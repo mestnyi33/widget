@@ -26,6 +26,67 @@ EndDeclareModule
 
 Module Button
   
+  Macro Colors(_this_, _i_, _ii_, _iii_)
+    If _this_\Color[_i_]\Line[_ii_]
+      _this_\Color[_i_]\Line[_iii_] = _this_\Color[_i_]\Line[_ii_]
+    Else
+      _this_\Color[_i_]\Line[_iii_] = _this_\Color[0]\Line[_ii_]
+    EndIf
+    
+    If _this_\Color[_i_]\Fore[_ii_]
+      _this_\Color[_i_]\Fore[_iii_] = _this_\Color[_i_]\Fore[_ii_]
+    Else
+      _this_\Color[_i_]\Fore[_iii_] = _this_\Color[0]\Fore[_ii_]
+    EndIf
+    
+    If _this_\Color[_i_]\Back[_ii_]
+      _this_\Color[_i_]\Back[_iii_] = _this_\Color[_i_]\Back[_ii_]
+    Else
+      _this_\Color[_i_]\Back[_iii_] = _this_\Color[0]\Back[_ii_]
+    EndIf
+    
+    If _this_\Color[_i_]\Frame[_ii_]
+      _this_\Color[_i_]\Frame[_iii_] = _this_\Color[_i_]\Frame[_ii_]
+    Else
+      _this_\Color[_i_]\Frame[_iii_] = _this_\Color[0]\Frame[_ii_]
+    EndIf
+  EndMacro
+  
+  Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
+    BackColor(_color_1_&$FFFFFF|_alpha_<<24)
+    FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
+    If _type_
+      LinearGradient(_x_,_y_, (_x_+_width_), _y_)
+    Else
+      LinearGradient(_x_,_y_, _x_, (_y_+_height_))
+    EndIf
+    RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
+    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
+  EndMacro
+  
+  Macro ResetColor(This)
+    
+    Colors(This, 0, 1, 0)
+    Colors(This, 1, 1, 0)
+    Colors(This, 2, 1, 0)
+    Colors(This, 3, 1, 0)
+    
+    
+    Colors(This, 1, 1, 1)
+    Colors(This, 2, 1, 1)
+    Colors(This, 3, 1, 1)
+    
+    Colors(This, 1, 2, 2)
+    Colors(This, 2, 2, 2)
+    Colors(This, 3, 2, 2)
+    
+    Colors(This, 1, 3, 3)
+    Colors(This, 2, 3, 3)
+    Colors(This, 3, 3, 3)
+    
+  EndMacro
+  
+  
   ;- PROCEDURE
   Procedure.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
     Protected line$, ret$="", LineRet$=""
@@ -97,14 +158,15 @@ Module Button
     ProcedureReturn ret$ ; ReplaceString(ret$, " ", "*")
   EndProcedure
   
-  Procedure Draw(*This.Widget)
-    Protected String.s, String1.s, String2.s, String3.s, String4.s, StringWidth, CountString
-    Protected IT,Text_Y,Text_X,TxtHeight,Width,Height
-    
-    If *This
-      With *This
+  Procedure.i Draw(*This.Widget)
+    With *This
+      If Not \Hide
         If \FontID : DrawingFont(\FontID) : EndIf
-        Box(\X[1],\Y[1],\Width[1],\Height[1],\Color\Back)
+        DrawingMode(\DrawingMode)
+        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back)
+        Protected String.s, String1.s, String2.s, String3.s, String4.s, StringWidth, CountString
+        Protected IT,Text_Y,Text_X,TxtHeight,Width,Height
+        
         
         If \Text\String.s
           If \Text\Change
@@ -114,15 +176,20 @@ Module Button
           EndIf
           
           TxtHeight=\Text\Height
-          Width = \Width[2]
-          Height = \Height[2]
           
+          If \Vertical
+            Width = \Height[1]-\Text\X*2
+            Height = \Width[1]-\Text\y*2
+          Else
+            Width = \Width[1]-\Text\X*2
+            Height = \Height[1]-\Text\y*2
+          EndIf
           
           If \Text\MultiLine
-            String.s = Wrap(\Text\String.s, \Width[2]-\Text\X*2) 
+            String.s = Wrap(\Text\String.s, Width)
             CountString = CountString(String, #LF$)
           ElseIf \Text\WordWrap
-            String.s = Wrap(\Text\String.s, \Width[2]-\Text\X*2, 1) 
+            String.s = Wrap(\Text\String.s, Width, 1)
             CountString = CountString(String, #LF$)
           Else
             String.s = \Text\String.s
@@ -148,19 +215,21 @@ Module Button
                 Text_X=(Width-StringWidth)/2 
               EndIf
               
-              If Text_X<\Text\X : Text_X=\Text\X : EndIf
+              ;If Text_X<\Text\X : Text_X=\Text\X : EndIf
               
               DrawingMode(#PB_2DDrawing_Transparent)
-              DrawText(Text_X, Text_Y, String4.s, \Color\Front)
+              If \Vertical
+                DrawRotatedText(\Text\X+Text_Y, \Text\Y+Text_X, String4.s, 270, \Color\Front)
+                Text_Y+TxtHeight  
+                If Text_Y > (Height) : Break : EndIf
+              Else
+                DrawText(\Text\X+Text_X, \Text\Y+Text_Y, String4.s, \Color\Front)
+                Text_Y+TxtHeight  
+                If Text_Y > (Height-TxtHeight) : Break : EndIf
+              EndIf
               
-              Text_Y+TxtHeight : If Text_Y > (Height-TxtHeight) : Break : EndIf
             Next
           EndIf
-          
-          
-          
-          ; Debug ElapsedMilliseconds()-time
-          
           
         EndIf
         
@@ -176,8 +245,8 @@ Module Button
           Box(\X[1],\Y[1],\Width[1],\Height[1],\Color\Frame)
         EndIf
         
-      EndWith  
-    EndIf
+      EndIf
+    EndWith 
     
   EndProcedure
   
@@ -307,9 +376,13 @@ Module Button
         \fSize = Bool(Flag&#PB_Text_Border)
         \bSize = \fSize
         
+        
         If Resize(*This, X,Y,Width,Height)
           \Color\Frame = $C0C0C0
           \Color\Back = $F0F0F0
+          
+          \DrawingMode = #PB_2DDrawing_Gradient
+          \Vertical = Bool(Flag&#PB_Text_Vertical)
           
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
@@ -317,9 +390,35 @@ Module Button
             \Text\MultiLine = 1;Bool(Flag&#PB_Text_MultiLine)
           EndIf
           
-          \Text\X = \fSize+4 ; 2,6,12 
+          \Text\X = \fSize+12 ; 2,6,12 
           \Text\y = \fSize
           
+          \Color[0]\Fore[1] = $F6F6F6 
+      \Color[0]\Frame[1] = $BABABA
+      
+      \Color[0]\Back[1] = $F0F0F0 
+      \Color[1]\Back[1] = $E2E2E2  
+      \Color[2]\Back[1] = $E2E2E2 
+      \Color[3]\Back[1] = $E2E2E2 
+      
+      \Color[0]\Line[1] = $FFFFFF
+      \Color[1]\Line[1] = $5B5B5B
+      \Color[2]\Line[1] = $5B5B5B
+      \Color[3]\Line[1] = $5B5B5B
+      
+      ;
+      \Color[0]\Fore[2] = $EAEAEA
+      \Color[0]\Back[2] = $CECECE
+      \Color[0]\Line[2] = $5B5B5B
+      \Color[0]\Frame[2] = $8F8F8F
+      
+      ;
+      \Color[0]\Fore[3] = $E2E2E2
+      \Color[0]\Back[3] = $B4B4B4
+      \Color[0]\Line[3] = $FFFFFF
+      \Color[0]\Frame[3] = $6F6F6F
+      
+      ResetColor(*This)
           If Bool(Flag&#PB_Text_Center) : \Text\Align | #PB_Text_Center : EndIf
           If Bool(Flag&#PB_Text_Middle) : \Text\Align | #PB_Text_Middle : EndIf
           If Bool(Flag&#PB_Text_Right)  : \Text\Align | #PB_Text_Right : EndIf
@@ -368,8 +467,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 104, 690, "Text on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     ;EditorGadget(0, 10, 10, 380, 330, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s)
-    TextGadget(0, 10, 10, 380, 330, Text.s, #PB_Text_Center) 
-    ;ButtonGadget(0, 10, 10, 380, 330, Text.s) 
+    ;TextGadget(0, 10, 10, 380, 330, Text.s, #PB_Text_Center) 
+    ButtonGadget(0, 10, 10, 380, 330, Text.s) 
     SetGadgetColor(0, #PB_Gadget_BackColor, $CCBFB4)
     SetGadgetColor(0, #PB_Gadget_FrontColor, $D57A2E)
     SetGadgetFont(0,FontID(0) )
@@ -381,9 +480,9 @@ CompilerIf #PB_Compiler_IsMainFile
     *Text\Type = #PB_GadgetType_Text
     *Text\FontID = GetGadgetFont(#PB_Default)
     
-    Widget(*Text,10, 350, 380, 330, Text.s, #PB_Text_Center);|#PB_Text_Middle );| #PB_Text_WordWrap);
-    SetColor(*Text, #PB_Gadget_BackColor, $CCBFB4)
-    SetColor(*Text, #PB_Gadget_FrontColor, $D56F1A)
+    Widget(*Text,10, 350, 380, 330, Text.s, #PB_Text_Center|#PB_Text_Middle | #PB_Text_Border);| #PB_Text_WordWrap);
+;     SetColor(*Text, #PB_Gadget_BackColor, $CCBFB4)
+;     SetColor(*Text, #PB_Gadget_FrontColor, $D56F1A)
     SetFont(*Text, FontID(0))
     
     SetGadgetData(g, *Text)
@@ -396,7 +495,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 305
-; FirstLine = 284
-; Folding = 0---------
+; CursorPosition = 217
+; FirstLine = 191
+; Folding = -----------
 ; EnableXP

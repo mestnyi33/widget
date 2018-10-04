@@ -64,6 +64,7 @@ EndProcedure
     Protected Result
     
     With *This
+      
 ;       Select \Type
 ;         Case #PB_GadgetType_ScrollBar
 ;           ScrollBar::Resize(\Scroll, X,Y,Width,Height)
@@ -424,7 +425,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 22
-; FirstLine = 11
+; CursorPosition = 66
+; FirstLine = 45
 ; Folding = --n748-t---
 ; EnableXP
