@@ -1,27 +1,27 @@
 ﻿DeclareModule Structures
   
   ;- STRUCTURE
-  Structure Coordinate
+  Structure COORDINATE
     y.i[4]
     x.i[4]
     height.i[4]
     width.i[4]
   EndStructure
   
-  Structure Mouse
+  Structure MOUSE
     X.i
     Y.i
     Buttons.i
   EndStructure
   
-  Structure Page
+  Structure PAGE
     Pos.l
     Length.l
     ScrollStep.l
   EndStructure
   
-  Structure Canvas
-    Mouse.Mouse
+  Structure CANVAS
+    Mouse.MOUSE
     Gadget.i
     Window.i
     
@@ -29,7 +29,7 @@
     Key.i[2]
   EndStructure
   
-  Structure Color
+  Structure COLOR
     Front.i[4]
     Fore.i[4]
     Back.i[4]
@@ -38,7 +38,7 @@
     Arrows.i[4]
   EndStructure
   
-  Structure Text Extends Coordinate
+  Structure TEXT Extends COORDINATE
     ;     Char.c
     Len.i
     String.s[3]
@@ -64,9 +64,10 @@
     Mode.i
   EndStructure
   
-  Structure Scroll Extends COORDINATE
+  Structure SCROLL Extends COORDINATE
     Window.l
     Gadget.l
+    
     Max.l
     Min.l
     
@@ -76,7 +77,6 @@
     Type.l[4]
     Focus.l
     Buttons.l
-    Button.Page
     Radius.l
     
     Hide.b[2]
@@ -88,15 +88,16 @@
     Page.PAGE
     Area.PAGE
     Thumb.PAGE
-    Color.Color[4]
+    Button.PAGE
+    Color.COLOR[4]
   EndStructure
   
-  Structure Widget Extends Coordinate
-    Canvas.Canvas
-    Color.Color[4]
+  Structure WIDGET Extends COORDINATE
+    Canvas.CANVAS
+    Color.COLOR[4]
     
     FontID.i
-    Text.Text[4]
+    Text.TEXT[4]
     
     fSize.i
     bSize.i
@@ -104,29 +105,16 @@
     Disable.b[2]
     
     Type.i
-    Resize.i
+    Resize.i ; 
     
-    Buttons.i
     Focus.i
     
+    Buttons.i
     Vertical.i
-    ButtonLength.i
-    DrawingMode.i
     
-;     Max.i
-;     Min.i
-;     
-;     Pos.i
-;     PageLength.i
-;     
-;     AreaPos.i
-;     AreaLength.i
-;     
-;     ThumbPos.i
-;     ThumbLength.i
-    
-    Scroll.Scroll
+    Scroll.SCROLL
   
+    DrawingMode.i
   EndStructure
   
 EndDeclareModule 
@@ -137,7 +125,7 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 32
+; CursorPosition = 107
+; FirstLine = 87
 ; Folding = --
 ; EnableXP

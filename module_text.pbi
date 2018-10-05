@@ -294,7 +294,7 @@ Module Text
         ;       
         If \fSize
           DrawingMode(#PB_2DDrawing_Outlined)
-          Box(\X[1],\Y[1],\Width[1],\Height[1],\Color\Frame)
+          Box(\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Frame)
         EndIf
         
       EndIf
@@ -409,10 +409,7 @@ Module Text
         Result = 4
       EndIf
       
-      If Result
-        \Resize = #True
-      EndIf
-      
+      \Resize = Result
       ProcedureReturn Result
     EndWith
   EndProcedure
@@ -421,7 +418,9 @@ Module Text
     Protected Result
     
     With *This
-      
+      If \Type = #PB_GadgetType_Text
+        
+      EndIf
       ProcedureReturn Result
     EndWith
   EndProcedure
@@ -532,7 +531,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 210
-; FirstLine = 186
+; CursorPosition = 207
+; FirstLine = 204
 ; Folding = --------------
 ; EnableXP

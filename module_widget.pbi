@@ -96,45 +96,11 @@ Module Widget
       EndIf
       ;       EndSelect
       
+      \Resize = Result
       ProcedureReturn Result
     EndWith
   EndProcedure
   
-  Procedure.i CallBacks()
-    Protected Repaint, *This.Widget = GetGadgetData(EventGadget())
-    
-    With *This
-      \Canvas\Window = EventWindow()
-      \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
-      \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
-      \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
-      \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
-      \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
-      \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-      
-      Select EventType()
-        Case #PB_EventType_Resize 
-          ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          Repaint = Resizes(*This, #PB_Ignore,#PB_Ignore,GadgetWidth(\Canvas\Gadget),GadgetHeight(\Canvas\Gadget))
-      EndSelect
-      
-      If ScrollBar::CallBack(\Scroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
-        If \Scroll\Buttons 
-          PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
-        EndIf
-        Repaint = #True
-      EndIf
-      
-      If Button::CallBack(*This, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
-        Repaint = #True
-      EndIf
-      
-      If Repaint
-        Draws(*This)
-      EndIf
-    EndWith
-    
-  EndProcedure
   
   
   ;-
@@ -280,6 +246,39 @@ Module Widget
   
   
   ;-
+  Procedure.i CallBacks()
+    Protected Repaint, *This.Widget = GetGadgetData(EventGadget())
+    
+    With *This
+      \Canvas\Window = EventWindow()
+      \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
+      \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
+      \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
+      \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
+      \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
+      \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+      
+      Select EventType()
+        Case #PB_EventType_Resize 
+          ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Repaint = Resizes(*This, #PB_Ignore,#PB_Ignore,GadgetWidth(\Canvas\Gadget),GadgetHeight(\Canvas\Gadget))
+      EndSelect
+      
+      If ScrollBar::CallBack(\Scroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+        Repaint = #True
+      EndIf
+      
+      If Button::CallBack(*This, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+        Repaint = #True
+      EndIf
+      
+      If Repaint
+        Draws(*This)
+      EndIf
+    EndWith
+    
+  EndProcedure
+  
   Procedure.i ScrollBar(Widget.i, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0)
     Protected *This.Widget=AllocateStructure(Widget)
     Protected g = CanvasGadget(Widget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Widget=-1 : Widget=g : EndIf
@@ -438,7 +437,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 373
-; FirstLine = 359
+; CursorPosition = 281
+; FirstLine = 248
 ; Folding = -----------
 ; EnableXP

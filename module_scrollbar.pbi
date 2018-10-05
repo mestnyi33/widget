@@ -613,6 +613,7 @@ Module ScrollBar
     Static LastX, LastY, Last, *Thisis.Scroll, Cursor, Drag, Down
     
     With *This
+      If \Type = #PB_GadgetType_ScrollBar
       If \Hide And *This = *Thisis
         \Buttons = 0
         *Thisis = 0
@@ -759,7 +760,7 @@ Module ScrollBar
           Result =- 2
         EndIf 
       EndIf
-      
+      EndIf
     EndWith
     
     ProcedureReturn Result
@@ -957,7 +958,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 953
-; FirstLine = 52
-; Folding = B8-0----------------------0--
+; CursorPosition = 618
+; FirstLine = 440
+; Folding = F8-0---------------b---d7-8--
 ; EnableXP

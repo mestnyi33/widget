@@ -295,10 +295,7 @@ Module Button
         Result = 4
       EndIf
       
-      If Result
-        \Resize = #True
-      EndIf
-      
+      \Resize = Result
       ProcedureReturn Result
     EndWith
   EndProcedure
@@ -308,95 +305,97 @@ Module Button
     Static LastX, LastY, Last, *Scroll.Widget, Cursor, Drag
     
     With *This
-      If \Hide
-        If *This = *Scroll
-          \Focus = 0
-          \Buttons = 0
-        EndIf
-      Else
-        If Drag
-          If \Buttons>0 : Buttons = \Buttons : EndIf
-        Else
-          If (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
-            If (Mousex>\x[1] And Mousex=<\x[1]+\Width[1] And  Mousey>\y[1] And Mousey=<\y[1]+\Height[1])
-              \Buttons = 1
-            ElseIf (Mousex>\x[3] And Mousex=<\x[3]+\Width[3] And Mousey>\y[3] And Mousey=<\y[3]+\Height[3])
-              \Buttons = 3
-            ElseIf (Mousex>\x[2] And Mousex=<\x[2]+\Width[2] And Mousey>\y[2] And Mousey=<\y[2]+\Height[2])
-              \Buttons = 2
-            Else
-              \Buttons =- 1
-            EndIf
-            
-            If \Buttons>0 : Buttons = \Buttons : EndIf
-          Else
+      If \Type = #PB_GadgetType_Button
+        If \Hide
+          If *This = *Scroll
+            \Focus = 0
             \Buttons = 0
           EndIf
-        EndIf
-        
-        Select EventType
-          Case #PB_EventType_MouseLeave : Buttons = 0 : LastX = 0 : LastY = 0
-          Case #PB_EventType_LeftButtonUp : Drag = 0 :  LastX = 0 : LastY = 0
-          Case #PB_EventType_LeftButtonDown : Drag = 1
-            If Buttons : *Scroll = *This : EndIf
-            
-          Case #PB_EventType_MouseMove
-            If Drag
-              If Bool(LastX|LastY) 
-                If *Scroll = *This
+        Else
+          If Drag
+            If \Buttons>0 : Buttons = \Buttons : EndIf
+          Else
+            If (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
+              If (Mousex>\x[1] And Mousex=<\x[1]+\Width[1] And  Mousey>\y[1] And Mousey=<\y[1]+\Height[1])
+                \Buttons = 1
+              ElseIf (Mousex>\x[3] And Mousex=<\x[3]+\Width[3] And Mousey>\y[3] And Mousey=<\y[3]+\Height[3])
+                \Buttons = 3
+              ElseIf (Mousex>\x[2] And Mousex=<\x[2]+\Width[2] And Mousey>\y[2] And Mousey=<\y[2]+\Height[2])
+                \Buttons = 2
+              Else
+                \Buttons =- 1
+              EndIf
+              
+              If \Buttons>0 : Buttons = \Buttons : EndIf
+            Else
+              \Buttons = 0
+            EndIf
+          EndIf
+          
+          Select EventType
+            Case #PB_EventType_MouseLeave : Buttons = 0 : LastX = 0 : LastY = 0
+            Case #PB_EventType_LeftButtonUp : Drag = 0 :  LastX = 0 : LastY = 0
+            Case #PB_EventType_LeftButtonDown : Drag = 1
+              If Buttons : *Scroll = *This : EndIf
+              
+            Case #PB_EventType_MouseMove
+              If Drag
+                If Bool(LastX|LastY) 
+                  If *Scroll = *This
+                    
+                  EndIf
+                EndIf
+              Else
+                If \Buttons
+                  If Last<>Buttons
+                    If *Scroll : CallBack(*Scroll, #PB_EventType_MouseLeave, MouseX, MouseY, WheelDelta) : EndIf
+                    EventType = #PB_EventType_MouseEnter
+                    Last = Buttons
+                  EndIf
                   
+                  If *Scroll <> *This 
+                    ; Debug "Мышь находится внутри"
+                    Cursor = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+                    SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+                    *Scroll = *This
+                  EndIf
+                ElseIf *Scroll = *This
+                  If Cursor <> GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+                    ; Debug "Мышь находится снаружи"
+                    SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, Cursor)
+                  EndIf
+                  
+                  EventType = #PB_EventType_MouseLeave
+                  *Scroll = 0
+                  Last = 0
                 EndIf
               EndIf
-            Else
-              If \Buttons
-                If Last<>Buttons
-                  If *Scroll : CallBack(*Scroll, #PB_EventType_MouseLeave, MouseX, MouseY, WheelDelta) : EndIf
-                  EventType = #PB_EventType_MouseEnter
-                  Last = Buttons
-                EndIf
-                
-                If *Scroll <> *This 
-                  ; Debug "Мышь находится внутри"
-                  Cursor = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-                  SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-                  *Scroll = *This
-                EndIf
-              ElseIf *Scroll = *This
-                If Cursor <> GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-                  ; Debug "Мышь находится снаружи"
-                  SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, Cursor)
-                EndIf
-                
-                EventType = #PB_EventType_MouseLeave
-                *Scroll = 0
-                Last = 0
+              
+          EndSelect
+          
+          Select EventType
+            Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
+              If Buttons
+                \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+                \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+                \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+                \Color[Buttons]\Line = \Color[Buttons]\Line[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+              Else
+                ResetColor(*This)
               EndIf
-            EndIf
-            
-        EndSelect
-        
-        Select EventType
-          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
-            If Buttons
-              \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Line = \Color[Buttons]\Line[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-            Else
-              ResetColor(*This)
-            EndIf
-            
-            Result = #True
-        EndSelect 
-        
-        Select EventType
-          Case #PB_EventType_Focus
-            \Focus = #True
-            Result = #True
-          Case #PB_EventType_LostFocus
-            \Focus = #False
-            Result = #True
-        EndSelect
+              
+              Result = #True
+          EndSelect 
+          
+          Select EventType
+            Case #PB_EventType_Focus
+              \Focus = #True
+              Result = #True
+            Case #PB_EventType_LostFocus
+              \Focus = #False
+              Result = #True
+          EndSelect
+        EndIf
       EndIf
     EndWith
     
@@ -568,7 +567,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 140
-; FirstLine = 130
+; CursorPosition = 567
+; FirstLine = 530
 ; Folding = ---------------
 ; EnableXP
