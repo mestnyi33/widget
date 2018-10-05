@@ -287,6 +287,7 @@ Module Widget
       With *This
         \Canvas\Gadget = Widget
         \Type = #PB_GadgetType_ScrollBar
+        \FontID = GetGadgetFont(#PB_Default)
         ScrollBar::Widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
         \Scroll\Type[1]=1 : \Scroll\Type[2]=1     ; Можно менять вид стрелок 
         \Scroll\Size[1]=6 : \Scroll\Size[2]=6     ; Можно задать размер стрелок
@@ -306,6 +307,7 @@ Module Widget
     If *This
       With *This
         \Canvas\Gadget = Widget
+        \FontID = GetGadgetFont(#PB_Default)
         Button::Widget(*This, 0, 0, Width, Height, Text.s, Flag|#PB_Text_Center|#PB_Text_Middle|#PB_Text_Border)
         SetGadgetData(Widget, *This)
         Draws(*This)
@@ -323,6 +325,7 @@ Module Widget
     If *This
       With *This
         \Canvas\Gadget = Widget
+        \FontID = GetGadgetFont(#PB_Default)
         Text::Widget(*This, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
         Draws(*This)
@@ -391,53 +394,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-
-
-
-
-CompilerIf #PB_Compiler_IsMainFile
-  Procedure CallBack()
-    Select EventType()
-      Case #PB_EventType_Change
-        Debug GetGadgetText(6)
-        ;Debug GetText(16)
-        
-    EndSelect
-  EndProcedure
-  
-  
-  Procedure ResizeCallBack()
-    ResizeGadget(0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, #PB_Ignore)
-    ResizeGadget(16, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, #PB_Ignore)
-    SetWindowTitle(0, Str(WindowWidth(EventWindow(), #PB_Window_FrameCoordinate)-20))
-  EndProcedure
-  
-  Define cr.s = #LF$
-  LoadFont(0, "Courier", 14)
-  Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  ; Debug "len - "+Len(Text)
-  
-  If OpenWindow(0, 0, 0, 104, 690, "StringGadget Centered Text", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ;EditorGadget(0, 10, 10, 380, 330, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s)
-    TextGadget(0, 10, 10, 380, 330, Text.s, #PB_Text_Center) 
-    ;ButtonGadget(0, 10, 10, 380, 330, Text.s) 
-    SetGadgetColor(0, #PB_Gadget_BackColor, $CCBFB4)
-    SetGadgetColor(0, #PB_Gadget_FrontColor, $D57A2E)
-    SetGadgetFont(0,FontID(0) )
-    
-    g=16
-    Text(g, 10, 350, 380, 330, Text.s, #PB_Text_Center);|#PB_Text_Middle );| #PB_Text_WordWrap);
-    SetColor(g, #PB_Gadget_BackColor, $CCBFB4)
-    SetColor(g, #PB_Gadget_FrontColor, $D56F1A)
-    SetFont(g, FontID(0))
-    
-    PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore)
-    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  EndIf
-CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 281
-; FirstLine = 248
-; Folding = -----------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 395
+; FirstLine = 373
+; Folding = ----------
 ; EnableXP
