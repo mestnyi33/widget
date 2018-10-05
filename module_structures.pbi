@@ -45,6 +45,10 @@
     Change.b
     
     Align.i
+    Align_Bottom.i
+    Align_Right.i
+    Align_Vertical.i
+    Align_Horisontal.i
     
     Lower.b
     Upper.b
@@ -132,6 +136,7 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 7
+; CursorPosition = 50
+; FirstLine = 46
 ; Folding = --
 ; EnableXP

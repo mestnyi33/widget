@@ -49,53 +49,53 @@ Module Widget
   Procedure.i Draws(*This.Widget)
     With *This
       If StartDrawing(CanvasOutput(\Canvas\Gadget))
-      Select \Type
-        Case #PB_GadgetType_Text   : Text::Draw(*This)
-        Case #PB_GadgetType_Button : Button::Draw(*This)
-        Case #PB_GadgetType_ScrollBar : ScrollBar::Draw(\Scroll)
-      EndSelect
-      
-      StopDrawing()
-    EndIf
-  EndWith
-EndProcedure
+        Select \Type
+          Case #PB_GadgetType_Text   : Text::Draw(*This)
+          Case #PB_GadgetType_Button : Button::Draw(*This)
+          Case #PB_GadgetType_ScrollBar : ScrollBar::Draw(\Scroll)
+        EndSelect
+        
+        StopDrawing()
+      EndIf
+    EndWith
+  EndProcedure
   
   Procedure.i Resizes(*This.Widget, X.i,Y.i,Width.i,Height.i)
     Protected Result
     
     With *This
       
-;       Select \Type
-;         Case #PB_GadgetType_ScrollBar
-;           ScrollBar::Resize(\Scroll, X,Y,Width,Height)
-;           Result = 1
-;         Default
-          If X<>#PB_Ignore 
-            \X[0] = X 
-            \X[2]=\bSize
-            \X[1]=\X[2]-\fSize
-            Result = 1
-          EndIf
-          If Y<>#PB_Ignore 
-            \Y[0] = Y
-            \Y[2]=\bSize
-            \Y[1]=\Y[2]-\fSize
-            Result = 2
-          EndIf
-          If Width<>#PB_Ignore 
-            \Width[0] = Width 
-            \Width[2] = \Width-\bSize*2
-            \Width[1] = \Width[2]+\fSize*2
-            Result = 3
-          EndIf
-          If Height<>#PB_Ignore 
-            \Height[0] = Height 
-            \Height[2] = \Height-\bSize*2
-            \Height[1] = \Height[2]+\fSize*2
-            Result = 4
-          EndIf
-;       EndSelect
-  
+      ;       Select \Type
+      ;         Case #PB_GadgetType_ScrollBar
+      ;           ScrollBar::Resize(\Scroll, X,Y,Width,Height)
+      ;           Result = 1
+      ;         Default
+      If X<>#PB_Ignore 
+        \X[0] = X 
+        \X[2]=\bSize
+        \X[1]=\X[2]-\fSize
+        Result = 1
+      EndIf
+      If Y<>#PB_Ignore 
+        \Y[0] = Y
+        \Y[2]=\bSize
+        \Y[1]=\Y[2]-\fSize
+        Result = 2
+      EndIf
+      If Width<>#PB_Ignore 
+        \Width[0] = Width 
+        \Width[2] = \Width-\bSize*2
+        \Width[1] = \Width[2]+\fSize*2
+        Result = 3
+      EndIf
+      If Height<>#PB_Ignore 
+        \Height[0] = Height 
+        \Height[2] = \Height-\bSize*2
+        \Height[1] = \Height[2]+\fSize*2
+        Result = 4
+      EndIf
+      ;       EndSelect
+      
       ProcedureReturn Result
     EndWith
   EndProcedure
@@ -122,6 +122,10 @@ EndProcedure
         If \Scroll\Buttons 
           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
         EndIf
+        Repaint = #True
+      EndIf
+      
+      If Button::CallBack(*This, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
         Repaint = #True
       EndIf
       
@@ -288,6 +292,7 @@ EndProcedure
         \Scroll\Type[1]=1 : \Scroll\Type[2]=1     ; Можно менять вид стрелок 
         \Scroll\Size[1]=6 : \Scroll\Size[2]=6     ; Можно задать размер стрелок
         SetGadgetData(Widget, *This)
+        Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
       EndIf
     EndWith
@@ -302,8 +307,9 @@ EndProcedure
     If *This
       With *This
         \Canvas\Gadget = Widget
-        Button::Widget(*This, X, Y, Width, Height, Text.s, Flag)
+        Button::Widget(*This, 0, 0, Width, Height, Text.s, Flag|#PB_Text_Center|#PB_Text_Middle|#PB_Text_Border)
         SetGadgetData(Widget, *This)
+        Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
       EndIf
     EndWith
@@ -318,8 +324,9 @@ EndProcedure
     If *This
       With *This
         \Canvas\Gadget = Widget
-        Text::Widget(*This, X, Y, Width, Height, Text.s, Flag)
+        Text::Widget(*This, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
+        Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
       EndIf
     EndWith
@@ -331,8 +338,8 @@ EndModule
 
 UseModule Widget
 
- 
-  ;- EXAMPLE
+
+;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   Procedure v_GadgetCallBack()
     SetState(13, GetGadgetState(EventGadget()))
@@ -352,8 +359,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(2, GetState(EventGadget()))
   EndProcedure
   
-
-  If OpenWindow(0, 0, 0, 605, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  
+  If OpenWindow(0, 0, 0, 605, 300, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TextGadget       (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
     ScrollBarGadget  (2,  10, 42, 250,  20, 30, 100, 30)
     SetGadgetState   (2,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
@@ -368,6 +375,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ScrollBar  (13, 300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
     SetState   (13, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
+    ButtonGadget(15, 10, 190, 180,  60, "Button (Horisontal)")
+    ButtonGadget(16, 200, 150,  60, 140 ,"Button (Vertical)")
+    
+    Button(17, 300+10, 190, 180,  60, "Button (Horisontal)")
+    Button(18, 300+200, 150,  60, 140 ,"Button (Vertical)",#PB_Text_Vertical)
+    
     PostEvent(#PB_Event_Gadget, 0,12,#PB_EventType_Resize)
     
     BindGadgetEvent(2,@h_GadgetCallBack())
@@ -380,11 +393,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
-  
-  
-  
+
+
+
 CompilerIf #PB_Compiler_IsMainFile
-   Procedure CallBack()
+  Procedure CallBack()
     Select EventType()
       Case #PB_EventType_Change
         Debug GetGadgetText(6)
@@ -425,7 +438,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 45
-; Folding = --n748-t---
+; CursorPosition = 438
+; FirstLine = 401
+; Folding = -----------
 ; EnableXP

@@ -10,7 +10,7 @@ DeclareModule Text
   UseModule Constants
   UseModule Structures
   
-  ;- DECLARE
+  ;- DECLAREs
   Declare.i Draw(*This.Widget)
   Declare.s GetText(*This.Widget)
   Declare.i SetText(*This.Widget, Text.s)
@@ -19,14 +19,27 @@ DeclareModule Text
   Declare.i SetColor(*This.Widget, ColorType.i, Color.i)
   Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i)
   ;Declare.i CallBack(*This.Widget, EventType.i, MouseX.i, MouseY.i)
-  Declare.i Widget(*This.Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
+  Declare.i Widget(*This.Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   
 EndDeclareModule
 
 Module Text
   
-  ;- PROCEDURE
+  ;- MACROS
+  Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
+    BackColor(_color_1_&$FFFFFF|_alpha_<<24)
+    FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
+    If _type_
+      LinearGradient(_x_,_y_, (_x_+_width_), _y_)
+    Else
+      LinearGradient(_x_,_y_, _x_, (_y_+_height_))
+    EndIf
+    RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
+    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
+  EndMacro
+  
+  ;- PROCEDUREs
   Procedure.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
     Protected line$, ret$="", LineRet$=""
     Protected.i CountString, i, start, ii, found, length
@@ -97,7 +110,7 @@ Module Text
     ProcedureReturn ret$ ; ReplaceString(ret$, " ", "*")
   EndProcedure
   
-  Procedure Draw(*This.Widget)
+  Procedure _Draw(*This.Widget)
     Protected String.s, String1.s, String2.s, String3.s, String4.s, StringWidth, CountString
     Protected IT,Text_Y,Text_X,TxtHeight,Width,Height
     
@@ -137,7 +150,7 @@ Module Text
             EndIf
             
             For IT = 1 To CountString
-              If \Text\Y+Text_Y < \Y[2] : Text_Y+TxtHeight : Continue : EndIf
+              If \Text\Y+Text_Y < \bSize : Text_Y+TxtHeight : Continue : EndIf
               
               String4 = StringField(String, IT, #LF$)
               StringWidth = TextWidth(RTrim(String4))
@@ -148,12 +161,20 @@ Module Text
                 Text_X=(Width-StringWidth)/2 
               EndIf
               
-              If Text_X<\Text\X : Text_X=\Text\X : EndIf
+              ; If Text_X<\Text\X : Text_X=\Text\X : EndIf
               
+              ;               DrawingMode(#PB_2DDrawing_Transparent)
+              ;               DrawText(\X[1]+Text_X, \Y[1]+Text_Y, String4.s, \Color\Front)
               DrawingMode(#PB_2DDrawing_Transparent)
-              DrawText(Text_X, Text_Y, String4.s, \Color\Front)
+              If \Vertical
+                DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String4.s, 270, \Color\Front)
+                Text_Y+TxtHeight : If Text_Y > (Width) : Break : EndIf
+              Else
+                DrawText(\X[1]+Text_X, \Y[1]+Text_Y, String4.s, \Color\Front)
+                Text_Y+TxtHeight : If Text_Y > (Height-TxtHeight) : Break : EndIf
+              EndIf
               
-              Text_Y+TxtHeight : If Text_Y > (Height-TxtHeight) : Break : EndIf
+              ; Text_Y+TxtHeight : If Text_Y > (Height-TxtHeight) : Break : EndIf
             Next
           EndIf
           
@@ -178,6 +199,104 @@ Module Text
         
       EndWith  
     EndIf
+    
+  EndProcedure
+  
+  Procedure.i Draw(*This.Widget)
+    Protected String.s, String1.s, String2.s, String3.s, String4.s, StringWidth, CountString
+    Protected IT,Text_Y,Text_X,TxtHeight,Width,Height
+    
+    With *This
+      If Not \Hide
+        If \FontID : DrawingFont(\FontID) : EndIf
+        DrawingMode(\DrawingMode)
+        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back)
+        
+        
+        If \Text\String.s
+          If \Text\Change
+            \Text\Height = TextHeight("A")
+            \Text\Width = TextWidth(\Text\String.s)
+            \Text\Change = 0
+          EndIf
+          
+          TxtHeight=\Text\Height
+          
+          If \Vertical
+            Width = \Height[1]-\Text\X*2
+            Height = \Width[1]-\Text\y*2
+          Else
+            Width = \Width[1]-\Text\X*2
+            Height = \Height[1]-\Text\y*2
+          EndIf
+          
+          If \Text\MultiLine
+            String.s = Text::Wrap(\Text\String.s, Width)
+            CountString = CountString(String, #LF$)
+          ElseIf \Text\WordWrap
+            String.s = Text::Wrap(\Text\String.s, Width, 0)
+            CountString = CountString(String, #LF$)
+          Else
+            String.s = \Text\String.s
+            CountString = 1
+          EndIf
+          
+          If CountString
+            If Bool((\Text\Align & #PB_Text_Bottom) = #PB_Text_Bottom) 
+              Text_Y=(Height-(\Text\Height*CountString)-Text_Y) 
+            ElseIf Bool((\Text\Align & #PB_Text_Middle) = #PB_Text_Middle) 
+              Text_Y=((Height-(\Text\Height*CountString))/2)
+            EndIf
+            
+            
+            For IT = 1 To CountString
+              If \Text\Y+Text_Y < \bSize : Text_Y+TxtHeight : Continue : EndIf
+              
+              String4 = StringField(String, IT, #LF$)
+              StringWidth = TextWidth(RTrim(String4))
+              
+              If Bool((\Text\Align & #PB_Text_Right) = #PB_Text_Right) 
+                Text_X=(Width-StringWidth-\Text\X) 
+              ElseIf Bool((\Text\Align & #PB_Text_Center) = #PB_Text_Center) 
+                Text_X=(Width-StringWidth)/2 
+              EndIf
+              
+              
+              ;               DrawingMode(#PB_2DDrawing_Outlined)
+              ;               Box(\X[1],Text_Y,\Width[1],\Text\Height,0)
+              
+              DrawingMode(#PB_2DDrawing_Transparent)
+              If \Vertical
+                DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String4.s, 270, \Color\Front)
+                Text_Y+TxtHeight : If Text_Y > (Width) : Break : EndIf
+              Else
+                DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String4.s, \Color\Front)
+                Text_Y+TxtHeight : If Text_Y > (Height-TxtHeight) : Break : EndIf
+              EndIf
+              
+            Next
+          EndIf
+          
+        EndIf
+        
+        
+        ;         DrawingMode(\DrawingMode)
+        ;         If \Width > \Text\X
+        ;           BoxGradient(\Vertical,\X[1],\Y[1]+\Text\Y,\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1]+\Width[1]-\Text\X,\Y[1],\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;         EndIf
+        ;         If \Height > \Text\Y
+        ;           BoxGradient(\Vertical,\X[1],\Y[1],\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1]+\Text\X,\Y[1]+\Height[1]-\Text\Y,\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;         EndIf
+        ;       
+        If \fSize
+          DrawingMode(#PB_2DDrawing_Outlined)
+          Box(\X[1],\Y[1],\Width[1],\Height[1],\Color\Frame)
+        EndIf
+        
+      EndIf
+    EndWith 
     
   EndProcedure
   
@@ -220,8 +339,8 @@ Module Text
           EndIf
           
         Case #PB_Gadget_BackColor
-          If \Color\Back <> Color 
-            \Color\Back = Color
+          If \Color[1]\Back <> Color 
+            \Color[1]\Back = Color
             Result = #True
           EndIf
           
@@ -264,13 +383,13 @@ Module Text
     With *This
       If X<>#PB_Ignore 
         \X[0] = X 
-        \X[2]=\bSize
+        \X[2]=X+\bSize
         \X[1]=\X[2]-\fSize
         Result = 1
       EndIf
       If Y<>#PB_Ignore 
         \Y[0] = Y
-        \Y[2]=\bSize
+        \Y[2]=Y+\bSize
         \Y[1]=\Y[2]-\fSize
         Result = 2
       EndIf
@@ -300,7 +419,7 @@ Module Text
     EndWith
   EndProcedure
   
-  Procedure Widget(*This.Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
+  Procedure Widget(*This.Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
         \Type = #PB_GadgetType_Text
@@ -308,8 +427,8 @@ Module Text
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height)
-          \Color\Frame = $C0C0C0
-          \Color\Back = $F0F0F0
+          \Color[1]\Frame = $C0C0C0
+          \Color[1]\Back = $F0F0F0
           
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
@@ -317,8 +436,13 @@ Module Text
             \Text\MultiLine = 1;Bool(Flag&#PB_Text_MultiLine)
           EndIf
           
-          \Text\X = \fSize+4 ; 2,6,12 
-          \Text\y = \fSize
+          If \Vertical
+            \Text\X = \fSize 
+            \Text\y = \fSize+4 ; 2,6,1
+          Else
+            \Text\X = \fSize+4 ; 2,6,12 
+            \Text\y = \fSize
+          EndIf
           
           If Bool(Flag&#PB_Text_Center) : \Text\Align | #PB_Text_Center : EndIf
           If Bool(Flag&#PB_Text_Middle) : \Text\Align | #PB_Text_Middle : EndIf
@@ -381,7 +505,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *Text\Type = #PB_GadgetType_Text
     *Text\FontID = GetGadgetFont(#PB_Default)
     
-    Widget(*Text,10, 350, 380, 330, Text.s, #PB_Text_Center);|#PB_Text_Middle );| #PB_Text_WordWrap);
+    Widget(*Text,0, 0, 380, 330, Text.s, #PB_Text_Center);|#PB_Text_Middle );| #PB_Text_WordWrap);
     SetColor(*Text, #PB_Gadget_BackColor, $CCBFB4)
     SetColor(*Text, #PB_Gadget_FrontColor, $D56F1A)
     SetFont(*Text, FontID(0))
@@ -396,7 +520,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 183
-; FirstLine = 91
-; Folding = -v--------
+; CursorPosition = 502
+; FirstLine = 483
+; Folding = -------------
 ; EnableXP

@@ -1,6 +1,7 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
+  XIncludeFile "module_Text.pbi"
 CompilerEndIf
 
 ;-
@@ -10,7 +11,7 @@ DeclareModule Button
   UseModule Constants
   UseModule Structures
   
-  ;- DECLARE
+  ;- DECLAREs
   Declare.i Draw(*This.Widget)
   Declare.s GetText(*This.Widget)
   Declare.i SetText(*This.Widget, Text.s)
@@ -18,14 +19,14 @@ DeclareModule Button
   Declare.i GetColor(*This.Widget, ColorType.i)
   Declare.i SetColor(*This.Widget, ColorType.i, Color.i)
   Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i)
-  ;Declare.i CallBack(*This.Widget, EventType.i, MouseX.i, MouseY.i)
-  Declare.i Widget(*This.Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
-  Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
+  Declare.i CallBack(*This.Widget, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
+  Declare.i Widget(*This.Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   
 EndDeclareModule
 
 Module Button
   
+  ;- MACROS
   Macro Colors(_this_, _i_, _ii_, _iii_)
     If _this_\Color[_i_]\Line[_ii_]
       _this_\Color[_i_]\Line[_iii_] = _this_\Color[_i_]\Line[_ii_]
@@ -87,83 +88,13 @@ Module Button
   EndMacro
   
   
-  ;- PROCEDURE
-  Procedure.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
-    Protected line$, ret$="", LineRet$=""
-    Protected.i CountString, i, start, ii, found, length
-    
-    Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
-    Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
-    Text.s = ReplaceString(Text.s, #CR$, #LF$)
-    Text.s + #LF$
-    
-    CountString = CountString(Text.s, #LF$) 
-    
-    For i = 1 To CountString
-      line$ = StringField(Text.s, i, #LF$)
-      start = Len(line$)
-      length = start
-      
-      ; Get text len
-      While length > 1
-        If width > TextWidth(RTrim(Left(line$, length)))
-          Break
-        Else
-          length - 1 
-        EndIf
-      Wend
-      
-      While start > length 
-        For ii = length To 0 Step - 1
-          If mode =- 1 And CountString(Left((line$),ii), " ") > 1      And width > 71 ; button
-            found + FindString(delimList$, Mid(RTrim(line$),ii,1))
-            If found <> 2
-              Continue
-            EndIf
-          Else
-            found = FindString(delimList$, Mid(line$,ii,1))
-          EndIf
-          
-          If found
-            start = ii
-            Break
-          EndIf
-        Next
-        
-        If found
-          found = 0
-        Else
-          start = length
-        EndIf
-        
-        LineRet$ + Left(line$, start) + nl$
-        line$ = LTrim(Mid(line$, start+1))
-        start = Len(line$)
-        length = start
-        
-        ; Get text len
-        While length > 1
-          If width > TextWidth(RTrim(Left(line$, length)))
-            Break
-          Else
-            length - 1 
-          EndIf
-        Wend
-      Wend
-      
-      ret$ +  LineRet$ + line$ + nl$
-      LineRet$=""
-    Next
-    
-    ProcedureReturn ret$ ; ReplaceString(ret$, " ", "*")
-  EndProcedure
-  
+  ;- PROCEDUREs
   Procedure.i Draw(*This.Widget)
     With *This
       If Not \Hide
         If \FontID : DrawingFont(\FontID) : EndIf
         DrawingMode(\DrawingMode)
-        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back)
+        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back)
         Protected String.s, String1.s, String2.s, String3.s, String4.s, StringWidth, CountString
         Protected IT,Text_Y,Text_X,TxtHeight,Width,Height
         
@@ -186,10 +117,10 @@ Module Button
           EndIf
           
           If \Text\MultiLine
-            String.s = Wrap(\Text\String.s, Width)
+            String.s = Text::Wrap(\Text\String.s, Width)
             CountString = CountString(String, #LF$)
           ElseIf \Text\WordWrap
-            String.s = Wrap(\Text\String.s, Width, 1)
+            String.s = Text::Wrap(\Text\String.s, Width, 0)
             CountString = CountString(String, #LF$)
           Else
             String.s = \Text\String.s
@@ -197,35 +128,36 @@ Module Button
           EndIf
           
           If CountString
-            If Bool((\Text\Align & #PB_Text_Bottom) = #PB_Text_Bottom) 
-              Text_Y=(Height-(TxtHeight * CountString)-Text_Y) 
-            ElseIf Bool((\Text\Align & #PB_Text_Middle) = #PB_Text_Middle) 
-              Text_Y=((Height-(TxtHeight * CountString))/2) 
+            If \Text\Align_Bottom ; Bool((\Text\Align & #PB_Text_Bottom) = #PB_Text_Bottom) 
+              Text_Y=(Height-(\Text\Height*CountString)-Text_Y) 
+            ElseIf \Text\Align_Vertical ; Bool((\Text\Align & #PB_Text_Middle) = #PB_Text_Middle) 
+              Text_Y=((Height-(\Text\Height*CountString))/2)
             EndIf
             
+            
             For IT = 1 To CountString
-              If \Text\Y+Text_Y < \Y[2] : Text_Y+TxtHeight : Continue : EndIf
+              If \Text\Y+Text_Y < \bSize : Text_Y+TxtHeight : Continue : EndIf
               
               String4 = StringField(String, IT, #LF$)
               StringWidth = TextWidth(RTrim(String4))
               
-              If Bool((\Text\Align & #PB_Text_Right) = #PB_Text_Right) 
+              If \Text\Align_Right ; Bool((\Text\Align & #PB_Text_Right) = #PB_Text_Right) 
                 Text_X=(Width-StringWidth-\Text\X) 
-              ElseIf Bool((\Text\Align & #PB_Text_Center) = #PB_Text_Center) 
+              ElseIf \Text\Align_Horisontal ; Bool((\Text\Align & #PB_Text_Center) = #PB_Text_Center) 
                 Text_X=(Width-StringWidth)/2 
               EndIf
               
-              ;If Text_X<\Text\X : Text_X=\Text\X : EndIf
+              
+              ;               DrawingMode(#PB_2DDrawing_Outlined)
+              ;               Box(\X[1],Text_Y,\Width[1],\Text\Height,0)
               
               DrawingMode(#PB_2DDrawing_Transparent)
               If \Vertical
-                DrawRotatedText(\Text\X+Text_Y, \Text\Y+Text_X, String4.s, 270, \Color\Front)
-                Text_Y+TxtHeight  
-                If Text_Y > (Height) : Break : EndIf
+                DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String4.s, 270, \Color\Front)
+                Text_Y+TxtHeight : If Text_Y > (Width) : Break : EndIf
               Else
-                DrawText(\Text\X+Text_X, \Text\Y+Text_Y, String4.s, \Color\Front)
-                Text_Y+TxtHeight  
-                If Text_Y > (Height-TxtHeight) : Break : EndIf
+                DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String4.s, \Color\Front)
+                Text_Y+TxtHeight : If Text_Y > (Height-TxtHeight) : Break : EndIf
               EndIf
               
             Next
@@ -234,12 +166,16 @@ Module Button
         EndIf
         
         
-        DrawingMode(#PB_2DDrawing_Default)
-        Box(\X[1],\Y[1],\Width[1]-\Text\X,\Text\Y,\Color\Back)
-        Box(\X[1]+\Width[1]-\Text\X,\Y[1],\Text\X,\Height[1]-\Text\Y,\Color\Back)
-        Box(\X[1]+\Text\X,\Y[1]+\Height[1]-\Text\Y,\Width[1]-\Text\X,\Text\Y,\Color\Back)
-        Box(\X[1],\Y[1]+\Text\Y,\Text\X,\Height[1]-\Text\Y,\Color\Back)
-        
+        ;         DrawingMode(\DrawingMode)
+        ;         If \Width > \Text\X
+        ;           BoxGradient(\Vertical,\X[1],\Y[1]+\Text\Y,\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1]+\Width[1]-\Text\X,\Y[1],\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;         EndIf
+        ;         If \Height > \Text\Y
+        ;           BoxGradient(\Vertical,\X[1],\Y[1],\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1]+\Text\X,\Y[1]+\Height[1]-\Text\Y,\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;         EndIf
+        ;       
         If \fSize
           DrawingMode(#PB_2DDrawing_Outlined)
           Box(\X[1],\Y[1],\Width[1],\Height[1],\Color\Frame)
@@ -333,13 +269,13 @@ Module Button
     With *This
       If X<>#PB_Ignore 
         \X[0] = X 
-        \X[2]=\bSize
+        \X[2]=X+\bSize
         \X[1]=\X[2]-\fSize
         Result = 1
       EndIf
       If Y<>#PB_Ignore 
         \Y[0] = Y
-        \Y[2]=\bSize
+        \Y[2]=Y+\bSize
         \Y[1]=\Y[2]-\fSize
         Result = 2
       EndIf
@@ -360,16 +296,108 @@ Module Button
     EndWith
   EndProcedure
   
-  Procedure.i CallBack(*This.Widget, EventType.i, MouseX.i, MouseY.i)
-    Protected Result
+  Procedure.i CallBack(*This.Widget, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
+    Protected Result, Buttons
+    Static LastX, LastY, Last, *Scroll.Widget, Cursor, Drag
     
     With *This
-      
-      ProcedureReturn Result
+      If \Hide
+        If *This = *Scroll
+          \Focus = 0
+          \Buttons = 0
+        EndIf
+      Else
+        If Drag
+          If \Buttons>0 : Buttons = \Buttons : EndIf
+        Else
+          If (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
+            If (Mousex>\x[1] And Mousex=<\x[1]+\Width[1] And  Mousey>\y[1] And Mousey=<\y[1]+\Height[1])
+              \Buttons = 1
+            ElseIf (Mousex>\x[3] And Mousex=<\x[3]+\Width[3] And Mousey>\y[3] And Mousey=<\y[3]+\Height[3])
+              \Buttons = 3
+            ElseIf (Mousex>\x[2] And Mousex=<\x[2]+\Width[2] And Mousey>\y[2] And Mousey=<\y[2]+\Height[2])
+              \Buttons = 2
+            Else
+              \Buttons =- 1
+            EndIf
+            
+            If \Buttons>0 : Buttons = \Buttons : EndIf
+          Else
+            \Buttons = 0
+          EndIf
+        EndIf
+        
+        Select EventType
+          Case #PB_EventType_MouseLeave : Buttons = 0 : LastX = 0 : LastY = 0
+          Case #PB_EventType_LeftButtonUp : Drag = 0 :  LastX = 0 : LastY = 0
+          Case #PB_EventType_LeftButtonDown : Drag = 1
+            If Buttons : *Scroll = *This : EndIf
+            
+          Case #PB_EventType_MouseMove
+            If Drag
+              If Bool(LastX|LastY) 
+                If *Scroll = *This
+                  
+                EndIf
+              EndIf
+            Else
+              If \Buttons
+                If Last<>Buttons
+                  If *Scroll : CallBack(*Scroll, #PB_EventType_MouseLeave, MouseX, MouseY, WheelDelta) : EndIf
+                  EventType = #PB_EventType_MouseEnter
+                  Last = Buttons
+                EndIf
+                
+                If *Scroll <> *This 
+                  ; Debug "Мышь находится внутри"
+                  Cursor = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+                  SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+                  *Scroll = *This
+                EndIf
+              ElseIf *Scroll = *This
+                If Cursor <> GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+                  ; Debug "Мышь находится снаружи"
+                  SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, Cursor)
+                EndIf
+                
+                EventType = #PB_EventType_MouseLeave
+                *Scroll = 0
+                Last = 0
+              EndIf
+            EndIf
+            
+        EndSelect
+        
+        Select EventType
+          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
+            If Buttons
+              \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+              \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+              \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+              \Color[Buttons]\Line = \Color[Buttons]\Line[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+            Else
+              ResetColor(*This)
+            EndIf
+            
+            Result = #True
+        EndSelect 
+        
+        Select EventType
+          Case #PB_EventType_Focus
+            \Focus = #True
+            Result = #True
+          Case #PB_EventType_LostFocus
+            \Focus = #False
+            Result = #True
+        EndSelect
+      EndIf
     EndWith
+    
+    ProcedureReturn Result
   EndProcedure
   
-  Procedure Widget(*This.Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
+  
+  Procedure Widget(*This.Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
         \Type = #PB_GadgetType_Button
@@ -387,38 +415,49 @@ Module Button
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
           If Not \Text\WordWrap
-            \Text\MultiLine = 1;Bool(Flag&#PB_Text_MultiLine)
+            \Text\MultiLine = 1
           EndIf
           
-          \Text\X = \fSize+12 ; 2,6,12 
-          \Text\y = \fSize
+          If \Vertical
+            \Text\X = \fSize 
+            \Text\y = \fSize+12 ; 2,6,1
+          Else
+            \Text\X = \fSize+12 ; 2,6,12 
+            \Text\y = \fSize
+          EndIf
           
           \Color[0]\Fore[1] = $F6F6F6 
-      \Color[0]\Frame[1] = $BABABA
-      
-      \Color[0]\Back[1] = $F0F0F0 
-      \Color[1]\Back[1] = $E2E2E2  
-      \Color[2]\Back[1] = $E2E2E2 
-      \Color[3]\Back[1] = $E2E2E2 
-      
-      \Color[0]\Line[1] = $FFFFFF
-      \Color[1]\Line[1] = $5B5B5B
-      \Color[2]\Line[1] = $5B5B5B
-      \Color[3]\Line[1] = $5B5B5B
-      
-      ;
-      \Color[0]\Fore[2] = $EAEAEA
-      \Color[0]\Back[2] = $CECECE
-      \Color[0]\Line[2] = $5B5B5B
-      \Color[0]\Frame[2] = $8F8F8F
-      
-      ;
-      \Color[0]\Fore[3] = $E2E2E2
-      \Color[0]\Back[3] = $B4B4B4
-      \Color[0]\Line[3] = $FFFFFF
-      \Color[0]\Frame[3] = $6F6F6F
-      
-      ResetColor(*This)
+          \Color[0]\Frame[1] = $BABABA
+          
+          \Color[0]\Back[1] = $F0F0F0 
+          \Color[1]\Back[1] = $E2E2E2  
+          \Color[2]\Back[1] = $E2E2E2 
+          \Color[3]\Back[1] = $E2E2E2 
+          
+          \Color[0]\Line[1] = $FFFFFF
+          \Color[1]\Line[1] = $5B5B5B
+          \Color[2]\Line[1] = $5B5B5B
+          \Color[3]\Line[1] = $5B5B5B
+          
+          ;
+          \Color[0]\Fore[2] = $EAEAEA
+          \Color[0]\Back[2] = $CECECE
+          \Color[0]\Line[2] = $5B5B5B
+          \Color[0]\Frame[2] = $8F8F8F
+          
+          ;
+          \Color[0]\Fore[3] = $E2E2E2
+          \Color[0]\Back[3] = $B4B4B4
+          \Color[0]\Line[3] = $FFFFFF
+          \Color[0]\Frame[3] = $6F6F6F
+          
+          ResetColor(*This)
+          
+          If Bool(Flag&#PB_Text_Center) : \Text\Align_Horisontal=1 : EndIf
+          If Bool(Flag&#PB_Text_Middle) : \Text\Align_Vertical=1 : EndIf
+          If Bool(Flag&#PB_Text_Right)  : \Text\Align_Right=1 : EndIf
+          If Bool(Flag&#PB_Text_Bottom) : \Text\Align_Bottom=1 : EndIf
+          
           If Bool(Flag&#PB_Text_Center) : \Text\Align | #PB_Text_Center : EndIf
           If Bool(Flag&#PB_Text_Middle) : \Text\Align | #PB_Text_Middle : EndIf
           If Bool(Flag&#PB_Text_Right)  : \Text\Align | #PB_Text_Right : EndIf
@@ -438,56 +477,83 @@ EndModule
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Button
-  Global *Text.Widget = AllocateStructure(Widget)
+  Global *Button_0.Widget = AllocateStructure(Widget)
+  Global *Button_1.Widget = AllocateStructure(Widget)
   
   Procedure Canvas_CallBack()
+    Protected Result
+    Protected Canvas = EventGadget()
+    Protected Width = GadgetWidth(Canvas)
+    Protected Height = GadgetHeight(Canvas)
+    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
+    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    
     Select EventType()
       Case #PB_EventType_Resize
-        If Resize(*Text, #PB_Ignore, #PB_Ignore, GadgetWidth(EventGadget()), #PB_Ignore)
-          If StartDrawing(CanvasOutput(EventGadget()))
-            Draw(*Text)
-            StopDrawing()
-          EndIf
+        If Resize(*Button_0, Width-70, #PB_Ignore, #PB_Ignore, Height-20)
+          Result = 1
+        EndIf
+        If Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
+          Result = 1
+        EndIf
+      Default
+        
+        If CallBack(*Button_0, EventType(), MouseX, MouseY, WheelDelta) 
+          Result = 1
+        EndIf
+        If CallBack(*Button_1, EventType(), MouseX, MouseY, WheelDelta) 
+          Result = 1
         EndIf
         
     EndSelect
+    
+    If Result
+      If StartDrawing(CanvasOutput(Canvas))
+        Box(0,0,Width,Height)
+        Draw(*Button_0)
+        Draw(*Button_1)
+        StopDrawing()
+      EndIf
+    EndIf
+    
   EndProcedure
   
   
   Procedure ResizeCallBack()
-    ResizeGadget(0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, #PB_Ignore)
-    ResizeGadget(16, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, #PB_Ignore)
-    SetWindowTitle(0, Str(WindowWidth(EventWindow(), #PB_Window_FrameCoordinate)-20)+" - Text on the canvas")
+    ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
   EndProcedure
   
-  Define cr.s = #LF$
   LoadFont(0, "Courier", 14)
-  Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  ; Debug "len - "+Len(Text)
   
-  If OpenWindow(0, 0, 0, 104, 690, "Text on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ;EditorGadget(0, 10, 10, 380, 330, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s)
-    ;TextGadget(0, 10, 10, 380, 330, Text.s, #PB_Text_Center) 
-    ButtonGadget(0, 10, 10, 380, 330, Text.s) 
-    SetGadgetColor(0, #PB_Gadget_BackColor, $CCBFB4)
-    SetGadgetColor(0, #PB_Gadget_FrontColor, $D57A2E)
-    SetGadgetFont(0,FontID(0) )
+  If OpenWindow(0, 0, 0, 325+80, 160, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    g=1
+    CanvasGadget(g,  10,10,305,140, #PB_Canvas_Keyboard)
+    SetGadgetAttribute(g, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     
-    g=16
-    CanvasGadget(g, 10, 350, 380, 330) 
+    With *Button_0
+      \Canvas\Gadget = g
+      \Type = #PB_GadgetType_Text
+      \FontID = GetGadgetFont(#PB_Default)
+      
+      Widget(*Button_0, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_Center|#PB_Text_Middle|#PB_Text_Border | #PB_Text_Vertical)
+      SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
+      SetColor(*Button_0, #PB_Gadget_FrontColor, $D56F1A)
+      SetFont(*Button_0, FontID(0))
+    EndWith
     
-    *Text\Canvas\Gadget = g
-    *Text\Type = #PB_GadgetType_Text
-    *Text\FontID = GetGadgetFont(#PB_Default)
+    With *Button_1
+      \Canvas\Gadget = g
+      \Type = #PB_GadgetType_Text
+      \FontID = GetGadgetFont(#PB_Default)
+      
+      Widget(*Button_1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_Center|#PB_Text_Middle|#PB_Text_Border)
+      SetColor(*Button_1, #PB_Gadget_BackColor, $CCBFB4)
+      SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
+      SetFont(*Button_1, FontID(0))
+    EndWith
     
-    Widget(*Text,10, 350, 380, 330, Text.s, #PB_Text_Center|#PB_Text_Middle | #PB_Text_Border);| #PB_Text_WordWrap);
-;     SetColor(*Text, #PB_Gadget_BackColor, $CCBFB4)
-;     SetColor(*Text, #PB_Gadget_FrontColor, $D56F1A)
-    SetFont(*Text, FontID(0))
-    
-    SetGadgetData(g, *Text)
     BindGadgetEvent(g, @Canvas_CallBack())
-    ;Draw(*This)
     
     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore)
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
@@ -495,7 +561,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 217
-; FirstLine = 191
-; Folding = -----------
+; CursorPosition = 561
+; FirstLine = 524
+; Folding = ---------------
 ; EnableXP
