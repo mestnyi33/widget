@@ -125,8 +125,8 @@ Module Widget
   Procedure.i SetFont(Widget.i, FontID.i)
     Protected Result, *This.Widget = GetGadgetData(Widget)
     
-    If *This\FontID <> FontID
-      *This\FontID = FontID
+    If *This\Text\FontID <> FontID
+      *This\Text\FontID = FontID
       Result = #True
       Draws(*This)
     EndIf
@@ -287,7 +287,7 @@ Module Widget
       With *This
         \Canvas\Gadget = Widget
         \Type = #PB_GadgetType_ScrollBar
-        \FontID = GetGadgetFont(#PB_Default)
+        \Text\FontID = GetGadgetFont(#PB_Default)
         ScrollBar::Widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
         \Scroll\Type[1]=1 : \Scroll\Type[2]=1     ; Можно менять вид стрелок 
         \Scroll\Size[1]=6 : \Scroll\Size[2]=6     ; Можно задать размер стрелок
@@ -307,7 +307,7 @@ Module Widget
     If *This
       With *This
         \Canvas\Gadget = Widget
-        \FontID = GetGadgetFont(#PB_Default)
+        \Text\FontID = GetGadgetFont(#PB_Default)
         Button::Widget(*This, 0, 0, Width, Height, Text.s, Flag|#PB_Text_Center|#PB_Text_Middle|#PB_Text_Border)
         SetGadgetData(Widget, *This)
         Draws(*This)
@@ -325,7 +325,7 @@ Module Widget
     If *This
       With *This
         \Canvas\Gadget = Widget
-        \FontID = GetGadgetFont(#PB_Default)
+        \Text\FontID = GetGadgetFont(#PB_Default)
         Text::Widget(*This, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
         Draws(*This)
@@ -394,8 +394,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 395
-; FirstLine = 373
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 327
+; FirstLine = 290
 ; Folding = ----------
 ; EnableXP

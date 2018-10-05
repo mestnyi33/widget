@@ -92,7 +92,7 @@ Module Button
   Procedure.i Draw(*This.Widget)
     With *This
       If Not \Hide
-        If \FontID : DrawingFont(\FontID) : EndIf
+        If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
         DrawingMode(\DrawingMode)
         BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back)
         Protected String.s, StringWidth
@@ -131,39 +131,47 @@ Module Button
           EndIf
           
           If \Text\CountString
-            If \Text\Align_Bottom ; Bool((\Text\Align & #PB_Text_Bottom) = #PB_Text_Bottom) 
+            If \Text\Align\Bottom ; Bool((\Text\Align & #PB_Text_Bottom) = #PB_Text_Bottom) 
               Text_Y=(Height-(\Text\Height*\Text\CountString)-Text_Y) 
-            ElseIf \Text\Align_Vertical ; Bool((\Text\Align & #PB_Text_Middle) = #PB_Text_Middle) 
+            ElseIf \Text\Align\Vertical ; Bool((\Text\Align & #PB_Text_Middle) = #PB_Text_Middle) 
               Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
             EndIf
             
             
-            For IT = 1 To \Text\CountString
-              If \Text\Y+Text_Y < \bSize : Text_Y+TxtHeight : Continue : EndIf
-              
-              String = StringField(\Text\String.s[1], IT, #LF$)
-              StringWidth = TextWidth(RTrim(String))
-              
-              If \Text\Align_Right ; Bool((\Text\Align & #PB_Text_Right) = #PB_Text_Right) 
-                Text_X=(Width-StringWidth-\Text\X) 
-              ElseIf \Text\Align_Horisontal ; Bool((\Text\Align & #PB_Text_Center) = #PB_Text_Center) 
-                Text_X=(Width-StringWidth)/2 
-              EndIf
-              
-              
-              ;               DrawingMode(#PB_2DDrawing_Outlined)
-              ;               Box(\X[1],Text_Y,\Width[1],\Text\Height,0)
-              
-              DrawingMode(#PB_2DDrawing_Transparent)
-              If \Vertical
+            DrawingMode(#PB_2DDrawing_Transparent)
+            If \Vertical
+              For IT = \Text\CountString To 1 Step - 1
+                If \Text\Y+Text_Y < \bSize : Text_Y+TxtHeight : Continue : EndIf
+                
+                String = StringField(\Text\String.s[1], IT, #LF$)
+                StringWidth = TextWidth(RTrim(String))
+                
+                If \Text\Align\Right
+                  Text_X=(Width-StringWidth-\Text\X) 
+                ElseIf \Text\Align\Horisontal
+                  Text_X=(Width-StringWidth)/2 
+                EndIf
+                
                 DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
                 Text_Y+TxtHeight : If Text_Y > (Width) : Break : EndIf
-              Else
+              Next
+            Else
+              For IT = 1 To \Text\CountString
+                If \Text\Y+Text_Y < \bSize : Text_Y+TxtHeight : Continue : EndIf
+                
+                String = StringField(\Text\String.s[1], IT, #LF$)
+                StringWidth = TextWidth(RTrim(String))
+                
+                If \Text\Align\Right
+                  Text_X=(Width-StringWidth-\Text\X) 
+                ElseIf \Text\Align\Horisontal
+                  Text_X=(Width-StringWidth)/2 
+                EndIf
+                
                 DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
                 Text_Y+TxtHeight : If Text_Y > (Height-TxtHeight) : Break : EndIf
-              EndIf
-              
-            Next
+              Next
+            EndIf
           EndIf
           
         EndIf
@@ -208,8 +216,8 @@ Module Button
   Procedure.i SetFont(*This.Widget, FontID.i)
     Protected Result
     
-    If *This\FontID <> FontID
-      *This\FontID = FontID
+    If *This\Text\FontID <> FontID
+      *This\Text\FontID = FontID
       Result = #True
     EndIf
     
@@ -459,15 +467,10 @@ Module Button
           
           ResetColor(*This)
           
-          If Bool(Flag&#PB_Text_Center) : \Text\Align_Horisontal=1 : EndIf
-          If Bool(Flag&#PB_Text_Middle) : \Text\Align_Vertical=1 : EndIf
-          If Bool(Flag&#PB_Text_Right)  : \Text\Align_Right=1 : EndIf
-          If Bool(Flag&#PB_Text_Bottom) : \Text\Align_Bottom=1 : EndIf
-          
-          If Bool(Flag&#PB_Text_Center) : \Text\Align | #PB_Text_Center : EndIf
-          If Bool(Flag&#PB_Text_Middle) : \Text\Align | #PB_Text_Middle : EndIf
-          If Bool(Flag&#PB_Text_Right)  : \Text\Align | #PB_Text_Right : EndIf
-          If Bool(Flag&#PB_Text_Bottom) : \Text\Align | #PB_Text_Bottom : EndIf
+          If Bool(Flag&#PB_Text_Center) : \Text\Align\Horisontal=1 : EndIf
+          If Bool(Flag&#PB_Text_Middle) : \Text\Align\Vertical=1 : EndIf
+          If Bool(Flag&#PB_Text_Right)  : \Text\Align\Right=1 : EndIf
+          If Bool(Flag&#PB_Text_Bottom) : \Text\Align\Bottom=1 : EndIf
           
           \Text\String.s = Text.s
           \Text\Change = #True
@@ -540,7 +543,7 @@ CompilerIf #PB_Compiler_IsMainFile
     With *Button_0
       \Canvas\Gadget = g
       \Type = #PB_GadgetType_Text
-      \FontID = GetGadgetFont(#PB_Default)
+      \Text\FontID = GetGadgetFont(#PB_Default)
       
       Widget(*Button_0, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_Center|#PB_Text_Middle|#PB_Text_Border | #PB_Text_Vertical)
       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
@@ -551,7 +554,7 @@ CompilerIf #PB_Compiler_IsMainFile
     With *Button_1
       \Canvas\Gadget = g
       \Type = #PB_GadgetType_Text
-      \FontID = GetGadgetFont(#PB_Default)
+      \Text\FontID = GetGadgetFont(#PB_Default)
       
       Widget(*Button_1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_Center|#PB_Text_Middle|#PB_Text_Border)
       SetColor(*Button_1, #PB_Gadget_BackColor, $CCBFB4)
@@ -567,7 +570,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 567
-; FirstLine = 530
+; CursorPosition = 166
+; FirstLine = 132
 ; Folding = ---------------
 ; EnableXP

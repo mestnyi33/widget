@@ -14,10 +14,17 @@
     Buttons.i
   EndStructure
   
+  Structure ALIGN
+    Right.b
+    Bottom.b
+    Vertical.b
+    Horisontal.b
+  EndStructure
+  
   Structure PAGE
-    Pos.l
-    Length.l
-    ScrollStep.l
+    Pos.i
+    Length.i
+    ScrollStep.i
   EndStructure
   
   Structure CANVAS
@@ -41,15 +48,12 @@
   Structure TEXT Extends COORDINATE
     ;     Char.c
     Len.i
+    FontID.i
     String.s[3]
     CountString.i
     Change.b
     
-    Align.i
-    Align_Bottom.i
-    Align_Right.i
-    Align_Vertical.i
-    Align_Horisontal.i
+    Align.ALIGN
     
     Lower.b
     Upper.b
@@ -65,25 +69,25 @@
   EndStructure
   
   Structure SCROLL Extends COORDINATE
-    Window.l
-    Gadget.l
+    Window.i
+    Gadget.i
     
-    Max.l
-    Min.l
+    Max.i
+    Min.i
     
     Both.b ; we see both scrolbars
     
-    Size.l[4]
-    Type.l[4]
-    Focus.l
-    Buttons.l
-    Radius.l
+    Size.i[4]
+    Type.i[4]
+    Focus.i
+    Buttons.i
+    Radius.i
     
     Hide.b[2]
     Alpha.a[2]
     Disable.b[2]
     Vertical.b
-    DrawingMode.l
+    DrawingMode.i
     
     Page.PAGE
     Area.PAGE
@@ -96,7 +100,6 @@
     Canvas.CANVAS
     Color.COLOR[4]
     
-    FontID.i
     Text.TEXT[4]
     
     fSize.i
@@ -105,12 +108,12 @@
     Disable.b[2]
     
     Type.i
-    Resize.i ; 
+    Resize.b ; 
     
     Focus.i
     
     Buttons.i
-    Vertical.i
+    Vertical.b
     
     Scroll.SCROLL
   
@@ -125,7 +128,7 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 107
-; FirstLine = 87
+; CursorPosition = 50
+; FirstLine = 43
 ; Folding = --
 ; EnableXP
