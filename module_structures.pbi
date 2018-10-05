@@ -42,6 +42,7 @@
     ;     Char.c
     Len.i
     String.s[3]
+    CountString.i
     Change.b
     
     Align.i
@@ -103,7 +104,7 @@
     Disable.b[2]
     
     Type.i
-    
+    Resize.i
     
     Buttons.i
     Focus.i
@@ -136,7 +137,7 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 46
+; CursorPosition = 44
+; FirstLine = 32
 ; Folding = --
 ; EnableXP

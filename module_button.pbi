@@ -95,7 +95,7 @@ Module Button
         If \FontID : DrawingFont(\FontID) : EndIf
         DrawingMode(\DrawingMode)
         BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back)
-        Protected String.s, String1.s, String2.s, String3.s, String4.s, StringWidth, CountString
+        Protected String.s, StringWidth
         Protected IT,Text_Y,Text_X,TxtHeight,Width,Height
         
         
@@ -116,30 +116,33 @@ Module Button
             Height = \Height[1]-\Text\y*2
           EndIf
           
-          If \Text\MultiLine
-            String.s = Text::Wrap(\Text\String.s, Width)
-            CountString = CountString(String, #LF$)
-          ElseIf \Text\WordWrap
-            String.s = Text::Wrap(\Text\String.s, Width, 0)
-            CountString = CountString(String, #LF$)
-          Else
-            String.s = \Text\String.s
-            CountString = 1
+          If \Resize
+            If \Text\MultiLine
+              \Text\String.s[1] = Text::Wrap(\Text\String.s, Width)
+              \Text\CountString = CountString(\Text\String.s[1], #LF$)
+            ElseIf \Text\WordWrap
+              \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, 0)
+              \Text\CountString = CountString(\Text\String.s[1], #LF$)
+            Else
+              \Text\String.s[1] = \Text\String.s
+              \Text\CountString = 1
+            EndIf
+            \Resize = #False
           EndIf
           
-          If CountString
+          If \Text\CountString
             If \Text\Align_Bottom ; Bool((\Text\Align & #PB_Text_Bottom) = #PB_Text_Bottom) 
-              Text_Y=(Height-(\Text\Height*CountString)-Text_Y) 
+              Text_Y=(Height-(\Text\Height*\Text\CountString)-Text_Y) 
             ElseIf \Text\Align_Vertical ; Bool((\Text\Align & #PB_Text_Middle) = #PB_Text_Middle) 
-              Text_Y=((Height-(\Text\Height*CountString))/2)
+              Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
             EndIf
             
             
-            For IT = 1 To CountString
+            For IT = 1 To \Text\CountString
               If \Text\Y+Text_Y < \bSize : Text_Y+TxtHeight : Continue : EndIf
               
-              String4 = StringField(String, IT, #LF$)
-              StringWidth = TextWidth(RTrim(String4))
+              String = StringField(\Text\String.s[1], IT, #LF$)
+              StringWidth = TextWidth(RTrim(String))
               
               If \Text\Align_Right ; Bool((\Text\Align & #PB_Text_Right) = #PB_Text_Right) 
                 Text_X=(Width-StringWidth-\Text\X) 
@@ -153,10 +156,10 @@ Module Button
               
               DrawingMode(#PB_2DDrawing_Transparent)
               If \Vertical
-                DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String4.s, 270, \Color\Front)
+                DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
                 Text_Y+TxtHeight : If Text_Y > (Width) : Break : EndIf
               Else
-                DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String4.s, \Color\Front)
+                DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
                 Text_Y+TxtHeight : If Text_Y > (Height-TxtHeight) : Break : EndIf
               EndIf
               
@@ -290,6 +293,10 @@ Module Button
         \Height[2] = \Height-\bSize*2
         \Height[1] = \Height[2]+\fSize*2
         Result = 4
+      EndIf
+      
+      If Result
+        \Resize = #True
       EndIf
       
       ProcedureReturn Result
@@ -561,7 +568,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 561
-; FirstLine = 524
+; CursorPosition = 140
+; FirstLine = 130
 ; Folding = ---------------
 ; EnableXP

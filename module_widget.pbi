@@ -368,15 +368,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ScrollBarGadget  (3, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
     SetGadgetState   (3, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
-    TextGadget       (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ScrollBar  (12,  300+10, 42, 250,  20, 30, 100, 30)
-    SetState   (12,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  300+10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ScrollBar  (13, 300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    SetState   (13, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
     ButtonGadget(15, 10, 190, 180,  60, "Button (Horisontal)")
     ButtonGadget(16, 200, 150,  60, 140 ,"Button (Vertical)")
+    
+    Text       (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+    ScrollBar  (12,  300+10, 42, 250,  20, 30, 100, 30)
+    SetState   (12,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    Text       (-1,  300+10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
+    ScrollBar  (13, 300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
+    SetState   (13, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     Button(17, 300+10, 190, 180,  60, "Button (Horisontal)")
     Button(18, 300+200, 150,  60, 140 ,"Button (Vertical)",#PB_Text_Vertical)
@@ -438,7 +438,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 438
-; FirstLine = 401
+; CursorPosition = 373
+; FirstLine = 359
 ; Folding = -----------
 ; EnableXP
