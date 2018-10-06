@@ -14,14 +14,14 @@ DeclareModule Button
   ;- DECLAREs
   ;- MACROS
   Macro Parent(_adress_, _canvas_) : Bool(_adress_\Canvas\Gadget = _canvas_) : EndMacro
+  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   
-  Macro Draw(_adress_) : Text::Draw(_adress_) : EndMacro
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
   Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
   Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
   Macro GetColor(_adress_, _color_type_) : Text::GetColor(_adress_, _color_type_) : EndMacro
   Macro SetColor(_adress_, _color_type_, _color_) : Text::SetColor(_adress_, _color_type_, _color_) : EndMacro
-  Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
+  Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
   
   Macro Colors(_adress_, _i_, _ii_, _iii_)
     If _adress_\Color[_i_]\Line[_ii_]
@@ -73,7 +73,7 @@ DeclareModule Button
   
   Declare.i GetState(*This.Widget)
   Declare.i SetState(*This.Widget, Value.i)
-  Declare.i CallBack(*This.Widget, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
+  Declare.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
   Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   
 EndDeclareModule
@@ -95,14 +95,24 @@ Module Button
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i CallBack(*Widget.Widget, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
-    Protected Result, Buttons
+  Procedure.i CallBack(*Widget.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
+    Protected Result, Buttons, Widget.i
     Static *This.Widget, *Last.Widget, LastX, LastY, Last, Drag
     
+    If Canvas=-1 
+      Widget = *Widget
+      Canvas = EventGadget()
+    Else
+      Widget = Canvas
+    EndIf
+    If Canvas <> *Widget\Canvas\Gadget
+      ProcedureReturn
+    EndIf
+    
     If EventType = #PB_EventType_LeftClick
-       ;     EventType =- 1 ; #PB_EventType_LeftButtonUp
-          EndIf
-          
+      ;     EventType =- 1 ; #PB_EventType_LeftButtonUp
+    EndIf
+    
     If *Widget\Type = #PB_GadgetType_Button
       With *Widget
         If Not \Hide And Not Drag
@@ -147,15 +157,15 @@ Module Button
         ElseIf *Last = *Widget
           If EventType = #PB_EventType_LeftButtonUp And *This = *Last And (MouseX<>#PB_Ignore And MouseY<>#PB_Ignore) 
             If Not (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
-              CallBack(*Last, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
+              CallBack(*Last, Canvas, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
               EventType = #PB_EventType_MouseLeave
             Else
-              CallBack(*Last, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
+              CallBack(*Last, Canvas, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
               EventType = #PB_EventType_LeftClick
             EndIf
             
             *This = 0  
-         EndIf
+          EndIf
           
         EndIf
       EndWith
@@ -184,8 +194,8 @@ Module Button
                 ;Debug "LeftButtonUp"
                 
               Case #PB_EventType_LeftClick ; Bug in mac os afte move mouse dont post event click
-                ;Debug "LeftClick"
-                PostEvent(#PB_Event_Widget, \Canvas\Window, *Widget, #PB_EventType_LeftClick)
+                                           ;Debug "LeftClick"
+                PostEvent(#PB_Event_Widget, \Canvas\Window, Widget, #PB_EventType_LeftClick)
                 
               Case #PB_EventType_MouseLeave
                 If \Drag 
@@ -260,7 +270,7 @@ Module Button
         \bSize = \fSize
         
         
-        If Resize(*This, X,Y,Width,Height)
+        If Resize(*This, X,Y,Width,Height, Canvas)
           \DrawingMode = #PB_2DDrawing_Gradient
           \Vertical = Bool(Flag&#PB_Text_Vertical)
           
@@ -355,20 +365,16 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Result = 1
       Default
-        If Parent(*B_0, Canvas)
-          ; First window
-          Result | CallBack(*B_0, EventType(), MouseX, MouseY) 
-          Result | CallBack(*B_1, EventType(), MouseX, MouseY) 
-          Result | CallBack(*B_2, EventType(), MouseX, MouseY) 
-          Result | CallBack(*B_3, EventType(), MouseX, MouseY) 
-          Result | CallBack(*B_4, EventType(), MouseX, MouseY) 
-        EndIf
+        ; First window
+        Result | CallBack(*B_0, -1, EventType(), MouseX, MouseY) 
+        Result | CallBack(*B_1, -1, EventType(), MouseX, MouseY) 
+        Result | CallBack(*B_2, -1, EventType(), MouseX, MouseY) 
+        Result | CallBack(*B_3, -1, EventType(), MouseX, MouseY) 
+        Result | CallBack(*B_4, -1, EventType(), MouseX, MouseY) 
         
         ; Second window
-        If Parent(*Button_0, Canvas)
-          Result | CallBack(*Button_0, EventType(), MouseX, MouseY) 
-          Result | CallBack(*Button_1, EventType(), MouseX, MouseY) 
-        EndIf
+        Result | CallBack(*Button_0, -1, EventType(), MouseX, MouseY) 
+        Result | CallBack(*Button_1, -1, EventType(), MouseX, MouseY) 
         
     EndSelect
     
@@ -376,18 +382,14 @@ CompilerIf #PB_Compiler_IsMainFile
       If StartDrawing(CanvasOutput(Canvas))
         Box(0,0,Width,Height)
         
-        If Parent(*B_0, Canvas)
-          Draw(*B_0)
-          Draw(*B_1)
-          Draw(*B_2)
-          Draw(*B_3)
-          Draw(*B_4)
-        EndIf
+        Draw(*B_0)
+        Draw(*B_1)
+        Draw(*B_2)
+        Draw(*B_3)
+        Draw(*B_4)
         
-        If Parent(*Button_0, Canvas)
-          Draw(*Button_0)
-          Draw(*Button_1)
-        EndIf
+        Draw(*Button_0)
+        Draw(*Button_1)
         
         StopDrawing()
       EndIf
@@ -451,7 +453,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 195
-; FirstLine = 50
-; Folding = -P6x----f--
+; CursorPosition = 421
+; FirstLine = 389
+; Folding = ---------0-
 ; EnableXP

@@ -24,14 +24,14 @@ DeclareModule Text
   
   
   ;- DECLAREs
-  Declare.i Draw(*This.Widget)
+  Declare.i Draw(*This.Widget, Canvas.i=-1)
   Declare.s GetText(*This.Widget)
   Declare.i SetText(*This.Widget, Text.s)
   Declare.i SetFont(*This.Widget, FontID.i)
   Declare.i GetColor(*This.Widget, ColorType.i)
   Declare.i SetColor(*This.Widget, ColorType.i, Color.i)
-  Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i)
-  ;Declare.i CallBack(*This.Widget, EventType.i, MouseX.i, MouseY.i)
+  Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+  ;Declare.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i)
   Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   
@@ -111,11 +111,18 @@ Module Text
     ProcedureReturn ret$ ; ReplaceString(ret$, " ", "*")
   EndProcedure
   
-  Procedure.i Draw(*This.Widget)
+  Procedure.i Draw(*This.Widget, Canvas.i=-1)
     Protected String.s, StringWidth
     Protected IT,Text_Y,Text_X,Width,Height
     
     With *This
+      If Canvas=-1 
+        Canvas = EventGadget()
+      EndIf
+      If Canvas <> \Canvas\Gadget
+        ProcedureReturn
+      EndIf
+    
       If Not \Hide
         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
         DrawingMode(\DrawingMode)
@@ -293,10 +300,17 @@ Module Text
     ProcedureReturn Color
   EndProcedure
   
-  Procedure.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i)
+  Procedure.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
     Protected Result
     
     With *This
+      If Canvas=-1 
+        Canvas = EventGadget()
+      EndIf
+      If Canvas <> \Canvas\Gadget
+        ProcedureReturn
+      EndIf
+    
       If X<>#PB_Ignore 
         \X[0] = X 
         \X[2]=X+\bSize
@@ -349,7 +363,7 @@ Module Text
         \fSize = Bool(Flag&#PB_Text_Border)
         \bSize = \fSize
         
-        If Resize(*This, X,Y,Width,Height)
+        If Resize(*This, X,Y,Width,Height, Canvas)
           \Color[1]\Frame = $C0C0C0
           \Color[1]\Back = $F0F0F0
           
@@ -405,24 +419,16 @@ CompilerIf #PB_Compiler_IsMainFile
     Select EventType()
       Case #PB_EventType_Resize
         Result = 1
-      Default
-        
-;         Result | CallBack(*T_0, EventType(), MouseX, MouseY, WheelDelta) 
-;         Result | CallBack(*T_1, EventType(), MouseX, MouseY, WheelDelta) 
-;         Result | CallBack(*T_2, EventType(), MouseX, MouseY, WheelDelta) 
-;         Result | CallBack(*T_3, EventType(), MouseX, MouseY, WheelDelta) 
-;         Result | CallBack(*T_4, EventType(), MouseX, MouseY, WheelDelta) 
-        
     EndSelect
     
     If Result
       If StartDrawing(CanvasOutput(Canvas))
         Box(0,0,Width,Height)
-        Draw(*T_0)
-        Draw(*T_1)
-        Draw(*T_2)
-        Draw(*T_3)
-        Draw(*T_4)
+        Draw(*T_0, Canvas)
+        Draw(*T_1, Canvas)
+        Draw(*T_2, Canvas)
+        Draw(*T_3, Canvas)
+        Draw(*T_4, Canvas)
         StopDrawing()
       EndIf
     EndIf
@@ -460,9 +466,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Canvas_CallBack()
     Select EventType()
       Case #PB_EventType_Resize
-        If Resize(*Text, #PB_Ignore, #PB_Ignore, GadgetWidth(EventGadget()), #PB_Ignore)
+        If Resize(*Text, #PB_Ignore, #PB_Ignore, GadgetWidth(EventGadget()), #PB_Ignore, EventGadget())
           If StartDrawing(CanvasOutput(EventGadget()))
-            Draw(*Text)
+            Draw(*Text, EventGadget())
             StopDrawing()
           EndIf
         EndIf
@@ -512,7 +518,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 500
-; FirstLine = 406
-; Folding = --80---------
+; CursorPosition = 365
+; FirstLine = 283
+; Folding = --v4---------
 ; EnableXP
