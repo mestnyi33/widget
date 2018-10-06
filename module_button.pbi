@@ -49,17 +49,17 @@ Module Button
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i CallBack(*Widget.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
+  Procedure.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
     Protected Result, Buttons, Widget.i
-    Static *This.Widget, *Last.Widget, LastX, LastY, Last, Drag
+    Static *Last.Widget, *Widget.Widget, LastX, LastY, Last, Drag
     
     If Canvas=-1 
-      Widget = *Widget
+      Widget = *This
       Canvas = EventGadget()
     Else
       Widget = Canvas
     EndIf
-    If Canvas <> *Widget\Canvas\Gadget
+    If Canvas <> *This\Canvas\Gadget
       ProcedureReturn
     EndIf
     
@@ -67,24 +67,27 @@ Module Button
       ;     EventType =- 1 ; #PB_EventType_LeftButtonUp
     EndIf
     
-    If *Widget\Type = #PB_GadgetType_Button
-      With *Widget
+    If *This\Type = #PB_GadgetType_Button
+      With *This
+        \Canvas\Mouse\X = MouseX
+        \Canvas\Mouse\Y = MouseY
+        
         If Not \Hide And Not Drag
           If EventType <> #PB_EventType_MouseLeave And 
              (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
             
-            If *This <> *Widget  
+            If *Last <> *This  
               
-              If *This
-                If *This > *Widget
+              If *Last
+                If *Last > *This
                   ProcedureReturn
                 Else
+                  *Widget = *Last
+                  CallBack(*Widget, #PB_EventType_MouseLeave, 0, 0, 0)
                   *Last = *This
-                  CallBack(*Last, #PB_EventType_MouseLeave, 0, 0, 0)
-                  *This = *Widget
                 EndIf
               Else
-                *This = *Widget
+                *Last = *This
               EndIf
               
               \Buttons = 1
@@ -94,38 +97,38 @@ Module Button
               EventType = #PB_EventType_MouseEnter
               \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
               SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
-              *Last = *This
-              ; Debug "enter "+*This\text\string+" "+EventType
+              *Widget = *Last
+              ; Debug "enter "+*Last\text\string+" "+EventType
             EndIf
             
-          ElseIf *This = *Widget
-            ; Debug "leave "+*This\text\string+" "+EventType+" "+*Last
-            If \Cursor[1] And \Cursor[1] <> GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+          ElseIf *Last = *This
+            ; Debug "leave "+*Last\text\string+" "+EventType+" "+*Widget
+            If \Cursor[1] <> GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
               SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor[1])
               \Cursor[1] = 0
             EndIf
             EventType = #PB_EventType_MouseLeave
-            *This = 0
+            *Last = 0
           EndIf
           
-        ElseIf *Last = *Widget
-          If EventType = #PB_EventType_LeftButtonUp And *This = *Last And (MouseX<>#PB_Ignore And MouseY<>#PB_Ignore) 
+        ElseIf *Widget = *This
+          If EventType = #PB_EventType_LeftButtonUp And *Last = *Widget And (MouseX<>#PB_Ignore And MouseY<>#PB_Ignore) 
             If Not (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
-              CallBack(*Last, Canvas, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
+              CallBack(*Widget, Canvas, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
               EventType = #PB_EventType_MouseLeave
             Else
-              CallBack(*Last, Canvas, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
+              CallBack(*Widget, Canvas, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
               EventType = #PB_EventType_LeftClick
             EndIf
             
-            *This = 0  
+            *Last = 0  
           EndIf
           
         EndIf
       EndWith
       
-      If *Last = *Widget
-        With *Last
+      If *Widget = *This
+        With *Widget
           If Not \Hide
             Select EventType
               Case #PB_EventType_LeftButtonDown : Drag = 1 : LastX = MouseX : LastY = MouseY
@@ -173,9 +176,9 @@ Module Button
                 
               Case #PB_EventType_MouseLeave
                 If Not \Checked
-                  ResetColor(*Last)
+                  ResetColor(*Widget)
                 EndIf
-                *Last = 0
+                *Widget = 0
                 
                 Result = #True
             EndSelect 
@@ -197,11 +200,12 @@ Module Button
     ProcedureReturn Result
   EndProcedure
   
-  Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
         \Type = #PB_GadgetType_Button
         \Cursor = #PB_Cursor_Default
+        \DrawingMode = #PB_2DDrawing_Gradient
         \Canvas\Gadget = Canvas
         
         If Bool(Flag&#PB_Button_Left)
@@ -225,7 +229,6 @@ Module Button
         
         
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \DrawingMode = #PB_2DDrawing_Gradient
           \Vertical = Bool(Flag&#PB_Text_Vertical)
           
           \Toggle = Bool(Flag&#PB_Button_Toggle)
@@ -407,6 +410,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 26
+; CursorPosition = 74
+; FirstLine = 54
 ; Folding = --------f--
 ; EnableXP

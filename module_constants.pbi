@@ -37,11 +37,11 @@
     #PB_Text_MultiLine 
     
     #PB_Text_Vertical
-  EndEnumeration
   
-  #PB_Text_ReadOnly = 256 ; #PB_String_ReadOnly
-  #PB_Text_Numeric = 512  ; #PB_String_Numeric
-  #PB_Text_WordWrap = 1024; #PB_Editor_WordWrap
+  #PB_Text_ReadOnly; = 256 ; #PB_String_ReadOnly
+  #PB_Text_Numeric ;= 512  ; #PB_String_Numeric
+  #PB_Text_WordWrap ;= 1024; #PB_Editor_WordWrap
+  EndEnumeration
   
   ;     Debug #PB_Text_Center
   ;     Debug #PB_Text_Right
@@ -67,7 +67,15 @@
   ;   Debug #PB_Gadget_TitleBackColor  ; 5
   ;   Debug #PB_Gadget_GrayTextColor   ; 6
   
-  EndDeclareModule 
+  Enumeration
+    #PB_Align_None
+    #PB_Align_Right
+    #PB_Align_Bottom
+    #PB_Align_Center
+    #PB_Align_Middle
+  EndEnumeration
+  
+EndDeclareModule 
 
 Module Constants
   
@@ -75,7 +83,7 @@ EndModule
 
 UseModule Constants
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 40
+; CursorPosition = 39
+; FirstLine = 26
 ; Folding = -
 ; EnableXP

@@ -347,28 +347,33 @@ Module Text
     If *This
       With *This
         \Type = #PB_GadgetType_Text
+        \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         
+        Flag|#PB_Text_MultiLine
+       
         If Not \Text\FontID : \Text\FontID = GetGadgetFont(#PB_Default) : EndIf
         
         \fSize = Bool(Flag&#PB_Text_Border)
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \Color[1]\Frame = $C0C0C0
-          \Color[1]\Back = $F0F0F0
-          
-          
-          \DrawingMode = #PB_2DDrawing_Default
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
-          If Not \Text\WordWrap
-            \Text\MultiLine = 1;Bool(Flag&#PB_Text_MultiLine)
+          \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
+          
+          
+          If \Text\Editable
+            \Color[1]\Back = $FFFFFF 
+          Else
+            \Color[1]\Back = $F0F0F0  
           EndIf
+          \Color[1]\Frame = $C0C0C0
+          
           
           If \Vertical
             \Text\X = \fSize 
-            \Text\y = \fSize+4 ; 2,6,1
+            \Text\y = \fSize+4 ; 2,6,12
           Else
             \Text\X = \fSize+4 ; 2,6,12 
             \Text\y = \fSize
@@ -509,6 +514,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 2
-; Folding = --48---------
+; CursorPosition = 375
+; FirstLine = 215
+; Folding = 4-48---------
 ; EnableXP

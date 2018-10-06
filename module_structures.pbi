@@ -128,6 +128,10 @@
     Scroll.SCROLL
   
     DrawingMode.i
+    
+    List Items.WIDGET()
+    List Columns.WIDGET()
+    
   EndStructure
   
 EndDeclareModule 
@@ -138,7 +142,7 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 124
+; CursorPosition = 132
 ; FirstLine = 102
 ; Folding = ---
 ; EnableXP
