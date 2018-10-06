@@ -7,17 +7,23 @@
     CompilerIf #PB_Compiler_Version =< 546
       #PB_EventType_Resize
     CompilerEndIf
+    #PB_EventType_Create
     #PB_EventType_ScrollChange
   EndEnumeration
   
   EnumerationBinary
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       #PB_Text_Right
       #PB_Text_Center
       #PB_Text_Border
-    CompilerElse ; If #PB_Compiler_OS = #PB_OS_Windows
-      #PB_Text_Center
-      #PB_Text_Right
+    CompilerElse
+      CompilerIf #PB_Compiler_Version = 560
+        #PB_Text_Center
+        #PB_Text_Right
+      CompilerElse
+        #PB_Text_Right
+        #PB_Text_Center
+      CompilerEndIf
     CompilerEndIf
     
     #PB_Text_Bottom
@@ -76,7 +82,6 @@ EndModule
 
 UseModule Constants
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 37
+; CursorPosition = 40
 ; Folding = -
 ; EnableXP

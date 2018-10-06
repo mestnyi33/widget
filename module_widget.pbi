@@ -287,7 +287,6 @@ Module Widget
       With *This
         \Canvas\Gadget = Widget
         \Type = #PB_GadgetType_ScrollBar
-        \Text\FontID = GetGadgetFont(#PB_Default)
         ScrollBar::Widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
         \Scroll\Type[1]=1 : \Scroll\Type[2]=1     ; Можно менять вид стрелок 
         \Scroll\Size[1]=6 : \Scroll\Size[2]=6     ; Можно задать размер стрелок
@@ -306,9 +305,7 @@ Module Widget
     
     If *This
       With *This
-        \Canvas\Gadget = Widget
-        \Text\FontID = GetGadgetFont(#PB_Default)
-        Button::Widget(*This, 0, 0, Width, Height, Text.s, Flag|#PB_Text_Center|#PB_Text_Middle|#PB_Text_Border)
+        Button::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
         Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
@@ -324,9 +321,7 @@ Module Widget
     
     If *This
       With *This
-        \Canvas\Gadget = Widget
-        \Text\FontID = GetGadgetFont(#PB_Default)
-        Text::Widget(*This, 0, 0, Width, Height, Text.s, Flag)
+        Text::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
         Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
@@ -340,7 +335,45 @@ EndModule
 
 UseModule Widget
 
+Macro _C_
+  :
+EndMacro
+     
+Macro _CC_
+  ::
+EndMacro
+     
+Macro UseWidget()
+  ;Macro PB_Event_Gadget#_Colon_#PB_Event_Widget#_Colon_#EndMacro
+  ;   Macro TextGadget#_C_#Widget#_CC_#Text
+  ;     #_C_#EndMacro
+  Macro ButtonGadget
+    Widget#_CC_#Button#_C_#EndMacro
+    Macro ScrollBarGadget
+      Widget#_CC_#ScrollBar
+      #_C_#EndMacro
+    EndMacro
+    
+    
+ ; UseWidget()
 
+; Shows possible flags of ButtonGadget in action...
+  Procedure Events()
+    Debug "Left click "+EventGadget()+" "+EventType()
+  EndProcedure
+  
+  If OpenWindow(0, 0, 0, 222, 200, "ButtonGadgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    ButtonGadget(0, 10, 10, 200, 20, "Standard Button")
+    ButtonGadget(1, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
+    ButtonGadget(2, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
+    ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine)
+    ButtonGadget(4, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
+    
+    ; BindEvent(#PB_Event_Widget, @Events())
+   BindEvent(#PB_Event_Gadget, @Events())
+    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  EndIf
+  
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   Procedure v_GadgetCallBack()
@@ -395,7 +428,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 327
-; FirstLine = 290
+; CursorPosition = 371
+; FirstLine = 350
 ; Folding = ----------
 ; EnableXP

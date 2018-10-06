@@ -45,6 +45,11 @@
     Arrows.i[4]
   EndStructure
   
+  Structure IMAGE Extends Coordinate
+    handle.i[2]
+    change.b
+  EndStructure
+  
   Structure TEXT Extends COORDINATE
     ;     Char.c
     Len.i
@@ -99,20 +104,25 @@
   Structure WIDGET Extends COORDINATE
     Canvas.CANVAS
     Color.COLOR[4]
-    
     Text.TEXT[4]
     
     fSize.i
     bSize.i
     Hide.b[2]
     Disable.b[2]
+    Cursor.i[2]
     
     Type.i
-    Resize.b ; 
     
+    From.i  ; at point widget | item
     Focus.i
+    LostFocus.i
+    Drag.b
     
+    Resize.b ; 
     Buttons.i
+    Toggle.b
+    Checked.b[2]
     Vertical.b
     
     Scroll.SCROLL
@@ -128,7 +138,7 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 43
-; Folding = --
+; CursorPosition = 124
+; FirstLine = 102
+; Folding = ---
 ; EnableXP
