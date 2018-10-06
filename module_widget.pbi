@@ -10,6 +10,7 @@
 ; Topic           : 
 ;
 
+XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
 XIncludeFile "module_scrollbar.pbi"
@@ -24,6 +25,7 @@ XIncludeFile "module_button.pbi"
 DeclareModule Widget
   
   EnableExplicit
+  UseModule Macros
   UseModule Constants
   UseModule Structures
   
@@ -189,17 +191,27 @@ Module Widget
   EndProcedure
   
   Procedure.i SetState(Widget.i, State.i)
-    Protected *This.Widget = GetGadgetData(Widget)
+    Protected Result.b, *This.Widget = GetGadgetData(Widget)
     
     With *This
       Select \Type
+        Case #PB_GadgetType_Button
+          If Button::SetState(*This, State)
+            Result = 1
+          EndIf
+          
         Case #PB_GadgetType_ScrollBar  
           If ScrollBar::SetState(*This\Scroll, State) 
-            Draws(*This)
             PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
+            Result = 1
           EndIf
       EndSelect
     EndWith
+    
+    If Result  
+      Draws(*This)
+    EndIf     
+    
   EndProcedure
   
   Procedure.i GetState(Widget.i)
@@ -391,7 +403,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 48
+; CursorPosition = 28
 ; Folding = ----------
 ; EnableXP

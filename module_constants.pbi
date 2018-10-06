@@ -7,6 +7,7 @@
     CompilerIf #PB_Compiler_Version =< 546
       #PB_EventType_Resize
     CompilerEndIf
+    #PB_EventType_Free
     #PB_EventType_Create
     #PB_EventType_ScrollChange
   EndEnumeration
@@ -66,15 +67,7 @@
   ;   Debug #PB_Gadget_TitleBackColor  ; 5
   ;   Debug #PB_Gadget_GrayTextColor   ; 6
   
-  Enumeration
-    #PB_Align_None
-    #PB_Align_Right
-    #PB_Align_Bottom
-    #PB_Align_Center
-    #PB_Align_Middle
-  EndEnumeration
-  
-EndDeclareModule 
+  EndDeclareModule 
 
 Module Constants
   
@@ -82,6 +75,7 @@ EndModule
 
 UseModule Constants
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 40
+; CursorPosition = 69
+; FirstLine = 40
 ; Folding = -
 ; EnableXP

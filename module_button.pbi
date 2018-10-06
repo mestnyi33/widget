@@ -1,4 +1,5 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_Text.pbi"
@@ -8,6 +9,7 @@ CompilerEndIf
 DeclareModule Button
   
   EnableExplicit
+  UseModule Macros
   UseModule Constants
   UseModule Structures
   
@@ -22,54 +24,6 @@ DeclareModule Button
   Macro GetColor(_adress_, _color_type_) : Text::GetColor(_adress_, _color_type_) : EndMacro
   Macro SetColor(_adress_, _color_type_, _color_) : Text::SetColor(_adress_, _color_type_, _color_) : EndMacro
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
-  
-  Macro Colors(_adress_, _i_, _ii_, _iii_)
-    If _adress_\Color[_i_]\Line[_ii_]
-      _adress_\Color[_i_]\Line[_iii_] = _adress_\Color[_i_]\Line[_ii_]
-    Else
-      _adress_\Color[_i_]\Line[_iii_] = _adress_\Color[0]\Line[_ii_]
-    EndIf
-    
-    If _adress_\Color[_i_]\Fore[_ii_]
-      _adress_\Color[_i_]\Fore[_iii_] = _adress_\Color[_i_]\Fore[_ii_]
-    Else
-      _adress_\Color[_i_]\Fore[_iii_] = _adress_\Color[0]\Fore[_ii_]
-    EndIf
-    
-    If _adress_\Color[_i_]\Back[_ii_]
-      _adress_\Color[_i_]\Back[_iii_] = _adress_\Color[_i_]\Back[_ii_]
-    Else
-      _adress_\Color[_i_]\Back[_iii_] = _adress_\Color[0]\Back[_ii_]
-    EndIf
-    
-    If _adress_\Color[_i_]\Frame[_ii_]
-      _adress_\Color[_i_]\Frame[_iii_] = _adress_\Color[_i_]\Frame[_ii_]
-    Else
-      _adress_\Color[_i_]\Frame[_iii_] = _adress_\Color[0]\Frame[_ii_]
-    EndIf
-  EndMacro
-  
-  Macro ResetColor(This)
-    
-    Colors(This, 0, 1, 0)
-    Colors(This, 1, 1, 0)
-    Colors(This, 2, 1, 0)
-    Colors(This, 3, 1, 0)
-    
-    
-    Colors(This, 1, 1, 1)
-    Colors(This, 2, 1, 1)
-    Colors(This, 3, 1, 1)
-    
-    Colors(This, 1, 2, 2)
-    Colors(This, 2, 2, 2)
-    Colors(This, 3, 2, 2)
-    
-    Colors(This, 1, 3, 3)
-    Colors(This, 2, 3, 3)
-    Colors(This, 3, 3, 3)
-    
-  EndMacro
   
   Declare.i GetState(*This.Widget)
   Declare.i SetState(*This.Widget, Value.i)
@@ -453,7 +407,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 421
-; FirstLine = 389
-; Folding = ---------0-
+; CursorPosition = 26
+; Folding = --------f--
 ; EnableXP

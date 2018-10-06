@@ -1,4 +1,5 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
 CompilerEndIf
@@ -7,20 +8,10 @@ CompilerEndIf
 DeclareModule Text
   
   EnableExplicit
+  UseModule Macros
   UseModule Constants
   UseModule Structures
   
-  Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
-    BackColor(_color_1_&$FFFFFF|_alpha_<<24)
-    FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
-    If _type_
-      LinearGradient(_x_,_y_, (_x_+_width_), _y_)
-    Else
-      LinearGradient(_x_,_y_, _x_, (_y_+_height_))
-    EndIf
-    RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
-    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
-  EndMacro
   
   
   ;- DECLAREs
@@ -518,7 +509,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 365
-; FirstLine = 283
-; Folding = --v4---------
+; CursorPosition = 2
+; Folding = --48---------
 ; EnableXP
