@@ -146,8 +146,8 @@ Module Text
               \Text\String.s[1] = Wrap(\Text\String.s, Width, 1)
               \Text\CountString = CountString(\Text\String.s[1], #LF$)
             Else
-              \Text\String.s[1] = Wrap(\Text\String.s, Width, 0)
-              ;  \Text\String.s[1] = \Text\String.s
+              ;  \Text\String.s[1] = Wrap(\Text\String.s, Width, 0)
+              \Text\String.s[1] = \Text\String.s
               \Text\CountString = 1
             EndIf
             \Resize = #False
@@ -159,6 +159,8 @@ Module Text
             ElseIf \Text\Align\Vertical
               Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
             EndIf
+            
+            ;;;ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
             
             DrawingMode(#PB_2DDrawing_Transparent)
             If \Text\Vertical
@@ -174,6 +176,7 @@ Module Text
                   Text_X=(Width-StringWidth)/2 
                 EndIf
                 
+                ;                  DrawRotatedText(\X[1]+\Text\Y+Text_Y, \Y[1]+\Text\X+Text_X+StringWidth, String.s, 90, \Color\Front)
                 DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
                 Text_Y+\Text\Height : If Text_Y > (Width) : Break : EndIf
               Next
@@ -193,6 +196,7 @@ Module Text
                 EndIf
                 
                 DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
+                ;DrawRotatedText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, 0, \Color\Front)
                 Text_Y+\Text\Height : If Text_Y > (Height-\Text\Height) : Break : EndIf
               Next
             EndIf
@@ -291,13 +295,20 @@ Module Text
                   
                   AddElement(\Items())
                   \Items()\Text\Vertical = \Text\Vertical
-                  \Items()\Text\x = \X[1]+\Text\Y+Text_Y+\Text\Height
-                  \Items()\Text\y = \Y[1]+\Text\X+Text_X
+                  If \Text\Rotate = 270
+                    \Items()\Text\x = \X[1]+\Text\Y+Text_Y+\Text\Height
+                    \Items()\Text\y = \Y[1]+\Text\X+Text_X
+                  Else
+                    \Items()\Text\x = \X[1]+\Text\Y+Text_Y
+                    \Items()\Text\y = \Y[1]+\Text\X+Text_X+StringWidth
+                  EndIf
                   \Items()\Text\Width = StringWidth
                   \Items()\Text\Height = \Text\Height
                   \Items()\Text\String.s = String.s
                   \Items()\Text\Len = Len(String.s)
                   
+                  
+                  ;DrawRotatedText(\X[1]+\Text\Y+Text_Y, \Y[1]+\Text\X+Text_X+StringWidth, String.s, 90, \Color\Front)
                   ;DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
                   Text_Y+\Text\Height : If Text_Y > (Width) : Break : EndIf
                 Next
@@ -376,11 +387,7 @@ Module Text
             If \Text[2]\Len
               If \Text[1]\String.s
                 DrawingMode(#PB_2DDrawing_Transparent)
-                If \Text\Vertical
-                  DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[1]\String.s, 270, *This\Color\Front)
-                Else
-                  DrawText(\Text[0]\X, \Text[0]\Y, \Text[1]\String.s, *This\Color\Front)
-                EndIf
+                DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
               EndIf
               If \Text[2]\String.s
                 DrawingMode(#PB_2DDrawing_Default)
@@ -390,27 +397,15 @@ Module Text
                   Box(\Text[2]\X, \Text[0]\Y, \Text[2]\Width, \Text[0]\Height, $D77800)
                 EndIf
                 DrawingMode(#PB_2DDrawing_Transparent)
-                If \Text\Vertical
-                  DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[2]\String.s, 270, *This\Color\Front)
-                Else
-                  DrawText(\Text[2]\X, \Text[0]\Y, \Text[2]\String.s, $FFFFFF)
-                EndIf
+                DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
               EndIf
               If \Text[3]\String.s
                 DrawingMode(#PB_2DDrawing_Transparent)
-                If \Text\Vertical
-                  DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[3]\String.s, 270, *This\Color\Front)
-                Else
-                  DrawText(\Text[3]\X, \Text[0]\Y, \Text[3]\String.s, *This\Color\Front)
-                EndIf
+                DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
               EndIf
             Else
               DrawingMode(#PB_2DDrawing_Transparent)
-              If \Text\Vertical
-                DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, 270, *This\Color\Front)
-              Else
-                DrawText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, *This\Color\Front)
-              EndIf
+              DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
             EndIf
           EndIf
         Next
@@ -424,8 +419,6 @@ Module Text
     EndIf
     
   EndProcedure
-  
-  
   
   Procedure.s GetText(*This.Widget)
     ProcedureReturn *This\Text\String.s
@@ -727,7 +720,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 426
-; FirstLine = 213
-; Folding = -----4--------------
+; CursorPosition = 421
+; FirstLine = 225
+; Folding = -----4-------------
 ; EnableXP

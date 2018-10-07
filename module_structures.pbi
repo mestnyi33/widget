@@ -68,6 +68,7 @@
     WordWrap.b
     MultiLine.b
     Vertical.b
+    Rotate.f
     
     CaretPos.i[2] ; 0 = Pos ; 1 = PosFixed
     
@@ -148,7 +149,7 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 128
-; FirstLine = 117
+; CursorPosition = 71
+; FirstLine = 59
 ; Folding = ---
 ; EnableXP

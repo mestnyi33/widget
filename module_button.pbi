@@ -209,6 +209,7 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         \DrawingMode = #PB_2DDrawing_Gradient
         \Canvas\Gadget = Canvas
         \Radius = Radius
+        \Text\Rotate = 90;270
         
         If Bool(Flag&#PB_Button_Left)
           Flag&~#PB_Text_Center
@@ -450,7 +451,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 319
-; FirstLine = 286
+; CursorPosition = 211
+; FirstLine = 192
 ; Folding = -----------
 ; EnableXP
