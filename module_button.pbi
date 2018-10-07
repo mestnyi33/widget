@@ -27,6 +27,7 @@ DeclareModule Button
   
   Declare.i GetState(*This.Widget)
   Declare.i SetState(*This.Widget, Value.i)
+  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
   Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   
@@ -290,6 +291,37 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
     
     ProcedureReturn *This
   EndProcedure
+  
+Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  Protected *Widget, *This.Widget=AllocateStructure(Widget)
+  
+  If *This
+    
+    ;{ Генерируем идентификатор
+    If Widget =- 1 Or Widget > ListSize(List()) - 1
+      LastElement(List())
+      AddElement(List()) 
+      Widget = ListIndex(List())
+      *Widget = @List()
+    Else
+      SelectElement(List(), Widget)
+      *Widget = @List()
+      InsertElement(List())
+      
+      PushListPosition(List())
+      While NextElement(List())
+        ; List()\Item = ListIndex(List())
+      Wend
+      PopListPosition(List())
+    EndIf
+    ;}
+    
+    Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
+    List()\Widget = *This
+    
+  EndIf
+  ProcedureReturn *This
+EndProcedure
 EndModule
 
 ;-
@@ -393,7 +425,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(g, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     
     With *Button_0
-      Widget(*Button_0, g, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
+      *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
+      *Button_0\Width = 20
+      
+      ; Widget(*Button_0, g, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
       SetColor(*Button_0, #PB_Gadget_FrontColor, $D56F1A)
       SetFont(*Button_0, FontID(0))
@@ -417,7 +452,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 375
-; FirstLine = 362
-; Folding = -----------
+; CursorPosition = 389
+; FirstLine = 321
+; Folding = ------f----
 ; EnableXP

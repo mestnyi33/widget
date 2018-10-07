@@ -117,7 +117,7 @@ Module Text
       If Not \Hide
         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
         DrawingMode(\DrawingMode)
-        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back,\Radius)
+        BoxGradient(\Vertical,\X[2],\Y[2],\Width[2],\Height[2],\Color[1]\Fore,\Color[1]\Back,\Radius)
         
         If \Text\String.s
           If \Text\Change
@@ -514,7 +514,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 207
-; FirstLine = 64
+; CursorPosition = 119
+; FirstLine = 39
 ; Folding = 4-48---------
 ; EnableXP

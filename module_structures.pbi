@@ -67,6 +67,7 @@
     Numeric.b
     WordWrap.b
     MultiLine.b
+    Vertical.b
     
     CaretPos.i[2] ; 0 = Pos ; 1 = PosFixed
     
@@ -102,6 +103,7 @@
   EndStructure
   
   Structure WIDGET Extends COORDINATE
+    Handle.i
     *Widget.WIDGET
     Canvas.CANVAS
     Color.COLOR[4]
@@ -136,6 +138,8 @@
     
   EndStructure
   
+  Global NewList List.Widget()
+
 EndDeclareModule 
 
 Module Structures 
@@ -145,6 +149,6 @@ EndModule
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; CursorPosition = 128
-; FirstLine = 110
+; FirstLine = 117
 ; Folding = ---
 ; EnableXP

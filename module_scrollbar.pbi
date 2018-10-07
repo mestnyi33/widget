@@ -614,7 +614,7 @@ Module ScrollBar
     
     If *This
       If EventType = #PB_EventType_LeftButtonDown
-        Debug 7777
+        Debug "CallBack(*This.Scroll)"
       EndIf
       
       With *This
@@ -964,7 +964,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 618
-; FirstLine = 438
-; Folding = F8-0---------------v0---p-v--
+; CursorPosition = 616
+; FirstLine = 450
+; Folding = V8-0---------------v0---p-v--
 ; EnableXP
