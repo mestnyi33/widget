@@ -207,6 +207,7 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         \Cursor = #PB_Cursor_Default
         \DrawingMode = #PB_2DDrawing_Gradient
         \Canvas\Gadget = Canvas
+        \Radius = Radius
         
         If Bool(Flag&#PB_Button_Left)
           Flag&~#PB_Text_Center
@@ -337,7 +338,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If Result
       If StartDrawing(CanvasOutput(Canvas))
-        Box(0,0,Width,Height)
+        Box(0,0,Width,Height, $F0F0F0)
         
         Draw(*B_0)
         Draw(*B_1)
@@ -360,28 +361,34 @@ CompilerIf #PB_Compiler_IsMainFile
   
   LoadFont(0, "Courier", 14)
   
-  If OpenWindow(0, 0, 0, 222, 200, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    CanvasGadget(0,  0, 0, 222, 200, #PB_Canvas_Keyboard)
+  If OpenWindow(0, 0, 0, 222+222, 200, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    ButtonGadget(0, 10, 10, 200, 20, "Standard Button")
+    ButtonGadget(1, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
+    ButtonGadget(2, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
+    ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine)
+    ButtonGadget(4, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
     
-    Widget(*B_0, 0, 10, 10, 200, 20, "Standard Button")
-    Widget(*B_1, 0, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
-    Widget(*B_2, 0, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
-    Widget(*B_3, 0, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine)
-    Widget(*B_4, 0, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
+    CanvasGadget(10,  222, 0, 222, 200, #PB_Canvas_Keyboard)
+    
+    Widget(*B_0, 10, 10, 10, 200, 20, "Standard Button",0,8)
+    Widget(*B_1, 10, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
+    Widget(*B_2, 10, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
+    Widget(*B_3, 10, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine, 4)
+    Widget(*B_4, 10, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
     
     BindEvent(#PB_Event_Widget, @Events())
     
-    BindGadgetEvent(0, @CallBacks())
-    PostEvent(#PB_Event_Gadget, 0,0, #PB_EventType_Resize)
+    BindGadgetEvent(10, @CallBacks())
+    PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
   EndIf
   
   
   Procedure ResizeCallBack()
-    ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
+    ResizeGadget(11, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
   EndProcedure
   
-  If OpenWindow(1, 0, 0, 325+80, 160, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    g=1
+  If OpenWindow(11, 0, 0, 325+80, 160, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    g=11
     CanvasGadget(g,  10,10,305,140, #PB_Canvas_Keyboard)
     SetGadgetAttribute(g, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     
@@ -400,17 +407,17 @@ CompilerIf #PB_Compiler_IsMainFile
     EndWith
     
     BindGadgetEvent(g, @CallBacks())
-    PostEvent(#PB_Event_Gadget, 1,1, #PB_EventType_Resize)
+    PostEvent(#PB_Event_Gadget, 11,11, #PB_EventType_Resize)
     
-    ResizeWindow(1, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
+    ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
     
-    PostEvent(#PB_Event_SizeWindow, 1, #PB_Ignore)
-    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 1)
+    PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
+    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 74
-; FirstLine = 54
-; Folding = --------f--
+; CursorPosition = 375
+; FirstLine = 362
+; Folding = -----------
 ; EnableXP

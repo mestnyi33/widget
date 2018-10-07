@@ -117,7 +117,7 @@ Module Text
       If Not \Hide
         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
         DrawingMode(\DrawingMode)
-        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back)
+        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back,\Radius)
         
         If \Text\String.s
           If \Text\Change
@@ -205,7 +205,7 @@ Module Text
         ;       
         If \fSize
           DrawingMode(#PB_2DDrawing_Outlined)
-          Box(\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Frame)
+          RoundBox(\X[1],\Y[1],\Width[1],\Height[1], \Radius, \Radius, \Color[1]\Frame)
         EndIf
         
       EndIf
@@ -358,7 +358,7 @@ Module Text
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+          ;\Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
           \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
           
@@ -514,7 +514,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 375
-; FirstLine = 215
+; CursorPosition = 207
+; FirstLine = 64
 ; Folding = 4-48---------
 ; EnableXP

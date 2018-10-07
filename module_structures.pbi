@@ -125,6 +125,7 @@
     Toggle.b
     Checked.b[2]
     Vertical.b
+    Radius.i
     
     Scroll.SCROLL
   
@@ -143,7 +144,7 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 104
-; FirstLine = 100
+; CursorPosition = 128
+; FirstLine = 110
 ; Folding = ---
 ; EnableXP
