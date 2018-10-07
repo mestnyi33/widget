@@ -244,10 +244,10 @@ Module String
           EndIf 
         EndIf
         
-        If \Text\CaretPos=\Text\CaretPos[1] ; And Property_GadgetTimer( 300 )
+        If \Focus = *This And \Text\CaretPos=\Text\CaretPos[1] ; And Property_GadgetTimer( 300 )
           DrawingMode(#PB_2DDrawing_XOr)             
           Line(\X[2]+\Text[0]\X + \Text[1]\Width, \Y[2]+\Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
-          EndIf
+        EndIf
         ;         DrawingMode(\DrawingMode)
         ;         If \Width > \Text\X
         ;           BoxGradient(\Vertical,\X[1],\Y[1]+\Text\Y,\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
@@ -579,11 +579,13 @@ Module String
           
           Select EventType
             Case #PB_EventType_LostFocus : Repaint = #True
+              \Focus =- 1
               \Text[2]\Len = 0 ; Убыраем выделение
               \Text\CaretPos[1] =- 1 ; Прячем коректор
               
             Case #PB_EventType_Focus : Repaint = #True
-              \Text\CaretPos[1] = \Text\CaretPos ; Показываем коректор
+              \Focus = *Widget
+              \Text\CaretPos[1] = \Text\CaretPos
               
             Case #PB_EventType_Input
               If \Text\Editable
@@ -771,6 +773,7 @@ Module String
               Repaint = #True
               
             Case #PB_EventType_LeftButtonDown
+              \Focus = *Widget
               \Text\CaretPos = Caret(*Widget)
               
               If \Text\CaretPos = DoubleClickCaretPos
@@ -903,6 +906,19 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     
     Select EventType()
+      Case #PB_EventType_LeftButtonDown
+        *S_0\Focus = 0
+        *S_1\Focus = 0
+        *S_2\Focus = 0
+        *S_3\Focus = 0
+        *S_4\Focus = 0
+        *S_5\Focus = 0
+        *S_6\Focus = 0
+        *S_7\Focus = 0
+        
+    EndSelect
+    
+    Select EventType()
       Case #PB_EventType_Resize
         Result = 1
       Default
@@ -973,7 +989,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 916
-; FirstLine = 683
-; Folding = ------------v0-38-------
+; CursorPosition = 921
+; FirstLine = 685
+; Folding = ------------j0-38-------
 ; EnableXP
