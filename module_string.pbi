@@ -2,6 +2,7 @@
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
+  XIncludeFile "module_text.pbi"
 CompilerEndIf
 
 ;-
@@ -26,7 +27,7 @@ DeclareModule String
   Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
   Declare.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
   Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
+  ;Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   
 EndDeclareModule
 
@@ -72,76 +73,6 @@ Module String
     ProcedureReturn Position
   EndProcedure
   
-  Procedure.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
-    Protected line$, ret$="", LineRet$=""
-    Protected.i CountString, i, start, ii, found, length
-    
-    Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
-    Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
-    Text.s = ReplaceString(Text.s, #CR$, #LF$)
-    Text.s + #LF$
-    
-    CountString = CountString(Text.s, #LF$) 
-    
-    For i = 1 To CountString
-      line$ = StringField(Text.s, i, #LF$)
-      start = Len(line$)
-      length = start
-      
-      ; Get text len
-      While length > 1
-        If width > TextWidth(RTrim(Left(line$, length)))
-          Break
-        Else
-          length - 1 
-        EndIf
-      Wend
-      
-      While start > length 
-        For ii = length To 0 Step - 1
-          If mode =- 1 And CountString(Left((line$),ii), " ") > 1      And width > 71 ; button
-            found + FindString(delimList$, Mid(RTrim(line$),ii,1))
-            If found <> 2
-              Continue
-            EndIf
-          Else
-            found = FindString(delimList$, Mid(line$,ii,1))
-          EndIf
-          
-          If found
-            start = ii
-            Break
-          EndIf
-        Next
-        
-        If found
-          found = 0
-        Else
-          start = length
-        EndIf
-        
-        LineRet$ + Left(line$, start) + nl$
-        line$ = LTrim(Mid(line$, start+1))
-        start = Len(line$)
-        length = start
-        
-        ; Get text len
-        While length > 1
-          If width > TextWidth(RTrim(Left(line$, length)))
-            Break
-          Else
-            length - 1 
-          EndIf
-        Wend
-      Wend
-      
-      ret$ +  LineRet$ + line$ + nl$
-      LineRet$=""
-    Next
-    
-    ProcedureReturn ret$ ; ReplaceString(ret$, " ", "*")
-  EndProcedure
-  
   Procedure.i Draw(*This.Widget, Canvas.i=-1)
     Protected String.s, StringWidth
     Protected IT,Text_Y,Text_X,Width,Height
@@ -159,7 +90,7 @@ Module String
           DrawingFont(\Text\FontID) 
         EndIf
         DrawingMode(\DrawingMode)
-        BoxGradient(\Text\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back)
+        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back)
         
         If \Text\String.s
           If \Text\Change
@@ -178,12 +109,13 @@ Module String
             EndIf
             
             If \Text\MultiLine
-              \Text\String.s[1] = Wrap(\Text\String.s, Width)
+              \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, -1)
               \Text\CountString = CountString(\Text\String.s[1], #LF$)
             ElseIf \Text\WordWrap
-              \Text\String.s[1] = Wrap(\Text\String.s, Width, 0)
+              \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, 1)
               \Text\CountString = CountString(\Text\String.s[1], #LF$)
             Else
+              ;  \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, 0)
               \Text\String.s[1] = \Text\String.s
               \Text\CountString = 1
             EndIf
@@ -253,15 +185,15 @@ Module String
             \Resize = #False
           EndIf
         EndIf
-       
+        
         ;         DrawingMode(\DrawingMode)
         ;         If \Width > \Text\X
-        ;           BoxGradient(\Text\Vertical,\X[1],\Y[1]+\Text\Y,\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
-        ;           BoxGradient(\Text\Vertical,\X[1]+\Width[1]-\Text\X,\Y[1],\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1],\Y[1]+\Text\Y,\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1]+\Width[1]-\Text\X,\Y[1],\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
         ;         EndIf
         ;         If \Height > \Text\Y
-        ;           BoxGradient(\Text\Vertical,\X[1],\Y[1],\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
-        ;           BoxGradient(\Text\Vertical,\X[1]+\Text\X,\Y[1]+\Height[1]-\Text\Y,\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1],\Y[1],\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1]+\Text\X,\Y[1]+\Height[1]-\Text\Y,\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
         ;         EndIf
         ;       
         If \fSize
@@ -269,6 +201,10 @@ Module String
           Box(\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Frame)
         EndIf
       EndIf
+      
+      CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
+        ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
+      CompilerEndIf
     EndWith 
     
     
@@ -295,9 +231,9 @@ Module String
               If \Text[1]\String.s
                 DrawingMode(#PB_2DDrawing_Transparent)
                 If \Text\Vertical
-                  DrawRotatedText(\Text\Y, \Text\X, \Text[1]\String.s, 270, *This\Color\Front)
+                  DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[1]\String.s, 270, *This\Color\Front)
                 Else
-                  DrawText(\Text\X, \Text\Y, \Text[1]\String.s, *This\Color\Front)
+                  DrawText(\Text[0]\X, \Text[0]\Y, \Text[1]\String.s, *This\Color\Front)
                 EndIf
               EndIf
               If \Text[2]\String.s
@@ -309,7 +245,7 @@ Module String
                 EndIf
                 DrawingMode(#PB_2DDrawing_Transparent)
                 If \Text\Vertical
-                  DrawRotatedText(\Text[2]\Y, \Text[2]\X, \Text[2]\String.s, 270, *This\Color\Front)
+                  DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[2]\String.s, 270, *This\Color\Front)
                 Else
                   DrawText(\Text[2]\X, \Text[0]\Y, \Text[2]\String.s, $FFFFFF)
                 EndIf
@@ -317,7 +253,7 @@ Module String
               If \Text[3]\String.s
                 DrawingMode(#PB_2DDrawing_Transparent)
                 If \Text\Vertical
-                  DrawRotatedText(\Text[3]\Y, \Text[0]\X, \Text[3]\String.s, 270, *This\Color\Front)
+                  DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[3]\String.s, 270, *This\Color\Front)
                 Else
                   DrawText(\Text[3]\X, \Text[0]\Y, \Text[3]\String.s, *This\Color\Front)
                 EndIf
@@ -325,7 +261,7 @@ Module String
             Else
               DrawingMode(#PB_2DDrawing_Transparent)
               If \Text\Vertical
-                DrawRotatedText(\Text[0]\Y, \Text[0]\X, \Text[0]\String.s, 270, *This\Color\Front)
+                DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, 270, *This\Color\Front)
               Else
                 DrawText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, *This\Color\Front)
               EndIf
@@ -590,6 +526,7 @@ Module String
       With *This
         \Canvas\Mouse\X = MouseX
         \Canvas\Mouse\Y = MouseY
+        Drag = \Canvas\Mouse\Buttons
         
         If Not \Hide And Not Drag
           If EventType <> #PB_EventType_MouseLeave And 
@@ -847,8 +784,14 @@ Module String
               SelectionText(*Widget) 
               Repaint = #True
               
+            Case #PB_EventType_LeftButtonUp
+              *Widget\Canvas\Mouse\Buttons = 0
+              
             Case #PB_EventType_LeftButtonDown
+              
               *Widget\Focus = *Widget
+              *Widget\Canvas\Mouse\Buttons = #PB_Canvas_LeftButton
+              
               \Text\CaretPos = Caret(*Widget)
               
               If \Text\CaretPos = DoubleClickCaretPos
@@ -867,7 +810,7 @@ Module String
               Repaint = #True
               
             Case #PB_EventType_MouseMove
-              If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton
+              If *Widget\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton
                 \Text\CaretPos = Caret(*Widget)
                 SelectionText(*Widget)
                 Repaint = #True
@@ -889,14 +832,12 @@ Module String
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
+        \Radius = Radius
         
         Flag|#PB_Text_Middle
         
         If Not \Text\FontID
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-        EndIf
-        If Not \Text\FontID 
-          \Text\FontID = FontID(LoadFont(-1, "Monaco space", 12))
         EndIf
         
         \fSize = Bool(Not Flag&#PB_String_BorderLess)
@@ -1064,7 +1005,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 1050
-; FirstLine = 946
-; Folding = ---HS8--------------------
+; CursorPosition = 528
+; FirstLine = 508
+; Folding = -------------ffv-9-------
 ; EnableXP

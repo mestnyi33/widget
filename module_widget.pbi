@@ -300,6 +300,7 @@ Module Widget
         \Canvas\Gadget = Widget
         \Type = #PB_GadgetType_ScrollBar
         ScrollBar::Widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
+        \Scroll\Gadget = Widget
         \Scroll\Type[1]=1 : \Scroll\Type[2]=1     ; Можно менять вид стрелок 
         \Scroll\Size[1]=6 : \Scroll\Size[2]=6     ; Можно задать размер стрелок
         SetGadgetData(Widget, *This)
@@ -360,15 +361,18 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure h_GadgetCallBack()
-    Debug "gadget - "+GetGadgetState(EventGadget())
+    ;Debug "gadget - "+GetGadgetState(EventGadget())
     SetState(12, GetGadgetState(EventGadget()))
   EndProcedure
   
   Procedure h_CallBack()
-    Debug "widget - "+GetState(EventGadget())
+    ;Debug "widget - "+GetState(EventGadget())
     SetGadgetState(2, GetState(EventGadget()))
   EndProcedure
   
+  Procedure Events()
+    Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
+  EndProcedure
   
   If OpenWindow(0, 0, 0, 605, 300, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TextGadget       (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
@@ -393,6 +397,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     PostEvent(#PB_Event_Gadget, 0,12,#PB_EventType_Resize)
     
+    BindEvent(#PB_Event_Widget, @Events())
+    
     BindGadgetEvent(2,@h_GadgetCallBack())
     BindGadgetEvent(3,@v_GadgetCallBack())
     
@@ -403,6 +409,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 28
+; CursorPosition = 363
+; FirstLine = 358
 ; Folding = ----------
 ; EnableXP

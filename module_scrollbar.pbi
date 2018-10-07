@@ -369,7 +369,14 @@ Module ScrollBar
           \Width[3] = \Thumb\Length
         EndIf
         
-        If \Gadget >- 1 : PostEvent(#PB_Event_Widget, \Window, \Gadget, #PB_EventType_ScrollChange, Direction) : EndIf
+        If \Gadget >- 1 
+          ;Debug \Window
+          If \Window =- 1
+            \Window = EventWindow()
+          EndIf
+          
+          PostEvent(#PB_Event_Widget, \Window, \Gadget, #PB_EventType_ScrollChange, Direction) 
+        EndIf
         Result = #True
       EndIf
     EndWith
@@ -614,7 +621,7 @@ Module ScrollBar
     
     If *This
       If EventType = #PB_EventType_LeftButtonDown
-        Debug "CallBack(*This.Scroll)"
+      ;  Debug "CallBack(*This.Scroll)"
       EndIf
       
       With *This
@@ -964,7 +971,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 616
-; FirstLine = 450
-; Folding = V8-0---------------v0---p-v--
+; CursorPosition = 623
+; FirstLine = 478
+; Folding = X8-0---------------f8---T-f---
 ; EnableXP

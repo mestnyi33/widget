@@ -223,7 +223,7 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         Flag|#PB_Text_Middle
         
         If Not \Text\FontID
-          \Text\FontID = GetGadgetFont(#PB_Default)
+          \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
         \fSize = 1;Bool(Flag&#PB_Text_Border)
@@ -231,16 +231,13 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         
         
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \Vertical = Bool(Flag&#PB_Text_Vertical)
-          
           \Toggle = Bool(Flag&#PB_Button_Toggle)
-          
-          
+          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
           \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
           
-          If \Vertical
+          If \Text\Vertical
             \Text\X = \fSize 
             \Text\y = \fSize+12 ; 2,6,1
           Else
@@ -320,6 +317,7 @@ Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0
     List()\Widget = *This
     
   EndIf
+  
   ProcedureReturn *This
 EndProcedure
 EndModule
@@ -388,7 +386,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Events()
-    Debug "Left click "+EventGadget()+" "+EventType()
+    Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
   LoadFont(0, "Courier", 14)
@@ -426,7 +424,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     With *Button_0
       *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
-      *Button_0\Width = 20
+      ;*Button_0\Width[1] = 20
       
       ; Widget(*Button_0, g, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
@@ -452,7 +450,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 389
-; FirstLine = 321
-; Folding = ------f----
+; CursorPosition = 319
+; FirstLine = 286
+; Folding = -----------
 ; EnableXP
