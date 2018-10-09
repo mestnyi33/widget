@@ -433,7 +433,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
-  LoadFont(0, "Arial", 14)
+  LoadFont(0, "Arial", 18)
   
   If OpenWindow(0, 0, 0, 222+222, 200, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ButtonGadget(0, 10, 10, 200, 20, "Standard Button")
@@ -491,8 +491,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 476
-; FirstLine = 457
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 435
+; FirstLine = 427
 ; Folding = ------------
 ; EnableXP
