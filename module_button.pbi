@@ -13,10 +13,9 @@ DeclareModule Button
   UseModule Constants
   UseModule Structures
   
-  ;- DECLAREs
-  ;- MACROS
+  ;- - DECLAREs MACROs
   Macro Parent(_adress_, _canvas_) : Bool(_adress_\Canvas\Gadget = _canvas_) : EndMacro
-  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
+;   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
   Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
@@ -24,6 +23,9 @@ DeclareModule Button
   Macro GetColor(_adress_, _color_type_) : Text::GetColor(_adress_, _color_type_) : EndMacro
   Macro SetColor(_adress_, _color_type_, _color_) : Text::SetColor(_adress_, _color_type_, _color_) : EndMacro
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
+  
+  ;- - DECLAREs PRACEDUREs
+  Declare.i Draw(*This.Widget, Canvas.i=-1)
   
   Declare.i GetState(*This.Widget)
   Declare.i SetState(*This.Widget, Value.i)
@@ -35,6 +37,13 @@ EndDeclareModule
 
 Module Button
   ;-
+  ;- - MACROS
+  ;- - PROCEDUREs
+  Procedure.i Draw(*This.Widget, Canvas.i=-1)
+    ProcedureReturn Text::Draw(*This, Canvas)
+    
+  EndProcedure
+  
   Procedure.i GetState(*This.Widget)
     ProcedureReturn *This\Toggle
   EndProcedure
@@ -235,10 +244,21 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         \Radius = Radius
         \Text\Rotate = 270 ; 90;
         
+        If Flag&#PB_Button_Toggle
+          Flag&~#PB_Button_Toggle
+          \Toggle = #True
+        EndIf
+        
+        Flag|#PB_Text_ReadOnly
+        
         If Bool(Flag&#PB_Button_Left)
           Flag&~#PB_Text_Center
         Else
           Flag|#PB_Text_Center
+        EndIf
+        If Bool(Flag&#PB_Button_Right)
+          Flag&~#PB_Button_Right
+          Flag|#PB_Text_Right
         EndIf
         If Bool(Flag&#PB_Button_MultiLine)
           Flag&~#PB_Button_MultiLine
@@ -251,14 +271,13 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = 1;Bool(Flag&#PB_Text_Border)
+        \fSize = 1
         \bSize = \fSize
         
         
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \Toggle = Bool(Flag&#PB_Button_Toggle)
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
-          \Text\Editable = 0 ; Bool(Not Flag&#PB_Text_ReadOnly)
+          \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
           \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
           
@@ -414,7 +433,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
-  LoadFont(0, "Courier", 14)
+  LoadFont(0, "Arial", 14)
   
   If OpenWindow(0, 0, 0, 222+222, 200, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ButtonGadget(0, 10, 10, 200, 20, "Standard Button")
@@ -461,18 +480,19 @@ CompilerIf #PB_Compiler_IsMainFile
       SetFont(*Button_1, FontID(0))
     EndWith
     
+    ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
+    
+    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
+    PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
+    
     BindGadgetEvent(g, @CallBacks())
     PostEvent(#PB_Event_Gadget, 11,11, #PB_EventType_Resize)
     
-    ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
-    
-    PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
-    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 451
-; FirstLine = 387
-; Folding = ---0--------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 476
+; FirstLine = 457
+; Folding = ------------
 ; EnableXP

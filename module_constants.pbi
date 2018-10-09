@@ -48,24 +48,30 @@
       ;         #PB_Text_Right = 1
       ;         #PB_Text_Center = 2
       ;       CompilerEndIf
-      
+            ;  #PB_Button_Default = 1
+
       #PB_Text_Vertical = 4
       
       #PB_Text_UpperCase = 8        ; #PB_String_UpperCase = 8
       #PB_Text_LowerCase = 16       ; #PB_String_LowerCase = 16
       #PB_Text_Password = 32        ; #PB_String_Password = 32
       
-      #PB_Text_Bottom
-      #PB_Text_Middle 
-      #PB_Text_MultiLine 
+      #PB_Text_Bottom  = 64
+      #PB_Text_Middle  = 128
+      
+      #PB_Button_Left = 256
+      #PB_Button_Right = 512
+      #PB_Text_MultiLine = 1024
       
       #PB_Text_ReadOnly = 2048      ; #PB_String_ReadOnly = 2048       ; #PB_Editor_ReadOnly = 2048
+                                    ; #PB_Button_Toggle = 4099
       #PB_Text_Numeric = 8192       ; #PB_String_Numeric = 8192
       #PB_Text_Border = 131072      ; #PB_String_BorderLess = 131072
       #PB_Text_WordWrap = 268435456 ;  #PB_Editor_WordWrap = 268435456
     CompilerEndIf
   EndEnumeration
-;   Debug #PB_Button_Default
+;    Debug #PB_Button_Left
+;   Debug #PB_Button_Toggle = 4099
   ;   Debug #PB_Gadget_FrontColor      ; 1
   ;   Debug #PB_Gadget_BackColor       ; 2
   ;   Debug #PB_Gadget_LineColor       ; 3
@@ -74,23 +80,15 @@
   ;   Debug #PB_Gadget_GrayTextColor   ; 6
   #PB_Gadget_FrameColor = 10
   
-  Enumeration
-    #PB_Align_None
-    #PB_Align_Right
-    #PB_Align_Bottom
-    #PB_Align_Center
-    #PB_Align_Middle
-  EndEnumeration
-  
-EndDeclareModule 
+ EndDeclareModule 
 
 Module Constants
   
 EndModule 
 
 UseModule Constants
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 32
-; FirstLine = 15
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 43
 ; Folding = -
 ; EnableXP
