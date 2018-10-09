@@ -25,12 +25,12 @@ DeclareModule String
   ;- - DECLAREs PRACEDUREs
   Declare.i Draw(*This.Widget, Canvas.i=-1)
   
-;   Declare.s GetText(*This.Widget)
-;   Declare.i SetText(*This.Widget, Text.s)
-;   Declare.i SetFont(*This.Widget, FontID.i)
-;   Declare.i GetColor(*This.Widget, ColorType.i)
-;   Declare.i SetColor(*This.Widget, ColorType.i, Color.i)
-;   Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+  ;   Declare.s GetText(*This.Widget)
+  ;   Declare.i SetText(*This.Widget, Text.s)
+  ;   Declare.i SetFont(*This.Widget, FontID.i)
+  ;   Declare.i GetColor(*This.Widget, ColorType.i)
+  ;   Declare.i SetColor(*This.Widget, ColorType.i, Color.i)
+  ;   Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
   Declare.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
   Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
@@ -51,28 +51,24 @@ Module String
         Len = \Items()\Text\Len
         FontID = \Items()\Text\FontID
         String.s = \Items()\Text\String.s
-      Else
-        X = \X[2]+\Text\x
-        Len = \Text\Len
-        FontID = \Text\FontID
-        String.s = \Text\String.s
-      EndIf
-      
-      If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
-        If FontID : DrawingFont(FontID) : EndIf
+        If Not FontID : FontID = *This\Text\FontID : EndIf
         
-        For i=0 To Len
-          CursorX = X+TextWidth(Left(String.s, i))
-          Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
+        If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
+          If FontID : DrawingFont(FontID) : EndIf
           
-          ; Получаем позицию коpректора
-          If MinDistance > Distance 
-            MinDistance = Distance
-            Position = i
-          EndIf
-        Next
-        
-        StopDrawing()
+          For i=0 To Len
+            CursorX = X+TextWidth(Left(String.s, i))
+            Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
+            
+            ; Получаем позицию коpректора
+            If MinDistance > Distance 
+              MinDistance = Distance
+              Position = i
+            EndIf
+          Next
+          
+          StopDrawing()
+        EndIf
       EndIf
     EndWith
     
@@ -537,19 +533,19 @@ Module String
         \Canvas\Gadget = Canvas
         \Radius = Radius
         
+        ; Set the default widget flag
         Flag|#PB_Text_Middle
         
         If Not \Text\FontID
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_String_BorderLess)
+        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
         \bSize = \fSize
         
-        
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \Toggle = Bool(Flag&#PB_Button_Toggle)
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
+          
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
@@ -558,6 +554,12 @@ Module String
           \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
           \Text\Pass = Bool(Flag&#PB_Text_Password)
           
+          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
+          \Text\Align\Right = Bool(Flag&#PB_Text_Right)
+          \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
+          
+          
           If \Text\Vertical
             \Text\X = \fSize 
             \Text\y = \fSize+2 ; 2,6,1
@@ -565,13 +567,6 @@ Module String
             \Text\X = \fSize+2 ; 2,6,12 
             \Text\y = \fSize
           EndIf
-          
-          If \Text\Editable
-            \Color[1]\Back[1] = $FFFFFF 
-          Else
-            \Color[1]\Back[1] = $F0F0F0  
-          EndIf
-          \Color[0]\Frame[1] = $BABABA
           
           If \Text\Pass
             Protected i,Len = Len(Text.s)
@@ -587,13 +582,15 @@ Module String
           \Text\Change = #True
           \Text\Len = Len(\Text\String.s)
           
+          
+          If \Text\Editable
+            \Color[1]\Back[1] = $FFFFFF 
+          Else
+            \Color[1]\Back[1] = $F0F0F0  
+          EndIf
+          \Color[0]\Frame[1] = $BABABA
+          
           ResetColor(*This)
-          
-          If Bool(Flag&#PB_Text_Center) : \Text\Align\Horisontal=1 : EndIf
-          If Bool(Flag&#PB_Text_Middle) : \Text\Align\Vertical=1 : EndIf
-          If Bool(Flag&#PB_Text_Right)  : \Text\Align\Right=1 : EndIf
-          If Bool(Flag&#PB_Text_Bottom) : \Text\Align\Bottom=1 : EndIf
-          
         EndIf
       EndIf
     EndWith
@@ -738,7 +735,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *S_2 = Create(10, -1, 8,  60, 290, 20, "Read-only StringGadget", #PB_Text_ReadOnly|#PB_Text_Right)
     *S_3 = Create(10, -1, 8,  85, 290, 20, "LOWERCASE...", #PB_Text_LowerCase)
     *S_4 = Create(10, -1, 8, 110, 290, 20, "uppercase...", #PB_Text_UpperCase)
-    *S_5 = Create(10, -1, 8, 140, 290, 20, "Borderless StringGadget", #PB_String_BorderLess)
+    *S_5 = Create(10, -1, 8, 140, 290, 20, "Borderless StringGadget", #PB_Widget_BorderLess)
     *S_6 = Create(10, -1, 8, 170, 290, 20, "Password", #PB_Text_Password)
     
     *S_7 = Create(10, -1, 8,  200, 290, 20, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
@@ -751,7 +748,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 86
+; CursorPosition = 53
+; FirstLine = 43
 ; Folding = ------------------
 ; EnableXP
