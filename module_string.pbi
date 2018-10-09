@@ -18,8 +18,8 @@ DeclareModule String
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
   Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
   Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
-  Macro GetColor(_adress_, _color_type_) : Text::GetColor(_adress_, _color_type_) : EndMacro
-  Macro SetColor(_adress_, _color_type_, _color_) : Text::SetColor(_adress_, _color_type_, _color_) : EndMacro
+  Macro GetColor(_adress_, _color_type_, _state_=0) : Text::GetColor(_adress_, _color_type_, _state_) : EndMacro
+  Macro SetColor(_adress_, _color_type_, _color_, _state_=1) : Text::SetColor(_adress_, _color_type_, _color_, _state_) : EndMacro
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
@@ -584,9 +584,9 @@ Module String
           
           
           If \Text\Editable
-            \Color[1]\Back[1] = $FFFFFF 
+            \Color[0]\Back[1] = $FFFFFF 
           Else
-            \Color[1]\Back[1] = $F0F0F0  
+            \Color[0]\Back[1] = $F0F0F0  
           EndIf
           \Color[0]\Frame[1] = $BABABA
           
@@ -748,7 +748,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 43
+; CursorPosition = 20
+; FirstLine = 12
 ; Folding = ------------------
 ; EnableXP

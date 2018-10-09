@@ -20,8 +20,8 @@ DeclareModule Button
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
   Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
   Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
-  Macro GetColor(_adress_, _color_type_) : Text::GetColor(_adress_, _color_type_) : EndMacro
-  Macro SetColor(_adress_, _color_type_, _color_) : Text::SetColor(_adress_, _color_type_, _color_) : EndMacro
+  Macro GetColor(_adress_, _color_type_, _state_=0) : Text::GetColor(_adress_, _color_type_, _state_) : EndMacro
+  Macro SetColor(_adress_, _color_type_, _color_, _state_=1) : Text::SetColor(_adress_, _color_type_, _color_, _state_) : EndMacro
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
@@ -201,6 +201,7 @@ Module Button
             Select EventType
               Case #PB_EventType_MouseEnter, #PB_EventType_LeftButtonUp, #PB_EventType_LeftButtonDown
                 If Buttons 
+                  Buttons = 0
                   \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
                   \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
                   \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
@@ -295,35 +296,21 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
           \Text\String.s = Text.s
           \Text\Change = #True
           
-          
-          \Color\Frame = $C0C0C0
-          \Color\Back = $F0F0F0
-          
           \Color[0]\Fore[1] = $F6F6F6 
-          \Color[0]\Frame[1] = $BABABA
+          \Color[0]\Back[1] = $E2E2E2  
+          \Color[0]\Frame[1] = $BABABA 
           
-          \Color[0]\Back[1] = $F0F0F0 
-          \Color[1]\Back[1] = $E2E2E2  
-          \Color[2]\Back[1] = $E2E2E2 
-          \Color[3]\Back[1] = $E2E2E2 
-          
-          \Color[0]\Line[1] = $FFFFFF
-          \Color[1]\Line[1] = $5B5B5B
-          \Color[2]\Line[1] = $5B5B5B
-          \Color[3]\Line[1] = $5B5B5B
-          
-          ;
+          ; Цвет если мышь на виджете
           \Color[0]\Fore[2] = $EAEAEA
           \Color[0]\Back[2] = $CECECE
-          \Color[0]\Line[2] = $5B5B5B
           \Color[0]\Frame[2] = $8F8F8F
           
-          ;
+          ; Цвет если нажали на виджет
           \Color[0]\Fore[3] = $E2E2E2
           \Color[0]\Back[3] = $B4B4B4
-          \Color[0]\Line[3] = $FFFFFF
           \Color[0]\Frame[3] = $6F6F6F
           
+          ; Устанавливаем цвет по умолчанию первый
           ResetColor(*This)
         EndIf
       EndIf
@@ -491,19 +478,30 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
+<<<<<<< HEAD
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; CursorPosition = 435
 ; FirstLine = 427
 ; Folding = ------------
 
+=======
+>>>>>>> e59254fef6b3ef7fff65cb3ffe512dc7e84c6101
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 262
 ; FirstLine = 239
 ; Folding = -----------
+<<<<<<< HEAD
 
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; CursorPosition = 497
 ; FirstLine = 470
 ; Folding = -----------
+=======
+; EnableXP
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 22
+; FirstLine = 17
+; Folding = ---0f------
+>>>>>>> e59254fef6b3ef7fff65cb3ffe512dc7e84c6101
 ; EnableXP
