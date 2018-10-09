@@ -105,11 +105,130 @@ Module Procedures
     
     ProcedureReturn Value
   EndProcedure
-   
+  
+  Procedure.i _Draw(*This.Widget, Canvas.i=-1)
+    Protected String.s, StringWidth
+    Protected IT,Text_Y,Text_X,Width,Height
+    
+    With *This
+      If Canvas=-1 
+        Canvas = EventGadget()
+      EndIf
+      If Canvas <> \Canvas\Gadget
+        ProcedureReturn
+      EndIf
+      
+      If Not \Hide
+        If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
+        DrawingMode(\DrawingMode)
+        BoxGradient(\Vertical,\X[2],\Y[2],\Width[2],\Height[2],\Color[1]\Fore,\Color[1]\Back,\Radius)
+        
+        If \Text\String.s
+          If \Text\Change
+            \Text\Height = TextHeight("A")
+            \Text\Width = TextWidth(\Text\String.s)
+            \Text\Change = 0
+          EndIf
+          
+          If \Text\Vertical
+            Width = \Height[1]-\Text\X*2
+            Height = \Width[1]-\Text\y*2
+          Else
+            Width = \Width[1]-\Text\X*2
+            Height = \Height[1]-\Text\y*2
+          EndIf
+          
+          If \Resize
+            If \Text\MultiLine
+              \Text\String.s[1] = Wrap(\Text\String.s, Width)
+              \Text\CountString = CountString(\Text\String.s[1], #LF$)
+            ElseIf \Text\WordWrap
+              \Text\String.s[1] = Wrap(\Text\String.s, Width, 1)
+              \Text\CountString = CountString(\Text\String.s[1], #LF$)
+            Else
+              ;  \Text\String.s[1] = Wrap(\Text\String.s, Width, 0)
+              \Text\String.s[1] = \Text\String.s
+              \Text\CountString = 1
+            EndIf
+            \Resize = #False
+          EndIf
+          
+          If \Text\CountString
+            If \Text\Align\Bottom
+              Text_Y=(Height-(\Text\Height*\Text\CountString)-Text_Y) 
+            ElseIf \Text\Align\Vertical
+              Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
+            EndIf
+            
+            ;;;ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
+            
+            DrawingMode(#PB_2DDrawing_Transparent)
+            If \Text\Vertical
+              For IT = \Text\CountString To 1 Step - 1
+                If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
+                
+                String = StringField(\Text\String.s[1], IT, #LF$)
+                StringWidth = TextWidth(RTrim(String))
+                
+                If \Text\Align\Right
+                  Text_X=(Width-StringWidth) 
+                ElseIf \Text\Align\Horisontal
+                  Text_X=(Width-StringWidth)/2 
+                EndIf
+                
+                ;                  DrawRotatedText(\X[1]+\Text\Y+Text_Y, \Y[1]+\Text\X+Text_X+StringWidth, String.s, 90, \Color\Front)
+                DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
+                Text_Y+\Text\Height : If Text_Y > (Width) : Break : EndIf
+              Next
+            Else
+              For IT = 1 To \Text\CountString
+                If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
+                
+                String = StringField(\Text\String.s[1], IT, #LF$)
+                StringWidth = TextWidth(RTrim(String))
+                
+                If \Text\Align\Right
+                  Text_X=(Width-StringWidth) 
+                ElseIf \Text\Align\Horisontal
+                  If Width > StringWidth
+                    Text_X=(Width-StringWidth)/2
+                  EndIf
+                EndIf
+                
+                DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
+                ;DrawRotatedText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, 0, \Color\Front)
+                Text_Y+\Text\Height : If Text_Y > (Height-\Text\Height) : Break : EndIf
+              Next
+            EndIf
+          EndIf
+        EndIf
+        
+        
+        ;         DrawingMode(\DrawingMode)
+        ;         If \Width > \Text\X
+        ;           BoxGradient(\Vertical,\X[1],\Y[1]+\Text\Y,\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1]+\Width[1]-\Text\X,\Y[1],\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;         EndIf
+        ;         If \Height > \Text\Y
+        ;           BoxGradient(\Vertical,\X[1],\Y[1],\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;           BoxGradient(\Vertical,\X[1]+\Text\X,\Y[1]+\Height[1]-\Text\Y,\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
+        ;         EndIf
+        ;       
+        If \fSize
+          DrawingMode(#PB_2DDrawing_Outlined)
+          RoundBox(\X[1],\Y[1],\Width[1],\Height[1], \Radius, \Radius, \Color[1]\Frame)
+        EndIf
+        
+      EndIf
+    EndWith 
+    
+  EndProcedure
+  
 EndModule 
 
 UseModule Procedures
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 3
-; Folding = ---
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 225
+; FirstLine = 92
+; Folding = 8-0----
 ; EnableXP

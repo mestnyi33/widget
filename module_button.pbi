@@ -244,28 +244,22 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         \Radius = Radius
         \Text\Rotate = 270 ; 90;
         
-        If Flag&#PB_Button_Toggle
-          Flag&~#PB_Button_Toggle
-          \Toggle = #True
-        EndIf
         
+        ; Set the default widget flag
         Flag|#PB_Text_ReadOnly
         
-        If Bool(Flag&#PB_Button_Left)
+        If Bool(Flag&#PB_Text_Left)
           Flag&~#PB_Text_Center
         Else
           Flag|#PB_Text_Center
         EndIf
-        If Bool(Flag&#PB_Button_Right)
-          Flag&~#PB_Button_Right
-          Flag|#PB_Text_Right
-        EndIf
-        If Bool(Flag&#PB_Button_MultiLine)
-          Flag&~#PB_Button_MultiLine
-          Flag|#PB_Text_MultiLine
+        
+        If Bool(Flag&#PB_Text_Top)
+          Flag&~#PB_Text_Middle
+        Else
+          Flag|#PB_Text_Middle
         EndIf
         
-        Flag|#PB_Text_Middle
         
         If Not \Text\FontID
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
@@ -276,10 +270,18 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         
         
         If Resize(*This, X,Y,Width,Height, Canvas)
+          \Default = Bool(Flag&#PB_Widget_Default)
+          \Toggle = Bool(Flag&#PB_Widget_Toggle)
+          
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
           \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
+          
+          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
+          \Text\Align\Right = Bool(Flag&#PB_Text_Right)
+          \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
           
           If \Text\Vertical
             \Text\X = \fSize 
@@ -288,6 +290,11 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
             \Text\X = \fSize+12 ; 2,6,12 
             \Text\y = \fSize
           EndIf
+          
+             
+          \Text\String.s = Text.s
+          \Text\Change = #True
+          
           
           \Color\Frame = $C0C0C0
           \Color\Back = $F0F0F0
@@ -318,14 +325,6 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
           \Color[0]\Frame[3] = $6F6F6F
           
           ResetColor(*This)
-          
-          If Bool(Flag&#PB_Text_Center) : \Text\Align\Horisontal=1 : EndIf
-          If Bool(Flag&#PB_Text_Middle) : \Text\Align\Vertical=1 : EndIf
-          If Bool(Flag&#PB_Text_Right)  : \Text\Align\Right=1 : EndIf
-          If Bool(Flag&#PB_Text_Bottom) : \Text\Align\Bottom=1 : EndIf
-          
-          \Text\String.s = Text.s
-          \Text\Change = #True
         EndIf
       EndIf
     EndWith
@@ -445,10 +444,10 @@ CompilerIf #PB_Compiler_IsMainFile
     CanvasGadget(10,  222, 0, 222, 200, #PB_Canvas_Keyboard)
     
     *B_0 = Create(10, -1, 10, 10, 200, 20, "Standard Button", 0,8)
-    *B_1 = Create(10, -1, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
-    *B_2 = Create(10, -1, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
-    *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine|#PB_Button_Default, 4)
-    *B_4 = Create(10, -1, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
+    *B_1 = Create(10, -1, 10, 40, 200, 20, "Left Button", #PB_Text_Left)
+    *B_2 = Create(10, -1, 10, 70, 200, 20, "Right Button", #PB_Text_Right)
+    *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
+    *B_4 = Create(10, -1, 10,170, 200, 20, "Toggle Button", #PB_Widget_Toggle)
     
     BindEvent(#PB_Event_Widget, @Events())
     
@@ -491,8 +490,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
+<<<<<<< HEAD
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; CursorPosition = 435
 ; FirstLine = 427
 ; Folding = ------------
+=======
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 262
+; FirstLine = 239
+; Folding = -----------
+>>>>>>> 6e5150b10471908559585218cc2c2d8de805250a
 ; EnableXP

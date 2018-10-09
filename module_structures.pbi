@@ -125,10 +125,12 @@
     
     Resize.b ; 
     Buttons.i
-    Toggle.b
+    Toggle.b ; 
     Checked.b[2]
     Vertical.b
     Radius.i
+    
+    *Default
     
     Scroll.SCROLL
   
@@ -148,8 +150,8 @@ Module Structures
 EndModule 
 
 UseModule Structures
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 71
-; FirstLine = 59
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 132
+; FirstLine = 110
 ; Folding = ---
 ; EnableXP
