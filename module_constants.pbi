@@ -25,10 +25,12 @@
       ;       #PB_Editor_ReadOnly = 1
       ;       #PB_Editor_WordWrap = 2
       
-      #PB_Text_LowerCase = 8     ; #PB_String_LowerCase = 8
+      ;       #PB_Button_Default = 8
+      
       #PB_Text_Numeric = 16      ; #PB_String_Numeric = 16
       #PB_String_BorderLess = 32
       
+      #PB_Text_LowerCase ; = 8     ; #PB_String_LowerCase = 8
       #PB_Text_Password
       #PB_Text_ReadOnly
       #PB_Text_UpperCase
@@ -63,7 +65,7 @@
       #PB_Text_WordWrap = 268435456 ;  #PB_Editor_WordWrap = 268435456
     CompilerEndIf
   EndEnumeration
-  
+;   Debug #PB_Button_Default
   ;   Debug #PB_Gadget_FrontColor      ; 1
   ;   Debug #PB_Gadget_BackColor       ; 2
   ;   Debug #PB_Gadget_LineColor       ; 3
@@ -88,7 +90,7 @@ EndModule
 
 UseModule Constants
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 33
+; CursorPosition = 32
+; FirstLine = 15
 ; Folding = -
 ; EnableXP

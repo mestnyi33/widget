@@ -9,6 +9,7 @@
 ; File name       : module_widget.pbi
 ; Topic           : 
 ;
+; ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC045ZWQqqZ/A0QtEXnbMaPMSgYQeocF1xmZe+99U5IMoSltVwZ3wSuOHdsJEYSLxmMLsFk7EdOV5lgH0ZSeVe+qqz4M3q3lcSzQ8f2l3Dvq/svqW8tGFEYbZ4tbgCSveLZQ3LGTwTqCzeYZELr+2awNC5ykraMCzvgPK2OcclEACkJ0m6E++e+gRuhrMfnf0c4iLmxxSLDmEaCA2XjQKMFjV0uPWu55W7qtHEDZx7f7MXTV6/KlaUcp9+S9bbDWa852vV04GTUM0+YHJwyaB3GLskEwDoWm1nbBGqfVCO+gHao4WStJ0/6pha4MZVL28SXRvYTko7fqfjt5bRkBnaqrP4b6au3PiO3cMr3NTCVPLnRserMjk7UuPWkFUchFL8ODqdt/BD5lzQ4+q+dxXaMYC++q/z6x95Ja+s43wMDZLepG61wGcG2ftbQhxjsETbJTy/cNU6ing07wdkbTckAhz5Gue4OfB+vwlMZi3F35aCeq+FG8UzPOlQH122X9VPuowTJdVWYM5qqmmgrGkkaePvYYarruxMrtsoq8wY4hBs4WWyaq4zvJyUZTBfDzTsv8kWQxuPQ8wKMT4Mpo5H+CZrjCBsFtidu/LJ8FxFxOFcxik9o2tyxscuikYMoEW4sBkKpQeMESz+tXmXcxZwaa/8YEGL10s2uc4iI2ul99w==
 
 XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
@@ -409,7 +410,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 363
-; FirstLine = 358
+; CursorPosition = 13
 ; Folding = ----------
 ; EnableXP

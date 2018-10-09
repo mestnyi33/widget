@@ -128,11 +128,33 @@ Module Button
         EndIf
       EndWith
       
+      
       If *Widget = *This
+        
+        ; Если канвас как родитель
+        If Widget <> Canvas
+          ; Будем сбрасывать все остальные виджети
+          With List()\Widget
+            If EventType = #PB_EventType_LeftButtonDown
+              PushListPosition(List())
+              ForEach List()
+                If *Widget <> List()\Widget
+                  \Focus = 0
+                  \Items()\Text[2]\Len = 0
+                EndIf
+              Next
+              PopListPosition(List())
+            EndIf
+          EndWith
+        EndIf
+        
         With *Widget
           If Not \Hide
             Select EventType
               Case #PB_EventType_LeftButtonDown : Drag = 1 : LastX = MouseX : LastY = MouseY
+                *Widget\Focus = *Widget
+                *Widget\Canvas\Mouse\Buttons = #PB_Canvas_LeftButton
+                
                 If \Buttons
                   Buttons = \Buttons
                   If \Toggle 
@@ -142,7 +164,9 @@ Module Button
                 EndIf
                 
               Case #PB_EventType_LeftButtonUp : Drag = 0
-                If \Toggle 
+                 *Widget\Canvas\Mouse\Buttons = 0
+              
+              If \Toggle 
                   If Not \Checked And Not (MouseX=#PB_Ignore And MouseY=#PB_Ignore)
                     Buttons = \Buttons
                   EndIf
@@ -209,7 +233,7 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         \DrawingMode = #PB_2DDrawing_Gradient
         \Canvas\Gadget = Canvas
         \Radius = Radius
-        \Text\Rotate = 90;270
+        \Text\Rotate = 270 ; 90;
         
         If Bool(Flag&#PB_Button_Left)
           Flag&~#PB_Text_Center
@@ -234,7 +258,7 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         If Resize(*This, X,Y,Width,Height, Canvas)
           \Toggle = Bool(Flag&#PB_Button_Toggle)
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
-          \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+          \Text\Editable = 0 ; Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
           \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
           
@@ -396,16 +420,16 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget(0, 10, 10, 200, 20, "Standard Button")
     ButtonGadget(1, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
     ButtonGadget(2, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
-    ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine)
+    ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine|#PB_Button_Default)
     ButtonGadget(4, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
     
     CanvasGadget(10,  222, 0, 222, 200, #PB_Canvas_Keyboard)
     
-    Widget(*B_0, 10, 10, 10, 200, 20, "Standard Button",0,8)
-    Widget(*B_1, 10, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
-    Widget(*B_2, 10, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
-    Widget(*B_3, 10, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine, 4)
-    Widget(*B_4, 10, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
+    *B_0 = Create(10, -1, 10, 10, 200, 20, "Standard Button", 0,8)
+    *B_1 = Create(10, -1, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
+    *B_2 = Create(10, -1, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
+    *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine|#PB_Button_Default, 4)
+    *B_4 = Create(10, -1, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
     
     BindEvent(#PB_Event_Widget, @Events())
     
@@ -425,16 +449,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     With *Button_0
       *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
-      ;*Button_0\Width[1] = 20
-      
-      ; Widget(*Button_0, g, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
       SetColor(*Button_0, #PB_Gadget_FrontColor, $D56F1A)
       SetFont(*Button_0, FontID(0))
     EndWith
     
     With *Button_1
-      Widget(*Button_1, g, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine)
+     *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine)
       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
       SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
       SetFont(*Button_1, FontID(0))
@@ -451,7 +472,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 211
-; FirstLine = 192
-; Folding = -----------
+; CursorPosition = 451
+; FirstLine = 387
+; Folding = ---0--------
 ; EnableXP
