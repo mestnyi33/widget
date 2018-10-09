@@ -454,14 +454,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     With *Button_0
       *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
-      SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
+;       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
       SetColor(*Button_0, #PB_Gadget_FrontColor, $D56F1A)
       SetFont(*Button_0, FontID(0))
     EndWith
     
     With *Button_1
      *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine)
-      SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
+;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
       SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
       SetFont(*Button_1, FontID(0))
     EndWith
@@ -478,30 +478,13 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
-<<<<<<< HEAD
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; CursorPosition = 435
 ; FirstLine = 427
 ; Folding = ------------
 
-=======
->>>>>>> e59254fef6b3ef7fff65cb3ffe512dc7e84c6101
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 262
-; FirstLine = 239
+; CursorPosition = 456
+; FirstLine = 451
 ; Folding = -----------
-<<<<<<< HEAD
-
-; EnableXP
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 497
-; FirstLine = 470
-; Folding = -----------
-=======
-; EnableXP
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 17
-; Folding = ---0f------
->>>>>>> e59254fef6b3ef7fff65cb3ffe512dc7e84c6101
 ; EnableXP
