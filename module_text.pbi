@@ -19,8 +19,8 @@ DeclareModule Text
   Declare.s GetText(*This.Widget)
   Declare.i SetText(*This.Widget, Text.s)
   Declare.i SetFont(*This.Widget, FontID.i)
-  Declare.i GetColor(*This.Widget, ColorType.i)
-  Declare.i SetColor(*This.Widget, ColorType.i, Color.i)
+  Declare.i GetColor(*This.Widget, ColorType.i, State.i=0)
+  Declare.i SetColor(*This.Widget, ColorType.i, Color.i, State.i=1)
   Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
   ;Declare.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i)
   Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
@@ -128,7 +128,7 @@ Module Text
         CompilerEndIf
         
         DrawingMode(\DrawingMode)
-        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back,\Radius)
+        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
         
         
         ; Make output text
@@ -187,7 +187,7 @@ Module Text
                   \Items()\Text\Editable = \Text\Editable 
                   \Items()\Text\Vertical = \Text\Vertical
                   If \Text\Rotate = 270
-                    \Items()\Text\x = \X[1]+\Text\Y+Text_Y+\Text\Height
+                    \Items()\Text\x = \X[1]+\Text\Y+Text_Y+\Text\Height+\Text\X
                     \Items()\Text\y = \Y[1]+\Text\X+Text_X
                   Else
                     \Items()\Text\x = \X[1]+\Text\Y+Text_Y
@@ -318,20 +318,15 @@ Module Text
         If \Focus = *This 
           If \Radius 
             ; Сглаживание краев)))
-;             RoundBox(\X[1],\Y[1],\Width[1]+2,\Height[1]+2,\Radius,\Radius,$D5A719)
-;             RoundBox(\X[1]-1,\Y[1]-2,\Width[1]+2,\Height[1]+4,\Radius,\Radius,$D5A719)
-            
              RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,$D5A719)
              RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$D5A719)
           EndIf
           
-          ;RoundBox(\X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4,\Radius,\Radius,$D5A719)
           RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$D5A719)
-          
           RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$D5A719)
         Else
           If \fSize
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color[1]\Frame)
+            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
           EndIf
         EndIf
         
@@ -368,50 +363,51 @@ Module Text
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetColor(*This.Widget, ColorType.i, Color.i)
+  Procedure.i SetColor(*This.Widget, ColorType.i, Color.i, State.i=1)
     Protected Result
     
     With *This
       Select ColorType
         Case #PB_Gadget_LineColor
-          If \Color\Line <> Color 
-            \Color\Line = Color
+          If \Color\Line[State] <> Color 
+            \Color\Line[State] = Color
             Result = #True
           EndIf
           
         Case #PB_Gadget_BackColor
-          If \Color\Back <> Color 
-            \Color\Back = Color
+          If \Color\Back[State] <> Color 
+            \Color\Back[State] = Color
             Result = #True
           EndIf
           
         Case #PB_Gadget_FrontColor
-          If \Color\Front <> Color 
-            \Color\Front = Color
+          If \Color\Front[State] <> Color 
+            \Color\Front[State] = Color
             Result = #True
           EndIf
           
         Case #PB_Gadget_FrameColor
-          If \Color\Frame <> Color 
-            \Color\Frame = Color
+          If \Color\Frame[State] <> Color 
+            \Color\Frame[State] = Color
             Result = #True
           EndIf
           
       EndSelect
     EndWith
     
+    ResetColor(*This)
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i GetColor(*This.Widget, ColorType.i)
+  Procedure.i GetColor(*This.Widget, ColorType.i, State.i=0)
     Protected Color.i
     
     With *This
       Select ColorType
-        Case #PB_Gadget_LineColor  : Color = \Color\Line
-        Case #PB_Gadget_BackColor  : Color = \Color\Back
-        Case #PB_Gadget_FrontColor : Color = \Color\Front
-        Case #PB_Gadget_FrameColor : Color = \Color\Frame
+        Case #PB_Gadget_LineColor  : Color = \Color\Line[State]
+        Case #PB_Gadget_BackColor  : Color = \Color\Back[State]
+        Case #PB_Gadget_FrontColor : Color = \Color\Front[State]
+        Case #PB_Gadget_FrameColor : Color = \Color\Frame[State]
       EndSelect
     EndWith
     
@@ -645,7 +641,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 324
-; FirstLine = 144
-; Folding = ---+-4----------
+; CursorPosition = 21
+; FirstLine = 1
+; Folding = ---k-4----------
 ; EnableXP
