@@ -124,11 +124,12 @@
     
     Drag.b
     Resize.b ; 
-    Buttons.i
     Toggle.b ; 
     Checked.b[2]
     Vertical.b
+    Interact.b ; будет ли взаимодействовать с пользователем?
     Radius.i
+    Buttons.i
     
     ; tree
     time.i

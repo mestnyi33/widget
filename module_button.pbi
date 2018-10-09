@@ -15,7 +15,7 @@ DeclareModule Button
   
   ;- - DECLAREs MACROs
   Macro Parent(_adress_, _canvas_) : Bool(_adress_\Canvas\Gadget = _canvas_) : EndMacro
-;   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
+  ;   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
   Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
@@ -82,7 +82,7 @@ Module Button
         \Canvas\Mouse\X = MouseX
         \Canvas\Mouse\Y = MouseY
         
-        If Not \Hide And Not Drag
+        If Not \Hide And Not Drag And \Interact
           If EventType <> #PB_EventType_MouseLeave And 
              (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
             
@@ -173,9 +173,9 @@ Module Button
                 EndIf
                 
               Case #PB_EventType_LeftButtonUp : Drag = 0
-                 *Widget\Canvas\Mouse\Buttons = 0
-              
-              If \Toggle 
+                *Widget\Canvas\Mouse\Buttons = 0
+                
+                If \Toggle 
                   If Not \Checked And Not (MouseX=#PB_Ignore And MouseY=#PB_Ignore)
                     Buttons = \Buttons
                   EndIf
@@ -235,7 +235,7 @@ Module Button
     ProcedureReturn Result
   EndProcedure
   
-Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+  Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
     If *This
       With *This
         \Type = #PB_GadgetType_Button
@@ -245,6 +245,7 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         \Radius = Radius
         \Text\Rotate = 270 ; 90;
         \Alpha = 255
+        \Interact = 1
         
         ; Set the default widget flag
         Flag|#PB_Text_ReadOnly
@@ -261,12 +262,19 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
           Flag|#PB_Text_Middle
         EndIf
         
+        If Bool(Flag&#PB_Text_WordWrap)
+          Flag&~#PB_Text_MultiLine
+        EndIf
+        
+        If Bool(Flag&#PB_Text_MultiLine)
+          Flag&~#PB_Text_WordWrap
+        EndIf
         
         If Not \Text\FontID
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = 1
+        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
         \bSize = \fSize
         
         If IsImage(Image)
@@ -298,7 +306,7 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
             \Text\y = \fSize
           EndIf
           
-             
+          
           \Text\String.s = Text.s
           \Text\Change = #True
           
@@ -319,43 +327,41 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
           ; Устанавливаем цвет по умолчанию первый
           ResetColor(*This)
         EndIf
-      EndIf
-    EndWith
+      EndWith
+    EndIf
     
     ProcedureReturn *This
   EndProcedure
   
-Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
-  Protected *Widget, *This.Widget=AllocateStructure(Widget)
-  
-  If *This
+  Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+    Protected *Widget, *This.Widget=AllocateStructure(Widget)
     
-    ;{ Генерируем идентификатор
-    If Widget =- 1 Or Widget > ListSize(List()) - 1
-      LastElement(List())
-      AddElement(List()) 
-      Widget = ListIndex(List())
-      *Widget = @List()
-    Else
-      SelectElement(List(), Widget)
-      *Widget = @List()
-      InsertElement(List())
+    If *This
       
-      PushListPosition(List())
-      While NextElement(List())
-        ; List()\Item = ListIndex(List())
-      Wend
-      PopListPosition(List())
+      ;{ Генерируем идентификатор
+      If Widget =- 1 Or Widget > ListSize(List()) - 1
+        LastElement(List())
+        AddElement(List()) 
+        Widget = ListIndex(List())
+        *Widget = @List()
+      Else
+        SelectElement(List(), Widget)
+        *Widget = @List()
+        InsertElement(List())
+        
+        PushListPosition(List())
+        While NextElement(List())
+          ; List()\Item = ListIndex(List())
+        Wend
+        PopListPosition(List())
+      EndIf
+      ;}
+      
+      List()\Widget = Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius, Image)
     EndIf
-    ;}
     
-    Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius, Image)
-    List()\Widget = *This
-    
-  EndIf
-  
-  ProcedureReturn *This
-EndProcedure
+    ProcedureReturn *This
+  EndProcedure
 EndModule
 
 ;-
@@ -464,7 +470,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     With *Button_0
       *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
-;       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
+      ;       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
       SetColor(*Button_0, #PB_Gadget_FrontColor, $D56F1A)
       SetFont(*Button_0, FontID(0))
     EndWith
@@ -472,7 +478,7 @@ CompilerIf #PB_Compiler_IsMainFile
     With *Button_1
       ResizeImage(0, 32,32)
       *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine,0,0)
-;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
+      ;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
       SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
       SetFont(*Button_1, FontID(0))
     EndWith
@@ -494,5 +500,5 @@ CompilerEndIf
 ; FirstLine = 427
 ; Folding = ------------
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---0--v-----
+; Folding = --n-f-------
 ; EnableXP

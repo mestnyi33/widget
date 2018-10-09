@@ -527,14 +527,27 @@ Module String
   Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
-        \Type = #PB_GadgetType_Button
+        \Type = #PB_GadgetType_String
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         \Radius = Radius
+        \Alpha = 255
         
         ; Set the default widget flag
-        Flag|#PB_Text_Middle
+        If Bool(Flag&#PB_Text_Top)
+          Flag&~#PB_Text_Middle
+        Else
+          Flag|#PB_Text_Middle
+        EndIf
+        
+        If Bool(Flag&#PB_Text_WordWrap)
+          Flag&~#PB_Text_MultiLine
+        EndIf
+        
+        If Bool(Flag&#PB_Text_MultiLine)
+          Flag&~#PB_Text_WordWrap
+        EndIf
         
         If Not \Text\FontID
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
@@ -592,8 +605,8 @@ Module String
           
           ResetColor(*This)
         EndIf
-      EndIf
-    EndWith
+      EndWith
+    EndIf
     
     ProcedureReturn *This
   EndProcedure
@@ -622,9 +635,7 @@ Module String
       EndIf
       ;}
       
-      Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
-      List()\Widget = *This
-      
+      List()\Widget = Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
     EndIf
     
     ProcedureReturn *This
@@ -747,8 +758,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 12
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = ------------------
 ; EnableXP

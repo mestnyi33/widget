@@ -334,11 +334,11 @@ Module Text
         EndIf
         
         If \Focus = *This 
-        ;  Debug "\Focus "+\Focus
-        If \Radius 
+          ;  Debug "\Focus "+\Focus
+          If \Radius 
             ; Сглаживание краев)))
-             RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,$D5A719)
-             RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$D5A719)
+            RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,$D5A719)
+            RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$D5A719)
           EndIf
           
           RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$D5A719)
@@ -493,20 +493,28 @@ Module Text
     If *This
       With *This
         \Type = #PB_GadgetType_Text
+        \Cursor = #PB_Cursor_Default
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
+        \Radius = Radius
+        \Alpha = 255
         
         ; Set the default widget flag
-        Flag|#PB_Text_ReadOnly
+        Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly|#PB_Widget_BorderLess
+        
         If Bool(Flag&#PB_Text_WordWrap)
           Flag&~#PB_Text_MultiLine
-        Else
-          Flag|#PB_Text_MultiLine
         EndIf
         
-        If Not \Text\FontID : \Text\FontID = GetGadgetFont(#PB_Default) : EndIf
+        If Bool(Flag&#PB_Text_MultiLine)
+          Flag&~#PB_Text_WordWrap
+        EndIf
         
-        \fSize = Bool(Flag&#PB_Text_Border)
+        If Not \Text\FontID
+          \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
+        EndIf
+        
+        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height, Canvas)
@@ -539,11 +547,11 @@ Module Text
           EndIf
           \Color[0]\Frame[1] = $BABABA
           
-                   
+          
           ResetColor(*This)
         EndIf
-      EndIf
-    EndWith
+      EndWith
+    EndIf
     
     ProcedureReturn *This
   EndProcedure
@@ -666,5 +674,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---t-P-----------
+; Folding = -----------------
 ; EnableXP

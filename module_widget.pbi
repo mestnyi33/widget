@@ -56,6 +56,7 @@ Module Widget
         Select \Type
           Case #PB_GadgetType_Text   : Text::Draw(*This, \Canvas\Gadget)
           Case #PB_GadgetType_Button : Button::Draw(*This, \Canvas\Gadget)
+          Case #PB_GadgetType_String : String::Draw(*This, \Canvas\Gadget)
           Case #PB_GadgetType_ScrollBar : ScrollBar::Draw(\Scroll)
         EndSelect
         
