@@ -29,9 +29,9 @@ DeclareModule Button
   
   Declare.i GetState(*This.Widget)
   Declare.i SetState(*This.Widget, Value.i)
-  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
   Declare.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
-  Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
   
 EndDeclareModule
 
@@ -220,11 +220,11 @@ Module Button
             
             Select EventType
               Case #PB_EventType_Focus
-                \Focus = #True
+                \Focus = *Widget
                 Result = #True
                 
               Case #PB_EventType_LostFocus
-                \Focus = #False
+                \Focus = 0
                 Result = #True
             EndSelect
           EndIf
@@ -235,7 +235,7 @@ Module Button
     ProcedureReturn Result
   EndProcedure
   
-Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
     If *This
       With *This
         \Type = #PB_GadgetType_Button
@@ -244,7 +244,7 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         \Canvas\Gadget = Canvas
         \Radius = Radius
         \Text\Rotate = 270 ; 90;
-        
+        \Alpha = 255
         
         ; Set the default widget flag
         Flag|#PB_Text_ReadOnly
@@ -269,6 +269,12 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
         \fSize = 1
         \bSize = \fSize
         
+        If IsImage(Image)
+          \Image\handle[1] = Image
+          \Image\handle = ImageID(Image)
+          \Image\width = ImageWidth(Image)
+          \Image\height = ImageHeight(Image)
+        EndIf
         
         If Resize(*This, X,Y,Width,Height, Canvas)
           \Default = Bool(Flag&#PB_Widget_Default)
@@ -319,7 +325,7 @@ Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Fl
     ProcedureReturn *This
   EndProcedure
   
-Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
   Protected *Widget, *This.Widget=AllocateStructure(Widget)
   
   If *This
@@ -343,7 +349,7 @@ Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0
     EndIf
     ;}
     
-    Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
+    Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius, Image)
     List()\Widget = *This
     
   EndIf
@@ -365,6 +371,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *Button_0.Widget = AllocateStructure(Widget)
   Global *Button_1.Widget = AllocateStructure(Widget)
   
+  UsePNGImageDecoder()
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+    End
+  EndIf
   
   Procedure CallBacks()
     Protected Result
@@ -460,7 +470,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndWith
     
     With *Button_1
-     *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine)
+      ResizeImage(0, 32,32)
+      *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine,0,0)
 ;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
       SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
       SetFont(*Button_1, FontID(0))
@@ -482,9 +493,6 @@ CompilerEndIf
 ; CursorPosition = 435
 ; FirstLine = 427
 ; Folding = ------------
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 456
-; FirstLine = 451
-; Folding = -----------
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = ---0--v-----
 ; EnableXP

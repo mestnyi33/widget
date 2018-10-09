@@ -121,8 +121,8 @@
     From.i  ; at point widget | item
     Focus.i
     LostFocus.i
-    Drag.b
     
+    Drag.b
     Resize.b ; 
     Buttons.i
     Toggle.b ; 
@@ -130,10 +130,27 @@
     Vertical.b
     Radius.i
     
-    *Default
+    ; tree
+    time.i
+    adress.i[2]
+    sublevel.i
+    box.Coordinate
+    *data
+    collapsed.b
+    childrens.i
+    Item.i
+    Attribute.l
+    change.b
+    flag.i
+    Image.IMAGE
     
     Scroll.SCROLL
-  
+    vScroll.SCROLL
+    hScroll.SCROLL
+    
+    *Default
+    Alpha.a[2]
+    
     DrawingMode.i
     
     List Items.WIDGET()
@@ -150,8 +167,6 @@ Module Structures
 EndModule 
 
 UseModule Structures
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 132
-; FirstLine = 110
-; Folding = ---
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = -z-
 ; EnableXP

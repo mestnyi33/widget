@@ -17,7 +17,7 @@ XIncludeFile "module_structures.pbi"
 XIncludeFile "module_scrollbar.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_button.pbi"
-; XIncludeFile "module_string.pbi"
+XIncludeFile "module_string.pbi"
 ; XIncludeFile "module_editor.pbi"
 ; XIncludeFile "module_tree.pbi"
 ; XIncludeFile "module_listicon.pbi"
@@ -44,6 +44,7 @@ DeclareModule Widget
   Declare.i Text(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
   Declare.i Button(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
   Declare.i ScrollBar(Widget.i, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0)
+  Declare.i String(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
   
 EndDeclareModule
 
@@ -272,6 +273,10 @@ Module Widget
       \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
       
       Select EventType()
+        Case #PB_EventType_LostFocus
+          \Focus = 0
+          Repaint = #True
+          
         Case #PB_EventType_Resize 
           ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
           Repaint = Resizes(*This, #PB_Ignore,#PB_Ignore,GadgetWidth(\Canvas\Gadget),GadgetHeight(\Canvas\Gadget))
@@ -329,6 +334,22 @@ Module Widget
     ProcedureReturn g
   EndProcedure
   
+  Procedure.i String(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget=AllocateStructure(Widget)
+    Protected g = CanvasGadget(Widget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Widget=-1 : Widget=g : EndIf
+    
+    If *This
+      With *This
+        String::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
+        SetGadgetData(Widget, *This)
+        Draws(*This)
+        BindGadgetEvent(Widget, @CallBacks())
+      EndIf
+    EndWith
+    
+    ProcedureReturn g
+  EndProcedure
+  
   Procedure.i Text(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
     Protected *This.Widget=AllocateStructure(Widget)
     Protected g = CanvasGadget(Widget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Widget=-1 : Widget=g : EndIf
@@ -376,8 +397,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, 605, 300, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    TextGadget       (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ScrollBarGadget  (2,  10, 42, 250,  20, 30, 100, 30)
+    StringGadget     (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+    ScrollBarGadget  (2,  10, 50, 250,  20, 30, 100, 30)
     SetGadgetState   (2,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     ScrollBarGadget  (3, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
@@ -386,8 +407,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget(15, 10, 190, 180,  60, "Button (Horisontal)")
     ButtonGadget(16, 200, 150,  60, 140 ,"Button (Vertical)")
     
-    Text       (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ScrollBar  (12,  300+10, 42, 250,  20, 30, 100, 30)
+    String     (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+    ScrollBar  (12,  300+10, 50, 250,  20, 30, 100, 30)
     SetState   (12,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     Text       (-1,  300+10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     ScrollBar  (13, 300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
@@ -410,6 +431,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 13
-; Folding = ----------
+; Folding = -----------
 ; EnableXP

@@ -13,11 +13,11 @@ DeclareModule Text
   UseModule Structures
   
   
-  
-  ;- DECLAREs
+  ;- - DECLAREs PROCEDUREs
   Declare.i Draw(*This.Widget, Canvas.i=-1)
   Declare.s GetText(*This.Widget)
   Declare.i SetText(*This.Widget, Text.s)
+  Declare.i GetFont(*This.Widget)
   Declare.i SetFont(*This.Widget, FontID.i)
   Declare.i GetColor(*This.Widget, ColorType.i, State.i=0)
   Declare.i SetColor(*This.Widget, ColorType.i, Color.i, State.i=1)
@@ -141,10 +141,10 @@ Module Text
           
           If \Resize
             If \Text\Vertical
-              Width = \Height[1]-\Text\X*2
+              Width = \Height[1]-\Text\X*2-(\Image\Width+\Image\Width/2)
               Height = \Width[1]-\Text\y*2
             Else
-              Width = \Width[1]-\Text\X*2
+              Width = \Width[1]-\Text\X*2-(\Image\Width+\Image\Width/2)
               Height = \Height[1]-\Text\y*2
             EndIf
             
@@ -187,10 +187,10 @@ Module Text
                   \Items()\Text\Editable = \Text\Editable 
                   \Items()\Text\Vertical = \Text\Vertical
                   If \Text\Rotate = 270
-                    \Items()\Text\x = \X[1]+\Text\Y+Text_Y+\Text\Height+\Text\X
+                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y+\Text\Height+\Text\X
                     \Items()\Text\y = \Y[1]+\Text\X+Text_X
                   Else
-                    \Items()\Text\x = \X[1]+\Text\Y+Text_Y
+                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y
                     \Items()\Text\y = \Y[1]+\Text\X+Text_X+StringWidth
                   EndIf
                   \Items()\Text\Width = StringWidth
@@ -218,12 +218,15 @@ Module Text
                   
                   AddElement(\Items())
                   \Items()\Text\Editable = \Text\Editable 
-                  \Items()\Text\x = \X[1]+\Text\X+Text_X
+                  \Items()\Text\x = (\Image\Width+\Image\Width/2)+\X[1]+\Text\X+Text_X
                   \Items()\Text\y = \Y[1]+\Text\Y+Text_Y
                   \Items()\Text\Width = StringWidth
                   \Items()\Text\Height = \Text\Height
                   \Items()\Text\String.s = String.s
                   \Items()\Text\Len = Len(String.s)
+                  
+                  \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
+                  \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
                   
                   ;DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
                   Text_Y+\Text\Height : If Text_Y > (Height-\Text\Height) : Break : EndIf
@@ -242,6 +245,14 @@ Module Text
         With *This\Items()
           PushListPosition(*This\Items())
           ForEach *This\Items()
+            
+            ; Draw image
+            If \Image\handle
+              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+              DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
+            EndIf
+            
+            ; Draw string
             If \Text\String.s
               If \Text\FontID 
                 DrawingFont(\Text\FontID) 
@@ -285,6 +296,7 @@ Module Text
                 DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
               EndIf
             EndIf
+            
           Next
           PopListPosition(*This\Items()) ; 
           
@@ -302,6 +314,12 @@ Module Text
           ClipOutput(\X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4) ; Bug in Mac os
         CompilerEndIf
         
+        ; Draw image
+        If \Image\handle
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
+        EndIf
+        
         ; Draw frames
         DrawingMode(#PB_2DDrawing_Outlined)
         
@@ -316,7 +334,8 @@ Module Text
         EndIf
         
         If \Focus = *This 
-          If \Radius 
+        ;  Debug "\Focus "+\Focus
+        If \Radius 
             ; Сглаживание краев)))
              RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,$D5A719)
              RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$D5A719)
@@ -350,6 +369,10 @@ Module Text
     EndIf
     
     ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i GetFont(*This.Widget)
+    ProcedureReturn *This\Text\FontID
   EndProcedure
   
   Procedure.i SetFont(*This.Widget, FontID.i)
@@ -474,7 +497,12 @@ Module Text
         \Canvas\Gadget = Canvas
         
         ; Set the default widget flag
-        Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly
+        Flag|#PB_Text_ReadOnly
+        If Bool(Flag&#PB_Text_WordWrap)
+          Flag&~#PB_Text_MultiLine
+        Else
+          Flag|#PB_Text_MultiLine
+        EndIf
         
         If Not \Text\FontID : \Text\FontID = GetGadgetFont(#PB_Default) : EndIf
         
@@ -494,9 +522,9 @@ Module Text
           
           If \Text\Vertical
             \Text\X = \fSize 
-            \Text\y = \fSize+4 ; 2,6,12
+            \Text\y = \fSize+2+Bool(Flag&#PB_Text_WordWrap)*4 ; 2,6,12
           Else
-            \Text\X = \fSize+4 ; 2,6,12 
+            \Text\X = \fSize+2+Bool(Flag&#PB_Text_WordWrap)*4 ; 2,6,12 
             \Text\y = \fSize
           EndIf
           
@@ -505,9 +533,9 @@ Module Text
           
           
           If \Text\Editable
-            \Color[1]\Back[1] = $FFFFFF 
+            \Color[0]\Back[1] = $FFFFFF 
           Else
-            \Color[1]\Back[1] = $F0F0F0  
+            \Color[0]\Back[1] = $F0F0F0  
           EndIf
           \Color[0]\Frame[1] = $BABABA
           
@@ -606,42 +634,37 @@ CompilerIf #PB_Compiler_IsMainFile
     SetWindowTitle(0, Str(WindowWidth(EventWindow(), #PB_Window_FrameCoordinate)-20)+" - Text on the canvas")
   EndProcedure
   
-  Define cr.s = #LF$
-  LoadFont(0, "Arial", 12)
-  Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
+  LoadFont(0, "Arial", 16)
+  Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
   ; Debug "len - "+Len(Text)
   
   If OpenWindow(0, 0, 0, 104, 690, "Text on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     ;EditorGadget(0, 10, 10, 380, 330, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s)
-    TextGadget(0, 10, 10, 380, 330, Text.s, #PB_Text_Center) 
+    TextGadget(0, 10, 10, 380, 330, Text.s) 
     ;ButtonGadget(0, 10, 10, 380, 330, Text.s) 
-    SetGadgetColor(0, #PB_Gadget_BackColor, $CCBFB4)
-    SetGadgetColor(0, #PB_Gadget_FrontColor, $D57A2E)
-    SetGadgetFont(0,FontID(0) )
     
     g=16
     CanvasGadget(g, 10, 350, 380, 330) 
     
-    *Text\Canvas\Gadget = g
-    *Text\Type = #PB_GadgetType_Text
-    *Text\Text\FontID = GetGadgetFont(#PB_Default)
-    
-    Widget(*Text,g, 0, 0, 380, 330, Text.s, #PB_Text_Center);|#PB_Text_Bottom );| #PB_Text_WordWrap);
+    Widget(*Text,g, 0, 0, 380, 330, Text.s);, #PB_Text_WordWrap);
     SetColor(*Text, #PB_Gadget_BackColor, $CCBFB4)
     SetColor(*Text, #PB_Gadget_FrontColor, $D56F1A)
     SetFont(*Text, FontID(0))
     
-    SetGadgetData(g, *Text)
-    BindGadgetEvent(g, @Canvas_CallBack())
-    ;Draw(*This)
+    ; Get example
+    SetGadgetFont(0, GetFont(*Text))
+    SetGadgetColor(0, #PB_Gadget_BackColor, GetColor(*Text, #PB_Gadget_BackColor))
+    SetGadgetColor(0, #PB_Gadget_FrontColor, GetColor(*Text, #PB_Gadget_FrontColor))
     
     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore)
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
+    
+    BindGadgetEvent(g, @Canvas_CallBack())
+    PostEvent(#PB_Event_Gadget, 0,g, #PB_EventType_Resize) ; 
+    
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 1
-; Folding = ---k-4----------
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = ---t-P-----------
 ; EnableXP
