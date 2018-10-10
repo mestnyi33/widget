@@ -4,7 +4,8 @@
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_text.pbi"
 CompilerEndIf
-
+XIncludeFile "module_button.pbi" 
+    
 ;-
 DeclareModule String
   
@@ -25,13 +26,7 @@ DeclareModule String
   ;- - DECLAREs PRACEDUREs
   Declare.i Draw(*This.Widget, Canvas.i=-1)
   
-  ;   Declare.s GetText(*This.Widget)
-  ;   Declare.i SetText(*This.Widget, Text.s)
-  ;   Declare.i SetFont(*This.Widget, FontID.i)
-  ;   Declare.i GetColor(*This.Widget, ColorType.i)
-  ;   Declare.i SetColor(*This.Widget, ColorType.i, Color.i)
-  ;   Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
-  Declare.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
+  Declare.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   
@@ -187,133 +182,148 @@ Module String
     EndWith           
   EndProcedure
   
-  Procedure.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
+  Procedure.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Static Text$, DoubleClickCaretPos =- 1
     Protected Repaint, StartDrawing, Update_Text_Selected
     
     Protected Result, Buttons, Widget.i
     Static *Last.Widget, *Widget.Widget, LastX, LastY, Last, Drag
     
-    If Canvas=-1 
-      Widget = *This
-      Canvas = EventGadget()
-    Else
-      Widget = Canvas
-    EndIf
-    If Canvas <> *This\Canvas\Gadget
-      ProcedureReturn
-    EndIf
-    
     If *This
       With *This
-        \Canvas\Mouse\X = MouseX
-        \Canvas\Mouse\Y = MouseY
-        Drag = \Canvas\Mouse\Buttons
         
-        If Not \Hide And Not Drag
-          If EventType <> #PB_EventType_MouseLeave And 
-             (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
-            
+        If Canvas=-1 
+          Widget = *This
+          Canvas = EventGadget()
+        Else
+          Widget = Canvas
+        EndIf
+        If Canvas <> \Canvas\Gadget Or
+           \Type <> #PB_GadgetType_String
+          ProcedureReturn
+        EndIf
+    
+        If CanvasModifiers
+          Select EventType
+            Case #PB_EventType_Input 
+              \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
+            Case #PB_EventType_KeyDown
+              \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
+              \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
+            Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
+              \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
+              \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
+              \Canvas\Mouse\At = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And 
+                                      \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
+            Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
+                 #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
+                 #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
+              \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+          EndSelect
+        EndIf
+        
+        If Not \Hide And Not \Canvas\Mouse\Buttons And \Interact 
+          If EventType <> #PB_EventType_MouseLeave And \Canvas\Mouse\At 
             If *Last <> *This  
-              
               If *Last
                 If *Last > *This
                   ProcedureReturn
                 Else
                   *Widget = *Last
-                  CallBack(*Widget, #PB_EventType_MouseLeave, 0, 0, 0)
+                  ; Если с одного виджета перешли на другой, 
+                  ; то посылаем событие выход для первого
+                  CallBack(*Widget, #PB_EventType_MouseLeave, Canvas)
                   *Last = *This
                 EndIf
               Else
                 *Last = *This
               EndIf
-              
-              \Buttons = 1
-              If Not \Checked
-                Buttons = \Buttons
-              EndIf
+              \Buttons = \Canvas\Mouse\At
               EventType = #PB_EventType_MouseEnter
-              \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
+              If Not \Checked : Buttons = \Buttons : EndIf
+              \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
               *Widget = *Last
               ; Debug "enter "+*Last\text\string+" "+EventType
             EndIf
-            
           ElseIf *Last = *This
             ; Debug "leave "+*Last\text\string+" "+EventType+" "+*Widget
-            If \Cursor[1] <> GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor[1])
+            If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
               \Cursor[1] = 0
             EndIf
             EventType = #PB_EventType_MouseLeave
             *Last = 0
           EndIf
-          
         ElseIf *Widget = *This
-          If EventType = #PB_EventType_LeftButtonUp And *Last = *Widget And (MouseX<>#PB_Ignore And MouseY<>#PB_Ignore) 
-            If Not (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
-              CallBack(*Widget, Canvas, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
+          If EventType = #PB_EventType_LeftButtonUp And *Last = *Widget And CanvasModifiers=-1
+            If Not \Canvas\Mouse\At
+              CallBack(*Widget, #PB_EventType_LeftButtonUp, Canvas, 1)
               EventType = #PB_EventType_MouseLeave
             Else
-              CallBack(*Widget, Canvas, #PB_EventType_LeftButtonUp, #PB_Ignore, #PB_Ignore)
+              CallBack(*Widget, #PB_EventType_LeftButtonUp, Canvas, 1)
               EventType = #PB_EventType_LeftClick
             EndIf
-            
             *Last = 0  
           EndIf
-          
         EndIf
       EndWith
-    EndIf
-    
-    If *Widget = *This
       
       ; Если канвас как родитель
-      If Widget <> Canvas
-        ; Будем сбрасывать все остальные виджети
-        With List()\Widget
-          If EventType = #PB_EventType_LeftButtonDown
+      If *Last And *Widget = *This And Widget <> Canvas
+        If EventType = #PB_EventType_Focus : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
+        ElseIf EventType = #PB_EventType_LeftButtonDown
+          With List()\Widget
             PushListPosition(List())
             ForEach List()
               If *Widget <> List()\Widget
-                \Focus = 0
-                \Items()\Text[2]\Len = 0
+                If List()\Widget\Focus = List()\Widget : List()\Widget\Focus = 0
+                  *Widget = List()\Widget
+                  CallBack(List()\Widget, #PB_EventType_LostFocus, Canvas, 0)
+                  *Widget = *Last
+                EndIf
               EndIf
             Next
             PopListPosition(List())
+          EndWith
+          
+          If *Widget\Focus <> *Widget 
+            *Widget\Focus = *Widget
+            CallBack(*Widget, #PB_EventType_Focus, Canvas, 0)
           EndIf
-        EndWith
+        EndIf
       EndIf
-      
+    EndIf
+    
+    
+    If *Last And *Widget = *This And ListSize(*Widget\items())
       With *Widget\items()
         If Not \Hide And Not \Disable
           
           Select EventType
             Case #PB_EventType_LostFocus : Repaint = #True
-              *Widget\Focus =- 1
               \Text[2]\Len = 0 ; Убыраем выделение
               \Text\CaretPos[1] =- 1 ; Прячем коректор
               
             Case #PB_EventType_Focus : Repaint = #True
-              *Widget\Focus = *Widget
               \Text\CaretPos[1] = \Text\CaretPos
               
             Case #PB_EventType_Input
-              If \Text\Editable
+              If *Widget\Text\Editable
                 Protected Input, Input_2
                 
                 Select #True
-                  Case \Text\Lower : Input = Asc(LCase(Chr(\Canvas\Input))) : Input_2 = Input
-                  Case \Text\Upper : Input = Asc(UCase(Chr(\Canvas\Input))) : Input_2 = Input
-                  Case \Text\Pass  : Input = 9679 : Input_2 = \Canvas\Input ; "●"
-                  Case \Text\Numeric                                        ; : Debug Chr(\Canvas\Input)
+                  Case *Widget\Text\Lower : Input = Asc(LCase(Chr(*Widget\Canvas\Input))) : Input_2 = Input
+                  Case *Widget\Text\Upper : Input = Asc(UCase(Chr(*Widget\Canvas\Input))) : Input_2 = Input
+                  Case *Widget\Text\Pass  : Input = 9679 : Input_2 = *Widget\Canvas\Input ; "●"
+                  Case *Widget\Text\Numeric                                        ; : Debug Chr(\Canvas\Input)
                     Static Dot
                     
-                    Select \Canvas\Input 
-                      Case '.','0' To '9' : Input = \Canvas\Input : Input_2 = Input
+                    Select *Widget\Canvas\Input 
+                      Case '.','0' To '9' : Input = *Widget\Canvas\Input : Input_2 = Input
                       Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.' : Input_2 = Input
                       Default
-                        Input_2 = \Canvas\Input
+                        Input_2 = *Widget\Canvas\Input
                     EndSelect
                     
                     If Not Dot And Input = '.'
@@ -325,7 +335,7 @@ Module String
                     EndIf
                     
                   Default
-                    Input = \Canvas\Input : Input_2 = Input
+                    Input = *Widget\Canvas\Input : Input_2 = Input
                 EndSelect
                 
                 If Input_2
@@ -339,6 +349,7 @@ Module String
                   \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(Input_2), \Text\CaretPos)
                   
                   If Input
+                    *Widget\Text\Change = 1
                     \Text\Len = Len(\Text\String.s)
                     PostEvent(#PB_Event_Gadget, EventWindow(), EventGadget(), #PB_EventType_Change)
                   EndIf
@@ -374,6 +385,7 @@ Module String
                         \Text\CaretPos[1] = \Text\CaretPos 
                       EndIf
                     EndIf
+                    
                     Repaint = #True 
                   EndIf
                   
@@ -423,6 +435,7 @@ Module String
                     
                     \Text\CaretPos[1] = \Text\CaretPos
                     \Text\Len = Len(\Text\String.s)
+                    *Widget\Text\Change = 1
                     Repaint = #True
                   EndIf
                   
@@ -483,14 +496,7 @@ Module String
               SelectionText(*Widget) 
               Repaint = #True
               
-            Case #PB_EventType_LeftButtonUp
-              *Widget\Canvas\Mouse\Buttons = 0
-              
             Case #PB_EventType_LeftButtonDown
-              
-              *Widget\Focus = *Widget
-              *Widget\Canvas\Mouse\Buttons = #PB_Canvas_LeftButton
-              
               \Text\CaretPos = Caret(*Widget)
               
               If \Text\CaretPos = DoubleClickCaretPos
@@ -524,6 +530,51 @@ Module String
     ProcedureReturn Repaint
   EndProcedure
   
+  Procedure Cut(*This.Widget)
+    Protected String.s
+    
+    With *This\Items()
+      If ListSize(*This\Items()) 
+        
+      EndIf
+    EndWith
+  EndProcedure
+  
+  Procedure.s Copy(*This.Widget)
+    Protected String.s
+    
+    With *This
+      PushListPosition(\Items())
+      ForEach \Items()
+        If \Items()\Text[2]\Len 
+          String.s+\Items()\Text[2]\String.s+#LF$
+        EndIf
+      Next
+      PopListPosition(\Items())
+      
+      String.s = Trim(String.s, #LF$)
+      
+      ; Для совместимости с виндовсовским 
+      If String.s And Not \CaretPos
+        String.s+#LF$+#CR$
+      EndIf
+    EndWith
+    
+    ProcedureReturn String.s
+  EndProcedure
+  
+  Procedure.b Back(*This.Widget)
+    Protected Repaint.b, String.s
+    
+    With *This\Items()
+      If ListSize(*This\Items()) 
+        
+      EndIf
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
@@ -533,6 +584,7 @@ Module String
         \Canvas\Gadget = Canvas
         \Radius = Radius
         \Alpha = 255
+        \Interact = 1
         
         ; Set the default widget flag
         If Bool(Flag&#PB_Text_Top)
@@ -636,6 +688,7 @@ Module String
       ;}
       
       List()\Widget = Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
+;       Draw(*This, Canvas)
     EndIf
     
     ProcedureReturn *This
@@ -683,20 +736,20 @@ CompilerIf #PB_Compiler_IsMainFile
         Result = 1
       Default
         
-        Result | CallBack(*S_0, -1, EventType(), MouseX, MouseY) 
-        Result | CallBack(*S_1, -1, EventType(), MouseX, MouseY) 
-        Result | CallBack(*S_2, -1, EventType(), MouseX, MouseY) 
-        Result | CallBack(*S_3, -1, EventType(), MouseX, MouseY) 
-        Result | CallBack(*S_4, -1, EventType(), MouseX, MouseY) 
-        Result | CallBack(*S_5, -1, EventType(), MouseX, MouseY) 
-        Result | CallBack(*S_6, -1, EventType(), MouseX, MouseY) 
-        Result | CallBack(*S_7, -1, EventType(), MouseX, MouseY) 
+        Result | CallBack(*S_0, EventType()) 
+        Result | CallBack(*S_1, EventType()) 
+        Result | CallBack(*S_2, EventType()) 
+        Result | CallBack(*S_3, EventType()) 
+        Result | CallBack(*S_4, EventType()) 
+        Result | CallBack(*S_5, EventType()) 
+        Result | CallBack(*S_6, EventType()) 
+        Result | CallBack(*S_7, EventType()) 
         
     EndSelect
     
     If Result
       If StartDrawing(CanvasOutput(Canvas))
-        Box(0,0,Width,Height, $F0F0F0)
+        Box(0,0,Width,Height, $DDDEC9)
         Draw(*S_0, Canvas)
         Draw(*S_1, Canvas)
         Draw(*S_2, Canvas)
@@ -728,18 +781,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     StringGadget(7, 8,  200, 290, 20, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh", #PB_String_Numeric|#PB_Text_Center)
     
+    ; Demo draw string on the canvas
     CanvasGadget(10,  305, 0, 310, 235, #PB_Canvas_Keyboard)
-    SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Default)
-    
-    ;     Widget(*S_0, 10, 8,  10, 290, 20, "Normal StringGadget...")
-    ;     Widget(*S_1, 10, 8,  35, 290, 20, "1234567", #PB_Text_Numeric|#PB_Text_Center)
-    ;     Widget(*S_2, 10, 8,  60, 290, 20, "Read-only StringGadget", #PB_Text_ReadOnly|#PB_Text_Right)
-    ;     Widget(*S_3, 10, 8,  85, 290, 20, "LOWERCASE...", #PB_Text_LowerCase)
-    ;     Widget(*S_4, 10, 8, 110, 290, 20, "uppercase...", #PB_Text_UpperCase)
-    ;     Widget(*S_5, 10, 8, 140, 290, 20, "Borderless StringGadget", #PB_String_BorderLess)
-    ;     Widget(*S_6, 10, 8, 170, 290, 20, "Password", #PB_Text_Password)
-    ;     
-    ;     Widget(*S_7, 10, 8,  200, 290, 20, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
+    SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
+    BindGadgetEvent(10, @CallBacks())
     
     *S_0 = Create(10, -1, 8,  10, 290, 20, "Normal StringGadget...")
     *S_1 = Create(10, -1, 8,  35, 290, 20, "1234567", #PB_Text_Numeric|#PB_Text_Center)
@@ -748,16 +793,14 @@ CompilerIf #PB_Compiler_IsMainFile
     *S_4 = Create(10, -1, 8, 110, 290, 20, "uppercase...", #PB_Text_UpperCase)
     *S_5 = Create(10, -1, 8, 140, 290, 20, "Borderless StringGadget", #PB_Widget_BorderLess)
     *S_6 = Create(10, -1, 8, 170, 290, 20, "Password", #PB_Text_Password)
-    
+    Button::Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
     *S_7 = Create(10, -1, 8,  200, 290, 20, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
     
     BindEvent(#PB_Event_Widget, @Events())
-    
-    BindGadgetEvent(10, @CallBacks())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------------
+; Folding = -4n++v-+f-6---r0----
 ; EnableXP

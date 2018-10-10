@@ -12,10 +12,10 @@
     #PB_EventType_ScrollChange
   EndEnumeration
   
-  EnumerationBinary 4
+  EnumerationBinary WidgetFlags
 ;     #PB_Text_Center
 ;     #PB_Text_Right
-    #PB_Text_Bottom
+    #PB_Text_Bottom = 4
     #PB_Text_Middle 
     
     #PB_Text_Vertical
@@ -40,12 +40,17 @@
     #PB_Widget_Flat
     #PB_Widget_Raised
     #PB_Widget_Single
+    
+    #PB_Widget_Invisible
   EndEnumeration
   
 ;   #PB_Text_Left = ~#PB_Text_Center
 ;   #PB_Text_Top = ~#PB_Text_Middle
 ;   
- ; Debug #PB_Text_Left
+  If WidgetFlags > 2147483647
+    Debug "Исчерпан лимит в x32"+WidgetFlags
+  EndIf
+  
   #PB_Gadget_FrameColor = 10
   
 EndDeclareModule 
@@ -55,8 +60,6 @@ Module Constants
 EndModule 
 
 UseModule Constants
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 12
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

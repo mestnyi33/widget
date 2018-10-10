@@ -136,10 +136,9 @@ Module Text
           If \Text\Change
             \Text\Height = TextHeight("A")
             \Text\Width = TextWidth(\Text\String.s)
-            \Text\Change = 0
           EndIf
           
-          If \Resize
+          If (\Text\Change Or \Resize)
             If \Text\Vertical
               Width = \Height[1]-\Text\X*2-(\Image\Width+\Image\Width/2)
               Height = \Width[1]-\Text\y*2
@@ -149,14 +148,14 @@ Module Text
             EndIf
             
             If \Text\MultiLine
-              \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, -1)
-              \Text\CountString = CountString(\Text\String.s[1], #LF$)
+              \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, -1)
+              \Text\CountString = CountString(\Text\String.s[2], #LF$)
             ElseIf \Text\WordWrap
-              \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, 1)
-              \Text\CountString = CountString(\Text\String.s[1], #LF$)
+              \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, 1)
+              \Text\CountString = CountString(\Text\String.s[2], #LF$)
             Else
               ;  \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, 0)
-              \Text\String.s[1] = \Text\String.s
+              \Text\String.s[2] = \Text\String.s
               \Text\CountString = 1
             EndIf
             
@@ -174,7 +173,7 @@ Module Text
                 For IT = \Text\CountString To 1 Step - 1
                   If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
                   
-                  String = StringField(\Text\String.s[1], IT, #LF$)
+                  String = StringField(\Text\String.s[2], IT, #LF$)
                   StringWidth = TextWidth(RTrim(String))
                   
                   If \Text\Align\Right
@@ -207,7 +206,7 @@ Module Text
                 For IT = 1 To \Text\CountString
                   If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
                   
-                  String = StringField(\Text\String.s[1], IT, #LF$)
+                  String = StringField(\Text\String.s[2], IT, #LF$)
                   StringWidth = TextWidth(RTrim(String))
                   
                   If \Text\Align\Right
@@ -233,8 +232,14 @@ Module Text
                 Next
               EndIf
             EndIf
-            
-            \Resize = #False
+          EndIf
+          
+          If \Text\Change
+            \Text\Change = 0
+          EndIf
+          
+          If \Resize
+            \Resize = 0
           EndIf
         EndIf
         
@@ -280,7 +285,7 @@ Module Text
                 If \Text[2]\String.s
                   DrawingMode(#PB_2DDrawing_Default)
                   If \Text[0]\String.s = \Text[1]\String.s+\Text[2]\String.s
-                    Box(\Text[2]\X, \Text[0]\Y,*This\width[2], \Text[0]\Height, $DE9541)
+                    Box(\Text[2]\X, \Text[0]\Y,*This\width[2]-\Text[2]\X, \Text[0]\Height, $DE9541)
                   Else
                     Box(\Text[2]\X, \Text[0]\Y, \Text[2]\Width, \Text[0]\Height+1, $DE9541)
                   EndIf
@@ -348,7 +353,6 @@ Module Text
             RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
           EndIf
         EndIf
-        
       EndWith
     EndIf
     
@@ -674,5 +678,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------------
+; Folding = --PW-f--o--------
 ; EnableXP

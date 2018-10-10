@@ -2,7 +2,7 @@
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
-  XIncludeFile "module_Text.pbi"
+  XIncludeFile "module_text.pbi"
 CompilerEndIf
 
 ;-
@@ -445,6 +445,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget(4, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
     
     CanvasGadget(10,  222, 0, 222, 200, #PB_Canvas_Keyboard)
+    BindGadgetEvent(10, @CallBacks())
     
     *B_0 = Create(10, -1, 10, 10, 200, 20, "Standard Button", 0,8)
     *B_1 = Create(10, -1, 10, 40, 200, 20, "Left Button", #PB_Text_Left)
@@ -453,8 +454,6 @@ CompilerIf #PB_Compiler_IsMainFile
     *B_4 = Create(10, -1, 10,170, 200, 20, "Toggle Button", #PB_Widget_Toggle)
     
     BindEvent(#PB_Event_Widget, @Events())
-    
-    BindGadgetEvent(10, @CallBacks())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
   EndIf
   
@@ -483,7 +482,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetFont(*Button_1, FontID(0))
     EndWith
     
-    ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
+     ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
     
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
     PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
@@ -500,5 +499,5 @@ CompilerEndIf
 ; FirstLine = 427
 ; Folding = ------------
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --n-f-------
+; Folding = --n---------
 ; EnableXP

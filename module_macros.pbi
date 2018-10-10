@@ -1,4 +1,11 @@
 ﻿DeclareModule Macros
+  Macro StartDrawingCanvas(_canvas_)
+    Bool(IsGadget(_canvas_) And StartDrawing(CanvasOutput(_canvas_)))
+  EndMacro
+  
+  Macro StopDrawingCanvas()
+    Bool(ListSize(List()) And IsGadget(List()\Widget\Canvas\Gadget) And Not StopDrawing())
+  EndMacro
   
   Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
     BackColor(_color_1_&$FFFFFF|_alpha_<<24)
@@ -119,5 +126,5 @@ EndModule
 
 UseModule Macros
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = PA9
+; Folding = PAw
 ; EnableXP

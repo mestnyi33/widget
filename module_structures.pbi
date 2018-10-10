@@ -11,6 +11,7 @@
   Structure MOUSE
     X.i
     Y.i
+    At.i
     Buttons.i
   EndStructure
   
@@ -131,6 +132,10 @@
     Radius.i
     Buttons.i
     
+    ; edit
+    Pos.i[2] ; 0 = Pos ; 1 = PosFixed
+    CaretPos.i[2] ; 0 = Pos ; 1 = PosFixed
+    
     ; tree
     time.i
     adress.i[2]
@@ -160,7 +165,7 @@
   EndStructure
   
   Global NewList List.Widget()
-
+  Global Use_List_Canvas_Gadget
 EndDeclareModule 
 
 Module Structures 
