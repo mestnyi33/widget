@@ -216,6 +216,8 @@ Module Text
                   EndIf
                   
                   AddElement(\Items())
+;                   \Items()\Text\Caret = \Text\Caret 
+;                   \Items()\Text\Caret[1] = \Text\Caret[1] 
                   \Items()\Text\Editable = \Text\Editable 
                   \Items()\Text\x = (\Image\Width+\Image\Width/2)+\X[1]+\Text\X+Text_X
                   \Items()\Text\y = \Y[1]+\Text\Y+Text_Y
@@ -262,12 +264,12 @@ Module Text
               If \Text\FontID 
                 DrawingFont(\Text\FontID) 
               EndIf
-              If \Text[1]\Change And \Text[1]\String.s
+              If \Text[1]\Change 
                 \Text[1]\Width = TextWidth(\Text[1]\String.s) 
                 \Text[2]\X = \Text[0]\X+\Text[1]\Width
                 \Text[1]\Change = #False
               EndIf
-              If \Text[2]\Change And \Text[2]\String.s
+              If \Text[2]\Change
                 \Text[2]\Width = TextWidth(\Text[2]\String.s)
                 \Text[3]\X = \Text[2]\X+\Text[2]\Width
                 \Text[2]\Change = #False
@@ -284,11 +286,11 @@ Module Text
                 EndIf
                 If \Text[2]\String.s
                   DrawingMode(#PB_2DDrawing_Default)
-                  If \Text[0]\String.s = \Text[1]\String.s+\Text[2]\String.s
-                    Box(\Text[2]\X, \Text[0]\Y,*This\width[2]-\Text[2]\X, \Text[0]\Height, $DE9541)
-                  Else
+;                   If \Text[0]\String.s = \Text[1]\String.s+\Text[2]\String.s
+;                     Box(\Text[2]\X, \Text[0]\Y,*This\width[2]-\Text[2]\X, \Text[0]\Height, $DE9541)
+;                   Else
                     Box(\Text[2]\X, \Text[0]\Y, \Text[2]\Width, \Text[0]\Height+1, $DE9541)
-                  EndIf
+;                   EndIf
                   DrawingMode(#PB_2DDrawing_Transparent)
                   DrawRotatedText(\Text[2]\X, \Text[0]\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFF)
                 EndIf
@@ -297,6 +299,10 @@ Module Text
                   DrawRotatedText(\Text[3]\X, \Text[0]\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                 EndIf
               Else
+                If \Text[2]\Len
+                  DrawingMode(#PB_2DDrawing_Default)
+                  Box(\Text[2]\X, \Text[0]\Y+1, \Text[2]\Width, \Text[0]\Height-1, $FADBB3);$DE9541)
+                EndIf
                 DrawingMode(#PB_2DDrawing_Transparent)
                 DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
               EndIf
@@ -305,10 +311,12 @@ Module Text
           Next
           PopListPosition(*This\Items()) ; 
           
-          If *This\Focus = *This And \Text\Editable And 
-             \Text[0]\CaretPos = \Text[0]\CaretPos[1] 
-            DrawingMode(#PB_2DDrawing_XOr)             
-            Line(\Text[0]\X + \Text[1]\Width, \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
+          If *This\Focus = *This 
+            ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+            If *This\Text\Editable And \Text\Caret = \Text\Caret[1] 
+              DrawingMode(#PB_2DDrawing_XOr)             
+              Line(\Text[0]\X + \Text[1]\Width, \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
+            EndIf
           EndIf
         EndWith  
       EndIf
@@ -678,5 +686,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --PW-f--o--------
+; Folding = --P4--7-R--------
 ; EnableXP

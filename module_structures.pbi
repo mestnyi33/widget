@@ -71,7 +71,7 @@
     Vertical.b
     Rotate.f
     
-    CaretPos.i[2] ; 0 = Pos ; 1 = PosFixed
+    Caret.i[2] ; 0 = Pos ; 1 = PosFixed
     
     Mode.i
   EndStructure
@@ -134,7 +134,7 @@
     
     ; edit
     Pos.i[2] ; 0 = Pos ; 1 = PosFixed
-    CaretPos.i[2] ; 0 = Pos ; 1 = PosFixed
+    Caret.i[2] ; 0 = Pos ; 1 = PosFixed
     
     ; tree
     time.i
@@ -174,5 +174,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -z-
+; Folding = -4-
 ; EnableXP
