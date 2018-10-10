@@ -272,7 +272,8 @@ Module Widget
       \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
       \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
       \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-      
+      \Canvas\Mouse\At = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
+            
       Select EventType()
         Case #PB_EventType_LostFocus
           \Focus = 0
@@ -283,13 +284,9 @@ Module Widget
           Repaint = Resizes(*This, #PB_Ignore,#PB_Ignore,GadgetWidth(\Canvas\Gadget),GadgetHeight(\Canvas\Gadget))
       EndSelect
       
-      If ScrollBar::CallBack(\Scroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
-        Repaint = #True
-      EndIf
-      
-      If Button::CallBack(*This, \Canvas\Gadget, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
-        Repaint = #True
-      EndIf
+      Repaint | ScrollBar::CallBack(\Scroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+      Repaint | Button::CallBack(*This, \Canvas\Gadget, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+      Repaint | String::CallBack(*This, EventType(), -1, 0) 
       
       If Repaint
         Draws(*This)
@@ -432,5 +429,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------
+; Folding = ----------
 ; EnableXP
