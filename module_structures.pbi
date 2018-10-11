@@ -11,7 +11,7 @@
   Structure MOUSE
     X.i
     Y.i
-    At.i
+    From.i ; at point widget
     Buttons.i
   EndStructure
   

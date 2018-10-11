@@ -156,7 +156,7 @@ Module String
     EndWith           
   EndProcedure
   
-  Procedure.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Procedure.i Events(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Static Text$, DoubleClickCaret =- 1
     Protected Repaint, StartDrawing, Update_Text_Selected
     
@@ -171,8 +171,7 @@ Module String
         Else
           Widget = Canvas
         EndIf
-        If Canvas <> \Canvas\Gadget Or
-           \Type <> #PB_GadgetType_String
+        If Canvas <> \Canvas\Gadget Or \Type <> #PB_GadgetType_String
           ProcedureReturn
         EndIf
     
@@ -186,7 +185,7 @@ Module String
             Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
               \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
               \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
-              \Canvas\Mouse\At = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And 
+              \Canvas\Mouse\From = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And 
                                       \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
             Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
                  #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
@@ -195,8 +194,8 @@ Module String
           EndSelect
         EndIf
         
-        If Not \Hide And Not \Canvas\Mouse\Buttons And \Interact 
-          If EventType <> #PB_EventType_MouseLeave And \Canvas\Mouse\At 
+        If Not \Hide And Not \Disable And Not \Canvas\Mouse\Buttons And \Interact 
+          If EventType <> #PB_EventType_MouseLeave And \Canvas\Mouse\From 
             If *Last <> *This  
               If *Last
                 If *Last > *This
@@ -211,7 +210,7 @@ Module String
               Else
                 *Last = *This
               EndIf
-              \Buttons = \Canvas\Mouse\At
+              \Buttons = \Canvas\Mouse\From
               EventType = #PB_EventType_MouseEnter
               If Not \Checked : Buttons = \Buttons : EndIf
               \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
@@ -230,7 +229,7 @@ Module String
           EndIf
         ElseIf *Widget = *This
           If EventType = #PB_EventType_LeftButtonUp And *Last = *Widget And CanvasModifiers=-1
-            If Not \Canvas\Mouse\At
+            If Not \Canvas\Mouse\From
               CallBack(*Widget, #PB_EventType_LeftButtonUp, Canvas, 1)
               EventType = #PB_EventType_MouseLeave
             Else
@@ -269,10 +268,25 @@ Module String
       EndIf
     EndIf
     
+; ;     If (*Widget = *This) Or (*Last = *This)
+; ;       Select EventType
+; ;       Case #PB_EventType_Focus          : Debug "Focus"          +" "+ *This\Text\String.s
+; ;       Case #PB_EventType_LostFocus      : Debug "LostFocus"      +" "+ *This\Text\String.s
+; ;       Case #PB_EventType_MouseEnter     : Debug "MouseEnter"     +" "+ *This\Text\String.s
+; ;       Case #PB_EventType_MouseLeave     : Debug "MouseLeave"     +" "+ *This\Text\String.s
+; ; ;         *Last = *Widget
+; ; ;         *Widget = 0
+; ;       Case #PB_EventType_LeftButtonDown : Debug "LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+; ;       Case #PB_EventType_LeftButtonUp   : Debug "LeftButtonUp"   +" "+ *This\Text\String.s
+; ;       Case #PB_EventType_LeftClick      : Debug "LeftClick"      +" "+ *This\Text\String.s
+; ;     EndSelect
+; ;   EndIf
+  
+    
     If *Focus = *This And ListSize(*This\items())
       With *This\items()
-        If Not \Disable
-          Select EventType
+        
+        Select EventType
             Case #PB_EventType_LostFocus : Repaint = #True : \Text\Caret[1] =- 1 ; Прячем коректор
             Case #PB_EventType_Focus : Repaint = #True : \Text\Caret[1] = \Text\Caret ; Показываем коректор
             Case #PB_EventType_LeftDoubleClick : DoubleClickCaret = \Text\Caret
@@ -477,7 +491,6 @@ Module String
               
           EndSelect
           
-        EndIf
       EndWith
       
       If Repaint
@@ -489,7 +502,54 @@ Module String
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  Procedure.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+    ; Canvas events bug fix
+    Protected Result.b
+    Static MouseLeave.b, LeftClick.b
+    Protected EventGadget.i = EventGadget()
+    
+    ; Это из за ошибки в мак ос
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
+        If EventType = #PB_EventType_MouseLeave 
+          EventType = #PB_EventType_MouseMove
+          MouseLeave = 1
+        EndIf
+      EndIf
+      
+      If EventType = #PB_EventType_LeftButtonUp
+        If MouseLeave
+          Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+          EventType = #PB_EventType_MouseLeave
+          MouseLeave = 0
+        Else
+          Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+          EventType = #PB_EventType_LeftClick
+          LeftClick = 1
+        EndIf
+      EndIf
+      
+      ; Родное убираем оставляем искуственное
+      If EventType = #PB_EventType_LeftClick
+        If LeftClick 
+          LeftClick = 0 
+        Else
+          ProcedureReturn 0
+        EndIf
+      EndIf
+      
+      If EventType = #PB_EventType_LeftButtonDown
+        If GetActiveGadget()<>EventGadget
+          SetActiveGadget(EventGadget)
+        EndIf
+      EndIf
+    CompilerEndIf
+    
+    Result | Events(*This, EventType, Canvas, CanvasModifiers)
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
         \Type = #PB_GadgetType_String
@@ -624,6 +684,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *S_6.Widget = AllocateStructure(Widget)
   Global *S_7.Widget = AllocateStructure(Widget)
   
+  Global *Button_0.Widget = AllocateStructure(Widget)
+  Global *Button_1.Widget = AllocateStructure(Widget)
+  
+  UsePNGImageDecoder()
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+    End
+  EndIf
+  
   Procedure CallBacks()
     Protected Result
     Protected Canvas = EventGadget()
@@ -660,6 +728,10 @@ CompilerIf #PB_Compiler_IsMainFile
         Result | CallBack(*S_6, EventType()) 
         Result | CallBack(*S_7, EventType()) 
         
+        ; Second window
+        Result | CallBack(*Button_0, EventType()) 
+        Result | CallBack(*Button_1, EventType()) 
+        
     EndSelect
     
     If Result
@@ -673,6 +745,10 @@ CompilerIf #PB_Compiler_IsMainFile
         Draw(*S_5, Canvas)
         Draw(*S_6, Canvas)
         Draw(*S_7, Canvas)
+        
+        Draw(*Button_0)
+        Draw(*Button_1)
+        
         StopDrawing()
       EndIf
     EndIf
@@ -713,9 +789,46 @@ CompilerIf #PB_Compiler_IsMainFile
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
+;     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  EndIf
+  
+  
+  
+  Procedure ResizeCallBack()
+    ResizeGadget(11, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
+  EndProcedure
+  
+  If OpenWindow(11, 0, 0, 325+80, 160, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    g=11
+    CanvasGadget(g,  10,10,305,140, #PB_Canvas_Keyboard)
+    SetGadgetAttribute(g, #PB_Canvas_Cursor, #PB_Cursor_Cross)
+    
+    With *Button_0
+      *Button_0 = Button::Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
+      ;       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
+      SetColor(*Button_0, #PB_Gadget_FrontColor, $D56F1A)
+      SetFont(*Button_0, FontID(0))
+    EndWith
+    
+    With *Button_1
+      ResizeImage(0, 32,32)
+      *Button_1 = Button::Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine,0,0)
+      ;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
+      SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
+      SetFont(*Button_1, FontID(0))
+    EndWith
+    
+     ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
+    
+    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
+    PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
+    
+    BindGadgetEvent(g, @CallBacks())
+    PostEvent(#PB_Event_Gadget, 11,11, #PB_EventType_Resize)
+    
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --n3Pkv+D-6-------
+; Folding = --v3f2-+g-9--v------
 ; EnableXP
