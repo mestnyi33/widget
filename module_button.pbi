@@ -78,23 +78,6 @@ Module Button
         ProcedureReturn
       EndIf
       
-      If CanvasModifiers
-        Select EventType
-          Case #PB_EventType_Input 
-            \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
-          Case #PB_EventType_KeyDown
-            \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
-            \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
-          Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
-            \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
-            \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
-          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
-               #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
-               #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
-            \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-        EndSelect
-      EndIf
-      
       ; Get at point widget
       \Canvas\Mouse\From = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And 
                                 \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
@@ -136,8 +119,8 @@ Module Button
               EventType = #PB_EventType_MouseLeave
               ;                 *Widget = 0
               ;                 *Last = *This
-              *Last = *Widget
-              *Widget = 0
+              *Last = 0
+              ;*Widget = 0
               
             Else
               ; *Widget=0
@@ -284,6 +267,25 @@ Module Button
     Static MouseLeave.b, LeftClick.b
     Protected EventGadget.i = EventGadget()
     
+    If Canvas =- 1
+      With *This
+        Select EventType
+          Case #PB_EventType_Input 
+            \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
+          Case #PB_EventType_KeyDown
+            \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
+            \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
+          Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
+            \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
+            \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
+          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
+               #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
+               #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
+            \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+        EndSelect
+      EndWith
+    EndIf
+      
     ; Это из за ошибки в мак ос
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
@@ -767,5 +769,5 @@ CompilerEndIf
 ; FirstLine = 427
 ; Folding = ------------
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------+----------
+; Folding = ---------v---------
 ; EnableXP
