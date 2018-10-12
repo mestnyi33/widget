@@ -65,7 +65,7 @@ Module Button
     
     Protected Buttons, Widget.i
     Static *Focus.Widget, *Last.Widget, *Widget.Widget, LastX, LastY, Last, Drag
-    
+     
     With *This
       If Canvas=-1 
         Widget = *This
@@ -83,54 +83,82 @@ Module Button
                                 \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
       
       If Not \Hide And Not \Disable And Not \Canvas\Mouse\Buttons And \Interact 
-        If EventType <> #PB_EventType_MouseLeave And \Canvas\Mouse\From 
-          If *Last <> *This  
-            If *Last
-              If *Last > *This
-                ProcedureReturn
-              Else
-                *Widget = *Last
-                ; Если с одного виджета перешли на другой, 
-                ; то посылаем событие выход для первого
-                Events(*Widget, #PB_EventType_MouseLeave, Canvas, 0)
-                *Last = *This
-              EndIf
-            Else
-              *Last = *This
-            EndIf
-            \Buttons = \Canvas\Mouse\From
-            EventType = #PB_EventType_MouseEnter
-            If Not \Checked : Buttons = \Buttons : EndIf
-            \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-            SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
-            *Widget = *Last
-            ; Debug "enter "+*Last\text\string+" "+EventType
-          EndIf
-        ElseIf *Last = *This
-          ; Debug "leave "+*Last\text\string+" "+EventType+" "+*Widget
-          If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-            SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
-            \Cursor[1] = 0
-          EndIf
-          
-          If EventType = #PB_EventType_LeftButtonUp 
-            If CanvasModifiers=-1
-              Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
-              EventType = #PB_EventType_MouseLeave
-              ;                 *Widget = 0
-              ;                 *Last = *This
-              *Last = 0
-              ;*Widget = 0
-              
-            Else
-              ; *Widget=0
+        If EventType = #PB_EventType_LeftClick
+          If Not *This\Canvas\Mouse\From
+            If *Last = *This 
               *Last = 0
             EndIf
             
-          Else
-            EventType = #PB_EventType_MouseLeave
-            *Last = *Widget
-            *Widget = 0
+;             PushListPosition(List())
+;             ForEach List()
+;               If *This <> List()\Widget And List()\Widget <> List()\Widget\Focus
+;                 If Bool(List()\Widget\Canvas\Mouse\X>=List()\Widget\x And 
+;                         List()\Widget\Canvas\Mouse\X<List()\Widget\x+List()\Widget\Width And 
+;                         List()\Widget\Canvas\Mouse\Y>=List()\Widget\y And
+;                         List()\Widget\Canvas\Mouse\Y<List()\Widget\y+List()\Widget\Height)
+;                   Debug 77777
+; ;                   *This\Canvas\Mouse\From = 1
+;                    *Widget = List()\Widget
+;                    Events(List()\Widget, #PB_EventType_MouseEnter, Canvas, 0)
+;                   Break
+;                 EndIf
+;               EndIf
+;             Next
+;             PopListPosition(List())
+            
+            ProcedureReturn 0
+          EndIf
+        Else
+          If EventType <> #PB_EventType_MouseLeave And EventType <> #PB_EventType_MouseEnter
+            If \Canvas\Mouse\From
+              If EventType = #PB_EventType_MouseMove
+                If *Last <> *This  
+                  If *Last
+                    If *Last > *This
+                      ProcedureReturn
+                    Else
+                      *Widget = *Last
+                      ; Если с одного виджета перешли на другой, 
+                      ; то посылаем событие выход для первого
+                      Events(*Widget, #PB_EventType_MouseLeave, Canvas, 0)
+                      *Last = *This
+                    EndIf
+                  Else
+                    *Last = *This
+                  EndIf
+                  
+                  *Widget = *Last
+                  \Buttons = \Canvas\Mouse\From
+                  If Not \Checked : Buttons = \Buttons : EndIf
+                  \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                  SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
+                  EventType = #PB_EventType_MouseEnter
+                  
+                  ; Debug "enter "+*Last\text\string+" "+EventType
+                EndIf
+              EndIf
+            ElseIf *Last = *This 
+              If *Widget And *Last\Cursor[1] <> GetGadgetAttribute(*Last\Canvas\Gadget, #PB_Canvas_Cursor)
+;                 Debug "leave "+*Last\text\string+" "+EventType+" "+*Widget
+                SetGadgetAttribute(*Last\Canvas\Gadget, #PB_Canvas_Cursor, *Last\Cursor[1])
+                *Last\Cursor[1] = 0
+              EndIf
+              
+              If EventType = #PB_EventType_LeftButtonUp 
+                If CanvasModifiers=-1
+                  Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
+                  EventType = #PB_EventType_MouseLeave
+                  ;                 *Widget = 0
+                  ;*Last = 0
+                  *Last = *This
+                  *Widget = 0
+                EndIf
+              Else
+                EventType = #PB_EventType_MouseLeave
+                *Last = *Widget
+                *Widget = 0
+              EndIf
+            EndIf
           EndIf
         EndIf
       EndIf
@@ -162,22 +190,7 @@ Module Button
       EndIf
     EndIf
     
-    If (*Last = *This) Or (*Widget = *This) 
-      
-      ;       Select EventType
-      ;         Case #PB_EventType_Focus          : Debug ""+Bool((*Widget = *This))+" Focus"          +" "+ *This\Text\String.s
-      ;         Case #PB_EventType_LostFocus      : Debug ""+Bool((*Widget = *This))+" LostFocus"      +" "+ *This\Text\String.s
-      ;         Case #PB_EventType_MouseEnter     : Debug ""+Bool((*Widget = *This))+" MouseEnter"     +" "+ *This\Text\String.s
-      ;         Case #PB_EventType_MouseLeave     : Debug ""+Bool((*Widget = *This))+" MouseLeave"     +" "+ *This\Text\String.s
-      ;           ;         *Last = *Widget
-      ;           ;         *Widget = 0
-      ;         Case #PB_EventType_LeftButtonDown : Debug ""+Bool((*Widget = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-      ;         Case #PB_EventType_LeftButtonUp   : Debug ""+Bool((*Widget = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
-      ;         Case #PB_EventType_LeftClick      : Debug ""+Bool((*Widget = *This))+" LeftClick"      +" "+ *This\Text\String.s
-      ;       EndSelect
-      ;     EndIf
-      ;     
-      ;     If (*Widget = *This) 
+    If (*Last = *This) ;Or (*Widget = *This)) ; And *Last <> *Widget
       Select EventType
         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
@@ -191,7 +204,7 @@ Module Button
       EndSelect
     EndIf
     
-    If (*Last = *This) ;And ListSize(*This\items())
+    If (*Last = *This) Or (*Widget = *This) ;And ListSize(*This\items())
       With *This       ;\items()
         
         Select EventType
@@ -665,7 +678,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select EventType()
       Case #PB_EventType_Resize
         Resize(*Button_0, Width-70, #PB_Ignore, #PB_Ignore, Height-20)
-        Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
+        Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-50, #PB_Ignore)
         
         Result = 1
       Default
@@ -686,14 +699,9 @@ CompilerIf #PB_Compiler_IsMainFile
       If StartDrawing(CanvasOutput(Canvas))
         Box(0,0,Width,Height, $F0F0F0)
         
-        Draw(*B_0)
-        Draw(*B_1)
-        Draw(*B_2)
-        Draw(*B_3)
-        Draw(*B_4)
-        
-        Draw(*Button_0)
-        Draw(*Button_1)
+        ForEach List()
+          Draw(List()\Widget)
+        Next
         
         StopDrawing()
       EndIf
@@ -769,5 +777,5 @@ CompilerEndIf
 ; FirstLine = 427
 ; Folding = ------------
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------v---------
+; Folding = ---f----------------
 ; EnableXP

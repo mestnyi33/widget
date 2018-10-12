@@ -223,7 +223,7 @@ Module Tree
   Procedure Draw(*This.Widget)
     Protected x_content,y_point,x_point, iwidth, iheight, w=18, level,iY, start,i, back_color=$FFFFFF, point_color=$7E7E7E, box_color=$7E7E7E
     Protected hide_color=$FEFFFF, box_size = 9,box_1_size = 12, alpha = 255, item_alpha = 128, height =20
-    Protected line_size=8, box_1_pos.b = 0, checkbox_color = $FFFFFF, checkbox_backcolor, box_type.b = -1
+    Protected line_size=8, box_1_pos.b = 0, checkbox_color = $FFFFFF, checkbox_backcolor, box_type.b =- 1
     Protected Drawing.b, text_color
     
     If Bool(*This And StartDrawing(CanvasOutput(*This\canvas\gadget))) : If *This\Text\FontID : DrawingFont(*This\Text\FontID) : EndIf
