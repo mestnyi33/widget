@@ -144,16 +144,10 @@ Module Button
                 *Last\Cursor[1] = 0
               EndIf
               
-              If EventType = #PB_EventType_LeftButtonUp 
-                If CanvasModifiers=-1
+              If CanvasModifiers=-1
+                If EventType = #PB_EventType_LeftButtonUp 
                   Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
-                  EventType = #PB_EventType_MouseLeave
-                  ;                 *Widget = 0
-                  ;*Last = 0
-                  *Last = *This
-                  *Widget = 0
                 EndIf
-              Else
                 EventType = #PB_EventType_MouseLeave
                 *Last = *Widget
                 *Widget = 0
@@ -174,9 +168,9 @@ Module Button
             ForEach List()
               If *This <> List()\Widget
                 If List()\Widget\Focus = List()\Widget : List()\Widget\Focus = 0
-                  *Widget = List()\Widget
+                  *Last = List()\Widget
                   Events(List()\Widget, #PB_EventType_LostFocus, Canvas, 0)
-                  *Widget = *Last
+                  *Last = *Widget 
                 EndIf
               EndIf
             Next
