@@ -24,6 +24,11 @@ DeclareModule Button
   Macro SetColor(_adress_, _color_type_, _color_, _state_=1) : Text::SetColor(_adress_, _color_type_, _color_, _state_) : EndMacro
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
   
+  Macro From(_this_, _buttons_=0)
+    Bool(_this_\Canvas\Mouse\X>=_this_\x[_buttons_] And _this_\Canvas\Mouse\X<_this_\x[_buttons_]+_this_\Width[_buttons_] And 
+         _this_\Canvas\Mouse\Y>=_this_\y[_buttons_] And _this_\Canvas\Mouse\Y<_this_\y[_buttons_]+_this_\Height[_buttons_])
+  EndMacro
+  
   ;- - DECLAREs PRACEDUREs
   Declare.i Draw(*This.Widget, Canvas.i=-1)
   
@@ -65,7 +70,8 @@ Module Button
     
     Protected Buttons, Widget.i
     Static *Focus.Widget, *Last.Widget, *Widget.Widget, LastX, LastY, Last, Drag
-     
+    
+    
     With *This
       If Canvas=-1 
         Widget = *This
@@ -79,8 +85,7 @@ Module Button
       EndIf
       
       ; Get at point widget
-      \Canvas\Mouse\From = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And 
-                                \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
+      \Canvas\Mouse\From = From(*This)
       
       If Not \Hide And Not \Disable And Not \Canvas\Mouse\Buttons And \Interact 
         If EventType = #PB_EventType_LeftClick
@@ -112,22 +117,34 @@ Module Button
           If EventType <> #PB_EventType_MouseLeave And EventType <> #PB_EventType_MouseEnter
             If \Canvas\Mouse\From
               If EventType = #PB_EventType_MouseMove
-                If *Last <> *This  
+                
+                If *Last <> *This And CanvasModifiers=-1  
                   If *Last
-                    If *Last > *This
-                      ProcedureReturn
+                    ;                     PushListPosition(List())
+                    ;                     ChangeCurrentElement(List(), *This\Handle)
+                    ;                     Debug List()\Widget\Text\String+" "+ListIndex(List())
+                    ;                     ChangeCurrentElement(List(), *Last\Handle)
+                    ;                     Debug "   "+List()\Widget\Text\String+" "+ListIndex(List()) ; List()\Widget\Text\String
+                    If (*Last\Index > *This\Index)
+                      ProcedureReturn 
                     Else
+                      ; Если с нижнего виджета перешли на верхный, 
+                      ; то посылаем событие выход для нижнего
                       *Widget = *Last
-                      ; Если с одного виджета перешли на другой, 
-                      ; то посылаем событие выход для первого
+                      If *Widget And \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                        SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
+                      EndIf
                       Events(*Widget, #PB_EventType_MouseLeave, Canvas, 0)
                       *Last = *This
                     EndIf
+                    ;                     PopListPosition(List())
+                    
                   Else
                     *Last = *This
                   EndIf
                   
                   *Widget = *Last
+                  
                   \Buttons = \Canvas\Mouse\From
                   If Not \Checked : Buttons = \Buttons : EndIf
                   \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
@@ -137,21 +154,21 @@ Module Button
                   ; Debug "enter "+*Last\text\string+" "+EventType
                 EndIf
               EndIf
-            ElseIf *Last = *This 
-              If *Widget And *Last\Cursor[1] <> GetGadgetAttribute(*Last\Canvas\Gadget, #PB_Canvas_Cursor)
-;                 Debug "leave "+*Last\text\string+" "+EventType+" "+*Widget
-                SetGadgetAttribute(*Last\Canvas\Gadget, #PB_Canvas_Cursor, *Last\Cursor[1])
-                *Last\Cursor[1] = 0
+            ElseIf *Last = *This And CanvasModifiers=-1
+              If *Widget And \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
+                Debug "from "+From(*Widget)
+               ; \Cursor[1] = 0
+              EndIf
+                 
+            
+              If EventType = #PB_EventType_LeftButtonUp 
+                Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
               EndIf
               
-              If CanvasModifiers=-1
-                If EventType = #PB_EventType_LeftButtonUp 
-                  Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
-                EndIf
-                EventType = #PB_EventType_MouseLeave
-                *Last = *Widget
-                *Widget = 0
-              EndIf
+              EventType = #PB_EventType_MouseLeave
+              *Last = *Widget
+              *Widget = 0
             EndIf
           EndIf
         EndIf
@@ -628,12 +645,14 @@ Module Button
         
         PushListPosition(List())
         While NextElement(List())
-          ; List()\Item = ListIndex(List())
+          List()\Widget\Index = ListIndex(List())
         Wend
         PopListPosition(List())
       EndIf
       ;}
       
+      *This\Index = Widget
+      *This\Handle = *Widget
       List()\Widget = Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius, Image)
     EndIf
     
@@ -771,5 +790,5 @@ CompilerEndIf
 ; FirstLine = 427
 ; Folding = ------------
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---f----------------
+; Folding = ----90--------------
 ; EnableXP

@@ -105,7 +105,9 @@
   EndStructure
   
   Structure WIDGET Extends COORDINATE
-    Handle.i
+    Index.i  ; Index of new list element
+    Handle.i ; Adress of new list element
+    
     *Widget.WIDGET
     Canvas.CANVAS
     Color.COLOR[4]
