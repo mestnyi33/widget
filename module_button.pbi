@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-﻿
-=======
-﻿CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
@@ -807,6 +804,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
->>>>>>> parent of 3dfd18b... >>
+
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = ---------------------
 ; EnableXP
