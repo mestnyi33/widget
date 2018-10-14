@@ -456,7 +456,9 @@ Module Text
       If Canvas=-1 
         Canvas = EventGadget()
       EndIf
-      If Canvas <> \Canvas\Gadget
+      If Canvas = \Canvas\Gadget
+        \Canvas\Window = EventWindow()
+      Else
         ProcedureReturn
       EndIf
       
