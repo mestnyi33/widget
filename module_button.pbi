@@ -92,13 +92,19 @@ Module Button
          ; Case #PB_EventType_Focus : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
           Case #PB_EventType_LeftButtonUp 
             If *Last <> *This
-                ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
+             ;   ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
               EndIf
             Case #PB_EventType_LeftClick 
               If *Last = *This 
                 *Last = *Widget
+                
+;                 If *Widget = 0
+;                   *Widget = *Last
+;                   ProcedureReturn 0 
+;                EndIf
               EndIf
-             If Not *This\Canvas\Mouse\From
+               
+                If Not *This\Canvas\Mouse\From
              ProcedureReturn 0
             EndIf
         EndSelect
@@ -109,7 +115,7 @@ Module Button
             Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonUp
               If Not \Canvas\Mouse\Buttons 
                 If \Canvas\Mouse\From
-                  If EventType = #PB_EventType_MouseMove And *Last <> *This 
+                  If *Last <> *This 
                     If *Last
                       If (*Last\Index > *This\Index)
                         ProcedureReturn 0
@@ -138,6 +144,15 @@ Module Button
                 EndIf
               EndIf
               
+              If EventType = #PB_EventType_LeftButtonUp 
+                Debug " Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+                If *Widget = 0
+                  *Widget = *Last
+                  ProcedureReturn 0 
+                EndIf
+              EndIf
+                  
+                  
             Case #PB_EventType_LeftButtonDown
               If *Last = *This
                 PushListPosition(List())
@@ -180,7 +195,7 @@ Module Button
                     Debug 7777
                     
                     *Last = List()\Widget
-                    *Widget = List()\Widget
+                    ;*Widget = List()\Widget
                     Events(*Last, #PB_EventType_MouseEnter, Canvas, 0)
                     ProcedureReturn
                   EndIf
@@ -219,26 +234,13 @@ Module Button
     
     
     
-    If (*Last = *This) ;Or (*Widget = *This) ;And ListSize(*This\items())
+    If (*Last = *This) ;And ListSize(*This\items())
       With *This       ;\items()
         Select EventType
           Case #PB_EventType_MouseEnter    
             \Buttons = \Canvas\Mouse\From
             If Not \Checked : Buttons = \Buttons : EndIf
-            If Not \Cursor[1] 
-              \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-            EndIf
-            SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
-            
-          Case #PB_EventType_MouseLeave     
-;             If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-;               SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
-;               \Cursor[1] = 0
-;             EndIf
-;             
-        EndSelect
-        
-        Select EventType
+           
           Case #PB_EventType_LeftButtonDown : Drag = 1 : LastX = \Canvas\Mouse\X : LastY = \Canvas\Mouse\Y
             If \Buttons
               Buttons = \Buttons
@@ -1053,5 +1055,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------4---------------
+; Folding = ----v3-4----4---------------
 ; EnableXP
