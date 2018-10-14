@@ -163,10 +163,10 @@ Module Button
           EndSelect
         EndIf
           
+        If (*Last = *This) 
           Select EventType
             Case #PB_EventType_MouseLeave
-              If (*Last = *This) And CanvasModifiers 
-                Debug 6666
+              If CanvasModifiers 
                 ; Если перешли на другой виджет
                 PushListPosition(List())
                 ForEach List()
@@ -186,9 +186,21 @@ Module Button
                   EndIf
                 Next
                 PopListPosition(List())
-              EndIf 
+              EndIf
+              
+              If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
+                \Cursor[1] = 0
+              EndIf
+              
+            Case #PB_EventType_MouseEnter    
+              If Not \Cursor[1] 
+                \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+              EndIf
+              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
               
           EndSelect
+        EndIf 
         
       EndWith
     EndIf
@@ -219,11 +231,11 @@ Module Button
             SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
             
           Case #PB_EventType_MouseLeave     
-            If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
-              \Cursor[1] = 0
-            EndIf
-            
+;             If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+;               SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
+;               \Cursor[1] = 0
+;             EndIf
+;             
         EndSelect
         
         Select EventType
@@ -1041,5 +1053,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------0---------------
+; Folding = ------------4---------------
 ; EnableXP
