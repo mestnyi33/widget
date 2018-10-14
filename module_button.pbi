@@ -120,11 +120,6 @@ Module Button
                 
                 If *Last <> *This And CanvasModifiers=-1  
                   If *Last
-                    ;                     PushListPosition(List())
-                    ;                     ChangeCurrentElement(List(), *This\Handle)
-                    ;                     Debug List()\Widget\Text\String+" "+ListIndex(List())
-                    ;                     ChangeCurrentElement(List(), *Last\Handle)
-                    ;                     Debug "   "+List()\Widget\Text\String+" "+ListIndex(List()) ; List()\Widget\Text\String
                     If (*Last\Index > *This\Index)
                       ProcedureReturn 
                     Else
@@ -137,31 +132,15 @@ Module Button
                       Events(*Widget, #PB_EventType_MouseLeave, Canvas, 0)
                       *Last = *This
                     EndIf
-                    ;                     PopListPosition(List())
-                    
                   Else
                     *Last = *This
                   EndIf
                   
-                  *Widget = *Last
-                  
-                  \Buttons = \Canvas\Mouse\From
-                  If Not \Checked : Buttons = \Buttons : EndIf
-                  \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-                  SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
                   EventType = #PB_EventType_MouseEnter
-                  
-                  ; Debug "enter "+*Last\text\string+" "+EventType
+                  *Widget = *Last
                 EndIf
               EndIf
             ElseIf *Last = *This And CanvasModifiers=-1
-              If *Widget And \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
-                Debug "from "+From(*Widget)
-               ; \Cursor[1] = 0
-              EndIf
-                 
-            
               If EventType = #PB_EventType_LeftButtonUp 
                 Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
               EndIf
@@ -173,9 +152,32 @@ Module Button
           EndIf
         EndIf
       EndIf
+      
+      
+      
     EndWith
     
     If *This
+      If EventType = #PB_EventType_MouseLeave And CanvasModifiers=-1
+        PushListPosition(List())
+        ForEach List()
+          If *This <> List()\Widget And List()\Widget <> List()\Widget\Focus
+            If From(List()\Widget) And *Last <> List()\Widget And CanvasModifiers=-1  
+                If *Last
+                  Events(*Last, #PB_EventType_MouseLeave, Canvas, 0)
+                EndIf
+                *Widget = *Last
+                *Last = List()\Widget
+                Events(List()\Widget, #PB_EventType_MouseEnter, Canvas, 0)
+                *Widget = List()\Widget
+                ProcedureReturn 0
+             EndIf
+          EndIf
+        Next
+        PopListPosition(List())
+      EndIf
+      
+             
       ; Если канвас как родитель
       If *Last = *This And Widget <> Canvas
         If EventType = #PB_EventType_Focus And CanvasModifiers : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
@@ -201,23 +203,39 @@ Module Button
       EndIf
     EndIf
     
-    If (*Last = *This) ;Or (*Widget = *This)) ; And *Last <> *Widget
+    If (*Last = *This)
       Select EventType
         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s
         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
-          ;         *Last = *Widget
-          ;         *Widget = 0
         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
       EndSelect
     EndIf
     
-    If (*Last = *This) Or (*Widget = *This) ;And ListSize(*This\items())
+    
+    
+    If (*Last = *This) ;Or (*Widget = *This) ;And ListSize(*This\items())
       With *This       ;\items()
-        
+        Select EventType
+          Case #PB_EventType_MouseEnter    
+            \Buttons = \Canvas\Mouse\From
+            If Not \Checked : Buttons = \Buttons : EndIf
+            If Not \Cursor[1] 
+              \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+            EndIf
+            SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
+            
+          Case #PB_EventType_MouseLeave     
+            If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
+              \Cursor[1] = 0
+            EndIf
+            
+        EndSelect
+    
         Select EventType
           Case #PB_EventType_LeftButtonDown : Drag = 1 : LastX = \Canvas\Mouse\X : LastY = \Canvas\Mouse\Y
             If \Buttons
@@ -769,7 +787,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ResizeImage(0, 32,32)
       *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine,0,0)
       ;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
-      SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
+      \Cursor = #PB_Cursor_Hand
+        SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
       SetFont(*Button_1, FontID(0))
     EndWith
     
@@ -790,5 +809,5 @@ CompilerEndIf
 ; FirstLine = 427
 ; Folding = ------------
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----90--------------
+; Folding = ---v-f--7------------
 ; EnableXP
