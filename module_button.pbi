@@ -93,24 +93,6 @@ Module Button
             If *Last = *This 
               *Last = 0
             EndIf
-            
-;             PushListPosition(List())
-;             ForEach List()
-;               If *This <> List()\Widget And List()\Widget <> List()\Widget\Focus
-;                 If Bool(List()\Widget\Canvas\Mouse\X>=List()\Widget\x And 
-;                         List()\Widget\Canvas\Mouse\X<List()\Widget\x+List()\Widget\Width And 
-;                         List()\Widget\Canvas\Mouse\Y>=List()\Widget\y And
-;                         List()\Widget\Canvas\Mouse\Y<List()\Widget\y+List()\Widget\Height)
-;                   Debug 77777
-; ;                   *This\Canvas\Mouse\From = 1
-;                    *Widget = List()\Widget
-;                    Events(List()\Widget, #PB_EventType_MouseEnter, Canvas, 0)
-;                   Break
-;                 EndIf
-;               EndIf
-;             Next
-;             PopListPosition(List())
-            
             ProcedureReturn 0
           EndIf
         Else
