@@ -78,6 +78,7 @@ Module Button
           Widget = *This
           Canvas = EventGadget()
         Else
+<<<<<<< HEAD
           Widget = Canvas
         EndIf
         If Canvas <> \Canvas\Gadget Or
@@ -114,14 +115,53 @@ Module Button
                         EndIf
                         Events(*Widget, #PB_EventType_MouseLeave, Canvas, 0)
                         *Last = *This
+=======
+          If EventType <> #PB_EventType_MouseLeave And EventType <> #PB_EventType_MouseEnter
+            If \Canvas\Mouse\From
+              If EventType = #PB_EventType_MouseMove
+                
+                If *Last <> *This And CanvasModifiers=-1  
+                  If *Last
+                    ;                     PushListPosition(List())
+                    ;                     ChangeCurrentElement(List(), *This\Handle)
+                    ;                     Debug List()\Widget\Text\String+" "+ListIndex(List())
+                    ;                     ChangeCurrentElement(List(), *Last\Handle)
+                    ;                     Debug "   "+List()\Widget\Text\String+" "+ListIndex(List()) ; List()\Widget\Text\String
+                    If (*Last\Index > *This\Index)
+                      ProcedureReturn 
+                    Else
+                      ; Если с нижнего виджета перешли на верхный, 
+                      ; то посылаем событие выход для нижнего
+                      *Widget = *Last
+                      If *Widget And \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                        SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
+>>>>>>> parent of 3f40767... Теперь событие виджетов работают как и ожидалось
                       EndIf
                     Else
                       *Last = *This
                     EndIf
+<<<<<<< HEAD
                     
                     EventType = #PB_EventType_MouseEnter
                     *Widget = *Last
                   EndIf
+=======
+                    ;                     PopListPosition(List())
+                    
+                  Else
+                    *Last = *This
+                  EndIf
+                  
+                  *Widget = *Last
+                  
+                  \Buttons = \Canvas\Mouse\From
+                  If Not \Checked : Buttons = \Buttons : EndIf
+                  \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                  SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
+                  EventType = #PB_EventType_MouseEnter
+                  
+                  ; Debug "enter "+*Last\text\string+" "+EventType
+>>>>>>> parent of 3f40767... Теперь событие виджетов работают как и ожидалось
                 EndIf
               ElseIf *Last = *This And CanvasModifiers=-1
                 If EventType = #PB_EventType_LeftButtonUp 
@@ -132,6 +172,7 @@ Module Button
                 *Last = *Widget
                 *Widget = 0
               EndIf
+<<<<<<< HEAD
             EndIf
           EndIf
         EndIf
@@ -159,6 +200,41 @@ Module Button
                   List()\Widget\Focus = 0 
                   *Last = List()\Widget 
                   Events(List()\Widget, #PB_EventType_LostFocus, Canvas, 0) 
+=======
+            ElseIf *Last = *This And CanvasModifiers=-1
+              If *Widget And \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
+                Debug "from "+From(*Widget)
+               ; \Cursor[1] = 0
+              EndIf
+                 
+            
+              If EventType = #PB_EventType_LeftButtonUp 
+                Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
+              EndIf
+              
+              EventType = #PB_EventType_MouseLeave
+              *Last = *Widget
+              *Widget = 0
+            EndIf
+          EndIf
+        EndIf
+      EndIf
+    EndWith
+    
+    If *This
+      ; Если канвас как родитель
+      If *Last = *This And Widget <> Canvas
+        If EventType = #PB_EventType_Focus And CanvasModifiers : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
+        ElseIf EventType = #PB_EventType_LeftButtonDown
+          With List()\Widget
+            PushListPosition(List())
+            ForEach List()
+              If *This <> List()\Widget
+                If List()\Widget\Focus = List()\Widget : List()\Widget\Focus = 0
+                  *Last = List()\Widget
+                  Events(List()\Widget, #PB_EventType_LostFocus, Canvas, 0)
+>>>>>>> parent of 3f40767... Теперь событие виджетов работают как и ожидалось
                   *Last = *Widget 
                 EndIf
               Next
@@ -172,41 +248,30 @@ Module Button
       EndWith
       
     EndIf
+<<<<<<< HEAD
   
   
     If (*Last = *This)
+=======
+    
+    If (*Last = *This) ;Or (*Widget = *This)) ; And *Last <> *Widget
+>>>>>>> parent of 3f40767... Теперь событие виджетов работают как и ожидалось
       Select EventType
         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s
         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
+          ;         *Last = *Widget
+          ;         *Widget = 0
         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
       EndSelect
     EndIf
     
-    
-    
-    If (*Last = *This) ;Or (*Widget = *This) ;And ListSize(*This\items())
+    If (*Last = *This) Or (*Widget = *This) ;And ListSize(*This\items())
       With *This       ;\items()
-        Select EventType
-          Case #PB_EventType_MouseEnter    
-            \Buttons = \Canvas\Mouse\From
-            If Not \Checked : Buttons = \Buttons : EndIf
-            If Not \Cursor[1] 
-              \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-            EndIf
-            SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
-            
-          Case #PB_EventType_MouseLeave     
-            If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
-              \Cursor[1] = 0
-            EndIf
-            
-        EndSelect
-    
+        
         Select EventType
           Case #PB_EventType_LeftButtonDown : Drag = 1 : LastX = \Canvas\Mouse\X : LastY = \Canvas\Mouse\Y
             If \Buttons
@@ -758,8 +823,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ResizeImage(0, 32,32)
       *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine,0,0)
       ;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
-      \Cursor = #PB_Cursor_Hand
-        SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
+      SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
       SetFont(*Button_1, FontID(0))
     EndWith
     
@@ -780,5 +844,12 @@ CompilerEndIf
 ; FirstLine = 427
 ; Folding = ------------
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
+<<<<<<< HEAD
 ; Folding = --f7---X-------------
+=======
+; Folding = ----90--------------
+>>>>>>> parent of 3f40767... Теперь событие виджетов работают как и ожидалось
+; EnableXP
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = -----------------------
 ; EnableXP
