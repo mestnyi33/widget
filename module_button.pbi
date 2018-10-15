@@ -198,19 +198,17 @@ Module Button
       EndWith
     EndIf
     
-    If (*Last = *This)
-      Select EventType
-        Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
-        Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
-        Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-        Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
-        Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-        Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
-        Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
-      EndSelect
-    EndIf
-    
-    
+;     If (*Last = *This)
+;       Select EventType
+;         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
+;         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
+;         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+;         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
+;         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+;         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
+;         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
+;       EndSelect
+;     EndIf
     
     If (*Last = *This) ;And ListSize(*This\items())
       With *This       ;\items()
@@ -463,13 +461,16 @@ EndModule
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
   UseModule Button
-  Global *B_0, *B_1, *B_2, *B_3, *B_4
+  Global *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
   
   Global *Button_0.Widget = AllocateStructure(Widget)
   Global *Button_1.Widget = AllocateStructure(Widget)
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+    End
+  EndIf
+  If Not LoadImage(10, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png")
     End
   EndIf
   
@@ -506,7 +507,9 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         ForEach List()
-          Result | CallBack(List()\Widget, EventType()) 
+          ; If List()\Widget\Canvas\Gadget = GetActiveGadget()
+            Result | CallBack(List()\Widget, EventType()) 
+          ; EndIf
         Next
         
     EndSelect
@@ -531,21 +534,23 @@ CompilerIf #PB_Compiler_IsMainFile
   
   LoadFont(0, "Arial", 18)
   
-  If OpenWindow(0, 0, 0, 222+222, 200, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenWindow(0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ButtonGadget(0, 10, 10, 200, 20, "Standard Button")
     ButtonGadget(1, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
     ButtonGadget(2, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
     ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine|#PB_Button_Default)
-    ButtonGadget(4, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
+    ButtonGadget(4, 10,170, 200, 60, "Multiline Button  (longer text gets automatically multiline)", #PB_Button_MultiLine|#PB_Button_Default)
+    ButtonGadget(5, 10,170+70, 200, 20, "Toggle Button", #PB_Button_Toggle)
     
-    CanvasGadget(10,  222, 0, 222, 200, #PB_Canvas_Keyboard)
+    CanvasGadget(10,  222, 0, 222, 205+70, #PB_Canvas_Keyboard)
     BindGadgetEvent(10, @CallBacks())
     
     *B_0 = Create(10, -1, 10, 10, 200, 20, "Standard Button", 0,8)
     *B_1 = Create(10, -1, 10, 40, 200, 20, "Left Button", #PB_Text_Left)
     *B_2 = Create(10, -1, 10, 70, 200, 20, "Right Button", #PB_Text_Right)
-    *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
-    *B_4 = Create(10, -1, 10,170, 200, 20, "Toggle Button", #PB_Widget_Toggle)
+    *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_WordWrap|#PB_Widget_Default, 4)
+    *B_4 = Create(10, -1, 10,170, 200, 60, "Multiline Button  (longer text gets automatically multiline)", #PB_Text_MultiLine, 4)
+    *B_5 = Create(10, -1, 10,170+70, 200, 25, "Toggle Button", #PB_Widget_Toggle,0, 10)
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
