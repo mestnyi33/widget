@@ -58,7 +58,7 @@ Module Button
     
     Protected Buttons, Widget.i
     Static *Focus.Widget, *Last.Widget, *Widget.Widget, LastX, LastY, Last, Drag
-        
+    
     ; widget_events_type
     If *This
       With *This
@@ -198,17 +198,17 @@ Module Button
       EndWith
     EndIf
     
-;     If (*Last = *This)
-;       Select EventType
-;         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
-;         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
-;         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-;         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
-;         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-;         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
-;         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
-;       EndSelect
-;     EndIf
+    ;     If (*Last = *This)
+    ;       Select EventType
+    ;         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+    ;         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+    ;         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
+    ;       EndSelect
+    ;     EndIf
     
     If (*Last = *This) ;And ListSize(*This\items())
       With *This       ;\items()
@@ -286,8 +286,13 @@ Module Button
   Procedure.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     ; Canvas events bug fix
     Protected Result.b
-    Static MouseLeave.b, LeftClick.b
+    Static MouseLeave.b
     Protected EventGadget.i = EventGadget()
+    
+    Protected Width = GadgetWidth(EventGadget)
+    Protected Height = GadgetHeight(EventGadget)
+    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
     
     If Canvas =- 1
       With *This
@@ -308,9 +313,16 @@ Module Button
       EndWith
     EndIf
     
-    ; Это из за ошибки в мак ос
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    
+    ; Это из за ошибки в мак ос и линукс
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
       Select EventType 
+        Case #PB_EventType_MouseEnter 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 0
+          EndIf
+          
         Case #PB_EventType_MouseLeave 
           If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
             EventType = #PB_EventType_MouseMove
@@ -323,18 +335,19 @@ Module Button
           EndIf
           
         Case #PB_EventType_LeftButtonUp
-          If MouseLeave
+          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
             MouseLeave = 0
-            Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-            EventType = #PB_EventType_MouseLeave
-          ElseIf Not LeftClick 
-            LeftClick = 1
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+              Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+              EventType = #PB_EventType_MouseLeave
+            CompilerEndIf
+          Else
+            MouseLeave =- 1
             Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
             EventType = #PB_EventType_LeftClick
-            LeftClick = 0 
           EndIf
           
-        Case #PB_EventType_LeftClick : ProcedureReturn - 1
+        Case #PB_EventType_LeftClick : ProcedureReturn 0
       EndSelect
     CompilerEndIf
     
@@ -491,16 +504,16 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Result = 1
       Default
-;         ; First window
-;         Result | CallBack(*B_0, EventType()) 
-;         Result | CallBack(*B_1, EventType()) 
-;         Result | CallBack(*B_2, EventType()) 
-;         Result | CallBack(*B_3, EventType()) 
-;         Result | CallBack(*B_4, EventType()) 
-;         
-;         ; Second window
-;         Result | CallBack(*Button_0, EventType()) 
-;         Result | CallBack(*Button_1, EventType()) 
+        ;         ; First window
+        ;         Result | CallBack(*B_0, EventType()) 
+        ;         Result | CallBack(*B_1, EventType()) 
+        ;         Result | CallBack(*B_2, EventType()) 
+        ;         Result | CallBack(*B_3, EventType()) 
+        ;         Result | CallBack(*B_4, EventType()) 
+        ;         
+        ;         ; Second window
+        ;         Result | CallBack(*Button_0, EventType()) 
+        ;         Result | CallBack(*Button_1, EventType()) 
         
         If EventType() = #PB_EventType_LeftButtonDown
           SetActiveGadget(EventGadget())
@@ -508,7 +521,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ForEach List()
           ; If List()\Widget\Canvas\Gadget = GetActiveGadget()
-            Result | CallBack(List()\Widget, EventType()) 
+          Result | CallBack(List()\Widget, EventType()) 
           ; EndIf
         Next
         
@@ -602,5 +615,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------
+; Folding = ----------------
 ; EnableXP
