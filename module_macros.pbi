@@ -7,6 +7,27 @@
     Bool(ListSize(List()) And IsGadget(List()\Widget\Canvas\Gadget) And Not StopDrawing())
   EndMacro
   
+  Macro From(_this_, _buttons_=0)
+    Bool(_this_\Canvas\Mouse\X>=_this_\x[_buttons_] And _this_\Canvas\Mouse\X<_this_\x[_buttons_]+_this_\Width[_buttons_] And 
+         _this_\Canvas\Mouse\Y>=_this_\y[_buttons_] And _this_\Canvas\Mouse\Y<_this_\y[_buttons_]+_this_\Height[_buttons_])
+  EndMacro
+  
+  Macro add_widget(_widget_, _hande_)
+    If _widget_ =- 1 Or _widget_ > ListSize(List()) - 1
+      LastElement(List())
+      _hande_ = AddElement(List()) 
+      _widget_ = ListIndex(List())
+    Else
+      _hande_ = SelectElement(List(), _widget_)
+      ; _hande_ = InsertElement(List())
+      PushListPosition(List())
+      While NextElement(List())
+        List()\Widget\Index = ListIndex(List())
+      Wend
+      PopListPosition(List())
+    EndIf
+  EndMacro
+  
   Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
     BackColor(_color_1_&$FFFFFF|_alpha_<<24)
     FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
@@ -126,5 +147,5 @@ EndModule
 
 UseModule Macros
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = PAw
+; Folding = -AA-
 ; EnableXP

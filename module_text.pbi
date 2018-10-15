@@ -22,7 +22,7 @@ DeclareModule Text
   Declare.i GetColor(*This.Widget, ColorType.i, State.i=0)
   Declare.i SetColor(*This.Widget, ColorType.i, Color.i, State.i=1)
   Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
-  ;Declare.i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i)
+  ;Declare.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   
@@ -279,7 +279,7 @@ Module Text
                 ClipOutput(*This\X[2]+*This\Text[0]\X-1,*This\Y[2],*This\Width[2]-*This\Text[0]\X*2+2,*This\Height[2]) ; Bug in Mac os
               CompilerEndIf
               
-              If \Text[2]\Len
+              If \Text[2]\Len And #PB_Compiler_OS <> #PB_OS_MacOS
                 If \Text[1]\String.s
                   DrawingMode(#PB_2DDrawing_Transparent)
                   DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
@@ -301,7 +301,7 @@ Module Text
               Else
                 If \Text[2]\Len
                   DrawingMode(#PB_2DDrawing_Default)
-                  Box(\Text[2]\X, \Text[0]\Y+1, \Text[2]\Width, \Text[0]\Height-1, $FADBB3);$DE9541)
+                  Box(\Text[2]\X, \Text[0]\Y, \Text[2]\Width, \Text[0]\Height+1, $FADBB3);$DE9541)
                 EndIf
                 DrawingMode(#PB_2DDrawing_Transparent)
                 DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
@@ -450,8 +450,6 @@ Module Text
   EndProcedure
   
   Procedure.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
-    Protected Result
-    
     With *This
       If Canvas=-1 
         Canvas = EventGadget()
@@ -466,33 +464,32 @@ Module Text
         \X[0] = X 
         \X[2]=X+\bSize
         \X[1]=\X[2]-\fSize
-        Result = 1
+        \Resize = 1
       EndIf
       If Y<>#PB_Ignore 
         \Y[0] = Y
         \Y[2]=Y+\bSize
         \Y[1]=\Y[2]-\fSize
-        Result = 2
+        \Resize = 2
       EndIf
       If Width<>#PB_Ignore 
         \Width[0] = Width 
         \Width[2] = \Width-\bSize*2
         \Width[1] = \Width[2]+\fSize*2
-        Result = 3
+        \Resize = 3
       EndIf
       If Height<>#PB_Ignore 
         \Height[0] = Height 
         \Height[2] = \Height-\bSize*2
         \Height[1] = \Height[2]+\fSize*2
-        Result = 4
+        \Resize = 4
       EndIf
       
-      \Resize = Result
-      ProcedureReturn Result
+      ProcedureReturn \Resize
     EndWith
   EndProcedure
   
-  Procedure.i CallBack(*This.Widget, EventType.i, MouseX.i, MouseY.i)
+  Procedure.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Protected Result
     
     With *This
@@ -688,5 +685,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --P4--7-R--------
+; Folding = --P4--i-R--------
 ; EnableXP

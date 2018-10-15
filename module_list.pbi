@@ -71,7 +71,7 @@ EndDeclareModule
 
 Module Tree
   
-  Procedure from(*This.Widget, MouseX=-1, MouseY=-1, focus=0)
+  Procedure item_from(*This.Widget, MouseX=-1, MouseY=-1, focus=0)
     Protected adress.i
     Protected lostfocus.l=-1, collapsed.l, sublevel.l, coll.l
     
@@ -1156,12 +1156,12 @@ Module Tree
                 EndIf
                 
               Case #PB_EventType_LeftButtonDown : \Focus = 1
-                Repaint = from(*This, MouseX, MouseY, 1)
+                Repaint = item_from(*This, MouseX, MouseY, 1)
                 MoveX = MouseX : MoveY = MouseY
                 
               Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter
                 Protected from = \from
-                Repaint = from(*This, MouseX, MouseY)
+                Repaint = item_from(*This, MouseX, MouseY)
                
                 If from <> \from
                   If \text\x+\text\width>\width
@@ -1180,11 +1180,11 @@ Module Tree
                 EndIf
                 
               Case #PB_EventType_MouseLeave
-                Repaint = from(*This,-1,-1, 0)
+                Repaint = item_from(*This,-1,-1, 0)
 ;                 \Drag =- 1
                 
               Case #PB_EventType_LostFocus
-                Repaint = from(*This,-1,-1, 1)
+                Repaint = item_from(*This,-1,-1, 1)
                 
               Case #PB_EventType_Focus
                 PushListPosition(\Items()) 
@@ -1217,7 +1217,7 @@ Module Tree
                 Repaint = 1
             EndSelect
           Else
-            Repaint = from(*This,-1,-1, 0)
+            Repaint = item_from(*This,-1,-1, 0)
           EndIf
         EndIf
       EndWith 

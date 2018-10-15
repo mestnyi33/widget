@@ -66,43 +66,40 @@ Module Widget
   EndProcedure
   
   Procedure.i Resizes(*This.Widget, X.i,Y.i,Width.i,Height.i)
-    Protected Result
-    
     With *This
       
       ;       Select \Type
       ;         Case #PB_GadgetType_ScrollBar
       ;           ScrollBar::Resize(\Scroll, X,Y,Width,Height)
-      ;           Result = 1
+      ;           \Resize = 1
       ;         Default
       If X<>#PB_Ignore 
         \X[0] = X 
         \X[2]=\bSize
         \X[1]=\X[2]-\fSize
-        Result = 1
+        \Resize = 1
       EndIf
       If Y<>#PB_Ignore 
         \Y[0] = Y
         \Y[2]=\bSize
         \Y[1]=\Y[2]-\fSize
-        Result = 2
+        \Resize = 2
       EndIf
       If Width<>#PB_Ignore 
         \Width[0] = Width 
         \Width[2] = \Width-\bSize*2
         \Width[1] = \Width[2]+\fSize*2
-        Result = 3
+        \Resize = 3
       EndIf
       If Height<>#PB_Ignore 
         \Height[0] = Height 
         \Height[2] = \Height-\bSize*2
         \Height[1] = \Height[2]+\fSize*2
-        Result = 4
+        \Resize = 4
       EndIf
       ;       EndSelect
       
-      \Resize = Result
-      ProcedureReturn Result
+      ProcedureReturn \Resize
     EndWith
   EndProcedure
   

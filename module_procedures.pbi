@@ -224,11 +224,75 @@ Module Procedures
     
   EndProcedure
   
+  Procedure canvas_events_bug_fix(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+    Protected Result.b
+    Static MouseLeave.b, LeftClick.b
+    Protected EventGadget.i = EventGadget()
+    
+    If Canvas =- 1
+      With *This
+        Select EventType
+          Case #PB_EventType_Input 
+            \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
+          Case #PB_EventType_KeyDown
+            \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
+            \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
+          Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
+            \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
+            \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
+          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
+               #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
+               #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
+            \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+        EndSelect
+      EndWith
+    EndIf
+      
+    ; Это из за ошибки в мак ос
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
+        If EventType = #PB_EventType_MouseLeave 
+          EventType = #PB_EventType_MouseMove
+          MouseLeave = 1
+        EndIf
+      EndIf
+      
+      If EventType = #PB_EventType_LeftButtonUp
+        If MouseLeave
+          Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+          EventType = #PB_EventType_MouseLeave
+          MouseLeave = 0
+        Else
+          Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+          EventType = #PB_EventType_LeftClick
+          LeftClick = 1
+        EndIf
+      EndIf
+      
+      ; Родное убираем оставляем искуственное
+      If EventType = #PB_EventType_LeftClick
+        If LeftClick 
+          LeftClick = 0 
+        Else
+          ProcedureReturn 0
+        EndIf
+      EndIf
+      
+      If EventType = #PB_EventType_LeftButtonDown
+        If GetActiveGadget()<>EventGadget
+          SetActiveGadget(EventGadget)
+        EndIf
+      EndIf
+    CompilerEndIf
+    
+    Result | Events(*This, EventType, Canvas, CanvasModifiers)
+    ProcedureReturn Result
+  EndProcedure
+  
+  
 EndModule 
 
 UseModule Procedures
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 225
-; FirstLine = 92
-; Folding = 8-0----
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = 8-t------
 ; EnableXP
