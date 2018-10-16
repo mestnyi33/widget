@@ -284,75 +284,7 @@ Module Button
   EndProcedure
   
   Procedure.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    ; Canvas events bug fix
-    Protected Result.b
-    Static MouseLeave.b
-    Protected EventGadget.i = EventGadget()
-    
-    Protected Width = GadgetWidth(EventGadget)
-    Protected Height = GadgetHeight(EventGadget)
-    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
-    
-    If Canvas =- 1
-      With *This
-        Select EventType
-          Case #PB_EventType_Input 
-            \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
-          Case #PB_EventType_KeyDown
-            \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
-            \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
-          Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
-            \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
-            \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
-          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
-               #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
-               #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
-            \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-        EndSelect
-      EndWith
-    EndIf
-    
-    
-    ; Это из за ошибки в мак ос и линукс
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
-      Select EventType 
-        Case #PB_EventType_MouseEnter 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
-            EventType = #PB_EventType_MouseMove
-            MouseLeave = 0
-          EndIf
-          
-        Case #PB_EventType_MouseLeave 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
-            EventType = #PB_EventType_MouseMove
-            MouseLeave = 1
-          EndIf
-          
-        Case #PB_EventType_LeftButtonDown
-          If GetActiveGadget()<>EventGadget
-            SetActiveGadget(EventGadget)
-          EndIf
-          
-        Case #PB_EventType_LeftButtonUp
-          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
-            MouseLeave = 0
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-              Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-              EventType = #PB_EventType_MouseLeave
-            CompilerEndIf
-          Else
-            MouseLeave =- 1
-            Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-            EventType = #PB_EventType_LeftClick
-          EndIf
-          
-        Case #PB_EventType_LeftClick : ProcedureReturn 0
-      EndSelect
-    CompilerEndIf
-    
-    Result | Events(*This, EventType, Canvas, CanvasModifiers)
-    ProcedureReturn Result
+    ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
   EndProcedure
   
   Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
@@ -615,5 +547,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------------
+; Folding = --------------
 ; EnableXP
