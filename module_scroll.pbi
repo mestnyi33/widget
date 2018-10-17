@@ -3,7 +3,7 @@
   XIncludeFile "module_structures.pbi"
 CompilerEndIf
 
-DeclareModule ScrollBar
+DeclareModule Scroll
   EnableExplicit
   UseModule Constants
   UseModule Structures
@@ -26,7 +26,7 @@ DeclareModule ScrollBar
   Declare DrawArrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
 EndDeclareModule
 
-Module ScrollBar
+Module Scroll
   Macro Colors(_this_, _i_, _ii_, _iii_)
     If _this_\Color[_i_]\Line[_ii_]
       _this_\Color[_i_]\Line[_iii_] = _this_\Color[_i_]\Line[_ii_]
@@ -853,7 +853,7 @@ EndModule
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule ScrollBar
+  UseModule Scroll
   
   Global *Vertical.Scroll=AllocateStructure(Scroll)
   Global *Horisontal_0.Scroll=AllocateStructure(Scroll)
@@ -971,7 +971,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 623
-; FirstLine = 478
 ; Folding = X8-0---------------f8---T-f---
 ; EnableXP

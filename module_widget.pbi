@@ -14,7 +14,7 @@
 XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scrollbar.pbi"
+XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_button.pbi"
 XIncludeFile "module_string.pbi"
@@ -57,7 +57,7 @@ Module Widget
           Case #PB_GadgetType_Text   : Text::Draw(*This, \Canvas\Gadget)
           Case #PB_GadgetType_Button : Button::Draw(*This, \Canvas\Gadget)
           Case #PB_GadgetType_String : String::Draw(*This, \Canvas\Gadget)
-          Case #PB_GadgetType_ScrollBar : ScrollBar::Draw(\Scroll)
+          Case #PB_GadgetType_ScrollBar : Scroll::Draw(\Scroll)
         EndSelect
         
         StopDrawing()
@@ -70,7 +70,7 @@ Module Widget
       
       ;       Select \Type
       ;         Case #PB_GadgetType_ScrollBar
-      ;           ScrollBar::Resize(\Scroll, X,Y,Width,Height)
+      ;           Scroll::Resize(\Scroll, X,Y,Width,Height)
       ;           \Resize = 1
       ;         Default
       If X<>#PB_Ignore 
@@ -201,7 +201,7 @@ Module Widget
           EndIf
           
         Case #PB_GadgetType_ScrollBar  
-          If ScrollBar::SetState(*This\Scroll, State) 
+          If Scroll::SetState(*This\Scroll, State) 
             PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
             Result = 1
           EndIf
@@ -231,7 +231,7 @@ Module Widget
     With *This
       Select \Type
         Case #PB_GadgetType_ScrollBar  
-          If ScrollBar::SetAttribute(\Scroll, Attribute, Value)
+          If Scroll::SetAttribute(\Scroll, Attribute, Value)
             Draws(*This)
           EndIf
           
@@ -281,8 +281,8 @@ Module Widget
           Repaint = Resizes(*This, #PB_Ignore,#PB_Ignore,GadgetWidth(\Canvas\Gadget),GadgetHeight(\Canvas\Gadget))
       EndSelect
       
-      Repaint | ScrollBar::CallBack(\Scroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
-      Repaint | Button::CallBack(*This, \Canvas\Gadget, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+      Repaint | Scroll::CallBack(\Scroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+      Repaint | Button::CallBack(*This, EventType())
       Repaint | String::CallBack(*This, EventType(), -1, 0) 
       
       If Repaint
@@ -300,7 +300,7 @@ Module Widget
       With *This
         \Canvas\Gadget = Widget
         \Type = #PB_GadgetType_ScrollBar
-        ScrollBar::Widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
+        Scroll::Widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
         \Scroll\Gadget = Widget
         \Scroll\Type[1]=1 : \Scroll\Type[2]=1     ; Можно менять вид стрелок 
         \Scroll\Size[1]=6 : \Scroll\Size[2]=6     ; Можно задать размер стрелок

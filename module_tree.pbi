@@ -3,7 +3,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
-  XIncludeFile "module_scrollbar.pbi"
+  XIncludeFile "module_scroll.pbi"
   XIncludeFile "module_Text.pbi"
 CompilerEndIf
 
@@ -234,13 +234,13 @@ Module Tree
         If ListSize(*This\Items())
           *This\Scroll\Width=*This\x[2]
           *This\Scroll\height=*This\y[2]
-          iwidth = *This\width[2]-Scrollbar::Width(*This\vScroll)
-          iheight = *This\height[2]-Scrollbar::Height(*This\hScroll)
+          iwidth = *This\width[2]-Scroll::Width(*This\vScroll)
+          iheight = *This\height[2]-Scroll::Height(*This\hScroll)
           
           ForEach *This\Items()
             If Not \hide
               CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-                ClipOutput(*This\x[2], *This\y[2], iwidth, *This\height[2]-Scrollbar::Height(*This\hScroll)) ; Bug
+                ClipOutput(*This\x[2], *This\y[2], iwidth, *This\height[2]-Scroll::Height(*This\hScroll)) ; Bug
               CompilerEndIf
               
               \x=*This\x[2]
@@ -366,7 +366,7 @@ Module Tree
                 If Not *This\flag&#NoButtons And \childrens
                   If box_type=-1
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Scrollbar::DrawArrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+                    Scroll::DrawArrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                   Else
                     DrawingMode(#PB_2DDrawing_Gradient)
                     BackColor($FFFFFF) : FrontColor($EEEEEE)
@@ -463,17 +463,17 @@ Module Tree
         
         ; Задаем размеры скролл баров
         If *This\vScroll\Page\Length And *This\vScroll\Max<>*This\Scroll\Height And 
-           Scrollbar::SetAttribute(*This\vScroll, #PB_ScrollBar_Maximum, *This\Scroll\Height)
-          Scrollbar::Resizes(*This\vScroll, *This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+           Scroll::SetAttribute(*This\vScroll, #PB_ScrollBar_Maximum, *This\Scroll\Height)
+          Scroll::Resizes(*This\vScroll, *This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           *This\vScroll\Page\ScrollStep = height
         EndIf
         If *This\hScroll\Page\Length And *This\hScroll\Max<>*This\Scroll\Width And 
-           Scrollbar::SetAttribute(*This\hScroll, #PB_ScrollBar_Maximum, *This\Scroll\Width)
-          Scrollbar::Resizes(*This\vScroll, *This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+           Scroll::SetAttribute(*This\hScroll, #PB_ScrollBar_Maximum, *This\Scroll\Width)
+          Scroll::Resizes(*This\vScroll, *This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
         EndIf
         
-        Scrollbar::Draw(*This\vScroll)
-        Scrollbar::Draw(*This\hScroll)
+        Scroll::Draw(*This\vScroll)
+        Scroll::Draw(*This\hScroll)
         
         If *This\fSize
           DrawingMode(#PB_2DDrawing_Outlined)
@@ -1111,14 +1111,14 @@ Module Tree
           AutoHide.b = 0; Bool(\vScroll\Buttons=0 And \hScroll\Buttons=0)
           
           If \vScroll
-            Repaint = Scrollbar::CallBack(\vScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \hScroll, Window, Canvas)
+            Repaint = Scroll::CallBack(\vScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \hScroll, Window, Canvas)
             If Repaint
               ReDraw(Canvas)
             EndIf
           EndIf
           
           If \hScroll
-            Repaint = Scrollbar::CallBack(\hScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \vScroll, Window, Canvas)
+            Repaint = Scroll::CallBack(\hScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \vScroll, Window, Canvas)
             If Repaint
               ReDraw(Canvas)
             EndIf
@@ -1129,8 +1129,8 @@ Module Tree
               Case #PB_EventType_MouseWheel
                 If Not \vScroll\Hide
                   Select -WheelDelta
-                    Case-1 : Repaint = Scrollbar::SetState(\vScroll, \vScroll\Page\Pos - (\vScroll\Max-\vScroll\Min)/30)
-                    Case 1 : Repaint = Scrollbar::SetState(\vScroll, \vScroll\Page\Pos + (\vScroll\Max-\vScroll\Min)/30)
+                    Case-1 : Repaint = Scroll::SetState(\vScroll, \vScroll\Page\Pos - (\vScroll\Max-\vScroll\Min)/30)
+                    Case 1 : Repaint = Scroll::SetState(\vScroll, \vScroll\Page\Pos + (\vScroll\Max-\vScroll\Min)/30)
                   EndSelect
                 EndIf
                 
@@ -1213,7 +1213,7 @@ Module Tree
                 \Width[1] = \Width[2]+\fSize*2
                 \Height[1] = \Height[2]+\fSize*2
                 
-                Scrollbar::Resizes(\vScroll, \hScroll, \X[2],\Y[2],\Width[2],\Height[2])
+                Scroll::Resizes(\vScroll, \hScroll, \X[2],\Y[2],\Width[2],\Height[2])
                 Repaint = 1
             EndSelect
           Else
@@ -1290,9 +1290,9 @@ Module Tree
         \Width[1] = \Width[2]+\fSize*2-2
         \Height[1] = \Height[2]+\fSize*2-2
         
-        Scrollbar::Widget(*This\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 8)
+        Scroll::Widget(*This\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 8)
         If flag&#NoButtons = 0 Or flag&#NoLines=0
-          Scrollbar::Widget(*This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 8)
+          Scroll::Widget(*This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 8)
         EndIf
         
         ;         \vScroll\alpha = 0
@@ -1306,12 +1306,12 @@ Module Tree
         ;         Debug SizeOf(*This\hScroll)
         ;         ; Set style windows 8
         ;         *This\vScroll\DrawingMode = #PB_2DDrawing_Default
-        ;         Scrollbar::SetColor(*This\vScroll, #PB_Gadget_BackColor, *This\vScroll\Color\Back, 1)
-        ;         Scrollbar::SetColor(*This\vScroll, #PB_Gadget_BackColor, *This\vScroll\Color\Back, 2)
+        ;         Scroll::SetColor(*This\vScroll, #PB_Gadget_BackColor, *This\vScroll\Color\Back, 1)
+        ;         Scroll::SetColor(*This\vScroll, #PB_Gadget_BackColor, *This\vScroll\Color\Back, 2)
         ;         
         ;         *This\hScroll\DrawingMode = #PB_2DDrawing_Default
-        ;         Scrollbar::SetColor(*This\hScroll, #PB_Gadget_BackColor, *This\hScroll\Color\Back, 1)
-        ;         Scrollbar::SetColor(*This\hScroll, #PB_Gadget_BackColor, *This\hScroll\Color\Back, 2)
+        ;         Scroll::SetColor(*This\hScroll, #PB_Gadget_BackColor, *This\hScroll\Color\Back, 1)
+        ;         Scroll::SetColor(*This\hScroll, #PB_Gadget_BackColor, *This\hScroll\Color\Back, 2)
         
         SetGadgetData(Gadget, *This)
         BindGadgetEvent(Gadget, @CallBack())
