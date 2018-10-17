@@ -9,13 +9,15 @@
 ; File name       : module_widget.pbi
 ; Topic           : 
 ;
+; ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC045ZWQqqZ/A0QtEXnbMaPMSgYQeocF1xmZe+99U5IMoSltVwZ3wSuOHdsJEYSLxmMLsFk7EdOV5lgH0ZSeVe+qqz4M3q3lcSzQ8f2l3Dvq/svqW8tGFEYbZ4tbgCSveLZQ3LGTwTqCzeYZELr+2awNC5ykraMCzvgPK2OcclEACkJ0m6E++e+gRuhrMfnf0c4iLmxxSLDmEaCA2XjQKMFjV0uPWu55W7qtHEDZx7f7MXTV6/KlaUcp9+S9bbDWa852vV04GTUM0+YHJwyaB3GLskEwDoWm1nbBGqfVCO+gHao4WStJ0/6pha4MZVL28SXRvYTko7fqfjt5bRkBnaqrP4b6au3PiO3cMr3NTCVPLnRserMjk7UuPWkFUchFL8ODqdt/BD5lzQ4+q+dxXaMYC++q/z6x95Ja+s43wMDZLepG61wGcG2ftbQhxjsETbJTy/cNU6ing07wdkbTckAhz5Gue4OfB+vwlMZi3F35aCeq+FG8UzPOlQH122X9VPuowTJdVWYM5qqmmgrGkkaePvYYarruxMrtsoq8wY4hBs4WWyaq4zvJyUZTBfDzTsv8kWQxuPQ8wKMT4Mpo5H+CZrjCBsFtidu/LJ8FxFxOFcxik9o2tyxscuikYMoEW4sBkKpQeMESz+tXmXcxZwaa/8YEGL10s2uc4iI2ul99w==
 
+XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scrollbar.pbi"
+XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_button.pbi"
-; XIncludeFile "module_string.pbi"
+XIncludeFile "module_string.pbi"
 ; XIncludeFile "module_editor.pbi"
 ; XIncludeFile "module_tree.pbi"
 ; XIncludeFile "module_listicon.pbi"
@@ -24,6 +26,7 @@ XIncludeFile "module_button.pbi"
 DeclareModule Widget
   
   EnableExplicit
+  UseModule Macros
   UseModule Constants
   UseModule Structures
   
@@ -41,6 +44,7 @@ DeclareModule Widget
   Declare.i Text(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
   Declare.i Button(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
   Declare.i ScrollBar(Widget.i, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0)
+  Declare.i String(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
   
 EndDeclareModule
 
@@ -50,9 +54,10 @@ Module Widget
     With *This
       If StartDrawing(CanvasOutput(\Canvas\Gadget))
         Select \Type
-          Case #PB_GadgetType_Text   : Text::Draw(*This)
-          Case #PB_GadgetType_Button : Button::Draw(*This)
-          Case #PB_GadgetType_ScrollBar : ScrollBar::Draw(\Scroll)
+          Case #PB_GadgetType_Text   : Text::Draw(*This, \Canvas\Gadget)
+          Case #PB_GadgetType_Button : Button::Draw(*This, \Canvas\Gadget)
+          Case #PB_GadgetType_String : String::Draw(*This, \Canvas\Gadget)
+          Case #PB_GadgetType_ScrollBar : Scroll::Draw(\Scroll)
         EndSelect
         
         StopDrawing()
@@ -61,43 +66,40 @@ Module Widget
   EndProcedure
   
   Procedure.i Resizes(*This.Widget, X.i,Y.i,Width.i,Height.i)
-    Protected Result
-    
     With *This
       
       ;       Select \Type
       ;         Case #PB_GadgetType_ScrollBar
-      ;           ScrollBar::Resize(\Scroll, X,Y,Width,Height)
-      ;           Result = 1
+      ;           Scroll::Resize(\Scroll, X,Y,Width,Height)
+      ;           \Resize = 1
       ;         Default
       If X<>#PB_Ignore 
         \X[0] = X 
         \X[2]=\bSize
         \X[1]=\X[2]-\fSize
-        Result = 1
+        \Resize = 1
       EndIf
       If Y<>#PB_Ignore 
         \Y[0] = Y
         \Y[2]=\bSize
         \Y[1]=\Y[2]-\fSize
-        Result = 2
+        \Resize = 2
       EndIf
       If Width<>#PB_Ignore 
         \Width[0] = Width 
         \Width[2] = \Width-\bSize*2
         \Width[1] = \Width[2]+\fSize*2
-        Result = 3
+        \Resize = 3
       EndIf
       If Height<>#PB_Ignore 
         \Height[0] = Height 
         \Height[2] = \Height-\bSize*2
         \Height[1] = \Height[2]+\fSize*2
-        Result = 4
+        \Resize = 4
       EndIf
       ;       EndSelect
       
-      \Resize = Result
-      ProcedureReturn Result
+      ProcedureReturn \Resize
     EndWith
   EndProcedure
   
@@ -189,17 +191,27 @@ Module Widget
   EndProcedure
   
   Procedure.i SetState(Widget.i, State.i)
-    Protected *This.Widget = GetGadgetData(Widget)
+    Protected Result.b, *This.Widget = GetGadgetData(Widget)
     
     With *This
       Select \Type
+        Case #PB_GadgetType_Button
+          If Button::SetState(*This, State)
+            Result = 1
+          EndIf
+          
         Case #PB_GadgetType_ScrollBar  
-          If ScrollBar::SetState(*This\Scroll, State) 
-            Draws(*This)
+          If Scroll::SetState(*This\Scroll, State) 
             PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
+            Result = 1
           EndIf
       EndSelect
     EndWith
+    
+    If Result  
+      Draws(*This)
+    EndIf     
+    
   EndProcedure
   
   Procedure.i GetState(Widget.i)
@@ -219,7 +231,7 @@ Module Widget
     With *This
       Select \Type
         Case #PB_GadgetType_ScrollBar  
-          If ScrollBar::SetAttribute(\Scroll, Attribute, Value)
+          If Scroll::SetAttribute(\Scroll, Attribute, Value)
             Draws(*This)
           EndIf
           
@@ -257,20 +269,21 @@ Module Widget
       \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
       \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
       \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-      
+      \Canvas\Mouse\From = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
+            
       Select EventType()
+        Case #PB_EventType_LostFocus
+          \Focus = 0
+          Repaint = #True
+          
         Case #PB_EventType_Resize 
           ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
           Repaint = Resizes(*This, #PB_Ignore,#PB_Ignore,GadgetWidth(\Canvas\Gadget),GadgetHeight(\Canvas\Gadget))
       EndSelect
       
-      If ScrollBar::CallBack(\Scroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
-        Repaint = #True
-      EndIf
-      
-      If Button::CallBack(*This, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
-        Repaint = #True
-      EndIf
+      Repaint | Scroll::CallBack(\Scroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+      Repaint | Button::CallBack(*This, EventType())
+      Repaint | String::CallBack(*This, EventType(), -1, 0) 
       
       If Repaint
         Draws(*This)
@@ -287,8 +300,8 @@ Module Widget
       With *This
         \Canvas\Gadget = Widget
         \Type = #PB_GadgetType_ScrollBar
-        \Text\FontID = GetGadgetFont(#PB_Default)
-        ScrollBar::Widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
+        Scroll::Widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
+        \Scroll\Gadget = Widget
         \Scroll\Type[1]=1 : \Scroll\Type[2]=1     ; Можно менять вид стрелок 
         \Scroll\Size[1]=6 : \Scroll\Size[2]=6     ; Можно задать размер стрелок
         SetGadgetData(Widget, *This)
@@ -306,9 +319,23 @@ Module Widget
     
     If *This
       With *This
-        \Canvas\Gadget = Widget
-        \Text\FontID = GetGadgetFont(#PB_Default)
-        Button::Widget(*This, 0, 0, Width, Height, Text.s, Flag|#PB_Text_Center|#PB_Text_Middle|#PB_Text_Border)
+        Button::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
+        SetGadgetData(Widget, *This)
+        Draws(*This)
+        BindGadgetEvent(Widget, @CallBacks())
+      EndIf
+    EndWith
+    
+    ProcedureReturn g
+  EndProcedure
+  
+  Procedure.i String(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget=AllocateStructure(Widget)
+    Protected g = CanvasGadget(Widget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Widget=-1 : Widget=g : EndIf
+    
+    If *This
+      With *This
+        String::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
         Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
@@ -324,9 +351,7 @@ Module Widget
     
     If *This
       With *This
-        \Canvas\Gadget = Widget
-        \Text\FontID = GetGadgetFont(#PB_Default)
-        Text::Widget(*This, 0, 0, Width, Height, Text.s, Flag)
+        Text::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
         Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
@@ -341,6 +366,7 @@ EndModule
 UseModule Widget
 
 
+  
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   Procedure v_GadgetCallBack()
@@ -352,19 +378,22 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure h_GadgetCallBack()
-    Debug "gadget - "+GetGadgetState(EventGadget())
+    ;Debug "gadget - "+GetGadgetState(EventGadget())
     SetState(12, GetGadgetState(EventGadget()))
   EndProcedure
   
   Procedure h_CallBack()
-    Debug "widget - "+GetState(EventGadget())
+    ;Debug "widget - "+GetState(EventGadget())
     SetGadgetState(2, GetState(EventGadget()))
   EndProcedure
   
+  Procedure Events()
+    Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
+  EndProcedure
   
   If OpenWindow(0, 0, 0, 605, 300, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    TextGadget       (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ScrollBarGadget  (2,  10, 42, 250,  20, 30, 100, 30)
+    StringGadget     (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+    ScrollBarGadget  (2,  10, 50, 250,  20, 30, 100, 30)
     SetGadgetState   (2,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     ScrollBarGadget  (3, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
@@ -373,8 +402,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget(15, 10, 190, 180,  60, "Button (Horisontal)")
     ButtonGadget(16, 200, 150,  60, 140 ,"Button (Vertical)")
     
-    Text       (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ScrollBar  (12,  300+10, 42, 250,  20, 30, 100, 30)
+    String     (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+    ScrollBar  (12,  300+10, 50, 250,  20, 30, 100, 30)
     SetState   (12,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     Text       (-1,  300+10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     ScrollBar  (13, 300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
@@ -384,6 +413,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(18, 300+200, 150,  60, 140 ,"Button (Vertical)",#PB_Text_Vertical)
     
     PostEvent(#PB_Event_Gadget, 0,12,#PB_EventType_Resize)
+    
+    BindEvent(#PB_Event_Widget, @Events())
     
     BindGadgetEvent(2,@h_GadgetCallBack())
     BindGadgetEvent(3,@v_GadgetCallBack())
@@ -395,7 +426,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 327
-; FirstLine = 290
 ; Folding = ----------
 ; EnableXP

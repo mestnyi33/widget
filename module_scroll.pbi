@@ -3,7 +3,7 @@
   XIncludeFile "module_structures.pbi"
 CompilerEndIf
 
-DeclareModule ScrollBar
+DeclareModule Scroll
   EnableExplicit
   UseModule Constants
   UseModule Structures
@@ -26,7 +26,7 @@ DeclareModule ScrollBar
   Declare DrawArrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
 EndDeclareModule
 
-Module ScrollBar
+Module Scroll
   Macro Colors(_this_, _i_, _ii_, _iii_)
     If _this_\Color[_i_]\Line[_ii_]
       _this_\Color[_i_]\Line[_iii_] = _this_\Color[_i_]\Line[_ii_]
@@ -369,7 +369,14 @@ Module ScrollBar
           \Width[3] = \Thumb\Length
         EndIf
         
-        If \Gadget >- 1 : PostEvent(#PB_Event_Widget, \Window, \Gadget, #PB_EventType_ScrollChange, Direction) : EndIf
+        If \Gadget >- 1 
+          ;Debug \Window
+          If \Window =- 1
+            \Window = EventWindow()
+          EndIf
+          
+          PostEvent(#PB_Event_Widget, \Window, \Gadget, #PB_EventType_ScrollChange, Direction) 
+        EndIf
         Result = #True
       EndIf
     EndWith
@@ -612,7 +619,12 @@ Module ScrollBar
     Protected Result, Buttons
     Static LastX, LastY, Last, *Thisis.Scroll, Cursor, Drag, Down
     
-    With *This
+    If *This
+      If EventType = #PB_EventType_LeftButtonDown
+      ;  Debug "CallBack(*This.Scroll)"
+      EndIf
+      
+      With *This
       If \Type = #PB_GadgetType_ScrollBar
       If \Hide And *This = *Thisis
         \Buttons = 0
@@ -762,7 +774,8 @@ Module ScrollBar
       EndIf
       EndIf
     EndWith
-    
+  EndIf
+  
     ProcedureReturn Result
   EndProcedure
   
@@ -840,7 +853,7 @@ EndModule
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule ScrollBar
+  UseModule Scroll
   
   Global *Vertical.Scroll=AllocateStructure(Scroll)
   Global *Horisontal_0.Scroll=AllocateStructure(Scroll)
@@ -958,7 +971,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 618
-; FirstLine = 440
-; Folding = F8-0---------------b---d7-8--
+; Folding = X8-0---------------f8---T-f---
 ; EnableXP

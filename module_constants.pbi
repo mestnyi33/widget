@@ -7,66 +7,53 @@
     CompilerIf #PB_Compiler_Version =< 546
       #PB_EventType_Resize
     CompilerEndIf
+    #PB_EventType_Free
+    #PB_EventType_Create
+    
+    #PB_EventType_Repaint
     #PB_EventType_ScrollChange
   EndEnumeration
   
-  EnumerationBinary
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      #PB_Text_Right
-      #PB_Text_Center
-      #PB_Text_Border
-    CompilerElse ; If #PB_Compiler_OS = #PB_OS_Windows
-      #PB_Text_Center
-      #PB_Text_Right
-    CompilerEndIf
-    
-    #PB_Text_Bottom
-    
-    #PB_Text_UpperCase
-    #PB_Text_LowerCase
-    #PB_Text_Password
-    
+  EnumerationBinary WidgetFlags
+;     #PB_Text_Center
+;     #PB_Text_Right
+    #PB_Text_Bottom = 4
     #PB_Text_Middle 
-    #PB_Text_MultiLine 
     
     #PB_Text_Vertical
+    #PB_Text_Numeric
+    
+    #PB_Text_LowerCase 
+    #PB_Text_UpperCase
+    #PB_Text_Password
+    
+    #PB_Text_ReadOnly
+    #PB_Text_WordWrap
+    #PB_Text_MultiLine 
+    
+    #PB_Text_Left
+    #PB_Text_Top
+    
+    #PB_Widget_Default
+    #PB_Widget_Toggle
+    
+    #PB_Widget_BorderLess
+    #PB_Widget_Double
+    #PB_Widget_Flat
+    #PB_Widget_Raised
+    #PB_Widget_Single
+    
+    #PB_Widget_Invisible
   EndEnumeration
   
-  #PB_Text_ReadOnly = 256 ; #PB_String_ReadOnly
-  #PB_Text_Numeric = 512  ; #PB_String_Numeric
-  #PB_Text_WordWrap = 1024; #PB_Editor_WordWrap
-  
-  ;     Debug #PB_Text_Center
-  ;     Debug #PB_Text_Right
-  ;     Debug #PB_Text_Bottom
-  ;     
-  ;     Debug #PB_Text_UpperCase
-  ;     Debug #PB_Text_LowerCase
-  ;     Debug #PB_Text_Password
-  ;     
-  ;     Debug #PB_Text_Middle 
-  ;     Debug #PB_Text_MultiLine 
-  ;     
-  ;     Debug #PB_Text_ReadOnly
-  ;     Debug #PB_Text_Numeric 
-  ;     Debug #PB_Text_WordWrap
-  ;     Debug #PB_Text_Border
+;   #PB_Text_Left = ~#PB_Text_Center
+;   #PB_Text_Top = ~#PB_Text_Middle
+;   
+  If WidgetFlags > 2147483647
+    Debug "Исчерпан лимит в x32"+WidgetFlags
+  EndIf
   
   #PB_Gadget_FrameColor = 10
-  ;   Debug #PB_Gadget_FrontColor      ; 1
-  ;   Debug #PB_Gadget_BackColor       ; 2
-  ;   Debug #PB_Gadget_LineColor       ; 3
-  ;   Debug #PB_Gadget_TitleFrontColor ; 4
-  ;   Debug #PB_Gadget_TitleBackColor  ; 5
-  ;   Debug #PB_Gadget_GrayTextColor   ; 6
-  
-  Enumeration
-    #PB_Align_None
-    #PB_Align_Right
-    #PB_Align_Bottom
-    #PB_Align_Center
-    #PB_Align_Middle
-  EndEnumeration
   
 EndDeclareModule 
 
@@ -76,7 +63,5 @@ EndModule
 
 UseModule Constants
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 37
 ; Folding = -
 ; EnableXP

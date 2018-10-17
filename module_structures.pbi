@@ -11,6 +11,7 @@
   Structure MOUSE
     X.i
     Y.i
+    From.i ; at point widget
     Buttons.i
   EndStructure
   
@@ -45,6 +46,11 @@
     Arrows.i[4]
   EndStructure
   
+  Structure IMAGE Extends Coordinate
+    handle.i[2]
+    change.b
+  EndStructure
+  
   Structure TEXT Extends COORDINATE
     ;     Char.c
     Len.i
@@ -62,8 +68,10 @@
     Numeric.b
     WordWrap.b
     MultiLine.b
+    Vertical.b
+    Rotate.f
     
-    CaretPos.i[2] ; 0 = Pos ; 1 = PosFixed
+    Caret.i[3] ; 0 = Pos ; 1 = PosFixed
     
     Mode.i
   EndStructure
@@ -97,29 +105,69 @@
   EndStructure
   
   Structure WIDGET Extends COORDINATE
+    Index.i  ; Index of new list element
+    Handle.i ; Adress of new list element
+    
+    *Widget.WIDGET
     Canvas.CANVAS
     Color.COLOR[4]
-    
     Text.TEXT[4]
     
     fSize.i
     bSize.i
     Hide.b[2]
     Disable.b[2]
+    Cursor.i[2]
     
     Type.i
-    Resize.b ; 
     
+    From.i  ; at point widget | item
     Focus.i
+    LostFocus.i
     
-    Buttons.i
+    Drag.b
+    Resize.b ; 
+    Toggle.b ; 
+    Checked.b[2]
     Vertical.b
+    Interact.b ; будет ли взаимодействовать с пользователем?
+    Radius.i
+    Buttons.i
+    
+    ; edit
+    LinePos.i[2] ; 0 = Pos ; 1 = PosFixed
+    Caret.i[2] ; 0 = Pos ; 1 = PosFixed
+    
+    ; tree
+    time.i
+    adress.i[2]
+    sublevel.i
+    box.Coordinate
+    *data
+    collapsed.b
+    childrens.i
+    Item.i
+    Attribute.l
+    change.b
+    flag.i
+    Image.IMAGE
     
     Scroll.SCROLL
-  
+    vScroll.SCROLL
+    hScroll.SCROLL
+    
+    *Default
+    Alpha.a[2]
+    
     DrawingMode.i
+    
+    List Items.WIDGET()
+    List Columns.WIDGET()
+    
   EndStructure
   
+  Global NewList List.Widget()
+  Global Use_List_Canvas_Gadget
 EndDeclareModule 
 
 Module Structures 
@@ -128,7 +176,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 43
-; Folding = --
+; Folding = -4-
 ; EnableXP
