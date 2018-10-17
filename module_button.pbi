@@ -25,11 +25,11 @@ DeclareModule Button
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
-  Declare.i GetState(*This.Widget)
-  Declare.i SetState(*This.Widget, Value.i)
+  Declare.i GetState(*This.Widget_S)
+  Declare.i SetState(*This.Widget_S, Value.i)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
-  Declare.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1) ; .i CallBack(*This.Widget, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
-  Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+  Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1) ; .i CallBack(*This.Widget_S, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
+  Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
   
 EndDeclareModule
 
@@ -37,11 +37,11 @@ Module Button
   ;-
   ;- - MACROS
   ;- - PROCEDUREs
-  Procedure.i GetState(*This.Widget)
+  Procedure.i GetState(*This.Widget_S)
     ProcedureReturn *This\Toggle
   EndProcedure
   
-  Procedure.i SetState(*This.Widget, Value.i)
+  Procedure.i SetState(*This.Widget_S, Value.i)
     Protected Result
     
     If *This\Toggle <> Bool(Value)
@@ -52,12 +52,12 @@ Module Button
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Events(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Static Text$, DoubleClickCaret =- 1
     Protected Repaint, StartDrawing, Update_Text_Selected
     
     Protected Buttons, Widget.i
-    Static *Focus.Widget, *Last.Widget, *Widget.Widget, LastX, LastY, Last, Drag
+    Static *Focus.Widget_S, *Last.Widget_S, *Widget.Widget_S, LastX, LastY, Last, Drag
     
     ; widget_events_type
     If *This
@@ -283,11 +283,11 @@ Module Button
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
   EndProcedure
   
-  Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+  Procedure Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
     If *This
       With *This
         \Type = #PB_GadgetType_Button
@@ -386,7 +386,7 @@ Module Button
   EndProcedure
   
   Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
-    Protected *Widget, *This.Widget = AllocateStructure(Widget)
+    Protected *Widget, *This.Widget_S = AllocateStructure(Widget_S)
     
     If *This
       add_widget(Widget, *Widget)
@@ -408,8 +408,8 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Button
   Global *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
   
-  Global *Button_0.Widget = AllocateStructure(Widget)
-  Global *Button_1.Widget = AllocateStructure(Widget)
+  Global *Button_0.Widget_S = AllocateStructure(Widget_S)
+  Global *Button_1.Widget_S = AllocateStructure(Widget_S)
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
@@ -496,6 +496,8 @@ CompilerIf #PB_Compiler_IsMainFile
     *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_WordWrap|#PB_Widget_Default, 4)
     *B_4 = Create(10, -1, 10,170, 200, 60, "Multiline Button  (longer text gets automatically multiline)", #PB_Text_MultiLine, 4)
     *B_5 = Create(10, -1, 10,170+70, 200, 25, "Toggle Button", #PB_Widget_Toggle,0, 10)
+    
+;     SetFont(*B_3, FontID(0))
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)

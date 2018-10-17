@@ -50,7 +50,7 @@ EndDeclareModule
 
 Module Widget
   ;-
-  Procedure.i Draws(*This.Widget)
+  Procedure.i Draws(*This.Widget_S)
     With *This
       If StartDrawing(CanvasOutput(\Canvas\Gadget))
         Select \Type
@@ -65,7 +65,7 @@ Module Widget
     EndWith
   EndProcedure
   
-  Procedure.i Resizes(*This.Widget, X.i,Y.i,Width.i,Height.i)
+  Procedure.i Resizes(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
     With *This
       
       ;       Select \Type
@@ -107,12 +107,12 @@ Module Widget
   
   ;-
   Procedure.s GetText(Widget.i)
-    Protected *This.Widget = GetGadgetData(Widget)
+    Protected *This.Widget_S = GetGadgetData(Widget)
     ProcedureReturn *This\Text\String.s
   EndProcedure
   
   Procedure.i SetText(Widget.i, Text.s)
-    Protected Result, *This.Widget = GetGadgetData(Widget)
+    Protected Result, *This.Widget_S = GetGadgetData(Widget)
     
     If *This\Text\String.s <> Text.s
       *This\Text\String.s = Text.s
@@ -125,7 +125,7 @@ Module Widget
   EndProcedure
   
   Procedure.i SetFont(Widget.i, FontID.i)
-    Protected Result, *This.Widget = GetGadgetData(Widget)
+    Protected Result, *This.Widget_S = GetGadgetData(Widget)
     
     If *This\Text\FontID <> FontID
       *This\Text\FontID = FontID
@@ -137,7 +137,7 @@ Module Widget
   EndProcedure
   
   Procedure.i SetColor(Widget.i, ColorType.i, Color.i)
-    Protected Result, *This.Widget = GetGadgetData(Widget)
+    Protected Result, *This.Widget_S = GetGadgetData(Widget)
     
     With *This
       Select ColorType
@@ -176,7 +176,7 @@ Module Widget
   EndProcedure
   
   Procedure.i GetColor(Widget.i, ColorType.i)
-    Protected Color.i, *This.Widget = GetGadgetData(Widget)
+    Protected Color.i, *This.Widget_S = GetGadgetData(Widget)
     
     With *This
       Select ColorType
@@ -191,7 +191,7 @@ Module Widget
   EndProcedure
   
   Procedure.i SetState(Widget.i, State.i)
-    Protected Result.b, *This.Widget = GetGadgetData(Widget)
+    Protected Result.b, *This.Widget_S = GetGadgetData(Widget)
     
     With *This
       Select \Type
@@ -215,7 +215,7 @@ Module Widget
   EndProcedure
   
   Procedure.i GetState(Widget.i)
-    Protected *This.Widget = GetGadgetData(Widget)
+    Protected *This.Widget_S = GetGadgetData(Widget)
     
     With *This
       Select \Type
@@ -226,7 +226,7 @@ Module Widget
   EndProcedure
   
   Procedure.i SetAttribute(Widget.i, Attribute.i, Value.i)
-    Protected *This.Widget = GetGadgetData(Widget)
+    Protected *This.Widget_S = GetGadgetData(Widget)
     
     With *This
       Select \Type
@@ -240,7 +240,7 @@ Module Widget
   EndProcedure
   
   Procedure.i GetAttribute(Widget.i, Attribute.i)
-    Protected Result, *This.Widget = GetGadgetData(Widget)
+    Protected Result, *This.Widget_S = GetGadgetData(Widget)
     
     With *This
       Select \Type
@@ -259,7 +259,7 @@ Module Widget
   
   ;-
   Procedure.i CallBacks()
-    Protected Repaint, *This.Widget = GetGadgetData(EventGadget())
+    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
     
     With *This
       \Canvas\Window = EventWindow()
@@ -293,7 +293,7 @@ Module Widget
   EndProcedure
   
   Procedure.i ScrollBar(Widget.i, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0)
-    Protected *This.Widget=AllocateStructure(Widget)
+    Protected *This.Widget_S=AllocateStructure(Widget_S)
     Protected g = CanvasGadget(Widget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Widget=-1 : Widget=g : EndIf
     
     If *This
@@ -314,7 +314,7 @@ Module Widget
   EndProcedure
   
   Procedure.i Button(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
-    Protected *This.Widget=AllocateStructure(Widget)
+    Protected *This.Widget_S=AllocateStructure(Widget_S)
     Protected g = CanvasGadget(Widget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Widget=-1 : Widget=g : EndIf
     
     If *This
@@ -330,7 +330,7 @@ Module Widget
   EndProcedure
   
   Procedure.i String(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
-    Protected *This.Widget=AllocateStructure(Widget)
+    Protected *This.Widget_S=AllocateStructure(Widget_S)
     Protected g = CanvasGadget(Widget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Widget=-1 : Widget=g : EndIf
     
     If *This
@@ -346,7 +346,7 @@ Module Widget
   EndProcedure
   
   Procedure.i Text(Widget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
-    Protected *This.Widget=AllocateStructure(Widget)
+    Protected *This.Widget_S=AllocateStructure(Widget_S)
     Protected g = CanvasGadget(Widget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Widget=-1 : Widget=g : EndIf
     
     If *This

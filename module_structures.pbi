@@ -104,11 +104,11 @@
     Color.COLOR[4]
   EndStructure
   
-  Structure WIDGET Extends COORDINATE
+  Structure Widget_S Extends COORDINATE
     Index.i  ; Index of new list element
     Handle.i ; Adress of new list element
     
-    *Widget.WIDGET
+    *Widget.Widget_S
     Canvas.CANVAS
     Color.COLOR[4]
     Text.TEXT[4]
@@ -161,12 +161,12 @@
     
     DrawingMode.i
     
-    List Items.WIDGET()
-    List Columns.WIDGET()
+    List Items.Widget_S()
+    List Columns.Widget_S()
     
   EndStructure
   
-  Global NewList List.Widget()
+  Global NewList List.Widget_S()
   Global Use_List_Canvas_Gadget
 EndDeclareModule 
 

@@ -14,16 +14,16 @@ DeclareModule Text
   
   
   ;- - DECLAREs PROCEDUREs
-  Declare.i Draw(*This.Widget, Canvas.i=-1)
-  Declare.s GetText(*This.Widget)
-  Declare.i SetText(*This.Widget, Text.s)
-  Declare.i GetFont(*This.Widget)
-  Declare.i SetFont(*This.Widget, FontID.i)
-  Declare.i GetColor(*This.Widget, ColorType.i, State.i=0)
-  Declare.i SetColor(*This.Widget, ColorType.i, Color.i, State.i=1)
-  Declare.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
-  Declare.i CallBack(*Function, *This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-  Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  Declare.i Draw(*ThisWidget_S, Canvas.i=-1)
+  Declare.s GetText(*This.Widget_S)
+  Declare.i SetText(*This.Widget_S, Text.s)
+  Declare.i GetFont(*This.Widget_S)
+  Declare.i SetFont(*This.Widget_S, FontID.i)
+  Declare.i GetColor(*This.Widget_S, ColorType.i, State.i=0)
+  Declare.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=1)
+  Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+  Declare.i CallBack(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   
 EndDeclareModule
@@ -106,7 +106,7 @@ Module Text
     EndIf
   EndProcedure
   
-  Procedure.i Draw(*This.Widget, Canvas.i=-1)
+  Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
     Protected String.s, StringWidth
     Protected IT,Text_Y,Text_X,Width,Height
     
@@ -367,11 +367,11 @@ Module Text
   EndProcedure
   
   ;-
-  Procedure.s GetText(*This.Widget)
+  Procedure.s GetText(*This.Widget_S)
     ProcedureReturn *This\Text\String.s
   EndProcedure
   
-  Procedure.i SetText(*This.Widget, Text.s)
+  Procedure.i SetText(*This.Widget_S, Text.s)
     Protected Result
     
     If *This\Text\String.s <> Text.s
@@ -383,11 +383,11 @@ Module Text
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i GetFont(*This.Widget)
+  Procedure.i GetFont(*This.Widget_S)
     ProcedureReturn *This\Text\FontID
   EndProcedure
   
-  Procedure.i SetFont(*This.Widget, FontID.i)
+  Procedure.i SetFont(*This.Widget_S, FontID.i)
     Protected Result
     
     If *This\Text\FontID <> FontID
@@ -398,7 +398,7 @@ Module Text
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetColor(*This.Widget, ColorType.i, Color.i, State.i=1)
+  Procedure.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=1)
     Protected Result
     
     With *This
@@ -434,7 +434,7 @@ Module Text
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i GetColor(*This.Widget, ColorType.i, State.i=0)
+  Procedure.i GetColor(*This.Widget_S, ColorType.i, State.i=0)
     Protected Color.i
     
     With *This
@@ -449,7 +449,7 @@ Module Text
     ProcedureReturn Color
   EndProcedure
   
-  Procedure.i Resize(*This.Widget, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
     With *This
       If Canvas=-1 
         Canvas = EventGadget()
@@ -489,10 +489,10 @@ Module Text
     EndWith
   EndProcedure
   
-  Procedure.i Events(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   EndProcedure
   
-  Procedure.i CallBack(*Function, *This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Procedure.i CallBack(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     ; Canvas events bug fix
     Protected Result.b
     Static MouseLeave.b
@@ -564,7 +564,7 @@ Module Text
     ProcedureReturn Result
   EndProcedure
   
-  Procedure Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  Procedure Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
         \Type = #PB_GadgetType_Text
@@ -635,11 +635,11 @@ EndModule
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile =99
   UseModule Text
-  Global *T_0.Widget = AllocateStructure(Widget)
-  Global *T_1.Widget = AllocateStructure(Widget)
-  Global *T_2.Widget = AllocateStructure(Widget)
-  Global *T_3.Widget = AllocateStructure(Widget)
-  Global *T_4.Widget = AllocateStructure(Widget)
+  Global *T_0.Widget_S = AllocateStructure(Widget_S)
+  Global *T_1.Widget_S = AllocateStructure(Widget_S)
+  Global *T_2.Widget_S = AllocateStructure(Widget_S)
+  Global *T_3.Widget_S = AllocateStructure(Widget_S)
+  Global *T_4.Widget_S = AllocateStructure(Widget_S)
   
   Procedure CallBacks()
     Protected Result
@@ -695,7 +695,7 @@ CompilerEndIf
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Text
-  Global *Text.Widget = AllocateStructure(Widget)
+  Global *Text.Widget_S = AllocateStructure(Widget_S)
   
   Procedure Canvas_CallBack()
     Select EventType()
@@ -749,5 +749,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --P4--i-R-----v----
+; Folding = --P4--i-R----------
 ; EnableXP

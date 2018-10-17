@@ -23,10 +23,10 @@ DeclareModule String
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
-  Declare.i Draw(*This.Widget, Canvas.i=-1)
+  Declare.i Draw(*This.Widget_S, Canvas.i=-1)
   
-  Declare.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-  Declare.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   
 EndDeclareModule
@@ -35,7 +35,7 @@ Module String
   ;-
   ;- - MACROS
   ;- - PROCEDUREs
-  Procedure Caret(*This.Widget)
+  Procedure Caret(*This.Widget_S)
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
     
@@ -69,11 +69,11 @@ Module String
     ProcedureReturn Position
   EndProcedure
   
-;   Procedure.i Draw(*This.Widget, Canvas.i=-1)
+;   Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
 ;     ProcedureReturn Text::Draw(*This, Canvas)
 ;     
 ;   EndProcedure
-  Procedure.i Draw(*This.Widget, Canvas.i=-1)
+  Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
     Protected String.s, StringWidth
     Protected IT,Text_Y,Text_X,Width,Height
     
@@ -354,7 +354,7 @@ Module String
   EndProcedure
   
   
-  Procedure RemoveText(*This.Widget)
+  Procedure RemoveText(*This.Widget_S)
     With *This\Items()
       If \Text\Caret > \Text\Caret[1] : \Text\Caret = \Text\Caret[1] : EndIf
       \Text\String.s = RemoveString(\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, \Text\Caret, 1)
@@ -366,7 +366,7 @@ Module String
     EndWith
   EndProcedure
   
-  Procedure SelectionText(*This.Widget)
+  Procedure SelectionText(*This.Widget_S)
     Static Caret.i
     Protected Position.i
     
@@ -405,7 +405,7 @@ Module String
     
   EndProcedure
   
-  Procedure SelectionLimits(*This.Widget)
+  Procedure SelectionLimits(*This.Widget_S)
     With *This\Items()
       Protected i, char = Asc(Mid(\Text\String.s, \Text\Caret + 1, 1))
       
@@ -447,12 +447,12 @@ Module String
     EndWith           
   EndProcedure
   
-  Procedure.i Events(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Static Text$, DoubleClick
     Protected Repaint, StartDrawing, Update_Text_Selected
     
     Protected Result, Buttons, Widget.i
-    Static *Focus.Widget, *Last.Widget, *Widget.Widget, LastX, LastY, Last, Drag
+    Static *Focus.Widget_S, *Last.Widget_S, *Widget.Widget_S, LastX, LastY, Last, Drag
     
     If *This
       With *This
@@ -789,11 +789,11 @@ Module String
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.i CallBack(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
   EndProcedure
   
-  Procedure.i Widget(*This.Widget, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
         \Type = #PB_GadgetType_String
@@ -883,7 +883,7 @@ Module String
   EndProcedure
   
   Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-    Protected *Widget, *This.Widget = AllocateStructure(Widget)
+    Protected *Widget, *This.Widget_S = AllocateStructure(Widget_S)
     
     If *This
       add_widget(Widget, *Widget)
@@ -904,17 +904,17 @@ EndModule
 CompilerIf #PB_Compiler_IsMainFile
   UseModule String
   
-  Global *S_0.Widget = AllocateStructure(Widget)
-  Global *S_1.Widget = AllocateStructure(Widget)
-  Global *S_2.Widget = AllocateStructure(Widget)
-  Global *S_3.Widget = AllocateStructure(Widget)
-  Global *S_4.Widget = AllocateStructure(Widget)
-  Global *S_5.Widget = AllocateStructure(Widget)
-  Global *S_6.Widget = AllocateStructure(Widget)
-  Global *S_7.Widget = AllocateStructure(Widget)
+  Global *S_0.Widget_S = AllocateStructure(Widget_S)
+  Global *S_1.Widget_S = AllocateStructure(Widget_S)
+  Global *S_2.Widget_S = AllocateStructure(Widget_S)
+  Global *S_3.Widget_S = AllocateStructure(Widget_S)
+  Global *S_4.Widget_S = AllocateStructure(Widget_S)
+  Global *S_5.Widget_S = AllocateStructure(Widget_S)
+  Global *S_6.Widget_S = AllocateStructure(Widget_S)
+  Global *S_7.Widget_S = AllocateStructure(Widget_S)
   
-  Global *Button_0.Widget = AllocateStructure(Widget)
-  Global *Button_1.Widget = AllocateStructure(Widget)
+  Global *Button_0.Widget_S = AllocateStructure(Widget_S)
+  Global *Button_1.Widget_S = AllocateStructure(Widget_S)
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
@@ -1000,5 +1000,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---4----x---8f--+8-9-----
+; Folding = ---4----x----f--+8-9-----
 ; EnableXP

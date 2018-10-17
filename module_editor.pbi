@@ -145,8 +145,8 @@ DeclareModule Editor
 ; ;     Repaint.i
 ; ;     Resize.b
 ; ;     
-; ;     List Items.Widget()
-; ;     List Columns.Widget()
+; ;     List Items.Widget_S()
+; ;     List Columns.Widget_S()
 ; ;   EndStructure
 ; ;   
   
@@ -299,7 +299,7 @@ Module Editor
     ProcedureReturn ret$
   EndProcedure
   
-  Procedure MakeSelectionText(*This.Widget)
+  Procedure MakeSelectionText(*This.Widget_S)
     Protected CaretPos
     
     With *This\Items()
@@ -327,7 +327,7 @@ Module Editor
     ProcedureReturn CaretPos
   EndProcedure
   
-  Procedure MakeDrawText(*This.Widget, item=-1)
+  Procedure MakeDrawText(*This.Widget_S, item=-1)
     Protected IT,Text_Y,Text_X, String.s, String1.s, StringWidth, CountString, Width, Height, adress.i, caret_pos, caret_pos_1 =- 1
     
     With *This
@@ -412,7 +412,7 @@ Module Editor
     EndWith
   EndProcedure
   
-  Procedure CaretPos(*This.Widget)
+  Procedure CaretPos(*This.Widget_S)
     Protected Result.i =- 1, i.i, Len.i, Text_X.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
     
@@ -448,7 +448,7 @@ Module Editor
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SelectionText(*This.Widget)
+  Procedure SelectionText(*This.Widget_S)
     Protected CaretPos
     
     With *This\Items()
@@ -492,7 +492,7 @@ Module Editor
     ProcedureReturn CaretPos
   EndProcedure
   
-  Procedure RemoveText(*This.Widget)
+  Procedure RemoveText(*This.Widget_S)
     With *This\Items()
       ;*This\Caret = 0
       If *This\Caret > *This\Caret[1] : *This\Caret = *This\Caret[1] : EndIf
@@ -507,7 +507,7 @@ Module Editor
     EndWith
   EndProcedure
   
-  Procedure Cut(*This.Widget)
+  Procedure Cut(*This.Widget_S)
     Protected String.s
     ;;;ProcedureReturn Remove(*This)
     
@@ -620,7 +620,7 @@ Module Editor
     EndWith
   EndProcedure
   
-  Procedure.s Copy(*This.Widget)
+  Procedure.s Copy(*This.Widget_S)
     Protected String.s
     
     With *This
@@ -642,7 +642,7 @@ Module Editor
     ProcedureReturn String.s
   EndProcedure
   
-  Procedure.b Back(*This.Widget)
+  Procedure.b Back(*This.Widget_S)
     Protected Repaint.b, String.s
     
     With *This\Items()
@@ -688,7 +688,7 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure SelectionLimits(*This.Widget)
+  Procedure SelectionLimits(*This.Widget_S)
     Protected i, char
     
     With *This\Items()
@@ -737,7 +737,7 @@ Module Editor
     EndWith           
   EndProcedure
   
-  Procedure EditableCallBack(*This.Widget, EventType.i)
+  Procedure EditableCallBack(*This.Widget_S, EventType.i)
     Static Text$, DoubleClickCaretPos =- 1
     Protected Repaint.b, String.s, StartDrawing, Update_Text_Selected
     
@@ -1119,7 +1119,7 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure Draw(*This.Widget)
+  Procedure Draw(*This.Widget_S)
     Protected Left, Right, r=1,height
     
     If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
@@ -1314,13 +1314,13 @@ Module Editor
     EndIf
   EndProcedure
   
-  Procedure ReDraw(*This.Widget)
+  Procedure ReDraw(*This.Widget_S)
     Draw(*This)
   EndProcedure
   
   Procedure CallBack()
     Static LastX, LastY
-    Protected Repaint, *This.Widget = GetGadgetData(EventGadget())
+    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
     
     With *This
       \Canvas\Window = EventWindow()
@@ -1397,7 +1397,7 @@ Module Editor
   
   ;- PUBLIC
   Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
-    Protected *This.Widget = GetGadgetData(Gadget)
+    Protected *This.Widget_S = GetGadgetData(Gadget)
     
     With *This
       
@@ -1405,7 +1405,7 @@ Module Editor
   EndProcedure
   
   Procedure GetAttribute(Gadget.i, Attribute.i)
-    Protected Result, *This.Widget = GetGadgetData(Gadget)
+    Protected Result, *This.Widget_S = GetGadgetData(Gadget)
     
     With *This
       ;       Select Attribute
@@ -1419,7 +1419,7 @@ Module Editor
   EndProcedure
   
   Procedure SetState(Gadget.i, State.i)
-    Protected *This.Widget = GetGadgetData(Gadget)
+    Protected *This.Widget_S = GetGadgetData(Gadget)
     
     With *This
       
@@ -1427,7 +1427,7 @@ Module Editor
   EndProcedure
   
   Procedure GetState(Gadget.i)
-    Protected ScrollPos, *This.Widget = GetGadgetData(Gadget)
+    Protected ScrollPos, *This.Widget_S = GetGadgetData(Gadget)
     
     With *This
       
@@ -1435,7 +1435,7 @@ Module Editor
   EndProcedure
   
   Procedure.s GetText(Gadget.i)
-    Protected ScrollPos, *This.Widget = GetGadgetData(Gadget)
+    Protected ScrollPos, *This.Widget_S = GetGadgetData(Gadget)
     
     With *This
       If \Text\Pass
@@ -1447,7 +1447,7 @@ Module Editor
   EndProcedure
   
   Procedure AddItem(Gadget, Item,Text.s,Image.i=-1,Flag.i=0)
-    Protected *This.Widget = GetGadgetData(Gadget)
+    Protected *This.Widget_S = GetGadgetData(Gadget)
     
     With *This\Items()
       If Item = #PB_Any
@@ -1488,7 +1488,7 @@ Module Editor
   EndProcedure
   
   Procedure SetText(Gadget, Text.s, Item.i=0)
-    Protected *This.Widget = GetGadgetData(Gadget)
+    Protected *This.Widget_S = GetGadgetData(Gadget)
     
     With *This\Items()
 ;       If *This
@@ -1510,7 +1510,7 @@ Module Editor
   EndProcedure
   
   Procedure SetFont(Gadget.i, FontID.i)
-    Protected *This.Widget = GetGadgetData(Gadget)
+    Protected *This.Widget_S = GetGadgetData(Gadget)
     
     With *This
       If \Text\FontID <> FontID 
@@ -1522,7 +1522,7 @@ Module Editor
   EndProcedure
   
   Procedure Gadget(Gadget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
-    Protected *This.Widget=AllocateStructure(Widget)
+    Protected *This.Widget_S=AllocateStructure(Widget_S)
     Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
     Protected Min.i, Max.i, PageLength.i
     

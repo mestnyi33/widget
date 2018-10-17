@@ -71,7 +71,7 @@ EndDeclareModule
 
 Module ListIcon
   
-  Procedure item_from(*This.Widget, MouseX=-1, MouseY=-1, focus=0)
+  Procedure item_from(*This.Widget_S, MouseX=-1, MouseY=-1, focus=0)
     Protected lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
     
     With *This\Columns()
@@ -222,7 +222,7 @@ Module ListIcon
     
   EndProcedure
   
-  Procedure Draw(*This.Widget)
+  Procedure Draw(*This.Widget_S)
     Protected x_content,y_point,x_point, iwidth, iheight, w=18, level,iY, start,i, back_color=$FFFFFF, point_color=$7E7E7E, box_color=$7E7E7E
     Protected hide_color=$FEFFFF, box_size = 9,box_1_size = 12, alpha = 255, item_alpha = 128
     Protected line_size=8, box_1_pos.b = 0, checkbox_color = $FFFFFF, checkbox_backcolor, box_type.b = 4
@@ -237,7 +237,7 @@ Module ListIcon
     CompilerEndIf
     
     
-    ;     If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    ;     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If Bool(*This And StartDrawing(CanvasOutput(*This\Canvas\Gadget))) : If *This\Text\FontID : DrawingFont(*This\Text\FontID) : EndIf
       DrawingMode(#PB_2DDrawing_Default)
@@ -549,15 +549,15 @@ Module ListIcon
   EndProcedure
   
   Procedure ReDraw(Gadget.l)
-    Protected *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     If *This
       Draw(*This)
     EndIf
   EndProcedure
   
   Procedure AddColumn(Gadget, Item,Text.s,Width.l,Image.l=-1)
-    Protected *This.Widget = GetGadgetData(Gadget)
+    Protected *This.Widget_S = GetGadgetData(Gadget)
     Static Adress
     
     With *This\Columns()
@@ -579,8 +579,8 @@ Module ListIcon
   
   Procedure AddItem(Gadget.l,Item.l,Text.s,Image.l=-1,sublevel.l=0)
     Static adress.i
-    Protected *This.Widget, Childrens.l, hide.b
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected *This.Widget_S, Childrens.l, hide.b
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If Not *This
       ProcedureReturn -1
@@ -686,8 +686,8 @@ Module ListIcon
   EndProcedure
   
   Procedure ClearItems(Gadget.l)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -703,8 +703,8 @@ Module ListIcon
   EndProcedure
   
   Procedure CountItems(Gadget.l, Item.l=-1)
-    Protected Result.l, *This.Widget, sublevel.l
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S, sublevel.l
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -737,8 +737,8 @@ Module ListIcon
   EndProcedure
   
   Procedure RemoveItem(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget, sublevel.l
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S, sublevel.l
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -769,8 +769,8 @@ Module ListIcon
   EndProcedure
   
   Procedure GetItemAttribute(Gadget.l, Item.l, Attribute.l)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -792,8 +792,8 @@ Module ListIcon
   EndProcedure
   
   Procedure GetItemData(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -812,8 +812,8 @@ Module ListIcon
   EndProcedure
   
   Procedure SetItemData(Gadget.l, Item.l, *data)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -832,8 +832,8 @@ Module ListIcon
   EndProcedure
   
   Procedure GetItemColor(Gadget.l, Item.l, ColorType.l, Column.l=0)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -852,8 +852,8 @@ Module ListIcon
   EndProcedure
   
   Procedure SetItemColor(Gadget.l, Item.l, ColorType.l, Color.l, Column.l=0)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -872,8 +872,8 @@ Module ListIcon
   EndProcedure
   
   Procedure GetItemImage(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -892,8 +892,8 @@ Module ListIcon
   EndProcedure
   
   Procedure SetItemImage(Gadget.l, Item.l, image.l)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -913,8 +913,8 @@ Module ListIcon
   EndProcedure
   
   Procedure SetState(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -979,8 +979,8 @@ Module ListIcon
   EndProcedure
   
   Procedure GetState(Gadget.l)
-    Protected Result.l, *This.Widget 
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S 
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This 
       With *This
@@ -992,8 +992,8 @@ Module ListIcon
   EndProcedure
   
   Procedure SetItemState(Gadget.l, Item.l, State.l)
-    Protected Result.l, *This.Widget, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -1044,8 +1044,8 @@ Module ListIcon
   EndProcedure
   
   Procedure GetItemState(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -1073,8 +1073,8 @@ Module ListIcon
   EndProcedure
   
   Procedure.s GetText(Gadget.l)
-    Protected Result.s, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.s, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -1094,8 +1094,8 @@ Module ListIcon
   EndProcedure
   
   Procedure SetText(Gadget.l, Text.s)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -1115,8 +1115,8 @@ Module ListIcon
   EndProcedure
   
   Procedure.s GetItemText(Gadget.l, Item.l)
-    Protected Result.s, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.s, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -1136,8 +1136,8 @@ Module ListIcon
   EndProcedure
   
   Procedure SetItemText(Gadget.l, Item.l, Text.s)
-    Protected Result.l, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result.l, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -1167,7 +1167,7 @@ Module ListIcon
     Protected WheelDelta = GetGadgetAttribute(Canvas, #PB_Canvas_WheelDelta)
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
-    Protected *This.Widget = GetGadgetData(Canvas)
+    Protected *This.Widget_S = GetGadgetData(Canvas)
     Static MoveX, MoveY
     
     If *This
@@ -1290,7 +1290,7 @@ Module ListIcon
   Procedure.l Gadget(Gadget.l, x.l, y.l, width.l, height.l, ColumnTitle.s, ColumnWidth.l, flag.l=0)
     Protected g = CanvasGadget(Gadget, x, y, width, height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget = g : EndIf
     
-    Protected *This.Widget=AllocateStructure(Widget)
+    Protected *This.Widget_S=AllocateStructure(Widget_S)
     If *This
       With *This
         If Not flag&#BorderLess
@@ -1353,8 +1353,8 @@ Module ListIcon
   EndProcedure
   
   Procedure Free(Gadget.l)
-    Protected Result, *This.Widget
-    If IsGadget(Gadget) : *This.Widget = GetGadgetData(Gadget) : EndIf
+    Protected Result, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       FreeStructure(*This)
