@@ -135,7 +135,7 @@
     Buttons.i
     
     ; edit
-    Pos.i[2] ; 0 = Pos ; 1 = PosFixed
+    LinePos.i[2] ; 0 = Pos ; 1 = PosFixed
     Caret.i[2] ; 0 = Pos ; 1 = PosFixed
     
     ; tree
