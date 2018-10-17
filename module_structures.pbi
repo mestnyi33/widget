@@ -71,7 +71,7 @@
     Vertical.b
     Rotate.f
     
-    Caret.i[2] ; 0 = Pos ; 1 = PosFixed
+    Caret.i[3] ; 0 = Pos ; 1 = PosFixed
     
     Mode.i
   EndStructure
