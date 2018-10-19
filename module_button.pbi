@@ -27,9 +27,9 @@ DeclareModule Button
   ;- - DECLAREs PRACEDUREs
   Declare.i GetState(*This.Widget_S)
   Declare.i SetState(*This.Widget_S, Value.i)
-  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1) ; .i CallBack(*This.Widget_S, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
-  Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+  Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   
 EndDeclareModule
 
@@ -44,10 +44,20 @@ Module Button
   Procedure.i SetState(*This.Widget_S, Value.i)
     Protected Result
     
-    If *This\Toggle <> Bool(Value)
-      *This\Toggle = Bool(Value)
-      Result = #True
-    EndIf
+    With *This
+      If \Toggle And 
+         \Checked <> Bool(Value)
+        \Checked[1] = \Checked
+        \Checked = Bool(Value)
+        
+        \Color\Fore = \Color\Fore[3]
+        \Color\Back = \Color\Back[3]
+        \Color\Frame = \Color\Frame[3]
+        \Color\Line = \Color\Line[3]
+        
+        Result = #True
+      EndIf
+    EndWith
     
     ProcedureReturn Result
   EndProcedure
@@ -287,7 +297,7 @@ Module Button
     ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
   EndProcedure
   
-  Procedure Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+  Procedure Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
         \Type = #PB_GadgetType_Button
@@ -329,13 +339,6 @@ Module Button
         \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
         \bSize = \fSize
         
-        If IsImage(Image)
-          \Image\handle[1] = Image
-          \Image\handle = ImageID(Image)
-          \Image\width = ImageWidth(Image)
-          \Image\height = ImageHeight(Image)
-        EndIf
-        
         If Resize(*This, X,Y,Width,Height, Canvas)
           \Default = Bool(Flag&#PB_Widget_Default)
           \Toggle = Bool(Flag&#PB_Widget_Toggle)
@@ -350,31 +353,64 @@ Module Button
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
           
-          If \Text\Vertical
-            \Text\X = \fSize 
-            \Text\y = \fSize+12 ; 2,6,1
-          Else
-            \Text\X = \fSize+12 ; 2,6,12 
-            \Text\y = \fSize
-          EndIf
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+10
+            Else
+              \Text\X = \fSize+10
+              \Text\y = \fSize
+            EndIf
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+2
+            Else
+              \Text\X = \fSize+2
+              \Text\y = \fSize
+            EndIf
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+6
+            Else
+              \Text\X = \fSize+6
+              \Text\y = \fSize
+            EndIf
+          CompilerEndIf 
           
           
           \Text\String.s = Text.s
           \Text\Change = #True
           
-          \Color[0]\Fore[1] = $F6F6F6 
-          \Color[0]\Back[1] = $E2E2E2  
-          \Color[0]\Frame[1] = $BABABA 
+          ; Default colors (based on Windows 7)
+          \Color[0]\Fore[1] = RGB(240, 240, 240)
+          \Color[0]\Back[1] = RGB(229, 229, 229)  
+          \Color[0]\Frame[1] = RGB(172, 172, 172) 
           
           ; Цвет если мышь на виджете
-          \Color[0]\Fore[2] = $EAEAEA
-          \Color[0]\Back[2] = $CECECE
-          \Color[0]\Frame[2] = $8F8F8F
+          \Color[0]\Fore[2] = RGB(236, 244, 252)
+          \Color[0]\Back[2] = RGB(220, 236, 252) ;  $FAEFE4 ; 
+          \Color[0]\Frame[2] = RGB(0, 160, 252)  ; $F5C775 ; 
           
           ; Цвет если нажали на виджет
-          \Color[0]\Fore[3] = $E2E2E2
-          \Color[0]\Back[3] = $B4B4B4
-          \Color[0]\Frame[3] = $6F6F6F
+          \Color[0]\Fore[3] = RGB(218, 236, 252)
+          \Color[0]\Back[3] = RGB(196, 224, 252)
+          \Color[0]\Frame[3] = RGB(86, 157, 229)
+          
+;           \Color[0]\Fore[1] = $F6F6F6 
+;           \Color[0]\Back[1] = $E2E2E2  
+;           \Color[0]\Frame[1] = $BABABA 
+;           
+;           ; Цвет если мышь на виджете
+;           \Color[0]\Fore[2] = $EAEAEA
+;           \Color[0]\Back[2] = $CECECE
+;           \Color[0]\Frame[2] = $8F8F8F
+;           
+;           ; Цвет если нажали на виджет
+;           \Color[0]\Fore[3] = $E2E2E2
+;           \Color[0]\Back[3] = $B4B4B4
+;           \Color[0]\Frame[3] = $6F6F6F
           
           ; Устанавливаем цвет по умолчанию первый
           ResetColor(*This)
@@ -385,7 +421,7 @@ Module Button
     ProcedureReturn *This
   EndProcedure
   
-  Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+  Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     Protected *Widget, *This.Widget_S = AllocateStructure(Widget_S)
     
     If *This
@@ -395,7 +431,7 @@ Module Button
       *This\Handle = *Widget
       List()\Widget = *This
       
-      Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius, Image)
+      Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
     EndIf
     
     ProcedureReturn *This
@@ -411,14 +447,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *Button_0.Widget_S = AllocateStructure(Widget_S)
   Global *Button_1.Widget_S = AllocateStructure(Widget_S)
   
-  UsePNGImageDecoder()
-  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
-    End
-  EndIf
-  If Not LoadImage(10, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png")
-    End
-  EndIf
-  
   Procedure CallBacks()
     Protected Result
     Protected Canvas = EventGadget()
@@ -432,7 +460,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select EventType()
       Case #PB_EventType_Resize
         Resize(*Button_0, Width-70, #PB_Ignore, #PB_Ignore, Height-20)
-        Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-50, #PB_Ignore)
+        Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
         
         Result = 1
       Default
@@ -477,15 +505,28 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
-  LoadFont(0, "Arial", 18)
   
-  If OpenWindow(0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    LoadFont(0, "Arial", 18)
+    ; SetGadgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "Times New Roman", 13)))
+  CompilerElse
+    LoadFont(0, "Arial", 16)
+    ; SetGadgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "", 9)))
+  CompilerEndIf 
+  
+  If OpenWindow(0, 0, 0, 222+222, 205, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    
     ButtonGadget(0, 10, 10, 200, 20, "Standard Button")
     ButtonGadget(1, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
     ButtonGadget(2, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
-    ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine|#PB_Button_Default)
-    ButtonGadget(4, 10,170, 200, 60, "Multiline Button  (longer text gets automatically multiline)", #PB_Button_MultiLine|#PB_Button_Default)
-    ButtonGadget(5, 10,170+70, 200, 20, "Toggle Button", #PB_Button_Toggle)
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+      ButtonGadget(3, 10,100, 200, 60, #LF$+"Multiline Button  (longer text gets automatically wrapped)"+#LF$, #PB_Button_MultiLine|#PB_Button_Default)
+    CompilerElse
+      ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine|#PB_Button_Default)
+    CompilerEndIf 
+    ButtonGadget(5, 10,170, 200, 25, "Toggle Button", #PB_Button_Toggle)
+    SetGadgetState (5,1)
+    
     
     CanvasGadget(10,  222, 0, 222, 205+70, #PB_Canvas_Keyboard)
     BindGadgetEvent(10, @CallBacks())
@@ -493,11 +534,13 @@ CompilerIf #PB_Compiler_IsMainFile
     *B_0 = Create(10, -1, 10, 10, 200, 20, "Standard Button", 0,8)
     *B_1 = Create(10, -1, 10, 40, 200, 20, "Left Button", #PB_Text_Left)
     *B_2 = Create(10, -1, 10, 70, 200, 20, "Right Button", #PB_Text_Right)
-    *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_WordWrap|#PB_Widget_Default, 4)
-    *B_4 = Create(10, -1, 10,170, 200, 60, "Multiline Button  (longer text gets automatically multiline)", #PB_Text_MultiLine, 4)
-    *B_5 = Create(10, -1, 10,170+70, 200, 25, "Toggle Button", #PB_Widget_Toggle,0, 10)
-    
-;     SetFont(*B_3, FontID(0))
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+      *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
+    CompilerElse
+      *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_WordWrap|#PB_Widget_Default, 4)
+    CompilerEndIf 
+    *B_4 = Create(10, -1, 10,170, 200, 25, "Toggle Button", #PB_Widget_Toggle,0)
+    SetState (*B_4,1)
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
@@ -521,8 +564,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndWith
     
     With *Button_1
-      ResizeImage(0, 32,32)
-      *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine,0,0)
+      *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine,0)
       ;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
       \Cursor = #PB_Cursor_Hand
       SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
@@ -549,5 +591,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------
+; Folding = --4------------
 ; EnableXP

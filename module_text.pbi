@@ -337,25 +337,19 @@ Module Text
         DrawingMode(#PB_2DDrawing_Outlined)
         
         If \Default
-          If \Radius 
-            ; Сглаживание краев)))
-            RoundBox(\X[1]+1+1,\Y[1]+2+1,\Width[1]-2-2,\Height[1]-4-2,\Radius,\Radius,$D5A719)
-          EndIf
-          
-          RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,$D5A719)
-          RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,$D5A719)
+          RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[3])
+;           If \Radius ; Сглаживание краев)))
+;             RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
+;           EndIf
+;           RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,\Color\Frame[3])
         EndIf
         
-        If \Focus = *This 
-          ;  Debug "\Focus "+\Focus
-          If \Radius 
-            ; Сглаживание краев)))
-            RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,$D5A719)
-            RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$D5A719)
+        If \Focus = *This ;  Debug "\Focus "+\Focus
+          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[3])
+          If \Radius ; Сглаживание краев))) ; RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,\Color\Frame[3])
+            RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
           EndIf
-          
-          RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$D5A719)
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$D5A719)
+          RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,\Color\Frame[3])
         Else
           If \fSize
             RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
@@ -717,7 +711,12 @@ CompilerIf #PB_Compiler_IsMainFile
     SetWindowTitle(0, Str(WindowWidth(EventWindow(), #PB_Window_FrameCoordinate)-20)+" - Text on the canvas")
   EndProcedure
   
-  LoadFont(0, "Arial", 16)
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    LoadFont(0, "Arial", 18)
+  CompilerElse
+    LoadFont(0, "Arial", 16)
+  CompilerEndIf 
+  
   Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
   ; Debug "len - "+Len(Text)
   
@@ -729,7 +728,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g=16
     CanvasGadget(g, 10, 350, 380, 330) 
     
-    Widget(*Text,g, 0, 0, 380, 330, Text.s);, #PB_Text_WordWrap);
+    Widget(*Text,g, 0, 0, 380, 330, Text.s);, #PB_Text_Center|#PB_Text_Middle);
     SetColor(*Text, #PB_Gadget_BackColor, $CCBFB4)
     SetColor(*Text, #PB_Gadget_FrontColor, $D56F1A)
     SetFont(*Text, FontID(0))
@@ -749,5 +748,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --P4--i-R----------
+; Folding = --P4--i-6----------
 ; EnableXP

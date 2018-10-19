@@ -12,6 +12,14 @@
          _this_\Canvas\Mouse\Y>=_this_\y[_buttons_] And _this_\Canvas\Mouse\Y<_this_\y[_buttons_]+_this_\Height[_buttons_])
   EndMacro
   
+  Macro isItem(_item_, _list_)
+    Bool(_item_ >= 0 And _item_ < ListSize(_list_))
+  EndMacro
+  
+  Macro itemSelect(_item_, _list_)
+    Bool(isItem(_item_, _list_) And _item_ <> ListIndex(_list_) And SelectElement(_list_, _item_))
+  EndMacro
+  
   Macro add_widget(_widget_, _hande_)
     If _widget_ =- 1 Or _widget_ > ListSize(List()) - 1
       LastElement(List())
@@ -147,5 +155,5 @@ EndModule
 
 UseModule Macros
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -AA-
+; Folding = -DA9
 ; EnableXP

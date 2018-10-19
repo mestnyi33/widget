@@ -71,7 +71,8 @@
     Vertical.b
     Rotate.f
     
-    Caret.i[3] ; 0 = Pos ; 1 = PosFixed
+    Caret.i[2] ; 0 = Pos ; 1 = PosFixed
+    Line.i[2] ; 0 = Pos ; 1 = PosFixed
     
     Mode.i
   EndStructure
@@ -134,10 +135,7 @@
     Radius.i
     Buttons.i
     
-    ; edit
-    LinePos.i[2] ; 0 = Pos ; 1 = PosFixed
-    Caret.i[2] ; 0 = Pos ; 1 = PosFixed
-    
+   
     ; tree
     time.i
     adress.i[2]
