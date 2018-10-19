@@ -139,7 +139,7 @@ Module String
             Else
               ;  \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, 0)
               \Text\String.s[2] = \Text\String.s
-              \Text\CountString = 1
+              \Text\CountString = CountString(\Text\String.s[2], #LF$) + 1
             EndIf
             
             If \Text\CountString
@@ -316,7 +316,7 @@ Module String
           
           If *This\Focus = *This 
             ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            If *This\Text\Editable And *This\Text\Caret = *This\Text\Caret[1] 
+            If *This\Text\Editable And *This\Text\Caret = *This\Text\Caret[1] And *This\Text\Line = *This\Text\Line[1] 
               DrawingMode(#PB_2DDrawing_XOr)             
               Line(((\Text[0]\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
             EndIf
