@@ -71,9 +71,6 @@
     Vertical.b
     Rotate.f
     
-    Caret.i[2] ; 0 = Pos ; 1 = PosFixed
-    Line.i[2] ; 0 = Pos ; 1 = PosFixed
-    
     Mode.i
   EndStructure
   
@@ -119,6 +116,10 @@
     Hide.b[2]
     Disable.b[2]
     Cursor.i[2]
+    
+    Caret.i[2] ; 0 = Pos ; 1 = PosFixed
+    Line.i[2] ; 0 = Pos ; 1 = PosFixed
+    
     
     Type.i
     

@@ -46,6 +46,38 @@
     #PB_Widget_Invisible
   EndEnumeration
   
+  
+  
+  #NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
+  #NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
+  
+  #CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
+  #ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    #BorderSingle = 4
+    #BorderDouble = 8
+  CompilerElse
+    #BorderSingle = 256 ; 4
+    #BorderDouble = 65535 ; 8
+  CompilerEndIf
+  
+  #BorderFlat = 16    
+  #AlwaysShowSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
+  #BorderLess = 64
+  #BorderRaised = 128  
+  
+  
+  #Selected = #PB_Tree_Selected                       ; 1
+  #Checked = #PB_Tree_Checked                         ; 4
+  #Expanded = #PB_Tree_Expanded                       ; 2
+  #Collapsed = #PB_Tree_Collapsed                     ; 8
+  
+  #FullSelection = 512 ; #PB_ListIcon_FullRowSelect
+  
+  #SmallIcon = #PB_ListIcon_LargeIcon                 ; 0 0
+  #LargeIcon = #PB_ListIcon_SmallIcon                 ; 1 1
+  
 ;   #PB_Text_Left = ~#PB_Text_Center
 ;   #PB_Text_Top = ~#PB_Text_Middle
 ;   

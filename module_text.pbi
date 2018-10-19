@@ -216,8 +216,8 @@ Module Text
                   EndIf
                   
                   AddElement(\Items())
-;                   \Items()\Text\Caret = \Text\Caret 
-;                   \Items()\Text\Caret[1] = \Text\Caret[1] 
+;                   \Items()\Text\Caret = \Caret 
+;                   \Items()\Text\Caret[1] = \Caret[1] 
                   \Items()\Text\Editable = \Text\Editable 
                   \Items()\Text\x = (\Image\Width+\Image\Width/2)+\X[1]+\Text\X+Text_X
                   \Items()\Text\y = \Y[1]+\Text\Y+Text_Y
@@ -313,7 +313,7 @@ Module Text
           
           If *This\Focus = *This 
             ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            If *This\Text\Editable And \Text\Caret = \Text\Caret[1] 
+            If *This\Text\Editable And *This\Caret = *This\Caret[1] 
               DrawingMode(#PB_2DDrawing_XOr)             
               Line(\Text[0]\X + \Text[1]\Width, \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
             EndIf
