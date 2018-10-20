@@ -314,13 +314,13 @@ Module String
           Next
           PopListPosition(*This\Items()) ; 
           
-          If *This\Focus = *This 
+;           If *This\Focus = *This 
             ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
             If *This\Text\Editable And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] 
               DrawingMode(#PB_2DDrawing_XOr)             
               Line(((\Text[0]\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
             EndIf
-          EndIf
+;           EndIf
         EndWith  
       EndIf
       
@@ -377,11 +377,11 @@ Module String
   EndProcedure
   
   Procedure SelectionText(*This.Widget_S) ; Ok
-    Static Caret.i =- 1, Line.i =- 1
+    Static Caret.i =- 1, Caret1.i =- 1, Line.i =- 1
     Protected Position.i
     
     With *This\Items()
-      If (Caret <> *This\Caret Or Line <> *This\Line)
+      If (Caret <> *This\Caret Or Caret1 <> *This\Caret[1] Or Line <> *This\Line)
         \Text[2]\String.s = ""
         
         ; Если выделяем снизу вверх
@@ -424,6 +424,7 @@ Module String
         
         Line = *This\Line
         Caret = *This\Caret
+        Caret1 = *This\Caret[1]
       EndIf
     EndWith
     
@@ -682,47 +683,31 @@ Module String
               Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = 0 : *This\Caret[1] = *This\Caret : Repaint = #True 
               Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = \Text\Len : *This\Caret[1] = *This\Caret : Repaint = #True 
                 
-              Case #PB_Shortcut_Left, #PB_Shortcut_Up : \Text[2]\String.s = ""
-                If *This\Caret[1] > 0 : *This\Caret - 1 
-                  If *This\Caret[1] <> *This\Caret
-                    If \Text[2]\Len 
-                      If *This\Caret > *This\Caret[1] 
-                        *This\Caret = *This\Caret[1] 
-                        *This\Caret[1] = *This\Caret 
-                      Else
-                        *This\Caret[1] = *This\Caret + 1 
-                        *This\Caret = *This\Caret[1] 
-                      EndIf
-                      \Text[2]\Len = 0
-                    Else
-                      *This\Caret[1] = *This\Caret 
-                    EndIf
-                    
-                    \Text[3]\Change = 1
+              Case #PB_Shortcut_Left, #PB_Shortcut_Up ; Ok
+                If *This\Caret[1] >= 0
+                  If \Text[2]\Len
+                    If *This\Caret > *This\Caret[1] 
+                      Swap *This\Caret, *This\Caret[1]
+                    EndIf      
+                  Else         
+                    *This\Caret - 1 
                   EndIf
                   
+                  *This\Caret[1] = *This\Caret 
                   Repaint =- 1 
                 EndIf
-                
-              Case #PB_Shortcut_Right, #PB_Shortcut_Down : \Text[2]\String.s = ""
-                If *This\Caret[1] < \Text\Len : *This\Caret[1] + 1 
-                  If *This\Caret <> *This\Caret[1]
-                    If \Text[2]\Len 
-                      If *This\Caret > *This\Caret[1] 
-                        *This\Caret = *This\Caret[1] + \Text[2]\Len - 1 
-                        *This\Caret[1] = *This\Caret
-                      Else
-                        *This\Caret = *This\Caret[1] - 1
-                        *This\Caret[1] = *This\Caret
-                      EndIf
-                      \Text[2]\Len = 0
-                    Else
-                      *This\Caret = *This\Caret[1] 
+               
+              Case #PB_Shortcut_Right, #PB_Shortcut_Down ; Ok
+                If *This\Caret[1] =< \Text\Len
+                  If \Text[2]\Len 
+                    If *This\Caret > *This\Caret[1] 
+                      Swap *This\Caret, *This\Caret[1]
                     EndIf
-                    
-                    \Text[3]\Change = 1
+                  Else
+                    *This\Caret[1] + 1 
                   EndIf
                   
+                  *This\Caret = *This\Caret[1] 
                   Repaint =- 1 
                 EndIf
                 
@@ -804,11 +789,13 @@ Module String
             
         EndSelect
         
+        If Repaint
+          \Text[3]\Change = Bool(Repaint =- 1)
+          
+          SelectionText(*This)
+        EndIf
       EndWith
       
-      If Repaint
-        SelectionText(*This)
-      EndIf
     EndIf
     
     ProcedureReturn Repaint
@@ -829,7 +816,7 @@ Module String
         \Alpha = 255
         \Interact = 1
         \Caret[1] =- 1
-        \Line =- 1
+
         
         ; Set the default widget flag
         If Bool(Flag&#PB_Text_Top)
@@ -1029,5 +1016,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -4------jz--f-8--f-v---40-
+; Folding = -4------j64-v-0-8v-o+--u-
 ; EnableXP
