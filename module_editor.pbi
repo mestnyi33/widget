@@ -276,9 +276,8 @@ Module Editor
                   ClipOutput(*This\X[2]+*This\Text[0]\X-1,*This\Y[2],*This\Width[2]-*This\Text[0]\X*2+2,*This\Height[2]) ; Bug in Mac os
                 CompilerEndIf
                 
-                If *This\Text\Editable And \Text[2]\Len ; And #PB_Compiler_OS <> #PB_OS_MacOS
-                  
-                  
+                If *This\Text\Editable And \Text[2]\Len > 0  And #PB_Compiler_OS <> #PB_OS_MacOS
+                   
                   If \Text[2]\String.s
                     If *This\Line[1] = *This\Line And *This\Caret[1]>*This\Caret
                       \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
@@ -292,7 +291,7 @@ Module Editor
                   If \Text\String.s = \Text[1]\String.s+\Text[2]\String.s
                     DrawingMode(#PB_2DDrawing_Default)
                     ; Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Width-((\Text[2]\X-\Text\X)+*This\Scroll\X), \Text\Height, $D77800)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width, \Text\Height, $D77800)
+                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[3]\Len, \Text\Height, $D77800)
                     
                     DrawingMode(#PB_2DDrawing_Transparent)
                     DrawText((\Text\X+*This\Scroll\X), \Text\Y, \Text\String.s, $FFFFFF)
@@ -311,7 +310,7 @@ Module Editor
                       
                       If \Text[2]\String.s
                         DrawingMode(#PB_2DDrawing_Default)
-                        Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width, \Text\Height, $D77800)
+                        Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[3]\Len, \Text\Height, $D77800)
                         
                         DrawingMode(#PB_2DDrawing_Transparent)
                         DrawText((\Text\X+*This\Scroll\X), \Text\Y, \Text[1]\String.s+\Text[2]\String.s, $FFFFFF)
@@ -351,13 +350,9 @@ Module Editor
                   ; ; ;                     DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text[0]\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                   ; ; ;                   EndIf
                 Else
-                  If \Text[2]\Len
+                  If \Text[2]\Len > 0
                     DrawingMode(#PB_2DDrawing_Default);|#PB_2DDrawing_AlphaBlend)
-                    If \Text\String.s = (\Text[1]\String.s+\Text[2]\String.s)
-                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Width-((\Text[2]\X-\Text\X)+*This\Scroll\X), \Text\Height, ($FADBB3));&back_color)|item_alpha<<24)
-                    Else
-                      Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width, \Text[0]\Height+1, ($FADBB3));&back_color)|item_alpha<<24)
-                    EndIf
+                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[3]\Len, \Text[0]\Height+1, ($FADBB3));&back_color)|item_alpha<<24)
                   EndIf
                   DrawingMode(#PB_2DDrawing_Transparent)
                   DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
@@ -437,6 +432,7 @@ Module Editor
   EndProcedure
   
   Procedure Caret(*This.Widget_S, Line.i = 0)
+    Static LastLine
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
     
@@ -452,9 +448,9 @@ Module Editor
         
         If ListSize(\Items())
           X = (\Items()\Text\X+\Scroll\X)
-          Len = \Items()\Text\Len
+          Len = \Items()\Text\Len; + Len(" ")
           FontID = \Items()\Text\FontID
-          String.s = \Items()\Text\String.s
+          String.s = \Items()\Text\String.s;+" "
           If Not FontID : FontID = \Text\FontID : EndIf
           
           If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
@@ -471,6 +467,36 @@ Module Editor
               EndIf
             Next
             
+            ; Длина переноса строки
+            If LastLine <> \Line
+              \Items()\Text[3]\Len = 0
+              
+              PushListPosition(\Items())
+              If \Line[1] > \Line
+                \Items()\Text[3]\Len = \Items()\Width-\Items()\Text\Width
+                If Position = len
+                  If \Items()\Text[2]\Len = 0
+                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                    \Items()\Text[2]\Len = 1
+                  EndIf 
+                EndIf
+              ElseIf \Line[1] < \Line
+                If PreviousElement(*This\Items())
+                  If Position = len
+                    If \Items()\Text[2]\Len = 0
+                      \Items()\Text[2]\Width = 0
+                      \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                      \Items()\Text[2]\Len = 1
+                    EndIf  
+                  EndIf
+                  \Items()\Text[3]\Len = \Items()\Width-\Items()\Text\Width
+                EndIf
+              EndIf
+              PopListPosition(\Items())
+              
+              LastLine = \Line
+            EndIf
+          
             StopDrawing()
           EndIf
         EndIf
@@ -504,6 +530,8 @@ Module Editor
   EndProcedure
   
   Procedure Remove(*This.Widget_S)
+    Protected Remove
+    
     With *This\Items()
       
      ;If *This\Caret > *This\Caret[1] : *This\Caret = *This\Caret[1] : EndIf
@@ -511,9 +539,11 @@ Module Editor
 ;      PushListPosition(*This\Items())
       ForEach *This\Items() 
         If \Text[2]\Len = \Text\Len ; And 
-;            *This\Line[1] <> ListIndex(*This\Items())
+                                    ;            *This\Line[1] <> ListIndex(*This\Items())
           DeleteElement(*This\Items(), 1)
-        ElseIf \Text[2]\Len
+          Remove + 1
+          
+        ElseIf \Text[2]\Len > 0
           \Text\String.s = RemoveString(\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, 0, 1) ; *This\Caret
           \Text\String.s[1] = RemoveString(\Text\String.s[1], \Text[2]\String.s, #PB_String_CaseSensitive, 0, 1) ; *This\Caret
           \Text[2]\String.s[1] = \Text[2]\String.s
@@ -529,6 +559,8 @@ Module Editor
 ;       EndIf
       
     EndWith
+    
+    ProcedureReturn Remove
   EndProcedure
   
   Procedure SelectionText(*This.Widget_S) ; Ok
@@ -539,18 +571,35 @@ Module Editor
       If (Caret <> *This\Caret Or Line <> *This\Line Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1]))
         \Text[2]\String.s = ""
         
-        ; Если выделяем снизу вверх
         PushListPosition(*This\Items())
-        If (*This\Line[1] > *This\Line)
-          If PreviousElement(*This\Items()) And \Text[2]\Len : \Text[2]\Len = 0 : EndIf
+        If *This\Line[1] = *This\Line
+          If *This\Caret[1] = *This\Caret And \Text[2]\Len > 0 
+            \Text[2]\Len = 0 
+          EndIf
+          If PreviousElement(*This\Items()) And \Text[2]\Len > 0 
+            \Text[3]\Len = 0 
+            \Text[2]\Len = 0 
+          EndIf
+        ElseIf *This\Line[1] > *This\Line
+          If PreviousElement(*This\Items()) And \Text[2]\Len > 0 
+            \Text[2]\Len = 0 
+          EndIf
         Else
-          If NextElement(*This\Items()) And \Text[2]\Len : \Text[2]\Len = 0 : EndIf
+          If NextElement(*This\Items()) And \Text[2]\Len > 0 
+            \Text[2]\Len = 0 
+          EndIf
         EndIf
         PopListPosition(*This\Items())
         
         If *This\Line[1] = *This\Line
+          If *This\Caret[1] = *This\Caret 
+            Position = *This\Caret[1]
+            If *This\Caret[1] = \Text\Len
+             ; Debug 555
+            ;  \Text[2]\Len =- 1
+            EndIf
           ; Если выделяем с право на лево
-          If *This\Caret[1] > *This\Caret 
+          ElseIf *This\Caret[1] > *This\Caret 
             ; |<<<<<< to left
             Position = *This\Caret
             \Text[2]\Len = (*This\Caret[1]-Position)
@@ -564,7 +613,9 @@ Module Editor
         ElseIf *This\Line[1] > *This\Line
           ; <<<<<|
           Position = *This\Caret
-          \Text[2]\Len = \Text\Len-Position
+          If \Text\Len<>Position
+            \Text[2]\Len = \Text\Len-Position
+          EndIf
         Else
           ; >>>>>|
           Position = 0
@@ -572,7 +623,7 @@ Module Editor
         EndIf
         
         \Text[1]\String.s = Left(\Text\String.s, Position) : \Text[1]\Change = #True
-        If \Text[2]\Len
+        If \Text[2]\Len > 0
           \Text[2]\String.s = Mid(\Text\String.s, 1+Position, \Text[2]\Len) : \Text[2]\Change = #True
         EndIf
         \Text[3]\String.s = Right(\Text\String.s, \Text\Len-(Position + \Text[2]\Len)) : \Text[3]\Change = #True
@@ -635,10 +686,10 @@ Module Editor
     
     With *This\Items()
       If ListSize(*This\Items()) 
-        ;If \Text[2]\Len
+        ;If \Text[2]\Len > 0
         If *This\Line[1] = *This\Line
           Debug "Cut Black"
-          If \Text[2]\Len
+          If \Text[2]\Len > 0
             RemoveText(*This)
           Else
             \Text[2]\String.s[1] = Mid(\Text\String.s, *This\Caret, 1)
@@ -649,7 +700,7 @@ Module Editor
         Else
           Debug " Cut " +*This\Caret +" "+ *This\Caret[1]+" "+\Text[2]\Len
           
-          If \Text[2]\Len
+          If \Text[2]\Len > 0
             ;If *This\Line > *This\Line[1] 
             RemoveText(*This)
             ;EndIf
@@ -665,7 +716,7 @@ Module Editor
             
             PushListPosition(*This\Items())
             ForEach *This\Items() 
-              If \Text[2]\Len
+              If \Text[2]\Len > 0
                 If \Text[2]\Len = \Text\Len
                   DeleteElement(*This\Items(), 1) 
                 Else
@@ -686,7 +737,7 @@ Module Editor
             ;               
             ;             PushListPosition(*This\Items())
             ;             ForEach *This\Items() 
-            ;               If \Text[2]\Len
+            ;               If \Text[2]\Len > 0
             ;                 If \Text[2]\Len = \Text\Len
             ;                   DeleteElement(*This\Items(), 1) 
             ;                 Else
@@ -725,7 +776,7 @@ Module Editor
           
           PushListPosition(*This\Items())
           ForEach *This\Items()
-            If \Text[2]\Len 
+            If \Text[2]\Len > 0 
               Debug "  Cut_2_ForEach"
               If \Text[2]\Len = \Text\Len
                 DeleteElement(*This\Items(), 1) 
@@ -748,7 +799,7 @@ Module Editor
     With *This
       PushListPosition(\Items())
       ForEach \Items()
-        If \Items()\Text[2]\Len 
+        If \Items()\Text[2]\Len > 0 
           String.s+\Items()\Text[2]\String.s+#LF$
         EndIf
       Next
@@ -791,7 +842,7 @@ Module Editor
         EndIf
         
         ForEach *This\Items() 
-          If \Text[2]\Len
+          If \Text[2]\Len > 0
             If \Text[2]\Len = \Text\Len
               DeleteElement(*This\Items(), 1) 
             Else
@@ -846,7 +897,7 @@ Module Editor
     
     With *This
       If \Caret[1] >= 0 
-        If \Items()\Text[2]\Len
+        If \Items()\Text[2]\Len > 0
           If \Caret > \Caret[1] 
             Swap \Caret, \Caret[1]
           EndIf      
@@ -874,7 +925,7 @@ Module Editor
     
     With *This
       If \Caret[1] =< \Items()\Text\Len
-        If \Items()\Text[2]\Len 
+        If \Items()\Text[2]\Len > 0 
           If \Caret > \Caret[1] 
             Swap \Caret, \Caret[1]
           EndIf
@@ -945,14 +996,14 @@ Module Editor
             
             AddElement(\Items())
             \Items()\Text\Vertical = \Text\Vertical
+            \Items()\Text\Width = TextWidth(String)
             If \Text\Rotate = 270
               \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y+\Text\Height+\Text\X
               \Items()\Text\y = \Y[1]+\Text\X+Text_X
             Else
               \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y
-              \Items()\Text\y = \Y[1]+\Text\X+Text_X+StringWidth
+              \Items()\Text\y = \Y[1]+\Text\X+Text_X+\Items()\Text\Width
             EndIf
-            \Items()\Text\Width = StringWidth
             \Items()\Text\Height = \Text\Height
             \Items()\Text\String.s = String.s
             \Items()\Text\Len = Len(String.s)
@@ -962,7 +1013,7 @@ Module Editor
         Else
           For IT = 1 To \Text\CountString
             String = StringField(\Text\String.s[2], IT, #LF$)
-            StringWidth = TextWidth(RTrim(String))
+            StringWidth = TextWidth(RTrim(String)) ;???????? вроде у кнопки выравнивать текст в середине
             
             If \Text\Align\Right
               Text_X=(Width-StringWidth) 
@@ -979,7 +1030,7 @@ Module Editor
             
             \Items()\Text\x = (\Image\Width+\Image\Width/2)+\X[1]+\Text\X+Text_X
             \Items()\Text\y = \Y[1]+\Text\Y+Text_Y
-            \Items()\Text\Width = StringWidth
+            \Items()\Text\Width = TextWidth(String)
             \Items()\Text\Height = \Text\Height
             \Items()\Text\String.s = String.s
             \Items()\Text\Len = Len(String.s)
@@ -1080,7 +1131,7 @@ Module Editor
               Next
               PopListPosition(\Items())
               
-              If \Items()\Text[2]\Len
+              If \Items()\Text[2]\Len > 0
                 \Text[2]\Len = 1
               Else
                 \Caret = Caret(*This, Item) 
@@ -1279,17 +1330,40 @@ Module Editor
               Case #PB_Shortcut_Back 
                 If *This\Caret[1] >= 0
                   
-                  If \Text[2]\Len
+                  If \Text[2]\Len ; Если начали виделят с канца строки поэтому не \Text[2]\Len > 0
                     If *This\Caret > *This\Caret[1] 
                       Swap *This\Caret, *This\Caret[1]
                     EndIf      
+                     
+                    String = \Text[1]\String.s
+                    Remove(*This)
+                    itemSelect(*This\Line[1], *This\Items())
                     
-                    RemoveText(*This)
+                    If *This\Line[1] > 0 
+                        ;If *This\Caret > 0
+                          If *This\Caret <> \Text[2]\Len ; *This\Caret[1] And \Text[2]\Len < 1
+                            Debug "ddd "+*This\Caret 
+                            DeleteElement(*This\Items())
+                            itemSelect(*This\Line[1], *This\Items())
+                            
+                            *This\Caret = Len(String.s)
+                            \Text[1]\String.s = String.s
+                            \Text[3]\String.s = \Text\String.s
+                            \Text\String.s = String.s + \Text\String.s
+                            \Text\Len = Len(\Text\String.s)
+                          EndIf
+                          
+                          
+                        ;EndIf
+                        AddString(*This)
+                      EndIf
+                      
+                    itemSelect(*This\Line[1], *This\Items()) : *This\Line = *This\Line[1]
                   Else         
                     If *This\Caret = 0
                       ; Если дошли до начала строки то 
                       ; переходим в конец предыдущего итема
-                      String = \Text\String.s
+                      String = \Text[3]\String.s
                       If *This\Line[1] > 0 
                         DeleteElement(*This\Items())
                         
@@ -1324,7 +1398,7 @@ Module Editor
               Case #PB_Shortcut_Return ;- Return
                 Debug "Return "+ListIndex(*This\Items())
                 
-                If \Text[2]\Len  ; (*This\Caret[1] <> *This\Caret) Or (*This\Line <> *This\Line[1])
+                If \Text[2]\Len > 0  ; (*This\Caret[1] <> *This\Caret) Or (*This\Line <> *This\Line[1])
                   Remove(*This)
                   
                   ;*This\Caret = 0
@@ -1421,7 +1495,7 @@ Module Editor
                   Protected ClipboardText.s = Trim(GetClipboardText(), #CR$)
                   
                   If ClipboardText.s
-                    If \Text[2]\Len
+                    If \Text[2]\Len > 0
                       RemoveText(*This)
                       
                       If \Text[2]\Len = \Text\Len
@@ -1431,7 +1505,7 @@ Module Editor
                       ;                         
                       PushListPosition(*This\Items())
                       ForEach *This\Items()
-                        If \Text[2]\Len 
+                        If \Text[2]\Len > 0 
                           If \Text[2]\Len = \Text\Len
                             DeleteElement(*This\Items(), 1) 
                           Else
@@ -1856,5 +1930,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -v--4-9z--w--------X0+-----v0v---------v--
+; Folding = -v--4-9X-f5----------2-----+-b-8---------f--
 ; EnableXP
