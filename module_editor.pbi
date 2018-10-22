@@ -273,20 +273,20 @@ Module Editor
                 EndIf
                 
                 ;If *This\Focus = *This 
-                  Protected Left,Right
-                  Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
-                  Right = (*This\Width[2]-*This\Text\X-1) + Left
-                  
-                  If *This\Scroll\X < Left
-                    *This\Scroll\X = Left
-                  ElseIf *This\Scroll\X > Right
-                    *This\Scroll\X = Right
-                  ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1]) ; Back string
-                    *This\Scroll\X = ((*This\Width[2]-*This\Text\X-1)-\Text[3]\Width) + Left
-                    If *This\Scroll\X>0
-                      *This\Scroll\X=0
-                    EndIf
+                Protected Left,Right
+                Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
+                Right = (*This\Width[2]-*This\Text\X-1) + Left
+                
+                If *This\Scroll\X < Left
+                  *This\Scroll\X = Left
+                ElseIf *This\Scroll\X > Right
+                  *This\Scroll\X = Right
+                ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1]) ; Back string
+                  *This\Scroll\X = ((*This\Width[2]-*This\Text\X-1)-\Text[3]\Width) + Left
+                  If *This\Scroll\X>0
+                    *This\Scroll\X=0
                   EndIf
+                EndIf
                 ;EndIf
                 
                 CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
@@ -355,11 +355,8 @@ Module Editor
                     EndIf
                     If \Text[2]\String.s
                       DrawingMode(#PB_2DDrawing_Default)
-                      ;                   If \Text[0]\String.s = \Text[1]\String.s+\Text[2]\String.s
-                      ;                     Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y,*This\width[2]-\Text[2]\X, \Text[0]\Height, $DE9541)
-                      ;                   Else
-                      Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width, \Text[0]\Height+1, $DE9541)
-                      ;                   EndIf
+                      Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, $D77800) ; DE9541)
+                      
                       DrawingMode(#PB_2DDrawing_Transparent)
                       DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFF)
                     EndIf
@@ -372,7 +369,7 @@ Module Editor
                 Else
                   If \Text[2]\Len > 0
                     DrawingMode(#PB_2DDrawing_Default);|#PB_2DDrawing_AlphaBlend)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height+1, ($FADBB3));&back_color)|item_alpha<<24)
+                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, ($FADBB3));&back_color)|item_alpha<<24)
                   EndIf
                   DrawingMode(#PB_2DDrawing_Transparent)
                   DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
@@ -494,49 +491,16 @@ Module Editor
             Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
             
             
-;             If \Line >= \Line[1] And
-;                LastItem <> Item
-;               
-;               If Position = len
-;                 
-;                 
-;                 If Item = \Line
-;                   Debug "show "
-;                   If Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-;                       \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-;                   EndIf 
-;                   If Not SelectionLen
-;                     \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-;                   Else
-;                     \Items()\Text[2]\Width[2] = SelectionLen
-;                   EndIf
-;                 Else
-;                   Debug "hide " ; If \Line < LastItem
-;                   If \Line = \Line[1]
-;                     \Items()\Text[2]\Len = 0
-;                     \Items()\Text[2]\Width = 0
-;                   EndIf
-;                   \Items()\Text[2]\Width[2] = 0
-;                   ; EndIf
-;                 EndIf
-;               EndIf
-;               
-;               LastItem = Item
-;             EndIf
-            
             If LastLine <> \Line Or LastItem <> Item
-;               If \Line[1] <> \Line
-                \Items()\Text[2]\Width[2] = 0
-;               EndIf
+              \Items()\Text[2]\Width[2] = 0
               
-              If \Line[1] = \Line ; Если начинаем виделят сверху вниз
+              If \Line[1] = \Line 
                 If Position = len
-                  Debug 555
                   If Item = \Line
                     If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                  EndIf 
-                  If Not SelectionLen
+                      \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                    EndIf 
+                    If Not SelectionLen
                       \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
                     Else
                       \Items()\Text[2]\Width[2] = SelectionLen
@@ -575,6 +539,183 @@ Module Editor
                 Else
                   \Items()\Text[2]\Width[2] = SelectionLen
                 EndIf
+                
+                ;If PreviousElement(*This\Items())
+                If Position = len
+                  If Item < \Line
+                    ;If Not \Items()\Text[2]\Len 
+                    \Items()\Text[2]\Len = 1
+                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                    ;EndIf 
+                    Debug  \Items()\Text\String
+                    If Not SelectionLen
+                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                    Else
+                      \Items()\Text[2]\Width[2] = SelectionLen
+                    EndIf
+                  EndIf
+                EndIf
+                ;EndIf
+                
+                
+              EndIf
+              
+              LastItem = Item
+              LastLine = \Line
+            EndIf
+            PopListPosition(\Items())
+            
+            StopDrawing()
+          EndIf
+        EndIf
+        
+      ElseIf LastElement(*This\Items())
+        ; Иначе, если ниже всех линии текста,
+        ; то позиция коректора конец текста.
+        Position = \Items()\Text\Len
+      EndIf
+    EndWith
+    
+    ProcedureReturn Position
+  EndProcedure
+  
+  Procedure _2Caret(*This.Widget_S, Line.i = 0)
+    Static LastLine.i,  LastItem.i
+    Protected Item.i, SelectionLen.i=0
+    Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
+              CursorX.i, Distance.f, MinDistance.f = Infinity()
+    
+    With *This
+      If Line < 0 And FirstElement(*This\Items())
+        ; А если выше всех линии текста,
+        ; то позиция коректора начало текста.
+        Position = 0
+      ElseIf Line < ListSize(*This\Items()) And 
+             SelectElement(*This\Items(), Line)
+        ; Если находимся на линии текста, 
+        ; то получаем позицию коректора.
+        
+        If ListSize(\Items())
+          X = (\Items()\Text\X+\Scroll\X)
+          Len = \Items()\Text\Len; + Len(" ")
+          FontID = \Items()\Text\FontID
+          String.s = \Items()\Text\String.s;+" "
+          If Not FontID : FontID = \Text\FontID : EndIf
+          
+          If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
+            If FontID : DrawingFont(FontID) : EndIf
+            
+            For i = 0 To Len
+              CursorX = X + TextWidth(Left(String.s, i))
+              Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
+              
+              ; Получаем позицию коpректора
+              If MinDistance > Distance 
+                MinDistance = Distance
+                Position = i
+              EndIf
+            Next
+            
+            ; Длина переноса строки
+            PushListPosition(\Items())
+            Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
+            
+            
+            ;             If \Line >= \Line[1] And
+            ;                LastItem <> Item
+            ;               
+            ;               If Position = len
+            ;                 
+            ;                 
+            ;                 If Item = \Line
+            ;                   Debug "show "
+            ;                   If Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+            ;                       \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+            ;                   EndIf 
+            ;                   If Not SelectionLen
+            ;                     \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+            ;                   Else
+            ;                     \Items()\Text[2]\Width[2] = SelectionLen
+            ;                   EndIf
+            ;                 Else
+            ;                   Debug "hide " ; If \Line < LastItem
+            ;                   If \Line = \Line[1]
+            ;                     \Items()\Text[2]\Len = 0
+            ;                     \Items()\Text[2]\Width = 0
+            ;                   EndIf
+            ;                   \Items()\Text[2]\Width[2] = 0
+            ;                   ; EndIf
+            ;                 EndIf
+            ;               EndIf
+            ;               
+            ;               LastItem = Item
+            ;             EndIf
+            
+            If LastLine <> \Line Or LastItem <> Item
+              ;               If \Line[1] <> \Line
+              \Items()\Text[2]\Width[2] = 0
+              ;               EndIf
+              
+              If \Line[1] = \Line ; Если начинаем виделят сверху вниз
+                If Position = len
+                  Debug 555
+                  If Item = \Line
+                    If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+                      \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                    EndIf 
+                    If Not SelectionLen
+                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                    Else
+                      \Items()\Text[2]\Width[2] = SelectionLen
+                    EndIf
+                  EndIf
+                EndIf
+                
+              ElseIf \Line[1] < \Line ; Если начинаем виделят сверху вниз
+                If Position = len
+                  If Item = \Line
+                    If Not SelectionLen
+                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                    Else
+                      \Items()\Text[2]\Width[2] = SelectionLen
+                    EndIf
+                  EndIf
+                EndIf
+                
+                If PreviousElement(*This\Items())
+                  If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                  EndIf 
+                  If Not SelectionLen
+                    \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                  Else
+                    \Items()\Text[2]\Width[2] = SelectionLen
+                  EndIf
+                EndIf
+                
+              ElseIf \Line[1] > \Line ; Если начинаем виделят снизу вверх
+                If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+                  \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                EndIf 
+                If Not SelectionLen
+                  \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                Else
+                  \Items()\Text[2]\Width[2] = SelectionLen
+                EndIf
+                Debug  5646
+                If PreviousElement(*This\Items())
+                  If Position = len
+                    If Item = \Line
+                      If Not SelectionLen
+                        \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                      Else
+                        \Items()\Text[2]\Width[2] = SelectionLen
+                      EndIf
+                    EndIf
+                  EndIf
+                EndIf
+                
+                
               EndIf
               
               LastItem = Item
@@ -1037,10 +1178,6 @@ Module Editor
     Protected IT, String.s, StringWidth, Text_Y,Text_X,Width,Height
     
     With *This
-      If \Text\FontID 
-        DrawingFont(\Text\FontID) 
-      EndIf
-      
       If \Text\Vertical
         Width = \Height[1]-\Text\X*2
         Height = \Width[1]-\Text\y*2
@@ -1066,7 +1203,6 @@ Module Editor
           Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
         EndIf
         
-        DrawingMode(#PB_2DDrawing_Transparent)
         If \Text\Vertical
           For IT = \Text\CountString To 1 Step - 1
             String = StringField(\Text\String.s[2], IT, #LF$)
@@ -1141,6 +1277,10 @@ Module Editor
     With *This
       If Not ListSize(\Items())
         If StartDrawing(CanvasOutput(\Canvas\Gadget))
+          If \Text\FontID 
+            DrawingFont(\Text\FontID) 
+          EndIf
+          
           AddLine(*This)
           StopDrawing()
         EndIf
@@ -1867,13 +2007,31 @@ Module Editor
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
           
           
-          If \Text\Vertical
-            \Text\X = \fSize 
-            \Text\y = \fSize+5
-          Else
-            \Text\X = \fSize+5
-            \Text\y = \bSize
-          EndIf
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+5
+            Else
+              \Text\X = \fSize+5
+              \Text\y = \fSize
+            EndIf
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+1
+            Else
+              \Text\X = \fSize+1
+              \Text\y = \fSize
+            EndIf
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+6
+            Else
+              \Text\X = \fSize+6
+              \Text\y = \fSize
+            EndIf
+          CompilerEndIf 
           
           If \Text\Pass
             Protected i,Len = Len(Text.s)
@@ -1978,7 +2136,12 @@ CompilerIf #PB_Compiler_IsMainFile
     PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
   EndProcedure
   
-  LoadFont(0, "Courier", 14)
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    LoadFont(0, "Arial", 18)
+  CompilerElse
+    LoadFont(0, "Arial", 12)
+  CompilerEndIf 
+  
   If OpenWindow(0, 0, 0, 422, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     
     EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s) 
@@ -2014,6 +2177,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = FEAYAsIf7-BA+0-v9pCAAAB2-DAACAwAAcMAAAAAAAAACw
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 165
+; FirstLine = 168
+; Folding = ----------------------------------------------------
 ; EnableXP

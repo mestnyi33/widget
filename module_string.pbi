@@ -315,7 +315,7 @@ Module String
   EndProcedure
   
   
-  Procedure Caret(*This.Widget_S, Line = 0)
+  Procedure _2Caret(*This.Widget_S, Line = 0)
     Static Caret.i 
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
@@ -370,6 +370,117 @@ Module String
     ProcedureReturn Position
   EndProcedure
   
+  Procedure Caret(*This.Widget_S, Line.i = 0)
+    Static LastLine.i,  LastItem.i
+    Protected Item.i, SelectionLen.i=0
+    Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
+              CursorX.i, Distance.f, MinDistance.f = Infinity()
+    
+    With *This
+      If Line < 0 And FirstElement(*This\Items())
+        ; А если выше всех линии текста,
+        ; то позиция коректора начало текста.
+        Position = 0
+      ElseIf Line < ListSize(*This\Items()) And 
+             SelectElement(*This\Items(), Line)
+        ; Если находимся на линии текста, 
+        ; то получаем позицию коректора.
+        
+        If ListSize(\Items())
+          X = (\Items()\Text\X+\Scroll\X)
+          Len = \Items()\Text\Len; + Len(" ")
+          FontID = \Items()\Text\FontID
+          String.s = \Items()\Text\String.s;+" "
+          If Not FontID : FontID = \Text\FontID : EndIf
+          
+          If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
+            If FontID : DrawingFont(FontID) : EndIf
+            
+            For i = 0 To Len
+              CursorX = X + TextWidth(Left(String.s, i))
+              Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
+              
+              ; Получаем позицию коpректора
+              If MinDistance > Distance 
+                MinDistance = Distance
+                Position = i
+              EndIf
+            Next
+            
+            ; Длина переноса строки
+            PushListPosition(\Items())
+            \Line = (((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / \Text\Height)
+            Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
+                       
+            If LastLine <> \Line Or LastItem <> Item
+              \Items()\Text[2]\Width[2] = 0
+              
+              If \Line[1] = \Line ; Если начинаем виделят сверху вниз
+                If Position = len
+                  If Item = \Line
+                    If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                  EndIf 
+                  If Not SelectionLen
+                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                    Else
+                      \Items()\Text[2]\Width[2] = SelectionLen
+                    EndIf
+                  EndIf
+                EndIf
+                
+              ElseIf \Line[1] < \Line ; Если начинаем виделят сверху вниз
+                If Position = len
+                  If Item = \Line
+                    If Not SelectionLen
+                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                    Else
+                      \Items()\Text[2]\Width[2] = SelectionLen
+                    EndIf
+                  EndIf
+                EndIf
+                
+                If PreviousElement(*This\Items())
+                  If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                  EndIf 
+                  If Not SelectionLen
+                    \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                  Else
+                    \Items()\Text[2]\Width[2] = SelectionLen
+                  EndIf
+                EndIf
+                
+              ElseIf \Line[1] > \Line ; Если начинаем виделят снизу вверх
+                If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+                  \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                EndIf 
+                If Not SelectionLen
+                  \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                Else
+                  \Items()\Text[2]\Width[2] = SelectionLen
+                EndIf
+              EndIf
+              
+              LastItem = Item
+              LastLine = \Line
+            EndIf
+            PopListPosition(\Items())
+            
+            StopDrawing()
+          EndIf
+        EndIf
+        
+      ElseIf LastElement(*This\Items())
+        ; Иначе, если ниже всех линии текста,
+        ; то позиция коректора конец текста.
+        Position = \Items()\Text\Len
+      EndIf
+    EndWith
+    
+    ProcedureReturn Position
+  EndProcedure
+  
   Procedure RemoveText(*This.Widget_S)
     With *This\Items()
       If *This\Caret > *This\Caret[1] : *This\Caret = *This\Caret[1] : EndIf
@@ -381,7 +492,7 @@ Module String
     EndWith
   EndProcedure
   
-  Procedure SelectionText(*This.Widget_S) ; Ok
+  Procedure _2SelectionText(*This.Widget_S) ; Ok
     Static Caret.i =- 1, Caret1.i =- 1, Line.i =- 1
     Protected Position.i
     
@@ -436,7 +547,7 @@ Module String
     ProcedureReturn Position
   EndProcedure
   
-  Procedure _2SelectionText(*This.Widget_S) ; Ok
+  Procedure SelectionText(*This.Widget_S) ; Ok
     Static Caret.i =- 1, Caret1.i =- 1, Line.i =- 1
     Protected Position.i
     
@@ -1181,6 +1292,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------+8--t0+----------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 239
+; FirstLine = 113
+; Folding = --4------8----4---vt4-----------
 ; EnableXP
