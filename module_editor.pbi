@@ -291,7 +291,7 @@ Module Editor
                   If \Text\String.s = \Text[1]\String.s+\Text[2]\String.s
                     DrawingMode(#PB_2DDrawing_Default)
                     ; Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Width-((\Text[2]\X-\Text\X)+*This\Scroll\X), \Text\Height, $D77800)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[3]\Len, \Text\Height, $D77800)
+                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, $D77800)
                     
                     DrawingMode(#PB_2DDrawing_Transparent)
                     DrawText((\Text\X+*This\Scroll\X), \Text\Y, \Text\String.s, $FFFFFF)
@@ -310,7 +310,7 @@ Module Editor
                       
                       If \Text[2]\String.s
                         DrawingMode(#PB_2DDrawing_Default)
-                        Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[3]\Len, \Text\Height, $D77800)
+                        Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, $D77800)
                         
                         DrawingMode(#PB_2DDrawing_Transparent)
                         DrawText((\Text\X+*This\Scroll\X), \Text\Y, \Text[1]\String.s+\Text[2]\String.s, $FFFFFF)
@@ -352,7 +352,7 @@ Module Editor
                 Else
                   If \Text[2]\Len > 0
                     DrawingMode(#PB_2DDrawing_Default);|#PB_2DDrawing_AlphaBlend)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[3]\Len, \Text[0]\Height+1, ($FADBB3));&back_color)|item_alpha<<24)
+                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height+1, ($FADBB3));&back_color)|item_alpha<<24)
                   EndIf
                   DrawingMode(#PB_2DDrawing_Transparent)
                   DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
@@ -432,7 +432,8 @@ Module Editor
   EndProcedure
   
   Procedure Caret(*This.Widget_S, Line.i = 0)
-    Static LastLine
+    Static LastLine.i,  LastItem.i
+    Protected Item.i, SelectionLen.i=0
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
     
@@ -457,7 +458,7 @@ Module Editor
             If FontID : DrawingFont(FontID) : EndIf
             
             For i = 0 To Len
-              CursorX = X+TextWidth(Left(String.s, i))
+              CursorX = X + TextWidth(Left(String.s, i))
               Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
               
               ; Получаем позицию коpректора
@@ -468,12 +469,35 @@ Module Editor
             Next
             
             ; Длина переноса строки
-            If LastLine <> \Line
-              \Items()\Text[3]\Len = 0
+            PushListPosition(\Items())
+            Item.i = (((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2))
+            If \Line > \Line[1] And
+               LastItem <> Item
               
-              PushListPosition(\Items())
+              If Position = len
+                If LastItem > Item
+                  \Items()\Text[2]\Width[2] = 0
+                Else
+                  If Not SelectionLen
+                    \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                  Else
+                    \Items()\Text[2]\Width[2] = SelectionLen
+                  EndIf
+                EndIf
+              EndIf
+              
+              LastItem = Item
+            EndIf
+            
+            If LastLine <> \Line
+              \Items()\Text[2]\Width[2] = 0
+              
               If \Line[1] > \Line
-                \Items()\Text[3]\Len = \Items()\Width-\Items()\Text\Width
+                If Not SelectionLen
+                  \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                Else
+                  \Items()\Text[2]\Width[2] = SelectionLen
+                EndIf
                 If Position = len
                   If \Items()\Text[2]\Len = 0
                     \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
@@ -489,14 +513,18 @@ Module Editor
                       \Items()\Text[2]\Len = 1
                     EndIf  
                   EndIf
-                  \Items()\Text[3]\Len = \Items()\Width-\Items()\Text\Width
+                  If Not SelectionLen
+                    \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                  Else
+                    \Items()\Text[2]\Width[2] = SelectionLen
+                  EndIf
                 EndIf
               EndIf
-              PopListPosition(\Items())
               
               LastLine = \Line
             EndIf
-          
+            PopListPosition(\Items())
+            
             StopDrawing()
           EndIf
         EndIf
@@ -577,7 +605,7 @@ Module Editor
             \Text[2]\Len = 0 
           EndIf
           If PreviousElement(*This\Items()) And \Text[2]\Len > 0 
-            \Text[3]\Len = 0 
+            \Text[2]\Width[2] = 0 
             \Text[2]\Len = 0 
           EndIf
         ElseIf *This\Line[1] > *This\Line
@@ -594,10 +622,10 @@ Module Editor
         If *This\Line[1] = *This\Line
           If *This\Caret[1] = *This\Caret 
             Position = *This\Caret[1]
-            If *This\Caret[1] = \Text\Len
-             ; Debug 555
-            ;  \Text[2]\Len =- 1
-            EndIf
+;             If *This\Caret[1] = \Text\Len
+;              ; Debug 555
+;             ;  \Text[2]\Len =- 1
+;             EndIf
           ; Если выделяем с право на лево
           ElseIf *This\Caret[1] > *This\Caret 
             ; |<<<<<< to left
@@ -1115,7 +1143,8 @@ Module Editor
         If Not \Hide And Not \Disable And \Interact ; And Widget <> Canvas And CanvasModifiers
           ; Get line & caret position
           If \Canvas\Mouse\Buttons 
-            Item.i = (((\Canvas\Mouse\Y-\Text\Y)-\Scroll\Y) / \Text\Height)  ; item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y) ; 
+;             Item.i = (((\Canvas\Mouse\Y-\Text\Y)-\Scroll\Y) / \Text\Height)  ; item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y) ; 
+            Item.i = (((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / \Text\Height)  ; item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y) ; 
           EndIf
           
           Select EventType 
@@ -1930,5 +1959,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -v--4-9X-f5----------2-----+-b-8---------f--
+; Folding = -v--4-94-f5-0--------X-----8-v0v----------0--
 ; EnableXP

@@ -262,7 +262,7 @@ Module String
               Else
                 If \Text[2]\Len
                   DrawingMode(#PB_2DDrawing_Default)
-                  Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[3]\Len, \Text[0]\Height+1, $FADBB3);$DE9541)
+                  Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height+1, $FADBB3);$DE9541)
                 EndIf
                 DrawingMode(#PB_2DDrawing_Transparent)
                 DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
@@ -321,7 +321,7 @@ Module String
   EndProcedure
   
   
-  Procedure Caret(*This.Widget_S, Line = 0)
+  Procedure _1Caret(*This.Widget_S, Line = 0)
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
     
@@ -358,6 +358,86 @@ Module String
             
             \Items()\Text[3]\Len = 6 ; (*This\Width[2]-3)-\Items()\Text\Width
 ;             Debug "pos " +Position
+            StopDrawing()
+          EndIf
+        EndIf
+        
+      ElseIf LastElement(*This\Items())
+        ; Иначе, если ниже всех линии текста,
+        ; то позиция коректора конец текста.
+        Position = \Items()\Text\Len
+      EndIf
+    EndWith
+    
+    ProcedureReturn Position
+  EndProcedure
+  
+  Procedure Caret(*This.Widget_S, Line.i = 0)
+    Static LastLine
+    Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
+              CursorX.i, Distance.f, MinDistance.f = Infinity()
+    
+    With *This
+      If Line < 0 And FirstElement(*This\Items())
+        ; А если выше всех линии текста,
+        ; то позиция коректора начало текста.
+        Position = 0
+      ElseIf Line < ListSize(*This\Items()) And 
+             SelectElement(*This\Items(), Line)
+        ; Если находимся на линии текста, 
+        ; то получаем позицию коректора.
+        
+        If ListSize(\Items())
+          X = (\Items()\Text\X+\Scroll\X)
+          Len = \Items()\Text\Len; + Len(" ")
+          FontID = \Items()\Text\FontID
+          String.s = \Items()\Text\String.s;+" "
+          If Not FontID : FontID = \Text\FontID : EndIf
+          
+          If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
+            If FontID : DrawingFont(FontID) : EndIf
+            
+            For i = 0 To Len
+              CursorX = X+TextWidth(Left(String.s, i))
+              Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
+              
+              ; Получаем позицию коpректора
+              If MinDistance > Distance 
+                MinDistance = Distance
+                Position = i
+              EndIf
+            Next
+            
+;             ; Длина переноса строки
+;             If LastLine <> \Line
+;               \Items()\Text[2]\Width[2] = 0
+;               
+;               PushListPosition(\Items())
+;               If \Line[1] > \Line
+;                 \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+;                 If Position = len
+;                   If \Items()\Text[2]\Len = 0
+;                     \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+;                     \Items()\Text[2]\Len = 1
+;                   EndIf 
+;                 EndIf
+;               ElseIf \Line[1] < \Line
+;                 If PreviousElement(*This\Items())
+;                   If Position = len
+;                     If \Items()\Text[2]\Len = 0
+;                       \Items()\Text[2]\Width = 0
+;                       \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+;                       \Items()\Text[2]\Len = 1
+;                     EndIf  
+;                   EndIf
+;                   \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+;                 EndIf
+;               EndIf
+;               PopListPosition(\Items())
+;               
+;               LastLine = \Line
+;             EndIf
+          
             StopDrawing()
           EndIf
         EndIf
@@ -1249,5 +1329,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --4----H---+-----0--f7----------
+; Folding = --4----H-4--0-----8---1----------
 ; EnableXP
