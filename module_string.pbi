@@ -607,15 +607,15 @@ Module String
     Protected Repaint
     
     With *This
-      If \Caret[1] > 0 
-        If \Items()\Text[2]\Len
-          If \Caret > \Caret[1] 
-            Swap \Caret, \Caret[1]
-          EndIf  
-        Else         
-          \Caret - 1 
-        EndIf
-        
+      If \Items()\Text[2]\Len
+        If \Caret > \Caret[1] 
+          Swap \Caret, \Caret[1]
+        EndIf  
+      ElseIf \Caret[1] > 0 
+        \Caret - 1 
+      EndIf
+      
+      If \Caret[1] <> \Caret
         \Caret[1] = \Caret 
         Repaint =- 1 
       EndIf
@@ -628,15 +628,15 @@ Module String
     Protected Repaint
     
     With *This
-      If \Caret[1] < \Items()\Text\Len
-        If \Items()\Text[2]\Len 
-          If \Caret > \Caret[1] 
-            Swap \Caret, \Caret[1]
-          EndIf
-        Else
-          \Caret[1] + 1 
+      If \Items()\Text[2]\Len 
+        If \Caret > \Caret[1] 
+          Swap \Caret, \Caret[1]
         EndIf
-        
+      ElseIf \Caret[1] < \Items()\Text\Len
+        \Caret[1] + 1 
+      EndIf
+      
+      If \Caret <> \Caret[1] 
         \Caret = \Caret[1] 
         Repaint =- 1 
       EndIf
@@ -1292,8 +1292,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 239
-; FirstLine = 113
-; Folding = --4------8----4---vt4-----------
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = --4------8--------vt4-----------
 ; EnableXP
