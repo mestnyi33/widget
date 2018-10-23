@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ;-
-DeclareModule String
+DeclareModule IPAddress
   
   EnableExplicit
   UseModule Macros
@@ -33,7 +33,7 @@ DeclareModule String
   
 EndDeclareModule
 
-Module String
+Module IPAddress
   ;-
   ;- - MACROS
   ;- - PROCEDUREs
@@ -264,7 +264,7 @@ Module String
           Next
           PopListPosition(*This\Items()) ; 
           If *This\Focus = *This 
-            ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+            ;              Debug ""+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
             If *This\Text\Editable And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] 
               DrawingMode(#PB_2DDrawing_XOr)             
               Line(((\Text\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
@@ -743,7 +743,7 @@ Module String
         Else
           Widget = Canvas
         EndIf
-        If Canvas <> \Canvas\Gadget Or \Type <> #PB_GadgetType_String
+        If Canvas <> \Canvas\Gadget Or \Type <> #PB_GadgetType_IPAddress
           ProcedureReturn
         EndIf
         
@@ -847,78 +847,6 @@ Module String
     Protected Caret,Item.i, String.s
     
     If *Focus = *This And ListSize(*This\items())
-      ;       If *This
-      ;         With *This
-      ;           If Not \Hide And Not \Disable And \Interact ; And Widget <> Canvas And CanvasModifiers
-      ;                                                       ; Get line & caret position
-      ;             If \Canvas\Mouse\Buttons 
-      ;               Item.i = (((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / \Text\Height)  ; item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y) ; 
-      ;             EndIf
-      ;             
-      ;             Select EventType 
-      ;               Case #PB_EventType_LeftButtonDown
-      ;                 MoveX = \Canvas\Mouse\X 
-      ;                 MoveY = \Canvas\Mouse\Y
-      ;                 
-      ;                 PushListPosition(\Items())
-      ;                 ForEach \Items() 
-      ;                   If \Items()\Text[2]\Len <> 0
-      ;                     \Items()\Text[2]\Len = 0 
-      ;                   EndIf
-      ;                 Next
-      ;                 PopListPosition(\Items())
-      ;                 
-      ;                 If \Items()\Text[2]\Len > 0
-      ;                   \Text[2]\Len = 1
-      ;                 Else
-      ;                   \Caret = Caret(*This, Item) 
-      ;                   \Line = ListIndex(*This\Items()) 
-      ;                   \Line[1] = Item
-      ;                   
-      ;                   PushListPosition(\Items())
-      ;                   ForEach \Items() 
-      ;                     If \Line[1] <> ListIndex(\Items())
-      ;                       \Items()\Text[1]\String = ""
-      ;                       \Items()\Text[2]\String = ""
-      ;                       \Items()\Text[3]\String = ""
-      ;                     EndIf
-      ;                   Next
-      ;                   PopListPosition(\Items())
-      ;                   
-      ;                 EndIf
-      ;                 
-      ;               Case #PB_EventType_MouseMove  
-      ;                 If \Canvas\Mouse\Buttons 
-      ;                   If \Line <> Item And Item =< ListSize(\Items())
-      ;                     If isItem(\Line, \Items()) 
-      ;                       If \Line <> ListIndex(\Items())
-      ;                         SelectElement(\Items(), \Line) 
-      ;                       EndIf
-      ;                       
-      ;                       If \Line > Item
-      ;                         \Caret = 0
-      ;                       Else
-      ;                         \Caret = \Items()\Text\Len
-      ;                       EndIf
-      ;                       
-      ;                       SelectionText(*This)
-      ;                     EndIf
-      ;                     
-      ;                     \Line = Item
-      ;                   EndIf
-      ;                   
-      ;                   \Caret = Caret(*This, Item) 
-      ;                   SelectionText(*This)
-      ;                 EndIf
-      ;                 
-      ;               Default
-      ;                 itemSelect(\Line[1], \Items())
-      ;             EndSelect
-      ;           EndIf
-      ;         EndWith    
-      ;       EndIf
-      ;       
-      
       With *This\items()
         
         Select EventType
@@ -1083,7 +1011,7 @@ Module String
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
-        \Type = #PB_GadgetType_String
+        \Type = #PB_GadgetType_IPAddress
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
@@ -1092,6 +1020,7 @@ Module String
         \Interact = 1
         \Caret[1] =- 1
         
+        Flag | #PB_Text_Numeric
         
         ; Set the default widget flag
         If Bool(Flag&#PB_Text_Top)
@@ -1195,24 +1124,11 @@ EndModule
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule String
+  UseModule IPAddress
   
   Global *S_0.Widget_S = AllocateStructure(Widget_S)
   Global *S_1.Widget_S = AllocateStructure(Widget_S)
   Global *S_2.Widget_S = AllocateStructure(Widget_S)
-  Global *S_3.Widget_S = AllocateStructure(Widget_S)
-  Global *S_4.Widget_S = AllocateStructure(Widget_S)
-  Global *S_5.Widget_S = AllocateStructure(Widget_S)
-  Global *S_6.Widget_S = AllocateStructure(Widget_S)
-  Global *S_7.Widget_S = AllocateStructure(Widget_S)
-  
-  Global *Button_0.Widget_S = AllocateStructure(Widget_S)
-  Global *Button_1.Widget_S = AllocateStructure(Widget_S)
-  
-  UsePNGImageDecoder()
-  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
-    End
-  EndIf
   
   Procedure CallBacks()
     Protected Result
@@ -1260,30 +1176,16 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, 615, 235, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    StringGadget(0, 8,  10, 290, 20, "Normal StringGadget...")
-    StringGadget(1, 8,  35, 290, 20, "1234567", #PB_String_Numeric)
-    StringGadget(2, 8,  60, 290, 20, "Read-only StringGadget", #PB_String_ReadOnly)
-    StringGadget(3, 8,  85, 290, 20, "LOWERCASE...", #PB_String_LowerCase)
-    StringGadget(4, 8, 110, 290, 20, "uppercase...", #PB_String_UpperCase)
-    StringGadget(5, 8, 140, 290, 20, "Borderless StringGadget", #PB_String_BorderLess)
-    StringGadget(6, 8, 170, 290, 20, "Password", #PB_String_Password)
+    IPAddressGadget(0, 8,  10, 290, 20)
     
-    StringGadget(7, 8,  200, 290, 20, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh")
-    
-    ; Demo draw string on the canvas
+    ; Demo draw IPAddress on the canvas
     CanvasGadget(10,  305, 0, 310, 235, #PB_Canvas_Keyboard)
     SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     BindGadgetEvent(10, @CallBacks())
     
-    *S_0 = Create(10, -1, 8,  10, 290, 20, "Normal StringGadget...")
-    *S_1 = Create(10, -1, 8,  35, 290, 20, "1234567", #PB_Text_Numeric|#PB_Text_Center)
-    *S_2 = Create(10, -1, 8,  60, 290, 20, "Read-only StringGadget", #PB_Text_ReadOnly|#PB_Text_Right)
-    *S_3 = Create(10, -1, 8,  85, 290, 20, "LOWERCASE...", #PB_Text_LowerCase)
-    *S_4 = Create(10, -1, 8, 110, 290, 20, "uppercase...", #PB_Text_UpperCase)
-    *S_5 = Create(10, -1, 8, 140, 290, 20, "Borderless StringGadget", #PB_Widget_BorderLess)
-    *S_6 = Create(10, -1, 8, 170, 290, 20, "Password", #PB_Text_Password)
-    ; Button::Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
-    *S_7 = Create(10, -1, 8,  200, 290, 20, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
+    *S_0 = Create(10, -1, 8,  10, 290, 20,"")
+    *S_1 = Create(10, -1, 8,  35, 290, 20,"rr")
+    *S_2 = Create(10, -1, 8,  60, 290, 20,"")
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
@@ -1291,7 +1193,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 62
+; CursorPosition = 1022
+; FirstLine = 1013
 ; Folding = -------------------------------
 ; EnableXP

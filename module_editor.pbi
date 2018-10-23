@@ -1257,6 +1257,11 @@ Module Editor
       If \Items()\Text[2]\Len
         If \Line[1] > \Line 
           Swap \Line[1], \Line
+          
+          If SelectElement(\Items(), \Line[1]) 
+            \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret[1]) 
+            \Items()\Text[1]\Change = #True
+          EndIf
         ElseIf \Line > \Line[1] And 
                \Caret[1] > \Caret
           Swap \Caret[1], \Caret
@@ -2204,7 +2209,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     LoadFont(0, "Arial", 16)
   CompilerElse
-    LoadFont(0, "Arial", 12)
+    LoadFont(0, "Arial", 11)
   CompilerEndIf 
   
   If OpenWindow(0, 0, 0, 422, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
@@ -2242,6 +2247,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------f--z-----------v---v--30+-+-+B034--4+--------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 2211
+; FirstLine = 1544
+; Folding = -------f--z-----------v---v--3-0-0-0D7tv--v0--------
 ; EnableXP

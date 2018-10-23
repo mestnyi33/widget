@@ -693,7 +693,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Canvas_CallBack()
     Select EventType()
-      Case #PB_EventType_Resize
+      Case #PB_EventType_Resize : ResizeGadget(EventGadget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
         If Resize(*Text, #PB_Ignore, #PB_Ignore, GadgetWidth(EventGadget()), #PB_Ignore, EventGadget())
           If StartDrawing(CanvasOutput(EventGadget()))
             Draw(*Text, EventGadget())
@@ -747,6 +747,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --P4--i-6----------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 695
+; FirstLine = 631
+; Folding = --P4--i-6----8-----
 ; EnableXP
