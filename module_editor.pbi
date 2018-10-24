@@ -451,7 +451,7 @@ Module Editor
   EndProcedure
   
   Procedure Caret(*This.Widget_S, Line.i = 0)
-    Static LastLine.i,  LastItem.i
+    Static LastLine.i =- 1,  LastItem.i =- 1
     Protected Item.i, SelectionLen.i=0
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
@@ -489,10 +489,14 @@ Module Editor
             
             ; Длина переноса строки
             PushListPosition(\Items())
-            Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
-            
+            If \Canvas\Mouse\Y < \Y+\Text\Height/2
+              Item.i =- 1 
+            Else
+              Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
+            EndIf
             
             If LastLine <> \Line Or LastItem <> Item
+            Debug Item
               \Items()\Text[2]\Width[2] = 0
               
               If \Line[1] = \Line 
@@ -2251,7 +2255,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1686
-; FirstLine = 1188
-; Folding = -------f--z---------------v--3-0-0-0D7tf--f8---------
+; CursorPosition = 453
+; FirstLine = 370
+; Folding = -------f--z---------------f--t-8-8-8H1b-+--3---------
 ; EnableXP
