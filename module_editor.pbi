@@ -176,10 +176,6 @@ Module Editor
           ProcedureReturn
         EndIf
         
-        If \Text\FontID 
-          DrawingFont(\Text\FontID) 
-        EndIf
-        
         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
           ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
         CompilerEndIf
@@ -188,9 +184,13 @@ Module Editor
         BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
         
         ; Make output text
-        If \Text\String.s
+        If (\Text\String.s Or \Text\Change Or \Resize)
+          If \Text\FontID 
+            DrawingFont(\Text\FontID) 
+          EndIf
+          
           If \Text\Change
-            \Text\Height = TextHeight("A")
+            \Text\Height = TextHeight("A") + 1
             \Text\Width = TextWidth(\Text\String.s)
           EndIf
           
@@ -290,7 +290,7 @@ Module Editor
                 ;EndIf
                 
                 CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-                  ClipOutput(*This\X[2]+*This\Text[0]\X-1,*This\Y[2],*This\Width[2]-*This\Text[0]\X*2+2,*This\Height[2]) ; Bug in Mac os
+                  ClipOutput(*This\Text[0]\X-1,*This\Y[2],*This\Width-*This\Text[0]\X*2+2,*This\Height[2]) ; Bug in Mac os
                 CompilerEndIf
                 
                 If *This\Text\Editable And \Text[2]\Len > 0 And #PB_Compiler_OS <> #PB_OS_MacOS
@@ -911,12 +911,11 @@ Module Editor
     Protected IT, String.s, StringWidth, Text_Y,Text_X,Width,Height
     
     With *This
+      Width = \Width[1]-\Text\X*2
+      Height = \Height[1]-\Text\y*2
+      
       If \Text\Vertical
-        Width = \Height[1]-\Text\X*2
-        Height = \Width[1]-\Text\y*2
-      Else
-        Width = \Width[1]-\Text\X*2
-        Height = \Height[1]-\Text\y*2
+        Swap Width, Height
       EndIf
       
       If Bool(\Text\MultiLine Or \Text\WordWrap)
@@ -1684,10 +1683,14 @@ Module Editor
       With *This
         If Not \Hide And Not \Disable And \Interact ; And Widget <> Canvas And CanvasModifiers
                                                     ; Get line & caret position
-          If \Canvas\Mouse\Buttons 
-            Item.i = (((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / \Text\Height)  ; item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y) ; 
+          If  \Canvas\Mouse\Buttons
+            If \Canvas\Mouse\Y < \Y
+              Item.i =- 1
+            Else
+              Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
+            EndIf
           EndIf
-          
+      
           Select EventType 
             Case #PB_EventType_LeftButtonDown
               MoveX = \Canvas\Mouse\X 
@@ -2248,7 +2251,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2211
-; FirstLine = 1544
-; Folding = -------f--z-----------v---v--3-0-0-0D7tv--v0--------
+; CursorPosition = 1686
+; FirstLine = 1188
+; Folding = -------f--z---------------v--3-0-0-0D7tf--f8---------
 ; EnableXP

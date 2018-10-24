@@ -55,10 +55,6 @@ Module String
           ProcedureReturn
         EndIf
         
-        If \Text\FontID 
-          DrawingFont(\Text\FontID) 
-        EndIf
-        
         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
           ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
         CompilerEndIf
@@ -66,119 +62,125 @@ Module String
         DrawingMode(\DrawingMode)
         BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
         
-        
         ; Make output text
-        If \Text\Change
-          \Text\Height = TextHeight("A")
-          \Text\Width = TextWidth(\Text\String.s)
-        EndIf
-        
-        If (\Text\Change Or \Resize)
-          If \Text\Vertical
-            Width = \Height[1]-\Text\X*2-(\Image\Width+\Image\Width/2)
-            Height = \Width[1]-\Text\y*2
-          Else
-            Width = \Width[1]-\Text\X*2-(\Image\Width+\Image\Width/2)
+        If (\Text\String.s Or \Text\Change Or \Resize)
+          If \Text\FontID 
+            DrawingFont(\Text\FontID) 
+          EndIf
+          
+          If \Text\Change
+            \Text\Height = TextHeight("A") + 1
+            \Text\Width = TextWidth(\Text\String.s)
+          EndIf
+          
+          If (\Text\Change Or \Resize)
+            Width = \Width[1]-\Text\X*2
             Height = \Height[1]-\Text\y*2
-          EndIf
-          
-          If \Text\MultiLine
-            \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, -1)
-            \Text\CountString = CountString(\Text\String.s[2], #LF$)
-          ElseIf \Text\WordWrap
-            \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, 1)
-            \Text\CountString = CountString(\Text\String.s[2], #LF$)
-          Else
-            ;  \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, 0)
-            \Text\String.s[2] = \Text\String.s
-            \Text\CountString = CountString(\Text\String.s[2], #LF$) + 1
-          EndIf
-          
-          If \Text\CountString
-            ClearList(\Items())
             
-            If \Text\Align\Bottom
-              Text_Y=(Height-(\Text\Height*\Text\CountString)-Text_Y) 
-            ElseIf \Text\Align\Vertical
-              Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
-            EndIf
-            
-            DrawingMode(#PB_2DDrawing_Transparent)
             If \Text\Vertical
-              For IT = \Text\CountString To 1 Step - 1
-                If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                
-                String = StringField(\Text\String.s[2], IT, #LF$)
-                StringWidth = TextWidth(RTrim(String))
-                
-                If \Text\Align\Right
-                  Text_X=(Width-StringWidth) 
-                ElseIf \Text\Align\Horisontal
-                  Text_X=(Width-StringWidth)/2 
-                EndIf
-                
-                AddElement(\Items())
-                \Items()\Text\Editable = \Text\Editable 
-                \Items()\Text\Vertical = \Text\Vertical
-                If \Text\Rotate = 270
-                  \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y+\Text\Height+\Text\X
-                  \Items()\Text\y = \Y[1]+\Text\X+Text_X
-                Else
-                  \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y
-                  \Items()\Text\y = \Y[1]+\Text\X+Text_X+StringWidth
-                EndIf
-                \Items()\Text\Width = StringWidth
-                \Items()\Text\Height = \Text\Height
-                \Items()\Text\String.s = String.s
-                \Items()\Text\Len = Len(String.s)
-                
-                
-                ;DrawRotatedText(\X[1]+\Text\Y+Text_Y, \Y[1]+\Text\X+Text_X+StringWidth, String.s, 90, \Color\Front)
-                ;DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
-                Text_Y+\Text\Height : If Text_Y > (Width) : Break : EndIf
-              Next
+              Swap Width, Height
+            EndIf
+            
+            If \Text\MultiLine
+              \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, -1)
+              \Text\CountString = CountString(\Text\String.s[2], #LF$)
+            ElseIf \Text\WordWrap
+              \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, 1)
+              \Text\CountString = CountString(\Text\String.s[2], #LF$)
             Else
-              For IT = 1 To \Text\CountString
-                If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                
-                String = StringField(\Text\String.s[2], IT, #LF$)
-                StringWidth = TextWidth(RTrim(String))
-                
-                If \Text\Align\Right
-                  Text_X=(Width-StringWidth) 
-                ElseIf \Text\Align\Horisontal
-                  Text_X=(Width-StringWidth)/2 
-                EndIf
-                
-                AddElement(\Items())
-                ;                   \Items()*This\Caret = *This\Caret 
-                ;                   \Items()*This\Caret[1] = *This\Caret[1] 
-                \Items()\Text\Editable = \Text\Editable 
-                \Items()\Text\x = (\Image\Width+\Image\Width/2)+\X[1]+\Text\X+Text_X
-                \Items()\Text\y = \Y[1]+\Text\Y+Text_Y
-                \Items()\Text\Width = StringWidth
-                \Items()\Text\Height = \Text\Height
-                \Items()\Text\String.s = String.s
-                \Items()\Text\Len = Len(String.s)
-                
-                \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
-                \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
-                
-                ;DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
-                Text_Y+\Text\Height : If Text_Y > (Height-\Text\Height) : Break : EndIf
-              Next
+              \Text\String.s[2] = \Text\String.s
+              \Text\CountString = CountString(\Text\String.s[2], #LF$) + 1
+            EndIf
+            
+            If \Text\CountString
+              ClearList(\Items())
+              
+              If \Text\Align\Bottom
+                Text_Y=(Height-(\Text\Height*\Text\CountString)-Text_Y) 
+              ElseIf \Text\Align\Vertical
+                Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
+              EndIf
+              
+              DrawingMode(#PB_2DDrawing_Transparent)
+              If \Text\Vertical
+                For IT = \Text\CountString To 1 Step - 1
+                  If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
+                  
+                  String = StringField(\Text\String.s[2], IT, #LF$)
+                  StringWidth = TextWidth(RTrim(String))
+                  
+                  If \Text\Align\Right
+                    Text_X=(Width-StringWidth) 
+                  ElseIf \Text\Align\Horisontal
+                    Text_X=(Width-StringWidth)/2 
+                  EndIf
+                  
+                  AddElement(\Items())
+                  \Items()\Text\Editable = \Text\Editable 
+                  \Items()\Text\Vertical = \Text\Vertical
+                  If \Text\Rotate = 270
+                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y+\Text\Height+\Text\X
+                    \Items()\Text\y = \Y[1]+\Text\X+Text_X
+                  Else
+                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y
+                    \Items()\Text\y = \Y[1]+\Text\X+Text_X+StringWidth
+                  EndIf
+                  \Items()\Text\Width = StringWidth
+                  \Items()\Text\Height = \Text\Height
+                  \Items()\Text\String.s = String.s
+                  \Items()\Text\Len = Len(String.s)
+                  
+                  
+                  ;DrawRotatedText(\X[1]+\Text\Y+Text_Y, \Y[1]+\Text\X+Text_X+StringWidth, String.s, 90, \Color\Front)
+                  ;DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
+                  Text_Y+\Text\Height : If Text_Y > (Width) : Break : EndIf
+                Next
+              Else
+                For IT = 1 To \Text\CountString
+                  If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
+                  
+                  String = StringField(\Text\String.s[2], IT, #LF$)
+                  StringWidth = TextWidth(RTrim(String))
+                  
+                  If \Text\Align\Right
+                    Text_X=(Width-StringWidth) 
+                  ElseIf \Text\Align\Horisontal
+                    Text_X=(Width-StringWidth)/2 
+                  EndIf
+                  
+                  AddElement(\Items())
+                  \Items()\x = \X[1]+\Text\X
+                  \Items()\y = \Y[1]+\Text\Y+Text_Y
+                  \Items()\Width = Width
+                  \Items()\Height = \Text\Height
+                  \Items()\Item = ListIndex(\Items())
+                  
+                  \Items()\Text\Editable = \Text\Editable 
+                  \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
+                  \Items()\Text\y = \Items()\y
+                  \Items()\Text\Width = TextWidth(String)
+                  \Items()\Text\Height = \Text\Height
+                  \Items()\Text\String.s = String.s
+                  \Items()\Text\Len = Len(String.s)
+                  
+                  \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
+                  \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
+                  
+                  ;DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
+                  Text_Y+\Text\Height : If Text_Y > (Height-\Text\Height) : Break : EndIf
+                Next
+              EndIf
             EndIf
           EndIf
-        EndIf
-        
-        If \Text\Change
-          \Text\Change = 0
-        EndIf
-        
-        If \Resize
-          \Resize = 0
-        EndIf
-        
+          
+          If \Text\Change
+            \Text\Change = 0
+          EndIf
+          
+          If \Resize
+            \Resize = 0
+          EndIf
+        EndIf 
       EndWith 
       
       ; Draw items text
@@ -192,11 +194,9 @@ Module String
               DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
             EndIf
             
-            
             ; Draw string
             If \Text[1]\Change : \Text[1]\Change = #False
               \Text[1]\Width = TextWidth(\Text[1]\String.s) 
-              *This\Text[3]\Width = TextWidth(Left(\Text\String.s, *This\Caret))
             EndIf 
             
             If \Text\String.s
@@ -232,10 +232,10 @@ Module String
               EndIf
               
               CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-                ClipOutput(*This\X[2]+*This\Text[0]\X-1,*This\Y[2],*This\Width[2]-*This\Text[0]\X*2+2,*This\Height[2]) ; Bug in Mac os
+                ClipOutput(\X,\Y,\Width,\Height) ; Bug in Mac os
               CompilerEndIf
               
-              If \Text[2]\Len And #PB_Compiler_OS <> #PB_OS_MacOS
+              If \Text[2]\Len And #PB_Compiler_OS <> #PB_OS_Windows
                 If \Text[1]\String.s
                   DrawingMode(#PB_2DDrawing_Transparent)
                   DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
@@ -313,61 +313,6 @@ Module String
   EndProcedure
   
   
-  Procedure _2Caret(*This.Widget_S, Line = 0)
-    Static Caret.i 
-    Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
-              CursorX.i, Distance.f, MinDistance.f = Infinity()
-    
-    With *This
-      If Line < 0 And FirstElement(*This\Items())
-        ; А если выше всех линии текста,
-        ; то позиция коректора начало текста.
-        Position = 0
-      ElseIf Line < ListSize(*This\Items()) And 
-             SelectElement(*This\Items(), Line)
-        ; Если находимся на линии текста, 
-        ; то получаем позицию коректора.
-        
-        If ListSize(\Items())
-          X = \Items()\X+(\Items()\Text\X+\Scroll\X)
-          Len = \Items()\Text\Len + Len(" ")
-          FontID = \Items()\Text\FontID
-          String.s = \Items()\Text\String.s+" "
-          If Not FontID : FontID = \Text\FontID : EndIf
-          
-          If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
-            If FontID : DrawingFont(FontID) : EndIf
-            ;             Debug "len " +Len
-            For i = 0 To Len
-              CursorX = X+TextWidth(Left(String.s, i))
-              Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
-              
-              ; Получаем позицию коpректора
-              If MinDistance > Distance 
-                MinDistance = Distance
-                Position = i
-              EndIf
-            Next
-            
-            If Caret <> Position
-              *This\Text[3]\Width = TextWidth(Left(\Text\String.s, Position))
-              Caret = Position
-            EndIf
-            
-            StopDrawing()
-          EndIf
-        EndIf
-        
-      ElseIf LastElement(*This\Items())
-        ; Иначе, если ниже всех линии текста,
-        ; то позиция коректора конец текста.
-        Position = \Items()\Text\Len
-      EndIf
-    EndWith
-    
-    ProcedureReturn Position
-  EndProcedure
-  
   Procedure Caret(*This.Widget_S, Line.i = 0)
     Static LastLine.i,  LastItem.i
     Protected Item.i, SelectionLen.i=0
@@ -386,9 +331,9 @@ Module String
         
         If ListSize(\Items())
           X = (\Items()\Text\X+\Scroll\X)
-          Len = \Items()\Text\Len; + Len(" ")
+          Len = \Items()\Text\Len
           FontID = \Items()\Text\FontID
-          String.s = \Items()\Text\String.s;+" "
+          String.s = \Items()\Text\String.s
           If Not FontID : FontID = \Text\FontID : EndIf
           
           If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
@@ -407,62 +352,62 @@ Module String
             
             ; Длина переноса строки
             PushListPosition(\Items())
-            \Line = (((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / \Text\Height)
-            Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
             
-            If LastLine <> \Line Or LastItem <> Item
-              \Items()\Text[2]\Width[2] = 0
-              
-              If \Line[1] = \Line ; Если начинаем виделят сверху вниз
-                If Position = len
-                  If Item = \Line
-                    If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                      \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                    EndIf 
-                    If Not SelectionLen
-                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                    Else
-                      \Items()\Text[2]\Width[2] = SelectionLen
-                    EndIf
-                  EndIf
-                EndIf
-                
-              ElseIf \Line[1] < \Line ; Если начинаем виделят сверху вниз
-                If Position = len
-                  If Item = \Line
-                    If Not SelectionLen
-                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                    Else
-                      \Items()\Text[2]\Width[2] = SelectionLen
-                    EndIf
-                  EndIf
-                EndIf
-                
-                If PreviousElement(*This\Items())
-                  If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                  EndIf 
-                  If Not SelectionLen
-                    \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                  Else
-                    \Items()\Text[2]\Width[2] = SelectionLen
-                  EndIf
-                EndIf
-                
-              ElseIf \Line[1] > \Line ; Если начинаем виделят снизу вверх
-                If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                  \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                EndIf 
-                If Not SelectionLen
-                  \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                Else
-                  \Items()\Text[2]\Width[2] = SelectionLen
-                EndIf
-              EndIf
-              
-              LastItem = Item
-              LastLine = \Line
-            EndIf
+;             Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
+            
+;             If LastLine <> \Line Or LastItem <> Item
+;               \Items()\Text[2]\Width[2] = 0
+;               
+;               If \Line[1] = \Line ; Если начинаем виделят сверху вниз
+;                 If Position = len
+;                   If Item = \Line
+;                     If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+;                       \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+;                     EndIf 
+;                     If Not SelectionLen
+;                       \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+;                     Else
+;                       \Items()\Text[2]\Width[2] = SelectionLen
+;                     EndIf
+;                   EndIf
+;                 EndIf
+;                 
+;               ElseIf \Line[1] < \Line ; Если начинаем виделят сверху вниз
+;                 If Position = len
+;                   If Item = \Line
+;                     If Not SelectionLen
+;                       \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+;                     Else
+;                       \Items()\Text[2]\Width[2] = SelectionLen
+;                     EndIf
+;                   EndIf
+;                 EndIf
+;                 
+;                 If PreviousElement(*This\Items())
+;                   If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+;                     \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+;                   EndIf 
+;                   If Not SelectionLen
+;                     \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+;                   Else
+;                     \Items()\Text[2]\Width[2] = SelectionLen
+;                   EndIf
+;                 EndIf
+;                 
+;               ElseIf \Line[1] > \Line ; Если начинаем виделят снизу вверх
+;                 If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+;                   \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+;                 EndIf 
+;                 If Not SelectionLen
+;                   \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+;                 Else
+;                   \Items()\Text[2]\Width[2] = SelectionLen
+;                 EndIf
+;               EndIf
+;               
+;               LastItem = Item
+;               LastLine = \Line
+;             EndIf
             PopListPosition(\Items())
             
             StopDrawing()
@@ -490,61 +435,6 @@ Module String
     EndWith
   EndProcedure
   
-  Procedure _2SelectionText(*This.Widget_S) ; Ok
-    Static Caret.i =- 1, Caret1.i =- 1, Line.i =- 1
-    Protected Position.i
-    
-    With *This\Items()
-      If (Caret <> *This\Caret Or Line <> *This\Line Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1]))
-        \Text[2]\String.s = ""
-        
-        ; Если выделяем снизу вверх
-        PushListPosition(*This\Items())
-        If (*This\Line[1] > *This\Line)
-          If PreviousElement(*This\Items()) And \Text[2]\Len : \Text[2]\Len = 0 : EndIf
-        Else
-          If NextElement(*This\Items()) And \Text[2]\Len : \Text[2]\Len = 0 : EndIf
-        EndIf
-        PopListPosition(*This\Items())
-        
-        If *This\Line[1] = *This\Line
-          ; Если выделяем с право на лево
-          If *This\Caret[1] > *This\Caret 
-            ; |<<<<<< to left
-            Position = *This\Caret
-            \Text[2]\Len = (*This\Caret[1]-Position)
-          Else 
-            ; >>>>>>| to right
-            Position = *This\Caret[1]
-            \Text[2]\Len = (*This\Caret-Position)
-          EndIf
-          
-          ; Если выделяем снизу вверх
-        ElseIf *This\Line > *This\Line[1]
-          ; <<<<<|
-          Position = *This\Caret
-          \Text[2]\Len = \Text\Len-Position
-        Else
-          ; >>>>>|
-          Position = 0
-          \Text[2]\Len = *This\Caret
-        EndIf
-        
-        \Text[1]\String.s = Left(\Text\String.s, Position) : \Text[1]\Change = #True
-        If \Text[2]\Len
-          \Text[2]\String.s = Mid(\Text\String.s, 1+Position, \Text[2]\Len) : \Text[2]\Change = #True
-        EndIf
-        \Text[3]\String.s = Right(\Text\String.s, \Text\Len-(Position + \Text[2]\Len)) : \Text[3]\Change = #True
-        
-        Line = *This\Line
-        Caret = *This\Caret
-        Caret1 = *This\Caret[1]
-      EndIf
-    EndWith
-    
-    ProcedureReturn Position
-  EndProcedure
-  
   Procedure SelectionText(*This.Widget_S) ; Ok
     Static Caret.i =- 1, Caret1.i =- 1, Line.i =- 1
     Protected Position.i
@@ -552,16 +442,6 @@ Module String
     With *This\Items()
       If Caret <> *This\Caret Or Line <> *This\Line Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1])
         \Text[2]\String.s = ""
-        
-        PushListPosition(*This\Items())
-        If *This\Line[1] = *This\Line
-          If *This\Caret[1] = *This\Caret And \Text[2]\Len > 0 : \Text[2]\Len = 0 : EndIf
-        ElseIf *This\Line[1] > *This\Line
-          If PreviousElement(*This\Items()) And \Text[2]\Len > 0 : \Text[2]\Len = 0 : EndIf
-        Else
-          If NextElement(*This\Items()) And \Text[2]\Len > 0 : \Text[2]\Len = 0 : EndIf
-        EndIf
-        PopListPosition(*This\Items())
         
         If *This\Line[1] = *This\Line
           If *This\Caret[1] > *This\Caret 
@@ -847,79 +727,15 @@ Module String
     Protected Caret,Item.i, String.s
     
     If *Focus = *This And ListSize(*This\items())
-      ;       If *This
-      ;         With *This
-      ;           If Not \Hide And Not \Disable And \Interact ; And Widget <> Canvas And CanvasModifiers
-      ;                                                       ; Get line & caret position
-      ;             If \Canvas\Mouse\Buttons 
-      ;               Item.i = (((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / \Text\Height)  ; item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y) ; 
-      ;             EndIf
-      ;             
-      ;             Select EventType 
-      ;               Case #PB_EventType_LeftButtonDown
-      ;                 MoveX = \Canvas\Mouse\X 
-      ;                 MoveY = \Canvas\Mouse\Y
-      ;                 
-      ;                 PushListPosition(\Items())
-      ;                 ForEach \Items() 
-      ;                   If \Items()\Text[2]\Len <> 0
-      ;                     \Items()\Text[2]\Len = 0 
-      ;                   EndIf
-      ;                 Next
-      ;                 PopListPosition(\Items())
-      ;                 
-      ;                 If \Items()\Text[2]\Len > 0
-      ;                   \Text[2]\Len = 1
-      ;                 Else
-      ;                   \Caret = Caret(*This, Item) 
-      ;                   \Line = ListIndex(*This\Items()) 
-      ;                   \Line[1] = Item
-      ;                   
-      ;                   PushListPosition(\Items())
-      ;                   ForEach \Items() 
-      ;                     If \Line[1] <> ListIndex(\Items())
-      ;                       \Items()\Text[1]\String = ""
-      ;                       \Items()\Text[2]\String = ""
-      ;                       \Items()\Text[3]\String = ""
-      ;                     EndIf
-      ;                   Next
-      ;                   PopListPosition(\Items())
-      ;                   
-      ;                 EndIf
-      ;                 
-      ;               Case #PB_EventType_MouseMove  
-      ;                 If \Canvas\Mouse\Buttons 
-      ;                   If \Line <> Item And Item =< ListSize(\Items())
-      ;                     If isItem(\Line, \Items()) 
-      ;                       If \Line <> ListIndex(\Items())
-      ;                         SelectElement(\Items(), \Line) 
-      ;                       EndIf
-      ;                       
-      ;                       If \Line > Item
-      ;                         \Caret = 0
-      ;                       Else
-      ;                         \Caret = \Items()\Text\Len
-      ;                       EndIf
-      ;                       
-      ;                       SelectionText(*This)
-      ;                     EndIf
-      ;                     
-      ;                     \Line = Item
-      ;                   EndIf
-      ;                   
-      ;                   \Caret = Caret(*This, Item) 
-      ;                   SelectionText(*This)
-      ;                 EndIf
-      ;                 
-      ;               Default
-      ;                 itemSelect(\Line[1], \Items())
-      ;             EndSelect
-      ;           EndIf
-      ;         EndWith    
-      ;       EndIf
-      ;       
+      If  *This\Canvas\Mouse\Buttons
+        If *This\Canvas\Mouse\Y < *This\Y
+          *This\Line =- 1
+        Else
+          *This\Line = (((*This\Canvas\Mouse\Y-*This\Y-*This\Text\Y)-*This\Scroll\Y) / *This\Text\Height)
+        EndIf
+      EndIf
       
-      With *This\items()
+     With *This\items()
         
         Select EventType
           Case #PB_EventType_LostFocus : Repaint = #True : *This\Caret[1] =- 1 ; Прячем коректор
@@ -1091,7 +907,6 @@ Module String
         \Alpha = 255
         \Interact = 1
         \Caret[1] =- 1
-        
         
         ; Set the default widget flag
         If Bool(Flag&#PB_Text_Top)
@@ -1291,7 +1106,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 62
-; Folding = -------------------------------
+; CursorPosition = 730
+; FirstLine = 478
+; Folding = --8--4wj--8---f-----------
 ; EnableXP
