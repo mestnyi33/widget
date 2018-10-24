@@ -1,4 +1,4 @@
-﻿IncludePath "/Users/as/Documents/GitHub/Widget/"
+﻿; IncludePath "/Users/as/Documents/GitHub/Widget/"
 
 CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
@@ -69,7 +69,7 @@ Module String
           EndIf
           
           If \Text\Change
-            \Text\Height = TextHeight("A") + 1
+            \Text\Height = TextHeight("A") + Bool(#PB_Compiler_OS <> #PB_OS_MacOS) ; Bug in windows
             \Text\Width = TextWidth(\Text\String.s)
           EndIf
           
@@ -349,67 +349,7 @@ Module String
                 Position = i
               EndIf
             Next
-            
-            ; Длина переноса строки
-            PushListPosition(\Items())
-            
-;             Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
-            
-;             If LastLine <> \Line Or LastItem <> Item
-;               \Items()\Text[2]\Width[2] = 0
-;               
-;               If \Line[1] = \Line ; Если начинаем виделят сверху вниз
-;                 If Position = len
-;                   If Item = \Line
-;                     If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-;                       \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-;                     EndIf 
-;                     If Not SelectionLen
-;                       \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-;                     Else
-;                       \Items()\Text[2]\Width[2] = SelectionLen
-;                     EndIf
-;                   EndIf
-;                 EndIf
-;                 
-;               ElseIf \Line[1] < \Line ; Если начинаем виделят сверху вниз
-;                 If Position = len
-;                   If Item = \Line
-;                     If Not SelectionLen
-;                       \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-;                     Else
-;                       \Items()\Text[2]\Width[2] = SelectionLen
-;                     EndIf
-;                   EndIf
-;                 EndIf
-;                 
-;                 If PreviousElement(*This\Items())
-;                   If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-;                     \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-;                   EndIf 
-;                   If Not SelectionLen
-;                     \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-;                   Else
-;                     \Items()\Text[2]\Width[2] = SelectionLen
-;                   EndIf
-;                 EndIf
-;                 
-;               ElseIf \Line[1] > \Line ; Если начинаем виделят снизу вверх
-;                 If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-;                   \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-;                 EndIf 
-;                 If Not SelectionLen
-;                   \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-;                 Else
-;                   \Items()\Text[2]\Width[2] = SelectionLen
-;                 EndIf
-;               EndIf
-;               
-;               LastItem = Item
-;               LastLine = \Line
-;             EndIf
-            PopListPosition(\Items())
-            
+                        
             StopDrawing()
           EndIf
         EndIf
@@ -454,14 +394,16 @@ Module String
             \Text[2]\Len = (*This\Caret-Position)
           EndIf
           ; Если выделяем снизу вверх
-        ElseIf *This\Line > *This\Line[1]
-          ; <<<<<|
-          Position = *This\Caret[1]
-          \Text[2]\Len = \Text\Len-Position
-        Else
-          ; >>>>>|
-          Position = 0
-          \Text[2]\Len = *This\Caret[1]
+        Else; If *This\Line > *This\Line[1]
+          If *This\Caret > *This\Caret[1]
+            ; <<<<<|
+            Position = *This\Caret[1]
+            \Text[2]\Len = \Text\Len-Position
+          Else
+            ; >>>>>|
+            Position = 0
+            \Text[2]\Len = *This\Caret[1]
+          EndIf
         EndIf
         
         \Text[1]\String.s = Left(\Text\String.s, Position) : \Text[1]\Change = #True
@@ -947,13 +889,31 @@ Module String
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
           
           
-          If \Text\Vertical
-            \Text\X = \fSize 
-            \Text\y = \fSize+2 ; 2,6,1
-          Else
-            \Text\X = \fSize+2 ; 2,6,12 
-            \Text\y = \fSize
-          EndIf
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+5
+            Else
+              \Text\X = \fSize+5
+              \Text\y = \fSize
+            EndIf
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+1
+            Else
+              \Text\X = \fSize+1
+              \Text\y = \fSize
+            EndIf
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+5
+            Else
+              \Text\X = \fSize+5
+              \Text\y = \fSize
+            EndIf
+          CompilerEndIf
           
           If \Text\Pass
             Protected i,Len = Len(Text.s)
@@ -1075,38 +1035,45 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, 615, 235, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    StringGadget(0, 8,  10, 290, 20, "Normal StringGadget...")
-    StringGadget(1, 8,  35, 290, 20, "1234567", #PB_String_Numeric)
-    StringGadget(2, 8,  60, 290, 20, "Read-only StringGadget", #PB_String_ReadOnly)
-    StringGadget(3, 8,  85, 290, 20, "LOWERCASE...", #PB_String_LowerCase)
-    StringGadget(4, 8, 110, 290, 20, "uppercase...", #PB_String_UpperCase)
-    StringGadget(5, 8, 140, 290, 20, "Borderless StringGadget", #PB_String_BorderLess)
-    StringGadget(6, 8, 170, 290, 20, "Password", #PB_String_Password)
+    Define height
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+      height = 20
+    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+      height = 18
+    CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+      height = 22
+    CompilerEndIf
     
-    StringGadget(7, 8,  200, 290, 20, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh")
+    StringGadget(0, 8,  10, 290, height, "Normal StringGadget...")
+    StringGadget(1, 8,  35, 290, height, "1234567", #PB_String_Numeric)
+    StringGadget(2, 8,  60, 290, height, "Read-only StringGadget", #PB_String_ReadOnly)
+    StringGadget(3, 8,  85, 290, height, "LOWERCASE...", #PB_String_LowerCase)
+    StringGadget(4, 8, 110, 290, height, "uppercase...", #PB_String_UpperCase)
+    StringGadget(5, 8, 140, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
+    StringGadget(6, 8, 170, 290, height, "Password", #PB_String_Password)
+    
+    StringGadget(7, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh")
     
     ; Demo draw string on the canvas
     CanvasGadget(10,  305, 0, 310, 235, #PB_Canvas_Keyboard)
     SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     BindGadgetEvent(10, @CallBacks())
     
-    *S_0 = Create(10, -1, 8,  10, 290, 20, "Normal StringGadget...")
-    *S_1 = Create(10, -1, 8,  35, 290, 20, "1234567", #PB_Text_Numeric|#PB_Text_Center)
-    *S_2 = Create(10, -1, 8,  60, 290, 20, "Read-only StringGadget", #PB_Text_ReadOnly|#PB_Text_Right)
-    *S_3 = Create(10, -1, 8,  85, 290, 20, "LOWERCASE...", #PB_Text_LowerCase)
-    *S_4 = Create(10, -1, 8, 110, 290, 20, "uppercase...", #PB_Text_UpperCase)
-    *S_5 = Create(10, -1, 8, 140, 290, 20, "Borderless StringGadget", #PB_Widget_BorderLess)
-    *S_6 = Create(10, -1, 8, 170, 290, 20, "Password", #PB_Text_Password)
+    *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...")
+    *S_1 = Create(10, -1, 8,  35, 290, height, "1234567", #PB_Text_Numeric|#PB_Text_Center)
+    *S_2 = Create(10, -1, 8,  60, 290, height, "Read-only StringGadget", #PB_Text_ReadOnly|#PB_Text_Right)
+    *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
+    *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
+    *S_5 = Create(10, -1, 8, 140, 290, height, "Borderless StringGadget", #PB_Widget_BorderLess)
+    *S_6 = Create(10, -1, 8, 170, 290, height, "Password", #PB_Text_Password)
     ; Button::Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
-    *S_7 = Create(10, -1, 8,  200, 290, 20, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
+    *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 730
-; FirstLine = 478
-; Folding = --8--4wj--8---f-----------
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = -----4wj--8----+-----------
 ; EnableXP
