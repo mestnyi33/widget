@@ -1151,13 +1151,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-<<<<<<< HEAD
+
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----4yj--8----44-8-8zu5------
-=======
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 902
-; FirstLine = 633
-; Folding = --8--4wj--8----+-----------
->>>>>>> 13bb82f413dc2ef0069cad43883233b4406969f9
+; Folding = ---------------+---v6---------
 ; EnableXP
