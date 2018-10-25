@@ -1,24 +1,12 @@
 ﻿IncludePath "/Users/as/Documents/GitHub/Widget/"
 ; XIncludeFile "module_scroll.pbi"
-; 
-; ;
-; ; Module name   : Editor
-; ; Author        : mestnyi
-; ; Last updated  : Aug 28, 2018
-; ; Forum link    : https://www.purebasic.fr/english/viewtopic.php?f=12&t=70650
-; ; 
-; 
-; 
-; EnableExplicit
-; ;-
-; DeclareModule Editor
-;   EnableExplicit
+
 CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_scroll.pbi"
-  XIncludeFile "module_Text.pbi"
+  XIncludeFile "module_text.pbi"
 CompilerEndIf
 
 DeclareModule Editor
@@ -2254,8 +2242,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 453
-; FirstLine = 370
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------f--z---------------f--t-8-8-8H1b-+--3---------
 ; EnableXP

@@ -511,7 +511,14 @@ Module Text
           Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
                #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
                #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
+            
+          CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+            \Canvas\Mouse\Buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
+                                    (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
+                                    (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
+          CompilerElse
             \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+          CompilerEndIf
         EndSelect
       EndWith
     EndIf
@@ -747,8 +754,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 695
-; FirstLine = 631
-; Folding = --P4--i-6----8-----
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = --P4--i-6----4-----
 ; EnableXP
