@@ -205,7 +205,7 @@ Module Editor
           
           *This\Scroll\Height = 0
           *This\Scroll\Width = 0
-          Wrap = Bool(*This\Text\MultiLine Or *This\Text\WordWrap)
+          Wrap = Bool(*This\Text\MultiLine)
           
           PushListPosition(*This\Items())
           ForEach *This\Items()
@@ -910,8 +910,8 @@ Module Editor
         Swap Width, Height
       EndIf
       
-      If Bool(\Text\MultiLine Or \Text\WordWrap)
-        \Text\String.s[2] = Text::Wrap(\Text\String.s, Width-(\Image\Width+\Image\Width/2), Bool(\Text\WordWrap)-Bool(\Text\MultiLine))
+      If \Text\MultiLine
+        \Text\String.s[2] = Text::Wrap(\Text\String.s, Width-(\Image\Width+\Image\Width/2), \Text\MultiLine)
         \Text\CountString = CountString(\Text\String.s[2], #LF$)
       Else
         \Text\String.s[2] = \Text\String.s
@@ -2058,9 +2058,12 @@ Module Editor
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           
-          \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-          \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
+          If Bool(Flag&#PB_Text_WordWrap)
+            \Text\MultiLine = 1
+          ElseIf Bool(Flag&#PB_Text_MultiLine)
+            \Text\MultiLine =- 1
+          EndIf
           \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
           \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
           \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
@@ -2129,7 +2132,7 @@ Module Editor
         EndIf
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        If Not Bool(\Text\WordWrap Or \Text\MultiLine)
+        If Not Bool(\Text\MultiLine)
           Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
         EndIf
       EndWith
@@ -2243,5 +2246,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------f--z---------------f--t-8-8-8H1b-+--3---------
+; Folding = --------7-z---------------f--t-8-8-8H1b-+--3---------
 ; EnableXP

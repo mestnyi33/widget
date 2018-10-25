@@ -66,7 +66,7 @@
     Pass.b
     Editable.b
     Numeric.b
-    WordWrap.b
+    ; WordWrap.b
     MultiLine.b
     Vertical.b
     Rotate.f

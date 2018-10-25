@@ -345,8 +345,11 @@ Module Button
           
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-          \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
-          \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
+          If Bool(Flag&#PB_Text_WordWrap)
+            \Text\MultiLine = 1
+          ElseIf Bool(Flag&#PB_Text_MultiLine)
+            \Text\MultiLine =- 1
+          EndIf
           
           \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
@@ -382,6 +385,10 @@ Module Button
           
           \Text\String.s = Text.s
           \Text\Change = #True
+          If Not \Text\MultiLine
+            \Text\String.s[2] = RemoveString(\Text\String.s, #LF$)
+            \Text\CountString = 1
+          EndIf
           
           ; Default colors (based on Windows 7)
           \Color[0]\Fore[1] = RGB(240, 240, 240)
