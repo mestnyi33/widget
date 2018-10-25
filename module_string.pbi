@@ -707,7 +707,6 @@ Module String
         
         If Resize(*This, X,Y,Width,Height, Canvas)
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
-          
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
             \Text\MultiLine = 1
@@ -751,38 +750,22 @@ Module String
             EndIf
           CompilerEndIf
           
-          If \Text\Pass
-            Protected i,Len = Len(Text.s)
-            Text.s = "" : For i=0 To Len : Text.s + "●" : Next
-          EndIf
-          
-          Select #True
-            Case \Text\Lower : \Text\String.s = LCase(Text.s)
-            Case \Text\Upper : \Text\String.s = UCase(Text.s)
-            Default
-              \Text\String.s = Text.s
-          EndSelect
-          \Text\Change = #True
-          \Text\Len = Len(\Text\String.s)
-          
-          If Not \Text\MultiLine
-            \Text\String.s[2] = RemoveString(\Text\String.s, #LF$)
-            \Text\CountString = 1
-          EndIf
-          
           If \Text\Editable
             \Color[0]\Back[1] = $FFFFFF 
           Else
-            \Color[0]\Back[1] = $F0F0F0  
+            \Color[0]\Back[1] = $FAFAFA  
           EndIf
           
-          ; Default frame color
+          ; default frame color
           \Color[0]\Frame[1] = $BABABA
           
-          ; Focus frame color
+          ; focus frame color
           \Color[0]\Frame[3] = $D5A719
           
+          ; set default colors
           ResetColor(*This)
+          
+          SetText(*This, Text.s)
         EndIf
       EndWith
     EndIf
@@ -899,9 +882,17 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If IsGadget(EventGadget())
-      Debug String.s +" - gadget"
+      If EventType() = #PB_EventType_Focus
+        Debug String.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
+      Else
+        Debug String.s +" - gadget"
+      EndIf
     Else
-      Debug String.s +" - widget"
+      If EventType() = #PB_EventType_Focus
+        Debug String.s +" - widget" +" get text - "+ GetText(EventGadget())
+      Else
+        Debug String.s +" - widget"
+      EndIf
     EndIf
     
   EndProcedure
@@ -935,6 +926,8 @@ CompilerIf #PB_Compiler_IsMainFile
       BindGadgetEvent(i, @Events())
     Next
     
+    SetGadgetText(6, "GaT")
+    
     ; Demo draw string on the canvas
     CanvasGadget(10,  305, 0, 310, 310, #PB_Canvas_Keyboard)
     SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
@@ -950,6 +943,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Button::Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
     *S_7 = Create(10, -1, 8,  200, 290, 100, Text);, #PB_Text_Top)
     ; *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
+    
+    Text::SetText(*S_6, "GaT")
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)

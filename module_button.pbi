@@ -382,14 +382,6 @@ Module Button
             EndIf
           CompilerEndIf 
           
-          
-          \Text\String.s = Text.s
-          \Text\Change = #True
-          If Not \Text\MultiLine
-            \Text\String.s[2] = RemoveString(\Text\String.s, #LF$)
-            \Text\CountString = 1
-          EndIf
-          
           ; Default colors (based on Windows 7)
           \Color[0]\Fore[1] = RGB(240, 240, 240)
           \Color[0]\Back[1] = RGB(229, 229, 229)  
@@ -421,6 +413,8 @@ Module Button
           
           ; Устанавливаем цвет по умолчанию первый
           ResetColor(*This)
+          
+          SetText(*This, Text.s)
         EndIf
       EndWith
     EndIf

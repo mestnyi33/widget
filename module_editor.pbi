@@ -1641,10 +1641,11 @@ Module Editor
     If *This
       With *This
         If \Text\String.s <> Text.s
-          ClearList(\Items())
           \Text\String.s = Text.s
           \Text\Len = Len(Text.s)
           \Text\Change = 1
+          
+          ClearList(\Items())
           AddString(*This)
           ;ReDraw(*This, \Canvas\Gadget)
         EndIf
@@ -2246,5 +2247,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------7-z---------------f--t-8-8-8H1b-+--3---------
+; Folding = --------7-z---------------f--t-8-8-8H3f-+--3---------
 ; EnableXP

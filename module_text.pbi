@@ -106,257 +106,6 @@ Module Text
     EndIf
   EndProcedure
   
-  Procedure.i _Draw(*This.Widget_S, Canvas.i=-1)
-    Protected String.s, StringWidth
-    Protected IT,Text_Y,Text_X,Width,Height
-    
-    If Not *This\Hide
-      With *This
-        If Canvas=-1 
-          Canvas = EventGadget()
-        EndIf
-        If Canvas <> \Canvas\Gadget
-          ProcedureReturn
-        EndIf
-        
-        If \Text\FontID 
-          DrawingFont(\Text\FontID) 
-        EndIf
-        
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
-        CompilerEndIf
-        
-        DrawingMode(\DrawingMode)
-        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
-        
-        
-        ; Make output text
-        If \Text\String.s
-          If \Text\Change
-            \Text\Height = TextHeight("A")
-            \Text\Width = TextWidth(\Text\String.s)
-          EndIf
-          
-          If (\Text\Change Or \Resize)
-            If \Text\Vertical
-              Width = \Height[1]-\Text\X*2
-              Height = \Width[1]-\Text\y*2
-            Else
-              Width = \Width[1]-\Text\X*2
-              Height = \Height[1]-\Text\y*2
-            EndIf
-            
-            If \Text\MultiLine
-              \Text\String.s[2] = Text::Wrap(\Text\String.s, Width-(\Image\Width+\Image\Width/2), \Text\MultiLine)
-              \Text\CountString = CountString(\Text\String.s[2], #LF$)
-;             Else
-;               ;  \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, 0)
-;               \Text\String.s[2] = \Text\String.s
-;               \Text\CountString = 1
-            EndIf
-            
-            If \Text\CountString
-              ClearList(\Items())
-              
-              If \Text\Align\Bottom
-                Text_Y=(Height-(\Text\Height*\Text\CountString)-Text_Y) 
-              ElseIf \Text\Align\Vertical
-                Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
-              EndIf
-              
-              DrawingMode(#PB_2DDrawing_Transparent)
-              If \Text\Vertical
-                For IT = \Text\CountString To 1 Step - 1
-                  If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                  
-                  String = StringField(\Text\String.s[2], IT, #LF$)
-                  StringWidth = TextWidth(RTrim(String))
-                  
-                  If \Text\Align\Right
-                    Text_X=(Width-StringWidth) 
-                  ElseIf \Text\Align\Horisontal
-                    Text_X=(Width-StringWidth)/2 
-                  EndIf
-                  
-                  AddElement(\Items())
-                  \Items()\Text\Editable = \Text\Editable 
-                  \Items()\Text\Vertical = \Text\Vertical
-                  If \Text\Rotate = 270
-                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y+\Text\Height+\Text\X
-                    \Items()\Text\y = \Y[1]+\Text\X+Text_X
-                  Else
-                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y
-                    \Items()\Text\y = \Y[1]+\Text\X+Text_X+StringWidth
-                  EndIf
-                  \Items()\Text\Width = StringWidth
-                  \Items()\Text\Height = \Text\Height
-                  \Items()\Text\String.s = String.s
-                  \Items()\Text\Len = Len(String.s)
-                  
-                  
-                  ;DrawRotatedText(\X[1]+\Text\Y+Text_Y, \Y[1]+\Text\X+Text_X+StringWidth, String.s, 90, \Color\Front)
-                  ;DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
-                  Text_Y+\Text\Height : If Text_Y > (Width) : Break : EndIf
-                Next
-              Else
-                For IT = 1 To \Text\CountString
-                  If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                  
-                  String = StringField(\Text\String.s[2], IT, #LF$)
-                  StringWidth = TextWidth(RTrim(String))
-                  
-                  If \Text\Align\Right
-                    Text_X=(Width-StringWidth) 
-                  ElseIf \Text\Align\Horisontal
-                    Text_X=(Width-StringWidth)/2 
-                  EndIf
-                  
-                  AddElement(\Items())
-;                   \Items()\Text\Caret = \Caret 
-;                   \Items()\Text\Caret[1] = \Caret[1] 
-                  \Items()\Text\Editable = \Text\Editable 
-                  \Items()\Text\x = (\Image\Width+\Image\Width/2)+\X[1]+\Text\X+Text_X
-                  \Items()\Text\y = \Y[1]+\Text\Y+Text_Y
-                  \Items()\Text\Width = StringWidth
-                  \Items()\Text\Height = \Text\Height
-                  \Items()\Text\String.s = String.s
-                  \Items()\Text\Len = Len(String.s)
-                  
-                  \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
-                  \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
-                  
-                  ;DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
-                  Text_Y+\Text\Height : If Text_Y > (Height-\Text\Height) : Break : EndIf
-                Next
-              EndIf
-            EndIf
-          EndIf
-          
-          If \Text\Change
-            \Text\Change = 0
-          EndIf
-          
-          If \Resize
-            \Resize = 0
-          EndIf
-        EndIf
-        
-      EndWith 
-      
-      ; Draw items text
-      If ListSize(*This\Items())
-        With *This\Items()
-          PushListPosition(*This\Items())
-          ForEach *This\Items()
-            
-            ; Draw image
-            If \Image\handle
-              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-              DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
-            EndIf
-            
-            ; Draw string
-            If \Text\String.s
-              If \Text\FontID 
-                DrawingFont(\Text\FontID) 
-              EndIf
-              If \Text[1]\Change 
-                \Text[1]\Width = TextWidth(\Text[1]\String.s) 
-                \Text[2]\X = \Text[0]\X+\Text[1]\Width
-                \Text[1]\Change = #False
-              EndIf
-              If \Text[2]\Change
-                \Text[2]\Width = TextWidth(\Text[2]\String.s)
-                \Text[3]\X = \Text[2]\X+\Text[2]\Width
-                \Text[2]\Change = #False
-              EndIf 
-              
-              CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-                ClipOutput(*This\X[2]+*This\Text[0]\X-1,*This\Y[2],*This\Width[2]-*This\Text[0]\X*2+2,*This\Height[2]) ; Bug in Mac os
-              CompilerEndIf
-              
-              If \Text[2]\Len And #PB_Compiler_OS <> #PB_OS_MacOS
-                If \Text[1]\String.s
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                EndIf
-                If \Text[2]\String.s
-                  DrawingMode(#PB_2DDrawing_Default)
-;                   If \Text[0]\String.s = \Text[1]\String.s+\Text[2]\String.s
-;                     Box(\Text[2]\X, \Text[0]\Y,*This\width[2]-\Text[2]\X, \Text[0]\Height, $DE9541)
-;                   Else
-                    Box(\Text[2]\X, \Text[0]\Y, \Text[2]\Width, \Text[0]\Height+1, $DE9541)
-;                   EndIf
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText(\Text[2]\X, \Text[0]\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFF)
-                EndIf
-                If \Text[3]\String.s
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText(\Text[3]\X, \Text[0]\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                EndIf
-              Else
-                If \Text[2]\Len
-                  DrawingMode(#PB_2DDrawing_Default)
-                  Box(\Text[2]\X, \Text[0]\Y, \Text[2]\Width, \Text[0]\Height+1, $FADBB3);$DE9541)
-                EndIf
-                DrawingMode(#PB_2DDrawing_Transparent)
-                DrawRotatedText(\Text[0]\X, \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-              EndIf
-            EndIf
-            
-          Next
-          PopListPosition(*This\Items()) ; 
-          
-          If *This\Focus = *This 
-            ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            If *This\Text\Editable And *This\Caret = *This\Caret[1] 
-              DrawingMode(#PB_2DDrawing_XOr)             
-              Line(\Text[0]\X + \Text[1]\Width, \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
-            EndIf
-          EndIf
-        EndWith  
-      EndIf
-      
-      ; Draw frames
-      With *This
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4) ; Bug in Mac os
-        CompilerEndIf
-        
-        ; Draw image
-        If \Image\handle
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
-        EndIf
-        
-        ; Draw frames
-        DrawingMode(#PB_2DDrawing_Outlined)
-        
-        If \Default
-          RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[3])
-;           If \Radius ; Сглаживание краев)))
-;             RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
-;           EndIf
-;           RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,\Color\Frame[3])
-        EndIf
-        
-        If \Focus = *This ;  Debug "\Focus "+\Focus
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[3])
-          If \Radius ; Сглаживание краев))) ; RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,\Color\Frame[3])
-            RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
-          EndIf
-          RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,\Color\Frame[3])
-        Else
-          If \fSize
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
-          EndIf
-        EndIf
-      EndWith
-    EndIf
-    
-  EndProcedure
-  
   Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
     Protected String.s, StringWidth
     Protected IT,Text_Y,Text_X,Width,Height
@@ -665,18 +414,44 @@ Module Text
   EndProcedure
   ;-
   Procedure.s GetText(*This.Widget_S)
-    ProcedureReturn *This\Text\String.s
+    With *This
+      If \Text\Pass
+        ProcedureReturn \Text\String.s[1]
+      Else
+        ProcedureReturn \Text\String
+      EndIf
+    EndWith
   EndProcedure
   
   Procedure.i SetText(*This.Widget_S, Text.s)
-    Protected Result
+    Protected Result,i,Len
     
-    If *This\Text\String.s <> Text.s
-      *This\Text\String.s = Text.s
-      *This\Text\Change = #True
-      Result = #True
-    EndIf
-    
+    With *This
+      If \Text\String.s <> Text.s
+        \Text\String.s[1] = Text.s
+        
+        If \Text\Pass
+          Len = Len(Text.s) : Text.s = "" 
+          For i = 1 To Len : Text.s + "●" : Next
+        Else
+          Select #True
+            Case \Text\Lower : Text.s = LCase(Text.s)
+            Case \Text\Upper : Text.s = UCase(Text.s)
+          EndSelect
+        EndIf
+        
+        If Not \Text\MultiLine
+          \Text\String.s[2] = RemoveString(Text.s, #LF$)
+          \Text\CountString = #True
+        EndIf
+        
+        \Text\String.s = Text.s
+        \Text\Len = Len(Text.s)
+        \Text\Change = #True
+        Result = #True
+      EndIf
+    EndWith
+  
     ProcedureReturn Result
   EndProcedure
   
@@ -919,19 +694,15 @@ Module Text
             \Text\y = \fSize
           EndIf
           
-          \Text\String.s = Text.s
-          \Text\Change = #True
-          
-          
           If \Text\Editable
             \Color[0]\Back[1] = $FFFFFF 
           Else
             \Color[0]\Back[1] = $F0F0F0  
           EndIf
           \Color[0]\Frame[1] = $BABABA
-          
-          
           ResetColor(*This)
+          
+          SetText(*This, Text.s)
         EndIf
       EndWith
     EndIf
@@ -1062,5 +833,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --+-------f0----------8-----
+; Folding = ---------------f------
 ; EnableXP
