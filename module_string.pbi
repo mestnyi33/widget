@@ -349,7 +349,7 @@ Module String
                 Position = i
               EndIf
             Next
-                        
+            
             StopDrawing()
           EndIf
         EndIf
@@ -394,16 +394,43 @@ Module String
             \Text[2]\Len = (*This\Caret-Position)
           EndIf
           ; Если выделяем снизу вверх
-        Else; If *This\Line > *This\Line[1]
-          If *This\Caret > *This\Caret[1]
-            ; <<<<<|
-            Position = *This\Caret[1]
-            \Text[2]\Len = \Text\Len-Position
-          Else
-            ; >>>>>|
-            Position = 0
-            \Text[2]\Len = *This\Caret[1]
-          EndIf
+        Else
+          ; Три разних поведения при виделении текста 
+          ; когда курсор переходит за предели виджета
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+            If *This\Caret > *This\Caret[1]
+              ; <<<<<|
+              Position = *This\Caret[1]
+              \Text[2]\Len = \Text\Len-Position
+            Else
+              ; >>>>>|
+              Position = 0
+              \Text[2]\Len = *This\Caret[1]
+            EndIf
+            
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+            If *This\Caret[1] > *This\Caret 
+              ; |<<<<<< to left
+              Position = *This\Caret
+              \Text[2]\Len = (*This\Caret[1]-Position)
+            Else 
+              ; >>>>>>| to right
+              Position = *This\Caret[1]
+              \Text[2]\Len = (*This\Caret-Position)
+            EndIf
+            
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+            If *This\Line > *This\Line[1]
+              ; <<<<<|
+              Position = *This\Caret[1]
+              \Text[2]\Len = \Text\Len-Position
+            Else
+              ; >>>>>|
+              Position = 0
+              \Text[2]\Len = *This\Caret[1]
+            EndIf 
+          CompilerEndIf
+          
         EndIf
         
         \Text[1]\String.s = Left(\Text\String.s, Position) : \Text[1]\Change = #True
@@ -446,7 +473,7 @@ Module String
   
   Procedure ToRight(*This.Widget_S)
     Protected Repaint
-    Debug 666
+    
     With *This
       If \Items()\Text[2]\Len 
         If \Caret > \Caret[1] 
@@ -560,7 +587,7 @@ Module String
     ; widget_events_type
     If *This
       With *This
-       If Canvas=-1 
+        If Canvas=-1 
           Widget = *This
           Canvas = EventGadget()
         Else
@@ -696,18 +723,18 @@ Module String
       EndWith
     EndIf
     
-;     If (*Last = *This)
-;       Select EventType
-;         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
-;         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
-;         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-;         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
-;         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-;         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
-;         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
-;       EndSelect
-;     EndIf
-   
+    ;     If (*Last = *This)
+    ;       Select EventType
+    ;         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+    ;         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+    ;         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
+    ;       EndSelect
+    ;     EndIf
+    
     Static MoveX, MoveY
     Protected Caret,Item.i, String.s
     
@@ -836,6 +863,12 @@ Module String
                 Case #PB_Shortcut_Delete : Repaint = ToDelete(*This)
                   
                   
+                Case #PB_Shortcut_A
+                  *This\Caret = 0
+                  *This\Caret[1] = \Text\Len
+                  \Text[2]\Len = \Text\Len
+                  Repaint = 1
+                
                 Case #PB_Shortcut_X
                   If \Text[2]\String.s And (*This\Canvas\Key[1] & #PB_Canvas_Control) 
                     SetClipboardText(\Text[2]\String.s)
@@ -958,9 +991,9 @@ Module String
           CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
             If \Text\Vertical
               \Text\X = \fSize 
-              \Text\y = \fSize+1
+              \Text\y = \fSize+2
             Else
-              \Text\X = \fSize+1
+              \Text\X = \fSize+2
               \Text\y = \fSize
             EndIf
           CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -1070,9 +1103,9 @@ CompilerIf #PB_Compiler_IsMainFile
               EndIf
             Next
         EndSelect
-        ;     EndSelect
-;     
-;     Select EventType()
+    EndSelect
+    
+    Select EventType()
       Case #PB_EventType_Resize
         ForEach List()
           Resize(List()\Widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -1108,7 +1141,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "Left click "+EventGadget()+" "+EventType()
   EndProcedure
   
-    
+  
   If OpenWindow(0, 0, 0, 615, 235, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define height
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -1152,6 +1185,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------+---v6---------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 869
+; FirstLine = 664
+; Folding = ---------------4----0f--------
 ; EnableXP
