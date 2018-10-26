@@ -17,6 +17,7 @@ DeclareModule Editor
   
   
   ;- DECLARE
+  Declare.i Draw(*This.Widget_S, Canvas.i=-1)
   Declare GetState(Gadget.i)
   Declare.s GetText(Gadget.i)
   Declare SetState(Gadget.i, State.i)
@@ -26,10 +27,10 @@ DeclareModule Editor
   Declare SetFont(Gadget, FontID.i)
   Declare AddItem(Gadget,Item,Text.s,Image.i=-1,Flag.i=0)
   
+  Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
-  Declare CallBack()
-  Declare.i Draw(*This.Widget_S, Canvas.i=-1)
+  Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   
 EndDeclareModule
 
@@ -1666,8 +1667,17 @@ Module Editor
     EndWith
   EndProcedure
   
+  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+    With *This
+      If Text::Resize(*This, X,Y,Width,Height)
+        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
+      EndIf
+      ProcedureReturn \Resize
+    EndWith
+  EndProcedure
+  
   ;-
-  Procedure Events(*This.Widget_S, EventType.i)
+  Procedure _Events(*This.Widget_S, EventType.i)
     Static MoveX, MoveY
     Static Text$, DoubleClickCaret =- 1
     Protected Repaint.b, Caret,Item.i, String.s, StartDrawing, Update_Text_Selected
@@ -1990,41 +2000,506 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure CallBack()
-    Static LastX, LastY
-    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
+  Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+    Static *Focus.Widget_S, *Last.Widget_S, *Widget.Widget_S
+    Static Text$, DoubleClick, LastX, LastY, Last, Drag
+    Protected.i Repaint, Control, Buttons, Widget
     
-    With *This
-      \Canvas\Window = EventWindow()
-      \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
-      \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
-      \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
-      \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
-      \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
-      \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+    ; widget_events_type
+    If *This
+      With *This
+        If Canvas=-1 
+          Widget = *This
+          Canvas = EventGadget()
+        Else
+          Widget = Canvas
+        EndIf
+        If Canvas <> \Canvas\Gadget Or 
+           \Type <> #PB_GadgetType_Editor
+        EndIf
+        
+        ; Get at point widget
+        \Canvas\Mouse\From = From(*This)
+        
+        Select EventType 
+          Case #PB_EventType_LeftButtonUp 
+            If *Last = *This
+              If *Widget <> *Focus
+                ProcedureReturn 0 
+              EndIf
+            EndIf
+            
+          Case #PB_EventType_LeftClick 
+            ; Debug ""+\Canvas\Mouse\Buttons+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+            If *Last = *This : *Last = *Widget
+              If *Widget <> *Focus
+                ProcedureReturn 0 
+              EndIf
+            EndIf
+            
+            If Not *This\Canvas\Mouse\From 
+              ProcedureReturn 0
+            EndIf
+        EndSelect
+        
+        If Not \Hide And Not \Disable And \Interact And Widget <> Canvas And CanvasModifiers 
+          Select EventType 
+            Case #PB_EventType_Focus : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
+            Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonUp
+              If Not \Canvas\Mouse\Buttons 
+                If \Canvas\Mouse\From
+                  If *Last <> *This 
+                    If *Last
+                      If (*Last\Index > *This\Index)
+                        ProcedureReturn 0
+                      Else
+                        ; Если с нижнего виджета перешли на верхный, 
+                        ; то посылаем событие выход для нижнего
+                        Events(*Last, #PB_EventType_MouseLeave, Canvas, 0)
+                        *Last = *This
+                      EndIf
+                    Else
+                      *Last = *This
+                    EndIf
+                    
+                    EventType = #PB_EventType_MouseEnter
+                    *Widget = *Last
+                  EndIf
+                  
+                ElseIf (*Last = *This)
+                  If EventType = #PB_EventType_LeftButtonUp 
+                    Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
+                  EndIf
+                  
+                  EventType = #PB_EventType_MouseLeave
+                  *Last = *Widget
+                  *Widget = 0
+                EndIf
+              EndIf
+              
+            Case #PB_EventType_LeftButtonDown
+              If (*Last = *This)
+                PushListPosition(List())
+                ForEach List()
+                  If List()\Widget\Focus = List()\Widget And List()\Widget <> *This 
+                    
+                    List()\Widget\Focus = 0
+                    *Last = List()\Widget
+                    Events(List()\Widget, #PB_EventType_LostFocus, List()\Widget\Canvas\Gadget, 0)
+                    *Last = *Widget 
+                    
+                    PostEvent(#PB_Event_Gadget, List()\Widget\Canvas\Window, List()\Widget\Canvas\Gadget, #PB_EventType_Repaint)
+                    Break 
+                  EndIf
+                Next
+                PopListPosition(List())
+                
+                If *This <> \Focus : \Focus = *This : *Focus = *This
+                  Events(*This, #PB_EventType_Focus, Canvas, 0)
+                EndIf
+              EndIf
+              
+          EndSelect
+        EndIf
+        
+        If (*Last = *This) 
+          Select EventType
+            Case #PB_EventType_MouseLeave
+              If CanvasModifiers 
+                ; Если перешли на другой виджет
+                PushListPosition(List())
+                ForEach List()
+                  If List()\Widget\Canvas\Gadget = Canvas And List()\Widget\Focus <> List()\Widget And List()\Widget <> *This
+                    List()\Widget\Canvas\Mouse\From = From(List()\Widget)
+                    
+                    If List()\Widget\Canvas\Mouse\From
+                      If *Last
+                        Events(*Last, #PB_EventType_MouseLeave, Canvas, 0)
+                      EndIf     
+                      
+                      *Last = List()\Widget
+                      *Widget = List()\Widget
+                      ProcedureReturn Events(*Last, #PB_EventType_MouseEnter, Canvas, 0)
+                    EndIf
+                  EndIf
+                Next
+                PopListPosition(List())
+              EndIf
+              
+              If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
+                \Cursor[1] = 0
+              EndIf
+              
+            Case #PB_EventType_MouseEnter    
+              If Not \Cursor[1] 
+                \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+              EndIf
+              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
+              
+          EndSelect
+        EndIf 
+        
+      EndWith
+    EndIf
+    
+    ;     If (*Last = *This)
+    ;       Select EventType
+    ;         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+    ;         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+    ;         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
+    ;         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
+    ;       EndSelect
+    ;     EndIf
+    
+    Static MoveX, MoveY
+    Protected Caret,Item.i, String.s
+    
+    If *This
+      With *This
+        If Not \Hide And Not \Disable And \Interact ; And Widget <> Canvas And CanvasModifiers
+                                                    ; Get line & caret position
+          If  \Canvas\Mouse\Buttons
+            If \Canvas\Mouse\Y < \Y
+              Item.i =- 1
+            Else
+              Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
+            EndIf
+          EndIf
       
-      Select EventType()
-        Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          Text::Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
-          Scroll::Resizes(*This\vScroll, *This\hScroll, *This\x[2]+1,*This\Y[2]+1,*This\Width[2]-2,*This\Height[2]-2)
-          Repaint = *This\Resize
+          Select EventType 
+            Case #PB_EventType_LeftButtonDown
+              MoveX = \Canvas\Mouse\X 
+              MoveY = \Canvas\Mouse\Y
+              
+              PushListPosition(\Items())
+              ForEach \Items() 
+                If \Items()\Text[2]\Len <> 0
+                  \Items()\Text[2]\Len = 0 
+                EndIf
+              Next
+              PopListPosition(\Items())
+              
+              If \Items()\Text[2]\Len > 0
+                \Text[2]\Len = 1
+              Else
+                \Caret = Caret(*This, Item) 
+                \Line = ListIndex(*This\Items()) 
+                \Line[1] = Item
+                
+                PushListPosition(\Items())
+                ForEach \Items() 
+                  If \Line[1] <> ListIndex(\Items())
+                    \Items()\Text[1]\String = ""
+                    \Items()\Text[2]\String = ""
+                    \Items()\Text[3]\String = ""
+                  EndIf
+                Next
+                PopListPosition(\Items())
+                
+              EndIf
+              
+            Case #PB_EventType_LeftButtonUp
+              ;               If \Caret = \Caret[1] ; And \Line = \Line[1] 
+              ; ;                 If Not \Drag
+              ;                   ; Сбрасываем все виделения.
+              ;                   PushListPosition(\Items())
+              ;                   ForEach \Items() 
+              ;                     If \Items()\Text[2]\Len <> 0
+              ;                       \Items()\Text[2]\Len = 0 
+              ;                     EndIf
+              ;                   Next
+              ;                   PopListPosition(\Items())
+              ;                   Repaint = 1
+              ; ;                 EndIf
+              ;                   \Text[2]\Len = 0
+              ; ;                 \Drag = 0
+              ;               EndIf
+              
+            Case #PB_EventType_MouseMove  
+              If \Canvas\Mouse\Buttons 
+                If \Drag = 0 And (Abs((\Canvas\Mouse\X-MoveX)+(\Canvas\Mouse\Y-MoveY)) >= 6) : \Drag=1
+                  Debug "DragStart";PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_DragStart)
+                EndIf
+                
+                
+                If Not \Text[2]\Len
+                  If \Line <> Item And Item =< ListSize(\Items())
+                    If isItem(\Line, \Items()) 
+                      If \Line <> ListIndex(\Items())
+                        SelectElement(\Items(), \Line) 
+                      EndIf
+                      
+                      If \Line > Item
+                        \Caret = 0
+                      Else
+                        \Caret = \Items()\Text\Len
+                      EndIf
+                      
+                      SelectionText(*This)
+                    EndIf
+                    
+                    \Line = Item
+                  EndIf
+                  
+                  \Caret = Caret(*This, Item) 
+                  SelectionText(*This)
+                EndIf
+              EndIf
+              
+            Default
+              itemSelect(\Line[1], \Items())
+          EndSelect
+        EndIf
+      EndWith    
+    EndIf
+    
+    With *This\items()
+      If ListSize(*This\items())
+        If *Last = *This
+          Select EventType
+            Case #PB_EventType_MouseEnter
+            SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
+            ; Debug ""+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+            
+          Case #PB_EventType_LostFocus : Repaint = #True
+            If Bool(*This\Type <> #PB_GadgetType_Editor)
+              ; StringGadget
+              \Text[2]\Len = 0 ; Убыраем выделение
+            EndIf
+            *This\Caret[1] =- 1 ; Прячем коректор
+            
+          Case #PB_EventType_Focus : Repaint = #True
+            *This\Caret[1] = *This\Caret ; Показываем коректор
+            
+          Case #PB_EventType_LeftDoubleClick 
+            DoubleClick = *This\Caret
+            SelectionLimits(*This)
+            SelectionText(*This) 
+            Repaint = #True
+            
+            *This\Caret = Caret(*This, *This\Line[1]) 
+            
+          Case #PB_EventType_LeftButtonDown
+            *This\Caret[1] = *This\Caret
+            
+            If \Text\Numeric 
+              \Text\String.s[1] = \Text\String.s 
+            EndIf
+            
+            If *This\Caret = DoubleClick
+              DoubleClick =- 1
+              *This\Caret[1] = \Text\Len
+              *This\Caret = 0
+            EndIf 
+            
+            SelectionText(*This)
+            Repaint = #True
+            
+          Case #PB_EventType_MouseMove
+            If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton
+              ;                 *This\Caret = Caret(*This)
+              ;                 SelectionText(*This)
+              Repaint = #True
+            EndIf
+            
+           
+          EndSelect
+        EndIf  
+        
+        If *Focus = *This And *This\Text\Editable
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+            Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
+          CompilerElse
+            Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
+          CompilerEndIf
           
-      EndSelect
-      
-      Repaint | Scroll::CallBack(*This\vScroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0)
-      Repaint | Scroll::CallBack(*This\hScroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0)
-      
-      If Not *This\vScroll\Buttons And Not *This\hScroll\Buttons
-        Repaint | Events(*This, EventType())
+          Select EventType
+            Case #PB_EventType_Input ;- Input (key)
+            If *This\Text\Editable And Not (*This\Canvas\Key[1] & #PB_Canvas_Command)
+              Protected Input, Input_2
+              
+              Select #True
+                Case \Text\Lower : Input = Asc(LCase(Chr(*This\Canvas\Input))) : Input_2 = Input
+                Case \Text\Upper : Input = Asc(UCase(Chr(*This\Canvas\Input))) : Input_2 = Input
+                Case \Text\Pass  : Input = 9679 : Input_2 = *This\Canvas\Input ; "●"
+                Case \Text\Numeric
+                  ;                     Debug *This\Canvas\Input
+                  Static Dot
+                  
+                  Select *This\Canvas\Input 
+                    Case '.','0' To '9' : Input = *This\Canvas\Input : Input_2 = Input
+                    Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.' : Input_2 = Input
+                    Default
+                      Input_2 = *This\Canvas\Input
+                  EndSelect
+                  
+                  If Not Dot And Input = '.'
+                    Dot = 1
+                  ElseIf Input <> '.'
+                    Dot = 0
+                  Else
+                    Input = 0
+                  EndIf
+                  
+                Default
+                  Input = *This\Canvas\Input : Input_2 = Input
+              EndSelect
+              
+              If Input_2
+                If Input
+                  If \Text[2]\String.s
+                    RemoveText(*This)
+                  EndIf
+                  *This\Caret + 1
+                  *This\Caret[1] = *This\Caret
+                EndIf
+                
+                If \Text\Numeric And Input = Input_2
+                  \Text\String.s[1] = \Text\String.s
+                EndIf
+                
+                ;\Text\String.s = Left(\Text\String.s, *This\Caret-1) + Chr(Input) + Mid(\Text\String.s, *This\Caret)
+                \Text\String.s = InsertString(\Text\String.s, Chr(Input), *This\Caret)
+                \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(Input_2), *This\Caret)
+                
+                If Input
+                  \Text\Len = Len(\Text\String.s)
+                  PostEvent(#PB_Event_Gadget, EventWindow(), EventGadget(), #PB_EventType_Change)
+                EndIf
+                
+                Repaint = #True 
+              EndIf
+            EndIf
+            
+          Case #PB_EventType_KeyUp
+            If \Text\Numeric
+              \Text\String.s[1]=\Text\String.s 
+            EndIf
+            Repaint = #True 
+            
+          Case #PB_EventType_KeyDown
+            Select *This\Canvas\Key
+              Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = 0 : *This\Caret[1] = *This\Caret : Repaint =- 1
+              Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = \Text\Len : *This\Caret[1] = *This\Caret : Repaint =- 1 
+                
+              Case #PB_Shortcut_Up     : Repaint = ToUp(*This)      ; Ok
+              Case #PB_Shortcut_Left   : Repaint = ToLeft(*This)    ; Ok
+              Case #PB_Shortcut_Right  : Repaint = ToRight(*This)   ; Ok
+              Case #PB_Shortcut_Down   : Repaint = ToDown(*This)    ; Ok
+              Case #PB_Shortcut_Back   : Repaint = ToBack(*This)
+              Case #PB_Shortcut_Return : Repaint = ToReturn(*This) 
+              Case #PB_Shortcut_Delete : Repaint = ToDelete(*This)
+                
+                
+              Case #PB_Shortcut_C, #PB_Shortcut_X
+                If ((*This\Canvas\Key[1] & #PB_Canvas_Control) Or (*This\Canvas\Key[1] & #PB_Canvas_Command)) 
+                  SetClipboardText(Copy(*This))
+                  
+                  If *This\Canvas\Key = #PB_Shortcut_X
+                    Cut(*This)
+                    
+                    *This\Caret[1] = *This\Caret
+                    Repaint = #True 
+                  EndIf
+                EndIf
+                
+              Case #PB_Shortcut_V
+                If *This\Text\Editable And ((*This\Canvas\Key[1] & #PB_Canvas_Control) Or (*This\Canvas\Key[1] & #PB_Canvas_Command))
+                  Protected ClipboardText.s = Trim(GetClipboardText(), #CR$)
+                  
+                  If ClipboardText.s
+                    If \Text[2]\Len > 0
+                      RemoveText(*This)
+                      
+                      If \Text[2]\Len = \Text\Len
+                        ;*This\Line[1] = *This\Line
+                        ClipboardText.s = Trim(ClipboardText.s, #LF$)
+                      EndIf
+                      ;                         
+                      PushListPosition(*This\Items())
+                      ForEach *This\Items()
+                        If \Text[2]\Len > 0 
+                          If \Text[2]\Len = \Text\Len
+                            DeleteElement(*This\Items(), 1) 
+                          Else
+                            RemoveText(*This)
+                          EndIf
+                        EndIf
+                      Next
+                      PopListPosition(*This\Items())
+                    EndIf
+                    
+                    Select #True
+                      Case \Text\Lower : ClipboardText.s = LCase(ClipboardText.s)
+                      Case \Text\Upper : ClipboardText.s = UCase(ClipboardText.s)
+                      Case \Text\Numeric 
+                        If Val(ClipboardText.s)
+                          ClipboardText.s = Str(Val(ClipboardText.s))
+                        EndIf
+                    EndSelect
+                    
+                    \Text\String.s = InsertString( \Text\String.s, ClipboardText.s, *This\Caret + 1)
+                    
+                    If CountString(\Text\String.s, #LF$)
+                      Caret = \Text\Len-*This\Caret
+                      String.s = \Text\String.s
+                      DeleteElement(*This\Items(), 1)
+                      SetText(*This\Canvas\Gadget, String.s, *This\Line[1])
+                      *This\Caret = Len(\Text\String.s)-Caret
+                      ;                         SelectElement(*This\Items(), *This\Line)
+                      ;                        *This\Caret = 0
+                    Else
+                      *This\Caret + Len(ClipboardText.s)
+                    EndIf
+                    
+                    *This\Caret[1] = *This\Caret
+                    \Text\Len = Len(\Text\String.s)
+                    
+                    Repaint = #True
+                  EndIf
+                EndIf
+                
+            EndSelect 
+          
+          EndSelect
+        EndIf
+        
+        If Repaint
+          ;\Text[3]\Change = Bool(Repaint =- 1)
+          If Repaint =- 1
+            SelectionText(*This) 
+          EndIf
+          
+          If Repaint = 2
+            *This\Text[0]\Change = Repaint
+            \Text[1]\Change = Repaint
+            \Text[2]\Change = Repaint
+            \Text[3]\Change = Repaint
+          EndIf
+          ; *This\CaretLength = \CaretLength
+          *This\Text[2]\String.s[1] = \Text[2]\String.s[1]
+        EndIf
       EndIf
-      
-      If Repaint 
-        ReDraw(*This)
-      EndIf
-      
     EndWith
     
-    ; Draw(*This)
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+    Protected Repaint
+    With *This
+      Repaint | Scroll::CallBack(\vScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0)
+      Repaint | Scroll::CallBack(\hScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0)
+      
+      If Not \vScroll\Buttons And Not \hScroll\Buttons
+        Repaint | Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
+      EndIf
+    EndWith
+    ProcedureReturn Repaint
   EndProcedure
   
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
@@ -2158,6 +2633,34 @@ Module Editor
     ProcedureReturn *This
   EndProcedure
   
+  
+  Procedure CallBacks()
+    Static LastX, LastY
+    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
+    
+    With *This
+      \Canvas\Window = EventWindow()
+      \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
+      \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
+      \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
+      \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
+      \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
+      \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+      
+      Select EventType()
+        Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+      EndSelect
+      
+      Repaint | CallBack(*This, EventType())
+      
+      If Repaint 
+        ReDraw(*This)
+      EndIf
+      
+    EndWith
+  EndProcedure
+  
   Procedure.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S)
     Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
@@ -2170,7 +2673,7 @@ Module Editor
         ReDraw(*This)
         
         PostEvent(#PB_Event_Gadget, GetActiveWindow(), Gadget, #PB_EventType_Resize)
-        BindGadgetEvent(Gadget, @CallBack())
+        BindGadgetEvent(Gadget, @CallBacks())
       EndWith
     EndIf
     
@@ -2246,6 +2749,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------7-z---------------f--t-8-8-8H3f-+--3---------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 2681
+; FirstLine = 1246
+; Folding = --------7-z---------------f--t-8-8-8H3-48--ZP--z-------+9---f--r0--
 ; EnableXP

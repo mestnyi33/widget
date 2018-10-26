@@ -174,14 +174,20 @@ Module Text
                   EndIf
                   
                   AddElement(\Items())
+                  \Items()\x = \X[1]+\Text\Y+Text_Y
+                  \Items()\y = \Y[1]+\Text\X+Text_X
+                  \Items()\Width = \Text\Height
+                  \Items()\Height = Width
+                  \Items()\Item = ListIndex(\Items())
+                  
                   \Items()\Text\Editable = \Text\Editable 
                   \Items()\Text\Vertical = \Text\Vertical
                   If \Text\Rotate = 270
-                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y+\Text\Height+\Text\X
-                    \Items()\Text\y = \Y[1]+\Text\X+Text_X
+                    \Items()\Text\x = \Image\Width+\Items()\x+\Text\Height+\Text\X
+                    \Items()\Text\y = \Items()\y
                   Else
-                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y
-                    \Items()\Text\y = \Y[1]+\Text\X+Text_X+StringWidth
+                    \Items()\Text\x = \Image\Width+\Items()\x
+                    \Items()\Text\y = \Items()\y+StringWidth
                   EndIf
                   \Items()\Text\Width = StringWidth
                   \Items()\Text\Height = \Text\Height
@@ -832,6 +838,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 267
+; FirstLine = 255
 ; Folding = ---------------f------
 ; EnableXP
