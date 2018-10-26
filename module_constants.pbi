@@ -34,6 +34,8 @@
     #PB_Text_Left
     #PB_Text_Top
     
+    #PB_Text_Reverse ; Mirror
+    
     #PB_Widget_Default
     #PB_Widget_Toggle
     

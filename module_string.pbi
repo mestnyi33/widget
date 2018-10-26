@@ -314,48 +314,6 @@ Module String
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure SelectionLimits(*This.Widget_S)
-    With *This\Items()
-      Protected i, char = Asc(Mid(\Text\String.s, *This\Caret + 1, 1))
-      
-      If (char > =  ' ' And char < =  '/') Or 
-         (char > =  ':' And char < =  '@') Or 
-         (char > =  '[' And char < =  96) Or 
-         (char > =  '{' And char < =  '~')
-        
-        *This\Caret + 1
-        \Text[2]\Len = 1 
-      Else
-        ; |<<<<<< left edge of the word 
-        For i = *This\Caret To 1 Step - 1
-          char = Asc(Mid(\Text\String.s, i, 1))
-          If (char > =  ' ' And char < =  '/') Or 
-             (char > =  ':' And char < =  '@') Or 
-             (char > =  '[' And char < =  96) Or 
-             (char > =  '{' And char < =  '~')
-            Break
-          EndIf
-        Next 
-        
-        *This\Caret[1] = i
-        
-        ; >>>>>>| right edge of the word
-        For i = *This\Caret To \Text\Len
-          char = Asc(Mid(\Text\String.s, i, 1))
-          If (char > =  ' ' And char < =  '/') Or 
-             (char > =  ':' And char < =  '@') Or
-             (char > =  '[' And char < =  96) Or 
-             (char > =  '{' And char < =  '~')
-            Break
-          EndIf
-        Next 
-        
-        *This\Caret = i - 1
-        \Text[2]\Len = *This\Caret[1] - *This\Caret
-      EndIf
-    EndWith           
-  EndProcedure
-  
   ;-
   Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Static *Focus.Widget_S, *Last.Widget_S, *Widget.Widget_S
@@ -563,7 +521,7 @@ Module String
               Repaint = 2
               
             Case #PB_EventType_LeftDoubleClick : DoubleClick = 1
-              SelectionLimits(*This)
+              Text::SelectionLimits(*This)
               Repaint = 2
               
             Case #PB_EventType_MouseMove
@@ -953,5 +911,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----v83-80----8----0----
+; Folding = ----v83-4---------4----
 ; EnableXP

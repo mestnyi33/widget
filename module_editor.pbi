@@ -858,213 +858,8 @@ Module Editor
     ProcedureReturn Position
   EndProcedure
   
-  Procedure SelectionLimits(*This.Widget_S) ; Ok
-    With *This\Items()
-      Protected i, char = Asc(Mid(\Text\String.s, *This\Caret + 1, 1))
-      
-      If (char > =  ' ' And char < =  '/') Or 
-         (char > =  ':' And char < =  '@') Or 
-         (char > =  '[' And char < =  96) Or 
-         (char > =  '{' And char < =  '~')
-        
-        *This\Caret + 1
-        \Text[2]\Len = 1 
-      Else
-        ; |<<<<<< left edge of the word 
-        For i = *This\Caret To 1 Step - 1
-          char = Asc(Mid(\Text\String.s, i, 1))
-          If (char > =  ' ' And char < =  '/') Or 
-             (char > =  ':' And char < =  '@') Or 
-             (char > =  '[' And char < =  96) Or 
-             (char > =  '{' And char < =  '~')
-            Break
-          EndIf
-        Next 
-        
-        *This\Caret[1] = i
-        
-        ; >>>>>>| right edge of the word
-        For i = *This\Caret To \Text\Len
-          char = Asc(Mid(\Text\String.s, i, 1))
-          If (char > =  ' ' And char < =  '/') Or 
-             (char > =  ':' And char < =  '@') Or
-             (char > =  '[' And char < =  96) Or 
-             (char > =  '{' And char < =  '~')
-            Break
-          EndIf
-        Next 
-        
-        *This\Caret = i - 1
-        \Text[2]\Len = *This\Caret[1] - *This\Caret
-      EndIf
-    EndWith           
-  EndProcedure
-  
   Procedure AddLine(*This.Widget_S)
-    Protected IT, String.s, StringWidth, Text_Y,Text_X,Width,Height
-    
-    With *This
-        If \Text\Vertical
-              Width = \Height[1]-\Text\X*2
-              Height = \Width[1]-\Text\y*2
-            Else
-              Width = \Width[1]-\Text\X*2   ; -Scroll::Width(\vScroll)
-              Height = \Height[1]-\Text\y*2 ; -Scroll::Height(\hScroll)
-            EndIf
-            
-            If \Text\MultiLine
-              String.s = Text::Wrap(\Text\String.s, Width, \Text\MultiLine)
-            Else
-              String.s = \Text\String.s
-            EndIf
-            
-            If \Text\String.s[2] <> String.s Or \Text\Vertical; \Text\Count[1] <> \Text\Count
-              \Text\String.s[2] = String.s
-              \Text\Count = CountString(String.s, #LF$)
-              
-              \Scroll\Width = 0 
-              \Scroll\Height = 0
-              
-              If \Text\Count[1] <> \Text\Count Or \Text\Vertical
-                ClearList(\Items())
-                
-                If \Text\Align\Bottom
-                  Text_Y=(Height-(\Text\Height*\Text\Count)-Text_Y) 
-                ElseIf \Text\Align\Vertical
-                  Text_Y=((Height-(\Text\Height*\Text\Count))/2)
-                EndIf
-                
-                If \Text\Vertical
-                  For IT = \Text\Count To 1 Step - 1
-                    String = StringField(\Text\String.s[2], IT, #LF$)
-                    
-                    If \Type = #PB_GadgetType_Button
-                      StringWidth = TextWidth(RTrim(String))
-                    Else
-                      StringWidth = TextWidth(String)
-                    EndIf
-                    
-                    If \Text\Align\Right
-                      Text_X=(Width-StringWidth) 
-                    ElseIf \Text\Align\Horisontal
-                      Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2 
-                    EndIf
-                    
-                    AddElement(\Items())
-                    \Items()\x = \X[1]+\Text\Y+\Scroll\Height+Text_Y
-                    \Items()\y = \Y[1]+\Text\X+Text_X
-                    \Items()\Width = \Text\Height
-                    \Items()\Height = Width
-                    \Items()\Item = ListIndex(\Items())
-                    
-                    \Items()\Text\Editable = \Text\Editable 
-                    \Items()\Text\Vertical = \Text\Vertical
-                    If \Text\Rotate = 270
-                      \Items()\Text\x = \Image\Width+\Items()\x+\Text\Height+\Text\X
-                      \Items()\Text\y = \Items()\y
-                    Else
-                      \Items()\Text\x = \Image\Width+\Items()\x
-                      \Items()\Text\y = \Items()\y+StringWidth
-                    EndIf
-                    \Items()\Text\Width = StringWidth
-                    \Items()\Text\Height = \Text\Height
-                    \Items()\Text\String.s = String.s
-                    \Items()\Text\Len = Len(String.s)
-                    
-                    \Scroll\Height+\Text\Height 
-                  Next
-                Else
-                  For IT = 1 To \Text\Count
-                    String = StringField(\Text\String.s[2], IT, #LF$)
-                    
-                    If \Type = #PB_GadgetType_Button
-                      StringWidth = TextWidth(RTrim(String))
-                    Else
-                      StringWidth = TextWidth(String)
-                    EndIf
-                    
-                    If \Text\Align\Right
-                      Text_X=(Width-StringWidth) 
-                    ElseIf \Text\Align\Horisontal
-                      Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
-                    EndIf
-                    
-                    AddElement(\Items())
-                    \Items()\x = \X[1]+\Text\X
-                    \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
-                    \Items()\Width = Width
-                    \Items()\Height = \Text\Height
-                    \Items()\Item = ListIndex(\Items())
-                    
-                    \Items()\Text\Editable = \Text\Editable 
-                    \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
-                    \Items()\Text\y = \Items()\y
-                    \Items()\Text\Width = StringWidth
-                    \Items()\Text\Height = \Text\Height
-                    \Items()\Text\String.s = String.s
-                    \Items()\Text\Len = Len(String.s)
-                    
-                    \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
-                    \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
-                    
-                    If \Scroll\Width<\Items()\Text\Width
-                      \Scroll\Width=\Items()\Text\Width
-                    EndIf
-                    
-                    \Scroll\Height+\Text\Height
-                  Next
-                EndIf
-                
-                \Text\Count[1] = \Text\Count
-              Else
-                For IT = 1 To \Text\Count
-                  String = StringField(\Text\String.s[2], IT, #LF$)
-                  
-                  If \Type = #PB_GadgetType_Button
-                    StringWidth = TextWidth(RTrim(String))
-                  Else
-                    StringWidth = TextWidth(String)
-                  EndIf
-                  
-                  If \Text\Align\Right
-                    Text_X=(Width-StringWidth) 
-                  ElseIf \Text\Align\Horisontal
-                    Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
-                  EndIf
-                  
-                  SelectElement(\Items(), IT-1)
-                  \Items()\Width = Width
-                  \Items()\x = \X[1]+\Text\X
-                  \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
-                  \Items()\Text\Width = StringWidth
-                  \Items()\Text\String.s = String.s
-                  \Items()\Text\Len = Len(String.s)
-                  
-                  If \Scroll\Width<\Items()\Text\Width
-                    \Scroll\Width=\Items()\Text\Width
-                  EndIf
-                  
-                  \Scroll\Height+\Text\Height
-                Next
-              EndIf
-            Else
-              PushListPosition(\Items())
-              ForEach \Items()
-                StringWidth = \Items()\Text\Width 
-                
-                If \Text\Align\Right
-                  Text_X=(Width-StringWidth) 
-                ElseIf \Text\Align\Horisontal
-                  Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
-                EndIf
-                
-                \Items()\x = \X[1]+\Text\X
-                \Items()\Width = Width
-                \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
-              Next
-              PopListPosition(\Items())
-            EndIf
-          EndWith
+    ProcedureReturn Text::MultiLine(*This)
   EndProcedure
   
   Procedure _AddLine(*This.Widget_S)
@@ -1970,7 +1765,7 @@ Module Editor
             
           Case #PB_EventType_LeftDoubleClick 
             DoubleClickCaret = *This\Caret
-            SelectionLimits(*This)
+            Text::SelectionLimits(*This)
             SelectionText(*This) 
             Repaint = #True
             
@@ -2446,7 +2241,7 @@ Module Editor
             
           Case #PB_EventType_LeftDoubleClick 
             DoubleClick = *This\Caret
-            SelectionLimits(*This)
+            Text::SelectionLimits(*This)
             SelectionText(*This) 
             Repaint = #True
             
@@ -2705,9 +2500,9 @@ Module Editor
           
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
-            \Text\MultiLine =- 1
-          ElseIf Bool(Flag&#PB_Text_MultiLine)
             \Text\MultiLine = 1
+          ElseIf Bool(Flag&#PB_Text_MultiLine)
+            \Text\MultiLine =- 1
           EndIf
           \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
           \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
@@ -2919,5 +2714,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------f0-8-----------v---0--t--3-0-0-0D--80--sn--6------ff+------2+-
+; Folding = ------------------------------------------------------------------
 ; EnableXP

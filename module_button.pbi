@@ -15,7 +15,6 @@ DeclareModule Button
   
   ;- - DECLAREs MACROs
   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
-  Macro Parent(_adress_, _canvas_) : Bool(_adress_\Canvas\Gadget = _canvas_) : EndMacro
   
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
   Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
@@ -34,7 +33,6 @@ DeclareModule Button
 EndDeclareModule
 
 Module Button
-  ;-
   ;- - MACROS
   ;- - PROCEDUREs
   Procedure.i GetState(*This.Widget_S)
@@ -305,9 +303,16 @@ Module Button
         \DrawingMode = #PB_2DDrawing_Gradient
         \Canvas\Gadget = Canvas
         \Radius = Radius
-        \Text\Rotate = 270 ; 90;
         \Alpha = 255
         \Interact = 1
+        
+        If Bool(Flag&#PB_Text_Vertical)
+          If Bool(Flag&#PB_Text_Reverse)
+            \Text\Rotate = 90
+          Else
+            \Text\Rotate = 270
+          EndIf
+        EndIf
         
         ; Set the default widget flag
         Flag|#PB_Text_ReadOnly
@@ -553,13 +558,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(11, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
   EndProcedure
   
+  Define Text.s = "Vertical & Horizontal"; + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
+  
   If OpenWindow(11, 0, 0, 325+80, 160, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     g=11
     CanvasGadget(g,  10,10,305,140, #PB_Canvas_Keyboard)
     SetGadgetAttribute(g, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     
     With *Button_0
-      *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
+     *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
       ;       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
       SetColor(*Button_0, #PB_Gadget_FrontColor, $D56F1A)
       SetFont(*Button_0, FontID(0))
@@ -593,5 +600,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --P2+f---------
+; Folding = --na-v-------v-
 ; EnableXP
