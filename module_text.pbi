@@ -25,7 +25,7 @@ DeclareModule Text
   Declare.i CallBack(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
-  
+  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
 EndDeclareModule
 
 Module Text
@@ -142,98 +142,161 @@ Module Text
               Width = \Height[1]-\Text\X*2
               Height = \Width[1]-\Text\y*2
             Else
-              Width = \Width[1]-\Text\X*2
-              Height = \Height[1]-\Text\y*2
+              Width = \Width[1]-\Text\X*2   ; -Scroll::Width(\vScroll)
+              Height = \Height[1]-\Text\y*2 ; -Scroll::Height(\hScroll)
             EndIf
             
             If \Text\MultiLine
-              \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, \Text\MultiLine)
-              \Text\CountString = CountString(\Text\String.s[2], #LF$)
+              String.s = Wrap(\Text\String.s, Width, \Text\MultiLine)
+            Else
+              String.s = \Text\String.s
             EndIf
             
-            If \Text\CountString
-              ClearList(\Items())
+            If \Text\String.s[2] <> String.s Or \Text\Vertical; \Text\Count[1] <> \Text\Count
+              \Text\String.s[2] = String.s
+              \Text\Count = CountString(String.s, #LF$)
               
-              If \Text\Align\Bottom
-                Text_Y=(Height-(\Text\Height*\Text\CountString)-Text_Y) 
-              ElseIf \Text\Align\Vertical
-                Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
-              EndIf
+              \Scroll\Width = 0 
+              \Scroll\Height = 0
               
-              If \Text\Vertical
-                For IT = \Text\CountString To 1 Step - 1
-                  If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                  
-                  String = StringField(\Text\String.s[2], IT, #LF$)
-                  StringWidth = TextWidth(RTrim(String))
-                  
-                  If \Text\Align\Right
-                    Text_X=(Width-StringWidth) 
-                  ElseIf \Text\Align\Horisontal
-                    Text_X=(Width-StringWidth)/2 
-                  EndIf
-                  
-                  AddElement(\Items())
-                  \Items()\x = \X[1]+\Text\Y+Text_Y
-                  \Items()\y = \Y[1]+\Text\X+Text_X
-                  \Items()\Width = \Text\Height
-                  \Items()\Height = Width
-                  \Items()\Item = ListIndex(\Items())
-                  
-                  \Items()\Text\Editable = \Text\Editable 
-                  \Items()\Text\Vertical = \Text\Vertical
-                  If \Text\Rotate = 270
-                    \Items()\Text\x = \Image\Width+\Items()\x+\Text\Height+\Text\X
+              If \Text\Count[1] <> \Text\Count Or \Text\Vertical
+                ClearList(\Items())
+                
+                If \Text\Align\Bottom
+                  Text_Y=(Height-(\Text\Height*\Text\Count)-Text_Y) 
+                ElseIf \Text\Align\Vertical
+                  Text_Y=((Height-(\Text\Height*\Text\Count))/2)
+                EndIf
+                
+                If \Text\Vertical
+                  For IT = \Text\Count To 1 Step - 1
+                    String = StringField(\Text\String.s[2], IT, #LF$)
+                    
+                    If \Type = #PB_GadgetType_Button
+                      StringWidth = TextWidth(RTrim(String))
+                    Else
+                      StringWidth = TextWidth(String)
+                    EndIf
+                    
+                    If \Text\Align\Right
+                      Text_X=(Width-StringWidth) 
+                    ElseIf \Text\Align\Horisontal
+                      Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2 
+                    EndIf
+                    
+                    AddElement(\Items())
+                    \Items()\x = \X[1]+\Text\Y+\Scroll\Height+Text_Y
+                    \Items()\y = \Y[1]+\Text\X+Text_X
+                    \Items()\Width = \Text\Height
+                    \Items()\Height = Width
+                    \Items()\Item = ListIndex(\Items())
+                    
+                    \Items()\Text\Editable = \Text\Editable 
+                    \Items()\Text\Vertical = \Text\Vertical
+                    If \Text\Rotate = 270
+                      \Items()\Text\x = \Image\Width+\Items()\x+\Text\Height+\Text\X
+                      \Items()\Text\y = \Items()\y
+                    Else
+                      \Items()\Text\x = \Image\Width+\Items()\x
+                      \Items()\Text\y = \Items()\y+StringWidth
+                    EndIf
+                    \Items()\Text\Width = StringWidth
+                    \Items()\Text\Height = \Text\Height
+                    \Items()\Text\String.s = String.s
+                    \Items()\Text\Len = Len(String.s)
+                    
+                    \Scroll\Height+\Text\Height 
+                  Next
+                Else
+                  For IT = 1 To \Text\Count
+                    String = StringField(\Text\String.s[2], IT, #LF$)
+                    
+                    If \Type = #PB_GadgetType_Button
+                      StringWidth = TextWidth(RTrim(String))
+                    Else
+                      StringWidth = TextWidth(String)
+                    EndIf
+                    
+                    If \Text\Align\Right
+                      Text_X=(Width-StringWidth) 
+                    ElseIf \Text\Align\Horisontal
+                      Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
+                    EndIf
+                    
+                    AddElement(\Items())
+                    \Items()\x = \X[1]+\Text\X
+                    \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
+                    \Items()\Width = Width
+                    \Items()\Height = \Text\Height
+                    \Items()\Item = ListIndex(\Items())
+                    
+                    \Items()\Text\Editable = \Text\Editable 
+                    \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
                     \Items()\Text\y = \Items()\y
-                  Else
-                    \Items()\Text\x = \Image\Width+\Items()\x
-                    \Items()\Text\y = \Items()\y+StringWidth
-                  EndIf
-                  \Items()\Text\Width = StringWidth
-                  \Items()\Text\Height = \Text\Height
-                  \Items()\Text\String.s = String.s
-                  \Items()\Text\Len = Len(String.s)
-                  
-                  
-                  ;DrawRotatedText(\X[1]+\Text\Y+Text_Y, \Y[1]+\Text\X+Text_X+StringWidth, String.s, 90, \Color\Front)
-                  ;DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
-                  Text_Y+\Text\Height : If Text_Y > (Width) : Break : EndIf
-                Next
+                    \Items()\Text\Width = StringWidth
+                    \Items()\Text\Height = \Text\Height
+                    \Items()\Text\String.s = String.s
+                    \Items()\Text\Len = Len(String.s)
+                    
+                    \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
+                    \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
+                    
+                    If \Scroll\Width<\Items()\Text\Width
+                      \Scroll\Width=\Items()\Text\Width
+                    EndIf
+                    
+                    \Scroll\Height+\Text\Height
+                  Next
+                EndIf
+                
+                \Text\Count[1] = \Text\Count
               Else
-                For IT = 1 To \Text\CountString
-                  If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                  
+                For IT = 1 To \Text\Count
                   String = StringField(\Text\String.s[2], IT, #LF$)
-                  StringWidth = TextWidth(RTrim(String))
+                  
+                  If \Type = #PB_GadgetType_Button
+                    StringWidth = TextWidth(RTrim(String))
+                  Else
+                    StringWidth = TextWidth(String)
+                  EndIf
                   
                   If \Text\Align\Right
                     Text_X=(Width-StringWidth) 
                   ElseIf \Text\Align\Horisontal
-                    Text_X=(Width-StringWidth)/2 
+                    Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
                   EndIf
                   
-                  AddElement(\Items())
-                  \Items()\x = \X[1]+\Text\X
-                  \Items()\y = \Y[1]+\Text\Y+Text_Y
+                  SelectElement(\Items(), IT-1)
                   \Items()\Width = Width
-                  \Items()\Height = \Text\Height
-                  \Items()\Item = ListIndex(\Items())
-                  
-                  \Items()\Text\Editable = \Text\Editable 
+                  \Items()\x = \X[1]+\Text\X
                   \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
-                  \Items()\Text\y = \Items()\y
-                  \Items()\Text\Width = TextWidth(String)
-                  \Items()\Text\Height = \Text\Height
+                  \Items()\Text\Width = StringWidth
                   \Items()\Text\String.s = String.s
                   \Items()\Text\Len = Len(String.s)
                   
-                  \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
-                  \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
+                  If \Scroll\Width<\Items()\Text\Width
+                    \Scroll\Width=\Items()\Text\Width
+                  EndIf
                   
-                  ;DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
-                  Text_Y+\Text\Height : If Text_Y > (Height-\Text\Height) : Break : EndIf
+                  \Scroll\Height+\Text\Height
                 Next
               EndIf
+            Else
+              PushListPosition(\Items())
+              ForEach \Items()
+                StringWidth = \Items()\Text\Width 
+                
+                If \Text\Align\Right
+                  Text_X=(Width-StringWidth) 
+                ElseIf \Text\Align\Horisontal
+                  Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
+                EndIf
+                
+                \Items()\x = \X[1]+\Text\X
+                \Items()\Width = Width
+                \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
+              Next
+              PopListPosition(\Items())
             EndIf
           EndIf
           
@@ -446,18 +509,18 @@ Module Text
           EndSelect
         EndIf
         
-        If Not \Text\MultiLine
-          \Text\String.s[2] = RemoveString(Text.s, #LF$)
-          \Text\CountString = #True
+        If \Text\MultiLine
+          \Text\String.s = Text.s
+        Else
+          \Text\String.s = RemoveString(Text.s, #LF$) + #LF$
         EndIf
         
-        \Text\String.s = Text.s
         \Text\Len = Len(Text.s)
         \Text\Change = #True
         Result = #True
       EndIf
     EndWith
-  
+    
     ProcedureReturn Result
   EndProcedure
   
@@ -597,13 +660,13 @@ Module Text
                #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
                #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
             
-          CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-            \Canvas\Mouse\Buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
-                                    (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
-                                    (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
-          CompilerElse
-            \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-          CompilerEndIf
+            CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+              \Canvas\Mouse\Buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
+                                      (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
+                                      (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
+            CompilerElse
+              \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+            CompilerEndIf
         EndSelect
       EndWith
     EndIf
@@ -661,7 +724,7 @@ Module Text
         \Alpha = 255
         
         ; Set the default widget flag
-        Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly|#PB_Widget_BorderLess
+        Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#PB_Widget_BorderLess
         
         If Bool(Flag&#PB_Text_WordWrap)
           Flag&~#PB_Text_MultiLine
@@ -682,21 +745,20 @@ Module Text
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
-            \Text\MultiLine = 1
-          ElseIf Bool(Flag&#PB_Text_MultiLine)
             \Text\MultiLine =- 1
+          ElseIf Bool(Flag&#PB_Text_MultiLine)
+            \Text\MultiLine = 1
           EndIf
           \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
           
-          
           If \Text\Vertical
             \Text\X = \fSize 
-            \Text\y = \fSize+2+Bool(Flag&#PB_Text_WordWrap)*4 ; 2,6,12
+            \Text\y = \fSize+1+Bool(Flag&#PB_Text_WordWrap)*4 ; 2,6,12
           Else
-            \Text\X = \fSize+2+Bool(Flag&#PB_Text_WordWrap)*4 ; 2,6,12 
+            \Text\X = \fSize+1+Bool(Flag&#PB_Text_WordWrap)*4 ; 2,6,12 
             \Text\y = \fSize
           EndIf
           
@@ -711,6 +773,22 @@ Module Text
           SetText(*This, Text.s)
         EndIf
       EndWith
+    EndIf
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+    Protected *Widget, *This.Widget_S = AllocateStructure(Widget_S)
+    
+    If *This
+      add_widget(Widget, *Widget)
+      
+      *This\Index = Widget
+      *This\Handle = *Widget
+      List()\Widget = *This
+      
+      Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
     EndIf
     
     ProcedureReturn *This
@@ -781,20 +859,23 @@ CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Text
   Global *Text.Widget_S = AllocateStructure(Widget_S)
+  Global *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
   
   Procedure Canvas_CallBack()
     Select EventType()
       Case #PB_EventType_Resize : ResizeGadget(EventGadget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        If Resize(*Text, #PB_Ignore, #PB_Ignore, GadgetWidth(EventGadget()), #PB_Ignore, EventGadget())
-          If StartDrawing(CanvasOutput(EventGadget()))
-            Draw(*Text, EventGadget())
-            StopDrawing()
-          EndIf
+        If StartDrawing(CanvasOutput(EventGadget()))
+          ForEach List()
+            If Resize(List()\Widget, #PB_Ignore, #PB_Ignore, GadgetWidth(EventGadget()), #PB_Ignore);, EventGadget())
+              Draw(List()\Widget)
+              ; Draw(*Text, EventGadget())
+            EndIf
+          Next
+          StopDrawing()
         EndIf
         
     EndSelect
   EndProcedure
-  
   
   Procedure ResizeCallBack()
     ResizeGadget(0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, #PB_Ignore)
@@ -808,8 +889,35 @@ CompilerIf #PB_Compiler_IsMainFile
     LoadFont(0, "Arial", 16)
   CompilerEndIf 
   
-  Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
+  Text.s = "строка_1"+Chr(10)+
+  "строка__2"+Chr(10)+
+  "строка___3 эта длиняя строка оказалась ну, очень длиной, поэтому будем его переносить"+Chr(10)+
+  "строка_4"+#CRLF$+
+  "строка__5"+#CRLF$
+  ; Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
   ; Debug "len - "+Len(Text)
+  
+  ;   If OpenWindow(0, 0, 0, 290, 760, "CanvasGadget", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  ;     CanvasGadget(16, 10, 10, 200, 140*4+30, #PB_Canvas_Keyboard)
+  ;     BindGadgetEvent(16, @Canvas_CallBack())
+  ;     
+  ;     *B_0 = Create(16, -1, 0, 0, 200, 140, Text, #PB_Text_Center)
+  ;     *B_1 = Create(16, -1, 0, 150, 200, 140, Text, #PB_Text_Middle)
+  ;     *B_2 = Create(16, -1, 0, 300, 200, 140, Text, #PB_Text_Middle|#PB_Text_Right)
+  ;     *B_3 = Create(16, -1, 0, 450, 200, 140, Text, #PB_Text_Center|#PB_Text_Bottom)
+  ;     
+  ;     TextGadget(0, 10, 610, 200, 140, Text, #PB_Text_Border|#PB_Text_Center)
+  ;     ;   EditorGadget(4, 10, 220, 200, 200) : AddGadgetItem(10, -1, Text)
+  ;     ;SetGadgetFont(0,FontID)
+  ;     
+  ;     ResizeCallBack()
+  ;     ResizeWindow(0,WindowX(0)-180,#PB_Ignore,#PB_Ignore,#PB_Ignore)
+  ;     BindEvent(#PB_Event_SizeWindow,@ResizeCallBack(),0)
+  ;     
+  ;     Repeat
+  ;       Define Event = WaitWindowEvent()
+  ;     Until Event = #PB_Event_CloseWindow
+  ;   EndIf
   
   If OpenWindow(0, 0, 0, 104, 690, "Text on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     ;EditorGadget(0, 10, 10, 380, 330, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s)
@@ -819,7 +927,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g=16
     CanvasGadget(g, 10, 350, 380, 330) 
     
-    Widget(*Text,g, 0, 0, 380, 330, Text.s);, #PB_Text_Center|#PB_Text_Middle);
+    *Text = Create(g, -1, 0, 0, 380, 330, Text.s);, #PB_Text_Center|#PB_Text_Middle);
     SetColor(*Text, #PB_Gadget_BackColor, $CCBFB4)
     SetColor(*Text, #PB_Gadget_FrontColor, $D56F1A)
     SetFont(*Text, FontID(0))
@@ -838,8 +946,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 267
-; FirstLine = 255
-; Folding = ---------------f------
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = ----6----------------v-
 ; EnableXP

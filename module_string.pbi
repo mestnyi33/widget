@@ -1,4 +1,5 @@
-﻿; IncludePath "/Users/as/Documents/GitHub/Widget/"
+﻿
+; IncludePath "/Users/as/Documents/GitHub/Widget/"
 
 CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
@@ -709,9 +710,9 @@ Module String
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
-            \Text\MultiLine = 1
-          ElseIf Bool(Flag&#PB_Text_MultiLine)
             \Text\MultiLine =- 1
+          ElseIf Bool(Flag&#PB_Text_MultiLine)
+            \Text\MultiLine = 1
           EndIf
           \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
           \Text\Lower = Bool(Flag&#PB_Text_LowerCase)

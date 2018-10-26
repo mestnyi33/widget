@@ -345,6 +345,7 @@ Module Button
           
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+          
           If Bool(Flag&#PB_Text_WordWrap)
             \Text\MultiLine = 1
           ElseIf Bool(Flag&#PB_Text_MultiLine)

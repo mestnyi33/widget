@@ -56,7 +56,7 @@
     Len.i
     FontID.i
     String.s[3]
-    CountString.i
+    Count.i[2]
     Change.b
     
     Align.ALIGN
@@ -66,7 +66,6 @@
     Pass.b
     Editable.b
     Numeric.b
-    ; WordWrap.b
     MultiLine.b
     Vertical.b
     Rotate.f
