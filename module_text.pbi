@@ -58,20 +58,23 @@ Module Text
             Default
               Input = 0
           EndSelect
+          Debug Input
           
           If Input
             If Not Dot And Input = '.'
               Dot = 1
-              Continue
             ElseIf Input <> '.'
               Dot = 0
+            Else
+              Continue
             EndIf
             
             If Not Minus And Input = '-'
               Minus = 1
-              Continue
             ElseIf Input <> '-'
               Minus = 0
+            Else
+              Continue
             EndIf
             
             String.s + Chr
@@ -236,9 +239,6 @@ Module Text
     EndMacro
     
     Macro _set_content_X_(_this_)
-      
-      
-      ;       If Not Bool(_this_\Scroll\X = Right)
       If _this_\Image\handle
         If _this_\InLine
           If _this_\Text\Align\Right
@@ -259,13 +259,9 @@ Module Text
           Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2 
         EndIf
       EndIf
-      ;       EndIf
     EndMacro
     
     Macro _line_resize_(_this_)
-      
-      ; Debug "pos "+_this_\Items()\Caret+" len "+_this_\Items()\Text\Len+" widget "+_this_\Items()\Text\String
-      
       _this_\Items()\x = _this_\X[1]+_this_\Text\X
       _this_\Items()\Width = Width
       _this_\Items()\Text\x = _this_\Items()\x+Text_X
@@ -309,7 +305,7 @@ Module Text
         \Scroll\Width = 0 
         _set_content_Y_(*This)
         
-        If *This\Focus = *This 
+        If \Text\Change And *This\Focus = *This 
           Protected Left,Right
           
           Right =- TextWidth(Mid(\Text\String.s, \Items()\Caret, \Caret))
@@ -384,9 +380,7 @@ Module Text
                 StringWidth = TextWidth(String)
               EndIf
               
-              ;If (Right And Not  Bool(*This\Scroll\X = Right))
               _set_content_X_(*This)
-              ;EndIf
               
               \Items()\Caret = Len
               \Items()\Text\Len = Len(String.s)
@@ -403,8 +397,6 @@ Module Text
               \Items()\Text\Width = StringWidth
               \Items()\Text\Height = \Text\Height
               \Items()\Text\String.s = String.s
-              ;               \Items()\Text\Len = Len(String.s)
-              
               
               If \Line[1] = ListIndex(\Items())
                 ;Debug " string "+String.s
@@ -450,7 +442,7 @@ Module Text
             EndIf
             
             ; Resize item
-            If (Left And Not  Bool(*This\Scroll\X = Left))
+            If (Left And Not  Bool(\Scroll\X = Left)) Or \Resize
               _set_content_X_(*This)
             EndIf
             
@@ -684,16 +676,45 @@ Module Text
         EndIf
         
         If \Default
+          If \Text\Numeric
+;             If \Text\String.s[1]<>\Text\String.s
+              DrawingMode(#PB_2DDrawing_Default)
+              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius, $F1F1FF)
+              DrawingMode(#PB_2DDrawing_Transparent)
+              DrawText((\Width[1]-TextWidth("!!! Недопустимый символ"))/2, \Items()\Text[0]\Y, "!!! Недопустимый символ", $0000FF)
+              DrawingMode(#PB_2DDrawing_Outlined)
+              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$0000FF)
+              If \Radius 
+                RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$0000FF) ; $D5A719)
+              EndIf
+              RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$0000FF)
+;             EndIf
+          EndIf
+          
           If \Default = *This : \Default = 0
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$004DFF)
-            If \Radius 
-              RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$004DFF) ; $D5A719)
+            If \Text\Numeric
+              ;             If \Text\String.s[1]<>\Text\String.s
+              DrawingMode(#PB_2DDrawing_Default)
+              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius, $F1F1FF)
+              DrawingMode(#PB_2DDrawing_Transparent)
+              DrawText((\Width[1]-TextWidth("!!! Недопустимый символ"))/2, \Items()\Text[0]\Y, "!!! Недопустимый символ", $0000FF)
+              DrawingMode(#PB_2DDrawing_Outlined)
+              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$0000FF)
+              If \Radius 
+                RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$0000FF) ; $D5A719)
+              EndIf
+              RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$0000FF)
+              ;             EndIf
             EndIf
-            RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$004DFF)
-            
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\X[1]+1,\Y[1]+1,\Width[1]-2,\Height[1]-2,\Radius,\Radius,($D7D6FA&$FFFFFF)|128<<24)
-            DrawingMode(#PB_2DDrawing_Outlined)
+            ;             RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$004DFF)
+;             If \Radius 
+;               RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$004DFF) ; $D5A719)
+;             EndIf
+;             RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$004DFF)
+;             
+;             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+;             RoundBox(\X[1]+1,\Y[1]+1,\Width[1]-2,\Height[1]-2,\Radius,\Radius,($D7D6FA&$FFFFFF)|128<<24)
+;             DrawingMode(#PB_2DDrawing_Outlined)
           Else
             RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[3])
             ;           If \Radius ; Сглаживание краев)))
@@ -1175,5 +1196,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------v-0---f-----------
+; Folding = 4v-05-+-v-0----------------
 ; EnableXP
