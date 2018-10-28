@@ -49,6 +49,7 @@
   Structure IMAGE Extends Coordinate
     handle.i[2]
     change.b
+    Align.ALIGN
   EndStructure
   
   Structure TEXT Extends COORDINATE
@@ -104,6 +105,7 @@
   Structure Widget_S Extends COORDINATE
     Index.i  ; Index of new list element
     Handle.i ; Adress of new list element
+    InLine.i
     
     *Widget.Widget_S
     Canvas.CANVAS

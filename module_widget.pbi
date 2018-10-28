@@ -319,7 +319,7 @@ Module Widget
     
     If *This
       With *This
-        Button::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
+        Button::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag, 29)
         SetGadgetData(Widget, *This)
         Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())

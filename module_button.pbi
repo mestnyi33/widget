@@ -370,7 +370,14 @@ Module Button
               \Text\X = \fSize+10
               \Text\y = \fSize
             EndIf
-          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+            
+;             Define Alpha.CGFloat = 0.6
+;             CocoaMessage(0, GadgetID(Canvas), "setOpaque:", #NO)
+;             CocoaMessage(0, GadgetID(Canvas), "setAlphaValue:@", @Alpha)
+; CocoaMessage(0, GadgetID(Canvas), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor clearColor"))
+; CocoaMessage(0, CocoaMessage(0, GadgetID(Canvas), "enclosingScrollView"), "setDrawsBackground:", #NO)
+
+        CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
             If \Text\Vertical
               \Text\X = \fSize 
               \Text\y = \fSize+2
@@ -514,6 +521,15 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    CreateImage(0, 64, 64, 32 , #PB_Image_Transparent)
+    StartDrawing(ImageOutput(0))
+    DrawingMode(#PB_2DDrawing_AlphaBlend)
+    Circle(32, 32, 30, $ffd0f080)
+    StopDrawing()
+    
+    Application = CocoaMessage(0, 0, "NSApplication sharedApplication")
+    CocoaMessage(0, Application, "setApplicationIconImage:", ImageID(0))
+    
     LoadFont(0, "Arial", 18)
     ; SetGadgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "Times New Roman", 13)))
   CompilerElse

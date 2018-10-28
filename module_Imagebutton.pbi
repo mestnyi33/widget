@@ -14,7 +14,7 @@ DeclareModule Button
   UseModule Structures
   
   ;- - DECLAREs MACROs
-;   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
+  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   Macro Parent(_adress_, _canvas_) : Bool(_adress_\Canvas\Gadget = _canvas_) : EndMacro
   
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
@@ -25,13 +25,13 @@ DeclareModule Button
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
-  Declare.i Draw(*This.Widget_S, Canvas.i=-1)
+  ;Declare.i Draw(*This.Widget_S, Canvas.i=-1)
   
   Declare.i GetState(*This.Widget_S)
   Declare.i SetState(*This.Widget_S, Value.i)
-  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Image.i=-1, Flag.i=0, Radius.i=0)
+  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Image.i=-1, Flag.i=0, Radius.i=0, ImageWidth.i=0, ImageHeight.i=0)
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1) ; .i CallBack(*This.Widget_S, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
-  Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+  Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1, ImageWidth.i=0, ImageHeight.i=0)
   
 EndDeclareModule
 
@@ -54,279 +54,6 @@ Module Button
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
-    Protected String.s, StringWidth
-    Protected IT,Text_Y,Text_X,Width,Height
-    
-    If Not *This\Hide
-      With *This
-        If Canvas=-1 
-          Canvas = EventGadget()
-        EndIf
-        If Canvas <> \Canvas\Gadget
-          ProcedureReturn
-        EndIf
-        
-        If \Text\FontID 
-          DrawingFont(\Text\FontID) 
-        EndIf
-        
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
-        CompilerEndIf
-        
-        DrawingMode(\DrawingMode)
-        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
-        
-        
-        ; Make output text
-        If \Text\String.s
-          If \Text\Change
-            \Text\Height = TextHeight("A")
-            \Text\Width = TextWidth(\Text\String.s)
-          EndIf
-          
-          If (\Text\Change Or \Resize)
-            If \Text\Vertical
-              Width = \Height[1]-\Text\X*2-(\Image\Width+\Image\Width/2)
-              Height = \Width[1]-\Text\y*2
-            Else
-              Width = \Width[1]-\Text\X*2-(\Image\Width+\Image\Width/2)
-              Height = \Height[1]-\Text\y*2
-            EndIf
-            
-            If \Text\MultiLine
-              \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, -1)
-              \Text\CountString = CountString(\Text\String.s[2], #LF$)
-            ElseIf \Text\WordWrap
-              \Text\String.s[2] = Text::Wrap(\Text\String.s, Width, 1)
-              \Text\CountString = CountString(\Text\String.s[2], #LF$)
-            Else
-              ;  \Text\String.s[1] = Text::Wrap(\Text\String.s, Width, 0)
-              \Text\String.s[2] = \Text\String.s
-              \Text\CountString = 1
-            EndIf
-            
-            If \Text\CountString
-              ClearList(\Items())
-              
-              If \Text\Align\Bottom
-                Text_Y=(Height-(\Text\Height*\Text\CountString)-Text_Y) 
-              ElseIf \Text\Align\Vertical
-                Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
-              EndIf
-              
-              DrawingMode(#PB_2DDrawing_Transparent)
-              If \Text\Vertical
-                For IT = \Text\CountString To 1 Step - 1
-                  If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                  
-                  String = StringField(\Text\String.s[2], IT, #LF$)
-                  StringWidth = TextWidth(RTrim(String))
-                  
-                  If \Text\Align\Right
-                    Text_X=(Width-StringWidth) 
-                  ElseIf \Text\Align\Horisontal
-                    Text_X=(Width-StringWidth)/2 
-                  EndIf
-                  
-                  AddElement(\Items())
-                  \Items()\Text\Editable = \Text\Editable 
-                  \Items()\Text\Vertical = \Text\Vertical
-                  If \Text\Rotate = 270
-                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y+\Text\Height+\Text\X
-                    \Items()\Text\y = \Y[1]+\Text\X+Text_X
-                  Else
-                    \Items()\Text\x = \Image\Width+\X[1]+\Text\Y+Text_Y
-                    \Items()\Text\y = \Y[1]+\Text\X+Text_X+StringWidth
-                  EndIf
-                  \Items()\Text\Width = StringWidth
-                  \Items()\Text\Height = \Text\Height
-                  \Items()\Text\String.s = String.s
-                  \Items()\Text\Len = Len(String.s)
-                  
-                  
-                  ;DrawRotatedText(\X[1]+\Text\Y+Text_Y, \Y[1]+\Text\X+Text_X+StringWidth, String.s, 90, \Color\Front)
-                  ;DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
-                  Text_Y+\Text\Height : If Text_Y > (Width) : Break : EndIf
-                Next
-              Else
-                For IT = 1 To \Text\CountString
-                  If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                  
-                  String = StringField(\Text\String.s[2], IT, #LF$)
-                  StringWidth = TextWidth(RTrim(String))
-                  
-                  If \Text\Align\Right
-                    Text_X=(Width-StringWidth) 
-                  ElseIf \Text\Align\Horisontal
-                    Text_X=(Width-StringWidth)/2 
-                  EndIf
-                  
-                  AddElement(\Items())
-;                   \Items()\Text\Caret = \Text\Caret 
-;                   \Items()\Text\Caret[1] = \Text\Caret[1] 
-                  \Items()\Text\Editable = \Text\Editable 
-                  \Items()\Text\x = (\Image\Width+\Image\Width/2)+\X[1]+\Text\X+Text_X
-                  \Items()\Text\y = \Y[1]+\Text\Y+Text_Y
-                  \Items()\Text\Width = StringWidth
-                  \Items()\Text\Height = \Text\Height
-                  \Items()\Text\String.s = String.s
-                  \Items()\Text\Len = Len(String.s)
-                  
-                  \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
-                  \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
-                  
-                  ;DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
-                  Text_Y+\Text\Height : If Text_Y > (Height-\Text\Height) : Break : EndIf
-                Next
-              EndIf
-            EndIf
-          EndIf
-          
-          If \Text\Change
-            \Text\Change = 0
-          EndIf
-          
-          If \Resize
-            \Resize = 0
-          EndIf
-        EndIf
-        
-      EndWith 
-      
-      ; Draw items text
-      If ListSize(*This\Items())
-        With *This\Items()
-          PushListPosition(*This\Items())
-          ForEach *This\Items()
-            ; Draw image
-            If \Image\handle
-              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-              DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
-            EndIf
-            
-            ; Draw string
-            If \Text\String.s
-              If \Text\FontID 
-                DrawingFont(\Text\FontID) 
-              EndIf
-              
-              If \Text[1]\Change : \Text[1]\Change = #False
-                \Text[1]\Width = TextWidth(\Text[1]\String.s) 
-              EndIf 
-              
-              If \Text[2]\Change : \Text[2]\Change = #False 
-                \Text[2]\X = \Text[0]\X+\Text[1]\Width
-                \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
-                \Text[3]\X = \Text[2]\X+\Text[2]\Width
-              EndIf 
-              
-              If \Text[3]\Change : \Text[3]\Change = #False 
-                \Text[3]\Width = TextWidth(Left(\Text\String.s, \Text\Caret))
-              EndIf 
-              
-              CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-                ClipOutput(*This\X[2]+*This\Text[0]\X-1,*This\Y[2],*This\Width[2]-*This\Text[0]\X*2+2,*This\Height[2]) ; Bug in Mac os
-              CompilerEndIf
-              
-              If *This\Focus = *This 
-                Protected Left,Right
-                Left =- \Text[3]\Width 
-                Right = (*This\Width[2]-*This\Text\X*2)-\Text[3]\Width
-                
-                If *This\Scroll\X < Left
-                  *This\Scroll\X = Left
-                ElseIf *This\Scroll\X > Right
-                  *This\Scroll\X = Right
-                EndIf
-                
-;                 If \Text[2]\String.s[1] And *This\Scroll\X < 0
-;                   *This\Scroll\X + TextWidth(\Text[2]\String.s[1]) 
-;                   \Text[2]\String.s[1] = ""
-;                 EndIf
-              EndIf
-            
-              If \Text[2]\Len And #PB_Compiler_OS <> #PB_OS_MacOS
-                If \Text[1]\String.s
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                EndIf
-                If \Text[2]\String.s
-                  DrawingMode(#PB_2DDrawing_Default)
-;                   If \Text[0]\String.s = \Text[1]\String.s+\Text[2]\String.s
-;                     Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y,*This\width[2]-\Text[2]\X, \Text[0]\Height, $DE9541)
-;                   Else
-                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width, \Text[0]\Height+1, $DE9541)
-;                   EndIf
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFF)
-                EndIf
-                If \Text[3]\String.s
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text[0]\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                EndIf
-              Else
-                If \Text[2]\Len
-                  DrawingMode(#PB_2DDrawing_Default)
-                  Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width, \Text[0]\Height+1, $FADBB3);$DE9541)
-                EndIf
-                DrawingMode(#PB_2DDrawing_Transparent)
-                DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-              EndIf
-            EndIf
-            
-          Next
-          PopListPosition(*This\Items()) ; 
-          
-          If *This\Focus = *This 
-            ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            If *This\Text\Editable And \Text\Caret = \Text\Caret[1] 
-              DrawingMode(#PB_2DDrawing_XOr)             
-              Line(((\Text[0]\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
-            EndIf
-          EndIf
-        EndWith  
-      EndIf
-      
-      ; Draw frames
-      With *This
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4) ; Bug in Mac os
-        CompilerEndIf
-        
-        ; Draw image
-        If \Image\handle
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
-        EndIf
-        
-        ; Draw frames
-        DrawingMode(#PB_2DDrawing_Outlined)
-        
-        If \Default
-          RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[3])
-;           If \Radius ; Сглаживание краев)))
-;             RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
-;           EndIf
-;           RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,\Color\Frame[3])
-        EndIf
-        
-        If \Focus = *This ;  Debug "\Focus "+\Focus
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[3])
-          If \Radius ; Сглаживание краев))) ; RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,\Color\Frame[3])
-            RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
-          EndIf
-          RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,\Color\Frame[3])
-        Else
-          If \fSize
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
-          EndIf
-        EndIf
-      EndWith
-    EndIf
-    
-  EndProcedure
   Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Static Text$, DoubleClickCaret =- 1
     Protected Repaint, StartDrawing, Update_Text_Selected
@@ -562,7 +289,7 @@ Module Button
     ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
   EndProcedure
   
-  Procedure Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1)
+  Procedure Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0, Image.i=-1, ImageWidth.i=0, ImageHeight.i=0)
     If *This
       With *This
         \Type = #PB_GadgetType_Button
@@ -605,10 +332,23 @@ Module Button
         \bSize = \fSize
         
         If IsImage(Image)
-          \Image\handle[1] = Image
-          \Image\handle = ImageID(Image)
-          \Image\width = ImageWidth(Image)
-          \Image\height = ImageHeight(Image)
+          If ImageWidth And ImageHeight
+            \Image\handle[1] = CreateImage(#PB_Any, ImageWidth, ImageHeight, 32, #PB_Image_Transparent)
+            \Image\handle = ImageID(\Image\handle[1])
+            \Image\width = ImageWidth
+            \Image\height = ImageHeight
+            
+            If StartDrawing(ImageOutput(\Image\handle[1]))
+              DrawingMode(#PB_2DDrawing_AlphaBlend)
+              DrawImage(ImageID(Image),0,0,ImageWidth, ImageHeight)
+              StopDrawing()
+            EndIf
+          Else   
+            \Image\handle[1] = Image
+            \Image\handle = ImageID(Image)
+            \Image\width = ImageWidth(Image)
+            \Image\height = ImageHeight(Image)
+          EndIf
         EndIf
         
         If Resize(*This, X,Y,Width,Height, Canvas)
@@ -617,13 +357,13 @@ Module Button
           
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-          \Text\WordWrap = Bool(Flag&#PB_Text_WordWrap)
           \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
           
           \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
+          \InLine = Bool(Flag&#PB_Text_InLine)
           
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
             If \Text\Vertical
@@ -651,10 +391,6 @@ Module Button
             EndIf
           CompilerEndIf 
           
-          
-          \Text\String.s = Text.s
-          \Text\Change = #True
-          
           \Color[0]\Fore[1] = $F6F6F6 
           \Color[0]\Back[1] = $E2E2E2  
           \Color[0]\Frame[1] = $BABABA 
@@ -671,6 +407,7 @@ Module Button
           
           ; Устанавливаем цвет по умолчанию первый
           ResetColor(*This)
+          SetText(*This, Text.s)
         EndIf
       EndWith
     EndIf
@@ -678,7 +415,7 @@ Module Button
     ProcedureReturn *This
   EndProcedure
   
-  Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Image.i=-1, Flag.i=0, Radius.i=0)
+  Procedure Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Image.i=-1, Flag.i=0, Radius.i=0, ImageWidth.i=0, ImageHeight.i=0)
     Protected *Widget, *This.Widget_S = AllocateStructure(Widget_S)
     
     If *This
@@ -688,7 +425,7 @@ Module Button
       *This\Handle = *Widget
       List()\Widget = *This
       
-      Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius, Image)
+      Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius, Image, ImageWidth, ImageHeight)
     EndIf
     
     ProcedureReturn *This
@@ -724,8 +461,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select EventType()
       Case #PB_EventType_Resize
-        Resize(*Button_0, Width-70, #PB_Ignore, #PB_Ignore, Height-20)
-        Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
+        ForEach List()
+          Resize(List()\Widget, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
+        Next
         
         Result = 1
       Default
@@ -773,66 +511,42 @@ CompilerIf #PB_Compiler_IsMainFile
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     LoadFont(0, "Arial", 18)
-  ;  SetGadgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "", 12)))
+    ;  SetGadgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "", 12)))
   CompilerElse
     LoadFont(0, "Arial", 16)
-   ; SetGadgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "", 9)))
+    ; SetGadgetFont(#PB_Default, FontID(LoadFont(#PB_Any, "", 9)))
   CompilerEndIf 
-  
-  If OpenWindow(0, 0, 0, 222+222, 205, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    
-    ButtonGadget(0, 10, 10, 200, 20, "Standard Button")
-    ButtonGadget(1, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
-    ButtonGadget(2, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
-    ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine|#PB_Button_Default)
-    ButtonGadget(5, 10,170, 200, 25, "Toggle Button", #PB_Button_Toggle)
-    
-    CanvasGadget(10,  222, 0, 222, 205+70, #PB_Canvas_Keyboard)
-    BindGadgetEvent(10, @CallBacks())
-    
-    *B_0 = Create(10, -1, 10, 10, 200, 20, "Standard Button", 0,8)
-    *B_1 = Create(10, -1, 10, 40, 200, 20, "Left Button", #PB_Text_Left)
-    *B_2 = Create(10, -1, 10, 70, 200, 20, "Right Button", #PB_Text_Right)
-    *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_WordWrap|#PB_Widget_Default, 4)
-    *B_4 = Create(10, -1, 10,170, 200, 25, "Toggle Button", #PB_Widget_Toggle,0, 10)
-    
-     ;SetFont(*B_3, FontID(1))
-    
-    BindEvent(#PB_Event_Widget, @Events())
-    PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
-  EndIf
-  
   
   Procedure ResizeCallBack()
     ResizeGadget(11, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate), WindowHeight(EventWindow(), #PB_Window_InnerCoordinate))
   EndProcedure
   
-  If OpenWindow(11, 0, 0, 150, 515, "ImageButton", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      WindowBounds(11,150,515,#PB_Ignore,515)
-      
-      CanvasGadget(11,  0, 0, 150, 515, #PB_Canvas_Keyboard)
-      BindGadgetEvent(11, @CallBacks())
-      
-      Create(11,#PB_Any, 10,10,130,25,"image_left",10, #PB_Text_Left)
-      Create(11,#PB_Any, 10,40,130,25,"image_right",10,#PB_Text_Right)
-      Create(11,#PB_Any, 10,70,130,75,"image_top",10,#PB_Text_Top);,32,32)
-      Create(11,#PB_Any, 10,150,130,75,"image_bottom",10,#PB_Text_Bottom);,32,32)
-      
-      ;Create(11,#PB_Any, 10,230,130,75,"",10)
-      
-      Create(11,#PB_Any, 10,310,130,35,"text_center",0)
-      Create(11,#PB_Any, 10,350,130,35,"text_left",0,#PB_Text_Left)
-      Create(11,#PB_Any, 10,390,130,35,"text_right",0,#PB_Text_Right)
-      Create(11,#PB_Any, 10,430,130,35,"text_top",0,#PB_Text_Top)
-      Create(11,#PB_Any, 10,470,130,35,"text_bottom",0,#PB_Text_Bottom)
-      
-      
-    ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
+  If OpenWindow(11, 0, 0, 250, 235, "ImageButton", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+    WindowBounds(11,150,235,#PB_Ignore,315)
     
+    CanvasGadget(11,  0, 0, 150, 515, #PB_Canvas_Keyboard)
+    BindGadgetEvent(11, @CallBacks())
+    ;ResizeImage(10, 32, 32)
+    
+    Create(11,#PB_Any, 10,10,130,25,"text_right",10, #PB_Text_InLine)
+    Create(11,#PB_Any, 10,40,130,25,"text_left",10,#PB_Text_InLine|#PB_Text_Right)
+    Create(11,#PB_Any, 10,70,130,75,"text_top",10,#PB_Text_Bottom);,32,32)
+    Create(11,#PB_Any, 10,150,130,75,"text_bottom",10,0,0,32,32)
+    
+    ; ;       ;Create(11,#PB_Any, 10,230,130,75,"",10)
+    ; ;       
+    ; ;       Create(11,#PB_Any, 10,310,130,35,"text_center",0)
+    ; ;       Create(11,#PB_Any, 10,350,130,35,"text_left",0,#PB_Text_Left)
+    ; ;       Create(11,#PB_Any, 10,390,130,35,"text_right",0,#PB_Text_Right)
+    ; ;       Create(11,#PB_Any, 10,430,130,35,"text_top",0,#PB_Text_Top)
+    ; ;       Create(11,#PB_Any, 10,470,130,35,"text_bottom",0,#PB_Text_Bottom)
+    
+    
+    ;     ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
+    
+    PostEvent(#PB_Event_SizeWindow, 11, 11)
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
-    PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
     
-    BindGadgetEvent(g, @CallBacks())
     PostEvent(#PB_Event_Gadget, 11,11, #PB_EventType_Resize)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
@@ -847,5 +561,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---0------------------
+; Folding = ---------------
 ; EnableXP

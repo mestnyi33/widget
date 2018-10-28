@@ -15,6 +15,7 @@ DeclareModule Text
   
   ;- - DECLAREs PROCEDUREs
   Declare.i Draw(*ThisWidget_S, Canvas.i=-1)
+  Declare.s Make(*This.Widget_S, Text.s)
   Declare.i MultiLine(*This.Widget_S)
   Declare.i SelectionLimits(*This.Widget_S)
   Declare.s GetText(*This.Widget_S)
@@ -34,6 +35,62 @@ Module Text
   
   ;- MACROS
   ;- PROCEDUREs
+  Procedure.s Make(*This.Widget_S, Text.s)
+    Protected String.s, i.i, Len.i
+    
+    With *This
+      If \Text\Pass
+        Len = Len(Text.s) 
+        For i = 1 To Len : String.s + "●" : Next
+        
+      ElseIf \Text\Numeric
+        Static Dot, Minus
+        Protected Chr.s, Input.i
+        
+        Len = Len(Text.s) 
+        For i = 1 To Len 
+          Chr = Mid(Text.s, i, 1)
+          Input = Asc(Chr)
+          
+          Select Input
+            Case '0' To '9', '.','-'
+            Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.'
+            Default
+              Input = 0
+          EndSelect
+          
+          If Input
+            If Not Dot And Input = '.'
+              Dot = 1
+              Continue
+            ElseIf Input <> '.'
+              Dot = 0
+            EndIf
+            
+            If Not Minus And Input = '-'
+              Minus = 1
+              Continue
+            ElseIf Input <> '-'
+              Minus = 0
+            EndIf
+            
+            String.s + Chr
+          EndIf
+        Next
+        
+      Else
+        Select #True
+          Case \Text\Lower : String.s = LCase(Text.s)
+          Case \Text\Upper : String.s = UCase(Text.s)
+          Default
+            String.s = Text.s
+        EndSelect
+      EndIf
+    EndWith
+    
+    ProcedureReturn String.s
+  EndProcedure
+  
   Procedure.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
     Protected line$, ret$="", LineRet$=""
     Protected.i CountString, i, start, ii, found, length
@@ -151,8 +208,73 @@ Module Text
   EndProcedure
   
   Procedure.i MultiLine(*This.Widget_S)
+    Static Len
     Protected Repaint, String.s, StringWidth
-    Protected IT,Text_Y,Text_X,Width,Height
+    Protected IT,Text_Y,Text_X,Width,Height, Image_Y, Image_X, Indent=4
+    
+    Macro _set_content_Y_(_this_)
+      If _this_\Image\handle
+        If _this_\InLine
+          Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count))/2)
+          Image_Y=((Height-_this_\Image\Height)/2)
+        Else
+          If _this_\Text\Align\Bottom
+            Text_Y=((Height-_this_\Image\Height-(_this_\Text\Height*_this_\Text\Count))/2)-Indent/2
+            Image_Y=(Height-_this_\Image\Height+(_this_\Text\Height*_this_\Text\Count))/2+Indent/2
+          Else
+            Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count)+_this_\Image\Height)/2)+Indent/2
+            Image_Y=(Height-(_this_\Text\Height*_this_\Text\Count)-_this_\Image\Height)/2-Indent/2
+          EndIf
+        EndIf
+      Else
+        If _this_\Text\Align\Bottom
+          Text_Y=(Height-(_this_\Text\Height*_this_\Text\Count)-Text_Y-Image_Y) 
+        ElseIf _this_\Text\Align\Vertical
+          Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count))/2)
+        EndIf
+      EndIf
+    EndMacro
+    
+    Macro _set_content_X_(_this_)
+      If _this_\Image\handle
+        If _this_\InLine
+          If _this_\Text\Align\Right
+            Text_X=((Width-_this_\Image\Width-StringWidth)/2)-Indent/2
+            Image_X=(Width-_this_\Image\Width+StringWidth)/2+Indent
+          Else
+            Text_X=((Width-StringWidth+_this_\Image\Width)/2)+Indent
+            Image_X=(Width-StringWidth-_this_\Image\Width)/2-Indent
+          EndIf
+        Else
+          Image_X=(Width-_this_\Image\Width)/2 
+          Text_X=(Width-StringWidth)/2 
+        EndIf
+      Else
+        If _this_\Text\Align\Right
+          Text_X=(Width-StringWidth) 
+        ElseIf _this_\Text\Align\Horisontal
+          Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2 
+        EndIf
+      EndIf
+    EndMacro
+    
+    Macro _line_resize_(_this_)
+      _set_content_X_(_this_)
+      
+      ;_this_\Items()\Caret = Len
+      _this_\Items()\Text\Len = Len(String.s)
+      Len + _this_\Items()\Text\Len
+      
+     ; Debug "pos "+_this_\Items()\Caret+" len "+_this_\Items()\Text\Len+" widget "+_this_\Items()\Text\String
+      
+      _this_\Items()\x = _this_\X[1]+_this_\Text\X
+      _this_\Items()\Width = Width
+      _this_\Items()\Text\x = _this_\Items()\x+Text_X
+      
+      _this_\Image\X = _this_\X[1]+_this_\Text\X+Image_X
+      _this_\Image\Y = _this_\Y[1]+_this_\Text\Y+Image_Y
+    EndMacro
+    
     
     With *This
       If \Text\Vertical
@@ -174,23 +296,32 @@ Module Text
         String.s = \Text\String.s
       EndIf
       
+      
+      
+      Len = 0
+          
       If \Text\String.s[2] <> String.s Or \Text\Vertical
-        \Scroll\Width = 0 
+        ; Посылаем сообщение об изменении содержимого 
+        If \Interact And \Type = #PB_GadgetType_String 
+          PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Change)
+        EndIf
+        
         \Text\String.s[2] = String.s
         \Text\Count = CountString(String.s, #LF$)
-        
+        If \Text\Numeric
+         Debug "get "+String.s+" "+\Text\Count
+      EndIf
+      
+        \Scroll\Width = 0 
+        _set_content_Y_(*This)
+      
         If \Text\Count[1] <> \Text\Count Or \Text\Vertical
           \Scroll\Height = 0
           ClearList(\Items())
           
-          If \Text\Align\Bottom
-            Text_Y=(Height-(\Text\Height*\Text\Count)-Text_Y) 
-          ElseIf \Text\Align\Vertical
-            Text_Y=((Height-(\Text\Height*\Text\Count))/2)
-          EndIf
-          
           If \Text\Vertical
             For IT = \Text\Count To 1 Step - 1
+              AddElement(\Items())
               String = StringField(\Text\String.s[2], IT, #LF$)
               
               If \Type = #PB_GadgetType_Button
@@ -205,7 +336,6 @@ Module Text
                 Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2 
               EndIf
               
-              AddElement(\Items())
               \Items()\x = \X[1]+\Text\Y+\Scroll\Height+Text_Y
               \Items()\y = \Y[1]+\Text\X+Text_X
               \Items()\Width = \Text\Height
@@ -230,6 +360,7 @@ Module Text
             Next
           Else
             For IT = 1 To \Text\Count
+              AddElement(\Items())
               String = StringField(\Text\String.s[2], IT, #LF$)
               
               If \Type = #PB_GadgetType_Button
@@ -238,29 +369,19 @@ Module Text
                 StringWidth = TextWidth(String)
               EndIf
               
-              If \Text\Align\Right
-                Text_X=(Width-StringWidth) 
-              ElseIf \Text\Align\Horisontal
-                Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
-              EndIf
+              _line_resize_(*This)
               
-              AddElement(\Items())
-              \Items()\x = \X[1]+\Text\X
               \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
-              \Items()\Width = Width
               \Items()\Height = \Text\Height
               \Items()\Item = ListIndex(\Items())
               
               \Items()\Text\Editable = \Text\Editable 
-              \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
               \Items()\Text\y = \Items()\y
               \Items()\Text\Width = StringWidth
               \Items()\Text\Height = \Text\Height
               \Items()\Text\String.s = String.s
-              \Items()\Text\Len = Len(String.s)
+;               \Items()\Text\Len = Len(String.s)
               
-              \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
-              \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
               
               If \Line[1] = ListIndex(\Items())
                 ;Debug " string "+String.s
@@ -282,7 +403,7 @@ Module Text
             SelectElement(\Items(), IT-1)
             String.s = StringField(\Text\String.s[2], IT, #LF$)
             
-            If \Items()\Text\String.s <> String.s
+            If \Items()\Text\String.s <> String.s Or \Items()\Text\Change
               \Items()\Text\String.s = String.s
               
               If \Type = #PB_GadgetType_Button
@@ -293,7 +414,7 @@ Module Text
               
               \Items()\Text\Width = StringWidth
               \Items()\Text\String.s = String.s
-              \Items()\Text\Len = Len(String.s)
+;               \Items()\Text\Len = Len(String.s)
               
               If \Scroll\Width<\Items()\Text\Width
                 \Scroll\Width=\Items()\Text\Width
@@ -303,31 +424,16 @@ Module Text
             EndIf
             
             ; Resize item
-            If \Text\Align\Right
-              Text_X=(Width-StringWidth) 
-            ElseIf \Text\Align\Horisontal
-              Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
-            EndIf
-            
-            \Items()\Width = Width
-            \Items()\x = \X[1]+\Text\X
-            \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
+            _line_resize_(*This)
           Next
         EndIf
       Else
+        _set_content_Y_(*This)
+        
         PushListPosition(\Items())
         ForEach \Items()
           StringWidth = \Items()\Text\Width 
-          
-          If \Text\Align\Right
-            Text_X=(Width-StringWidth) 
-          ElseIf \Text\Align\Horisontal
-            Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
-          EndIf
-          
-          \Items()\x = \X[1]+\Text\X
-          \Items()\Width = Width
-          \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
+          _line_resize_(*This)
         Next
         PopListPosition(\Items())
       EndIf
@@ -565,29 +671,18 @@ Module Text
   EndProcedure
   
   Procedure.i SetText(*This.Widget_S, Text.s)
-    Protected Result,i,Len
+    Protected Result,i,Len, String.s
     
     With *This
       If \Text\String.s <> Text.s
         \Text\String.s[1] = Text.s
+        \Text\String.s = Make(*This, Text.s)
         
-        If \Text\Pass
-          Len = Len(Text.s) : Text.s = "" 
-          For i = 1 To Len : Text.s + "●" : Next
-        Else
-          Select #True
-            Case \Text\Lower : Text.s = LCase(Text.s)
-            Case \Text\Upper : Text.s = UCase(Text.s)
-          EndSelect
+        If \Text\String.s And Not \Text\MultiLine
+          \Text\String.s = RemoveString(\Text\String.s, #LF$) + #LF$
         EndIf
         
-        If \Text\MultiLine
-          \Text\String.s = Text.s
-        Else
-          \Text\String.s = RemoveString(Text.s, #LF$) + #LF$
-        EndIf
-        
-        \Text\Len = Len(Text.s)
+        \Text\Len = Len(\Text\String.s)
         \Text\Change = #True
         Result = #True
       EndIf
@@ -1022,7 +1117,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----9-+-----------------
+; Folding = fu-01f+------------------
 ; EnableXP
