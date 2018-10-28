@@ -54,7 +54,7 @@ Module Text
           
           Select Input
             Case '0' To '9', '.','-'
-            Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.'
+            Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.' : Chr = Chr(Input)
             Default
               Input = 0
           EndSelect
@@ -236,6 +236,9 @@ Module Text
     EndMacro
     
     Macro _set_content_X_(_this_)
+      
+      
+      ;       If Not Bool(_this_\Scroll\X = Right)
       If _this_\Image\handle
         If _this_\InLine
           If _this_\Text\Align\Right
@@ -256,16 +259,12 @@ Module Text
           Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2 
         EndIf
       EndIf
+      ;       EndIf
     EndMacro
     
     Macro _line_resize_(_this_)
-      _set_content_X_(_this_)
       
-      ;_this_\Items()\Caret = Len
-      _this_\Items()\Text\Len = Len(String.s)
-      Len + _this_\Items()\Text\Len
-      
-     ; Debug "pos "+_this_\Items()\Caret+" len "+_this_\Items()\Text\Len+" widget "+_this_\Items()\Text\String
+      ; Debug "pos "+_this_\Items()\Caret+" len "+_this_\Items()\Text\Len+" widget "+_this_\Items()\Text\String
       
       _this_\Items()\x = _this_\X[1]+_this_\Text\X
       _this_\Items()\Width = Width
@@ -296,28 +295,44 @@ Module Text
         String.s = \Text\String.s
       EndIf
       
-      
-      
       Len = 0
-          
+      
       If \Text\String.s[2] <> String.s Or \Text\Vertical
         ; Посылаем сообщение об изменении содержимого 
-        If \Interact And \Type = #PB_GadgetType_String 
+        If \Text\Editable And \Text\Change=-1 
           PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Change)
         EndIf
         
         \Text\String.s[2] = String.s
         \Text\Count = CountString(String.s, #LF$)
-        If \Text\Numeric
-         Debug "get "+String.s+" "+\Text\Count
-      EndIf
-      
+        
         \Scroll\Width = 0 
         _set_content_Y_(*This)
-      
+        
+        If *This\Focus = *This 
+          Protected Left,Right
+          
+          Right =- TextWidth(Mid(\Text\String.s, \Items()\Caret, \Caret))
+          Left = (Width + Right)
+          ; Debug " "+Left+" "+Right
+          
+          If *This\Scroll\X < Right
+            *This\Scroll\X = Right
+          ElseIf *This\Scroll\X > Left
+            *This\Scroll\X = Left
+          ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
+            *This\Scroll\X = (\Items()\Width-\Items()\Text[3]\Width) + Right
+            If *This\Scroll\X>0
+              *This\Scroll\X=0
+            EndIf
+          EndIf
+          
+        EndIf
+        
+        
         If \Text\Count[1] <> \Text\Count Or \Text\Vertical
-          \Scroll\Height = 0
           ClearList(\Items())
+          \Scroll\Height = 0
           
           If \Text\Vertical
             For IT = \Text\Count To 1 Step - 1
@@ -369,6 +384,14 @@ Module Text
                 StringWidth = TextWidth(String)
               EndIf
               
+              ;If (Right And Not  Bool(*This\Scroll\X = Right))
+              _set_content_X_(*This)
+              ;EndIf
+              
+              \Items()\Caret = Len
+              \Items()\Text\Len = Len(String.s)
+              Len + \Items()\Text\Len
+              
               _line_resize_(*This)
               
               \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
@@ -380,7 +403,7 @@ Module Text
               \Items()\Text\Width = StringWidth
               \Items()\Text\Height = \Text\Height
               \Items()\Text\String.s = String.s
-;               \Items()\Text\Len = Len(String.s)
+              ;               \Items()\Text\Len = Len(String.s)
               
               
               If \Line[1] = ListIndex(\Items())
@@ -412,9 +435,12 @@ Module Text
                 StringWidth = TextWidth(String.s)
               EndIf
               
+              \Items()\Caret = Len
+              \Items()\Text\Len = Len(String.s)
+              Len + \Items()\Text\Len
+              
               \Items()\Text\Width = StringWidth
               \Items()\Text\String.s = String.s
-;               \Items()\Text\Len = Len(String.s)
               
               If \Scroll\Width<\Items()\Text\Width
                 \Scroll\Width=\Items()\Text\Width
@@ -424,6 +450,10 @@ Module Text
             EndIf
             
             ; Resize item
+            If (Left And Not  Bool(*This\Scroll\X = Left))
+              _set_content_X_(*This)
+            EndIf
+            
             _line_resize_(*This)
           Next
         EndIf
@@ -433,6 +463,10 @@ Module Text
         PushListPosition(\Items())
         ForEach \Items()
           StringWidth = \Items()\Text\Width 
+          ;If Not (Right And Not  Bool(*This\Scroll\X = Right))
+          _set_content_X_(*This)
+          ;  EndIf
+          
           _line_resize_(*This)
         Next
         PopListPosition(\Items())
@@ -448,6 +482,7 @@ Module Text
     Protected IT,Text_Y,Text_X,Width,Height
     
     If Not *This\Hide
+      
       With *This
         If Canvas=-1 
           Canvas = EventGadget()
@@ -489,8 +524,8 @@ Module Text
       EndWith 
       
       ; Draw items text
-      If ListSize(*This\Items())
-        With *This\Items()
+      With *This\Items()
+        If ListSize(*This\Items())
           PushListPosition(*This\Items())
           ForEach *This\Items()
             ; Draw image
@@ -522,7 +557,7 @@ Module Text
               If \Text[3]\Change : \Text[3]\Change = #False 
                 \Text[3]\Width = TextWidth(\Text[3]\String.s)
               EndIf 
-              
+              ;               
               If *This\Focus = *This 
                 Protected Left,Right
                 Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
@@ -608,9 +643,9 @@ Module Text
                 DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
               EndIf
             EndIf
-            
           Next
           PopListPosition(*This\Items()) ; 
+          
           If *This\Focus = *This 
             ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
             If *This\Text\Editable And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] 
@@ -618,8 +653,8 @@ Module Text
               Line(((\Text\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
             EndIf
           EndIf
-        EndWith  
-      EndIf
+        EndIf
+      EndWith  
       
       ; Draw frames
       With *This
@@ -636,15 +671,7 @@ Module Text
         ; Draw frames
         DrawingMode(#PB_2DDrawing_Outlined)
         
-        If \Default
-          RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[3])
-          ;           If \Radius ; Сглаживание краев)))
-          ;             RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
-          ;           EndIf
-          ;           RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,\Color\Frame[3])
-        EndIf
-        
-        If \Focus = *This ;  Debug "\Focus "+\Focus
+        If \Focus = *This  ;:  Debug "\Focus "+\Focus +"  "+ \Color\Frame[3]
           RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[3])
           If \Radius ; Сглаживание краев))) ; RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,\Color\Frame[3])
             RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
@@ -655,10 +682,32 @@ Module Text
             RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
           EndIf
         EndIf
+        
+        If \Default
+          If \Default = *This : \Default = 0
+            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$004DFF)
+            If \Radius 
+              RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$004DFF) ; $D5A719)
+            EndIf
+            RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$004DFF)
+            
+            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+            RoundBox(\X[1]+1,\Y[1]+1,\Width[1]-2,\Height[1]-2,\Radius,\Radius,($D7D6FA&$FFFFFF)|128<<24)
+            DrawingMode(#PB_2DDrawing_Outlined)
+          Else
+            RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[3])
+            ;           If \Radius ; Сглаживание краев)))
+            ;             RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
+            ;           EndIf
+            ;           RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,\Color\Frame[3])
+          EndIf
+        EndIf
+        
       EndWith
     EndIf
     
   EndProcedure
+  
   ;-
   Procedure.s GetText(*This.Widget_S)
     With *This
@@ -868,7 +917,11 @@ Module Text
             CompilerEndIf
           Else
             MouseLeave =- 1
-            Result | CallCFunctionFast(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+              Result | CallFunctionFast(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+            CompilerElse
+              Result | CallCFunctionFast(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+            CompilerEndIf
             EventType = #PB_EventType_LeftClick
           EndIf
           
@@ -876,7 +929,12 @@ Module Text
       EndSelect
     CompilerEndIf
     
-    Result | CallCFunctionFast(*Function, *This, EventType, Canvas, CanvasModifiers)
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      Result | CallFunctionFast(*Function, *This, EventType, Canvas, CanvasModifiers)
+    CompilerElse
+      Result | CallCFunctionFast(*Function, *This, EventType, Canvas, CanvasModifiers)
+    CompilerEndIf
+    
     ProcedureReturn Result
   EndProcedure
   
@@ -1116,7 +1174,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = fu-01f+------------------
+; Folding = --------v-0---f-----------
 ; EnableXP

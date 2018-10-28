@@ -1,4 +1,10 @@
-﻿IncludePath "/Users/as/Documents/GitHub/Widget/"
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+;  IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+  IncludePath "/Users/a/Documents/GitHub/Widget/"
+CompilerEndIf
 ; XIncludeFile "module_scroll.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -282,7 +288,7 @@ Module Editor
                   ClipOutput(*This\Text[0]\X-1,*This\Y[2],*This\Width-*This\Text[0]\X*2+2,*This\Height[2]) ; Bug in Mac os
                 CompilerEndIf
                 
-                If *This\Text\Editable And \Text[2]\Len > 0 And #PB_Compiler_OS <> #PB_OS_MacOS
+                If *This\Text\Editable And \Text[2]\Len > 0 ;And #PB_Compiler_OS <> #PB_OS_Windows ;MacOS
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                     If \Text[2]\String.s
@@ -342,10 +348,11 @@ Module Editor
                       DrawingMode(#PB_2DDrawing_Transparent)
                       DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                     EndIf
+                    
+                    DrawingMode(#PB_2DDrawing_Default)
+                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, $D77800) ; DE9541)
+                    
                     If \Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Default)
-                      Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, $D77800) ; DE9541)
-                      
                       DrawingMode(#PB_2DDrawing_Transparent)
                       DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFF)
                     EndIf
@@ -485,7 +492,6 @@ Module Editor
             EndIf
             
             If LastLine <> \Line Or LastItem <> Item
-            Debug Item
               \Items()\Text[2]\Width[2] = 0
               
               If \Line[1] = \Line 
@@ -553,6 +559,8 @@ Module Editor
                 
                 
               EndIf
+              
+              Debug "width "+\Items()\Text[2]\Width[2]
               
               LastItem = Item
               LastLine = \Line
@@ -735,7 +743,7 @@ Module Editor
     ;ProcedureReturn
     
     With *This\Items()
-      Debug *This\Line
+      ;Debug *This\Line
       ;*This\Caret = 0
       If *This\Caret > *This\Caret[1] : *This\Caret = *This\Caret[1] : EndIf
       ; Debug "  "+*This\Caret +" "+ *This\Caret[1]
@@ -2713,6 +2721,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 351
+; FirstLine = 268
+; Folding = ----4---7----t-------------------+8+------------------------------
 ; EnableXP

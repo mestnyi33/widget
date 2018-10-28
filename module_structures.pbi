@@ -166,6 +166,7 @@
     
   EndStructure
   
+  Global *Focus.Widget_S
   Global NewList List.Widget_S()
   Global Use_List_Canvas_Gadget
 EndDeclareModule 

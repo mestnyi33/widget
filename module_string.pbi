@@ -1,7 +1,7 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
+  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
   IncludePath "/Users/a/Documents/GitHub/Widget/"
 CompilerEndIf
@@ -20,7 +20,6 @@ DeclareModule String
   UseModule Macros
   UseModule Constants
   UseModule Structures
-  
   
   ;- - DECLAREs MACROs
   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
@@ -164,7 +163,7 @@ Module String
         If \Text[2]\Len > 0
           \Text[2]\String.s = Mid(\Text\String.s, 1+\Caret+Position, \Text[2]\Len) : \Text[2]\Change = #True
         EndIf
-        \Text[3]\String.s = Right(*This\Text\String.s, *This\Text\Len-(\Caret+Position + \Text[2]\Len)) : \Text[3]\Change = #True
+        \Text[3]\String.s = Trim(Right(*This\Text\String.s, *This\Text\Len-(\Caret+Position + \Text[2]\Len)), #LF$) : \Text[3]\Change = #True
         
         Line = *This\Line
         Caret = *This\Caret
@@ -219,7 +218,7 @@ Module String
   EndProcedure
   
   Procedure ToInput(*This.Widget_S)
-    Static Dot, Minus
+    Static Dot, Minus, Color.i
     Protected Repaint, Input, Input_2, Chr.s
     
     With *This
@@ -230,11 +229,14 @@ Module String
           If \Items()\Text[2]\Len 
             Remove(*This)
           EndIf
+          
           \Caret + 1
           \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Caret+\Caret)
           \Text\Len = Len(\Text\String.s) 
           \Caret[1] = \Caret 
-          \Text\Change = 1
+          \Text\Change =- 1
+        Else
+          \Default = *This
         EndIf
         
         \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Caret+\Caret)
@@ -258,7 +260,7 @@ Module String
           \Text\Len = Len(\Text\String.s) 
         EndIf
         
-        \Text\Change = 1
+        \Text\Change =- 1
         Repaint =- 1 
       EndIf
     EndWith
@@ -286,7 +288,7 @@ Module String
         EndIf
         
         \Caret[1] = \Caret
-        \Text\Change = 1
+        \Text\Change =- 1
         Repaint =- 1 
       EndIf
     EndWith
@@ -297,7 +299,7 @@ Module String
   
   ;-
   Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    Static *Focus.Widget_S, *Last.Widget_S, *Widget.Widget_S
+    Static *Last.Widget_S, *Widget.Widget_S;, *Focus.Widget_S
     Static Text$, DoubleClick, LastX, LastY, Last, Drag
     Protected.i Repaint, Control, Buttons, Widget
     
@@ -528,9 +530,9 @@ Module String
               EndIf
               
             Case #PB_EventType_KeyUp
-              If \Text\Numeric
-                \Text\String.s[1]=\Text\String.s 
-              EndIf
+              ;               If \Text\Numeric
+              ;                 \Text\String.s[1]=\Text\String.s 
+              ;               EndIf
               Repaint = #True 
               
             Case #PB_EventType_KeyDown
@@ -733,7 +735,40 @@ EndModule
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
+  Procedure GetWindowBackgroundColor(hwnd=0) ;hwnd only used in Linux, ignored in Win/Mac
+    CompilerSelect #PB_Compiler_OS
+        
+      CompilerCase #PB_OS_Windows  
+        Protected color = GetSysColor_(#COLOR_WINDOW)
+        If color = $FFFFFF Or color=0: color = GetSysColor_(#COLOR_BTNFACE): EndIf
+        ProcedureReturn color
+        
+      CompilerCase #PB_OS_Linux   ;thanks to uwekel http://www.purebasic.fr/english/viewtopic.php?p=405822
+        Protected *style.GtkStyle, *color.GdkColor
+        *style = gtk_widget_get_style_(hwnd) ;GadgetID(Gadget))
+        *color = *style\bg[0]                ;0=#GtkStateNormal
+        ProcedureReturn RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8)
+        
+      CompilerCase #PB_OS_MacOS   ;thanks to wilbert http://purebasic.fr/english/viewtopic.php?f=19&t=55719&p=497009
+        Protected.i color, Rect.NSRect, Image, NSColor = CocoaMessage(#Null, #Null, "NSColor windowBackgroundColor")
+        If NSColor
+          Rect\size\width = 1
+          Rect\size\height = 1
+          Image = CreateImage(#PB_Any, 1, 1)
+          StartDrawing(ImageOutput(Image))
+          CocoaMessage(#Null, NSColor, "drawSwatchInRect:@", @Rect)
+          color = Point(0, 0)
+          StopDrawing()
+          FreeImage(Image)
+          ProcedureReturn color
+        Else
+          ProcedureReturn -1
+        EndIf
+    CompilerEndSelect
+  EndProcedure  
+  
   UseModule String
+  Global winBackColor
   
   Global *S_0.Widget_S = AllocateStructure(Widget_S)
   Global *S_1.Widget_S = AllocateStructure(Widget_S)
@@ -797,7 +832,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If Result
       If StartDrawing(CanvasOutput(Canvas))
-        Box(0,0,Width,Height, $F0F0F0)
+        Box(0,0,Width,Height, winBackColor)
         
         ForEach List()
           Draw(List()\Widget)
@@ -840,6 +875,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define height, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
+    winBackColor = GetWindowBackgroundColor(WindowID(0))
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       height = 20
@@ -868,13 +904,21 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetGadgetText(6, "GaT")
     
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+      CocoaMessage(0,GadgetID(1),"setAlignment:", 2)
+      CocoaMessage(0,GadgetID(2),"setAlignment:", 1)
+    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+      SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE)|#SS_CENTER)
+      SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLong_(GadgetID(2), #GWL_STYLE)|#SS_RIGHT)
+    CompilerEndIf
+    
     ; Demo draw string on the canvas
     CanvasGadget(10,  305, 0, 310, 310, #PB_Canvas_Keyboard)
     SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
-    BindGadgetEvent(10, @CallBacks())
+     BindGadgetEvent(10, @CallBacks())
     
     *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...")
-    *S_1 = Create(10, -1, 8,  35, 290, height, "123-only-4567", #PB_Text_Numeric|#PB_Text_Center)
+    *S_1 = Create(10, -1, 8,  35, 290, height, "123-only-4567", #PB_Text_Numeric|#PB_Text_Center,8)
     *S_2 = Create(10, -1, 8,  60, 290, height, "Read-only StringGadget", #PB_Text_ReadOnly|#PB_Text_Right)
     *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
     *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
@@ -885,7 +929,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                                   ; *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
     
     Text::SetText(*S_6, "GaT")
-    Debug GetText(*S_6)
+    Debug "password: "+GetText(*S_6)
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
