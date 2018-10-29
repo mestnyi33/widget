@@ -1,8 +1,13 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_draw.pbi"
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_text.pbi"
+
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
 CompilerEndIf
 
 ;-
@@ -13,6 +18,10 @@ DeclareModule Button
   UseModule Constants
   UseModule Structures
   
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
+
   ;- - DECLAREs MACROs
   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   Macro Parent(_adress_, _canvas_) : Bool(_adress_\Canvas\Gadget = _canvas_) : EndMacro
@@ -391,19 +400,22 @@ Module Button
             EndIf
           CompilerEndIf 
           
-          \Color[0]\Fore[1] = $F6F6F6 
-          \Color[0]\Back[1] = $E2E2E2  
-          \Color[0]\Frame[1] = $BABABA 
+          \Color[0]\Fore[1] = $FFF6F6F6 
+          \Color[0]\Back[1] = $FFE2E2E2  
+          \Color[0]\Frame[1] = $FFBABABA 
           
           ; Цвет если мышь на виджете
-          \Color[0]\Fore[2] = $EAEAEA
-          \Color[0]\Back[2] = $CECECE
-          \Color[0]\Frame[2] = $8F8F8F
+          \Color[0]\Fore[2] = $FFEAEAEA
+          \Color[0]\Back[2] = $FFCECECE
+          \Color[0]\Frame[2] = $FF8F8F8F
           
           ; Цвет если нажали на виджет
-          \Color[0]\Fore[3] = $E2E2E2
-          \Color[0]\Back[3] = $B4B4B4
-          \Color[0]\Frame[3] = $6F6F6F
+          \Color[0]\Fore[3] = $FFE2E2E2
+          \Color[0]\Back[3] = $FFB4B4B4
+          \Color[0]\Frame[3] = $FF6F6F6F
+          
+          ; font color
+          \Color[0]\Front[1] = $FF000000
           
           ; Устанавливаем цвет по умолчанию первый
           ResetColor(*This)
@@ -492,7 +504,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If Result Or EventType() = #PB_EventType_Repaint
       If StartDrawing(CanvasOutput(Canvas))
-        Box(0,0,Width,Height, $F0F0F0)
+        Box(0,0,Width,Height, $FFF0F0F0)
         
         ForEach List()
           Draw(List()\Widget)

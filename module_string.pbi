@@ -7,10 +7,15 @@ CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_draw.pbi"
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_text.pbi"
+
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
 CompilerEndIf
 
 ;-
@@ -20,6 +25,9 @@ DeclareModule String
   UseModule Macros
   UseModule Constants
   UseModule Structures
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
   
   ;- - DECLAREs MACROs
   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
@@ -693,16 +701,19 @@ Module String
           CompilerEndIf
           
           If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFF 
+            \Color[0]\Back[1] = $FFFFFFFF 
           Else
-            \Color[0]\Back[1] = $FAFAFA  
+            \Color[0]\Back[1] = $FFFAFAFA  
           EndIf
           
           ; default frame color
-          \Color[0]\Frame[1] = $BABABA
+          \Color[0]\Frame[1] = $FFBABABA
           
           ; focus frame color
-          \Color[0]\Frame[3] = $D5A719
+          \Color[0]\Frame[3] = $FFD5A719
+          
+          ; font color
+          \Color[0]\Front[1] = $FF000000
           
           ; set default colors
           ResetColor(*This)
@@ -740,7 +751,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       CompilerCase #PB_OS_Windows  
         Protected color = GetSysColor_(#COLOR_WINDOW)
-        If color = $FFFFFF Or color=0: color = GetSysColor_(#COLOR_BTNFACE): EndIf
+        If color = $FFFFFFFF Or color=0: color = GetSysColor_(#COLOR_BTNFACE): EndIf
         ProcedureReturn color
         
       CompilerCase #PB_OS_Linux   ;thanks to uwekel http://www.purebasic.fr/english/viewtopic.php?p=405822
@@ -832,6 +843,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If Result
       If StartDrawing(CanvasOutput(Canvas))
+        DrawingMode(#PB_2DDrawing_Default)
         Box(0,0,Width,Height, winBackColor)
         
         ForEach List()
@@ -915,7 +927,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Demo draw string on the canvas
     CanvasGadget(10,  305, 0, 310, 310, #PB_Canvas_Keyboard)
     SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
-     BindGadgetEvent(10, @CallBacks())
+    BindGadgetEvent(10, @CallBacks())
     
     *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...")
     *S_1 = Create(10, -1, 8,  35, 290, height, "123-only-4567", #PB_Text_Numeric|#PB_Text_Center,8)

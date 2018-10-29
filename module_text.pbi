@@ -1,7 +1,12 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_draw.pbi"
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
+  
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
 CompilerEndIf
 
 ;-
@@ -12,6 +17,9 @@ DeclareModule Text
   UseModule Constants
   UseModule Structures
   
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
   
   ;- - DECLAREs PROCEDUREs
   Declare.i Draw(*ThisWidget_S, Canvas.i=-1)
@@ -35,6 +43,29 @@ Module Text
   
   ;- MACROS
   ;- PROCEDUREs
+  Procedure.i Clip(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
+    ; Static Clip_X.i,Clip_Y.i,Clip_Width.i,Clip_Height.i
+    
+    With *This
+      If X<>#PB_Ignore 
+        \Clip\X = X
+      EndIf
+      If Y<>#PB_Ignore 
+        \Clip\Y = Y
+      EndIf
+      If Width<>#PB_Ignore 
+        \Clip\Width = Width
+      EndIf
+      If Height<>#PB_Ignore 
+        \Clip\Height = Height
+      EndIf
+      
+      ;CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
+      ClipOutput(\Clip\X,\Clip\Y,\Clip\Width,\Clip\Height)
+      ;CompilerEndIf
+    EndWith
+  EndProcedure
+  
   Procedure.s Make(*This.Widget_S, Text.s)
     Protected String.s, i.i, Len.i
     
@@ -305,7 +336,7 @@ Module Text
         \Scroll\Width = 0 
         _set_content_Y_(*This)
         
-        If \Text\Change And *This\Focus = *This 
+        If ListSize(\Items()) 
           Protected Left,Right
           
           Right =- TextWidth(Mid(\Text\String.s, \Items()\Caret, \Caret))
@@ -367,6 +398,11 @@ Module Text
               \Items()\Text\String.s = String.s
               \Items()\Text\Len = Len(String.s)
               
+              ; Указываем какие линии будут видни
+              If Not Bool(\Items()\x >\x[2] And (\Items()\x-\x[2])+\Items()\width<\width[2])
+                \Items()\Hide = 1
+              EndIf
+              
               \Scroll\Height+\Text\Height 
             Next
           Else
@@ -402,6 +438,11 @@ Module Text
                 ;Debug " string "+String.s
                 \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret) : \Items()\Text[1]\Change = #True
                 \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
+              EndIf
+              
+              ; Указываем какие линии будут видни
+              If \Type <> #PB_GadgetType_Editor
+                \Items()\Hide = Bool( Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
               EndIf
               
               If \Scroll\Width<\Items()\Text\Width
@@ -442,7 +483,7 @@ Module Text
             EndIf
             
             ; Resize item
-            If (Left And Not  Bool(\Scroll\X = Left)) Or \Resize
+            If (Left And Not  Bool(\Scroll\X = Left)); Or \Resize
               _set_content_X_(*This)
             EndIf
             
@@ -471,7 +512,7 @@ Module Text
   
   Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
     Protected String.s, StringWidth
-    Protected IT,Text_Y,Text_X,Width,Height
+    Protected IT,Text_Y,Text_X,Width,Height, Drawing
     
     If Not *This\Hide
       
@@ -483,9 +524,7 @@ Module Text
           ProcedureReturn
         EndIf
         
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
-        CompilerEndIf
+        Clip(*This, \X[2],\Y[2],\Width[2],\Height[2])
         
         DrawingMode(\DrawingMode)
         BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
@@ -520,119 +559,148 @@ Module Text
         If ListSize(*This\Items())
           PushListPosition(*This\Items())
           ForEach *This\Items()
-            ; Draw image
-            If \Image\handle
-              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-              DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
-            EndIf
             
-            ; Draw string
-            If \Text[1]\Change : \Text[1]\Change = #False
-              \Text[1]\Width = TextWidth(\Text[1]\String.s) 
-            EndIf 
-            
-            If \Text\String.s
-              CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-                ClipOutput(\X,\Y,\Width,\Height) ; Bug in Mac os
-              CompilerEndIf
-              
-              If \Text\FontID 
-                DrawingFont(\Text\FontID) 
+            If Not \Hide
+              ; Draw image
+              If \Image\handle
+                DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
               EndIf
               
-              If \Text[2]\Change : \Text[2]\Change = #False 
-                \Text[2]\X = \Text[0]\X+\Text[1]\Width
-                \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
-                \Text[3]\X = \Text[2]\X+\Text[2]\Width
+              ; Draw string
+              If \Text[1]\Change : \Text[1]\Change = #False
+                \Text[1]\Width = TextWidth(\Text[1]\String.s) 
               EndIf 
               
-              If \Text[3]\Change : \Text[3]\Change = #False 
-                \Text[3]\Width = TextWidth(\Text[3]\String.s)
-              EndIf 
-              ;               
-              If *This\Focus = *This 
-                Protected Left,Right
-                Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
-                Right = (\Width + Left)
+              If \Text\String.s
+                Clip(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
                 
-                If *This\Scroll\X < Left
-                  *This\Scroll\X = Left
-                ElseIf *This\Scroll\X > Right
-                  *This\Scroll\X = Right
-                ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
-                  *This\Scroll\X = (\Width-\Text[3]\Width) + Left
-                  If *This\Scroll\X>0
-                    *This\Scroll\X=0
+                If \Text\FontID 
+                  DrawingFont(\Text\FontID) 
+                EndIf
+                
+                If \Text[2]\Change : \Text[2]\Change = #False 
+                  \Text[2]\X = \Text[0]\X+\Text[1]\Width
+                  \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
+                  \Text[3]\X = \Text[2]\X+\Text[2]\Width
+                EndIf 
+                
+                If \Text[3]\Change : \Text[3]\Change = #False 
+                  \Text[3]\Width = TextWidth(\Text[3]\String.s)
+                EndIf 
+                ;               
+                If *This\Focus = *This 
+                  Protected Left,Right
+                  Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
+                  Right = (\Width + Left)
+                  
+                  If *This\Scroll\X < Left
+                    *This\Scroll\X = Left
+                  ElseIf *This\Scroll\X > Right
+                    *This\Scroll\X = Right
+                  ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
+                    *This\Scroll\X = (\Width-\Text[3]\Width) + Left
+                    If *This\Scroll\X>0
+                      *This\Scroll\X=0
+                    EndIf
                   EndIf
                 EndIf
-              EndIf
-              
-              If *This\Text\Editable And \Text[2]\Len > 0 ; And #PB_Compiler_OS <> #PB_OS_MacOS
-                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS ; Bug in Mac os 
-                  If *This\Caret[1] > *This\Caret
-                    \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
-                    \Text[2]\X = \Text[3]\X-\Text[2]\Width
-                    
-                    If \Text[3]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $0B0B0B)
-                    EndIf
-                    
-                    If \Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Default)
-                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, $E89C3D)
-                      
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text\X+*This\Scroll\X), \Text\Y, \Text[1]\String.s+\Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFF)
-                    EndIf
-                    
-                    If \Text[1]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text\X+*This\Scroll\X), \Text\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $0B0B0B)
-                    EndIf
-                    
-                  Else
-                    ;                     \Text[2]\X = \Text\X+\Text[1]\Width
-                    ;                     \Text[3]\X = \Text[2]\X+\Text[2]\Width
-                    
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText((\Text\X+*This\Scroll\X), \Text\Y, \Text\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $0B0B0B)
-                    
-                    If \Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Default)
-                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y, (\Text[2]\Width+\Text[2]\Width[2]), \Text\Height, $E89C3D)
-                      
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFF)
-                    EndIf
-                  EndIf
-                  
-                CompilerElse
-                  If \Text[1]\String.s
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                  EndIf
-                  If \Text[2]\String.s
-                    DrawingMode(#PB_2DDrawing_Default)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, $DE9541)
-                    
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFF)
-                  EndIf
-                  If \Text[3]\String.s
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text[0]\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                  EndIf
+                
+                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+                  SetOrigin(*This\Clip\X, *This\Clip\Y) ; Bug in Mac os clip output
                 CompilerEndIf
                 
-              Else
-                If \Text[2]\Len > 0
-                  DrawingMode(#PB_2DDrawing_Default)
-                  Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, $FADBB3);$DE9541)
+                If *This\Text\Editable And \Text[2]\Len > 0 
+                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS ; Bug in Mac os 
+                    If *This\Caret[1] > *This\Caret
+                      \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
+                      \Text[2]\X = \Text[3]\X-\Text[2]\Width
+                      
+                      If \Text[3]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent)
+                        DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FF0B0B0B)
+                      EndIf
+                      
+                      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+                        SetOrigin(0, 0) ; Bug in Mac os clip output
+                      CompilerEndIf
+                      DrawingMode(#PB_2DDrawing_Default)
+                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, $FFE89C3D)
+                      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+                        SetOrigin(*This\Clip\X, *This\Clip\Y) ; Bug in Mac os clip output
+                      CompilerEndIf
+                      
+                      If \Text[2]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent)
+                        DrawRotatedText((\Text\X+*This\Scroll\X), \Text\Y, \Text[1]\String.s+\Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFFFF)
+                      EndIf
+                      
+                      If \Text[1]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent)
+                        DrawRotatedText((\Text\X+*This\Scroll\X), \Text\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FF0B0B0B)
+                      EndIf
+                      
+                    Else
+                      ;                     \Text[2]\X = \Text\X+\Text[1]\Width
+                      ;                     \Text[3]\X = \Text[2]\X+\Text[2]\Width
+                      
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawRotatedText((\Text\X+*This\Scroll\X), \Text\Y, \Text\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FF0B0B0B)
+                      
+                      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+                        SetOrigin(0, 0) ; Bug in Mac os clip output
+                      CompilerEndIf
+                      DrawingMode(#PB_2DDrawing_Default)
+                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y, (\Text[2]\Width+\Text[2]\Width[2]), \Text\Height, $FFE89C3D)
+                      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+                        SetOrigin(*This\Clip\X, *This\Clip\Y) ; Bug in Mac os clip output
+                      CompilerEndIf
+                      
+                      If \Text[2]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent)
+                        DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFFFF)
+                      EndIf
+                    EndIf
+                    
+                  CompilerElse
+                    If \Text[1]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                    EndIf
+                    
+                    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+                      SetOrigin(0, 0) ; Bug in Mac os clip output
+                    CompilerEndIf
+                    DrawingMode(#PB_2DDrawing_Default)
+                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, $FFDE9541)
+                    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+                      SetOrigin(*This\Clip\X, *This\Clip\Y) ; Bug in Mac os clip output
+                    CompilerEndIf
+                    
+                    If \Text[2]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFFFF)
+                    EndIf
+                    If \Text[3]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text[0]\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                    EndIf
+                  CompilerEndIf
+                Else
+                  If \Text[2]\Len > 0
+                    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+                      SetOrigin(0, 0) ; Bug in Mac os clip output
+                    CompilerEndIf
+                    DrawingMode(#PB_2DDrawing_Default)
+                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, $FFFADBB3);$FFDE9541)
+                    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+                      SetOrigin(*This\Clip\X, *This\Clip\Y) ; Bug in Mac os clip output
+                    CompilerEndIf
+                  EndIf
+                  
+                  DrawingMode(#PB_2DDrawing_Transparent)
+                  DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                 EndIf
-                
-                DrawingMode(#PB_2DDrawing_Transparent)
-                DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
               EndIf
             EndIf
           Next
@@ -642,7 +710,7 @@ Module Text
             ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
             If *This\Text\Editable And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] 
               DrawingMode(#PB_2DDrawing_XOr)             
-              Line(((\Text\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
+              Line(((\Text\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFFFF)
             EndIf
           EndIf
         EndIf
@@ -650,8 +718,11 @@ Module Text
       
       ; Draw frames
       With *This
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4) ; Bug in Mac os
+        ;         Clip(*This, \X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4)
+        Clip(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
+        
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+          SetOrigin(0, 0) ; Bug in Mac os clip output
         CompilerEndIf
         
         ; Draw image
@@ -666,7 +737,7 @@ Module Text
         If \Focus = *This  ;:  Debug "\Focus "+\Focus +"  "+ \Color\Frame[3]
           RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[3])
           If \Radius ; Сглаживание краев))) ; RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,\Color\Frame[3])
-            RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
+            RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[3]) ; $FFD5A719)
           EndIf
           RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,\Color\Frame[3])
         Else
@@ -676,49 +747,34 @@ Module Text
         EndIf
         
         If \Default
-          If \Text\Numeric
-;             If \Text\String.s[1]<>\Text\String.s
-              DrawingMode(#PB_2DDrawing_Default)
-              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius, $F1F1FF)
-              DrawingMode(#PB_2DDrawing_Transparent)
-              DrawText((\Width[1]-TextWidth("!!! Недопустимый символ"))/2, \Items()\Text[0]\Y, "!!! Недопустимый символ", $0000FF)
-              DrawingMode(#PB_2DDrawing_Outlined)
-              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$0000FF)
-              If \Radius 
-                RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$0000FF) ; $D5A719)
-              EndIf
-              RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$0000FF)
-;             EndIf
-          EndIf
-          
           If \Default = *This : \Default = 0
             If \Text\Numeric
               ;             If \Text\String.s[1]<>\Text\String.s
               DrawingMode(#PB_2DDrawing_Default)
-              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius, $F1F1FF)
+              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius, $FFF1F1FF)
               DrawingMode(#PB_2DDrawing_Transparent)
-              DrawText((\Width[1]-TextWidth("!!! Недопустимый символ"))/2, \Items()\Text[0]\Y, "!!! Недопустимый символ", $0000FF)
+              DrawText((\Width[1]-TextWidth("!!! Недопустимый символ"))/2, \Items()\Text[0]\Y, "!!! Недопустимый символ", $FF0000FF)
               DrawingMode(#PB_2DDrawing_Outlined)
-              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$0000FF)
+              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$FF0000FF)
               If \Radius 
-                RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$0000FF) ; $D5A719)
+                RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$FF0000FF) ; $FFD5A719)
               EndIf
-              RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$0000FF)
+              RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$FF0000FF)
               ;             EndIf
             EndIf
-            ;             RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$004DFF)
-;             If \Radius 
-;               RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$004DFF) ; $D5A719)
-;             EndIf
-;             RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$004DFF)
-;             
-;             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-;             RoundBox(\X[1]+1,\Y[1]+1,\Width[1]-2,\Height[1]-2,\Radius,\Radius,($D7D6FA&$FFFFFF)|128<<24)
-;             DrawingMode(#PB_2DDrawing_Outlined)
+            ;             RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$FF004DFF)
+            ;             If \Radius 
+            ;               RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$FF004DFF) ; $FFD5A719)
+            ;             EndIf
+            ;             RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$FF004DFF)
+            ;             
+            ;             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+            ;             RoundBox(\X[1]+1,\Y[1]+1,\Width[1]-2,\Height[1]-2,\Radius,\Radius,($FFD7D6FA&$FFFFFFFF)|128<<24)
+            ;             DrawingMode(#PB_2DDrawing_Outlined)
           Else
             RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[3])
             ;           If \Radius ; Сглаживание краев)))
-            ;             RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
+            ;             RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[3]) ; $FFD5A719)
             ;           EndIf
             ;           RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,\Color\Frame[3])
           EndIf
@@ -1009,11 +1065,13 @@ Module Text
           EndIf
           
           If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFF 
+            \Color[0]\Back[1] = $FFFFFFFF 
           Else
-            \Color[0]\Back[1] = $F0F0F0  
+            \Color[0]\Back[1] = $FFF0F0F0  
           EndIf
-          \Color[0]\Frame[1] = $BABABA
+          \Color[0]\Frame[1] = $FFBABABA
+          
+          \Color[0]\Front[1] = $FF000000
           ResetColor(*This)
           
           SetText(*This, Text.s)
@@ -1112,7 +1170,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Select EventType()
       Case #PB_EventType_Resize : ResizeGadget(EventGadget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
         If StartDrawing(CanvasOutput(EventGadget()))
-          Box(0,0,OutputWidth(),OutputHeight(), $F0F0F0)
+          DrawingMode(#PB_2DDrawing_Default)
+          Box(0,0,OutputWidth(),OutputHeight(), $FFF0F0F0)
           
           ForEach List()
             If Resize(List()\Widget, #PB_Ignore, #PB_Ignore, GadgetWidth(EventGadget()), #PB_Ignore);, EventGadget())
@@ -1177,8 +1236,8 @@ CompilerIf #PB_Compiler_IsMainFile
     CanvasGadget(g, 10, 350, 380, 330) 
     
     *Text = Create(g, -1, 0, 0, 380, 330, Text.s);, #PB_Text_Center|#PB_Text_Middle);
-    SetColor(*Text, #PB_Gadget_BackColor, $CCBFB4)
-    SetColor(*Text, #PB_Gadget_FrontColor, $D56F1A)
+    SetColor(*Text, #PB_Gadget_BackColor, $FFCCBFB4)
+    SetColor(*Text, #PB_Gadget_FrontColor, $FFD56F1A)
     SetFont(*Text, FontID(0))
     
     ; Get example
@@ -1196,5 +1255,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = 4v-05-+-v-0----------------
+; Folding = -----------------------------
 ; EnableXP

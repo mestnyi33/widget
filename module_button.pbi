@@ -1,8 +1,13 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_draw.pbi"
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_text.pbi"
+
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
 CompilerEndIf
 
 ;-
@@ -13,6 +18,10 @@ DeclareModule Button
   UseModule Constants
   UseModule Structures
   
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
+
   ;- - DECLAREs MACROs
   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   
@@ -371,13 +380,13 @@ Module Button
               \Text\y = \fSize
             EndIf
             
-;             Define Alpha.CGFloat = 0.6
-;             CocoaMessage(0, GadgetID(Canvas), "setOpaque:", #NO)
-;             CocoaMessage(0, GadgetID(Canvas), "setAlphaValue:@", @Alpha)
-; CocoaMessage(0, GadgetID(Canvas), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor clearColor"))
-; CocoaMessage(0, CocoaMessage(0, GadgetID(Canvas), "enclosingScrollView"), "setDrawsBackground:", #NO)
-
-        CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+            ;             Define Alpha.CGFloat = 0.6
+            ;             CocoaMessage(0, GadgetID(Canvas), "setOpaque:", #NO)
+            ;             CocoaMessage(0, GadgetID(Canvas), "setAlphaValue:@", @Alpha)
+            ; CocoaMessage(0, GadgetID(Canvas), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor clearColor"))
+            ; CocoaMessage(0, CocoaMessage(0, GadgetID(Canvas), "enclosingScrollView"), "setDrawsBackground:", #NO)
+            
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
             If \Text\Vertical
               \Text\X = \fSize 
               \Text\y = \fSize+2
@@ -396,33 +405,36 @@ Module Button
           CompilerEndIf 
           
           ; Default colors (based on Windows 7)
-          \Color[0]\Fore[1] = RGB(240, 240, 240)
-          \Color[0]\Back[1] = RGB(229, 229, 229)  
-          \Color[0]\Frame[1] = RGB(172, 172, 172) 
+          \Color[0]\Fore[1] = RGBA(240, 240, 240, 255)
+          \Color[0]\Back[1] = RGBA(229, 229, 229, 255)  
+          \Color[0]\Frame[1] = RGBA(172, 172, 172, 255) 
           
           ; Цвет если мышь на виджете
-          \Color[0]\Fore[2] = RGB(236, 244, 252)
-          \Color[0]\Back[2] = RGB(220, 236, 252) ;  $FAEFE4 ; 
-          \Color[0]\Frame[2] = RGB(0, 160, 252)  ; $F5C775 ; 
+          \Color[0]\Fore[2] = RGBA(236, 244, 252, 255)
+          \Color[0]\Back[2] = RGBA(220, 236, 252, 255) ;  $FFFAEFE4 ; 
+          \Color[0]\Frame[2] = RGBA(0, 160, 252, 255)  ; $FFF5C775 ; 
           
           ; Цвет если нажали на виджет
-          \Color[0]\Fore[3] = RGB(218, 236, 252)
-          \Color[0]\Back[3] = RGB(196, 224, 252)
-          \Color[0]\Frame[3] = RGB(86, 157, 229)
+          \Color[0]\Fore[3] = RGBA(218, 236, 252, 255)
+          \Color[0]\Back[3] = RGBA(196, 224, 252, 255)
+          \Color[0]\Frame[3] = RGBA(86, 157, 229, 255)
           
-;           \Color[0]\Fore[1] = $F6F6F6 
-;           \Color[0]\Back[1] = $E2E2E2  
-;           \Color[0]\Frame[1] = $BABABA 
-;           
-;           ; Цвет если мышь на виджете
-;           \Color[0]\Fore[2] = $EAEAEA
-;           \Color[0]\Back[2] = $CECECE
-;           \Color[0]\Frame[2] = $8F8F8F
-;           
-;           ; Цвет если нажали на виджет
-;           \Color[0]\Fore[3] = $E2E2E2
-;           \Color[0]\Back[3] = $B4B4B4
-;           \Color[0]\Frame[3] = $6F6F6F
+          ;           \Color[0]\Fore[1] = $FFF6F6F6 
+          ;           \Color[0]\Back[1] = $FFE2E2E2  
+          ;           \Color[0]\Frame[1] = $FFBABABA 
+          ;           
+          ;           ; Цвет если мышь на виджете
+          ;           \Color[0]\Fore[2] = $FFEAEAEA
+          ;           \Color[0]\Back[2] = $FFCECECE
+          ;           \Color[0]\Frame[2] = $FF8F8F8F
+          ;           
+          ;           ; Цвет если нажали на виджет
+          ;           \Color[0]\Fore[3] = $FFE2E2E2
+          ;           \Color[0]\Back[3] = $FFB4B4B4
+          ;           \Color[0]\Frame[3] = $FF6F6F6F
+          
+          ; font color
+          \Color[0]\Front[1] = $FF000000
           
           ; Устанавливаем цвет по умолчанию первый
           ResetColor(*This)
@@ -503,7 +515,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If Result Or EventType() = #PB_EventType_Repaint
       If StartDrawing(CanvasOutput(Canvas))
-        Box(0,0,Width,Height, $F0F0F0)
+        Box(0,0,Width,Height, $FFF0F0F0)
         
         ForEach List()
           Draw(List()\Widget)
@@ -582,17 +594,17 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(g, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     
     With *Button_0
-     *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
-      ;       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
-      SetColor(*Button_0, #PB_Gadget_FrontColor, $D56F1A)
+      *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
+      ;       SetColor(*Button_0, #PB_Gadget_BackColor, $FFCCBFB4)
+      SetColor(*Button_0, #PB_Gadget_FrontColor, $FFD56F1A)
       SetFont(*Button_0, FontID(0))
     EndWith
     
     With *Button_1
       *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine,0)
-      ;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
+      ;       SetColor(*Button_1, #PB_Gadget_BackColor, $FFD58119)
       \Cursor = #PB_Cursor_Hand
-      SetColor(*Button_1, #PB_Gadget_FrontColor, $4919D5)
+      SetColor(*Button_1, #PB_Gadget_FrontColor, $FF4919D5)
       SetFont(*Button_1, FontID(0))
     EndWith
     
@@ -616,5 +628,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --na-v-------v-
+; Folding = ---------------
 ; EnableXP

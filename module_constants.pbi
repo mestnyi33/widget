@@ -1,4 +1,12 @@
-﻿DeclareModule Constants
+﻿XIncludeFile "module_draw.pbi"
+
+DeclareModule Constants
+  #VectorDrawing = 0
+  
+  ;CompilerIf #VectorDrawing
+  ;  UseModule Draw
+  ;CompilerEndIf
+  
   Enumeration #PB_Event_FirstCustomValue
     #PB_Event_Widget
   EndEnumeration
@@ -97,6 +105,7 @@ Module Constants
 EndModule 
 
 UseModule Constants
+    
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

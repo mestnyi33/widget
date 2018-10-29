@@ -8,18 +8,28 @@ CompilerEndIf
 ; XIncludeFile "module_scroll.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_draw.pbi"
+  
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_scroll.pbi"
   XIncludeFile "module_text.pbi"
-CompilerEndIf
+  
+CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
+  CompilerEndIf
 
 DeclareModule Editor
   EnableExplicit
   UseModule Macros
   UseModule Constants
   UseModule Structures
+  
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
   
   
   ;- DECLARE
@@ -216,16 +226,15 @@ Module Editor
           
           PushListPosition(*This\Items())
           ForEach *This\Items()
-            If \Hide : Continue : EndIf
-            
+          
 ;             If Not Wrap And *This\Scroll\Width<\Text\Width
 ;               ;  *This\Text[3]\String.s = \Text\String.s
 ;               *This\Scroll\Width=\Text\Width
 ;             EndIf
             
             
-            Drawing = Bool(\y+\height>*This\y[2] And \y<*This\height[2])
-            If Drawing
+            \Hide = Bool( Not Bool(\y+\height>*This\y[2] And \y<*This\height[2]))
+            If Not \Hide ; Drawing
               ; Draw selections
               If \Item=*This\Line
                 DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
@@ -2721,8 +2730,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 351
-; FirstLine = 268
-; Folding = ----4---7----t-------------------+8+------------------------------
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = ----f---2----b-------------------040------------------------------
 ; EnableXP

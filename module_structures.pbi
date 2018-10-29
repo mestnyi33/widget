@@ -137,7 +137,8 @@
     Radius.i
     Buttons.i
     
-   
+    Clip.COORDINATE
+    
     ; tree
     time.i
     adress.i[2]
@@ -166,6 +167,7 @@
     
   EndStructure
   
+  Global VectorDrawing
   Global *Focus.Widget_S
   Global NewList List.Widget_S()
   Global Use_List_Canvas_Gadget
