@@ -481,6 +481,7 @@ Module String
         If *Last = *This
           Select EventType
             Case #PB_EventType_LostFocus 
+              \Caret[1] = 0 ; Двойной клик на тексте
               *This\Caret = 0
               *This\Caret[1] = 0 
               \Text[2]\Len = 0
@@ -504,8 +505,20 @@ Module String
                   SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, *This\Cursor)
                 EndIf
                 *This\Text\String.s = RemoveString(*This\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, \Caret[1], 1)
-                *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, (\Caret+(*This\Caret-\Text[2]\Len)) + 1)
+                
+                If \Caret[1] > *This\Caret 
+                  \Caret[1] = *This\Caret 
+                  *This\Caret[1] = *This\Caret + \Text[2]\Len
+                Else
+                  \Caret[1] = (*This\Caret-\Text[2]\Len)
+                  *This\Caret[1] = \Caret[1]
+                EndIf
+                
+                *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, \Caret+\Caret[1] + 1)
                 *This\Text\Len = Len(*This\Text\String.s)
+                \Text\String.s = InsertString(\Text\String.s, \Text[2]\String.s, \Caret+\Caret[1] + 1)
+                \Text\Len = Len(\Text\String.s)
+                
                 *This\Text\Change =- 1
                 \Caret[1] = 0
               EndIf
@@ -514,7 +527,7 @@ Module String
             Case #PB_EventType_LeftButtonDown
               Caret = Caret(*This)
               
-              If DoubleClick : DoubleClick = 0
+              If \Caret[1] =- 1 : \Caret[1] = 0
                 *This\Caret = Caret
                 *This\Caret = 0
                 *This\Caret[1] = \Text\Len
@@ -540,7 +553,7 @@ Module String
                 *This\Caret[1] = *This\Caret
               EndIf 
               
-            Case #PB_EventType_LeftDoubleClick : DoubleClick = 1
+            Case #PB_EventType_LeftDoubleClick : \Caret[1] =- 1
               Text::SelectionLimits(*This)
               Repaint =- 1
               
@@ -991,5 +1004,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = h-R0BAACNAAADz-PAAHCQBgA+
+; Folding = h-R0BAACNAAADz-fAAOEgCAB9
 ; EnableXP
