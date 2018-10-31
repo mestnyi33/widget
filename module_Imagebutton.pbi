@@ -540,9 +540,9 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(11, @CallBacks())
     ;ResizeImage(10, 32, 32)
     
-    Create(11,#PB_Any, 10,10,130,25,"text_right",10, #PB_Text_InLine)
+    Create(11,#PB_Any, 10,10,130,25,"text_right",0, #PB_Text_InLine)
     Create(11,#PB_Any, 10,40,130,25,"text_left",10,#PB_Text_InLine|#PB_Text_Right)
-    Create(11,#PB_Any, 10,70,130,75,"text_top",10,#PB_Text_Bottom);,32,32)
+    Create(11,#PB_Any, 10,70,130,75,"text_top",0,#PB_Text_Bottom);,32,32)
     Create(11,#PB_Any, 10,150,130,75,"text_bottom",10,0,0,32,32)
     
     ; ;       ;Create(11,#PB_Any, 10,230,130,75,"",10)

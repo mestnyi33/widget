@@ -1,17 +1,21 @@
-﻿
-CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
+  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
   IncludePath "/Users/a/Documents/GitHub/Widget/"
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_draw.pbi"
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_text.pbi"
+
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
 CompilerEndIf
 
 ;-
@@ -21,10 +25,12 @@ DeclareModule String
   UseModule Macros
   UseModule Constants
   UseModule Structures
-  
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
   
   ;- - DECLAREs MACROs
-  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
+  ; Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
   Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
   Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
@@ -33,6 +39,7 @@ DeclareModule String
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
+  Declare.i Draw(*This.Widget_S, Canvas.i=-1)
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
@@ -43,6 +50,129 @@ Module String
   ;-
   ;- - MACROS
   ;- - PROCEDUREs
+  Procedure.i DrawArrow(X.i,Y.i, Size.i, Direction.i, Color.i, Thickness.i = 1, Length.i = 1)
+    Protected I
+    
+    If Length=0
+      Thickness = - 1
+    EndIf
+    Length = (Size+2)/2
+    
+    
+    If Direction = 1 ; top
+      If Thickness > 0 : x-1 : y+2
+        Size / 2
+        For i = 0 To Size 
+          LineXY((X+1+i)+Size,(Y+i-1)-(Thickness),(X+1+i)+Size,(Y+i-1)+(Thickness),Color)         ; Левая линия
+          LineXY(((X+1+(Size))-i),(Y+i-1)-(Thickness),((X+1+(Size))-i),(Y+i-1)+(Thickness),Color) ; правая линия
+        Next
+      Else : x-1 : y-1
+        For i = 1 To Length 
+          If Thickness =- 1
+            LineXY(x+i, (Size+y), x+Length, y, Color)
+            LineXY(x+Length*2-i, (Size+y), x+Length, y, Color)
+          Else
+            LineXY(x+i, (Size+y)-i/2, x+Length, y, Color)
+            LineXY(x+Length*2-i, (Size+y)-i/2, x+Length, y, Color)
+          EndIf
+        Next 
+        i = Bool(Thickness =- 1) 
+        LineXY(x, (Size+y)+Bool(i=0), x+Length, y+1, Color) 
+        LineXY(x+Length*2, (Size+y)+Bool(i=0), x+Length, y+1, Color) ; bug
+      EndIf
+    ElseIf Direction = 3 ; bottom
+      If Thickness > 0 : x-1 : y+2
+        Size / 2
+        For i = 0 To Size
+          LineXY((X+1+i),(Y+i)-(Thickness),(X+1+i),(Y+i)+(Thickness),Color) ; Левая линия
+          LineXY(((X+1+(Size*2))-i),(Y+i)-(Thickness),((X+1+(Size*2))-i),(Y+i)+(Thickness),Color) ; правая линия
+        Next
+      Else : x-1 : y+1
+        For i = 0 To Length 
+          If Thickness =- 1
+            LineXY(x+i, y, x+Length, (Size+y), Color)
+            LineXY(x+Length*2-i, y, x+Length, (Size+y), Color)
+          Else
+            LineXY(x+i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
+            LineXY(x+Length*2-i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
+          EndIf
+        Next
+      EndIf
+    ElseIf Direction = 0 ; в лево
+      If Thickness > 0 : y-1
+        Size / 2
+        For i = 0 To Size 
+          ; в лево
+          LineXY(((X+1)+i)-(Thickness),(((Y+1)+(Size))-i),((X+1)+i)+(Thickness),(((Y+1)+(Size))-i),Color) ; правая линия
+          LineXY(((X+1)+i)-(Thickness),((Y+1)+i)+Size,((X+1)+i)+(Thickness),((Y+1)+i)+Size,Color)         ; Левая линия
+        Next  
+      Else : x-1 : y-1
+        For i = 1 To Length
+          If Thickness =- 1
+            LineXY((Size+x), y+i, x, y+Length, Color)
+            LineXY((Size+x), y+Length*2-i, x, y+Length, Color)
+          Else
+            LineXY((Size+x)-i/2, y+i, x, y+Length, Color)
+            LineXY((Size+x)-i/2, y+Length*2-i, x, y+Length, Color)
+          EndIf
+        Next 
+        i = Bool(Thickness =- 1) 
+        LineXY((Size+x)+Bool(i=0), y, x+1, y+Length, Color) 
+        LineXY((Size+x)+Bool(i=0), y+Length*2, x+1, y+Length, Color)
+      EndIf
+    ElseIf Direction = 2 ; в право
+      If Thickness > 0 : y-1
+        Size / 2
+        For i = 0 To Size 
+          ; в право
+          LineXY(((X+2)+i)-(Thickness),((Y+1)+i),((X+2)+i)+(Thickness),((Y+1)+i),Color) ; Левая линия
+          LineXY(((X+2)+i)-(Thickness),(((Y+1)+(Size*2))-i),((X+2)+i)+(Thickness),(((Y+1)+(Size*2))-i),Color) ; правая линия
+        Next
+      Else : y-1 : x+1
+        For i = 0 To Length 
+          If Thickness =- 1
+            LineXY(x, y+i, Size+x, y+Length, Color)
+            LineXY(x, y+Length*2-i, Size+x, y+Length, Color)
+          Else
+            LineXY(x+i/2-Bool(i=0), y+i, Size+x, y+Length, Color)
+            LineXY(x+i/2-Bool(i=0), y+Length*2-i, Size+x, y+Length, Color)
+          EndIf
+        Next
+      EndIf
+    EndIf
+    
+  EndProcedure
+  
+  
+  Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
+   With *This
+     If ListSize(\Items())
+        \Items()\Text\X=0
+      EndIf
+      Text::Draw(*This, Canvas)
+      
+      Protected size = 4
+      DrawingMode(#PB_2DDrawing_Default)
+      RoundBox(\X[1]+\Width[1]-17-2,\Y[1]+2,17,(\Height[1]-4),\Radius,\Radius,$F0F0F0)
+      
+      DrawingMode(#PB_2DDrawing_Outlined)
+      RoundBox(\X[1]+\Width[1]-17-2,\Y[1]+2,17,\Height[1]-4,\Radius,\Radius,\Color\Frame)
+;       Line(\X[1]+\Width[1]-17-2,\Y[1]+1+(\Height[1]-4)/2-1,17,1,\Color\Frame)
+;       Line(\X[1]+\Width[1]-17-2,\Y[1]+2+(\Height[1]-4)/2+1,17,1,\Color\Frame)
+;       Line(\X[1]+\Width[1]-17-2,\Y[1]+1+(\Height[1]-4)/2,17,1,\Color\Back)
+      Line(\X[1]+\Width[1]-17-2,\Y[1]+1+(\Height[1]-4)/2,17,1,\Color\Frame)
+      Line(\X[1]+\Width[1]-17-2,\Y[1]+2+(\Height[1]-4)/2,17,1,\Color\Frame)
+      
+        ; Draw arrows
+          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+;           DrawArrow(\X[1]+(\Width[1]-\Size[1])/2,\Y[1]+(\Height[1]-\Size[1])/2, \Size[1], Bool(\Vertical), \Color[1]\Line&$FFFFFF|\Alpha<<24,\Type[1])
+;           DrawArrow(\X[2]+(\Width[2]-\Size[2])/2,\Y[2]+(\Height[2]-\Size[2])/2, \Size[2], Bool(\Vertical)+2, \Color[2]\Line&$FFFFFF|\Alpha<<24,\Type[2])
+          DrawArrow(\X[1]+\Width[1]-17+size,\Y[1]-1+(\Height[2]/4), size, 1, \Color[1]\Line&$FFFFFF|\Alpha<<24,1)
+          DrawArrow(\X[1]+\Width[1]-17+size,\Y[1]+(\Height[2]-size)/2+(\Height[2]/4), size, 1+2, \Color[2]\Line&$FFFFFF|\Alpha<<24,1)
+        
+    EndWith
+    
+  EndProcedure
   
   Procedure Caret(*This.Widget_S, Line.i = 0)
     Static LastLine.i,  LastItem.i
@@ -95,14 +225,11 @@ Module String
     ProcedureReturn Position
   EndProcedure
   
-  Procedure RemoveText(*This.Widget_S)
-    With *This\Items()
-      If *This\Caret > *This\Caret[1] : *This\Caret = *This\Caret[1] : EndIf
-      \Text\String.s = RemoveString(\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, *This\Caret, 1)
-      \Text\String.s[1] = RemoveString(\Text\String.s[1], \Text[2]\String.s, #PB_String_CaseSensitive, *This\Caret, 1)
+  Procedure Remove(*This.Widget_S)
+    With *This
+      If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
       \Text\Len = Len(\Text\String.s)
-      \Text[2]\String.s = ""
-      \Text[2]\Len = 0
     EndWith
   EndProcedure
   
@@ -164,11 +291,11 @@ Module String
           
         EndIf
         
-        \Text[1]\String.s = Left(\Text\String.s, Position) : \Text[1]\Change = #True
+        \Text[1]\String.s = Left(*This\Text\String.s, \Caret+Position) : \Text[1]\Change = #True
         If \Text[2]\Len > 0
-          \Text[2]\String.s = Mid(\Text\String.s, 1+Position, \Text[2]\Len) : \Text[2]\Change = #True
+          \Text[2]\String.s = Mid(\Text\String.s, 1+\Caret+Position, \Text[2]\Len) : \Text[2]\Change = #True
         EndIf
-        \Text[3]\String.s = Right(\Text\String.s, \Text\Len-(Position + \Text[2]\Len)) : \Text[3]\Change = #True
+        \Text[3]\String.s = Trim(Right(*This\Text\String.s, *This\Text\Len-(\Caret+Position + \Text[2]\Len)), #LF$) : \Text[3]\Change = #True
         
         Line = *This\Line
         Caret = *This\Caret
@@ -178,7 +305,6 @@ Module String
     
     ProcedureReturn Position
   EndProcedure
-  
   
   
   Procedure ToLeft(*This.Widget_S)
@@ -223,22 +349,30 @@ Module String
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure ToBack(*This.Widget_S)
-    Protected Repaint
+  Procedure ToInput(*This.Widget_S)
+    Static Dot, Minus, Color.i
+    Protected Repaint, Input, Input_2, Chr.s
     
     With *This
-      If \Caret[1] > 0
-        If \Items()\Text[2]\Len
-          RemoveText(*This)
-        Else         
-          \Items()\Text\String.s = Left(\Items()\Text\String.s, \Caret - 1) + 
-                                   Right(\Items()\Text\String.s, (\Items()\Text\Len-\Caret)) : \Caret - 1 
-          \Items()\Text\Len = Len(\Items()\Text\String.s)
+      If \Canvas\Input
+        Chr.s = Text::Make(*This, Chr(\Canvas\Input))
+        
+        If Chr.s
+          If \Items()\Text[2]\Len 
+            Remove(*This)
+          EndIf
+          
+          \Caret + 1
+          \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Caret+\Caret)
+          \Text\Len = Len(\Text\String.s) 
+          \Caret[1] = \Caret 
+          \Text\Change =- 1
+        Else
+          \Default = *This
         EndIf
         
-        \Caret[1] = \Caret 
+        \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Caret+\Caret)
         Repaint =- 1 
-        PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Change)
       EndIf
     EndWith
     
@@ -251,14 +385,14 @@ Module String
     With *This
       If \Caret[1] < \Items()\Text\Len
         If \Items()\Text[2]\Len 
-          RemoveText(*This)
+          Remove(*This)
         Else
-          \Items()\Text\String.s = Left(\Items()\Text\String.s, \Caret) + 
-                                   Right(\Items()\Text\String.s, (\Items()\Text\Len-\Caret) + 1)
-          \Items()\Text\Len = Len(\Items()\Text\String.s)
+          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 2)
+          \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 2)
+          \Text\Len = Len(\Text\String.s) 
         EndIf
         
-        \Caret[1] = \Caret 
+        \Text\Change =- 1
         Repaint =- 1 
       EndIf
     EndWith
@@ -266,63 +400,38 @@ Module String
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure ToInput(*This.Widget_S)
-    Static Dot
-    Protected Repaint, Input, Input_2
+  Procedure ToBack(*This.Widget_S)
+    Protected Repaint, String.s 
+    
+    If *This\Canvas\Input
+      *This\Canvas\Input = 0
+      ToInput(*This) ; Сбросить Dot&Minus
+    EndIf
     
     With *This
-      Select #True
-        Case \Text\Lower : Input = Asc(LCase(Chr(\Canvas\Input))) : Input_2 = Input
-        Case \Text\Upper : Input = Asc(UCase(Chr(\Canvas\Input))) : Input_2 = Input
-        Case \Text\Pass  : Input = 9679 : Input_2 = \Canvas\Input ; "●"
-        Case \Text\Numeric                                        ; : Debug Chr(\Canvas\Input)
-          Select \Canvas\Input 
-            Case '.','0' To '9' : Input = \Canvas\Input : Input_2 = Input
-            Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.' : Input_2 = Input
-            Default
-              Input_2 = \Canvas\Input
-          EndSelect
-          
-          ; Чтобы нельзя было ставить точки подряд
-          If Not Dot And Input = '.'
-            Dot = 1
-          ElseIf Input <> '.'
-            Dot = 0
-          Else
-            Input = 0
-          EndIf
-          
-        Default
-          Input = \Canvas\Input : Input_2 = Input
-      EndSelect
-      
-      If Input_2
-        If Input
-          If \Items()\Text[2]\Len : RemoveText(*This) : EndIf
-          \Caret + 1 : \Caret[1] = \Caret
+      If \Caret[1] > 0
+        If \Items()\Text[2]\Len
+          Remove(*This)
+        Else         
+          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
+          \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret - 1) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 1)
+          \Text\Len = Len(\Text\String.s)  
+          \Caret - 1
         EndIf
         
-        ;\Items()\Text\String.s = Left(\Items()\Text\String.s, *This\Caret-1) + Chr(Input) + Mid(\Items()\Text\String.s, *This\Caret)
-        \Items()\Text\String.s = InsertString(\Items()\Text\String.s, Chr(Input), \Caret)
-        \Items()\Text\String.s[1] = InsertString(\Items()\Text\String.s[1], Chr(Input_2), \Caret)
-        
-        If Input
-          ;\Text\Change = 1
-          \Items()\Text\Len = Len(\Items()\Text\String.s)
-          PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Change)
-        EndIf
-        
-        *This\Canvas\Input = 0
-        Repaint = #True 
+        \Caret[1] = \Caret
+        \Text\Change =- 1
+        Repaint =- 1 
       EndIf
     EndWith
     
     ProcedureReturn Repaint
   EndProcedure
   
+  
   ;-
   Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    Static *Focus.Widget_S, *Last.Widget_S, *Widget.Widget_S
+    Static *Last.Widget_S, *Widget.Widget_S;, *Focus.Widget_S
     Static Text$, DoubleClick, LastX, LastY, Last, Drag
     Protected.i Repaint, Control, Buttons, Widget
     
@@ -336,7 +445,7 @@ Module String
           Widget = Canvas
         EndIf
         If Canvas <> \Canvas\Gadget Or 
-           \Type <> #PB_GadgetType_Spin
+           \Type <> #PB_GadgetType_String
           ProcedureReturn
         EndIf
         
@@ -553,9 +662,9 @@ Module String
               EndIf
               
             Case #PB_EventType_KeyUp
-              If \Text\Numeric
-                \Text\String.s[1]=\Text\String.s 
-              EndIf
+              ;               If \Text\Numeric
+              ;                 \Text\String.s[1]=\Text\String.s 
+              ;               EndIf
               Repaint = #True 
               
             Case #PB_EventType_KeyDown
@@ -579,7 +688,7 @@ Module String
                 Case #PB_Shortcut_X
                   If Control And \Text[2]\String.s 
                     SetClipboardText(\Text[2]\String.s)
-                    RemoveText(*This)
+                    Remove(*This)
                     *This\Caret[1] = *This\Caret
                     \Text\Len = Len(\Text\String.s)
                     Repaint = #True 
@@ -596,7 +705,7 @@ Module String
                     
                     If ClipboardText.s
                       If \Text[2]\String.s
-                        RemoveText(*This)
+                        Remove(*This)
                       EndIf
                       
                       Select #True
@@ -639,7 +748,7 @@ Module String
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
-        \Type = #PB_GadgetType_Spin
+        \Type = #PB_GadgetType_String
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
@@ -649,6 +758,8 @@ Module String
         \Caret[1] =- 1
         
         ; Set the default widget flag
+        Flag | #PB_Text_Numeric
+        
         If Bool(Flag&#PB_Text_Top)
           Flag&~#PB_Text_Middle
         Else
@@ -678,7 +789,7 @@ Module String
           ElseIf Bool(Flag&#PB_Text_MultiLine)
             \Text\MultiLine = 1
           EndIf
-          \Text\Numeric = 1;Bool(Flag&#PB_Text_Numeric)
+          \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
           \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
           \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
           \Text\Pass = Bool(Flag&#PB_Text_Password)
@@ -716,16 +827,19 @@ Module String
           CompilerEndIf
           
           If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFF 
+            \Color[0]\Back[1] = $FFFFFFFF 
           Else
-            \Color[0]\Back[1] = $FAFAFA  
+            \Color[0]\Back[1] = $FFFAFAFA  
           EndIf
           
           ; default frame color
-          \Color[0]\Frame[1] = $BABABA
+          \Color[0]\Frame[1] = $FFBABABA
           
           ; focus frame color
-          \Color[0]\Frame[3] = $D5A719
+          \Color[0]\Frame[3] = $FFD5A719
+          
+          ; font color
+          \Color[0]\Front[1] = $FF000000
           
           ; set default colors
           ResetColor(*This)
@@ -758,7 +872,40 @@ EndModule
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
+  Procedure GetWindowBackgroundColor(hwnd=0) ;hwnd only used in Linux, ignored in Win/Mac
+    CompilerSelect #PB_Compiler_OS
+        
+      CompilerCase #PB_OS_Windows  
+        Protected color = GetSysColor_(#COLOR_WINDOW)
+        If color = $FFFFFFFF Or color=0: color = GetSysColor_(#COLOR_BTNFACE): EndIf
+        ProcedureReturn color
+        
+      CompilerCase #PB_OS_Linux   ;thanks to uwekel http://www.purebasic.fr/english/viewtopic.php?p=405822
+        Protected *style.GtkStyle, *color.GdkColor
+        *style = gtk_widget_get_style_(hwnd) ;GadgetID(Gadget))
+        *color = *style\bg[0]                ;0=#GtkStateNormal
+        ProcedureReturn RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8)
+        
+      CompilerCase #PB_OS_MacOS   ;thanks to wilbert http://purebasic.fr/english/viewtopic.php?f=19&t=55719&p=497009
+        Protected.i color, Rect.NSRect, Image, NSColor = CocoaMessage(#Null, #Null, "NSColor windowBackgroundColor")
+        If NSColor
+          Rect\size\width = 1
+          Rect\size\height = 1
+          Image = CreateImage(#PB_Any, 1, 1)
+          StartDrawing(ImageOutput(Image))
+          CocoaMessage(#Null, NSColor, "drawSwatchInRect:@", @Rect)
+          color = Point(0, 0)
+          StopDrawing()
+          FreeImage(Image)
+          ProcedureReturn color
+        Else
+          ProcedureReturn -1
+        EndIf
+    CompilerEndSelect
+  EndProcedure  
+  
   UseModule String
+  Global winBackColor
   
   Global *S_0.Widget_S = AllocateStructure(Widget_S)
   Global *S_1.Widget_S = AllocateStructure(Widget_S)
@@ -794,7 +941,7 @@ CompilerIf #PB_Compiler_IsMainFile
               If List()\Widget = List()\Widget\Focus
                 Result | CallBack(List()\Widget, #PB_EventType_LostFocus);, Canvas) 
                 NextElement(List())
-                Debug List()\Widget
+                ;Debug List()\Widget
                 Result | CallBack(List()\Widget, #PB_EventType_Focus);, Canvas) 
                 Break
               EndIf
@@ -822,7 +969,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If Result
       If StartDrawing(CanvasOutput(Canvas))
-        Box(0,0,Width,Height, $F0F0F0)
+        DrawingMode(#PB_2DDrawing_Default)
+        Box(0,0,Width,Height, winBackColor)
         
         ForEach List()
           Draw(List()\Widget)
@@ -865,6 +1013,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define height, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
+    winBackColor = GetWindowBackgroundColor(WindowID(0))
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       height = 20
@@ -876,34 +1025,55 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetFont(-1,FontID(0))
     CompilerEndIf
     
-    SpinGadget     (0, 20, 20, 100, 25, 0, 1000)
-    SetGadgetState (0, 5) : SetGadgetText(0, "5")   ; set initial value
+    StringGadget(0, 8,  10, 290, height, "Normal StringGadget...")
+    StringGadget(1, 8,  35, 290, height, "1234567", #PB_String_Numeric)
+    StringGadget(2, 8,  60, 290, height, "Read-only StringGadget", #PB_String_ReadOnly)
+    StringGadget(3, 8,  85, 290, height, "LOWERCASE...", #PB_String_LowerCase)
+    StringGadget(4, 8, 110, 290, height, "uppercase...", #PB_String_UpperCase)
+    StringGadget(5, 8, 140, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
+    StringGadget(6, 8, 170, 290, height, "Password", #PB_String_Password)
+    
+    StringGadget(7, 8,  200, 290, 100, Text)
     
     Define i
-    ;     For i=0 To 7
-    BindGadgetEvent(i, @Events())
-    ;     Next
+    For i=0 To 7
+      BindGadgetEvent(i, @Events())
+    Next
     
+    SetGadgetText(6, "GaT")
+    
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+      CocoaMessage(0,GadgetID(1),"setAlignment:", 2)
+      CocoaMessage(0,GadgetID(2),"setAlignment:", 1)
+    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+      SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE)|#SS_CENTER)
+      SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLong_(GadgetID(2), #GWL_STYLE)|#SS_RIGHT)
+    CompilerEndIf
     
     ; Demo draw string on the canvas
     CanvasGadget(10,  305, 0, 310, 310, #PB_Canvas_Keyboard)
     SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     BindGadgetEvent(10, @CallBacks())
     
-    *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...")
+    *S_0 = Create(10, -1, 8,  10, 290, height, "0000.0000.0000.0000")
+    *S_1 = Create(10, -1, 8,  35, 290, height, "1234567890", #PB_Text_Center,8)
+    *S_2 = Create(10, -1, 8,  60, 290, height, "0000-0000-0000-0000", #PB_Text_ReadOnly|#PB_Text_Right)
+    *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
+    *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
+    *S_5 = Create(10, -1, 8, 140, 290, height, "Borderless StringGadget", #PB_Widget_BorderLess)
+    *S_6 = Create(10, -1, 8, 170, 290, height, "Password", #PB_Text_Password)
+    ; Button::Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
+    *S_7 = Create(10, -1, 8,  200, 290, 100, Text);, #PB_Text_Top)
+                                                  ; *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
+    
+    Text::SetText(*S_6, "GaT")
+    Debug "password: "+GetText(*S_6)
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
-    Repeat
-      Event = WaitWindowEvent()
-      If Event = #PB_Event_Gadget
-        If EventGadget() = 0
-          SetGadgetText(0, Str(GetGadgetState(0)))
-        EndIf
-      EndIf
-    Until Event = #PB_Event_CloseWindow
+    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------------------
+; Folding = --------------------------
 ; EnableXP

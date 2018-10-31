@@ -33,8 +33,8 @@
   Macro DrawingFont(FontID) : _DrawingFont(FontID) : EndMacro
   Macro FrontColor(Color) : _FrontColor(Color) : EndMacro
   Macro BackColor(Color) : _BackColor(Color) : EndMacro
-  Macro Point (X,Y) : _Point(X,Y) : EndMacro
   Macro UnclipOutput () : _UnclipOutput() : EndMacro
+  Macro Point (X,Y) : _Point(X,Y) : EndMacro
   Macro StopDrawing () : _StopDrawing() : EndMacro
   Macro OutputWidth () : _OutputWidth() : EndMacro
   Macro OutputHeight () : _OutputHeight() : EndMacro

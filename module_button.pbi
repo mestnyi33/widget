@@ -407,12 +407,12 @@ Module Button
           ; Default colors (based on Windows 7)
           \Color[0]\Fore[1] = RGBA(240, 240, 240, 255)
           \Color[0]\Back[1] = RGBA(229, 229, 229, 255)  
-          \Color[0]\Frame[1] = RGBA(172, 172, 172, 255) 
+          \Color[0]\Frame[1] = Widget_FrameColor_Default ; RGBA(172, 172, 172, 255) 
           
           ; Цвет если мышь на виджете
           \Color[0]\Fore[2] = RGBA(236, 244, 252, 255)
-          \Color[0]\Back[2] = RGBA(220, 236, 252, 255) ;  $FFFAEFE4 ; 
-          \Color[0]\Frame[2] = RGBA(0, 160, 252, 255)  ; $FFF5C775 ; 
+          \Color[0]\Back[2] = Widget_FrameColor_Focus ; RGBA(220, 236, 252, 255) ;  $FFFAEFE4 ; 
+          \Color[0]\Frame[2] = Widget_FrameColor_Focus ; RGBA(0, 160, 252, 255)  ; $FFF5C775 ; 
           
           ; Цвет если нажали на виджет
           \Color[0]\Fore[3] = RGBA(218, 236, 252, 255)
@@ -434,7 +434,7 @@ Module Button
           ;           \Color[0]\Frame[3] = $FF6F6F6F
           
           ; font color
-          \Color[0]\Front[1] = $FF000000
+          \Color[0]\Front[1] = Widget_FontColor_Default ; $FF000000
           
           ; Устанавливаем цвет по умолчанию первый
           ResetColor(*This)

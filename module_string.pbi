@@ -3,7 +3,7 @@
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-  IncludePath "/Users/a/Documents/GitHub/Widget/"
+  ;  IncludePath "/Users/a/Documents/GitHub/Widget/"
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -225,6 +225,27 @@ Module String
     ProcedureReturn Repaint
   EndProcedure
   
+  Procedure ToDelete(*This.Widget_S)
+    Protected Repaint
+    
+    With *This
+      If \Caret[1] < \Items()\Text\Len
+        If \Items()\Text[2]\Len 
+          Remove(*This)
+        Else
+          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 2)
+          \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 2)
+          \Text\Len = Len(\Text\String.s) 
+        EndIf
+        
+        \Text\Change =- 1
+        Repaint =- 1 
+      EndIf
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure ToInput(*This.Widget_S)
     Static Dot, Minus, Color.i
     Protected Repaint, Input, Input_2, Chr.s
@@ -255,47 +276,29 @@ Module String
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure ToDelete(*This.Widget_S)
-    Protected Repaint
-    
-    With *This
-      If \Caret[1] < \Items()\Text\Len
-        If \Items()\Text[2]\Len 
-          Remove(*This)
-        Else
-          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 2)
-          \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 2)
-          \Text\Len = Len(\Text\String.s) 
-        EndIf
-        
-        \Text\Change =- 1
-        Repaint =- 1 
-      EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
   Procedure ToBack(*This.Widget_S)
     Protected Repaint, String.s 
     
-    If *This\Canvas\Input
-      *This\Canvas\Input = 0
+    If *This\Canvas\Input : *This\Canvas\Input = 0
       ToInput(*This) ; Сбросить Dot&Minus
     EndIf
     
     With *This
-      If \Caret[1] > 0
-        If \Items()\Text[2]\Len
-          Remove(*This)
-        Else         
-          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
-          \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret - 1) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 1)
-          \Text\Len = Len(\Text\String.s)  
-          \Caret - 1
-        EndIf
+      If \Items()\Text[2]\Len
+        If \Caret > \Caret[1] 
+          Swap \Caret, \Caret[1]
+        EndIf  
+        Remove(*This)
         
-        \Caret[1] = \Caret
+      ElseIf \Caret[1] > 0 
+        \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
+        \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret - 1) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 1)
+        \Text\Len = Len(\Text\String.s)  
+        \Caret - 1 
+      EndIf
+      
+      If \Caret[1] <> \Caret
+        \Caret[1] = \Caret 
         \Text\Change =- 1
         Repaint =- 1 
       EndIf
@@ -487,38 +490,76 @@ Module String
               \Text[1]\Width = 0
               \Text[2]\Width = 0
               \Text[3]\Width = 0
-              Repaint = #True
+             ; Repaint = #True
               PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_LostFocus)
               
-            Case #PB_EventType_Focus : Repaint = #True : *This\Caret[1] = *This\Caret ; Показываем коректор
+            Case #PB_EventType_Focus 
+              Repaint = #True 
+              ;*This\Caret[1] = *This\Caret ; Показываем коректор
               PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Focus)
               
+            Case #PB_EventType_LeftButtonUp
+              If \Caret[1]
+                If #PB_Cursor_Default = GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
+                  SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, *This\Cursor)
+                EndIf
+                *This\Text\String.s = RemoveString(*This\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, \Caret[1], 1)
+                *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, (\Caret+(*This\Caret-\Text[2]\Len)) + 1)
+                *This\Text\Len = Len(*This\Text\String.s)
+                *This\Text\Change =- 1
+                \Caret[1] = 0
+              EndIf
+              Repaint =- 1
+              
             Case #PB_EventType_LeftButtonDown
-              *This\Caret = Caret(*This)
+              Caret = Caret(*This)
               
               If DoubleClick : DoubleClick = 0
+                *This\Caret = Caret
                 *This\Caret = 0
                 *This\Caret[1] = \Text\Len
                 \Text[2]\Len = \Text\Len
+                Repaint =- 1
               Else
+                Repaint = 1
+                
+                If \Text[2]\Len
+                  If *This\Caret[1] > *This\Caret : *This\Caret[1] = *This\Caret : EndIf
+                  
+                  If *This\Caret[1] < Caret And Caret < *This\Caret[1] + \Text[2]\Len
+                    SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
+                   \Caret[1] = *This\Caret[1] + 1
+                  Else
+                    Repaint =- 1
+                  EndIf
+                Else
+                  \Text[1]\String.s = Left(*This\Text\String.s, \Caret+Caret) : \Text[1]\Change = #True
+                EndIf
+                
+                *This\Caret = Caret
                 *This\Caret[1] = *This\Caret
-                \Text[2]\Len = 0
               EndIf 
-              
-              If \Text\Numeric
-                \Text\String.s[1] = \Text\String.s
-              EndIf
-              
-              Repaint = 2
               
             Case #PB_EventType_LeftDoubleClick : DoubleClick = 1
               Text::SelectionLimits(*This)
-              Repaint = 2
+              Repaint =- 1
               
             Case #PB_EventType_MouseMove
-              If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton
+              If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
                 *This\Caret = Caret(*This)
-                Repaint = 2
+                
+                If \Caret[1] ; *This\Cursor <> GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
+                  If \Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len
+                    SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
+                  Else
+                    \Text[1]\String.s = Left(*This\Text\String.s, \Caret+*This\Caret) : \Text[1]\Change = #True
+                  EndIf
+                  
+                  *This\Caret[1] = *This\Caret
+                  Repaint = 1
+                Else
+                  Repaint =- 1
+                EndIf
               EndIf
               
           EndSelect
@@ -606,9 +647,7 @@ Module String
           EndSelect
         EndIf
         
-        If Repaint 
-          *This\Text[3]\Change = Bool(Repaint =- 1)
-          
+        If Repaint =- 1
           SelectionText(*This)
         EndIf
       EndIf
@@ -707,13 +746,16 @@ Module String
           EndIf
           
           ; default frame color
-          \Color[0]\Frame[1] = $FFBABABA
+          \Color[0]\Frame[1] = Widget_FrameColor_Default ; $FFBABABA
           
           ; focus frame color
-          \Color[0]\Frame[3] = $FFD5A719
+          \Color[0]\Frame[3] = Widget_FrameColor_Focus ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;   
           
-          ; font color
-          \Color[0]\Front[1] = $FF000000
+          ; default font color
+          \Color[0]\Front[1] = Widget_FontColor_Default ; $FF000000 ; $FF0B0B0B
+          
+          ; focus font color
+          \Color[0]\Front[3] = Widget_FontColor_Focus ; ! $FFFFFFFF; Widget_FontColor_Focus ; $FF000000 ; $FF0B0B0B
           
           ; set default colors
           ResetColor(*This)
@@ -815,7 +857,7 @@ CompilerIf #PB_Compiler_IsMainFile
               If List()\Widget = List()\Widget\Focus
                 Result | CallBack(List()\Widget, #PB_EventType_LostFocus);, Canvas) 
                 NextElement(List())
-                Debug List()\Widget
+                ;Debug List()\Widget
                 Result | CallBack(List()\Widget, #PB_EventType_Focus);, Canvas) 
                 Break
               EndIf
@@ -949,5 +991,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------------------
+; Folding = h-R0BAACNAAADz-PAAHCQBgA+
 ; EnableXP

@@ -167,7 +167,11 @@
     
   EndStructure
   
-  Global VectorDrawing
+  Global Widget_FrameColor_Default = $FFBABABA
+  Global Widget_FrameColor_Focus = $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;   
+  Global Widget_FontColor_Default = $FF000000 ; $FF0B0B0B
+  Global Widget_FontColor_Focus = $FFFFFFFF
+  
   Global *Focus.Widget_S
   Global NewList List.Widget_S()
   Global Use_List_Canvas_Gadget
