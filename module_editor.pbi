@@ -1,7 +1,7 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-;  IncludePath "/Users/as/Documents/GitHub/Widget/"
+  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
   IncludePath "/Users/a/Documents/GitHub/Widget/"
 CompilerEndIf
@@ -16,10 +16,10 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_scroll.pbi"
   XIncludeFile "module_text.pbi"
   
-CompilerIf #VectorDrawing
+  CompilerIf #VectorDrawing
     UseModule Draw
   CompilerEndIf
-  CompilerEndIf
+CompilerEndIf
 
 DeclareModule Editor
   EnableExplicit
@@ -53,9 +53,6 @@ EndDeclareModule
 Module Editor
   ; ;   UseModule Constant
   ;- PROCEDURE
-  Declare AddLine(*This.Widget_S)
-  
-  
   Procedure item_from(*This.Widget_S, MouseX=-1, MouseY=-1, focus=0)
     Protected adress.i
     Protected lostfocus.l=-1, collapsed.l, sublevel.l, coll.l
@@ -168,28 +165,40 @@ Module Editor
     ProcedureReturn adress
   EndProcedure
   
+  Procedure.i Clip(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
+    ; Static Clip_X.i,Clip_Y.i,Clip_Width.i,Clip_Height.i
+    
+    With *This
+      If X<>#PB_Ignore 
+        \Clip\X = X
+      EndIf
+      If Y<>#PB_Ignore 
+        \Clip\Y = Y
+      EndIf
+      If Width<>#PB_Ignore 
+        \Clip\Width = Width
+      EndIf
+      If Height<>#PB_Ignore 
+        \Clip\Height = Height
+      EndIf
+      
+      CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
+        ClipOutput(\Clip\X,\Clip\Y,\Clip\Width,\Clip\Height)
+      CompilerEndIf
+    EndWith
+  EndProcedure
+  
   Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
     Protected Drawing, Wrap, String.s, StringWidth
     Protected IT,Text_Y,Text_X,Width,Height
     
     If Not *This\Hide
       With *This
-        If Canvas=-1 
-          Canvas = EventGadget()
-        EndIf
-        If Canvas <> \Canvas\Gadget
-          ProcedureReturn
-        EndIf
-        
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
-        CompilerEndIf
-        
-        DrawingMode(\DrawingMode)
-        BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
+        If Canvas=-1 : Canvas = EventGadget() : EndIf
+        If Canvas <> \Canvas\Gadget : ProcedureReturn : EndIf
         
         ; Make output text
-        If (\Text\String.s Or \Text\Change Or \Resize)
+        If \Text\String.s
           If \Text\FontID 
             DrawingFont(\Text\FontID) 
           EndIf
@@ -200,61 +209,61 @@ Module Editor
           EndIf
           
           If (\Text\Change Or \Resize)
-            AddLine(*This)
+            Text::MultiLine(*This)
           EndIf
           
           If \Text\Change
-            Debug "\Text\Change "+\Text\Change
             \Text\Change = 0
           EndIf
           
           If \Resize
             \Resize = 0
           EndIf
+        EndIf 
+        
+        ; Draw back color
+        If \Color\Fore
+          DrawingMode(#PB_2DDrawing_Gradient)
+          BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
+        Else
+          DrawingMode(#PB_2DDrawing_Default)
+          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Back)
         EndIf
+        
+        Clip(*This, \X[2],\Y[2],\Width[2],\Height[2])
       EndWith 
       
       ; Draw items text
       If ListSize(*This\Items())
         With *This\Items()
-          Protected back_color=$FFFFFF, item_alpha = 128
-          Protected BackColor = ($E89C3D&back_color)|item_alpha<<24
-          
-;           *This\Scroll\Height = 0
-;           *This\Scroll\Width = 0
-          Wrap = Bool(*This\Text\MultiLine)
+          Protected ScrollPagePos = *This\vScroll\Page\Pos
           
           PushListPosition(*This\Items())
           ForEach *This\Items()
-          
-;             If Not Wrap And *This\Scroll\Width<\Text\Width
-;               ;  *This\Text[3]\String.s = \Text\String.s
-;               *This\Scroll\Width=\Text\Width
-;             EndIf
+            \Hide = Bool( Not Bool(\y+\height-ScrollPagePos>*This\y[2] And \y-ScrollPagePos<*This\height[2]))
+            ;Debug ScrollPagePos
             
-            
-            \Hide = Bool( Not Bool(\y+\height>*This\y[2] And \y<*This\height[2]))
-            If Not \Hide ; Drawing
+            If Not \Hide
               ; Draw selections
               If \Item=*This\Line
-                DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                Box(\x+1,\y+1,\width-2,\height-2, ($FCEADA&back_color)|item_alpha<<24)  ; ((Color & $FFFFFF) << 32) $FCEADA $00A5FF $CBC0FF
+                ; Draw items back color
+                If \Color\Fore
+                  DrawingMode(#PB_2DDrawing_Gradient)
+                  BoxGradient(\Vertical,*This\X[2],\Y-ScrollPagePos,*This\Width[2],\Height,*This\Color\Fore[2],*This\Color\Back[2],\Radius)
+                Else
+                  DrawingMode(#PB_2DDrawing_Default)
+                  RoundBox(*This\X[2],\Y-ScrollPagePos,*This\Width[2],\Height,\Radius,\Radius,*This\Color\Back[2])
+                EndIf
                 
-                DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                Box(\x,\y,\width,\height, ($FFC288&back_color)|item_alpha<<24) ; $FFC288 $0045FF
+                DrawingMode(#PB_2DDrawing_Outlined)
+                Box(*This\x[2],\y-ScrollPagePos,*This\width[2],\height, *This\Color\Frame[2])
               EndIf
               
               ; Draw image
               If \Image\handle
                 DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
+                DrawAlphaImage(\Image\handle, \Image\x, \Image\y-ScrollPagePos, \alpha)
               EndIf
-              
-              ;               If \Text[1]\Change Or \Text[2]\Change Or \Text[3]\Change
-              ;                 Debug "   "+ \Text[1]\Change +" "+ \Text[1]\String.s +#LF$+
-              ;                       "   "+ \Text[2]\Change +" "+ \Text[2]\String.s +#LF$+
-              ;                       "   "+ \Text[3]\Change +" "+ \Text[3]\String.s +#LF$
-              ;               EndIf
               
               ; Draw string
               If \Text[1]\Change : \Text[1]\Change = #False
@@ -262,6 +271,8 @@ Module Editor
               EndIf 
               
               If \Text\String.s
+                Clip(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
+                
                 If \Text\FontID 
                   DrawingFont(\Text\FontID) 
                 EndIf
@@ -279,118 +290,103 @@ Module Editor
                 ;If *This\Focus = *This 
                 Protected Left,Right
                 Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
-                Right = (*This\Width[2]-*This\Text\X-1) + Left
+                Right = (\Width + Left)
                 
                 If *This\Scroll\X < Left
                   *This\Scroll\X = Left
                 ElseIf *This\Scroll\X > Right
                   *This\Scroll\X = Right
-                ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1]) ; Back string
-                  *This\Scroll\X = ((*This\Width[2]-*This\Text\X-1)-\Text[3]\Width) + Left
+                ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
+                  *This\Scroll\X = (\Width-\Text[3]\Width) + Left
                   If *This\Scroll\X>0
                     *This\Scroll\X=0
                   EndIf
                 EndIf
                 ;EndIf
                 
-                CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-                  ClipOutput(*This\Text[0]\X-1,*This\Y[2],*This\Width-*This\Text[0]\X*2+2,*This\Height[2]) ; Bug in Mac os
-                CompilerEndIf
-                
-                If *This\Text\Editable And \Text[2]\Len > 0 ;And #PB_Compiler_OS <> #PB_OS_Windows ;MacOS
+                ; Draw text
+                If \Text[2]\Len > 0 And *This\Color\Front <> *This\Color\Front[3]
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                    If \Text[2]\String.s
-                      If *This\Line[1] = *This\Line And *This\Caret[1]>*This\Caret
-                        \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
-                        \Text[2]\X = \Text[3]\X-\Text[2]\Width
-                      Else
-                        \Text[2]\X = \Text\X+\Text[1]\Width
-                        \Text[3]\X = \Text[2]\X+\Text[2]\Width
-                      EndIf
-                    EndIf
-                    
-                    If \Text\String.s = \Text[1]\String.s+\Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Default)
-                      ; Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Width-((\Text[2]\X-\Text\X)+*This\Scroll\X), \Text\Height, $D77800)
-                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, $D77800)
+                    If (*This\Caret[1] > *This\Caret And *This\Line[1] = *This\Line) Or (*This\Line[1] > *This\Line And *This\Line = \Item)
+                      \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
                       
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawText((\Text\X+*This\Scroll\X), \Text\Y, \Text\String.s, $FFFFFF)
+                      If *This\Line[1] = *This\Line
+                        \Text[2]\X = \Text[3]\X-\Text[2]\Width
+                      EndIf
+                      
+                      If \Text[3]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent)
+                        DrawText((\Text[3]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[3]\String.s, *This\Color\Front)
+                      EndIf
+                      
+                      DrawingMode(#PB_2DDrawing_Default)
+                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, *This\Color\Frame[3])
+                      
+                      If \Text[2]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent)
+                        DrawText((\Text\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[1]\String.s+\Text[2]\String.s, *This\Color\Front[3])
+                      EndIf
                       
                       If \Text[1]\String.s
                         DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text\X+*This\Scroll\X), \Text\Y, \Text[1]\String.s, $0B0B0B)
+                        DrawText((\Text\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[1]\String.s, *This\Color\Front)
                       EndIf
-                      
                     Else
-                      If *This\Line[1] = *This\Line And *This\Caret[1] > *This\Caret
-                        If \Text[3]\String.s
-                          DrawingMode(#PB_2DDrawing_Transparent)
-                          DrawText((\Text[3]\X+*This\Scroll\X), \Text\Y, \Text[3]\String.s, $0B0B0B)
-                        EndIf
-                        
-                        If \Text[2]\String.s
-                          DrawingMode(#PB_2DDrawing_Default)
-                          Box((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, $D77800)
-                          
-                          DrawingMode(#PB_2DDrawing_Transparent)
-                          DrawText((\Text\X+*This\Scroll\X), \Text\Y, \Text[1]\String.s+\Text[2]\String.s, $FFFFFF)
-                        EndIf
-                        
-                        If \Text[1]\String.s
-                          DrawingMode(#PB_2DDrawing_Transparent)
-                          DrawText((\Text\X+*This\Scroll\X), \Text\Y, \Text[1]\String.s, $0B0B0B)
-                        EndIf
-                      Else
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawText((\Text\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text\String.s, *This\Color\Front)
+                      
+                      DrawingMode(#PB_2DDrawing_Default)
+                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, *This\Color\Frame[3])
+                      
+                      If \Text[2]\String.s
                         DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text\X+*This\Scroll\X), \Text\Y, \Text\String.s, $0B0B0B)
-                        
-                        If \Text[2]\String.s
-                          DrawingMode(#PB_2DDrawing_Default)
-                          DrawText((\Text[2]\X+*This\Scroll\X), \Text\Y, \Text[2]\String.s, $FFFFFF, $D77800)
-                        EndIf
+                        DrawText((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\String.s, *This\Color\Front[3])
                       EndIf
                     EndIf
                   CompilerElse
                     If \Text[1]\String.s
                       DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                      DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                     EndIf
                     
                     DrawingMode(#PB_2DDrawing_Default)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, $D77800) ; DE9541)
+                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, *This\Color\Frame[3])
                     
                     If \Text[2]\String.s
                       DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, $FFFFFF)
+                      DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[3])
                     EndIf
+                    
                     If \Text[3]\String.s
                       DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text[0]\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                      DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                     EndIf
                   CompilerEndIf
                   
                 Else
                   If \Text[2]\Len > 0
-                    DrawingMode(#PB_2DDrawing_Default);|#PB_2DDrawing_AlphaBlend)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text[0]\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, ($FADBB3));&back_color)|item_alpha<<24)
+                    DrawingMode(#PB_2DDrawing_Default)
+                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, *This\Color\Frame[3])
                   EndIf
+                  
                   DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text[0]\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                  DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                 EndIf
+                
               EndIf
             EndIf
             
-;             *This\Scroll\Height + \Text\Height
           Next
           PopListPosition(*This\Items()) ; 
           
           If *This\Text\Editable ;And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] And Not \Text[2]\Width[2]
-           ; Debug ""+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-             DrawingMode(#PB_2DDrawing_XOr)     
-            Line(((\Text[0]\X+*This\Scroll\X) + \Text[1]\Width), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFF)
+                                 ; Debug ""+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+            DrawingMode(#PB_2DDrawing_XOr)     
+            Line(((\Text[0]\X+*This\Scroll\X) + \Text[1]\Width), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFFFF ! *This\Color\Frame[3])
           EndIf
+          
+          Wrap = Bool(*This\Text\MultiLine)
           
           If *This\vScroll\Page\Length And *This\vScroll\Max<>*This\Scroll\Height And
              Scroll::SetAttribute(*This\vScroll, #PB_ScrollBar_Maximum, *This\Scroll\Height)
@@ -411,9 +407,8 @@ Module Editor
       
       ; Draw frames
       With *This
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-          ClipOutput(\X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4) ; Bug in Mac os
-        CompilerEndIf
+        ;         Clip(*This, \X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4)
+        Clip(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
         
         ; Draw image
         If \Image\handle
@@ -457,7 +452,7 @@ Module Editor
   
   Procedure Caret(*This.Widget_S, Line.i = 0)
     Static LastLine.i =- 1,  LastItem.i =- 1
-    Protected Item.i, SelectionLen.i=0
+    Protected Item.i, SelectionLen.i=7
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
     
@@ -806,10 +801,10 @@ Module Editor
     
     With *This\Items()
       ;Debug "7777    "+*This\Caret +" "+ *This\Caret[1] +" "+*This\Line +" "+ *This\Line[1] +" "+ \Text\String
-        
+      
       If (Caret <> *This\Caret Or Line <> *This\Line Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1]))
         \Text[2]\String.s = ""
-       ; Debug 8888
+        ; Debug 8888
         PushListPosition(*This\Items())
         If *This\Line[1] = *This\Line
           If *This\Caret[1] = *This\Caret And \Text[2]\Len > 0 
@@ -875,108 +870,6 @@ Module Editor
     ProcedureReturn Position
   EndProcedure
   
-  Procedure AddLine(*This.Widget_S)
-    ProcedureReturn Text::MultiLine(*This)
-  EndProcedure
-  
-  Procedure _AddLine(*This.Widget_S)
-    Protected IT, String.s, StringWidth, Text_Y,Text_X,Width,Height
-    
-    With *This
-      If \Text\Vertical
-        Width = \Height[1]-\Text\X*2
-        Height = \Width[1]-\Text\y*2
-      Else
-        Width = \Width[1]-\Text\X*2-Scroll::Width(\vScroll)
-        Height = \Height[1]-\Text\y*2-Scroll::Height(\hScroll)
-      EndIf
-      
-      If \Text\MultiLine
-        \Text\String.s[2] = Text::Wrap(\Text\String.s, Width-(\Image\Width+\Image\Width/2), \Text\MultiLine)
-        \Text\Count = CountString(\Text\String.s[2], #LF$)
-      Else
-        \Text\String.s[2] = \Text\String.s
-        \Text\Count = CountString(\Text\String.s[2], #LF$) + 1
-      EndIf
-      
-      If \Text\Count[1] <> \Text\Count
-        \Scroll\Width = 0 
-        \Scroll\Height = 0
-        ClearList(\Items())
-        
-        If \Text\Align\Bottom
-          Text_Y=(Height-(\Text\Height*\Text\Count)-Text_Y) 
-        ElseIf \Text\Align\Vertical
-          Text_Y=((Height-(\Text\Height*\Text\Count))/2)
-        EndIf
-        
-        If Not \Text\Vertical
-          For IT = 1 To \Text\Count
-            String = StringField(\Text\String.s[2], IT, #LF$)
-            
-            If \Type = #PB_GadgetType_Button
-              StringWidth = TextWidth(RTrim(String))
-            Else
-              StringWidth = TextWidth(String)
-            EndIf
-            
-            If \Text\Align\Right
-              Text_X=(Width-StringWidth) 
-            ElseIf \Text\Align\Horisontal
-              Text_X=(Width-StringWidth)/2 
-            EndIf
-            
-            AddElement(\Items())
-            \Items()\x = \X[1]+\Text\X
-            \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
-            \Items()\Width = Width
-            \Items()\Height = \Text\Height
-            \Items()\Item = ListIndex(\Items())
-            
-            \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
-            \Items()\Text\y = \Items()\y
-            \Items()\Text\Width = TextWidth(String)
-            \Items()\Text\Height = \Text\Height
-            \Items()\Text\String.s = String.s
-            \Items()\Text\Len = Len(String.s)
-            
-            \Image\X = \Items()\Text\x-(\Image\Width+\Image\Width/2)
-            \Image\Y = \Y[1]+\Text\Y +(Height-\Image\Height)/2
-            
-            If \Line[1] = ListIndex(\Items())
-              ;Debug " string "+String.s
-              \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret) : \Items()\Text[1]\Change = #True
-              \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
-            EndIf
-            
-            If \Scroll\Width<\Items()\Text\Width
-              \Scroll\Width=\Items()\Text\Width
-            EndIf
-            \Scroll\Height+\Text\Height 
-          Next
-        EndIf
-        
-        \Text\Count[1] = \Text\Count
-      Else
-        PushListPosition(\Items())
-        ForEach \Items()
-          StringWidth = \Items()\Text\Width 
-          
-          If \Text\Align\Right
-            Text_X=(Width-StringWidth) 
-          ElseIf \Text\Align\Horisontal
-            Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2
-          EndIf
-          
-          \Items()\Width = Width
-          \Items()\x = \X[1]+\Text\X
-          \Items()\Text\x = (\Image\Width+\Image\Width/2)+\Items()\x+Text_X
-        Next
-        PopListPosition(\Items())
-      EndIf
-    EndWith
-  EndProcedure
-  
   Procedure.s AddString(*This.Widget_S, Item =- 1,Text.s="")
     Protected String.s, i
     
@@ -987,7 +880,7 @@ Module Editor
             DrawingFont(\Text\FontID) 
           EndIf
           
-          AddLine(*This)
+          Text::MultiLine(*This)
           StopDrawing()
         EndIf
       Else
@@ -1196,8 +1089,8 @@ Module Editor
   Procedure ToUp(*This.Widget_S)
     Protected Repaint
     ; Если дошли до начала строки то 
-        ; переходим в конец предыдущего итема
-        
+    ; переходим в конец предыдущего итема
+    
     With *This
       If (\Line[1] > 0 And \Line = \Line[1]) : \Line[1] - 1 : \Line = \Line[1]
         SelectElement(\Items(), \Line[1])
@@ -1211,8 +1104,8 @@ Module Editor
   Procedure ToDown(*This.Widget_S)
     Protected Repaint
     ; Если дошли до начала строки то 
-        ; переходим в конец предыдущего итема
-        
+    ; переходим в конец предыдущего итема
+    
     With *This
       If (\Line < ListSize(\Items()) - 1 And \Line = \Line[1]) : \Line[1] + 1 : \Line = \Line[1]
         SelectElement(\Items(), \Line[1]) 
@@ -1293,7 +1186,7 @@ Module Editor
       
       If \Caret <> \Caret[1]
         \Caret = \Caret[1] 
-         Repaint =- 1 
+        Repaint =- 1 
       ElseIf Not Repaint And ToDown(*This)
         \Caret[1] = 0
         \Caret = \Caret[1]
@@ -1304,7 +1197,7 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure ToBack(*This.Widget_S)
+  Procedure __ToBack(*This.Widget_S)
     Protected Repaint.b, String.s
     
     With *This
@@ -1342,6 +1235,40 @@ Module Editor
           \Caret[1] = \Caret
           Repaint =- 1 
         EndIf
+      EndIf
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure ToBack(*This.Widget_S)
+    Protected Repaint, String.s 
+    
+    If *This\Canvas\Input : *This\Canvas\Input = 0
+      ;ToInput(*This) ; Сбросить Dot&Minus
+    EndIf
+    
+    With *This
+      If \Items()\Text[2]\Len
+        If \Caret > \Caret[1] 
+          Swap \Caret, \Caret[1]
+        EndIf  
+        Remove(*This)
+        
+      ElseIf \Caret[1] > 0 
+        Debug \Items()\Caret
+        Debug Left(\Text\String.s, \Items()\Caret+\Caret - 1);
+        ;\Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
+        \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret - 1) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 1)
+        \Text\Len = Len(\Text\String.s)  
+        \Caret - 1 
+      EndIf
+      
+      If \Caret[1] <> \Caret
+        \Caret[1] = \Caret 
+       \Text\Change =- 1
+       Debug \Text\String.s; 
+       Repaint =- 1 
       EndIf
     EndWith
     
@@ -1558,94 +1485,124 @@ Module Editor
     EndWith
   EndProcedure
   
-  Procedure.s GetText(Gadget.i)
-    Protected ScrollPos, *This.Widget_S = GetGadgetData(Gadget)
-    
-    With *This
-      If \Text\Pass
-        ProcedureReturn \Text\String.s[1]
-      Else
-        ProcedureReturn \Text\String
-      EndIf
-    EndWith
-  EndProcedure
-  
-  Procedure AddItem(Gadget, Item,Text.s,Image.i=-1,Flag.i=0)
-    Protected String.s, i, *This.Widget_S = GetGadgetData(Gadget)
-    
-    With *This\Items()
-      *This\Text\Count = CountString(*This\Text\String.s, #LF$)
-      
-      For i=0 To *This\Text\Count
-        If Item = i
-          If String.s
-            String.s  +#LF$+ Text
-          Else
-            String.s  + Text
-          EndIf
-        EndIf
-        
-        If String.s
-          String.s +#LF$+ StringField(*This\Text\String.s, i + 1, #LF$)
-        Else
-          String.s + StringField(*This\Text\String.s, i + 1, #LF$)
-        EndIf
-      Next
-      
-      *This\Text\String.s = String.s 
-      *This\Text\Len = Len(String.s)
-      ; *This\Text\Change = 1
-    EndWith
-    
-    ;     If AddString(*This, Item, Text.s)
-    ;       
-    ;       *This\Text\Change = 1
-    ;       If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
-    ;         AddLine(*This)
-    ;         StopDrawing()
-    ;       EndIf
-    ;       
-    ;     EndIf
-    ;    
-    ;      If Item = 5
-    ;        Debug *This\Text\String.s
-    ;      EndIf
-    If *This\Scroll\Height<*This\Height
-      ;  ReDraw(*This, *This\Canvas\Gadget)
-    EndIf
-    
-    ProcedureReturn Item
-  EndProcedure
-  
-  Procedure SetText(Gadget, Text.s, Item.i=0)
-    Protected *This.Widget_S = GetGadgetData(Gadget)
+  Procedure ClearItems(Gadget.i)
+    Protected Result.i, *This.Widget_S
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
-        If \Text\String.s <> Text.s
-          \Text\String.s = Text.s
-          \Text\Len = Len(Text.s)
-          \Text\Change = 1
-          
-          ClearList(\Items())
-          AddString(*This)
-          ;ReDraw(*This, \Canvas\Gadget)
+        Result = ClearList(\Items())
+        If StartDrawing(CanvasOutput(Gadget))
+          Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
+          StopDrawing()
         EndIf
       EndWith
     EndIf
     
+    ProcedureReturn Result
   EndProcedure
   
-  Procedure SetFont(Gadget.i, FontID.i)
+  Procedure.i CountItems(Gadget.i, Item.i=-1)
+    Protected Result.i, *This.Widget_S, sublevel.i
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+    
+    If *This
+      With *This
+        If Item.i=-1
+          Result = ListSize(\Items())
+        Else
+          PushListPosition(\Items()) 
+          ForEach \Items()
+            If \Items()\Item = Item 
+              ; Result = \Items()\childrens 
+              sublevel = \Items()\sublevel
+              PushListPosition(\Items())
+              While NextElement(\Items())
+                If sublevel = \Items()\sublevel
+                  Break
+                ElseIf sublevel < \Items()\sublevel 
+                  Result+1
+                EndIf
+              Wend
+              PopListPosition(\Items())
+              Break
+            EndIf
+          Next
+          PopListPosition(\Items())
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i RemoveItem(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S, sublevel.i
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+    
+    If *This
+      With *This
+        PushListPosition(\Items()) 
+        ForEach \Items()
+          If \Items()\Item = Item 
+            sublevel = \Items()\sublevel
+            PushListPosition(\Items())
+            While NextElement(\Items())
+              If sublevel = \Items()\sublevel
+                Break
+              ElseIf sublevel < \Items()\sublevel 
+                Result = DeleteElement(\Items()) 
+              EndIf
+            Wend
+            PopListPosition(\Items())
+            Result = DeleteElement(\Items()) 
+            Break
+          EndIf
+        Next
+        PopListPosition(\Items())
+        
+        ReDraw(Gadget)
+      EndWith
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i AddItem(Gadget, Item, Text.s,Image.i=-1,Flag.i=0)
+    Protected String.s, i.i, *This.Widget_S = GetGadgetData(Gadget)
+    
+    If Text::AddLine(*This, Item, Text.s) 
+      ; ReDraw(*This, *This\Canvas\Gadget)
+      ProcedureReturn 1
+    EndIf
+    
+   
+    ProcedureReturn Item
+  EndProcedure
+  
+  Procedure.s GetText(Gadget.i)
+    Protected *This.Widget_S = GetGadgetData(Gadget)
+    ProcedureReturn Text::GetText(*This)
+  EndProcedure
+  
+  Procedure.i SetText(Gadget, Text.s, Item.i=0)
     Protected *This.Widget_S = GetGadgetData(Gadget)
     
-    With *This
-      If \Text\FontID <> FontID 
-        \Text\FontID = FontID
-        \Text\Change = 1
-        ReDraw(*This)
-      EndIf
-    EndWith
+    If Text::SetText(*This, Text.s) 
+      ReDraw(*This, *This\Canvas\Gadget)
+      ProcedureReturn 1
+    EndIf
+    
+  EndProcedure
+  
+  Procedure.i SetFont(Gadget.i, FontID.i)
+    Protected *This.Widget_S = GetGadgetData(Gadget)
+    
+    If Text::SetFont(*This, FontID)
+      ReDraw(*This, *This\Canvas\Gadget)
+      ProcedureReturn 1
+    EndIf
+      
   EndProcedure
   
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
@@ -1674,7 +1631,7 @@ Module Editor
               Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
             EndIf
           EndIf
-      
+          
           Select EventType 
             Case #PB_EventType_LeftButtonDown
               MoveX = \Canvas\Mouse\X 
@@ -2150,7 +2107,7 @@ Module Editor
               Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
             EndIf
           EndIf
-      
+          
           Select EventType 
             Case #PB_EventType_LeftButtonDown
               MoveX = \Canvas\Mouse\X 
@@ -2243,51 +2200,51 @@ Module Editor
         If *Last = *This
           Select EventType
             Case #PB_EventType_MouseEnter
-            SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
-            ; Debug ""+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            
-          Case #PB_EventType_LostFocus : Repaint = #True
-            If Bool(*This\Type <> #PB_GadgetType_Editor)
-              ; StringGadget
-              \Text[2]\Len = 0 ; Убыраем выделение
-            EndIf
-            *This\Caret[1] =- 1 ; Прячем коректор
-            
-          Case #PB_EventType_Focus : Repaint = #True
-            *This\Caret[1] = *This\Caret ; Показываем коректор
-            
-          Case #PB_EventType_LeftDoubleClick 
-            DoubleClick = *This\Caret
-            Text::SelectionLimits(*This)
-            SelectionText(*This) 
-            Repaint = #True
-            
-            *This\Caret = Caret(*This, *This\Line[1]) 
-            
-          Case #PB_EventType_LeftButtonDown
-            *This\Caret[1] = *This\Caret
-            
-            If \Text\Numeric 
-              \Text\String.s[1] = \Text\String.s 
-            EndIf
-            
-            If *This\Caret = DoubleClick
-              DoubleClick =- 1
-              *This\Caret[1] = \Text\Len
-              *This\Caret = 0
-            EndIf 
-            
-            SelectionText(*This)
-            Repaint = #True
-            
-          Case #PB_EventType_MouseMove
-            If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton
-              ;                 *This\Caret = Caret(*This)
-              ;                 SelectionText(*This)
+              SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
+              ; Debug ""+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+              
+            Case #PB_EventType_LostFocus : Repaint = #True
+              If Bool(*This\Type <> #PB_GadgetType_Editor)
+                ; StringGadget
+                \Text[2]\Len = 0 ; Убыраем выделение
+              EndIf
+              *This\Caret[1] =- 1 ; Прячем коректор
+              
+            Case #PB_EventType_Focus : Repaint = #True
+              *This\Caret[1] = *This\Caret ; Показываем коректор
+              
+            Case #PB_EventType_LeftDoubleClick 
+              DoubleClick = *This\Caret
+              Text::SelectionLimits(*This)
+              SelectionText(*This) 
               Repaint = #True
-            EndIf
-            
-           
+              
+              *This\Caret = Caret(*This, *This\Line[1]) 
+              
+            Case #PB_EventType_LeftButtonDown
+              *This\Caret[1] = *This\Caret
+              
+              If \Text\Numeric 
+                \Text\String.s[1] = \Text\String.s 
+              EndIf
+              
+              If *This\Caret = DoubleClick
+                DoubleClick =- 1
+                *This\Caret[1] = \Text\Len
+                *This\Caret = 0
+              EndIf 
+              
+              SelectionText(*This)
+              Repaint = #True
+              
+            Case #PB_EventType_MouseMove
+              If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton
+                ;                 *This\Caret = Caret(*This)
+                ;                 SelectionText(*This)
+                Repaint = #True
+              EndIf
+              
+              
           EndSelect
         EndIf  
         
@@ -2300,152 +2257,152 @@ Module Editor
           
           Select EventType
             Case #PB_EventType_Input ;- Input (key)
-            If *This\Text\Editable And Not (*This\Canvas\Key[1] & #PB_Canvas_Command)
-              Protected Input, Input_2
-              
-              Select #True
-                Case \Text\Lower : Input = Asc(LCase(Chr(*This\Canvas\Input))) : Input_2 = Input
-                Case \Text\Upper : Input = Asc(UCase(Chr(*This\Canvas\Input))) : Input_2 = Input
-                Case \Text\Pass  : Input = 9679 : Input_2 = *This\Canvas\Input ; "●"
-                Case \Text\Numeric
-                  ;                     Debug *This\Canvas\Input
-                  Static Dot
-                  
-                  Select *This\Canvas\Input 
-                    Case '.','0' To '9' : Input = *This\Canvas\Input : Input_2 = Input
-                    Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.' : Input_2 = Input
-                    Default
-                      Input_2 = *This\Canvas\Input
-                  EndSelect
-                  
-                  If Not Dot And Input = '.'
-                    Dot = 1
-                  ElseIf Input <> '.'
-                    Dot = 0
-                  Else
-                    Input = 0
-                  EndIf
-                  
-                Default
-                  Input = *This\Canvas\Input : Input_2 = Input
-              EndSelect
-              
-              If Input_2
-                If Input
-                  If \Text[2]\String.s
-                    RemoveText(*This)
-                  EndIf
-                  *This\Caret + 1
-                  *This\Caret[1] = *This\Caret
-                EndIf
+              If *This\Text\Editable And Not (*This\Canvas\Key[1] & #PB_Canvas_Command)
+                Protected Input, Input_2
                 
-                If \Text\Numeric And Input = Input_2
-                  \Text\String.s[1] = \Text\String.s
-                EndIf
-                
-                ;\Text\String.s = Left(\Text\String.s, *This\Caret-1) + Chr(Input) + Mid(\Text\String.s, *This\Caret)
-                \Text\String.s = InsertString(\Text\String.s, Chr(Input), *This\Caret)
-                \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(Input_2), *This\Caret)
-                
-                If Input
-                  \Text\Len = Len(\Text\String.s)
-                  PostEvent(#PB_Event_Gadget, EventWindow(), EventGadget(), #PB_EventType_Change)
-                EndIf
-                
-                Repaint = #True 
-              EndIf
-            EndIf
-            
-          Case #PB_EventType_KeyUp
-            If \Text\Numeric
-              \Text\String.s[1]=\Text\String.s 
-            EndIf
-            Repaint = #True 
-            
-          Case #PB_EventType_KeyDown
-            Select *This\Canvas\Key
-              Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = 0 : *This\Caret[1] = *This\Caret : Repaint =- 1
-              Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = \Text\Len : *This\Caret[1] = *This\Caret : Repaint =- 1 
-                
-              Case #PB_Shortcut_Up     : Repaint = ToUp(*This)      ; Ok
-              Case #PB_Shortcut_Left   : Repaint = ToLeft(*This)    ; Ok
-              Case #PB_Shortcut_Right  : Repaint = ToRight(*This)   ; Ok
-              Case #PB_Shortcut_Down   : Repaint = ToDown(*This)    ; Ok
-              Case #PB_Shortcut_Back   : Repaint = ToBack(*This)
-              Case #PB_Shortcut_Return : Repaint = ToReturn(*This) 
-              Case #PB_Shortcut_Delete : Repaint = ToDelete(*This)
-                
-                
-              Case #PB_Shortcut_C, #PB_Shortcut_X
-                If ((*This\Canvas\Key[1] & #PB_Canvas_Control) Or (*This\Canvas\Key[1] & #PB_Canvas_Command)) 
-                  SetClipboardText(Copy(*This))
-                  
-                  If *This\Canvas\Key = #PB_Shortcut_X
-                    Cut(*This)
+                Select #True
+                  Case \Text\Lower : Input = Asc(LCase(Chr(*This\Canvas\Input))) : Input_2 = Input
+                  Case \Text\Upper : Input = Asc(UCase(Chr(*This\Canvas\Input))) : Input_2 = Input
+                  Case \Text\Pass  : Input = 9679 : Input_2 = *This\Canvas\Input ; "●"
+                  Case \Text\Numeric
+                    ;                     Debug *This\Canvas\Input
+                    Static Dot
                     
-                    *This\Caret[1] = *This\Caret
-                    Repaint = #True 
-                  EndIf
-                EndIf
-                
-              Case #PB_Shortcut_V
-                If *This\Text\Editable And ((*This\Canvas\Key[1] & #PB_Canvas_Control) Or (*This\Canvas\Key[1] & #PB_Canvas_Command))
-                  Protected ClipboardText.s = Trim(GetClipboardText(), #CR$)
-                  
-                  If ClipboardText.s
-                    If \Text[2]\Len > 0
-                      RemoveText(*This)
-                      
-                      If \Text[2]\Len = \Text\Len
-                        ;*This\Line[1] = *This\Line
-                        ClipboardText.s = Trim(ClipboardText.s, #LF$)
-                      EndIf
-                      ;                         
-                      PushListPosition(*This\Items())
-                      ForEach *This\Items()
-                        If \Text[2]\Len > 0 
-                          If \Text[2]\Len = \Text\Len
-                            DeleteElement(*This\Items(), 1) 
-                          Else
-                            RemoveText(*This)
-                          EndIf
-                        EndIf
-                      Next
-                      PopListPosition(*This\Items())
-                    EndIf
-                    
-                    Select #True
-                      Case \Text\Lower : ClipboardText.s = LCase(ClipboardText.s)
-                      Case \Text\Upper : ClipboardText.s = UCase(ClipboardText.s)
-                      Case \Text\Numeric 
-                        If Val(ClipboardText.s)
-                          ClipboardText.s = Str(Val(ClipboardText.s))
-                        EndIf
+                    Select *This\Canvas\Input 
+                      Case '.','0' To '9' : Input = *This\Canvas\Input : Input_2 = Input
+                      Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.' : Input_2 = Input
+                      Default
+                        Input_2 = *This\Canvas\Input
                     EndSelect
                     
-                    \Text\String.s = InsertString( \Text\String.s, ClipboardText.s, *This\Caret + 1)
-                    
-                    If CountString(\Text\String.s, #LF$)
-                      Caret = \Text\Len-*This\Caret
-                      String.s = \Text\String.s
-                      DeleteElement(*This\Items(), 1)
-                      SetText(*This\Canvas\Gadget, String.s, *This\Line[1])
-                      *This\Caret = Len(\Text\String.s)-Caret
-                      ;                         SelectElement(*This\Items(), *This\Line)
-                      ;                        *This\Caret = 0
+                    If Not Dot And Input = '.'
+                      Dot = 1
+                    ElseIf Input <> '.'
+                      Dot = 0
                     Else
-                      *This\Caret + Len(ClipboardText.s)
+                      Input = 0
                     EndIf
                     
-                    *This\Caret[1] = *This\Caret
-                    \Text\Len = Len(\Text\String.s)
-                    
-                    Repaint = #True
-                  EndIf
-                EndIf
+                  Default
+                    Input = *This\Canvas\Input : Input_2 = Input
+                EndSelect
                 
-            EndSelect 
-          
+                If Input_2
+                  If Input
+                    If \Text[2]\String.s
+                      RemoveText(*This)
+                    EndIf
+                    *This\Caret + 1
+                    *This\Caret[1] = *This\Caret
+                  EndIf
+                  
+                  If \Text\Numeric And Input = Input_2
+                    \Text\String.s[1] = \Text\String.s
+                  EndIf
+                  
+                  ;\Text\String.s = Left(\Text\String.s, *This\Caret-1) + Chr(Input) + Mid(\Text\String.s, *This\Caret)
+                  \Text\String.s = InsertString(\Text\String.s, Chr(Input), *This\Caret)
+                  \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(Input_2), *This\Caret)
+                  
+                  If Input
+                    \Text\Len = Len(\Text\String.s)
+                    PostEvent(#PB_Event_Gadget, EventWindow(), EventGadget(), #PB_EventType_Change)
+                  EndIf
+                  
+                  Repaint = #True 
+                EndIf
+              EndIf
+              
+            Case #PB_EventType_KeyUp
+              If \Text\Numeric
+                \Text\String.s[1]=\Text\String.s 
+              EndIf
+              Repaint = #True 
+              
+            Case #PB_EventType_KeyDown
+              Select *This\Canvas\Key
+                Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = 0 : *This\Caret[1] = *This\Caret : Repaint =- 1
+                Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = \Text\Len : *This\Caret[1] = *This\Caret : Repaint =- 1 
+                  
+                Case #PB_Shortcut_Up     : Repaint = ToUp(*This)      ; Ok
+                Case #PB_Shortcut_Left   : Repaint = ToLeft(*This)    ; Ok
+                Case #PB_Shortcut_Right  : Repaint = ToRight(*This)   ; Ok
+                Case #PB_Shortcut_Down   : Repaint = ToDown(*This)    ; Ok
+                Case #PB_Shortcut_Back   : Repaint = ToBack(*This)
+                Case #PB_Shortcut_Return : Repaint = ToReturn(*This) 
+                Case #PB_Shortcut_Delete : Repaint = ToDelete(*This)
+                  
+                  
+                Case #PB_Shortcut_C, #PB_Shortcut_X
+                  If ((*This\Canvas\Key[1] & #PB_Canvas_Control) Or (*This\Canvas\Key[1] & #PB_Canvas_Command)) 
+                    SetClipboardText(Copy(*This))
+                    
+                    If *This\Canvas\Key = #PB_Shortcut_X
+                      Cut(*This)
+                      
+                      *This\Caret[1] = *This\Caret
+                      Repaint = #True 
+                    EndIf
+                  EndIf
+                  
+                Case #PB_Shortcut_V
+                  If *This\Text\Editable And ((*This\Canvas\Key[1] & #PB_Canvas_Control) Or (*This\Canvas\Key[1] & #PB_Canvas_Command))
+                    Protected ClipboardText.s = Trim(GetClipboardText(), #CR$)
+                    
+                    If ClipboardText.s
+                      If \Text[2]\Len > 0
+                        RemoveText(*This)
+                        
+                        If \Text[2]\Len = \Text\Len
+                          ;*This\Line[1] = *This\Line
+                          ClipboardText.s = Trim(ClipboardText.s, #LF$)
+                        EndIf
+                        ;                         
+                        PushListPosition(*This\Items())
+                        ForEach *This\Items()
+                          If \Text[2]\Len > 0 
+                            If \Text[2]\Len = \Text\Len
+                              DeleteElement(*This\Items(), 1) 
+                            Else
+                              RemoveText(*This)
+                            EndIf
+                          EndIf
+                        Next
+                        PopListPosition(*This\Items())
+                      EndIf
+                      
+                      Select #True
+                        Case \Text\Lower : ClipboardText.s = LCase(ClipboardText.s)
+                        Case \Text\Upper : ClipboardText.s = UCase(ClipboardText.s)
+                        Case \Text\Numeric 
+                          If Val(ClipboardText.s)
+                            ClipboardText.s = Str(Val(ClipboardText.s))
+                          EndIf
+                      EndSelect
+                      
+                      \Text\String.s = InsertString( \Text\String.s, ClipboardText.s, *This\Caret + 1)
+                      
+                      If CountString(\Text\String.s, #LF$)
+                        Caret = \Text\Len-*This\Caret
+                        String.s = \Text\String.s
+                        DeleteElement(*This\Items(), 1)
+                        SetText(*This\Canvas\Gadget, String.s, *This\Line[1])
+                        *This\Caret = Len(\Text\String.s)-Caret
+                        ;                         SelectElement(*This\Items(), *This\Line)
+                        ;                        *This\Caret = 0
+                      Else
+                        *This\Caret + Len(ClipboardText.s)
+                      EndIf
+                      
+                      *This\Caret[1] = *This\Caret
+                      \Text\Len = Len(\Text\String.s)
+                      
+                      Repaint = #True
+                    EndIf
+                  EndIf
+                  
+              EndSelect 
+              
           EndSelect
         EndIf
         
@@ -2579,11 +2536,27 @@ Module Editor
             \Color[0]\Back[1] = $F0F0F0  
           EndIf
           
-          ; Default frame color
-          \Color[0]\Frame[1] = $BABABA
+          ;           ; Default frame color
+          ;           \Color[0]\Frame[1] = $BABABA
+          ;           
+          ;           ; Focus frame color
+          ;           \Color[0]\Frame[3] = $D5A719
+          ; default frame color
+          \Color[0]\Frame[1] = Widget_FrameColor_Default ; $FFBABABA
           
-          ; Focus frame color
-          \Color[0]\Frame[3] = $D5A719
+          ; focus frame color
+          \Color[0]\Frame[3] = Widget_FrameColor_Focus ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;   
+          
+          ; default font color
+          \Color[0]\Front[1] = Widget_FontColor_Default ; $FF000000 ; $FF0B0B0B
+          
+          ; focus font color
+          \Color[0]\Front[3] = Widget_FontColor_Focus ; ! $FFFFFFFF; Widget_FontColor_Focus ; $FF000000 ; $FF0B0B0B
+          
+          ; enter frame color
+          \Color[0]\Frame[2] = Widget_FrameColor_Enter   
+          \Color[0]\Fore[2] = Widget_FontColor_Focus   
+          \Color[0]\Back[2] = Widget_Color_Enter   
           
           ResetColor(*This)
         EndIf
@@ -2731,5 +2704,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----f---2----b-------------------040------------------------------
+; Folding = ggAAAMAAAAAAAKAAAUAAACAAAAAAAAAoDAAAEBBAAAAAAAAAAAAAAAAAAAAAAAAAABw
 ; EnableXP

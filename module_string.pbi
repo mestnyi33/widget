@@ -500,7 +500,7 @@ Module String
               PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Focus)
               
             Case #PB_EventType_LeftButtonUp
-              If \Caret[1]
+              If \Caret[1] > 0
                 If #PB_Cursor_Default = GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
                   SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, *This\Cursor)
                 EndIf
@@ -684,6 +684,7 @@ Module String
         \Alpha = 255
         \Interact = 1
         \Caret[1] =- 1
+        \Line =- 1
         
         ; Set the default widget flag
         If Bool(Flag&#PB_Text_Top)
@@ -760,6 +761,11 @@ Module String
           
           ; default frame color
           \Color[0]\Frame[1] = Widget_FrameColor_Default ; $FFBABABA
+          
+          ; enter frame color
+          \Color[0]\Frame[2] = Widget_FrameColor_Enter   
+          \Color[0]\Fore[2] = Widget_FontColor_Focus   
+          \Color[0]\Back[2] = Widget_Color_Enter   
           
           ; focus frame color
           \Color[0]\Frame[3] = Widget_FrameColor_Focus ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;   
@@ -1004,5 +1010,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = h-R0BAACNAAADz-fAAOEgCAB9
+; Folding = h--0HAASNAAADz-fAAOEgCAB9
 ; EnableXP

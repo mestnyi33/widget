@@ -314,6 +314,7 @@ Module Button
         \Radius = Radius
         \Alpha = 255
         \Interact = 1
+        \Line =- 1
         
         If Bool(Flag&#PB_Text_Vertical)
           If Bool(Flag&#PB_Text_Reverse)
@@ -407,12 +408,12 @@ Module Button
           ; Default colors (based on Windows 7)
           \Color[0]\Fore[1] = RGBA(240, 240, 240, 255)
           \Color[0]\Back[1] = RGBA(229, 229, 229, 255)  
-          \Color[0]\Frame[1] = Widget_FrameColor_Default ; RGBA(172, 172, 172, 255) 
+          \Color[0]\Frame[1] = RGBA(172, 172, 172, 255) 
           
           ; Цвет если мышь на виджете
           \Color[0]\Fore[2] = RGBA(236, 244, 252, 255)
-          \Color[0]\Back[2] = Widget_FrameColor_Focus ; RGBA(220, 236, 252, 255) ;  $FFFAEFE4 ; 
-          \Color[0]\Frame[2] = Widget_FrameColor_Focus ; RGBA(0, 160, 252, 255)  ; $FFF5C775 ; 
+          \Color[0]\Back[2] = RGBA(220, 236, 252, 255) ;  $FFFAEFE4 ; 
+          \Color[0]\Frame[2] = RGBA(0, 160, 252, 255)  ; $FFF5C775 ; 
           
           ; Цвет если нажали на виджет
           \Color[0]\Fore[3] = RGBA(218, 236, 252, 255)
@@ -628,5 +629,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------
+; Folding = ------------v--
 ; EnableXP
