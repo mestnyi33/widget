@@ -1,4 +1,12 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+  ;  IncludePath "/Users/a/Documents/GitHub/Widget/"
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_draw.pbi"
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
@@ -190,7 +198,7 @@ Module Text
   
   Procedure.i MultiLine(*This.Widget_S)
     Static Len
-    Protected Repaint, String.s, StringWidth
+    Protected Repaint, String.s
     Protected IT,Text_Y,Text_X,Width,Height, Image_Y, Image_X, Indent=4
     
     Macro _set_content_Y_(_this_)
@@ -220,21 +228,21 @@ Module Text
       If _this_\Image\handle
         If _this_\InLine
           If _this_\Text\Align\Right
-            Text_X=((Width-_this_\Image\Width-StringWidth)/2)-Indent/2
-            Image_X=(Width-_this_\Image\Width+StringWidth)/2+Indent
+            Text_X=((Width-_this_\Image\Width-_this_\Items()\Text\Width)/2)-Indent/2
+            Image_X=(Width-_this_\Image\Width+_this_\Items()\Text\Width)/2+Indent
           Else
-            Text_X=((Width-StringWidth+_this_\Image\Width)/2)+Indent
-            Image_X=(Width-StringWidth-_this_\Image\Width)/2-Indent
+            Text_X=((Width-_this_\Items()\Text\Width+_this_\Image\Width)/2)+Indent
+            Image_X=(Width-_this_\Items()\Text\Width-_this_\Image\Width)/2-Indent
           EndIf
         Else
           Image_X=(Width-_this_\Image\Width)/2 
-          Text_X=(Width-StringWidth)/2 
+          Text_X=(Width-_this_\Items()\Text\Width)/2 
         EndIf
       Else
         If _this_\Text\Align\Right
-          Text_X=(Width-StringWidth) 
+          Text_X=(Width-_this_\Items()\Text\Width) 
         ElseIf _this_\Text\Align\Horisontal
-          Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2 
+          Text_X=(Width-_this_\Items()\Text\Width-Bool(_this_\Items()\Text\Width % 2))/2 
         EndIf
       EndIf
     EndMacro
@@ -314,15 +322,15 @@ Module Text
               String = StringField(\Text\String.s[2], IT, #LF$)
               
               If \Type = #PB_GadgetType_Button
-                StringWidth = TextWidth(RTrim(String))
+                \Items()\Text\Width = TextWidth(RTrim(String))
               Else
-                StringWidth = TextWidth(String)
+                \Items()\Text\Width = TextWidth(String)
               EndIf
               
               If \Text\Align\Right
-                Text_X=(Width-StringWidth) 
+                Text_X=(Width-\Items()\Text\Width) 
               ElseIf \Text\Align\Horisontal
-                Text_X=(Width-StringWidth-Bool(StringWidth % 2))/2 
+                Text_X=(Width-\Items()\Text\Width-Bool(\Items()\Text\Width % 2))/2 
               EndIf
               
               \Items()\x = \X[1]+\Text\Y+\Scroll\Height+Text_Y
@@ -338,9 +346,8 @@ Module Text
                 \Items()\Text\y = \Items()\y
               Else
                 \Items()\Text\x = \Image\Width+\Items()\x
-                \Items()\Text\y = \Items()\y+StringWidth
+                \Items()\Text\y = \Items()\y+\Items()\Text\Width
               EndIf
-              \Items()\Text\Width = StringWidth
               \Items()\Text\Height = \Text\Height
               \Items()\Text\String.s = String.s
               \Items()\Text\Len = Len(String.s)
@@ -358,26 +365,24 @@ Module Text
               String = StringField(\Text\String.s[2], IT, #LF$)
               
               If \Type = #PB_GadgetType_Button
-                StringWidth = TextWidth(RTrim(String))
+                \Items()\Text\Width = TextWidth(RTrim(String))
               Else
-                StringWidth = TextWidth(String)
+                \Items()\Text\Width = TextWidth(String)
               EndIf
               
-              _set_content_X_(*This)
-              
+              ; Update line pos in the text
               \Items()\Caret = Len
               \Items()\Text\Len = Len(String.s)
-              Len + \Items()\Text\Len + 1
+              Len + \Items()\Text\Len + 1 ; Len(#LF$)
               
+              _set_content_X_(*This)
               _line_resize_(*This)
               
               \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
               \Items()\Height = \Text\Height
               \Items()\Item = ListIndex(\Items())
               
-              \Items()\Text\Editable = \Text\Editable 
               \Items()\Text\y = \Items()\y
-              \Items()\Text\Width = StringWidth
               \Items()\Text\Height = \Text\Height
               \Items()\Text\String.s = String.s
               
@@ -387,15 +392,15 @@ Module Text
                 \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
               EndIf
               
-              ; Указываем какие линии будут видни
-;               If \Type <> #PB_GadgetType_Editor
-                \Items()\Hide = Bool( Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
-;               EndIf
+              ; Is visible lines
+              \Items()\Hide = Bool( Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
               
+              ; Scroll width length
               If \Scroll\Width<\Items()\Text\Width
                 \Scroll\Width=\Items()\Text\Width
               EndIf
               
+              ; Scroll hight length
               \Scroll\Height+\Text\Height
             Next
           EndIf
@@ -406,31 +411,30 @@ Module Text
             SelectElement(\Items(), IT-1)
             String.s = StringField(\Text\String.s[2], IT, #LF$)
             
-            \Items()\Caret = Len
-            \Items()\Text\Len = Len(String.s)
-            Len + \Items()\Text\Len + 1
-            
             If \Items()\Text\String.s <> String.s Or \Items()\Text\Change
               \Items()\Text\String.s = String.s
               
               If \Type = #PB_GadgetType_Button
-                StringWidth = TextWidth(RTrim(String.s))
+                \Items()\Text\Width = TextWidth(RTrim(String.s))
               Else
-                StringWidth = TextWidth(String.s)
+                \Items()\Text\Width = TextWidth(String.s)
               EndIf
               
-              \Items()\Text\Width = StringWidth
               \Items()\Text\String.s = String.s
               
+              ; Scroll width length
               If \Scroll\Width<\Items()\Text\Width
                 \Scroll\Width=\Items()\Text\Width
               EndIf
-            Else
-              StringWidth = \Items()\Text\Width 
             EndIf
             
+            ; Update line pos in the text
+            \Items()\Caret = Len
+            \Items()\Text\Len = Len(String.s)
+            Len + \Items()\Text\Len + 1 ; Len(#LF$)
+            
             ; Resize item
-            If (Left And Not  Bool(\Scroll\X = Left)); Or \Resize
+            If (Left And Not  Bool(\Scroll\X = Left))
               _set_content_X_(*This)
             EndIf
             
@@ -442,11 +446,7 @@ Module Text
         
         PushListPosition(\Items())
         ForEach \Items()
-          StringWidth = \Items()\Text\Width 
-          ;If Not (Right And Not  Bool(*This\Scroll\X = Right))
           _set_content_X_(*This)
-          ;  EndIf
-          
           _line_resize_(*This)
         Next
         PopListPosition(\Items())
@@ -509,28 +509,19 @@ Module Text
         If Canvas=-1 : Canvas = EventGadget() : EndIf
         If Canvas <> \Canvas\Gadget : ProcedureReturn : EndIf
         
-        ; Make output text
-        If \Text\String.s
-          If \Text\FontID 
-            DrawingFont(\Text\FontID) 
-          EndIf
+        ; Make output multi line text
+        If (\Text\Change Or \Resize)
+          If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
           
           If \Text\Change
             \Text\Height = TextHeight("A") + 1
             \Text\Width = TextWidth(\Text\String.s)
           EndIf
           
-          If (\Text\Change Or \Resize)
-            MultiLine(*This)
-          EndIf
+          MultiLine(*This)
           
-          If \Text\Change
-            \Text\Change = 0
-          EndIf
-          
-          If \Resize
-            \Resize = 0
-          EndIf
+          If \Text\Change : \Text\Change = 0 : EndIf
+          If \Resize : \Resize = 0 : EndIf
         EndIf 
         
         ; Draw back color
@@ -559,14 +550,14 @@ Module Text
                 ; Draw items back color
                 If \Color\Fore
                   DrawingMode(#PB_2DDrawing_Gradient)
-                  BoxGradient(\Vertical,*This\X[2]+1,\Y-ScrollPagePos,*This\Width[2]-2,\Height,*This\Color\Fore[2],*This\Color\Back[2],\Radius)
+                  BoxGradient(\Vertical,*This\X[2]+1,\Y-ScrollPagePos,*This\Width[2]-2,\Height,*This\Color\Fore[2],*This\Color\Back[2],*This\Radius)
                 Else
                   DrawingMode(#PB_2DDrawing_Default)
-                  RoundBox(*This\X[2]+1,\Y-ScrollPagePos,*This\Width[2]-2,\Height,\Radius,\Radius,*This\Color\Back[2])
+                  RoundBox(*This\X[2]+1,\Y-ScrollPagePos,*This\Width[2]-2,\Height,*This\Radius,*This\Radius,*This\Color\Back[2])
                 EndIf
                 
                 DrawingMode(#PB_2DDrawing_Outlined)
-                Box(*This\x[2]+1,\y-ScrollPagePos,*This\width[2]-2,\height, *This\Color\Frame[2])
+                RoundBox(*This\x[2]+1,\y-ScrollPagePos,*This\width[2]-2,\height,*This\Radius,*This\Radius, *This\Color\Frame[2])
               EndIf
               
               ; Draw image
@@ -777,6 +768,7 @@ Module Text
       If \Text\String.s <> String.s
         \Text\String.s = String.s
         \Text\Len = Len(String.s)
+;         \Text\Change = 1
         Result = 1
       EndIf
     EndWith
@@ -796,7 +788,8 @@ Module Text
   
   Procedure.i SetText(*This.Widget_S, Text.s)
     Protected Result.i, Len.i, String.s, i.i
-    
+    If Text.s="" : Text.s=#LF$ : EndIf
+
     With *This
       If \Text\String.s <> Text.s
         \Text\String.s = Make(*This, Text.s)
@@ -1258,5 +1251,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ff6+PUO+v8+em8-vvvO02--------
+; Folding = ----f9-vd4-------------------
 ; EnableXP

@@ -850,6 +850,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *S_5.Widget_S = AllocateStructure(Widget_S)
   Global *S_6.Widget_S = AllocateStructure(Widget_S)
   Global *S_7.Widget_S = AllocateStructure(Widget_S)
+  Global *S_8.Widget_S = AllocateStructure(Widget_S)
   
   Global *Button_0.Widget_S = AllocateStructure(Widget_S)
   Global *Button_1.Widget_S = AllocateStructure(Widget_S)
@@ -965,13 +966,13 @@ CompilerIf #PB_Compiler_IsMainFile
     StringGadget(2, 8,  60, 290, height, "Read-only StringGadget", #PB_String_ReadOnly)
     StringGadget(3, 8,  85, 290, height, "LOWERCASE...", #PB_String_LowerCase)
     StringGadget(4, 8, 110, 290, height, "uppercase...", #PB_String_UpperCase)
-    StringGadget(5, 8, 140, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
-    StringGadget(6, 8, 170, 290, height, "Password", #PB_String_Password)
-    
-    StringGadget(7, 8,  200, 290, 100, Text)
+    StringGadget(5, 8, 135, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
+    StringGadget(6, 8, 160, 290, height, "Password", #PB_String_Password)
+    StringGadget(7, 8,  185, 290, height, "")
+    StringGadget(8, 8,  210, 290, 90, Text)
     
     Define i
-    For i=0 To 7
+    For i=0 To 8
       BindGadgetEvent(i, @Events())
     Next
     
@@ -992,13 +993,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...")
     *S_1 = Create(10, -1, 8,  35, 290, height, "123-only-4567", #PB_Text_Numeric|#PB_Text_Center,8)
-    *S_2 = Create(10, -1, 8,  60, 290, height, "Read-only StringGadget", #PB_Text_ReadOnly|#PB_Text_Right)
+    *S_2 = Create(10, -1, 8,  60, 290, height, "Read-only StringGadget", #PB_Text_Right)
     *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
     *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
-    *S_5 = Create(10, -1, 8, 140, 290, height, "Borderless StringGadget", #PB_Widget_BorderLess)
-    *S_6 = Create(10, -1, 8, 170, 290, height, "Password", #PB_Text_Password)
-    ; Button::Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
-    *S_7 = Create(10, -1, 8,  200, 290, 100, Text);, #PB_Text_Top)
+    *S_5 = Create(10, -1, 8, 135, 290, height, "Borderless StringGadget", #PB_Text_ReadOnly|#PB_Widget_BorderLess)
+    *S_6 = Create(10, -1, 8, 160, 290, height, "Password", #PB_Text_Password)
+    *S_7 = Create(10, -1, 8, 185, 290, height, "")
+    *S_8 = Create(10, -1, 8,  210, 290, 90, Text);, #PB_Text_Top)
                                                   ; *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
     
     Text::SetText(*S_6, "GaT")
@@ -1010,5 +1011,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = h--0HAASNAAADz-fAAOEgCAB9
+; Folding = h--0HAASNAAADz-fAAOEgCAh9
 ; EnableXP

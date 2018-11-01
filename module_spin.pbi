@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ;-
-DeclareModule String
+DeclareModule Spin
   
   EnableExplicit
   UseModule Macros
@@ -46,11 +46,11 @@ DeclareModule String
   
 EndDeclareModule
 
-Module String
+Module Spin
   ;-
   ;- - MACROS
   ;- - PROCEDUREs
-  Procedure.i DrawArrow(X.i,Y.i, Size.i, Direction.i, Color.i, Thickness.i = 1, Length.i = 1)
+  Procedure.i Arrow(X.i,Y.i, Size.i, Direction.i, Color.i, Thickness.i = 1, Length.i = 1)
     Protected I
     
     If Length=0
@@ -146,9 +146,11 @@ Module String
   
   Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
    With *This
-     If ListSize(\Items())
-        \Items()\Text\X=0
-      EndIf
+     If \Text\Align\Right
+       If *This\Text\X < 18
+         *This\Text\X + 18
+       EndIf
+     EndIf
       Text::Draw(*This, Canvas)
       
       Protected size = 4
@@ -165,10 +167,10 @@ Module String
       
         ; Draw arrows
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-;           DrawArrow(\X[1]+(\Width[1]-\Size[1])/2,\Y[1]+(\Height[1]-\Size[1])/2, \Size[1], Bool(\Vertical), \Color[1]\Line&$FFFFFF|\Alpha<<24,\Type[1])
-;           DrawArrow(\X[2]+(\Width[2]-\Size[2])/2,\Y[2]+(\Height[2]-\Size[2])/2, \Size[2], Bool(\Vertical)+2, \Color[2]\Line&$FFFFFF|\Alpha<<24,\Type[2])
-          DrawArrow(\X[1]+\Width[1]-17+size,\Y[1]-1+(\Height[2]/4), size, 1, \Color[1]\Line&$FFFFFF|\Alpha<<24,1)
-          DrawArrow(\X[1]+\Width[1]-17+size,\Y[1]+(\Height[2]-size)/2+(\Height[2]/4), size, 1+2, \Color[2]\Line&$FFFFFF|\Alpha<<24,1)
+;           Arrow(\X[1]+(\Width[1]-\Size[1])/2,\Y[1]+(\Height[1]-\Size[1])/2, \Size[1], Bool(\Vertical), \Color[1]\Line&$FFFFFF|\Alpha<<24,\Type[1])
+;           Arrow(\X[2]+(\Width[2]-\Size[2])/2,\Y[2]+(\Height[2]-\Size[2])/2, \Size[2], Bool(\Vertical)+2, \Color[2]\Line&$FFFFFF|\Alpha<<24,\Type[2])
+          Arrow(\X[1]+\Width[1]-17+size,\Y[1]-1+(\Height[2]/4), size, 1, \Color[1]\Line&$FFFFFF|\Alpha<<24,1)
+          Arrow(\X[1]+\Width[1]-17+size,\Y[1]+(\Height[2]-size)/2+(\Height[2]/4), size, 1+2, \Color[2]\Line&$FFFFFF|\Alpha<<24,1)
         
     EndWith
     
@@ -445,7 +447,7 @@ Module String
           Widget = Canvas
         EndIf
         If Canvas <> \Canvas\Gadget Or 
-           \Type <> #PB_GadgetType_String
+           \Type <> #PB_GadgetType_Spin
           ProcedureReturn
         EndIf
         
@@ -748,7 +750,7 @@ Module String
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
-        \Type = #PB_GadgetType_String
+        \Type = #PB_GadgetType_Spin
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
@@ -841,6 +843,11 @@ Module String
           ; font color
           \Color[0]\Front[1] = $FF000000
           
+          ; enter frame color
+          \Color[0]\Frame[2] = Widget_FrameColor_Enter   
+          \Color[0]\Fore[2] = Widget_FontColor_Focus   
+          \Color[0]\Back[2] = Widget_Color_Enter   
+          
           ; set default colors
           ResetColor(*This)
           
@@ -904,7 +911,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerEndSelect
   EndProcedure  
   
-  UseModule String
+  UseModule Spin
   Global winBackColor
   
   Global *S_0.Widget_S = AllocateStructure(Widget_S)
@@ -1057,7 +1064,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *S_0 = Create(10, -1, 8,  10, 290, height, "0000.0000.0000.0000")
     *S_1 = Create(10, -1, 8,  35, 290, height, "1234567890", #PB_Text_Center,8)
-    *S_2 = Create(10, -1, 8,  60, 290, height, "0000-0000-0000-0000", #PB_Text_ReadOnly|#PB_Text_Right)
+    *S_2 = Create(10, -1, 8,  60, 290, height, "0000-0000-0000-0000", #PB_Text_Right)
     *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
     *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
     *S_5 = Create(10, -1, 8, 140, 290, height, "Borderless StringGadget", #PB_Widget_BorderLess)
@@ -1075,5 +1082,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------------
+; Folding = 4-+------------------f----
 ; EnableXP

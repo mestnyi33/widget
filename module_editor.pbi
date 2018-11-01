@@ -762,37 +762,96 @@ Module Editor
   EndProcedure
   
   Procedure Remove(*This.Widget_S)
-    Protected Remove
+    Protected Caret
     
-    With *This\Items()
+    With *This
+      PushListPosition(\Items())
+      FirstElement(\Items()) ; LastElement(\Items()) ; 
+      While NextElement(\Items()) ; PreviousElement(\Items())  ; 
+        
+        If \Items()\Text[2]\Len = \Items()\Text\Len
+          \Items()\Caret - Caret
+          \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Caret, 1)
+          Caret + \Items()\Caret
+          *This\Line - 1
+        ElseIf \Items()\Text[2]\Len > 0
+             Debug " get "+\Items()\Text\String.s+" "+\Items()\Text[2]\String.s
+          ; If \Caret < \Caret[1] : \Caret = \Caret[1] : EndIf
+         
+             If \Caret[1] < \Caret
+               If \Items()\Text[2]\Width[2]
+                 \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Caret+\Caret[1], 1) 
+                 ;             \Caret = \Items()\Text\Len - \Items()\Text[2]\Len
+                 ;             \Caret[1] = \Caret
+               Else
+                 \Items()\Caret - Caret
+                 Debug \Items()\Caret
+                 \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret, 1) 
+                 *This\Line - 1
+               EndIf
+             EndIf
+              Caret = \Items()\Text[2]\Len
+           EndIf
+      Wend
+      PopListPosition(\Items())
       
-      ;If *This\Caret > *This\Caret[1] : *This\Caret = *This\Caret[1] : EndIf
+;       \Text\Len = Len(\Text\String.s)
+; 
+;         If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+;       \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
+      \Text\Len = Len(\Text\String.s)
+      \Text\Change = 1
       
-      ;      PushListPosition(*This\Items())
-      ForEach *This\Items() 
-        If \Text[2]\Len = \Text\Len ; And 
-                                    ;            *This\Line[1] <> ListIndex(*This\Items())
-          DeleteElement(*This\Items(), 1)
-          Remove + 1
-          
-        ElseIf \Text[2]\Len > 0
-          \Text\String.s = RemoveString(\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, 0, 1) ; *This\Caret
-          \Text\String.s[1] = RemoveString(\Text\String.s[1], \Text[2]\String.s, #PB_String_CaseSensitive, 0, 1) ; *This\Caret
-          \Text[2]\String.s[1] = \Text[2]\String.s
-          \Text\Len = Len(\Text\String.s)
-          \Text[2]\String.s = ""
-          \Text[2]\Len = 0
-        EndIf
-      Next
-      ;       PopListPosition(*This\Items())
-      ;       
-      ;       If \Text[2]\Len = \Text\Len
-      ;         DeleteElement(*This\Items(), 1)
-      ;       EndIf
-      
+      Debug \Text\String.s
     EndWith
     
-    ProcedureReturn Remove
+    ProcedureReturn 1
+  EndProcedure
+  Procedure _Remove(*This.Widget_S)
+    Protected Caret
+    
+    With *This
+      PushListPosition(\Items())
+      FirstElement(\Items()) ; LastElement(\Items()) ; 
+      While NextElement(\Items()) ; PreviousElement(\Items())  ; 
+        
+        If \Items()\Text[2]\Len = \Items()\Text\Len
+          \Items()\Caret - Caret
+          \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Caret, 1)
+          Caret + \Items()\Caret
+          *This\Line - 1
+        ElseIf \Items()\Text[2]\Len > 0
+             Debug " get "+\Items()\Text\String.s+" "+\Items()\Text[2]\String.s
+          ; If \Caret < \Caret[1] : \Caret = \Caret[1] : EndIf
+         
+             If \Caret[1] > \Caret
+               If \Items()\Text[2]\Width[2]
+                 \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1) 
+                 ;             \Caret = \Items()\Text\Len - \Items()\Text[2]\Len
+                 ;             \Caret[1] = \Caret
+                Caret = \Items()\Text[2]\Len
+              Else
+                 \Items()\Caret - Caret
+                 Debug \Items()\Caret
+                 \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret, 1) 
+                 *This\Line - 1
+               EndIf
+             EndIf
+           EndIf
+      Wend
+      PopListPosition(\Items())
+      
+;       \Text\Len = Len(\Text\String.s)
+; 
+;         If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+;       \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
+      \Text\Len = Len(\Text\String.s)
+      \Text\Change = 1
+      
+      Debug \Text\String.s
+    EndWith
+    
+    ProcedureReturn 1
   EndProcedure
   
   Procedure SelectionText(*This.Widget_S) ; Ok
@@ -1259,11 +1318,22 @@ Module Editor
         Debug " "+ListIndex(\Items())+" "+\Items()\Caret+" "+\Items()\Text\String.s; 
         \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
         \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret - 1) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 1)
-        \Text\Len = Len(\Text\String.s)  
         \Caret - 1 
+      Else
+          ; Если дошли до начала строки то 
+            ; переходим в конец предыдущего итема
+        If *This\Line[1] > 0 
+          \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
+          
+          ToUp(*This)
+          
+          *This\Caret = \Items()\Text\Len 
+        EndIf
+          
       EndIf
       
       If \Caret[1] <> \Caret
+        \Text\Len = Len(\Text\String.s)  
         \Caret[1] = \Caret 
         \Text\Change =- 1
         Repaint =- 1 
@@ -2702,5 +2772,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ggAAAOAAAAAAAKAAAUAAACAAAAAAAAAobGAAEBBAAAAAAAAAAAAAAAAAAAAAAAAAABw
+; Folding = ggAAAOAAAAAAAKAAAUAAA+OAAAAAAAAAo4MAAICiBAAAAAAAAAAAAAAAAAAAAAAAAACg
 ; EnableXP
