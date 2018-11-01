@@ -41,27 +41,16 @@ DeclareModule Text
 EndDeclareModule
 
 Module Text
-  
   ;- MACROS
   ;- PROCEDUREs
   Procedure.i Clip(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
-    ; Static Clip_X.i,Clip_Y.i,Clip_Width.i,Clip_Height.i
-    
     With *This
-      If X<>#PB_Ignore 
-        \Clip\X = X
-      EndIf
-      If Y<>#PB_Ignore 
-        \Clip\Y = Y
-      EndIf
-      If Width<>#PB_Ignore 
-        \Clip\Width = Width
-      EndIf
-      If Height<>#PB_Ignore 
-        \Clip\Height = Height
-      EndIf
+      If X<>#PB_Ignore : \Clip\X = X : EndIf
+      If Y<>#PB_Ignore : \Clip\Y = Y : EndIf
+      If Width<>#PB_Ignore : \Clip\Width = Width : EndIf
+      If Height<>#PB_Ignore : \Clip\Height = Height : EndIf
       
-      CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
+      CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS ; Bug in mac os
         ClipOutput(\Clip\X,\Clip\Y,\Clip\Width,\Clip\Height)
       CompilerEndIf
     EndWith
@@ -199,48 +188,6 @@ Module Text
     EndIf
   EndProcedure
   
-  Procedure SelectionLimits(*This.Widget_S)
-    With *This
-      Protected i, char = Asc(Mid(\Items()\Text\String.s, \Caret + 1, 1))
-      
-      If (char > =  ' ' And char < =  '/') Or 
-         (char > =  ':' And char < =  '@') Or 
-         (char > =  '[' And char < =  96) Or 
-         (char > =  '{' And char < =  '~')
-        
-        \Caret + 1
-        \Items()\Text[2]\Len = 1 
-      Else
-        ; |<<<<<< left edge of the word 
-        For i = \Caret To 1 Step - 1
-          char = Asc(Mid(\Items()\Text\String.s, i, 1))
-          If (char > =  ' ' And char < =  '/') Or 
-             (char > =  ':' And char < =  '@') Or 
-             (char > =  '[' And char < =  96) Or 
-             (char > =  '{' And char < =  '~')
-            Break
-          EndIf
-        Next 
-        
-        \Caret[1] = i
-        
-        ; >>>>>>| right edge of the word
-        For i = \Caret To \Items()\Text\Len
-          char = Asc(Mid(\Items()\Text\String.s, i, 1))
-          If (char > =  ' ' And char < =  '/') Or 
-             (char > =  ':' And char < =  '@') Or
-             (char > =  '[' And char < =  96) Or 
-             (char > =  '{' And char < =  '~')
-            Break
-          EndIf
-        Next 
-        
-        \Caret = i - 1
-        \Items()\Text[2]\Len = \Caret[1] - \Caret
-      EndIf
-    EndWith           
-  EndProcedure
-  
   Procedure.i MultiLine(*This.Widget_S)
     Static Len
     Protected Repaint, String.s, StringWidth
@@ -336,6 +283,7 @@ Module Text
         \Scroll\Width = 0 
         _set_content_Y_(*This)
         
+        ; 
         If ListSize(\Items()) 
           Protected Left,Right
           
@@ -355,7 +303,6 @@ Module Text
           EndIf
           
         EndIf
-        
         
         If \Text\Count[1] <> \Text\Count Or \Text\Vertical
           ClearList(\Items())
@@ -459,6 +406,10 @@ Module Text
             SelectElement(\Items(), IT-1)
             String.s = StringField(\Text\String.s[2], IT, #LF$)
             
+            \Items()\Caret = Len
+            \Items()\Text\Len = Len(String.s)
+            Len + \Items()\Text\Len + 1
+            
             If \Items()\Text\String.s <> String.s Or \Items()\Text\Change
               \Items()\Text\String.s = String.s
               
@@ -467,10 +418,6 @@ Module Text
               Else
                 StringWidth = TextWidth(String.s)
               EndIf
-              
-              \Items()\Caret = Len
-              \Items()\Text\Len = Len(String.s)
-              Len + \Items()\Text\Len + 1
               
               \Items()\Text\Width = StringWidth
               \Items()\Text\String.s = String.s
@@ -508,6 +455,48 @@ Module Text
     EndWith
     
     ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure.i SelectionLimits(*This.Widget_S)
+    With *This
+      Protected i, char = Asc(Mid(\Items()\Text\String.s, \Caret + 1, 1))
+      
+      If (char > =  ' ' And char < =  '/') Or 
+         (char > =  ':' And char < =  '@') Or 
+         (char > =  '[' And char < =  96) Or 
+         (char > =  '{' And char < =  '~')
+        
+        \Caret + 1
+        \Items()\Text[2]\Len = 1 
+      Else
+        ; |<<<<<< left edge of the word 
+        For i = \Caret To 1 Step - 1
+          char = Asc(Mid(\Items()\Text\String.s, i, 1))
+          If (char > =  ' ' And char < =  '/') Or 
+             (char > =  ':' And char < =  '@') Or 
+             (char > =  '[' And char < =  96) Or 
+             (char > =  '{' And char < =  '~')
+            Break
+          EndIf
+        Next 
+        
+        \Caret[1] = i
+        
+        ; >>>>>>| right edge of the word
+        For i = \Caret To \Items()\Text\Len
+          char = Asc(Mid(\Items()\Text\String.s, i, 1))
+          If (char > =  ' ' And char < =  '/') Or 
+             (char > =  ':' And char < =  '@') Or
+             (char > =  '[' And char < =  96) Or 
+             (char > =  '{' And char < =  '~')
+            Break
+          EndIf
+        Next 
+        
+        \Caret = i - 1
+        \Items()\Text[2]\Len = \Caret[1] - \Caret
+      EndIf
+    EndWith           
   EndProcedure
   
   Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
@@ -900,9 +889,7 @@ Module Text
   
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
     With *This
-      If Canvas=-1 
-        Canvas = EventGadget()
-      EndIf
+      If Canvas=-1 : Canvas = EventGadget() : EndIf
       If Canvas = \Canvas\Gadget
         \Canvas\Window = EventWindow()
       Else
@@ -913,25 +900,25 @@ Module Text
         \X[0] = X 
         \X[2]=X+\bSize
         \X[1]=\X[2]-\fSize
-        \Resize = 1
+        \Resize = 1<<1
       EndIf
       If Y<>#PB_Ignore 
         \Y[0] = Y
         \Y[2]=Y+\bSize
         \Y[1]=\Y[2]-\fSize
-        \Resize = 2
+        \Resize = 1<<2
       EndIf
       If Width<>#PB_Ignore 
         \Width[0] = Width 
         \Width[2] = \Width-\bSize*2
         \Width[1] = \Width[2]+\fSize*2
-        \Resize = 3
+        \Resize = 1<<3
       EndIf
       If Height<>#PB_Ignore 
         \Height[0] = Height 
         \Height[2] = \Height-\bSize*2
         \Height[1] = \Height[2]+\fSize*2
-        \Resize = 4
+        \Resize = 1<<4
       EndIf
       
       ProcedureReturn \Resize
@@ -1271,5 +1258,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --6--j-n--+em8-vvv+----------
+; Folding = ff6+PUO+v8+em8-vvvO02--------
 ; EnableXP

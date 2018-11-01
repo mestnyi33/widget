@@ -1256,9 +1256,8 @@ Module Editor
         Remove(*This)
         
       ElseIf \Caret[1] > 0 
-        Debug \Items()\Caret
-        Debug Left(\Text\String.s, \Items()\Caret+\Caret - 1);
-        ;\Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
+        Debug " "+ListIndex(\Items())+" "+\Items()\Caret+" "+\Items()\Text\String.s; 
+        \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
         \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret - 1) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 1)
         \Text\Len = Len(\Text\String.s)  
         \Caret - 1 
@@ -1266,9 +1265,8 @@ Module Editor
       
       If \Caret[1] <> \Caret
         \Caret[1] = \Caret 
-       \Text\Change =- 1
-       Debug \Text\String.s; 
-       Repaint =- 1 
+        \Text\Change =- 1
+        Repaint =- 1 
       EndIf
     EndWith
     
@@ -2704,5 +2702,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ggAAAMAAAAAAAKAAAUAAACAAAAAAAAAoDAAAEBBAAAAAAAAAAAAAAAAAAAAAAAAAABw
+; Folding = ggAAAOAAAAAAAKAAAUAAACAAAAAAAAAobGAAEBBAAAAAAAAAAAAAAAAAAAAAAAAAABw
 ; EnableXP
