@@ -405,39 +405,9 @@ Module Button
             EndIf
           CompilerEndIf 
           
-          ; Default colors (based on Windows 7)
-          \Color[0]\Fore[1] = RGBA(240, 240, 240, 255)
-          \Color[0]\Back[1] = RGBA(229, 229, 229, 255)  
-          \Color[0]\Frame[1] = RGBA(172, 172, 172, 255) 
-          
-          ; Цвет если мышь на виджете
-          \Color[0]\Fore[2] = RGBA(236, 244, 252, 255)
-          \Color[0]\Back[2] = RGBA(220, 236, 252, 255) ;  $FFFAEFE4 ; 
-          \Color[0]\Frame[2] = RGBA(0, 160, 252, 255)  ; $FFF5C775 ; 
-          
-          ; Цвет если нажали на виджет
-          \Color[0]\Fore[3] = RGBA(218, 236, 252, 255)
-          \Color[0]\Back[3] = RGBA(196, 224, 252, 255)
-          \Color[0]\Frame[3] = RGBA(86, 157, 229, 255)
-          
-          ;           \Color[0]\Fore[1] = $FFF6F6F6 
-          ;           \Color[0]\Back[1] = $FFE2E2E2  
-          ;           \Color[0]\Frame[1] = $FFBABABA 
-          ;           
-          ;           ; Цвет если мышь на виджете
-          ;           \Color[0]\Fore[2] = $FFEAEAEA
-          ;           \Color[0]\Back[2] = $FFCECECE
-          ;           \Color[0]\Frame[2] = $FF8F8F8F
-          ;           
-          ;           ; Цвет если нажали на виджет
-          ;           \Color[0]\Fore[3] = $FFE2E2E2
-          ;           \Color[0]\Back[3] = $FFB4B4B4
-          ;           \Color[0]\Frame[3] = $FF6F6F6F
-          
-          ; font color
-          \Color[0]\Front[1] = Widget_FontColor_Default ; $FF000000
-          
-          ; Устанавливаем цвет по умолчанию первый
+          ; Устанавливаем 
+          ; цвета по умолчанию
+          \Color[0] = Colors
           ResetColor(*This)
           
           SetText(*This, Text.s)

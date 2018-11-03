@@ -500,29 +500,34 @@ Module String
               PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Focus)
               
             Case #PB_EventType_LeftButtonUp
-              If \Caret[1] > 0
-                If #PB_Cursor_Default = GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
-                  SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, *This\Cursor)
+              If *This\Text\Editable 
+                If \Caret[1] > 0 And Not Bool(\Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len)
+                  If #PB_Cursor_Default = GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
+                    SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, *This\Cursor)
+                  EndIf
+                  
+                  *This\Text\String.s = RemoveString(*This\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, \Caret[1], 1)
+                  
+                  If \Caret[1] > *This\Caret 
+                    \Caret[1] = *This\Caret 
+                    *This\Caret[1] = *This\Caret + \Text[2]\Len
+                  Else
+                    \Caret[1] = (*This\Caret-\Text[2]\Len)
+                    *This\Caret[1] = \Caret[1]
+                  EndIf
+                  
+                  *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, \Caret+\Caret[1] + 1)
+                  *This\Text\Len = Len(*This\Text\String.s)
+                  \Text\String.s = InsertString(\Text\String.s, \Text[2]\String.s, \Caret+\Caret[1] + 1)
+                  \Text\Len = Len(\Text\String.s)
+                  
+                  *This\Text\Change =- 1
+                  \Caret[1] = 0
+                  Repaint =- 1
                 EndIf
-                *This\Text\String.s = RemoveString(*This\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, \Caret[1], 1)
-                
-                If \Caret[1] > *This\Caret 
-                  \Caret[1] = *This\Caret 
-                  *This\Caret[1] = *This\Caret + \Text[2]\Len
-                Else
-                  \Caret[1] = (*This\Caret-\Text[2]\Len)
-                  *This\Caret[1] = \Caret[1]
-                EndIf
-                
-                *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, \Caret+\Caret[1] + 1)
-                *This\Text\Len = Len(*This\Text\String.s)
-                \Text\String.s = InsertString(\Text\String.s, \Text[2]\String.s, \Caret+\Caret[1] + 1)
-                \Text\Len = Len(\Text\String.s)
-                
-                *This\Text\Change =- 1
+              Else
                 \Caret[1] = 0
               EndIf
-              Repaint =- 1
               
             Case #PB_EventType_LeftButtonDown
               Caret = Caret(*This)
@@ -753,30 +758,18 @@ Module String
             EndIf
           CompilerEndIf
           
+          ; set default colors
+          \Color[0] = Colors
+          \Color[0]\Fore[1] = 0
+          \Color[0]\Fore[2] = 0
           If \Text\Editable
             \Color[0]\Back[1] = $FFFFFFFF 
+            \Color[0]\Back[2] = $FFFFFFFF
           Else
             \Color[0]\Back[1] = $FFFAFAFA  
+            \Color[0]\Back[2] = $FFFAFAFA
           EndIf
-          
-          ; default frame color
-          \Color[0]\Frame[1] = Widget_FrameColor_Default ; $FFBABABA
-          
-          ; enter frame color
-          \Color[0]\Frame[2] = Widget_FrameColor_Enter   
-          \Color[0]\Fore[2] = Widget_FontColor_Focus   
-          \Color[0]\Back[2] = Widget_Color_Enter   
-          
-          ; focus frame color
-          \Color[0]\Frame[3] = Widget_FrameColor_Focus ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;   
-          
-          ; default font color
-          \Color[0]\Front[1] = Widget_FontColor_Default ; $FF000000 ; $FF0B0B0B
-          
-          ; focus font color
-          \Color[0]\Front[3] = Widget_FontColor_Focus ; ! $FFFFFFFF; Widget_FontColor_Focus ; $FF000000 ; $FF0B0B0B
-          
-          ; set default colors
+          \Color[0]\Frame[2] = $FFFFFFFF
           ResetColor(*This)
           
           SetText(*This, Text.s)
@@ -963,10 +956,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     StringGadget(0, 8,  10, 290, height, "Normal StringGadget...")
     StringGadget(1, 8,  35, 290, height, "1234567", #PB_String_Numeric)
-    StringGadget(2, 8,  60, 290, height, "Read-only StringGadget", #PB_String_ReadOnly)
+    StringGadget(2, 8,  60, 290, height, "StringGadget to right")
     StringGadget(3, 8,  85, 290, height, "LOWERCASE...", #PB_String_LowerCase)
     StringGadget(4, 8, 110, 290, height, "uppercase...", #PB_String_UpperCase)
-    StringGadget(5, 8, 135, 290, height, "Borderless StringGadget", #PB_String_BorderLess)
+    StringGadget(5, 8, 135, 290, height, "Borderless & read-only StringGadget", #PB_String_BorderLess|#PB_String_ReadOnly)
     StringGadget(6, 8, 160, 290, height, "Password", #PB_String_Password)
     StringGadget(7, 8,  185, 290, height, "")
     StringGadget(8, 8,  210, 290, 90, Text)
@@ -993,10 +986,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...")
     *S_1 = Create(10, -1, 8,  35, 290, height, "123-only-4567", #PB_Text_Numeric|#PB_Text_Center,8)
-    *S_2 = Create(10, -1, 8,  60, 290, height, "Read-only StringGadget", #PB_Text_Right)
+    *S_2 = Create(10, -1, 8,  60, 290, height, "StringGadget to right", #PB_Text_Right)
     *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
     *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
-    *S_5 = Create(10, -1, 8, 135, 290, height, "Borderless StringGadget", #PB_Text_ReadOnly|#PB_Widget_BorderLess)
+    *S_5 = Create(10, -1, 8, 135, 290, height, "Borderless & read-only StringGadget", #PB_Text_ReadOnly|#PB_Widget_BorderLess)
     *S_6 = Create(10, -1, 8, 160, 290, height, "Password", #PB_Text_Password)
     *S_7 = Create(10, -1, 8, 185, 290, height, "")
     *S_8 = Create(10, -1, 8,  210, 290, 90, Text);, #PB_Text_Top)
@@ -1011,5 +1004,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = h--0HAASNAAADz-fAAOEgCAh9
+; Folding = h--0HAASNAAADz--AAcIIFAC6
 ; EnableXP

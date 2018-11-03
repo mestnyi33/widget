@@ -51,19 +51,6 @@ EndDeclareModule
 Module Text
   ;- MACROS
   ;- PROCEDUREs
-  Procedure.i Clip(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
-    With *This
-      If X<>#PB_Ignore : \Clip\X = X : EndIf
-      If Y<>#PB_Ignore : \Clip\Y = Y : EndIf
-      If Width<>#PB_Ignore : \Clip\Width = Width : EndIf
-      If Height<>#PB_Ignore : \Clip\Height = Height : EndIf
-      
-      CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS ; Bug in mac os
-        ClipOutput(\Clip\X,\Clip\Y,\Clip\Width,\Clip\Height)
-      CompilerEndIf
-    EndWith
-  EndProcedure
-  
   Procedure.s Make(*This.Widget_S, Text.s)
     Protected String.s, i.i, Len.i
     
@@ -203,7 +190,7 @@ Module Text
     
     Macro _set_content_Y_(_this_)
       If _this_\Image\handle
-        If _this_\InLine
+        If _this_\Style\InLine
           Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count))/2)
           Image_Y=((Height-_this_\Image\Height)/2)
         Else
@@ -226,7 +213,7 @@ Module Text
     
     Macro _set_content_X_(_this_)
       If _this_\Image\handle
-        If _this_\InLine
+        If _this_\Style\InLine
           If _this_\Text\Align\Right
             Text_X=((Width-_this_\Image\Width-_this_\Items()\Text\Width)/2)-Indent/2
             Image_X=(Width-_this_\Image\Width+_this_\Items()\Text\Width)/2+Indent
@@ -313,6 +300,7 @@ Module Text
         EndIf
         
         If \Text\Count[1] <> \Text\Count Or \Text\Vertical
+          
           ClearList(\Items())
           \Scroll\Height = 0
           
@@ -500,7 +488,7 @@ Module Text
   EndProcedure
   
   Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
-    Protected String.s, StringWidth
+    Protected String.s, StringWidth, iwidth, iheight
     Protected IT,Text_Y,Text_X,Width,Height, Drawing
     
     If Not *This\Hide
@@ -509,10 +497,10 @@ Module Text
         If Canvas=-1 : Canvas = EventGadget() : EndIf
         If Canvas <> \Canvas\Gadget : ProcedureReturn : EndIf
         
+        If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
+          
         ; Make output multi line text
         If (\Text\Change Or \Resize)
-          If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
-          
           If \Text\Change
             \Text\Height = TextHeight("A") + 1
             \Text\Width = TextWidth(\Text\String.s)
@@ -533,50 +521,69 @@ Module Text
           RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Back)
         EndIf
         
-        Clip(*This, \X[2],\Y[2],\Width[2],\Height[2])
+        _clip_output_(*This, \X[2],\Y[2],\Width[2],\Height[2])
       EndWith 
       
       ; Draw items text
       With *This\Items()
         If ListSize(*This\Items())
-          Protected ScrollPagePos = *This\vScroll\Page\Pos
+          CompilerIf Defined(Scroll, #PB_Module)
+            iwidth = *This\width[2]-Scroll::Width(*This\vScroll)
+            iheight = *This\height[2]-Scroll::Height(*This\hScroll)
+          CompilerElse
+            iwidth = *This\width[2]
+            iheight = *This\height[2]
+          CompilerEndIf
           
           PushListPosition(*This\Items())
           ForEach *This\Items()
+            If *This\Type = #PB_GadgetType_Editor
+              \Hide = Bool( Not Bool(\y+\height+*This\Scroll\Y>*This\y[2] And \y+*This\Scroll\Y<iheight))
+            EndIf
             
             If Not \Hide
-              ; Draw selections
-              If \Item=*This\Line
-                ; Draw items back color
-                If \Color\Fore
-                  DrawingMode(#PB_2DDrawing_Gradient)
-                  BoxGradient(\Vertical,*This\X[2]+1,\Y-ScrollPagePos,*This\Width[2]-2,\Height,*This\Color\Fore[2],*This\Color\Back[2],*This\Radius)
-                Else
-                  DrawingMode(#PB_2DDrawing_Default)
-                  RoundBox(*This\X[2]+1,\Y-ScrollPagePos,*This\Width[2]-2,\Height,*This\Radius,*This\Radius,*This\Color\Back[2])
-                EndIf
-                
-                DrawingMode(#PB_2DDrawing_Outlined)
-                RoundBox(*This\x[2]+1,\y-ScrollPagePos,*This\width[2]-2,\height,*This\Radius,*This\Radius, *This\Color\Frame[2])
+              If \Text\FontID 
+                DrawingFont(\Text\FontID) 
               EndIf
               
-              ; Draw image
-              If \Image\handle
-                DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                DrawAlphaImage(\Image\handle, \Image\x, \Image\y-ScrollPagePos, \alpha)
-              EndIf
+              If \Text\Change : \Text\Change = #False
+                \Text\Width = TextWidth(\Text\String.s) 
+                
+                If \Text\FontID 
+                  \Text\Height = TextHeight("A") 
+                Else
+                  \Text\Height = *This\Text\Height
+                EndIf
+              EndIf 
               
               If \Text[1]\Change : \Text[1]\Change = #False
                 \Text[1]\Width = TextWidth(\Text[1]\String.s) 
               EndIf 
               
+              ; Draw selections
+              If \Item=*This\Line
+                ; Draw items back color
+                If \Color\Fore
+                  DrawingMode(#PB_2DDrawing_Gradient)
+                  BoxGradient(\Vertical,*This\X[2],\Y+*This\Scroll\Y,iwidth,\Height,*This\Color\Fore[2],*This\Color\Back[2],\Radius)
+                Else
+                  DrawingMode(#PB_2DDrawing_Default)
+                  RoundBox(*This\X[2],\Y+*This\Scroll\Y,iwidth,\Height,\Radius,\Radius,*This\Color\Back[2])
+                EndIf
+                
+                DrawingMode(#PB_2DDrawing_Outlined)
+                Box(*This\x[2],\y+*This\Scroll\Y,iwidth,\height, *This\Color\Frame[2])
+              EndIf
+              
+              ; Draw image
+              If \Image\handle
+                DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                DrawAlphaImage(\Image\handle, \Image\x, \Image\y+*This\Scroll\Y, \alpha)
+              EndIf
+              
               ; Draw text
               If \Text\String.s
-                Clip(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
-                
-                If \Text\FontID 
-                  DrawingFont(\Text\FontID) 
-                EndIf
+                _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
                 
                 If \Text[2]\Change : \Text[2]\Change = #False 
                   \Text[2]\X = \Text[0]\X+\Text[1]\Width
@@ -618,61 +625,61 @@ Module Text
                       
                       If \Text[3]\String.s
                         DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text[3]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[3]\String.s, *This\Color\Front)
+                        DrawText((\Text[3]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[3]\String.s, *This\Color\Front)
                       EndIf
                       
                       DrawingMode(#PB_2DDrawing_Default)
-                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, *This\Color\Frame[3])
+                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, *This\Color\Frame[3])
                       
                       If \Text[2]\String.s
                         DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[1]\String.s+\Text[2]\String.s, *This\Color\Front[3])
+                        DrawText((\Text\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[1]\String.s+\Text[2]\String.s, *This\Color\Front[3])
                       EndIf
                       
                       If \Text[1]\String.s
                         DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[1]\String.s, *This\Color\Front)
+                        DrawText((\Text\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[1]\String.s, *This\Color\Front)
                       EndIf
                     Else
                       DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawText((\Text\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text\String.s, *This\Color\Front)
+                      DrawText((\Text\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text\String.s, *This\Color\Front)
                       
                       DrawingMode(#PB_2DDrawing_Default)
-                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, *This\Color\Frame[3])
+                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, *This\Color\Frame[3])
                       
                       If \Text[2]\String.s
                         DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\String.s, *This\Color\Front[3])
+                        DrawText((\Text[2]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[2]\String.s, *This\Color\Front[3])
                       EndIf
                     EndIf
                   CompilerElse
                     If \Text[1]\String.s
                       DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                      DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                     EndIf
                     
                     DrawingMode(#PB_2DDrawing_Default)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, *This\Color\Frame[3])
+                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, *This\Color\Frame[3])
                     
                     If \Text[2]\String.s
                       DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[3])
+                      DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[3])
                     EndIf
                     
                     If \Text[3]\String.s
                       DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                      DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                     EndIf
                   CompilerEndIf
                   
                 Else
                   If \Text[2]\Len > 0
                     DrawingMode(#PB_2DDrawing_Default)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, *This\Color\Frame[3])
+                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, *This\Color\Frame[3])
                   EndIf
                   
                   DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                  DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                 EndIf
                 
               EndIf
@@ -682,9 +689,9 @@ Module Text
           
           If *This\Focus = *This 
             ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            If *This\Text\Editable And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] 
+            If (*This\Text\Editable Or \Text\Editable) And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] And Not \Text[2]\Width[2] 
               DrawingMode(#PB_2DDrawing_XOr)             
-              Line(((\Text\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFFFF)
+              Line(((\Text\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y+*This\Scroll\Y, 1, \Text[0]\Height, $FFFFFFFF)
             EndIf
           EndIf
         EndIf
@@ -692,8 +699,26 @@ Module Text
       
       ; Draw frames
       With *This
-        ;         Clip(*This, \X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4)
-        Clip(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
+        ;
+        CompilerIf Defined(Scroll, #PB_Module)
+          If \vScroll\Page\Length And \vScroll\Max<>\Scroll\Height And
+             Scroll::SetAttribute(\vScroll, #PB_ScrollBar_Maximum, \Scroll\Height)
+            Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            ; \vScroll\Page\ScrollStep = height
+          EndIf
+          If Not \Text\MultiLine And \hScroll\Page\Length And \hScroll\Max<>\Scroll\Width And
+             Scroll::SetAttribute(\hScroll, #PB_ScrollBar_Maximum, \Scroll\Width)
+            Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          EndIf
+          
+          Scroll::Draw(\vScroll)
+          If Not \Text\MultiLine
+            Scroll::Draw(\hScroll)
+          EndIf
+        CompilerEndIf
+        
+        ;         _clip_output_(*This, \X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4)
+        _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
         
         ; Draw image
         If \Image\handle
@@ -1060,14 +1085,9 @@ Module Text
             \Text\y = \fSize
           EndIf
           
-          If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFFFF 
-          Else
-            \Color[0]\Back[1] = $FFF0F0F0  
-          EndIf
-          \Color[0]\Frame[1] = $FFBABABA
-          
-          \Color[0]\Front[1] = $FF000000
+          \Color[0] = Colors
+          \Color[0]\Back[1] = \Color[0]\Fore[1]
+          \Color[0]\Fore[1] = 0
           ResetColor(*This)
           
           SetText(*This, Text.s)
@@ -1251,5 +1271,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----f9-vd4-------------------
+; Folding = -+0Ps-vd-8n+-+---------------
 ; EnableXP

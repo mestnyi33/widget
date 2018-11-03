@@ -27,26 +27,20 @@ DeclareModule Constants
 ;     #PB_Text_Right
     #PB_Text_Bottom = 4
     #PB_Text_Middle 
-    
-    #PB_Text_Vertical
-    #PB_Text_Numeric
-    
-    #PB_Text_LowerCase 
-    #PB_Text_UpperCase
-    #PB_Text_Password
-    
-    #PB_Text_ReadOnly
-    #PB_Text_WordWrap
-    #PB_Text_MultiLine 
-    
     #PB_Text_Left
     #PB_Text_Top
     
+    #PB_Text_Numeric
+    #PB_Text_ReadOnly
+    #PB_Text_LowerCase 
+    #PB_Text_UpperCase
+    #PB_Text_Password
+    #PB_Text_WordWrap
+    #PB_Text_MultiLine 
+     
+    #PB_Text_Vertical
     #PB_Text_Reverse ; Mirror
     #PB_Text_InLine
-    
-    #PB_Widget_Default
-    #PB_Widget_Toggle
     
     #PB_Widget_BorderLess
     #PB_Widget_Double
@@ -54,6 +48,11 @@ DeclareModule Constants
     #PB_Widget_Raised
     #PB_Widget_Single
     
+    #PB_Widget_Default
+    #PB_Widget_Toggle
+    
+    #PB_Widget_GridLines
+    #PB_Widget_FullRowSelect
     #PB_Widget_Invisible
   EndEnumeration
   
@@ -64,24 +63,13 @@ DeclareModule Constants
   
   #CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
   #ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
-  
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    #BorderSingle = 4
-    #BorderDouble = 8
-  CompilerElse
-    #BorderSingle = 256 ; 4
-    #BorderDouble = 65535 ; 8
-  CompilerEndIf
-  
-  #BorderFlat = 16    
+    
   #AlwaysShowSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
-  #BorderLess = 64
-  #BorderRaised = 128  
   
   
   #Selected = #PB_Tree_Selected                       ; 1
-  #Checked = #PB_Tree_Checked                         ; 4
   #Expanded = #PB_Tree_Expanded                       ; 2
+  #Checked = #PB_Tree_Checked                         ; 4
   #Collapsed = #PB_Tree_Collapsed                     ; 8
   
   #FullSelection = 512 ; #PB_ListIcon_FullRowSelect
@@ -106,7 +94,6 @@ EndModule
 
 UseModule Constants
     
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

@@ -1,35 +1,35 @@
 ﻿DeclareModule Structures
   
   ;- STRUCTURE
-  Structure COORDINATE
+  Structure Coordinate_S
     y.i[4]
     x.i[4]
     height.i[4]
     width.i[4]
   EndStructure
   
-  Structure MOUSE
+  Structure Mouse_S
     X.i
     Y.i
     From.i ; at point widget
     Buttons.i
   EndStructure
   
-  Structure ALIGN
+  Structure Align_S
     Right.b
     Bottom.b
     Vertical.b
     Horisontal.b
   EndStructure
   
-  Structure PAGE
+  Structure Page_S
     Pos.i
     Length.i
     ScrollStep.i
   EndStructure
   
-  Structure CANVAS
-    Mouse.MOUSE
+  Structure Canvas_S
+    Mouse.Mouse_S
     Gadget.i
     Window.i
     
@@ -37,7 +37,7 @@
     Key.i[2]
   EndStructure
   
-  Structure COLOR
+  Structure Color_S
     Front.i[4]
     Fore.i[4]
     Back.i[4]
@@ -46,13 +46,22 @@
     Arrows.i[4]
   EndStructure
   
-  Structure IMAGE Extends Coordinate
-    handle.i[2]
-    change.b
-    Align.ALIGN
+  Structure Style_S
+    InLine.i
+    NoLines.i
+    NoButtons.i
+    CheckBoxes.i
+    FullRowSelect.i
+    AlwaysShowSelection.i
   EndStructure
   
-  Structure TEXT Extends COORDINATE
+  Structure Image_S Extends Coordinate_S
+    handle.i[2]
+    change.b
+    Align.Align_S
+  EndStructure
+  
+  Structure Text_S Extends Coordinate_S
     ;     Char.c
     Len.i
     FontID.i
@@ -60,7 +69,7 @@
     Count.i[2]
     Change.b
     
-    Align.ALIGN
+    Align.Align_S
     
     Lower.b
     Upper.b
@@ -74,7 +83,7 @@
     Mode.i
   EndStructure
   
-  Structure SCROLL Extends COORDINATE
+  Structure Scroll_S Extends Coordinate_S
     Window.i
     Gadget.i
     
@@ -95,22 +104,24 @@
     Vertical.b
     DrawingMode.i
     
-    Page.PAGE
-    Area.PAGE
-    Thumb.PAGE
-    Button.PAGE
-    Color.COLOR[4]
+    Page.Page_S
+    Area.Page_S
+    Thumb.Page_S
+    Button.Page_S
+    Color.Color_S[4]
   EndStructure
   
-  Structure Widget_S Extends COORDINATE
+  Structure Widget_S Extends Coordinate_S
     Index.i  ; Index of new list element
     Handle.i ; Adress of new list element
-    InLine.i
+             ;
     
     *Widget.Widget_S
-    Canvas.CANVAS
-    Color.COLOR[4]
-    Text.TEXT[4]
+    Canvas.Canvas_S
+    Style.Style_S
+    Color.Color_S[4]
+    Text.Text_S[4]
+    Clip.Coordinate_S
     
     fSize.i
     bSize.i
@@ -119,7 +130,7 @@
     Cursor.i[2]
     
     Caret.i[2] ; 0 = Pos ; 1 = PosFixed
-    Line.i[2] ; 0 = Pos ; 1 = PosFixed
+    Line.i[2]  ; 0 = Pos ; 1 = PosFixed
     
     
     Type.i
@@ -137,13 +148,12 @@
     Radius.i
     Buttons.i
     
-    Clip.COORDINATE
     
     ; tree
     time.i
     adress.i[2]
     sublevel.i
-    box.Coordinate
+    box.Coordinate_S
     *data
     collapsed.b
     childrens.i
@@ -151,11 +161,11 @@
     Attribute.l
     change.b
     flag.i
-    Image.IMAGE
+    Image.Image_S
     
-    Scroll.SCROLL
-    vScroll.SCROLL
-    hScroll.SCROLL
+    Scroll.Scroll_S
+    vScroll.Scroll_S
+    hScroll.Scroll_S
     
     *Default
     Alpha.a[2]
@@ -167,12 +177,70 @@
     
   EndStructure
   
-  Global Widget_FrameColor_Default = $FFBABABA
-  Global Widget_Color_Enter = $FFD3FECA ; $FFFCEADA
-  Global Widget_FrameColor_Enter = $FF44FB1C ; $FFFFC288
-  Global Widget_FrameColor_Focus = $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;   
-  Global Widget_FontColor_Default = $FF000000 ; $FF0B0B0B
-  Global Widget_FontColor_Focus = $FFFFFFFF
+  ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;
+  Global Colors.Color_S
+  With Colors                          
+    ;- Серые цвета 
+    ; Цвета по умолчанию
+    \Front[1] = $FF000000
+    \Fore[1] = $FFF6F6F6 
+    \Back[1] = $FFE2E2E2
+    \Line[1] = $FFA3A3A3
+    \Frame[1] = $FFBABABA
+    
+    ; Цвета если мышь на виджете
+    \Front[2] = $FF000000
+    \Fore[2] = $FFEAEAEA
+    \Back[2] = $FFCECECE
+    \Line[2] = $FF5B5B5B
+    \Frame[2] = $FF8F8F8F
+    
+    ; Цвета если нажали на виджет
+    \Front[3] = $FFFFFFFF
+    \Fore[3] = $FFE2E2E2
+    \Back[3] = $FFB4B4B4
+    \Line[3] = $FFFFFFFF
+    \Frame[3] = $FF6F6F6F
+    
+    ;         ;- Зеленые цвета
+    ;         ; Цвета по умолчанию
+    ;         \Front[1] = $FF000000
+    ;         \Fore[1] = $FFE4FEDF 
+    ;         \Back[1] = $FFD3FECA  
+    ;         \Frame[1] = $FFA0FC8C 
+    ;         
+    ;         ; Цвета если мышь на виджете
+    ;         \Front[2] = $FF000000
+    ;         \Fore[2] = $FFD8FED0
+    ;         \Back[2] = $FFA0FC8C
+    ;         \Frame[2] = $FF2DEE04
+    ;         
+    ;         ; Цвета если нажали на виджет
+    ;         \Front[3] = $FFFFFFFF
+    ;         \Fore[3] = $FFC3FDB7
+    ;         \Back[3] = $FF2DEE04
+    ;         \Frame[3] = $FF23BE03
+    
+    ;         ;- Синие цвета
+    ;         ; Цвета по умолчанию
+    ;         \Front[1] = $FF000000
+    ;         \Fore[1] = $FFF8F8F8 ; $FFF0F0F0 
+    ;         \Back[1] = $FFE5E5E5
+    ;         \Frame[1] = $FFACACAC 
+    ;         
+    ;         ; Цвета если мышь на виджете
+    ;         \Front[2] = $FF000000
+    ;         \Fore[2] = $FFFAF8F8 ; $FFFCF4EA
+    ;         \Back[2] = $FFFAE8DB ; $FFFCECDC
+    ;         \Frame[2] = $FFFC9F00
+    ;         
+    ;         ; Цвета если нажали на виджет
+    ;         \Front[3] = $FFFFFFFF
+    ;         \Fore[3] = $FFFDF7EF
+    ;         \Back[3] = $FFFBD9B7
+    ;         \Frame[3] = $FFE59B55
+    
+  EndWith
   
   Global *Focus.Widget_S
   Global NewList List.Widget_S()
@@ -185,5 +253,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -4-
+; Folding = ---
 ; EnableXP

@@ -309,6 +309,7 @@ Module Button
         \Text\Rotate = 270 ; 90;
         \Alpha = 255
         \Interact = 1
+        \Line =- 1
         
         ; Set the default widget flag
         Flag|#PB_Text_ReadOnly
@@ -372,7 +373,7 @@ Module Button
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
-          \InLine = Bool(Flag&#PB_Text_InLine)
+          \Style\InLine = Bool(Flag&#PB_Text_InLine)
           
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
             If \Text\Vertical
@@ -400,25 +401,11 @@ Module Button
             EndIf
           CompilerEndIf 
           
-          \Color[0]\Fore[1] = $FFF6F6F6 
-          \Color[0]\Back[1] = $FFE2E2E2  
-          \Color[0]\Frame[1] = $FFBABABA 
-          
-          ; Цвет если мышь на виджете
-          \Color[0]\Fore[2] = $FFEAEAEA
-          \Color[0]\Back[2] = $FFCECECE
-          \Color[0]\Frame[2] = $FF8F8F8F
-          
-          ; Цвет если нажали на виджет
-          \Color[0]\Fore[3] = $FFE2E2E2
-          \Color[0]\Back[3] = $FFB4B4B4
-          \Color[0]\Frame[3] = $FF6F6F6F
-          
-          ; font color
-          \Color[0]\Front[1] = $FF000000
-          
-          ; Устанавливаем цвет по умолчанию первый
+          ; Устанавливаем 
+          ; цвета по умолчанию
+          \Color[0] = Colors
           ResetColor(*This)
+          
           SetText(*This, Text.s)
         EndIf
       EndWith

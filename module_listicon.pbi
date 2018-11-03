@@ -12,38 +12,7 @@ DeclareModule ListIcon
   UseModule Constants
   UseModule Structures
   
-  #NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
-  #NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
   
-  #CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
-  #ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
-  
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    #BorderSingle = 4
-    #BorderDouble = 8
-  CompilerElse
-    #BorderSingle = 256 ; 4
-    #BorderDouble = 65535 ; 8
-  CompilerEndIf
-  
-  #BorderFlat = 16    
-  #AlwaysShowSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
-  #BorderLess = 64
-  #BorderRaised = 128  
-  
-  
-  #Selected = #PB_Tree_Selected                       ; 1
-  #Checked = #PB_Tree_Checked                         ; 4
-  #Expanded = #PB_Tree_Expanded                       ; 2
-  #Collapsed = #PB_Tree_Collapsed                     ; 8
-  
-  #FullSelection = 512 ; #PB_ListIcon_FullRowSelect
-  #GridLines = 1024
-  
-  #SmallIcon = #PB_ListIcon_LargeIcon                 ; 0 0
-  #LargeIcon = #PB_ListIcon_SmallIcon                 ; 1 1
-  
- 
   Declare AddColumn(Gadget,Item,Text.s,Width.l,Image.l=-1)
   Declare.l Gadget(Gadget.l, x.l, y.l, width.l, height.l, ColumnTitle.s, ColumnWidth.l, flag.l=0)
   Declare AddItem(Gadget.l,Item.l,Text.s,Image.l=-1,sublevel.l=0)
@@ -144,7 +113,7 @@ Module ListIcon
               Else
                 
                 ; 
-                If Not *This\flag&#FullSelection And
+                If Not *This\flag&#PB_Widget_FullRowSelect And
                    ((MouseX < \Items()\text\x-*This\Image\width) Or (MouseX > \Items()\text\x+\Items()\text\width))
                   Break
                 EndIf
@@ -250,7 +219,7 @@ Module ListIcon
         EndIf
         column_x - *This\hScroll\Page\Pos
         column_width = column_x
-        *This\vScroll\Page\ScrollStep = height+Bool(*This\flag&#GridLines)*2+l
+        *This\vScroll\Page\ScrollStep = height+Bool(*This\flag&#PB_Widget_GridLines)*2+l
         
         ForEach *This\Columns()
           ;If ListSize(*This\Columns()\Items())
@@ -333,7 +302,7 @@ Module ListIcon
                 \box\y[1] = \y+(\height-\box\height[1])/2
               EndIf
               
-              *This\Scroll\height+\height+l+Bool(*This\flag&#GridLines)*2
+              *This\Scroll\height+\height+l+Bool(*This\flag&#PB_Widget_GridLines)*2
               If *This\Scroll\Width < (\text\x+\text\width+n)+*This\hScroll\Page\Pos
                 *This\Scroll\Width = (\text\x+\text\width+n)+*This\hScroll\Page\Pos
               EndIf
@@ -341,7 +310,7 @@ Module ListIcon
               Drawing = Bool(\y+\height>*This\y[2]+*This\Columns()\height And \y<*This\height[2])
               If Drawing
                 If (\Item=\focus And \lostfocus<>\focus) Or
-                   (*This\focus And *This\flag&#FullSelection And *This\Item = \Item )
+                   (*This\focus And *This\flag&#PB_Widget_FullRowSelect And *This\Item = \Item )
                   
                   box_color = $FFFFFF
                   text_color=$FFFFFF
@@ -352,7 +321,7 @@ Module ListIcon
                 
                 
                 ; Draw selections
-                If *This\flag&#FullSelection
+                If *This\flag&#PB_Widget_FullRowSelect
                   If ListIndex(*This\Columns()) = 0;ListSize(*This\Columns()) - 1
                     If \Item=\from
                       DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
@@ -457,7 +426,7 @@ Module ListIcon
                   CompilerEndIf
                 EndIf
                 
-                If *This\flag&#GridLines
+                If *This\flag&#PB_Widget_GridLines
                   ; Horisontal line
                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                   Box(*This\x[2], (\y+\height)+l, iwidth, l, $ADADAE&$FFFFFF|alpha<<24)
@@ -493,7 +462,7 @@ Module ListIcon
           
           
           ; Vertical line
-          If *This\flag&#GridLines
+          If *This\flag&#PB_Widget_GridLines
             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
             Box(column_x, *This\y[2], l, iheight, $ADADAE&$FFFFFF|alpha<<24)
             Box(*This\Columns()\x+*This\Columns()\width, *This\y[2], l, iheight, $ADADAE&$FFFFFF|alpha<<24)
@@ -517,7 +486,7 @@ Module ListIcon
           ;EndIf
         Next
         
-        *This\Scroll\Height = *This\Scroll\Height-l-Bool(*This\flag&#GridLines)*2
+        *This\Scroll\Height = *This\Scroll\Height-l-Bool(*This\flag&#PB_Widget_GridLines)*2
         
         ; Задаем размеры скролл баров
         If *This\vScroll\Page\Length And *This\vScroll\Max<>*This\Scroll\Height And 
@@ -1293,7 +1262,7 @@ Module ListIcon
     Protected *This.Widget_S=AllocateStructure(Widget_S)
     If *This
       With *This
-        If Not flag&#BorderLess
+        If Not flag&#PB_Widget_BorderLess
           \bSize = 2
           \fSize = 2
         EndIf
@@ -1450,7 +1419,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 12
-    Gadget(g, 180, 230, 165, 210,"Column_1",90, #FullSelection)                                         
+    Gadget(g, 180, 230, 165, 210,"Column_1",90, #PB_Widget_FullRowSelect)                                         
     For i=1 To 2 : AddColumn(g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To Count
@@ -1458,7 +1427,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 13
-    Gadget(g, 350, 230, 430, 210,"Column_1",90, #FullSelection|#GridLines|#CheckBoxes)                                         
+    Gadget(g, 350, 230, 430, 210,"Column_1",90, #PB_Widget_FullRowSelect|#PB_Widget_GridLines|#CheckBoxes)                                         
     
     ;HideGadget(g,1)
     For i=1 To 2

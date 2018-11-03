@@ -32,8 +32,10 @@ DeclareModule Editor
   CompilerEndIf
   
   
+  ;- - DECLAREs MACROs
+  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
+  
   ;- DECLARE
-  Declare.i Draw(*This.Widget_S, Canvas.i=-1)
   Declare GetState(Gadget.i)
   Declare.s GetText(Gadget.i)
   Declare SetState(Gadget.i, State.i)
@@ -53,396 +55,7 @@ EndDeclareModule
 Module Editor
   ; ;   UseModule Constant
   ;- PROCEDURE
-  Procedure item_from(*This.Widget_S, MouseX=-1, MouseY=-1, focus=0)
-    Protected adress.i
-    Protected lostfocus.l=-1, collapsed.l, sublevel.l, coll.l
-    
-    With *This
-      PushListPosition(\Items()) 
-      ForEach \Items()
-        If \Items()\from = \Items()\Item 
-          \Items()\from =- 1
-          adress = @\Items()
-          Break
-        EndIf
-      Next
-      
-      ForEach \Items()
-        If \Items()\Item = \Items()\focus
-          If Bool(MouseX=-1 And MouseY=-1 And focus=1)
-            \Items()\lostfocus = \Items()\focus
-            *This\focus = 0
-          EndIf
-          adress = @\Items()
-          Break
-        EndIf
-      Next
-      
-      If Not Bool(MouseX=-1 And MouseY=-1)
-        ForEach \Items()
-          If \Items()\hide : Continue : EndIf
-          If (MouseY > (\Items()\Y) And MouseY =< ((\Items()\Y+\Items()\Height))) And 
-             ((MouseX > \Items()\X) And (MouseX =< (\Items()\X+\Items()\Width)))
-            
-            If focus
-              If (MouseY > (\Items()\box\y[1]) And MouseY =< ((\Items()\box\y[1]+\Items()\box\height[1]))) And 
-                 ((MouseX > \Items()\box\x[1]) And (MouseX =< (\Items()\box\x[1]+\Items()\box\width[1])))
-                
-                \Items()\checked ! 1
-                *This\Change = 1
-              EndIf
-              
-              If (Not \flag&#NoButtons And \Items()\childrens) And
-                 (MouseY > (\Items()\box\y[0]) And MouseY =< ((\Items()\box\y[0]+\Items()\box\height[0]))) And 
-                 ((MouseX > \Items()\box\x[0]) And (MouseX =< (\Items()\box\x[0]+\Items()\box\width[0])))
-                
-                sublevel = \Items()\sublevel
-                \Items()\collapsed ! 1
-                
-                PushListPosition(\Items())
-                While NextElement(\Items())
-                  If sublevel = \Items()\sublevel
-                    Break
-                  ElseIf sublevel < \Items()\sublevel 
-                    If \Items()\adress
-                      PushListPosition(\Items())
-                      ChangeCurrentElement(\Items(), \Items()\adress)
-                      collapsed = \Items()\collapsed
-                      If \Items()\hide
-                        collapsed = 1
-                      EndIf
-                      PopListPosition(\Items())
-                    EndIf
-                    
-                    \Items()\hide = collapsed
-                  EndIf
-                Wend
-                PopListPosition(\Items())
-                
-              Else
-                ; Get entered item only on image and text 
-                If Not *This\flag&#FullSelection And
-                   ((MouseX < \Items()\text\x-*This\Image\width) Or (MouseX > \Items()\text\x+\Items()\text\width))
-                  Break
-                EndIf
-                
-                If adress 
-                  PushListPosition(\Items()) 
-                  ChangeCurrentElement(\Items(), adress)
-                  If \Items()\focus = \Items()\Item
-                    lostfocus = \Items()\focus 
-                    \Items()\lostfocus =- 1
-                    \Items()\focus =- 1
-                  EndIf
-                  PopListPosition(\Items()) 
-                  If lostfocus <> \Items()\Item
-                    \Items()\lostfocus = lostfocus
-                    *This\Item = \Items()\Item
-                    *This\Change = 1
-                  EndIf
-                EndIf
-                
-                \Items()\focus = \Items()\Item
-              EndIf
-              
-            EndIf
-            
-            If \Items()\from <> \Items()\Item 
-              \Items()\from = \Items()\Item
-              *This\from = \Items()\from
-              ;  *This\text = \Items()\text 
-            EndIf
-            
-            adress = @\Items()
-            
-            Break
-          EndIf
-        Next
-      EndIf
-      PopListPosition(\Items())
-    EndWith
-    
-    ProcedureReturn adress
-  EndProcedure
-  
-  Procedure.i Clip(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
-    ; Static Clip_X.i,Clip_Y.i,Clip_Width.i,Clip_Height.i
-    
-    With *This
-      If X<>#PB_Ignore 
-        \Clip\X = X
-      EndIf
-      If Y<>#PB_Ignore 
-        \Clip\Y = Y
-      EndIf
-      If Width<>#PB_Ignore 
-        \Clip\Width = Width
-      EndIf
-      If Height<>#PB_Ignore 
-        \Clip\Height = Height
-      EndIf
-      
-      CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-        ClipOutput(\Clip\X,\Clip\Y,\Clip\Width,\Clip\Height)
-      CompilerEndIf
-    EndWith
-  EndProcedure
-  
-  Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
-    Protected Drawing, Wrap, String.s, StringWidth
-    Protected IT,Text_Y,Text_X,Width,Height
-    
-    If Not *This\Hide
-      With *This
-        If Canvas=-1 : Canvas = EventGadget() : EndIf
-        If Canvas <> \Canvas\Gadget : ProcedureReturn : EndIf
-        
-        ; Make output text
-        If \Text\String.s
-          If \Text\FontID 
-            DrawingFont(\Text\FontID) 
-          EndIf
-          
-          If \Text\Change
-            \Text\Height = TextHeight("A") + 1
-            \Text\Width = TextWidth(\Text\String.s)
-          EndIf
-          
-          If (\Text\Change Or \Resize)
-            Text::MultiLine(*This)
-          EndIf
-          
-          If \Text\Change
-            \Text\Change = 0
-          EndIf
-          
-          If \Resize
-            \Resize = 0
-          EndIf
-        EndIf 
-        
-        ; Draw back color
-        If \Color\Fore
-          DrawingMode(#PB_2DDrawing_Gradient)
-          BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
-        Else
-          DrawingMode(#PB_2DDrawing_Default)
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Back)
-        EndIf
-        
-        Clip(*This, \X[2],\Y[2],\Width[2],\Height[2])
-      EndWith 
-      
-      ; Draw items text
-      If ListSize(*This\Items())
-        With *This\Items()
-          Protected ScrollPagePos = *This\vScroll\Page\Pos
-          
-          PushListPosition(*This\Items())
-          ForEach *This\Items()
-            \Hide = Bool( Not Bool(\y+\height-ScrollPagePos>*This\y[2] And \y-ScrollPagePos<*This\height[2]))
-            ;Debug ScrollPagePos
-            
-            If Not \Hide
-              ; Draw selections
-              If \Item=*This\Line
-                ; Draw items back color
-                If \Color\Fore
-                  DrawingMode(#PB_2DDrawing_Gradient)
-                  BoxGradient(\Vertical,*This\X[2],\Y-ScrollPagePos,*This\Width[2],\Height,*This\Color\Fore[2],*This\Color\Back[2],\Radius)
-                Else
-                  DrawingMode(#PB_2DDrawing_Default)
-                  RoundBox(*This\X[2],\Y-ScrollPagePos,*This\Width[2],\Height,\Radius,\Radius,*This\Color\Back[2])
-                EndIf
-                
-                DrawingMode(#PB_2DDrawing_Outlined)
-                Box(*This\x[2],\y-ScrollPagePos,*This\width[2],\height, *This\Color\Frame[2])
-              EndIf
-              
-              ; Draw image
-              If \Image\handle
-                DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                DrawAlphaImage(\Image\handle, \Image\x, \Image\y-ScrollPagePos, \alpha)
-              EndIf
-              
-              ; Draw string
-              If \Text[1]\Change : \Text[1]\Change = #False
-                \Text[1]\Width = TextWidth(\Text[1]\String.s) 
-              EndIf 
-              
-              If \Text\String.s
-                Clip(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
-                
-                If \Text\FontID 
-                  DrawingFont(\Text\FontID) 
-                EndIf
-                
-                If \Text[2]\Change : \Text[2]\Change = #False 
-                  \Text[2]\X = \Text[0]\X+\Text[1]\Width
-                  \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
-                  \Text[3]\X = \Text[2]\X+\Text[2]\Width
-                EndIf 
-                
-                If \Text[3]\Change : \Text[3]\Change = #False 
-                  \Text[3]\Width = TextWidth(\Text[3]\String.s)
-                EndIf
-                
-                ;If *This\Focus = *This 
-                Protected Left,Right
-                Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
-                Right = (\Width + Left)
-                
-                If *This\Scroll\X < Left
-                  *This\Scroll\X = Left
-                ElseIf *This\Scroll\X > Right
-                  *This\Scroll\X = Right
-                ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
-                  *This\Scroll\X = (\Width-\Text[3]\Width) + Left
-                  If *This\Scroll\X>0
-                    *This\Scroll\X=0
-                  EndIf
-                EndIf
-                ;EndIf
-                
-                ; Draw text
-                If \Text[2]\Len > 0 And *This\Color\Front <> *This\Color\Front[3]
-                  
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                    If (*This\Caret[1] > *This\Caret And *This\Line[1] = *This\Line) Or (*This\Line[1] > *This\Line And *This\Line = \Item)
-                      \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
-                      
-                      If *This\Line[1] = *This\Line
-                        \Text[2]\X = \Text[3]\X-\Text[2]\Width
-                      EndIf
-                      
-                      If \Text[3]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text[3]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[3]\String.s, *This\Color\Front)
-                      EndIf
-                      
-                      DrawingMode(#PB_2DDrawing_Default)
-                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, *This\Color\Frame[3])
-                      
-                      If \Text[2]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[1]\String.s+\Text[2]\String.s, *This\Color\Front[3])
-                      EndIf
-                      
-                      If \Text[1]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[1]\String.s, *This\Color\Front)
-                      EndIf
-                    Else
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawText((\Text\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text\String.s, *This\Color\Front)
-                      
-                      DrawingMode(#PB_2DDrawing_Default)
-                      Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text\Height, *This\Color\Frame[3])
-                      
-                      If \Text[2]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\String.s, *This\Color\Front[3])
-                      EndIf
-                    EndIf
-                  CompilerElse
-                    If \Text[1]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                    EndIf
-                    
-                    DrawingMode(#PB_2DDrawing_Default)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, *This\Color\Frame[3])
-                    
-                    If \Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[3])
-                    EndIf
-                    
-                    If \Text[3]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[3]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                    EndIf
-                  CompilerEndIf
-                  
-                Else
-                  If \Text[2]\Len > 0
-                    DrawingMode(#PB_2DDrawing_Default)
-                    Box((\Text[2]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[2]\Width+\Text[2]\Width[2], \Text[0]\Height, *This\Color\Frame[3])
-                  EndIf
-                  
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y-ScrollPagePos, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                EndIf
-                
-              EndIf
-            EndIf
-            
-          Next
-          PopListPosition(*This\Items()) ; 
-          
-          If *This\Text\Editable ;And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] And Not \Text[2]\Width[2]
-                                 ; Debug ""+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            DrawingMode(#PB_2DDrawing_XOr)     
-            Line(((\Text[0]\X+*This\Scroll\X) + \Text[1]\Width), \Text[0]\Y, 1, \Text[0]\Height, $FFFFFFFF ! *This\Color\Frame[3])
-          EndIf
-          
-          Wrap = Bool(*This\Text\MultiLine)
-          
-          If *This\vScroll\Page\Length And *This\vScroll\Max<>*This\Scroll\Height And
-             Scroll::SetAttribute(*This\vScroll, #PB_ScrollBar_Maximum, *This\Scroll\Height)
-            Scroll::Resizes(*This\vScroll, *This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            ; *This\vScroll\Page\ScrollStep = height
-          EndIf
-          If Not Wrap And *This\hScroll\Page\Length And *This\hScroll\Max<>*This\Scroll\Width And
-             Scroll::SetAttribute(*This\hScroll, #PB_ScrollBar_Maximum, *This\Scroll\Width)
-            Scroll::Resizes(*This\vScroll, *This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
-          
-          Scroll::Draw(*This\vScroll)
-          If Not Wrap
-            Scroll::Draw(*This\hScroll)
-          EndIf
-        EndWith  
-      EndIf
-      
-      ; Draw frames
-      With *This
-        ;         Clip(*This, \X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4)
-        Clip(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
-        
-        ; Draw image
-        If \Image\handle
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
-        EndIf
-        
-        ; Draw frames
-        DrawingMode(#PB_2DDrawing_Outlined)
-        
-        If \Default
-          RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[3])
-          ;           If \Radius ; Сглаживание краев)))
-          ;             RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
-          ;           EndIf
-          ;           RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,\Color\Frame[3])
-        EndIf
-        
-        If \Focus = *This ;  Debug "\Focus "+\Focus
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[3])
-          If \Radius ; Сглаживание краев))) ; RoundBox(\X[1],\Y[1],\Width[1]+1,\Height[1]+1,\Radius,\Radius,\Color\Frame[3])
-            RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[3]) ; $D5A719)
-          EndIf
-          RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,\Color\Frame[3])
-        Else
-          If \fSize
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
-          EndIf
-        EndIf
-      EndWith
-    EndIf
-    
-  EndProcedure
-  
+  ;-
   Procedure ReDraw(*This.Widget_S, Canvas =- 1)
     If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
       Draw(*This, Canvas)
@@ -774,6 +387,7 @@ Module Editor
           \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Caret, 1)
           Caret + \Items()\Caret
           *This\Line - 1
+          
         ElseIf \Items()\Text[2]\Len > 0
              Debug " get "+\Items()\Text\String.s+" "+\Items()\Text[2]\String.s
           ; If \Caret < \Caret[1] : \Caret = \Caret[1] : EndIf
@@ -929,64 +543,33 @@ Module Editor
     ProcedureReturn Position
   EndProcedure
   
-  Procedure.s AddString(*This.Widget_S, Item =- 1,Text.s="")
+  Procedure.s Replace(*This.Widget_S)
     Protected String.s, i
     
     With *This
-      If Not ListSize(\Items())
-        If StartDrawing(CanvasOutput(\Canvas\Gadget))
-          If \Text\FontID 
-            DrawingFont(\Text\FontID) 
-          EndIf
-          
-          Text::MultiLine(*This)
-          StopDrawing()
-        EndIf
-      Else
-        PushListPosition(\Items())
-        ForEach \Items()
-          If Item = ListIndex(\Items())
-            If String.s
-              String.s  +#LF$+ Text.s
-            Else
-              String.s  + Text.s
-            EndIf
-          EndIf
-          
+      PushListPosition(\Items())
+      ForEach \Items()
+        ; Пропускаем выделенные слова
+        If \Items()\Text[2]\Len <> \Items()\Text\Len
           If String.s
             String.s +#LF$+ \Items()\Text\String.s
           Else
             String.s + \Items()\Text\String.s
           EndIf
-        Next
-        PopListPosition(\Items())
-        ;         *This\Text\Count = CountString(*This\Text\String.s, #LF$)
-        ;       
-        ;       For i=0 To *This\Text\Count
-        ;         If Item = i
-        ;           If String.s
-        ;             String.s  +#LF$+ Text.s
-        ;           Else
-        ;             String.s  + Text.s
-        ;           EndIf
-        ;         EndIf
-        ;         
-        ;         If String.s
-        ;           String.s +#LF$+ StringField(*This\Text\String.s, i + 1, #LF$)
-        ;         Else
-        ;           String.s + StringField(*This\Text\String.s, i + 1, #LF$)
-        ;         EndIf
-        ;       Next
-        
-        \Text\String.s = String.s 
-        \Text\Len = Len(String.s)
-        \Text\Change = 1
-      EndIf
+        EndIf
+      Next
+      PopListPosition(\Items())
+      
+      String.s = Trim(String.s, #LF$)
+      ;\Text\Count = 
+      
+      \Text\String.s = String.s 
+      \Text\Len = Len(String.s)
+      \Text\Change = 1
     EndWith
     
     ProcedureReturn String.s
   EndProcedure
-  
   
   Procedure ResetLen(*This.Widget_S)
     With *This
@@ -1256,6 +839,98 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
+  ;-
+  Procedure.s AddString(*This.Widget_S, Item =- 1,Text.s="")
+    Protected String.s, i
+    
+    With *This
+      If Not ListSize(\Items())
+        If StartDrawing(CanvasOutput(\Canvas\Gadget))
+          If \Text\FontID 
+            DrawingFont(\Text\FontID) 
+          EndIf
+          
+          Text::MultiLine(*This)
+          StopDrawing()
+        EndIf
+      Else
+        PushListPosition(\Items())
+        ForEach \Items()
+          If Item = ListIndex(\Items())
+            If String.s
+              String.s  +#LF$+ Text.s
+            Else
+              String.s  + Text.s
+            EndIf
+          EndIf
+          
+          If String.s
+            String.s +#LF$+ \Items()\Text\String.s
+          Else
+            String.s + \Items()\Text\String.s
+          EndIf
+        Next
+        PopListPosition(\Items())
+        ;         *This\Text\Count = CountString(*This\Text\String.s, #LF$)
+        ;       
+        ;       For i=0 To *This\Text\Count
+        ;         If Item = i
+        ;           If String.s
+        ;             String.s  +#LF$+ Text.s
+        ;           Else
+        ;             String.s  + Text.s
+        ;           EndIf
+        ;         EndIf
+        ;         
+        ;         If String.s
+        ;           String.s +#LF$+ StringField(*This\Text\String.s, i + 1, #LF$)
+        ;         Else
+        ;           String.s + StringField(*This\Text\String.s, i + 1, #LF$)
+        ;         EndIf
+        ;       Next
+        
+        \Text\String.s = String.s 
+        \Text\Len = Len(String.s)
+        \Text\Change = 1
+      EndIf
+    EndWith
+    
+    ProcedureReturn String.s
+  EndProcedure
+  
+  Procedure rRemove(*This.Widget_S)
+    Protected Caret
+    
+    With *This
+      PushListPosition(\Items())
+      FirstElement(\Items()) ; LastElement(\Items()) ; 
+      While NextElement(\Items()) ; PreviousElement(\Items())  ; 
+        
+        If \Items()\Text[2]\Len > 0 And \Items()\Text[2]\Len <> \Items()\Text\Len
+          If \Items()\Text[1]\String.s And \Items()\Text[3]\String.s
+            ; курсор в нутри слова
+            ;\Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s
+            
+          ElseIf \Items()\Text[3]\String.s
+            ; курсор в начале слова
+            \Items()\Text\String.s = \Items()\Text[3]\String.s
+            
+          ElseIf \Items()\Text[1]\String.s
+            ; курсор в конце слова
+            \Items()\Text\String.s = \Items()\Text[1]\String.s
+            
+          EndIf
+        EndIf
+        
+      Wend
+      PopListPosition(\Items())
+      
+    ;  Debug \Text\String.s
+    EndWith
+    
+    ProcedureReturn 1
+  EndProcedure
+  
   Procedure __ToBack(*This.Widget_S)
     Protected Repaint.b, String.s
     
@@ -1319,7 +994,8 @@ Module Editor
         \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
         \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret - 1) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 1)
         \Caret - 1 
-      Else
+        \Text\Change =- 1
+        Else
           ; Если дошли до начала строки то 
             ; переходим в конец предыдущего итема
         If *This\Line[1] > 0 
@@ -1328,14 +1004,14 @@ Module Editor
           ToUp(*This)
           
           *This\Caret = \Items()\Text\Len 
+          \Text\Change =- 1
         EndIf
           
       EndIf
       
-      If \Caret[1] <> \Caret
+      If \Text\Change
         \Text\Len = Len(\Text\String.s)  
         \Caret[1] = \Caret 
-        \Text\Change =- 1
         Repaint =- 1 
       EndIf
     EndWith
@@ -1420,47 +1096,55 @@ Module Editor
   EndProcedure
   
   Procedure ToReturn(*This.Widget_S)
-    Protected Repaint
+    Protected Repaint, String.s
     
-    With  *This\Items()
-      Debug "Return "+ListIndex(*This\Items())
+    With  *This
+      Debug "Return "+ListIndex(\Items())
       
-      If \Text[2]\Len > 0  ; (*This\Caret[1] <> *This\Caret) Or (*This\Line <> *This\Line[1])
-        Remove(*This)
+      If \Items()\Text[2]\Len > 0
+        rRemove(*This)
         
         ;*This\Caret = 0
-        itemSelect(*This\Line[1], *This\Items())
+     ;   itemSelect(\Line[1], \Items())
         
-        If *This\Caret = 0
-          ; \Text\String.s = #LF$ + \Text\String.s
-        ElseIf *This\Caret = \Text\Len
-          ; \Text\String.s + #LF$
-        Else
-          \Text\String.s = \Text[1]\String.s + #LF$ + \Text[3]\String.s
-        EndIf
-        
-        
+;         If \Items()\Text[1]\String.s And \Items()\Text[3]\String.s
+;           ; курсор в нутри слова
+;           \Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s
+;           
+;         ElseIf \Items()\Text[3]\String.s
+;           ; курсор в начале слова
+;           \Items()\Text\String.s = #LF$ + \Items()\Text[3]\String.s
+;           
+;         ElseIf \Items()\Text[1]\String.s
+;           ; курсор в конце слова
+;           \Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$
+;           
+;         EndIf
       Else
-        If *This\Caret = 0
-          \Text\String.s = #LF$ + \Text\String.s
-        ElseIf *This\Caret = \Text\Len
-          \Text\String.s + #LF$
+        If \Caret = 0
+          ; курсор в начале слова
+          \Items()\Text\String.s = #LF$ + \Items()\Text[3]\String.s
+          
+        ElseIf \Caret = \Items()\Text\Len
+          ; курсор в конце слова
+          \Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$
+          
         Else
-          \Text\String.s = \Text[1]\String.s + #LF$ + \Text[3]\String.s
+          ; курсор в нутри слова
+          \Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s
+          
         EndIf
-        
       EndIf
       
-      *This\Line[1] + 1
-      *This\Line = *This\Line[1]
+      \Line[1] + 1
+      \Line = \Line[1]
       
-      *This\Caret = 0
-      *This\Caret[1] = *This\Caret
-      \Text\Len = Len(\Text\String.s)
+      \Caret = 0
+      \Caret[1] = \Caret
       
-      AddString(*This)
-      
-      Scroll::SetState(*This\vScroll, *This\vScroll\Max)
+      Replace(*This)
+      Debug \Text\String.s
+;       Scroll::SetState(\vScroll, \vScroll\Max)
       Repaint = #True
     EndWith
     
@@ -2270,6 +1954,8 @@ Module Editor
             Case #PB_EventType_MouseEnter
               SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
               ; Debug ""+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+              ClearDebugOutput()
+              Debug *This\Text\String.s
               
             Case #PB_EventType_LostFocus : Repaint = #True
               If Bool(*This\Type <> #PB_GadgetType_Editor)
@@ -2316,7 +2002,7 @@ Module Editor
           EndSelect
         EndIf  
         
-        If *Focus = *This And *This\Text\Editable
+        If *Focus = *This And (*This\Text\Editable Or \Text\Editable)
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
             Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
           CompilerElse
@@ -2497,14 +2183,22 @@ Module Editor
   
   Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Protected Repaint
+    
     With *This
       Repaint | Scroll::CallBack(\vScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0)
+      If Repaint
+        \Scroll\Y =- \vScroll\Page\Pos
+      EndIf
       Repaint | Scroll::CallBack(\hScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0)
+      If Repaint
+        \Scroll\X =- \hScroll\Page\Pos
+      EndIf
       
       If Not \vScroll\Buttons And Not \hScroll\Buttons
         Repaint | Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
       EndIf
     EndWith
+    
     ProcedureReturn Repaint
   EndProcedure
   
@@ -2556,7 +2250,6 @@ Module Editor
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
           
-          
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
             If \Text\Vertical
               \Text\X = \fSize 
@@ -2597,40 +2290,18 @@ Module Editor
           \Text\Change = #True
           \Text\Len = Len(\Text\String.s)
           
-          
+          \Color[0] = Colors
+          \Color[0]\Fore[1] = 0
           If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFF 
+            \Color[0]\Back[1] = $FFFFFFFF 
           Else
-            \Color[0]\Back[1] = $F0F0F0  
+            \Color[0]\Back[1] = $FFF0F0F0  
           EndIf
-          
-          ;           ; Default frame color
-          ;           \Color[0]\Frame[1] = $BABABA
-          ;           
-          ;           ; Focus frame color
-          ;           \Color[0]\Frame[3] = $D5A719
-          ; default frame color
-          \Color[0]\Frame[1] = Widget_FrameColor_Default ; $FFBABABA
-          
-          ; focus frame color
-          \Color[0]\Frame[3] = Widget_FrameColor_Focus ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;   
-          
-          ; default font color
-          \Color[0]\Front[1] = Widget_FontColor_Default ; $FF000000 ; $FF0B0B0B
-          
-          ; focus font color
-          \Color[0]\Front[3] = Widget_FontColor_Focus ; ! $FFFFFFFF; Widget_FontColor_Focus ; $FF000000 ; $FF0B0B0B
-          
-          ; enter frame color
-          \Color[0]\Frame[2] = Widget_FrameColor_Enter   
-          \Color[0]\Fore[2] = Widget_FontColor_Focus   
-          \Color[0]\Back[2] = Widget_Color_Enter   
-          
           ResetColor(*This)
         EndIf
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        If Not Bool(\Text\MultiLine)
+        If Not Bool(\Text\MultiLine) And Bool(flag&#NoButtons = 0 Or flag&#NoLines=0)
           Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
         EndIf
       EndWith
@@ -2772,5 +2443,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ggAAAOAAAAAAAKAAAUAAA+OAAAAAAAAAo4MAAICiBAAAAAAAAAAAAAAAAAAAAAAAAACg
+; Folding = --XAAwPAAAdHAMAAAAAgfDwbmAAigYAfAwAAsnDBAAAwDAEUAYPH-IA0eh
 ; EnableXP

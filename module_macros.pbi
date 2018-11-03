@@ -36,6 +36,17 @@
     EndIf
   EndMacro
   
+  Macro _clip_output_(_this_, _x_,_y_,_width_,_height_)
+    If _x_<>#PB_Ignore : _this_\Clip\X = _x_ : EndIf
+    If _y_<>#PB_Ignore : _this_\Clip\Y = _y_ : EndIf
+    If _width_<>#PB_Ignore : _this_\Clip\Width = _width_ : EndIf
+    If _height_<>#PB_Ignore : _this_\Clip\Height = _height_ : EndIf
+    
+    CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
+      ClipOutput(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
+    CompilerEndIf
+  EndMacro
+  
   Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
     BackColor(_color_1_&$FFFFFF|_alpha_<<24)
     FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
@@ -48,7 +59,7 @@
     BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
   EndMacro
   
-  Macro Colors(_adress_, _i_, _ii_, _iii_)
+  Macro _colors_(_adress_, _i_, _ii_, _iii_)
     ; Debug ""+_i_+" "+ _ii_+" "+ _iii_
     
     If _adress_\Color[_i_]\Line[_ii_]
@@ -84,30 +95,30 @@
   
   Macro ResetColor(_adress_)
     
-    Colors(_adress_, 0, 1, 0)
+    _colors_(_adress_, 0, 1, 0)
     
-    ;     Colors(_adress_, 1, 1, 0)
-    ;     Colors(_adress_, 2, 1, 0)
-    ;     Colors(_adress_, 3, 1, 0)
-    ;     
-    ;     Colors(_adress_, 1, 1, 1)
-    ;     Colors(_adress_, 2, 1, 1)
-    ;     Colors(_adress_, 3, 1, 1)
-    ;     
-    ;     Colors(_adress_, 1, 2, 2)
-    ;     Colors(_adress_, 2, 2, 2)
-    ;     Colors(_adress_, 3, 2, 2)
-    ;     
-    ;     Colors(_adress_, 1, 3, 3)
-    ;     Colors(_adress_, 2, 3, 3)
-    ;     Colors(_adress_, 3, 3, 3)
+    _colors_(_adress_, 1, 1, 0)
+    _colors_(_adress_, 2, 1, 0)
+    _colors_(_adress_, 3, 1, 0)
+    
+    _colors_(_adress_, 1, 1, 1)
+    _colors_(_adress_, 2, 1, 1)
+    _colors_(_adress_, 3, 1, 1)
+    
+    _colors_(_adress_, 1, 2, 2)
+    _colors_(_adress_, 2, 2, 2)
+    _colors_(_adress_, 3, 2, 2)
+    
+    _colors_(_adress_, 1, 3, 3)
+    _colors_(_adress_, 2, 3, 3)
+    _colors_(_adress_, 3, 3, 3)
     
   EndMacro
   
   Macro Distance(_mouse_x_, _mouse_y_, _position_x_, _position_y_, _radius_)
     Bool(Sqr(Pow(((_position_x_+_radius_) - _mouse_x_),2) + Pow(((_position_y_+_radius_) - _mouse_y_),2)) =< _radius_)
   EndMacro
-
+  
   Macro Max(_a_, _b_)
     ((_a_) * Bool((_a_) > = (_b_)) + (_b_) * Bool((_b_) > (_a_)))
   EndMacro
@@ -155,5 +166,5 @@ EndModule
 
 UseModule Macros
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -DA9
+; Folding = -4--
 ; EnableXP

@@ -13,67 +13,36 @@ DeclareModule Tree
   UseModule Constants
   UseModule Structures
   
-  #NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
-  #NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
-  
-  #CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
-  #ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
-  
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    #BorderSingle = 4
-    #BorderDouble = 8
-  CompilerElse
-    #BorderSingle = 256 ; 4
-    #BorderDouble = 65535 ; 8
-  CompilerEndIf
-  
-  #BorderFlat = 16    
-  #AlwaysShowSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
-  #BorderLess = 64
-  #BorderRaised = 128  
-  
-  
-  #Selected = #PB_Tree_Selected                       ; 1
-  #Checked = #PB_Tree_Checked                         ; 4
-  #Expanded = #PB_Tree_Expanded                       ; 2
-  #Collapsed = #PB_Tree_Collapsed                     ; 8
-  
-  #FullSelection = 512 ; #PB_ListIcon_FullRowSelect
-  
-  #SmallIcon = #PB_ListIcon_LargeIcon                 ; 0 0
-  #LargeIcon = #PB_ListIcon_SmallIcon                 ; 1 1
-  
-
   Declare CallBack()
-  Declare.l Gadget(Gadget.l, x.l, y.l, width.l, height.l, flag.l=0)
-  Declare AddItem(Gadget.l,Item.l,Text.s,Image.l=-1,sublevel.l=0)
-  Declare ClearItems(Gadget.l)
-  Declare CountItems(Gadget.l, Item.l=-1)
-  Declare RemoveItem(Gadget.l, Item.l)
-  Declare GetItemAttribute(Gadget.l, Item.l, Attribute.l)
-  Declare GetItemData(Gadget.l, Item.l)
-  Declare SetItemData(Gadget.l, Item.l, *data)
-  Declare GetItemColor(Gadget.l, Item.l, ColorType.l, Column.l=0)
-  Declare SetItemColor(Gadget.l, Item.l, ColorType.l, Color.l, Column.l=0)
-  Declare GetItemImage(Gadget.l, Item.l)
-  Declare SetItemImage(Gadget.l, Item.l, Image.l)
-  Declare GetState(Gadget.l)
-  Declare SetState(Gadget.l, Item.l)
-  Declare GetItemState(Gadget.l, Item.l)
-  Declare SetItemState(Gadget.l, Item.l, State.l)
-  Declare.s GetText(Gadget.l)
-  Declare   SetText(Gadget.l, Text.s)
-  Declare.s GetItemText(Gadget.l, Item.l)
-  Declare SetItemText(Gadget.l, Item.l, Text.s)
-  Declare Free(Gadget.l)
-  Declare ReDraw(Gadget.l)
+  Declare.i Gadget(Gadget.i, x.i, y.i, width.i, height.i, flag.i=0)
+  Declare AddItem(Gadget.i,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+  Declare ClearItems(Gadget.i)
+  Declare CountItems(Gadget.i, Item.i=-1)
+  Declare RemoveItem(Gadget.i, Item.i)
+  Declare GetItemAttribute(Gadget.i, Item.i, Attribute.i)
+  Declare GetItemData(Gadget.i, Item.i)
+  Declare SetItemData(Gadget.i, Item.i, *data)
+  Declare GetItemColor(Gadget.i, Item.i, ColorType.i, Column.i=0)
+  Declare SetItemColor(Gadget.i, Item.i, ColorType.i, Color.i, Column.i=0)
+  Declare GetItemImage(Gadget.i, Item.i)
+  Declare SetItemImage(Gadget.i, Item.i, Image.i)
+  Declare GetState(Gadget.i)
+  Declare SetState(Gadget.i, Item.i)
+  Declare GetItemState(Gadget.i, Item.i)
+  Declare SetItemState(Gadget.i, Item.i, State.i)
+  Declare.s GetText(Gadget.i)
+  Declare   SetText(Gadget.i, Text.s)
+  Declare.s GetItemText(Gadget.i, Item.i)
+  Declare SetItemText(Gadget.i, Item.i, Text.s)
+  Declare Free(Gadget.i)
+  Declare ReDraw(Gadget.i)
 EndDeclareModule
 
 Module Tree
   
   Procedure item_from(*This.Widget_S, MouseX=-1, MouseY=-1, focus=0)
     Protected adress.i
-    Protected lostfocus.l=-1, collapsed.l, sublevel.l, coll.l
+    Protected lostfocus.i=-1, collapsed.i, sublevel.i, coll.i
     
     With *This
       PushListPosition(\Items()) 
@@ -139,7 +108,7 @@ Module Tree
                 
               Else
                 ; Get entered item only on image and text 
-                If Not *This\flag&#FullSelection And
+                If Not *This\flag&#PB_Widget_FullRowSelect And
                    ((MouseX < \Items()\text\x-*This\Image\width) Or (MouseX > \Items()\text\x+\Items()\text\width))
                   Break
                 EndIf
@@ -220,13 +189,15 @@ Module Tree
     
   EndProcedure
   
+  ;-
   Procedure Draw(*This.Widget_S)
     Protected x_content,y_point,x_point, iwidth, iheight, w=18, level,iY, start,i, back_color=$FFFFFF, point_color=$7E7E7E, box_color=$7E7E7E
     Protected hide_color=$FEFFFF, box_size = 9,box_1_size = 12, alpha = 255, item_alpha = 128, height =20
     Protected line_size=8, box_1_pos.b = 0, checkbox_color = $FFFFFF, checkbox_backcolor, box_type.b =- 1
     Protected Drawing.b, text_color
     
-    If Bool(*This And StartDrawing(CanvasOutput(*This\canvas\gadget))) : If *This\Text\FontID : DrawingFont(*This\Text\FontID) : EndIf
+    If *This 
+      If *This\Text\FontID : DrawingFont(*This\Text\FontID) : EndIf
       DrawingMode(#PB_2DDrawing_Default)
       Box(*This\x[2], *This\y[2], *This\width[2], *This\height[2], back_color)
       
@@ -239,9 +210,7 @@ Module Tree
           
           ForEach *This\Items()
             If Not \hide
-              CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-                ClipOutput(*This\x[2], *This\y[2], iwidth, *This\height[2]-Scroll::Height(*This\hScroll)) ; Bug
-              CompilerEndIf
+              _clip_output_(*This, *This\x[2], *This\y[2], iwidth, iheight) ; Bug
               
               \x=*This\x[2]
               \width=iwidth
@@ -254,11 +223,7 @@ Module Tree
                 \text\change = 0
               EndIf
               
-              If *This\flag&#NoButtons 
-                x_content=2+\x+(\sublevel*w)-*This\hScroll\Page\Pos
-              Else
-                x_content=2+\x+(w+\sublevel*w)-*This\hScroll\Page\Pos
-              EndIf
+              x_content=2+\x+(Bool(*This\flag&#NoButtons=0)*w+\sublevel*w)-*This\hScroll\Page\Pos
               
               \box\width = box_size
               \box\height = box_size
@@ -297,9 +262,9 @@ Module Tree
               Drawing = Bool(\y+\height>*This\y[2] And \y<*This\height[2])
               If Drawing
                 If (\Item=\focus And \lostfocus<>\focus) Or
-                   (*This\focus And *This\flag&#FullSelection And *This\Item = \Item )
+                   (*This\focus And *This\flag&#PB_Widget_FullRowSelect And *This\Item = \Item )
                   
-                  If *This\flag&#FullSelection
+                  If *This\flag&#PB_Widget_FullRowSelect
                     box_color = $FFFFFF
                   EndIf
                   text_color=$FFFFFF
@@ -309,7 +274,7 @@ Module Tree
                 EndIf
                 
                 ; Draw selections
-                If *This\flag&#FullSelection
+                If *This\flag&#PB_Widget_FullRowSelect
                   If \Item=\from
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                     Box(\x+1,\y+1,\width-2,\height-2, $FCEADA&back_color|item_alpha<<24)  ; ((Color & $FFFFFF) << 32) $FCEADA $00A5FF $CBC0FF
@@ -366,7 +331,7 @@ Module Tree
                 If Not *This\flag&#NoButtons And \childrens
                   If box_type=-1
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Scroll::DrawArrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+                    Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                   Else
                     DrawingMode(#PB_2DDrawing_Gradient)
                     BackColor($FFFFFF) : FrontColor($EEEEEE)
@@ -446,9 +411,7 @@ Module Tree
                 
                 ; Draw string
                 If \text\string.s
-                  CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-                    ClipOutput(*This\x[2], *This\y[2], \width, *This\height[2]) ; Bug
-                  CompilerEndIf
+                  _clip_output_(*This, *This\x[2], *This\y[2], \width, *This\height[2]) 
                   DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
                   DrawText(\text\x, \text\y, \text\string.s, text_color&$FFFFFF|alpha<<24)
                 EndIf
@@ -457,9 +420,7 @@ Module Tree
           Next
         EndIf
         
-        CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-          UnclipOutput()
-        CompilerEndIf
+        UnclipOutput()
         
         ; Задаем размеры скролл баров
         If *This\vScroll\Page\Length And *This\vScroll\Max<>*This\Scroll\Height And 
@@ -485,22 +446,23 @@ Module Tree
           Box(*This\x[2]-1, *This\y[2]-1, *This\width[2]+2, *This\height[2]+2, $FFFFFF)
         EndIf
         
-        StopDrawing()
       EndWith
     EndIf
   EndProcedure
   
-  Procedure ReDraw(Gadget.l)
+  Procedure ReDraw(Gadget.i)
     Protected *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    If *This
+    
+    If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
       Draw(*This)
+      StopDrawing()
     EndIf
   EndProcedure
   
-  Procedure AddItem(Gadget.l,Item.l,Text.s,Image.l=-1,sublevel.l=0)
+  Procedure AddItem(Gadget.i,Item.i,Text.s,Image.i=-1,sublevel.i=0)
     Static adress.i
-    Protected *This.Widget_S, Childrens.l, hide.b, *Item
+    Protected *This.Widget_S, Childrens.i, hide.b, *Item
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If Not *This
@@ -604,8 +566,8 @@ Module Tree
     ProcedureReturn Item
   EndProcedure
   
-  Procedure ClearItems(Gadget.l)
-    Protected Result.l, *This.Widget_S
+  Procedure ClearItems(Gadget.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -621,13 +583,13 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure CountItems(Gadget.l, Item.l=-1)
-    Protected Result.l, *This.Widget_S, sublevel.l
+  Procedure CountItems(Gadget.i, Item.i=-1)
+    Protected Result.i, *This.Widget_S, sublevel.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
-        If Item.l=-1
+        If Item.i=-1
           Result = ListSize(\Items())
         Else
           PushListPosition(\Items()) 
@@ -655,8 +617,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure RemoveItem(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S, sublevel.l
+  Procedure RemoveItem(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S, sublevel.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -687,8 +649,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemAttribute(Gadget.l, Item.l, Attribute.l)
-    Protected Result.l, *This.Widget_S
+  Procedure GetItemAttribute(Gadget.i, Item.i, Attribute.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -710,8 +672,8 @@ Module Tree
     
   EndProcedure
   
-  Procedure GetItemData(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S
+  Procedure GetItemData(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -730,8 +692,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemData(Gadget.l, Item.l, *data)
-    Protected Result.l, *This.Widget_S
+  Procedure SetItemData(Gadget.i, Item.i, *data)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -750,8 +712,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemColor(Gadget.l, Item.l, ColorType.l, Column.l=0)
-    Protected Result.l, *This.Widget_S
+  Procedure GetItemColor(Gadget.i, Item.i, ColorType.i, Column.i=0)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -770,8 +732,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemColor(Gadget.l, Item.l, ColorType.l, Color.l, Column.l=0)
-    Protected Result.l, *This.Widget_S
+  Procedure SetItemColor(Gadget.i, Item.i, ColorType.i, Color.i, Column.i=0)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -790,8 +752,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemImage(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S
+  Procedure GetItemImage(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -810,8 +772,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemImage(Gadget.l, Item.l, image.l)
-    Protected Result.l, *This.Widget_S
+  Procedure SetItemImage(Gadget.i, Item.i, image.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -831,8 +793,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetState(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+  Procedure SetState(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -897,8 +859,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetState(Gadget.l)
-    Protected Result.l, *This.Widget_S 
+  Procedure GetState(Gadget.i)
+    Protected Result.i, *This.Widget_S 
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This 
@@ -918,8 +880,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemState(Gadget.l, Item.l, State.l)
-    Protected Result.l, *This.Widget_S, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+  Procedure SetItemState(Gadget.i, Item.i, State.i)
+    Protected Result.i, *This.Widget_S, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -936,6 +898,8 @@ Module Tree
                 \Items()\from =- 1
               EndIf
               
+              ; GetText()
+              \text\string = \Items()\text\string
             EndIf
             If State&#Checked
               \Items()\checked = 1
@@ -970,8 +934,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemState(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+  Procedure GetItemState(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -999,29 +963,30 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.s GetText(Gadget.l)
+  Procedure.s GetText(Gadget.i)
     Protected Result.s, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
-    If *This
-      With *This
-        PushListPosition(\Items()) 
-        ForEach \Items()
-          If \Items()\hide : Continue : EndIf
-          If \Items()\Item = \Items()\focus
-            Result = \Items()\text\string
-            Break
-          EndIf
-        Next
-        PopListPosition(\Items())
-      EndWith
-    EndIf  
+    Result = *This\text\string
+;     If *This
+;       With *This
+;         PushListPosition(\Items()) 
+;         ForEach \Items()
+;           If \Items()\hide : Continue : EndIf
+;           If \Items()\Item = \Items()\focus
+;             Result = \Items()\text\string
+;             Break
+;           EndIf
+;         Next
+;         PopListPosition(\Items())
+;       EndWith
+;     EndIf  
     
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetText(Gadget.l, Text.s)
-    Protected Result.l, *This.Widget_S
+  Procedure SetText(Gadget.i, Text.s)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -1041,7 +1006,7 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.s GetItemText(Gadget.l, Item.l) ; Ok
+  Procedure.s GetItemText(Gadget.i, Item.i) ; Ok
     Protected Result.s, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
@@ -1062,8 +1027,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemText(Gadget.l, Item.l, Text.s) ; Ok
-    Protected Result.l, *This.Widget_S
+  Procedure SetItemText(Gadget.i, Item.i, Text.s) ; Ok
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -1091,8 +1056,9 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
+  ;-
   Procedure CallBack()
-    Protected Repaint.l, AutoHide.b
+    Protected Repaint.i, AutoHide.b
     Protected Event = EventType()
     Protected Window = EventWindow()
     Protected Canvas = EventGadget()
@@ -1198,23 +1164,9 @@ Module Tree
                 PopListPosition(\Items()) 
                 
               Case #PB_EventType_Resize : ResizeGadget(\Canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-                \Width = GadgetWidth(\Canvas\gadget)
-                \Height = GadgetHeight(\Canvas\gadget)
-                
-                ; Inner coordinate
-                \X[2]=\bSize
-                \Y[2]=\bSize
-                \Width[2] = \Width-\bSize*2
-                \Height[2] = \Height-\bSize*2
-                
-                ; Frame coordinae
-                \X[1]=\X[2]-\fSize
-                \Y[1]=\Y[2]-\fSize
-                \Width[1] = \Width[2]+\fSize*2
-                \Height[1] = \Height[2]+\fSize*2
-                
-                Scroll::Resizes(\vScroll, \hScroll, \X[2],\Y[2],\Width[2],\Height[2])
-                Repaint = 1
+                If Text::Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+                  Repaint | Scroll::Resizes(\vScroll, \hScroll, \X[2],\Y[2],\Width[2],\Height[2])
+                EndIf
             EndSelect
           Else
             Repaint = item_from(*This,-1,-1, 0)
@@ -1228,104 +1180,153 @@ Module Tree
     EndIf
   EndProcedure
   
-  Procedure Events()
-    Protected Repaint.l, AutoHide.b
-    Protected Event = EventType()
-    Protected Window = EventWindow()
-    Protected Canvas = EventGadget()
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    Protected Buttons = GetGadgetAttribute(Canvas, #PB_Canvas_Buttons)
-    Protected WheelDelta = GetGadgetAttribute(Canvas, #PB_Canvas_WheelDelta)
-    Protected Width = GadgetWidth(Canvas)
-    Protected Height = GadgetHeight(Canvas)
-    Protected *This.Widget_S = GetGadgetData(Canvas)
-    
-    
-    If Repaint 
-      ReDraw(Canvas)
-    EndIf
-  EndProcedure
-  
-  Procedure AllCallBack()
-    
-    If EventType() = #PB_EventType_DragStart
-      Debug 88888
-    EndIf
-    
-  EndProcedure
-  
-  Procedure.l Gadget(Gadget.l, x.l, y.l, width.l, height.l, flag.l=0)
-    Protected g = CanvasGadget(Gadget, x, y, width, height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget = g : EndIf
-    
-    Protected *This.Widget_S=AllocateStructure(Widget_S)
+  Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
-        If Not flag&#BorderLess
-          \bSize = 2
-          \fSize = 2
-        EndIf
-        
-        \Item =- 1
-        \canvas\window = GetActiveWindow()
         \Type = #PB_GadgetType_Tree
+        \Cursor = #PB_Cursor_Default
+        \DrawingMode = #PB_2DDrawing_Default
+        \Canvas\Gadget = Canvas
+        \Radius = Radius
+        \Alpha = 255
+        \Interact = 1
+        \Caret[1] =- 1
+        \Line =- 1
         
-        \Attribute=-1
-        \Text\FontID = GetGadgetFont(#PB_Default) ; FontID(LoadFont(#PB_Any,"Tahoma",8)) ; 
-        \canvas\gadget = Gadget
-        \flag = flag
-        
-        \Width = width
-        \Height = height
-        
-        ; Inner coordinate
-        \X[2]=\bSize
-        \Y[2]=\bSize
-        \Width[2] = \Width-\bSize*2
-        \Height[2] = \Height-\bSize*2
-        
-        ; Frame coordinae
-        \X[1]=\X[2]-\fSize+1
-        \Y[1]=\Y[2]-\fSize+1
-        \Width[1] = \Width[2]+\fSize*2-2
-        \Height[1] = \Height[2]+\fSize*2-2
-        
-        Scroll::Widget(*This\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 8)
-        If flag&#NoButtons = 0 Or flag&#NoLines=0
-          Scroll::Widget(*This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 8)
+        ; Set the default widget flag
+        If Bool(Flag&#PB_Text_WordWrap)
+          Flag&~#PB_Text_MultiLine
         EndIf
         
-        ;         \vScroll\alpha = 0
-        ;         \hScroll\alpha = 0
+        If Bool(Flag&#PB_Text_MultiLine)
+          Flag&~#PB_Text_WordWrap
+        EndIf
         
-        PostEvent(#PB_Event_Gadget, \canvas\window, Gadget, #PB_EventType_Resize)
-        ; ;         AddWindowTimer(\canvas_window, 12, 5000)
-        ; ;         BindEvent(#PB_Event_Timer, @bind(), \canvas\window, Gadget)
+        If Not \Text\FontID
+          \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
+        EndIf
         
+        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)+1
+        \bSize = \fSize
         
-        ;         Debug SizeOf(*This\hScroll)
-        ;         ; Set style windows 8
-        ;         *This\vScroll\DrawingMode = #PB_2DDrawing_Default
-        ;         Scroll::SetColor(*This\vScroll, #PB_Gadget_BackColor, *This\vScroll\Color\Back, 1)
-        ;         Scroll::SetColor(*This\vScroll, #PB_Gadget_BackColor, *This\vScroll\Color\Back, 2)
-        ;         
-        ;         *This\hScroll\DrawingMode = #PB_2DDrawing_Default
-        ;         Scroll::SetColor(*This\hScroll, #PB_Gadget_BackColor, *This\hScroll\Color\Back, 1)
-        ;         Scroll::SetColor(*This\hScroll, #PB_Gadget_BackColor, *This\hScroll\Color\Back, 2)
+        If Text::Resize(*This, X,Y,Width,Height, Canvas)
+          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
+          
+          \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+          If Bool(Flag&#PB_Text_WordWrap)
+            \Text\MultiLine = 1
+          ElseIf Bool(Flag&#PB_Text_MultiLine)
+            \Text\MultiLine =- 1
+          EndIf
+          \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
+          \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
+          \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
+          \Text\Pass = Bool(Flag&#PB_Text_Password)
+          
+          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
+          \Text\Align\Right = Bool(Flag&#PB_Text_Right)
+          \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
+          
+          
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+5
+            Else
+              \Text\X = \fSize+5
+              \Text\y = \fSize
+            EndIf
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+1
+            Else
+              \Text\X = \fSize+1
+              \Text\y = \fSize
+            EndIf
+          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+            If \Text\Vertical
+              \Text\X = \fSize 
+              \Text\y = \fSize+6
+            Else
+              \Text\X = \fSize+6
+              \Text\y = \fSize
+            EndIf
+          CompilerEndIf 
+          
+          If \Text\Pass
+            Protected i,Len = Len(Text.s)
+            Text.s = "" : For i=0 To Len : Text.s + "●" : Next
+          EndIf
+          
+          Select #True
+            Case \Text\Lower : \Text\String.s = LCase(Text.s)
+            Case \Text\Upper : \Text\String.s = UCase(Text.s)
+            Default
+              \Text\String.s = Text.s
+          EndSelect
+          \Text\Change = #True
+          \Text\Len = Len(\Text\String.s)
+          
+          
+          \Color[0] = Colors
+          \Color[0]\Fore[1] = 0
+          If \Text\Editable
+            \Color[0]\Back[1] = $FFFFFFFF 
+          Else
+            \Color[0]\Back[1] = $FFF0F0F0  
+          EndIf
+          ResetColor(*This)
+        EndIf
+        
+        Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+        If Not Bool(\Text\MultiLine) And Bool(flag&#NoButtons = 0 Or flag&#NoLines=0)
+          Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+    Protected *Widget, *This.Widget_S = AllocateStructure(Widget_S)
+    
+    If *This
+      add_widget(Widget, *Widget)
+      
+      *This\Index = Widget
+      *This\Handle = *Widget
+      List()\Widget = *This
+      
+      Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
+    EndIf
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S)
+    Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
+    
+    If *This
+      With *This
+        \flag = flag
+        Widget(*This, Gadget, 0, 0, Width, Height, "", Flag)
         
         SetGadgetData(Gadget, *This)
-        BindGadgetEvent(Gadget, @CallBack())
+       ; ReDraw(*This)
         
-;         UnbindEvent(#PB_Event_Gadget,   @AllCallBack())
-;         BindEvent(#PB_Event_Gadget,   @AllCallBack())
-
+        PostEvent(#PB_Event_Gadget, GetActiveWindow(), Gadget, #PB_EventType_Resize)
+        BindGadgetEvent(Gadget, @CallBack())
       EndWith
     EndIf
     
     ProcedureReturn g
   EndProcedure
   
-  Procedure Free(Gadget.l)
+  Procedure Free(Gadget.i)
     Protected Result, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
@@ -1480,7 +1481,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g = 10
-    Gadget(g, 10, 230, 210, 210, #AlwaysShowSelection|#PB_Tree_CheckBoxes|#FullSelection)                                         
+    Gadget(g, 10, 230, 210, 210, #AlwaysShowSelection|#PB_Tree_CheckBoxes|#PB_Widget_FullRowSelect)                                         
     ; 1_example
     AddItem (g, 0, "Normal Item "+Str(a), -1, 0)                                   
     AddItem (g, -1, "Node "+Str(a), 0, 0)                                         
@@ -1501,7 +1502,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     Debug "c "+Tree::GetText(g)
     
     g = 11
-    Gadget(g, 230, 230, 210, 210, #AlwaysShowSelection|#FullSelection)                                         
+    Gadget(g, 230, 230, 210, 210, #AlwaysShowSelection|#PB_Widget_FullRowSelect)                                         
     ;  3_example
     AddItem(g, 0, "Tree_0", -1 )
     AddItem(g, 1, "Tree_1_1", 0, 1) 
@@ -1527,7 +1528,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ClearItems(g)
     
     g = 12
-    Gadget(g, 450, 230, 210, 210, #AlwaysShowSelection|#NoLines|#NoButtons|#FullSelection|#CheckBoxes)                                        
+    Gadget(g, 450, 230, 210, 210, #AlwaysShowSelection|#NoLines|#NoButtons|#PB_Widget_FullRowSelect|#CheckBoxes)                                        
     ;   ;  2_example
     ;   AddItem (g, 0, "Normal Item "+Str(a), -1, 0)                                    
     ;   AddItem (g, 1, "Node "+Str(a), -1, 1)                                           
@@ -1568,7 +1569,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 15
-    Gadget(g, 890+106, 230, 103, 210, #AlwaysShowSelection|#BorderLess)                                         
+    Gadget(g, 890+106, 230, 103, 210, #AlwaysShowSelection|#PB_Widget_BorderLess)                                         
     ;  6_example
     AddItem(g, 0, "Tree_1", -1, 1) 
     AddItem(g, 0, "Tree_2_1", -1, 2) 
@@ -1624,5 +1625,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------------------------------------
+; Folding = ---------Hs--+--------------84-----X----
 ; EnableXP

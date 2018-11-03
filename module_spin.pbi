@@ -828,27 +828,19 @@ Module Spin
             EndIf
           CompilerEndIf
           
-          If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFFFF 
-          Else
-            \Color[0]\Back[1] = $FFFAFAFA  
-          EndIf
-          
-          ; default frame color
-          \Color[0]\Frame[1] = $FFBABABA
-          
-          ; focus frame color
-          \Color[0]\Frame[3] = $FFD5A719
-          
-          ; font color
-          \Color[0]\Front[1] = $FF000000
-          
-          ; enter frame color
-          \Color[0]\Frame[2] = Widget_FrameColor_Enter   
-          \Color[0]\Fore[2] = Widget_FontColor_Focus   
-          \Color[0]\Back[2] = Widget_Color_Enter   
           
           ; set default colors
+          \Color[0] = Colors
+          \Color[0]\Fore[1] = 0
+          \Color[0]\Fore[2] = 0
+          If \Text\Editable
+            \Color[0]\Back[1] = $FFFFFFFF 
+            \Color[0]\Back[2] = $FFFFFFFF
+          Else
+            \Color[0]\Back[1] = $FFFAFAFA  
+            \Color[0]\Back[2] = $FFFAFAFA
+          EndIf
+          \Color[0]\Frame[2] = $FFFFFFFF
           ResetColor(*This)
           
           SetText(*This, Text.s)

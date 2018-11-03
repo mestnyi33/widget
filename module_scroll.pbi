@@ -1,90 +1,34 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
 CompilerEndIf
 
 DeclareModule Scroll
   EnableExplicit
+  UseModule Macros
   UseModule Constants
   UseModule Structures
   
   
-  Declare.b Draw(*Scroll.Scroll)
-  Declare.l Y(*Scroll.Scroll)
-  Declare.l X(*Scroll.Scroll)
-  Declare.l Width(*Scroll.Scroll)
-  Declare.l Height(*Scroll.Scroll)
-  Declare.b SetState(*Scroll.Scroll, ScrollPos.l)
-  Declare.l SetAttribute(*Scroll.Scroll, Attribute.l, Value.l)
-  Declare.b SetColor(*Scroll.Scroll, ColorType.l, Color.l, Item.l=- 1, State.l=1)
-  Declare.b Resize(*This.Scroll, iX.l,iY.l,iWidth.l,iHeight.l, *Scroll.Scroll=#Null)
-  Declare.b Resizes(*v.Scroll, *h.Scroll, X.l,Y.l,Width.l,Height.l)
-  Declare.b Updates(*v.Scroll, *h.Scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
-  Declare.b CallBack(*This.Scroll, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0, AutoHide.b=0, *Scroll.Scroll=#Null, Window=-1, Gadget=-1)
-  Declare.b Widget(*Scroll.Scroll, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
+  Declare.b Draw(*Scroll.Scroll_S)
+  Declare.l Y(*Scroll.Scroll_S)
+  Declare.l X(*Scroll.Scroll_S)
+  Declare.l Width(*Scroll.Scroll_S)
+  Declare.l Height(*Scroll.Scroll_S)
+  Declare.b SetState(*Scroll.Scroll_S, ScrollPos.l)
+  Declare.l SetAttribute(*Scroll.Scroll_S, Attribute.l, Value.l)
+  Declare.b SetColor(*Scroll.Scroll_S, ColorType.l, Color.l, Item.l=- 1, State.l=1)
+  Declare.b Resize(*This.Scroll_S, iX.l,iY.l,iWidth.l,iHeight.l, *Scroll.Scroll_S=#Null)
+  Declare.b Resizes(*v.Scroll_S, *h.Scroll_S, X.l,Y.l,Width.l,Height.l)
+  Declare.b Updates(*v.Scroll_S, *h.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
+  Declare.b CallBack(*This.Scroll_S, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
+  Declare.b Widget(*Scroll.Scroll_S, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
   
-  Declare DrawArrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
+  Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
 EndDeclareModule
 
 Module Scroll
-  Macro Colors(_this_, _i_, _ii_, _iii_)
-    If _this_\Color[_i_]\Line[_ii_]
-      _this_\Color[_i_]\Line[_iii_] = _this_\Color[_i_]\Line[_ii_]
-    Else
-      _this_\Color[_i_]\Line[_iii_] = _this_\Color[0]\Line[_ii_]
-    EndIf
-    
-    If _this_\Color[_i_]\Fore[_ii_]
-      _this_\Color[_i_]\Fore[_iii_] = _this_\Color[_i_]\Fore[_ii_]
-    Else
-      _this_\Color[_i_]\Fore[_iii_] = _this_\Color[0]\Fore[_ii_]
-    EndIf
-    
-    If _this_\Color[_i_]\Back[_ii_]
-      _this_\Color[_i_]\Back[_iii_] = _this_\Color[_i_]\Back[_ii_]
-    Else
-      _this_\Color[_i_]\Back[_iii_] = _this_\Color[0]\Back[_ii_]
-    EndIf
-    
-    If _this_\Color[_i_]\Frame[_ii_]
-      _this_\Color[_i_]\Frame[_iii_] = _this_\Color[_i_]\Frame[_ii_]
-    Else
-      _this_\Color[_i_]\Frame[_iii_] = _this_\Color[0]\Frame[_ii_]
-    EndIf
-  EndMacro
-  
-  Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
-    BackColor(_color_1_&$FFFFFF|_alpha_<<24)
-    FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
-    If _type_
-      LinearGradient(_x_,_y_, (_x_+_width_), _y_)
-    Else
-      LinearGradient(_x_,_y_, _x_, (_y_+_height_))
-    EndIf
-    RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
-    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
-  EndMacro
-  
-  Macro ResetColor(_this_)
-    Colors(_this_, 0, 1, 0)
-    Colors(_this_, 1, 1, 0)
-    Colors(_this_, 2, 1, 0)
-    Colors(_this_, 3, 1, 0)
-    
-    
-    Colors(_this_, 1, 1, 1)
-    Colors(_this_, 2, 1, 1)
-    Colors(_this_, 3, 1, 1)
-    
-    Colors(_this_, 1, 2, 2)
-    Colors(_this_, 2, 2, 2)
-    Colors(_this_, 3, 2, 2)
-    
-    Colors(_this_, 1, 3, 3)
-    Colors(_this_, 2, 3, 3)
-    Colors(_this_, 3, 3, 3)
-  EndMacro
-  
   Macro ThumbPos(_this_, _scroll_pos_)
     (_this_\Area\Pos + Round((_scroll_pos_-_this_\Min) * (_this_\Area\Length / (_this_\Max-_this_\Min)), #PB_Round_Nearest))
   EndMacro
@@ -93,7 +37,7 @@ Module Scroll
     Round(_this_\Area\Length - (_this_\Area\Length / (_this_\Max-_this_\Min))*((_this_\Max-_this_\Min) - _this_\Page\Length), #PB_Round_Nearest)
   EndMacro
   
-  Procedure DrawArrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
+  Procedure Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
     Protected I
     
     If Length=0
@@ -194,7 +138,7 @@ Module Scroll
     ProcedureReturn Value
   EndProcedure
   
-  Procedure.l Pos(*This.Scroll, ThumbPos.l)
+  Procedure.l Pos(*This.Scroll_S, ThumbPos.l)
     Protected ScrollPos.l
     
     With *This
@@ -206,29 +150,29 @@ Module Scroll
   EndProcedure
   
   ;-
-  Procedure.b Draw(*Scroll.Scroll)
+  Procedure.b Draw(*Scroll.Scroll_S)
     With *Scroll
       If Not \Hide And \Alpha
         
         ; Draw scroll bar background
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox(\X[0],\Y[0],\Width[0],\Height[0],\Radius,\Radius,\Color[0]\Back&$FFFFFF|\Alpha<<24)
+        RoundBox(\X[0],\Y[0],\Width[0],\Height[0],\Radius,\Radius,\Color\Back&$FFFFFF|\Alpha<<24)
         
         If \Vertical
           ; Draw left line
           If \Both
             ; "Это пустое пространство между двумя скроллами тоже закрашиваем если скролл бара кнопки не круглые"
             If Not \Radius : Box(\X[2],\Y[2]+\height[2]+1,\Width[2],\Height[2],\Color[0]\Back&$FFFFFF|\Alpha<<24) : EndIf
-            Line(\X[0],\Y[0],1,\height[0]-\Radius/2,\Color[0]\Line&$FFFFFF|\Alpha<<24)
+            Line(\X[0],\Y[0],1,\height[0]-\Radius/2,$FFFFFFFF&$FFFFFF|\Alpha<<24)
           Else
-            Line(\X[0],\Y[0],1,\Height[0],\Color[0]\Line&$FFFFFF|\Alpha<<24)
+            Line(\X[0],\Y[0],1,\Height[0],$FFFFFFFF&$FFFFFF|\Alpha<<24)
           EndIf
         Else
           ; Draw top line
           If \Both
-            Line(\X[0],\Y[0],\width[0]-\Radius/2,1,\Color[0]\Line&$FFFFFF|\Alpha<<24)
+            Line(\X[0],\Y[0],\width[0]-\Radius/2,1,$FFFFFFFF&$FFFFFF|\Alpha<<24)
           Else
-            Line(\X[0],\Y[0],\Width[0],1,\Color[0]\Line&$FFFFFF|\Alpha<<24)
+            Line(\X[0],\Y[0],\Width[0],1,$FFFFFFFF&$FFFFFF|\Alpha<<24)
           EndIf
         EndIf
         
@@ -259,28 +203,28 @@ Module Scroll
           
           ; Draw arrows
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          DrawArrow(\X[1]+(\Width[1]-\Size[1])/2,\Y[1]+(\Height[1]-\Size[1])/2, \Size[1], Bool(\Vertical), \Color[1]\Line&$FFFFFF|\Alpha<<24,\Type[1])
-          DrawArrow(\X[2]+(\Width[2]-\Size[2])/2,\Y[2]+(\Height[2]-\Size[2])/2, \Size[2], Bool(\Vertical)+2, \Color[2]\Line&$FFFFFF|\Alpha<<24,\Type[2])
+          Arrow(\X[1]+(\Width[1]-\Size[1])/2,\Y[1]+(\Height[1]-\Size[1])/2, \Size[1], Bool(\Vertical), \Color[1]\Front&$FFFFFF|\Alpha<<24,\Type[1])
+          Arrow(\X[2]+(\Width[2]-\Size[2])/2,\Y[2]+(\Height[2]-\Size[2])/2, \Size[2], Bool(\Vertical)+2, \Color[2]\Front&$FFFFFF|\Alpha<<24,\Type[2])
         EndIf
         
         If \DrawingMode = #PB_2DDrawing_Gradient
           ; Draw thumb lines
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
           If \Vertical
-            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2-3,9,1,\Color[3]\Line&$FFFFFF|\Alpha<<24)
-            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2,9,1,\Color[3]\Line&$FFFFFF|\Alpha<<24)
-            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2+3,9,1,\Color[3]\Line&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2-3,9,1,\Color[3]\Front&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2,9,1,\Color[3]\Front&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2+3,9,1,\Color[3]\Front&$FFFFFF|\Alpha<<24)
           Else
-            Line(\X[3]+\Width[3]/2-3,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Line&$FFFFFF|\Alpha<<24)
-            Line(\X[3]+\Width[3]/2,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Line&$FFFFFF|\Alpha<<24)
-            Line(\X[3]+\Width[3]/2+3,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Line&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+\Width[3]/2-3,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Front&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+\Width[3]/2,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Front&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+\Width[3]/2+3,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Front&$FFFFFF|\Alpha<<24)
           EndIf
         EndIf
       EndIf
     EndWith 
   EndProcedure
   
-  Procedure.l X(*Scroll.Scroll)
+  Procedure.l X(*Scroll.Scroll_S)
     Protected Result.l
     
     If *Scroll
@@ -296,7 +240,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l Y(*Scroll.Scroll)
+  Procedure.l Y(*Scroll.Scroll_S)
     Protected Result.l
     
     If *Scroll
@@ -312,7 +256,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l Width(*Scroll.Scroll)
+  Procedure.l Width(*Scroll.Scroll_S)
     Protected Result.l
     
     If *Scroll
@@ -326,7 +270,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l Height(*Scroll.Scroll)
+  Procedure.l Height(*Scroll.Scroll_S)
     Protected Result.l
     
     If *Scroll
@@ -340,7 +284,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b SetState(*Scroll.Scroll, ScrollPos.l)
+  Procedure.b SetState(*Scroll.Scroll_S, ScrollPos.l)
     Protected Result.b, Direction
     
     With *Scroll
@@ -384,7 +328,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l SetAttribute(*Scroll.Scroll, Attribute.l, Value.l)
+  Procedure.l SetAttribute(*Scroll.Scroll_S, Attribute.l, Value.l)
     Protected Result.l
     
     With *Scroll
@@ -426,7 +370,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b SetColor(*Scroll.Scroll, ColorType.l, Color.l, Item.l=- 1, State.l=1)
+  Procedure.b SetColor(*Scroll.Scroll_S, ColorType.l, Color.l, Item.l=- 1, State.l=1)
     Protected Result
     
     With *Scroll
@@ -461,7 +405,7 @@ Module Scroll
     ProcedureReturn Bool(Color)
   EndProcedure
   
-  Procedure.b Resize(*This.Scroll, X.l,Y.l,Width.l,Height.l, *Scroll.Scroll=#Null)
+  Procedure.b Resize(*This.Scroll_S, X.l,Y.l,Width.l,Height.l, *Scroll.Scroll_S=#Null)
     Protected Result, Lines, ScrollPage
     
     With *This
@@ -537,7 +481,7 @@ Module Scroll
     EndWith
   EndProcedure
   
-  Procedure.b Updates(*v.Scroll, *h.Scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
+  Procedure.b Updates(*v.Scroll_S, *h.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
     Protected iWidth = X(*v), iHeight = Y(*h)
     Static hPos, vPos : vPos = *v\Page\Pos : hPos = *h\Page\Pos
     
@@ -583,7 +527,7 @@ Module Scroll
     ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
   EndProcedure
   
-  Procedure.b Resizes(*v.Scroll, *h.Scroll, X.l,Y.l,Width.l,Height.l )
+  Procedure.b Resizes(*v.Scroll_S, *h.Scroll_S, X.l,Y.l,Width.l,Height.l )
     If Width=#PB_Ignore : Width = *v\X+*v\Width : Else : Width+x : EndIf
     If Height=#PB_Ignore : Height = *h\Y+*h\Height : Else : Height+y : EndIf
     
@@ -615,13 +559,13 @@ Module Scroll
     ProcedureReturn Bool(*v\Hide|*h\Hide)
   EndProcedure
   
-  Procedure.b CallBack(*This.Scroll, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0, AutoHide.b=0, *Scroll.Scroll=#Null, Window=-1, Gadget=-1)
+  Procedure.b CallBack(*This.Scroll_S, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
     Protected Result, Buttons
-    Static LastX, LastY, Last, *Thisis.Scroll, Cursor, Drag, Down
+    Static LastX, LastY, Last, *Thisis.Scroll_S, Cursor, Drag, Down
     
     If *This
       If EventType = #PB_EventType_LeftButtonDown
-      ;  Debug "CallBack(*This.Scroll)"
+      ;  Debug "CallBack(*This.Scroll_S)"
       EndIf
       
       With *This
@@ -731,7 +675,7 @@ Module Scroll
               \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
               \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
               \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Line = \Color[Buttons]\Line[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+              \Color[Buttons]\Front = \Color[Buttons]\Front[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
             ElseIf Not Drag And Not Buttons 
               If *Thisis = *This And ((EventType = #PB_EventType_MouseLeave) And 
                                       Cursor <> GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)) Or 
@@ -779,7 +723,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b Widget(*Scroll.Scroll, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
+  Procedure.b Widget(*Scroll.Scroll_S, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
     
     With *Scroll
       \Alpha = 255
@@ -792,36 +736,16 @@ Module Scroll
       \Window =- 1
       \Gadget =- 1
       
-      \Color[0]\Fore[1] = $F6F6F6 
-      \Color[0]\Frame[1] = $BABABA
-      
-      \Color[0]\Back[1] = $F9F9F9 ; $F0F0F0 
-      \Color[1]\Back[1] = $E2E2E2  
-      \Color[2]\Back[1] = $E2E2E2 
-      \Color[3]\Back[1] = $E2E2E2 
-      
-      \Color[0]\Line[1] = $FFFFFF
-      ;       \Color[1]\Line[1] = $3F3F3F
-      ;       \Color[2]\Line[1] = $3F3F3F
-      ;       \Color[3]\Line[1] = $3F3F3F
-      \Color[1]\Line[1] = $A3A3A3
-      \Color[2]\Line[1] = $A3A3A3
-      \Color[3]\Line[1] = $A3A3A3
-      
-      ;
-      \Color[0]\Fore[2] = $EAEAEA
-      \Color[0]\Back[2] = $CECECE
-      \Color[0]\Line[2] = $5B5B5B
-      \Color[0]\Frame[2] = $8F8F8F
-      
-      ;
-      \Color[0]\Fore[3] = $E2E2E2
-      \Color[0]\Back[3] = $B4B4B4
-      \Color[0]\Line[3] = $FFFFFF
-      \Color[0]\Frame[3] = $6F6F6F
-      
+      \Color[0] = Colors
       ResetColor(*Scroll)
       
+      ; Цвет фона скролла
+      \Color[0]\Back[1] = $FFF9F9F9
+      \Color[1]\Front[1] = $FFA3A3A3
+      \Color[2]\Front[1] = $FFA3A3A3
+      \Color[3]\Front[1] = $FF3F3F3F
+      ResetColor(*Scroll)
+       
       \Type = #PB_GadgetType_ScrollBar
       \DrawingMode = #PB_2DDrawing_Gradient
       \Vertical = Bool(Flag&#PB_ScrollBar_Vertical)
@@ -855,13 +779,13 @@ EndModule
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Scroll
   
-  Global *Vertical.Scroll=AllocateStructure(Scroll)
-  Global *Horisontal_0.Scroll=AllocateStructure(Scroll)
-  Global *Horisontal_1.Scroll=AllocateStructure(Scroll)
-  Global *Horisontal_2.Scroll=AllocateStructure(Scroll)
-  Global *Horisontal_3.Scroll=AllocateStructure(Scroll)
-  Global *Horisontal_4.Scroll=AllocateStructure(Scroll)
-  Global *Horisontal_5.Scroll=AllocateStructure(Scroll)
+  Global *Vertical.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horisontal_0.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horisontal_1.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horisontal_2.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horisontal_3.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horisontal_4.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horisontal_5.Scroll_S=AllocateStructure(Scroll_S)
   
   Procedure CallBacks()
     Protected Repaint
@@ -922,6 +846,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     With *Vertical
       Widget(*Vertical, 270, 10,  25, 183 ,0, 300, 50, #PB_ScrollBar_Vertical, 4)
+      SetColor(*Vertical, #PB_Gadget_BackColor, $FFF9F9F9)
       SetState(*Vertical, 100) 
     EndWith
     
@@ -971,5 +896,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = X8-0---------------f8---T-f---
+; Folding = f-v-4--------------b---f7-8--
 ; EnableXP
