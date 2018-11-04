@@ -49,7 +49,6 @@ Module String
   ;-
   ;- - MACROS
   ;- - PROCEDUREs
-  
   Procedure Caret(*This.Widget_S, Line.i = 0)
     Static LastLine.i,  LastItem.i
     Protected Item.i, SelectionLen.i=0
@@ -975,8 +974,19 @@ CompilerIf #PB_Compiler_IsMainFile
       CocoaMessage(0,GadgetID(1),"setAlignment:", 2)
       CocoaMessage(0,GadgetID(2),"setAlignment:", 1)
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-      SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE)|#SS_CENTER)
-      SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLong_(GadgetID(2), #GWL_STYLE)|#SS_RIGHT)
+      If OSVersion() > #PB_OS_Windows_XP
+        SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE) & $FFFFFFFC | #SS_CENTER)
+        SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLongPtr_(GadgetID(2), #GWL_STYLE) & $FFFFFFFC | #ES_RIGHT) 
+      Else
+        SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE)|#SS_CENTER)
+        SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLong_(GadgetID(2), #GWL_STYLE)|#SS_RIGHT)
+      EndIf
+    CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+      ImportC ""
+        gtk_entry_set_alignment(Entry.i, XAlign.f)
+      EndImport
+      gtk_entry_set_alignment(GadgetID(1), 0.5)
+      gtk_entry_set_alignment(GadgetID(2), 1)
     CompilerEndIf
     
     ; Demo draw string on the canvas
@@ -1003,6 +1013,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = h--0HAASNAAADz--AAcIIFAC6
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 978
+; FirstLine = 419
+; Folding = h--0HAASNAAADz--AAcIIFAC0
 ; EnableXP

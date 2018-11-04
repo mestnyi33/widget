@@ -250,7 +250,7 @@ Module Text
         Height = \Width[1]-\Text\y*2
       Else
         CompilerIf Defined(Scroll, #PB_Module)
-          Width = \Width[1]-\Text\X*2    -Scroll::Width(\vScroll)
+          Width = Abs(\Width[1]-\Text\X*2    -Scroll::Width(\vScroll)) ; bug in linux иногда
           Height = \Height[1]-\Text\y*2  -Scroll::Height(\hScroll)
         CompilerElse
           Width = \Width[1]-\Text\X*2  
@@ -284,7 +284,7 @@ Module Text
           
           Right =- TextWidth(Mid(\Text\String.s, \Items()\Caret, \Caret))
           Left = (Width + Right)
-          ; Debug " "+Left+" "+Right
+          ; Debug " "+\Width[1] +" "+ Width +" "+ Left +" "+ Right
           
           If *This\Scroll\X < Right
             *This\Scroll\X = Right
@@ -498,6 +498,7 @@ Module Text
         If Canvas <> \Canvas\Gadget : ProcedureReturn : EndIf
         
         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
+        _clip_output_(*This, \X[2],\Y[2],\Width[2],\Height[2])
           
         ; Make output multi line text
         If (\Text\Change Or \Resize)
@@ -520,8 +521,6 @@ Module Text
           DrawingMode(#PB_2DDrawing_Default)
           RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Back)
         EndIf
-        
-        _clip_output_(*This, \X[2],\Y[2],\Width[2],\Height[2])
       EndWith 
       
       ; Draw items text
@@ -542,9 +541,8 @@ Module Text
             EndIf
             
             If Not \Hide
-              If \Text\FontID 
-                DrawingFont(\Text\FontID) 
-              EndIf
+              If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
+              _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Width[2], #PB_Ignore) 
               
               If \Text\Change : \Text\Change = #False
                 \Text\Width = TextWidth(\Text\String.s) 
@@ -715,6 +713,20 @@ Module Text
           If Not \Text\MultiLine
             Scroll::Draw(\hScroll)
           EndIf
+          
+;           ; >>>|||
+;           If \Scroll\Widget\Vertical\Page\Length And \Scroll\Widget\Vertical\Max<>\Scroll\Height And
+;              Scroll::SetAttribute(\Scroll\Widget\Vertical, #PB_ScrollBar_Maximum, \Scroll\Height)
+;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horisontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;           EndIf
+;           
+;           If \Scroll\Widget\Horisontal\Page\Length And \Scroll\Widget\Horisontal\Max<>\Scroll\Width And
+;              Scroll::SetAttribute(\Scroll\Widget\Horisontal, #PB_ScrollBar_Maximum, \Scroll\Width)
+;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horisontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;           EndIf
+;           
+;           Scroll::Draw(\Scroll\Widget\Vertical)
+;           Scroll::Draw(\Scroll\Widget\Horisontal)
         CompilerEndIf
         
         ;         _clip_output_(*This, \X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4)
@@ -1244,6 +1256,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   If OpenWindow(0, 0, 0, 104, 690, "Text on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    ClearList(List())
+    
     ;EditorGadget(0, 10, 10, 380, 330, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s)
     TextGadget(0, 10, 10, 380, 330, Text.s) 
     ;ButtonGadget(0, 10, 10, 380, 330, Text.s) 
@@ -1270,6 +1284,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -+0Ps-vd-8n+-+---------------
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 545
+; FirstLine = 359
+; Folding = -+-fs-vd--4+-+---------------
 ; EnableXP

@@ -111,6 +111,15 @@
     Color.Color_S[4]
   EndStructure
   
+  Structure S_S
+    Vertical.Scroll_S
+    Horisontal.Scroll_S
+  EndStructure
+  
+  Structure Scrolls_S Extends Coordinate_S
+    *Widget.S_S
+  EndStructure
+  
   Structure Widget_S Extends Coordinate_S
     Index.i  ; Index of new list element
     Handle.i ; Adress of new list element
@@ -163,7 +172,7 @@
     flag.i
     Image.Image_S
     
-    Scroll.Scroll_S
+    Scroll.Scrolls_S
     vScroll.Scroll_S
     hScroll.Scroll_S
     
@@ -183,15 +192,15 @@
     ;- Серые цвета 
     ; Цвета по умолчанию
     \Front[1] = $FF000000
-    \Fore[1] = $FFF6F6F6 
-    \Back[1] = $FFE2E2E2
+    \Fore[1] = $FFFCFCFC ; $FFF6F6F6 
+    \Back[1] = $FFE2E2E2 ; $FFE8E8E8 ; 
     \Line[1] = $FFA3A3A3
-    \Frame[1] = $FFBABABA
+    \Frame[1] = $FFA5A5A5 ; $FFBABABA
     
     ; Цвета если мышь на виджете
     \Front[2] = $FF000000
-    \Fore[2] = $FFEAEAEA
-    \Back[2] = $FFCECECE
+    \Fore[2] = $FFF5F5F5 ; $FFF5F5F5 ; $FFEAEAEA
+    \Back[2] = $FFCECECE ; $FFEAEAEA ; 
     \Line[2] = $FF5B5B5B
     \Frame[2] = $FF8F8F8F
     
@@ -252,6 +261,8 @@ Module Structures
 EndModule 
 
 UseModule Structures
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 201
+; FirstLine = 156
+; Folding = -v-
 ; EnableXP

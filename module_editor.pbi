@@ -3,7 +3,7 @@
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-  IncludePath "/Users/a/Documents/GitHub/Widget/"
+  ;  IncludePath "/Users/a/Documents/GitHub/Widget/"
 CompilerEndIf
 ; XIncludeFile "module_scroll.pbi"
 
@@ -160,16 +160,17 @@ Module Editor
                 ;If PreviousElement(*This\Items())
                 If Position = len
                   If Item < \Line
+                    Debug " get "+ \Items()\Text\String
                     ;If Not \Items()\Text[2]\Len 
                     \Items()\Text[2]\Len = 1
                     \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
                     ;EndIf 
-                    Debug  \Items()\Text\String
                     If Not SelectionLen
                       \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
                     Else
                       \Items()\Text[2]\Width[2] = SelectionLen
                     EndIf
+                  Else
                   EndIf
                 EndIf
                 ;EndIf
@@ -177,7 +178,7 @@ Module Editor
                 
               EndIf
               
-              Debug "width "+\Items()\Text[2]\Width[2]
+              Debug "width "+\Items()\Text[2]\Width;[2]
               
               LastItem = Item
               LastLine = \Line
@@ -2442,6 +2443,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --XAAwPAAAdHAMAAAAAgfDwbmAAigYAfAwAAsnDBAAAwDAEUAYPH-IA0eh
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 2194
+; FirstLine = 639
+; Folding = --4fA+PAAAdHAMAAAAAgfDwb3CYjgYwfAwAAsnjBAAAwDAEUAYPH-IA0el
 ; EnableXP

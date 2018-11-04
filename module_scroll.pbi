@@ -23,7 +23,7 @@ DeclareModule Scroll
   Declare.b Resizes(*v.Scroll_S, *h.Scroll_S, X.l,Y.l,Width.l,Height.l)
   Declare.b Updates(*v.Scroll_S, *h.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
   Declare.b CallBack(*This.Scroll_S, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
-  Declare.b Widget(*Scroll.Scroll_S, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
+  Declare.i Widget(*Scroll.Scroll_S, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
   
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
 EndDeclareModule
@@ -723,7 +723,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b Widget(*Scroll.Scroll_S, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
+  Procedure.i Widget(*Scroll.Scroll_S, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
     
     With *Scroll
       \Alpha = 255
