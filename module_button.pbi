@@ -364,7 +364,7 @@ Module Button
           If Bool(Flag&#PB_Text_WordWrap)
             \Text\MultiLine = 1
           ElseIf Bool(Flag&#PB_Text_MultiLine)
-            \Text\MultiLine =- 1
+            \Text\MultiLine = 2
           EndIf
           
           \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)

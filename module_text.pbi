@@ -44,8 +44,10 @@ DeclareModule Text
   Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
   Declare.i CallBack(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
+  ;Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+  
+  Declare.i ToReturn(*This.Widget_S)
 EndDeclareModule
 
 Module Text
@@ -259,7 +261,7 @@ Module Text
       EndIf
       
       If \Text\MultiLine > 0
-        String.s = Text::Wrap(\Text\String.s, Width, \Text\MultiLine)
+        String.s = Wrap(\Text\String.s, Width, \Text\MultiLine)
       Else
         String.s = \Text\String.s
       EndIf
@@ -840,6 +842,59 @@ Module Text
   EndProcedure
   
   ;-
+  Procedure.i ToReturn(*This.Widget_S) ; Ok
+    Protected Repaint, String.s
+    
+    With  *This
+      If \Items()\Text[2]\Len > 0
+        If \Line[1] > \Line : Swap \Line[1], \Line : EndIf
+        
+        If \Line = \Line[1] 
+          String.s = Left(\Text\String.s, \Items()\Caret) + \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Caret+\Items()\Text\Len))
+        Else    
+          PushListPosition(\Items())
+          ForEach \Items()
+            Select ListIndex(\Items()) 
+              Case \Line[1] : String.s = Left(\Text\String.s, \Items()\Caret) + \Items()\Text[1]\String.s + #LF$
+              Case \Line : String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Caret+\Items()\Text\Len))
+            EndSelect
+          Next
+          PopListPosition(\Items())
+        EndIf
+      Else
+        If \Items()\Text[1]\String.s And \Items()\Text[3]\String.s
+          ; курсор в нутри слова
+          String.s = \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s
+        ElseIf \Items()\Text[3]\String.s
+          ; курсор в начале слова
+          String.s = #LF$ + \Items()\Text[3]\String.s
+        ElseIf \Items()\Text[1]\String.s
+          ; курсор в конце слова
+          String.s = \Items()\Text[1]\String.s + #LF$
+        Else
+          ; курсор на линии где нету слово
+          String.s = #LF$
+        EndIf
+        String.s = Left(\Text\String.s, \Items()\Caret) + String.s + Right(\Text\String.s, \Text\Len-(\Items()\Caret+\Items()\Text\Len))
+      EndIf
+      
+      \Line[1] + 1
+      \Line = \Line[1]
+      
+      \Caret = 0
+      \Caret[1] = \Caret
+      
+      \Text\String.s = String.s
+      \Text\Len = Len(\Text\String.s)
+      \Text\Change = 1
+      
+      ;       Scroll::SetState(\vScroll, \vScroll\Max)
+      Repaint = #True
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure.i AddLine(*This.Widget_S, Line.i, Text.s)
     Protected Result.i, String.s, i.i
     
@@ -864,12 +919,10 @@ Module Text
         EndIf
       Next : \Text\Count = i
       
-      ;String.s = Trim(String.s, #LF$)
-      
       If \Text\String.s <> String.s
         \Text\String.s = String.s
         \Text\Len = Len(String.s)
-         \Text\Change = 1
+        ; \Text\Change = 1
         Result = 1
       EndIf
     EndWith
@@ -1355,5 +1408,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---f9-vd---3-4-ff--------------
+; Folding = ---f9-vd---3-4-ff-00------------
 ; EnableXP

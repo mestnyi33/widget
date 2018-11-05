@@ -47,7 +47,7 @@
     CompilerEndIf
   EndMacro
   
-  Macro _frame_(_this_, _x_,_y_,_width_,_height_, _color_1_, _color_2_, _radius_=0)
+  Macro _frame_(_this_, _x_,_y_,_width_,_height_, _color_1_, _color_2_);, _radius_=0)
     ClipOutput(_x_-1,_y_-1,_width_+1,_height_+1)
     RoundBox(_x_-1,_y_-1,_width_+2,_height_+2, _this_\Radius,_this_\Radius, _color_1_)  
     

@@ -211,7 +211,7 @@ Module Tree
           ForEach *This\Items()
             If Not \hide
               _clip_output_(*This, *This\x[2], *This\y[2], iwidth, iheight) ; Bug
-              
+              Protected y=*This\Scroll\height
               \x=*This\x[2]
               \width=iwidth
               \height=height
@@ -228,11 +228,11 @@ Module Tree
               \box\width = box_size
               \box\height = box_size
               \box\x = x_content-(w+\box\width)/2
-              \box\y = (\y+height)-(height+\box\height)/2
+              \box\y = (y+height)-(height+\box\height)/2
               
               If \Image\handle
                 \Image\x = 3+x_content
-                \Image\y = \y+(height-\Image\height)/2
+                \Image\y = y+(height-\Image\height)/2
                 
                 *This\Image\handle = \Image\handle
                 *This\Image\width = \Image\width+4
@@ -240,7 +240,7 @@ Module Tree
               
 ;               If \text\change = 1
               \text\x = 3+x_content+*This\Image\width
-              \text\y = \y+(height-\text\height)/2
+              \text\y = y+(height-\text\height)/2
 ;                 \text\change = 0
 ;               EndIf
               
@@ -253,7 +253,7 @@ Module Tree
                 \box\height[1] = box_1_size
                 
                 \box\x[1] = 3+(w-\box\width[1])/2 
-                \box\y[1] = (\y+height)-(height+\box\height[1])/2
+                \box\y[1] = (y+height)-(height+\box\height[1])/2
               EndIf
               
               *This\Scroll\height+\height
@@ -334,19 +334,19 @@ Module Tree
                 If Not *This\flag&#NoButtons And \childrens
                   If box_type=-1
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+                    Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,*This\Scroll\Y+\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                   Else
                     DrawingMode(#PB_2DDrawing_Gradient)
                     BackColor($FFFFFF) : FrontColor($EEEEEE)
-                    LinearGradient(\box\x, \box\y, \box\x, (\box\y+\box\height))
-                    RoundBox(\box\x+1,\box\y+1,\box\width-2,\box\height-2,box_type,box_type)
+                    LinearGradient(\box\x, *This\Scroll\Y+\box\y, \box\x, (\box\y+\box\height))
+                    RoundBox(\box\x+1,*This\Scroll\Y+\box\y+1,\box\width-2,\box\height-2,box_type,box_type)
                     BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
                     
                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                     RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type,box_color&$FFFFFF|alpha<<24)
                     
-                    Line(\box\x+2,\box\y+\box\height/2 ,\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
-                    If \collapsed : Line(\box\x+\box\width/2,\box\y+2,1,\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
+                    Line(\box\x+2,*This\Scroll\Y+\box\y+\box\height/2 ,\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
+                    If \collapsed : Line(\box\x+\box\width/2,*This\Scroll\Y+\box\y+2,1,\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
                   EndIf
                 EndIf
               EndIf
@@ -403,20 +403,20 @@ Module Tree
               If Drawing
                 ; Draw checkbox
                 If *This\flag&#CheckBoxes
-                  DrawBox(\box\x[1],\box\y[1],\box\width[1],\box\height[1], 3, \checked, checkbox_color, box_color, 2, alpha);, box_type)
+                  DrawBox(\box\x[1],*This\Scroll\Y+\box\y[1],\box\width[1],\box\height[1], 3, \checked, checkbox_color, box_color, 2, alpha);, box_type)
                 EndIf
                 
                 ; Draw image
                 If \Image\handle
                   DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                  DrawAlphaImage(\Image\handle, \Image\x, \Image\y, alpha)
+                  DrawAlphaImage(\Image\handle, \Image\x, *This\Scroll\Y+\Image\y, alpha)
                 EndIf
                 
                 ; Draw string
                 If \text\string.s
                   _clip_output_(*This, *This\x[2], *This\y[2], \width, *This\height[2]) 
                   DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                  DrawText(\text\x, \text\y, \text\string.s, text_color&$FFFFFF|alpha<<24)
+                  DrawText(\text\x, *This\Scroll\Y+\text\y, \text\string.s, text_color&$FFFFFF|alpha<<24)
                 EndIf
               EndIf
             EndIf
@@ -1630,5 +1630,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---4-00--Hs--+--------------8------X----
+; Folding = ---4---4+Hs--+--------------8------X----
 ; EnableXP
