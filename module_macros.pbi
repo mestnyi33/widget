@@ -47,6 +47,19 @@
     CompilerEndIf
   EndMacro
   
+  Macro _frame_(_this_, _x_,_y_,_width_,_height_, _color_1_, _color_2_, _radius_=0)
+    ClipOutput(_x_-1,_y_-1,_width_+1,_height_+1)
+    RoundBox(_x_-1,_y_-1,_width_+2,_height_+2, _this_\Radius,_this_\Radius, _color_1_)  
+    
+    ClipOutput(_x_+_this_\Radius/3,_y_+_this_\Radius/3,_width_+2,_height_+2)
+    RoundBox(_x_-1,_y_-1,_width_+2,_height_+2,_this_\Radius,_this_\Radius, _color_2_)  
+    
+;     If _radius_ And _this_\Radius : RoundBox(_x_,_y_-1,_width_,_height_+1,_this_\Radius,_this_\Radius,_color_1_) : EndIf  ; Сглаживание краев )))
+;     If _radius_ And _this_\Radius : RoundBox(_x_-1,_y_-1,_width_+1,_height_+1,_this_\Radius,_this_\Radius,_color_1_) : EndIf  ; Сглаживание краев )))
+    
+    UnclipOutput() : _clip_output_(_this_, _this_\X[1]-1,_this_\Y[1]-1,_this_\Width[1]+2,_this_\Height[1]+2)
+  EndMacro
+  
   Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
     BackColor(_color_1_&$FFFFFF|_alpha_<<24)
     FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
@@ -165,8 +178,6 @@ Module Macros
 EndModule 
 
 UseModule Macros
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 45
-; FirstLine = 40
-; Folding = -4--
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = -v--
 ; EnableXP

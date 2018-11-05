@@ -87,9 +87,6 @@
     Window.i
     Gadget.i
     
-    Max.i
-    Min.i
-    
     Both.b ; we see both scrolbars
     
     Size.i[4]
@@ -104,6 +101,8 @@
     Vertical.b
     DrawingMode.i
     
+    Max.i
+    Min.i
     Page.Page_S
     Area.Page_S
     Thumb.Page_S
@@ -132,8 +131,17 @@
     Text.Text_S[4]
     Clip.Coordinate_S
     
-    fSize.i
-    bSize.i
+    Scroll.Scrolls_S
+    vScroll.Scroll_S
+    hScroll.Scroll_S
+    
+    Image.Image_S
+    box.Coordinate_S
+    
+    
+    bSize.b
+    fSize.b[2]
+    
     Hide.b[2]
     Disable.b[2]
     Cursor.i[2]
@@ -162,7 +170,6 @@
     time.i
     adress.i[2]
     sublevel.i
-    box.Coordinate_S
     *data
     collapsed.b
     childrens.i
@@ -170,11 +177,7 @@
     Attribute.l
     change.b
     flag.i
-    Image.Image_S
     
-    Scroll.Scrolls_S
-    vScroll.Scroll_S
-    hScroll.Scroll_S
     
     *Default
     Alpha.a[2]
@@ -261,8 +264,6 @@ Module Structures
 EndModule 
 
 UseModule Structures
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 201
-; FirstLine = 156
-; Folding = -v-
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = ---
 ; EnableXP

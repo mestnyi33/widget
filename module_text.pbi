@@ -113,11 +113,11 @@ Module Text
     Protected line$, ret$="", LineRet$=""
     Protected.i CountString, i, start, ii, found, length
     
-    Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
-    Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
-    Text.s = ReplaceString(Text.s, #CR$, #LF$)
-    Text.s + #LF$
-    
+;     Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
+;     Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
+;     Text.s = ReplaceString(Text.s, #CR$, #LF$)
+;     Text.s + #LF$
+;     
     CountString = CountString(Text.s, #LF$) 
     
     For i = 1 To CountString
@@ -137,7 +137,7 @@ Module Text
       While start > length 
         If mode
           For ii = length To 0 Step - 1
-            If mode =- 1 And CountString(Left((line$),ii), " ") > 1     And width > 71 ; button
+            If mode = 2 And CountString(Left((line$),ii), " ") > 1     And width > 71 ; button
               found + FindString(delimList$, Mid(RTrim(line$),ii,1))
               If found <> 2
                 Continue
@@ -174,7 +174,7 @@ Module Text
         Wend
       Wend
       
-      ret$ +  LineRet$ + line$ + nl$
+      ret$ + LineRet$ + line$ + nl$
       LineRet$=""
     Next
     
@@ -258,7 +258,7 @@ Module Text
         CompilerEndIf
       EndIf
       
-      If \Text\MultiLine
+      If \Text\MultiLine > 0
         String.s = Text::Wrap(\Text\String.s, Width, \Text\MultiLine)
       Else
         String.s = \Text\String.s
@@ -487,6 +487,21 @@ Module Text
     EndWith           
   EndProcedure
   
+  Procedure DrawFilterCallback(X, Y, SourceColor, TargetColor)
+    Protected Color, Dot.b=4, line.b = 10, Length.b = (Line+Dot*2+1)
+    Static Len.b
+    
+    If ((Len%Length)<line Or (Len%Length)=(line+Dot))
+      If (Len>(Line+Dot)) : Len=0 : EndIf
+      Color = SourceColor
+    Else
+      Color = TargetColor
+    EndIf
+    
+    Len+1
+    ProcedureReturn Color
+  EndProcedure
+  
   Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
     Protected String.s, StringWidth, iwidth, iheight
     Protected IT,Text_Y,Text_X,Width,Height, Drawing
@@ -496,6 +511,8 @@ Module Text
       With *This
         If Canvas=-1 : Canvas = EventGadget() : EndIf
         If Canvas <> \Canvas\Gadget : ProcedureReturn : EndIf
+        
+        Protected iX=\X[2],iY=\Y[2]
         
         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
         _clip_output_(*This, \X[2],\Y[2],\Width[2],\Height[2])
@@ -697,22 +714,19 @@ Module Text
       
       ; Draw frames
       With *This
-        ;
+        ; Draw scroll bars
         CompilerIf Defined(Scroll, #PB_Module)
           If \vScroll\Page\Length And \vScroll\Max<>\Scroll\Height And
              Scroll::SetAttribute(\vScroll, #PB_ScrollBar_Maximum, \Scroll\Height)
             Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            ; \vScroll\Page\ScrollStep = height
           EndIf
-          If Not \Text\MultiLine And \hScroll\Page\Length And \hScroll\Max<>\Scroll\Width And
+          If \hScroll\Page\Length And \hScroll\Max<>\Scroll\Width And
              Scroll::SetAttribute(\hScroll, #PB_ScrollBar_Maximum, \Scroll\Width)
             Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           EndIf
           
           Scroll::Draw(\vScroll)
-          If Not \Text\MultiLine
-            Scroll::Draw(\hScroll)
-          EndIf
+          Scroll::Draw(\hScroll)
           
 ;           ; >>>|||
 ;           If \Scroll\Widget\Vertical\Page\Length And \Scroll\Widget\Vertical\Max<>\Scroll\Height And
@@ -729,7 +743,6 @@ Module Text
 ;           Scroll::Draw(\Scroll\Widget\Horisontal)
         CompilerEndIf
         
-        ;         _clip_output_(*This, \X[1]-2,\Y[1]-2,\Width[1]+4,\Height[1]+4)
         _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
         
         ; Draw image
@@ -746,7 +759,57 @@ Module Text
           If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[3]) : EndIf  ; Сглаживание краев )))
           RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,\Color\Frame[3])
         ElseIf \fSize
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
+          Select \fSize[1] 
+            Case 1 ; Flat
+              RoundBox(iX-1,iY-1,iWidth+2,iHeight+2,\Radius,\Radius, $FF9E9E9E)  
+              
+            Case 2 ; Single
+;               Line(iX-1,iY-1,iWidth+2,1, $FF9E9E9E)
+;               Line(iX-1,iY-1,1,iHeight+2, $FF9E9E9E)
+;               Line(iX-1,(iY+iHeight),iWidth+2,1, $FFFFFFFF)
+;               Line((iX+iWidth),iY-1,1,iHeight+2, $FFFFFFFF)
+              
+              _frame_(*This, iX,iY,iWidth,iHeight, $FF9E9E9E, $FFFFFFFF)
+              
+            Case 3 ; Double
+;               Line(iX-2,iY-2,iWidth+4,1, $FF9E9E9E)
+;               Line(iX-2,iY-2,1,iHeight+4, $FF9E9E9E)
+;               
+;               Line(iX-1,iY-1,iWidth+2,1, $FF888888)
+;               Line(iX-1,iY-1,1,iHeight+2, $FF888888)
+;               Line(iX-1,(iY+iHeight),iWidth+2,1, $FFE1E1E1)
+;               Line((iX+iWidth),iY-1,1,iHeight+2, $FFE1E1E1)
+;               
+;               Line(iX-2,(iY+iHeight)+1,iWidth+4,1, $FFFFFFFF)
+;               Line((iX+iWidth)+1,iY-2,1,iHeight+4, $FFFFFFFF)
+              
+              _frame_(*This, iX-1,iY-1,iWidth+2,iHeight+2, $FF9E9E9E, $FFFFFFFF)
+              If \Radius : RoundBox(iX-1,iY-1-1,iWidth+2,iHeight+2+1,\Radius,\Radius,$FF9E9E9E) : EndIf  ; Сглаживание краев )))
+              If \Radius : RoundBox(iX-2,iY-1-1,iWidth+3,iHeight+2+1,\Radius,\Radius,$FF9E9E9E) : EndIf  ; Сглаживание краев )))
+              _frame_(*This, iX,iY,iWidth,iHeight, $FF888888, $FFE1E1E1)
+             
+            Case 4 ; Raised
+;               Line(iX-2,iY-2,iWidth+4,1, $FFE1E1E1)
+;               Line(iX-2,iY-2,1,iHeight+4, $FFE1E1E1)
+;               
+;               Line(iX-1,iY-1,iWidth+2,1, $FFFFFFFF)
+;               Line(iX-1,iY-1,1,iHeight+2, $FFFFFFFF)
+;               Line(iX-1,(iY+iHeight),iWidth+2,1, $FF9E9E9E)
+;               Line((iX+iWidth),iY-1,1,iHeight+2, $FF9E9E9E)
+;               
+;               Line(iX-2,(iY+iHeight)+1,iWidth+4,1, $FF888888)
+;               Line((iX+iWidth)+1,iY-2,1,iHeight+4, $FF888888)
+              
+                _frame_(*This, iX-1,iY-1,iWidth+2,iHeight+2, $FFE1E1E1, $FF9E9E9E)
+              If \Radius : RoundBox(iX-1,iY-1,iWidth+3,iHeight+2+1,\Radius,\Radius,$FF9E9E9E) : EndIf  ; Сглаживание краев )))
+              If \Radius : RoundBox(iX-1,iY-1,iWidth+2,iHeight+2+1,\Radius,\Radius,$FF9E9E9E) : EndIf  ; Сглаживание краев )))
+              _frame_(*This, iX,iY,iWidth,iHeight, $FFFFFFFF, $FF888888)
+            
+              
+            Default 
+              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
+            
+          EndSelect
         EndIf
         
         If \Default
@@ -764,6 +827,7 @@ Module Text
             DrawingMode(#PB_2DDrawing_Transparent)
             DrawText((\Width[1]-TextWidth("!!! Недопустимый символ"))/2, \Items()\Text[0]\Y, "!!! Недопустимый символ", $FF0000FF)
           Else
+            ; DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@DrawFilterCallback())
             RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[3])
             ;           If \Radius : RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[3]) : EndIf ; Сглаживание краев )))
             ;           RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,\Color\Frame[3])
@@ -800,12 +864,12 @@ Module Text
         EndIf
       Next : \Text\Count = i
       
-      String.s = Trim(String.s, #LF$)
+      ;String.s = Trim(String.s, #LF$)
       
       If \Text\String.s <> String.s
         \Text\String.s = String.s
         \Text\Len = Len(String.s)
-;         \Text\Change = 1
+         \Text\Change = 1
         Result = 1
       EndIf
     EndWith
@@ -834,7 +898,13 @@ Module Text
         If \Text\String.s
           \Text\String.s[1] = Text.s
           
-          If Not \Text\MultiLine
+          If \Text\MultiLine Or \Type = #PB_GadgetType_Editor 
+            Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
+            Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
+            Text.s = ReplaceString(Text.s, #CR$, #LF$)
+            Text.s + #LF$
+            \Text\String.s = Text.s
+          Else
             \Text\String.s = RemoveString(\Text\String.s, #LF$) + #LF$
           EndIf
           
@@ -1284,8 +1354,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 545
-; FirstLine = 359
-; Folding = -+-fs-vd--4+-+---------------
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = ---f9-vd---3-4-ff--------------
 ; EnableXP

@@ -12,18 +12,18 @@ DeclareModule Scroll
   
   
   Declare.b Draw(*Scroll.Scroll_S)
-  Declare.l Y(*Scroll.Scroll_S)
-  Declare.l X(*Scroll.Scroll_S)
-  Declare.l Width(*Scroll.Scroll_S)
-  Declare.l Height(*Scroll.Scroll_S)
-  Declare.b SetState(*Scroll.Scroll_S, ScrollPos.l)
-  Declare.l SetAttribute(*Scroll.Scroll_S, Attribute.l, Value.l)
-  Declare.b SetColor(*Scroll.Scroll_S, ColorType.l, Color.l, Item.l=- 1, State.l=1)
-  Declare.b Resize(*This.Scroll_S, iX.l,iY.l,iWidth.l,iHeight.l, *Scroll.Scroll_S=#Null)
-  Declare.b Resizes(*v.Scroll_S, *h.Scroll_S, X.l,Y.l,Width.l,Height.l)
+  Declare.i Y(*Scroll.Scroll_S)
+  Declare.i X(*Scroll.Scroll_S)
+  Declare.i Width(*Scroll.Scroll_S)
+  Declare.i Height(*Scroll.Scroll_S)
+  Declare.b SetState(*Scroll.Scroll_S, ScrollPos.i)
+  Declare.i SetAttribute(*Scroll.Scroll_S, Attribute.i, Value.i)
+  Declare.b SetColor(*Scroll.Scroll_S, ColorType.i, Color.i, Item.i=- 1, State.i=1)
+  Declare.b Resize(*This.Scroll_S, iX.i,iY.i,iWidth.i,iHeight.i, *Scroll.Scroll_S=#Null)
+  Declare.b Resizes(*v.Scroll_S, *h.Scroll_S, X.i,Y.i,Width.i,Height.i)
   Declare.b Updates(*v.Scroll_S, *h.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
-  Declare.b CallBack(*This.Scroll_S, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
-  Declare.i Widget(*Scroll.Scroll_S, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
+  Declare.b CallBack(*This.Scroll_S, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
+  Declare.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
   
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
 EndDeclareModule
@@ -138,8 +138,8 @@ Module Scroll
     ProcedureReturn Value
   EndProcedure
   
-  Procedure.l Pos(*This.Scroll_S, ThumbPos.l)
-    Protected ScrollPos.l
+  Procedure.i Pos(*This.Scroll_S, ThumbPos.i)
+    Protected ScrollPos.i
     
     With *This
       ScrollPos = Match(\Min + Round((ThumbPos - \Area\Pos) / (\Area\Length / (\Max-\Min)), #PB_Round_Nearest), \Page\ScrollStep)
@@ -224,8 +224,8 @@ Module Scroll
     EndWith 
   EndProcedure
   
-  Procedure.l X(*Scroll.Scroll_S)
-    Protected Result.l
+  Procedure.i X(*Scroll.Scroll_S)
+    Protected Result.i
     
     If *Scroll
       With *Scroll
@@ -240,8 +240,8 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l Y(*Scroll.Scroll_S)
-    Protected Result.l
+  Procedure.i Y(*Scroll.Scroll_S)
+    Protected Result.i
     
     If *Scroll
       With *Scroll
@@ -256,8 +256,8 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l Width(*Scroll.Scroll_S)
-    Protected Result.l
+  Procedure.i Width(*Scroll.Scroll_S)
+    Protected Result.i
     
     If *Scroll
       With *Scroll
@@ -270,8 +270,8 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l Height(*Scroll.Scroll_S)
-    Protected Result.l
+  Procedure.i Height(*Scroll.Scroll_S)
+    Protected Result.i
     
     If *Scroll
       With *Scroll
@@ -284,7 +284,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b SetState(*Scroll.Scroll_S, ScrollPos.l)
+  Procedure.b SetState(*Scroll.Scroll_S, ScrollPos.i)
     Protected Result.b, Direction
     
     With *Scroll
@@ -328,8 +328,8 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l SetAttribute(*Scroll.Scroll_S, Attribute.l, Value.l)
-    Protected Result.l
+  Procedure.i SetAttribute(*Scroll.Scroll_S, Attribute.i, Value.i)
+    Protected Result.i
     
     With *Scroll
       Select Attribute
@@ -370,7 +370,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b SetColor(*Scroll.Scroll_S, ColorType.l, Color.l, Item.l=- 1, State.l=1)
+  Procedure.b SetColor(*Scroll.Scroll_S, ColorType.i, Color.i, Item.i=- 1, State.i=1)
     Protected Result
     
     With *Scroll
@@ -405,7 +405,7 @@ Module Scroll
     ProcedureReturn Bool(Color)
   EndProcedure
   
-  Procedure.b Resize(*This.Scroll_S, X.l,Y.l,Width.l,Height.l, *Scroll.Scroll_S=#Null)
+  Procedure.b Resize(*This.Scroll_S, X.i,Y.i,Width.i,Height.i, *Scroll.Scroll_S=#Null)
     Protected Result, Lines, ScrollPage
     
     With *This
@@ -527,7 +527,7 @@ Module Scroll
     ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
   EndProcedure
   
-  Procedure.b Resizes(*v.Scroll_S, *h.Scroll_S, X.l,Y.l,Width.l,Height.l )
+  Procedure.b Resizes(*v.Scroll_S, *h.Scroll_S, X.i,Y.i,Width.i,Height.i )
     If Width=#PB_Ignore : Width = *v\X+*v\Width : Else : Width+x : EndIf
     If Height=#PB_Ignore : Height = *h\Y+*h\Height : Else : Height+y : EndIf
     
@@ -559,7 +559,7 @@ Module Scroll
     ProcedureReturn Bool(*v\Hide|*h\Hide)
   EndProcedure
   
-  Procedure.b CallBack(*This.Scroll_S, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
+  Procedure.b CallBack(*This.Scroll_S, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
     Protected Result, Buttons
     Static LastX, LastY, Last, *Thisis.Scroll_S, Cursor, Drag, Down
     
@@ -723,7 +723,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Widget(*Scroll.Scroll_S, X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l, Radius.l=0)
+  Procedure.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
     
     With *Scroll
       \Alpha = 255
@@ -896,5 +896,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = f-v-4--------------b---f7-8--
+; Folding = H-v-4--------------b---f7-8--
 ; EnableXP

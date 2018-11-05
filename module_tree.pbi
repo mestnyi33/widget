@@ -215,7 +215,7 @@ Module Tree
               \x=*This\x[2]
               \width=iwidth
               \height=height
-              \y=*This\Scroll\height-*This\vScroll\Page\Pos
+              \y=*This\Scroll\Y+*This\Scroll\height
               
               If \text\change = 1
                 \text\height = TextHeight("A")
@@ -223,7 +223,7 @@ Module Tree
                 \text\change = 0
               EndIf
               
-              x_content=2+\x+(Bool(*This\flag&#NoButtons=0)*w+\sublevel*w)-*This\hScroll\Page\Pos
+              x_content=*This\Scroll\X+2+\x+(Bool(*This\flag&#NoButtons=0)*w+\sublevel*w)
               
               \box\width = box_size
               \box\height = box_size
@@ -238,8 +238,11 @@ Module Tree
                 *This\Image\width = \Image\width+4
               EndIf
               
+;               If \text\change = 1
               \text\x = 3+x_content+*This\Image\width
               \text\y = \y+(height-\text\height)/2
+;                 \text\change = 0
+;               EndIf
               
               If *This\flag&#CheckBoxes
                 \box\x+w-2
@@ -254,8 +257,8 @@ Module Tree
               EndIf
               
               *This\Scroll\height+\height
-              If *This\Scroll\Width < (\text\x+\text\width)+*This\hScroll\Page\Pos
-                *This\Scroll\Width = (\text\x+\text\width)+*This\hScroll\Page\Pos
+              If *This\Scroll\Width < (\text\x+\text\width)-*This\Scroll\X
+                *This\Scroll\Width = (\text\x+\text\width)-*This\Scroll\X
               EndIf
               
               
@@ -372,7 +375,7 @@ Module Tree
                     PushListPosition(*This\Items())
                     ChangeCurrentElement(*This\Items(), \adress) 
                     If start 
-                      start = (*This\y[2]+\height/2)-*This\vScroll\Page\Pos 
+                      start = *This\Scroll\Y+(*This\y[2]+\height/2)
                     Else 
                       start = \y+\height+\height/2-line_size 
                     EndIf
@@ -1079,6 +1082,7 @@ Module Tree
           If \vScroll
             Repaint = Scroll::CallBack(\vScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \hScroll, Window, Canvas)
             If Repaint
+             *This\Scroll\Y =- *This\vScroll\Page\Pos
               ReDraw(Canvas)
             EndIf
           EndIf
@@ -1086,6 +1090,7 @@ Module Tree
           If \hScroll
             Repaint = Scroll::CallBack(\hScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \vScroll, Window, Canvas)
             If Repaint
+             *This\Scroll\X =- *This\hScroll\Page\Pos
               ReDraw(Canvas)
             EndIf
           EndIf
@@ -1625,5 +1630,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------Hs--+--------------84-----X----
+; Folding = ---4-00--Hs--+--------------8------X----
 ; EnableXP

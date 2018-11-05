@@ -1,11 +1,11 @@
 ﻿DeclareModule Procedures
   
   Declare.i GridSpacing(Value.i, Grid.i, Max.i=$7FFFFFFF)
-  Declare.i DrawArrow(X.i,Y.i, Size.i, Direction.i, Color.i, Thickness.i = 1, Length.i = 1)
+  Declare.i Arrow(X.i,Y.i, Size.i, Direction.i, Color.i, Thickness.i = 1, Length.i = 1)
 EndDeclareModule 
 
 Module Procedures
-  Procedure.i DrawArrow(X.i,Y.i, Size.i, Direction.i, Color.i, Thickness.i = 1, Length.i = 1)
+  Procedure Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
     Protected I
     
     If Length=0

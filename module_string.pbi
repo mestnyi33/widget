@@ -710,6 +710,19 @@ Module String
         EndIf
         
         \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
+        
+        If Flag&#PB_Widget_Flat
+          \fSize[1] = 1
+        ElseIf Flag&#PB_Widget_Single
+          \fSize[1] = 2
+        ElseIf Flag&#PB_Widget_Double
+          \fSize[1] = 3
+          \fSize = 2
+        ElseIf Flag&#PB_Widget_Raised
+          \fSize[1] = 4
+          \fSize = 2
+        EndIf
+        
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height, Canvas)
@@ -970,6 +983,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetGadgetText(6, "GaT")
     
+    ; Alignment text
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       CocoaMessage(0,GadgetID(1),"setAlignment:", 2)
       CocoaMessage(0,GadgetID(2),"setAlignment:", 1)
@@ -994,27 +1008,30 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     BindGadgetEvent(10, @CallBacks())
     
-    *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...")
-    *S_1 = Create(10, -1, 8,  35, 290, height, "123-only-4567", #PB_Text_Numeric|#PB_Text_Center,8)
-    *S_2 = Create(10, -1, 8,  60, 290, height, "StringGadget to right", #PB_Text_Right)
-    *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
-    *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
-    *S_5 = Create(10, -1, 8, 135, 290, height, "Borderless & read-only StringGadget", #PB_Text_ReadOnly|#PB_Widget_BorderLess)
+    *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...",0,8)
+    *S_1 = Create(10, -1, 8,  35, 290, height, "123-only-4567", #PB_Widget_Flat|#PB_Text_Numeric|#PB_Text_Center)
+    *S_2 = Create(10, -1, 8,  60, 290, height, "StringGadget to right", #PB_Widget_Single|#PB_Text_Right)
+    *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Widget_Double|#PB_Text_LowerCase)
+    *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Widget_Raised|#PB_Text_UpperCase)
+    *S_5 = Create(10, -1, 8, 135, 290, height, "Borderless & read-only StringGadget", #PB_Widget_BorderLess|#PB_Text_ReadOnly)
     *S_6 = Create(10, -1, 8, 160, 290, height, "Password", #PB_Text_Password)
     *S_7 = Create(10, -1, 8, 185, 290, height, "")
     *S_8 = Create(10, -1, 8,  210, 290, 90, Text);, #PB_Text_Top)
                                                   ; *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
     
-    Text::SetText(*S_6, "GaT")
+    SetText(*S_6, "GaT")
     Debug "password: "+GetText(*S_6)
+    
+    SetColor(*S_1, #PB_Gadget_BackColor, $FFF0F0F0)
+    SetColor(*S_2, #PB_Gadget_BackColor, $FFF0F0F0)
+    SetColor(*S_3, #PB_Gadget_BackColor, $FFF0F0F0)
+    SetColor(*S_4, #PB_Gadget_BackColor, $FFF0F0F0)
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 978
-; FirstLine = 419
-; Folding = h--0HAASNAAADz--AAcIIFAC0
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = h--0HAASNAAADz--AAcYQKAEy
 ; EnableXP

@@ -390,30 +390,30 @@ Module Editor
           *This\Line - 1
           
         ElseIf \Items()\Text[2]\Len > 0
-             Debug " get "+\Items()\Text\String.s+" "+\Items()\Text[2]\String.s
+          Debug " get "+\Items()\Text\String.s+" "+\Items()\Text[2]\String.s
           ; If \Caret < \Caret[1] : \Caret = \Caret[1] : EndIf
-         
-             If \Caret[1] < \Caret
-               If \Items()\Text[2]\Width[2]
-                 \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Caret+\Caret[1], 1) 
-                 ;             \Caret = \Items()\Text\Len - \Items()\Text[2]\Len
-                 ;             \Caret[1] = \Caret
-               Else
-                 \Items()\Caret - Caret
-                 Debug \Items()\Caret
-                 \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret, 1) 
-                 *This\Line - 1
-               EndIf
-             EndIf
-              Caret = \Items()\Text[2]\Len
-           EndIf
+          
+          If \Caret[1] < \Caret
+            If \Items()\Text[2]\Width[2]
+              \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Caret+\Caret[1], 1) 
+              ;             \Caret = \Items()\Text\Len - \Items()\Text[2]\Len
+              ;             \Caret[1] = \Caret
+            Else
+              \Items()\Caret - Caret
+              Debug \Items()\Caret
+              \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret, 1) 
+              *This\Line - 1
+            EndIf
+          EndIf
+          Caret = \Items()\Text[2]\Len
+        EndIf
       Wend
       PopListPosition(\Items())
       
-;       \Text\Len = Len(\Text\String.s)
-; 
-;         If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-;       \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
+      ;       \Text\Len = Len(\Text\String.s)
+      ; 
+      ;         If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+      ;       \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
       \Text\Len = Len(\Text\String.s)
       \Text\Change = 1
       
@@ -436,30 +436,30 @@ Module Editor
           Caret + \Items()\Caret
           *This\Line - 1
         ElseIf \Items()\Text[2]\Len > 0
-             Debug " get "+\Items()\Text\String.s+" "+\Items()\Text[2]\String.s
+          Debug " get "+\Items()\Text\String.s+" "+\Items()\Text[2]\String.s
           ; If \Caret < \Caret[1] : \Caret = \Caret[1] : EndIf
-         
-             If \Caret[1] > \Caret
-               If \Items()\Text[2]\Width[2]
-                 \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1) 
-                 ;             \Caret = \Items()\Text\Len - \Items()\Text[2]\Len
-                 ;             \Caret[1] = \Caret
-                Caret = \Items()\Text[2]\Len
-              Else
-                 \Items()\Caret - Caret
-                 Debug \Items()\Caret
-                 \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret, 1) 
-                 *This\Line - 1
-               EndIf
-             EndIf
-           EndIf
+          
+          If \Caret[1] > \Caret
+            If \Items()\Text[2]\Width[2]
+              \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1) 
+              ;             \Caret = \Items()\Text\Len - \Items()\Text[2]\Len
+              ;             \Caret[1] = \Caret
+              Caret = \Items()\Text[2]\Len
+            Else
+              \Items()\Caret - Caret
+              Debug \Items()\Caret
+              \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret, 1) 
+              *This\Line - 1
+            EndIf
+          EndIf
+        EndIf
       Wend
       PopListPosition(\Items())
       
-;       \Text\Len = Len(\Text\String.s)
-; 
-;         If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-;       \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
+      ;       \Text\Len = Len(\Text\String.s)
+      ; 
+      ;         If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+      ;       \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
       \Text\Len = Len(\Text\String.s)
       \Text\Change = 1
       
@@ -926,7 +926,7 @@ Module Editor
       Wend
       PopListPosition(\Items())
       
-    ;  Debug \Text\String.s
+      ;  Debug \Text\String.s
     EndWith
     
     ProcedureReturn 1
@@ -996,9 +996,9 @@ Module Editor
         \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret - 1) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 1)
         \Caret - 1 
         \Text\Change =- 1
-        Else
-          ; Если дошли до начала строки то 
-            ; переходим в конец предыдущего итема
+      Else
+        ; Если дошли до начала строки то 
+        ; переходим в конец предыдущего итема
         If *This\Line[1] > 0 
           \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
           
@@ -1007,7 +1007,7 @@ Module Editor
           *This\Caret = \Items()\Text\Len 
           \Text\Change =- 1
         EndIf
-          
+        
       EndIf
       
       If \Text\Change
@@ -1106,21 +1106,21 @@ Module Editor
         rRemove(*This)
         
         ;*This\Caret = 0
-     ;   itemSelect(\Line[1], \Items())
+        ;   itemSelect(\Line[1], \Items())
         
-;         If \Items()\Text[1]\String.s And \Items()\Text[3]\String.s
-;           ; курсор в нутри слова
-;           \Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s
-;           
-;         ElseIf \Items()\Text[3]\String.s
-;           ; курсор в начале слова
-;           \Items()\Text\String.s = #LF$ + \Items()\Text[3]\String.s
-;           
-;         ElseIf \Items()\Text[1]\String.s
-;           ; курсор в конце слова
-;           \Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$
-;           
-;         EndIf
+        ;         If \Items()\Text[1]\String.s And \Items()\Text[3]\String.s
+        ;           ; курсор в нутри слова
+        ;           \Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s
+        ;           
+        ;         ElseIf \Items()\Text[3]\String.s
+        ;           ; курсор в начале слова
+        ;           \Items()\Text\String.s = #LF$ + \Items()\Text[3]\String.s
+        ;           
+        ;         ElseIf \Items()\Text[1]\String.s
+        ;           ; курсор в конце слова
+        ;           \Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$
+        ;           
+        ;         EndIf
       Else
         If \Caret = 0
           ; курсор в начале слова
@@ -1145,7 +1145,7 @@ Module Editor
       
       Replace(*This)
       Debug \Text\String.s
-;       Scroll::SetState(\vScroll, \vScroll\Max)
+      ;       Scroll::SetState(\vScroll, \vScroll\Max)
       Repaint = #True
     EndWith
     
@@ -1329,7 +1329,7 @@ Module Editor
       ProcedureReturn 1
     EndIf
     
-   
+    
     ProcedureReturn Item
   EndProcedure
   
@@ -1355,7 +1355,7 @@ Module Editor
       ReDraw(*This, *This\Canvas\Gadget)
       ProcedureReturn 1
     EndIf
-      
+    
   EndProcedure
   
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
@@ -2206,6 +2206,7 @@ Module Editor
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
+        
         \Type = #PB_GadgetType_Editor
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
@@ -2216,7 +2217,7 @@ Module Editor
         \Caret[1] =- 1
         \Line =- 1
         
-        ; Set the default widget flag
+        ; Set the Default widget flag
         If Bool(Flag&#PB_Text_WordWrap)
           Flag&~#PB_Text_MultiLine
         EndIf
@@ -2234,13 +2235,16 @@ Module Editor
         
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
-          
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+          
           If Bool(Flag&#PB_Text_WordWrap)
             \Text\MultiLine = 1
           ElseIf Bool(Flag&#PB_Text_MultiLine)
+            \Text\MultiLine = 2
+          Else
             \Text\MultiLine =- 1
           EndIf
+          
           \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
           \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
           \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
@@ -2302,7 +2306,7 @@ Module Editor
         EndIf
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        If Not Bool(\Text\MultiLine) And Bool(flag&#NoButtons = 0 Or flag&#NoLines=0)
+        If Bool(flag&#NoButtons = 0 Or flag&#NoLines=0)
           Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
         EndIf
       EndWith
@@ -2392,6 +2396,7 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work."
   
   Procedure ResizeCallBack()
+    ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-60, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
     ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
     CompilerIf #PB_Compiler_Version =< 546
       PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
@@ -2409,6 +2414,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CompilerEndIf 
   
   If OpenWindow(0, 0, 0, 422, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    ButtonGadget(100, 490-60,490-30,60,25,"Wrap")
     
     EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s) 
     For a = 0 To 5
@@ -2431,10 +2437,67 @@ CompilerIf #PB_Compiler_IsMainFile
     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
     
+    
     Repeat 
       Define Event = WaitWindowEvent()
       
       Select Event
+        Case #PB_Event_Gadget
+          If EventGadget() = 100
+            Select EventType()
+              Case #PB_EventType_LeftClick
+                Define *E.Widget_S = GetGadgetData(g)
+                
+                *E\Text\MultiLine !- 1
+                
+                CompilerSelect #PB_Compiler_OS
+                  CompilerCase #PB_OS_Linux
+                    gtk_text_view_set_wrap_mode_(GadgetID(0), #GTK_WRAP_WORD)
+                  CompilerCase #PB_OS_MacOS
+                    
+                    If  *E\Text\MultiLine = 1
+                      EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap)
+                    Else
+                      EditorGadget(0, 8, 8, 306, 133) 
+                    EndIf
+                    
+                    SetGadgetText(0, Text.s) 
+                    For a = 0 To 5
+                      AddGadgetItem(0, a, "Line "+Str(a))
+                    Next
+                    SetGadgetFont(0, FontID(0))
+                    
+                    SplitterGadget(10,8, 8, 306, 276, 0,g)
+                    
+                    CompilerIf #PB_Compiler_Version =< 546
+                      BindGadgetEvent(10, @SplitterCallBack())
+                    CompilerEndIf
+                    PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
+                    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
+                    
+                    ; ;                     ImportC ""
+                    ; ;                       GetControlProperty(Control, PropertyCreator, PropertyTag, BufferSize, *ActualSize, *PropertyBuffer)
+                    ; ;                       TXNSetTXNObjectControls(TXNObject, ClearAll, ControlCount, ControlTags, ControlData)
+                    ; ;                     EndImport
+                    ; ;                     
+                    ; ;                     Define TXNObject.i
+                    ; ;                     Dim ControlTag.i(0)
+                    ; ;                     Dim ControlData.i(0)
+                    ; ;                     
+                    ; ;                     ControlTag(0) = 'wwrs' ; kTXNWordWrapStateTag
+                    ; ;                     ControlData(0) = 0     ; kTXNAutoWrap
+                    ; ;                     
+                    ; ;                     If GetControlProperty(GadgetID(0), 'PURE', 'TXOB', 4, 0, @TXNObject) = 0
+                    ; ;                       TXNSetTXNObjectControls(TXNObject, #False, 1, @ControlTag(0), @ControlData(0))
+                    ; ;                     EndIf
+                  CompilerCase #PB_OS_Windows
+                    SendMessage_(GadgetID(0), #EM_SETTARGETDEVICE, 0, 0)
+                CompilerEndSelect
+                
+                
+            EndSelect
+          EndIf
+          
         Case #PB_Event_LeftClick  
           SetActiveGadget(0)
         Case #PB_Event_RightClick 
@@ -2443,8 +2506,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 2194
-; FirstLine = 639
-; Folding = --4fA+PAAAdHAMAAAAAgfDwb3CYjgYwfAwAAsnjBAAAwDAEUAYPH-IA0el
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = -----------------------------------------------------------
 ; EnableXP
