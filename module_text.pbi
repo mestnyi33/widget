@@ -573,7 +573,7 @@ Module Text
                 ;               
                 If *This\Focus = *This 
                   Protected Left,Right
-                  Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
+                  Left =- TextWidth(Mid(*This\Text\String.s, \Caret, *This\Caret)) ; - (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
                   Right = (\Width + Left)
                   
                   If *This\Scroll\X < Left

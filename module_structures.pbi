@@ -1,6 +1,11 @@
 ﻿DeclareModule Structures
   
   ;- STRUCTURE
+  Structure Point_S
+    y.i
+    x.i
+  EndStructure
+  
   Structure Coordinate_S
     y.i[4]
     x.i[4]
@@ -13,6 +18,7 @@
     Y.i
     From.i ; at point widget
     Buttons.i
+    *Delta.Mouse_S
   EndStructure
   
   Structure Align_S

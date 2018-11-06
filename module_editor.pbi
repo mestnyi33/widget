@@ -1009,6 +1009,24 @@ Module Editor
         
         If (*Last = *This) 
           Select EventType
+            Case #PB_EventType_LeftButtonDown
+              If Not \Canvas\Mouse\Delta
+                \Canvas\Mouse\Delta = AllocateStructure(Mouse_S)
+                \Canvas\Mouse\Delta\X = \Canvas\Mouse\X
+                \Canvas\Mouse\Delta\Y = \Canvas\Mouse\Y
+                \Canvas\Mouse\Delta\From = \Canvas\Mouse\From
+                \Canvas\Mouse\Delta\Buttons = \Canvas\Mouse\Buttons
+              EndIf
+            
+            Case #PB_EventType_LeftButtonUp : \Drag = 0
+              FreeStructure(\Canvas\Mouse\Delta) : \Canvas\Mouse\Delta = 0
+              
+            Case #PB_EventType_MouseMove
+              If \Drag = 0 And \Canvas\Mouse\Buttons And \Canvas\Mouse\Delta And 
+                 (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1
+               ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
+              EndIf
+              
             Case #PB_EventType_MouseLeave
               If CanvasModifiers 
                 ; Если перешли на другой виджет
@@ -1134,15 +1152,11 @@ Module Editor
               ;                   Repaint = 1
               ; ;                 EndIf
               ;                   \Text[2]\Len = 0
-              ; ;                 \Drag = 0
+                              \Drag = 0
               ;               EndIf
               
             Case #PB_EventType_MouseMove  
               If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
-                If \Drag = 0 And (Abs((\Canvas\Mouse\X-MoveX)+(\Canvas\Mouse\Y-MoveY)) >= 6) : \Drag=1
-                  Debug "DragStart";PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_DragStart)
-                EndIf
-                
                 
                 If Not \Text[2]\Len
                   If \Line <> Item And Item =< ListSize(\Items())
@@ -1667,5 +1681,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----ff--f--+-f-----f----v-0vX---------
+; Folding = -----ff--f--+-f-------4-----fv+--------
 ; EnableXP

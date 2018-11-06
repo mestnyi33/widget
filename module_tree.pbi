@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_scroll.pbi"
-  XIncludeFile "module_Text.pbi"
+  XIncludeFile "module_text.pbi"
 CompilerEndIf
 
 DeclareModule Tree
@@ -1630,5 +1630,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---4---4+Hs--+--------------8------X----
+; Folding = ---4----+Hu--+--------------8------X----
 ; EnableXP

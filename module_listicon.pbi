@@ -1,4 +1,7 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerEndIf
+CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
@@ -13,35 +16,35 @@ DeclareModule ListIcon
   UseModule Structures
   
   
-  Declare AddColumn(Gadget,Item,Text.s,Width.l,Image.l=-1)
-  Declare.l Gadget(Gadget.l, x.l, y.l, width.l, height.l, ColumnTitle.s, ColumnWidth.l, flag.l=0)
-  Declare AddItem(Gadget.l,Item.l,Text.s,Image.l=-1,sublevel.l=0)
-  Declare ClearItems(Gadget.l)
-  Declare CountItems(Gadget.l, Item.l=-1)
-  Declare RemoveItem(Gadget.l, Item.l)
-  Declare GetItemAttribute(Gadget.l, Item.l, Attribute.l)
-  Declare GetItemData(Gadget.l, Item.l)
-  Declare SetItemData(Gadget.l, Item.l, *data)
-  Declare GetItemColor(Gadget.l, Item.l, ColorType.l, Column.l=0)
-  Declare SetItemColor(Gadget.l, Item.l, ColorType.l, Color.l, Column.l=0)
-  Declare GetItemImage(Gadget.l, Item.l)
-  Declare SetItemImage(Gadget.l, Item.l, Image.l)
-  Declare GetState(Gadget.l)
-  Declare SetState(Gadget.l, Item.l)
-  Declare GetItemState(Gadget.l, Item.l)
-  Declare SetItemState(Gadget.l, Item.l, State.l)
-  Declare.s GetText(Gadget.l)
-  Declare   SetText(Gadget.l, Text.s)
-  Declare.s GetItemText(Gadget.l, Item.l)
-  Declare SetItemText(Gadget.l, Item.l, Text.s)
-  Declare Free(Gadget.l)
-  Declare ReDraw(Gadget.l)
+  Declare AddColumn(Gadget,Item,Text.s,Width.i,Image.i=-1)
+  Declare.i Gadget(Gadget.i, x.i, y.i, width.i, height.i, ColumnTitle.s, ColumnWidth.i, flag.i=0)
+  Declare AddItem(Gadget.i,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+  Declare ClearItems(Gadget.i)
+  Declare CountItems(Gadget.i, Item.i=-1)
+  Declare RemoveItem(Gadget.i, Item.i)
+  Declare GetItemAttribute(Gadget.i, Item.i, Attribute.i)
+  Declare GetItemData(Gadget.i, Item.i)
+  Declare SetItemData(Gadget.i, Item.i, *data)
+  Declare GetItemColor(Gadget.i, Item.i, ColorType.i, Column.i=0)
+  Declare SetItemColor(Gadget.i, Item.i, ColorType.i, Color.i, Column.i=0)
+  Declare GetItemImage(Gadget.i, Item.i)
+  Declare SetItemImage(Gadget.i, Item.i, Image.i)
+  Declare GetState(Gadget.i)
+  Declare SetState(Gadget.i, Item.i)
+  Declare GetItemState(Gadget.i, Item.i)
+  Declare SetItemState(Gadget.i, Item.i, State.i)
+  Declare.s GetText(Gadget.i)
+  Declare   SetText(Gadget.i, Text.s)
+  Declare.s GetItemText(Gadget.i, Item.i)
+  Declare SetItemText(Gadget.i, Item.i, Text.s)
+  Declare Free(Gadget.i)
+  Declare ReDraw(Gadget.i)
 EndDeclareModule
 
 Module ListIcon
   
   Procedure item_from(*This.Widget_S, MouseX=-1, MouseY=-1, focus=0)
-    Protected lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+    Protected lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     
     With *This\Columns()
       ;PushListPosition(\Items()) 
@@ -208,7 +211,8 @@ Module ListIcon
     
     ;     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
-    If Bool(*This And StartDrawing(CanvasOutput(*This\Canvas\Gadget))) : If *This\Text\FontID : DrawingFont(*This\Text\FontID) : EndIf
+    If *This
+      If *This\Text\FontID : DrawingFont(*This\Text\FontID) : EndIf
       DrawingMode(#PB_2DDrawing_Default)
       Box(*This\x[2], *This\y[2], *This\width[2], *This\height[2], back_color)
       
@@ -380,7 +384,7 @@ Module ListIcon
                 If Not *This\flag&#NoButtons And \childrens
                   If box_type=-1
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Scroll::DrawArrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+                    Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                   Else
                     DrawingMode(#PB_2DDrawing_Gradient)
                     BackColor($FFFFFF) : FrontColor($EEEEEE)
@@ -512,20 +516,21 @@ Module ListIcon
         EndIf
         
         
-        StopDrawing()
       EndWith
     EndIf
   EndProcedure
   
-  Procedure ReDraw(Gadget.l)
+  Procedure ReDraw(Gadget.i)
     Protected *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    If *This
+    
+    If *This And StartDrawing(CanvasOutput(*This\Canvas\Gadget))
       Draw(*This)
+      StopDrawing()
     EndIf
   EndProcedure
   
-  Procedure AddColumn(Gadget, Item,Text.s,Width.l,Image.l=-1)
+  Procedure AddColumn(Gadget, Item,Text.s,Width.i,Image.i=-1)
     Protected *This.Widget_S = GetGadgetData(Gadget)
     Static Adress
     
@@ -543,12 +548,12 @@ Module ListIcon
       ;       EndIf
     EndWith
     
-    Draw(*This)
+    ReDraw(*This)
   EndProcedure
   
-  Procedure AddItem(Gadget.l,Item.l,Text.s,Image.l=-1,sublevel.l=0)
+  Procedure AddItem(Gadget.i,Item.i,Text.s,Image.i=-1,sublevel.i=0)
     Static adress.i
-    Protected *This.Widget_S, Childrens.l, hide.b
+    Protected *This.Widget_S, Childrens.i, hide.b
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If Not *This
@@ -646,7 +651,7 @@ Module ListIcon
         ;       Re(*This)
         
         If *This\Scroll\Height=<*This\height
-          ;  Draw(*This)
+          ;  ReDraw(*This)
         EndIf
       Next
     EndWith
@@ -654,8 +659,8 @@ Module ListIcon
     ProcedureReturn Item
   EndProcedure
   
-  Procedure ClearItems(Gadget.l)
-    Protected Result.l, *This.Widget_S
+  Procedure ClearItems(Gadget.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -671,13 +676,13 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure CountItems(Gadget.l, Item.l=-1)
-    Protected Result.l, *This.Widget_S, sublevel.l
+  Procedure CountItems(Gadget.i, Item.i=-1)
+    Protected Result.i, *This.Widget_S, sublevel.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
-        If Item.l=-1
+        If Item.i=-1
           Result = ListSize(\Items())
         Else
           PushListPosition(\Items()) 
@@ -705,8 +710,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure RemoveItem(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S, sublevel.l
+  Procedure RemoveItem(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S, sublevel.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -737,8 +742,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemAttribute(Gadget.l, Item.l, Attribute.l)
-    Protected Result.l, *This.Widget_S
+  Procedure GetItemAttribute(Gadget.i, Item.i, Attribute.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -760,8 +765,8 @@ Module ListIcon
     
   EndProcedure
   
-  Procedure GetItemData(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S
+  Procedure GetItemData(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -780,8 +785,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemData(Gadget.l, Item.l, *data)
-    Protected Result.l, *This.Widget_S
+  Procedure SetItemData(Gadget.i, Item.i, *data)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -800,8 +805,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemColor(Gadget.l, Item.l, ColorType.l, Column.l=0)
-    Protected Result.l, *This.Widget_S
+  Procedure GetItemColor(Gadget.i, Item.i, ColorType.i, Column.i=0)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -820,8 +825,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemColor(Gadget.l, Item.l, ColorType.l, Color.l, Column.l=0)
-    Protected Result.l, *This.Widget_S
+  Procedure SetItemColor(Gadget.i, Item.i, ColorType.i, Color.i, Column.i=0)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -840,8 +845,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemImage(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S
+  Procedure GetItemImage(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -860,8 +865,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemImage(Gadget.l, Item.l, image.l)
-    Protected Result.l, *This.Widget_S
+  Procedure SetItemImage(Gadget.i, Item.i, image.i)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -881,8 +886,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetState(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+  Procedure SetState(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -947,8 +952,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetState(Gadget.l)
-    Protected Result.l, *This.Widget_S 
+  Procedure GetState(Gadget.i)
+    Protected Result.i, *This.Widget_S 
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This 
@@ -960,8 +965,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemState(Gadget.l, Item.l, State.l)
-    Protected Result.l, *This.Widget_S, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+  Procedure SetItemState(Gadget.i, Item.i, State.i)
+    Protected Result.i, *This.Widget_S, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -1012,8 +1017,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemState(Gadget.l, Item.l)
-    Protected Result.l, *This.Widget_S, lostfocus.l=-1, collapsed.l, sublevel.l, adress.i, coll.l
+  Procedure GetItemState(Gadget.i, Item.i)
+    Protected Result.i, *This.Widget_S, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -1041,7 +1046,7 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.s GetText(Gadget.l)
+  Procedure.s GetText(Gadget.i)
     Protected Result.s, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
@@ -1062,8 +1067,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetText(Gadget.l, Text.s)
-    Protected Result.l, *This.Widget_S
+  Procedure SetText(Gadget.i, Text.s)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -1083,7 +1088,7 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.s GetItemText(Gadget.l, Item.l)
+  Procedure.s GetItemText(Gadget.i, Item.i)
     Protected Result.s, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
@@ -1104,8 +1109,8 @@ Module ListIcon
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemText(Gadget.l, Item.l, Text.s)
-    Protected Result.l, *This.Widget_S
+  Procedure SetItemText(Gadget.i, Item.i, Text.s)
+    Protected Result.i, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
@@ -1126,7 +1131,7 @@ Module ListIcon
   EndProcedure
   
   Procedure CallBack()
-    Protected Repaint.l, AutoHide.b
+    Protected Repaint.i, AutoHide.b
     Protected Event = EventType()
     Protected Window = EventWindow()
     Protected Canvas = EventGadget()
@@ -1256,7 +1261,7 @@ Module ListIcon
     EndIf
   EndProcedure
   
-  Procedure.l Gadget(Gadget.l, x.l, y.l, width.l, height.l, ColumnTitle.s, ColumnWidth.l, flag.l=0)
+  Procedure.i Gadget(Gadget.i, x.i, y.i, width.i, height.i, ColumnTitle.s, ColumnWidth.i, flag.i=0)
     Protected g = CanvasGadget(Gadget, x, y, width, height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget = g : EndIf
     
     Protected *This.Widget_S=AllocateStructure(Widget_S)
@@ -1321,7 +1326,7 @@ Module ListIcon
     ProcedureReturn g
   EndProcedure
   
-  Procedure Free(Gadget.l)
+  Procedure Free(Gadget.i)
     Protected Result, *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
@@ -1487,5 +1492,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------------------------------
+; Folding = ----0----------------------------------
 ; EnableXP

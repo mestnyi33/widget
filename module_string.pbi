@@ -406,6 +406,25 @@ Module String
         
         If (*Last = *This) 
           Select EventType
+            Case #PB_EventType_LeftButtonDown
+              If Not \Canvas\Mouse\Delta
+                \Canvas\Mouse\Delta = AllocateStructure(Mouse_S)
+                \Canvas\Mouse\Delta\X = \Canvas\Mouse\X
+                \Canvas\Mouse\Delta\Y = \Canvas\Mouse\Y
+                \Canvas\Mouse\Delta\From = \Canvas\Mouse\From
+                \Canvas\Mouse\Delta\Buttons = \Canvas\Mouse\Buttons
+              EndIf
+            
+            Case #PB_EventType_LeftButtonUp : \Drag = 0
+              FreeStructure(\Canvas\Mouse\Delta) : \Canvas\Mouse\Delta = 0
+              
+            Case #PB_EventType_MouseMove
+              If \Drag = 0 And \Canvas\Mouse\Buttons And \Canvas\Mouse\Delta And 
+                 (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1
+                ; Debug "DragStart"
+               ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
+              EndIf
+              
             Case #PB_EventType_MouseLeave
               If CanvasModifiers 
                 ; Если перешли на другой виджет
@@ -557,7 +576,8 @@ Module String
             Case #PB_EventType_MouseMove
               If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
                 *This\Caret = Caret(*This)
-                
+               ; Debug *This\Canvas\Mouse\Delta\X
+              
                 If \Caret[1] ; *This\Cursor <> GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
                   If \Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len
                     SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
@@ -1026,5 +1046,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = h--0B5+4HAAwwU-fVnHGkDAh9
+; Folding = h--0B5+4HAAwHz--UdeYQOAEy
 ; EnableXP
