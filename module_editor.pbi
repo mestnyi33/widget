@@ -102,83 +102,41 @@ Module Editor
             
             ; Длина переноса строки
             PushListPosition(\Items())
-            If \Canvas\Mouse\Y < \Y+\Text\Height/2
+            If \Canvas\Mouse\Y < \Y+(\Text\Height/2+1)
               Item.i =- 1 
             Else
-              Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
+              Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2+1)) - 1)/2
             EndIf
             
             If LastLine <> \Line Or LastItem <> Item
               \Items()\Text[2]\Width[2] = 0
               
-              If \Line[1] = \Line 
-                If Position = len
-                  If Item = \Line
-                    If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                      \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                    EndIf 
-                    If Not SelectionLen
-                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                    Else
-                      \Items()\Text[2]\Width[2] = SelectionLen
-                    EndIf
-                  EndIf
-                EndIf
-                
-              ElseIf \Line[1] < \Line ; Если начинаем виделят сверху вниз
-                If Position = len
-                  If Item = \Line
-                    If Not SelectionLen
-                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                    Else
-                      \Items()\Text[2]\Width[2] = SelectionLen
-                    EndIf
-                  EndIf
-                EndIf
-                
-                If PreviousElement(*This\Items())
-                  If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                  EndIf 
-                  If Not SelectionLen
-                    \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                  Else
-                    \Items()\Text[2]\Width[2] = SelectionLen
-                  EndIf
-                EndIf
-                
-              ElseIf \Line[1] > \Line ; Если начинаем виделят снизу вверх
-                If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                  \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                EndIf 
+              ; Если выделяем сверху вниз, 
+              ; если каректор находится в конце слова, 
+              ; и позиция курсора неже половини высоты линии
+              If (\Line[1] < \Line And Item = \Line And Position = len)
                 If Not SelectionLen
                   \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
                 Else
                   \Items()\Text[2]\Width[2] = SelectionLen
                 EndIf
-                
-                ;If PreviousElement(*This\Items())
-                If Position = len
-                  If Item < \Line
-                    Debug " get "+ \Items()\Text\String
-                    ;If Not \Items()\Text[2]\Len 
-                    \Items()\Text[2]\Len = 1
-                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                    ;EndIf 
-                    If Not SelectionLen
-                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                    Else
-                      \Items()\Text[2]\Width[2] = SelectionLen
-                    EndIf
-                  Else
-                  EndIf
-                EndIf
-                ;EndIf
-                
-                
               EndIf
               
-              Debug "width "+\Items()\Text[2]\Width;[2]
+              If \Line[1] > \Line Or ; Если выделяем снизу вверх
+                 (\Line[1] = \Line And Item = \Line) Or ; Если позиция курсора неже половини высоты линии
+                 (\Line[1] < \Line And ; Если выделяем сверху вниз
+                  PreviousElement(*This\Items())) ; то выбираем предыдущую линию
+                
+                If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+                 \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
+                EndIf 
+                
+                If Not SelectionLen
+                  \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                Else
+                  \Items()\Text[2]\Width[2] = SelectionLen
+                EndIf
+              EndIf
               
               LastItem = Item
               LastLine = \Line
@@ -199,164 +157,99 @@ Module Editor
     ProcedureReturn Position
   EndProcedure
   
-  Procedure _2Caret(*This.Widget_S, Line.i = 0)
-    Static LastLine.i,  LastItem.i
-    Protected Item.i, SelectionLen.i=0
-    Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
-              CursorX.i, Distance.f, MinDistance.f = Infinity()
+  Procedure SelectionText(*This.Widget_S) ; Ok
+    Static Caret.i =- 1, Caret1.i =- 1, Line.i =- 1
+    Protected Position.i
     
-    With *This
-      If Line < 0 And FirstElement(*This\Items())
-        ; А если выше всех линии текста,
-        ; то позиция коректора начало текста.
-        Position = 0
-      ElseIf Line < ListSize(*This\Items()) And 
-             SelectElement(*This\Items(), Line)
-        ; Если находимся на линии текста, 
-        ; то получаем позицию коректора.
+    With *This\Items()
+      ;Debug "7777    "+*This\Caret +" "+ *This\Caret[1] +" "+*This\Line +" "+ *This\Line[1] +" "+ \Text\String
+      
+      If (Caret <> *This\Caret Or Line <> *This\Line Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1]))
+        \Text[2]\String.s = ""
+        ; Debug 8888
+        PushListPosition(*This\Items())
+        If *This\Line[1] = *This\Line
+          If *This\Caret[1] = *This\Caret And \Text[2]\Len > 0 
+            \Text[2]\Len = 0 
+            \Text[2]\Width = 0 
+          EndIf
+          If PreviousElement(*This\Items()) And \Text[2]\Len > 0 
+            \Text[2]\Width[2] = 0 
+            \Text[2]\Len = 0 
+          EndIf
+        ElseIf *This\Line[1] > *This\Line
+          If PreviousElement(*This\Items()) And \Text[2]\Len > 0 
+            \Text[2]\Len = 0 
+          EndIf
+        Else
+          If NextElement(*This\Items()) And \Text[2]\Len > 0 
+            \Text[2]\Len = 0 
+          EndIf
+        EndIf
+        PopListPosition(*This\Items())
         
-        If ListSize(\Items())
-          X = (\Items()\Text\X+\Scroll\X)
-          Len = \Items()\Text\Len; + Len(" ")
-          FontID = \Items()\Text\FontID
-          String.s = \Items()\Text\String.s;+" "
-          If Not FontID : FontID = \Text\FontID : EndIf
-          
-          If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
-            If FontID : DrawingFont(FontID) : EndIf
-            
-            For i = 0 To Len
-              CursorX = X + TextWidth(Left(String.s, i))
-              Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
-              
-              ; Получаем позицию коpректора
-              If MinDistance > Distance 
-                MinDistance = Distance
-                Position = i
-              EndIf
-            Next
-            
-            ; Длина переноса строки
-            PushListPosition(\Items())
-            Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2)) - 1)/2
-            
-            
-            ;             If \Line >= \Line[1] And
-            ;                LastItem <> Item
-            ;               
-            ;               If Position = len
-            ;                 
-            ;                 
-            ;                 If Item = \Line
-            ;                   Debug "show "
-            ;                   If Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-            ;                       \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-            ;                   EndIf 
-            ;                   If Not SelectionLen
-            ;                     \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-            ;                   Else
-            ;                     \Items()\Text[2]\Width[2] = SelectionLen
-            ;                   EndIf
-            ;                 Else
-            ;                   Debug "hide " ; If \Line < LastItem
-            ;                   If \Line = \Line[1]
-            ;                     \Items()\Text[2]\Len = 0
-            ;                     \Items()\Text[2]\Width = 0
-            ;                   EndIf
-            ;                   \Items()\Text[2]\Width[2] = 0
-            ;                   ; EndIf
-            ;                 EndIf
-            ;               EndIf
-            ;               
-            ;               LastItem = Item
+        If *This\Line[1] = *This\Line
+          If *This\Caret[1] = *This\Caret 
+            Position = *This\Caret[1]
+            ;             If *This\Caret[1] = \Text\Len
+            ;              ; Debug 555
+            ;             ;  \Text[2]\Len =- 1
             ;             EndIf
-            
-            If LastLine <> \Line Or LastItem <> Item
-              ;               If \Line[1] <> \Line
-              \Items()\Text[2]\Width[2] = 0
-              ;               EndIf
-              
-              If \Line[1] = \Line ; Если начинаем виделят сверху вниз
-                If Position = len
-                  Debug 555
-                  If Item = \Line
-                    If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                      \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                    EndIf 
-                    If Not SelectionLen
-                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                    Else
-                      \Items()\Text[2]\Width[2] = SelectionLen
-                    EndIf
-                  EndIf
-                EndIf
-                
-              ElseIf \Line[1] < \Line ; Если начинаем виделят сверху вниз
-                If Position = len
-                  If Item = \Line
-                    If Not SelectionLen
-                      \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                    Else
-                      \Items()\Text[2]\Width[2] = SelectionLen
-                    EndIf
-                  EndIf
-                EndIf
-                
-                If PreviousElement(*This\Items())
-                  If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                    \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                  EndIf 
-                  If Not SelectionLen
-                    \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                  Else
-                    \Items()\Text[2]\Width[2] = SelectionLen
-                  EndIf
-                EndIf
-                
-              ElseIf \Line[1] > \Line ; Если начинаем виделят снизу вверх
-                If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                  \Items()\Text[2]\X = \Items()\Text[0]\X+\Items()\Text\Width
-                EndIf 
-                If Not SelectionLen
-                  \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                Else
-                  \Items()\Text[2]\Width[2] = SelectionLen
-                EndIf
-                Debug  5646
-                If PreviousElement(*This\Items())
-                  If Position = len
-                    If Item = \Line
-                      If Not SelectionLen
-                        \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                      Else
-                        \Items()\Text[2]\Width[2] = SelectionLen
-                      EndIf
-                    EndIf
-                  EndIf
-                EndIf
-                
-                
-              EndIf
-              
-              LastItem = Item
-              LastLine = \Line
-            EndIf
-            PopListPosition(\Items())
-            
-            StopDrawing()
+            ; Если выделяем с право на лево
+          ElseIf *This\Caret[1] > *This\Caret 
+            ; |<<<<<< to left
+            Position = *This\Caret
+            \Text[2]\Len = (*This\Caret[1]-Position)
+          Else 
+            ; >>>>>>| to right
+            Position = *This\Caret[1]
+            \Text[2]\Len = (*This\Caret-Position)
           EndIf
+          
+          ; Если выделяем снизу вверх
+        ElseIf *This\Line[1] > *This\Line
+          ; <<<<<|
+          Position = *This\Caret
+          \Text[2]\Len = \Text\Len-Position
+          \Text[2]\Len | Bool(\Text\Len=Position) ; 
+        Else
+          ; >>>>>|
+          Position = 0
+          \Text[2]\Len = *This\Caret
         EndIf
         
-      ElseIf LastElement(*This\Items())
-        ; Иначе, если ниже всех линии текста,
-        ; то позиция коректора конец текста.
-        Position = \Items()\Text\Len
+        \Text[1]\String.s = Left(\Text\String.s, Position) : \Text[1]\Len = Len(\Text[1]\String.s) : \Text[1]\Change = #True
+        If \Text[2]\Len > 0 : \Text[2]\String.s = Mid(\Text\String.s, 1+Position, \Text[2]\Len) : \Text[2]\Change = #True : EndIf
+        \Text[3]\String.s = Right(\Text\String.s, \Text\Len-(Position + \Text[2]\Len)) : \Text[3]\Len = Len(\Text[3]\String.s) : \Text[3]\Change = #True
+        
+        Line = *This\Line
+        Caret = *This\Caret
+        Caret1 = *This\Caret[1]
       EndIf
     EndWith
     
     ProcedureReturn Position
   EndProcedure
   
+  Procedure SelectionReset(*This.Widget_S)
+    With *This
+      PushListPosition(\Items())
+      ForEach \Items() 
+        If \Items()\Text[2]\Len <> 0
+          \Items()\Text[2]\Len = 0 
+          \Items()\Text[2]\Width[2] = 0 
+          \Items()\Text[1]\String = ""
+          \Items()\Text[2]\String = "" 
+          \Items()\Text[3]\String = ""
+          \Items()\Text[2]\Width = 0 
+        EndIf
+      Next
+      PopListPosition(\Items())
+    EndWith
+  EndProcedure
+  
+  
+  ;-
   Procedure RemoveText(*This.Widget_S)
     ;ProcedureReturn
     
@@ -469,100 +362,7 @@ Module Editor
     ProcedureReturn 1
   EndProcedure
   
-  Procedure SelectionText(*This.Widget_S) ; Ok
-    Static Caret.i =- 1, Caret1.i =- 1, Line.i =- 1
-    Protected Position.i
-    
-    With *This\Items()
-      ;Debug "7777    "+*This\Caret +" "+ *This\Caret[1] +" "+*This\Line +" "+ *This\Line[1] +" "+ \Text\String
-      
-      If (Caret <> *This\Caret Or Line <> *This\Line Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1]))
-        \Text[2]\String.s = ""
-        ; Debug 8888
-        PushListPosition(*This\Items())
-        If *This\Line[1] = *This\Line
-          If *This\Caret[1] = *This\Caret And \Text[2]\Len > 0 
-            \Text[2]\Len = 0 
-          EndIf
-          If PreviousElement(*This\Items()) And \Text[2]\Len > 0 
-            \Text[2]\Width[2] = 0 
-            \Text[2]\Len = 0 
-          EndIf
-        ElseIf *This\Line[1] > *This\Line
-          If PreviousElement(*This\Items()) And \Text[2]\Len > 0 
-            \Text[2]\Len = 0 
-          EndIf
-        Else
-          If NextElement(*This\Items()) And \Text[2]\Len > 0 
-            \Text[2]\Len = 0 
-          EndIf
-        EndIf
-        PopListPosition(*This\Items())
-        
-        If *This\Line[1] = *This\Line
-          If *This\Caret[1] = *This\Caret 
-            Position = *This\Caret[1]
-            ;             If *This\Caret[1] = \Text\Len
-            ;              ; Debug 555
-            ;             ;  \Text[2]\Len =- 1
-            ;             EndIf
-            ; Если выделяем с право на лево
-          ElseIf *This\Caret[1] > *This\Caret 
-            ; |<<<<<< to left
-            Position = *This\Caret
-            \Text[2]\Len = (*This\Caret[1]-Position)
-          Else 
-            ; >>>>>>| to right
-            Position = *This\Caret[1]
-            \Text[2]\Len = (*This\Caret-Position)
-          EndIf
-          
-          ; Если выделяем снизу вверх
-        ElseIf *This\Line[1] > *This\Line
-          ; <<<<<|
-          Position = *This\Caret
-          \Text[2]\Len = \Text\Len-Position
-          \Text[2]\Len | Bool(\Text\Len=Position) ; 
-        Else
-          ; >>>>>|
-          Position = 0
-          \Text[2]\Len = *This\Caret
-        EndIf
-        
-        \Text[1]\String.s = Left(\Text\String.s, Position) : \Text[1]\Len = Len(\Text[1]\String.s) : \Text[1]\Change = #True
-        If \Text[2]\Len > 0
-          \Text[2]\String.s = Mid(\Text\String.s, 1+Position, \Text[2]\Len) : \Text[2]\Change = #True
-        EndIf
-        \Text[3]\String.s = Right(\Text\String.s, \Text\Len-(Position + \Text[2]\Len)) : \Text[3]\Len = Len(\Text[3]\String.s) : \Text[3]\Change = #True
-        
-        Line = *This\Line
-        Caret = *This\Caret
-        Caret1 = *This\Caret[1]
-      EndIf
-    EndWith
-    
-    ProcedureReturn Position
-  EndProcedure
   
-  Procedure ResetLen(*This.Widget_S)
-    With *This
-      PushListPosition(\Items())
-      ForEach \Items() 
-        If \Items()\Text[2]\Len <> 0
-          \Items()\Text[2]\Len = 0 
-        EndIf
-        If \Items()\Text[2]\Width[2] <> 0
-          \Items()\Text[2]\Width[2] = 0 
-        EndIf
-        ; ; ;         
-        ; ; ; ;           \Items()\Text[1]\String = ""
-        ; ; ; ;           \Items()\Text[2]\String = ""
-        ; ; ; ;           \Items()\Text[3]\String = ""
-        ; ; ; ;         EndIf
-      Next
-      PopListPosition(\Items())
-    EndWith
-  EndProcedure
   
   Procedure Cut(*This.Widget_S)
     Protected String.s
@@ -701,6 +501,7 @@ Module Editor
   EndProcedure
   
   
+  ;-
   Procedure ToUp(*This.Widget_S)
     Protected Repaint
     ; Если дошли до начала строки то 
@@ -751,7 +552,7 @@ Module Editor
         EndIf
         
         If \Line <> \Line[1]
-          ResetLen(*This)
+          SelectionReset(*This)
           \Line = \Line[1]
           Repaint =- 1
         EndIf
@@ -791,7 +592,7 @@ Module Editor
         EndIf
         
         If \Line <> \Line[1]
-          ResetLen(*This)
+          SelectionReset(*This)
           \Line = \Line[1]
           Repaint =- 1
         EndIf
@@ -806,142 +607,6 @@ Module Editor
         \Caret[1] = 0
         \Caret = \Caret[1]
         Repaint =- 1 
-      EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  ;-
-  Procedure.s AddString(*This.Widget_S, Item =- 1,Text.s="")
-    Protected String.s, i
-    
-    With *This
-      If Not ListSize(\Items())
-        If StartDrawing(CanvasOutput(\Canvas\Gadget))
-          If \Text\FontID 
-            DrawingFont(\Text\FontID) 
-          EndIf
-          
-          Text::MultiLine(*This)
-          StopDrawing()
-        EndIf
-      Else
-        PushListPosition(\Items())
-        ForEach \Items()
-          If Item = ListIndex(\Items())
-            If String.s
-              String.s  +#LF$+ Text.s
-            Else
-              String.s  + Text.s
-            EndIf
-          EndIf
-          
-          If String.s
-            String.s +#LF$+ \Items()\Text\String.s
-          Else
-            String.s + \Items()\Text\String.s
-          EndIf
-        Next
-        PopListPosition(\Items())
-        ;         *This\Text\Count = CountString(*This\Text\String.s, #LF$)
-        ;       
-        ;       For i=0 To *This\Text\Count
-        ;         If Item = i
-        ;           If String.s
-        ;             String.s  +#LF$+ Text.s
-        ;           Else
-        ;             String.s  + Text.s
-        ;           EndIf
-        ;         EndIf
-        ;         
-        ;         If String.s
-        ;           String.s +#LF$+ StringField(*This\Text\String.s, i + 1, #LF$)
-        ;         Else
-        ;           String.s + StringField(*This\Text\String.s, i + 1, #LF$)
-        ;         EndIf
-        ;       Next
-        
-        \Text\String.s = String.s 
-        \Text\Len = Len(String.s)
-        \Text\Change = 1
-      EndIf
-    EndWith
-    
-    ProcedureReturn String.s
-  EndProcedure
-  
-  Procedure rRemove(*This.Widget_S)
-    Protected Caret
-    
-    With *This
-      PushListPosition(\Items())
-      FirstElement(\Items()) ; LastElement(\Items()) ; 
-      While NextElement(\Items()) ; PreviousElement(\Items())  ; 
-        
-        If \Items()\Text[2]\Len > 0 And \Items()\Text[2]\Len <> \Items()\Text\Len
-          If \Items()\Text[1]\String.s And \Items()\Text[3]\String.s
-            ; курсор в нутри слова
-            ;\Items()\Text\String.s = \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s
-            
-          ElseIf \Items()\Text[3]\String.s
-            ; курсор в начале слова
-            \Items()\Text\String.s = \Items()\Text[3]\String.s
-            
-          ElseIf \Items()\Text[1]\String.s
-            ; курсор в конце слова
-            \Items()\Text\String.s = \Items()\Text[1]\String.s
-            
-          EndIf
-        EndIf
-        
-      Wend
-      PopListPosition(\Items())
-      
-      ;  Debug \Text\String.s
-    EndWith
-    
-    ProcedureReturn 1
-  EndProcedure
-  
-  Procedure __ToBack(*This.Widget_S)
-    Protected Repaint.b, String.s
-    
-    With *This
-      If \Items()\Text[2]\Len
-        If \Line[1] > \Line 
-          Swap \Line[1], \Line
-        ElseIf \Line > \Line[1] And 
-               \Caret[1] > \Caret
-          Swap \Caret[1], \Caret
-        ElseIf \Caret > \Caret[1] 
-          Swap \Caret, \Caret[1]
-        EndIf
-        
-        If \Line <> \Line[1]
-          ResetLen(*This)
-          \Line = \Line[1]
-          Repaint =- 1
-        EndIf
-      ElseIf \Caret[1] > 0 
-        \Caret - 1 
-      EndIf
-      
-      If \Caret[1] <> \Caret
-        \Caret[1] = \Caret 
-        
-        \Items()\Text\String.s = Left(\Items()\Text\String.s, \Caret) + Right(\Items()\Text\String.s, \Items()\Text\Len-\Caret-1)
-        \Items()\Text\Len = Len(\Items()\Text\String.s)
-        
-        Repaint =- 1 
-      ElseIf Not Repaint 
-        If (\Line[1] > 0 And \Line = \Line[1]) : \Line[1] - 1 : \Line = \Line[1]
-          DeleteElement(\Items(), 1)
-          SelectElement(\Items(), \Line[1])
-          \Caret = \Items()\Text\Len
-          \Caret[1] = \Caret
-          Repaint =- 1 
-        EndIf
       EndIf
     EndWith
     
@@ -987,82 +652,6 @@ Module Editor
         \Caret[1] = \Caret 
         Repaint =- 1 
       EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  Procedure _ToBack(*This.Widget_S)
-    Protected Repaint.b, String.s
-    
-    With *This\Items()
-      If *This\Caret[1] >= 0
-        
-        If \Text[2]\Len ; Если начали виделят с канца строки поэтому не \Text[2]\Len > 0
-          If *This\Caret > *This\Caret[1] 
-            Swap *This\Caret, *This\Caret[1]
-          EndIf      
-          
-          String = \Text[1]\String.s
-          Remove(*This)
-          itemSelect(*This\Line[1], *This\Items())
-          
-          If *This\Line[1] > 0 
-            ;If *This\Caret > 0
-            If *This\Caret <> \Text[2]\Len ; *This\Caret[1] And \Text[2]\Len < 1
-              Debug "ddd "+*This\Caret 
-              DeleteElement(*This\Items())
-              itemSelect(*This\Line[1], *This\Items())
-              
-              *This\Caret = Len(String.s)
-              \Text[1]\String.s = String.s
-              \Text[3]\String.s = \Text\String.s
-              \Text\String.s = String.s + \Text\String.s
-              \Text\Len = Len(\Text\String.s)
-            EndIf
-            
-            
-            ;EndIf
-            AddString(*This)
-          EndIf
-          
-          itemSelect(*This\Line[1], *This\Items()) : *This\Line = *This\Line[1]
-        Else         
-          If *This\Caret = 0
-            ; Если дошли до начала строки то 
-            ; переходим в конец предыдущего итема
-            String = \Text[3]\String.s
-            If *This\Line[1] > 0 
-              DeleteElement(*This\Items())
-              
-              ToUp(*This)
-              *This\Caret = \Text\Len + 1 ; Len(#LF$)
-              \Text[1]\String.s = \Text\String.s
-              \Text[3]\String.s = String.s
-              \Text\String.s + String
-              \Text\Len = Len(\Text\String.s)
-              
-              AddString(*This)
-              
-            EndIf
-          Else
-            ;                       Caret = (FindString(*This\Text\String.s, \Text\String.s) + *This\Caret) - 1
-            \Text[2]\String.s[1] = Mid(\Text\String.s, *This\Caret, 1)
-            \Text\String.s = Left(\Text\String.s, *This\Caret - 1) + Right(\Text\String.s, \Text\Len-*This\Caret)
-            \Text\Len = Len(\Text\String.s)
-            
-            ;                       *This\Text\String.s = Left(*This\Text\String.s, Caret - 1) + Right(*This\Text\String.s, *This\Text\Len-Caret)
-            ;                       *This\Text\Len = Len(*This\Text\String.s)
-          EndIf
-          
-          *This\Caret - 1 
-        EndIf
-        
-        *This\Caret[1] = *This\Caret 
-        Repaint =- 1 
-      EndIf
-      ;Debug *This\Text\String.s
-      
     EndWith
     
     ProcedureReturn Repaint
@@ -1421,6 +1010,12 @@ Module Editor
               EndIf
               SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
               
+            Case #PB_EventType_MouseMove ; bug mac os
+              If \Canvas\Mouse\Buttons And #PB_Compiler_OS = #PB_OS_MacOS ; And \Cursor <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+               ; Debug 555
+                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
+              EndIf
+              
           EndSelect
         EndIf 
         
@@ -1442,11 +1037,11 @@ Module Editor
     Static MoveX, MoveY
     Protected Caret,Item.i, String.s
     
-    If *This
-      With *This
+    With *This
+      If *Last = *This
         If Not \Hide And Not \Disable And \Interact ; And Widget <> Canvas And CanvasModifiers
                                                     ; Get line & caret position
-          If  \Canvas\Mouse\Buttons
+          If \Canvas\Mouse\Buttons
             If \Canvas\Mouse\Y < \Y
               Item.i =- 1
             Else
@@ -1459,13 +1054,7 @@ Module Editor
               MoveX = \Canvas\Mouse\X 
               MoveY = \Canvas\Mouse\Y
               
-              PushListPosition(\Items())
-              ForEach \Items() 
-                If \Items()\Text[2]\Len <> 0
-                  \Items()\Text[2]\Len = 0 
-                EndIf
-              Next
-              PopListPosition(\Items())
+              SelectionReset(*This)
               
               If \Items()\Text[2]\Len > 0
                 \Text[2]\Len = 1
@@ -1483,6 +1072,19 @@ Module Editor
                   EndIf
                 Next
                 PopListPosition(\Items())
+                
+                
+                \Caret[1] = \Caret
+                
+                If \Caret = DoubleClick
+                  DoubleClick =- 1
+                  \Caret[1] = \Items()\Text\Len
+                  \Caret = 0
+                EndIf 
+                
+                SelectionText(*This)
+                Repaint = #True
+                
                 
               EndIf
               
@@ -1504,7 +1106,7 @@ Module Editor
               ;               EndIf
               
             Case #PB_EventType_MouseMove  
-              If \Canvas\Mouse\Buttons 
+              If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
                 If \Drag = 0 And (Abs((\Canvas\Mouse\X-MoveX)+(\Canvas\Mouse\Y-MoveY)) >= 6) : \Drag=1
                   Debug "DragStart";PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_DragStart)
                 EndIf
@@ -1532,70 +1134,42 @@ Module Editor
                   \Caret = Caret(*This, Item) 
                   SelectionText(*This)
                 EndIf
+                
+                Repaint = #True
               EndIf
+              
+            Case #PB_EventType_LeftDoubleClick 
+              DoubleClick = \Caret
+              Text::SelectionLimits(*This)
+              SelectionText(*This) 
+              Repaint = #True
+              
+              \Caret = Caret(*This, \Line[1]) 
+              
+            Case #PB_EventType_MouseEnter
+              ; Debug ""+ \Caret +" "+ \Caret[1] +" "+ \Items()\Text[1]\Width +" "+ \Items()\Text[1]\String.s
+              ClearDebugOutput()
+              Debug \Text\String.s
+              
+            Case #PB_EventType_LostFocus : Repaint = #True
+              If Bool(\Type <> #PB_GadgetType_Editor)
+                ; StringGadget
+                \Items()\Text[2]\Len = 0 ; Убыраем выделение
+              EndIf
+              \Caret[1] =- 1 ; Прячем коректор
+              
+            Case #PB_EventType_Focus : Repaint = #True
+              \Caret[1] = \Caret ; Показываем коректор
               
             Default
               itemSelect(\Line[1], \Items())
           EndSelect
         EndIf
-      EndWith    
-    EndIf
+      EndIf
+    EndWith    
     
     With *This\items()
       If ListSize(*This\items())
-        If *Last = *This
-          Select EventType
-            Case #PB_EventType_MouseEnter
-              SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
-              ; Debug ""+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-              ClearDebugOutput()
-              Debug *This\Text\String.s
-              
-            Case #PB_EventType_LostFocus : Repaint = #True
-              If Bool(*This\Type <> #PB_GadgetType_Editor)
-                ; StringGadget
-                \Text[2]\Len = 0 ; Убыраем выделение
-              EndIf
-              *This\Caret[1] =- 1 ; Прячем коректор
-              
-            Case #PB_EventType_Focus : Repaint = #True
-              *This\Caret[1] = *This\Caret ; Показываем коректор
-              
-            Case #PB_EventType_LeftDoubleClick 
-              DoubleClick = *This\Caret
-              Text::SelectionLimits(*This)
-              SelectionText(*This) 
-              Repaint = #True
-              
-              *This\Caret = Caret(*This, *This\Line[1]) 
-              
-            Case #PB_EventType_LeftButtonDown
-              *This\Caret[1] = *This\Caret
-              
-              If \Text\Numeric 
-                \Text\String.s[1] = \Text\String.s 
-              EndIf
-              
-              If *This\Caret = DoubleClick
-                DoubleClick =- 1
-                *This\Caret[1] = \Text\Len
-                *This\Caret = 0
-              EndIf 
-              
-              SelectionText(*This)
-              Repaint = #True
-              
-            Case #PB_EventType_MouseMove
-              If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton
-                ;                 *This\Caret = Caret(*This)
-                ;                 SelectionText(*This)
-                Repaint = #True
-              EndIf
-              
-              
-          EndSelect
-        EndIf  
-        
         If *Focus = *This And (*This\Text\Editable Or \Text\Editable)
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
             Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
@@ -2111,4 +1685,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
+; EnableXP
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = -4---fd--f---+------------8-------------
 ; EnableXP

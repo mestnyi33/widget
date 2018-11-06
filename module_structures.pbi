@@ -146,7 +146,7 @@
     Disable.b[2]
     Cursor.i[2]
     
-    Caret.i[2] ; 0 = Pos ; 1 = PosFixed
+    Caret.i[3] ; 0 = Pos ; 1 = PosFixed
     Line.i[2]  ; 0 = Pos ; 1 = PosFixed
     
     

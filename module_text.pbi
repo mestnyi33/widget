@@ -447,48 +447,6 @@ Module Text
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.i SelectionLimits(*This.Widget_S)
-    With *This
-      Protected i, char = Asc(Mid(\Items()\Text\String.s, \Caret + 1, 1))
-      
-      If (char > =  ' ' And char < =  '/') Or 
-         (char > =  ':' And char < =  '@') Or 
-         (char > =  '[' And char < =  96) Or 
-         (char > =  '{' And char < =  '~')
-        
-        \Caret + 1
-        \Items()\Text[2]\Len = 1 
-      Else
-        ; |<<<<<< left edge of the word 
-        For i = \Caret To 1 Step - 1
-          char = Asc(Mid(\Items()\Text\String.s, i, 1))
-          If (char > =  ' ' And char < =  '/') Or 
-             (char > =  ':' And char < =  '@') Or 
-             (char > =  '[' And char < =  96) Or 
-             (char > =  '{' And char < =  '~')
-            Break
-          EndIf
-        Next 
-        
-        \Caret[1] = i
-        
-        ; >>>>>>| right edge of the word
-        For i = \Caret To \Items()\Text\Len
-          char = Asc(Mid(\Items()\Text\String.s, i, 1))
-          If (char > =  ' ' And char < =  '/') Or 
-             (char > =  ':' And char < =  '@') Or
-             (char > =  '[' And char < =  96) Or 
-             (char > =  '{' And char < =  '~')
-            Break
-          EndIf
-        Next 
-        
-        \Caret = i - 1
-        \Items()\Text[2]\Len = \Caret[1] - \Caret
-      EndIf
-    EndWith           
-  EndProcedure
-  
   Procedure DrawFilterCallback(X, Y, SourceColor, TargetColor)
     Protected Color, Dot.b=4, line.b = 10, Length.b = (Line+Dot*2+1)
     Static Len.b
@@ -706,7 +664,7 @@ Module Text
           
           If *This\Focus = *This 
             ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            If (*This\Text\Editable Or \Text\Editable) And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] And Not \Text[2]\Width[2] 
+            If (*This\Text\Editable Or \Text\Editable) ;And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] And Not \Text[2]\Width[2] 
               DrawingMode(#PB_2DDrawing_XOr)             
               Line(((\Text\X+*This\Scroll\X) + \Text[1]\Width) - Bool(*This\Scroll\X = Right), \Text[0]\Y+*This\Scroll\Y, 1, \Text[0]\Height, $FFFFFFFF)
             EndIf
@@ -842,6 +800,48 @@ Module Text
   EndProcedure
   
   ;-
+  Procedure.i SelectionLimits(*This.Widget_S)
+    With *This
+      Protected i, char = Asc(Mid(\Items()\Text\String.s, \Caret + 1, 1))
+      
+      If (char > =  ' ' And char < =  '/') Or 
+         (char > =  ':' And char < =  '@') Or 
+         (char > =  '[' And char < =  96) Or 
+         (char > =  '{' And char < =  '~')
+        
+        \Caret + 1
+        \Items()\Text[2]\Len = 1 
+      Else
+        ; |<<<<<< left edge of the word 
+        For i = \Caret To 1 Step - 1
+          char = Asc(Mid(\Items()\Text\String.s, i, 1))
+          If (char > =  ' ' And char < =  '/') Or 
+             (char > =  ':' And char < =  '@') Or 
+             (char > =  '[' And char < =  96) Or 
+             (char > =  '{' And char < =  '~')
+            Break
+          EndIf
+        Next 
+        
+        \Caret[1] = i
+        
+        ; >>>>>>| right edge of the word
+        For i = \Caret To \Items()\Text\Len
+          char = Asc(Mid(\Items()\Text\String.s, i, 1))
+          If (char > =  ' ' And char < =  '/') Or 
+             (char > =  ':' And char < =  '@') Or
+             (char > =  '[' And char < =  96) Or 
+             (char > =  '{' And char < =  '~')
+            Break
+          EndIf
+        Next 
+        
+        \Caret = i - 1
+        \Items()\Text[2]\Len = \Caret[1] - \Caret
+      EndIf
+    EndWith           
+  EndProcedure
+  
   Procedure.i ToReturn(*This.Widget_S) ; Ok
     Protected Repaint, String.s
     
@@ -1408,5 +1408,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---f9-vd---3-4-ff-00------------
+; Folding = ---f9-v0--b----00--02-----------
 ; EnableXP
