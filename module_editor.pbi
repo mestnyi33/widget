@@ -613,6 +613,38 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
+  Procedure ToInput(*This.Widget_S)
+    Static Dot, Minus, Color.i
+    Protected Repaint, Input, Input_2, Chr.s
+    
+    With *This
+      If \Canvas\Input
+        Chr.s = Text::Make(*This, Chr(\Canvas\Input))
+        
+        If Chr.s
+          If \Items()\Text[2]\Len 
+            If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+            \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
+          EndIf
+          
+          \Caret + 1
+          \Items()\Text\String.s = \Items()\Text[1]\String.s + Chr(\Canvas\Input) + \Items()\Text[3]\String.s
+          \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Caret+\Caret)
+          \Text\Len = Len(\Text\String.s) 
+          \Caret[1] = \Caret 
+          \Text\Change =- 1
+        Else
+          \Default = *This
+        EndIf
+        
+        \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Caret+\Caret)
+        Repaint =- 1 
+      EndIf
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure ToBack(*This.Widget_S)
     Protected Repaint, String.s 
     
@@ -1179,60 +1211,8 @@ Module Editor
           
           Select EventType
             Case #PB_EventType_Input ;- Input (key)
-              If *This\Text\Editable And Not (*This\Canvas\Key[1] & #PB_Canvas_Command)
-                Protected Input, Input_2
-                
-                Select #True
-                  Case \Text\Lower : Input = Asc(LCase(Chr(*This\Canvas\Input))) : Input_2 = Input
-                  Case \Text\Upper : Input = Asc(UCase(Chr(*This\Canvas\Input))) : Input_2 = Input
-                  Case \Text\Pass  : Input = 9679 : Input_2 = *This\Canvas\Input ; "●"
-                  Case \Text\Numeric
-                    ;                     Debug *This\Canvas\Input
-                    Static Dot
-                    
-                    Select *This\Canvas\Input 
-                      Case '.','0' To '9' : Input = *This\Canvas\Input : Input_2 = Input
-                      Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.' : Input_2 = Input
-                      Default
-                        Input_2 = *This\Canvas\Input
-                    EndSelect
-                    
-                    If Not Dot And Input = '.'
-                      Dot = 1
-                    ElseIf Input <> '.'
-                      Dot = 0
-                    Else
-                      Input = 0
-                    EndIf
-                    
-                  Default
-                    Input = *This\Canvas\Input : Input_2 = Input
-                EndSelect
-                
-                If Input_2
-                  If Input
-                    If \Text[2]\String.s
-                      RemoveText(*This)
-                    EndIf
-                    *This\Caret + 1
-                    *This\Caret[1] = *This\Caret
-                  EndIf
-                  
-                  If \Text\Numeric And Input = Input_2
-                    \Text\String.s[1] = \Text\String.s
-                  EndIf
-                  
-                  ;\Text\String.s = Left(\Text\String.s, *This\Caret-1) + Chr(Input) + Mid(\Text\String.s, *This\Caret)
-                  \Text\String.s = InsertString(\Text\String.s, Chr(Input), *This\Caret)
-                  \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(Input_2), *This\Caret)
-                  
-                  If Input
-                    \Text\Len = Len(\Text\String.s)
-                    PostEvent(#PB_Event_Gadget, EventWindow(), EventGadget(), #PB_EventType_Change)
-                  EndIf
-                  
-                  Repaint = #True 
-                EndIf
+              If Not Control
+                Repaint = ToInput(*This)
               EndIf
               
             Case #PB_EventType_KeyUp
@@ -1687,5 +1667,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -4---fd--f---+------------8-------------
+; Folding = -----ff--f--+-f-----f----v-0vX---------
 ; EnableXP

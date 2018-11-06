@@ -100,14 +100,6 @@ Module String
     ProcedureReturn Position
   EndProcedure
   
-  Procedure Remove(*This.Widget_S)
-    With *This
-      If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
-      \Text\Len = Len(\Text\String.s)
-    EndWith
-  EndProcedure
-  
   Procedure SelectionText(*This.Widget_S) ; Ok
     Static Caret.i =- 1, Caret1.i =- 1, Line.i =- 1
     Protected Position.i
@@ -230,7 +222,7 @@ Module String
     With *This
       If \Caret[1] < \Items()\Text\Len
         If \Items()\Text[2]\Len 
-          Remove(*This)
+          Text::Remove(*This)
         Else
           \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 2)
           \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 2)
@@ -255,10 +247,11 @@ Module String
         
         If Chr.s
           If \Items()\Text[2]\Len 
-            Remove(*This)
+            Text::Remove(*This)
           EndIf
           
           \Caret + 1
+          \Items()\Text\String.s = \Items()\Text[1]\String.s + Chr(\Canvas\Input) + \Items()\Text[3]\String.s
           \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Caret+\Caret)
           \Text\Len = Len(\Text\String.s) 
           \Caret[1] = \Caret 
@@ -287,7 +280,7 @@ Module String
         If \Caret > \Caret[1] 
           Swap \Caret, \Caret[1]
         EndIf  
-        Remove(*This)
+        Text::Remove(*This)
         
       ElseIf \Caret[1] > 0 
         \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
@@ -622,7 +615,7 @@ Module String
                 Case #PB_Shortcut_X
                   If Control And \Text[2]\String.s 
                     SetClipboardText(\Text[2]\String.s)
-                    Remove(*This)
+                    Text::Remove(*This)
                     *This\Caret[1] = *This\Caret
                     \Text\Len = Len(\Text\String.s)
                     Repaint = #True 
@@ -639,7 +632,7 @@ Module String
                     
                     If ClipboardText.s
                       If \Text[2]\String.s
-                        Remove(*This)
+                        Text::Remove(*This)
                       EndIf
                       
                       Select #True
@@ -1033,5 +1026,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = h--0HgDSdAAADz0-AAeYQOAEy
+; Folding = h--0B5+4HAAwwU-fVnHGkDAh9
 ; EnableXP

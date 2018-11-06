@@ -47,6 +47,7 @@ DeclareModule Text
   ;Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   
+  Declare.i Remove(*This.Widget_S)
   Declare.i ToReturn(*This.Widget_S)
 EndDeclareModule
 
@@ -842,6 +843,14 @@ Module Text
     EndWith           
   EndProcedure
   
+  Procedure.i Remove(*This.Widget_S)
+    With *This
+      If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Caret+\Caret, 1)
+      \Text\Len = Len(\Text\String.s)
+    EndWith
+  EndProcedure
+  
   Procedure.i ToReturn(*This.Widget_S) ; Ok
     Protected Repaint, String.s
     
@@ -1408,5 +1417,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---f9-v0--b----00--02-----------
+; Folding = ---f9-v0--b----004-4X-----------
 ; EnableXP
