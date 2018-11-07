@@ -79,7 +79,7 @@ Module Tree
                 *This\Change = 1
               EndIf
               
-              If (Not \flag&#NoButtons And \Items()\childrens) And
+              If (Not \Flag\NoButtons And \Items()\childrens) And
                  (MouseY > (\Items()\box\y[0]) And MouseY =< ((\Items()\box\y[0]+\Items()\box\height[0]))) And 
                  ((MouseX > \Items()\box\x[0]) And (MouseX =< (\Items()\box\x[0]+\Items()\box\width[0])))
                 
@@ -108,7 +108,7 @@ Module Tree
                 
               Else
                 ; Get entered item only on image and text 
-                If Not *This\flag&#PB_Widget_FullRowSelect And
+                If Not *This\Flag\FullSelection And
                    ((MouseX < \Items()\text\x-*This\Image\width) Or (MouseX > \Items()\text\x+\Items()\text\width))
                   Break
                 EndIf
@@ -190,6 +190,55 @@ Module Tree
   EndProcedure
   
   ;-
+  Procedure DrawFilterCallback(X, Y, SourceColor, TargetColor)
+    Protected Color, Dot.b=1, line.b = 1, Length.b = (Line+Dot*2+1)
+    Static Len.b
+    
+    If ((Len%Length)<line Or (Len%Length)=(line+Dot))
+      If (Len>(Line+Dot)) : Len=0 : EndIf
+      
+;       Select Point(X, Y) 
+;         Case $FFFDF4EC, $FFFCEEE1, $FFF0F0F0, $FFEFEAE6
+;           Color = TargetColor&~$FFFFFF
+;         Case $FFECAE62, $FFECB166
+;           Color = $FFFEFEFE
+;         Case $FFFFFFFF
+;           Color = SourceColor
+;         Default
+;           Color = TargetColor
+;       EndSelect
+      
+            Select Point(X, Y)
+              Case $FFECAE62, $FFECB166
+                Color = $FFFEFEFE
+              Case $FFF1F1F1, $FFF3F3F3, $FFF5F5F5, $FFF7F7F7, $FFF9F9F9, $FFFBFBFB, $FFFDFDFD, $FFFCFCFC, $FFFEFEFE, $FF7E7E7E
+                Color = TargetColor
+              Default
+                Color = SourceColor
+            EndSelect
+      
+    Else
+      Color = TargetColor
+    EndIf
+    
+    Len+1
+    ProcedureReturn Color
+  EndProcedure
+  
+  Procedure DrawFilterCallback_1(X, Y, SourceColor, TargetColor)
+    Protected Color, Dot.b=0, line.b = 0, Length.b = (Line+Dot*2+1)
+    Static Len.b
+    
+      Select Point(X, Y) 
+        Case $FFECAE62, $FFECB166
+          Color = $FFFFFF&~$000000
+        Default
+          Color = SourceColor
+      EndSelect
+      
+      ProcedureReturn Color
+  EndProcedure
+  
   Procedure Draw(*This.Widget_S)
     Protected x_content,y_point,x_point, iwidth, iheight, w=18, level,iY, start,i, back_color=$FFFFFF, point_color=$7E7E7E, box_color=$7E7E7E
     Protected hide_color=$FEFFFF, box_size = 9,box_1_size = 12, alpha = 255, item_alpha = 128, height =20
@@ -211,11 +260,11 @@ Module Tree
           ForEach *This\Items()
             If Not \hide
               _clip_output_(*This, *This\x[2], *This\y[2], iwidth, iheight) ; Bug
-              Protected y=*This\Scroll\height
+              
               \x=*This\x[2]
               \width=iwidth
               \height=height
-              \y=*This\Scroll\Y+*This\Scroll\height
+              \y=*This\Scroll\height-*This\vScroll\Page\Pos
               
               If \text\change = 1
                 \text\height = TextHeight("A")
@@ -223,28 +272,25 @@ Module Tree
                 \text\change = 0
               EndIf
               
-              x_content=*This\Scroll\X+2+\x+(Bool(*This\flag&#NoButtons=0)*w+\sublevel*w)
+              x_content=2+\x+(Bool(*This\Flag\NoButtons=0)*w+\sublevel*w)-*This\hScroll\Page\Pos
               
               \box\width = box_size
               \box\height = box_size
               \box\x = x_content-(w+\box\width)/2
-              \box\y = (y+height)-(height+\box\height)/2
+              \box\y = (\y+height)-(height+\box\height)/2
               
               If \Image\handle
                 \Image\x = 3+x_content
-                \Image\y = y+(height-\Image\height)/2
+                \Image\y = \y+(height-\Image\height)/2
                 
                 *This\Image\handle = \Image\handle
                 *This\Image\width = \Image\width+4
               EndIf
               
-;               If \text\change = 1
               \text\x = 3+x_content+*This\Image\width
-              \text\y = y+(height-\text\height)/2
-;                 \text\change = 0
-;               EndIf
+              \text\y = \y+(height-\text\height)/2
               
-              If *This\flag&#CheckBoxes
+              If *This\Flag\CheckBoxes
                 \box\x+w-2
                 \text\x+w-2
                 \Image\x+w-2 
@@ -253,42 +299,44 @@ Module Tree
                 \box\height[1] = box_1_size
                 
                 \box\x[1] = 3+(w-\box\width[1])/2 
-                \box\y[1] = (y+height)-(height+\box\height[1])/2
+                \box\y[1] = (\y+height)-(height+\box\height[1])/2
               EndIf
               
               *This\Scroll\height+\height
-              If *This\Scroll\Width < (\text\x+\text\width)-*This\Scroll\X
-                *This\Scroll\Width = (\text\x+\text\width)-*This\Scroll\X
+              If *This\Scroll\Width < (\text\x+\text\width)+*This\hScroll\Page\Pos
+                *This\Scroll\Width = (\text\x+\text\width)+*This\hScroll\Page\Pos
               EndIf
               
               
               Drawing = Bool(\y+\height>*This\y[2] And \y<*This\height[2])
               If Drawing
                 If (\Item=\focus And \lostfocus<>\focus) Or
-                   (*This\focus And *This\flag&#PB_Widget_FullRowSelect And *This\Item = \Item )
+                   (*This\focus And *This\Flag\FullSelection And *This\Item = \Item )
                   
-                  If *This\flag&#PB_Widget_FullRowSelect
-                    box_color = $FFFFFF
+                  If *This\Flag\FullSelection
+                    box_color = $FEFEFE
                   EndIf
-                  text_color=$FFFFFF
+                  text_color=$FEFEFE
                 Else
                   box_color = $7E7E7E
                   text_color=$000000
                 EndIf
                 
                 ; Draw selections
-                If *This\flag&#PB_Widget_FullRowSelect
+                If *This\Flag\FullSelection
                   If \Item=\from
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                     Box(\x+1,\y+1,\width-2,\height-2, $FCEADA&back_color|item_alpha<<24)  ; ((Color & $FFFFFF) << 32) $FCEADA $00A5FF $CBC0FF
                     
                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                     Box(\x,\y,\width,\height, $FFC288&back_color|item_alpha<<24) ; $FFC288 $0045FF
+                    
+                   ; Debug Point(\X+5, \y+5)
                   EndIf
                   
                   If \Item=\focus
                     If \lostfocus=\focus 
-                      If *This\flag&#AlwaysShowSelection
+                      If *This\Flag\AlwaysSelection
                         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                         Box(\x+1,\y+1,\width-2,\height-2, $E2E2E2&back_color|item_alpha<<24)
                         
@@ -304,13 +352,14 @@ Module Tree
                       
                       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                       Box(\x,\y,\width,\height, $DC9338&back_color|item_alpha<<24)
+                     ; Debug Point(\X+5, \y+5)
                     EndIf
                   EndIf
                 Else
                   
                   If \Item=\focus
                     If \lostfocus=\focus 
-                      If *This\flag&#AlwaysShowSelection
+                      If *This\Flag\AlwaysSelection
                         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                         Box(\text\x+1,\y+1,\text\width-2,\height-2, $E8E8E8&back_color|item_alpha<<24)
                         
@@ -331,92 +380,82 @@ Module Tree
                 EndIf
                 
                 ; Draw boxes
-                If Not *This\flag&#NoButtons And \childrens
+                If Not *This\Flag\NoButtons And \childrens
+                    
                   If box_type=-1
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,*This\Scroll\Y+\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+                    Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                   Else
                     DrawingMode(#PB_2DDrawing_Gradient)
                     BackColor($FFFFFF) : FrontColor($EEEEEE)
-                    LinearGradient(\box\x, *This\Scroll\Y+\box\y, \box\x, (\box\y+\box\height))
-                    RoundBox(\box\x+1,*This\Scroll\Y+\box\y+1,\box\width-2,\box\height-2,box_type,box_type)
+                    LinearGradient(\box\x, \box\y, \box\x, (\box\y+\box\height))
+                    RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type)
                     BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
                     
+;                    DrawingMode(#PB_2DDrawing_CustomFilter) 
+;                    CustomFilterCallback(@DrawFilterCallback_1())
                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                     RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type,box_color&$FFFFFF|alpha<<24)
+                    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                    RoundBox(\box\x-1,\box\y-1,\box\width+2,\box\height+2,box_type,box_type,$FEFEFE&$FFFFFF|alpha<<24)
                     
-                    Line(\box\x+2,*This\Scroll\Y+\box\y+\box\height/2 ,\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
-                    If \collapsed : Line(\box\x+\box\width/2,*This\Scroll\Y+\box\y+2,1,\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
+; ;                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+; ;                     RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type,$EEEEEE&$FFFFFF|alpha<<24)
+;                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+;                     RoundBox(\box\x-1,\box\y-1,\box\width+2,\box\height+2,box_type,box_type,text_color&$FFFFFF|alpha<<24)
+                    
+                    Line(\box\x+2,\box\y+\box\height/2 ,\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
+                    If \collapsed : Line(\box\x+\box\width/2,\box\y+2,1,\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
                   EndIf
                 EndIf
-              EndIf
-              
-              ; Draw plot
-              If Not *This\flag&#NoLines 
-                x_point=\box\x+\box\width/2
-                y_point=\box\y+\box\height/2
                 
-                If x_point>*This\x[2]
-                  ; Horisontal plot
-                  If Drawing
-                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-;                     For i=0 To line_size Step 2
-;                       If Not \childrens Or (i>box_size/2) Or *This\flag&#NoButtons
-;                         Line(x_point+i,y_point,1,1, point_color&$FFFFFF|alpha<<24)
-;                       EndIf
-;                     Next
-                    Line(x_point+i,y_point,line_size,1, point_color&$FFFFFF|alpha<<24);
-                  EndIf
+                ; Draw plot
+                If Not *This\Flag\NoLines 
+                  x_point=\box\x+\box\width/2
                   
-                  ; Vertical plot
-                  If \adress 
-                    start=Bool(Not \sublevel) ;  And Not \childrens
+                  If x_point>*This\x[2] 
+                    y_point=\box\y+\box\height/2
                     
-                    PushListPosition(*This\Items())
-                    ChangeCurrentElement(*This\Items(), \adress) 
-                    If start 
-                      start = *This\Scroll\Y+(*This\y[2]+\height/2)
-                    Else 
-                      start = \y+\height+\height/2-line_size 
+                    DrawingMode(#PB_2DDrawing_CustomFilter) 
+                    CustomFilterCallback(@DrawFilterCallback())
+                    
+                    ; Horisontal plot
+                    Line(x_point+i,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
+                    
+                    ; Vertical plot
+                    If \adress 
+                      start=Bool(Not \sublevel)
+                      
+                      PushListPosition(*This\Items())
+                      ChangeCurrentElement(*This\Items(), \adress) 
+                      If start 
+                        start = (*This\y[2]+\height/2)-*This\vScroll\Page\Pos 
+                      Else 
+                        start = \y+\height+\height/2-line_size 
+                      EndIf
+                      PopListPosition(*This\Items())
+                      
+                      Line(x_point,start,1, (y_point-start), point_color&$FFFFFF|alpha<<24)
                     EndIf
-                    PopListPosition(*This\Items())
-                    
-                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Line(x_point,start,1, (y_point-start), point_color&$FFFFFF|alpha<<24);, point_color&$FFFFFF|alpha<<24)
-                    
-; ;                     For i=y_point To start Step -2
-; ;                       If Bool(i>*This\y And i<*This\height)
-; ;                         Select Point(x_point,i)
-; ;                           Case $F3F3F3, $F7F7F7, $FBFBFB, 16645629, 15856113, 16119285, 16382457, 4286479998, 4294177779, 4294704123
-; ;                             Continue
-; ;                           Default
-; ;                             ; Debug Point(x_point,i)
-; ;                             ;Protected p = Point(x_point,i) ; (RGBA(Red(p), Green(p), Blue(p), Alpha(p))&~$FFFFFF)&$FFFFFF|alpha<<24);
-; ;                             Line(x_point,i,1,1);, point_color&$FFFFFF|alpha<<24)
-; ;                         EndSelect
-; ;                       EndIf
-; ;                     Next
                   EndIf
                 EndIf
-              EndIf
-              
-              If Drawing
+                
                 ; Draw checkbox
-                If *This\flag&#CheckBoxes
-                  DrawBox(\box\x[1],*This\Scroll\Y+\box\y[1],\box\width[1],\box\height[1], 3, \checked, checkbox_color, box_color, 2, alpha);, box_type)
+                If *This\Flag\CheckBoxes
+                  DrawBox(\box\x[1],\box\y[1],\box\width[1],\box\height[1], 3, \checked, checkbox_color, box_color, 2, alpha);, box_type)
                 EndIf
                 
                 ; Draw image
                 If \Image\handle
                   DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                  DrawAlphaImage(\Image\handle, \Image\x, *This\Scroll\Y+\Image\y, alpha)
+                  DrawAlphaImage(\Image\handle, \Image\x, \Image\y, alpha)
                 EndIf
                 
                 ; Draw string
                 If \text\string.s
                   _clip_output_(*This, *This\x[2], *This\y[2], \width, *This\height[2]) 
                   DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                  DrawText(\text\x, *This\Scroll\Y+\text\y, \text\string.s, text_color&$FFFFFF|alpha<<24)
+                  DrawText(\text\x, \text\y, \text\string.s, text_color&$FFFFFF|alpha<<24)
                 EndIf
               EndIf
             EndIf
@@ -971,19 +1010,19 @@ Module Tree
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     Result = *This\text\string
-;     If *This
-;       With *This
-;         PushListPosition(\Items()) 
-;         ForEach \Items()
-;           If \Items()\hide : Continue : EndIf
-;           If \Items()\Item = \Items()\focus
-;             Result = \Items()\text\string
-;             Break
-;           EndIf
-;         Next
-;         PopListPosition(\Items())
-;       EndWith
-;     EndIf  
+    ;     If *This
+    ;       With *This
+    ;         PushListPosition(\Items()) 
+    ;         ForEach \Items()
+    ;           If \Items()\hide : Continue : EndIf
+    ;           If \Items()\Item = \Items()\focus
+    ;             Result = \Items()\text\string
+    ;             Break
+    ;           EndIf
+    ;         Next
+    ;         PopListPosition(\Items())
+    ;       EndWith
+    ;     EndIf  
     
     ProcedureReturn Result
   EndProcedure
@@ -1082,7 +1121,7 @@ Module Tree
           If \vScroll
             Repaint = Scroll::CallBack(\vScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \hScroll, Window, Canvas)
             If Repaint
-             *This\Scroll\Y =- *This\vScroll\Page\Pos
+              *This\Scroll\Y =- *This\vScroll\Page\Pos
               ReDraw(Canvas)
             EndIf
           EndIf
@@ -1090,7 +1129,7 @@ Module Tree
           If \hScroll
             Repaint = Scroll::CallBack(\hScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \vScroll, Window, Canvas)
             If Repaint
-             *This\Scroll\X =- *This\hScroll\Page\Pos
+              *This\Scroll\X =- *This\hScroll\Page\Pos
               ReDraw(Canvas)
             EndIf
           EndIf
@@ -1114,10 +1153,10 @@ Module Tree
                 ;EndIf
                 
               Case #PB_EventType_LeftButtonUp 
-;                 If \Drag =- 1
-;                   
-;                   PostEvent(#PB_Event_GadgetDrop, EventWindow(), 2)
-;                 EndIf
+                ;                 If \Drag =- 1
+                ;                   
+                ;                   PostEvent(#PB_Event_GadgetDrop, EventWindow(), 2)
+                ;                 EndIf
                 
                 If \Drag=1                                         
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -1133,7 +1172,7 @@ Module Tree
               Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter
                 Protected from = \from
                 Repaint = item_from(*This, MouseX, MouseY)
-               
+                
                 If from <> \from
                   If \text\x+\text\width>\width
                     GadgetToolTip(canvas, \text\string)
@@ -1152,7 +1191,7 @@ Module Tree
                 
               Case #PB_EventType_MouseLeave
                 Repaint = item_from(*This,-1,-1, 0)
-;                 \Drag =- 1
+                ;                 \Drag =- 1
                 
               Case #PB_EventType_LostFocus
                 Repaint = item_from(*This,-1,-1, 1)
@@ -1213,6 +1252,12 @@ Module Tree
         
         \fSize = Bool(Not Flag&#PB_Widget_BorderLess)+1
         \bSize = \fSize
+        
+        \Flag\NoButtons = Bool(flag&#PB_Widget_NoButtons)
+        \Flag\NoLines = Bool(flag&#PB_Widget_NoLines)
+        \Flag\FullSelection = Bool(flag&#PB_Widget_FullSelection)
+        \Flag\AlwaysSelection = Bool(flag&#PB_Widget_AlwaysSelection)
+        \Flag\CheckBoxes = Bool(flag&#PB_Widget_CheckBoxes)
         
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
@@ -1286,7 +1331,7 @@ Module Tree
         EndIf
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        If Not Bool(\Text\MultiLine) And Bool(flag&#NoButtons = 0 Or flag&#NoLines=0)
+        If Not Bool(\Text\MultiLine) And Bool(\flag\NoButtons = 0 Or \flag\NoLines=0)
           Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
         EndIf
       EndWith
@@ -1317,11 +1362,10 @@ Module Tree
     
     If *This
       With *This
-        \flag = flag
         Widget(*This, Gadget, 0, 0, Width, Height, "", Flag)
         
         SetGadgetData(Gadget, *This)
-       ; ReDraw(*This)
+        ; ReDraw(*This)
         
         PostEvent(#PB_Event_Gadget, GetActiveWindow(), Gadget, #PB_EventType_Resize)
         BindGadgetEvent(Gadget, @CallBack())
@@ -1486,7 +1530,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g = 10
-    Gadget(g, 10, 230, 210, 210, #AlwaysShowSelection|#PB_Tree_CheckBoxes|#PB_Widget_FullRowSelect)                                         
+    Gadget(g, 10, 230, 210, 210, #PB_Widget_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Widget_FullSelection)                                         
     ; 1_example
     AddItem (g, 0, "Normal Item "+Str(a), -1, 0)                                   
     AddItem (g, -1, "Node "+Str(a), 0, 0)                                         
@@ -1507,7 +1551,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     Debug "c "+Tree::GetText(g)
     
     g = 11
-    Gadget(g, 230, 230, 210, 210, #AlwaysShowSelection|#PB_Widget_FullRowSelect)                                         
+    Gadget(g, 230, 230, 210, 210, #PB_Widget_AlwaysSelection|#PB_Widget_FullSelection)                                         
     ;  3_example
     AddItem(g, 0, "Tree_0", -1 )
     AddItem(g, 1, "Tree_1_1", 0, 1) 
@@ -1533,7 +1577,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ClearItems(g)
     
     g = 12
-    Gadget(g, 450, 230, 210, 210, #AlwaysShowSelection|#NoLines|#NoButtons|#PB_Widget_FullRowSelect|#CheckBoxes)                                        
+    Gadget(g, 450, 230, 210, 210, #PB_Widget_AlwaysSelection|#PB_Widget_NoLines|#PB_Widget_NoButtons|#PB_Widget_FullSelection|#PB_Widget_CheckBoxes)                                        
     ;   ;  2_example
     ;   AddItem (g, 0, "Normal Item "+Str(a), -1, 0)                                    
     ;   AddItem (g, 1, "Node "+Str(a), -1, 1)                                           
@@ -1553,7 +1597,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 13
-    Gadget(g, 670, 230, 210, 210, #AlwaysShowSelection|#PB_Tree_NoLines)                                         
+    Gadget(g, 670, 230, 210, 210, #PB_Widget_AlwaysSelection|#PB_Tree_NoLines)                                         
     ;  4_example
     AddItem(g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
     AddItem(g, 1, "Tree_1", -1, 1) 
@@ -1565,7 +1609,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g = 14
-    Gadget(g, 890, 230, 103, 210, #AlwaysShowSelection|#PB_Tree_NoButtons)                                         
+    Gadget(g, 890, 230, 103, 210, #PB_Widget_AlwaysSelection|#PB_Tree_NoButtons)                                         
     ;  5_example
     AddItem(g, 0, "Tree_0 (NoButtons)", -1 )
     AddItem(g, 1, "Tree_1", -1, 1) 
@@ -1574,7 +1618,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 15
-    Gadget(g, 890+106, 230, 103, 210, #AlwaysShowSelection|#PB_Widget_BorderLess)                                         
+    Gadget(g, 890+106, 230, 103, 210, #PB_Widget_AlwaysSelection|#PB_Widget_BorderLess)                                         
     ;  6_example
     AddItem(g, 0, "Tree_1", -1, 1) 
     AddItem(g, 0, "Tree_2_1", -1, 2) 
@@ -1630,5 +1674,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---4----+Hu--+--------------8------X----
+; Folding = --------v--------------------------------
 ; EnableXP

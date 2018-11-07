@@ -52,19 +52,19 @@ DeclareModule Constants
     #PB_Widget_Toggle
     
     #PB_Widget_GridLines
-    #PB_Widget_FullRowSelect
+    #PB_Widget_FullSelection
     #PB_Widget_Invisible
   EndEnumeration
   
   
   
-  #NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
-  #NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
+  #PB_Widget_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
+  #PB_Widget_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
   
-  #CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
-  #ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
+  #PB_Widget_CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
+  #PB_Widget_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
     
-  #AlwaysShowSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
+  #PB_Widget_AlwaysSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
   
   
   #Selected = #PB_Tree_Selected                       ; 1
@@ -72,7 +72,7 @@ DeclareModule Constants
   #Checked = #PB_Tree_Checked                         ; 4
   #Collapsed = #PB_Tree_Collapsed                     ; 8
   
-  #FullSelection = 512 ; #PB_ListIcon_FullRowSelect
+  ;#FullSelection = 512 ; #PB_ListIcon_FullRowSelect
   
   #SmallIcon = #PB_ListIcon_LargeIcon                 ; 0 0
   #LargeIcon = #PB_ListIcon_SmallIcon                 ; 1 1

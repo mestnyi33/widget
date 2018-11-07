@@ -125,6 +125,15 @@
     *Widget.S_S
   EndStructure
   
+  Structure Flag_S
+    FullSelection.b
+    AlwaysSelection.b
+    NoButtons.b
+    NoLines.b
+    CheckBoxes.b
+    GridLines.b
+  EndStructure
+  
   Structure Widget_S Extends Coordinate_S
     Index.i  ; Index of new list element
     Handle.i ; Adress of new list element
@@ -143,6 +152,7 @@
     
     Image.Image_S
     box.Coordinate_S
+    Flag.Flag_S
     
     
     bSize.b
@@ -180,9 +190,8 @@
     collapsed.b
     childrens.i
     Item.i
-    Attribute.l
+    Attribute.i
     change.b
-    flag.i
     
     
     *Default
@@ -271,5 +280,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---
+; Folding = BA9
 ; EnableXP

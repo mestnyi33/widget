@@ -245,7 +245,7 @@ Module Button
             
           Case #PB_EventType_LeftButtonUp : Drag = 0
             If \Toggle 
-              If Not \Checked And Not CanvasModifiers
+              If Not \Checked ; And Not CanvasModifiers
                 Buttons = \Buttons
               EndIf
             Else
@@ -269,7 +269,7 @@ Module Button
         
         Select EventType
           Case #PB_EventType_MouseEnter, #PB_EventType_LeftButtonUp, #PB_EventType_LeftButtonDown
-            If Buttons 
+            If Buttons
               Buttons = 0
               \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
               \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
@@ -290,12 +290,8 @@ Module Button
           Case #PB_EventType_Focus : Repaint = #True
           Case #PB_EventType_LostFocus : Repaint = #True
         EndSelect
-        
-        
-        
       EndWith
     EndIf
-    
     
     ProcedureReturn Repaint
   EndProcedure
@@ -599,5 +595,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------v--
+; Folding = --v------------
 ; EnableXP

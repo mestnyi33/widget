@@ -1457,6 +1457,13 @@ Module Editor
         \bSize = \fSize
         
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
+          \Flag\NoButtons = Bool(flag&#PB_Widget_NoButtons)
+          \Flag\NoLines = Bool(flag&#PB_Widget_NoLines)
+          \Flag\FullSelection = Bool(flag&#PB_Widget_FullSelection)
+          \Flag\AlwaysSelection = Bool(flag&#PB_Widget_AlwaysSelection)
+          \Flag\CheckBoxes = Bool(flag&#PB_Widget_CheckBoxes)
+          \Flag\GridLines = Bool(flag&#PB_Widget_GridLines)
+          
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           
@@ -1529,7 +1536,7 @@ Module Editor
         EndIf
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        If Bool(flag&#NoButtons = 0 Or flag&#NoLines=0)
+        If Bool(\flag\NoButtons = 0 Or \flag\NoLines=0)
           Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
         EndIf
       EndWith
@@ -1651,7 +1658,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g=16
-    Editor::Gadget(g, 8, 133+5+8, 306, 133, #PB_Text_WordWrap) : Editor::SetText(g, Text.s) 
+    Editor::Gadget(g, 8, 133+5+8, 306, 133, #PB_Text_WordWrap|#PB_Widget_GridLines) : Editor::SetText(g, Text.s) 
     For a = 0 To 2
        Editor::AddItem(g, a, "Line "+Str(a))
     Next

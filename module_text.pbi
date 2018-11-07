@@ -374,7 +374,7 @@ Module Text
               If \Text\Count = 1
                 \Items()\Height = \Text\Height
               Else
-                \Items()\Height = \Text\Height - 1
+                \Items()\Height = \Text\Height - Bool(\Flag\GridLines)
               EndIf
               \Items()\Item = ListIndex(\Items())
               
@@ -1489,5 +1489,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---fo-v8--4+6+-88-----4-----------
+; Folding = ---fo-v8---+6+-88-----4--4--------
 ; EnableXP
