@@ -726,16 +726,16 @@ Module String
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
+        \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
         
-        If Flag&#PB_Widget_Flat
+        If Flag&#PB_Flag_Flat
           \fSize[1] = 1
-        ElseIf Flag&#PB_Widget_Single
+        ElseIf Flag&#PB_Flag_Single
           \fSize[1] = 2
-        ElseIf Flag&#PB_Widget_Double
+        ElseIf Flag&#PB_Flag_Double
           \fSize[1] = 3
           \fSize = 2
-        ElseIf Flag&#PB_Widget_Raised
+        ElseIf Flag&#PB_Flag_Raised
           \fSize[1] = 4
           \fSize = 2
         EndIf
@@ -1026,11 +1026,11 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(10, @CallBacks())
     
     *S_0 = Create(10, -1, 8,  10, 290, height, "Normal StringGadget...",0,8)
-    *S_1 = Create(10, -1, 8,  35, 290, height, "123-only-4567", #PB_Widget_Flat|#PB_Text_Numeric|#PB_Text_Center)
-    *S_2 = Create(10, -1, 8,  60, 290, height, "StringGadget to right", #PB_Widget_Single|#PB_Text_Right)
-    *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Widget_Double|#PB_Text_LowerCase)
-    *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Widget_Raised|#PB_Text_UpperCase)
-    *S_5 = Create(10, -1, 8, 135, 290, height, "Borderless & read-only StringGadget", #PB_Widget_BorderLess|#PB_Text_ReadOnly)
+    *S_1 = Create(10, -1, 8,  35, 290, height, "123-only-4567", #PB_Flag_Flat|#PB_Text_Numeric|#PB_Text_Center)
+    *S_2 = Create(10, -1, 8,  60, 290, height, "StringGadget to right", #PB_Flag_Single|#PB_Text_Right)
+    *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Flag_Double|#PB_Text_LowerCase)
+    *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Flag_Raised|#PB_Text_UpperCase)
+    *S_5 = Create(10, -1, 8, 135, 290, height, "Borderless & read-only StringGadget", #PB_Flag_BorderLess|#PB_Text_ReadOnly)
     *S_6 = Create(10, -1, 8, 160, 290, height, "Password", #PB_Text_Password)
     *S_7 = Create(10, -1, 8, 185, 290, height, "")
     *S_8 = Create(10, -1, 8,  210, 290, 90, Text);, #PB_Text_Top)

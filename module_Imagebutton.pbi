@@ -338,7 +338,7 @@ Module Button
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
+        \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
         \bSize = \fSize
         
         If IsImage(Image)
@@ -362,8 +362,8 @@ Module Button
         EndIf
         
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \Default = Bool(Flag&#PB_Widget_Default)
-          \Toggle = Bool(Flag&#PB_Widget_Toggle)
+          \Default = Bool(Flag&#PB_Flag_Default)
+          \Toggle = Bool(Flag&#PB_Flag_Toggle)
           
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)

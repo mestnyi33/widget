@@ -579,12 +579,12 @@ Module Tree
       
       If IsImage(Image)
         Select \Attribute
-          Case #LargeIcon
+          Case #PB_Attribute_LargeIcon
             \Items()\Image\width = 32
             \Items()\Image\height = 32
             ResizeImage(Image, \Items()\Image\width,\Items()\Image\height)
             
-          Case #SmallIcon
+          Case #PB_Attribute_SmallIcon
             \Items()\Image\width = 16
             \Items()\Image\height = 16
             ResizeImage(Image, \Items()\Image\width,\Items()\Image\height)
@@ -932,7 +932,7 @@ Module Tree
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
           If \Items()\Item = Item
-            If State&#Selected
+            If State&#PB_Attribute_Selected
               \Items()\focus = \Items()\Item
               
               If GetActiveGadget()<>Gadget
@@ -943,11 +943,11 @@ Module Tree
               ; GetText()
               \text\string = \Items()\text\string
             EndIf
-            If State&#Checked
+            If State&#PB_Attribute_Checked
               \Items()\checked = 1
             EndIf
-            If State&#Collapsed Or State&#Expanded
-              \Items()\collapsed = Bool(State&#Collapsed)
+            If State&#PB_Attribute_Collapsed Or State&#PB_Attribute_Expanded
+              \Items()\collapsed = Bool(State&#PB_Attribute_Collapsed)
               
               sublevel = \Items()\sublevel
               
@@ -956,9 +956,9 @@ Module Tree
                 If sublevel = \Items()\sublevel
                   Break
                 ElseIf sublevel < \Items()\sublevel 
-                  If State&#Collapsed
+                  If State&#PB_Attribute_Collapsed
                     \Items()\hide = 1
-                  ElseIf State&#Expanded
+                  ElseIf State&#PB_Attribute_Expanded
                     \Items()\hide = 0
                   EndIf
                 EndIf
@@ -986,14 +986,14 @@ Module Tree
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
           If \Items()\Item = Item
-            Result = #Selected
+            Result = #PB_Attribute_Selected
             If \Items()\collapsed
-              Result | #Collapsed
+              Result | #PB_Attribute_Collapsed
             Else
-              Result | #Expanded
+              Result | #PB_Attribute_Expanded
             EndIf
             If \Items()\checked
-              Result | #Checked
+              Result | #PB_Attribute_Checked
             EndIf
             Break
           EndIf
@@ -1250,14 +1250,14 @@ Module Tree
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)+1
+        \fSize = Bool(Not Flag&#PB_Flag_BorderLess)+1
         \bSize = \fSize
         
-        \Flag\NoButtons = Bool(flag&#PB_Widget_NoButtons)
-        \Flag\NoLines = Bool(flag&#PB_Widget_NoLines)
-        \Flag\FullSelection = Bool(flag&#PB_Widget_FullSelection)
-        \Flag\AlwaysSelection = Bool(flag&#PB_Widget_AlwaysSelection)
-        \Flag\CheckBoxes = Bool(flag&#PB_Widget_CheckBoxes)
+        \Flag\NoButtons = Bool(flag&#PB_Flag_NoButtons)
+        \Flag\NoLines = Bool(flag&#PB_Flag_NoLines)
+        \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
+        \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
+        \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
         
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
@@ -1530,7 +1530,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g = 10
-    Gadget(g, 10, 230, 210, 210, #PB_Widget_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Widget_FullSelection)                                         
+    Gadget(g, 10, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
     ; 1_example
     AddItem (g, 0, "Normal Item "+Str(a), -1, 0)                                   
     AddItem (g, -1, "Node "+Str(a), 0, 0)                                         
@@ -1551,7 +1551,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     Debug "c "+Tree::GetText(g)
     
     g = 11
-    Gadget(g, 230, 230, 210, 210, #PB_Widget_AlwaysSelection|#PB_Widget_FullSelection)                                         
+    Gadget(g, 230, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
     ;  3_example
     AddItem(g, 0, "Tree_0", -1 )
     AddItem(g, 1, "Tree_1_1", 0, 1) 
@@ -1577,7 +1577,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ClearItems(g)
     
     g = 12
-    Gadget(g, 450, 230, 210, 210, #PB_Widget_AlwaysSelection|#PB_Widget_NoLines|#PB_Widget_NoButtons|#PB_Widget_FullSelection|#PB_Widget_CheckBoxes)                                        
+    Gadget(g, 450, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes)                                        
     ;   ;  2_example
     ;   AddItem (g, 0, "Normal Item "+Str(a), -1, 0)                                    
     ;   AddItem (g, 1, "Node "+Str(a), -1, 1)                                           
@@ -1597,7 +1597,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 13
-    Gadget(g, 670, 230, 210, 210, #PB_Widget_AlwaysSelection|#PB_Tree_NoLines)                                         
+    Gadget(g, 670, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
     ;  4_example
     AddItem(g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
     AddItem(g, 1, "Tree_1", -1, 1) 
@@ -1609,7 +1609,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g = 14
-    Gadget(g, 890, 230, 103, 210, #PB_Widget_AlwaysSelection|#PB_Tree_NoButtons)                                         
+    Gadget(g, 890, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
     ;  5_example
     AddItem(g, 0, "Tree_0 (NoButtons)", -1 )
     AddItem(g, 1, "Tree_1", -1, 1) 
@@ -1618,7 +1618,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 15
-    Gadget(g, 890+106, 230, 103, 210, #PB_Widget_AlwaysSelection|#PB_Widget_BorderLess)                                         
+    Gadget(g, 890+106, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
     ;  6_example
     AddItem(g, 0, "Tree_1", -1, 1) 
     AddItem(g, 0, "Tree_2_1", -1, 2) 

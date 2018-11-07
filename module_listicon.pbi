@@ -628,12 +628,12 @@ Module ListIcon
         
         If IsImage(Image)
           Select *This\Attribute
-            Case #LargeIcon
+            Case #PB_Attribute_LargeIcon
               \Items()\Image\width = 32
               \Items()\Image\height = 32
               ResizeImage(Image, \Items()\Image\width,\Items()\Image\height)
               
-            Case #SmallIcon
+            Case #PB_Attribute_SmallIcon
               \Items()\Image\width = 16
               \Items()\Image\height = 16
               ResizeImage(Image, \Items()\Image\width,\Items()\Image\height)
@@ -975,7 +975,7 @@ Module ListIcon
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
           If \Items()\Item = Item
-            If State&#Selected
+            If State&#PB_Attribute_Selected
               \Items()\focus = \Items()\Item
               
               If GetActiveGadget()<>Gadget
@@ -984,11 +984,11 @@ Module ListIcon
               EndIf
               
             EndIf
-            If State&#Checked
+            If State&#PB_Attribute_Checked
               \Items()\checked = 1
             EndIf
-            If State&#Collapsed Or State&#Expanded
-              \Items()\collapsed = Bool(State&#Collapsed)
+            If State&#PB_Attribute_Collapsed Or State&#PB_Attribute_Expanded
+              \Items()\collapsed = Bool(State&#PB_Attribute_Collapsed)
               
               sublevel = \Items()\sublevel
               
@@ -997,9 +997,9 @@ Module ListIcon
                 If sublevel = \Items()\sublevel
                   Break
                 ElseIf sublevel < \Items()\sublevel 
-                  If State&#Collapsed
+                  If State&#PB_Attribute_Collapsed
                     \Items()\hide = 1
-                  ElseIf State&#Expanded
+                  ElseIf State&#PB_Attribute_Expanded
                     \Items()\hide = 0
                   EndIf
                 EndIf
@@ -1027,14 +1027,14 @@ Module ListIcon
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
           If \Items()\Item = Item
-            Result = #Selected
+            Result = #PB_Attribute_Selected
             If \Items()\collapsed
-              Result | #Collapsed
+              Result | #PB_Attribute_Collapsed
             Else
-              Result | #Expanded
+              Result | #PB_Attribute_Expanded
             EndIf
             If \Items()\checked
-              Result | #Checked
+              Result | #PB_Attribute_Checked
             EndIf
             Break
           EndIf
@@ -1267,7 +1267,7 @@ Module ListIcon
     Protected *This.Widget_S=AllocateStructure(Widget_S)
     If *This
       With *This
-        If Not flag&#PB_Widget_BorderLess
+        If Not flag&#PB_Flag_BorderLess
           \bSize = 2
           \fSize = 2
         EndIf
@@ -1279,15 +1279,15 @@ Module ListIcon
         \Text\FontID = GetGadgetFont(#PB_Default) ; FontID(LoadFont(#PB_Any,"Tahoma",8)) ; 
         \Canvas\Gadget = Gadget
         
-        flag|#PB_Widget_NoLines|#PB_Widget_NoButtons
+        flag|#PB_Flag_NoLines|#PB_Flag_NoButtons
         
         
-        \Flag\NoButtons = Bool(flag&#PB_Widget_NoButtons)
-        \Flag\NoLines = Bool(flag&#PB_Widget_NoLines)
-        \Flag\FullSelection = Bool(flag&#PB_Widget_FullSelection)
-        \Flag\AlwaysSelection = Bool(flag&#PB_Widget_AlwaysSelection)
-        \Flag\CheckBoxes = Bool(flag&#PB_Widget_CheckBoxes)
-        \Flag\GridLines = Bool(flag&#PB_Widget_GridLines)
+        \Flag\NoButtons = Bool(flag&#PB_Flag_NoButtons)
+        \Flag\NoLines = Bool(flag&#PB_Flag_NoLines)
+        \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
+        \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
+        \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
+        \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
         
         \Width = width
         \Height = height
@@ -1433,7 +1433,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 12
-    Gadget(g, 180, 230, 165, 210,"Column_1",90, #PB_Widget_FullSelection)                                         
+    Gadget(g, 180, 230, 165, 210,"Column_1",90, #PB_Flag_FullSelection)                                         
     For i=1 To 2 : AddColumn(g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To Count
@@ -1441,7 +1441,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 13
-    Gadget(g, 350, 230, 430, 210,"Column_1",90, #PB_Widget_FullSelection|#PB_Widget_GridLines|#PB_Widget_CheckBoxes)                                         
+    Gadget(g, 350, 230, 430, 210,"Column_1",90, #PB_Flag_FullSelection|#PB_Flag_GridLines|#PB_Flag_CheckBoxes)                                         
     
     ;HideGadget(g,1)
     For i=1 To 2

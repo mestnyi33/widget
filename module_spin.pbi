@@ -780,7 +780,7 @@ Module Spin
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
+        \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height, Canvas)
@@ -1059,9 +1059,9 @@ CompilerIf #PB_Compiler_IsMainFile
     *S_2 = Create(10, -1, 8,  60, 290, height, "0000-0000-0000-0000", #PB_Text_Right)
     *S_3 = Create(10, -1, 8,  85, 290, height, "LOWERCASE...", #PB_Text_LowerCase)
     *S_4 = Create(10, -1, 8, 110, 290, height, "uppercase...", #PB_Text_UpperCase)
-    *S_5 = Create(10, -1, 8, 140, 290, height, "Borderless StringGadget", #PB_Widget_BorderLess)
+    *S_5 = Create(10, -1, 8, 140, 290, height, "Borderless StringGadget", #PB_Flag_BorderLess)
     *S_6 = Create(10, -1, 8, 170, 290, height, "Password", #PB_Text_Password)
-    ; Button::Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
+    ; Button::Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Flag_Default, 4)
     *S_7 = Create(10, -1, 8,  200, 290, 100, Text);, #PB_Text_Top)
                                                   ; *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
     

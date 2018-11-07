@@ -220,7 +220,7 @@ Module Widget
     With *This
       Select \Type
         Case #PB_GadgetType_ScrollBar  
-          ProcedureReturn *This\Scroll\Page\Pos
+         ; ProcedureReturn *This\Scroll\Page\Pos
       EndSelect
     EndWith
   EndProcedure
@@ -246,9 +246,9 @@ Module Widget
       Select \Type
         Case #PB_GadgetType_ScrollBar  
           Select Attribute
-            Case #PB_ScrollBar_Minimum    : Result = \Scroll\Min
-            Case #PB_ScrollBar_Maximum    : Result = \Scroll\Max
-            Case #PB_ScrollBar_PageLength : Result = \Scroll\Page\Length
+;             Case #PB_ScrollBar_Minimum    : Result = \Scroll\Min
+;             Case #PB_ScrollBar_Maximum    : Result = \Scroll\Max
+;             Case #PB_ScrollBar_PageLength : Result = \Scroll\Page\Length
           EndSelect
       EndSelect
     EndWith
@@ -300,10 +300,10 @@ Module Widget
       With *This
         \Canvas\Gadget = Widget
         \Type = #PB_GadgetType_ScrollBar
-        Scroll::Widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
-        \Scroll\Gadget = Widget
-        \Scroll\Type[1]=1 : \Scroll\Type[2]=1     ; Можно менять вид стрелок 
-        \Scroll\Size[1]=6 : \Scroll\Size[2]=6     ; Можно задать размер стрелок
+        Scroll::Widget(\vScroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
+        \vScroll\Gadget = Widget
+        \vScroll\Type[1]=1 : \vScroll\Type[2]=1     ; Можно менять вид стрелок 
+        \vScroll\Size[1]=6 : \vScroll\Size[2]=6     ; Можно задать размер стрелок
         SetGadgetData(Widget, *This)
         Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())

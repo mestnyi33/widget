@@ -347,12 +347,12 @@ Module Button
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
+        \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \Default = Bool(Flag&#PB_Widget_Default)
-          \Toggle = Bool(Flag&#PB_Widget_Toggle)
+          \Default = Bool(Flag&#PB_Flag_Default)
+          \Toggle = Bool(Flag&#PB_Flag_Toggle)
           
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
@@ -537,11 +537,11 @@ CompilerIf #PB_Compiler_IsMainFile
     *B_1 = Create(10, -1, 10, 40, 200, 20, "Left Button", #PB_Text_Left)
     *B_2 = Create(10, -1, 10, 70, 200, 20, "Right Button", #PB_Text_Right)
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-      *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Widget_Default, 4)
+      *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_MultiLine|#PB_Flag_Default, 4)
     CompilerElse
-      *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_WordWrap|#PB_Widget_Default, 4)
+      *B_3 = Create(10, -1, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Text_WordWrap|#PB_Flag_Default, 4)
     CompilerEndIf 
-    *B_4 = Create(10, -1, 10,170, 200, 25, "Toggle Button", #PB_Widget_Toggle,0)
+    *B_4 = Create(10, -1, 10,170, 200, 25, "Toggle Button", #PB_Flag_Toggle,0)
     SetState (*B_4,1)
     
     BindEvent(#PB_Event_Widget, @Events())

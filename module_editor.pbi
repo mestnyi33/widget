@@ -1453,16 +1453,16 @@ Module Editor
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)+1
+        \fSize = Bool(Not Flag&#PB_Flag_BorderLess)+1
         \bSize = \fSize
         
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
-          \Flag\NoButtons = Bool(flag&#PB_Widget_NoButtons)
-          \Flag\NoLines = Bool(flag&#PB_Widget_NoLines)
-          \Flag\FullSelection = Bool(flag&#PB_Widget_FullSelection)
-          \Flag\AlwaysSelection = Bool(flag&#PB_Widget_AlwaysSelection)
-          \Flag\CheckBoxes = Bool(flag&#PB_Widget_CheckBoxes)
-          \Flag\GridLines = Bool(flag&#PB_Widget_GridLines)
+          \Flag\NoButtons = Bool(flag&#PB_Flag_NoButtons)
+          \Flag\NoLines = Bool(flag&#PB_Flag_NoLines)
+          \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
+          \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
+          \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
+          \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
           
           \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
@@ -1658,7 +1658,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g=16
-    Editor::Gadget(g, 8, 133+5+8, 306, 133, #PB_Text_WordWrap|#PB_Widget_GridLines) : Editor::SetText(g, Text.s) 
+    Editor::Gadget(g, 8, 133+5+8, 306, 133, #PB_Text_WordWrap|#PB_Flag_GridLines) : Editor::SetText(g, Text.s) 
     For a = 0 To 2
        Editor::AddItem(g, a, "Line "+Str(a))
     Next

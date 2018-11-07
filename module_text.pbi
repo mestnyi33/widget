@@ -1263,7 +1263,7 @@ Module Text
         \Line =- 1
         
         ; Set the default widget flag
-        Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#PB_Widget_BorderLess
+        Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#PB_Flag_BorderLess
         
         If Bool(Flag&#PB_Text_WordWrap)
           Flag&~#PB_Text_MultiLine
@@ -1277,7 +1277,7 @@ Module Text
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_Widget_BorderLess)
+        \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height, Canvas)
