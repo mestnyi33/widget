@@ -50,6 +50,8 @@ Module String
   ;- - MACROS
   ;- - PROCEDUREs
   Procedure Caret(*This.Widget_S, Line.i = 0)
+    ProcedureReturn Text::Caret(*This, Line)
+    
     Static LastLine.i,  LastItem.i
     Protected Item.i, SelectionLen.i=0
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
@@ -420,7 +422,7 @@ Module String
               
             Case #PB_EventType_MouseMove
               If \Drag = 0 And \Canvas\Mouse\Buttons And \Canvas\Mouse\Delta And 
-                 (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1
+                 (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1 : \Drag[1]=1
                 ; Debug "DragStart"
                ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
               EndIf
@@ -511,12 +513,12 @@ Module String
               PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Focus)
               
             Case #PB_EventType_LeftButtonUp
-              If *This\Text\Editable 
+              If #PB_Cursor_Default = GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
+                SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, *This\Cursor)
+              EndIf
+              If *This\Text\Editable And *This\Drag[1] : *This\Drag[1] = 0
                 If \Caret[1] > 0 And Not Bool(\Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len)
-                  If #PB_Cursor_Default = GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
-                    SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, *This\Cursor)
-                  EndIf
-                  
+                 
                   *This\Text\String.s = RemoveString(*This\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, \Caret[1], 1)
                   
                   If \Caret[1] > *This\Caret 
@@ -537,6 +539,7 @@ Module String
                   Repaint =- 1
                 EndIf
               Else
+                Repaint =- 1
                 \Caret[1] = 0
               EndIf
               
@@ -569,8 +572,9 @@ Module String
                 *This\Caret[1] = *This\Caret
               EndIf 
               
-            Case #PB_EventType_LeftDoubleClick : \Caret[1] =- 1
-              Text::SelectionLimits(*This)
+            Case #PB_EventType_LeftDoubleClick 
+              \Caret[1] =- 1 ; Запоминаем что сделали двойной клик
+              Text::SelectionLimits(*This) ; Выделяем слово
               Repaint =- 1
               
             Case #PB_EventType_MouseMove
@@ -1035,10 +1039,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SetText(*S_6, "GaT")
     Debug "password: "+GetText(*S_6)
     
-    SetColor(*S_1, #PB_Gadget_BackColor, $FFF0F0F0)
-    SetColor(*S_2, #PB_Gadget_BackColor, $FFF0F0F0)
-    SetColor(*S_3, #PB_Gadget_BackColor, $FFF0F0F0)
-    SetColor(*S_4, #PB_Gadget_BackColor, $FFF0F0F0)
+;     SetColor(*S_1, #PB_Gadget_BackColor, $FFF0F0F0)
+;     SetColor(*S_2, #PB_Gadget_BackColor, $FFF0F0F0)
+;     SetColor(*S_3, #PB_Gadget_BackColor, $FFF0F0F0)
+;     SetColor(*S_4, #PB_Gadget_BackColor, $FFF0F0F0)
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)

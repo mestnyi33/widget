@@ -197,14 +197,18 @@ Module Draw
   Procedure.i _Box(X.i,Y.i,Width.i,Height.i, Color.i)
     VectorSourceColor(Color)
     
-    If DrawingMode = #PB_2DDrawing_Outlined
-      AddPathBox(X+1,Y+1,Width-2,Height-2)
-      StrokePath(1, #PB_Path_SquareEnd)
+    If VectorOutputWidth() = Width And VectorOutputHeight() = Height
+      FillVectorOutput()
     Else
-      AddPathBox(X,Y,Width,Height)
-      FillPath()
+      If DrawingMode = #PB_2DDrawing_Outlined
+        AddPathBox(X+1,Y+1,Width-2,Height-2)
+        StrokePath(1, #PB_Path_SquareEnd)
+      Else
+        AddPathBox(X,Y,Width,Height)
+        FillPath()
+      EndIf
     EndIf
-    
+  
     ClosePath()
   EndProcedure
   

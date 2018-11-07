@@ -162,7 +162,7 @@
     Focus.i
     LostFocus.i
     
-    Drag.b
+    Drag.b[2]
     Resize.b ; 
     Toggle.b ; 
     Checked.b[2]
