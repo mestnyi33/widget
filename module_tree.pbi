@@ -190,53 +190,40 @@ Module Tree
   EndProcedure
   
   ;-
-  Procedure DrawFilterCallback(X, Y, SourceColor, TargetColor)
-    Protected Color, Dot.b=1, line.b = 1, Length.b = (Line+Dot*2+1)
-    Static Len.b
+  Procedure DrawPlotXCallback(X, Y, SourceColor, TargetColor)
+    Protected Color
     
-    If ((Len%Length)<line Or (Len%Length)=(line+Dot))
-      If (Len>(Line+Dot)) : Len=0 : EndIf
-      
-;       Select Point(X, Y) 
-;         Case $FFFDF4EC, $FFFCEEE1, $FFF0F0F0, $FFEFEAE6
-;           Color = TargetColor&~$FFFFFF
-;         Case $FFECAE62, $FFECB166
-;           Color = $FFFEFEFE
-;         Case $FFFFFFFF
-;           Color = SourceColor
-;         Default
-;           Color = TargetColor
-;       EndSelect
-      
-            Select Point(X, Y)
-              Case $FFECAE62, $FFECB166
-                Color = $FFFEFEFE
-              Case $FFF1F1F1, $FFF3F3F3, $FFF5F5F5, $FFF7F7F7, $FFF9F9F9, $FFFBFBFB, $FFFDFDFD, $FFFCFCFC, $FFFEFEFE, $FF7E7E7E
-                Color = TargetColor
-              Default
-                Color = SourceColor
-            EndSelect
-      
+    If x%2
+      Select TargetColor
+        Case $FFECAE62, $FFECB166, $FFFEFEFE
+          Color = $FFFEFEFE
+        Default
+          Color = SourceColor
+      EndSelect
     Else
       Color = TargetColor
     EndIf
     
-    Len+1
     ProcedureReturn Color
   EndProcedure
   
-  Procedure DrawFilterCallback_1(X, Y, SourceColor, TargetColor)
-    Protected Color, Dot.b=0, line.b = 0, Length.b = (Line+Dot*2+1)
-    Static Len.b
+  Procedure DrawPlotYCallback(X, Y, SourceColor, TargetColor)
+    Protected Color
     
-      Select Point(X, Y) 
-        Case $FFECAE62, $FFECB166
-          Color = $FFFFFF&~$000000
+    If y%2
+      Select TargetColor
+        Case $FFECAE62, $FFECB166, $FFFEFEFE
+          Color = $FFFEFEFE
+        Case $FFF1F1F1, $FFF3F3F3, $FFF5F5F5, $FFF7F7F7, $FFF9F9F9, $FFFBFBFB, $FFFDFDFD, $FFFCFCFC, $FFFEFEFE, $FF7E7E7E
+          Color = TargetColor
         Default
           Color = SourceColor
       EndSelect
-      
-      ProcedureReturn Color
+    Else
+      Color = TargetColor
+    EndIf
+    
+    ProcedureReturn Color
   EndProcedure
   
   Procedure Draw(*This.Widget_S)
@@ -313,7 +300,7 @@ Module Tree
                 If (\Item=\focus And \lostfocus<>\focus) Or
                    (*This\focus And *This\Flag\FullSelection And *This\Item = \Item )
                   
-                  If *This\Flag\FullSelection
+                  If *This\Flag\FullSelection And box_type=-1
                     box_color = $FEFEFE
                   EndIf
                   text_color=$FEFEFE
@@ -331,7 +318,7 @@ Module Tree
                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                     Box(\x,\y,\width,\height, $FFC288&back_color|item_alpha<<24) ; $FFC288 $0045FF
                     
-                   ; Debug Point(\X+5, \y+5)
+                    ; Debug Point(\X+5, \y+5)
                   EndIf
                   
                   If \Item=\focus
@@ -352,7 +339,7 @@ Module Tree
                       
                       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                       Box(\x,\y,\width,\height, $DC9338&back_color|item_alpha<<24)
-                     ; Debug Point(\X+5, \y+5)
+                      ; Debug Point(\X+5, \y+5)
                     EndIf
                   EndIf
                 Else
@@ -378,10 +365,47 @@ Module Tree
                   EndIf
                   
                 EndIf
+              EndIf  
+              
+              ; Draw plot
+              If Not *This\Flag\NoLines 
+                x_point=\box\x+\box\width/2
                 
+                If x_point>*This\x[2] 
+                  y_point=\box\y+\box\height/2
+                  
+                  If Drawing
+                    ; Horisontal plot
+                    DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@DrawPlotXCallback())
+                    Line(x_point+i,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
+                  EndIf
+                  
+                  ; Vertical plot
+                  If \adress
+                    start = \sublevel
+                    
+                    PushListPosition(*This\Items())
+                    ChangeCurrentElement(*This\Items(), \adress) 
+                    If Drawing Or (start = \sublevel And Bool(\y+\height>*This\y[2] And \y<*This\height[2]))
+                      
+                      If start
+                        start = \y+\height+\height/2-line_size 
+                      Else 
+                        start = (*This\y[2]+\height/2)-*This\vScroll\Page\Pos 
+                      EndIf
+                      
+                      DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@DrawPlotYCallback())
+                      Line(x_point,start,1, (y_point-start), point_color&$FFFFFF|alpha<<24)
+                    EndIf
+                    PopListPosition(*This\Items())
+                  EndIf
+                EndIf
+              EndIf
+              
+              If Drawing
                 ; Draw boxes
                 If Not *This\Flag\NoButtons And \childrens
-                    
+                  
                   If box_type=-1
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                     Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
@@ -392,51 +416,20 @@ Module Tree
                     RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type)
                     BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
                     
-;                    DrawingMode(#PB_2DDrawing_CustomFilter) 
-;                    CustomFilterCallback(@DrawFilterCallback_1())
+                    ;                    DrawingMode(#PB_2DDrawing_CustomFilter) 
+                    ;                    CustomFilterCallback(@DrawFilterCallback_1())
                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                     RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type,box_color&$FFFFFF|alpha<<24)
                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                     RoundBox(\box\x-1,\box\y-1,\box\width+2,\box\height+2,box_type,box_type,$FEFEFE&$FFFFFF|alpha<<24)
                     
-; ;                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-; ;                     RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type,$EEEEEE&$FFFFFF|alpha<<24)
-;                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-;                     RoundBox(\box\x-1,\box\y-1,\box\width+2,\box\height+2,box_type,box_type,text_color&$FFFFFF|alpha<<24)
+                    ; ;                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                    ; ;                     RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type,$EEEEEE&$FFFFFF|alpha<<24)
+                    ;                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                    ;                     RoundBox(\box\x-1,\box\y-1,\box\width+2,\box\height+2,box_type,box_type,text_color&$FFFFFF|alpha<<24)
                     
                     Line(\box\x+2,\box\y+\box\height/2 ,\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
                     If \collapsed : Line(\box\x+\box\width/2,\box\y+2,1,\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
-                  EndIf
-                EndIf
-                
-                ; Draw plot
-                If Not *This\Flag\NoLines 
-                  x_point=\box\x+\box\width/2
-                  
-                  If x_point>*This\x[2] 
-                    y_point=\box\y+\box\height/2
-                    
-                    DrawingMode(#PB_2DDrawing_CustomFilter) 
-                    CustomFilterCallback(@DrawFilterCallback())
-                    
-                    ; Horisontal plot
-                    Line(x_point+i,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
-                    
-                    ; Vertical plot
-                    If \adress 
-                      start=Bool(Not \sublevel)
-                      
-                      PushListPosition(*This\Items())
-                      ChangeCurrentElement(*This\Items(), \adress) 
-                      If start 
-                        start = (*This\y[2]+\height/2)-*This\vScroll\Page\Pos 
-                      Else 
-                        start = \y+\height+\height/2-line_size 
-                      EndIf
-                      PopListPosition(*This\Items())
-                      
-                      Line(x_point,start,1, (y_point-start), point_color&$FFFFFF|alpha<<24)
-                    EndIf
                   EndIf
                 EndIf
                 
@@ -1674,5 +1667,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------v--------------------------------
+; Folding = -------04-0-------------------------------
 ; EnableXP
