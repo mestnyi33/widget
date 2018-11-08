@@ -497,12 +497,12 @@ Module Text
         EndIf 
         
         ; Draw back color
-        If \Color\Fore
+        If \Color\Fore[\Color\State]
           DrawingMode(#PB_2DDrawing_Gradient)
-          BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore,\Color\Back,\Radius)
+          BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore[\Color\State],\Color\Back[\Color\State],\Radius)
         Else
           DrawingMode(#PB_2DDrawing_Default)
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Back)
+          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Back[\Color\State])
         EndIf
       EndWith 
       
@@ -774,7 +774,7 @@ Module Text
             
               
             Default 
-              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame)
+              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[\Color\State])
             
           EndSelect
         EndIf
@@ -1489,5 +1489,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---fo-v8---+6+-88-----4--4--------
+; Folding = ---fo-v8--0+6+-8------4--4--------
 ; EnableXP

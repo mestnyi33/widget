@@ -44,6 +44,7 @@
   EndStructure
   
   Structure Color_S
+    State.b
     Front.i[4]
     Fore.i[4]
     Back.i[4]
@@ -207,6 +208,8 @@
   ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;
   Global Colors.Color_S
   With Colors                          
+    \State = 1
+    
     ;- Серые цвета 
     ; Цвета по умолчанию
     \Front[1] = $FF000000
@@ -280,5 +283,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = BA9
+; Folding = BC9
 ; EnableXP

@@ -57,10 +57,12 @@ Module Button
         \Checked[1] = \Checked
         \Checked = Bool(Value)
         
-        \Color\Fore = \Color\Fore[3]
-        \Color\Back = \Color\Back[3]
-        \Color\Frame = \Color\Frame[3]
-        \Color\Line = \Color\Line[3]
+        \Color\State = 3
+        
+;         \Color\Fore = \Color\Fore[3]
+;         \Color\Back = \Color\Back[3]
+;         \Color\Frame = \Color\Frame[3]
+;         \Color\Line = \Color\Line[3]
         
         Result = #True
       EndIf
@@ -271,16 +273,18 @@ Module Button
           Case #PB_EventType_MouseEnter, #PB_EventType_LeftButtonUp, #PB_EventType_LeftButtonDown
             If Buttons
               Buttons = 0
-              \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Line = \Color[Buttons]\Line[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+              \Color\State = 2+Bool(EventType=#PB_EventType_LeftButtonDown)
+;               \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+;               \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+;               \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+;               \Color[Buttons]\Line = \Color[Buttons]\Line[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
               Repaint = #True
             EndIf
             
           Case #PB_EventType_MouseLeave
             If Not \Checked
-              ResetColor(*This)
+              \Color\State = 1
+              ;ResetColor(*This)
             EndIf
             
             Repaint = #True
@@ -404,7 +408,7 @@ Module Button
           ; Устанавливаем 
           ; цвета по умолчанию
           \Color[0] = Colors
-          ResetColor(*This)
+          ;ResetColor(*This)
           
           SetText(*This, Text.s)
         EndIf

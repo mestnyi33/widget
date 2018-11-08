@@ -43,13 +43,15 @@ Module Tree
   Procedure item_from(*This.Widget_S, MouseX=-1, MouseY=-1, focus=0)
     Protected adress.i
     Protected lostfocus.i=-1, collapsed.i, sublevel.i, coll.i
+    Protected Buttons
     
     With *This
       PushListPosition(\Items()) 
       ForEach \Items()
-        If \Items()\from = \Items()\Item 
-          \Items()\from =- 1
+        If \Items()\Line = \Items()\Item 
+          \Items()\Line =- 1
           adress = @\Items()
+          ; ResetColor(*This\Items())
           Break
         EndIf
       Next
@@ -59,6 +61,10 @@ Module Tree
           If Bool(MouseX=-1 And MouseY=-1 And focus=1)
             \Items()\lostfocus = \Items()\focus
             *This\focus = 0
+            
+            ; then lost focus widget
+            \Items()\Color\State = 1
+            
           EndIf
           adress = @\Items()
           Break
@@ -131,13 +137,18 @@ Module Tree
                 
                 \Items()\focus = \Items()\Item
               EndIf
-              
             EndIf
             
-            If \Items()\from <> \Items()\Item 
-              \Items()\from = \Items()\Item
-              *This\from = \Items()\from
+            If \Items()\Line <> \Items()\Item 
+              \Items()\Line = \Items()\Item
+              *This\Line = \Items()\Line
               *This\text = \Items()\text 
+              
+                  
+              If \Items()\lostfocus <> \Items()\Item
+                \Items()\Color\State = 2+Bool(\Items()\Item=\Items()\focus)
+              EndIf
+              
             EndIf
             
             adress = @\Items()
@@ -195,7 +206,7 @@ Module Tree
     
     If x%2
       Select TargetColor
-        Case $FFECAE62, $FFECB166, $FFFEFEFE
+        Case $FFECAE62, $FFECB166, $FFFEFEFE, $FFE89C3D, $FFF3CD9D
           Color = $FFFEFEFE
         Default
           Color = SourceColor
@@ -212,7 +223,7 @@ Module Tree
     
     If y%2
       Select TargetColor
-        Case $FFECAE62, $FFECB166, $FFFEFEFE
+        Case $FFECAE62, $FFECB166, $FFFEFEFE, $FFE89C3D, $FFF3CD9D
           Color = $FFFEFEFE
         Case $FFF1F1F1, $FFF3F3F3, $FFF5F5F5, $FFF7F7F7, $FFF9F9F9, $FFFBFBFB, $FFFDFDFD, $FFFCFCFC, $FFFEFEFE, $FF7E7E7E
           Color = TargetColor
@@ -310,60 +321,27 @@ Module Tree
                 EndIf
                 
                 ; Draw selections
-                If *This\Flag\FullSelection
-                  If \Item=\from
+                If \Item=\Line Or \Item=\focus ; \Item=*This\Line ; с этим остается последное виделеное слово
+                  Protected SelectionPos, SelectionLen 
+                  If *This\Flag\FullSelection
+                    SelectionPos = *This\X[2]
+                    SelectionLen = iwidth
+                  Else
+                    SelectionPos = \Text\X - 2
+                    SelectionLen = \Text\width + 4
+                  EndIf
+                  
+                  ; Draw items back color
+                  If \Color\Fore
+                    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                    BoxGradient(\Vertical,SelectionPos,\Y,SelectionLen,\Height,\Color\Fore[\Color\State],\Color\Back[\Color\State],\Radius)
+                  Else
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Box(\x+1,\y+1,\width-2,\height-2, $FCEADA&back_color|item_alpha<<24)  ; ((Color & $FFFFFF) << 32) $FCEADA $00A5FF $CBC0FF
-                    
-                    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                    Box(\x,\y,\width,\height, $FFC288&back_color|item_alpha<<24) ; $FFC288 $0045FF
-                    
-                    ; Debug Point(\X+5, \y+5)
+                    RoundBox(SelectionPos,\Y,SelectionLen,\Height,\Radius,\Radius,\Color\Back[\Color\State])
                   EndIf
-                  
-                  If \Item=\focus
-                    If \lostfocus=\focus 
-                      If *This\Flag\AlwaysSelection
-                        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                        Box(\x+1,\y+1,\width-2,\height-2, $E2E2E2&back_color|item_alpha<<24)
-                        
-                        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                        Box(\x,\y,\width,\height, $C8C8C8&back_color|item_alpha<<24)
-                      EndIf
-                    Else
-                      item_alpha = 200
-                      
-                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                      ;Box(\x+1,\y+1,\width-2,\height-2, $ECAF7C&back_color|item_alpha<<24)
-                      Box(\x+1,\y+1,\width-2,\height-2, $E89C3D&back_color|item_alpha<<24)
-                      
-                      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                      Box(\x,\y,\width,\height, $DC9338&back_color|item_alpha<<24)
-                      ; Debug Point(\X+5, \y+5)
-                    EndIf
-                  EndIf
-                Else
-                  
-                  If \Item=\focus
-                    If \lostfocus=\focus 
-                      If *This\Flag\AlwaysSelection
-                        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                        Box(\text\x+1,\y+1,\text\width-2,\height-2, $E8E8E8&back_color|item_alpha<<24)
-                        
-                        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                        Box(\text\x,\y,\text\width,\height, $C4C4C4&back_color|item_alpha<<24)
-                      EndIf
-                    Else
-                      item_alpha = 200
-                      
-                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                      Box(\text\x+1,\y+1,\text\width-2,\height-2, $E89C3D&back_color|item_alpha<<24)
-                      
-                      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                      Box(\text\x,\y,\text\width,\height, $DC9338&back_color|item_alpha<<24)
-                    EndIf
-                  EndIf
-                  
+                  ;Debug Point(\x+2,\y+2)
+                  DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                  Box(SelectionPos,\y,SelectionLen,\height, \Color\Frame[\Color\State])
                 EndIf
               EndIf  
               
@@ -405,32 +383,8 @@ Module Tree
               If Drawing
                 ; Draw boxes
                 If Not *This\Flag\NoButtons And \childrens
-                  
-                  If box_type=-1
-                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
-                  Else
-                    DrawingMode(#PB_2DDrawing_Gradient)
-                    BackColor($FFFFFF) : FrontColor($EEEEEE)
-                    LinearGradient(\box\x, \box\y, \box\x, (\box\y+\box\height))
-                    RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type)
-                    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
-                    
-                    ;                    DrawingMode(#PB_2DDrawing_CustomFilter) 
-                    ;                    CustomFilterCallback(@DrawFilterCallback_1())
-                    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                    RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type,box_color&$FFFFFF|alpha<<24)
-                    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                    RoundBox(\box\x-1,\box\y-1,\box\width+2,\box\height+2,box_type,box_type,$FEFEFE&$FFFFFF|alpha<<24)
-                    
-                    ; ;                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                    ; ;                     RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type,$EEEEEE&$FFFFFF|alpha<<24)
-                    ;                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                    ;                     RoundBox(\box\x-1,\box\y-1,\box\width+2,\box\height+2,box_type,box_type,text_color&$FFFFFF|alpha<<24)
-                    
-                    Line(\box\x+2,\box\y+\box\height/2 ,\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
-                    If \collapsed : Line(\box\x+\box\width/2,\box\y+2,1,\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
-                  EndIf
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                  Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                 EndIf
                 
                 ; Draw checkbox
@@ -560,7 +514,7 @@ Module Tree
         ;         EndIf
       EndIf
       
-      \Items()\from =- 1
+      \Items()\Line =- 1
       \Items()\focus =- 1
       \Items()\lostfocus =- 1
       \Items()\time = ElapsedMilliseconds()
@@ -591,11 +545,40 @@ Module Tree
         \Items()\Image\handle[1] = Image
       EndIf
       
-      ;       Re(*This)
+      ; Устанавливаем 
+      ; цвета по умолчанию
       
-      If *This\Scroll\Height=<*This\height
-        ;  Draw(*This)
-      EndIf
+;       If Item%2
+;         \Items()\Color[0] = Colors
+;       Else
+      \Items()\Color[0]\Front[0] = $80000000
+      \Items()\Color[0]\Fore[0] = 0 
+      \Items()\Color[0]\Back[0] = $80E2E2E2
+      \Items()\Color[0]\Frame[0] = $80C8C8C8
+      
+      ; Цвета по умолчанию
+      \Items()\Color[0]\Front[1] = $80000000
+      \Items()\Color[0]\Fore[1] = 0 
+      \Items()\Color[0]\Back[1] = $80E2E2E2
+      \Items()\Color[0]\Frame[1] = $80C8C8C8
+      
+      ; Цвета если мышь на виджете
+      \Items()\Color[0]\Front[2] = $80000000
+      \Items()\Color[0]\Fore[2] = 0
+      \Items()\Color[0]\Back[2] = $80FCEADA
+      \Items()\Color[0]\Frame[2] = $80FFC288
+      
+      ; Цвета если нажали на виджет
+      \Items()\Color[0]\Front[3] = $80FFFFFF
+      \Items()\Color[0]\Fore[3] = 0
+      \Items()\Color[0]\Back[3] = $C8E89C3D ; $80E89C3D
+      \Items()\Color[0]\Frame[3] = $C8DC9338 ; $80DC9338
+      
+;     EndIf
+    
+;       If *This\Scroll\Height=<*This\height
+;         ;  Draw(*This)
+;       EndIf
     EndWith
     
     ProcedureReturn Item
@@ -836,8 +819,8 @@ Module Tree
       With *This
         PushListPosition(\Items()) 
         ForEach \Items()
-          If \Items()\from = \Items()\Item 
-            \Items()\from =- 1
+          If \Items()\Line = \Items()\Item 
+            \Items()\Line =- 1
             Result = @\Items()
             Break
           EndIf
@@ -872,11 +855,11 @@ Module Tree
               EndIf
               
               \Items()\focus = \Items()\Item
-              \Items()\from = \Items()\Item
+              \Items()\Line = \Items()\Item
               
               If GetActiveGadget()<>Gadget
                 \Items()\lostfocus = \Items()\focus
-                \Items()\from =- 1
+                \Items()\Line =- 1
               EndIf
               
               Result = @\Items()
@@ -930,7 +913,7 @@ Module Tree
               
               If GetActiveGadget()<>Gadget
                 \Items()\lostfocus = \Items()\focus
-                \Items()\from =- 1
+                \Items()\Line =- 1
               EndIf
               
               ; GetText()
@@ -1163,16 +1146,16 @@ Module Tree
                 MoveX = MouseX : MoveY = MouseY
                 
               Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter
-                Protected from = \from
+                Protected from = \Line
                 Repaint = item_from(*This, MouseX, MouseY)
                 
-                If from <> \from
+                If from <> \Line
                   If \text\x+\text\width>\width
                     GadgetToolTip(canvas, \text\string)
                   Else
                     GadgetToolTip(canvas, "")
                   EndIf
-                  from = \from
+                  from = \Line
                 EndIf
                 
                 If Buttons And \Drag=0 And (Abs((MouseX-MoveX)+(MouseY-MoveY)) >= 6) : \Drag=1
@@ -1667,5 +1650,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------04-0-------------------------------
+; Folding = -------f---bv---------------------------
 ; EnableXP
