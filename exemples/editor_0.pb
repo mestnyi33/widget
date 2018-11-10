@@ -7,17 +7,17 @@ XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
 XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
-XIncludeFile "module_tree.pbi"
+XIncludeFile "module_editor.pbi"
 
-LN=30000; количесвто итемов 
+LN=1500; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
-  Tree::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection)
+  editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection)
   Debug "---------------Start"
   Define time = ElapsedMilliseconds()
   
   For a = 0 To LN
-    Tree::AddItem (1, -1, "Item "+Str(a), 0,1)
+    editor::AddItem (1, -1, "Item "+Str(a), 0,1)
     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
     EndIf
     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
@@ -25,9 +25,11 @@ If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
     EndIf
   Next
   
+  PostEvent(#PB_Event_Gadget, 0, 1, #PB_EventType_Resize)
+        
   Debug "---------------END "+Str(ElapsedMilliseconds()-time)
   
-  TreeGadget(0, 10, 10, 250, 680)
+  EditorGadget(0, 10, 10, 250, 680)
   Debug "---------------Start"
   Define time = ElapsedMilliseconds()
   

@@ -1,6 +1,5 @@
 ﻿DeclareModule Draw
   EnableExplicit
-  Global DrawingMode = #PB_2DDrawing_Default
   
   Declare.i _Point(X,Y)
   Declare.i _DrawingFont(FontID.i)
@@ -59,6 +58,7 @@ EndDeclareModule
 
 Module Draw
   Global Clip
+  Global DrawingMode = #PB_2DDrawing_Default
   
   Procedure AddPathRoundBox(x.d,y.d,Width.d,Height.d,radius.d, RoundY.d, flags=#PB_Path_Default)
     MovePathCursor(x+radius,y,flags)

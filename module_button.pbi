@@ -1,4 +1,8 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_draw.pbi"
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"

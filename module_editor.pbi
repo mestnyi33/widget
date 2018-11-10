@@ -5,7 +5,6 @@ CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
   ;  IncludePath "/Users/a/Documents/GitHub/Widget/"
 CompilerEndIf
-; XIncludeFile "module_scroll.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_draw.pbi"
@@ -923,14 +922,191 @@ Module Editor
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i AddItem(Gadget, Item, Text.s,Image.i=-1,Flag.i=0)
-    Protected String.s, i.i, *This.Widget_S = GetGadgetData(Gadget)
-    
-    If Text::AddLine(*This, Item, Text.s) 
-      ; ReDraw(*This, *This\Canvas\Gadget)
-      ProcedureReturn 1
+  Procedure AddLine(Gadget.i,Item.i,Text.s,Image.i=-1,Flag.i=0)
+    Static adress.i, Len
+    Protected *This.Widget_S, Childrens.i, hide.b, *Item, sublevel.i, Image_Y, Image_X, Text_X, Text_Y, Height, Width, Indent = 4
+    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+    ;Item=0
+    If Not *This
+      ProcedureReturn -1
     EndIf
     
+    Macro _set_content_Y_(_this_)
+      If _this_\Image\handle
+        If _this_\Style\InLine
+          Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count))/2)
+          Image_Y=((Height-_this_\Image\Height)/2)
+        Else
+          If _this_\Text\Align\Bottom
+            Text_Y=((Height-_this_\Image\Height-(_this_\Text\Height*_this_\Text\Count))/2)-Indent/2
+            Image_Y=(Height-_this_\Image\Height+(_this_\Text\Height*_this_\Text\Count))/2+Indent/2
+          Else
+            Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count)+_this_\Image\Height)/2)+Indent/2
+            Image_Y=(Height-(_this_\Text\Height*_this_\Text\Count)-_this_\Image\Height)/2-Indent/2
+          EndIf
+        EndIf
+      Else
+        If _this_\Text\Align\Bottom
+          Text_Y=(Height-(_this_\Text\Height*_this_\Text\Count)-Text_Y-Image_Y) 
+        ElseIf _this_\Text\Align\Vertical
+          Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count))/2)
+        EndIf
+      EndIf
+    EndMacro
+    
+    Macro _set_content_X_(_this_)
+      If _this_\Image\handle
+        If _this_\Style\InLine
+          If _this_\Text\Align\Right
+            Text_X=((Width-_this_\Image\Width-_this_\Items()\Text\Width)/2)-Indent/2
+            Image_X=(Width-_this_\Image\Width+_this_\Items()\Text\Width)/2+Indent
+          Else
+            Text_X=((Width-_this_\Items()\Text\Width+_this_\Image\Width)/2)+Indent
+            Image_X=(Width-_this_\Items()\Text\Width-_this_\Image\Width)/2-Indent
+          EndIf
+        Else
+          Image_X=(Width-_this_\Image\Width)/2 
+          Text_X=(Width-_this_\Items()\Text\Width)/2 
+        EndIf
+      Else
+        If _this_\Text\Align\Right
+          Text_X=(Width-_this_\Items()\Text\Width) 
+        ElseIf _this_\Text\Align\Horisontal
+          Text_X=(Width-_this_\Items()\Text\Width-Bool(_this_\Items()\Text\Width % 2))/2 
+        EndIf
+      EndIf
+    EndMacro
+    
+    Macro _line_resize_(_this_)
+      _this_\Items()\x = _this_\X[1]+_this_\Text\X
+      _this_\Items()\Width = Width
+      _this_\Items()\Text\x = _this_\Items()\x+Text_X
+      
+      _this_\Image\X = _this_\X[1]+_this_\Text\X+Image_X
+      _this_\Image\Y = _this_\Y[1]+_this_\Text\Y+Image_Y
+    EndMacro
+    
+    With *This
+      Width = \Width[1]-\Text\X*2  
+      Height = \Height[1]-\Text\y*2 
+      
+      ;{ Генерируем идентификатор
+      If Item =- 1 Or Item > ListSize(\Items()) - 1
+        LastElement(\Items())
+        AddElement(\Items()) 
+        Item = ListIndex(\Items())
+        *Item = @\Items()
+      Else
+        SelectElement(\Items(), Item)
+        If \Items()\sublevel>sublevel
+          sublevel=\Items()\sublevel 
+        EndIf
+        *Item = @\Items()
+        InsertElement(\Items())
+        
+        PushListPosition(\Items())
+        While NextElement(\Items())
+          \Items()\Item = ListIndex(\Items())
+        Wend
+        PopListPosition(\Items())
+      EndIf
+      ;}
+      AddElement(\Items())
+      Protected String.s = Text;StringField(\Text\String.s[2], IT, #LF$)
+      
+      ; Set line default colors             
+      \Items()\Color = \Color
+      \Items()\Color\State = 1
+      \Items()\Color\Fore[\Items()\Color\State] = 0
+      
+      \Items()\Radius = \Radius
+      
+; ;       If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
+; ;         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
+; ;         If \Type = #PB_GadgetType_Button
+; ;           \Items()\Text\Width = TextWidth(RTrim(String))
+; ;         Else
+; ;           \Items()\Text\Width = TextWidth(String)
+; ;         EndIf
+; ;         StopDrawing()
+; ;       EndIf
+      \Items()\Text\Change = 1
+      
+      ; Update line pos in the text
+      \Items()\Caret = Len
+      \Items()\Text\Len = Len(String.s)
+      Len + \Items()\Text\Len + 1 ; Len(#LF$)
+      
+      _set_content_X_(*This)
+      _line_resize_(*This)
+      
+      \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
+      If \Text\Count = 1
+        \Items()\Height = \Text\Height
+      Else
+        \Items()\Height = \Text\Height - Bool(\Flag\GridLines)
+      EndIf
+      \Items()\Item = ListIndex(\Items())
+      
+      \Items()\Text\y = \Items()\y
+      \Items()\Text\Height = \Text\Height
+      \Items()\Text\String.s = String.s
+      
+      If \Line[1] = ListIndex(\Items())
+        ;Debug " string "+String.s
+        \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret) : \Items()\Text[1]\Change = #True
+        \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
+      EndIf
+      
+      ; Is visible lines
+      \Items()\Hide = Bool( Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
+      
+      ; Scroll width length
+      If \Scroll\Width<\Items()\Text\Width
+        \Scroll\Width=\Items()\Text\Width
+      EndIf
+      
+      ; Scroll hight length
+      \Scroll\Height+\Text\Height
+      
+      \Text\String.s = String.s +#LF$+ \Text\String.s
+    EndWith
+    
+    ProcedureReturn Item
+  EndProcedure
+  
+  Procedure.i AddItem(Gadget, Item, Text.s,Image.i=-1,Flag.i=0)
+    Protected *This.Widget_S = GetGadgetData(Gadget)
+    Protected Result.i, String.s, i.i
+    Static Len
+    
+    With *This
+      If (Item > \Text\Count Or Item < 0)
+        Item = \Text\Count
+      EndIf
+      
+      If Item = \Text\Count
+        
+        If Item     
+          String.s = StringField(\Text\String.s, item, #LF$)+#LF$ : i = Len(String.s) : Len + i
+          \Text\String.s = InsertString(\Text\String.s, #LF$ + Text.s, len )
+          \Text\Len + i
+        Else
+          String.s = Text.s +#LF$
+          \Text\String.s = String.s + \Text\String.s
+          \Text\Len + Len(String.s)
+        EndIf
+        
+        \Text\Count + 1
+        
+        ; AddLine(Gadget,Item,Text.s,Image,Flag)
+      Else 
+        Text::AddLine(*This, Item, Text.s) 
+      EndIf
+      
+      ;         ; \Text\Change = 1
+      ;         Result = 1
+    EndWith
     
     ProcedureReturn Item
   EndProcedure
@@ -1760,5 +1936,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------------------------------------
+; Folding = --------------------0----------------------
 ; EnableXP

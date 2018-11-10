@@ -816,7 +816,7 @@ Module Text
   ;-
   Procedure.i Caret(*This.Widget_S, Line.i = 0)
     Static LastLine.i =- 1,  LastItem.i =- 1
-    Protected Item.i, SelectionLen.i=7
+    Protected Item.i, SelectionLen.i
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
     
@@ -850,6 +850,8 @@ Module Text
                 Position = i
               EndIf
             Next
+            
+            SelectionLen=Bool(Not \Flag\FullSelection)*7
             
             ; Длина переноса строки
             PushListPosition(\Items())
@@ -1010,7 +1012,7 @@ Module Text
       If \Text\String.s <> String.s
         \Text\String.s = String.s
         \Text\Len = Len(String.s)
-        ; \Text\Change = 1
+        \Text\Change = 1
         Result = 1
       EndIf
     EndWith
@@ -1045,6 +1047,7 @@ Module Text
             Text.s = ReplaceString(Text.s, #CR$, #LF$)
             Text.s + #LF$
             \Text\String.s = Text.s
+           ; \Text\Count = CountString(\Text\String.s, #LF$)
           Else
             \Text\String.s = RemoveString(\Text\String.s, #LF$) + #LF$
           EndIf
@@ -1513,5 +1516,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------------------------------
+; Folding = ---f9-----------------------------
 ; EnableXP

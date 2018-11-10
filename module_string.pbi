@@ -8,6 +8,7 @@ CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_draw.pbi"
+  
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
