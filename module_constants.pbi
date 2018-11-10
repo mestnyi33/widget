@@ -25,9 +25,9 @@ DeclareModule Constants
   EnumerationBinary WidgetFlags
 ;     #PB_Text_Center
 ;     #PB_Text_Right
-    #PB_Text_Bottom = 4
+    #PB_Text_Left = 4
+    #PB_Text_Bottom
     #PB_Text_Middle 
-    #PB_Text_Left
     #PB_Text_Top
     
     #PB_Text_Numeric
@@ -52,11 +52,8 @@ DeclareModule Constants
     #PB_Flag_Toggle
     
     #PB_Flag_GridLines
-    
     #PB_Flag_Invisible
   EndEnumeration
-  
-  
   
   #PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
   #PB_Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
@@ -65,14 +62,12 @@ DeclareModule Constants
   #PB_Flag_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
     
   #PB_Flag_AlwaysSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
-  
+  #PB_Flag_FullSelection = 512 ; #PB_ListIcon_FullRowSelect
   
   #PB_Attribute_Selected = #PB_Tree_Selected                       ; 1
   #PB_Attribute_Expanded = #PB_Tree_Expanded                       ; 2
   #PB_Attribute_Checked = #PB_Tree_Checked                         ; 4
   #PB_Attribute_Collapsed = #PB_Tree_Collapsed                     ; 8
-  
-  #PB_Flag_FullSelection = 512 ; #PB_ListIcon_FullRowSelect
   
   #PB_Attribute_SmallIcon = #PB_ListIcon_LargeIcon                 ; 0 0
   #PB_Attribute_LargeIcon = #PB_ListIcon_SmallIcon                 ; 1 1

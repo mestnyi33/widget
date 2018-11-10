@@ -208,67 +208,86 @@
   ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;
   Global Colors.Color_S
   With Colors                          
-    \State = 1
+    \State = 0
     
-    ;- Серые цвета 
+    ;     ;- Серые цвета 
+    ;     ; Цвета по умолчанию
+    ;     \Front[0] = $FF000000
+    ;     \Fore[0] = $FFFCFCFC ; $FFF6F6F6 
+    ;     \Back[0] = $FFE2E2E2 ; $FFE8E8E8 ; 
+    ;     \Line[0] = $FFA3A3A3
+    ;     \Frame[0] = $FFA5A5A5 ; $FFBABABA
+    ;     
+    ;     ; Цвета если мышь на виджете
+    ;     \Front[1] = $FF000000
+    ;     \Fore[1] = $FFF5F5F5 ; $FFF5F5F5 ; $FFEAEAEA
+    ;     \Back[1] = $FFCECECE ; $FFEAEAEA ; 
+    ;     \Line[1] = $FF5B5B5B
+    ;     \Frame[1] = $FF8F8F8F
+    ;     
+    ;     ; Цвета если нажали на виджет
+    ;     \Front[2] = $FFFFFFFF
+    ;     \Fore[2] = $FFE2E2E2
+    ;     \Back[2] = $FFB4B4B4
+    ;     \Line[2] = $FFFFFFFF
+    ;     \Frame[2] = $FF6F6F6F
+    
+    ;             ;- Зеленые цвета
+    ;             ; Цвета по умолчанию
+    ;             \Front[0] = $FF000000
+    ;             \Fore[0] = $FFFFFFFF
+    ;             \Back[0] = $FFDAFCE1  
+    ;             \Frame[0] = $FF6AFF70 
+    ;             
+    ;             ; Цвета если мышь на виджете
+    ;             \Front[1] = $FF000000
+    ;             \Fore[1] = $FFE7FFEC
+    ;             \Back[1] = $FFBCFFC5
+    ;             \Frame[1] = $FF46E064 ; $FF51AB50
+    ;             
+    ;             ; Цвета если нажали на виджет
+    ;             \Front[2] = $FFFEFEFE
+    ;             \Fore[2] = $FFC3FDB7
+    ;             \Back[2] = $FF00B002
+    ;             \Frame[2] = $FF23BE03
+    
+    ;- Синие цвета
     ; Цвета по умолчанию
-    \Front[1] = $FF000000
-    \Fore[1] = $FFFCFCFC ; $FFF6F6F6 
-    \Back[1] = $FFE2E2E2 ; $FFE8E8E8 ; 
-    \Line[1] = $FFA3A3A3
-    \Frame[1] = $FFA5A5A5 ; $FFBABABA
+    \Front[0] = $80000000
+    \Fore[0] = $FFF8F8F8 
+    \Back[0] = $80E2E2E2
+    \Frame[0] = $80C8C8C8
     
     ; Цвета если мышь на виджете
-    \Front[2] = $FF000000
-    \Fore[2] = $FFF5F5F5 ; $FFF5F5F5 ; $FFEAEAEA
-    \Back[2] = $FFCECECE ; $FFEAEAEA ; 
-    \Line[2] = $FF5B5B5B
-    \Frame[2] = $FF8F8F8F
+    \Front[1] = $80000000
+    \Fore[1] = $FFFAF8F8
+    \Back[1] = $80FCEADA
+    \Frame[1] = $80FFC288
     
     ; Цвета если нажали на виджет
-    \Front[3] = $FFFFFFFF
-    \Fore[3] = $FFE2E2E2
-    \Back[3] = $FFB4B4B4
-    \Line[3] = $FFFFFFFF
-    \Frame[3] = $FF6F6F6F
+    \Front[2] = $80FFFFFF
+    \Fore[2] = $C8E9BA81;$C8FFFCFA
+    \Back[2] = $C8E89C3D ; $80E89C3D
+    \Frame[2] = $C8DC9338; $80DC9338
     
-    ;         ;- Зеленые цвета
+    ;         ;- Синие цвета 2
     ;         ; Цвета по умолчанию
-    ;         \Front[1] = $FF000000
-    ;         \Fore[1] = $FFE4FEDF 
-    ;         \Back[1] = $FFD3FECA  
-    ;         \Frame[1] = $FFA0FC8C 
+    ;         \Front[0] = $FF000000
+    ;         \Fore[0] = $FFF8F8F8 ; $FFF0F0F0 
+    ;         \Back[0] = $FFE5E5E5
+    ;         \Frame[0] = $FFACACAC 
     ;         
     ;         ; Цвета если мышь на виджете
-    ;         \Front[2] = $FF000000
-    ;         \Fore[2] = $FFD8FED0
-    ;         \Back[2] = $FFA0FC8C
-    ;         \Frame[2] = $FF2DEE04
-    ;         
-    ;         ; Цвета если нажали на виджет
-    ;         \Front[3] = $FFFFFFFF
-    ;         \Fore[3] = $FFC3FDB7
-    ;         \Back[3] = $FF2DEE04
-    ;         \Frame[3] = $FF23BE03
-    
-    ;         ;- Синие цвета
-    ;         ; Цвета по умолчанию
     ;         \Front[1] = $FF000000
-    ;         \Fore[1] = $FFF8F8F8 ; $FFF0F0F0 
-    ;         \Back[1] = $FFE5E5E5
-    ;         \Frame[1] = $FFACACAC 
+    ;         \Fore[1] = $FFFAF8F8 ; $FFFCF4EA
+    ;         \Back[1] = $FFFAE8DB ; $FFFCECDC
+    ;         \Frame[1] = $FFFC9F00
     ;         
-    ;         ; Цвета если мышь на виджете
-    ;         \Front[2] = $FF000000
-    ;         \Fore[2] = $FFFAF8F8 ; $FFFCF4EA
-    ;         \Back[2] = $FFFAE8DB ; $FFFCECDC
-    ;         \Frame[2] = $FFFC9F00
-    ;         
-    ;         ; Цвета если нажали на виджет
-    ;         \Front[3] = $FFFFFFFF
-    ;         \Fore[3] = $FFFDF7EF
-    ;         \Back[3] = $FFFBD9B7
-    ;         \Frame[3] = $FFE59B55
+;             ; Цвета если нажали на виджет
+;             \Front[2] = $FF000000;$FFFFFFFF
+;             \Fore[2] = $FFFDF7EF
+;             \Back[2] = $FFFBD9B7
+;             \Frame[2] = $FFE59B55
     
   EndWith
   
@@ -283,5 +302,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = BC9
+; Folding = ---
 ; EnableXP

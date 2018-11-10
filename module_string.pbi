@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_text.pbi"
-
+  
   CompilerIf #VectorDrawing
     UseModule Draw
   CompilerEndIf
@@ -253,7 +253,7 @@ Module String
           EndIf
           
           \Caret + 1
-          \Items()\Text\String.s = \Items()\Text[1]\String.s + Chr(\Canvas\Input) + \Items()\Text[3]\String.s
+          ; \Items()\Text\String.s = \Items()\Text[1]\String.s + Chr(\Canvas\Input) + \Items()\Text[3]\String.s ; сним не выравнивается строка при вводе слов
           \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Caret+\Caret)
           \Text\Len = Len(\Text\String.s) 
           \Caret[1] = \Caret 
@@ -416,7 +416,7 @@ Module String
                 \Canvas\Mouse\Delta\From = \Canvas\Mouse\From
                 \Canvas\Mouse\Delta\Buttons = \Canvas\Mouse\Buttons
               EndIf
-            
+              
             Case #PB_EventType_LeftButtonUp : \Drag = 0
               FreeStructure(\Canvas\Mouse\Delta) : \Canvas\Mouse\Delta = 0
               
@@ -424,7 +424,7 @@ Module String
               If \Drag = 0 And \Canvas\Mouse\Buttons And \Canvas\Mouse\Delta And 
                  (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1 : \Drag[1]=1
                 ; Debug "DragStart"
-               ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
+                ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
               EndIf
               
             Case #PB_EventType_MouseLeave
@@ -504,7 +504,7 @@ Module String
               \Text[1]\Width = 0
               \Text[2]\Width = 0
               \Text[3]\Width = 0
-             ; Repaint = #True
+              ; Repaint = #True
               PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_LostFocus)
               
             Case #PB_EventType_Focus 
@@ -518,7 +518,7 @@ Module String
               EndIf
               If *This\Text\Editable And *This\Drag[1] : *This\Drag[1] = 0
                 If \Caret[1] > 0 And Not Bool(\Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len)
-                 
+                  
                   *This\Text\String.s = RemoveString(*This\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, \Caret[1], 1)
                   
                   If \Caret[1] > *This\Caret 
@@ -560,7 +560,7 @@ Module String
                   
                   If *This\Caret[1] < Caret And Caret < *This\Caret[1] + \Text[2]\Len
                     SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
-                   \Caret[1] = *This\Caret[1] + 1
+                    \Caret[1] = *This\Caret[1] + 1
                   Else
                     Repaint =- 1
                   EndIf
@@ -580,8 +580,8 @@ Module String
             Case #PB_EventType_MouseMove
               If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
                 *This\Caret = Caret(*This)
-               ; Debug *This\Canvas\Mouse\Delta\X
-              
+                ; Debug *This\Canvas\Mouse\Delta\X
+                
                 If \Caret[1] ; *This\Cursor <> GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
                   If \Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len
                     SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
@@ -789,17 +789,21 @@ Module String
           
           ; set default colors
           \Color[0] = Colors
+          \Color[0]\Fore[0] = 0
           \Color[0]\Fore[1] = 0
           \Color[0]\Fore[2] = 0
+          
           If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFFFF 
-            \Color[0]\Back[2] = $FFFFFFFF
+            \Color[0]\Back[0] = $FFFFFFFF 
+            \Color[0]\Back[1] = $FFFFFFFF
           Else
-            \Color[0]\Back[1] = $FFFAFAFA  
-            \Color[0]\Back[2] = $FFFAFAFA
+            \Color[0]\Back[0] = $FFFAFAFA  
+            \Color[0]\Back[1] = $FFFAFAFA
           EndIf
-          \Color[0]\Frame[2] = $FFFFFFFF
-          ResetColor(*This)
+          
+          If Not \fSize[1]
+            \Color[0]\Frame[1] = $FFFFFFFF
+          EndIf
           
           SetText(*This, Text.s)
         EndIf
@@ -1034,15 +1038,15 @@ CompilerIf #PB_Compiler_IsMainFile
     *S_6 = Create(10, -1, 8, 160, 290, height, "Password", #PB_Text_Password)
     *S_7 = Create(10, -1, 8, 185, 290, height, "")
     *S_8 = Create(10, -1, 8,  210, 290, 90, Text);, #PB_Text_Top)
-                                                  ; *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
+                                                 ; *S_7 = Create(10, -1, 8,  200, 290, height, "aaaaaaa bbbbbbb ccccccc ddddddd eeeeeee fffffff ggggggg hhhhhhh");, #PB_Text_Numeric|#PB_Text_Center)
     
     SetText(*S_6, "GaT")
     Debug "password: "+GetText(*S_6)
     
-;     SetColor(*S_1, #PB_Gadget_BackColor, $FFF0F0F0)
-;     SetColor(*S_2, #PB_Gadget_BackColor, $FFF0F0F0)
-;     SetColor(*S_3, #PB_Gadget_BackColor, $FFF0F0F0)
-;     SetColor(*S_4, #PB_Gadget_BackColor, $FFF0F0F0)
+    ;     SetColor(*S_1, #PB_Gadget_BackColor, $FFF0F0F0)
+    ;     SetColor(*S_2, #PB_Gadget_BackColor, $FFF0F0F0)
+    ;     SetColor(*S_3, #PB_Gadget_BackColor, $FFF0F0F0)
+    ;     SetColor(*S_4, #PB_Gadget_BackColor, $FFF0F0F0)
     
     BindEvent(#PB_Event_Widget, @Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
@@ -1050,5 +1054,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = h--0B5+4HAAwHz--UdeYQOAEy
+; Folding = --------------------------
 ; EnableXP

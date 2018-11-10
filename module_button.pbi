@@ -4,7 +4,7 @@
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_text.pbi"
-
+  
   CompilerIf #VectorDrawing
     UseModule Draw
   CompilerEndIf
@@ -21,7 +21,7 @@ DeclareModule Button
   CompilerIf #VectorDrawing
     UseModule Draw
   CompilerEndIf
-
+  
   ;- - DECLAREs MACROs
   Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   
@@ -57,12 +57,7 @@ Module Button
         \Checked[1] = \Checked
         \Checked = Bool(Value)
         
-        \Color\State = 3
-        
-;         \Color\Fore = \Color\Fore[3]
-;         \Color\Back = \Color\Back[3]
-;         \Color\Frame = \Color\Frame[3]
-;         \Color\Line = \Color\Line[3]
+        \Color\State = 2
         
         Result = #True
       EndIf
@@ -229,14 +224,15 @@ Module Button
     ;       EndSelect
     ;     EndIf
     
-    If (*Last = *This) ;And ListSize(*This\items())
-      With *This       ;\items()
+    If (*Last = *This)
+      With *This
         Select EventType
           Case #PB_EventType_MouseEnter    
             \Buttons = \Canvas\Mouse\From
             If Not \Checked : Buttons = \Buttons : EndIf
             
-          Case #PB_EventType_LeftButtonDown : Drag = 1 : LastX = \Canvas\Mouse\X : LastY = \Canvas\Mouse\Y
+          Case #PB_EventType_LeftButtonDown : Drag = 1 
+            LastX = \Canvas\Mouse\X : LastY = \Canvas\Mouse\Y
             If \Buttons
               Buttons = \Buttons
               If \Toggle 
@@ -247,16 +243,14 @@ Module Button
             
           Case #PB_EventType_LeftButtonUp : Drag = 0
             If \Toggle 
-              If Not \Checked ; And Not CanvasModifiers
+              If Not \Checked
                 Buttons = \Buttons
               EndIf
             Else
               Buttons = \Buttons
             EndIf
-            ;Debug "LeftButtonUp"
             
-          Case #PB_EventType_LeftClick ; Bug in mac os afte move mouse dont post event click
-                                       ;Debug "LeftClick"
+          Case #PB_EventType_LeftClick 
             PostEvent(#PB_Event_Widget, \Canvas\Window, Widget, #PB_EventType_LeftClick)
             
           Case #PB_EventType_MouseLeave
@@ -271,23 +265,15 @@ Module Button
         
         Select EventType
           Case #PB_EventType_MouseEnter, #PB_EventType_LeftButtonUp, #PB_EventType_LeftButtonDown
-            If Buttons
-              Buttons = 0
-              \Color\State = 2+Bool(EventType=#PB_EventType_LeftButtonDown)
-;               \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-;               \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-;               \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-;               \Color[Buttons]\Line = \Color[Buttons]\Line[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+            If Buttons : Buttons = 0
+              \Color\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
               Repaint = #True
             EndIf
             
           Case #PB_EventType_MouseLeave
-            If Not \Checked
-              \Color\State = 1
-              ;ResetColor(*This)
-            EndIf
-            
+            If Not \Checked : \Color\State = 0 : EndIf
             Repaint = #True
+            
         EndSelect 
         
         Select EventType
@@ -407,8 +393,8 @@ Module Button
           
           ; Устанавливаем 
           ; цвета по умолчанию
-          \Color[0] = Colors
-          ;ResetColor(*This)
+          \Color = Colors
+          ;\Color\Front[3] = \Color\Front[1]
           
           SetText(*This, Text.s)
         EndIf
@@ -599,5 +585,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --v------------
+; Folding = ---------------
 ; EnableXP

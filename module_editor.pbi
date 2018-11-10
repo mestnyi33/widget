@@ -127,19 +127,19 @@ Module Editor
               If (\Items()\Text\String.s = "" And Item = \Line And Position = len) Or
                  \Line[1] > \Line Or ; Если выделяем снизу вверх
                  (\Line[1] = \Line And Item = \Line And Position = len) Or ; Если позиция курсора неже половини высоты линии
-                 (\Line[1] < \Line And ; Если выделяем сверху вниз
-                  PreviousElement(*This\Items())) ; то выбираем предыдущую линию
+                 (\Line[1] < \Line And                                     ; Если выделяем сверху вниз
+                  PreviousElement(*This\Items()))                          ; то выбираем предыдущую линию
                 
-;                 If \Items()\Text\String.s = ""
-;                   \Items()\Text[2]\Len = 1
-;                   \Items()\Text[2]\X = \Items()\Text\X+\Items()\Text\Width
-;                   Debug \Items()\Text[2]\Width[2] 
-;                   \Items()\Text[2]\Width[2] = SelectionLen
-;               ;\Items()\Text[2]\Width[2] = SelectionLen
-;             EndIf
-;             
+                ;                 If \Items()\Text\String.s = ""
+                ;                   \Items()\Text[2]\Len = 1
+                ;                   \Items()\Text[2]\X = \Items()\Text\X+\Items()\Text\Width
+                ;                   Debug \Items()\Text[2]\Width[2] 
+                ;                   \Items()\Text[2]\Width[2] = SelectionLen
+                ;               ;\Items()\Text[2]\Width[2] = SelectionLen
+                ;             EndIf
+                ;             
                 If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                 \Items()\Text[2]\X = \Items()\Text\X+\Items()\Text\Width
+                  \Items()\Text[2]\X = \Items()\Text\X+\Items()\Text\Width
                 EndIf 
                 
                 If Not SelectionLen
@@ -1082,14 +1082,14 @@ Module Editor
                 \Canvas\Mouse\Delta\From = \Canvas\Mouse\From
                 \Canvas\Mouse\Delta\Buttons = \Canvas\Mouse\Buttons
               EndIf
-            
+              
             Case #PB_EventType_LeftButtonUp : \Drag = 0
               FreeStructure(\Canvas\Mouse\Delta) : \Canvas\Mouse\Delta = 0
               
             Case #PB_EventType_MouseMove
               If \Drag = 0 And \Canvas\Mouse\Buttons And \Canvas\Mouse\Delta And 
                  (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1
-               ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
+                ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
               EndIf
               
             Case #PB_EventType_MouseLeave
@@ -1127,7 +1127,7 @@ Module Editor
               
             Case #PB_EventType_MouseMove ; bug mac os
               If \Canvas\Mouse\Buttons And #PB_Compiler_OS = #PB_OS_MacOS ; And \Cursor <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-               ; Debug 555
+                                                                          ; Debug 555
                 SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
               EndIf
               
@@ -1525,14 +1525,16 @@ Module Editor
           \Text\Change = #True
           \Text\Len = Len(\Text\String.s)
           
-          \Color[0] = Colors
-          \Color[0]\Fore[1] = 0
+          \Color = Colors
+          \Color\Fore[0] = 0
+          ;\Color\Back[1] = \Color\Back[0]
+          
           If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFFFF 
+            \Color[0]\Back[0] = $FFFFFFFF 
           Else
-            \Color[0]\Back[1] = $FFF0F0F0  
+            \Color[0]\Back[0] = $FFF0F0F0  
           EndIf
-          ResetColor(*This)
+          
         EndIf
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
@@ -1648,7 +1650,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s) 
     For a = 0 To 2
-       AddGadgetItem(0, a, "Line "+Str(a))
+      AddGadgetItem(0, a, "Line "+Str(a))
     Next
     AddGadgetItem(0, a, "")
     For a = 4 To 6
@@ -1660,7 +1662,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g=16
     Editor::Gadget(g, 8, 133+5+8, 306, 133, #PB_Text_WordWrap|#PB_Flag_GridLines) : Editor::SetText(g, Text.s) 
     For a = 0 To 2
-       Editor::AddItem(g, a, "Line "+Str(a))
+      Editor::AddItem(g, a, "Line "+Str(a))
     Next
     Editor::AddItem(g, a, "")
     For a = 4 To 6
@@ -1758,5 +1760,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----ff--f--+-f------f-4---4-P--v--------
+; Folding = -----------------------------------------
 ; EnableXP

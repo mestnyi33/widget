@@ -63,7 +63,7 @@ Module Tree
             *This\focus = 0
             
             ; then lost focus widget
-            \Items()\Color\State = 1
+            \Items()\Color\State = 0
             
           EndIf
           adress = @\Items()
@@ -144,9 +144,9 @@ Module Tree
               *This\Line = \Items()\Line
               *This\text = \Items()\text 
               
-                  
+              
               If \Items()\lostfocus <> \Items()\Item
-                \Items()\Color\State = 2+Bool(\Items()\Item=\Items()\focus)
+                \Items()\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
               EndIf
               
             EndIf
@@ -548,37 +548,32 @@ Module Tree
       ; Устанавливаем 
       ; цвета по умолчанию
       
-;       If Item%2
-;         \Items()\Color[0] = Colors
-;       Else
-      \Items()\Color[0]\Front[0] = $80000000
+      ;       If Item%2
+      \Items()\Color = Colors
+      ;       Else
+      ;       ; Цвета по умолчанию
+      ;       \Items()\Color[0]\Front[0] = $80000000
       \Items()\Color[0]\Fore[0] = 0 
-      \Items()\Color[0]\Back[0] = $80E2E2E2
-      \Items()\Color[0]\Frame[0] = $80C8C8C8
-      
-      ; Цвета по умолчанию
-      \Items()\Color[0]\Front[1] = $80000000
-      \Items()\Color[0]\Fore[1] = 0 
-      \Items()\Color[0]\Back[1] = $80E2E2E2
-      \Items()\Color[0]\Frame[1] = $80C8C8C8
-      
-      ; Цвета если мышь на виджете
-      \Items()\Color[0]\Front[2] = $80000000
+      ;       \Items()\Color[0]\Back[0] = $80E2E2E2
+      ;       \Items()\Color[0]\Frame[0] = $80C8C8C8
+      ;       
+      ;       ; Цвета если мышь на виджете
+      ;       \Items()\Color[0]\Front[1] = $80000000
+      \Items()\Color[0]\Fore[1] = 0
+      ;       \Items()\Color[0]\Back[1] = $80FCEADA
+      ;       \Items()\Color[0]\Frame[1] = $80FFC288
+      ;       
+      ;       ; Цвета если нажали на виджет
+      ;       \Items()\Color[0]\Front[2] = $80FFFFFF
       \Items()\Color[0]\Fore[2] = 0
-      \Items()\Color[0]\Back[2] = $80FCEADA
-      \Items()\Color[0]\Frame[2] = $80FFC288
+      ;       \Items()\Color[0]\Back[2] = $C8E89C3D ; $80E89C3D
+      ;       \Items()\Color[0]\Frame[2] = $C8DC9338 ; $80DC9338
       
-      ; Цвета если нажали на виджет
-      \Items()\Color[0]\Front[3] = $80FFFFFF
-      \Items()\Color[0]\Fore[3] = 0
-      \Items()\Color[0]\Back[3] = $C8E89C3D ; $80E89C3D
-      \Items()\Color[0]\Frame[3] = $C8DC9338 ; $80DC9338
+      ;     EndIf
       
-;     EndIf
-    
-;       If *This\Scroll\Height=<*This\height
-;         ;  Draw(*This)
-;       EndIf
+      ;       If *This\Scroll\Height=<*This\height
+      ;         ;  Draw(*This)
+      ;       EndIf
     EndWith
     
     ProcedureReturn Item
@@ -1296,14 +1291,14 @@ Module Tree
           \Text\Len = Len(\Text\String.s)
           
           
-          \Color[0] = Colors
-          \Color[0]\Fore[1] = 0
+          \Color = Colors
+          \Color\Fore = 0
           If \Text\Editable
-            \Color[0]\Back[1] = $FFFFFFFF 
+            \Color\Back = $FFFFFFFF 
           Else
-            \Color[0]\Back[1] = $FFF0F0F0  
+            \Color\Back = $FFF0F0F0  
           EndIf
-          ResetColor(*This)
+          
         EndIf
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
@@ -1650,5 +1645,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------f---bv---------------------------
+; Folding = ----------------------------------------
 ; EnableXP

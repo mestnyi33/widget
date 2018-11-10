@@ -1,4 +1,12 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+  ;  IncludePath "/Users/a/Documents/GitHub/Widget/"
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
@@ -18,7 +26,7 @@ DeclareModule Scroll
   Declare.i Height(*Scroll.Scroll_S)
   Declare.b SetState(*Scroll.Scroll_S, ScrollPos.i)
   Declare.i SetAttribute(*Scroll.Scroll_S, Attribute.i, Value.i)
-  Declare.b SetColor(*Scroll.Scroll_S, ColorType.i, Color.i, Item.i=- 1, State.i=1)
+  Declare.i SetColor(*Scroll.Scroll_S, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.b Resize(*This.Scroll_S, iX.i,iY.i,iWidth.i,iHeight.i, *Scroll.Scroll_S=#Null)
   Declare.b Resizes(*v.Scroll_S, *h.Scroll_S, X.i,Y.i,Width.i,Height.i)
   Declare.b Updates(*v.Scroll_S, *h.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
@@ -156,13 +164,13 @@ Module Scroll
         
         ; Draw scroll bar background
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox(\X[0],\Y[0],\Width[0],\Height[0],\Radius,\Radius,\Color\Back&$FFFFFF|\Alpha<<24)
+        RoundBox(\X[0],\Y[0],\Width[0],\Height[0],\Radius,\Radius,\Color[0]\Back[\Color[0]\State]&$FFFFFF|\Alpha<<24)
         
         If \Vertical
           ; Draw left line
           If \Both
             ; "Это пустое пространство между двумя скроллами тоже закрашиваем если скролл бара кнопки не круглые"
-            If Not \Radius : Box(\X[2],\Y[2]+\height[2]+1,\Width[2],\Height[2],\Color[0]\Back&$FFFFFF|\Alpha<<24) : EndIf
+            If Not \Radius : Box(\X[2],\Y[2]+\height[2]+1,\Width[2],\Height[2],\Color[0]\Back[\Color[0]\State]&$FFFFFF|\Alpha<<24) : EndIf
             Line(\X[0],\Y[0],1,\height[0]-\Radius/2,$FFFFFFFF&$FFFFFF|\Alpha<<24)
           Else
             Line(\X[0],\Y[0],1,\Height[0],$FFFFFFFF&$FFFFFF|\Alpha<<24)
@@ -179,45 +187,45 @@ Module Scroll
         If \Thumb\Length
           ; Draw thumb
           DrawingMode(\DrawingMode|#PB_2DDrawing_AlphaBlend)
-          BoxGradient(\Vertical,\X[3],\Y[3],\Width[3],\Height[3],\Color[3]\Fore,\Color[3]\Back, \Radius, \Alpha)
+          BoxGradient(\Vertical,\X[3],\Y[3],\Width[3],\Height[3],\Color[3]\Fore[\Color[3]\State],\Color[3]\Back[\Color[3]\State], \Radius, \Alpha)
           
           ; Draw thumb frame
           If \DrawingMode = #PB_2DDrawing_Gradient
             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\X[3],\Y[3],\Width[3],\Height[3],\Radius,\Radius,\Color[3]\Frame&$FFFFFF|\Alpha<<24)
+            RoundBox(\X[3],\Y[3],\Width[3],\Height[3],\Radius,\Radius,\Color[3]\Frame[\Color[3]\State]&$FFFFFF|\Alpha<<24)
           EndIf
         EndIf
         
         If \Button\Length
           ; Draw buttons
           DrawingMode(\DrawingMode|#PB_2DDrawing_AlphaBlend)
-          BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore,\Color[1]\Back, \Radius, \Alpha)
-          BoxGradient(\Vertical,\X[2],\Y[2],\Width[2],\Height[2],\Color[2]\Fore,\Color[2]\Back, \Radius, \Alpha)
+          BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color[1]\Fore[\Color[1]\State],\Color[1]\Back[\Color[1]\State], \Radius, \Alpha)
+          BoxGradient(\Vertical,\X[2],\Y[2],\Width[2],\Height[2],\Color[2]\Fore[\Color[2]\State],\Color[2]\Back[\Color[2]\State], \Radius, \Alpha)
           
           ; Draw buttons frame
           If \DrawingMode = #PB_2DDrawing_Gradient
             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color[1]\Frame&$FFFFFF|\Alpha<<24)
-            RoundBox(\X[2],\Y[2],\Width[2],\Height[2],\Radius,\Radius,\Color[2]\Frame&$FFFFFF|\Alpha<<24)
+            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color[1]\Frame[\Color[1]\State]&$FFFFFF|\Alpha<<24)
+            RoundBox(\X[2],\Y[2],\Width[2],\Height[2],\Radius,\Radius,\Color[2]\Frame[\Color[2]\State]&$FFFFFF|\Alpha<<24)
           EndIf
           
           ; Draw arrows
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          Arrow(\X[1]+(\Width[1]-\Size[1])/2,\Y[1]+(\Height[1]-\Size[1])/2, \Size[1], Bool(\Vertical), \Color[1]\Front&$FFFFFF|\Alpha<<24,\Type[1])
-          Arrow(\X[2]+(\Width[2]-\Size[2])/2,\Y[2]+(\Height[2]-\Size[2])/2, \Size[2], Bool(\Vertical)+2, \Color[2]\Front&$FFFFFF|\Alpha<<24,\Type[2])
+          Arrow(\X[1]+(\Width[1]-\Size[1])/2,\Y[1]+(\Height[1]-\Size[1])/2, \Size[1], Bool(\Vertical), \Color[1]\Front[\Color[1]\State]&$FFFFFF|\Alpha<<24,\Type[1])
+          Arrow(\X[2]+(\Width[2]-\Size[2])/2,\Y[2]+(\Height[2]-\Size[2])/2, \Size[2], Bool(\Vertical)+2, \Color[2]\Front[\Color[2]\State]&$FFFFFF|\Alpha<<24,\Type[2])
         EndIf
         
         If \DrawingMode = #PB_2DDrawing_Gradient
           ; Draw thumb lines
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
           If \Vertical
-            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2-3,9,1,\Color[3]\Front&$FFFFFF|\Alpha<<24)
-            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2,9,1,\Color[3]\Front&$FFFFFF|\Alpha<<24)
-            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2+3,9,1,\Color[3]\Front&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2-3,9,1,\Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2,9,1,\Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+(\Width[3]-8)/2,\Y[3]+\Height[3]/2+3,9,1,\Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
           Else
-            Line(\X[3]+\Width[3]/2-3,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Front&$FFFFFF|\Alpha<<24)
-            Line(\X[3]+\Width[3]/2,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Front&$FFFFFF|\Alpha<<24)
-            Line(\X[3]+\Width[3]/2+3,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Front&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+\Width[3]/2-3,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+\Width[3]/2,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
+            Line(\X[3]+\Width[3]/2+3,\Y[3]+(\Height[3]-8)/2,1,9,\Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
           EndIf
         EndIf
       EndIf
@@ -370,39 +378,57 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b SetColor(*Scroll.Scroll_S, ColorType.i, Color.i, Item.i=- 1, State.i=1)
-    Protected Result
+  Procedure.i SetColor(*Scroll.Scroll_S, ColorType.i, Color.i, State.i=0, Item.i=0)
+    Protected Result, Count 
+    State =- 1
+    If Item < 0 
+      Item = 0 
+    ElseIf Item > 3 
+      Item = 3 
+    EndIf
     
     With *Scroll
-      Select ColorType
-        Case #PB_Gadget_LineColor
-          If Item=- 1
-            \Color\Line[State] = Color
-          Else
-            \Color[Item]\Line[State] = Color
-          EndIf
-          
-        Case #PB_Gadget_BackColor
-          If Item=- 1
-            \Color\Back[State] = Color
-          Else
-            \Color[Item]\Back[State] = Color
-          EndIf
-          
-        Case #PB_Gadget_FrontColor
-        Default ; Case #PB_Gadget_FrameColor
-          If Item=- 1
-            \Color\Frame[State] = Color
-          Else
-            \Color[Item]\Frame[State] = Color
-          EndIf
-          
-      EndSelect
+      If State =- 1
+        Count = 2
+        \Color\State = 0
+      Else
+        Count = State
+        \Color\State = State
+      EndIf
+      
+      For State = \Color\State To Count
+        
+        Select ColorType
+          Case #PB_Gadget_LineColor
+            If \Color[Item]\Line[State] <> Color 
+              \Color[Item]\Line[State] = Color
+              Result = #True
+            EndIf
+            
+          Case #PB_Gadget_BackColor
+            If \Color[Item]\Back[State] <> Color 
+              \Color[Item]\Back[State] = Color
+              Result = #True
+            EndIf
+            
+          Case #PB_Gadget_FrontColor
+            If \Color[Item]\Front[State] <> Color 
+              \Color[Item]\Front[State] = Color
+              Result = #True
+            EndIf
+            
+          Case #PB_Gadget_FrameColor
+            If \Color[Item]\Frame[State] <> Color 
+              \Color[Item]\Frame[State] = Color
+              Result = #True
+            EndIf
+            
+        EndSelect
+        
+      Next
     EndWith
     
-    ResetColor(*Scroll)
-    
-    ProcedureReturn Bool(Color)
+    ProcedureReturn Result
   EndProcedure
   
   Procedure.b Resize(*This.Scroll_S, X.i,Y.i,Width.i,Height.i, *Scroll.Scroll_S=#Null)
@@ -565,161 +591,160 @@ Module Scroll
     
     If *This
       If EventType = #PB_EventType_LeftButtonDown
-      ;  Debug "CallBack(*This.Scroll_S)"
+        ;  Debug "CallBack(*This.Scroll_S)"
       EndIf
       
       With *This
-      If \Type = #PB_GadgetType_ScrollBar
-      If \Hide And *This = *Thisis
-        \Buttons = 0
-        *Thisis = 0
-        \Focus = 0
-      EndIf
-      
-      ; get at point buttons
-      If Down
-        Buttons = \Buttons 
-      Else
-        If (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
-          If (Mousex>\x[1] And Mousex=<\x[1]+\Width[1] And  Mousey>\y[1] And Mousey=<\y[1]+\Height[1])
-            Buttons = 1
-          ElseIf (Mousex>\x[3] And Mousex=<\x[3]+\Width[3] And Mousey>\y[3] And Mousey=<\y[3]+\Height[3])
-            Buttons = 3
-          ElseIf (Mousex>\x[2] And Mousex=<\x[2]+\Width[2] And Mousey>\y[2] And Mousey=<\y[2]+\Height[2])
-            Buttons = 2
-          Else
-            Buttons =- 1
-          EndIf
-        EndIf
-      EndIf
-      
-      ; get
-      Select EventType
-        Case #PB_EventType_MouseWheel  
-          If *Thisis = *This
-            Select WheelDelta
-              Case-1 : Result = SetState(*This, \Page\Pos - (\Max-\Min)/30)
-              Case 1 : Result = SetState(*This, \Page\Pos + (\Max-\Min)/30)
-            EndSelect
+        If \Type = #PB_GadgetType_ScrollBar
+          If \Hide And *This = *Thisis
+            \Buttons = 0
+            *Thisis = 0
+            \Focus = 0
           EndIf
           
-        Case #PB_EventType_MouseLeave 
-          If Not Drag : \Buttons = 0 : Buttons = 0 : LastX = 0 : LastY = 0 : EndIf
-        Case #PB_EventType_LeftButtonUp : Down = 0 :  Drag = 0 :  LastX = 0 : LastY = 0
-        Case #PB_EventType_LeftButtonDown 
-          If Not \Hide : Down = 1
-            If Buttons : \Buttons = Buttons : Drag = 1 : *Thisis = *This : EndIf
-            
-            Select Buttons
-              Case - 1
-                If *Thisis = *This Or (\Height>(\Y[2]+\Height[2]) And \Buttons =- 1) 
-                  If \Vertical
-                    Result = SetState(*This, Pos(*This, (MouseY-\Thumb\Length/2)))
-                  Else
-                    Result = SetState(*This, Pos(*This, (MouseX-\Thumb\Length/2)))
+          ; get at point buttons
+          If Down
+            Buttons = \Buttons 
+          Else
+            If (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\Height) 
+              If (Mousex>\x[1] And Mousex=<\x[1]+\Width[1] And  Mousey>\y[1] And Mousey=<\y[1]+\Height[1])
+                Buttons = 1
+              ElseIf (Mousex>\x[3] And Mousex=<\x[3]+\Width[3] And Mousey>\y[3] And Mousey=<\y[3]+\Height[3])
+                Buttons = 3
+              ElseIf (Mousex>\x[2] And Mousex=<\x[2]+\Width[2] And Mousey>\y[2] And Mousey=<\y[2]+\Height[2])
+                Buttons = 2
+              Else
+                Buttons =- 1
+              EndIf
+            EndIf
+          EndIf
+          
+          ; get
+          Select EventType
+            Case #PB_EventType_MouseWheel  
+              If *Thisis = *This
+                Select WheelDelta
+                  Case-1 : Result = SetState(*This, \Page\Pos - (\Max-\Min)/30)
+                  Case 1 : Result = SetState(*This, \Page\Pos + (\Max-\Min)/30)
+                EndSelect
+              EndIf
+              
+            Case #PB_EventType_MouseLeave 
+              If Not Drag : \Buttons = 0 : Buttons = 0 : LastX = 0 : LastY = 0 : EndIf
+            Case #PB_EventType_LeftButtonUp : Down = 0 :  Drag = 0 :  LastX = 0 : LastY = 0
+            Case #PB_EventType_LeftButtonDown 
+              If Not \Hide : Down = 1
+                If Buttons : \Buttons = Buttons : Drag = 1 : *Thisis = *This : EndIf
+                
+                Select Buttons
+                  Case - 1
+                    If *Thisis = *This Or (\Height>(\Y[2]+\Height[2]) And \Buttons =- 1) 
+                      If \Vertical
+                        Result = SetState(*This, Pos(*This, (MouseY-\Thumb\Length/2)))
+                      Else
+                        Result = SetState(*This, Pos(*This, (MouseX-\Thumb\Length/2)))
+                      EndIf
+                    EndIf
+                  Case 1 : Result = SetState(*This, (\Page\Pos - \Page\ScrollStep))
+                  Case 2 : Result = SetState(*This, (\Page\Pos + \Page\ScrollStep))
+                  Case 3 : LastX = MouseX - \Thumb\Pos : LastY = MouseY - \Thumb\Pos
+                EndSelect
+              EndIf
+              
+            Case #PB_EventType_MouseMove
+              If Drag
+                If Bool(LastX|LastY) 
+                  If *Thisis = *This
+                    If \Vertical
+                      Result = SetState(*This, Pos(*This, (MouseY-LastY)))
+                    Else
+                      Result = SetState(*This, Pos(*This, (MouseX-LastX)))
+                    EndIf
                   EndIf
                 EndIf
-              Case 1 : Result = SetState(*This, (\Page\Pos - \Page\ScrollStep))
-              Case 2 : Result = SetState(*This, (\Page\Pos + \Page\ScrollStep))
-              Case 3 : LastX = MouseX - \Thumb\Pos : LastY = MouseY - \Thumb\Pos
+              Else
+                If Not \Hide
+                  If Buttons
+                    If Last <> Buttons
+                      If *Thisis>0 : CallBack(*Thisis, #PB_EventType_MouseLeave, MouseX, MouseY, WheelDelta) : EndIf
+                      EventType = #PB_EventType_MouseEnter
+                      Last = Buttons
+                    EndIf
+                    
+                    If *Thisis <> *This 
+                      Cursor = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+                      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+                      ; Debug "Мышь находится внутри"
+                      *Thisis = *This
+                    EndIf
+                    
+                    If Window >- 1 : \Window = Window : EndIf
+                    If Window >- 1 : \Gadget = Gadget : EndIf
+                    \Buttons = Buttons
+                  Else   ;   If *Thisis = *This
+                    EventType = #PB_EventType_MouseLeave
+                    \Buttons = 0
+                    Last = 0
+                  EndIf
+                EndIf
+              EndIf
+              
+          EndSelect
+          
+          ; set colors
+          If Not \Hide
+            Select EventType
+              Case #PB_EventType_Focus : \Focus = #True : Result = #True
+              Case #PB_EventType_LostFocus : \Focus = #False : Result = #True
+              Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
+                If Buttons>0
+                  \Color[Buttons]\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
+                ElseIf Not Drag And Not Buttons 
+                  If *Thisis = *This And ((EventType = #PB_EventType_MouseLeave) And 
+                                          Cursor <> GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)) Or 
+                     EventType() = #PB_EventType_MouseLeave
+                    SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, Cursor)
+                    ; Debug "Мышь находится снаружи"
+                    *Thisis = 0
+                  EndIf
+                  \Color[1]\State = 0
+                  \Color[2]\State = 0
+                  \Color[3]\State = 0
+                EndIf
+                
+                Result = #True
+                
             EndSelect
           EndIf
           
-        Case #PB_EventType_MouseMove
-          If Drag
-            If Bool(LastX|LastY) 
-              If *Thisis = *This
+          If AutoHide =- 1 : *Scroll = 0
+            AutoHide = Bool(EventType() = #PB_EventType_MouseLeave)
+          EndIf
+          
+          ; Auto hides
+          If (AutoHide And Not Drag And Not Buttons) 
+            If \Alpha <> \Alpha[1] : \Alpha = \Alpha[1] 
+              Result =- 1
+            EndIf 
+          EndIf
+          If EventType = #PB_EventType_MouseEnter And (*Thisis = *This Or Not *Scroll)
+            If \Alpha < 255 : \Alpha = 255
+              
+              If *Scroll
                 If \Vertical
-                  Result = SetState(*This, Pos(*This, (MouseY-LastY)))
+                  Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*Scroll\y+*Scroll\height)-\y) 
                 Else
-                  Result = SetState(*This, Pos(*This, (MouseX-LastX)))
+                  Resize(*This, #PB_Ignore, #PB_Ignore, (*Scroll\x+*Scroll\width)-\x, #PB_Ignore) 
                 EndIf
               EndIf
-            EndIf
-          Else
-            If Not \Hide
-              If Buttons
-                If Last <> Buttons
-                  If *Thisis>0 : CallBack(*Thisis, #PB_EventType_MouseLeave, MouseX, MouseY, WheelDelta) : EndIf
-                  EventType = #PB_EventType_MouseEnter
-                  Last = Buttons
-                EndIf
-                
-                If *Thisis <> *This 
-                  Cursor = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-                  SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-                  ; Debug "Мышь находится внутри"
-                  *Thisis = *This
-                EndIf
-                
-                If Window >- 1 : \Window = Window : EndIf
-                If Window >- 1 : \Gadget = Gadget : EndIf
-                \Buttons = Buttons
-              Else   ;   If *Thisis = *This
-                EventType = #PB_EventType_MouseLeave
-                \Buttons = 0
-                Last = 0
-              EndIf
-            EndIf
+              
+              Result =- 2
+            EndIf 
           EndIf
-          
-      EndSelect
-      
-      ; set colors
-      If Not \Hide
-        Select EventType
-          Case #PB_EventType_Focus : \Focus = #True : Result = #True
-          Case #PB_EventType_LostFocus : \Focus = #False : Result = #True
-          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
-            If Buttons>0
-              \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Front = \Color[Buttons]\Front[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-            ElseIf Not Drag And Not Buttons 
-              If *Thisis = *This And ((EventType = #PB_EventType_MouseLeave) And 
-                                      Cursor <> GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)) Or 
-                 EventType() = #PB_EventType_MouseLeave
-                SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, Cursor)
-                ; Debug "Мышь находится снаружи"
-                *Thisis = 0
-              EndIf
-              ResetColor(*This)
-            EndIf
-            
-            Result = #True
-            
-        EndSelect
-      EndIf
-      
-      If AutoHide =- 1 : *Scroll = 0
-        AutoHide = Bool(EventType() = #PB_EventType_MouseLeave)
-      EndIf
-      
-      ; Auto hides
-      If (AutoHide And Not Drag And Not Buttons) 
-        If \Alpha <> \Alpha[1] : \Alpha = \Alpha[1] 
-          Result =- 1
-        EndIf 
-      EndIf
-      If EventType = #PB_EventType_MouseEnter And (*Thisis = *This Or Not *Scroll)
-        If \Alpha < 255 : \Alpha = 255
-          
-          If *Scroll
-            If \Vertical
-              Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*Scroll\y+*Scroll\height)-\y) 
-            Else
-              Resize(*This, #PB_Ignore, #PB_Ignore, (*Scroll\x+*Scroll\width)-\x, #PB_Ignore) 
-            EndIf
-          EndIf
-          
-          Result =- 2
-        EndIf 
-      EndIf
-      EndIf
-    EndWith
-  EndIf
-  
+        EndIf
+      EndWith
+    EndIf
+    
     ProcedureReturn Result
   EndProcedure
   
@@ -736,16 +761,15 @@ Module Scroll
       \Window =- 1
       \Gadget =- 1
       
-      \Color[0] = Colors
-      ResetColor(*Scroll)
-      
       ; Цвет фона скролла
-      \Color[0]\Back[1] = $FFF9F9F9
-      \Color[1]\Front[1] = $FFA3A3A3
-      \Color[2]\Front[1] = $FFA3A3A3
-      \Color[3]\Front[1] = $FF3F3F3F
-      ResetColor(*Scroll)
-       
+      \Color[0]\State = 0
+      \Color[0]\Back[0] = $FFF9F9F9
+      \Color[0]\Frame[0] = \Color\Back[0]
+      
+      \Color[1] = Colors
+      \Color[2] = Colors
+      \Color[3] = Colors
+      
       \Type = #PB_GadgetType_ScrollBar
       \DrawingMode = #PB_2DDrawing_Gradient
       \Vertical = Bool(Flag&#PB_ScrollBar_Vertical)
@@ -852,7 +876,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     With *Horisontal_0
       \Hide = Widget(*Horisontal_0, 10, 10, 250,  18, 30, 100, 30, 0)
-      SetColor(*Horisontal_0, #PB_Gadget_BackColor, $5A98FF)
+      SetColor(*Horisontal_0, #PB_Gadget_BackColor, $FF5A98FF)
       SetState(*Horisontal_0, 50) 
       \Button\Length=0
     EndWith
@@ -877,9 +901,11 @@ CompilerIf #PB_Compiler_IsMainFile
     EndWith
     With *Horisontal_4
       \Hide = Widget(*Horisontal_4, 10, 142, 250,  18, 30, 100, 30, 0, 10)
-      SetColor(*Horisontal_4, #PB_Gadget_BackColor, $2EC450)
+      SetColor(*Horisontal_4, #PB_Gadget_BackColor, $2EC450, 0, 1)
+      SetColor(*Horisontal_4, #PB_Gadget_BackColor, $BF853F, 0, 3)
+      SetColor(*Horisontal_4, #PB_Gadget_BackColor, $5A98FF, 0, 2)
       SetState(*Horisontal_4, 50) 
-      \Button\Length=0
+     ; \Button\Length=0
     EndWith
     With *Horisontal_5
       \Hide = Widget(*Horisontal_5, 10, 175, 250,  18, 30, 300, 30, 0, 10)
@@ -896,5 +922,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = H-v-4--------------b---f7-8--
+; Folding = ------------------------------
 ; EnableXP

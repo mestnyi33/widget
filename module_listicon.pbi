@@ -64,10 +64,11 @@ Module ListIcon
             If Bool(MouseX=-1 And MouseY=-1 And focus=1)
               \Items()\lostfocus = \Items()\focus
               *This\focus = 0
-               ; then lost focus widget
-            \Items()\Color\State = 1
-            
-         EndIf
+              
+              ; then lost focus widget
+              \Items()\Color\State = 0
+              
+            EndIf
             adress = @\Items()
             Break
           EndIf
@@ -150,9 +151,9 @@ Module ListIcon
               *This\Line = \Items()\Line
               *This\text = \Items()\text 
               
-                  
+              
               If \Items()\lostfocus <> \Items()\Item
-                \Items()\Color\State = 2+Bool(\Items()\Item=\Items()\focus)
+                \Items()\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
               EndIf
               
             EndIf
@@ -364,8 +365,8 @@ Module ListIcon
                 
                 ; Draw boxes
                 If Not *This\Flag\NoButtons And \childrens
-                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                  Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                 EndIf
               EndIf
               
@@ -616,30 +617,15 @@ Module ListIcon
           *This\image\width = \Items()\image\width
         EndIf
         
-        \Items()\Color[0]\Front[0] = $80000000
-      \Items()\Color[0]\Fore[0] = 0 
-      \Items()\Color[0]\Back[0] = $80E2E2E2
-      \Items()\Color[0]\Frame[0] = $80C8C8C8
-      
-      ; Цвета по умолчанию
-      \Items()\Color[0]\Front[1] = $80000000
-      \Items()\Color[0]\Fore[1] = 0 
-      \Items()\Color[0]\Back[1] = $80E2E2E2
-      \Items()\Color[0]\Frame[1] = $80C8C8C8
-      
-      ; Цвета если мышь на виджете
-      \Items()\Color[0]\Front[2] = $80000000
-      \Items()\Color[0]\Fore[2] = 0
-      \Items()\Color[0]\Back[2] = $80FCEADA
-      \Items()\Color[0]\Frame[2] = $80FFC288
-      
-      ; Цвета если нажали на виджет
-      \Items()\Color[0]\Front[3] = $80FFFFFF
-      \Items()\Color[0]\Fore[3] = 0
-      \Items()\Color[0]\Back[3] = $C8E89C3D ; $80E89C3D
-      \Items()\Color[0]\Frame[3] = $C8DC9338 ; $80DC9338
-      
-      ;       Re(*This)
+        ; Устанавливаем 
+        ; цвета по умолчанию
+        \Items()\Color = Colors
+        \Items()\Color[0]\Fore[0] = 0 
+        \Items()\Color[0]\Fore[1] = 0
+        \Items()\Color[0]\Fore[2] = 0
+        
+        
+        ;       Re(*This)
         
         If *This\Scroll\Height=<*This\height
           ;  ReDraw(*This)
@@ -1492,5 +1478,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------f---------------------------
+; Folding = --------------------------------------
 ; EnableXP
