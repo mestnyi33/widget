@@ -1352,9 +1352,9 @@ Module Text
     
     If (*Last = *This) Or (*Focus = *This And *This\Text\Editable)
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        Result | CallFunctionFast(*Function, *This, EventType, Canvas, CanvasModifiers)
+        Result | CallFunctionFast(*Function, *This, EventType)
       CompilerElse
-        Result | CallCFunctionFast(*Function, *This, EventType, Canvas, CanvasModifiers)
+        Result | CallCFunctionFast(*Function, *This, EventType)
       CompilerEndIf
     EndIf
     
