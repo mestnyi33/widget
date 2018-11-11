@@ -312,6 +312,9 @@ Module Text
               AddElement(\Items())
               String = StringField(\Text\String.s[2], IT, #LF$)
               
+              \Items()\Focus =- 1
+              \Items()\Line =- 1
+              
               If \Type = #PB_GadgetType_Button
                 \Items()\Text\Width = TextWidth(RTrim(String))
               Else
@@ -361,6 +364,8 @@ Module Text
               \Items()\Color\Fore[\Items()\Color\State] = 0
               
               \Items()\Radius = \Radius
+              \Items()\Focus =- 1
+              \Items()\Line =- 1
               
               If \Type = #PB_GadgetType_Button
                 \Items()\Text\Width = TextWidth(RTrim(String))
@@ -525,7 +530,7 @@ Module Text
           
           PushListPosition(*This\Items())
           ForEach *This\Items()
-            If *This\Type = #PB_GadgetType_Editor
+            If *This\Type = #PB_GadgetType_Editor Or *This\Type = #PB_GadgetType_ListView
               \Hide = Bool( Not Bool(\y+\height+*This\Scroll\Y>*This\y[2] And \y+*This\Scroll\Y<iheight))
             EndIf
             
@@ -548,7 +553,7 @@ Module Text
               EndIf 
               
               ; Draw selections
-              If \Item=*This\Line
+              If \Item=*This\Line Or \Item=\focus
                 ; Draw items back color
                 If \Color\Fore[\Color\State]
                   DrawingMode(#PB_2DDrawing_Gradient)
@@ -667,8 +672,14 @@ Module Text
                     Box((\Text[2]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
                   EndIf
                   
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+                  If \Color\State = 2
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, \Color\Front[\Color\State])
+                  Else
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText((\Text[0]\X+*This\Scroll\X), \Text\Y+*This\Scroll\Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+                  EndIf
+                  
                 EndIf
                 
               EndIf
@@ -1696,5 +1707,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---f9--------------------f------f------
+; Folding = ---f9---------------------+------+------
 ; EnableXP

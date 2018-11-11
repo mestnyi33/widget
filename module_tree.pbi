@@ -16,7 +16,7 @@ DeclareModule Tree
   UseModule Constants
   UseModule Structures
   
-  Declare CallBack()
+  ;Declare CallBack()
   Declare.i Gadget(Gadget.i, x.i, y.i, width.i, height.i, flag.i=0)
   Declare AddItem(Gadget.i,Item.i,Text.s,Image.i=-1,sublevel.i=0)
   Declare ClearItems(Gadget.i)
@@ -38,7 +38,7 @@ DeclareModule Tree
   Declare.s GetItemText(Gadget.i, Item.i)
   Declare SetItemText(Gadget.i, Item.i, Text.s)
   Declare Free(Gadget.i)
-  Declare ReDraw(Gadget.i)
+  ;Declare ReDraw(*This)
 EndDeclareModule
 
 Module Tree
@@ -442,10 +442,7 @@ Module Tree
     EndIf
   EndProcedure
   
-  Procedure ReDraw(Gadget.i)
-    Protected *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
+  Procedure ReDraw(*This.Widget_S)
     If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
       Draw(*This)
       StopDrawing()
@@ -658,7 +655,7 @@ Module Tree
         Next
         PopListPosition(\Items())
         
-        ReDraw(Gadget)
+        ReDraw(*This)
       EndWith
     EndIf
     
@@ -868,7 +865,7 @@ Module Tree
         EndIf
         PopListPosition(\Items())
         
-        ReDraw(Gadget)
+        ReDraw(*This)
       EndWith
     EndIf
     
@@ -943,7 +940,7 @@ Module Tree
         Next
         PopListPosition(\Items())
         
-        ReDraw(Gadget)
+        ReDraw(*This)
       EndWith
     EndIf
     
@@ -1072,223 +1069,18 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  ;-
-  Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    Static *Focus.Widget_S, *Last.Widget_S, *Widget.Widget_S
-    Static Text$, DoubleClick, LastX, LastY, Last, Drag
-    Protected.i Repaint, Control, Buttons, Widget
-    
-    ; widget_events_type
-    If *This
-      With *This
-        If Canvas=-1 
-          Widget = *This
-          Canvas = EventGadget()
-        Else
-          Widget = Canvas
-        EndIf
-        If Canvas <> \Canvas\Gadget Or 
-           \Type <> #PB_GadgetType_Editor
-        EndIf
-        
-        ; Get at point widget
-        \Canvas\Mouse\From = From(*This)
-        
-        Select EventType 
-          Case #PB_EventType_LeftButtonUp 
-            If *Last = *This
-              If *Widget <> *Focus
-                ProcedureReturn 0 
-              EndIf
-            EndIf
-            
-          Case #PB_EventType_LeftClick 
-            ; Debug ""+\Canvas\Mouse\Buttons+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-            If *Last = *This : *Last = *Widget
-              If *Widget <> *Focus
-                ProcedureReturn 0 
-              EndIf
-            EndIf
-            
-            If Not *This\Canvas\Mouse\From 
-              ProcedureReturn 0
-            EndIf
-        EndSelect
-        
-        If Not \Hide And Not \Disable And \Interact And Widget <> Canvas And CanvasModifiers 
-          Select EventType 
-            Case #PB_EventType_Focus : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
-            Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonUp
-              If Not \Canvas\Mouse\Buttons 
-                If \Canvas\Mouse\From
-                  If *Last <> *This 
-                    If *Last
-                      If (*Last\Index > *This\Index)
-                        ProcedureReturn 0
-                      Else
-                        ; Если с нижнего виджета перешли на верхный, 
-                        ; то посылаем событие выход для нижнего
-                        Events(*Last, #PB_EventType_MouseLeave, Canvas, 0)
-                        *Last = *This
-                      EndIf
-                    Else
-                      *Last = *This
-                    EndIf
-                    
-                    EventType = #PB_EventType_MouseEnter
-                    *Widget = *Last
-                  EndIf
-                  
-                ElseIf (*Last = *This)
-                  If EventType = #PB_EventType_LeftButtonUp 
-                    Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
-                  EndIf
-                  
-                  EventType = #PB_EventType_MouseLeave
-                  *Last = *Widget
-                  *Widget = 0
-                EndIf
-              EndIf
-              
-            Case #PB_EventType_LeftButtonDown
-              If (*Last = *This)
-                PushListPosition(List())
-                ForEach List()
-                  If List()\Widget\Focus = List()\Widget And List()\Widget <> *This 
-                    
-                    List()\Widget\Focus = 0
-                    *Last = List()\Widget
-                    Events(List()\Widget, #PB_EventType_LostFocus, List()\Widget\Canvas\Gadget, 0)
-                    *Last = *Widget 
-                    
-                    PostEvent(#PB_Event_Gadget, List()\Widget\Canvas\Window, List()\Widget\Canvas\Gadget, #PB_EventType_Repaint)
-                    Break 
-                  EndIf
-                Next
-                PopListPosition(List())
-                
-                If *This <> \Focus : \Focus = *This : *Focus = *This
-                  Events(*This, #PB_EventType_Focus, Canvas, 0)
-                EndIf
-              EndIf
-              
-          EndSelect
-        EndIf
-        
-        If (*Last = *This) 
-          Select EventType
-            Case #PB_EventType_LeftButtonDown
-              If Not \Canvas\Mouse\Delta
-                \Canvas\Mouse\Delta = AllocateStructure(Mouse_S)
-                \Canvas\Mouse\Delta\X = \Canvas\Mouse\X
-                \Canvas\Mouse\Delta\Y = \Canvas\Mouse\Y
-                \Canvas\Mouse\Delta\From = \Canvas\Mouse\From
-                \Canvas\Mouse\Delta\Buttons = \Canvas\Mouse\Buttons
-              EndIf
-              
-            Case #PB_EventType_LeftButtonUp : \Drag = 0
-              FreeStructure(\Canvas\Mouse\Delta) : \Canvas\Mouse\Delta = 0
-              
-            Case #PB_EventType_MouseMove
-              If \Drag = 0 And \Canvas\Mouse\Buttons And \Canvas\Mouse\Delta And 
-                 (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1
-                ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
-              EndIf
-              
-            Case #PB_EventType_MouseLeave
-              If CanvasModifiers 
-                ; Если перешли на другой виджет
-                PushListPosition(List())
-                ForEach List()
-                  If List()\Widget\Canvas\Gadget = Canvas And List()\Widget\Focus <> List()\Widget And List()\Widget <> *This
-                    List()\Widget\Canvas\Mouse\From = From(List()\Widget)
-                    
-                    If List()\Widget\Canvas\Mouse\From
-                      If *Last
-                        Events(*Last, #PB_EventType_MouseLeave, Canvas, 0)
-                      EndIf     
-                      
-                      *Last = List()\Widget
-                      *Widget = List()\Widget
-                      ProcedureReturn Events(*Last, #PB_EventType_MouseEnter, Canvas, 0)
-                    EndIf
-                  EndIf
-                Next
-                PopListPosition(List())
-              EndIf
-              
-              If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
-                \Cursor[1] = 0
-              EndIf
-              
-            Case #PB_EventType_MouseEnter    
-              If Not \Cursor[1] 
-                \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-              EndIf
-              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
-              
-            Case #PB_EventType_MouseMove ; bug mac os
-              If \Canvas\Mouse\Buttons And #PB_Compiler_OS = #PB_OS_MacOS ; And \Cursor <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-                                                                          ; Debug 555
-                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
-              EndIf
-              
-          EndSelect
-        EndIf 
-        
-      EndWith
-    EndIf
-    
-    ;     If (*Last = *This)
-    ;       Select EventType
-    ;         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
-    ;         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
-    ;         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-    ;         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
-    ;         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-    ;         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
-    ;         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
-    ;       EndSelect
-    ;     EndIf
-    
-    Protected Caret,Item.i, String.s
-    
-    If ListSize(*This\items())
-      With *This
-        If *Last = *This
-          If Not \Hide And Not \Disable And \Interact ; And Widget <> Canvas And CanvasModifiers
-                                                      ; Get line & caret position
-            If \Canvas\Mouse\Buttons
-              If \Canvas\Mouse\Y < \Y
-                Item.i =- 1
-              Else
-                Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
-              EndIf
-            EndIf
-            
-            Select EventType 
-              Case #PB_EventType_LeftButtonDown
-              Case #PB_EventType_LeftButtonUp
-              Case #PB_EventType_MouseMove  
-              Case #PB_EventType_LeftDoubleClick 
-              Case #PB_EventType_MouseEnter
-              Case #PB_EventType_LostFocus 
-              Case #PB_EventType_Focus
-              Default
-            EndSelect
-          EndIf
-        EndIf
-      EndWith    
-      
-    EndIf
-    
-    ProcedureReturn Repaint
+  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+    With *This
+      If Text::Resize(*This, X,Y,Width,Height)
+        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
+      EndIf
+      ProcedureReturn \Resize
+    EndWith
   EndProcedure
-  
-  Procedure CallBack()
+  ;-
+  Procedure.i Events(*This.Widget_S, EventType.i)
+    If *This
     Protected Repaint.i, AutoHide.b
-    Protected Event = EventType()
     Protected Window = EventWindow()
     Protected Canvas = EventGadget()
     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
@@ -1297,32 +1089,30 @@ Module Tree
     Protected WheelDelta = GetGadgetAttribute(Canvas, #PB_Canvas_WheelDelta)
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
-    Protected *This.Widget_S = GetGadgetData(Canvas)
     Static MoveX, MoveY
     
-    If *This
       With *This
         If Not \hide
           AutoHide.b = 0; Bool(\vScroll\Buttons=0 And \hScroll\Buttons=0)
           
           If \vScroll
-            Repaint = Scroll::CallBack(\vScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \hScroll, Window, Canvas)
+            Repaint = Scroll::CallBack(\vScroll, EventType, MouseX, MouseY, WheelDelta, AutoHide, \hScroll, Window, Canvas)
             If Repaint
               *This\Scroll\Y =- *This\vScroll\Page\Pos
-              ReDraw(Canvas)
+              ReDraw(*This)
             EndIf
           EndIf
           
           If \hScroll
-            Repaint = Scroll::CallBack(\hScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \vScroll, Window, Canvas)
+            Repaint = Scroll::CallBack(\hScroll, EventType, MouseX, MouseY, WheelDelta, AutoHide, \vScroll, Window, Canvas)
             If Repaint
               *This\Scroll\X =- *This\hScroll\Page\Pos
-              ReDraw(Canvas)
+              ReDraw(*This)
             EndIf
           EndIf
           
           If Not (\vScroll\Buttons Or \hScroll\Buttons)
-            Select Event
+            Select EventType
               Case #PB_EventType_MouseWheel
                 If Not \vScroll\Hide
                   Select -WheelDelta
@@ -1394,10 +1184,6 @@ Module Tree
                 Next
                 PopListPosition(\Items()) 
                 
-              Case #PB_EventType_Resize : ResizeGadget(\Canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-                If Text::Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
-                  Repaint | Scroll::Resizes(\vScroll, \hScroll, \X[2],\Y[2],\Width[2],\Height[2])
-                EndIf
             EndSelect
           Else
             Repaint = item_from(*This,-1,-1, 0)
@@ -1407,8 +1193,154 @@ Module Tree
     EndIf
     
     If Repaint 
-      ReDraw(Canvas)
+      ReDraw(*This)
     EndIf
+  EndProcedure
+  
+  Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+    ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
+  EndProcedure
+  
+  Procedure CallBacks()
+    
+    Static LastX, LastY
+    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
+    
+    With *This
+      Select EventType()
+        Case #PB_EventType_Resize : ResizeGadget(\Canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+      EndSelect
+      
+      Repaint | CallBack(*This, EventType())
+      
+      If Repaint
+        ReDraw(*This)
+      EndIf
+    EndWith
+    
+;     Protected Repaint.i, AutoHide.b
+;     Protected Event = EventType()
+;     Protected Window = EventWindow()
+;     Protected Canvas = EventGadget()
+;     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+;     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
+;     Protected Buttons = GetGadgetAttribute(Canvas, #PB_Canvas_Buttons)
+;     Protected WheelDelta = GetGadgetAttribute(Canvas, #PB_Canvas_WheelDelta)
+;     Protected Width = GadgetWidth(Canvas)
+;     Protected Height = GadgetHeight(Canvas)
+;     Protected *This.Widget_S = GetGadgetData(Canvas)
+;     Static MoveX, MoveY
+;     
+;     If *This
+;       With *This
+;         If Not \hide
+;           AutoHide.b = 0; Bool(\vScroll\Buttons=0 And \hScroll\Buttons=0)
+;           
+;           If \vScroll
+;             Repaint = Scroll::CallBack(\vScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \hScroll, Window, Canvas)
+;             If Repaint
+;               *This\Scroll\Y =- *This\vScroll\Page\Pos
+;               ReDraw(*This)
+;             EndIf
+;           EndIf
+;           
+;           If \hScroll
+;             Repaint = Scroll::CallBack(\hScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \vScroll, Window, Canvas)
+;             If Repaint
+;               *This\Scroll\X =- *This\hScroll\Page\Pos
+;               ReDraw(*This)
+;             EndIf
+;           EndIf
+;           
+;           If Not (\vScroll\Buttons Or \hScroll\Buttons)
+;             Select Event
+;               Case #PB_EventType_MouseWheel
+;                 If Not \vScroll\Hide
+;                   Select -WheelDelta
+;                     Case-1 : Repaint = Scroll::SetState(\vScroll, \vScroll\Page\Pos - (\vScroll\Max-\vScroll\Min)/30)
+;                     Case 1 : Repaint = Scroll::SetState(\vScroll, \vScroll\Page\Pos + (\vScroll\Max-\vScroll\Min)/30)
+;                   EndSelect
+;                 EndIf
+;                 
+;               Case #PB_EventType_LeftClick ; Bug in mac os afte move mouse dont post event click
+;                 If \change : \change = 0
+;                   PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_Change)
+;                 EndIf
+;                 ;If \Drag[1] : \Drag[1] = 0 : Else
+;                 PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_LeftClick)
+;                 ;EndIf
+;                 
+;               Case #PB_EventType_LeftButtonUp 
+;                 ;                 If \Drag =- 1
+;                 ;                   
+;                 ;                   PostEvent(#PB_Event_GadgetDrop, EventWindow(), 2)
+;                 ;                 EndIf
+;                 
+;                 If \Drag=1                                         
+;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;                     PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_LeftClick)
+;                   CompilerEndIf
+;                   \Drag=0 
+;                 EndIf
+;                 
+;               Case #PB_EventType_LeftButtonDown : \Focus = 1
+;                 Repaint = item_from(*This, MouseX, MouseY, 1)
+;                 MoveX = MouseX : MoveY = MouseY
+;                 
+;               Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter
+;                 Protected from = \Line
+;                 Repaint = item_from(*This, MouseX, MouseY)
+;                 
+;                 If from <> \Line
+;                   If \text\x+\text\width>\width
+;                     GadgetToolTip(canvas, \text\string)
+;                   Else
+;                     GadgetToolTip(canvas, "")
+;                   EndIf
+;                   from = \Line
+;                 EndIf
+;                 
+;                 If Buttons And \Drag=0 And (Abs((MouseX-MoveX)+(MouseY-MoveY)) >= 6) : \Drag=1
+;                   If \change : \change = 0
+;                     PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_Change)
+;                   EndIf
+;                   PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_DragStart)
+;                 EndIf
+;                 
+;               Case #PB_EventType_MouseLeave
+;                 Repaint = item_from(*This,-1,-1, 0)
+;                 ;                 \Drag =- 1
+;                 
+;               Case #PB_EventType_LostFocus
+;                 Repaint = item_from(*This,-1,-1, 1)
+;                 
+;               Case #PB_EventType_Focus
+;                 PushListPosition(\Items()) 
+;                 ForEach \Items()
+;                   If \Items()\Item = \Items()\focus And \Items()\focus = \Items()\lostfocus 
+;                     \Items()\lostfocus =- 1
+;                     Repaint = 1
+;                     Break
+;                   EndIf
+;                 Next
+;                 PopListPosition(\Items()) 
+;                 
+;               Case #PB_EventType_Resize : ResizeGadget(\Canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+;                 If Text::Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+;                   Repaint | Scroll::Resizes(\vScroll, \hScroll, \X[2],\Y[2],\Width[2],\Height[2])
+;                 EndIf
+;             EndSelect
+;           Else
+;             Repaint = item_from(*This,-1,-1, 0)
+;           EndIf
+;         EndIf
+;       EndWith 
+;     EndIf
+;     
+;     If Repaint 
+;       ReDraw(*This)
+;     EndIf
   EndProcedure
   
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
@@ -1555,7 +1487,7 @@ Module Tree
         ; ReDraw(*This)
         
         PostEvent(#PB_Event_Gadget, GetActiveWindow(), Gadget, #PB_EventType_Resize)
-        BindGadgetEvent(Gadget, @CallBack())
+        BindGadgetEvent(Gadget, @CallBacks())
       EndWith
     EndIf
     
@@ -1569,7 +1501,7 @@ Module Tree
     If *This
       FreeStructure(*This)
       ; SetGadgetData(Gadget, #Null)
-      UnbindGadgetEvent(Gadget, @CallBack())
+      UnbindGadgetEvent(Gadget, @CallBacks())
       ; SetGadgetColor(Gadget, #PB_Gadget_BackColor, $FFFFFF)
       If StartDrawing(CanvasOutput(Gadget))
         Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
@@ -1861,5 +1793,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------+-----------------------------------
+; Folding = ------------v--------------------0-------
 ; EnableXP

@@ -7,17 +7,17 @@ XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
 XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
-XIncludeFile "module_editor.pbi"
+XIncludeFile "module_listview.pbi"
 
 LN=1500; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
-  editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection)
+  ListView::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection)
   Debug "---------------Start"
   Define time = ElapsedMilliseconds()
   
   For a = 0 To LN
-    editor::AddItem (1, -1, "Item "+Str(a), 0,1)
+    ListView::AddItem (1, -1, "Item "+Str(a), 0,1)
     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
     EndIf
     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
@@ -29,7 +29,7 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
         
   Debug "---------------END "+Str(ElapsedMilliseconds()-time)
   
-  EditorGadget(0, 10, 10, 250, 680)
+  ListViewGadget(0, 10, 10, 250, 680)
   Debug "---------------Start"
   ; HideGadget(0, 1)
   Define time = ElapsedMilliseconds()

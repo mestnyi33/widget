@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CompilerEndIf
 CompilerEndIf
 
-DeclareModule Editor
+DeclareModule ListView
   EnableExplicit
   UseModule Macros
   UseModule Constants
@@ -51,7 +51,7 @@ DeclareModule Editor
   
 EndDeclareModule
 
-Module Editor
+Module ListView
   ; ;   UseModule Constant
   ;- PROCEDURE
   ;-
@@ -1092,12 +1092,15 @@ Module Editor
           \Text\String.s = InsertString(\Text\String.s, #LF$ + Text.s, len )
           \Text\Len + i
         Else
-          String.s = Text.s +#LF$
+          String.s = Text.s + #LF$
           \Text\String.s = String.s + \Text\String.s
           \Text\Len + Len(String.s)
         EndIf
-        
+;         If Item = 6
+;           Debug \Text\String.s
+;         EndIf
         \Text\Count + 1
+        ;\Text\Change = 1
         
         ; AddLine(Gadget,Item,Text.s,Image,Flag)
       Else 
@@ -1166,68 +1169,44 @@ Module Editor
         With *This
           If Not \Hide And Not \Disable And \Interact
                                                       ; Get line & caret position
-            If \Canvas\Mouse\Buttons
+            ;If \Canvas\Mouse\Buttons
               If \Canvas\Mouse\Y < \Y
                 Item.i =- 1
               Else
                 Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
               EndIf
-            EndIf
+            ;EndIf
             
             Select EventType 
               Case #PB_EventType_LeftButtonDown
-                SelectionReset(*This)
+                PushListPosition(\Items()) 
+                ForEach \Items()
+                  If \Items()\Focus = \Items()\Item 
+                    \Items()\Color\State = 1
+                    \Items()\Focus =- 1
+                    Break
+                  EndIf
+                Next
+                PopListPosition(\Items()) 
                 
-                If \Items()\Text[2]\Len > 0
-                  \Text[2]\Len = 1
-                Else
-                  \Caret = Caret(*This, Item) 
-                  \Line = ListIndex(*This\Items()) 
-                  \Line[1] = Item
-                  
-                  PushListPosition(\Items())
-                  ForEach \Items() 
-                    If \Line[1] <> ListIndex(\Items())
-                      \Items()\Text[1]\String = ""
-                      \Items()\Text[2]\String = ""
-                      \Items()\Text[3]\String = ""
-                    EndIf
-                  Next
-                  PopListPosition(\Items())
-                  
-                  \Caret[1] = \Caret
-                  
-                  If \Caret = DoubleClick
-                    DoubleClick =- 1
-                    \Caret[1] = \Items()\Text\Len
-                    \Caret = 0
-                  EndIf 
-                  
-                  SelectionText(*This)
-                  Repaint = #True
-                  
-                  
-                EndIf
+                ;\Line[1] = Item
+                \Items()\Color\State = 2
+                Repaint = 1
                 
               Case #PB_EventType_LeftButtonUp
-                ;               If \Caret = \Caret[1] ; And \Line = \Line[1] 
-                ; ;                 If Not \Drag
-                ;                   ; Сбрасываем все виделения.
-                ;                   PushListPosition(\Items())
-                ;                   ForEach \Items() 
-                ;                     If \Items()\Text[2]\Len <> 0
-                ;                       \Items()\Text[2]\Len = 0 
-                ;                     EndIf
-                ;                   Next
-                ;                   PopListPosition(\Items())
-                ;                   Repaint = 1
-                ; ;                 EndIf
-                ;                   \Text[2]\Len = 0
-                \Drag = 0
-                ;               EndIf
+                PushListPosition(\Items()) 
+                ForEach \Items()
+                  If Item = \Items()\Item 
+                    \Items()\Focus = \Items()\Item 
+                  Else
+                    \Items()\Color\State = 1
+                  EndIf
+                Next
+                PopListPosition(\Items()) 
+                Repaint = 1
                 
               Case #PB_EventType_MouseMove  
-                If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
+               ; If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
                   
                   If Not \Text[2]\Len
                     If \Line <> Item And Item =< ListSize(\Items())
@@ -1242,20 +1221,27 @@ Module Editor
                           \Caret = \Items()\Text\Len
                         EndIf
                         
-                        SelectionText(*This)
-                      EndIf
+                        If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
+                          \items()\Color\State = 1 
+                          ; SelectionText(*This)
+                        EndIf
+                     EndIf
                       
                       \Line = Item
                     EndIf
                     
                     If isItem(Item, \Items()) 
-                      \Caret = Caret(*This, Item) 
-                      SelectionText(*This)
+                      SelectElement(\Items(), Item)
+                      If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
+                        \items()\Color\State = 2
+                        ;  \Caret = Caret(*This, Item) 
+                        ;  SelectionText(*This)
+                      EndIf
                     EndIf
                   EndIf
                   
                   Repaint = #True
-                EndIf
+               ; EndIf
                 
               Case #PB_EventType_LeftDoubleClick 
                 DoubleClick = \Caret
@@ -1271,7 +1257,7 @@ Module Editor
 ;                 Debug \Text\String.s
                 
               Case #PB_EventType_LostFocus : Repaint = #True
-                If Bool(\Type <> #PB_GadgetType_Editor)
+                If Bool(\Type <> #PB_GadgetType_ListView)
                   ; StringGadget
                   \Items()\Text[2]\Len = 0 ; Убыраем выделение
                 EndIf
@@ -1423,8 +1409,8 @@ Module Editor
     If *This
       With *This
         
-        \Type = #PB_GadgetType_Editor
-        \Cursor = #PB_Cursor_IBeam
+        \Type = #PB_GadgetType_ListView
+        \Cursor = #PB_Cursor_Default
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         \Radius = Radius
@@ -1523,6 +1509,7 @@ Module Editor
           ;\Color\Back[1] = \Color\Back[0]
           
           If \Text\Editable
+            \Text\Editable = 0
             \Color[0]\Back[0] = $FFFFFFFF 
           Else
             \Color[0]\Back[0] = $FFF0F0F0  
@@ -1612,7 +1599,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define a,i
   Define g, Text.s
   ; Define m.s=#CRLF$
-  Define m.s=#LF$
+  Define m.s;=#LF$
   
   Text.s = "This is a long line" + m.s +
            "Who should show," + m.s +
@@ -1621,7 +1608,7 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work."
   
   Procedure ResizeCallBack()
-    ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
+    ;ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
     ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
     CompilerIf #PB_Compiler_Version =< 546
       PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
@@ -1638,30 +1625,30 @@ CompilerIf #PB_Compiler_IsMainFile
     LoadFont(0, "Arial", 11)
   CompilerEndIf 
   
-  If OpenWindow(0, 0, 0, 422, 491, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
+  If OpenWindow(0, 0, 0, 422, 491, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    ;ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
     
-    EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s) 
+    ListViewGadget(0, 8, 8, 306, 133) ;: SetGadgetText(0, Text.s) 
     For a = 0 To 2
-      AddGadgetItem(0, a, "Line "+Str(a))
+      AddGadgetItem(0, a, "Line "+Str(a)+ " of the Listview")
     Next
-    AddGadgetItem(0, a, "")
-    For a = 4 To 6
-      AddGadgetItem(0, a, "Line "+Str(a))
+    AddGadgetItem(0, a, Text)
+    For a = 4 To 16
+      AddGadgetItem(0, a, "Line "+Str(a)+ " of the Listview")
     Next
     SetGadgetFont(0, FontID(0))
     
     
     g=16
-    Editor::Gadget(g, 8, 133+5+8, 306, 133, #PB_Text_WordWrap|#PB_Flag_GridLines) : Editor::SetText(g, Text.s) 
+    ListView::Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines) ;: ListView::SetText(g, Text.s) 
     For a = 0 To 2
-      Editor::AddItem(g, a, "Line "+Str(a))
+      ListView::AddItem(g, a, "Line "+Str(a)+ " of the Listview")
     Next
-    Editor::AddItem(g, a, "")
-    For a = 4 To 6
-      Editor::AddItem(g, a, "Line "+Str(a))
+    ListView::AddItem(g, a, Text)
+    For a = 4 To 16
+      ListView::AddItem(g, a, "Line "+Str(a)+ " of the Listview")
     Next
-    Editor::SetFont(g, FontID(0))
+    ListView::SetFont(g, FontID(0))
     
     SplitterGadget(10,8, 8, 306, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
@@ -1680,64 +1667,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventType()
               Case #PB_EventType_LeftClick
                 Define *E.Widget_S = GetGadgetData(g)
-                
-                *E\Text\MultiLine !- 1
-                If  *E\Text\MultiLine = 1
-                  SetGadgetText(100,"~wrap")
-                Else
-                  SetGadgetText(100,"wrap")
-                EndIf
-                
-                CompilerSelect #PB_Compiler_OS
-                  CompilerCase #PB_OS_Linux
-                    If  *E\Text\MultiLine = 1
-                      gtk_text_view_set_wrap_mode_(GadgetID(0), #GTK_WRAP_WORD)
-                    Else
-                      gtk_text_view_set_wrap_mode_(GadgetID(0), #GTK_WRAP_NONE)
-                    EndIf
-                    
-                  CompilerCase #PB_OS_MacOS
-                    
-                    If  *E\Text\MultiLine = 1
-                      EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap)
-                    Else
-                      EditorGadget(0, 8, 8, 306, 133) 
-                    EndIf
-                    
-                    SetGadgetText(0, Text.s) 
-                    For a = 0 To 5
-                      AddGadgetItem(0, a, "Line "+Str(a))
-                    Next
-                    SetGadgetFont(0, FontID(0))
-                    
-                    SplitterGadget(10,8, 8, 306, 276, 0,g)
-                    
-                    CompilerIf #PB_Compiler_Version =< 546
-                      BindGadgetEvent(10, @SplitterCallBack())
-                    CompilerEndIf
-                    PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
-                    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
-                    
-                    ; ;                     ImportC ""
-                    ; ;                       GetControlProperty(Control, PropertyCreator, PropertyTag, BufferSize, *ActualSize, *PropertyBuffer)
-                    ; ;                       TXNSetTXNObjectControls(TXNObject, ClearAll, ControlCount, ControlTags, ControlData)
-                    ; ;                     EndImport
-                    ; ;                     
-                    ; ;                     Define TXNObject.i
-                    ; ;                     Dim ControlTag.i(0)
-                    ; ;                     Dim ControlData.i(0)
-                    ; ;                     
-                    ; ;                     ControlTag(0) = 'wwrs' ; kTXNWordWrapStateTag
-                    ; ;                     ControlData(0) = 0     ; kTXNAutoWrap
-                    ; ;                     
-                    ; ;                     If GetControlProperty(GadgetID(0), 'PURE', 'TXOB', 4, 0, @TXNObject) = 0
-                    ; ;                       TXNSetTXNObjectControls(TXNObject, #False, 1, @ControlTag(0), @ControlData(0))
-                    ; ;                     EndIf
-                  CompilerCase #PB_OS_Windows
-                    SendMessage_(GadgetID(0), #EM_SETTARGETDEVICE, 0, 0)
-                CompilerEndSelect
-                
-                
+             
             EndSelect
           EndIf
           
@@ -1753,5 +1683,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------0-----08--d--8----
+; Folding = -------------------------------------
 ; EnableXP
