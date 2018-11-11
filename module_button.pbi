@@ -71,6 +71,72 @@ Module Button
   EndProcedure
   
   Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+    Static LastX, LastY, Last, Drag
+    Protected Repaint, Buttons, Widget.i
+    
+    If *This 
+      With *This
+        Select EventType
+          Case #PB_EventType_MouseEnter    
+            \Buttons = \Canvas\Mouse\From
+            If Not \Checked : Buttons = \Buttons : EndIf
+            
+          Case #PB_EventType_LeftButtonDown : Drag = 1 
+            LastX = \Canvas\Mouse\X : LastY = \Canvas\Mouse\Y
+            If \Buttons
+              Buttons = \Buttons
+              If \Toggle 
+                \Checked[1] = \Checked
+                \Checked ! 1
+              EndIf
+            EndIf
+            
+          Case #PB_EventType_LeftButtonUp : Drag = 0
+            If \Toggle 
+              If Not \Checked
+                Buttons = \Buttons
+              EndIf
+            Else
+              Buttons = \Buttons
+            EndIf
+            
+          Case #PB_EventType_LeftClick 
+            PostEvent(#PB_Event_Widget, \Canvas\Window, Widget, #PB_EventType_LeftClick)
+            
+          Case #PB_EventType_MouseLeave
+            If \Drag 
+              \Checked = \Checked[1]
+            EndIf
+            
+          Case #PB_EventType_MouseMove
+            If Drag And \Drag=0 And (Abs((\Canvas\Mouse\X-LastX)+(\Canvas\Mouse\Y-LastY)) >= 6) : \Drag=1 : EndIf
+            
+        EndSelect
+        
+        Select EventType
+          Case #PB_EventType_MouseEnter, #PB_EventType_LeftButtonUp, #PB_EventType_LeftButtonDown
+            If Buttons : Buttons = 0
+              \Color\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
+              Repaint = #True
+            EndIf
+            
+          Case #PB_EventType_MouseLeave
+            If Not \Checked : \Color\State = 0 : EndIf
+            Repaint = #True
+            
+        EndSelect 
+        
+        Select EventType
+          Case #PB_EventType_Focus : Repaint = #True
+          Case #PB_EventType_LostFocus : Repaint = #True
+        EndSelect
+      EndWith
+    EndIf
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure.i _Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Static Text$, DoubleClickCaret =- 1
     Protected Repaint, StartDrawing, Update_Text_Selected
     
@@ -589,5 +655,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------
+; Folding = ---+b-------------
 ; EnableXP
