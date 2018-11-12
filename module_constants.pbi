@@ -72,6 +72,7 @@ DeclareModule Constants
   #PB_Attribute_SmallIcon = #PB_ListIcon_LargeIcon                 ; 0 0
   #PB_Attribute_LargeIcon = #PB_ListIcon_SmallIcon                 ; 1 1
   
+  #PB_Attribute_Numeric = 1
 ;   #PB_Text_Left = ~#PB_Text_Center
 ;   #PB_Text_Top = ~#PB_Text_Middle
 ;   

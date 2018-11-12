@@ -796,7 +796,7 @@ Module Spin
           \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
           \Text\Pass = Bool(Flag&#PB_Text_Password)
           
-          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)

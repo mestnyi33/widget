@@ -32,7 +32,7 @@ DeclareModule Scroll
   Declare.b Updates(*v.Scroll_S, *h.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
   Declare.b CallBack(*This.Scroll_S, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
   Declare.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
-  
+  Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
 EndDeclareModule
 
@@ -796,6 +796,21 @@ Module Scroll
     ProcedureReturn Resize(*Scroll, X,Y,Width,Height)
   EndProcedure
   
+  Procedure.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
+    Protected *Widget, *This.Widget_S = AllocateStructure(Widget_S)
+    
+    If *This
+      add_widget(Widget, *Widget)
+      
+      *This\Index = Widget
+      *This\Handle = *Widget
+      List()\Widget = *This
+      
+      Widget(*This, x, y, Width, Height, Min, Max, PageLength, Flag, Radius)
+    EndIf
+    
+    ProcedureReturn *This
+  EndProcedure
 EndModule
 ;-
 
@@ -804,12 +819,12 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Scroll
   
   Global *Vertical.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horisontal_0.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horisontal_1.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horisontal_2.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horisontal_3.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horisontal_4.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horisontal_5.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horizontal_0.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horizontal_1.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horizontal_2.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horizontal_3.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horizontal_4.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Horizontal_5.Scroll_S=AllocateStructure(Scroll_S)
   
   Procedure CallBacks()
     Protected Repaint
@@ -824,34 +839,34 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
         
         Resize(*Vertical, Width-35, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        Resize(*Horisontal_0, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horisontal_1, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horisontal_2, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horisontal_3, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horisontal_4, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horisontal_5, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
+        Resize(*Horizontal_0, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
+        Resize(*Horizontal_1, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
+        Resize(*Horizontal_2, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
+        Resize(*Horizontal_3, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
+        Resize(*Horizontal_4, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
+        Resize(*Horizontal_5, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
         
         Repaint = #True
     EndSelect
     
     If CallBack(*Vertical, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
     
-    If CallBack(*Horisontal_0, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horisontal_1, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horisontal_2, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horisontal_3, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horisontal_4, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horisontal_5, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
+    If CallBack(*Horizontal_0, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
+    If CallBack(*Horizontal_1, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
+    If CallBack(*Horizontal_2, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
+    If CallBack(*Horizontal_3, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
+    If CallBack(*Horizontal_4, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
+    If CallBack(*Horizontal_5, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
     
     If Repaint And StartDrawing(CanvasOutput(Canvas))
       Box(0,0,Width,Height)
       Draw(*Vertical)
-      Draw(*Horisontal_0)
-      Draw(*Horisontal_1)
-      Draw(*Horisontal_2)
-      Draw(*Horisontal_3)
-      Draw(*Horisontal_4)
-      Draw(*Horisontal_5)
+      Draw(*Horizontal_0)
+      Draw(*Horizontal_1)
+      Draw(*Horizontal_2)
+      Draw(*Horizontal_3)
+      Draw(*Horizontal_4)
+      Draw(*Horizontal_5)
       StopDrawing()
     EndIf
     
@@ -874,42 +889,42 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState(*Vertical, 100) 
     EndWith
     
-    With *Horisontal_0
-      \Hide = Widget(*Horisontal_0, 10, 10, 250,  18, 30, 100, 30, 0)
-      SetColor(*Horisontal_0, #PB_Gadget_BackColor, $FF5A98FF)
-      SetState(*Horisontal_0, 50) 
+    With *Horizontal_0
+      \Hide = Widget(*Horizontal_0, 10, 10, 250,  18, 30, 100, 30, 0)
+      SetColor(*Horizontal_0, #PB_Gadget_BackColor, $FF5A98FF)
+      SetState(*Horizontal_0, 50) 
       \Button\Length=0
     EndWith
-    With *Horisontal_1
-      \Hide = Widget(*Horisontal_1, 10, 43, 250,  18, 30, 300, 30, 0)
-      SetState(*Horisontal_1, 150) 
+    With *Horizontal_1
+      \Hide = Widget(*Horizontal_1, 10, 43, 250,  18, 30, 300, 30, 0)
+      SetState(*Horizontal_1, 150) 
       \Type[1]=-1 : \Type[2]=1     ; Можно менять вид стрелки 
       \Size[1]=6 : \Size[2]=6      ; Можно задать размер стрелки 
     EndWith
-    With *Horisontal_2
-      \Hide = Widget(*Horisontal_2, 10, 76, 250,  18, 30, 100, 30, 0, 304)
-      SetColor(*Horisontal_2, #PB_Gadget_BackColor, $BF853F)
-      SetState(*Horisontal_2, 50) 
+    With *Horizontal_2
+      \Hide = Widget(*Horizontal_2, 10, 76, 250,  18, 30, 100, 30, 0, 304)
+      SetColor(*Horizontal_2, #PB_Gadget_BackColor, $BF853F)
+      SetState(*Horizontal_2, 50) 
       \Button\Length=0
     EndWith
-    With *Horisontal_3
-      \Hide = Widget(*Horisontal_3, 10, 109, 250,  14, 30, 300, 30, 0, 304)
-      SetState(*Horisontal_3, 150) 
+    With *Horizontal_3
+      \Hide = Widget(*Horizontal_3, 10, 109, 250,  14, 30, 300, 30, 0, 304)
+      SetState(*Horizontal_3, 150) 
       \Button\Length=35           ; Можно задать длину кнопки
       \Type[1]=0 : \Type[2]=0     ; Можно менять вид стрелки 
       \Size[1]=6 : \Size[2]=6     ; Можно задать размер стрелки 
     EndWith
-    With *Horisontal_4
-      \Hide = Widget(*Horisontal_4, 10, 142, 250,  18, 30, 100, 30, 0, 10)
-      SetColor(*Horisontal_4, #PB_Gadget_BackColor, $2EC450, 0, 1)
-      SetColor(*Horisontal_4, #PB_Gadget_BackColor, $BF853F, 0, 3)
-      SetColor(*Horisontal_4, #PB_Gadget_BackColor, $5A98FF, 0, 2)
-      SetState(*Horisontal_4, 50) 
+    With *Horizontal_4
+      \Hide = Widget(*Horizontal_4, 10, 142, 250,  18, 30, 100, 30, 0, 10)
+      SetColor(*Horizontal_4, #PB_Gadget_BackColor, $2EC450, 0, 1)
+      SetColor(*Horizontal_4, #PB_Gadget_BackColor, $BF853F, 0, 3)
+      SetColor(*Horizontal_4, #PB_Gadget_BackColor, $5A98FF, 0, 2)
+      SetState(*Horizontal_4, 50) 
      ; \Button\Length=0
     EndWith
-    With *Horisontal_5
-      \Hide = Widget(*Horisontal_5, 10, 175, 250,  18, 30, 300, 30, 0, 10)
-      SetState(*Horisontal_5, 150) 
+    With *Horizontal_5
+      \Hide = Widget(*Horizontal_5, 10, 175, 250,  18, 30, 300, 30, 0, 10)
+      SetState(*Horizontal_5, 150) 
       \Type[1]=-1 : \Type[2]=1 ; Можно менять вид стрелки 
       \Size[1]=6 : \Size[2]=6  ; Можно задать размер стрелки 
     EndWith
@@ -922,5 +937,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------------------------
+; Folding = -------------------------v----
 ; EnableXP

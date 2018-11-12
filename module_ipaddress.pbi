@@ -113,7 +113,7 @@ Module IPAddress
                 
                 If \Text\Align\Right
                   Text_X=(Width-StringWidth) 
-                ElseIf \Text\Align\Horisontal
+                ElseIf \Text\Align\Horizontal
                   Text_X=(Width-StringWidth)/2 
                 EndIf
                 
@@ -146,7 +146,7 @@ Module IPAddress
                 
                 If \Text\Align\Right
                   Text_X=(Width-StringWidth) 
-                ElseIf \Text\Align\Horisontal
+                ElseIf \Text\Align\Horizontal
                   Text_X=(Width-StringWidth)/2 
                 EndIf
                 
@@ -1055,7 +1055,7 @@ Module IPAddress
           \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
           \Text\Pass = Bool(Flag&#PB_Text_Password)
           
-          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
@@ -1192,8 +1192,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1022
-; FirstLine = 1013
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------------------
 ; EnableXP

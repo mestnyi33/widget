@@ -63,172 +63,18 @@ Module Button
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Events(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    Static Text$, DoubleClickCaret =- 1
-    Protected Repaint, StartDrawing, Update_Text_Selected
+  Procedure.i Events(*This.Widget_S, EventType.i)
+    Static LastX, LastY, Last, Drag
+    Protected Repaint, Buttons, Widget.i
     
-    Protected Buttons, Widget.i
-    Static *Focus.Widget_S, *Last.Widget_S, *Widget.Widget_S, LastX, LastY, Last, Drag
-    
-    ; widget_events_type
-    If *This
+    If *This 
       With *This
-        If Canvas=-1 
-          Widget = *This
-          Canvas = EventGadget()
-        Else
-          Widget = Canvas
-        EndIf
-        If Canvas <> \Canvas\Gadget Or 
-           \Type <> #PB_GadgetType_Button
-          ProcedureReturn
-        EndIf
-        
-        ; Get at point widget
-        \Canvas\Mouse\From = From(*This)
-        
-        Select EventType 
-          Case #PB_EventType_LeftButtonUp 
-            If *Last = *This
-              If *Widget <> *Focus
-                ProcedureReturn 0 
-              EndIf
-            EndIf
-            
-          Case #PB_EventType_LeftClick 
-            ; Debug ""+\Canvas\Mouse\Buttons+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-            If *Last = *This : *Last = *Widget
-              If *Widget <> *Focus
-                ProcedureReturn 0 
-              EndIf
-            EndIf
-            
-            If Not *This\Canvas\Mouse\From 
-              ProcedureReturn 0
-            EndIf
-        EndSelect
-        
-        If Not \Hide And Not \Disable And \Interact And Widget <> Canvas And CanvasModifiers 
-          Select EventType 
-            Case #PB_EventType_Focus : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
-            Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonUp
-              If Not \Canvas\Mouse\Buttons 
-                If \Canvas\Mouse\From
-                  If *Last <> *This 
-                    If *Last
-                      If (*Last\Index > *This\Index)
-                        ProcedureReturn 0
-                      Else
-                        ; Если с нижнего виджета перешли на верхный, 
-                        ; то посылаем событие выход для нижнего
-                        Events(*Last, #PB_EventType_MouseLeave, Canvas, 0)
-                        *Last = *This
-                      EndIf
-                    Else
-                      *Last = *This
-                    EndIf
-                    
-                    EventType = #PB_EventType_MouseEnter
-                    *Widget = *Last
-                  EndIf
-                  
-                ElseIf (*Last = *This)
-                  If EventType = #PB_EventType_LeftButtonUp 
-                    Events(*Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
-                  EndIf
-                  
-                  EventType = #PB_EventType_MouseLeave
-                  *Last = *Widget
-                  *Widget = 0
-                EndIf
-              EndIf
-              
-            Case #PB_EventType_LeftButtonDown
-              If (*Last = *This)
-                PushListPosition(List())
-                ForEach List()
-                  If List()\Widget\Focus = List()\Widget And List()\Widget <> *This 
-                    
-                    List()\Widget\Focus = 0
-                    *Last = List()\Widget
-                    Events(List()\Widget, #PB_EventType_LostFocus, List()\Widget\Canvas\Gadget, 0)
-                    *Last = *Widget 
-                    
-                    PostEvent(#PB_Event_Gadget, List()\Widget\Canvas\Window, List()\Widget\Canvas\Gadget, #PB_EventType_Repaint)
-                    Break 
-                  EndIf
-                Next
-                PopListPosition(List())
-                
-                If *This <> \Focus : \Focus = *This : *Focus = *This
-                  Events(*This, #PB_EventType_Focus, Canvas, 0)
-                EndIf
-              EndIf
-              
-          EndSelect
-        EndIf
-        
-        If (*Last = *This) 
-          Select EventType
-            Case #PB_EventType_MouseLeave
-              If CanvasModifiers 
-                ; Если перешли на другой виджет
-                PushListPosition(List())
-                ForEach List()
-                  If List()\Widget\Canvas\Gadget = Canvas And List()\Widget\Focus <> List()\Widget And List()\Widget <> *This
-                    List()\Widget\Canvas\Mouse\From = From(List()\Widget)
-                    
-                    If List()\Widget\Canvas\Mouse\From
-                      If *Last
-                        Events(*Last, #PB_EventType_MouseLeave, Canvas, 0)
-                      EndIf     
-                      
-                      *Last = List()\Widget
-                      *Widget = List()\Widget
-                      ProcedureReturn Events(*Last, #PB_EventType_MouseEnter, Canvas, 0)
-                    EndIf
-                  EndIf
-                Next
-                PopListPosition(List())
-              EndIf
-              
-              If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
-                \Cursor[1] = 0
-              EndIf
-              
-            Case #PB_EventType_MouseEnter    
-              If Not \Cursor[1] 
-                \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
-              EndIf
-              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
-              
-          EndSelect
-        EndIf 
-        
-      EndWith
-    EndIf
-    
-    ;     If (*Last = *This)
-    ;       Select EventType
-    ;         Case #PB_EventType_Focus          : Debug "  "+Bool((*Last = *This))+" Focus"          +" "+ *This\Text\String.s
-    ;         Case #PB_EventType_LostFocus      : Debug "  "+Bool((*Last = *This))+" LostFocus"      +" "+ *This\Text\String.s
-    ;         Case #PB_EventType_MouseEnter     : Debug "  "+Bool((*Last = *This))+" MouseEnter"     +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-    ;         Case #PB_EventType_MouseLeave     : Debug "  "+Bool((*Last = *This))+" MouseLeave"     +" "+ *This\Text\String.s
-    ;         Case #PB_EventType_LeftButtonDown : Debug "  "+Bool((*Last = *This))+" LeftButtonDown" +" "+ *This\Text\String.s ;+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
-    ;         Case #PB_EventType_LeftButtonUp   : Debug "  "+Bool((*Last = *This))+" LeftButtonUp"   +" "+ *This\Text\String.s
-    ;         Case #PB_EventType_LeftClick      : Debug "  "+Bool((*Last = *This))+" LeftClick"      +" "+ *This\Text\String.s
-    ;       EndSelect
-    ;     EndIf
-    
-    If (*Last = *This) ;And ListSize(*This\items())
-      With *This       ;\items()
         Select EventType
           Case #PB_EventType_MouseEnter    
             \Buttons = \Canvas\Mouse\From
             If Not \Checked : Buttons = \Buttons : EndIf
             
-          Case #PB_EventType_LeftButtonDown : Drag = 1 : LastX = \Canvas\Mouse\X : LastY = \Canvas\Mouse\Y
+          Case #PB_EventType_LeftButtonDown 
             If \Buttons
               Buttons = \Buttons
               If \Toggle 
@@ -237,59 +83,40 @@ Module Button
               EndIf
             EndIf
             
-          Case #PB_EventType_LeftButtonUp : Drag = 0
+          Case #PB_EventType_LeftButtonUp 
             If \Toggle 
-              If Not \Checked And Not CanvasModifiers
+              If Not \Checked
                 Buttons = \Buttons
               EndIf
             Else
               Buttons = \Buttons
             EndIf
-            ;Debug "LeftButtonUp"
             
-          Case #PB_EventType_LeftClick ; Bug in mac os afte move mouse dont post event click
-                                       ;Debug "LeftClick"
-            PostEvent(#PB_Event_Widget, \Canvas\Window, Widget, #PB_EventType_LeftClick)
+          Case #PB_EventType_LeftClick 
+            PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Widget, #PB_EventType_LeftClick)
             
-          Case #PB_EventType_MouseLeave
-            If \Drag 
-              \Checked = \Checked[1]
-            EndIf
-            
-          Case #PB_EventType_MouseMove
-            If Drag And \Drag=0 And (Abs((\Canvas\Mouse\X-LastX)+(\Canvas\Mouse\Y-LastY)) >= 6) : \Drag=1 : EndIf
+;           Case #PB_EventType_MouseLeave
+;             If \Drag[1] 
+;               \Checked = \Checked[1]
+;             EndIf
             
         EndSelect
         
         Select EventType
           Case #PB_EventType_MouseEnter, #PB_EventType_LeftButtonUp, #PB_EventType_LeftButtonDown
-            If Buttons 
-              Buttons = 0
-              \Color[Buttons]\Fore = \Color[Buttons]\Fore[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Back = \Color[Buttons]\Back[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Frame = \Color[Buttons]\Frame[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
-              \Color[Buttons]\Line = \Color[Buttons]\Line[2+Bool(EventType=#PB_EventType_LeftButtonDown)]
+            If Buttons : Buttons = 0
+              \Color\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
               Repaint = #True
             EndIf
             
           Case #PB_EventType_MouseLeave
-            If Not \Checked
-              ResetColor(*This)
+            If Not \Checked 
+              \Color\State = 0
+              Repaint = #True
             EndIf
-            
-            Repaint = #True
-        EndSelect 
-        
-        Select EventType
-          Case #PB_EventType_Focus : Repaint = #True
-          Case #PB_EventType_LostFocus : Repaint = #True
         EndSelect
-        
-        
-        
       EndWith
     EndIf
-    
     
     ProcedureReturn Repaint
   EndProcedure
@@ -369,11 +196,11 @@ Module Button
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
           
-          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
-          \Style\InLine = Bool(Flag&#PB_Text_InLine)
+          \Flag\InLine = Bool(Flag&#PB_Text_InLine)
           
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
             If \Text\Vertical
@@ -404,7 +231,6 @@ Module Button
           ; Устанавливаем 
           ; цвета по умолчанию
           \Color[0] = Colors
-          ResetColor(*This)
           
           SetText(*This, Text.s)
         EndIf
@@ -560,5 +386,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------
+; Folding = ----------
 ; EnableXP

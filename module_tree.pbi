@@ -54,7 +54,6 @@ Module Tree
         If \Items()\Line = \Items()\Item 
           \Items()\Line =- 1
           adress = @\Items()
-          ; ResetColor(*This\Items())
           Break
         EndIf
       Next
@@ -246,6 +245,8 @@ Module Tree
     Protected line_size=8, box_1_pos.b = 0, checkbox_color = $FFFFFF, checkbox_backcolor, box_type.b =- 1
     Protected Drawing.b, text_color
     
+    ;box_type.b = 0
+    
     If *This 
       If *This\Text\FontID : DrawingFont(*This\Text\FontID) : EndIf
       DrawingMode(#PB_2DDrawing_Default)
@@ -260,6 +261,7 @@ Module Tree
           
           ForEach *This\Items()
             If Not \hide
+              If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
               _clip_output_(*This, *This\x[2], *This\y[2], iwidth, iheight) ; Bug
               
               \x=*This\x[2]
@@ -356,7 +358,7 @@ Module Tree
                   y_point=\box\y+\box\height/2
                   
                   If Drawing
-                    ; Horisontal plot
+                    ; Horizontal plot
                     DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@DrawPlotXCallback())
                     Line(x_point+i,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
                   EndIf
@@ -386,8 +388,24 @@ Module Tree
               If Drawing
                 ; Draw boxes
                 If Not *This\Flag\NoButtons And \childrens
-                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                  Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+;                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+;                   Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+                  If box_type=-1
+                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                    Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+                  Else
+                    DrawingMode(#PB_2DDrawing_Gradient)
+                    BackColor($FFFFFF) : FrontColor($EEEEEE)
+                    LinearGradient(\box\x, \box\y, \box\x, (\box\y+\box\height))
+                    RoundBox(\box\x+1,\box\y+1,\box\width-2,\box\height-2,box_type,box_type)
+                    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
+                    
+                    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                    RoundBox(\box\x,\box\y,\box\width,\box\height,box_type,box_type,box_color&$FFFFFF|alpha<<24)
+                    
+                    Line(\box\x+2,\box\y+\box\height/2 ,\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
+                    If \collapsed : Line(\box\x+\box\width/2,\box\y+2,1,\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
+                  EndIf
                 EndIf
                 
                 ; Draw checkbox
@@ -1079,24 +1097,13 @@ Module Tree
   EndProcedure
   ;-
   Procedure.i Events(*This.Widget_S, EventType.i)
-    If *This
-    Protected Repaint.i, AutoHide.b
-    Protected Window = EventWindow()
-    Protected Canvas = EventGadget()
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    Protected Buttons = GetGadgetAttribute(Canvas, #PB_Canvas_Buttons)
-    Protected WheelDelta = GetGadgetAttribute(Canvas, #PB_Canvas_WheelDelta)
-    Protected Width = GadgetWidth(Canvas)
-    Protected Height = GadgetHeight(Canvas)
-    Static MoveX, MoveY
+    Protected Repaint.i, WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     
+    If *This
       With *This
         If Not \hide
-          AutoHide.b = 0; Bool(\vScroll\Buttons=0 And \hScroll\Buttons=0)
-          
           If \vScroll
-            Repaint = Scroll::CallBack(\vScroll, EventType, MouseX, MouseY, WheelDelta, AutoHide, \hScroll, Window, Canvas)
+            Repaint = Scroll::CallBack(\vScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y, WheelDelta, 0, \hScroll, \Canvas\Window, \Canvas\Gadget)
             If Repaint
               *This\Scroll\Y =- *This\vScroll\Page\Pos
               ReDraw(*This)
@@ -1104,7 +1111,7 @@ Module Tree
           EndIf
           
           If \hScroll
-            Repaint = Scroll::CallBack(\hScroll, EventType, MouseX, MouseY, WheelDelta, AutoHide, \vScroll, Window, Canvas)
+            Repaint = Scroll::CallBack(\hScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y, WheelDelta, 0, \vScroll, \Canvas\Window, \Canvas\Gadget)
             If Repaint
               *This\Scroll\X =- *This\hScroll\Page\Pos
               ReDraw(*This)
@@ -1121,57 +1128,38 @@ Module Tree
                   EndSelect
                 EndIf
                 
-              Case #PB_EventType_LeftClick ; Bug in mac os afte move mouse dont post event click
-                If \change : \change = 0
-                  PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_Change)
+              Case #PB_EventType_LeftClick 
+                If \change : \change = 0 
+                  PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
                 EndIf
-                ;If \Drag[1] : \Drag[1] = 0 : Else
-                PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_LeftClick)
-                ;EndIf
+                PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftClick)
                 
-              Case #PB_EventType_LeftButtonUp 
-                ;                 If \Drag =- 1
-                ;                   
-                ;                   PostEvent(#PB_Event_GadgetDrop, EventWindow(), 2)
-                ;                 EndIf
-                
-                If \Drag=1                                         
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                    PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_LeftClick)
-                  CompilerEndIf
-                  \Drag=0 
-                EndIf
-                
+              Case #PB_EventType_LeftButtonUp : \Drag[1]=0 
               Case #PB_EventType_LeftButtonDown : \Focus = 1
-                Repaint = item_from(*This, MouseX, MouseY, 1)
-                MoveX = MouseX : MoveY = MouseY
+                Repaint = item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y, 1)
+                
+              Case #PB_EventType_MouseLeave, #PB_EventType_LostFocus
+                Repaint = item_from(*This,-1,-1, Bool(EventType=#PB_EventType_LostFocus))
                 
               Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter
                 Protected from = \Line
-                Repaint = item_from(*This, MouseX, MouseY)
+                Repaint = item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y)
                 
                 If from <> \Line
                   If \text\x+\text\width>\width
-                    GadgetToolTip(canvas, \text\string)
+                    GadgetToolTip(\Canvas\Gadget, \text\string)
                   Else
-                    GadgetToolTip(canvas, "")
+                    GadgetToolTip(\Canvas\Gadget, "")
                   EndIf
                   from = \Line
                 EndIf
                 
-                If Buttons And \Drag=0 And (Abs((MouseX-MoveX)+(MouseY-MoveY)) >= 6) : \Drag=1
+                If \Drag And \Drag[1]<>\Drag : \Drag[1]=\Drag 
                   If \change : \change = 0
-                    PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_Change)
+                    PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
                   EndIf
-                  PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_DragStart)
+                  PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
                 EndIf
-                
-              Case #PB_EventType_MouseLeave
-                Repaint = item_from(*This,-1,-1, 0)
-                ;                 \Drag =- 1
-                
-              Case #PB_EventType_LostFocus
-                Repaint = item_from(*This,-1,-1, 1)
                 
               Case #PB_EventType_Focus
                 PushListPosition(\Items()) 
@@ -1199,148 +1187,6 @@ Module Tree
   
   Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
-  EndProcedure
-  
-  Procedure CallBacks()
-    
-    Static LastX, LastY
-    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
-    
-    With *This
-      Select EventType()
-        Case #PB_EventType_Resize : ResizeGadget(\Canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
-      EndSelect
-      
-      Repaint | CallBack(*This, EventType())
-      
-      If Repaint
-        ReDraw(*This)
-      EndIf
-    EndWith
-    
-;     Protected Repaint.i, AutoHide.b
-;     Protected Event = EventType()
-;     Protected Window = EventWindow()
-;     Protected Canvas = EventGadget()
-;     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-;     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-;     Protected Buttons = GetGadgetAttribute(Canvas, #PB_Canvas_Buttons)
-;     Protected WheelDelta = GetGadgetAttribute(Canvas, #PB_Canvas_WheelDelta)
-;     Protected Width = GadgetWidth(Canvas)
-;     Protected Height = GadgetHeight(Canvas)
-;     Protected *This.Widget_S = GetGadgetData(Canvas)
-;     Static MoveX, MoveY
-;     
-;     If *This
-;       With *This
-;         If Not \hide
-;           AutoHide.b = 0; Bool(\vScroll\Buttons=0 And \hScroll\Buttons=0)
-;           
-;           If \vScroll
-;             Repaint = Scroll::CallBack(\vScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \hScroll, Window, Canvas)
-;             If Repaint
-;               *This\Scroll\Y =- *This\vScroll\Page\Pos
-;               ReDraw(*This)
-;             EndIf
-;           EndIf
-;           
-;           If \hScroll
-;             Repaint = Scroll::CallBack(\hScroll, Event, MouseX, MouseY, WheelDelta, AutoHide, \vScroll, Window, Canvas)
-;             If Repaint
-;               *This\Scroll\X =- *This\hScroll\Page\Pos
-;               ReDraw(*This)
-;             EndIf
-;           EndIf
-;           
-;           If Not (\vScroll\Buttons Or \hScroll\Buttons)
-;             Select Event
-;               Case #PB_EventType_MouseWheel
-;                 If Not \vScroll\Hide
-;                   Select -WheelDelta
-;                     Case-1 : Repaint = Scroll::SetState(\vScroll, \vScroll\Page\Pos - (\vScroll\Max-\vScroll\Min)/30)
-;                     Case 1 : Repaint = Scroll::SetState(\vScroll, \vScroll\Page\Pos + (\vScroll\Max-\vScroll\Min)/30)
-;                   EndSelect
-;                 EndIf
-;                 
-;               Case #PB_EventType_LeftClick ; Bug in mac os afte move mouse dont post event click
-;                 If \change : \change = 0
-;                   PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_Change)
-;                 EndIf
-;                 ;If \Drag[1] : \Drag[1] = 0 : Else
-;                 PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_LeftClick)
-;                 ;EndIf
-;                 
-;               Case #PB_EventType_LeftButtonUp 
-;                 ;                 If \Drag =- 1
-;                 ;                   
-;                 ;                   PostEvent(#PB_Event_GadgetDrop, EventWindow(), 2)
-;                 ;                 EndIf
-;                 
-;                 If \Drag=1                                         
-;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-;                     PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_LeftClick)
-;                   CompilerEndIf
-;                   \Drag=0 
-;                 EndIf
-;                 
-;               Case #PB_EventType_LeftButtonDown : \Focus = 1
-;                 Repaint = item_from(*This, MouseX, MouseY, 1)
-;                 MoveX = MouseX : MoveY = MouseY
-;                 
-;               Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter
-;                 Protected from = \Line
-;                 Repaint = item_from(*This, MouseX, MouseY)
-;                 
-;                 If from <> \Line
-;                   If \text\x+\text\width>\width
-;                     GadgetToolTip(canvas, \text\string)
-;                   Else
-;                     GadgetToolTip(canvas, "")
-;                   EndIf
-;                   from = \Line
-;                 EndIf
-;                 
-;                 If Buttons And \Drag=0 And (Abs((MouseX-MoveX)+(MouseY-MoveY)) >= 6) : \Drag=1
-;                   If \change : \change = 0
-;                     PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_Change)
-;                   EndIf
-;                   PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_DragStart)
-;                 EndIf
-;                 
-;               Case #PB_EventType_MouseLeave
-;                 Repaint = item_from(*This,-1,-1, 0)
-;                 ;                 \Drag =- 1
-;                 
-;               Case #PB_EventType_LostFocus
-;                 Repaint = item_from(*This,-1,-1, 1)
-;                 
-;               Case #PB_EventType_Focus
-;                 PushListPosition(\Items()) 
-;                 ForEach \Items()
-;                   If \Items()\Item = \Items()\focus And \Items()\focus = \Items()\lostfocus 
-;                     \Items()\lostfocus =- 1
-;                     Repaint = 1
-;                     Break
-;                   EndIf
-;                 Next
-;                 PopListPosition(\Items()) 
-;                 
-;               Case #PB_EventType_Resize : ResizeGadget(\Canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-;                 If Text::Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
-;                   Repaint | Scroll::Resizes(\vScroll, \hScroll, \X[2],\Y[2],\Width[2],\Height[2])
-;                 EndIf
-;             EndSelect
-;           Else
-;             Repaint = item_from(*This,-1,-1, 0)
-;           EndIf
-;         EndIf
-;       EndWith 
-;     EndIf
-;     
-;     If Repaint 
-;       ReDraw(*This)
-;     EndIf
   EndProcedure
   
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
@@ -1392,7 +1238,7 @@ Module Tree
           \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
           \Text\Pass = Bool(Flag&#PB_Text_Password)
           
-          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
@@ -1473,6 +1319,26 @@ Module Tree
     EndIf
     
     ProcedureReturn *This
+  EndProcedure
+  
+  Procedure CallBacks()
+    
+    Static LastX, LastY
+    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
+    
+    With *This
+      Select EventType()
+        Case #PB_EventType_Resize : ResizeGadget(\Canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+      EndSelect
+      
+      Repaint | CallBack(*This, EventType())
+      
+      If Repaint
+        ReDraw(*This)
+      EndIf
+    EndWith
+    
   EndProcedure
   
   Procedure.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
@@ -1792,6 +1658,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------v--------------------0-------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 247
+; FirstLine = 239
+; Folding = --------0----0----------------+--8-------
 ; EnableXP

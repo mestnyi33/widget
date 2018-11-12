@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CompilerEndIf
 CompilerEndIf
 
-DeclareModule ListView
+DeclareModule Scintilla
   EnableExplicit
   UseModule Macros
   UseModule Constants
@@ -51,7 +51,7 @@ DeclareModule ListView
   
 EndDeclareModule
 
-Module ListView
+Module Scintilla
   ; ;   UseModule Constant
   ;- PROCEDURE
   ;-
@@ -805,7 +805,10 @@ Module ListView
     Protected *This.Widget_S = GetGadgetData(Gadget)
     
     With *This
-      
+      Select Attribute
+        Case #PB_Attribute_Numeric   
+          
+      EndSelect
     EndWith
   EndProcedure
   
@@ -922,12 +925,11 @@ Module ListView
     ProcedureReturn Result
   EndProcedure
   
-  Procedure AddItem(Gadget.i,Item.i,String.s,Image.i=-1,Flag.i=0)
+  Procedure AddLine(Gadget.i,Item.i,Text.s,Image.i=-1,Flag.i=0)
     Static adress.i, Len
-    Protected *This.Widget_S, Sublevel.i, Childrens.i, Hide.b, *Item
-    Protected Image_Y, Image_X, Text_X, Text_Y, Height, Width, Indent = 4
+    Protected *This.Widget_S, Childrens.i, hide.b, *Item, sublevel.i, Image_Y, Image_X, Text_X, Text_Y, Height, Width, Indent = 4
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
+    ;Item=0
     If Not *This
       ProcedureReturn -1
     EndIf
@@ -990,8 +992,6 @@ Module ListView
     With *This
       Width = \Width[1]-\Text\X*2  
       Height = \Height[1]-\Text\y*2 
-     ; \Text\Height = 19
-     ; \Text\Change = 1
       
       ;{ Генерируем идентификатор
       If Item =- 1 Or Item > ListSize(\Items()) - 1
@@ -1014,6 +1014,8 @@ Module ListView
         PopListPosition(\Items())
       EndIf
       ;}
+      AddElement(\Items())
+      Protected String.s = Text;StringField(\Text\String.s[2], IT, #LF$)
       
       ; Set line default colors             
       \Items()\Color = \Color
@@ -1021,19 +1023,17 @@ Module ListView
       \Items()\Color\Fore[\Items()\Color\State] = 0
       
       \Items()\Radius = \Radius
-      \Items()\Focus =- 1
-      \Items()\Line =- 1
-              
-      If Not \Text\Height And StartDrawing(CanvasOutput(\Canvas\Gadget)) 
-        If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
-        \Text\Height = TextHeight("A") + 1
-;         If \Type = #PB_GadgetType_Button
-;           \Items()\Text\Width = TextWidth(RTrim(String))
-;         Else
-;           \Items()\Text\Width = TextWidth(String)
-;         EndIf
-        StopDrawing()
-      EndIf
+      
+; ;       If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
+; ;         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
+; ;         If \Type = #PB_GadgetType_Button
+; ;           \Items()\Text\Width = TextWidth(RTrim(String))
+; ;         Else
+; ;           \Items()\Text\Width = TextWidth(String)
+; ;         EndIf
+; ;         StopDrawing()
+; ;       EndIf
+      \Items()\Text\Change = 1
       
       ; Update line pos in the text
       \Items()\Caret = Len
@@ -1044,167 +1044,44 @@ Module ListView
       _line_resize_(*This)
       
       \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
-      \Items()\Height = \Text\Height - Bool(\Text\Count<>1 And \Flag\GridLines)
-      \Items()\Item = Item
+      If \Text\Count = 1
+        \Items()\Height = \Text\Height
+      Else
+        \Items()\Height = \Text\Height - Bool(\Flag\GridLines)
+      EndIf
+      \Items()\Item = ListIndex(\Items())
       
       \Items()\Text\y = \Items()\y
       \Items()\Text\Height = \Text\Height
       \Items()\Text\String.s = String.s
-      \Items()\Text\Change = 1
+      
+      If \Line[1] = ListIndex(\Items())
+        ;Debug " string "+String.s
+        \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret) : \Items()\Text[1]\Change = #True
+        \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
+      EndIf
       
       ; Is visible lines
       \Items()\Hide = Bool( Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
       
-      ; Scroll hight length
-      \Scroll\Height+\Text\Height
-    EndWith
-    
-    ProcedureReturn Item
-  EndProcedure
-  
-  Procedure __AddItem(Gadget.i,Item.i,Text.s,Image.i=-1,sublevel.i=0)
-    Static adress.i
-    Protected *This.Widget_S, Childrens.i, hide.b, *Item
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
-    If Not *This
-      ProcedureReturn -1
-    EndIf
-    
-    With *This
-      ;{ Генерируем идентификатор
-      If Item =- 1 Or Item > ListSize(\Items()) - 1
-        LastElement(\Items())
-        AddElement(\Items()) 
-        Item = ListIndex(\Items())
-        *Item = @\Items()
-      Else
-        SelectElement(\Items(), Item)
-        If \Items()\sublevel>sublevel
-          sublevel=\Items()\sublevel 
-        EndIf
-        *Item = @\Items()
-        InsertElement(\Items())
-        
-        PushListPosition(\Items())
-        While NextElement(\Items())
-          \Items()\Item = ListIndex(\Items())
-        Wend
-        PopListPosition(\Items())
-      EndIf
-      ;}
-      
-      If subLevel
-        If sublevel>ListIndex(\Items())
-          sublevel=ListIndex(\Items())
-        EndIf
-        PushListPosition(\Items()) 
-        While PreviousElement(\Items()) 
-          If subLevel = \Items()\subLevel
-            adress = \Items()\adress
-            Break
-          ElseIf subLevel > \Items()\subLevel
-            adress = @\Items()
-            Break
-          EndIf
-        Wend 
-        If adress
-          ChangeCurrentElement(\Items(), adress)
-          If subLevel > \Items()\subLevel
-            sublevel = \Items()\sublevel + 1
-            \Items()\adress[1] = *Item
-            \Items()\childrens + 1
-            \Items()\collapsed = 1
-            hide = 1
-          EndIf
-        EndIf
-        
-        PopListPosition(\Items()) 
-        \Items()\hide = hide
-        ;       Else
-        ;         If Not \Item 
-        ;           adress = FirstElement(\Items())
-        ;         EndIf
-      EndIf
-      
-      \Items()\Line =- 1
-      \Items()\focus =- 1
-      \Items()\lostfocus =- 1
-      \Items()\time = ElapsedMilliseconds()
-      \Items()\Item = Item
-      \Items()\adress = adress
-      \Items()\text\change = 1
-      \Items()\text\string.s = Text.s ;+" ("+Str(iadress)+"-"+Str(SubLevel)+")" 
-      \Items()\sublevel = sublevel
-      
-      \Items()\y = \Y[1]+\Text\Y+\Scroll\Height;+Text_Y
-      
-      If IsImage(Image)
-        Select \Attribute
-          Case #PB_Attribute_LargeIcon
-            \Items()\Image\width = 32
-            \Items()\Image\height = 32
-            ResizeImage(Image, \Items()\Image\width,\Items()\Image\height)
-            
-          Case #PB_Attribute_SmallIcon
-            \Items()\Image\width = 16
-            \Items()\Image\height = 16
-            ResizeImage(Image, \Items()\Image\width,\Items()\Image\height)
-            
-          Default
-            \Items()\Image\width = ImageWidth(Image)
-            \Items()\Image\height = ImageHeight(Image)
-        EndSelect   
-        
-        \Items()\Image\handle = ImageID(Image)
-        \Items()\Image\handle[1] = Image
-      EndIf
-      
-      ; Устанавливаем 
-      ; цвета по умолчанию
-      
-      ;       If Item%2
-      \Items()\Color = Colors
-      ;       Else
-      ;       ; Цвета по умолчанию
-      ;       \Items()\Color[0]\Front[0] = $80000000
-      \Items()\Color[0]\Fore[0] = 0 
-      ;       \Items()\Color[0]\Back[0] = $80E2E2E2
-      ;       \Items()\Color[0]\Frame[0] = $80C8C8C8
-      ;       
-      ;       ; Цвета если мышь на виджете
-      ;       \Items()\Color[0]\Front[1] = $80000000
-      \Items()\Color[0]\Fore[1] = 0
-      ;       \Items()\Color[0]\Back[1] = $80FCEADA
-      ;       \Items()\Color[0]\Frame[1] = $80FFC288
-      ;       
-      ;       ; Цвета если нажали на виджет
-      ;       \Items()\Color[0]\Front[2] = $80FFFFFF
-      \Items()\Color[0]\Fore[2] = 0
-      ;       \Items()\Color[0]\Back[2] = $C8E89C3D ; $80E89C3D
-      ;       \Items()\Color[0]\Frame[2] = $C8DC9338 ; $80DC9338
-      
-      ;     EndIf
-      
-      ;       If *This\Scroll\Height=<*This\height
-      ;         ;  Draw(*This)
-      ;       EndIf
-    ; Scroll width length
+      ; Scroll width length
       If \Scroll\Width<\Items()\Text\Width
         \Scroll\Width=\Items()\Text\Width
       EndIf
       
       ; Scroll hight length
       \Scroll\Height+\Text\Height
-      EndWith
+      
+      \Text\String.s = String.s +#LF$+ \Text\String.s
+    EndWith
     
     ProcedureReturn Item
   EndProcedure
   
-  Procedure.i _AddItem(Gadget, Item, Text.s,Image.i=-1,Flag.i=0)
+  Procedure.i AddItem(Gadget, Item, Text.s,Image.i=-1,Flag.i=0)
     Protected *This.Widget_S = GetGadgetData(Gadget)
     Protected Result.i, String.s, i.i
-    Static Len, y
+    Static Len
     
     With *This
       If (Item > \Text\Count Or Item < 0)
@@ -1212,24 +1089,18 @@ Module ListView
       EndIf
       
       If Item = \Text\Count
-          String.s = Text.s + #LF$
-          \Text\String.s + String.s
-          \Text\Len + Len(String.s)
         
-;           If Item 
-; ;             y + 16
-; ;             If Bool(y+16>*This\y[2] And y<*This\height[2])
-;               String.s = StringField(\Text\String.s, item, #LF$)+#LF$ : i = Len(String.s) : Len + i
-;               \Text\String.s = InsertString(\Text\String.s, #LF$ + Text.s, len )
-;             \Text\Len + i
-;           Else
-;             String.s = Text.s + #LF$
-;             \Text\String.s = String.s + \Text\String.s
-;             \Text\Len + Len(String.s)
-;           EndIf
-          
-          \Text\Count + 1
-        ;\Text\Change = 1
+        If Item     
+          String.s = StringField(\Text\String.s, item, #LF$)+#LF$ : i = Len(String.s) : Len + i
+          \Text\String.s = InsertString(\Text\String.s, #LF$ + Text.s, len )
+          \Text\Len + i
+        Else
+          String.s = Text.s +#LF$
+          \Text\String.s = String.s + \Text\String.s
+          \Text\Len + Len(String.s)
+        EndIf
+        
+        \Text\Count + 1
         
         ; AddLine(Gadget,Item,Text.s,Image,Flag)
       Else 
@@ -1298,44 +1169,68 @@ Module ListView
         With *This
           If Not \Hide And Not \Disable And \Interact
                                                       ; Get line & caret position
-            ;If \Canvas\Mouse\Buttons
+            If \Canvas\Mouse\Buttons
               If \Canvas\Mouse\Y < \Y
                 Item.i =- 1
               Else
                 Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
               EndIf
-            ;EndIf
+            EndIf
             
             Select EventType 
               Case #PB_EventType_LeftButtonDown
-                PushListPosition(\Items()) 
-                ForEach \Items()
-                  If \Items()\Focus = \Items()\Item 
-                    \Items()\Color\State = 1
-                    \Items()\Focus =- 1
-                    Break
-                  EndIf
-                Next
-                PopListPosition(\Items()) 
+                SelectionReset(*This)
                 
-                ;\Line[1] = Item
-                \Items()\Color\State = 2
-                Repaint = 1
+                If \Items()\Text[2]\Len > 0
+                  \Text[2]\Len = 1
+                Else
+                  \Caret = Caret(*This, Item) 
+                  \Line = ListIndex(*This\Items()) 
+                  \Line[1] = Item
+                  
+                  PushListPosition(\Items())
+                  ForEach \Items() 
+                    If \Line[1] <> ListIndex(\Items())
+                      \Items()\Text[1]\String = ""
+                      \Items()\Text[2]\String = ""
+                      \Items()\Text[3]\String = ""
+                    EndIf
+                  Next
+                  PopListPosition(\Items())
+                  
+                  \Caret[1] = \Caret
+                  
+                  If \Caret = DoubleClick
+                    DoubleClick =- 1
+                    \Caret[1] = \Items()\Text\Len
+                    \Caret = 0
+                  EndIf 
+                  
+                  SelectionText(*This)
+                  Repaint = #True
+                  
+                  
+                EndIf
                 
               Case #PB_EventType_LeftButtonUp
-                PushListPosition(\Items()) 
-                ForEach \Items()
-                  If Item = \Items()\Item 
-                    \Items()\Focus = \Items()\Item 
-                  Else
-                    \Items()\Color\State = 1
-                  EndIf
-                Next
-                PopListPosition(\Items()) 
-                Repaint = 1
+                ;               If \Caret = \Caret[1] ; And \Line = \Line[1] 
+                ; ;                 If Not \Drag
+                ;                   ; Сбрасываем все виделения.
+                ;                   PushListPosition(\Items())
+                ;                   ForEach \Items() 
+                ;                     If \Items()\Text[2]\Len <> 0
+                ;                       \Items()\Text[2]\Len = 0 
+                ;                     EndIf
+                ;                   Next
+                ;                   PopListPosition(\Items())
+                ;                   Repaint = 1
+                ; ;                 EndIf
+                ;                   \Text[2]\Len = 0
+                \Drag = 0
+                ;               EndIf
                 
               Case #PB_EventType_MouseMove  
-               ; If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
+                If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
                   
                   If Not \Text[2]\Len
                     If \Line <> Item And Item =< ListSize(\Items())
@@ -1350,27 +1245,20 @@ Module ListView
                           \Caret = \Items()\Text\Len
                         EndIf
                         
-                        If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
-                          \items()\Color\State = 1 
-                          ; SelectionText(*This)
-                        EndIf
-                     EndIf
+                        SelectionText(*This)
+                      EndIf
                       
                       \Line = Item
                     EndIf
                     
                     If isItem(Item, \Items()) 
-                      SelectElement(\Items(), Item)
-                      If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
-                        \items()\Color\State = 2
-                        ;  \Caret = Caret(*This, Item) 
-                        ;  SelectionText(*This)
-                      EndIf
+                      \Caret = Caret(*This, Item) 
+                      SelectionText(*This)
                     EndIf
                   EndIf
                   
                   Repaint = #True
-               ; EndIf
+                EndIf
                 
               Case #PB_EventType_LeftDoubleClick 
                 DoubleClick = \Caret
@@ -1386,7 +1274,7 @@ Module ListView
 ;                 Debug \Text\String.s
                 
               Case #PB_EventType_LostFocus : Repaint = #True
-                If Bool(\Type <> #PB_GadgetType_ListView)
+                If Bool(\Type <> #PB_GadgetType_Scintilla)
                   ; StringGadget
                   \Items()\Text[2]\Len = 0 ; Убыраем выделение
                 EndIf
@@ -1538,8 +1426,8 @@ Module ListView
     If *This
       With *This
         
-        \Type = #PB_GadgetType_ListView
-        \Cursor = #PB_Cursor_Default
+        \Type = #PB_GadgetType_Scintilla
+        \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         \Radius = Radius
@@ -1638,7 +1526,6 @@ Module ListView
           ;\Color\Back[1] = \Color\Back[0]
           
           If \Text\Editable
-            \Text\Editable = 0
             \Color[0]\Back[0] = $FFFFFFFF 
           Else
             \Color[0]\Back[0] = $FFF0F0F0  
@@ -1647,10 +1534,9 @@ Module ListView
         EndIf
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        \hScroll\Hide = 1
-;         If Bool(\flag\NoButtons = 0 Or \flag\NoLines=0)
-;           Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
-;         EndIf
+        If Bool(\flag\NoButtons = 0 Or \flag\NoLines=0)
+          Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        EndIf
       EndWith
     EndIf
     
@@ -1729,7 +1615,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define a,i
   Define g, Text.s
   ; Define m.s=#CRLF$
-  Define m.s;=#LF$
+  Define m.s=#LF$
   
   Text.s = "This is a long line" + m.s +
            "Who should show," + m.s +
@@ -1738,7 +1624,7 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work."
   
   Procedure ResizeCallBack()
-    ;ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
+    ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
     ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
     CompilerIf #PB_Compiler_Version =< 546
       PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
@@ -1755,30 +1641,42 @@ CompilerIf #PB_Compiler_IsMainFile
     LoadFont(0, "Arial", 11)
   CompilerEndIf 
   
-  If OpenWindow(0, 0, 0, 422, 491, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ;ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
+  
+  If OpenWindow(0, 0, 0, 422, 491, "ScintillaGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
     
-    ListViewGadget(0, 8, 8, 306, 133) ;: SetGadgetText(0, Text.s) 
+    ScintillaGadget(0, 8, 8, 306, 133, 0) ;: ScintillaSendMessage(0, #SCI_SETTEXT, 0, UTF8(Text.s)) ;: SetGadgetText(0, Text.s) 
     For a = 0 To 2
-      AddGadgetItem(0, a, "Line "+Str(a)+ " of the Listview")
+      String.s = "Line "+Str(a) + Chr(10) 
+        ScintillaSendMessage(0, #SCI_APPENDTEXT, Len(String.s), UTF8(String.s))
+        ;AddGadgetItem(0, a, "Line "+Str(a))
     Next
-    AddGadgetItem(0, a, Text)
-    For a = 4 To 16
-      AddGadgetItem(0, a, "Line "+Str(a)+ " of the Listview")
+      String.s = "" + Chr(10)
+        ScintillaSendMessage(0, #SCI_APPENDTEXT, Len(String.s), UTF8(String.s))
+    ;AddGadgetItem(0, a, "")
+    For a = 4 To 6
+      String.s = "Line "+Str(a) + Chr(10) ;Chr(10) + "Line "+Str(a)
+        ScintillaSendMessage(0, #SCI_APPENDTEXT, Len(String.s), UTF8(String.s))
+    ;  AddGadgetItem(0, a, "Line "+Str(a))
     Next
-    SetGadgetFont(0, FontID(0))
+      String.s = Text.s
+        ScintillaSendMessage(0, #SCI_APPENDTEXT, Len(String.s), UTF8(String.s))
+    ScintillaSendMessage(0, #SCI_STYLESETFONT,#STYLE_DEFAULT, @"Lucida Console")       ;Police à utiliser 
+   ScintillaSendMessage(0, #SCI_STYLESETSIZE, #STYLE_DEFAULT, 16)                     ;Taille de la police
+    ScintillaSendMessage(0, #SCI_STYLECLEARALL)
+     ;SetGadgetFont(0, FontID(0))
     
     
     g=16
-    ListView::Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines) ;: ListView::SetText(g, Text.s) 
+    Scintilla::Gadget(g, 8, 133+5+8, 306, 133, #PB_Text_WordWrap|#PB_Flag_GridLines) : Scintilla::SetText(g, Text.s) 
     For a = 0 To 2
-      ListView::AddItem(g, a, "Line "+Str(a)+ " of the Listview")
+      Scintilla::AddItem(g, a, "Line "+Str(a))
     Next
-    ListView::AddItem(g, a, Text)
-    For a = 4 To 16
-      ListView::AddItem(g, a, "Line "+Str(a)+ " of the Listview")
+    Scintilla::AddItem(g, a, "")
+    For a = 4 To 6
+      Scintilla::AddItem(g, a, "Line "+Str(a))
     Next
-    ListView::SetFont(g, FontID(0))
+    Scintilla::SetFont(g, FontID(0))
     
     SplitterGadget(10,8, 8, 306, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
@@ -1787,7 +1685,7 @@ CompilerIf #PB_Compiler_IsMainFile
     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
     
-    ; Debug "высота "+GadgetHeight(0) +" "+ GadgetHeight(g)
+    Debug ""+GadgetHeight(0) +" "+ GadgetHeight(g)
     Repeat 
       Define Event = WaitWindowEvent()
       
@@ -1797,7 +1695,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventType()
               Case #PB_EventType_LeftClick
                 Define *E.Widget_S = GetGadgetData(g)
-             
+                
             EndSelect
           EndIf
           
@@ -1813,5 +1711,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------P9+f8--------------
+; Folding = -------------------------------------
 ; EnableXP

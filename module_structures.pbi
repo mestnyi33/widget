@@ -25,22 +25,13 @@
     Right.b
     Bottom.b
     Vertical.b
-    Horisontal.b
+    Horizontal.b
   EndStructure
   
   Structure Page_S
     Pos.i
     Length.i
     ScrollStep.i
-  EndStructure
-  
-  Structure Canvas_S
-    Mouse.Mouse_S
-    Gadget.i
-    Window.i
-    
-    Input.c
-    Key.i[2]
   EndStructure
   
   Structure Color_S
@@ -53,13 +44,14 @@
     Arrows.i[4]
   EndStructure
   
-  Structure Style_S
-    InLine.i
-    NoLines.i
-    NoButtons.i
-    CheckBoxes.i
-    FullRowSelect.i
-    AlwaysShowSelection.i
+  Structure Flag_S
+    InLine.b
+    NoLines.b
+    NoButtons.b
+    GridLines.b
+    CheckBoxes.b
+    FullSelection.b
+    AlwaysSelection.b
   EndStructure
   
   Structure Image_S Extends Coordinate_S
@@ -76,8 +68,6 @@
     Count.i[2]
     Change.b
     
-    Align.Align_S
-    
     Lower.b
     Upper.b
     Pass.b
@@ -87,7 +77,7 @@
     Vertical.b
     Rotate.f
     
-    Mode.i
+    Align.Align_S
   EndStructure
   
   Structure Scroll_S Extends Coordinate_S
@@ -117,22 +107,20 @@
     Color.Color_S[4]
   EndStructure
   
-  Structure S_S
-    Vertical.Scroll_S
-    Horisontal.Scroll_S
-  EndStructure
-  
   Structure Scrolls_S Extends Coordinate_S
-    *Widget.S_S
+    Orientation.b
+    *Vertical.Scroll_S
+    *Horizontal.Scroll_S
   EndStructure
   
-  Structure Flag_S
-    FullSelection.b
-    AlwaysSelection.b
-    NoButtons.b
-    NoLines.b
-    CheckBoxes.b
-    GridLines.b
+  Structure Canvas_S
+    Mouse.Mouse_S
+    Gadget.i
+    Window.i
+    Widget.i
+    
+    Input.c
+    Key.i[2]
   EndStructure
   
   Structure Widget_S Extends Coordinate_S
@@ -142,7 +130,6 @@
     
     *Widget.Widget_S
     Canvas.Canvas_S
-    Style.Style_S
     Color.Color_S[4]
     Text.Text_S[4]
     Clip.Coordinate_S
@@ -302,5 +289,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---
+; Folding = -n-
 ; EnableXP

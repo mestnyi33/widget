@@ -1,5 +1,7 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerElse
+  IncludePath "../"
 CompilerEndIf
 
 XIncludeFile "module_macros.pbi"
@@ -11,7 +13,7 @@ XIncludeFile "module_listview.pbi"
 
 LN=1500; количесвто итемов 
 
-If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
+If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   ListView::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection)
   Debug "---------------Start"
   Define time = ElapsedMilliseconds()
@@ -50,6 +52,7 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 13
 ; Folding = --
 ; EnableXP

@@ -194,7 +194,7 @@ Module Text
     
     Macro _set_content_Y_(_this_)
       If _this_\Image\handle
-        If _this_\Style\InLine
+        If _this_\Flag\InLine
           Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count))/2)
           Image_Y=((Height-_this_\Image\Height)/2)
         Else
@@ -217,7 +217,7 @@ Module Text
     
     Macro _set_content_X_(_this_)
       If _this_\Image\handle
-        If _this_\Style\InLine
+        If _this_\Flag\InLine
           If _this_\Text\Align\Right
             Text_X=((Width-_this_\Image\Width-_this_\Items()\Text\Width)/2)-Indent/2
             Image_X=(Width-_this_\Image\Width+_this_\Items()\Text\Width)/2+Indent
@@ -232,7 +232,7 @@ Module Text
       Else
         If _this_\Text\Align\Right
           Text_X=(Width-_this_\Items()\Text\Width) 
-        ElseIf _this_\Text\Align\Horisontal
+        ElseIf _this_\Text\Align\Horizontal
           Text_X=(Width-_this_\Items()\Text\Width-Bool(_this_\Items()\Text\Width % 2))/2 
         EndIf
       EndIf
@@ -281,7 +281,7 @@ Module Text
         
         \Scroll\Width = 0 
         _set_content_Y_(*This)
-        
+          
         ; 
         If ListSize(\Items()) 
           Protected Left,Right
@@ -302,7 +302,7 @@ Module Text
           EndIf
           
         EndIf
-        Debug *This\Scroll\X
+        
         If \Text\Count[1] <> \Text\Count Or \Text\Vertical
           ClearList(\Items())
           \Scroll\Height = 0
@@ -323,7 +323,7 @@ Module Text
               
               If \Text\Align\Right
                 Text_X=(Width-\Items()\Text\Width) 
-              ElseIf \Text\Align\Horisontal
+              ElseIf \Text\Align\Horizontal
                 Text_X=(Width-\Items()\Text\Width-Bool(\Items()\Text\Width % 2))/2 
               EndIf
               
@@ -382,11 +382,7 @@ Module Text
               _line_resize_(*This)
               
               \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
-              If \Text\Count = 1
-                \Items()\Height = \Text\Height
-              Else
-                \Items()\Height = \Text\Height - Bool(\Flag\GridLines)
-              EndIf
+              \Items()\Height = \Text\Height - Bool(\Text\Count<>1 And \Flag\GridLines)
               \Items()\Item = ListIndex(\Items())
               
               \Items()\Text\y = \Items()\y
@@ -450,9 +446,21 @@ Module Text
         EndIf
       Else
         _set_content_Y_(*This)
+        \Scroll\Height=0
         
         PushListPosition(\Items())
         ForEach \Items()
+          
+          \Items()\y = \Y[1]+\Text\Y+\Scroll\Height+Text_Y
+          \Items()\Height = \Text\Height - Bool(\Text\Count<>1 And \Flag\GridLines)
+         ; \Items()\Item = ListIndex(\Items())
+          
+          \Items()\Text\y = \Items()\y
+          \Items()\Text\Height = \Text\Height
+          
+          ; Scroll hight length
+          \Scroll\Height+\Text\Height
+          
           _set_content_X_(*This)
           _line_resize_(*This)
         Next
@@ -502,9 +510,6 @@ Module Text
           EndIf
           
           MultiLine(*This)
-          
-          If \Text\Change : \Text\Change = 0 : EndIf
-          If \Resize : \Resize = 0 : EndIf
         EndIf 
         
         ; Draw back color
@@ -530,13 +535,25 @@ Module Text
           
           PushListPosition(*This\Items())
           ForEach *This\Items()
-            If *This\Type = #PB_GadgetType_Editor Or *This\Type = #PB_GadgetType_ListView
+            If *This\Type = #PB_GadgetType_Editor Or *This\Type = #PB_GadgetType_ListView Or *This\Type = #PB_GadgetType_Scintilla
               \Hide = Bool( Not Bool(\y+\height+*This\Scroll\Y>*This\y[2] And \y+*This\Scroll\Y<iheight))
             EndIf
             
             If Not \Hide
               If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
               _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Width[2], #PB_Ignore) 
+              
+;               ; Scroll width length
+;               If *This\Text\Change 
+;                 \Text\Change = 1
+;                 \Text[1]\Change = 1
+;                 \Text[2]\Change = 1
+;                 \Text[3]\Change = 1
+;                 
+;                 If *This\Scroll\Width<*This\Text\X*2+\Text\Width
+;                   *This\Scroll\Width=*This\Text\X*2+\Text\Width
+;                 EndIf
+;               EndIf
               
               If \Text\Change : \Text\Change = #False
                 \Text\Width = TextWidth(\Text\String.s) 
@@ -701,8 +718,9 @@ Module Text
       With *This
         ; Draw scroll bars
         CompilerIf Defined(Scroll, #PB_Module)
-          If \vScroll\Page\Length And \vScroll\Max<>\Scroll\Height And
-             Scroll::SetAttribute(\vScroll, #PB_ScrollBar_Maximum, \Scroll\Height)
+          UnclipOutput()
+          If \vScroll\Page\Length And \vScroll\Max<>\Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines) And
+             Scroll::SetAttribute(\vScroll, #PB_ScrollBar_Maximum, \Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines))
             Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           EndIf
           If \hScroll\Page\Length And \hScroll\Max<>\Scroll\Width And
@@ -716,16 +734,16 @@ Module Text
           ;           ; >>>|||
           ;           If \Scroll\Widget\Vertical\Page\Length And \Scroll\Widget\Vertical\Max<>\Scroll\Height And
           ;              Scroll::SetAttribute(\Scroll\Widget\Vertical, #PB_ScrollBar_Maximum, \Scroll\Height)
-          ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horisontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horizontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           ;           EndIf
           ;           
-          ;           If \Scroll\Widget\Horisontal\Page\Length And \Scroll\Widget\Horisontal\Max<>\Scroll\Width And
-          ;              Scroll::SetAttribute(\Scroll\Widget\Horisontal, #PB_ScrollBar_Maximum, \Scroll\Width)
-          ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horisontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          ;           If \Scroll\Widget\Horizontal\Page\Length And \Scroll\Widget\Horizontal\Max<>\Scroll\Width And
+          ;              Scroll::SetAttribute(\Scroll\Widget\Horizontal, #PB_ScrollBar_Maximum, \Scroll\Width)
+          ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horizontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           ;           EndIf
           ;           
           ;           Scroll::Draw(\Scroll\Widget\Vertical)
-          ;           Scroll::Draw(\Scroll\Widget\Horisontal)
+          ;           Scroll::Draw(\Scroll\Widget\Horizontal)
         CompilerEndIf
         
         _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
@@ -819,6 +837,9 @@ Module Text
           EndIf
         EndIf
         
+        
+          If \Text\Change : \Text\Change = 0 : EndIf
+          If \Resize : \Resize = 0 : EndIf
       EndWith
     EndIf
     
@@ -1052,7 +1073,7 @@ Module Text
         If \Text\String.s
           \Text\String.s[1] = Text.s
           
-          If \Text\MultiLine Or \Type = #PB_GadgetType_Editor 
+          If \Text\MultiLine Or \Type = #PB_GadgetType_Editor  Or \Type = #PB_GadgetType_ListView Or \Type = #PB_GadgetType_Scintilla 
             Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
             Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
             Text.s = ReplaceString(Text.s, #CR$, #LF$)
@@ -1271,6 +1292,13 @@ Module Text
                 EndIf
               EndIf
               
+            Case #PB_EventType_LostFocus
+              If (*Focus = *This)
+                *Last = *Focus
+                Events(*Function, *Focus, #PB_EventType_LostFocus, Canvas, 0)
+                *Last = *Widget
+              EndIf
+            
             Case #PB_EventType_LeftButtonDown
               If (*Last = *This)
                 PushListPosition(List())
@@ -1282,6 +1310,7 @@ Module Text
                     Events(*Function, List()\Widget, #PB_EventType_LostFocus, List()\Widget\Canvas\Gadget, 0)
                     *Last = *Widget 
                     
+                    ; 
                     PostEvent(#PB_Event_Gadget, List()\Widget\Canvas\Window, List()\Widget\Canvas\Gadget, #PB_EventType_Repaint)
                     Break 
                   EndIf
@@ -1361,7 +1390,7 @@ Module Text
       EndWith
     EndIf
     
-    If (*Last = *This) Or (*Focus = *This And *This\Text\Editable)
+    If (*Last = *This) Or (*Focus = *This And *This\Text\Editable); Or (*Last = *Focus)
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
         Result | CallFunctionFast(*Function, *This, EventType)
       CompilerElse
@@ -1435,18 +1464,11 @@ Module Text
           If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
             MouseLeave = 0
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-;               Result | CallCFunctionFast(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
               Result | Events(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
               EventType = #PB_EventType_MouseLeave
             CompilerEndIf
           Else
             MouseLeave =- 1
-;             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-;               Result | CallFunctionFast(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-;             CompilerElse
-;               Result | CallCFunctionFast(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-;             CompilerEndIf
-            
             Result | Events(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
             EventType = #PB_EventType_LeftClick
           EndIf
@@ -1454,12 +1476,6 @@ Module Text
         Case #PB_EventType_LeftClick : ProcedureReturn 0
       EndSelect
     CompilerEndIf
-    
-;     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-;       Result | CallFunctionFast(*Function, *This, EventType, Canvas, CanvasModifiers)
-;     CompilerElse
-;       Result | CallCFunctionFast(*Function, *This, EventType, Canvas, CanvasModifiers)
-;     CompilerEndIf
     
     Result | Events(*Function, *This, EventType, Canvas, CanvasModifiers)
     
@@ -1503,7 +1519,7 @@ Module Text
           ElseIf Bool(Flag&#PB_Text_MultiLine)
             \Text\MultiLine = 1
           EndIf
-          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
@@ -1707,5 +1723,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---f9---------------------+------+------
+; Folding = ---f59------4--vf--------f------v-------
 ; EnableXP

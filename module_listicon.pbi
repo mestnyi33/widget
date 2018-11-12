@@ -257,7 +257,7 @@ Module ListIcon
           CompilerEndIf
           
           If *This\Columns()\text\change = 1
-            *This\Columns()\text\height = TextHeight("A")
+            *This\Columns()\text\height = TextHeight("A") 
             *This\Columns()\text\width = TextWidth(*This\Columns()\text\string.s)
             *This\Columns()\text\change = 0
           EndIf
@@ -281,7 +281,7 @@ Module ListIcon
               \y=*This\Scroll\height-*This\vScroll\Page\Pos
               
               If \text\change = 1
-                \text\height = TextHeight("A")
+                \text\height = TextHeight("A") 
                 \text\width = TextWidth(\text\string.s)
                 \text\change = 0
               EndIf
@@ -401,7 +401,7 @@ Module ListIcon
                 EndIf
                 
                 If *This\Flag\GridLines
-                  ; Horisontal line
+                  ; Horizontal line
                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                   Box(*This\x[2], (\y+\height)+l, iwidth, l, $ADADAE&$FFFFFF|alpha<<24)
                   ;Box(*This\Columns()\x-column_x, (\y+\height)+l, *This\Columns()\width+column_x, l, $ADADAE&$FFFFFF|alpha<<24)
@@ -1478,6 +1478,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 283
+; FirstLine = 266
 ; Folding = --------------------------------------
 ; EnableXP

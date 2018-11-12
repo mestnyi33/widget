@@ -1,5 +1,7 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerElse
+  IncludePath "../"
 CompilerEndIf
 
 XIncludeFile "module_macros.pbi"
@@ -9,7 +11,7 @@ XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_tree.pbi"
 
-LN=30000; количесвто итемов 
+LN=15000; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
   Tree::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection)
@@ -17,7 +19,7 @@ If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
   Define time = ElapsedMilliseconds()
   
   For a = 0 To LN
-    Tree::AddItem (1, -1, "Item "+Str(a), 0,1)
+    Tree::AddItem (1, -1, "Item "+Str(a), 0,Random(5)+1)
     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
     EndIf
     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
@@ -46,6 +48,7 @@ If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP

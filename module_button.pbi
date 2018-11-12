@@ -81,8 +81,7 @@ Module Button
             \Buttons = \Canvas\Mouse\From
             If Not \Checked : Buttons = \Buttons : EndIf
             
-          Case #PB_EventType_LeftButtonDown : Drag = 1 
-            LastX = \Canvas\Mouse\X : LastY = \Canvas\Mouse\Y
+          Case #PB_EventType_LeftButtonDown 
             If \Buttons
               Buttons = \Buttons
               If \Toggle 
@@ -91,7 +90,7 @@ Module Button
               EndIf
             EndIf
             
-          Case #PB_EventType_LeftButtonUp : Drag = 0
+          Case #PB_EventType_LeftButtonUp 
             If \Toggle 
               If Not \Checked
                 Buttons = \Buttons
@@ -101,15 +100,12 @@ Module Button
             EndIf
             
           Case #PB_EventType_LeftClick 
-            PostEvent(#PB_Event_Widget, \Canvas\Window, Widget, #PB_EventType_LeftClick)
+            PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Widget, #PB_EventType_LeftClick)
             
-          Case #PB_EventType_MouseLeave
-            If \Drag 
-              \Checked = \Checked[1]
-            EndIf
-            
-          Case #PB_EventType_MouseMove
-            If Drag And \Drag=0 And (Abs((\Canvas\Mouse\X-LastX)+(\Canvas\Mouse\Y-LastY)) >= 6) : \Drag=1 : EndIf
+;           Case #PB_EventType_MouseLeave
+;             If \Drag[1] 
+;               \Checked = \Checked[1]
+;             EndIf
             
         EndSelect
         
@@ -121,14 +117,10 @@ Module Button
             EndIf
             
           Case #PB_EventType_MouseLeave
-            If Not \Checked : \Color\State = 0 : EndIf
-            Repaint = #True
-            
-        EndSelect 
-        
-        Select EventType
-          Case #PB_EventType_Focus : Repaint = #True
-          Case #PB_EventType_LostFocus : Repaint = #True
+            If Not \Checked 
+              \Color\State = 0
+              Repaint = #True
+            EndIf
         EndSelect
       EndWith
     EndIf
@@ -203,7 +195,7 @@ Module Button
             \Text\MultiLine = 2
           EndIf
           
-          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
@@ -408,7 +400,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndWith
     
     With *Button_1
-      *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horisontal)", #PB_Text_MultiLine,0)
+      *Button_1 = Create(g, -1, 10, 42, 250,  60, "Button (Horizontal)", #PB_Text_MultiLine,0)
       ;       SetColor(*Button_1, #PB_Gadget_BackColor, $FFD58119)
       \Cursor = #PB_Cursor_Hand
       SetColor(*Button_1, #PB_Gadget_FrontColor, $FF4919D5)
@@ -435,5 +427,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---+b------
+; Folding = --v-------
 ; EnableXP

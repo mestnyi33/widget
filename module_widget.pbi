@@ -298,12 +298,12 @@ Module Widget
     
     If *This
       With *This
-        \Canvas\Gadget = Widget
-        \Type = #PB_GadgetType_ScrollBar
-        Scroll::Widget(\vScroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
-        \vScroll\Gadget = Widget
-        \vScroll\Type[1]=1 : \vScroll\Type[2]=1     ; Можно менять вид стрелок 
-        \vScroll\Size[1]=6 : \vScroll\Size[2]=6     ; Можно задать размер стрелок
+         \Canvas\Gadget = Widget
+         \Type = #PB_GadgetType_ScrollBar
+        Scroll::Create(\Scroll\Vertical, Widget, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
+;         \vScroll\Gadget = Widget
+;         \vScroll\Type[1]=1 : \vScroll\Type[2]=1     ; Можно менять вид стрелок 
+;         \vScroll\Size[1]=6 : \vScroll\Size[2]=6     ; Можно задать размер стрелок
         SetGadgetData(Widget, *This)
         Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
@@ -399,7 +399,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ScrollBarGadget  (3, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
     SetGadgetState   (3, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
-    ButtonGadget(15, 10, 190, 180,  60, "Button (Horisontal)")
+    ButtonGadget(15, 10, 190, 180,  60, "Button (Horizontal)")
     ButtonGadget(16, 200, 150,  60, 140 ,"Button (Vertical)")
     
     String     (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
@@ -409,7 +409,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ScrollBar  (13, 300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
     SetState   (13, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
-    Button(17, 300+10, 190, 180,  60, "Button (Horisontal)")
+    Button(17, 300+10, 190, 180,  60, "Button (Horizontal)")
     Button(18, 300+200, 150,  60, 140 ,"Button (Vertical)",#PB_Text_Vertical)
     
     PostEvent(#PB_Event_Gadget, 0,12,#PB_EventType_Resize)

@@ -933,7 +933,7 @@ Module Editor
     
     Macro _set_content_Y_(_this_)
       If _this_\Image\handle
-        If _this_\Style\InLine
+        If _this_\Flag\InLine
           Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count))/2)
           Image_Y=((Height-_this_\Image\Height)/2)
         Else
@@ -956,7 +956,7 @@ Module Editor
     
     Macro _set_content_X_(_this_)
       If _this_\Image\handle
-        If _this_\Style\InLine
+        If _this_\Flag\InLine
           If _this_\Text\Align\Right
             Text_X=((Width-_this_\Image\Width-_this_\Items()\Text\Width)/2)-Indent/2
             Image_X=(Width-_this_\Image\Width+_this_\Items()\Text\Width)/2+Indent
@@ -971,7 +971,7 @@ Module Editor
       Else
         If _this_\Text\Align\Right
           Text_X=(Width-_this_\Items()\Text\Width) 
-        ElseIf _this_\Text\Align\Horisontal
+        ElseIf _this_\Text\Align\Horizontal
           Text_X=(Width-_this_\Items()\Text\Width-Bool(_this_\Items()\Text\Width % 2))/2 
         EndIf
       EndIf
@@ -1473,7 +1473,7 @@ Module Editor
           \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
           \Text\Pass = Bool(Flag&#PB_Text_Password)
           
-          \Text\Align\Horisontal = Bool(Flag&#PB_Text_Center)
+          \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
           \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
@@ -1753,5 +1753,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------0-----08--d--8----
+; Folding = --------------------------08--0--8----
 ; EnableXP
