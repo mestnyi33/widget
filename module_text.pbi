@@ -31,19 +31,10 @@ DeclareModule Text
   
   ;- - DECLAREs MACROs
   Macro CountItems(_this_)
-    _this_\Text\Count ; ListSize(_this_\Items())
+    _this_\Text\Count
   EndMacro
   
   Macro ClearItems(_this_) 
-;     If StartDrawing(CanvasOutput(_this_\Canvas\Gadget))
-;       DrawingMode(#PB_2DDrawing_Default)
-;       RoundBox(_this_\X[1],_this_\Y[1],_this_\Width[1],_this_\Height[1],_this_\Radius,_this_\Radius,_this_\Color\Back[_this_\Color\State])
-;       DrawingMode(#PB_2DDrawing_Outlined)
-;       RoundBox(_this_\X[1],_this_\Y[1],_this_\Width[1],_this_\Height[1],_this_\Radius,_this_\Radius,_this_\Color\Frame[_this_\Color\State])
-;       
-; ;       ClearList(_this_\Items()) : Text::Draw(_this_)
-;       StopDrawing()
-;     EndIf 
     _this_\Text\Count = 0
     _this_\Text\Change = 1 
     _this_\Text\String = #LF$
@@ -51,9 +42,14 @@ DeclareModule Text
   EndMacro
   
   Macro RemoveItem(_this_, _item_) 
-    SelectElement(_this_\Items(), _item_)
-    DeleteElement(_this_\Items())
+    _this_\Text\Count - 1
     _this_\Text\Change = 1
+    If _this_\Text\Count =- 1 
+      _this_\Text\Count = 0 
+      _this_\Text\String = #LF$
+    Else
+      _this_\Text\String = RemoveString(_this_\Text\String, StringField(_this_\Text\String, _item_+1, #LF$) + #LF$)
+    EndIf
     PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
   EndMacro
   
