@@ -9,6 +9,7 @@ XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
 XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
+XIncludeFile "module_editor.pbi"
 XIncludeFile "module_listview.pbi"
 
 LN=1500; количесвто итемов 
@@ -30,7 +31,8 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   PostEvent(#PB_Event_Gadget, 0, 1, #PB_EventType_Resize)
         
   Debug "---------------END "+Str(ElapsedMilliseconds()-time)
-  ListView::Repaint(GetGadgetData(1))
+  
+  Text::Redraw(GetGadgetData(1), 1)
   
   ListViewGadget(0, 10, 10, 250, 680)
   Debug "---------------Start"
@@ -49,7 +51,15 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Debug "---------------END "+Str(ElapsedMilliseconds()-time)
   ; HideGadget(0, 0)
   
-
+  
+  Define time = ElapsedMilliseconds()
+  ListView::ClearItems(1)
+  Debug Str(ElapsedMilliseconds()-time) + " - clear widget items time "
+  
+  Define time = ElapsedMilliseconds()
+  ClearGadgetItems(0)
+  Debug Str(ElapsedMilliseconds()-time) + " - clear gadget items time "
+  
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf

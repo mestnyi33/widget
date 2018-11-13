@@ -21,9 +21,9 @@ Text.s = "This is a long line" + m.s +
   
 If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
   editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : Editor::SetText(1, Text.s)
-  Debug "---------------Start"
-  Define time = ElapsedMilliseconds()
+  EditorGadget(0, 10, 10, 250, 680) : SetGadgetText(0, Text.s)
   
+  Define time = ElapsedMilliseconds()
   For a = 3 To LN
     editor::AddItem (1, -1, "Item "+Str(a), 0,1)
     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
@@ -32,12 +32,10 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
       Debug a
     EndIf
   Next
-  
-  Debug "---------------END "+Str(ElapsedMilliseconds()-time)
-;*w.Widget_S = AllocateStructure(Widget_S)
-  ; *w=GetGadgetData(1)
+  Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + Editor::CountItems(1)
   
   Editor::Repaint(GetGadgetData(1))
+  ;Text::Redraw(GetGadgetData(1), 1)
   
   ; PostEvent(#PB_Event_Widget, 0, GetGadgetData(1), #PB_EventType_Create)
   ; PostEvent(#PB_Event_Gadget, 0, 1, #PB_EventType_Repaint)
@@ -45,8 +43,6 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
  ; Debug *w\Canvas\Gadget
  ; Editor::redraw(*w, 1)
   
-  EditorGadget(0, 10, 10, 250, 680) : SetGadgetText(0, Text.s)
-  Debug "---------------Start"
   ; HideGadget(0, 1)
   Define time = ElapsedMilliseconds()
   
@@ -59,10 +55,17 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
     EndIf
   Next
   
-  Debug "---------------END "+Str(ElapsedMilliseconds()-time)
+  Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
   ; HideGadget(0, 0)
   
-
+  Define time = ElapsedMilliseconds()
+  Editor::ClearItems(1)
+  Debug Str(ElapsedMilliseconds()-time) + " - clear widget items time count - " + Editor::CountItems(1)
+  
+  Define time = ElapsedMilliseconds()
+  ClearGadgetItems(0)
+  Debug Str(ElapsedMilliseconds()-time) + " - clear gadget items time count - " + CountGadgetItems(0)
+  
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf

@@ -32,11 +32,13 @@ DeclareModule Editor
   
   
   ;- - DECLAREs MACROs
-  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   
   ;- DECLARE
   Declare GetState(Gadget.i)
   Declare.s GetText(Gadget.i)
+  Declare.i ClearItems(Gadget.i)
+  Declare.i CountItems(Gadget.i)
+  Declare.i RemoveItem(Gadget.i, Item.i)
   Declare SetState(Gadget.i, State.i)
   Declare GetAttribute(Gadget.i, Attribute.i)
   Declare SetAttribute(Gadget.i, Attribute.i, Value.i)
@@ -48,7 +50,6 @@ DeclareModule Editor
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-  Declare.i ReDraw(*This.Widget_S, Canvas =- 1)
   Declare.i Repaint(*This.Widget_S)
 EndDeclareModule
 
@@ -66,13 +67,6 @@ Module Editor
     EndIf
   EndProcedure
 
-  Procedure.i ReDraw(*This.Widget_S, Canvas =- 1)
-    If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
-      Draw(*This, Canvas)
-      StopDrawing()
-    EndIf
-  EndProcedure
-  
   Procedure Caret(*This.Widget_S, Line.i = 0)
     ProcedureReturn Text::Caret(*This, Line)
     
@@ -886,85 +880,22 @@ Module Editor
   EndProcedure
   
   Procedure ClearItems(Gadget.i)
-    Protected Result.i, *This.Widget_S
+    Protected *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
-    If *This
-      With *This
-        Result = ClearList(\Items())
-        If StartDrawing(CanvasOutput(Gadget))
-          Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
-          StopDrawing()
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn Result
+    Text::ClearItems(*This)
+    ProcedureReturn 1
   EndProcedure
   
-  Procedure.i CountItems(Gadget.i, Item.i=-1)
-    Protected Result.i, *This.Widget_S, sublevel.i
+  Procedure.i CountItems(Gadget.i)
+    Protected *This.Widget_S
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
-    If *This
-      With *This
-        If Item.i=-1
-          Result = ListSize(\Items())
-        Else
-          PushListPosition(\Items()) 
-          ForEach \Items()
-            If \Items()\Item = Item 
-              ; Result = \Items()\childrens 
-              sublevel = \Items()\sublevel
-              PushListPosition(\Items())
-              While NextElement(\Items())
-                If sublevel = \Items()\sublevel
-                  Break
-                ElseIf sublevel < \Items()\sublevel 
-                  Result+1
-                EndIf
-              Wend
-              PopListPosition(\Items())
-              Break
-            EndIf
-          Next
-          PopListPosition(\Items())
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn Result
+    ProcedureReturn Text::CountItems(*This)
   EndProcedure
   
   Procedure.i RemoveItem(Gadget.i, Item.i)
     Protected Result.i, *This.Widget_S, sublevel.i
     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
-    If *This
-      With *This
-        PushListPosition(\Items()) 
-        ForEach \Items()
-          If \Items()\Item = Item 
-            sublevel = \Items()\sublevel
-            PushListPosition(\Items())
-            While NextElement(\Items())
-              If sublevel = \Items()\sublevel
-                Break
-              ElseIf sublevel < \Items()\sublevel 
-                Result = DeleteElement(\Items()) 
-              EndIf
-            Wend
-            PopListPosition(\Items())
-            Result = DeleteElement(\Items()) 
-            Break
-          EndIf
-        Next
-        PopListPosition(\Items())
-        
-        ReDraw(Gadget)
-      EndWith
-    EndIf
-    
+    Text::RemoveItem(*This, Item)
     ProcedureReturn Result
   EndProcedure
   
@@ -1010,7 +941,7 @@ Module Editor
     Protected *This.Widget_S = GetGadgetData(Gadget)
     
     If Text::SetText(*This, Text.s) 
-      ReDraw(*This, *This\Canvas\Gadget)
+      Text::ReDraw(*This, *This\Canvas\Gadget)
       ProcedureReturn 1
     EndIf
     
@@ -1020,7 +951,7 @@ Module Editor
     Protected *This.Widget_S = GetGadgetData(Gadget)
     
     If Text::SetFont(*This, FontID)
-      ReDraw(*This, *This\Canvas\Gadget)
+      Text::ReDraw(*This, *This\Canvas\Gadget)
       ProcedureReturn 1
     EndIf
     
@@ -1315,7 +1246,7 @@ Module Editor
     With *This
       Select EventType() 
         Case #PB_EventType_Create
-          If \Text\Count <> ListSize(\Items())
+;           If \Text\Count <> ListSize(\Items())
             PushListPosition(\Items())
             ForEach \Items()
               If String.s
@@ -1329,13 +1260,13 @@ Module Editor
             If \Text\String.s <> String.s
               \Text\String.s = String.s
               \Text\Len = Len(String.s)
-              \Text\Count = ListSize(\Items())
              ; Debug "new add texts len "+\Text\Len
             EndIf
             
-            Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
-            ReDraw(*This, \Canvas\Gadget)
-          EndIf
+            ; Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
+            Text::ReDraw(*This, \Canvas\Gadget)
+           ; \Text\Count = ListSize(\Items())
+;           EndIf
       EndSelect
     EndWith
   EndProcedure
@@ -1455,6 +1386,7 @@ Module Editor
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
         Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
         
         PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Create, \Resize)
         BindEvent(#PB_Event_Widget, @Widget_CallBack(), \Canvas\Window, *This, #PB_EventType_Create)
@@ -1496,7 +1428,7 @@ Module Editor
       Repaint | CallBack(*This, EventType())
       
       If Repaint 
-        ReDraw(*This)
+        Text::ReDraw(*This)
       EndIf
       
     EndWith
@@ -1598,62 +1530,8 @@ CompilerIf #PB_Compiler_IsMainFile
               Case #PB_EventType_LeftClick
                 Define *E.Widget_S = GetGadgetData(g)
                 
-                *E\Text\MultiLine !- 1
-                If  *E\Text\MultiLine = 1
-                  SetGadgetText(100,"~wrap")
-                Else
-                  SetGadgetText(100,"wrap")
-                EndIf
-                
-                CompilerSelect #PB_Compiler_OS
-                  CompilerCase #PB_OS_Linux
-                    If  *E\Text\MultiLine = 1
-                      gtk_text_view_set_wrap_mode_(GadgetID(0), #GTK_WRAP_WORD)
-                    Else
-                      gtk_text_view_set_wrap_mode_(GadgetID(0), #GTK_WRAP_NONE)
-                    EndIf
-                    
-                  CompilerCase #PB_OS_MacOS
-                    
-                    If  *E\Text\MultiLine = 1
-                      EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap)
-                    Else
-                      EditorGadget(0, 8, 8, 306, 133) 
-                    EndIf
-                    
-                    SetGadgetText(0, Text.s) 
-                    For a = 0 To 5
-                      AddGadgetItem(0, a, "Line "+Str(a))
-                    Next
-                    SetGadgetFont(0, FontID(0))
-                    
-                    SplitterGadget(10,8, 8, 306, 276, 0,g)
-                    
-                    CompilerIf #PB_Compiler_Version =< 546
-                      BindGadgetEvent(10, @SplitterCallBack())
-                    CompilerEndIf
-                    PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
-                    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
-                    
-                    ; ;                     ImportC ""
-                    ; ;                       GetControlProperty(Control, PropertyCreator, PropertyTag, BufferSize, *ActualSize, *PropertyBuffer)
-                    ; ;                       TXNSetTXNObjectControls(TXNObject, ClearAll, ControlCount, ControlTags, ControlData)
-                    ; ;                     EndImport
-                    ; ;                     
-                    ; ;                     Define TXNObject.i
-                    ; ;                     Dim ControlTag.i(0)
-                    ; ;                     Dim ControlData.i(0)
-                    ; ;                     
-                    ; ;                     ControlTag(0) = 'wwrs' ; kTXNWordWrapStateTag
-                    ; ;                     ControlData(0) = 0     ; kTXNAutoWrap
-                    ; ;                     
-                    ; ;                     If GetControlProperty(GadgetID(0), 'PURE', 'TXOB', 4, 0, @TXNObject) = 0
-                    ; ;                       TXNSetTXNObjectControls(TXNObject, #False, 1, @ControlTag(0), @ControlData(0))
-                    ; ;                     EndIf
-                  CompilerCase #PB_OS_Windows
-                    SendMessage_(GadgetID(0), #EM_SETTARGETDEVICE, 0, 0)
-                CompilerEndSelect
-                
+                Editor::RemoveItem(g, 5)
+                RemoveGadgetItem(0,5)
                 
             EndSelect
           EndIf
@@ -1670,5 +1548,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -f--0f00----------------8--e-f---v3---
+; Folding = 08-v-rv---------------8--e-f---48--
 ; EnableXP

@@ -31,7 +31,7 @@ DeclareModule String
   CompilerEndIf
   
   ;- - DECLAREs MACROs
-  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
+  Macro Draw(_adress_) : Text::Draw(_adress_) : EndMacro
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
   Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
   Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
@@ -43,7 +43,7 @@ DeclareModule String
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  
+  Declare.i Events(*This.Widget_S, EventType.i)
 EndDeclareModule
 
 Module String
@@ -742,12 +742,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     Select EventType()
-      Case #PB_EventType_Resize
-        ForEach List()
-          Resize(List()\Widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        Next
-        
-        Result = 1
+      Case #PB_EventType_Resize : Result = 1
       Default
         
         If EventType() = #PB_EventType_LeftButtonDown
@@ -755,21 +750,14 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         ForEach List()
-          Result | CallBack(List()\Widget, EventType()) 
+          If Canvas = List()\Widget\Canvas\Gadget
+            Result | CallBack(List()\Widget, EventType()) 
+          EndIf
         Next
     EndSelect
     
     If Result
-      If StartDrawing(CanvasOutput(Canvas))
-        DrawingMode(#PB_2DDrawing_Default)
-        Box(0,0,Width,Height, winBackColor)
-        
-        ForEach List()
-          Draw(List()\Widget)
-        Next
-        
-        StopDrawing()
-      EndIf
+      Text::ReDraw(0, Canvas, winBackColor)
     EndIf
     
   EndProcedure

@@ -27,7 +27,7 @@ DeclareModule Button
   CompilerEndIf
   
   ;- - DECLAREs MACROs
-  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
+  Macro Draw(_adress_) : Text::Draw(_adress_) : EndMacro
   
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro
   Macro SetText(_adress_, _text_) : Text::SetText(_adress_, _text_) : EndMacro
@@ -287,48 +287,28 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     
     Select EventType()
+      Case #PB_EventType_Repaint : Result = 1
       Case #PB_EventType_Resize
         Resize(*Button_0, Width-70, #PB_Ignore, #PB_Ignore, Height-20)
         Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
-;         ForEach List()
-;           Resize(List()\Widget, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
-;         Next
         
         Result = 1
       Default
-        ;         ; First window
-        ;         Result | CallBack(*B_0, EventType()) 
-        ;         Result | CallBack(*B_1, EventType()) 
-        ;         Result | CallBack(*B_2, EventType()) 
-        ;         Result | CallBack(*B_3, EventType()) 
-        ;         Result | CallBack(*B_4, EventType()) 
-        ;         
-        ;         ; Second window
-        ;         Result | CallBack(*Button_0, EventType()) 
-        ;         Result | CallBack(*Button_1, EventType()) 
-        
         If EventType() = #PB_EventType_LeftButtonDown
           SetActiveGadget(EventGadget())
         EndIf
         
         ForEach List()
           ; If List()\Widget\Canvas\Gadget = GetActiveGadget()
-          Result | CallBack(List()\Widget, EventType()) 
-          ; EndIf
+          If Canvas = List()\Widget\Canvas\Gadget
+            Result | CallBack(List()\Widget, EventType()) 
+          EndIf
         Next
         
     EndSelect
     
-    If Result Or EventType() = #PB_EventType_Repaint
-      If StartDrawing(CanvasOutput(Canvas))
-        Box(0,0,Width,Height, $FFF0F0F0)
-        
-        ForEach List()
-          Draw(List()\Widget)
-        Next
-        
-        StopDrawing()
-      EndIf
+    If Result
+      Text::ReDraw(0, Canvas)
     EndIf
     
   EndProcedure

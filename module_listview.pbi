@@ -14,6 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_scroll.pbi"
   XIncludeFile "module_text.pbi"
+  XIncludeFile "module_editor.pbi"
   
   CompilerIf #VectorDrawing
     UseModule Draw
@@ -32,11 +33,12 @@ DeclareModule ListView
   
   
   ;- - DECLAREs MACROs
-  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
   
   ;- DECLARE
   Declare GetState(Gadget.i)
   Declare.s GetText(Gadget.i)
+  Declare.i ClearItems(Gadget.i)
+  Declare.i CountItems(Gadget.i)
   Declare SetState(Gadget.i, State.i)
   Declare GetAttribute(Gadget.i, Attribute.i)
   Declare SetAttribute(Gadget.i, Attribute.i, Value.i)
@@ -48,34 +50,15 @@ DeclareModule ListView
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-  Declare.i Repaint(*This.Widget_S)
 EndDeclareModule
 
 Module ListView
   ; ;   UseModule Constant
   ;- PROCEDURE
   ;-
-  Procedure ReDraw(*This.Widget_S, Canvas =- 1)
-    If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
-      Draw(*This, Canvas)
-      StopDrawing()
-    EndIf
-  EndProcedure
   
   ;-
   ;- PUBLIC
-  Procedure.i Repaint(*This.Widget_S)
-    If *This
-      Scroll::Resizes(*This\vScroll, *This\hScroll, *This\x[2],*This\Y[2],*This\Width[2],*This\Height[2])
-      ReDraw(*This, *This\Canvas\Gadget)
-    Else
-      ForEach List()
-        Scroll::Resizes(List()\Widget\vScroll, List()\Widget\hScroll, List()\Widget\x[2],List()\Widget\Y[2],List()\Widget\Width[2],List()\Widget\Height[2])
-        ReDraw(List()\Widget, List()\Widget\Canvas\Gadget)
-      Next
-    EndIf
-  EndProcedure
-  
   Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
     Protected *This.Widget_S = GetGadgetData(Gadget)
     
@@ -114,55 +97,12 @@ Module ListView
     EndWith
   EndProcedure
   
-  Procedure ClearItems(Gadget.i)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
-    If *This
-      With *This
-        Result = ClearList(\Items())
-        If StartDrawing(CanvasOutput(Gadget))
-          Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
-          StopDrawing()
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn Result
+  Procedure.i ClearItems(Gadget.i)
+    ProcedureReturn Editor::ClearItems(Gadget)
   EndProcedure
   
-  Procedure.i CountItems(Gadget.i, Item.i=-1)
-    Protected Result.i, *This.Widget_S, sublevel.i
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
-    If *This
-      With *This
-        If Item.i=-1
-          Result = ListSize(\Items())
-        Else
-          PushListPosition(\Items()) 
-          ForEach \Items()
-            If \Items()\Item = Item 
-              ; Result = \Items()\childrens 
-              sublevel = \Items()\sublevel
-              PushListPosition(\Items())
-              While NextElement(\Items())
-                If sublevel = \Items()\sublevel
-                  Break
-                ElseIf sublevel < \Items()\sublevel 
-                  Result+1
-                EndIf
-              Wend
-              PopListPosition(\Items())
-              Break
-            EndIf
-          Next
-          PopListPosition(\Items())
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn Result
+  Procedure.i CountItems(Gadget.i)
+    ProcedureReturn Editor::CountItems(Gadget)
   EndProcedure
   
   Procedure.i RemoveItem(Gadget.i, Item.i)
@@ -190,7 +130,7 @@ Module ListView
         Next
         PopListPosition(\Items())
         
-        ReDraw(Gadget)
+        Text::ReDraw(Gadget)
       EndWith
     EndIf
     
@@ -246,48 +186,6 @@ Module ListView
     ProcedureReturn Item
   EndProcedure
   
-  Procedure.i _AddItem(Gadget, Item, Text.s,Image.i=-1,Flag.i=0)
-    Protected *This.Widget_S = GetGadgetData(Gadget)
-    Protected Result.i, String.s, i.i
-    Static Len, y
-    
-    With *This
-      If (Item > \Text\Count Or Item < 0)
-        Item = \Text\Count
-      EndIf
-      
-      If Item = \Text\Count
-        String.s = Text.s + #LF$
-        \Text\String.s + String.s
-        \Text\Len + Len(String.s)
-        
-        ;           If Item 
-        ; ;             y + 16
-        ; ;             If Bool(y+16>*This\y[2] And y<*This\height[2])
-        ;               String.s = StringField(\Text\String.s, item, #LF$)+#LF$ : i = Len(String.s) : Len + i
-        ;               \Text\String.s = InsertString(\Text\String.s, #LF$ + Text.s, len )
-        ;             \Text\Len + i
-        ;           Else
-        ;             String.s = Text.s + #LF$
-        ;             \Text\String.s = String.s + \Text\String.s
-        ;             \Text\Len + Len(String.s)
-        ;           EndIf
-        
-        \Text\Count + 1
-        ;\Text\Change = 1
-        
-        ; AddLine(Gadget,Item,Text.s,Image,Flag)
-      Else 
-        Text::AddLine(*This, Item, Text.s) 
-      EndIf
-      
-      ;         ; \Text\Change = 1
-      ;         Result = 1
-    EndWith
-    
-    ProcedureReturn Item
-  EndProcedure
-  
   Procedure.s GetText(Gadget.i)
     Protected *This.Widget_S = GetGadgetData(Gadget)
     ProcedureReturn Text::GetText(*This)
@@ -297,7 +195,7 @@ Module ListView
     Protected *This.Widget_S = GetGadgetData(Gadget)
     
     If Text::SetText(*This, Text.s) 
-      ReDraw(*This, *This\Canvas\Gadget)
+      Text::ReDraw(*This, *This\Canvas\Gadget)
       ProcedureReturn 1
     EndIf
     
@@ -307,7 +205,7 @@ Module ListView
     Protected *This.Widget_S = GetGadgetData(Gadget)
     
     If Text::SetFont(*This, FontID)
-      ReDraw(*This, *This\Canvas\Gadget)
+      Text::ReDraw(*This, *This\Canvas\Gadget)
       ProcedureReturn 1
     EndIf
     
@@ -376,7 +274,7 @@ Module ListView
               Case #PB_EventType_MouseMove  
                 If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\vScroll)
                   Item.i =- 1
-                Else
+                ElseIf \Text\Height
                   Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
                 EndIf
                 
@@ -524,23 +422,9 @@ Module ListView
             EndIf
           CompilerEndIf 
           
-          If \Text\Pass
-            Protected i,Len = Len(Text.s)
-            Text.s = "" : For i=0 To Len : Text.s + "●" : Next
-          EndIf
-          
-          Select #True
-            Case \Text\Lower : \Text\String.s = LCase(Text.s)
-            Case \Text\Upper : \Text\String.s = UCase(Text.s)
-            Default
-              \Text\String.s = Text.s
-          EndSelect
-          \Text\Change = #True
-          \Text\Len = Len(\Text\String.s)
-          
+          \Text\Change = 1
           \Color = Colors
           \Color\Fore[0] = 0
-          ;\Color\Back[1] = \Color\Back[0]
           
           If \Text\Editable
             \Text\Editable = 0
@@ -552,10 +436,7 @@ Module ListView
         EndIf
         
         Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        \hScroll\Hide = 1
-        ;         If Bool(\flag\NoButtons = 0 Or \flag\NoLines=0)
-        ;           Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
-        ;         EndIf
+        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
         \Resize = 0
       EndWith
     EndIf
@@ -592,7 +473,7 @@ Module ListView
       Repaint | CallBack(*This, EventType())
       
       If Repaint 
-        ReDraw(*This)
+        Text::ReDraw(*This)
       EndIf
       
     EndWith
@@ -652,7 +533,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 422, 491, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     ;ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
     
-    ListViewGadget(0, 8, 8, 306, 133) ;: SetGadgetText(0, Text.s) 
+    ListViewGadget(0, 8, 8, 306, 233) ;: SetGadgetText(0, Text.s) 
     For a = 0 To 2
       AddGadgetItem(0, a, "Line "+Str(a)+ " of the Listview")
     Next
@@ -664,7 +545,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g=16
-    ListView::Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines) ;: ListView::SetText(g, Text.s) 
+    ListView::Gadget(g, 8, 133+5+8, 306, 233, #PB_Flag_GridLines) ;: ListView::SetText(g, Text.s) 
     For a = 0 To 2
       ListView::AddItem(g, a, "Line "+Str(a)+ " of the Listview")
     Next
@@ -706,5 +587,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------------2+--
+; Folding = --f------80+--
 ; EnableXP

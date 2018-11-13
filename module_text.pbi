@@ -29,8 +29,36 @@ DeclareModule Text
     UseModule Draw
   CompilerEndIf
   
+  ;- - DECLAREs MACROs
+  Macro CountItems(_this_)
+    _this_\Text\Count ; ListSize(_this_\Items())
+  EndMacro
+  
+  Macro ClearItems(_this_) 
+;     If StartDrawing(CanvasOutput(_this_\Canvas\Gadget))
+;       DrawingMode(#PB_2DDrawing_Default)
+;       RoundBox(_this_\X[1],_this_\Y[1],_this_\Width[1],_this_\Height[1],_this_\Radius,_this_\Radius,_this_\Color\Back[_this_\Color\State])
+;       DrawingMode(#PB_2DDrawing_Outlined)
+;       RoundBox(_this_\X[1],_this_\Y[1],_this_\Width[1],_this_\Height[1],_this_\Radius,_this_\Radius,_this_\Color\Frame[_this_\Color\State])
+;       
+; ;       ClearList(_this_\Items()) : Text::Draw(_this_)
+;       StopDrawing()
+;     EndIf 
+    _this_\Text\Count = 0
+    _this_\Text\Change = 1 
+    _this_\Text\String = #LF$
+    PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
+  EndMacro
+  
+  Macro RemoveItem(_this_, _item_) 
+    SelectElement(_this_\Items(), _item_)
+    DeleteElement(_this_\Items())
+    _this_\Text\Change = 1
+    PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
+  EndMacro
+  
   ;- - DECLAREs PROCEDUREs
-  Declare.i Draw(*ThisWidget_S, Canvas.i=-1)
+  Declare.i Draw(*ThisWidget_S)
   Declare.s Make(*This.Widget_S, Text.s)
   Declare.i MultiLine(*This.Widget_S)
   Declare.i SelectionLimits(*This.Widget_S)
@@ -46,7 +74,8 @@ DeclareModule Text
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   ;Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  
+  Declare.i ReDraw(*This.Widget_S, Canvas =- 1, BackColor=$FFF0F0F0)
+
   Declare.i Caret(*This.Widget_S, Line.i = 0)
   Declare.i Remove(*This.Widget_S)
   Declare.i ToReturn(*This.Widget_S)
@@ -254,6 +283,8 @@ Module Text
     EndMacro
     
     With *This
+      \Text\Count = ListSize(\Items())
+        
       If \Text\Vertical
         Width = \Height[1]-\Text\X*2
         Height = \Width[1]-\Text\y*2
@@ -585,16 +616,13 @@ Module Text
     ProcedureReturn Color
   EndProcedure
   
-  Procedure.i Draw(*This.Widget_S, Canvas.i=-1)
+  Procedure.i Draw(*This.Widget_S)
     Protected String.s, StringWidth, ix, iy, iwidth, iheight
     Protected IT,Text_Y,Text_X, X,Y, Width,Height, Drawing
     
     If Not *This\Hide
       
       With *This
-        If Canvas=-1 : Canvas = EventGadget() : EndIf
-        If Canvas <> \Canvas\Gadget : ProcedureReturn : EndIf
-        
         iX=\X[2]
         iY=\Y[2]
         CompilerIf Defined(Scroll, #PB_Module)
@@ -829,44 +857,46 @@ Module Text
       
       ; Draw frames
       With *This
-        ; Draw scroll bars
-        CompilerIf Defined(Scroll, #PB_Module)
-          UnclipOutput()
-          If \vScroll\Page\Length And \vScroll\Max<>\Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines) And
-             Scroll::SetAttribute(\vScroll, #PB_ScrollBar_Maximum, \Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines))
-            Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
-          If \hScroll\Page\Length And \hScroll\Max<>\Scroll\Width And
-             Scroll::SetAttribute(\hScroll, #PB_ScrollBar_Maximum, \Scroll\Width)
-            Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
+        If ListSize(*This\Items())
+          ; Draw scroll bars
+          CompilerIf Defined(Scroll, #PB_Module)
+            UnclipOutput()
+            If \vScroll\Page\Length And \vScroll\Max<>\Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines) And
+               Scroll::SetAttribute(\vScroll, #PB_ScrollBar_Maximum, \Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines))
+              Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            EndIf
+            If \hScroll\Page\Length And \hScroll\Max<>\Scroll\Width And
+               Scroll::SetAttribute(\hScroll, #PB_ScrollBar_Maximum, \Scroll\Width)
+              Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            EndIf
+            
+            Scroll::Draw(\vScroll)
+            Scroll::Draw(\hScroll)
+            
+            ;           ; >>>|||
+            ;           If \Scroll\Widget\Vertical\Page\Length And \Scroll\Widget\Vertical\Max<>\Scroll\Height And
+            ;              Scroll::SetAttribute(\Scroll\Widget\Vertical, #PB_ScrollBar_Maximum, \Scroll\Height)
+            ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horizontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            ;           EndIf
+            ;           
+            ;           If \Scroll\Widget\Horizontal\Page\Length And \Scroll\Widget\Horizontal\Max<>\Scroll\Width And
+            ;              Scroll::SetAttribute(\Scroll\Widget\Horizontal, #PB_ScrollBar_Maximum, \Scroll\Width)
+            ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horizontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            ;           EndIf
+            ;           
+            ;           Scroll::Draw(\Scroll\Widget\Vertical)
+            ;           Scroll::Draw(\Scroll\Widget\Horizontal)
+          CompilerEndIf
           
-          Scroll::Draw(\vScroll)
-          Scroll::Draw(\hScroll)
+          _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
           
-          ;           ; >>>|||
-          ;           If \Scroll\Widget\Vertical\Page\Length And \Scroll\Widget\Vertical\Max<>\Scroll\Height And
-          ;              Scroll::SetAttribute(\Scroll\Widget\Vertical, #PB_ScrollBar_Maximum, \Scroll\Height)
-          ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horizontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          ;           EndIf
-          ;           
-          ;           If \Scroll\Widget\Horizontal\Page\Length And \Scroll\Widget\Horizontal\Max<>\Scroll\Width And
-          ;              Scroll::SetAttribute(\Scroll\Widget\Horizontal, #PB_ScrollBar_Maximum, \Scroll\Width)
-          ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horizontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          ;           EndIf
-          ;           
-          ;           Scroll::Draw(\Scroll\Widget\Vertical)
-          ;           Scroll::Draw(\Scroll\Widget\Horizontal)
-        CompilerEndIf
-        
-        _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
-        
-        ; Draw image
-        If \Image\handle
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
+          ; Draw image
+          If \Image\handle
+            DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+            DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
+          EndIf
         EndIf
-        
+      
         ; Draw frames
         DrawingMode(#PB_2DDrawing_Outlined)
         
@@ -955,6 +985,38 @@ Module Text
       EndWith
     EndIf
     
+  EndProcedure
+  
+  Procedure.i ReDraw(*This.Widget_S, Canvas =- 1, BackColor=$FFF0F0F0)
+    If *This
+      With *This
+        If Canvas =- 1 
+          Canvas = \Canvas\Gadget 
+        ElseIf Canvas <> \Canvas\Gadget
+          ProcedureReturn 0
+        EndIf
+        
+        If StartDrawing(CanvasOutput(Canvas))
+          Draw(*This)
+          StopDrawing()
+        EndIf
+      EndWith
+    Else
+      If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+        DrawingMode(#PB_2DDrawing_Default)
+        Box(0,0,OutputWidth(),OutputHeight(), BackColor)
+        
+        With List()\Widget
+          ForEach List()
+            If Canvas = \Canvas\Gadget
+              Draw(List()\Widget)
+            EndIf
+          Next
+        EndWith
+        
+        StopDrawing()
+      EndIf
+    EndIf
   EndProcedure
   
   ;-
@@ -1808,5 +1870,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --0-98s---0-fu---8-u-v-----------v------
+; Folding = -fu-Dfn0--88-c--n64--+-+-----------+-----
 ; EnableXP
