@@ -144,7 +144,8 @@ Module Tree
             If \Items()\Line <> \Items()\Item 
               \Items()\Line = \Items()\Item
               *This\Line = \Items()\Line
-              *This\text = \Items()\text 
+              *This\Text = \Items()\text 
+              ;CopyStructure(\Items()\text, *This\Text, Text_S)
               
               
               If \Items()\lostfocus <> \Items()\Item
@@ -251,6 +252,10 @@ Module Tree
       If *This\Text\FontID : DrawingFont(*This\Text\FontID) : EndIf
       DrawingMode(#PB_2DDrawing_Default)
       Box(*This\x[2], *This\y[2], *This\width[2], *This\height[2], back_color)
+      
+      If Not *This\Text\Height
+        *This\Text\Height = height;TextHeight("A") + 1
+      EndIf
       
       With *This\Items()
         If ListSize(*This\Items())
@@ -478,19 +483,18 @@ Module Tree
     
     With *This
       ;{ Генерируем идентификатор
-      If Item =- 1 Or Item > ListSize(\Items()) - 1
+      If Item < 0 Or Item > ListSize(\Items()) - 1
         LastElement(\Items())
-        AddElement(\Items()) 
+        *Item = AddElement(\Items()) 
         Item = ListIndex(\Items())
-        *Item = @\Items()
       Else
         SelectElement(\Items(), Item)
         If \Items()\sublevel>sublevel
           sublevel=\Items()\sublevel 
         EndIf
-        *Item = @\Items()
-        InsertElement(\Items())
+        *Item = InsertElement(\Items())
         
+        ; Исправляем идентификатор итема  
         PushListPosition(\Items())
         While NextElement(\Items())
           \Items()\Item = ListIndex(\Items())
@@ -532,6 +536,7 @@ Module Tree
         ;         EndIf
       EndIf
       
+      \Items()\Text\FontID = \Text\FontID
       \Items()\Line =- 1
       \Items()\focus =- 1
       \Items()\lostfocus =- 1
@@ -1185,6 +1190,117 @@ Module Tree
     EndIf
   EndProcedure
   
+  Procedure.i _Events(*This.Widget_S, EventType.i)
+    Static DoubleClick.i
+    Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
+    
+    With *This
+      Repaint | Scroll::CallBack(\vScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \hScroll, \Canvas\Window, \Canvas\Gadget)
+      If Repaint
+        \Scroll\Y =- \vScroll\Page\Pos
+      EndIf
+      Repaint | Scroll::CallBack(\hScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \vScroll, \Canvas\Window, \Canvas\Gadget)
+      If Repaint
+        \Scroll\X =- \hScroll\Page\Pos
+      EndIf
+    EndWith
+    
+    If *This ;And (Not *This\vScroll\Buttons And Not *This\hScroll\Buttons)
+      If ListSize(*This\items())
+        With *This
+          If Not \Hide And Not \Disable And \Interact
+            Select EventType 
+              Case #PB_EventType_MouseLeave
+                \Line =- 1
+                
+              Case #PB_EventType_LeftButtonDown
+                PushListPosition(\Items()) 
+                ForEach \Items()
+                  If \Line = \Items()\Item 
+                    \Line[1] = \Line
+                    \Items()\Color\State = 2
+                    ; \Items()\Focus = \Items()\Item 
+                  ElseIf \Items()\Focus = \Items()\Item 
+                    \Items()\Color\State = 1
+                    \Items()\Focus =- 1
+                  EndIf
+                Next
+                PopListPosition(\Items()) 
+                Repaint = 1
+                
+              Case #PB_EventType_LeftButtonUp
+                PushListPosition(\Items()) 
+                ForEach \Items()
+                  If \Line = \Items()\Item 
+                    \Items()\Focus = \Items()\Item 
+                  Else
+                    \Items()\Color\State = 1
+                  EndIf
+                Next
+                PopListPosition(\Items()) 
+                Repaint = 1
+                
+              Case #PB_EventType_MouseMove  
+                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\vScroll)
+                  Item.i =- 1
+                Else
+                  Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
+                EndIf
+                
+                If \Line <> Item And Item =< ListSize(\Items())
+                  If isItem(\Line, \Items()) 
+                    If \Line <> ListIndex(\Items())
+                      SelectElement(\Items(), \Line) 
+                    EndIf
+                    
+                    ;If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
+                      \items()\Color\State = 2 
+                     \items()\Line =- 1
+                    ;EndIf
+                  EndIf
+                  
+                  itemSelect(Item, \Items())
+                  ;If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton And itemSelect(Item, \Items())
+                    \items()\Color\State = 1
+                  \items()\Line = \items()\Item
+                  ;EndIf
+                  
+                  \Line = Item
+                   Repaint = #True
+                EndIf
+                
+              Default
+                itemSelect(\Line[1], \Items())
+            EndSelect
+          EndIf
+        EndWith    
+        
+        With *This\items()
+          If *Focus = *This
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
+            CompilerElse
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
+            CompilerEndIf
+            
+            Select EventType
+              Case #PB_EventType_KeyUp
+              Case #PB_EventType_KeyDown
+                Select *This\Canvas\Key
+                  Case #PB_Shortcut_V
+                EndSelect 
+                
+            EndSelect
+          EndIf
+          
+          
+        EndWith
+      EndIf
+    EndIf
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
   EndProcedure
@@ -1196,11 +1312,14 @@ Module Tree
         \Cursor = #PB_Cursor_Default
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
+        \Canvas\Window = GetActiveWindow()
         \Radius = Radius
         \Alpha = 255
         \Interact = 1
         \Caret[1] =- 1
         \Line =- 1
+        \X =- 1
+        \Y =- 1
         
         ; Set the default widget flag
         If Bool(Flag&#PB_Text_WordWrap)
@@ -1658,8 +1777,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 247
-; FirstLine = 239
-; Folding = --------0----0----------------+--8-------
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = --------8----8----------------2-------------
 ; EnableXP

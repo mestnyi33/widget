@@ -137,6 +137,8 @@ Module Button
         \Alpha = 255
         \Interact = 1
         \Line =- 1
+        \X =- 1
+        \Y =- 1
         
         ; Set the default widget flag
         Flag|#PB_Text_ReadOnly

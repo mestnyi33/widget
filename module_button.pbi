@@ -139,10 +139,13 @@ Module Button
         \Cursor = #PB_Cursor_Default
         \DrawingMode = #PB_2DDrawing_Gradient
         \Canvas\Gadget = Canvas
+        \Canvas\Window = GetActiveWindow()
         \Radius = Radius
         \Alpha = 255
         \Interact = 1
         \Line =- 1
+        \X =- 1
+        \Y =- 1
         
         If Bool(Flag&#PB_Text_Vertical)
           If Bool(Flag&#PB_Text_Reverse)
@@ -239,6 +242,7 @@ Module Button
           ;\Color\Front[3] = \Color\Front[1]
           
           SetText(*This, Text.s)
+          \Resize = 0
         EndIf
       EndWith
     EndIf
@@ -286,6 +290,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_Resize
         Resize(*Button_0, Width-70, #PB_Ignore, #PB_Ignore, Height-20)
         Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
+;         ForEach List()
+;           Resize(List()\Widget, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
+;         Next
         
         Result = 1
       Default

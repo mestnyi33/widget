@@ -67,6 +67,7 @@
     String.s[3]
     Count.i[2]
     Change.b
+    Position.i
     
     Lower.b
     Upper.b
@@ -289,5 +290,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -n-
+; Folding = -v-
 ; EnableXP

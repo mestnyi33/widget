@@ -760,7 +760,9 @@ Module Scroll
       \Size[2] = 4
       \Window =- 1
       \Gadget =- 1
-      
+      \X =- 1
+      \Y =- 1
+        
       ; Цвет фона скролла
       \Color[0]\State = 0
       \Color[0]\Back[0] = $FFF9F9F9
@@ -937,5 +939,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------------------------v----
+; Folding = ------------------------------
 ; EnableXP

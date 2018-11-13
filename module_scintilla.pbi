@@ -1425,7 +1425,6 @@ Module Scintilla
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
-        
         \Type = #PB_GadgetType_Scintilla
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
@@ -1435,6 +1434,8 @@ Module Scintilla
         \Interact = 1
         \Caret[1] =- 1
         \Line =- 1
+        \X =- 1
+        \Y =- 1
         
         ; Set the Default widget flag
         If Bool(Flag&#PB_Text_WordWrap)

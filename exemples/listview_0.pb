@@ -30,6 +30,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   PostEvent(#PB_Event_Gadget, 0, 1, #PB_EventType_Resize)
         
   Debug "---------------END "+Str(ElapsedMilliseconds()-time)
+  ListView::Repaint(GetGadgetData(1))
   
   ListViewGadget(0, 10, 10, 250, 680)
   Debug "---------------Start"
@@ -52,7 +53,6 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 13
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

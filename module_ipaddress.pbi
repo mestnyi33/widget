@@ -1015,6 +1015,7 @@ Module IPAddress
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
+        \Canvas\Window = GetActiveWindow()
         \Radius = Radius
         \Alpha = 255
         \Interact = 1

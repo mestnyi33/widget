@@ -161,11 +161,11 @@ Module String
           
         EndIf
         
-        \Text[1]\String.s = Left(*This\Text\String.s, \Caret+Position) : \Text[1]\Change = #True
+        \Text[1]\String.s = Left(*This\Text\String.s, \Text\Position+Position) : \Text[1]\Change = #True
         If \Text[2]\Len > 0
-          \Text[2]\String.s = Mid(\Text\String.s, 1+\Caret+Position, \Text[2]\Len) : \Text[2]\Change = #True
+          \Text[2]\String.s = Mid(\Text\String.s, 1+\Text\Position+Position, \Text[2]\Len) : \Text[2]\Change = #True
         EndIf
-        \Text[3]\String.s = Trim(Right(*This\Text\String.s, *This\Text\Len-(\Caret+Position + \Text[2]\Len)), #LF$) : \Text[3]\Change = #True
+        \Text[3]\String.s = Trim(Right(*This\Text\String.s, *This\Text\Len-(\Text\Position+Position + \Text[2]\Len)), #LF$) : \Text[3]\Change = #True
         
         Line = *This\Line
         Caret = *This\Caret
@@ -227,8 +227,8 @@ Module String
         If \Items()\Text[2]\Len 
           Text::Remove(*This)
         Else
-          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 2)
-          \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 2)
+          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Position+\Caret) + Mid(\Text\String.s[1],  \Items()\Text\Position+\Caret + 2)
+          \Text\String.s = Left(\Text\String.s, \Items()\Text\Position+\Caret) + Mid(\Text\String.s,  \Items()\Text\Position+\Caret + 2)
           \Text\Len = Len(\Text\String.s) 
         EndIf
         
@@ -255,7 +255,7 @@ Module String
           
           \Caret + 1
           ; \Items()\Text\String.s = \Items()\Text[1]\String.s + Chr(\Canvas\Input) + \Items()\Text[3]\String.s ; сним не выравнивается строка при вводе слов
-          \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Caret+\Caret)
+          \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Text\Position+\Caret)
           \Text\Len = Len(\Text\String.s) 
           \Caret[1] = \Caret 
           \Text\Change =- 1
@@ -263,7 +263,7 @@ Module String
           \Default = *This
         EndIf
         
-        \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Caret+\Caret)
+        \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Text\Position+\Caret)
         Repaint =- 1 
       EndIf
     EndWith
@@ -286,8 +286,8 @@ Module String
         Text::Remove(*This)
         
       ElseIf \Caret[1] > 0 
-        \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Caret+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Caret+\Caret + 1)
-        \Text\String.s = Left(\Text\String.s, \Items()\Caret+\Caret - 1) + Mid(\Text\String.s,  \Items()\Caret+\Caret + 1)
+        \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Position+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Text\Position+\Caret + 1)
+        \Text\String.s = Left(\Text\String.s, \Items()\Text\Position+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Position+\Caret + 1)
         \Text\Len = Len(\Text\String.s)  
         \Caret - 1 
       EndIf
@@ -355,9 +355,9 @@ Module String
                     *This\Caret[1] = \Caret[1]
                   EndIf
                   
-                  *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, \Caret+\Caret[1] + 1)
+                  *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, \Text\Position+\Caret[1] + 1)
                   *This\Text\Len = Len(*This\Text\String.s)
-                  \Text\String.s = InsertString(\Text\String.s, \Text[2]\String.s, \Caret+\Caret[1] + 1)
+                  \Text\String.s = InsertString(\Text\String.s, \Text[2]\String.s, \Text\Position+\Caret[1] + 1)
                   \Text\Len = Len(\Text\String.s)
                   
                   *This\Text\Change =- 1
@@ -391,7 +391,7 @@ Module String
                     Repaint =- 1
                   EndIf
                 Else
-                  \Text[1]\String.s = Left(*This\Text\String.s, \Caret+Caret) : \Text[1]\Change = #True
+                  \Text[1]\String.s = Left(*This\Text\String.s, \Text\Position+Caret) : \Text[1]\Change = #True
                 EndIf
                 
                 *This\Caret = Caret
@@ -412,7 +412,7 @@ Module String
                   If \Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len
                     SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
                   Else
-                    \Text[1]\String.s = Left(*This\Text\String.s, \Caret+*This\Caret) : \Text[1]\Change = #True
+                    \Text[1]\String.s = Left(*This\Text\String.s, \Text\Position+*This\Caret) : \Text[1]\Change = #True
                   EndIf
                   
                   *This\Caret[1] = *This\Caret
@@ -527,11 +527,14 @@ Module String
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
+        \Canvas\Window = GetActiveWindow()
         \Radius = Radius
         \Alpha = 255
         \Interact = 1
         \Caret[1] =- 1
         \Line =- 1
+        \X =- 1
+        \Y =- 1
         
         ; Set the default widget flag
         If Bool(Flag&#PB_Text_Top)
@@ -632,6 +635,7 @@ Module String
           EndIf
           
           SetText(*This, Text.s)
+          \Resize = 0
         EndIf
       EndWith
     EndIf
@@ -804,12 +808,12 @@ CompilerIf #PB_Compiler_IsMainFile
     winBackColor = GetWindowBackgroundColor(WindowID(0))
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-      height = 20
+      height = 19
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
       height = 18
-    CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-      height = 20
-      LoadFont(0, "monospace", 9)
+    CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux ; 
+      height = 19
+      LoadFont(0, "monospace", 10)
       SetGadgetFont(-1,FontID(0))
     CompilerEndIf
     
@@ -880,5 +884,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------X--+-0-------
+; Folding = --------4----0-------
 ; EnableXP

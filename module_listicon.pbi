@@ -1252,6 +1252,8 @@ Module ListIcon
         
         \Item =- 1
         \Canvas\Window = GetActiveWindow()
+        \X =- 1
+        \Y =- 1
         
         \Attribute=-1
         \Text\FontID = GetGadgetFont(#PB_Default) ; FontID(LoadFont(#PB_Any,"Tahoma",8)) ; 
@@ -1478,8 +1480,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 283
-; FirstLine = 266
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = --------------------------------------
 ; EnableXP

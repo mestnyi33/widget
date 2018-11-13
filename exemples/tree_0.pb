@@ -19,7 +19,7 @@ If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
   Define time = ElapsedMilliseconds()
   
   For a = 0 To LN
-    Tree::AddItem (1, -1, "Item "+Str(a), 0,Random(5)+1)
+    Tree::AddItem (1, -1, "Item "+Str(a), 0);,Random(5)+1)
     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
     EndIf
     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
@@ -49,6 +49,6 @@ If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
   Until  Event= #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 3
+; CursorPosition = 21
 ; Folding = --
 ; EnableXP
