@@ -51,14 +51,14 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
   ; HideGadget(0, 0)
   
   
-  
-  Define time = ElapsedMilliseconds()
-  count = Editor::CountItems(1) : For a = 0 To count : Editor::RemoveItem(1, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove widget items time count - " + Editor::CountItems(1)
-  ; Editor::ClearItems(1) : Debug Str(ElapsedMilliseconds()-time) + " - clear widget items time count - " + Editor::CountItems(1)
-  
-  Define time = ElapsedMilliseconds()
-  count = CountGadgetItems(0) : For a = 0 To count : RemoveGadgetItem(0, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove gadget items time count - " + CountGadgetItems(0)
-  ; ClearGadgetItems(0) : Debug Str(ElapsedMilliseconds()-time) + " - clear gadget items time count - " + CountGadgetItems(0)
+;   
+;   Define time = ElapsedMilliseconds()
+;   count = Editor::CountItems(1) : For a = 0 To count : Editor::RemoveItem(1, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove widget items time count - " + Editor::CountItems(1)
+;   ; Editor::ClearItems(1) : Debug Str(ElapsedMilliseconds()-time) + " - clear widget items time count - " + Editor::CountItems(1)
+;   
+;   Define time = ElapsedMilliseconds()
+;   count = CountGadgetItems(0) : For a = 0 To count : RemoveGadgetItem(0, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove gadget items time count - " + CountGadgetItems(0)
+;   ; ClearGadgetItems(0) : Debug Str(ElapsedMilliseconds()-time) + " - clear gadget items time count - " + CountGadgetItems(0)
   
   
   Repeat : Event=WaitWindowEvent()

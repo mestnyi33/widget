@@ -1557,7 +1557,7 @@ Module Text
           Case #PB_EventType_Input 
             \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
             \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
-          Case #PB_EventType_KeyDown
+          Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
             \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
             \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
           Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave

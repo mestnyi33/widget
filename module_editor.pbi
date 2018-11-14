@@ -1063,7 +1063,7 @@ Module Editor
                           \Caret = \Items()\Text\Len
                         EndIf
                         
-                        SelectionText(*This)
+                       SelectionText(*This)
                       EndIf
                       
                       \Line = Item
@@ -1076,6 +1076,36 @@ Module Editor
                   EndIf
                   
                   Repaint = #True
+                  
+                  Protected SelectionLen
+                  PushListPosition(\Items()) 
+                  ForEach \Items()
+                    If \Line = \Items()\Item Or \Line[1] = \Items()\Item
+                      
+                    ElseIf ((\Line[1] < \Line And \Line[1] < \Items()\Item And \Line > \Items()\Item) Or
+                        (\Line[1] > \Line And \Line[1] > \Items()\Item And \Line < \Items()\Item)) 
+                      
+                      If \Items()\Text[2]\String <> \Items()\Text\String
+                        \Items()\Text[2]\Len = \Items()\Text\Len
+                        If Not \Items()\Text\Len : \Items()\Text[2]\Len = 1 : EndIf
+                        \Items()\Text[1]\String = "" : \Items()\Text[1]\Len = 0 : \Items()\Text[1]\Change = 1
+                        \Items()\Text[3]\String = "" : \Items()\Text[3]\Len = 0 : \Items()\Text[3]\Change = 1
+                        \Items()\Text[2]\String = \Items()\Text\String : \Items()\Text[2]\Change = 1
+                      EndIf
+                      
+                       SelectionLen=Bool(Not \Flag\FullSelection)*7
+                        ; \Items()\Text[2]\X = 0;\Items()\Text\X+\Items()\Text\Width
+                        
+                        If Not SelectionLen
+                          \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                        Else
+                          \Items()\Text[2]\Width[2] = SelectionLen
+                        EndIf
+                    Else  
+                      \Items()\Text[2]\String =  "" : \Items()\Text[2]\Len = 0 : \Items()\Text[2]\Change = 1
+                    EndIf
+                  Next
+                  PopListPosition(\Items()) 
                 EndIf
                 
               Case #PB_EventType_LeftDoubleClick 
@@ -1548,5 +1578,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = 08-v-rv---------------8--e-f---48--
+; Folding = 08-v-rv---------------------8---e---
 ; EnableXP

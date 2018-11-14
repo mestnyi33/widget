@@ -160,6 +160,12 @@ Module ListView
       If ListSize(*This\items())
         With *This
           If Not \Hide And Not \Disable And \Interact
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
+            CompilerElse
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
+            CompilerEndIf
+            
             Select EventType 
               Case #PB_EventType_LeftClick : PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_LeftClick)
               Case #PB_EventType_RightClick : PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_RightClick)
@@ -176,13 +182,13 @@ Module ListView
                     
                     If \Flag\ClickSelect
                       \Items()\Color\State ! 2
-                    Else ; If Not \Flag\MultiSelect
+                    Else
                        \Items()\Line = \Items()\Item
                        \Items()\Color\State = 2
                     EndIf
                     
                     ; \Items()\Focus = \Items()\Item 
-                  ElseIf (Not \Flag\ClickSelect And \Items()\Focus = \Items()\Item) Or \Flag\MultiSelect 
+                  ElseIf ((Not \Flag\ClickSelect And \Items()\Focus = \Items()\Item) Or \Flag\MultiSelect) And Not Control
                     \Items()\Line =- 1
                     \Items()\Color\State = 1
                     \Items()\Focus =- 1
@@ -219,16 +225,16 @@ Module ListView
                     EndIf
                     
                     If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
-                      If \Flag\MultiSelect
+                      If (\Flag\MultiSelect And Not Control)
                        \items()\Color\State = 2
-                      ElseIf And Not \Flag\ClickSelect
+                      ElseIf Not \Flag\ClickSelect
                         \items()\Color\State = 1
                       EndIf
                     EndIf
                   EndIf
                   
                   If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton And itemSelect(Item, \Items())
-                    If And Not \Flag\ClickSelect
+                    If Not \Flag\ClickSelect And (\Flag\MultiSelect And Not Control)
                        \Items()\Line = \Items()\Item
                        \items()\Color\State = 2
                     EndIf
@@ -236,6 +242,69 @@ Module ListView
                   
                   \Line = Item
                    Repaint = #True
+                EndIf
+                
+                If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton
+                  If (\Flag\MultiSelect And Not Control)
+                    PushListPosition(\Items()) 
+                    ForEach \Items()
+                      If  Not \Items()\Hide
+                        If ((\Line[1] =< \Line And \Line[1] =< \Items()\Item And \Line >= \Items()\Item) Or
+                            (\Line[1] >= \Line And \Line[1] >= \Items()\Item And \Line =< \Items()\Item)) 
+                          If \Items()\Line <> \Items()\Item
+                            \Items()\Line = \Items()\Item
+                            \items()\Color\State = 2
+                          EndIf
+                        Else
+                          \Items()\Line =- 1
+                          \Items()\Color\State = 1
+                          \Items()\Focus =- 1
+                        EndIf
+                      EndIf
+                    Next
+                    PopListPosition(\Items()) 
+                  EndIf
+                
+; ; ;                   If \Line[1] =< \Line
+; ; ;                     PushListPosition(\Items()) 
+; ; ;                     While PreviousElement(\Items()) And \Line[1] < \Items()\Item And Not \Items()\Hide
+; ; ;                       If \Items()\Line <> \Items()\Item
+; ; ;                         \Items()\Line = \Items()\Item
+; ; ;                         \items()\Color\State = 2
+; ; ;                       EndIf
+; ; ;                     Wend
+; ; ;                     PopListPosition(\Items()) 
+; ; ;                     PushListPosition(\Items()) 
+; ; ;                     While NextElement(\Items()) And \Items()\Line = \Items()\Item And Not \Items()\Hide
+; ; ;                       \Items()\Line =- 1
+; ; ;                       \Items()\Color\State = 1
+; ; ;                       \Items()\Focus =- 1
+; ; ;                     Wend
+; ; ;                     PopListPosition(\Items()) 
+; ; ;                     PushListPosition(\Items()) 
+; ; ;                     If \Line[1] = \Line And PreviousElement(\Items()) And \Items()\Line = \Items()\Item And Not \Items()\Hide
+; ; ;                       \Items()\Line =- 1
+; ; ;                       \Items()\Color\State = 1
+; ; ;                       \Items()\Focus =- 1
+; ; ;                     EndIf
+; ; ;                     PopListPosition(\Items()) 
+; ; ;                   ElseIf \Line[1] > \Line
+; ; ;                     PushListPosition(\Items()) 
+; ; ;                     While NextElement(\Items()) And \Line[1] > \Items()\Item And Not \Items()\Hide
+; ; ;                       If \Items()\Line <> \Items()\Item
+; ; ;                         \Items()\Line = \Items()\Item
+; ; ;                         \items()\Color\State = 2
+; ; ;                       EndIf
+; ; ;                     Wend
+; ; ;                     PopListPosition(\Items()) 
+; ; ;                     PushListPosition(\Items()) 
+; ; ;                     While PreviousElement(\Items()) And \Items()\Line = \Items()\Item And Not \Items()\Hide
+; ; ;                       \Items()\Line =- 1
+; ; ;                       \Items()\Color\State = 1
+; ; ;                       \Items()\Focus =- 1
+; ; ;                     Wend
+; ; ;                     PopListPosition(\Items()) 
+; ; ;                   EndIf
                 EndIf
                 
               Default
@@ -451,16 +520,16 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   For a = 0 To LN
     ListView::AddItem (1, -1, "Item "+Str(a), 0,1)
   Next
-  Define time = ElapsedMilliseconds()
-  For a = 0 To LN
-    ;ListView::SetItemState(1, a, 1) ; set (beginning with 0) the tenth item as the active one
-    If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
-    EndIf
-    If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
-      Debug a
-    EndIf
-  Next
-  Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + Editor::CountItems(1)
+;   Define time = ElapsedMilliseconds()
+;   For a = 0 To LN
+;     ListView::SetItemState(1, a, 1) ; set (beginning with 0) the tenth item as the active one
+;     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+;     EndIf
+;     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+;       Debug a
+;     EndIf
+;   Next
+;   Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + Editor::CountItems(1)
   
   Text::Redraw(GetGadgetData(1), 1)
   
@@ -468,16 +537,16 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   For a = 0 To LN
     AddGadgetItem (0, -1, "Item "+Str(a), 0, Random(5)+1)
   Next
-  Define time = ElapsedMilliseconds()
-  For a = 0 To LN
-    ;SetGadgetItemState(0, a, 1) ; set (beginning with 0) the tenth item as the active one
-    If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
-    EndIf
-    If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
-      Debug a
-    EndIf
-  Next
-  Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
+;   Define time = ElapsedMilliseconds()
+;   For a = 0 To LN
+;     SetGadgetItemState(0, a, 1) ; set (beginning with 0) the tenth item as the active one
+;     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+;     EndIf
+;     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+;       Debug a
+;     EndIf
+;   Next
+;   Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
   ; HideGadget(0, 0)
   
   Repeat : Event=WaitWindowEvent()
@@ -571,5 +640,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------48-v6-
+; Folding = ---------80fz-
 ; EnableXP

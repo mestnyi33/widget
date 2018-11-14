@@ -16,7 +16,7 @@ LN=1500; количесвто итемов
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   ListViewGadget(0, 10, 10, 250, 680)
-  ListView::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection)
+  ListView::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection|#PB_Flag_MultiSelect)
   
   Define time = ElapsedMilliseconds()
   For a = 0 To LN
