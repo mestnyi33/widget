@@ -52,6 +52,8 @@
     CheckBoxes.b
     FullSelection.b
     AlwaysSelection.b
+    MultiSelect.b
+    ClickSelect.b
   EndStructure
   
   Structure Image_S Extends Coordinate_S

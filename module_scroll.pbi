@@ -18,6 +18,10 @@ DeclareModule Scroll
   UseModule Constants
   UseModule Structures
   
+  Macro ThumbPos(_this_, _scroll_pos_)
+    (_this_\Area\Pos + Round((_scroll_pos_-_this_\Min) * (_this_\Area\Length / (_this_\Max-_this_\Min)), #PB_Round_Nearest)) : If _this_\Vertical : _this_\Y[3] = _this_\Thumb\Pos : _this_\Height[3] = _this_\Thumb\Length : Else : _this_\X[3] = _this_\Thumb\Pos : _this_\Width[3] = _this_\Thumb\Length : EndIf
+  EndMacro
+  
   
   Declare.b Draw(*Scroll.Scroll_S)
   Declare.i Y(*Scroll.Scroll_S)
@@ -37,10 +41,6 @@ DeclareModule Scroll
 EndDeclareModule
 
 Module Scroll
-  Macro ThumbPos(_this_, _scroll_pos_)
-    (_this_\Area\Pos + Round((_scroll_pos_-_this_\Min) * (_this_\Area\Length / (_this_\Max-_this_\Min)), #PB_Round_Nearest))
-  EndMacro
-  
   Macro ThumbLength(_this_)
     Round(_this_\Area\Length - (_this_\Area\Length / (_this_\Max-_this_\Min))*((_this_\Max-_this_\Min) - _this_\Page\Length), #PB_Round_Nearest)
   EndMacro
@@ -150,8 +150,7 @@ Module Scroll
     Protected ScrollPos.i
     
     With *This
-      ScrollPos = Match(\Min + Round((ThumbPos - \Area\Pos) / (\Area\Length / (\Max-\Min)), #PB_Round_Nearest), \Page\ScrollStep)
-      If (\Vertical And \Type = #PB_GadgetType_TrackBar) : ScrollPos = ((\Max-\Min)-ScrollPos) : EndIf
+      ScrollPos = Match(\Min + Round((ThumbPos - \Area\Pos) / (\Area\Length / (\Max-\Min)), #PB_Round_Nearest), \Page\ScrollStep) : If (\Vertical And \Type = #PB_GadgetType_TrackBar) : ScrollPos = ((\Max-\Min)-ScrollPos) : EndIf
     EndWith
     
     ProcedureReturn ScrollPos
@@ -313,13 +312,13 @@ Module Scroll
         \Page\Pos=ScrollPos
         \Thumb\Pos = ThumbPos(*Scroll, ScrollPos)
         
-        If \Vertical
-          \Y[3] = \Thumb\Pos
-          \Height[3] = \Thumb\Length
-        Else
-          \X[3] = \Thumb\Pos
-          \Width[3] = \Thumb\Length
-        EndIf
+; ; ;         If \Vertical
+; ; ;           \Y[3] = \Thumb\Pos
+; ; ;           \Height[3] = \Thumb\Length
+; ; ;         Else
+; ; ;           \X[3] = \Thumb\Pos
+; ; ;           \Width[3] = \Thumb\Length
+; ; ;         EndIf
         
         If \Gadget >- 1 
           ;Debug \Window
@@ -939,5 +938,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------------------------
+; Folding = -+f---------------------------
 ; EnableXP

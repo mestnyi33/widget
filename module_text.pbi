@@ -704,7 +704,7 @@ Module Text
               EndIf 
                 
               ; Draw selections
-              If \Item=*This\Line Or \Item=\focus
+              If \Item=*This\Line Or \Item=\focus Or \Item=\line ; \Color\State;
                 ; Draw items back color
                 If \Color\Fore[\Color\State]
                   DrawingMode(#PB_2DDrawing_Gradient)
@@ -1866,5 +1866,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -fu-Dfn0--88-c--n64--+-+-----------+-----
+; Folding = -fu-Dfn0--8--c--n64--+-+-----------+-----
 ; EnableXP

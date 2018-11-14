@@ -762,7 +762,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  Procedure Events()
+  Procedure Widget_Events()
     Protected String.s
     
     Select EventType()
@@ -817,7 +817,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define i
     For i=0 To 8
-      BindGadgetEvent(i, @Events())
+      BindGadgetEvent(i, @Widget_Events())
     Next
     
     SetGadgetText(6, "GaT")
@@ -866,7 +866,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SetColor(*S_3, #PB_Gadget_BackColor, $FFF0F0F0)
     ;     SetColor(*S_4, #PB_Gadget_BackColor, $FFF0F0F0)
     
-    BindEvent(#PB_Event_Widget, @Events())
+    BindEvent(#PB_Event_Widget, @Widget_Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

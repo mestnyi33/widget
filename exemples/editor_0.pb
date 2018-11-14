@@ -11,7 +11,7 @@ XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_editor.pbi"
 
-LN=150; количесвто итемов 
+LN=1500; количесвто итемов 
 Define m.s=#LF$
 Text.s = "This is a long line" + m.s +
            "Who should show," + m.s +
@@ -20,8 +20,8 @@ Text.s = "This is a long line" + m.s +
            "Otherwise it will not work."
   
 If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
-  editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : Editor::SetText(1, Text.s)
   EditorGadget(0, 10, 10, 250, 680) : SetGadgetText(0, Text.s)
+  editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : Editor::SetText(1, Text.s)
   
   Define time = ElapsedMilliseconds()
   For a = 3 To LN
@@ -37,15 +37,8 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
   Editor::Repaint(GetGadgetData(1))
   ;Text::Redraw(GetGadgetData(1), 1)
   
-  ; PostEvent(#PB_Event_Widget, 0, GetGadgetData(1), #PB_EventType_Create)
-  ; PostEvent(#PB_Event_Gadget, 0, 1, #PB_EventType_Repaint)
- ; *w = w 
- ; Debug *w\Canvas\Gadget
- ; Editor::redraw(*w, 1)
-  
   ; HideGadget(0, 1)
   Define time = ElapsedMilliseconds()
-  
   For a = 3 To LN
     AddGadgetItem (0, -1, "Item "+Str(a), 0, Random(5)+1)
     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
@@ -54,7 +47,6 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
       Debug a
     EndIf
   Next
-  
   Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
   ; HideGadget(0, 0)
   

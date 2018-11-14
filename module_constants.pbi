@@ -53,6 +53,9 @@ DeclareModule Constants
     
     #PB_Flag_GridLines
     #PB_Flag_Invisible
+    
+    #PB_Flag_MultiSelect
+    #PB_Flag_ClickSelect
   EndEnumeration
   
   #PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.

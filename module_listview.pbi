@@ -33,183 +33,104 @@ DeclareModule ListView
   
   
   ;- - DECLAREs MACROs
+  Macro ClearItems(_gadget_)
+    Editor::ClearItems(_gadget_)
+  EndMacro
   
-  ;- DECLARE
-  Declare GetState(Gadget.i)
-  Declare.s GetText(Gadget.i)
-  Declare.i ClearItems(Gadget.i)
-  Declare.i CountItems(Gadget.i)
-  Declare SetState(Gadget.i, State.i)
-  Declare GetAttribute(Gadget.i, Attribute.i)
-  Declare SetAttribute(Gadget.i, Attribute.i, Value.i)
-  Declare SetText(Gadget, Text.s, Item.i=0)
-  Declare SetFont(Gadget, FontID.i)
-  Declare AddItem(Gadget,Item,Text.s,Image.i=-1,Flag.i=0)
+  Macro CountItems(_gadget_)
+    Editor::CountItems(_gadget_)
+  EndMacro
   
-  Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+  Macro RemoveItem(_gadget_, _item_)
+    Editor::RemoveItem(_gadget_, _item_)
+  EndMacro
+  
+  Macro AddItem(_gadget_,_item_,_text_,_image_=-1,_flag_=0)
+    Editor::AddItem(_gadget_,_item_,_text_,_image_,_flag_)
+  EndMacro
+  
+  Macro SetText(_gadget_,_text_)
+    Editor::SetText(_gadget_,_text_,0)
+  EndMacro
+  
+  Macro SetFont(_gadget_, _font_id_)
+    Editor::SetFont(_gadget_, _font_id_)
+  EndMacro
+  
+  Macro GetText(_gadget_)
+    Text::GetText(GetGadgetData(_gadget_))
+  EndMacro
+  
+  ;- DECLAREs PROCEDUREs
+  Declare.i SetState(Gadget.i, State.i)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
+  Declare.i SetItemState(Gadget.i, Item.i, State.i)
 EndDeclareModule
 
 Module ListView
-  ; ;   UseModule Constant
-  ;- PROCEDURE
   ;-
-  
+  ;- PROCEDUREs
   ;-
-  ;- PUBLIC
-  Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
-    Protected *This.Widget_S = GetGadgetData(Gadget)
-    
-    With *This
-      
-    EndWith
-  EndProcedure
-  
-  Procedure GetAttribute(Gadget.i, Attribute.i)
+  Procedure.i SetItemState(Gadget.i, Item.i, State.i)
     Protected Result, *This.Widget_S = GetGadgetData(Gadget)
     
     With *This
-      ;       Select Attribute
-      ;         Case #PB_ScrollBar_Minimum    : Result = \Scroll\Min
-      ;         Case #PB_ScrollBar_Maximum    : Result = \Scroll\Max
-      ;         Case #PB_ScrollBar_PageLength : Result = \Scroll\PageLength
-      ;       EndSelect
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure SetState(Gadget.i, State.i)
-    Protected *This.Widget_S = GetGadgetData(Gadget)
-    
-    With *This
-      
-    EndWith
-  EndProcedure
-  
-  Procedure GetState(Gadget.i)
-    Protected ScrollPos, *This.Widget_S = GetGadgetData(Gadget)
-    
-    With *This
-      
-    EndWith
-  EndProcedure
-  
-  Procedure.i ClearItems(Gadget.i)
-    ProcedureReturn Editor::ClearItems(Gadget)
-  EndProcedure
-  
-  Procedure.i CountItems(Gadget.i)
-    ProcedureReturn Editor::CountItems(Gadget)
-  EndProcedure
-  
-  Procedure.i RemoveItem(Gadget.i, Item.i)
-    Protected Result.i, *This.Widget_S, sublevel.i
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
-    If *This
-      With *This
-        PushListPosition(\Items()) 
-        ForEach \Items()
-          If \Items()\Item = Item 
-            sublevel = \Items()\sublevel
-            PushListPosition(\Items())
-            While NextElement(\Items())
-              If sublevel = \Items()\sublevel
-                Break
-              ElseIf sublevel < \Items()\sublevel 
-                Result = DeleteElement(\Items()) 
-              EndIf
-            Wend
-            PopListPosition(\Items())
-            Result = DeleteElement(\Items()) 
-            Break
-          EndIf
-        Next
-        PopListPosition(\Items())
-        
-        Text::ReDraw(Gadget)
-      EndWith
-    EndIf
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure AddItem(Gadget.i,Item.i,String.s,Image.i=-1,Flag.i=0)
-    Static adress.i, Len
-    Protected *This.Widget_S, Sublevel.i, Childrens.i, Hide.b, *Item
-    Protected Image_Y, Image_X, Text_X, Text_Y, Height, Width, Indent = 4
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
-    
-    If Not *This
-      ProcedureReturn -1
-    EndIf
-    
-    With *This
-      ;{ Генерируем идентификатор
-      If Item =- 1 Or Item > ListSize(\Items()) - 1
-        LastElement(\Items())
-        *Item = AddElement(\Items()) 
-        Item = ListIndex(\Items())
-      Else
-        SelectElement(\Items(), Item)
-        *Item = InsertElement(\Items())
-        
+      If (\Flag\MultiSelect Or \Flag\ClickSelect)
         PushListPosition(\Items())
-        While NextElement(\Items())
-          \Items()\Item = ListIndex(\Items())
-        Wend
+        Result = SelectElement(\Items(), Item) 
+        If Result 
+          \Items()\Color\State = Bool(State)+1
+          \Items()\Line = \Items()\Item
+          PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
+        EndIf
         PopListPosition(\Items())
       EndIf
-      ;}
-      
-      ;       ; If Not \Text\Height And StartDrawing(CanvasOutput(\Canvas\Gadget)) ; с ним три раза быстрее
-      ;       If StartDrawing(CanvasOutput(\Canvas\Gadget))
-      ;         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
-      ;         If Not \Text\Height : \Text\Height = TextHeight("A") + 1 : EndIf
-      ;         
-      ;         If \Type = #PB_GadgetType_Button
-      ;           \Items()\Text\Width = TextWidth(RTrim(String.s))
-      ;         Else
-      ;           \Items()\Text\Width = TextWidth(String.s)
-      ;         EndIf
-      ;         StopDrawing()
-      ;       EndIf
-      
-      Text::AddLine(*This, Item.i,String.s)
-;       \Items()\Color[0]\Fore[1] = 0
-;       \Items()\Color[0]\Fore[2] = 0
     EndWith
     
-    ProcedureReturn Item
+    ProcedureReturn Result
   EndProcedure
   
-  Procedure.s GetText(Gadget.i)
+  Procedure.i SetState(Gadget.i, State.i)
     Protected *This.Widget_S = GetGadgetData(Gadget)
-    ProcedureReturn Text::GetText(*This)
+    
+    With *This
+      Text::Redraw(*This, \Canvas\Gadget)
+      
+      PushListPosition(\Items())
+      ChangeCurrentElement(\Items(), SetItemState(Gadget, State, 2)) : \Items()\Focus = State
+      Scroll::SetState(\vScroll, (State*\Text\Height)-\vScroll\Height + \Text\Height) : \Scroll\Y =- \vScroll\Page\Pos
+      PopListPosition(\Items())
+    EndWith
   EndProcedure
   
-  Procedure.i SetText(Gadget, Text.s, Item.i=0)
-    Protected *This.Widget_S = GetGadgetData(Gadget)
-    
-    If Text::SetText(*This, Text.s) 
-      Text::ReDraw(*This, *This\Canvas\Gadget)
-      ProcedureReturn 1
-    EndIf
-    
-  EndProcedure
+;   Procedure.i SetState(Gadget.i, State.i)
+;     Protected *This.Widget_S = GetGadgetData(Gadget)
+;     
+;     With *This
+;       Text::Redraw(*This, \Canvas\Gadget)
+;       
+;       PushListPosition(\Items())
+;       SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Color\State = 2
+;       Scroll::SetState(\vScroll, (State*\Text\Height)-\vScroll\Height + \Text\Height) : \Scroll\Y =- \vScroll\Page\Pos
+;       PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
+;       PopListPosition(\Items())
+;     EndWith
+;   EndProcedure
   
-  Procedure.i SetFont(Gadget.i, FontID.i)
-    Protected *This.Widget_S = GetGadgetData(Gadget)
+  Procedure GetState(Gadget.i)
+    Protected Result, *This.Widget_S = GetGadgetData(Gadget)
     
-    If Text::SetFont(*This, FontID)
-      Text::ReDraw(*This, *This\Canvas\Gadget)
-      ProcedureReturn 1
-    EndIf
+    With *This
+;       PushListPosition(\Items())
+;       SelectElement(\Items(), State) 
+;       Result = \Items()\Color\State 
+;       PopListPosition(\Items())
+    EndWith
     
-  EndProcedure
+   ProcedureReturn Result
+ EndProcedure
   
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
     With *This
@@ -220,7 +141,6 @@ Module ListView
     EndWith
   EndProcedure
   
-  ;-
   Procedure.i Events(*This.Widget_S, EventType.i)
     Static DoubleClick.i
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
@@ -241,6 +161,10 @@ Module ListView
         With *This
           If Not \Hide And Not \Disable And \Interact
             Select EventType 
+              Case #PB_EventType_LeftClick : PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_LeftClick)
+              Case #PB_EventType_RightClick : PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_RightClick)
+              Case #PB_EventType_LeftDoubleClick : PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_LeftDoubleClick)
+                
               Case #PB_EventType_MouseLeave
                 \Line =- 1
                 
@@ -249,23 +173,33 @@ Module ListView
                 ForEach \Items()
                   If \Line = \Items()\Item 
                     \Line[1] = \Line
-                    \Items()\Color\State = 2
+                    
+                    If \Flag\ClickSelect
+                      \Items()\Color\State ! 2
+                    Else ; If Not \Flag\MultiSelect
+                       \Items()\Line = \Items()\Item
+                       \Items()\Color\State = 2
+                    EndIf
+                    
                     ; \Items()\Focus = \Items()\Item 
-                  ElseIf \Items()\Focus = \Items()\Item 
+                  ElseIf (Not \Flag\ClickSelect And \Items()\Focus = \Items()\Item) Or \Flag\MultiSelect 
+                    \Items()\Line =- 1
                     \Items()\Color\State = 1
                     \Items()\Focus =- 1
                   EndIf
                 Next
                 PopListPosition(\Items()) 
                 Repaint = 1
-                
+                 
               Case #PB_EventType_LeftButtonUp
                 PushListPosition(\Items()) 
                 ForEach \Items()
                   If \Line = \Items()\Item 
                     \Items()\Focus = \Items()\Item 
                   Else
-                    \Items()\Color\State = 1
+                    If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
+                      \items()\Color\State = 1
+                    EndIf
                   EndIf
                 Next
                 PopListPosition(\Items()) 
@@ -285,12 +219,19 @@ Module ListView
                     EndIf
                     
                     If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
-                      \items()\Color\State = 1 
+                      If \Flag\MultiSelect
+                       \items()\Color\State = 2
+                      ElseIf And Not \Flag\ClickSelect
+                        \items()\Color\State = 1
+                      EndIf
                     EndIf
                   EndIf
                   
                   If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton And itemSelect(Item, \Items())
-                    \items()\Color\State = 2
+                    If And Not \Flag\ClickSelect
+                       \Items()\Line = \Items()\Item
+                       \items()\Color\State = 2
+                    EndIf
                   EndIf
                   
                   \Line = Item
@@ -368,6 +309,8 @@ Module ListView
         \bSize = \fSize
         
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
+          \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+          \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
           \Flag\NoButtons = Bool(flag&#PB_Flag_NoButtons)
           \Flag\NoLines = Bool(flag&#PB_Flag_NoLines)
           \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
@@ -497,9 +440,50 @@ Module ListView
   
 EndModule
 
-
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
+
+If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
+  ListViewGadget(0, 10, 10, 250, 680, #PB_ListView_MultiSelect)
+  ListView::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection|#PB_Flag_GridLines|#PB_Flag_MultiSelect)
+  LN = 150
+  
+  For a = 0 To LN
+    ListView::AddItem (1, -1, "Item "+Str(a), 0,1)
+  Next
+  Define time = ElapsedMilliseconds()
+  For a = 0 To LN
+    ;ListView::SetItemState(1, a, 1) ; set (beginning with 0) the tenth item as the active one
+    If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+    EndIf
+    If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+      Debug a
+    EndIf
+  Next
+  Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + Editor::CountItems(1)
+  
+  Text::Redraw(GetGadgetData(1), 1)
+  
+  ; HideGadget(0, 1)
+  For a = 0 To LN
+    AddGadgetItem (0, -1, "Item "+Str(a), 0, Random(5)+1)
+  Next
+  Define time = ElapsedMilliseconds()
+  For a = 0 To LN
+    ;SetGadgetItemState(0, a, 1) ; set (beginning with 0) the tenth item as the active one
+    If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+    EndIf
+    If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+      Debug a
+    EndIf
+  Next
+  Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
+  ; HideGadget(0, 0)
+  
+  Repeat : Event=WaitWindowEvent()
+  Until  Event= #PB_Event_CloseWindow
+EndIf
+
   
   Define a,i
   Define g, Text.s
@@ -587,5 +571,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --f------80+--
+; Folding = --------48-v6-
 ; EnableXP
