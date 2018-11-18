@@ -1666,7 +1666,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ClearItems(*g)
     
     g = 12
-    Gadget(g, 450, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes)                                        
+    Gadget(g, 450, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes)         ; |#PB_Flag_NoLines|#PB_Flag_NoButtons                                
     *g = GetGadgetData(g)
     ;   ;  2_example
     ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
@@ -1767,5 +1767,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------------------------------------
+; Folding = -------8---------------------------------
 ; EnableXP
