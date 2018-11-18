@@ -194,7 +194,7 @@ Module Button
           \Default = Bool(Flag&#PB_Flag_Default)
           \Toggle = Bool(Flag&#PB_Flag_Toggle)
           
-          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
+          \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           \Text\MultiLine = Bool(Flag&#PB_Text_MultiLine)
           

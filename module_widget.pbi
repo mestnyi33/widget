@@ -54,9 +54,9 @@ Module Widget
     With *This
       If StartDrawing(CanvasOutput(\Canvas\Gadget))
         Select \Type
-          Case #PB_GadgetType_Text   : Text::Draw(*This, \Canvas\Gadget)
-          Case #PB_GadgetType_Button : Button::Draw(*This, \Canvas\Gadget)
-          Case #PB_GadgetType_String : String::Draw(*This, \Canvas\Gadget)
+          Case #PB_GadgetType_Text   : Text::Draw(*This)
+          Case #PB_GadgetType_Button : Button::Draw(*This)
+          Case #PB_GadgetType_String : String::Draw(*This)
           Case #PB_GadgetType_ScrollBar : Scroll::Draw(\Scroll)
         EndSelect
         
@@ -410,7 +410,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState   (13, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     Button(17, 300+10, 190, 180,  60, "Button (Horizontal)")
-    Button(18, 300+200, 150,  60, 140 ,"Button (Vertical)",#PB_Text_Vertical)
+    Button(18, 300+200, 150,  60, 140 ,"Button (Vertical)",#PB_Flag_Vertical)
     
     PostEvent(#PB_Event_Gadget, 0,12,#PB_EventType_Resize)
     

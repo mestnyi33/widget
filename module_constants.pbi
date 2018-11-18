@@ -38,10 +38,10 @@ DeclareModule Constants
     #PB_Text_WordWrap
     #PB_Text_MultiLine 
      
-    #PB_Text_Vertical
     #PB_Text_Reverse ; Mirror
     #PB_Text_InLine
     
+    #PB_Flag_Vertical
     #PB_Flag_BorderLess
     #PB_Flag_Double
     #PB_Flag_Flat
@@ -56,8 +56,15 @@ DeclareModule Constants
     
     #PB_Flag_MultiSelect
     #PB_Flag_ClickSelect
+    
+    #PB_Flag_AutoSize
+    #PB_Flag_AutoRight
+    #PB_Flag_AutoBottom
+    
+    ; #____End____
   EndEnumeration
   
+  #PB_Flag_Numeric = #PB_Text_Numeric
   #PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
   #PB_Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
   
@@ -79,8 +86,12 @@ DeclareModule Constants
 ;   #PB_Text_Left = ~#PB_Text_Center
 ;   #PB_Text_Top = ~#PB_Text_Middle
 ;   
-  If WidgetFlags > 2147483647
-    Debug "Исчерпан лимит в x32"+WidgetFlags
+   EnumerationBinary WidgetFlags
+      #PB_Flag_Limit
+    EndEnumeration
+    
+    If (#PB_Flag_Limit>>1) > 2147483647 ; 8589934592
+    Debug "Исчерпан лимит в x32 ("+Str(#PB_Flag_Limit>>1)+")"
   EndIf
   
   #PB_Gadget_FrameColor = 10

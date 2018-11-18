@@ -755,6 +755,9 @@ Module Spin
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         \Canvas\Window = GetActiveWindow()
+        If \Canvas\Window =- 1
+          \Canvas\Window = GetGadgetData(Canvas)
+        EndIf
         \Radius = Radius
         \Alpha = 255
         \Interact = 1
@@ -1077,5 +1080,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --+------------------f----
+; Folding = --+-------------------+---
 ; EnableXP

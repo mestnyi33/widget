@@ -1252,6 +1252,9 @@ Module ListIcon
         
         \Item =- 1
         \Canvas\Window = GetActiveWindow()
+        If \Canvas\Window =- 1
+          \Canvas\Window = GetGadgetData(Canvas)
+        EndIf
         \X =- 1
         \Y =- 1
         

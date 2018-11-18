@@ -176,8 +176,12 @@
     ; tree
     time.i
     adress.i[2]
+    
     sublevel.i
-    *data
+    sublevellen.i
+    sublevelpos.i
+    
+    *Data
     collapsed.b
     childrens.i
     Item.i
@@ -255,7 +259,7 @@
     \Frame[1] = $80FFC288
     
     ; Цвета если нажали на виджет
-    \Front[2] = $80FFFFFF
+    \Front[2] = $FFFEFEFE
     \Fore[2] = $C8E9BA81;$C8FFFCFA
     \Back[2] = $C8E89C3D ; $80E89C3D
     \Frame[2] = $C8DC9338; $80DC9338

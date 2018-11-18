@@ -139,7 +139,9 @@ Module Button
         \Cursor = #PB_Cursor_Default
         \DrawingMode = #PB_2DDrawing_Gradient
         \Canvas\Gadget = Canvas
-        \Canvas\Window = GetActiveWindow()
+        If Not \Canvas\Window
+          \Canvas\Window = GetGadgetData(Canvas)
+        EndIf
         \Radius = Radius
         \Alpha = 255
         \Interact = 1
@@ -147,7 +149,7 @@ Module Button
         \X =- 1
         \Y =- 1
         
-        If Bool(Flag&#PB_Text_Vertical)
+        If Bool(Flag&#PB_Flag_Vertical)
           If Bool(Flag&#PB_Text_Reverse)
             \Text\Rotate = 90
           Else
@@ -189,7 +191,7 @@ Module Button
           \Default = Bool(Flag&#PB_Flag_Default)
           \Toggle = Bool(Flag&#PB_Flag_Toggle)
           
-          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
+          \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           
           If Bool(Flag&#PB_Text_WordWrap)
@@ -261,6 +263,9 @@ Module Button
       List()\Widget = *This
       
       Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
+      Debug ""+*This\Canvas\Window +" "+ *This\Canvas\Gadget
+      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create)
+      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
     EndIf
     
     ProcedureReturn *This
@@ -364,7 +369,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState (*B_4,1)
     
     BindEvent(#PB_Event_Widget, @Events())
-    PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
+    ;PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
   EndIf
   
   
@@ -380,7 +385,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(g, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     
     With *Button_0
-      *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Text_Vertical)
+      *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Flag_Vertical)
       ;       SetColor(*Button_0, #PB_Gadget_BackColor, $FFCCBFB4)
       SetColor(*Button_0, #PB_Gadget_FrontColor, $FFD56F1A)
       SetFont(*Button_0, FontID(0))
@@ -400,7 +405,7 @@ CompilerIf #PB_Compiler_IsMainFile
     PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
     
     BindGadgetEvent(g, @CallBacks())
-    PostEvent(#PB_Event_Gadget, 11,11, #PB_EventType_Resize)
+    ;PostEvent(#PB_Event_Gadget, 11,11, #PB_EventType_Resize)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

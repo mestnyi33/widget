@@ -527,7 +527,9 @@ Module String
         \Cursor = #PB_Cursor_IBeam
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
-        \Canvas\Window = GetActiveWindow()
+        If Not \Canvas\Window
+          \Canvas\Window = GetGadgetData(Canvas)
+        EndIf
         \Radius = Radius
         \Alpha = 255
         \Interact = 1
@@ -572,7 +574,7 @@ Module String
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
+          \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
             \Text\MultiLine =- 1
@@ -634,6 +636,7 @@ Module String
             \Color[0]\Frame[1] = $FFFFFFFF
           EndIf
           
+          If Text.s="" : Text.s=#LF$ : EndIf
           SetText(*This, Text.s)
           \Resize = 0
         EndIf
@@ -654,6 +657,8 @@ Module String
       List()\Widget = *This
       
       Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
+      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create)
+      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
     EndIf
     
     ProcedureReturn *This

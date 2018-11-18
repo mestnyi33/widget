@@ -47,10 +47,10 @@ DeclareModule Text
     If _this_\Text\Count =- 1 
       _this_\Text\Count = 0 
       _this_\Text\String = #LF$
+      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
     Else
       _this_\Text\String = RemoveString(_this_\Text\String, StringField(_this_\Text\String, _item_+1, #LF$) + #LF$)
     EndIf
-    PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
   EndMacro
   
   ;- - DECLAREs PROCEDUREs
@@ -267,22 +267,24 @@ Module Text
       _this_\Items()\Text\x = _this_\Items()\x+Text_X
       
       _this_\Image\X = _this_\X[1]+_this_\Text\X+Image_X
+      _this_\Items()\Image\X = _this_\Items()\x+Image_X-4
     EndMacro
     
     Macro _line_resize_Y_(_this_)
       _this_\Items()\y = _this_\Y[1]+_this_\Text\Y+_this_\Scroll\Height+Text_Y
-      _this_\Items()\Height = _this_\Text\Height - Bool(_this_\Text\Count<>1 And _this_\Flag\GridLines)
-      _this_\Items()\Text\y = _this_\Items()\y - Bool(#PB_Compiler_OS <> #PB_OS_MacOS And _this_\Text\Count<>1)
-      _this_\Items()\Text\Height = _this_\Text\Height
+      _this_\Items()\Height = _this_\Text\Height - Bool(_this_\Flag\GridLines)
+      _this_\Items()\Text\y = _this_\Items()\y + (_this_\Text\Height-_this_\Text\Height[1]+1)/2 - Bool(_this_\Flag\GridLines) - Bool(#PB_Compiler_OS <> #PB_OS_MacOS And _this_\Text\Count<>1)
+      _this_\Items()\Text\Height = _this_\Text\Height[1]
       
       _this_\Image\Y = _this_\Y[1]+_this_\Text\Y+Image_Y
+      _this_\Items()\Image\Y = _this_\Items()\y+(_this_\Text\Height-_this_\Items()\Image\Height+1)/2+Image_Y
     EndMacro
     
     With *This
       \Text\Count = ListSize(\Items())
         
       If \Text\Vertical
-        Width = \Height[1]-\Text\X*2
+        Width = \Height[1]-\Text\X*2 
         Height = \Width[1]-\Text\y*2
       Else
         CompilerIf Defined(Scroll, #PB_Module)
@@ -417,7 +419,7 @@ Module Text
           
           If \Text\Vertical
             For IT = \Text\Count To 1 Step - 1
-              AddElement(\Items())
+              If AddElement(\Items())
               String = StringField(\Text\String.s[2], IT, #LF$)
               
               \Items()\Focus =- 1
@@ -460,6 +462,7 @@ Module Text
 ;               EndIf
               
               \Scroll\Height+\Text\Height 
+            EndIf
             Next
           Else
             For IT = 1 To \Text\Count
@@ -487,6 +490,8 @@ Module Text
                 \Items()\Text\Position = \Text\Position
                 \Items()\Text\Len = Len(String.s)
                 \Text\Position + \Items()\Text\Len + 1 ; Len(#LF$)
+                
+                ;;;\Items()\sublevellen = ((\Items()\sublevel+Bool(Not \Flag\NoButtons))*\sublevellen) + Bool(\Flag\CheckBoxes)*16
                 
                 _set_content_X_(*This)
                 _line_resize_X_(*This)
@@ -556,11 +561,6 @@ Module Text
         \Scroll\Height = 0
         _set_content_Y_(*This)
         
-;         ; Это для второго способа добавления линии
-;         If \Text\String.s[2] = \Text\String.s
-;           String.s = ""
-;         EndIf
-      
         PushListPosition(\Items())
         ForEach \Items()
           _set_content_X_(*This)
@@ -569,26 +569,7 @@ Module Text
           
           ; Scroll hight length
           \Scroll\Height + \Text\Height
-          
-;           ; Is visible lines
-;           \Items()\Hide = Bool(Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
-                
-;           If \Text\String.s[2] = \Text\String.s
-;             If String.s
-;               String.s +#LF$+ \Items()\Text\String.s 
-;             Else
-;               String.s + \Items()\Text\String.s
-;             EndIf
-;           EndIf
         Next
-        
-;         If \Text\String.s[2] = \Text\String.s And
-;            \Text\String.s <> String.s+#LF$
-;           \Text\String.s = String.s+#LF$
-;           \Text\Len = Len(String.s+#LF$)
-;          ; Debug "new add texts len "+\Text\Len
-;         EndIf
-        
         PopListPosition(\Items())
       EndIf
       
@@ -641,7 +622,8 @@ Module Text
             PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
           EndIf
           If \Text\Change
-            \Text\Height = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
+            \Text\Height[1] = TextHeight("A")
+            \Text\Height = \Text\Height[1] ;+ Bool(\Text\Count<>1 And \Flag\GridLines)*2
             \Text\Width = TextWidth(\Text\String.s)
           EndIf
           
@@ -669,11 +651,6 @@ Module Text
             \Hide = Bool( Not Bool(\y+\height+*This\Scroll\Y>*This\y[2] And (\y-*This\y[2])+*This\Scroll\Y<iheight))
             
             If Not \Hide
-              Height = \Height
-              Y = \Y+*This\Scroll\Y
-              Text_X = \Text\X+*This\Scroll\X
-              Text_Y = \Text\Y+*This\Scroll\Y
-                
               If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
               _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Width[2], #PB_Ignore) 
               
@@ -703,6 +680,41 @@ Module Text
                 \Text[1]\Width = TextWidth(\Text[1]\String.s) 
               EndIf 
                 
+              If \Text[3]\Change : \Text[3]\Change = #False 
+                \Text[3]\Width = TextWidth(\Text[3]\String.s)
+              EndIf 
+              
+              If \Text[2]\Change : \Text[2]\Change = #False 
+                \Text[2]\X = Text_X+\Text[1]\Width
+                \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
+                \Text[3]\X = \Text[2]\X+\Text[2]\Width
+              EndIf 
+              
+              ;               
+              If *This\Focus = *This 
+                Protected Left,Right
+                Left =- TextWidth(Mid(*This\Text\String.s, \Text\Position, *This\Caret))
+                ; Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
+                Right = (\Width + Left)
+                
+                If *This\Scroll\X < Left
+                  *This\Scroll\X = Left
+                ElseIf *This\Scroll\X > Right
+                  *This\Scroll\X = Right
+                ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
+                  *This\Scroll\X = (\Width-\Text[3]\Width) + Left
+                  If *This\Scroll\X>0
+                    *This\Scroll\X=0
+                  EndIf
+                EndIf
+              EndIf
+              
+              ; Draw coordinates 
+              Height = \Height
+              Y = \Y+*This\Scroll\Y
+              Text_X = \Text\X+*This\Scroll\X
+              Text_Y = \Text\Y+*This\Scroll\Y
+                
               ; Draw selections
               If \Item=*This\Line Or \Item=\focus Or \Item=\line ; \Color\State;
                 ; Draw items back color
@@ -725,120 +737,89 @@ Module Text
               EndIf
               
               ; Draw text
-              If 1;\Text\String.s
-                _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
+              _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
+              
+              ; Draw string
+              If \Text[2]\Len > 0 And *This\Color\Front <> *This\Color\Front[2]
                 
-                If \Text[2]\Change : \Text[2]\Change = #False 
-                  \Text[2]\X = \Text[0]\X+\Text[1]\Width
-                  \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
-                  \Text[3]\X = \Text[2]\X+\Text[2]\Width
-                EndIf 
-                
-                If \Text[3]\Change : \Text[3]\Change = #False 
-                  \Text[3]\Width = TextWidth(\Text[3]\String.s)
-                EndIf 
-                ;               
-                If *This\Focus = *This 
-                  Protected Left,Right
-                  Left =- TextWidth(Mid(*This\Text\String.s, \Text\Position, *This\Caret))
-                  ; Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
-                  Right = (\Width + Left)
-                  
-                  If *This\Scroll\X < Left
-                    *This\Scroll\X = Left
-                  ElseIf *This\Scroll\X > Right
-                    *This\Scroll\X = Right
-                  ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
-                    *This\Scroll\X = (\Width-\Text[3]\Width) + Left
-                    If *This\Scroll\X>0
-                      *This\Scroll\X=0
-                    EndIf
-                  EndIf
-                EndIf
-                
-                ; Draw string
-                If \Text[2]\Len > 0 And *This\Color\Front <> *This\Color\Front[2]
-                  
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                    If (*This\Caret[1] > *This\Caret And *This\Line[1] = *This\Line) Or (*This\Line[1] > *This\Line And *This\Line = \Item)
-                      \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
-                      
-                      If *This\Line[1] = *This\Line
-                        \Text[2]\X = \Text[3]\X-\Text[2]\Width
-                      EndIf
-                      
-                      If \Text[3]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text[3]\X+*This\Scroll\X), Text_Y, \Text[3]\String.s, *This\Color\Front)
-                      EndIf
-                      
-                      DrawingMode(#PB_2DDrawing_Default)
-                      Box((\Text[2]\X+*This\Scroll\X), Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                      
-                      If \Text[2]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText(Text_X, Text_Y, \Text[1]\String.s+\Text[2]\String.s, *This\Color\Front[2])
-                      EndIf
-                      
-                      If \Text[1]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText(Text_X, Text_Y, \Text[1]\String.s, *This\Color\Front)
-                      EndIf
-                    Else
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawText(Text_X, Text_Y, \Text\String.s, *This\Color\Front)
-                      
-                      DrawingMode(#PB_2DDrawing_Default)
-                      Box((\Text[2]\X+*This\Scroll\X), Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                      
-                      If \Text[2]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText((\Text[2]\X+*This\Scroll\X), Text_Y, \Text[2]\String.s, *This\Color\Front[2])
-                      EndIf
-                    EndIf
-                  CompilerElse
-                    If \Text[1]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                    EndIf
+                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  If (*This\Caret[1] > *This\Caret And *This\Line[1] = *This\Line) Or (*This\Line[1] > *This\Line And *This\Line = \Item)
+                    \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
                     
-                    DrawingMode(#PB_2DDrawing_Default)
-                    Box((\Text[2]\X+*This\Scroll\X), Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                    
-                    If \Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[2]\X+*This\Scroll\X), Text_Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[2])
+                    If *This\Line[1] = *This\Line
+                      \Text[2]\X = \Text[3]\X-\Text[2]\Width
                     EndIf
                     
                     If \Text[3]\String.s
                       DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText((\Text[3]\X+*This\Scroll\X), Text_Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                      DrawText(\Text[3]\X, Text_Y, \Text[3]\String.s, *This\Color\Front)
                     EndIf
-                  CompilerEndIf
-                  
-                Else
-                  If \Text[2]\Len > 0
+                    
                     DrawingMode(#PB_2DDrawing_Default)
-                    Box((\Text[2]\X+*This\Scroll\X), Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                  EndIf
-                  
-                  If \Color\State = 2
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, \Color\Front[\Color\State])
+                    Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
+                    
+                    If \Text[2]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawText(Text_X, Text_Y, \Text[1]\String.s+\Text[2]\String.s, *This\Color\Front[2])
+                    EndIf
+                    
+                    If \Text[1]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawText(Text_X, Text_Y, \Text[1]\String.s, *This\Color\Front)
+                    EndIf
                   Else
                     DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+                    DrawText(Text_X, Text_Y, \Text\String.s, *This\Color\Front)
+                    
+                    DrawingMode(#PB_2DDrawing_Default)
+                    Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
+                    
+                    If \Text[2]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawText(\Text[2]\X, Text_Y, \Text[2]\String.s, *This\Color\Front[2])
+                    EndIf
+                  EndIf
+                CompilerElse
+                  If \Text[1]\String.s
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
                   EndIf
                   
+                  DrawingMode(#PB_2DDrawing_Default)
+                  Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
+                  
+                  If \Text[2]\String.s
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(\Text[2]\X, Text_Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[2])
+                  EndIf
+                  
+                  If \Text[3]\String.s
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(\Text[3]\X, Text_Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                  EndIf
+                CompilerEndIf
+                
+              Else
+                If \Text[2]\Len > 0
+                  DrawingMode(#PB_2DDrawing_Default)
+                  Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
                 EndIf
                 
+                If \Color\State = 2
+                  DrawingMode(#PB_2DDrawing_Transparent)
+                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, \Color\Front[\Color\State])
+                Else
+                  DrawingMode(#PB_2DDrawing_Transparent)
+                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+                EndIf
               EndIf
+              
             EndIf
           Next
           PopListPosition(*This\Items()) ; 
           
           If *This\Focus = *This 
-            ; Debug ""+ \Text[0]\Caret +" "+ \Text[0]\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+             Debug ""+ \Caret +" "+ \Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
             If (*This\Text\Editable Or \Text\Editable) ;And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] And Not \Text[2]\Width[2] 
               DrawingMode(#PB_2DDrawing_XOr)             
               If Bool(Not \Text[1]\Width Or *This\Caret > *This\Caret[1])
@@ -1199,7 +1180,7 @@ Module Text
   
   Procedure.i SetText(*This.Widget_S, Text.s)
     Protected Result.i, Len.i, String.s, i.i
-    If Text.s="" : Text.s=#LF$ : EndIf
+    ; If Text.s="" : Text.s=#LF$ : EndIf
     
     With *This
       If \Text\String.s <> Text.s
@@ -1315,9 +1296,7 @@ Module Text
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
     With *This
       If Canvas=-1 : Canvas = EventGadget() : EndIf
-      If Canvas = \Canvas\Gadget
-        \Canvas\Window = EventWindow()
-      Else
+      If Canvas <> \Canvas\Gadget
         ProcedureReturn
       EndIf
       
@@ -1554,6 +1533,8 @@ Module Text
     If Canvas =- 1
       With *This
         Select EventType
+          Case #PB_EventType_Repaint
+            Debug " -- Canvas repaint -- "
           Case #PB_EventType_Input 
             \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
             \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
@@ -1628,7 +1609,9 @@ Module Text
         \Cursor = #PB_Cursor_Default
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
-        \Canvas\Window = GetActiveWindow()
+        If Not \Canvas\Window
+          \Canvas\Window = GetGadgetData(Canvas)
+        EndIf
         \Radius = Radius
         \Alpha = 255
         \Line =- 1
@@ -1654,7 +1637,7 @@ Module Text
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height, Canvas)
-          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
+          \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
             \Text\MultiLine =- 1
@@ -1702,6 +1685,8 @@ Module Text
       List()\Widget = *This
       
       Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
+      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create)
+      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
     EndIf
     
     ProcedureReturn *This
@@ -1865,6 +1850,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -fu-Dfn0--8--c--n64--+-+-----------+-----
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 625
+; FirstLine = 378
+; Folding = -Xu-4enP-u4-GL+Pnt4----+----------f------
 ; EnableXP

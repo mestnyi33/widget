@@ -35,33 +35,33 @@ DeclareModule Scintilla
   ;- - DECLAREs MACROs
   
 ;   ;- DECLARE
-;   Declare GetState(Gadget.i)
-;   Declare.s GetText(Gadget.i)
-;   Declare SetState(Gadget.i, State.i)
-;   Declare GetAttribute(Gadget.i, Attribute.i)
-;   Declare SetAttribute(Gadget.i, Attribute.i, Value.i)
-   Declare SetText(Gadget, Text.s, Item.i=0)
-   Declare SetFont(Gadget, FontID.i)
-   Declare AddItem(Gadget,Item,Text.s,Image.i=-1,Flag.i=0)
+;   Declare GetState(*This.Widget_S)
+;   Declare.s GetText(*This.Widget_S)
+;   Declare SetState(*This.Widget_S, State.i)
+;   Declare GetAttribute(*This.Widget_S, Attribute.i)
+;   Declare SetAttribute(*This.Widget_S, Attribute.i, Value.i)
+   Declare SetText(*This.Widget_S, Text.s, Item.i=0)
+   Declare SetFont(*This.Widget_S, FontID.i)
+   Declare AddItem(*This.Widget_S, Item, Text.s, Image.i=-1, Flag.i=0)
 ;   
 ;   Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
 ;   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
+   Declare.i Gadget(*This.Widget_S, X.i, Y.i, Width.i, Height.i, Flag.i=0)
 ;   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
 ;   Declare.i Repaint(*This.Widget_S)
 EndDeclareModule
 
 Module Scintilla
-  Procedure.i SetFont(Gadget.i, FontID.i)
-    ProcedureReturn Editor::SetFont(Gadget.i, FontID.i)
+  Procedure.i SetFont(*This.Widget_S, FontID.i)
+    ProcedureReturn Editor::SetFont(*This.Widget_S, FontID.i)
   EndProcedure
   
-  Procedure.i AddItem(Gadget.i,Item.i,Text.s,Image.i=-1,Flag.i=0)
-    ProcedureReturn Editor::AddItem(Gadget.i,Item.i,Text.s,Image.i,Flag.i)
+  Procedure.i AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,Flag.i=0)
+    ProcedureReturn Editor::AddItem(*This.Widget_S,Item.i,Text.s,Image.i,Flag.i)
   EndProcedure
   
-  Procedure.i SetText(Gadget, Text.s, Item.i=0)
-    ProcedureReturn Editor::SetText(Gadget, Text.s, Item.i)
+  Procedure.i SetText(*This.Widget_S, Text.s, Item.i=0)
+    ProcedureReturn Editor::SetText(*This.Widget_S, Text.s, Item.i)
   EndProcedure
   
   Procedure.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
@@ -129,15 +129,20 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g=16
-    Scintilla::Gadget(g, 8, 133+5+8, 306, 133, #PB_Text_WordWrap|#PB_Flag_GridLines) : Scintilla::SetText(g, Text.s) 
+    Scintilla::Gadget(g, 8, 133+5+8, 306, 233, #PB_Text_WordWrap|#PB_Flag_GridLines|#PB_Flag_Numeric) 
+    *w=GetGadgetData(g)
+    
+    Scintilla::SetText(*w, Text.s) 
+    
     For a = 0 To 2
-      Scintilla::AddItem(g, a, "Line "+Str(a))
+      Scintilla::AddItem(*w, a, "Line "+Str(a))
     Next
-    Scintilla::AddItem(g, a, "")
+    Scintilla::AddItem(*w, a, "")
     For a = 4 To 6
-      Scintilla::AddItem(g, a, "Line "+Str(a))
+      Scintilla::AddItem(*w, a, "Line "+Str(a))
     Next
-    Scintilla::SetFont(g, FontID(0))
+    Scintilla::SetFont(*w, FontID(0))
+    
     
     SplitterGadget(10,8, 8, 306, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
@@ -172,5 +177,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = oPA9
+; Folding = ofI9
 ; EnableXP

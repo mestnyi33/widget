@@ -8,6 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_structures.pbi"
   XIncludeFile "module_scroll.pbi"
   XIncludeFile "module_text.pbi"
+  XIncludeFile "module_editor.pbi"
 CompilerEndIf
 
 DeclareModule Tree
@@ -17,27 +18,29 @@ DeclareModule Tree
   UseModule Structures
   
   ;Declare CallBack()
+  Declare ReDraw(*This.Widget_S)
+  Declare Draw(*This.Widget_S)
   Declare.i Gadget(Gadget.i, x.i, y.i, width.i, height.i, flag.i=0)
-  Declare AddItem(Gadget.i,Item.i,Text.s,Image.i=-1,sublevel.i=0)
-  Declare ClearItems(Gadget.i)
-  Declare CountItems(Gadget.i, Item.i=-1)
-  Declare RemoveItem(Gadget.i, Item.i)
-  Declare GetItemAttribute(Gadget.i, Item.i, Attribute.i)
-  Declare GetItemData(Gadget.i, Item.i)
-  Declare SetItemData(Gadget.i, Item.i, *data)
-  Declare GetItemColor(Gadget.i, Item.i, ColorType.i, Column.i=0)
-  Declare SetItemColor(Gadget.i, Item.i, ColorType.i, Color.i, Column.i=0)
-  Declare GetItemImage(Gadget.i, Item.i)
-  Declare SetItemImage(Gadget.i, Item.i, Image.i)
-  Declare GetState(Gadget.i)
-  Declare SetState(Gadget.i, Item.i)
-  Declare GetItemState(Gadget.i, Item.i)
-  Declare SetItemState(Gadget.i, Item.i, State.i)
-  Declare.s GetText(Gadget.i)
-  Declare   SetText(Gadget.i, Text.s)
-  Declare.s GetItemText(Gadget.i, Item.i)
-  Declare SetItemText(Gadget.i, Item.i, Text.s)
-  Declare Free(Gadget.i)
+  Declare AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+  Declare ClearItems(*This.Widget_S)
+  Declare CountItems(*This.Widget_S, Item.i=-1)
+  Declare RemoveItem(*This.Widget_S, Item.i)
+  Declare GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
+  Declare GetItemData(*This.Widget_S, Item.i)
+  Declare SetItemData(*This.Widget_S, Item.i, *data)
+  Declare GetItemColor(*This.Widget_S, Item.i, ColorType.i, Column.i=0)
+  Declare SetItemColor(*This.Widget_S, Item.i, ColorType.i, Color.i, Column.i=0)
+  Declare GetItemImage(*This.Widget_S, Item.i)
+  Declare SetItemImage(*This.Widget_S, Item.i, Image.i)
+  Declare GetState(*This.Widget_S)
+  Declare SetState(*This.Widget_S, Item.i)
+  Declare GetItemState(*This.Widget_S, Item.i)
+  Declare SetItemState(*This.Widget_S, Item.i, State.i)
+  Declare.s GetText(*This.Widget_S)
+  Declare   SetText(*This.Widget_S, Text.s)
+  Declare.s GetItemText(*This.Widget_S, Item.i)
+  Declare SetItemText(*This.Widget_S, Item.i, Text.s)
+  Declare Free(*This.Widget_S)
   ;Declare ReDraw(*This)
 EndDeclareModule
 
@@ -365,7 +368,7 @@ Module Tree
                   If Drawing
                     ; Horizontal plot
                     DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@DrawPlotXCallback())
-                    Line(x_point+i,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
+                    Line(x_point,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
                   EndIf
                   
                   ; Vertical plot
@@ -472,10 +475,10 @@ Module Tree
     EndIf
   EndProcedure
   
-  Procedure AddItem(Gadget.i,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+  Procedure AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+   ; ProcedureReturn Editor::AddItem(*This,Item,Text.s,Image,sublevel)
     Static adress.i
-    Protected *This.Widget_S, Childrens.i, hide.b, *Item
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+    Protected hide.b, *Item
     
     If Not *This
       ProcedureReturn -1
@@ -530,11 +533,11 @@ Module Tree
         
         PopListPosition(\Items()) 
         \Items()\hide = hide
-        ;       Else
-        ;         If Not \Item 
-        ;           adress = FirstElement(\Items())
-        ;         EndIf
+        \Items()\sublevel = sublevel
       EndIf
+      
+      \Items()\adress = adress
+      \Items()\text\change = 1
       
       \Items()\Text\FontID = \Text\FontID
       \Items()\Line =- 1
@@ -542,10 +545,7 @@ Module Tree
       \Items()\lostfocus =- 1
       \Items()\time = ElapsedMilliseconds()
       \Items()\Item = Item
-      \Items()\adress = adress
-      \Items()\text\change = 1
       \Items()\text\string.s = Text.s ;+" ("+Str(iadress)+"-"+Str(SubLevel)+")" 
-      \Items()\sublevel = sublevel
       
       If IsImage(Image)
         Select \Attribute
@@ -602,14 +602,13 @@ Module Tree
     ProcedureReturn Item
   EndProcedure
   
-  Procedure ClearItems(Gadget.i)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure ClearItems(*This.Widget_S)
+    Protected Result.i
     
     If *This
       With *This
         Result = ClearList(\Items())
-        If StartDrawing(CanvasOutput(Gadget))
+        If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
           Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
           StopDrawing()
         EndIf
@@ -619,9 +618,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure CountItems(Gadget.i, Item.i=-1)
-    Protected Result.i, *This.Widget_S, sublevel.i
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure CountItems(*This.Widget_S, Item.i=-1)
+    Protected Result.i, sublevel.i
     
     If *This
       With *This
@@ -653,13 +651,12 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure RemoveItem(Gadget.i, Item.i)
-    Protected Result.i, *This.Widget_S, sublevel.i
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure RemoveItem(*This.Widget_S, Item.i)
+    Protected Result.i, sublevel.i
     
     If *This
       With *This
-        PushListPosition(\Items()) 
+        ;PushListPosition(\Items()) 
         ForEach \Items()
           If \Items()\Item = Item 
             sublevel = \Items()\sublevel
@@ -668,7 +665,7 @@ Module Tree
               If sublevel = \Items()\sublevel
                 Break
               ElseIf sublevel < \Items()\sublevel 
-                Result = DeleteElement(\Items()) 
+                Result = DeleteElement(\Items(), 1) 
               EndIf
             Wend
             PopListPosition(\Items())
@@ -676,7 +673,7 @@ Module Tree
             Break
           EndIf
         Next
-        PopListPosition(\Items())
+        ;PopListPosition(\Items())
         
         ReDraw(*This)
       EndWith
@@ -685,9 +682,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemAttribute(Gadget.i, Item.i, Attribute.i)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
+    Protected Result.i
     
     If *This
       With *This
@@ -708,9 +704,8 @@ Module Tree
     
   EndProcedure
   
-  Procedure GetItemData(Gadget.i, Item.i)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure GetItemData(*This.Widget_S, Item.i)
+    Protected Result.i
     
     If *This
       With *This
@@ -728,9 +723,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemData(Gadget.i, Item.i, *data)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure SetItemData(*This.Widget_S, Item.i, *data)
+    Protected Result.i
     
     If *This
       With *This
@@ -748,9 +742,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemColor(Gadget.i, Item.i, ColorType.i, Column.i=0)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure GetItemColor(*This.Widget_S, Item.i, ColorType.i, Column.i=0)
+    Protected Result.i
     
     If *This
       With *This
@@ -768,9 +761,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemColor(Gadget.i, Item.i, ColorType.i, Color.i, Column.i=0)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure SetItemColor(*This.Widget_S, Item.i, ColorType.i, Color.i, Column.i=0)
+    Protected Result.i
     
     If *This
       With *This
@@ -788,9 +780,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemImage(Gadget.i, Item.i)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure GetItemImage(*This.Widget_S, Item.i)
+    Protected Result.i
     
     If *This
       With *This
@@ -808,9 +799,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemImage(Gadget.i, Item.i, image.i)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure SetItemImage(*This.Widget_S, Item.i, image.i)
+    Protected Result.i
     
     If *This
       With *This
@@ -829,9 +819,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetState(Gadget.i, Item.i)
-    Protected Result.i, *This.Widget_S, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure SetState(*This.Widget_S, Item.i)
+    Protected Result.i, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     
     If *This
       With *This
@@ -875,7 +864,7 @@ Module Tree
               \Items()\focus = \Items()\Item
               \Items()\Line = \Items()\Item
               
-              If GetActiveGadget()<>Gadget
+              If GetActiveGadget()<>*This\Canvas\Gadget
                 \Items()\lostfocus = \Items()\focus
                 \Items()\Line =- 1
               EndIf
@@ -895,9 +884,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetState(Gadget.i)
-    Protected Result.i, *This.Widget_S 
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure GetState(*This.Widget_S)
+    Protected Result.i
     
     If *This 
       With *This
@@ -916,9 +904,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemState(Gadget.i, Item.i, State.i)
-    Protected Result.i, *This.Widget_S, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure SetItemState(*This.Widget_S, Item.i, State.i)
+    Protected Result.i, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     
     If *This
       With *This
@@ -929,7 +916,7 @@ Module Tree
             If State&#PB_Attribute_Selected
               \Items()\focus = \Items()\Item
               
-              If GetActiveGadget()<>Gadget
+              If GetActiveGadget()<>*This\Canvas\Gadget
                 \Items()\lostfocus = \Items()\focus
                 \Items()\Line =- 1
               EndIf
@@ -970,9 +957,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure GetItemState(Gadget.i, Item.i)
-    Protected Result.i, *This.Widget_S, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure GetItemState(*This.Widget_S, Item.i)
+    Protected Result.i, lostfocus.i=-1, collapsed.i, sublevel.i, adress.i, coll.i
     
     If *This
       With *This
@@ -999,9 +985,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.s GetText(Gadget.i)
-    Protected Result.s, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure.s GetText(*This.Widget_S)
+    Protected Result.s
     
     Result = *This\text\string
     ;     If *This
@@ -1021,9 +1006,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetText(Gadget.i, Text.s)
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure SetText(*This.Widget_S, Text.s)
+    Protected Result.i
     
     If *This
       With *This
@@ -1042,9 +1026,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.s GetItemText(Gadget.i, Item.i) ; Ok
-    Protected Result.s, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure.s GetItemText(*This.Widget_S, Item.i) ; Ok
+    Protected Result.s
     
     If *This
       With *This
@@ -1063,9 +1046,8 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetItemText(Gadget.i, Item.i, Text.s) ; Ok
-    Protected Result.i, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure SetItemText(*This.Widget_S, Item.i, Text.s) ; Ok
+    Protected Result.i
     
     If *This
       With *This
@@ -1312,7 +1294,9 @@ Module Tree
         \Cursor = #PB_Cursor_Default
         \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
-        \Canvas\Window = GetActiveWindow()
+        If Not \Canvas\Window
+          \Canvas\Window = GetGadgetData(Canvas)
+        EndIf
         \Radius = Radius
         \Alpha = 255
         \Interact = 1
@@ -1344,7 +1328,7 @@ Module Tree
         \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
         
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
-          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
+          \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
@@ -1479,16 +1463,15 @@ Module Tree
     ProcedureReturn g
   EndProcedure
   
-  Procedure Free(Gadget.i)
-    Protected Result, *This.Widget_S
-    If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+  Procedure Free(*This.Widget_S)
+    Protected Result
     
     If *This
       FreeStructure(*This)
       ; SetGadgetData(Gadget, #Null)
-      UnbindGadgetEvent(Gadget, @CallBacks())
+      UnbindGadgetEvent(*This\Canvas\Gadget, @CallBacks())
       ; SetGadgetColor(Gadget, #PB_Gadget_BackColor, $FFFFFF)
-      If StartDrawing(CanvasOutput(Gadget))
+      If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
         Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
         StopDrawing()
       EndIf
@@ -1635,110 +1618,116 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 10
     Gadget(g, 10, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
+    *g = GetGadgetData(g)
     ; 1_example
-    AddItem (g, 0, "Normal Item "+Str(a), -1, 0)                                   
-    AddItem (g, -1, "Node "+Str(a), 0, 0)                                         
-    AddItem (g, -1, "Sub-Item 1", -1, 1)                                           
-    AddItem (g, -1, "Sub-Item 2", -1, 11)
-    AddItem (g, -1, "Sub-Item 3", -1, 1)
-    AddItem (g, -1, "Sub-Item 4", -1, 1)                                           
-    AddItem (g, -1, "Sub-Item 5", -1, 11)
-    AddItem (g, -1, "Sub-Item 6", -1, 1)
-    AddItem (g, -1, "File "+Str(a), -1, 0)  
-    For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
+    AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
+    AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+    AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+    AddItem (*g, -1, "Sub-Item 2", -1, 11)
+    AddItem (*g, -1, "Sub-Item 3", -1, 1)
+    AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
+    AddItem (*g, -1, "Sub-Item 5", -1, 11)
+    AddItem (*g, -1, "Sub-Item 6", -1, 1)
+    AddItem (*g, -1, "File "+Str(a), -1, 0)  
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
-    ; RemoveItem(g,1)
-    Tree::SetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+    ; RemoveItem(*g,1)
+    Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
     BindGadgetEvent(g, @Events())
-    ;Tree::SetState(g, 1)
-    ;Tree::SetState(g, -1)
-    ;     Debug "c "+Tree::GetText(g)
+    ;Tree::SetState(*g, 1)
+    ;Tree::SetState(*g, -1)
+    ;     Debug "c "+Tree::GetText(*g)
     
     g = 11
     Gadget(g, 230, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
+    *g = GetGadgetData(g)
     ;  3_example
-    AddItem(g, 0, "Tree_0", -1 )
-    AddItem(g, 1, "Tree_1_1", 0, 1) 
-    AddItem(g, 4, "Tree_1_1_1", -1, 2) 
-    AddItem(g, 5, "Tree_1_1_2", -1, 2) 
-    AddItem(g, 6, "Tree_1_1_2_1", -1, 3) 
-    AddItem(g, 8, "Tree_1_1_2_1_1_4jhhhhhhhhhhhhh", -1, 4) 
-    AddItem(g, 7, "Tree_1_1_2_2", -1, 3) 
-    AddItem(g, 2, "Tree_1_2", -1, 1) 
-    AddItem(g, 3, "Tree_1_3", -1, 1) 
-    AddItem(g, 9, "Tree_2",-1 )
-    AddItem(g, 10, "Tree_3", -1 )
+    AddItem(*g, 0, "Tree_0", -1 )
+    AddItem(*g, 1, "Tree_1_1", 0, 1) 
+    AddItem(*g, 4, "Tree_1_1_1", -1, 2) 
+    AddItem(*g, 5, "Tree_1_1_2", -1, 2) 
+    AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
+    AddItem(*g, 8, "Tree_1_1_2_1_1_4jhhhhhhhhhhhhh", -1, 4) 
+    AddItem(*g, 7, "Tree_1_1_2_2", -1, 3) 
+    AddItem(*g, 2, "Tree_1_2", -1, 1) 
+    AddItem(*g, 3, "Tree_1_3", -1, 1) 
+    AddItem(*g, 9, "Tree_2",-1 )
+    AddItem(*g, 10, "Tree_3", -1 )
     
-    ;     AddItem(g, 6, "Tree_1_1_2_1", -1, 3) 
-    ;     AddItem(g, 8, "Tree_1_1_2_1_1_8", -1, 4) 
-    ;     AddItem(g, 7, "Tree_1_1_2_2", -1, 3) 
-    ;     AddItem(g, 2, "Tree_1_2", -1, 1) 
-    ;     AddItem(g, 3, "Tree_1_3", -1, 1) 
-    ;     AddItem(g, 9, "Tree_2",-1 )
-    ;     AddItem(g, 10, "Tree_3", -1 )
-    For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
+    ;     AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
+    ;     AddItem(*g, 8, "Tree_1_1_2_1_1_8", -1, 4) 
+    ;     AddItem(*g, 7, "Tree_1_1_2_2", -1, 3) 
+    ;     AddItem(*g, 2, "Tree_1_2", -1, 1) 
+    ;     AddItem(*g, 3, "Tree_1_3", -1, 1) 
+    ;     AddItem(*g, 9, "Tree_2",-1 )
+    ;     AddItem(*g, 10, "Tree_3", -1 )
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
-    ; ClearItems(g)
+    ; ClearItems(*g)
     
     g = 12
     Gadget(g, 450, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes)                                        
+    *g = GetGadgetData(g)
     ;   ;  2_example
-    ;   AddItem (g, 0, "Normal Item "+Str(a), -1, 0)                                    
-    ;   AddItem (g, 1, "Node "+Str(a), -1, 1)                                           
-    ;   AddItem (g, 4, "Sub-Item 1", -1, 2)                                            
-    ;   AddItem (g, 2, "Sub-Item 2", -1, 1)
-    ;   AddItem (g, 3, "Sub-Item 3", -1, 1)
+    ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
+    ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
+    ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
+    ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
+    ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
     
     ;  2_example
-    AddItem (g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
+    AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5
-        AddItem(g, -1, "Tree_"+Str(i), -1) 
+        AddItem(*g, -1, "Tree_"+Str(i), -1) 
       Else
-        AddItem(g, -1, "Tree_"+Str(i), 0) 
+        AddItem(*g, -1, "Tree_"+Str(i), 0) 
       EndIf
     Next
-    For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
     g = 13
     Gadget(g, 670, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
+    *g = GetGadgetData(g)
     ;  4_example
-    AddItem(g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
-    AddItem(g, 1, "Tree_1", -1, 1) 
-    AddItem(g, 2, "Tree_2_2", -1, 2) 
-    AddItem(g, 2, "Tree_2_1", -1, 1) 
-    AddItem(g, 3, "Tree_3_1", -1, 1) 
-    AddItem(g, 3, "Tree_3_2", -1, 2) 
-    For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
+    AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
+    AddItem(*g, 1, "Tree_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    AddItem(*g, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g, 3, "Tree_3_1", -1, 1) 
+    AddItem(*g, 3, "Tree_3_2", -1, 2) 
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
     
     g = 14
     Gadget(g, 890, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
+    *g = GetGadgetData(g)
     ;  5_example
-    AddItem(g, 0, "Tree_0 (NoButtons)", -1 )
-    AddItem(g, 1, "Tree_1", -1, 1) 
-    AddItem(g, 2, "Tree_2_1", -1, 1) 
-    AddItem(g, 2, "Tree_2_2", -1, 2) 
-    For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
+    AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g, 1, "Tree_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
     g = 15
     Gadget(g, 890+106, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
+    *g = GetGadgetData(g)
     ;  6_example
-    AddItem(g, 0, "Tree_1", -1, 1) 
-    AddItem(g, 0, "Tree_2_1", -1, 2) 
-    AddItem(g, 0, "Tree_2_2", -1, 3) 
+    AddItem(*g, 0, "Tree_1", -1, 1) 
+    AddItem(*g, 0, "Tree_2_1", -1, 2) 
+    AddItem(*g, 0, "Tree_2_2", -1, 3) 
     
     For i = 0 To 24
       If i % 5 = 0
-        AddItem(g, -1, "Directory" + Str(i), -1, 0)
+        AddItem(*g, -1, "Directory" + Str(i), -1, 0)
       Else
-        AddItem(g, -1, "Item" + Str(i), -1, 1)
+        AddItem(*g, -1, "Item" + Str(i), -1, 1)
       EndIf
     Next i
     
-    For i=0 To CountItems(g) : SetItemState(g, i, #PB_Tree_Expanded) : Next
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
-    ;Free(g)
+    ;Free(*g)
     
     Repeat
       Select WaitWindowEvent()   
@@ -1778,5 +1767,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------8----8----------------2-------------
+; Folding = -----------------------------------------
 ; EnableXP
