@@ -956,7 +956,7 @@ Module Editor
   EndProcedure
   
   Procedure.i AddItem(*This.Widget_S, Item.i,Text.s,Image.i=-1,Flag.i=0)
-    Static adress.i
+    Static adress.i, first.i
     Protected *Item, subLevel, hide
     ;     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
@@ -988,14 +988,19 @@ Module Editor
         ;}
         
         If *Item
+          If Item = 0
+            First = *Item
+          EndIf
+          
           If subLevel
-            If sublevel>ListIndex(\Items())
-              sublevel=ListIndex(\Items())
+            If sublevel>Item
+              sublevel=Item
             EndIf
-            PushListPosition(\Items()) 
+            
+            PushListPosition(\Items())
             While PreviousElement(\Items()) 
               If subLevel = \Items()\subLevel
-                adress = \Items()\adress
+                adress = \Items()\address
                 Break
               ElseIf subLevel > \Items()\subLevel
                 adress = @\Items()
@@ -1006,32 +1011,32 @@ Module Editor
               ChangeCurrentElement(\Items(), adress)
               If subLevel > \Items()\subLevel
                 sublevel = \Items()\sublevel + 1
-                \Items()\adress[1] = *Item
+                \Items()\address[1] = *Item
                 \Items()\childrens + 1
                 \Items()\collapsed = 1
                 hide = 1
               EndIf
             EndIf
-            PopListPosition(\Items()) 
+            PopListPosition(\Items())
             
-            \Items()\hide = hide
             \Items()\sublevel = sublevel
-            \Items()\sublevellen = ((\Items()\sublevel+Bool(Not \Flag\NoButtons))*\sublevellen) + Bool(\Flag\CheckBoxes)*16
-            ; \Items()\Text\X = \Items()\sublevellen
-          Else
-            PushListPosition(\Items()) 
-            If Not \Item 
-              adress = FirstElement(\Items())
-            EndIf
-            PopListPosition(\Items()) 
+            \Items()\hide = hide
+          Else                                      
+            ; ChangeCurrentElement(\Items(), *Item)
+            ; PushListPosition(\Items()) 
+            ; PopListPosition(\Items())
+            adress = first
           EndIf
           
-          \Items()\alpha = 255
-          \Items()\Line =- 1
-          \Items()\focus =- 1
-          \Items()\lostfocus =- 1
-          \Items()\text\change = 1
-          \Items()\adress = adress
+          If \Items()\address <> adress : \Items()\address = adress
+            \Items()\change = Bool(\Type = #PB_GadgetType_Tree)
+            \Items()\alpha = 255
+            \Items()\Line =- 1
+            \Items()\Text\FontID = \Text\FontID
+            \Items()\focus =- 1
+            \Items()\lostfocus =- 1
+            \Items()\text\change = 1
+          EndIf
           
           If IsImage(Image)
             
@@ -1064,7 +1069,7 @@ Module Editor
           \Items()\Color[0]\Fore[1] = 0
           \Items()\Color[0]\Fore[2] = 0
           
-          If ListIndex(\Items()) = 0
+          If Item = 0
             PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
           EndIf
         EndIf
@@ -1416,11 +1421,11 @@ Module Editor
         \bSize = \fSize
         
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
-          \Flag\NoButtons = Bool(flag&#PB_Flag_NoButtons)
-          \Flag\NoLines = Bool(flag&#PB_Flag_NoLines)
+          \Flag\Buttons = Bool(flag&#PB_Flag_NoButtons)
+          \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
           \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
           \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
-          \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
+          \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
           \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
           
           \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
@@ -1665,8 +1670,6 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 1008
-; FirstLine = 95
-; Folding = ggCAACgAAAAAAAIAACCAc--AAAAIAAAAAAACA+
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = --------------------f4v---------------
 ; EnableXP

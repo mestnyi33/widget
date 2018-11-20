@@ -10,7 +10,7 @@ XIncludeFile "module_structures.pbi"
 XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_editor.pbi"
-XIncludeFile "module_tree_.pbi"
+XIncludeFile "module_tree.pbi"
 
 LN=150; количесвто итемов 
  

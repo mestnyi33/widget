@@ -10,9 +10,9 @@ XIncludeFile "module_structures.pbi"
 XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_editor.pbi"
-XIncludeFile "module_tree_.pbi"
+XIncludeFile "module_tree.pbi"
 
-LN=150; количесвто итемов 
+LN=1500; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "treeGadget", #PB_Window_SystemMenu)
   TreeGadget(0, 10, 10, 250, 680)

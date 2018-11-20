@@ -355,7 +355,7 @@ Module Scroll
               \Max = Value
             EndIf
             
-            \Page\ScrollStep = (\Max-\Min) / 100
+            ; \Page\ScrollStep = (\Max-\Min) / 100
             
             Result = #True
           EndIf

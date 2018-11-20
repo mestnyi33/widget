@@ -156,12 +156,13 @@ Module ListView
             CompilerEndIf
             
             Select EventType 
-              Case #PB_EventType_LeftClick : PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_LeftClick)
-              Case #PB_EventType_RightClick : PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_RightClick)
-              Case #PB_EventType_LeftDoubleClick : PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_LeftDoubleClick)
+              Case #PB_EventType_LeftClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftClick)
+              Case #PB_EventType_RightClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_RightClick)
+              Case #PB_EventType_LeftDoubleClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftDoubleClick)
                 
               Case #PB_EventType_MouseLeave
                 \Line =- 1
+                Repaint = 1
                 
               Case #PB_EventType_LeftButtonDown
                 PushListPosition(\Items()) 
@@ -373,8 +374,8 @@ Module ListView
         If Text::Resize(*This, X,Y,Width,Height, Canvas)
           \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
           \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-          \Flag\NoButtons = Bool(flag&#PB_Flag_NoButtons)
-          \Flag\NoLines = Bool(flag&#PB_Flag_NoLines)
+          \Flag\Buttons = Bool(flag&#PB_Flag_NoButtons)
+          \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
           \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
           \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
           \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
@@ -595,5 +596,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = IA-BAAAA5IwYpw
+; Folding = IA-JXAAA5IwYpw
 ; EnableXP

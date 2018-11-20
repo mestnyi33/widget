@@ -91,7 +91,7 @@ Module ListIcon
                 \Items()\checked ! 1
                 *This\Change = 1
               EndIf
-              If (Not \flag\NoButtons And \Items()\childrens) And
+              If (Not \flag\Buttons And \Items()\childrens) And
                  (MouseY > (\Items()\box\y[0]) And MouseY =< ((\Items()\box\y[0]+\Items()\box\height[0]))) And 
                  ((MouseX > \Items()\box\x[0]) And (MouseX =< (\Items()\box\x[0]+\Items()\box\width[0])))
                 
@@ -103,9 +103,9 @@ Module ListIcon
                   If sublevel = \Items()\sublevel
                     Break
                   ElseIf sublevel < \Items()\sublevel 
-                    If \Items()\adress
+                    If \Items()\address
                       PushListPosition(\Items())
-                      ChangeCurrentElement(\Items(), \Items()\adress)
+                      ChangeCurrentElement(\Items(), \Items()\address)
                       collapsed = \Items()\collapsed
                       If \Items()\hide
                         collapsed = 1
@@ -286,7 +286,7 @@ Module ListIcon
                 \text\change = 0
               EndIf
               
-              If *This\Flag\NoButtons 
+              If *This\Flag\Buttons 
                 x_content=*This\x[2]+column_width-column_x+2+(\sublevel*w)-*This\hScroll\Page\Pos
               Else
                 x_content=*This\x[2]+column_width-column_x+2+(w+\sublevel*w)-*This\hScroll\Page\Pos
@@ -365,7 +365,7 @@ Module ListIcon
                 EndIf
                 
                 ; Draw boxes
-                If Not *This\Flag\NoButtons And \childrens
+                If Not *This\Flag\Buttons And \childrens
                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                   Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                 EndIf
@@ -560,7 +560,7 @@ Module ListIcon
           PushListPosition(\Items()) 
           While PreviousElement(\Items()) 
             If subLevel = \Items()\subLevel
-              adress = \Items()\adress
+              adress = \Items()\address
               Break
             ElseIf subLevel > \Items()\subLevel
               adress = @\Items()
@@ -590,7 +590,7 @@ Module ListIcon
         \Items()\lostfocus =- 1
         \Items()\time = ElapsedMilliseconds()
         \Items()\Item = Item
-        \Items()\adress = adress
+        \Items()\address = adress
         \Items()\text\change = 1
         \Items()\text\string.s = StringField(Text.s, ListIndex(*This\Columns()) + 1, #LF$)
         ;\text\string.s = Text.s ;+" ("+Str(iadress)+"-"+Str(SubLevel)+")" 
@@ -1253,7 +1253,7 @@ Module ListIcon
         \Item =- 1
         \Canvas\Window = GetActiveWindow()
         If \Canvas\Window =- 1
-          \Canvas\Window = GetGadgetData(Canvas)
+          \Canvas\Window = GetGadgetData(Gadget)
         EndIf
         \X =- 1
         \Y =- 1
@@ -1265,8 +1265,8 @@ Module ListIcon
         flag|#PB_Flag_NoLines|#PB_Flag_NoButtons
         
         
-        \Flag\NoButtons = Bool(flag&#PB_Flag_NoButtons)
-        \Flag\NoLines = Bool(flag&#PB_Flag_NoLines)
+        \Flag\Buttons = Bool(flag&#PB_Flag_NoButtons)
+        \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
         \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
         \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
         \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
@@ -1289,7 +1289,7 @@ Module ListIcon
         
         ;
         Scroll::Widget(*This\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 8)
-        If \flag\NoButtons = 0 Or \flag\NoLines=0
+        If \flag\Buttons = 0 Or \flag\Lines=0
           Scroll::Widget(*This\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 8)
         EndIf
         

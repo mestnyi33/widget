@@ -14,6 +14,7 @@ XIncludeFile "module_button.pbi"
 XIncludeFile "module_string.pbi"
 XIncludeFile "module_editor.pbi"
 XIncludeFile "module_listview.pbi"
+XIncludeFile "module_tree.pbi"
 XIncludeFile "module_widget.pbi"
 
 
@@ -22,6 +23,7 @@ Procedure CallBack(*This.Widget_S, EventType.i)
   
   With *This
     Select \Type 
+      Case #PB_GadgetType_Tree : Repaint | Tree::CallBack(*This, EventType)
       Case #PB_GadgetType_Button : Repaint | Button::CallBack(*This, EventType)
       Case #PB_GadgetType_String : Repaint | String::CallBack(*This, EventType)
       Case #PB_GadgetType_Editor : Repaint | Editor::CallBack(*This, EventType)
@@ -71,8 +73,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
-  Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
-  OpenWindow(20, 0, 0, 630, 400, "demo set gadget new parent", Flags )
+  Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu ; | #PB_Window_ScreenCentered 
+  OpenWindow(20, 110, 210, 630, 400, "demo set gadget new parent", Flags )
   
   ; Demo draw widgets on the canvas
   CanvasGadget(20,  0, 0, WindowWidth( 20 ), WindowHeight( 20 ), #PB_Canvas_Keyboard)
@@ -178,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                     Case 24 :ExplorerTree(20,20,20,w,h,"")
 ;                     Case 25 :ExplorerCombo(20,20,20,w,h,"")
 ;                     Case 26 :Spin(20,20,20,w,h,0,5,#PB_Spin_Numeric)
-;                     Case 27 :Tree(20,20,20,w,h) : AddItem(20,-1,"Tree") : AddItem(20,-1,"SubLavel",0,1)
+                     Case 27 :*w=Tree::Create(20,-1, 20,20,w,h,"") : Tree::AddItem(*w,-1,"Tree") : Tree::AddItem(*w,-1,"SubLavel",0,1)
 ;                     Case 28 :Panel(20,20,20,w,h) :AddItem(20,-1,"Panel") :CloseList()
 ;                     Case 29 
 ;                       Button(201,0,0,20,h,"1")
@@ -219,5 +221,5 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -4-
+; Folding = ---
 ; EnableXP

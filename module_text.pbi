@@ -84,9 +84,9 @@ Module Text
     Protected String.s, i.i, Len.i
     
     With *This
-      If \Text\Numeric
+      If \Text\Numeric And Text.s <> #LF$
         Static Dot, Minus
-        Protected Chr.s, Input.i
+        Protected Chr.s, Input.i, left.s, count.i
         
         Len = Len(Text.s) 
         For i = 1 To Len 
@@ -101,15 +101,31 @@ Module Text
           EndSelect
           
           If Input
-            If Not Dot And Input = '.'
+            If \Type = #PB_GadgetType_IPAddress
+              left.s = Left(\Text\String, \Caret)
+              Select CountString(left.s, ".")
+                Case 0 : left.s = StringField(left.s, 1, ".")
+                Case 1 : left.s = StringField(left.s, 2, ".")
+                Case 2 : left.s = StringField(left.s, 3, ".")
+                Case 3 : left.s = StringField(left.s, 4, ".")
+              EndSelect                                           
+              count = Len(left.s+Trim(StringField(Mid(\Text\String, \Caret+1), 1, "."), #LF$))
+              If count < 3 And (Val(left.s) > 25 Or Val(left.s+Chr.s) > 255)
+                Continue
+;               ElseIf Mid(\Text\String, \Caret + 1, 1) = "."
+;                 \Caret + 1 : \Caret[1]=\Caret
+              EndIf
+            EndIf
+            
+            If Not Dot And Input = '.' And Mid(\Text\String, \Caret + 1, 1) <> "."
               Dot = 1
-            ElseIf Input <> '.'
+            ElseIf Input <> '.' And count < 3
               Dot = 0
             Else
               Continue
             EndIf
             
-            If Not Minus And Input = '-'
+            If Not Minus And Input = '-' And Mid(\Text\String, \Caret + 1, 1) <> "-"
               Minus = 1
             ElseIf Input <> '-'
               Minus = 0
@@ -272,12 +288,12 @@ Module Text
     
     Macro _line_resize_Y_(_this_)
       _this_\Items()\y = _this_\Y[1]+_this_\Text\Y+_this_\Scroll\Height+Text_Y
-      _this_\Items()\Height = _this_\Text\Height - Bool(_this_\Text\Count<>1 And _this_\Flag\GridLines)
-      _this_\Items()\Text\y = _this_\Items()\y - Bool(#PB_Compiler_OS <> #PB_OS_MacOS And _this_\Text\Count<>1)
-      _this_\Items()\Text\Height = _this_\Text\Height
-      
-      _this_\Image\Y = _this_\Y[1]+_this_\Text\Y+Image_Y
-      _this_\Items()\Image\Y = _this_\Items()\y+Image_Y
+        _this_\Items()\Height = _this_\Text\Height - Bool(_this_\Text\Count<>1 And _this_\Flag\GridLines)
+        _this_\Items()\Text\y = _this_\Items()\y + (_this_\Text\Height-_this_\Text\Height[1])/2 - Bool(#PB_Compiler_OS <> #PB_OS_MacOS And _this_\Text\Count<>1)
+        _this_\Items()\Text\Height = _this_\Text\Height[1]
+        
+        _this_\Image\Y = _this_\Y[1]+_this_\Text\Y+Image_Y
+        _this_\Items()\Image\Y = _this_\Items()\y + (_this_\Text\Height-_this_\Items()\Image\Height)/2 + Image_Y
     EndMacro
     
     With *This
@@ -339,12 +355,14 @@ Module Text
 ;       \Items()\Hide = Bool(Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
       
       ; Scroll width length
-      If \Scroll\Width<\Items()\Text\Width
-        \Scroll\Width=\Items()\Text\Width
+      If Not \Hide And \Scroll\Width<\Items()\Text\x+\Items()\Text\Width
+        \Scroll\Width=\Items()\Text\x+\Items()\Text\Width
       EndIf
       
       ; Scroll hight length
-      \Scroll\Height+\Text\Height
+      If Not \Items()\Hide
+        \Scroll\Height+\Text\Height
+      EndIf
     EndWith
     
     ProcedureReturn Line
@@ -461,10 +479,12 @@ Module Text
 ;                 \Items()\Hide = 1
 ;               EndIf
               
-              \Scroll\Height+\Text\Height 
+              If Not \Items()\Hide
+                \Scroll\Height+\Text\Height 
+              EndIf
             EndIf
-            Next
-          Else
+          Next
+        Else
             For IT = 1 To \Text\Count
               String = StringField(\Text\String.s[2], IT, #LF$)
               
@@ -490,9 +510,7 @@ Module Text
                 \Items()\Text\Position = \Text\Position
                 \Items()\Text\Len = Len(String.s)
                 \Text\Position + \Items()\Text\Len + 1 ; Len(#LF$)
-                
-                ;;;\Items()\sublevellen = ((\Items()\sublevel+Bool(Not \Flag\NoButtons))*\sublevellen) + Bool(\Flag\CheckBoxes)*16
-                
+               
                 _set_content_X_(*This)
                 _line_resize_X_(*This)
                 _line_resize_Y_(*This)
@@ -503,17 +521,15 @@ Module Text
                   \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
                 EndIf
                 
-;                 ; Is visible lines
-;                 \Items()\Hide = Bool(Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
-                
                 ; Scroll width length
-                If \Scroll\Width<\Items()\Text\Width
-                  \Scroll\Width=\Items()\Text\Width
+                If Not \Items()\Hide And \Scroll\Width<\Items()\Text\x+\Items()\Text\Width
+                  \Scroll\Width=\Items()\Text\x+\Items()\Text\Width
                 EndIf
                 
                 ; Scroll hight length
-                \Scroll\Height+\Text\Height
-                
+                If Not \Items()\Hide
+                  \Scroll\Height+\Text\Height
+                EndIf
 ;                 AddLine(*This, ListIndex(\Items()), String.s)
               EndIf
             Next
@@ -531,12 +547,7 @@ Module Text
                 Else
                   \Items()\Text\Width = TextWidth(String.s)
                 EndIf
-                
-                ; Set scroll width length
-                If \Scroll\Width<\Items()\Text\Width
-                  \Scroll\Width=\Items()\Text\Width
-                EndIf
-              EndIf
+             EndIf
               
               ; Update line pos in the text
               \Items()\Text\Position = \Text\Position
@@ -550,9 +561,10 @@ Module Text
               
               _line_resize_X_(*This)
               
-;               ; Is visible lines ---
-;               \Items()\Hide = Bool(Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
-                
+              ; Set scroll width length
+              If Not \Items()\Hide And \Scroll\Width<\Items()\Text\x+\Items()\Text\Width
+                \Scroll\Width=\Items()\Text\x+\Items()\Text\Width
+              EndIf
             EndIf
           Next
         EndIf
@@ -563,12 +575,14 @@ Module Text
         
         PushListPosition(\Items())
         ForEach \Items()
+          If Not \Items()\Hide
           _set_content_X_(*This)
           _line_resize_X_(*This)
           _line_resize_Y_(*This)
           
           ; Scroll hight length
-          \Scroll\Height + \Text\Height
+            \Scroll\Height + \Text\Height
+          EndIf
         Next
         PopListPosition(\Items())
       EndIf
@@ -622,7 +636,8 @@ Module Text
             PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
           EndIf
           If \Text\Change
-            \Text\Height = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
+            \Text\Height[1] = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
+            \Text\Height = \Text\Height[1]
             \Text\Width = TextWidth(\Text\String.s)
           EndIf
           
@@ -660,7 +675,7 @@ Module Text
 ;                 \Text[2]\Change = 1
 ;                 \Text[3]\Change = 1
 ;                 
-;                 If *This\Scroll\Width<*This\Text\X*2+\Text\Width
+;                 If Not \Hide And *This\Scroll\Width<*This\Text\X*2+\Text\Width
 ;                   *This\Scroll\Width=*This\Text\X*2+\Text\Width
 ;                 EndIf
 ;               EndIf
@@ -1040,7 +1055,9 @@ Module Text
     Protected String.s, StringWidth, ix, iy, iwidth, iheight
     Protected IT,Text_Y,Text_X, X,Y, Width,Height, Drawing
     
-    Protected box_size = 9,box_1_size = 12
+    Protected line_size = *This\Flag\Lines
+    Protected box_size = *This\Flag\Buttons
+    Protected check_box_size = *This\Flag\CheckBoxes
     
     If Not *This\Hide
       
@@ -1098,85 +1115,91 @@ Module Text
           ForEach *This\Items()
             ; Is visible lines ---
             Drawing = Bool(\y+\height+*This\Scroll\Y>*This\y[2] And (\y-*This\y[2])+*This\Scroll\Y<iheight)
-            \Hide = Bool(Not Drawing)
+            ;\Hide = Bool(Not Drawing)
             
+            If \hide
+              Drawing = 0
+            EndIf
+                    
             If Drawing
-               ; Debug  \Item                                                             ; Draw items back color
+              If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
+              _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Width[2], #PB_Ignore) 
               
-            If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
-            _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Width[2], #PB_Ignore) 
-            
-            If \Text\Change : \Text\Change = #False
-              \Text\Width = TextWidth(\Text\String.s) 
+              If \Text\Change : \Text\Change = #False
+                \Text\Width = TextWidth(\Text\String.s) 
+                
+                If \Text\FontID 
+                  \Text\Height = TextHeight("A") 
+                Else
+                  \Text\Height = *This\Text\Height[1]
+                EndIf
+              EndIf 
               
-              If \Text\FontID 
-                \Text\Height = TextHeight("A") 
-              Else
-                \Text\Height = *This\Text\Height
-              EndIf
-            EndIf 
-            
-            If \Text[1]\Change : \Text[1]\Change = #False
-              \Text[1]\Width = TextWidth(\Text[1]\String.s) 
-            EndIf 
-            
-            If \Text[3]\Change : \Text[3]\Change = #False 
-              \Text[3]\Width = TextWidth(\Text[3]\String.s)
-            EndIf 
-            
-            If \Text[2]\Change : \Text[2]\Change = #False 
-              \Text[2]\X = Text_X+\Text[1]\Width
-              \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
-              \Text[3]\X = \Text[2]\X+\Text[2]\Width
-            EndIf 
-            
-            ;               
-            If *This\Focus = *This 
-              Protected Left,Right
-              Left =- TextWidth(Mid(*This\Text\String.s, \Text\Position, *This\Caret))
-              ; Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
-              Right = (\Width + Left)
+              If \Text[1]\Change : \Text[1]\Change = #False
+                \Text[1]\Width = TextWidth(\Text[1]\String.s) 
+              EndIf 
               
-              If *This\Scroll\X < Left
-                *This\Scroll\X = Left
-              ElseIf *This\Scroll\X > Right
-                *This\Scroll\X = Right
-              ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
-                *This\Scroll\X = (\Width-\Text[3]\Width) + Left
-                If *This\Scroll\X>0
-                  *This\Scroll\X=0
+              If \Text[3]\Change : \Text[3]\Change = #False 
+                \Text[3]\Width = TextWidth(\Text[3]\String.s)
+              EndIf 
+              
+              If \Text[2]\Change : \Text[2]\Change = #False 
+                \Text[2]\X = Text_X+\Text[1]\Width
+                \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
+                \Text[3]\X = \Text[2]\X+\Text[2]\Width
+              EndIf 
+              
+              ;               
+              If *This\Focus = *This And *This\Text\Editable
+                Protected Left,Right
+                Left =- TextWidth(Mid(*This\Text\String.s, \Text\Position, *This\Caret))
+                ; Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
+                Right = (\Width + Left)
+                
+                If *This\Scroll\X < Left
+                  *This\Scroll\X = Left
+                ElseIf *This\Scroll\X > Right
+                  *This\Scroll\X = Right
+                ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
+                  *This\Scroll\X = (\Width-\Text[3]\Width) + Left
+                  If *This\Scroll\X>0
+                    *This\Scroll\X=0
+                  EndIf
                 EndIf
               EndIf
             EndIf
             
-          EndIf
-          
-          ; *This\sublevellen = 18
-          If *This\sublevellen
-            Protected indent = 8 + Bool(*This\Image\width)*4
-            ; Draw coordinates 
-            \sublevellen = (12 - *This\sublevellen) + ((\sublevel+Bool(Not *This\Flag\NoButtons))**This\sublevellen) + Bool(*This\Flag\CheckBoxes)*12
-          EndIf
+            
+            If \change = 1 : \change = 0
+              Protected indent = 8 + Bool(*This\Image\width)*4
+              ; Draw coordinates 
+              \sublevellen = *This\Text\X + (7 - *This\sublevellen) + ((\sublevel + Bool(*This\Flag\Buttons)) * *This\sublevellen) + Bool(*This\Flag\CheckBoxes)*17
+              \Image\X + \sublevellen + indent
+              \Text\X + \sublevellen + *This\Image\width + indent
+              
+              ; Scroll width length
+              If Not \Hide And *This\Scroll\Width<\Text\X+\Text\Width
+                *This\Scroll\Width=\Text\X+\Text\Width
+              EndIf
+            EndIf
             
             Height = \Height
             Y = \Y+*This\Scroll\Y
-            Text_X = \Text\X+*This\Scroll\X + \sublevellen + *This\Image\width + indent
+            Text_X = \Text\X+*This\Scroll\X
             Text_Y = \Text\Y+*This\Scroll\Y
             
             ; expanded & collapsed box
-            If Not *This\Flag\NoButtons Or
-               Not *This\Flag\NoLines 
+            If *This\Flag\Buttons Or *This\Flag\Lines 
               \box\width = box_size
               \box\height = box_size
-              \box\x = \sublevellen-(\box\width)/2 
+              \box\x = *This\x+\sublevellen-(\box\width)/2+*This\Scroll\X
               \box\y = (Y+height)-(height+\box\height)/2
             EndIf
             
             If *This\Flag\CheckBoxes
-              \box\width[1] = box_1_size
-              \box\height[1] = box_1_size
-              
-              \box\x[1] = (\box\width[1])/2
+              \box\width[1] = check_box_size
+              \box\height[1] = check_box_size
+              \box\x[1] = *This\x+(\box\width[1])/2+*This\Scroll\X
               \box\y[1] = (Y+height)-(height+\box\height[1])/2
             EndIf
             
@@ -1195,8 +1218,8 @@ Module Text
             EndIf
             
             ; Draw plot
-            If *This\sublevellen And Not *This\Flag\NoLines 
-              Protected line_size=8, x_point=\sublevellen
+            If *This\sublevellen And *This\Flag\Lines 
+              Protected x_point=*This\x+\sublevellen+*This\Scroll\X
               
               If x_point>*This\x[2] 
                 Protected y_point=\box\y+\box\height/2
@@ -1208,21 +1231,20 @@ Module Text
                 EndIf
                 
                 ; Vertical plot
-                If \adress
+                If \address
                   Protected start = \sublevel
                   
-                  If \adress[1]
+                  ; это нужно если линия уходит за предели границы виджета
+                  If \address[1]
                     PushListPosition(*This\Items())
-                    ChangeCurrentElement(*This\Items(), \adress[1]) 
-                    If \Hide 
-                      Drawing = 1 
-                    EndIf
+                    ChangeCurrentElement(*This\Items(), \address[1]) 
+                    ;If \Hide : Drawing = 2 : EndIf
                     PopListPosition(*This\Items())
                   EndIf
                   
                   PushListPosition(*This\Items())
-                  ChangeCurrentElement(*This\Items(), \adress) 
-                  If Drawing
+                  ChangeCurrentElement(*This\Items(), \address) 
+                  If Drawing  
                     If start
                       If *This\sublevellen > 10
                         start = (\y+\height+\height/2) + *This\Scroll\Y - line_size
@@ -1243,7 +1265,7 @@ Module Text
             
             If Drawing
               ; Draw boxes
-              If Not *This\Flag\NoButtons And \childrens
+              If *This\Flag\Buttons And \childrens
                 DrawingMode(#PB_2DDrawing_Default)
                 CompilerIf Defined(Scroll, #PB_Module)
                   Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, \Color\Front[\Color\State], 0,0) 
@@ -1259,11 +1281,11 @@ Module Text
               ; Draw image
               If \Image\handle
                 DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                DrawAlphaImage(\Image\handle, indent + \Image\x+\sublevellen, \Image\y+*This\Scroll\Y, \alpha)
+                DrawAlphaImage(\Image\handle, \Image\x+*This\Scroll\X, \Image\y+*This\Scroll\Y, \alpha)
               EndIf
               
               ; Draw text
-              ;_clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
+              _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
               
               ; Draw string
               If \Text[2]\Len > 0 And *This\Color\Front <> *This\Color\Front[2]
@@ -1462,24 +1484,14 @@ Module Text
         EndIf
         
         If \Default
+          ; DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@DrawFilterCallback())
           If \Default = *This : \Default = 0
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius, $FFF1F1FF)
-            
             DrawingMode(#PB_2DDrawing_Outlined)
             RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$FF004DFF)
-            If \Radius 
-              RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$FF004DFF)
-            EndIf
+            If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$FF004DFF) : EndIf
             RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$FF004DFF)
-            
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawText((\Width[1]-TextWidth("!!! Недопустимый символ"))/2, \Items()\Text[0]\Y, "!!! Недопустимый символ", $FF0000FF)
           Else
-            ; DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@DrawFilterCallback())
             RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[2])
-            ;           If \Radius : RoundBox(\X[1]+2,\Y[1]+3,\Width[1]-4,\Height[1]-6,\Radius,\Radius,\Color\Frame[2]) : EndIf ; Сглаживание краев )))
-            ;           RoundBox(\X[1]+3,\Y[1]+3,\Width[1]-6,\Height[1]-6,\Radius,\Radius,\Color\Frame[2])
           EndIf
         EndIf
         
@@ -2377,5 +2389,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -Xu-zenF0u2-GL+Pnt4-----------------v-----------4------
+; Folding = ---0-146z-ev-PW9f+Tv4t--+v--+---v-----+----------f------
 ; EnableXP

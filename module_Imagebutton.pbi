@@ -23,7 +23,7 @@ DeclareModule Button
   CompilerEndIf
 
   ;- - DECLAREs MACROs
-  Macro Draw(_adress_, _canvas_=-1) : Text::Draw(_adress_, _canvas_) : EndMacro
+  Macro Draw(_adress_) : Text::Draw(_adress_) : EndMacro
   Macro Parent(_adress_, _canvas_) : Bool(_adress_\Canvas\Gadget = _canvas_) : EndMacro
   
   Macro GetText(_adress_) : Text::GetText(_adress_) : EndMacro

@@ -9,18 +9,20 @@ XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
 XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
+XIncludeFile "module_editor.pbi"
 XIncludeFile "module_tree.pbi"
 
+UseModule Tree
 LN=15000; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
-  Tree::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection)
+  Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection)
   *w=GetGadgetData(1)
   Debug "---------------Start"
   Define time = ElapsedMilliseconds()
   
   For a = 0 To LN
-    Tree::AddItem (*w, -1, "Item "+Str(a), 0);,Random(5)+1)
+    AddItem (*w, -1, "Item "+Str(a));, 0);,Random(5)+1)
     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
     EndIf
     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло

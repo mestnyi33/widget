@@ -11,7 +11,7 @@ XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_editor.pbi"
 
-LN=1500; количесвто итемов 
+LN=15000; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)
@@ -46,7 +46,6 @@ If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

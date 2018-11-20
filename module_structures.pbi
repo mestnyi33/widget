@@ -46,8 +46,8 @@
   
   Structure Flag_S
     InLine.b
-    NoLines.b
-    NoButtons.b
+    Lines.b
+    Buttons.b
     GridLines.b
     CheckBoxes.b
     FullSelection.b
@@ -136,6 +136,7 @@
     Color.Color_S[4]
     Text.Text_S[4]
     Clip.Coordinate_S
+    *ToolTip.Text_S
     
     Scroll.Scrolls_S
     vScroll.Scroll_S
@@ -175,7 +176,7 @@
     
     ; tree
     time.i
-    adress.i[2]
+    address.i[2]
     
     sublevel.i
     sublevellen.i
