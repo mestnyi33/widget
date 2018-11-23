@@ -636,7 +636,6 @@ Module String
             \Color[0]\Frame[1] = $FFFFFFFF
           EndIf
           
-          If Text.s="" : Text.s=#LF$ : EndIf
           SetText(*This, Text.s)
           \Resize = 0
         EndIf
@@ -657,8 +656,8 @@ Module String
       List()\Widget = *This
       
       Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
-      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create)
-      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
+      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create, *This\Canvas\Gadget)
+      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint, *This)
     EndIf
     
     ProcedureReturn *This
@@ -747,7 +746,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     Select EventType()
-      Case #PB_EventType_Resize : Result = 1
+      Case #PB_EventType_Repaint : Result = EventData()
+      Case #PB_EventType_Resize : Result = EventData()
       Default
         
         If EventType() = #PB_EventType_LeftButtonDown
@@ -761,7 +761,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Next
     EndSelect
     
-    If Result
+    If Result 
       Text::ReDraw(0, Canvas, winBackColor)
     EndIf
     

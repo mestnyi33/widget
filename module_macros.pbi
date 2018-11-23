@@ -168,6 +168,13 @@
     ((_mask_ & _flag_) = _flag_)
   EndMacro
   
+  Macro _set_scroll_width_(_this_)
+    If Not _this_\hide And Not _this_\items()\hide And _this_\Scroll\width<(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
+      _this_\scroll\width=(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
+    ; Debug "   "+_this_\width +" "+ _this_\scroll\width
+    EndIf
+  EndMacro
+  
   ; val = %10011110
   ; Debug Bin(GetBits(val, 0, 3))
   
@@ -178,8 +185,6 @@ Module Macros
 EndModule 
 
 UseModule Macros
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 45
-; FirstLine = 38
-; Folding = ----
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = -----
 ; EnableXP

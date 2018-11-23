@@ -18,16 +18,29 @@ DeclareModule Scroll
   UseModule Constants
   UseModule Structures
   
+  Macro x(_this_)
+    _this_\x+Bool(_this_\hide[1] Or Not _this_\alpha)*_this_\width
+  EndMacro
+  Macro y(_this_)
+    _this_\y+Bool(_this_\hide[1] Or Not _this_\alpha)*_this_\height
+  EndMacro
+  Macro width(_this_)
+    Bool(Not _this_\hide[1] And _this_\alpha)*_this_\width
+  EndMacro
+  Macro height(_this_)
+    Bool(Not _this_\hide[1] And _this_\alpha)*_this_\height
+  EndMacro
+  
   Macro ThumbPos(_this_, _scroll_pos_)
     (_this_\Area\Pos + Round((_scroll_pos_-_this_\Min) * (_this_\Area\Length / (_this_\Max-_this_\Min)), #PB_Round_Nearest)) : If _this_\Vertical : _this_\Y[3] = _this_\Thumb\Pos : _this_\Height[3] = _this_\Thumb\Length : Else : _this_\X[3] = _this_\Thumb\Pos : _this_\Width[3] = _this_\Thumb\Length : EndIf
   EndMacro
   
   
   Declare.b Draw(*Scroll.Scroll_S)
-  Declare.i Y(*Scroll.Scroll_S)
-  Declare.i X(*Scroll.Scroll_S)
-  Declare.i Width(*Scroll.Scroll_S)
-  Declare.i Height(*Scroll.Scroll_S)
+; ;   Declare.i Y(*Scroll.Scroll_S)
+; ;   Declare.i X(*Scroll.Scroll_S)
+; ;   Declare.i Width(*Scroll.Scroll_S)
+; ;   Declare.i Height(*Scroll.Scroll_S)
   Declare.b SetState(*Scroll.Scroll_S, ScrollPos.i)
   Declare.i SetAttribute(*Scroll.Scroll_S, Attribute.i, Value.i)
   Declare.i SetColor(*Scroll.Scroll_S, ColorType.i, Color.i, State.i=0, Item.i=0)
@@ -231,65 +244,65 @@ Module Scroll
     EndWith 
   EndProcedure
   
-  Procedure.i X(*Scroll.Scroll_S)
-    Protected Result.i
-    
-    If *Scroll
-      With *Scroll
-        If Not \Hide[1] And \Alpha
-          Result = \X
-        Else
-          Result = \X+\Width
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn Result
-  EndProcedure
+; ;   Procedure.i X(*Scroll.Scroll_S)
+; ;     Protected Result.i
+; ;     
+; ;     If *Scroll
+; ;       With *Scroll
+; ;         If Not \Hide[1] And \Alpha
+; ;           Result = \X
+; ;         Else
+; ;           Result = \X+\Width
+; ;         EndIf
+; ;       EndWith
+; ;     EndIf
+; ;     
+; ;     ProcedureReturn Result
+; ;   EndProcedure
+; ;   
+; ;   Procedure.i Y(*Scroll.Scroll_S)
+; ;     Protected Result.i
+; ;     
+; ;     If *Scroll
+; ;       With *Scroll
+; ;         If Not \Hide[1] And \Alpha
+; ;           Result = \Y
+; ;         Else
+; ;           Result = \Y+\Height
+; ;         EndIf
+; ;       EndWith
+; ;     EndIf
+; ;     
+; ;     ProcedureReturn Result
+; ;   EndProcedure
   
-  Procedure.i Y(*Scroll.Scroll_S)
-    Protected Result.i
-    
-    If *Scroll
-      With *Scroll
-        If Not \Hide[1] And \Alpha
-          Result = \Y
-        Else
-          Result = \Y+\Height
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i Width(*Scroll.Scroll_S)
-    Protected Result.i
-    
-    If *Scroll
-      With *Scroll
-        If Not \Hide[1] And \Width And \Alpha
-          Result = \Width
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i Height(*Scroll.Scroll_S)
-    Protected Result.i
-    
-    If *Scroll
-      With *Scroll
-        If Not \Hide[1] And \Height And \Alpha
-          Result = \Height
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn Result
-  EndProcedure
+; ;   Procedure.i Width(*Scroll.Scroll_S)
+; ;     Protected Result.i
+; ;     
+; ;     If *Scroll
+; ;       With *Scroll
+; ;         If Not \Hide[1] And \Width And \Alpha
+; ;           Result = \Width
+; ;         EndIf
+; ;       EndWith
+; ;     EndIf
+; ;     
+; ;     ProcedureReturn Result
+; ;   EndProcedure
+; ;   
+; ;   Procedure.i Height(*Scroll.Scroll_S)
+; ;     Protected Result.i
+; ;     
+; ;     If *Scroll
+; ;       With *Scroll
+; ;         If Not \Hide[1] And \Height And \Alpha
+; ;           Result = \Height
+; ;         EndIf
+; ;       EndWith
+; ;     EndIf
+; ;     
+; ;     ProcedureReturn Result
+; ;   EndProcedure
   
   Procedure.b SetState(*Scroll.Scroll_S, ScrollPos.i)
     Protected Result.b, Direction
@@ -362,7 +375,8 @@ Module Scroll
           
         Case #PB_ScrollBar_PageLength
           If \Page\Length <> Value
-            If Value > (\Max-\Min) : \Max = Value ; Если этого page_length вызвать раньше maximum то не правильно работает
+            If Value > (\Max-\Min) 
+              If Not \Max : \Max = Value : EndIf ; Если этого page_length вызвать раньше maximum то не правильно работает
               \Page\Length = (\Max-\Min)
             Else
               \Page\Length = Value
@@ -446,11 +460,13 @@ Module Scroll
       EndIf
       
       ;
-      If X=#PB_Ignore : X = \X[0] : EndIf : If Y=#PB_Ignore : Y = \Y[0] : EndIf 
-      If Width=#PB_Ignore : Width = \Width[0] : EndIf : If Height=#PB_Ignore : Height = \Height[0] : EndIf
+      If X=#PB_Ignore : X = \X[0] : EndIf 
+      If Y=#PB_Ignore : Y = \Y[0] : EndIf 
+      If Width=#PB_Ignore : Width = \Width[0] : EndIf 
+      If Height=#PB_Ignore : Height = \Height[0] : EndIf
       
       ;
-      If ((\Max-\Min) >= \Page\Length)
+      If ((\Max-\Min) > \Page\Length) ; = 
         If \Vertical
           \Area\Pos = Y+\Button\Length
           \Area\Length = (Height-\Button\Length*2)
@@ -479,7 +495,8 @@ Module Scroll
           EndIf
           
           If \Area\Length > 0
-            If (\Type <> #PB_GadgetType_TrackBar) And (\Thumb\Pos+\Thumb\Length) >= (\Area\Length+\Button\Length)
+            ; Debug " scroll set state "+\Max+" "+\Page\Length+" "+Str(\Thumb\Pos+\Thumb\Length) +" "+ Str(\Area\Length+\Button\Length)
+            If (\Type <> #PB_GadgetType_TrackBar) And (\Thumb\Pos+\Thumb\Length) >= (\Area\Pos+\Area\Length)
               SetState(*This, ScrollPage)
             EndIf
             
@@ -552,17 +569,19 @@ Module Scroll
     ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
   EndProcedure
   
-  Procedure.b Resizes(*v.Scroll_S, *h.Scroll_S, X.i,Y.i,Width.i,Height.i )
-    If Width=#PB_Ignore : Width = *v\X+*v\Width : Else : Width+x : EndIf
-    If Height=#PB_Ignore : Height = *h\Y+*h\Height : Else : Height+y : EndIf
+  Procedure.b Resizes(*v.Scroll_S, *h.Scroll_S, X.i,Y.i,Width.i,Height.i)
+    If Width=#PB_Ignore : Width = *v\X : Else : Width+x-*v\Width : EndIf
+    If Height=#PB_Ignore : Height = *h\Y : Else : Height+y-*h\Height : EndIf
     
-    Protected iWidth = Width-Width(*v), iHeight = Height-Height(*h)
+    Protected indent = 2
+    Protected iWidth = x(*v)-*h\x+indent
+    Protected iHeight = y(*h)-*v\y+indent
     
     If *v\width And *v\Page\Length<>iHeight : SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
     If *h\height And *h\Page\Length<>iWidth : SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
     
-    *v\Hide = Resize(*v, Width-*v\Width, Y, #PB_Ignore, #PB_Ignore, *h) : iWidth = Width-Width(*v)
-    *h\Hide = Resize(*h, X, Height-*h\Height, #PB_Ignore, #PB_Ignore, *v) : iHeight = Height-Height(*h)
+    *v\Hide = Resize(*v, Width, Y, #PB_Ignore, #PB_Ignore, *h) : iWidth = x(*v)-*h\x+indent
+    *h\Hide = Resize(*h, X, Height, #PB_Ignore, #PB_Ignore, *v) : iHeight = y(*h)-*v\y+indent
     
     If *v\width And *v\Page\Length<>iHeight : SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
     If *h\height And *h\Page\Length<>iWidth : SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
@@ -571,16 +590,15 @@ Module Scroll
     If *h\height : *h\Hide = Resize(*h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *v) : EndIf
     
     ; Do we see both scrolbars?
-    *v\Both = Bool(Not *h\Hide) 
-    *h\Both = Bool(Not *v\Hide) 
+    *v\Both = Bool(Not *h\Hide) : *h\Both = Bool(Not *v\Hide) 
     
     If *v\Hide : *v\Page\Pos = 0 : Else
-      If *h\Radius : Resize(*h, #PB_Ignore, #PB_Ignore, *v\x+*v\Radius/2-1, #PB_Ignore) : EndIf
+      If *h\Radius : Resize(*h, #PB_Ignore, #PB_Ignore, (*v\x-*h\x)+Bool(*v\Radius)*4, #PB_Ignore) : EndIf
     EndIf
     If *h\Hide : *h\Page\Pos = 0 : Else
-      If *v\Radius : Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *h\y+*v\Radius/2-1) : EndIf
+      If *v\Radius : Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*h\y-*v\y)+Bool(*h\Radius)*4) : EndIf
     EndIf
-    
+
     ProcedureReturn Bool(*v\Hide|*h\Hide)
   EndProcedure
   
@@ -938,5 +956,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -+f---------------------------
+; Folding = -----------------------------
 ; EnableXP

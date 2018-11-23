@@ -83,26 +83,26 @@ Module tree
       If *This
         ; Debug "show tooltip "+\string
 ;         If Not Window
-; ;         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
-; ;         Gadget = CanvasGadget(#PB_Any,0,0,\width+8,\height[1])
-; ;         If StartDrawing(CanvasOutput(Gadget))
-; ;           If \FontID : DrawingFont(\FontID) : EndIf 
-; ;           DrawingMode(#PB_2DDrawing_Default)
-; ;           Box(1,1,\width-2+8,\height[1]-2, Color\Back[1])
-; ;           DrawingMode(#PB_2DDrawing_Transparent)
-; ;           DrawText(3, (\height[1]-\height)/2, \String, Color\Front[1])
-; ;           DrawingMode(#PB_2DDrawing_Outlined)
-; ;           Box(0,0,\width+8,\height[1], Color\Frame[1])
-; ;           StopDrawing()
-; ;         EndIf
-        
         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
-        SetGadgetColor(ContainerGadget(#PB_Any,1,1,\width-2+8,\height[1]-2), #PB_Gadget_BackColor, Color\Back[1])
-        Gadget = StringGadget(#PB_Any,0,(\height[1]-\height)/2-1,\width-2+8,\height[1]-2, \string, #PB_String_BorderLess)
-        SetGadgetColor(Gadget, #PB_Gadget_BackColor, Color\Back[1])
-        SetWindowColor(Window, Color\Frame[1])
-        SetGadgetFont(Gadget, \FontID)
-        CloseGadgetList()
+        Gadget = CanvasGadget(#PB_Any,0,0,\width+8,\height[1])
+        If StartDrawing(CanvasOutput(Gadget))
+          If \FontID : DrawingFont(\FontID) : EndIf 
+          DrawingMode(#PB_2DDrawing_Default)
+          Box(1,1,\width-2+8,\height[1]-2, Color\Back[1])
+          DrawingMode(#PB_2DDrawing_Transparent)
+          DrawText(3, (\height[1]-\height)/2, \String, Color\Front[1])
+          DrawingMode(#PB_2DDrawing_Outlined)
+          Box(0,0,\width+8,\height[1], Color\Frame[1])
+          StopDrawing()
+        EndIf
+        
+; ;         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
+; ;         SetGadgetColor(ContainerGadget(#PB_Any,1,1,\width-2+8,\height[1]-2), #PB_Gadget_BackColor, Color\Back[1])
+; ;         Gadget = StringGadget(#PB_Any,0,(\height[1]-\height)/2-1,\width-2+8,\height[1]-2, \string, #PB_String_BorderLess)
+; ;         SetGadgetColor(Gadget, #PB_Gadget_BackColor, Color\Back[1])
+; ;         SetWindowColor(Window, Color\Frame[1])
+; ;         SetGadgetFont(Gadget, \FontID)
+; ;         CloseGadgetList()
         
         
         SetWindowData(Window, Gadget)
@@ -215,9 +215,7 @@ Module tree
                     \Scroll\Height = Height
                     PushListPosition(\Items())
                     ForEach \Items()
-                      If Not \Items()\hide And \Scroll\Width<\Items()\Text\x+\Items()\Text\Width
-                        \Scroll\Width=\Items()\Text\x+\Items()\Text\Width
-                      EndIf
+                      _set_scroll_width_(*This)
                     Next
                     PopListPosition(\Items())
                     
@@ -539,11 +537,13 @@ Module tree
             
             Select EventType 
               Case #PB_EventType_LostFocus 
-                \Focus =- 1
-                \Line =- 1
-                \Items()\Focus =- 1
-                \Items()\Line = \Items()\Item
-                \Items()\Color\State = 1
+                ; \Focus =- 1
+;                 \Line =- 1
+                ; \Items()\Focus =- 1
+;                 \Items()\Line = \Items()\Item
+                Debug "    "+\Line[1]+" "+\Items()\Text\String 
+               itemSelect(\Line[1], \Items())
+               \Items()\Color\State = 0
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
                 
@@ -578,21 +578,17 @@ Module tree
                 Repaint = 1
                     
               Case #PB_EventType_LeftButtonDown
-                get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y, 1)
+                \Line = get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y, 1) : \Line[1] = \Line
                 Repaint = 1
                 
               Case #PB_EventType_MouseMove  
                 Protected from = \Line
                 \Line = get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y)
                 
-                If from <> \Line
+                If \hScroll\Hide And from <> \Line
                   itemSelect(\Line, \Items())
-                  ;Debug \Line;\Items()\width
-                  If \Items()\text\x+\Items()\text\width>\Items()\width
-                    If \ToolTip
-                      ToolTip(0)
-                    EndIf
-                    
+                  If (\Items()\text\x+\Items()\text\width)>\Items()\X+\Items()\width
+                    If \ToolTip : ToolTip(0) : EndIf
                     \ToolTip = \Items()\text
                     \tooltip\x[1]=\Items()\text\x+GadgetX(\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\X
                     \tooltip\y[1]=\Items()\y+GadgetY(\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\Y
@@ -850,7 +846,7 @@ Module tree
         If Not Bool(Not \flag\Buttons And Not \flag\Lines)
           Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
         EndIf
-        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
+        Scroll::Resizes(\vScroll, \hScroll, \x[2],\y[2],\width[2],\height[2])
         \Resize = 0
       EndWith
     EndIf
@@ -869,8 +865,8 @@ Module tree
       List()\Widget = *This
       
       Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
-      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create)
-      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
+      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create, *This\Canvas\Gadget)
+      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint, *This)
     EndIf
     
     ProcedureReturn *This
@@ -913,28 +909,74 @@ Module tree
   
 EndModule
 
+
 ;- 
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Tree
   
-  Procedure Events()
-    Protected *Widget
+  Procedure CallBacks()
+    Protected Result
+    Protected Canvas = EventGadget()
+    Protected Width = GadgetWidth(Canvas)
+    Protected Height = GadgetHeight(Canvas)
+    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
+    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     
+    Select EventType()
+      Case #PB_EventType_KeyDown ; Debug  " key "+GetGadgetAttribute(Canvas, #PB_Canvas_Key)
+        Select GetGadgetAttribute(Canvas, #PB_Canvas_Key)
+          Case #PB_Shortcut_Tab
+            ForEach List()
+              If List()\Widget = List()\Widget\Focus
+                Result | CallBack(List()\Widget, #PB_EventType_LostFocus);, Canvas) 
+                NextElement(List())
+                ;Debug List()\Widget
+                Result | CallBack(List()\Widget, #PB_EventType_Focus);, Canvas) 
+                Break
+              EndIf
+            Next
+        EndSelect
+    EndSelect
+    
+    Select EventType()
+      Case #PB_EventType_Repaint : Text::ReDraw(EventData(), Canvas, $FFF0F0F0)
+      Case #PB_EventType_Resize : Result = 1
+      Default
+        
+        If EventType() = #PB_EventType_LeftButtonDown
+          SetActiveGadget(EventGadget())
+        EndIf
+        
+        ForEach List()
+          If Canvas = List()\Widget\Canvas\Gadget
+            Result | CallBack(List()\Widget, EventType()) 
+          EndIf
+        Next
+    EndSelect
+    
+    If Result
+       Text::ReDraw(0, Canvas, $FFF0F0F0)
+    EndIf
+    
+  EndProcedure
+  
+  Procedure Events()
     If EventType() = #PB_EventType_LeftClick
-      If GadgetType(EventGadget()) = #PB_GadgetType_Tree
-        Debug GetGadgetText(EventGadget())
-        Debug GetGadgetState(EventGadget())
-        Debug GetGadgetItemState(EventGadget(), GetGadgetState(EventGadget()))
-      Else
-        *Widget = GetGadgetData(EventGadget())
-        Debug GetText(*Widget)
-        Debug GetState(*Widget)
-        ;         Debug GetItemState(*Widget, GetState(*Widget))
-      EndIf
+;       If GadgetType(EventGadget()) = #PB_GadgetType_ListIcon
+;         Debug GetGadgetText(EventGadget())
+;         Debug GetGadgetState(EventGadget())
+;         Debug GetGadgetItemState(EventGadget(), GetGadgetState(EventGadget()))
+;       Else
+;         Debug ListIcon::GetText(EventGadget())
+;         Debug ListIcon::GetState(EventGadget())
+;         Debug ListIcon::GetItemState(EventGadget(), ListIcon::GetState(EventGadget()))
+;       EndIf
     EndIf
   EndProcedure
+  
   
   UsePNGImageDecoder()
   ;Debug #PB_Compiler_Home+"examples/sources/Data/Toolbar/Paste.png"
@@ -945,6 +987,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 1110, 450, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define i,a,g = 1
+    ;{ - gadget
     TreeGadget(g, 10, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
     ; 1_example
     AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
@@ -1048,48 +1091,37 @@ CompilerIf #PB_Compiler_IsMainFile
     Next i
     
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    ;}
     
-    
+    ;{ - widget
+    ; Demo draw string on the canvas
     g = 10
-    Gadget(g, 10, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
-    *g = GetGadgetData(g)
+    CanvasGadget(g,  0, 220, 1110, 230, #PB_Canvas_Keyboard)
+    SetGadgetAttribute(g, #PB_Canvas_Cursor, #PB_Cursor_Cross)
+    SetGadgetData(g, 0)
+    BindGadgetEvent(g, @CallBacks())
     
-    Define time = ElapsedMilliseconds()
-    AddItem (*g, -1, "Item "+Str(a), -1);,Random(5)+1)
-    For a = 1 To 1500
-      AddItem (*g, -1, "Item "+Str(a), -1, 1);,Random(5)+1)
-      If A & $f=$f:WindowEvent()             ; это нужно чтобы раздет немного обновлялся
-      EndIf
-      If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
-        Debug a
-      EndIf
-    Next
-    Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*g)
-    
-    Text::Redraw(*g)
-    
-    ; ; ;     ; 1_example
-    ; ; ;     AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
-    ; ; ;     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-    ; ; ;     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-    ; ; ;     AddItem (*g, -1, "Sub-Item 2", -1, 11)
-    ; ; ;     AddItem (*g, -1, "Sub-Item 3", -1, 1)
-    ; ; ;     AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
-    ; ; ;     AddItem (*g, -1, "Sub-Item 5", -1, 11)
-    ; ; ;     AddItem (*g, -1, "Sub-Item 6", -1, 1)
-    ; ; ;     AddItem (*g, -1, "File "+Str(a), -1, 0)  
-    ; ; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    ; ; ;     
-    ; ; ;     ; RemoveItem(*g,1)
-    ; ; ;     Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
-    ; ; ;     BindGadgetEvent(g, @Events())
-    ; ; ;     ;Tree::SetState(*g, 1)
-    ; ; ;     ;Tree::SetState(*g, -1)
-    ;     Debug "c "+Tree::GetText(*g)
-    
-    g = 11
-    Gadget(g, 230, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
-    *g = GetGadgetData(g)
+; ;     *g = Create(g, -1, 10, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
+; ;         ; 1_example
+; ;         AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
+; ;         AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+; ;         AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+; ;         AddItem (*g, -1, "Sub-Item 2", -1, 11)
+; ;         AddItem (*g, -1, "Sub-Item 3", -1, 1)
+; ;         AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
+; ;         AddItem (*g, -1, "Sub-Item 5", -1, 11)
+; ;         AddItem (*g, -1, "Sub-Item 6", -1, 1)
+; ;         AddItem (*g, -1, "File "+Str(a), -1, 0)  
+; ;         For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+; ;         
+; ;         ; RemoveItem(*g,1)
+; ;         Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+; ;         BindGadgetEvent(g, @Events())
+; ;         ;Tree::SetState(*g, 1)
+; ;         ;Tree::SetState(*g, -1)
+; ;         
+        
+    *g = Create(g, -1, 230, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
     ;  3_example
     
     AddItem(*g, 0, "Tree_0", 0 )
@@ -1113,70 +1145,62 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     AddItem(*g, 10, "Tree_3", -1 )
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
-    ; ClearItems(*g)
-    
-    g = 12
-    Gadget(g, 450, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes |#PB_Flag_NoLines|#PB_Flag_NoButtons )    ;                                
-    *g = GetGadgetData(g)
-    ;   ;  2_example
-    ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
-    ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
-    ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
-    ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
-    ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
-    
-    ;  2_example
-    AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
-    For i=1 To 20
-      If i=5
-        AddItem(*g, -1, "Tree_"+Str(i), -1) 
-      Else
-        AddItem(*g, -1, "Tree_"+Str(i), 0) 
-      EndIf
-    Next
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    
-    g = 13
-    Gadget(g, 670, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
-    *g = GetGadgetData(g)
-    ;  4_example
-    AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
-    AddItem(*g, 1, "Tree_1", -1, 1) 
-    AddItem(*g, 2, "Tree_2_2", -1, 2) 
-    AddItem(*g, 2, "Tree_2_1", -1, 1) 
-    AddItem(*g, 3, "Tree_3_1", -1, 1) 
-    AddItem(*g, 3, "Tree_3_2", -1, 2) 
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    
-    
-    g = 14
-    Gadget(g, 890, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
-    *g = GetGadgetData(g)
-    ;  5_example
-    AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
-    AddItem(*g, 1, "Tree_1", -1, 1) 
-    AddItem(*g, 2, "Tree_2_1", -1, 1) 
-    AddItem(*g, 2, "Tree_2_2", -1, 2) 
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    
-    g = 15
-    Gadget(g, 890+106, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
-    *g = GetGadgetData(g)
-    ;  6_example
-    AddItem(*g, 0, "Tree_1", -1, 1) 
-    AddItem(*g, 0, "Tree_2_1", -1, 2) 
-    AddItem(*g, 0, "Tree_2_2", -1, 3) 
-    
-    For i = 0 To 24
-      If i % 5 = 0
-        AddItem(*g, -1, "Directory" + Str(i), -1, 0)
-      Else
-        AddItem(*g, -1, "Item" + Str(i), -1, 1)
-      EndIf
-    Next i
-    
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    
+; ;     ; ClearItems(*g)
+; ;     
+; ;     *g = Create(g, -1, 450, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes |#PB_Flag_NoLines|#PB_Flag_NoButtons )    ;                                
+; ;     ;   ;  2_example
+; ;     ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
+; ;     ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
+; ;     ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
+; ;     ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
+; ;     ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
+; ;     
+; ;     ;  2_example
+; ;     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
+; ;     For i=1 To 20
+; ;       If i=5
+; ;         AddItem(*g, -1, "Tree_"+Str(i), -1) 
+; ;       Else
+; ;         AddItem(*g, -1, "Tree_"+Str(i), 0) 
+; ;       EndIf
+; ;     Next
+; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+; ;     
+; ;     *g = Create(g, -1, 670, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
+; ;     ;  4_example
+; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
+; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
+; ;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
+; ;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
+; ;     AddItem(*g, 3, "Tree_3_1", -1, 1) 
+; ;     AddItem(*g, 3, "Tree_3_2", -1, 2) 
+; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+; ;     
+; ;     
+; ;     *g = Create(g, -1, 890, 10, 103, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
+; ;     ;  5_example
+; ;     AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
+; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
+; ;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
+; ;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
+; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+; ;     
+; ;     *g = Create(g, -1, 890+106, 10, 103, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
+; ;     ;  6_example
+; ;     AddItem(*g, 0, "Tree_1", -1, 1) 
+; ;     AddItem(*g, 0, "Tree_2_1", -1, 2) 
+; ;     AddItem(*g, 0, "Tree_2_2", -1, 3) 
+; ;     
+; ;     For i = 0 To 24
+; ;       If i % 5 = 0
+; ;         AddItem(*g, -1, "Directory" + Str(i), -1, 0)
+; ;       Else
+; ;         AddItem(*g, -1, "Item" + Str(i), -1, 1)
+; ;       EndIf
+; ;     Next i
+; ;     
+; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    ;}
     ;Free(*g)
     
     Repeat
@@ -1216,6 +1240,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
+
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------------------------
+; Folding = ---------------0-------4--
 ; EnableXP

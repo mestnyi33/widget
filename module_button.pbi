@@ -264,8 +264,8 @@ Module Button
       
       Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
       Debug ""+*This\Canvas\Window +" "+ *This\Canvas\Gadget
-      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create)
-      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
+      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create, *This\Canvas\Gadget)
+      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint, *This)
     EndIf
     
     ProcedureReturn *This
@@ -292,8 +292,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     
     Select EventType()
-      Case #PB_EventType_Repaint : Result = 1
-      Case #PB_EventType_Resize
+      Case #PB_EventType_Repaint : Result = 1 ; Text::ReDraw(EventData())
+      Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
         Resize(*Button_0, Width-70, #PB_Ignore, #PB_Ignore, Height-20)
         Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-90, #PB_Ignore)
         
@@ -355,6 +355,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     CanvasGadget(10,  222, 0, 222, 205+70, #PB_Canvas_Keyboard)
+    SetGadgetData(g, 0)
     BindGadgetEvent(10, @CallBacks())
     
     *B_0 = Create(10, -1, 10, 10, 200, 20, "Standard Button", 0,8)
@@ -383,6 +384,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g=11
     CanvasGadget(g,  10,10,305,140, #PB_Canvas_Keyboard)
     SetGadgetAttribute(g, #PB_Canvas_Cursor, #PB_Cursor_Cross)
+    SetGadgetData(g, 11)
     
     With *Button_0
       *Button_0 = Create(g, -1, 270, 10,  60, 120, "Button (Vertical)", #PB_Text_MultiLine | #PB_Flag_Vertical)

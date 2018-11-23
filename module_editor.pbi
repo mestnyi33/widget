@@ -1030,13 +1030,13 @@ Module Editor
           
           If \Items()\address <> adress : \Items()\address = adress
             \Items()\change = Bool(\Type = #PB_GadgetType_Tree)
+          EndIf
+            \Items()\Text\FontID = \Text\FontID
             \Items()\alpha = 255
             \Items()\Line =- 1
-            \Items()\Text\FontID = \Text\FontID
             \Items()\focus =- 1
             \Items()\lostfocus =- 1
             \Items()\text\change = 1
-          EndIf
           
           If IsImage(Image)
             
@@ -1065,10 +1065,12 @@ Module Editor
           ; add lines
           Text::AddLine(*This, Item.i, Text.s)
           
+          \Items()\Color = Colors
+          \Items()\Color[0]\State = 1
           \Items()\Color[0]\Fore[0] = 0 
           \Items()\Color[0]\Fore[1] = 0
           \Items()\Color[0]\Fore[2] = 0
-          
+       
           If Item = 0
             PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
           EndIf
@@ -1619,7 +1621,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g=16
-    Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Text_WordWrap|#PB_Flag_GridLines) 
+    Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Text_WordWrap|#PB_Flag_GridLines);|#PB_Text_Right) 
     *w=GetGadgetData(g)
     
     Editor::SetText(*w, Text.s) 
@@ -1671,5 +1673,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------f4v---------------
+; Folding = --------------------fnv---------------
 ; EnableXP

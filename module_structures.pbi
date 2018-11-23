@@ -197,7 +197,7 @@
     
     List Items.Widget_S()
     List Columns.Widget_S()
-    
+    ;ColumnWidth.i
   EndStructure
   
   ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;

@@ -180,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                     Case 24 :ExplorerTree(20,20,20,w,h,"")
 ;                     Case 25 :ExplorerCombo(20,20,20,w,h,"")
 ;                     Case 26 :Spin(20,20,20,w,h,0,5,#PB_Spin_Numeric)
-                     Case 27 :*w=Tree::Create(20,-1, 20,20,w,h,"") : Tree::AddItem(*w,-1,"Tree") : Tree::AddItem(*w,-1,"SubLavel",0,1)
+                     Case 27 :*w=Tree::Create(20,-1, 20,20,w,h,"", #pb_Flag_FullSelection) : Tree::AddItem(*w,-1,"Tree") : Tree::AddItem(*w,-1,"SubLavel",0,1)
 ;                     Case 28 :Panel(20,20,20,w,h) :AddItem(20,-1,"Panel") :CloseList()
 ;                     Case 29 
 ;                       Button(201,0,0,20,h,"1")
@@ -218,7 +218,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event=#PB_Event_CloseWindow
   
 CompilerEndIf
-
 
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = ---
