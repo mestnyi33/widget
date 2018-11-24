@@ -16,8 +16,9 @@
   Structure Mouse_S
     X.i
     Y.i
-    From.i ; at point widget
-    Buttons.i
+    at.i ; at point widget
+    Wheel.i ; delta
+    Buttons.i ; state
     *Delta.Mouse_S
   EndStructure
   
@@ -30,7 +31,7 @@
   
   Structure Page_S
     Pos.i
-    Length.i
+    len.i
     ScrollStep.i
   EndStructure
   
@@ -83,12 +84,11 @@
     Align.Align_S
   EndStructure
   
-  Structure Scroll_S Extends Coordinate_S
+  Structure Bar_S Extends Coordinate_S
     Window.i
     Gadget.i
-    
     Both.b ; we see both scrolbars
-    
+    body.Coordinate_S
     Size.i[4]
     Type.i[4]
     Focus.i
@@ -110,15 +110,20 @@
     Color.Color_S[4]
   EndStructure
   
-  Structure Scrolls_S Extends Coordinate_S
-    Orientation.b
-    *Vertical.Scroll_S
-    *Horizontal.Scroll_S
+  Structure Scroll_S Extends Coordinate_S
+    Window.i
+    Widget.i
+    Event.i
+    mouse.Mouse_S
+    
+    *v.Scroll_S
+    *h.Scroll_S
+    bar.Bar_S
   EndStructure
   
   Structure Canvas_S
     Mouse.Mouse_S
-    Gadget.i
+    Gadget.i[3]
     Window.i
     Widget.i
     
@@ -138,9 +143,9 @@
     Clip.Coordinate_S
     *ToolTip.Text_S
     
-    Scroll.Scrolls_S
-    vScroll.Scroll_S
-    hScroll.Scroll_S
+    Scroll.Scroll_S
+    v.Scroll_S
+    h.Scroll_S
     
     Image.Image_S
     box.Coordinate_S
@@ -298,5 +303,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -v-
+; Folding = -4-
 ; EnableXP

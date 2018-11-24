@@ -833,7 +833,7 @@ Module Editor
       \Text\Len = Len(\Text\String.s)
       \Text\Change = 1
       
-      ;       Scroll::SetState(\vScroll, \vScroll\Max)
+      ;       Scroll::SetState(\v, \v\bar\max)
       Repaint = #True
     EndWith
     
@@ -853,9 +853,9 @@ Module Editor
     
     With *This
       ;       Select Attribute
-      ;         Case #PB_ScrollBar_Minimum    : Result = \Scroll\Min
-      ;         Case #PB_ScrollBar_Maximum    : Result = \Scroll\Max
-      ;         Case #PB_ScrollBar_PageLength : Result = \Scroll\PageLength
+      ;         Case #PB_ScrollBar_Minimum    : Result = \Scroll\bar\min
+      ;         Case #PB_ScrollBar_Maximum    : Result = \Scroll\bar\max
+      ;         Case #PB_ScrollBar_PageLength : Result = \Scroll\bar\pageLength
       ;       EndSelect
     EndWith
     
@@ -921,7 +921,7 @@ Module Editor
         
         \Items()\Line = \Items()\Item 
         ;PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
-        Scroll::SetState(\vScroll, ((\Line * \Text\Height)-\vScroll\Height) + \Text\Height) : \Scroll\Y =- \vScroll\Page\Pos
+        Scroll::SetState(\v, ((\Line * \Text\Height)-\v\Height) + \Text\Height) : \Scroll\Y =- \v\bar\page\Pos
       EndIf
     EndWith
   EndProcedure
@@ -1106,7 +1106,7 @@ Module Editor
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
     With *This
       If Text::Resize(*This, X,Y,Width,Height)
-        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
+        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
       EndIf
       ProcedureReturn \Resize
     EndWith
@@ -1118,22 +1118,22 @@ Module Editor
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\vScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \hScroll, \Canvas\Window, \Canvas\Gadget)
+      Repaint | Scroll::CallBack(\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \h, \Canvas\Window, \Canvas\Gadget)
       If Repaint
-        \Scroll\Y =- \vScroll\Page\Pos
+        \Scroll\Y =- \v\bar\page\Pos
       EndIf
-      Repaint | Scroll::CallBack(\hScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \vScroll, \Canvas\Window, \Canvas\Gadget)
+      Repaint | Scroll::CallBack(\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \v, \Canvas\Window, \Canvas\Gadget)
       If Repaint
-        \Scroll\X =- \hScroll\Page\Pos
+        \Scroll\X =- \h\bar\page\Pos
       EndIf
     EndWith
     
-    If *This And (Not *This\vScroll\Buttons And Not *This\hScroll\Buttons)
+    If *This And (Not *This\v\bar\buttons And Not *This\h\bar\buttons)
       If ListSize(*This\items())
         With *This
           If Not \Hide And Not \Disable And \Interact
             ; Get line & caret position
-            If \Canvas\Mouse\Buttons
+            If \Canvas\Mouse\buttons
               If \Canvas\Mouse\Y < \Y
                 Item.i =- 1
               Else
@@ -1177,7 +1177,7 @@ Module Editor
                 EndIf
                 
               Case #PB_EventType_MouseMove  
-                If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
+                If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton 
                   
                   If \Line <> Item And Item =< ListSize(\Items())
                     If isItem(\Line, \Items()) 
@@ -1422,8 +1422,8 @@ Module Editor
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)+1
         \bSize = \fSize
         
-        If Text::Resize(*This, X,Y,Width,Height, Canvas)
-          \Flag\Buttons = Bool(flag&#PB_Flag_NoButtons)
+        If Text::Resize(*This, X,Y,Width,Height)
+          \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
           \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
           \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
           \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
@@ -1503,9 +1503,9 @@ Module Editor
           
         EndIf
         
-        Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
-        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
+        Scroll::Widget(\v, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+        Scroll::Widget(\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
         \Resize = 0
       EndWith
     EndIf

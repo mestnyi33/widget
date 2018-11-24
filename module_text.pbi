@@ -67,7 +67,7 @@ DeclareModule Text
   Declare.i AddLine(*This.Widget_S, Line.i, Text.s)
   Declare.i GetColor(*This.Widget_S, ColorType.i, State.i=0)
   Declare.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=1)
-  Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+  Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
   Declare.i CallBack(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   ;Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
@@ -77,11 +77,184 @@ DeclareModule Text
   Declare.i Caret(*This.Widget_S, Line.i = 0)
   Declare.i Remove(*This.Widget_S)
   Declare.i ToReturn(*This.Widget_S)
+  
+  Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
 EndDeclareModule
 
 Module Text
   ;- MACROS
   ;- PROCEDUREs
+  Procedure.i Caret(*This.Widget_S, Line.i = 0)
+    Static LastLine.i =- 1,  LastItem.i =- 1
+    Protected Item.i, SelectionLen.i
+    Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
+              CursorX.i, Distance.f, MinDistance.f = Infinity()
+    
+    With *This
+      If Line < 0 And FirstElement(*This\Items())
+        ; А если выше всех линии текста,
+        ; то позиция коректора начало текста.
+        Position = 0
+      ElseIf Line < ListSize(*This\Items()) And 
+             SelectElement(*This\Items(), Line)
+        ; Если находимся на линии текста, 
+        ; то получаем позицию коректора.
+        
+        If ListSize(\Items())
+          X = (\Items()\Text\X+\Scroll\X)
+          Len = \Items()\Text\Len; + Len(" ")
+          FontID = \Items()\Text\FontID
+          String.s = \Items()\Text\String.s;+" "
+          If Not FontID : FontID = \Text\FontID : EndIf
+          
+          If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
+            If FontID : DrawingFont(FontID) : EndIf
+            
+            For i = 0 To Len
+              CursorX = X + TextWidth(Left(String.s, i))
+              Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
+              
+              ; Получаем позицию коpректора
+              If MinDistance > Distance 
+                MinDistance = Distance
+                Position = i
+              EndIf
+            Next
+            
+            SelectionLen=Bool(Not \Flag\FullSelection)*7
+            
+            ; Длина переноса строки
+            PushListPosition(\Items())
+            If \Canvas\Mouse\Y < \Y+(\Text\Height/2+1)
+              Item.i =- 1 
+            Else
+              Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2+1)) - 1)/2
+            EndIf
+            
+            If LastLine <> \Line Or LastItem <> Item
+              \Items()\Text[2]\Width[2] = 0
+              
+              If (\Items()\Text\String.s = "" And Item = \Line And Position = len) Or
+                 \Line[1] > \Line Or ; Если выделяем снизу вверх
+                 (\Line[1] =< \Line And \Line = Item And Position = len) Or ; Если позиция курсора неже половини высоты линии
+                 (\Line[1] < \Line And                                      ; Если выделяем сверху вниз
+                  PreviousElement(*This\Items()))                           ; то выбираем предыдущую линию
+                
+                If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
+                  \Items()\Text[2]\X = \Items()\Text\X+\Items()\Text\Width
+                EndIf 
+                
+                If Not SelectionLen
+                  \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                Else
+                  \Items()\Text[2]\Width[2] = SelectionLen
+                EndIf
+              EndIf
+              
+              LastItem = Item
+              LastLine = \Line
+            EndIf
+            PopListPosition(\Items())
+            
+            StopDrawing()
+          EndIf
+        EndIf
+        
+      ElseIf LastElement(*This\Items())
+        ; Иначе, если ниже всех линии текста,
+        ; то позиция коректора конец текста.
+        Position = \Items()\Text\Len
+      EndIf
+    EndWith
+    
+    ProcedureReturn Position
+  EndProcedure
+  
+  Procedure.i SelectionLimits(*This.Widget_S)
+    Protected i, char.i
+    
+    Macro _is_selection_end_(_char_)
+      Bool((_char_ > = ' ' And _char_ = < '/') Or 
+           (_char_ > = ':' And _char_ = < '@') Or 
+           (_char_ > = '[' And _char_ = < 96) Or 
+           (_char_ > = '{' And _char_ = < '~'))
+    EndMacro
+    
+    With *This
+      char = Asc(Mid(\Items()\Text\String.s, \Caret + 1, 1))
+      If _is_selection_end_(char)
+        \Caret + 1
+        \Items()\Text[2]\Len = 1 
+      Else
+        ; |<<<<<< left edge of the word 
+        For i = \Caret To 1 Step - 1
+          char = Asc(Mid(\Items()\Text\String.s, i, 1))
+          If _is_selection_end_(char)
+            Break
+          EndIf
+        Next 
+        
+        \Caret[1] = i
+        
+        ; >>>>>>| right edge of the word
+        For i = \Caret To \Items()\Text\Len
+          char = Asc(Mid(\Items()\Text\String.s, i, 1))
+          If _is_selection_end_(char)
+            Break
+          EndIf
+        Next 
+        
+        \Caret = i - 1
+        \Items()\Text[2]\Len = \Caret[1] - \Caret
+      EndIf
+    EndWith           
+  EndProcedure
+  
+  Procedure.i Remove(*This.Widget_S)
+    With *This
+      If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Position+\Caret, 1)
+      \Text\Len = Len(\Text\String.s)
+    EndWith
+  EndProcedure
+  
+  Procedure.i ToReturn(*This.Widget_S) ; Ok
+    Protected Repaint, String.s
+    
+    With  *This
+      If \Items()\Text[2]\Len > 0 And \Line[1] <> \Line
+        If \Line[1] > \Line : Swap \Line[1], \Line : EndIf
+        
+        PushListPosition(\Items())
+        ForEach \Items()
+          Select ListIndex(\Items()) 
+            Case \Line[1] : String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$
+            Case \Line : String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+          EndSelect
+        Next
+        PopListPosition(\Items())
+        
+      Else
+        String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+      EndIf
+      
+      \Line[1] + 1
+      \Line = \Line[1]
+      
+      \Caret = 0
+      \Caret[1] = \Caret
+      
+      \Text\String.s = String.s
+      \Text\Len = Len(\Text\String.s)
+      \Text\Change = 1
+      
+      ;       Scroll::SetState(\v, \v\bar\max)
+      Repaint = #True
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure.s Make(*This.Widget_S, Text.s)
     Protected String.s, i.i, Len.i
     
@@ -155,12 +328,6 @@ Module Text
     
     ProcedureReturn String.s
   EndProcedure
-  
-  Macro _set_scroll_height_(_this_)
-    If Not _this_\Items()\Hide
-      _this_\Scroll\Height+_this_\Text\Height
-    EndIf
-  EndMacro
   
   Procedure.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
     Protected line$, ret$="", LineRet$=""
@@ -312,8 +479,8 @@ Module Text
         Height = \Width[1]-\Text\y*2
       Else
         CompilerIf Defined(Scroll, #PB_Module)
-          Width = Abs(\Width[1]-\Text\X*2    -Scroll::Width(\vScroll)) ; bug in linux иногда
-          Height = \Height[1]-\Text\y*2      -Scroll::Height(\hScroll)
+          Width = Abs(\Width[1]-\Text\X*2    -Scroll::Width(\v)) ; bug in linux иногда
+          Height = \Height[1]-\Text\y*2      -Scroll::Height(\h)
         CompilerElse
           Width = \Width[1]-\Text\X*2  
           Height = \Height[1]-\Text\y*2 
@@ -379,15 +546,15 @@ Module Text
     
     With *This
       If \Text\Vertical
-        Width = \Height[1]-\Text\X*2
-        Height = \Width[1]-\Text\y*2
+        Width = \Height[2]-\Text\X*2
+        Height = \Width[2]-\Text\y*2
       Else
         CompilerIf Defined(Scroll, #PB_Module)
-          Width = Abs(\Width[1]-\Text\X*2    -Scroll::Width(\vScroll)) ; bug in linux иногда
-          Height = \Height[1]-\Text\y*2  -Scroll::Height(\hScroll)
+          Width = Abs(\Width[2]-\Text\X*2    -Scroll::Width(\v)) ; bug in linux иногда
+          Height = \Height[2]  -Scroll::Height(\h)
         CompilerElse
-          Width = \Width[1]-\Text\X*2  
-          Height = \Height[1]-\Text\y*2 
+          Width = \Width[2]-\Text\X*2  
+          Height = \Height[2]
         CompilerEndIf
       EndIf
       
@@ -585,6 +752,7 @@ Module Text
     ProcedureReturn Repaint
   EndProcedure
   
+  ;-
   ;- - DRAWINGs
   Procedure CheckBox(X,Y, Width, Height, Type, Checked, Color, BackColor, Radius, Alpha=255) 
     Protected I, checkbox_backcolor
@@ -679,7 +847,7 @@ Module Text
     Protected IT,Text_Y,Text_X, X,Y, Width,Height, Drawing
     
     Protected line_size = *This\Flag\Lines
-    Protected box_size = *This\Flag\Buttons
+    Protected box_size = *This\flag\buttons
     Protected check_box_size = *This\Flag\CheckBoxes
     
     If Not *This\Hide
@@ -688,8 +856,8 @@ Module Text
         iX=\X[2]
         iY=\Y[2]
         CompilerIf Defined(Scroll, #PB_Module)
-          iwidth = *This\width[2]-Scroll::Width(*This\vScroll)
-          iheight = *This\height[2]-Scroll::Height(*This\hScroll)
+          iwidth = *This\width[2]-Scroll::Width(*This\v)
+          iheight = *This\height[2]-Scroll::Height(*This\h)
         CompilerElse
           iwidth = *This\width[2]
           iheight = *This\height[2]
@@ -797,7 +965,7 @@ Module Text
             If \change = 1 : \change = 0
               Protected indent = 8 + Bool(*This\Image\width)*4
               ; Draw coordinates 
-              \sublevellen = *This\Text\X + (7 - *This\sublevellen) + ((\sublevel + Bool(*This\Flag\Buttons)) * *This\sublevellen) + Bool(*This\Flag\CheckBoxes)*17
+              \sublevellen = *This\Text\X + (7 - *This\sublevellen) + ((\sublevel + Bool(*This\flag\buttons)) * *This\sublevellen) + Bool(*This\Flag\CheckBoxes)*17
               \Image\X + \sublevellen + indent
               \Text\X + \sublevellen + *This\Image\width + indent
               
@@ -811,7 +979,7 @@ Module Text
             Text_Y = \Text\Y+*This\Scroll\Y
             
             ; expanded & collapsed box
-            If *This\Flag\Buttons Or *This\Flag\Lines 
+            If *This\flag\buttons Or *This\Flag\Lines 
               \box\width = box_size
               \box\height = box_size
               \box\x = *This\x+\sublevellen-(\box\width)/2+*This\Scroll\X
@@ -887,7 +1055,7 @@ Module Text
             
             If Drawing
               ; Draw boxes
-              If *This\Flag\Buttons And \childrens
+              If *This\flag\buttons And \childrens
                 DrawingMode(#PB_2DDrawing_Default)
                 CompilerIf Defined(Scroll, #PB_Module)
                   Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, \Color\Front[\Color\State], 0,0) 
@@ -1009,17 +1177,17 @@ Module Text
           CompilerIf Defined(Scroll, #PB_Module)
             UnclipOutput()
             
-            If \vScroll\Page\Length And \vScroll\Max<>\Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines) And
-               Scroll::SetAttribute(\vScroll, #PB_ScrollBar_Maximum, \Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines))
-              Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            If \v\bar\page\len And \v\bar\max<>\Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines) And
+               Scroll::SetAttribute(\v, #PB_ScrollBar_Maximum, \Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines))
+              Scroll::Resizes(\v, \h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             EndIf
-            If \hScroll\Page\Length And \hScroll\Max<>\Scroll\Width And
-               Scroll::SetAttribute(\hScroll, #PB_ScrollBar_Maximum, \Scroll\Width)
-              Scroll::Resizes(\vScroll, \hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            If \h\bar\page\len And \h\bar\max<>\Scroll\Width And
+               Scroll::SetAttribute(\h, #PB_ScrollBar_Maximum, \Scroll\Width)
+              Scroll::Resizes(\v, \h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             EndIf
             
-            Scroll::Draw(\vScroll)
-            Scroll::Draw(\hScroll)
+            Scroll::Draw(\v)
+            Scroll::Draw(\h)
           CompilerEndIf
           
           _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
@@ -1115,176 +1283,47 @@ Module Text
     EndIf
   EndProcedure
   
+  ;-
   ;- - SET&GET
-  Procedure.i Caret(*This.Widget_S, Line.i = 0)
-    Static LastLine.i =- 1,  LastItem.i =- 1
-    Protected Item.i, SelectionLen.i
-    Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
-              CursorX.i, Distance.f, MinDistance.f = Infinity()
-    
+  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
     With *This
-      If Line < 0 And FirstElement(*This\Items())
-        ; А если выше всех линии текста,
-        ; то позиция коректора начало текста.
-        Position = 0
-      ElseIf Line < ListSize(*This\Items()) And 
-             SelectElement(*This\Items(), Line)
-        ; Если находимся на линии текста, 
-        ; то получаем позицию коректора.
-        
-        If ListSize(\Items())
-          X = (\Items()\Text\X+\Scroll\X)
-          Len = \Items()\Text\Len; + Len(" ")
-          FontID = \Items()\Text\FontID
-          String.s = \Items()\Text\String.s;+" "
-          If Not FontID : FontID = \Text\FontID : EndIf
-          
-          If StartDrawing(CanvasOutput(\Canvas\Gadget)) 
-            If FontID : DrawingFont(FontID) : EndIf
-            
-            For i = 0 To Len
-              CursorX = X + TextWidth(Left(String.s, i))
-              Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
-              
-              ; Получаем позицию коpректора
-              If MinDistance > Distance 
-                MinDistance = Distance
-                Position = i
-              EndIf
-            Next
-            
-            SelectionLen=Bool(Not \Flag\FullSelection)*7
-            
-            ; Длина переноса строки
-            PushListPosition(\Items())
-            If \Canvas\Mouse\Y < \Y+(\Text\Height/2+1)
-              Item.i =- 1 
-            Else
-              Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2+1)) - 1)/2
-            EndIf
-            
-            If LastLine <> \Line Or LastItem <> Item
-              \Items()\Text[2]\Width[2] = 0
-              
-              If (\Items()\Text\String.s = "" And Item = \Line And Position = len) Or
-                 \Line[1] > \Line Or ; Если выделяем снизу вверх
-                 (\Line[1] =< \Line And \Line = Item And Position = len) Or ; Если позиция курсора неже половини высоты линии
-                 (\Line[1] < \Line And                                      ; Если выделяем сверху вниз
-                  PreviousElement(*This\Items()))                           ; то выбираем предыдущую линию
-                
-                If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
-                  \Items()\Text[2]\X = \Items()\Text\X+\Items()\Text\Width
-                EndIf 
-                
-                If Not SelectionLen
-                  \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-                Else
-                  \Items()\Text[2]\Width[2] = SelectionLen
-                EndIf
-              EndIf
-              
-              LastItem = Item
-              LastLine = \Line
-            EndIf
-            PopListPosition(\Items())
-            
-            StopDrawing()
-          EndIf
-        EndIf
-        
-      ElseIf LastElement(*This\Items())
-        ; Иначе, если ниже всех линии текста,
-        ; то позиция коректора конец текста.
-        Position = \Items()\Text\Len
+      If X<>#PB_Ignore And 
+         \X[0] <> X
+        \X[0] = X 
+        \X[2]=\X[0]+\bSize
+        \X[1]=\X[2]-\fSize
+        \Resize = 1<<1
       EndIf
-    EndWith
-    
-    ProcedureReturn Position
-  EndProcedure
-  
-  Procedure.i SelectionLimits(*This.Widget_S)
-    Protected i, char.i
-    
-    Macro _is_selection_end_(_char_)
-      Bool((_char_ > = ' ' And _char_ = < '/') Or 
-           (_char_ > = ':' And _char_ = < '@') Or 
-           (_char_ > = '[' And _char_ = < 96) Or 
-           (_char_ > = '{' And _char_ = < '~'))
-    EndMacro
-    
-    With *This
-      char = Asc(Mid(\Items()\Text\String.s, \Caret + 1, 1))
-      If _is_selection_end_(char)
-        \Caret + 1
-        \Items()\Text[2]\Len = 1 
-      Else
-        ; |<<<<<< left edge of the word 
-        For i = \Caret To 1 Step - 1
-          char = Asc(Mid(\Items()\Text\String.s, i, 1))
-          If _is_selection_end_(char)
-            Break
-          EndIf
-        Next 
-        
-        \Caret[1] = i
-        
-        ; >>>>>>| right edge of the word
-        For i = \Caret To \Items()\Text\Len
-          char = Asc(Mid(\Items()\Text\String.s, i, 1))
-          If _is_selection_end_(char)
-            Break
-          EndIf
-        Next 
-        
-        \Caret = i - 1
-        \Items()\Text[2]\Len = \Caret[1] - \Caret
+      If Y<>#PB_Ignore And 
+         \Y[0] <> Y
+        \Y[0] = Y
+        \Y[2]=\Y[0]+\bSize
+        \Y[1]=\Y[2]-\fSize
+        \Resize = 1<<2
       EndIf
-    EndWith           
-  EndProcedure
-  
-  Procedure.i Remove(*This.Widget_S)
-    With *This
-      If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Position+\Caret, 1)
-      \Text\Len = Len(\Text\String.s)
-    EndWith
-  EndProcedure
-  
-  Procedure.i ToReturn(*This.Widget_S) ; Ok
-    Protected Repaint, String.s
-    
-    With  *This
-      If \Items()\Text[2]\Len > 0 And \Line[1] <> \Line
-        If \Line[1] > \Line : Swap \Line[1], \Line : EndIf
-        
-        PushListPosition(\Items())
-        ForEach \Items()
-          Select ListIndex(\Items()) 
-            Case \Line[1] : String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$
-            Case \Line : String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
-          EndSelect
-        Next
-        PopListPosition(\Items())
-        
-      Else
-        String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+      If Width<>#PB_Ignore And
+         \Width[0] <> Width 
+        \Width[0] = Width 
+        \Width[2] = \Width[0]-\bSize*2
+        \Width[1] = \Width[2]+\fSize*2
+        \Resize = 1<<3
+      EndIf
+      If Height<>#PB_Ignore And 
+         \Height[0] <> Height
+        \Height[0] = Height 
+        \Height[2] = \Height[0]-\bSize*2
+        \Height[1] = \Height[2]+\fSize*2
+        \Resize = 1<<4
       EndIf
       
-      \Line[1] + 1
-      \Line = \Line[1]
-      
-      \Caret = 0
-      \Caret[1] = \Caret
-      
-      \Text\String.s = String.s
-      \Text\Len = Len(\Text\String.s)
-      \Text\Change = 1
-      
-      ;       Scroll::SetState(\vScroll, \vScroll\Max)
-      Repaint = #True
+      If \Resize
+        ; Debug "   resize "+\Resize
+        ; ReDraw(*This, \Canvas\Gadget, $FFF0F0F0)
+        ; PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
+        ; PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint, *This)
+      EndIf
+      ProcedureReturn \Resize
     EndWith
-    
-    ProcedureReturn Repaint
   EndProcedure
   
   Procedure.s GetText(*This.Widget_S)
@@ -1299,7 +1338,7 @@ Module Text
   
   Procedure.i SetText(*This.Widget_S, Text.s)
     Protected Result.i, Len.i, String.s, i.i
-    ; If Text.s="" : Text.s=#LF$ : EndIf
+    If Text.s="" : Text.s=#LF$ : EndIf
     
     With *This
       If \Text\String.s <> Text.s
@@ -1412,52 +1451,7 @@ Module Text
     ProcedureReturn Color
   EndProcedure
   
-  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
-    With *This
-      If Canvas=-1 : Canvas = EventGadget() : EndIf
-      If Canvas <> \Canvas\Gadget
-        ProcedureReturn
-      EndIf
-      
-      If X<>#PB_Ignore And 
-         \X[0] <> X
-        \X[0] = X 
-        \X[2]=\X[0]+\bSize
-        \X[1]=\X[2]-\fSize
-        \Resize = 1<<1
-      EndIf
-      If Y<>#PB_Ignore And 
-         \Y[0] <> Y
-        \Y[0] = Y
-        \Y[2]=\Y[0]+\bSize
-        \Y[1]=\Y[2]-\fSize
-        \Resize = 1<<2
-      EndIf
-      If Width<>#PB_Ignore And
-         \Width[0] <> Width 
-        \Width[0] = Width 
-        \Width[2] = \Width[0]-\bSize*2
-        \Width[1] = \Width[2]+\fSize*2
-        \Resize = 1<<3
-      EndIf
-      If Height<>#PB_Ignore And 
-         \Height[0] <> Height
-        \Height[0] = Height 
-        \Height[2] = \Height[0]-\bSize*2
-        \Height[1] = \Height[2]+\fSize*2
-        \Resize = 1<<4
-      EndIf
-      
-      If \Resize
-        ; Debug "   resize "+\Resize
-        ; ReDraw(*This, \Canvas\Gadget, $FFF0F0F0)
-        ; PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
-        ; PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint, *This)
-      EndIf
-      ProcedureReturn \Resize
-    EndWith
-  EndProcedure
-  
+  ;-
   Procedure.i Events(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
     Static *Last.Widget_S, *Widget.Widget_S    ; *Focus.Widget_S, 
     Static Text$, DoubleClick, LastX, LastY, Last, Drag
@@ -1477,7 +1471,7 @@ Module Text
 ;         EndIf
         
         ; Get at point widget
-        \Canvas\Mouse\From = From(*This)
+        \Canvas\mouse\at = From(*This)
         
         Select EventType 
           Case #PB_EventType_LeftButtonUp 
@@ -1488,14 +1482,14 @@ Module Text
             EndIf
             
           Case #PB_EventType_LeftClick 
-            ; Debug ""+\Canvas\Mouse\Buttons+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+            ; Debug ""+\Canvas\Mouse\buttons+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
             If *Last = *This : *Last = *Widget
               If *Widget <> *Focus
                 ProcedureReturn 0 
               EndIf
             EndIf
             
-            If Not *This\Canvas\Mouse\From 
+            If Not *This\Canvas\mouse\at 
               ProcedureReturn 0
             EndIf
         EndSelect
@@ -1504,8 +1498,8 @@ Module Text
           Select EventType 
             Case #PB_EventType_Focus : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
             Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonUp
-              If Not \Canvas\Mouse\Buttons 
-                If \Canvas\Mouse\From
+              If Not \Canvas\Mouse\buttons 
+                If \Canvas\mouse\at
                   If *Last <> *This 
                     If *Last
                       If (*Last\Index > *This\Index)
@@ -1575,15 +1569,16 @@ Module Text
                 \Canvas\Mouse\Delta = AllocateStructure(Mouse_S)
                 \Canvas\Mouse\Delta\X = \Canvas\Mouse\X
                 \Canvas\Mouse\Delta\Y = \Canvas\Mouse\Y
-                \Canvas\Mouse\Delta\From = \Canvas\Mouse\From
-                \Canvas\Mouse\Delta\Buttons = \Canvas\Mouse\Buttons
+                \Canvas\Mouse\delta\at = \Canvas\mouse\at
+                \Canvas\Mouse\Delta\buttons = \Canvas\Mouse\buttons
               EndIf
               
             Case #PB_EventType_LeftButtonUp : \Drag = 0
               FreeStructure(\Canvas\Mouse\Delta) : \Canvas\Mouse\Delta = 0
-              
+              ; ResetStructure(\Canvas\Mouse\Delta, Mouse_S)
+    
             Case #PB_EventType_MouseMove
-              If \Drag = 0 And \Canvas\Mouse\Buttons And \Canvas\Mouse\Delta And 
+              If \Drag = 0 And \Canvas\Mouse\buttons And \Canvas\Mouse\Delta And 
                  (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1
                 ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
               EndIf
@@ -1594,9 +1589,9 @@ Module Text
                 PushListPosition(List())
                 ForEach List()
                   If List()\Widget\Canvas\Gadget = Canvas And List()\Widget\Focus <> List()\Widget And List()\Widget <> *This
-                    List()\Widget\Canvas\Mouse\From = From(List()\Widget)
+                    List()\Widget\Canvas\mouse\at = From(List()\Widget)
                     
-                    If List()\Widget\Canvas\Mouse\From
+                    If List()\Widget\Canvas\mouse\at
                       If *Last
                         Events(*Function, *Last, #PB_EventType_MouseLeave, Canvas, 0)
                       EndIf     
@@ -1622,7 +1617,7 @@ Module Text
               SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
               
             Case #PB_EventType_MouseMove ; bug mac os
-              If \Canvas\Mouse\Buttons And #PB_Compiler_OS = #PB_OS_MacOS ; And \Cursor <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+              If \Canvas\Mouse\buttons And #PB_Compiler_OS = #PB_OS_MacOS ; And \Cursor <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
                                                                           ; Debug 555
                 SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
               EndIf
@@ -1674,11 +1669,11 @@ Module Text
                #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
             
             CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-              \Canvas\Mouse\Buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
+              \Canvas\Mouse\buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
                                       (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
                                       (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
             CompilerElse
-              \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+              \Canvas\Mouse\buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
             CompilerEndIf
         EndSelect
       EndWith
@@ -1760,7 +1755,7 @@ Module Text
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
         \bSize = \fSize
         
-        If Resize(*This, X,Y,Width,Height, Canvas)
+        If Resize(*This, X,Y,Width,Height)
           \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
@@ -1815,10 +1810,47 @@ Module Text
     
     ProcedureReturn *This
   EndProcedure
-EndModule
+  
+  Procedure Canvas_CallBack()
+    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
+    
+    With *This
+      Select EventType()
+        Case #PB_EventType_Repaint : Repaint = 1
+        Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+      EndSelect
+      
+      ; Repaint | CallBack(*This, EventType())
+      
+      If Repaint 
+        Text::ReDraw(*This)
+      EndIf
+      
+    EndWith
+  EndProcedure
+  
+  Procedure.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S)
+    Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
+    
+    If *This
+      With *This
+        Widget(*This, Gadget, 0, 0, Width, Height, Text.s, Flag)
+        
+        SetGadgetData(Gadget, *This)
+        BindGadgetEvent(Gadget, @Canvas_CallBack())
+        PostEvent(#PB_Event_Gadget, GetActiveWindow(), Gadget, #PB_EventType_Repaint, *This)
+    EndWith
+    EndIf
+    
+    ProcedureReturn g
+  EndProcedure
+  EndModule
 
 
-;- EXAMPLE
+;-
+;- EXAMPLEs
 CompilerIf #PB_Compiler_IsMainFile =99
   UseModule Text
   Global *T_0.Widget_S = AllocateStructure(Widget_S)
@@ -1975,5 +2007,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---8------ut--f+-+v-------------f9-----b------
+; Folding = -------+-----vb8-0n-v-8----------------4-------
 ; EnableXP

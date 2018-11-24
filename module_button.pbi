@@ -34,7 +34,7 @@ DeclareModule Button
   Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
   Macro GetColor(_adress_, _color_type_, _state_=0) : Text::GetColor(_adress_, _color_type_, _state_) : EndMacro
   Macro SetColor(_adress_, _color_type_, _color_, _state_=1) : Text::SetColor(_adress_, _color_type_, _color_, _state_) : EndMacro
-  Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
+  Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
   Declare.i GetState(*This.Widget_S)
@@ -43,6 +43,7 @@ DeclareModule Button
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1) ; .i CallBack(*This.Widget_S, Canvas.i, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   
+  Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
 EndDeclareModule
 
 Module Button
@@ -78,7 +79,7 @@ Module Button
       With *This
         Select EventType
           Case #PB_EventType_MouseEnter    
-            \Buttons = \Canvas\Mouse\From
+            \Buttons = \Canvas\Mouse\at
             If Not \Checked : Buttons = \Buttons : EndIf
             
           Case #PB_EventType_LeftButtonDown 
@@ -187,7 +188,7 @@ Module Button
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
         \bSize = \fSize
         
-        If Resize(*This, X,Y,Width,Height, Canvas)
+        If Resize(*This, X,Y,Width,Height)
           \Default = Bool(Flag&#PB_Flag_Default)
           \Toggle = Bool(Flag&#PB_Flag_Toggle)
           
@@ -270,7 +271,43 @@ Module Button
     
     ProcedureReturn *This
   EndProcedure
-EndModule
+  
+  Procedure Canvas_CallBack()
+    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
+    
+    With *This
+      Select EventType()
+        Case #PB_EventType_Repaint : Repaint = 1
+        Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+      EndSelect
+      
+      Repaint | CallBack(*This, EventType())
+      
+      If Repaint 
+        Text::ReDraw(*This)
+      EndIf
+      
+    EndWith
+  EndProcedure
+  
+  Procedure.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S)
+    Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
+    
+    If *This
+      With *This
+        Widget(*This, Gadget, 0, 0, Width, Height, Text.s, Flag)
+        
+        SetGadgetData(Gadget, *This)
+        BindGadgetEvent(Gadget, @Canvas_CallBack())
+        PostEvent(#PB_Event_Gadget, GetActiveWindow(), Gadget, #PB_EventType_Repaint, *This)
+    EndWith
+    EndIf
+    
+    ProcedureReturn g
+  EndProcedure
+  EndModule
 
 ;-
 CompilerIf #PB_Compiler_IsMainFile
@@ -421,5 +458,5 @@ CompilerEndIf
 ; Folding = ---v-f--7------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --v-------
+; Folding = -----------
 ; EnableXP

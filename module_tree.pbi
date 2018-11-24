@@ -83,7 +83,7 @@ Module tree
       If *This
         ; Debug "show tooltip "+\string
 ;         If Not Window
-        Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
+        Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool)) ;|#PB_Window_NoGadgets
         Gadget = CanvasGadget(#PB_Any,0,0,\width+8,\height[1])
         If StartDrawing(CanvasOutput(Gadget))
           If \FontID : DrawingFont(\FontID) : EndIf 
@@ -117,154 +117,6 @@ Module tree
       ;  Debug "hide tooltip "
       EndIf
     EndWith              
-  EndProcedure
-  
-  Procedure get_from(*This.Widget_S, MouseX=-1, MouseY=-1, focus=0)
-    Protected adress.i
-    Protected lostfocus.i=-1, collapsed.i, sublevel.i
-    Protected Buttons, Line.i =- 1
-    
-    With *This
-      PushListPosition(\Items()) 
-      ForEach \Items()
-        If \Items()\Line = \Items()\Item 
-          \Items()\Line =- 1
-          adress = @\Items()
-          Line = \Items()\Item 
-          Break
-        EndIf
-      Next
-      
-      ForEach \Items()
-        If \Items()\Item = \Items()\focus
-          If Bool(MouseX=-1 And MouseY=-1 And focus=1)
-            \Items()\lostfocus = \Items()\focus
-            *This\focus = 0
-            
-            ; then lost focus widget
-            \Items()\Color\State = 0
-            
-          EndIf
-          
-          adress = @\Items()
-          Line = \Items()\Item 
-          Break
-        EndIf
-      Next
-      
-      If Not Bool(MouseX=-1 And MouseY=-1)
-        ForEach \Items()
-          If \Items()\hide : Continue : EndIf
-          If (MouseY > (\Items()\Y) And MouseY =< ((\Items()\Y+\Items()\Height))) And 
-             ((MouseX > \Items()\X) And (MouseX =< (\Items()\X+\Items()\Width)))
-            
-            If focus
-              If (MouseY > (\Items()\box\y[1]) And MouseY =< ((\Items()\box\y[1]+\Items()\box\height[1]))) And 
-                 ((MouseX > \Items()\box\x[1]) And (MouseX =< (\Items()\box\x[1]+\Items()\box\width[1])))
-                
-                \Items()\checked ! 1
-                *This\Change = 1
-              EndIf
-              
-              If (\Flag\Buttons And \Items()\childrens) And
-                 (MouseY > (\Items()\box\y[0]) And MouseY =< ((\Items()\box\y[0]+\Items()\box\height[0]))) And 
-                 ((MouseX > \Items()\box\x[0]) And (MouseX =< (\Items()\box\x[0]+\Items()\box\width[0])))
-                
-                sublevel = \Items()\sublevel
-                \Items()\collapsed ! 1
-                Protected Height = \Items()\Y+\Items()\Height, Y=Height
-                
-                PushListPosition(\Items())
-                While NextElement(\Items())
-                  If \Items()\sublevel > sublevel 
-                    If \Items()\address
-                      PushListPosition(\Items())
-                      ChangeCurrentElement(\Items(), \Items()\address)
-                      collapsed = \Items()\collapsed
-                      collapsed | \Items()\hide
-                      PopListPosition(\Items())
-                    EndIf
-                    \Items()\hide = collapsed
-                    
-                    If \Items()\hide
-                      \Scroll\Height - \Items()\Height
-                    Else
-                      Height = \Items()\Y+\Items()\Height
-                      If Not \Items()\Height
-                        \Items()\Height = \Text\Height
-                        \Items()\Text\Height = \Text\Height[1]
-                      EndIf
-                      \Items()\Y = Y
-                      \Items()\Text\Y = \Items()\Y + (\Items()\Height-\Items()\Text\Height)/2
-                      \Items()\Image\Y = \Items()\Y + (\Items()\Height-\Items()\Image\Height)/2
-                      Y + \Items()\Height
-                      \Scroll\Height + \Items()\Height
-                    EndIf
-                  Else
-                    PushListPosition(\Items())
-                    Repeat
-                      If Not \Items()\hide
-                        \Items()\Y = Height
-                        \Items()\Text\Y = \Items()\Y + (\Items()\Height-\Items()\Text\Height)/2
-                        \Items()\Image\Y = \Items()\Y + (\Items()\Height-\Items()\Image\Height)/2
-                        Height + \Items()\Height
-                      EndIf
-                    Until Not NextElement(\Items())
-                    PopListPosition(\Items())
-                    \Scroll\Width = 0
-                    \Scroll\Height = Height
-                    PushListPosition(\Items())
-                    ForEach \Items()
-                      _set_scroll_width_(*This)
-                    Next
-                    PopListPosition(\Items())
-                    
-                    Break
-                  EndIf
-                Wend
-                PopListPosition(\Items())
-                
-              Else
-                ; Get entered item only on image and text 
-                If Not *This\Flag\FullSelection And
-                   ((MouseX < \Items()\text\x-*This\Image\width) Or (MouseX > \Items()\text\x+\Items()\text\width))
-                  Break
-                EndIf
-                
-                If adress 
-                  PushListPosition(\Items()) 
-                  ChangeCurrentElement(\Items(), adress)
-                  If \Items()\focus = \Items()\Item
-                    lostfocus = \Items()\focus 
-                    \Items()\Color\State = 1
-                    \Items()\lostfocus =- 1
-                    \Items()\focus =- 1
-                  EndIf
-                  PopListPosition(\Items()) 
-                EndIf
-                
-                If lostfocus <> \Items()\Item
-                  \Items()\lostfocus = lostfocus
-                  *This\Item = \Items()\Item
-                  *This\Change = 1
-                EndIf
-                
-                \Items()\Color\State = 2
-                \Items()\focus = \Items()\Item
-              EndIf
-            EndIf
-            
-            
-            adress = @\Items()
-            Line = \Items()\Item 
-            Break
-          EndIf
-        Next
-      EndIf
-      PopListPosition(\Items())
-    EndWith
-    
-    ProcedureReturn Line
   EndProcedure
   
   Procedure item_from(*This.Widget_S, MouseX=-1, MouseY=-1, focus=0)
@@ -311,7 +163,7 @@ Module tree
                 *This\Change = 1
               EndIf
               
-              If (\Flag\Buttons And \Items()\childrens) And
+              If (\flag\buttons And \Items()\childrens) And
                  (MouseY > (\Items()\box\y[0]) And MouseY =< ((\Items()\box\y[0]+\Items()\box\height[0]))) And 
                  ((MouseX > \Items()\box\x[0]) And (MouseX =< (\Items()\box\x[0]+\Items()\box\width[0])))
                 
@@ -426,6 +278,157 @@ Module tree
     ProcedureReturn adress
   EndProcedure
   
+  Procedure get_from(*This.Widget_S, MouseX=-1, MouseY=-1, focus=0)
+    Protected adress.i
+    Protected lostfocus.i=-1, collapsed.i, sublevel.i
+    Protected Buttons, Line.i =- 1
+    
+    With *This
+      MouseX-\Scroll\X
+      MouseY-\Scroll\Y
+      
+      PushListPosition(\Items()) 
+      ForEach \Items()
+        If \Items()\Line = \Items()\Item 
+          \Items()\Line =- 1
+          adress = @\Items()
+          Line = \Items()\Item 
+          Break
+        EndIf
+      Next
+      
+      ForEach \Items()
+        If \Items()\Item = \Items()\focus
+          If Bool(MouseX=-1 And MouseY=-1 And focus=1)
+            \Items()\lostfocus = \Items()\focus
+            *This\focus = 0
+            
+            ; then lost focus widget
+            \Items()\Color\State = 0
+            
+          EndIf
+          
+          adress = @\Items()
+          Line = \Items()\Item 
+          Break
+        EndIf
+      Next
+      
+      If Not Bool(MouseX=-1 And MouseY=-1)
+        ForEach \Items()
+          If \Items()\hide : Continue : EndIf
+          If (MouseY > (\Items()\Y) And MouseY =< ((\Items()\Y+\Items()\Height))) And 
+             ((MouseX > \Items()\X) And (MouseX =< (\Items()\X+\Items()\Width)))
+            
+            If focus
+              If (MouseY > (\Items()\box\y[1]) And MouseY =< ((\Items()\box\y[1]+\Items()\box\height[1]))) And 
+                 ((MouseX > \Items()\box\x[1]) And (MouseX =< (\Items()\box\x[1]+\Items()\box\width[1])))
+                
+                \Items()\checked ! 1
+                *This\Change = 1
+              EndIf
+              
+              If (\flag\buttons And \Items()\childrens) And
+                 (MouseY > (\Items()\box\y[0]) And MouseY =< ((\Items()\box\y[0]+\Items()\box\height[0]))) And 
+                 ((MouseX > \Items()\box\x[0]) And (MouseX =< (\Items()\box\x[0]+\Items()\box\width[0])))
+                
+                sublevel = \Items()\sublevel
+                \Items()\collapsed ! 1
+                Protected Height = \Items()\Y+\Items()\Height, Y=Height
+                
+                PushListPosition(\Items())
+                While NextElement(\Items())
+                  If \Items()\sublevel > sublevel 
+                    If \Items()\address
+                      PushListPosition(\Items())
+                      ChangeCurrentElement(\Items(), \Items()\address)
+                      collapsed = \Items()\collapsed
+                      collapsed | \Items()\hide
+                      PopListPosition(\Items())
+                    EndIf
+                    \Items()\hide = collapsed
+                    
+                    If \Items()\hide
+                      \Scroll\Height - \Items()\Height
+                    Else
+                      Height = \Items()\Y+\Items()\Height
+                      If Not \Items()\Height
+                        \Items()\Height = \Text\Height
+                        \Items()\Text\Height = \Text\Height[1]
+                      EndIf
+                      \Items()\Y = Y
+                      \Items()\Text\Y = \Items()\Y + (\Items()\Height-\Items()\Text\Height)/2
+                      \Items()\Image\Y = \Items()\Y + (\Items()\Height-\Items()\Image\Height)/2
+                      Y + \Items()\Height
+                      \Scroll\Height + \Items()\Height
+                    EndIf
+                  Else
+                    PushListPosition(\Items())
+                    Repeat
+                      If Not \Items()\hide
+                        \Items()\Y = Height
+                        \Items()\Text\Y = \Items()\Y + (\Items()\Height-\Items()\Text\Height)/2
+                        \Items()\Image\Y = \Items()\Y + (\Items()\Height-\Items()\Image\Height)/2
+                        Height + \Items()\Height
+                      EndIf
+                    Until Not NextElement(\Items())
+                    PopListPosition(\Items())
+                    \Scroll\Width = 0
+                    \Scroll\Height = Height
+                    PushListPosition(\Items())
+                    ForEach \Items()
+                      _set_scroll_width_(*This)
+                    Next
+                    PopListPosition(\Items())
+                    
+                    Break
+                  EndIf
+                Wend
+                PopListPosition(\Items())
+                
+              Else
+                ; Get entered item only on image and text 
+                If Not *This\Flag\FullSelection And
+                   ((MouseX < \Items()\text\x-*This\Image\width) Or (MouseX > \Items()\text\x+\Items()\text\width))
+                  Break
+                EndIf
+                
+                If adress 
+                  PushListPosition(\Items()) 
+                  ChangeCurrentElement(\Items(), adress)
+                  If \Items()\focus = \Items()\Item
+                    lostfocus = \Items()\focus 
+                    \Items()\Color\State = 1
+                    \Items()\lostfocus =- 1
+                    \Items()\focus =- 1
+                  EndIf
+                  PopListPosition(\Items()) 
+                EndIf
+                
+                If lostfocus <> \Items()\Item
+                  \Items()\lostfocus = lostfocus
+                  *This\Item = \Items()\Item
+                  *This\Change = 1
+                EndIf
+                
+                \Items()\Color\State = 2
+                \Items()\focus = \Items()\Item
+              EndIf
+            EndIf
+            
+            
+            adress = @\Items()
+            Line = \Items()\Item 
+            Break
+          EndIf
+        Next
+      EndIf
+      PopListPosition(\Items())
+    EndWith
+    
+    ProcedureReturn Line
+  EndProcedure
+  
   Procedure ReDraw(*This.Widget_S)
     If StartDrawing(CanvasOutput(*This\Canvas\Gadget))
       Text::Draw(*This)
@@ -479,8 +482,8 @@ Module tree
       
       PushListPosition(\Items())
       SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Line = \Items()\Item : \Items()\Color\State = 2
-      Scroll::SetState(\vScroll, ((State*\Text\Height)-\vScroll\Height) + \Text\Height) : \Scroll\Y =- \vScroll\Page\Pos ; в конце
-                                                                                                                         ; Scroll::SetState(\vScroll, (State*\Text\Height)) : \Scroll\Y =- \vScroll\Page\Pos ; в начале 
+      Scroll::SetState(\v, ((State*\Text\Height)-\v\Height) + \Text\Height) : \Scroll\Y =- \v\bar\page\Pos ; в конце
+                                                                                                                         ; Scroll::SetState(\v, (State*\Text\Height)) : \Scroll\Y =- \v\bar\page\Pos ; в начале 
       PopListPosition(\Items())
     EndWith
   EndProcedure
@@ -501,10 +504,10 @@ Module tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
     With *This
       If Text::Resize(*This, X,Y,Width,Height)
-        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
+        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
       EndIf
       ProcedureReturn \Resize
     EndWith
@@ -515,17 +518,17 @@ Module tree
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\vScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \hScroll, \Canvas\Window, \Canvas\Gadget)
+      Repaint | Scroll::CallBack(\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \h, \Canvas\Window, \Canvas\Gadget)
       If Repaint
-        \Scroll\Y =- \vScroll\Page\Pos
+        \Scroll\Y =- \v\bar\page\Pos
       EndIf
-      Repaint | Scroll::CallBack(\hScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \vScroll, \Canvas\Window, \Canvas\Gadget)
+      Repaint | Scroll::CallBack(\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \v, \Canvas\Window, \Canvas\Gadget)
       If Repaint
-        \Scroll\X =- \hScroll\Page\Pos
+        \Scroll\X =- \h\bar\page\Pos
       EndIf
     EndWith
     
-    If *This And (Not *This\vScroll\Buttons And Not *This\hScroll\Buttons)
+    If *This And (Not *This\v\bar\buttons And Not *This\h\bar\buttons)
       If ListSize(*This\items())
         With *This
           If Not \Hide And Not \Disable And \Interact
@@ -585,7 +588,7 @@ Module tree
                 Protected from = \Line
                 \Line = get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y)
                 
-                If \hScroll\Hide And from <> \Line
+                If \h\bar\hide And from <> \Line
                   itemSelect(\Line, \Items())
                   If (\Items()\text\x+\Items()\text\width)>\Items()\X+\Items()\width
                     If \ToolTip : ToolTip(0) : EndIf
@@ -649,29 +652,29 @@ Module tree
     If *This
       With *This
         If Not \hide
-          If \vScroll
-            Repaint = Scroll::CallBack(\vScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y, WheelDelta, 0, \hScroll, \Canvas\Window, \Canvas\Gadget)
+          If \v
+            Repaint = Scroll::CallBack(\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y, WheelDelta, 0, \h, \Canvas\Window, \Canvas\Gadget)
             If Repaint
-              *This\Scroll\Y =- *This\vScroll\Page\Pos
+              *This\Scroll\Y =- *This\v\bar\page\Pos
               ReDraw(*This)
             EndIf
           EndIf
           
-          If \hScroll
-            Repaint = Scroll::CallBack(\hScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y, WheelDelta, 0, \vScroll, \Canvas\Window, \Canvas\Gadget)
+          If \h
+            Repaint = Scroll::CallBack(\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y, WheelDelta, 0, \v, \Canvas\Window, \Canvas\Gadget)
             If Repaint
-              *This\Scroll\X =- *This\hScroll\Page\Pos
+              *This\Scroll\X =- *This\h\bar\page\Pos
               ReDraw(*This)
             EndIf
           EndIf
           
-          If Not (\vScroll\Buttons Or \hScroll\Buttons)
+          If Not (\v\bar\buttons Or \h\bar\buttons)
             Select EventType
               Case #PB_EventType_MouseWheel
-                If Not \vScroll\Hide
+                If Not \v\bar\hide
                   Select -WheelDelta
-                    Case-1 : Repaint = Scroll::SetState(\vScroll, \vScroll\Page\Pos - (\vScroll\Max-\vScroll\Min)/30)
-                    Case 1 : Repaint = Scroll::SetState(\vScroll, \vScroll\Page\Pos + (\vScroll\Max-\vScroll\Min)/30)
+                    Case-1 : Repaint = Scroll::SetState(\v, \v\bar\page\Pos - (\v\bar\max-\v\bar\min)/30)
+                    Case 1 : Repaint = Scroll::SetState(\v, \v\bar\page\Pos + (\v\bar\max-\v\bar\min)/30)
                   EndSelect
                 EndIf
                 
@@ -771,7 +774,7 @@ Module tree
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)*2
         \bSize = \fSize
         
-        If Text::Resize(*This, X,Y,Width,Height, Canvas)
+        If Text::Resize(*This, X,Y,Width,Height)
           \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
           \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
           \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
@@ -779,7 +782,7 @@ Module tree
           \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
           
           \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
-          \Flag\Buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+          \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
           \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
           
           \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
@@ -842,11 +845,11 @@ Module tree
           
         EndIf
         
-        Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        If Not Bool(Not \flag\Buttons And Not \flag\Lines)
-          Scroll::Widget(\hScroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        Scroll::Widget(\v, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+        If Not Bool(Not \flag\buttons And Not \flag\Lines)
+          Scroll::Widget(\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
         EndIf
-        Scroll::Resizes(\vScroll, \hScroll, \x[2],\y[2],\width[2],\height[2])
+        Scroll::Resizes(\v, \h, \x[2],\y[2],\width[2],\height[2])
         \Resize = 0
       EndWith
     EndIf
@@ -1101,25 +1104,25 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetData(g, 0)
     BindGadgetEvent(g, @CallBacks())
     
-; ;     *g = Create(g, -1, 10, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
-; ;         ; 1_example
-; ;         AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
-; ;         AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-; ;         AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-; ;         AddItem (*g, -1, "Sub-Item 2", -1, 11)
-; ;         AddItem (*g, -1, "Sub-Item 3", -1, 1)
-; ;         AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
-; ;         AddItem (*g, -1, "Sub-Item 5", -1, 11)
-; ;         AddItem (*g, -1, "Sub-Item 6", -1, 1)
-; ;         AddItem (*g, -1, "File "+Str(a), -1, 0)  
-; ;         For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-; ;         
-; ;         ; RemoveItem(*g,1)
-; ;         Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
-; ;         BindGadgetEvent(g, @Events())
-; ;         ;Tree::SetState(*g, 1)
-; ;         ;Tree::SetState(*g, -1)
-; ;         
+    *g = Create(g, -1, 10, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
+        ; 1_example
+        AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
+        AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+        AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+        AddItem (*g, -1, "Sub-Item 2", -1, 11)
+        AddItem (*g, -1, "Sub-Item 3", -1, 1)
+        AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
+        AddItem (*g, -1, "Sub-Item 5", -1, 11)
+        AddItem (*g, -1, "Sub-Item 6", -1, 1)
+        AddItem (*g, -1, "File "+Str(a), -1, 0)  
+        For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+        
+        ; RemoveItem(*g,1)
+        Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+        BindGadgetEvent(g, @Events())
+        ;Tree::SetState(*g, 1)
+        ;Tree::SetState(*g, -1)
+        
         
     *g = Create(g, -1, 230, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
     ;  3_example
@@ -1145,61 +1148,61 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     AddItem(*g, 10, "Tree_3", -1 )
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
-; ;     ; ClearItems(*g)
-; ;     
-; ;     *g = Create(g, -1, 450, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes |#PB_Flag_NoLines|#PB_Flag_NoButtons )    ;                                
-; ;     ;   ;  2_example
-; ;     ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
-; ;     ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
-; ;     ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
-; ;     ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
-; ;     ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
-; ;     
-; ;     ;  2_example
-; ;     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
-; ;     For i=1 To 20
-; ;       If i=5
-; ;         AddItem(*g, -1, "Tree_"+Str(i), -1) 
-; ;       Else
-; ;         AddItem(*g, -1, "Tree_"+Str(i), 0) 
-; ;       EndIf
-; ;     Next
-; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-; ;     
-; ;     *g = Create(g, -1, 670, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
-; ;     ;  4_example
-; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
-; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
-; ;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-; ;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
-; ;     AddItem(*g, 3, "Tree_3_1", -1, 1) 
-; ;     AddItem(*g, 3, "Tree_3_2", -1, 2) 
-; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-; ;     
-; ;     
-; ;     *g = Create(g, -1, 890, 10, 103, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
-; ;     ;  5_example
-; ;     AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
-; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
-; ;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
-; ;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-; ;     
-; ;     *g = Create(g, -1, 890+106, 10, 103, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
-; ;     ;  6_example
-; ;     AddItem(*g, 0, "Tree_1", -1, 1) 
-; ;     AddItem(*g, 0, "Tree_2_1", -1, 2) 
-; ;     AddItem(*g, 0, "Tree_2_2", -1, 3) 
-; ;     
-; ;     For i = 0 To 24
-; ;       If i % 5 = 0
-; ;         AddItem(*g, -1, "Directory" + Str(i), -1, 0)
-; ;       Else
-; ;         AddItem(*g, -1, "Item" + Str(i), -1, 1)
-; ;       EndIf
-; ;     Next i
-; ;     
-; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    ; ClearItems(*g)
+    
+    *g = Create(g, -1, 450, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes |#PB_Flag_NoLines|#PB_Flag_NoButtons )    ;                                
+    ;   ;  2_example
+    ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
+    ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
+    ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
+    ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
+    ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
+    
+    ;  2_example
+    AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
+    For i=1 To 20
+      If i=5
+        AddItem(*g, -1, "Tree_"+Str(i), -1) 
+      Else
+        AddItem(*g, -1, "Tree_"+Str(i), 0) 
+      EndIf
+    Next
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    *g = Create(g, -1, 670, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
+    ;  4_example
+    AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
+    AddItem(*g, 1, "Tree_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    AddItem(*g, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g, 3, "Tree_3_1", -1, 1) 
+    AddItem(*g, 3, "Tree_3_2", -1, 2) 
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    
+    *g = Create(g, -1, 890, 10, 103, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
+    ;  5_example
+    AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g, 1, "Tree_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    *g = Create(g, -1, 890+106, 10, 103, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
+    ;  6_example
+    AddItem(*g, 0, "Tree_1", -1, 1) 
+    AddItem(*g, 0, "Tree_2_1", -1, 2) 
+    AddItem(*g, 0, "Tree_2_2", -1, 3) 
+    
+    For i = 0 To 24
+      If i % 5 = 0
+        AddItem(*g, -1, "Directory" + Str(i), -1, 0)
+      Else
+        AddItem(*g, -1, "Item" + Str(i), -1, 1)
+      EndIf
+    Next i
+    
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     ;}
     ;Free(*g)
     
@@ -1240,7 +1243,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------0-------4--
+; Folding = --------------------8--4--
 ; EnableXP

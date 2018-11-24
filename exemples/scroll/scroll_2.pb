@@ -155,7 +155,7 @@ Procedure Draw (canvas.i, List ilements.canvasitem())
     
     ForEach ilements()
       DrawingMode(#PB_2DDrawing_AlphaBlend)
-      DrawImage(ImageID(ilements()\img),ilements()\x - *h\Page\Pos,ilements()\y - *v\Page\Pos) ; draw all images with z-order
+      DrawImage(ImageID(ilements()\img),ilements()\x - *h\bar\Page\Pos,ilements()\y - *v\bar\Page\Pos) ; draw all images with z-order
       
       ForEach ilements()\Items()
         
@@ -197,8 +197,8 @@ Procedure.i HitTest (List ilements.canvasitem(), x, y)
   
   If LastElement(ilements()) ; search for hit, starting from end (z-order)
     Repeat
-      If x >= ilements()\x - *h\Page\Pos And x < ilements()\x - *h\Page\Pos + ilements()\width
-        If y >= ilements()\y - *v\Page\Pos And y < ilements()\y - *v\Page\Pos + ilements()\height
+      If x >= ilements()\x - *h\bar\Page\Pos And x < ilements()\x - *h\bar\Page\Pos + ilements()\width
+        If y >= ilements()\y - *v\bar\Page\Pos And y < ilements()\y - *v\bar\Page\Pos + ilements()\height
           alpha = 255
           
           If ilements()\alphatest And ImageDepth(ilements()\img)>31
@@ -232,13 +232,13 @@ Procedure.i iHitTest (List ilements.canvasitem(), x, y)
     Repeat
       Debug ilements()\y
       
-      If x >= ilements()\x - *h\Page\Pos And x < ilements()\x - *h\Page\Pos + ilements()\width
-        If y >= ilements()\y - *v\Page\Pos And y < ilements()\y - *v\Page\Pos + ilements()\height
+      If x >= ilements()\x - *h\bar\Page\Pos And x < ilements()\x - *h\bar\Page\Pos + ilements()\width
+        If y >= ilements()\y - *v\bar\Page\Pos And y < ilements()\y - *v\bar\Page\Pos + ilements()\height
           
           ForEach ilements()\Items()
             
-            If x >= ilements()\Items()\x - *h\Page\Pos And x < ilements()\Items()\x - *h\Page\Pos + ilements()\Items()\width
-              ; If y >= ilements()\Items()\y - *v\Page\Pos And y < ilements()\Items()\y - *v\Page\Pos + ilements()\Items()\height
+            If x >= ilements()\Items()\x - *h\bar\Page\Pos And x < ilements()\Items()\x - *h\bar\Page\Pos + ilements()\Items()\width
+              ; If y >= ilements()\Items()\y - *v\bar\Page\Pos And y < ilements()\Items()\y - *v\bar\Page\Pos + ilements()\Items()\height
               Debug ilements()\Items()\y
               
             EndIf
@@ -311,49 +311,49 @@ EndMacro
 
 Procedure ScrollUpdates(*v.Scroll_S, *h.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
   Protected iWidth = Scroll::X(*v), iHeight = Scroll::Y(*h)
-  Static hPos, vPos : vPos = *v\Page\Pos : hPos = *h\Page\Pos
+  Static hPos, vPos : vPos = *v\bar\page\Pos : hPos = *h\bar\page\Pos
   
   ; Вправо работает как надо
-  If ScrollArea_Width<*h\Page\Pos+iWidth 
-    ScrollArea_Width=*h\Page\Pos+iWidth
+  If ScrollArea_Width<*h\bar\page\Pos+iWidth 
+    ScrollArea_Width=*h\bar\page\Pos+iWidth
     ; Влево работает как надо
-  ElseIf ScrollArea_X>*h\Page\Pos And
-         ScrollArea_Width=*h\Page\Pos+iWidth 
+  ElseIf ScrollArea_X>*h\bar\page\Pos And
+         ScrollArea_Width=*h\bar\page\Pos+iWidth 
     ScrollArea_Width = iWidth 
   EndIf
   
   ; Вниз работает как надо
-  If ScrollArea_Height<*v\Page\Pos+iHeight
-    ScrollArea_Height=*v\Page\Pos+iHeight 
+  If ScrollArea_Height<*v\bar\page\Pos+iHeight
+    ScrollArea_Height=*v\bar\page\Pos+iHeight 
     ; Верх работает как надо
-  ElseIf ScrollArea_Y>*v\Page\Pos And
-         ScrollArea_Height=*v\Page\Pos+iHeight 
+  ElseIf ScrollArea_Y>*v\bar\page\Pos And
+         ScrollArea_Height=*v\bar\page\Pos+iHeight 
     ScrollArea_Height = iHeight 
   EndIf
   
   If ScrollArea_X>0 : ScrollArea_X=0 : EndIf
   If ScrollArea_Y>0 : ScrollArea_Y=0 : EndIf
   
-  If ScrollArea_X<*h\Page\Pos : ScrollArea_Width-ScrollArea_X : EndIf
-  If ScrollArea_Y<*v\Page\Pos : ScrollArea_Height-ScrollArea_Y : EndIf
+  If ScrollArea_X<*h\bar\page\Pos : ScrollArea_Width-ScrollArea_X : EndIf
+  If ScrollArea_Y<*v\bar\page\Pos : ScrollArea_Height-ScrollArea_Y : EndIf
   
-  If *v\Max<>ScrollArea_Height : Scroll::SetAttribute(*v, #PB_ScrollBar_Maximum, ScrollArea_Height) : EndIf
-  If *h\Max<>ScrollArea_Width : Scroll::SetAttribute(*h, #PB_ScrollBar_Maximum, ScrollArea_Width) : EndIf
+  If *v\bar\max<>ScrollArea_Height : Scroll::SetAttribute(*v, #PB_ScrollBar_Maximum, ScrollArea_Height) : EndIf
+  If *h\bar\max<>ScrollArea_Width : Scroll::SetAttribute(*h, #PB_ScrollBar_Maximum, ScrollArea_Width) : EndIf
   
-  If *v\Page\Length<>iHeight : Scroll::SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-  If *h\Page\Length<>iWidth : Scroll::SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+  If *v\bar\page\len<>iHeight : Scroll::SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+  If *h\bar\page\len<>iWidth : Scroll::SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
   
   If ScrollArea_Y<0 : Scroll::SetState(*v, (ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) : EndIf
   If ScrollArea_X<0 : Scroll::SetState(*h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
   
-  *v\Hide = Scroll::Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *h) 
-  *h\Hide = Scroll::Resize(*h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *v)
+  *v\bar\hide = Scroll::Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *h) 
+  *h\bar\hide = Scroll::Resize(*h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *v)
   
-  ;   If *v\Hide : *v\Page\Pos = 0 : Else : *v\Page\Pos = vPos : *h\Width = iWidth+*v\Width : EndIf
-  ;   If *h\Hide : *h\Page\Pos = 0 : Else : *h\Page\Pos = hPos : *v\Height = iHeight+*h\Height : EndIf
+  ;   If *v\bar\hide : *v\bar\page\Pos = 0 : Else : *v\bar\page\Pos = vPos : *h\Width = iWidth+*v\Width : EndIf
+  ;   If *h\bar\hide : *h\bar\page\Pos = 0 : Else : *h\bar\page\Pos = hPos : *v\Height = iHeight+*h\Height : EndIf
   
-  If *v\Hide : *v\Page\Pos = 0 : If vPos : *v\Hide = vPos : EndIf : Else : *v\Page\Pos = vPos : *h\Width = iWidth+*v\Width : EndIf
-  If *h\Hide : *h\Page\Pos = 0 : If hPos : *h\Hide = hPos : EndIf : Else : *h\Page\Pos = hPos : *v\Height = iHeight+*h\Height : EndIf
+  If *v\bar\hide : *v\bar\page\Pos = 0 : If vPos : *v\bar\hide = vPos : EndIf : Else : *v\bar\page\Pos = vPos : *h\Width = iWidth+*v\Width : EndIf
+  If *h\bar\hide : *h\bar\page\Pos = 0 : If hPos : *h\bar\hide = hPos : EndIf : Else : *h\bar\page\Pos = hPos : *v\Height = iHeight+*h\Height : EndIf
   
   ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
 EndProcedure
@@ -385,11 +385,11 @@ Procedure CallBack()
         PushListPosition(ilements())
         ForEach ilements()
           If ScrollX<0
-            *h\Page\Pos =- ScrollX
+            *h\bar\page\Pos =- ScrollX
             ilements()\X-ScrollX
           EndIf
           If ScrollY<0
-            *v\Page\Pos =- ScrollY
+            *v\bar\page\Pos =- ScrollY
             ilements()\Y-ScrollY
           EndIf
         Next
@@ -399,7 +399,7 @@ Procedure CallBack()
   EndSelect     
   
   
-  If (*h\Buttons Or *v\Buttons)
+  If (*h\bar\buttons Or *v\bar\buttons)
     Select Event
       Case #PB_EventType_LeftButtonUp
         Debug "----------Up---------"
@@ -407,15 +407,15 @@ Procedure CallBack()
         ScrollUpdates(*v,*h, ScrollX, ScrollY, ScrollWidth, ScrollHeight)
         ;           Protected iWidth = Width-Scroll::Width(*v), iHeight = Height-Scroll::Height(*h)
         ;   
-        ;         Debug ""+*h\Hide+" "+ScrollX+" "+Str(ScrollWidth-iWidth)
-        ;         Debug ""+*v\Hide+" "+ScrollY+" "+Str(ScrollHeight-iHeight)
+        ;         Debug ""+*h\bar\hide+" "+ScrollX+" "+Str(ScrollWidth-iWidth)
+        ;         Debug ""+*v\bar\hide+" "+ScrollY+" "+Str(ScrollHeight-iHeight)
         
         PushListPosition(ilements())
         ForEach ilements()
-          ;           If *h\Hide And (ScrollWidth-Width)>0 : ilements()\X-(ScrollWidth-Width) : EndIf
-          ;           If *v\Hide And (ScrollHeight-Height)>0 : ilements()\Y-(ScrollHeight-Height) : EndIf
-          If *h\Hide>1 : ilements()\X-*h\Hide : EndIf
-          If *v\Hide>1 : ilements()\Y-*v\Hide : EndIf
+          ;           If *h\bar\hide And (ScrollWidth-Width)>0 : ilements()\X-(ScrollWidth-Width) : EndIf
+          ;           If *v\bar\hide And (ScrollHeight-Height)>0 : ilements()\Y-(ScrollHeight-Height) : EndIf
+          If *h\bar\hide>1 : ilements()\X-*h\bar\hide : EndIf
+          If *v\bar\hide>1 : ilements()\Y-*v\bar\hide : EndIf
         Next
         PopListPosition(ilements())
         
@@ -450,8 +450,8 @@ Procedure CallBack()
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
         GetScrollCoordinate()
         
-        If *h\Max<>ScrollWidth : Scroll::SetAttribute(*h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
-        If *v\Max<>ScrollHeight : Scroll::SetAttribute(*v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
+        If *h\bar\max<>ScrollWidth : Scroll::SetAttribute(*h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
+        If *v\bar\max<>ScrollHeight : Scroll::SetAttribute(*v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
         
         Scroll::Resizes(*v, *h, 0, 0, Width, Height)
         Repaint = #True

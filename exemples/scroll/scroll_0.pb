@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; draw frame on the image
     If StartDrawing(ImageOutput(0))
       DrawingMode(#PB_2DDrawing_Outlined)
-      Box(0,0,OutputWidth(),OutputWidth(), $000000)
+      Box(0,0,OutputWidth(),OutputWidth(), $FF0000)
       StopDrawing()
     EndIf
   EndIf
@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If Repaint And StartDrawing(CanvasOutput(Canvas))
       Box(0,0,Width,Height, $FFFFFF)
       ClipOutput(0,0, iWidth, iHeight)
-      DrawImage(ImageID(0), -*Horisontal\Page\Pos, -*Vertical\Page\Pos)
+      DrawImage(ImageID(0), -*Horisontal\bar\page\Pos, -*Vertical\bar\page\Pos)
       UnclipOutput()
       
       Scroll::Draw(*Vertical)

@@ -151,41 +151,41 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g = 10
-;     Gadget(g, 10, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
-;     *g = GetGadgetData(g)
-;     
-;     Define time = ElapsedMilliseconds()
-;     AddItem (*g, -1, "Item "+Str(a), -1);,Random(5)+1)
-;     For a = 1 To 1500
-;       AddItem (*g, -1, "Item "+Str(a), -1, 1);,Random(5)+1)
-;       If A & $f=$f:WindowEvent()             ; это нужно чтобы раздет немного обновлялся
-;       EndIf
-;       If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
-;         Debug a
-;       EndIf
-;     Next
-;     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*g)
-;     
-;     Text::Redraw(*g)
+    Gadget(g, 10, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
+    *g = GetGadgetData(g)
     
-;     ; ; ;     ; 1_example
-;     ; ; ;     AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
-;     ; ; ;     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-;     ; ; ;     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-;     ; ; ;     AddItem (*g, -1, "Sub-Item 2", -1, 11)
-;     ; ; ;     AddItem (*g, -1, "Sub-Item 3", -1, 1)
-;     ; ; ;     AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
-;     ; ; ;     AddItem (*g, -1, "Sub-Item 5", -1, 11)
-;     ; ; ;     AddItem (*g, -1, "Sub-Item 6", -1, 1)
-;     ; ; ;     AddItem (*g, -1, "File "+Str(a), -1, 0)  
-;     ; ; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     ; ; ;     
-;     ; ; ;     ; RemoveItem(*g,1)
-;     ; ; ;     Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
-;     ; ; ;     BindGadgetEvent(g, @Events())
-;     ; ; ;     ;Tree::SetState(*g, 1)
-;     ; ; ;     ;Tree::SetState(*g, -1)
-;     ;     Debug "c "+Tree::GetText(*g)
+    Define time = ElapsedMilliseconds()
+    AddItem (*g, -1, "Item "+Str(a), -1);,Random(5)+1)
+    For a = 1 To 1500
+      AddItem (*g, -1, "Item "+Str(a), -1, 1);,Random(5)+1)
+      If A & $f=$f:WindowEvent()             ; это нужно чтобы раздет немного обновлялся
+      EndIf
+      If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+        Debug a
+      EndIf
+    Next
+    Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*g)
+    
+    Text::Redraw(*g)
+    
+    ; ; ;     ; 1_example
+    ; ; ;     AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
+    ; ; ;     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+    ; ; ;     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+    ; ; ;     AddItem (*g, -1, "Sub-Item 2", -1, 11)
+    ; ; ;     AddItem (*g, -1, "Sub-Item 3", -1, 1)
+    ; ; ;     AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
+    ; ; ;     AddItem (*g, -1, "Sub-Item 5", -1, 11)
+    ; ; ;     AddItem (*g, -1, "Sub-Item 6", -1, 1)
+    ; ; ;     AddItem (*g, -1, "File "+Str(a), -1, 0)  
+    ; ; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    ; ; ;     
+    ; ; ;     ; RemoveItem(*g,1)
+    ; ; ;     Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+    ; ; ;     BindGadgetEvent(g, @Events())
+    ; ; ;     ;Tree::SetState(*g, 1)
+    ; ; ;     ;Tree::SetState(*g, -1)
+    ;     Debug "c "+Tree::GetText(*g)
     
     g = 11
     Gadget(g, 230, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
@@ -213,71 +213,71 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     AddItem(*g, 10, "Tree_3", -1 )
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
-;     ; ClearItems(*g)
-;     
-;     g = 12
-;     Gadget(g, 450, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes |#PB_Flag_NoLines|#PB_Flag_NoButtons )    ;                                
-;     *g = GetGadgetData(g)
-;     ;   ;  2_example
-;     ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
-;     ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
-;     ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
-;     ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
-;     ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
-;     
-;     ;  2_example
-;     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
-;     For i=1 To 20
-;       If i=5
-;         AddItem(*g, -1, "Tree_"+Str(i), -1) 
-;       Else
-;         AddItem(*g, -1, "Tree_"+Str(i), 0) 
-;       EndIf
-;     Next
-;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     g = 13
-;     Gadget(g, 670, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
-;     *g = GetGadgetData(g)
-;     ;  4_example
-;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
-;     AddItem(*g, 1, "Tree_1", -1, 1) 
-;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
-;     AddItem(*g, 3, "Tree_3_1", -1, 1) 
-;     AddItem(*g, 3, "Tree_3_2", -1, 2) 
-;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     
-;     g = 14
-;     Gadget(g, 890, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
-;     *g = GetGadgetData(g)
-;     ;  5_example
-;     AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
-;     AddItem(*g, 1, "Tree_1", -1, 1) 
-;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
-;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     g = 15
-;     Gadget(g, 890+106, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
-;     *g = GetGadgetData(g)
-;     ;  6_example
-;     AddItem(*g, 0, "Tree_1", -1, 1) 
-;     AddItem(*g, 0, "Tree_2_1", -1, 2) 
-;     AddItem(*g, 0, "Tree_2_2", -1, 3) 
-;     
-;     For i = 0 To 24
-;       If i % 5 = 0
-;         AddItem(*g, -1, "Directory" + Str(i), -1, 0)
-;       Else
-;         AddItem(*g, -1, "Item" + Str(i), -1, 1)
-;       EndIf
-;     Next i
-;     
-;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     ;Free(*g)
+    ; ClearItems(*g)
+    
+    g = 12
+    Gadget(g, 450, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes |#PB_Flag_NoLines|#PB_Flag_NoButtons )    ;                                
+    *g = GetGadgetData(g)
+    ;   ;  2_example
+    ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
+    ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
+    ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
+    ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
+    ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
+    
+    ;  2_example
+    AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
+    For i=1 To 20
+      If i=5
+        AddItem(*g, -1, "Tree_"+Str(i), -1) 
+      Else
+        AddItem(*g, -1, "Tree_"+Str(i), 0) 
+      EndIf
+    Next
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    g = 13
+    Gadget(g, 670, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
+    *g = GetGadgetData(g)
+    ;  4_example
+    AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
+    AddItem(*g, 1, "Tree_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    AddItem(*g, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g, 3, "Tree_3_1", -1, 1) 
+    AddItem(*g, 3, "Tree_3_2", -1, 2) 
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    
+    g = 14
+    Gadget(g, 890, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
+    *g = GetGadgetData(g)
+    ;  5_example
+    AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g, 1, "Tree_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    g = 15
+    Gadget(g, 890+106, 230, 103, 210, #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
+    *g = GetGadgetData(g)
+    ;  6_example
+    AddItem(*g, 0, "Tree_1", -1, 1) 
+    AddItem(*g, 0, "Tree_2_1", -1, 2) 
+    AddItem(*g, 0, "Tree_2_2", -1, 3) 
+    
+    For i = 0 To 24
+      If i % 5 = 0
+        AddItem(*g, -1, "Directory" + Str(i), -1, 0)
+      Else
+        AddItem(*g, -1, "Item" + Str(i), -1, 1)
+      EndIf
+    Next i
+    
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    ;Free(*g)
     
     Repeat
       Select WaitWindowEvent()   
@@ -316,7 +316,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-
 
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = ----

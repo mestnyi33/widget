@@ -1,9 +1,7 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/"
-CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
-CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-  ;  IncludePath "/Users/a/Documents/GitHub/Widget/"
+CompilerElse
+  IncludePath "../../"
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -28,18 +26,14 @@ DeclareModule Scroll
   EndMacro
   
   
-  Declare.b Draw(*Scroll.Scroll_S)
-; ;   Declare.i Y(*Scroll.Scroll_S)
-; ;   Declare.i X(*Scroll.Scroll_S)
-; ;   Declare.i Width(*Scroll.Scroll_S)
-; ;   Declare.i Height(*Scroll.Scroll_S)
-  Declare.b SetState(*Scroll.Scroll_S, ScrollPos.i)
-  Declare.i SetAttribute(*Scroll.Scroll_S, Attribute.i, Value.i)
-  Declare.i SetColor(*Scroll.Scroll_S, ColorType.i, Color.i, State.i=0, Item.i=0)
-  Declare.b Resize(*This.Scroll_S, iX.i,iY.i,iWidth.i,iHeight.i, *Scroll.Scroll_S=#Null)
-  Declare.b Resizes(*v.Scroll_S, *h.Scroll_S, X.i,Y.i,Width.i,Height.i)
-  Declare.b Updates(*v.Scroll_S, *h.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
-  Declare.b CallBack(*This.Scroll_S, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
+  Declare.b Draw(*This.Scroll_S)
+  Declare.b SetState(*This.Scroll_S, ScrollPos.i)
+  Declare.i SetAttribute(*This.Scroll_S, Attribute.i, Value.i)
+  Declare.i SetColor(*This.Scroll_S, ColorType.i, Color.i, State.i=0, Item.i=0)
+  Declare.b Resize(*This.Scroll_S, iX.i,iY.i,iWidth.i,iHeight.i, *That.Scroll_S=#Null)
+  Declare.b Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
+  Declare.b Updates(*Scroll.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
+  Declare.b CallBack(*This.Scroll_S, EventType.i, *mouse.Mouse_S, AutoHide.b=0)
   Declare.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
@@ -162,8 +156,8 @@ Module Scroll
   EndProcedure
   
   ;-
-  Procedure.b Draw(*Scroll.Scroll_S)
-    With *Scroll
+  Procedure.b Draw(*This.Scroll_S)
+    With *This
       If Not \bar\hide And \bar\Alpha
         
         ; Draw scroll bar background
@@ -296,10 +290,11 @@ Module Scroll
 ; ;     ProcedureReturn Result
 ; ;   EndProcedure
   
-  Procedure.b SetState(*Scroll.Scroll_S, ScrollPos.i)
+  Procedure.b SetState(*This.Scroll_S, ScrollPos.i)
     Protected Result.b, Direction.i ; Направление и позиция скролла (вверх,вниз,влево,вправо)
     
-    With *Scroll
+    ;If *This
+      With *This
       If ( \bar\Vertical And \bar\Type = #PB_GadgetType_TrackBar) : ScrollPos = (( \bar\Max-\bar\Min)-ScrollPos) : EndIf
       
       If ScrollPos < \bar\Min : ScrollPos = \bar\Min : EndIf
@@ -315,29 +310,35 @@ Module Scroll
         EndIf
         \bar\Page\Pos = ScrollPos
         
-        \bar\Thumb\Pos = ThumbPos(*Scroll, ScrollPos)
+        \bar\Thumb\Pos = ThumbPos(*This, ScrollPos)
         
-        If \bar\Gadget >- 1 
-          If \bar\Window =- 1
-            \bar\Window = EventWindow()
+        If \bar\Vertical
+          \v\y =- \bar\Page\Pos
+          If \v\Event
+            PostEvent(\v\Event, \v\Window, \v\Widget, #PB_EventType_ScrollChange, Direction) 
           EndIf
-          
-          PostEvent(#PB_Event_Widget, \bar\Window, \bar\Gadget, #PB_EventType_ScrollChange, Direction) 
+        Else
+          \h\x =- \bar\Page\Pos
+          If \h\Event
+            PostEvent(\h\Event, \h\Window, \h\Widget, #PB_EventType_ScrollChange, Direction) 
+          EndIf
         EndIf
+        
         Result = #True
       EndIf
     EndWith
-    
+  ;EndIf
+  
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetAttribute(*Scroll.Scroll_S, Attribute.i, Value.i)
+  Procedure.i SetAttribute(*This.Scroll_S, Attribute.i, Value.i)
     Protected Result.i
     
-    With *Scroll
+    With *This
       Select Attribute
         Case #PB_ScrollBar_Minimum
-          If \bar\Min <> Value
+          If \bar\Min <> Value 
             \bar\Min = Value
             \bar\Page\Pos = Value
             Result = #True
@@ -351,7 +352,11 @@ Module Scroll
               \bar\Max = Value
             EndIf
             
-            ; \bar\Page\ScrollStep = ( \bar\Max-\bar\Min) / 100
+            If \bar\Vertical
+              \v\height = \bar\Max
+            Else
+              \h\width = \bar\Max
+            EndIf
             
             Result = #True
           EndIf
@@ -359,7 +364,16 @@ Module Scroll
         Case #PB_ScrollBar_PageLength
           If \bar\Page\len <> Value
             If Value > ( \bar\Max-\bar\Min) 
-              If Not \bar\Max : \bar\Max = Value : EndIf ; Если этого page_length вызвать раньше maximum то не правильно работает
+              If Not \bar\Max 
+                \bar\Max = Value ; Если этого page_length вызвать раньше maximum то не правильно работает 
+              EndIf
+              
+              If \bar\Vertical
+                \v\height = \bar\Max
+              Else
+                \h\width = \bar\Max
+              EndIf
+              
               \bar\Page\len = ( \bar\Max-\bar\Min)
             Else
               \bar\Page\len = Value
@@ -374,7 +388,7 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetColor(*Scroll.Scroll_S, ColorType.i, Color.i, State.i=0, Item.i=0)
+  Procedure.i SetColor(*This.Scroll_S, ColorType.i, Color.i, State.i=0, Item.i=0)
     Protected Result, Count 
     State =- 1
     If Item < 0 
@@ -383,7 +397,7 @@ Module Scroll
       Item = 3 
     EndIf
     
-    With *Scroll
+    With *This
       If State =- 1
         Count = 2
         \bar\Color\State = 0
@@ -427,18 +441,18 @@ Module Scroll
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b Resize(*This.Scroll_S, X.i,Y.i,Width.i,Height.i, *Scroll.Scroll_S=#Null)
+  Procedure.b Resize(*This.Scroll_S, X.i,Y.i,Width.i,Height.i, *That.Scroll_S=#Null)
     Protected Result, Lines, ScrollPage
     
     With *This
       ScrollPage = (( \bar\Max-\bar\Min) - \bar\Page\len)
       Lines = Bool( \bar\Type=#PB_GadgetType_ScrollBar)
       
-      If *Scroll
+      If *That
         If \bar\Vertical
-          If Height=#PB_Ignore : If *Scroll\bar\hide : Height=(*Scroll\bar\Y+*Scroll\bar\Height)-\bar\Y : Else : Height = *Scroll\bar\Y-\bar\Y : EndIf : EndIf
+          If Height=#PB_Ignore : If *That\bar\hide : Height=(*That\bar\Y+*That\bar\Height)-\bar\Y : Else : Height = *That\bar\Y-\bar\Y : EndIf : EndIf
         Else
-          If Width=#PB_Ignore : If *Scroll\bar\hide : Width=(*Scroll\bar\X+*Scroll\bar\Width)-\bar\X : Else : Width = *Scroll\bar\X-\bar\X : EndIf : EndIf
+          If Width=#PB_Ignore : If *That\bar\hide : Width=(*That\bar\X+*That\bar\Width)-\bar\X : Else : Width = *That\bar\X-\bar\X : EndIf : EndIf
         EndIf
       EndIf
       
@@ -506,85 +520,94 @@ Module Scroll
     EndWith
   EndProcedure
   
-  Procedure.b Updates(*v.Scroll_S, *h.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
-    Protected iWidth = X(*v), iHeight = Y(*h)
-    Static hPos, vPos : vPos = *v\bar\Page\Pos : hPos = *h\bar\Page\Pos
+  Procedure.b Updates(*Scroll.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
+    Protected iWidth = X(*Scroll\v), iHeight = Y(*Scroll\h)
+    Static hPos, vPos : vPos = *Scroll\v\bar\Page\Pos : hPos = *Scroll\h\bar\Page\Pos
     
     ; Вправо работает как надо
-    If ScrollArea_Width<*h\bar\Page\Pos+iWidth 
-      ScrollArea_Width=*h\bar\Page\Pos+iWidth
+    If ScrollArea_Width<*Scroll\h\bar\Page\Pos+iWidth 
+      ScrollArea_Width=*Scroll\h\bar\Page\Pos+iWidth
       ; Влево работает как надо
-    ElseIf ScrollArea_X>*h\bar\Page\Pos And
-           ScrollArea_Width=*h\bar\Page\Pos+iWidth 
+    ElseIf ScrollArea_X>*Scroll\h\bar\Page\Pos And
+           ScrollArea_Width=*Scroll\h\bar\Page\Pos+iWidth 
       ScrollArea_Width = iWidth 
     EndIf
     
     ; Вниз работает как надо
-    If ScrollArea_Height<*v\bar\Page\Pos+iHeight
-      ScrollArea_Height=*v\bar\Page\Pos+iHeight 
+    If ScrollArea_Height<*Scroll\v\bar\Page\Pos+iHeight
+      ScrollArea_Height=*Scroll\v\bar\Page\Pos+iHeight 
       ; Верх работает как надо
-    ElseIf ScrollArea_Y>*v\bar\Page\Pos And
-           ScrollArea_Height=*v\bar\Page\Pos+iHeight 
+    ElseIf ScrollArea_Y>*Scroll\v\bar\Page\Pos And
+           ScrollArea_Height=*Scroll\v\bar\Page\Pos+iHeight 
       ScrollArea_Height = iHeight 
     EndIf
     
     If ScrollArea_X>0 : ScrollArea_X=0 : EndIf
     If ScrollArea_Y>0 : ScrollArea_Y=0 : EndIf
     
-    If ScrollArea_X<*h\bar\Page\Pos : ScrollArea_Width-ScrollArea_X : EndIf
-    If ScrollArea_Y<*v\bar\Page\Pos : ScrollArea_Height-ScrollArea_Y : EndIf
+    If ScrollArea_X<*Scroll\h\bar\Page\Pos : ScrollArea_Width-ScrollArea_X : EndIf
+    If ScrollArea_Y<*Scroll\v\bar\Page\Pos : ScrollArea_Height-ScrollArea_Y : EndIf
     
-    If *v\bar\max<>ScrollArea_Height : SetAttribute(*v, #PB_ScrollBar_Maximum, ScrollArea_Height) : EndIf
-    If *h\bar\max<>ScrollArea_Width : SetAttribute(*h, #PB_ScrollBar_Maximum, ScrollArea_Width) : EndIf
+    If *Scroll\v\bar\max<>ScrollArea_Height : SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ScrollArea_Height) : EndIf
+    If *Scroll\h\bar\max<>ScrollArea_Width : SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ScrollArea_Width) : EndIf
     
-    If *v\bar\Page\len<>iHeight : SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-    If *h\bar\Page\len<>iWidth : SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+    If *Scroll\v\bar\Page\len<>iHeight : SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+    If *Scroll\h\bar\Page\len<>iWidth : SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
     
-    If ScrollArea_Y<0 : SetState(*v, (ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) : EndIf
-    If ScrollArea_X<0 : SetState(*h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
+    If ScrollArea_Y<0 : SetState(*Scroll\v, (ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) : EndIf
+    If ScrollArea_X<0 : SetState(*Scroll\h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
     
-    *v\bar\hide = Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *h) 
-    *h\bar\hide = Resize(*h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *v)
+    *Scroll\v\bar\hide = Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\h) 
+    *Scroll\h\bar\hide = Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\v)
     
-    If *v\bar\hide : *v\bar\Page\Pos = 0 : If vPos : *v\bar\hide = vPos : EndIf : Else : *v\bar\Page\Pos = vPos : *h\bar\Width = iWidth+*v\bar\Width : EndIf
-    If *h\bar\hide : *h\bar\Page\Pos = 0 : If hPos : *h\bar\hide = hPos : EndIf : Else : *h\bar\Page\Pos = hPos : *v\bar\Height = iHeight+*h\bar\Height : EndIf
+    If *Scroll\v\bar\hide : *Scroll\v\bar\Page\Pos = 0 : If vPos : *Scroll\v\bar\hide = vPos : EndIf : Else : *Scroll\v\bar\Page\Pos = vPos : *Scroll\h\bar\Width = iWidth+*Scroll\v\bar\Width : EndIf
+    If *Scroll\h\bar\hide : *Scroll\h\bar\Page\Pos = 0 : If hPos : *Scroll\h\bar\hide = hPos : EndIf : Else : *Scroll\h\bar\Page\Pos = hPos : *Scroll\v\bar\Height = iHeight+*Scroll\h\bar\Height : EndIf
     
     ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
   EndProcedure
   
-  Procedure.b Resizes(*v.Scroll_S, *h.Scroll_S, X.i,Y.i,Width.i,Height.i)
-    If Width=#PB_Ignore : Width = *v\bar\X : Else : Width+x-*v\bar\Width : EndIf
-    If Height=#PB_Ignore : Height = *h\bar\Y : Else : Height+y-*h\bar\Height : EndIf
+  Procedure.b Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
+;     If Not Bool(*Scroll\v And *Scroll\h) 
+;       If *Scroll\v
+;         ProcedureReturn Resize(*Scroll\v, X.i,Y.i,Width.i,Height.i)
+;       ElseIf *Scroll\h
+;         ProcedureReturn Resize(*Scroll\h, X.i,Y.i,Width.i,Height.i)
+;       EndIf
+;     EndIf
     
-    Protected iWidth = x(*v)-*h\bar\X, iHeight = y(*h)-*v\bar\Y
+    If Width=#PB_Ignore : Width = *Scroll\v\bar\X : Else : Width+x-*Scroll\v\bar\Width : EndIf
+    If Height=#PB_Ignore : Height = *Scroll\h\bar\Y : Else : Height+y-*Scroll\h\bar\Height : EndIf
     
-    If *v\bar\Width And *v\bar\Page\len<>iHeight : SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-    If *h\bar\Height And *h\bar\Page\len<>iWidth : SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+    Protected iWidth = x(*Scroll\v)-*Scroll\h\bar\x, iHeight = y(*Scroll\h)-*Scroll\v\bar\y
     
-    *v\bar\hide = Resize(*v, Width, Y, #PB_Ignore, #PB_Ignore, *h) : iWidth = x(*v)-*h\bar\X
-    *h\bar\hide = Resize(*h, X, Height, #PB_Ignore, #PB_Ignore, *v) : iHeight = y(*h)-*v\bar\Y
+    If *Scroll\v\bar\width And *Scroll\v\bar\Page\len<>iHeight : SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+    If *Scroll\h\bar\height And *Scroll\h\bar\Page\len<>iWidth : SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
     
-    If *v\bar\Width And *v\bar\Page\len<>iHeight : SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-    If *h\bar\Height And *h\bar\Page\len<>iWidth : SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+    *Scroll\v\bar\Hide = Resize(*Scroll\v, Width, Y, #PB_Ignore, #PB_Ignore, *Scroll\h) : iWidth = x(*Scroll\v)-*Scroll\h\bar\x
+    *Scroll\h\bar\Hide = Resize(*Scroll\h, X, Height, #PB_Ignore, #PB_Ignore, *Scroll\v) : iHeight = y(*Scroll\h)-*Scroll\v\bar\y
     
-    If *v\bar\Width : *v\bar\hide = Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *h) : EndIf
-    If *h\bar\Height : *h\bar\hide = Resize(*h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *v) : EndIf
+    If *Scroll\v\bar\width And *Scroll\v\bar\Page\len<>iHeight : SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+    If *Scroll\h\bar\height And *Scroll\h\bar\Page\len<>iWidth : SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+    
+    If *Scroll\v\bar\width : *Scroll\v\bar\Hide = Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\h) : EndIf
+    If *Scroll\h\bar\height : *Scroll\h\bar\Hide = Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\v) : EndIf
     
     ; Do we see both scrolbars?
-    *v\bar\Both = Bool(Not *h\bar\hide) : *h\bar\Both = Bool(Not *v\bar\hide) 
+    *Scroll\v\bar\Both = Bool(Not *Scroll\h\bar\Hide) : *Scroll\h\bar\Both = Bool(Not *Scroll\v\bar\Hide) 
     
-    If *v\bar\hide : *v\bar\Page\Pos = 0 : Else
-      If *h\bar\Radius : Resize(*h, #PB_Ignore, #PB_Ignore, (*v\bar\X-*h\bar\X)+Bool(*v\bar\Radius)*4, #PB_Ignore) : EndIf
+    If *Scroll\v\bar\Hide : *Scroll\v\bar\Page\Pos = 0 : Else
+      If *Scroll\h\bar\Radius : Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, (*Scroll\v\bar\x-*Scroll\h\bar\x)+Bool(*Scroll\v\bar\Radius)*4, #PB_Ignore) : EndIf
     EndIf
-    If *h\bar\hide : *h\bar\Page\Pos = 0 : Else
-      If *v\bar\Radius : Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*h\bar\Y-*v\bar\Y)+Bool(*h\bar\Radius)*4) : EndIf
+    If *Scroll\h\bar\Hide : *Scroll\h\bar\Page\Pos = 0 : Else
+      If *Scroll\v\bar\Radius : Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*Scroll\h\bar\y-*Scroll\v\bar\y)+Bool(*Scroll\h\bar\Radius)*4) : EndIf
     EndIf
 
-    ProcedureReturn Bool(*v\bar\hide|*h\bar\hide)
+    ProcedureReturn Bool(*Scroll\v\bar\Hide|*Scroll\h\bar\Hide)
   EndProcedure
   
-  Procedure.b CallBack(*This.Scroll_S, EventType.i, MouseX.i, MouseY.i, WheelDelta.i=0, AutoHide.b=0, *Scroll.Scroll_S=#Null, Window=-1, Gadget=-1)
-    Protected Result, Buttons
+
+ Procedure.b CallBack(*This.Scroll_S, EventType.i, *mouse.Mouse_S, AutoHide.b=0)
+    Protected Result, Buttons, *Scroll.Scroll_S, MouseX.i, MouseY.i, WheelDelta.i=0
     Static LastX, LastY, Last, *Thisis.Scroll_S, Cursor, Drag, Down
     
     If *This
@@ -593,6 +616,12 @@ Module Scroll
       EndIf
       
       With *This
+        If \bar\Vertical
+          *Scroll = \h
+        Else
+          *Scroll = \v
+        EndIf
+        
         If \bar\Type = #PB_GadgetType_ScrollBar
           If \bar\hide And *This = *Thisis
             \bar\Buttons = 0
@@ -604,12 +633,12 @@ Module Scroll
           If Down
             Buttons = \bar\Buttons 
           Else
-            If (Mousex>=\bar\X And Mousex<\bar\X+\bar\Width And Mousey>\bar\Y And Mousey=<\bar\Y+\bar\Height) 
-              If (Mousex>\bar\X[1] And Mousex=<\bar\X[1]+\bar\Width[1] And  Mousey>\bar\Y[1] And Mousey=<\bar\Y[1]+\bar\Height[1])
+            If (*mouse\x>=\bar\X And *mouse\x<\bar\X+\bar\Width And *mouse\y>\bar\Y And *mouse\y=<\bar\Y+\bar\Height) 
+              If (*mouse\x>\bar\X[1] And *mouse\x=<\bar\X[1]+\bar\Width[1] And  *mouse\y>\bar\Y[1] And *mouse\y=<\bar\Y[1]+\bar\Height[1])
                 Buttons = 1
-              ElseIf (Mousex>\bar\X[3] And Mousex=<\bar\X[3]+\bar\Width[3] And Mousey>\bar\Y[3] And Mousey=<\bar\Y[3]+\bar\Height[3])
+              ElseIf (*mouse\x>\bar\X[3] And *mouse\x=<\bar\X[3]+\bar\Width[3] And *mouse\y>\bar\Y[3] And *mouse\y=<\bar\Y[3]+\bar\Height[3])
                 Buttons = 3
-              ElseIf (Mousex>\bar\X[2] And Mousex=<\bar\X[2]+\bar\Width[2] And Mousey>\bar\Y[2] And Mousey=<\bar\Y[2]+\bar\Height[2])
+              ElseIf (*mouse\x>\bar\X[2] And *mouse\x=<\bar\X[2]+\bar\Width[2] And *mouse\y>\bar\Y[2] And *mouse\y=<\bar\Y[2]+\bar\Height[2])
                 Buttons = 2
               Else
                 Buttons =- 1
@@ -638,14 +667,14 @@ Module Scroll
                   Case - 1
                     If *Thisis = *This Or ( \bar\Height>( \bar\Y[2]+\bar\Height[2]) And \bar\Buttons =- 1) 
                       If \bar\Vertical
-                        Result = SetState(*This, Pos(*This, (MouseY-\bar\Thumb\len/2)))
+                        Result = SetState(*This, Pos(*This, (*mouse\Y-\bar\Thumb\len/2)))
                       Else
-                        Result = SetState(*This, Pos(*This, (MouseX-\bar\Thumb\len/2)))
+                        Result = SetState(*This, Pos(*This, (*mouse\X-\bar\Thumb\len/2)))
                       EndIf
                     EndIf
                   Case 1 : Result = SetState(*This, ( \bar\Page\Pos - \bar\Page\ScrollStep))
                   Case 2 : Result = SetState(*This, ( \bar\Page\Pos + \bar\Page\ScrollStep))
-                  Case 3 : LastX = MouseX - \bar\Thumb\Pos : LastY = MouseY - \bar\Thumb\Pos
+                  Case 3 : LastX = *mouse\X - \bar\Thumb\Pos : LastY = *mouse\Y - \bar\Thumb\Pos
                 EndSelect
               EndIf
               
@@ -654,9 +683,9 @@ Module Scroll
                 If Bool(LastX|LastY) 
                   If *Thisis = *This
                     If \bar\Vertical
-                      Result = SetState(*This, Pos(*This, (MouseY-LastY)))
+                      Result = SetState(*This, Pos(*This, (*mouse\Y-LastY)))
                     Else
-                      Result = SetState(*This, Pos(*This, (MouseX-LastX)))
+                      Result = SetState(*This, Pos(*This, (*mouse\X-LastX)))
                     EndIf
                   EndIf
                 EndIf
@@ -664,7 +693,7 @@ Module Scroll
                 If Not \bar\hide
                   If Buttons
                     If Last <> Buttons
-                      If *Thisis>0 : CallBack(*Thisis, #PB_EventType_MouseLeave, MouseX, MouseY, WheelDelta) : EndIf
+                      If *Thisis>0 : CallBack(*Thisis, #PB_EventType_MouseLeave, *mouse) : EndIf
                       EventType = #PB_EventType_MouseEnter
                       Last = Buttons
                     EndIf
@@ -676,8 +705,6 @@ Module Scroll
                       *Thisis = *This
                     EndIf
                     
-                    If Window >- 1 : \bar\Window = Window : EndIf
-                    If Window >- 1 : \bar\Gadget = Gadget : EndIf
                     \bar\Buttons = Buttons
                   Else   ;   If *Thisis = *This
                     EventType = #PB_EventType_MouseLeave
@@ -747,8 +774,32 @@ Module Scroll
   EndProcedure
   
   Procedure.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
+    Protected *This.Scroll_S = AllocateStructure(Scroll_S)
+    ; 
+    Protected Vertical = Bool(Flag=#PB_ScrollBar_Vertical)
     
-    With *Scroll
+    If Vertical
+      *Scroll\v.Scroll_S = *This
+      *Scroll\v\v = *Scroll
+      *Scroll\v\h = *Scroll\h
+      If *Scroll\h
+        *Scroll\h\v = *Scroll\v
+      EndIf
+    Else
+      *Scroll\h.Scroll_S = *This
+      *Scroll\h\h = *Scroll
+      *Scroll\h\v = *Scroll\v
+      If *Scroll\v
+        *Scroll\v\h = *Scroll\h
+      EndIf
+    EndIf
+    
+    ; Invisible
+    If Flag =- 1
+      ProcedureReturn *This
+    EndIf
+    
+    With *This
       \bar\Alpha = 255
       \bar\Alpha[1] = 0
       \bar\Radius = Radius
@@ -756,8 +807,6 @@ Module Scroll
       \bar\Type[2] =- 1 ; -1 0 1
       \bar\Size[1] = 4
       \bar\Size[2] = 4
-      \bar\Window =- 1
-      \bar\Gadget =- 1
       \bar\X =- 1
       \bar\Y =- 1
         
@@ -772,7 +821,7 @@ Module Scroll
       
       \bar\Type = #PB_GadgetType_ScrollBar
       \bar\DrawingMode = #PB_2DDrawing_Gradient
-      \bar\Vertical = Bool(Flag&#PB_ScrollBar_Vertical)
+      \bar\Vertical = Vertical
       
       If \bar\Vertical
         If width < 21
@@ -788,12 +837,12 @@ Module Scroll
         EndIf
       EndIf
       
-      If \bar\Min <> Min : SetAttribute(*Scroll, #PB_ScrollBar_Minimum, Min) : EndIf
-      If \bar\Max <> Max : SetAttribute(*Scroll, #PB_ScrollBar_Maximum, Max) : EndIf
-      If \bar\Page\len <> Pagelength : SetAttribute(*Scroll, #PB_ScrollBar_PageLength, Pagelength) : EndIf
+      If \bar\Min <> Min : SetAttribute(*This, #PB_ScrollBar_Minimum, Min) : EndIf
+      If \bar\Max <> Max : SetAttribute(*This, #PB_ScrollBar_Maximum, Max) : EndIf
+      If \bar\Page\len <> Pagelength : SetAttribute(*This, #PB_ScrollBar_PageLength, Pagelength) : EndIf
     EndWith
     
-    ProcedureReturn Resize(*Scroll, X,Y,Width,Height)
+    ProcedureReturn Resize(*This, X,Y,Width,Height)
   EndProcedure
   
   Procedure.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
@@ -814,128 +863,103 @@ Module Scroll
 EndModule
 
 ;-
-;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Scroll
-  
-  Global *Vertical.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horizontal_0.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horizontal_1.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horizontal_2.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horizontal_3.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horizontal_4.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horizontal_5.Scroll_S=AllocateStructure(Scroll_S)
-  
-  Procedure CallBacks()
-    Protected Repaint
+  If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
+    ResizeImage(0,ImageWidth(0)*2,ImageHeight(0)*2)
+    
+    ; draw frame on the image
+    If StartDrawing(ImageOutput(0))
+      DrawingMode(#PB_2DDrawing_Outlined)
+      Box(0,0,OutputWidth(),OutputWidth(), $FF0000)
+      StopDrawing()
+    EndIf
+  EndIf
+    
+  Global *Scroll.Scroll_S=AllocateStructure(Scroll_S)
+   
+  Procedure CallBack()
+    If EventType() = #PB_EventType_ScrollChange ; bug mac os на функциях канваса GetGadgetAttribute()
+      ProcedureReturn
+    EndIf
+    
+    Protected Repaint, iWidth, iHeight
     Protected Canvas = EventGadget()
+    *Scroll\mouse\X = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    *Scroll\mouse\Y = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
+    *Scroll\mouse\Wheel = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    
     
     Select EventType()
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        
-        Resize(*Vertical, Width-35, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        Resize(*Horizontal_0, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horizontal_1, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horizontal_2, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horizontal_3, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horizontal_4, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        Resize(*Horizontal_5, #PB_Ignore, #PB_Ignore, Width-55, #PB_Ignore)
-        
+        Scroll::Resizes(*Scroll, 0, 0, Width, Height)
         Repaint = #True
     EndSelect
     
-    If CallBack(*Vertical, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
+    Repaint | Scroll::CallBack(*Scroll\v, EventType(), *Scroll\mouse)
+    Repaint | Scroll::CallBack(*Scroll\h, EventType(), *Scroll\mouse)
     
-    If CallBack(*Horizontal_0, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horizontal_1, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horizontal_2, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horizontal_3, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horizontal_4, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If CallBack(*Horizontal_5, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    
-    If Repaint And StartDrawing(CanvasOutput(Canvas))
-      Box(0,0,Width,Height)
-      Draw(*Vertical)
-      Draw(*Horizontal_0)
-      Draw(*Horizontal_1)
-      Draw(*Horizontal_2)
-      Draw(*Horizontal_3)
-      Draw(*Horizontal_4)
-      Draw(*Horizontal_5)
-      StopDrawing()
+    If *Scroll\v
+       iWidth = Scroll::X(*Scroll\v)
+    Else
+      iWidth = Width
+    EndIf
+    If *Scroll\h
+       iHeight = Scroll::Y(*Scroll\h)
+    Else
+      iHeight = Height
     EndIf
     
+    If Repaint And StartDrawing(CanvasOutput(Canvas))
+      Box(0,0,Width,Height, $FFFFFF)
+      ClipOutput(0,0, iWidth, iHeight)
+      DrawImage(ImageID(0), *Scroll\x, *Scroll\y)
+      ;DrawImage(ImageID(0), -*Scroll\h\bar\Page\Pos, -*Scroll\v\bar\Page\Pos)
+      UnclipOutput()
+
+      Scroll::Draw(*Scroll\v)
+      Scroll::Draw(*Scroll\h)
+      StopDrawing()
+    EndIf
+  EndProcedure
+  
+  Procedure Events()
+    Select EventType()
+      Case #PB_EventType_ScrollChange
+        Debug EventData()
+    EndSelect
   EndProcedure
   
   Procedure ResizeCallBack()
     ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
-    CompilerIf #PB_Compiler_Version =< 546
-      PostEvent(#PB_Event_Gadget, EventWindow(), 1, #PB_EventType_Resize)
-    CompilerEndIf
   EndProcedure
   
-  If OpenWindow(0, 0, 0, 325, 223, "Scroll on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    CanvasGadget(1,  10,10,305,203, #PB_Canvas_Keyboard)
-    SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Cross)
+  If OpenWindow(0, 0, 0, 325, 160, "Scroll on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+    CanvasGadget(1, 10,10,305,140, #PB_Canvas_Keyboard)
+    SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
     
-    With *Vertical
-      Widget(*Vertical, 270, 10,  25, 183 ,0, 300, 50, #PB_ScrollBar_Vertical, 4)
-      SetColor(*Vertical, #PB_Gadget_BackColor, $FFF9F9F9)
-      SetState(*Vertical, 100) 
-    EndWith
+    *Scroll\Window = 0
+    *Scroll\Widget = 1
+    *Scroll\Event = #PB_Event_Gadget ; #PB_Event_Widget
     
-    With *Horizontal_0
-      \bar\hide = Widget(*Horizontal_0, 10, 10, 250,  18, 30, 100, 30, 0)
-      SetColor(*Horizontal_0, #PB_Gadget_BackColor, $FF5A98FF)
-      SetState(*Horizontal_0, 50) 
-      \bar\Button\len=0
-    EndWith
-    With *Horizontal_1
-      \bar\hide = Widget(*Horizontal_1, 10, 43, 250,  18, 30, 300, 30, 0)
-      SetState(*Horizontal_1, 150) 
-      \bar\Type[1]=-1 : \bar\Type[2]=1     ; Можно менять вид стрелки 
-      \bar\Size[1]=6 : \bar\Size[2]=6      ; Можно задать размер стрелки 
-    EndWith
-    With *Horizontal_2
-      \bar\hide = Widget(*Horizontal_2, 10, 76, 250,  18, 30, 100, 30, 0, 304)
-      SetColor(*Horizontal_2, #PB_Gadget_BackColor, $BF853F)
-      SetState(*Horizontal_2, 50) 
-      \bar\Button\len=0
-    EndWith
-    With *Horizontal_3
-      \bar\hide = Widget(*Horizontal_3, 10, 109, 250,  14, 30, 300, 30, 0, 304)
-      SetState(*Horizontal_3, 150) 
-      \bar\Button\len=35           ; Можно задать длину кнопки
-      \bar\Type[1]=0 : \bar\Type[2]=0     ; Можно менять вид стрелки 
-      \bar\Size[1]=6 : \bar\Size[2]=6     ; Можно задать размер стрелки 
-    EndWith
-    With *Horizontal_4
-      \bar\hide = Widget(*Horizontal_4, 10, 142, 250,  18, 30, 100, 30, 0, 10)
-      SetColor(*Horizontal_4, #PB_Gadget_BackColor, $2EC450, 0, 1)
-      SetColor(*Horizontal_4, #PB_Gadget_BackColor, $BF853F, 0, 3)
-      SetColor(*Horizontal_4, #PB_Gadget_BackColor, $5A98FF, 0, 2)
-      SetState(*Horizontal_4, 50) 
-     ; \bar\Button\len=0
-    EndWith
-    With *Horizontal_5
-      \bar\hide = Widget(*Horizontal_5, 10, 175, 250,  18, 30, 300, 30, 0, 10)
-      SetState(*Horizontal_5, 150) 
-      \bar\Type[1]=-1 : \bar\Type[2]=1 ; Можно менять вид стрелки 
-      \bar\Size[1]=6 : \bar\Size[2]=6  ; Можно задать размер стрелки 
-    EndWith
+    ; *Scroll\h.Scroll_S = AllocateStructure(Scroll_S)
+    Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,ImageHeight(0), 0, #PB_ScrollBar_Vertical, 7)
+    Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,ImageWidth(0), 0, 0, 7)
+        
+    Scroll::SetState(*Scroll\v, 150)
+    Scroll::SetState(*Scroll\h, 100)
     
-    PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
+     PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
+    BindGadgetEvent(1, @CallBack())
+    BindGadgetEvent(1, @Events())
+    
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack())
-    BindGadgetEvent(1, @CallBacks())
-    WindowBounds(0, #PB_Default,223,#PB_Default,223) 
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = 0v---------------------------
+
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 4
+; Folding = ---------0--------------------
 ; EnableXP

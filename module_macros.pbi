@@ -168,6 +168,12 @@
     ((_mask_ & _flag_) = _flag_)
   EndMacro
   
+  Macro _set_scroll_height_(_this_)
+    If Not _this_\hide And Not _this_\Items()\Hide
+      _this_\Scroll\Height+_this_\Text\Height
+    EndIf
+  EndMacro
+  
   Macro _set_scroll_width_(_this_)
     If Not _this_\hide And Not _this_\items()\hide And _this_\Scroll\width<(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
       _this_\scroll\width=(_this_\items()\text\x+_this_\items()\text\width)-_this_\x

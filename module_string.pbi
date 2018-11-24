@@ -37,13 +37,15 @@ DeclareModule String
   Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
   Macro GetColor(_adress_, _color_type_, _state_=0) : Text::GetColor(_adress_, _color_type_, _state_) : EndMacro
   Macro SetColor(_adress_, _color_type_, _color_, _state_=1) : Text::SetColor(_adress_, _color_type_, _color_, _state_) : EndMacro
-  Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
+  Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Events(*This.Widget_S, EventType.i)
+  
+  Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
 EndDeclareModule
 
 Module String
@@ -573,7 +575,7 @@ Module String
         
         \bSize = \fSize
         
-        If Resize(*This, X,Y,Width,Height, Canvas)
+        If Resize(*This, X,Y,Width,Height)
           \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
@@ -591,32 +593,13 @@ Module String
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
           
-          
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            If \Text\Vertical
-              \Text\X = \fSize+5
-              \Text\y = \fSize+5
-            Else
-              \Text\X = \fSize+5
-              \Text\y = \fSize+5
-            EndIf
-          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+2
-            Else
-              \Text\X = \fSize+2
-              \Text\y = \fSize
-            EndIf
-          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+5
-            Else
-              \Text\X = \fSize+5
-              \Text\y = \fSize
-            EndIf
-          CompilerEndIf
+          If \Text\Vertical
+            \Text\X = \fSize+5
+            \Text\y = \fSize
+          Else
+            \Text\X = \fSize+5
+            \Text\y = \fSize
+          EndIf
           
           ; set default colors
           \Color[0] = Colors
@@ -663,7 +646,42 @@ Module String
     ProcedureReturn *This
   EndProcedure
   
-EndModule
+Procedure Canvas_CallBack()
+    Protected Repaint, *This.Widget_S = GetGadgetData(EventGadget())
+    
+    With *This
+      Select EventType()
+        Case #PB_EventType_Repaint : Repaint = 1
+        Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+      EndSelect
+      
+      Repaint | CallBack(*This, EventType())
+      
+      If Repaint 
+        Text::ReDraw(*This)
+      EndIf
+      
+    EndWith
+  EndProcedure
+  
+  Procedure.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S)
+    Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
+    
+    If *This
+      With *This
+        Widget(*This, Gadget, 0, 0, Width, Height, Text.s, Flag)
+        
+        SetGadgetData(Gadget, *This)
+        BindGadgetEvent(Gadget, @Canvas_CallBack())
+        PostEvent(#PB_Event_Gadget, GetActiveWindow(), Gadget, #PB_EventType_Repaint, *This)
+    EndWith
+    EndIf
+    
+    ProcedureReturn g
+  EndProcedure
+  EndModule
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile

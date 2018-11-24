@@ -36,7 +36,7 @@ DeclareModule Spin
   Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
   Macro GetColor(_adress_, _color_type_, _state_=0) : Text::GetColor(_adress_, _color_type_, _state_) : EndMacro
   Macro SetColor(_adress_, _color_type_, _color_, _state_=1) : Text::SetColor(_adress_, _color_type_, _color_, _state_) : EndMacro
-  Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
+  Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
   Declare.i Draw(*This.Widget_S, Canvas.i=-1)
@@ -151,7 +151,7 @@ Module Spin
          *This\Text\X + 18
        EndIf
      EndIf
-      Text::Draw(*This, Canvas)
+      Text::Draw(*This)
       
       Protected size = 4
       DrawingMode(#PB_2DDrawing_Default)
@@ -452,7 +452,7 @@ Module Spin
         EndIf
         
         ; Get at point widget
-        \Canvas\Mouse\From = From(*This)
+        \Canvas\Mouse\at = From(*This)
         
         Select EventType 
           Case #PB_EventType_LeftButtonUp 
@@ -470,7 +470,7 @@ Module Spin
               EndIf
             EndIf
             
-            If Not *This\Canvas\Mouse\From 
+            If Not *This\Canvas\Mouse\at 
               ProcedureReturn 0
             EndIf
         EndSelect
@@ -480,7 +480,7 @@ Module Spin
             Case #PB_EventType_Focus : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
             Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonUp
               If Not \Canvas\Mouse\Buttons 
-                If \Canvas\Mouse\From
+                If \Canvas\Mouse\at
                   If *Last <> *This 
                     If *Last
                       If (*Last\Index > *This\Index)
@@ -543,9 +543,9 @@ Module Spin
                 PushListPosition(List())
                 ForEach List()
                   If List()\Widget\Canvas\Gadget = Canvas And List()\Widget\Focus <> List()\Widget And List()\Widget <> *This
-                    List()\Widget\Canvas\Mouse\From = From(List()\Widget)
+                    List()\Widget\Canvas\Mouse\at = From(List()\Widget)
                     
-                    If List()\Widget\Canvas\Mouse\From
+                    If List()\Widget\Canvas\Mouse\at
                       If *Last
                         Events(*Last, #PB_EventType_MouseLeave, Canvas, 0)
                       EndIf     
@@ -789,8 +789,8 @@ Module Spin
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
         \bSize = \fSize
         
-        If Resize(*This, X,Y,Width,Height, Canvas)
-          \Text\Vertical = Bool(Flag&#PB_Text_Vertical)
+        If Resize(*This, X,Y,Width,Height)
+          \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
             \Text\MultiLine =- 1
@@ -955,6 +955,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     Select EventType()
+      Case #PB_EventType_Repaint
       Case #PB_EventType_Resize
         ForEach List()
           Resize(List()\Widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)

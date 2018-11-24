@@ -99,8 +99,8 @@ Module ListView
       
       PushListPosition(\Items())
       SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Line = \Items()\Item : \Items()\Color\State = 2
-      Scroll::SetState(\vScroll, ((State*\Text\Height)-\vScroll\Height) + \Text\Height) : \Scroll\Y =- \vScroll\Page\Pos ; в конце
-      ; Scroll::SetState(\vScroll, (State*\Text\Height)) : \Scroll\Y =- \vScroll\Page\Pos ; в начале 
+      Scroll::SetState(\v, ((State*\Text\Height)-\v\Height) + \Text\Height) : \Scroll\Y =- \v\bar\page\Pos ; в конце
+      ; Scroll::SetState(\v, (State*\Text\Height)) : \Scroll\Y =- \v\bar\page\Pos ; в начале 
       PopListPosition(\Items())
     EndWith
   EndProcedure
@@ -121,10 +121,10 @@ Module ListView
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
+  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
     With *This
       If Text::Resize(*This, X,Y,Width,Height)
-        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
+        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
       EndIf
       ProcedureReturn \Resize
     EndWith
@@ -135,17 +135,17 @@ Module ListView
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\vScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \hScroll, \Canvas\Window, \Canvas\Gadget)
+      Repaint | Scroll::CallBack(\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \h, \Canvas\Window, \Canvas\Gadget)
       If Repaint
-        \Scroll\Y =- \vScroll\Page\Pos
+        \Scroll\Y =- \v\bar\page\Pos
       EndIf
-      Repaint | Scroll::CallBack(\hScroll, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \vScroll, \Canvas\Window, \Canvas\Gadget)
+      Repaint | Scroll::CallBack(\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \v, \Canvas\Window, \Canvas\Gadget)
       If Repaint
-        \Scroll\X =- \hScroll\Page\Pos
+        \Scroll\X =- \h\bar\page\Pos
       EndIf
     EndWith
     
-    If *This And (Not *This\vScroll\Buttons And Not *This\hScroll\Buttons)
+    If *This And (Not *This\v\bar\buttons And Not *This\h\bar\buttons)
       If ListSize(*This\items())
         With *This
           If Not \Hide And Not \Disable And \Interact
@@ -202,7 +202,7 @@ Module ListView
                 Repaint = 1
                 
               Case #PB_EventType_MouseMove  
-                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\vScroll)
+                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\v)
                   Item.i =- 1
                 ElseIf \Text\Height
                   Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
@@ -214,7 +214,7 @@ Module ListView
                       SelectElement(\Items(), \Line) 
                     EndIf
                     
-                    If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
+                    If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton 
                       If (\Flag\MultiSelect And Not Control)
                         \items()\Color\State = 2
                       ElseIf Not \Flag\ClickSelect
@@ -223,7 +223,7 @@ Module ListView
                     EndIf
                   EndIf
                   
-                  If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton And itemSelect(Item, \Items())
+                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton And itemSelect(Item, \Items())
                     If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
                       \items()\Color\State = 2
                     ElseIf Not \Flag\ClickSelect And (\Flag\MultiSelect And Not Control)
@@ -235,7 +235,7 @@ Module ListView
                   \Line = Item
                   Repaint = #True
                   
-                  If \Canvas\Mouse\Buttons & #PB_Canvas_LeftButton
+                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton
                     If (\Flag\MultiSelect And Not Control)
                       PushListPosition(\Items()) 
                       ForEach \Items()
@@ -371,10 +371,10 @@ Module ListView
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)+1
         \bSize = \fSize
         
-        If Text::Resize(*This, X,Y,Width,Height, Canvas)
+        If Text::Resize(*This, X,Y,Width,Height)
           \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
           \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-          \Flag\Buttons = Bool(flag&#PB_Flag_NoButtons)
+          \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
           \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
           \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
           \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
@@ -441,8 +441,8 @@ Module ListView
           
         EndIf
         
-        Scroll::Widget(\vScroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        Scroll::Resizes(\vScroll, \hScroll, \x[2],\Y[2],\Width[2],\Height[2])
+        Scroll::Widget(\v, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
         \Resize = 0
       EndWith
     EndIf
@@ -596,5 +596,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = IA-JXAAA5IwYpw
+; Folding = IA--X5qA5IwYpw
 ; EnableXP
