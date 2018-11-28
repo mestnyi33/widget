@@ -234,22 +234,29 @@ Module Scroll
   EndProcedure
   
   Procedure.i ReDraw(*Scroll.Scroll_S)
-    If StartDrawing(CanvasOutput(*Scroll\Widget))
-      If Not *Scroll\v\bar\hide
-        Draw(*Scroll\v)
-      EndIf
-      If Not *Scroll\h\bar\hide
-        Draw(*Scroll\h)
-      EndIf
+    If *Scroll\output
       StopDrawing()
     EndIf
+    
+    *Scroll\output = StartDrawing(CanvasOutput(*Scroll\Widget))
+    ClipOutput(0,0, X(*Scroll\v), Y(*Scroll\h))
+    Debug PostEvent(#PB_Event_Gadget, *Scroll\Window,*Scroll\Widget,#PB_EventType_Repaint)
+    
+    
+    ;       If Not *Scroll\v\bar\hide
+    ;         Draw(*Scroll\v)
+    ;       EndIf
+    ;       If Not *Scroll\h\bar\hide
+    ;         Draw(*Scroll\h)
+    ;       EndIf
+    ;       ;StopDrawing()
   EndProcedure
   
   Procedure.b SetState(*This.Scroll_S, ScrollPos.i)
     Protected Result.b, Direction.i ; Направление и позиция скролла (вверх,вниз,влево,вправо)
     
     ;If *This
-    With *This
+      With *This
       If ( \bar\Vertical And \bar\Type = #PB_GadgetType_TrackBar) : ScrollPos = (( \bar\Max-\bar\Min)-ScrollPos) : EndIf
       
       If ScrollPos < \bar\Min : ScrollPos = \bar\Min : EndIf
@@ -282,8 +289,8 @@ Module Scroll
         Result = #True
       EndIf
     EndWith
-    ;EndIf
-    
+  ;EndIf
+  
     ProcedureReturn Result
   EndProcedure
   
@@ -312,8 +319,6 @@ Module Scroll
             Else
               \h\width = \bar\Max
             EndIf
-            
-            \bar\Page\ScrollStep = ( \bar\Max-\bar\Min) / 100
             
             Result = #True
           EndIf
@@ -524,13 +529,13 @@ Module Scroll
   EndProcedure
   
   Procedure.b Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
-    ;     If Not Bool(*Scroll\v And *Scroll\h) 
-    ;       If *Scroll\v
-    ;         ProcedureReturn Resize(*Scroll\v, X.i,Y.i,Width.i,Height.i)
-    ;       ElseIf *Scroll\h
-    ;         ProcedureReturn Resize(*Scroll\h, X.i,Y.i,Width.i,Height.i)
-    ;       EndIf
-    ;     EndIf
+;     If Not Bool(*Scroll\v And *Scroll\h) 
+;       If *Scroll\v
+;         ProcedureReturn Resize(*Scroll\v, X.i,Y.i,Width.i,Height.i)
+;       ElseIf *Scroll\h
+;         ProcedureReturn Resize(*Scroll\h, X.i,Y.i,Width.i,Height.i)
+;       EndIf
+;     EndIf
     
     If Width=#PB_Ignore : Width = *Scroll\v\bar\X : Else : Width+x-*Scroll\v\bar\Width : EndIf
     If Height=#PB_Ignore : Height = *Scroll\h\bar\Y : Else : Height+y-*Scroll\h\bar\Height : EndIf
@@ -558,104 +563,48 @@ Module Scroll
     If *Scroll\h\bar\Hide : *Scroll\h\bar\Page\Pos = 0 : Else
       If *Scroll\v\bar\Radius : Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*Scroll\h\bar\y-*Scroll\v\bar\y)+Bool(*Scroll\h\bar\Radius)*4) : EndIf
     EndIf
-    
+
     ProcedureReturn Bool(*Scroll\v\bar\Hide|*Scroll\h\bar\Hide)
   EndProcedure
   
-  
-  Procedure.i Events(*This.Scroll_S, EventType.i, Buttons)
-    Static delta, cursor
-    Protected Repaint.i
-    Protected window = EventWindow()
-    Protected canvas = EventGadget()
-            
-            
+
+ Procedure.i Events(*This.Scroll_S, EventType.i, Buttons)
+    Protected Repaint.i, Control.i, Caret.i, String.s
+    
     If *This
       With *This
         Select EventType
-          Case #PB_EventType_LeftDoubleClick 
-            Select Buttons
-              Case - 1
-                ; If \bar\Height > ( \bar\Y[2]+\bar\Height[2])
-                If \bar\Vertical
-                  Repaint = SetState(*This, Pos(*This, (\v\mouse\Y-\bar\Thumb\len/2)))
-                Else
-                  Repaint = SetState(*This, Pos(*This, (\h\mouse\X-\bar\Thumb\len/2)))
-                EndIf
-                ; EndIf
-            EndSelect
-            
-          Case #PB_EventType_LeftButtonUp : delta = 0
-          Case #PB_EventType_LeftButtonDown 
-            Select Buttons
-              Case 1 : Repaint = SetState(*This, ( \bar\Page\Pos - \bar\Page\ScrollStep))
-              Case 2 : Repaint = SetState(*This, ( \bar\Page\Pos + \bar\Page\ScrollStep))
-              Case 3 
-                If \bar\Vertical
-                  delta = \v\mouse\Y - \bar\Thumb\Pos
-                Else
-                  delta = \h\mouse\X - \bar\Thumb\Pos
-                EndIf
-            EndSelect
-            
-          Case #PB_EventType_MouseMove
-            If delta
-              If \bar\Vertical
-                Repaint = SetState(*This, Pos(*This, (\v\mouse\Y-delta)))
-              Else
-                Repaint = SetState(*This, Pos(*This, (\h\mouse\X-delta)))
-              EndIf
-            EndIf
-        EndSelect
-        
-        Select EventType
-          Case #PB_EventType_MouseLeave
-            If Buttons > 0
-              \bar\Color[1]\State = 0
-              \bar\Color[2]\State = 0
-              \bar\Color[3]\State = 0
-              
-              Repaint = #True
-            Else
-              ; Debug ""+*This +" "+ EventType +" "+ Buttons
-              
-              If cursor <> GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
-                SetGadgetAttribute(canvas, #PB_Canvas_Cursor, cursor)
-              EndIf
-              
-            EndIf
-            
-          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter
-            If Buttons>0
-              \bar\Color[Buttons]\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
-              
-              Repaint = #True
-            Else
-              ; Debug ""+*This +" "+ EventType +" "+ Buttons
-              
-              If Not cursor
-                cursor = GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
-              EndIf
-              SetGadgetAttribute(canvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
-              
-            EndIf
-        EndSelect
-      EndWith
-    EndIf  
-    
+          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
+          If Buttons>0
+            \bar\Color[Buttons]\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
+          Else
+            \bar\Color[1]\State = 0
+            \bar\Color[2]\State = 0
+            \bar\Color[3]\State = 0
+          EndIf
+       
+        Debug ""+*This +" "+ EventType +" "+ Buttons
+      
+           
+          Repaint = #True
+          
+      EndSelect
+    EndWith
+  EndIf  
+     
     ProcedureReturn Repaint
   EndProcedure
   
   Procedure.b CallBack(*This.Scroll_S, EventType.i, *mouse.Mouse_S, AutoHide.b=0)
-    Protected repaint
-    Static Last, Down, *Scroll.Scroll_S, *Last.Scroll_S
+    Protected Result, Buttons, MouseX.i, MouseY.i, WheelDelta.i=0
+    Static LastX, LastY, Last, *Last.Scroll_S, Cursor, Drag, Down
     
     If *This
       With *This
         If \bar\Type = #PB_GadgetType_ScrollBar
-          
           ; get at point buttons
           If *mouse\buttons 
+            
           ElseIf (*mouse\x>=\bar\X And *mouse\x<\bar\X+\bar\Width And *mouse\y>\bar\Y And *mouse\y=<\bar\Y+\bar\Height) 
             If (*mouse\x>\bar\X[1] And *mouse\x=<\bar\X[1]+\bar\Width[1] And  *mouse\y>\bar\Y[1] And *mouse\y=<\bar\Y[1]+\bar\Height[1])
               \bar\buttons = 1
@@ -667,11 +616,6 @@ Module Scroll
               \bar\buttons =- 1
             EndIf 
             
-            Select EventType 
-              Case #PB_EventType_MouseEnter : EventType = #PB_EventType_MouseMove
-              Case #PB_EventType_MouseLeave : EventType = #PB_EventType_MouseMove
-            EndSelect
-           
             If \bar\Vertical
               \v\mouse\at = *This
             Else
@@ -680,139 +624,56 @@ Module Scroll
           Else
             \bar\buttons = 0
             
-            Select EventType 
-              Case #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
-                If \bar\Vertical
-                  If \h\bar\buttons
-                    If \h\bar\buttons > 0
-                      repaint | Events(\h, EventType, \h\bar\buttons)
-                    EndIf
-                    repaint | Events(\h, EventType, - 1)
-                    If EventType = #PB_EventType_MouseLeave
-                      *Scroll = 0
-                    EndIf
-                    
-                    \h\bar\buttons = 0
-                  EndIf
-                EndIf     
-                
-                EventType = #PB_EventType_MouseMove
-            EndSelect
-            
             If \bar\Vertical
-              If \h\bar\buttons
-                If \bar\Color[2]\State
-                  repaint | Events(*Scroll, #PB_EventType_MouseLeave, *Scroll\bar\buttons)
-;                   repaint | Events(*Scroll, #PB_EventType_MouseLeave, - 1)
-;                   repaint | Events(\h, #PB_EventType_MouseEnter, - 1)
-                  repaint | Events(\h, #PB_EventType_MouseEnter, \h\bar\buttons)
-                  \bar\Color[2]\State = 0
-                EndIf
-              Else
+              If Not \h\bar\buttons
                 \v\mouse\at = 0
               EndIf
             Else
-              If \v\bar\buttons
-                If \bar\Color[2]\State
-                  repaint | Events(*Scroll, #PB_EventType_MouseLeave, *Scroll\bar\buttons)
-;                   repaint | Events(*Scroll, #PB_EventType_MouseLeave, - 1)
-;                   repaint | Events(\v, #PB_EventType_MouseEnter, - 1)
-                  repaint | Events(\v, #PB_EventType_MouseEnter, \v\bar\buttons)
-                  \bar\Color[2]\State = 0
-                EndIf
-              Else
+              If Not \v\bar\buttons
                 \h\mouse\at = 0
               EndIf
             EndIf
           EndIf
           
           If \bar\Vertical
-            If *Scroll <> \v\mouse\at And 
-               *This = \v\mouse\at
-              *Last = *Scroll
-              *Scroll = \v\mouse\at
+            If *Last <> \v\mouse\at And \v\mouse\at = *This
+              If *Last 
+                Result | Events(*Last, #PB_EventType_MouseLeave,0) 
+              EndIf
+              Result | Events(\v\mouse\at, #PB_EventType_MouseEnter,0)
+              *Last = \v\mouse\at
             EndIf
           Else
-            If *Scroll <> \h\mouse\at And
-               *This = \h\mouse\at
-              *Last = *Scroll
-              *Scroll = \h\mouse\at
+            If *Last <> \h\mouse\at And \h\mouse\at = *This
+              If *Last 
+                Result | Events(*Last, #PB_EventType_MouseLeave,0) 
+              EndIf
+              Result | Events(\h\mouse\at, #PB_EventType_MouseEnter,0)
+              *Last = \h\mouse\at
             EndIf
           EndIf
           
-          If *Scroll = *This
-            If Last <> *Scroll\bar\Buttons
-              ;
-               ; Debug ""+Last +" "+ *Scroll\bar\Buttons +" "+ *Scroll +" "+ *Last
-              If Last > 0 Or (Last = 2 And *Scroll\bar\Buttons =- 1 And *Last)
-                repaint | Events(*Scroll, #PB_EventType_MouseLeave, Last) : *Last = 0
+          If *Last = *This
+            If Last <> *Last\bar\Buttons
+              If Last
+                Result | Events(*Last, #PB_EventType_MouseLeave, Last)
               EndIf
-              If Not *Scroll\bar\Buttons Or (Last = 2 And *Scroll\bar\Buttons =- 1 And *Last)
-                repaint | Events(*Scroll, #PB_EventType_MouseLeave, - 1) : *Last = 0
-              EndIf
-              
-              If Not last ; Or (Last =- 1 And *Scroll\bar\Buttons = 2 And *Last)
-                repaint | Events(*Scroll, #PB_EventType_MouseEnter, - 1)
-              EndIf
-              If *Scroll\bar\Buttons > 0
-                repaint | Events(*Scroll, #PB_EventType_MouseEnter, *Scroll\bar\Buttons)
-              EndIf
-              
-              Last = *Scroll\bar\Buttons
+              Result | Events(*Last, #PB_EventType_MouseEnter, *Last\bar\Buttons)
+              Last = *Last\bar\Buttons
             EndIf
             
-            Select EventType 
-              Case #PB_EventType_LeftButtonDown
-                If *Scroll\bar\Buttons
-                  Down = *Scroll\bar\Buttons
-                  repaint | Events(*Scroll, EventType, *Scroll\bar\Buttons)
-                EndIf
-                
-              Case #PB_EventType_LeftButtonUp 
-                If Down
-                  repaint | Events(*Scroll, EventType, Down)
-                EndIf
-                
-              Case #PB_EventType_LeftDoubleClick, 
-                   #PB_EventType_LeftButtonDown, 
-                   #PB_EventType_MouseMove
-                
-                If *Scroll\bar\Buttons
-                  repaint | Events(*Scroll, EventType, *Scroll\bar\Buttons)
-                EndIf
-            EndSelect
+            If EventType = #PB_EventType_LeftButtonDown
+              Result = Events(*Last, #PB_EventType_LeftButtonDown, *Last\bar\Buttons)
+            ElseIf EventType = #PB_EventType_LeftButtonUp
+              Result = Events(*Last, #PB_EventType_LeftButtonUp, *Last\bar\Buttons)
+            EndIf
           EndIf
-          
-; ; ;           If AutoHide =- 1 : *Scroll = 0
-; ; ;             AutoHide = Bool(EventType() = #PB_EventType_MouseLeave)
-; ; ;           EndIf
-; ; ;           
-; ; ;           ; Auto hides
-; ; ;           If (AutoHide And Not Drag And Not Buttons) 
-; ; ;             If \bar\Alpha <> \bar\Alpha[1] : \bar\Alpha = \bar\Alpha[1] 
-; ; ;               repaint =- 1
-; ; ;             EndIf 
-; ; ;           EndIf
-; ; ;           If EventType = #PB_EventType_MouseEnter And (*Thisis = *This Or Not *Scroll)
-; ; ;             If \bar\Alpha < 255 : \bar\Alpha = 255
-; ; ;               
-; ; ;               If *Scroll
-; ; ;                 If \bar\Vertical
-; ; ;                   Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*Scroll\bar\Y+*Scroll\bar\Height)-\bar\Y) 
-; ; ;                 Else
-; ; ;                   Resize(*This, #PB_Ignore, #PB_Ignore, (*Scroll\bar\X+*Scroll\bar\Width)-\bar\X, #PB_Ignore) 
-; ; ;                 EndIf
-; ; ;               EndIf
-; ; ;               
-; ; ;               repaint =- 2
-; ; ;             EndIf 
-; ; ;           EndIf
           
         EndIf
       EndWith
     EndIf
     
-    ProcedureReturn repaint
+    ProcedureReturn Result
   EndProcedure
   
   Procedure.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
@@ -851,7 +712,7 @@ Module Scroll
       \bar\Size[2] = 4
       \bar\X =- 1
       \bar\Y =- 1
-      
+        
       ; Цвет фона скролла
       \bar\Color[0]\State = 0
       \bar\Color[0]\Back[0] = $FFF9F9F9
@@ -916,11 +777,14 @@ CompilerIf #PB_Compiler_IsMainFile
       StopDrawing()
     EndIf
   EndIf
-  
+    
   Global *Scroll.Scroll_S=AllocateStructure(Scroll_S)
-  
+   
   Procedure CallBack()
     If EventType() = #PB_EventType_ScrollChange ; bug mac os на функциях канваса GetGadgetAttribute()
+      ProcedureReturn
+    EndIf
+    If EventType() = #PB_EventType_Repaint ; bug mac os на функциях канваса GetGadgetAttribute()
       ProcedureReturn
     EndIf
     
@@ -940,35 +804,60 @@ CompilerIf #PB_Compiler_IsMainFile
         Repaint = #True
     EndSelect
     
-    Repaint | Scroll::CallBack(*Scroll\v, EventType(), *Scroll\mouse)
-    Repaint | Scroll::CallBack(*Scroll\h, EventType(), *Scroll\mouse)
-    
-    If *Scroll\v
-      iWidth = Scroll::X(*Scroll\v)
-    Else
-      iWidth = Width
-    EndIf
-    If *Scroll\h
-      iHeight = Scroll::Y(*Scroll\h)
-    Else
-      iHeight = Height
+    If Scroll::CallBack(*Scroll\v, EventType(), *Scroll\mouse)
+        Debug "vert "
+      Scroll::ReDraw(*Scroll) ; PostEvent(#PB_Event_Gadget, *Scroll\Window, *Scroll\Widget, #PB_EventType_Repaint, *Scroll\v)
     EndIf
     
-    If Repaint And StartDrawing(CanvasOutput(Canvas))
-      Box(0,0,Width,Height, $FFFFFF)
-      ClipOutput(0,0, iWidth, iHeight)
-      DrawImage(ImageID(0), *Scroll\x, *Scroll\y)
-      ;DrawImage(ImageID(0), -*Scroll\h\bar\Page\Pos, -*Scroll\v\bar\Page\Pos)
-      UnclipOutput()
-      
-      Scroll::Draw(*Scroll\v)
-      Scroll::Draw(*Scroll\h)
-      StopDrawing()
+    If Scroll::CallBack(*Scroll\h, EventType(), *Scroll\mouse)
+        Debug "horz "
+      Scroll::ReDraw(*Scroll) ; PostEvent(#PB_Event_Gadget, *Scroll\Window, *Scroll\Widget, #PB_EventType_Repaint, *Scroll\h)
     EndIf
+   ; Debug *Scroll\mouse\at
+    
+;     If *Scroll\v
+;        iWidth = Scroll::X(*Scroll\v)
+;     Else
+;       iWidth = Width
+;     EndIf
+;     If *Scroll\h
+;        iHeight = Scroll::Y(*Scroll\h)
+;     Else
+;       iHeight = Height
+;     EndIf
+    
+;     If Repaint And StartDrawing(CanvasOutput(Canvas))
+;       Box(0,0,Width,Height, $FFFFFF)
+;       ClipOutput(0,0, iWidth, iHeight)
+;       DrawImage(ImageID(0), *Scroll\x, *Scroll\y)
+;       ;DrawImage(ImageID(0), -*Scroll\h\bar\Page\Pos, -*Scroll\v\bar\Page\Pos)
+;       UnclipOutput()
+; 
+;       Scroll::Draw(*Scroll\v)
+;       Scroll::Draw(*Scroll\h)
+;       StopDrawing()
+;     EndIf
   EndProcedure
   
   Procedure Events()
+    Protected Canvas = EventGadget()
+    Protected Width = GadgetWidth(Canvas)
+    Protected Height = GadgetHeight(Canvas)
+    
     Select EventType()
+      Case #PB_EventType_Repaint
+        Debug 66666
+       ; Box(0,0,Width,Height, $FFFFFF)
+       ; ClipOutput(0,0, iWidth, iHeight)
+        DrawImage(ImageID(0), *Scroll\x, *Scroll\y)
+        
+        UnclipOutput()
+        Scroll::Draw(*Scroll\v)
+        Scroll::Draw(*Scroll\h)
+        ;DrawImage(ImageID(0), -*Scroll\h\bar\Page\Pos, -*Scroll\v\bar\Page\Pos)
+       ; UnclipOutput()
+      ProcedureReturn 555
+        
       Case #PB_EventType_ScrollChange
         Debug EventData()
     EndSelect
@@ -982,19 +871,23 @@ CompilerIf #PB_Compiler_IsMainFile
     CanvasGadget(1, 10,10,305,140, #PB_Canvas_Keyboard)
     SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
     
-    ;     ; post event
-    ;     *Scroll\Window = 0
-    ;     *Scroll\Widget = 1
-    ;     *Scroll\Event = #PB_Event_Gadget ; #PB_Event_Widget
+    ; post event
+    *Scroll\Window = 0
+    *Scroll\Widget = 1
+    *Scroll\Event = #PB_Event_Gadget ; #PB_Event_Widget
     
     ; *Scroll\h.Scroll_S = AllocateStructure(Scroll_S)
     Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,ImageHeight(0), 0, #PB_ScrollBar_Vertical, 7)
     Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,ImageWidth(0), 0, 0, 7)
-    
+        
     Scroll::SetState(*Scroll\v, 150)
     Scroll::SetState(*Scroll\h, 100)
     
-    PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
+    
+    Scroll::Resizes(*Scroll, 0, 0, 305,140)
+    Scroll::ReDraw(*Scroll)
+    
+    ;PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
     BindGadgetEvent(1, @CallBack())
     BindGadgetEvent(1, @Events())
     
@@ -1003,5 +896,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------f---------8--0-4+------
+; Folding = --------------------00------
 ; EnableXP
