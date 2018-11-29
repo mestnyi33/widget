@@ -1673,5 +1673,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------fnv---------------
+; Folding = --------------------f4----------------
 ; EnableXP

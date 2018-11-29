@@ -2382,5 +2382,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --fu6--+-8-4----+--0---+--------------------------0----0---
+; Folding = --fu6----8-4----+------+--------------------------0----0---
 ; EnableXP
