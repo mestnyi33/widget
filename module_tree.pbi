@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
+  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -31,35 +31,15 @@ DeclareModule tree
     UseModule Draw
   CompilerEndIf
   
-  
   ;- - DECLAREs MACROs
-  Macro ClearItems(_this_)
-    Editor::ClearItems(_this_)
-  EndMacro
-  
-  Macro CountItems(_this_)
-    Editor::CountItems(_this_)
-  EndMacro
-  
-  Macro RemoveItem(_this_, _item_)
-    Editor::RemoveItem(_this_, _item_)
-  EndMacro
-  
-  Macro AddItem(_this_, _item_,_text_,_image_=-1,_flag_=0)
-    Editor::AddItem(_this_,_item_,_text_,_image_,_flag_)
-  EndMacro
-  
-  Macro SetText(_this_, _text_)
-    Editor::SetText(_this_,_text_,0)
-  EndMacro
-  
-  Macro SetFont(_this_, _font_id_)
-    Editor::SetFont(_this_, _font_id_)
-  EndMacro
-  
-  Macro GetText(_this_)
-    Text::GetText(_this_)
-  EndMacro
+  Macro GetText(_this_) : Text::GetText(_this_) : EndMacro
+  Macro CountItems(_this_) : Editor::CountItems(_this_) : EndMacro
+  Macro ClearItems(_this_) : Editor::ClearItems(_this_) : EndMacro
+  Macro SetText(_this_, _text_) : Editor::SetText(_this_,_text_,0) : EndMacro
+  Macro RemoveItem(_this_, _item_) : Editor::RemoveItem(_this_, _item_) : EndMacro
+  Macro SetFont(_this_, _font_id_) : Editor::SetFont(_this_, _font_id_) : EndMacro
+  Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
+  Macro AddItem(_this_, _item_,_text_,_image_=-1,_flag_=0) : Editor::AddItem(_this_,_item_,_text_,_image_,_flag_) : EndMacro
   
   ;- DECLAREs PROCEDUREs
   Declare.i GetState(*This.Widget_S)
@@ -141,7 +121,7 @@ Module tree
             *This\focus = 0
             
             ; then lost focus widget
-            \Items()\Color\State = 0
+            \Items()\Row\Color\State = 0
             
           EndIf
           adress = @\Items()
@@ -235,7 +215,7 @@ Module tree
                   ChangeCurrentElement(\Items(), adress)
                   If \Items()\focus = \Items()\Item
                     lostfocus = \Items()\focus 
-                    \Items()\Color\State = 1
+                    \Items()\Row\Color\State = 1
                     \Items()\lostfocus =- 1
                     \Items()\focus =- 1
                   EndIf
@@ -261,7 +241,7 @@ Module tree
               
               
               If \Items()\lostfocus <> \Items()\Item
-                \Items()\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
+                \Items()\Row\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
               EndIf
               
             EndIf
@@ -304,7 +284,7 @@ Module tree
             *This\focus = 0
             
             ; then lost focus widget
-            \Items()\Color\State = 0
+            \Items()\Row\Color\State = 0
             
           EndIf
           
@@ -398,7 +378,7 @@ Module tree
                   ChangeCurrentElement(\Items(), adress)
                   If \Items()\focus = \Items()\Item
                     lostfocus = \Items()\focus 
-                    \Items()\Color\State = 1
+                    \Items()\Row\Color\State = 1
                     \Items()\lostfocus =- 1
                     \Items()\focus =- 1
                   EndIf
@@ -411,7 +391,7 @@ Module tree
                   *This\Change = 1
                 EndIf
                 
-                \Items()\Color\State = 2
+                \Items()\Row\Color\State = 2
                 \Items()\focus = \Items()\Item
               EndIf
             EndIf
@@ -446,7 +426,7 @@ Module tree
       If Result 
         If State&#PB_Attribute_Selected
           \Items()\Line = \Items()\Item
-          \Items()\Color\State = Bool(State)+1
+          \Items()\Row\Color\State = Bool(State)+1
         EndIf
         
         If State&#PB_Attribute_Collapsed Or State&#PB_Attribute_Expanded
@@ -481,9 +461,9 @@ Module tree
       Text::Redraw(*This, \Canvas\Gadget)
       
       PushListPosition(\Items())
-      SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Line = \Items()\Item : \Items()\Color\State = 2
-      Scroll::SetState(\v, ((State*\Text\Height)-\v\Height) + \Text\Height) : \Scroll\Y =- \v\bar\page\Pos ; в конце
-                                                                                                                         ; Scroll::SetState(\v, (State*\Text\Height)) : \Scroll\Y =- \v\bar\page\Pos ; в начале 
+      SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Line = \Items()\Item : \Items()\Row\Color\State = 2
+      Scroll::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos ; в конце
+                                                                                                                         ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
       PopListPosition(\Items())
     EndWith
   EndProcedure
@@ -504,31 +484,16 @@ Module tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
-    With *This
-      If Text::Resize(*This, X,Y,Width,Height)
-        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
-      EndIf
-      ProcedureReturn \Resize
-    EndWith
-  EndProcedure
-  
   Procedure.i Events(*This.Widget_S, EventType.i)
     Static DoubleClick.i
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \h, \Canvas\Window, \Canvas\Gadget)
-      If Repaint
-        \Scroll\Y =- \v\bar\page\Pos
-      EndIf
-      Repaint | Scroll::CallBack(\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \v, \Canvas\Window, \Canvas\Gadget)
-      If Repaint
-        \Scroll\X =- \h\bar\page\Pos
-      EndIf
+      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
     EndWith
     
-    If *This And (Not *This\v\bar\buttons And Not *This\h\bar\buttons)
+    If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
       If ListSize(*This\items())
         With *This
           If Not \Hide And Not \Disable And \Interact
@@ -546,7 +511,7 @@ Module tree
 ;                 \Items()\Line = \Items()\Item
                 Debug "    "+\Line[1]+" "+\Items()\Text\String 
                itemSelect(\Line[1], \Items())
-               \Items()\Color\State = 0
+               \Items()\Row\Color\State = 0
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
                 
@@ -586,9 +551,10 @@ Module tree
                 
               Case #PB_EventType_MouseMove  
                 Protected from = \Line
-                \Line = get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+                Protected Line = get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y)
                 
-                If \h\bar\hide And from <> \Line
+                If \Line<>Line : \Line=Line
+                  If \Scroll\h\hide And from <> \Line
                   itemSelect(\Line, \Items())
                   If (\Items()\text\x+\Items()\text\width)>\Items()\X+\Items()\width
                     If \ToolTip : ToolTip(0) : EndIf
@@ -611,8 +577,51 @@ Module tree
                   PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
                 EndIf
                 
-                Repaint = 1
+                 Repaint = 1
                 
+; ;                 If StartDrawing(CanvasOutput(\Canvas\Gadget))
+; ;                   ; Text::Draw(*This)
+; ;                   If \Text\FontID 
+; ;                     DrawingFont(\Text\FontID) 
+; ;                   EndIf
+; ;                   
+; ;                   ; Draw selections
+; ;                   If from>=0 And SelectElement(\Items(), from)
+; ;                       DrawingMode(#PB_2DDrawing_Default)
+; ;                       RoundBox(*This\x[2],\Items()\Y,\Items()\width,\Items()\height,\Items()\Radius,\Items()\Radius, \Color\Back[0])
+; ;                       
+; ;                     
+; ;                     If \Row\Color\State = 2
+; ;                       DrawingMode(#PB_2DDrawing_Transparent)
+; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, \Items()\Color\Front[\Row\Color\State])
+; ;                     Else
+; ;                       DrawingMode(#PB_2DDrawing_Transparent)
+; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+; ;                     EndIf
+; ;                   EndIf
+; ;                   
+; ;                   If Line>=0 And SelectElement(\Items(), Line)
+; ;                   ;If (\Items()\Item=*This\Line Or \Items()\Item=\Items()\focus Or \Items()\Item=\Items()\line) ; \Color\State;
+; ;                     If \Items()\Color\Fore[\Row\Color\State]
+; ;                       DrawingMode(#PB_2DDrawing_Gradient);|#PB_2DDrawing_AlphaBlend)
+; ;                       BoxGradient(\Vertical,*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Color\Fore[\Row\Color\State],\Items()\Color\Back[\Row\Color\State],\Items()\Radius)
+; ;                     Else
+; ;                       DrawingMode(#PB_2DDrawing_Default);|#PB_2DDrawing_AlphaBlend)
+; ;                       RoundBox(*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Radius,\Items()\Radius,\Items()\Color\Back[\Row\Color\State])
+; ;                     EndIf
+; ;                     
+; ;                     DrawingMode(#PB_2DDrawing_Outlined);|#PB_2DDrawing_AlphaBlend)
+; ;                     RoundBox(*This\x[2],\Items()\Y,\Items()\width,\Items()\height,\Items()\Radius,\Items()\Radius, \Items()\Color\Frame[\Row\Color\State])
+; ;                     
+; ;                     DrawingMode(#PB_2DDrawing_Transparent)
+; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+; ;                     EndIf
+; ;                   
+; ;                   StopDrawing()
+; ;                 EndIf
+                
+              EndIf
+              
               Default
                 itemSelect(\Line[1], \Items())
             EndSelect
@@ -644,96 +653,11 @@ Module tree
       *This\Line =- 1
     EndIf
     
+;     If Repaint
+;       Debug Repaint
+;     EndIf
+    
     ProcedureReturn Repaint
-  EndProcedure
-  
-  Procedure.i _Events(*This.Widget_S, EventType.i)
-    Protected Repaint.i, WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    
-    If *This
-      With *This
-        If Not \hide
-          If \v
-            Repaint = Scroll::CallBack(\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y, WheelDelta, 0, \h, \Canvas\Window, \Canvas\Gadget)
-            If Repaint
-              *This\Scroll\Y =- *This\v\bar\page\Pos
-              ReDraw(*This)
-            EndIf
-          EndIf
-          
-          If \h
-            Repaint = Scroll::CallBack(\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y, WheelDelta, 0, \v, \Canvas\Window, \Canvas\Gadget)
-            If Repaint
-              *This\Scroll\X =- *This\h\bar\page\Pos
-              ReDraw(*This)
-            EndIf
-          EndIf
-          
-          If Not (\v\bar\buttons Or \h\bar\buttons)
-            Select EventType
-              Case #PB_EventType_MouseWheel
-                If Not \v\bar\hide
-                  Select -WheelDelta
-                    Case-1 : Repaint = Scroll::SetState(\v, \v\bar\page\Pos - (\v\bar\max-\v\bar\min)/30)
-                    Case 1 : Repaint = Scroll::SetState(\v, \v\bar\page\Pos + (\v\bar\max-\v\bar\min)/30)
-                  EndSelect
-                EndIf
-                
-              Case #PB_EventType_LeftClick 
-                If \change : \change = 0 
-                  PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
-                EndIf
-                PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftClick)
-                
-              Case #PB_EventType_LeftButtonUp : \Drag[1]=0 
-              Case #PB_EventType_LeftButtonDown : \Focus = 1
-                Repaint = item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y, 1)
-                
-              Case #PB_EventType_MouseLeave, #PB_EventType_LostFocus
-                Repaint = item_from(*This,-1,-1, Bool(EventType=#PB_EventType_LostFocus))
-                
-              Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter
-                Protected from = \Line
-                Repaint = item_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y)
-                
-                If from <> \Line
-                  If \text\x+\text\width>\width
-                    GadgetToolTip(\Canvas\Gadget, \text\string)
-                  Else
-                    GadgetToolTip(\Canvas\Gadget, "")
-                  EndIf
-                  from = \Line
-                EndIf
-                
-                If \Drag And \Drag[1]<>\Drag : \Drag[1]=\Drag 
-                  If \change : \change = 0
-                    PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
-                  EndIf
-                  PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
-                EndIf
-                
-              Case #PB_EventType_Focus
-                PushListPosition(\Items()) 
-                ForEach \Items()
-                  If \Items()\Item = \Items()\focus And \Items()\focus = \Items()\lostfocus 
-                    \Items()\lostfocus =- 1
-                    Repaint = 1
-                    Break
-                  EndIf
-                Next
-                PopListPosition(\Items()) 
-                
-            EndSelect
-          Else
-            Repaint = item_from(*This,-1,-1, 0)
-          EndIf
-        EndIf
-      EndWith 
-    EndIf
-    
-    If Repaint 
-      ReDraw(*This)
-    EndIf
   EndProcedure
   
   Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
@@ -775,83 +699,62 @@ Module tree
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)*2
         \bSize = \fSize
         
-        If Text::Resize(*This, X,Y,Width,Height)
-          \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
-          \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-          \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
-          \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
-          \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-          
-          \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
-          \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-          \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
-          
-          \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
-          \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-          
-          If Bool(Flag&#PB_Text_WordWrap)
-            \Text\MultiLine = 1
-          ElseIf Bool(Flag&#PB_Text_MultiLine)
-            \Text\MultiLine = 2
-          Else
-            \Text\MultiLine =- 1
-          EndIf
-          
-          \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
-          \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
-          \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
-          \Text\Pass = Bool(Flag&#PB_Text_Password)
-          
-          ;\Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
-          ;\Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
-          ;\Text\Align\Right = Bool(Flag&#PB_Text_Right)
-          ;\Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
-          
-          ;           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-          ;             If \Text\Vertical
-          ;               \Text\X = \fSize 
-          ;               \Text\y = \fSize+5
-          ;             Else
-          ;               \Text\X = \fSize+5
-          ;               \Text\y = \fSize
-          ;             EndIf
-          ;           CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-          ;             If \Text\Vertical
-          ;               \Text\X = \fSize 
-          ;               \Text\y = \fSize+1
-          ;             Else
-          \Text\X = \fSize+2
-          \Text\y = \fSize
-          ;             EndIf
-          ;           CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-          ;             If \Text\Vertical
-          ;               \Text\X = \fSize 
-          ;               \Text\y = \fSize+6
-          ;             Else
-          ;               \Text\X = \fSize+6
-          ;               \Text\y = \fSize
-          ;             EndIf
-          ;           CompilerEndIf 
-          
-          \Text\Change = 1
-          \Color = Colors
-          \Color\Fore[0] = 0
-          
-          If \Text\Editable
-            \Text\Editable = 0
-            \Color[0]\Back[0] = $FFFFFFFF 
-          Else
-            \Color[0]\Back[0] = $FFF0F0F0  
-          EndIf
-          
+        \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+        \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+        \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
+        \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
+        \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+        
+        \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
+        \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+        \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+        
+        \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
+        \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+        
+        If Bool(Flag&#PB_Text_WordWrap)
+          \Text\MultiLine = 1
+        ElseIf Bool(Flag&#PB_Text_MultiLine)
+          \Text\MultiLine = 2
+        Else
+          \Text\MultiLine =- 1
         EndIf
         
-        Scroll::Widget(\v, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        If Not Bool(Not \flag\buttons And Not \flag\Lines)
-          Scroll::Widget(\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
+        \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
+        \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
+        \Text\Pass = Bool(Flag&#PB_Text_Password)
+        
+        
+        \Text\X = \fSize+2
+        \Text\y = \fSize
+        \Text\Change = 1
+        
+        \Color = Colors
+        \Color\Fore[0] = 0
+        
+        \Row\Alpha = 255
+        \Row\Color = Colors
+        \Row\Color\State = 1
+        \Row\Color\Fore[0] = 0
+        \Row\Color\Fore[1] = 0
+        \Row\Color\Fore[2] = 0
+        
+        \Row\Color\Frame[2] = \Row\Color\Back[2]
+        
+        If \Text\Editable
+          \Text\Editable = 0
+          \Color[0]\Back[0] = $FFFFFFFF 
+        Else
+          \Color[0]\Back[0] = $FFF0F0F0  
         EndIf
-        Scroll::Resizes(\v, \h, \x[2],\y[2],\width[2],\height[2])
-        \Resize = 0
+        
+        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+        If Not Bool(Not \flag\buttons And Not \flag\Lines)
+          Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        EndIf
+        
+        Resize(*This, X,Y,Width,Height)
       EndWith
     EndIf
     
@@ -1245,5 +1148,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------+--0--
+; Folding = --------------0-f---+--
 ; EnableXP

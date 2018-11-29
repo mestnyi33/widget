@@ -91,28 +91,34 @@
     
     Align.Align_S
   EndStructure
+    
+  ;- - Event_S
+  Structure Post_S
+    Gadget.i
+    Window.i
+    Type.i
+    Event.i
+    *Function
+  EndStructure
   
   ;- - Bar_S
   Structure Bar_S Extends Coordinate_S
-    Window.i
-    Gadget.i
+    *s.Scroll_S
     Type.i
+    Widget.i
+    Radius.i
     ArrowSize.b[3]
     ArrowType.b[3]
-    Buttons.i
-    Radius.i
     
-    Focus.i
-    Both.b ; we see both scrolbars
+    at.i
     
     Hide.b[2]
     Alpha.a[2]
     Disable.b[2]
-    Vertical.b
-    DrawingMode.i
     
     Max.i
     Min.i
+    Vertical.b
     Page.Page_S
     Area.Page_S
     Thumb.Page_S
@@ -122,15 +128,11 @@
   
   ;- - Scroll_S
   Structure Scroll_S Extends Coordinate_S
-    Window.i
-    Widget.i
-    Event.i
-    mouse.Mouse_S
-    output.i
+    *Mouse.Mouse_S
+    Post.Post_S
     
-    *v.Scroll_S
-    *h.Scroll_S
-    bar.Bar_S
+    *v.Bar_S
+    *h.Bar_S
   EndStructure
   
   ;- - Canvas_S
@@ -144,12 +146,30 @@
     Key.i[2]
   EndStructure
   
+  ;- - Scintilla_S
+  Structure Margin_S
+    FonyID.i
+    Width.i
+    Color.Color_S
+  EndStructure
+  
+  ;- - Scintilla_S
+  Structure Scintilla_S
+    Margin.Margin_S
+  EndStructure
+  
+  ;- - Row_S
+  Structure Row_S
+    Alpha.a
+    Color.Color_S
+  EndStructure
+  
   ;- - Widget_S
   Structure Widget_S Extends Coordinate_S
     Index.i  ; Index of new list element
     Handle.i ; Adress of new list element
              ;
-    
+    Sci.Scintilla_S
     *Widget.Widget_S
     Canvas.Canvas_S
     Color.Color_S[4]
@@ -165,6 +185,7 @@
     box.Coordinate_S
     Flag.Flag_S
     
+    Row.Row_S
     
     bSize.b
     fSize.b[2]
@@ -282,9 +303,9 @@
     
     ; Цвета если нажали на виджет
     \Front[2] = $FFFEFEFE
-    \Fore[2] = $C8E9BA81;$C8FFFCFA
-    \Back[2] = $C8E89C3D ; $80E89C3D
-    \Frame[2] = $C8DC9338; $80DC9338
+    \Fore[2] = $FFE9BA81;$C8FFFCFA
+    \Back[2] = $FFE89C3D ; $80E89C3D
+    \Frame[2] = $FFDC9338; $80DC9338
     
     ;         ;- Синие цвета 2
     ;         ; Цвета по умолчанию
@@ -319,5 +340,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---
+; Folding = ----
 ; EnableXP

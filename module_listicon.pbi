@@ -1,6 +1,6 @@
-﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
-CompilerEndIf
+﻿; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+;   IncludePath "/Users/as/Documents/GitHub/Widget/"
+; CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
@@ -137,8 +137,8 @@ Module ListIcon
         iX=\X[2]
         iY=\Y[2]
         CompilerIf Defined(Scroll, #PB_Module)
-          iwidth = *This\width[2]-Scroll::Width(*This\v)
-          iheight = *This\height[2]-Scroll::Height(*This\h)
+          iwidth = *This\width[2]-Scroll::Width(*This\Scroll\v)
+          iheight = *This\height[2]-Scroll::Height(*This\Scroll\h)
         CompilerElse
           iwidth = *This\width[2]
           iheight = *This\height[2]
@@ -179,9 +179,6 @@ Module ListIcon
           RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Back[\Color\State])
         EndIf
         
-        
-        \Scroll\X =- \h\bar\page\Pos
-        \Scroll\Y =- \v\bar\page\Pos
       EndWith 
       
       ; Draw items text
@@ -504,35 +501,10 @@ Module ListIcon
       
       ; Draw frames
       With *This
-        If ListSize(*This\Columns()\Items())
+        If ListSize(\Columns()\Items())
           ; Draw scroll bars
           CompilerIf Defined(Scroll, #PB_Module)
-            UnclipOutput()
-            If \v\bar\page\len And \v\bar\max<>\Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines) And
-               Scroll::SetAttribute(\v, #PB_ScrollBar_Maximum, \Scroll\Height+Bool(\Text\Count<>1 And \Flag\GridLines))
-              Scroll::Resizes(\v, \h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            EndIf
-            If \h\bar\page\len And \h\bar\max<>\Scroll\Width And
-               Scroll::SetAttribute(\h, #PB_ScrollBar_Maximum, \Scroll\Width)
-              Scroll::Resizes(\v, \h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            EndIf
-            
-            Scroll::Draw(\v)
-            Scroll::Draw(\h)
-            
-            ;           ; >>>|||
-            ;           If \Scroll\Widget\Vertical\bar\page\len And \Scroll\Widget\Vertical\bar\max<>\Scroll\Height And
-            ;              Scroll::SetAttribute(\Scroll\Widget\Vertical, #PB_ScrollBar_Maximum, \Scroll\Height)
-            ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horizontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            ;           EndIf
-            ;           
-            ;           If \Scroll\Widget\Horizontal\bar\page\len And \Scroll\Widget\Horizontal\bar\max<>\Scroll\Width And
-            ;              Scroll::SetAttribute(\Scroll\Widget\Horizontal, #PB_ScrollBar_Maximum, \Scroll\Width)
-            ;             Scroll::Resizes(\Scroll\Widget\Vertical, \Scroll\Widget\Horizontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            ;           EndIf
-            ;           
-            ;           Scroll::Draw(\Scroll\Widget\Vertical)
-            ;           Scroll::Draw(\Scroll\Widget\Horizontal)
+            Scroll::Draws(\Scroll, \Scroll\Height, \Scroll\Width)
           CompilerEndIf
           
           _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
@@ -651,9 +623,9 @@ Module ListIcon
           n=19
           column_x = *This\bSize+(n*(1+Bool(*This\flag\CheckBoxes))) + 4
         EndIf
-        column_x - *This\h\bar\page\Pos
+        column_x - *This\Scroll\h\page\Pos
         column_width = column_x
-        *This\v\bar\page\ScrollStep = height+Bool(*This\flag\GridLines)*2+l
+        *This\Scroll\v\page\ScrollStep = height+Bool(*This\flag\GridLines)*2+l
         
         ForEach *This\Columns()
           ;If ListSize(*This\Columns()\Items())
@@ -662,8 +634,8 @@ Module ListIcon
           *This\Scroll\height=*This\bSize+column_height
           *This\Columns()\x=column_width ; + 20;*This\Columns()\Image\width
           iWidth = *This\Columns()\x + *This\Columns()\width
-          iWidth = *This\width[2]-Scroll::Width(*This\v)
-          iHeight = *This\height[2]-Scroll::Height(*This\h)
+          iWidth = *This\width[2]-Scroll::Width(*This\Scroll\v)
+          iHeight = *This\height[2]-Scroll::Height(*This\Scroll\h)
           
           
           CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
@@ -692,7 +664,7 @@ Module ListIcon
               \x=*This\bSize+*This\Columns()\x-column_x; ;
               \width=iwidth
               \height=height
-              \y=*This\Scroll\height-*This\v\bar\page\Pos
+              \y=*This\Scroll\height-*This\Scroll\v\page\Pos
               
               If \text\change = 1
                 \text\height = TextHeight("A") 
@@ -701,9 +673,9 @@ Module ListIcon
               EndIf
               
               If *This\flag\buttons 
-                x_content=*This\bSize+column_width-column_x+2+(w+\sublevel*w)-*This\h\bar\page\Pos
+                x_content=*This\bSize+column_width-column_x+2+(w+\sublevel*w)-*This\Scroll\h\page\Pos
               Else
-                x_content=*This\bSize+column_width-column_x+2+(\sublevel*w)-*This\h\bar\page\Pos
+                x_content=*This\bSize+column_width-column_x+2+(\sublevel*w)-*This\Scroll\h\page\Pos
               EndIf
               
               \box\width = box_size
@@ -737,8 +709,8 @@ Module ListIcon
               EndIf
               
               *This\Scroll\height+\height+l+Bool(*This\Flag\GridLines)*2
-;               If *This\Scroll\Width < (\text\x+\text\width+n)+*This\h\bar\page\Pos
-;                 *This\Scroll\Width = (\text\x+\text\width+n)+*This\h\bar\page\Pos
+;               If *This\Scroll\Width < (\text\x+\text\width+n)+*This\Scroll\h\page\Pos
+;                 *This\Scroll\Width = (\text\x+\text\width+n)+*This\Scroll\h\page\Pos
 ;               EndIf
               
               Drawing = Bool(\y+\height>*This\bSize+*This\Columns()\height And \y<*This\height[2])
@@ -877,18 +849,10 @@ Module ListIcon
         *This\Scroll\Height = *This\Scroll\Height-l-Bool(*This\Flag\GridLines)*2
         
         ; Задаем размеры скролл баров
-        If *This\v\bar\page\len And *This\v\bar\max<>*This\Scroll\Height And 
-           Scroll::SetAttribute(*This\v, #PB_ScrollBar_Maximum, *This\Scroll\Height)
-          Scroll::Resizes(*This\v, *This\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        EndIf
-        If *This\h\bar\page\len And *This\h\bar\max<>*This\Scroll\Width+1 And 
-           Scroll::SetAttribute(*This\h, #PB_ScrollBar_Maximum, *This\Scroll\Width+1)
-          Scroll::Resizes(*This\v, *This\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        EndIf
-        
-        Scroll::Draw(*This\v)
-        Scroll::Draw(*This\h)
-        
+        CompilerIf Defined(Scroll, #PB_Module)
+            Scroll::Draws(*This\Scroll, *This\Scroll\Height, *This\Scroll\Width)
+          CompilerEndIf
+          
         If *This\fSize
           DrawingMode(#PB_2DDrawing_Outlined)
           Box((*This\bSize-*This\fSize), (*This\bSize-*This\fSize), *This\width[1], *This\height[1], $ADADAE)
@@ -980,7 +944,7 @@ Module ListIcon
     If *This
       With *This
         Result = ClearList(\Columns()\Items())
-        \v\bar\hide = 1
+        \Scroll\v\hide = 1
         PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
       EndWith
     EndIf
@@ -1500,7 +1464,7 @@ Module ListIcon
               *This\focus = 0
               
               ; then lost focus widget
-              \Items()\Color\State = 0
+              \Row\Color\State = 0
               
             EndIf
             adress = @\Items()
@@ -1588,7 +1552,7 @@ Module ListIcon
               
               
               If \Items()\lostfocus <> \Items()\Item
-                \Items()\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
+                \Row\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
               EndIf
               
             EndIf
@@ -1633,7 +1597,7 @@ Module ListIcon
               *This\focus = 0
               
               ; then lost focus widget
-              \Items()\Color\State = 0
+              \Row\Color\State = 0
               
             EndIf
             
@@ -1730,7 +1694,7 @@ Module ListIcon
                   ChangeCurrentElement(\Items(), adress)
                   If \Items()\focus = \Items()\Item
                     lostfocus = \Items()\focus 
-                    \Items()\Color\State = 1
+                    \Row\Color\State = 1
                     \Items()\lostfocus =- 1
                     \Items()\focus =- 1
                   EndIf
@@ -1743,7 +1707,7 @@ Module ListIcon
                   *This\Change = 1
                 EndIf
                 
-                \Items()\Color\State = 2
+                \Row\Color\State = 2
                 \Items()\focus = \Items()\Item
               EndIf
             EndIf
@@ -1759,7 +1723,7 @@ Module ListIcon
               
               
               If \Items()\lostfocus <> \Items()\Item
-                \Items()\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
+                \Row\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
               EndIf
               
             EndIf
@@ -1778,7 +1742,7 @@ Module ListIcon
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
     With *This
       If Text::Resize(*This, X,Y,Width,Height)
-        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
+        Scroll::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
       EndIf
       ProcedureReturn \Resize
     EndWith
@@ -1789,17 +1753,11 @@ Module ListIcon
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \h, \Canvas\Window, \Canvas\Gadget)
-      If Repaint
-        \Scroll\Y =- \v\bar\page\Pos
-      EndIf
-      Repaint | Scroll::CallBack(\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \v, \Canvas\Window, \Canvas\Gadget)
-      If Repaint
-        \Scroll\X =- \h\bar\page\Pos
-      EndIf
+      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
     EndWith
     
-    If *This And (Not *This\v\bar\buttons And Not *This\h\bar\buttons)
+    If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
       If ListSize(*This\Columns()\items())
         FirstElement(*This\Columns())
         With *This\Columns()
@@ -1818,7 +1776,7 @@ Module ListIcon
 ;                 \Items()\Line = \Items()\Item
                itemSelect(*This\Line[1], \Items())
                 Debug "  LostFocus   "+*This\Line[1]+" "+\Items()\Text\String 
-               \Items()\Color\State = 0
+               \Row\Color\State = 0
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
                 
@@ -1826,7 +1784,7 @@ Module ListIcon
                 itemSelect(*This\Line[1], \Items())
                 Debug "  Focus   "+*This\Line[1]+" "+\Items()\Text\String 
                 \Items()\Line = \Items()\Item
-                \Items()\Color\State = 2
+                \Row\Color\State = 2
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
                
@@ -1863,9 +1821,10 @@ Module ListIcon
                 
               Case #PB_EventType_MouseMove  
                 Protected from = *This\Line
-                *This\Line = get_from(*This, *This\Canvas\Mouse\X, *This\Canvas\Mouse\Y)
+                Protected Line = get_from(*This, *This\Canvas\Mouse\X, *This\Canvas\Mouse\Y)
                 
-                If *This\h\bar\hide And from <> *This\Line
+                If *This\Line<>Line : *This\Line=Line
+                 If *This\Scroll\h\hide And from <> *This\Line
                   itemSelect(*This\Line, \Items())
                   If \Items()\text\x+\Items()\text\width>\Items()\width
                     If *This\ToolTip : ToolTip(0) : EndIf
@@ -1888,7 +1847,9 @@ Module ListIcon
                   PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_DragStart)
                 EndIf
                 
-                
+                Repaint = 1
+              EndIf
+              
               Default
                 itemSelect(*This\Line[1], \Items())
             EndSelect
@@ -2024,6 +1985,9 @@ Module ListIcon
           \Color = Colors
           \Color\Fore[0] = 0
           
+          \Row\Color = Colors
+          \Row\Color\Fore[0] = 0
+          
           If \Text\Editable
             \Text\Editable = 0
             \Color[0]\Back[0] = $FFFFFFFF 
@@ -2032,9 +1996,9 @@ Module ListIcon
           EndIf
         EndIf
         
-        Scroll::Widget(\v, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        Scroll::Widget(\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
-        Scroll::Resizes(\v, \h, \bSize,\bSize,\Width[2],\Height[2])
+        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        Scroll::Resizes(\Scroll, \bSize,\bSize,\Width[2],\Height[2])
         
         AddColumn(*This, 0,ColumnTitle, ColumnWidth)
         \Resize = 0
@@ -2078,30 +2042,34 @@ Module ListIcon
     
     If *This
       With *This
+;         \Canvas\Mouse\X = MouseX
+;         \Canvas\Mouse\Y = MouseY
+;         \Canvas\Mouse\Buttons = Buttons
+        
         If Not \hide
-          AutoHide.b = 0; Bool(\v\bar\buttons=0 And \h\bar\buttons=0)
+          AutoHide.b = 0; Bool(\Scroll\v\buttons=0 And \Scroll\h\buttons=0)
           
-          If \v
-            Repaint = Scroll::CallBack(\v, Event, MouseX, MouseY, WheelDelta, AutoHide, \h, Window, Canvas)
+          If \Scroll\v
+            Repaint = Scroll::CallBack(\Scroll\v, Event, MouseX, MouseY);, WheelDelta, AutoHide, \Scroll\h, Window, Canvas)
             If Repaint
               ReDraw(*This)
             EndIf
           EndIf
           
-          If \h
-            Repaint = Scroll::CallBack(\h, Event, MouseX, MouseY, WheelDelta, AutoHide, \v, Window, Canvas)
+          If \Scroll\h
+            Repaint = Scroll::CallBack(\Scroll\h, Event, MouseX, MouseY);, WheelDelta, AutoHide, \Scroll\v, Window, Canvas)
             If Repaint
               ReDraw(*This)
             EndIf
           EndIf
           
-          If Not (\v\bar\buttons Or \h\bar\buttons)
+          If Not (\Scroll\v\at Or \Scroll\h\at)
             Select Event
               Case #PB_EventType_MouseWheel
-                If Not \v\bar\hide
+                If Not \Scroll\v\hide
                   Select -WheelDelta
-                    Case-1 : Repaint = Scroll::SetState(\v, \v\bar\page\Pos - (\v\bar\max-\v\bar\min)/30)
-                    Case 1 : Repaint = Scroll::SetState(\v, \v\bar\page\Pos + (\v\bar\max-\v\bar\min)/30)
+                    Case-1 : Repaint = Scroll::SetState(\Scroll\v, \Scroll\v\page\Pos - (\Scroll\v\max-\Scroll\v\min)/30)
+                    Case 1 : Repaint = Scroll::SetState(\Scroll\v, \Scroll\v\page\Pos + (\Scroll\v\max-\Scroll\v\min)/30)
                   EndSelect
                 EndIf
                 
@@ -2382,5 +2350,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --fu6----8-4----+------+--------------------------0----0---
+; Folding = --v49----0-8---4B+0---8--------------------------8----8---
 ; EnableXP

@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
+  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -32,6 +32,7 @@ DeclareModule Editor
   
   
   ;- - DECLAREs MACROs
+  Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
   
   ;- DECLARE
   Declare.i SetItemState(*This.Widget_S, Item.i, State.i)
@@ -48,7 +49,6 @@ DeclareModule Editor
   Declare.i AddItem(*This.Widget_S, Item.i,Text.s,Image.i=-1,Flag.i=0)
   
   Declare.i Repaint(*This.Widget_S)
-  Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
@@ -833,7 +833,7 @@ Module Editor
       \Text\Len = Len(\Text\String.s)
       \Text\Change = 1
       
-      ;       Scroll::SetState(\v, \v\bar\max)
+      ;       Scroll::SetState(\Scroll\v, \Scroll\v\max)
       Repaint = #True
     EndWith
     
@@ -853,9 +853,9 @@ Module Editor
     
     With *This
       ;       Select Attribute
-      ;         Case #PB_ScrollBar_Minimum    : Result = \Scroll\bar\min
-      ;         Case #PB_ScrollBar_Maximum    : Result = \Scroll\bar\max
-      ;         Case #PB_ScrollBar_PageLength : Result = \Scroll\bar\pageLength
+      ;         Case #PB_ScrollBar_Minimum    : Result = \Scroll\min
+      ;         Case #PB_ScrollBar_Maximum    : Result = \Scroll\max
+      ;         Case #PB_ScrollBar_PageLength : Result = \Scroll\pageLength
       ;       EndSelect
     EndWith
     
@@ -921,7 +921,7 @@ Module Editor
         
         \Items()\Line = \Items()\Item 
         ;PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
-        Scroll::SetState(\v, ((\Line * \Text\Height)-\v\Height) + \Text\Height) : \Scroll\Y =- \v\bar\page\Pos
+        Scroll::SetState(\Scroll\v, ((\Line * \Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos
       EndIf
     EndWith
   EndProcedure
@@ -1103,32 +1103,17 @@ Module Editor
     
   EndProcedure
   
-  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i, Canvas.i=-1)
-    With *This
-      If Text::Resize(*This, X,Y,Width,Height)
-        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
-      EndIf
-      ProcedureReturn \Resize
-    EndWith
-  EndProcedure
-  
   ;-
   Procedure.i Events(*This.Widget_S, EventType.i)
     Static DoubleClick.i
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \h, \Canvas\Window, \Canvas\Gadget)
-      If Repaint
-        \Scroll\Y =- \v\bar\page\Pos
-      EndIf
-      Repaint | Scroll::CallBack(\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \v, \Canvas\Window, \Canvas\Gadget)
-      If Repaint
-        \Scroll\X =- \h\bar\page\Pos
-      EndIf
+      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
     EndWith
     
-    If *This And (Not *This\v\bar\buttons And Not *This\h\bar\buttons)
+    If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
       If ListSize(*This\items())
         With *This
           If Not \Hide And Not \Disable And \Interact
@@ -1422,7 +1407,6 @@ Module Editor
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)+1
         \bSize = \fSize
         
-        If Text::Resize(*This, X,Y,Width,Height)
           \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
           \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
           \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
@@ -1493,6 +1477,14 @@ Module Editor
           
           \Color = Colors
           \Color\Fore[0] = 0
+          
+          \Row\Alpha = 255
+          \Row\Color = Colors
+          \Row\Color\Fore[0] = 0
+          \Row\Color\Fore[1] = 0
+          \Row\Color\Fore[2] = 0
+          \Row\Color\Back[0] = \Row\Color\Back[1]
+          \Row\Color\Frame[0] = \Row\Color\Frame[1]
           ;\Color\Back[1] = \Color\Back[0]
           
           If \Text\Editable
@@ -1503,13 +1495,12 @@ Module Editor
           
         EndIf
         
-        Scroll::Widget(\v, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        Scroll::Widget(\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
-        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
-        \Resize = 0
-      EndWith
-    EndIf
-    
+        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        
+        Resize(*This, X,Y,Width,Height)
+     EndWith
+      
     ProcedureReturn *This
   EndProcedure
   
@@ -1673,5 +1664,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------f4----------------
+; Folding = ---------------------uw----v---+-v---
 ; EnableXP
