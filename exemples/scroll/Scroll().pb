@@ -121,7 +121,7 @@ DeclareModule Scroll
   
   ;- - DECLAREs
   Declare.i Draw(*This.Bar_S)
-; ; ;   Declare.i Draws(*Scroll.Scroll_S)
+  Declare.i Draws(*Scroll.Scroll_S, ScrollHeight.i, ScrollWidth.i)
   Declare.b SetState(*This.Bar_S, ScrollPos.i)
   Declare.i SetAttribute(*This.Bar_S, Attribute.i, Value.i)
   Declare.b CallBack(*This.Bar_S, EventType.i)
@@ -358,6 +358,31 @@ Module Scroll
     EndWith 
   EndProcedure
   
+  Procedure.i Draws(*Scroll.Scroll_S, ScrollHeight.i, ScrollWidth.i)
+    ;     Protected Repaint
+    
+    With *Scroll
+      UnclipOutput()
+      If \v\page\len And \v\max<>ScrollHeight And 
+         SetAttribute(\v, #PB_ScrollBar_Maximum, ScrollHeight)
+        Resizes(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      EndIf
+      If \h\page\len And \h\max<>ScrollWidth And
+         SetAttribute(\h, #PB_ScrollBar_Maximum, ScrollWidth)
+        Resizes(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      EndIf
+      
+      If Not \v\hide
+        Draw(\v)
+      EndIf
+      If Not \h\hide
+        Draw(\h)
+      EndIf
+    EndWith
+    
+    ;     ProcedureReturn Repaint
+  EndProcedure
+  
 ; ; ;   Procedure.i Draws(*Scroll.Scroll_S)
 ; ; ;     If Not *Scroll\v\hide
 ; ; ;       Draw(*Scroll\v)
@@ -536,13 +561,13 @@ Module Scroll
       ScrollPage = (( \Max-\Min) - \Page\len)
       Lines = Bool( \Type=#PB_GadgetType_ScrollBar)
       
-      If *That
-        If \Vertical
-          If Height=#PB_Ignore : If *That\hide : Height=(*That\Y+*That\Height)-\Y : Else : Height = *That\Y-\Y : EndIf : EndIf
-        Else
-          If Width=#PB_Ignore : If *That\hide : Width=(*That\X+*That\Width)-\X : Else : Width = *That\X-\X : EndIf : EndIf
-        EndIf
-      EndIf
+;       If *That
+;         If \Vertical
+;           If Height=#PB_Ignore : If *That\hide : Height=(*That\Y+*That\Height)-\Y : Else : Height = *That\Y-\Y : EndIf : EndIf
+;         Else
+;           If Width=#PB_Ignore : If *That\hide : Width=(*That\X+*That\Width)-\X : Else : Width = *That\X-\X : EndIf : EndIf
+;         EndIf
+;       EndIf
       
       ;
       If X=#PB_Ignore : X = \X[0] : EndIf 
@@ -654,7 +679,7 @@ Module Scroll
     ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
   EndProcedure
   
-  Procedure.b Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
+  Procedure.b _Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
     ;     If Not Bool(*Scroll\v And *Scroll\h) 
     ;       If *Scroll\v
     ;         ProcedureReturn Resize(*Scroll\v, X.i,Y.i,Width.i,Height.i)
@@ -662,6 +687,9 @@ Module Scroll
     ;         ProcedureReturn Resize(*Scroll\h, X.i,Y.i,Width.i,Height.i)
     ;       EndIf
     ;     EndIf
+    
+    *Scroll\v\Max = *Scroll\height
+    *Scroll\h\Max = *Scroll\width
     
     If Width=#PB_Ignore : Width = *Scroll\v\X : Else : Width+x-*Scroll\v\Width : EndIf
     If Height=#PB_Ignore : Height = *Scroll\h\Y : Else : Height+y-*Scroll\h\Height : EndIf
@@ -693,6 +721,44 @@ Module Scroll
     ProcedureReturn Bool(*Scroll\v\Hide|*Scroll\h\Hide)
   EndProcedure
   
+  Procedure.b Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
+    ;     If Not Bool(*Scroll\v And *Scroll\h) 
+    ;       If *Scroll\v
+    ;         ProcedureReturn Resize(*Scroll\v, X.i,Y.i,Width.i,Height.i)
+    ;       ElseIf *Scroll\h
+    ;         ProcedureReturn Resize(*Scroll\h, X.i,Y.i,Width.i,Height.i)
+    ;       EndIf
+    ;     EndIf
+    
+    *Scroll\v\Max = *Scroll\height
+    *Scroll\h\Max = *Scroll\width
+    
+    If Height=#PB_Ignore : Height = *Scroll\h\Y : Else : Height+y-*Scroll\h\Height : EndIf
+    If Width=#PB_Ignore : Width = *Scroll\v\X : Else : Width+x-*Scroll\v\Width : EndIf
+    
+    Protected iHeight = y(*Scroll\h)-*Scroll\v\y, iWidth = x(*Scroll\v)-*Scroll\h\x
+    
+    If *Scroll\h\height And *Scroll\h\Page\len<>iWidth : SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+    If *Scroll\v\width And *Scroll\v\Page\len<>iHeight : SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+    
+    *Scroll\v\Hide = Resize(*Scroll\v, Width, Y, #PB_Ignore, #PB_Ignore, *Scroll\h) : iWidth = x(*Scroll\v)-*Scroll\h\x
+    *Scroll\h\Hide = Resize(*Scroll\h, X, Height, #PB_Ignore, #PB_Ignore, *Scroll\v) : iHeight = y(*Scroll\h)-*Scroll\v\y
+    
+    If *Scroll\h\height And *Scroll\h\Page\len<>iWidth : SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+    If *Scroll\v\width And *Scroll\v\Page\len<>iHeight : SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+    
+    If *Scroll\h\height : *Scroll\h\Hide = Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\v) : EndIf
+    If *Scroll\v\width : *Scroll\v\Hide = Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\h) : EndIf
+    
+    If *Scroll\h\Hide : *Scroll\h\Page\Pos = 0 : Else
+      If *Scroll\v\Radius : Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*Scroll\h\y-*Scroll\v\y)+Bool(*Scroll\h\Radius)*4) : EndIf
+    EndIf
+    If *Scroll\v\Hide : *Scroll\v\Page\Pos = 0 : Else
+      If *Scroll\h\Radius : Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, (*Scroll\v\x-*Scroll\h\x)+Bool(*Scroll\v\Radius)*4, #PB_Ignore) : EndIf
+    EndIf
+    
+    ProcedureReturn Bool(*Scroll\v\Hide|*Scroll\h\Hide)
+  EndProcedure
   
   Procedure.i Events(*This.Bar_S, EventType.i, Buttons)
     Static delta, cursor
@@ -942,17 +1008,18 @@ Module Scroll
     
     If Vertical
       *Scroll\v.Bar_S = *This
-      ;*Scroll\v\s.Scroll_S = AllocateStructure(Scroll_S)
       *Scroll\v\s = *Scroll
+      If Not *Scroll\h
+        *Scroll\h.Bar_S = AllocateStructure(Bar_S)
+        *Scroll\h\s = *Scroll
+      EndIf
     Else
       *Scroll\h.Bar_S = *This
-      ;*Scroll\h\s.Scroll_S = AllocateStructure(Scroll_S)
       *Scroll\h\s = *Scroll
-    EndIf
-    
-    ; Invisible
-    If Flag =- 1
-      ProcedureReturn *This
+      If Not *Scroll\v
+        *Scroll\v.Bar_S = AllocateStructure(Bar_S)
+        *Scroll\v\s = *Scroll
+      EndIf
     EndIf
     
     With *This
@@ -1011,6 +1078,8 @@ EndModule
 CompilerIf #PB_Compiler_IsMainFile
   ; UseModule Scroll
   
+  Global *Scroll.Scroll::Scroll_S=AllocateStructure(Scroll::Scroll_S)
+  
   If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
     ResizeImage(0,ImageWidth(0)*2,ImageHeight(0)*2)
     
@@ -1018,11 +1087,11 @@ CompilerIf #PB_Compiler_IsMainFile
     If StartDrawing(ImageOutput(0))
       DrawingMode(#PB_2DDrawing_Outlined)
       Box(0,0,OutputWidth(),OutputWidth(), $FF0000)
+      *Scroll\width = OutputWidth()
+      *Scroll\height = OutputHeight()
       StopDrawing()
     EndIf
   EndIf
-  
-  Global *Scroll.Scroll::Scroll_S=AllocateStructure(Scroll::Scroll_S)
   
   Procedure Events(Canvas.i, EventType.i)
     If EventType = Scroll::#PB_EventType_ScrollChange ; bug mac os на функциях канваса GetGadgetAttribute()
@@ -1057,9 +1126,10 @@ CompilerIf #PB_Compiler_IsMainFile
       DrawImage(ImageID(0), *Scroll\x, *Scroll\y)
       UnclipOutput()
       
-      Scroll::Draw(*Scroll\v)
-      Scroll::Draw(*Scroll\h)
-      StopDrawing()
+            Scroll::Draws(*Scroll, *Scroll\height, *Scroll\width)
+;       Scroll::Draw(*Scroll\v)
+;       Scroll::Draw(*Scroll\h)
+StopDrawing()
     EndIf
   EndProcedure
   
@@ -1126,6 +1196,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 325, 160, "Scroll on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     CanvasGadget(1, 10,10,305,140, #PB_Canvas_Keyboard)
     SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+    Debug SizeOf(*Scroll)
     
     ; post event
     *Scroll\Post\window = 0
@@ -1133,7 +1204,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *Scroll\Post\Function = @Widget_Events()
     *Scroll\Post\event = Scroll::#PB_Event_Widget
     
-    Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,ImageHeight(0), 0, #PB_ScrollBar_Vertical, 7)
+    ;Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,ImageHeight(0), 0, #PB_ScrollBar_Vertical, 7)
     Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,ImageWidth(0), 0, 0, 7)
     
     Scroll::SetState(*Scroll\v, 150)
@@ -1147,5 +1218,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------------------------+--
+; Folding = -----8------------8-4-----------4--
 ; EnableXP
