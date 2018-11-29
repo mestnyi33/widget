@@ -1,11 +1,13 @@
 ﻿DeclareModule Structures
   
   ;- STRUCTURE
+  ;- - Point_S
   Structure Point_S
     y.i
     x.i
   EndStructure
   
+  ;- - Coordinate_S
   Structure Coordinate_S
     y.i[4]
     x.i[4]
@@ -13,6 +15,7 @@
     width.i[4]
   EndStructure
   
+  ;- - Mouse_S
   Structure Mouse_S
     X.i
     Y.i
@@ -22,6 +25,7 @@
     *Delta.Mouse_S
   EndStructure
   
+  ;- - Align_S
   Structure Align_S
     Right.b
     Bottom.b
@@ -29,12 +33,14 @@
     Horizontal.b
   EndStructure
   
+  ;- - Page_S
   Structure Page_S
     Pos.i
     len.i
     ScrollStep.i
   EndStructure
   
+  ;- - Color_S
   Structure Color_S
     State.b
     Front.i[4]
@@ -42,9 +48,9 @@
     Back.i[4]
     Line.i[4]
     Frame.i[4]
-    Arrows.i[4]
   EndStructure
   
+  ;- - Flag_S
   Structure Flag_S
     InLine.b
     Lines.b
@@ -57,12 +63,14 @@
     ClickSelect.b
   EndStructure
   
+  ;- - Image_S
   Structure Image_S Extends Coordinate_S
     handle.i[2]
     change.b
     Align.Align_S
   EndStructure
   
+  ;- - Text_S
   Structure Text_S Extends Coordinate_S
     ;     Char.c
     Len.i
@@ -83,26 +91,34 @@
     
     Align.Align_S
   EndStructure
-  
-  Structure Bar_S Extends Coordinate_S
-    Window.i
+    
+  ;- - Event_S
+  Structure Post_S
     Gadget.i
-    Both.b ; we see both scrolbars
-    body.Coordinate_S
-    Size.i[4]
-    Type.i[4]
-    Focus.i
-    Buttons.i
+    Window.i
+    Type.i
+    Event.i
+    *Function
+  EndStructure
+  
+  ;- - Bar_S
+  Structure Bar_S Extends Coordinate_S
+    *s.Scroll_S
+    Type.i
+    Widget.i
     Radius.i
+    ArrowSize.b[3]
+    ArrowType.b[3]
+    
+    at.i
     
     Hide.b[2]
     Alpha.a[2]
     Disable.b[2]
-    Vertical.b
-    DrawingMode.i
     
     Max.i
     Min.i
+    Vertical.b
     Page.Page_S
     Area.Page_S
     Thumb.Page_S
@@ -110,17 +126,16 @@
     Color.Color_S[4]
   EndStructure
   
+  ;- - Scroll_S
   Structure Scroll_S Extends Coordinate_S
-    Window.i
-    Widget.i
-    Event.i
-    mouse.Mouse_S
+    *Mouse.Mouse_S
+    Post.Post_S
     
-    *v.Scroll_S
-    *h.Scroll_S
-    bar.Bar_S
+    *v.Bar_S
+    *h.Bar_S
   EndStructure
   
+  ;- - Canvas_S
   Structure Canvas_S
     Mouse.Mouse_S
     Gadget.i[3]
@@ -131,11 +146,30 @@
     Key.i[2]
   EndStructure
   
+  ;- - Scintilla_S
+  Structure Margin_S
+    FonyID.i
+    Width.i
+    Color.Color_S
+  EndStructure
+  
+  ;- - Scintilla_S
+  Structure Scintilla_S
+    Margin.Margin_S
+  EndStructure
+  
+  ;- - Row_S
+  Structure Row_S
+    Alpha.a
+    Color.Color_S
+  EndStructure
+  
+  ;- - Widget_S
   Structure Widget_S Extends Coordinate_S
     Index.i  ; Index of new list element
     Handle.i ; Adress of new list element
              ;
-    
+    Sci.Scintilla_S
     *Widget.Widget_S
     Canvas.Canvas_S
     Color.Color_S[4]
@@ -151,6 +185,7 @@
     box.Coordinate_S
     Flag.Flag_S
     
+    Row.Row_S
     
     bSize.b
     fSize.b[2]
@@ -205,12 +240,14 @@
     ;ColumnWidth.i
   EndStructure
   
+  ;-
+  ;- Colors
   ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;
   Global Colors.Color_S
   With Colors                          
     \State = 0
     
-    ;     ;- Серые цвета 
+    ;- Серые цвета 
     ;     ; Цвета по умолчанию
     ;     \Front[0] = $FF000000
     ;     \Fore[0] = $FFFCFCFC ; $FFF6F6F6 
@@ -232,7 +269,7 @@
     ;     \Line[2] = $FFFFFFFF
     ;     \Frame[2] = $FF6F6F6F
     
-    ;             ;- Зеленые цвета
+    ;- Зеленые цвета
     ;             ; Цвета по умолчанию
     ;             \Front[0] = $FF000000
     ;             \Fore[0] = $FFFFFFFF
@@ -266,9 +303,9 @@
     
     ; Цвета если нажали на виджет
     \Front[2] = $FFFEFEFE
-    \Fore[2] = $C8E9BA81;$C8FFFCFA
-    \Back[2] = $C8E89C3D ; $80E89C3D
-    \Frame[2] = $C8DC9338; $80DC9338
+    \Fore[2] = $FFE9BA81;$C8FFFCFA
+    \Back[2] = $FFE89C3D ; $80E89C3D
+    \Frame[2] = $FFDC9338; $80DC9338
     
     ;         ;- Синие цвета 2
     ;         ; Цвета по умолчанию
@@ -303,5 +340,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -4-
+; Folding = ----
 ; EnableXP
