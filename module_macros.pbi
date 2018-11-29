@@ -171,29 +171,14 @@
   Macro _set_scroll_height_(_this_)
     If Not _this_\hide And Not _this_\Items()\Hide
       _this_\Scroll\Height+_this_\Text\Height
-     ; _this_\scroll\v\max = _this_\scroll\Height
     EndIf
   EndMacro
   
   Macro _set_scroll_width_(_this_)
     If Not _this_\hide And Not _this_\items()\hide And _this_\Scroll\width<(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
       _this_\scroll\width=(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
-     ; _this_\scroll\h\max = _this_\scroll\width
-      ; Debug "   "+_this_\width +" "+ _this_\scroll\width
+    ; Debug "   "+_this_\width +" "+ _this_\scroll\width
     EndIf
-  EndMacro
-  
-  Macro RowBackColor(_this_, _state_)
-    _this_\Row\Color\Back[_state_]&$FFFFFFFF|_this_\Row\Alpha<<24
-  EndMacro
-  Macro RowForeColor(_this_, _state_)
-    _this_\Row\Color\Fore[_state_]&$FFFFFFFF|_this_\Row\Alpha<<24
-  EndMacro
-  Macro RowFrameColor(_this_, _state_)
-    _this_\Row\Color\Frame[_state_]&$FFFFFFFF|_this_\Row\Alpha<<24
-  EndMacro
-  Macro RowFontColor(_this_, _state_)
-    _this_\Row\Color\Front[_state_]&$FFFFFFFF|_this_\Row\Alpha<<24
   EndMacro
   
   ; val = %10011110

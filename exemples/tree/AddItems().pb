@@ -57,6 +57,6 @@ If OpenWindow(0, 0, 0, 355, 180, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
     Next
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.70 beta 1 (MacOS X - x64)
-; Folding = -
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = --
 ; EnableXP

@@ -188,6 +188,7 @@ Module Button
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
         \bSize = \fSize
         
+        If Resize(*This, X,Y,Width,Height)
           \Default = Bool(Flag&#PB_Flag_Default)
           \Toggle = Bool(Flag&#PB_Flag_Toggle)
           
@@ -244,8 +245,9 @@ Module Button
           ;\Color\Front[3] = \Color\Front[1]
           
           SetText(*This, Text.s)
-          Resize(*This, X,Y,Width,Height)
-       EndWith
+          \Resize = 0
+        EndIf
+      EndWith
     EndIf
     
     ProcedureReturn *This

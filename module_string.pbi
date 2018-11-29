@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-;  IncludePath "/Users/as/Documents/GitHub/Widget/"
+  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -12,7 +12,6 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
-  XIncludeFile "module_scroll.pbi"
   XIncludeFile "module_text.pbi"
   
   CompilerIf #VectorDrawing
@@ -319,13 +318,8 @@ Module String
         EndIf
       EndIf
       
-      With *This
-      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse)
-      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse)
-    EndWith
-    
-    With *This\items() ;  Not Scroll::is(\Scroll)
-        If ListSize(*This\items()) And Not Scroll::is(\Scroll) ; (((*This\Scroll\v And Not *This\Scroll\v\at) Or Not *This\Scroll\v) And ((*This\Scroll\h And Not *This\Scroll\h\at) Or Not *This\Scroll\h))
+      With *This\items()
+        If ListSize(*This\items())
           Select EventType
             Case #PB_EventType_LostFocus 
               \Caret[1] = 0 ; Двойной клик на тексте
@@ -581,6 +575,7 @@ Module String
         
         \bSize = \fSize
         
+        If Resize(*This, X,Y,Width,Height)
           \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
@@ -624,11 +619,11 @@ Module String
             \Color[0]\Frame[1] = $FFFFFFFF
           EndIf
           
-          
           SetText(*This, Text.s)
-          Resize(*This, X,Y,Width,Height)
-        EndWith
-      EndIf
+          \Resize = 0
+        EndIf
+      EndWith
+    EndIf
     
     ProcedureReturn *This
   EndProcedure
@@ -806,13 +801,13 @@ CompilerIf #PB_Compiler_IsMainFile
       If EventType() = #PB_EventType_Focus
         Debug String.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
       Else
-        Debug String.s +" - gadget " +  EventType()
+        Debug String.s +" - gadget"
       EndIf
     Else
       If EventType() = #PB_EventType_Focus
         Debug String.s +" - widget" +" get text - "+ GetText(EventGadget())
       Else
-        Debug String.s +" - widget " + EventType()
+        Debug String.s +" - widget"
       EndIf
     EndIf
     
@@ -900,5 +895,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------4--+-0-------
+; Folding = --------4----0-------
 ; EnableXP
