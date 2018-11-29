@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
+ ; IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -33,33 +33,14 @@ DeclareModule ListView
   
   
   ;- - DECLAREs MACROs
-  Macro ClearItems(_this_)
-    Editor::ClearItems(_this_)
-  EndMacro
-  
-  Macro CountItems(_this_)
-    Editor::CountItems(_this_)
-  EndMacro
-  
-  Macro RemoveItem(_this_, _item_)
-    Editor::RemoveItem(_this_, _item_)
-  EndMacro
-  
-  Macro AddItem(_this_, _item_,_text_,_image_=-1,_flag_=0)
-    Editor::AddItem(_this_,_item_,_text_,_image_,_flag_)
-  EndMacro
-  
-  Macro SetText(_this_, _text_)
-    Editor::SetText(_this_,_text_,0)
-  EndMacro
-  
-  Macro SetFont(_this_, _font_id_)
-    Editor::SetFont(_this_, _font_id_)
-  EndMacro
-  
-  Macro GetText(_this_)
-    Text::GetText(_this_)
-  EndMacro
+  Macro GetText(_this_) : Text::GetText(_this_) : EndMacro
+  Macro CountItems(_this_) : Editor::CountItems(_this_) : EndMacro
+  Macro ClearItems(_this_) : Editor::ClearItems(_this_) : EndMacro
+  Macro SetText(_this_, _text_) : Editor::SetText(_this_,_text_,0) : EndMacro
+  Macro RemoveItem(_this_, _item_) : Editor::RemoveItem(_this_, _item_) : EndMacro
+  Macro SetFont(_this_, _font_id_) : Editor::SetFont(_this_, _font_id_) : EndMacro
+  Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
+  Macro AddItem(_this_, _item_,_text_,_image_=-1,_flag_=0) : Editor::AddItem(_this_,_item_,_text_,_image_,_flag_) : EndMacro
   
   ;- DECLAREs PROCEDUREs
   Declare.i GetState(*This.Widget_S)
@@ -99,8 +80,8 @@ Module ListView
       
       PushListPosition(\Items())
       SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Line = \Items()\Item : \Items()\Color\State = 2
-      Scroll::SetState(\v, ((State*\Text\Height)-\v\Height) + \Text\Height) : \Scroll\Y =- \v\bar\page\Pos ; в конце
-      ; Scroll::SetState(\v, (State*\Text\Height)) : \Scroll\Y =- \v\bar\page\Pos ; в начале 
+      Scroll::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos ; в конце
+      ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
       PopListPosition(\Items())
     EndWith
   EndProcedure
@@ -121,31 +102,16 @@ Module ListView
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
-    With *This
-      If Text::Resize(*This, X,Y,Width,Height)
-        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
-      EndIf
-      ProcedureReturn \Resize
-    EndWith
-  EndProcedure
-  
   Procedure.i Events(*This.Widget_S, EventType.i)
     Static DoubleClick.i
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \h, \Canvas\Window, \Canvas\Gadget)
-      If Repaint
-        \Scroll\Y =- \v\bar\page\Pos
-      EndIf
-      Repaint | Scroll::CallBack(\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y,0, 0, \v, \Canvas\Window, \Canvas\Gadget)
-      If Repaint
-        \Scroll\X =- \h\bar\page\Pos
-      EndIf
+      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse)
+      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse)
     EndWith
     
-    If *This And (Not *This\v\bar\buttons And Not *This\h\bar\buttons)
+    If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
       If ListSize(*This\items())
         With *This
           If Not \Hide And Not \Disable And \Interact
@@ -202,7 +168,7 @@ Module ListView
                 Repaint = 1
                 
               Case #PB_EventType_MouseMove  
-                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\v)
+                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\Scroll\v)
                   Item.i =- 1
                 ElseIf \Text\Height
                   Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
@@ -371,7 +337,6 @@ Module ListView
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)+1
         \bSize = \fSize
         
-        If Text::Resize(*This, X,Y,Width,Height)
           \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
           \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
           \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
@@ -441,12 +406,12 @@ Module ListView
           
         EndIf
         
-        Scroll::Widget(\v, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        Scroll::Resizes(\v, \h, \x[2],\Y[2],\Width[2],\Height[2])
-        \Resize = 0
+        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        
+        Resize(*This, X,Y,Width,Height)
       EndWith
-    EndIf
-    
+      
     ProcedureReturn *This
   EndProcedure
   
@@ -596,5 +561,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = IA--X5qA5IwYpw
+; Folding = p---CXFAHAjlC-
 ; EnableXP

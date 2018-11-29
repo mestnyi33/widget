@@ -1,8 +1,8 @@
-﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
-CompilerElse
-  IncludePath "../../"
-CompilerEndIf
+﻿; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+;   IncludePath "/Users/as/Documents/GitHub/Widget/"
+; CompilerElse
+   IncludePath "../../"
+; CompilerEndIf
 
 XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug a
       EndIf
     Next : a = 0
-    Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountGadgetItems(g)
+    Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(g)
     
     g = 2
     EditorGadget(g, 230, 10, 210, 210)                                         
@@ -198,8 +198,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -----
 ; EnableXP
