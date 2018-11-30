@@ -184,16 +184,82 @@
   EndMacro
   
   Macro RowBackColor(_this_, _state_)
-    _this_\Row\Color\Back[_state_]&$FFFFFFFF|_this_\Row\Color\Alpha<<24
+    _this_\Row\Color\Back[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
   EndMacro
   Macro RowForeColor(_this_, _state_)
-    _this_\Row\Color\Fore[_state_]&$FFFFFFFF|_this_\Row\Color\Alpha<<24
+    _this_\Row\Color\Fore[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
   EndMacro
   Macro RowFrameColor(_this_, _state_)
-    _this_\Row\Color\Frame[_state_]&$FFFFFFFF|_this_\Row\Color\Alpha<<24
+    _this_\Row\Color\Frame[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
   EndMacro
   Macro RowFontColor(_this_, _state_)
-    _this_\Row\Color\Front[_state_]&$FFFFFFFF|_this_\Row\Color\Alpha<<24
+    _this_\Row\Color\Front[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
+  EndMacro
+  
+  Macro _set_open_box_XY_(_this_, _items_, _x_, _y_)
+    If (_this_\flag\buttons Or _this_\Flag\Lines) 
+      _items_\box\width = _this_\flag\buttons
+      _items_\box\height = _this_\flag\buttons
+      _items_\box\x = _x_+_items_\sublevellen-(_items_\box\width)/2
+      _items_\box\y = (_y_+_items_\height)-(_items_\height+_items_\box\height)/2
+    EndIf
+  EndMacro
+  
+  Macro _set_check_box_XY_(_this_, _items_, _x_, _y_)
+    If _this_\Flag\CheckBoxes
+      _items_\box\width[1] = _this_\Flag\CheckBoxes
+      _items_\box\height[1] = _this_\Flag\CheckBoxes
+      _items_\box\x[1] = _x_+(_items_\box\width[1])/2
+      _items_\box\y[1] = (_y_+_items_\height)-(_items_\height+_items_\box\height[1])/2
+    EndIf
+  EndMacro
+  
+  Macro _draw_plots_(_this_, _items_, _x_, _y_)
+    ; Draw plot
+    If _this_\sublevellen And _this_\Flag\Lines 
+      Protected x_point=_x_+_items_\sublevellen
+      
+      If x_point>_this_\x[2] 
+        Protected y_point=_y_
+        
+        If Drawing
+          ; Horizontal plot
+          DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
+          Line(x_point,y_point,line_size,1, $FF000000)
+        EndIf
+        
+        ; Vertical plot
+        If _items_\handle
+          Protected start = _items_\sublevel
+          
+          ; это нужно если линия уходит за предели границы виджета
+          If _items_\handle[1]
+            PushListPosition(_items_)
+            ChangeCurrentElement(_items_, _items_\handle[1]) 
+            ;If \Hide : Drawing = 2 : EndIf
+            PopListPosition(_items_)
+          EndIf
+          
+          PushListPosition(_items_)
+          ChangeCurrentElement(_items_, _items_\handle) 
+          If Drawing  
+            If start
+              If _this_\sublevellen > 10
+                start = (_items_\y+_items_\height+_items_\height/2) + _this_\Scroll\Y - line_size
+              Else
+                start = (_items_\y+_items_\height/2) + _this_\Scroll\Y
+              EndIf
+            Else 
+              start = (_this_\y[2]+_items_\height/2)+_this_\Scroll\Y
+            EndIf
+            
+            DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
+            Line(x_point,start,1, (y_point-start), $FF000000)
+          EndIf
+          PopListPosition(_items_)
+        EndIf
+      EndIf
+    EndIf
   EndMacro
   
   ; val = %10011110
@@ -207,5 +273,5 @@ EndModule
 
 UseModule Macros
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----
+; Folding = ------
 ; EnableXP

@@ -607,22 +607,22 @@ Module String
           EndIf
           
           ; set default colors
-          \Color[0] = Colors
-          \Color[0]\Fore[0] = 0
-          \Color[0]\Fore[1] = 0
-          \Color[0]\Fore[2] = 0
+          \Color = Colors
+          \Color\Fore[0] = 0
+          \Color\Fore[1] = 0
+          \Color\Fore[2] = 0
           \Row\Color = \Color
           
           If \Text\Editable
-            \Color[0]\Back[0] = $FFFFFFFF 
-            \Color[0]\Back[1] = $FFFFFFFF
+            \Color\Back[0] = $FFFFFFFF 
+            \Color\Back[1] = $FFFFFFFF
           Else
-            \Color[0]\Back[0] = $FFFAFAFA  
-            \Color[0]\Back[1] = $FFFAFAFA
+            \Color\Back[0] = $FFFAFAFA  
+            \Color\Back[1] = $FFFAFAFA
           EndIf
           
           If Not \fSize[1]
-            \Color[0]\Frame[1] = $FFFFFFFF
+            \Color\Frame[1] = $FFFFFFFF
           EndIf
           
           

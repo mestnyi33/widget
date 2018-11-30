@@ -746,9 +746,9 @@ Module tree
         
         If \Text\Editable
           \Text\Editable = 0
-          \Color[0]\Back[0] = $FFFFFFFF 
+          \Color\Back[0] = $FFFFFFFF 
         Else
-          \Color[0]\Back[0] = $FFF0F0F0  
+          \Color\Back[0] = $FFF0F0F0  
         EndIf
         
         Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)

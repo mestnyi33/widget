@@ -909,8 +909,6 @@ Module Text
     Protected IT,Text_Y,Text_X, X,Y, Width,Height, Drawing
     
     Protected line_size = *This\Flag\Lines
-    Protected box_size = *This\flag\buttons
-    Protected check_box_size = *This\Flag\CheckBoxes
     
     If Not *This\Hide
       
@@ -1033,19 +1031,10 @@ Module Text
             Text_Y = \Text\Y+*This\Scroll\Y
             
             ; expanded & collapsed box
-            If *This\flag\buttons Or *This\Flag\Lines 
-              \box\width = box_size
-              \box\height = box_size
-              \box\x = *This\x+\sublevellen-(\box\width)/2+*This\Scroll\X
-              \box\y = (Y+height)-(height+\box\height)/2
-            EndIf
+            _set_open_box_XY_(*This, *This\Items(), *This\x+*This\Scroll\X, Y)
             
-            If *This\Flag\CheckBoxes
-              \box\width[1] = check_box_size
-              \box\height[1] = check_box_size
-              \box\x[1] = *This\x+(\box\width[1])/2+*This\Scroll\X
-              \box\y[1] = (Y+height)-(height+\box\height[1])/2
-            EndIf
+            ; checked box
+            _set_check_box_XY_(*This, *This\Items(), *This\x+*This\Scroll\X, Y)
             
             ; Draw selections
             If Drawing And (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1]) ; \Color\State;
@@ -1062,50 +1051,7 @@ Module Text
             EndIf
             
             ; Draw plot
-            If *This\sublevellen And *This\Flag\Lines 
-              Protected x_point=*This\x+\sublevellen+*This\Scroll\X
-              
-              If x_point>*This\x[2] 
-                Protected y_point=\box\y+\box\height/2
-                
-                If Drawing
-                  ; Horizontal plot
-                  DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
-                  Line(x_point,y_point,line_size,1, $FF000000)
-                EndIf
-                
-                ; Vertical plot
-                If \handle
-                  Protected start = \sublevel
-                  
-                  ; это нужно если линия уходит за предели границы виджета
-                  If \handle[1]
-                    PushListPosition(*This\Items())
-                    ChangeCurrentElement(*This\Items(), \handle[1]) 
-                    ;If \Hide : Drawing = 2 : EndIf
-                    PopListPosition(*This\Items())
-                  EndIf
-                  
-                  PushListPosition(*This\Items())
-                  ChangeCurrentElement(*This\Items(), \handle) 
-                  If Drawing  
-                    If start
-                      If *This\sublevellen > 10
-                        start = (\y+\height+\height/2) + *This\Scroll\Y - line_size
-                      Else
-                        start = (\y+\height/2) + *This\Scroll\Y
-                      EndIf
-                    Else 
-                      start = (*This\y[2]+\height/2)+*This\Scroll\Y
-                    EndIf
-                    
-                    DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
-                    Line(x_point,start,1, (y_point-start), $FF000000)
-                  EndIf
-                  PopListPosition(*This\Items())
-                EndIf
-              EndIf
-            EndIf
+            _draw_plots_(*This, *This\Items(), *This\x+*This\Scroll\X, \box\y+\box\height/2)
             
             If Drawing
               ; Draw boxes
@@ -2068,5 +2014,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------v9-------v5----P----------------------
+; Folding = ---------v9-------v5L+-s----------------------
 ; EnableXP

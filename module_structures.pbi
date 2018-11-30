@@ -160,10 +160,26 @@
   
   ;- - Row_S
   Structure Row_S Extends Coordinate_S
+    Color.Color_S
+  EndStructure
+  
+  ;- - Color_S
+  Structure Colors_S
+    State.b
+;     Front.i[4]
+;     Fore.i[4]
+;     Back.i[4]
+;     Line.i[4]
+;     Frame.i[4]
+;      Alpha.a[2]
+  EndStructure
+  
+  ;- - Rows_S
+  Structure Rows_S Extends Coordinate_S
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
     handle.i[2]
     
-    Color.Color_S[4]
+    Color.Colors_S
     Text.Text_S[4]
     Image.Image_S
     box.Coordinate_S
@@ -197,7 +213,7 @@
     Sci.Scintilla_S
     *Widget.Widget_S
     Canvas.Canvas_S
-    Color.Color_S[4]
+    Color.Color_S
     Text.Text_S[4]
     Clip.Coordinate_S
     *tooltip.Text_S
@@ -233,7 +249,7 @@
     
     *Default
     row.Row_S
-    List Items.Row_S()
+    List Items.Rows_S()
     List Columns.Widget_S()
   EndStructure
   

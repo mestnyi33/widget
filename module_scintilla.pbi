@@ -255,7 +255,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g=16
     Scintilla::Gadget(g, 8, 133+5+8, 306, 233, #PB_Flag_GridLines|#PB_Flag_Numeric) 
-    *w=GetGadgetData(g)
+    *w.Widget_S=GetGadgetData(g)
     
     Scintilla::SetText(*w, Text.s) 
     
@@ -267,7 +267,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Scintilla::AddItem(*w, a, "Line "+Str(a))
     Next
     Scintilla::SetFont(*w, FontID(0))
-    
     
     SplitterGadget(10,8, 8, 306, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
@@ -303,6 +302,56 @@ CompilerIf #PB_Compiler_IsMainFile
     Scintilla::Send(*w, #SCI_SETSELALPHA, 128)
     Scintilla::Send(*w, #SCI_SETSELBACK, 1, RGB(255, 160, 136))
     Scintilla::Send(*w, #SCI_SETSELFORE, 1, RGB(200, 0, 200))
+    
+    
+    *w\Scroll\v\width = 10
+    ;*w\Scroll\v\radius = 0
+    *w\Scroll\v\button\len = 0
+    *w\Scroll\v\Color\back =-1; RGB(70, 78, 85)
+    *w\Scroll\v\Color\line =-1 
+    
+    *w\Scroll\v\Color[3]\frame[0] = $FFFFFFFF
+    *w\Scroll\v\Color[3]\fore[0] =  0  
+    *w\Scroll\v\Color[3]\back[0] =-1;  $C89F9F9F
+    *w\Scroll\v\Color[3]\frame[1] = $FFFFFFFF
+    *w\Scroll\v\Color[3]\fore[1] =  0  
+    *w\Scroll\v\Color[3]\back[1] =-1;  $C85B5B5B
+    *w\Scroll\v\Color[3]\frame[2] = $FFFFFFFF
+    *w\Scroll\v\Color[3]\fore[2] =  0  
+    *w\Scroll\v\Color[3]\back[2] =-1;  $C8161616
+    
+     *w\Scroll\h\height = 10
+;     *w\Scroll\h\radius = 0
+     *w\Scroll\h\button\len = 0
+    *w\Scroll\h\Color\back =-1; RGB(70, 78, 85)
+    *w\Scroll\h\Color\line =-1 
+    
+    *w\Scroll\h\Color[3]\frame[0] = $FFFFFFFF
+    *w\Scroll\h\Color[3]\fore[0] =  0  
+    *w\Scroll\h\Color[3]\back[0] =-1;  $C89F9F9F
+    *w\Scroll\h\Color[3]\frame[1] = $FFFFFFFF
+    *w\Scroll\h\Color[3]\fore[1] =  0  
+    *w\Scroll\h\Color[3]\back[1] =-1;  $C85B5B5B
+    *w\Scroll\h\Color[3]\frame[2] = $FFFFFFFF
+    *w\Scroll\h\Color[3]\fore[2] =  0  
+    *w\Scroll\h\Color[3]\back[2] =-1;  $C8161616
+    
+;     Scroll::SetAttribute(*w\Scroll\h, #PB_ScrollBar_PageLength, *w\Scroll\h\width-1)
+;     Scroll::SetAttribute(*w\Scroll\h, #PB_ScrollBar_Maximum, *w\Scroll\width-1)
+    
+;     *w\Scroll\h\Color\back =-1; RGB(70, 78, 85)
+;     *w\Scroll\h\Color[3]\frame[0] = $C8000000
+;     *w\Scroll\h\Color[3]\fore[0] = $C8E1E1E1
+;     *w\Scroll\h\Color[3]\back[0] = $ff565656
+;     *w\Scroll\h\Color[3]\frame[1] = $C8000000
+;     *w\Scroll\h\Color[3]\fore[1] = $C8E1E1E1
+;     *w\Scroll\h\Color[3]\back[1] = $ff252525
+;     *w\Scroll\h\Color[3]\frame[2] = $C8000000
+;     *w\Scroll\h\Color[3]\fore[2] = $C88D8D8D
+;     *w\Scroll\h\Color[3]\back[2] = $FF000000
+    
+;     *w\Scroll\v\Color\line = RGB(70, 78, 85)
+;     *w\Scroll\h\Color\line = RGB(70, 78, 85)
     
     
     Debug ""+GadgetHeight(0) +" "+ GadgetHeight(g)

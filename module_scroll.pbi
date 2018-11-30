@@ -299,34 +299,41 @@ Module Scroll
       If *This And Not \hide And \color\alpha
         
         ; Draw scroll bar background
-        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox( \X[0], \Y[0], \Width[0], \Height[0], \Radius, \Radius, \Color[0]\Back[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
+        If \Color[0]\Back[\Color[0]\State]<>-1
+          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+          RoundBox( \X[0], \Y[0], \Width[0], \Height[0], \Radius, \Radius, \Color[0]\Back[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
+        EndIf
         
-        If \Vertical
-          ; Draw left line
-          If Not \s\h\hide
-            ; "Это пустое пространство между двумя скроллами тоже закрашиваем если скролл бара кнопки не круглые"
-            If Not \Radius : Box( \X[2], \Y[2]+\Height[2]+1, \Width[2], \Height[2], \Color[0]\Back[\Color[0]\State]&$FFFFFF|\color\alpha<<24) : EndIf
-            Line( \X[0], \Y[0],1, \Height[0]-\Radius/2,$FFFFFFFF&$FFFFFF|\color\alpha<<24)
+        ; Draw line
+        If \Color[0]\Line[\Color[0]\State]<>-1
+          If \Vertical
+            ; Draw left line
+            If Not \s\h\hide
+              ; "Это пустое пространство между двумя скроллами тоже закрашиваем если скролл бара кнопки не круглые"
+              If Not \Radius : Box( \X[2], \Y[2]+\Height[2]+1, \Width[2], \Height[2], \Color[0]\Back[\Color[0]\State]&$FFFFFF|\color\alpha<<24) : EndIf
+              Line( \X[0], \Y[0],1, \Height[0]-\Radius/2,\Color[0]\Line[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
+            Else
+              Line( \X[0], \Y[0],1, \Height[0],\Color[0]\Line[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
+            EndIf
           Else
-            Line( \X[0], \Y[0],1, \Height[0],$FFFFFFFF&$FFFFFF|\color\alpha<<24)
-          EndIf
-        Else
-          ; Draw top line
-          If Not \s\v\hide
-            Line( \X[0], \Y[0], \Width[0]-\Radius/2,1,$FFFFFFFF&$FFFFFF|\color\alpha<<24)
-          Else
-            Line( \X[0], \Y[0], \Width[0],1,$FFFFFFFF&$FFFFFF|\color\alpha<<24)
+            ; Draw top line
+            If Not \s\v\hide
+              Line( \X[0], \Y[0], \Width[0]-\Radius/2,1,\Color[0]\Line[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
+            Else
+              Line( \X[0], \Y[0], \Width[0],1,\Color[0]\Line[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
+            EndIf
           EndIf
         EndIf
         
-        If \Thumb\len
-          ; Draw thumb
-          If \Color[3]\Fore[\Color[3]\State]
-            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+        If \Thumb\len 
+          ; Draw thumb  
+          If \Color[3]\back[\Color[3]\State]<>-1
+            If \Color[3]\Fore[\Color[3]\State]
+              DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+            EndIf
+            BoxGradient( \Vertical, \X[3], \Y[3], \Width[3], \Height[3], \Color[3]\Fore[\Color[3]\State], \Color[3]\Back[\Color[3]\State], \Radius, \color\alpha)
           EndIf
-          BoxGradient( \Vertical, \X[3], \Y[3], \Width[3], \Height[3], \Color[3]\Fore[\Color[3]\State], \Color[3]\Back[\Color[3]\State], \Radius, \color\alpha)
-          
+        
           ; Draw thumb frame
           If \Color[3]\Frame[\Color[3]\State] 
             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
@@ -334,17 +341,19 @@ Module Scroll
           EndIf
         EndIf
         
-        If \Button\len
+        If \Button\len 
           ; Draw buttons
-          If \Color[1]\Fore[\Color[1]\State]
-            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          If \Color[1]\back[\Color[1]\State]<>-1
+            If \Color[1]\Fore[\Color[1]\State]
+              DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+            EndIf
+            BoxGradient( \Vertical, \X[1], \Y[1], \Width[1], \Height[1], \Color[1]\Fore[\Color[1]\State], \Color[1]\Back[\Color[1]\State], \Radius, \color\alpha)
+            If \Color[2]\Fore[\Color[2]\State]
+              DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+            EndIf
+            BoxGradient( \Vertical, \X[2], \Y[2], \Width[2], \Height[2], \Color[2]\Fore[\Color[2]\State], \Color[2]\Back[\Color[2]\State], \Radius, \color\alpha)
           EndIf
-          BoxGradient( \Vertical, \X[1], \Y[1], \Width[1], \Height[1], \Color[1]\Fore[\Color[1]\State], \Color[1]\Back[\Color[1]\State], \Radius, \color\alpha)
-          If \Color[2]\Fore[\Color[2]\State]
-            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          EndIf
-          BoxGradient( \Vertical, \X[2], \Y[2], \Width[2], \Height[2], \Color[2]\Fore[\Color[2]\State], \Color[2]\Back[\Color[2]\State], \Radius, \color\alpha)
-          
+        
           ; Draw buttons frame
           If \Color[1]\Frame[\Color[1]\State]
             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
@@ -1093,6 +1102,7 @@ Module Scroll
       \Color[0]\State = 0
       \Color[0]\Back[0] = $FFF9F9F9
       \Color[0]\Frame[0] = \Color\Back[0]
+      \Color[0]\Line[0] = $FFFFFFFF
       
       \Color[1] = Colors
       \Color[2] = Colors
@@ -1275,5 +1285,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------------------------------f--
+; Folding = ----f---------------------------4--
 ; EnableXP

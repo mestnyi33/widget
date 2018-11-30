@@ -61,13 +61,13 @@ Module ListView
     
     With *This
       If (\Flag\MultiSelect Or \Flag\ClickSelect)
-        PushListPosition(\Items())
-        Result = SelectElement(\Items(), Item) 
+        PushListPosition(\items())
+        Result = SelectElement(\items(), Item) 
         If Result 
-          \Items()\Line = \Items()\Item
-          \Items()\Color\State = Bool(State)+1
+          \items()\index[1] = \items()\index
+          \items()\Color\State = Bool(State)+1
         EndIf
-        PopListPosition(\Items())
+        PopListPosition(\items())
       EndIf
     EndWith
     
@@ -78,11 +78,11 @@ Module ListView
     With *This
       Text::Redraw(*This, \Canvas\Gadget)
       
-      PushListPosition(\Items())
-      SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Line = \Items()\Item : \Items()\Color\State = 2
+      PushListPosition(\items())
+      SelectElement(\items(), State) : \items()\Focus = State : \items()\index[1] = \items()\index : \items()\Color\State = 2
       Scroll::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos ; в конце
       ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
-      PopListPosition(\Items())
+      PopListPosition(\items())
     EndWith
   EndProcedure
   
@@ -90,13 +90,13 @@ Module ListView
     Protected Result
     
     With *This
-      PushListPosition(\Items())
-      ForEach \Items()
-        If \Items()\Focus = \Items()\Item
-          Result = \Items()\Item
+      PushListPosition(\items())
+      ForEach \items()
+        If \items()\Focus = \items()\index
+          Result = \items()\index
         EndIf
       Next
-      PopListPosition(\Items())
+      PopListPosition(\items())
     EndWith
     
     ProcedureReturn Result
@@ -107,8 +107,8 @@ Module ListView
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse)
-      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse)
+      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
     EndWith
     
     If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
@@ -127,44 +127,44 @@ Module ListView
               Case #PB_EventType_LeftDoubleClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftDoubleClick)
                 
               Case #PB_EventType_MouseLeave
-                \Line =- 1
+                \index[1] =- 1
                 Repaint = 1
                 
               Case #PB_EventType_LeftButtonDown
-                PushListPosition(\Items()) 
-                ForEach \Items()
-                  If \Line = \Items()\Item 
-                    \Index[2] = \Line
+                PushListPosition(\items()) 
+                ForEach \items()
+                  If \index[1] = \items()\index 
+                    \Index[2] = \index[1]
                     
                     If \Flag\ClickSelect
-                      \Items()\Color\State ! 2
+                      \items()\Color\State ! 2
                     Else
-                      ; \Items()\Line = \Items()\Item
-                      \Items()\Color\State = 2
+                      ; \items()\index[1] = \items()\index
+                      \items()\Color\State = 2
                     EndIf
                     
-                    ; \Items()\Focus = \Items()\Item 
-                  ElseIf ((Not \Flag\ClickSelect And \Items()\Focus = \Items()\Item) Or \Flag\MultiSelect) And Not Control
-                    \Items()\Line =- 1
-                    \Items()\Color\State = 1
-                    \Items()\Focus =- 1
+                    ; \items()\Focus = \items()\index 
+                  ElseIf ((Not \Flag\ClickSelect And \items()\Focus = \items()\index) Or \Flag\MultiSelect) And Not Control
+                    \items()\index[1] =- 1
+                    \items()\Color\State = 1
+                    \items()\Focus =- 1
                   EndIf
                 Next
-                PopListPosition(\Items()) 
+                PopListPosition(\items()) 
                 Repaint = 1
                 
               Case #PB_EventType_LeftButtonUp
-                PushListPosition(\Items()) 
-                ForEach \Items()
-                  If \Line = \Items()\Item 
-                    \Items()\Focus = \Items()\Item 
+                PushListPosition(\items()) 
+                ForEach \items()
+                  If \index[1] = \items()\index 
+                    \items()\Focus = \items()\index 
                   Else
                     If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
                       \items()\Color\State = 1
                     EndIf
                   EndIf
                 Next
-                PopListPosition(\Items()) 
+                PopListPosition(\items()) 
                 Repaint = 1
                 
               Case #PB_EventType_MouseMove  
@@ -174,10 +174,10 @@ Module ListView
                   Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
                 EndIf
                 
-                If \Line <> Item And Item =< ListSize(\Items())
-                  If isItem(\Line, \Items()) 
-                    If \Line <> ListIndex(\Items())
-                      SelectElement(\Items(), \Line) 
+                If \index[1] <> Item And Item =< ListSize(\items())
+                  If isItem(\index[1], \items()) 
+                    If \index[1] <> ListIndex(\items())
+                      SelectElement(\items(), \index[1]) 
                     EndIf
                     
                     If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton 
@@ -189,84 +189,84 @@ Module ListView
                     EndIf
                   EndIf
                   
-                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton And itemSelect(Item, \Items())
+                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton And itemSelect(Item, \items())
                     If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
                       \items()\Color\State = 2
                     ElseIf Not \Flag\ClickSelect And (\Flag\MultiSelect And Not Control)
-                      \Items()\Line = \Items()\Item
+                      \items()\index[1] = \items()\index
                       \items()\Color\State = 2
                     EndIf
                   EndIf
                   
-                  \Line = Item
+                  \index[1] = Item
                   Repaint = #True
                   
                   If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton
                     If (\Flag\MultiSelect And Not Control)
-                      PushListPosition(\Items()) 
-                      ForEach \Items()
-                        If  Not \Items()\Hide
-                          If ((\Index[2] =< \Line And \Index[2] =< \Items()\Item And \Line >= \Items()\Item) Or
-                              (\Index[2] >= \Line And \Index[2] >= \Items()\Item And \Line =< \Items()\Item)) 
-                            If \Items()\Line <> \Items()\Item
-                              \Items()\Line = \Items()\Item
+                      PushListPosition(\items()) 
+                      ForEach \items()
+                        If  Not \items()\Hide
+                          If ((\Index[2] =< \index[1] And \Index[2] =< \items()\index And \index[1] >= \items()\index) Or
+                              (\Index[2] >= \index[1] And \Index[2] >= \items()\index And \index[1] =< \items()\index)) 
+                            If \items()\index[1] <> \items()\index
+                              \items()\index[1] = \items()\index
                               \items()\Color\State = 2
                             EndIf
                           Else
-                            \Items()\Line =- 1
-                            \Items()\Color\State = 1
-                            \Items()\Focus =- 1
+                            \items()\index[1] =- 1
+                            \items()\Color\State = 1
+                            \items()\Focus =- 1
                           EndIf
                         EndIf
                       Next
-                      PopListPosition(\Items()) 
+                      PopListPosition(\items()) 
                     EndIf
                     
-                    ; ; ;                   If \Index[2] =< \Line
-                    ; ; ;                     PushListPosition(\Items()) 
-                    ; ; ;                     While PreviousElement(\Items()) And \Index[2] < \Items()\Item And Not \Items()\Hide
-                    ; ; ;                       If \Items()\Line <> \Items()\Item
-                    ; ; ;                         \Items()\Line = \Items()\Item
+                    ; ; ;                   If \Index[2] =< \index[1]
+                    ; ; ;                     PushListPosition(\items()) 
+                    ; ; ;                     While PreviousElement(\items()) And \Index[2] < \items()\index And Not \items()\Hide
+                    ; ; ;                       If \items()\index[1] <> \items()\index
+                    ; ; ;                         \items()\index[1] = \items()\index
                     ; ; ;                         \items()\Color\State = 2
                     ; ; ;                       EndIf
                     ; ; ;                     Wend
-                    ; ; ;                     PopListPosition(\Items()) 
-                    ; ; ;                     PushListPosition(\Items()) 
-                    ; ; ;                     While NextElement(\Items()) And \Items()\Line = \Items()\Item And Not \Items()\Hide
-                    ; ; ;                       \Items()\Line =- 1
-                    ; ; ;                       \Items()\Color\State = 1
-                    ; ; ;                       \Items()\Focus =- 1
+                    ; ; ;                     PopListPosition(\items()) 
+                    ; ; ;                     PushListPosition(\items()) 
+                    ; ; ;                     While NextElement(\items()) And \items()\index[1] = \items()\index And Not \items()\Hide
+                    ; ; ;                       \items()\index[1] =- 1
+                    ; ; ;                       \items()\Color\State = 1
+                    ; ; ;                       \items()\Focus =- 1
                     ; ; ;                     Wend
-                    ; ; ;                     PopListPosition(\Items()) 
-                    ; ; ;                     PushListPosition(\Items()) 
-                    ; ; ;                     If \Index[2] = \Line And PreviousElement(\Items()) And \Items()\Line = \Items()\Item And Not \Items()\Hide
-                    ; ; ;                       \Items()\Line =- 1
-                    ; ; ;                       \Items()\Color\State = 1
-                    ; ; ;                       \Items()\Focus =- 1
+                    ; ; ;                     PopListPosition(\items()) 
+                    ; ; ;                     PushListPosition(\items()) 
+                    ; ; ;                     If \Index[2] = \index[1] And PreviousElement(\items()) And \items()\index[1] = \items()\index And Not \items()\Hide
+                    ; ; ;                       \items()\index[1] =- 1
+                    ; ; ;                       \items()\Color\State = 1
+                    ; ; ;                       \items()\Focus =- 1
                     ; ; ;                     EndIf
-                    ; ; ;                     PopListPosition(\Items()) 
-                    ; ; ;                   ElseIf \Index[2] > \Line
-                    ; ; ;                     PushListPosition(\Items()) 
-                    ; ; ;                     While NextElement(\Items()) And \Index[2] > \Items()\Item And Not \Items()\Hide
-                    ; ; ;                       If \Items()\Line <> \Items()\Item
-                    ; ; ;                         \Items()\Line = \Items()\Item
+                    ; ; ;                     PopListPosition(\items()) 
+                    ; ; ;                   ElseIf \Index[2] > \index[1]
+                    ; ; ;                     PushListPosition(\items()) 
+                    ; ; ;                     While NextElement(\items()) And \Index[2] > \items()\index And Not \items()\Hide
+                    ; ; ;                       If \items()\index[1] <> \items()\index
+                    ; ; ;                         \items()\index[1] = \items()\index
                     ; ; ;                         \items()\Color\State = 2
                     ; ; ;                       EndIf
                     ; ; ;                     Wend
-                    ; ; ;                     PopListPosition(\Items()) 
-                    ; ; ;                     PushListPosition(\Items()) 
-                    ; ; ;                     While PreviousElement(\Items()) And \Items()\Line = \Items()\Item And Not \Items()\Hide
-                    ; ; ;                       \Items()\Line =- 1
-                    ; ; ;                       \Items()\Color\State = 1
-                    ; ; ;                       \Items()\Focus =- 1
+                    ; ; ;                     PopListPosition(\items()) 
+                    ; ; ;                     PushListPosition(\items()) 
+                    ; ; ;                     While PreviousElement(\items()) And \items()\index[1] = \items()\index And Not \items()\Hide
+                    ; ; ;                       \items()\index[1] =- 1
+                    ; ; ;                       \items()\Color\State = 1
+                    ; ; ;                       \items()\Focus =- 1
                     ; ; ;                     Wend
-                    ; ; ;                     PopListPosition(\Items()) 
+                    ; ; ;                     PopListPosition(\items()) 
                     ; ; ;                   EndIf
                   EndIf
                 EndIf
                 
               Default
-                itemSelect(\Index[2], \Items())
+                itemSelect(\Index[2], \items())
             EndSelect
           EndIf
         EndWith    
@@ -293,7 +293,7 @@ Module ListView
         EndWith
       EndIf
     Else
-      *This\Line =- 1
+      *This\index[1] =- 1
     EndIf
     
     ProcedureReturn Repaint
@@ -308,16 +308,14 @@ Module ListView
       With *This
         \Type = #PB_GadgetType_ListView
         \Cursor = #PB_Cursor_Default
-        \DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         If Not \Canvas\Window
           \Canvas\Window = GetGadgetData(Canvas)
         EndIf
         \Radius = Radius
-        \Alpha = 255
         \Interact = 1
         \Caret[1] =- 1
-        \Line =- 1
+        \index[1] =- 1
         \X =- 1
         \Y =- 1
         
@@ -340,7 +338,7 @@ Module ListView
           \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
           \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
           \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
-          \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
+          \Flag\lines = Bool(flag&#PB_Flag_NoLines)
           \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
           \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
           \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
@@ -395,13 +393,24 @@ Module ListView
           
           \Text\Change = 1
           \Color = Colors
+          \color\Alpha = 255
           \Color\Fore[0] = 0
           
+          \Row\color\alpha = 255
+        \Row\Color = Colors
+        \Row\color\alpha = 255
+        \Row\color\alpha[1] = 0
+        \Row\Color\Fore[0] = 0
+        \Row\Color\Fore[1] = 0
+        \Row\Color\Fore[2] = 0
+        
+        \Row\Color\Frame[2] = \Row\Color\Back[2]
+        
           If \Text\Editable
             \Text\Editable = 0
-            \Color[0]\Back[0] = $FFFFFFFF 
+            \Color\Back[0] = $FFFFFFFF 
           Else
-            \Color[0]\Back[0] = $FFF0F0F0  
+            \Color\Back[0] = $FFF0F0F0  
           EndIf
           
         EndIf
@@ -561,5 +570,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = p---GX0AHAjlC-
+; Folding = p---+--BHgnlC-
 ; EnableXP

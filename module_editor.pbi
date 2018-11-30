@@ -1032,13 +1032,11 @@ Module Editor
             \Items()\change = Bool(\Type = #PB_GadgetType_Tree)
           EndIf
             \Items()\Text\FontID = \Text\FontID
-            \Items()\color\alpha = 255
             \Items()\Index[1] =- 1
             \Items()\focus =- 1
             \Items()\lostfocus =- 1
             \Items()\text\change = 1
-            \Items()\color\alpha = 255
-        
+            
           If IsImage(Image)
             
             Select \Attribute
@@ -1066,11 +1064,11 @@ Module Editor
           ; add lines
           Text::AddLine(*This, Item.i, Text.s)
           
-          \Items()\Color = Colors
-          \Items()\Color[0]\State = 1
-          \Items()\Color[0]\Fore[0] = 0 
-          \Items()\Color[0]\Fore[1] = 0
-          \Items()\Color[0]\Fore[2] = 0
+;           \Items()\Color = Colors
+;           \Items()\Color\State = 1
+;           \Items()\Color\Fore[0] = 0 
+;           \Items()\Color\Fore[1] = 0
+;           \Items()\Color\Fore[2] = 0
        
           If Item = 0
             PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
@@ -1489,9 +1487,9 @@ Module Editor
           ;\Color\Back[1] = \Color\Back[0]
           
           If \Text\Editable
-            \Color[0]\Back[0] = $FFFFFFFF 
+            \Color\Back[0] = $FFFFFFFF 
           Else
-            \Color[0]\Back[0] = $FFF0F0F0  
+            \Color\Back[0] = $FFF0F0F0  
           EndIf
           
         EndIf
