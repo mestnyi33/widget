@@ -170,7 +170,7 @@
   
   Macro _set_scroll_height_(_this_)
     If Not _this_\hide And Not _this_\Items()\Hide
-      _this_\Scroll\Height+_this_\Text\Height
+     _this_\Scroll\Height+_this_\Text\Height
      ; _this_\scroll\v\max = _this_\scroll\Height
     EndIf
   EndMacro
@@ -273,5 +273,5 @@ EndModule
 
 UseModule Macros
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------
+; Folding = ----P+
 ; EnableXP

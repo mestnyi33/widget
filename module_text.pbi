@@ -935,6 +935,8 @@ Module Text
             \Text\Height[1] = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
             If \Type = #PB_GadgetType_Tree
               \Text\Height = 20
+;             ElseIf \Type = #PB_GadgetType_ListView
+;               \Text\Height = 20
             Else
               \Text\Height = \Text\Height[1]
             EndIf
@@ -1200,6 +1202,9 @@ Module Text
         If ListSize(*This\Items())
           ; Draw scroll bars
           CompilerIf Defined(Scroll, #PB_Module)
+            If \Scroll\Height <> \Scroll\v\max
+              \Scroll\Height - Bool(\Flag\GridLines)
+            EndIf
             Scroll::Draws(\Scroll, \Scroll\Height, \Scroll\Width)
           CompilerEndIf
           
@@ -1354,7 +1359,7 @@ Module Text
         If \Text\String.s
           \Text\String.s[1] = Text.s
           
-          If \Text\MultiLine Or \Type = #PB_GadgetType_Editor  Or \Type = #PB_GadgetType_ListView Or \Type = #PB_GadgetType_Scintilla 
+          If \Text\MultiLine Or \Type = #PB_GadgetType_Editor Or \Type = #PB_GadgetType_Scintilla  ; Or \Type = #PB_GadgetType_ListView
             Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
             Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
             Text.s = ReplaceString(Text.s, #CR$, #LF$)
@@ -1363,6 +1368,7 @@ Module Text
            ; \Text\Count = CountString(\Text\String.s, #LF$)
           Else
             \Text\String.s = RemoveString(\Text\String.s, #LF$) + #LF$
+           ; \Text\String.s = RTrim(ReplaceString(\Text\String.s, #LF$, " ")) + #LF$
           EndIf
           
           \Text\Len = Len(\Text\String.s)
@@ -2014,5 +2020,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------v9-------v5L+-s----------------------
+; Folding = ---------v9-------v5r+-s----------------------
 ; EnableXP

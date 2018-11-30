@@ -1028,14 +1028,13 @@ Module Editor
             adress = first
           EndIf
           
-          If \Items()\handle <> adress : \Items()\handle = adress
-            \Items()\change = Bool(\Type = #PB_GadgetType_Tree)
-          EndIf
-            \Items()\Text\FontID = \Text\FontID
-            \Items()\Index[1] =- 1
-            \Items()\focus =- 1
-            \Items()\lostfocus =- 1
-            \Items()\text\change = 1
+          \Items()\handle = adress
+          \Items()\change = Bool(\Type = #PB_GadgetType_Tree)
+          \Items()\Text\FontID = \Text\FontID
+          \Items()\Index[1] =- 1
+          \Items()\focus =- 1
+          \Items()\lostfocus =- 1
+          \Items()\text\change = 1
             
           If IsImage(Image)
             
@@ -1663,5 +1662,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------------v+----v---+-v-+-
+; Folding = ---------------------v5----4--f--4f--
 ; EnableXP

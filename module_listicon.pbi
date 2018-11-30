@@ -292,16 +292,16 @@ Module ListIcon
               
               ; Draw selections
               If Drawing And (\index=*This\Index[1] Or \index=\focus Or \index=\Index[1]) ; \Color\State;
-                If \Color\Fore[\Color\State]
+                If *This\Row\Color\Fore[\Color\State]
                   DrawingMode(#PB_2DDrawing_Gradient)
-                  BoxGradient(\Vertical,*This\X[2],Y,iwidth,\Height,\Color\Fore[\Color\State],\Color\Back[\Color\State],\Radius)
+                  BoxGradient(\Vertical,*This\X[2],Y,iwidth,\Height,RowForeColor(*This, \Color\State) ,RowBackColor(*This, \Color\State),\Radius)
                 Else
                   DrawingMode(#PB_2DDrawing_Default)
-                  RoundBox(*This\X[2],Y,iwidth,\Height,\Radius,\Radius,\Color\Back[\Color\State])
+                  RoundBox(*This\X[2],Y,iwidth,\Height,\Radius,\Radius,RowBackColor(*This, \Color\State))
                 EndIf
                 
                 DrawingMode(#PB_2DDrawing_Outlined)
-                RoundBox(*This\x[2],Y,iwidth,\height,\Radius,\Radius, \Color\Frame[\Color\State])
+                RoundBox(*This\x[2],Y,iwidth,\height,\Radius,\Radius, RowFrameColor(*This, \Color\State))
               EndIf
               
               ; Draw plot
@@ -356,7 +356,7 @@ Module ListIcon
                   If *This\flag\buttons And \childrens
                     DrawingMode(#PB_2DDrawing_Default)
                     CompilerIf Defined(Scroll, #PB_Module)
-                      Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, \Color\Front[\Color\State], 0,0) 
+                      Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), 0,0) 
                     CompilerEndIf
                   EndIf
                   
@@ -369,7 +369,7 @@ Module ListIcon
                   ; Draw image
                   If \Image\handle
                     DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                    DrawAlphaImage(\Image\handle, \Image\x+*This\Scroll\X, \Image\y+*This\Scroll\Y, \color\alpha)
+                    DrawAlphaImage(\Image\handle, \Image\x+*This\Scroll\X, \Image\y+*This\Scroll\Y, *This\row\color\alpha)
                   EndIf
                 EndIf
                 
@@ -377,79 +377,98 @@ Module ListIcon
                 _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
                 
                 ; Draw string
-                If \Text[2]\Len > 0 And *This\Color\Front <> *This\Color\Front[2]
-                  
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                    If (*This\Caret[1] > *This\Caret And *This\Index[2] = *This\Index[1]) Or (*This\Index[2] > *This\Index[1] And *This\Index[1] = \index)
-                      \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
-                      
-                      If *This\Index[2] = *This\Index[1]
-                        \Text[2]\X = \Text[3]\X-\Text[2]\Width
-                      EndIf
-                      
-                      If \Text[3]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText(\Text[3]\X, Text_Y, \Text[3]\String.s, *This\Color\Front)
-                      EndIf
-                      
-                      DrawingMode(#PB_2DDrawing_Default)
-                      Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                      
-                      If \Text[2]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText(Text_X, Text_Y, \Text[1]\String.s+\Text[2]\String.s, *This\Color\Front[2])
-                      EndIf
-                      
-                      If \Text[1]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText(Text_X, Text_Y, \Text[1]\String.s, *This\Color\Front)
-                      EndIf
-                    Else
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawText(Text_X, Text_Y, \Text\String.s, *This\Color\Front)
-                      
-                      DrawingMode(#PB_2DDrawing_Default)
-                      Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                      
-                      If \Text[2]\String.s
-                        DrawingMode(#PB_2DDrawing_Transparent)
-                        DrawText(\Text[2]\X, Text_Y, \Text[2]\String.s, *This\Color\Front[2])
-                      EndIf
-                    EndIf
-                  CompilerElse
-                    If \Text[1]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                    EndIf
+                If \Text[2]\Len > 0 And *This\Color\Front <> *This\Row\Color\Front[2]
+                
+                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  If (*This\Caret[1] > *This\Caret And *This\Index[2] = *This\Index[1]) Or (*This\Index[2] > *This\Index[1] And *This\Index[1] = \Index)
+                    \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
                     
-                    DrawingMode(#PB_2DDrawing_Default)
-                    Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                    
-                    If \Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText(\Text[2]\X, Text_Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[2])
+                    If *This\Index[2] = *This\Index[1]
+                      \Text[2]\X = \Text[3]\X-\Text[2]\Width
                     EndIf
                     
                     If \Text[3]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawRotatedText(\Text[3]\X, Text_Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
+                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                      DrawText(\Text[3]\X, Text_Y, \Text[3]\String.s, *This\Color\Front[*This\Color\State])
                     EndIf
-                  CompilerEndIf
-                  
-                Else
-                  If \Text[2]\Len > 0
-                    DrawingMode(#PB_2DDrawing_Default)
-                    Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                  EndIf
-                  
-                  If \Color\State = 2
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, \Color\Front[\Color\State])
+                    
+                    If *This\Row\Color\Fore[2]
+                      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                      BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
+                    Else
+                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                      Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2) )
+                    EndIf
+                    
+                    If \Text[2]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                      DrawText(Text_X, Text_Y, \Text[1]\String.s+\Text[2]\String.s, RowFontColor(*This, 2))
+                    EndIf
+                    
+                    If \Text[1]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                      DrawText(Text_X, Text_Y, \Text[1]\String.s, *This\Color\Front[*This\Color\State])
+                    EndIf
                   Else
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+                    DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                    DrawText(Text_X, Text_Y, \Text\String.s, *This\Color\Front[*This\Color\State])
+                    
+                    If *This\Row\Color\Fore[2]
+                      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                      BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
+                    Else
+                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                      Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
+                    EndIf
+                    
+                    If \Text[2]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                      DrawText(\Text[2]\X+*This\Scroll\X, Text_Y, \Text[2]\String.s, RowFontColor(*This, 2))
+                    EndIf
                   EndIf
+                CompilerElse
+                  If \Text[1]\String.s
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, 0))
+                  EndIf
+                  
+                  If *This\Row\Color\Fore[2]
+                    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                    BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
+                  Else
+                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                    Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
+                  EndIf
+                  
+                  If \Text[2]\String.s
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(\Text[2]\X+*This\Scroll\X, Text_Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, 2))
+                  EndIf
+                  
+                  If \Text[3]\String.s
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(\Text[3]\X+*This\Scroll\X, Text_Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, 0))
+                  EndIf
+                CompilerEndIf
+                
+              Else
+                If \Text[2]\Len > 0
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                  Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
                 EndIf
+                
+;                 CompilerIf Defined(Scroll, #PB_Module)
+;                   Debug ""+*This\Scroll\X +" "+ *This\Scroll\h\page\pos
+;                 CompilerEndIf
+                
+                If \Color\State = 2
+                  DrawingMode(#PB_2DDrawing_Transparent)
+                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, \Color\State))
+                Else
+                  DrawingMode(#PB_2DDrawing_Transparent)
+                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+                EndIf
+              EndIf
                 
               EndIf
             Next
@@ -738,16 +757,16 @@ Module ListIcon
                   EndIf
                   
                   ; Draw items back color
-                  If \Color\Fore
+                  If *This\row\Color\Fore
                     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                    BoxGradient(\Vertical,SelectionPos,\Y,SelectionLen,\Height,\Color\Fore[\Color\State],\Color\Back[\Color\State],\Radius)
+                    BoxGradient(\Vertical,SelectionPos,\Y,SelectionLen,\Height,*This\row\Color\Fore[\Color\State],*This\row\Color\Back[\Color\State],\Radius)
                   Else
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    RoundBox(SelectionPos,\Y,SelectionLen,\Height,\Radius,\Radius,\Color\Back[\Color\State])
+                    RoundBox(SelectionPos,\Y,SelectionLen,\Height,\Radius,\Radius,*This\row\Color\Back[\Color\State])
                   EndIf
                   ;Debug Point(\x+2,\y+2)
                   DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                  Box(SelectionPos,\y,SelectionLen,\height, \Color\Frame[\Color\State])
+                  Box(SelectionPos,\y,SelectionLen,\height, *This\row\Color\Frame[\Color\State])
                 EndIf
                 
                 ; Draw boxes
@@ -917,10 +936,10 @@ Module ListIcon
         
         Editor::AddItem(\Columns(),Item.i,Text.s,Image.i,sublevel.i)
         \Columns()\Items()\text\string.s = StringField(Text.s, ListIndex(\Columns()) + 1, #LF$)
-        \Columns()\Items()\Color = Colors
-        \Columns()\Items()\Color[0]\Fore[0] = 0 
-        \Columns()\Items()\Color[0]\Fore[1] = 0
-        \Columns()\Items()\Color[0]\Fore[2] = 0
+        \Columns()\row\Color = Colors
+        \Columns()\row\Color\Fore[0] = 0 
+        \Columns()\row\Color\Fore[1] = 0
+        \Columns()\row\Color\Fore[2] = 0
         
         \Columns()\Items()\Y = \Scroll\height
         \Columns()\Items()\height = height
@@ -1990,9 +2009,9 @@ Module ListIcon
           
           If \Text\Editable
             \Text\Editable = 0
-            \Color[0]\Back[0] = $FFFFFFFF 
+            \Color\Back[0] = $FFFFFFFF 
           Else
-            \Color[0]\Back[0] = $FFF0F0F0  
+            \Color\Back[0] = $FFF0F0F0  
           EndIf
         EndIf
         
@@ -2350,5 +2369,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --v49----------4B+0------------------------------8----8---
+; Folding = --v49-----------Owv------------------------------f----f----
 ; EnableXP
