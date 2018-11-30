@@ -131,13 +131,13 @@ Module Text
               Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2+1)) - 1)/2
             EndIf
             
-            If LastLine <> \Line Or LastItem <> Item
+            If LastLine <> \Index[1] Or LastItem <> Item
               \Items()\Text[2]\Width[2] = 0
               
-              If (\Items()\Text\String.s = "" And Item = \Line And Position = len) Or
-                 \Line[1] > \Line Or ; Если выделяем снизу вверх
-                 (\Line[1] =< \Line And \Line = Item And Position = len) Or ; Если позиция курсора неже половини высоты линии
-                 (\Line[1] < \Line And                                      ; Если выделяем сверху вниз
+              If (\Items()\Text\String.s = "" And Item = \Index[1] And Position = len) Or
+                 \Index[2] > \Index[1] Or ; Если выделяем снизу вверх
+                 (\Index[2] =< \Index[1] And \Index[1] = Item And Position = len) Or ; Если позиция курсора неже половини высоты линии
+                 (\Index[2] < \Index[1] And                                      ; Если выделяем сверху вниз
                   PreviousElement(*This\Items()))                           ; то выбираем предыдущую линию
                 
                 If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
@@ -152,7 +152,7 @@ Module Text
               EndIf
               
               LastItem = Item
-              LastLine = \Line
+              LastLine = \Index[1]
             EndIf
             PopListPosition(\Items())
             
@@ -222,14 +222,14 @@ Module Text
     Protected Repaint, String.s
     
     With  *This
-      If \Items()\Text[2]\Len > 0 And \Line[1] <> \Line
-        If \Line[1] > \Line : Swap \Line[1], \Line : EndIf
+      If \Items()\Text[2]\Len > 0 And \Index[2] <> \Index[1]
+        If \Index[2] > \Index[1] : Swap \Index[2], \Index[1] : EndIf
         
         PushListPosition(\Items())
         ForEach \Items()
           Select ListIndex(\Items()) 
-            Case \Line[1] : String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$
-            Case \Line : String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+            Case \Index[2] : String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$
+            Case \Index[1] : String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
           EndSelect
         Next
         PopListPosition(\Items())
@@ -238,8 +238,8 @@ Module Text
         String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
       EndIf
       
-      \Line[1] + 1
-      \Line = \Line[1]
+      \Index[2] + 1
+      \Index[1] = \Index[2]
       
       \Caret = 0
       \Caret[1] = \Caret
@@ -563,15 +563,15 @@ Module Text
 ;         StopDrawing()
 ;       EndIf
       
-      \Items()\Line =- 1
+      \Items()\Index[1] =- 1
       \Items()\Focus =- 1
-      \Items()\Item = Line
+      \Items()\Index = Line
       \Items()\Radius = \Radius
       \Items()\Text\String.s = String.s
       
 ; ; ; ;       ; Set line default colors             
 ; ; ; ;       \Items()\Color = \Color
-\Items()\Row\Color\State = 1
+\Items()\Color\State = 1
 ; ; ; ;       \Items()\Color\Fore[\Items()\Color\State] = 0
       
       ; Update line pos in the text
@@ -583,7 +583,7 @@ Module Text
       _line_resize_X_(*This)
       _line_resize_Y_(*This)
       
-      If \Line[1] = ListIndex(\Items())
+      If \Index[2] = ListIndex(\Items())
         ;Debug " string "+String.s
         \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret) : \Items()\Text[1]\Change = #True
         \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
@@ -674,7 +674,7 @@ Module Text
               String = StringField(\Text\String.s[2], IT, #LF$)
               
               \Items()\Focus =- 1
-              \Items()\Line =- 1
+              \Items()\Index[1] =- 1
               
               If \Type = #PB_GadgetType_Button
                 \Items()\Text\Width = TextWidth(RTrim(String))
@@ -692,7 +692,7 @@ Module Text
               \Items()\y = \Y[1]+\Text\X+Text_X
               \Items()\Width = \Text\Height
               \Items()\Height = Width
-              \Items()\Item = ListIndex(\Items())
+              \Items()\Index = ListIndex(\Items())
               
               \Items()\Text\Editable = \Text\Editable 
               \Items()\Text\Vertical = \Text\Vertical
@@ -721,15 +721,16 @@ Module Text
                   \Items()\Text\Width = TextWidth(String.s)
                 EndIf
                 
-                \Items()\Line =- 1
+                \Items()\Index[1] =- 1
                 \Items()\Focus =- 1
                 \Items()\Radius = \Radius
                 \Items()\Text\String.s = String.s
-                \Items()\Item = ListIndex(\Items())
+                \Items()\Index = ListIndex(\Items())
                 
 ;                 ; Set line default colors             
 ;                 \Items()\Color = \Color
-                 \Items()\Row\Color\State = 1
+                \Items()\Color\State = 1
+                
 ;                 \Items()\Color\Fore[\Items()\Color\State] = 0
                 
                 ; Update line pos in the text
@@ -741,7 +742,7 @@ Module Text
                 _line_resize_X_(*This)
                 _line_resize_Y_(*This)
                 
-                If \Line[1] = ListIndex(\Items())
+                If \Index[2] = ListIndex(\Items())
                   ;Debug " string "+String.s
                   \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret) : \Items()\Text[1]\Change = #True
                   \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
@@ -1047,17 +1048,17 @@ Module Text
             EndIf
             
             ; Draw selections
-            If Drawing And (\Item=*This\Line Or \Item=\focus Or \Item=\line) ; \Color\State;
-              If *This\Row\Color\Fore[\Row\Color\State]
+            If Drawing And (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1]) ; \Color\State;
+              If *This\Row\Color\Fore[\Color\State]
                 DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                BoxGradient(\Vertical,*This\X[2],Y,iwidth,\Height,RowForeColor(*This, \Row\Color\State) ,RowBackColor(*This, \Row\Color\State) ,\Radius)
+                BoxGradient(\Vertical,*This\X[2],Y,iwidth,\Height,RowForeColor(*This, \Color\State) ,RowBackColor(*This, \Color\State) ,\Radius)
               Else
                 DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                RoundBox(*This\X[2],Y,iwidth,\Height,\Radius,\Radius,RowBackColor(*This, \Row\Color\State) )
+                RoundBox(*This\X[2],Y,iwidth,\Height,\Radius,\Radius,RowBackColor(*This, \Color\State) )
               EndIf
               
               DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-              RoundBox(*This\x[2],Y,iwidth,\height,\Radius,\Radius, RowFrameColor(*This, \Row\Color\State) )
+              RoundBox(*This\x[2],Y,iwidth,\height,\Radius,\Radius, RowFrameColor(*This, \Color\State) )
             EndIf
             
             ; Draw plot
@@ -1074,19 +1075,19 @@ Module Text
                 EndIf
                 
                 ; Vertical plot
-                If \address
+                If \handle
                   Protected start = \sublevel
                   
                   ; это нужно если линия уходит за предели границы виджета
-                  If \address[1]
+                  If \handle[1]
                     PushListPosition(*This\Items())
-                    ChangeCurrentElement(*This\Items(), \address[1]) 
+                    ChangeCurrentElement(*This\Items(), \handle[1]) 
                     ;If \Hide : Drawing = 2 : EndIf
                     PopListPosition(*This\Items())
                   EndIf
                   
                   PushListPosition(*This\Items())
-                  ChangeCurrentElement(*This\Items(), \address) 
+                  ChangeCurrentElement(*This\Items(), \handle) 
                   If Drawing  
                     If start
                       If *This\sublevellen > 10
@@ -1111,7 +1112,7 @@ Module Text
               If *This\flag\buttons And \childrens
                 DrawingMode(#PB_2DDrawing_Default)
                 CompilerIf Defined(Scroll, #PB_Module)
-                  Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Row\Color\State), 0,0) 
+                  Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), 0,0) 
                 CompilerEndIf
               EndIf
               
@@ -1124,7 +1125,7 @@ Module Text
               ; Draw image
               If \Image\handle
                 DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                DrawAlphaImage(\Image\handle, \Image\x+*This\Scroll\X, \Image\y+*This\Scroll\Y, \alpha)
+                DrawAlphaImage(\Image\handle, \Image\x+*This\Scroll\X, \Image\y+*This\Scroll\Y, *This\row\color\alpha)
               EndIf
               
               ; Draw text
@@ -1134,10 +1135,10 @@ Module Text
               If \Text[2]\Len > 0 And *This\Color\Front <> *This\Row\Color\Front[2]
                 
                 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If (*This\Caret[1] > *This\Caret And *This\Line[1] = *This\Line) Or (*This\Line[1] > *This\Line And *This\Line = \Item)
+                  If (*This\Caret[1] > *This\Caret And *This\Index[2] = *This\Index[1]) Or (*This\Index[2] > *This\Index[1] And *This\Index[1] = \Index)
                     \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
                     
-                    If *This\Line[1] = *This\Line
+                    If *This\Index[2] = *This\Index[1]
                       \Text[2]\X = \Text[3]\X-\Text[2]\Width
                     EndIf
                     
@@ -1215,9 +1216,9 @@ Module Text
 ;                   Debug ""+*This\Scroll\X +" "+ *This\Scroll\h\page\pos
 ;                 CompilerEndIf
                 
-                If \Row\Color\State = 2
+                If \Color\State = 2
                   DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, \Row\Color\State))
+                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, \Color\State))
                 Else
                   DrawingMode(#PB_2DDrawing_Transparent)
                   DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
@@ -1227,7 +1228,7 @@ Module Text
               ; Draw margin
               If *This\sci\margin\width
                 DrawingMode(#PB_2DDrawing_Transparent)
-                DrawText(*This\sci\margin\width-TextWidth(Str(\Item)) - 5, \Y+*This\Scroll\Y, Str(\Item), *This\sci\margin\Color\Front)
+                DrawText(*This\sci\margin\width-TextWidth(Str(\Index)) - 5, \Y+*This\Scroll\Y, Str(\Index), *This\sci\margin\Color\Front)
               EndIf
               
             EndIf
@@ -1236,7 +1237,7 @@ Module Text
           
           If *This\Focus = *This 
             ; Debug ""+ \Caret +" "+ \Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            If (*This\Text\Editable Or \Text\Editable) ;And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] And Not \Text[2]\Width[2] 
+            If (*This\Text\Editable Or \Text\Editable) ;And *This\Caret = *This\Caret[1] And *This\Index[1] = *This\Index[2] And Not \Text[2]\Width[2] 
               DrawingMode(#PB_2DDrawing_XOr)             
               If Bool(Not \Text[1]\Width Or *This\Caret > *This\Caret[1])
                 Line((\Text\X+*This\Scroll\X) + \Text[1]\Width + \Text[2]\Width - Bool(*This\Scroll\X = Left), \Y+*This\Scroll\Y, 1, Height, $FFFFFFFF)
@@ -1261,7 +1262,7 @@ Module Text
           ; Draw image
           If \Image\handle
             DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-            DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
+            DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \color\alpha)
           EndIf
         EndIf
         
@@ -1786,14 +1787,14 @@ Module Text
       With *This
         \Type = #PB_GadgetType_Text
         \Cursor = #PB_Cursor_Default
-        \DrawingMode = #PB_2DDrawing_Default
+        ;\DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         If Not \Canvas\Window
           \Canvas\Window = GetGadgetData(Canvas)
         EndIf
         \Radius = Radius
-        \Alpha = 255
-        \Line =- 1
+        \color\alpha = 255
+        \Index[1] =- 1
         \X =- 1
         \Y =- 1
         
@@ -2067,5 +2068,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------v9-0-----v54-z-P----------------------
+; Folding = ---------v9-------v5----P----------------------
 ; EnableXP

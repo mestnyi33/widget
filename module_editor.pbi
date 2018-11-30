@@ -115,13 +115,13 @@ Module Editor
               Item.i = ((((\Canvas\Mouse\Y-\Y-\Text\Y)-\Scroll\Y) / (\Text\Height/2+1)) - 1)/2
             EndIf
             
-            If LastLine <> \Line Or LastItem <> Item
+            If LastLine <> \Index[1] Or LastItem <> Item
               \Items()\Text[2]\Width[2] = 0
               
               ; Если выделяем сверху вниз, 
               ; если каректор находится в конце слова, 
               ; и позиция курсора неже половини высоты линии
-              If (\Line[1] < \Line And Item = \Line And Position = len)
+              If (\Index[2] < \Index[1] And Item = \Index[1] And Position = len)
                 If Not SelectionLen
                   \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
                 Else
@@ -129,10 +129,10 @@ Module Editor
                 EndIf
               EndIf
               
-              If (\Items()\Text\String.s = "" And Item = \Line And Position = len) Or
-                 \Line[1] > \Line Or ; Если выделяем снизу вверх
-                 (\Line[1] = \Line And Item = \Line And Position = len) Or ; Если позиция курсора неже половини высоты линии
-                 (\Line[1] < \Line And                                     ; Если выделяем сверху вниз
+              If (\Items()\Text\String.s = "" And Item = \Index[1] And Position = len) Or
+                 \Index[2] > \Index[1] Or ; Если выделяем снизу вверх
+                 (\Index[2] = \Index[1] And Item = \Index[1] And Position = len) Or ; Если позиция курсора неже половини высоты линии
+                 (\Index[2] < \Index[1] And                                     ; Если выделяем сверху вниз
                   PreviousElement(*This\Items()))                          ; то выбираем предыдущую линию
                 
                 ;                 If \Items()\Text\String.s = ""
@@ -155,7 +155,7 @@ Module Editor
               EndIf
               
               LastItem = Item
-              LastLine = \Line
+              LastLine = \Index[1]
             EndIf
             PopListPosition(\Items())
             
@@ -179,13 +179,13 @@ Module Editor
     Protected Position.i
     
     With *This\Items()
-      ;Debug "7777    "+*This\Caret +" "+ *This\Caret[1] +" "+*This\Line +" "+ *This\Line[1] +" "+ \Text\String
+      ;Debug "7777    "+*This\Caret +" "+ *This\Caret[1] +" "+*This\Index[1] +" "+ *This\Index[2] +" "+ \Text\String
       
-      If (Caret <> *This\Caret Or Line <> *This\Line Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1]))
+      If (Caret <> *This\Caret Or Line <> *This\Index[1] Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1]))
         \Text[2]\String.s = ""
         ; Debug 8888
         PushListPosition(*This\Items())
-        If *This\Line[1] = *This\Line
+        If *This\Index[2] = *This\Index[1]
           If *This\Caret[1] = *This\Caret And \Text[2]\Len > 0 
             \Text[2]\Len = 0 
             \Text[2]\Width = 0 
@@ -194,7 +194,7 @@ Module Editor
             \Text[2]\Width[2] = 0 
             \Text[2]\Len = 0 
           EndIf
-        ElseIf *This\Line[1] > *This\Line
+        ElseIf *This\Index[2] > *This\Index[1]
           If PreviousElement(*This\Items()) And \Text[2]\Len > 0 
             \Text[2]\Len = 0 
           EndIf
@@ -205,7 +205,7 @@ Module Editor
         EndIf
         PopListPosition(*This\Items())
         
-        If *This\Line[1] = *This\Line
+        If *This\Index[2] = *This\Index[1]
           If *This\Caret[1] = *This\Caret 
             Position = *This\Caret[1]
             ;             If *This\Caret[1] = \Text\Len
@@ -224,7 +224,7 @@ Module Editor
           EndIf
           
           ; Если выделяем снизу вверх
-        ElseIf *This\Line[1] > *This\Line
+        ElseIf *This\Index[2] > *This\Index[1]
           ; <<<<<|
           Position = *This\Caret
           \Text[2]\Len = \Text\Len-Position
@@ -239,7 +239,7 @@ Module Editor
         If \Text[2]\Len > 0 : \Text[2]\String.s = Mid(\Text\String.s, 1+Position, \Text[2]\Len) : \Text[2]\Change = #True : EndIf
         \Text[3]\String.s = Right(\Text\String.s, \Text\Len-(Position + \Text[2]\Len)) : \Text[3]\Len = Len(\Text[3]\String.s) : \Text[3]\Change = #True
         
-        Line = *This\Line
+        Line = *This\Index[1]
         Caret = *This\Caret
         Caret1 = *This\Caret[1]
       EndIf
@@ -306,7 +306,7 @@ Module Editor
     ;ProcedureReturn
     
     With *This\Items()
-      ;Debug *This\Line
+      ;Debug *This\Index[1]
       ;*This\Caret = 0
       If *This\Caret > *This\Caret[1] : *This\Caret = *This\Caret[1] : EndIf
       ; Debug "  "+*This\Caret +" "+ *This\Caret[1]
@@ -332,7 +332,7 @@ Module Editor
           \Items()\Text\Position - Caret
           \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Text\Position, 1)
           Caret + \Items()\Text\Position
-          *This\Line - 1
+          *This\Index[1] - 1
           
         ElseIf \Items()\Text[2]\Len > 0
           Debug " get "+\Items()\Text\String.s+" "+\Items()\Text[2]\String.s
@@ -347,7 +347,7 @@ Module Editor
               \Items()\Text\Position - Caret
               Debug \Items()\Text\Position
               \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Position, 1) 
-              *This\Line - 1
+              *This\Index[1] - 1
             EndIf
           EndIf
           Caret = \Items()\Text[2]\Len
@@ -379,7 +379,7 @@ Module Editor
           \Items()\Text\Position - Caret
           \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s+#LF$, #PB_String_CaseSensitive, \Items()\Text\Position, 1)
           Caret + \Items()\Text\Position
-          *This\Line - 1
+          *This\Index[1] - 1
         ElseIf \Items()\Text[2]\Len > 0
           Debug " get "+\Items()\Text\String.s+" "+\Items()\Text[2]\String.s
           ; If \Caret < \Caret[1] : \Caret = \Caret[1] : EndIf
@@ -394,7 +394,7 @@ Module Editor
               \Items()\Text\Position - Caret
               Debug \Items()\Text\Position
               \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Position, 1) 
-              *This\Line - 1
+              *This\Index[1] - 1
             EndIf
           EndIf
         EndIf
@@ -423,7 +423,7 @@ Module Editor
     With *This\Items()
       If ListSize(*This\Items()) 
         ;If \Text[2]\Len > 0
-        If *This\Line[1] = *This\Line
+        If *This\Index[2] = *This\Index[1]
           Debug "Cut Black"
           If \Text[2]\Len > 0
             RemoveText(*This)
@@ -437,17 +437,17 @@ Module Editor
           Debug " Cut " +*This\Caret +" "+ *This\Caret[1]+" "+\Text[2]\Len
           
           If \Text[2]\Len > 0
-            ;If *This\Line > *This\Line[1] 
+            ;If *This\Index[1] > *This\Index[2] 
             RemoveText(*This)
             ;EndIf
             
             If \Text[2]\Len = \Text\Len
-              SelectElement(*This\Items(), *This\Line)
+              SelectElement(*This\Items(), *This\Index[1])
             EndIf
           EndIf
           
           ; Выделили сверх вниз
-          If *This\Line > *This\Line[1] 
+          If *This\Index[1] > *This\Index[2] 
             Debug "  Cut_1_ForEach"
             
             PushListPosition(*This\Items())
@@ -464,8 +464,8 @@ Module Editor
             
             *This\Caret = *This\Caret[1]
             ; Выделили снизу верх 
-          ElseIf *This\Line[1] > *This\Line 
-            *This\Line[1] = *This\Line 
+          ElseIf *This\Index[2] > *This\Index[1] 
+            *This\Index[2] = *This\Index[1] 
             
             *This\Caret[1] = *This\Caret  ; Выделили пос = 0 фикс = 1
             
@@ -486,20 +486,20 @@ Module Editor
           EndIf
           
           
-          If *This\Line[1]>=0 And *This\Line[1]<ListSize(*This\Items())
-            ;If *This\Line > *This\Line[1]
+          If *This\Index[2]>=0 And *This\Index[2]<ListSize(*This\Items())
+            ;If *This\Index[1] > *This\Index[2]
             String.s = \Text\String.s
             DeleteElement(*This\Items(), 1)
             ;EndIf
-            SelectElement(*This\Items(), *This\Line[1])
+            SelectElement(*This\Items(), *This\Index[2])
             
             If Not *This\Caret
               *This\Caret = \Text\Len-Len(#LF$)
             EndIf
             
             ; Выделили сверху вниз
-            If *This\Line > *This\Line[1]
-              *This\Line = *This\Line[1]
+            If *This\Index[1] > *This\Index[2]
+              *This\Index[1] = *This\Index[2]
               *This\Caret = *This\Caret[1] ; Выделили пос = 0 фикс = 0
               \Text\String.s = String.s + \Text\String.s 
             Else
@@ -560,8 +560,8 @@ Module Editor
     ; переходим в конец предыдущего итема
     
     With *This
-      If (\Line[1] > 0 And \Line = \Line[1]) : \Line[1] - 1 : \Line = \Line[1]
-        SelectElement(\Items(), \Line[1])
+      If (\Index[2] > 0 And \Index[1] = \Index[2]) : \Index[2] - 1 : \Index[1] = \Index[2]
+        SelectElement(\Items(), \Index[2])
         Repaint =- 1 
       EndIf
     EndWith
@@ -575,8 +575,8 @@ Module Editor
     ; переходим в конец предыдущего итема
     
     With *This
-      If (\Line < ListSize(\Items()) - 1 And \Line = \Line[1]) : \Line[1] + 1 : \Line = \Line[1]
-        SelectElement(\Items(), \Line[1]) 
+      If (\Index[1] < ListSize(\Items()) - 1 And \Index[1] = \Index[2]) : \Index[2] + 1 : \Index[1] = \Index[2]
+        SelectElement(\Items(), \Index[2]) 
         Repaint =- 1 
       EndIf
     EndWith
@@ -589,23 +589,23 @@ Module Editor
     
     With *This
       If \Items()\Text[2]\Len
-        If \Line[1] > \Line 
-          Swap \Line[1], \Line
+        If \Index[2] > \Index[1] 
+          Swap \Index[2], \Index[1]
           
-          If SelectElement(\Items(), \Line[1]) 
+          If SelectElement(\Items(), \Index[2]) 
             \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret[1]) 
             \Items()\Text[1]\Change = #True
           EndIf
-        ElseIf \Line > \Line[1] And 
+        ElseIf \Index[1] > \Index[2] And 
                \Caret[1] > \Caret
           Swap \Caret[1], \Caret
         ElseIf \Caret > \Caret[1] 
           Swap \Caret, \Caret[1]
         EndIf
         
-        If \Line <> \Line[1]
+        If \Index[1] <> \Index[2]
           SelectionReset(*This)
-          \Line = \Line[1]
+          \Index[1] = \Index[2]
           Repaint =- 1
         EndIf
       ElseIf \Caret[1] > 0 
@@ -630,22 +630,22 @@ Module Editor
     
     With *This
       If \Items()\Text[2]\Len
-        If \Line > \Line[1] 
-          Swap \Line, \Line[1] 
+        If \Index[1] > \Index[2] 
+          Swap \Index[1], \Index[2] 
           Swap \Caret, \Caret[1]
           
-          If SelectElement(\Items(), \Line[1]) 
+          If SelectElement(\Items(), \Index[2]) 
             \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret[1]) 
             \Items()\Text[1]\Change = #True
           EndIf
-        ElseIf \Line[1] = \Line And 
+        ElseIf \Index[2] = \Index[1] And 
                \Caret > \Caret[1] 
           Swap \Caret, \Caret[1]
         EndIf
         
-        If \Line <> \Line[1]
+        If \Index[1] <> \Index[2]
           SelectionReset(*This)
-          \Line = \Line[1]
+          \Index[1] = \Index[2]
           Repaint =- 1
         EndIf
       ElseIf \Caret[1] < \Items()\Text\Len 
@@ -720,7 +720,7 @@ Module Editor
       Else
         ; Если дошли до начала строки то 
         ; переходим в конец предыдущего итема
-        If *This\Line[1] > 0 
+        If *This\Index[2] > 0 
           \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Position+\Caret, 1)
           
           ToUp(*This)
@@ -763,15 +763,15 @@ Module Editor
           Next
           PopListPosition(*This\Items())
           
-          If *This\Caret = Len(\Text\String.s) : *This\Line[1]+1
-            If *This\Line[1]>=0 And *This\Line[1]<ListSize(*This\Items())
+          If *This\Caret = Len(\Text\String.s) : *This\Index[2]+1
+            If *This\Index[2]>=0 And *This\Index[2]<ListSize(*This\Items())
               PushListPosition(*This\Items())
-              SelectElement(*This\Items(), *This\Line[1])
+              SelectElement(*This\Items(), *This\Index[2])
               String.s = \Text\String.s
               DeleteElement(*This\Items(), 1)
               PopListPosition(*This\Items())
               \Text\String.s + String.s 
-              *This\Line[1] - 1
+              *This\Index[2] - 1
             EndIf
           EndIf
         EndIf
@@ -792,16 +792,16 @@ Module Editor
     
     With  *This
       If \Items()\Text[2]\Len > 0
-        If \Line[1] > \Line : Swap \Line[1], \Line : EndIf
+        If \Index[2] > \Index[1] : Swap \Index[2], \Index[1] : EndIf
         
-        If \Line = \Line[1] 
+        If \Index[1] = \Index[2] 
           String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
         Else    
           PushListPosition(\Items())
           ForEach \Items()
             Select ListIndex(\Items()) 
-              Case \Line[1] : String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$
-              Case \Line : String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+              Case \Index[2] : String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$
+              Case \Index[1] : String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
             EndSelect
           Next
           PopListPosition(\Items())
@@ -823,8 +823,8 @@ Module Editor
         String.s = Left(\Text\String.s, \Items()\Text\Position) + String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
       EndIf
       
-      \Line[1] + 1
-      \Line = \Line[1]
+      \Index[2] + 1
+      \Index[1] = \Index[2]
       
       \Caret = 0
       \Caret[1] = \Caret
@@ -869,7 +869,7 @@ Module Editor
       PushListPosition(\Items())
       Result = SelectElement(\Items(), Item) 
       If Result 
-        \Items()\Line = \Items()\Item
+        \Items()\Index[1] = \Items()\Index
         \Caret = State
         \Caret[1] = \Caret
       EndIf
@@ -906,12 +906,12 @@ Module Editor
         EndIf
         
         If State =- 1
-          \Line = \Text\Count - 1
+          \Index[1] = \Text\Count - 1
           LastElement(\Items())
           \Caret = \Items()\Text\Len
         Else
-          \Line = CountString(Left(String, State), #LF$)
-          SelectElement(\Items(), \Line)
+          \Index[1] = CountString(Left(String, State), #LF$)
+          SelectElement(\Items(), \Index[1])
           \Caret = State-\Items()\Text\Position
         EndIf
         
@@ -919,9 +919,9 @@ Module Editor
         \Items()\Text[1]\Change = 1
         \Caret[1] = \Caret
         
-        \Items()\Line = \Items()\Item 
+        \Items()\Index[1] = \Items()\Index 
         ;PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
-        Scroll::SetState(\Scroll\v, ((\Line * \Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos
+        Scroll::SetState(\Scroll\v, ((\Index[1] * \Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos
       EndIf
     EndWith
   EndProcedure
@@ -932,7 +932,7 @@ Module Editor
     With *This
       PushListPosition(\Items())
       ForEach \Items()
-        If \Items()\Line = \Items()\Item
+        If \Items()\Index[1] = \Items()\Index
           Result = \Items()\Text\Position + \Caret
         EndIf
       Next
@@ -981,7 +981,7 @@ Module Editor
           ; Исправляем идентификатор итема  
           PushListPosition(\Items())
           While NextElement(\Items())
-            \Items()\Item = ListIndex(\Items())
+            \Items()\Index = ListIndex(\Items())
           Wend
           PopListPosition(\Items())
         EndIf
@@ -1000,7 +1000,7 @@ Module Editor
             PushListPosition(\Items())
             While PreviousElement(\Items()) 
               If subLevel = \Items()\subLevel
-                adress = \Items()\address
+                adress = \Items()\handle
                 Break
               ElseIf subLevel > \Items()\subLevel
                 adress = @\Items()
@@ -1011,7 +1011,7 @@ Module Editor
               ChangeCurrentElement(\Items(), adress)
               If subLevel > \Items()\subLevel
                 sublevel = \Items()\sublevel + 1
-                \Items()\address[1] = *Item
+                \Items()\handle[1] = *Item
                 \Items()\childrens + 1
                 \Items()\collapsed = 1
                 hide = 1
@@ -1028,16 +1028,17 @@ Module Editor
             adress = first
           EndIf
           
-          If \Items()\address <> adress : \Items()\address = adress
+          If \Items()\handle <> adress : \Items()\handle = adress
             \Items()\change = Bool(\Type = #PB_GadgetType_Tree)
           EndIf
             \Items()\Text\FontID = \Text\FontID
-            \Items()\alpha = 255
-            \Items()\Line =- 1
+            \Items()\color\alpha = 255
+            \Items()\Index[1] =- 1
             \Items()\focus =- 1
             \Items()\lostfocus =- 1
             \Items()\text\change = 1
-          
+            \Items()\color\alpha = 255
+        
           If IsImage(Image)
             
             Select \Attribute
@@ -1134,12 +1135,12 @@ Module Editor
                   \Text[2]\Len = 1
                 Else
                   \Caret = Caret(*This, Item) 
-                  \Line = ListIndex(*This\Items()) 
-                  \Line[1] = Item
+                  \Index[1] = ListIndex(*This\Items()) 
+                  \Index[2] = Item
                   
                   PushListPosition(\Items())
                   ForEach \Items() 
-                    If \Line[1] <> ListIndex(\Items())
+                    If \Index[2] <> ListIndex(\Items())
                       \Items()\Text[1]\String = ""
                       \Items()\Text[2]\String = ""
                       \Items()\Text[3]\String = ""
@@ -1164,13 +1165,13 @@ Module Editor
               Case #PB_EventType_MouseMove  
                 If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton 
                   
-                  If \Line <> Item And Item =< ListSize(\Items())
-                    If isItem(\Line, \Items()) 
-                      If \Line <> ListIndex(\Items())
-                        SelectElement(\Items(), \Line) 
+                  If \Index[1] <> Item And Item =< ListSize(\Items())
+                    If isItem(\Index[1], \Items()) 
+                      If \Index[1] <> ListIndex(\Items())
+                        SelectElement(\Items(), \Index[1]) 
                       EndIf
                       
-                      If \Line > Item
+                      If \Index[1] > Item
                         \Caret = 0
                       Else
                         \Caret = \Items()\Text\Len
@@ -1179,7 +1180,7 @@ Module Editor
                       SelectionText(*This)
                     EndIf
                     
-                    \Line = Item
+                    \Index[1] = Item
                   EndIf
                   
                   If isItem(Item, \Items()) 
@@ -1192,10 +1193,10 @@ Module Editor
                   Protected SelectionLen
                   PushListPosition(\Items()) 
                   ForEach \Items()
-                    If \Line = \Items()\Item Or \Line[1] = \Items()\Item
+                    If \Index[1] = \Items()\Index Or \Index[2] = \Items()\Index
                       
-                    ElseIf ((\Line[1] < \Line And \Line[1] < \Items()\Item And \Line > \Items()\Item) Or
-                            (\Line[1] > \Line And \Line[1] > \Items()\Item And \Line < \Items()\Item)) 
+                    ElseIf ((\Index[2] < \Index[1] And \Index[2] < \Items()\Index And \Index[1] > \Items()\Index) Or
+                            (\Index[2] > \Index[1] And \Index[2] > \Items()\Index And \Index[1] < \Items()\Index)) 
                       
                       If \Items()\Text[2]\String <> \Items()\Text\String
                         \Items()\Text[2]\Len = \Items()\Text\Len
@@ -1214,9 +1215,9 @@ Module Editor
                         \Items()\Text[2]\Width[2] = SelectionLen
                       EndIf
                       
-                      ;\Items()\Line = \Items()\Item
+                      ;\Items()\Index[1] = \Items()\Index
                     Else  
-                      ;\Items()\Line =- 1
+                      ;\Items()\Index[1] =- 1
                       \Items()\Text[2]\String =  "" : \Items()\Text[2]\Len = 0 : \Items()\Text[2]\Change = 1
                     EndIf
                   Next
@@ -1224,7 +1225,7 @@ Module Editor
                 EndIf
                 
               Default
-                itemSelect(\Line[1], \Items())
+                itemSelect(\Index[2], \Items())
             EndSelect
           EndIf
         EndWith    
@@ -1284,7 +1285,7 @@ Module Editor
                           RemoveText(*This)
                           
                           If \Text[2]\Len = \Text\Len
-                            ;*This\Line[1] = *This\Line
+                            ;*This\Index[2] = *This\Index[1]
                             ClipboardText.s = Trim(ClipboardText.s, #LF$)
                           EndIf
                           ;                         
@@ -1316,9 +1317,9 @@ Module Editor
                           Caret = \Text\Len-*This\Caret
                           String.s = \Text\String.s
                           DeleteElement(*This\Items(), 1)
-                          SetText(*This\Canvas\Gadget, String.s, *This\Line[1])
+                          SetText(*This\Canvas\Gadget, String.s, *This\Index[2])
                           *This\Caret = Len(\Text\String.s)-Caret
-                          ;                         SelectElement(*This\Items(), *This\Line)
+                          ;                         SelectElement(*This\Items(), *This\Index[1])
                           ;                        *This\Caret = 0
                         Else
                           *This\Caret + Len(ClipboardText.s)
@@ -1378,16 +1379,16 @@ Module Editor
       With *This
         \Type = #PB_GadgetType_Editor
         \Cursor = #PB_Cursor_IBeam
-        \DrawingMode = #PB_2DDrawing_Default
+        ;\DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         If Not \Canvas\Window
           \Canvas\Window = GetGadgetData(Canvas)
         EndIf
         \Radius = Radius
-        \Alpha = 255
+        \color\alpha = 255
         \Interact = 1
         \Caret[1] =- 1
-        \Line =- 1
+        \Index[1] =- 1
         \X =- 1
         \Y =- 1
         
@@ -1478,7 +1479,7 @@ Module Editor
           \Color = Colors
           \Color\Fore[0] = 0
           
-          \Row\Alpha = 255
+          \Row\color\alpha = 255
           \Row\Color = Colors
           \Row\Color\Fore[0] = 0
           \Row\Color\Fore[1] = 0
@@ -1664,5 +1665,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------------uw----v---+-v---
+; Folding = ---------------------v+----v---+-v-+-
 ; EnableXP

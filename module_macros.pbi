@@ -184,16 +184,16 @@
   EndMacro
   
   Macro RowBackColor(_this_, _state_)
-    _this_\Row\Color\Back[_state_]&$FFFFFFFF|_this_\Row\Alpha<<24
+    _this_\Row\Color\Back[_state_]&$FFFFFFFF|_this_\Row\Color\Alpha<<24
   EndMacro
   Macro RowForeColor(_this_, _state_)
-    _this_\Row\Color\Fore[_state_]&$FFFFFFFF|_this_\Row\Alpha<<24
+    _this_\Row\Color\Fore[_state_]&$FFFFFFFF|_this_\Row\Color\Alpha<<24
   EndMacro
   Macro RowFrameColor(_this_, _state_)
-    _this_\Row\Color\Frame[_state_]&$FFFFFFFF|_this_\Row\Alpha<<24
+    _this_\Row\Color\Frame[_state_]&$FFFFFFFF|_this_\Row\Color\Alpha<<24
   EndMacro
   Macro RowFontColor(_this_, _state_)
-    _this_\Row\Color\Front[_state_]&$FFFFFFFF|_this_\Row\Alpha<<24
+    _this_\Row\Color\Front[_state_]&$FFFFFFFF|_this_\Row\Color\Alpha<<24
   EndMacro
   
   ; val = %10011110

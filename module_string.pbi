@@ -111,10 +111,10 @@ Module String
     Protected Position.i
     
     With *This\Items()
-      If Caret <> *This\Caret Or Line <> *This\Line Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1])
+      If Caret <> *This\Caret Or Line <> *This\Index[1] Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1])
         \Text[2]\String.s = ""
         
-        If *This\Line[1] = *This\Line
+        If *This\Index[2] = *This\Index[1]
           If *This\Caret[1] > *This\Caret 
             ; |<<<<<< to left
             Position = *This\Caret
@@ -151,7 +151,7 @@ Module String
             EndIf
             
           CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            If *This\Line > *This\Line[1]
+            If *This\Index[1] > *This\Index[2]
               ; <<<<<|
               Position = *This\Caret[1]
               \Text[2]\Len = \Text\Len-Position
@@ -170,7 +170,7 @@ Module String
         EndIf
         \Text[3]\String.s = Trim(Right(*This\Text\String.s, *This\Text\Len-(\Text\Position+Position + \Text[2]\Len)), #LF$) : \Text[3]\Change = #True
         
-        Line = *This\Line
+        Line = *This\Index[1]
         Caret = *This\Caret
         Caret1 = *This\Caret[1]
       EndIf
@@ -313,9 +313,9 @@ Module String
     If *This
       If  *This\Canvas\Mouse\Buttons
         If *This\Canvas\Mouse\Y < *This\Y
-          *This\Line =- 1
+          *This\Index[1] =- 1
         Else
-          *This\Line = (((*This\Canvas\Mouse\Y-*This\Y-*This\Text\Y)-*This\Scroll\Y) / *This\Height[2])
+          *This\Index[1] = (((*This\Canvas\Mouse\Y-*This\Y-*This\Text\Y)-*This\Scroll\Y) / *This\Height[2])
         EndIf
       EndIf
       
@@ -325,7 +325,7 @@ Module String
     EndWith
     
     With *This\items() ;  Not Scroll::is(\Scroll)
-        If ListSize(*This\items()) And Not Scroll::is(\Scroll) ; (((*This\Scroll\v And Not *This\Scroll\v\at) Or Not *This\Scroll\v) And ((*This\Scroll\h And Not *This\Scroll\h\at) Or Not *This\Scroll\h))
+        If ListSize(*This\items()) And Not Scroll::is(*This\Scroll) ; (((*This\Scroll\v And Not *This\Scroll\v\at) Or Not *This\Scroll\v) And ((*This\Scroll\h And Not *This\Scroll\h\at) Or Not *This\Scroll\h))
           Select EventType
             Case #PB_EventType_LostFocus 
               \Caret[1] = 0 ; Двойной клик на тексте
@@ -533,16 +533,16 @@ Module String
       With *This
         \Type = #PB_GadgetType_String
         \Cursor = #PB_Cursor_IBeam
-        \DrawingMode = #PB_2DDrawing_Default
+        ;\DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         If Not \Canvas\Window
           \Canvas\Window = GetGadgetData(Canvas)
         EndIf
         \Radius = Radius
-        \Alpha = 255
+        \color\alpha = 255
         \Interact = 1
         \Caret[1] =- 1
-        \Line =- 1
+        \Index[1] =- 1
         \X =- 1
         \Y =- 1
         
@@ -611,6 +611,7 @@ Module String
           \Color[0]\Fore[0] = 0
           \Color[0]\Fore[1] = 0
           \Color[0]\Fore[2] = 0
+          \Row\Color = \Color
           
           If \Text\Editable
             \Color[0]\Back[0] = $FFFFFFFF 
@@ -900,5 +901,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------4--+-0-------
+; Folding = -----------+-0-------
 ; EnableXP

@@ -48,6 +48,7 @@
     Back.i[4]
     Line.i[4]
     Frame.i[4]
+    Alpha.a[2]
   EndStructure
   
   ;- - Flag_S
@@ -113,7 +114,6 @@
     at.i
     
     Hide.b[2]
-    Alpha.a[2]
     Disable.b[2]
     
     Max.i
@@ -159,15 +159,40 @@
   EndStructure
   
   ;- - Row_S
-  Structure Row_S
-    Alpha.a
-    Color.Color_S
+  Structure Row_S Extends Coordinate_S
+    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
+    handle.i[2]
+    
+    Color.Color_S[4]
+    Text.Text_S[4]
+    Image.Image_S
+    box.Coordinate_S
+    
+    Hide.b[2]
+    Caret.i[3] ; 0 = Pos ; 1 = PosFixed
+    
+    Focus.i
+    LostFocus.i
+    
+    Checked.b[2]
+    Vertical.b
+    Radius.i
+    
+    change.b
+    sublevel.i
+    ;sublevelpos.i
+    sublevellen.i
+    
+    collapsed.b
+    childrens.i
+    *data  ; set/get item data
   EndStructure
   
   ;- - Widget_S
   Structure Widget_S Extends Coordinate_S
-    Index.i  ; Index of new list element
-    Handle.i ; Adress of new list element
+    Type.i
+    handle.i ; Adress of new list element
+    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
              ;
     Sci.Scintilla_S
     *Widget.Widget_S
@@ -175,69 +200,41 @@
     Color.Color_S[4]
     Text.Text_S[4]
     Clip.Coordinate_S
-    *ToolTip.Text_S
-    
-    Scroll.Scroll_S
-    v.Scroll_S
-    h.Scroll_S
-    
-    Image.Image_S
-    box.Coordinate_S
-    Flag.Flag_S
-    
-    Row.Row_S
+    *tooltip.Text_S
+    scroll.Scroll_S
+    image.Image_S
+    flag.Flag_S
     
     bSize.b
     fSize.b[2]
-    
     Hide.b[2]
     Disable.b[2]
+    Interact.b ; будет ли взаимодействовать с пользователем?
     Cursor.i[2]
     
     Caret.i[3] ; 0 = Pos ; 1 = PosFixed
-    Line.i[2]  ; 0 = Pos ; 1 = PosFixed
     
-    
-    Type.i
-    
-    From.i  ; at point widget | item
     Focus.i
     LostFocus.i
     
     Drag.b[2]
     Resize.b ; 
     Toggle.b ; 
-    Checked.b[2]
-    Vertical.b
-    Interact.b ; будет ли взаимодействовать с пользователем?
-    Radius.i
     Buttons.i
     
-    
-    ; tree
-    time.i
-    address.i[2]
-    
-    sublevel.i
-    sublevellen.i
-    sublevelpos.i
-    
-    *Data
-    collapsed.b
-    childrens.i
-    Item.i
-    Attribute.i
+    *data
     change.b
+    radius.i
+    vertical.b
+    checked.b[2]
+    sublevellen.i
     
+    attribute.i
     
     *Default
-    Alpha.a[2]
-    
-    DrawingMode.i
-    
-    List Items.Widget_S()
+    row.Row_S
+    List Items.Row_S()
     List Columns.Widget_S()
-    ;ColumnWidth.i
   EndStructure
   
   ;-

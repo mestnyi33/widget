@@ -30,6 +30,7 @@ DeclareModule Scroll
   ; ;     Fore.i[4]
   ; ;     Back.i[4]
   ; ;     Frame.i[4]
+  ; ;     Alpha.a[2]
   ; ;   EndStructure
   ; ;   
   ; ;   ;- - Page_S
@@ -52,7 +53,6 @@ DeclareModule Scroll
   ; ;     Both.b ; we see both scrolbars
   ; ;     
   ; ;     Hide.b[2]
-  ; ;     Alpha.a[2]
   ; ;     Disable.b[2]
   ; ;     Vertical.b
   ; ;     
@@ -129,10 +129,10 @@ DeclareModule Scroll
   Macro is(_scroll_) : Bool(((_scroll_\v And _scroll_\v\at) Or (_scroll_\h And _scroll_\h\at))) : EndMacro
   ;Macro is(_scroll_) : Bool((((_scroll_\v And Not _scroll_\v\at) Or Not _scroll_\v) And ((_scroll_\h And Not _scroll_\h\at) Or Not _scroll_\h))) : EndMacro
   ;Macro is(_scroll_) : Bool( Bool((_scroll_\v And Not _scroll_\v\at) And (_scroll_\h And Not _scroll_\h\at)) Or Not Bool(_scroll_\v And _scroll_\h)) : EndMacro
-  Macro x(_this_) : _this_\X+Bool(_this_\hide[1] Or Not _this_\alpha)*_this_\Width : EndMacro
-  Macro y(_this_) : _this_\Y+Bool(_this_\hide[1] Or Not _this_\alpha)*_this_\Height : EndMacro
-  Macro width(_this_) : Bool(Not _this_\hide[1] And _this_\alpha)*_this_\Width : EndMacro
-  Macro height(_this_) : Bool(Not _this_\hide[1] And _this_\alpha)*_this_\Height : EndMacro
+  Macro x(_this_) : _this_\X+Bool(_this_\hide[1] Or Not _this_\color\alpha)*_this_\Width : EndMacro
+  Macro y(_this_) : _this_\Y+Bool(_this_\hide[1] Or Not _this_\color\alpha)*_this_\Height : EndMacro
+  Macro width(_this_) : Bool(Not _this_\hide[1] And _this_\color\alpha)*_this_\Width : EndMacro
+  Macro height(_this_) : Bool(Not _this_\hide[1] And _this_\color\alpha)*_this_\Height : EndMacro
   
   ;- - DECLAREs
   Declare.i Draw(*This.Bar_S)
@@ -296,27 +296,27 @@ Module Scroll
   ;-
   Procedure.i Draw(*This.Bar_S)
     With *This
-      If *This And Not \hide And \Alpha
+      If *This And Not \hide And \color\alpha
         
         ; Draw scroll bar background
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox( \X[0], \Y[0], \Width[0], \Height[0], \Radius, \Radius, \Color[0]\Back[\Color[0]\State]&$FFFFFF|\Alpha<<24)
+        RoundBox( \X[0], \Y[0], \Width[0], \Height[0], \Radius, \Radius, \Color[0]\Back[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
         
         If \Vertical
           ; Draw left line
           If Not \s\h\hide
             ; "Это пустое пространство между двумя скроллами тоже закрашиваем если скролл бара кнопки не круглые"
-            If Not \Radius : Box( \X[2], \Y[2]+\Height[2]+1, \Width[2], \Height[2], \Color[0]\Back[\Color[0]\State]&$FFFFFF|\Alpha<<24) : EndIf
-            Line( \X[0], \Y[0],1, \Height[0]-\Radius/2,$FFFFFFFF&$FFFFFF|\Alpha<<24)
+            If Not \Radius : Box( \X[2], \Y[2]+\Height[2]+1, \Width[2], \Height[2], \Color[0]\Back[\Color[0]\State]&$FFFFFF|\color\alpha<<24) : EndIf
+            Line( \X[0], \Y[0],1, \Height[0]-\Radius/2,$FFFFFFFF&$FFFFFF|\color\alpha<<24)
           Else
-            Line( \X[0], \Y[0],1, \Height[0],$FFFFFFFF&$FFFFFF|\Alpha<<24)
+            Line( \X[0], \Y[0],1, \Height[0],$FFFFFFFF&$FFFFFF|\color\alpha<<24)
           EndIf
         Else
           ; Draw top line
           If Not \s\v\hide
-            Line( \X[0], \Y[0], \Width[0]-\Radius/2,1,$FFFFFFFF&$FFFFFF|\Alpha<<24)
+            Line( \X[0], \Y[0], \Width[0]-\Radius/2,1,$FFFFFFFF&$FFFFFF|\color\alpha<<24)
           Else
-            Line( \X[0], \Y[0], \Width[0],1,$FFFFFFFF&$FFFFFF|\Alpha<<24)
+            Line( \X[0], \Y[0], \Width[0],1,$FFFFFFFF&$FFFFFF|\color\alpha<<24)
           EndIf
         EndIf
         
@@ -325,12 +325,12 @@ Module Scroll
           If \Color[3]\Fore[\Color[3]\State]
             DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
           EndIf
-          BoxGradient( \Vertical, \X[3], \Y[3], \Width[3], \Height[3], \Color[3]\Fore[\Color[3]\State], \Color[3]\Back[\Color[3]\State], \Radius, \Alpha)
+          BoxGradient( \Vertical, \X[3], \Y[3], \Width[3], \Height[3], \Color[3]\Fore[\Color[3]\State], \Color[3]\Back[\Color[3]\State], \Radius, \color\alpha)
           
           ; Draw thumb frame
           If \Color[3]\Frame[\Color[3]\State] 
             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox( \X[3], \Y[3], \Width[3], \Height[3], \Radius, \Radius, \Color[3]\Frame[\Color[3]\State]&$FFFFFF|\Alpha<<24)
+            RoundBox( \X[3], \Y[3], \Width[3], \Height[3], \Radius, \Radius, \Color[3]\Frame[\Color[3]\State]&$FFFFFF|\color\alpha<<24)
           EndIf
         EndIf
         
@@ -339,38 +339,38 @@ Module Scroll
           If \Color[1]\Fore[\Color[1]\State]
             DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
           EndIf
-          BoxGradient( \Vertical, \X[1], \Y[1], \Width[1], \Height[1], \Color[1]\Fore[\Color[1]\State], \Color[1]\Back[\Color[1]\State], \Radius, \Alpha)
+          BoxGradient( \Vertical, \X[1], \Y[1], \Width[1], \Height[1], \Color[1]\Fore[\Color[1]\State], \Color[1]\Back[\Color[1]\State], \Radius, \color\alpha)
           If \Color[2]\Fore[\Color[2]\State]
             DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
           EndIf
-          BoxGradient( \Vertical, \X[2], \Y[2], \Width[2], \Height[2], \Color[2]\Fore[\Color[2]\State], \Color[2]\Back[\Color[2]\State], \Radius, \Alpha)
+          BoxGradient( \Vertical, \X[2], \Y[2], \Width[2], \Height[2], \Color[2]\Fore[\Color[2]\State], \Color[2]\Back[\Color[2]\State], \Radius, \color\alpha)
           
           ; Draw buttons frame
           If \Color[1]\Frame[\Color[1]\State]
             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox( \X[1], \Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color[1]\Frame[\Color[1]\State]&$FFFFFF|\Alpha<<24)
+            RoundBox( \X[1], \Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color[1]\Frame[\Color[1]\State]&$FFFFFF|\color\alpha<<24)
           EndIf
           If \Color[2]\Frame[\Color[2]\State]
             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox( \X[2], \Y[2], \Width[2], \Height[2], \Radius, \Radius, \Color[2]\Frame[\Color[2]\State]&$FFFFFF|\Alpha<<24)
+            RoundBox( \X[2], \Y[2], \Width[2], \Height[2], \Radius, \Radius, \Color[2]\Frame[\Color[2]\State]&$FFFFFF|\color\alpha<<24)
           EndIf
           
           ; Draw arrows
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          Arrow( \X[1]+( \Width[1]-\ArrowSize[1])/2, \Y[1]+( \Height[1]-\ArrowSize[1])/2, \ArrowSize[1], Bool( \Vertical), \Color[1]\Front[\Color[1]\State]&$FFFFFF|\Alpha<<24, \ArrowType[1])
-          Arrow( \X[2]+( \Width[2]-\ArrowSize[2])/2, \Y[2]+( \Height[2]-\ArrowSize[2])/2, \ArrowSize[2], Bool( \Vertical)+2, \Color[2]\Front[\Color[2]\State]&$FFFFFF|\Alpha<<24, \ArrowType[2])
+          Arrow( \X[1]+( \Width[1]-\ArrowSize[1])/2, \Y[1]+( \Height[1]-\ArrowSize[1])/2, \ArrowSize[1], Bool( \Vertical), \Color[1]\Front[\Color[1]\State]&$FFFFFF|\color\alpha<<24, \ArrowType[1])
+          Arrow( \X[2]+( \Width[2]-\ArrowSize[2])/2, \Y[2]+( \Height[2]-\ArrowSize[2])/2, \ArrowSize[2], Bool( \Vertical)+2, \Color[2]\Front[\Color[2]\State]&$FFFFFF|\color\alpha<<24, \ArrowType[2])
         EndIf
         
         If \Color[3]\Fore[\Color[3]\State]  ; Draw thumb lines
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
           If \Vertical
-            Line( \X[3]+( \Width[3]-8)/2, \Y[3]+\Height[3]/2-3,9,1, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
-            Line( \X[3]+( \Width[3]-8)/2, \Y[3]+\Height[3]/2,9,1, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
-            Line( \X[3]+( \Width[3]-8)/2, \Y[3]+\Height[3]/2+3,9,1, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
+            Line( \X[3]+( \Width[3]-8)/2, \Y[3]+\Height[3]/2-3,9,1, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\color\alpha<<24)
+            Line( \X[3]+( \Width[3]-8)/2, \Y[3]+\Height[3]/2,9,1, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\color\alpha<<24)
+            Line( \X[3]+( \Width[3]-8)/2, \Y[3]+\Height[3]/2+3,9,1, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\color\alpha<<24)
           Else
-            Line( \X[3]+\Width[3]/2-3, \Y[3]+( \Height[3]-8)/2,1,9, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
-            Line( \X[3]+\Width[3]/2, \Y[3]+( \Height[3]-8)/2,1,9, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
-            Line( \X[3]+\Width[3]/2+3, \Y[3]+( \Height[3]-8)/2,1,9, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\Alpha<<24)
+            Line( \X[3]+\Width[3]/2-3, \Y[3]+( \Height[3]-8)/2,1,9, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\color\alpha<<24)
+            Line( \X[3]+\Width[3]/2, \Y[3]+( \Height[3]-8)/2,1,9, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\color\alpha<<24)
+            Line( \X[3]+\Width[3]/2+3, \Y[3]+( \Height[3]-8)/2,1,9, \Color[3]\Front[\Color[3]\State]&$FFFFFF|\color\alpha<<24)
           EndIf
         EndIf
       EndIf
@@ -416,7 +416,7 @@ Module Scroll
 ; ;       Protected Result.i
 ; ;       
 ; ;       If *This
-; ;         Result = *This\X+Bool(*This\hide[1] Or Not *This\Alpha) * *This\Width
+; ;         Result = *This\X+Bool(*This\hide[1] Or Not *This\color\alpha) * *This\Width
 ; ;       EndIf
 ; ;       
 ; ;       ProcedureReturn Result
@@ -426,7 +426,7 @@ Module Scroll
 ; ;       Protected Result.i
 ; ;       
 ; ;       If *This
-; ;         Result = *This\Y+Bool(*This\hide[1] Or Not *This\Alpha) * *This\Height
+; ;         Result = *This\Y+Bool(*This\hide[1] Or Not *This\color\alpha) * *This\Height
 ; ;       EndIf
 ; ;       
 ; ;       ProcedureReturn Result
@@ -436,7 +436,7 @@ Module Scroll
 ; ;       Protected Result.i
 ; ;       
 ; ;       If *This
-; ;         Result = Bool(Not *This\hide[1] And *This\Width And *This\Alpha) * *This\Width
+; ;         Result = Bool(Not *This\hide[1] And *This\Width And *This\color\alpha) * *This\Width
 ; ;       EndIf
 ; ;       
 ; ;       ProcedureReturn Result
@@ -446,7 +446,7 @@ Module Scroll
 ; ;       Protected Result.i
 ; ;       
 ; ;       If *This
-; ;         Result = Bool(Not *This\hide[1] And *This\Height And *This\Alpha) * *This\Height
+; ;         Result = Bool(Not *This\hide[1] And *This\Height And *This\color\alpha) * *This\Height
 ; ;       EndIf
 ; ;       
 ; ;       ProcedureReturn Result
@@ -893,7 +893,7 @@ Module Scroll
     Static Last, Down, *Scroll.Bar_S, *Last.Bar_S, mouseB, mouseat
     
     With *This
-      If *This And Not \hide And \Alpha And \Type = #PB_GadgetType_ScrollBar
+      If *This And Not \hide And \color\alpha And \Type = #PB_GadgetType_ScrollBar
         If Not mouseX
           mouseX = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX)
         EndIf
@@ -1027,12 +1027,12 @@ Module Scroll
         ; ; ;           
         ; ; ;           ; Auto hides
         ; ; ;           If (AutoHide And Not Drag And Not at) 
-        ; ; ;             If \Alpha <> \Alpha[1] : \Alpha = \Alpha[1] 
+        ; ; ;             If \color\alpha <> \color\alpha[1] : \color\alpha = \color\alpha[1] 
         ; ; ;               repaint =- 1
         ; ; ;             EndIf 
         ; ; ;           EndIf
         ; ; ;           If EventType = #PB_EventType_MouseEnter And (*Thisis = *This Or Not *Scroll)
-        ; ; ;             If \Alpha < 255 : \Alpha = 255
+        ; ; ;             If \color\alpha < 255 : \color\alpha = 255
         ; ; ;               
         ; ; ;               If *Scroll
         ; ; ;                 If \Vertical
@@ -1079,8 +1079,6 @@ Module Scroll
     
     With *This
       ; \Widget = *This
-      \Alpha = 255
-      \Alpha[1] = 0
       \Radius = Radius
       \ArrowType[1] =- 1 ; -1 0 1
       \ArrowType[2] =- 1 ; -1 0 1
@@ -1090,6 +1088,8 @@ Module Scroll
       \Y =- 1
       
       ; Цвет фона скролла
+      \color\alpha = 255
+      \color\alpha[1] = 0
       \Color[0]\State = 0
       \Color[0]\Back[0] = $FFF9F9F9
       \Color[0]\Frame[0] = \Color\Back[0]

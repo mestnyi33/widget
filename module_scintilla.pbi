@@ -60,11 +60,11 @@ Module Scintilla
       Select message
         Case #SCI_SETCARETLINEVISIBLE
         Case #SCI_SETCARETLINEBACK  : \Row\Color\Back[1] = param
-        Case #SCI_SETCARETLINEBACKALPHA : \Row\Alpha = param
+        Case #SCI_SETCARETLINEBACKALPHA : \Row\color\alpha = param
           
         Case #SCI_SETMARGINWIDTHN : \sci\margin\width = lparam
           
-        Case #SCI_SETSELALPHA : \Alpha = param
+        Case #SCI_SETSELALPHA : \color\alpha = param
           
         Case #SCI_SETSELBACK
           Select param

@@ -107,21 +107,21 @@ Module tree
     With *This
       PushListPosition(\Items()) 
       ForEach \Items()
-        If \Items()\Line = \Items()\Item 
-          \Items()\Line =- 1
+        If \Items()\Index[1] = \Items()\Index 
+          \Items()\Index[1] =- 1
           adress = @\Items()
           Break
         EndIf
       Next
       
       ForEach \Items()
-        If \Items()\Item = \Items()\focus
+        If \Items()\Index = \Items()\focus
           If Bool(MouseX=-1 And MouseY=-1 And focus=1)
             \Items()\lostfocus = \Items()\focus
             *This\focus = 0
             
             ; then lost focus widget
-            \Items()\Row\Color\State = 0
+            \Items()\Color\State = 0
             
           EndIf
           adress = @\Items()
@@ -154,9 +154,9 @@ Module tree
                 PushListPosition(\Items())
                 While NextElement(\Items())
                   If \Items()\sublevel > sublevel 
-                    If \Items()\address
+                    If \Items()\handle
                       PushListPosition(\Items())
-                      ChangeCurrentElement(\Items(), \Items()\address)
+                      ChangeCurrentElement(\Items(), \Items()\handle)
                       collapsed = \Items()\collapsed
                       collapsed | \Items()\hide
                       PopListPosition(\Items())
@@ -213,35 +213,35 @@ Module tree
                 If adress 
                   PushListPosition(\Items()) 
                   ChangeCurrentElement(\Items(), adress)
-                  If \Items()\focus = \Items()\Item
+                  If \Items()\focus = \Items()\Index
                     lostfocus = \Items()\focus 
-                    \Items()\Row\Color\State = 1
+                    \Items()\Color\State = 1
                     \Items()\lostfocus =- 1
                     \Items()\focus =- 1
                   EndIf
                   PopListPosition(\Items()) 
-                  If lostfocus <> \Items()\Item
+                  If lostfocus <> \Items()\Index
                     \Items()\lostfocus = lostfocus
-                    *This\Item = \Items()\Item
+                    *This\Index = \Items()\Index
                     *This\Change = 1
                   EndIf
                 EndIf
                 
-                \Items()\focus = \Items()\Item
+                \Items()\focus = \Items()\Index
               EndIf
             EndIf
             
-            If \Items()\Line <> \Items()\Item 
-              \Items()\Line = \Items()\Item
-              *This\Line = \Items()\Line
+            If \Items()\Index[1] <> \Items()\Index 
+              \Items()\Index[1] = \Items()\Index
+              *This\Index[1] = \Items()\Index[1]
               
               ; надо учитивать высоту текста шрифт текста и т.д.
               ;*This\Text = \Items()\text 
               ;CopyStructure(\Items()\text, *This\Text, Text_S)
               
               
-              If \Items()\lostfocus <> \Items()\Item
-                \Items()\Row\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
+              If \Items()\lostfocus <> \Items()\Index
+                \Items()\Color\State = 1+Bool(\Items()\Index=\Items()\focus)
               EndIf
               
             EndIf
@@ -269,27 +269,27 @@ Module tree
       
       PushListPosition(\Items()) 
       ForEach \Items()
-        If \Items()\Line = \Items()\Item 
-          \Items()\Line =- 1
+        If \Items()\Index[1] = \Items()\Index 
+          \Items()\Index[1] =- 1
           adress = @\Items()
-          Line = \Items()\Item 
+          Line = \Items()\Index 
           Break
         EndIf
       Next
       
       ForEach \Items()
-        If \Items()\Item = \Items()\focus
+        If \Items()\Index = \Items()\focus
           If Bool(MouseX=-1 And MouseY=-1 And focus=1)
             \Items()\lostfocus = \Items()\focus
             *This\focus = 0
             
             ; then lost focus widget
-            \Items()\Row\Color\State = 0
+            \Items()\Color\State = 0
             
           EndIf
           
           adress = @\Items()
-          Line = \Items()\Item 
+          Line = \Items()\Index 
           Break
         EndIf
       Next
@@ -319,9 +319,9 @@ Module tree
                 PushListPosition(\Items())
                 While NextElement(\Items())
                   If \Items()\sublevel > sublevel 
-                    If \Items()\address
+                    If \Items()\handle
                       PushListPosition(\Items())
-                      ChangeCurrentElement(\Items(), \Items()\address)
+                      ChangeCurrentElement(\Items(), \Items()\handle)
                       collapsed = \Items()\collapsed
                       collapsed | \Items()\hide
                       PopListPosition(\Items())
@@ -376,29 +376,29 @@ Module tree
                 If adress 
                   PushListPosition(\Items()) 
                   ChangeCurrentElement(\Items(), adress)
-                  If \Items()\focus = \Items()\Item
+                  If \Items()\focus = \Items()\Index
                     lostfocus = \Items()\focus 
-                    \Items()\Row\Color\State = 1
+                    \Items()\Color\State = 1
                     \Items()\lostfocus =- 1
                     \Items()\focus =- 1
                   EndIf
                   PopListPosition(\Items()) 
                 EndIf
                 
-                If lostfocus <> \Items()\Item
+                If lostfocus <> \Items()\Index
                   \Items()\lostfocus = lostfocus
-                  *This\Item = \Items()\Item
+                  *This\Index = \Items()\Index
                   *This\Change = 1
                 EndIf
                 
-                \Items()\Row\Color\State = 2
-                \Items()\focus = \Items()\Item
+                \Items()\Color\State = 2
+                \Items()\focus = \Items()\Index
               EndIf
             EndIf
             
             
             adress = @\Items()
-            Line = \Items()\Item 
+            Line = \Items()\Index 
             Break
           EndIf
         Next
@@ -425,8 +425,8 @@ Module tree
       Result = SelectElement(\Items(), Item) 
       If Result 
         If State&#PB_Attribute_Selected
-          \Items()\Line = \Items()\Item
-          \Items()\Row\Color\State = Bool(State)+1
+          \Items()\Index[1] = \Items()\Index
+          \Items()\Color\State = Bool(State)+1
         EndIf
         
         If State&#PB_Attribute_Collapsed Or State&#PB_Attribute_Expanded
@@ -461,7 +461,7 @@ Module tree
       Text::Redraw(*This, \Canvas\Gadget)
       
       PushListPosition(\Items())
-      SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Line = \Items()\Item : \Items()\Row\Color\State = 2
+      SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Index[1] = \Items()\Index : \Items()\Color\State = 2
       Scroll::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos ; в конце
                                                                                                                          ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
       PopListPosition(\Items())
@@ -474,8 +474,8 @@ Module tree
     With *This
       PushListPosition(\Items())
       ForEach \Items()
-        If \Items()\Focus = \Items()\Item
-          Result = \Items()\Item
+        If \Items()\Focus = \Items()\Index
+          Result = \Items()\Index
         EndIf
       Next
       PopListPosition(\Items())
@@ -494,7 +494,7 @@ Module tree
     EndWith
     
     If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
-      If ListSize(*This\items())
+      If ListSize(*This\Items())
         With *This
           If Not \Hide And Not \Disable And \Interact
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -506,12 +506,12 @@ Module tree
             Select EventType 
               Case #PB_EventType_LostFocus 
                 ; \Focus =- 1
-;                 \Line =- 1
+;                 \Index[1] =- 1
                 ; \Items()\Focus =- 1
-;                 \Items()\Line = \Items()\Item
-                Debug "    "+\Line[1]+" "+\Items()\Text\String 
-               itemSelect(\Line[1], \Items())
-               \Items()\Row\Color\State = 0
+;                 \Items()\Index[1] = \Items()\Index
+                Debug "    "+\Index[2]+" "+\Items()\Text\String 
+               itemSelect(\Index[2], \Items())
+               \Items()\Color\State = 0
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
                 
@@ -536,26 +536,26 @@ Module tree
                   Else
                     ;Debug 77777
                     ToolTip(0)
-                    \Line =- 1
+                    \Index[1] =- 1
                   EndIf
                 Else
-                  \Line =- 1
+                  \Index[1] =- 1
                 EndIf
                 
               Case #PB_EventType_LeftButtonUp : \Drag[1] = 0
                 Repaint = 1
                     
               Case #PB_EventType_LeftButtonDown
-                \Line = get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y, 1) : \Line[1] = \Line
+                \Index[1] = get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y, 1) : \Index[2] = \Index[1]
                 Repaint = 1
                 
               Case #PB_EventType_MouseMove  
-                Protected from = \Line
+                Protected from = \Index[1]
                 Protected Line = get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y)
                 
-                If \Line<>Line : \Line=Line
-                  If \Scroll\h\hide And from <> \Line
-                  itemSelect(\Line, \Items())
+                If \Index[1]<>Line : \Index[1]=Line
+                  If \Scroll\h\hide And from <> \Index[1]
+                  itemSelect(\Index[1], \Items())
                   If (\Items()\text\x+\Items()\text\width)>\Items()\X+\Items()\width
                     If \ToolTip : ToolTip(0) : EndIf
                     \ToolTip = \Items()\text
@@ -567,7 +567,7 @@ Module tree
                   ElseIf \ToolTip : \ToolTip = 0
                     ToolTip(0)
                   EndIf
-                  from = \Line
+                  from = \Index[1]
                 EndIf
                 
                 If \Drag And \Drag[1] = 0 : \Drag[1] = 1
@@ -591,9 +591,9 @@ Module tree
 ; ;                       RoundBox(*This\x[2],\Items()\Y,\Items()\width,\Items()\height,\Items()\Radius,\Items()\Radius, \Color\Back[0])
 ; ;                       
 ; ;                     
-; ;                     If \Row\Color\State = 2
+; ;                     If \Color\State = 2
 ; ;                       DrawingMode(#PB_2DDrawing_Transparent)
-; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, \Items()\Color\Front[\Row\Color\State])
+; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, \Items()\Color\Front[\Color\State])
 ; ;                     Else
 ; ;                       DrawingMode(#PB_2DDrawing_Transparent)
 ; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
@@ -601,17 +601,17 @@ Module tree
 ; ;                   EndIf
 ; ;                   
 ; ;                   If Line>=0 And SelectElement(\Items(), Line)
-; ;                   ;If (\Items()\Item=*This\Line Or \Items()\Item=\Items()\focus Or \Items()\Item=\Items()\line) ; \Color\State;
-; ;                     If \Items()\Color\Fore[\Row\Color\State]
+; ;                   ;If (\Items()\Index=*This\Index[1] Or \Items()\Index=\Items()\focus Or \Items()\Index=\Items()\Index[1]) ; \Color\State;
+; ;                     If \Items()\Color\Fore[\Color\State]
 ; ;                       DrawingMode(#PB_2DDrawing_Gradient);|#PB_2DDrawing_AlphaBlend)
-; ;                       BoxGradient(\Vertical,*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Color\Fore[\Row\Color\State],\Items()\Color\Back[\Row\Color\State],\Items()\Radius)
+; ;                       BoxGradient(\Vertical,*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Color\Fore[\Color\State],\Items()\Color\Back[\Color\State],\Items()\Radius)
 ; ;                     Else
 ; ;                       DrawingMode(#PB_2DDrawing_Default);|#PB_2DDrawing_AlphaBlend)
-; ;                       RoundBox(*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Radius,\Items()\Radius,\Items()\Color\Back[\Row\Color\State])
+; ;                       RoundBox(*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Radius,\Items()\Radius,\Items()\Color\Back[\Color\State])
 ; ;                     EndIf
 ; ;                     
 ; ;                     DrawingMode(#PB_2DDrawing_Outlined);|#PB_2DDrawing_AlphaBlend)
-; ;                     RoundBox(*This\x[2],\Items()\Y,\Items()\width,\Items()\height,\Items()\Radius,\Items()\Radius, \Items()\Color\Frame[\Row\Color\State])
+; ;                     RoundBox(*This\x[2],\Items()\Y,\Items()\width,\Items()\height,\Items()\Radius,\Items()\Radius, \Items()\Color\Frame[\Color\State])
 ; ;                     
 ; ;                     DrawingMode(#PB_2DDrawing_Transparent)
 ; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
@@ -623,12 +623,12 @@ Module tree
               EndIf
               
               Default
-                itemSelect(\Line[1], \Items())
+                itemSelect(\Index[2], \Items())
             EndSelect
           EndIf
         EndWith    
         
-        With *This\items()
+        With *This\Items()
           If *Focus = *This
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
               Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
@@ -650,7 +650,7 @@ Module tree
         EndWith
       EndIf
     Else
-      *This\Line =- 1
+      *This\Index[1] =- 1
     EndIf
     
 ;     If Repaint
@@ -669,17 +669,16 @@ Module tree
       With *This
         \Type = #PB_GadgetType_Tree
         \Cursor = #PB_Cursor_Default
-        \DrawingMode = #PB_2DDrawing_Default
+        ;\DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         If Not \Canvas\Window
           \Canvas\Window = GetGadgetData(Canvas)
         EndIf
         \Radius = Radius
         \sublevellen = 18
-        \Alpha = 255
         \Interact = 1
         \Caret[1] =- 1
-        \Line =- 1
+        \Index[1] =- 1
         \X =- 1
         \Y =- 1
         
@@ -731,11 +730,14 @@ Module tree
         \Text\Change = 1
         
         \Color = Colors
+        \color\alpha = 255
+        \color\alpha[1] = 0
         \Color\Fore[0] = 0
         
-        \Row\Alpha = 255
+        \Row\color\alpha = 255
         \Row\Color = Colors
-        \Row\Color\State = 1
+        \Row\color\alpha = 255
+        \Row\color\alpha[1] = 0
         \Row\Color\Fore[0] = 0
         \Row\Color\Fore[1] = 0
         \Row\Color\Fore[2] = 0

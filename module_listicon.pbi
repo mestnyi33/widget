@@ -291,7 +291,7 @@ Module ListIcon
               EndIf
               
               ; Draw selections
-              If Drawing And (\Item=*This\Line Or \Item=\focus Or \Item=\line) ; \Color\State;
+              If Drawing And (\index=*This\Index[1] Or \index=\focus Or \index=\Index[1]) ; \Color\State;
                 If \Color\Fore[\Color\State]
                   DrawingMode(#PB_2DDrawing_Gradient)
                   BoxGradient(\Vertical,*This\X[2],Y,iwidth,\Height,\Color\Fore[\Color\State],\Color\Back[\Color\State],\Radius)
@@ -318,19 +318,19 @@ Module ListIcon
                   EndIf
                   
                   ; Vertical plot
-                  If \address
+                  If \handle
                     Protected start = \sublevel
                     
                     ; это нужно если линия уходит за предели границы виджета
-                    If \address[1]
+                    If \handle[1]
                       PushListPosition(*This\Items())
-                      ChangeCurrentElement(*This\Items(), \address[1]) 
+                      ChangeCurrentElement(*This\Items(), \handle[1]) 
                       ;If \Hide : Drawing = 2 : EndIf
                       PopListPosition(*This\Items())
                     EndIf
                     
                     PushListPosition(*This\Items())
-                    ChangeCurrentElement(*This\Items(), \address) 
+                    ChangeCurrentElement(*This\Items(), \handle) 
                     If Drawing  
                       If start
                         If *This\sublevellen > 10
@@ -369,7 +369,7 @@ Module ListIcon
                   ; Draw image
                   If \Image\handle
                     DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                    DrawAlphaImage(\Image\handle, \Image\x+*This\Scroll\X, \Image\y+*This\Scroll\Y, \alpha)
+                    DrawAlphaImage(\Image\handle, \Image\x+*This\Scroll\X, \Image\y+*This\Scroll\Y, \color\alpha)
                   EndIf
                 EndIf
                 
@@ -380,10 +380,10 @@ Module ListIcon
                 If \Text[2]\Len > 0 And *This\Color\Front <> *This\Color\Front[2]
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                    If (*This\Caret[1] > *This\Caret And *This\Line[1] = *This\Line) Or (*This\Line[1] > *This\Line And *This\Line = \Item)
+                    If (*This\Caret[1] > *This\Caret And *This\Index[2] = *This\Index[1]) Or (*This\Index[2] > *This\Index[1] And *This\Index[1] = \index)
                       \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
                       
-                      If *This\Line[1] = *This\Line
+                      If *This\Index[2] = *This\Index[1]
                         \Text[2]\X = \Text[3]\X-\Text[2]\Width
                       EndIf
                       
@@ -457,7 +457,7 @@ Module ListIcon
             
             If *This\Focus = *This 
               ; Debug ""+ \Caret +" "+ \Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-              If (*This\Text\Editable Or \Text\Editable) ;And *This\Caret = *This\Caret[1] And *This\Line = *This\Line[1] And Not \Text[2]\Width[2] 
+              If (*This\Text\Editable Or \Text\Editable) ;And *This\Caret = *This\Caret[1] And *This\Index[1] = *This\Index[2] And Not \Text[2]\Width[2] 
                 DrawingMode(#PB_2DDrawing_XOr)             
                 If Bool(Not \Text[1]\Width Or *This\Caret > *This\Caret[1])
                   Line((\Text\X+*This\Scroll\X) + \Text[1]\Width + \Text[2]\Width - Bool(*This\Scroll\X = Right), \Y+*This\Scroll\Y, 1, Height, $FFFFFFFF)
@@ -512,7 +512,7 @@ Module ListIcon
           ; Draw image
           If \Image\handle
             DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-            DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \alpha)
+            DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \color\alpha)
           EndIf
         EndIf
         
@@ -715,8 +715,8 @@ Module ListIcon
               
               Drawing = Bool(\y+\height>*This\bSize+*This\Columns()\height And \y<*This\height[2])
               If Drawing
-                If (\Item=\focus And \lostfocus<>\focus) Or
-                   (*This\focus And *This\Flag\FullSelection And *This\Item = \Item )
+                If (\index=\focus And \lostfocus<>\focus) Or
+                   (*This\focus And *This\Flag\FullSelection And *This\Index[1] = \Index )
                   
                   box_color = $FFFFFF
                   text_color=$FFFFFF
@@ -727,7 +727,7 @@ Module ListIcon
                 
                 
                 ; Draw selections
-                If \Item=\Line Or \Item=\focus ; \Item=*This\Line ; с этим остается последное виделеное слово
+                If \index=\Index[1] Or \index=\focus ; \index=*This\Index[1] ; с этим остается последное виделеное слово
                   Protected SelectionPos, SelectionLen 
                   If *This\Flag\FullSelection
                     SelectionPos = *This\bSize
@@ -962,7 +962,7 @@ Module ListIcon
         Else
           PushListPosition(\Items()) 
           ForEach \Items()
-            If \Items()\Item = Item 
+            If \Items()\Index = Item 
               ; Result = \Items()\childrens 
               sublevel = \Items()\sublevel
               
@@ -993,7 +993,7 @@ Module ListIcon
       With *This
         ;PushListPosition(\Columns()\Items()) 
         ForEach \Columns()\Items()
-          If \Columns()\Items()\Item = Item 
+          If \Columns()\Items()\Index = Item 
             Result = DeleteElement(\Columns()\Items(), 1) 
             Break
           EndIf
@@ -1016,7 +1016,7 @@ Module ListIcon
       With *This
         PushListPosition(\Items()) 
         ForEach \Items()
-          If \Items()\Item = Item 
+          If \Items()\Index = Item 
             Select Attribute
               Case #PB_Tree_SubLevel
                 Result = \Items()\sublevel
@@ -1039,7 +1039,7 @@ Module ListIcon
       With *This
         PushListPosition(\Items()) 
         ForEach \Items()
-          If \Items()\Item = Item 
+          If \Items()\Index = Item 
             Result = \Items()\data
             Break
           EndIf
@@ -1059,7 +1059,7 @@ Module ListIcon
       With *This
         PushListPosition(\Items()) 
         ForEach \Items()
-          If \Items()\Item = Item 
+          If \Items()\Index = Item 
             \Items()\data = *data
             Break
           EndIf
@@ -1079,7 +1079,7 @@ Module ListIcon
       With *This
         PushListPosition(\Items()) 
         ForEach \Items()
-          If \Items()\Item = Item 
+          If \Items()\Index = Item 
             
             Break
           EndIf
@@ -1099,7 +1099,7 @@ Module ListIcon
       With *This
         PushListPosition(\Items()) 
         ForEach \Items()
-          If \Items()\Item = Item 
+          If \Items()\Index = Item 
             
             Break
           EndIf
@@ -1119,7 +1119,7 @@ Module ListIcon
       With *This
         PushListPosition(\Items()) 
         ForEach \Items()
-          If \Items()\Item = Item 
+          If \Items()\Index = Item 
             Result = \Items()\Image
             Break
           EndIf
@@ -1139,7 +1139,7 @@ Module ListIcon
       With *This
         PushListPosition(\Items()) 
         ForEach \Items()
-          If \Items()\Item = Item And IsImage(image)
+          If \Items()\Index = Item And IsImage(image)
             \Items()\Image\handle = ImageID(image)
             \Items()\Image\handle[1] = image 
             Break
@@ -1160,15 +1160,15 @@ Module ListIcon
       With *This
         PushListPosition(\Items()) 
         ForEach \Items()
-          If \Items()\Line = \Items()\Item 
-            \Items()\Line =- 1
+          If \Items()\Index[1] = \Items()\Index 
+            \Items()\Index[1] =- 1
             Result = @\Items()
             Break
           EndIf
         Next
         
         ForEach \Items()
-          If \Items()\Item = \Items()\focus
+          If \Items()\Index = \Items()\focus
             \Items()\lostfocus = \Items()\focus
             If Item =- 1 : \Items()\focus =- 1 : EndIf
             Result = @\Items()
@@ -1179,28 +1179,28 @@ Module ListIcon
         If Item <>- 1
           ForEach \Items()
             If \Items()\hide : Continue : EndIf
-            If \Items()\Item = Item
+            If \Items()\Index = Item
               
               If Result 
                 PushListPosition(\Items()) 
                 ChangeCurrentElement(\Items(), Result)
-                If \Items()\focus = \Items()\Item
+                If \Items()\focus = \Items()\Index
                   lostfocus = \Items()\focus 
                   \Items()\lostfocus =- 1
                   \Items()\focus =- 1
                 EndIf
                 PopListPosition(\Items()) 
-                If lostfocus <> \Items()\Item
+                If lostfocus <> \Items()\Index
                   \Items()\lostfocus = lostfocus
                 EndIf
               EndIf
               
-              \Items()\focus = \Items()\Item
-              \Items()\Line = \Items()\Item
+              \Items()\focus = \Items()\Index
+              \Items()\Index[1] = \Items()\Index
               
               If GetActiveGadget()<>Gadget
                 \Items()\lostfocus = \Items()\focus
-                \Items()\Line =- 1
+                \Items()\Index[1] =- 1
               EndIf
               
               Result = @\Items()
@@ -1224,7 +1224,7 @@ Module ListIcon
     
     If *This 
       With *This
-        Result = \Item
+        Result = \index
       EndWith
     EndIf
     
@@ -1240,13 +1240,13 @@ Module ListIcon
         PushListPosition(\Items()) 
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
-          If \Items()\Item = Item
+          If \Items()\Index = Item
             If State&#PB_Attribute_Selected
-              \Items()\focus = \Items()\Item
+              \Items()\focus = \Items()\Index
               
               If GetActiveGadget()<>Gadget
                 \Items()\lostfocus = \Items()\focus
-                \Items()\Line =- 1
+                \Items()\Index[1] =- 1
               EndIf
               
             EndIf
@@ -1292,7 +1292,7 @@ Module ListIcon
         PushListPosition(\Items()) 
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
-          If \Items()\Item = Item
+          If \Items()\Index = Item
             Result = #PB_Attribute_Selected
             If \Items()\collapsed
               Result | #PB_Attribute_Collapsed
@@ -1321,7 +1321,7 @@ Module ListIcon
         PushListPosition(\Items()) 
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
-          If \Items()\Item = \Items()\focus
+          If \Items()\Index = \Items()\focus
             Result = \Items()\text\string
             Break
           EndIf
@@ -1342,7 +1342,7 @@ Module ListIcon
         PushListPosition(\Items()) 
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
-          If \Items()\Item = \Items()\focus
+          If \Items()\Index = \Items()\focus
             \Items()\text\string = Text
             Break
           EndIf
@@ -1363,7 +1363,7 @@ Module ListIcon
         PushListPosition(\Items()) 
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
-          If \Items()\Item = Item
+          If \Items()\Index = Item
             Result = \Items()\text\string
             Break
           EndIf
@@ -1384,7 +1384,7 @@ Module ListIcon
         PushListPosition(\Items()) 
         ForEach \Items()
           If \Items()\hide : Continue : EndIf
-          If \Items()\Item = Item
+          If \Items()\Index = Item
             \Items()\text\string = Text
             Break
           EndIf
@@ -1448,8 +1448,8 @@ Module ListIcon
       ;PushListPosition(\Items()) 
       ForEach *This\Columns()
         ForEach \Items()
-          If \Items()\Line = \Items()\Item 
-            \Items()\Line =- 1
+          If \Items()\Index[1] = \Items()\Index 
+            \Items()\Index[1] =- 1
             adress = @\Items()
             Break
           EndIf
@@ -1458,7 +1458,7 @@ Module ListIcon
       
       ForEach *This\Columns()
         ForEach \Items()
-          If \Items()\Item = \Items()\focus
+          If \Items()\Index = \Items()\focus
             If Bool(MouseX=-1 And MouseY=-1 And focus=1)
               \Items()\lostfocus = \Items()\focus
               *This\focus = 0
@@ -1501,9 +1501,9 @@ Module ListIcon
                   If sublevel = \Items()\sublevel
                     Break
                   ElseIf sublevel < \Items()\sublevel 
-                    If \Items()\address
+                    If \Items()\handle
                       PushListPosition(\Items())
-                      ChangeCurrentElement(\Items(), \Items()\address)
+                      ChangeCurrentElement(\Items(), \Items()\handle)
                       collapsed = \Items()\collapsed
                       If \Items()\hide
                         collapsed = 1
@@ -1527,32 +1527,32 @@ Module ListIcon
                 If adress 
                   PushListPosition(\Items()) 
                   ChangeCurrentElement(\Items(), adress)
-                  If \Items()\focus = \Items()\Item
+                  If \Items()\focus = \Items()\Index
                     lostfocus = \Items()\focus 
                     \Items()\lostfocus =- 1
                     \Items()\focus =- 1
                   EndIf
                   PopListPosition(\Items()) 
-                  If lostfocus <> \Items()\Item
+                  If lostfocus <> \Items()\Index
                     \Items()\lostfocus = lostfocus
-                    *This\Item = \Items()\Item
+                    *This\index[1] = \Items()\Index
                     *This\Change = 1
                   EndIf
                 EndIf
                 
-                \Items()\focus = \Items()\Item
+                \Items()\focus = \Items()\Index
               EndIf
               
             EndIf
             
-            If \Items()\Line <> \Items()\Item 
-              \Items()\Line = \Items()\Item
-              *This\Line = \Items()\Line
+            If \Items()\Index[1] <> \Items()\Index 
+              \Items()\Index[1] = \Items()\Index
+              *This\Index[1] = \Items()\Index[1]
               ; *This\text = \Items()\text 
               
               
-              If \Items()\lostfocus <> \Items()\Item
-                \Row\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
+              If \Items()\lostfocus <> \Items()\Index
+                \Row\Color\State = 1+Bool(\Items()\Index=\Items()\focus)
               EndIf
               
             EndIf
@@ -1580,10 +1580,10 @@ Module ListIcon
       ; PushListPosition(\Items()) 
       ForEach *This\Columns()
         ForEach \Items()
-          If \Items()\Line = \Items()\Item 
-            \Items()\Line =- 1
+          If \Items()\Index[1] = \Items()\Index 
+            \Items()\Index[1] =- 1
             adress = @\Items()
-            Line =- 1; \Items()\Item 
+            Line =- 1; \Items()\Index 
             Break
           EndIf
         Next
@@ -1591,7 +1591,7 @@ Module ListIcon
       
       ForEach *This\Columns()
         ForEach \Items()
-          If \Items()\Item = \Items()\focus
+          If \Items()\Index = \Items()\focus
             If Bool(MouseX=-1 And MouseY=-1 And focus=1)
               \Items()\lostfocus = \Items()\focus
               *This\focus = 0
@@ -1602,7 +1602,7 @@ Module ListIcon
             EndIf
             
             adress = @\Items()
-            Line =- 1 ; \Items()\Item 
+            Line =- 1 ; \Items()\Index 
             Break
           EndIf
         Next
@@ -1635,9 +1635,9 @@ Module ListIcon
                 PushListPosition(\Items())
                 While NextElement(\Items())
                   If \Items()\sublevel > sublevel 
-                    If \Items()\address
+                    If \Items()\handle
                       PushListPosition(\Items())
-                      ChangeCurrentElement(\Items(), \Items()\address)
+                      ChangeCurrentElement(\Items(), \Items()\handle)
                       collapsed = \Items()\collapsed
                       collapsed | \Items()\hide
                       PopListPosition(\Items())
@@ -1692,7 +1692,7 @@ Module ListIcon
                 If adress 
                   PushListPosition(\Items()) 
                   ChangeCurrentElement(\Items(), adress)
-                  If \Items()\focus = \Items()\Item
+                  If \Items()\focus = \Items()\Index
                     lostfocus = \Items()\focus 
                     \Row\Color\State = 1
                     \Items()\lostfocus =- 1
@@ -1701,29 +1701,29 @@ Module ListIcon
                   PopListPosition(\Items()) 
                 EndIf
                 
-                If lostfocus <> \Items()\Item
+                If lostfocus <> \Items()\Index
                   \Items()\lostfocus = lostfocus
-                  *This\Item = \Items()\Item
+                  *This\Index[1] = \Items()\Index
                   *This\Change = 1
                 EndIf
                 
                 \Row\Color\State = 2
-                \Items()\focus = \Items()\Item
+                \Items()\focus = \Items()\Index
               EndIf
             EndIf
             
             
             adress = @\Items()
-            Line = \Items()\Item 
+            Line = \Items()\Index 
             
-            If \Items()\Line <> \Items()\Item 
-              \Items()\Line = \Items()\Item
-;               *This\Line = \Items()\Line
+            If \Items()\Index[1] <> \Items()\Index 
+              \Items()\Index[1] = \Items()\Index
+;               *This\Index[1] = \Items()\Index[1]
 ;               *This\text = \Items()\text 
               
               
-              If \Items()\lostfocus <> \Items()\Item
-                \Row\Color\State = 1+Bool(\Items()\Item=\Items()\focus)
+              If \Items()\lostfocus <> \Items()\Index
+                \Row\Color\State = 1+Bool(\Items()\Index=\Items()\focus)
               EndIf
               
             EndIf
@@ -1771,19 +1771,19 @@ Module ListIcon
             Select EventType 
               Case #PB_EventType_LostFocus 
                 ; \Focus =- 1
-;                 \Line =- 1
+;                 \Index[1] =- 1
                 ; \Items()\Focus =- 1
-;                 \Items()\Line = \Items()\Item
-               itemSelect(*This\Line[1], \Items())
-                Debug "  LostFocus   "+*This\Line[1]+" "+\Items()\Text\String 
+;                 \Items()\Index[1] = \Items()\Index
+               itemSelect(*This\Index[2], \Items())
+                Debug "  LostFocus   "+*This\Index[2]+" "+\Items()\Text\String 
                \Row\Color\State = 0
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
                 
               Case #PB_EventType_Focus 
-                itemSelect(*This\Line[1], \Items())
-                Debug "  Focus   "+*This\Line[1]+" "+\Items()\Text\String 
-                \Items()\Line = \Items()\Item
+                itemSelect(*This\Index[2], \Items())
+                Debug "  Focus   "+*This\Index[2]+" "+\Items()\Text\String 
+                \Items()\Index[1] = \Items()\Index
                 \Row\Color\State = 2
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
@@ -1806,26 +1806,26 @@ Module ListIcon
                   Else
                     ;Debug 77777
                     ToolTip(0)
-                    *This\Line =- 1
+                    *This\Index[1] =- 1
                   EndIf
                 Else
-                  *This\Line =- 1
+                  *This\Index[1] =- 1
                 EndIf
                 
               Case #PB_EventType_LeftButtonUp : *This\Drag[1] = 0
                 Repaint = 1
                     
               Case #PB_EventType_LeftButtonDown
-                *This\Line = get_from(*This, *This\Canvas\Mouse\X, *This\Canvas\Mouse\Y, 1) : *This\Line[1] = *This\Line
+                *This\Index[1] = get_from(*This, *This\Canvas\Mouse\X, *This\Canvas\Mouse\Y, 1) : *This\Index[2] = *This\Index[1]
                 Repaint = 1
                 
               Case #PB_EventType_MouseMove  
-                Protected from = *This\Line
+                Protected from = *This\Index[1]
                 Protected Line = get_from(*This, *This\Canvas\Mouse\X, *This\Canvas\Mouse\Y)
                 
-                If *This\Line<>Line : *This\Line=Line
-                 If *This\Scroll\h\hide And from <> *This\Line
-                  itemSelect(*This\Line, \Items())
+                If *This\Index[1]<>Line : *This\Index[1]=Line
+                 If *This\Scroll\h\hide And from <> *This\Index[1]
+                  itemSelect(*This\Index[1], \Items())
                   If \Items()\text\x+\Items()\text\width>\Items()\width
                     If *This\ToolTip : ToolTip(0) : EndIf
                     *This\ToolTip = \Items()\text
@@ -1837,7 +1837,7 @@ Module ListIcon
                   ElseIf *This\ToolTip : *This\ToolTip = 0
                     ToolTip(0)
                   EndIf
-                  from = *This\Line
+                  from = *This\Index[1]
                 EndIf
                 
                 If *This\Drag And *This\Drag[1] = 0 : *This\Drag[1] = 1
@@ -1851,7 +1851,7 @@ Module ListIcon
               EndIf
               
               Default
-                itemSelect(*This\Line[1], \Items())
+                itemSelect(*This\Index[2], \Items())
             EndSelect
           EndIf
         EndWith    
@@ -1878,7 +1878,7 @@ Module ListIcon
         EndWith
       EndIf
     Else
-      *This\Line =- 1
+      *This\Index[1] =- 1
     EndIf
     
     ProcedureReturn Repaint
@@ -1893,17 +1893,17 @@ Module ListIcon
       With *This
         \Type = #PB_GadgetType_ListIcon
         \Cursor = #PB_Cursor_Default
-        \DrawingMode = #PB_2DDrawing_Default
+        ;\DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         If Not \Canvas\Window
           \Canvas\Window = GetGadgetData(Canvas)
         EndIf
         \Radius = Radius
         \sublevellen = 18
-        \Alpha = 255
+        \color\alpha = 255
         \Interact = 1
         \Caret[1] =- 1
-        \Line =- 1
+        \Index[1] =- 1
         \X =- 1
         \Y =- 1
         
@@ -2094,16 +2094,16 @@ Module ListIcon
                 MoveX = MouseX : MoveY = MouseY
                 
               Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter
-                Protected from = \Line
+                Protected from = \Index[1]
                 Repaint = item_from(*This, MouseX, MouseY)
                 
-                If from <> \Line
+                If from <> \Index[1]
                   If \text\x+\text\width>\width
                     GadgetToolTip(canvas, \text\string)
                   Else
                     GadgetToolTip(canvas, "")
                   EndIf
-                  from = \Line
+                  from = \Index[1]
                 EndIf
                 
                 If Buttons And \Drag=0 And (Abs((MouseX-MoveX)+(MouseY-MoveY)) >= 6) : \Drag=1
@@ -2122,7 +2122,7 @@ Module ListIcon
               Case #PB_EventType_Focus
                 PushListPosition(\Items()) 
                 ForEach \Items()
-                  If \Items()\Item = \Items()\focus And \Items()\focus = \Items()\lostfocus 
+                  If \Items()\Index = \Items()\focus And \Items()\focus = \Items()\lostfocus 
                     \Items()\lostfocus =- 1
                     Repaint = 1
                     Break
@@ -2350,5 +2350,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --v49----0-8---4B+0---8--------------------------8----8---
+; Folding = --v49----------4B+0------------------------------8----8---
 ; EnableXP

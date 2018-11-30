@@ -134,7 +134,7 @@ Module ListView
                 PushListPosition(\Items()) 
                 ForEach \Items()
                   If \Line = \Items()\Item 
-                    \Line[1] = \Line
+                    \Index[2] = \Line
                     
                     If \Flag\ClickSelect
                       \Items()\Color\State ! 2
@@ -206,8 +206,8 @@ Module ListView
                       PushListPosition(\Items()) 
                       ForEach \Items()
                         If  Not \Items()\Hide
-                          If ((\Line[1] =< \Line And \Line[1] =< \Items()\Item And \Line >= \Items()\Item) Or
-                              (\Line[1] >= \Line And \Line[1] >= \Items()\Item And \Line =< \Items()\Item)) 
+                          If ((\Index[2] =< \Line And \Index[2] =< \Items()\Item And \Line >= \Items()\Item) Or
+                              (\Index[2] >= \Line And \Index[2] >= \Items()\Item And \Line =< \Items()\Item)) 
                             If \Items()\Line <> \Items()\Item
                               \Items()\Line = \Items()\Item
                               \items()\Color\State = 2
@@ -222,9 +222,9 @@ Module ListView
                       PopListPosition(\Items()) 
                     EndIf
                     
-                    ; ; ;                   If \Line[1] =< \Line
+                    ; ; ;                   If \Index[2] =< \Line
                     ; ; ;                     PushListPosition(\Items()) 
-                    ; ; ;                     While PreviousElement(\Items()) And \Line[1] < \Items()\Item And Not \Items()\Hide
+                    ; ; ;                     While PreviousElement(\Items()) And \Index[2] < \Items()\Item And Not \Items()\Hide
                     ; ; ;                       If \Items()\Line <> \Items()\Item
                     ; ; ;                         \Items()\Line = \Items()\Item
                     ; ; ;                         \items()\Color\State = 2
@@ -239,15 +239,15 @@ Module ListView
                     ; ; ;                     Wend
                     ; ; ;                     PopListPosition(\Items()) 
                     ; ; ;                     PushListPosition(\Items()) 
-                    ; ; ;                     If \Line[1] = \Line And PreviousElement(\Items()) And \Items()\Line = \Items()\Item And Not \Items()\Hide
+                    ; ; ;                     If \Index[2] = \Line And PreviousElement(\Items()) And \Items()\Line = \Items()\Item And Not \Items()\Hide
                     ; ; ;                       \Items()\Line =- 1
                     ; ; ;                       \Items()\Color\State = 1
                     ; ; ;                       \Items()\Focus =- 1
                     ; ; ;                     EndIf
                     ; ; ;                     PopListPosition(\Items()) 
-                    ; ; ;                   ElseIf \Line[1] > \Line
+                    ; ; ;                   ElseIf \Index[2] > \Line
                     ; ; ;                     PushListPosition(\Items()) 
-                    ; ; ;                     While NextElement(\Items()) And \Line[1] > \Items()\Item And Not \Items()\Hide
+                    ; ; ;                     While NextElement(\Items()) And \Index[2] > \Items()\Item And Not \Items()\Hide
                     ; ; ;                       If \Items()\Line <> \Items()\Item
                     ; ; ;                         \Items()\Line = \Items()\Item
                     ; ; ;                         \items()\Color\State = 2
@@ -266,7 +266,7 @@ Module ListView
                 EndIf
                 
               Default
-                itemSelect(\Line[1], \Items())
+                itemSelect(\Index[2], \Items())
             EndSelect
           EndIf
         EndWith    
@@ -561,5 +561,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = p---CXFAHAjlC-
+; Folding = p---GX0AHAjlC-
 ; EnableXP
