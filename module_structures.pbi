@@ -1,4 +1,16 @@
 ﻿DeclareModule Structures
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    ; PB Interne Struktur Gadget MacOS
+    Structure sdkGadget
+      *gadget
+      *container
+      *vt
+      UserData.i
+      Window.i
+      Type.i
+      Flags.i
+    EndStructure
+  CompilerEndIf
   
   ;- STRUCTURE
   ;- - Point_S

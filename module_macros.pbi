@@ -193,7 +193,7 @@
     _this_\Row\Color\Frame[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
   EndMacro
   Macro RowFontColor(_this_, _state_)
-    _this_\Row\Color\Front[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
+    _this_\Color\Front[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
   EndMacro
   
   Macro _set_open_box_XY_(_this_, _items_, _x_, _y_)
@@ -217,6 +217,7 @@
   Macro _draw_plots_(_this_, _items_, _x_, _y_)
     ; Draw plot
     If _this_\sublevellen And _this_\Flag\Lines 
+      Protected line_size = _this_\Flag\Lines
       Protected x_point=_x_+_items_\sublevellen
       
       If x_point>_this_\x[2] 

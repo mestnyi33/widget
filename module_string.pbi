@@ -612,6 +612,8 @@ Module String
           \Color\Fore[1] = 0
           \Color\Fore[2] = 0
           \Row\Color = \Color
+          \Row\Color\back[1] =- 1
+          \Row\Color\frame[1] =- 1
           
           If \Text\Editable
             \Color\Back[0] = $FFFFFFFF 

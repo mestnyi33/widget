@@ -63,7 +63,7 @@ Module tree
       If *This
         ; Debug "show tooltip "+\string
 ;         If Not Window
-        Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool)) ;|#PB_Window_NoGadgets
+        Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID(EventWindow())) ;|#PB_Window_NoGadgets
         Gadget = CanvasGadget(#PB_Any,0,0,\width+8,\height[1])
         If StartDrawing(CanvasOutput(Gadget))
           If \FontID : DrawingFont(\FontID) : EndIf 

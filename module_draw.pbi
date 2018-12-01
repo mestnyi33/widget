@@ -17,6 +17,7 @@
   Declare.i _StartDrawing(Output.i)
   Declare.i _Circle(X.d,Y.d,Radius.d, Color.i)
   Declare.i _Line(X.i,Y.i,Width.i,Height.i, Color.i)
+  Declare.i _LineXY(X.i,Y.i,Width.i,Height.i, Color.i)
   Declare.i _Box(X.i,Y.i,Width.i,Height.i, Color.i)
   Declare.i _RoundBox(X.i,Y.i,Width.i,Height.i, RoundX.i, RoundY.i, Color.i)
   Declare.i _ClipOutput(X.i,Y.i,Width.i,Height.i)
@@ -46,16 +47,18 @@
   Macro StartDrawing (Output) : _StartDrawing(Output) : EndMacro
   Macro Circle (X,Y,Radius, Color) : _Circle(X,Y,Radius, Color) : EndMacro
   Macro ClipOutput (X,Y,Width,Height) : _ClipOutput(X,Y,Width,Height) : EndMacro
-  Macro DrawImage (ImageID, X,Y,Width,Height) : _DrawImage(ImageID, X,Y,Width,Height) : EndMacro
+  Macro DrawImage (ImageID, X,Y,Width=0,Height=0) : _DrawImage(ImageID, X,Y,Width,Height) : EndMacro
   Macro DrawAlphaImage (ImageID, X,Y, Alpha,Width=0,Height=0) : _DrawAlphaImage(ImageID, X,Y, Alpha,Width,Height) : EndMacro
   Macro Box (X,Y,Width,Height, Color=0) : _Box(X,Y,Width,Height, Color) : EndMacro
   Macro Line (X,Y,Width,Height, Color=0) : _Line(X,Y,Width,Height, Color) : EndMacro
+  Macro LineXY (X,Y,Width,Height, Color=0) : _Line(X,Y,Width,Height, Color) : EndMacro
   Macro RoundBox (X,Y,Width,Height, RoundX,RoundY, Color=0) : _RoundBox(X,Y,Width,Height, RoundX,RoundY, Color) : EndMacro
   Macro DrawText (X,Y,Text, FontColor=$FFFFFF, BackColor=0) : _DrawText(X,Y,Text, FontColor, BackColor) : EndMacro
   Macro DrawRotatedText (X,Y,Text, Angle, FontColor=$FFFFFF) : _DrawRotatedText(X,Y,Text, Angle, FontColor) : EndMacro
   
 EndDeclareModule
 
+;-
 Module Draw
   Global Clip
   Global DrawingMode = #PB_2DDrawing_Default
@@ -87,7 +90,11 @@ Module Draw
   
   Procedure.i _DrawImage(ImageID.i, X.i,Y.i,Width.i,Height.i)
     MovePathCursor(X,Y) 
-    VectorSourceImage(ImageID, 255, Width,Height, #PB_VectorImage_Repeat)
+    If Width And Height
+      VectorSourceImage(ImageID, 255, Width,Height, #PB_VectorImage_Repeat)
+    Else
+      VectorSourceImage(ImageID, 255)
+    EndIf
   EndProcedure
   
   Procedure.i _Point(X.i,Y.i)
@@ -214,7 +221,8 @@ Module Draw
   
   Procedure.i _Line(X.i,Y.i,Width.i,Height.i, Color.i)
     VectorSourceColor(Color)
-    
+    ;MovePathCursor(X,Y)
+      
     If DrawingMode = #PB_2DDrawing_Outlined
       AddPathLine(X+1,Y+1)
       StrokePath(1, #PB_Path_SquareEnd)
@@ -222,6 +230,20 @@ Module Draw
       AddPathLine(X,Y)
       FillPath()
     EndIf
+    
+    ClosePath()
+  EndProcedure
+  
+  Procedure.i _LineXY(X.i,Y.i,Width.i,Height.i, Color.i)
+    VectorSourceColor(Color)
+    
+;     If DrawingMode = #PB_2DDrawing_Outlined
+;       AddPathLine(X+1,Y+1)
+;       StrokePath(1, #PB_Path_SquareEnd)
+;     Else
+      AddPathLine(X,Y)
+      FillPath()
+;     EndIf
     
     ClosePath()
   EndProcedure
@@ -243,52 +265,68 @@ Module Draw
   EndProcedure
 EndModule
 
+Macro UseVectorDrawing()
+  UseModule Draw
+EndMacro
+
 
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Draw
+  UseVectorDrawing()
   
   If OpenWindow(0, 0, 0, 200, 200, "2DDrawing Example", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     CanvasGadget(16, 0, 0, 400, 200)
+    Define FontID = GetGadgetFont(-1)
+    
     x=50
     w = 100
     If StartDrawing(CanvasOutput(16))
-      DrawingFont(GetGadgetFont(-1))
+      If FontID
+        DrawingFont(FontID)
+      EndIf
       
-      ClipOutput(x, 10, w, 20) ; restrict all drawing to this region
       
-      DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText(x-10,10+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+      ;FrontColor(RGB(255,0,0)) ; Finally, red lines..
+      For k=0 To 20
+        LineXY(10,10+k*8,200, 0, $FFFF8888)
+      Next
+       Line(10,10+k*8,200, 2,$FFFF8888)
       
-      DrawingMode(#PB_2DDrawing_Outlined)
-      RoundBox(x, 10, w, 20, 15,10,$FF000000)
       
-      ClipOutput(x, 50, w, 20) ; restrict all drawing to this region
-      
-      DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText(x-10,50+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
-      
-      DrawingMode(#PB_2DDrawing_Outlined)
-      RoundBox(x, 50, w, 20, 8,8, $FF000000)
-      
-      ClipOutput(x, 90, w, 20) ; restrict all drawing to this region
-      
-      DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText(x-10,90+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
-      
-      DrawingMode(#PB_2DDrawing_Outlined)
-      RoundBox(x, 90, w, 20, 7,7, $FF000000)
-      
-      ClipOutput(x, 130, w, 20) ; restrict all drawing to this region
-      
-      DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText(x-10,130+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
-      
-      DrawingMode(#PB_2DDrawing_Outlined)
-      RoundBox(x, 130, w, 20, 0,0, $FF000000)
-      
-      UnclipOutput()
-      DrawingMode(#PB_2DDrawing_Outlined)
-      Box(x-3, 10-3, w+6, 146, $FF000000)
+;       ClipOutput(x, 10, w, 20) ; restrict all drawing to this region
+;       
+;       DrawingMode(#PB_2DDrawing_Transparent)
+;       DrawText(x-10,10+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+;       
+;       DrawingMode(#PB_2DDrawing_Outlined)
+;       RoundBox(x, 10, w, 20, 15,10,$FF000000)
+;       
+;       ClipOutput(x, 50, w, 20) ; restrict all drawing to this region
+;       
+;       DrawingMode(#PB_2DDrawing_Transparent)
+;       DrawText(x-10,50+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+;       
+;       DrawingMode(#PB_2DDrawing_Outlined)
+;       RoundBox(x, 50, w, 20, 8,8, $FF000000)
+;       
+;       ClipOutput(x, 90, w, 20) ; restrict all drawing to this region
+;       
+;       DrawingMode(#PB_2DDrawing_Transparent)
+;       DrawText(x-10,90+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+;       
+;       DrawingMode(#PB_2DDrawing_Outlined)
+;       RoundBox(x, 90, w, 20, 7,7, $FF000000)
+;       
+;       ClipOutput(x, 130, w, 20) ; restrict all drawing to this region
+;       
+;       DrawingMode(#PB_2DDrawing_Transparent)
+;       DrawText(x-10,130+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+;       
+;       DrawingMode(#PB_2DDrawing_Outlined)
+;       RoundBox(x, 130, w, 20, 0,0, $FF000000)
+;       
+;       UnclipOutput()
+;       DrawingMode(#PB_2DDrawing_Outlined)
+;       Box(x-3, 10-3, w+6, 146, $FF000000)
       
       StopDrawing() 
     EndIf
@@ -325,5 +363,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------
+; Folding = -------------
 ; EnableXP

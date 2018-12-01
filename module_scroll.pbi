@@ -1,7 +1,13 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_draw.pbi"
+  
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
+  
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
 CompilerEndIf
 
 DeclareModule Scroll
@@ -9,6 +15,10 @@ DeclareModule Scroll
   UseModule Macros
   UseModule Constants
   UseModule Structures
+  
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
   
   ; ; DeclareModule Scroll
   ; ;   EnableExplicit
@@ -1285,5 +1295,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----f---------------------------4--
+; Folding = -----0ez---------------------v--f--
 ; EnableXP

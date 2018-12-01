@@ -316,7 +316,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next i
     
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #pb_tree_Expanded) : Next
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     ;}
     ;Free(*g)
     

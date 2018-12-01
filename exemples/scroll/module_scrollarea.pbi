@@ -103,8 +103,8 @@ Module ScrollArea
   
   Procedure Re(*This.Widget_S)
     With *This
-      ResizeGadget(\Canvas\Gadget[1], #PB_Ignore,#PB_Ignore,Scroll::X(\v)-*This\fSize, Scroll::Y(\h)-*This\fSize)
-      ResizeGadget(\Canvas\Gadget[2],-\h\bar\page\Pos-*This\fSize, -\v\bar\page\Pos-*This\fSize, #PB_Ignore,#PB_Ignore)
+      ResizeGadget(\Canvas\Gadget[1], #PB_Ignore,#PB_Ignore,Scroll::X(\Scroll\v)-*This\fSize, Scroll::Y(\Scroll\h)-*This\fSize)
+      ResizeGadget(\Canvas\Gadget[2],\Scroll\X+*This\fSize, \Scroll\Y+*This\fSize, #PB_Ignore,#PB_Ignore)
     EndWith   
   EndProcedure
   
@@ -121,8 +121,8 @@ Module ScrollArea
         DrawingMode(#PB_2DDrawing_Default)
         Box(\X[2],\Y[2],\Width[2],\Height[2], $FFFFFF)
         
-        Scroll::Draw(*This\v)
-        Scroll::Draw(*This\h)
+        Scroll::Draw(*This\Scroll\v)
+        Scroll::Draw(*This\Scroll\h)
         
         StopDrawing()
       EndIf
@@ -173,11 +173,11 @@ Module ScrollArea
           \Width[1] = \Width[2]+\fSize*2
           \Height[1] = \Height[2]+\fSize*2
           
-          Scroll::Resizes(*This\v, *This\h, *This\x[2]+1,*This\Y[2]+1,*This\Width[2]-2,*This\Height[2]-2)
+          Scroll::Resizes(*This\Scroll, *This\x[2]+1,*This\Y[2]+1,*This\Width[2]-2,*This\Height[2]-2)
           ReDraw(*This)
       EndSelect   
       
-      Repaint = Scroll::CallBack(*This\v, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint = Scroll::CallBack(*This\Scroll\v, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y)
       If Repaint 
         ReDraw(*This)
         If \Canvas\Mouse\Buttons
@@ -185,7 +185,7 @@ Module ScrollArea
         EndIf
       EndIf
       
-      Repaint = Scroll::CallBack(*This\h, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint = Scroll::CallBack(*This\Scroll\h, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y)
       If Repaint
         ReDraw(*This) 
         If \Canvas\Mouse\Buttons 
@@ -205,13 +205,13 @@ Module ScrollArea
       Select Attribute
         Case #PB_ScrollArea_InnerWidth    
           ResizeGadget(\Canvas\Gadget[2], #PB_Ignore, #PB_Ignore, Value, #PB_Ignore)
-          If Scroll::SetAttribute(*This\h, #PB_ScrollBar_Maximum, Value)
+          If Scroll::SetAttribute(*This\Scroll\h, #PB_ScrollBar_Maximum, Value)
             Repaint = #True
           EndIf
           
         Case #PB_ScrollArea_InnerHeight   
           ResizeGadget(\Canvas\Gadget[2], #PB_Ignore, #PB_Ignore, #PB_Ignore, Value)
-          If Scroll::SetAttribute(*This\v, #PB_ScrollBar_Maximum, Value)
+          If Scroll::SetAttribute(*This\Scroll\v, #PB_ScrollBar_Maximum, Value)
             Repaint = #True
           EndIf
           
@@ -282,8 +282,8 @@ Module ScrollArea
         
         \Color = Colors
         
-        Scroll::Widget(*This\v, *This\Width[2]-17, *This\Y[2], 17, *This\Height[2], 0,ScrollAreaHeight,Height, #PB_ScrollBar_Vertical)
-        Scroll::Widget(*This\h, *This\x[2], *This\Height[2]-17, *This\Width[2], 17, 0,ScrollAreaWidth,Width, 0)
+        Scroll::Widget(*This\Scroll, *This\Width[2]-17, *This\Y[2], 17, *This\Height[2], 0,ScrollAreaHeight,Height, #PB_ScrollBar_Vertical)
+        Scroll::Widget(*This\Scroll, *This\x[2], *This\Height[2]-17, *This\Width[2], 17, 0,ScrollAreaWidth,Width, 0)
         
         ReDraw(*This)
         SetGadgetData(Gadget, *This)
@@ -425,8 +425,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 105
-; FirstLine = 103
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 175
+; FirstLine = 165
 ; Folding = --------
 ; EnableXP

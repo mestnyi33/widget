@@ -665,31 +665,96 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
+  Procedure.i ToReturn(*This.Widget_S) ; Ok
+    Protected Repaint, String.s
+    
+    With  *This
+      If \Index[2] <> \Index[1] ; Это значить строки выделени
+        If \Index[2] > \Index[1] : Swap \Index[2], \Index[1] : EndIf
+        
+        If SelectElement(\Items(), \Index[2]) ;: Debug \Items()\Text\String.s
+          String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$
+          \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
+        EndIf   
+        
+        If SelectElement(\Items(), \Index[1]) ;: Debug "  "+\Items()\Text\String.s
+          String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+          \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
+        EndIf
+        
+      Else
+        String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$ +
+                   \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+      EndIf
+      
+      \Index[2] + 1
+      \Index[1] = \Index[2]
+      
+      \Caret = 0
+      \Caret[1] = \Caret
+      
+      \Text\String.s = String.s
+      \Text\Len = Len(\Text\String.s)
+      \Text\Change = 1
+      
+      If SelectElement(\items(), \index[1]) And Not \Scroll\v\hide
+        CompilerIf Defined(Scroll, #PB_Module)
+          Scroll::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height)))
+        CompilerEndIf
+      EndIf
+      
+      Repaint = #True
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure ToInput(*This.Widget_S)
     Static Dot, Minus, Color.i
-    Protected Repaint, Input, Input_2, Chr.s
+    Protected Repaint, Input, Input_2, Chr.s, String.s
     
     With *This
       If \Canvas\Input
         Chr.s = Text::Make(*This, Chr(\Canvas\Input))
         
         If Chr.s
-          If \Items()\Text[2]\Len 
-            If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-            \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Position+\Caret, 1)
+          If \Index[1] <> \Index[2] ; Это значить строки выделени
+            If \Index[2] > \Index[1] : Swap \Index[2], \Index[1] : EndIf
+            
+            If SelectElement(\Items(), \Index[2]) ;: Debug \Items()\Text\String.s
+              String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + Chr.s
+              \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
+              \Caret = \Items()\Text[1]\Len
+            EndIf   
+            
+            If SelectElement(\Items(), \Index[1]) ;: Debug "  "+\Items()\Text\String.s
+              String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+              \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
+            EndIf
+            
+            \Index[1] = \Index[2]
+          Else
+            If \Items()\Text[2]\Len 
+              If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+              \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Position+\Caret, 1)
+            EndIf
+            
+            \Items()\Text\String.s = \Items()\Text[1]\String.s + Chr.s + \Items()\Text[3]\String.s
+            String.s = InsertString(\Text\String.s, Chr.s, \Items()\Text\Position+\Caret + 1)
           EndIf
           
-          \Caret + 1
-          \Items()\Text\String.s = \Items()\Text[1]\String.s + Chr(\Canvas\Input) + \Items()\Text[3]\String.s
-          \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Text\Position+\Caret)
-          \Text\Len = Len(\Text\String.s) 
+          \Caret + 1 
           \Caret[1] = \Caret 
+          \Text\String.s = String.s
+          \Text\Len = Len(\Text\String.s)
           \Text\Change =- 1
+          
+          SelectElement(\items(), \index[2]) 
+      
         Else
           \Default = *This
         EndIf
         
-        \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Text\Position+\Caret)
         Repaint =- 1 
       EndIf
     EndWith
@@ -697,8 +762,9 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure ToBack(*This.Widget_S)
+  Procedure _ToBack(*This.Widget_S)
     Protected Repaint, String.s 
+    ;ProcedureReturn Text::ToReturn(*This,"")
     
     If *This\Canvas\Input : *This\Canvas\Input = 0
       ;ToInput(*This) ; Сбросить Dot&Minus
@@ -720,12 +786,12 @@ Module Editor
       Else
         ; Если дошли до начала строки то 
         ; переходим в конец предыдущего итема
-        If *This\Index[2] > 0 
+        If \Index[2] > 0 
           \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Position+\Caret, 1)
           
           ToUp(*This)
           
-          *This\Caret = \Items()\Text\Len 
+          \Caret = \Items()\Text\Len 
           \Text\Change =- 1
         EndIf
         
@@ -734,7 +800,82 @@ Module Editor
       If \Text\Change
         \Text\Len = Len(\Text\String.s)  
         \Caret[1] = \Caret 
+        
+              
+        PushListPosition(\items())
+        If SelectElement(\items(), \index[2]) And Not \Scroll\v\hide
+          Scroll::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height))) ; в конце
+        EndIf
+        PopListPosition(\items())
+        
         Repaint =- 1 
+      EndIf
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure.i ToBack(*This.Widget_S, Chr.s="") ; Ok
+    Protected Repaint, String.s
+    
+    With  *This
+      If \Index[2] <> \Index[1] ; Это значить строки выделени
+        If \Index[2] > \Index[1] : Swap \Index[2], \Index[1] : EndIf
+        
+        If SelectElement(\Items(), \Index[2]) ;: Debug \Items()\Text\String.s
+          String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + Chr.s
+          \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
+          \Caret = \Items()\Text[1]\Len
+        EndIf   
+        
+        If SelectElement(\Items(), \Index[1]) ;: Debug "  "+\Items()\Text\String.s
+          String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+          \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
+        EndIf
+        
+        \Index[1] = \Index[2]
+        \Text\Change = 1
+        
+      ElseIf \Caret[1] > 0 
+        \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret - 1)
+        \Items()\Text[1]\len = Len(\Items()\Text[1]\String.s)
+        \Items()\Text[1]\Change = 1
+        
+        \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
+        String.s = Left(\Text\String.s, \Items()\Text\Position+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Position+\Caret + 1)
+        \Text\Change = 1
+        \Caret - 1
+        
+      Else
+      ; Если дошли до начала строки то 
+        ; переходим в конец предыдущего итема
+        If \Index[2] > 0 
+          String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Position+\Caret, 1)
+          
+          ToUp(*This)
+          
+          \Caret = \Items()\Text\Len 
+          \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret)
+          \Items()\Text[1]\len = Len(\Items()\Text[1]\String.s)
+          \Items()\Text[1]\Change = 1
+          \Text\Change = 1
+        
+        EndIf
+      EndIf
+      
+      If \Text\Change
+        \Caret[1] = \Caret
+        \Text\String.s = String.s
+        \Text\Len = Len(\Text\String.s)
+        
+        If SelectElement(\items(), \index[1]) And Not \Scroll\v\hide
+          CompilerIf Defined(Scroll, #PB_Module)
+           ; Scroll::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height)))
+            Scroll::SetState(\Scroll\v, (\items()\y-(Scroll::Y(\Scroll\h)-\items()\height)))
+          CompilerEndIf
+        EndIf
+        
+        Repaint = #True
       EndIf
     EndWith
     
@@ -782,59 +923,6 @@ Module Editor
         Repaint = #True
       EndIf
       
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  Procedure.i ToReturn(*This.Widget_S) ; Ok
-    Protected Repaint, String.s
-    
-    With  *This
-      If \Items()\Text[2]\Len > 0
-        If \Index[2] > \Index[1] : Swap \Index[2], \Index[1] : EndIf
-        
-        If \Index[1] = \Index[2] 
-          String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
-        Else    
-          PushListPosition(\Items())
-          ForEach \Items()
-            Select ListIndex(\Items()) 
-              Case \Index[2] : String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$
-              Case \Index[1] : String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
-            EndSelect
-          Next
-          PopListPosition(\Items())
-        EndIf
-      Else
-        If \Items()\Text[1]\String.s And \Items()\Text[3]\String.s
-          ; курсор в нутри слова
-          String.s = \Items()\Text[1]\String.s + #LF$ + \Items()\Text[3]\String.s
-        ElseIf \Items()\Text[3]\String.s
-          ; курсор в начале слова
-          String.s = #LF$ + \Items()\Text[3]\String.s
-        ElseIf \Items()\Text[1]\String.s
-          ; курсор в конце слова
-          String.s = \Items()\Text[1]\String.s + #LF$
-        Else
-          ; курсор на линии где нету слово
-          String.s = #LF$
-        EndIf
-        String.s = Left(\Text\String.s, \Items()\Text\Position) + String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
-      EndIf
-      
-      \Index[2] + 1
-      \Index[1] = \Index[2]
-      
-      \Caret = 0
-      \Caret[1] = \Caret
-      
-      \Text\String.s = String.s
-      \Text\Len = Len(\Text\String.s)
-      \Text\Change = 1
-      
-      ;       Scroll::SetState(\Scroll\v, \Scroll\v\max)
-      Repaint = #True
     EndWith
     
     ProcedureReturn Repaint
@@ -1030,7 +1118,7 @@ Module Editor
           
           \Items()\handle = adress
           \Items()\change = Bool(\Type = #PB_GadgetType_Tree)
-          \Items()\Text\FontID = \Text\FontID
+          ;\Items()\Text\FontID = \Text\FontID
           \Items()\Index[1] =- 1
           \Items()\focus =- 1
           \Items()\lostfocus =- 1
@@ -1102,7 +1190,136 @@ Module Editor
   EndProcedure
   
   ;-
-  Procedure.i Events(*This.Widget_S, EventType.i)
+  Procedure.i Editable(*This.Widget_S, EventType.i)
+    Static DoubleClick.i
+    Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
+    
+    With *This
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+        Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
+      CompilerElse
+        Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
+      CompilerEndIf
+      
+      Select EventType
+        Case #PB_EventType_Input ;- Input (key)
+          If Not Control
+            Repaint = ToInput(*This)
+          EndIf
+          
+        Case #PB_EventType_KeyUp
+          If \items()\Text\Numeric
+            \items()\Text\String.s[1]=\items()\Text\String.s 
+          EndIf
+          Repaint = #True 
+          
+        Case #PB_EventType_KeyDown
+          Select \Canvas\Key
+            Case #PB_Shortcut_Home : \items()\Text[2]\String.s = "" : \items()\Text[2]\Len = 0 : \Caret = 0 : \Caret[1] = \Caret : Repaint =- 1
+            Case #PB_Shortcut_End : \items()\Text[2]\String.s = "" : \items()\Text[2]\Len = 0 : \Caret = \items()\Text\Len : \Caret[1] = \Caret : Repaint =- 1 
+              
+            Case #PB_Shortcut_Up     : Repaint = ToUp(*This)      ; Ok
+            Case #PB_Shortcut_Left   : Repaint = ToLeft(*This)    ; Ok
+            Case #PB_Shortcut_Right  : Repaint = ToRight(*This)   ; Ok
+            Case #PB_Shortcut_Down   : Repaint = ToDown(*This)    ; Ok
+            Case #PB_Shortcut_Back   : Repaint = ToBack(*This)
+            Case #PB_Shortcut_Return : Repaint = Text::ToReturn(*This) 
+            Case #PB_Shortcut_Delete : Repaint = ToDelete(*This)
+              
+              
+            Case #PB_Shortcut_C, #PB_Shortcut_X
+              If ((\Canvas\Key[1] & #PB_Canvas_Control) Or (\Canvas\Key[1] & #PB_Canvas_Command)) 
+                SetClipboardText(Copy(*This))
+                
+                If \Canvas\Key = #PB_Shortcut_X
+                  Cut(*This)
+                  
+                  \Caret[1] = \Caret
+                  Repaint = #True 
+                EndIf
+              EndIf
+              
+            Case #PB_Shortcut_V
+              If \Text\Editable And ((\Canvas\Key[1] & #PB_Canvas_Control) Or (\Canvas\Key[1] & #PB_Canvas_Command))
+                Protected ClipboardText.s = Trim(GetClipboardText(), #CR$)
+                
+                If ClipboardText.s
+                  If \items()\Text[2]\Len > 0
+                    RemoveText(*This)
+                    
+                    If \items()\Text[2]\Len = \items()\Text\Len
+                      ;*This\Index[2] = *This\Index[1]
+                      ClipboardText.s = Trim(ClipboardText.s, #LF$)
+                    EndIf
+                    ;                         
+                    PushListPosition(\Items())
+                    ForEach \Items()
+                      If \items()\Text[2]\Len > 0 
+                        If \items()\Text[2]\Len = \items()\Text\Len
+                          DeleteElement(\Items(), 1) 
+                        Else
+                          RemoveText(*This)
+                        EndIf
+                      EndIf
+                    Next
+                    PopListPosition(\Items())
+                  EndIf
+                  
+                  Select #True
+                    Case \Text\Lower : ClipboardText.s = LCase(ClipboardText.s)
+                    Case \Text\Upper : ClipboardText.s = UCase(ClipboardText.s)
+                    Case \Text\Numeric 
+                      If Val(ClipboardText.s)
+                        ClipboardText.s = Str(Val(ClipboardText.s))
+                      EndIf
+                  EndSelect
+                  
+                  \Text\String.s = InsertString( \Text\String.s, ClipboardText.s, \Caret + 1)
+                  
+                  If CountString(\Text\String.s, #LF$)
+                    Caret = \Text\Len-\Caret
+                    String.s = \Text\String.s
+                    DeleteElement(\Items(), 1)
+                    SetText(\Canvas\Gadget, String.s, \Index[2])
+                    \Caret = Len(\Text\String.s)-Caret
+                    ;                         SelectElement(*This\Items(), *This\Index[1])
+                    ;                        *This\Caret = 0
+                  Else
+                    \Caret + Len(ClipboardText.s)
+                  EndIf
+                  
+                  \Caret[1] = \Caret
+                  \Text\Len = Len(\Text\String.s)
+                  
+                  Repaint = #True
+                EndIf
+              EndIf
+              
+          EndSelect 
+          
+      EndSelect
+      
+      If Repaint
+        ;\Text[3]\Change = Bool(Repaint =- 1)
+        If Repaint =- 1
+          SelectionText(*This) 
+        EndIf
+        
+        If Repaint = 2
+          \Text[0]\Change = Repaint
+          \items()\Text[1]\Change = Repaint
+          \items()\Text[2]\Change = Repaint
+          \items()\Text[3]\Change = Repaint
+        EndIf
+        ; *This\CaretLength = \CaretLength
+        \Text[2]\String.s[1] = \items()\Text[2]\String.s[1]
+      EndIf
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure.i _Events(*This.Widget_S, EventType.i)
     Static DoubleClick.i
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
@@ -1114,6 +1331,145 @@ Module Editor
     If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
       If ListSize(*This\items())
         With *This
+          If Not \Hide And Not \Disable And \Interact
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
+            CompilerElse
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
+            CompilerEndIf
+            
+            Select EventType 
+              Case #PB_EventType_LeftClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftClick)
+              Case #PB_EventType_RightClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_RightClick)
+              Case #PB_EventType_LeftDoubleClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftDoubleClick)
+                
+              Case #PB_EventType_MouseLeave
+                \index[1] =- 1
+                Repaint = 1
+                
+              Case #PB_EventType_LeftButtonDown
+                PushListPosition(\items()) 
+                ForEach \items()
+                  If \index[1] = \items()\index 
+                    \Index[2] = \index[1]
+                    
+                    If \Flag\ClickSelect
+                      \items()\Color\State ! 2
+                    Else
+                      \items()\Color\State = 2
+                    EndIf
+                    
+                    ; \items()\Focus = \items()\index 
+                  ElseIf ((Not \Flag\ClickSelect And \items()\Focus = \items()\index) Or \Flag\MultiSelect) And Not Control
+                    \items()\index[1] =- 1
+                    \items()\Color\State = 1
+                    \items()\Focus =- 1
+                  EndIf
+                Next
+                PopListPosition(\items()) 
+                Repaint = 1
+                
+              Case #PB_EventType_LeftButtonUp
+                PushListPosition(\items()) 
+                ForEach \items()
+                  If \index[1] = \items()\index 
+                    \items()\Focus = \items()\index 
+                  Else
+                    If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
+                      \items()\Color\State = 1
+                    EndIf
+                  EndIf
+                Next
+                PopListPosition(\items()) 
+                Repaint = 1
+                
+              Case #PB_EventType_MouseMove  
+                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\Scroll\v)
+                  Item.i =- 1
+                ElseIf \Text\Height
+                  Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
+                EndIf
+                
+                If \index[1] <> Item And Item =< ListSize(\items())
+                  If isItem(\index[1], \items()) 
+                    If \index[1] <> ListIndex(\items())
+                      SelectElement(\items(), \index[1]) 
+                    EndIf
+                    
+                    If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton 
+                      If (\Flag\MultiSelect And Not Control)
+                        \items()\Color\State = 2
+                      ElseIf Not \Flag\ClickSelect
+                        \items()\Color\State = 1
+                      EndIf
+                    EndIf
+                  EndIf
+                  
+                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton And itemSelect(Item, \items())
+                    If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
+                      \items()\Color\State = 2
+                    ElseIf Not \Flag\ClickSelect And (\Flag\MultiSelect And Not Control)
+                      \items()\index[1] = \items()\index
+                      \items()\Color\State = 2
+                    EndIf
+                  EndIf
+                  
+                  \index[1] = Item
+                  Repaint = #True
+                  
+                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton
+                    If (\Flag\MultiSelect And Not Control)
+                      PushListPosition(\items()) 
+                      ForEach \items()
+                        If  Not \items()\Hide
+                          If ((\Index[2] =< \index[1] And \Index[2] =< \items()\index And \index[1] >= \items()\index) Or
+                              (\Index[2] >= \index[1] And \Index[2] >= \items()\index And \index[1] =< \items()\index)) 
+                            If \items()\index[1] <> \items()\index
+                              \items()\index[1] = \items()\index
+                              \items()\Color\State = 2
+                            EndIf
+                          Else
+                            \items()\index[1] =- 1
+                            \items()\Color\State = 1
+                            \items()\Focus =- 1
+                          EndIf
+                        EndIf
+                      Next
+                      PopListPosition(\items()) 
+                    EndIf
+                    
+                  EndIf
+                EndIf
+                
+              Default
+                itemSelect(\Index[2], \items())
+            EndSelect
+          EndIf
+        EndWith    
+        
+        With *This\items()
+          If *Focus = *This
+            Repaint | Editable(*This.Widget_S, EventType.i)
+          EndIf
+        EndWith
+      EndIf
+    Else
+      *This\index[1] =- 1
+    EndIf
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure.i Events(*This.Widget_S, EventType.i)
+    Static DoubleClick.i
+    Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
+    
+    With *This
+      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      
+      If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
+        If ListSize(*This\items())
           If Not \Hide And Not \Disable And \Interact
             ; Get line & caret position
             If \Canvas\Mouse\buttons
@@ -1225,133 +1581,14 @@ Module Editor
                 itemSelect(\Index[2], \Items())
             EndSelect
           EndIf
-        EndWith    
-        
-        With *This\items()
-          If *Focus = *This And (*This\Text\Editable Or \Text\Editable)
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
-            CompilerElse
-              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
-            CompilerEndIf
-            
-            Select EventType
-              Case #PB_EventType_Input ;- Input (key)
-                If Not Control
-                  Repaint = ToInput(*This)
-                EndIf
-                
-              Case #PB_EventType_KeyUp
-                If \Text\Numeric
-                  \Text\String.s[1]=\Text\String.s 
-                EndIf
-                Repaint = #True 
-                
-              Case #PB_EventType_KeyDown
-                Select *This\Canvas\Key
-                  Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = 0 : *This\Caret[1] = *This\Caret : Repaint =- 1
-                  Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = \Text\Len : *This\Caret[1] = *This\Caret : Repaint =- 1 
-                    
-                  Case #PB_Shortcut_Up     : Repaint = ToUp(*This)      ; Ok
-                  Case #PB_Shortcut_Left   : Repaint = ToLeft(*This)    ; Ok
-                  Case #PB_Shortcut_Right  : Repaint = ToRight(*This)   ; Ok
-                  Case #PB_Shortcut_Down   : Repaint = ToDown(*This)    ; Ok
-                  Case #PB_Shortcut_Back   : Repaint = ToBack(*This)
-                  Case #PB_Shortcut_Return : Repaint = Text::ToReturn(*This) 
-                  Case #PB_Shortcut_Delete : Repaint = ToDelete(*This)
-                    
-                    
-                  Case #PB_Shortcut_C, #PB_Shortcut_X
-                    If ((*This\Canvas\Key[1] & #PB_Canvas_Control) Or (*This\Canvas\Key[1] & #PB_Canvas_Command)) 
-                      SetClipboardText(Copy(*This))
-                      
-                      If *This\Canvas\Key = #PB_Shortcut_X
-                        Cut(*This)
-                        
-                        *This\Caret[1] = *This\Caret
-                        Repaint = #True 
-                      EndIf
-                    EndIf
-                    
-                  Case #PB_Shortcut_V
-                    If *This\Text\Editable And ((*This\Canvas\Key[1] & #PB_Canvas_Control) Or (*This\Canvas\Key[1] & #PB_Canvas_Command))
-                      Protected ClipboardText.s = Trim(GetClipboardText(), #CR$)
-                      
-                      If ClipboardText.s
-                        If \Text[2]\Len > 0
-                          RemoveText(*This)
-                          
-                          If \Text[2]\Len = \Text\Len
-                            ;*This\Index[2] = *This\Index[1]
-                            ClipboardText.s = Trim(ClipboardText.s, #LF$)
-                          EndIf
-                          ;                         
-                          PushListPosition(*This\Items())
-                          ForEach *This\Items()
-                            If \Text[2]\Len > 0 
-                              If \Text[2]\Len = \Text\Len
-                                DeleteElement(*This\Items(), 1) 
-                              Else
-                                RemoveText(*This)
-                              EndIf
-                            EndIf
-                          Next
-                          PopListPosition(*This\Items())
-                        EndIf
-                        
-                        Select #True
-                          Case \Text\Lower : ClipboardText.s = LCase(ClipboardText.s)
-                          Case \Text\Upper : ClipboardText.s = UCase(ClipboardText.s)
-                          Case \Text\Numeric 
-                            If Val(ClipboardText.s)
-                              ClipboardText.s = Str(Val(ClipboardText.s))
-                            EndIf
-                        EndSelect
-                        
-                        \Text\String.s = InsertString( \Text\String.s, ClipboardText.s, *This\Caret + 1)
-                        
-                        If CountString(\Text\String.s, #LF$)
-                          Caret = \Text\Len-*This\Caret
-                          String.s = \Text\String.s
-                          DeleteElement(*This\Items(), 1)
-                          SetText(*This\Canvas\Gadget, String.s, *This\Index[2])
-                          *This\Caret = Len(\Text\String.s)-Caret
-                          ;                         SelectElement(*This\Items(), *This\Index[1])
-                          ;                        *This\Caret = 0
-                        Else
-                          *This\Caret + Len(ClipboardText.s)
-                        EndIf
-                        
-                        *This\Caret[1] = *This\Caret
-                        \Text\Len = Len(\Text\String.s)
-                        
-                        Repaint = #True
-                      EndIf
-                    EndIf
-                    
-                EndSelect 
-                
-            EndSelect
-          EndIf
           
-          If Repaint
-            ;\Text[3]\Change = Bool(Repaint =- 1)
-            If Repaint =- 1
-              SelectionText(*This) 
-            EndIf
-            
-            If Repaint = 2
-              *This\Text[0]\Change = Repaint
-              \Text[1]\Change = Repaint
-              \Text[2]\Change = Repaint
-              \Text[3]\Change = Repaint
-            EndIf
-            ; *This\CaretLength = \CaretLength
-            *This\Text[2]\String.s[1] = \Text[2]\String.s[1]
+          ; edit events
+          If *Focus = *This And (*This\Text\Editable Or \Text\Editable)
+            Repaint | Editable(*This, EventType)
           EndIf
-        EndWith
+        EndIf
       EndIf
-    EndIf
+    EndWith
     
     ProcedureReturn Repaint
   EndProcedure
@@ -1423,6 +1660,7 @@ Module Editor
             \Text\MultiLine =- 1
           EndIf
           
+          \Flag\MultiSelect = 1
           \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
           \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
           \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
@@ -1433,45 +1671,14 @@ Module Editor
           \Text\Align\Right = Bool(Flag&#PB_Text_Right)
           \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
           
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+5
-            Else
-              \Text\X = \fSize+5
-              \Text\y = \fSize
-            EndIf
-          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+1
-            Else
-              \Text\X = \fSize+1
-              \Text\y = \fSize
-            EndIf
-          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+6
-            Else
-              \Text\X = \fSize+6
-              \Text\y = \fSize
-            EndIf
-          CompilerEndIf 
-          
-          If \Text\Pass
-            Protected i,Len = Len(Text.s)
-            Text.s = "" : For i=0 To Len : Text.s + "●" : Next
+          If \Text\Vertical
+            \Text\X = \fSize 
+            \Text\y = \fSize+4
+          Else
+            \Text\X = \fSize+4
+            \Text\y = \fSize
           EndIf
           
-          Select #True
-            Case \Text\Lower : \Text\String.s = LCase(Text.s)
-            Case \Text\Upper : \Text\String.s = UCase(Text.s)
-            Default
-              \Text\String.s = Text.s
-          EndSelect
-          \Text\Change = #True
-          \Text\Len = Len(\Text\String.s)
           
           \Color = Colors
           \Color\Fore[0] = 0
@@ -1662,5 +1869,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------------v5----4--f--4f--
+; Folding = ------------------------F---ff-------4-8---
 ; EnableXP

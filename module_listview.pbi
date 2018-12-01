@@ -80,8 +80,10 @@ Module ListView
       
       PushListPosition(\items())
       SelectElement(\items(), State) : \items()\Focus = State : \items()\index[1] = \items()\index : \items()\Color\State = 2
-      Scroll::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos ; в конце
-      ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
+      ; Scroll::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) ;: \Scroll\Y =- \Scroll\v\page\Pos ; в конце
+      ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) ;: \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
+        Scroll::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height))) ; в конце
+       ; Scroll::SetState(\Scroll\v, \items()\y-\text\y) ; в начале
       PopListPosition(\items())
     EndWith
   EndProcedure
@@ -304,6 +306,17 @@ Module ListView
   EndProcedure
   
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
+    Protected Window.i
+    
+    CompilerSelect #PB_Compiler_OS
+      CompilerCase #PB_OS_MacOS
+        Protected *g.sdkGadget = IsGadget(Canvas) : Window = *g\Window
+      CompilerCase #PB_OS_Linux
+;         GadgetWindowID = gtk_widget_get_toplevel_ (GadgetID(Canvas))
+      CompilerCase #PB_OS_Windows
+        Window = GetProp_(GetAncestor_(GadgetID(Canvas), #GA_ROOT), "PB_WindowID") - 1
+    CompilerEndSelect
+    
     If *This
       With *This
         \Type = #PB_GadgetType_ListView
@@ -507,10 +520,10 @@ CompilerIf #PB_Compiler_IsMainFile
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     LoadFont(0, "Arial", 16)
   CompilerElse
-    LoadFont(0, "Arial", 11)
+    LoadFont(0, "Arial", 12)
   CompilerEndIf 
   
-  If OpenWindow(0, 0, 0, 422, 491, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If OpenWindow(30, 0, 0, 422, 491, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     ;ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
     
     ListViewGadget(0, 8, 8, 306, 233) ;: SetGadgetText(0, Text.s) 
@@ -569,6 +582,8 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = p---+--BHgnlC-
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 522
+; FirstLine = 260
+; Folding = r--b+--BHgnnD-
 ; EnableXP

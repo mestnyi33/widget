@@ -138,15 +138,13 @@ Module Button
       With *This
         \Type = #PB_GadgetType_Button
         \Cursor = #PB_Cursor_Default
-        \DrawingMode = #PB_2DDrawing_Gradient
         \Canvas\Gadget = Canvas
         If Not \Canvas\Window
           \Canvas\Window = GetGadgetData(Canvas)
         EndIf
         \Radius = Radius
-        \Alpha = 255
         \Interact = 1
-        \Line =- 1
+        \index[1] =- 1
         \X =- 1
         \Y =- 1
         
@@ -240,6 +238,7 @@ Module Button
           
           ; Устанавливаем 
           ; цвета по умолчанию
+          \color\Alpha = 255
           \Color = Colors
           ;\Color\Front[3] = \Color\Front[1]
           

@@ -269,13 +269,14 @@ Module Widget
       \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
       \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
       \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-      \Canvas\Mouse\From = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
+      \Canvas\Mouse\at = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
             
       Select EventType()
         Case #PB_EventType_LostFocus
           \Focus = 0
           Repaint = #True
           
+        Case #PB_EventType_Repaint : Repaint = 1
         Case #PB_EventType_Resize 
           ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
           Repaint = Resizes(*This, #PB_Ignore,#PB_Ignore,GadgetWidth(\Canvas\Gadget),GadgetHeight(\Canvas\Gadget))
@@ -299,14 +300,16 @@ Module Widget
     If *This
       With *This
          \Canvas\Gadget = Widget
+         \Canvas\window = GetActiveWindow()
          \Type = #PB_GadgetType_ScrollBar
-        Scroll::Create(\Scroll\Vertical, Widget, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
+        Scroll::widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
 ;         \vScroll\Gadget = Widget
 ;         \vScroll\Type[1]=1 : \vScroll\Type[2]=1     ; Можно менять вид стрелок 
 ;         \vScroll\Size[1]=6 : \vScroll\Size[2]=6     ; Можно задать размер стрелок
         SetGadgetData(Widget, *This)
-        Draws(*This)
+        ;Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
+        PostEvent(#PB_Event_Gadget, GetActiveWindow(), Widget, #PB_EventType_Repaint, *This)
       EndIf
     EndWith
     
@@ -321,8 +324,9 @@ Module Widget
       With *This
         Button::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag);, 29)
         SetGadgetData(Widget, *This)
-        Draws(*This)
+;         Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
+        PostEvent(#PB_Event_Gadget, GetActiveWindow(), Widget, #PB_EventType_Repaint, *This)
       EndIf
     EndWith
     
@@ -337,8 +341,9 @@ Module Widget
       With *This
         String::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
-        Draws(*This)
+        ;Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
+        PostEvent(#PB_Event_Gadget, GetActiveWindow(), Widget, #PB_EventType_Repaint, *This)
       EndIf
     EndWith
     
@@ -353,8 +358,9 @@ Module Widget
       With *This
         Text::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
-        Draws(*This)
+        ;Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
+        PostEvent(#PB_Event_Gadget, GetActiveWindow(), Widget, #PB_EventType_Repaint, *This)
       EndIf
     EndWith
     

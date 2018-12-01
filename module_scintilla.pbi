@@ -73,7 +73,7 @@ Module Scintilla
           EndSelect
         Case #SCI_SETSELFORE
           Select param
-            Case 1 : \Row\Color\Front[2] = lparam
+            Case 1 : \Color\Front[2] = lparam ; selected font color
               
           EndSelect
             
