@@ -86,12 +86,13 @@
   ;- - Text_S
   Structure Text_S Extends Coordinate_S
     ;     Char.c
+    Pos.i
     Len.i
+    
     FontID.i
     String.s[3]
     Count.i[2]
     Change.b
-    Position.i
     
     Lower.b
     Upper.b

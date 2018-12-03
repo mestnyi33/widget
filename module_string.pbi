@@ -164,11 +164,11 @@ Module String
           
         EndIf
         
-        \Text[1]\String.s = Left(*This\Text\String.s, \Text\Position+Position) : \Text[1]\Change = #True
+        \Text[1]\String.s = Left(*This\Text\String.s, \Text\Pos+Position) : \Text[1]\Change = #True
         If \Text[2]\Len > 0
-          \Text[2]\String.s = Mid(\Text\String.s, 1+\Text\Position+Position, \Text[2]\Len) : \Text[2]\Change = #True
+          \Text[2]\String.s = Mid(\Text\String.s, 1+\Text\Pos+Position, \Text[2]\Len) : \Text[2]\Change = #True
         EndIf
-        \Text[3]\String.s = Trim(Right(*This\Text\String.s, *This\Text\Len-(\Text\Position+Position + \Text[2]\Len)), #LF$) : \Text[3]\Change = #True
+        \Text[3]\String.s = Trim(Right(*This\Text\String.s, *This\Text\Len-(\Text\Pos+Position + \Text[2]\Len)), #LF$) : \Text[3]\Change = #True
         
         Line = *This\Index[1]
         Caret = *This\Caret
@@ -230,8 +230,8 @@ Module String
         If \Items()\Text[2]\Len 
           Text::Remove(*This)
         Else
-          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Position+\Caret) + Mid(\Text\String.s[1],  \Items()\Text\Position+\Caret + 2)
-          \Text\String.s = Left(\Text\String.s, \Items()\Text\Position+\Caret) + Mid(\Text\String.s,  \Items()\Text\Position+\Caret + 2)
+          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Pos+\Caret) + Mid(\Text\String.s[1],  \Items()\Text\Pos+\Caret + 2)
+          \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret) + Mid(\Text\String.s,  \Items()\Text\Pos+\Caret + 2)
           \Text\Len = Len(\Text\String.s) 
         EndIf
         
@@ -258,7 +258,7 @@ Module String
           
           \Caret + 1
           ; \Items()\Text\String.s = \Items()\Text[1]\String.s + Chr(\Canvas\Input) + \Items()\Text[3]\String.s ; сним не выравнивается строка при вводе слов
-          \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Text\Position+\Caret)
+          \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Text\Pos+\Caret)
           \Text\Len = Len(\Text\String.s) 
           \Caret[1] = \Caret 
           \Text\Change =- 1
@@ -266,7 +266,7 @@ Module String
           \Default = *This
         EndIf
         
-        \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Text\Position+\Caret)
+        \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Text\Pos+\Caret)
         Repaint =- 1 
       EndIf
     EndWith
@@ -289,8 +289,8 @@ Module String
         Text::Remove(*This)
         
       ElseIf \Caret[1] > 0 
-        \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Position+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Text\Position+\Caret + 1)
-        \Text\String.s = Left(\Text\String.s, \Items()\Text\Position+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Position+\Caret + 1)
+        \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Text\Pos+\Caret + 1)
+        \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Pos+\Caret + 1)
         \Text\Len = Len(\Text\String.s)  
         \Caret - 1 
       EndIf
@@ -363,9 +363,9 @@ Module String
                     *This\Caret[1] = \Caret[1]
                   EndIf
                   
-                  *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, \Text\Position+\Caret[1] + 1)
+                  *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, \Text\Pos+\Caret[1] + 1)
                   *This\Text\Len = Len(*This\Text\String.s)
-                  \Text\String.s = InsertString(\Text\String.s, \Text[2]\String.s, \Text\Position+\Caret[1] + 1)
+                  \Text\String.s = InsertString(\Text\String.s, \Text[2]\String.s, \Text\Pos+\Caret[1] + 1)
                   \Text\Len = Len(\Text\String.s)
                   
                   *This\Text\Change =- 1
@@ -399,7 +399,7 @@ Module String
                     Repaint =- 1
                   EndIf
                 Else
-                  \Text[1]\String.s = Left(*This\Text\String.s, \Text\Position+Caret) : \Text[1]\Change = #True
+                  \Text[1]\String.s = Left(*This\Text\String.s, \Text\Pos+Caret) : \Text[1]\Change = #True
                 EndIf
                 
                 *This\Caret = Caret
@@ -420,7 +420,7 @@ Module String
                   If \Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len
                     SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
                   Else
-                    \Text[1]\String.s = Left(*This\Text\String.s, \Text\Position+*This\Caret) : \Text[1]\Change = #True
+                    \Text[1]\String.s = Left(*This\Text\String.s, \Text\Pos+*This\Caret) : \Text[1]\Change = #True
                   EndIf
                   
                   *This\Caret[1] = *This\Caret
@@ -903,5 +903,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------+-0-------
+; Folding = -------------0-------
 ; EnableXP

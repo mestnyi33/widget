@@ -73,10 +73,11 @@ DeclareModule Text
   ;Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i ReDraw(*This.Widget_S, Canvas =- 1, BackColor=$FFF0F0F0)
-
+  
   Declare.i Caret(*This.Widget_S, Line.i = 0)
   Declare.i Remove(*This.Widget_S)
   Declare.i ToReturn(*This.Widget_S)
+  Declare.i Change(*This.Widget_S, Pos.i, Len.i)
   
   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
 EndDeclareModule
@@ -84,6 +85,54 @@ EndDeclareModule
 Module Text
   ;- MACROS
   ;- PROCEDUREs
+  Procedure.i Change(*This.Widget_S, Pos.i, Len.i)
+    With *This
+        \Items()\Text[2]\Pos = Pos
+        \Items()\Text[2]\Len = Len
+        
+        ; lines string/pos/len/state
+        \Items()\Text[1]\Change = #True
+        \Items()\Text[1]\Len = \Items()\Text[2]\Pos
+        \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Items()\Text[1]\Len) 
+        
+        \Items()\Text[3]\Change = #True
+        \Items()\Text[3]\Pos = (\Items()\Text[2]\Pos + \Items()\Text[2]\Len)
+        \Items()\Text[3]\Len = (\Items()\Text\Len - \Items()\Text[3]\Pos)
+        \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text[3]\Len) 
+        
+        If \Items()\Text[1]\Len = \Items()\Text[3]\Pos
+          \Items()\Text[2]\String.s = ""
+          \Items()\Text[2]\Width = 0
+        Else
+          \Items()\Text[2]\Change = #True 
+          \Items()\Text[2]\String.s = Mid(\Items()\Text\String.s, 1 + \Items()\Text[2]\Pos, \Items()\Text[2]\Len) 
+        EndIf
+        
+        ; text string/pos/len/state
+        If (\index[2] > \index[1] Or \index[2] = \Items()\index) : \Text[1]\Change = #True
+          \Text[1]\Len = (\Items()\Text[0]\Pos + \Items()\Text[1]\len)
+          \Text[1]\String.s = Left(\Text\String.s, \Text[1]\Len) 
+          \Text[2]\Pos = \Text[1]\Len
+        EndIf
+        
+        If (\index[2] < \index[1] Or \index[2] = \Items()\index) : \Text[3]\Change = #True
+          \Text[3]\Pos = (\Items()\Text[0]\Pos + \Items()\Text[3]\Pos)
+          \Text[3]\Len = (\Text\Len - \Text[3]\Pos)
+          \Text[3]\String.s = Right(\Text\String.s, \Text[3]\Len) 
+        EndIf
+          
+        If \Text[1]\Len = \Text[3]\Pos
+          \Text[2]\Len = 0
+          \Text[2]\String.s = ""
+        Else
+          \Text[2]\Change = #True 
+          \Text[2]\Len = (\Text[3]\Pos-\Text[2]\Pos)
+          \Text[2]\String.s = Mid(\Text\String.s, 1 + \Text[2]\Pos, \Text[2]\Len) 
+        EndIf
+        
+    EndWith
+  EndProcedure
+  
   Procedure.i Caret(*This.Widget_S, Line.i = 0)
     Static LastLine.i =- 1,  LastItem.i =- 1
     Protected Item.i, SelectionLen.i
@@ -137,8 +186,8 @@ Module Text
               If (\Items()\Text\String.s = "" And Item = \Index[1] And Position = len) Or
                  \Index[2] > \Index[1] Or ; Если выделяем снизу вверх
                  (\Index[2] =< \Index[1] And \Index[1] = Item And Position = len) Or ; Если позиция курсора неже половини высоты линии
-                 (\Index[2] < \Index[1] And                                      ; Если выделяем сверху вниз
-                  PreviousElement(*This\Items()))                           ; то выбираем предыдущую линию
+                 (\Index[2] < \Index[1] And                                          ; Если выделяем сверху вниз
+                  PreviousElement(*This\Items()))                                    ; то выбираем предыдущую линию
                 
                 If Position = len And Not \Items()\Text[2]\Len : \Items()\Text[2]\Len = 1
                   \Items()\Text[2]\X = \Items()\Text\X+\Items()\Text\Width
@@ -213,7 +262,7 @@ Module Text
   Procedure.i Remove(*This.Widget_S)
     With *This
       If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Position+\Caret, 1)
+      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
       \Text\Len = Len(\Text\String.s)
     EndWith
   EndProcedure
@@ -226,18 +275,18 @@ Module Text
         If \Index[2] > \Index[1] : Swap \Index[2], \Index[1] : EndIf
         
         If SelectElement(\Items(), \Index[2]) ;: Debug \Items()\Text\String.s
-          String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$
+          String.s = Left(\Text\String.s, \Items()\Text\Pos) + \Items()\Text[1]\String.s + #LF$
           \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
         EndIf   
         
         If SelectElement(\Items(), \Index[1]) ;: Debug "  "+\Items()\Text\String.s
-          String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+          String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Pos+\Items()\Text\Len))
           \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
         EndIf
         
       Else
-        String.s = Left(\Text\String.s, \Items()\Text\Position) + \Items()\Text[1]\String.s + #LF$ +
-                   \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Position+\Items()\Text\Len))
+        String.s = Left(\Text\String.s, \Items()\Text\Pos) + \Items()\Text[1]\String.s + #LF$ +
+                   \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Pos+\Items()\Text\Len))
       EndIf
       
       \Index[2] + 1
@@ -248,13 +297,15 @@ Module Text
       
       \Text\String.s = String.s
       \Text\Len = Len(\Text\String.s)
-      \Text\Change = 1
+      \Text\Change =- 1 ; - 1 post event change widget
       
-      If SelectElement(\items(), \index[1]) And Not \Scroll\v\hide
-        CompilerIf Defined(Scroll, #PB_Module)
-          Scroll::SetState(\Scroll\v, (\items()\y-(Scroll::Y(\Scroll\h)-\items()\height)))
-        CompilerEndIf
-      EndIf
+;       Debug \index[2]
+;       If (\index[2] > 0 And \index[2] < ListSize(\items()) - 1) And 
+;          SelectElement(\items(), \index[2]) And Not \Scroll\v\hide
+;         CompilerIf Defined(Scroll, #PB_Module)
+;           Scroll::SetState(\Scroll\v, (\items()\y-(Scroll::Y(\Scroll\h)-\items()\height)))
+;         CompilerEndIf
+;       EndIf
       
       Repaint = #True
     EndWith
@@ -262,26 +313,27 @@ Module Text
     ProcedureReturn Repaint
   EndProcedure
   
+  ;-
   Procedure _Move(*This.Widget_S, Width)
     Protected Left,Right
     
     With *This
-      Right =- TextWidth(Mid(\Text\String.s, \Items()\Text\Position, \Caret))
+      Right =- TextWidth(Mid(\Text\String.s, \Items()\Text\Pos, \Caret))
       ;If Right 
-        Left = (Width + Right)
-        ;If Not \Scroll\h\Buttons ; \Scroll\X <> Right
-          
-          If \Scroll\X < Right
-            \Scroll\X = Right
-          ElseIf \Scroll\X > Left
-            \Scroll\X = Left
-          ElseIf (\Scroll\X < 0 And \Caret = \Caret[1] And Not \Canvas\Input) ; Back string
-            \Scroll\X = (Width-\Items()\Text[3]\Width) + Right
-            If \Scroll\X>0
-              \Scroll\X=0
-            EndIf
-          EndIf
-        ;EndIf
+      Left = (Width + Right)
+      ;If Not \Scroll\h\Buttons ; \Scroll\X <> Right
+      
+      If \Scroll\X < Right
+        \Scroll\X = Right
+      ElseIf \Scroll\X > Left
+        \Scroll\X = Left
+      ElseIf (\Scroll\X < 0 And \Caret = \Caret[1] And Not \Canvas\Input) ; Back string
+        \Scroll\X = (Width-\Items()\Text[3]\Width) + Right
+        If \Scroll\X>0
+          \Scroll\X=0
+        EndIf
+      EndIf
+      ;EndIf
       
       Debug " "+\Width[1] +" "+ Width +" "+ Left +" "+ Right + " " + \Scroll\X
     EndWith
@@ -293,22 +345,22 @@ Module Text
     Protected Left,Right
     
     With *This
-      Right = TextWidth(Mid(\Text\String.s, \Items()\Text\Position, \Caret))
+      Right = TextWidth(Mid(\Text\String.s, \Items()\Text\Pos, \Caret))
       ;If Right 
-        Left = (Width - Right)
-        ;If Not \Scroll\h\Buttons ; \Scroll\X <> Right
-          
-          If \Scroll\X > Right
-            \Scroll\X = Right
-          ElseIf \Scroll\X > Left
-            \Scroll\X = Left
-          ElseIf (\Scroll\X < 0 And \Caret = \Caret[1] And Not \Canvas\Input) ; Back string
-            \Scroll\X = (Width-\Items()\Text[3]\Width) - Right
-            If \Scroll\X>0
-              \Scroll\X=0
-            EndIf
-          EndIf
-        ;EndIf
+      Left = (Width - Right)
+      ;If Not \Scroll\h\Buttons ; \Scroll\X <> Right
+      
+      If \Scroll\X > Right
+        \Scroll\X = Right
+      ElseIf \Scroll\X > Left
+        \Scroll\X = Left
+      ElseIf (\Scroll\X < 0 And \Caret = \Caret[1] And Not \Canvas\Input) ; Back string
+        \Scroll\X = (Width-\Items()\Text[3]\Width) - Right
+        If \Scroll\X>0
+          \Scroll\X=0
+        EndIf
+      EndIf
+      ;EndIf
       
       ; Debug " "+\Width[1] +" "+ Width +" "+ Left +" "+ Right + " " + \Scroll\X
     EndWith
@@ -348,8 +400,8 @@ Module Text
               count = Len(left.s+Trim(StringField(Mid(\Text\String, \Caret+1), 1, "."), #LF$))
               If count < 3 And (Val(left.s) > 25 Or Val(left.s+Chr.s) > 255)
                 Continue
-;               ElseIf Mid(\Text\String, \Caret + 1, 1) = "."
-;                 \Caret + 1 : \Caret[1]=\Caret
+                ;               ElseIf Mid(\Text\String, \Caret + 1, 1) = "."
+                ;                 \Caret + 1 : \Caret[1]=\Caret
               EndIf
             EndIf
             
@@ -464,6 +516,7 @@ Module Text
     EndIf
   EndProcedure
   
+  ;-
   Procedure AddLine(*This.Widget_S,Line.i,String.s) ;,Image.i=-1,Sublevel.i=0)
     Protected Image_Y, Image_X, Text_X, Text_Y, Height, Width, Indent = 4
     
@@ -526,28 +579,28 @@ Module Text
     
     Macro _line_resize_Y_(_this_)
       _this_\Items()\y = _this_\Y[1]+_this_\Text\Y+_this_\Scroll\Height+Text_Y
-        _this_\Items()\Height = _this_\Text\Height - Bool(_this_\Text\Count<>1 And _this_\Flag\GridLines)
-        _this_\Items()\Text\y = _this_\Items()\y + (_this_\Text\Height-_this_\Text\Height[1])/2 - Bool(#PB_Compiler_OS <> #PB_OS_MacOS And _this_\Text\Count<>1)
-        _this_\Items()\Text\Height = _this_\Text\Height[1]
-        
-        _this_\Image\Y = _this_\Y[1]+_this_\Text\Y+Image_Y
-        _this_\Items()\Image\Y = _this_\Items()\y + (_this_\Text\Height-_this_\Items()\Image\Height)/2 + Image_Y
+      _this_\Items()\Height = _this_\Text\Height - Bool(_this_\Text\Count<>1 And _this_\Flag\GridLines)
+      _this_\Items()\Text\y = _this_\Items()\y + (_this_\Text\Height-_this_\Text\Height[1])/2 - Bool(#PB_Compiler_OS <> #PB_OS_MacOS And _this_\Text\Count<>1)
+      _this_\Items()\Text\Height = _this_\Text\Height[1]
+      
+      _this_\Image\Y = _this_\Y[1]+_this_\Text\Y+Image_Y
+      _this_\Items()\Image\Y = _this_\Items()\y + (_this_\Text\Height-_this_\Items()\Image\Height)/2 + Image_Y
     EndMacro
     
     With *This
       \Text\Count = ListSize(\Items())
-        
+      
       If \Text\Vertical
         Width = \Height[1]-\Text\X*2 
         Height = \Width[1]-\Text\y*2
       Else
-;         CompilerIf Defined(Scroll, #PB_Module) ; And (\Scroll\v And \Scroll\h)
-;           Width = Abs(\Width[1]-\Text\X*2    -Scroll::Width(\Scroll\v)) ; bug in linux иногда
-;           Height = \Height[1]-\Text\y*2      -Scroll::Height(\Scroll\h)
-;         CompilerElse
-;           Width = \Width[1]-\Text\X*2  
-;           Height = \Height[1]-\Text\y*2 
-;         CompilerEndIf
+        ;         CompilerIf Defined(Scroll, #PB_Module) ; And (\Scroll\v And \Scroll\h)
+        ;           Width = Abs(\Width[1]-\Text\X*2    -Scroll::Width(\Scroll\v)) ; bug in linux иногда
+        ;           Height = \Height[1]-\Text\y*2      -Scroll::Height(\Scroll\h)
+        ;         CompilerElse
+        ;           Width = \Width[1]-\Text\X*2  
+        ;           Height = \Height[1]-\Text\y*2 
+        ;         CompilerEndIf
         CompilerIf Not Defined(Scroll, #PB_Module)
           \Scroll\Width[2] = \width[2]
           \Scroll\Height[2] = \height[2]
@@ -555,20 +608,20 @@ Module Text
       EndIf
       
       width = \Scroll\width[2]
-        height = \Scroll\height[2]
+      height = \Scroll\height[2]
       
-;       ; If Not \Text\Height And StartDrawing(CanvasOutput(\Canvas\Gadget)) ; с ним три раза быстрее
-;       If StartDrawing(CanvasOutput(\Canvas\Gadget))
-;         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
-;         If Not \Text\Height : \Text\Height = TextHeight("A") + 1 : EndIf
-;         
-;         If \Type = #PB_GadgetType_Button
-;           \Items()\Text\Width = TextWidth(RTrim(String.s))
-;         Else
-;           \Items()\Text\Width = TextWidth(String.s)
-;         EndIf
-;         StopDrawing()
-;       EndIf
+      ;       ; If Not \Text\Height And StartDrawing(CanvasOutput(\Canvas\Gadget)) ; с ним три раза быстрее
+      ;       If StartDrawing(CanvasOutput(\Canvas\Gadget))
+      ;         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
+      ;         If Not \Text\Height : \Text\Height = TextHeight("A") + 1 : EndIf
+      ;         
+      ;         If \Type = #PB_GadgetType_Button
+      ;           \Items()\Text\Width = TextWidth(RTrim(String.s))
+      ;         Else
+      ;           \Items()\Text\Width = TextWidth(String.s)
+      ;         EndIf
+      ;         StopDrawing()
+      ;       EndIf
       
       \Items()\Index[1] =- 1
       \Items()\Focus =- 1
@@ -576,15 +629,15 @@ Module Text
       \Items()\Radius = \Radius
       \Items()\Text\String.s = String.s
       
-; ; ; ;       ; Set line default colors             
-; ; ; ;       \Items()\Color = \Color
-\Items()\Color\State = 1
-; ; ; ;       \Items()\Color\Fore[\Items()\Color\State] = 0
+      ; ; ; ;       ; Set line default colors             
+      ; ; ; ;       \Items()\Color = \Color
+      \Items()\Color\State = 1
+      ; ; ; ;       \Items()\Color\Fore[\Items()\Color\State] = 0
       
       ; Update line pos in the text
       \Items()\Text\Len = Len(String.s)
-      \Items()\Text\Position = \Text\Position
-      \Text\Position + \Items()\Text\Len + 1 ; Len(#LF$)
+      \Items()\Text\Pos = \Text\Pos
+      \Text\Pos + \Items()\Text\Len + 1 ; Len(#LF$)
       
       _set_content_X_(*This)
       _line_resize_X_(*This)
@@ -596,15 +649,15 @@ Module Text
         \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
       EndIf
       
-;       ; Is visible lines
-;       \Items()\Hide = Bool(Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
+      ;       ; Is visible lines
+      ;       \Items()\Hide = Bool(Not Bool(\Items()\y>=\y[2] And (\Items()\y-\y[2])+\Items()\height=<\height[2]))
       
       ; Scroll width length
       _set_scroll_width_(*This)
       
       ; Scroll hight length
       _set_scroll_height_(*This)
-            
+      
     EndWith
     
     ProcedureReturn Line
@@ -619,35 +672,35 @@ Module Text
         Width = \Height[2]-\Text\X*2
         Height = \Width[2]-\Text\y*2
       Else
-;         CompilerIf Defined(Scroll, #PB_Module)
-;           If *This\Scroll\v
-;             width = Abs(*This\width[2]-\Text\X*2 -Scroll::Width(*This\Scroll\v)) ; bug in linux иногда
-;           Else
-;             width = Abs(*This\width[2]-\Text\X*2 )
-;           EndIf
-;           If *This\Scroll\h
-;             height = *This\height[2]-Scroll::Height(*This\Scroll\h)
-;           Else
-;             height = *This\height[2]
-;           EndIf
-          width = \Scroll\width[2]-\Text\X*2-\sci\margin\width
-          height = \Scroll\height[2]
-          
-;         CompilerElse
-;           Width = \Width[2]-\Text\X*2  
-;           Height = \Height[2]
-;         CompilerEndIf
+        ;         CompilerIf Defined(Scroll, #PB_Module)
+        ;           If *This\Scroll\v
+        ;             width = Abs(*This\width[2]-\Text\X*2 -Scroll::Width(*This\Scroll\v)) ; bug in linux иногда
+        ;           Else
+        ;             width = Abs(*This\width[2]-\Text\X*2 )
+        ;           EndIf
+        ;           If *This\Scroll\h
+        ;             height = *This\height[2]-Scroll::Height(*This\Scroll\h)
+        ;           Else
+        ;             height = *This\height[2]
+        ;           EndIf
+        width = \Scroll\width[2]-\Text\X*2-\sci\margin\width
+        height = \Scroll\height[2]
+        
+        ;         CompilerElse
+        ;           Width = \Width[2]-\Text\X*2  
+        ;           Height = \Height[2]
+        ;         CompilerEndIf
       EndIf
       
       ;  Debug ""+\Scroll\Width[2] +" "+ \Scroll\Height[2] +" "+ \Width[2] +" "+ \Height[2] +" "+ Width +" "+ Height
-            
+      
       If \Text\MultiLine > 0
         String.s = Wrap(\Text\String.s, Width, \Text\MultiLine)
       Else
         String.s = \Text\String.s
       EndIf
       
-      \Text\Position = 0
+      \Text\Pos = 0
       
       If \Text\String.s[2] <> String.s Or \Text\Vertical
         If \Text\Editable And \Text\Change=-1 
@@ -660,9 +713,9 @@ Module Text
         
         ; Scroll width reset 
         \Scroll\Width = 0;\Text\X
-           
+        
         _set_content_Y_(*This)
-          
+        
         ; 
         If ListSize(\Items()) 
           Protected Left = Move(*This, Width)
@@ -678,46 +731,46 @@ Module Text
           If \Text\Vertical
             For IT = \Text\Count To 1 Step - 1
               If AddElement(\Items())
-              String = StringField(\Text\String.s[2], IT, #LF$)
-              
-              \Items()\Focus =- 1
-              \Items()\Index[1] =- 1
-              
-              If \Type = #PB_GadgetType_Button
-                \Items()\Text\Width = TextWidth(RTrim(String))
-              Else
-                \Items()\Text\Width = TextWidth(String)
+                String = StringField(\Text\String.s[2], IT, #LF$)
+                
+                \Items()\Focus =- 1
+                \Items()\Index[1] =- 1
+                
+                If \Type = #PB_GadgetType_Button
+                  \Items()\Text\Width = TextWidth(RTrim(String))
+                Else
+                  \Items()\Text\Width = TextWidth(String)
+                EndIf
+                
+                If \Text\Align\Right
+                  Text_X=(Width-\Items()\Text\Width) 
+                ElseIf \Text\Align\Horizontal
+                  Text_X=(Width-\Items()\Text\Width-Bool(\Items()\Text\Width % 2))/2 
+                EndIf
+                
+                \Items()\x = \X[1]+\Text\Y+\Scroll\Height+Text_Y
+                \Items()\y = \Y[1]+\Text\X+Text_X
+                \Items()\Width = \Text\Height
+                \Items()\Height = Width
+                \Items()\Index = ListIndex(\Items())
+                
+                \Items()\Text\Editable = \Text\Editable 
+                \Items()\Text\Vertical = \Text\Vertical
+                If \Text\Rotate = 270
+                  \Items()\Text\x = \Image\Width+\Items()\x+\Text\Height+\Text\X
+                  \Items()\Text\y = \Items()\y
+                Else
+                  \Items()\Text\x = \Image\Width+\Items()\x
+                  \Items()\Text\y = \Items()\y+\Items()\Text\Width
+                EndIf
+                \Items()\Text\Height = \Text\Height
+                \Items()\Text\String.s = String.s
+                \Items()\Text\Len = Len(String.s)
+                
+                _set_scroll_height_(*This)
               EndIf
-              
-              If \Text\Align\Right
-                Text_X=(Width-\Items()\Text\Width) 
-              ElseIf \Text\Align\Horizontal
-                Text_X=(Width-\Items()\Text\Width-Bool(\Items()\Text\Width % 2))/2 
-              EndIf
-              
-              \Items()\x = \X[1]+\Text\Y+\Scroll\Height+Text_Y
-              \Items()\y = \Y[1]+\Text\X+Text_X
-              \Items()\Width = \Text\Height
-              \Items()\Height = Width
-              \Items()\Index = ListIndex(\Items())
-              
-              \Items()\Text\Editable = \Text\Editable 
-              \Items()\Text\Vertical = \Text\Vertical
-              If \Text\Rotate = 270
-                \Items()\Text\x = \Image\Width+\Items()\x+\Text\Height+\Text\X
-                \Items()\Text\y = \Items()\y
-              Else
-                \Items()\Text\x = \Image\Width+\Items()\x
-                \Items()\Text\y = \Items()\y+\Items()\Text\Width
-              EndIf
-              \Items()\Text\Height = \Text\Height
-              \Items()\Text\String.s = String.s
-              \Items()\Text\Len = Len(String.s)
-              
-              _set_scroll_height_(*This)
-            EndIf
-          Next
-        Else
+            Next
+          Else
             For IT = 1 To \Text\Count
               String = StringField(\Text\String.s[2], IT, #LF$)
               
@@ -734,17 +787,17 @@ Module Text
                 \Items()\Text\String.s = String.s
                 \Items()\Index = ListIndex(\Items())
                 
-;                 ; Set line default colors             
-;                 \Items()\Color = \Color
+                ;                 ; Set line default colors             
+                ;                 \Items()\Color = \Color
                 \Items()\Color\State = 1
                 
-;                 \Items()\Color\Fore[\Items()\Color\State] = 0
+                ;                 \Items()\Color\Fore[\Items()\Color\State] = 0
                 
                 ; Update line pos in the text
-                \Items()\Text\Position = \Text\Position
+                \Items()\Text\Pos = \Text\Pos
                 \Items()\Text\Len = Len(String.s)
-                \Text\Position + \Items()\Text\Len + 1 ; Len(#LF$)
-               
+                \Text\Pos + \Items()\Text\Len + 1 ; Len(#LF$)
+                
                 _set_content_X_(*This)
                 _line_resize_X_(*This)
                 _line_resize_Y_(*This)
@@ -761,7 +814,7 @@ Module Text
                 ; Scroll hight length
                 _set_scroll_height_(*This)
                 
-;                 AddLine(*This, ListIndex(\Items()), String.s)
+                ;                 AddLine(*This, ListIndex(\Items()), String.s)
               EndIf
             Next
           EndIf
@@ -778,12 +831,12 @@ Module Text
                 Else
                   \Items()\Text\Width = TextWidth(String.s)
                 EndIf
-             EndIf
+              EndIf
               
               ; Update line pos in the text
-              \Items()\Text\Position = \Text\Position
+              \Items()\Text\Pos = \Text\Pos
               \Items()\Text\Len = Len(String.s)
-              \Text\Position + \Items()\Text\Len + 1 ; Len(#LF$)
+              \Text\Pos + \Items()\Text\Len + 1 ; Len(#LF$)
               
               ; Resize item
               If (Left And Not  Bool(\Scroll\X = Left))
@@ -802,18 +855,16 @@ Module Text
         \Scroll\Height = 0
         _set_content_Y_(*This)
         
-        PushListPosition(\Items())
         ForEach \Items()
           If Not \Items()\Hide
-          _set_content_X_(*This)
-          _line_resize_X_(*This)
-          _line_resize_Y_(*This)
-          
-          ; Scroll hight length
-          _set_scroll_height_(*This)
+            _set_content_X_(*This)
+            _line_resize_X_(*This)
+            _line_resize_Y_(*This)
+            
+            ; Scroll hight length
+            _set_scroll_height_(*This)
           EndIf
         Next
-        PopListPosition(\Items())
       EndIf
       
     EndWith
@@ -929,7 +980,7 @@ Module Text
             ; Посылаем сообщение об изменении размера 
             PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
             CompilerIf Defined(Scroll, #PB_Module)
-            ;  Scroll::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
+              ;  Scroll::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
               Scroll::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
             CompilerElse
               \Scroll\Width[2] = \width[2]
@@ -941,8 +992,6 @@ Module Text
             \Text\Height[1] = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
             If \Type = #PB_GadgetType_Tree
               \Text\Height = 20
-;             ElseIf \Type = #PB_GadgetType_ListView
-;               \Text\Height = 20
             Else
               \Text\Height = \Text\Height[1]
             EndIf
@@ -950,13 +999,47 @@ Module Text
           EndIf
           
           Text::MultiLine(*This)
+          
+          ;This is for the caret and scroll when entering the key - (enter & beckspace)
+          If \index[2] >= 0 And \index[2] < ListSize(\items()) - 1
+            SelectElement(\items(), \index[2])
+          EndIf
+          
+          CompilerIf Defined(Scroll, #PB_Module)
+            If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
+              If \Text\editable And \index[2] > 0 And (\items()\y+\Text\y >= (Scroll::Y(\Scroll\h)-\items()\height))
+                ; This is for the editor widget when you enter the key - (enter & backspace)
+                Scroll::SetState(\Scroll\v, (\items()\y-(Scroll::Y(\Scroll\h)-\items()\height)))
+              EndIf
+              Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            EndIf
+            ;           CompilerEndIf
+;           
+;           CompilerIf Defined(Scroll, #PB_Module)
+;             If \Scroll\v And \Scroll\v\Max <> \Scroll\Height And 
+;                Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines))
+;               Protected vDraw = Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;             EndIf
+;             If \Scroll\h And \Scroll\h\Max<>\Scroll\Width And 
+;                Scroll::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
+;               Protected hDraw = Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;             EndIf
+;            
+;             If vDraw
+;               Scroll::Draw(\Scroll\v)
+;             EndIf
+;             If hDraw
+;               Scroll::Draw(\Scroll\h)
+;             EndIf
+          CompilerEndIf
+          
         EndIf 
         
         iX=\X[2]
         iY=\Y[2]
         iwidth = \Scroll\width[2]
         iheight = \Scroll\height[2]
-         
+        
         _clip_output_(*This, \X,\Y,\Width,\Height)
         
         ; Draw back color
@@ -967,7 +1050,7 @@ Module Text
           DrawingMode(#PB_2DDrawing_Default)
           RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Back[\Color\State])
         EndIf
-      
+        
         ; Draw margin back color
         If \sci\margin\width
           DrawingMode(#PB_2DDrawing_Default)
@@ -987,12 +1070,12 @@ Module Text
             If \hide
               Drawing = 0
             EndIf
-                    
+            
             If Drawing
               If \Text\FontID 
                 DrawingFont(\Text\FontID) 
-;               ElseIf *This\Text\FontID 
-;                 DrawingFont(*This\Text\FontID) 
+                ;               ElseIf *This\Text\FontID 
+                ;                 DrawingFont(*This\Text\FontID) 
               EndIf
               _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Width[2], #PB_Ignore) 
               
@@ -1041,7 +1124,8 @@ Module Text
             Y = \Y+*This\Scroll\Y
             Text_X = \Text\X+*This\Scroll\X
             Text_Y = \Text\Y+*This\Scroll\Y
-            
+           ; Debug Text_X
+                
             ; expanded & collapsed box
             _set_open_box_XY_(*This, *This\Items(), *This\x+*This\Scroll\X, Y)
             
@@ -1050,7 +1134,7 @@ Module Text
             
             ; Draw selections
             If Drawing And (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1]) ; \Color\State;
-              If *This\Row\Color\Back[\Color\State]<>-1 ; no draw transparent
+              If *This\Row\Color\Back[\Color\State]<>-1                                 ; no draw transparent
                 If *This\Row\Color\Fore[\Color\State]
                   DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
                   BoxGradient(\Vertical,*This\X[2],Y,iwidth,\Height,RowForeColor(*This, \Color\State) ,RowBackColor(*This, \Color\State) ,\Radius)
@@ -1095,7 +1179,7 @@ Module Text
               
               Angle = Bool(\Text\Vertical)**This\Text\Rotate
               Protected Front_BackColor_1 = RowFontColor(*This, *This\Color\State) ; *This\Color\Front[*This\Color\State]&$FFFFFFFF|*This\row\color\alpha<<24
-              Protected Front_BackColor_2 = RowFontColor(*This, 2) ; *This\Color\Front[2]&$FFFFFFFF|*This\row\color\alpha<<24
+              Protected Front_BackColor_2 = RowFontColor(*This, 2)                 ; *This\Color\Front[2]&$FFFFFFFF|*This\row\color\alpha<<24
               
               ; Draw string
               If \Text[2]\Len > 0 And *This\Color\Front <> *This\Row\Color\Front[2]
@@ -1179,9 +1263,9 @@ Module Text
                   Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
                 EndIf
                 
-;                 CompilerIf Defined(Scroll, #PB_Module)
-;                   Debug ""+*This\Scroll\X +" "+ *This\Scroll\h\page\pos
-;                 CompilerEndIf
+                ;                 CompilerIf Defined(Scroll, #PB_Module)
+                ;                   Debug ""+*This\Scroll\X +" "+ *This\Scroll\h\page\pos
+                ;                 CompilerEndIf
                 
                 If \Color\State = 2
                   DrawingMode(#PB_2DDrawing_Transparent)
@@ -1203,8 +1287,8 @@ Module Text
           PopListPosition(*This\Items()) ; 
           
           If *This\Focus = *This 
-            ; Debug ""+ \Caret +" "+ \Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            If (*This\Text\Editable Or \Text\Editable) ;And *This\Caret = *This\Caret[1] And *This\Index[1] = *This\Index[2] And Not \Text[2]\Width[2] 
+            ; Debug ""+ \index +" "+ *This\index[1] +" "+ *This\index[2] +" "+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+            If (*This\Text\Editable Or \Text\Editable) ; And *This\Caret = *This\Caret[1] And *This\Index[1] = *This\Index[2] And Not \Text[2]\Width[2] 
               DrawingMode(#PB_2DDrawing_XOr)             
               If Bool(Not \Text[1]\Width Or *This\Caret > *This\Caret[1])
                 Line((\Text\X+*This\Scroll\X) + \Text[1]\Width + \Text[2]\Width - Bool(*This\Scroll\X = Left), \Y+*This\Scroll\Y, 1, Height, $FFFFFFFF)
@@ -1221,10 +1305,17 @@ Module Text
         If ListSize(*This\Items())
           ; Draw scroll bars
           CompilerIf Defined(Scroll, #PB_Module)
-            If \Scroll\v And \Scroll\Height <> \Scroll\v\max
-              \Scroll\Height - Bool(\Flag\GridLines)
+            If \Scroll\v And \Scroll\v\Max <> \Scroll\Height And 
+               Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines))
+              Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             EndIf
-            Scroll::Draws(\Scroll, \Scroll\Height, \Scroll\Width)
+            If \Scroll\h And \Scroll\h\Max<>\Scroll\Width And 
+               Scroll::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
+              Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            EndIf
+           
+            Scroll::Draw(\Scroll\v)
+            Scroll::Draw(\Scroll\h)
           CompilerEndIf
           
           _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
@@ -1241,11 +1332,11 @@ Module Text
         
         If \Focus = *This
           If \Color\State = 2
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\front[2])
-          If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\front[2]) : EndIf  ; Сглаживание краев )))
+            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\front[2])
+            If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\front[2]) : EndIf  ; Сглаживание краев )))
           Else
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[2])
-          If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[2]) : EndIf  ; Сглаживание краев )))
+            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[2])
+            If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[2]) : EndIf  ; Сглаживание краев )))
           EndIf
           RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,\Color\Frame[2])
         ElseIf \fSize
@@ -1254,7 +1345,7 @@ Module Text
               RoundBox(iX-1,iY-1,iWidth+2,iHeight+2,\Radius,\Radius, $FFE1E1E1)  
               
             Case 2 ; Single
-               _frame_(*This, iX,iY,iWidth,iHeight, $FFE1E1E1, $FFFFFFFF)
+              _frame_(*This, iX,iY,iWidth,iHeight, $FFE1E1E1, $FFFFFFFF)
               
             Case 3 ; Double
               _frame_(*This, iX-1,iY-1,iWidth+2,iHeight+2, $FF888888, $FFFFFFFF)
@@ -1393,10 +1484,10 @@ Module Text
             Text.s = ReplaceString(Text.s, #CR$, #LF$)
             Text.s + #LF$
             \Text\String.s = Text.s
-           ; \Text\Count = CountString(\Text\String.s, #LF$)
+            ; \Text\Count = CountString(\Text\String.s, #LF$)
           Else
             \Text\String.s = RemoveString(\Text\String.s, #LF$) + #LF$
-           ; \Text\String.s = RTrim(ReplaceString(\Text\String.s, #LF$, " ")) + #LF$
+            ; \Text\String.s = RTrim(ReplaceString(\Text\String.s, #LF$, " ")) + #LF$
           EndIf
           
           \Text\Len = Len(\Text\String.s)
@@ -1507,9 +1598,9 @@ Module Text
         Else
           Widget = Canvas
         EndIf
-;         If Canvas <> \Canvas\Gadget
-;           ProcedureReturn 
-;         EndIf
+        ;         If Canvas <> \Canvas\Gadget
+        ;           ProcedureReturn 
+        ;         EndIf
         
         ; Get at point widget
         \Canvas\mouse\at = From(*This)
@@ -1576,7 +1667,7 @@ Module Text
                 Events(*Function, *Focus, #PB_EventType_LostFocus, Canvas, 0)
                 *Last = *Widget
               EndIf
-            
+              
             Case #PB_EventType_LeftButtonDown
               If (*Last = *This)
                 PushListPosition(List())
@@ -1617,7 +1708,7 @@ Module Text
             Case #PB_EventType_LeftButtonUp : \Drag = 0
               FreeStructure(\Canvas\Mouse\Delta) : \Canvas\Mouse\Delta = 0
               ; ResetStructure(\Canvas\Mouse\Delta, Mouse_S)
-    
+              
             Case #PB_EventType_MouseMove
               If \Drag = 0 And \Canvas\Mouse\buttons And \Canvas\Mouse\Delta And 
                  (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1
@@ -1882,12 +1973,12 @@ Module Text
         SetGadgetData(Gadget, *This)
         BindGadgetEvent(Gadget, @Canvas_CallBack())
         PostEvent(#PB_Event_Gadget, GetActiveWindow(), Gadget, #PB_EventType_Repaint, *This)
-    EndWith
+      EndWith
     EndIf
     
     ProcedureReturn g
   EndProcedure
-  EndModule
+EndModule
 
 
 ;-
@@ -2048,5 +2139,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------l--------F-n--4-4--------------------
+; Folding = -f9------+---0-----T+4-0-------------------------
 ; EnableXP

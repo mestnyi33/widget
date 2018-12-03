@@ -237,7 +237,7 @@ Module ListIcon
                 ;               
                 Protected Left,Right
                 If *This\Focus = *This And *This\Text\Editable
-                  Left =- TextWidth(Mid(*This\Text\String.s, \Text\Position, *This\Caret))
+                  Left =- TextWidth(Mid(*This\Text\String.s, \Text\Pos, *This\Caret))
                   ; Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
                   Right = (\Width + Left)
                   
@@ -2369,5 +2369,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --v49-----------Owv------------------------------f----f----
+; Folding = --v4+-----------Owv------------------------------f----f----
 ; EnableXP

@@ -24,7 +24,7 @@ XIncludeFile "module_editor.pbi"
     
     Procedure OpenWindow_0(X = 0, Y = 0, Width = 690, Height = 470)
       Window_0 = OpenWindow(#PB_Any, X, Y, Width, Height, "MyEditor Gadget", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget | #PB_Window_SizeGadget)
-      Canvas_0 = CanvasGadget(#PB_Any, 10, 10, 670, 350, #PB_Canvas_Keyboard)
+      ; Canvas_0 = CanvasGadget(#PB_Any, 10, 10, 670, 350, #PB_Canvas_Keyboard)
       Editor_0 = EditorGadget(#PB_Any, 10, 390, 670, 70)
       Button_0 = ButtonGadget(#PB_Any, 10, 360, 130, 30, "Close Editor")
     EndProcedure
@@ -44,9 +44,6 @@ XIncludeFile "module_editor.pbi"
     ;Txt_1 + "x" + sep + sep
     Txt_1 + sep + sep
     Txt_1 + "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" + sep + sep
-    Txt_1 + "PureBasic is a high-level programming language based on established BASIC rules. It is mostly compatible with any other BASIC compiler, whether it's for the Amiga or PC format. Learning PureBasic is very easy! PureBasic has been created for beginners and experts alike. Compilation time is extremely fast. This software has been developed for the Windows operating system. We have put a lot of effort into its realization to produce a fast, reliable and system-friendly language. " + sep
-    Txt_1 + "The syntax is easy and the possibilities are huge with the advanced functions that have been added to this language like pointers, structures, procedures, dynamic lists and much more. For the experienced coder, there are no problems gaining access to any of the legal OS structures or Windows API objects. " + sep
-    Txt_1 + "PureBasic is a portable programming language which currently works on AmigaOS, Linux, MacOS X and Windows computer systems. This means that the same code can be compiled natively for the OS and use the full power of each. There are no bottlenecks like a virtual machine or a code translator, the generated code produces an optimized executable. " + sep
     Txt_1 + "The main features of PureBasic" + sep
     Txt_1 + "- x86, x64, 680x0 and PowerPC support" + sep 
     Txt_1 + "- Built-in arrays, dynamic lists, complex structures, pointers and variable definitions"  + sep
@@ -67,6 +64,9 @@ XIncludeFile "module_editor.pbi"
     Txt_1 + "- Inline Assembler " + sep + sep
     Txt_1 + "- Precompiled structures with constants files for extra-fast compilation " + sep
     Txt_1 + "- Configurable CLI compiler " + sep
+    Txt_1 + "PureBasic is a high-level programming language based on established BASIC rules. It is mostly compatible with any other BASIC compiler, whether it's for the Amiga or PC format. Learning PureBasic is very easy! PureBasic has been created for beginners and experts alike. Compilation time is extremely fast. This software has been developed for the Windows operating system. We have put a lot of effort into its realization to produce a fast, reliable and system-friendly language. " + sep
+    Txt_1 + "The syntax is easy and the possibilities are huge with the advanced functions that have been added to this language like pointers, structures, procedures, dynamic lists and much more. For the experienced coder, there are no problems gaining access to any of the legal OS structures or Windows API objects. " + sep
+    Txt_1 + "PureBasic is a portable programming language which currently works on AmigaOS, Linux, MacOS X and Windows computer systems. This means that the same code can be compiled natively for the OS and use the full power of each. There are no bottlenecks like a virtual machine or a code translator, the generated code produces an optimized executable. " + sep
     Txt_1 + "- Very high productivity, comprehensive keywords, online help " + sep
     Txt_1 + "- System friendly, easy to install and easy to use " + sep + sep
     
@@ -146,7 +146,6 @@ XIncludeFile "module_editor.pbi"
     
 
 ;}
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = --
 ; EnableXP
