@@ -1007,7 +1007,7 @@ Module Text
           
           CompilerIf Defined(Scroll, #PB_Module)
             If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
-              If \Text\editable And \index[2] > 0 And (\items()\y+\Text\y >= (Scroll::Y(\Scroll\h)-\items()\height))
+              If \Text\editable And \index[2] >= 0 And \index[2] < ListSize(\items()) - 1 And (\items()\y+\Text\y >= (Scroll::Y(\Scroll\h)-\items()\height))
                 ; This is for the editor widget when you enter the key - (enter & backspace)
                 Scroll::SetState(\Scroll\v, (\items()\y-(Scroll::Y(\Scroll\h)-\items()\height)))
               EndIf

@@ -1,7 +1,10 @@
-﻿; TODO надо исправить на последней строке ентер дает ошибку
-; TODO если есть вертикальный скроллбар авто прокручивает в конец файла
-; FIXME горизонтальный скролл не перемешает текст если строка выбрана
-; FIXME при выделении не прокручивает текст
+﻿; + надо исправить на последней строке ентер дает ошибку
+; + если есть вертикальный скроллбар авто прокручивает в конец файла
+; - горизонтальный скролл не перемешает текст если строка выбрана
+; - при выделении не прокручивает текст
+; + если добавить слова в конец текста и нажать ентер есть ошибки
+; + если добавить букву в конец текста потом убрать с помошью бекспейс затем нажать ентер то переносится удаленная буква
+; + если выделить слова в одной строке и нажать бекспейс затем нажать ентер то переносятся удаленые слова
 
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -777,7 +780,7 @@ Module Editor
     ;ProcedureReturn Text::ToReturn(*This,"")
     
     If *This\Canvas\Input : *This\Canvas\Input = 0
-      ;ToInput(*This) ; Сбросить Dot&Minus
+    ;  ToInput(*This) ; Сбросить Dot&Minus
     EndIf
     
     With *This
@@ -800,20 +803,24 @@ Module Editor
         \Text\Change =- 1 ; - 1 post event change widget
         
       ElseIf \Items()\Text[2]\Len
-        If \Caret > \Caret[1] : Swap \Caret, \Caret[1] : EndIf  
+        If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
         
-        \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret) + Mid(\Text\String.s,  \Items()\Text\Pos+\Caret + \Items()\Text[2]\Len + 1)
-        \Items()\Text[2]\Len = 0 
-        \Items()\Text[2]\String.s = "" 
-        \Items()\Text[2]\change = 1
-        \Text\Change =- 1
+        \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
+        \Items()\Text\Len = \Items()\Text[1]\Len + \Items()\Text[3]\Len
+        \Items()\Text\Change = 1
+        
+        \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+        \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
+        \Text\Change =- 1 ; - 1 post event change widget
         
       ElseIf \Caret[1] > 0 
-        Debug " "+ListIndex(\Items())+" "+\Items()\Text\Pos+" "+\Items()\Text\String.s; 
-        \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Text\Pos+\Caret + 1)
-        \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Pos+\Caret + 1)
+        \Items()\Text\String.s = Left(\Items()\Text\String.s, \Caret[1] - 1) + \Items()\Text[3]\String.s
+        \Items()\Text\Len = Len(\Items()\Text\String.s)
+        \Items()\Text\Change = 1
+        
+        \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Pos + \Caret + 1)
+        \Text\Change =- 1 ; - 1 post event change widget
         \Caret - 1 
-        \Text\Change =- 1
       Else
         ; Если дошли до начала строки то 
         ; переходим в конец предыдущего итема
@@ -823,7 +830,7 @@ Module Editor
           ToUp(*This)
           
           \Caret = \Items()\Text\Len 
-          \Text\Change =- 1
+          \Text\Change =- 1 ; - 1 post event change widget
         EndIf
         
       EndIf
@@ -833,102 +840,13 @@ Module Editor
         \Caret[1] = \Caret 
         
         
-        PushListPosition(\items())
-        If SelectElement(\items(), \index[2]) And Not \Scroll\v\hide
-          Scroll::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height))) ; в конце
-        EndIf
-        PopListPosition(\items())
+; ;         PushListPosition(\items())
+; ;         If SelectElement(\items(), \index[2]) And Not \Scroll\v\hide
+; ;           Scroll::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height))) ; в конце
+; ;         EndIf
+; ;         PopListPosition(\items())
         
         Repaint =- 1 
-      EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  Procedure.i _ToBack(*This.Widget_S, Chr.s="") ; Ok
-    Protected Repaint, String.s, Len.i
-    
-    With  *This
-      If \Index[2] <> \Index[1] ; Это значить строки выделени
-        If \Index[2] > \Index[1] : Swap \Index[2], \Index[1] : EndIf
-        
-        If SelectElement(\Items(), \Index[2]) ;: Debug \Items()\Text\String.s
-          String.s = Left(\Text\String.s, \Items()\Text\Pos) + \Items()\Text[1]\String.s + Chr.s
-          \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
-          \Caret = \Items()\Text[1]\Len
-        EndIf   
-        
-        If SelectElement(\Items(), \Index[1]) ;: Debug "  "+\Items()\Text\String.s
-          String.s + \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Pos+\Items()\Text\Len))
-          \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
-        EndIf
-        
-        \Index[1] = \Index[2]
-        \Text\Change =- 1 ; - 1 post event change widget
-        
-      ElseIf \Caret[1] > 0 
-        
-        If \Items()\Text[2]\Len
-          If \Caret > \Caret[1] 
-            Swap \Caret, \Caret[1]
-          EndIf  
-          
-          len = \Items()\Text[2]\Len
-          \Items()\Text[2]\Len = 0 
-          \Items()\Text[2]\String.s = "" 
-          \Items()\Text[2]\change = 1
-        Else
-          \Items()\Text[1]\Len - 1
-          If \Items()\Text[1]\Len =- 1
-            \Items()\Text[1]\Len = \Caret - 1
-          EndIf
-          \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Items()\Text[1]\Len)
-          \Items()\Text[1]\Change = 1
-          
-          \Items()\Text[3]\Pos = \Items()\Text[1]\Len
-          \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
-          \Items()\Text\Len = \Items()\Text[1]\Len + \Items()\Text[3]\Pos
-          \Caret - 1
-        EndIf
-        
-        String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret) + Mid(\Text\String.s,  \Items()\Text\Pos+\Caret + Len + 1)
-        \Text\Change =- 1 ; - 1 post event change widget
-                          ;Debug String.s
-        
-      Else
-        ; Если дошли до начала строки то 
-        ; переходим в конец предыдущего итема
-        If \Index[2] > 0 
-          String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
-          
-          ToUp(*This)
-          
-          \Caret = \Items()\Text\Len 
-          \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret)
-          \Items()\Text[1]\len = Len(\Items()\Text[1]\String.s)
-          \Items()\Text[1]\Change = 1
-          \Text\Change =- 1 ; - 1 post event change widget
-          
-        EndIf
-      EndIf
-      
-      If \Text\Change
-        \Caret[1] = \Caret
-        \Text\String.s = String.s
-        \Text\Len = Len(\Text\String.s)
-        
-        
-        
-        If SelectElement(\items(), \index[1]) And Not \Scroll\v\hide
-          ;           CompilerIf Defined(Scroll, #PB_Module)
-          ;            ; Scroll::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height)))
-          ;             Scroll::SetState(\Scroll\v, (\items()\y-(Scroll::Y(\Scroll\h)-\items()\height)))
-          ;           CompilerEndIf
-        EndIf
-        
-        ; Text::Change(*This, \Caret, 0)
-        Repaint = #True
       EndIf
     EndWith
     
@@ -1932,5 +1850,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------------0-------------------------
+; Folding = ------------------------------------------
 ; EnableXP
