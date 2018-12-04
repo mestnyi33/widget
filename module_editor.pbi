@@ -6,6 +6,8 @@
 ; + если добавить букву в конец текста потом убрать с помошью бекспейс затем нажать ентер то переносится удаленная буква
 ; + если выделить слова в одной строке и нажать бекспейс затем нажать ентер то переносятся удаленые слова
 ; - при перемещении корета вниз не прокручивается страница
+; + При переходе на предыдущую строку если переходящая строка длинее предыдушего была ошибка перемещения корета на предыдущей строке
+
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
@@ -569,6 +571,10 @@ Module Editor
     With *This
       If (\Index[2] > 0 And \Index[1] = \Index[2]) : \Index[2] - 1 : \Index[1] = \Index[2]
         SelectElement(\Items(), \Index[2])
+        If \Caret > \items()\text\len
+          \Caret = \items()\text\len
+          \Caret[1] = \Caret
+        EndIf
         Repaint =- 1 
       EndIf
     EndWith
