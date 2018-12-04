@@ -142,7 +142,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*g)
     
     Text::Redraw(*g)
-    
+
      *g = Create(g, -1, 230, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
     ;  3_example
     
@@ -161,6 +161,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     ;Free(*g)
     
+  
     Repeat
       Select WaitWindowEvent()   
         Case #PB_Event_CloseWindow

@@ -61,7 +61,8 @@ DeclareModule Constants
     #PB_Flag_AutoRight
     #PB_Flag_AutoBottom
     
-    ; #____End____
+    #PB_Flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
+  ; #____End____
   EndEnumeration
   
   #PB_Flag_Numeric = #PB_Text_Numeric
@@ -72,7 +73,6 @@ DeclareModule Constants
   #PB_Flag_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
     
   #PB_Flag_AlwaysSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
-  #PB_Flag_FullSelection = 512 ; #PB_ListIcon_FullRowSelect
   
   #PB_Attribute_Selected = #PB_Tree_Selected                       ; 1
   #PB_Attribute_Expanded = #PB_Tree_Expanded                       ; 2

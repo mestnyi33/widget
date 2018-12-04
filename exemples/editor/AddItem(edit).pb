@@ -11,7 +11,7 @@ XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_editor.pbi"
 
-LN=15000; количесвто итемов 
+LN=1500;0; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)

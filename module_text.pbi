@@ -230,6 +230,14 @@ Module Text
     ProcedureReturn Position
   EndProcedure
   
+  Procedure.i Remove(*This.Widget_S)
+    With *This
+      If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+      \Text\Len = Len(\Text\String.s)
+    EndWith
+  EndProcedure
+  
   Procedure.i SelLimits(*This.Widget_S)
     Protected i, char.i
     
@@ -270,14 +278,6 @@ Module Text
     EndWith           
   EndProcedure
   
-  Procedure.i Remove(*This.Widget_S)
-    With *This
-      If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
-      \Text\Len = Len(\Text\String.s)
-    EndWith
-  EndProcedure
-  
   Procedure.i SelReset(*This.Widget_S)
     With *This
       PushListPosition(\Items())
@@ -290,6 +290,21 @@ Module Text
           \Items()\Text[3]\String = ""
           \Items()\Text[2]\Width = 0 
         EndIf
+      Next
+      PopListPosition(\Items())
+    EndWith
+  EndProcedure
+  
+  Procedure.i SelSet(*This.Widget_S)
+    With *This
+      PushListPosition(\Items())
+      ForEach \Items() 
+        \Items()\Text[2]\Len = \Items()\Text\Len 
+        \Items()\Text[2]\Width[2] = \Flag\FullSelection
+        \Items()\Text[1]\String = ""
+        \Items()\Text[2]\String = "" 
+        \Items()\Text[3]\String = ""
+        \Items()\Text[2]\Width = 0 
       Next
       PopListPosition(\Items())
     EndWith
@@ -1333,7 +1348,7 @@ Module Text
           
           CompilerIf Defined(Scroll, #PB_Module)
             If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
-              If \Text\editable And \index[2] >= 0 And \index[2] < ListSize(\items()) - 1 And (\items()\y+\Text\y >= (Scroll::Y(\Scroll\h)-\items()\height))
+              If \Text\editable And \index[2] >= 0 And (\items()\y+\Text\y >= (Scroll::Y(\Scroll\h)-\items()\height))
                 ; This is for the editor widget when you enter the key - (enter & backspace)
                 Scroll::SetState(\Scroll\v, (\items()\y-(Scroll::Y(\Scroll\h)-\items()\height)))
               EndIf
@@ -2465,5 +2480,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------------47-----------------------------------------
+; Folding = ----v--------v4---D-------------------------------------
 ; EnableXP

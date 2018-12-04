@@ -1,4 +1,4 @@
-﻿; + надо исправить на последней строке ентер дает ошибку
+﻿; ++ надо исправить на последней строке ентер дает ошибку
 ; + если есть вертикальный скроллбар авто прокручивает в конец файла
 ; - горизонтальный скролл не перемешает текст если строка выбрана
 ; - при выделении не прокручивает текст
@@ -59,7 +59,6 @@ DeclareModule Editor
   Declare SetFont(*This.Widget_S, FontID.i)
   Declare.i AddItem(*This.Widget_S, Item.i,Text.s,Image.i=-1,Flag.i=0)
   
-  Declare.i Repaint(*This.Widget_S)
   Declare.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
@@ -69,21 +68,11 @@ Module Editor
   ; ;   UseModule Constant
   ;- PROCEDURE
   ;-
-  Procedure.i Repaint(*This.Widget_S)
-    If *This
-      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create)
-    Else
-      ForEach List()
-        PostEvent(#PB_Event_Widget, List()\Widget\Canvas\Window, List()\Widget, #PB_EventType_Create)
-      Next
-    EndIf
-  EndProcedure
-  
   Procedure Caret(*This.Widget_S, Line.i = 0)
     ProcedureReturn Text::Caret(*This, Line)
     
     Static LastLine.i =- 1,  LastItem.i =- 1
-    Protected Item.i, SelectionLen.i;=7
+    Protected Item.i, SelectionLen.i=*This\Flag\FullSelection
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
               CursorX.i, Distance.f, MinDistance.f = Infinity()
     
@@ -403,7 +392,7 @@ Module Editor
           
           ; add lines
           Text::AddLine(*This, Item.i, Text.s)
-          
+          \Text\Change = 1
           ;           \Items()\Color = Colors
           ;           \Items()\Color\State = 1
           ;           \Items()\Color\Fore[0] = 0 
@@ -965,7 +954,7 @@ Module Editor
         
         \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
         \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
-        \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
+        \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)*7
         \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
         \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
         \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
@@ -1138,7 +1127,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g=16
-    Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Text_WordWrap|#PB_Flag_GridLines);|#PB_Text_Right) 
+    Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Flag_FullSelection|#PB_Text_WordWrap|#PB_Flag_GridLines);|#PB_Text_Right) 
     *w=GetGadgetData(g)
     
     Editor::SetText(*w, Text.s) 
@@ -1152,7 +1141,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     Editor::SetFont(*w, FontID(0))
     
-    Editor::Repaint(*w)
     
     SplitterGadget(10,8, 8, 306, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
@@ -1190,5 +1178,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------------------------
+; Folding = ---------------------------
 ; EnableXP
