@@ -156,7 +156,7 @@ DeclareModule Scroll
   Declare.i Draws(*Scroll.Scroll_S, ScrollHeight.i, ScrollWidth.i)
   Declare.i SetColor(*This.Bar_S, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.b Resize(*This.Bar_S, iX.i,iY.i,iWidth.i,iHeight.i, *That.Bar_S=#Null)
-  Declare.i Bar(*This.Bar_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
+  Declare.i Bar(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
   
   Declare.b Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
   Declare.b Updates(*Scroll.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
@@ -1064,7 +1064,9 @@ Module Scroll
     ProcedureReturn repaint
   EndProcedure
   
-  Procedure.i Bar(*This.Bar_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
+  Procedure.i Bar(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
+    Protected *This.Bar_S = AllocateStructure(Bar_S)
+    
     With *This
       \X =- 1
       \Y =- 1
@@ -1108,21 +1110,23 @@ Module Scroll
       If \Page\len <> Pagelength : SetAttribute(*This, #PB_ScrollBar_PageLength, Pagelength) : EndIf
     EndWith
     
-    ProcedureReturn Resize(*This, X,Y,Width,Height)
+    Resize(*This, X,Y,Width,Height)
+    ProcedureReturn *This
   EndProcedure
   
   Procedure.i Bars(*Scroll.Scroll_S, Size.i, Radius.i, Both.b)
-    If Not *Scroll\v
-      *Scroll\v.Bar_S = AllocateStructure(Bar_S)
-      *Scroll\v\s = *Scroll
-      *Scroll\v\hide = 1
-    EndIf
+    *Scroll\v = Bar(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, Radius)
+    *Scroll\v\hide = *Scroll\v\hide[1]
+    *Scroll\v\s = *Scroll
     
-    If Not *Scroll\h
+    If Both
+      *Scroll\h = Bar(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
+      *Scroll\h\hide = *Scroll\h\hide[1]
+    Else
       *Scroll\h.Bar_S = AllocateStructure(Bar_S)
-      *Scroll\h\s = *Scroll
       *Scroll\h\hide = 1
     EndIf
+    *Scroll\h\s = *Scroll
     
     With *Scroll     
       If \Post\Function And \Post\Event
@@ -1131,52 +1135,7 @@ Module Scroll
       EndIf
     EndWith
     
-    Bar(*Scroll\v, #PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, Radius)
-    If Both
-      Bar(*Scroll\h, #PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
-    EndIf
-    
-    ProcedureReturn 
-  EndProcedure
-  
-  Procedure.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
-    Protected Vertical = Bool(Flag=#PB_ScrollBar_Vertical)                                                              
-    Protected *This.Bar_S = AllocateStructure(Bar_S)
-    
-    If Vertical
-      If Not *Scroll\v
-        *Scroll\v.Bar_S = *This
-        *Scroll\v\s = *Scroll
-      Else
-        *This = *Scroll\v
-      EndIf
-      If Not *Scroll\h
-        *Scroll\h.Bar_S = AllocateStructure(Bar_S)
-        *Scroll\h\s = *Scroll
-        *Scroll\h\hide = 1
-      EndIf
-    Else
-      If Not *Scroll\h
-        *Scroll\h.Bar_S = *This
-        *Scroll\h\s = *Scroll
-      Else
-        *This = *Scroll\h
-      EndIf
-      If Not *Scroll\v
-        *Scroll\v.Bar_S = AllocateStructure(Bar_S)
-        *Scroll\v\s = *Scroll
-        *Scroll\v\hide = 1
-      EndIf
-    EndIf
-    
-    With *This      
-      If \s\Post\Function And \s\Post\Event
-        UnbindEvent(\s\Post\Event, \s\Post\Function, \s\Post\Window, \s\Post\Gadget)
-        BindEvent(\s\Post\Event, \s\Post\Function, \s\Post\Window, \s\Post\Gadget)
-      EndIf
-    EndWith
-    
-    ProcedureReturn Bar(*This, X,Y,Width,Height, Min, Max, PageLength, Flag, Radius)
+    ProcedureReturn *Scroll
   EndProcedure
 EndModule
 
@@ -1325,5 +1284,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------0m-------P-0----f------f-f--0--
+; Folding = ------0m-------P-0----f---------v--
 ; EnableXP

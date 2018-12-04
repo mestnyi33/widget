@@ -303,14 +303,12 @@ Module Widget
          \Canvas\window = GetActiveWindow()
          \Type = #PB_GadgetType_ScrollBar
          
-         \Scroll\v.Bar_S = AllocateStructure(Bar_S)
-           Scroll::Bar(\Scroll\v, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
+         \Scroll\v = Scroll::Bar(0, 0, Width, Height, Min, Max, Pagelength, Flag)
          
-;       ;         \vScroll\Gadget = Widget
-; ;         \vScroll\Type[1]=1 : \vScroll\Type[2]=1     ; Можно менять вид стрелок 
-; ;         \vScroll\Size[1]=6 : \vScroll\Size[2]=6     ; Можно задать размер стрелок
+         \Scroll\v\ArrowType[1]=1 : \Scroll\v\ArrowType[2]=1     ; Можно менять вид стрелок 
+         \Scroll\v\ArrowSize[1]=6 : \Scroll\v\ArrowSize[2]=6     ; Можно задать размер стрелок
+         
         SetGadgetData(Widget, *This)
-        ;Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
         PostEvent(#PB_Event_Gadget, GetActiveWindow(), Widget, #PB_EventType_Repaint, *This)
       EndIf
@@ -327,7 +325,6 @@ Module Widget
       With *This
         Button::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag);, 29)
         SetGadgetData(Widget, *This)
-;         Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
         PostEvent(#PB_Event_Gadget, GetActiveWindow(), Widget, #PB_EventType_Repaint, *This)
       EndIf
@@ -344,7 +341,6 @@ Module Widget
       With *This
         String::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
-        ;Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
         PostEvent(#PB_Event_Gadget, GetActiveWindow(), Widget, #PB_EventType_Repaint, *This)
       EndIf
@@ -361,7 +357,6 @@ Module Widget
       With *This
         Text::Widget(*This, Widget, 0, 0, Width, Height, Text.s, Flag)
         SetGadgetData(Widget, *This)
-        ;Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
         PostEvent(#PB_Event_Gadget, GetActiveWindow(), Widget, #PB_EventType_Repaint, *This)
       EndIf

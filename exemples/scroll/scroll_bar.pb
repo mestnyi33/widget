@@ -192,8 +192,7 @@ Module ScrollBar
         
         \Color\Frame = $C0C0C0
         
-        \Bar.Structures::Bar_S = AllocateStructure(Structures::Bar_S)
-        Scroll::Bar(\Bar, 0, 0, \Width[2], \Height[2], Min, Max, PageLength, Flag)
+        \Bar = Scroll::Bar(0, 0, \Width[2], \Height[2], Min, Max, PageLength, Flag)
         \Bar\ArrowType[1]=1 
         \Bar\ArrowType[2]=1
         \Bar\ArrowSize[1]=6 
