@@ -57,7 +57,7 @@ Module Widget
           Case #PB_GadgetType_Text   : Text::Draw(*This)
           Case #PB_GadgetType_Button : Button::Draw(*This)
           Case #PB_GadgetType_String : String::Draw(*This)
-          Case #PB_GadgetType_ScrollBar : Scroll::Draw(\Scroll)
+          Case #PB_GadgetType_ScrollBar : Scroll::Draw(\Scroll\v)
         EndSelect
         
         StopDrawing()
@@ -70,7 +70,7 @@ Module Widget
       
       ;       Select \Type
       ;         Case #PB_GadgetType_ScrollBar
-      ;           Scroll::Resize(\Scroll, X,Y,Width,Height)
+      ;           Scroll::Resize(\Scroll\v, X,Y,Width,Height)
       ;           \Resize = 1
       ;         Default
       If X<>#PB_Ignore 
@@ -201,7 +201,7 @@ Module Widget
           EndIf
           
         Case #PB_GadgetType_ScrollBar  
-          If Scroll::SetState(*This\Scroll, State) 
+          If Scroll::SetState(*This\Scroll\v, State) 
             PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
             Result = 1
           EndIf
@@ -220,7 +220,7 @@ Module Widget
     With *This
       Select \Type
         Case #PB_GadgetType_ScrollBar  
-         ; ProcedureReturn *This\Scroll\Page\Pos
+         ; ProcedureReturn *This\Scroll\v\Page\Pos
       EndSelect
     EndWith
   EndProcedure
@@ -231,7 +231,7 @@ Module Widget
     With *This
       Select \Type
         Case #PB_GadgetType_ScrollBar  
-          If Scroll::SetAttribute(\Scroll, Attribute, Value)
+          If Scroll::SetAttribute(\Scroll\v, Attribute, Value)
             Draws(*This)
           EndIf
           
@@ -246,9 +246,9 @@ Module Widget
       Select \Type
         Case #PB_GadgetType_ScrollBar  
           Select Attribute
-;             Case #PB_ScrollBar_Minimum    : Result = \Scroll\Min
-;             Case #PB_ScrollBar_Maximum    : Result = \Scroll\Max
-;             Case #PB_ScrollBar_PageLength : Result = \Scroll\Page\Length
+;             Case #PB_ScrollBar_Minimum    : Result = \Scroll\v\Min
+;             Case #PB_ScrollBar_Maximum    : Result = \Scroll\v\Max
+;             Case #PB_ScrollBar_PageLength : Result = \Scroll\v\Page\Length
           EndSelect
       EndSelect
     EndWith
@@ -282,7 +282,7 @@ Module Widget
           Repaint = Resizes(*This, #PB_Ignore,#PB_Ignore,GadgetWidth(\Canvas\Gadget),GadgetHeight(\Canvas\Gadget))
       EndSelect
       
-      Repaint | Scroll::CallBack(\Scroll, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+      Repaint | Scroll::CallBack(\Scroll\v, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
       Repaint | Button::CallBack(*This, EventType())
       Repaint | String::CallBack(*This, EventType(), -1, 0) 
       
@@ -302,10 +302,13 @@ Module Widget
          \Canvas\Gadget = Widget
          \Canvas\window = GetActiveWindow()
          \Type = #PB_GadgetType_ScrollBar
-        Scroll::widget(\Scroll, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
-;         \vScroll\Gadget = Widget
-;         \vScroll\Type[1]=1 : \vScroll\Type[2]=1     ; Можно менять вид стрелок 
-;         \vScroll\Size[1]=6 : \vScroll\Size[2]=6     ; Можно задать размер стрелок
+         
+         \Scroll\v.Bar_S = AllocateStructure(Bar_S)
+           Scroll::Bar(\Scroll\v, 0, 0, Width, Height, Min, Max, Pagelength, Flag)
+         
+;       ;         \vScroll\Gadget = Widget
+; ;         \vScroll\Type[1]=1 : \vScroll\Type[2]=1     ; Можно менять вид стрелок 
+; ;         \vScroll\Size[1]=6 : \vScroll\Size[2]=6     ; Можно задать размер стрелок
         SetGadgetData(Widget, *This)
         ;Draws(*This)
         BindGadgetEvent(Widget, @CallBacks())
