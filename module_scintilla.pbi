@@ -180,6 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 522, 491, "ScintillaGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
     
+    InitScintilla()
     ScintillaGadget(0, 8, 8, 306, 133, 0) ;: ScintillaSendMessage(0, #SCI_SETTEXT, 0, UTF8(Text.s)) ;: SetGadgetText(0, Text.s) 
     
     For a = 0 To 2

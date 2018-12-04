@@ -408,7 +408,7 @@ Module String
               
             Case #PB_EventType_LeftDoubleClick 
               \Caret[1] =- 1 ; Запоминаем что сделали двойной клик
-              Text::SelectionLimits(*This) ; Выделяем слово
+              Text::SelLimits(*This) ; Выделяем слово
               Repaint =- 1
               
             Case #PB_EventType_MouseMove
