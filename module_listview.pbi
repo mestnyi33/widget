@@ -428,9 +428,9 @@ Module ListView
           
         EndIf
         
-        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
-        
+        ; Create scrollbar
+        Scroll::Bars(\Scroll, 16, 7, 0)
+    
         Resize(*This, X,Y,Width,Height)
       EndWith
       
@@ -582,8 +582,6 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 522
-; FirstLine = 260
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = r--b+--BHgnnD-
 ; EnableXP

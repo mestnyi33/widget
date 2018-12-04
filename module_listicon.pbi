@@ -2015,10 +2015,12 @@ Module ListIcon
           EndIf
         EndIf
         
-        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+;         Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+;         Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        ; create scrollbars
+        Scroll::Bars(\Scroll, 16, 7, 1) ; Bool(Not Bool(Not \flag\buttons And Not \flag\Lines)))
         Scroll::Resizes(\Scroll, \bSize,\bSize,\Width[2],\Height[2])
-        
+       
         AddColumn(*This, 0,ColumnTitle, ColumnWidth)
         \Resize = 0
       EndWith

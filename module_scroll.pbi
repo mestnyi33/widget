@@ -155,11 +155,13 @@ DeclareModule Scroll
   Declare.b CallBack(*This.Bar_S, EventType.i, mouseX=0, mouseY=0)
   Declare.i Draws(*Scroll.Scroll_S, ScrollHeight.i, ScrollWidth.i)
   Declare.i SetColor(*This.Bar_S, ColorType.i, Color.i, State.i=0, Item.i=0)
-  ; ; ;   Declare.b Resize(*This.Bar_S, iX.i,iY.i,iWidth.i,iHeight.i, *That.Bar_S=#Null)
+  Declare.b Resize(*This.Bar_S, iX.i,iY.i,iWidth.i,iHeight.i, *That.Bar_S=#Null)
+  Declare.i Bar(*This.Bar_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
   
   Declare.b Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
   Declare.b Updates(*Scroll.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
-  Declare.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
+  ;Declare.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
+  Declare.i Bars(*Scroll.Scroll_S, Size.i, Radius.i, Both.b)
   Declare Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
 EndDeclareModule
 
@@ -316,7 +318,8 @@ Module Scroll
         
         ; Draw line
         If \Color[0]\Line[\Color[0]\State]<>-1
-          If \Vertical
+           If \s
+           If \Vertical
             ; Draw left line
             If Not \s\h\hide
               ; "Это пустое пространство между двумя скроллами тоже закрашиваем если скролл бара кнопки не круглые"
@@ -327,10 +330,11 @@ Module Scroll
             EndIf
           Else
             ; Draw top line
-            If Not \s\v\hide
-              Line( \X[0], \Y[0], \Width[0]-\Radius/2,1,\Color[0]\Line[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
-            Else
-              Line( \X[0], \Y[0], \Width[0],1,\Color[0]\Line[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
+              If Not \s\v\hide
+                Line( \X[0], \Y[0], \Width[0]-\Radius/2,1,\Color[0]\Line[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
+              Else
+                Line( \X[0], \Y[0], \Width[0],1,\Color[0]\Line[\Color[0]\State]&$FFFFFF|\color\alpha<<24)
+              EndIf
             EndIf
           EndIf
         EndIf
@@ -479,8 +483,8 @@ Module Scroll
         If ( \Vertical And \Type = #PB_GadgetType_TrackBar) : ScrollPos = (( \Max-\Min)-ScrollPos) : EndIf
         
         If ScrollPos < \Min : ScrollPos = \Min : EndIf
-        If ScrollPos > ( \Max-\Page\len)
-          ScrollPos = ( \Max-\Page\len)
+        If ScrollPos > (\Max-\Page\len) ; ((\Max-\Min) - \Page\len)
+          ScrollPos = (\Max-\Page\len)
         EndIf
         
         If \Page\Pos <> ScrollPos 
@@ -493,7 +497,7 @@ Module Scroll
           
           \Thumb\Pos = ThumbPos(*This, ScrollPos)
           
-;           If \s
+          If \s
             If \Vertical
               \s\y =- \Page\Pos
             Else
@@ -501,13 +505,13 @@ Module Scroll
             EndIf
             
             If \s\Post\event
-              If \widget
-                PostEvent(\s\Post\event, \s\Post\window, \widget, #PB_EventType_ScrollChange, Direction) 
+              If \s\Post\widget
+                PostEvent(\s\Post\event, \s\Post\window, \s\Post\widget, #PB_EventType_ScrollChange, Direction) 
               Else
                 PostEvent(\s\Post\event, \s\Post\window, \s\Post\gadget, #PB_EventType_ScrollChange, Direction) 
               EndIf
             EndIf
-;           EndIf
+          EndIf
           
           Result = #True
         EndIf
@@ -538,10 +542,12 @@ Module Scroll
                 \Max = Value
               EndIf
               
-              If \Vertical
-                \s\height = \Max
-              Else
-                \s\width = \Max
+              If \s
+                If \Vertical
+                  \s\height = \Max
+                Else
+                  \s\width = \Max
+                EndIf
               EndIf
               
               \Page\ScrollStep = ( \Max-\Min) / 100
@@ -555,12 +561,6 @@ Module Scroll
                 If Not \Max 
                   \Max = Value ; Если этого page_length вызвать раньше maximum то не правильно работает 
                 EndIf
-                
-                ;               If \Vertical
-                ;                 \s\height = \Max
-                ;               Else
-                ;                 \s\width = \Max
-                ;               EndIf
                 
                 \Page\len = ( \Max-\Min)
               Else
@@ -631,28 +631,21 @@ Module Scroll
   EndProcedure
   
   Procedure.b Resize(*This.Bar_S, X.i,Y.i,Width.i,Height.i, *That.Bar_S=#Null)
-    Protected Result, Lines, ScrollPage
+    Protected Lines.i, ScrollPage.i
     
     With *This
-      ScrollPage = (( \Max-\Min) - \Page\len)
-      Lines = Bool( \Type=#PB_GadgetType_ScrollBar)
+      ScrollPage = ((\Max-\Min) - \Page\len)
+      Lines = Bool(\Type=#PB_GadgetType_ScrollBar)
       
-      If *That
+      ;
+      If *This <> *That And *That And *That\hide
         If \Vertical
           If Height=#PB_Ignore 
-            If *That\hide 
-              Height=(*That\Y+*That\Height)-\Y 
-;             Else 
-;               Height = *That\Y-\Y 
-            EndIf
+            Height=(*That\Y+*That\Height)-\Y 
           EndIf
         Else
-          If Width=#PB_Ignore 
-            If *That\hide 
-              Width=(*That\X+*That\Width)-\X 
-;             Else 
-;               Width = *That\X-\X 
-            EndIf 
+          If Width=#PB_Ignore
+            Width=(*That\X+*That\Width)-\X 
           EndIf
         EndIf
       EndIf
@@ -663,8 +656,10 @@ Module Scroll
       If Width=#PB_Ignore : Width = \Width[0] : EndIf 
       If Height=#PB_Ignore : Height = \Height[0] : EndIf
       
-      ;
-      If (( \Max-\Min) > \Page\len) ; = 
+      ; 
+      \hide[1] = Bool(Not (\Page\Len And (\Max-\Min) > \Page\len))
+      
+      If Not \hide[1]
         If \Vertical
           \Area\Pos = Y+\Button\len
           \Area\len = (Height-\Button\len*2)
@@ -694,7 +689,7 @@ Module Scroll
           
           If \Area\len > 0
             ; Debug " scroll set state "+\Max+" "+\Page\len+" "+Str( \Thumb\Pos+\Thumb\len) +" "+ Str( \Area\len+\Button\len)
-            If ( \Type <> #PB_GadgetType_TrackBar) And ( \Thumb\Pos+\Thumb\len) >= ( \Area\Pos+\Area\len)
+            If ( \Type <> #PB_GadgetType_TrackBar) And (\Thumb\Pos+\Thumb\len) >= (\Area\Pos+\Area\len)
               SetState(*This, ScrollPage)
             EndIf
             
@@ -703,8 +698,7 @@ Module Scroll
         EndIf
       EndIf
       
-      
-      \X[0] = X : \Y[0] = Y : \Width[0] = Width : \Height[0] = Height                                             ; Set scroll bar coordinate
+      \X[0] = X : \Y[0] = Y : \Width[0] = Width : \Height[0] = Height                                          ; Set scroll bar coordinate
       
       If \Vertical
         \X[1] = X + Lines : \Y[1] = Y : \Width[1] = Width - Lines : \Height[1] = \Button\len                   ; Top button coordinate on scroll bar
@@ -716,7 +710,6 @@ Module Scroll
         \Y[3] = Y + Lines : \Height[3] = Height - Lines : \X[3] = \Thumb\Pos : \Width[3] = \Thumb\len          ; Thumb coordinate on scroll bar
       EndIf
       
-      \hide[1] = Bool(Not (( \Max-\Min) > \Page\len))
       ProcedureReturn \hide[1]
     EndWith
   EndProcedure
@@ -945,7 +938,7 @@ Module Scroll
           Select EventType 
             Case #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
               If \Vertical
-                If \s\h And \s\h\at
+                If \s And \s\h And \s\h\at
                   If \s\h\at > 0
                     repaint | Events(\s\h, EventType, mouseX, mouseY, \s\h\at)
                   EndIf
@@ -962,7 +955,7 @@ Module Scroll
           EndSelect
           
           If \Vertical
-            If \s\h And \s\h\at
+            If \s And \s\h And \s\h\at
               If \Color[2]\State
                 repaint | Events(*This, #PB_EventType_MouseLeave, mouseX, mouseY, \at)
                 ;                   repaint | Events(*This, #PB_EventType_MouseLeave, - 1)
@@ -974,7 +967,7 @@ Module Scroll
               mouseat = 0
             EndIf
           Else
-            If \s\v\at
+            If \s And \s\v And \s\v\at
               If \Color[2]\State
                 repaint | Events(*This, #PB_EventType_MouseLeave, mouseX, mouseY, \at)
                 ;                   repaint | Events(*This, #PB_EventType_MouseLeave, - 1)
@@ -1071,40 +1064,18 @@ Module Scroll
     ProcedureReturn repaint
   EndProcedure
   
-  Procedure.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
-    Protected *This.Bar_S = AllocateStructure(Bar_S)
-    ; 
-    Protected Vertical = Bool(Flag=#PB_ScrollBar_Vertical)
-    
-    If Vertical
-      *Scroll\v.Bar_S = *This
-      *Scroll\v\s = *Scroll
-      If Not *Scroll\h
-        *Scroll\h.Bar_S = AllocateStructure(Bar_S)
-        *Scroll\h\s = *Scroll
-      EndIf
-    Else
-      *Scroll\h.Bar_S = *This
-      *Scroll\h\s = *Scroll
-      If Not *Scroll\v
-        *Scroll\v.Bar_S = AllocateStructure(Bar_S)
-        *Scroll\v\s = *Scroll
-      EndIf
-    EndIf
-    
-    If Not *Scroll\mouse
-      *Scroll\mouse.Mouse_S = AllocateStructure(Mouse_S)
-    EndIf
-    
+  Procedure.i Bar(*This.Bar_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
     With *This
-      ; \Widget = *This
-      \Radius = Radius
-      \ArrowType[1] =- 1 ; -1 0 1
-      \ArrowType[2] =- 1 ; -1 0 1
-      \ArrowSize[1] = 4
-      \ArrowSize[2] = 4
       \X =- 1
       \Y =- 1
+      \Radius = Radius
+      \Vertical = Bool(Flag=#PB_ScrollBar_Vertical)
+      \Type = #PB_GadgetType_ScrollBar
+      
+      \ArrowSize[1] = 4
+      \ArrowSize[2] = 4
+      \ArrowType[1] =- 1 ; -1 0 1
+      \ArrowType[2] =- 1 ; -1 0 1
       
       ; Цвет фона скролла
       \color\alpha = 255
@@ -1117,9 +1088,6 @@ Module Scroll
       \Color[1] = Colors
       \Color[2] = Colors
       \Color[3] = Colors
-      
-      \Type = #PB_GadgetType_ScrollBar
-      \Vertical = Vertical
       
       If \Vertical
         If width < 21
@@ -1138,14 +1106,77 @@ Module Scroll
       If \Min <> Min : SetAttribute(*This, #PB_ScrollBar_Minimum, Min) : EndIf
       If \Max <> Max : SetAttribute(*This, #PB_ScrollBar_Maximum, Max) : EndIf
       If \Page\len <> Pagelength : SetAttribute(*This, #PB_ScrollBar_PageLength, Pagelength) : EndIf
-      
+    EndWith
+    
+    ProcedureReturn Resize(*This, X,Y,Width,Height)
+  EndProcedure
+  
+  Procedure.i Bars(*Scroll.Scroll_S, Size.i, Radius.i, Both.b)
+    If Not *Scroll\v
+      *Scroll\v.Bar_S = AllocateStructure(Bar_S)
+      *Scroll\v\s = *Scroll
+      *Scroll\v\hide = 1
+    EndIf
+    
+    If Not *Scroll\h
+      *Scroll\h.Bar_S = AllocateStructure(Bar_S)
+      *Scroll\h\s = *Scroll
+      *Scroll\h\hide = 1
+    EndIf
+    
+    With *Scroll     
+      If \Post\Function And \Post\Event
+        UnbindEvent(\Post\Event, \Post\Function, \Post\Window, \Post\Gadget)
+        BindEvent(\Post\Event, \Post\Function, \Post\Window, \Post\Gadget)
+      EndIf
+    EndWith
+    
+    Bar(*Scroll\v, #PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, Radius)
+    If Both
+      Bar(*Scroll\h, #PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
+    EndIf
+    
+    ProcedureReturn 
+  EndProcedure
+  
+  Procedure.i Widget(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
+    Protected Vertical = Bool(Flag=#PB_ScrollBar_Vertical)                                                              
+    Protected *This.Bar_S = AllocateStructure(Bar_S)
+    
+    If Vertical
+      If Not *Scroll\v
+        *Scroll\v.Bar_S = *This
+        *Scroll\v\s = *Scroll
+      Else
+        *This = *Scroll\v
+      EndIf
+      If Not *Scroll\h
+        *Scroll\h.Bar_S = AllocateStructure(Bar_S)
+        *Scroll\h\s = *Scroll
+        *Scroll\h\hide = 1
+      EndIf
+    Else
+      If Not *Scroll\h
+        *Scroll\h.Bar_S = *This
+        *Scroll\h\s = *Scroll
+      Else
+        *This = *Scroll\h
+      EndIf
+      If Not *Scroll\v
+        *Scroll\v.Bar_S = AllocateStructure(Bar_S)
+        *Scroll\v\s = *Scroll
+        *Scroll\v\hide = 1
+      EndIf
+    EndIf
+    
+    With *This      
       If \s\Post\Function And \s\Post\Event
         UnbindEvent(\s\Post\Event, \s\Post\Function, \s\Post\Window, \s\Post\Gadget)
         BindEvent(\s\Post\Event, \s\Post\Function, \s\Post\Window, \s\Post\Gadget)
       EndIf
     EndWith
     
-    ProcedureReturn Resize(*This, X,Y,Width,Height)
+    ProcedureReturn Bar(*This, X,Y,Width,Height, Min, Max, PageLength, Flag, Radius)
   EndProcedure
 EndModule
 
@@ -1279,10 +1310,9 @@ CompilerIf #PB_Compiler_IsMainFile
     *Scroll\Post\Function = @Widget_Events()
     *Scroll\Post\event = #PB_Event_Widget
     
-    Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,ImageHeight(0), 0, #PB_ScrollBar_Vertical, 7)
-    Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,ImageWidth(0), 0, 0, 7)
-;     Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-;     Scroll::Widget(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+    Scroll::Bars(*Scroll, 16, 7, 1)
+    Scroll::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
+    Scroll::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
     
     Scroll::SetState(*Scroll\v, 150)
     Scroll::SetState(*Scroll\h, 100)
@@ -1295,5 +1325,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----0ez---------------------v--f--
+; Folding = ------0m-------P-0----f------f-f--0--
 ; EnableXP

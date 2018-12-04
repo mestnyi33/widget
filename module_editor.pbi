@@ -5,7 +5,7 @@
 ; + если добавить слова в конец текста и нажать ентер есть ошибки
 ; + если добавить букву в конец текста потом убрать с помошью бекспейс затем нажать ентер то переносится удаленная буква
 ; + если выделить слова в одной строке и нажать бекспейс затем нажать ентер то переносятся удаленые слова
-
+; - при перемещении корета вниз не прокручивается страница
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
@@ -1681,9 +1681,9 @@ Module Editor
         
       EndIf
       
-      Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-      Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
-      
+      ; create scrollbars
+      Scroll::Bars(\Scroll, 16, 7, 1)
+        
       Resize(*This, X,Y,Width,Height)
     EndWith
     

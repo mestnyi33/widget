@@ -21,8 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndIf
     
-  Global *Vertical.Scroll_S=AllocateStructure(Scroll_S)
-  Global *Horisontal.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Scroll.Scroll_S=AllocateStructure(Scroll_S)
   
   Procedure CallBack()
     Protected Repaint, iWidth, iHeight
@@ -33,27 +32,26 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
     
-    
     Select EventType()
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        Scroll::Resizes(*Vertical, *Horisontal, 0, 0, Width, Height)
+        Scroll::Resizes(*Scroll, 0, 0, Width, Height)
         Repaint = #True
     EndSelect
     
-    If Scroll::CallBack(*Vertical, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
-    If Scroll::CallBack(*Horisontal, EventType(), MouseX, MouseY, WheelDelta) : Repaint = #True : EndIf
+    If Scroll::CallBack(*Scroll\v, EventType(), MouseX, MouseY) : Repaint = #True : EndIf
+    If Scroll::CallBack(*Scroll\h, EventType(), MouseX, MouseY) : Repaint = #True : EndIf
     
-    iWidth = Scroll::X(*Vertical)
-    iHeight = Scroll::Y(*Horisontal)
+    iWidth = Scroll::X(*Scroll\v)
+    iHeight = Scroll::Y(*Scroll\h)
     
     If Repaint And StartDrawing(CanvasOutput(Canvas))
       Box(0,0,Width,Height, $FFFFFF)
       ClipOutput(0,0, iWidth, iHeight)
-      DrawImage(ImageID(0), -*Horisontal\bar\page\Pos, -*Vertical\bar\page\Pos)
+      DrawImage(ImageID(0), *Scroll\x, *Scroll\y)
       UnclipOutput()
       
-      Scroll::Draw(*Vertical)
-      Scroll::Draw(*Horisontal)
+      Scroll::Draw(*Scroll\v)
+      Scroll::Draw(*Scroll\h)
       StopDrawing()
     EndIf
   EndProcedure
@@ -67,11 +65,12 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
     ; SetGadgetData(1,0) ; set parent window
     
-    Scroll::Widget(*Vertical, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,ImageHeight(0),0, #PB_ScrollBar_Vertical, 7)
-    Scroll::Widget(*Horisontal, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,ImageWidth(0),0, 0, 7)
+    Scroll::Bars(*Scroll, 16, 7, 1)
+    Scroll::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
+    Scroll::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
         
-    Scroll::SetState(*Vertical, 150)
-    Scroll::SetState(*Horisontal, 100)
+    Scroll::SetState(*Scroll\v, 150)
+    Scroll::SetState(*Scroll\h, 100)
     
     PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
     BindGadgetEvent(1, @CallBack())

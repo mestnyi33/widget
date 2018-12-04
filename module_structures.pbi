@@ -106,15 +106,6 @@
     Align.Align_S
   EndStructure
     
-  ;- - Event_S
-  Structure Post_S
-    Gadget.i
-    Window.i
-    Type.i
-    Event.i
-    *Function
-  EndStructure
-  
   ;- - Bar_S
   Structure Bar_S Extends Coordinate_S
     *s.Scroll_S
@@ -139,9 +130,18 @@
     Color.Color_S[4]
   EndStructure
   
+  ;- - Event_S
+  Structure Post_S
+    Gadget.i
+    Window.i
+    Widget.i
+    Type.i
+    Event.i
+    *Function
+  EndStructure
+  
   ;- - Scroll_S
   Structure Scroll_S Extends Coordinate_S
-    *Mouse.Mouse_S
     Post.Post_S
     
     *v.Bar_S

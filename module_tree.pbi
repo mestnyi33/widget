@@ -62,7 +62,7 @@ Module tree
     With *This
       If *This
         ; Debug "show tooltip "+\string
-;         If Not Window
+        ;         If Not Window
         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID(EventWindow())) ;|#PB_Window_NoGadgets
         Gadget = CanvasGadget(#PB_Any,0,0,\width+8,\height[1])
         If StartDrawing(CanvasOutput(Gadget))
@@ -76,25 +76,25 @@ Module tree
           StopDrawing()
         EndIf
         
-; ;         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
-; ;         SetGadgetColor(ContainerGadget(#PB_Any,1,1,\width-2+8,\height[1]-2), #PB_Gadget_BackColor, Color\Back[1])
-; ;         Gadget = StringGadget(#PB_Any,0,(\height[1]-\height)/2-1,\width-2+8,\height[1]-2, \string, #PB_String_BorderLess)
-; ;         SetGadgetColor(Gadget, #PB_Gadget_BackColor, Color\Back[1])
-; ;         SetWindowColor(Window, Color\Frame[1])
-; ;         SetGadgetFont(Gadget, \FontID)
-; ;         CloseGadgetList()
+        ; ;         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
+        ; ;         SetGadgetColor(ContainerGadget(#PB_Any,1,1,\width-2+8,\height[1]-2), #PB_Gadget_BackColor, Color\Back[1])
+        ; ;         Gadget = StringGadget(#PB_Any,0,(\height[1]-\height)/2-1,\width-2+8,\height[1]-2, \string, #PB_String_BorderLess)
+        ; ;         SetGadgetColor(Gadget, #PB_Gadget_BackColor, Color\Back[1])
+        ; ;         SetWindowColor(Window, Color\Frame[1])
+        ; ;         SetGadgetFont(Gadget, \FontID)
+        ; ;         CloseGadgetList()
         
         
         SetWindowData(Window, Gadget)
-;         Else
-;           ResizeWindow(Window, \x[1],\y[1],\width,\height[1])
-;           SetGadgetText(GetWindowData(Window), \string)
-;           HideWindow(Window, 0, #PB_Window_NoActivate)
-;         EndIf
+        ;         Else
+        ;           ResizeWindow(Window, \x[1],\y[1],\width,\height[1])
+        ;           SetGadgetText(GetWindowData(Window), \string)
+        ;           HideWindow(Window, 0, #PB_Window_NoActivate)
+        ;         EndIf
       ElseIf IsWindow(Window)
-;         HideWindow(Window, 1, #PB_Window_NoActivate)
+        ;         HideWindow(Window, 1, #PB_Window_NoActivate)
         CloseWindow(Window)
-      ;  Debug "hide tooltip "
+        ;  Debug "hide tooltip "
       EndIf
     EndWith              
   EndProcedure
@@ -463,7 +463,7 @@ Module tree
       PushListPosition(\Items())
       SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Index[1] = \Items()\Index : \Items()\Color\State = 2
       Scroll::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos ; в конце
-                                                                                                                         ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
+                                                                                                                            ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
       PopListPosition(\Items())
     EndWith
   EndProcedure
@@ -506,12 +506,12 @@ Module tree
             Select EventType 
               Case #PB_EventType_LostFocus 
                 ; \Focus =- 1
-;                 \Index[1] =- 1
+                ;                 \Index[1] =- 1
                 ; \Items()\Focus =- 1
-;                 \Items()\Index[1] = \Items()\Index
+                ;                 \Items()\Index[1] = \Items()\Index
                 Debug "    "+\Index[2]+" "+\Items()\Text\String 
-               itemSelect(\Index[2], \Items())
-               \Items()\Color\State = 0
+                itemSelect(\Index[2], \Items())
+                \Items()\Color\State = 0
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
                 
@@ -544,7 +544,7 @@ Module tree
                 
               Case #PB_EventType_LeftButtonUp : \Drag[1] = 0
                 Repaint = 1
-                    
+                
               Case #PB_EventType_LeftButtonDown
                 \Index[1] = get_from(*This, \Canvas\Mouse\X, \Canvas\Mouse\Y, 1) : \Index[2] = \Index[1]
                 Repaint = 1
@@ -555,73 +555,73 @@ Module tree
                 
                 If \Index[1]<>Line : \Index[1]=Line
                   If \Scroll\h\hide And from <> \Index[1]
-                  itemSelect(\Index[1], \Items())
-                  If (\Items()\text\x+\Items()\text\width)>\Items()\X+\Items()\width
-                    If \ToolTip : ToolTip(0) : EndIf
-                    \ToolTip = \Items()\text
-                    \tooltip\x[1]=\Items()\text\x+GadgetX(\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\X
-                    \tooltip\y[1]=\Items()\y+GadgetY(\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\Y
-                    \tooltip\width[1]=\Items()\width
-                    \tooltip\height[1]=\Items()\height
-                    ToolTip(\ToolTip)
-                  ElseIf \ToolTip : \ToolTip = 0
-                    ToolTip(0)
+                    itemSelect(\Index[1], \Items())
+                    If (\Items()\text\x+\Items()\text\width)>\Items()\X+\Items()\width
+                      If \ToolTip : ToolTip(0) : EndIf
+                      \ToolTip = \Items()\text
+                      \tooltip\x[1]=\Items()\text\x+GadgetX(\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\X
+                      \tooltip\y[1]=\Items()\y+GadgetY(\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\Y
+                      \tooltip\width[1]=\Items()\width
+                      \tooltip\height[1]=\Items()\height
+                      ToolTip(\ToolTip)
+                    ElseIf \ToolTip : \ToolTip = 0
+                      ToolTip(0)
+                    EndIf
+                    from = \Index[1]
                   EndIf
-                  from = \Index[1]
+                  
+                  If \Drag And \Drag[1] = 0 : \Drag[1] = 1
+                    If \change : \change = 0 
+                      PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
+                    EndIf
+                    PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
+                  EndIf
+                  
+                  Repaint = 1
+                  
+                  ; ;                 If StartDrawing(CanvasOutput(\Canvas\Gadget))
+                  ; ;                   ; Text::Draw(*This)
+                  ; ;                   If \Text\FontID 
+                  ; ;                     DrawingFont(\Text\FontID) 
+                  ; ;                   EndIf
+                  ; ;                   
+                  ; ;                   ; Draw selections
+                  ; ;                   If from>=0 And SelectElement(\Items(), from)
+                  ; ;                       DrawingMode(#PB_2DDrawing_Default)
+                  ; ;                       RoundBox(*This\x[2],\Items()\Y,\Items()\width,\Items()\height,\Items()\Radius,\Items()\Radius, \Color\Back[0])
+                  ; ;                       
+                  ; ;                     
+                  ; ;                     If \Color\State = 2
+                  ; ;                       DrawingMode(#PB_2DDrawing_Transparent)
+                  ; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, \Items()\Color\Front[\Color\State])
+                  ; ;                     Else
+                  ; ;                       DrawingMode(#PB_2DDrawing_Transparent)
+                  ; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+                  ; ;                     EndIf
+                  ; ;                   EndIf
+                  ; ;                   
+                  ; ;                   If Line>=0 And SelectElement(\Items(), Line)
+                  ; ;                   ;If (\Items()\Index=*This\Index[1] Or \Items()\Index=\Items()\focus Or \Items()\Index=\Items()\Index[1]) ; \Color\State;
+                  ; ;                     If \Items()\Color\Fore[\Color\State]
+                  ; ;                       DrawingMode(#PB_2DDrawing_Gradient);|#PB_2DDrawing_AlphaBlend)
+                  ; ;                       BoxGradient(\Vertical,*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Color\Fore[\Color\State],\Items()\Color\Back[\Color\State],\Items()\Radius)
+                  ; ;                     Else
+                  ; ;                       DrawingMode(#PB_2DDrawing_Default);|#PB_2DDrawing_AlphaBlend)
+                  ; ;                       RoundBox(*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Radius,\Items()\Radius,\Items()\Color\Back[\Color\State])
+                  ; ;                     EndIf
+                  ; ;                     
+                  ; ;                     DrawingMode(#PB_2DDrawing_Outlined);|#PB_2DDrawing_AlphaBlend)
+                  ; ;                     RoundBox(*This\x[2],\Items()\Y,\Items()\width,\Items()\height,\Items()\Radius,\Items()\Radius, \Items()\Color\Frame[\Color\State])
+                  ; ;                     
+                  ; ;                     DrawingMode(#PB_2DDrawing_Transparent)
+                  ; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
+                  ; ;                     EndIf
+                  ; ;                   
+                  ; ;                   StopDrawing()
+                  ; ;                 EndIf
+                  
                 EndIf
                 
-                If \Drag And \Drag[1] = 0 : \Drag[1] = 1
-                  If \change : \change = 0 
-                    PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
-                  EndIf
-                  PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
-                EndIf
-                
-                 Repaint = 1
-                
-; ;                 If StartDrawing(CanvasOutput(\Canvas\Gadget))
-; ;                   ; Text::Draw(*This)
-; ;                   If \Text\FontID 
-; ;                     DrawingFont(\Text\FontID) 
-; ;                   EndIf
-; ;                   
-; ;                   ; Draw selections
-; ;                   If from>=0 And SelectElement(\Items(), from)
-; ;                       DrawingMode(#PB_2DDrawing_Default)
-; ;                       RoundBox(*This\x[2],\Items()\Y,\Items()\width,\Items()\height,\Items()\Radius,\Items()\Radius, \Color\Back[0])
-; ;                       
-; ;                     
-; ;                     If \Color\State = 2
-; ;                       DrawingMode(#PB_2DDrawing_Transparent)
-; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, \Items()\Color\Front[\Color\State])
-; ;                     Else
-; ;                       DrawingMode(#PB_2DDrawing_Transparent)
-; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
-; ;                     EndIf
-; ;                   EndIf
-; ;                   
-; ;                   If Line>=0 And SelectElement(\Items(), Line)
-; ;                   ;If (\Items()\Index=*This\Index[1] Or \Items()\Index=\Items()\focus Or \Items()\Index=\Items()\Index[1]) ; \Color\State;
-; ;                     If \Items()\Color\Fore[\Color\State]
-; ;                       DrawingMode(#PB_2DDrawing_Gradient);|#PB_2DDrawing_AlphaBlend)
-; ;                       BoxGradient(\Vertical,*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Color\Fore[\Color\State],\Items()\Color\Back[\Color\State],\Items()\Radius)
-; ;                     Else
-; ;                       DrawingMode(#PB_2DDrawing_Default);|#PB_2DDrawing_AlphaBlend)
-; ;                       RoundBox(*This\X[2],\Items()\Y,\Items()\width,\Items()\Height,\Items()\Radius,\Items()\Radius,\Items()\Color\Back[\Color\State])
-; ;                     EndIf
-; ;                     
-; ;                     DrawingMode(#PB_2DDrawing_Outlined);|#PB_2DDrawing_AlphaBlend)
-; ;                     RoundBox(*This\x[2],\Items()\Y,\Items()\width,\Items()\height,\Items()\Radius,\Items()\Radius, \Items()\Color\Frame[\Color\State])
-; ;                     
-; ;                     DrawingMode(#PB_2DDrawing_Transparent)
-; ;                       DrawRotatedText(\Items()\Text[0]\X, \Items()\Text[0]\Y, \Items()\Text[0]\String.s, Bool(\Items()\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
-; ;                     EndIf
-; ;                   
-; ;                   StopDrawing()
-; ;                 EndIf
-                
-              EndIf
-              
               Default
                 itemSelect(\Index[2], \Items())
             EndSelect
@@ -653,9 +653,9 @@ Module tree
       *This\Index[1] =- 1
     EndIf
     
-;     If Repaint
-;       Debug Repaint
-;     EndIf
+    ;     If Repaint
+    ;       Debug Repaint
+    ;     EndIf
     
     ProcedureReturn Repaint
   EndProcedure
@@ -751,10 +751,8 @@ Module tree
           \Color\Back[0] = $FFF0F0F0  
         EndIf
         
-        Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-        If Not Bool(Not \flag\buttons And Not \flag\Lines)
-          Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
-        EndIf
+        ; create scrollbars
+        Scroll::Bars(\Scroll, 16, 7, Bool(Not Bool(Not \flag\buttons And Not \flag\Lines)))
         
         Resize(*This, X,Y,Width,Height)
       EndWith
@@ -867,22 +865,22 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If Result
-       Text::ReDraw(0, Canvas, $FFF0F0F0)
+      Text::ReDraw(0, Canvas, $FFF0F0F0)
     EndIf
     
   EndProcedure
   
   Procedure Events()
     If EventType() = #PB_EventType_LeftClick
-;       If GadgetType(EventGadget()) = #PB_GadgetType_ListIcon
-;         Debug GetGadgetText(EventGadget())
-;         Debug GetGadgetState(EventGadget())
-;         Debug GetGadgetItemState(EventGadget(), GetGadgetState(EventGadget()))
-;       Else
-;         Debug ListIcon::GetText(EventGadget())
-;         Debug ListIcon::GetState(EventGadget())
-;         Debug ListIcon::GetItemState(EventGadget(), ListIcon::GetState(EventGadget()))
-;       EndIf
+      ;       If GadgetType(EventGadget()) = #PB_GadgetType_ListIcon
+      ;         Debug GetGadgetText(EventGadget())
+      ;         Debug GetGadgetState(EventGadget())
+      ;         Debug GetGadgetItemState(EventGadget(), GetGadgetState(EventGadget()))
+      ;       Else
+      ;         Debug ListIcon::GetText(EventGadget())
+      ;         Debug ListIcon::GetState(EventGadget())
+      ;         Debug ListIcon::GetItemState(EventGadget(), ListIcon::GetState(EventGadget()))
+      ;       EndIf
     EndIf
   EndProcedure
   
@@ -1011,25 +1009,25 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(g, @CallBacks())
     
     *g = Create(g, -1, 10, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
-        ; 1_example
-        AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
-        AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-        AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-        AddItem (*g, -1, "Sub-Item 2", -1, 11)
-        AddItem (*g, -1, "Sub-Item 3", -1, 1)
-        AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
-        AddItem (*g, -1, "Sub-Item 5", -1, 11)
-        AddItem (*g, -1, "Sub-Item 6", -1, 1)
-        AddItem (*g, -1, "File "+Str(a), -1, 0)  
-        For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-        
-        ; RemoveItem(*g,1)
-        Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
-        BindGadgetEvent(g, @Events())
-        ;Tree::SetState(*g, 1)
-        ;Tree::SetState(*g, -1)
-        
-        
+    ; 1_example
+    AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
+    AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+    AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+    AddItem (*g, -1, "Sub-Item 2", -1, 11)
+    AddItem (*g, -1, "Sub-Item 3", -1, 1)
+    AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
+    AddItem (*g, -1, "Sub-Item 5", -1, 11)
+    AddItem (*g, -1, "Sub-Item 6", -1, 1)
+    AddItem (*g, -1, "File "+Str(a), -1, 0)  
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    ; RemoveItem(*g,1)
+    Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+    BindGadgetEvent(g, @Events())
+    ;Tree::SetState(*g, 1)
+    ;Tree::SetState(*g, -1)
+    
+    
     *g = Create(g, -1, 230, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
     ;  3_example
     
@@ -1057,12 +1055,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ClearItems(*g)
     
     *g = Create(g, -1, 450, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes |#PB_Flag_NoLines|#PB_Flag_NoButtons )    ;                                
-    ;   ;  2_example
-    ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
-    ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
-    ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
-    ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
-    ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
+                                                                                                                                                            ;   ;  2_example
+                                                                                                                                                            ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
+                                                                                                                                                            ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
+                                                                                                                                                            ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
+                                                                                                                                                            ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
+                                                                                                                                                            ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
     
     ;  2_example
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
@@ -1150,5 +1148,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------0-f---+--
+; Folding = -----------------------
 ; EnableXP
