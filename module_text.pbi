@@ -630,63 +630,6 @@ Module Text
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.i ToBack(*This.Widget_S)
-    Protected Repaint, String.s, Cut.i
-    ;ProcedureReturn Text::ToReturn(*This,"")
-    
-    If *This\Canvas\Input : *This\Canvas\Input = 0
-      ;  ToInput(*This) ; Сбросить Dot&Minus
-    EndIf
-    
-    With *This 
-      If Not Cut(*This)
-        If \Items()\Text[2]\Len
-          If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-          
-          \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
-          \Items()\Text\Len = \Items()\Text[1]\Len + \Items()\Text[3]\Len
-          \Items()\Text\Change = 1
-          
-          \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
-          \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
-          \Text\Change =- 1 ; - 1 post event change widget
-          
-        ElseIf \Caret[1] > 0 
-          \Items()\Text\String.s = Left(\Items()\Text\String.s, \Caret[1] - 1) + \Items()\Text[3]\String.s
-          \Items()\Text\Len = Len(\Items()\Text\String.s)
-          \Items()\Text\Change = 1
-          
-          \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Pos + \Caret + 1)
-          \Text\Change =- 1 ; - 1 post event change widget
-          \Caret - 1 
-        Else
-          ; Если дошли до начала строки то 
-          ; переходим в конец предыдущего итема
-          If \Index[2] > 0 
-            \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
-            
-            If (\Index[2] > 0 And \Index[1] = \Index[2]) : \Index[2] - 1 : \Index[1] = \Index[2]
-              SelectElement(\Items(), \Index[2])
-              Repaint =- 1 
-            EndIf
-            
-            \Caret = \Items()\Text\Len 
-            \Text\Change =- 1 ; - 1 post event change widget
-          EndIf
-          
-        EndIf
-      EndIf
-      
-      If \Text\Change
-        \Text\Len = Len(\Text\String.s)  
-        \Caret[1] = \Caret 
-        Repaint =- 1 
-      EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
   Procedure.i ToInput(*This.Widget_S)
     Protected Repaint
     
@@ -727,6 +670,60 @@ Module Text
     ProcedureReturn Repaint
   EndProcedure
   
+  Procedure.i ToBack(*This.Widget_S)
+    Protected Repaint, String.s, Cut.i
+    ;ProcedureReturn Text::ToReturn(*This,"")
+    
+    If *This\Canvas\Input : *This\Canvas\Input = 0
+      ;  ToInput(*This) ; Сбросить Dot&Minus
+    EndIf
+    
+    With *This 
+      If Not Cut(*This)
+        If \Items()\Text[2]\Len
+          If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+          
+          \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
+          \Items()\Text\Len = \Items()\Text[1]\Len + \Items()\Text[3]\Len
+          \Items()\Text\Change = 1
+          
+          \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+          \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
+          \Text\Change =- 1 ; - 1 post event change widget
+          
+        ElseIf \Caret[1] > 0 
+          \Items()\Text\String.s = Left(\Items()\Text\String.s, \Caret[1] - 1) + \Items()\Text[3]\String.s
+          \Items()\Text\Len = Len(\Items()\Text\String.s)
+          \Items()\Text\Change = 1
+          
+          \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Pos + \Caret + 1)
+          \Text\Change =- 1 ; - 1 post event change widget
+          \Caret - 1 
+        Else
+          ; Если дошли до начала строки то 
+          ; переходим в конец предыдущего итема
+          If \Index[2] > 0 
+            \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+            
+            ToUp(*This)
+            
+            \Caret = \Items()\Text\Len 
+            \Text\Change =- 1 ; - 1 post event change widget
+          EndIf
+          
+        EndIf
+      EndIf
+      
+      If \Text\Change
+        \Text\Len = Len(\Text\String.s)  
+        \Caret[1] = \Caret 
+        Repaint =- 1 
+      EndIf
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure.i ToDelete(*This.Widget_S)
     Protected Repaint, String.s
     
@@ -743,7 +740,7 @@ Module Text
           \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
           \Text\Change =- 1 ; - 1 post event change widget
           
-        ElseIf \Caret[1] > 0 
+        ElseIf \Caret[1] < \Items()\Text\Len
           \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len - \Caret - 1)
           
           \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
@@ -753,17 +750,8 @@ Module Text
           \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret) + Right(\Text\String.s,  \Text\Len - (\Items()\Text\Pos + \Caret) - 1)
           \Text\Change =- 1 ; - 1 post event change widget
         Else
-          ; Если дошли до начала строки то 
-          ; переходим в конец предыдущего итема
-          If \Index[2] > 0 
+          If \Index[2] < (\Text\Count-1) ; ListSize(\items()) - 1
             \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
-            
-            If (\Index[2] > 0 And \Index[1] = \Index[2]) : \Index[2] - 1 : \Index[1] = \Index[2]
-              SelectElement(\Items(), \Index[2])
-              Repaint =- 1 
-            EndIf
-            
-            \Caret = \Items()\Text\Len 
             \Text\Change =- 1 ; - 1 post event change widget
           EndIf
         EndIf
@@ -2477,5 +2465,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------------------------------------------
+; Folding = -------------47-----------------------------------------
 ; EnableXP
