@@ -425,56 +425,6 @@ Module Scroll
     ;     ProcedureReturn Repaint
   EndProcedure
   
-  ; ; ;   
-  ; ; ;   Procedure.i ReDraw(*This.Bar_S)
-  ; ; ;     If StartDrawing(CanvasOutput(*This\s\Gadget))
-  ; ; ;       Draw(*This)
-  ; ; ;       StopDrawing()
-  ; ; ;     EndIf
-  ; ; ;   EndProcedure
-  
-  
-  
-; ;     Procedure.i X(*This.Bar_S)
-; ;       Protected Result.i
-; ;       
-; ;       If *This
-; ;         Result = *This\X+Bool(*This\hide[1] Or Not *This\color\alpha) * *This\Width
-; ;       EndIf
-; ;       
-; ;       ProcedureReturn Result
-; ;     EndProcedure
-; ;     
-; ;     Procedure.i Y(*This.Bar_S)
-; ;       Protected Result.i
-; ;       
-; ;       If *This
-; ;         Result = *This\Y+Bool(*This\hide[1] Or Not *This\color\alpha) * *This\Height
-; ;       EndIf
-; ;       
-; ;       ProcedureReturn Result
-; ;     EndProcedure
-; ;     
-; ;     Procedure.i Width(*This.Bar_S)
-; ;       Protected Result.i
-; ;       
-; ;       If *This
-; ;         Result = Bool(Not *This\hide[1] And *This\Width And *This\color\alpha) * *This\Width
-; ;       EndIf
-; ;       
-; ;       ProcedureReturn Result
-; ;     EndProcedure
-; ;     
-; ;     Procedure.i Height(*This.Bar_S)
-; ;       Protected Result.i
-; ;       
-; ;       If *This
-; ;         Result = Bool(Not *This\hide[1] And *This\Height And *This\color\alpha) * *This\Height
-; ;       EndIf
-; ;       
-; ;       ProcedureReturn Result
-; ;     EndProcedure
-  
   Procedure.b SetState(*This.Bar_S, ScrollPos.i)
     Protected Result.b, Direction.i ; Направление и позиция скролла (вверх,вниз,влево,вправо)
     
@@ -1165,12 +1115,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     Protected Repaint, iWidth, iHeight
-;     If *Scroll\mouse
-;       *Scroll\mouse\X = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-;       *Scroll\mouse\Y = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-;       *Scroll\mouse\Wheel = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-;       *Scroll\mouse\Buttons = GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
-;     EndIf
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
     
@@ -1190,10 +1134,7 @@ CompilerIf #PB_Compiler_IsMainFile
       DrawImage(ImageID(0), x+*Scroll\x, y+*Scroll\y)
       UnclipOutput()
       
-      ; Scroll::Draws(*Scroll, *Scroll\Height, *Scroll\Width)
-      
-      Scroll::Draw(*Scroll\v)
-      Scroll::Draw(*Scroll\h)
+      Scroll::Draws(*Scroll, *Scroll\Width, *Scroll\Height)
       StopDrawing()
      EndIf
   EndProcedure

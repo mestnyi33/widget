@@ -285,48 +285,48 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       
-      ;FrontColor(RGB(255,0,0)) ; Finally, red lines..
-      For k=0 To 20
-        LineXY(10,10+k*8,200, 0, $FFFF8888)
-      Next
-       Line(10,10+k*8,200, 2,$FFFF8888)
+; ;       ;FrontColor(RGB(255,0,0)) ; Finally, red lines..
+; ;       For k=0 To 20
+; ;         LineXY(10,10+k*8,200, 0, $FFFF8888)
+; ;       Next
+; ;        Line(10,10+k*8,200, 2,$FFFF8888)
+; ;       
       
+      ClipOutput(x, 10, w, 20) ; restrict all drawing to this region
       
-;       ClipOutput(x, 10, w, 20) ; restrict all drawing to this region
-;       
-;       DrawingMode(#PB_2DDrawing_Transparent)
-;       DrawText(x-10,10+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
-;       
-;       DrawingMode(#PB_2DDrawing_Outlined)
-;       RoundBox(x, 10, w, 20, 15,10,$FF000000)
-;       
-;       ClipOutput(x, 50, w, 20) ; restrict all drawing to this region
-;       
-;       DrawingMode(#PB_2DDrawing_Transparent)
-;       DrawText(x-10,50+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
-;       
-;       DrawingMode(#PB_2DDrawing_Outlined)
-;       RoundBox(x, 50, w, 20, 8,8, $FF000000)
-;       
-;       ClipOutput(x, 90, w, 20) ; restrict all drawing to this region
-;       
-;       DrawingMode(#PB_2DDrawing_Transparent)
-;       DrawText(x-10,90+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
-;       
-;       DrawingMode(#PB_2DDrawing_Outlined)
-;       RoundBox(x, 90, w, 20, 7,7, $FF000000)
-;       
-;       ClipOutput(x, 130, w, 20) ; restrict all drawing to this region
-;       
-;       DrawingMode(#PB_2DDrawing_Transparent)
-;       DrawText(x-10,130+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
-;       
-;       DrawingMode(#PB_2DDrawing_Outlined)
-;       RoundBox(x, 130, w, 20, 0,0, $FF000000)
-;       
-;       UnclipOutput()
-;       DrawingMode(#PB_2DDrawing_Outlined)
-;       Box(x-3, 10-3, w+6, 146, $FF000000)
+      DrawingMode(#PB_2DDrawing_Transparent)
+      DrawText(x-10,10+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+      
+      DrawingMode(#PB_2DDrawing_Outlined)
+      RoundBox(x, 10, w, 20, 15,10,$FF000000)
+      
+      ClipOutput(x, 50, w, 20) ; restrict all drawing to this region
+      
+      DrawingMode(#PB_2DDrawing_Transparent)
+      DrawText(x-10,50+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+      
+      DrawingMode(#PB_2DDrawing_Outlined)
+      RoundBox(x, 50, w, 20, 8,8, $FF000000)
+      
+      ClipOutput(x, 90, w, 20) ; restrict all drawing to this region
+      
+      DrawingMode(#PB_2DDrawing_Transparent)
+      DrawText(x-10,90+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+      
+      DrawingMode(#PB_2DDrawing_Outlined)
+      RoundBox(x, 90, w, 20, 7,7, $FF000000)
+      
+      ClipOutput(x, 130, w, 20) ; restrict all drawing to this region
+      
+      DrawingMode(#PB_2DDrawing_Transparent)
+      DrawText(x-10,130+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+      
+      DrawingMode(#PB_2DDrawing_Outlined)
+      RoundBox(x, 130, w, 20, 0,0, $FF000000)
+      
+      UnclipOutput()
+      DrawingMode(#PB_2DDrawing_Outlined)
+      Box(x-3, 10-3, w+6, 146, $FF000000)
       
       StopDrawing() 
     EndIf
