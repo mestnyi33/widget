@@ -97,28 +97,9 @@ XIncludeFile "module_editor.pbi"
     Editor=GetGadgetData(Canvas_0) 
     
     Editor::SetText(Editor, Txt_1)
+    ; Editor::SetFont(Editor, FontID(Font_3))
     
-    ;Editor = MyEditor::OpenEditor(Window_0, Canvas_0, Txt_1, 0, 0, GadgetWidth(Canvas_0), GadgetHeight(Canvas_0), Font_0, sep)
-    
-;     MyEditor::AddStyle(Editor, Font_1, RGB(255, 215, 0))    ; style # 1
-;     MyEditor::AddStyle(Editor, Font_2, RGB(205, 38, 38))    ; style # 2
-;     MyEditor::AddStyle(Editor, Font_3, RGB(0, 250, 154))    ; style # 3
-;     
-;     MyEditor::NoRedraw(Editor)
-;     i = 0
-;     Repeat
-;         Style = Random(3, 1)
-;         i = FindString(Txt_1, "purebasic", i+1, #PB_String_NoCase)
-;         MyEditor::AssignStyle(Editor, Style, i, 9)
-;     Until i = 0
-;     
-;     i = FindString(Txt_1, "purebasic", 1, #PB_String_NoCase)
-;     MyEditor::SelectText(Editor, Style, i, 9)                         ; highlight the first purebasic word
-;     
-;     ;MyEditor::SetCaratPos(Editor, MyEditor::#MyEditor_LastCaratPos)     ; moves the carat to last pos
-;     MyEditor::Redraw(Editor)
-    
-    Repeat
+   Repeat
         Select WaitWindowEvent()
             Case #PB_Event_SizeWindow
                 ResizeGadgetsWindow_0()

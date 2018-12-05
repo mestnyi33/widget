@@ -15,7 +15,7 @@ LN=1500;0; количесвто итемов
 
 If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)
-  editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : *w=GetGadgetData(1)
+  editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : *w.Widget_S=GetGadgetData(1)
   
   Define time = ElapsedMilliseconds()
   For a = 0 To LN
@@ -28,9 +28,16 @@ If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   Next
   Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + Editor::CountItems(*w)
   
-  ;PostEvent(#PB_Event_Gadget, 0, 1, #PB_EventType_Resize)
-  Text::Redraw(*w)
-  
+  If Not *w\Repaint : *w\Repaint = 1
+    PostEvent(#PB_Event_Gadget, 
+              *w\Canvas\Window, 
+              *w\Canvas\Gadget,
+              #PB_EventType_Repaint)
+    ; While WindowEvent() : Wend
+  EndIf
+  ; Text::Redraw(*w)
+  ; Editor::SetFont(*w, FontID(LoadFont(#PB_Any, "Impact", 18 , #PB_Font_HighQuality)))
+    
   ; HideGadget(0, 1)
   Define time = ElapsedMilliseconds()
   For a = 0 To LN

@@ -21,12 +21,22 @@ Text.s = "This is a long line" + m.s +
   
 If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680) : SetGadgetText(0, Text.s)
-  editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : *w=GetGadgetData(1) : Editor::SetText(*w, Text.s)
+  editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : *w.Widget_S=GetGadgetData(1) : Editor::SetText(*w, Text.s)
   
   
   Define time = ElapsedMilliseconds()
   For a = 3 To LN
     editor::AddItem (*w, -1, "Item "+Str(a), 0,1)
+    
+; ;     If Not *w\Repaint
+; ;       *w\Repaint = 1
+; ;       PostEvent(#PB_Event_Gadget, 
+; ;                 *w\Canvas\Window, 
+; ;                 *w\Canvas\Gadget,
+; ;                 #PB_EventType_Repaint)
+; ;       ; While WindowEvent() : Wend
+; ;     EndIf
+
     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
     EndIf
     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
@@ -34,6 +44,7 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
     EndIf
   Next
   Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + Editor::CountItems(*w)
+  
   Text::Redraw(*w)
   
   ; HideGadget(0, 1)
@@ -61,7 +72,6 @@ If OpenWindow(0, 100, 50, 530, 700, "EditorGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

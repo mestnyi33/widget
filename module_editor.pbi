@@ -403,7 +403,9 @@ Module Editor
           ;           \Items()\Color\Fore[2] = 0
           
           If Item = 0
-            PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
+            If Not \Repaint : \Repaint = 1
+              PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
+            EndIf
           EndIf
         EndIf
       EndWith
@@ -450,7 +452,7 @@ Module Editor
   EndProcedure
   
   Procedure.i SetState(*This.Widget_S, State.i)
-    Protected String.s
+    Protected String.s, *Line
     
     With *This
       PushListPosition(\Items())
@@ -475,24 +477,42 @@ Module Editor
           SetActiveGadget(\Canvas\Gadget)
         EndIf
         
+        PushListPosition(\Items())
         If State =- 1
           \Index[1] = \Text\Count - 1
-          LastElement(\Items())
+          *Line = LastElement(\Items())
           \Caret = \Items()\Text\Len
         Else
           \Index[1] = CountString(Left(String, State), #LF$)
-          SelectElement(\Items(), \Index[1])
-          \Caret = State-\Items()\Text\Pos
+          *Line = SelectElement(\Items(), \Index[1])
+          If *Line
+            \Caret = State-\Items()\Text\Pos
+          EndIf
         EndIf
+        
+        ;If *Line
+;         \Index[2] = \Index[1]
+;         \Text[1]\Change = 1
+;         \Text[3]\Change = 1
+;         Text::Change(*This, \Caret, 0)
         
         \Items()\Text[1]\String = Left(\Items()\Text\String, \Caret)
         \Items()\Text[1]\Change = 1
         \Caret[1] = \Caret
         
         \Items()\Index[1] = \Items()\Index 
-        ;PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
-        Scroll::SetState(\Scroll\v, ((\Index[1] * \Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos
-      EndIf
+        Scroll::SetState(\Scroll\v, (\items()\y-((\Scroll\height[2]+\Text\y)-\items()\height))) ;((\Index[1] * \Text\Height)-\Scroll\v\Height) + \Text\Height)
+        
+;         If Not \Repaint : \Repaint = 1
+;           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
+;         EndIf
+         Text::Redraw(*This)
+      ;EndIf
+      PopListPosition(\Items())
+      
+      Debug \Index[2]
+      
+    EndIf
     EndWith
   EndProcedure
   
@@ -507,6 +527,8 @@ Module Editor
         EndIf
       Next
       PopListPosition(\Items())
+      
+      Debug \text[1]\len
     EndWith
     
     ProcedureReturn Result
@@ -530,28 +552,112 @@ Module Editor
   EndProcedure
   
   Procedure.i SetText(*This.Widget_S, Text.s, Item.i=0)
+    Protected i
     
-    If Text::SetText(*This, Text.s) 
-      Text::ReDraw(*This, *This\Canvas\Gadget)
-      ProcedureReturn 1
-    EndIf
+    With *This
+      If Text::SetText(*This, Text.s) 
+        Text::ReDraw(*This, *This\Canvas\Gadget)
+        ProcedureReturn 1
+      EndIf
+    EndWith
     
   EndProcedure
   
   Procedure.i SetFont(*This.Widget_S, FontID.i)
     
-    If Text::SetFont(*This, FontID)
-      SetState(*This, #PB_Ignore) ; Это чтобы собрать текст перед применением шрифта
-      ;Text::ReDraw(*This, *This\Canvas\Gadget)
-      ProcedureReturn 1
-    EndIf
+    With *This
+      If Text::SetFont(*This, FontID)
+        If Not Bool(\Text\Count[1] And \Text\Count[1] <> \Text\Count)
+          Text::Redraw(*This, \Canvas\Gadget)
+        EndIf
+        ProcedureReturn 1
+      EndIf
+    EndWith
     
   EndProcedure
   
   ;-
+  Procedure SelSet(*This.Widget_S, Line.i)
+    Protected Repaint.i
+    
+    With *This
+      
+      If \Index[1] <> Line And Line =< ListSize(\Items())
+        If isItem(\Index[1], \Items()) 
+          If \Index[1] <> ListIndex(\Items())
+            SelectElement(\Items(), \Index[1]) 
+          EndIf
+          
+          If \Index[1] > Line
+            \Caret = 0
+          Else
+            \Caret = \Items()\Text\Len
+          EndIf
+          
+          SelectionText(*This)
+        EndIf
+        
+        \Index[1] = Line
+      EndIf
+      
+      If isItem(Line, \Items()) 
+        \Caret = Caret(*This, Line) 
+        SelectionText(*This)
+      EndIf
+      
+      Repaint = #True
+      
+      Protected SelectionLen
+      PushListPosition(\Items()) 
+      ForEach \Items()
+        If \Index[1] = \Items()\Index Or \Index[2] = \Items()\Index
+          
+        ElseIf ((\Index[2] < \Index[1] And \Index[2] < \Items()\Index And \Index[1] > \Items()\Index) Or
+                (\Index[2] > \Index[1] And \Index[2] > \Items()\Index And \Index[1] < \Items()\Index)) 
+          
+          If \Items()\Text[2]\String <> \Items()\Text\String
+            \Items()\Text[2]\Len = \Items()\Text\Len
+            If Not \Items()\Text\Len : \Items()\Text[2]\Len = 1 : EndIf
+            \Items()\Text[1]\String = "" : \Items()\Text[1]\Len = 0 : \Items()\Text[1]\Change = 1
+            \Items()\Text[3]\String = "" : \Items()\Text[3]\Len = 0 : \Items()\Text[3]\Change = 1
+            \Items()\Text[2]\String = \Items()\Text\String : \Items()\Text[2]\Change = 1
+          EndIf
+          
+          SelectionLen=Bool(Not \Flag\FullSelection)*7
+          ; \Items()\Text[2]\X = 0;\Items()\Text\X+\Items()\Text\Width
+          
+          If Not SelectionLen
+            \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+          Else
+            \Items()\Text[2]\Width[2] = SelectionLen
+          EndIf
+          
+          ;\Items()\Index[1] = \Items()\Index
+        Else  
+          ;\Items()\Index[1] =- 1
+          \Items()\Text[2]\String =  "" : \Items()\Text[2]\Len = 0 : \Items()\Text[2]\Change = 1
+        EndIf
+      Next
+      PopListPosition(\Items()) 
+      
+      ;                   CompilerIf Defined(Scroll, #PB_Module)
+      ;                     If \Canvas\Mouse\Y > \Height[2]
+      ;                       ;                       If \Scroll\v And \Scroll\v\max <> \Scroll\Height And 
+      ;                       ;                          Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines))
+      ;                       Scroll::SetState(\Scroll\v, (\items()\y-(Scroll::Y(\Scroll\h)-\items()\height)))
+      ;                       ;                         Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      ;                       ;                       EndIf
+      ;                     EndIf
+      ;                   CompilerEndIf
+      
+      
+    EndWith
+  EndProcedure
+  
+  
   Procedure.i Editable(*This.Widget_S, EventType.i)
     Static DoubleClick.i
-    Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
+    Protected Repaint.i, Control.i, Caret.i, Item.i, String.s, Shift.i
     
     With *This
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -573,13 +679,23 @@ Module Editor
           Repaint = #True 
           
         Case #PB_EventType_KeyDown
+          
+          Shift = Bool(*This\Canvas\Key[1] & #PB_Canvas_Shift)
+          
           Select \Canvas\Key
             Case #PB_Shortcut_Home : \items()\Text[2]\String.s = "" : \items()\Text[2]\Len = 0 : \Caret = 0 : \Caret[1] = \Caret : Repaint =- 1
             Case #PB_Shortcut_End : \items()\Text[2]\String.s = "" : \items()\Text[2]\Len = 0 : \Caret = \items()\Text\Len : \Caret[1] = \Caret : Repaint =- 1 
               
             Case #PB_Shortcut_Up     : Repaint = Text::ToUp(*This)      ; Ok
             Case #PB_Shortcut_Left   : Repaint = Text::ToLeft(*This)    ; Ok
-            Case #PB_Shortcut_Right  : Repaint = Text::ToRight(*This)   ; Ok
+            Case #PB_Shortcut_Right  
+              If Shift
+                \Caret + 1
+                Repaint = SelSet(*This.Widget_S, \index[2])
+              Else
+                Repaint = Text::ToRight(*This)   ; Ok
+              EndIf
+              
             Case #PB_Shortcut_Down   : Repaint = Text::ToDown(*This)    ; Ok
             Case #PB_Shortcut_Back   : Repaint = Text::ToBack(*This)
             Case #PB_Shortcut_Return : Repaint = Text::ToReturn(*This) 
@@ -911,17 +1027,6 @@ Module Editor
     ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
   EndProcedure
   
-  Procedure Widget_CallBack()
-    Protected String.s, *This.Widget_S = EventGadget()
-    ; надо будет проверить может уже не нужен
-    With *This
-      Select EventType() 
-        Case #PB_EventType_Create
-          SetState(*This, #PB_Ignore)
-      EndSelect
-    EndWith
-  EndProcedure
-  
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
@@ -987,9 +1092,9 @@ Module Editor
         
         If \Text\Vertical
           \Text\X = \fSize 
-          \Text\y = \fSize+4
+          \Text\y = \fSize+2
         Else
-          \Text\X = \fSize+4
+          \Text\X = \fSize+2
           \Text\y = \fSize
         EndIf
         
@@ -1035,8 +1140,9 @@ Module Editor
       
       Widget(*This, Canvas, x, y, Width, Height, Text.s, Flag, Radius)
       PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create)
-      PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
-      BindEvent(#PB_Event_Widget, @Widget_CallBack(), *This\Canvas\Window, *This, #PB_EventType_Create)
+      If Not *This\Repaint : *This\Repaint = 1
+        PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
+      EndIf
     EndIf
     
     ProcedureReturn *This
@@ -1048,7 +1154,13 @@ Module Editor
     
     With *This
       Select EventType()
-          ;Case #PB_EventType_Repaint : Repaint = 1
+        Case #PB_EventType_Repaint 
+          If *This\Repaint : *This\Repaint = 0
+            
+            Repaint = 1
+            
+          EndIf
+          
         Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
                                                                                                                  ;Debug "resize "+GadgetWidth(\Canvas\Gadget) +" "+ GadgetHeight(\Canvas\Gadget)
           Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
@@ -1057,6 +1169,27 @@ Module Editor
       Repaint | CallBack(*This, EventType())
       
       If Repaint 
+        Protected String.s
+        
+        If \Text\Count[1] And \Text\Count[1] <> \Text\Count
+          ; Это чтобы собрать текст перед применением шрифта
+          PushListPosition(\Items())
+          ForEach \Items()
+            If String.s
+              String.s +#LF$+ \Items()\Text\String.s 
+            Else
+              String.s + \Items()\Text\String.s
+            EndIf
+          Next : String.s + #LF$
+          PopListPosition(\Items())
+          ; Debug  String.s
+          
+          If \Text\String.s <> String.s
+            \Text\String.s = String.s
+            \Text\Len = Len(String.s)
+          EndIf
+        EndIf
+        
         Text::ReDraw(*This)
       EndIf
       
@@ -1071,7 +1204,6 @@ Module Editor
       With *This
         Widget(*This, Gadget, 0, 0, Width, Height, "", Flag)
         PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Create)
-        BindEvent(#PB_Event_Widget, @Widget_CallBack(), *This\Canvas\Window, *This, #PB_EventType_Create)
         
         SetGadgetData(Gadget, *This)
         BindGadgetEvent(Gadget, @Canvas_CallBack())
@@ -1102,16 +1234,15 @@ CompilerIf #PB_Compiler_IsMainFile
            "You ned it, that's true." + m.s +
            "There was a group of monkeys siting on a fallen tree."
         
-  Procedure ResizeCallBack()
-    ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
-    ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
-    CompilerIf #PB_Compiler_Version =< 546
-      PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
-    CompilerEndIf
-  EndProcedure
-  
   Procedure SplitterCallBack()
     PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
+  EndProcedure
+  
+  Procedure ResizeCallBack()
+    ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-127, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
+    ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-135, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
+    
+    CompilerIf #PB_Compiler_Version =< 546 : SplitterCallBack() : CompilerEndIf
   EndProcedure
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -1121,18 +1252,23 @@ CompilerIf #PB_Compiler_IsMainFile
   CompilerEndIf 
   
   If OpenWindow(0, 0, 0, 422, 491, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
+    ButtonGadget(100, 490-60,490-30,125,25,"~wrap")
     
     EditorGadget(0, 8, 8, 306, 233, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s) 
-    For a = 0 To 2
+    For a = 0 To 10
       AddGadgetItem(0, a, "Line "+Str(a))
+      If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+      EndIf
+      If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+        Debug a
+      EndIf
     Next
     AddGadgetItem(0, a, "")
     For a = 4 To 6
       AddGadgetItem(0, a, "Line "+Str(a))
     Next
     SetGadgetFont(0, FontID(0))
-    
+    ;SetGadgetState(0, 9)
     
     g=16
     Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Text_WordWrap|#PB_Flag_GridLines);|#PB_Text_Right) #PB_Flag_FullSelection|
@@ -1140,16 +1276,26 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Editor::SetText(*w, Text.s) 
     
-    For a = 0 To 2
+    For a = 0 To 10
       Editor::AddItem(*w, a, "Line "+Str(a))
+      If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+      EndIf
+      If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+        Debug a
+      EndIf
     Next
     Editor::AddItem(*w, a, "")
     For a = 4 To 6
       Editor::AddItem(*w, a, "Line "+Str(a))
     Next
+    
     Editor::SetFont(*w, FontID(0))
-     
-    SplitterGadget(10,8, 8, 306, 491-16, 0,g)
+    ;editor::SetState(*w, -1) ; 119) ; set caret pos    
+  
+    
+    
+    
+    SplitterGadget(10,8, 8, 250, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
       BindGadgetEvent(10, @SplitterCallBack())
     CompilerEndIf
@@ -1185,5 +1331,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------v------------------
+; Folding = ------------------------------
 ; EnableXP

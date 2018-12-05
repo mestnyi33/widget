@@ -23,12 +23,12 @@ If OpenWindow(0, 0, 0, 270, 270, "ListViewGadget", #PB_Window_SystemMenu | #PB_W
     editor::AddItem (*w, -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
   
-  editor::SetState(*w, -1) ; 119) ; set caret pos
+  editor::SetState(*w, -1) ; 119) ; set caret pos   
+  
   
   Debug " get state - " + editor::GetState(*w)
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

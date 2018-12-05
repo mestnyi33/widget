@@ -264,6 +264,7 @@
     row.Row_S
     List Items.Rows_S()
     List Columns.Widget_S()
+    Repaint.i ; Будем посылать сообщение что надо перерисовать а после надо сбрасывать переменую
   EndStructure
   
   ;-
