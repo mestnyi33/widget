@@ -273,6 +273,8 @@ Module Macros
 EndModule 
 
 UseModule Macros
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 38
 ; Folding = ----P+
 ; EnableXP

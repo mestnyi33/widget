@@ -858,7 +858,7 @@ Module Text
   EndProcedure
   
   ;-
-  Procedure AddLine(*This.Widget_S,Line.i,String.s) ;,Image.i=-1,Sublevel.i=0)
+  Procedure AddLine(*This.Widget_S, Line.i, String.s) ;,Image.i=-1,Sublevel.i=0)
     Protected Image_Y, Image_X, Text_X, Text_Y, Height, Width, Indent = 4
     
     Macro _set_content_Y_(_this_)
@@ -929,19 +929,12 @@ Module Text
     EndMacro
     
     With *This
-      \Text\Count = 15 ; = ListSize(\Items())
+      \Text\Count = ListSize(\Items())
       
       If \Text\Vertical
         Width = \Height[1]-\Text\X*2 
         Height = \Width[1]-\Text\y*2
       Else
-        ;         CompilerIf Defined(Scroll, #PB_Module) ; And (\Scroll\v And \Scroll\h)
-        ;           Width = Abs(\Width[1]-\Text\X*2    -Scroll::Width(\Scroll\v)) ; bug in linux иногда
-        ;           Height = \Height[1]-\Text\y*2      -Scroll::Height(\Scroll\h)
-        ;         CompilerElse
-        ;           Width = \Width[1]-\Text\X*2  
-        ;           Height = \Height[1]-\Text\y*2 
-        ;         CompilerEndIf
         CompilerIf Not Defined(Scroll, #PB_Module)
           \Scroll\Width[2] = \width[2]
           \Scroll\Height[2] = \height[2]
@@ -950,30 +943,15 @@ Module Text
       
       width = \Scroll\width[2]
       height = \Scroll\height[2]
-      
-      ;       ; If Not \Text\Height And StartDrawing(CanvasOutput(\Canvas\Gadget)) ; с ним три раза быстрее
-      ;       If StartDrawing(CanvasOutput(\Canvas\Gadget))
-      ;         If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
-      ;         If Not \Text\Height : \Text\Height = TextHeight("A") + 1 : EndIf
-      ;         
-      ;         If \Type = #PB_GadgetType_Button
-      ;           \Items()\Text\Width = TextWidth(RTrim(String.s))
-      ;         Else
-      ;           \Items()\Text\Width = TextWidth(String.s)
-      ;         EndIf
-      ;         StopDrawing()
-      ;       EndIf
-      
+  
       \Items()\Index[1] =- 1
       \Items()\Focus =- 1
       \Items()\Index = Line
       \Items()\Radius = \Radius
       \Items()\Text\String.s = String.s
       
-      ; ; ; ;       ; Set line default colors             
-      ; ; ; ;       \Items()\Color = \Color
+      ; Set line default color state           
       \Items()\Color\State = 1
-      ; ; ; ;       \Items()\Color\Fore[\Items()\Color\State] = 0
       
       ; Update line pos in the text
       \Items()\Text\Len = Len(String.s)
@@ -1501,6 +1479,7 @@ Module Text
               
               ; Draw text
               _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
+             ; _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Scroll\Width[2], #PB_Ignore) 
               
               Angle = Bool(\Text\Vertical)**This\Text\Rotate
               Protected Front_BackColor_1 = RowFontColor(*This, *This\Color\State) ; *This\Color\Front[*This\Color\State]&$FFFFFFFF|*This\row\color\alpha<<24
@@ -1628,6 +1607,7 @@ Module Text
       ; Draw frames
       With *This
         If ListSize(*This\Items())
+          UnclipOutput()
           ; Draw scroll bars
           CompilerIf Defined(Scroll, #PB_Module)
             If \Scroll\v And \Scroll\v\Max <> \Scroll\Height And 
@@ -2463,6 +2443,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------------------------------------------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1610
+; FirstLine = 1538
+; Folding = ------------------D-------------------------------------
 ; EnableXP
