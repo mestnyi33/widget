@@ -11,7 +11,7 @@ XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_editor.pbi"
 
-LN=1500;0; количесвто итемов 
+LN=15000; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)
@@ -28,6 +28,7 @@ If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   Next
   Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + Editor::CountItems(*w)
   
+  ;PostEvent(#PB_Event_Gadget, 0, 1, #PB_EventType_Resize)
   Text::Redraw(*w)
   
   ; HideGadget(0, 1)

@@ -2,12 +2,16 @@
 ; + если есть вертикальный скроллбар авто прокручивает в конец файла
 ; - горизонтальный скролл не перемешает текст если строка выбрана
 ; - при выделении не прокручивает текст
+; - при перемещении корета вниз не прокручивается страница
 ; + если добавить слова в конец текста и нажать ентер есть ошибки
 ; + если добавить букву в конец текста потом убрать с помошью бекспейс затем нажать ентер то переносится удаленная буква
 ; + если выделить слова в одной строке и нажать бекспейс затем нажать ентер то переносятся удаленые слова
-; - при перемещении корета вниз не прокручивается страница
 ; + При переходе на предыдущую строку если переходящая строка длинее предыдушего была ошибка перемещения корета на предыдущей строке
 ; + когда выделяем 2-3 строки затем вырезаем затем ставляем, курсон не перемещается правильно
+; - после запуска если шелкнуть в начале строки курсор оказывается в конце строки и строка выделяется полностью
+; - если текст веденный спомощью settext() шире ширины виджета то additem() не работает
+
+
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
@@ -250,7 +254,7 @@ Module Editor
   
   ;-
   ;- PUBLIC
-  Procedure.i AddLine(*This.Widget_S, Line.i, Text.s)
+  Procedure.i Text_AddLine(*This.Widget_S, Line.i, Text.s)
     Protected Result.i, String.s, i.i
     
     With *This
@@ -288,7 +292,6 @@ Module Editor
   Procedure.i AddItem(*This.Widget_S, Item.i,Text.s,Image.i=-1,Flag.i=0)
     Static adress.i, first.i
     Protected *Item, subLevel, hide
-    ;     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
     
     If *This
       With *This
@@ -392,7 +395,7 @@ Module Editor
           
           ; add lines
           Text::AddLine(*This, Item.i, Text.s)
-          \Text\Change = 1
+          \Text\Change = 1 ; надо посмотрет почему надо его вызивать раньше вед не нужно было
           ;           \Items()\Color = Colors
           ;           \Items()\Color\State = 1
           ;           \Items()\Color\Fore[0] = 0 
@@ -538,7 +541,8 @@ Module Editor
   Procedure.i SetFont(*This.Widget_S, FontID.i)
     
     If Text::SetFont(*This, FontID)
-      Text::ReDraw(*This, *This\Canvas\Gadget)
+      SetState(*This, #PB_Ignore) ; Это чтобы собрать текст перед применением шрифта
+      ;Text::ReDraw(*This, *This\Canvas\Gadget)
       ProcedureReturn 1
     EndIf
     
@@ -909,7 +913,7 @@ Module Editor
   
   Procedure Widget_CallBack()
     Protected String.s, *This.Widget_S = EventGadget()
-    
+    ; надо будет проверить может уже не нужен
     With *This
       Select EventType() 
         Case #PB_EventType_Create
@@ -1011,7 +1015,7 @@ Module Editor
       EndIf
       
       ; create scrollbars
-      Scroll::Bars(\Scroll, 16, 7, 1)
+      Scroll::Bars(\Scroll, 16, 7, Bool(\Text\MultiLine <> 1))
       
       Resize(*This, X,Y,Width,Height)
     EndWith
@@ -1088,12 +1092,16 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Define m.s=#CRLF$
   Define m.s=#LF$
   
-  Text.s = "This is a long line" + m.s +
-           "Who should show," + m.s +
+  Text.s = "This is a long line." + m.s +
+           "Who should show." + m.s +
            "I have to write the text in the box or not." + m.s +
-           "The string must be very long" + m.s +
-           "Otherwise it will not work."
-  
+           "The string must be very long." + m.s +
+           "Otherwise it will not work." + m.s +
+           m.s +
+           "Schol is a beautiful thing." + m.s +
+           "You ned it, that's true." + m.s +
+           "There was a group of monkeys siting on a fallen tree."
+        
   Procedure ResizeCallBack()
     ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
     ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
@@ -1127,8 +1135,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g=16
-    Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Flag_FullSelection|#PB_Text_WordWrap|#PB_Flag_GridLines);|#PB_Text_Right) 
-    *w=GetGadgetData(g)
+    Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Text_WordWrap|#PB_Flag_GridLines);|#PB_Text_Right) #PB_Flag_FullSelection|
+    *w.Widget_S=GetGadgetData(g)
     
     Editor::SetText(*w, Text.s) 
     
@@ -1140,8 +1148,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Editor::AddItem(*w, a, "Line "+Str(a))
     Next
     Editor::SetFont(*w, FontID(0))
-    
-    
+     
     SplitterGadget(10,8, 8, 306, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
       BindGadgetEvent(10, @SplitterCallBack())
@@ -1178,5 +1185,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------------------
+; Folding = --------v------------------
 ; EnableXP

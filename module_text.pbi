@@ -69,7 +69,7 @@ DeclareModule Text
   Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
   Declare.i CallBack(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  ;Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
+  Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i ReDraw(*This.Widget_S, Canvas =- 1, BackColor=$FFF0F0F0)
   
@@ -929,7 +929,7 @@ Module Text
     EndMacro
     
     With *This
-      \Text\Count = ListSize(\Items())
+      \Text\Count = 15 ; = ListSize(\Items())
       
       If \Text\Vertical
         Width = \Height[1]-\Text\X*2 
@@ -1311,10 +1311,11 @@ Module Text
     If Not *This\Hide
       
       With *This
+        ; Debug "Draw "
         If \Text\FontID 
           DrawingFont(\Text\FontID) 
         EndIf
-        
+          
         ; Make output multi line text
         If (\Text\Change Or \Resize)
           If \Resize
@@ -1342,37 +1343,20 @@ Module Text
           Text::MultiLine(*This)
           
           ;This is for the caret and scroll when entering the key - (enter & beckspace)
-          If \index[2] >= 0 And \index[2] < ListSize(\items()) - 1
+          If \index[2] >= 0 And \index[2] < ListSize(\items())
             SelectElement(\items(), \index[2])
-          EndIf
-          
-          CompilerIf Defined(Scroll, #PB_Module)
-            If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
-              If \Text\editable And \index[2] >= 0 And (\items()\y+\Text\y >= (Scroll::Y(\Scroll\h)-\items()\height))
-                ; This is for the editor widget when you enter the key - (enter & backspace)
-                Scroll::SetState(\Scroll\v, (\items()\y-(Scroll::Y(\Scroll\h)-\items()\height)))
+            
+            CompilerIf Defined(Scroll, #PB_Module)
+              If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
+                
+                If \Text\editable And (\items()\y >= (\Scroll\height[2]-\items()\height))
+                  ; This is for the editor widget when you enter the key - (enter & backspace)
+                  Scroll::SetState(\Scroll\v, (\items()\y-((\Scroll\height[2]+\Text\y)-\items()\height)))
+                EndIf
+                Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
               EndIf
-              Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            EndIf
-            ;           CompilerEndIf
-            ;           
-            ;           CompilerIf Defined(Scroll, #PB_Module)
-            ;             If \Scroll\v And \Scroll\v\Max <> \Scroll\Height And 
-            ;                Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines))
-            ;               Protected vDraw = Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            ;             EndIf
-            ;             If \Scroll\h And \Scroll\h\Max<>\Scroll\Width And 
-            ;                Scroll::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
-            ;               Protected hDraw = Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            ;             EndIf
-            ;            
-            ;             If vDraw
-            ;               Scroll::Draw(\Scroll\v)
-            ;             EndIf
-            ;             If hDraw
-            ;               Scroll::Draw(\Scroll\h)
-            ;             EndIf
-          CompilerEndIf
+            CompilerEndIf
+          EndIf
           
         EndIf 
         
@@ -2480,5 +2464,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----v--------v4---D-------------------------------------
+; Folding = --------------------------------------------------------
 ; EnableXP
