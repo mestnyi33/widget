@@ -1026,6 +1026,7 @@ Module Text
         
         \Text\String.s[2] = String.s
         \Text\Count = CountString(String.s, #LF$)
+        ;;;\Text\Len = Len(String.s)
         
         ; Scroll width reset 
         \Scroll\Width = 0;\Text\X
@@ -1313,7 +1314,23 @@ Module Text
           EndIf
           
           Text::MultiLine(*This)
-        EndIf 
+        ;This is for the caret and scroll when entering the key - (enter & beckspace)
+          If \Text\Change And \index[2] >= 0 And \index[2] < ListSize(\items())
+            SelectElement(\items(), \index[2])
+            
+            CompilerIf Defined(Scroll, #PB_Module)
+              If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
+                If \Text\editable And (\items()\y >= (\Scroll\height[2]-\items()\height))
+                ; This is for the editor widget when you enter the key - (enter & backspace)
+                Scroll::SetState(\Scroll\v, (\items()\y-((\Scroll\height[2]+\Text\y)-\items()\height)))
+              EndIf
+              
+                Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+              EndIf
+              
+            CompilerEndIf
+          EndIf
+          EndIf 
         
         iX=\X[2]
         iY=\Y[2]
@@ -1338,22 +1355,6 @@ Module Text
         EndIf
         
           
-          ;This is for the caret and scroll when entering the key - (enter & beckspace)
-          If \Text\Change And \index[2] >= 0 And \index[2] < ListSize(\items())
-            SelectElement(\items(), \index[2])
-            
-            CompilerIf Defined(Scroll, #PB_Module)
-              If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
-                
-                Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-              EndIf
-              
-              If \Text\editable And (\items()\y >= (\Scroll\height[2]-\items()\height))
-                ; This is for the editor widget when you enter the key - (enter & backspace)
-                Scroll::SetState(\Scroll\v, (\items()\y-((\Scroll\height[2]+\Text\y)-\items()\height)))
-              EndIf
-            CompilerEndIf
-          EndIf
           
         
       EndWith 

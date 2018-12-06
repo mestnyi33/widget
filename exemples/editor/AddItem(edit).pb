@@ -28,14 +28,14 @@ If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   Next
   Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + Editor::CountItems(*w)
   
-  If Not *w\Repaint : *w\Repaint = 1
-    PostEvent(#PB_Event_Gadget, 
-              *w\Canvas\Window, 
-              *w\Canvas\Gadget,
-              #PB_EventType_Repaint)
-    ; While WindowEvent() : Wend
-  EndIf
-  ; Text::Redraw(*w)
+;   If Not *w\Repaint : *w\Repaint = 1
+;     PostEvent(#PB_Event_Gadget, 
+;               *w\Canvas\Window, 
+;               *w\Canvas\Gadget,
+;               #PB_EventType_Repaint)
+;     ; While WindowEvent() : Wend
+;   EndIf
+   Text::Redraw(*w)
   ; Editor::SetFont(*w, FontID(LoadFont(#PB_Any, "Impact", 18 , #PB_Font_HighQuality)))
     
   ; HideGadget(0, 1)
