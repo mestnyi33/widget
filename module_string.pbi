@@ -111,54 +111,54 @@ Module String
     Protected Position.i
     
     With *This\Items()
-      If Caret <> *This\Caret Or Line <> *This\Index[1] Or (*This\Caret[1] >= 0 And Caret1 <> *This\Caret[1])
+      If Caret <> *This\Text\Caret Or Line <> *This\Index[1] Or (*This\Text\Caret[1] >= 0 And Caret1 <> *This\Text\Caret[1])
         \Text[2]\String.s = ""
         
         If *This\Index[2] = *This\Index[1]
-          If *This\Caret[1] > *This\Caret 
+          If *This\Text\Caret[1] > *This\Text\Caret 
             ; |<<<<<< to left
-            Position = *This\Caret
-            \Text[2]\Len = (*This\Caret[1]-Position)
+            Position = *This\Text\Caret
+            \Text[2]\Len = (*This\Text\Caret[1]-Position)
           Else 
             ; >>>>>>| to right
-            Position = *This\Caret[1]
-            \Text[2]\Len = (*This\Caret-Position)
+            Position = *This\Text\Caret[1]
+            \Text[2]\Len = (*This\Text\Caret-Position)
           EndIf
           ; Если выделяем снизу вверх
         Else
           ; Три разних поведения при виделении текста 
           ; когда курсор переходит за предели виджета
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            If *This\Caret > *This\Caret[1]
+            If *This\Text\Caret > *This\Text\Caret[1]
               ; <<<<<|
-              Position = *This\Caret[1]
+              Position = *This\Text\Caret[1]
               \Text[2]\Len = \Text\Len-Position
             Else
               ; >>>>>|
               Position = 0
-              \Text[2]\Len = *This\Caret[1]
+              \Text[2]\Len = *This\Text\Caret[1]
             EndIf
             
           CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            If *This\Caret[1] > *This\Caret 
+            If *This\Text\Caret[1] > *This\Text\Caret 
               ; |<<<<<< to left
-              Position = *This\Caret
-              \Text[2]\Len = (*This\Caret[1]-Position)
+              Position = *This\Text\Caret
+              \Text[2]\Len = (*This\Text\Caret[1]-Position)
             Else 
               ; >>>>>>| to right
-              Position = *This\Caret[1]
-              \Text[2]\Len = (*This\Caret-Position)
+              Position = *This\Text\Caret[1]
+              \Text[2]\Len = (*This\Text\Caret-Position)
             EndIf
             
           CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
             If *This\Index[1] > *This\Index[2]
               ; <<<<<|
-              Position = *This\Caret[1]
+              Position = *This\Text\Caret[1]
               \Text[2]\Len = \Text\Len-Position
             Else
               ; >>>>>|
               Position = 0
-              \Text[2]\Len = *This\Caret[1]
+              \Text[2]\Len = *This\Text\Caret[1]
             EndIf 
           CompilerEndIf
           
@@ -171,8 +171,8 @@ Module String
         \Text[3]\String.s = Trim(Right(*This\Text\String.s, *This\Text\Len-(\Text\Pos+Position + \Text[2]\Len)), #LF$) : \Text[3]\Change = #True
         
         Line = *This\Index[1]
-        Caret = *This\Caret
-        Caret1 = *This\Caret[1]
+        Caret = *This\Text\Caret
+        Caret1 = *This\Text\Caret[1]
       EndIf
     EndWith
     
@@ -185,15 +185,15 @@ Module String
     
     With *This
       If \Items()\Text[2]\Len
-        If \Caret > \Caret[1] 
-          Swap \Caret, \Caret[1]
+        If \Text\Caret > \Text\Caret[1] 
+          Swap \Text\Caret, \Text\Caret[1]
         EndIf  
-      ElseIf \Caret[1] > 0 
-        \Caret - 1 
+      ElseIf \Text\Caret[1] > 0 
+        \Text\Caret - 1 
       EndIf
       
-      If \Caret[1] <> \Caret
-        \Caret[1] = \Caret 
+      If \Text\Caret[1] <> \Text\Caret
+        \Text\Caret[1] = \Text\Caret 
         Repaint =- 1 
       EndIf
     EndWith
@@ -206,15 +206,15 @@ Module String
     
     With *This
       If \Items()\Text[2]\Len 
-        If \Caret > \Caret[1] 
-          Swap \Caret, \Caret[1]
+        If \Text\Caret > \Text\Caret[1] 
+          Swap \Text\Caret, \Text\Caret[1]
         EndIf
-      ElseIf \Caret[1] < \Items()\Text\Len
-        \Caret[1] + 1 
+      ElseIf \Text\Caret[1] < \Items()\Text\Len
+        \Text\Caret[1] + 1 
       EndIf
       
-      If \Caret <> \Caret[1] 
-        \Caret = \Caret[1] 
+      If \Text\Caret <> \Text\Caret[1] 
+        \Text\Caret = \Text\Caret[1] 
         Repaint =- 1 
       EndIf
     EndWith
@@ -226,12 +226,12 @@ Module String
     Protected Repaint
     
     With *This
-      If \Caret[1] < \Items()\Text\Len
+      If \Text\Caret[1] < \Items()\Text\Len
         If \Items()\Text[2]\Len 
           Text::Remove(*This)
         Else
-          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Pos+\Caret) + Mid(\Text\String.s[1],  \Items()\Text\Pos+\Caret + 2)
-          \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret) + Mid(\Text\String.s,  \Items()\Text\Pos+\Caret + 2)
+          \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Pos+\Text\Caret) + Mid(\Text\String.s[1],  \Items()\Text\Pos+\Text\Caret + 2)
+          \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Text\Caret) + Mid(\Text\String.s,  \Items()\Text\Pos+\Text\Caret + 2)
           \Text\Len = Len(\Text\String.s) 
         EndIf
         
@@ -256,17 +256,17 @@ Module String
             Text::Remove(*This)
           EndIf
           
-          \Caret + 1
+          \Text\Caret + 1
           ; \Items()\Text\String.s = \Items()\Text[1]\String.s + Chr(\Canvas\Input) + \Items()\Text[3]\String.s ; сним не выравнивается строка при вводе слов
-          \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Text\Pos+\Caret)
+          \Text\String.s = InsertString(\Text\String.s, Chr.s, \Items()\Text\Pos+\Text\Caret)
           \Text\Len = Len(\Text\String.s) 
-          \Caret[1] = \Caret 
+          \Text\Caret[1] = \Text\Caret 
           \Text\Change =- 1
         Else
           \Default = *This
         EndIf
         
-        \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Text\Pos+\Caret)
+        \Text\String.s[1] = InsertString(\Text\String.s[1], Chr(\Canvas\Input), \Items()\Text\Pos+\Text\Caret)
         Repaint =- 1 
       EndIf
     EndWith
@@ -283,20 +283,20 @@ Module String
     
     With *This
       If \Items()\Text[2]\Len
-        If \Caret > \Caret[1] 
-          Swap \Caret, \Caret[1]
+        If \Text\Caret > \Text\Caret[1] 
+          Swap \Text\Caret, \Text\Caret[1]
         EndIf  
         Text::Remove(*This)
         
-      ElseIf \Caret[1] > 0 
-        \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Text\Pos+\Caret + 1)
-        \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Pos+\Caret + 1)
+      ElseIf \Text\Caret[1] > 0 
+        \Text\String.s[1] = Left(\Text\String.s[1], \Items()\Text\Pos+\Text\Caret - 1) + Mid(\Text\String.s[1],  \Items()\Text\Pos+\Text\Caret + 1)
+        \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Text\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Pos+\Text\Caret + 1)
         \Text\Len = Len(\Text\String.s)  
-        \Caret - 1 
+        \Text\Caret - 1 
       EndIf
       
-      If \Caret[1] <> \Caret
-        \Caret[1] = \Caret 
+      If \Text\Caret[1] <> \Text\Caret
+        \Text\Caret[1] = \Text\Caret 
         \Text\Change =- 1
         Repaint =- 1 
       EndIf
@@ -328,9 +328,9 @@ Module String
         If ListSize(*This\items()) And Not Scroll::is(*This\Scroll) ; (((*This\Scroll\v And Not *This\Scroll\v\at) Or Not *This\Scroll\v) And ((*This\Scroll\h And Not *This\Scroll\h\at) Or Not *This\Scroll\h))
           Select EventType
             Case #PB_EventType_LostFocus 
-              \Caret[1] = 0 ; Двойной клик на тексте
-              *This\Caret = 0
-              *This\Caret[1] = 0 
+              \Text\Caret[1] = 0 ; Двойной клик на тексте
+              *This\Text\Caret = 0
+              *This\Text\Caret[1] = 0 
               \Text[2]\Len = 0
               ;             \Text[1]\String.s = "" : \Text[1]\Change = #True
               ;             \Text[2]\String.s = "" : \Text[2]\Change = #True
@@ -343,7 +343,7 @@ Module String
               
             Case #PB_EventType_Focus 
               Repaint = #True 
-              ;*This\Caret[1] = *This\Caret ; Показываем коректор
+              ;*This\Text\Caret[1] = *This\Text\Caret ; Показываем коректор
               PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This, #PB_EventType_Focus)
               
             Case #PB_EventType_LeftButtonUp
@@ -351,50 +351,50 @@ Module String
                 SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, *This\Cursor)
               EndIf
               If *This\Text\Editable And *This\Drag[1] : *This\Drag[1] = 0
-                If \Caret[1] > 0 And Not Bool(\Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len)
+                If \Text\Caret[1] > 0 And Not Bool(\Text\Caret[1] < *This\Text\Caret + 1 And *This\Text\Caret + 1 < \Text\Caret[1] + \Text[2]\Len)
                   
-                  *This\Text\String.s = RemoveString(*This\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, \Caret[1], 1)
+                  *This\Text\String.s = RemoveString(*This\Text\String.s, \Text[2]\String.s, #PB_String_CaseSensitive, \Text\Caret[1], 1)
                   
-                  If \Caret[1] > *This\Caret 
-                    \Caret[1] = *This\Caret 
-                    *This\Caret[1] = *This\Caret + \Text[2]\Len
+                  If \Text\Caret[1] > *This\Text\Caret 
+                    \Text\Caret[1] = *This\Text\Caret 
+                    *This\Text\Caret[1] = *This\Text\Caret + \Text[2]\Len
                   Else
-                    \Caret[1] = (*This\Caret-\Text[2]\Len)
-                    *This\Caret[1] = \Caret[1]
+                    \Text\Caret[1] = (*This\Text\Caret-\Text[2]\Len)
+                    *This\Text\Caret[1] = \Text\Caret[1]
                   EndIf
                   
-                  *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, \Text\Pos+\Caret[1] + 1)
+                  *This\Text\String.s = InsertString(*This\Text\String.s, \Text[2]\String.s, \Text\Pos+\Text\Caret[1] + 1)
                   *This\Text\Len = Len(*This\Text\String.s)
-                  \Text\String.s = InsertString(\Text\String.s, \Text[2]\String.s, \Text\Pos+\Caret[1] + 1)
+                  \Text\String.s = InsertString(\Text\String.s, \Text[2]\String.s, \Text\Pos+\Text\Caret[1] + 1)
                   \Text\Len = Len(\Text\String.s)
                   
                   *This\Text\Change =- 1
-                  \Caret[1] = 0
+                  \Text\Caret[1] = 0
                   Repaint =- 1
                 EndIf
               Else
                 Repaint =- 1
-                \Caret[1] = 0
+                \Text\Caret[1] = 0
               EndIf
               
             Case #PB_EventType_LeftButtonDown
               Caret = Caret(*This)
               
-              If \Caret[1] =- 1 : \Caret[1] = 0
-                *This\Caret = Caret
-                *This\Caret = 0
-                *This\Caret[1] = \Text\Len
+              If \Text\Caret[1] =- 1 : \Text\Caret[1] = 0
+                *This\Text\Caret = Caret
+                *This\Text\Caret = 0
+                *This\Text\Caret[1] = \Text\Len
                 \Text[2]\Len = \Text\Len
                 Repaint =- 1
               Else
                 Repaint = 1
                 
                 If \Text[2]\Len
-                  If *This\Caret[1] > *This\Caret : *This\Caret[1] = *This\Caret : EndIf
+                  If *This\Text\Caret[1] > *This\Text\Caret : *This\Text\Caret[1] = *This\Text\Caret : EndIf
                   
-                  If *This\Caret[1] < Caret And Caret < *This\Caret[1] + \Text[2]\Len
+                  If *This\Text\Caret[1] < Caret And Caret < *This\Text\Caret[1] + \Text[2]\Len
                     SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
-                    \Caret[1] = *This\Caret[1] + 1
+                    \Text\Caret[1] = *This\Text\Caret[1] + 1
                   Else
                     Repaint =- 1
                   EndIf
@@ -402,28 +402,28 @@ Module String
                   \Text[1]\String.s = Left(*This\Text\String.s, \Text\Pos+Caret) : \Text[1]\Change = #True
                 EndIf
                 
-                *This\Caret = Caret
-                *This\Caret[1] = *This\Caret
+                *This\Text\Caret = Caret
+                *This\Text\Caret[1] = *This\Text\Caret
               EndIf 
               
             Case #PB_EventType_LeftDoubleClick 
-              \Caret[1] =- 1 ; Запоминаем что сделали двойной клик
+              \Text\Caret[1] =- 1 ; Запоминаем что сделали двойной клик
               Text::SelLimits(*This) ; Выделяем слово
               Repaint =- 1
               
             Case #PB_EventType_MouseMove
               If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
-                *This\Caret = Caret(*This)
+                *This\Text\Caret = Caret(*This)
                 ; Debug *This\Canvas\Mouse\Delta\X
                 
-                If \Caret[1] ; *This\Cursor <> GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
-                  If \Caret[1] < *This\Caret + 1 And *This\Caret + 1 < \Caret[1] + \Text[2]\Len
+                If \Text\Caret[1] ; *This\Cursor <> GetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor)
+                  If \Text\Caret[1] < *This\Text\Caret + 1 And *This\Text\Caret + 1 < \Text\Caret[1] + \Text[2]\Len
                     SetGadgetAttribute(*This\Canvas\Gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
                   Else
-                    \Text[1]\String.s = Left(*This\Text\String.s, \Text\Pos+*This\Caret) : \Text[1]\Change = #True
+                    \Text[1]\String.s = Left(*This\Text\String.s, \Text\Pos+*This\Text\Caret) : \Text[1]\Change = #True
                   EndIf
                   
-                  *This\Caret[1] = *This\Caret
+                  *This\Text\Caret[1] = *This\Text\Caret
                   Repaint = 1
                 Else
                   Repaint =- 1
@@ -453,8 +453,8 @@ Module String
                 
               Case #PB_EventType_KeyDown
                 Select *This\Canvas\Key
-                  Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = 0 : *This\Caret[1] = *This\Caret : Repaint = #True 
-                  Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Caret = \Text\Len : *This\Caret[1] = *This\Caret : Repaint = #True 
+                  Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Text\Caret = 0 : *This\Text\Caret[1] = *This\Text\Caret : Repaint = #True 
+                  Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Text\Caret = \Text\Len : *This\Text\Caret[1] = *This\Text\Caret : Repaint = #True 
                     
                   Case #PB_Shortcut_Left, #PB_Shortcut_Up : Repaint = ToLeft(*This) ; Ok
                   Case #PB_Shortcut_Right, #PB_Shortcut_Down : Repaint = ToRight(*This) ; Ok
@@ -463,8 +463,8 @@ Module String
                     
                   Case #PB_Shortcut_A
                     If Control
-                      *This\Caret = 0
-                      *This\Caret[1] = \Text\Len
+                      *This\Text\Caret = 0
+                      *This\Text\Caret[1] = \Text\Len
                       \Text[2]\Len = \Text\Len
                       Repaint = 1
                     EndIf
@@ -473,7 +473,7 @@ Module String
                     If Control And \Text[2]\String.s 
                       SetClipboardText(\Text[2]\String.s)
                       Text::Remove(*This)
-                      *This\Caret[1] = *This\Caret
+                      *This\Text\Caret[1] = *This\Text\Caret
                       \Text\Len = Len(\Text\String.s)
                       Repaint = #True 
                     EndIf
@@ -501,9 +501,9 @@ Module String
                             EndIf
                         EndSelect
                         
-                        \Text\String.s = InsertString(\Text\String.s, ClipboardText.s, *This\Caret + 1)
-                        *This\Caret + Len(ClipboardText.s)
-                        *This\Caret[1] = *This\Caret
+                        \Text\String.s = InsertString(\Text\String.s, ClipboardText.s, *This\Text\Caret + 1)
+                        *This\Text\Caret + Len(ClipboardText.s)
+                        *This\Text\Caret[1] = *This\Text\Caret
                         \Text\Len = Len(\Text\String.s)
                         Repaint = #True
                       EndIf
@@ -541,7 +541,7 @@ Module String
         \Radius = Radius
         \color\alpha = 255
         \Interact = 1
-        \Caret[1] =- 1
+        \Text\Caret[1] =- 1
         \Index[1] =- 1
         \X =- 1
         \Y =- 1

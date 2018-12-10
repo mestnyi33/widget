@@ -139,15 +139,15 @@ DeclareModule Scroll
   Macro is(_scroll_) : Bool(((_scroll_\v And _scroll_\v\at) Or (_scroll_\h And _scroll_\h\at))) : EndMacro
   ;Macro is(_scroll_) : Bool((((_scroll_\v And Not _scroll_\v\at) Or Not _scroll_\v) And ((_scroll_\h And Not _scroll_\h\at) Or Not _scroll_\h))) : EndMacro
   ;Macro is(_scroll_) : Bool( Bool((_scroll_\v And Not _scroll_\v\at) And (_scroll_\h And Not _scroll_\h\at)) Or Not Bool(_scroll_\v And _scroll_\h)) : EndMacro
-  Macro x(_this_) : _this_\X+Bool(_this_\hide[1] Or Not _this_\color\alpha)*_this_\Width : EndMacro
-  Macro y(_this_) : _this_\Y+Bool(_this_\hide[1] Or Not _this_\color\alpha)*_this_\Height : EndMacro
+;   Macro x(_this_) : _this_\X+Bool(_this_\hide[1] Or Not _this_\color\alpha)*_this_\Width : EndMacro
+;   Macro y(_this_) : _this_\Y+Bool(_this_\hide[1] Or Not _this_\color\alpha)*_this_\Height : EndMacro
   Macro width(_this_) : Bool(Not _this_\hide[1] And _this_\color\alpha)*_this_\Width : EndMacro
   Macro height(_this_) : Bool(Not _this_\hide[1] And _this_\color\alpha)*_this_\Height : EndMacro
   
   ;- - DECLAREs
   Declare.i Draw(*This.Bar_S)
-;   Declare.i Y(*This.Bar_S)
-;   Declare.i X(*This.Bar_S)
+  Declare.i Y(*This.Bar_S)
+  Declare.i X(*This.Bar_S)
 ;   Declare.i Width(*This.Bar_S)
 ;   Declare.i Height(*This.Bar_S)
   Declare.b SetState(*This.Bar_S, ScrollPos.i)
@@ -306,6 +306,38 @@ Module Scroll
   EndProcedure
   
   ;-
+  Procedure.i X(*This.Bar_S)
+    Protected Result.l
+    
+    If *This
+      With *This
+        If Not \Hide[1] And \color\Alpha
+          Result = \X
+        Else
+          Result = \X+\Width
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i Y(*This.Bar_S)
+    Protected Result.l
+    
+    If *This
+      With *This
+        If Not \Hide[1] And \color\Alpha
+          Result = \Y ; -(\Height-\Radius/2)+1
+        Else
+          Result = \Y+\Height
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
   Procedure.i Draw(*This.Bar_S)
     With *This
       If *This And Not \hide And \color\alpha
@@ -665,7 +697,7 @@ Module Scroll
   EndProcedure
   
   Procedure.b Updates(*Scroll.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
-    Protected iWidth = X(*Scroll\v), iHeight = Y(*Scroll\h)
+    Protected iWidth = X(*Scroll\v)-(*Scroll\v\Width-*Scroll\v\Radius/2)+1, iHeight = Y(*Scroll\h)-(*Scroll\h\Height-*Scroll\h\Radius/2)+1
     Static hPos, vPos : vPos = *Scroll\v\Page\Pos : hPos = *Scroll\h\Page\Pos
     
     ; Вправо работает как надо
@@ -1225,5 +1257,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------0m-------P-0----f---------v--
+; Folding = ------fv6-------z------4---------8--
 ; EnableXP

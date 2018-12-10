@@ -39,7 +39,7 @@ DeclareModule tree
   Macro RemoveItem(_this_, _item_) : Editor::RemoveItem(_this_, _item_) : EndMacro
   Macro SetFont(_this_, _font_id_) : Editor::SetFont(_this_, _font_id_) : EndMacro
   Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
-  Macro AddItem(_this_, _item_,_text_,_image_=-1,_flag_=0) : Editor::AddItem(_this_,_item_,_text_,_image_,_flag_) : EndMacro
+  Macro AddItem(_this_, _item_,_text_,_image_=-1,_flag_=0) : Text::AddItem(_this_,_item_,_text_,_image_,_flag_) : EndMacro
   
   ;- DECLAREs PROCEDUREs
   Declare.i GetState(*This.Widget_S)
@@ -677,7 +677,7 @@ Module tree
         \Radius = Radius
         \sublevellen = 18
         \Interact = 1
-        \Caret[1] =- 1
+        \Text\Caret[1] =- 1
         \Index[1] =- 1
         \X =- 1
         \Y =- 1

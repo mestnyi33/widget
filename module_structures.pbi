@@ -88,6 +88,7 @@
     ;     Char.c
     Pos.i
     Len.i
+    Caret.i[3] ; 0 = Pos ; 1 = PosFixed
     
     FontID.i
     String.s[3]
@@ -241,7 +242,6 @@
     Interact.b ; будет ли взаимодействовать с пользователем?
     Cursor.i[2]
     
-    Caret.i[3] ; 0 = Pos ; 1 = PosFixed
     
     Focus.i
     LostFocus.i
@@ -263,6 +263,7 @@
     *Default
     row.Row_S
     List Items.Rows_S()
+    List Lines.Rows_S()
     List Columns.Widget_S()
     Repaint.i ; Будем посылать сообщение что надо перерисовать а после надо сбрасывать переменую
   EndStructure

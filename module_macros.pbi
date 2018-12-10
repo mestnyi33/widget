@@ -183,6 +183,12 @@
     EndIf
   EndMacro
   
+;   Macro _set_line_pos_(_this_)
+;     _this_\Items()\Text\Pos = _this_\Text\Pos
+;     _this_\Items()\Text\Len = Len(_this_\Items()\Text\String.s)
+;     _this_\Text\Pos + _this_\Items()\Text\Len + 1 ; Len(#LF$)
+;   EndMacro
+  
   Macro RowBackColor(_this_, _state_)
     _this_\Row\Color\Back[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
   EndMacro
@@ -273,8 +279,6 @@ Module Macros
 EndModule 
 
 UseModule Macros
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 38
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = ----P+
 ; EnableXP

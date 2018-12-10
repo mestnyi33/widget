@@ -9,7 +9,7 @@ XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
 XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
-XIncludeFile "module_editor.pbi"
+XIncludeFile "module_editor_0_0.pb"
 
 
   ;- Example

@@ -183,14 +183,14 @@ Module Editor
     Protected Pos.i, Len.i
     
     With *This
-      ;Debug "7777    "+\Caret +" "+ \Caret[1] +" "+\Index[1] +" "+ \Index[2] +" "+ \Items()\Text\String
+      ;Debug "7777    "+\Text\Caret +" "+ \Text\Caret[1] +" "+\Index[1] +" "+ \Index[2] +" "+ \Items()\Text\String
       
-      If (Caret <> \Caret Or Line <> \Index[1] Or (\Caret[1] >= 0 And Caret1 <> \Caret[1]))
+      If (Caret <> \Text\Caret Or Line <> \Index[1] Or (\Text\Caret[1] >= 0 And Caret1 <> \Text\Caret[1]))
         \Items()\Text[2]\String.s = ""
         
         PushListPosition(\Items())
         If \Index[2] = \Index[1]
-          If \Caret[1] = \Caret And \Items()\Text[2]\Len > 0 
+          If \Text\Caret[1] = \Text\Caret And \Items()\Text[2]\Len > 0 
             \Items()\Text[2]\Len = 0 
             \Items()\Text[2]\Width = 0 
           EndIf
@@ -210,40 +210,40 @@ Module Editor
         PopListPosition(\Items())
         
         If \Index[2] = \Index[1]
-          If \Caret[1] = \Caret 
-            Pos = \Caret[1]
-            ;             If \Caret[1] = \Items()\Text\Len
+          If \Text\Caret[1] = \Text\Caret 
+            Pos = \Text\Caret[1]
+            ;             If \Text\Caret[1] = \Items()\Text\Len
             ;              ; Debug 555
             ;             ;  Len =- 1
             ;             EndIf
             ; Если выделяем с право на лево
-          ElseIf \Caret[1] > \Caret 
+          ElseIf \Text\Caret[1] > \Text\Caret 
             ; |<<<<<< to left
-            Pos = \Caret
-            Len = (\Caret[1]-Pos)
+            Pos = \Text\Caret
+            Len = (\Text\Caret[1]-Pos)
           Else 
             ; >>>>>>| to right
-            Pos = \Caret[1]
-            Len = (\Caret-Pos)
+            Pos = \Text\Caret[1]
+            Len = (\Text\Caret-Pos)
           EndIf
           
           ; Если выделяем снизу вверх
         ElseIf \Index[2] > \Index[1]
           ; <<<<<|
-          Pos = \Caret
+          Pos = \Text\Caret
           Len = \Items()\Text\Len-Pos
           Len | Bool(\Items()\Text\Len=Pos) ; 
         Else
           ; >>>>>|
           Pos = 0
-          Len = \Caret
+          Len = \Text\Caret
         EndIf
         
         Text::Change(*This, Pos, Len)
         
         Line = \Index[1]
-        Caret = \Caret
-        Caret1 = \Caret[1]
+        Caret = \Text\Caret
+        Caret1 = \Text\Caret[1]
       EndIf
     EndWith
     
@@ -442,8 +442,8 @@ Module Editor
       Result = SelectElement(\Items(), Item) 
       If Result 
         \Items()\Index[1] = \Items()\Index
-        \Caret = State
-        \Caret[1] = \Caret
+        \Text\Caret = State
+        \Text\Caret[1] = \Text\Caret
       EndIf
       PopListPosition(\Items())
     EndWith
@@ -481,12 +481,12 @@ Module Editor
         If State =- 1
           \Index[1] = \Text\Count - 1
           *Line = LastElement(\Items())
-          \Caret = \Items()\Text\Len
+          \Text\Caret = \Items()\Text\Len
         Else
           \Index[1] = CountString(Left(String, State), #LF$)
           *Line = SelectElement(\Items(), \Index[1])
           If *Line
-            \Caret = State-\Items()\Text\Pos
+            \Text\Caret = State-\Items()\Text\Pos
           EndIf
         EndIf
         
@@ -494,11 +494,11 @@ Module Editor
 ;         \Index[2] = \Index[1]
 ;         \Text[1]\Change = 1
 ;         \Text[3]\Change = 1
-;         Text::Change(*This, \Caret, 0)
+;         Text::Change(*This, \Text\Caret, 0)
         
-        \Items()\Text[1]\String = Left(\Items()\Text\String, \Caret)
+        \Items()\Text[1]\String = Left(\Items()\Text\String, \Text\Caret)
         \Items()\Text[1]\Change = 1
-        \Caret[1] = \Caret
+        \Text\Caret[1] = \Text\Caret
         
         \Items()\Index[1] = \Items()\Index 
         Scroll::SetState(\Scroll\v, (\items()\y-((\Scroll\height[2]+\Text\y)-\items()\height))) ;((\Index[1] * \Text\Height)-\Scroll\v\Height) + \Text\Height)
@@ -523,7 +523,7 @@ Module Editor
       PushListPosition(\Items())
       ForEach \Items()
         If \Items()\Index[1] = \Items()\Index
-          Result = \Items()\Text\Pos + \Caret
+          Result = \Items()\Text\Pos + \Text\Caret
         EndIf
       Next
       PopListPosition(\Items())
@@ -589,9 +589,9 @@ Module Editor
           EndIf
           
           If \Index[1] > Line
-            \Caret = 0
+            \Text\Caret = 0
           Else
-            \Caret = \Items()\Text\Len
+            \Text\Caret = \Items()\Text\Len
           EndIf
           
           SelectionText(*This)
@@ -601,7 +601,7 @@ Module Editor
       EndIf
       
       If isItem(Line, \Items()) 
-        \Caret = Caret(*This, Line) 
+        \Text\Caret = Caret(*This, Line) 
         SelectionText(*This)
       EndIf
       
@@ -683,14 +683,14 @@ Module Editor
           Shift = Bool(*This\Canvas\Key[1] & #PB_Canvas_Shift)
           
           Select \Canvas\Key
-            Case #PB_Shortcut_Home : \items()\Text[2]\String.s = "" : \items()\Text[2]\Len = 0 : \Caret = 0 : \Caret[1] = \Caret : Repaint =- 1
-            Case #PB_Shortcut_End : \items()\Text[2]\String.s = "" : \items()\Text[2]\Len = 0 : \Caret = \items()\Text\Len : \Caret[1] = \Caret : Repaint =- 1 
+            Case #PB_Shortcut_Home : \items()\Text[2]\String.s = "" : \items()\Text[2]\Len = 0 : \Text\Caret = 0 : \Text\Caret[1] = \Text\Caret : Repaint =- 1
+            Case #PB_Shortcut_End : \items()\Text[2]\String.s = "" : \items()\Text[2]\Len = 0 : \Text\Caret = \items()\Text\Len : \Text\Caret[1] = \Text\Caret : Repaint =- 1 
               
             Case #PB_Shortcut_Up     : Repaint = Text::ToUp(*This)      ; Ok
             Case #PB_Shortcut_Left   : Repaint = Text::ToLeft(*This)    ; Ok
             Case #PB_Shortcut_Right  
               If Shift
-                \Caret + 1
+                \Text\Caret + 1
                 Repaint = SelSet(*This.Widget_S, \index[2])
               Else
                 Repaint = Text::ToRight(*This)   ; Ok
@@ -731,7 +731,7 @@ Module Editor
           \items()\Text[2]\Change = Repaint
           \items()\Text[3]\Change = Repaint
         EndIf
-        ; *This\CaretLength = \CaretLength
+        ; *This\Text\CaretLength = \Text\CaretLength
         \Text[2]\String.s[1] = \items()\Text[2]\String.s[1]
       EndIf
     EndWith
@@ -907,7 +907,7 @@ Module Editor
                 If \Items()\Text[2]\Len > 0
                   \Text[2]\Len = 1
                 Else
-                  \Caret = Caret(*This, Item) 
+                  \Text\Caret = Caret(*This, Item) 
                   \Index[1] = ListIndex(*This\Items()) 
                   \Index[2] = Item
                   
@@ -921,12 +921,12 @@ Module Editor
                   Next
                   PopListPosition(\Items())
                   
-                  \Caret[1] = \Caret
+                  \Text\Caret[1] = \Text\Caret
                   
-                  If \Caret = DoubleClick
+                  If \Text\Caret = DoubleClick
                     DoubleClick =- 1
-                    \Caret[1] = \Items()\Text\Len
-                    \Caret = 0
+                    \Text\Caret[1] = \Items()\Text\Len
+                    \Text\Caret = 0
                   EndIf 
                   
                   SelectionText(*This)
@@ -945,9 +945,9 @@ Module Editor
                       EndIf
                       
                       If \Index[1] > Item
-                        \Caret = 0
+                        \Text\Caret = 0
                       Else
-                        \Caret = \Items()\Text\Len
+                        \Text\Caret = \Items()\Text\Len
                       EndIf
                       
                       SelectionText(*This)
@@ -957,7 +957,7 @@ Module Editor
                   EndIf
                   
                   If isItem(Item, \Items()) 
-                    \Caret = Caret(*This, Item) 
+                    \Text\Caret = Caret(*This, Item) 
                     SelectionText(*This)
                   EndIf
                   
@@ -1051,7 +1051,7 @@ Module Editor
         \Radius = Radius
         \color\alpha = 255
         \Interact = 1
-        \Caret[1] =- 1
+        \Text\Caret[1] =- 1
         \Index[1] =- 1
         \X =- 1
         \Y =- 1
@@ -1184,27 +1184,27 @@ Module Editor
       
       If Repaint 
     
-          If (\Text\Count[1] And \Text\Count[1] <> \Text\Count) ;Or Len(\Text\String.s[2]) <> \Text\Len ; 
-            ; Это чтобы собрать текст перед применением шрифта
-            PushListPosition(\Items())
-            ForEach \Items()
-              If String.s
-                String.s +#LF$+ \Items()\Text\String.s 
-              Else
-                String.s + \Items()\Text\String.s
-              EndIf
-            Next : String.s + #LF$
-            PopListPosition(\Items())
-            ; Debug  String.s
-            ;Protected len = Len(String.s)
-            ;Debug len
-            If \Text\String.s <> String.s
-              \Text\String.s = String.s
-              \Text\Len = Len(String.s)
-            EndIf
-          EndIf
-          
-          Debug "len "+\text\len+" "+\Text\Count[1] +" "+\Text\Count + "   "+Len(\Text\String.s[2]) +" "+ \Text\Len
+;           If (\Text\Count[1] And \Text\Count[1] <> \Text\Count) ;Or Len(\Text\String.s[2]) <> \Text\Len ; 
+;             ; Это чтобы собрать текст перед применением шрифта
+;             PushListPosition(\Items())
+;             ForEach \Items()
+;               If String.s
+;                 String.s +#LF$+ \Items()\Text\String.s 
+;               Else
+;                 String.s + \Items()\Text\String.s
+;               EndIf
+;             Next : String.s + #LF$
+;             PopListPosition(\Items())
+;             ; Debug  String.s
+;             ;Protected len = Len(String.s)
+;             ;Debug len
+;             If \Text\String.s <> String.s
+;               \Text\String.s = String.s
+;               \Text\Len = Len(String.s)
+;             EndIf
+;           EndIf
+;           
+;           Debug "len "+\text\len+" "+\Text\Count[1] +" "+\Text\Count + "   "+Len(\Text\String.s[2]) +" "+ \Text\Len
       
         
         Text::ReDraw(*This)
@@ -1234,6 +1234,7 @@ Module Editor
   
 EndModule
 
+
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -1246,11 +1247,12 @@ CompilerIf #PB_Compiler_IsMainFile
            "Who should show." + m.s +
            "I have to write the text in the box or not." + m.s +
            "The string must be very long." + m.s +
-           "Otherwise it will not work." + m.s +
-           m.s +
-           "Schol is a beautiful thing." + m.s +
-           "You ned it, that's true." + m.s +
-           "There was a group of monkeys siting on a fallen tree."
+           "Otherwise it will not work." ;+ m.s +
+;            m.s +
+;            "Schol is a beautiful thing." + m.s +
+;            "You ned it, that's true." + m.s +
+;            "There was a group of monkeys siting on a fallen tree."
+;   Text.s = "This is a long line. Who should show, i have to write the text in the box or not. The string must be very long. Otherwise it will not work."
         
   Procedure SplitterCallBack()
     PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
@@ -1273,20 +1275,20 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget(100, 490-60,490-30,125,25,"~wrap")
     
     EditorGadget(0, 8, 8, 306, 233, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s) 
-    For a = 0 To 10
-      AddGadgetItem(0, a, "Line "+Str(a))
-      If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
-      EndIf
-      If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
-        Debug a
-      EndIf
-    Next
-    AddGadgetItem(0, a, "")
-    For a = 4 To 6
-      AddGadgetItem(0, a, "Line "+Str(a))
-    Next
-    ;SetGadgetFont(0, FontID(0))
-    ;SetGadgetState(0, 9)
+;     For a = 0 To 2
+;       AddGadgetItem(0, -1, "Line "+Str(a))
+;       If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+;       EndIf
+;       If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+;         Debug a
+;       EndIf
+;     Next
+;     AddGadgetItem(0, a, "")
+;     For a = 4 To 6
+;       AddGadgetItem(0, a, "Line "+Str(a))
+;     Next
+;     ;SetGadgetFont(0, FontID(0))
+;     ;SetGadgetState(0, 9)
     
     g=16
     Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Text_WordWrap|#PB_Flag_GridLines);|#PB_Text_Right) #PB_Flag_FullSelection|
@@ -1294,26 +1296,35 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Editor::SetText(*w, Text.s) 
     
-    For a = 0 To 100
-      Editor::AddItem(*w, a, "Line "+Str(a))
-      If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
-      EndIf
-      If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
-        Debug a
-      EndIf
-    Next
-    Editor::AddItem(*w, a, "")
-    For a = 4 To 6
-      Editor::AddItem(*w, a, "Line "+Str(a))
-    Next
+    Len = Len(text)
+      
+;     For a = 0 To 2
+;       Len + Len("Line "+Str(a)+#LF$)
+;       Editor::AddItem(*w, -1, "Line "+Str(a))
+;       If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+;       EndIf
+;       If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+;         Debug a
+;       EndIf
+;     Next
+;     Editor::AddItem(*w, a, "")
+;     Len + Len(#LF$)
+;     
+;     For a = 4 To 6
+;       Len + Len("Line "+Str(a)+#LF$)
+;       Editor::AddItem(*w, a, "Line "+Str(a))
+;     Next
+;     
+;     ;Editor::SetFont(*w, FontID(0))
+;     ;editor::SetState(*w, -1) ; 119) ; set caret pos    
+;   
+; ;    Debug 555
+; ;    editor::SetState(*w, #PB_Ignore) ; 119) ; set caret pos    
     
-    ;Editor::SetFont(*w, FontID(0))
-    ;editor::SetState(*w, -1) ; 119) ; set caret pos    
-  
-;    Debug 555
-;    editor::SetState(*w, #PB_Ignore) ; 119) ; set caret pos    
     Debug *w\text\string
     
+    Debug Len
+    Debug Len(*w\text\string)
     
     SplitterGadget(10,8, 8, 250, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
@@ -1347,6 +1358,120 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
+
+; ; ;- EXAMPLE
+; ; CompilerIf #PB_Compiler_IsMainFile
+; ;   
+; ;   Define a,i
+; ;   Define g, Text.s
+; ;   ; Define m.s=#CRLF$
+; ;   Define m.s=#LF$
+; ;   
+; ;   Text.s = "This is a long line." + m.s +
+; ;            "Who should show." + m.s +
+; ;            "I have to write the text in the box or not." + m.s +
+; ;            "The string must be very long." + m.s +
+; ;            "Otherwise it will not work." + m.s +
+; ;            m.s +
+; ;            "Schol is a beautiful thing." + m.s +
+; ;            "You ned it, that's true." + m.s +
+; ;            "There was a group of monkeys siting on a fallen tree."
+; ;         
+; ;   Procedure SplitterCallBack()
+; ;     PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
+; ;   EndProcedure
+; ;   
+; ;   Procedure ResizeCallBack()
+; ;     ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-127, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
+; ;     ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-135, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
+; ;     
+; ;     CompilerIf #PB_Compiler_Version =< 546 : SplitterCallBack() : CompilerEndIf
+; ;   EndProcedure
+; ;   
+; ;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+; ;     LoadFont(0, "Arial", 16)
+; ;   CompilerElse
+; ;     LoadFont(0, "Arial", 11)
+; ;   CompilerEndIf 
+; ;   
+; ;   If OpenWindow(0, 0, 0, 422, 491, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+; ;     ButtonGadget(100, 490-60,490-30,125,25,"~wrap")
+; ;     
+; ;     EditorGadget(0, 8, 8, 306, 233, #PB_Editor_WordWrap) : SetGadgetText(0, Text.s) 
+; ;     For a = 0 To 10
+; ;       AddGadgetItem(0, a, "Line "+Str(a))
+; ;       If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+; ;       EndIf
+; ;       If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+; ;         Debug a
+; ;       EndIf
+; ;     Next
+; ;     AddGadgetItem(0, a, "")
+; ;     For a = 4 To 6
+; ;       AddGadgetItem(0, a, "Line "+Str(a))
+; ;     Next
+; ;     ;SetGadgetFont(0, FontID(0))
+; ;     ;SetGadgetState(0, 9)
+; ;     
+; ;     g=16
+; ;     Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Text_WordWrap|#PB_Flag_GridLines);|#PB_Text_Right) #PB_Flag_FullSelection|
+; ;     *w.Widget_S=GetGadgetData(g)
+; ;     
+; ;     Editor::SetText(*w, Text.s) 
+; ;     
+; ;     For a = 0 To 100
+; ;       Editor::AddItem(*w, a, "Line "+Str(a))
+; ;       If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+; ;       EndIf
+; ;       If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+; ;         Debug a
+; ;       EndIf
+; ;     Next
+; ;     Editor::AddItem(*w, a, "")
+; ;     For a = 4 To 6
+; ;       Editor::AddItem(*w, a, "Line "+Str(a))
+; ;     Next
+; ;     
+; ;     ;Editor::SetFont(*w, FontID(0))
+; ;     ;editor::SetState(*w, -1) ; 119) ; set caret pos    
+; ;   
+; ; ;    Debug 555
+; ; ;    editor::SetState(*w, #PB_Ignore) ; 119) ; set caret pos    
+; ;     Debug *w\text\string
+; ;     
+; ;     
+; ;     SplitterGadget(10,8, 8, 250, 491-16, 0,g)
+; ;     CompilerIf #PB_Compiler_Version =< 546
+; ;       BindGadgetEvent(10, @SplitterCallBack())
+; ;     CompilerEndIf
+; ;     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug no linux
+; ;     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
+; ;     
+; ;     ;Debug ""+GadgetHeight(0) +" "+ GadgetHeight(g)
+; ;     Repeat 
+; ;       Define Event = WaitWindowEvent()
+; ;       
+; ;       Select Event
+; ;         Case #PB_Event_Gadget
+; ;           If EventGadget() = 100
+; ;             Select EventType()
+; ;               Case #PB_EventType_LeftClick
+; ;                 Define *E.Widget_S = GetGadgetData(g)
+; ;                 
+; ;                 Editor::RemoveItem(g, 5)
+; ;                 RemoveGadgetItem(0,5)
+; ;                 
+; ;             EndSelect
+; ;           EndIf
+; ;           
+; ;         Case #PB_Event_LeftClick  
+; ;           SetActiveGadget(0)
+; ;         Case #PB_Event_RightClick 
+; ;           SetActiveGadget(10)
+; ;       EndSelect
+; ;     Until Event = #PB_Event_CloseWindow
+; ;   EndIf
+; ; CompilerEndIf
 
 
 ; ; ; ; ;- EXAMPLE
@@ -1464,5 +1589,5 @@ CompilerEndIf
 ; ; ; ; ; Folding = -------------------0f-f----------------------------
 ; ; ; ; ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------------------------------
+; Folding = -----+------------------------
 ; EnableXP

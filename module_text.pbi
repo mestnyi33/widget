@@ -73,7 +73,7 @@ DeclareModule Text
   Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
   Declare.i CallBack(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  Declare.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
+  Declare.s Wrap (Text.s, Width.i, Mode=-1, nl$=#LF$, DelimList$=" "+Chr(9))
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i ReDraw(*This.Widget_S, Canvas =- 1, BackColor=$FFF0F0F0)
   
@@ -94,6 +94,7 @@ DeclareModule Text
   Declare.i SelReset(*This.Widget_S)
   Declare.i SelLimits(*This.Widget_S)
   
+  Declare.i AddItem(*This.Widget_S, Item.i,Text.s,Image.i=-1,Flag.i=0)
   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0)
 EndDeclareModule
 
@@ -102,8 +103,8 @@ Module Text
   ;- PROCEDUREs
   Procedure.i Remove(*This.Widget_S)
     With *This
-      If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+      If \Text\Caret > \Text\Caret[1] : \Text\Caret = \Text\Caret[1] : EndIf
+      \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Text\Caret, 1)
       \Text\Len = Len(\Text\String.s)
     EndWith
   EndProcedure
@@ -218,22 +219,18 @@ Module Text
       EndIf
       
       ; text string/pos/len/state
-      If (\index[2] > \index[1] Or \index[2] = \Items()\index) 
-        \Text[1]\Change = #True
-      EndIf
-      If \Text[1]\Change
+      If (\index[2] > \index[1] Or \index[2] = \Items()\index)
         \Text[1]\Len = (\Items()\Text[0]\Pos + \Items()\Text[1]\len)
         \Text[1]\String.s = Left(\Text\String.s, \Text[1]\Len) 
         \Text[2]\Pos = \Text[1]\Len
+        \Text[1]\Change = #True
       EndIf
       
       If (\index[2] < \index[1] Or \index[2] = \Items()\index) 
-        \Text[3]\Change = #True
-      EndIf
-      If \Text[3]\Change
         \Text[3]\Pos = (\Items()\Text[0]\Pos + \Items()\Text[3]\Pos)
         \Text[3]\Len = (\Text\Len - \Text[3]\Pos)
         \Text[3]\String.s = Right(\Text\String.s, \Text[3]\Len) 
+        \Text[3]\Change = #True
       EndIf
       
       If \Text[1]\Len = \Text[3]\Pos
@@ -292,31 +289,31 @@ Module Text
     EndMacro
     
     With *This
-      char = Asc(Mid(\Items()\Text\String.s, \Caret + 1, 1))
+      char = Asc(Mid(\Items()\Text\String.s, \Text\Caret + 1, 1))
       If _is_selection_end_(char)
-        \Caret + 1
+        \Text\Caret + 1
         \Items()\Text[2]\Len = 1 
       Else
         ; |<<<<<< left edge of the word 
-        For i = \Caret To 1 Step - 1
+        For i = \Text\Caret To 1 Step - 1
           char = Asc(Mid(\Items()\Text\String.s, i, 1))
           If _is_selection_end_(char)
             Break
           EndIf
         Next 
         
-        \Caret[1] = i
+        \Text\Caret[1] = i
         
         ; >>>>>>| right edge of the word
-        For i = \Caret To \Items()\Text\Len
+        For i = \Text\Caret To \Items()\Text\Len
           char = Asc(Mid(\Items()\Text\String.s, i, 1))
           If _is_selection_end_(char)
             Break
           EndIf
         Next 
         
-        \Caret = i - 1
-        \Items()\Text[2]\Len = \Caret[1] - \Caret
+        \Text\Caret = i - 1
+        \Items()\Text[2]\Len = \Text\Caret[1] - \Text\Caret
       EndIf
     EndWith           
   EndProcedure
@@ -327,7 +324,7 @@ Module Text
     Protected Left,Right
     
     With *This
-      Right =- TextWidth(Mid(\Text\String.s, \Items()\Text\Pos, \Caret))
+      Right =- TextWidth(Mid(\Text\String.s, \Items()\Text\Pos, \Text\Caret))
       ;If Right 
       Left = (Width + Right)
       ;If Not \Scroll\h\Buttons ; \Scroll\X <> Right
@@ -336,7 +333,7 @@ Module Text
         \Scroll\X = Right
       ElseIf \Scroll\X > Left
         \Scroll\X = Left
-      ElseIf (\Scroll\X < 0 And \Caret = \Caret[1] And Not \Canvas\Input) ; Back string
+      ElseIf (\Scroll\X < 0 And \Text\Caret = \Text\Caret[1] And Not \Canvas\Input) ; Back string
         \Scroll\X = (Width-\Items()\Text[3]\Width) + Right
         If \Scroll\X>0
           \Scroll\X=0
@@ -354,7 +351,7 @@ Module Text
     Protected Left,Right
     
     With *This
-      Right = TextWidth(Mid(\Text\String.s, \Items()\Text\Pos, \Caret))
+      Right = TextWidth(Mid(\Text\String.s, \Items()\Text\Pos, \Text\Caret))
       ;If Right 
       Left = (Width - Right)
       ;If Not \Scroll\h\Buttons ; \Scroll\X <> Right
@@ -363,7 +360,7 @@ Module Text
         \Scroll\X = Right
       ElseIf \Scroll\X > Left
         \Scroll\X = Left
-      ElseIf (\Scroll\X < 0 And \Caret = \Caret[1] And Not \Canvas\Input) ; Back string
+      ElseIf (\Scroll\X < 0 And \Text\Caret = \Text\Caret[1] And Not \Canvas\Input) ; Back string
         \Scroll\X = (Width-\Items()\Text[3]\Width) - Right
         If \Scroll\X>0
           \Scroll\X=0
@@ -399,22 +396,22 @@ Module Text
           
           If Input
             If \Type = #PB_GadgetType_IPAddress
-              left.s = Left(\Text\String, \Caret)
+              left.s = Left(\Text\String, \Text\Caret)
               Select CountString(left.s, ".")
                 Case 0 : left.s = StringField(left.s, 1, ".")
                 Case 1 : left.s = StringField(left.s, 2, ".")
                 Case 2 : left.s = StringField(left.s, 3, ".")
                 Case 3 : left.s = StringField(left.s, 4, ".")
               EndSelect                                           
-              count = Len(left.s+Trim(StringField(Mid(\Text\String, \Caret+1), 1, "."), #LF$))
+              count = Len(left.s+Trim(StringField(Mid(\Text\String, \Text\Caret+1), 1, "."), #LF$))
               If count < 3 And (Val(left.s) > 25 Or Val(left.s+Chr.s) > 255)
                 Continue
-                ;               ElseIf Mid(\Text\String, \Caret + 1, 1) = "."
-                ;                 \Caret + 1 : \Caret[1]=\Caret
+                ;               ElseIf Mid(\Text\String, \Text\Caret + 1, 1) = "."
+                ;                 \Text\Caret + 1 : \Text\Caret[1]=\Text\Caret
               EndIf
             EndIf
             
-            If Not Dot And Input = '.' And Mid(\Text\String, \Caret + 1, 1) <> "."
+            If Not Dot And Input = '.' And Mid(\Text\String, \Text\Caret + 1, 1) <> "."
               Dot = 1
             ElseIf Input <> '.' And count < 3
               Dot = 0
@@ -422,7 +419,7 @@ Module Text
               Continue
             EndIf
             
-            If Not Minus And Input = '-' And Mid(\Text\String, \Caret + 1, 1) <> "-"
+            If Not Minus And Input = '-' And Mid(\Text\String, \Text\Caret + 1, 1) <> "-"
               Minus = 1
             ElseIf Input <> '-'
               Minus = 0
@@ -462,7 +459,7 @@ Module Text
         If SelectElement(\Items(), \Index[2])
           String.s = Left(\Text\String.s, \Items()\Text\Pos) + \Items()\Text[1]\String.s + Chr.s
           \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
-          \Caret = \Items()\Text[1]\Len 
+          \Text\Caret = \Items()\Text[1]\Len 
         EndIf   
         
         If SelectElement(\Items(), \Index[1])
@@ -475,10 +472,10 @@ Module Text
           \Index[2] + Count
         ElseIf Chr.s = #LF$ ; to return
           \Index[2] + 1
-          \Caret = 0
+          \Text\Caret = 0
         EndIf
         
-        \Caret[1] = \Caret
+        \Text\Caret[1] = \Text\Caret
         \Index[1] = \Index[2]
         \Text\String.s = String.s
         \Text\Len = Len(\Text\String.s)
@@ -486,7 +483,7 @@ Module Text
         Repaint = 1 
       EndIf
       
-      ;         SelectElement(\items(), \index[2]) 
+      ;         SelectElement(\Items(), \index[2]) 
     EndWith
     
     ProcedureReturn Repaint
@@ -508,8 +505,8 @@ Module Text
         
         If Not Paste(*This, Chr.s, Count)
           If \Items()\Text[2]\Len 
-            If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
-            \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+            If \Text\Caret > \Text\Caret[1] : \Text\Caret = \Text\Caret[1] : EndIf
+            \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Text\Caret, 1)
             \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
           EndIf
           
@@ -518,23 +515,23 @@ Module Text
           \Items()\Text[1]\len = Len(\Items()\Text[1]\String.s)
           
           \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
-          String.s = InsertString(\Text\String.s, Chr.s, \Items()\Text\Pos+\Caret + 1)
+          String.s = InsertString(\Text\String.s, Chr.s, \Items()\Text\Pos+\Text\Caret + 1)
           
           If Count
             \Index[2] + Count
             \Index[1] = \Index[2] 
-            \Caret = Len(StringField(Chr.s, 1 + Count, #LF$))
+            \Text\Caret = Len(StringField(Chr.s, 1 + Count, #LF$))
           Else
-            \Caret + Len(Chr.s) 
+            \Text\Caret + Len(Chr.s) 
           EndIf
           
-          \Caret[1] = \Caret 
+          \Text\Caret[1] = \Text\Caret 
           \Text\String.s = String.s
           \Text\Len = Len(\Text\String.s)
           \Text\Change =- 1 ; - 1 post event change widget
         EndIf
         
-        SelectElement(\items(), \index[2]) 
+        SelectElement(\Items(), \index[2]) 
         Repaint = 1 
       EndIf
     EndWith
@@ -582,14 +579,14 @@ Module Text
           Swap \Index[2], \Index[1]
           
           If SelectElement(\Items(), \Index[2]) 
-            \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret[1]) 
+            \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Text\Caret[1]) 
             \Items()\Text[1]\Change = #True
           EndIf
         ElseIf \Index[1] > \Index[2] And 
-               \Caret[1] > \Caret
-          Swap \Caret[1], \Caret
-        ElseIf \Caret > \Caret[1] 
-          Swap \Caret, \Caret[1]
+               \Text\Caret[1] > \Text\Caret
+          Swap \Text\Caret[1], \Text\Caret
+        ElseIf \Text\Caret > \Text\Caret[1] 
+          Swap \Text\Caret, \Text\Caret[1]
         EndIf
         
         If \Index[1] <> \Index[2]
@@ -597,19 +594,19 @@ Module Text
           \Index[1] = \Index[2]
           Repaint =- 1
         EndIf
-      ElseIf \Caret[1] > 0
-        If \Caret > \items()\text\len
-          \Caret = \items()\text\len
+      ElseIf \Text\Caret[1] > 0
+        If \Text\Caret > \Items()\text\len
+          \Text\Caret = \Items()\text\len
         EndIf
-        \Caret - 1 
+        \Text\Caret - 1 
       EndIf
       
-      If \Caret[1] <> \Caret
-        \Caret[1] = \Caret 
+      If \Text\Caret[1] <> \Text\Caret
+        \Text\Caret[1] = \Text\Caret 
         Repaint =- 1 
       ElseIf Not Repaint And ToUp(*This.Widget_S)
-        \Caret = \Items()\Text\Len
-        \Caret[1] = \Caret
+        \Text\Caret = \Items()\Text\Len
+        \Text\Caret[1] = \Text\Caret
         Repaint =- 1 
       EndIf
     EndWith
@@ -624,15 +621,15 @@ Module Text
       If \Items()\Text[2]\Len
         If \Index[1] > \Index[2] 
           Swap \Index[1], \Index[2] 
-          Swap \Caret, \Caret[1]
+          Swap \Text\Caret, \Text\Caret[1]
           
           If SelectElement(\Items(), \Index[2]) 
-            \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret[1]) 
+            \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Text\Caret[1]) 
             \Items()\Text[1]\Change = #True
           EndIf
         ElseIf \Index[2] = \Index[1] And 
-               \Caret > \Caret[1] 
-          Swap \Caret, \Caret[1]
+               \Text\Caret > \Text\Caret[1] 
+          Swap \Text\Caret, \Text\Caret[1]
         EndIf
         
         If \Index[1] <> \Index[2]
@@ -640,16 +637,16 @@ Module Text
           \Index[1] = \Index[2]
           Repaint =- 1
         EndIf
-      ElseIf \Caret[1] < \Items()\Text\Len 
-        \Caret[1] + 1 
+      ElseIf \Text\Caret[1] < \Items()\Text\Len 
+        \Text\Caret[1] + 1 
       EndIf
       
-      If \Caret <> \Caret[1]
-        \Caret = \Caret[1] 
+      If \Text\Caret <> \Text\Caret[1]
+        \Text\Caret = \Text\Caret[1] 
         Repaint =- 1 
       ElseIf Not Repaint And ToDown(*This)
-        \Caret[1] = 0
-        \Caret = \Caret[1]
+        \Text\Caret[1] = 0
+        \Text\Caret = \Text\Caret[1]
         Repaint =- 1 
       EndIf
     EndWith
@@ -682,9 +679,9 @@ Module Text
         String.s = Left(\Text\String.s, \Items()\Text\Pos) + \Items()\Text[1]\String.s + #LF$ +
                    \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Pos+\Items()\Text\Len))
         
-        \Caret = 0
+        \Text\Caret = 0
         \Index[2] + 1
-        \Caret[1] = \Caret
+        \Text\Caret[1] = \Text\Caret
         \Index[1] = \Index[2]
         \Text\String.s = String.s
         \Text\Len = Len(\Text\String.s)
@@ -708,33 +705,33 @@ Module Text
     With *This 
       If Not Cut(*This)
         If \Items()\Text[2]\Len
-          If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+          If \Text\Caret > \Text\Caret[1] : \Text\Caret = \Text\Caret[1] : EndIf
           
           \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
           \Items()\Text\Len = \Items()\Text[1]\Len + \Items()\Text[3]\Len
           \Items()\Text\Change = 1
           
-          \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+          \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Text\Caret, 1)
           \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
           \Text\Change =- 1 ; - 1 post event change widget
           
-        ElseIf \Caret[1] > 0 
-          \Items()\Text\String.s = Left(\Items()\Text\String.s, \Caret[1] - 1) + \Items()\Text[3]\String.s
+        ElseIf \Text\Caret[1] > 0 
+          \Items()\Text\String.s = Left(\Items()\Text\String.s, \Text\Caret[1] - 1) + \Items()\Text[3]\String.s
           \Items()\Text\Len = Len(\Items()\Text\String.s)
           \Items()\Text\Change = 1
           
-          \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Pos + \Caret + 1)
+          \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Text\Caret - 1) + Mid(\Text\String.s,  \Items()\Text\Pos + \Text\Caret + 1)
           \Text\Change =- 1 ; - 1 post event change widget
-          \Caret - 1 
+          \Text\Caret - 1 
         Else
           ; Если дошли до начала строки то 
           ; переходим в конец предыдущего итема
           If \Index[2] > 0 
-            \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+            \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Pos+\Text\Caret, 1)
             
             ToUp(*This)
             
-            \Caret = \Items()\Text\Len 
+            \Text\Caret = \Items()\Text\Len 
             \Text\Change =- 1 ; - 1 post event change widget
           EndIf
           
@@ -743,7 +740,7 @@ Module Text
       
       If \Text\Change
         \Text\Len = Len(\Text\String.s)  
-        \Caret[1] = \Caret 
+        \Text\Caret[1] = \Text\Caret 
         Repaint =- 1 
       EndIf
     EndWith
@@ -757,28 +754,28 @@ Module Text
     With *This 
       If Not Cut(*This)
         If \Items()\Text[2]\Len
-          If \Caret > \Caret[1] : \Caret = \Caret[1] : EndIf
+          If \Text\Caret > \Text\Caret[1] : \Text\Caret = \Text\Caret[1] : EndIf
           
           \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
           \Items()\Text\Len = \Items()\Text[1]\Len + \Items()\Text[3]\Len
           \Items()\Text\Change = 1
           
-          \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+          \Text\String.s = RemoveString(\Text\String.s, \Items()\Text[2]\String.s, #PB_String_CaseSensitive, \Items()\Text\Pos+\Text\Caret, 1)
           \Items()\Text[2]\Len = 0 : \Items()\Text[2]\String.s = "" : \Items()\Text[2]\change = 1
           \Text\Change =- 1 ; - 1 post event change widget
           
-        ElseIf \Caret[1] < \Items()\Text\Len
-          \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len - \Caret - 1)
+        ElseIf \Text\Caret[1] < \Items()\Text\Len
+          \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len - \Text\Caret - 1)
           
           \Items()\Text\String.s = \Items()\Text[1]\String.s + \Items()\Text[3]\String.s
           \Items()\Text\Len = Len(\Items()\Text\String.s)
           \Items()\Text\Change = 1
           
-          \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Caret) + Right(\Text\String.s,  \Text\Len - (\Items()\Text\Pos + \Caret) - 1)
+          \Text\String.s = Left(\Text\String.s, \Items()\Text\Pos+\Text\Caret) + Right(\Text\String.s,  \Text\Len - (\Items()\Text\Pos + \Text\Caret) - 1)
           \Text\Change =- 1 ; - 1 post event change widget
         Else
-          If \Index[2] < (\Text\Count-1) ; ListSize(\items()) - 1
-            \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Pos+\Caret, 1)
+          If \Index[2] < (\Text\Count-1) ; ListSize(\Items()) - 1
+            \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Pos+\Text\Caret, 1)
             \Text\Change =- 1 ; - 1 post event change widget
           EndIf
         EndIf
@@ -786,7 +783,7 @@ Module Text
       
       If \Text\Change
         \Text\Len = Len(\Text\String.s)  
-        \Caret[1] = \Caret 
+        \Text\Caret[1] = \Text\Caret 
         Repaint =- 1 
       EndIf
     EndWith
@@ -795,9 +792,9 @@ Module Text
   EndProcedure
   
   ;-
-  Procedure.s Wrap (Text.s, Width.i, Mode=-1, DelimList$=" "+Chr(9), nl$=#LF$)
-    Protected line$, ret$="", LineRet$=""
+  Procedure.s Wrap (Text.s, Width.i, Mode=-1, nl$=#LF$, DelimList$=" "+Chr(9))
     Protected.i CountString, i, start, ii, found, length
+    Protected line$, ret$="", LineRet$=""
     
     ;     Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
     ;     Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
@@ -823,7 +820,7 @@ Module Text
       While start > length 
         If mode
           For ii = length To 0 Step - 1
-            If mode = 2 And CountString(Left((line$),ii), " ") > 1     And width > 71 ; button
+            If mode = 2 And CountString(Left(line$,ii), " ") > 1     And width > 71 ; button
               found + FindString(delimList$, Mid(RTrim(line$),ii,1))
               If found <> 2
                 Continue
@@ -860,7 +857,7 @@ Module Text
         Wend
       Wend
       
-      ret$ + LineRet$ + line$ + nl$
+      ret$ + LineRet$ + line$ + #CR$+nl$
       LineRet$=""
     Next
     
@@ -976,8 +973,8 @@ Module Text
       
       If \Index[2] = ListIndex(\Items())
         ;Debug " string "+String.s
-        \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret) : \Items()\Text[1]\Change = #True
-        \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
+        \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Text\Caret) : \Items()\Text[1]\Change = #True
+        \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Text\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
       EndIf
       
       ;       ; Is visible lines
@@ -992,6 +989,130 @@ Module Text
     EndWith
     
     ProcedureReturn Line
+  EndProcedure
+  
+  Procedure.i AddItem(*This.Widget_S, Item.i,Text.s,Image.i=-1,Flag.i=0)
+    Static adress.i, first.i
+    Protected *Item, subLevel, hide
+    ;     If IsGadget(Gadget) : *This.Widget_S = GetGadgetData(Gadget) : EndIf
+    
+    If *This
+      With *This
+        If \Type = #PB_GadgetType_Tree
+          subLevel = Flag
+        EndIf
+        
+        ;{ Генерируем идентификатор
+        If Item < 0 Or Item > ListSize(\Items()) - 1
+          LastElement(\Items())
+          *Item = AddElement(\Items()) 
+          Item = ListIndex(\Items())
+        Else
+          SelectElement(\Items(), Item)
+          If \Items()\sublevel>sublevel
+            sublevel=\Items()\sublevel 
+          EndIf
+          *Item = InsertElement(\Items())
+          
+          ; Исправляем идентификатор итема  
+          PushListPosition(\Items())
+          While NextElement(\Items())
+            \Items()\Index = ListIndex(\Items())
+          Wend
+          PopListPosition(\Items())
+        EndIf
+        ;}
+        
+        If *Item
+          If Item = 0
+            First = *Item
+          EndIf
+          
+          If subLevel
+            If sublevel>Item
+              sublevel=Item
+            EndIf
+            
+            PushListPosition(\Items())
+            While PreviousElement(\Items()) 
+              If subLevel = \Items()\subLevel
+                adress = \Items()\handle
+                Break
+              ElseIf subLevel > \Items()\subLevel
+                adress = @\Items()
+                Break
+              EndIf
+            Wend 
+            If adress
+              ChangeCurrentElement(\Items(), adress)
+              If subLevel > \Items()\subLevel
+                sublevel = \Items()\sublevel + 1
+                \Items()\handle[1] = *Item
+                \Items()\childrens + 1
+                \Items()\collapsed = 1
+                hide = 1
+              EndIf
+            EndIf
+            PopListPosition(\Items())
+            
+            \Items()\sublevel = sublevel
+            \Items()\hide = hide
+          Else                                      
+            ; ChangeCurrentElement(\Items(), *Item)
+            ; PushListPosition(\Items()) 
+            ; PopListPosition(\Items())
+            adress = first
+          EndIf
+          
+          \Items()\handle = adress
+          \Items()\change = Bool(\Type = #PB_GadgetType_Tree)
+          ;\Items()\Text\FontID = \Text\FontID
+          \Items()\Index[1] =- 1
+          \Items()\focus =- 1
+          \Items()\lostfocus =- 1
+          \Items()\text\change = 1
+          
+          If IsImage(Image)
+            
+            Select \Attribute
+              Case #PB_Attribute_LargeIcon
+                \Items()\Image\width = 32
+                \Items()\Image\height = 32
+                ResizeImage(Image, \Items()\Image\width,\Items()\Image\height)
+                
+              Case #PB_Attribute_SmallIcon
+                \Items()\Image\width = 16
+                \Items()\Image\height = 16
+                ResizeImage(Image, \Items()\Image\width,\Items()\Image\height)
+                
+              Default
+                \Items()\Image\width = ImageWidth(Image)
+                \Items()\Image\height = ImageHeight(Image)
+            EndSelect   
+            
+            \Items()\Image\handle = ImageID(Image)
+            \Items()\Image\handle[1] = Image
+            
+            \Image\width = \Items()\Image\width
+          EndIf
+          
+          ; add lines
+          AddLine(*This, Item.i, Text.s)
+          \Text\Change = 1 ; надо посмотрет почему надо его вызивать раньше вед не нужно было
+          ;           \Items()\Color = Colors
+          ;           \Items()\Color\State = 1
+          ;           \Items()\Color\Fore[0] = 0 
+          ;           \Items()\Color\Fore[1] = 0
+          ;           \Items()\Color\Fore[2] = 0
+          
+          If Item = 0
+            PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
+          EndIf
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn *Item
   EndProcedure
   
   Procedure.i MultiLine(*This.Widget_S)
@@ -1012,6 +1133,14 @@ Module Text
       
       If \Text\MultiLine > 0
         String.s = Wrap(\Text\String.s, Width, \Text\MultiLine)
+;         \Text\Count = CountString(String.s, #LF$)
+;         
+;         For IT = 1 To \Text\Count
+;           
+;           Debug StringField(String.s, IT, #LF$)
+;           
+;         Next
+    
       Else
         String.s = \Text\String.s
       EndIf
@@ -1026,7 +1155,7 @@ Module Text
         
         \Text\String.s[2] = String.s
         \Text\Count = CountString(String.s, #LF$)
-        ;;;\Text\Len = Len(String.s)
+        ;; \Text\Len = Len(String.s)
         
         ; Scroll width reset 
         \Scroll\Width = 0;\Text\X
@@ -1118,8 +1247,8 @@ Module Text
                 
                 If \Index[2] = ListIndex(\Items())
                   ;Debug " string "+String.s
-                  \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Caret) : \Items()\Text[1]\Change = #True
-                  \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
+                  \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Text\Caret) : \Items()\Text[1]\Change = #True
+                  \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Text\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
                 EndIf
                 
                 ; Scroll width length
@@ -1315,14 +1444,14 @@ Module Text
           
           Text::MultiLine(*This)
         ;This is for the caret and scroll when entering the key - (enter & beckspace)
-          If \Text\Change And \index[2] >= 0 And \index[2] < ListSize(\items())
-            SelectElement(\items(), \index[2])
+          If \Text\Change And \index[2] >= 0 And \index[2] < ListSize(\Items())
+            SelectElement(\Items(), \index[2])
             
             CompilerIf Defined(Scroll, #PB_Module)
               If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
-                If \Text\editable And (\items()\y >= (\Scroll\height[2]-\items()\height))
+                If \Text\editable And (\Items()\y >= (\Scroll\height[2]-\Items()\height))
                 ; This is for the editor widget when you enter the key - (enter & backspace)
-                Scroll::SetState(\Scroll\v, (\items()\y-((\Scroll\height[2]+\Text\y)-\items()\height)))
+                Scroll::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
               EndIf
               
                 Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -1359,7 +1488,7 @@ Module Text
         
       EndWith 
       
-      ; Draw items text
+      ; Draw Lines text
       With *This\Items()
         If ListSize(*This\Items())
           PushListPosition(*This\Items())
@@ -1487,9 +1616,9 @@ Module Text
               If \Text[2]\Len > 0 And *This\Color\Front <> *This\Row\Color\Front[2]
                 
                 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If (*This\Caret[1] > *This\Caret And *This\Index[2] = *This\Index[1]) Or
+                  If (*This\Text\Caret[1] > *This\Text\Caret And *This\Index[2] = *This\Index[1]) Or
                      (\Index = *This\Index[1] And *This\Index[2] > *This\Index[1])
-                    \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
+                    \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Text\Caret[1])) 
                     
                     If *This\Index[2] = *This\Index[1]
                       \Text[2]\X = \Text[3]\X-\Text[2]\Width
@@ -1589,10 +1718,10 @@ Module Text
           PopListPosition(*This\Items()) ; 
           
           If *This\Focus = *This 
-            ; Debug ""+ \index +" "+ *This\index[1] +" "+ *This\index[2] +" "+ *This\Caret +" "+ *This\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-            If (*This\Text\Editable Or \Text\Editable) ; And *This\Caret = *This\Caret[1] And *This\Index[1] = *This\Index[2] And Not \Text[2]\Width[2] 
+            ; Debug ""+ \index +" "+ *This\index[1] +" "+ *This\index[2] +" "+ *This\Text\Caret +" "+ *This\Text\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+            If (*This\Text\Editable Or \Text\Editable) ; And *This\Text\Caret = *This\Text\Caret[1] And *This\Index[1] = *This\Index[2] And Not \Text[2]\Width[2] 
               DrawingMode(#PB_2DDrawing_XOr)             
-              If Bool(Not \Text[1]\Width Or *This\Caret > *This\Caret[1])
+              If Bool(Not \Text[1]\Width Or *This\Text\Caret > *This\Text\Caret[1])
                 Line((\Text\X+*This\Scroll\X) + \Text[1]\Width + \Text[2]\Width - Bool(*This\Scroll\X = Left), \Y+*This\Scroll\Y, 1, Height, $FFFFFFFF)
               Else
                 Line((\Text\X+*This\Scroll\X) + \Text[1]\Width - Bool(*This\Scroll\X = Left), \Y+*This\Scroll\Y, 1, Height, $FFFFFFFF)
@@ -2450,5 +2579,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------------------------------------------------------
+; Folding = -f----3---------vv04--04-4tt------------+------------------
 ; EnableXP

@@ -327,7 +327,7 @@ Module ListView
         EndIf
         \Radius = Radius
         \Interact = 1
-        \Caret[1] =- 1
+        \Text\Caret[1] =- 1
         \index[1] =- 1
         \X =- 1
         \Y =- 1

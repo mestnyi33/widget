@@ -48,11 +48,11 @@ Procedure Draw (canvas.i, List Images.canvasitem())
   
   If StartDrawing(CanvasOutput(canvas))
     
-    ClipOutput(0,0, iWidth, iHeight)
     
     DrawingMode(#PB_2DDrawing_Default)
-    Box(0, 0, iWidth, iHeight, RGB(255,255,255))
+    Box(0, 0, OutputWidth(), OutputHeight(), RGB(255,255,255))
     
+    ClipOutput(0,0, iWidth, iHeight)
     DrawingMode(#PB_2DDrawing_AlphaBlend)
     ForEach Images()
       DrawImage(ImageID(Images()\img),Images()\x - *Scroll\h\Page\Pos,Images()\y - *Scroll\v\Page\Pos) ; draw all images with z-order
@@ -179,8 +179,8 @@ Procedure ScrollUpdates(ScrollX, ScrollY, ScrollWidth, ScrollHeight, Width, Heig
   *Scroll\v\Hide = Scroll::Resize(*Scroll\v, Width-*Scroll\v\Width, Y, #PB_Ignore, #PB_Ignore, *Scroll\h) 
   *Scroll\h\Hide = Scroll::Resize(*Scroll\h, X, Height-*Scroll\h\Height, #PB_Ignore, #PB_Ignore, *Scroll\v)
   
-;   If *Scroll\v\Hide : *Scroll\v\Page\Pos = 0 : Else : *Scroll\v\Page\Pos = vPos : *Scroll\h\Width = Width : EndIf
-;   If *Scroll\h\Hide : *Scroll\h\Page\Pos = 0 : Else : *Scroll\h\Page\Pos = hPos : *Scroll\v\Height = Height : EndIf
+  ;   If *Scroll\v\Hide : *Scroll\v\Page\Pos = 0 : Else : *Scroll\v\Page\Pos = vPos : *Scroll\h\Width = Width : EndIf
+  ;   If *Scroll\h\Hide : *Scroll\h\Page\Pos = 0 : Else : *Scroll\h\Page\Pos = hPos : *Scroll\v\Height = Height : EndIf
   
   If *Scroll\v\Hide : *Scroll\v\Page\Pos = 0 : If vPos : *Scroll\v\Hide = vPos : EndIf : Else : *Scroll\v\Page\Pos = vPos : *Scroll\h\Width = Width : EndIf
   If *Scroll\h\Hide : *Scroll\h\Page\Pos = 0 : If hPos : *Scroll\h\Hide = hPos : EndIf : Else : *Scroll\h\Page\Pos = hPos : *Scroll\v\Height = Height : EndIf
@@ -234,15 +234,16 @@ Procedure CallBack()
         Debug "----------Up---------"
         GetScrollCoordinate()
         ScrollUpdates(ScrollX, ScrollY, ScrollWidth, ScrollHeight, Width, Height)
-;         Protected iWidth = Width-Scroll::Width(*Scroll\v), iHeight = Height-Scroll::Height(*Scroll\h)
-;   
-;         Debug ""+*Scroll\h\Hide+" "+ScrollX+" "+Str(ScrollWidth-iWidth)
-;         Debug ""+*Scroll\v\Hide+" "+ScrollY+" "+Str(ScrollHeight-iHeight)
+        ; Scroll::Updates(*Scroll,ScrollX, ScrollY, ScrollWidth, ScrollHeight)
+        ;         Protected iWidth = Width-Scroll::Width(*Scroll\v), iHeight = Height-Scroll::Height(*Scroll\h)
+        ;   
+        ;         Debug ""+*Scroll\h\Hide+" "+ScrollX+" "+Str(ScrollWidth-iWidth)
+        ;         Debug ""+*Scroll\v\Hide+" "+ScrollY+" "+Str(ScrollHeight-iHeight)
         
         PushListPosition(Images())
         ForEach Images()
-;           If *Scroll\h\Hide And (ScrollWidth-Width)>0 : Images()\X-(ScrollWidth-Width) : EndIf
-;           If *Scroll\v\Hide And (ScrollHeight-Height)>0 : Images()\Y-(ScrollHeight-Height) : EndIf
+          ;           If *Scroll\h\Hide And (ScrollWidth-Width)>0 : Images()\X-(ScrollWidth-Width) : EndIf
+          ;           If *Scroll\v\Hide And (ScrollHeight-Height)>0 : Images()\Y-(ScrollHeight-Height) : EndIf
           If *Scroll\h\Hide>1 : Images()\X-*Scroll\h\Hide : EndIf
           If *Scroll\v\Hide>1 : Images()\Y-*Scroll\v\Hide : EndIf
         Next
@@ -270,7 +271,8 @@ Procedure CallBack()
               
               GetScrollCoordinate()
               ScrollUpdates(ScrollX, ScrollY, ScrollWidth, ScrollHeight, Width, Height)
-              
+              ;Scroll::Updates(*Scroll, ScrollX, ScrollY, ScrollWidth, ScrollHeight);, Width, Height)
+        
               Repaint = #True
             EndIf
           EndIf
@@ -307,7 +309,7 @@ CanvasGadget(#MyCanvas, 10, 10, 400, 400)
 Scroll::Bars(*Scroll, 16, 7, 1)
 ;     Scroll::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
 ;     Scroll::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
-    
+
 PostEvent(#PB_Event_Gadget, 0,#MyCanvas,#PB_EventType_Resize)
 BindGadgetEvent(#MyCanvas, @CallBack())
 BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)

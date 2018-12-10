@@ -237,15 +237,15 @@ Module ListIcon
                 ;               
                 Protected Left,Right
                 If *This\Focus = *This And *This\Text\Editable
-                  Left =- TextWidth(Mid(*This\Text\String.s, \Text\Pos, *This\Caret))
-                  ; Left =- (\Text[1]\Width+(Bool(*This\Caret>*This\Caret[1])*\Text[2]\Width))
+                  Left =- TextWidth(Mid(*This\Text\String.s, \Text\Pos, *This\Text\Caret))
+                  ; Left =- (\Text[1]\Width+(Bool(*This\Text\Caret>*This\Text\Caret[1])*\Text[2]\Width))
                   Right = (\Width + Left)
                   
                   If *This\Scroll\X < Left
                     *This\Scroll\X = Left
                   ElseIf *This\Scroll\X > Right
                     *This\Scroll\X = Right
-                  ElseIf (*This\Scroll\X < 0 And *This\Caret = *This\Caret[1] And Not *This\Canvas\Input) ; Back string
+                  ElseIf (*This\Scroll\X < 0 And *This\Text\Caret = *This\Text\Caret[1] And Not *This\Canvas\Input) ; Back string
                     *This\Scroll\X = (\Width-\Text[3]\Width) + Left
                     If *This\Scroll\X>0
                       *This\Scroll\X=0
@@ -380,8 +380,8 @@ Module ListIcon
                 If \Text[2]\Len > 0 And *This\Color\Front <> *This\Row\Color\Front[2]
                 
                 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If (*This\Caret[1] > *This\Caret And *This\Index[2] = *This\Index[1]) Or (*This\Index[2] > *This\Index[1] And *This\Index[1] = \Index)
-                    \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
+                  If (*This\Text\Caret[1] > *This\Text\Caret And *This\Index[2] = *This\Index[1]) Or (*This\Index[2] > *This\Index[1] And *This\Index[1] = \Index)
+                    \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Text\Caret[1])) 
                     
                     If *This\Index[2] = *This\Index[1]
                       \Text[2]\X = \Text[3]\X-\Text[2]\Width
@@ -475,10 +475,10 @@ Module ListIcon
             PopListPosition(*This\Columns()\Items()) ; 
             
             If *This\Focus = *This 
-              ; Debug ""+ \Caret +" "+ \Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
-              If (*This\Text\Editable Or \Text\Editable) ;And *This\Caret = *This\Caret[1] And *This\Index[1] = *This\Index[2] And Not \Text[2]\Width[2] 
+              ; Debug ""+ \Text\Caret +" "+ \Text\Caret[1] +" "+ \Text[1]\Width +" "+ \Text[1]\String.s
+              If (*This\Text\Editable Or \Text\Editable) ;And *This\Text\Caret = *This\Text\Caret[1] And *This\Index[1] = *This\Index[2] And Not \Text[2]\Width[2] 
                 DrawingMode(#PB_2DDrawing_XOr)             
-                If Bool(Not \Text[1]\Width Or *This\Caret > *This\Caret[1])
+                If Bool(Not \Text[1]\Width Or *This\Text\Caret > *This\Text\Caret[1])
                   Line((\Text\X+*This\Scroll\X) + \Text[1]\Width + \Text[2]\Width - Bool(*This\Scroll\X = Right), \Y+*This\Scroll\Y, 1, Height, $FFFFFFFF)
                 Else
                   Line((\Text\X+*This\Scroll\X) + \Text[1]\Width - Bool(*This\Scroll\X = Right), \Y+*This\Scroll\Y, 1, Height, $FFFFFFFF)
@@ -1921,7 +1921,7 @@ Module ListIcon
         \sublevellen = 18
         \color\alpha = 255
         \Interact = 1
-        \Caret[1] =- 1
+        \Text\Caret[1] =- 1
         \Index[1] =- 1
         \X =- 1
         \Y =- 1
