@@ -32,6 +32,81 @@
 ; Shft-Del - вырезать и копировать выделенный текст в буфер обмена 
 ; Shft-Insert - вставить буфер обмена в позицию курсора 
 
+
+
+; http://www.hot-keys.ru/comment_1235822771.html
+; Использование горячих клавиш для работы с текстом возможно практически в любой программе на вашем компьютере.
+; Особенно примечательно то, что именно при работе с текстом, выгодно использовать клавиатуру «по полной программе», поскольку руки уже на ней!
+; Для того, что б выделить, вырезать, вставить, удалить или переместить фрагмент текста, совершенно не обязательно каждый раз переносить руку на мышь. И, конечно, эти сочетания работают во всех текстовых редакторах. И в самом простом Notepad, и в профессиональном Word.
+; Здесь и сейчас я приведу горячие клавиши для работы с обычным блокнотом – Notepad.
+; Вызвать его из командной строки, то есть без помощи мышки можно следующим образом:
+; Сначала нажатием клавиш Win+R вызвать командную строку (клавиша Win с логотипом windows – окном, в последней версии окно уже пластиковое :-). Ввести в командную строку слово notepad и нажать клавишу Enter.
+; Обязательно сделайте это прямо сейчас!
+; Получилось? Теперь скопируйте текст ниже, из этой страницы в блокнот! Запомнить все, сразу применив на практике, легче! Да еще и в самой программе.
+; Собственно пройти этот урок вы можете в любое время, если сохраните этот открытый файл .txt со вставленным текстом. Тогда и Интернет отключать не придется :-)
+; Урок по использованию горячих клавиш для работы с текстом:
+; Перемещение: (< ^ > v этими закорючками обозначены клавиши стрелки, не путаете с символами возле Б и Ю)
+; < ^ > v Попробуйте перемещать курсор, при помощи клавиш-стрелок.
+; Конечно, этим Вас не удивишь, но все равно попрыгаете по тексту вниз, вправо, влево, вверх и вернитесь назад, нажав Ctrl+Home.
+; Ctrl+>< Перемещение курсора на одно слово вправо или влево. Уже веселее! Перемещение по словам, происходит куда быстрее, чем по буквам. Надеюсь, Вы уже пробуете нажимать на стрелки вправо, влево, удерживая Ctrl.
+; Попробовали? Опять нажмите Ctrl+Home и попробуйте перемещаться в конец и начало строки, нажимая клавиши:
+; End и Home (обычно эти кнопки находятся чуть выше клавиш-стрелок)
+; Попробовали? Получается?...
+; Ctrl+Home перемещает курсор в начало текста, это Вы уже знаете, а вот
+; Ctrl+End переместит курсор в самый конец текста! Тоже нажмите, не забыв вернуться :-)
+; Назначение клавиш End и Home понятно из названия, а вот то, что они работают везде и всегда возьмите на заметку. Проверить сможете на любой странице в Интернет...
+; Tab добавит 10 пробелов (все знают, никто не считал), соответственно Backspase вернет курсор на десять пробелов назад, а нажатие Enter перенесет курсор к следующей строке, обычно нажатием Enter заканчивают строку.
+; А вот если курсор переместить в середину текста и нажать Enter, он тоже перейдет на следующую строку причем вместе с тем текстом, который справа от него. Backspase вернет все на место.
+; Попробуйте все это, немного "покалечив" этот текст.
+; Выделение:
+; Ctrl+A Выделит весь текст, всегда и везде! А именно здесь выделит все, с одновременным переносом курсора в конец текста.
+; Нажмите сейчас Ctrl+A, потом Ctrl+C, потом Win+R (в строке должна была сохраниться запись - notepad) если да, жмем Enter (если нет, набираем notepad, потом жмем Enter), потом Ctrl+V, теперь Alt+F4, стрелку (>)вправо и Enter.
+; Этим мы выделили весь текст, скопировали его, вызвали блокнот через командную строку, вставили в новый документ весь текст, потом удовлетворенно, закрыли новый документ, не сохранив, ничего.
+; Могли и сохранить, конечно, но и так забежали немного вперед.
+; Забежали, чтоб понять, в каком случае часто применяется сочетание Ctrl+A (выделить все!).
+; Shift+>< Выделение по буквам. Удерживание Shift во время перемещения клавишами стрелками будет выделять текст в зависимости от направления стрелки. Вправо-влево выделение по одной букве, вниз-вверх по одной строке. Попробовать это, чтоб понять, намного легче, чем вникать в любые объяснения. Посему, попробуйте!
+; Часто выделить мышью с точностью до одной буквы просто не возможно! С Шифтом такого не бывает!
+; Помните, удерживая Ctrl, мы перемещали курсор по словам? Так вот, если "разбавить" эту комбинацию Шифтом, мы будем выделять по словам, соответственно.
+; Пробуйте сейчас!
+; Так же по аналогии:
+; Shift+Home Выделить до начала строки
+; Shift+End Выделить до конца строки
+; Ctrl+Shift+Home Выделить до начала текста
+; Ctrl+Shift+End Выделить до конца текста
+; Попробуйте все четыре, в зависимости от места расположения курсора...
+; Удаление:
+; Delete удаление символа справа от курсора или удаление чего-то выделенного.
+; Backspace и Shift+Delete удаление символа слева от курсора.
+; Ctrl+Delete удаление символов справа до конца строки.
+; Кнопка тоже говорит сама за себя и используется вместе с модификаторами Ctrl и Shift.
+; Запомнить не трудно, посему и потренируйтесь на этой строке... удалив ее.
+; Группа сочетаний "под левую руку"
+; Вырезание:
+; Ctrl+X вырезать предварительно выделенное.
+; Вырезают понятно для того, что б, куда нибудь вставить. Вырезать можно один раз, а вставить несколько.
+; Отмена:
+; Ctrl+Z отменить последнее действие. Самое время вспомнить об этом сочетании, поскольку нужда в нем возникает, обычно после удаления или вырезания.
+; Благодаря этому сочетанию "отмерять семь раз" совсем не обязательно!
+; Это действие дает возможность исправить любую ошибку, просто отменив ошибочное действие и вернув все в исходное состояние. Проверим?
+; Нажмите Ctrl+А теперь внимание! Запомнили о Ctrl+Z ? Нажмите Delete, а потом Ctrl+Z !!! Надеюсь, мы снова вместе...
+; Копирование, Вставка:
+; Ctrl+C копировать! Это мы любим... В Интернет часто работают такие сочетания Ctrl+А плюс Ctrl+C плюс Ctrl+V = плагиат :-)
+; Ctrl+V вставить! Эти сочетания, во истину лидеры среди себе подобных. Не использовать их просто грех :-) Насколько я помню, Вы уже делали копи-паст выше по тексту.
+; Касается работы с текстом и вставка символа:
+; Alt+Число вставить символ! Удерживая Alt, наберите любое число на дополнительной цифровой клавиатуре. Например, у меня при наборе Alt+753 появляется буква ё, хотя её и в помине нет на моей клавиатуре (я нахожусь в Армении)
+; А символ "собака" получается нажатием Alt+64. В общем, с этим сочетанием экспериментируйте...
+; Сохранение:
+; Ctrl+S сохранить!
+; Ничего особенного вроде бы нет, но когда после 15 минут (а то и больше) работы с документом отключат свет, Вы вспомните, что Ctrl+S(свет) надо было время от времени нажимать.
+; Я, например, нажимаю после каждой записанной законченной мысли. Хотя если вы за ноутбуком, Вам это не грозит, как и при наличии "бесперебойника".
+; Во всех других случаях, если Вы творите, а не созерцаете, время от времени прижимайте Ctrl+S(свет), работает почти везде.
+; Поиск и замена:
+; Ну и напоследок пару слов о поиске текста. Иногда бывает нужно организовать поиск слова или фразы по одному единственному документу. Делается это в две секунды нажатием:
+; Ctrl+F найти букву, слово, текст. Попробуйте найти в этом тексте слово Собака (кроме этого)
+; Получилось? :-) Внимательно рассмотрите диалоговое окно поиска, авось пригодится.
+; Ctrl+H найти и заменить используется редко, но зато находит и заменяет метко! Об этом не мешает знать.
+
+
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -725,7 +800,7 @@ Module Editor
     EndMacro
     
     Macro _set_line_pos_(_this_)
-      _this_\Items()\Text\Pos = _this_\Text\Pos - _this_\Items()\index
+      _this_\Items()\Text\Pos = _this_\Text\Pos - Bool(_this_\Text\MultiLine = 1)*_this_\Items()\index ; wordwrap
       _this_\Items()\Text\Len = Len(_this_\Items()\Text\String.s)
       _this_\Text\Pos + _this_\Items()\Text\Len + 1 ; Len(#LF$)
     EndMacro
@@ -2134,7 +2209,7 @@ Module Editor
     Protected i
     
     With *This
-      If Text::SetText(*This, Text.s) 
+      If Text::SetText(*This, Text.s) ; ReplaceString(Text.s, #CRLF$, #LF$)) 
         ReDraw(*This, *This\Canvas\Gadget)
         ProcedureReturn 1
       EndIf
@@ -2576,39 +2651,39 @@ Module Editor
                   
                   Repaint = #True
                   
-;                   Protected SelectionLen
-;                   PushListPosition(\Items()) 
-;                   ForEach \Items()
-;                     If \Index[1] = \Items()\Index Or \Index[2] = \Items()\Index
-;                       
-;                     ElseIf ((\Index[2] < \Index[1] And \Index[2] < \Items()\Index And \Index[1] > \Items()\Index) Or
-;                             (\Index[2] > \Index[1] And \Index[2] > \Items()\Index And \Index[1] < \Items()\Index)) 
-;                       
-;                       If \Items()\Text[2]\String <> \Items()\Text\String
-;                         \Items()\Text[2]\Len = \Items()\Text\Len
-;                         If Not \Items()\Text\Len : \Items()\Text[2]\Len = 1 : EndIf
-;                         \Items()\Text[1]\String = "" : \Items()\Text[1]\Len = 0 : \Items()\Text[1]\Change = 1
-;                         \Items()\Text[3]\String = "" : \Items()\Text[3]\Len = 0 : \Items()\Text[3]\Change = 1
-;                         \Items()\Text[2]\String = \Items()\Text\String : \Items()\Text[2]\Change = 1
-;                       EndIf
-;                       
-;                       SelectionLen=Bool(Not \Flag\FullSelection)*7
-;                       ; \Items()\Text[2]\X = 0;\Items()\Text\X+\Items()\Text\Width
-;                       
-;                       If Not SelectionLen
-;                         \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
-;                       Else
-;                         \Items()\Text[2]\Width[2] = SelectionLen
-;                       EndIf
-;                       
-;                       ;\Items()\Index[1] = \Items()\Index
-;                     Else  
-;                       ;\Items()\Index[1] =- 1
-;                       \Items()\Text[2]\String =  "" : \Items()\Text[2]\Len = 0 : \Items()\Text[2]\Change = 1
-;                     EndIf
-;                   Next
-;                   PopListPosition(\Items()) 
-;                   
+                  Protected SelectionLen
+                  PushListPosition(\Items()) 
+                  ForEach \Items()
+                    If \Index[1] = \Items()\Index Or \Index[2] = \Items()\Index
+                      
+                    ElseIf ((\Index[2] < \Index[1] And \Index[2] < \Items()\Index And \Index[1] > \Items()\Index) Or
+                            (\Index[2] > \Index[1] And \Index[2] > \Items()\Index And \Index[1] < \Items()\Index)) 
+                      
+                      If \Items()\Text[2]\String <> \Items()\Text\String
+                        \Items()\Text[2]\Len = \Items()\Text\Len
+                        If Not \Items()\Text\Len : \Items()\Text[2]\Len = 1 : EndIf
+                        \Items()\Text[1]\String = "" : \Items()\Text[1]\Len = 0 : \Items()\Text[1]\Change = 1
+                        \Items()\Text[3]\String = "" : \Items()\Text[3]\Len = 0 : \Items()\Text[3]\Change = 1
+                        \Items()\Text[2]\String = \Items()\Text\String : \Items()\Text[2]\Change = 1
+                      EndIf
+                      
+                      SelectionLen=Bool(Not \Flag\FullSelection)*7
+                      ; \Items()\Text[2]\X = 0;\Items()\Text\X+\Items()\Text\Width
+                      
+                      If Not SelectionLen
+                        \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                      Else
+                        \Items()\Text[2]\Width[2] = SelectionLen
+                      EndIf
+                      
+                      ;\Items()\Index[1] = \Items()\Index
+                    Else  
+                      ;\Items()\Index[1] =- 1
+                      \Items()\Text[2]\String =  "" : \Items()\Text[2]\Len = 0 : \Items()\Text[2]\Change = 1
+                    EndIf
+                  Next
+                  PopListPosition(\Items()) 
+                  
 ;                   CompilerIf Defined(Scroll, #PB_Module)
 ;                     If \Canvas\Mouse\Y > \Height[2]
 ;                       ;                       If \Scroll\v And \Scroll\v\max <> \Scroll\Height And 
@@ -2856,19 +2931,22 @@ CompilerIf #PB_Compiler_IsMainFile
   Define a,i
   Define g, Text.s
   ; Define m.s=#CRLF$
-  Define m.s=#LF$
+  Define m.s=#CRLF$;#LF$
   
-  Text.s = "This is a long line." + m.s +
-           "Who should show." + m.s +
-           "I have to write the text in the box or not." + m.s +
-           "The string must be very long." + m.s +
-           "Otherwise it will not work." ;+ m.s +
-                                         ;            m.s +
-                                         ;            "Schol is a beautiful thing." + m.s +
-                                         ;            "You ned it, that's true." + m.s +
-                                         ;            "There was a group of monkeys siting on a fallen tree."
-                                         ;  Text.s = "This is a long line. Who should show, i have to write the text in the box or not. The string must be very long. Otherwise it will not work."
-  
+;   Text.s = "This is a long line." + m.s +
+;            "Who should show." + m.s +
+;            "I have to write the text in the box or not." + m.s +
+;            "The string must be very long." + m.s +
+;            "Otherwise it will not work." ;+ m.s +
+;                                          ;            m.s +
+;                                          ;            "Schol is a beautiful thing." + m.s +
+;                                          ;            "You ned it, that's true." + m.s +
+;                                          ;            "There was a group of monkeys siting on a fallen tree."
+;                                          ;  Text.s = "This is a long line. Who should show, i have to write the text in the box or not. The string must be very long. Otherwise it will not work."
+   Text.s + m + m
+    Text.s + "0123456789012345678901234567890123456789012345678901234567890" + m + "12345678901234567890123456789012345678901234567890123456789" + m + m
+    Text.s + "The main features of PureBasic" + m
+    
   Procedure ResizeCallBack()
     ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
     ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
@@ -2902,7 +2980,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g=16
-    Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Text_WordWrap|#PB_Flag_GridLines);|#PB_Text_Right) #PB_Flag_FullSelection|
+    Editor::Gadget(g, 8, 133+5+8, 306, 233, #PB_Flag_GridLines);|#PB_Text_Right) #PB_Flag_FullSelection| #PB_Text_WordWrap|
     *w.Widget_S=GetGadgetData(g)
     
     Editor::SetText(*w, Text.s) 
@@ -2952,22 +3030,23 @@ CompilerIf #PB_Compiler_IsMainFile
                 ;                 Debug CountString(*w\items()\text\string, #CR$)
                 ;                 Debug CountString(*w\items()\text\string, #LF$)
                 
-                ;                 If Not count
-                ;                   Debug "string - "+#CR$+Mid(*w\text\string, *w\items()\text\pos-*w\items()\index+1, 2)
-                ;                 Else
-                ;                   Debug "string - "+Mid(*w\text\string, *w\items()\text\pos-*w\items()\index, 3)
-                ;                 EndIf
-                ;                 Debug "string2 - "+Mid(*w\text\string[2], *w\items()\text\pos, 3)
+                If Not count
+                  Debug "string - "+#CR$+Mid(*w\text\string, *w\items()\text\pos+1, 2)
+                Else
+                  Debug "string - "+Mid(*w\text\string, *w\items()\text\pos, 3)
+                EndIf
+                Debug "string2 - "+Mid(*w\text\string[2], *w\items()\text\pos+*w\items()\index, 3)
                 
-                With *w 
-                  Debug Left(\Text\String.s, \Items()\Text\Pos+\text\caret)
-                  Debug "----"
-                  Debug Right(\Text\String.s, \Text\Len-(\Items()\Text\Pos+\text\caret))
-                  Debug " ===== "+ \text\count
-                  Debug Left(\Text\String.s[2], \Items()\Text\Pos+\items()\index+\text\caret)
-                  Debug "----"
-                  Debug Right(\Text\String.s[2], Len(\Text\String.s[2])-(\Items()\Text\Pos+\items()\index+\text\caret))
-                EndWith
+                
+; ;                 With *w 
+; ;                   Debug Left(\Text\String.s, \Items()\Text\Pos+\text\caret)
+; ;                   Debug "----"
+; ;                   Debug Right(\Text\String.s, \Text\Len-(\Items()\Text\Pos+\text\caret))
+; ;                   Debug " ===== "+ \text\count
+; ;                   Debug Left(\Text\String.s[2], \Items()\Text\Pos+\items()\index+\text\caret)
+; ;                   Debug "----"
+; ;                   Debug Right(\Text\String.s[2], Len(\Text\String.s[2])-(\Items()\Text\Pos+\items()\index+\text\caret))
+; ;                 EndWith
                 
                 ;                With *w 
                 ;                 Debug Left(\Text\String.s, \Items()\Text\Pos) + \Items()\Text[1]\String.s
@@ -2994,5 +3073,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------------------5P4-------------------------0------------
+; Folding = ---------------4------5P4-------------------------0-----------0-
 ; EnableXP

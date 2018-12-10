@@ -93,15 +93,64 @@ XIncludeFile "module_editor_0_0.pb"
     Font_3 = LoadFont(#PB_Any, "Impact", 18 , #PB_Font_HighQuality)
     
    ; Editor=editor::Create(Canvas_0, -1, 0, 0, GadgetWidth(Canvas_0), GadgetHeight(Canvas_0), "", #PB_Flag_FullSelection)
-    Canvas_0 = editor::Gadget(-1, 10, 10, 670, 350);, #PB_Flag_FullSelection) 
+    Canvas_0 = editor::Gadget(-1, 10, 10, 670, 350);, #PB_Text_WordWrap) 
     Editor=GetGadgetData(Canvas_0) 
     
     Editor::SetText(Editor, Txt_1)
     ; Editor::SetFont(Editor, FontID(Font_3))
     
-   Repeat
-        Select WaitWindowEvent()
-            Case #PB_Event_SizeWindow
+     Repeat 
+      Define Event = WaitWindowEvent()
+      
+      Select Event
+        Case #PB_Event_Gadget
+          If EventGadget() = Button_0
+            Select EventType()
+              Case #PB_EventType_LeftClick
+                Define *w.Widget_S = GetGadgetData(Canvas_0)
+                
+                If *w\index[2]-1 > 0
+                  SelectElement(*w\Items(), *w\index[2]-1)
+                  Define count = CountString(*w\items()\text\string, #CR$)
+                EndIf
+                
+                SelectElement(*w\Items(), *w\index[2])
+                ; если в предыдущей строке нет #CR$ то в начало получаемой строки добавляем #CR$
+                ;                 Debug CountString(*w\items()\text\string, #CR$)
+                ;                 Debug CountString(*w\items()\text\string, #LF$)
+                
+                If Not count
+                  Debug "string - "+#CR$+Mid(*w\text\string, *w\items()\text\pos+1, 4)
+                Else
+                  Debug "string - "+Mid(*w\text\string, *w\items()\text\pos, 5)
+                EndIf
+                Debug "string2 - "+Mid(*w\text\string[2], *w\items()\text\pos+*w\items()\index, 5)
+                
+                
+; ;                 With *w 
+; ;                   Debug Left(\Text\String.s, \Items()\Text\Pos+\text\caret)
+; ;                   Debug "----"
+; ;                   Debug Right(\Text\String.s, \Text\Len-(\Items()\Text\Pos+\text\caret))
+; ;                   Debug " ===== "+ \text\count
+; ;                   Debug Left(\Text\String.s[2], \Items()\Text\Pos+\items()\index+\text\caret)
+; ;                   Debug "----"
+; ;                   Debug Right(\Text\String.s[2], Len(\Text\String.s[2])-(\Items()\Text\Pos+\items()\index+\text\caret))
+; ;                 EndWith
+                
+                ;                With *w 
+                ;                 Debug Left(\Text\String.s, \Items()\Text\Pos) + \Items()\Text[1]\String.s
+                ;                 Debug "----"
+                ;                 Debug \Items()\Text[3]\String.s + Right(\Text\String.s, \Text\Len-(\Items()\Text\Pos+\Items()\Text\Len))
+                ;                 Debug " ====="
+                ;                 Debug Left(\Text\String.s[2], \Items()\Text\Pos+\items()\index) + \Items()\Text[1]\String.s
+                ;                 Debug "----"
+                ;                 Debug \Items()\Text[3]\String.s + Right(\Text\String.s[2], Len(\Text\String.s[2])-(\Items()\Text\Pos+\items()\index+\Items()\Text\Len))
+                ;                EndWith
+                
+            EndSelect
+          EndIf
+          
+           Case #PB_Event_SizeWindow
                 ResizeGadgetsWindow_0()
 ;                 MyEditor::Resize(Editor, #PB_Ignore, #PB_Ignore, GadgetWidth(Canvas_0), GadgetHeight(Canvas_0))
                 
