@@ -85,6 +85,7 @@
   
   ;- - Text_S
   Structure Text_S Extends Coordinate_S
+    Big.i[3]
     ;     Char.c
     Pos.i
     Len.i
@@ -221,9 +222,10 @@
   ;- - Widget_S
   Structure Widget_S Extends Coordinate_S
     Type.i
-    handle.i ; Adress of new list element
+    handle.i    ; Adress of new list element
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-             ;
+   ;;; line.i[3]   ; 
+    
     Sci.Scintilla_S
     *Widget.Widget_S
     Canvas.Canvas_S

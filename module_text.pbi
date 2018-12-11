@@ -109,6 +109,36 @@ Module Text
     EndWith
   EndProcedure
   
+  Procedure.i CaretPos(mouse_x_minus_string_x.i, string.s, string_len.i)
+    Protected result.i =- 1, i.i, x.i, distance.f, min_distance.f = Infinity()
+    
+    For i = 0 To string_len : x = TextWidth(Left(String.s, i))
+      distance = (mouse_x_minus_string_x-x)*(mouse_x_minus_string_x-x)
+      
+      If min_distance > distance 
+        min_distance = distance
+        result = i
+      EndIf
+    Next
+    
+    ProcedureReturn result    
+  EndProcedure
+  
+  Procedure.i CaretLen(mouse_x_minus_string_x.i, string.s, string_len.i)
+    Protected result.i =- 1, i.i, x.i, distance.f, min_distance.f = Infinity()
+    
+    For i = 0 To string_len : x = TextWidth(Left(String.s, i))
+      distance = (mouse_x_minus_string_x-x)*(mouse_x_minus_string_x-x)
+      
+      If min_distance > distance 
+        min_distance = distance
+        result = x
+      EndIf
+    Next
+    
+    ProcedureReturn result    
+  EndProcedure
+  
   Procedure.i Caret(*This.Widget_S, Line.i = 0)
     Static LastLine.i =- 1,  LastItem.i =- 1
     Protected Item.i, SelectionLen.i
@@ -347,7 +377,7 @@ Module Text
     ProcedureReturn Left
   EndProcedure
   
-  Procedure Move(*This.Widget_S, Width)
+  Procedure __Move(*This.Widget_S, Width)
     Protected Left,Right
     
     With *This
@@ -369,6 +399,28 @@ Module Text
       ;EndIf
       
       ; Debug " "+\Width[1] +" "+ Width +" "+ Left +" "+ Right + " " + \Scroll\X
+    EndWith
+    
+    ProcedureReturn Left
+  EndProcedure
+  
+  Procedure Move(*This.Widget_S, Width)
+    Protected Left,Right
+    
+    With *This
+      Right =- TextWidth(Mid(\Text\String.s, \Items()\Text\Pos, \Text\Caret))
+      Left = (Width + Right)
+      
+      If \Scroll\X < Right
+        Scroll::SetState(\Scroll\h, -Right)
+        \Scroll\X = Right
+      ElseIf \Scroll\X > Left
+        Scroll::SetState(\Scroll\h, -Left) 
+        \Scroll\X = Left
+      ElseIf (\Scroll\X < 0 And \Canvas\Input = 65535 ) : \Canvas\Input = 0
+        \Scroll\X = (Width-\Items()\Text[3]\Width) + Right
+        If \Scroll\X>0 : \Scroll\X=0 : EndIf
+      EndIf
     EndWith
     
     ProcedureReturn Left
@@ -703,6 +755,8 @@ Module Text
     EndIf
     
     With *This 
+      \Canvas\Input = 65535
+      
       If Not Cut(*This)
         If \Items()\Text[2]\Len
           If \Text\Caret > \Text\Caret[1] : \Text\Caret = \Text\Caret[1] : EndIf
@@ -1405,7 +1459,7 @@ Module Text
     ProcedureReturn Color
   EndProcedure
   
-  Procedure.i Draw(*This.Widget_S)
+  Procedure.i _Draw(*This.Widget_S)
     Protected String.s, StringWidth, ix, iy, iwidth, iheight
     Protected IT,Text_Y,Text_X, X,Y, Width,Height, Drawing
     Protected angle.f
@@ -1760,6 +1814,436 @@ Module Text
         EndIf
         
         ; Draw frames
+        DrawingMode(#PB_2DDrawing_Outlined)
+        
+        If \Focus = *This
+          If \Color\State = 2
+            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\front[2])
+            If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\front[2]) : EndIf  ; Сглаживание краев )))
+          Else
+            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[2])
+            If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[2]) : EndIf  ; Сглаживание краев )))
+          EndIf
+          RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,\Color\Frame[2])
+        ElseIf \fSize
+          Select \fSize[1] 
+            Case 1 ; Flat
+              RoundBox(iX-1,iY-1,iWidth+2,iHeight+2,\Radius,\Radius, $FFE1E1E1)  
+              
+            Case 2 ; Single
+              _frame_(*This, iX,iY,iWidth,iHeight, $FFE1E1E1, $FFFFFFFF)
+              
+            Case 3 ; Double
+              _frame_(*This, iX-1,iY-1,iWidth+2,iHeight+2, $FF888888, $FFFFFFFF)
+              If \Radius : RoundBox(iX-1,iY-1-1,iWidth+2,iHeight+2+1,\Radius,\Radius,$FF888888) : EndIf  ; Сглаживание краев )))
+              If \Radius : RoundBox(iX-2,iY-1-1,iWidth+3,iHeight+2+1,\Radius,\Radius,$FF888888) : EndIf  ; Сглаживание краев )))
+              _frame_(*This, iX,iY,iWidth,iHeight, $FF888888, $FFE1E1E1)
+              
+            Case 4 ; Raised
+              _frame_(*This, iX-1,iY-1,iWidth+2,iHeight+2, $FFE1E1E1, $FF9E9E9E)
+              If \Radius : RoundBox(iX-1,iY-1,iWidth+3,iHeight+2+1,\Radius,\Radius,$FF9E9E9E) : EndIf  ; Сглаживание краев )))
+              If \Radius : RoundBox(iX-1,iY-1,iWidth+2,iHeight+2+1,\Radius,\Radius,$FF9E9E9E) : EndIf  ; Сглаживание краев )))
+              _frame_(*This, iX,iY,iWidth,iHeight, $FFFFFFFF, $FF888888)
+              
+            Default 
+              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[\Color\State])
+              
+          EndSelect
+        EndIf
+        
+        If \Default
+          ; DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@DrawFilterCallback())
+          If \Default = *This : \Default = 0
+            DrawingMode(#PB_2DDrawing_Outlined)
+            RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$FF004DFF)
+            If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$FF004DFF) : EndIf
+            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$FF004DFF)
+          Else
+            If \Color\State = 2
+              RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\front[2])
+            Else
+              RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[2])
+            EndIf
+          EndIf
+        EndIf
+        
+        If \Text\Change : \Text\Change = 0 : EndIf
+        If \Resize : \Resize = 0 : EndIf
+      EndWith
+    EndIf
+    
+  EndProcedure
+  
+  Procedure.i Draw(*This.Widget_S)
+    Protected String.s, StringWidth, ix, iy, iwidth, iheight
+    Protected IT,Text_Y,Text_X, X,Y, Width,Height, Drawing
+    Protected angle.f
+    
+    If Not *This\Hide
+      
+      With *This
+        ; Debug "Draw "
+        If \Text\FontID 
+          DrawingFont(\Text\FontID) 
+        EndIf
+        
+        ; Make output multi line text
+        If (\Text\Change Or \Resize)
+          If \Resize
+            ; Посылаем сообщение об изменении размера 
+            PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
+            CompilerIf Defined(Scroll, #PB_Module)
+              ;  Scroll::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
+              Scroll::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
+            CompilerElse
+              \Scroll\Width[2] = \width[2]
+              \Scroll\Height[2] = \height[2]
+            CompilerEndIf
+          EndIf
+          
+          If \Text\Change
+            \Text\Height[1] = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
+            If \Type = #PB_GadgetType_Tree
+              \Text\Height = 20
+            Else
+              \Text\Height = \Text\Height[1]
+            EndIf
+            \Text\Width = TextWidth(\Text\String.s)
+          EndIf
+          
+          MultiLine(*This)
+          ;This is for the caret and scroll when entering the key - (enter & beckspace)
+          If \Text\Change And \index[2] >= 0 And \index[2] < ListSize(\Items())
+            SelectElement(\Items(), \index[2])
+            
+            CompilerIf Defined(Scroll, #PB_Module)
+              If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
+                If \Text\editable And (\Items()\y >= (\Scroll\height[2]-\Items()\height))
+                  ; This is for the editor widget when you enter the key - (enter & backspace)
+                  Scroll::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+                EndIf
+                
+                Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+              EndIf
+              
+            CompilerEndIf
+          EndIf
+        EndIf 
+        
+        iX=\X[2]
+        iY=\Y[2]
+        iwidth = \Scroll\width[2]
+        iheight = \Scroll\height[2]
+        
+        _clip_output_(*This, \X,\Y,\Width,\Height)
+        
+        ; Draw back color
+        If \Color\Fore[\Color\State]
+          DrawingMode(#PB_2DDrawing_Gradient)
+          BoxGradient(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\Color\Fore[\Color\State],\Color\Back[\Color\State],\Radius)
+        Else
+          DrawingMode(#PB_2DDrawing_Default)
+          RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Back[\Color\State])
+        EndIf
+        
+        ; Draw margin back color
+        If \sci\margin\width
+          DrawingMode(#PB_2DDrawing_Default)
+          Box(ix, iy, \sci\margin\width, iHeight, \sci\margin\Color\Back); $C8D7D7D7)
+        EndIf
+        
+        ; Caaret move
+        If \Text\Editable And ListSize(\Items()) And \Focus = *This And \Canvas\Mouse\Buttons
+;           If \Items()\Text[3]\Change : \Items()\Text[3]\Change = #False 
+;             \Items()\Text[3]\Width = TextWidth(\Items()\Text[3]\String.s)
+;           EndIf 
+       Protected Left
+          CompilerIf Defined(Scroll, #PB_Module)
+           ; If ((\Scroll\v And Not \Scroll\v\at) And (\Scroll\h And Not \Scroll\h\at))
+           ;  Debug 4444
+          Left = Move(*This, \Items()\Width)
+          ;  EndIf
+          CompilerElse
+            Left = Move(*This, \Items()\Width)
+          CompilerEndIf
+        EndIf
+        
+      EndWith 
+      
+      
+      ; Draw Lines text
+      With *This\Items()
+        If ListSize(*This\Items())
+          PushListPosition(*This\Items())
+          ForEach *This\Items()
+            ; Is visible lines ---
+            Drawing = Bool(\y+\height+*This\Scroll\Y>*This\y[2] And (\y-*This\y[2])+*This\Scroll\Y<iheight)
+            ;\Hide = Bool(Not Drawing)
+            
+            If \hide
+              Drawing = 0
+            EndIf
+            
+            If Drawing
+              If \Text\FontID 
+                DrawingFont(\Text\FontID) 
+                ;               ElseIf *This\Text\FontID 
+                ;                 DrawingFont(*This\Text\FontID) 
+              EndIf
+              _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Width[2], #PB_Ignore) 
+              
+              If \Text\Change : \Text\Change = #False
+                \Text\Width = TextWidth(\Text\String.s) 
+                
+                If \Text\FontID 
+                  \Text\Height = TextHeight("A") 
+                Else
+                  \Text\Height = *This\Text\Height[1]
+                EndIf
+              EndIf 
+              
+              If \Text[1]\Change : \Text[1]\Change = #False
+                \Text[1]\Width = TextWidth(\Text[1]\String.s) 
+              EndIf 
+              
+              If \Text[3]\Change : \Text[3]\Change = #False 
+                \Text[3]\Width = TextWidth(\Text[3]\String.s)
+              EndIf 
+              
+              If \Text[2]\Change : \Text[2]\Change = #False 
+                \Text[2]\X = \Text\X+\Text[1]\Width
+                \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
+                \Text[3]\X = \Text[2]\X+\Text[2]\Width
+              EndIf 
+              
+;               If *This\Focus = *This And *This\Text\Editable
+;                 Protected Left = Move2(*This, \Width)
+;               EndIf
+            EndIf
+            
+            
+            If \change = 1 : \change = 0
+              Protected indent = 8 + Bool(*This\Image\width)*4
+              ; Draw coordinates 
+              \sublevellen = *This\Text\X + (7 - *This\sublevellen) + ((\sublevel + Bool(*This\flag\buttons)) * *This\sublevellen) + Bool(*This\Flag\CheckBoxes)*17
+              \Image\X + \sublevellen + indent
+              \Text\X + \sublevellen + *This\Image\width + indent
+              
+              ; Scroll width length
+              _set_scroll_width_(*This)
+            EndIf
+            
+            Height = \Height
+            Y = \Y+*This\Scroll\Y
+            Text_X = \Text\X+*This\Scroll\X
+            Text_Y = \Text\Y+*This\Scroll\Y
+            ; Debug Text_X
+            
+            ; expanded & collapsed box
+            _set_open_box_XY_(*This, *This\Items(), *This\x+*This\Scroll\X, Y)
+            
+            ; checked box
+            _set_check_box_XY_(*This, *This\Items(), *This\x+*This\Scroll\X, Y)
+            
+            ; Draw selections
+            If Drawing And (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1]) ; \Color\State;
+              If *This\Row\Color\Back[\Color\State]<>-1                                 ; no draw transparent
+                If *This\Row\Color\Fore[\Color\State]
+                  DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                  BoxGradient(\Vertical,*This\X[2],Y,iwidth,\Height,RowForeColor(*This, \Color\State) ,RowBackColor(*This, \Color\State) ,\Radius)
+                Else
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                  RoundBox(*This\X[2],Y,iwidth,\Height,\Radius,\Radius,RowBackColor(*This, \Color\State) )
+                EndIf
+              EndIf
+              
+              If *This\Row\Color\Frame[\Color\State]<>-1 ; no draw transparent
+                DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                RoundBox(*This\x[2],Y,iwidth,\height,\Radius,\Radius, RowFrameColor(*This, \Color\State) )
+              EndIf
+            EndIf
+            
+            ; Draw plot
+            _draw_plots_(*This, *This\Items(), *This\x+*This\Scroll\X, \box\y+\box\height/2)
+            
+            If Drawing
+              ; Draw boxes
+              If *This\flag\buttons And \childrens
+                DrawingMode(#PB_2DDrawing_Default)
+                CompilerIf Defined(Scroll, #PB_Module)
+                  Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), 0,0) 
+                CompilerEndIf
+              EndIf
+              
+              ; Draw checkbox
+              If *This\Flag\CheckBoxes
+                DrawingMode(#PB_2DDrawing_Default)
+                CheckBox(\box\x[1],\box\y[1],\box\width[1],\box\height[1], 3, \checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
+              EndIf
+              
+              ; Draw image
+              If \Image\handle
+                DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                DrawAlphaImage(\Image\handle, \Image\x+*This\Scroll\X, \Image\y+*This\Scroll\Y, *This\row\color\alpha)
+              EndIf
+              
+              ; Draw text
+              _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
+              ; _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Scroll\Width[2], #PB_Ignore) 
+              
+              Angle = Bool(\Text\Vertical)**This\Text\Rotate
+              Protected Front_BackColor_1 = RowFontColor(*This, *This\Color\State) ; *This\Color\Front[*This\Color\State]&$FFFFFFFF|*This\row\color\alpha<<24
+              Protected Front_BackColor_2 = RowFontColor(*This, 2)                 ; *This\Color\Front[2]&$FFFFFFFF|*This\row\color\alpha<<24
+              
+              ; Draw string
+              If \Text[2]\Len > 0 And *This\Color\Front <> *This\Row\Color\Front[2]
+                
+                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  If (*This\Text\Caret[1] > *This\Text\Caret And *This\Index[2] = *This\Index[1]) Or
+                     (\Index = *This\Index[1] And *This\Index[2] > *This\Index[1])
+                    \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Text\Caret[1])) 
+                    
+                    If *This\Index[2] = *This\Index[1]
+                      \Text[2]\X = \Text[3]\X-\Text[2]\Width
+                    EndIf
+                    
+                    If \Text[3]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                      DrawRotatedText(\Text[3]\X+*This\Scroll\X, Text_Y, \Text[3]\String.s, angle, Front_BackColor_1)
+                    EndIf
+                    
+                    If *This\Row\Color\Fore[2]
+                      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                      BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
+                    Else
+                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                      Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2) )
+                    EndIf
+                    
+                    If \Text[2]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                      DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s+\Text[2]\String.s, angle, Front_BackColor_2)
+                    EndIf
+                    
+                    If \Text[1]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                      DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s, angle, Front_BackColor_1)
+                    EndIf
+                  Else
+                    DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                    DrawRotatedText(Text_X, Text_Y, \Text\String.s, angle, Front_BackColor_1)
+                    
+                    If *This\Row\Color\Fore[2]
+                      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                      BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
+                    Else
+                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                      Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
+                    EndIf
+                    
+                    If \Text[2]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                      DrawRotatedText(\Text[2]\X+*This\Scroll\X, Text_Y, \Text[2]\String.s, angle, Front_BackColor_2)
+                    EndIf
+                  EndIf
+                CompilerElse
+                  If \Text[1]\String.s
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s, angle, Front_BackColor_1)
+                  EndIf
+                  
+                  If *This\Row\Color\Fore[2]
+                    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                    BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
+                  Else
+                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                    Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
+                  EndIf
+                  
+                  If \Text[2]\String.s
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(\Text[2]\X+*This\Scroll\X, Text_Y, \Text[2]\String.s, angle, Front_BackColor_2)
+                  EndIf
+                  
+                  If \Text[3]\String.s
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(\Text[3]\X+*This\Scroll\X, Text_Y, \Text[3]\String.s, angle, Front_BackColor_1)
+                  EndIf
+                CompilerEndIf
+                
+              Else
+                If \Text[2]\Len > 0
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                  Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
+                EndIf
+                
+                ;                 CompilerIf Defined(Scroll, #PB_Module)
+                ;                   Debug ""+*This\Scroll\X +" "+ *This\Scroll\h\page\pos
+                ;                 CompilerEndIf
+                
+                If \Color\State = 2
+                  DrawingMode(#PB_2DDrawing_Transparent)
+                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, angle, Front_BackColor_2)
+                Else
+                  DrawingMode(#PB_2DDrawing_Transparent)
+                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, angle, Front_BackColor_1)
+                EndIf
+              EndIf
+              
+              ; Draw margin
+              If *This\sci\margin\width
+                DrawingMode(#PB_2DDrawing_Transparent)
+                DrawText(*This\sci\margin\width-TextWidth(Str(\Index)) - 5, \Y+*This\Scroll\Y, Str(\Index), *This\sci\margin\Color\Front)
+              EndIf
+              
+            EndIf
+          Next
+          PopListPosition(*This\Items()) ; 
+        EndIf
+      EndWith  
+      
+      
+      With *This
+        ; Draw image
+        If \Image\handle
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \color\alpha)
+        EndIf
+        
+        ; Draw caret
+        If ListSize(\Items()) And (\Text\Editable Or \Items()\Text\Editable) And \Focus = *This
+          DrawingMode(#PB_2DDrawing_XOr)             
+          Line((\Items()\Text\X+\Scroll\X) + \Items()\Text[1]\Width + 
+               Bool(Not \Items()\Text[1]\Width Or (\Index[1] = \Index[2] And \Text\Caret > \Text\Caret[1]))*\Items()\Text[2]\Width - Bool(\Scroll\X = Left), 
+               \Items()\Y+\Scroll\Y, 1, Height, $FFFFFFFF)
+          
+;           Debug \Items()\Text[1]\Width + 
+;                Bool(Not \Items()\Text[1]\Width Or (\Index[1] = \Index[2] And \Text\Caret > \Text\Caret[1]))*\Items()\Text[2]\Width - Bool(\Scroll\X = Left)
+        EndIf
+        
+        UnclipOutput()
+        
+        ; Draw scroll bars
+        CompilerIf Defined(Scroll, #PB_Module)
+          If \Scroll\v And \Scroll\v\Max <> \Scroll\Height And 
+             Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines))
+            Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          EndIf
+          If \Scroll\h And \Scroll\h\Max<>\Scroll\Width And 
+             Scroll::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
+            Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          EndIf
+          
+          Scroll::Draw(\Scroll\v)
+          Scroll::Draw(\Scroll\h)
+        CompilerEndIf
+        
+        _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
+        
+      EndWith
+      
+      ; Draw frames
+      With *This
         DrawingMode(#PB_2DDrawing_Outlined)
         
         If \Focus = *This
@@ -2579,5 +3063,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -f----3---------vv04--04-4tt------------+------------------
+; Folding = ------v0---------ff8v--8v-vbb--------------------------------------------
 ; EnableXP

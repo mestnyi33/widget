@@ -238,10 +238,12 @@ Module Editor
                   \Items()\Text[2]\X = \Items()\Text\X+\Items()\Text\Width
                 EndIf 
                 
-                If \Flag\FullSelection
-                  \Items()\Text[2]\Width[2] = \Flag\FullSelection
-                Else
+                SelectionLen=Bool(Not \Flag\FullSelection)*7
+            
+                If Not SelectionLen
                   \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                Else
+                  \Items()\Text[2]\Width[2] = SelectionLen
                 EndIf
               EndIf
               
@@ -2282,10 +2284,13 @@ Module Editor
             \Items()\Text[2]\String = \Items()\Text\String : \Items()\Text[2]\Change = 1
           EndIf
           
-          If \Flag\FullSelection
-            \Items()\Text[2]\Width[2] = \Flag\FullSelection
-          Else
+          SelectionLen=Bool(Not \Flag\FullSelection)*7
+          ; \Items()\Text[2]\X = 0;\Items()\Text\X+\Items()\Text\Width
+          
+          If Not SelectionLen
             \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+          Else
+            \Items()\Text[2]\Width[2] = SelectionLen
           EndIf
           
           ;\Items()\Index[1] = \Items()\Index
@@ -2325,7 +2330,7 @@ Module Editor
       CompilerEndIf
       
       Select EventType
-        Case #PB_EventType_Input ; - Input (key)
+        Case #PB_EventType_Input ;- Input (key)
           If Not Control         ; And Not Shift
             Repaint = ToInput(*This)
           EndIf
@@ -2428,6 +2433,147 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
+  Procedure.i _Events(*This.Widget_S, EventType.i)
+    Static DoubleClick.i
+    Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
+    
+    With *This
+      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+    EndWith
+    
+    If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
+      If ListSize(*This\items())
+        With *This
+          If Not \Hide And Not \Disable And \Interact
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
+            CompilerElse
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
+            CompilerEndIf
+            
+            Select EventType 
+              Case #PB_EventType_LeftClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftClick)
+              Case #PB_EventType_RightClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_RightClick)
+              Case #PB_EventType_LeftDoubleClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftDoubleClick)
+                
+              Case #PB_EventType_MouseLeave
+                \index[1] =- 1
+                Repaint = 1
+                
+              Case #PB_EventType_LeftButtonDown
+                PushListPosition(\items()) 
+                ForEach \items()
+                  If \index[1] = \items()\index 
+                    \Index[2] = \index[1]
+                    
+                    If \Flag\ClickSelect
+                      \items()\Color\State ! 2
+                    Else
+                      \items()\Color\State = 2
+                    EndIf
+                    
+                    ; \items()\Focus = \items()\index 
+                  ElseIf ((Not \Flag\ClickSelect And \items()\Focus = \items()\index) Or \Flag\MultiSelect) And Not Control
+                    \items()\index[1] =- 1
+                    \items()\Color\State = 1
+                    \items()\Focus =- 1
+                  EndIf
+                Next
+                PopListPosition(\items()) 
+                Repaint = 1
+                
+              Case #PB_EventType_LeftButtonUp
+                PushListPosition(\items()) 
+                ForEach \items()
+                  If \index[1] = \items()\index 
+                    \items()\Focus = \items()\index 
+                  Else
+                    If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
+                      \items()\Color\State = 1
+                    EndIf
+                  EndIf
+                Next
+                PopListPosition(\items()) 
+                Repaint = 1
+                
+              Case #PB_EventType_MouseMove  
+                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\Scroll\v)
+                  Item.i =- 1
+                ElseIf \Text\Height
+                  Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
+                EndIf
+                
+                If \index[1] <> Item And Item =< ListSize(\items())
+                  If isItem(\index[1], \items()) 
+                    If \index[1] <> ListIndex(\items())
+                      SelectElement(\items(), \index[1]) 
+                    EndIf
+                    
+                    If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton 
+                      If (\Flag\MultiSelect And Not Control)
+                        \items()\Color\State = 2
+                      ElseIf Not \Flag\ClickSelect
+                        \items()\Color\State = 1
+                      EndIf
+                    EndIf
+                  EndIf
+                  
+                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton And itemSelect(Item, \items())
+                    If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
+                      \items()\Color\State = 2
+                    ElseIf Not \Flag\ClickSelect And (\Flag\MultiSelect And Not Control)
+                      \items()\index[1] = \items()\index
+                      \items()\Color\State = 2
+                    EndIf
+                  EndIf
+                  
+                  \index[1] = Item
+                  Repaint = #True
+                  
+                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton
+                    If (\Flag\MultiSelect And Not Control)
+                      PushListPosition(\items()) 
+                      ForEach \items()
+                        If  Not \items()\Hide
+                          If ((\Index[2] =< \index[1] And \Index[2] =< \items()\index And \index[1] >= \items()\index) Or
+                              (\Index[2] >= \index[1] And \Index[2] >= \items()\index And \index[1] =< \items()\index)) 
+                            If \items()\index[1] <> \items()\index
+                              \items()\index[1] = \items()\index
+                              \items()\Color\State = 2
+                            EndIf
+                          Else
+                            \items()\index[1] =- 1
+                            \items()\Color\State = 1
+                            \items()\Focus =- 1
+                          EndIf
+                        EndIf
+                      Next
+                      PopListPosition(\items()) 
+                    EndIf
+                    
+                  EndIf
+                EndIf
+                
+              Default
+                itemSelect(\Index[2], \items())
+            EndSelect
+          EndIf
+        EndWith    
+        
+        With *This\items()
+          If *Focus = *This
+            Repaint | Editable(*This.Widget_S, EventType.i)
+          EndIf
+        EndWith
+      EndIf
+    Else
+      *This\index[1] =- 1
+    EndIf
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure.i Events(*This.Widget_S, EventType.i)
     Static DoubleClick.i
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
@@ -2439,7 +2585,7 @@ Module Editor
       If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
         If ListSize(*This\items())
           If Not \Hide And Not \Disable And \Interact
-            ; Get line position
+            ; Get line & caret position
             If \Canvas\Mouse\buttons
               If \Canvas\Mouse\Y < \Y
                 Item.i =- 1
@@ -2513,7 +2659,6 @@ Module Editor
                   Repaint = #True
                   
                   Protected SelectionLen
-                  
                   PushListPosition(\Items()) 
                   ForEach \Items()
                     If \Index[1] = \Items()\Index Or \Index[2] = \Items()\Index
@@ -2529,12 +2674,13 @@ Module Editor
                         \Items()\Text[2]\String = \Items()\Text\String : \Items()\Text[2]\Change = 1
                       EndIf
                       
+                      SelectionLen=Bool(Not \Flag\FullSelection)*7
                       ; \Items()\Text[2]\X = 0;\Items()\Text\X+\Items()\Text\Width
                       
-                      If \Flag\FullSelection
-                        \Items()\Text[2]\Width[2] = \Flag\FullSelection
-                      Else
+                      If Not SelectionLen
                         \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                      Else
+                        \Items()\Text[2]\Width[2] = SelectionLen
                       EndIf
                       
                       ;\Items()\Index[1] = \Items()\Index
@@ -2624,7 +2770,7 @@ Module Editor
         
         \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
         \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
-        \Flag\FullSelection = Bool(Not flag&#PB_Flag_FullSelection)*7
+        \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)*7
         \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
         \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
         \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
@@ -2804,15 +2950,15 @@ CompilerIf #PB_Compiler_IsMainFile
            m.s +
            m.s +
            "The string must be very long." + m.s +
-           "Otherwise it will not work." ;+ m.s +
-                                         ;            m.s +
-                                         ;            "Schol is a beautiful thing." + m.s +
-                                         ;            "You ned it, that's true." + m.s +
-                                         ;            "There was a group of monkeys siting on a fallen tree."
-                                         ;  Text.s = "This is a long line. Who should show, i have to write the text in the box or not. The string must be very long. Otherwise it will not work."
-                                         ; ;   ;Text.s + m + m                   ; " + m + "
-                                         ; ;   Text.s + "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" + m ; + m
-                                         ; ;   Text.s + "The main features of PureBasic" + m
+             "Otherwise it will not work." ;+ m.s +
+                                           ;            m.s +
+                                           ;            "Schol is a beautiful thing." + m.s +
+                                           ;            "You ned it, that's true." + m.s +
+                                           ;            "There was a group of monkeys siting on a fallen tree."
+                                           ;  Text.s = "This is a long line. Who should show, i have to write the text in the box or not. The string must be very long. Otherwise it will not work."
+;   Text.s + m + m                   ; " + m + "
+;   Text.s + "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" + m ; + m
+;   Text.s + "The main features of PureBasic" + m
   
   Procedure ResizeCallBack()
     ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
@@ -2940,5 +3086,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------------------------------------------------------
+; Folding = ----------------------------------------------------------------
 ; EnableXP

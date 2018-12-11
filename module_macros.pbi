@@ -176,8 +176,12 @@
   EndMacro
   
   Macro _set_scroll_width_(_this_)
-    If Not _this_\hide And Not _this_\items()\hide And _this_\Scroll\width<(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
+    If Not _this_\items()\hide And
+       _this_\Scroll\width<(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
       _this_\scroll\width=(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
+      _this_\Text\Big = _this_\Items()\Index ; Позиция в тексте самой длинной строки
+      _this_\Text\Big[1] = _this_\Items()\Text\Pos ; Может и не понадобятся
+      _this_\Text\Big[2] = _this_\Items()\Text\Len ; Может и не понадобятся
      ; _this_\scroll\h\max = _this_\scroll\width
       ; Debug "   "+_this_\width +" "+ _this_\scroll\width
     EndIf

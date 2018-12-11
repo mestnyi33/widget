@@ -805,6 +805,7 @@ Module Scroll
     Protected window = EventWindow()
     Protected canvas = EventGadget()
     
+    ;Debug EventType
     
     If *This
       With *This
@@ -1003,6 +1004,7 @@ Module Scroll
               mouseB = 0
               If Down
                 repaint | Events(*This, EventType, mouseX, mouseY, Down)
+                Down = 0
               EndIf
               
             Case #PB_EventType_LeftDoubleClick, 
@@ -1257,5 +1259,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------fv6-------z------4---------8--
+; Folding = ------fv6-------z----------------8--
 ; EnableXP

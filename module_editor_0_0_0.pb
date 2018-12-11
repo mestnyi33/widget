@@ -179,19 +179,35 @@ Module Editor
   
   ;-
   ;- PUBLIC
+  Procedure.i CaretPos(mouse_x, string.s, string_x.i, string_len.i)
+    ; Получаем позицию коpректора
+    Protected Position.i =- 1, i.i, cursor_x.i, Distance.f, MinDistance.f = Infinity()
+    
+    For i = 0 To string_len
+      cursor_x = string_x + TextWidth(Left(String.s, i))
+      Distance = (mouse_x-cursor_x)*(mouse_x-cursor_x)
+      
+      If MinDistance > Distance 
+        MinDistance = Distance
+        Position = i
+      EndIf
+    Next
+    
+    ProcedureReturn Position    
+  EndProcedure
+  
   Procedure.i Caret(*This.Widget_S, Line.i = 0)
     Static LastLine.i =- 1,  LastItem.i =- 1
     Protected Item.i, SelectionLen.i
-    Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
-              CursorX.i, MouseX.i, Distance.f, MinDistance.f = Infinity()
+    Protected Position.i =- 1, i.i, Len.i, MouseX.i, FontID.i, String.s, 
+              X.i, Distance.f, MinDistance.f = Infinity()
     
     With *This
       If Line < 0 And FirstElement(*This\Items())
         ; А если выше всех линии текста,
         ; то позиция коректора начало текста.
         Position = 0
-      ElseIf Line < ListSize(*This\Items()) And 
-             SelectElement(*This\Items(), Line)
+      ElseIf Line < ListSize(*This\Items()) And SelectElement(*This\Items(), Line)
         ; Если находимся на линии текста, 
         ; то получаем позицию коректора.
         
@@ -215,7 +231,9 @@ Module Editor
                 \Text\Caret[2] = X ; len
                 Position = i ; pos
               EndIf
-            Next 
+            Next
+            
+            SelectionLen=Bool(Not \Flag\FullSelection)*7
             
             ; Длина переноса строки
             PushListPosition(\Items())
@@ -229,7 +247,7 @@ Module Editor
               \Items()\Text[2]\Width[2] = 0
               
               If (\Items()\Text\String.s = "" And Item = \Index[1] And Position = len) Or
-                 \Index[2] > \Index[1] Or                                            ; Если выделяем снизу вверх
+                 \Index[2] > \Index[1] Or ; Если выделяем снизу вверх
                  (\Index[2] =< \Index[1] And \Index[1] = Item And Position = len) Or ; Если позиция курсора неже половини высоты линии
                  (\Index[2] < \Index[1] And                                          ; Если выделяем сверху вниз
                   PreviousElement(*This\Items()))                                    ; то выбираем предыдущую линию
@@ -238,10 +256,10 @@ Module Editor
                   \Items()\Text[2]\X = \Items()\Text\X+\Items()\Text\Width
                 EndIf 
                 
-                If \Flag\FullSelection
-                  \Items()\Text[2]\Width[2] = \Flag\FullSelection
-                Else
+                If Not SelectionLen
                   \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                Else
+                  \Items()\Text[2]\Width[2] = SelectionLen
                 EndIf
               EndIf
               
@@ -446,6 +464,64 @@ Module Editor
   EndProcedure
   
   ;-
+  Procedure _Move1(*This.Widget_S, Width)
+    Protected Left,Right
+    
+    With *This
+      Right = TextWidth(Mid(\Text\String.s, \Items()\Text\Pos, \Text\Caret))
+      Left = (Width - Right)
+      
+      If \Scroll\X > Right
+        Scroll::SetState(\Scroll\h, -Right)
+      ElseIf \Scroll\X > Left
+        ; |>>>>>>>>>
+        Scroll::SetState(\Scroll\h, -Left)
+      ElseIf \Scroll\X < 0 And \Canvas\Input = 65535 : \Canvas\Input = 0 ; Back string
+        \Scroll\X = (Width-\Items()\Text[3]\Width)-Right
+        If \Scroll\X>0 : \Scroll\X=0 : EndIf
+      EndIf
+      
+      Debug " move1"
+      Debug " \Width "+\Width[1] +#LF$+ 
+            " Width "+ Width +#LF$+
+            " Left "+ Left +#LF$+
+            " Right "+ Right +#LF$+
+            " ScrollX " + \Scroll\X
+    EndWith
+    
+    ProcedureReturn Left
+  EndProcedure
+  
+  Procedure _Move(*This.Widget_S, Width)
+    Protected Left,Right
+    
+    With *This
+      Right = TextWidth(Mid(\Text\String.s, \Items()\Text\Pos, \Text\Caret))
+      Left = (Width - Right)
+      
+      If -\Scroll\X > Right
+        ; <<<<<<<<<<|
+        Scroll::SetState(\Scroll\h, Right)
+      ElseIf \Scroll\X > Left
+        ; |>>>>>>>>>
+        Scroll::SetState(\Scroll\h, -Left)
+      ElseIf \Scroll\X < 0 And \Canvas\Input = 65535 : \Canvas\Input = 0 ; Back string
+        \Scroll\X = (Width-\Items()\Text[3]\Width)-Right
+        If \Scroll\X>0 : \Scroll\X=0 : EndIf
+      EndIf
+      
+;       Debug " "
+;       Debug " move2 " + \items()\index
+;       Debug " \Width "+\Width[1] +#LF$+ 
+;             " Width "+ Width +#LF$+
+;             " Left "+ Left +#LF$+
+;             " Right "+ Right +#LF$+
+;             " ScrollX " + \Scroll\X
+    EndWith
+    
+    ProcedureReturn Left
+  EndProcedure
+  
   Procedure Move(*This.Widget_S, Width)
     Protected Left,Right
     
@@ -457,31 +533,30 @@ Module Editor
         Protected String.s = \Items()\Text\String.s
         Protected string_len.i = \Items()\Text\Len
         Protected mouse_x.i = \Canvas\Mouse\X-(\Items()\Text\X+\Scroll\X)
-        
-        For i = 0 To string_len
-          cursor_x = TextWidth(Left(String.s, i))
-          Distance = (mouse_x-cursor_x)*(mouse_x-cursor_x)
-          
-          If MinDistance > Distance 
-            MinDistance = Distance
-            Right =- cursor_x
-            Caret = i
-          EndIf
-        Next
-        
-        Left = (Width + Right)
-        \Items()\Text[3]\Width = TextWidth(Right(String.s, string_len-Caret))
-        
-        If \Scroll\X < Right
-          Scroll::SetState(\Scroll\h, -Right) ;: \Scroll\X = Right
-        ElseIf \Scroll\X > Left
-          Scroll::SetState(\Scroll\h, -Left) ;: \Scroll\X = Left
-        ElseIf (\Scroll\X < 0 And \Canvas\Input = 65535 ) : \Canvas\Input = 0
-          \Scroll\X = (Width-\Items()\Text[3]\Width) + Right
-          If \Scroll\X>0 : \Scroll\X=0 : EndIf
-        EndIf
       EndIf
       PopListPosition(\items())
+      
+      For i = 0 To string_len
+        cursor_x = TextWidth(Left(String.s, i))
+        Distance = (mouse_x-cursor_x)*(mouse_x-cursor_x)
+        
+        If MinDistance > Distance 
+          MinDistance = Distance
+          Right =- cursor_x
+          Caret = i
+        EndIf
+      Next
+      
+      Left = (Width + Right)
+      
+      If \Scroll\X < Right
+        Scroll::SetState(\Scroll\h, -Right) ;: \Scroll\X = Right
+      ElseIf \Scroll\X > Left
+        Scroll::SetState(\Scroll\h, -Left) ;: \Scroll\X = Left
+      ElseIf (\Scroll\X < 0 And \Canvas\Input = 65535 ) : \Canvas\Input = 0
+        \Scroll\X = (Width-\Items()\Text[3]\Width) + Right
+        If \Scroll\X>0 : \Scroll\X=0 : EndIf
+      EndIf
     EndWith
     
     ProcedureReturn Left
@@ -1203,12 +1278,6 @@ Module Editor
           Protected Left = Move(*This, \Items()\Width)
         EndIf
         
-        If \Items()\Text[1]\Change : \Items()\Text[1]\Change = #False
-          \Items()\Text[1]\Width = TextWidth(\Items()\Text[1]\String.s)
-          If \Text\Caret[1] = \Text\Caret
-            \Text\Caret[2] = \Items()\Text[1]\Width
-          EndIf
-        EndIf
       EndWith 
       
       
@@ -1256,6 +1325,10 @@ Module Editor
                 \Text[2]\Width = TextWidth(\Text[2]\String.s) ; bug in mac os
                 \Text[3]\X = \Text[2]\X+\Text[2]\Width
               EndIf 
+              
+;               If *This\Focus = *This And *This\Text\Editable
+;                 Protected Left = Move2(*This, \Width)
+;               EndIf
             EndIf
             
             
@@ -1450,15 +1523,13 @@ Module Editor
         ; Draw caret
         If ListSize(\Items()) And (\Text\Editable Or \Items()\Text\Editable) And \Focus = *This
           DrawingMode(#PB_2DDrawing_XOr)             
-          ;           Line((\Items()\Text\X+\Scroll\X) + \Items()\Text[1]\Width + 
-;                Bool(Not \Items()\Text[1]\Width Or (\Index[1] = \Index[2] And \Text\Caret > \Text\Caret[1]))*\Items()\Text[2]\Width - Bool(\Scroll\X = Left), 
-;                \Items()\Y+\Scroll\Y, 1, Height, $FFFFFFFF)
+          Line((\Items()\Text\X+\Scroll\X) + \Items()\Text[1]\Width + 
+               Bool(Not \Items()\Text[1]\Width Or (\Index[1] = \Index[2] And \Text\Caret > \Text\Caret[1]))*\Items()\Text[2]\Width - Bool(\Scroll\X = Left), 
+               \Items()\Y+\Scroll\Y, 1, Height, $FFFFFFFF)
           
-          Line((\Items()\Text\X+\Scroll\X) + \Text\Caret[2], \Items()\Y+\Scroll\Y, 1, Height, $FFFFFFFF)
-          
- 
-;           Debug \Text\Caret[2]
-;           Debug \Items()\Text[1]\Width + Bool(Not \Items()\Text[1]\Width Or (\Index[1] = \Index[2] And \Text\Caret > \Text\Caret[1]))*\Items()\Text[2]\Width - Bool(\Scroll\X = Left)
+          Debug \Text\Caret[2]
+          Debug \Items()\Text[1]\Width + 
+               Bool(Not \Items()\Text[1]\Width Or (\Index[1] = \Index[2] And \Text\Caret > \Text\Caret[1]))*\Items()\Text[2]\Width - Bool(\Scroll\X = Left)
         EndIf
         
         UnclipOutput()
@@ -2282,10 +2353,13 @@ Module Editor
             \Items()\Text[2]\String = \Items()\Text\String : \Items()\Text[2]\Change = 1
           EndIf
           
-          If \Flag\FullSelection
-            \Items()\Text[2]\Width[2] = \Flag\FullSelection
-          Else
+          SelectionLen=Bool(Not \Flag\FullSelection)*7
+          ; \Items()\Text[2]\X = 0;\Items()\Text\X+\Items()\Text\Width
+          
+          If Not SelectionLen
             \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+          Else
+            \Items()\Text[2]\Width[2] = SelectionLen
           EndIf
           
           ;\Items()\Index[1] = \Items()\Index
@@ -2325,7 +2399,7 @@ Module Editor
       CompilerEndIf
       
       Select EventType
-        Case #PB_EventType_Input ; - Input (key)
+        Case #PB_EventType_Input ;- Input (key)
           If Not Control         ; And Not Shift
             Repaint = ToInput(*This)
           EndIf
@@ -2428,6 +2502,147 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
+  Procedure.i _Events(*This.Widget_S, EventType.i)
+    Static DoubleClick.i
+    Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
+    
+    With *This
+      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+    EndWith
+    
+    If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
+      If ListSize(*This\items())
+        With *This
+          If Not \Hide And Not \Disable And \Interact
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
+            CompilerElse
+              Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
+            CompilerEndIf
+            
+            Select EventType 
+              Case #PB_EventType_LeftClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftClick)
+              Case #PB_EventType_RightClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_RightClick)
+              Case #PB_EventType_LeftDoubleClick : PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_LeftDoubleClick)
+                
+              Case #PB_EventType_MouseLeave
+                \index[1] =- 1
+                Repaint = 1
+                
+              Case #PB_EventType_LeftButtonDown
+                PushListPosition(\items()) 
+                ForEach \items()
+                  If \index[1] = \items()\index 
+                    \Index[2] = \index[1]
+                    
+                    If \Flag\ClickSelect
+                      \items()\Color\State ! 2
+                    Else
+                      \items()\Color\State = 2
+                    EndIf
+                    
+                    ; \items()\Focus = \items()\index 
+                  ElseIf ((Not \Flag\ClickSelect And \items()\Focus = \items()\index) Or \Flag\MultiSelect) And Not Control
+                    \items()\index[1] =- 1
+                    \items()\Color\State = 1
+                    \items()\Focus =- 1
+                  EndIf
+                Next
+                PopListPosition(\items()) 
+                Repaint = 1
+                
+              Case #PB_EventType_LeftButtonUp
+                PushListPosition(\items()) 
+                ForEach \items()
+                  If \index[1] = \items()\index 
+                    \items()\Focus = \items()\index 
+                  Else
+                    If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
+                      \items()\Color\State = 1
+                    EndIf
+                  EndIf
+                Next
+                PopListPosition(\items()) 
+                Repaint = 1
+                
+              Case #PB_EventType_MouseMove  
+                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\Scroll\v)
+                  Item.i =- 1
+                ElseIf \Text\Height
+                  Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
+                EndIf
+                
+                If \index[1] <> Item And Item =< ListSize(\items())
+                  If isItem(\index[1], \items()) 
+                    If \index[1] <> ListIndex(\items())
+                      SelectElement(\items(), \index[1]) 
+                    EndIf
+                    
+                    If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton 
+                      If (\Flag\MultiSelect And Not Control)
+                        \items()\Color\State = 2
+                      ElseIf Not \Flag\ClickSelect
+                        \items()\Color\State = 1
+                      EndIf
+                    EndIf
+                  EndIf
+                  
+                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton And itemSelect(Item, \items())
+                    If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
+                      \items()\Color\State = 2
+                    ElseIf Not \Flag\ClickSelect And (\Flag\MultiSelect And Not Control)
+                      \items()\index[1] = \items()\index
+                      \items()\Color\State = 2
+                    EndIf
+                  EndIf
+                  
+                  \index[1] = Item
+                  Repaint = #True
+                  
+                  If \Canvas\Mouse\buttons & #PB_Canvas_LeftButton
+                    If (\Flag\MultiSelect And Not Control)
+                      PushListPosition(\items()) 
+                      ForEach \items()
+                        If  Not \items()\Hide
+                          If ((\Index[2] =< \index[1] And \Index[2] =< \items()\index And \index[1] >= \items()\index) Or
+                              (\Index[2] >= \index[1] And \Index[2] >= \items()\index And \index[1] =< \items()\index)) 
+                            If \items()\index[1] <> \items()\index
+                              \items()\index[1] = \items()\index
+                              \items()\Color\State = 2
+                            EndIf
+                          Else
+                            \items()\index[1] =- 1
+                            \items()\Color\State = 1
+                            \items()\Focus =- 1
+                          EndIf
+                        EndIf
+                      Next
+                      PopListPosition(\items()) 
+                    EndIf
+                    
+                  EndIf
+                EndIf
+                
+              Default
+                itemSelect(\Index[2], \items())
+            EndSelect
+          EndIf
+        EndWith    
+        
+        With *This\items()
+          If *Focus = *This
+            Repaint | Editable(*This.Widget_S, EventType.i)
+          EndIf
+        EndWith
+      EndIf
+    Else
+      *This\index[1] =- 1
+    EndIf
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
   Procedure.i Events(*This.Widget_S, EventType.i)
     Static DoubleClick.i
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
@@ -2439,7 +2654,7 @@ Module Editor
       If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
         If ListSize(*This\items())
           If Not \Hide And Not \Disable And \Interact
-            ; Get line position
+            ; Get line & caret position
             If \Canvas\Mouse\buttons
               If \Canvas\Mouse\Y < \Y
                 Item.i =- 1
@@ -2513,7 +2728,6 @@ Module Editor
                   Repaint = #True
                   
                   Protected SelectionLen
-                  
                   PushListPosition(\Items()) 
                   ForEach \Items()
                     If \Index[1] = \Items()\Index Or \Index[2] = \Items()\Index
@@ -2529,12 +2743,13 @@ Module Editor
                         \Items()\Text[2]\String = \Items()\Text\String : \Items()\Text[2]\Change = 1
                       EndIf
                       
+                      SelectionLen=Bool(Not \Flag\FullSelection)*7
                       ; \Items()\Text[2]\X = 0;\Items()\Text\X+\Items()\Text\Width
                       
-                      If \Flag\FullSelection
-                        \Items()\Text[2]\Width[2] = \Flag\FullSelection
-                      Else
+                      If Not SelectionLen
                         \Items()\Text[2]\Width[2] = \Items()\Width-\Items()\Text\Width
+                      Else
+                        \Items()\Text[2]\Width[2] = SelectionLen
                       EndIf
                       
                       ;\Items()\Index[1] = \Items()\Index
@@ -2624,7 +2839,7 @@ Module Editor
         
         \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
         \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
-        \Flag\FullSelection = Bool(Not flag&#PB_Flag_FullSelection)*7
+        \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)*7
         \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
         \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
         \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
@@ -2794,25 +3009,19 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Define m.s=#CRLF$
   Define m.s=#CRLF$;#LF$
   
-  Text.s = "This is a long line." + m.s +
-           "Who should show." + m.s +
-           m.s +
-           m.s +
-           m.s +
-           "I have to write the text in the box or not." + m.s +
-           m.s +
-           m.s +
-           m.s +
-           "The string must be very long." + m.s +
-           "Otherwise it will not work." ;+ m.s +
-                                         ;            m.s +
-                                         ;            "Schol is a beautiful thing." + m.s +
-                                         ;            "You ned it, that's true." + m.s +
-                                         ;            "There was a group of monkeys siting on a fallen tree."
-                                         ;  Text.s = "This is a long line. Who should show, i have to write the text in the box or not. The string must be very long. Otherwise it will not work."
-                                         ; ;   ;Text.s + m + m                   ; " + m + "
-                                         ; ;   Text.s + "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" + m ; + m
-                                         ; ;   Text.s + "The main features of PureBasic" + m
+  ;   Text.s = "This is a long line." + m.s +
+  ;            "Who should show." + m.s +
+  ;            "I have to write the text in the box or not." + m.s +
+  ;            "The string must be very long." + m.s +
+  ;            "Otherwise it will not work." ;+ m.s +
+  ;                                          ;            m.s +
+  ;                                          ;            "Schol is a beautiful thing." + m.s +
+  ;                                          ;            "You ned it, that's true." + m.s +
+  ;                                          ;            "There was a group of monkeys siting on a fallen tree."
+  ;                                          ;  Text.s = "This is a long line. Who should show, i have to write the text in the box or not. The string must be very long. Otherwise it will not work."
+  ;Text.s + m + m                   ; " + m + "
+  Text.s + "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" + m ; + m
+  Text.s + "The main features of PureBasic" + m
   
   Procedure ResizeCallBack()
     ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
@@ -2940,5 +3149,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------------------------------------------------------
+; Folding = -----------------------------------------------------------------
 ; EnableXP

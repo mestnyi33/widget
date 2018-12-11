@@ -282,7 +282,9 @@ Module String
     EndIf
     
     With *This
-      If \Items()\Text[2]\Len
+     \Canvas\Input = 65535
+     
+     If \Items()\Text[2]\Len
         If \Text\Caret > \Text\Caret[1] 
           Swap \Text\Caret, \Text\Caret[1]
         EndIf  
