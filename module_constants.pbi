@@ -62,7 +62,7 @@ DeclareModule Constants
     #PB_Flag_AutoBottom
     
     #PB_Flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
-  ; #____End____
+    ; #____End____
   EndEnumeration
   
   #PB_Flag_Numeric = #PB_Text_Numeric
@@ -107,3 +107,4 @@ UseModule Constants
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -
 ; EnableXP
+; Constant = #PB_Gadget_FrameColor = 10

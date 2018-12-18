@@ -17,7 +17,7 @@ DeclareModule IPAddress
   UseModule Structures
   
   Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
-  Macro GetState(_this_) : _this_\address : EndMacro
+  Macro GetState(_this_) : _this_\handle : EndMacro
   
   
   Declare.i SetState(*This.Widget_S, State.i)
@@ -35,7 +35,7 @@ Module IPAddress
                Str(IPAddressField(State,1))+"."+
                Str(IPAddressField(State,2))+"."+
                Str(IPAddressField(State,3))
-      \address = State
+      \handle = State
       Text::SetText(*This, Text)
     EndWith
   EndProcedure

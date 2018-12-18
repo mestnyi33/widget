@@ -272,19 +272,25 @@ Module Widget
       \Canvas\Mouse\at = Bool(\Canvas\Mouse\X>=\x And \Canvas\Mouse\X<\x+\Width And \Canvas\Mouse\Y>=\y And \Canvas\Mouse\Y<\y+\Height)
             
       Select EventType()
-        Case #PB_EventType_LostFocus
+        Case #PB_EventType_LostFocus : Repaint = 1
           \Focus = 0
-          Repaint = #True
           
         Case #PB_EventType_Repaint : Repaint = 1
-        Case #PB_EventType_Resize 
-          ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+        Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
           Repaint = Resizes(*This, #PB_Ignore,#PB_Ignore,GadgetWidth(\Canvas\Gadget),GadgetHeight(\Canvas\Gadget))
       EndSelect
       
-      Repaint | Scroll::CallBack(\Scroll\v, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
-      Repaint | Button::CallBack(*This, EventType())
-      Repaint | String::CallBack(*This, EventType(), -1, 0) 
+      Select \Type
+        Case #PB_GadgetType_Button
+          Repaint | Button::CallBack(*This, EventType())
+          
+        Case #PB_GadgetType_String
+          Repaint | String::CallBack(*This, EventType()) 
+          
+        Case #PB_GadgetType_ScrollBar  
+          Repaint | Scroll::CallBack(\Scroll\v, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+          
+      EndSelect
       
       If Repaint
         Draws(*This)
@@ -396,7 +402,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, 605, 300, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    StringGadget     (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+    StringGadget     (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)");,#PB_Text_Center)
     ScrollBarGadget  (2,  10, 50, 250,  20, 30, 100, 30)
     SetGadgetState   (2,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
@@ -406,7 +412,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget(15, 10, 190, 180,  60, "Button (Horizontal)")
     ButtonGadget(16, 200, 150,  60, 140 ,"Button (Vertical)")
     
-    String     (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+    String     (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)");,#PB_Text_Center)
     ScrollBar  (12,  300+10, 50, 250,  20, 30, 100, 30)
     SetState   (12,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     Text       (-1,  300+10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
@@ -430,5 +436,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------
+; Folding = -----------
 ; EnableXP

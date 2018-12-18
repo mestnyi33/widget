@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CompilerEndIf
 CompilerEndIf
 
-DeclareModule tree
+DeclareModule Tree
   EnableExplicit
   UseModule Macros
   UseModule Constants
@@ -51,7 +51,7 @@ DeclareModule tree
   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
 EndDeclareModule
 
-Module tree
+Module Tree
   ;-
   ;- PROCEDUREs
   ;-
@@ -672,7 +672,7 @@ Module tree
         ;\DrawingMode = #PB_2DDrawing_Default
         \Canvas\Gadget = Canvas
         If Not \Canvas\Window
-          \Canvas\Window = GetGadgetData(Canvas)
+          \Canvas\Window = GetActiveWindow() ; GetGadgetData(Canvas)
         EndIf
         \Radius = Radius
         \sublevellen = 18

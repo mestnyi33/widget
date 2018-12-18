@@ -31,7 +31,7 @@ DeclareModule Button
   Macro SetFont(_adress_, _font_id_) : Text::SetFont(_adress_, _font_id_) : EndMacro
   Macro GetColor(_adress_, _color_type_, _state_=0) : Text::GetColor(_adress_, _color_type_, _state_) : EndMacro
   Macro SetColor(_adress_, _color_type_, _color_, _state_=1) : Text::SetColor(_adress_, _color_type_, _color_, _state_) : EndMacro
-  Macro Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_=-1) : Text::Resize(_adress_, _x_,_y_,_width_,_height_, _canvas_) : EndMacro
+  Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
   
   ;- - DECLAREs PRACEDUREs
   ;Declare.i Draw(*This.Widget_S, Canvas.i=-1)
@@ -71,7 +71,7 @@ Module Button
       With *This
         Select EventType
           Case #PB_EventType_MouseEnter    
-            \Buttons = \Canvas\Mouse\From
+            \Buttons = \Canvas\Mouse\at
             If Not \Checked : Buttons = \Buttons : EndIf
             
           Case #PB_EventType_LeftButtonDown 
@@ -130,13 +130,11 @@ Module Button
       With *This
         \Type = #PB_GadgetType_Button
         \Cursor = #PB_Cursor_Default
-        \DrawingMode = #PB_2DDrawing_Gradient
         \Canvas\Gadget = Canvas
         \Radius = Radius
         \Text\Rotate = 270 ; 90;
-        \Alpha = 255
         \Interact = 1
-        \Line =- 1
+        \index[1] =- 1
         \X =- 1
         \Y =- 1
         
@@ -190,7 +188,7 @@ Module Button
           EndIf
         EndIf
         
-        If Resize(*This, X,Y,Width,Height, Canvas)
+        If Resize(*This, X,Y,Width,Height)
           \Default = Bool(Flag&#PB_Flag_Default)
           \Toggle = Bool(Flag&#PB_Flag_Toggle)
           
@@ -232,7 +230,8 @@ Module Button
           
           ; Устанавливаем 
           ; цвета по умолчанию
-          \Color[0] = Colors
+          \Color = Colors
+          \color\alpha = 255
           
           SetText(*This, Text.s)
         EndIf

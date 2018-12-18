@@ -321,13 +321,13 @@ Module String
         EndIf
       EndIf
       
-      With *This
-      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse)
-      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse)
-    EndWith
+;       With *This
+;       Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse)
+;       Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse)
+;     EndWith
     
     With *This\items() ;  Not Scroll::is(\Scroll)
-        If ListSize(*This\items()) And Not Scroll::is(*This\Scroll) ; (((*This\Scroll\v And Not *This\Scroll\v\at) Or Not *This\Scroll\v) And ((*This\Scroll\h And Not *This\Scroll\h\at) Or Not *This\Scroll\h))
+        If ListSize(*This\items()) ; And Not Scroll::is(*This\Scroll) ; (((*This\Scroll\v And Not *This\Scroll\v\at) Or Not *This\Scroll\v) And ((*This\Scroll\h And Not *This\Scroll\h\at) Or Not *This\Scroll\h))
           Select EventType
             Case #PB_EventType_LostFocus 
               \Text\Caret[1] = 0 ; Двойной клик на тексте
@@ -383,7 +383,6 @@ Module String
               Caret = Caret(*This)
               
               If \Text\Caret[1] =- 1 : \Text\Caret[1] = 0
-                *This\Text\Caret = Caret
                 *This\Text\Caret = 0
                 *This\Text\Caret[1] = \Text\Len
                 \Text[2]\Len = \Text\Len
@@ -630,8 +629,8 @@ Module String
           EndIf
           
           
-          SetText(*This, Text.s)
           Resize(*This, X,Y,Width,Height)
+          SetText(*This, Text.s)
         EndWith
       EndIf
     
@@ -859,6 +858,9 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       CocoaMessage(0,GadgetID(1),"setAlignment:", 2)
       CocoaMessage(0,GadgetID(2),"setAlignment:", 1)
+      
+      Debug CocoaMessage (0, GadgetID (1), "isHidden")
+      
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
       If OSVersion() > #PB_OS_Windows_XP
         SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE) & $FFFFFFFC | #SS_CENTER)
@@ -905,5 +907,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------------0-------
+; Folding = -------------0---v---
 ; EnableXP

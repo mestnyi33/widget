@@ -129,13 +129,6 @@ DeclareModule Scroll
   ; ;     BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
   ; ;   EndMacro
   
-  Macro ThumbLength(_this_)
-    Round(_this_\Area\len - (_this_\Area\len / (_this_\Max-_this_\Min))*((_this_\Max-_this_\Min) - _this_\Page\len), #PB_Round_Nearest)
-  EndMacro
-  Macro ThumbPos(_this_, _scroll_pos_)
-    (_this_\Area\Pos + Round((_scroll_pos_-_this_\Min) * (_this_\Area\len / (_this_\Max-_this_\Min)), #PB_Round_Nearest)) : If _this_\Vertical : _this_\Y[3] = _this_\Thumb\Pos : _this_\Height[3] = _this_\Thumb\len : Else : _this_\X[3] = _this_\Thumb\Pos : _this_\Width[3] = _this_\Thumb\len : EndIf
-  EndMacro
-  
   Macro is(_scroll_) : Bool(((_scroll_\v And _scroll_\v\at) Or (_scroll_\h And _scroll_\h\at))) : EndMacro
   ;Macro is(_scroll_) : Bool((((_scroll_\v And Not _scroll_\v\at) Or Not _scroll_\v) And ((_scroll_\h And Not _scroll_\h\at) Or Not _scroll_\h))) : EndMacro
   ;Macro is(_scroll_) : Bool( Bool((_scroll_\v And Not _scroll_\v\at) And (_scroll_\h And Not _scroll_\h\at)) Or Not Bool(_scroll_\v And _scroll_\h)) : EndMacro
@@ -189,6 +182,16 @@ Module Scroll
     \Back[2] = $C8E89C3D; $80E89C3D
     \Frame[2] = $C8DC9338; $80DC9338
   EndWith
+  
+  Macro ThumbLength(_this_)
+    Round(_this_\Area\len - (_this_\Area\len / (_this_\Max-_this_\Min))*((_this_\Max-_this_\Min) - _this_\Page\len), #PB_Round_Nearest)
+  EndMacro
+  Macro ThumbPos(_this_, _scroll_pos_)
+    (_this_\Area\Pos + Round((_scroll_pos_-_this_\Min) * (_this_\Area\len / (_this_\Max-_this_\Min)), #PB_Round_Nearest)) : If _this_\Vertical : _this_\Y[3] = _this_\Thumb\Pos : _this_\Height[3] = _this_\Thumb\len : Else : _this_\X[3] = _this_\Thumb\Pos : _this_\Width[3] = _this_\Thumb\len : EndIf
+  EndMacro
+  Macro ScrollEnd(_this_)
+    Bool(_this_\Page\Pos = ((_this_\Max-_this_\Min)-_this_\Page\len))
+  EndMacro
   
   Procedure Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
     Protected I
@@ -653,9 +656,9 @@ Module Scroll
         If \Area\len
           \Thumb\len = ThumbLength(*This)
           
-          If ( \Area\len > \Button\len)
+          If (\Area\len > \Button\len)
             If \Button\len
-              If ( \Thumb\len < \Button\len)
+              If (\Thumb\len < \Button\len)
                 \Area\len = Round( \Area\len - ( \Button\len-\Thumb\len), #PB_Round_Nearest)
                 \Thumb\len = \Button\len 
               EndIf
@@ -1259,5 +1262,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------fv6-------z----------------8--
+; Folding = -f-v---ez-------4----------------4--
 ; EnableXP

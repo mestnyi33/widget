@@ -43,7 +43,7 @@
     If _height_<>#PB_Ignore : _this_\Clip\Height = _height_ : EndIf
     
     CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-      ClipOutput(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
+     ; ClipOutput(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
     CompilerEndIf
   EndMacro
   
@@ -182,6 +182,8 @@
       _this_\Text\Big = _this_\Items()\Index ; Позиция в тексте самой длинной строки
       _this_\Text\Big[1] = _this_\Items()\Text\Pos ; Может и не понадобятся
       _this_\Text\Big[2] = _this_\Items()\Text\Len ; Может и не понадобятся
+      
+          
      ; _this_\scroll\h\max = _this_\scroll\width
       ; Debug "   "+_this_\width +" "+ _this_\scroll\width
     EndIf
@@ -283,6 +285,8 @@ Module Macros
 EndModule 
 
 UseModule Macros
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 38
 ; Folding = ----P+
 ; EnableXP

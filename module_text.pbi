@@ -412,10 +412,10 @@ Module Text
       Left = (Width + Right)
       
       If \Scroll\X < Right
-        Scroll::SetState(\Scroll\h, -Right)
+       ; Scroll::SetState(\Scroll\h, -Right)
         \Scroll\X = Right
       ElseIf \Scroll\X > Left
-        Scroll::SetState(\Scroll\h, -Left) 
+       ; Scroll::SetState(\Scroll\h, -Left) 
         \Scroll\X = Left
       ElseIf (\Scroll\X < 0 And \Canvas\Input = 65535 ) : \Canvas\Input = 0
         \Scroll\X = (Width-\Items()\Text[3]\Width) + Right
@@ -2400,7 +2400,7 @@ Module Text
             Text.s = ReplaceString(Text.s, #CR$, #LF$)
             Text.s + #LF$
             \Text\String.s = Text.s
-            ; \Text\Count = CountString(\Text\String.s, #LF$)
+            \Text\Count = CountString(\Text\String.s, #LF$)
           Else
             \Text\String.s = RemoveString(\Text\String.s, #LF$) + #LF$
             ; \Text\String.s = RTrim(ReplaceString(\Text\String.s, #LF$, " ")) + #LF$
@@ -3063,5 +3063,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------v0---------ff8v--8v-vbb--------------------------------------------
+; Folding = ------v0---------44+fn4+8-833-------------------------------------------
 ; EnableXP
