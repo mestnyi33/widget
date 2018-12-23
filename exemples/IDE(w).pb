@@ -130,15 +130,16 @@ Procedure OpenWindow_0(x = 0, y = 0, width = 800, height = 600)
   ; SetGadgetColor(Canvas_0, #PB_Gadget_BackColor, $6D6DD9)
   BindGadgetEvent(Canvas_0, @CallBacks())
   
-  *Editor_0 = Editor::Create(Canvas_0, #PB_Any, 1, 1, 548, 548, " ", #PB_Flag_Numeric) 
+  *Editor_0 = Editor::Create(Canvas_0, #PB_Any, 1, 1, 548, 548, "", #PB_Flag_Numeric) 
   *Tree_0 = Tree::Create(Canvas_0, #PB_Any, 558, 1, 220, 180, "", #PB_Flag_FullSelection)
   *Tree_1 = Tree::Create(Canvas_0, #PB_Any, 558, 191, 220, 358, "", #PB_Flag_FullSelection)
   
-  Editor::SetText(*Editor_0, "Code"+#LF$+"Code"+#LF$)
+  ;Editor::SetText(*Editor_0, "")
   Tree::AddItem(*Tree_0, -1, "Window_0")
   
   Tree::AddItem(*Tree_1, -1, "Button")
   Tree::AddItem(*Tree_1, -1, "String")
+  Tree::AddItem(*Tree_1, -1, "Text")
      
 EndProcedure
 

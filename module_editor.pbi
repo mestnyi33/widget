@@ -823,7 +823,6 @@ Module Editor
       ; Scroll hight length
       _set_scroll_height_(*This)
       
-      
       If \Index[2] = ListIndex(\Items())
         ;Debug " string "+String.s
         \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Text\Caret) : \Items()\Text[1]\Change = #True
@@ -835,7 +834,7 @@ Module Editor
   EndProcedure
   
   Procedure.i MultiLine(*This.Widget_S)
-    Protected Repaint, String.s, text_width
+    Protected Repaint, String.s, text_width, Len.i
     Protected IT,Text_Y,Text_X,Width,Height, Image_Y, Image_X, Indent=4
     
     With *This
@@ -921,52 +920,24 @@ Module Editor
               EndIf
             Next
           Else
-            Protected *Sta.Character = @\Text\String.s[2], *End.Character = @\Text\String.s[2] : #SOC = SizeOf (Character)
             Protected time = ElapsedMilliseconds()
-;              ClearDebugOutput()
-;             
-;              Debug \Text\String.s
-;              Debug "--------------------"
-;             Debug \Text\String.s[2]
-;             
-;             Debug CountString(\Text\String.s, #CR$)
-;             Debug CountString(\Text\String.s[2], #CR$)
-;             Debug CountString(\Text\String.s, #LF$)
-;             Debug CountString(\Text\String.s[2], #LF$)
-;             
-           
-; ; ; ;             For IT = 1 To \Text\Count
-; ; ; ;               String = StringField(\Text\String.s[2], IT, #LF$)
-; ; ;             
-; ; ;            ; Repeat : *End + #SOC : If *End\c = #LF Or Not *End\c : String = PeekS (*Sta, (*End-*Sta)/#SOC)
-; ; ;             ; Repeat : *End + #SOC : If *End\c = #LF : String = PeekS (*Sta, (*End-*Sta)/#SOC)
-;            While *End\c : If *End\c = #LF : String = PeekS (*Sta, (*End-*Sta)/#SOC) ; 300
-                
-          If CreateRegularExpression(0, ~".*\n?")
-           ; If CreateRegularExpression(0, ~"^.*", #PB_RegularExpression_MultiLine)
+            
+            ; 239
+            If CreateRegularExpression(0, ~".*\n?")
               If ExamineRegularExpression(0, \Text\String.s[2])
-                While NextRegularExpressionMatch(0)  ; 239
-                  String.s = Trim(RegularExpressionMatchString(0), #LF$)
-                 
-                
+                While NextRegularExpressionMatch(0) 
                   If AddElement(\Items())
-                    If \Type = #PB_GadgetType_Button
-                      \Items()\Text\Width = TextWidth(RTrim(String.s))
-                    Else
-                      \Items()\Text\Width = TextWidth(String.s)
-                    EndIf
+                    \Items()\Text\String.s = Trim(RegularExpressionMatchString(0), #LF$)
+                    ;\Items()\Text\Width = TextWidth(\Items()\Text\String.s) ; 
                     
                     \Items()\Focus =- 1
                     \Items()\Index[1] =- 1
                     \Items()\Color\State = 1 ; Set line default colors
                     \Items()\Radius = \Radius
-                    \Items()\Text\String.s = String.s
                     \Items()\Index = ListIndex(\Items())
                     
                     ; Update line pos in the text
                     _set_line_pos_(*This)
-                   
-                     ; Debug "f - "+String.s +" "+ CountString(String, #CR$) +" "+ CountString(String, #LF$) +" - "+ \Items()\Text\Pos +" "+ \Items()\Text\Len
                     
                     _set_content_X_(*This)
                     _line_resize_X_(*This)
@@ -977,14 +948,7 @@ Module Editor
                     
                     ; Scroll hight length
                     _set_scroll_height_(*This)
-                    
-                    ;                     If \Index[2] = ListIndex(\Items())
-                    ;                       ;Debug " string "+String.s
-                    ;                       \Items()\Text[1]\String.s = Left(\Items()\Text\String.s, \Text\Caret) : \Items()\Text[1]\Change = #True
-                    ;                       \Items()\Text[3]\String.s = Right(\Items()\Text\String.s, \Items()\Text\Len-(\Text\Caret + \Items()\Text[2]\Len)) : \Items()\Text[3]\Change = #True
-                    ;                     EndIf
                   EndIf
-                  
                 Wend
               EndIf
               
@@ -992,62 +956,99 @@ Module Editor
             Else
               Debug RegularExpressionError()
             EndIf
-               
-                  
-; ; ; ;              ; *Sta = *End + #SOC : EndIf : Until Not *End\c 
-;             *Sta = *End + #SOC : EndIf : *End + #SOC : Wend
-; ; ; ;             
-; ; ; ; ;             Next
-           
-          ;  MessageRequester("", Str(ElapsedMilliseconds()-time) + " text parse time ")
+
+            
+            
+            
+;             ;; 294 ; 124
+;             Protected *Sta.Character = @\Text\String.s[2], *End.Character = @\Text\String.s[2] : #SOC = SizeOf (Character)
+            ;While *End\c 
+;               If *End\c = #LF And AddElement(\Items())
+;                 Len = (*End-*Sta)>>#PB_Compiler_Unicode
+;                 
+;                 \Items()\Text\String.s = PeekS (*Sta, Len) ;Trim(, #LF$)
+;                 
+; ;                 If \Type = #PB_GadgetType_Button
+; ;                   \Items()\Text\Width = TextWidth(RTrim(\Items()\Text\String.s))
+; ;                 Else
+; ;                   \Items()\Text\Width = TextWidth(\Items()\Text\String.s)
+; ;                 EndIf
+;                 
+;                 \Items()\Focus =- 1
+;                 \Items()\Index[1] =- 1
+;                 \Items()\Color\State = 1 ; Set line default colors
+;                 \Items()\Radius = \Radius
+;                 \Items()\Index = ListIndex(\Items())
+;                 
+;                 ; Update line pos in the text
+;                 ; _set_line_pos_(*This)
+;                 \Items()\Text\Pos = \Text\Pos - Bool(\Text\MultiLine = 1)*\Items()\index ; wordwrap
+;                 \Items()\Text\Len = Len                                                  ; (\Items()\Text\String.s)
+;                 \Text\Pos + \Items()\Text\Len + 1                                        ; Len(#LF$)
+;                 
+;                 ; Debug "f - "+String.s +" "+ CountString(String, #CR$) +" "+ CountString(String, #LF$) +" - "+ \Items()\Text\Pos +" "+ \Items()\Text\Len
+;                 
+;                 _set_content_X_(*This)
+;                 _line_resize_X_(*This)
+;                 _line_resize_Y_(*This)
+;                 
+;                 ; Scroll width length
+;                 _set_scroll_width_(*This)
+;                 
+;                 ; Scroll hight length
+;                 _set_scroll_height_(*This)
+;                 
+;                 *Sta = *End + #SOC 
+;               EndIf 
+;               
+;               *End + #SOC 
+;             Wend
+          ;;;;  FreeMemory(*End)
+            
+            ;  MessageRequester("", Str(ElapsedMilliseconds()-time) + " text parse time ")
            Debug Str(ElapsedMilliseconds()-time) + " text parse time "
           EndIf
         Else
           Protected time2 = ElapsedMilliseconds()
           
-          ; If CreateRegularExpression(0, ~".*\n?\r?")
           If CreateRegularExpression(0, ~".*\n?")
-            ; If CreateRegularExpression(0, ~"^.*", #PB_RegularExpression_MultiLine)
-                If ExamineRegularExpression(0, \Text\String.s[2])
-                While NextRegularExpressionMatch(0)
-                  String.s = Trim(RegularExpressionMatchString(0), #LF$)
-                  
-                  ;         Debug "    Position: " + Str(RegularExpressionMatchPosition(0))
-                  ;         Debug "    Length: " + Str(RegularExpressionMatchLength(0))
-                  IT+1
-                  If SelectElement(\Items(), IT-1)
-                    If \Items()\Text\String.s <> String.s Or \Items()\Text\Change
-                      \Items()\Text\String.s = String.s
-                      
-                      If \Type = #PB_GadgetType_Button
-                        \Items()\Text\Width = TextWidth(RTrim(String.s))
-                      Else
-                        \Items()\Text\Width = TextWidth(String.s)
-                      EndIf
+            If ExamineRegularExpression(0, \Text\String.s[2])
+              While NextRegularExpressionMatch(0) : IT+1
+                String.s = Trim(RegularExpressionMatchString(0), #LF$)
+                
+                If SelectElement(\Items(), IT-1)
+                  If \Items()\Text\String.s <> String.s
+                    \Items()\Text\String.s = String.s
+                    
+                    If \Type = #PB_GadgetType_Button
+                      \Items()\Text\Width = TextWidth(RTrim(String.s))
+                    Else
+                      \Items()\Text\Width = TextWidth(String.s)
                     EndIf
-                    
-                    ; Update line pos in the text
-                    _set_line_pos_(*This)
-                    
-                    ; Resize item
-                    If (Left And Not  Bool(\Scroll\X = Left))
-                      _set_content_X_(*This)
-                    EndIf
-                    
-                    _line_resize_X_(*This)
-                    
-                    ; Set scroll width length
-                    _set_scroll_width_(*This)
                   EndIf
                   
-                Wend
-              EndIf
-              
-              FreeRegularExpression(0)
-            Else
-              Debug RegularExpressionError()
+                  ; Update line pos in the text
+                  _set_line_pos_(*This)
+                  
+                  ; Resize item
+                  If (Left And Not  Bool(\Scroll\X = Left))
+                    _set_content_X_(*This)
+                  EndIf
+                  
+                  _line_resize_X_(*This)
+                  
+                  ; Set scroll width length
+                  _set_scroll_width_(*This)
+                EndIf
+                
+              Wend
             EndIf
             
+            FreeRegularExpression(0)
+          Else
+            Debug RegularExpressionError()
+          EndIf
+          
             Debug Str(ElapsedMilliseconds()-time2) + " text parse time2 "
            
         EndIf
@@ -1176,15 +1177,13 @@ Module Editor
         EndIf
         
         
-        If \Text\Change And \sci\margin\width ; = 1 Or \Text\Change
-          \Text\Count = CountString(\Text\String.s, #LF$)
-          \sci\margin\width = TextWidth(Str(\Text\Count))+11
-         ;  Scroll::Resizes(\Scroll, \x[2]+\sci\margin\width+1,\Y[2],\Width[2]-\sci\margin\width-1,\Height[2])
-         EndIf
-        
-        
         ; Then changed text
         If \Text\Change
+          If set_text_width
+            SetTextWidth(set_text_width, Len(set_text_width))
+            set_text_width = ""
+          EndIf
+          
           \Text\Height[1] = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
           If \Type = #PB_GadgetType_Tree
             \Text\Height = 20
@@ -1192,6 +1191,12 @@ Module Editor
             \Text\Height = \Text\Height[1]
           EndIf
           \Text\Width = TextWidth(\Text\String.s)
+          
+          If \sci\margin\width 
+            \Text\Count = CountString(\Text\String.s, #LF$)
+            \sci\margin\width = TextWidth(Str(\Text\Count))+11
+            ;  Scroll::Resizes(\Scroll, \x[2]+\sci\margin\width+1,\Y[2],\Width[2]-\sci\margin\width-1,\Height[2])
+          EndIf
         EndIf
         
         ; Then resized widget
@@ -1464,7 +1469,7 @@ Module Editor
               ; Draw string
               If \Text[2]\Len And *This\Color\Front <> *This\Row\Color\Front[2]
                 
-                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                CompilerIf #PB_Compiler_OS = #PB_OS_Web;MacOS
                   If (*This\Text\Caret[1] > *This\Text\Caret And *This\Index[2] = *This\Index[1]) Or
                      (\Index = *This\Index[1] And *This\Index[2] > *This\Index[1])
                     \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Text\Caret[1])) 
@@ -2960,5 +2965,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------vn--vv-------X-----f-----------------------------
+; Folding = ----------vn--v--------4-----f-----------------------------
 ; EnableXP

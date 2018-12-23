@@ -86,7 +86,6 @@
   ;- - Text_S
   Structure Text_S Extends Coordinate_S
     Big.i[3]
-    ;     Char.c
     Pos.i
     Len.i
     Caret.i[3] ; 0 = Pos ; 1 = PosFixed
@@ -106,6 +105,8 @@
     Rotate.f
     
     Align.Align_S
+    ;List Char.c()
+    ;Map Char.i()
   EndStructure
     
   ;- - Bar_S
@@ -274,6 +275,7 @@
   ;- Colors
   ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;
   Global Colors.Color_S
+  
   With Colors                          
     \State = 0
     

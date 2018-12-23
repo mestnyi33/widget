@@ -277,16 +277,57 @@
   
   ; val = %10011110
   ; Debug Bin(GetBits(val, 0, 3))
+  ; Force to call orginal PB-Function
+  Macro PB(Function)
+    Function
+  EndMacro
   
+  
+  Declare GetTextWidth(text.s, len)
+  Declare SetTextWidth(Text.s, Len.i)
+  Global set_text_width.s 
+  
+;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;     set_text_width.s = "_№qwertyuiopasdfghjklzxcvbnm\QWERTYUIOPASDFGHJKLZXCVBNM йцукенгшщзхъфывапролджэ\ячсмитьбю./ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,][{}|'+-=()*&^%$#@!±§<>`~:?0123456789"+~"\"" : Macro TextWidth(Text) : GetTextWidth(Text, Len(Text)) : EndMacro
+;   CompilerEndIf
 EndDeclareModule 
 
 Module Macros
+  Global NewMap get_text_width.i()
+  
+  Procedure GetTextWidth(text.s, len)
+    Protected i, TextWidth.i
+    
+    For i=1 To len
+      TextWidth + get_text_width(Mid(Text.s, i, 1))
+    Next
+    
+    ProcedureReturn TextWidth + Bool(#PB_Compiler_OS = #PB_OS_MacOS And i>1) * (i/2)
+  EndProcedure
+  
+  Procedure SetTextWidth(Text.s, Len.i)
+    Protected i, w, Key.s
+    
+    For i = 0 To Len 
+      Key.s = Mid(Text.s, i, 1)
+      
+      If Not FindMapElement(get_text_width(), Key.s)
+        w = PB(TextWidth)(Key)
+        
+        If w
+          get_text_width(Key) = w
+          
+         ; Debug "width - "+get_text_width(Key) +" "+ gettextwidth(Key, Len(Key)) +" "+ Key +" "+ i
+        EndIf
+      EndIf
+    Next
+    
+  EndProcedure
+  
   
 EndModule 
 
 UseModule Macros
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 38
-; Folding = ----P+
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = ----Pe-
 ; EnableXP

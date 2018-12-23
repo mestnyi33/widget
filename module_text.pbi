@@ -73,7 +73,7 @@ DeclareModule Text
   Declare.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
   Declare.i CallBack(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
   Declare.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
-  Declare.s Wrap (Text.s, Width.i, Mode=-1, nl$=#LF$, DelimList$=" "+Chr(9))
+  Declare.s Wrap (*This.Widget_S, Text.s, Width.i, Mode=-1, nl$=#LF$, DelimList$=" "+Chr(9))
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i ReDraw(*This.Widget_S, Canvas =- 1, BackColor=$FFF0F0F0)
   
@@ -846,16 +846,28 @@ Module Text
   EndProcedure
   
   ;-
-  Procedure.s Wrap (Text.s, Width.i, Mode=-1, nl$=#LF$, DelimList$=" "+Chr(9))
+  Procedure.s Wrap (*This.Widget_S, Text.s, Width.i, Mode=-1, nl$=#LF$, DelimList$=" "+Chr(9))
     Protected.i CountString, i, start, ii, found, length
-    Protected line$, ret$="", LineRet$=""
+    Protected line$, ret$="", LineRet$="", TextWidth
     
     ;     Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
     ;     Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
     ;     Text.s = ReplaceString(Text.s, #CR$, #LF$)
     ;     Text.s + #LF$
-    ;     
+    ;  
+    
+      
     CountString = CountString(Text.s, #LF$) 
+   ; Protected time = ElapsedMilliseconds()
+    
+; ;     Protected Len
+; ;     Protected *s_0.Character = @Text.s
+; ;     Protected *e_0.Character = @Text.s 
+; ;     #SOC = SizeOf (Character)
+; ;       While *e_0\c 
+; ;         If *e_0\c = #LF
+; ;           Len = (*e_0-*s_0)>>#PB_Compiler_Unicode
+; ;           line$ = PeekS(*s_0, Len) ;Trim(, #LF$)
     
     For i = 1 To CountString
       line$ = StringField(Text.s, i, #LF$)
@@ -864,13 +876,15 @@ Module Text
       
       ; Get text len
       While length > 1
-        If width > TextWidth(RTrim(Left(line$, length)))
+        ; Debug ""+TextWidth(RTrim(Left(Line$, length))) +" "+ GetTextWidth(RTrim(Left(Line$, length)), length)
+        If width > TextWidth(RTrim(Left(Line$, length))) ; GetTextWidth(RTrim(Left(Line$, length)), length) ;   
           Break
         Else
-          length - 1 
+          length - 1
         EndIf
-      Wend
+      Wend 
       
+      ;  Debug ""+start +" "+ length
       While start > length 
         If mode
           For ii = length To 0 Step - 1
@@ -903,18 +917,24 @@ Module Text
         
         ; Get text len
         While length > 1
-          If width > TextWidth(RTrim(Left(line$, length)))
+         ; Debug ""+TextWidth(RTrim(Left(Line$, length))) +" "+ GetTextWidth(RTrim(Left(Line$, length)), length)
+        If width > TextWidth(RTrim(Left(Line$, length))) ; GetTextWidth(RTrim(Left(Line$, length)), length) ; 
             Break
           Else
-            length - 1 
+            length - 1
           EndIf
-        Wend
-      Wend
+        Wend 
+        
+      Wend   
       
       ret$ + LineRet$ + line$ + #CR$+nl$
       LineRet$=""
     Next
-    
+      
+; ;       *s_0 = *e_0 + #SOC : EndIf : *e_0 + #SOC : Wend
+  ;Debug  ElapsedMilliseconds()-time
+ ; MessageRequester("",Str( ElapsedMilliseconds()-time))
+  
     If Width > 1
       ProcedureReturn ret$ ; ReplaceString(ret$, " ", "*")
     EndIf
@@ -1186,7 +1206,8 @@ Module Text
       ;Debug ""+\Scroll\Width[2] +" "+ \Scroll\Height[2] +" "+ \Width[2] +" "+ \Height[2] +" "+ Width +" "+ Height
       
       If \Text\MultiLine > 0
-        String.s = Wrap(\Text\String.s, Width, \Text\MultiLine)
+        
+        String.s = Wrap(*This, \Text\String.s, Width, \Text\MultiLine)
 ;         \Text\Count = CountString(String.s, #LF$)
 ;         
 ;         For IT = 1 To \Text\Count
@@ -1902,7 +1923,12 @@ Module Text
           EndIf
           
           If \Text\Change
-            \Text\Height[1] = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
+            If set_text_width
+              SetTextWidth(set_text_width, Len(set_text_width))
+              set_text_width = ""
+            EndIf
+            
+           \Text\Height[1] = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
             If \Type = #PB_GadgetType_Tree
               \Text\Height = 20
             Else
@@ -2394,11 +2420,15 @@ Module Text
         If \Text\String.s
           \Text\String.s[1] = Text.s
           
-          If \Text\MultiLine Or \Type = #PB_GadgetType_Editor Or \Type = #PB_GadgetType_Scintilla  ; Or \Type = #PB_GadgetType_ListView
+          If \Text\MultiLine
             Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
             Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
             Text.s = ReplaceString(Text.s, #CR$, #LF$)
-            Text.s + #LF$
+            
+            If \Text\MultiLine > 0
+              Text.s + #LF$
+            EndIf
+            
             \Text\String.s = Text.s
             \Text\Count = CountString(\Text\String.s, #LF$)
           Else
@@ -2822,7 +2852,7 @@ Module Text
             \Text\X = \fSize 
             \Text\y = \fSize + 2
           Else
-            \Text\X = \fSize + 2
+            \Text\X = \fSize + 4
             \Text\y = \fSize
           EndIf
           
@@ -2836,6 +2866,8 @@ Module Text
           
           SetText(*This, Text.s)
           \Resize = 0
+          
+          
         EndIf
       EndWith
     EndIf
@@ -2992,8 +3024,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure ResizeCallBack()
-    ResizeGadget(0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, #PB_Ignore)
-    ResizeGadget(16, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, #PB_Ignore)
+    ResizeGadget(0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-125, #PB_Ignore)
+    ResizeGadget(16, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-125, #PB_Ignore)
     SetWindowTitle(0, Str(WindowWidth(EventWindow(), #PB_Window_FrameCoordinate)-20)+" - Text on the canvas")
   EndProcedure
   
@@ -3011,7 +3043,9 @@ CompilerIf #PB_Compiler_IsMainFile
              ; Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget"
              ; Debug "len - "+Len(Text)
   
-  If OpenWindow(0, 0, 0, 290, 760, "CanvasGadget", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenWindow(0, 0, 0, 280, 760, "CanvasGadget", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    WindowBounds(0, 128,-1,-1,-1)
+    
     CanvasGadget(16, 10, 10, 200, 140*4+30, #PB_Canvas_Keyboard)
     BindGadgetEvent(16, @Canvas_CallBack())
     
@@ -3063,5 +3097,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------v0---------44+fn4+8-833-------------------------------------------
+; Folding = ------v0---------4--46t-+-u00--------------------------------------------
 ; EnableXP
