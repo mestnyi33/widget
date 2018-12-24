@@ -1,10 +1,92 @@
-﻿DeclareModule Procedures
+﻿CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_draw.pbi"
+  XIncludeFile "module_macros.pbi"
+  XIncludeFile "module_constants.pbi"
+  XIncludeFile "module_structures.pbi"
+  XIncludeFile "module_procedures.pbi"
+  
+  CompilerIf #VectorDrawing
+    UseModule Draw
+  CompilerEndIf
+CompilerEndIf
+
+;-
+DeclareModule Procedures
+  
+  EnableExplicit
+  UseModule Macros
+  UseModule Constants
+  UseModule Structures
+  
   
   Declare.i GridSpacing(Value.i, Grid.i, Max.i=$7FFFFFFF)
   Declare.i Arrow(X.i,Y.i, Size.i, Direction.i, Color.i, Thickness.i = 1, Length.i = 1)
+  Declare.s Font_GetNameFromGadgetID(GadgetID)
+  Declare.i GetCurrentDpi()
+  Declare.i IsHideGadget(Gadget)
 EndDeclareModule 
 
 Module Procedures
+  CompilerSelect #PB_Compiler_OS
+    CompilerCase #PB_OS_Linux
+      ImportC ""
+        pango_context_list_families(*context, *families, *n_families); PangoFontFamily
+        pango_context_get_font_description(*context)
+        pango_font_description_get_family(*desc)
+        pango_font_family_get_name(*family)
+        pango_font_family_is_monospace(*family)
+        pango_font_description_from_string(str.p-utf8)
+        
+        ;  gtk_widget_modify_font_(GadgetID, pango_font_description_from_string("Monospace bold 10")) ; gtk2
+				;; for reset use ...
+        ;  gtk_widget_modify_font_(GadgetID, #Null)
+        
+        ;  gtk_widget_override_font(GadgetID, pango_font_description_from_string("Monospace bold 10")) ; gtk3
+		    ;; for reset use ...
+        ;  gtk_widget_override_font(GadgetID, #Null)
+
+;       EndImport
+;       ImportC ""
+        g_object_get_property(*object.GObject, property.p-utf8, *gval)
+        
+        
+        gtk_widget_set_visible(*widget.GtkWidget, visible)
+        gtk_widget_get_visible(*widget.GtkWidget)
+      EndImport
+  CompilerEndSelect
+  
+  Procedure.i IsHideGadget(Gadget)
+    Protected.i Ret
+    
+    CompilerSelect #PB_Compiler_OS
+      CompilerCase #PB_OS_Linux
+        ret = gtk_widget_get_visible(GadgetID(Gadget))
+      CompilerCase #PB_OS_MacOS
+        ret = CocoaMessage(0, GadgetID(Gadget), "isHidden")
+    CompilerEndSelect
+    
+    ProcedureReturn Ret
+  EndProcedure
+
+  
+  #G_TYPE_INT  = 24
+  
+  Procedure.i GetCurrentDpi()
+    Protected.i Ret
+    ; "Current dpi value: " + Str(GetCurrentDpi()/1024)
+    CompilerSelect #PB_Compiler_OS
+      CompilerCase #PB_OS_Linux
+        Protected gVal.GValue
+        
+        g_value_init_(@gval, #G_TYPE_INT)
+        g_object_get_property(gtk_settings_get_default_(), "gtk-xft-dpi", @gval)
+        Ret = g_value_get_int_(@gval)
+        g_value_unset_(@gval)
+    CompilerEndSelect
+    
+    ProcedureReturn Ret
+  EndProcedure
+
   Procedure Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
     Protected I
     
@@ -99,200 +181,67 @@ Module Procedures
   EndProcedure
   
   Procedure.i GridSpacing(Value.i, Grid.i, Max.i=$7FFFFFFF)
-    If Grid 
-      Value = Round((Value/Grid), #PB_Round_Nearest) * Grid : If (Value>Max) : Value=Max : EndIf
-    EndIf
+    ;Value = (Bool(Grid) * (Round((Value/Grid), #PB_Round_Nearest) * Grid) + Bool(Not Grid) * Value)
+    Value = (Round((Value/((Grid) + Bool(Not (Grid)))), #PB_Round_Nearest) * (Grid))
+    If Value>Max : Value=Max : EndIf
     
     ProcedureReturn Value
   EndProcedure
   
-  Procedure.i _Draw(*This.Widget, Canvas.i=-1)
-    Protected String.s, StringWidth
-    Protected IT,Text_Y,Text_X,Width,Height
+  Procedure.s Font_GetNameFromGadgetID(GadgetID)
+    ; http://www.chabba.de/
+    Protected Name.s
     
-    With *This
-      If Canvas=-1 
-        Canvas = EventGadget()
-      EndIf
-      If Canvas <> \Canvas\Gadget
-        ProcedureReturn
-      EndIf
-      
-      If Not \Hide
-        If \Text\FontID : DrawingFont(\Text\FontID) : EndIf
-        DrawingMode(\DrawingMode)
-        BoxGradient(\Vertical,\X[2],\Y[2],\Width[2],\Height[2],\Color[1]\Fore,\Color[1]\Back,\Radius)
+    CompilerSelect #PB_Compiler_OS
+      CompilerCase #PB_OS_Linux
+        Protected Description.i, Family.i
         
-        If \Text\String.s
-          If \Text\Change
-            \Text\Height = TextHeight("A")
-            \Text\Width = TextWidth(\Text\String.s)
-            \Text\Change = 0
-          EndIf
-          
-          If \Text\Vertical
-            Width = \Height[1]-\Text\X*2
-            Height = \Width[1]-\Text\y*2
-          Else
-            Width = \Width[1]-\Text\X*2
-            Height = \Height[1]-\Text\y*2
-          EndIf
-          
-          If \Resize
-            If \Text\MultiLine
-              \Text\String.s[1] = Wrap(\Text\String.s, Width)
-              \Text\CountString = CountString(\Text\String.s[1], #LF$)
-            ElseIf \Text\WordWrap
-              \Text\String.s[1] = Wrap(\Text\String.s, Width, 1)
-              \Text\CountString = CountString(\Text\String.s[1], #LF$)
-            Else
-              ;  \Text\String.s[1] = Wrap(\Text\String.s, Width, 0)
-              \Text\String.s[1] = \Text\String.s
-              \Text\CountString = 1
-            EndIf
-            \Resize = #False
-          EndIf
-          
-          If \Text\CountString
-            If \Text\Align\Bottom
-              Text_Y=(Height-(\Text\Height*\Text\CountString)-Text_Y) 
-            ElseIf \Text\Align\Vertical
-              Text_Y=((Height-(\Text\Height*\Text\CountString))/2)
-            EndIf
-            
-            ;;;ClipOutput(\X[2],\Y[2],\Width[2],\Height[2]) ; Bug in Mac os
-            
-            DrawingMode(#PB_2DDrawing_Transparent)
-            If \Text\Vertical
-              For IT = \Text\CountString To 1 Step - 1
-                If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                
-                String = StringField(\Text\String.s[1], IT, #LF$)
-                StringWidth = TextWidth(RTrim(String))
-                
-                If \Text\Align\Right
-                  Text_X=(Width-StringWidth) 
-                ElseIf \Text\Align\Horisontal
-                  Text_X=(Width-StringWidth)/2 
-                EndIf
-                
-                ;                  DrawRotatedText(\X[1]+\Text\Y+Text_Y, \Y[1]+\Text\X+Text_X+StringWidth, String.s, 90, \Color\Front)
-                DrawRotatedText(\X[1]+\Text\Y+Text_Y+\Text\Height, \Y[1]+\Text\X+Text_X, String.s, 270, \Color\Front)
-                Text_Y+\Text\Height : If Text_Y > (Width) : Break : EndIf
-              Next
-            Else
-              For IT = 1 To \Text\CountString
-                If \Text\Y+Text_Y < \bSize : Text_Y+\Text\Height : Continue : EndIf
-                
-                String = StringField(\Text\String.s[1], IT, #LF$)
-                StringWidth = TextWidth(RTrim(String))
-                
-                If \Text\Align\Right
-                  Text_X=(Width-StringWidth) 
-                ElseIf \Text\Align\Horisontal
-                  If Width > StringWidth
-                    Text_X=(Width-StringWidth)/2
-                  EndIf
-                EndIf
-                
-                DrawText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, \Color\Front)
-                ;DrawRotatedText(\X[1]+\Text\X+Text_X, \Y[1]+\Text\Y+Text_Y, String.s, 0, \Color\Front)
-                Text_Y+\Text\Height : If Text_Y > (Height-\Text\Height) : Break : EndIf
-              Next
-            EndIf
-          EndIf
+        Description = pango_context_get_font_description(gtk_widget_get_pango_context_(GadgetID))
+        Family = pango_font_description_get_family(Description)
+        
+        If Family
+          Name = PeekS(Family, -1, #PB_UTF8)
         EndIf
-        
-        
-        ;         DrawingMode(\DrawingMode)
-        ;         If \Width > \Text\X
-        ;           BoxGradient(\Vertical,\X[1],\Y[1]+\Text\Y,\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
-        ;           BoxGradient(\Vertical,\X[1]+\Width[1]-\Text\X,\Y[1],\Text\X,\Height[1]-\Text\Y,\Color[1]\Fore,\Color[1]\Back)
-        ;         EndIf
-        ;         If \Height > \Text\Y
-        ;           BoxGradient(\Vertical,\X[1],\Y[1],\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
-        ;           BoxGradient(\Vertical,\X[1]+\Text\X,\Y[1]+\Height[1]-\Text\Y,\Width[1]-\Text\X,\Text\Y,\Color[1]\Fore,\Color[1]\Back)
-        ;         EndIf
-        ;       
-        If \fSize
-          DrawingMode(#PB_2DDrawing_Outlined)
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1], \Radius, \Radius, \Color[1]\Frame)
-        EndIf
-        
-      EndIf
-    EndWith 
+    CompilerEndSelect
     
+    ProcedureReturn Name
   EndProcedure
   
-  Procedure canvas_events_bug_fix(*This.Widget, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    Protected Result.b
-    Static MouseLeave.b, LeftClick.b
-    Protected EventGadget.i = EventGadget()
+  Procedure.i Font_IsMonospace(FontName.s)
+    Protected IsMonospace = #False
     
-    If Canvas =- 1
-      With *This
-        Select EventType
-          Case #PB_EventType_Input 
-            \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
-          Case #PB_EventType_KeyDown
-            \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
-            \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
-          Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
-            \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
-            \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
-          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
-               #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
-               #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
-            \Canvas\Mouse\Buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
-        EndSelect
-      EndWith
-    EndIf
-      
-    ; Это из за ошибки в мак ос
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
-        If EventType = #PB_EventType_MouseLeave 
-          EventType = #PB_EventType_MouseMove
-          MouseLeave = 1
-        EndIf
-      EndIf
-      
-      If EventType = #PB_EventType_LeftButtonUp
-        If MouseLeave
-          Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-          EventType = #PB_EventType_MouseLeave
-          MouseLeave = 0
-        Else
-          Result | Events(*This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-          EventType = #PB_EventType_LeftClick
-          LeftClick = 1
-        EndIf
-      EndIf
-      
-      ; Родное убираем оставляем искуственное
-      If EventType = #PB_EventType_LeftClick
-        If LeftClick 
-          LeftClick = 0 
-        Else
-          ProcedureReturn 0
-        EndIf
-      EndIf
-      
-      If EventType = #PB_EventType_LeftButtonDown
-        If GetActiveGadget()<>EventGadget
-          SetActiveGadget(EventGadget)
-        EndIf
-      EndIf
-    CompilerEndIf
+    CompilerSelect #PB_Compiler_OS
+      CompilerCase #PB_OS_Linux
+        Protected   PangoContext = gdk_pango_context_get_()
+        Protected.i PangoFamilies, PangoFamily, pFamilyName
+        Protected.i pPangoFamily
+        Protected.i I, nFamilies
+        
+        pango_context_list_families(PangoContext, @PangoFamilies, @nFamilies)
+        pPangoFamily= PangoFamilies
+        For I= 1 To nFamilies
+          PangoFamily= PeekI(pPangoFamily);                    not sure about 'long', but yet no error
+          If PangoFamily
+            pFamilyName= pango_font_family_get_name(PangoFamily)
+            If pFamilyName
+              If PeekS(pFamilyName, -1, #PB_UTF8) = FontName;  compare names
+                IsMonospace= pango_font_family_is_monospace(PangoFamily)
+                Break
+              EndIf
+            EndIf
+          EndIf
+          pPangoFamily+ SizeOf(PangoFamily)
+        Next I
+        g_free_(PangoFamilies)
+    CompilerEndSelect
     
-    Result | Events(*This, EventType, Canvas, CanvasModifiers)
-    ProcedureReturn Result
+    ProcedureReturn IsMonospace
   EndProcedure
-  
-  
+
+
 EndModule 
 
 UseModule Procedures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = 8-t------
+; Folding = f+f--
 ; EnableXP

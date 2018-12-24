@@ -325,6 +325,36 @@ Module Macros
   EndProcedure
   
   
+; https://www.purebasic.fr/german/viewtopic.php?f=3&t=31144
+;   Procedure.i SetBit(*Target,Bit.i)
+;     !mov rax,[p.p_Target]
+;     !mov rcx,[p.v_Bit] 
+;     !bts [rax],rcx
+;   EndProcedure
+;   
+;   Procedure.i GetBit(*Target,Bit.i)
+;     !xor rax,rax
+;     !mov rcx,[p.p_Target]
+;     !mov rdx,[p.v_Bit]
+;     !bt [rcx],rdx
+;     !setc al
+;     ProcedureReturn
+;   EndProcedure
+  
+; Procedure.i SetBits(*Target.Long, Offset.i, Value.i)
+;    *Target\l | (Value << Offset)
+; EndProcedure
+; 
+; Procedure.i GetBits(*Target.Long, Offset.i)
+;    ProcedureReturn (*Target\l >> Offset) & %111
+; EndProcedure
+; Global Buffer.l
+
+; SetBits(@Buffer,0,3);<- setze den Wert 4 (in 3 Bits) an die Position @Buffer + Offset (in Bits)
+; Debug GetBits(@Buffer,0);<- hier wird der Wert wieder ausgelesen
+
+
+
 EndModule 
 
 UseModule Macros

@@ -468,7 +468,7 @@ Module Scroll
         If ( \Vertical And \Type = #PB_GadgetType_TrackBar) : ScrollPos = (( \Max-\Min)-ScrollPos) : EndIf
         
         If ScrollPos < \Min : ScrollPos = \Min : EndIf
-        If ScrollPos > (\Max-\Page\len) ; ((\Max-\Min) - \Page\len)
+        If ScrollPos > (\Max-\Page\len)
           ScrollPos = (\Max-\Page\len)
         EndIf
         

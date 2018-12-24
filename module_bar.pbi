@@ -1,6 +1,8 @@
 ﻿DeclareModule Bar
   EnableExplicit
   
+  #PB_ScrollBar_NoButtons = 1<<1
+  
   ;- - STRUCTUREs
   ;- - Coordinate_S
   Structure Coordinate_S
@@ -30,23 +32,22 @@
   
   ;- - Bar_S
   Structure Bar_S Extends Coordinate_S
-    *s.Scroll_S
-    
     at.i
     Type.i
-    Radius.i
-    ArrowSize.b[3]
+    Radius.a
+    ArrowSize.a[3]
     ArrowType.b[3]
     
     Hide.b[2]
     Disable.b[2]
     
+    Change.b
+    Vertical.b
+    Direction.i
+    Inverted.b
+    
     Max.i
     Min.i
-    Vertical.b
-    Change.i
-    Direction.i
-    
     Page.Page_S
     Area.Page_S
     Thumb.Page_S
@@ -61,13 +62,19 @@
   ;-
   ;- - DECLAREs
   Macro ScrollEnd(_this_)
-    Bool(_this_\Page\Pos >= ((_this_\Max-_this_\Min)-_this_\Page\len)) ; * _this_\Max
+    Bool(_this_\Page\Pos >= _this_\Max-_this_\Page\len)
+  EndMacro
+  
+  Macro ScrollStart(_this_)
+    Bool(_this_\Page\Pos =< _this_\Min)
   EndMacro
   
   Declare.i Draw(*This.Bar_S)
-  Declare.b SetState(*This.Bar_S, ScrollPos.i)
+  Declare.i GetState(*This.Bar_S)
+  Declare.i SetState(*This.Bar_S, ScrollPos.i)
+  Declare.i GetAttribute(*This.Bar_S, Attribute.i)
   Declare.i SetAttribute(*This.Bar_S, Attribute.i, Value.i)
-  Declare.b CallBack(*This.Bar_S, EventType.i, mouseX=0, mouseY=0)
+  Declare.i CallBack(*This.Bar_S, EventType.i, MouseScreenX.i=0, MouseScreenY.i=0)
   Declare.i SetColor(*This.Bar_S, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.i Resize(*This.Bar_S, X.i,Y.i,Width.i,Height.i, *That.Bar_S=0)
   Declare.i Bar(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, Radius.i=0)
@@ -79,9 +86,9 @@ EndDeclareModule
 Module Bar
   Global Colors.Color_S
   
+  ;- COLORS
   With Colors                          
     \State = 0
-    ;- Синие цвета
     ; Цвета по умолчанию
     \Front[0] = $80000000
     \Fore[0] = $FFF8F8F8 
@@ -101,13 +108,7 @@ Module Bar
     \Frame[2] = $C8DC9338; $80DC9338
   EndWith
   
-  Macro ThumbLength(_this_)
-    Round(_this_\Area\len - (_this_\Area\len / (_this_\Max-_this_\Min)) * ((_this_\Max-_this_\Min) - _this_\Page\len), #PB_Round_Nearest)
-  EndMacro
-  Macro ThumbPos(_this_, _scroll_pos_)
-    (_this_\Area\Pos + Round((_scroll_pos_-_this_\Min) * (_this_\Area\len / (_this_\Max-_this_\Min)), #PB_Round_Nearest)) : If _this_\Vertical : _this_\Y[3] = _this_\Thumb\Pos : _this_\Height[3] = _this_\Thumb\len : Else : _this_\X[3] = _this_\Thumb\Pos : _this_\Width[3] = _this_\Thumb\len : EndIf
-  EndMacro
-  
+  ;-
   Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
     BackColor(_color_1_&$FFFFFF|_alpha_<<24)
     FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
@@ -118,6 +119,14 @@ Module Bar
     EndIf
     RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
     BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
+  EndMacro
+  
+  Macro ThumbLength(_this_)
+    Round(_this_\Area\len - (_this_\Area\len / (_this_\Max-_this_\Min)) * ((_this_\Max-_this_\Min) - _this_\Page\len), #PB_Round_Nearest)
+  EndMacro
+  
+  Macro ThumbPos(_this_, _scroll_pos_)
+    (_this_\Area\Pos + Round((_scroll_pos_-_this_\Min) * (_this_\Area\len / (_this_\Max-_this_\Min)), #PB_Round_Nearest)) : If _this_\Vertical : _this_\Y[3] = _this_\Thumb\Pos : _this_\Height[3] = _this_\Thumb\len : Else : _this_\X[3] = _this_\Thumb\Pos : _this_\Width[3] = _this_\Thumb\len : EndIf
   EndMacro
   
   Procedure Arrow(X,Y, Size, Direction, Color, Thickness = 1, Length = 1)
@@ -213,21 +222,13 @@ Module Bar
     
   EndProcedure
   
-  Procedure.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
-    If Grid 
-      Value = Round((Value/Grid), #PB_Round_Nearest) * Grid 
-      If Value>Max : Value=Max : EndIf
-    EndIf
-    
-    ProcedureReturn Value
-  EndProcedure
-  
   Procedure.i Pos(*This.Bar_S, ThumbPos.i)
     Protected ScrollPos.i
     
     With *This
-      ScrollPos = Match(\Min + Round((ThumbPos - \Area\Pos) / (\Area\len / (\Max-\Min)), #PB_Round_Nearest), \Page\Step) 
-      If (\Vertical And \Type = #PB_GadgetType_TrackBar) : ScrollPos = ((\Max-\Min)-ScrollPos) : EndIf
+      ScrollPos = \Min + Round((ThumbPos - \Area\Pos) / (\Area\len / (\Max-\Min)), #PB_Round_Nearest)
+      ScrollPos = Round(ScrollPos/(\Page\Step + Bool(Not \Page\Step)), #PB_Round_Nearest) * \Page\Step
+      If \Inverted : ScrollPos = ((\Max-\Min)-ScrollPos) : EndIf
     EndWith
     
     ProcedureReturn ScrollPos
@@ -269,13 +270,15 @@ Module Bar
           EndIf
         EndIf
         
-        If \Button\len 
+        If \Button\len
           ; Draw buttons
           If \Color[1]\back[\Color[1]\State]<>-1
             If \Color[1]\Fore[\Color[1]\State]
               DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
             EndIf
             BoxGradient( \Vertical, \X[1], \Y[1], \Width[1], \Height[1], \Color[1]\Fore[\Color[1]\State], \Color[1]\Back[\Color[1]\State], \Radius, \color\alpha)
+          EndIf
+          If \Color[2]\back[\Color[2]\State]<>-1
             If \Color[2]\Fore[\Color[2]\State]
               DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
             EndIf
@@ -293,9 +296,17 @@ Module Bar
           EndIf
           
           ; Draw arrows
-          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          Arrow( \X[1]+( \Width[1]-\ArrowSize[1])/2, \Y[1]+( \Height[1]-\ArrowSize[1])/2, \ArrowSize[1], Bool( \Vertical), \Color[1]\Front[\Color[1]\State]&$FFFFFF|\color\alpha<<24, \ArrowType[1])
-          Arrow( \X[2]+( \Width[2]-\ArrowSize[2])/2, \Y[2]+( \Height[2]-\ArrowSize[2])/2, \ArrowSize[2], Bool( \Vertical)+2, \Color[2]\Front[\Color[2]\State]&$FFFFFF|\color\alpha<<24, \ArrowType[2])
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          If ScrollStart(*This)
+            Arrow( \X[1]+( \Width[1]-\ArrowSize[1])/2, \Y[1]+( \Height[1]-\ArrowSize[1])/2, \ArrowSize[1], Bool( \Vertical), \Color[1]\Frame[0]&$FFFFFF|\color\alpha<<24, \ArrowType[1])
+          Else
+            Arrow( \X[1]+( \Width[1]-\ArrowSize[1])/2, \Y[1]+( \Height[1]-\ArrowSize[1])/2, \ArrowSize[1], Bool( \Vertical), \Color[1]\Front[\Color[1]\State]&$FFFFFF|\color\alpha<<24, \ArrowType[1])
+          EndIf
+          If ScrollEnd(*This)
+            Arrow( \X[2]+( \Width[2]-\ArrowSize[2])/2, \Y[2]+( \Height[2]-\ArrowSize[2])/2, \ArrowSize[2], Bool( \Vertical)+2, \Color[2]\Frame[0]&$FFFFFF|\color\alpha<<24, \ArrowType[2])
+          Else
+            Arrow( \X[2]+( \Width[2]-\ArrowSize[2])/2, \Y[2]+( \Height[2]-\ArrowSize[2])/2, \ArrowSize[2], Bool( \Vertical)+2, \Color[2]\Front[\Color[2]\State]&$FFFFFF|\color\alpha<<24, \ArrowType[2])
+          EndIf
         EndIf
         
         If \Color[3]\Fore[\Color[3]\State]  ; Draw thumb lines
@@ -314,15 +325,20 @@ Module Bar
     EndWith 
   EndProcedure
   
-  Procedure.b SetState(*This.Bar_S, ScrollPos.i)
-    Protected Result.b, Direction.i ; Направление и позиция скролла (вверх,вниз,влево,вправо)
+  Procedure.i SetState(*This.Bar_S, ScrollPos.i)
+    Protected Result.i, Direction.i ; Направление и позиция скролла (вверх,вниз,влево,вправо)
     
     With *This
       If *This
-        If ( \Vertical And \Type = #PB_GadgetType_TrackBar) : ScrollPos = (( \Max-\Min)-ScrollPos) : EndIf
+        If \Inverted
+          ScrollPos = ((\Max-\Min)-ScrollPos) 
+        EndIf
         
-        If ScrollPos < \Min : ScrollPos = \Min : EndIf
-        If ScrollPos > (\Max-\Page\len) ; ((\Max-\Min) - \Page\len)
+        If ScrollPos < \Min
+          ScrollPos = \Min 
+        EndIf
+        
+        If ScrollPos > (\Max-\Page\len)
           ScrollPos = (\Max-\Page\len)
         EndIf
         
@@ -332,6 +348,18 @@ Module Bar
           Else
             \Direction = ScrollPos
           EndIf
+                  
+;           If ScrollPos > \Min
+;             \color[1]\alpha = 255
+;           Else
+;             \color[1]\alpha = \color[1]\alpha[1]
+;           EndIf
+;           
+;           If ScrollPos < (\Max-\Page\len)
+;             \color[2]\alpha = 255
+;           Else
+;             \color[2]\alpha = \color[2]\alpha[1]
+;           EndIf
           
           \Thumb\Pos = ThumbPos(*This, ScrollPos)
           \Page\Pos = ScrollPos
@@ -342,6 +370,19 @@ Module Bar
     EndWith
     
     ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i GetState(*This.Bar_S)
+    Protected ScrollPos
+    
+    With *This
+      ScrollPos = \Page\Pos
+      If \Inverted 
+        ScrollPos = ((\Max-\Min)-ScrollPos) 
+      EndIf
+    EndWith
+    
+    ProcedureReturn ScrollPos
   EndProcedure
   
   Procedure.i SetAttribute(*This.Bar_S, Attribute.i, Value.i)
@@ -361,7 +402,8 @@ Module Bar
                 Value = \Min + 1
               EndIf
               \Max = Value
-              \Page\Step = (\Max-\Min) / 100
+              
+              \Page\Step = Bool(\Page\len) * ((\Max-\Min) / (Bool(\Page\len) * \Page\len + 1)) + 1
               ProcedureReturn 1
             EndIf
             
@@ -382,6 +424,22 @@ Module Bar
         EndSelect
       EndIf
     EndWith
+  EndProcedure
+  
+  Procedure.i GetAttribute(*This.Bar_S, Attribute.i)
+    Protected Result.i
+    
+    With *This
+      If *This
+        Select Attribute
+          Case #PB_ScrollBar_Minimum : Result = \Min
+          Case #PB_ScrollBar_Maximum : Result = \Max
+          Case #PB_ScrollBar_PageLength : Result = \Page\len
+        EndSelect
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
   EndProcedure
   
   Procedure.i SetColor(*This.Bar_S, ColorType.i, Color.i, State.i=0, Item.i=0)
@@ -437,48 +495,45 @@ Module Bar
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Events(*This.Bar_S, EventType.i, mouseX.i, mouseY.i, at.i)
+  Procedure.i Events(*This.Bar_S, at.i, EventType.i, MouseScreenX.i, MouseScreenY.i)
     Static delta, cursor
     Protected Repaint.i
     Protected window = EventWindow()
     Protected canvas = EventGadget()
     
-    ;Debug EventType
-    
     If *This
       With *This
         Select EventType
+          Case #PB_EventType_LeftButtonUp : delta = 0
           Case #PB_EventType_LeftDoubleClick 
             Select at
               Case - 1
-                ; If \Height > ( \Y[2]+\Height[2])
                 If \Vertical
-                  Repaint = SetState(*This, Pos(*This, (mouseY-\Thumb\len/2)))
+                  Repaint = SetState(*This, Pos(*This, (MouseScreenY-\Thumb\len/2)))
                 Else
-                  Repaint = SetState(*This, Pos(*This, (mouseX-\Thumb\len/2)))
+                  Repaint = SetState(*This, Pos(*This, (MouseScreenX-\Thumb\len/2)))
                 EndIf
-                ; EndIf
             EndSelect
             
-          Case #PB_EventType_LeftButtonUp : delta = 0
           Case #PB_EventType_LeftButtonDown 
             Select at
-              Case 1 : Repaint = SetState(*This, ( \Page\Pos - \Page\Step))
-              Case 2 : Repaint = SetState(*This, ( \Page\Pos + \Page\Step))
-              Case 3 
+              Case 1 : Repaint = SetState(*This, (\Page\Pos - \Page\Step)) ; Up button
+              Case 2 : Repaint = SetState(*This, (\Page\Pos + \Page\Step)) ; Down button
+              Case 3                                                       ; Thumb button
                 If \Vertical
-                  delta = mouseY - \Thumb\Pos
+                  delta = MouseScreenY - \Thumb\Pos
                 Else
-                  delta = mouseX - \Thumb\Pos
+                  delta = MouseScreenX - \Thumb\Pos
                 EndIf
             EndSelect
             
           Case #PB_EventType_MouseMove
             If delta
+            ;Debug at
               If \Vertical
-                Repaint = SetState(*This, Pos(*This, (mouseY-delta)))
+                Repaint = SetState(*This, Pos(*This, (MouseScreenY-delta)))
               Else
-                Repaint = SetState(*This, Pos(*This, (mouseX-delta)))
+                Repaint = SetState(*This, Pos(*This, (MouseScreenX-delta)))
               EndIf
             EndIf
         EndSelect
@@ -501,6 +556,11 @@ Module Bar
             Repaint = #True
             
           Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter
+            If ((at = 1 And \Page\Pos = \Min) Or (at = 2 And \Page\Pos = (\Max-\Page\len)))
+              \Color[at]\State = 0
+              at = 0
+            EndIf
+            
             If at>0
               \Color[at]\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
               
@@ -521,27 +581,27 @@ Module Bar
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.b CallBack(*This.Bar_S, EventType.i, mouseX=0, mouseY=0)
-    Protected repaint
-    Static Last, Down, *Scroll.Bar_S, *Last.Bar_S, mouseB, mouseat
+  Procedure.i CallBack(*This.Bar_S, EventType.i, MouseScreenX.i=0, MouseScreenY.i=0)
+    Protected repaint.i
+    Static Last.i, Down.i, *Scroll.Bar_S, *Last.Bar_S, mouseB.i, mouseat.i
     
     With *This
-      If *This And Not \hide And \color\alpha And \Type = #PB_GadgetType_ScrollBar
-        If Not mouseX
-          mouseX = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX)
+      If *This And Not \hide And \color\alpha
+        If Not MouseScreenX
+          MouseScreenX = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX)
         EndIf
-        If Not mouseY
-          mouseY = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY)
+        If Not MouseScreenY
+          MouseScreenY = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY)
         EndIf
         
         ; get at point buttons
         If mouseB
-        ElseIf (mouseX>=\X And mouseX<\X+\Width And mouseY>\Y And mouseY=<\Y+\Height) 
-          If (mouseX>\X[1] And mouseX=<\X[1]+\Width[1] And  mouseY>\Y[1] And mouseY=<\Y[1]+\Height[1])
+        ElseIf (MouseScreenX>=\X And MouseScreenX<\X+\Width And MouseScreenY>\Y And MouseScreenY=<\Y+\Height) 
+          If (MouseScreenX>\X[1] And MouseScreenX=<\X[1]+\Width[1] And  MouseScreenY>\Y[1] And MouseScreenY=<\Y[1]+\Height[1])
             \at = 1
-          ElseIf (mouseX>\X[3] And mouseX=<\X[3]+\Width[3] And mouseY>\Y[3] And mouseY=<\Y[3]+\Height[3])
+          ElseIf (MouseScreenX>\X[3] And MouseScreenX=<\X[3]+\Width[3] And MouseScreenY>\Y[3] And MouseScreenY=<\Y[3]+\Height[3])
             \at = 3
-          ElseIf (mouseX>\X[2] And mouseX=<\X[2]+\Width[2] And mouseY>\Y[2] And mouseY=<\Y[2]+\Height[2])
+          ElseIf (MouseScreenX>\X[2] And MouseScreenX=<\X[2]+\Width[2] And MouseScreenY>\Y[2] And MouseScreenY=<\Y[2]+\Height[2])
             \at = 2
           Else
             \at =- 1
@@ -575,17 +635,17 @@ Module Bar
             ;
             ; Debug ""+Last +" "+ *This\at +" "+ *This +" "+ *Last
             If Last > 0 Or (Last = 2 And \at =- 1 And *Last)
-              repaint | Events(*This, #PB_EventType_MouseLeave, mouseX, mouseY, Last) : *Last = 0
+              repaint | Events(*This, Last, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY) : *Last = 0
             EndIf
             If Not \at Or (Last = 2 And \at =- 1 And *Last)
-              repaint | Events(*This, #PB_EventType_MouseLeave, mouseX, mouseY, - 1) : *Last = 0
+              repaint | Events(*This, - 1, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY) : *Last = 0
             EndIf
             
             If Not last ; Or (Last =- 1 And \at = 2 And *Last)
-              repaint | Events(*This, #PB_EventType_MouseEnter, mouseX, mouseY, - 1)
+              repaint | Events(*This, - 1, #PB_EventType_MouseEnter, MouseScreenX, MouseScreenY)
             EndIf
             If \at > 0
-              repaint | Events(*This, #PB_EventType_MouseEnter, mouseX, mouseY, \at)
+              repaint | Events(*This, \at, #PB_EventType_MouseEnter, MouseScreenX, MouseScreenY)
             EndIf
             
             Last = \at
@@ -595,12 +655,12 @@ Module Bar
             Case #PB_EventType_LeftButtonDown : mouseB = 1
               If \at
                 Down = \at
-                repaint | Events(*This, EventType, mouseX, mouseY, \at)
+                repaint | Events(*This, \at, EventType, MouseScreenX, MouseScreenY)
               EndIf
               
             Case #PB_EventType_LeftButtonUp : mouseB = 0
               If Down
-                repaint | Events(*This, EventType, mouseX, mouseY, Down)
+                repaint | Events(*This, Down, EventType, MouseScreenX, MouseScreenY)
                 Down = 0
               EndIf
               
@@ -609,7 +669,7 @@ Module Bar
                  #PB_EventType_MouseMove
               
               If \at
-                repaint | Events(*This, EventType, mouseX, mouseY, \at)
+                repaint | Events(*This, \at, EventType, MouseScreenX, MouseScreenY)
               EndIf
           EndSelect
         EndIf
@@ -692,28 +752,29 @@ Module Bar
     Protected Lines.i, ScrollPage.i
     
     If *That
-      ; ;       If y=#PB_Ignore : y = *This\Y : EndIf
-      ; ;       If x=#PB_Ignore : x = *That\X : EndIf
-      ; ;       If Width=#PB_Ignore : Width = *This\X-*That\X+*This\width : EndIf
-      ; ;       If Height=#PB_Ignore : Height = *That\Y-*This\Y+*That\height : EndIf
-      ; ;       
-      ; ;       ; Debug ""+Width +" "+ Str(*This\X-*That\X+*This\width)
-      ; ;       
-      ; ;       SetAttribute(*This, #PB_ScrollBar_PageLength, Height - Bool(Not *That\hide) * *That\height) 
-      ; ;       SetAttribute(*That, #PB_ScrollBar_PageLength, Width - Bool(Not *This\hide) * *This\width)  
-      ; ;       
-      ; ; ;       *This\Hide = Resize(*This, x+*That\Page\Len, #PB_Ignore, #PB_Ignore, *This\Page\len)
-      ; ; ;       *That\Hide = Resize(*That, #PB_Ignore, y+*This\Page\len, *That\Page\len, #PB_Ignore)
-      ; ;       
-      ; ;       *This\Hide = Resize(*This, x+*That\Page\Len, y, #PB_Ignore, *This\Page\len)
-      ; ;       *That\Hide = Resize(*That, x, y+*This\Page\len, *That\Page\len, #PB_Ignore)
-      ; ;       
-      ; ;       SetAttribute(*This, #PB_ScrollBar_PageLength, Height - Bool(Not *That\hide) * *That\height)
-      ; ;       SetAttribute(*That, #PB_ScrollBar_PageLength, Width - Bool(Not *This\hide) * *This\width)
-      ; ;       
-      ; ;       *This\Hide = Resize(*This, x+*That\Page\len, #PB_Ignore, #PB_Ignore, *This\Page\len + Bool(*This\Radius And Not *That\Hide)*4)
-      ; ;       *That\Hide = Resize(*That, #PB_Ignore, y+*This\Page\len, *That\Page\len + Bool(*That\Radius And Not *This\Hide)*4, #PB_Ignore)
-      
+            If y=#PB_Ignore : y = *This\Y : EndIf
+            If x=#PB_Ignore : x = *That\X : EndIf
+            If Width=#PB_Ignore : Width = *This\X-*That\X+*This\width : EndIf
+            If Height=#PB_Ignore : Height = *That\Y-*This\Y+*That\height : EndIf
+            
+            ; Debug ""+Width +" "+ Str(*This\X-*That\X+*This\width)
+            
+            SetAttribute(*This, #PB_ScrollBar_PageLength, Height - Bool(Not *That\hide) * *That\height) 
+            SetAttribute(*That, #PB_ScrollBar_PageLength, Width - Bool(Not *This\hide) * *This\width)  
+            
+      ;       *This\Hide = Resize(*This, x+*That\Page\Len, #PB_Ignore, #PB_Ignore, *This\Page\len)
+      ;       *That\Hide = Resize(*That, #PB_Ignore, y+*This\Page\len, *That\Page\len, #PB_Ignore)
+            
+            *This\Hide = Resize(*This, x+*That\Page\Len, y, #PB_Ignore, *This\Page\len)
+            *That\Hide = Resize(*That, x, y+*This\Page\len, *That\Page\len, #PB_Ignore)
+            
+            SetAttribute(*This, #PB_ScrollBar_PageLength, Height - Bool(Not *That\hide) * *That\height)
+            SetAttribute(*That, #PB_ScrollBar_PageLength, Width - Bool(Not *This\hide) * *This\width)
+            
+            *This\Hide = Resize(*This, x+*That\Page\len, #PB_Ignore, #PB_Ignore, *This\Page\len + Bool(*This\Radius And Not *That\Hide)*4)
+            *That\Hide = Resize(*That, #PB_Ignore, y+*This\Page\len, *That\Page\len + Bool(*That\Radius And Not *This\Hide)*4, #PB_Ignore)
+        ProcedureReturn 1
+    
       If Width=#PB_Ignore 
         Width = *This\X+*This\Width
       EndIf
@@ -724,13 +785,13 @@ Module Bar
       SetAttribute(*This, #PB_ScrollBar_PageLength, Height-Bool(Not *That\Hide) * *That\height)
       SetAttribute(*That, #PB_ScrollBar_PageLength, Width-Bool(Not *This\Hide) * *This\width)
       
-;       *This\Hide = Resize(*This, Width+x-*This\Width, Y, #PB_Ignore, (*That\Y+Bool(*That\Hide) * *That\Height) - *This\Y)
-     
-            *This\Hide = Resize(*This, x+*That\Page\Len, y, #PB_Ignore, *This\Page\len)
+      ;       *This\Hide = Resize(*This, Width+x-*This\Width, Y, #PB_Ignore, (*That\Y+Bool(*That\Hide) * *That\Height) - *This\Y)
+      
+      *This\Hide = Resize(*This, x+*That\Page\Len, y, #PB_Ignore, *This\Page\len)
       ;      *That\Hide = Resize(*That, x, y+*This\Page\len, *That\Page\len, #PB_Ignore)
-            
-            *That\Hide = Resize(*That, X, Height+y-*That\Height, (*This\X+Bool(*This\Hide) * *This\width) - *That\X, #PB_Ignore)
-     
+      
+      *That\Hide = Resize(*That, X, Height+y-*That\Height, (*This\X+Bool(*This\Hide) * *This\width) - *That\X, #PB_Ignore)
+      
       SetAttribute(*This, #PB_ScrollBar_PageLength, Height-Bool(Not *That\Hide) * *That\height)
       SetAttribute(*That, #PB_ScrollBar_PageLength, Width-Bool(Not *This\Hide) * *This\width)
       
@@ -792,8 +853,8 @@ Module Bar
             EndIf
             
             If \Area\len > 0
-              If ScrollEnd(*This) And (\Type <> #PB_GadgetType_TrackBar) 
-                SetState(*This, (\Max-\Min))
+              If ScrollEnd(*This)
+                SetState(*This, Bool(Not \Inverted) * (\Max-\Min))
               EndIf
               
               \Thumb\Pos = ThumbPos(*This, \Page\Pos)
@@ -826,8 +887,8 @@ Module Bar
       \X =- 1
       \Y =- 1
       \Radius = Radius
-      \Vertical = Bool(Flag=#PB_ScrollBar_Vertical)
       \Type = #PB_GadgetType_ScrollBar
+      \Vertical = Bool(Flag&#PB_ScrollBar_Vertical)
       
       \ArrowSize[1] = 4
       \ArrowSize[2] = 4
@@ -835,7 +896,7 @@ Module Bar
       \ArrowType[2] =- 1 ; -1 0 1
       
       ; Цвет фона скролла
-      \color\alpha = 255
+      \color[0]\alpha = 255
       \color\alpha[1] = 0
       \Color\State = 0
       \Color\Back = $FFF9F9F9
@@ -845,18 +906,27 @@ Module Bar
       \Color[1] = Colors
       \Color[2] = Colors
       \Color[3] = Colors
+      \color[1]\alpha = 255
+      \color[2]\alpha = 255
+      \color[3]\alpha = 255
+      \color[1]\alpha[1] = 128
+      \color[2]\alpha[1] = 128
+      \color[3]\alpha[1] = 128
       
-      If \Vertical
-        If width < 21
-          \Button\len = width - 1
+      
+      If Not Bool(Flag&#PB_ScrollBar_NoButtons)
+        If \Vertical
+          If width < 21
+            \Button\len = width - 1
+          Else
+            \Button\len = 17
+          EndIf
         Else
-          \Button\len = 17
-        EndIf
-      Else
-        If height < 21
-          \Button\len = height - 1
-        Else
-          \Button\len = 17
+          If height < 21
+            \Button\len = height - 1
+          Else
+            \Button\len = 17
+          EndIf
         EndIf
       EndIf
       
@@ -905,6 +975,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Repaint, iWidth, iHeight
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
+    Protected mouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     
     
     Select EventType
@@ -914,9 +986,15 @@ CompilerIf #PB_Compiler_IsMainFile
         
     EndSelect
     
-    Repaint | Bar::CallBack(*Scroll\v, EventType)
-    Repaint | Bar::CallBack(*Scroll\h, EventType)
+    Repaint | Bar::CallBack(*Scroll\v, EventType, mouseX,mouseY)
+    Repaint | Bar::CallBack(*Scroll\h, EventType, mouseX,mouseY)
     
+    If Not (*Scroll\v\at Or *Scroll\h\at)
+      Select EventType
+        Case #PB_EventType_LeftButtonDown
+          Debug 5554
+      EndSelect
+    EndIf
     
     If *Scroll\v\Change
       ; An example showing the sending of messages in a vertical scrollbar.
@@ -960,18 +1038,20 @@ CompilerIf #PB_Compiler_IsMainFile
         *Scroll\v\Color\Line = $FFFFFF
       EndIf
       
-      
-      ClipOutput(x,y, *Scroll\h\Page\len, *Scroll\v\Page\len)
-      DrawImage(ImageID(0), x-*Scroll\h\Page\Pos, y-*Scroll\v\Page\Pos)
+      ClipOutput(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Page\len, *Scroll\v\Page\len)
+      DrawImage(ImageID(0), *Scroll\h\x-*Scroll\h\Page\Pos, *Scroll\v\y-*Scroll\v\Page\Pos)
       UnclipOutput()
       
       Bar::Draw(*Scroll\v)
       Bar::Draw(*Scroll\h)
       
+      ;Debug ""+*Scroll\h\x +" "+ x
       DrawingMode(#PB_2DDrawing_Outlined)
-      Box(x, y, *Scroll\h\Page\Len, *Scroll\v\Page\Len, $FF0000)
+      Box(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Page\Len, *Scroll\v\Page\Len, $00FF00)
+      
+      ; Scroll area coordinate
       DrawingMode(#PB_2DDrawing_Outlined)
-      Box(x-*Scroll\h\Page\Pos, y-*Scroll\v\Page\Pos, *Scroll\h\Max, *Scroll\v\Max, $00FF00)
+      Box(*Scroll\h\x-*Scroll\h\Page\Pos, *Scroll\v\y-*Scroll\v\Page\Pos, *Scroll\h\Max, *Scroll\v\Max, $FF0000)
       
       StopDrawing()
     EndIf
@@ -1042,10 +1122,12 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
     
     ; Create both scroll bars
-    *Scroll\v = Bar::Bar(#PB_Ignore, y,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical, 7)
-    *Scroll\h = Bar::Bar(x, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
+    *Scroll\v = Bar::Bar(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical, 7)
+    *Scroll\h = Bar::Bar(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
+    *Scroll\h\Inverted = 1
     
-    Bar::SetState(*Scroll\v, 150)
+    ; Set scroll page position
+    Bar::SetState(*Scroll\v, 120)
     Bar::SetState(*Scroll\h, 100)
     
     PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
@@ -1061,5 +1143,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------------------------
+; Folding = -f-----8--------------------0--
 ; EnableXP

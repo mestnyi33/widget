@@ -11,6 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
+  XIncludeFile "module_procedures.pbi"
   
   CompilerIf #VectorDrawing
     UseModule Draw
@@ -3054,6 +3055,8 @@ CompilerIf #PB_Compiler_IsMainFile
     *B_2 = Create(16, -1, 0, 300, 200, 140, Text, #PB_Text_Middle|#PB_Text_Right)
     *B_3 = Create(16, -1, 0, 450, 200, 140, Text, #PB_Text_Center|#PB_Text_Bottom)
     
+    Debug "font name: "+Procedures::Font_GetNameFromGadgetID(GadgetID(16))
+    
     TextGadget(0, 10, 610, 200, 140, Text, #PB_Text_Border|#PB_Text_Center)
     ;   EditorGadget(4, 10, 220, 200, 200) : AddGadgetItem(10, -1, Text)
     ;SetGadgetFont(0,FontID)
@@ -3096,6 +3099,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 3057
+; FirstLine = 2911
 ; Folding = ------v0---------4--46t-+-u00--------------------------------------------
 ; EnableXP

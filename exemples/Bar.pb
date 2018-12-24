@@ -68,11 +68,10 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       If *Scroll\height < Images()\Y+Images()\height 
-        *Scroll\height = Images()\Y+Images()\height
+        *Scroll\height = Images()\height+Images()\Y
       EndIf 
     Next
     PopListPosition(Images())
-    
   EndMacro
   
   Procedure AddImage (List Images.canvasitem(), x, y, img, alphatest=0)
@@ -114,13 +113,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       
-      ; ClipOutput(x,y, *Scroll\h\Page\len, *Scroll\v\Page\len)
+      ; ClipOutput(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Page\len, *Scroll\v\Page\len)
       DrawingMode(#PB_2DDrawing_AlphaBlend)
       ;       If focus And ChangeCurrentElement(Images(), focus)
       ;         DrawImage(ImageID(Images()\img),x+(Images()\x - *Scroll\h\Page\Pos), y+(Images()\y)) ; draw all images with z-order
       ;       Else
       ForEach Images()
-        DrawImage(ImageID(Images()\img),x+(Images()\x - Bool(Not focus) * *Scroll\h\Page\Pos), y+(Images()\y - Bool(Not focus) * *Scroll\y)) ; draw all images with z-order
+        DrawImage(ImageID(Images()\img),x+(Images()\x - Bool(Not focus) * *Scroll\h\Page\Pos), y+(Images()\y - Bool(Not focus) * *Scroll\v\Page\Pos)) ; draw all images with z-order
       Next
       ;       EndIf
       UnclipOutput()
@@ -129,9 +128,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Bar::Draw(*Scroll\h)
       
       DrawingMode(#PB_2DDrawing_Outlined)
-      Box(x, y, *Scroll\h\Page\Len, *Scroll\v\Page\Len, $000000)
-      Box(x+*Scroll\x, y+*Scroll\y, *Scroll\width, *Scroll\height, $00FF00)
-      StopDrawing()
+      ; area coordinate
+      Box(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Page\Len, *Scroll\v\Page\Len, $00FF00)
+      
+      ; Scroll area coordinate
+      Box(*Scroll\h\x-*Scroll\h\Page\Pos, *Scroll\v\y-*Scroll\v\Page\Pos, *Scroll\h\Max, *Scroll\v\Max, $FF0000)
+     StopDrawing()
     EndIf
   EndProcedure
   
@@ -170,8 +172,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   AddImage(Images(),  10,  10, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
-  AddImage(Images(), 100, 100, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/GeeBee2.bmp"))
-  AddImage(Images(),  50, 200, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+  AddImage(Images(), 100, 60, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/GeeBee2.bmp"))
+  AddImage(Images(),  50, 160, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
   
   ;   hole = CreateImage(#PB_Any,100,100,32)
   ;   If StartDrawing(ImageOutput(hole))
@@ -231,14 +233,12 @@ CompilerIf #PB_Compiler_IsMainFile
     bar::SetAttribute(*v, #PB_ScrollBar_Maximum, ScrollArea_Height)
     bar::SetAttribute(*h, #PB_ScrollBar_Maximum, ScrollArea_Width)
     
-    ;     bar::SetAttribute(*v, #PB_ScrollBar_PageLength, *v\Height)
-    ;     bar::SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth)
+    bar::SetAttribute(*v, #PB_ScrollBar_PageLength, *v\Height)
+    bar::SetAttribute(*h, #PB_ScrollBar_PageLength, *h\width)
     
     If ScrollArea_Y<0 : bar::SetState(*v, (ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) : EndIf
     If ScrollArea_X<0 : bar::SetState(*h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
     
-    ;     *v\Hide[1] = Bool((*v\Max-*v\Min) < *v\Page\len)
-    ;     *v\Hide = *v\Hide[1]
     *v\Hide = bar::Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*h\Y + Bool(*h\Hide) * *h\Height) - *v\Y) 
     *h\Hide = bar::Resize(*h, #PB_Ignore, #PB_Ignore, (*v\X + Bool(*v\Hide) * *v\Width) - *h\X, #PB_Ignore)
     
@@ -282,25 +282,15 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If *Scroll\v\Change
       *Scroll\Y =- *Scroll\v\Page\Pos
-      ;       ; An example showing the sending of messages in a vertical scrollbar.
-      ;       PostEvent(#PB_Event_Widget, EventWindow(), *Scroll\v, #PB_EventType_ScrollChange, *Scroll\v\Direction) 
-      ;       
-      ;       ; An example showing the sending of messages to the gadget of both scrollbars.
-      ;       PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_ScrollChange, *Scroll\v\Direction) 
+      
       *Scroll\v\Change = 0
     EndIf
     
     If *Scroll\h\Change
       *Scroll\X =- *Scroll\h\Page\Pos
-      ;       ; An example showing the sending of messages in a horizontal scrollbar.
-      ;       PostEvent(#PB_Event_Widget, EventWindow(), *Scroll\h, #PB_EventType_ScrollChange, *Scroll\h\Direction) 
-      ;       
-      ;       ; An example showing the sending of messages to the gadget of both scrollbars.
-      ;       PostEvent(#PB_Event_Widget, EventWindow(), EventGadget(), #PB_EventType_ScrollChange, *Scroll\h\Direction) 
+      
       *Scroll\h\Change = 0
     EndIf
-    
-    
     
     Select Event
       Case #PB_EventType_LeftButtonUp
@@ -408,19 +398,18 @@ CompilerIf #PB_Compiler_IsMainFile
                   *Scroll\y =- *Scroll\v\Page\Pos
                 EndIf
                 
-                If *Scroll\Height<Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height+1
-                  *Scroll\Height =Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height+1
+                If *Scroll\Height<Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height
+                  *Scroll\Height =Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height
                 EndIf
                 
-                If *Scroll\width<Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width+1
-                  *Scroll\width =Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width+1
+                If *Scroll\width<Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width
+                  *Scroll\width =Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width
                 EndIf
                 
                 *Scroll\Width-*Scroll\x
                 *Scroll\height-*Scroll\y
                 
                 
-                Debug *Scroll\Y
                 Updates(*Scroll\v, *Scroll\h, *Scroll\X, *Scroll\Y, *Scroll\Width, *Scroll\Height)
                 ;                 
                 ;                 Debug *Scroll\v\Max
@@ -441,12 +430,12 @@ CompilerIf #PB_Compiler_IsMainFile
             *Scroll\y = 0
           EndIf
           
-          If *Scroll\Height<Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height+1
-            *Scroll\Height =Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height+1
+          If *Scroll\Height<Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height
+            *Scroll\Height =Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height
           EndIf
           
-          If *Scroll\width<Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width+1
-            *Scroll\width =Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width+1
+          If *Scroll\width<Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width
+            *Scroll\width =Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width
           EndIf
           
           *Scroll\Width-*Scroll\x
@@ -524,5 +513,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------
+; Folding = P4-P4---
 ; EnableXP

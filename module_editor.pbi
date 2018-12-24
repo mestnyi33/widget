@@ -1469,7 +1469,7 @@ Module Editor
               ; Draw string
               If \Text[2]\Len And *This\Color\Front <> *This\Row\Color\Front[2]
                 
-                CompilerIf #PB_Compiler_OS = #PB_OS_Web;MacOS
+                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   If (*This\Text\Caret[1] > *This\Text\Caret And *This\Index[2] = *This\Index[1]) Or
                      (\Index = *This\Index[1] And *This\Index[2] > *This\Index[1])
                     \Text[3]\X = \Text\X+TextWidth(Left(\Text\String.s, *This\Text\Caret[1])) 

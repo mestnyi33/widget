@@ -7,6 +7,7 @@ CompilerEndIf
 XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
+XIncludeFile "module_procedures.pbi"
 XIncludeFile "module_scroll.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_editor.pbi"
@@ -16,6 +17,7 @@ LN=15000; количесвто итемов
 If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)
   editor::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : *w.Widget_S=GetGadgetData(1)
+  ;; Debug Procedures::IsHideGadget(1)
   
   Define time = ElapsedMilliseconds()
   For a = 0 To LN
