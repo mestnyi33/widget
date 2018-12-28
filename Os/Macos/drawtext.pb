@@ -1,0 +1,63 @@
+﻿OpenWindow(0, 0, 0, 220, 220, "CanvasGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+CanvasGadget(0, 10, 10, 200, 200)
+
+S.s = "Hello, let's draw this line of text"
+
+Macro PB(Function)
+  Function
+EndMacro
+
+Global _drawing_mode_
+Macro DrawingMode(_mode_)
+  PB(DrawingMode)(_mode_) : _drawing_mode_ = _mode_
+EndMacro
+
+Procedure ClipOutput_(x, y, width, height)
+  Protected Rect.NSRect
+  Rect\origin\x = x 
+  Rect\origin\y = OutputHeight()-height-y
+  Rect\size\width = width 
+  Rect\size\height = height
+  CocoaMessage(0, CocoaMessage(0, 0, "NSBezierPath bezierPathWithRect:@", @Rect), "setClip")
+EndProcedure
+
+Procedure DrawText_(x, y, Text.s, FrontColor=$ffffff, BackColor=0)
+  Protected.CGFloat r,g,b,a
+  Protected.i NSString, Attributes, Color
+  Protected Size.NSSize, Point.NSPoint
+  
+  CocoaMessage(@Attributes, 0, "NSMutableDictionary dictionaryWithCapacity:", 2)
+  
+  r = Red(FrontColor)/255 : g = Green(FrontColor)/255 : b = Blue(FrontColor)/255 : a = 1
+  Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
+  CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSColor")
+  
+  r = Red(BackColor)/255 : g = Green(BackColor)/255 : b = Blue(BackColor)/255 : a = Bool(_drawing_mode_<>#PB_2DDrawing_Transparent)
+  Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
+  CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSBackgroundColor")  
+  
+  NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
+  CocoaMessage(@Size, NSString, "sizeWithAttributes:", Attributes)
+  Point\x = x : Point\y = OutputHeight()-Size\height-y
+  CocoaMessage(0, NSString, "drawAtPoint:@", @Point, "withAttributes:", Attributes)
+EndProcedure
+
+
+StartDrawing(CanvasOutput(0))
+Box(0,0,OutputWidth(), OutputHeight(), $FFE0E0E0)
+              
+DrawingMode(#PB_2DDrawing_Transparent)
+ClipOutput_(100,10,40,100)
+DrawText_(100,10, "os draw text");, $FFFF3B00)
+
+ClipOutput_(10,10,40,100)
+DrawText(10,10, "pb draw text");, $FFFF3B00)
+
+StopDrawing()
+
+Repeat
+  Event = WaitWindowEvent()
+Until Event = #PB_Event_CloseWindow
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = -
+; EnableXP

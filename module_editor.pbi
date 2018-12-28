@@ -880,6 +880,7 @@ Module Editor
           If \Text\Vertical
             For IT = \Text\Count To 1 Step - 1
               If AddElement(\Items())
+                \Items() = AllocateStructure(Rows_S)
                 String = StringField(\Text\String.s[2], IT, #LF$)
                 
                 \Items()\Focus =- 1
@@ -927,6 +928,8 @@ Module Editor
               If ExamineRegularExpression(0, \Text\String.s[2])
                 While NextRegularExpressionMatch(0) 
                   If AddElement(\Items())
+                    \Items() = AllocateStructure(Rows_S)
+        
                     \Items()\Text\String.s = Trim(RegularExpressionMatchString(0), #LF$)
                     ;\Items()\Text\Width = TextWidth(\Items()\Text\String.s) ; 
                     
@@ -1560,7 +1563,7 @@ Module Editor
               ; Draw margin
               If *This\sci\margin\width
                 DrawingMode(#PB_2DDrawing_Transparent)
-                DrawText(*This\sci\margin\width-TextWidth(Str(\Index))-3, \Y+*This\Scroll\Y, Str(\Index), *This\sci\margin\Color\Front)
+                DrawText(*This\sci\margin\width-TextWidth(Str(\Index))-3, \Y+*This\Scroll\Y, Str(\Index), *This\sci\margin\Color\Front);, *This\sci\margin\Color\Back)
               EndIf
             EndIf
           Next
@@ -2126,6 +2129,9 @@ Module Editor
         ;}
         
         If *Item
+          ;\Items() = AllocateMemory(SizeOf(Rows_S) )
+          \Items() = AllocateStructure(Rows_S)
+          
           If Item = 0
             First = *Item
           EndIf
@@ -2965,5 +2971,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------vn--v--------4-----f-----------------------------
+; Folding = ----------vn--v8-------4---+-f------------8----------------
 ; EnableXP

@@ -33,7 +33,8 @@ DeclareModule TrackBar
   
   Structure Gadget Extends Coordinate
     Canvas.Canvas
-    
+   
+    Type.i
     Text.s[3]
     ImageID.i[3]
     Color.i[3]
@@ -46,13 +47,6 @@ DeclareModule TrackBar
     
     *Bar.Bar::Bar_S
     
-    Type.i
-    InnerCoordinate.Coordinate
-    
-    Repaint.i
-    
-    List Items.Gadget()
-    List Columns.Gadget()
   EndStructure
   
   
@@ -70,7 +64,6 @@ Module TrackBar
   ;- PROCEDURE
   
   Procedure Re(*This.Gadget)
-    If Not *This\Repaint : *This\Repaint = #True : EndIf
     
     Bar::SetAttribute(*This\Bar, #PB_ScrollBar_Maximum, *This\Bar\Max)
     Bar::SetAttribute(*This\Bar, #PB_ScrollBar_PageLength, *This\Bar\Page\Len)
@@ -83,10 +76,10 @@ Module TrackBar
   Procedure PlotX(X, Y, SourceColor, TargetColor)
     Protected Color
     
-    If x%PlotStep
-      Color = TargetColor
-    Else
+    If Not ((x)%PlotStep)
       Color = SourceColor
+    Else
+      Color = TargetColor
     EndIf
     
     ProcedureReturn Color
@@ -161,9 +154,9 @@ Module TrackBar
           
           
           
-          If *This\Ticks
-            PlotStep = \width/\Max
-;             Protected i
+              Protected i
+         If *This\Ticks
+            PlotStep = (\width)/(\Max-\Min)
 ;             #a=4
 ;             For i=3 To \Width/2-#a Step #a
 ;               LineXY(\X+i,\Y[3]+\Height[3]-1,\X+i,\Y[3]+\Height[3]-4,\Color[3]\Frame)
@@ -178,15 +171,15 @@ Module TrackBar
           EndIf
           
           
-;           If \Focus
-;             For i=0 To \Area\Len+\Thumb\Len+2 Step 2
-;               Line(*This\X,*This\Y+i,1,1,\Color[3]\Frame[3])
-;               Line(*This\X+*This\Width-1,*This\Y+i,1,1,\Color[3]\Frame[3])
-;               
-;               Line(*This\X+i,*This\Y,1,1,\Color[3]\Frame[3])
-;               Line(*This\X+i,*This\Y+*This\Height-1,1,1,\Color[3]\Frame[3])
-;             Next
-;           EndIf
+          If \Focus
+            For i=0 To \Area\Len+\Thumb\Len+2 Step 2
+              Line(*This\X,*This\Y+i,1,1,\Color[3]\Frame[3])
+              Line(*This\X+*This\Width-1,*This\Y+i,1,1,\Color[3]\Frame[3])
+              
+              Line(*This\X+i,*This\Y,1,1,\Color[3]\Frame[3])
+              Line(*This\X+i,*This\Y+*This\Height-1,1,1,\Color[3]\Frame[3])
+            Next
+          EndIf
           
           StopDrawing()
         EndIf
@@ -203,9 +196,10 @@ Module TrackBar
   
   Procedure Canvas_Events(EventGadget.i, EventType.i)
     Static LastX, LastY
-    Protected *This.Gadget = GetGadgetData(EventGadget)
+    Protected Repaint, *This.Gadget = GetGadgetData(EventGadget)
     
-    With *This
+    If *This
+      With *This
       \Canvas\Window = EventWindow()
       \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
       \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
@@ -217,8 +211,15 @@ Module TrackBar
           
       EndSelect
       
-      \Repaint = Bar::CallBack(\Bar, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
-      If \Repaint 
+      Repaint | Bar::CallBack(\Bar, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      
+      If \Bar\Focus
+        \Bar\Color[3]\State = 2
+      Else
+        \Bar\Color[3]\State = 0
+      EndIf
+      
+      If Repaint 
         ReDraw(*This)
         
         If \Bar\Change 
@@ -227,7 +228,8 @@ Module TrackBar
         EndIf
       EndIf
     EndWith
-    
+  EndIf
+  
     ; Draw(*This)
   EndProcedure
   
@@ -331,6 +333,7 @@ Module TrackBar
   
   Procedure GetState(Gadget.i)
     Protected ScrollPos, *This.Gadget = GetGadgetData(Gadget)
+    ;ProcedureReturn ((*This\Bar\Max-*This\Bar\Page\len)-*This\Bar\Page\Pos) 
     ProcedureReturn Bar::GetState(*This\Bar)
   EndProcedure
   
@@ -421,20 +424,20 @@ If OpenWindow(0, 0, 0, 605, 200, "TrackBarGadget", #PB_Window_SystemMenu | #PB_W
   TrackBarGadget(0, 10,  40, 250, 20, 0, 10000)
   SetGadgetState(0, 5000)
   TextGadget    (-1, 10, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-  TrackBarGadget(1, 10, 120, 250, 20, 0, 60, #PB_TrackBar_Ticks)
+  TrackBarGadget(1, 10, 120, 250, 20, 10, 30, #PB_TrackBar_Ticks)
   SetGadgetState(1, 3000)
   TextGadget    (-1,  90, 180, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-  TrackBarGadget(2, 270, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
+  TrackBarGadget(2, 270, 10, 20, 170, 100, 10000, #PB_TrackBar_Vertical)
   SetGadgetState(2, 8000)
   
   TextGadget    (-1, 300+10,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
   TrackBar::Gadget(10, 300+10,  40, 250, 20, 0, 10000)
   TrackBar::SetState(10, 5000)
   TextGadget    (-1, 300+10, 100, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-  TrackBar::Gadget(11, 300+10, 120, 250, 20, 0, 60, #PB_TrackBar_Ticks)
+  TrackBar::Gadget(11, 300+10, 120, 250, 20, 10, 30, #PB_TrackBar_Ticks)
   TrackBar::SetState(11, 3000)
   TextGadget    (-1,  300+90, 180, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-  TrackBar::Gadget(12, 300+270, 10, 20, 170, 0, 10000, #PB_TrackBar_Vertical)
+  TrackBar::Gadget(12, 300+270, 10, 20, 170, 100, 10000, #PB_TrackBar_Vertical)
   TrackBar::SetState(12, 8000)
   
   BindGadgetEvent(1,@h_GadgetCallBack())
@@ -444,5 +447,5 @@ If OpenWindow(0, 0, 0, 605, 200, "TrackBarGadget", #PB_Window_SystemMenu | #PB_W
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---8-b---
+; Folding = ----8v0--
 ; EnableXP

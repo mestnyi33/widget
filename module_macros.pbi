@@ -36,17 +36,6 @@
     EndIf
   EndMacro
   
-  Macro _clip_output_(_this_, _x_,_y_,_width_,_height_)
-    If _x_<>#PB_Ignore : _this_\Clip\X = _x_ : EndIf
-    If _y_<>#PB_Ignore : _this_\Clip\Y = _y_ : EndIf
-    If _width_<>#PB_Ignore : _this_\Clip\Width = _width_ : EndIf
-    If _height_<>#PB_Ignore : _this_\Clip\Height = _height_ : EndIf
-    
-    CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS 
-     ; ClipOutput(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
-    CompilerEndIf
-  EndMacro
-  
   Macro _frame_(_this_, _x_,_y_,_width_,_height_, _color_1_, _color_2_);, _radius_=0)
     ClipOutput(_x_-1,_y_-1,_width_+1,_height_+1)
     RoundBox(_x_-1,_y_-1,_width_+2,_height_+2, _this_\Radius,_this_\Radius, _color_1_)  
@@ -282,6 +271,42 @@
     Function
   EndMacro
   
+  ;-
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    Global _drawing_mode_
+    
+    Declare.i DrawText_(x.i, y.i, Text.s, FrontColor.i=$ffffff, BackColor.i=0)
+    Declare.i ClipOutput_(x.i, y.i, width.i, height.i)
+    
+    Macro DrawingMode(_mode_)
+      PB(DrawingMode)(_mode_) : _drawing_mode_ = _mode_
+    EndMacro
+    
+;     Macro ClipOutput(x, y, width, height)
+;     ;  PB(ClipOutput)(x, y, width, height)
+;       ClipOutput_(x, y, width, height)
+;     EndMacro
+    
+;     Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
+;       DrawText_(x, y, Text, FrontColor, BackColor)
+;     EndMacro
+  CompilerEndIf
+  
+  Macro _clip_output_(_this_, _x_,_y_,_width_,_height_)
+    If _x_<>#PB_Ignore : _this_\Clip\X = _x_ : EndIf
+    If _y_<>#PB_Ignore : _this_\Clip\Y = _y_ : EndIf
+    If _width_<>#PB_Ignore : _this_\Clip\Width = _width_ : EndIf
+    If _height_<>#PB_Ignore : _this_\Clip\Height = _height_ : EndIf
+    
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+      ClipOutput_(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
+      ;ClipOutput(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
+      
+    CompilerElse
+      ClipOutput(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
+    CompilerEndIf
+  EndMacro
+  
   
   Declare GetTextWidth(text.s, len)
   Declare SetTextWidth(Text.s, Len.i)
@@ -354,10 +379,42 @@ Module Macros
 ; Debug GetBits(@Buffer,0);<- hier wird der Wert wieder ausgelesen
 
 
-
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    Procedure.i DrawText_(x.i, y.i, Text.s, FrontColor.i=$ffffff, BackColor.i=0)
+      Protected.CGFloat r,g,b,a
+      Protected.i NSString, Attributes, Color
+      Protected Size.NSSize, Point.NSPoint
+      
+      CocoaMessage(@Attributes, 0, "NSMutableDictionary dictionaryWithCapacity:", 2)
+      
+      r = Red(FrontColor)/255 : g = Green(FrontColor)/255 : b = Blue(FrontColor)/255 : a = 1
+      Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
+      CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSColor")
+      
+      r = Red(BackColor)/255 : g = Green(BackColor)/255 : b = Blue(BackColor)/255 : a = Bool(_drawing_mode_<>#PB_2DDrawing_Transparent)
+      Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
+      CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSBackgroundColor")  
+      
+      NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
+      CocoaMessage(@Size, NSString, "sizeWithAttributes:", Attributes)
+      Point\x = x : Point\y = OutputHeight()-Size\height-y
+      CocoaMessage(0, NSString, "drawAtPoint:@", @Point, "withAttributes:", Attributes)
+    EndProcedure
+    
+    Procedure.i ClipOutput_(x.i, y.i, width.i, height.i)
+      Protected Rect.NSRect
+      Rect\origin\x = x 
+      Rect\origin\y = OutputHeight()-height-y
+      Rect\size\width = width 
+      Rect\size\height = height
+      
+      CocoaMessage(0, CocoaMessage(0, 0, "NSBezierPath bezierPathWithRect:@", @Rect), "setClip")
+    EndProcedure
+  CompilerEndIf
+  
 EndModule 
 
 UseModule Macros
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----Pe-
+; Folding = -+--H-0-
 ; EnableXP

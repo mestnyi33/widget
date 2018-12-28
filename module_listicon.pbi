@@ -899,6 +899,8 @@ Module ListIcon
     With *This
       LastElement(\Columns())
       AddElement(\Columns()) 
+      \Columns() = AllocateStructure(Widget_S)
+        
 ;       Position = ListIndex(\Columns())
       
       \Columns()\text\string.s = Text.s

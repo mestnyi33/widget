@@ -199,11 +199,8 @@ Module ScrollBar
   EndProcedure
   
   Procedure GetState(Gadget.i)
-    Protected *This.Gadget = GetGadgetData(Gadget)
-    
-    With *This
-      ProcedureReturn \Bar\Page\Pos
-    EndWith
+    Protected ScrollPos, *This.Gadget = GetGadgetData(Gadget)
+    ProcedureReturn Bar::GetState(*This\Bar)
   EndProcedure
   
   Procedure Gadget(Gadget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0)
@@ -241,7 +238,7 @@ Module ScrollBar
         
         \Color\Frame = $C0C0C0
         
-        \Bar = Bar::Bar(0, 0, \Width[2], \Height[2], Min, Max, PageLength, Flag)
+        \Bar = Bar::Bar(0, 0, \Width[2], \Height[2], Min, Max, PageLength, Flag, 0)
         \Bar\ArrowType[1]=1 
         \Bar\ArrowType[2]=1
         \Bar\ArrowSize[1]=6 
@@ -296,10 +293,10 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState   (3, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     TextGadget       (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ScrollBar::Gadget  (12,  300+10, 42, 250,  20, 30, 100, 30, Flag)
+    ScrollBar::Gadget  (12,  300+10, 42, 250,  20, 30, 100+1, 30, Flag)
     ScrollBar::SetState   (12,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  300+10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ScrollBar::Gadget  (13, 300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical|Flag)
+    ScrollBar::Gadget  (13, 300+270, 10,  25, 120 ,0, 300+1, 50, #PB_ScrollBar_Vertical|Flag)
     ScrollBar::SetState   (13, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     

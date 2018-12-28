@@ -314,7 +314,7 @@ CompilerIf #PB_Compiler_IsMainFile
       DrawText(x-10,90+(20-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
       
       DrawingMode(#PB_2DDrawing_Outlined)
-      RoundBox(x, 90, w, 20, 7,7, $FF000000)
+      RoundBox(x, 90, w, 20, 4,4, $FF000000)
       
       ClipOutput(x, 130, w, 20) ; restrict all drawing to this region
       
@@ -363,5 +363,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------------
+; Folding = ----n-----f--
 ; EnableXP

@@ -1077,6 +1077,7 @@ Module Text
           subLevel = Flag
         EndIf
         
+        
         ;{ Генерируем идентификатор
         If Item < 0 Or Item > ListSize(\Items()) - 1
           LastElement(\Items())
@@ -1099,6 +1100,8 @@ Module Text
         ;}
         
         If *Item
+          \Items() = AllocateStructure(Rows_S)
+        
           If Item = 0
             First = *Item
           EndIf
@@ -1297,6 +1300,8 @@ Module Text
               String = StringField(\Text\String.s[2], IT, #LF$)
               
               If AddElement(\Items())
+                \Items() = AllocateStructure(Rows_S)
+                
                 If \Type = #PB_GadgetType_Button
                   \Items()\Text\Width = TextWidth(RTrim(String.s))
                 Else
@@ -3099,8 +3104,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 3057
-; FirstLine = 2911
-; Folding = ------v0---------4--46t-+-u00--------------------------------------------
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = ------v0---------4--46t-+-u00-----4--------------------------------------
 ; EnableXP
