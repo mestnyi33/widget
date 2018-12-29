@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
-  XIncludeFile "module_scroll.pbi"
+  XIncludeFile "module_bar.pbi"
   XIncludeFile "module_text.pbi"
   
   CompilerIf #VectorDrawing
@@ -485,9 +485,9 @@ Module Editor
         \Items()\Text[3]\Width = TextWidth(Right(String.s, string_len-Caret))
         
         If \Scroll\X < Right
-          Scroll::SetState(\Scroll\h, -Right) ;: \Scroll\X = Right
+          Bar::SetState(\Scroll\h, -Right) ;: \Scroll\X = Right
         ElseIf \Scroll\X > Left
-          Scroll::SetState(\Scroll\h, -Left) ;: \Scroll\X = Left
+          Bar::SetState(\Scroll\h, -Left) ;: \Scroll\X = Left
         ElseIf (\Scroll\X < 0 And \Canvas\Input = 65535 ) : \Canvas\Input = 0
           \Scroll\X = (Width-\Items()\Text[3]\Width) + Right
           If \Scroll\X>0 : \Scroll\X=0 : EndIf
@@ -789,7 +789,7 @@ Module Editor
         Width = \Height[1]-\Text\X*2 
         Height = \Width[1]-\Text\y*2
       Else
-        CompilerIf Not Defined(Scroll, #PB_Module)
+        CompilerIf Not Defined(Bar, #PB_Module)
           \Scroll\Width[2] = \width[2]-\sci\margin\width
           \Scroll\Height[2] = \height[2]
         CompilerEndIf
@@ -1198,7 +1198,7 @@ Module Editor
           If \sci\margin\width 
             \Text\Count = CountString(\Text\String.s, #LF$)
             \sci\margin\width = TextWidth(Str(\Text\Count))+11
-            ;  Scroll::Resizes(\Scroll, \x[2]+\sci\margin\width+1,\Y[2],\Width[2]-\sci\margin\width-1,\Height[2])
+            ;  Bar::Resizes(\Scroll, \x[2]+\sci\margin\width+1,\Y[2],\Width[2]-\sci\margin\width-1,\Height[2])
           EndIf
         EndIf
         
@@ -1206,9 +1206,9 @@ Module Editor
         If \Resize
           ; Посылаем сообщение об изменении размера 
           PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
-          CompilerIf Defined(Scroll, #PB_Module)
-            ;  Scroll::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
-            Scroll::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
+          CompilerIf Defined(Bar, #PB_Module)
+            ;  Bar::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
+            Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
           CompilerElse
             \Scroll\Width[2] = \width[2]
             \Scroll\Height[2] = \height[2]
@@ -1229,18 +1229,18 @@ Module Editor
           If \Text\Change And \index[2] >= 0 And \index[2] < ListSize(\Items())
             SelectElement(\Items(), \index[2])
             
-            CompilerIf Defined(Scroll, #PB_Module)
+            CompilerIf Defined(Bar, #PB_Module)
               If \Scroll\v And \Scroll\v\max <> \Scroll\Height And 
-                 Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
+                 Bar::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
                 
-                \Scroll\v\Page\ScrollStep = \Text\Height
+                \Scroll\v\Step = \Text\Height
                 
                 If \Text\editable And (\Items()\y >= (\Scroll\height[2]-\Items()\height))
                   ; This is for the editor widget when you enter the key - (enter & backspace)
-                  Scroll::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+                  Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
                 EndIf
                 
-                Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                 
                 If \Scroll\v\Hide 
                   \Scroll\width[2] = \Width[2]
@@ -1252,8 +1252,8 @@ Module Editor
               EndIf
               
               If \Scroll\h And \Scroll\h\Max<>\Scroll\Width And 
-                 Scroll::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
-                Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                 Bar::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
+                Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
               ;  \Scroll\Width[2] = \width[2] - Bool(Not \Scroll\v\Hide)*\Scroll\v\Width : iwidth = \Scroll\width[2]
               EndIf
               
@@ -1263,9 +1263,9 @@ Module Editor
                 Debug ""+\Scroll\h\Max +" "+ Str(\Items()\text\x+\Items()\text\width)
                 
                 If \Scroll\h\Max = (\Items()\text\x+\Items()\text\width)
-                  Scroll::SetState(\Scroll\h, \Scroll\h\Max)
+                  Bar::SetState(\Scroll\h, \Scroll\h\Max)
                 Else
-                  Scroll::SetState(\Scroll\h, \Scroll\h\Page\Pos + TextWidth(Chr(\Canvas\input)))
+                  Bar::SetState(\Scroll\h, \Scroll\h\Page\Pos + TextWidth(Chr(\Canvas\input)))
                 EndIf
               EndIf
               
@@ -1444,8 +1444,8 @@ Module Editor
               ; Draw boxes
               If *This\flag\buttons And \childrens
                 DrawingMode(#PB_2DDrawing_Default)
-                CompilerIf Defined(Scroll, #PB_Module)
-                  Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), 0,0) 
+                CompilerIf Defined(Bar, #PB_Module)
+                  Bar::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), 0,0) 
                 CompilerEndIf
               EndIf
               
@@ -1573,6 +1573,12 @@ Module Editor
       
       
       With *This
+        CompilerIf Defined(Bar, #PB_Module)
+        DrawingMode(#PB_2DDrawing_Outlined)
+        Box(*This\Scroll\h\x-Bar::GetState(*This\Scroll\h), *This\Scroll\v\y-Bar::GetState(*This\Scroll\v), *This\Scroll\h\Max, *This\Scroll\v\Max, $FF0000)
+        Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Page\Len, *This\Scroll\v\Page\Len, $FF00FF00)
+        CompilerEndIf
+        
         ; Draw image
         If \Image\handle
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
@@ -1587,18 +1593,18 @@ Module Editor
         UnclipOutput()
         
         ; Draw scroll bars
-        CompilerIf Defined(Scroll, #PB_Module)
+        CompilerIf Defined(Bar, #PB_Module)
           ;           If \Scroll\v And \Scroll\v\Max <> \Scroll\Height And 
-          ;              Scroll::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines))
-          ;             Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          ;              Bar::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines))
+          ;             Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           ;           EndIf
           ;           If \Scroll\h And \Scroll\h\Max<>\Scroll\Width And 
-          ;              Scroll::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
-          ;             Scroll::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          ;              Bar::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
+          ;             Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           ;           EndIf
           
-          Scroll::Draw(\Scroll\v)
-          Scroll::Draw(\Scroll\h)
+          Bar::Draw(\Scroll\v)
+          Bar::Draw(\Scroll\h)
         CompilerEndIf
         
         _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
@@ -1710,13 +1716,13 @@ Module Editor
       If (\Index[2] > 0 And \Index[1] = \Index[2]) : \Index[2] - 1 : \Index[1] = \Index[2]
         SelectElement(\Items(), \Index[2])
         ;If (\Items()\y+\Scroll\Y =< \Y[2])
-        Scroll::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+        Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
         ;EndIf
         ; При вводе перемещаем текста
         If \Items()\text\x+\Items()\text\width > \Items()\X+\Items()\width
-          Scroll::SetState(\Scroll\h, (\Items()\text\x+\Items()\text\width))
+          Bar::SetState(\Scroll\h, (\Items()\text\x+\Items()\text\width))
         Else
-          Scroll::SetState(\Scroll\h, 0)
+          Bar::SetState(\Scroll\h, 0)
         EndIf
         ;Change(*This, \Text\Caret, 0)
         Repaint =- 1 
@@ -1755,13 +1761,13 @@ Module Editor
         If (\Index[1] < ListSize(\Items()) - 1 And \Index[1] = \Index[2]) : \Index[2] + 1 : \Index[1] = \Index[2]
           SelectElement(\Items(), \Index[2]) 
           ;If (\Items()\y >= (\Scroll\height[2]-\Items()\height))
-          Scroll::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+          Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
           ;EndIf
           
           If \Items()\text\x+\Items()\text\width > \Items()\X+\Items()\width
-            Scroll::SetState(\Scroll\h, (\Items()\text\x+\Items()\text\width))
+            Bar::SetState(\Scroll\h, (\Items()\text\x+\Items()\text\width))
           Else
-            Scroll::SetState(\Scroll\h, 0)
+            Bar::SetState(\Scroll\h, 0)
           EndIf
           
           ;Change(*This, \Text\Caret, 0)
@@ -2045,11 +2051,11 @@ Module Editor
         EndSelect
         
         \index[1] = \items()\index
-        Scroll::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+        Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
       Else
         SelectElement(\items(), \index[1]) 
         \Text\Caret = Bool(Pos =- 1) * \items()\Text\Len 
-        Scroll::SetState(\Scroll\h, Bool(Pos =- 1) * \Scroll\h\Max)
+        Bar::SetState(\Scroll\h, Bool(Pos =- 1) * \Scroll\h\Max)
       EndIf
       
       \Text\Caret[1] = \Text\Caret
@@ -2312,7 +2318,7 @@ Module Editor
         \Text\Caret[1] = \Text\Caret
         
         \Items()\Index[1] = \Items()\Index 
-        Scroll::SetState(\Scroll\v, (\items()\y-((\Scroll\height[2]+\Text\y)-\items()\height))) ;((\Index[1] * \Text\Height)-\Scroll\v\Height) + \Text\Height)
+        Bar::SetState(\Scroll\v, (\items()\y-((\Scroll\height[2]+\Text\y)-\items()\height))) ;((\Index[1] * \Text\Height)-\Scroll\v\Height) + \Text\Height)
         
         ;         If Not \Repaint : \Repaint = 1
         ;           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
@@ -2541,8 +2547,8 @@ Module Editor
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
-      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Bar::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Bar::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
       
       If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
         If ListSize(*This\items())
@@ -2735,7 +2741,7 @@ Module Editor
       EndIf
       
       ; create scrollbars
-      Scroll::Bars(\Scroll, 16, 7, Bool(\Text\MultiLine <> 1))
+      Bar::Bars(\Scroll, 16, 7, Bool(\Text\MultiLine <> 1))
       
       Resize(*This, X,Y,Width,Height)
       ;       \Text\String = #LF$
@@ -2971,5 +2977,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------vn--v8-------4---+-f------------8----------------
+; Folding = ----------vn--v8-------4---+--+-----------4----------------
 ; EnableXP

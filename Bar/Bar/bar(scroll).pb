@@ -32,7 +32,7 @@ DeclareModule ScrollBar
   Declare SetState(Gadget.i, State.i)
   Declare GetAttribute(Gadget.i, Attribute.i)
   Declare SetAttribute(Gadget.i, Attribute.i, Value.i)
-  Declare Gadget(Gadget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0)
+  Declare Gadget(Gadget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0, Radius.i=0)
   
 EndDeclareModule
 
@@ -100,11 +100,11 @@ Module ScrollBar
       EndSelect
       
       If Bar::CallBack(\Bar, EventType, Mouse_X, Mouse_Y) 
-        Draw(*This)
         If \Bar\Change 
           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
-          \Bar\Change = 0
         EndIf
+        
+        Draw(*This)
       EndIf
     EndWith
     
@@ -203,7 +203,7 @@ Module ScrollBar
     ProcedureReturn Bar::GetState(*This\Bar)
   EndProcedure
   
-  Procedure Gadget(Gadget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0)
+  Procedure Gadget(Gadget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0, Radius.i=0)
     Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
     Protected *This.Gadget = AllocateStructure(Gadget)
     
@@ -238,7 +238,7 @@ Module ScrollBar
         
         \Color\Frame = $C0C0C0
         
-        \Bar = Bar::Bar(0, 0, \Width[2], \Height[2], Min, Max, PageLength, Flag, 0)
+        \Bar = Bar::Bar(0, 0, \Width[2], \Height[2], Min, Max, PageLength, Flag, Radius)
         \Bar\ArrowType[1]=1 
         \Bar\ArrowType[2]=1
         \Bar\ArrowSize[1]=6 

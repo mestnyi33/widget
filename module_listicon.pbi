@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
-  XIncludeFile "module_scroll.pbi"
+  XIncludeFile "module_bar.pbi"
   XIncludeFile "module_text.pbi"
   XIncludeFile "module_editor.pbi"
 CompilerEndIf
@@ -136,9 +136,9 @@ Module ListIcon
       With *This
         iX=\X[2]
         iY=\Y[2]
-        CompilerIf Defined(Scroll, #PB_Module)
-          iwidth = *This\width[2]-Scroll::Width(*This\Scroll\v)
-          iheight = *This\height[2]-Scroll::Height(*This\Scroll\h)
+        CompilerIf Defined(Bar, #PB_Module)
+          iwidth = *This\width[2]-Bar::Width(*This\Scroll\v)
+          iheight = *This\height[2]-Bar::Height(*This\Scroll\h)
         CompilerElse
           iwidth = *This\width[2]
           iheight = *This\height[2]
@@ -355,8 +355,8 @@ Module ListIcon
                   ; Draw boxes
                   If *This\flag\buttons And \childrens
                     DrawingMode(#PB_2DDrawing_Default)
-                    CompilerIf Defined(Scroll, #PB_Module)
-                      Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), 0,0) 
+                    CompilerIf Defined(Bar, #PB_Module)
+                      Bar::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), 0,0) 
                     CompilerEndIf
                   EndIf
                   
@@ -457,7 +457,7 @@ Module ListIcon
                   Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
                 EndIf
                 
-;                 CompilerIf Defined(Scroll, #PB_Module)
+;                 CompilerIf Defined(Bar, #PB_Module)
 ;                   Debug ""+*This\Scroll\X +" "+ *This\Scroll\h\page\pos
 ;                 CompilerEndIf
                 
@@ -522,8 +522,8 @@ Module ListIcon
       With *This
         If ListSize(\Columns()\Items())
           ; Draw scroll bars
-          CompilerIf Defined(Scroll, #PB_Module)
-            Scroll::Draws(\Scroll, \Scroll\Height, \Scroll\Width)
+          CompilerIf Defined(Bar, #PB_Module)
+            Bar::Draws(\Scroll, \Scroll\Height, \Scroll\Width)
           CompilerEndIf
           
           _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
@@ -644,7 +644,7 @@ Module ListIcon
         EndIf
         column_x - *This\Scroll\h\page\Pos
         column_width = column_x
-        *This\Scroll\v\page\ScrollStep = height+Bool(*This\flag\GridLines)*2+l
+        *This\Scroll\v\Step = height+Bool(*This\flag\GridLines)*2+l
         
         ForEach *This\Columns()
           ;If ListSize(*This\Columns()\Items())
@@ -653,8 +653,8 @@ Module ListIcon
           *This\Scroll\height=*This\bSize+column_height
           *This\Columns()\x=column_width ; + 20;*This\Columns()\Image\width
           iWidth = *This\Columns()\x + *This\Columns()\width
-          iWidth = *This\width[2]-Scroll::Width(*This\Scroll\v)
-          iHeight = *This\height[2]-Scroll::Height(*This\Scroll\h)
+          iWidth = *This\width[2]-Bar::Width(*This\Scroll\v)
+          iHeight = *This\height[2]-Bar::Height(*This\Scroll\h)
           
           
           CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
@@ -772,7 +772,7 @@ Module ListIcon
                 ; Draw boxes
                 If *This\flag\buttons And \childrens
                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                  Scroll::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
+                  Bar::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                 EndIf
               EndIf
               
@@ -868,8 +868,8 @@ Module ListIcon
         *This\Scroll\Height = *This\Scroll\Height-l-Bool(*This\Flag\GridLines)*2
         
         ; Задаем размеры скролл баров
-        CompilerIf Defined(Scroll, #PB_Module)
-            Scroll::Draws(*This\Scroll, *This\Scroll\Height, *This\Scroll\Width)
+        CompilerIf Defined(Bar, #PB_Module)
+            Bar::Draws(*This\Scroll, *This\Scroll\Height, *This\Scroll\Width)
           CompilerEndIf
           
         If *This\fSize
@@ -1763,7 +1763,7 @@ Module ListIcon
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
     With *This
       If Text::Resize(*This, X,Y,Width,Height)
-        Scroll::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
+        Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
       EndIf
       ProcedureReturn \Resize
     EndWith
@@ -1774,8 +1774,8 @@ Module ListIcon
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
-      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Bar::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Bar::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
     EndWith
     
     If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
@@ -2017,11 +2017,11 @@ Module ListIcon
           EndIf
         EndIf
         
-;         Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-;         Scroll::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+;         Bar::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+;         Bar::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
         ; create scrollbars
-        Scroll::Bars(\Scroll, 16, 7, 1) ; Bool(Not Bool(Not \flag\buttons And Not \flag\Lines)))
-        Scroll::Resizes(\Scroll, \bSize,\bSize,\Width[2],\Height[2])
+        Bar::Bars(\Scroll, 16, 7, 1) ; Bool(Not Bool(Not \flag\buttons And Not \flag\Lines)))
+        Bar::Resizes(\Scroll, \bSize,\bSize,\Width[2],\Height[2])
        
         AddColumn(*This, 0,ColumnTitle, ColumnWidth)
         \Resize = 0
@@ -2073,14 +2073,14 @@ Module ListIcon
           AutoHide.b = 0; Bool(\Scroll\v\buttons=0 And \Scroll\h\buttons=0)
           
           If \Scroll\v
-            Repaint = Scroll::CallBack(\Scroll\v, Event, MouseX, MouseY);, WheelDelta, AutoHide, \Scroll\h, Window, Canvas)
+            Repaint = Bar::CallBack(\Scroll\v, Event, MouseX, MouseY);, WheelDelta, AutoHide, \Scroll\h, Window, Canvas)
             If Repaint
               ReDraw(*This)
             EndIf
           EndIf
           
           If \Scroll\h
-            Repaint = Scroll::CallBack(\Scroll\h, Event, MouseX, MouseY);, WheelDelta, AutoHide, \Scroll\v, Window, Canvas)
+            Repaint = Bar::CallBack(\Scroll\h, Event, MouseX, MouseY);, WheelDelta, AutoHide, \Scroll\v, Window, Canvas)
             If Repaint
               ReDraw(*This)
             EndIf
@@ -2091,8 +2091,8 @@ Module ListIcon
               Case #PB_EventType_MouseWheel
                 If Not \Scroll\v\hide
                   Select -WheelDelta
-                    Case-1 : Repaint = Scroll::SetState(\Scroll\v, \Scroll\v\page\Pos - (\Scroll\v\max-\Scroll\v\min)/30)
-                    Case 1 : Repaint = Scroll::SetState(\Scroll\v, \Scroll\v\page\Pos + (\Scroll\v\max-\Scroll\v\min)/30)
+                    Case-1 : Repaint = Bar::SetState(\Scroll\v, \Scroll\v\page\Pos - (\Scroll\v\max-\Scroll\v\min)/30)
+                    Case 1 : Repaint = Bar::SetState(\Scroll\v, \Scroll\v\page\Pos + (\Scroll\v\max-\Scroll\v\min)/30)
                   EndSelect
                 EndIf
                 

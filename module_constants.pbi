@@ -96,6 +96,10 @@ DeclareModule Constants
   
   #PB_Gadget_FrameColor = 10
   
+  #PB_ScrollBar_Direction = 1<<2
+  #PB_ScrollBar_NoButtons = 1<<3
+  #PB_ScrollBar_Inverted = 1<<4
+  
 EndDeclareModule 
 
 Module Constants

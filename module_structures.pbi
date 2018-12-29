@@ -49,7 +49,6 @@
   Structure Page_S
     Pos.i
     len.i
-    ScrollStep.i
   EndStructure
   
   ;- - Color_S
@@ -110,22 +109,26 @@
   EndStructure
     
   ;- - Bar_S
-  Structure Bar_S Extends Coordinate_S
+  Structure Bar_S Extends Coordinate_S  ; Bar::Bar_S ; 
     *s.Scroll_S
+    
+    at.b
     Type.i
-    Widget.i
-    Radius.i
-    ArrowSize.b[3]
+    Radius.a
+    ArrowSize.a[3]
     ArrowType.b[3]
-    
-    at.i
-    
-    Hide.b[2]
-    Disable.b[2]
     
     Max.i
     Min.i
+    *Step
+    Hide.b[2]
+    
+    Focus.b
+    Change.b
     Vertical.b
+    Inverted.b
+    Direction.i
+    
     Page.Page_S
     Area.Page_S
     Thumb.Page_S
@@ -137,10 +140,11 @@
   Structure Post_S
     Gadget.i
     Window.i
-    Widget.i
     Type.i
     Event.i
     *Function
+    *Widget.Bar_S
+    *Active.Bar_S
   EndStructure
   
   ;- - Scroll_S

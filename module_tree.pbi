@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
-  XIncludeFile "module_scroll.pbi"
+  XIncludeFile "module_bar.pbi"
   XIncludeFile "module_text.pbi"
   XIncludeFile "module_editor.pbi"
   
@@ -462,8 +462,8 @@ Module Tree
       
       PushListPosition(\Items())
       SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Index[1] = \Items()\Index : \Items()\Color\State = 2
-      Scroll::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos ; в конце
-                                                                                                                            ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
+      Bar::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos ; в конце
+                                                                                                                            ; Bar::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
       PopListPosition(\Items())
     EndWith
   EndProcedure
@@ -489,8 +489,8 @@ Module Tree
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
-      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Bar::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Bar::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
     EndWith
     
     If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
@@ -752,7 +752,7 @@ Module Tree
         EndIf
         
         ; create scrollbars
-        Scroll::Bars(\Scroll, 16, 7, Bool(Not Bool(Not \flag\buttons And Not \flag\Lines)))
+        Bar::Bars(\Scroll, 16, 7, Bool(Not Bool(Not \flag\buttons And Not \flag\Lines)))
         
         Resize(*This, X,Y,Width,Height)
       EndWith

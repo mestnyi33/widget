@@ -28,13 +28,13 @@ Procedure ScrollBar_SetInverted(Gadget, Inverted)
 EndProcedure
 
 Procedure Create_WinMain()
-	If OpenWindow(#Win_Main, 0, 0, 400, 200, "Inverted ScrollBar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-		ButtonGadget   (0,    5,   5, 390,  30, "Invert ScrollBar 2", #PB_Button_Toggle)
-		ScrollBarGadget(1,   5,  40, 350,  22,  0, 100, 25)
-		ScrollBarGadget(2,   5, 70, 350,  20, 20,  50, 8)
+	If OpenWindow(#Win_Main, 0, 0, 400, 100, "Inverted ScrollBar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+		ButtonGadget   (0,    5,   65, 390,  30, "Invert ScrollBar 2", #PB_Button_Toggle)
 		
-		ScrollBar::Gadget(3,   5,  100, 350,  22,  0, 100+1, 25)
-		ScrollBar::Gadget(4,   5, 140, 350,  20, 20,  50+1, 8);, Bar::#PB_ScrollBar_Inverted)
+		ScrollBarGadget(1,   5, 5, 390,  20, 20,  50, 8)
+		ScrollBar::Gadget(2,   5, 40, 390,  20, 20,  50, 8)
+		; ScrollBar::SetAttribute(2, Bar::#PB_ScrollBar_NoButtons, 0)
+					
 	EndIf
 EndProcedure
 
@@ -52,36 +52,24 @@ Repeat
 			Select EventGadget()
 					
 				Case 0
-					ScrollBar_SetInverted(2, GetGadgetState(0))
-					ScrollBar::SetAttribute(4, Bar::#PB_ScrollBar_Inverted, GetGadgetState(0))
-					Debug "canvas - "+ScrollBar::GetState(4)
-					Debug "gadget - "+GetGadgetState(2)
+					ScrollBar_SetInverted(1, GetGadgetState(0))
+					ScrollBar::SetAttribute(2, Bar::#PB_ScrollBar_Inverted, GetGadgetState(0))
+					
+					Debug "canvas - "+ScrollBar::GetState(2)
+					Debug "gadget - "+GetGadgetState(1)
 					
 				Case 1
 					SetWindowTitle(0, Str(GetGadgetState(1)))
-					ScrollBar::SetState(3, GetGadgetState(1))
 					
 				Case 2
-					SetWindowTitle(0, Str(GetGadgetState(2)))
-					
-				Case 3
-					SetWindowTitle(0, Str(ScrollBar::GetState(3)))
-					
-					SetGadgetState(1, ScrollBar::GetState(3))
-				
-				Case 4
-					SetWindowTitle(0, Str(ScrollBar::GetState(4)))
+					SetWindowTitle(0, Str(ScrollBar::GetState(2)))
 					
 			EndSelect
 			
 	EndSelect
 	
 Until gQuit
-; IDE Options = PureBasic 5.70 LTS beta 2 (Linux - x64)
-; CursorPosition = 5
-; Folding = -
-; EnableXP
-; EnableUnicode
+
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
-  XIncludeFile "module_scroll.pbi"
+  XIncludeFile "module_bar.pbi"
   XIncludeFile "module_text.pbi"
   XIncludeFile "module_editor.pbi"
   
@@ -80,10 +80,10 @@ Module ListView
       
       PushListPosition(\items())
       SelectElement(\items(), State) : \items()\Focus = State : \items()\index[1] = \items()\index : \items()\Color\State = 2
-      ; Scroll::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) ;: \Scroll\Y =- \Scroll\v\page\Pos ; в конце
-      ; Scroll::SetState(\Scroll\v, (State*\Text\Height)) ;: \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
-        Scroll::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height))) ; в конце
-       ; Scroll::SetState(\Scroll\v, \items()\y-\text\y) ; в начале
+      ; Bar::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) ;: \Scroll\Y =- \Scroll\v\page\Pos ; в конце
+      ; Bar::SetState(\Scroll\v, (State*\Text\Height)) ;: \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
+        Bar::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height))) ; в конце
+       ; Bar::SetState(\Scroll\v, \items()\y-\text\y) ; в начале
       PopListPosition(\items())
     EndWith
   EndProcedure
@@ -109,8 +109,8 @@ Module ListView
     Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
     
     With *This
-      Repaint | Scroll::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
-      Repaint | Scroll::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Bar::CallBack(\Scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      Repaint | Bar::CallBack(\Scroll\h, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
     EndWith
     
     If *This And (Not *This\Scroll\v\at And Not *This\Scroll\h\at)
@@ -170,7 +170,7 @@ Module ListView
                 Repaint = 1
                 
               Case #PB_EventType_MouseMove  
-                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Scroll::X(\Scroll\v)
+                If \Canvas\Mouse\Y < \Y Or \Canvas\Mouse\X > Bar::X(\Scroll\v)
                   Item.i =- 1
                 ElseIf \Text\Height
                   Item.i = ((\Canvas\Mouse\Y-\Y-\Text\Y-\Scroll\Y) / \Text\Height)
@@ -429,7 +429,7 @@ Module ListView
         EndIf
         
         ; Create scrollbar
-        Scroll::Bars(\Scroll, 16, 7, 0)
+        Bar::Bars(\Scroll, 16, 7, 0)
     
         Resize(*This, X,Y,Width,Height)
       EndWith
@@ -583,5 +583,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = r--b+--BHgnnD-
+; Folding = r---+--BHgnnD-
 ; EnableXP

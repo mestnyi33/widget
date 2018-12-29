@@ -220,12 +220,11 @@ Module TrackBar
       EndIf
       
       If Repaint 
-        ReDraw(*This)
-        
         If \Bar\Change 
           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
-          \Bar\Change = 0
         EndIf
+        
+        ReDraw(*This)
       EndIf
     EndWith
   EndIf
@@ -321,7 +320,7 @@ Module TrackBar
     Protected *This.Gadget = GetGadgetData(Gadget)
     
     With *This
-      If Bar::SetState(*This\Bar, State)
+      If Bar::SetState(*This\Bar, State); Bar::Invert(*This\Bar, State, *This\Bar\Inverted))
         ReDraw(*This)
         If \Bar\Change 
           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
@@ -370,13 +369,13 @@ Module TrackBar
         \Color[1] = $C0C0C0
         \Color[2] = $F0F0F0
         
-        ;*This\Bar = Bar::Bar(*This\X[2], *This\Y[2], *This\Width[2], *This\Height[2], Min, Max, PageLength, Bool(Flag&#PB_TrackBar_Vertical))
-        \Bar = Bar::Bar(0,0, \Width[2], \Height[2], Min, Max, PageLength, Bool(Flag&#PB_TrackBar_Vertical))
-        \Bar\Type = \Type
-        \Bar\Inverted = Bool(\Bar\Vertical)
-        If \Bar\Inverted
-          \Bar\Page\Pos = (\Bar\Max-\Bar\Min)
+        If Bool(Flag&#PB_TrackBar_Vertical)
+          Flag = #PB_ScrollBar_Vertical|Bar::#PB_ScrollBar_Inverted
+        Else
+          Flag = 0
         EndIf
+        
+        \Bar = Bar::Bar(0,0, \Width[2], \Height[2], Min, Max, PageLength, Flag)
         
         \Bar\Type = \Type
         \Bar\Button\Len = 0
