@@ -139,6 +139,12 @@ CompilerIf #PB_Compiler_IsMainFile
       *Bar_0 = Splitter(10, 10, 360,  330, *Scroll_1, *Scroll_2);, #PB_Splitter_Vertical)
       *Bar_1 = Splitter(10, 10, 360,  330, -1, *Bar_0, #PB_Splitter_Vertical)
       
+      SetAttribute(*Bar_1, #PB_Splitter_FirstMinimumSize, 120)
+      SetAttribute(*Bar_1, #PB_Splitter_SecondMinimumSize, 80)
+      
+      SetAttribute(*Bar_0, #PB_Splitter_FirstMinimumSize, 100)
+      SetAttribute(*Bar_0, #PB_Splitter_SecondMinimumSize, 50)
+      
       BindGadgetEvent(1, @Canvas_CallBack())
       
       ;SetState(*Bar_0, 25)
@@ -199,5 +205,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -v---
+; Folding = d----
 ; EnableXP

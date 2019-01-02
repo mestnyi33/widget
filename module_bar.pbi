@@ -28,10 +28,10 @@ DeclareModule Bar
     len.i
   EndStructure
   
-;   ;- - Splitter_S
-;   Structure Splitter_S Extends Coordinate_S
-;     Type.i
-;   EndStructure
+  ;   ;- - Splitter_S
+  ;   Structure Splitter_S Extends Coordinate_S
+  ;     Type.i
+  ;   EndStructure
   
   ;- - Bar_S
   Structure Bar_S Extends Coordinate_S
@@ -47,7 +47,6 @@ DeclareModule Bar
     
     ; progress bar
     Smooth.b
-    
     
     at.b
     Type.i[3] ; [2] for splitter
@@ -66,11 +65,11 @@ DeclareModule Bar
     Vertical.b
     Inverted.b
     Direction.i
+    ButtonLen.i[3]
     
     Page.Page_S
     Area.Page_S
     Thumb.Page_S
-    Button.Page_S
     Color.Color_S[4]
   EndStructure
   
@@ -408,7 +407,7 @@ Module Bar
     Protected IsVertical,Pos, Size, X,Y,Width,Height, fColor, Color
     Protected Radius.d = 2, Border=1, Circle=1, Separator=0
     Protected s
-            
+    
     With *This
       If *This > 0
         s = \Separator
@@ -478,13 +477,13 @@ Module Bar
           EndIf
         EndIf
         
-;         If \Vertical
-;           ;Box(\x[3], \y[3]+\height[3]-\Thumb\len, \width[3], \Thumb\len, $FF0000)
-;           Box(X,Y,Width,Height/2,$0000FF)
-;         Else
-;           ;Box(\x[3]+\width[3]-\Thumb\len, \y[3], \Thumb\len, \height[3], $FF0000)
-;           Box(X,Y,Width/2,Height,$0000FF)
-;         EndIf
+        ;         If \Vertical
+        ;           ;Box(\x[3], \y[3]+\height[3]-\Thumb\len, \width[3], \Thumb\len, $FF0000)
+        ;           Box(X,Y,Width,Height/2,$0000FF)
+        ;         Else
+        ;           ;Box(\x[3]+\width[3]-\Thumb\len, \y[3], \Thumb\len, \height[3], $FF0000)
+        ;           Box(X,Y,Width/2,Height,$0000FF)
+        ;         EndIf
       EndIf
       
     EndWith
@@ -532,7 +531,7 @@ Module Bar
         EndIf
       EndIf
       
-      If \Button\len
+      If \ButtonLen
         ; Draw buttons
         If \Color[1]\back[State_1]<>-1
           If \Color[1]\Fore[State_1]
@@ -711,41 +710,41 @@ Module Bar
   EndProcedure
   
   ;-
-;   Procedure.i ResizeWidget(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
-;     
-;     With *This
-;       If X<>#PB_Ignore And 
-;          \X[0] <> X
-;         \X[0] = X 
-;         \X[2]=\X[0]+\bSize
-;         \X[1]=\X[2]-\fSize
-;         \Resize = 1<<1
-;       EndIf
-;       If Y<>#PB_Ignore And 
-;          \Y[0] <> Y
-;         \Y[0] = Y
-;         \Y[2]=\Y[0]+\bSize
-;         \Y[1]=\Y[2]-\fSize
-;         \Resize = 1<<2
-;       EndIf
-;       If Width<>#PB_Ignore And
-;          \Width[0] <> Width 
-;         \Width[0] = Width 
-;         \Width[2] = \Width[0]-\bSize*2
-;         \Width[1] = \Width[2]+\fSize*2
-;         \Resize = 1<<3
-;       EndIf
-;       If Height<>#PB_Ignore And 
-;          \Height[0] <> Height
-;         \Height[0] = Height 
-;         \Height[2] = \Height[0]-\bSize*2
-;         \Height[1] = \Height[2]+\fSize*2
-;         \Resize = 1<<4
-;       EndIf
-;       
-;       ProcedureReturn \Resize
-;     EndWith
-;   EndProcedure
+  ;   Procedure.i ResizeWidget(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
+  ;     
+  ;     With *This
+  ;       If X<>#PB_Ignore And 
+  ;          \X[0] <> X
+  ;         \X[0] = X 
+  ;         \X[2]=\X[0]+\bSize
+  ;         \X[1]=\X[2]-\fSize
+  ;         \Resize = 1<<1
+  ;       EndIf
+  ;       If Y<>#PB_Ignore And 
+  ;          \Y[0] <> Y
+  ;         \Y[0] = Y
+  ;         \Y[2]=\Y[0]+\bSize
+  ;         \Y[1]=\Y[2]-\fSize
+  ;         \Resize = 1<<2
+  ;       EndIf
+  ;       If Width<>#PB_Ignore And
+  ;          \Width[0] <> Width 
+  ;         \Width[0] = Width 
+  ;         \Width[2] = \Width[0]-\bSize*2
+  ;         \Width[1] = \Width[2]+\fSize*2
+  ;         \Resize = 1<<3
+  ;       EndIf
+  ;       If Height<>#PB_Ignore And 
+  ;          \Height[0] <> Height
+  ;         \Height[0] = Height 
+  ;         \Height[2] = \Height[0]-\bSize*2
+  ;         \Height[1] = \Height[2]+\fSize*2
+  ;         \Resize = 1<<4
+  ;       EndIf
+  ;       
+  ;       ProcedureReturn \Resize
+  ;     EndWith
+  ;   EndProcedure
   
   Procedure.i GetState(*This.Bar_S)
     ProcedureReturn Invert(*This, *This\Page\Pos, *This\Inverted)
@@ -833,7 +832,7 @@ Module Bar
           Case #PB_ScrollBar_Maximum : Result = \Max
           Case #PB_ScrollBar_Inverted : Result = \Inverted
           Case #PB_ScrollBar_PageLength : Result = \Page\len
-          Case #PB_ScrollBar_NoButtons : Result = \Button\len
+          Case #PB_ScrollBar_NoButtons : Result = \ButtonLen
           Case #PB_ScrollBar_Direction : Result = \Direction
         EndSelect
       EndIf
@@ -845,9 +844,25 @@ Module Bar
   Procedure.i SetAttribute(*This.Bar_S, Attribute.i, Value.i)
     With *This
       If *This > 0
+        If \Type = #PB_GadgetType_Splitter
+          Select Attribute
+            Case #PB_Splitter_FirstMinimumSize : \ButtonLen[1] = Value
+            Case #PB_Splitter_SecondMinimumSize : \ButtonLen[2] = Value
+          EndSelect 
+          
+          If \Vertical
+            \Area\Pos = \Y+\ButtonLen[1]
+            \Area\len = (\Height-\ButtonLen[1]-\ButtonLen[2])
+          Else
+            \Area\Pos = \X+\ButtonLen[1]
+            \Area\len = (\Width-\ButtonLen[1]-\ButtonLen[2])
+          EndIf
+          ProcedureReturn 1
+        EndIf
+        
         Select Attribute
           Case #PB_ScrollBar_NoButtons 
-            \Button\len = Value
+            \ButtonLen = Value
             Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             ProcedureReturn 1
             
@@ -1008,17 +1023,17 @@ Module Bar
       EndIf
       
       With *This
-;         If *This <> *That And *That And *That\hide
-;           If \Vertical
-;             If Height=#PB_Ignore 
-;               Height=(*That\Y+*That\Height)-\Y 
-;             EndIf
-;           Else
-;             If Width=#PB_Ignore
-;               Width=(*That\X+*That\Width)-\X 
-;             EndIf
-;           EndIf
-;         EndIf
+        ;         If *This <> *That And *That And *That\hide
+        ;           If \Vertical
+        ;             If Height=#PB_Ignore 
+        ;               Height=(*That\Y+*That\Height)-\Y 
+        ;             EndIf
+        ;           Else
+        ;             If Width=#PB_Ignore
+        ;               Width=(*That\X+*That\Width)-\X 
+        ;             EndIf
+        ;           EndIf
+        ;         EndIf
         
         \hide[1] = Bool(Not ((\Max-\Min) > \Page\Len)) ; Bool(Not (\Page\Len And (\Max-\Min) > \Page\len));
         Lines = Bool(\Type=#PB_GadgetType_ScrollBar)
@@ -1030,22 +1045,27 @@ Module Bar
         If Height=#PB_Ignore : Height = \Height : Else : \Height = Height : \Resize = 1<<4 : EndIf
         
         If Not \hide
+          If \ButtonLen
+            \ButtonLen[1] = \ButtonLen
+            \ButtonLen[2] = \ButtonLen
+          EndIf
+          
           If \Vertical
-            \Area\Pos = Y+\Button\len
-            \Area\len = (Height-\Button\len*2)
+            \Area\Pos = \Y+\ButtonLen[1]
+            \Area\len = \Height-(\ButtonLen[1]+\ButtonLen[2])
           Else
-            \Area\Pos = X+\Button\len
-            \Area\len = (Width-\Button\len*2)
+            \Area\Pos = \X+\ButtonLen[1]
+            \Area\len = \Width-(\ButtonLen[1]+\ButtonLen[2])
           EndIf
           
           If \Area\len
             \Thumb\len = ThumbLength(*This)
             
-            If (\Area\len > \Button\len)
-              If \Button\len
-                If (\Thumb\len < \Button\len)
-                  \Area\len = Round(\Area\len - (\Button\len-\Thumb\len), #PB_Round_Nearest)
-                  \Thumb\len = \Button\len 
+            If (\Area\len > \ButtonLen)
+              If \ButtonLen
+                If (\Thumb\len < \ButtonLen)
+                  \Area\len = Round(\Area\len - (\ButtonLen-\Thumb\len), #PB_Round_Nearest)
+                  \Thumb\len = \ButtonLen 
                 EndIf
               Else
                 If (\Thumb\len < 7) And (\Type <> #PB_GadgetType_ProgressBar)
@@ -1068,15 +1088,15 @@ Module Bar
         EndIf
         
         If \Vertical
-          If \Button\len
-            \X[1] = X + Lines : \Y[1] = Y : \Width[1] = Width - Lines : \Height[1] = \Button\len                   ; Top button coordinate on scroll bar
-            \X[2] = X + Lines : \Width[2] = Width - Lines : \Height[2] = \Button\len : \Y[2] = Y+Height-\Height[2] ; Botom button coordinate on scroll bar
+          If \ButtonLen
+            \X[1] = X + Lines : \Y[1] = Y : \Width[1] = Width - Lines : \Height[1] = \ButtonLen                   ; Top button coordinate on scroll bar
+            \X[2] = X + Lines : \Width[2] = Width - Lines : \Height[2] = \ButtonLen : \Y[2] = Y+Height-\Height[2] ; Botom button coordinate on scroll bar
           EndIf
           \X[3] = X + Lines : \Width[3] = Width - Lines : \Y[3] = \Thumb\Pos : \Height[3] = \Thumb\len           ; Thumb coordinate on scroll bar
         Else
-          If \Button\len
-            \X[1] = X : \Y[1] = Y + Lines : \Width[1] = \Button\len : \Height[1] = Height - Lines                  ; Left button coordinate on scroll bar
-            \Y[2] = Y + Lines : \Height[2] = Height - Lines : \Width[2] = \Button\len : \X[2] = X+Width-\Width[2]  ; Right button coordinate on scroll bar
+          If \ButtonLen
+            \X[1] = X : \Y[1] = Y + Lines : \Width[1] = \ButtonLen : \Height[1] = Height - Lines                  ; Left button coordinate on scroll bar
+            \Y[2] = Y + Lines : \Height[2] = Height - Lines : \Width[2] = \ButtonLen : \X[2] = X+Width-\Width[2]  ; Right button coordinate on scroll bar
           EndIf
           \Y[3] = Y + Lines : \Height[3] = Height - Lines : \X[3] = \Thumb\Pos : \Width[3] = \Thumb\len          ; Thumb coordinate on scroll bar
         EndIf
@@ -1127,8 +1147,8 @@ Module Bar
     If ScrollArea_Y<0 : SetState(*Scroll\v, (ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) : EndIf
     If ScrollArea_X<0 : SetState(*Scroll\h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
     
-;     *Scroll\v\hide = Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\h) 
-;     *Scroll\h\hide = Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\v)
+    ;     *Scroll\v\hide = Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\h) 
+    ;     *Scroll\h\hide = Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\v)
     *Scroll\v\Hide = Bar::Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*Scroll\h\Y + Bool(*Scroll\h\Hide) * *Scroll\h\Height) - *Scroll\v\Y) ; #PB_Ignore, *Scroll\h) 
     *Scroll\h\Hide = Bar::Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, (*Scroll\v\X + Bool(*Scroll\v\Hide) * *Scroll\v\Width) - *Scroll\h\X, #PB_Ignore)  ; #PB_Ignore, #PB_Ignore, *Scroll\v)
     
@@ -1741,7 +1761,6 @@ Module Bar
     With *This
       \X =- 1
       \Y =- 1
-      \Type = Type
       \Radius = Radius
       \Ticks = Bool(Flag&#PB_Bar_Ticks)
       \Smooth = Bool(Flag&#PB_Bar_Smooth)
@@ -1774,15 +1793,15 @@ Module Bar
       If Not Bool(Flag&#PB_ScrollBar_NoButtons)
         If \Vertical
           If width < 21
-            \Button\len = width - 1
+            \ButtonLen = width - 1
           Else
-            \Button\len = 17
+            \ButtonLen = 17
           EndIf
         Else
           If height < 21
-            \Button\len = height - 1
+            \ButtonLen = height - 1
           Else
-            \Button\len = 17
+            \ButtonLen = 17
           EndIf
         EndIf
       EndIf
@@ -1791,6 +1810,8 @@ Module Bar
       If \Max <> Max : SetAttribute(*This, #PB_ScrollBar_Maximum, Max) : EndIf
       If \Page\len <> Pagelength : SetAttribute(*This, #PB_ScrollBar_PageLength, Pagelength) : EndIf
       If Bool(Flag&#PB_ScrollBar_Inverted) : SetAttribute(*This, #PB_ScrollBar_Inverted, #True) : EndIf
+      
+      \Type = Type
     EndWith
     
     Resize(*This, X,Y,Width,Height)
@@ -1828,7 +1849,7 @@ Module Bar
     With *This
       \Separator = 0
       
-       If First > 0
+      If First > 0
         \First = First
       Else
         \First = AllocateStructure(Bar_S)
@@ -1847,7 +1868,7 @@ Module Bar
         \Type[2] = Bool(\Second\Type = #PB_GadgetType_Splitter) * #PB_GadgetType_Splitter
       EndIf
       
-     If \Vertical
+      If \Vertical
         SetState(*This, \height/2-1) ; y+(Height+\Thumb\len)/2+1)
       Else
         SetState(*This, \width/2-1)
@@ -2189,6 +2210,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
+
+
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------+--+v--------------------------------------
+; Folding = -----------------------------------------------------
 ; EnableXP

@@ -153,19 +153,19 @@ Procedure CallBacks()
         Repaint | Bar::CallBack(*splitter_1, EventType()) 
         Repaint | Bar::CallBack(*splitter_0, EventType()) 
         
-        If *splitter_1\Change
-          Editor::Resize(*Editor_0, *splitter_1\First\x, *splitter_1\First\y, *splitter_1\First\width, *splitter_1\First\height)
-        EndIf
-        
-        If *splitter_0\Change Or *splitter_0\Resize
-          Tree::Resize(*Tree_0, *splitter_0\First\x, *splitter_0\First\y, *splitter_0\First\width, *splitter_0\First\height)
-          Tree::Resize(*Tree_1, *splitter_0\Second\x, *splitter_0\Second\y, *splitter_0\Second\width, *splitter_0\Second\height)
-        EndIf
-        
-        
     EndSelect
     
     If Repaint 
+      If *splitter_1\Change Or *splitter_1\Resize
+        Editor::Resize(*Editor_0, *splitter_1\x[1], *splitter_1\y[1], *splitter_1\width[1], *splitter_1\height[1])
+        ; *splitter_1\Type[2] = #PB_GadgetType_Splitter 
+      EndIf
+      
+      If *splitter_0\Change Or *splitter_0\Resize
+        Tree::Resize(*Tree_0, *splitter_0\x[1], *splitter_0\y[1], *splitter_0\width[1], *splitter_0\height[1])
+        Tree::Resize(*Tree_1,  *splitter_0\x[2], *splitter_0\y[2], *splitter_0\width[2], *splitter_0\height[2])
+      EndIf
+      
       If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
         DrawingMode(#PB_2DDrawing_Default)
         Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
@@ -204,22 +204,13 @@ Procedure OpenWindow_0(x = 0, y = 0, width = 800, height = 600)
   *Tree_0 = Tree::Create(Canvas_0, #PB_Any, 0, 0, 0, 0, "", #PB_Flag_FullSelection)
   *Tree_1 = Tree::Create(Canvas_0, #PB_Any, 0, 0, 0, 0, "", #PB_Flag_FullSelection)
   
-  *splitter_0 = Bar::Splitter(1,1,778, 548, -1, -1)
+  *splitter_0 = Bar::Splitter(1,1,778, 548, *Tree_0, *Tree_1)
   
-  *splitter_1 = Bar::Splitter(1,1,778, 548, -1, *splitter_0, #PB_Splitter_Vertical)
+  *splitter_1 = Bar::Splitter(1,1,778, 548, *Editor_0, *splitter_0, #PB_Splitter_Vertical)
   
-  Bar::SetState(*splitter_1, 350)
-  
-  Bar::SetState(*splitter_0, 150)
-  
-  If *splitter_0\Change
-    Tree::Resize(*Tree_0, *splitter_0\First\x, *splitter_0\First\y, *splitter_0\First\width, *splitter_0\First\height)
-    Tree::Resize(*Tree_1, *splitter_0\Second\x, *splitter_0\Second\y, *splitter_0\Second\width, *splitter_0\Second\height)
-  EndIf
-  
-  If *splitter_1\Change
-    Editor::Resize(*Editor_0, *splitter_1\First\x, *splitter_1\First\y, *splitter_1\First\width, *splitter_1\First\height)
-  EndIf
+;   Bar::SetState(*splitter_1, 350)
+;   
+;   Bar::SetState(*splitter_0, 150)
   
    
    ;Editor::SetText(*Editor_0, "")
@@ -228,7 +219,8 @@ Procedure OpenWindow_0(x = 0, y = 0, width = 800, height = 600)
   Tree::AddItem(*Tree_1, -1, "Button")
   Tree::AddItem(*Tree_1, -1, "String")
   Tree::AddItem(*Tree_1, -1, "Text")
-     
+  
+  ;ReDraw(Canvas_0)
 EndProcedure
 
 Procedure Window_0_Events(event)
@@ -259,5 +251,5 @@ Repeat
   EndSelect
 ForEver
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -4--+
+; Folding = -4-v-
 ; EnableXP

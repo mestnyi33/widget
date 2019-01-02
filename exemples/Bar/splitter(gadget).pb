@@ -137,7 +137,6 @@ CompilerIf #PB_Compiler_IsMainFile
       *Bar_1 = Splitter(10, 10, 360,  330, #Button3, *Bar_0, #PB_Splitter_Vertical)
       BindGadgetEvent(1, @Canvas_CallBack())
     
-    ;SetState(*Bar_0, 25)
       CloseGadgetList()
       
       ReDraw(1)

@@ -112,12 +112,19 @@
   Structure Bar_S Extends Coordinate_S  ; Bar::Bar_S ; 
     *s.Scroll_S
     
-    ; for splitter
+    ; splitter bar
     *First.Bar_S 
     *Second.Bar_S
-      
+    Separator.b
+    
+    ; track bar
+    Ticks.b
+    
+    ; progress bar
+    Smooth.b
+    
     at.b
-    Type.i
+    Type.i[3] ; [2] for splitter
     Radius.a
     ArrowSize.a[3]
     ArrowType.b[3]
@@ -129,16 +136,15 @@
     
     Focus.b
     Change.b
+    Resize.b
     Vertical.b
     Inverted.b
     Direction.i
-    Ticks.b
-    Smooth.b
+    ButtonLen.i[3]
     
     Page.Page_S
     Area.Page_S
     Thumb.Page_S
-    Button.Page_S
     Color.Color_S[4]
   EndStructure
   
