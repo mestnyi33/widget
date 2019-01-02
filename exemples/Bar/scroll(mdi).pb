@@ -115,8 +115,19 @@ CompilerIf #PB_Compiler_IsMainFile
       ; Scroll area coordinate
       Box(*Scroll\h\x-*Scroll\h\Page\Pos, *Scroll\v\y-*Scroll\v\Page\Pos, *Scroll\h\Max, *Scroll\v\Max, $FF0000)
       
-      ; area coordinate
+      ; page coordinate
       Box(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Page\Len, *Scroll\v\Page\Len, $00FF00)
+      
+      ; area coordinate
+      Box(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Area\Len, *Scroll\v\Area\Len, $00FFFF)
+      
+      ; scroll coordinate
+      Box(*Scroll\h\x, *Scroll\v\y, *Scroll\h\width, *Scroll\v\height, $FF00FF)
+      
+      ; frame coordinate
+      Box(*Scroll\h\x, *Scroll\v\y, 
+          *Scroll\h\Page\len + (Bool(Not *Scroll\v\hide) * *Scroll\v\width),
+          *Scroll\v\Page\len + (Bool(Not *Scroll\h\hide) * *Scroll\h\height), $FFFF00)
       
       StopDrawing()
     EndIf

@@ -7,7 +7,7 @@
 XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scroll.pbi"
+XIncludeFile "module_bar.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_editor.pbi"
 

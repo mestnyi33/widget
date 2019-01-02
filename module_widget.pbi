@@ -14,7 +14,7 @@
 XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scroll.pbi"
+XIncludeFile "module_bar.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_button.pbi"
 XIncludeFile "module_string.pbi"
@@ -57,7 +57,7 @@ Module Widget
           Case #PB_GadgetType_Text   : Text::Draw(*This)
           Case #PB_GadgetType_Button : Button::Draw(*This)
           Case #PB_GadgetType_String : String::Draw(*This)
-          Case #PB_GadgetType_ScrollBar : Scroll::Draw(\Scroll\v)
+          Case #PB_GadgetType_ScrollBar : Bar::Draw(\Scroll\v)
         EndSelect
         
         StopDrawing()
@@ -70,7 +70,7 @@ Module Widget
       
       ;       Select \Type
       ;         Case #PB_GadgetType_ScrollBar
-      ;           Scroll::Resize(\Scroll\v, X,Y,Width,Height)
+      ;           Bar::Resize(\Scroll\v, X,Y,Width,Height)
       ;           \Resize = 1
       ;         Default
       If X<>#PB_Ignore 
@@ -201,7 +201,7 @@ Module Widget
           EndIf
           
         Case #PB_GadgetType_ScrollBar  
-          If Scroll::SetState(*This\Scroll\v, State) 
+          If Bar::SetState(*This\Scroll\v, State) 
             PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
             Result = 1
           EndIf
@@ -231,7 +231,7 @@ Module Widget
     With *This
       Select \Type
         Case #PB_GadgetType_ScrollBar  
-          If Scroll::SetAttribute(\Scroll\v, Attribute, Value)
+          If Bar::SetAttribute(\Scroll\v, Attribute, Value)
             Draws(*This)
           EndIf
           
@@ -288,7 +288,7 @@ Module Widget
           Repaint | String::CallBack(*This, EventType()) 
           
         Case #PB_GadgetType_ScrollBar  
-          Repaint | Scroll::CallBack(\Scroll\v, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
+          Repaint | Bar::CallBack(\Scroll\v, EventType(), \Canvas\Mouse\X, \Canvas\Mouse\Y);, WheelDelta) 
           
       EndSelect
       
@@ -309,7 +309,7 @@ Module Widget
          \Canvas\window = GetActiveWindow()
          \Type = #PB_GadgetType_ScrollBar
          
-         \Scroll\v = Scroll::Bar(0, 0, Width, Height, Min, Max, Pagelength, Flag)
+         \Scroll\v = Bar::Scroll(0, 0, Width, Height, Min, Max, Pagelength, Flag)
          
          \Scroll\v\ArrowType[1]=1 : \Scroll\v\ArrowType[2]=1     ; Можно менять вид стрелок 
          \Scroll\v\ArrowSize[1]=6 : \Scroll\v\ArrowSize[2]=6     ; Можно задать размер стрелок
@@ -436,5 +436,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------
+; Folding = f-4v+------
 ; EnableXP

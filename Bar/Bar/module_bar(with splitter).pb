@@ -37,20 +37,12 @@ DeclareModule Bar
   Structure Bar_S Extends Coordinate_S
     *s.Scroll_S
     
-    ; splitter bar
+    ; for splitter
     *First.Bar_S 
     *Second.Bar_S
-    Separator.b
-    
-    ; track bar
-    Ticks.b
-    
-    ; progress bar
-    Smooth.b
-    
     
     at.b
-    Type.i[3] ; [2] for splitter
+    Type.i
     Radius.a
     ArrowSize.a[3]
     ArrowType.b[3]
@@ -66,6 +58,8 @@ DeclareModule Bar
     Vertical.b
     Inverted.b
     Direction.i
+    Ticks.b
+    Smooth.b
     
     Page.Page_S
     Area.Page_S
@@ -334,28 +328,30 @@ Module Bar
   EndProcedure
   
   ;-
-  Procedure.i ResizeSplitter(*This.Bar_S)
+  Procedure.i ResizeSplitter(*This.Bar_S, First, Second)
     With *This
       If \Vertical
-        \x[1] = \x
-        \y[1] = \y
-        \width[1] = \width
-        \height[1] = (\Thumb\Pos+\Separator)-\y
-        
-        \x[2] = \x
-        \y[2] = (\Thumb\Pos-\Separator)+\Thumb\len
-        \width[2] = \width
-        \height[2] = \Height-(((\Thumb\Pos-\Separator)+\Thumb\len)-\y)
+        If First > 0 And IsGadget(First)
+          ResizeGadget(First, \x, \y, \width, \Thumb\Pos-\y)
+        Else
+          Resize(First, \x, \y, \width, \Thumb\Pos-\y)
+        EndIf
+        If Second > 0 And IsGadget(Second)
+          ResizeGadget(Second, \x, \Thumb\Pos+\Thumb\len, \width, \Height-((\Thumb\Pos+\Thumb\len)-\y))
+        Else
+          Resize(Second, \x, \Thumb\Pos+\Thumb\len, \width, \Height-((\Thumb\Pos+\Thumb\len)-\y))
+        EndIf
       Else
-        \x[1] = \x
-        \y[1] = \y
-        \width[1] = (\Thumb\Pos+\Separator)-\x
-        \height[1] = \height
-        
-        \x[2] = (\Thumb\Pos-\Separator)+\Thumb\len
-        \y[2] = \y
-        \width[2] = \width-(((\Thumb\Pos-\Separator)+\Thumb\len)-\x)
-        \height[2] = \height
+        If First > 0 And IsGadget(First)
+          ResizeGadget(First, \x, \y, \Thumb\Pos-\x, \height)
+        Else
+          Resize(First, \x, \y, \Thumb\Pos-\x, \height)
+        EndIf
+        If Second > 0 And IsGadget(Second)
+          ResizeGadget(Second, \Thumb\Pos+\Thumb\len, \y, \width-((\Thumb\Pos+\Thumb\len)-\x), \height)
+        Else
+          Resize(Second, \Thumb\Pos+\Thumb\len, \y, \width-((\Thumb\Pos+\Thumb\len)-\x), \height)
+        EndIf
       EndIf
     EndWith
   EndProcedure
@@ -405,43 +401,56 @@ Module Bar
   EndProcedure
   
   Procedure.i DrawSplitter(*This.Bar_S)
-    Protected IsVertical,Pos, Size, X,Y,Width,Height, fColor, Color
-    Protected Radius.d = 2, Border=1, Circle=1, Separator=0
-    Protected s
-            
+    Protected IsVertical,Pos, Size, X,Y,Width,Height, fColor = $686868, Color = $686868
+    
     With *This
       If *This > 0
-        s = \Separator
+        If Not IsGadget(\First)
+          Protected Splitter1 = Bool(\First\Type = #PB_GadgetType_Splitter)
+        EndIf
+        If Not IsGadget(\Second)
+          Protected Splitter2 = Bool(\Second\Type = #PB_GadgetType_Splitter)
+        EndIf
+        
+        IsVertical = Bool(Not \Vertical)
         X = \X
         Y = \Y
         Width = \Width 
         Height = \Height
         
         ; Позиция сплиттера 
-        Size = \Thumb\len-s*2
-        
-        If \Vertical
-          Pos = \Thumb\Pos-y+s
+        Size = \Thumb\len-2
+        If IsVertical
+          Pos = \Thumb\Pos-x+1
         Else
-          Pos = \Thumb\Pos-x+s
+          Pos = \Thumb\Pos-y+1
         EndIf
+        ;       If IsVertical
+        ;         If (Pos<Width/2) : Pos+1 : EndIf
+        ;       Else
+        ;         If (Pos<Height/2) : Pos+1 : EndIf
+        ;       EndIf
         
+        Protected Radius.d = 2.0 ; Size/2
+        DrawingMode(#PB_2DDrawing_Outlined) 
+        ;Box(X,Y,Width,Height,Color)
+        Protected Border=1, Circle=1, Separator=0
+        
+        fColor = 0;\Color[3]\Frame[0]
         If Border
-          fColor = 0;\Color[3]\Frame[0]
-          DrawingMode(#PB_2DDrawing_Outlined) 
-          If \Vertical
-            If \Type[1]<>#PB_GadgetType_Splitter
-              Box(X,Y,Width,Pos,fColor) 
-            EndIf
-            If \Type[2]<>#PB_GadgetType_Splitter
-              Box( X,Y+(Pos+Size),Width,(Height-(Pos+Size)),fColor)
+          If IsVertical
+            If Not Splitter1
+              Box(X,Y,Pos-1,Height,fColor) 
+            EndIf 
+            If Not Splitter2
+              Box(X+(Pos+Size+1), Y,(Width-(Pos+Size))-1,Height,fColor)
             EndIf
           Else
-            If \Type[1]<>#PB_GadgetType_Splitter
-              Box(X,Y,Pos,Height,fColor) 
-            EndIf 
-            If \Type[2]<>#PB_GadgetType_Splitter
-              Box(X+(Pos+Size), Y,(Width-(Pos+Size)),Height,fColor)
+            If Not Splitter1
+              Box(X,Y,Width,Pos-1,fColor) 
+            EndIf
+            If Not Splitter2
+              Box( X,Y+(Pos+Size+1),Width,(Height-(Pos+Size))-1,fColor)
             EndIf
           EndIf
         EndIf
@@ -449,42 +458,36 @@ Module Bar
         If Circle
           Color = 0;\Color[3]\Frame[\Color[3]\State]
           DrawingMode(#PB_2DDrawing_Outlined) 
-          If \Vertical ; horisontal
-            ClipOutput(\x[3], \y[3]+\height[3]-\Thumb\len, \width[3], \Thumb\len);, $0000FF)
-            Circle(X+((Width-Radius)/2-((Radius*2+2)*2+2)),Y+Pos+Size/2,Radius,Color)
-            Circle(X+((Width-Radius)/2-(Radius*2+2)),Y+Pos+Size/2,Radius,Color)
-            Circle(X+((Width-Radius)/2),Y+Pos+Size/2,Radius,Color)
-            Circle(X+((Width-Radius)/2+(Radius*2+2)),Y+Pos+Size/2,Radius,Color)
-            Circle(X+((Width-Radius)/2+((Radius*2+2)*2+2)),Y+Pos+Size/2,Radius,Color)
-            UnclipOutput()
-          Else
-            ClipOutput(\x[3]+\width[3]-\Thumb\len, \y[3], \Thumb\len, \height[3]);, $0000FF)
+          If IsVertical
             Circle(X+Pos+Size/2,Y+((Height-Radius)/2-((Radius*2+2)*2+2)),Radius,Color)
             Circle(X+Pos+Size/2,Y+((Height-Radius)/2-(Radius*2+2)),Radius,Color)
             Circle(X+Pos+Size/2,Y+((Height-Radius)/2),Radius,Color)
             Circle(X+Pos+Size/2,Y+((Height-Radius)/2+(Radius*2+2)),Radius,Color)
             Circle(X+Pos+Size/2,Y+((Height-Radius)/2+((Radius*2+2)*2+2)),Radius,Color)
-            UnclipOutput()
+          Else
+            Circle(X+((Width-Radius)/2-((Radius*2+2)*2+2)),Y+Pos+Size/2,Radius,Color)
+            Circle(X+((Width-Radius)/2-(Radius*2+2)),Y+Pos+Size/2,Radius,Color)
+            Circle(X+((Width-Radius)/2),Y+Pos+Size/2,Radius,Color)
+            Circle(X+((Width-Radius)/2+(Radius*2+2)),Y+Pos+Size/2,Radius,Color)
+            Circle(X+((Width-Radius)/2+((Radius*2+2)*2+2)),Y+Pos+Size/2,Radius,Color)
           EndIf
           
         ElseIf Separator
           DrawingMode(#PB_2DDrawing_Outlined) 
-          If \Vertical
-            ;Box(X,(Y+Pos),Width,Size,Color)
-            Line(X,(Y+Pos)+Size/2,Width,1,Color)
-          Else
+          If IsVertical
             ;Box(X+Pos,Y,Size,Height,Color)
             Line((X+Pos)+Size/2,Y,1,Height,Color)
+          Else
+            ;Box(X,(Y+Pos),Width,Size,Color)
+            Line(X,(Y+Pos)+Size/2,Width,1,Color)
           EndIf
         EndIf
         
-;         If \Vertical
-;           ;Box(\x[3], \y[3]+\height[3]-\Thumb\len, \width[3], \Thumb\len, $FF0000)
-;           Box(X,Y,Width,Height/2,$0000FF)
-;         Else
-;           ;Box(\x[3]+\width[3]-\Thumb\len, \y[3], \Thumb\len, \height[3], $FF0000)
-;           Box(X,Y,Width/2,Height,$0000FF)
-;         EndIf
+        ;       If \Vertical
+        ;         Box(X,Y,Width,Height/2,$0000FF)
+        ;       Else
+        ;         Box(X,Y,Width/2,Height,$0000FF)
+        ;       EndIf
       EndIf
       
     EndWith
@@ -795,7 +798,7 @@ Module Bar
           \Change = 1
           
           If \Type = #PB_GadgetType_Splitter
-            ResizeSplitter(*This)
+            ResizeSplitter(*This, \First, \Second)
           EndIf
           
           ;           If \s
@@ -1082,7 +1085,7 @@ Module Bar
         EndIf
         
         If \Type = #PB_GadgetType_Splitter
-          ResizeSplitter(*This)
+          ResizeSplitter(*This, \First, \Second)
         EndIf
         
         ProcedureReturn \hide[1]
@@ -1264,28 +1267,21 @@ Module Bar
           Case #PB_EventType_LostFocus : \Focus = 0 : Repaint = 1
           Case #PB_EventType_LeftButtonUp : Repaint = 1 : delta = 0
           Case #PB_EventType_LeftDoubleClick 
-            If \Type = #PB_GadgetType_ScrollBar
-              Select at
-                Case - 1
-                  If \Vertical
-                    Repaint = (MouseScreenY-\Thumb\len/2)
-                  Else
-                    Repaint = (MouseScreenX-\Thumb\len/2)
-                  EndIf
-                  
-                  Repaint = SetState(*This, Pos(*This, Repaint))
-              EndSelect
-            EndIf
+            Select at
+              Case - 1
+                If \Vertical
+                  Repaint = (MouseScreenY-\Thumb\len/2)
+                Else
+                  Repaint = (MouseScreenX-\Thumb\len/2)
+                EndIf
+                
+                Repaint = SetState(*This, Pos(*This, Repaint))
+            EndSelect
             
           Case #PB_EventType_LeftButtonDown
-            If \Type = #PB_GadgetType_ScrollBar
-              Select at
-                Case 1 : Repaint = SetState(*This, (\Page\Pos - \Step)) ; Up button
-                Case 2 : Repaint = SetState(*This, (\Page\Pos + \Step)) ; Down button
-              EndSelect
-            EndIf
-            
             Select at
+              Case 1 : Repaint = SetState(*This, (\Page\Pos - \Step)) ; Up button
+              Case 2 : Repaint = SetState(*This, (\Page\Pos + \Step)) ; Down button
               Case 3                                                  ; Thumb button
                 If \Vertical
                   delta = MouseScreenY - \Thumb\Pos
@@ -1818,17 +1814,15 @@ Module Bar
     Protected Vertical = Bool(Not Flag&#PB_Splitter_Vertical) * #PB_ScrollBar_Vertical
     
     If Vertical
-      max = Height
-    Else
       max = Width
+    Else
+      max = Height
     EndIf
     
     Protected *This.Bar_S = Bar(#PB_GadgetType_Splitter, X,Y,Width,Height, 0, max, 0, Ticks|Vertical|#PB_ScrollBar_NoButtons, 0)
     
     With *This
-      \Separator = 0
-      
-       If First > 0
+      If First > 0
         \First = First
       Else
         \First = AllocateStructure(Bar_S)
@@ -1840,17 +1834,10 @@ Module Bar
         \Second = AllocateStructure(Bar_S)
       EndIf
       
-      If \First And Not IsGadget(\First)
-        \Type[1] = Bool(\First\Type = #PB_GadgetType_Splitter) * #PB_GadgetType_Splitter
-      EndIf
-      If \Second And Not IsGadget(\Second)
-        \Type[2] = Bool(\Second\Type = #PB_GadgetType_Splitter) * #PB_GadgetType_Splitter
-      EndIf
-      
-     If \Vertical
-        SetState(*This, \height/2-1) ; y+(Height+\Thumb\len)/2+1)
+      If \Vertical
+        SetState(*This,  y+(Height+\Thumb\len)/2+1)
       Else
-        SetState(*This, \width/2-1)
+        SetState(*This,  x+(Width+\Thumb\len)/2+1)
       EndIf
     EndWith
     
@@ -2190,5 +2177,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ---------+--+v--------------------------------------
+; Folding = -----------------------------------------------------
 ; EnableXP

@@ -261,11 +261,11 @@ Module ListIcon
                 \Image\Y = \Y
                 \Text\X = 5+column_x
                 \Image\X = 5+Bool(*This\Flag\CheckBoxes)*25
-;                 ; Draw coordinates 
-              ;   \sublevellen = column_x;+*This\Text\X + (7 - *This\sublevellen) + ((\sublevel + Bool(*This\flag\buttons)) * *This\sublevellen) + Bool(*This\Flag\CheckBoxes)*17
-;                 \Image\X + \sublevellen + indent
-;                 ;\Text\X + \sublevellen + *This\Image\width + indent
-;                 ; Scroll width length
+                ;                 ; Draw coordinates 
+                ;   \sublevellen = column_x;+*This\Text\X + (7 - *This\sublevellen) + ((\sublevel + Bool(*This\flag\buttons)) * *This\sublevellen) + Bool(*This\Flag\CheckBoxes)*17
+                ;                 \Image\X + \sublevellen + indent
+                ;                 ;\Text\X + \sublevellen + *This\Image\width + indent
+                ;                 ; Scroll width length
               EndIf
               
               If Drawing
@@ -274,7 +274,7 @@ Module ListIcon
                 Text_X = \Text\X+*This\Scroll\X
                 Text_Y = \Text\Y+*This\Scroll\Y
               EndIf
-            
+              
               ; expanded & collapsed box
               If *This\flag\buttons Or *This\Flag\Lines 
                 \box\width = box_size
@@ -378,40 +378,59 @@ Module ListIcon
                 
                 ; Draw string
                 If \Text[2]\Len > 0 And *This\Color\Front <> *This\Row\Color\Front[2]
-                
-                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If (*This\Text\Caret[1] > *This\Text\Caret And *This\Index[2] = *This\Index[1]) Or (*This\Index[2] > *This\Index[1] And *This\Index[1] = \Index)
-                    \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Text\Caret[1])) 
-                    
-                    If *This\Index[2] = *This\Index[1]
-                      \Text[2]\X = \Text[3]\X-\Text[2]\Width
-                    EndIf
-                    
-                    If \Text[3]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                      DrawText(\Text[3]\X, Text_Y, \Text[3]\String.s, *This\Color\Front[*This\Color\State])
-                    EndIf
-                    
-                    If *This\Row\Color\Fore[2]
-                      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                      BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
+                  
+                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                    If (*This\Text\Caret[1] > *This\Text\Caret And *This\Index[2] = *This\Index[1]) Or (*This\Index[2] > *This\Index[1] And *This\Index[1] = \Index)
+                      \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Text\Caret[1])) 
+                      
+                      If *This\Index[2] = *This\Index[1]
+                        \Text[2]\X = \Text[3]\X-\Text[2]\Width
+                      EndIf
+                      
+                      If \Text[3]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                        DrawText(\Text[3]\X, Text_Y, \Text[3]\String.s, *This\Color\Front[*This\Color\State])
+                      EndIf
+                      
+                      If *This\Row\Color\Fore[2]
+                        DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                        BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
+                      Else
+                        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                        Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2) )
+                      EndIf
+                      
+                      If \Text[2]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                        DrawText(Text_X, Text_Y, \Text[1]\String.s+\Text[2]\String.s, RowFontColor(*This, 2))
+                      EndIf
+                      
+                      If \Text[1]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                        DrawText(Text_X, Text_Y, \Text[1]\String.s, *This\Color\Front[*This\Color\State])
+                      EndIf
                     Else
-                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                      Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2) )
-                    EndIf
-                    
-                    If \Text[2]\String.s
                       DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                      DrawText(Text_X, Text_Y, \Text[1]\String.s+\Text[2]\String.s, RowFontColor(*This, 2))
+                      DrawText(Text_X, Text_Y, \Text\String.s, *This\Color\Front[*This\Color\State])
+                      
+                      If *This\Row\Color\Fore[2]
+                        DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                        BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
+                      Else
+                        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                        Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
+                      EndIf
+                      
+                      If \Text[2]\String.s
+                        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                        DrawText(\Text[2]\X+*This\Scroll\X, Text_Y, \Text[2]\String.s, RowFontColor(*This, 2))
+                      EndIf
                     EndIf
-                    
+                  CompilerElse
                     If \Text[1]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                      DrawText(Text_X, Text_Y, \Text[1]\String.s, *This\Color\Front[*This\Color\State])
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, 0))
                     EndIf
-                  Else
-                    DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                    DrawText(Text_X, Text_Y, \Text\String.s, *This\Color\Front[*This\Color\State])
                     
                     If *This\Row\Color\Fore[2]
                       DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
@@ -422,53 +441,34 @@ Module ListIcon
                     EndIf
                     
                     If \Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                      DrawText(\Text[2]\X+*This\Scroll\X, Text_Y, \Text[2]\String.s, RowFontColor(*This, 2))
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawRotatedText(\Text[2]\X+*This\Scroll\X, Text_Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, 2))
                     EndIf
-                  EndIf
-                CompilerElse
-                  If \Text[1]\String.s
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, 0))
-                  EndIf
+                    
+                    If \Text[3]\String.s
+                      DrawingMode(#PB_2DDrawing_Transparent)
+                      DrawRotatedText(\Text[3]\X+*This\Scroll\X, Text_Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, 0))
+                    EndIf
+                  CompilerEndIf
                   
-                  If *This\Row\Color\Fore[2]
-                    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                    BoxGradient(\Vertical,\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height,RowForeColor(*This, 2),RowBackColor(*This, 2),\Radius)
-                  Else
+                Else
+                  If \Text[2]\Len > 0
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                     Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
                   EndIf
                   
-                  If \Text[2]\String.s
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(\Text[2]\X+*This\Scroll\X, Text_Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, 2))
-                  EndIf
+                  ;                 CompilerIf Defined(Bar, #PB_Module)
+                  ;                   Debug ""+*This\Scroll\X +" "+ *This\Scroll\h\page\pos
+                  ;                 CompilerEndIf
                   
-                  If \Text[3]\String.s
+                  If \Color\State = 2
                     DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(\Text[3]\X+*This\Scroll\X, Text_Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, 0))
+                    DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, \Color\State))
+                  Else
+                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
                   EndIf
-                CompilerEndIf
-                
-              Else
-                If \Text[2]\Len > 0
-                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                  Box(\Text[2]\X+*This\Scroll\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, RowBackColor(*This, 2))
                 EndIf
-                
-;                 CompilerIf Defined(Bar, #PB_Module)
-;                   Debug ""+*This\Scroll\X +" "+ *This\Scroll\h\page\pos
-;                 CompilerEndIf
-                
-                If \Color\State = 2
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, RowFontColor(*This, \Color\State))
-                Else
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
-                EndIf
-              EndIf
                 
               EndIf
             Next
@@ -728,9 +728,9 @@ Module ListIcon
               EndIf
               
               *This\Scroll\height+\height+l+Bool(*This\Flag\GridLines)*2
-;               If *This\Scroll\Width < (\text\x+\text\width+n)+*This\Scroll\h\page\Pos
-;                 *This\Scroll\Width = (\text\x+\text\width+n)+*This\Scroll\h\page\Pos
-;               EndIf
+              ;               If *This\Scroll\Width < (\text\x+\text\width+n)+*This\Scroll\h\page\Pos
+              ;                 *This\Scroll\Width = (\text\x+\text\width+n)+*This\Scroll\h\page\Pos
+              ;               EndIf
               
               Drawing = Bool(\y+\height>*This\bSize+*This\Columns()\height And \y<*This\height[2])
               If Drawing
@@ -869,9 +869,9 @@ Module ListIcon
         
         ; Задаем размеры скролл баров
         CompilerIf Defined(Bar, #PB_Module)
-            Bar::Draws(*This\Scroll, *This\Scroll\Height, *This\Scroll\Width)
-          CompilerEndIf
-          
+          Bar::Draws(*This\Scroll, *This\Scroll\Height, *This\Scroll\Width)
+        CompilerEndIf
+        
         If *This\fSize
           DrawingMode(#PB_2DDrawing_Outlined)
           Box((*This\bSize-*This\fSize), (*This\bSize-*This\fSize), *This\width[1], *This\height[1], $ADADAE)
@@ -900,8 +900,8 @@ Module ListIcon
       LastElement(\Columns())
       AddElement(\Columns()) 
       \Columns() = AllocateStructure(Widget_S)
-        
-;       Position = ListIndex(\Columns())
+      
+      ;       Position = ListIndex(\Columns())
       
       \Columns()\text\string.s = Text.s
       \Columns()\text\change = 1
@@ -911,9 +911,9 @@ Module ListIcon
       \scroll\width + Width
       \Scroll\height = \bSize*2+\Columns()\height
       ;      ; ReDraw(*This)
-;       If Position = 0
-;      ;   PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
-;       EndIf
+      ;       If Position = 0
+      ;      ;   PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
+      ;       EndIf
     EndWith
   EndProcedure
   
@@ -953,8 +953,8 @@ Module ListIcon
         EndIf
       Next
       
-       \Scroll\height + height
-     EndWith
+      \Scroll\height + height
+    EndWith
     
     ProcedureReturn Item
   EndProcedure
@@ -1021,7 +1021,7 @@ Module ListIcon
         Next
         ;PopListPosition(\Columns()\Items())
         
-          PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
+        PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
         ;ReDraw(*This)
       EndWith
     EndIf
@@ -1425,19 +1425,19 @@ Module ListIcon
     With *This
       If *This
         ; Debug "show tooltip "+\string
-;         If Not Window
-; ;         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
-; ;         Gadget = CanvasGadget(#PB_Any,0,0,\width+8,\height[1])
-; ;         If StartDrawing(CanvasOutput(Gadget))
-; ;           If \FontID : DrawingFont(\FontID) : EndIf 
-; ;           DrawingMode(#PB_2DDrawing_Default)
-; ;           Box(1,1,\width-2+8,\height[1]-2, Color\Back[1])
-; ;           DrawingMode(#PB_2DDrawing_Transparent)
-; ;           DrawText(3, (\height[1]-\height)/2, \String, Color\Front[1])
-; ;           DrawingMode(#PB_2DDrawing_Outlined)
-; ;           Box(0,0,\width+8,\height[1], Color\Frame[1])
-; ;           StopDrawing()
-; ;         EndIf
+        ;         If Not Window
+        ; ;         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
+        ; ;         Gadget = CanvasGadget(#PB_Any,0,0,\width+8,\height[1])
+        ; ;         If StartDrawing(CanvasOutput(Gadget))
+        ; ;           If \FontID : DrawingFont(\FontID) : EndIf 
+        ; ;           DrawingMode(#PB_2DDrawing_Default)
+        ; ;           Box(1,1,\width-2+8,\height[1]-2, Color\Back[1])
+        ; ;           DrawingMode(#PB_2DDrawing_Transparent)
+        ; ;           DrawText(3, (\height[1]-\height)/2, \String, Color\Front[1])
+        ; ;           DrawingMode(#PB_2DDrawing_Outlined)
+        ; ;           Box(0,0,\width+8,\height[1], Color\Frame[1])
+        ; ;           StopDrawing()
+        ; ;         EndIf
         
         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
         SetGadgetColor(ContainerGadget(#PB_Any,1,1,\width-2+8,\height[1]-2), #PB_Gadget_BackColor, Color\Back[1])
@@ -1449,15 +1449,15 @@ Module ListIcon
         
         
         SetWindowData(Window, Gadget)
-;         Else
-;           ResizeWindow(Window, \x[1],\y[1],\width,\height[1])
-;           SetGadgetText(GetWindowData(Window), \string)
-;           HideWindow(Window, 0, #PB_Window_NoActivate)
-;         EndIf
+        ;         Else
+        ;           ResizeWindow(Window, \x[1],\y[1],\width,\height[1])
+        ;           SetGadgetText(GetWindowData(Window), \string)
+        ;           HideWindow(Window, 0, #PB_Window_NoActivate)
+        ;         EndIf
       ElseIf IsWindow(Window)
-;         HideWindow(Window, 1, #PB_Window_NoActivate)
+        ;         HideWindow(Window, 1, #PB_Window_NoActivate)
         CloseWindow(Window)
-      ;  Debug "hide tooltip "
+        ;  Debug "hide tooltip "
       EndIf
     EndWith              
   EndProcedure
@@ -1739,8 +1739,8 @@ Module ListIcon
             
             If \Items()\Index[1] <> \Items()\Index 
               \Items()\Index[1] = \Items()\Index
-;               *This\Index[1] = \Items()\Index[1]
-;               *This\text = \Items()\text 
+              ;               *This\Index[1] = \Items()\Index[1]
+              ;               *This\text = \Items()\text 
               
               
               If \Items()\lostfocus <> \Items()\Index
@@ -1764,6 +1764,8 @@ Module ListIcon
     With *This
       If Text::Resize(*This, X,Y,Width,Height)
         Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
+        \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+        \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
       EndIf
       ProcedureReturn \Resize
     EndWith
@@ -1788,16 +1790,16 @@ Module ListIcon
             CompilerElse
               Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
             CompilerEndIf
-                  
+            
             Select EventType 
               Case #PB_EventType_LostFocus 
                 ; \Focus =- 1
-;                 \Index[1] =- 1
+                ;                 \Index[1] =- 1
                 ; \Items()\Focus =- 1
-;                 \Items()\Index[1] = \Items()\Index
-               itemSelect(*This\Index[2], \Items())
+                ;                 \Items()\Index[1] = \Items()\Index
+                itemSelect(*This\Index[2], \Items())
                 Debug "  LostFocus   "+*This\Index[2]+" "+\Items()\Text\String 
-               \Row\Color\State = 0
+                \Row\Color\State = 0
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
                 
@@ -1808,7 +1810,7 @@ Module ListIcon
                 \Row\Color\State = 2
                 Repaint = #True
                 PostEvent(#PB_Event_Gadget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Repaint)
-               
+                
               Case #PB_EventType_LeftClick 
                 If *This\change : *This\change = 0 
                   PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Change) 
@@ -1835,7 +1837,7 @@ Module ListIcon
                 
               Case #PB_EventType_LeftButtonUp : *This\Drag[1] = 0
                 Repaint = 1
-                    
+                
               Case #PB_EventType_LeftButtonDown
                 *This\Index[1] = get_from(*This, *This\Canvas\Mouse\X, *This\Canvas\Mouse\Y, 1) : *This\Index[2] = *This\Index[1]
                 Repaint = 1
@@ -1845,32 +1847,32 @@ Module ListIcon
                 Protected Line = get_from(*This, *This\Canvas\Mouse\X, *This\Canvas\Mouse\Y)
                 
                 If *This\Index[1]<>Line : *This\Index[1]=Line
-                 If *This\Scroll\h\hide And from <> *This\Index[1]
-                  itemSelect(*This\Index[1], \Items())
-                  If \Items()\text\x+\Items()\text\width>\Items()\width
-                    If *This\ToolTip : ToolTip(0) : EndIf
-                    *This\ToolTip = \Items()\text
-                    *This\tooltip\x[1]=\Items()\text\x+GadgetX(*This\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\X
-                    *This\tooltip\y[1]=\Items()\y+GadgetY(*This\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\Y
-                    *This\tooltip\width[1]=\Items()\width
-                    *This\tooltip\height[1]=\Items()\height
-                    ToolTip(*This\ToolTip)
-                  ElseIf *This\ToolTip : *This\ToolTip = 0
-                    ToolTip(0)
+                  If *This\Scroll\h\hide And from <> *This\Index[1]
+                    itemSelect(*This\Index[1], \Items())
+                    If \Items()\text\x+\Items()\text\width>\Items()\width
+                      If *This\ToolTip : ToolTip(0) : EndIf
+                      *This\ToolTip = \Items()\text
+                      *This\tooltip\x[1]=\Items()\text\x+GadgetX(*This\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\X
+                      *This\tooltip\y[1]=\Items()\y+GadgetY(*This\canvas\gadget, #PB_Gadget_ScreenCoordinate)+*This\Scroll\Y
+                      *This\tooltip\width[1]=\Items()\width
+                      *This\tooltip\height[1]=\Items()\height
+                      ToolTip(*This\ToolTip)
+                    ElseIf *This\ToolTip : *This\ToolTip = 0
+                      ToolTip(0)
+                    EndIf
+                    from = *This\Index[1]
                   EndIf
-                  from = *This\Index[1]
+                  
+                  If *This\Drag And *This\Drag[1] = 0 : *This\Drag[1] = 1
+                    If *This\change : *This\change = 0 
+                      PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Change) 
+                    EndIf
+                    PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_DragStart)
+                  EndIf
+                  
+                  Repaint = 1
                 EndIf
                 
-                If *This\Drag And *This\Drag[1] = 0 : *This\Drag[1] = 1
-                  If *This\change : *This\change = 0 
-                    PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_Change) 
-                  EndIf
-                  PostEvent(#PB_Event_Widget, *This\Canvas\Window, *This\Canvas\Gadget, #PB_EventType_DragStart)
-                EndIf
-                
-                Repaint = 1
-              EndIf
-              
               Default
                 itemSelect(*This\Index[2], \Items())
             EndSelect
@@ -1951,9 +1953,9 @@ Module ListIcon
           \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
           \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
           
-           \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
-           \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-           \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+          \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
+          \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+          \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
           
           \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
@@ -2017,12 +2019,14 @@ Module ListIcon
           EndIf
         EndIf
         
-;         Bar::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
-;         Bar::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
+        ;         Bar::Widget(\Scroll, #PB_Ignore, #PB_Ignore, 16, #PB_Ignore, 0,0,0, #PB_ScrollBar_Vertical, 7)
+        ;         Bar::Widget(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, 16, 0,0,0, 0, 7)
         ; create scrollbars
         Bar::Bars(\Scroll, 16, 7, 1) ; Bool(Not Bool(Not \flag\buttons And Not \flag\Lines)))
         Bar::Resizes(\Scroll, \bSize,\bSize,\Width[2],\Height[2])
-       
+        \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+        \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
+        
         AddColumn(*This, 0,ColumnTitle, ColumnWidth)
         \Resize = 0
       EndWith
@@ -2065,9 +2069,9 @@ Module ListIcon
     
     If *This
       With *This
-;         \Canvas\Mouse\X = MouseX
-;         \Canvas\Mouse\Y = MouseY
-;         \Canvas\Mouse\Buttons = Buttons
+        ;         \Canvas\Mouse\X = MouseX
+        ;         \Canvas\Mouse\Y = MouseY
+        ;         \Canvas\Mouse\Buttons = Buttons
         
         If Not \hide
           AutoHide.b = 0; Bool(\Scroll\v\buttons=0 And \Scroll\h\buttons=0)
@@ -2155,8 +2159,8 @@ Module ListIcon
                 
               Case #PB_EventType_Repaint : Repaint = 1
               Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-                  Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
-      
+                Repaint | Resize(*This, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+                
             EndSelect
           Else
             Repaint = item_from(*This,-1,-1, 0)
@@ -2373,5 +2377,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --v4+-----------Owv------------------------------f----f----
+; Folding = -----------------------------------------------------------
 ; EnableXP

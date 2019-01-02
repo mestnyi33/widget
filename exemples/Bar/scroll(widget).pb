@@ -72,29 +72,8 @@ Module ScrollBar
       
       Select EventType
         Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          \Width = GadgetWidth(\Canvas\Gadget)
-          \Height = GadgetHeight(\Canvas\Gadget)
-          
-            ; Inner coordinae
-          If \Bar\Vertical
-            \X[2]=\bSize
-            \Y[2]=\bSize*2
-            \Width[2] = \Width-\bSize*3
-            \Height[2] = \Height-\bSize*4
-          Else
-            \X[2]=\bSize*2
-            \Y[2]=\bSize
-            \Width[2] = \Width-\bSize*4
-            \Height[2] = \Height-\bSize*3
-          EndIf
-          
-          ; Frame coordinae
-          \X[1]=\X[2]-\fSize
-          \Y[1]=\Y[2]-\fSize
-          \Width[1] = \Width[2]+\fSize*2
-          \Height[1] = \Height[2]+\fSize*2
-          
-         ; Bar::Resize(\Bar, \X[2], \Y[2], \Width[2], \Height[2]) : Draw(*This)
+          Bar::Resize(\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget)) 
+          Draw(*This)
       EndSelect
       
       If Bar::CallBack(\Bar, EventType, Mouse_X, Mouse_Y) 
@@ -190,8 +169,9 @@ Module ScrollBar
     Protected *This.Gadget = GetGadgetData(Gadget)
     
     With *This
-      If Bar::SetState(*This\Bar, State) : Draw(*This)
+      If Bar::SetState(*This\Bar, State)
         PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
+        Draw(*This)
       EndIf
     EndWith
   EndProcedure
@@ -208,34 +188,8 @@ Module ScrollBar
     If *This
       With *This
         \Canvas\Gadget = Gadget
-        \Width = Width
-        \Height = Height
         
-        \fSize = 0
-        \bSize = \fSize
-        
-        ; Inner coordinae
-        If Flag&#PB_ScrollBar_Vertical
-          \X[2]=\bSize
-          \Y[2]=\bSize*2
-          \Width[2] = \Width-\bSize*3
-          \Height[2] = \Height-\bSize*4
-        Else
-          \X[2]=\bSize*2
-          \Y[2]=\bSize
-          \Width[2] = \Width-\bSize*4
-          \Height[2] = \Height-\bSize*3
-        EndIf
-        
-        ; Frame coordinae
-        \X[1]=\X[2]-\fSize
-        \Y[1]=\Y[2]-\fSize
-        \Width[1] = \Width[2]+\fSize*2
-        \Height[1] = \Height[2]+\fSize*2
-        
-        \Color\Frame = $C0C0C0
-        
-        \Bar = Bar::Scroll(0, 0, \Width[2], \Height[2], Min, Max, PageLength, Flag, Radius)
+        \Bar = Bar::Scroll(0, 0, Width, Height, Min, Max, PageLength, Flag, Radius)
         
         \Bar\ArrowType[1]=1 
         \Bar\ArrowType[2]=1
@@ -256,18 +210,22 @@ EndModule
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   Procedure v_GadgetCallBack()
+    SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
     ScrollBar::SetState(13, GetGadgetState(EventGadget()))
   EndProcedure
   
   Procedure v_CallBack()
+    SetWindowTitle(EventWindow(), Str(ScrollBar::GetState(EventGadget())))
     SetGadgetState(3, ScrollBar::GetState(EventGadget()))
   EndProcedure
   
   Procedure h_GadgetCallBack()
+    SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
     ScrollBar::SetState(12, GetGadgetState(EventGadget()))
   EndProcedure
   
   Procedure h_CallBack()
+    SetWindowTitle(EventWindow(), Str(ScrollBar::GetState(EventGadget())))
     SetGadgetState(2, ScrollBar::GetState(EventGadget()))
   EndProcedure
   
@@ -306,5 +264,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------
+; Folding = --+----
 ; EnableXP

@@ -463,7 +463,7 @@ Module Tree
       PushListPosition(\Items())
       SelectElement(\Items(), State) : \Items()\Focus = State : \Items()\Index[1] = \Items()\Index : \Items()\Color\State = 2
       Bar::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) : \Scroll\Y =- \Scroll\v\page\Pos ; в конце
-                                                                                                                            ; Bar::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
+                                                                                                                         ; Bar::SetState(\Scroll\v, (State*\Text\Height)) : \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
       PopListPosition(\Items())
     EndWith
   EndProcedure

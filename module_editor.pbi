@@ -790,13 +790,13 @@ Module Editor
         Height = \Width[1]-\Text\y*2
       Else
         CompilerIf Not Defined(Bar, #PB_Module)
-          \Scroll\Width[2] = \width[2]-\sci\margin\width
-          \Scroll\Height[2] = \height[2]
+          \scroll\width[2] = \width[2]-\sci\margin\width
+          \scroll\height[2] = \height[2]
         CompilerEndIf
       EndIf
       
-      width = \Scroll\width[2]
-      height = \Scroll\height[2]
+      width = \scroll\width[2]
+      height = \scroll\height[2]
       
       \Items()\Index[1] =- 1
       \Items()\Focus =- 1
@@ -842,12 +842,12 @@ Module Editor
         Width = \Height[2]-\Text\X*2
         Height = \Width[2]-\Text\y*2
       Else
-        width = \Scroll\width[2]-\Text\X*2-\sci\margin\width
-        height = \Scroll\height[2]
+        width = \scroll\width[2]-\Text\X*2-\sci\margin\width
+        height = \scroll\height[2]
       EndIf
       
-      ; Debug ""+\Scroll\Width[2] +" "+ \Width[0] +" "+ \Width[1] +" "+ \Width[2] +" "+ Width
-      ;Debug ""+\Scroll\Width[2] +" "+ \Scroll\Height[2] +" "+ \Width[2] +" "+ \Height[2] +" "+ Width +" "+ Height
+      ; Debug ""+\scroll\width[2] +" "+ \Width[0] +" "+ \Width[1] +" "+ \Width[2] +" "+ Width
+      ;Debug ""+\scroll\width[2] +" "+ \scroll\height[2] +" "+ \Width[2] +" "+ \Height[2] +" "+ Width +" "+ Height
       
       If \Text\MultiLine > 0
         String.s = Wrap(\Text\String.s, Width, \Text\MultiLine)
@@ -929,9 +929,9 @@ Module Editor
                 While NextRegularExpressionMatch(0) 
                   If AddElement(\Items())
                     \Items() = AllocateStructure(Rows_S)
-        
+                    
                     \Items()\Text\String.s = Trim(RegularExpressionMatchString(0), #LF$)
-                    ;\Items()\Text\Width = TextWidth(\Items()\Text\String.s) ; 
+                    \Items()\Text\Width = TextWidth(\Items()\Text\String.s) ; Нужен для скролл бара
                     
                     \Items()\Focus =- 1
                     \Items()\Index[1] =- 1
@@ -959,57 +959,57 @@ Module Editor
             Else
               Debug RegularExpressionError()
             EndIf
-
             
             
             
-;             ;; 294 ; 124
-;             Protected *Sta.Character = @\Text\String.s[2], *End.Character = @\Text\String.s[2] : #SOC = SizeOf (Character)
+            
+            ;             ;; 294 ; 124
+            ;             Protected *Sta.Character = @\Text\String.s[2], *End.Character = @\Text\String.s[2] : #SOC = SizeOf (Character)
             ;While *End\c 
-;               If *End\c = #LF And AddElement(\Items())
-;                 Len = (*End-*Sta)>>#PB_Compiler_Unicode
-;                 
-;                 \Items()\Text\String.s = PeekS (*Sta, Len) ;Trim(, #LF$)
-;                 
-; ;                 If \Type = #PB_GadgetType_Button
-; ;                   \Items()\Text\Width = TextWidth(RTrim(\Items()\Text\String.s))
-; ;                 Else
-; ;                   \Items()\Text\Width = TextWidth(\Items()\Text\String.s)
-; ;                 EndIf
-;                 
-;                 \Items()\Focus =- 1
-;                 \Items()\Index[1] =- 1
-;                 \Items()\Color\State = 1 ; Set line default colors
-;                 \Items()\Radius = \Radius
-;                 \Items()\Index = ListIndex(\Items())
-;                 
-;                 ; Update line pos in the text
-;                 ; _set_line_pos_(*This)
-;                 \Items()\Text\Pos = \Text\Pos - Bool(\Text\MultiLine = 1)*\Items()\index ; wordwrap
-;                 \Items()\Text\Len = Len                                                  ; (\Items()\Text\String.s)
-;                 \Text\Pos + \Items()\Text\Len + 1                                        ; Len(#LF$)
-;                 
-;                 ; Debug "f - "+String.s +" "+ CountString(String, #CR$) +" "+ CountString(String, #LF$) +" - "+ \Items()\Text\Pos +" "+ \Items()\Text\Len
-;                 
-;                 _set_content_X_(*This)
-;                 _line_resize_X_(*This)
-;                 _line_resize_Y_(*This)
-;                 
-;                 ; Scroll width length
-;                 _set_scroll_width_(*This)
-;                 
-;                 ; Scroll hight length
-;                 _set_scroll_height_(*This)
-;                 
-;                 *Sta = *End + #SOC 
-;               EndIf 
-;               
-;               *End + #SOC 
-;             Wend
-          ;;;;  FreeMemory(*End)
+            ;               If *End\c = #LF And AddElement(\Items())
+            ;                 Len = (*End-*Sta)>>#PB_Compiler_Unicode
+            ;                 
+            ;                 \Items()\Text\String.s = PeekS (*Sta, Len) ;Trim(, #LF$)
+            ;                 
+            ; ;                 If \Type = #PB_GadgetType_Button
+            ; ;                   \Items()\Text\Width = TextWidth(RTrim(\Items()\Text\String.s))
+            ; ;                 Else
+            ; ;                   \Items()\Text\Width = TextWidth(\Items()\Text\String.s)
+            ; ;                 EndIf
+            ;                 
+            ;                 \Items()\Focus =- 1
+            ;                 \Items()\Index[1] =- 1
+            ;                 \Items()\Color\State = 1 ; Set line default colors
+            ;                 \Items()\Radius = \Radius
+            ;                 \Items()\Index = ListIndex(\Items())
+            ;                 
+            ;                 ; Update line pos in the text
+            ;                 ; _set_line_pos_(*This)
+            ;                 \Items()\Text\Pos = \Text\Pos - Bool(\Text\MultiLine = 1)*\Items()\index ; wordwrap
+            ;                 \Items()\Text\Len = Len                                                  ; (\Items()\Text\String.s)
+            ;                 \Text\Pos + \Items()\Text\Len + 1                                        ; Len(#LF$)
+            ;                 
+            ;                 ; Debug "f - "+String.s +" "+ CountString(String, #CR$) +" "+ CountString(String, #LF$) +" - "+ \Items()\Text\Pos +" "+ \Items()\Text\Len
+            ;                 
+            ;                 _set_content_X_(*This)
+            ;                 _line_resize_X_(*This)
+            ;                 _line_resize_Y_(*This)
+            ;                 
+            ;                 ; Scroll width length
+            ;                 _set_scroll_width_(*This)
+            ;                 
+            ;                 ; Scroll hight length
+            ;                 _set_scroll_height_(*This)
+            ;                 
+            ;                 *Sta = *End + #SOC 
+            ;               EndIf 
+            ;               
+            ;               *End + #SOC 
+            ;             Wend
+            ;;;;  FreeMemory(*End)
             
             ;  MessageRequester("", Str(ElapsedMilliseconds()-time) + " text parse time ")
-           Debug Str(ElapsedMilliseconds()-time) + " text parse time "
+            Debug Str(ElapsedMilliseconds()-time) + " text parse time "
           EndIf
         Else
           Protected time2 = ElapsedMilliseconds()
@@ -1052,8 +1052,8 @@ Module Editor
             Debug RegularExpressionError()
           EndIf
           
-            Debug Str(ElapsedMilliseconds()-time2) + " text parse time2 "
-           
+          Debug Str(ElapsedMilliseconds()-time2) + " text parse time2 "
+          
         EndIf
       Else
         ; Scroll hight reset 
@@ -1206,20 +1206,23 @@ Module Editor
         If \Resize
           ; Посылаем сообщение об изменении размера 
           PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
+          
           CompilerIf Defined(Bar, #PB_Module)
             ;  Bar::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
             Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
+            \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+            \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
           CompilerElse
-            \Scroll\Width[2] = \width[2]
-            \Scroll\Height[2] = \height[2]
+            \scroll\width[2] = \width[2]
+            \scroll\height[2] = \height[2]
           CompilerEndIf
         EndIf
         
         ; Widget inner coordinate
         iX=\X[2]
         iY=\Y[2]
-        iwidth = \Scroll\width[2]
-        iheight = \Scroll\height[2]
+        iwidth = \scroll\width[2]
+        iheight = \scroll\height[2]
         
         ; Make output multi line text
         If (\Text\Change Or \Resize)
@@ -1235,17 +1238,19 @@ Module Editor
                 
                 \Scroll\v\Step = \Text\Height
                 
-                If \Text\editable And (\Items()\y >= (\Scroll\height[2]-\Items()\height))
+                If \Text\editable And (\Items()\y >= (\scroll\height[2]-\Items()\height))
                   ; This is for the editor widget when you enter the key - (enter & backspace)
-                  Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+                  Bar::SetState(\Scroll\v, (\Items()\y-((\scroll\height[2]+\Text\y)-\Items()\height)))
                 EndIf
                 
                 Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+                \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
                 
                 If \Scroll\v\Hide 
-                  \Scroll\width[2] = \Width[2]
-                  \Items()\Width = \Scroll\width[2]
-                  iwidth = \Scroll\width[2]
+                  \scroll\width[2] = \Width[2]
+                  \Items()\Width = \scroll\width[2]
+                  iwidth = \scroll\width[2]
                   
                   ;  Debug ""+\Scroll\v\Hide +" "+ \Scroll\Height
                 EndIf
@@ -1254,7 +1259,9 @@ Module Editor
               If \Scroll\h And \Scroll\h\Max<>\Scroll\Width And 
                  Bar::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
                 Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-              ;  \Scroll\Width[2] = \width[2] - Bool(Not \Scroll\v\Hide)*\Scroll\v\Width : iwidth = \Scroll\width[2]
+                \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+                \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
+                                                          ;  \scroll\width[2] = \width[2] - Bool(Not \Scroll\v\Hide)*\Scroll\v\Width : iwidth = \scroll\width[2]
               EndIf
               
               
@@ -1462,8 +1469,8 @@ Module Editor
               EndIf
               
               ; Draw text
-              _clip_output_(*This, \X-1, #PB_Ignore, \Width+2, #PB_Ignore) 
-              ; _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Scroll\Width[2], #PB_Ignore) 
+              _clip_output_(*This, \X-1, #PB_Ignore, \Width+2+*This\sci\margin\width, #PB_Ignore) 
+              ; _clip_output_(*This, *This\X[2], #PB_Ignore, *This\scroll\width[2], #PB_Ignore) 
               
               Angle = Bool(\Text\Vertical)**This\Text\Rotate
               Protected Front_BackColor_1 = RowFontColor(*This, *This\Color\State) ; *This\Color\Front[*This\Color\State]&$FFFFFFFF|*This\row\color\alpha<<24
@@ -1573,12 +1580,6 @@ Module Editor
       
       
       With *This
-        CompilerIf Defined(Bar, #PB_Module)
-        DrawingMode(#PB_2DDrawing_Outlined)
-        Box(*This\Scroll\h\x-Bar::GetState(*This\Scroll\h), *This\Scroll\v\y-Bar::GetState(*This\Scroll\v), *This\Scroll\h\Max, *This\Scroll\v\Max, $FF0000)
-        Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Page\Len, *This\Scroll\v\Page\Len, $FF00FF00)
-        CompilerEndIf
-        
         ; Draw image
         If \Image\handle
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
@@ -1605,6 +1606,11 @@ Module Editor
           
           Bar::Draw(\Scroll\v)
           Bar::Draw(\Scroll\h)
+          
+          DrawingMode(#PB_2DDrawing_Outlined)
+          Box(*This\Scroll\h\x-Bar::GetState(*This\Scroll\h), *This\Scroll\v\y-Bar::GetState(*This\Scroll\v), *This\Scroll\h\Max, *This\Scroll\v\Max, $FF0000)
+          Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Page\Len, *This\Scroll\v\Page\Len, $FF00FF00)
+          Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Area\Len, *This\Scroll\v\Area\Len, $FF00FFFF)
         CompilerEndIf
         
         _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
@@ -1716,7 +1722,7 @@ Module Editor
       If (\Index[2] > 0 And \Index[1] = \Index[2]) : \Index[2] - 1 : \Index[1] = \Index[2]
         SelectElement(\Items(), \Index[2])
         ;If (\Items()\y+\Scroll\Y =< \Y[2])
-        Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+        Bar::SetState(\Scroll\v, (\Items()\y-((\scroll\height[2]+\Text\y)-\Items()\height)))
         ;EndIf
         ; При вводе перемещаем текста
         If \Items()\text\x+\Items()\text\width > \Items()\X+\Items()\width
@@ -1760,8 +1766,8 @@ Module Editor
       Else
         If (\Index[1] < ListSize(\Items()) - 1 And \Index[1] = \Index[2]) : \Index[2] + 1 : \Index[1] = \Index[2]
           SelectElement(\Items(), \Index[2]) 
-          ;If (\Items()\y >= (\Scroll\height[2]-\Items()\height))
-          Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+          ;If (\Items()\y >= (\scroll\height[2]-\Items()\height))
+          Bar::SetState(\Scroll\v, (\Items()\y-((\scroll\height[2]+\Text\y)-\Items()\height)))
           ;EndIf
           
           If \Items()\text\x+\Items()\text\width > \Items()\X+\Items()\width
@@ -2051,7 +2057,7 @@ Module Editor
         EndSelect
         
         \index[1] = \items()\index
-        Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+        Bar::SetState(\Scroll\v, (\Items()\y-((\scroll\height[2]+\Text\y)-\Items()\height)))
       Else
         SelectElement(\items(), \index[1]) 
         \Text\Caret = Bool(Pos =- 1) * \items()\Text\Len 
@@ -2318,7 +2324,7 @@ Module Editor
         \Text\Caret[1] = \Text\Caret
         
         \Items()\Index[1] = \Items()\Index 
-        Bar::SetState(\Scroll\v, (\items()\y-((\Scroll\height[2]+\Text\y)-\items()\height))) ;((\Index[1] * \Text\Height)-\Scroll\v\Height) + \Text\Height)
+        Bar::SetState(\Scroll\v, (\items()\y-((\scroll\height[2]+\Text\y)-\items()\height))) ;((\Index[1] * \Text\Height)-\Scroll\v\Height) + \Text\Height)
         
         ;         If Not \Repaint : \Repaint = 1
         ;           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
@@ -2977,5 +2983,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----------vn--v8-------4---+--+-----------4----------------
+; Folding = -----------------------------------------------------------
 ; EnableXP

@@ -1020,13 +1020,13 @@ Module Text
         Height = \Width[1]-\Text\y*2
       Else
         CompilerIf Not Defined(Bar, #PB_Module)
-          \Scroll\Width[2] = \width[2]
-          \Scroll\Height[2] = \height[2]
+          \scroll\width[2] = \width[2]
+          \scroll\height[2] = \height[2]
         CompilerEndIf
       EndIf
       
-      width = \Scroll\width[2]
-      height = \Scroll\height[2]
+      width = \scroll\width[2]
+      height = \scroll\height[2]
   
       \Items()\Index[1] =- 1
       \Items()\Focus =- 1
@@ -1202,12 +1202,12 @@ Module Text
         Width = \Height[2]-\Text\X*2
         Height = \Width[2]-\Text\y*2
       Else
-        width = \Scroll\width[2]-\Text\X*2-\sci\margin\width
-        height = \Scroll\height[2]
+        width = \scroll\width[2]-\Text\X*2-\sci\margin\width
+        height = \scroll\height[2]
       EndIf
       
-     ; Debug ""+\Scroll\Width[2] +" "+ \Width[0] +" "+ \Width[1] +" "+ \Width[2] +" "+ Width
-      ;Debug ""+\Scroll\Width[2] +" "+ \Scroll\Height[2] +" "+ \Width[2] +" "+ \Height[2] +" "+ Width +" "+ Height
+     ; Debug ""+\scroll\width[2] +" "+ \Width[0] +" "+ \Width[1] +" "+ \Width[2] +" "+ Width
+      ;Debug ""+\scroll\width[2] +" "+ \scroll\height[2] +" "+ \Width[2] +" "+ \Height[2] +" "+ Width +" "+ Height
       
       If \Text\MultiLine > 0
         
@@ -1255,6 +1255,7 @@ Module Text
           
           If \Text\Vertical
             For IT = \Text\Count To 1 Step - 1
+              
               If AddElement(\Items())
                 String = StringField(\Text\String.s[2], IT, #LF$)
                 
@@ -1294,6 +1295,7 @@ Module Text
                 
                 _set_scroll_height_(*This)
               EndIf
+              
             Next
           Else
             For IT = 1 To \Text\Count
@@ -1507,9 +1509,11 @@ Module Text
             CompilerIf Defined(Bar, #PB_Module)
               ;  Bar::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
               Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
+              \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+              \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
             CompilerElse
-              \Scroll\Width[2] = \width[2]
-              \Scroll\Height[2] = \height[2]
+              \scroll\width[2] = \width[2]
+              \scroll\height[2] = \height[2]
             CompilerEndIf
           EndIf
           
@@ -1530,13 +1534,15 @@ Module Text
             
             CompilerIf Defined(Bar, #PB_Module)
               If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Bar::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
-                If \Text\editable And (\Items()\y >= (\Scroll\height[2]-\Items()\height))
+                If \Text\editable And (\Items()\y >= (\scroll\height[2]-\Items()\height))
                 ; This is for the editor widget when you enter the key - (enter & backspace)
-                Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+                Bar::SetState(\Scroll\v, (\Items()\y-((\scroll\height[2]+\Text\y)-\Items()\height)))
               EndIf
               
                 Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-              EndIf
+                \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+              \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
+            EndIf
               
             CompilerEndIf
           EndIf
@@ -1544,8 +1550,8 @@ Module Text
         
         iX=\X[2]
         iY=\Y[2]
-        iwidth = \Scroll\width[2]
-        iheight = \Scroll\height[2]
+        iwidth = \scroll\width[2]
+        iheight = \scroll\height[2]
         
         _clip_output_(*This, \X,\Y,\Width,\Height)
         
@@ -1687,7 +1693,7 @@ Module Text
               
               ; Draw text
               _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
-             ; _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Scroll\Width[2], #PB_Ignore) 
+             ; _clip_output_(*This, *This\X[2], #PB_Ignore, *This\scroll\width[2], #PB_Ignore) 
               
               Angle = Bool(\Text\Vertical)**This\Text\Rotate
               Protected Front_BackColor_1 = RowFontColor(*This, *This\Color\State) ; *This\Color\Front[*This\Color\State]&$FFFFFFFF|*This\row\color\alpha<<24
@@ -1821,10 +1827,14 @@ Module Text
             If \Scroll\v And \Scroll\v\Max <> \Scroll\Height And 
                Bar::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines))
               Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+              \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+              \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
             EndIf
             If \Scroll\h And \Scroll\h\Max<>\Scroll\Width And 
                Bar::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
               Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+              \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+              \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
             EndIf
             
             Bar::Draw(\Scroll\v)
@@ -1920,11 +1930,19 @@ Module Text
             ; Посылаем сообщение об изменении размера 
             PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
             CompilerIf Defined(Bar, #PB_Module)
-              ;  Bar::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
-              Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
+              If *This\Scroll\v And *This\Scroll\h
+                ;  Bar::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
+                Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
+                \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
+                \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+              Else
+                
+                \scroll\width[2] = \width[2]
+              \scroll\height[2] = \height[2]
+            EndIf
             CompilerElse
-              \Scroll\Width[2] = \width[2]
-              \Scroll\Height[2] = \height[2]
+              \scroll\width[2] = \width[2]
+              \scroll\height[2] = \height[2]
             CompilerEndIf
           EndIf
           
@@ -1950,13 +1968,15 @@ Module Text
             
             CompilerIf Defined(Bar, #PB_Module)
               If \Scroll\v And \Scroll\v\max <> \Scroll\Height And Bar::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines)) 
-                If \Text\editable And (\Items()\y >= (\Scroll\height[2]-\Items()\height))
+                If \Text\editable And (\Items()\y >= (\scroll\height[2]-\Items()\height))
                   ; This is for the editor widget when you enter the key - (enter & backspace)
-                  Bar::SetState(\Scroll\v, (\Items()\y-((\Scroll\height[2]+\Text\y)-\Items()\height)))
+                  Bar::SetState(\Scroll\v, (\Items()\y-((\scroll\height[2]+\Text\y)-\Items()\height)))
                 EndIf
                 
                 Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-              EndIf
+                \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+              \scroll\height[2] = *This\Scroll\v\Page\len ; y(*This\Scroll\h)-*This\Scroll\v\y ;
+            EndIf
               
             CompilerEndIf
           EndIf
@@ -1964,8 +1984,8 @@ Module Text
         
         iX=\X[2]
         iY=\Y[2]
-        iwidth = \Scroll\width[2]
-        iheight = \Scroll\height[2]
+        iwidth = \scroll\width[2]
+        iheight = \scroll\height[2]
         
         _clip_output_(*This, \X,\Y,\Width,\Height)
         
@@ -2103,7 +2123,7 @@ Module Text
               If *This\flag\buttons And \childrens
                 DrawingMode(#PB_2DDrawing_Default)
                 CompilerIf Defined(Bar, #PB_Module)
-                  Bar::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), 0,0) 
+                  Bar::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), *This\Scroll\v\ArrowType[1],1) 
                 CompilerEndIf
               EndIf
               
@@ -2121,7 +2141,7 @@ Module Text
               
               ; Draw text
               _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
-              ; _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Scroll\Width[2], #PB_Ignore) 
+              ; _clip_output_(*This, *This\X[2], #PB_Ignore, *This\scroll\width[2], #PB_Ignore) 
               
               Angle = Bool(\Text\Vertical)**This\Text\Rotate
               Protected Front_BackColor_1 = RowFontColor(*This, *This\Color\State) ; *This\Color\Front[*This\Color\State]&$FFFFFFFF|*This\row\color\alpha<<24
@@ -2236,14 +2256,7 @@ Module Text
       
       
       With *This
-        ;UnclipOutput()
-        CompilerIf Defined(Bar, #PB_Module)
-        DrawingMode(#PB_2DDrawing_Outlined)
-        Box(*This\Scroll\h\x-Bar::GetState(*This\Scroll\h), *This\Scroll\v\y-Bar::GetState(*This\Scroll\v), *This\Scroll\h\Max, *This\Scroll\v\Max, $FF0000)
-        Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Page\Len, *This\Scroll\v\Page\Len, $FF00FF00)
-        CompilerEndIf
-        
-      ; Draw image
+        ; Draw image
         If \Image\handle
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
           DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \color\alpha)
@@ -2267,14 +2280,25 @@ Module Text
           If \Scroll\v And \Scroll\v\Max <> \Scroll\Height And 
              Bar::SetAttribute(\Scroll\v, #PB_ScrollBar_Maximum, \Scroll\Height - Bool(\Flag\GridLines))
             Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+            \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
           EndIf
           If \Scroll\h And \Scroll\h\Max<>\Scroll\Width And 
              Bar::SetAttribute(\Scroll\h, #PB_ScrollBar_Maximum, \Scroll\Width)
             Bar::Resizes(\Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
+            \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
           EndIf
           
           Bar::Draw(\Scroll\v)
           Bar::Draw(\Scroll\h)
+          
+          If \Scroll\v And \Scroll\h
+            DrawingMode(#PB_2DDrawing_Outlined)
+            Box(*This\Scroll\h\x-Bar::GetState(*This\Scroll\h), *This\Scroll\v\y-Bar::GetState(*This\Scroll\v), *This\Scroll\h\Max, *This\Scroll\v\Max, $FF0000)
+            Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Page\Len, *This\Scroll\v\Page\Len, $FF00FF00)
+            Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Area\Len, *This\Scroll\v\Area\Len, $FF00FFFF)
+          EndIf
         CompilerEndIf
         
         _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
@@ -2378,6 +2402,7 @@ Module Text
   ;-
   ;- - SET&GET
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
+    
     With *This
       If X<>#PB_Ignore And 
          \X[0] <> X
@@ -3112,5 +3137,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------v0---------4--46t-+-u00---------------+----------------------------
+; Folding = ------v0---------4--46t-+-u00--------------------------------------------
 ; EnableXP

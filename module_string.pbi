@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
-  XIncludeFile "module_scroll.pbi"
+  XIncludeFile "module_bar.pbi"
   XIncludeFile "module_text.pbi"
   
   CompilerIf #VectorDrawing
@@ -906,8 +906,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 837
-; FirstLine = 761
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------0---v---
 ; EnableXP

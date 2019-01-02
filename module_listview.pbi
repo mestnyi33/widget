@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
- ; IncludePath "/Users/as/Documents/GitHub/Widget/"
+  ; IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
   ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -82,8 +82,8 @@ Module ListView
       SelectElement(\items(), State) : \items()\Focus = State : \items()\index[1] = \items()\index : \items()\Color\State = 2
       ; Bar::SetState(\Scroll\v, ((State*\Text\Height)-\Scroll\v\Height) + \Text\Height) ;: \Scroll\Y =- \Scroll\v\page\Pos ; в конце
       ; Bar::SetState(\Scroll\v, (State*\Text\Height)) ;: \Scroll\Y =- \Scroll\v\page\Pos ; в начале 
-        Bar::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height))) ; в конце
-       ; Bar::SetState(\Scroll\v, \items()\y-\text\y) ; в начале
+      Bar::SetState(\Scroll\v, ((\items()\y-\text\y)-(\Height[2]-\items()\height))) ; в конце
+                                                                                    ; Bar::SetState(\Scroll\v, \items()\y-\text\y) ; в начале
       PopListPosition(\items())
     EndWith
   EndProcedure
@@ -312,7 +312,7 @@ Module ListView
       CompilerCase #PB_OS_MacOS
         Protected *g.sdkGadget = IsGadget(Canvas) : Window = *g\Window
       CompilerCase #PB_OS_Linux
-;         GadgetWindowID = gtk_widget_get_toplevel_ (GadgetID(Canvas))
+        ;         GadgetWindowID = gtk_widget_get_toplevel_ (GadgetID(Canvas))
       CompilerCase #PB_OS_Windows
         Window = GetProp_(GetAncestor_(GadgetID(Canvas), #GA_ROOT), "PB_WindowID") - 1
     CompilerEndSelect
@@ -348,68 +348,68 @@ Module ListView
         \fSize = Bool(Not Flag&#PB_Flag_BorderLess)+1
         \bSize = \fSize
         
-          \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
-          \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-          \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
-          \Flag\lines = Bool(flag&#PB_Flag_NoLines)
-          \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
-          \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
-          \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
-          \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-          
-          \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
-          \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-          
-          If Bool(Flag&#PB_Text_WordWrap)
-            \Text\MultiLine = 1
-          ElseIf Bool(Flag&#PB_Text_MultiLine)
-            \Text\MultiLine = 2
+        \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+        \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+        \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
+        \Flag\lines = Bool(flag&#PB_Flag_NoLines)
+        \Flag\FullSelection = Bool(flag&#PB_Flag_FullSelection)
+        \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
+        \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)
+        \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+        
+        \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
+        \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+        
+        If Bool(Flag&#PB_Text_WordWrap)
+          \Text\MultiLine = 1
+        ElseIf Bool(Flag&#PB_Text_MultiLine)
+          \Text\MultiLine = 2
+        Else
+          \Text\MultiLine =- 1
+        EndIf
+        
+        \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
+        \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
+        \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
+        \Text\Pass = Bool(Flag&#PB_Text_Password)
+        
+        \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
+        \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
+        \Text\Align\Right = Bool(Flag&#PB_Text_Right)
+        \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
+        
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+          If \Text\Vertical
+            \Text\X = \fSize 
+            \Text\y = \fSize+5
           Else
-            \Text\MultiLine =- 1
+            \Text\X = \fSize+5
+            \Text\y = \fSize
           EndIf
-          
-          \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
-          \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
-          \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
-          \Text\Pass = Bool(Flag&#PB_Text_Password)
-          
-          \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
-          \Text\Align\Vertical = Bool(Flag&#PB_Text_Middle)
-          \Text\Align\Right = Bool(Flag&#PB_Text_Right)
-          \Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
-          
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+5
-            Else
-              \Text\X = \fSize+5
-              \Text\y = \fSize
-            EndIf
-          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+1
-            Else
-              \Text\X = \fSize+1
-              \Text\y = \fSize
-            EndIf
-          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            If \Text\Vertical
-              \Text\X = \fSize 
-              \Text\y = \fSize+6
-            Else
-              \Text\X = \fSize+6
-              \Text\y = \fSize
-            EndIf
-          CompilerEndIf 
-          
-          \Text\Change = 1
-          \Color = Colors
-          \color\Alpha = 255
-          \Color\Fore[0] = 0
-          
-          \Row\color\alpha = 255
+        CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+          If \Text\Vertical
+            \Text\X = \fSize 
+            \Text\y = \fSize+1
+          Else
+            \Text\X = \fSize+1
+            \Text\y = \fSize
+          EndIf
+        CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+          If \Text\Vertical
+            \Text\X = \fSize 
+            \Text\y = \fSize+6
+          Else
+            \Text\X = \fSize+6
+            \Text\y = \fSize
+          EndIf
+        CompilerEndIf 
+        
+        \Text\Change = 1
+        \Color = Colors
+        \color\Alpha = 255
+        \Color\Fore[0] = 0
+        
+        \Row\color\alpha = 255
         \Row\Color = Colors
         \Row\color\alpha = 255
         \Row\color\alpha[1] = 0
@@ -419,21 +419,21 @@ Module ListView
         
         \Row\Color\Frame[2] = \Row\Color\Back[2]
         
-          If \Text\Editable
-            \Text\Editable = 0
-            \Color\Back[0] = $FFFFFFFF 
-          Else
-            \Color\Back[0] = $FFF0F0F0  
-          EndIf
-          
+        If \Text\Editable
+          \Text\Editable = 0
+          \Color\Back[0] = $FFFFFFFF 
+        Else
+          \Color\Back[0] = $FFF0F0F0  
         EndIf
         
-        ; Create scrollbar
-        Bar::Bars(\Scroll, 16, 7, 0)
-    
-        Resize(*This, X,Y,Width,Height)
-      EndWith
+      EndIf
       
+      ; Create scrollbar
+      Bar::Bars(\Scroll, 16, 7, 0)
+      
+      Resize(*This, X,Y,Width,Height)
+    EndWith
+    
     ProcedureReturn *This
   EndProcedure
   
@@ -583,5 +583,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = r---+--BHgnnD-
+; Folding = --------------
 ; EnableXP

@@ -112,6 +112,10 @@
   Structure Bar_S Extends Coordinate_S  ; Bar::Bar_S ; 
     *s.Scroll_S
     
+    ; for splitter
+    *First.Bar_S 
+    *Second.Bar_S
+      
     at.b
     Type.i
     Radius.a
@@ -128,6 +132,8 @@
     Vertical.b
     Inverted.b
     Direction.i
+    Ticks.b
+    Smooth.b
     
     Page.Page_S
     Area.Page_S
@@ -166,7 +172,7 @@
     Key.i[2]
   EndStructure
   
-  ;- - Scintilla_S
+  ;- - Margin_S
   Structure Margin_S
     FonyID.i
     Width.i
@@ -366,8 +372,8 @@
   
   Global *Focus.Widget_S
   Global NewList List.Widget_S()
-  Global Use_List_Canvas_Gadget
-  
+  Global Use_List_Canvas_Gadget,  _scroll_height_2
+            
 EndDeclareModule 
 
 Module Structures 

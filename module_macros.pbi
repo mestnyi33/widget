@@ -158,23 +158,36 @@
   EndMacro
   
   Macro _set_scroll_height_(_this_)
-    If Not _this_\hide And Not _this_\Items()\Hide
-     _this_\Scroll\Height+_this_\Text\Height
+    If _this_\Scroll And Not _this_\hide And Not _this_\Items()\Hide
+      _this_\Scroll\Height+_this_\Text\Height
+      
+      
      ; _this_\scroll\v\max = _this_\scroll\Height
     EndIf
   EndMacro
   
   Macro _set_scroll_width_(_this_)
-    If Not _this_\items()\hide And
-       _this_\Scroll\width<(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
-      _this_\scroll\width=(_this_\items()\text\x+_this_\items()\text\width)-_this_\x
+    If _this_\Scroll And Not _this_\items()\hide And
+       _this_\Scroll\width<(_this_\sci\margin\width + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
+      _this_\scroll\width=(_this_\sci\margin\width + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
+;        _this_\Scroll\width<(_this_\sci\margin\width + (_this_\sublevellen -Bool(_this_\Scroll\h\Radius)*4) + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
+;       _this_\scroll\width=(_this_\sci\margin\width + (_this_\sublevellen -Bool(_this_\Scroll\h\Radius)*4) + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
+      
+;       If _this_\scroll\width < _this_\width[2]-(Bool(Not _this_\Scroll\v\Hide) * _this_\Scroll\v\width)
+;         _this_\scroll\width = _this_\width[2]-(Bool(Not _this_\Scroll\v\Hide) * _this_\Scroll\v\width)
+;       EndIf
+      
+;        If _this_\scroll\Height < _this_\Height[2]-(Bool(Not _this_\Scroll\h\Hide) * _this_\Scroll\h\Height)
+;         _this_\scroll\Height = _this_\Height[2]-(Bool(Not _this_\Scroll\h\Hide) * _this_\Scroll\h\Height)
+;       EndIf
+     
       _this_\Text\Big = _this_\Items()\Index ; Позиция в тексте самой длинной строки
       _this_\Text\Big[1] = _this_\Items()\Text\Pos ; Может и не понадобятся
       _this_\Text\Big[2] = _this_\Items()\Text\Len ; Может и не понадобятся
       
           
      ; _this_\scroll\h\max = _this_\scroll\width
-      ; Debug "   "+_this_\width +" "+ _this_\scroll\width
+     ;  Debug "   "+_this_\width +" "+ _this_\scroll\width
     EndIf
   EndMacro
   

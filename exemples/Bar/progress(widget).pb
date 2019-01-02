@@ -54,7 +54,7 @@ Module ProgressBar
         
         Select EventType
           Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-            Bar::Resize(*This\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+            Repaint | Bar::Resize(*This\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
         EndSelect
         
         Repaint | Bar::CallBack(\Bar, EventType, Mouse_X, Mouse_Y)
@@ -243,7 +243,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -f-----
 ; EnableXP

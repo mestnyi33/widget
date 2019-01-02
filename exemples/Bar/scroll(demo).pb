@@ -106,18 +106,18 @@ CompilerIf #PB_Compiler_IsMainFile
       DrawingMode(#PB_2DDrawing_Default)
       Box(0,0,Width,Height, $FFFFFF)
       
-      ;       
-      If IsStop(*Scroll\v)
-        *Scroll\h\Color\Line = 0
-      Else
-        *Scroll\h\Color\Line = $FFFFFF
-      EndIf
-      
-      If IsStop(*Scroll\h)
-        *Scroll\v\Color\Line = 0
-      Else
-        *Scroll\v\Color\Line = $FFFFFF
-      EndIf
+;       ;       
+;       If IsStop(*Scroll\v)
+;         *Scroll\h\Color\Line = 0
+;       Else
+;         *Scroll\h\Color\Line = $FFFFFF
+;       EndIf
+;       
+;       If IsStop(*Scroll\h)
+;         *Scroll\v\Color\Line = 0
+;       Else
+;         *Scroll\v\Color\Line = $FFFFFF
+;       EndIf
       
       ClipOutput(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Page\len, *Scroll\v\Page\len)
       ;DrawImage(ImageID(0), *Scroll\h\x-*Scroll\h\Page\Pos, *Scroll\v\y-*Scroll\v\Page\Pos)
@@ -138,10 +138,22 @@ CompilerIf #PB_Compiler_IsMainFile
       ; Scroll area coordinate ; (*Scroll\v\x-*Scroll\h\x)
       ;Box(*Scroll\h\x-*Scroll\h\Page\Pos, *Scroll\v\y-*Scroll\v\Page\Pos, *Scroll\h\Max, *Scroll\v\Max, $FF0000)
       ;Debug Str(((*Scroll\h\Max-*Scroll\h\Page\len)-*Scroll\h\Page\Pos))
-      Box(*Scroll\h\x-GetState(*Scroll\h), *Scroll\v\y-GetState(*Scroll\v), *Scroll\h\Max, *Scroll\v\Max, $FF0000)
       
-      ; area coordinate
-      Box(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Page\Len, *Scroll\v\Page\Len, $00FF00)
+       Box(*Scroll\h\x-GetState(*Scroll\h), *Scroll\v\y-GetState(*Scroll\v), *Scroll\h\Max, *Scroll\v\Max, $FF0000)
+      
+       ; page coordinate
+       Box(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Page\Len, *Scroll\v\Page\Len, $00FF00)
+       
+       ; area coordinate
+       Box(*Scroll\h\x, *Scroll\v\y, *Scroll\h\Area\Len, *Scroll\v\Area\Len, $00FFFF)
+      
+       ; scroll coordinate
+       Box(*Scroll\h\x, *Scroll\v\y, *Scroll\h\width, *Scroll\v\height, $FF00FF)
+      
+       ; frame coordinate
+       Box(*Scroll\h\x, *Scroll\v\y, 
+           *Scroll\h\Page\len + (Bool(Not *Scroll\v\hide) * *Scroll\v\width),
+           *Scroll\v\Page\len + (Bool(Not *Scroll\h\hide) * *Scroll\h\height), $FFFF00)
       
       StopDrawing()
     EndIf
@@ -241,5 +253,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = 4-v--
+; Folding = 4-8--
 ; EnableXP
