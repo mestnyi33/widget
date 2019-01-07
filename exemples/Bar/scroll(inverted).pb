@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasGadget(1, 10,10, 380, 50, #PB_Canvas_Keyboard)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
-      *Bar_0 = Scroll(5, 10, 370, 30, 20, 50, 8, #PB_ScrollBar_Inverted)
+      *Bar_0 = Scroll(5, 10, 370, 30, 20, 50, 8, #PB_Bar_Inverted)
       
       ReDraw(1)
     EndIf
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            SetAttribute(*Bar_0, #PB_ScrollBar_Inverted, Bool(Not GetGadgetState(0)))
+            SetAttribute(*Bar_0, #PB_Bar_Inverted, Bool(Not GetGadgetState(0)))
             SetWindowTitle(0, Str(GetState(*Bar_0)))
             If GetGadgetState(0)
               SetGadgetText(0, "set inverted scrollbar")
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
         CallBack(*Bar_0, EventType())
         
         If WidgetEventType() = #PB_EventType_Change
-          Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_ScrollBar_Direction)
+          Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_Bar_Direction)
           
           Select EventWidget()
               

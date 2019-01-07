@@ -7,7 +7,7 @@ CompilerEndIf
 XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scroll.pbi"
+XIncludeFile "module_bar.pbi"
 
 
 EnableExplicit
@@ -44,7 +44,7 @@ Procedure AddImage (List Images.canvasitem(), x, y, img, alphatest=0)
 EndProcedure
 
 Procedure Draw (canvas.i, List Images.canvasitem())
-  Protected iWidth = Scroll::X(*Scroll\v), iHeight = Scroll::Y(*Scroll\h)
+  Protected iWidth = Bar::X(*Scroll\v), iHeight = Bar::Y(*Scroll\h)
   
   If StartDrawing(CanvasOutput(canvas))
     
@@ -60,8 +60,8 @@ Procedure Draw (canvas.i, List Images.canvasitem())
     
     UnclipOutput()
     
-    Scroll::Draw(*Scroll\v)
-    Scroll::Draw(*Scroll\h)
+    Bar::Draw(*Scroll\v)
+    Bar::Draw(*Scroll\h)
     
     StopDrawing()
   EndIf
@@ -133,7 +133,7 @@ EndMacro
 
 Procedure ScrollUpdates(ScrollX, ScrollY, ScrollWidth, ScrollHeight, Width, Height, X=0,Y=0)
   Static hPos, vPos
-  Protected iWidth = Width-Scroll::Width(*Scroll\v), iHeight = Height-Scroll::Height(*Scroll\h)
+  Protected iWidth = Width-Bar::Width(*Scroll\v), iHeight = Height-Bar::Height(*Scroll\h)
   
   ; Вправо работает как надо
   If ScrollWidth<*Scroll\h\Page\Pos+iWidth 
@@ -167,17 +167,17 @@ Procedure ScrollUpdates(ScrollX, ScrollY, ScrollWidth, ScrollHeight, Width, Heig
   
   vPos = *Scroll\v\Page\Pos : hPos = *Scroll\h\Page\Pos
   
-  If *Scroll\v\Max<>ScrollHeight : Scroll::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
-  If *Scroll\h\Max<>ScrollWidth : Scroll::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
+  If *Scroll\v\Max<>ScrollHeight : Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
+  If *Scroll\h\Max<>ScrollWidth : Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
   
-  If *Scroll\v\Page\Len<>iHeight : Scroll::SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-  If *Scroll\h\Page\Len<>iWidth : Scroll::SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+  If *Scroll\v\Page\Len<>iHeight : Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+  If *Scroll\h\Page\Len<>iWidth : Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
   
-  If ScrollY<0 : Scroll::SetState(*Scroll\v, (ScrollHeight-ScrollY)-ScrollHeight) : EndIf
-  If ScrollX<0 : Scroll::SetState(*Scroll\h, (ScrollWidth-ScrollX)-ScrollWidth) : EndIf
+  If ScrollY<0 : Bar::SetState(*Scroll\v, (ScrollHeight-ScrollY)-ScrollHeight) : EndIf
+  If ScrollX<0 : Bar::SetState(*Scroll\h, (ScrollWidth-ScrollX)-ScrollWidth) : EndIf
   
-  *Scroll\v\Hide = Scroll::Resize(*Scroll\v, Width-*Scroll\v\Width, Y, #PB_Ignore, #PB_Ignore, *Scroll\h) 
-  *Scroll\h\Hide = Scroll::Resize(*Scroll\h, X, Height-*Scroll\h\Height, #PB_Ignore, #PB_Ignore, *Scroll\v)
+  *Scroll\v\Hide = Bar::Resize(*Scroll\v, Width-*Scroll\v\Width, Y, #PB_Ignore, #PB_Ignore);, *Scroll\h) 
+  *Scroll\h\Hide = Bar::Resize(*Scroll\h, X, Height-*Scroll\h\Height, #PB_Ignore, #PB_Ignore);, *Scroll\v)
   
   ;   If *Scroll\v\Hide : *Scroll\v\Page\Pos = 0 : Else : *Scroll\v\Page\Pos = vPos : *Scroll\h\Width = Width : EndIf
   ;   If *Scroll\h\Hide : *Scroll\h\Page\Pos = 0 : Else : *Scroll\h\Page\Pos = hPos : *Scroll\v\Height = Height : EndIf
@@ -200,10 +200,10 @@ Procedure CallBack()
   Protected Height = GadgetHeight(Canvas)
   Protected ScrollX, ScrollY, ScrollWidth, ScrollHeight
   
-  If Scroll::CallBack(*Scroll\v, Event, MouseX, MouseY) 
+  If Bar::CallBack(*Scroll\v, Event, MouseX, MouseY) 
     Repaint = #True 
   EndIf
-  If Scroll::CallBack(*Scroll\h, Event, MouseX, MouseY) 
+  If Bar::CallBack(*Scroll\h, Event, MouseX, MouseY) 
     Repaint = #True 
   EndIf
   
@@ -234,8 +234,8 @@ Procedure CallBack()
         Debug "----------Up---------"
         GetScrollCoordinate()
         ScrollUpdates(ScrollX, ScrollY, ScrollWidth, ScrollHeight, Width, Height)
-        ; Scroll::Updates(*Scroll,ScrollX, ScrollY, ScrollWidth, ScrollHeight)
-        ;         Protected iWidth = Width-Scroll::Width(*Scroll\v), iHeight = Height-Scroll::Height(*Scroll\h)
+        ; Bar::Updates(*Scroll,ScrollX, ScrollY, ScrollWidth, ScrollHeight)
+        ;         Protected iWidth = Width-Bar::Width(*Scroll\v), iHeight = Height-Bar::Height(*Scroll\h)
         ;   
         ;         Debug ""+*Scroll\h\Hide+" "+ScrollX+" "+Str(ScrollWidth-iWidth)
         ;         Debug ""+*Scroll\v\Hide+" "+ScrollY+" "+Str(ScrollHeight-iHeight)
@@ -271,7 +271,7 @@ Procedure CallBack()
               
               GetScrollCoordinate()
               ScrollUpdates(ScrollX, ScrollY, ScrollWidth, ScrollHeight, Width, Height)
-              ;Scroll::Updates(*Scroll, ScrollX, ScrollY, ScrollWidth, ScrollHeight);, Width, Height)
+              ;Bar::Updates(*Scroll, ScrollX, ScrollY, ScrollWidth, ScrollHeight);, Width, Height)
         
               Repaint = #True
             EndIf
@@ -281,10 +281,10 @@ Procedure CallBack()
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
         GetScrollCoordinate()
         
-        If *Scroll\h\Max<>ScrollWidth : Scroll::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
-        If *Scroll\v\Max<>ScrollHeight : Scroll::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
+        If *Scroll\h\Max<>ScrollWidth : Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
+        If *Scroll\v\Max<>ScrollHeight : Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
         
-        Scroll::Resizes(*Scroll, 0, 0, Width, Height)
+        Bar::Resizes(*Scroll, 0, 0, Width, Height)
         Repaint = #True
         
     EndSelect
@@ -306,9 +306,9 @@ EndIf
 ;
 CanvasGadget(#MyCanvas, 10, 10, 400, 400)
 
-Scroll::Bars(*Scroll, 16, 7, 1)
-;     Scroll::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
-;     Scroll::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
+Bar::Bars(*Scroll, 16, 7, 1)
+;     Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
+;     Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
 
 PostEvent(#PB_Event_Gadget, 0,#MyCanvas,#PB_EventType_Resize)
 BindGadgetEvent(#MyCanvas, @CallBack())

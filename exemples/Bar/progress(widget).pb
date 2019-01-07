@@ -54,8 +54,9 @@ Module ProgressBar
         
         Select EventType
           Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-            Repaint | Bar::Resize(*This\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
-        EndSelect
+            Bar::Resize(*This\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+            Repaint = 1
+       EndSelect
         
         Repaint | Bar::CallBack(\Bar, EventType, Mouse_X, Mouse_Y)
         
@@ -130,8 +131,8 @@ Module ProgressBar
     
     With *This
       Select Attribute
-        Case #PB_ProgressBar_Minimum : Attribute = #PB_ScrollBar_Minimum
-        Case #PB_ProgressBar_Maximum : Attribute = #PB_ScrollBar_Maximum
+        Case #PB_ProgressBar_Minimum : Attribute = Bar::#PB_Bar_Minimum
+        Case #PB_ProgressBar_Maximum : Attribute = Bar::#PB_Bar_Maximum
       EndSelect
       
       If Bar::SetAttribute(*This\Bar, Attribute, Value)
@@ -145,8 +146,8 @@ Module ProgressBar
     
     With *This
       Select Attribute
-        Case #PB_ProgressBar_Minimum : Attribute = #PB_ScrollBar_Minimum
-        Case #PB_ProgressBar_Maximum : Attribute = #PB_ScrollBar_Maximum
+        Case #PB_ProgressBar_Minimum : Attribute = Bar::#PB_Bar_Minimum
+        Case #PB_ProgressBar_Maximum : Attribute = Bar::#PB_Bar_Maximum
       EndSelect
       
       Result = Bar::GetAttribute(*This\Bar, Attribute)
@@ -182,6 +183,8 @@ Module ProgressBar
       With *This
         \Canvas\Gadget = Gadget
         \Bar = Bar::Progress(0,0, Width, Height, Min, Max, Flag)
+;         \Bar\Color[3]\Fore[0] = 0
+;         \Bar\Color[3]\Fore[2] = 0
         
         Draw(*This)
         SetGadgetData(Gadget, *This)

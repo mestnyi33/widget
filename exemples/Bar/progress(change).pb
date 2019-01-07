@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
         CallBack(*Bar_0, EventType())
         
         If WidgetEventType() = #PB_EventType_Change
-          SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_ScrollBar_Direction)))
+          SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
         EndIf
         
         ReDraw(1)

@@ -76,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select EventType
         Case #PB_EventType_LeftButtonDown
           Debug "#PB_EventType_LeftButtonDown "
-          SetAttribute(*Scroll\h, #PB_ScrollBar_Inverted, *Scroll\h\Inverted!1)
+          SetAttribute(*Scroll\h, #PB_Bar_Inverted, *Scroll\h\Inverted!1)
           
           Repaint = 1
       EndSelect

@@ -115,7 +115,6 @@
     ; splitter bar
     *First.Bar_S 
     *Second.Bar_S
-    Separator.b
     
     ; track bar
     Ticks.b
@@ -140,7 +139,7 @@
     Vertical.b
     Inverted.b
     Direction.i
-    ButtonLen.i[3]
+    ButtonLen.i[4]
     
     Page.Page_S
     Area.Page_S
@@ -161,7 +160,7 @@
   
   ;- - Scroll_S
   Structure Scroll_S Extends Coordinate_S
-    Post.Post_S
+    ;Post.Post_S
     
     *v.Bar_S
     *h.Bar_S
@@ -388,5 +387,5 @@ EndModule
 
 UseModule Structures
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ----
+; Folding = 4---
 ; EnableXP

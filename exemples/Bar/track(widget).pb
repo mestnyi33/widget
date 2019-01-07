@@ -55,8 +55,9 @@ Module TrackBar
         
         Select EventType
           Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-            Repaint | Bar::Resize(*This\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
-        EndSelect
+            Bar::Resize(*This\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+            Repaint = 1
+       EndSelect
         
         Repaint | Bar::CallBack(\Bar, EventType, Mouse_X, Mouse_Y)
         
@@ -136,8 +137,8 @@ Module TrackBar
     
     With *This
       Select Attribute
-        Case #PB_TrackBar_Minimum : Attribute = #PB_ScrollBar_Minimum
-        Case #PB_TrackBar_Maximum : Attribute = #PB_ScrollBar_Maximum
+        Case #PB_TrackBar_Minimum : Attribute = Bar::#PB_Bar_Minimum
+        Case #PB_TrackBar_Maximum : Attribute = Bar::#PB_Bar_Maximum
       EndSelect
       
       If Bar::SetAttribute(*This\Bar, Attribute, Value)
@@ -151,8 +152,8 @@ Module TrackBar
     
     With *This
       Select Attribute
-        Case #PB_TrackBar_Minimum : Attribute = #PB_ScrollBar_Minimum
-        Case #PB_TrackBar_Maximum : Attribute = #PB_ScrollBar_Maximum
+        Case #PB_TrackBar_Minimum : Attribute = Bar::#PB_Bar_Minimum
+        Case #PB_TrackBar_Maximum : Attribute = Bar::#PB_Bar_Maximum
       EndSelect
       
       Result = Bar::GetAttribute(*This\Bar, Attribute)

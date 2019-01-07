@@ -2022,7 +2022,7 @@ Module Text
         
       EndWith 
       
-      
+      Protected sw
       ; Draw Lines text
       With *This\Items()
         If ListSize(*This\Items())
@@ -2032,11 +2032,18 @@ Module Text
             Drawing = Bool(\y+\height+*This\Scroll\Y>*This\y[2] And (\y-*This\y[2])+*This\Scroll\Y<iheight)
             ;\Hide = Bool(Not Drawing)
             
+               If sw<\text\x+\text\width
+                sw=\text\x+\text\width
+              EndIf
+              
+            
             If \hide
               Drawing = 0
-            EndIf
+            Else
+           EndIf
             
             If Drawing
+              
               If \Text\FontID 
                 DrawingFont(\Text\FontID) 
                 ;               ElseIf *This\Text\FontID 
@@ -2249,6 +2256,7 @@ Module Text
               EndIf
               
             EndIf
+            
           Next
           PopListPosition(*This\Items()) ; 
         EndIf
@@ -2298,7 +2306,9 @@ Module Text
             Box(*This\Scroll\h\x-Bar::GetState(*This\Scroll\h), *This\Scroll\v\y-Bar::GetState(*This\Scroll\v), *This\Scroll\h\Max, *This\Scroll\v\Max, $FF0000)
             Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Page\Len, *This\Scroll\v\Page\Len, $FF00FF00)
             Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Area\Len, *This\Scroll\v\Area\Len, $FF00FFFF)
-          EndIf
+            ;Debug \x+*This\scroll\width
+            Box(sw, *This\y, 2, *This\height, $FFFF0000)
+           EndIf
         CompilerEndIf
         
         _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
@@ -2409,28 +2419,28 @@ Module Text
         \X[0] = X 
         \X[2]=\X[0]+\bSize
         \X[1]=\X[2]-\fSize
-        \Resize = 1<<1
+        \Resize | 1<<1
       EndIf
       If Y<>#PB_Ignore And 
          \Y[0] <> Y
         \Y[0] = Y
         \Y[2]=\Y[0]+\bSize
         \Y[1]=\Y[2]-\fSize
-        \Resize = 1<<2
+        \Resize | 1<<2
       EndIf
       If Width<>#PB_Ignore And
          \Width[0] <> Width 
         \Width[0] = Width 
         \Width[2] = \Width[0]-\bSize*2
         \Width[1] = \Width[2]+\fSize*2
-        \Resize = 1<<3
+        \Resize | 1<<3
       EndIf
       If Height<>#PB_Ignore And 
          \Height[0] <> Height
         \Height[0] = Height 
         \Height[2] = \Height[0]-\bSize*2
         \Height[1] = \Height[2]+\fSize*2
-        \Resize = 1<<4
+        \Resize | 1<<4
       EndIf
       
       ProcedureReturn \Resize
@@ -3137,5 +3147,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------v0---------4--46t-+-u00--------------------------------------------
+; Folding = ------v0---------4--460-+-u0d--------fn-----vfu-------------------f------
 ; EnableXP

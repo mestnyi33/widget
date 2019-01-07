@@ -7,7 +7,7 @@ CompilerEndIf
 XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scroll.pbi"
+XIncludeFile "module_bar.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
@@ -34,15 +34,15 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select EventType()
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        Scroll::Resizes(*Scroll, 0, 0, Width, Height)
+        Bar::Resizes(*Scroll, 0, 0, Width, Height)
         Repaint = #True
     EndSelect
     
-    If Scroll::CallBack(*Scroll\v, EventType(), MouseX, MouseY) : Repaint = #True : EndIf
-    If Scroll::CallBack(*Scroll\h, EventType(), MouseX, MouseY) : Repaint = #True : EndIf
+    If Bar::CallBack(*Scroll\v, EventType(), MouseX, MouseY) : Repaint = #True : EndIf
+    If Bar::CallBack(*Scroll\h, EventType(), MouseX, MouseY) : Repaint = #True : EndIf
     
-    iWidth = Scroll::X(*Scroll\v)
-    iHeight = Scroll::Y(*Scroll\h)
+    iWidth = Bar::X(*Scroll\v)
+    iHeight = Bar::Y(*Scroll\h)
     
     If Repaint And StartDrawing(CanvasOutput(Canvas))
       Box(0,0,Width,Height, $FFFFFF)
@@ -50,8 +50,8 @@ CompilerIf #PB_Compiler_IsMainFile
       DrawImage(ImageID(0), *Scroll\x, *Scroll\y)
       UnclipOutput()
       
-      Scroll::Draw(*Scroll\v)
-      Scroll::Draw(*Scroll\h)
+      Bar::Draw(*Scroll\v)
+      Bar::Draw(*Scroll\h)
       StopDrawing()
     EndIf
   EndProcedure
@@ -65,12 +65,12 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
     ; SetGadgetData(1,0) ; set parent window
     
-    Scroll::Bars(*Scroll, 16, 7, 1)
-    Scroll::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
-    Scroll::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
+    Bar::Bars(*Scroll, 16, 7, 1)
+    Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
+    Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
         
-    Scroll::SetState(*Scroll\v, 150)
-    Scroll::SetState(*Scroll\h, 100)
+    Bar::SetState(*Scroll\v, 150)
+    Bar::SetState(*Scroll\h, 100)
     
     PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
     BindGadgetEvent(1, @CallBack())

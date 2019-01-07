@@ -4,7 +4,8 @@ CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
  IncludePath "../"
  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-  ;  IncludePath "/Users/a/Documents/GitHub/Widget/"
+  IncludePath "../"
+ ;  IncludePath "/Users/a/Documents/GitHub/Widget/"
 CompilerEndIf
 
 XIncludeFile "module_macros.pbi"
@@ -35,44 +36,37 @@ Global *Editor_0.Widget_S, *Tree_0.Widget_S, *Tree_1.Widget_S
  Procedure.i ResizeSplitter(*This.Bar::Bar_S)
    
    With *This
-     If Not IsGadget(\First)
-       Protected Splitter1 = Bool(\First\Type = #PB_GadgetType_Splitter)
-     EndIf
-     If Not IsGadget(\Second)
-       Protected Splitter2 = Bool(\Second\Type = #PB_GadgetType_Splitter)
-     EndIf
-     
      If \Vertical
         If IsGadget(\First)
           ResizeGadget(\First, \x, \y, \width, \Thumb\Pos-\y)
-        ElseIf Splitter1
+        ElseIf \Type[1]
           Bar::Resize(\First, \x, \y, \width, \Thumb\Pos-\y)
-          ResizeSplitter(\First)
+          ;ResizeSplitter(\First)
         Else
           Tree::Resize(\First, \x, \y, \width, \Thumb\Pos-\y)
         EndIf
         If IsGadget(\Second)
           ResizeGadget(\Second, \x, \Thumb\Pos+\Thumb\len, \width, \Height-((\Thumb\Pos+\Thumb\len)-\y))
-        ElseIf Splitter2
+        ElseIf \Type[2]
           Bar::Resize(\Second, \x, \y, \width, \Thumb\Pos-\y)
-          ResizeSplitter(\Second)
+          ;ResizeSplitter(\Second)
         Else
           Tree::Resize(\Second, \x, \Thumb\Pos+\Thumb\len, \width, \Height-((\Thumb\Pos+\Thumb\len)-\y))
         EndIf
       Else
         If IsGadget(\First)
           ResizeGadget(\First, \x, \y, \Thumb\Pos-\x, \height)
-        ElseIf Splitter1
+        ElseIf \Type[1]
           Bar::Resize(\First, \x, \y, \width, \Thumb\Pos-\y)
-          ResizeSplitter(\First)
+          ;ResizeSplitter(\First)
         Else
           Tree::Resize(\First, \x, \y, \Thumb\Pos-\x, \height)
         EndIf
         If IsGadget(\Second)
           ResizeGadget(\Second, \Thumb\Pos+\Thumb\len, \y, \width-((\Thumb\Pos+\Thumb\len)-\x), \height)
-        ElseIf Splitter2
+        ElseIf \Type[2]
           Bar::Resize(\Second, \x, \y, \width, \Thumb\Pos-\y)
-          ResizeSplitter(\Second)
+          ;ResizeSplitter(\Second)
         Else
           Tree::Resize(\Second, \Thumb\Pos+\Thumb\len, \y, \width-((\Thumb\Pos+\Thumb\len)-\x), \height)
         EndIf
@@ -158,7 +152,9 @@ Procedure CallBacks()
     If Repaint 
       If *splitter_1\Change Or *splitter_1\Resize
         Editor::Resize(*Editor_0, *splitter_1\x[1], *splitter_1\y[1], *splitter_1\width[1], *splitter_1\height[1])
-        ; *splitter_1\Type[2] = #PB_GadgetType_Splitter 
+        
+;         *splitter_1\Type[2] = #PB_GadgetType_Splitter 
+;         Bar::Resize(*splitter_0, *splitter_1\x[2], *splitter_1\y[2], *splitter_1\width[2], *splitter_1\height[2])
       EndIf
       
       If *splitter_0\Change Or *splitter_0\Resize
@@ -204,13 +200,13 @@ Procedure OpenWindow_0(x = 0, y = 0, width = 800, height = 600)
   *Tree_0 = Tree::Create(Canvas_0, #PB_Any, 0, 0, 0, 0, "", #PB_Flag_FullSelection)
   *Tree_1 = Tree::Create(Canvas_0, #PB_Any, 0, 0, 0, 0, "", #PB_Flag_FullSelection)
   
-  *splitter_0 = Bar::Splitter(1,1,778, 548, *Tree_0, *Tree_1)
+  *splitter_0 = Bar::Splitter(100,1,778, 548, *Tree_0, *Tree_1)
   
   *splitter_1 = Bar::Splitter(1,1,778, 548, *Editor_0, *splitter_0, #PB_Splitter_Vertical)
   
-;   Bar::SetState(*splitter_1, 350)
-;   
-;   Bar::SetState(*splitter_0, 150)
+  Bar::SetState(*splitter_1, 550)
+  
+  Bar::SetState(*splitter_0, 150)
   
    
    ;Editor::SetText(*Editor_0, "")
@@ -250,6 +246,7 @@ Repeat
       
   EndSelect
 ForEver
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -4-v-
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 7
+; Folding = -0---
 ; EnableXP

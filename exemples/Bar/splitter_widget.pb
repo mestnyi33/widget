@@ -6,39 +6,38 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Bar
   
-  #Button1  = 3
-  #Button2  = 4
-  #Button3  = 5
-  
   Global.i gEvent, gQuit, value, direction, x=10,y=10
   Global *Bar_0.Bar_S=AllocateStructure(Bar_S)
   Global *Bar_1.Bar_S=AllocateStructure(Bar_S)
+  Global *Scroll_1.Bar_S=AllocateStructure(Bar_S)
+  Global *Scroll_2.Bar_S=AllocateStructure(Bar_S)
+  Global *Scroll_3.Bar_S=AllocateStructure(Bar_S)
   
   Procedure ReDraw(Gadget.i)
-    
-    With *Bar_1
-      If (\Change Or \Resize)
-;         Debug IsBar(\First)
-;         Debug IsBar(\Second)
-        
-        ResizeGadget(\First, \x[1], \y[1], \width[1], \height[1]+1)
-        Bar::Resize(\Second, \x[2], \y[2], \width[2], \height[2])
-      EndIf
-    EndWith
-    
-    With *Bar_0
-      If (\Change Or \Resize)
-        ResizeGadget(\First, \x[1], \y[1], \width[1], \height[1]+1)
-        ResizeGadget(\Second, \x[2], \y[2], \width[2], \height[2]+1)
-      EndIf
-    EndWith
+;     With *Bar_1
+;       If (\Change Or \Resize)
+;         Bar::Resize(\First, \x[1], \y[1], \width[1], \height[1])
+;         Bar::Resize(\Second, \x[2], \y[2], \width[2], \height[2])
+;       EndIf
+;     EndWith
+;     
+;     With *Bar_0
+;       If (\Change Or \Resize)
+;         Bar::Resize(\First, \x[1], \y[1], \width[1], \height[1])
+;         Bar::Resize(\Second, \x[2], \y[2], \width[2], \height[2])
+;       EndIf
+;     EndWith
     
     If StartDrawing(CanvasOutput(Gadget))
       DrawingMode(#PB_2DDrawing_Default)
       Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
       
-      Draw(*Bar_0)
       Draw(*Bar_1)
+      Draw(*Bar_0)
+      
+;       Draw(*Scroll_1)
+;       Draw(*Scroll_2)
+;       Draw(*Scroll_3)
       
       StopDrawing()
     EndIf
@@ -51,9 +50,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected mouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
     Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     
+    
     Select EventType
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        Resize(*Bar_0, x, y, Width-x*2, Height-y*2)
+        Resize(*Bar_1, x, y, Width-x*2, Height-y*2)  
         Repaint = 1 
     EndSelect
     
@@ -118,24 +118,43 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Result
   EndProcedure
   
+  Procedure Window_0_Resize()
+    ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
+    ResizeGadget(10, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
+  EndProcedure
+  
   Procedure Window_0()
-    If OpenWindow(0, 0, 0, 400, 400, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      ButtonGadget   (0,    5,   365, 390,  30, "start change scrollbar", #PB_Button_Toggle)
+    If OpenWindow(0, 0, 0, 400, 400, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      ButtonGadget   (10,    5,   365, 390,  30, "start change scrollbar", #PB_Button_Toggle)
       
       CanvasGadget(1, 10,10, 380, 350, #PB_Canvas_Keyboard|#PB_Canvas_Container)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
-      ButtonGadget(#Button1, 0, 0, 0, 0, "Button 1") ; No need to specify size or coordinates
-      ButtonGadget(#Button2, 0, 0, 0, 0, "Button 2") ; as they will be sized automatically
-      ButtonGadget(#Button3, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
+      *Scroll_1.Bar_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_1, 50)
+      *Scroll_2.Bar_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_2, 50)
+      *Scroll_3.Bar_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_3, 50) 
       
-      *Bar_0 = Splitter(10, 10, 360,  330, #Button1, #Button2);, #PB_Splitter_Vertical)
-      *Bar_1 = Splitter(10, 10, 360,  330, #Button3, *Bar_0, #PB_Splitter_Vertical)
+      *Bar_0 = Splitter(10, 10, 360,  330, *Scroll_1, *Scroll_2)
+      *Bar_1 = Splitter(10, 10, 360,  330, *Scroll_3, *Bar_0, #PB_Splitter_Vertical)
+      
+;       SetAttribute(*Bar_1, #PB_Splitter_FirstFixed, 120)
+;       SetAttribute(*Bar_1, #PB_Splitter_SecondFixed, 80)
+;       
+;       SetAttribute(*Bar_1, #PB_Splitter_FirstMinimumSize, 120)
+;       SetAttribute(*Bar_1, #PB_Splitter_SecondMinimumSize, 80)
+;       
+;       SetAttribute(*Bar_0, #PB_Splitter_FirstMinimumSize, 100)
+;       SetAttribute(*Bar_0, #PB_Splitter_SecondMinimumSize, 50)
+      
+;       SetState(*Bar_0, 25)
+      
       BindGadgetEvent(1, @Canvas_CallBack())
       
       CloseGadgetList()
       
       ReDraw(1)
+      
+      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
   EndProcedure
   
@@ -160,18 +179,17 @@ CompilerIf #PB_Compiler_IsMainFile
         value + direction
         
         If SetState(*Bar_0, value)
-          If WidgetEventType() = #PB_EventType_Change
-            PostEvent(#PB_Event_Gadget, 0, 1)
-          EndIf
+          ;PostEvent(#PB_Event_Gadget, 0, 1, -1)
+          ReDraw(1)
         EndIf
         
       Case #PB_Event_Gadget
         
         Select EventGadget()
-          Case 0
+          Case 10
             value = GetState(*Bar_0)
-            If GetGadgetState(0)
-              AddWindowTimer(0, 1, 200)
+            If GetGadgetState(10)
+              AddWindowTimer(0, 1, 10)
             Else
               RemoveWindowTimer(0, 1)
             EndIf
@@ -190,7 +208,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 21
-; FirstLine = 8
-; Folding = -----
+; CursorPosition = 16
+; Folding = -8---
 ; EnableXP

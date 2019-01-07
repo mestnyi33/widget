@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasGadget(1, 10,10, 380, 50, #PB_Canvas_Keyboard)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
-      *Bar_0 = Scroll(5, 10, 370,  30, 20,  50, 8, #PB_ScrollBar_NoButtons)
+      *Bar_0 = Scroll(5, 10, 370,  30, 20,  50, 8, #PB_Bar_NoButtons)
       
       ReDraw(1)
     EndIf
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            SetAttribute(*Bar_0, #PB_ScrollBar_NoButtons, GetGadgetState(0) * 17)
+            SetAttribute(*Bar_0, #PB_Bar_NoButtons, GetGadgetState(0) * 17)
             If GetGadgetState(0)
               SetGadgetText(0, "hide scrollbar buttons")
             Else
@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
         CallBack(*Bar_0, EventType())
         
         If WidgetEventType() = #PB_EventType_Change
-          Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_ScrollBar_Direction)
+          Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_Bar_Direction)
           
           Select EventWidget()
               

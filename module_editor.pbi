@@ -1573,6 +1573,10 @@ Module Editor
                 DrawText(*This\sci\margin\width-TextWidth(Str(\Index))-3, \Y+*This\Scroll\Y, Str(\Index), *This\sci\margin\Color\Front);, *This\sci\margin\Color\Back)
               EndIf
             EndIf
+            
+;             ; text x
+;             Box(\text\x, *This\y, 2, *This\height, $FFFF0000)
+;         
           Next
           PopListPosition(*This\Items()) ; 
         EndIf
@@ -1606,6 +1610,7 @@ Module Editor
           
           Bar::Draw(\Scroll\v)
           Bar::Draw(\Scroll\h)
+         ; (_this_\sci\margin\width + (_this_\sublevellen -Bool(_this_\Scroll\h\Radius)*4) + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
           
           DrawingMode(#PB_2DDrawing_Outlined)
           Box(*This\Scroll\h\x-Bar::GetState(*This\Scroll\h), *This\Scroll\v\y-Bar::GetState(*This\Scroll\v), *This\Scroll\h\Max, *This\Scroll\v\Max, $FF0000)
@@ -2983,5 +2988,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -----------------------------------------------------------
+; Folding = 4----------------------------------------------------------
 ; EnableXP

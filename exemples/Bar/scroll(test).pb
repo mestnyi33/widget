@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If Not (*Scroll\v\at Or *Scroll\h\at)
       Select EventType
         Case #PB_EventType_LeftButtonDown
-          SetAttribute(*Scroll\h, #PB_ScrollBar_Inverted, *Scroll\h\Inverted!1)
+          SetAttribute(*Scroll\h, #PB_Bar_Inverted, *Scroll\h\Inverted!1)
           Debug "#PB_EventType_LeftButtonDown *Scroll\h\Inverted " + *Scroll\h\Inverted
           
           Repaint = 1
@@ -294,7 +294,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-
 
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = ------
