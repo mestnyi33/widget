@@ -30,7 +30,7 @@ If OpenWindow(0, 0, 0, 322, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Wind
   
   ;SetGadgetState(0, 1)
   ;func ancestorShared(With: NSView) -> NSView?
-  Debug "   class - "+GetClass(CocoaMessage(0, GadgetID(0), "ancestorShared"))
+  ;Debug "   class - "+GetClass(CocoaMessage(0, GadgetID(0), "ancestorShared"))
  
   Debug "Panel = " + GadgetID(0)
   Debug "Panel 1 = " + GadgetID(1)
@@ -49,14 +49,21 @@ If OpenWindow(0, 0, 0, 322, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Wind
   Debug "Parent from Gadget 2 = " + sv
   
   
-  CocoaMessage(0, GadgetID(0), "subviews", @MyArray())
+  ;CocoaMessage(0, GadgetID(0), "subviews", @MyArray())
+  ;view = WindowID(0) ; GadgetID(0)
+  view = GadgetID(1)
+  subviews = CocoaMessage(0, view, "subviews")
+  Debug CocoaMessage(0, subviews, "count") 
+  i=0;CocoaMessage(0, subviews, "count") - 1
   
-  Debug ArraySize(MyArray())
-  For i=0 To ArraySize(MyArray())
-  Next
+  Debug "get - "+GetClass(CocoaMessage(0, subviews, "objectAtIndex:", i))
+  
+;   Debug ArraySize(MyArray())
+;   For i=0 To ArraySize(MyArray())
+;   Next
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

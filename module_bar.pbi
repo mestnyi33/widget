@@ -126,7 +126,7 @@ DeclareModule Bar
   Global *Bar.Post_S
   
   Prototype.i Resize(*This, iX.i,iY.i,iWidth.i,iHeight.i) 
-
+  
   ;- - DECLAREs MACROs
   Macro IsBar(_this_)
     Bool(_this_ And (_this_\Type = #PB_GadgetType_ScrollBar Or _this_\Type = #PB_GadgetType_TrackBar Or _this_\Type = #PB_GadgetType_ProgressBar Or _this_\Type = #PB_GadgetType_Splitter))
@@ -515,8 +515,8 @@ Module Bar
     Protected.i State_0, State_1, State_2, State_3, Alpha, LinesColor
     
     With *This 
-;       Debug ""+Str(\Area\Pos+\Area\len) +" "+ \x[2]
-;       Debug ""+Str(\Area\Pos+\Area\len) +" "+ \Y[2]
+      ;       Debug ""+Str(\Area\Pos+\Area\len) +" "+ \x[2]
+      ;       Debug ""+Str(\Area\Pos+\Area\len) +" "+ \Y[2]
       
       State_0 = \Color[0]\State
       State_1 = \Color[1]\State
@@ -1028,6 +1028,7 @@ Module Bar
       EndIf
       
       With *This
+        
         ;         If *This <> *That And *That And *That\hide
         ;           If \Vertical
         ;             If Height=#PB_Ignore 
@@ -1058,18 +1059,11 @@ Module Bar
           
           If \Vertical
             \Area\Pos = \Y+\ButtonLen[1]
-            If \Resize & 1<<4
-              \Area\len = \Height-(\ButtonLen[1]+\ButtonLen[2])
-              \Y[2] = Bool(\ButtonLen[2]) * (\Area\Pos + \Area\len)
-            EndIf
+            \Area\len = \Height-(\ButtonLen[1]+\ButtonLen[2])
           Else
             \Area\Pos = \X+\ButtonLen[1]
-            If \Resize & 1<<3
-              \Area\len = \width -(\ButtonLen[1]+\ButtonLen[2])
-              \X[2] = Bool(\ButtonLen[2]) * (\Area\Pos + \Area\len)
-            EndIf
+            \Area\len = \width-(\ButtonLen[1]+\ButtonLen[2])
           EndIf
-          
           
           If Bool(\Resize & (1<<4 | 1<<3))
             If Not \hide And \Area\len
@@ -1103,28 +1097,16 @@ Module Bar
           
           If \Vertical
             If \ButtonLen
-              \X[1] = X + Lines : \Y[1] = Y : \Width[1] = Width - Lines : \Height[1] = \ButtonLen                   ; Top button coordinate on scroll bar
-              \X[2] = X + Lines : \Width[2] = Width - Lines : \Height[2] = \ButtonLen 
-              
-;               If Size
-;                 \Y[2] = Y+Height-\Height[2] ; Botom button coordinate on scroll bar
-;                 
-;                 Debug "y_2 "+\y[2] +" a_2 "+ Str(\Area\Pos + \Area\len)
-;               EndIf
+              \X[1] = X + Lines : \Y[1] = Y : \Width[1] = Width - Lines : \Height[1] = \ButtonLen[1]                       ; Top button coordinate on scroll bar
+              \X[2] = X + Lines : \Width[2] = Width - Lines : \Height[2] = \ButtonLen[2] : \Y[2] = (\Area\Pos+\Area\len)   ; Bottom button coordinate on scroll bar
             EndIf
-            \X[3] = X + Lines : \Width[3] = Width - Lines : \Y[3] = \Thumb\Pos : \Height[3] = \Thumb\len           ; Thumb coordinate on scroll bar
+            \X[3] = X + Lines : \Width[3] = Width - Lines : \Y[3] = \Thumb\Pos : \Height[3] = \Thumb\len                   ; Thumb coordinate on scroll bar
           Else
             If \ButtonLen
-              \X[1] = X : \Y[1] = Y + Lines : \Width[1] = \ButtonLen : \Height[1] = Height - Lines                  ; Left button coordinate on scroll bar
-              \Y[2] = Y + Lines : \Height[2] = Height - Lines : \Width[2] = \ButtonLen 
-              
-;               If Size
-;                 \X[2] = X+Width-\Width[2]  ; Right button coordinate on scroll bar
-;                 
-;                 Debug "x_2 "+\x[2] +" a_2 "+ Str(\Area\Pos + \Area\len)
-;               EndIf
+              \X[1] = X : \Y[1] = Y + Lines : \Height[1] = Height - Lines : \Width[1] = \ButtonLen[1]                      ; Left button coordinate on scroll bar
+              \Y[2] = Y + Lines : \Height[2] = Height - Lines : \Width[2] = \ButtonLen[2] : \X[2] = (\Area\Pos+\Area\len)  ; Right button coordinate on scroll bar
             EndIf
-            \Y[3] = Y + Lines : \Height[3] = Height - Lines : \X[3] = \Thumb\Pos : \Width[3] = \Thumb\len          ; Thumb coordinate on scroll bar
+            \Y[3] = Y + Lines : \Height[3] = Height - Lines : \X[3] = \Thumb\Pos : \Width[3] = \Thumb\len                  ; Thumb coordinate on scroll bar
           EndIf
           
           If (\Type = #PB_GadgetType_Splitter)
@@ -1222,6 +1204,23 @@ Module Bar
       If x=#PB_Ignore : x = \h\X : EndIf
       If Width=#PB_Ignore : Width = \v\X-\h\X+\v\width : EndIf
       If Height=#PB_Ignore : Height = \h\Y-\v\Y+\h\height : EndIf
+      
+;       \v\Page\len = Height - Bool(Not \h\hide) * \h\height
+;       \h\Page\len = Width - Bool(Not \v\hide) * \v\width
+;       
+;       \v\Hide = Resize(\v, Width+x-\v\Width, y, #PB_Ignore, \v\Page\len)
+;       \h\Hide = Resize(\h, x, Height+y-\h\Height, \h\Page\len, #PB_Ignore)
+;       
+;       \v\Page\len = Height - Bool(Not \h\hide) * \h\height
+;       \h\Page\len = Width - Bool(Not \v\hide) * \v\width
+;       
+;       \v\Hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\Page\len + Bool(\v\Radius And Not \h\Hide And Not \v\Hide)*4)
+;       \h\Hide = Resize(\h, #PB_Ignore, #PB_Ignore, \h\Page\len + Bool(\h\Radius And Not \v\Hide And Not \h\hide)*4, #PB_Ignore)
+;       
+;       \Width[2] = \h\Page\len ;  x(\v)-\h\x ; 
+;       \Height[2] =\v\Page\len ;  y(\h)-\v\y  ; \v\Page\len ;(\h\Y + Bool(Not \h\Hide) * \h\Height) - \v\y;
+;       ProcedureReturn 1
+      
       
       ;       If \h\Max < \width ; Width-Bool(Not \v\Hide) * \v\width
       ;         \h\Max = \width ; Width-Bool(Not \v\Hide) * \v\width
@@ -1577,214 +1576,6 @@ Module Bar
     ProcedureReturn repaint
   EndProcedure
   
-  Procedure.i _CallBack(*This.Bar_S, EventType.i, mouseX=0, mouseY=0) ; scroll
-    Protected repaint
-    Static Last, Down, *Scroll.Bar_S, *Last.Bar_S, mouseB, mouseat, Buttons
-    
-    With *This
-      If *This > 0 And Not \hide And \color\alpha ; And \Type = #PB_GadgetType_ScrollBar
-        Select EventType 
-          Case #PB_EventType_LeftButtonDown, 
-               #PB_EventType_MiddleButtonDown, 
-               #PB_EventType_RightButtonDown
-            Buttons = 1
-          Case #PB_EventType_LeftButtonUp, 
-               #PB_EventType_MiddleButtonUp, 
-               #PB_EventType_RightButtonUp
-            Buttons = 0
-        EndSelect
-        
-        If Not mouseX
-          mouseX = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX)
-        EndIf
-        If Not mouseY
-          mouseY = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY)
-        EndIf
-        
-        ; get at point buttons
-        If mouseB Or Buttons
-        ElseIf (mouseX>=\X And mouseX<\X+\Width And mouseY>\Y And mouseY=<\Y+\Height) 
-          If (mouseX>\X[1] And mouseX=<\X[1]+\Width[1] And  mouseY>\Y[1] And mouseY=<\Y[1]+\Height[1])
-            \at = 1
-          ElseIf (mouseX>\X[3] And mouseX=<\X[3]+\Width[3] And mouseY>\Y[3] And mouseY=<\Y[3]+\Height[3])
-            \at = 3
-          ElseIf (mouseX>\X[2] And mouseX=<\X[2]+\Width[2] And mouseY>\Y[2] And mouseY=<\Y[2]+\Height[2])
-            \at = 2
-          Else
-            \at =- 1
-          EndIf 
-          
-          Select EventType 
-            Case #PB_EventType_MouseEnter : EventType = #PB_EventType_MouseMove
-            Case #PB_EventType_MouseLeave : EventType = #PB_EventType_MouseMove
-          EndSelect
-          
-          mouseat = *This
-        Else
-          \at = 0
-          
-          Select EventType 
-            Case #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
-              If \Vertical
-                If \s And \s\h And \s\h\at
-                  If \s\h\at > 0
-                    repaint | Events(\s\h, \s\h\at, EventType, mouseX, mouseY)
-                  EndIf
-                  repaint | Events(\s\h, - 1, EventType, mouseX, mouseY)
-                  If EventType = #PB_EventType_MouseLeave
-                    *Scroll = 0
-                  EndIf
-                  
-                  \s\h\at = 0
-                EndIf
-              EndIf     
-              
-              EventType = #PB_EventType_MouseMove
-          EndSelect
-          
-          If \Vertical
-            If \s And \s\h And \s\h\at
-              If \Color[2]\State
-                repaint | Events(*This, \at, #PB_EventType_MouseLeave, mouseX, mouseY)
-                ;                   repaint | Events(*This, - 1, #PB_EventType_MouseLeave)
-                ;                   repaint | Events(\s\h, - 1, #PB_EventType_MouseEnter)
-                repaint | Events(\s\h, \s\h\at, #PB_EventType_MouseEnter, mouseX, mouseY)
-                \Color[2]\State = 0
-              EndIf
-            Else
-              mouseat = 0
-            EndIf
-          Else
-            If \s And \s\v And \s\v\at
-              If \Color[2]\State
-                repaint | Events(*This, \at, #PB_EventType_MouseLeave, mouseX, mouseY)
-                ;                   repaint | Events(*This, - 1, #PB_EventType_MouseLeave)
-                ;                   repaint | Events(\s\v, - 1, #PB_EventType_MouseEnter)
-                repaint | Events(\s\v, \s\v\at, #PB_EventType_MouseEnter, mouseX, mouseY)
-                \Color[2]\State = 0
-              EndIf
-            Else
-              mouseat = 0
-            EndIf
-          EndIf
-          
-        EndIf
-        
-        If *Scroll <> mouseat And 
-           *This = mouseat
-          *Last = *Scroll
-          *Scroll = mouseat
-        EndIf
-        
-        Select EventType 
-          Case #PB_EventType_Focus
-            If \at       
-              *Bar\Active = *This
-              repaint | Events(*This, \at, #PB_EventType_Focus, mouseX, mouseY)
-            EndIf
-            
-          Case #PB_EventType_LostFocus 
-            If *Bar\Active
-              *Bar\Active = 0 
-              repaint | Events(*This, - 1, #PB_EventType_LostFocus, mouseX, mouseY)
-            EndIf
-            
-        EndSelect
-        
-        If *Scroll = *This
-          If Last <> \at
-            ;
-            ; Debug ""+Last +" "+ *This\at +" "+ *This +" "+ *Last
-            If Last > 0 Or (Last = 2 And \at =- 1 And *Last)
-              repaint | Events(*This, Last, #PB_EventType_MouseLeave, mouseX, mouseY) : *Last = 0
-            EndIf
-            If Not \at Or (Last = 2 And \at =- 1 And *Last)
-              repaint | Events(*This, - 1, #PB_EventType_MouseLeave, mouseX, mouseY) : *Last = 0
-            EndIf
-            
-            If Not last ; Or (Last =- 1 And \at = 2 And *Last)
-              repaint | Events(*This, - 1, #PB_EventType_MouseEnter, mouseX, mouseY)
-            EndIf
-            If \at > 0
-              repaint | Events(*This, \at, #PB_EventType_MouseEnter, mouseX, mouseY)
-            EndIf
-            
-            Last = \at
-          EndIf
-          
-          Select EventType 
-            Case #PB_EventType_MouseWheel
-              Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta) ; bug in mac os
-              
-              If \at
-                repaint | Events(*This, \at, EventType, mouseX, mouseY, -WheelDelta)
-              ElseIf *Bar\Active
-                repaint | Events(*Bar\Active, - 1, EventType, mouseX, mouseY, WheelDelta)
-              EndIf
-              
-            Case #PB_EventType_LeftButtonDown
-              mouseB = 1
-              If \at
-                If *Bar\Active <> *This
-                  If *Bar\Active
-                    repaint | Events(*Bar\Active, \at, #PB_EventType_LostFocus, mouseX, mouseY)
-                  EndIf
-                  repaint | Events(*This, \at, #PB_EventType_Focus, mouseX, mouseY)
-                  *Bar\Active = *This
-                EndIf
-                
-                Down = \at
-                repaint | Events(*This, \at, EventType, mouseX, mouseY)
-              EndIf
-              
-            Case #PB_EventType_LeftButtonUp 
-              mouseB = 0
-              If Down
-                repaint | Events(*This, Down, EventType, mouseX, mouseY)
-                Down = 0
-              EndIf
-              
-            Case #PB_EventType_LeftDoubleClick, 
-                 #PB_EventType_LeftButtonDown, 
-                 #PB_EventType_MouseMove
-              
-              If \at
-                repaint | Events(*This, \at, EventType, mouseX, mouseY)
-              EndIf
-          EndSelect
-        EndIf
-        
-        ; ; ;           If AutoHide =- 1 : *Scroll = 0
-        ; ; ;             AutoHide = Bool(EventType() = #PB_EventType_MouseLeave)
-        ; ; ;           EndIf
-        ; ; ;           
-        ; ; ;           ; Auto hides
-        ; ; ;           If (AutoHide And Not Drag And Not at) 
-        ; ; ;             If \color\alpha <> \color\alpha[1] : \color\alpha = \color\alpha[1] 
-        ; ; ;               repaint =- 1
-        ; ; ;             EndIf 
-        ; ; ;           EndIf
-        ; ; ;           If EventType = #PB_EventType_MouseEnter And (*Thisis = *This Or Not *Scroll)
-        ; ; ;             If \color\alpha < 255 : \color\alpha = 255
-        ; ; ;               
-        ; ; ;               If *Scroll
-        ; ; ;                 If \Vertical
-        ; ; ;                   Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\Y+\Height)-\Y) 
-        ; ; ;                 Else
-        ; ; ;                   Resize(*This, #PB_Ignore, #PB_Ignore, (\X+\Width)-\X, #PB_Ignore) 
-        ; ; ;                 EndIf
-        ; ; ;               EndIf
-        ; ; ;               
-        ; ; ;               repaint =- 2
-        ; ; ;             EndIf 
-        ; ; ;           EndIf
-        
-      EndIf
-    EndWith
-    
-    ProcedureReturn repaint
-  EndProcedure
-  
   ;-
   Procedure.i Bar(Type.i, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7, SliderLen.i=7)
     Protected *This.Bar_S = AllocateStructure(Bar_S)
@@ -1904,7 +1695,7 @@ Module Bar
     With *Scroll     
       \v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_Bar_Vertical, Radius)
       \v\hide = \v\hide[1]
-      \v\s = *Scroll
+      ;\v\s = *Scroll
       
       If Both
         \h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
@@ -1913,7 +1704,7 @@ Module Bar
         \h.Bar_S = AllocateStructure(Bar_S)
         \h\hide = 1
       EndIf
-      \h\s = *Scroll
+      ;\h\s = *Scroll
     EndWith
     
     ProcedureReturn *Scroll
@@ -3120,6 +2911,6 @@ CompilerEndIf
 ; ; ;   EndIf
 ; ; ; CompilerEndIf
 ; ; ; 
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -BQ9-Wu-v--vvf----------------------------------v4v-4--------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = ------------------------4------------------------------
 ; EnableXP

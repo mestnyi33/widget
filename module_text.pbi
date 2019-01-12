@@ -1256,46 +1256,46 @@ Module Text
           If \Text\Vertical
             For IT = \Text\Count To 1 Step - 1
               
-              If AddElement(\Items())
-                String = StringField(\Text\String.s[2], IT, #LF$)
-                
-                \Items()\Focus =- 1
-                \Items()\Index[1] =- 1
-                
-                If \Type = #PB_GadgetType_Button
-                  \Items()\Text\Width = TextWidth(RTrim(String))
-                Else
-                  \Items()\Text\Width = TextWidth(String)
-                EndIf
-                
-                If \Text\Align\Right
-                  Text_X=(Width-\Items()\Text\Width) 
-                ElseIf \Text\Align\Horizontal
-                  Text_X=(Width-\Items()\Text\Width-Bool(\Items()\Text\Width % 2))/2 
-                EndIf
-                
-                \Items()\x = \X[2]+\Text\Y+\Scroll\Height+Text_Y
-                \Items()\y = \Y[2]+\Text\X+Text_X
-                \Items()\Width = \Text\Height
-                \Items()\Height = Width
-                \Items()\Index = ListIndex(\Items())
-                
-                \Items()\Text\Editable = \Text\Editable 
-                \Items()\Text\Vertical = \Text\Vertical
-                If \Text\Rotate = 270
-                  \Items()\Text\x = \Image\Width+\Items()\x+\Text\Height+\Text\X
-                  \Items()\Text\y = \Items()\y
-                Else
-                  \Items()\Text\x = \Image\Width+\Items()\x
-                  \Items()\Text\y = \Items()\y+\Items()\Text\Width
-                EndIf
-                \Items()\Text\Height = \Text\Height
-                \Items()\Text\String.s = String.s
-                \Items()\Text\Len = Len(String.s)
-                
-                _set_scroll_height_(*This)
-              EndIf
-              
+;               If AddElement(\Items())
+;                 String = StringField(\Text\String.s[2], IT, #LF$)
+;                 
+;                 \Items()\Focus =- 1
+;                 \Items()\Index[1] =- 1
+;                 
+;                 If \Type = #PB_GadgetType_Button
+;                   \Items()\Text\Width = TextWidth(RTrim(String))
+;                 Else
+;                   \Items()\Text\Width = TextWidth(String)
+;                 EndIf
+;                 
+;                 If \Text\Align\Right
+;                   Text_X=(Width-\Items()\Text\Width) 
+;                 ElseIf \Text\Align\Horizontal
+;                   Text_X=(Width-\Items()\Text\Width-Bool(\Items()\Text\Width % 2))/2 
+;                 EndIf
+;                 
+;                 \Items()\x = \X[2]+\Text\Y+\Scroll\Height+Text_Y
+;                 \Items()\y = \Y[2]+\Text\X+Text_X
+;                 \Items()\Width = \Text\Height
+;                 \Items()\Height = Width
+;                 \Items()\Index = ListIndex(\Items())
+;                 
+;                 \Items()\Text\Editable = \Text\Editable 
+;                 \Items()\Text\Vertical = \Text\Vertical
+;                 If \Text\Rotate = 270
+;                   \Items()\Text\x = \Image\Width+\Items()\x+\Text\Height+\Text\X
+;                   \Items()\Text\y = \Items()\y
+;                 Else
+;                   \Items()\Text\x = \Image\Width+\Items()\x
+;                   \Items()\Text\y = \Items()\y+\Items()\Text\Width
+;                 EndIf
+;                 \Items()\Text\Height = \Text\Height
+;                 \Items()\Text\String.s = String.s
+;                 \Items()\Text\Len = Len(String.s)
+;                 
+;                 _set_scroll_height_(*This)
+;               EndIf
+;               
             Next
           Else
             For IT = 1 To \Text\Count
@@ -3146,6 +3146,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = ------v0---------4--460-+-u0d--------fn-----vfu-------------------f------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = ------v0---------4--460-+834---------f+------6------------4-------0------
 ; EnableXP

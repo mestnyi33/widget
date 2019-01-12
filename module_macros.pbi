@@ -288,6 +288,7 @@
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     Global _drawing_mode_
     
+    Declare.i DrawRotatedText_(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
     Declare.i DrawText_(x.i, y.i, Text.s, FrontColor.i=$ffffff, BackColor.i=0)
     Declare.i ClipOutput_(x.i, y.i, width.i, height.i)
     
@@ -295,14 +296,19 @@
       PB(DrawingMode)(_mode_) : _drawing_mode_ = _mode_
     EndMacro
     
-;     Macro ClipOutput(x, y, width, height)
-;     ;  PB(ClipOutput)(x, y, width, height)
-;       ClipOutput_(x, y, width, height)
-;     EndMacro
+    Macro ClipOutput(x, y, width, height)
+      PB(ClipOutput)(x, y, width, height)
+      ClipOutput_(x, y, width, height)
+    EndMacro
     
-;     Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
-;       DrawText_(x, y, Text, FrontColor, BackColor)
-;     EndMacro
+    Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
+      DrawText_(x, y, Text, FrontColor, BackColor)
+    EndMacro
+    
+    Macro DrawRotatedText(x, y, Text, Angle, FrontColor=$ffffff, BackColor=0)
+      DrawRotatedText_(x, y, Text, Angle, FrontColor, BackColor)
+    EndMacro
+    
   CompilerEndIf
   
   Macro _clip_output_(_this_, _x_,_y_,_width_,_height_)
@@ -311,13 +317,13 @@
     If _width_<>#PB_Ignore : _this_\Clip\Width = _width_ : EndIf
     If _height_<>#PB_Ignore : _this_\Clip\Height = _height_ : EndIf
     
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-      ClipOutput_(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
-      ;ClipOutput(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
-      
-    CompilerElse
+;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+;       ClipOutput_(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
+;       ;ClipOutput(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
+;       
+;     CompilerElse
       ClipOutput(_this_\Clip\X,_this_\Clip\Y,_this_\Clip\Width,_this_\Clip\Height)
-    CompilerEndIf
+;     CompilerEndIf
   EndMacro
   
   
@@ -393,6 +399,38 @@ Module Macros
 
 
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    Procedure.i DrawRotatedText_(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
+      Protected.CGFloat r,g,b,a
+      Protected.i Transform, NSString, Attributes, Color
+      Protected Size.NSSize, ZeroPoint.NSPoint
+      
+      CocoaMessage(@Attributes, 0, "NSMutableDictionary dictionaryWithCapacity:", 2)
+      
+      r = Red(FrontColor)/255 : g = Green(FrontColor)/255 : b = Blue(FrontColor)/255 : a = 1
+      Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
+      CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSColor")
+      
+      r = Red(BackColor)/255 : g = Green(BackColor)/255 : b = Blue(BackColor)/255 : a = Bool(_drawing_mode_&#PB_2DDrawing_Transparent=0)
+      Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
+      CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSBackgroundColor")  
+      
+      NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
+      CocoaMessage(@Size, NSString, "sizeWithAttributes:", Attributes)
+      
+      CocoaMessage(0, 0, "NSGraphicsContext saveGraphicsState")
+      
+      y = OutputHeight()-y
+      Transform = CocoaMessage(0, 0, "NSAffineTransform transform")
+      CocoaMessage(0, Transform, "translateXBy:@", @x, "yBy:@", @y)
+      CocoaMessage(0, Transform, "rotateByDegrees:@", @Angle)
+      x = 0 : y = -Size\height
+      CocoaMessage(0, Transform, "translateXBy:@", @x, "yBy:@", @y)
+      CocoaMessage(0, Transform, "concat")
+      CocoaMessage(0, NSString, "drawAtPoint:@", @ZeroPoint, "withAttributes:", Attributes)
+      
+      CocoaMessage(0, 0,  "NSGraphicsContext restoreGraphicsState")
+    EndProcedure
+    
     Procedure.i DrawText_(x.i, y.i, Text.s, FrontColor.i=$ffffff, BackColor.i=0)
       Protected.CGFloat r,g,b,a
       Protected.i NSString, Attributes, Color
@@ -404,7 +442,7 @@ Module Macros
       Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
       CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSColor")
       
-      r = Red(BackColor)/255 : g = Green(BackColor)/255 : b = Blue(BackColor)/255 : a = Bool(_drawing_mode_<>#PB_2DDrawing_Transparent)
+      r = Red(BackColor)/255 : g = Green(BackColor)/255 : b = Blue(BackColor)/255 : a = Bool(_drawing_mode_&#PB_2DDrawing_Transparent=0)
       Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
       CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSBackgroundColor")  
       
@@ -422,12 +460,13 @@ Module Macros
       Rect\size\height = height
       
       CocoaMessage(0, CocoaMessage(0, 0, "NSBezierPath bezierPathWithRect:@", @Rect), "setClip")
+      ;CocoaMessage(0, CocoaMessage(0, 0, "NSBezierPath bezierPathWithRect:@", @Rect), "addClip")
     EndProcedure
   CompilerEndIf
   
 EndModule 
 
 UseModule Macros
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -+--H-0-
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = -+-vH-v4
 ; EnableXP
