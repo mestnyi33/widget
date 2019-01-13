@@ -582,7 +582,7 @@ Module Widget
   
   Macro Resize_Childrens(_this_, _change_x_, _change_y_)
     ForEach _this_\Childrens()
-      Resize(_this_\Childrens(), (_this_\Childrens()\x-_this_\x-_this_\fs) + _change_x_, (_this_\Childrens()\y-_this_\y-_this_\fs) + _change_y_, #PB_Ignore, #PB_Ignore)
+      Resize(_this_\Childrens(), (_this_\Childrens()\x-_this_\x) - _change_x_, (_this_\Childrens()\y-_this_\y) - _change_y_, #PB_Ignore, #PB_Ignore)
     Next
   EndMacro
   
@@ -760,14 +760,117 @@ Module Widget
     EndWith
   EndProcedure
   
+  Procedure.i __Draw_Panel(*This.Widget_S, scroll_x,scroll_y)
+    Protected Alpha.i
+    
+    With *This 
+      Alpha = \color\alpha<<24
+      Protected x = \x
+      
+      ; 1 - frame
+      If \Color\Frame<>-1
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        RoundBox( scroll_x+\X, scroll_y+\Y+\Tab\Height/2, \Width, \Height-\Tab\Height/2, \Radius, \Radius, \Color\Frame&$FFFFFF|Alpha)
+      EndIf
+      
+      ForEach \Tabs()
+        Protected State_3,px=8,py=0
+        
+        State_3 = \Tabs()\Color\State
+        
+        If \Tabs()\Text\Change
+          \Tabs()\Text\width = TextWidth(\Tabs()\Text\String)
+          \Tabs()\Text\height = TextHeight("A")
+          
+          \Tabs()\x = x+px
+          \Tabs()\y = \y+py
+          \Tabs()\width = \Tabs()\Text\width+10
+          x + \Tabs()\width - 1
+        EndIf
+        
+        \Tabs()\Text\x = \Tabs()\x+5
+        \Tabs()\Text\y = \Tabs()\y+((\Tabs()\height-py-1)-\Tabs()\Text\height)/2
+        
+        ; Draw thumb  
+        If \Color\back[State_3]<>-1
+          If \Color\Fore[State_3]
+            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          EndIf
+          BoxGradient( \Vertical, scroll_x+\Tabs()\X, scroll_y+\Tabs()\Y, \Tabs()\Width, \Tabs()\Height-py, \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
+        EndIf
+        
+        ; Draw thumb frame
+        If \Color\Frame[State_3] 
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          RoundBox( scroll_x+\Tabs()\X, scroll_y+\Tabs()\Y, \Tabs()\Width, \Tabs()\Height-py, \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
+        EndIf
+        
+        ; Draw string
+        If \Tabs()\Text\String
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawText(scroll_x+\Tabs()\Text\x, scroll_y+\Tabs()\Text\y, \Tabs()\Text\String.s, \Color\Front[State_3]&$FFFFFF|Alpha)
+        EndIf
+        
+        ; Draw image
+        If \Tabs()\Image\handle
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawAlphaImage(\Tabs()\Image\handle, \Tabs()\Image\x, \Tabs()\Image\y, \color\alpha)
+        EndIf
+        
+        \Tabs()\Text\Change = 0
+      Next
+      
+      If \handle[2] And SelectElement(\Tabs(), \index[2])
+        State_3 = 2
+        
+        ; Draw thumb  
+        If \Color\back[State_3]<>-1
+          If \Color\Fore[State_3]
+            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          EndIf
+          BoxGradient( \Vertical, scroll_x+\Tabs()\X, scroll_y+\Tabs()\Y, \Tabs()\Width, \Tabs()\Height-py, \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
+        EndIf
+        
+        ; Draw thumb frame
+        If \Color\Frame[State_3] 
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          RoundBox( scroll_x+\Tabs()\X, scroll_y+\Tabs()\Y, \Tabs()\Width, \Tabs()\Height-py, \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
+          
+          ;           If State_3 = 2
+          ;             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          ;             RoundBox( scroll_x+\Tabs()\X+1, scroll_y+\Tabs()\Y+1, \Tabs()\Width-2, \Tabs()\Height-py-2, \Radius, \Radius, \Color\Front[State_3]&$FFFFFF|Alpha)
+          ;           EndIf
+        EndIf
+        
+        ; Draw string
+        If \Tabs()\Text\String
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawText(scroll_x+\Tabs()\Text\x, scroll_y+\Tabs()\Text\y, \Tabs()\Text\String.s, \Color\Front[State_3]&$FFFFFF|Alpha)
+        EndIf
+        
+        ; Draw image
+        If \Tabs()\Image\handle
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawAlphaImage(\Tabs()\Image\handle, \Tabs()\Image\x, \Tabs()\Image\y, \color\alpha)
+        EndIf
+      EndIf
+      
+    EndWith
+  EndProcedure
+  
   Procedure.i Draw_Panel(*This.Widget_S, scroll_x,scroll_y)
     Protected Alpha.i
     
     With *This 
       Alpha = \color\alpha<<24
-      Protected sx,sw,x = \x
+      Protected sx, sw, x = \x
       Protected State_3,px=2,py
-      Protected start, stop
+      
+      ; 1 - frame
+      If \Color\Frame<>-1
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        RoundBox( scroll_x+\X, scroll_y+\Y+\Tab\Height+8, \Width, \Height-(\Tab\Height+8), \Radius, \Radius, \Color\Frame&$FFFFFF|Alpha)
+      EndIf
       
       ClipOutput(\clip\x+\Tab\ButtonLen+3, \clip\y, \clip\width-\Tab\ButtonLen*2-6, \clip\height)
       
@@ -787,8 +890,8 @@ Module Widget
           \Tabs()\Text\height = TextHeight("A")
         EndIf
         
-        \Tabs()\y = scroll_y+\y+py
-        \Tabs()\x = scroll_x+x+px-\Tab\Page\Pos  + (\Tab\ButtonLen+1)
+        \Tabs()\y = \y+py
+        \Tabs()\x = x+px-\Tab\Page\Pos+\Tab\ButtonLen+1
         \Tabs()\width = \Tabs()\Text\width+5+Bool(\Tabs()\Image\width) * (\Tabs()\Image\width+\Tabs()\Image\x[1]*2)+Bool(Not \Tabs()\Image\width) * 5
         x + \Tabs()\width + 1
         
@@ -801,8 +904,6 @@ Module Widget
         If \handle[2] = \Tabs()
           sx = \Tabs()\x
           sw = \Tabs()\width
-          start = Bool(\Tabs()\x<\Tab\Area\Pos+1 And \Tabs()\x+\Tabs()\width>\Tab\Area\Pos+1)*2
-          stop = Bool(\Tabs()\x<\Tab\Area\Pos+\Tab\Area\len-2 And \Tabs()\x+\Tabs()\width>\Tab\Area\Pos+\Tab\Area\len-2)*2
         EndIf
         
         ; Draw thumb  
@@ -810,68 +911,47 @@ Module Widget
           If \Color\Fore[State_3]
             DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
           EndIf
-          BoxGradient( \Vertical, \Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1-Bool(State_3 = 2)*(\Tabs()\Height-4), \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
-        EndIf
-        
-        ; Draw string
-        If \Tabs()\Text\String
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawText(\Tabs()\Text\x, \Tabs()\Text\y, \Tabs()\Text\String.s, \Color\Front[0]&$FFFFFF|Alpha)
-        EndIf
-        
-        ; Draw image
-        If \Tabs()\Image\handle
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\Tabs()\Image\handle, \Tabs()\Image\x, \Tabs()\Image\y, \color\alpha)
+          BoxGradient( \Vertical, scroll_x+\Tabs()\X, scroll_y+\Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1-Bool(State_3 = 2)*(\Tabs()\Height-4), \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
         EndIf
         
         ; Draw thumb frame
         If \Color\Frame[State_3] 
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          RoundBox( scroll_x+\Tabs()\X, scroll_y+\Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1, \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
           
           If State_3 = 2
-            Line(\Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, 1, \Color\Frame[State_3]&$FFFFFF|Alpha)
-            Line(\Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, 1, \Tabs()\Height-py-1, \Color\Frame[State_3]&$FFFFFF|Alpha)
-            Line(\Tabs()\X+\Tabs()\width-1, \Tabs()\Y+Bool(State_3 = 2)*2, 1, \Tabs()\Height-py-1, \Color\Frame[State_3]&$FFFFFF|Alpha)
-          Else
-            RoundBox( \Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1, \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
+            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+            Line( scroll_x+\Tabs()\X+1, scroll_y+\Tabs()\Y+1+\Tabs()\Height-py-1, \Tabs()\Width-2, 1, $FFFFFFFF)
           EndIf
+        EndIf
+        
+        ; Draw string
+        If \Tabs()\Text\String
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawText(scroll_x+\Tabs()\Text\x, scroll_y+\Tabs()\Text\y, \Tabs()\Text\String.s, \Color\Front[0]&$FFFFFF|Alpha)
+        EndIf
+        
+        ; Draw image
+        If \Tabs()\Image\handle
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawAlphaImage(\Tabs()\Image\handle, scroll_x+\Tabs()\Image\x, scroll_y+\Tabs()\Image\y, \color\alpha)
         EndIf
         
         \Tabs()\Text\Change = 0
       Next
       
-      If ListSize(\Tabs()) And SetAttribute(\Tab, #PB_Bar_Maximum, (\Tab\ButtonLen+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width))+2+1)
+      If SetAttribute(\Tab, #PB_Bar_Maximum, (\Tab\ButtonLen+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width))+2+1)
         \Tab\Step = \Tab\Thumb\len
       EndIf
       
       ClipOutput(\clip\x, \clip\y, \clip\width, \clip\height)
-      
-      ; Линии на концах 
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
       If Not IsStart(\Tab)
-        Line( scroll_x+\Tab\Area\Pos+1, scroll_y+\Tab\y+3, 1, \Tab\height-5+start, \Color\Frame[start]&$FFFFFF|Alpha)
+        Line( scroll_x+\x+\Tab\ButtonLen+3, scroll_y+\Tab\y-1, 1, \Tab\height+3+Bool(sx And sx<\x+\Tab\ButtonLen And sx+sw>\x+\Tab\ButtonLen)*2, \Color\Frame[Bool(sx And sx<\x+\Tab\ButtonLen And sx+sw>\x+\Tab\ButtonLen)*2]&$FFFFFF|Alpha)
       EndIf
       If Not IsStop(\Tab)
-        Line( scroll_x+(\Tab\Area\Pos+\Tab\Area\len-2), scroll_y+\Tab\y+3, 1, \Tab\height-5+stop, \Color\Frame[stop]&$FFFFFF|Alpha)
+        Line( scroll_x+\x+\width-\Tab\ButtonLen-3-1, scroll_y+\Tab\y-1, 1, \Tab\height+3+Bool(sx And sx<(scroll_x+\x+\width-\Tab\ButtonLen-3-1) And sx+sw>(scroll_x+\x+\width-\Tab\ButtonLen-3-1))*2, \Color\Frame[Bool(sx And sx<(scroll_x+\x+\width-\Tab\ButtonLen-3-1) And sx+sw>(scroll_x+\x+\width-\Tab\ButtonLen-3-1))*2]&$FFFFFF|Alpha)
       EndIf
-      
-      ; 1 - frame
-      If \Color\Frame<>-1
-        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        ;RoundBox( scroll_x+\X, scroll_y+\Y+\Tab\Height, \Width, \Height-\Tab\Height, \Radius, \Radius, \Color\Frame&$FFFFFF|Alpha)
-        Line(scroll_x+\X, scroll_y+\Y+\Tab\Height, \Tab\Area\Pos-\x, 1, \Color\Frame&$FFFFFF|Alpha)
-        
-        Line(scroll_x+\Tab\Area\Pos, scroll_y+\Y+\Tab\Height, sx-\Tab\Area\Pos, 1, \Color\Frame&$FFFFFF|Alpha)
-        Line(scroll_x+sx+sw, scroll_y+\Y+\Tab\Height, \width-((sx+sw)-\x), 1, \Color\Frame&$FFFFFF|Alpha)
-        
-        Line(scroll_x+\Tab\Area\Pos+\Tab\Area\len, scroll_y+\Y+\Tab\Height, \Tab\Area\Pos-\x, 1, \Color\Frame&$FFFFFF|Alpha)
-        
-        Line(scroll_x+\X, scroll_y+\Y+\Tab\Height, 1, \Height-\Tab\Height, \Color\Frame&$FFFFFF|Alpha)
-        Line(scroll_x+\X+\width-1, scroll_y+\Y+\Tab\Height, 1, \Height-\Tab\Height, \Color\Frame&$FFFFFF|Alpha)
-        Line(scroll_x+\X, scroll_y+\Y+\height-1, \width, 1, \Color\Frame&$FFFFFF|Alpha)
-      EndIf
-      
       
     EndWith
     
@@ -880,6 +960,30 @@ Module Widget
       Protected State_2 = \Color[2]\State
       
       If \ButtonLen
+        ; Draw buttons
+        If \Color[1]\back[State_1]<>-1
+          If \Color[1]\Fore[State_1]
+            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          EndIf
+          BoxGradient( \Vertical, scroll_x+\X[1], scroll_y+\Y[1], \Width[1], \Height[1], \Color[1]\Fore[State_1], \Color[1]\Back[State_1], \Radius, \color\alpha)
+        EndIf
+        If \Color[2]\back[State_2]<>-1
+          If \Color[2]\Fore[State_2]
+            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          EndIf
+          BoxGradient( \Vertical, scroll_x+\X[2], scroll_y+\Y[2], \Width[2], \Height[2], \Color[2]\Fore[State_2], \Color[2]\Back[State_2], \Radius, \color\alpha)
+        EndIf
+        
+        ; Draw buttons frame
+        If \Color[1]\Frame[State_1]
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          RoundBox( scroll_x+\X[1], scroll_y+\Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color[1]\Frame[State_1]&$FFFFFF|Alpha)
+        EndIf
+        If \Color[2]\Frame[State_2]
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          RoundBox( scroll_x+\X[2], scroll_y+\Y[2], \Width[2], \Height[2], \Radius, \Radius, \Color[2]\Frame[State_2]&$FFFFFF|Alpha)
+        EndIf
+        
         ; Draw arrows
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
         Arrow( scroll_x+\X[1]+( \Width[1]-\ArrowSize[1])/2, scroll_y+\Y[1]+( \Height[1]-\ArrowSize[1])/2, \ArrowSize[1], Bool( \Vertical),
@@ -888,6 +992,81 @@ Module Widget
         Arrow( scroll_x+\X[2]+( \Width[2]-\ArrowSize[2])/2, scroll_y+\Y[2]+( \Height[2]-\ArrowSize[2])/2, \ArrowSize[2], Bool( \Vertical)+2, 
                (Bool(Not IsStop(*This\Tab)) * \Color[2]\Front[State_2] + IsStop(*This\Tab) * \Color[2]\Frame[0])&$FFFFFF|Alpha, \ArrowType[2])
       EndIf
+    EndWith
+  EndProcedure
+  
+  Procedure.i _Draw_Panel(*This.Widget_S, scroll_x,scroll_y)
+    Protected Alpha.i
+    
+    With *This 
+      Alpha = \color\alpha<<24
+      Protected x = \x
+      
+      ForEach \Tabs()
+        Protected State_3,px=2,py
+        
+        If \handle[2] = \Tabs() ; \index[2] = ListIndex(\Tabs()) ; (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1])
+          State_3 = 2
+          ;px=0
+          py=0
+        Else
+          State_3 = \Tabs()\Color\State
+          py=4
+        EndIf
+        
+        
+        If \Tabs()\Text\Change
+          \Tabs()\Text\width = TextWidth(\Tabs()\Text\String)
+          \Tabs()\Text\height = TextHeight("A")
+        EndIf
+        
+        \Tabs()\x = x+px
+        \Tabs()\y = \y+py
+        \Tabs()\width = \Tabs()\Text\width+10
+        x + \Tabs()\width + 1
+        
+        \Tabs()\Text\x = \Tabs()\x+5
+        \Tabs()\Text\y = \Tabs()\y+((\Tabs()\height-py-1+Bool(State_3 = 2)*3)-\Tabs()\Text\height)/2
+        
+        ; Draw thumb  
+        If \Color\back[State_3]<>-1
+          If \Color\Fore[State_3]
+            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          EndIf
+          BoxGradient( \Vertical, scroll_x+\Tabs()\X, scroll_y+\Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1, \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
+        EndIf
+        
+        ; Draw thumb frame
+        If \Color\Frame[State_3] 
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          RoundBox( scroll_x+\Tabs()\X, scroll_y+\Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1, \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
+        EndIf
+        
+        ; Draw string
+        If \Tabs()\Text\String
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawText(scroll_x+\Tabs()\Text\x, scroll_y+\Tabs()\Text\y, \Tabs()\Text\String.s, \Color\Front[State_3]&$FFFFFF|Alpha)
+        EndIf
+        
+        ; Draw image
+        If \Tabs()\Image\handle
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawAlphaImage(\Tabs()\Image\handle, \Tabs()\Image\x, \Tabs()\Image\y, \color\alpha)
+        EndIf
+        
+        \Tabs()\Text\Change = 0
+      Next
+      
+      
+      ; 1 - frame
+      If \Color\Frame<>-1
+        ;         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        ;         RoundBox( scroll_x+\X, scroll_y+\Y, \Width, \Height, \Radius, \Radius, \Color\Frame&$FFFFFF|Alpha)
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        RoundBox( scroll_x+\X, scroll_y+\Y+\Tab\Height, \Width, \Height-\Tab\Height, \Radius, \Radius, \Color\Frame&$FFFFFF|Alpha)
+        ; Line(scroll_x+\Text\x+5, scroll_y+\Y+\Tab\Height, \Text\width+6, 1)
+      EndIf
+      
     EndWith
   EndProcedure
   
@@ -1376,7 +1555,7 @@ Module Widget
       \Tabs()\Focus =- 1
       \Tabs()\Text\String = Text.s
       \Tabs()\Text\Change = 1
-      \Tabs()\height = \Tab\Height
+      \Tabs()\height = \Tab\Height+8
       
       If IsImage(Image)
         \Tabs()\Image\change = 1
@@ -1464,16 +1643,14 @@ Module Widget
                 If \p\s
                   If \Vertical
                     \p\s\y =- \Page\Pos
-;                     ForEach \p\Childrens()
-;                       Resize(\p\Childrens(),#PB_Ignore, (\p\Childrens()\y-\p\y-\p\fs)+\Change,#PB_Ignore, #PB_Ignore)
-;                     Next
-                    Resize_Childrens(\p, 0, \Change)
+                    ForEach \p\Childrens()
+                      Resize(\p\Childrens(),#PB_Ignore, (\p\Childrens()\y-\p\y)+\Change,#PB_Ignore, #PB_Ignore)
+                    Next
                   Else
                     \p\s\x =- \Page\Pos
-;                     ForEach \p\Childrens()
-;                       Resize(\p\Childrens(),(\p\Childrens()\x-\p\x-\p\fs)+\Change,#PB_Ignore, #PB_Ignore, #PB_Ignore)
-;                     Next
-                    Resize_Childrens(\p, \Change, 0)
+                    ForEach \p\Childrens()
+                      Resize(\p\Childrens(),(\p\Childrens()\x-\p\x)+\Change,#PB_Ignore, #PB_Ignore, #PB_Ignore)
+                    Next
                   EndIf
                 EndIf
               EndIf
@@ -1729,21 +1906,21 @@ Module Widget
       
       With *This
         If \p And X<>#PB_Ignore
-          x=\p\x+\p\fs+x
+          x=\p\x+x
         EndIf
         If \p And y<>#PB_Ignore
           If \p\Tab
-            Protected _p_tab_height = \p\Tab\Height
+            Protected _p_tab_height = \p\Tab\Height+8
           EndIf
           
-          y=\p\y+y+\p\fs+_p_tab_height
+          y=\p\y+y+_p_tab_height
         EndIf
         
         ; Set scroll bar coordinate
-        If X=#PB_Ignore : X = \X : Else : If \X <> X : Change_x = x-\x : \X = X : \Resize | 1<<1 : EndIf : EndIf  
-        If Y=#PB_Ignore : Y = \Y : Else : If \Y <> Y : Change_y = y-\y : \Y = Y : \Resize | 1<<2 : EndIf : EndIf  
-        If Width=#PB_Ignore : Width = \Width : Else : If \Width <> Width : Change_width = width-\width : \Width = Width : \Resize | 1<<3 : EndIf : EndIf  
-        If Height=#PB_Ignore : Height = \Height : Else : If \Height <> Height : Change_height = height-\height : \Height = Height : \Resize | 1<<4 : EndIf : EndIf 
+        If X=#PB_Ignore : X = \X : Else : If \X <> X : Change_x = \x-x : \X = X : \Resize | 1<<1 : EndIf : EndIf  
+        If Y=#PB_Ignore : Y = \Y : Else : If \Y <> Y : Change_y = \y-y : \Y = Y : \Resize | 1<<2 : EndIf : EndIf  
+        If Width=#PB_Ignore : Width = \Width : Else : If \Width <> Width : Change_width = \width-width : \Width = Width : \Resize | 1<<3 : EndIf : EndIf  
+        If Height=#PB_Ignore : Height = \Height : Else : If \Height <> Height : Change_height = \height-height : \Height = Height : \Resize | 1<<4 : EndIf : EndIf 
         
         If \Resize
           Lines = Bool(\Type=#PB_GadgetType_ScrollBar)
@@ -1808,12 +1985,12 @@ Module Widget
             If (\Type = #PB_GadgetType_Splitter)
               Resize_Splitter(*This)
             Else
-              Resizes(\s, 0,0,\Width-\fs*2,\Height-\fs*2)
+              Resizes(\s, 2,2,\Width-4,\Height-4)
             EndIf
           EndIf
           
           If \Tab
-            Resize(\Tab, 1,-\Tab\height,\Width-\fs*2-2,#PB_Ignore)
+            Resize(\Tab, 2,-\Tab\height-3,\Width-4,#PB_Ignore)
           EndIf   
           
           ;           If \anchor\id[1] : Resize(\anchor\id[1], \x-\anchor\Size+\anchor\Pos, \y+(\height-\anchor\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
@@ -1828,10 +2005,9 @@ Module Widget
           
           ; Resize childrens
           If ListSize(\Childrens())
-;             ForEach \Childrens()
-;               Resize(\Childrens(), (\Childrens()\x-\x-\fs)+Change_x,(\Childrens()\y-\y-\fs)+Change_y, #PB_Ignore, #PB_Ignore)
-;             Next
-            Resize_Childrens(*This, Change_x, Change_y)
+            ForEach \Childrens()
+              Resize(\Childrens(), (\Childrens()\x-\x)-Change_x,(\Childrens()\y-\y)-Change_y, #PB_Ignore, #PB_Ignore)
+            Next
           EndIf
           
           ; Draw clip coordinate
@@ -1843,14 +2019,10 @@ Module Widget
             Protected h=Bool(\p\height=\p\clip\height And Not \p\s\h\Hide And \p\s\h\type = #PB_GadgetType_ScrollBar)*(\p\s\h\height+2) : If Not h : h = \p\fs : EndIf
           EndIf
           
-          If \p And \x+\width>\p\clip\x+\p\clip\width-v : \clip\width = \p\clip\width-v-(\clip\x-\p\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
-          If \p And \y+\height>=\p\clip\y+\p\clip\height-h : \clip\height = \p\clip\height-h-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
+          If \p And \x+\width>\p\clip\x+\p\clip\width-v-\fs : \clip\width = \p\clip\width-v-\fs-(\clip\x-\p\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
+          If \p And \y+\height>=\p\clip\y+\p\clip\height-h-\fs : \clip\height = \p\clip\height-h-\fs-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
           
           
-;           \clip\x = \x
-;           \clip\y = \y
-;           \clip\width = \width
-;           \clip\height = \height
           
           ; ; ;           If \p And \x+\fs < \p\iclip\x
           ; ; ;             \iclip\x = \p\iclip\x
@@ -2202,11 +2374,6 @@ Module Widget
           MouseScreenY = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY)
         EndIf
         
-        ; Если виджет под скроллбаром родителя то выходим
-        If Bool(\p And \p\s And *This<>\p\s\v And \p\s\h<>*This And (\p\s\v\at Or \p\s\h\at))
-          ProcedureReturn
-        EndIf
-        
         If \Tab And \Tab\Type 
           CallBack(\Tab, EventType.i, MouseScreenX.i, MouseScreenY.i) 
           If \Tab\at=1 Or \Tab\at=2
@@ -2214,7 +2381,7 @@ Module Widget
           EndIf
         EndIf
         
-        If \s
+        If \s 
           ;If \Type <> #PB_GadgetType_Splitter
           ; childrens events
           If \s\v And \s\v\Type And (CallBack(\s\v, EventType.i, MouseScreenX.i, MouseScreenY.i) Or \s\v\at)
@@ -2534,8 +2701,6 @@ Module Widget
       \Color = Colors
       \color\alpha = 255
       
-      \fs = 1
-      
       If IsImage(Image)
         \Image\change = 1
         \Image\handle[1] = Image
@@ -2667,26 +2832,29 @@ Module Widget
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
-      \Tab = AllocateStructure(Widget_S)
-      \Tab\p = *This
-      \Tab\Radius = 19
-      \Tab\Height = 27
-      \Tab\ButtonLen = 13 
-      \Tab\Page\len = Width
+      \Tab = Bar(#PB_GadgetType_ScrollBar, x+2,y+5,Width-4,18, 0, 0, Width, 0, 19) : \Tab\p = *This ; AllocateStructure(Bar_S)
+                                                                                                    ;\Tab\Color\Alpha = 128
+      \Tab\ArrowType[1] = 1
+      \Tab\ArrowType[2] = 1
+      ;       \Tab\ArrowSize[1] = 7
+      ;       \Tab\ArrowSize[2] = 5
+      \Tab\ButtonLen = 9
+;       \Tab\Color\Back =- 1
+;       \Tab\Color\Line =- 1
+;       \Tab\Color[3]\Back =- 1
+;       \Tab\Color[3]\Fore =- 1
+;       \Tab\Color[3]\Front =- 1
+;       \Tab\Color[3]\Frame =- 1
+;       \Tab\Color[3]\Back[1] =- 1
+;       \Tab\Color[3]\Fore[1] =- 1
+;       \Tab\Color[3]\Front[1] =- 1
+;       \Tab\Color[3]\Frame[1] =- 1
+;       \Tab\Color[3]\Back[2] =- 1
+;       \Tab\Color[3]\Fore[2] =- 1
+;       \Tab\Color[3]\Front[2] =- 1
+;       \Tab\Color[3]\Frame[2] =- 1
       
-      \Tab\ArrowSize[1] = 6
-      \Tab\ArrowSize[2] = 6
-      \Tab\ArrowType[1] =- 1
-      \Tab\ArrowType[2] =- 1
-      \Tab\Color[1] = Colors
-      \Tab\Color[2] = Colors
-      
-      \Tab\color[0]\alpha = 255
-      \Tab\color[1]\alpha = 255
-      \Tab\color[2]\alpha = 255
-      
-      \Tab\Type = #PB_GadgetType_ScrollBar
-      
+      ;\Tab\Height = 27
       \fs = 1
       
       Resize(*This, X.i,Y.i,Width.i,Height)
@@ -2767,7 +2935,7 @@ EndMacro
 
 
 ;- EXAMPLE
-CompilerIf #PB_Compiler_IsMainFile ;= 100
+CompilerIf #PB_Compiler_IsMainFile = 100
   EnableExplicit
   UseModule Widget
   
@@ -2919,7 +3087,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
       *Scroll_1.Widget_S  = Image(0, 0, 0, 0, 0); : SetState(*Scroll_1, 1) 
-      *Scroll_2.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : SetState(*Scroll_2\s\h, 45) : CloseList()
+      *Scroll_2.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : SetState(*Scroll_2\s\h, 45)
       *Scroll_3.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_3, 50)
       
       *Bar_0 = Splitter(10, 10, 360,  330, *Scroll_1, *Scroll_2)
@@ -2929,7 +3097,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       *child_1.Widget_S  = Progress(10, 40, 100, 20, 0,200,100) : SetState(*child_1, 50)
       *child_2.Widget_S  = Progress(10, 70, 100, 20, 0,200,100) : SetState(*child_2, 80)
       
-      *ScrollArea.Widget_S  = ScrollArea(50, 50, 150, 150, 250,250) : CloseList() : SetParent(*ScrollArea, *Scroll_2)
+      *ScrollArea.Widget_S  = ScrollArea(50, 50, 150, 150, 250,250) : SetParent(*ScrollArea, *Scroll_2)
       
       SetParent(*child_0, *Scroll_2)
       SetParent(*child_1, *ScrollArea)
@@ -3151,10 +3319,7 @@ CompilerIf #PB_Compiler_IsMainFile
     IPAddressGadget(#PB_GadgetType_IPAddress, 170, 305, 160,70 ) : SetGadgetState(#PB_GadgetType_IPAddress, MakeIPAddress(1, 2, 3, 4))                                                                     ; ok
     Widgets(Str(#PB_GadgetType_ProgressBar)) = Progress(170, 380, 160,70,0,100) : SetState(Widgets(Str(#PB_GadgetType_ProgressBar)), 50)
     Widgets(Str(#PB_GadgetType_ScrollBar)) = Scroll(170, 455, 160,70,0,100,20) : SetState(Widgets(Str(#PB_GadgetType_ScrollBar)), 40)
-    Widgets(Str(#PB_GadgetType_ScrollArea)) = ScrollArea(170, 530, 160,70,180,90,1,#PB_ScrollArea_Flat ) 
-    Widgets(Str(201)) = Button(10, 10, 110,20, "ScrollArea_201_"+Str(#PB_GadgetType_ScrollArea) ) 
-    Widgets(Str(202)) = Button(70, 70, 110,20, "Button_202" ) 
-    CloseList() ;: SetParent(Widgets(Str(201)), Widgets(Str(#PB_GadgetType_ScrollArea)))
+    Widgets(Str(#PB_GadgetType_ScrollArea)) = ScrollArea(170, 530, 160,70,180,90,1,#PB_ScrollArea_Flat ) : Widgets(Str(201)) = Button(10, 10, 100,20, "ScrollAreaGadget_"+Str(#PB_GadgetType_ScrollArea) ) : CloseList() ;: SetParent(Widgets(Str(201)), Widgets(Str(#PB_GadgetType_ScrollArea)))
     
     Widgets(Str(#PB_GadgetType_TrackBar)) = Track(335, 5, 160,70,0,100) : SetState(Widgets(Str(#PB_GadgetType_TrackBar)), 50)
     WebGadget(#PB_GadgetType_Web, 335, 80, 160,70,"" )
@@ -3193,7 +3358,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ScintillaGadget(#PB_GadgetType_Scintilla, 500, 455, 160,70,0 )
     ShortcutGadget(#PB_GadgetType_Shortcut, 500, 530, 160,70 ,-1)
     
-    Define i
     For i=1 To 33
       If IsGadget(i) : Clip(i) : EndIf
     Next
@@ -3207,5 +3371,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------1-----------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------
 ; EnableXP
