@@ -9,18 +9,6 @@
 UseModule Widget
 
 Global Window_0, Canvas_0, winBackColor = $FFFFFF
-
-Global *splitter_0.Widget_S
-Global *splitter_1.Widget_S
-Global *Panel_0.Widget_S
-Global *Panel_1.Widget_S
-Global *Tree_0.Widget_S
-Global *Tree_1.Widget_S
-Global *Tree_2.Widget_S
-Global *Tree_3.Widget_S
-Global *Form_0.Widget_S
-Global *Editor_0.Widget_S
-
 Global NewMap Widgets.i()
 
 Procedure ReDraw(Canvas)
@@ -40,7 +28,7 @@ Procedure ReDraw(Canvas)
   EndIf
 EndProcedure
 
-Procedure CallBacks()
+Procedure Canvas_0_CallBack()
   Protected Repaint, *This.Widget_S
   Protected Canvas = EventGadget()
   Protected Width = GadgetWidth(Canvas)
@@ -51,7 +39,8 @@ Procedure CallBacks()
   
   Select EventType()
       ;Case #PB_EventType_Repaint : Repaint = EventData()
-    Case #PB_EventType_Resize : Repaint = EventData()
+    Case #PB_EventType_Resize : Repaint = 1
+      Resize(Widgets("Splitter_1"), #PB_Ignore, #PB_Ignore, Width-2, Height-2)
     Default
       
       If EventType() = #PB_EventType_LeftButtonDown
@@ -74,56 +63,49 @@ Procedure CallBacks()
   
 EndProcedure
 
-Procedure OpenWindow_0(x = 0, y = 0, width = 800, height = 600)
-  Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_SystemMenu)
+Procedure Window_0_Resize()
+  ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(Window_0)-20, WindowHeight(Window_0)-50)
+EndProcedure
+
+Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 600)
+  Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+  BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), Window_0)
   
   ; Demo draw widgets on the canvas
   Canvas_0 = CanvasGadget(#PB_Any,  10, 40, 780, 550, #PB_Canvas_Keyboard)
-  ; SetGadgetAttribute(Canvas_0, #PB_Canvas_Cursor, #PB_Cursor_Cross)
-  ; SetGadgetColor(Canvas_0, #PB_Gadget_BackColor, $6D6DD9)
-  BindGadgetEvent(Canvas_0, @CallBacks())
+  BindGadgetEvent(Canvas_0, @Canvas_0_CallBack())
   
-  *Panel_0 = Panel(0, 0, 0, 0) 
-  AddItem(*Panel_0, -1, "Code")
-  *Editor_0 = Button(0, 0, 180, 230, "Тут будут строки кода")
-  AddItem(*Panel_0, -1, "Form")
-  *Form_0 = Container(20, 20, 210, 210) 
+  Widgets("Panel_0") = Panel(0, 0, 0, 0) 
+  AddItem(Widgets("Panel_0"), -1, "Code")
+  Widgets("Editor_0") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Widget_AutoSize)
+  AddItem(Widgets("Panel_0"), -1, "Form")
+  Widgets("Form_0") = Container(20, 20, 210, 210) 
   CloseList()
   CloseList()
   
-  *Tree_0 = Button(0, 0, 80, 30, "Тут будет дерево элементов")
+  Widgets("Tree_0") = Text(0, 0, 80, 30, "Тут будет дерево элементов")
   
-  *Panel_1 = Panel(0, 0, 0, 0) 
-  AddItem(*Panel_1, -1, "Widgets")
-  *Tree_1 = Button(0, 0, 180, 30, "Тут будет список элементов")
-  AddItem(*Panel_1, -1, "Properties")
-  *Tree_3 = Button(0, 30, 180, 30, "Тут будет свойства элементов")
-  AddItem(*Panel_1, -1, "Events")
-  *Tree_4 = Button(0, 60, 180, 30, "Тут будет событие элементов")
+  Widgets("Panel_1") = Panel(0, 0, 0, 0) 
+  AddItem(Widgets("Panel_1"), -1, "Widgets")
+  Widgets("Tree_1") = Text(0, 0, 180, 30, "Тут будет список элементов", #PB_Widget_AutoSize)
+  AddItem(Widgets("Panel_1"), -1, "Properties")
+  Widgets("Tree_3") = Text(0, 30, 180, 30, "Тут будет свойства элементов", #PB_Widget_AutoSize)
+  AddItem(Widgets("Panel_1"), -1, "Events")
+  Widgets("Tree_4") = Text(0, 60, 180, 30, "Тут будет событие элементов", #PB_Widget_AutoSize)
   CloseList()
   
-  *splitter_0 = Splitter(1,1,778, 548, *Tree_0, *Panel_1)
-  *splitter_1 = Splitter(1,1,778, 548, *Panel_0, *splitter_0, #PB_Splitter_Vertical)
+  Widgets("Splitter_0") = Splitter(1,1,778, 548, Widgets("Tree_0"), Widgets("Panel_1"))
+  Widgets("Splitter_1") = Splitter(1,1,778, 548, Widgets("Panel_0"), Widgets("Splitter_0"), #PB_Splitter_Vertical)
   
-  SetState(*splitter_1, 550)
-  SetState(*splitter_0, 150)
+  SetState(Widgets("Splitter_1"), 550)
+  SetState(Widgets("Splitter_0"), 150)
   
-  Widgets("0") = *Editor_0
-  Widgets("1") = *Panel_0
-  Widgets("2") = *Panel_1
-  Widgets("3") = *Tree_0
-  Widgets("4") = *Tree_1
-  Widgets("5") = *Tree_2
-  Widgets("6") = *Tree_3
-  Widgets("7") = *splitter_0
-  Widgets("8") = *splitter_1
-  
-  ;    ;Editor::SetText(*Panel_0, "")
-  ;   Tree::AddItem(*Tree_0, -1, "Window_0")
+   ;    ;Editor::SetText(Widgets("Panel_0"), "")
+  ;   Tree::AddItem(Widgets("Tree_0"), -1, "Window_0")
   ;   
-  ;   Tree::AddItem(*Tree_1, -1, "Button")
-  ;   Tree::AddItem(*Tree_1, -1, "String")
-  ;   Tree::AddItem(*Tree_1, -1, "Text")
+  ;   Tree::AddItem(Widgets("Tree_1"), -1, "Button")
+  ;   Tree::AddItem(Widgets("Tree_1"), -1, "String")
+  ;   Tree::AddItem(Widgets("Tree_1"), -1, "Text")
   
   ReDraw(Canvas_0)
 EndProcedure
@@ -145,7 +127,7 @@ Procedure Window_0_Events(event)
   ProcedureReturn #True
 EndProcedure
 
-OpenWindow_0()
+Window_0_Open()
 
 Repeat
   Select WaitWindowEvent()
@@ -156,5 +138,5 @@ Repeat
   EndSelect
 ForEver
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = +--
 ; EnableXP

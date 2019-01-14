@@ -30,6 +30,8 @@ DeclareModule Widget
   
   ;- - Align_S
   Structure Align_S
+    Left.b
+    Top.b
     Right.b
     Bottom.b
     Vertical.b
@@ -177,6 +179,7 @@ DeclareModule Widget
     
     clip.Coordinate_S
     ; iclip.Coordinate_S
+    *Align.Align_S
   EndStructure
   
   ;- - Event_S
@@ -228,6 +231,8 @@ DeclareModule Widget
   #PB_Widget_SecondFixed = 1<<10
   #PB_Bar_FirstMinimumSize = 1<<11
   #PB_Widget_SecondMinimumSize = 1<<12
+  #PB_Widget_AutoSize = 1<<13
+  
   
   #PB_DisplayMode = 1<<13
   
@@ -321,6 +326,7 @@ DeclareModule Widget
   Declare.i Container(X.i,Y.i,Width.i,Height.i, Flag.i=0)
   Declare.i Frame(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
   Declare.i Panel(X.i,Y.i,Width.i,Height.i, Flag.i=0)
+  Declare.i Text(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
   
   Declare.i OpenList(*This.Widget_S, Item.i=-1)
   Declare.i CloseList()
@@ -455,6 +461,7 @@ Module Widget
   Macro ThumbPos(_this_, _scroll_pos_)
     (_this_\Area\Pos + Round((_scroll_pos_-_this_\Min) * (_this_\Area\len / (_this_\Max-_this_\Min)), #PB_Round_Nearest)) 
     : If _this_\Thumb\Pos < _this_\Area\Pos : _this_\Thumb\Pos = _this_\Area\Pos : EndIf 
+    : If _this_\Thumb\Pos > _this_\Area\Pos+_this_\Area\Len : _this_\Thumb\Pos = (_this_\Area\Pos+_this_\Area\Len)-_this_\Thumb\Len : EndIf 
     : If _this_\Vertical : _this_\Y[3] = _this_\Thumb\Pos : Else : _this_\X[3] = _this_\Thumb\Pos : EndIf
   EndMacro
   
@@ -687,7 +694,7 @@ Module Widget
         EndIf
       EndIf
       
-      If \ButtonLen
+      If \ButtonLen[1]
         ; Draw buttons
         If \Color[1]\back[State_1]<>-1
           If \Color[1]\Fore[State_1]
@@ -695,6 +702,21 @@ Module Widget
           EndIf
           BoxGradient( \Vertical, scroll_x+\X[1], scroll_y+\Y[1], \Width[1], \Height[1], \Color[1]\Fore[State_1], \Color[1]\Back[State_1], \Radius, \color\alpha)
         EndIf
+        
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        
+        ; Draw buttons frame
+        If \Color[1]\Frame[State_1]
+          RoundBox( scroll_x+\X[1], scroll_y+\Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color[1]\Frame[State_1]&$FFFFFF|Alpha)
+        EndIf
+        
+        ; Draw arrows
+        Arrow( scroll_x+\X[1]+( \Width[1]-\ArrowSize[1])/2, scroll_y+\Y[1]+( \Height[1]-\ArrowSize[1])/2, \ArrowSize[1], Bool( \Vertical),
+               (Bool(Not IsStart(*This)) * \Color[1]\Front[State_1] + IsStart(*This) * \Color[1]\Frame[0])&$FFFFFF|Alpha, \ArrowType[1])
+      EndIf
+      
+      If \ButtonLen[2]
+        ; Draw buttons
         If \Color[2]\back[State_2]<>-1
           If \Color[2]\Fore[State_2]
             DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
@@ -702,24 +724,16 @@ Module Widget
           BoxGradient( \Vertical, scroll_x+\X[2], scroll_y+\Y[2], \Width[2], \Height[2], \Color[2]\Fore[State_2], \Color[2]\Back[State_2], \Radius, \color\alpha)
         EndIf
         
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        
         ; Draw buttons frame
-        If \Color[1]\Frame[State_1]
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox( scroll_x+\X[1], scroll_y+\Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color[1]\Frame[State_1]&$FFFFFF|Alpha)
-        EndIf
         If \Color[2]\Frame[State_2]
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
           RoundBox( scroll_x+\X[2], scroll_y+\Y[2], \Width[2], \Height[2], \Radius, \Radius, \Color[2]\Frame[State_2]&$FFFFFF|Alpha)
         EndIf
         
         ; Draw arrows
-        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        Arrow( scroll_x+\X[1]+( \Width[1]-\ArrowSize[1])/2, scroll_y+\Y[1]+( \Height[1]-\ArrowSize[1])/2, \ArrowSize[1], Bool( \Vertical),
-               (Bool(Not IsStart(*This)) * \Color[1]\Front[State_1] + IsStart(*This) * \Color[1]\Frame[0])&$FFFFFF|Alpha, \ArrowType[1])
-        
         Arrow( scroll_x+\X[2]+( \Width[2]-\ArrowSize[2])/2, scroll_y+\Y[2]+( \Height[2]-\ArrowSize[2])/2, \ArrowSize[2], Bool( \Vertical)+2, 
                (Bool(Not IsStop(*This)) * \Color[2]\Front[State_2] + IsStop(*This) * \Color[2]\Frame[0])&$FFFFFF|Alpha, \ArrowType[2])
-        
       EndIf
       
       If \Thumb\len And \Color[3]\Fore[State_3]<>-1  ; Draw thumb lines
@@ -769,7 +783,7 @@ Module Widget
       Protected State_3,px=2,py
       Protected start, stop
       
-      ClipOutput(\clip\x+\Tab\ButtonLen+3, \clip\y, \clip\width-\Tab\ButtonLen*2-6, \clip\height)
+      ClipOutput(\clip\x+\Tab\ButtonLen[1]+3, \clip\y, \clip\width-\Tab\ButtonLen[1]-\Tab\ButtonLen[2]-6, \clip\height)
       
       ForEach \Tabs()
         If \handle[2] = \Tabs() ; \index[2] = ListIndex(\Tabs()) ; (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1])
@@ -788,7 +802,7 @@ Module Widget
         EndIf
         
         \Tabs()\y = scroll_y+\y+py
-        \Tabs()\x = scroll_x+x+px-\Tab\Page\Pos  + (\Tab\ButtonLen+1)
+        \Tabs()\x = scroll_x+x+px-\Tab\Page\Pos  + (\Tab\ButtonLen[1]+1)
         \Tabs()\width = \Tabs()\Text\width+5+Bool(\Tabs()\Image\width) * (\Tabs()\Image\width+\Tabs()\Image\x[1]*2)+Bool(Not \Tabs()\Image\width) * 5
         x + \Tabs()\width + 1
         
@@ -841,7 +855,7 @@ Module Widget
         \Tabs()\Text\Change = 0
       Next
       
-      If ListSize(\Tabs()) And SetAttribute(\Tab, #PB_Bar_Maximum, (\Tab\ButtonLen+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width)))
+      If ListSize(\Tabs()) And SetAttribute(\Tab, #PB_Bar_Maximum, (\Tab\ButtonLen[1]+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width)))
         \Tab\Step = \Tab\Thumb\len
       EndIf
       
@@ -879,7 +893,7 @@ Module Widget
       Protected State_1 = \Color[1]\State
       Protected State_2 = \Color[2]\State
       
-      If \ButtonLen
+      If \ButtonLen[1] Or \ButtonLen[2]
         ; Draw arrows
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
         Arrow( scroll_x+\X[1]+( \Width[1]-\ArrowSize[1])/2, scroll_y+\Y[1]+( \Height[1]-\ArrowSize[1])/2, \ArrowSize[1], Bool( \Vertical),
@@ -1009,13 +1023,13 @@ Module Widget
           EndIf
         EndIf
         
-        ;         If \Vertical
-        ;           ;Box(\x[3], \y[3]+\height[3]-\Thumb\len, \width[3], \Thumb\len, $FF0000)
-        ;           Box(X,Y,Width,Height/2,$0000FF)
-        ;         Else
-        ;           ;Box(\x[3]+\width[3]-\Thumb\len, \y[3], \Thumb\len, \height[3], $FF0000)
-        ;           Box(X,Y,Width/2,Height,$0000FF)
-        ;         EndIf
+                If \Vertical
+                  ;Box(\x[3], \y[3]+\height[3]-\Thumb\len, \width[3], \Thumb\len, $FF0000)
+                  Box(X,Y,Width,Height/2,$FF0000)
+                Else
+                  ;Box(\x[3]+\width[3]-\Thumb\len, \y[3], \Thumb\len, \height[3], $FF0000)
+                  Box(X,Y,Width/2,Height,$FF0000)
+                EndIf
       EndIf
       
     EndWith
@@ -1145,6 +1159,40 @@ Module Widget
     EndWith 
   EndProcedure
   
+  Procedure.i Draw_Text(*This.Widget_S, scroll_x,scroll_y)
+    With *This
+      Protected State_3 = \Color[3]\State
+      Protected Alpha = \color\alpha<<24
+      
+;       ; Draw thumb  
+;       If \Color\back[State_3]<>-1
+;         If \Color\Fore[State_3]
+;           DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+;         EndIf
+;         BoxGradient( \Vertical, scroll_x+\X, scroll_y+\Y, \Width, \Height, \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
+;       EndIf
+      
+      ; Draw thumb frame
+      If \Color\Frame[State_3] 
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        RoundBox( scroll_x+\X, scroll_y+\Y, \Width, \Height, \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
+      EndIf
+      
+      ; Draw string
+      If \Text\String
+        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+        DrawText(scroll_x+\Text\x, scroll_y+\Text\y, \Text\String.s, \Color\Front[State_3]&$FFFFFF|Alpha)
+      EndIf
+      
+      ; Draw image
+      If \Image\handle
+        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+        DrawAlphaImage(\Image\handle, \Image\x, \Image\y, \color\alpha)
+      EndIf
+      
+    EndWith 
+  EndProcedure
+  
   Procedure.i Draw(*This.Widget_S)
     Protected x,y
     
@@ -1156,6 +1204,9 @@ Module Widget
         EndIf
         
         If Not \hide And \color\alpha And \height>0 And \width>0
+         ;Debug \width[1]
+;           x = (Bool((\Align\Right Or \Align\Horizontal)) * (\width-\width)) / (\Align\Horizontal+1)
+;           y = (Bool((\Align\Bottom Or \Align\Vertical)) * (\height-\height)) / (\Align\Vertical+1)
           
           ; Text coordinate
           If \Text\String
@@ -1188,6 +1239,7 @@ Module Widget
           ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
           
           Select \Type
+            Case #PB_GadgetType_Text : Draw_Text(*This, x,y)
             Case #PB_GadgetType_Panel : Draw_Panel(*This, x,y)
             Case #PB_GadgetType_Frame : Draw_Frame(*This, x,y)
             Case #PB_GadgetType_Image : Draw_Image(*This, x,y)
@@ -1456,22 +1508,15 @@ Module Widget
               If \Type = #PB_GadgetType_Splitter
                 Resize_Splitter(*This)
               Else
-                
                 If \p
                   \p\Change = \Change
                   
                   If \p\s
                     If \Vertical
                       \p\s\y =- \Page\Pos
-                      ;                     ForEach \p\Childrens()
-                      ;                       Resize(\p\Childrens(),#PB_Ignore, (\p\Childrens()\y-\p\y-\p\fs)+\Change,#PB_Ignore, #PB_Ignore)
-                      ;                     Next
                       Resize_Childrens(\p, 0, \Change)
                     Else
                       \p\s\x =- \Page\Pos
-                      ;                     ForEach \p\Childrens()
-                      ;                       Resize(\p\Childrens(),(\p\Childrens()\x-\p\x-\p\fs)+\Change,#PB_Ignore, #PB_Ignore, #PB_Ignore)
-                      ;                     Next
                       Resize_Childrens(\p, \Change, 0)
                     EndIf
                   EndIf
@@ -1729,12 +1774,12 @@ Module Widget
       
       With *This
         If \p And X<>#PB_Ignore
-          x=\p\x+\p\fs+x
+          x=\p\x+x+\p\fs
         EndIf
         If \p And y<>#PB_Ignore
           y=\p\y+y+\p\TabHeight +\p\fs
         EndIf
-        
+            
         ; Set scroll bar coordinate
         If X=#PB_Ignore : X = \X : Else : If \X <> X : Change_x = x-\x : \X = X : \Resize | 1<<1 : EndIf : EndIf  
         If Y=#PB_Ignore : Y = \Y : Else : If \Y <> Y : Change_y = y-\y : \Y = Y : \Resize | 1<<2 : EndIf : EndIf  
@@ -1750,15 +1795,17 @@ Module Widget
             \ButtonLen[2] = \ButtonLen
           EndIf
           
-          If \Vertical
-            \Area\Pos = \Y+\ButtonLen[1]
-            \Area\len = \Height-(\ButtonLen[1]+\ButtonLen[2])
-          Else
-            \Area\Pos = \X+\ButtonLen[1]
-            \Area\len = \width-(\ButtonLen[1]+\ButtonLen[2])
+          If \Max
+            If \Vertical
+              \Area\Pos = \Y+\ButtonLen[1]
+              \Area\len = \Height-(\ButtonLen[1]+\ButtonLen[2]) - Bool(\Thumb\len>0 And (\Type = #PB_GadgetType_Splitter))*\Thumb\len
+            Else
+              \Area\Pos = \X+\ButtonLen[1]
+              \Area\len = \width-(\ButtonLen[1]+\ButtonLen[2]) - Bool(\Thumb\len>0 And (\Type = #PB_GadgetType_Splitter))*\Thumb\len
+            EndIf
           EndIf
           
-          If Bool(\Resize & (1<<4 | 1<<3))
+          If (\Type <> #PB_GadgetType_Splitter) And Bool(\Resize & (1<<4 | 1<<3))
             \Thumb\len = ThumbLength(*This)
             
             If (\Area\len > \ButtonLen)
@@ -1779,13 +1826,13 @@ Module Widget
           EndIf
           
           If \Area\len > 0
-            If IsStop(*This) And (\Type <> #PB_GadgetType_TrackBar)
+            If IsStop(*This) And (\Type = #PB_GadgetType_ScrollBar)
               SetState(*This, \Max)
             EndIf
             
             \Thumb\Pos = ThumbPos(*This, \Page\Pos)
           EndIf
-          
+            
           If \Vertical
             If \ButtonLen
               \X[1] = X + Lines : \Y[1] = Y : \Width[1] = Width - Lines : \Height[1] = \ButtonLen[1]                       ; Top button coordinate on scroll bar
@@ -1799,6 +1846,7 @@ Module Widget
             EndIf
             \Y[3] = Y + Lines : \Height[3] = Height - Lines : \X[3] = \Thumb\Pos : \Width[3] = \Thumb\len                  ; Thumb coordinate on scroll bar
           EndIf
+          
         EndIf 
         ;           If \Type = #PB_GadgetType_Panel
         ;             Debug \width
@@ -1818,7 +1866,7 @@ Module Widget
         
         If \p And \x+\width>\p\clip\x+\p\clip\width-v-\p\fs : \clip\width = \p\clip\width-v-\p\fs-(\clip\x-\p\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
         If \p And \y+\height>=\p\clip\y+\p\clip\height-h-\p\fs : \clip\height = \p\clip\height-h-\p\fs-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
-        
+       
         If \Resize
           If \s 
             If (\Type = #PB_GadgetType_Splitter)
@@ -1835,7 +1883,14 @@ Module Widget
           
           ; Resize childrens
           If ListSize(\Childrens())
-            Resize_Childrens(*This, Change_x, Change_y)
+            ForEach \Childrens()
+              If \Childrens()\Align
+                Resize(\Childrens(), (\Childrens()\x-\x-\fs) + Change_x, (\Childrens()\y-\y-\fs-\TabHeight) + Change_y, width, \height)
+              Else
+                Resize(\Childrens(), (\Childrens()\x-\x-\fs) + Change_x, (\Childrens()\y-\y-\fs-\TabHeight) + Change_y, #PB_Ignore, #PB_Ignore)
+              EndIf
+            Next
+            ;Resize_Childrens(*This, Change_x, Change_y)
           EndIf
         EndIf
         
@@ -2326,6 +2381,16 @@ Module Widget
       \color[2]\alpha[1] = 128
       \color[3]\alpha[1] = 128
       
+      If Flag&#PB_Widget_AutoSize
+        x=0
+        y=0
+        \Align = AllocateStructure(Align_S)
+        \Align\Left = 1
+        \Align\Top = 1
+        \Align\Right = 1
+        \Align\Bottom = 1
+      EndIf
+      
       If Not Bool(Flag&#PB_Bar_NoButtons)
         If \Vertical
           If width < 21
@@ -2390,6 +2455,7 @@ Module Widget
       \s\h = Second
       
       \Type = #PB_GadgetType_Splitter
+      \Thumb\len = 7
       
       *Bar = \s\v 
       ; thisis bar
@@ -2425,6 +2491,16 @@ Module Widget
       \color\alpha = 255
       
       \fs = 1
+      
+      If Flag&#PB_Widget_AutoSize
+        x=0
+        y=0
+        \Align = AllocateStructure(Align_S)
+        \Align\Left = 1
+        \Align\Top = 1
+        \Align\Right = 1
+        \Align\Bottom = 1
+      EndIf
       
       If IsImage(Image)
         \Image\change = 1
@@ -2465,6 +2541,16 @@ Module Widget
       \Text\Align\Vertical = 1
       \Text\Align\Horizontal = 1
       
+      If Flag&#PB_Widget_AutoSize
+        x=0
+        y=0
+        \Align = AllocateStructure(Align_S)
+        \Align\Left = 1
+        \Align\Top = 1
+        \Align\Right = 1
+        \Align\Bottom = 1
+      EndIf
+      
       If IsImage(Image)
         \Image\handle[1] = Image
         \Image\handle = ImageID(Image)
@@ -2473,6 +2559,44 @@ Module Widget
         
         \Image\Align\Vertical = 1
         \Image\Align\Horizontal = 1
+      EndIf
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+      
+      ; Set parent
+      If LastElement(*openedlist())
+        If LastElement(*openedlist()\Tabs())
+          SetParent(*This, *openedlist(), ListIndex(*openedlist()\Tabs()))
+        Else
+          SetParent(*This, *openedlist(), 0)
+        EndIf
+      EndIf
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Text(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    
+    With *This
+      \Type = #PB_GadgetType_Text
+      \Color = Colors
+      \color\alpha = 255
+      
+      \Text\String = Text.s
+      \Text\Change = 1
+      \Text\x[1] = 5
+      \Text\y[2] = 5
+      
+      If Flag&#PB_Widget_AutoSize
+        x=0
+        y=0
+        \Align = AllocateStructure(Align_S)
+        \Align\Left = 1
+        \Align\Top = 1
+        \Align\Right = 1
+        \Align\Bottom = 1
       EndIf
       
       Resize(*This, X.i,Y.i,Width.i,Height)
@@ -2501,6 +2625,16 @@ Module Widget
       \Color\Back = $FFF9F9F9
       
       \fs = 2
+      
+      If Flag&#PB_Widget_AutoSize
+        x=0
+        y=0
+        \Align = AllocateStructure(Align_S)
+        \Align\Left = 1
+        \Align\Top = 1
+        \Align\Right = 1
+        \Align\Bottom = 1
+      EndIf
       
       \s\v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,ScrollAreaHeight,Height, #PB_Bar_Vertical, 7) : \s\v\p = *This
       \s\h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,ScrollAreaWidth,Width, 0, 7) : \s\h\p = *This
@@ -2531,6 +2665,16 @@ Module Widget
       \Color\Back = $FFF9F9F9
       
       \fs = 1
+      
+      If Flag&#PB_Widget_AutoSize
+        x=0
+        y=0
+        \Align = AllocateStructure(Align_S)
+        \Align\Left = 1
+        \Align\Top = 1
+        \Align\Right = 1
+        \Align\Bottom = 1
+      EndIf
       
       Resize(*This, X.i,Y.i,Width.i,Height)
       
@@ -2580,6 +2724,16 @@ Module Widget
       
       \fs = 1
       
+      If Flag&#PB_Widget_AutoSize
+        x=0
+        y=0
+        \Align = AllocateStructure(Align_S)
+        \Align\Left = 1
+        \Align\Top = 1
+        \Align\Right = 1
+        \Align\Bottom = 1
+      EndIf
+      
       Resize(*This, X.i,Y.i,Width.i,Height)
       
       ; Set parent
@@ -2607,6 +2761,16 @@ Module Widget
       
       \Text\String = Text.s
       \Text\Change = 1
+      
+      If Flag&#PB_Widget_AutoSize
+        x=0
+        y=0
+        \Align = AllocateStructure(Align_S)
+        \Align\Left = 1
+        \Align\Top = 1
+        \Align\Right = 1
+        \Align\Bottom = 1
+      EndIf
       
       Resize(*This, X.i,Y.i,Width.i,Height)
       
@@ -2814,7 +2978,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       ; *Scroll_3.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_3, 50)
       *Scroll_3.Widget_S = Panel(1, 1, 548, 548) 
       AddItem(*Scroll_3, -1, "Panel_0")
-      Button(10,20,250,135, "butt_1") 
+      Button(10,20,250,135, "butt_0", -1, #PB_Widget_AutoSize) 
       AddItem(*Scroll_3, -1, "Panel_1")
       Container(10,10,150,55,#PB_Container_Flat) 
       Hide(Container(-10,-10,150,55,#PB_Container_Flat), 1)  
@@ -3118,5 +3282,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------v---------------------------------
+; Folding = ---------------------------------------------------------------------------
 ; EnableXP
