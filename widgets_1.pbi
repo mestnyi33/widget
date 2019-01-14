@@ -1981,6 +1981,18 @@ Module Widget
             \Y[3] = Y + Lines : \Height[3] = Height - Lines : \X[3] = \Thumb\Pos : \Width[3] = \Thumb\len                  ; Thumb coordinate on scroll bar
           EndIf
           
+          ; Draw clip coordinate
+          If \p And \x < \p\clip\x+\p\fs : \clip\x = \p\clip\x+\p\fs : Else : \clip\x = \x : EndIf
+          If \p And \y < \p\clip\y+\p\fs+_p_tab_height : \clip\y = \p\clip\y+\p\fs+_p_tab_height : Else : \clip\y = \y : EndIf
+          
+          If \p And \p\s
+            Protected v=Bool(\p\width=\p\clip\width And Not \p\s\v\Hide And \p\s\v\type = #PB_GadgetType_ScrollBar)*(\p\s\v\width+2) ;: If Not v : v = \p\fs : EndIf
+            Protected h=Bool(\p\height=\p\clip\height And Not \p\s\h\Hide And \p\s\h\type = #PB_GadgetType_ScrollBar)*(\p\s\h\height+2) ;: If Not h : h = 0 : EndIf
+          EndIf
+          
+          If \p And \x+\width>\p\clip\x+\p\clip\width-v-\p\fs : \clip\width = \p\clip\width-v-\p\fs-(\clip\x-\p\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
+          If \p And \y+\height>=\p\clip\y-\p\fs+\p\clip\height-h : \clip\height = \p\clip\height-h-(\clip\y-(\p\clip\y-\p\fs)) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
+          
           If \s 
             If (\Type = #PB_GadgetType_Splitter)
               Resize_Splitter(*This)
@@ -2010,19 +2022,13 @@ Module Widget
             Next
           EndIf
           
-          ; Draw clip coordinate
-          If \p And \x < \p\clip\x+\p\fs : \clip\x = \p\clip\x+\p\fs : Else : \clip\x = \x : EndIf
-          If \p And \y < \p\clip\y+\p\fs+_p_tab_height : \clip\y = \p\clip\y+\p\fs+_p_tab_height : Else : \clip\y = \y : EndIf
-          
-          If \p And \p\s
-            Protected v=Bool(\p\width=\p\clip\width And Not \p\s\v\Hide And \p\s\v\type = #PB_GadgetType_ScrollBar)*(\p\s\v\width+2) : If Not v : v = \p\fs : EndIf
-            Protected h=Bool(\p\height=\p\clip\height And Not \p\s\h\Hide And \p\s\h\type = #PB_GadgetType_ScrollBar)*(\p\s\h\height+2) : If Not h : h = \p\fs : EndIf
-          EndIf
-          
-          If \p And \x+\width>\p\clip\x+\p\clip\width-v-\fs : \clip\width = \p\clip\width-v-\fs-(\clip\x-\p\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
-          If \p And \y+\height>=\p\clip\y+\p\clip\height-h-\fs : \clip\height = \p\clip\height-h-\fs-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
           
           
+          
+;           \clip\x = \x
+;           \clip\y = \y
+;           \clip\width = \width
+;           \clip\height = \height
           
           ; ; ;           If \p And \x+\fs < \p\iclip\x
           ; ; ;             \iclip\x = \p\iclip\x
@@ -2935,7 +2941,7 @@ EndMacro
 
 
 ;- EXAMPLE
-CompilerIf #PB_Compiler_IsMainFile = 100
+CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
   UseModule Widget
   
@@ -3086,8 +3092,21 @@ CompilerIf #PB_Compiler_IsMainFile = 100
       CanvasGadget(1, 10,10, 380, 350, #PB_Canvas_Keyboard|#PB_Canvas_Container)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
-      *Scroll_1.Widget_S  = Image(0, 0, 0, 0, 0); : SetState(*Scroll_1, 1) 
-      *Scroll_2.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : SetState(*Scroll_2\s\h, 45)
+      *Scroll_1.Widget_S = Panel(1, 1, 548, 548) 
+      AddItem(*Scroll_1, -1, "Panel_0")
+      Container(10,10,150,55,#PB_Container_Flat) 
+      Container(10,10,150,55,#PB_Container_Flat) 
+      Button(10,10,50,35, "butt") 
+      CloseList()
+      CloseList()
+      AddItem(*Scroll_1, -1, "Panel_1")
+      AddItem(*Scroll_1, -1, "Panel_2")
+      AddItem(*Scroll_1, -1, "Panel_3")
+      AddItem(*Scroll_1, -1, "Panel_4")
+      CloseList()
+      
+      ;*Scroll_1.Widget_S  = Image(0, 0, 0, 0, 0); : SetState(*Scroll_1, 1) 
+      *Scroll_2.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : SetState(*Scroll_2\s\h, 45) : CloseList()
       *Scroll_3.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_3, 50)
       
       *Bar_0 = Splitter(10, 10, 360,  330, *Scroll_1, *Scroll_2)
@@ -3097,7 +3116,7 @@ CompilerIf #PB_Compiler_IsMainFile = 100
       *child_1.Widget_S  = Progress(10, 40, 100, 20, 0,200,100) : SetState(*child_1, 50)
       *child_2.Widget_S  = Progress(10, 70, 100, 20, 0,200,100) : SetState(*child_2, 80)
       
-      *ScrollArea.Widget_S  = ScrollArea(50, 50, 150, 150, 250,250) : SetParent(*ScrollArea, *Scroll_2)
+      *ScrollArea.Widget_S  = ScrollArea(50, 50, 150, 150, 250,250) : CloseList() : SetParent(*ScrollArea, *Scroll_2)
       
       SetParent(*child_0, *Scroll_2)
       SetParent(*child_1, *ScrollArea)
@@ -3357,7 +3376,7 @@ CompilerIf #PB_Compiler_IsMainFile
     InitScintilla()
     ScintillaGadget(#PB_GadgetType_Scintilla, 500, 455, 160,70,0 )
     ShortcutGadget(#PB_GadgetType_Shortcut, 500, 530, 160,70 ,-1)
-    
+    Define i
     For i=1 To 33
       If IsGadget(i) : Clip(i) : EndIf
     Next

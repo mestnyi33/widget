@@ -309,7 +309,7 @@ DeclareModule Widget
   Declare.i CallBack(*This.Widget_S, EventType.i, mouseX=0, mouseY=0)
   Declare.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.i Resize(*This.Widget_S, iX.i,iY.i,iWidth.i,iHeight.i);, *That.Widget_S=#Null)
-  
+  Declare.i Hide(*This.Widget_S, State.i)
   
   Declare.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
   Declare.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
@@ -582,7 +582,7 @@ Module Widget
   
   Macro Resize_Childrens(_this_, _change_x_, _change_y_)
     ForEach _this_\Childrens()
-      Resize(_this_\Childrens(), (_this_\Childrens()\x-_this_\x-_this_\fs) + _change_x_, (_this_\Childrens()\y-_this_\y-_this_\fs) + _change_y_, #PB_Ignore, #PB_Ignore)
+      Resize(_this_\Childrens(), (_this_\Childrens()\x-_this_\x-_this_\fs) + _change_x_, (_this_\Childrens()\y-_this_\y-_this_\fs-_this_\TabHeight) + _change_y_, #PB_Ignore, #PB_Ignore)
     Next
   EndMacro
   
@@ -841,7 +841,7 @@ Module Widget
         \Tabs()\Text\Change = 0
       Next
       
-      If ListSize(\Tabs()) And SetAttribute(\Tab, #PB_Bar_Maximum, (\Tab\ButtonLen+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width))+2+1)
+      If ListSize(\Tabs()) And SetAttribute(\Tab, #PB_Bar_Maximum, (\Tab\ButtonLen+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width)))
         \Tab\Step = \Tab\Thumb\len
       EndIf
       
@@ -893,7 +893,6 @@ Module Widget
   
   Procedure.i Draw_Progress(*This.Widget_S, scroll_x,scroll_y)
     With *This 
-      
       ; Draw progress
       If \Vertical
         DrawingMode(#PB_2DDrawing_Default)
@@ -1146,22 +1145,6 @@ Module Widget
     EndWith 
   EndProcedure
   
-  Procedure Draw_Childrens(*This.Widget_S)
-    With *This
-      If ListSize(\Childrens())
-        ForEach \Childrens()
-          If ListSize(\Childrens()\Childrens())
-            Draw_Childrens(\Childrens())
-          Else
-            ;               ClipOutput(\x+2,\y+2,\s\h\Page\len,\s\v\Page\len)
-            Draw(\Childrens())
-            ;               UnclipOutput()
-          EndIf
-        Next
-      EndIf
-    EndWith
-  EndProcedure
-  
   Procedure.i Draw(*This.Widget_S)
     Protected x,y
     
@@ -1172,8 +1155,9 @@ Module Widget
           \Text\height = TextHeight("A")
         EndIf
         
-        If Not \hide And \color\alpha And \Height>0 And \width>0
+        If Not \hide And \color\alpha And \height>0 And \width>0
           
+          ; Text coordinate
           If \Text\String
             \Text\x[1] = (Bool((\Text\Align\Right Or \Text\Align\Horizontal)) * (\width-\Text\width)) / (\Text\Align\Horizontal+1)
             \Text\y[1] = (Bool((\Text\Align\Bottom Or \Text\Align\Vertical)) * (\height-\Text\height)) / (\Text\Align\Vertical+1)
@@ -1182,7 +1166,7 @@ Module Widget
             \Text\x = \Text\x[1]+\x 
           EndIf
           
-          
+          ; Image coordinate
           If \Image\handle
             If (\Type = #PB_GadgetType_Image)
               \Image\x[1] = (Bool(\s\h\Page\len>\Image\width And (\Image\Align\Right Or \Image\Align\Horizontal)) * (\s\h\Page\len-\Image\width)) / (\Image\Align\Horizontal+1)
@@ -1299,17 +1283,30 @@ Module Widget
   EndProcedure
   
   ;-
-  Procedure Hide(*This.Widget_S, State.i)
+  Procedure.i Hides(*This.Widget_S, State.i)
     With *This
       If State
-        \Hide = \Hide[1]
+        \Hide = 1
       Else
-        \Hide = 0
+        \Hide = \Hide[1]
       EndIf
       
       If ListSize(\Childrens())
         ForEach \Childrens()
-          Hide(\Childrens(), State)
+          Hides(\Childrens(), State)
+        Next
+      EndIf
+    EndWith
+  EndProcedure
+  
+  Procedure.i Hide(*This.Widget_S, State.i)
+    With *This
+      \Hide = State
+      \Hide[1] = \Hide
+      
+      If ListSize(\Childrens())
+        ForEach \Childrens()
+          Hides(\Childrens(), State)
         Next
       EndIf
     EndWith
@@ -1325,6 +1322,8 @@ Module Widget
         
         \p = *Parent
         \Hide = Bool(Item > 0 Or \p\Hide)
+        
+        ;Debug ""+\Type +" "+ \p\Type +" "+ Item +" "+ \Hide
         
         If Item >= 0 And SelectElement(\p\Tabs(), Item)
           \pi = \p\Tabs()
@@ -1456,24 +1455,25 @@ Module Widget
               
               If \Type = #PB_GadgetType_Splitter
                 Resize_Splitter(*This)
-              EndIf
-              
-              If \p
-                \p\Change = \Change
+              Else
                 
-                If \p\s
-                  If \Vertical
-                    \p\s\y =- \Page\Pos
-;                     ForEach \p\Childrens()
-;                       Resize(\p\Childrens(),#PB_Ignore, (\p\Childrens()\y-\p\y-\p\fs)+\Change,#PB_Ignore, #PB_Ignore)
-;                     Next
-                    Resize_Childrens(\p, 0, \Change)
-                  Else
-                    \p\s\x =- \Page\Pos
-;                     ForEach \p\Childrens()
-;                       Resize(\p\Childrens(),(\p\Childrens()\x-\p\x-\p\fs)+\Change,#PB_Ignore, #PB_Ignore, #PB_Ignore)
-;                     Next
-                    Resize_Childrens(\p, \Change, 0)
+                If \p
+                  \p\Change = \Change
+                  
+                  If \p\s
+                    If \Vertical
+                      \p\s\y =- \Page\Pos
+                      ;                     ForEach \p\Childrens()
+                      ;                       Resize(\p\Childrens(),#PB_Ignore, (\p\Childrens()\y-\p\y-\p\fs)+\Change,#PB_Ignore, #PB_Ignore)
+                      ;                     Next
+                      Resize_Childrens(\p, 0, \Change)
+                    Else
+                      \p\s\x =- \Page\Pos
+                      ;                     ForEach \p\Childrens()
+                      ;                       Resize(\p\Childrens(),(\p\Childrens()\x-\p\x-\p\fs)+\Change,#PB_Ignore, #PB_Ignore, #PB_Ignore)
+                      ;                     Next
+                      Resize_Childrens(\p, \Change, 0)
+                    EndIf
                   EndIf
                 EndIf
               EndIf
@@ -1719,7 +1719,7 @@ Module Widget
   EndProcedure
   
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i);, *That.Widget_S=#Null)
-    Protected Lines.i, Change_x, Change_y, Change_width, Change_height
+    Protected Lines.i, hide.i, Change_x, Change_y, Change_width, Change_height
     
     If *This > 0
       If Not Bool(X=#PB_Ignore And Y=#PB_Ignore And Width=#PB_Ignore And Height=#PB_Ignore)
@@ -1732,11 +1732,7 @@ Module Widget
           x=\p\x+\p\fs+x
         EndIf
         If \p And y<>#PB_Ignore
-          If \p\Tab
-            Protected _p_tab_height = \p\Tab\Height
-          EndIf
-          
-          y=\p\y+y+\p\fs+_p_tab_height
+          y=\p\y+y+\p\TabHeight +\p\fs
         EndIf
         
         ; Set scroll bar coordinate
@@ -1747,7 +1743,7 @@ Module Widget
         
         If \Resize
           Lines = Bool(\Type=#PB_GadgetType_ScrollBar)
-          \hide[1] = Bool(Not ((\Max-\Min) > \Page\Len))
+          hide = Bool(\Page\len And Not ((\Max-\Min) > \Page\Len))
           
           If \ButtonLen
             \ButtonLen[1] = \ButtonLen
@@ -1803,7 +1799,27 @@ Module Widget
             EndIf
             \Y[3] = Y + Lines : \Height[3] = Height - Lines : \X[3] = \Thumb\Pos : \Width[3] = \Thumb\len                  ; Thumb coordinate on scroll bar
           EndIf
-          
+        EndIf 
+        ;           If \Type = #PB_GadgetType_Panel
+        ;             Debug \width
+        ;           EndIf
+        ;           If \p And \p\Type = #PB_GadgetType_Panel And \Type = #PB_GadgetType_Panel
+        ;             Debug ""+\Type +" "+ \clip\width
+        ;           EndIf
+        
+        ; Draw clip coordinate
+        If \p And \x < \p\clip\x+\p\fs : \clip\x = \p\clip\x+\p\fs : Else : \clip\x = \x : EndIf
+        If \p And \y < \p\clip\y+\p\fs+\p\TabHeight : \clip\y = \p\clip\y+\p\fs+\p\TabHeight : Else : \clip\y = \y : EndIf
+        
+        If \p And \p\s And \p\s\v And \p\s\h
+          Protected v=Bool(\p\width=\p\clip\width And Not \p\s\v\Hide And \p\s\v\type = #PB_GadgetType_ScrollBar)*(\p\s\v\width) ;: If Not v : v = \p\fs : EndIf
+          Protected h=Bool(\p\height=\p\clip\height And Not \p\s\h\Hide And \p\s\h\type = #PB_GadgetType_ScrollBar)*(\p\s\h\height) ;: If Not h : h = \p\fs : EndIf
+        EndIf
+        
+        If \p And \x+\width>\p\clip\x+\p\clip\width-v-\p\fs : \clip\width = \p\clip\width-v-\p\fs-(\clip\x-\p\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
+        If \p And \y+\height>=\p\clip\y+\p\clip\height-h-\p\fs : \clip\height = \p\clip\height-h-\p\fs-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
+        
+        If \Resize
           If \s 
             If (\Type = #PB_GadgetType_Splitter)
               Resize_Splitter(*This)
@@ -1813,85 +1829,17 @@ Module Widget
           EndIf
           
           If \Tab
-            Resize(\Tab, 1,-\Tab\height,\Width-\fs*2-2,#PB_Ignore)
+            \Tab\Page\len = \Width-\fs*2-2
+            Resize(\Tab, 1,-\Tab\height,\Tab\Page\len,#PB_Ignore)
           EndIf   
-          
-          ;           If \anchor\id[1] : Resize(\anchor\id[1], \x-\anchor\Size+\anchor\Pos, \y+(\height-\anchor\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
-          ;           If \anchor\id[2] : Resize(\anchor\id[2], \x+(\width-\anchor\Size)/2, \y-\anchor\Size+\anchor\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-          ;           If \anchor\id[3] : Resize(\anchor\id[3], \x+\width-\anchor\Pos, \y+(\height-\anchor\Size)/2, #PB_Ignore, #PB_Ignore) : EndIf
-          ;           If \anchor\id[4] : Resize(\anchor\id[4], \x+(\width-\anchor\Size)/2, \y+\height-\anchor\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-          ;           If \anchor\id[5] : Resize(\anchor\id[5], \x-\anchor\Size+\anchor\Pos, \y-\anchor\Size+\anchor\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-          ;           If \anchor\id[6] : Resize(\anchor\id[6], \x+\width-\anchor\Pos, \y-\anchor\Size+\anchor\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-          ;           If \anchor\id[7] : Resize(\anchor\id[7], \x+\width-\anchor\Pos, \y+\height-\anchor\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-          ;           If \anchor\id[8] : Resize(\anchor\id[8], \x-\anchor\Size+\anchor\Pos, \y+\height-\anchor\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-          ;           If \anchor\id[9] : Resize(\anchor\id[9], \x+(\anchor\Pos+2), \y-\anchor\Size+\anchor\Pos, #PB_Ignore, #PB_Ignore) : EndIf
           
           ; Resize childrens
           If ListSize(\Childrens())
-;             ForEach \Childrens()
-;               Resize(\Childrens(), (\Childrens()\x-\x-\fs)+Change_x,(\Childrens()\y-\y-\fs)+Change_y, #PB_Ignore, #PB_Ignore)
-;             Next
             Resize_Childrens(*This, Change_x, Change_y)
           EndIf
-          
-          ; Draw clip coordinate
-          If \p And \x < \p\clip\x+\p\fs : \clip\x = \p\clip\x+\p\fs : Else : \clip\x = \x : EndIf
-          If \p And \y < \p\clip\y+\p\fs+_p_tab_height : \clip\y = \p\clip\y+\p\fs+_p_tab_height : Else : \clip\y = \y : EndIf
-          
-          If \p And \p\s
-            Protected v=Bool(\p\width=\p\clip\width And Not \p\s\v\Hide And \p\s\v\type = #PB_GadgetType_ScrollBar)*(\p\s\v\width+2) : If Not v : v = \p\fs : EndIf
-            Protected h=Bool(\p\height=\p\clip\height And Not \p\s\h\Hide And \p\s\h\type = #PB_GadgetType_ScrollBar)*(\p\s\h\height+2) : If Not h : h = \p\fs : EndIf
-          EndIf
-          
-          If \p And \x+\width>\p\clip\x+\p\clip\width-v : \clip\width = \p\clip\width-v-(\clip\x-\p\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
-          If \p And \y+\height>=\p\clip\y+\p\clip\height-h : \clip\height = \p\clip\height-h-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
-          
-          
-;           \clip\x = \x
-;           \clip\y = \y
-;           \clip\width = \width
-;           \clip\height = \height
-          
-          ; ; ;           If \p And \x+\fs < \p\iclip\x
-          ; ; ;             \iclip\x = \p\iclip\x
-          ; ; ;           Else
-          ; ; ;             \iclip\x = \x+\fs
-          ; ; ;           EndIf
-          ; ; ;           
-          ; ; ;           If \p And \y+\fs < \p\iclip\y
-          ; ; ;             \iclip\y = \p\iclip\y
-          ; ; ;           Else
-          ; ; ;             \iclip\y = \y+\fs
-          ; ; ;           EndIf
-          ; ; ;           
-          ; ; ;           Protected iwidth, iheight
-          ; ; ;           If \s And \s\h\Page\len
-          ; ; ;             iwidth = \s\h\Page\len+\fs
-          ; ; ;           Else
-          ; ; ;             iwidth = \width+\fs
-          ; ; ;           EndIf
-          ; ; ;           
-          ; ; ;           If \s And \s\v\Page\len
-          ; ; ;             iheight= \s\v\Page\len+\fs
-          ; ; ;           Else
-          ; ; ;             iheight = \height+\fs
-          ; ; ;           EndIf
-          ; ; ;           
-          ; ; ;           If \p And \x+iwidth  > \p\iclip\x+\p\iclip\width
-          ; ; ;             \iclip\width = \p\iclip\width-(\iclip\x-\p\iclip\x)
-          ; ; ;           Else
-          ; ; ;             \iclip\width = iwidth-(\iclip\x-\x)
-          ; ; ;           EndIf
-          ; ; ;           
-          ; ; ;           If \p And \y+iheight > \p\iclip\y+\p\iclip\height
-          ; ; ;             \iclip\height = \p\iclip\height-(\iclip\y-\p\iclip\y)
-          ; ; ;           Else
-          ; ; ;             \iclip\height = iheight-(\iclip\y-\y)
-          ; ; ;           EndIf
-          
         EndIf
         
-        ProcedureReturn \hide[1]
+        ProcedureReturn hide
       EndWith
     EndIf
   EndProcedure
@@ -2021,7 +1969,7 @@ Module Widget
                 \handle[2] = \handle[1]
                 
                 ForEach \Childrens()
-                  Hide(\Childrens(), Bool(\Childrens()\pi<>\handle[1]))
+                  Hides(\Childrens(), Bool(\Childrens()\pi<>\handle[1]))
                 Next
                 
                 Repaint = 1
@@ -2127,64 +2075,6 @@ Module Widget
         EndSelect
       EndWith
     EndIf  
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  Procedure.i CallBack_Items(*This.Widget_S, Item.i, buttons.i, Control.i)
-    Protected Repaint
-    
-    With *This
-      If \index[1] <> Item And Item =< ListSize(\Tabs())
-        If IsList(\index[1], \Tabs()) 
-          If \index[1] <> ListIndex(\Tabs())
-            SelectElement(\Tabs(), \index[1]) 
-          EndIf
-          
-          If buttons
-            If (\Flag\MultiSelect And Not Control)
-              \Tabs()\Color\State = 2
-            ElseIf Not \Flag\ClickSelect
-              \Tabs()\Color\State = 1
-            EndIf
-          EndIf
-        EndIf
-        
-        If buttons And SelectList(Item, \Tabs())
-          If (Not \Flag\MultiSelect And Not \Flag\ClickSelect)
-            \Tabs()\Color\State = 2
-          ElseIf Not \Flag\ClickSelect And (\Flag\MultiSelect And Not Control)
-            \Tabs()\index[1] = \Tabs()\index
-            \Tabs()\Color\State = 2
-          EndIf
-        EndIf
-        
-        \index[1] = Item
-        Repaint = #True
-        
-        If buttons
-          If (\Flag\MultiSelect And Not Control)
-            PushListPosition(\Tabs()) 
-            ForEach \Tabs()
-              If Not \Tabs()\Hide
-                If ((\Index[2] =< \index[1] And \Index[2] =< \Tabs()\index And \index[1] >= \Tabs()\index) Or
-                    (\Index[2] >= \index[1] And \Index[2] >= \Tabs()\index And \index[1] =< \Tabs()\index)) 
-                  If \Tabs()\index[1] <> \Tabs()\index
-                    \Tabs()\index[1] = \Tabs()\index
-                    \Tabs()\Color\State = 2
-                  EndIf
-                Else
-                  \Tabs()\index[1] =- 1
-                  \Tabs()\Color\State = 1
-                  \Tabs()\Focus =- 1
-                EndIf
-              EndIf
-            Next
-            PopListPosition(\Tabs()) 
-          EndIf
-        EndIf
-      EndIf
-    EndWith
     
     ProcedureReturn Repaint
   EndProcedure
@@ -2686,6 +2576,7 @@ Module Widget
       \Tab\color[2]\alpha = 255
       
       \Tab\Type = #PB_GadgetType_ScrollBar
+      \TabHeight = \Tab\height
       
       \fs = 1
       
@@ -2920,7 +2811,27 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       
       *Scroll_1.Widget_S  = Image(0, 0, 0, 0, 0); : SetState(*Scroll_1, 1) 
       *Scroll_2.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : SetState(*Scroll_2\s\h, 45) : CloseList()
-      *Scroll_3.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_3, 50)
+      ; *Scroll_3.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_3, 50)
+      *Scroll_3.Widget_S = Panel(1, 1, 548, 548) 
+      AddItem(*Scroll_3, -1, "Panel_0")
+      Button(10,20,250,135, "butt_1") 
+      AddItem(*Scroll_3, -1, "Panel_1")
+      Container(10,10,150,55,#PB_Container_Flat) 
+      Hide(Container(-10,-10,150,55,#PB_Container_Flat), 1)  
+      Button(50,-10,50,35, "butt") 
+      CloseList()
+      CloseList()
+      AddItem(*Scroll_3, -1, "Panel_2")
+      Container(10,10,150,55,#PB_Container_Flat) 
+      Container(10,10,150,55,#PB_Container_Flat) 
+      Hide(Button(10,-10,50,35, "butt_0"), 1) 
+      Button(10,20,50,35, "butt_1") 
+      CloseList()
+      CloseList()
+      AddItem(*Scroll_3, -1, "Panel_3")
+      AddItem(*Scroll_3, -1, "Panel_4")
+      CloseList()
+      
       
       *Bar_0 = Splitter(10, 10, 360,  330, *Scroll_1, *Scroll_2)
       *Bar_1 = Splitter(10, 10, 360,  330, *Scroll_3, *Bar_0, #PB_Splitter_Vertical)
@@ -3207,5 +3118,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------1-----------------------------------------------------------
+; Folding = --------------------------------------v---------------------------------
 ; EnableXP

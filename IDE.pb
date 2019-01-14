@@ -8,120 +8,72 @@
 
 UseModule Widget
 
-Global Window_0, Canvas_0, winBackColor = $F0F0F0
-
-Global Editor_0, Tree_0, Tree_1
+Global Window_0, Canvas_0, winBackColor = $FFFFFF
 
 Global *splitter_0.Widget_S
 Global *splitter_1.Widget_S
-Global *Panel_0.Widget_S, *Tree_0.Widget_S, *Tree_1.Widget_S
+Global *Panel_0.Widget_S
+Global *Panel_1.Widget_S
+Global *Tree_0.Widget_S
+Global *Tree_1.Widget_S
+Global *Tree_2.Widget_S
+Global *Tree_3.Widget_S
+Global *Form_0.Widget_S
+Global *Editor_0.Widget_S
+
 Global NewMap Widgets.i()
-  
- Procedure _CallBacks()
-;     Protected Repaint, *This.Widget_S
-;     Protected Canvas = EventGadget()
-;     Protected Width = GadgetWidth(Canvas)
-;     Protected Height = GadgetHeight(Canvas)
-;     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-;     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-;     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-;     
-;     Select EventType()
-;       Case #PB_EventType_Repaint : Repaint = EventData()
-;       Case #PB_EventType_Resize : Repaint = EventData()
-;       Default
-;         
-;         If EventType() = #PB_EventType_LeftButtonDown
-;           SetActiveGadget(EventGadget())
-;         EndIf
-;         
-;         If Editor::CallBack(*Panel_0, EventType())
-;           Editor::ReDraw(*Panel_0)
-;         EndIf
-;         If Tree::CallBack(*Tree_0, EventType())
-;           Tree::ReDraw(*Tree_0)
-;         EndIf
-;         If Tree::CallBack(*Tree_1, EventType())
-;           Tree::ReDraw(*Tree_1)
-;         EndIf
-;         
-;     EndSelect
-;     
-;     If Repaint 
-;       Text::ReDraw(0, Canvas, winBackColor)
-;     EndIf
-;     
-  EndProcedure
-  
+
+Procedure ReDraw(Canvas)
+  If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+    DrawingMode(#PB_2DDrawing_Default)
+    Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+    
+    With Widgets()
+      ForEach Widgets()
+        ;If Canvas = \Canvas\Gadget
+        Draw(Widgets())
+        ;EndIf
+      Next
+    EndWith
+    
+    StopDrawing()
+  EndIf
+EndProcedure
+
 Procedure CallBacks()
-    Protected Repaint, *This.Widget_S
-    Protected Canvas = EventGadget()
-    Protected Width = GadgetWidth(Canvas)
-    Protected Height = GadgetHeight(Canvas)
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    
-    Select EventType()
-      ;Case #PB_EventType_Repaint : Repaint = EventData()
-      Case #PB_EventType_Resize : Repaint = EventData()
-      Default
-        
-        If EventType() = #PB_EventType_LeftButtonDown
-          SetActiveGadget(EventGadget())
-        EndIf
-        
-        With Widgets()
-          ForEach Widgets()
-            ;If Canvas = \Canvas\Gadget
-;               Select \Type
-;                 Case #PB_GadgetType_Tree : Repaint | Tree::CallBack(Widgets(), EventType())
-;                 Case #PB_GadgetType_Editor : Repaint | Editor::CallBack(Widgets(), EventType())
-;                 Case #PB_GadgetType_Button : Repaint | Button::CallBack(Widgets(), EventType())
-;                 Case #PB_GadgetType_String : Repaint | String::CallBack(Widgets(), EventType()) 
-                  CallBack(Widgets(), EventType(), MouseX, MouseY)
-;               EndSelect
-              
-            ;EndIf
-          Next
-        EndWith
-        
-;         Repaint | Bar::CallBack(*splitter_1, EventType()) 
-;         Repaint | Bar::CallBack(*splitter_0, EventType()) 
-        
-    EndSelect
-    
-    ;If Repaint 
-;       If *splitter_1\Change Or *splitter_1\Resize
-;         Editor::Resize(*Panel_0, *splitter_1\x[1], *splitter_1\y[1], *splitter_1\width[1], *splitter_1\height[1])
-;         
-; ;         *splitter_1\Type[2] = #PB_GadgetType_Splitter 
-; ;         Bar::Resize(*splitter_0, *splitter_1\x[2], *splitter_1\y[2], *splitter_1\width[2], *splitter_1\height[2])
-;       EndIf
-;       
-;       If *splitter_0\Change Or *splitter_0\Resize
-;         Tree::Resize(*Tree_0, *splitter_0\x[1], *splitter_0\y[1], *splitter_0\width[1], *splitter_0\height[1])
-;         Tree::Resize(*Tree_1,  *splitter_0\x[2], *splitter_0\y[2], *splitter_0\width[2], *splitter_0\height[2])
-;       EndIf
-      
-      If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-        DrawingMode(#PB_2DDrawing_Default)
-        Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-        
-        With Widgets()
-          ForEach Widgets()
-            ;If Canvas = \Canvas\Gadget
-              Draw(Widgets())
-            ;EndIf
-          Next
-        EndWith
-        
-        StopDrawing()
-      EndIf
-    ;EndIf
-    
-  EndProcedure
+  Protected Repaint, *This.Widget_S
+  Protected Canvas = EventGadget()
+  Protected Width = GadgetWidth(Canvas)
+  Protected Height = GadgetHeight(Canvas)
+  Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+  Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
+  Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
   
+  Select EventType()
+      ;Case #PB_EventType_Repaint : Repaint = EventData()
+    Case #PB_EventType_Resize : Repaint = EventData()
+    Default
+      
+      If EventType() = #PB_EventType_LeftButtonDown
+        SetActiveGadget(EventGadget())
+      EndIf
+      
+      With Widgets()
+        ForEach Widgets()
+          
+          Repaint | CallBack(Widgets(), EventType(), MouseX, MouseY)
+          
+        Next
+      EndWith
+      
+  EndSelect
+  
+  If Repaint 
+    ReDraw(Canvas)
+  EndIf
+  
+EndProcedure
+
 Procedure OpenWindow_0(x = 0, y = 0, width = 800, height = 600)
   Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_SystemMenu)
   
@@ -131,49 +83,60 @@ Procedure OpenWindow_0(x = 0, y = 0, width = 800, height = 600)
   ; SetGadgetColor(Canvas_0, #PB_Gadget_BackColor, $6D6DD9)
   BindGadgetEvent(Canvas_0, @CallBacks())
   
-  *Panel_0 = Panel(1, 1, 548, 548) 
+  *Panel_0 = Panel(0, 0, 0, 0) 
   AddItem(*Panel_0, -1, "Code")
+  *Editor_0 = Button(0, 0, 180, 230, "Тут будут строки кода")
   AddItem(*Panel_0, -1, "Form")
+  *Form_0 = Container(20, 20, 210, 210) 
+  CloseList()
   CloseList()
   
-;   *Tree_0 = Tree::Create(Canvas_0, #PB_Any, 558, 1, 220, 180, "", #PB_Flag_FullSelection)
-;   *Tree_1 = Tree::Create(Canvas_0, #PB_Any, 558, 191, 220, 358, "", #PB_Flag_FullSelection)
-  *Tree_0 = Progress(0, 0, 0, 0, 0,100)
-  *Tree_1 = Progress(0, 0, 0, 0, 0,100)
+  *Tree_0 = Button(0, 0, 80, 30, "Тут будет дерево элементов")
   
-  *splitter_0 = Splitter(100,1,778, 548, *Tree_0, *Tree_1)
+  *Panel_1 = Panel(0, 0, 0, 0) 
+  AddItem(*Panel_1, -1, "Widgets")
+  *Tree_1 = Button(0, 0, 180, 30, "Тут будет список элементов")
+  AddItem(*Panel_1, -1, "Properties")
+  *Tree_3 = Button(0, 30, 180, 30, "Тут будет свойства элементов")
+  AddItem(*Panel_1, -1, "Events")
+  *Tree_4 = Button(0, 60, 180, 30, "Тут будет событие элементов")
+  CloseList()
   
-   *splitter_1 = Splitter(1,1,778, 548, *Panel_0, *splitter_0, #PB_Splitter_Vertical)
+  *splitter_0 = Splitter(1,1,778, 548, *Tree_0, *Panel_1)
+  *splitter_1 = Splitter(1,1,778, 548, *Panel_0, *splitter_0, #PB_Splitter_Vertical)
   
   SetState(*splitter_1, 550)
-  
   SetState(*splitter_0, 150)
   
+  Widgets("0") = *Editor_0
   Widgets("1") = *Panel_0
-   Widgets("2") = *Tree_0
- Widgets("3") = *Tree_1
- Widgets("4") = *splitter_0
-Widgets("5") = *splitter_1
-
-;    ;Editor::SetText(*Panel_0, "")
-;   Tree::AddItem(*Tree_0, -1, "Window_0")
-;   
-;   Tree::AddItem(*Tree_1, -1, "Button")
-;   Tree::AddItem(*Tree_1, -1, "String")
-;   Tree::AddItem(*Tree_1, -1, "Text")
+  Widgets("2") = *Panel_1
+  Widgets("3") = *Tree_0
+  Widgets("4") = *Tree_1
+  Widgets("5") = *Tree_2
+  Widgets("6") = *Tree_3
+  Widgets("7") = *splitter_0
+  Widgets("8") = *splitter_1
   
-  ;ReDraw(Canvas_0)
+  ;    ;Editor::SetText(*Panel_0, "")
+  ;   Tree::AddItem(*Tree_0, -1, "Window_0")
+  ;   
+  ;   Tree::AddItem(*Tree_1, -1, "Button")
+  ;   Tree::AddItem(*Tree_1, -1, "String")
+  ;   Tree::AddItem(*Tree_1, -1, "Text")
+  
+  ReDraw(Canvas_0)
 EndProcedure
 
 Procedure Window_0_Events(event)
   Select event
     Case #PB_Event_CloseWindow
       ProcedureReturn #False
-
+      
     Case #PB_Event_Menu
       Select EventMenu()
       EndSelect
-
+      
     Case #PB_Event_Gadget
       Select EventGadget()
       EndSelect
@@ -193,5 +156,5 @@ Repeat
   EndSelect
 ForEver
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --
+; Folding = ---
 ; EnableXP
