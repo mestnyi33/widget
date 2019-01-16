@@ -40,10 +40,10 @@ If OpenWindow(3, 0, 0, 665, 605, "Position de la souris sur la fenêtre", #PB_Wi
   SpinGadget(#PB_GadgetType_Spin, 500, 80, 160,70,0,10)
   TreeGadget(#PB_GadgetType_Tree, 500, 155, 160,70 )
   PanelGadget(#PB_GadgetType_Panel, 500, 230, 160,70 ) 
-  AddGadgetItem(#PB_GadgetType_Panel, -1, "PanelGadget_"+Str(#PB_GadgetType_Panel)) 
+  AddGadgetItem(#PB_GadgetType_Panel, -1, "Panel_0_"+Str(#PB_GadgetType_Panel), ImageID(1)) 
   ButtonGadget(255, 0, 0, 90,20, "ButtonGadget" )
-  AddGadgetItem(#PB_GadgetType_Panel, -1, "PanelGadget_"+Str(#PB_GadgetType_Panel)) 
-  AddGadgetItem(#PB_GadgetType_Panel, -1, "PanelGadget_"+Str(#PB_GadgetType_Panel)) 
+  AddGadgetItem(#PB_GadgetType_Panel, -1, "Panel_1_"+Str(#PB_GadgetType_Panel)) 
+  AddGadgetItem(#PB_GadgetType_Panel, -1, "Panel_2_"+Str(#PB_GadgetType_Panel)) 
   CloseGadgetList()
   
   
@@ -60,6 +60,8 @@ If OpenWindow(3, 0, 0, 665, 605, "Position de la souris sur la fenêtre", #PB_Wi
   Until Event= #PB_Event_CloseWindow
   
 EndIf   
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 42
+; FirstLine = 33
 ; Folding = -
 ; EnableXP

@@ -1695,7 +1695,7 @@ Module Bar
     With *Scroll     
       \v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_Bar_Vertical, Radius)
       \v\hide = \v\hide[1]
-      ;\v\s = *Scroll
+      \v\s = *Scroll
       
       If Both
         \h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
@@ -1704,7 +1704,7 @@ Module Bar
         \h.Bar_S = AllocateStructure(Bar_S)
         \h\hide = 1
       EndIf
-      ;\h\s = *Scroll
+      \h\s = *Scroll
     EndWith
     
     ProcedureReturn *Scroll

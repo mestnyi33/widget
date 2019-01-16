@@ -64,8 +64,7 @@ DeclareModule Widget
   
   ;- - Image_S
   Structure Image_S Extends Coordinate_S
-    index.i
-    adress.i
+    adress.i[2]
     change.b
     Align.Align_S
   EndStructure
@@ -151,7 +150,7 @@ DeclareModule Widget
   ;- - Rows_S
   Structure Rows_S Extends Coordinate_S
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    adress.i
+    adress.i[3]
     
     Color.Colors_S
     Text.Text_S[4]
@@ -202,12 +201,10 @@ DeclareModule Widget
   ;- - Widget_S
   Structure Widget_S Extends Bar_S
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    adress.i
+    adress.i[3]
     
     *p.Widget_S
     *pi.Rows_S
-    *ps.Scroll_S
-    
     
     fs.i 
     bs.i
@@ -229,8 +226,8 @@ DeclareModule Widget
     sublevellen.i
     Drag.i[2]
     Attribute.i
-    List Items.Rows_S()
-    Canvas.Canvas_S
+   List Items.Rows_S()
+   Canvas.Canvas_S
     ;Scroll.Scroll_S
   EndStructure
   
@@ -253,18 +250,15 @@ DeclareModule Widget
   EndEnumeration
   
   ;
-  #PB_Bar_Minimum = 1
-  #PB_Bar_Maximum = 2
-  #PB_Bar_PageLength = 3
-  #PB_Bar_NoButtons = 4
-  #PB_Bar_Ticks = 1<<5
-  #PB_Bar_Smooth = 1<<6
+  #PB_Widget_Minimum = 1
+  #PB_Widget_Maximum = 2
+  #PB_Widget_PageLength = 3
   
-  #PB_Bar_Direction = 1<<2
+  #PB_Widget_Direction = 1<<2
+  #PB_Flag_NoButtons = 1<<3
   
-  #PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
-  #PB_Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
-  
+  #PB_Widget_Ticks = 1<<5
+  #PB_Widget_Smooth = 1<<6
   
   #PB_Widget_First = 1<<7
   #PB_Widget_Second = 1<<8
@@ -285,7 +279,7 @@ DeclareModule Widget
     
     #PB_Toggle
     #PB_Vertical
-    #PB_Bar_Inverted
+    #PB_Inverted
     #PB_BorderLess
     
     #PB_Text_Numeric
@@ -330,6 +324,9 @@ DeclareModule Widget
   #PB_Flag = 1<<15
   #PB_State = 1<<16
   
+  #PB_Flag_Numeric = #PB_Text_Numeric
+  ;#PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
+  #PB_Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
   
   #PB_DisplayMode_CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
   #PB_DisplayMode_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
@@ -426,14 +423,6 @@ DeclareModule Widget
   Declare.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.i Resize(*This.Widget_S, iX.i,iY.i,iWidth.i,iHeight.i);, *That.Widget_S=#Null)
   Declare.i Hide(*This.Widget_S, State.i)
-  
-  Declare.i SetItemData(*This.Widget_S, Item.i, *Data)
-  Declare.i GetItemData(*This.Widget_S, Item.i)
-  Declare.i CountItems(*This.Widget_S)
-  Declare.i ClearItems(*This.Widget_S)
-  Declare.i RemoveItem(*This.Widget_S, Item.i)
-  Declare.i SetItemAttribute(*This.Widget_S, Item.i, Attribute.i, Value.i)
-  Declare.i GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
   
   Declare.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
   Declare.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
@@ -590,23 +579,6 @@ Module Widget
       Else
         SetParent(_this_, *openedlist(), 0)
       EndIf
-    EndIf
-  EndMacro
-  
-  Macro SetImage(_item_, _image_)
-    IsImage(_image_)
-    
-    _item_\Image\change = 1
-    _item_\image\index = _image_
-    
-    If IsImage(_image_)
-      _item_\image\adress = ImageID(_image_)
-      _item_\Image\width = ImageWidth(_image_)
-      _item_\Image\height = ImageHeight(_image_)
-    Else
-      _item_\image\adress = 0
-      _item_\Image\width = 0
-      _item_\Image\height = 0
     EndIf
   EndMacro
   
@@ -906,11 +878,11 @@ Module Widget
   ;-
   Macro Resize_Splitter(_this_)
     If _this_\Vertical
-      Resize(_this_\ps\v, 0, 0, _this_\width, _this_\Thumb\Pos-_this_\y)
-      Resize(_this_\ps\h, 0, (_this_\Thumb\Pos+_this_\Thumb\len)-_this_\y, _this_\width, _this_\height-((_this_\Thumb\Pos+_this_\Thumb\len)-_this_\y))
+      Resize(_this_\s\v, 0, 0, _this_\width, _this_\Thumb\Pos-_this_\y)
+      Resize(_this_\s\h, 0, (_this_\Thumb\Pos+_this_\Thumb\len)-_this_\y, _this_\width, _this_\height-((_this_\Thumb\Pos+_this_\Thumb\len)-_this_\y))
     Else
-      Resize(_this_\ps\v, 0, 0, _this_\Thumb\Pos-_this_\x, _this_\height)
-      Resize(_this_\ps\h, (_this_\Thumb\Pos+_this_\Thumb\len)-_this_\x, 0, _this_\width-((_this_\thumb\Pos+_this_\thumb\len)-_this_\x), _this_\height)
+      Resize(_this_\s\v, 0, 0, _this_\Thumb\Pos-_this_\x, _this_\height)
+      Resize(_this_\s\h, (_this_\Thumb\Pos+_this_\Thumb\len)-_this_\x, 0, _this_\width-((_this_\thumb\Pos+_this_\thumb\len)-_this_\x), _this_\height)
     EndIf
   EndMacro
   
@@ -1182,7 +1154,7 @@ Module Widget
   EndProcedure
   
   Procedure Draw_Tree(*This.Widget_S, scroll_x,scroll_y)
-    Protected y_point,x_point, level,iY, start,i, back_color=$FFFFFF, point_color=$7E7E7E, box_color=$7E7E7E
+     Protected y_point,x_point, level,iY, start,i, back_color=$FFFFFF, point_color=$7E7E7E, box_color=$7E7E7E
     Protected hide_color=$FEFFFF, box_size = 9,box_1_size = 12, alpha = 255, item_alpha = 255, height =20
     Protected line_size=8, box_1_pos.b = 0, checkbox_color = $FFFFFF, checkbox_backcolor, box_type.b = -1
     Protected Drawing.b, text_color, State_3
@@ -1199,11 +1171,12 @@ Module Widget
           
           ForEach \items()
             If Not \items()\hide
-              If \index[2] = \Items()\index ; \index[2] = ListIndex(\State_3()) ; (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1])
+              If \adress[2] = \Items() ; \index[2] = ListIndex(\State_3()) ; (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1])
                 State_3 = 2
               Else
                 State_3 = \Items()\Color\State
               EndIf
+              
               
               \items()\height=height
               \items()\width=\s\h\Page\len
@@ -1222,11 +1195,11 @@ Module Widget
               \items()\box\x = \items()\sublevellen-(\sublevellen+\items()\box\width)/2
               \items()\box\y = (\items()\y+height)-(height+\items()\box\height)/2
               
-              If \items()\image\adress
+              If \items()\Image\adress
                 \items()\Image\x = 3+\items()\sublevellen
                 \items()\Image\y = \items()\y+(height-\items()\Image\height)/2
                 
-                \image\adress = \items()\image\adress
+                \Image\adress = \items()\Image\adress
                 \Image\width = \items()\Image\width+4
               EndIf
               
@@ -1247,37 +1220,52 @@ Module Widget
               
               \s\height+\items()\height
               
-              If \s\Width < (\items()\text\x-\x+\items()\text\width)+\s\h\Page\Pos
-                \s\Width = (\items()\text\x-\x+\items()\text\width)+\s\h\Page\Pos
-              EndIf
+                If \s\Width < (\items()\text\x-\x+\items()\text\width)+\s\h\Page\Pos
+                  \s\Width = (\items()\text\x-\x+\items()\text\width)+\s\h\Page\Pos
+                EndIf
               
               Drawing = Bool(\items()\y+\items()\height>\y+\bs And \items()\y<\y+\height-\bs*2)
               If Drawing
+                If (\items()\index=\items()\focus And \items()\lostfocus<>\items()\focus) Or
+                   (\focus And \flag\FullSelection And \index= \items()\index)
+                  
+                  If \flag\FullSelection
+                    box_color = $FFFFFF
+                  EndIf
+                  text_color=$FFFFFF
+                Else
+                  box_color = $7E7E7E
+                  text_color=$000000
+                EndIf
+                
                 ; Draw selections
                 If \flag\FullSelection
-                  If State_3 = 1
+                  If State_3 ; \items()\index=\items()\index[1]
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, \Color\Back[State_3]&$FFFFFFFF|item_alpha<<24)
+                    Box(\items()\x+1,\items()\y+1,\items()\width-2,\items()\height-2, \Color\Back[State_3]&$FFFFFFFF|item_alpha<<24)  ; ((Color & $FFFFFF) << 32) $FCEADA $00A5FF $CBC0FF
                     
                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                    Box(\items()\x+\s\h\Page\Pos,\items()\y,\items()\width,\items()\height, \Color\Frame[State_3]&$FFFFFFFF|item_alpha<<24)
+                    Box(\items()\x,\items()\y,\items()\width,\items()\height, \Color\Frame[State_3]&$FFFFFFFF|item_alpha<<24) ; $FFC288 $0045FF
                   EndIf
                   
-                  If State_3 = 2
-                    If \Focus : item_alpha = 200
-                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                      Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, $E89C3D&back_color|item_alpha<<24)
-                      
-                      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                      Box(\items()\x+\s\h\Page\Pos,\items()\y,\items()\width,\items()\height, $DC9338&back_color|item_alpha<<24)
+                  If \items()\index=\items()\focus
+                    If \items()\lostfocus=\items()\focus 
+                      If \flag\AlwaysSelection
+                        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                        Box(\items()\x+1,\items()\y+1,\items()\width-2,\items()\height-2, $E2E2E2&back_color|item_alpha<<24)
+                        
+                        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                        Box(\items()\x,\items()\y,\items()\width,\items()\height, $C8C8C8&back_color|item_alpha<<24)
+                      EndIf
                     Else
-                      ;If \flag\AlwaysSelection
+                      item_alpha = 200
+                      
                       DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                      Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, $E2E2E2&back_color|item_alpha<<24)
+                      ;Box(\items()\x+1,\items()\y+1,\items()\width-2,\items()\height-2, $ECAF7C&back_color|item_alpha<<24)
+                      Box(\items()\x+1,\items()\y+1,\items()\width-2,\items()\height-2, $E89C3D&back_color|item_alpha<<24)
                       
                       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                      Box(\items()\x+\s\h\Page\Pos,\items()\y,\items()\width,\items()\height, $C8C8C8&back_color|item_alpha<<24)
-                      ;EndIf
+                      Box(\items()\x,\items()\y,\items()\width,\items()\height, $DC9338&back_color|item_alpha<<24)
                     EndIf
                   EndIf
                 EndIf
@@ -1286,7 +1274,7 @@ Module Widget
                 If \flag\Buttons And \items()\childrens
                   If box_type=-1
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Widget::Arrow(\items()\box\X[0]+(\items()\box\Width[0]-6)/2,\items()\box\Y[0]+(\items()\box\height[0]-6)/2, 6, Bool(Not \items()\collapsed)+2, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24, 0,0) 
+                    Widget::Arrow(\items()\box\X[0]+(\items()\box\Width[0]-6)/2,\items()\box\Y[0]+(\items()\box\height[0]-6)/2, 6, Bool(Not \items()\collapsed)+2, box_color&$FFFFFF|alpha<<24, 0,0) 
                   Else
                     DrawingMode(#PB_2DDrawing_Gradient)
                     BackColor($FFFFFF) : FrontColor($EEEEEE)
@@ -1332,11 +1320,14 @@ Module Widget
                       start = \items()\y+\items()\height+\items()\height/2-line_size 
                     EndIf
                     PopListPosition(\items())
-                    
+                    ;                    
+                    ;                     PushListPosition(\items())
+                    ;                     If \items()\adress[1]
+                    ;                       ChangeCurrentElement(\items(), \items()\adress[1]) 
+                    ;                       ;Debug \items()\text\string
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                     For i=y_point To start Step -2
-                      If Bool(i>0 And i<OutputHeight()) And Bool(x_point>0 And x_point<OutputWidth())
-                        
+                      If Bool(i>\y And i<\height)
                         Select Point(x_point,i)
                           Case $F3F3F3, $F7F7F7, $FBFBFB, 16645629, 15856113, 16119285, 16382457, 4286479998, 4294177779, 4294704123
                             Continue
@@ -1359,46 +1350,46 @@ Module Widget
                 EndIf
                 
                 ; Draw image
-                If \items()\image\adress
+                If \items()\Image\adress
                   DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                  DrawAlphaImage(\items()\image\adress, \items()\Image\x, \items()\Image\y, alpha)
+                  DrawAlphaImage(\items()\Image\adress, \items()\Image\x, \items()\Image\y, alpha)
                 EndIf
                 
                 ; Draw string
                 If \items()\text\string.s
                   DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                  DrawText(\items()\text\x, \items()\text\y, \items()\text\string.s, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24)
+                  DrawText(\items()\text\x, \items()\text\y, \items()\text\string.s, \Color\Front[State_3]&$FFFFFFFF|alpha<<24)
                 EndIf
               EndIf
             EndIf
             
             \items()\text\change = 0
-            
+              
           Next
         EndIf
         
         
         ; Задаем размеры скролл баров
         If \s\v And \s\v\Page\Len And \s\v\Max<>\s\height And 
-           Widget::SetAttribute(\s\v, #PB_Bar_Maximum, \s\height)
+           Widget::SetAttribute(\s\v, #PB_Widget_Maximum, \s\height)
           Widget::Resizes(\s, \x-\s\h\x+1, \y-\s\v\y+1, #PB_Ignore, #PB_Ignore)
           \s\v\Step = height
         EndIf
         
         If \s\h And \s\h\Page\Len And \s\h\Max<>\s\Width And 
-           Widget::SetAttribute(\s\h, #PB_Bar_Maximum, \s\Width)
+           Widget::SetAttribute(\s\h, #PB_Widget_Maximum, \s\Width)
           Widget::Resizes(\s, \x-\s\h\x+1, \y-\s\v\y+1, #PB_Ignore, #PB_Ignore)
         EndIf
         
         ;Draw_Scroll(\s\h,0,0)
-        ;         
-        ;         If \bs
-        ;           DrawingMode(#PB_2DDrawing_Outlined)
-        ;           Box(\x, \y, \width, \height, $ADADAE)
-        ;         EndIf
+;         
+;         If \bs
+;           DrawingMode(#PB_2DDrawing_Outlined)
+;           Box(\x, \y, \width, \height, $ADADAE)
+;         EndIf
       EndIf
     EndWith
-    
+     
   EndProcedure
   
   Procedure.i Draw_ScrollArea(*This.Widget_S, scroll_x,scroll_y)
@@ -1485,7 +1476,7 @@ Module Widget
       ClipOutput(\clip\x+\Tab\ButtonLen[1]+3, \clip\y, \clip\width-\Tab\ButtonLen[1]-\Tab\ButtonLen[2]-6, \clip\height)
       
       ForEach \Tabs()
-        If \index[2] = \Tabs()\index ; ListIndex(\Tabs()) ; (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1])
+        If \adress[2] = \Tabs() ; \index[2] = ListIndex(\Tabs()) ; (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1])
           State_3 = 2
           py=0
         Else
@@ -1493,7 +1484,7 @@ Module Widget
           py=4
         EndIf
         
-        \Tabs()\Image\x[1] = 8 ; Bool(\Tabs()\Image\width) * 4
+        \Tabs()\Image\x[1] = Bool(\Tabs()\Image\width) * 3
         
         If \Tabs()\Text\Change
           \Tabs()\Text\width = TextWidth(\Tabs()\Text\String)
@@ -1502,17 +1493,16 @@ Module Widget
         
         \Tabs()\y = scroll_y+\y+py
         \Tabs()\x = scroll_x+x+px-\Tab\Page\Pos  + (\Tab\ButtonLen[1]+1)
-        
-        \Tabs()\width = \Tabs()\Text\width + \Tabs()\Image\x[1]*2 + \Tabs()\Image\width + Bool(\Tabs()\Image\width) * 3; +8+Bool(\Tabs()\Image\width) * (\Tabs()\Image\width+\Tabs()\Image\x[1]*2)+Bool(Not \Tabs()\Image\width) * 10
+        \Tabs()\width = \Tabs()\Text\width+5+Bool(\Tabs()\Image\width) * (\Tabs()\Image\width+\Tabs()\Image\x[1]*2)+Bool(Not \Tabs()\Image\width) * 5
         x + \Tabs()\width + 1
         
-        \Tabs()\Image\x = \Tabs()\x+\Tabs()\Image\x[1] - 1
+        \Tabs()\Image\x = \Tabs()\x+\Tabs()\Image\x[1] 
         \Tabs()\Image\y = \Tabs()\y+((\Tabs()\height-py+Bool(State_3 = 2)*4)-\Tabs()\Image\height)/2
         
-        \Tabs()\Text\x = \Tabs()\Image\x + \Tabs()\Image\width + Bool(\Tabs()\Image\width) * 3
+        \Tabs()\Text\x = \Tabs()\Image\x+\Tabs()\Image\width+3+Bool(Not \Tabs()\Image\width)*3
         \Tabs()\Text\y = \Tabs()\y+((\Tabs()\height-py+Bool(State_3 = 2)*4)-\Tabs()\Text\height)/2
         
-        If \index[2] = \Tabs()\index
+        If \adress[2] = \Tabs()
           sx = \Tabs()\x
           sw = \Tabs()\width
           start = Bool(\Tabs()\x<\Tab\Area\Pos+1 And \Tabs()\x+\Tabs()\width>\Tab\Area\Pos+1)*2
@@ -1534,9 +1524,9 @@ Module Widget
         EndIf
         
         ; Draw image
-        If \Tabs()\image\adress
+        If \Tabs()\Image\adress
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\Tabs()\image\adress, \Tabs()\Image\x, \Tabs()\Image\y, \color\alpha)
+          DrawAlphaImage(\Tabs()\Image\adress, \Tabs()\Image\x, \Tabs()\Image\y, \color\alpha)
         EndIf
         
         ; Draw thumb frame
@@ -1555,7 +1545,7 @@ Module Widget
         \Tabs()\Text\Change = 0
       Next
       
-      If ListSize(\Tabs()) And SetAttribute(\Tab, #PB_Bar_Maximum, (\Tab\ButtonLen[1]+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width)))
+      If ListSize(\Tabs()) And SetAttribute(\Tab, #PB_Widget_Maximum, (\Tab\ButtonLen[1]+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width)))
         \Tab\Step = \Tab\Thumb\len
       EndIf
       
@@ -1810,9 +1800,9 @@ Module Widget
     With *This 
       ; Draw image
       ClipOutput(scroll_x+\x+2,scroll_y+\y+2,\s\h\Page\len,\s\v\Page\len)
-      If \image\adress
+      If \Image\adress
         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawAlphaImage(\image\adress, scroll_x+\Image\x, scroll_y+\Image\y, \color\alpha)
+        DrawAlphaImage(\Image\adress, scroll_x+\Image\x, scroll_y+\Image\y, \color\alpha)
       EndIf
       UnclipOutput()  
       
@@ -1866,9 +1856,9 @@ Module Widget
       EndIf
       
       ; Draw image
-      If \image\adress
+      If \Image\adress
         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawAlphaImage(\image\adress, \Image\x, \Image\y, \color\alpha)
+        DrawAlphaImage(\Image\adress, \Image\x, \Image\y, \color\alpha)
       EndIf
       
     EndWith 
@@ -1900,9 +1890,9 @@ Module Widget
       EndIf
       
       ; Draw image
-      If \image\adress
+      If \Image\adress
         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawAlphaImage(\image\adress, \Image\x, \Image\y, \color\alpha)
+        DrawAlphaImage(\Image\adress, \Image\x, \Image\y, \color\alpha)
       EndIf
       
     EndWith 
@@ -1920,7 +1910,7 @@ Module Widget
         
         ; Get text size
         If \Text\Change
-          \Text\width = TextWidth(\Text\String.s[1])
+          \Text\width = TextWidth(\Text\String)
           \Text\height = TextHeight("A")
         EndIf
         
@@ -1940,12 +1930,15 @@ Module Widget
           
           ; Text coordinate
           If \Text\String
-            \Text\x[1] = (Bool((\Text\Align\Right Or \Text\Align\Horizontal)) * (\width-\Text\width)) / (\Text\Align\Horizontal+1) : \Text\x = \Text\x[1]+\x
-            \Text\y[1] = (Bool((\Text\Align\Bottom Or \Text\Align\Vertical)) * (\height-\Text\height)) / (\Text\Align\Vertical+1) : \Text\y = \Text\y[1]+\y
+            \Text\x[1] = (Bool((\Text\Align\Right Or \Text\Align\Horizontal)) * (\width-\Text\width)) / (\Text\Align\Horizontal+1)
+            \Text\y[1] = (Bool((\Text\Align\Bottom Or \Text\Align\Vertical)) * (\height-\Text\height)) / (\Text\Align\Vertical+1)
+            
+            \Text\y = \Text\y[1]+\y
+            \Text\x = \Text\x[1]+\x 
           EndIf
           
           ; Image coordinate
-          If \image\adress
+          If \Image\adress
             If (\Type = #PB_GadgetType_Image)
               \Image\x[1] = (Bool(\s\h\Page\len>\Image\width And (\Image\Align\Right Or \Image\Align\Horizontal)) * (\s\h\Page\len-\Image\width)) / (\Image\Align\Horizontal+1)
               \Image\y[1] = (Bool(\s\v\Page\len>\Image\height And (\Image\Align\Bottom Or \Image\Align\Vertical)) * (\s\v\Page\len-\Image\height)) / (\Image\Align\Vertical+1)
@@ -1988,13 +1981,11 @@ Module Widget
           
           ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
           
-          If \Type = #PB_GadgetType_Splitter
-            If \ps
-              If \Type[1] : Draw(\ps\v) : EndIf
-              If \Type[2] : Draw(\ps\h) : EndIf
-            EndIf
-          Else  
-            If \s 
+          If \s 
+            If \Type = #PB_GadgetType_Splitter
+              If \Type[1] : Draw(\s\v) : EndIf
+              If \Type[2] : Draw(\s\h) : EndIf
+            Else  
               If \s\v And \s\v\Type And Not \s\v\Hide : Draw_Scroll(\s\v, x,y) : EndIf
               If \s\h And \s\h\Type And Not \s\h\Hide : Draw_Scroll(\s\h, x,y) : EndIf
             EndIf
@@ -2073,10 +2064,6 @@ Module Widget
         \Hide = \Hide[1]
       EndIf
       
-      ;       If \Tab
-      ;         \Tab\Hide = \Hide
-      ;       EndIf
-      
       If ListSize(\Childrens())
         ForEach \Childrens()
           Hides(\Childrens(), State)
@@ -2089,10 +2076,6 @@ Module Widget
     With *This
       \Hide = State
       \Hide[1] = \Hide
-      
-      ;       If \Tab
-      ;         \Tab\Hide = \Hide
-      ;       EndIf
       
       If ListSize(\Childrens())
         ForEach \Childrens()
@@ -2111,8 +2094,13 @@ Module Widget
         y = \y
         
         \p = *Parent
-        \pi = Item
         \Hide = Bool(Item > 0 Or \p\Hide)
+        
+        ;Debug ""+\Type +" "+ \p\Type +" "+ Item +" "+ \Hide
+        
+        If Item >= 0 And SelectElement(\p\Tabs(), Item)
+          \pi = \p\Tabs()
+        EndIf
         
         LastElement(\p\Childrens())
         If AddElement(\p\Childrens())
@@ -2195,9 +2183,10 @@ Module Widget
           ChangeCurrentElement(\items(), adress)
           If subLevel > \items()\subLevel
             sublevel = \items()\sublevel + 1
+            \items()\adress[1] = *Item
             \items()\childrens + 1
-            ;             \items()\collapsed = 1
-            ;             hide = 1
+;             \items()\collapsed = 1
+;             hide = 1
           EndIf
         EndIf
         
@@ -2219,27 +2208,27 @@ Module Widget
       \items()\text\string.s = Text.s ;+" ("+Str(iadress)+"-"+Str(SubLevel)+")" 
       \items()\sublevel = sublevel
       \items()\height = 20
-      
+                    
       
       If IsImage(Image)
-        ;         Select \Attribute
-        ;           Case Widget::#PB_DisplayMode_Large
-        ;             \items()\Image\width = 32
-        ;             \items()\Image\height = 32
-        ;             ResizeImage(Image, \items()\Image\width,\items()\Image\height)
-        ;             
-        ;           Case Widget::#PB_DisplayMode_Small
-        ;             \items()\Image\width = 16
-        ;             \items()\Image\height = 16
-        ;             ResizeImage(Image, \items()\Image\width,\items()\Image\height)
-        ;             
-        ;           Default
-        \items()\Image\width = ImageWidth(Image)
-        \items()\Image\height = ImageHeight(Image)
-        ;         EndSelect   
+;         Select \Attribute
+;           Case Widget::#PB_DisplayMode_Large
+;             \items()\Image\width = 32
+;             \items()\Image\height = 32
+;             ResizeImage(Image, \items()\Image\width,\items()\Image\height)
+;             
+;           Case Widget::#PB_DisplayMode_Small
+;             \items()\Image\width = 16
+;             \items()\Image\height = 16
+;             ResizeImage(Image, \items()\Image\width,\items()\Image\height)
+;             
+;           Default
+            \items()\Image\width = ImageWidth(Image)
+            \items()\Image\height = ImageHeight(Image)
+;         EndSelect   
         
-        \items()\image\adress = ImageID(Image)
-        \items()\image\index = Image
+        \items()\Image\adress = ImageID(Image)
+        \items()\Image\adress[1] = Image
       EndIf
       
       ;       Re(*This)
@@ -2257,26 +2246,34 @@ Module Widget
       
       Select \Type
         Case #PB_GadgetType_Tree
-          ;           LastElement(\Tabs())
-          ;           AddElement(\Tabs())
-          ;           
-          ;           \Tabs() = AllocateStructure(Rows_S)
+;           LastElement(\Tabs())
+;           AddElement(\Tabs())
+;           
+;           \Tabs() = AllocateStructure(Rows_S)
           Tree_AddItem(*This, Item.i,Text.s,Image, Flag)
-          \Text\Count + 1
           
         Case #PB_GadgetType_Panel
-          \index[2] = 0
           LastElement(\Tabs())
           AddElement(\Tabs())
           
           \Tabs() = AllocateStructure(Rows_S)
-          \Tabs()\index = ListIndex(\Tabs())
+          ; если использовать хендл для отрисовки табов
+          If ListSize(\Tabs()) = 1
+            \adress[2] = \Tabs()
+          EndIf
+          
           \Tabs()\Focus =- 1
           \Tabs()\Text\String = Text.s
           \Tabs()\Text\Change = 1
           \Tabs()\height = \Tab\Height
           
-          SetImage(\Tabs(), Image)
+          If IsImage(Image)
+            \Tabs()\Image\change = 1
+            \Tabs()\Image\adress[1] = Image
+            \Tabs()\Image\adress = ImageID(Image)
+            \Tabs()\Image\width = ImageWidth(Image)
+            \Tabs()\Image\height = ImageHeight(Image)
+          EndIf
       EndSelect
       
     EndWith
@@ -2318,18 +2315,7 @@ Module Widget
   EndProcedure
   
   Procedure.i GetState(*This.Widget_S)
-    Protected Result.i
-    
-    With *This
-      Select \Type
-        Case #PB_GadgetType_Tree : Result = \index[2]
-        Case #PB_GadgetType_Panel : Result = \index[2]
-        Case #PB_GadgetType_Image : Result = \image\index
-        Case #PB_GadgetType_ScrollBar : Result = Invert(*This, \Page\Pos, \Inverted)
-      EndSelect
-    EndWith
-    
-    ProcedureReturn Result
+    ProcedureReturn Invert(*This, *This\Page\Pos, *This\Inverted)
   EndProcedure
   
   Procedure.i SetState(*This.Widget_S, ScrollPos.i)
@@ -2339,27 +2325,19 @@ Module Widget
       If *This > 0
         Select \Type
           Case #PB_GadgetType_Image
-            Result = SetImage(*This, ScrollPos)
-            If Result
-              If \s
-                SetAttribute(\s\v, #PB_Bar_Maximum, \Image\height)
-                SetAttribute(\s\h, #PB_Bar_Maximum, \Image\width)
-                
-                \Resize = 1<<1|1<<2|1<<3|1<<4 
-                Resize(*This, \x, \y, \width, \height) 
-                \Resize = 0
-              EndIf
-            EndIf
-            
-          Case #PB_GadgetType_Panel
-            If ScrollPos >= 0 And \Index[2] <> ScrollPos : \Index[2] = ScrollPos
+            If IsImage(ScrollPos)
+              \Image\change = 1
+              \Image\adress[1] = ScrollPos
+              \Image\adress = ImageID(ScrollPos)
+              \Image\width = ImageWidth(ScrollPos)
+              \Image\height = ImageHeight(ScrollPos)
               
-              ForEach \Childrens()
-                Hides(\Childrens(), Bool(\Childrens()\pi<>ScrollPos))
-              Next
+              SetAttribute(\s\v, #PB_Widget_Maximum, \Image\height)
+              SetAttribute(\s\h, #PB_Widget_Maximum, \Image\width)
               
-              \Change = 1
-              Result = 1
+              \Resize = 1<<1|1<<2|1<<3|1<<4 
+              Resize(*This, \x, \y, \width, \height) : \Resize = 0
+              Result = #True
             EndIf
             
           Default
@@ -2432,29 +2410,16 @@ Module Widget
     Protected Result.i
     
     With *This
-      Select \Type
-        Case #PB_GadgetType_Button
-          Select Attribute 
-            Case #PB_Button_Image ; 1
-              Result = \Image\index
-          EndSelect
-          
-        Case #PB_GadgetType_Splitter
-          Select Attribute
-            Case #PB_Splitter_FirstMinimumSize : Result = \ButtonLen[1]
-            Case #PB_Splitter_SecondMinimumSize : Result = \ButtonLen[2] - \ButtonLen[3]
-          EndSelect 
-          
-        Default 
-          Select Attribute
-            Case #PB_Bar_Minimum : Result = \Min  ; 1
-            Case #PB_Bar_Maximum : Result = \Max  ; 2
-            Case #PB_Bar_Inverted : Result = \Inverted
-            Case #PB_Bar_NoButtons : Result = \ButtonLen ; 4
-            Case #PB_Bar_Direction : Result = \Direction
-            Case #PB_Bar_PageLength : Result = \Page\len ; 3
-          EndSelect
-      EndSelect
+      If *This > 0
+        Select Attribute
+          Case #PB_Widget_Minimum : Result = \Min
+          Case #PB_Widget_Maximum : Result = \Max
+          Case #PB_Inverted : Result = \Inverted
+          Case #PB_Widget_PageLength : Result = \Page\len
+          Case #PB_Flag_NoButtons : Result = \ButtonLen
+          Case #PB_Widget_Direction : Result = \Direction
+        EndSelect
+      EndIf
     EndWith
     
     ProcedureReturn Result
@@ -2465,160 +2430,147 @@ Module Widget
     
     With *This
       If *This > 0
-        Select \Type
-          Case #PB_GadgetType_Button
-            Select Attribute 
-              Case #PB_Button_Image
-                SetImage(*This, Value)
-                ProcedureReturn 1
+        If \Type = #PB_GadgetType_Splitter
+          Select Attribute
+            Case #PB_Splitter_FirstMinimumSize : \ButtonLen[1] = Value
+            Case #PB_Splitter_SecondMinimumSize : \ButtonLen[2] = \ButtonLen[3] + Value
+          EndSelect 
+          
+          If \Vertical
+            \Area\Pos = \Y+\ButtonLen[1]
+            \Area\len = (\Height-\ButtonLen[1]-\ButtonLen[2])
+          Else
+            \Area\Pos = \X+\ButtonLen[1]
+            \Area\len = (\Width-\ButtonLen[1]-\ButtonLen[2])
+          EndIf
+          
+          ProcedureReturn 1
+        EndIf
+        
+        Select Attribute
+          Case #PB_DisplayMode
+            
+            Select Value
+              Case 0 ; Default
+                \Image\Align\Vertical = 0
+                \Image\Align\Horizontal = 0
+                
+              Case 1 ; Center
+                \Image\Align\Vertical = 1
+                \Image\Align\Horizontal = 1
+                
+              Case 3 ; Mosaic
+              Case 2 ; Stretch
+                
+              Case 5 ; Proportionally
             EndSelect
             
-          Case #PB_GadgetType_Splitter
-            Select Attribute
-              Case #PB_Splitter_FirstMinimumSize : \ButtonLen[1] = Value
-              Case #PB_Splitter_SecondMinimumSize : \ButtonLen[2] = \ButtonLen[3] + Value
-            EndSelect 
+            ;Resize = 1
+            \Resize = 1<<1|1<<2|1<<3|1<<4
+            Resize(*This, \x, \y, \width, \height)
+            \Resize = 0
             
-            If \Vertical
-              \Area\Pos = \Y+\ButtonLen[1]
-              \Area\len = (\Height-\ButtonLen[1]-\ButtonLen[2])
-            Else
-              \Area\Pos = \X+\ButtonLen[1]
-              \Area\len = (\Width-\ButtonLen[1]-\ButtonLen[2])
-            EndIf
             
+          Case #PB_Flag_NoButtons : Resize = 1
+            \ButtonLen[0] = Value
+            \ButtonLen[1] = Value
+            \ButtonLen[2] = Value
+            
+          Case #PB_Inverted
+            \Inverted = Bool(Value)
+            \Page\Pos = Invert(*This, \Page\Pos)
+            \Thumb\Pos = ThumbPos(*This, \Page\Pos)
             ProcedureReturn 1
             
-          Case #PB_GadgetType_Image
-            Select Attribute
-              Case #PB_DisplayMode
-                
-                Select Value
-                  Case 0 ; Default
-                    \Image\Align\Vertical = 0
-                    \Image\Align\Horizontal = 0
-                    
-                  Case 1 ; Center
-                    \Image\Align\Vertical = 1
-                    \Image\Align\Horizontal = 1
-                    
-                  Case 3 ; Mosaic
-                  Case 2 ; Stretch
-                    
-                  Case 5 ; Proportionally
-                EndSelect
-                
-                ;Resize = 1
-                \Resize = 1<<1|1<<2|1<<3|1<<4
-                Resize(*This, \x, \y, \width, \height)
-                \Resize = 0
-            EndSelect
-            
-          Default
-            
-            Select Attribute
-              Case #PB_Bar_NoButtons : Resize = 1
-                \ButtonLen[0] = Value
-                \ButtonLen[1] = Value
-                \ButtonLen[2] = Value
-                
-              Case #PB_Bar_Inverted
-                \Inverted = Bool(Value)
-                \Page\Pos = Invert(*This, \Page\Pos)
+          Case #PB_Widget_Minimum ; 1 -m&l
+            If \Min <> Value 
+              \Min = Value
+              \Page\Pos + Value
+              
+              If \Page\Pos > \Max-\Page\len
+                If \Max > \Page\len 
+                  \Page\Pos = \Max-\Page\len
+                Else
+                  \Page\Pos = \Min 
+                EndIf
+              EndIf
+              
+              If \Max > \Min
                 \Thumb\Pos = ThumbPos(*This, \Page\Pos)
-                ProcedureReturn 1
+                \Thumb\len = ThumbLength(*This)
+              Else
+                \Thumb\Pos = \Area\Pos
+                \Thumb\len = \Area\len
                 
-              Case #PB_Bar_Minimum ; 1 -m&l
-                If \Min <> Value 
-                  \Min = Value
-                  \Page\Pos + Value
-                  
-                  If \Page\Pos > \Max-\Page\len
-                    If \Max > \Page\len 
-                      \Page\Pos = \Max-\Page\len
-                    Else
-                      \Page\Pos = \Min 
-                    EndIf
-                  EndIf
-                  
-                  If \Max > \Min
-                    \Thumb\Pos = ThumbPos(*This, \Page\Pos)
-                    \Thumb\len = ThumbLength(*This)
-                  Else
-                    \Thumb\Pos = \Area\Pos
-                    \Thumb\len = \Area\len
-                    
-                    If \Vertical 
-                      \Y[3] = \Thumb\Pos  
-                      \Height[3] = \Thumb\len
-                    Else 
-                      \X[3] = \Thumb\Pos 
-                      \Width[3] = \Thumb\len
-                    EndIf
-                  EndIf
-                  
-                  Resize = 1
+                If \Vertical 
+                  \Y[3] = \Thumb\Pos  
+                  \Height[3] = \Thumb\len
+                Else 
+                  \X[3] = \Thumb\Pos 
+                  \Width[3] = \Thumb\len
                 EndIf
+              EndIf
+              
+              Resize = 1
+            EndIf
+            
+          Case #PB_Widget_Maximum ; 2 -m&l
+            If \Max <> Value
+              \Max = Value
+              
+              If \Page\len > \Max 
+                \Page\Pos = \Min
+              EndIf
+              
+              \Thumb\Pos = ThumbPos(*This, \Page\Pos)
+              
+              If \Max > \Min
+                \Thumb\len = ThumbLength(*This)
+              Else
+                \Thumb\len = \Area\len
                 
-              Case #PB_Bar_Maximum ; 2 -m&l
-                If \Max <> Value
-                  \Max = Value
-                  
-                  If \Page\len > \Max 
-                    \Page\Pos = \Min
-                  EndIf
-                  
-                  \Thumb\Pos = ThumbPos(*This, \Page\Pos)
-                  
-                  If \Max > \Min
-                    \Thumb\len = ThumbLength(*This)
-                  Else
-                    \Thumb\len = \Area\len
-                    
-                    If \Vertical 
-                      \Height[3] = \Thumb\len
-                    Else 
-                      \Width[3] = \Thumb\len
-                    EndIf
-                  EndIf
-                  
-                  If \Step = 0
-                    \Step = 1
-                  EndIf
-                  
-                  Resize = 1
+                If \Vertical 
+                  \Height[3] = \Thumb\len
+                Else 
+                  \Width[3] = \Thumb\len
                 EndIf
-                
-              Case #PB_Bar_PageLength ; 3 -m&l
-                If \Page\len <> Value
-                  If Value > (\Max-\Min)
-                    If \Max = 0 
-                      \Max = Value 
-                    EndIf
-                    Value = (\Max-\Min)
-                    \Page\Pos = \Min
-                  EndIf
-                  \Page\len = Value
-                  
-                  \Thumb\Pos = ThumbPos(*This, \Page\Pos)
-                  
-                  If \Page\len > \Min
-                    \Thumb\len = ThumbLength(*This)
-                  Else
-                    \Thumb\len = \ButtonLen[3]
-                  EndIf
-                  
-                  If \Step = 0
-                    \Step = 1
-                  EndIf
-                  If \Step < 2 And \Page\len
-                    \Step = (\Max-\Min) / \Page\len 
-                  EndIf
-                  
-                  Resize = 1
+              EndIf
+              
+              If \Step = 0
+                \Step = 1
+              EndIf
+              
+              Resize = 1
+            EndIf
+            
+          Case #PB_Widget_PageLength ; 3 -m&l
+            If \Page\len <> Value
+              If Value > (\Max-\Min)
+                If \Max = 0 
+                  \Max = Value 
                 EndIf
-                
-            EndSelect
+                Value = (\Max-\Min)
+                \Page\Pos = \Min
+              EndIf
+              \Page\len = Value
+              
+              \Thumb\Pos = ThumbPos(*This, \Page\Pos)
+              
+              If \Page\len > \Min
+                \Thumb\len = ThumbLength(*This)
+              Else
+                \Thumb\len = \ButtonLen[3]
+              EndIf
+              
+              If \Step = 0
+                \Step = 1
+              EndIf
+              If \Step < 2 And \Page\len
+                \Step = (\Max-\Min) / \Page\len 
+              EndIf
+              
+              Resize = 1
+            EndIf
             
         EndSelect
         
@@ -2628,112 +2580,6 @@ Module Widget
           \Resize = 0
           ProcedureReturn 1
         EndIf
-      EndIf
-    EndWith
-  EndProcedure
-  
-  Procedure.i GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
-    Protected Result.i
-    
-    With *This
-      Select \Type
-        Case #PB_GadgetType_Tree
-          ForEach \items()
-            If \items()\index= Item 
-              Select Attribute
-                Case #PB_Tree_SubLevel
-                  Result = \items()\sublevel
-                  
-              EndSelect
-              Break
-            EndIf
-          Next
-      EndSelect
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i SetItemAttribute(*This.Widget_S, Item.i, Attribute.i, Value.i)
-    Protected Result.i
-    
-    With *This
-      Select \Type
-        Case #PB_GadgetType_Panel
-          If SelectElement(\Tabs(), Item)
-            Select Attribute 
-              Case #PB_Button_Image
-                Result = SetImage(\Tabs(), Value)
-            EndSelect
-          EndIf
-      EndSelect
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i GetItemData(*This.Widget_S, Item.i)
-    Protected Result.i
-    
-    With *This
-      PushListPosition(\items()) 
-      ForEach \items()
-        If \items()\index = Item 
-          Result = \items()\data
-          Break
-        EndIf
-      Next
-      PopListPosition(\items())
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i SetItemData(*This.Widget_S, Item.i, *Data)
-    Protected Result.i
-    ;     Debug " "+Item +" "+ *Data
-    ;     
-    With *This
-      ForEach \items()
-        If \items()\index = Item 
-          \items()\data = *Data
-          Break
-        EndIf
-      Next
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i CountItems(*This.Widget_S)
-    ProcedureReturn *This\Text\Count
-  EndProcedure
-  
-  Procedure.i ClearItems(*This.Widget_S) 
-    With *This
-      \Text\Count = 0
-      \Text\Change = 1 
-      If \Text\Editable
-        \Text\String = #LF$
-      EndIf
-      ;       If Not \Repaint : \Repaint = 1
-      ;         PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
-      ;       EndIf
-    EndWith
-  EndProcedure
-  
-  Procedure.i RemoveItem(*This.Widget_S, Item.i) 
-    With *This
-      \Text\Count - 1
-      \Text\Change = 1
-      If \Text\Count =- 1 
-        \Text\Count = 0 
-        \Text\String = #LF$
-        ;         If Not \Repaint : \Repaint = 1
-        ;           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
-        ;         EndIf
-      Else
-        \Text\String = RemoveString(\Text\String, StringField(\Text\String, Item+1, #LF$) + #LF$)
       EndIf
     EndWith
   EndProcedure
@@ -2801,33 +2647,34 @@ Module Widget
       EndIf
       
       With *This
-        If \p 
-          If X<>#PB_Ignore
-            x=\p\x+x+\p\bs
-          EndIf
-          If y<>#PB_Ignore
-            y=\p\y+y+\p\TabHeight + \p\bs
-          EndIf
-          If Height<>#PB_Ignore
-            Height-\p\TabHeight
-          EndIf
+        If \p And X<>#PB_Ignore
+          x=\p\x+x+\p\bs
         EndIf
+        If \p And y<>#PB_Ignore
+          y=\p\y+y+\p\TabHeight + \p\bs
+        EndIf
+        If \p And Height<>#PB_Ignore
+          Height-\p\TabHeight ; - \p\bs
+        EndIf
+;         If \p And Width<>#PB_Ignore
+;           Width-\p\bs
+;         EndIf
         
-        ;         If \Type = #PB_GadgetType_Tree
-        ;           ; Set scroll bar coordinate
-        ;           ;         If X=#PB_Ignore : X = \X : Else : If \X <> X : Change_x = x-\x : \X = X : If \p : \x[2] = (\x-\p\x)+\bs : Else : \x[2] = \x+\bs : EndIf : \Resize | 1<<1 : EndIf : EndIf  
-        ;           ;         If Y=#PB_Ignore : Y = \Y : Else : If \Y <> Y : Change_y = y-\y : \Y = Y : If \p : \y[2] = (\y-\p\y)+\bs : Else : \y[2] = \y+\bs : EndIf : \Resize | 1<<2 : EndIf : EndIf  
-        ;           If X=#PB_Ignore : X = \X : Else : If \X <> X : Change_x = x-\x : \X = X : \x[2] = \x+\bs : \Resize | 1<<1 : EndIf : EndIf  
-        ;           If Y=#PB_Ignore : Y = \Y : Else : If \Y <> Y : Change_y = y-\y : \Y = Y : \y[2] = \y+\bs : \Resize | 1<<2 : EndIf : EndIf  
-        ;           If Width=#PB_Ignore : Width = \Width : Else : If \Width <> Width : Change_width = width-\width : \Width = Width : \width[2] = \width-\bs*2 : \Resize | 1<<3 : EndIf : EndIf  
-        ;           If Height=#PB_Ignore : Height = \Height : Else : If \Height <> Height : Change_height = height-\height : \Height = Height : \height[2] = \height-\bs*2 : \Resize | 1<<4 : EndIf : EndIf 
-        ;         Else
-        ; Set scroll bar coordinate
-        If X=#PB_Ignore : X = \X : Else : If \X <> X : Change_x = x-\x : \X = X : \Resize | 1<<1 : EndIf : EndIf  
-        If Y=#PB_Ignore : Y = \Y : Else : If \Y <> Y : Change_y = y-\y : \Y = Y : \Resize | 1<<2 : EndIf : EndIf  
-        If Width=#PB_Ignore : Width = \Width : Else : If \Width <> Width : Change_width = width-\width : \Width = Width : \Resize | 1<<3 : EndIf : EndIf  
-        If Height=#PB_Ignore : Height = \Height : Else : If \Height <> Height : Change_height = height-\height : \Height = Height : \Resize | 1<<4 : EndIf : EndIf 
-        ;         EndIf
+;         If \Type = #PB_GadgetType_Tree
+;           ; Set scroll bar coordinate
+;           ;         If X=#PB_Ignore : X = \X : Else : If \X <> X : Change_x = x-\x : \X = X : If \p : \x[2] = (\x-\p\x)+\bs : Else : \x[2] = \x+\bs : EndIf : \Resize | 1<<1 : EndIf : EndIf  
+;           ;         If Y=#PB_Ignore : Y = \Y : Else : If \Y <> Y : Change_y = y-\y : \Y = Y : If \p : \y[2] = (\y-\p\y)+\bs : Else : \y[2] = \y+\bs : EndIf : \Resize | 1<<2 : EndIf : EndIf  
+;           If X=#PB_Ignore : X = \X : Else : If \X <> X : Change_x = x-\x : \X = X : \x[2] = \x+\bs : \Resize | 1<<1 : EndIf : EndIf  
+;           If Y=#PB_Ignore : Y = \Y : Else : If \Y <> Y : Change_y = y-\y : \Y = Y : \y[2] = \y+\bs : \Resize | 1<<2 : EndIf : EndIf  
+;           If Width=#PB_Ignore : Width = \Width : Else : If \Width <> Width : Change_width = width-\width : \Width = Width : \width[2] = \width-\bs*2 : \Resize | 1<<3 : EndIf : EndIf  
+;           If Height=#PB_Ignore : Height = \Height : Else : If \Height <> Height : Change_height = height-\height : \Height = Height : \height[2] = \height-\bs*2 : \Resize | 1<<4 : EndIf : EndIf 
+;         Else
+          ; Set scroll bar coordinate
+          If X=#PB_Ignore : X = \X : Else : If \X <> X : Change_x = x-\x : \X = X : \Resize | 1<<1 : EndIf : EndIf  
+          If Y=#PB_Ignore : Y = \Y : Else : If \Y <> Y : Change_y = y-\y : \Y = Y : \Resize | 1<<2 : EndIf : EndIf  
+          If Width=#PB_Ignore : Width = \Width : Else : If \Width <> Width : Change_width = width-\width : \Width = Width : \Resize | 1<<3 : EndIf : EndIf  
+          If Height=#PB_Ignore : Height = \Height : Else : If \Height <> Height : Change_height = height-\height : \Height = Height : \Resize | 1<<4 : EndIf : EndIf 
+;         EndIf
         
         If \Resize
           Lines = Bool(\Type=#PB_GadgetType_ScrollBar)
@@ -2910,12 +2757,10 @@ Module Widget
         If \p And \y+\height>=\p\clip\y+\p\clip\height-h-\p\bs : \clip\height = \p\clip\height-h-\p\bs-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
         
         If \Resize
-          If (\Type = #PB_GadgetType_Splitter)
-            If \ps 
+          If \s 
+            If (\Type = #PB_GadgetType_Splitter)
               Resize_Splitter(*This)
-            EndIf
-          Else
-            If \s 
+            Else
               Resizes(\s, 0,0,\Width-\bs*2,\Height-\bs*2)
             EndIf
           EndIf
@@ -2973,11 +2818,11 @@ Module Widget
       If ScrollArea_X<\h\Page\Pos : ScrollArea_Width-ScrollArea_X : EndIf
       If ScrollArea_Y<\v\Page\Pos : ScrollArea_Height-ScrollArea_Y : EndIf
       
-      If \v\max<>ScrollArea_Height : SetAttribute(\v, #PB_Bar_Maximum, ScrollArea_Height) : EndIf
-      If \h\max<>ScrollArea_Width : SetAttribute(\h, #PB_Bar_Maximum, ScrollArea_Width) : EndIf
+      If \v\max<>ScrollArea_Height : SetAttribute(\v, #PB_Widget_Maximum, ScrollArea_Height) : EndIf
+      If \h\max<>ScrollArea_Width : SetAttribute(\h, #PB_Widget_Maximum, ScrollArea_Width) : EndIf
       
-      If \v\Page\len<>iHeight : SetAttribute(\v, #PB_Bar_PageLength, iHeight) : EndIf
-      If \h\Page\len<>iWidth : SetAttribute(\h, #PB_Bar_PageLength, iWidth) : EndIf
+      If \v\Page\len<>iHeight : SetAttribute(\v, #PB_Widget_PageLength, iHeight) : EndIf
+      If \h\Page\len<>iWidth : SetAttribute(\h, #PB_Widget_PageLength, iWidth) : EndIf
       
       If ScrollArea_Y<0 : SetState(\v, (ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) : EndIf
       If ScrollArea_X<0 : SetState(\h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
@@ -3001,9 +2846,9 @@ Module Widget
       If Width=#PB_Ignore : Width = \v\X-\h\X+\v\width : EndIf
       If Height=#PB_Ignore : Height = \h\Y-\v\Y+\h\height : EndIf
       
-      ;       If \v\p
-      ;         y - \v\p\bs
-      ;       EndIf
+;       If \v\p
+;         y - \v\p\bs
+;       EndIf
       
       \v\Page\len = Height - Bool(Not \h\hide) * \h\height
       \h\Page\len = Width - Bool(Not \v\hide) * \v\width
@@ -3065,81 +2910,24 @@ Module Widget
               EndSelect
               
             ElseIf ListSize(\Tabs())
-              SetState(*This, \index[1])
+              If \adress[1] 
+                ;ChangeCurrentElement(\Tabs(), \adress[1])
+                ;\index[1] >= 0 And
+                ;SelectElement(\Tabs(), \index[1])
+                \Index[2] = \index[1]
+                \adress[2] = \adress[1]
+                
+                ForEach \Childrens()
+                  Hides(\Childrens(), Bool(\Childrens()\pi<>\adress[1]))
+                Next
+                
+                Repaint = 1
+              EndIf
               
             ElseIf ListSize(\Items())
-              If \index[1] >= 0
+              If \adress[1] 
                 \Index[2] = \index[1]
-                
-                ;Debug \index[2]
-                
-                ;If focus
-                Protected sublevel, collapsed, adress
-                SelectElement(\Items(), \index[2])
-                
-                If (MouseScreenY > (\items()\box\y[1]) And MouseScreenY =< ((\items()\box\y[1]+\items()\box\height[1]))) And 
-                   ((MouseScreenX > \items()\box\x[1]) And (MouseScreenX =< (\items()\box\x[1]+\items()\box\width[1])))
-                  
-                  \items()\Checked ! 1
-                  *This\Change = 1
-                EndIf
-                
-                If (*This\flag\buttons And \items()\childrens) And
-                   (MouseScreenY > (\items()\box\y[0]) And MouseScreenY =< ((\items()\box\y[0]+\items()\box\height[0]))) And 
-                   ((MouseScreenX > \items()\box\x[0]) And (MouseScreenX =< (\items()\box\x[0]+\items()\box\width[0])))
-                  
-                  sublevel = \items()\sublevel
-                  \items()\collapsed ! 1
-                  
-                  PushListPosition(\items())
-                  While NextElement(\items())
-                    If sublevel = \items()\sublevel
-                      Break
-                    ElseIf sublevel < \items()\sublevel 
-                      If \items()\adress
-                        PushListPosition(\items())
-                        ChangeCurrentElement(\items(), \items()\adress)
-                        collapsed = \items()\collapsed
-                        If \items()\hide
-                          collapsed = 1
-                        EndIf
-                        PopListPosition(\items())
-                      EndIf
-                      
-                      \items()\hide = collapsed
-                    EndIf
-                  Wend
-                  PopListPosition(\items())
-                  
-                Else
-                  ;                     ; Get entered item only on image and text 
-                  ;                     If Not *This\flag\FullSelection And
-                  ;                        ((MouseScreenX < \items()\text\x-*This\Image\width) Or (MouseScreenX > \items()\text\x+\items()\text\width))
-                  ;                       Break
-                  ;                     EndIf
-                  
-                  ;                     If adress 
-                  ;                       PushListPosition(\items()) 
-                  ;                       ChangeCurrentElement(\items(), adress)
-                  ;                       If \items()\focus = \items()\index
-                  ;                         lostfocus = \items()\focus 
-                  ;                         \items()\lostfocus =- 1
-                  ;                         \items()\focus =- 1
-                  ;                       EndIf
-                  ;                       PopListPosition(\items()) 
-                  ;                       If lostfocus <> \items()\index
-                  ;                         \items()\lostfocus = lostfocus
-                  ;                         *This\index= \items()\index
-                  ;                         *This\Change = 1
-                  ;                       EndIf
-                  ;                     EndIf
-                  
-                  \items()\focus = \items()\index
-                EndIf
-                
-                ;EndIf
-                
-                
+                \adress[2] = \adress[1]
                 Repaint = 1
               EndIf
             EndIf
@@ -3252,7 +3040,7 @@ Module Widget
     Static Last.i, Down.i, *Lastat.Widget_S, *Last.Widget_S, mouseB.i, *mouseat.Widget_S, Buttons
     
     With *This
-      If *This > 0 And \color\alpha And Not \hide
+      If *This > 0 And Not \hide And \color\alpha
         If Not MouseScreenX
           MouseScreenX = GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX)
         EndIf
@@ -3267,7 +3055,6 @@ Module Widget
         
         ; Panel tabs events
         If \Tab And \Tab\Type 
-          \Tab\Hide = \Hide
           CallBack(\Tab, EventType.i, MouseScreenX.i, MouseScreenY.i) 
           If \Tab\at=1 Or \Tab\at=2
             ProcedureReturn 1
@@ -3280,16 +3067,6 @@ Module Widget
             ProcedureReturn 1
           EndIf
           If \s\h And \s\h\Type And (CallBack(\s\h, EventType.i, MouseScreenX.i, MouseScreenY.i) Or \s\h\at)
-            ProcedureReturn 1
-          EndIf
-        EndIf
-        
-        ; childrens events
-        If \ps ; And \Type <> #PB_GadgetType_Splitter
-          If \ps\v And \ps\v\Type And (CallBack(\ps\v, EventType.i, MouseScreenX.i, MouseScreenY.i) Or \ps\v\at)
-            ProcedureReturn 1
-          EndIf
-          If \ps\h And \ps\h\Type And (CallBack(\ps\h, EventType.i, MouseScreenX.i, MouseScreenY.i) Or \ps\h\at)
             ProcedureReturn 1
           EndIf
         EndIf
@@ -3343,18 +3120,20 @@ Module Widget
                     If \index[1] <> ListIndex(\Tabs())
                       \Tabs()\Color\State = 1
                       \index[1] = ListIndex(\Tabs())
+                      \adress[1] = \Tabs()
                       repaint=1
                     EndIf
                     
                   ElseIf \Tabs()\Color\State = 1
                     \Tabs()\Color\State = 0
                     \index[1] =- 1
+                    \adress[1] = 0
                     repaint=1
                   EndIf
                 EndIf
               Next
             EndIf
-            
+          
             ; items at point
             ForEach \Items()
               If Not \Items()\Hide
@@ -3364,21 +3143,23 @@ Module Widget
                   If \index[1] <> ListIndex(\Items())
                     \Items()\Color\State = 1
                     \index[1] = ListIndex(\Items())
+                    \adress[1] = \Items()
                     repaint=1
                   EndIf
                   
                 ElseIf \Items()\Color\State = 1
                   \Items()\Color\State = 0
                   \index[1] =- 1
+                  \adress[1] = 0
                   repaint=1
                 EndIf
               EndIf
             Next
             
-            ;  Debug \index[1]
-            ;              from(*This, MouseScreenX, MouseScreenX)
-            ;              Repaint = 1
-          EndIf
+          ;  Debug \index[1]
+;              from(*This, MouseScreenX, MouseScreenX)
+;              Repaint = 1
+           EndIf
           
           
           *mouseat = *This
@@ -3495,8 +3276,8 @@ Module Widget
       \Type = Type
       \Radius = Radius
       \ButtonLen[3] = SliderLen ; min thumb size
-      \Ticks = Bool(Flag&#PB_Bar_Ticks)
-      \Smooth = Bool(Flag&#PB_Bar_Smooth)
+      \Ticks = Bool(Flag&#PB_Widget_Ticks)
+      \Smooth = Bool(Flag&#PB_Widget_Smooth)
       \Vertical = Bool(Flag&#PB_Vertical)
       
       \ArrowSize[1] = 4
@@ -3523,7 +3304,7 @@ Module Widget
       \color[2]\alpha[1] = 128
       \color[3]\alpha[1] = 128
       
-      If Not Bool(Flag&#PB_Bar_NoButtons)
+      If Not Bool(Flag&#PB_Flag_NoButtons)
         If \Vertical
           If width < 21
             \ButtonLen = width - 1
@@ -3539,10 +3320,10 @@ Module Widget
         EndIf
       EndIf
       
-      If \Min <> Min : SetAttribute(*This, #PB_Bar_Minimum, Min) : EndIf
-      If \Max <> Max : SetAttribute(*This, #PB_Bar_Maximum, Max) : EndIf
-      If \Page\len <> Pagelength : SetAttribute(*This, #PB_Bar_PageLength, Pagelength) : EndIf
-      If Bool(Flag&#PB_Bar_Inverted) : SetAttribute(*This, #PB_Bar_Inverted, #True) : EndIf
+      If \Min <> Min : SetAttribute(*This, #PB_Widget_Minimum, Min) : EndIf
+      If \Max <> Max : SetAttribute(*This, #PB_Widget_Maximum, Max) : EndIf
+      If \Page\len <> Pagelength : SetAttribute(*This, #PB_Widget_PageLength, Pagelength) : EndIf
+      If Bool(Flag&#PB_Inverted) : SetAttribute(*This, #PB_Inverted, #True) : EndIf
       
     EndWith
     
@@ -3558,38 +3339,38 @@ Module Widget
   EndProcedure
   
   Procedure.i Progress(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
-    Protected Smooth = Bool(Flag&#PB_ProgressBar_Smooth) * #PB_Bar_Smooth
-    Protected Vertical = Bool(Flag&#PB_ProgressBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
-    ProcedureReturn Bar(#PB_GadgetType_ProgressBar, X,Y,Width,Height, Min, Max, 0, Smooth|Vertical|#PB_Bar_NoButtons, 0)
+    Protected Smooth = Bool(Flag&#PB_ProgressBar_Smooth) * #PB_Widget_Smooth
+    Protected Vertical = Bool(Flag&#PB_ProgressBar_Vertical) * (#PB_Vertical|#PB_Inverted)
+    ProcedureReturn Bar(#PB_GadgetType_ProgressBar, X,Y,Width,Height, Min, Max, 0, Smooth|Vertical|#PB_Flag_NoButtons, 0)
   EndProcedure
   
   Procedure.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
-    Protected Ticks = Bool(Flag&#PB_TrackBar_Ticks) * #PB_Bar_Ticks
-    Protected Vertical = Bool(Flag&#PB_TrackBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
-    ProcedureReturn Bar(#PB_GadgetType_TrackBar, X,Y,Width,Height, Min, Max, 0, Ticks|Vertical|#PB_Bar_NoButtons, 0)
+    Protected Ticks = Bool(Flag&#PB_TrackBar_Ticks) * #PB_Widget_Ticks
+    Protected Vertical = Bool(Flag&#PB_TrackBar_Vertical) * (#PB_Vertical|#PB_Inverted)
+    ProcedureReturn Bar(#PB_GadgetType_TrackBar, X,Y,Width,Height, Min, Max, 0, Ticks|Vertical|#PB_Flag_NoButtons, 0)
   EndProcedure
   
   Procedure.i Splitter(X.i,Y.i,Width.i,Height.i, First.i, Second.i, Flag.i=0)
     Protected Vertical = Bool(Not Flag&#PB_Splitter_Vertical) * #PB_Vertical
     Protected *Bar.Widget_S, *This.Widget_S, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
-    *This = Bar(0, X,Y,Width,Height, 0, Max, 0, Vertical|#PB_Bar_NoButtons, 0, 7)
+    *This = Bar(0, X,Y,Width,Height, 0, Max, 0, Vertical|#PB_Flag_NoButtons, 0, 7)
     
     With *This
-      \ps = AllocateStructure(Scroll_S)
-      \ps\v = First
-      \ps\h = Second
+      \s = AllocateStructure(Scroll_S)
+      \s\v = First
+      \s\h = Second
       
       \Type = #PB_GadgetType_Splitter
       \Thumb\len = 7
       
-      *Bar = \ps\v 
+      *Bar = \s\v 
       ; thisis bar
       If Not IsGadget(First) And IsBar(*Bar)
         *Bar\p = *This
         \Type[1] = *Bar\Type
       EndIf
       
-      *Bar = \ps\h 
+      *Bar = \s\h 
       ; thisis bar
       If Not IsGadget(Second) And IsBar(*Bar)
         *Bar\p = *This
@@ -3620,8 +3401,8 @@ Module Widget
       
       If IsImage(Image)
         \Image\change = 1
-        \image\index = Image
-        \image\adress = ImageID(Image)
+        \Image\adress[1] = Image
+        \Image\adress = ImageID(Image)
         \Image\width = ImageWidth(Image)
         \Image\height = ImageHeight(Image)
       EndIf
@@ -3651,8 +3432,8 @@ Module Widget
       \Text\Align\Horizontal = 1
       
       If IsImage(Image)
-        \image\index = Image
-        \image\adress = ImageID(Image)
+        \Image\adress[1] = Image
+        \Image\adress = ImageID(Image)
         \Image\width = ImageWidth(Image)
         \Image\height = ImageHeight(Image)
         
@@ -3930,17 +3711,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
   EndProcedure
   
-  ;   Procedure Widgets_CallBack()
-  ;     Debug 4444
-  ;   EndProcedure
-  
   Procedure Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint, iWidth, iHeight
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
     Protected mouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
     Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    
     
     
     Select EventType
@@ -3957,8 +3733,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ;     Repaint | CallBack(*Scroll_3, EventType, mouseX,mouseY)
     ;     Repaint | CallBack(*ScrollArea, EventType, mouseX,mouseY)
     ;     Repaint | CallBack(*Scroll_1, EventType, mouseX,mouseY)
-    
-    ;Debug WidgetEventType()
     
     If Repaint
       ReDraw(1)
@@ -4030,7 +3804,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       CanvasGadget(1, 10,10, 380, 350, #PB_Canvas_Keyboard|#PB_Canvas_Container)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
-      
+     
       ;*Scroll_1.Widget_S  = Image(0, 0, 0, 0, 0, #PB_Flag_AutoSize); : SetState(*Scroll_1, 1) 
       *Scroll_1.Widget_S = Tree(10,20,250,135, #PB_Flag_AutoSize) 
       AddItem(*Scroll_1, 0, "Tree_0", -1 )
@@ -4370,5 +4144,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------
 ; EnableXP
