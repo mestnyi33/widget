@@ -1206,56 +1206,38 @@ Module Widget
               
               ; Draw plot
               If \flag\Lines 
-                x_point=\items()\box\x+\items()\box\width/2
-                y_point=\items()\box\y+\items()\box\height/2
-                
-                If x_point>\x[2]
-                  ; Horisontal plot
-                  If Drawing
-                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    For i=0 To line_size Step 2
-                      If Not \items()\childrens Or (i>box_size/2) Or \flag\Buttons=0
-                        Line(x_point+i,y_point,1,1, point_color&$FFFFFF|alpha<<24)
-                      EndIf
-                    Next
-                  EndIf
+                  x_point=\items()\box\x+\items()\box\width/2
+                  y_point=\items()\box\y+\items()\box\height/2
                   
-                  ; Vertical plot
-                  If \items()\adress>=0 
-                    start=Bool(Not \items()\sublevel) ;  And Not \items()\childrens
+                  If x_point>\x+\fs
+                    ; Horisontal plot
+                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                    Line(x_point,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
                     
-                    PushMapPosition(\items())
+                    ; Vertical plot
+                    If \items()\adress 
+                      start=Bool(Not \items()\sublevel) ;  And Not \items()\childrens
+                      
+                      PushMapPosition(\items())
                     If FindMapElement(\items(), Str(\items()\adress)) 
                     ; Debug ""+\items()\index;+" "+\items()\adress
                      
                       If start 
-                        start = (\y+\items()\height/2)-\s\v\Page\Pos 
+                        start = (\y+\fs*2+\items()\height/2)-\s\v\Page\Pos 
                       Else 
                         start = \items()\y+\items()\height+\items()\height/2-line_size 
                       EndIf
                     EndIf
                     PopMapPosition(\items())
                     
-                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    For i=y_point To start Step -2
-                      If Bool(i>0 And i<OutputHeight()) And Bool(x_point>0 And x_point<OutputWidth())
-                        
-                        Select Point(x_point,i)
-                          Case $F3F3F3, $F7F7F7, $FBFBFB, 16645629, 15856113, 16119285, 16382457, 4286479998, 4294177779, 4294704123
-                            Continue
-                          Default
-                            ; Debug Point(x_point,i)
-                            Line(x_point,i,1,1, point_color&$FFFFFF|alpha<<24)
-                        EndSelect
-                      EndIf
-                    Next
-                    ;                     EndIf
-                    ;                     PopListPosition(\items())
+                    
+                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                      Line(x_point,start,1,y_point-start, point_color&$FFFFFF|alpha<<24)
+                    EndIf
                   EndIf
                 EndIf
-              EndIf
-              
-              If Drawing
+                
+             If Drawing
                 ; Draw checkbox
                 If \flag\CheckBoxes
                   Draw_Box(\items()\box\x[1],\items()\box\y[1],\items()\box\width[1],\items()\box\height[1], 3, \items()\Checked, checkbox_color, box_color, 2, alpha);, box_type)
@@ -4237,5 +4219,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------
 ; EnableXP

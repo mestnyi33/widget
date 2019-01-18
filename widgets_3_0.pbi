@@ -141,7 +141,7 @@ DeclareModule Widget
   ;- - Items_S
   Structure Items_S Extends Coordinate_S
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    *adress.Items_S
+    adress.i
     Drawing.i
     
     Image.Image_S
@@ -185,28 +185,11 @@ DeclareModule Widget
     Key.i[2]
   EndStructure
   
-  
-  ;- - Anchor_S
-  Structure Anchor_S
-    X.i
-    Y.i
-    Pos.i
-    State.i
-    Width.i
-    Height.i
-    
-    *p.Widget_S ; adress parent
-    Cursor.i[2]
-    Color.Color_S[4]
-  EndStructure
-  
   ;- - Widget_S
   Structure Widget_S Extends Bar_S
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
     adress.i
     Drawing.i
-    
-    *anchor.Anchor_S[10]
     
     fs.i 
     bs.i
@@ -218,7 +201,6 @@ DeclareModule Widget
     
     List *Childrens.Widget_S()
     List *Tabs.Items_S()
-    List *Draws.Items_S()
     
     *Tab.Widget_S
     
@@ -311,7 +293,6 @@ DeclareModule Widget
     #PB_Flag_AutoSize
     #PB_Flag_AutoRight
     #PB_Flag_AutoBottom
-    #PB_Flag_AnchorsGadget
     
     #PB_Flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
     
@@ -626,145 +607,6 @@ Module Widget
     : If _this_\Vertical : _this_\Y[3] = _this_\Thumb\Pos : Else : _this_\X[3] = _this_\Thumb\Pos : EndIf
   EndMacro
   
-;   Macro ResizeAnchors(_this_)
-;     If _this_\anchor[1] : Resize(_this_\anchor[1], _this_\x-_this_\anchor[1]\len+_this_\anchor[1]\Pos, _this_\y+(_this_\height-_this_\anchor[1]\len)/2, #PB_Ignore, #PB_Ignore) : EndIf
-;     If _this_\anchor[2] : Resize(_this_\anchor[2], _this_\x+(_this_\width-_this_\anchor[2]\len)/2, _this_\y-_this_\anchor[2]\len+_this_\anchor[2]\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If _this_\anchor[3] : Resize(_this_\anchor[3], _this_\x+_this_\width-_this_\anchor[3]\Pos, _this_\y+(_this_\height-_this_\anchor[3]\len)/2, #PB_Ignore, #PB_Ignore) : EndIf
-;     If _this_\anchor[4] : Resize(_this_\anchor[4], _this_\x+(_this_\width-_this_\anchor[4]\len)/2, _this_\y+_this_\height-_this_\anchor[4]\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If _this_\anchor[5] : Resize(_this_\anchor[5], _this_\x-_this_\anchor[5]\len+_this_\anchor[5]\Pos, _this_\y-_this_\anchor[5]\len+_this_\anchor[5]\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If _this_\anchor[6] : Resize(_this_\anchor[6], _this_\x+_this_\width-_this_\anchor[6]\Pos, _this_\y-_this_\anchor\len+_this_\anchor[6]\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If _this_\anchor[7] : Resize(_this_\anchor[7], _this_\x+_this_\width-_this_\anchor[7]\Pos, _this_\y+_this_\height-_this_\anchor[7]\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If _this_\anchor[8] : Resize(_this_\anchor[8], _this_\x-_this_\anchor[8]\len+_this_\anchor[8]\Pos, _this_\y+_this_\height-_this_\anchor[8]\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;     If _this_\anchor[9] : Resize(_this_\anchor[9], _this_\x+(_this_\anchor[9]\Pos+2), _this_\y-_this_\anchor[9]\len+_this_\anchor[9]\Pos, #PB_Ignore, #PB_Ignore) : EndIf
-;   EndMacro
-  
-;   Macro DrawAnchors(_this_)
-;     If _this_\anchor[1] : Box(_this_\x-_this_\anchor[1]\len+_this_\anchor[1]\Pos, _this_\y+(_this_\height-_this_\anchor[1]\len)/2, _this_\anchor[1]\len, _this_\anchor[1]\len,0) : EndIf
-;     If _this_\anchor[2] : Box(_this_\x+(_this_\width-_this_\anchor[2]\len)/2, _this_\y-_this_\anchor[2]\len+_this_\anchor[2]\Pos, _this_\anchor[2]\len, _this_\anchor[2]\len,0) : EndIf
-;     If _this_\anchor[3] : Box(_this_\x+_this_\width-_this_\anchor[3]\Pos, _this_\y+(_this_\height-_this_\anchor[3]\len)/2, _this_\anchor[3]\len, _this_\anchor[3]\len,0) : EndIf
-;     If _this_\anchor[4] : Box(_this_\x+(_this_\width-_this_\anchor[4]\len)/2, _this_\y+_this_\height-_this_\anchor[4]\Pos, _this_\anchor[4]\len, _this_\anchor[4]\len,0) : EndIf
-;     If _this_\anchor[5] : Box(_this_\x-_this_\anchor[5]\len+_this_\anchor[5]\Pos, _this_\y-_this_\anchor[5]\len+_this_\anchor[5]\Pos, _this_\anchor[5]\len, _this_\anchor[5]\len,0) : EndIf
-;     If _this_\anchor[6] : Box(_this_\x+_this_\width-_this_\anchor[6]\Pos, _this_\y-_this_\anchor[6]\len+_this_\anchor[6]\Pos, _this_\anchor[6]\len, _this_\anchor[6]\len,0) : EndIf
-;     If _this_\anchor[7] : Box(_this_\x+_this_\width-_this_\anchor[7]\Pos, _this_\y+_this_\height-_this_\anchor[7]\Pos, _this_\anchor[7]\len, _this_\anchor[7]\len,0) : EndIf
-;     If _this_\anchor[8] : Box(_this_\x-_this_\anchor[8]\len+_this_\anchor[8]\Pos, _this_\y+_this_\height-_this_\anchor[8]\Pos, _this_\anchor[8]\len, _this_\anchor[8]\len,0) : EndIf
-;     If _this_\anchor[9] : Box(_this_\x+(_this_\anchor[9]\Pos+2), _this_\y-_this_\anchor[9]\len+_this_\anchor[9]\Pos, _this_\anchor[9]\len*2, _this_\anchor[9]\len,0) : EndIf
-;   EndMacro
-  Macro DrawAnchors(_this_)
-    DrawingMode(#PB_2DDrawing_Default)
-    If _this_\anchor[1] : Box(_this_\anchor[1]\x, _this_\anchor[1]\y, _this_\anchor[1]\width, _this_\anchor[1]\height ,_this_\anchor[1]\color[_this_\anchor[1]\State]\back) : EndIf
-    If _this_\anchor[2] : Box(_this_\anchor[2]\x, _this_\anchor[2]\y, _this_\anchor[2]\width, _this_\anchor[2]\height ,_this_\anchor[2]\color[_this_\anchor[2]\State]\back) : EndIf
-    If _this_\anchor[3] : Box(_this_\anchor[3]\x, _this_\anchor[3]\y, _this_\anchor[3]\width, _this_\anchor[3]\height ,_this_\anchor[3]\color[_this_\anchor[3]\State]\back) : EndIf
-    If _this_\anchor[4] : Box(_this_\anchor[4]\x, _this_\anchor[4]\y, _this_\anchor[4]\width, _this_\anchor[4]\height ,_this_\anchor[4]\color[_this_\anchor[4]\State]\back) : EndIf
-    If _this_\anchor[5] : Box(_this_\anchor[5]\x, _this_\anchor[5]\y, _this_\anchor[5]\width, _this_\anchor[5]\height ,_this_\anchor[5]\color[_this_\anchor[5]\State]\back) : EndIf
-    If _this_\anchor[6] : Box(_this_\anchor[6]\x, _this_\anchor[6]\y, _this_\anchor[6]\width, _this_\anchor[6]\height ,_this_\anchor[6]\color[_this_\anchor[6]\State]\back) : EndIf
-    If _this_\anchor[7] : Box(_this_\anchor[7]\x, _this_\anchor[7]\y, _this_\anchor[7]\width, _this_\anchor[7]\height ,_this_\anchor[7]\color[_this_\anchor[7]\State]\back) : EndIf
-    If _this_\anchor[8] : Box(_this_\anchor[8]\x, _this_\anchor[8]\y, _this_\anchor[8]\width, _this_\anchor[8]\height ,_this_\anchor[8]\color[_this_\anchor[8]\State]\back) : EndIf
-    If _this_\anchor[9] : Box(_this_\anchor[9]\x, _this_\anchor[9]\y, _this_\anchor[9]\width, _this_\anchor[9]\height ,_this_\anchor[9]\color[_this_\anchor[9]\State]\back) : EndIf
-    
-    DrawingMode(#PB_2DDrawing_Outlined)
-    If _this_\anchor[1] : Box(_this_\anchor[1]\x, _this_\anchor[1]\y, _this_\anchor[1]\width, _this_\anchor[1]\height ,_this_\anchor[1]\color[_this_\anchor[1]\State]\frame) : EndIf
-    If _this_\anchor[2] : Box(_this_\anchor[2]\x, _this_\anchor[2]\y, _this_\anchor[2]\width, _this_\anchor[2]\height ,_this_\anchor[2]\color[_this_\anchor[2]\State]\frame) : EndIf
-    If _this_\anchor[3] : Box(_this_\anchor[3]\x, _this_\anchor[3]\y, _this_\anchor[3]\width, _this_\anchor[3]\height ,_this_\anchor[3]\color[_this_\anchor[3]\State]\frame) : EndIf
-    If _this_\anchor[4] : Box(_this_\anchor[4]\x, _this_\anchor[4]\y, _this_\anchor[4]\width, _this_\anchor[4]\height ,_this_\anchor[4]\color[_this_\anchor[4]\State]\frame) : EndIf
-    If _this_\anchor[5] : Box(_this_\anchor[5]\x, _this_\anchor[5]\y, _this_\anchor[5]\width, _this_\anchor[5]\height ,_this_\anchor[5]\color[_this_\anchor[5]\State]\frame) : EndIf
-    If _this_\anchor[6] : Box(_this_\anchor[6]\x, _this_\anchor[6]\y, _this_\anchor[6]\width, _this_\anchor[6]\height ,_this_\anchor[6]\color[_this_\anchor[6]\State]\frame) : EndIf
-    If _this_\anchor[7] : Box(_this_\anchor[7]\x, _this_\anchor[7]\y, _this_\anchor[7]\width, _this_\anchor[7]\height ,_this_\anchor[7]\color[_this_\anchor[7]\State]\frame) : EndIf
-    If _this_\anchor[8] : Box(_this_\anchor[8]\x, _this_\anchor[8]\y, _this_\anchor[8]\width, _this_\anchor[8]\height ,_this_\anchor[8]\color[_this_\anchor[8]\State]\frame) : EndIf
-    If _this_\anchor[9] : Box(_this_\anchor[9]\x, _this_\anchor[9]\y, _this_\anchor[9]\width, _this_\anchor[9]\height ,_this_\anchor[9]\color[_this_\anchor[9]\State]\frame) : EndIf
-  EndMacro
-  
-  Macro ResizeAnchors(_this_)
-    If _this_\anchor[1] 
-      _this_\anchor[1]\x = _this_\x-_this_\anchor[1]\width+_this_\anchor[1]\Pos
-      _this_\anchor[1]\y = _this_\y+(_this_\height-_this_\anchor[1]\height)/2
-    EndIf
-    If _this_\anchor[2] 
-      _this_\anchor[2]\x = _this_\x+(_this_\width-_this_\anchor[2]\width)/2
-      _this_\anchor[2]\y = _this_\y-_this_\anchor[2]\height+_this_\anchor[2]\Pos
-    EndIf
-    If  _this_\anchor[3]
-      _this_\anchor[3]\x = _this_\x+_this_\width-_this_\anchor[3]\Pos
-      _this_\anchor[3]\y = _this_\y+(_this_\height-_this_\anchor[3]\height)/2
-    EndIf
-    If _this_\anchor[4] 
-      _this_\anchor[4]\x = _this_\x+(_this_\width-_this_\anchor[4]\width)/2
-      _this_\anchor[4]\y = _this_\y+_this_\height-_this_\anchor[4]\Pos
-    EndIf
-    If _this_\anchor[5] 
-      _this_\anchor[5]\x = _this_\x-_this_\anchor[5]\width+_this_\anchor[5]\Pos
-      _this_\anchor[5]\y = _this_\y-_this_\anchor[5]\height+_this_\anchor[5]\Pos
-    EndIf
-    If _this_\anchor[6] 
-      _this_\anchor[6]\x = _this_\x+_this_\width-_this_\anchor[6]\Pos
-      _this_\anchor[6]\y = _this_\y-_this_\anchor[6]\height+_this_\anchor[6]\Pos
-    EndIf
-    If _this_\anchor[7] 
-      _this_\anchor[7]\x = _this_\x+_this_\width-_this_\anchor[7]\Pos
-      _this_\anchor[7]\y = _this_\y+_this_\height-_this_\anchor[7]\Pos
-    EndIf
-    If _this_\anchor[8] 
-      _this_\anchor[8]\x = _this_\x-_this_\anchor[8]\width+_this_\anchor[8]\Pos
-      _this_\anchor[8]\y = _this_\y+_this_\height-_this_\anchor[8]\Pos
-    EndIf
-    If _this_\anchor[9] 
-      _this_\anchor[9]\x = _this_\x+(_this_\anchor[9]\Pos+2)
-      _this_\anchor[9]\y = _this_\y-_this_\anchor[9]\height+_this_\anchor[9]\Pos 
-    EndIf
-  EndMacro
-  
-  Procedure SetAnchors(*This.Widget_S, State)
-    Structure DataBuffer
-      cursor.i[10]
-    EndStructure
-    
-    Protected *Cursor.DataBuffer = ?CursorsBuffer
-    
-    With *This
-      If State
-        Protected i
-        For i=1 To 9
-          \anchor[i] = AllocateStructure(Anchor_S)
-          \anchor[i]\p = *This
-          \anchor[i]\Cursor = *Cursor\Cursor[i]
-          \anchor[i]\Color[0]\Frame = $000000
-          \anchor[i]\Color[1]\Frame = $FF0000
-          \anchor[i]\Color[2]\Frame = $0000FF
-          
-          \anchor[i]\Color[0]\Back = $FFFFFF
-          \anchor[i]\Color[1]\Back = $FFFFFF
-          \anchor[i]\Color[2]\Back = $FFFFFF
-          
-          \anchor[i]\Height = 6
-          \anchor[i]\Width = 6
-          \anchor[i]\Pos = \anchor[i]\Height/2
-        Next i
-        \anchor[9]\Width * 2
-        
-;         For i=1 To 9
-;           Debug \anchor[i]\Cursor;*Cursor\Cursor[i]
-;           
-;         Next i
-        
-      EndIf
-    EndWith
-    
-    DataSection
-      CursorsBuffer:
-      Data.i 0
-      Data.i #PB_Cursor_LeftRight
-      Data.i #PB_Cursor_UpDown
-      Data.i #PB_Cursor_LeftRight
-      Data.i #PB_Cursor_UpDown
-      Data.i #PB_Cursor_LeftUpRightDown
-      Data.i #PB_Cursor_LeftDownRightUp
-      Data.i #PB_Cursor_LeftUpRightDown
-      Data.i #PB_Cursor_LeftDownRightUp
-      Data.i #PB_Cursor_Hand ;  #PB_Cursor_Arrows
-    EndDataSection
-    
-  EndProcedure
-  
-  
   ;-
   Procedure.s Make(*This.Widget_S, Text.s)
     Protected String.s, i.i, Len.i
@@ -1064,7 +906,7 @@ Module Widget
   
   ;-
   ;- DRAWING
-  Procedure.i Draw_Box(X,Y, Width, Height, Type, Checked, Color, BackColor, Radius, Alpha=255) 
+  Procedure Draw_Box(X,Y, Width, Height, Type, Checked, Color, BackColor, Radius, Alpha=255) 
     Protected I, checkbox_backcolor
     
     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
@@ -1210,11 +1052,11 @@ Module Widget
     EndWith
   EndProcedure
   
-  Procedure.i Draw_Tree(*This.Widget_S, scroll_x,scroll_y)
+  Procedure Draw_Tree(*This.Widget_S, scroll_x,scroll_y)
     Protected y_point,x_point, level,iY, start,i, back_color=$FFFFFF, point_color=$7E7E7E, box_color=$7E7E7E
     Protected hide_color=$FEFFFF, box_size = 9,box_1_size = 12, alpha = 255, item_alpha = 255
     Protected line_size=8, box_1_pos.b = 0, checkbox_color = $FFFFFF, checkbox_backcolor, box_type.b = -1
-    Protected Drawing.I, text_color, State_3
+    Protected Drawing.i, Drawing1.i, text_color, State_3
     
     With *This
       If *This > 0
@@ -1232,7 +1074,7 @@ Module Widget
           EndIf
           
           ForEach \items()
-            If Not \items()\Text\change And Not \Resize And Not \Change
+            If Not \items()\change And Not \Resize And Not \Change
               Break
             EndIf
             
@@ -1242,9 +1084,42 @@ Module Widget
             EndIf
             
             If Not \items()\hide 
+              \items()\y[2]=\s\v\y+\s\height
+              
+              If \items()\y[2] > \s\v\Page\Pos
+                ;Debug ""+\items()\y[2]+" "+\s\v\Page\Pos
+                 If Not Drawing
+                Drawing = @\Items();\Drawing 
+              EndIf
+           EndIf
+              
+              \s\height+\items()\height
+              
+              If \s\Width < (\items()\text\x-\x+\items()\text\width)+\s\h\Page\Pos
+                \s\Width = (\items()\text\x-\x+\items()\text\width)+\s\h\Page\Pos
+              EndIf
+            EndIf
+          Next
+          
+          If Drawing
+            \Drawing = Drawing
+          EndIf
+          
+          If \Drawing
+          ChangeCurrentElement(\Items(), \Drawing)
+        EndIf
+        Repeat
+            ;ForEach \items()
+            If Not \items()\change And Not \Resize
+              Break
+            EndIf
+;             
+;           Debug ListIndex(\Items())
+;           
+            If Not \items()\hide 
               \items()\width=\s\h\Page\len
               \items()\x=\s\h\x-\s\h\Page\Pos
-              \items()\y=(\s\v\y+\s\height)-\s\v\Page\Pos
+              \items()\y=\items()\y[2]-\s\v\Page\Pos
               
               If \items()\text\change = 1
                 \items()\text\height = TextHeight("A")
@@ -1281,128 +1156,153 @@ Module Widget
                 \items()\box\y[1] = (\items()\y+\items()\height)-(\items()\height+\items()\box\height[1])/2
               EndIf
               
-              \s\height+\items()\height
-              
-              If \s\Width < (\items()\text\x-\x+\items()\text\width)+\s\h\Page\Pos
-                \s\Width = (\items()\text\x-\x+\items()\text\width)+\s\h\Page\Pos
+              \Items()\Drawing = Bool(\items()\y+\items()\height>\y+\bs And \items()\y<\y+\height-\bs)
+              If \Items()\Drawing And Not Drawing1
+                Drawing1 = @\Items();\Drawing 
               EndIf
             EndIf
-              
-              \Items()\Drawing = Bool(Not \items()\hide And \items()\y+\items()\height>\y+\bs And \items()\y<\y+\height-\bs)
-              If \Items()\Drawing And Not Drawing
-                Drawing = @\Items()
-              EndIf
             
             \items()\text\change = 0
             \items()\change = 0
-          Next
-          
-          If Drawing
-            \Drawing = Drawing
+           Until Not NextElement(\Items()) 
+;         ; Next
+;           
+          If Drawing1
+            \Drawing = Drawing1
           EndIf
           
           If \Drawing
-            ChangeCurrentElement(\Items(), \Drawing)
-            Repeat 
-              If \Items()\Drawing
-                State_3 = \Items()\State
+          ChangeCurrentElement(\Items(), \Drawing)
+            Repeat
+              If Not \Items()\Drawing
+                Break
+              EndIf
+;               
+            Drawing = \Items()\Drawing ; Bool(Not \items()\hide And \items()\y+\items()\height>\y+\bs And \items()\y<\y+\height-\bs*2)
+            If Drawing
+              State_3 = \Items()\State
               
-                ; Draw selections
-                If \flag\FullSelection
-                  If State_3 = 1
-                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, \Color\Back[State_3]&$FFFFFFFF|item_alpha<<24)
-                    
-                    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                    Box(\items()\x+\s\h\Page\Pos,\items()\y,\items()\width,\items()\height, \Color\Frame[State_3]&$FFFFFFFF|item_alpha<<24)
-                  EndIf
+              ; Draw selections
+              If \flag\FullSelection
+                If State_3 = 1
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                  Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, \Color\Back[State_3]&$FFFFFFFF|item_alpha<<24)
                   
-                  If State_3 = 2
-                    If \Focus : item_alpha = 200
-                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                      Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, $E89C3D&back_color|item_alpha<<24)
-                      
-                      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                      Box(\items()\x+\s\h\Page\Pos,\items()\y,\items()\width,\items()\height, $DC9338&back_color|item_alpha<<24)
-                    Else
-                      ;If \flag\AlwaysSelection
-                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                      Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, $E2E2E2&back_color|item_alpha<<24)
-                      
-                      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                      Box(\items()\x+\s\h\Page\Pos,\items()\y,\items()\width,\items()\height, $C8C8C8&back_color|item_alpha<<24)
-                      ;EndIf
-                    EndIf
-                  EndIf
+                  DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                  Box(\items()\x+\s\h\Page\Pos,\items()\y,\items()\width,\items()\height, \Color\Frame[State_3]&$FFFFFFFF|item_alpha<<24)
                 EndIf
                 
-                ; Draw boxes
-                If \flag\Buttons And \items()\childrens
-                  If box_type=-1
+                If State_3 = 2
+                  If \Focus : item_alpha = 200
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Widget::Arrow(\items()\box\X[0]+(\items()\box\Width[0]-6)/2,\items()\box\Y[0]+(\items()\box\height[0]-6)/2, 6, Bool(Not \items()\collapsed)+2, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24, 0,0) 
+                    Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, $E89C3D&back_color|item_alpha<<24)
+                    
+                    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                    Box(\items()\x+\s\h\Page\Pos,\items()\y,\items()\width,\items()\height, $DC9338&back_color|item_alpha<<24)
                   Else
-                    DrawingMode(#PB_2DDrawing_Gradient)
-                    BackColor($FFFFFF) : FrontColor($EEEEEE)
-                    LinearGradient(\items()\box\x, \items()\box\y, \items()\box\x, (\items()\box\y+\items()\box\height))
-                    RoundBox(\items()\box\x+1,\items()\box\y+1,\items()\box\width-2,\items()\box\height-2,box_type,box_type)
-                    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
+                    ;If \flag\AlwaysSelection
+                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                    Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, $E2E2E2&back_color|item_alpha<<24)
                     
                     DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                    RoundBox(\items()\box\x,\items()\box\y,\items()\box\width,\items()\box\height,box_type,box_type,box_color&$FFFFFF|alpha<<24)
-                    
-                    Line(\items()\box\x+2,\items()\box\y+\items()\box\height/2 ,\items()\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
-                    If \items()\collapsed : Line(\items()\box\x+\items()\box\width/2,\items()\box\y+2,1,\items()\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
+                    Box(\items()\x+\s\h\Page\Pos,\items()\y,\items()\width,\items()\height, $C8C8C8&back_color|item_alpha<<24)
+                    ;EndIf
                   EndIf
-                EndIf
-                
-                ; Draw plot
-                If \flag\Lines 
-                  x_point=\items()\box\x+\items()\box\width/2
-                  y_point=\items()\box\y+\items()\box\height/2
-                  
-                  If x_point>\x+\fs
-                    ; Horisontal plot
-                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Line(x_point,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
-                    
-                    ; Vertical plot
-                    If \items()\adress 
-                      start=Bool(Not \items()\sublevel)
-                      
-                      If start 
-                        start = (\y+\fs*2+\items()\adress\height/2)-\s\v\Page\Pos
-                      Else 
-                        start = \items()\adress\y+\items()\adress\height+\items()\adress\height/2-line_size
-                      EndIf
-                      
-                      Line(x_point,start,1,y_point-start, point_color&$FFFFFF|alpha<<24)
-                    EndIf
-                  EndIf
-                EndIf
-                
-                ; Draw checkbox
-                If \flag\CheckBoxes
-                  Draw_Box(\items()\box\x[1],\items()\box\y[1],\items()\box\width[1],\items()\box\height[1], 3, \items()\Checked, checkbox_color, box_color, 2, alpha);, box_type)
-                EndIf
-                
-                ; Draw image
-                If \items()\image\adress
-                  DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                  DrawAlphaImage(\items()\image\adress, \items()\Image\x, \items()\Image\y, alpha)
-                EndIf
-                
-                ; Draw string
-                If \items()\text\string.s
-                  DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                  DrawText(\items()\text\x, \items()\text\y, \items()\text\string.s, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24)
                 EndIf
               EndIf
+              
+              ; Draw boxes
+              If \flag\Buttons And \items()\childrens
+                If box_type=-1
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                  Widget::Arrow(\items()\box\X[0]+(\items()\box\Width[0]-6)/2,\items()\box\Y[0]+(\items()\box\height[0]-6)/2, 6, Bool(Not \items()\collapsed)+2, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24, 0,0) 
+                Else
+                  DrawingMode(#PB_2DDrawing_Gradient)
+                  BackColor($FFFFFF) : FrontColor($EEEEEE)
+                  LinearGradient(\items()\box\x, \items()\box\y, \items()\box\x, (\items()\box\y+\items()\box\height))
+                  RoundBox(\items()\box\x+1,\items()\box\y+1,\items()\box\width-2,\items()\box\height-2,box_type,box_type)
+                  BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
+                  
+                  DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                  RoundBox(\items()\box\x,\items()\box\y,\items()\box\width,\items()\box\height,box_type,box_type,box_color&$FFFFFF|alpha<<24)
+                  
+                  Line(\items()\box\x+2,\items()\box\y+\items()\box\height/2 ,\items()\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
+                  If \items()\collapsed : Line(\items()\box\x+\items()\box\width/2,\items()\box\y+2,1,\items()\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
+                EndIf
+              EndIf
+              ;EndIf
+              
+              ; Draw plot
+              If \flag\Lines 
+                x_point=\items()\box\x+\items()\box\width/2
+                y_point=\items()\box\y+\items()\box\height/2
+                
+                If x_point>\x[2]
+                  ; Horisontal plot
+                  If Drawing
+                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                    For i=0 To line_size Step 2
+                      If Not \items()\childrens Or (i>box_size/2) Or \flag\Buttons=0
+                        Line(x_point+i,y_point,1,1, point_color&$FFFFFF|alpha<<24)
+                      EndIf
+                    Next
+                  EndIf
+                  
+                  ; Vertical plot
+                  If \items()\adress 
+                    start=Bool(Not \items()\sublevel) ;  And Not \items()\childrens
+                    
+                    PushListPosition(\items())
+                    ChangeCurrentElement(\items(), \items()\adress) 
+                    
+                    If start 
+                      start = (\y+\items()\height/2)-\s\v\Page\Pos 
+                    Else 
+                      start = \items()\y+\items()\height+\items()\height/2-line_size 
+                    EndIf
+                    PopListPosition(\items())
+                    
+                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                    For i=y_point To start Step -2
+                      If Bool(i>0 And i<OutputHeight()) And Bool(x_point>0 And x_point<OutputWidth())
+                        
+                        Select Point(x_point,i)
+                          Case $F3F3F3, $F7F7F7, $FBFBFB, 16645629, 15856113, 16119285, 16382457, 4286479998, 4294177779, 4294704123
+                            Continue
+                          Default
+                            ; Debug Point(x_point,i)
+                            Line(x_point,i,1,1, point_color&$FFFFFF|alpha<<24)
+                        EndSelect
+                      EndIf
+                    Next
+                    ;                     EndIf
+                    ;                     PopListPosition(\items())
+                  EndIf
+                EndIf
+              EndIf
+              
+              ;If Drawing
+              ; Draw checkbox
+              If \flag\CheckBoxes
+                Draw_Box(\items()\box\x[1],\items()\box\y[1],\items()\box\width[1],\items()\box\height[1], 3, \items()\Checked, checkbox_color, box_color, 2, alpha);, box_type)
+              EndIf
+              
+              ; Draw image
+              If \items()\image\adress
+                DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                DrawAlphaImage(\items()\image\adress, \items()\Image\x, \items()\Image\y, alpha)
+              EndIf
+              
+              ; Draw string
+              If \items()\text\string.s
+                DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                DrawText(\items()\text\x, \items()\text\y, \items()\text\string.s, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24)
+              EndIf
+            EndIf
             
-            Until Not NextElement(\Items())
-          EndIf
-          
-          
+          Until Not NextElement(\Items()) 
+        EndIf
+        
         EndIf
         
         
@@ -1418,6 +1318,8 @@ Module Widget
           Widget::Resizes(\s, \x-\s\h\x+1, \y-\s\v\y+1, #PB_Ignore, #PB_Ignore)
         EndIf
         
+        ;Draw_Scroll(\s\h,0,0)
+        ;         
         ;         If \bs
         ;           DrawingMode(#PB_2DDrawing_Outlined)
         ;           Box(\x, \y, \width, \height, $ADADAE)
@@ -1902,19 +1804,35 @@ Module Widget
   
   Procedure.i Draw_Text(*This.Widget_S, scroll_x,scroll_y)
     With *This
+      Protected State_3 = \Color[3]\State
       Protected Alpha = \color\alpha<<24
       
-      ; Draw frame
-      If \Color\Frame
+      ;       ; Draw thumb  
+      ;       If \Color\back[State_3]<>-1
+      ;         If \Color\Fore[State_3]
+      ;           DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+      ;         EndIf
+      ;         BoxGradient( \Vertical, scroll_x+\X, scroll_y+\Y, \Width, \Height, \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
+      ;       EndIf
+      
+      ; Draw thumb frame
+      If \Color\Frame[State_3] 
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        RoundBox( scroll_x+\X, scroll_y+\Y, \Width, \Height, \Radius, \Radius, \Color\Frame&$FFFFFF|Alpha)
+        RoundBox( scroll_x+\X, scroll_y+\Y, \Width, \Height, \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
       EndIf
       
       ; Draw string
       If \Text\String
         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawText(scroll_x+\Text\x, scroll_y+\Text\y, \Text\String.s, \Color\Front&$FFFFFF|Alpha)
+        DrawText(scroll_x+\Text\x, scroll_y+\Text\y, \Text\String.s, \Color\Front[State_3]&$FFFFFF|Alpha)
       EndIf
+      
+      ; Draw image
+      If \image\adress
+        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+        DrawAlphaImage(\image\adress, \Image\x, \Image\y, \color\alpha)
+      EndIf
+      
     EndWith 
   EndProcedure
   
@@ -1923,6 +1841,7 @@ Module Widget
     
     If *This > 0 And *This\Type 
       With *This
+        
         CompilerIf #PB_Compiler_OS <>#PB_OS_MacOS 
           DrawingFont(GetGadgetFont(-1))
         CompilerEndIf
@@ -1942,8 +1861,11 @@ Module Widget
           EndIf
         EndIf
         
-        ; 
         If Not \hide And \color\alpha And \height>0 And \width>0
+          ;Debug \width[1]
+          ;           x = (Bool((\Align\Right Or \Align\Horizontal)) * (\width-\width)) / (\Align\Horizontal+1)
+          ;           y = (Bool((\Align\Bottom Or \Align\Vertical)) * (\height-\height)) / (\Align\Vertical+1)
+          
           ; Text coordinate
           If \Text\String
             \Text\x[1] = (Bool((\Text\Align\Right Or \Text\Align\Horizontal)) * (\width-\Text\width)) / (\Text\Align\Horizontal+1) : \Text\x = \Text\x[1]+\x
@@ -1955,13 +1877,17 @@ Module Widget
             If (\Type = #PB_GadgetType_Image)
               \Image\x[1] = (Bool(\s\h\Page\len>\Image\width And (\Image\Align\Right Or \Image\Align\Horizontal)) * (\s\h\Page\len-\Image\width)) / (\Image\Align\Horizontal+1)
               \Image\y[1] = (Bool(\s\v\Page\len>\Image\height And (\Image\Align\Bottom Or \Image\Align\Vertical)) * (\s\v\Page\len-\Image\height)) / (\Image\Align\Vertical+1)
-              \Image\y = \s\y+\Image\y[1]+\y+2
-              \Image\x = \s\x+\Image\x[1]+\x+2 
             Else
               \Image\x[1] = (Bool(\Image\Align\Right Or \Image\Align\Horizontal) * (\width-\Image\width)) / (\Image\Align\Horizontal+1)
               \Image\y[1] = (Bool(\Image\Align\Bottom Or \Image\Align\Vertical) * (\height-\Image\height)) / (\Image\Align\Vertical+1)
-              \Image\y = \Image\y[1]+\y
-              \Image\x = \Image\x[1]+\x
+            EndIf
+            
+            \Image\y = \Image\y[1]+\y
+            \Image\x = \Image\x[1]+\x
+            
+            If \Type = #PB_GadgetType_Image
+              \Image\y = \s\y+\Image\y[1]+\y+2
+              \Image\x = \s\x+\Image\x[1]+\x+2 
             EndIf
           EndIf
           
@@ -1983,7 +1909,9 @@ Module Widget
           EndSelect
           
           If ListSize(\Childrens())
-            ForEach \Childrens() : Draw(\Childrens()) : Next
+            ForEach \Childrens()
+              Draw(\Childrens())
+            Next
           EndIf
           
           ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
@@ -2005,9 +1933,6 @@ Module Widget
             DrawingMode(#PB_2DDrawing_Outlined)
             Box(\clip\x,\clip\y,\clip\width,\clip\height, $0000FF)
           EndIf
-          
-          UnclipOutput()
-          DrawAnchors(*This)
         EndIf
         
         ; reset 
@@ -2023,6 +1948,8 @@ Module Widget
   EndProcedure
   
   Procedure.i Draws(*Scroll.Scroll_S, ScrollHeight.i, ScrollWidth.i)
+    ;     Protected Repaint
+    
     With *Scroll
       UnclipOutput()
       If \v And \v\page\len And \v\max<>ScrollHeight And 
@@ -2034,8 +1961,13 @@ Module Widget
         Resizes(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
       EndIf
       
-      If \v And Not \v\hide : Draw(\v) : EndIf
-      If \h And Not \h\hide : Draw(\h) : EndIf
+      If \v And Not \v\hide
+        Draw(\v)
+      EndIf
+      If \h And Not \h\hide
+        Draw(\h)
+      EndIf
+      
       
       DrawingMode(#PB_2DDrawing_Outlined)
       ; max coordinate
@@ -2056,6 +1988,8 @@ Module Widget
           \v\Page\len + (Bool(Not \h\hide) * \h\height), $FFFF00)
       
     EndWith
+    
+    ;     ProcedureReturn Repaint
   EndProcedure
   
   ;-
@@ -2066,6 +2000,10 @@ Module Widget
       Else
         \Hide = \Hide[1]
       EndIf
+      
+      ;       If \Tab
+      ;         \Tab\Hide = \Hide
+      ;       EndIf
       
       If ListSize(\Childrens())
         ForEach \Childrens()
@@ -2079,6 +2017,10 @@ Module Widget
     With *This
       \Hide = State
       \Hide[1] = \Hide
+      
+      ;       If \Tab
+      ;         \Tab\Hide = \Hide
+      ;       EndIf
       
       If ListSize(\Childrens())
         ForEach \Childrens()
@@ -2133,10 +2075,11 @@ Module Widget
   EndProcedure
   
   Procedure Tree_AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
-    Static *adress.Items_S
+    Static adress.i
+    Protected Childrens.i, hide.b, *Item
     
     If Not *This
-      ProcedureReturn 0
+      ProcedureReturn -1
     EndIf
     
     With *This
@@ -2145,12 +2088,13 @@ Module Widget
         LastElement(\items())
         AddElement(\items()) 
         Item = ListIndex(\items())
+        *Item = @\items()
       Else
         SelectElement(\items(), Item)
         If \items()\sublevel>sublevel
           sublevel=\items()\sublevel 
         EndIf
-        
+        *Item = @\items()
         InsertElement(\items())
         
         PushListPosition(\items())
@@ -2165,40 +2109,70 @@ Module Widget
         If sublevel>ListIndex(\items())
           sublevel=ListIndex(\items())
         EndIf
-        
         PushListPosition(\items()) 
         While PreviousElement(\items()) 
           If subLevel = \items()\subLevel
-            *adress = \items()\adress
+            adress = \items()\adress
             Break
           ElseIf subLevel > \items()\subLevel
-            *adress = @\items()
+            adress = @\items()
             Break
           EndIf
         Wend 
-        PopListPosition(\items()) 
-         
-        If *adress
-          If subLevel > *adress\subLevel
-            sublevel = *adress\sublevel + 1
-            *adress\childrens + 1
-;             *adress\collapsed = 1
-;             \items()\hide = 1
+        If adress
+          ChangeCurrentElement(\items(), adress)
+          If subLevel > \items()\subLevel
+            sublevel = \items()\sublevel + 1
+            \items()\childrens + 1
+            ;             \items()\collapsed = 1
+            ;             hide = 1
           EndIf
         EndIf
+        
+        PopListPosition(\items()) 
+        \items()\hide = hide
+        ;       Else
+        ;         If Not \index
+        ;           adress = FirstElement(\items())
+        ;         EndIf
       EndIf
       
-      \items()\change = 1
-      \items()\index= Item
       \items()\index[1] =- 1
-      \items()\adress = *adress
+      ;\items()\time = ElapsedMilliseconds()
+      \items()\index= Item
+      \items()\adress = adress
       \items()\text\change = 1
-      \items()\text\string.s = Text.s
+      \items()\text\string.s = Text.s ;+" ("+Str(iadress)+"-"+Str(SubLevel)+")" 
       \items()\sublevel = sublevel
       \items()\height = \Text\height
       
-      SetImage(\Items(), Image)
-      \Text\Count + 1
+      
+      If IsImage(Image)
+        ;         Select \Attribute
+        ;           Case Widget::#PB_DisplayMode_Large
+        ;             \items()\Image\width = 32
+        ;             \items()\Image\height = 32
+        ;             ResizeImage(Image, \items()\Image\width,\items()\Image\height)
+        ;             
+        ;           Case Widget::#PB_DisplayMode_Small
+        ;             \items()\Image\width = 16
+        ;             \items()\Image\height = 16
+        ;             ResizeImage(Image, \items()\Image\width,\items()\Image\height)
+        ;             
+        ;           Default
+        \items()\Image\width = ImageWidth(Image)
+        \items()\Image\height = ImageHeight(Image)
+        ;         EndSelect   
+        
+        \items()\image\adress = ImageID(Image)
+        \items()\image\index = Image
+      EndIf
+      
+      ;       Re(*This)
+      
+      If *This\s\height=<*This\height
+        ;  Draw(*This)
+      EndIf
     EndWith
     
     ProcedureReturn Item
@@ -2214,6 +2188,7 @@ Module Widget
           ;           
           ;           \Tabs() = AllocateStructure(Items_S)
           Tree_AddItem(*This, Item.i,Text.s,Image, Flag)
+          \Text\Count + 1
           
         Case #PB_GadgetType_Panel
           \index[2] = 0
@@ -2253,7 +2228,7 @@ Module Widget
             \Text\String.s[1] = Text.s
             \Text\Count = CountString(\Text\String.s[1], #LF$)
           Else
-            \Text\String.s[1] = RemoveString(\Text\String.s[1], #LF$) ; + #LF$
+            \Text\String.s[1] = RemoveString(\Text\String.s[1], #LF$) + #LF$
             ; \Text\String.s = RTrim(ReplaceString(\Text\String.s[1], #LF$, " ")) + #LF$
           EndIf
           
@@ -2905,9 +2880,6 @@ Module Widget
             Next
             ;Resize_Childrens(*This, Change_x, Change_y)
           EndIf
-          
-          ; anchors widgets
-          ResizeAnchors(*This)
         EndIf
         
         ProcedureReturn hide
@@ -3070,10 +3042,13 @@ Module Widget
                         Break
                       ElseIf sublevel < \items()\sublevel 
                         If \items()\adress
-                          collapsed = \items()\adress\collapsed
-                          If \items()\adress\hide
+                          PushListPosition(\items())
+                          ChangeCurrentElement(\items(), \items()\adress)
+                          collapsed = \items()\collapsed
+                          If \items()\hide
                             collapsed = 1
                           EndIf
+                          PopListPosition(\items())
                         EndIf
                         
                         \items()\hide = collapsed
@@ -3258,109 +3233,6 @@ Module Widget
             Buttons = 0
         EndSelect
         
-        Protected i 
-        Static *p.Widget_S
-        
-        
-        Select EventType 
-          Case #PB_EventType_MouseMove
-            If *p And *p\anchor
-              Protected x = MouseScreenX-*p\anchor\Width/2
-              Protected y = MouseScreeny-*p\anchor\Height/2
-              
-              ; Object resize
-              Select *p\anchor
-                Case *p\anchor[1]
-                  ;                     iX=Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  ;                     iWidth=ObjectX1-Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), #PB_Ignore, (*p\x+*p\Width)-(x+4), #PB_Ignore)
-                  
-                Case \anchor[2] 
-                  ;                     iY=Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     iHeight=ObjectY1-Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     
-                  Resize(*p, #PB_Ignore, y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), #PB_Ignore, ((*p\y+*p\p\TabHeight)+*p\height)-(y+4))
-                  
-                Case \anchor[3] 
-                  ; iWidth=Match(X+\Pos, \Grid)-ObjectX0+Bool(\Grid>1)
-                  Resize(*p, #PB_Ignore, #PB_Ignore, x+*p\anchor[3]\Pos-*p\x, #PB_Ignore)
-                  
-                Case \anchor[4] 
-                  ;                     iHeight=Match(Y+\Pos, \Grid)-ObjectY0+Bool(\Grid>1)
-                  Resize(*p, #PB_Ignore, #PB_Ignore, #PB_Ignore, y+*p\anchor[4]\Pos-(*p\y-*p\p\TabHeight))
-                  
-                                     Case \anchor[5]
-                  ;                     iX=Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  ;                     iY=Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     iWidth=ObjectX1-Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  ;                     iHeight=ObjectY1-Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                                       Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), (*p\x+*p\Width)-(x+4), ((*p\y+*p\p\TabHeight)+*p\height)-(y+4))
-                                       
-                                     Case \anchor[6] 
-                  ;                     iY=Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     iWidth=Match(X+\Pos, \Grid)-ObjectX0+Bool(\Grid>1)
-                  ;                     iHeight=ObjectY1-Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     
-                 Resize(*p, #PB_Ignore, y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), x+*p\anchor[3]\Pos-*p\x, ((*p\y+*p\p\TabHeight)+*p\height)-(y+4))
-                 
-               Case \anchor[7] 
-                  ;                     iWidth=Match(X+\Pos, \Grid)-ObjectX0+Bool(\Grid>1)
-                  ;                     iHeight=Match(Y+\Pos, \Grid)-ObjectY0+Bool(\Grid>1)
-                  Resize(*p, #PB_Ignore, #PB_Ignore, x+*p\anchor[5]\Pos-*p\x, y+*p\anchor[5]\Pos-(*p\y-*p\p\TabHeight))
-                                       
-                                     Case \anchor[8] 
-                  ;                     iX=Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  ;                     iHeight=Match(Y+\Pos, \Grid)-ObjectY0+Bool(\Grid>1)
-                  ;                     iWidth=ObjectX1-Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), #PB_Ignore, (*p\x+*p\Width)-(x+4), y+*p\anchor[4]\Pos-(*p\y-*p\p\TabHeight))
-                  ;                     
-                                     Case \anchor[9] 
-                  ;                     iX=Match((X-\Pos-2), \Grid)
-                  ;                     iY=Match(Y+(\Size-\Pos), \Grid)
-                  
-               Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), #PB_Ignore, #PB_Ignore)
-                 EndSelect
-              
-              ProcedureReturn 1
-            Else
-              For i = 1 To 9
-                If \anchor[i]
-                  If (MouseScreenX>\anchor[i]\X And MouseScreenX=<\anchor[i]\X+\anchor[i]\Width And 
-                      MouseScreenY>\anchor[i]\Y And MouseScreenY=<\anchor[i]\Y+\anchor[i]\Height)
-                    
-                    If \anchor <> \anchor[i] : \anchor = \anchor[i]
-                      If Not \anchor[i]\State
-                        \anchor[i]\State = 1
-                      EndIf
-                      
-                      \anchor[i]\Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-                      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor)
-                      ProcedureReturn 1
-                    EndIf
-                    
-                  ElseIf \anchor[i]\State = 1
-                    \anchor[i]\State = 0
-                    \anchor = 0
-                    
-                    SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor[1])
-                    ProcedureReturn 1
-                  EndIf
-                EndIf
-              Next
-            EndIf
-            
-          Case #PB_EventType_LeftButtonDown
-            If \anchor : \anchor\State = 2 : *p = *This
-              ProcedureReturn 1
-            EndIf
-            
-          Case #PB_EventType_LeftButtonUp
-            If \anchor : \anchor\State = 1 : *p = 0
-              ProcedureReturn 1
-            EndIf
-            
-        EndSelect
-        
         ; get at point buttons
         If (mouseB Or Buttons)
         ElseIf (MouseScreenX>=\X And MouseScreenX<\X+\Width And MouseScreenY>\Y And MouseScreenY=<\Y+\Height) 
@@ -3379,7 +3251,6 @@ Module Widget
             Case #PB_EventType_MouseLeave : EventType = #PB_EventType_MouseMove
           EndSelect
           
-           
           ; item at point
           If \at =- 1
             ; Panel tabs at point
@@ -3404,8 +3275,9 @@ Module Widget
               Next
             EndIf
             
+            ; items at point
             ForEach \Items()
-              If \Items()\Drawing
+              If Not \Items()\Hide
                 If (MouseScreenX>\Items()\X And MouseScreenX=<\Items()\X+\Items()\Width And 
                     MouseScreenY>\Items()\Y And MouseScreenY=<\Items()\Y+\Items()\Height)
                   
@@ -3415,7 +3287,6 @@ Module Widget
                       \Items()\State = 1
                     EndIf
                     \adress = @\Items()
-                    ;;Debug \index[1]
                     repaint=1
                   EndIf
                   
@@ -3426,57 +3297,6 @@ Module Widget
                 EndIf
               EndIf
             Next
-            
-
-            
-; ;             ForEach \Draws()
-; ;               If (MouseScreenX>\Draws()\X And MouseScreenX=<\Draws()\X+\Draws()\Width And 
-; ;                       MouseScreenY>\Draws()\Y And MouseScreenY=<\Draws()\Y+\Draws()\Height)
-; ;                     
-; ;                     If \index[1] <> ListIndex(\Draws())
-; ;                       \index[1] = ListIndex(\Draws())
-; ;                       If Not \Draws()\State
-; ;                         \Draws()\State = 1
-; ;                       EndIf
-; ;                       \adress = @\Draws()
-; ;                       ;;Debug \index[1]
-; ;                       repaint=1
-; ;                     EndIf
-; ;                     
-; ;                   ElseIf \Draws()\State = 1
-; ;                     \Draws()\State = 0
-; ;                     \index[1] =- 1
-; ;                     repaint=1
-; ;                   EndIf
-; ;                 Next
-; ;                 
-; ;             ; items at point
-; ;             If \Drawing
-; ;               ChangeCurrentElement(\Items(), \Drawing)
-; ;               Repeat
-; ;                 If \Items()\Drawing
-; ;                   If (MouseScreenX>\Items()\X And MouseScreenX=<\Items()\X+\Items()\Width And 
-; ;                       MouseScreenY>\Items()\Y And MouseScreenY=<\Items()\Y+\Items()\Height)
-; ;                     
-; ;                     If \index[1] <> ListIndex(\Items())
-; ;                       \index[1] = ListIndex(\Items())
-; ;                       If Not \Items()\State
-; ;                         \Items()\State = 1
-; ;                       EndIf
-; ;                       \adress = @\Items()
-; ;                       ;;Debug \index[1]
-; ;                       repaint=1
-; ;                     EndIf
-; ;                     
-; ;                   ElseIf \Items()\State = 1
-; ;                     \Items()\State = 0
-; ;                     \index[1] =- 1
-; ;                     repaint=1
-; ;                   EndIf
-; ;                 EndIf
-; ;               Until Not NextElement(\Items())
-; ;             EndIf
-            
           EndIf
           
           *mouseat = *This
@@ -3758,8 +3578,6 @@ Module Widget
         \Image\Align\Horizontal = 1
       EndIf
       
-      SetAnchors(*This, Flag&#PB_Flag_AnchorsGadget)
-      
       SetText(*This, Text.s)
       SetAutoSize(*This, Flag&#PB_Flag_AutoSize)
       Resize(*This, X.i,Y.i,Width.i,Height)
@@ -3878,8 +3696,6 @@ Module Widget
       
       \fs = 1
       \bs = 1
-      
-      SetAnchors(*This, Flag&#PB_Flag_AnchorsGadget)
       
       SetAutoSize(*This, Flag&#PB_Flag_AutoSize)
       Resize(*This, X.i,Y.i,Width.i,Height)
@@ -4161,7 +3977,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       AddItem(*Scroll_1, 9, "Tree_2",-1 )
       AddItem(*Scroll_1, 10, "Tree_3", -1 )
       Define i
-      For i=0 To 20;0;00
+      For i=0 To 200;00
         AddItem(*Scroll_1, -1, "Tree_item_"+Str(i), -1 )
       Next
       
@@ -4171,26 +3987,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       AddItem(*Scroll_3, -1, "Panel_0")
       Define Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline TextWidget"
       
-      *Tree_0.Widget_S = Button(15,15,100,30, "butt_anchor_0", #PB_Flag_AnchorsGadget)
-      
-; ;       *Tree_0.Widget_S = Tree(10,20,250,135, #PB_Flag_AutoSize) 
-; ;       AddItem(*Tree_0, 0, "Tree_0", -1 )
-; ;       AddItem(*Tree_0, 1, "Tree_1_1", -1, 1) 
-; ;       AddItem(*Tree_0, 4, "Tree_1_1_1", -1, 2) 
-; ;       AddItem(*Tree_0, 5, "Tree_1_1_2", -1, 2) 
-; ;       AddItem(*Tree_0, 6, "Tree_1_1_2_1", -1, 3) 
-; ;       AddItem(*Tree_0, 8, "Tree_1_1_2_1_1_4jhhhhhhhhhhhhh", -1, 4) 
-; ;       AddItem(*Tree_0, 7, "Tree_1_1_2_2", -1, 3) 
-; ;       AddItem(*Tree_0, 2, "Tree_1_2", -1, 1) 
-; ;       AddItem(*Tree_0, 3, "Tree_1_3", -1, 1) 
-; ;       AddItem(*Tree_0, 9, "Tree_2",-1 )
-; ;       AddItem(*Tree_0, 10, "Tree_3", -1 )
-; ; ;       Define i
-; ; ;       For i=0 To 10;0;0
-; ; ;         AddItem(*Tree_0, -1, "Tree_item_"+Str(i), -1 )
-; ; ;       Next
-; ;       ;*Scroll_3.Widget_S = *Tree_0
-; ;       SetState(*Tree_0, 1)
+      *Tree_0.Widget_S = Tree(10,20,250,135, #PB_Flag_AutoSize) 
+      Define i
+      For i=0 To 10;00
+        AddItem(*Tree_0, -1, "Tree_item_"+Str(i), -1 )
+      Next
+      ;*Scroll_3.Widget_S = *Tree_0
+      SetState(*Tree_0, 1)
       
       AddItem(*Scroll_3, -1, "Panel_1")
       Container(10,10,150,55,#PB_Container_Flat) 
@@ -4497,5 +4300,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------v-8f--40--8----f42--8+-0dfP+-----0--------------------------0--------8+----------+------
+; Folding = ------------------------------------------------------------------------------------------------
 ; EnableXP

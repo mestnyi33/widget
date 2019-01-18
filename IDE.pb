@@ -11,6 +11,7 @@ UseModule Widget
 
 Global Window_0, Canvas_0, winBackColor = $FFFFFF
 Global NewMap Widgets.i()
+Global*Widgets.Widget_S
 
 Procedure LoadControls(Widget)
   Macro ULCase(String)
@@ -129,9 +130,10 @@ EndProcedure
 
 Procedure ReDraw(Canvas)
   If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-    DrawingMode(#PB_2DDrawing_Default)
-    Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-    
+;     DrawingMode(#PB_2DDrawing_Default)
+;     Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+    FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
+  
     With Widgets()
       ForEach Widgets()
         ;If Canvas = \Canvas\Gadget
@@ -155,9 +157,8 @@ Procedure Widgets_CallBack()
   EndSelect
 EndProcedure
 
-Procedure Canvas_0_CallBack()
+Procedure Canvas_Events(Canvas.i, EventType.i)
   Protected Repaint, *This.Widget_S
-  Protected Canvas = EventGadget()
   Protected Width = GadgetWidth(Canvas)
   Protected Height = GadgetHeight(Canvas)
   Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
@@ -165,27 +166,33 @@ Procedure Canvas_0_CallBack()
   Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
   
   
-  Select EventType()
+  Select EventType
       ;Case #PB_EventType_Repaint : Repaint = EventData()
     Case #PB_EventType_Resize : Repaint = 1
       Resize(Widgets("Splitter_1"), #PB_Ignore, #PB_Ignore, Width-2, Height-2)
     Default
       
       If EventType() = #PB_EventType_LeftButtonDown
-        SetActiveGadget(EventGadget())
+        SetActiveGadget(Canvas)
       EndIf
       
       ; Repaint | CallBack(Widgets("Panel_1"), EventType(), MouseX, MouseY)
       
       With Widgets()
         ForEach Widgets()
-          
-          Repaint | CallBack(Widgets(), EventType(), MouseX, MouseY)
-          
+;           *Widgets = Widgets()
+;           If *Widgets\Text\String = "Button_0"
+;            Debug 55
+;           Else
+            Repaint | CallBack(Widgets(), EventType, MouseX, MouseY)
+;         EndIf
+        
         Next
       EndWith
       
   EndSelect
+  
+  ;Debug EventType
   
   If WidgetEventType()>0
     Widgets_CallBack()
@@ -197,6 +204,72 @@ Procedure Canvas_0_CallBack()
   
 EndProcedure
 
+Procedure Canvas_0_CallBack()
+    ; Canvas events bug fix
+    Protected Result.b
+    Static MouseLeave.b
+    Protected EventGadget.i = EventGadget()
+    Protected EventType.i = EventType()
+    Protected Width = GadgetWidth(EventGadget)
+    Protected Height = GadgetHeight(EventGadget)
+    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
+    
+    ; Это из за ошибки в мак ос и линукс
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
+      Select EventType 
+        Case #PB_EventType_MouseEnter 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 0
+          EndIf
+          
+        Case #PB_EventType_MouseLeave 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 1
+          EndIf
+          
+        Case #PB_EventType_LeftButtonDown
+          If GetActiveGadget()<>EventGadget
+            SetActiveGadget(EventGadget)
+          EndIf
+          
+        Case #PB_EventType_LeftButtonUp
+          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
+            MouseLeave = 0
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+              Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+              EventType = #PB_EventType_MouseLeave
+            CompilerEndIf
+          Else
+            MouseLeave =- 1
+            Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+            EventType = #PB_EventType_LeftClick
+          EndIf
+          
+        Case #PB_EventType_LeftClick : ProcedureReturn 0
+      EndSelect
+    CompilerEndIf
+    
+    
+    If EventType = #PB_EventType_MouseMove
+;       Static Last_X, Last_Y
+;       If Last_Y <> Mousey
+;         Last_Y = Mousey
+        Result | Canvas_Events(EventGadget, EventType)
+;       EndIf
+;       If Last_x <> Mousex
+;         Last_x = Mousex
+;         Result | Canvas_Events(EventGadget, EventType)
+;       EndIf
+    Else
+      Result | Canvas_Events(EventGadget, EventType)
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
 Procedure Window_0_Resize()
   ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(Window_0)-20, WindowHeight(Window_0)-50)
 EndProcedure
@@ -208,15 +281,17 @@ Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 600)
   ; Demo draw widgets on the canvas
   Canvas_0 = CanvasGadget(#PB_Any,  10, 40, 780, 550, #PB_Canvas_Keyboard)
   BindGadgetEvent(Canvas_0, @Canvas_0_CallBack())
+  *value\gadget = Canvas_0
+  *value\window = Window_0
   
   ; Main panel
   Widgets("Panel_0") = Panel(0, 0, 0, 0) 
+  AddItem(Widgets("Panel_0"), -1, "Form")
+  Widgets("Form_0") = Container(20, 20, 210, 210, #PB_Flag_AnchorsGadget) 
+  Widgets("Form_0_Button_0") = Button(10, 10, 100, 30, "Button_0", #PB_Flag_AnchorsGadget)
+  CloseList()
   AddItem(Widgets("Panel_0"), -1, "Code")
   Widgets("Editor_0") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
-  AddItem(Widgets("Panel_0"), -1, "Form")
-  Widgets("Form_0") = Container(20, 20, 210, 210) 
-  Widgets("Form_0_Button_0") = Button(1, 1, 100, 30, "Button_0")
-  CloseList()
   CloseList()
   
   Widgets("Tree_0") = Tree(0, 0, 80, 30)
@@ -226,11 +301,13 @@ Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 600)
   AddItem(Widgets("Tree_0"), 5, "Button_1", -1, 2) 
   AddItem(Widgets("Tree_0"), 6, "Container_1", -1, 2) 
   AddItem(Widgets("Tree_0"), 7, "Button_2", -1, 3) 
+  SetState(Widgets("Tree_0"), 0)
   
   Widgets("Panel_1") = Panel(0, 0, 0, 0) 
   AddItem(Widgets("Panel_1"), -1, "Widgets")
   Widgets("Tree_1") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines|#PB_Flag_AutoSize)
   LoadControls(Widgets("Tree_1"))
+  SetState(Widgets("Tree_1"), 1)
   
   AddItem(Widgets("Panel_1"), -1, "Properties")
   Widgets("Tree_3") = Text(0, 30, 180, 30, "Тут будет свойства элементов", #PB_Flag_AutoSize)
@@ -283,5 +360,5 @@ Repeat
   EndSelect
 ForEver
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----
+; Folding = +--v+0-
 ; EnableXP
