@@ -194,7 +194,7 @@ DeclareModule Widget
     State.i
     Width.i
     Height.i
-    
+    Grid.i
     *p.Widget_S ; adress parent
     Cursor.i[2]
     Color.Color_S[4]
@@ -206,7 +206,7 @@ DeclareModule Widget
     adress.i
     Drawing.i
     
-    *anchor.Anchor_S[10]
+    *anchor.Anchor_S[12]
     
     fs.i 
     bs.i
@@ -224,6 +224,8 @@ DeclareModule Widget
     
     *Align.Align_S
     clip.Coordinate_S
+    
+    Cursor.i[2]
     
     sublevellen.i
     Drag.i[2]
@@ -650,6 +652,9 @@ Module Widget
 ;     If _this_\anchor[9] : Box(_this_\x+(_this_\anchor[9]\Pos+2), _this_\y-_this_\anchor[9]\len+_this_\anchor[9]\Pos, _this_\anchor[9]\len*2, _this_\anchor[9]\len,0) : EndIf
 ;   EndMacro
   Macro DrawAnchors(_this_)
+    DrawingMode(#PB_2DDrawing_Outlined)
+    If _this_\anchor[10] : Box(_this_\anchor[10]\x, _this_\anchor[10]\y, _this_\anchor[10]\width, _this_\anchor[10]\height ,_this_\anchor[10]\color[_this_\anchor[10]\State]\frame) : EndIf
+    
     DrawingMode(#PB_2DDrawing_Default)
     If _this_\anchor[1] : Box(_this_\anchor[1]\x, _this_\anchor[1]\y, _this_\anchor[1]\width, _this_\anchor[1]\height ,_this_\anchor[1]\color[_this_\anchor[1]\State]\back) : EndIf
     If _this_\anchor[2] : Box(_this_\anchor[2]\x, _this_\anchor[2]\y, _this_\anchor[2]\width, _this_\anchor[2]\height ,_this_\anchor[2]\color[_this_\anchor[2]\State]\back) : EndIf
@@ -710,11 +715,17 @@ Module Widget
       _this_\anchor[9]\x = _this_\x+(_this_\anchor[9]\Pos+2)
       _this_\anchor[9]\y = _this_\y-_this_\anchor[9]\height+_this_\anchor[9]\Pos 
     EndIf
+    If _this_\anchor[10] 
+      _this_\anchor[10]\x = _this_\x
+      _this_\anchor[10]\y = _this_\y
+      _this_\anchor[10]\width = _this_\width
+      _this_\anchor[10]\height = _this_\height
+    EndIf
   EndMacro
   
   Procedure SetAnchors(*This.Widget_S, State)
     Structure DataBuffer
-      cursor.i[10]
+      cursor.i[11]
     EndStructure
     
     Protected *Cursor.DataBuffer = ?CursorsBuffer
@@ -722,7 +733,7 @@ Module Widget
     With *This
       If State
         Protected i
-        For i=1 To 9
+        For i=1 To 10
           \anchor[i] = AllocateStructure(Anchor_S)
           \anchor[i]\p = *This
           \anchor[i]\Cursor = *Cursor\Cursor[i]
@@ -734,17 +745,13 @@ Module Widget
           \anchor[i]\Color[1]\Back = $FFFFFF
           \anchor[i]\Color[2]\Back = $FFFFFF
           
+          \anchor[i]\Grid = 5
+          
           \anchor[i]\Height = 6
           \anchor[i]\Width = 6
           \anchor[i]\Pos = \anchor[i]\Height/2
         Next i
         \anchor[9]\Width * 2
-        
-;         For i=1 To 9
-;           Debug \anchor[i]\Cursor;*Cursor\Cursor[i]
-;           
-;         Next i
-        
       EndIf
     EndWith
     
@@ -759,7 +766,8 @@ Module Widget
       Data.i #PB_Cursor_LeftDownRightUp
       Data.i #PB_Cursor_LeftUpRightDown
       Data.i #PB_Cursor_LeftDownRightUp
-      Data.i #PB_Cursor_Hand ;  #PB_Cursor_Arrows
+      Data.i #PB_Cursor_Hand
+      Data.i #PB_Cursor_Arrows
     EndDataSection
     
   EndProcedure
@@ -3105,10 +3113,10 @@ Module Widget
               EndIf
               
               Repaint = SetState(*This, Pos(*This, Repaint))
-            Else
-              If \Type = #PB_GadgetType_Splitter And at <> 3
-                SetGadgetAttribute(canvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
-              EndIf
+;             Else
+;               If \Type = #PB_GadgetType_Splitter And at <> 3
+;                 SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \Cursor[1])
+;               EndIf
             EndIf
             
           Case #PB_EventType_MouseWheel
@@ -3142,8 +3150,8 @@ Module Widget
             Else
               ; Debug ""+*This +" "+ EventType +" "+ lastat
               
-              If cursor <> GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
-                SetGadgetAttribute(canvas, #PB_Canvas_Cursor, cursor)
+              If \cursor[1] <> GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
+                SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \cursor[1])
               EndIf
               
               \Color[1]\State = 0
@@ -3174,22 +3182,22 @@ Module Widget
               ; Debug "enter "+*This +" "+ \Type
               \Color[at]\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
               
-              If \Type = #PB_GadgetType_Splitter And at = 3
-                If Not \Vertical
-                  SetGadgetAttribute(canvas, #PB_Canvas_Cursor, #PB_Cursor_LeftRight)
-                Else
-                  SetGadgetAttribute(canvas, #PB_Canvas_Cursor, #PB_Cursor_UpDown)
-                EndIf
+              \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+              
+              If (\Type = #PB_GadgetType_Splitter And at = 3)
+                SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
+              Else
+                SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
               EndIf
               
               Repaint = #True
             Else
               ; Debug ""+*This +" "+ EventType +" "+ at
               
-              If Not cursor
-                cursor = GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
+              If Not \cursor[1]
+                \cursor[1] = GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
               EndIf
-              SetGadgetAttribute(canvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
+              SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \Cursor)
               
             EndIf
             
@@ -3200,6 +3208,29 @@ Module Widget
     ProcedureReturn Repaint
   EndProcedure
   
+  Procedure CallBackAnchors(*This.Widget_S, mouse_x,mouse_y)
+    With *This
+      Protected Grid = 5;\anchor\Grid
+      Protected mx = mouse_x-\p\x
+      Protected my = mouse_y-(\p\y+\p\TabHeight)
+      Protected x1 = (\x+\Width)
+      Protected y1 = ((\y+\p\TabHeight)+\height)
+      
+      
+    Select \anchor
+      Case \anchor[1] : Resize(*This, Match(mx, Grid), #PB_Ignore, Match(x1-(mouse_x+\p\fs), Grid), #PB_Ignore)
+      Case \anchor[2] : Resize(*This, #PB_Ignore,  Match(my, Grid), #PB_Ignore, Match(y1-(mouse_y+\p\fs), Grid))
+      Case \anchor[3] : Resize(*This, #PB_Ignore, #PB_Ignore, Match((mouse_x+\p\fs), Grid)-\x, #PB_Ignore)
+      Case \anchor[4] : Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, Match((mouse_y+\p\fs), Grid)-(\y-\p\TabHeight))
+      Case \anchor[5] : Resize(*This, Match(mx, Grid), Match(my, Grid), Match(x1-(mouse_x+\p\fs), Grid), Match(y1-(mouse_y+\p\fs), Grid))
+      Case \anchor[6] : Resize(*This, #PB_Ignore, Match(my, Grid), Match((mouse_x+\p\fs), Grid)-\x, Match(y1-(mouse_y+\p\fs), Grid))
+      Case \anchor[7] : Resize(*This, #PB_Ignore, #PB_Ignore, Match((mouse_x+\p\fs), Grid)-\x, Match((mouse_y+\p\fs), Grid)-(\y-\p\TabHeight))
+      Case \anchor[8] : Resize(*This, Match(mx, Grid), #PB_Ignore, Match(x1-(mouse_x+\p\fs), Grid), Match((mouse_y+\p\fs), Grid)-(\y-\p\TabHeight))
+      Case \anchor[10] : Resize(*This, Match(mx, Grid), Match(my, Grid), #PB_Ignore, #PB_Ignore)
+    EndSelect
+  EndWith
+EndProcedure
+
   Procedure.i CallBack(*This.Widget_S, EventType.i, MouseScreenX.i=0, MouseScreenY.i=0)
     Protected repaint.i
     Static Last.i, Down.i, *Lastat.Widget_S, *Last.Widget_S, mouseB.i, *mouseat.Widget_S, Buttons
@@ -3258,9 +3289,9 @@ Module Widget
             Buttons = 0
         EndSelect
         
+        ; anchors events
         Protected i 
         Static *p.Widget_S
-        
         
         Select EventType 
           Case #PB_EventType_MouseMove
@@ -3268,62 +3299,68 @@ Module Widget
               Protected x = MouseScreenX-*p\anchor\Width/2
               Protected y = MouseScreeny-*p\anchor\Height/2
               
-              ; Object resize
-              Select *p\anchor
-                Case *p\anchor[1]
-                  ;                     iX=Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  ;                     iWidth=ObjectX1-Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), #PB_Ignore, (*p\x+*p\Width)-(x+4), #PB_Ignore)
-                  
-                Case \anchor[2] 
-                  ;                     iY=Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     iHeight=ObjectY1-Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     
-                  Resize(*p, #PB_Ignore, y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), #PB_Ignore, ((*p\y+*p\p\TabHeight)+*p\height)-(y+4))
-                  
-                Case \anchor[3] 
-                  ; iWidth=Match(X+\Pos, \Grid)-ObjectX0+Bool(\Grid>1)
-                  Resize(*p, #PB_Ignore, #PB_Ignore, x+*p\anchor[3]\Pos-*p\x, #PB_Ignore)
-                  
-                Case \anchor[4] 
-                  ;                     iHeight=Match(Y+\Pos, \Grid)-ObjectY0+Bool(\Grid>1)
-                  Resize(*p, #PB_Ignore, #PB_Ignore, #PB_Ignore, y+*p\anchor[4]\Pos-(*p\y-*p\p\TabHeight))
-                  
-                                     Case \anchor[5]
-                  ;                     iX=Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  ;                     iY=Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     iWidth=ObjectX1-Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  ;                     iHeight=ObjectY1-Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                                       Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), (*p\x+*p\Width)-(x+4), ((*p\y+*p\p\TabHeight)+*p\height)-(y+4))
-                                       
-                                     Case \anchor[6] 
-                  ;                     iY=Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     iWidth=Match(X+\Pos, \Grid)-ObjectX0+Bool(\Grid>1)
-                  ;                     iHeight=ObjectY1-Match(Y+(\Size-\Pos), \Grid, ObjectY1)
-                  ;                     
-                 Resize(*p, #PB_Ignore, y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), x+*p\anchor[3]\Pos-*p\x, ((*p\y+*p\p\TabHeight)+*p\height)-(y+4))
-                 
-               Case \anchor[7] 
-                  ;                     iWidth=Match(X+\Pos, \Grid)-ObjectX0+Bool(\Grid>1)
-                  ;                     iHeight=Match(Y+\Pos, \Grid)-ObjectY0+Bool(\Grid>1)
-                  Resize(*p, #PB_Ignore, #PB_Ignore, x+*p\anchor[5]\Pos-*p\x, y+*p\anchor[5]\Pos-(*p\y-*p\p\TabHeight))
-                                       
-                                     Case \anchor[8] 
-                  ;                     iX=Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  ;                     iHeight=Match(Y+\Pos, \Grid)-ObjectY0+Bool(\Grid>1)
-                  ;                     iWidth=ObjectX1-Match(X+(\Size-\Pos), \Grid, ObjectX1)
-                  Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), #PB_Ignore, (*p\x+*p\Width)-(x+4), y+*p\anchor[4]\Pos-(*p\y-*p\p\TabHeight))
-                  ;                     
-                                     Case \anchor[9] 
-                  ;                     iX=Match((X-\Pos-2), \Grid)
-                  ;                     iY=Match(Y+(\Size-\Pos), \Grid)
-                  
-               Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), #PB_Ignore, #PB_Ignore)
-                 EndSelect
+              CallBackAnchors(*p, x,y)
               
+;               Select *p\anchor
+;                 Case *p\anchor[1]
+;                   ;                     iX=Match(X+(\Size-\Pos), \Grid, ObjectX1)
+;                   ;                     iWidth=ObjectX1-Match(X+(\Size-\Pos), \Grid, ObjectX1)
+;                   Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), #PB_Ignore, (*p\x+*p\Width)-(x+4), #PB_Ignore)
+;                   
+;                 Case \anchor[2] 
+;                   ;                     iY=Match(Y+(\Size-\Pos), \Grid, ObjectY1)
+;                   ;                     iHeight=ObjectY1-Match(Y+(\Size-\Pos), \Grid, ObjectY1)
+;                   ;                     
+;                   Resize(*p, #PB_Ignore, Match(y-(*p\p\y+*p\p\TabHeight), *p\anchor[2]\Grid)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), #PB_Ignore, ((*p\y+*p\p\TabHeight)+*p\height)-(y+4))
+;                   
+;                 Case \anchor[3] 
+;                   ; iWidth=Match(X+\Pos, \Grid)-ObjectX0+Bool(\Grid>1)
+;                   Resize(*p, #PB_Ignore, #PB_Ignore, Match(x+*p\anchor[3]\Pos, *p\anchor[3]\Grid)-*p\x, #PB_Ignore)
+;                   
+;                 Case \anchor[4] 
+;                   ;                     iHeight=Match(Y+\Pos, \Grid)-ObjectY0+Bool(\Grid>1)
+;                   Resize(*p, #PB_Ignore, #PB_Ignore, #PB_Ignore, Match(y+*p\anchor[4]\Pos, *p\anchor[4]\Grid)-(*p\y-*p\p\TabHeight))
+;                   
+;                                      Case \anchor[5]
+;                   ;                     iX=Match(X+(\Size-\Pos), \Grid, ObjectX1)
+;                   ;                     iY=Match(Y+(\Size-\Pos), \Grid, ObjectY1)
+;                   ;                     iWidth=ObjectX1-Match(X+(\Size-\Pos), \Grid, ObjectX1)
+;                   ;                     iHeight=ObjectY1-Match(Y+(\Size-\Pos), \Grid, ObjectY1)
+;                                        Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), (*p\x+*p\Width)-(x+4), ((*p\y+*p\p\TabHeight)+*p\height)-(y+4))
+;                                        
+;                                      Case \anchor[6] 
+;                   ;                     iY=Match(Y+(\Size-\Pos), \Grid, ObjectY1)
+;                   ;                     iWidth=Match(X+\Pos, \Grid)-ObjectX0+Bool(\Grid>1)
+;                   ;                     iHeight=ObjectY1-Match(Y+(\Size-\Pos), \Grid, ObjectY1)
+;                   ;                     
+;                  Resize(*p, #PB_Ignore, y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), x+*p\anchor[3]\Pos-*p\x, ((*p\y+*p\p\TabHeight)+*p\height)-(y+4))
+;                  
+;                Case \anchor[7] 
+;                   ;                     iWidth=Match(X+\Pos, \Grid)-ObjectX0+Bool(\Grid>1)
+;                   ;                     iHeight=Match(Y+\Pos, \Grid)-ObjectY0+Bool(\Grid>1)
+;                   Resize(*p, #PB_Ignore, #PB_Ignore, x+*p\anchor[5]\Pos-*p\x, y+*p\anchor[5]\Pos-(*p\y-*p\p\TabHeight))
+;                                        
+;                                      Case \anchor[8] 
+;                   ;                     iX=Match(X+(\Size-\Pos), \Grid, ObjectX1)
+;                   ;                     iHeight=Match(Y+\Pos, \Grid)-ObjectY0+Bool(\Grid>1)
+;                   ;                     iWidth=ObjectX1-Match(X+(\Size-\Pos), \Grid, ObjectX1)
+;                   Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), #PB_Ignore, (*p\x+*p\Width)-(x+4), y+*p\anchor[4]\Pos-(*p\y-*p\p\TabHeight))
+;                   ;                     
+;                                      Case \anchor[9] 
+;                   ;                     iX=Match((X-\Pos-2), \Grid)
+;                   ;                     iY=Match(Y+(\Size-\Pos), \Grid)
+;                   
+;                Resize(*p, x-*p\p\x+(*p\anchor[1]\Width-*p\anchor[1]\Pos), y-(*p\p\y+*p\p\TabHeight)+(*p\anchor[5]\Height-*p\anchor[5]\Pos), #PB_Ignore, #PB_Ignore)
+;                                     Case \anchor[10] 
+;                   ;                     iX=Match((X-\Pos-2), \Grid)
+;                   ;                     iY=Match(Y+(\Size-\Pos), \Grid)
+;                  
+;                Resize(*p, x-*p\p\x, y-(*p\p\y+*p\p\TabHeight), #PB_Ignore, #PB_Ignore)
+;                  EndSelect
+;               
               ProcedureReturn 1
             Else
-              For i = 1 To 9
+              For i = 10 To 1 Step - 1
                 If \anchor[i]
                   If (MouseScreenX>\anchor[i]\X And MouseScreenX=<\anchor[i]\X+\anchor[i]\Width And 
                       MouseScreenY>\anchor[i]\Y And MouseScreenY=<\anchor[i]\Y+\anchor[i]\Height)
@@ -3333,8 +3370,10 @@ Module Widget
                         \anchor[i]\State = 1
                       EndIf
                       
-                      \anchor[i]\Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-                      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor)
+                      If i<10
+                        \anchor[i]\Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+                        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor)
+                      EndIf
                       ProcedureReturn 1
                     EndIf
                     
@@ -3342,7 +3381,9 @@ Module Widget
                     \anchor[i]\State = 0
                     \anchor = 0
                     
-                    SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor[1])
+                    If GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) <> \anchor[i]\Cursor[1]
+                      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor[1])
+                    EndIf
                     ProcedureReturn 1
                   EndIf
                 EndIf
@@ -3351,11 +3392,13 @@ Module Widget
             
           Case #PB_EventType_LeftButtonDown
             If \anchor : \anchor\State = 2 : *p = *This
+              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor)
               ProcedureReturn 1
             EndIf
             
           Case #PB_EventType_LeftButtonUp
             If \anchor : \anchor\State = 1 : *p = 0
+              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor[1])
               ProcedureReturn 1
             EndIf
             
@@ -3695,8 +3738,10 @@ Module Widget
       EndIf
       
       If \Vertical
+        \Cursor = #PB_Cursor_UpDown
         SetState(*This, \height/2-1)
       Else
+        \Cursor = #PB_Cursor_LeftRight
         SetState(*This, \width/2-1)
       EndIf
     EndWith
@@ -4006,6 +4051,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global *child_2.Widget_S=AllocateStructure(Widget_S)
   Global *ScrollArea.Widget_S=AllocateStructure(Widget_S)
   Global *Tree_0.Widget_S=AllocateStructure(Widget_S)
+  Global *Tree_3.Widget_S=AllocateStructure(Widget_S)
   
   UsePNGImageDecoder()
   
@@ -4054,6 +4100,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     Repaint | CallBack(*Bar_1, EventType, mouseX,mouseY)
     Repaint | CallBack(*Tree_0, EventType, mouseX,mouseY)
+    Repaint | CallBack(*Tree_3, EventType, mouseX,mouseY)
     ;     Repaint | CallBack(*child_0, EventType, mouseX,mouseY)
     ;     Repaint | CallBack(*child_2, EventType, mouseX,mouseY)
     ;     Repaint | CallBack(*Bar_0, EventType, mouseX,mouseY)
@@ -4172,6 +4219,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       Define Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline TextWidget"
       
       *Tree_0.Widget_S = Button(15,15,100,30, "butt_anchor_0", #PB_Flag_AnchorsGadget)
+      *Tree_3.Widget_S = Button(15,55,100,30, "butt_anchor_0", #PB_Flag_AnchorsGadget)
       
 ; ;       *Tree_0.Widget_S = Tree(10,20,250,135, #PB_Flag_AutoSize) 
 ; ;       AddItem(*Tree_0, 0, "Tree_0", -1 )
@@ -4497,5 +4545,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------v-8f--40--8----f42--8+-0dfP+-----0--------------------------0--------8+----------+------
+; Folding = --------v-8f--40--8----f42--8--0dfP+-----0--------------------------0-0----4-40----------0------
 ; EnableXP
