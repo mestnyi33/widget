@@ -150,7 +150,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
       *Scroll_1.Widget_S  = Image(0, 0, 0, 0, 0); : SetState(*Scroll_1, 1) 
-      *Scroll_2.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : SetState(*Scroll_2\s\h, 45)
+      *Scroll_2.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : closelist() : SetState(*Scroll_2\s\h, 45)
       *Scroll_3.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_3, 50)
       
       *Bar_0 = Splitter(10, 10, 360,  330, *Scroll_1, *Scroll_2)
@@ -160,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *child_1.Widget_S  = Progress(10, 40, 80, 20, 0,200,100) : SetState(*child_1, 50)
       *child_2.Widget_S  = Scroll(10, 70, 80, 20, 0,200,100) : SetState(*child_2, 80)
       
-      *ScrollArea.Widget_S  = ScrollArea(50, 50, 150, 150, 250,250) : SetParent(*ScrollArea, *Scroll_2)
+      *ScrollArea.Widget_S  = ScrollArea(50, 50, 150, 150, 250,250) : closelist() : SetParent(*ScrollArea, *Scroll_2)
       
       SetParent(*child_0, *ScrollArea)
       SetParent(*child_1, *ScrollArea)

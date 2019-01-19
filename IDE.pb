@@ -11,8 +11,18 @@ UseModule Widget
 
 Global Window_0, Canvas_0, winBackColor = $FFFFFF
 Global NewMap Widgets.i()
-Global*Widgets.Widget_S
+Global*Widget.Widget_S
 
+If CreateImage(3, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(3))
+  DrawingMode(#PB_2DDrawing_AllChannels) 
+  For x=0 To 600 Step 5
+    For y=0 To 600 Step 5
+      Line(x, y, 1,1, $FF000000)
+    Next y
+  Next x
+  StopDrawing()
+EndIf
+  
 Procedure LoadControls(Widget)
   Macro ULCase(String)
     InsertString(UCase(Left(String,1)), LCase(Right(String,Len(String)-1)), 2)
@@ -287,7 +297,10 @@ Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 600)
   ; Main panel
   Widgets("Panel_0") = Panel(0, 0, 0, 0) 
   AddItem(Widgets("Panel_0"), -1, "Form")
-  Widgets("Form_0") = Container(20, 20, 210, 210, #PB_Flag_AnchorsGadget) 
+  Widgets("Form_0") = Window(20, 20, 210, 210, "Window_0", #PB_Flag_AnchorsGadget) 
+  *Widget = Widgets("Form_0")                      
+  SetImage(*Widget, 3)
+  
   Widgets("Form_0_Button_0") = Button(10, 10, 100, 30, "Button_0", #PB_Flag_AnchorsGadget)
   Widgets("Form_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget)
   Widgets("Form_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget)
@@ -362,5 +375,5 @@ Repeat
   EndSelect
 ForEver
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = +--v+0-
+; Folding = 0--f08-
 ; EnableXP
