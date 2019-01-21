@@ -7,90 +7,103 @@ XIncludeFile "widgets.pbi"
 ; Event procedures needs to be put in another source file.
 ;
 
-UseModule Widget
-
-Global Window_0, Canvas_0, winBackColor = $FFFFFF
-Global NewMap Widgets.i()
-Global*Widget.Widget_S
-
-If CreateImage(3, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(3))
-  DrawingMode(#PB_2DDrawing_AllChannels) 
-  For x=0 To 600 Step 5
-    For y=0 To 600 Step 5
-      Line(x, y, 1,1, $FF000000)
-    Next y
-  Next x
-  StopDrawing()
-EndIf
+;- EXAMPLE
+CompilerIf #PB_Compiler_IsMainFile ;= 100
+  EnableExplicit
+  UseModule Widget
   
-Procedure LoadControls(Widget)
-  Macro ULCase(String)
-    InsertString(UCase(Left(String,1)), LCase(Right(String,Len(String)-1)), 2)
-  EndMacro
+  Global Window_0, Canvas_0, winBackColor = $FFFFFF
+  Global NewMap Widgets.i()
+  Global*Widget.Widget_S, x,y
   
-  UsePNGImageDecoder()
-  
-  Protected ZipFile.i, GadgetName.s, GadgetImageSize.i, *GadgetImage, GadgetImage=-1, GadgetCtrlCount.l
-  Define ZipFileTheme.s = GetCurrentDirectory()+"SilkTheme.zip"
-  
-  If FileSize(ZipFileTheme) < 1
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      ZipFileTheme = #PB_Compiler_Home+"themes\SilkTheme.zip"
-    CompilerElse
-      ZipFileTheme = #PB_Compiler_Home+"themes/SilkTheme.zip"
-    CompilerEndIf
-    If FileSize(ZipFileTheme) < 1
-      MessageRequester("Designer Error", "SilkTheme.zip Not found in the Content directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
-      End
-    EndIf
+  If CreateImage(5, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(5))
+    DrawingMode(#PB_2DDrawing_AllChannels) 
+    For x=0 To 600 Step 5
+      For y=0 To 600 Step 5
+        Line(x, y, 1,1, $FF000000)
+      Next y
+    Next x
+    StopDrawing()
   EndIf
   
-  CompilerIf #PB_Compiler_Version > 522
-    UseZipPacker()
-  CompilerEndIf
+  If CreateImage(4, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(4))
+    DrawingMode(#PB_2DDrawing_AllChannels) 
+    For x=0 To 600 Step 4
+      For y=0 To 600 Step 4
+        Line(x, y, 1,1, $FF000000)
+      Next y
+    Next x
+    StopDrawing()
+  EndIf
   
-  ZipFile = OpenPack(#PB_Any, ZipFileTheme, #PB_PackerPlugin_Zip)
-  If ZipFile
-    If ExaminePack(ZipFile)
-      While NextPackEntry(ZipFile)
-        
-        GadgetName = PackEntryName(ZipFile)
-        GadgetName = ReplaceString(GadgetName,"chart_bar","vd_tabbargadget")   ;use chart_bar png for TabBarGadget
-        GadgetName = ReplaceString(GadgetName,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
-        GadgetName = ReplaceString(GadgetName,"frame3dgadget","framegadget")            ;vd_framegadget.png not found. Use vd_frame3dgadget.png instead
-        
-        If FindString(Left(GadgetName, 3), "vd_")
-          GadgetImageSize = PackEntrySize(ZipFile)
-          *GadgetImage = AllocateMemory(GadgetImageSize)
-          UncompressPackMemory(ZipFile, *GadgetImage, GadgetImageSize)
-          GadgetImage = CatchImage(#PB_Any, *GadgetImage, GadgetImageSize)
-          GadgetName = LCase(GadgetName)
-          GadgetName = ReplaceString(GadgetName,".png","")
-          GadgetName = ReplaceString(GadgetName,"vd_","")
+  Procedure LoadControls(Widget)
+    Macro ULCase(String)
+      InsertString(UCase(Left(String,1)), LCase(Right(String,Len(String)-1)), 2)
+    EndMacro
+    
+    UsePNGImageDecoder()
+    
+    Protected ZipFile.i, GadgetName.s, GadgetImageSize.i, *GadgetImage, GadgetImage=-1, GadgetCtrlCount.l
+    Define ZipFileTheme.s = GetCurrentDirectory()+"SilkTheme.zip"
+    
+    If FileSize(ZipFileTheme) < 1
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        ZipFileTheme = #PB_Compiler_Home+"themes\SilkTheme.zip"
+      CompilerElse
+        ZipFileTheme = #PB_Compiler_Home+"themes/SilkTheme.zip"
+      CompilerEndIf
+      If FileSize(ZipFileTheme) < 1
+        MessageRequester("Designer Error", "SilkTheme.zip Not found in the Content directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
+        End
+      EndIf
+    EndIf
+    
+    CompilerIf #PB_Compiler_Version > 522
+      UseZipPacker()
+    CompilerEndIf
+    
+    ZipFile = OpenPack(#PB_Any, ZipFileTheme, #PB_PackerPlugin_Zip)
+    If ZipFile
+      If ExaminePack(ZipFile)
+        While NextPackEntry(ZipFile)
           
-          Select PackEntryType(ZipFile)
-            Case #PB_Packer_File
-              If GadgetImage
-                Select GadgetName
-                  Case "buttongadget",
-                       "stringgadget",
-                       "textgadget",
-                       "checkboxgadget",
-                       "optiongadget",
-                       "listviewgadget",
-                       "framegadget",
-                       "comboboxgadget",
-                       "imagegadget",
-                       "hyperlinkgadget",
-                       "containergadget",
-                       "listicongadget",
-                       "ipaddressgadget",
-                       "progressbargadget",
-                       "scrollbargadget",
-                       "scrollareagadget",
-                       "trackbargadget",
-                       ;                        "webgadget",
-                    "buttonimagegadget",
+          GadgetName = PackEntryName(ZipFile)
+          GadgetName = ReplaceString(GadgetName,"chart_bar","vd_tabbargadget")   ;use chart_bar png for TabBarGadget
+          GadgetName = ReplaceString(GadgetName,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+          GadgetName = ReplaceString(GadgetName,"frame3dgadget","framegadget")            ;vd_framegadget.png not found. Use vd_frame3dgadget.png instead
+          
+          If FindString(Left(GadgetName, 3), "vd_")
+            GadgetImageSize = PackEntrySize(ZipFile)
+            *GadgetImage = AllocateMemory(GadgetImageSize)
+            UncompressPackMemory(ZipFile, *GadgetImage, GadgetImageSize)
+            GadgetImage = CatchImage(#PB_Any, *GadgetImage, GadgetImageSize)
+            GadgetName = LCase(GadgetName)
+            GadgetName = ReplaceString(GadgetName,".png","")
+            GadgetName = ReplaceString(GadgetName,"vd_","")
+            
+            Select PackEntryType(ZipFile)
+              Case #PB_Packer_File
+                If GadgetImage
+                  Select GadgetName
+                    Case "buttongadget",
+                         "stringgadget",
+                         "textgadget",
+                         "checkboxgadget",
+                         "optiongadget",
+                         "listviewgadget",
+                         "framegadget",
+                         "comboboxgadget",
+                         "imagegadget",
+                         "hyperlinkgadget",
+                         "containergadget",
+                         "listicongadget",
+                         "ipaddressgadget",
+                         "progressbargadget",
+                         "scrollbargadget",
+                         "scrollareagadget",
+                         "trackbargadget",
+                         ;                        "webgadget",
+                      "buttonimagegadget",
 "calendargadget",
 "dategadget",
 "editorgadget",
@@ -106,115 +119,115 @@ Procedure LoadControls(Widget)
 "shortcutgadget",
 "canvasgadget",
 "gadget"
-                    
-                    GadgetName=ULCase(ReplaceString(GadgetName, "gadget",""))
-                    
-                    GadgetName = ReplaceString(GadgetName, "box","Box")
-                    GadgetName = ReplaceString(GadgetName, "link","Link")
-                    GadgetName = ReplaceString(GadgetName, "bar","Bar")
-                    GadgetName = ReplaceString(GadgetName, "area","Area")
-                    GadgetName = ReplaceString(GadgetName, "Ipa","IPA")
-                    
-                    GadgetName = ReplaceString(GadgetName, "view","View")
-                    GadgetName = ReplaceString(GadgetName, "icon","Icon")
-                    GadgetName = ReplaceString(GadgetName, "image","Image")
-                    GadgetName = ReplaceString(GadgetName, "combo","Combo")
-                    GadgetName = ReplaceString(GadgetName, "list","List")
-                    GadgetName = ReplaceString(GadgetName, "tree","Tree")
-                    
-                    AddItem(Widget, -1, GadgetName, GadgetImage)
-                    SetItemData(Widget, CountItems(Widget)-1, GadgetImage)
-                EndSelect
-                
-                
-              EndIf
-          EndSelect
-          
-          FreeMemory(*GadgetImage)
-        EndIf
-      Wend
-    EndIf
-    ClosePack(ZipFile)
-  EndIf
-EndProcedure
-
-Procedure ReDraw(Canvas)
-  If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-;     DrawingMode(#PB_2DDrawing_Default)
-;     Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-    FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
-  
-    With Widgets()
-      ForEach Widgets()
-        ;If Canvas = \Canvas\Gadget
-        Draw(Widgets())
-        ;EndIf
-      Next
-    EndWith
-    
-    StopDrawing()
-  EndIf
-EndProcedure
-
-Procedure Widgets_CallBack()
-  Select EventWidget()
-    Case Widgets("Tree_1") 
-      Select WidgetEventType()
-        Case #PB_EventType_LeftButtonDown
-        ; SetAttribute(Widgets("Form_0_Button_0"), #PB_Button_Image, GetItemData(EventWidget(), GetState(EventWidget())))
-         SetItemAttribute(Widgets("Panel_0"), GetState(Widgets("Panel_0")), #PB_Button_Image, GetItemData(EventWidget(), GetState(EventWidget())))
-      EndSelect
-  EndSelect
-EndProcedure
-
-Procedure Canvas_Events(Canvas.i, EventType.i)
-  Protected Repaint, *This.Widget_S
-  Protected Width = GadgetWidth(Canvas)
-  Protected Height = GadgetHeight(Canvas)
-  Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-  Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-  Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-  
-  
-  Select EventType
-      ;Case #PB_EventType_Repaint : Repaint = EventData()
-    Case #PB_EventType_Resize : Repaint = 1
-      Resize(Widgets("Splitter_1"), #PB_Ignore, #PB_Ignore, Width-2, Height-2)
-    Default
-      
-      If EventType() = #PB_EventType_LeftButtonDown
-        SetActiveGadget(Canvas)
+                      
+                      GadgetName=ULCase(ReplaceString(GadgetName, "gadget",""))
+                      
+                      GadgetName = ReplaceString(GadgetName, "box","Box")
+                      GadgetName = ReplaceString(GadgetName, "link","Link")
+                      GadgetName = ReplaceString(GadgetName, "bar","Bar")
+                      GadgetName = ReplaceString(GadgetName, "area","Area")
+                      GadgetName = ReplaceString(GadgetName, "Ipa","IPA")
+                      
+                      GadgetName = ReplaceString(GadgetName, "view","View")
+                      GadgetName = ReplaceString(GadgetName, "icon","Icon")
+                      GadgetName = ReplaceString(GadgetName, "image","Image")
+                      GadgetName = ReplaceString(GadgetName, "combo","Combo")
+                      GadgetName = ReplaceString(GadgetName, "list","List")
+                      GadgetName = ReplaceString(GadgetName, "tree","Tree")
+                      
+                      AddItem(Widget, -1, GadgetName, GadgetImage)
+                      SetItemData(Widget, CountItems(Widget)-1, GadgetImage)
+                  EndSelect
+                  
+                  
+                EndIf
+            EndSelect
+            
+            FreeMemory(*GadgetImage)
+          EndIf
+        Wend
       EndIf
+      ClosePack(ZipFile)
+    EndIf
+  EndProcedure
+  
+  Procedure ReDraw(Canvas)
+    If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+      ;     DrawingMode(#PB_2DDrawing_Default)
+      ;     Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
       
-      ; Repaint | CallBack(Widgets("Panel_1"), EventType(), MouseX, MouseY)
-      
-      With Widgets()
-        ForEach Widgets()
-;           *Widgets = Widgets()
-;           If *Widgets\Text\String = "Button_0"
-;            Debug 55
-;           Else
-            Repaint | CallBack(Widgets(), EventType, MouseX, MouseY)
-;         EndIf
+;       With Widgets()
+;         ForEach Widgets()
+;           ;If Canvas = \Canvas\Gadget
+;           Draw(Widgets())
+;           ;EndIf
+;         Next
+;       EndWith
+      Draw(Widgets("Splitter_1"))
+      StopDrawing()
+    EndIf
+  EndProcedure
+  
+  Procedure Widgets_CallBack()
+    Select EventWidget()
+      Case Widgets("Tree_1") 
+        Select WidgetEventType()
+          Case #PB_EventType_LeftButtonDown
+            ; SetAttribute(Widgets("Form_0_Button_0"), #PB_Button_Image, GetItemData(EventWidget(), GetState(EventWidget())))
+            SetItemAttribute(Widgets("Panel_0"), GetState(Widgets("Panel_0")), #PB_Button_Image, GetItemData(EventWidget(), GetState(EventWidget())))
+        EndSelect
+    EndSelect
+  EndProcedure
+  
+  Procedure Canvas_Events(Canvas.i, EventType.i)
+    Protected Repaint, *This.Widget_S
+    Protected Width = GadgetWidth(Canvas)
+    Protected Height = GadgetHeight(Canvas)
+    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
+    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    
+    
+    Select EventType
+        ;Case #PB_EventType_Repaint : Repaint = EventData()
+      Case #PB_EventType_Resize : Repaint = 1
+        Resize(Widgets("Splitter_1"), #PB_Ignore, #PB_Ignore, Width-2, Height-2)
+      Default
         
-        Next
-      EndWith
-      
-  EndSelect
+        If EventType() = #PB_EventType_LeftButtonDown
+          SetActiveGadget(Canvas)
+        EndIf
+        
+        ; Repaint | CallBack(Widgets("Panel_1"), EventType(), MouseX, MouseY)
+        
+        With Widgets()
+          ForEach Widgets()
+            ;           *Widgets = Widgets()
+            ;           If *Widgets\Text\String = "Button_0"
+            ;            Debug 55
+            ;           Else
+            Repaint | CallBack(Widgets(), EventType, MouseX, MouseY)
+            ;         EndIf
+            
+          Next
+        EndWith
+        
+    EndSelect
+    
+    ;Debug EventType
+    
+    If WidgetEventType()>0
+      Widgets_CallBack()
+    EndIf
+    
+    If Repaint 
+      ReDraw(Canvas)
+    EndIf
+    
+  EndProcedure
   
-  ;Debug EventType
-  
-  If WidgetEventType()>0
-    Widgets_CallBack()
-  EndIf
-  
-  If Repaint 
-    ReDraw(Canvas)
-  EndIf
-  
-EndProcedure
-
-Procedure Canvas_0_CallBack()
+  Procedure Canvas_0_CallBack()
     ; Canvas events bug fix
     Protected Result.b
     Static MouseLeave.b
@@ -264,15 +277,15 @@ Procedure Canvas_0_CallBack()
     
     
     If EventType = #PB_EventType_MouseMove
-;       Static Last_X, Last_Y
-;       If Last_Y <> Mousey
-;         Last_Y = Mousey
-        Result | Canvas_Events(EventGadget, EventType)
-;       EndIf
-;       If Last_x <> Mousex
-;         Last_x = Mousex
-;         Result | Canvas_Events(EventGadget, EventType)
-;       EndIf
+      ;       Static Last_X, Last_Y
+      ;       If Last_Y <> Mousey
+      ;         Last_Y = Mousey
+      Result | Canvas_Events(EventGadget, EventType)
+      ;       EndIf
+      ;       If Last_x <> Mousex
+      ;         Last_x = Mousex
+      ;         Result | Canvas_Events(EventGadget, EventType)
+      ;       EndIf
     Else
       Result | Canvas_Events(EventGadget, EventType)
     EndIf
@@ -280,100 +293,119 @@ Procedure Canvas_0_CallBack()
     ProcedureReturn Result
   EndProcedure
   
-Procedure Window_0_Resize()
-  ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(Window_0)-20, WindowHeight(Window_0)-50)
-EndProcedure
-
-Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 600)
-  Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-  BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), Window_0)
+  Procedure Window_0_Resize()
+    ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(Window_0)-20, WindowHeight(Window_0)-50)
+  EndProcedure
   
-  ; Demo draw widgets on the canvas
-  Canvas_0 = CanvasGadget(#PB_Any,  10, 40, 780, 550, #PB_Canvas_Keyboard)
-  BindGadgetEvent(Canvas_0, @Canvas_0_CallBack())
-  *value\gadget = Canvas_0
-  *value\window = Window_0
+  Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 600)
+    Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+    BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), Window_0)
+    
+    ; Demo draw widgets on the canvas
+    Canvas_0 = CanvasGadget(#PB_Any,  10, 40, 780, 550, #PB_Canvas_Keyboard)
+    BindGadgetEvent(Canvas_0, @Canvas_0_CallBack())
+    *value\gadget = Canvas_0
+    *value\window = Window_0
+    
+    ; Main panel
+    Widgets("Panel_0") = Panel(0, 0, 0, 0) 
+    AddItem(Widgets("Panel_0"), -1, "Form")
+    
+    Widgets("Form_0") = Window(20, 20, 310, 310, "Window_0", #PB_Flag_AnchorsGadget) : *Widget = Widgets("Form_0") : SetImage(*Widget, 5)
+    Widgets("Form_0_Button_0") = Button(10, 10, 100, 30, "Button_0", #PB_Flag_AnchorsGadget)
+    
+    Widgets("Container_0") = Container(60, 60, 210, 210, #PB_Flag_AnchorsGadget) ;: *Widget = Widgets("Container_0")  : SetImage(*Widget, 4)
+    Widgets("Form_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget)
+    Widgets("Form_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget)
+    CloseList()
+    
+    CloseList()
+    
+    AddItem(Widgets("Panel_0"), -1, "Code")
+    Widgets("Editor_0") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
+    CloseList()
+    
+    Widgets("Tree_0") = Tree(0, 0, 80, 30)
+    AddItem(Widgets("Tree_0"), 0, "Window_0", -1 )
+    AddItem(Widgets("Tree_0"), 1, "Container_0", -1, 1) 
+    AddItem(Widgets("Tree_0"), 4, "Button_0", -1, 2) 
+    AddItem(Widgets("Tree_0"), 5, "Button_1", -1, 2) 
+    AddItem(Widgets("Tree_0"), 6, "Container_1", -1, 2) 
+    AddItem(Widgets("Tree_0"), 7, "Button_2", -1, 3) 
+    SetState(Widgets("Tree_0"), 0)
+    
+    Widgets("Panel_1") = Panel(0, 0, 0, 0) 
+    AddItem(Widgets("Panel_1"), -1, "Properties")
+    
+    Widgets("Tree_3") = Property(0, 0, 150, 30, 70, #PB_Flag_AutoSize)
+    AddItem(Widgets("Tree_3"), -1, " Общее", -1, 0)
+    AddItem(Widgets("Tree_3"), -1, "String Text Button_0", -1, 1)
+    AddItem(Widgets("Tree_3"), -1, " Координаты", -1, 0)
+    AddItem(Widgets("Tree_3"), -1, "Spin X 0|100", -1, 1)
+    AddItem(Widgets("Tree_3"), -1, "Spin Y 0|200", -1, 1)
+    AddItem(Widgets("Tree_3"), -1, "Spin Width 0|100", -1, 1)
+    AddItem(Widgets("Tree_3"), -1, "Spin Height 0|200", -1, 1)
+    
+    AddItem(Widgets("Tree_3"), -1, " Поведение", -1, 0)
+    
+    AddItem(Widgets("Tree_3"), -1, "Button Puch C:\as\Img\Image.png", -1, 1)
+    AddItem(Widgets("Tree_3"), -1, "ComboBox Disable True|False", -1, 1)
+    AddItem(Widgets("Tree_3"), -1, "ComboBox Flag #_Event_Close|#_Event_Size|#_Event_Move", -1, 1)
+    
+    AddItem(Widgets("Panel_1"), -1, "Widgets")
+    Widgets("Tree_1") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines|#PB_Flag_AutoSize)
+    LoadControls(Widgets("Tree_1"))
+    SetState(Widgets("Tree_1"), 1)
+    
+    AddItem(Widgets("Panel_1"), -1, "Events")
+    Widgets("Tree_4") = Text(0, 60, 180, 30, "Тут будет событие элементов", #PB_Flag_AutoSize)
+    CloseList()
+    
+    Widgets("Splitter_0") = Splitter(1,1,778, 548, Widgets("Tree_0"), Widgets("Panel_1"))
+    Widgets("Splitter_1") = Splitter(1,1,778, 548, Widgets("Panel_0"), Widgets("Splitter_0"), #PB_Splitter_Vertical)
+    
+    SetState(Widgets("Splitter_0"), 150)
+    SetState(Widgets("Splitter_1"), 550)
+    
+    ;    ;Editor::SetText(Widgets("Panel_0"), "")
+    ;   Tree::AddItem(Widgets("Tree_0"), -1, "Window_0")
+    ;   
+    ;   Tree::AddItem(Widgets("Tree_1"), -1, "Button")
+    ;   Tree::AddItem(Widgets("Tree_1"), -1, "String")
+    ;   Tree::AddItem(Widgets("Tree_1"), -1, "Text")
+    
+    BindEvent(#PB_Event_Widget, @Widgets_CallBack(), Window_0)
+    ReDraw(Canvas_0)
+  EndProcedure
   
-  ; Main panel
-  Widgets("Panel_0") = Panel(0, 0, 0, 0) 
-  AddItem(Widgets("Panel_0"), -1, "Form")
-  Widgets("Form_0") = Window(20, 20, 210, 210, "Window_0", #PB_Flag_AnchorsGadget) 
-  *Widget = Widgets("Form_0")                      
-  SetImage(*Widget, 3)
+  Procedure Window_0_Events(event)
+    Select event
+      Case #PB_Event_CloseWindow
+        ProcedureReturn #False
+        
+      Case #PB_Event_Menu
+        Select EventMenu()
+        EndSelect
+        
+      Case #PB_Event_Gadget
+        Select EventGadget()
+        EndSelect
+    EndSelect
+    
+    ProcedureReturn #True
+  EndProcedure
   
-  Widgets("Form_0_Button_0") = Button(10, 10, 100, 30, "Button_0", #PB_Flag_AnchorsGadget)
-  Widgets("Form_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget)
-  Widgets("Form_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget)
-  CloseList()
-  AddItem(Widgets("Panel_0"), -1, "Code")
-  Widgets("Editor_0") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
-  CloseList()
+  Window_0_Open()
   
-  Widgets("Tree_0") = Tree(0, 0, 80, 30)
-  AddItem(Widgets("Tree_0"), 0, "Window_0", -1 )
-  AddItem(Widgets("Tree_0"), 1, "Container_0", -1, 1) 
-  AddItem(Widgets("Tree_0"), 4, "Button_0", -1, 2) 
-  AddItem(Widgets("Tree_0"), 5, "Button_1", -1, 2) 
-  AddItem(Widgets("Tree_0"), 6, "Container_1", -1, 2) 
-  AddItem(Widgets("Tree_0"), 7, "Button_2", -1, 3) 
-  SetState(Widgets("Tree_0"), 0)
-  
-  Widgets("Panel_1") = Panel(0, 0, 0, 0) 
-  AddItem(Widgets("Panel_1"), -1, "Widgets")
-  Widgets("Tree_1") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines|#PB_Flag_AutoSize)
-  LoadControls(Widgets("Tree_1"))
-  SetState(Widgets("Tree_1"), 1)
-  
-  AddItem(Widgets("Panel_1"), -1, "Properties")
-  Widgets("Tree_3") = Text(0, 30, 180, 30, "Тут будет свойства элементов", #PB_Flag_AutoSize)
-  AddItem(Widgets("Panel_1"), -1, "Events")
-  Widgets("Tree_4") = Text(0, 60, 180, 30, "Тут будет событие элементов", #PB_Flag_AutoSize)
-  CloseList()
-  
-  Widgets("Splitter_0") = Splitter(1,1,778, 548, Widgets("Tree_0"), Widgets("Panel_1"))
-  Widgets("Splitter_1") = Splitter(1,1,778, 548, Widgets("Panel_0"), Widgets("Splitter_0"), #PB_Splitter_Vertical)
-  
-  SetState(Widgets("Splitter_0"), 150)
-  SetState(Widgets("Splitter_1"), 550)
-  
-   ;    ;Editor::SetText(Widgets("Panel_0"), "")
-  ;   Tree::AddItem(Widgets("Tree_0"), -1, "Window_0")
-  ;   
-  ;   Tree::AddItem(Widgets("Tree_1"), -1, "Button")
-  ;   Tree::AddItem(Widgets("Tree_1"), -1, "String")
-  ;   Tree::AddItem(Widgets("Tree_1"), -1, "Text")
-  
-  BindEvent(#PB_Event_Widget, @Widgets_CallBack(), Window_0)
-  ReDraw(Canvas_0)
-EndProcedure
-
-Procedure Window_0_Events(event)
-  Select event
-    Case #PB_Event_CloseWindow
-      ProcedureReturn #False
-      
-    Case #PB_Event_Menu
-      Select EventMenu()
-      EndSelect
-      
-    Case #PB_Event_Gadget
-      Select EventGadget()
-      EndSelect
-  EndSelect
-  
-  ProcedureReturn #True
-EndProcedure
-
-Window_0_Open()
-
-Repeat
-  Select WaitWindowEvent()
-    Case #PB_Event_CloseWindow
-      Break
-    Case #PB_Event_Gadget
-      
-  EndSelect
-ForEver
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0--f08-
+  Repeat
+    Select WaitWindowEvent()
+      Case #PB_Event_CloseWindow
+        Break
+      Case #PB_Event_Gadget
+        
+    EndSelect
+  ForEver
+CompilerEndIf
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; Folding = 4------
 ; EnableXP

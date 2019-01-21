@@ -136,7 +136,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure.i _SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
-    ;ProcedureReturn SetAlignment(*This.Widget_S, Mode.i, Type.i)
+    ProcedureReturn SetAlignment(*This.Widget_S, Mode.i, Type.i)
     With *This
       Select Type
         Case 1 ; widget
@@ -198,9 +198,9 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasGadget(1, 10,10, 580, 550, #PB_Canvas_Keyboard|#PB_Canvas_Container)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
-      Widgets(Str(-1)) = Container(50, 50, 280, 200, #PB_Flag_AnchorsGadget)
+      Widgets(Str(0)) = Container(50, 50, 280, 200, #PB_Flag_AnchorsGadget)
       
-      Widgets(Str(0)) = Button(91, 21, 280-2-182, 200-2-42, "Full_"+Str(0))
+      Widgets(Str(5)) = Button(91, 21, 280-2-182, 200-2-42, "Full_"+Str(5))
       Widgets(Str(1)) = Button(0, 21, 91, 200-2-42, "Left_"+Str(1))
       Widgets(Str(2)) = Button(0, 0, 280-2, 21, "Top_"+Str(2))
       Widgets(Str(3)) = Button(280-2-91, 21, 91, 200-2-42, Str(3)+"_Right")
@@ -208,7 +208,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseList()
       
-      _SetAlignment(Widgets(Str(0)), #PB_Full)
+      _SetAlignment(Widgets(Str(5)), #PB_Full)
       _SetAlignment(Widgets(Str(1)), #PB_Top|#PB_Bottom)
       _SetAlignment(Widgets(Str(2)), #PB_Left|#PB_Right)
       _SetAlignment(Widgets(Str(3)), #PB_Top|#PB_Bottom|#PB_Right)
@@ -273,7 +273,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---0--
+; Folding = f4-0--
 ; EnableXP

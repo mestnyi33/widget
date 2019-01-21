@@ -103,7 +103,7 @@ DeclareModule Widget
     *i          ; index parent item
     *p.Widget_S ; adress parent
     *s.Scroll_S ; 
-    
+    *Splitter.Scroll_S
     
     ; track bar
     Ticks.b
@@ -217,10 +217,6 @@ DeclareModule Widget
     iwidth.i[4]
     iheight.i[4]
     Enumerate.i
-    
-    *SplitterFirst.Widget_S
-    *SplitterSecond.Widget_S
-    
     
     fs.i 
     bs.i
@@ -660,13 +656,8 @@ Module Widget
     : If _this_\Vertical : _this_\iY[3] = _this_\Thumb\Pos : Else : _this_\iX[3] = _this_\Thumb\Pos : EndIf
   EndMacro
   
-  Procedure.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
-    ProcedureReturn ((Bool(Value>Max) * Max) + (Bool(Grid And Value<Max) * (Round((Value/Grid), #PB_Round_Nearest) * Grid)))
-  EndProcedure
-  
-  ;-
   ;- Anchors
-  Macro Draw_Anchors(_this_)
+  Macro DrawAnchors(_this_)
     DrawingMode(#PB_2DDrawing_Outlined)
     If _this_\anchor[10] : Box(_this_\anchor[10]\x, _this_\anchor[10]\y, _this_\anchor[10]\width, _this_\anchor[10]\height ,_this_\anchor[10]\color[_this_\anchor[10]\State]\frame) : EndIf
     
@@ -693,7 +684,7 @@ Module Widget
     If _this_\anchor[9] : Box(_this_\anchor[9]\x, _this_\anchor[9]\y, _this_\anchor[9]\width, _this_\anchor[9]\height ,_this_\anchor[9]\color[_this_\anchor[9]\State]\frame) : EndIf
   EndMacro
   
-  Macro Resize_Anchors(_this_)
+  Macro ResizeAnchors(_this_)
     If _this_\anchor[1] 
       _this_\anchor[1]\x = _this_\x-_this_\anchor[1]\width+_this_\anchor[1]\Pos
       _this_\anchor[1]\y = _this_\y+(_this_\height-_this_\anchor[1]\height)/2
@@ -772,10 +763,6 @@ Module Widget
           \anchor[i]\Pos = \anchor[i]\Height/2
         Next i
         \anchor[9]\Width * 2
-        If Bool(\Container)
-        \anchor[9]\Cursor = #PB_Cursor_Arrows
-      EndIf
-      
       EndIf
     EndWith
     
@@ -794,108 +781,6 @@ Module Widget
       Data.i #PB_Cursor_Arrows
     EndDataSection
     
-  EndProcedure
-  
-  Procedure Events_Anchors(*This.Widget_S, mouse_x,mouse_y)
-    With *This
-      Protected px,py,Grid = \Grid
-      
-      If \p
-        px = \p\x[2]
-        py = \p\y[2]
-      EndIf
-      
-      Protected mx = Match(mouse_x-px, Grid)
-      Protected my = Match(mouse_y-py, Grid)
-      Protected mw = Match((\x+\Width-Bool(Grid>1))-mouse_x, Grid)+Bool(Grid>1)
-      Protected mh = Match((\y+\height-Bool(Grid>1))-mouse_y, Grid)+Bool(Grid>1)
-      Protected mxw = Match(mouse_x-\x, Grid)+Bool(Grid>1)
-      Protected myh = Match(mouse_y-\y, Grid)+Bool(Grid>1)
-      
-      Select \anchor
-        Case \anchor[1] : Resize(*This, mx, #PB_Ignore, mw, #PB_Ignore)
-        Case \anchor[2] : Resize(*This, #PB_Ignore, my, #PB_Ignore, mh)
-        Case \anchor[3] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, #PB_Ignore)
-        Case \anchor[4] : Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, myh)
-          
-        Case \anchor[5] : Resize(*This, mx, my, mw, mh)
-        Case \anchor[6] : Resize(*This, #PB_Ignore, my, mxw, mh)
-        Case \anchor[7] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, myh)
-        Case \anchor[8] : Resize(*This, mx, #PB_Ignore, mw, myh)
-          
-        Case \anchor[9] 
-          If \Container
-            Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
-          EndIf
-          
-        Case \anchor[10] : Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
-      EndSelect
-    EndWith
-  EndProcedure
-  
-  Procedure CallBack_Anchors(*This.Widget_S, EventType.i, Buttons.i, MouseScreenX.i,MouseScreenY.i)
-      Protected i 
-        Static Result.i, *p.Widget_S
-        
-     With *This
-       Select EventType 
-          Case #PB_EventType_MouseMove
-            If *p And *p\anchor
-              Protected x = MouseScreenX-*p\anchor\Width/2
-              Protected y = MouseScreeny-*p\anchor\Height/2
-              
-              Events_Anchors(*p, x,y)
-              
-              ProcedureReturn 1
-              
-            ElseIf Not Buttons
-              For i = 10 To 1 Step - 1
-                If \anchor[i]
-                  If (MouseScreenX>\anchor[i]\X And MouseScreenX=<\anchor[i]\X+\anchor[i]\Width And 
-                      MouseScreenY>\anchor[i]\Y And MouseScreenY=<\anchor[i]\Y+\anchor[i]\Height)
-                    
-                    If \anchor <> \anchor[i] : \anchor = \anchor[i]
-                      If Not \anchor[i]\State
-                        \anchor[i]\State = 1
-                      EndIf
-                      
-                      If i<10
-                        \anchor[i]\Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-                        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor)
-                      EndIf
-                      Result = 1
-                    EndIf
-                    
-                  ElseIf \anchor[i]\State = 1
-                    \anchor[i]\State = 0
-                    \anchor = 0
-                    
-                    If GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) <> \anchor[i]\Cursor[1]
-                      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor[1])
-                    EndIf
-                    Result = 0
-                  EndIf
-                EndIf
-              Next
-            EndIf
-            
-          Case #PB_EventType_LeftButtonDown
-            If \anchor : \anchor\State = 2 : *p = *This
-              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor)
-              ProcedureReturn 1
-            EndIf
-            
-          Case #PB_EventType_LeftButtonUp
-            If \anchor : \anchor\State = 1 : *p = 0
-              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor[1])
-              ProcedureReturn 1
-            EndIf
-            
-        EndSelect
-        
-      EndWith
-      
-      ProcedureReturn Result
   EndProcedure
   
   
@@ -1216,6 +1101,10 @@ Module Widget
     
   EndProcedure
   
+  Procedure.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
+    ProcedureReturn ((Bool(Value>Max) * Max) + (Bool(Grid And Value<Max) * (Round((Value/Grid), #PB_Round_Nearest) * Grid)))
+  EndProcedure
+  
   Procedure.i Pos(*This.Widget_S, ThumbPos.i)
     Protected ScrollPos.i
     
@@ -1233,11 +1122,11 @@ Module Widget
   ;-
   Macro Resize_Splitter(_this_)
     If _this_\Vertical
-      Resize(_this_\SplitterFirst, 0, 0, _this_\width, _this_\Thumb\Pos-_this_\y)
-      Resize(_this_\SplitterSecond, 0, (_this_\Thumb\Pos+_this_\Thumb\len)-_this_\y, _this_\width, _this_\height-((_this_\Thumb\Pos+_this_\Thumb\len)-_this_\y))
+      Resize(_this_\Splitter\v, 0, 0, _this_\width, _this_\Thumb\Pos-_this_\y)
+      Resize(_this_\Splitter\h, 0, (_this_\Thumb\Pos+_this_\Thumb\len)-_this_\y, _this_\width, _this_\height-((_this_\Thumb\Pos+_this_\Thumb\len)-_this_\y))
     Else
-      Resize(_this_\SplitterFirst, 0, 0, _this_\Thumb\Pos-_this_\x, _this_\height)
-      Resize(_this_\SplitterSecond, (_this_\Thumb\Pos+_this_\Thumb\len)-_this_\x, 0, _this_\width-((_this_\thumb\Pos+_this_\thumb\len)-_this_\x), _this_\height)
+      Resize(_this_\Splitter\v, 0, 0, _this_\Thumb\Pos-_this_\x, _this_\height)
+      Resize(_this_\Splitter\h, (_this_\Thumb\Pos+_this_\Thumb\len)-_this_\x, 0, _this_\width-((_this_\thumb\Pos+_this_\thumb\len)-_this_\x), _this_\height)
     EndIf
   EndMacro
   
@@ -1248,6 +1137,35 @@ Module Widget
   EndMacro
   
   
+  
+  Procedure.i Enumerate(*This.Integer, *Parent.Widget_S, Item.i=0)
+    Protected Result.i
+    
+    With *Parent
+      If Not *This
+        ProcedureReturn 0
+      EndIf
+      
+      If Not \Enumerate
+        Result = FirstElement(\Childrens())
+      Else
+        Result = NextElement(\Childrens())
+      EndIf
+      
+      \Enumerate = Result
+     
+      If Result
+        If \Childrens()\i <> Item
+          ProcedureReturn Enumerate(*This, *Parent, Item)
+        EndIf
+        
+        PokeI(*This, PeekI(@\Childrens()))
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+ 
   ;-
   ;- DRAWING
   Procedure.i Draw_Box(X,Y, Width, Height, Type, Checked, Color, BackColor, Radius, Alpha=255) 
@@ -2550,9 +2468,16 @@ Module Widget
           
           ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
           
-          If \s 
-            If \s\v And \s\v\Type And Not \s\v\Hide : Draw_Scroll(\s\v, x,y) : EndIf
-            If \s\h And \s\h\Type And Not \s\h\Hide : Draw_Scroll(\s\h, x,y) : EndIf
+          If \Type = #PB_GadgetType_Splitter
+            If \Splitter
+              If \Type[1] : Draw(\Splitter\v) : EndIf
+              If \Type[2] : Draw(\Splitter\h) : EndIf
+            EndIf
+          Else  
+            If \s 
+              If \s\v And \s\v\Type And Not \s\v\Hide : Draw_Scroll(\s\v, x,y) : EndIf
+              If \s\h And \s\h\Type And Not \s\h\Hide : Draw_Scroll(\s\h, x,y) : EndIf
+            EndIf
           EndIf
           
           ; Demo clip
@@ -2568,7 +2493,7 @@ Module Widget
           EndIf
           
           UnclipOutput()
-          Draw_Anchors(*This)
+          DrawAnchors(*This)
         EndIf
         
         ; reset 
@@ -2594,44 +2519,12 @@ Module Widget
   EndProcedure
   
   ;-
-  Procedure.i Enumerate(*This.Integer, *Parent.Widget_S, Item.i=0)
-    Protected Result.i
-    
-    With *Parent
-      If Not *This
-        ProcedureReturn 0
-      EndIf
-      
-      If Not \Enumerate
-        Result = FirstElement(\Childrens())
-      Else
-        Result = NextElement(\Childrens())
-      EndIf
-      
-      \Enumerate = Result
-     
-      If Result
-        If \Childrens()\i <> Item
-          ProcedureReturn Enumerate(*This, *Parent, Item)
-        EndIf
-        
-        PokeI(*This, PeekI(@\Childrens()))
-      EndIf
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
- 
   Procedure.i Hides(*This.Widget_S, State.i)
     With *This
       If State
         \Hide = 1
       Else
         \Hide = \Hide[1]
-        If \s
-          \s\v\Hide = \s\v\Hide[1]
-          \s\h\Hide = \s\h\Hide[1]
-        EndIf
       EndIf
       
       If ListSize(\Childrens())
@@ -3412,7 +3305,7 @@ Module Widget
   EndProcedure
   
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i);, *That.Widget_S=#Null)
-    Protected Lines.i, Change_x, Change_y, Change_width, Change_height
+    Protected Lines.i, hide.i, Change_x, Change_y, Change_width, Change_height
     
     If *This > 0
       If Not Bool(X=#PB_Ignore And Y=#PB_Ignore And Width=#PB_Ignore And Height=#PB_Ignore)
@@ -3433,7 +3326,7 @@ Module Widget
         
         If \Resize
           Lines = Bool(\Type=#PB_GadgetType_ScrollBar)
-          \hide[1] = Bool(\Page\len And Not ((\Max-\Min) > \Page\Len))
+          hide = Bool(\Page\len And Not ((\Max-\Min) > \Page\Len))
           
           If \ButtonLen
             \ButtonLen[1] = \ButtonLen
@@ -3506,8 +3399,14 @@ Module Widget
         If \p And \y+\height>=\p\clip\y+\p\clip\height-h-\p\bs : \clip\height = \p\clip\height-h-\p\bs-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
         
         ;
-        If \s 
-          Resizes(\s, 0,0,\Width[2],\Height[2])
+        If (\Type = #PB_GadgetType_Splitter)
+          If \Splitter 
+            Resize_Splitter(*This)
+          EndIf
+        Else
+          If \s 
+            Resizes(\s, 0,0,\Width[2],\Height[2])
+          EndIf
         EndIf
         
         If \Tab
@@ -3517,52 +3416,49 @@ Module Widget
         
         ; Resize childrens
         If ListSize(\Childrens())
-          If (\Type = #PB_GadgetType_Splitter)
-            Resize_Splitter(*This)
-          Else
-            ForEach \Childrens()
-              If \Childrens()\Align
-                If \Childrens()\Align\Horizontal
-                  x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width))/2
-                ElseIf \Childrens()\Align\Right And Not \Childrens()\Align\Left
-                  x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width));+Bool(\Grid>1)
-                Else
-                  x = (\Childrens()\x-\x[2]) + Change_x
-                EndIf
-                
-                If \Childrens()\Align\Vertical
-                  y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height))/2 
-                ElseIf \Childrens()\Align\Bottom And Not \Childrens()\Align\Top
-                  y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height));+Bool(\Grid>1)
-                Else
-                  y = (\Childrens()\y-\y[2]) + Change_y 
-                EndIf
-                
-                If \Childrens()\Align\Top And \Childrens()\Align\Bottom
-                  Height = \height[2]-\Childrens()\Align\y1;+Bool(\Grid>1)
-                Else
-                  Height = #PB_Ignore
-                EndIf
-                
-                If \Childrens()\Align\Left And \Childrens()\Align\Right
-                  Width = \width[2]-\Childrens()\Align\x1;+Bool(\Grid>1)
-                Else
-                  Width = #PB_Ignore
-                EndIf
-                
-                Resize(\Childrens(), x, y, Width, Height)
-                ;Resize(\Childrens(), (\Childrens()\x-\x[2]) + Change_x, (\Childrens()\y-\y[2]) + Change_y, \width[2], \height[2])
+          
+          ForEach \Childrens()
+            If \Childrens()\Align
+              If \Childrens()\Align\Horizontal
+                x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width))/2
+              ElseIf \Childrens()\Align\Right And Not \Childrens()\Align\Left
+                x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width));+Bool(\Grid>1)
               Else
-                Resize(\Childrens(), (\Childrens()\x-\x[2]) + Change_x, (\Childrens()\y-\y[2]) + Change_y, #PB_Ignore, #PB_Ignore)
+                x = (\Childrens()\x-\x[2]) + Change_x
               EndIf
-            Next
-          EndIf
+              
+              If \Childrens()\Align\Vertical
+                y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height))/2 
+              ElseIf \Childrens()\Align\Bottom And Not \Childrens()\Align\Top
+                y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height));+Bool(\Grid>1)
+              Else
+                y = (\Childrens()\y-\y[2]) + Change_y 
+              EndIf
+              
+              If \Childrens()\Align\Top And \Childrens()\Align\Bottom
+                Height = \height[2]-\Childrens()\Align\y1;+Bool(\Grid>1)
+              Else
+                Height = #PB_Ignore
+              EndIf
+              
+              If \Childrens()\Align\Left And \Childrens()\Align\Right
+                Width = \width[2]-\Childrens()\Align\x1;+Bool(\Grid>1)
+              Else
+                Width = #PB_Ignore
+              EndIf
+              
+              Resize(\Childrens(), x, y, Width, Height)
+              ;Resize(\Childrens(), (\Childrens()\x-\x[2]) + Change_x, (\Childrens()\y-\y[2]) + Change_y, \width[2], \height[2])
+            Else
+              Resize(\Childrens(), (\Childrens()\x-\x[2]) + Change_x, (\Childrens()\y-\y[2]) + Change_y, #PB_Ignore, #PB_Ignore)
+            EndIf
+          Next
         EndIf
         
         ; anchors widgets
-        Resize_Anchors(*This)
+        ResizeAnchors(*This)
         
-        ProcedureReturn \hide[1]
+        ProcedureReturn hide
       EndWith
     EndIf
   EndProcedure
@@ -3851,6 +3747,44 @@ Module Widget
     
     ProcedureReturn Repaint
   EndProcedure
+  Procedure CallBackAnchors(*This.Widget_S, mouse_x,mouse_y)
+    With *This
+      Protected px,py,Grid = \Grid
+      ;       If \Container
+      ;         Grid = \anchor\Grid-1
+      ;       EndIf
+      If \p
+        px = (\p\x+\p\fs)
+        py = (\p\y+\p\fs+\p\TabHeight)
+      EndIf
+      
+      Protected mx = Match(mouse_x-px, Grid)
+      Protected my = Match(mouse_y-py, Grid)
+      Protected mw = Match((\x+\Width-Bool(Grid>1))-mouse_x, Grid)+Bool(Grid>1)
+      Protected mh = Match((\y+\height-Bool(Grid>1))-mouse_y, Grid)+Bool(Grid>1)
+      Protected mxw = Match(mouse_x-\x, Grid)+Bool(Grid>1)
+      Protected myh = Match(mouse_y-\y, Grid)+Bool(Grid>1)
+      
+      Select \anchor
+        Case \anchor[1] : Resize(*This, mx, #PB_Ignore, mw, #PB_Ignore)
+        Case \anchor[2] : Resize(*This, #PB_Ignore, my, #PB_Ignore, mh)
+        Case \anchor[3] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, #PB_Ignore)
+        Case \anchor[4] : Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, myh)
+          
+        Case \anchor[5] : Resize(*This, mx, my, mw, mh)
+        Case \anchor[6] : Resize(*This, #PB_Ignore, my, mxw, mh)
+        Case \anchor[7] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, myh)
+        Case \anchor[8] : Resize(*This, mx, #PB_Ignore, mw, myh)
+          
+        Case \anchor[9] 
+          If \Container
+            Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
+          EndIf
+          
+        Case \anchor[10] : Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
+      EndSelect
+    EndWith
+  EndProcedure
   
   Procedure.i CallBack(*This.Widget_S, EventType.i, MouseScreenX.i=0, MouseScreenY.i=0)
     Protected repaint.i
@@ -3879,12 +3813,22 @@ Module Widget
           EndIf
         EndIf
         
-        ; scrollbars events
-        If \s
+        ; childrens events
+        If \s ; And \Type <> #PB_GadgetType_Splitter
           If \s\v And \s\v\Type And (CallBack(\s\v, EventType.i, MouseScreenX.i, MouseScreenY.i) Or \s\v\at)
             ProcedureReturn 1
           EndIf
           If \s\h And \s\h\Type And (CallBack(\s\h, EventType.i, MouseScreenX.i, MouseScreenY.i) Or \s\h\at)
+            ProcedureReturn 1
+          EndIf
+        EndIf
+        
+        ; childrens events
+        If \Splitter ; And \Type <> #PB_GadgetType_Splitter
+          If \Splitter\v And \Splitter\v\Type And (CallBack(\Splitter\v, EventType.i, MouseScreenX.i, MouseScreenY.i) Or \Splitter\v\at)
+            ProcedureReturn 1
+          EndIf
+          If \Splitter\h And \Splitter\h\Type And (CallBack(\Splitter\h, EventType.i, MouseScreenX.i, MouseScreenY.i) Or \Splitter\h\at)
             ProcedureReturn 1
           EndIf
         EndIf
@@ -3901,9 +3845,62 @@ Module Widget
         EndSelect
         
         ; anchors events
-        If CallBack_Anchors(*This, EventType.i, Buttons, MouseScreenX.i,MouseScreenY.i)
-          ProcedureReturn 1
-        EndIf
+        Protected i 
+        Static *p.Widget_S
+        
+        Select EventType 
+          Case #PB_EventType_MouseMove
+            If *p And *p\anchor
+              Protected x = MouseScreenX-*p\anchor\Width/2
+              Protected y = MouseScreeny-*p\anchor\Height/2
+              
+              CallBackAnchors(*p, x,y)
+              
+              ProcedureReturn 1
+            Else
+              For i = 10 To 1 Step - 1
+                If \anchor[i]
+                  If (MouseScreenX>\anchor[i]\X And MouseScreenX=<\anchor[i]\X+\anchor[i]\Width And 
+                      MouseScreenY>\anchor[i]\Y And MouseScreenY=<\anchor[i]\Y+\anchor[i]\Height)
+                    
+                    If \anchor <> \anchor[i] : \anchor = \anchor[i]
+                      If Not \anchor[i]\State
+                        \anchor[i]\State = 1
+                      EndIf
+                      
+                      If i<10
+                        \anchor[i]\Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+                        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor)
+                      EndIf
+                      ProcedureReturn 1
+                    EndIf
+                    
+                  ElseIf \anchor[i]\State = 1
+                    \anchor[i]\State = 0
+                    \anchor = 0
+                    
+                    If GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) <> \anchor[i]\Cursor[1]
+                      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor[1])
+                    EndIf
+                    ProcedureReturn 1
+                  EndIf
+                EndIf
+              Next
+            EndIf
+            
+          Case #PB_EventType_LeftButtonDown
+            If \anchor : \anchor\State = 2 : *p = *This
+              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor)
+              ProcedureReturn 1
+            EndIf
+            
+          Case #PB_EventType_LeftButtonUp
+            If \anchor : \anchor\State = 1 : *p = 0
+              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor[1])
+              ProcedureReturn 1
+            EndIf
+            
+        EndSelect
         
         ; get at point buttons
         If (mouseB Or Buttons)
@@ -4382,21 +4379,25 @@ Module Widget
     *This = Bar(0, X,Y,Width,Height, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
     
     With *This
-      \Thumb\len = 7
-      \Type = #PB_GadgetType_Splitter
+      \Splitter = AllocateStructure(Scroll_S)
+      \Splitter\v = First
+      \Splitter\h = Second
       
-      \SplitterFirst = First
-      AddElement(\Childrens()) : \Childrens() = First
-      If Not IsGadget(First) And IsBar(\SplitterFirst)
-        \SplitterFirst\p = *This
-        \Type[1] = \SplitterFirst\Type
+      \Type = #PB_GadgetType_Splitter
+      \Thumb\len = 7
+      
+      *Bar = \Splitter\v 
+      ; thisis bar
+      If Not IsGadget(First) And IsBar(*Bar)
+        *Bar\p = *This
+        \Type[1] = *Bar\Type
       EndIf
       
-      \SplitterSecond = Second
-      AddElement(\Childrens()) : \Childrens() = Second
-      If Not IsGadget(Second) And IsBar(\SplitterSecond)
-        \SplitterSecond\p = *This
-        \Type[2] = \SplitterSecond\Type
+      *Bar = \Splitter\h 
+      ; thisis bar
+      If Not IsGadget(Second) And IsBar(*Bar)
+        *Bar\p = *This
+        \Type[2] = *Bar\Type
       EndIf
       
       If \Vertical
@@ -4790,16 +4791,24 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Protected *Widget.Widget_S
     Protected Item = GetState(*This)
     Protected Repaint 
-    
     Repaint | CallBack(*This, EventType, MouseX, MouseY)
     
-      With *This
-        ForEach \Childrens()
-          Repaint | CallBacks(\Childrens(), EventType, MouseX, MouseY)
-        Next
-      EndWith
+    While Enumerate(@*Widget, *This, Item)
+      ;           With Widgets()
+      ;           ForEach Widgets()
+      ;             ;           *Widgets = Widgets()
+      ;             ;           If *Widgets\Text\String = "Button_0"
+      ;             ;            Debug 55
+      ;             ;           Else
+      ;             Repaint | CallBack(Widgets(), EventType, MouseX, MouseY)
+      Repaint | CallBacks(*Widget, EventType, MouseX, MouseY)
+      ;             ;         EndIf
+      ;             
+      ;           Next
+      ;         EndWith
+    Wend
     
-    ProcedureReturn 1
+    ProcedureReturn Repaint
   EndProcedure
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
@@ -4831,7 +4840,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;             ;           Else
 ;             Repaint | CallBack(Widgets(), EventType, MouseX, MouseY)
             Repaint | CallBacks(Widgets("Splitter_1"), EventType, MouseX, MouseY)
-;             ;         EndIf
+            Repaint | CallBacks(Widgets("Panel_0"), EventType, MouseX, MouseY)
+            Repaint | CallBacks(Widgets("Splitter_0"), EventType, MouseX, MouseY)
+            Repaint | CallBacks(Widgets("Panel_1"), EventType, MouseX, MouseY)
+            ;             ;         EndIf
 ;             
 ;           Next
 ;         EndWith
@@ -5055,5 +5067,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------Hf4-8-8-+4-8--------------------------------------------------------------08-------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------
 ; EnableXP
