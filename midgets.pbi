@@ -146,7 +146,7 @@ DeclareModule Widget
   ;- - Items_S
   Structure Items_S Extends Coordinate_S
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    *adress.Items_S
+    *i.Items_S
     Drawing.i
     
     Image.Image_S
@@ -208,9 +208,9 @@ DeclareModule Widget
   ;- - Widget_S
   Structure Widget_S Extends Bar_S
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    adress.i
-    Drawing.i
-    Container.i
+    ;Drawing.i
+    Container.i ; (1) = Panel; Scrollarea; Container. (- 1) = Window. (- 2) = Frame.
+    Enumerate.i ; 
     
     *anchor.Anchor_S[10]
     Grid.i
@@ -218,7 +218,7 @@ DeclareModule Widget
     iy.i[4]
     iwidth.i[4]
     iheight.i[4]
-    Enumerate.i
+    *data
     
     *SplitterFirst.Widget_S
     *SplitterSecond.Widget_S
@@ -233,8 +233,9 @@ DeclareModule Widget
     Flag.Flag_S
     
     List *Childrens.Widget_S()
-    List *Tabs.Items_S()
+    Map *Tabs.Items_S()
     List *Draws.Items_S()
+    Map *Items.Items_S()
     
     *Tab.Widget_S
     
@@ -246,7 +247,6 @@ DeclareModule Widget
     sublevellen.i
     Drag.i[2]
     Attribute.i
-    List Items.Items_S()
     Canvas.Canvas_S
   EndStructure
   
@@ -380,12 +380,16 @@ DeclareModule Widget
   
   ;- - DECLAREs MACROs
   ;-
+  Macro PB(Function)
+    Function
+  EndMacro
+  
   Macro IsBar(_this_)
     Bool(_this_ And _this_\Type);(_this_\Type = #PB_GadgetType_ScrollBar Or _this_\Type = #PB_GadgetType_TrackBar Or _this_\Type = #PB_GadgetType_ProgressBar Or _this_\Type = #PB_GadgetType_Splitter))
   EndMacro
   
   Macro IsList(_index_, _list_)
-    Bool(_index_ >= 0 And _index_ < ListSize(_list_))
+    Bool(_index_ >= 0 And _index_ < MapSize(_list_))
   EndMacro
   
   Macro SelectList(_index_, _list_)
@@ -402,19 +406,6 @@ DeclareModule Widget
     EndIf
     RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
     BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
-  EndMacro
-  
-  Macro X(_this_) 
-    (_this_\X + Bool(_this_\hide[1] Or Not _this_\color\alpha) * _this_\Width) 
-  EndMacro
-  Macro Y(_this_) 
-    (_this_\Y + Bool(_this_\hide[1] Or Not _this_\color\alpha) * _this_\Height) 
-  EndMacro
-  Macro Width(_this_) 
-    (Bool(Not _this_\hide[1] And _this_\color\alpha) * _this_\Width) 
-  EndMacro
-  Macro Height(_this_) 
-    (Bool(Not _this_\hide[1] And _this_\color\alpha) * _this_\Height) 
   EndMacro
   
   Macro IsStart(_this_)
@@ -448,23 +439,15 @@ DeclareModule Widget
     EndIf
   EndMacro
   
-  Macro GetImage(_item_)
-    _item_\image\index
-  EndMacro
-  Macro GetParent(_item_)
-    _item_\p
-  EndMacro
-  Macro GetText(_item_)
-    _item_\Text\String.s
-  EndMacro
-  Macro GetType(_item_)
-    _item_\Type
-  EndMacro
   
   
   ;-
   ;- - DECLAREs
   ;-
+  Declare.i Y(*This.Widget_S)
+  Declare.i X(*This.Widget_S)
+  Declare.i Width(*This.Widget_S)
+  Declare.i Height(*This.Widget_S)
   Declare.i Draw(*This.Widget_S)
   Declare.i GetState(*This.Widget_S)
   Declare.i SetState(*This.Widget_S, State.i)
@@ -474,6 +457,13 @@ DeclareModule Widget
   Declare.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.i Resize(*This.Widget_S, iX.i,iY.i,iWidth.i,iHeight.i);, *That.Widget_S=#Null)
   Declare.i Hide(*This.Widget_S, State.i)
+  Declare.i GetImage(*This.Widget_S)
+  Declare.i GetParent(*This.Widget_S)
+  Declare.i GetType(*This.Widget_S)
+  Declare.i SetData(*This.Widget_S, *Data)
+  Declare.i GetData(*This.Widget_S)
+  Declare.i SetText(*This.Widget_S, Text.s)
+  Declare.s GetText(*This.Widget_S)
   
   Declare.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
   Declare.i SetItemData(*This.Widget_S, Item.i, *Data)
@@ -484,8 +474,8 @@ DeclareModule Widget
   Declare.i SetItemAttribute(*This.Widget_S, Item.i, Attribute.i, Value.i)
   Declare.i GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
   Declare.i Enumerate(*This.Integer, *Parent.Widget_S, Item.i=0)
-  Declare.i SetText(*This.Widget_S, Text.s)
-  Declare.s GetText(*This.Widget_S)
+  Declare.i SetItemText(*This.Widget_S, Item.i, Text.s)
+  Declare.s GetItemText(*This.Widget_S, Item.i)
   
   Declare.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
   Declare.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
@@ -548,9 +538,9 @@ Module Widget
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     Global _drawing_mode_
     
-    Macro PB(Function)
-      Function
-    EndMacro
+;     Macro PB(Function)
+;       Function
+;     EndMacro
     
     Macro DrawingMode(_mode_)
       PB(DrawingMode)(_mode_) : _drawing_mode_ = _mode_
@@ -642,11 +632,7 @@ Module Widget
   Macro SetLastParent(_this_)
     ; Set parent
     If LastElement(*openedlist())
-      If LastElement(*openedlist()\Tabs())
-        SetParent(_this_, *openedlist(), ListIndex(*openedlist()\Tabs()))
-      Else
-        SetParent(_this_, *openedlist(), 0)
-      EndIf
+      SetParent(_this_, *openedlist(), Val(MapKey(*openedlist()\Tabs())))
     EndIf
   EndMacro
   
@@ -699,46 +685,46 @@ Module Widget
   
   Macro Resize_Anchors(_this_)
     If _this_\anchor[1] 
-      _this_\anchor[1]\x = _this_\x[1]-_this_\anchor[1]\width+_this_\anchor[1]\Pos
-      _this_\anchor[1]\y = _this_\y[1]+(_this_\height[1]-_this_\anchor[1]\height)/2
+      _this_\anchor[1]\x = _this_\x-_this_\anchor[1]\width+_this_\anchor[1]\Pos
+      _this_\anchor[1]\y = _this_\y+(_this_\height-_this_\anchor[1]\height)/2
     EndIf
     If _this_\anchor[2] 
-      _this_\anchor[2]\x = _this_\x[1]+(_this_\width[1]-_this_\anchor[2]\width)/2
-      _this_\anchor[2]\y = _this_\y[1]-_this_\anchor[2]\height+_this_\anchor[2]\Pos
+      _this_\anchor[2]\x = _this_\x+(_this_\width-_this_\anchor[2]\width)/2
+      _this_\anchor[2]\y = _this_\y-_this_\anchor[2]\height+_this_\anchor[2]\Pos
     EndIf
     If  _this_\anchor[3]
-      _this_\anchor[3]\x = _this_\x[1]+_this_\width[1]-_this_\anchor[3]\Pos
-      _this_\anchor[3]\y = _this_\y[1]+(_this_\height[1]-_this_\anchor[3]\height)/2
+      _this_\anchor[3]\x = _this_\x+_this_\width-_this_\anchor[3]\Pos
+      _this_\anchor[3]\y = _this_\y+(_this_\height-_this_\anchor[3]\height)/2
     EndIf
     If _this_\anchor[4] 
-      _this_\anchor[4]\x = _this_\x[1]+(_this_\width[1]-_this_\anchor[4]\width)/2
-      _this_\anchor[4]\y = _this_\y[1]+_this_\height[1]-_this_\anchor[4]\Pos
+      _this_\anchor[4]\x = _this_\x+(_this_\width-_this_\anchor[4]\width)/2
+      _this_\anchor[4]\y = _this_\y+_this_\height-_this_\anchor[4]\Pos
     EndIf
     If _this_\anchor[5] 
-      _this_\anchor[5]\x = _this_\x[1]-_this_\anchor[5]\width+_this_\anchor[5]\Pos
-      _this_\anchor[5]\y = _this_\y[1]-_this_\anchor[5]\height+_this_\anchor[5]\Pos
+      _this_\anchor[5]\x = _this_\x-_this_\anchor[5]\width+_this_\anchor[5]\Pos
+      _this_\anchor[5]\y = _this_\y-_this_\anchor[5]\height+_this_\anchor[5]\Pos
     EndIf
     If _this_\anchor[6] 
-      _this_\anchor[6]\x = _this_\x[1]+_this_\width[1]-_this_\anchor[6]\Pos
-      _this_\anchor[6]\y = _this_\y[1]-_this_\anchor[6]\height+_this_\anchor[6]\Pos
+      _this_\anchor[6]\x = _this_\x+_this_\width-_this_\anchor[6]\Pos
+      _this_\anchor[6]\y = _this_\y-_this_\anchor[6]\height+_this_\anchor[6]\Pos
     EndIf
     If _this_\anchor[7] 
-      _this_\anchor[7]\x = _this_\x[1]+_this_\width[1]-_this_\anchor[7]\Pos
-      _this_\anchor[7]\y = _this_\y[1]+_this_\height[1]-_this_\anchor[7]\Pos
+      _this_\anchor[7]\x = _this_\x+_this_\width-_this_\anchor[7]\Pos
+      _this_\anchor[7]\y = _this_\y+_this_\height-_this_\anchor[7]\Pos
     EndIf
     If _this_\anchor[8] 
-      _this_\anchor[8]\x = _this_\x[1]-_this_\anchor[8]\width+_this_\anchor[8]\Pos
-      _this_\anchor[8]\y = _this_\y[1]+_this_\height[1]-_this_\anchor[8]\Pos
+      _this_\anchor[8]\x = _this_\x-_this_\anchor[8]\width+_this_\anchor[8]\Pos
+      _this_\anchor[8]\y = _this_\y+_this_\height-_this_\anchor[8]\Pos
     EndIf
     If _this_\anchor[9] 
       If _this_\Container
-        _this_\anchor[9]\x = _this_\x[1]+(_this_\anchor[9]\Pos+2)
-        _this_\anchor[9]\y = _this_\y[1]-_this_\anchor[9]\height+_this_\anchor[9]\Pos 
+        _this_\anchor[9]\x = _this_\x+(_this_\anchor[9]\Pos+2)
+        _this_\anchor[9]\y = _this_\y-_this_\anchor[9]\height+_this_\anchor[9]\Pos 
       Else
-        _this_\anchor[9]\x = _this_\x[1]
-        _this_\anchor[9]\y = _this_\y[1]
-        _this_\anchor[9]\width = _this_\width[1]
-        _this_\anchor[9]\height = _this_\height[1]
+        _this_\anchor[9]\x = _this_\x
+        _this_\anchor[9]\y = _this_\y
+        _this_\anchor[9]\width = _this_\width
+        _this_\anchor[9]\height = _this_\height
       EndIf
     EndIf
   EndMacro
@@ -832,69 +818,71 @@ Module Widget
   EndProcedure
   
   Procedure CallBack_Anchors(*This.Widget_S, EventType.i, Buttons.i, MouseScreenX.i,MouseScreenY.i)
-      Protected i 
-        Static Result.i, *p.Widget_S
-        
-     With *This
-       Select EventType 
-          Case #PB_EventType_MouseMove
-            If *p And *p\anchor
-              Protected x = MouseScreenX-*p\anchor\x[1]
-              Protected y = MouseScreeny-*p\anchor\y[1]
-              
-              Events_Anchors(*p, x,y)
-              
-              ProcedureReturn 1
-              
-            ElseIf Not Buttons
-              For i = 9 To 1 Step - 1
-                If \anchor[i]
-                  If (MouseScreenX>\anchor[i]\X And MouseScreenX=<\anchor[i]\X+\anchor[i]\Width And 
-                      MouseScreenY>\anchor[i]\Y And MouseScreenY=<\anchor[i]\Y+\anchor[i]\Height)
+    Protected i 
+    Static Result.i, *p.Widget_S
+    
+    With *This
+      Select EventType 
+        Case #PB_EventType_MouseMove
+          If *p And *p\anchor
+            Protected x = MouseScreenX-*p\anchor\x[1]
+            Protected y = MouseScreeny-*p\anchor\y[1]
+            
+            Events_Anchors(*p, x,y)
+            
+            ProcedureReturn 1
+            
+          ElseIf Not Buttons
+            For i = 9 To 1 Step - 1
+              If \anchor[i]
+                If (MouseScreenX>\anchor[i]\X And MouseScreenX=<\anchor[i]\X+\anchor[i]\Width And 
+                    MouseScreenY>\anchor[i]\Y And MouseScreenY=<\anchor[i]\Y+\anchor[i]\Height)
+                  
+                  If \anchor <> \anchor[i] : \anchor = \anchor[i]
+                    If Not \anchor[i]\State
+                      \anchor[i]\State = 1
+                    EndIf
                     
-                    If \anchor <> \anchor[i] : \anchor = \anchor[i]
-                      If Not \anchor[i]\State
-                        \anchor[i]\State = 1
-                      EndIf
-                      
-                      \anchor[i]\Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-                      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor)
+                    \anchor[i]\Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+                    SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor)
+                    If i<>9
                       Result = 1
                     EndIf
-                    
-                  ElseIf \anchor[i]\State = 1
-                    \anchor[i]\State = 0
-                    \anchor = 0
-                    
-                    If GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) <> \anchor[i]\Cursor[1]
-                      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor[1])
-                    EndIf
-                    Result = 0
                   EndIf
+                  
+                ElseIf \anchor[i]\State = 1
+                  \anchor[i]\State = 0
+                  \anchor = 0
+                  
+                  If GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) <> \anchor[i]\Cursor[1]
+                    SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor[1])
+                  EndIf
+                  Result = 0
                 EndIf
-              Next
-            EndIf
-            
-          Case #PB_EventType_LeftButtonDown
-            
-            If \anchor : \anchor\State = 2 : *p = *This 
-               SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor)
-               \anchor\x[1] = MouseScreenX-\anchor\x
-               \anchor\y[1] = MouseScreenY-\anchor\y
-               ProcedureReturn 0
-            EndIf
-            
-          Case #PB_EventType_LeftButtonUp
-            If \anchor : \anchor\State = 1 : *p = 0
-              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor[1])
-               ProcedureReturn 0
-            EndIf
-            
-        EndSelect
-        
-      EndWith
-      Debug Result
-      ProcedureReturn Result
+              EndIf
+            Next
+          EndIf
+          
+        Case #PB_EventType_LeftButtonDown
+          
+          If \anchor : \anchor\State = 2 : *p = *This 
+            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor)
+            \anchor\x[1] = MouseScreenX-\anchor\x
+            \anchor\y[1] = MouseScreenY-\anchor\y
+            ProcedureReturn 0
+          EndIf
+          
+        Case #PB_EventType_LeftButtonUp
+          If \anchor : \anchor\State = 1 : *p = 0
+            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor[1])
+            ProcedureReturn 0
+          EndIf
+          
+      EndSelect
+      
+    EndWith
+    
+    ProcedureReturn Result
   EndProcedure
   
   
@@ -1295,17 +1283,17 @@ Module Widget
       Protected State_3 = \Color[3]\State
       Protected Alpha = \color\alpha<<24
       
-       ; Draw caption frame
+      ; Draw caption frame
       If \Color\Frame
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
         RoundBox(\X[2], \Y+\bs+\fs, \Width[2], \TabHeight-\fs*2, \Radius, \Radius, \Color\Back&$FFFFFF|Alpha)
       EndIf
-    
-;       ; Draw image
-;       If \image[1]\adress
-;         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-;         DrawAlphaImage(\image[1]\adress, \Image[1]\x, \Image[1]\y, \color[1]\alpha)
-;       EndIf
+      
+      ;       ; Draw image
+      ;       If \image[1]\adress
+      ;         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+      ;         DrawAlphaImage(\image[1]\adress, \Image[1]\x, \Image[1]\y, \color[1]\alpha)
+      ;       EndIf
       
       ; Draw string
       If \Text\String
@@ -1313,12 +1301,12 @@ Module Widget
         DrawText(\Text\x+5, \Text\y-(\TabHeight+\Text\height)/2, \Text\String.s, \Color\Front[State_3]&$FFFFFF|Alpha)
       EndIf
       
-       ; Draw caption frame
+      ; Draw caption frame
       If \Color\Frame
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
         RoundBox(\X[1], \Y+\bs, \Width[1], \TabHeight, \Radius, \Radius, \Color\Frame&$FFFFFF|Alpha)
       EndIf
-    
+      
       ; Draw background  
       If \Color\back[State_3]<>-1
         If \Color\Fore[State_3]
@@ -1462,25 +1450,27 @@ Module Widget
         DrawingMode(#PB_2DDrawing_Default)
         Box(\x, \y, \width, \height, back_color)
         
-        If ListSize(\items())
+        If MapSize(\items())
           
           ; set vertical bar state
           If \s\v\Max And \Change > 0
-            If (\Change*\Text\height-\s\v\Page\len) > \s\v\Max
-              \s\v\Page\Pos = (\Change*\Text\height-\s\v\Page\len)
+            Debug "Tree - SetState()"
+            If (\Change*\Text\height-\s\v\Page\len) <> \s\v\Page\Pos
+              SetState(\s\v, (\Change*\Text\height-\s\v\Page\len))
             EndIf
           EndIf
           
-          ; Resize items
-          ForEach \items()
-            If Not \items()\Text\change And Not \Resize And Not \Change
-              Break
-            EndIf
-            
-            If Not ListIndex(\Items())
+          ;If Not Val(MapKey(\items()))
               \s\Width=0
               \s\height=0
-            EndIf
+           ; EndIf
+            
+            
+          ; Resize items
+          ForEach \items()
+;             If Not \items()\Text\change And Not \Resize And Not \Change
+;               Break
+;             EndIf
             
             If Not \items()\hide 
               \items()\width=\s\h\Page\len
@@ -1550,17 +1540,17 @@ Module Widget
             Widget::Resizes(\s, 0,0, #PB_Ignore, #PB_Ignore)
           EndIf
           
-          ;           ; Draw items
-          ;           ForEach \items()
+                    ; Draw items
+                    ForEach \items()
           
           
-          If Drawing
-            \Drawing = Drawing
-          EndIf
-          
-          If \Drawing
-            ChangeCurrentElement(\Items(), \Drawing)
-            Repeat 
+;           If Drawing
+;             \Drawing = Drawing
+;           EndIf
+;           
+;           If \Drawing
+;             ;ChangeCurrentElement(\Items(), \Drawing)
+;             Repeat 
               
               If \Items()\Drawing
                 \items()\width=\s\h\Page\len
@@ -1626,13 +1616,13 @@ Module Widget
                     Line(x_point,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
                     
                     ; Vertical plot
-                    If \items()\adress 
+                    If \items()\i 
                       start=Bool(Not \items()\sublevel)
                       
                       If start 
-                        start = (\y+\fs*2+\items()\adress\height/2)-\s\v\Page\Pos
+                        start = (\y+\fs*2+\items()\i\height/2)-\s\v\Page\Pos
                       Else 
-                        start = \items()\adress\y+\items()\adress\height+\items()\adress\height/2-line_size
+                        start = \items()\i\y+\items()\i\height+\items()\i\height/2-line_size
                       EndIf
                       
                       Line(x_point,start,1,y_point-start, point_color&$FFFFFF|alpha<<24)
@@ -1658,9 +1648,9 @@ Module Widget
                 EndIf
               EndIf
               
-            Until Not NextElement(\Items())
-          EndIf
-          ;           Next
+;             Until Not NextMapElement(\Items())
+;           EndIf
+                     Next
           
         EndIf
         
@@ -1740,7 +1730,7 @@ Module Widget
       ClipOutput(\clip\x+\Tab\ButtonLen[1]+3, \clip\y, \clip\width-\Tab\ButtonLen[1]-\Tab\ButtonLen[2]-6, \clip\height)
       
       ForEach \Tabs()
-        If \index[2] = \Tabs()\index ; ListIndex(\Tabs()) ; (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1])
+        If \index[2] = \Tabs()\index ; Val(MapKey(\Tabs())) ; (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1])
           State_3 = 2
           py=0
         Else
@@ -1774,43 +1764,47 @@ Module Widget
           stop = Bool(\Tabs()\x<\Tab\Area\Pos+\Tab\Area\len-2 And \Tabs()\x+\Tabs()\width>\Tab\Area\Pos+\Tab\Area\len-2)*2
         EndIf
         
-        ; Draw thumb  
-        If \Color\back[State_3]<>-1
-          If \Color\Fore[State_3]
-            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+        \Tabs()\Drawing = Bool(Not \Tabs()\hide And \Tabs()\x+\Tabs()\width>\x+\bs And \Tabs()\x<\x+\width-\bs)
+        
+        If \Tabs()\Drawing
+          ; Draw thumb  
+          If \Color\back[State_3]<>-1
+            If \Color\Fore[State_3]
+              DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+            EndIf
+            BoxGradient( \Vertical, \Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1-Bool(State_3 = 2)*(\Tabs()\Height-4), \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
           EndIf
-          BoxGradient( \Vertical, \Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1-Bool(State_3 = 2)*(\Tabs()\Height-4), \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
-        EndIf
-        
-        ; Draw string
-        If \Tabs()\Text\String
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawText(\Tabs()\Text\x, \Tabs()\Text\y, \Tabs()\Text\String.s, \Color\Front[0]&$FFFFFF|Alpha)
-        EndIf
-        
-        ; Draw image
-        If \Tabs()\image\adress
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\Tabs()\image\adress, \Tabs()\Image\x, \Tabs()\Image\y, \color\alpha)
-        EndIf
-        
-        ; Draw thumb frame
-        If \Color\Frame[State_3] 
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
           
-          If State_3 = 2
-            Line(\Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, 1, \Color\Frame[State_3]&$FFFFFF|Alpha)
-            Line(\Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, 1, \Tabs()\Height-py-1, \Color\Frame[State_3]&$FFFFFF|Alpha)
-            Line(\Tabs()\X+\Tabs()\width-1, \Tabs()\Y+Bool(State_3 = 2)*2, 1, \Tabs()\Height-py-1, \Color\Frame[State_3]&$FFFFFF|Alpha)
-          Else
-            RoundBox( \Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1, \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
+          ; Draw string
+          If \Tabs()\Text\String
+            DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+            DrawText(\Tabs()\Text\x, \Tabs()\Text\y, \Tabs()\Text\String.s, \Color\Front[0]&$FFFFFF|Alpha)
+          EndIf
+          
+          ; Draw image
+          If \Tabs()\image\adress
+            DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+            DrawAlphaImage(\Tabs()\image\adress, \Tabs()\Image\x, \Tabs()\Image\y, \color\alpha)
+          EndIf
+          
+          ; Draw thumb frame
+          If \Color\Frame[State_3] 
+            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+            
+            If State_3 = 2
+              Line(\Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, 1, \Color\Frame[State_3]&$FFFFFF|Alpha)
+              Line(\Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, 1, \Tabs()\Height-py-1, \Color\Frame[State_3]&$FFFFFF|Alpha)
+              Line(\Tabs()\X+\Tabs()\width-1, \Tabs()\Y+Bool(State_3 = 2)*2, 1, \Tabs()\Height-py-1, \Color\Frame[State_3]&$FFFFFF|Alpha)
+            Else
+              RoundBox( \Tabs()\X, \Tabs()\Y+Bool(State_3 = 2)*2, \Tabs()\Width, \Tabs()\Height-py-1, \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
+            EndIf
           EndIf
         EndIf
         
         \Tabs()\Text\Change = 0
       Next
       
-      If ListSize(\Tabs()) And SetAttribute(\Tab, #PB_Bar_Maximum, (\Tab\ButtonLen[1]+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width)))
+      If FindMapElement(\Tabs(), Str(MapSize(\Tabs()) - 1)) And SetAttribute(\Tab, #PB_Bar_Maximum, (\Tab\ButtonLen[1]+(((\Tabs()\x+\Tab\Page\Pos)-\x)+\Tabs()\width)))
         \Tab\Step = \Tab\Thumb\len
       EndIf
       
@@ -2126,13 +2120,37 @@ Module Widget
   EndProcedure
   
   Procedure.i Draw_Text(*This.Widget_S, scroll_x,scroll_y)
+    Protected i.i, y.i
+    
     With *This
       Protected Alpha = \color\alpha<<24
       
       ; Draw string
       If \Text\String
         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawText(\Text\x, \Text\y, \Text\String.s, \Color\Front&$FFFFFF|Alpha)
+        
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+           DrawText(\Text\x, \Text\y, \Text\String.s, \Color\Front&$FFFFFF|Alpha)
+           
+         CompilerElse
+          Protected *Sta.Character = @\Text\String.s
+          Protected *End.Character = @\Text\String.s 
+          #SOC = SizeOf(Character)
+          
+          While *End\c 
+            If *End\c = #LF
+              DrawText(\Text\x, \Text\y+y, PeekS(*Sta, (*End-*Sta)>>#PB_Compiler_Unicode), \Color\Front&$FFFFFF|Alpha)
+              *Sta = *End + #SOC 
+              y+\Text\height
+            EndIf 
+            *End + #SOC 
+          Wend
+          
+          ;         For i=1 To \Text\Count
+          ;           DrawText(\Text\x, \Text\y+y, StringField(\Text\String.s, i, #LF$), \Color\Front&$FFFFFF|Alpha)
+          ;           y+\Text\height
+          ;         Next
+        CompilerEndIf  
       EndIf
       
       ; Draw frame
@@ -2160,7 +2178,7 @@ Module Widget
         DrawingMode(#PB_2DDrawing_Default)
         Box(\x, \y, \width, \height, back_color)
         
-        If ListSize(\items())
+        If MapSize(\items())
           
           X = \X
           Y = \Y
@@ -2185,11 +2203,11 @@ Module Widget
           EndIf
           
           ForEach \items()
-            If Not \items()\Text\change And Not \Resize And Not \Change
-              Break
-            EndIf
+;             If Not \items()\Text\change And Not \Resize And Not \Change
+;               Break
+;             EndIf
             
-            If Not ListIndex(\Items())
+            If Not Val(MapKey(\items()))
               \s\Width=0
               \s\height=0
             EndIf
@@ -2249,19 +2267,20 @@ Module Widget
             \items()\text\change = 0
             \items()\change = 0
           Next
-          
-          If Drawing
-            \Drawing = Drawing
-          EndIf
-          
-          If \Drawing
-            ChangeCurrentElement(\Items(), \Drawing)
-            Repeat 
+;           
+;           If Drawing
+;             \Drawing = Drawing
+;           EndIf
+;           
+          ForEach \Items()
+;           If \Drawing
+;             ;ChangeCurrentElement(\Items(), \Drawing)
+;             Repeat 
               If \Items()\Drawing
                 State_3 = \Items()\State
                 
                 ; Draw selections
-                If \flag\FullSelection
+                If Not \Items()\Childrens And \flag\FullSelection
                   If State_3 = 1
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                     Box(\items()\x+1+\s\h\Page\Pos,\items()\y+1,\items()\width-2,\items()\height-2, \Color\Back[State_3]&$FFFFFFFF|item_alpha<<24)
@@ -2320,13 +2339,13 @@ Module Widget
                     Line(x_point,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
                     
                     ; Vertical plot
-                    If \items()\adress 
+                    If \items()\i 
                       start=Bool(Not \items()\sublevel)
                       
                       If start 
-                        start = (\y+\fs*2+\items()\adress\height/2)-\s\v\Page\Pos
+                        start = (\y+\fs*2+\items()\i\height/2)-\s\v\Page\Pos
                       Else 
-                        start = \items()\adress\y+\items()\adress\height+\items()\adress\height/2-line_size
+                        start = \items()\i\y+\items()\i\height+\items()\i\height/2-line_size
                       EndIf
                       
                       Line(x_point,start,1,y_point-start, point_color&$FFFFFF|alpha<<24)
@@ -2368,71 +2387,13 @@ Module Widget
                 ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
               EndIf
               
-            Until Not NextElement(\Items())
-          EndIf
-          
-          If *This > 0
-            If Border And (Pos > 0 And pos < \Area\len)
-              fColor = 0;\Color[3]\Frame[0]
-              DrawingMode(#PB_2DDrawing_Outlined) 
-              If \Vertical
-                If \Type[1]<>#PB_GadgetType_Splitter
-                  Box(X,Y,Width,Pos,fColor) 
-                EndIf
-                If \Type[2]<>#PB_GadgetType_Splitter
-                  Box( X,Y+(Pos+Size),Width,(Height-(Pos+Size)),fColor)
-                EndIf
-              Else
-                If \Type[1]<>#PB_GadgetType_Splitter
-                  Box(X,Y,Pos,Height,fColor) 
-                EndIf 
-                If \Type[2]<>#PB_GadgetType_Splitter
-                  Box(X+(Pos+Size), Y,(Width-(Pos+Size)),Height,fColor)
-                EndIf
-              EndIf
-            EndIf
+;             Until Not NextMapElement(\Items())
+;           EndIf
+            Next
             
-            If Circle
-              Color = 0;\Color[3]\Frame[\Color[3]\State]
-              DrawingMode(#PB_2DDrawing_Outlined) 
-              If \Vertical ; horisontal
-                           ;;ClipOutput(\x[3], \y[3]+\height[3]-\Thumb\len, \width[3], \Thumb\len);, $0000FF)
-                Circle(X+((Width-Radius)/2-((Radius*2+2)*2+2)),Y+Pos+Size/2,Radius,Color)
-                Circle(X+((Width-Radius)/2-(Radius*2+2)),Y+Pos+Size/2,Radius,Color)
-                Circle(X+((Width-Radius)/2),Y+Pos+Size/2,Radius,Color)
-                Circle(X+((Width-Radius)/2+(Radius*2+2)),Y+Pos+Size/2,Radius,Color)
-                Circle(X+((Width-Radius)/2+((Radius*2+2)*2+2)),Y+Pos+Size/2,Radius,Color)
-                ;;UnclipOutput()
-              Else
-                ;;ClipOutput(\x[3]+\width[3]-\Thumb\len, \y[3], \Thumb\len, \height[3]);, $0000FF)
-                Circle(X+Pos+Size/2,Y+((Height-Radius)/2-((Radius*2+2)*2+2)),Radius,Color)
-                Circle(X+Pos+Size/2,Y+((Height-Radius)/2-(Radius*2+2)),Radius,Color)
-                Circle(X+Pos+Size/2,Y+((Height-Radius)/2),Radius,Color)
-                Circle(X+Pos+Size/2,Y+((Height-Radius)/2+(Radius*2+2)),Radius,Color)
-                Circle(X+Pos+Size/2,Y+((Height-Radius)/2+((Radius*2+2)*2+2)),Radius,Color)
-                ;;UnclipOutput()
-              EndIf
-              
-            ElseIf Separator
-              DrawingMode(#PB_2DDrawing_Outlined) 
-              If \Vertical
-                ;Box(X,(Y+Pos),Width,Size,Color)
-                Line(X,(Y+Pos)+Size/2,Width,1,Color)
-              Else
-                ;Box(X+Pos,Y,Size,Height,Color)
-                Line((X+Pos)+Size/2,Y,1,Height,Color)
-              EndIf
-            EndIf
-            
-            ; ;         If \Vertical
-            ; ;           ;Box(\ix[3], \iy[3]+\iheight[3]-\Thumb\len, \iwidth[3], \Thumb\len, $FF0000)
-            ; ;           Box(X,Y,Width,Height/2,$FF0000)
-            ; ;         Else
-            ; ;           ;Box(\ix[3]+\iwidth[3]-\Thumb\len, \iy[3], \Thumb\len, \iheight[3], $FF0000)
-            ; ;           Box(X,Y,Width/2,Height,$FF0000)
-            ; ;         EndIf
-          EndIf
-          
+          ; Draw Splitter
+          DrawingMode(#PB_2DDrawing_Outlined) 
+          Line((X+Pos)+Size/2,Y,1,Height, \Color\Frame)
         EndIf
         
         
@@ -2477,6 +2438,7 @@ Module Widget
           ; Make multi line text
           If \Text\MultiLine > 0
             \Text\String.s = Wrap(*This, \Text\String.s[1], \Width-\bs*2, \Text\MultiLine)
+            \Text\Count = CountString(\Text\String.s, #LF$)
           Else
             \Text\String.s = \Text\String.s[1]
           EndIf
@@ -2534,14 +2496,14 @@ Module Widget
           EndSelect
           
           
-          If \Type <> #PB_GadgetType_Image
+          If \Container
             ; Draw image
             If \image\adress
               DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
               DrawAlphaImage(\image\adress, \Image\x, \Image\y, \color\alpha)
             EndIf
           EndIf
-        
+          
           ; Draw Childrens
           If ListSize(\Childrens())
             ForEach \Childrens() 
@@ -2585,6 +2547,66 @@ Module Widget
   EndProcedure
   
   ;-
+  Procedure.i X(*This.Widget_S)
+    Protected Result.i
+    
+    If *This
+      With *This
+        If Not \Hide[1] And \Color\Alpha
+          Result = \X
+        Else
+          Result = \X+\Width
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i Y(*This.Widget_S)
+    Protected Result.i
+    
+    If *This
+      With *This
+        If Not \Hide[1] And \Color\Alpha
+          Result = \Y
+        Else
+          Result = \Y+\Height
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i Width(*This.Widget_S)
+    Protected Result.i
+    
+    If *This
+      With *This
+        If Not \Hide[1] And \Width And \Color\Alpha
+          Result = \Width
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i Height(*This.Widget_S)
+    Protected Result.i
+    
+    If *This
+      With *This
+        If Not \Hide[1] And \Height And \Color\Alpha
+          Result = \Height
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
   Procedure.i Enumerate(*This.Integer, *Parent.Widget_S, Item.i=0)
     Protected Result.i
     
@@ -2600,7 +2622,7 @@ Module Widget
       EndIf
       
       \Enumerate = Result
-     
+      
       If Result
         If \Childrens()\i <> Item
           ProcedureReturn Enumerate(*This, *Parent, Item)
@@ -2612,7 +2634,7 @@ Module Widget
     
     ProcedureReturn Result
   EndProcedure
- 
+  
   Procedure.i Hides(*This.Widget_S, State.i)
     With *This
       If State
@@ -2690,52 +2712,86 @@ Module Widget
     EndIf
   EndProcedure
   
-  Procedure Tree_AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
-    Static *adress.Items_S
+  Procedure _Tree_AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+    Static ii, *w, *adress.Items_S
+    Protected Childrens.i, hide.b, *Item
     
     If Not *This
-      ProcedureReturn 0
+      ProcedureReturn -1
+    EndIf
+    
+    If *w<>*This
+      *w=*This
+     ; ii=0
     EndIf
     
     With *This
       ;{ Генерируем идентификатор
-      If Item =- 1 Or Item > ListSize(\items()) - 1
-        LastElement(\items())
-        AddElement(\items()) 
-        Item = ListIndex(\items())
-      Else
-        SelectElement(\items(), Item)
-        If \items()\sublevel>sublevel
-          sublevel=\items()\sublevel 
+     
+      If 0 > Item 
+        Item = MapSize(\items())
+        If Not FindMapElement(\items(), Str(Item))
+          *item = AddMapElement(\items(), Str(Item)) 
         EndIf
         
-        InsertElement(\items())
+       ElseIf Item > MapSize(\items()) - 1
+      ; Item = MapSize(\items())
+         
+;          *item = FindMapElement(\items(), Str(Item))
+;         If *item
+;           PushMapPosition(\items()) 
+;           \items(Str(MapSize(\items()))) = \items()
+;           \items(MapKey(\items()))\index = Val(MapKey(\items()))
+;           PopMapPosition(\items()) 
+;         EndIf
         
-        PushListPosition(\items())
-        While NextElement(\items())
-          \items()\index= ListIndex(\items())
-        Wend
-        PopListPosition(\items())
+       *item = AddMapElement(\items(), Str(Item)) ; MapSize(\items()))) 
+       
+        ;  Debug "  rr "+Item +" "+MapSize(\items())
+      Else
+        *item = FindMapElement(\items(), Str(Item))
+        If *item
+         ; PushMapPosition(\items()) 
+;           \items(Str(MapSize(\items()))) = \items()
+;           \items(MapKey(\items()))\index = Val(MapKey(\items()))
+          ;PopMapPosition(\items()) 
+          
+          If \items()\sublevel>sublevel
+            sublevel=\items()\sublevel 
+          EndIf
+          
+        Else
+          *item = AddMapElement(\items(), Str(Item)) ; MapSize(\items()))) 
+          ;Item = 0
+          Debug " qq  "+Item +" "+MapSize(\items())
+        
+        EndIf
       EndIf
       ;}
+        ;  Debug "    "+Item+" "+Text 
       
+      If *item
+      \Items() = AllocateStructure(Items_S)
+      ;
       If subLevel
-        If sublevel>ListIndex(\items())
-          sublevel=ListIndex(\items())
+        Protected i = Val(MapKey(\items()))-1
+        
+        If sublevel>Val(MapKey(\items()))
+          sublevel=Val(MapKey(\items()))
         EndIf
         
-        PushListPosition(\items()) 
-        While PreviousElement(\items()) 
+        PushMapPosition(\items()) 
+        While FindMapElement(\items(), Str(i)) : i-1  ;  PreviousMapElement(\items()) ; 
           If subLevel = \items()\subLevel
-            *adress = \items()\adress
+            *adress = \items()\i
             Break
           ElseIf subLevel > \items()\subLevel
-            *adress = @\items()
+            *adress = \items()
             Break
           EndIf
         Wend 
-        PopListPosition(\items()) 
-        
+        PopMapPosition(\items()) 
+         
         If *adress
           If subLevel > *adress\subLevel
             sublevel = *adress\sublevel + 1
@@ -2749,7 +2805,7 @@ Module Widget
       \items()\change = 1
       \items()\index= Item
       \items()\index[1] =- 1
-      \items()\adress = *adress
+      \items()\i = *adress
       \items()\text\change = 1
       \items()\text\string.s = Text.s
       \items()\sublevel = sublevel
@@ -2757,7 +2813,195 @@ Module Widget
       
       SetImage(\Items(), Image)
       \Text\Count + 1
+      EndIf
     EndWith
+    
+    ProcedureReturn Item
+  EndProcedure
+  
+  Procedure Tree_AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+    Static *adress.Items_S
+    ;Static adress.i=-1
+    Protected Childrens.i, hide.b, *Item
+    
+    If Not *This
+      ProcedureReturn -1
+    EndIf
+    
+    With *This
+      ;{ Генерируем идентификатор
+ 
+      If Item < 0
+        Item = MapSize(\items())+1
+        AddMapElement(\items(), Str(Item)) 
+      ElseIf Item > MapSize(\items()) - 1
+        If sublevel
+          Item = MapSize(\items())
+        EndIf
+        AddMapElement(\items(), Str(Item)) 
+      Else
+        If FindMapElement(\items(), Str(Item-1))
+          Protected NewMap *imap.Items_S()
+          While NextMapElement(\items())
+            *imap(MapKey(\items())) = \items()
+          Wend
+          
+          ForEach *imap()
+            \items(Str(Val(MapKey(*imap())) + 1)) = *imap()
+            \items(MapKey(\items()))\index = Val(MapKey(\items()))
+          Next
+          FreeMap(*imap())
+        EndIf
+        
+        FindMapElement(\items(), Str(Item))
+        
+        If \items()\sublevel>sublevel
+          sublevel=\items()\sublevel 
+        EndIf
+          AddMapElement(\items(), Str(Item)) 
+      
+      EndIf
+      ;}
+      
+      \Items() = AllocateStructure(Items_S)
+      ;
+      If subLevel
+        Protected i = Val(MapKey(\items()))-1
+        
+        If sublevel>Val(MapKey(\items()))
+          sublevel=Val(MapKey(\items()))
+        EndIf
+        
+        PushMapPosition(\items()) 
+        While FindMapElement(\items(), Str(i)) : i-1  ;  PreviousMapElement(\items()) ; 
+          If subLevel = \items()\subLevel
+            *adress = \items()\i
+            Break
+          ElseIf subLevel > \items()\subLevel
+            *adress = \items()
+            Break
+          EndIf
+        Wend 
+        PopMapPosition(\items()) 
+         
+        If *adress
+          If subLevel > *adress\subLevel
+            sublevel = *adress\sublevel + 1
+            *adress\childrens + 1
+            ;             *adress\collapsed = 1
+            ;             \items()\hide = 1
+          EndIf
+        EndIf
+        
+        \items()\hide = hide
+      EndIf
+      
+     \items()\change = 1
+      \items()\index= Item
+      \items()\index[1] =- 1
+      \items()\i = *adress
+      \items()\text\change = 1
+      \items()\text\string.s = Text.s
+      \items()\sublevel = sublevel
+      \items()\height = \Text\height
+      
+      SetImage(\Items(), Image)
+      \Text\Count = Val(MapKey(\Items()))+1
+      EndWith
+    
+    ProcedureReturn Item
+  EndProcedure
+  Procedure __Tree_AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+    Static *adress.Items_S
+    ;Static adress.i=-1
+    Protected Childrens.i, hide.b, *Item
+    
+    If Not *This
+      ProcedureReturn -1
+    EndIf
+    
+    With *This
+      ;{ Генерируем идентификатор
+      If Item =- 1 ;Or Item > MapSize(\items()) - 1
+        Item = MapSize(\items())
+        AddMapElement(\items(), Str(Item)) 
+      ElseIf Item > MapSize(\items()) - 1
+        Item = MapSize(\items())
+        AddMapElement(\items(), Str(Item)) 
+      Else
+        If FindMapElement(\items(), Str(Item-1))
+          Protected NewMap *imap.Items_S()
+          While NextMapElement(\items())
+            *imap(MapKey(\items())) = \items()
+          Wend
+          
+          ForEach *imap()
+            \items(Str(Val(MapKey(*imap())) + 1)) = *imap()
+            \items(MapKey(\items()))\index = Val(MapKey(\items()))
+          Next
+          FreeMap(*imap())
+          
+          
+;         PushMapPosition(\items()) 
+;           \items(Str(MapSize(\items()))) = \items()
+;           \items(MapKey(\items()))\index = Val(MapKey(\items()))
+;           PopMapPosition(\items()) 
+        EndIf
+        
+        
+        FindMapElement(\items(), Str(Item))
+        
+        If \items()\sublevel>sublevel
+          sublevel=\items()\sublevel 
+        EndIf
+      EndIf
+      ;}
+      
+      \Items() = AllocateStructure(Items_S)
+      ;
+      If subLevel
+        Protected i = Val(MapKey(\items()))-1
+        
+        If sublevel>Val(MapKey(\items()))
+          sublevel=Val(MapKey(\items()))
+        EndIf
+        
+        PushMapPosition(\items()) 
+        While FindMapElement(\items(), Str(i)) : i-1  ;  PreviousMapElement(\items()) ; 
+          If subLevel = \items()\subLevel
+            *adress = \items()\i
+            Break
+          ElseIf subLevel > \items()\subLevel
+            *adress = \items()
+            Break
+          EndIf
+        Wend 
+        PopMapPosition(\items()) 
+         
+        If *adress
+          If subLevel > *adress\subLevel
+            sublevel = *adress\sublevel + 1
+            *adress\childrens + 1
+            ;             *adress\collapsed = 1
+            ;             \items()\hide = 1
+          EndIf
+        EndIf
+        
+        \items()\hide = hide
+      EndIf
+      
+     \items()\change = 1
+      \items()\index= Item
+      \items()\index[1] =- 1
+      \items()\i = *adress
+      \items()\text\change = 1
+      \items()\text\string.s = Text.s
+      \items()\sublevel = sublevel
+      \items()\height = \Text\height
+      
+      SetImage(\Items(), Image)
+      \Text\Count = Val(MapKey(\Items()))+1
+      EndWith
     
     ProcedureReturn Item
   EndProcedure
@@ -2771,43 +3015,45 @@ Module Widget
     
     With *This
       ;{ Генерируем идентификатор
-      If Item =- 1 Or Item > ListSize(\items()) - 1
-        LastElement(\items())
-        AddElement(\items()) 
-        Item = ListIndex(\items())
+      If Item =- 1 Or Item > MapSize(\items()) - 1
+        Item = MapSize(\items())
+        AddMapElement(\items(), Str(Item)) 
       Else
-        SelectElement(\items(), Item)
+        If FindMapElement(\items(), Str(Item))
+          PushMapPosition(\items()) 
+          \items(Str(MapSize(\items()))) = \items()
+          \items(MapKey(\items()))\index = Val(MapKey(\items()))
+          PopMapPosition(\items()) 
+          ; FindMapElement(\items(), Str(Item))
+        EndIf
+        
         If \items()\sublevel>sublevel
           sublevel=\items()\sublevel 
         EndIf
-        
-        InsertElement(\items())
-        
-        PushListPosition(\items())
-        While NextElement(\items())
-          \items()\index= ListIndex(\items())
-        Wend
-        PopListPosition(\items())
       EndIf
       ;}
       
+      \Items() = AllocateStructure(Items_S)
+      ;
       If subLevel
-        If sublevel>ListIndex(\items())
-          sublevel=ListIndex(\items())
+        Protected i = Val(MapKey(\items()))-1
+        
+        If sublevel>Val(MapKey(\items()))
+          sublevel=Val(MapKey(\items()))
         EndIf
         
-        PushListPosition(\items()) 
-        While PreviousElement(\items()) 
+        PushMapPosition(\items()) 
+        While FindMapElement(\items(), Str(i)) : i-1  ;  PreviousMapElement(\items()) ; 
           If subLevel = \items()\subLevel
-            *adress = \items()\adress
+            *adress = \items()\i
             Break
           ElseIf subLevel > \items()\subLevel
-            *adress = @\items()
+            *adress = \items()
             Break
           EndIf
         Wend 
-        PopListPosition(\items()) 
-        
+        PopMapPosition(\items()) 
+         
         If *adress
           If subLevel > *adress\subLevel
             sublevel = *adress\sublevel + 1
@@ -2821,7 +3067,7 @@ Module Widget
       \items()\change = 1
       \items()\index= Item
       \items()\index[1] =- 1
-      \items()\adress = *adress
+      \items()\i = *adress
       \items()\text\change = 1
       
       Protected Type$ = Trim(StringField(Text, 1, " "))
@@ -2858,11 +3104,11 @@ Module Widget
           
         Case #PB_GadgetType_Panel
           \index[2] = 0
-          LastElement(\Tabs())
-          AddElement(\Tabs())
-          
+          AddMapElement(\Tabs(), Str(MapSize(\Tabs()))) 
           \Tabs() = AllocateStructure(Items_S)
-          \Tabs()\index = ListIndex(\Tabs())
+          
+          \Tabs()\i = \Tabs()
+          \Tabs()\index = Val(MapKey(\Tabs()))
           \Tabs()\Text\String = Text.s
           \Tabs()\Text\Change = 1
           \Tabs()\height = \Tab\Height
@@ -2932,21 +3178,24 @@ Module Widget
         Select \Type
           Case #PB_GadgetType_Tree
             If State < 0 : State = 0 : EndIf
-            If State > \Text\Count
-              State = \Text\Count
-            EndIf
+            If State > \Text\Count : State = \Text\Count :  EndIf
             
-            If SelectElement(\Items(), State) 
-              \Items()\State = 2
+            If \index[2] <> State
+              If FindMapElement(\Items(), Str(\index[2])) 
+                \Items()\State = 0
+              EndIf
+              
+              If FindMapElement(\Items(), Str(State)) 
+                *Value\Type = #PB_EventType_Change
+                *Value\Widget = *This
+                \Items()\State = 2
+                \Change = State+1
+                
+                PostEvent(#PB_Event_Widget, *Value\Window, *This, #PB_EventType_Change)
+                PostEvent(#PB_Event_Gadget, *Value\Window, *Value\Gadget, #PB_EventType_Repaint)
+              EndIf
+              
               \index[2] = State
-              \Change = State+1
-              *Value\Widget = *This
-              *Value\Type = #PB_EventType_Change
-              
-              PostEvent(#PB_Event_Gadget, *Value\Window, *Value\Gadget, #PB_EventType_Change)
-              
-              
-              ; \s\v\Change = 1
             EndIf
             
           Case #PB_GadgetType_Image
@@ -3271,7 +3520,7 @@ Module Widget
     With *This
       Select \Type
         Case #PB_GadgetType_Panel
-          If SelectElement(\Tabs(), Item)
+          If FindMapElement(\Tabs(), Str(Item))
             Select Attribute 
               Case #PB_Button_Image
                 Result = SetImage(\Tabs(), Value)
@@ -3285,16 +3534,19 @@ Module Widget
   
   Procedure.i GetItemData(*This.Widget_S, Item.i)
     Protected Result.i
-    
-    With *This
-      PushListPosition(\items()) 
-      ForEach \items()
-        If \items()\index = Item 
-          Result = \items()\data
-          Break
-        EndIf
-      Next
-      PopListPosition(\items())
+    ;Debug Item
+    With *This 
+      Result = \items(Str(Item))\data
+;       PushMapPosition(\items()) 
+;       ForEach \items()
+;       ;  Debug ""+\items()\index +" "+ PeekS(\items()\data) +" "+ \items()\Text\String
+;         If \items()\index = Item 
+;          ; 
+;           Result = \items()\data
+;           Break
+;         EndIf
+;       Next
+;       PopMapPosition(\items())
     EndWith
     
     ProcedureReturn Result
@@ -3302,18 +3554,96 @@ Module Widget
   
   Procedure.i SetItemData(*This.Widget_S, Item.i, *Data)
     Protected Result.i
-    ;     Debug " "+Item +" "+ *Data
+       ; Debug " "+Item +" "+ PeekS(*Data)
     ;     
+        With *This
+;           If FindMapElement(\Items(), Str(Item))
+;             Debug \Items()\Text\String
+;           EndIf
+          \items(Str(Item))\data = *Data
+          
+;       PushMapPosition(\items()) 
+;       ForEach \items()
+;           ;Debug "Key "+MapKey(\items()) +" i "+ \items()\index +" it "+ Item +" "+\Items()\Text\String +" "+ PeekS(*Data)
+;           
+;           If \items()\index = Item 
+;          ; Debug \Items()\Text\String
+;           ;\items(Str(Item))\data = *Data
+;           \items()\data = *Data
+;           Break
+;         EndIf
+;       Next
+;       PopMapPosition(\items())
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.s GetItemText(*This.Widget_S, Item.i)
+    Protected Result.s
+    
     With *This
       ForEach \items()
         If \items()\index = Item 
-          \items()\data = *Data
+          Result = \items()\Text\String.s
           Break
         EndIf
       Next
     EndWith
     
     ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i SetItemText(*This.Widget_S, Item.i, Text.s)
+    Protected Result.i
+    
+    With *This
+      ForEach \items()
+        If \items()\index = Item 
+          
+          If \Type = #PB_GadgetType_Property
+            \items()\text[1]\string.s = Text
+          Else
+            \items()\text\string.s = Text
+          EndIf
+          
+          ;\items()\Text\String.s = Text.s
+          Break
+        EndIf
+      Next
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i GetData(*This.Widget_S)
+    ProcedureReturn *This\data
+  EndProcedure
+  
+  Procedure.i SetData(*This.Widget_S, *Data)
+    Protected Result.i
+    
+    With *This
+      \data = *Data
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i GetImage(*This.Widget_S)
+    ProcedureReturn *This\image\index
+  EndProcedure
+  
+  Procedure.i GetParent(*This.Widget_S)
+    ProcedureReturn *This\p
+  EndProcedure
+  
+  Procedure.s GetText(*This.Widget_S)
+    ProcedureReturn *This\Text\String.s
+  EndProcedure
+  
+  Procedure.i GetType(*This.Widget_S)
+    ProcedureReturn *This\Type
   EndProcedure
   
   Procedure.i CountItems(*This.Widget_S)
@@ -3518,7 +3848,11 @@ Module Widget
                 ElseIf \Childrens()\Align\Right And Not \Childrens()\Align\Left
                   x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width));+Bool(\Grid>1)
                 Else
-                  x = (\Childrens()\x-\x[2]) + Change_x
+                  If \x[2]
+                    x = (\Childrens()\x-\x[2]) + Change_x 
+                  Else
+                    x = 0
+                  EndIf
                 EndIf
                 
                 If \Childrens()\Align\Vertical
@@ -3526,7 +3860,11 @@ Module Widget
                 ElseIf \Childrens()\Align\Bottom And Not \Childrens()\Align\Top
                   y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height));+Bool(\Grid>1)
                 Else
-                  y = (\Childrens()\y-\y[2]) + Change_y 
+                  If \y[2]
+                    y = (\Childrens()\y-\y[2]) + Change_y 
+                  Else
+                    y = 0
+                  EndIf
                 EndIf
                 
                 If \Childrens()\Align\Top And \Childrens()\Align\Bottom
@@ -3654,35 +3992,91 @@ Module Widget
       *Value\Type = EventType
       
       With *This
-        ; anchors events
-        If CallBack_Anchors(*This, EventType.i, delta, MouseScreenX.i,MouseScreenY.i)
-        ;  ProcedureReturn 1
+        ; 
+        If \anchor[1]
+          If EventType = #PB_EventType_MouseEnter
+            If (\Type = #PB_GadgetType_Splitter And at = 3)
+              \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
+            Else
+              \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
+            EndIf
+          EndIf
+          
+          If EventType = #PB_EventType_LeftButtonDown 
+            If *Value\Focus <> *This
+              If *Value\Focus
+                PostEvent(#PB_Event_Widget, *Value\Window, *Value\Focus, #PB_EventType_StatusChange, #PB_EventType_LostFocus)
+              EndIf
+              PostEvent(#PB_Event_Widget, *Value\Window, *This, #PB_EventType_StatusChange, #PB_EventType_Focus)
+              PostEvent(#PB_Event_Gadget, *Value\Window, *Value\Gadget, #PB_EventType_Repaint)
+              
+              *Value\Focus = *This
+            EndIf
+          EndIf
+          ProcedureReturn - 1
         EndIf
         
-;         ; 
-;         If \anchor[1]
-;           If EventType = #PB_EventType_MouseEnter
-;             If (\Type = #PB_GadgetType_Splitter And at = 3)
-;               \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-;               SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
-;             Else
-;               \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-;               SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
-;             EndIf
+        If EventType = #PB_EventType_MouseMove
+          ; Panel tabs at point
+          If \Tab
+            ForEach \Tabs()
+              If \Tabs()\Drawing
+                If (MouseScreenX>\Tabs()\X And MouseScreenX=<\Tabs()\X+\Tabs()\Width And 
+                    MouseScreenY>\Tabs()\Y And MouseScreenY=<\Tabs()\Y+\Tabs()\Height)
+                  
+                  If \index[1] <> Val(MapKey(\Tabs()))
+                    \index[1] = Val(MapKey(\Tabs()))
+                    \Tabs()\State = 1
+                    repaint=1
+                  EndIf
+                  
+                ElseIf \Tabs()\State = 1
+                  \Tabs()\State = 0
+                  \index[1] =- 1
+                  repaint=1
+                EndIf
+              EndIf
+            Next
+          EndIf
+          
+;           ; item at point
+;           If FindMapElement(\Items(), Str(\index[1])) And \Items()\State = 1
+;             \Items()\State = 0
+;             \index[1] =- 1
+;             repaint=1
 ;           EndIf
-;           
-;           If EventType = #PB_EventType_LeftButtonDown 
-;             If *Value\Focus <> *This
-;             Debug 555
-;             If *Value\Focus
-;               PostEvent(#PB_Event_Widget, *Value\Window, *Value\Focus, #PB_EventType_StatusChange, #PB_EventType_LostFocus)
-;             EndIf
-;             PostEvent(#PB_Event_Widget, *Value\Window, *This, #PB_EventType_StatusChange, #PB_EventType_Focus)
-;             *Value\Focus = *This
-;           EndIf
-;           EndIf
-;           ProcedureReturn - 1
-;         EndIf
+          
+          ; item at point
+          ForEach \Items()
+            If \Items()\Drawing
+              If (MouseScreenX>\Items()\X And MouseScreenX=<\Items()\X+\Items()\Width And 
+                  MouseScreenY>\Items()\Y And MouseScreenY=<\Items()\Y+\Items()\Height)
+                
+                If \index[1] <> \Items()\index
+                  \index[1] = \Items()\index
+                  If Not \Items()\State
+                    \Items()\State = 1
+                  EndIf
+                  
+                  If \Type = #PB_GadgetType_Tree Or (Not \Items()\Childrens And \Type = #PB_GadgetType_Property )
+                    PostEvent(#PB_Event_Widget, *Value\Window, *This, #PB_EventType_StatusChange, \index[1])
+                    ;                   PostEvent(#PB_Event_Gadget, *Value\Window, *Value\Gadget, #PB_EventType_Repaint)
+                  EndIf
+                  
+                  repaint=1
+                EndIf
+                
+              ElseIf \Items()\State = 1
+                \Items()\State = 0
+                \index[1] =- 1
+                repaint=1
+              EndIf
+            EndIf
+          Next
+          
+        EndIf
         
         Select EventType
           Case #PB_EventType_Focus : \Focus = 1 : Repaint = 1
@@ -3709,51 +4103,41 @@ Module Widget
                 Case 2 : Repaint = SetState(*This, (\Page\Pos + \Step)) ; Down button
               EndSelect
               
-            ElseIf ListSize(\Tabs())
+            ElseIf MapSize(\Tabs())
               SetState(*This, \index[1])
               
-            ElseIf ListSize(\Items())
-              If \index[1] >= 0
-                If \index[2]>=0 And SelectElement(\Items(), \index[2])
-                  \Items()\State = 0
-                EndIf
+            ElseIf MapSize(\Items())
+              If FindMapElement(\Items(), Str(\index[1]))
+                Protected sublevel
                 
-                \Index[2] = \index[1]
-                
-                If SelectElement(\Items(), \index[2]) : \Items()\State = 2
-                  Protected sublevel, collapsed, adress
+                If (MouseScreenY > (\items()\box\y[1]) And MouseScreenY =< ((\items()\box\y[1]+\items()\box\height[1]))) And 
+                   ((MouseScreenX > \items()\box\x[1]) And (MouseScreenX =< (\items()\box\x[1]+\items()\box\width[1])))
                   
-                  If (MouseScreenY > (\items()\box\y[1]) And MouseScreenY =< ((\items()\box\y[1]+\items()\box\height[1]))) And 
-                     ((MouseScreenX > \items()\box\x[1]) And (MouseScreenX =< (\items()\box\x[1]+\items()\box\width[1])))
-                    
-                    \items()\Checked ! 1
-                  EndIf
+                  \items()\Checked ! 1
                   
-                  If (\flag\buttons And \items()\childrens) And
-                     (MouseScreenY > (\items()\box\y[0]) And MouseScreenY =< ((\items()\box\y[0]+\items()\box\height[0]))) And 
-                     ((MouseScreenX > \items()\box\x[0]) And (MouseScreenX =< (\items()\box\x[0]+\items()\box\width[0])))
-                    
-                    sublevel = \items()\sublevel
-                    \items()\collapsed ! 1
-                    \Change = 1
-                    
-                    PushListPosition(\items())
-                    While NextElement(\items())
-                      If sublevel = \items()\sublevel
-                        Break
-                      ElseIf sublevel < \items()\sublevel 
-                        If \items()\adress
-                          collapsed = \items()\adress\collapsed
-                          If \items()\adress\hide
-                            collapsed = 1
-                          EndIf
-                        EndIf
-                        
-                        \items()\hide = collapsed
-                      EndIf
-                    Wend
-                    PopListPosition(\items())
+                ElseIf (\flag\buttons And \items()\childrens) And
+                       (MouseScreenY > (\items()\box\y[0]) And MouseScreenY =< ((\items()\box\y[0]+\items()\box\height[0]))) And 
+                       ((MouseScreenX > \items()\box\x[0]) And (MouseScreenX =< (\items()\box\x[0]+\items()\box\width[0])))
+                  
+                  sublevel = \items()\sublevel
+                  \items()\collapsed ! 1
+                  \Change =- 1
+                  
+                  PushMapPosition(\items())
+                  While NextMapElement(\items())
+                    If sublevel = \items()\sublevel
+                      Break
+                    ElseIf sublevel < \items()\sublevel And \items()\i
+                      \items()\hide = Bool(\items()\i\collapsed Or \items()\i\hide) * 1
+                    EndIf
+                  Wend
+                  PopMapPosition(\items())
+                  
+                ElseIf \Index[2] <> \index[1] : \Items()\State = 2
+                  If FindMapElement(\Items(), Str(\index[2]))
+                    \Items()\State = 0
                   EndIf
+                  \Index[2] = \index[1]
                 EndIf
                 
                 Repaint = 1
@@ -3808,6 +4192,7 @@ Module Widget
         
         Select EventType
           Case #PB_EventType_MouseLeave
+            ;Debug \Type
             
             If at > 0
               ;,Debug "leave "+*This +" "+ \Type
@@ -3823,18 +4208,6 @@ Module Widget
               \Color[2]\State = 0
               \Color[3]\State = 0
             EndIf
-            
-            ; For list
-            If Not \Tab
-              If \adress
-                ChangeCurrentElement(\Items(), \adress)
-                If \Items()\State = 1
-                  \Items()\State = 0
-                EndIf
-              EndIf
-              \index[1] =- 1
-            EndIf
-            
             Repaint = #True
             
           Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter
@@ -3921,6 +4294,11 @@ Module Widget
             Buttons = 0
         EndSelect
         
+        ; anchors events
+        If CallBack_Anchors(*This, EventType.i, Buttons, MouseScreenX.i,MouseScreenY.i)
+          ProcedureReturn 1
+        EndIf
+        
         ; get at point buttons
         If (mouseB Or Buttons)
         ElseIf (MouseScreenX>=\X And MouseScreenX<\X+\Width And MouseScreenY>\Y And MouseScreenY=<\Y+\Height) 
@@ -3938,55 +4316,6 @@ Module Widget
             Case #PB_EventType_MouseEnter : EventType = #PB_EventType_MouseMove
             Case #PB_EventType_MouseLeave : EventType = #PB_EventType_MouseMove
           EndSelect
-          
-          
-          ; item at point
-          If \at =- 1
-            ; Panel tabs at point
-            If \Tab
-              ForEach \Tabs()
-                If Not \Tabs()\Hide
-                  If (MouseScreenX>\Tabs()\X And MouseScreenX=<\Tabs()\X+\Tabs()\Width And 
-                      MouseScreenY>\Tabs()\Y And MouseScreenY=<\Tabs()\Y+\Tabs()\Height)
-                    
-                    If \index[1] <> ListIndex(\Tabs())
-                      \index[1] = ListIndex(\Tabs())
-                      \Tabs()\State = 1
-                      repaint=1
-                    EndIf
-                    
-                  ElseIf \Tabs()\State = 1
-                    \Tabs()\State = 0
-                    \index[1] =- 1
-                    repaint=1
-                  EndIf
-                EndIf
-              Next
-            EndIf
-         EndIf
-             
-         ForEach \Items()
-           If \Items()\Drawing
-             If (MouseScreenX>\Items()\X And MouseScreenX=<\Items()\X+\Items()\Width And 
-                 MouseScreenY>\Items()\Y And MouseScreenY=<\Items()\Y+\Items()\Height)
-               
-               If \index[1] <> \Items()\index
-                 \index[1] = \Items()\index
-                 If Not \Items()\State
-                   \Items()\State = 1
-                 EndIf
-                 \adress = @\Items()
-                ; Debug \index[1]
-                 repaint=1
-               EndIf
-               
-             ElseIf \Items()\State = 1
-               \Items()\State = 0
-               \index[1] =- 1
-               repaint=1
-             EndIf
-           EndIf
-         Next
           
           *mouseat = *This
         Else
@@ -4012,19 +4341,19 @@ Module Widget
           *Lastat = *mouseat
         EndIf
         
-;         Select EventType 
-;           Case #PB_EventType_Focus
-;             If \at And *Value\Active <> *This
-;               *Value\Active = *This
-;               repaint | Events(*This, \at, #PB_EventType_Focus, MouseScreenX, MouseScreenY)
-;             EndIf
-;             
-;           Case #PB_EventType_LostFocus 
-;             If *Value\Active
-;               *Value\Active = 0 
-;               repaint | Events(*This, - 1, #PB_EventType_LostFocus, MouseScreenX, MouseScreenY)
-;             EndIf
-;         EndSelect
+        ;         Select EventType 
+        ;           Case #PB_EventType_Focus
+        ;             If \at And *Value\Active <> *This
+        ;               *Value\Active = *This
+        ;               repaint | Events(*This, \at, #PB_EventType_Focus, MouseScreenX, MouseScreenY)
+        ;             EndIf
+        ;             
+        ;           Case #PB_EventType_LostFocus 
+        ;             If *Value\Active
+        ;               *Value\Active = 0 
+        ;               repaint | Events(*This, - 1, #PB_EventType_LostFocus, MouseScreenX, MouseScreenY)
+        ;             EndIf
+        ;         EndSelect
         
         If *Lastat = *This
           If Last <> \at
@@ -4048,12 +4377,14 @@ Module Widget
           
           Select EventType 
             Case #PB_EventType_MouseWheel
-              Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta) ; bug in mac os
-              
-              If \at
-                repaint | Events(*This, \at, EventType, MouseScreenX, MouseScreenY, -WheelDelta)
-              ElseIf *Value\Active
-                repaint | Events(*Value\Active, - 1, EventType, MouseScreenX, MouseScreenY, WheelDelta)
+              If \Type=#PB_GadgetType_ScrollBar 
+                Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta) ; bug in mac os
+                
+                If \at
+                  repaint | Events(*This, \at, EventType, MouseScreenX, MouseScreenY, -WheelDelta)
+                ElseIf *Value\Active
+                  repaint | Events(*Value\Active, - 1, EventType, MouseScreenX, MouseScreenY, WheelDelta)
+                EndIf
               EndIf
               
             Case #PB_EventType_LeftButtonDown : mouseB = 1
@@ -4215,7 +4546,6 @@ Module Widget
       \Color = Colors
       \color\alpha = 255
       
-      \bs = 5
       \fs = 1
       
       \Text\Align\Vertical = 1
@@ -4235,7 +4565,7 @@ Module Widget
       SetAutoSize(*This, Flag&#PB_Flag_AutoSize)
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      Resize(*This, X.i,Y.i,Width.i+\bs,Height+\bs)
+      Resize(*This, X.i,Y.i,Width.i,Height)
       SetLastParent(*This) : SetAnchors(*This, Flag&#PB_Flag_AnchorsGadget)
     EndWith
     
@@ -4572,11 +4902,15 @@ Macro GetActiveWidget()
 EndMacro
 
 Macro EventWidget()
-  Widget::*Value\Widget
+ Widget::PB(EventGadget)() ; Widget::*Value\Widget   ;  
 EndMacro
 
-Macro WidgetEventType()
-  Widget::*Value\Type
+Macro WidgetEvent()
+  Widget::PB(EventType)() ;Widget::*Value\Type  ; 
+EndMacro
+
+Macro EventGadget()
+  (Bool(Event()<>Widget::#PB_Event_Widget) * Widget::PB(EventGadget)() + Bool(Event()=Widget::#PB_Event_Widget) * Widget::*Value\Gadget)
 EndMacro
 
 
@@ -4609,14 +4943,14 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     StopDrawing()
   EndIf
   
-  Procedure LoadControls(Widget)
+  Procedure _LoadControls(Widget)
     Macro ULCase(String)
       InsertString(UCase(Left(String,1)), LCase(Right(String,Len(String)-1)), 2)
     EndMacro
     
     UsePNGImageDecoder()
     
-    Protected ZipFile.i, GadgetName.s, GadgetImageSize.i, *GadgetImage, GadgetImage=-1, GadgetCtrlCount.l
+    Protected ZipFile.i, GadgetName.s, GadgetImageSize.i, *GadgetImage, GadgetImage=-1, GadgetCtrlCount.i
     Define ZipFileTheme.s = GetCurrentDirectory()+"SilkTheme.zip"
     
     If FileSize(ZipFileTheme) < 1
@@ -4724,7 +5058,99 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
   EndProcedure
   
+  Procedure LoadControls(Widget, Directory$)
+  Protected ZipFile$ = Directory$ + "SilkTheme.zip"
   
+  If FileSize(ZipFile$) < 1
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
+    CompilerElse
+      ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+    CompilerEndIf
+    If FileSize(ZipFile$) < 1
+      MessageRequester("Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
+      End
+    EndIf
+  EndIf
+;   Directory$ = GetCurrentDirectory()+"images/" ; "";
+;   Protected ZipFile$ = Directory$ + "images.zip"
+  
+  
+  If FileSize(ZipFile$) > 0
+    UsePNGImageDecoder()
+    
+    CompilerIf #PB_Compiler_Version > 522
+      UseZipPacker()
+    CompilerEndIf
+    
+    Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+    ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
+    
+    If ZipFile  
+      If ExaminePack(ZipFile)
+        While NextPackEntry(ZipFile)
+          
+          PackEntryName.S = PackEntryName(ZipFile)
+          ImageSize = PackEntrySize(ZipFile)
+          If ImageSize
+            *Image = AllocateMemory(ImageSize)
+          UncompressPackMemory(ZipFile, *Image, ImageSize)
+          Image = CatchImage(#PB_Any, *Image, ImageSize)
+          PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
+          If PackEntryName.S="application_form" 
+            PackEntryName.S="vd_windowgadget"
+          EndIf
+          
+          PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+          
+          Select PackEntryType(ZipFile)
+            Case #PB_Packer_File
+              If Image
+                If FindString(Left(PackEntryName.S, 3), "vd_")
+                  PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
+                  PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
+                  
+                  Protected Left.S = UCase(Left(PackEntryName.S,1))
+                  Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
+                  PackEntryName.S = " "+Left.S+Right.S
+                  
+                  If FindString(LCase(PackEntryName.S), "cursor")
+                    
+                    ;SetAttribute(Widget, #PB_Button_Image, Image)
+                    AddItem(Widget, 0, PackEntryName.S, Image)
+                    ; PackEntryName.S = "set_"+PackEntryName.S
+                   SetItemData(Widget, 0, Image);@PackEntryName.S)
+;                   ElseIf FindString(LCase(PackEntryName.S), "window")
+;                     
+;                     ;SetAttribute(Widget, #PB_Button_Image, Image)
+;                     AddItem(Widget, 1, PackEntryName.S, Image)
+;                     ;PackEntryName.S = "set_"+PackEntryName.S
+;                     SetItemData(Widget, 1, Image);@PackEntryName.S)
+;                   ElseIf FindString(LCase(PackEntryName.S), "button")
+;                     
+;                     ;SetAttribute(Widget, #PB_Button_Image, Image)
+;                     AddItem(Widget, 5, PackEntryName.S, Image)
+;                     ;PackEntryName.S = "set_"+PackEntryName.S
+;                     SetItemData(Widget, 5, Image);@PackEntryName.S)
+                  Else
+                    AddItem(Widget, -1, PackEntryName.S, Image)
+                    ;PackEntryName.S = "set_"+PackEntryName.S
+                    SetItemData(Widget, CountItems(Widget)-1, Image);@PackEntryName.S)
+                  EndIf
+                EndIf
+              EndIf    
+          EndSelect
+          
+          FreeMemory(*Image)
+          EndIf
+        Wend  
+      EndIf
+      
+      ClosePack(ZipFile)
+    EndIf
+  EndIf
+EndProcedure
+
   Procedure ReDraw(Canvas)
     If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
       ;     DrawingMode(#PB_2DDrawing_Default)
@@ -4737,21 +5163,102 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
   EndProcedure
   
-  Procedure Widgets_CallBack()
-    Debug ""+EventType() +" "+ WidgetEventType() +" "+ EventWidget() +" "+ EventGadget() +" "+ EventData()
+  Procedure.S Help_Widgets(Class.s)
+    Protected Result.S
     
-    Select EventWidget()
-      Case Widgets("Widgets") 
-        Select WidgetEventType()
-;           Case #PB_EventType_Repaint
-;             Debug GetState(EventWidget())
-            
-          Case #PB_EventType_LeftButtonDown
-            ; SetAttribute(Widgets("Form_0_Button_0"), #PB_Button_Image, GetItemData(EventWidget(), GetState(EventWidget())))
-            SetItemAttribute(Widgets("Panel"), GetState(Widgets("Panel")), #PB_Button_Image, GetItemData(EventWidget(), GetState(EventWidget())))
-            
-        EndSelect
+    Select LCase(Trim(Class.s))
+      Case "window"
+        Result.S = "Это окно (Window)"
+        
+      Case "cursor"
+        Result.S = "Это курсор"
+        
+      Case "scintilla"
+        Result.S = "Это редактор (Scintilla)"
+        
+      Case "button"
+        Result.S = "Это кнопка (Button)"
+        
+      Case "buttonimage"
+        Result.S = "Это кнопка картинка (ButtonImage)"
+        
+      Case "checkbox"
+        Result.S = "Это переключатель (CheckBox)"
+        
+      Case "container"
+        Result.S = "Это контейнер для других элементов (Container)"
+        
+      Case "combobox"
+        Result.S = "Это выподающий список (ComboBox)"
+        
+      Default
+        Result.S = "Подсказка еще не реализованно"
+        
     EndSelect
+    
+    ProcedureReturn Result.S
+  EndProcedure
+
+  Procedure.S Help_Properties(Class.s)
+    Protected Result.S
+    
+    Select Trim(Class.s, ":")
+      Case "Text"
+        Result.S = "Это надпись на виджете"
+        
+      Case "X"
+        Result.S = "Это позиция по оси X"
+        
+      Case "Y"
+        Result.S = "Это позиция по оси Y"
+        
+      Case "Width"
+        Result.S = "Это ширина виджета"
+        
+      Case "Height"
+        Result.S = "Это высота виджета"
+        
+      Default
+        Result.S = "Подсказка еще не реализованно"
+        
+    EndSelect
+    
+    ProcedureReturn Result.S
+  EndProcedure
+
+  Procedure Widgets_CallBack()
+    ; Debug ""+EventType() +" "+ WidgetEventType() +" "+ EventWidget() +" "+ EventGadget() +" "+ EventData()
+    Protected EventWidget = EventWidget()
+    
+    Select WidgetEvent()
+      Case #PB_EventType_StatusChange
+        Select EventWidget
+          Case Widgets("Widgets") 
+            SetText(Widgets("Widgets_info"), Help_Widgets(GetItemText(EventWidget, EventData())))
+            
+              SetItemAttribute(Widgets("Panel"), GetState(Widgets("Panel")), #PB_Button_Image, GetItemData(EventWidget, EventData())) ; GetState(EventWidget)))
+          
+          Case Widgets("Properties") 
+            SetText(Widgets("Properties_info"), Help_Properties(GetItemText(EventWidget, EventData())))
+        EndSelect
+        
+        Select EventData()
+          Case #PB_EventType_Focus
+            SetState(Widgets("Inspector"), GetData(EventWidget()))
+            
+            SetItemText(Widgets("Properties"), 1, GetText(EventWidget()))
+            SetItemText(Widgets("Properties"), 3, Str(X(EventWidget())))
+            SetItemText(Widgets("Properties"), 4, Str(Y(EventWidget())))
+            SetItemText(Widgets("Properties"), 5, Str(Width(EventWidget())))
+            SetItemText(Widgets("Properties"), 6, Str(Height(EventWidget())))
+            
+          Case #PB_EventType_LostFocus
+            
+        EndSelect  
+    EndSelect
+    
+      
+    ; ReDraw(Canvas_0)
   EndProcedure
   
   Procedure CallBacks(*This.Widget_S, EventType, MouseX, MouseY)
@@ -4761,11 +5268,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     Repaint | CallBack(*This, EventType, MouseX, MouseY)
     
-      With *This
-        ForEach \Childrens()
-          Repaint | CallBacks(\Childrens(), EventType, MouseX, MouseY)
-        Next
-      EndWith
+    With *This
+      ForEach \Childrens()
+        Repaint | CallBacks(\Childrens(), EventType, MouseX, MouseY)
+      Next
+    EndWith
     
     ProcedureReturn 1
   EndProcedure
@@ -4791,26 +5298,21 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         
         ; Repaint | CallBack(Widgets("Inspector_panel"), EventType(), MouseX, MouseY)
         
-;           With Widgets()
-;           ForEach Widgets()
-;             ;           *Widgets = Widgets()
-;             ;           If *Widgets\Text\String = "Button_0"
-;             ;            Debug 55
-;             ;           Else
-;             Repaint | CallBack(Widgets(), EventType, MouseX, MouseY)
-            Repaint | CallBacks(Widgets("Splitter"), EventType, MouseX, MouseY)
-;             ;         EndIf
-;             
-;           Next
-;         EndWith
+        ;           With Widgets()
+        ;           ForEach Widgets()
+        ;             ;           *Widgets = Widgets()
+        ;             ;           If *Widgets\Text\String = "Button_0"
+        ;             ;            Debug 55
+        ;             ;           Else
+        ;             Repaint | CallBack(Widgets(), EventType, MouseX, MouseY)
+        Repaint | CallBacks(Widgets("Splitter"), EventType, MouseX, MouseY)
+        ;             ;         EndIf
+        ;             
+        ;           Next
+        ;         EndWith
         
     EndSelect
     
-    ;Debug EventType
-    
-;     If WidgetEventType()>0
-;       Widgets_CallBack()
-;     EndIf
     
     If Repaint 
       ReDraw(Canvas)
@@ -4903,20 +5405,20 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     ; panel tab new forms
     AddItem(Widgets("Panel"), -1, "Form")
-    Widgets("Form_0") = Window(20, 20, 410, 410, "Window_0", #PB_Flag_AnchorsGadget) : *Widget = Widgets("Form_0") : SetImage(*Widget, 5)
-    Widgets("Form_0_Button_0") = Button(10, 10, 100, 30, "Button_0", #PB_Flag_AnchorsGadget)
-    Widgets("Form_0_Frame_0") = Frame(120, 10, 100, 100, "Frame_0", #PB_Flag_AnchorsGadget)
-    Widgets("Container_0") = Container(30, 130, 210, 210, #PB_Flag_AnchorsGadget) : *Widget = Widgets("Container_0")  : SetImage(*Widget, 5)
+    Widgets("Form_0") = Window(20, 20, 410, 410, "Window_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0"), 0) : *Widget = Widgets("Form_0") : SetImage(*Widget, 5)
+    Widgets("Form_0_Button_0") = Button(10, 10, 100, 30, "Button_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Button_0"), 1)
+    Widgets("Form_0_Frame_0") = Text(120, 10, 100, 100, "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Frame_0"), 2)
+    Widgets("Container_0") = Container(30, 130, 210, 210, #PB_Flag_AnchorsGadget) : SetData(Widgets("Container_0"), 3) : *Widget = Widgets("Container_0")  : SetImage(*Widget, 5)
     SetColor(Widgets("Container_0"), #PB_Gadget_BackColor, $FF00CDFF)
-    Widgets("Form_0_Container_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget)
-    Widgets("Form_0_Container_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget)
+    Widgets("Form_0_Container_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_1"), 4)
+    Widgets("Form_0_Container_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_2"), 5)
     CloseList()
-    Widgets("Container_1") = Container(160, 160, 210, 210, #PB_Flag_AnchorsGadget) : *Widget = Widgets("Container_1")  : SetImage(*Widget, 5)
+    Widgets("Container_1") = Container(160, 160, 210, 210, #PB_Flag_AnchorsGadget) : SetData(Widgets("Container_1"), 6) : *Widget = Widgets("Container_1")  : SetImage(*Widget, 5)
     SetColor(Widgets("Container_1"), #PB_Gadget_BackColor, $FF0CDF0F)
-    Widgets("Form_0_Container_1_Button_3") = Button(10, 60, 100, 30, "Button_3", #PB_Flag_AnchorsGadget)
-    Widgets("Form_0_Container_1_Button_4") = Button(10, 110, 100, 30, "Button_4", #PB_Flag_AnchorsGadget)
+    Widgets("Form_0_Container_1_Button_3") = Button(10, 60, 100, 30, "Button_3", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_3"), 7)
+    Widgets("Form_0_Container_1_Button_4") = Button(10, 110, 100, 30, "Button_4", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_4"), 8)
     CloseList()
-    Widgets("Form_0_Button_5") = Button(10, 50, 100, 30, "Button_5", #PB_Flag_AnchorsGadget)
+    Widgets("Form_0_Button_5") = Button(10, 50, 100, 30, "Button_5", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Button_5"), 9)
     CloseList()
     
     ; panel tab code
@@ -4927,20 +5429,49 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ;{- inspector 
     ; create tree inspector
     Widgets("Inspector") = Tree(0, 0, 80, 30)
-    AddItem(Widgets("Inspector"), -1, "Window_0", -1 )
-    AddItem(Widgets("Inspector"), -1, "Button_0", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Frame_0", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Container_0", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Button_1", -1, 2) 
-    AddItem(Widgets("Inspector"), -1, "Button_2", -1, 2) 
-    AddItem(Widgets("Inspector"), -1, "Container_1", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Button_3", -1, 2) 
-    AddItem(Widgets("Inspector"), -1, "Button_4", -1, 2) 
-    AddItem(Widgets("Inspector"), -1, "Button_5", -1, 1) 
-    SetState(Widgets("Inspector"), 0)
+    
+    AddItem(Widgets("Inspector"), 0, "Tree_0", -1 )
+      AddItem(Widgets("Inspector"), 1, "Tree_1_1", -1, 1) 
+      AddItem(Widgets("Inspector"), 4, "Tree_1_1_1", -1, 2) 
+      AddItem(Widgets("Inspector"), 5, "Tree_1_1_2", -1, 2) 
+      AddItem(Widgets("Inspector"), 6, "Tree_1_1_2_1", -1, 3) 
+      AddItem(Widgets("Inspector"), 8, "Tree_1_1_2_1_1_4jhhhhhhhhhhhhh", -1, 4) 
+      AddItem(Widgets("Inspector"), 7, "Tree_1_1_2_2", -1, 3) 
+      AddItem(Widgets("Inspector"), 2, "Tree_1_2", -1, 1) 
+      AddItem(Widgets("Inspector"), 3, "Tree_1_3", -1, 1) 
+      AddItem(Widgets("Inspector"), 9, "Tree_2",-1 )
+      AddItem(Widgets("Inspector"), 10, "Tree_3", -1 )
+      
+;     AddItem(Widgets("Inspector"), -1, "Window_0", -1 )
+;     AddItem(Widgets("Inspector"), -1, "Button_0", -1, 1) 
+;     AddItem(Widgets("Inspector"), -1, "Frame_0", -1, 1) 
+;     AddItem(Widgets("Inspector"), -1, "Container_0", -1, 1) 
+;     AddItem(Widgets("Inspector"), -1, "Button_1", -1, 2) 
+;     AddItem(Widgets("Inspector"), -1, "Button_2", -1, 2) 
+;     AddItem(Widgets("Inspector"), -1, "Container_1", -1, 1) 
+;     AddItem(Widgets("Inspector"), -1, "Button_3", -1, 2) 
+;     AddItem(Widgets("Inspector"), -1, "Button_4", -1, 2) 
+;     AddItem(Widgets("Inspector"), -1, "Button_5", -1, 1) 
+;     SetState(Widgets("Inspector"), 0)
     
     ; create panel widget
     Widgets("Inspector_panel") = Panel(0, 0, 0, 0) 
+    
+    ; Panel tab "widgets"
+    AddItem(Widgets("Inspector_panel"), -1, "Widgets")
+    Widgets("Widgets") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines)
+    LoadControls(Widgets("Widgets"), GetCurrentDirectory()+"Themes/")
+    SetState(Widgets("Widgets"), 9)
+    Widgets("Widgets_info") = Text(0, 0, 80, 30, "Тут будет инфо о виджете")
+    Widgets("Widgets_splitter") = Splitter(1,1,778, 548, Widgets("Widgets"), Widgets("Widgets_info"), #PB_Flag_AutoSize)
+    SetState(Widgets("Widgets_splitter"), 450)
+    
+    Define i, *w.Widget_S = Widgets("Widgets")
+    For i=0 To CountItems(*w)-1
+      If i<MapSize(*w\Items())
+       ; Debug ""+i+" "+*w\Items(Str(i))\index + " "+*w\Items()\data + " "+*w\Items()\Text\String
+      EndIf
+    Next
     
     ; Panel tab "properties"
     AddItem(Widgets("Inspector_panel"), -1, "Properties")
@@ -4959,15 +5490,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Widgets("Properties_info") = Text(0, 0, 80, 30, "Тут будет инфо о свойстве")
     Widgets("Properties_splitter") = Splitter(1,1,778, 548, Widgets("Properties"), Widgets("Properties_info"), #PB_Flag_AutoSize)
     SetState(Widgets("Properties_splitter"), 450)
-    
-    ; Panel tab "widgets"
-    AddItem(Widgets("Inspector_panel"), -1, "Widgets")
-    Widgets("Widgets") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines)
-    LoadControls(Widgets("Widgets"))
-    SetState(Widgets("Widgets"), 1)
-    Widgets("Widgets_info") = Text(0, 0, 80, 30, "Тут будет инфо о виджете")
-    Widgets("Widgets_splitter") = Splitter(1,1,778, 548, Widgets("Widgets"), Widgets("Widgets_info"), #PB_Flag_AutoSize)
-    SetState(Widgets("Widgets_splitter"), 450)
     
     ; Panel tab "events"
     AddItem(Widgets("Inspector_panel"), -1, "Events")
@@ -5020,5 +5542,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------0n----8----------------------------------------------f----------
 ; EnableXP
