@@ -156,7 +156,7 @@ Module ListIcon
             PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
           EndIf
           If \Text\Change
-            \Text\Height[1] = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
+            \Text\Height[1] = TextHeight("A") + Bool(\CountItems<>1 And \Flag\GridLines)
             If \Type = #PB_GadgetType_Tree
               \Text\Height = 20
             Else
@@ -2376,6 +2376,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = -----------------------------------------------------------
 ; EnableXP

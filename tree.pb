@@ -101,7 +101,7 @@ DeclareModule Widget
   
   ;- - Bar_S
   Structure Bar_S Extends Coordinate_S
-    *i          ; index parent item
+    *i.Items_S  ; index parent item
     *p.Widget_S ; adress parent
     *s.Scroll_S ; 
     
@@ -1458,23 +1458,23 @@ Module Widget
           
           ; set vertical bar state
           If \s\v\Max And \Change > 0
-            ; Debug ""+Str(\Change*\Text\height-\s\v\Page\len+\s\v\Thumb\len) +" "+ \s\v\Max
-            If (\Change*\Text\height-\s\v\Page\len) <> \s\v\Page\Pos  ;> \s\v\Max
-                                                                      ;\s\v\Page\Pos = (\Change*\Text\height-\s\v\Page\len)
+            Debug "Tree - SetState()"
+            If (\Change*\Text\height-\s\v\Page\len) <> \s\v\Page\Pos
               SetState(\s\v, (\Change*\Text\height-\s\v\Page\len))
             EndIf
           EndIf
           
-          ; Resize items
-          ForEach \items()
-            If Not \items()\Text\change And Not \Resize And Not \Change
-              Break
-            EndIf
-            
-            If Not ListIndex(\Items())
+          ;If Not Val(MapKey(\items()))
               \s\Width=0
               \s\height=0
-            EndIf
+           ; EndIf
+            
+            
+          ; Resize items
+          ForEach \items()
+;             If Not \items()\Text\change And Not \Resize And Not \Change
+;               Break
+;             EndIf
             
             If Not \items()\hide 
               \items()\width=\s\h\Page\len
@@ -1544,17 +1544,17 @@ Module Widget
             Widget::Resizes(\s, 0,0, #PB_Ignore, #PB_Ignore)
           EndIf
           
-          ;           ; Draw items
-          ;           ForEach \items()
+                    ; Draw items
+                    ForEach \items()
           
           
-          If Drawing
-            \Drawing = Drawing
-          EndIf
-          
-          If \Drawing
-            ChangeCurrentElement(\Items(), \Drawing)
-            Repeat 
+;           If Drawing
+;             \Drawing = Drawing
+;           EndIf
+;           
+;           If \Drawing
+;             ;ChangeCurrentElement(\Items(), \Drawing)
+;             Repeat 
               
               If \Items()\Drawing
                 \items()\width=\s\h\Page\len
@@ -1652,9 +1652,9 @@ Module Widget
                 EndIf
               EndIf
               
-            Until Not NextElement(\Items())
-          EndIf
-          ;           Next
+;             Until Not NextMapElement(\Items())
+;           EndIf
+                     Next
           
         EndIf
         
@@ -1662,6 +1662,7 @@ Module Widget
     EndWith
     
   EndProcedure
+  
   
   Procedure.i Draw_ScrollArea(*This.Widget_S, scroll_x,scroll_y)
     With *This 
@@ -2782,6 +2783,9 @@ Module Widget
       \items()\height = \Text\height
       
       SetImage(\Items(), Image)
+      
+      \image\adress = \items()\image\adress
+      \Image\width = \items()\Image\width+4
       \Text\Count + 1
     EndWith
     
@@ -2802,14 +2806,17 @@ Module Widget
         AddElement(\items()) 
         Item = ListIndex(\items())
       Else
-        If SelectElement(\items(), Item)
-          PreviousElement(\items())
-          If \items()\sublevel=*last\sublevel
-            *last = \items()
-          EndIf
+        SelectElement(\items(), Item)
+;       PreviousElement(\items())
+;       If \i\sublevel = \items()\sublevel
+;          \i = \items()
+;       EndIf
+        
+;       SelectElement(\items(), Item)
+        If \i\sublevel = *last\sublevel
+          \i = *last
         EndIf
         
-        SelectElement(\items(), Item)
         If \items()\sublevel>sublevel
           sublevel=\items()\sublevel
         EndIf
@@ -2831,13 +2838,14 @@ Module Widget
         EndIf
       EndIf
       
-      If *last
-        If subLevel = *last\subLevel 
-          \items()\i = *last\i
-        ElseIf subLevel > *last\subLevel 
-          \items()\i = *last
-        ElseIf *last\i
-          \items()\i = *last\i\i
+      If \i
+        If subLevel = \i\subLevel 
+          \items()\i = \i\i
+        ElseIf subLevel > \i\subLevel 
+          \items()\i = \i
+          *last = \items()
+        ElseIf \i\i
+          \items()\i = \i\i\i
         EndIf
         
         If \items()\i And subLevel > \items()\i\subLevel
@@ -2850,7 +2858,8 @@ Module Widget
         \items()\i = \items()
       EndIf
       
-      *last = \items()
+      
+      \i = \items()
       \items()\change = 1
       \items()\index= Item
       \items()\index[1] =- 1
@@ -2860,6 +2869,9 @@ Module Widget
       \items()\height = \Text\height
       
       SetImage(\Items(), Image)
+      
+      \image\adress = \items()\image\adress
+      \Image\width = \items()\Image\width+4
       \Text\Count + 1
       
     EndWith
@@ -4979,12 +4991,11 @@ EndMacro
 Macro EventGadget()
   (Bool(Event()<>Widget::#PB_Event_Widget) * Widget::PB(EventGadget)() + Bool(Event()=Widget::#PB_Event_Widget) * Widget::*Value\Gadget)
 EndMacro
-
 ;- 
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Widget
+ UseModule Widget
   Global Canvas_0
   Global *g0.Widget_S
   Global *g1.Widget_S
@@ -4997,7 +5008,179 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *g8.Widget_S
   Global *g9.Widget_S
   
-  Procedure ReDraw(Canvas)
+   Procedure LoadControls(Widget, Directory$)
+  Protected ZipFile$ = Directory$ + "SilkTheme.zip"
+  
+  If FileSize(ZipFile$) < 1
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
+    CompilerElse
+      ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+    CompilerEndIf
+    If FileSize(ZipFile$) < 1
+      MessageRequester("Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
+      End
+    EndIf
+  EndIf
+;   Directory$ = GetCurrentDirectory()+"images/" ; "";
+;   Protected ZipFile$ = Directory$ + "images.zip"
+  
+  
+  If FileSize(ZipFile$) > 0
+    UsePNGImageDecoder()
+    
+    CompilerIf #PB_Compiler_Version > 522
+      UseZipPacker()
+    CompilerEndIf
+    
+    Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+    ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
+    
+    If ZipFile  
+      If ExaminePack(ZipFile)
+        While NextPackEntry(ZipFile)
+          
+          PackEntryName.S = PackEntryName(ZipFile)
+          ImageSize = PackEntrySize(ZipFile)
+          If ImageSize
+            *Image = AllocateMemory(ImageSize)
+          UncompressPackMemory(ZipFile, *Image, ImageSize)
+          Image = CatchImage(#PB_Any, *Image, ImageSize)
+          PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
+          If PackEntryName.S="application_form" 
+            PackEntryName.S="vd_windowgadget"
+          EndIf
+          
+          PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+          
+          Select PackEntryType(ZipFile)
+            Case #PB_Packer_File
+              If Image
+                If FindString(Left(PackEntryName.S, 3), "vd_")
+                  PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
+                  PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
+                  
+                  Protected Left.S = UCase(Left(PackEntryName.S,1))
+                  Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
+                  PackEntryName.S = " "+Left.S+Right.S
+                  
+                  If FindString(LCase(PackEntryName.S), "cursor")
+                    
+                    ;Debug "add cursor"
+                    AddItem(Widget, 0, PackEntryName.S, Image)
+                    SetItemData(Widget, 0, Image)
+                    
+                  ElseIf FindString(LCase(PackEntryName.S), "window")
+                    
+                    Debug "add window"
+                    AddItem(Widget, 1, PackEntryName.S, Image)
+                    SetItemData(Widget, 1, Image)
+                    
+                  Else
+                    AddItem(Widget, -1, PackEntryName.S, Image)
+                    SetItemData(Widget, CountItems(Widget)-1, Image)
+                  EndIf
+                EndIf
+              EndIf    
+          EndSelect
+          
+          FreeMemory(*Image)
+          EndIf
+        Wend  
+      EndIf
+      
+      ClosePack(ZipFile)
+    EndIf
+  EndIf
+EndProcedure
+
+  Procedure Loadgadgets(Widget, Directory$)
+  Protected ZipFile$ = Directory$ + "SilkTheme.zip"
+  
+  If FileSize(ZipFile$) < 1
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
+    CompilerElse
+      ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+    CompilerEndIf
+    If FileSize(ZipFile$) < 1
+      MessageRequester("Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
+      End
+    EndIf
+  EndIf
+;   Directory$ = GetCurrentDirectory()+"images/" ; "";
+;   Protected ZipFile$ = Directory$ + "images.zip"
+  
+  
+  If FileSize(ZipFile$) > 0
+    UsePNGImageDecoder()
+    
+    CompilerIf #PB_Compiler_Version > 522
+      UseZipPacker()
+    CompilerEndIf
+    
+    Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+    ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
+    
+    If ZipFile  
+      If ExaminePack(ZipFile)
+        While NextPackEntry(ZipFile)
+          
+          PackEntryName.S = PackEntryName(ZipFile)
+          ImageSize = PackEntrySize(ZipFile)
+          If ImageSize
+            *Image = AllocateMemory(ImageSize)
+          UncompressPackMemory(ZipFile, *Image, ImageSize)
+          Image = CatchImage(#PB_Any, *Image, ImageSize)
+          PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
+          If PackEntryName.S="application_form" 
+            PackEntryName.S="vd_windowgadget"
+          EndIf
+          
+          PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+          
+          Select PackEntryType(ZipFile)
+            Case #PB_Packer_File
+              If Image
+                If FindString(Left(PackEntryName.S, 3), "vd_")
+                  PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
+                  PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
+                  
+                  Protected Left.S = UCase(Left(PackEntryName.S,1))
+                  Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
+                  PackEntryName.S = " "+Left.S+Right.S
+                  
+                  If FindString(LCase(PackEntryName.S), "cursor")
+                    
+                    ;Debug "add cursor"
+                    AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
+                    SetGadgetItemData(Widget, 0, ImageID(Image))
+                    
+                  ElseIf FindString(LCase(PackEntryName.S), "window")
+                    
+                    ;Debug "add gadget window"
+                    AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
+                    SetGadgetItemData(Widget, 1, ImageID(Image))
+                    
+                  Else
+                    AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
+                    SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
+                  EndIf
+                EndIf
+              EndIf    
+          EndSelect
+          
+          FreeMemory(*Image)
+          EndIf
+        Wend  
+      EndIf
+      
+      ClosePack(ZipFile)
+    EndIf
+  EndIf
+EndProcedure
+
+Procedure ReDraw(Canvas)
     If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
       ;     DrawingMode(#PB_2DDrawing_Default)
       ;     Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
@@ -5113,12 +5296,18 @@ CompilerIf #PB_Compiler_IsMainFile
     ;  2_example
     AddGadgetItem(g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)",ImageID(0)) 
     For i=1 To 20
-      If i=5
-        AddGadgetItem(g, -1, "Tree_"+Str(i), 0) 
+      If i=3
+        AddGadgetItem(g, 1, "Tree_"+Str(i), 0) 
+      ElseIf i=5
+        AddGadgetItem(g, 4, "Tree_"+Str(i), 0) 
+      ElseIf i=10
+        AddGadgetItem(g, 0, "Tree_"+Str(i), 0) 
       Else
         AddGadgetItem(g, -1, "Tree_"+Str(i), ImageID(0)) 
       EndIf
     Next
+    Loadgadgets(g, GetCurrentDirectory()+"Themes/")
+    
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 4
@@ -5222,12 +5411,17 @@ CompilerIf #PB_Compiler_IsMainFile
     ;  2_example
     AddItem (*g2, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
-      If i=5
-        AddItem(*g2, -1, "Tree_"+Str(i), -1) 
+      If i=3
+        AddItem(*g2, 1, "Tree_"+Str(i), -1) 
+      ElseIf i=5
+        AddItem(*g2, 4, "Tree_"+Str(i), -1) 
+      ElseIf i=10
+        AddItem(*g2, 0, "Tree_"+Str(i), -1) 
       Else
         AddItem(*g2, -1, "Tree_"+Str(i), 0) 
       EndIf
     Next
+    LoadControls(*g2, GetCurrentDirectory()+"Themes/")
     ;For i=0 To CountItems(*g2) : SetItemState(*g2, i, #PB_Tree_Expanded) : Next
     
     *g3 = Tree(670, 10, 210, 210, #PB_Tree_NoLines)                                         
@@ -5307,5 +5501,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------v--
+; Folding = ----------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -504,10 +504,10 @@ Module Editor
     
     With *This
       If ListSize(\Lines())
-        \Text\Count = 0;CountString(\text\string, #LF$)
+        \CountItems = 0;CountString(\text\string, #LF$)
         
         ForEach \Lines()
-          If \Lines()\Index =- 1 : \Text\Count + 1
+          If \Lines()\Index =- 1 : \CountItems + 1
             If String1.s
               String1.s +#LF$+ \Lines()\Text\String.s 
             Else
@@ -517,7 +517,7 @@ Module Editor
         Next : String1.s + #LF$
         
         ForEach \Lines()
-          If \Lines()\Index = \Text\Count
+          If \Lines()\Index = \CountItems
             If String2.s
               String2.s +#LF$+ \Lines()\Text\String.s 
             Else
@@ -538,7 +538,7 @@ Module Editor
         Next : String3.s + #LF$
         
         \Text\String.s = String1.s + String2.s + \Text\String.s + String3.s
-        \Text\Count = CountString(\Text\string, #LF$)
+        \CountItems = CountString(\Text\string, #LF$)
         \Text\Len = Len(\Text\String.s)
         \Text\Change = 1
         
@@ -614,7 +614,7 @@ Module Editor
           
           \Text\String.s = \Text[1]\String + Chr.s + \Text[3]\String
           \Text\Caret[1] = \Text\Caret 
-          ; \Text\Count = CountString(\Text\String.s, #LF$)
+          ; \CountItems = CountString(\Text\String.s, #LF$)
           \Text\Change =- 1 ; - 1 post event change widget
         EndIf
         
@@ -711,22 +711,22 @@ Module Editor
     Macro _set_content_Y_(_this_)
       If _this_\Image\handle
         If _this_\Flag\InLine
-          Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count))/2)
+          Text_Y=((Height-(_this_\Text\Height*_this_\CountItems))/2)
           Image_Y=((Height-_this_\Image\Height)/2)
         Else
           If _this_\Text\Align\Bottom
-            Text_Y=((Height-_this_\Image\Height-(_this_\Text\Height*_this_\Text\Count))/2)-Indent/2
-            Image_Y=(Height-_this_\Image\Height+(_this_\Text\Height*_this_\Text\Count))/2+Indent/2
+            Text_Y=((Height-_this_\Image\Height-(_this_\Text\Height*_this_\CountItems))/2)-Indent/2
+            Image_Y=(Height-_this_\Image\Height+(_this_\Text\Height*_this_\CountItems))/2+Indent/2
           Else
-            Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count)+_this_\Image\Height)/2)+Indent/2
-            Image_Y=(Height-(_this_\Text\Height*_this_\Text\Count)-_this_\Image\Height)/2-Indent/2
+            Text_Y=((Height-(_this_\Text\Height*_this_\CountItems)+_this_\Image\Height)/2)+Indent/2
+            Image_Y=(Height-(_this_\Text\Height*_this_\CountItems)-_this_\Image\Height)/2-Indent/2
           EndIf
         EndIf
       Else
         If _this_\Text\Align\Bottom
-          Text_Y=(Height-(_this_\Text\Height*_this_\Text\Count)-Text_Y-Image_Y) 
+          Text_Y=(Height-(_this_\Text\Height*_this_\CountItems)-Text_Y-Image_Y) 
         ElseIf _this_\Text\Align\Vertical
-          Text_Y=((Height-(_this_\Text\Height*_this_\Text\Count))/2)
+          Text_Y=((Height-(_this_\Text\Height*_this_\CountItems))/2)
         EndIf
       EndIf
     EndMacro
@@ -767,8 +767,8 @@ Module Editor
     
     Macro _line_resize_Y_(_this_)
       _this_\Items()\y = _this_\Y[1]+_this_\Text\Y+_this_\Scroll\Height+Text_Y
-      _this_\Items()\Height = _this_\Text\Height - Bool(_this_\Text\Count<>1 And _this_\Flag\GridLines)
-      _this_\Items()\Text\y = _this_\Items()\y + (_this_\Text\Height-_this_\Text\Height[1])/2 - Bool(#PB_Compiler_OS <> #PB_OS_MacOS And _this_\Text\Count<>1)
+      _this_\Items()\Height = _this_\Text\Height - Bool(_this_\CountItems<>1 And _this_\Flag\GridLines)
+      _this_\Items()\Text\y = _this_\Items()\y + (_this_\Text\Height-_this_\Text\Height[1])/2 - Bool(#PB_Compiler_OS <> #PB_OS_MacOS And _this_\CountItems<>1)
       _this_\Items()\Text\Height = _this_\Text\Height[1]
       
       _this_\Image\Y = _this_\Y[1]+_this_\Text\Y+Image_Y
@@ -783,7 +783,7 @@ Module Editor
     
     
     With *This
-      \Text\Count = ListSize(\Items())
+      \CountItems = ListSize(\Items())
       
       If \Text\Vertical
         Width = \Height[1]-\Text\X*2 
@@ -859,7 +859,7 @@ Module Editor
       
       If \Text\String.s[2] <> String.s Or \Text\Vertical
         \Text\String.s[2] = String.s
-        \Text\Count = CountString(String.s, #LF$)
+        \CountItems = CountString(String.s, #LF$)
         
         ; Scroll width reset 
         \Scroll\Width = 0
@@ -870,15 +870,15 @@ Module Editor
           Protected Left = Move(*This, Width)
         EndIf
         
-        If \Text\Count[1] <> \Text\Count Or \Text\Vertical
-          \Text\Count[1] = \Text\Count
+        If \CountItems[1] <> \CountItems Or \Text\Vertical
+          \CountItems[1] = \CountItems
           
           ; Scroll hight reset 
           \Scroll\Height = 0
           ClearList(\Items())
           
           If \Text\Vertical
-            For IT = \Text\Count To 1 Step - 1
+            For IT = \CountItems To 1 Step - 1
               If AddElement(\Items())
                 \Items() = AllocateStructure(Rows_S)
                 String = StringField(\Text\String.s[2], IT, #LF$)
@@ -1187,7 +1187,7 @@ Module Editor
             set_text_width = ""
           EndIf
           
-          \Text\Height[1] = TextHeight("A") + Bool(\Text\Count<>1 And \Flag\GridLines)
+          \Text\Height[1] = TextHeight("A") + Bool(\CountItems<>1 And \Flag\GridLines)
           If \Type = #PB_GadgetType_Tree
             \Text\Height = 20
           Else
@@ -1196,8 +1196,8 @@ Module Editor
           \Text\Width = TextWidth(\Text\String.s)
           
           If \sci\margin\width 
-            \Text\Count = CountString(\Text\String.s, #LF$)
-            \sci\margin\width = TextWidth(Str(\Text\Count))+11
+            \CountItems = CountString(\Text\String.s, #LF$)
+            \sci\margin\width = TextWidth(Str(\CountItems))+11
             ;  Bar::Resizes(\Scroll, \x[2]+\sci\margin\width+1,\Y[2],\Width[2]-\sci\margin\width-1,\Height[2])
           EndIf
         EndIf
@@ -2033,7 +2033,7 @@ Module Editor
           \Text\String.s = \Text[1]\String + \Text[3]\String
           \Text\Change =- 1 ; - 1 post event change widget
         Else
-          If \Index[2] < (\Text\Count-1) ; ListSize(\Items()) - 1
+          If \Index[2] < (\CountItems-1) ; ListSize(\Items()) - 1
             \Text\String.s = RemoveString(\Text\String.s, #LF$, #PB_String_CaseSensitive, \Items()\Text\Pos+\Text\Caret, 1)
             \Text\Change =- 1 ; - 1 post event change widget
           EndIf
@@ -2083,11 +2083,11 @@ Module Editor
     Protected Result.i, String.s, i.i
     
     With *This
-      If (Line > \Text\Count Or Line < 0)
-        Line = \Text\Count
+      If (Line > \CountItems Or Line < 0)
+        Line = \CountItems
       EndIf
       
-      For i = 0 To \Text\Count
+      For i = 0 To \CountItems
         If Line = i
           If String.s
             String.s +#LF$+ Text
@@ -2101,7 +2101,7 @@ Module Editor
         Else
           String.s + StringField(\Text\String.s, i + 1, #LF$)
         EndIf
-      Next : \Text\Count = i
+      Next : \CountItems = i
       
       If \Text\String.s <> String.s
         \Text\String.s = String.s
@@ -2307,7 +2307,7 @@ Module Editor
         
         PushListPosition(\Items())
         If State =- 1
-          \Index[1] = \Text\Count - 1
+          \Index[1] = \CountItems - 1
           *Line = LastElement(\Items())
           \Text\Caret = \Items()\Text\Len
         Else
@@ -2397,7 +2397,7 @@ Module Editor
     
     With *This
       If Text::SetFont(*This, FontID)
-        If Not Bool(\Text\Count[1] And \Text\Count[1] <> \Text\Count)
+        If Not Bool(\CountItems[1] And \CountItems[1] <> \CountItems)
           Redraw(*This, \Canvas\Gadget)
         EndIf
         ProcedureReturn 1
@@ -2899,7 +2899,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Editor::SetText(*w, Text.s) 
     
-    ;     ;*w\text\count = CountString(*w\text\string)
+    ;     ;*w\CountItems = CountString(*w\text\string)
     ;     *w\text\change = 1
     Debug *w\text\string
     Debug "------------ "+Len(*w\text\string)
@@ -2957,7 +2957,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 ; ;                 ; ;                   Debug Left(\Text\String.s, \Items()\Text\Pos+\text\caret)
                 ; ;                 ; ;                   Debug "----"
                 ; ;                 ; ;                   Debug Right(\Text\String.s, \Text\Len-(\Items()\Text\Pos+\text\caret))
-                ; ;                 ; ;                   Debug " ===== "+ \text\count
+                ; ;                 ; ;                   Debug " ===== "+ \CountItems
                 ; ;                 ; ;                   Debug Left(\Text\String.s[2], \Items()\Text\Pos+\items()\index+\text\caret)
                 ; ;                 ; ;                   Debug "----"
                 ; ;                 ; ;                   Debug Right(\Text\String.s[2], Len(\Text\String.s[2])-(\Items()\Text\Pos+\items()\index+\text\caret))
@@ -2987,6 +2987,6 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = 4----------------------------------------------------------
 ; EnableXP

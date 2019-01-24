@@ -91,7 +91,6 @@
     
     FontID.i
     String.s[3]
-    Count.i[2]
     Change.b
     
     Lower.b
@@ -241,6 +240,8 @@
     handle.i    ; Adress of new list element
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
    ;;; line.i[3]   ; 
+    
+    CountItems.i[2]
     
     Sci.Scintilla_S
     *Widget.Widget_S
