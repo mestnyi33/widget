@@ -26,7 +26,9 @@ DeclareModule Widget
   ;- - Box_S
   Structure Box_S Extends Coordinate_S
     Size.i[4]
-    Checked.b[2]
+    Checked.b;[3]
+    Inbetween.b
+    ThreeState.b
   EndStructure
   
   ;- - Color_S
@@ -2471,75 +2473,19 @@ Module Widget
       RoundBox( \box\x,\box\y,\box\width,\box\height, \Radius, \Radius, \Color\Back&$FFFFFF|Alpha)
       
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      RoundBox( \box\x,\box\y,\box\width,\box\height, \Radius, \Radius, \Color\Frame[\box\Checked*2]&$FFFFFF|Alpha)
+      RoundBox( \box\x,\box\y,\box\width,\box\height, \Radius, \Radius, \Color\Frame[\Focus*2]&$FFFFFF|Alpha)
       
       If \box\Checked
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
         For i = 0 To 2
-          LineXY((\box\X+3),(i+\box\Y+8),(\box\X+7),(i+\box\Y+9), \Color\Frame[2]&$FFFFFF|Alpha) 
-          LineXY((\box\X+10+i),(\box\Y+3),(\box\X+6+i),(\box\Y+10), \Color\Frame[2]&$FFFFFF|Alpha)
+          LineXY((\box\X+3),(i+\box\Y+8),(\box\X+7),(i+\box\Y+9), \Color\Frame[\Focus*2]&$FFFFFF|Alpha) 
+          LineXY((\box\X+10+i),(\box\Y+3),(\box\X+6+i),(\box\Y+10), \Color\Frame[\Focus*2]&$FFFFFF|Alpha)
         Next
       EndIf
-    
-      ; Draw string
-      If \Text\String
-        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        
-        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-          DrawText(\Text\x, \Text\y, \Text\String.s, \Color\Front&$FFFFFF|Alpha)
-          
-        CompilerElse
-          Protected *Sta.Character = @\Text\String.s
-          Protected *End.Character = @\Text\String.s 
-          #SOC = SizeOf(Character)
-          
-          While *End\c 
-            If *End\c = #LF
-              DrawText(\Text\x, \Text\y+y, PeekS(*Sta, (*End-*Sta)>>#PB_Compiler_Unicode), \Color\Front&$FFFFFF|Alpha)
-              *Sta = *End + #SOC 
-              y+\Text\height
-            EndIf 
-            *End + #SOC 
-          Wend
-          
-          ;         For i=1 To \CountItems
-          ;           DrawText(\Text\x, \Text\y+y, StringField(\Text\String.s, i, #LF$), \Color\Front&$FFFFFF|Alpha)
-          ;           y+\Text\height
-          ;         Next
-        CompilerEndIf  
-      EndIf
       
-      ; Draw frame
-      If \Color\Frame
-        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        RoundBox( \X[1], \Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color\Frame&$FFFFFF|Alpha)
-      EndIf
-    EndWith 
-  EndProcedure
-  
-  Procedure.i _Draw_CheckBox(*This.Widget_S, scroll_x,scroll_y)
-    Protected i.i, y.i
-    
-    With *This
-      Protected Alpha = \color\alpha<<24
-      \box\x = \x[2]+3
-      \box\y = \y[2]+(\height[2]-\Box\height)/2
-      
-      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      RoundBox( \box\x,\box\y,\box\width,\box\height, \Radius, \Radius, \Color\Back&$FFFFFF|Alpha)
-      
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      RoundBox( \box\x,\box\y,\box\width,\box\height, \Radius, \Radius, \Color\Frame[\box\Checked*2]&$FFFFFF|Alpha)
-      
-      If \box\Checked
+      If \box\Inbetween
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox( \box\x+2,\box\y+2,\box\width-4,\box\height-4, \Radius-2, \Radius-2, \Color\Frame[\box\Checked*2]&$FFFFFF|Alpha)
-        
-        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        For i = 0 To 1
-          LineXY((\box\X+4),(i+\box\Y+8),(\box\X+6),(i+\box\Y+9), $FFFFFFFF) 
-          LineXY((\box\X+9+i),(\box\Y+4),(\box\X+6+i),(\box\Y+10), $FFFFFFFF)
-        Next
+        RoundBox( \box\x+2,\box\y+2,\box\width-4,\box\height-4, \Radius-2, \Radius-2, \Color\Frame[\Focus*2]&$FFFFFF|Alpha)
       EndIf
     
       ; Draw string
@@ -2591,11 +2537,11 @@ Module Widget
       RoundBox( \box\x,\box\y,\box\width,\box\width, \Radius, \Radius, \Color\Back&$FFFFFF|Alpha)
    
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      Circle(\box\x+\box\width/2,\box\y+\box\width/2,\box\width/2, \Color\Frame[\Box\Checked*2]&$FFFFFF|Alpha)
+      Circle(\box\x+\box\width/2,\box\y+\box\width/2,\box\width/2, \Color\Frame[\Focus*2]&$FFFFFF|Alpha)
       
       If \Box\Checked
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        Circle(\box\x+\box\width/2,\box\y+\box\width/2,2, \Color\Frame[2]&$FFFFFFFF|Alpha)
+        Circle(\box\x+\box\width/2,\box\y+\box\width/2,2, \Color\Frame[\Focus*2]&$FFFFFFFF|Alpha)
       EndIf
             
       ; Draw string
@@ -3221,10 +3167,20 @@ Module Widget
       If *This > 0
         Select \Type
           Case #PB_GadgetType_CheckBox
-            If \Box
-              \Box\Checked = State
-            EndIf
+            Select State
+              Case 0,1 ; #PB_Checkbox_Unchecked, #PB_Checkbox_Checked
+                \Box\Checked = State
+                \Box\Inbetween = #False
+                ProcedureReturn 1
             
+              Case - 1 ; #PB_Checkbox_Inbetween
+                If \Box\ThreeState 
+                  \Box\Inbetween = #True
+                  \Box\Checked = #False
+                  ProcedureReturn 1
+                EndIf
+            EndSelect
+          
           Case #PB_GadgetType_Option
             If \OptionGroup And \Box\Checked <> State
               If \OptionGroup\OptionGroup <> *This
@@ -3234,33 +3190,30 @@ Module Widget
                 \OptionGroup\OptionGroup = *This
               EndIf
               \Box\Checked = State
+              ProcedureReturn 1
             EndIf
             
           Case #PB_GadgetType_Tree
             If State < 0 : State = 0 : EndIf
-            If State > \CountItems
-              State = \CountItems
-            EndIf
+            If State > \CountItems : State = \CountItems :  EndIf
             
-            
-            If \index[2] >= 0
-              SelectElement(\Items(), \index[2]) 
-              \Items()\State = 0
-            EndIf
-            
-            \index[2] = State
-            
-            If SelectElement(\Items(), State) 
-              \Items()\State = 2
-              \Change = State+1
-              *Value\Widget = *This
-              *Value\Type = #PB_EventType_Change
+            If \index[2] <> State
+              If \index[2] >= 0 And SelectElement(\Items(), \index[2]) 
+                \Items()\State = 0
+              EndIf
               
-              PostEvent(#PB_Event_Widget, *Value\Window, *This, #PB_EventType_Change)
-              PostEvent(#PB_Event_Gadget, *Value\Window, *Value\Gadget, #PB_EventType_Repaint)
+              If SelectElement(\Items(), State)
+                *Value\Type = #PB_EventType_Change
+                *Value\Widget = *This
+                \Items()\State = 2
+                \Change = State+1
+                
+                PostEvent(#PB_Event_Widget, *Value\Window, *This, #PB_EventType_Change)
+                PostEvent(#PB_Event_Gadget, *Value\Window, *Value\Gadget, #PB_EventType_Repaint)
+              EndIf
               
-              
-              ; \s\v\Change = 1
+              \index[2] = State
+              ProcedureReturn 1
             EndIf
             
           Case #PB_GadgetType_Image
@@ -4129,58 +4082,55 @@ Module Widget
             EndIf
             
           Case #PB_EventType_LeftButtonDown
-            If \OptionGroup
-              SetState(*This, 1)
-            Else
-              If \Box
-                \Box\Checked ! 1
-              EndIf
-            EndIf
-          
-            If \Type = #PB_GadgetType_ScrollBar
-                Select at
+            If \Type = #PB_GadgetType_Option
+              Repaint = SetState(*This, 1)
+              
+            ElseIf \Type = #PB_GadgetType_Panel
+              Repaint = SetState(*This, \index[1])
+                
+            ElseIf \Type = #PB_GadgetType_CheckBox
+              Repaint = SetState(*This, \Box\Checked ! 1)
+              
+            ElseIf \Type = #PB_GadgetType_ScrollBar
+              Select at
                 Case 1 : Repaint = SetState(*This, (\Page\Pos - \Step)) ; Up button
                 Case 2 : Repaint = SetState(*This, (\Page\Pos + \Step)) ; Down button
               EndSelect
               
             ElseIf ListSize(\Items())
-              If \Type = #PB_GadgetType_Panel
-                SetState(*This, \index[1])
-              Else
-                If \index[1] >= 0 And SelectElement(\Items(), \index[1]) 
-                  Protected sublevel.i
+              If \index[1] >= 0 And SelectElement(\Items(), \index[1]) 
+                Protected sublevel.i
+                
+                If (MouseScreenY > (\items()\box\y[1]) And MouseScreenY =< ((\items()\box\y[1]+\items()\box\height[1]))) And 
+                   ((MouseScreenX > \items()\box\x[1]) And (MouseScreenX =< (\items()\box\x[1]+\items()\box\width[1])))
                   
-                  If (MouseScreenY > (\items()\box\y[1]) And MouseScreenY =< ((\items()\box\y[1]+\items()\box\height[1]))) And 
-                     ((MouseScreenX > \items()\box\x[1]) And (MouseScreenX =< (\items()\box\x[1]+\items()\box\width[1])))
-                    
-                    \items()\Box\Checked ! 1
-                  ElseIf (\flag\buttons And \items()\childrens) And
-                         (MouseScreenY > (\items()\box\y[0]) And MouseScreenY =< ((\items()\box\y[0]+\items()\box\height[0]))) And 
-                         ((MouseScreenX > \items()\box\x[0]) And (MouseScreenX =< (\items()\box\x[0]+\items()\box\width[0])))
-                    
-                    sublevel = \items()\sublevel
-                    \items()\collapsed ! 1
-                    \Change = 1
-                    
-                    PushListPosition(\items())
-                    While NextElement(\items())
-                      If sublevel = \items()\sublevel
-                        Break
-                      ElseIf sublevel < \items()\sublevel And \items()\i
-                        \items()\hide = Bool(\items()\i\collapsed Or \items()\i\hide) * 1
-                      EndIf
-                    Wend
-                    PopListPosition(\items())
-                    
-                  ElseIf \Index[2] <> \index[1] : \Items()\State = 2
-                    If \index[2] >= 0 And SelectElement(\Items(), \index[2])
-                      \Items()\State = 0
+                  \items()\Box\Checked ! 1
+                ElseIf (\flag\buttons And \items()\childrens) And
+                       (MouseScreenY > (\items()\box\y[0]) And MouseScreenY =< ((\items()\box\y[0]+\items()\box\height[0]))) And 
+                       ((MouseScreenX > \items()\box\x[0]) And (MouseScreenX =< (\items()\box\x[0]+\items()\box\width[0])))
+                  
+                  sublevel = \items()\sublevel
+                  \items()\collapsed ! 1
+                  \Change = 1
+                  
+                  PushListPosition(\items())
+                  While NextElement(\items())
+                    If sublevel = \items()\sublevel
+                      Break
+                    ElseIf sublevel < \items()\sublevel And \items()\i
+                      \items()\hide = Bool(\items()\i\collapsed Or \items()\i\hide) * 1
                     EndIf
-                    \Index[2] = \index[1]
-                  EndIf
+                  Wend
+                  PopListPosition(\items())
                   
-                  Repaint = 1
+                ElseIf \Index[2] <> \index[1] : \Items()\State = 2
+                  If \index[2] >= 0 And SelectElement(\Items(), \index[2])
+                    \Items()\State = 0
+                  EndIf
+                  \Index[2] = \index[1]
                 EndIf
+                
+                Repaint = 1
               EndIf
             EndIf
             
@@ -4866,10 +4816,11 @@ Module Widget
       
       \Text\x[2] = 25
       
+      \Radius = 3
       \Box = AllocateStructure(Box_S)
       \Box\height = 15
       \Box\width = 15
-      \Radius = 3
+      \Box\ThreeState = Flag&#PB_Flag_ThreeState
       
       \Text\Align\Vertical = 1
       
@@ -5645,8 +5596,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     SetState(Widgets("Form_0_Option_0"), 1)
     
     Widgets("Form_0_CheckBox_0") = CheckBox(340, 40, 100, 21, "CheckBox_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_CheckBox_0"), 14)
-    Widgets("Form_0_CheckBox_1") = CheckBox(340, 65, 100, 21, "CheckBox_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_CheckBox_1"), 15)
-    SetState(Widgets("Form_0_CheckBox_0"), 1)
+    Widgets("Form_0_CheckBox_1") = CheckBox(340, 65, 100, 21, "CheckBox_1", #PB_Flag_AnchorsGadget|#PB_Flag_ThreeState) : SetData(Widgets("Form_0_CheckBox_1"), 15)
+    SetState(Widgets("Form_0_CheckBox_0"), #PB_Checkbox_Checked)
+    SetState(Widgets("Form_0_CheckBox_1"), #PB_Checkbox_Inbetween)
     CloseList()
     
     ; panel tab code
@@ -5768,5 +5720,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------d-0--------------------------------------------4----------------------------
+; Folding = ---------------------------------------------88--------------------------------------------4----------------------------
 ; EnableXP
