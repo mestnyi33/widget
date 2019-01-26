@@ -26,7 +26,7 @@ DeclareModule Widget
   ;- - Box_S
   Structure Box_S Extends Coordinate_S
     Size.i[4]
-    Checked.b[2] 
+    Checked.b 
     ;Toggle.b
         
     ArrowSize.a[3]
@@ -172,6 +172,7 @@ DeclareModule Widget
     sublevel.i
     sublevellen.i
     
+    collapsed.b
     childrens.i
     *data      ; set/get item data
   EndStructure
@@ -1327,7 +1328,7 @@ Module Widget
         If \items()\a And subLevel > \items()\a\subLevel
           sublevel = \items()\a\sublevel + 1
           \items()\a\childrens + 1
-          ;             \items()\a\Box\Checked = 1
+          ;             \items()\a\collapsed = 1
           ;             \items()\hide = 1
         EndIf
       Else
@@ -1408,7 +1409,7 @@ Module Widget
           If subLevel > *adress\subLevel
             sublevel = *adress\sublevel + 1
             *adress\childrens + 1
-            ;             *adress\Box\Checked = 1
+            ;             *adress\collapsed = 1
             ;             \items()\hide = 1
           EndIf
         EndIf
@@ -2068,7 +2069,7 @@ Module Widget
               If \flag\Buttons And \items()\childrens
                 If box_type=-1
                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                  Widget::Arrow(\items()\box\X[0]+(\items()\box\Width[0]-6)/2,\items()\box\Y[0]+(\items()\box\height[0]-6)/2, 6, Bool(Not \items()\Box\Checked)+2, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24, 0,0) 
+                  Widget::Arrow(\items()\box\X[0]+(\items()\box\Width[0]-6)/2,\items()\box\Y[0]+(\items()\box\height[0]-6)/2, 6, Bool(Not \items()\collapsed)+2, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24, 0,0) 
                 Else
                   DrawingMode(#PB_2DDrawing_Gradient)
                   BackColor($FFFFFF) : FrontColor($EEEEEE)
@@ -2080,7 +2081,7 @@ Module Widget
                   RoundBox(\items()\box\x,\items()\box\y,\items()\box\width,\items()\box\height,box_type,box_type,box_color&$FFFFFF|alpha<<24)
                   
                   Line(\items()\box\x+2,\items()\box\y+\items()\box\height/2 ,\items()\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
-                  If \items()\Box\Checked : Line(\items()\box\x+\items()\box\width/2,\items()\box\y+2,1,\items()\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
+                  If \items()\collapsed : Line(\items()\box\x+\items()\box\width/2,\items()\box\y+2,1,\items()\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
                 EndIf
               EndIf
               
@@ -2111,7 +2112,7 @@ Module Widget
               
               ; Draw checkbox
               If \flag\CheckBoxes
-                Draw_Box(\items()\box\x[1],\items()\box\y[1],\items()\box\width[1],\items()\box\height[1], 3, \items()\Box\Checked[1], checkbox_color, box_color, 2, alpha);, box_type)
+                Draw_Box(\items()\box\x[1],\items()\box\y[1],\items()\box\width[1],\items()\box\height[1], 3, \items()\Box\Checked, checkbox_color, box_color, 2, alpha);, box_type)
               EndIf
               
               ; Draw image
@@ -2185,20 +2186,16 @@ Module Widget
             EndIf
           EndIf
           
-            \s\Width=0
-              \s\height=0
-            
           ; Resize items
-              ForEach \items()
-                ;\items()\height = 20
-;             If Not \items()\Text\change And Not \Resize And Not \Change
-;               Break
-;             EndIf
+          ForEach \items()
+            If Not \items()\Text\change And Not \Resize And Not \Change
+              Break
+            EndIf
             
-;             If Not ListIndex(\items())
-;               \s\Width=0
-;               \s\height=0
-;             EndIf
+            If Not ListIndex(\items())
+              \s\Width=0
+              \s\height=0
+            EndIf
             
             If Not \items()\hide 
               \items()\width=\s\h\Page\len
@@ -2206,7 +2203,6 @@ Module Widget
               \items()\y=(\s\v\y+\s\height)-\s\v\Page\Pos
               
               If \items()\text\change = 1
-                
                 \items()\text\height = TextHeight("A")
                 \items()\text\width = TextWidth(\items()\text\string.s)
               EndIf
@@ -2249,9 +2245,9 @@ Module Widget
             EndIf
             
             \items()\Drawing = Bool(Not \items()\hide And \items()\y+\items()\height>\y+\bs And \items()\y<\y+\height-\bs)
-;             If \items()\Drawing And Not Drawing
-;               Drawing = @\items()
-;             EndIf
+            If \items()\Drawing And Not Drawing
+              Drawing = @\items()
+            EndIf
             
             \items()\text\change = 0
             \items()\change = 0
@@ -2318,7 +2314,7 @@ Module Widget
               If \flag\Buttons And \items()\childrens
                 If box_type=-1
                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                  Widget::Arrow(\items()\box\X[0]+(\items()\box\Width[0]-6)/2,\items()\box\Y[0]+(\items()\box\height[0]-6)/2, 6, Bool(Not \items()\Box\Checked)+2, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24, 0,0) 
+                  Widget::Arrow(\items()\box\X[0]+(\items()\box\Width[0]-6)/2,\items()\box\Y[0]+(\items()\box\height[0]-6)/2, 6, Bool(Not \items()\collapsed)+2, \Color\Front[Bool(\Focus) * State_3]&$FFFFFFFF|alpha<<24, 0,0) 
                 Else
                   DrawingMode(#PB_2DDrawing_Gradient)
                   BackColor($FFFFFF) : FrontColor($EEEEEE)
@@ -2330,7 +2326,7 @@ Module Widget
                   RoundBox(\items()\box\x,\items()\box\y,\items()\box\width,\items()\box\height,box_type,box_type,box_color&$FFFFFF|alpha<<24)
                   
                   Line(\items()\box\x+2,\items()\box\y+\items()\box\height/2 ,\items()\box\width/2+1,1, box_color&$FFFFFF|alpha<<24)
-                  If \items()\Box\Checked : Line(\items()\box\x+\items()\box\width/2,\items()\box\y+2,1,\items()\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
+                  If \items()\collapsed : Line(\items()\box\x+\items()\box\width/2,\items()\box\y+2,1,\items()\box\height/2+1, box_color&$FFFFFF|alpha<<24) : EndIf
                 EndIf
               EndIf
               
@@ -2361,7 +2357,7 @@ Module Widget
               
               ; Draw checkbox
               If \flag\CheckBoxes
-                Draw_Box(\items()\box\x[1],\items()\box\y[1],\items()\box\width[1],\items()\box\height[1], 3, \items()\Box\Checked[1], checkbox_color, box_color, 2, alpha);, box_type)
+                Draw_Box(\items()\box\x[1],\items()\box\y[1],\items()\box\width[1],\items()\box\height[1], 3, \items()\Box\Checked, checkbox_color, box_color, 2, alpha);, box_type)
               EndIf
               
               ; Draw image
@@ -2886,15 +2882,15 @@ Module Widget
   
   Procedure.i Draw_Button(*This.Widget_S, scroll_x,scroll_y)
     With *This
-      Protected State = \Color\State
+      Protected State_3 = \Color[3]\State
       Protected Alpha = \color\alpha<<24
       
       ; Draw background  
-      If \Color\back[State]<>-1
-        If \Color\Fore[State]
+      If \Color\back[State_3]<>-1
+        If \Color\Fore[State_3]
           DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
         EndIf
-        BoxGradient( \Vertical, \X[2], \Y[2], \Width[2], \Height[2], \Color\Fore[State], \Color\Back[State], \Radius, \color\alpha)
+        BoxGradient( \Vertical, \X[2], \Y[2], \Width[2], \Height[2], \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
       EndIf
       
       ; Draw image
@@ -2906,13 +2902,13 @@ Module Widget
       ; Draw string
       If \Text\String
         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawText(\Text\x, \Text\y, \Text\String.s, \Color\Front[State]&$FFFFFF|Alpha)
+        DrawText(\Text\x, \Text\y, \Text\String.s, \Color\Front[State_3]&$FFFFFF|Alpha)
       EndIf
       
       ; Draw frame
-      If \Color\Frame[State] 
+      If \Color\Frame[State_3] 
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        RoundBox(\X[1], \Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color\Frame[State]&$FFFFFF|Alpha)
+        RoundBox(\X[1], \Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
       EndIf
       
     EndWith 
@@ -2920,19 +2916,19 @@ Module Widget
   
   Procedure.i Draw_ComboBox(*This.Widget_S, scroll_x,scroll_y)
     With *This
-      Protected State = \Color\State
+      Protected State_3 = \Color\State
       Protected Alpha = \color\alpha<<24
       
       If \Box\Checked
-        State = 2
+        State_3 = 2
       EndIf
       
       ; Draw background  
-      If \Color\back[State]<>-1
-        If \Color\Fore[State]
+      If \Color\back[State_3]<>-1
+        If \Color\Fore[State_3]
           DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
         EndIf
-        BoxGradient( \Vertical, \X[2], \Y[2], \Width[2], \Height[2], \Color\Fore[State], \Color\Back[State], \Radius, \color\alpha)
+        BoxGradient( \Vertical, \X[2], \Y[2], \Width[2], \Height[2], \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
       EndIf
       
       ; Draw image
@@ -2941,26 +2937,24 @@ Module Widget
         DrawAlphaImage(\image\imageID, \image\x, \image\y, \color\alpha)
       EndIf
       
-      ClipOutput(\clip\x,\clip\y,\clip\width-\Box\width-\Text\x[2],\clip\height)
       ; Draw string
       If \Text\String
         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawText(\Text\x, \Text\y, \Text\String.s, \Color\Front[State]&$FFFFFF|Alpha)
+        DrawText(\Text\x, \Text\y, \Text\String.s, \Color\Front[State_3]&$FFFFFF|Alpha)
       EndIf
-      ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
-         
-      \Box\x = \x+\width-\Box\width -\Box\ArrowSize/2
+      
+      \Box\x = \x+\width-\Box\width-\Box\ArrowSize/2
       \Box\y = \y
       
       ; Draw arrows
         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
         ;Arrow(\Box\x+(\Box\Width-\Box\ArrowSize)/2, \Box\y+(\Box\Height-\Box\ArrowSize)/2, \Box\ArrowSize, Bool(\Vertical)+2, \Color\Frame[0])&$FFFFFF|Alpha, \Box\ArrowType)
-      Arrow(\Box\x+(\Box\Width-\Box\ArrowSize)/2, \Box\y+(\Box\Height-\Box\ArrowSize)/2, \Box\ArrowSize, Bool(\Box\Checked)*3, \Color\Front[State]&$FFFFFF|Alpha, \Box\ArrowType)
+      Arrow(\Box\x+(\Box\Width-\Box\ArrowSize)/2, \Box\y+(\Box\Height-\Box\ArrowSize)/2, \Box\ArrowSize, Bool(\Box\Checked)+2, \Color\Front[State_3]&$FFFFFF|Alpha, \Box\ArrowType)
       
       ; Draw frame
-      If \Color\Frame[State] 
+      If \Color\Frame[State_3] 
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        RoundBox(\X[1], \Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color\Frame[State]&$FFFFFF|Alpha)
+        RoundBox(\X[1], \Y[1], \Width[1], \Height[1], \Radius, \Radius, \Color\Frame[State_3]&$FFFFFF|Alpha)
       EndIf
       
     EndWith 
@@ -3126,19 +3120,6 @@ Module Widget
     Protected Repaint, *This.Widget_S
     
     Select Event()
-      Case #PB_Event_ActivateWindow
-        *This.Widget_S = GetWindowData(EventWindow())
-        
-        PostEvent(#PB_Event_Gadget, EventWindow(), *This\Canvas\Gadget, #PB_EventType_LeftButtonDown)
-        SetActiveWindow(*This\Canvas\Widget\Canvas\Window)
-        ;SetActiveGadget(*This\Canvas\Widget\Canvas\Gadget)
-        SetText(*This\Canvas\Widget, GetItemText(*This\Childrens(), *This\Childrens()\index[1]))
-        ;*This\Canvas\Widget\Canvas\Mouse\Buttons = 0
-        *This\Canvas\Widget\Color\State = 0
-        *This\Canvas\Widget\Box\Checked = 0
-        HideWindow(EventWindow(), 1)
-        *This = 0
-        
       Case #PB_Event_Repaint
         *This.Widget_S = GetWindowData(EventWindow())
       Case #PB_Event_Gadget
@@ -3155,11 +3136,6 @@ Module Widget
         
         If Repaint
           Draw_Popup(*This)
-          If EventType() = #PB_EventType_LeftButtonDown
-          *This\Canvas\Mouse\Buttons = 0
-          *This\Childrens()\Canvas\Mouse\Buttons = 0
-           ; HideWindow(EventWindow(), 1)
-          EndIf
         EndIf
       EndWith
     EndIf
@@ -3200,7 +3176,6 @@ Module Widget
         SetGadgetData(\Canvas\Gadget, *This)
         
         ;BindEvent(#PB_Event_SizeWindow, @CallBack_Popup(), \Canvas\Window, \Canvas\Gadget )
-        BindEvent(#PB_Event_ActivateWindow, @CallBack_Popup(), \Canvas\Window);, \Canvas\Gadget )
         ;BindEvent(#PB_Event_Repaint, @CallBack_Popup(), \Canvas\Window, \Canvas\Gadget )
         BindGadgetEvent(\Canvas\Gadget, @CallBack_Popup())
         ;Draw_Popup(*This)
@@ -3227,36 +3202,22 @@ Module Widget
       If Y=#PB_Ignore 
         Y = \y+\height+GadgetY(\Canvas\Gadget, #PB_Gadget_ScreenCoordinate)
       EndIf
-      
-      If StartDrawing(CanvasOutput(*Widget\Canvas\Gadget))
-        
-        ForEach *Widget\Childrens()\Items()
-          If *Widget\Childrens()\items()\text\change = 1
-            *Widget\Childrens()\items()\text\height = TextHeight("A")
-            *Widget\Childrens()\items()\text\width = TextWidth(*Widget\Childrens()\items()\text\string.s)
-          EndIf
-          
-          If *Widget\Childrens()\s\Width < (10+*Widget\Childrens()\items()\text\width)+*Widget\Childrens()\s\h\Page\Pos
-            *Widget\Childrens()\s\Width = (10+*Widget\Childrens()\items()\text\width)+*Widget\Childrens()\s\h\Page\Pos
-          EndIf
-        Next
-        
-        StopDrawing()
-      EndIf
-      
       Protected *Tree.Widget_S = *Widget\Childrens()
-      *Tree\Focus=1
-      Protected Width = *Tree\s\width + *Tree\bs*2 
-      Protected Height = *Tree\s\height + *Tree\bs*2 ; CountItems * *Tree\Text\height + *Tree\bs*2
+      Protected Width = \width
+      Protected Height = *Tree\CountItems * 20
       
       Resize(*Widget, 0,0, width, Height )
       ResizeWindow(*Widget\Canvas\Window, x, y, width, Height)
       ResizeGadget(*Widget\Canvas\Gadget, #PB_Ignore, #PB_Ignore, width, Height)
-      ;Resize(*Widget, 0,0, width, Height )
+      Resize(*Widget, 0,0, width, Height )
+      ;       *Widget\clip\width = Width
+      ;       *Widget\clip\height = Height
+      
     EndWith
     
     Draw_Popup(*Widget)
   EndProcedure
+  
   
   ;-
   ;- PUBLIC
@@ -3465,11 +3426,8 @@ Module Widget
           *Tree\items()\index = ListIndex(*Tree\items())
           *Tree\items()\Text\String = Text.s
           *Tree\items()\Text\Change = 1
-          *Tree\items()\height = \Text\height
+          *Tree\items()\height = \TabHeight
           *Tree\CountItems + 1 
-          
-          *Tree\items()\y = *Tree\s\height
-          *Tree\s\height + *Tree\items()\height
           
           SetImage(*Tree\items(), Image)
       EndSelect
@@ -4925,7 +4883,6 @@ Module Widget
           Case #PB_EventType_LeftButtonDown
             If \Type = #PB_GadgetType_ComboBox
               \Box\Checked ! 1
-              
               If \Box\Checked
                 Display_Popup(*This, \Popup)
                 HideWindow(\Popup\Canvas\Window, 0, #PB_Window_NoActivate)
@@ -4955,13 +4912,13 @@ Module Widget
                 If (MouseScreenY > (\items()\box\y[1]) And MouseScreenY =< ((\items()\box\y[1]+\items()\box\height[1]))) And 
                    ((MouseScreenX > \items()\box\x[1]) And (MouseScreenX =< (\items()\box\x[1]+\items()\box\width[1])))
                   
-                  \items()\Box\Checked[1] ! 1
+                  \items()\Box\Checked ! 1
                 ElseIf (\flag\buttons And \items()\childrens) And
                        (MouseScreenY > (\items()\box\y[0]) And MouseScreenY =< ((\items()\box\y[0]+\items()\box\height[0]))) And 
                        ((MouseScreenX > \items()\box\x[0]) And (MouseScreenX =< (\items()\box\x[0]+\items()\box\width[0])))
                   
                   sublevel = \items()\sublevel
-                  \items()\Box\Checked ! 1
+                  \items()\collapsed ! 1
                   \Change = 1
                   
                   PushListPosition(\items())
@@ -4969,7 +4926,7 @@ Module Widget
                     If sublevel = \items()\sublevel
                       Break
                     ElseIf sublevel < \items()\sublevel And \items()\a
-                      \items()\hide = Bool(\items()\a\Box\Checked Or \items()\a\hide) * 1
+                      \items()\hide = Bool(\items()\a\collapsed Or \items()\a\hide) * 1
                     EndIf
                   Wend
                   PopListPosition(\items())
@@ -5074,7 +5031,7 @@ Module Widget
             ; Debug "enter "+\Type
             
             If \Type <> #PB_GadgetType_ScrollBar
-              \Color\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
+              \Color\State = 1
             EndIf
             
             If ((at = 1 And IsStart(*This)) Or (at = 2 And IsStop(*This)))
@@ -5120,7 +5077,7 @@ Module Widget
   
   Procedure.i CallBack(*This.Widget_S, EventType.i, MouseScreenX.i=0, MouseScreenY.i=0)
     Protected repaint.i, Canvas = EventGadget()
-    Static Last.i, Down.i, *Lastat.Widget_S, *Last.Widget_S, *mouseat.Widget_S
+    Static Last.i, Down.i, *Lastat.Widget_S, *Last.Widget_S, mouseB.i, *mouseat.Widget_S, Buttons
     
     With *This
       If *This > 0 And \color\alpha And Not \hide
@@ -5138,12 +5095,14 @@ Module Widget
           Case #PB_EventType_LeftButtonDown, 
                #PB_EventType_MiddleButtonDown, 
                #PB_EventType_RightButtonDown
-            \Canvas\Mouse\Buttons = 1
+            Buttons = 1
+            \Canvas\Mouse\Buttons = Buttons
             
           Case #PB_EventType_LeftButtonUp, 
                #PB_EventType_MiddleButtonUp, 
                #PB_EventType_RightButtonUp
-            \Canvas\Mouse\Buttons = 0
+            Buttons = 0
+            \Canvas\Mouse\Buttons = Buttons
             
             ; active widget key state
           Case #PB_EventType_Input, 
@@ -5162,7 +5121,7 @@ Module Widget
         EndSelect
         
         ; anchors events
-        If CallBack_Anchors(*This, EventType.i, \Canvas\Mouse\Buttons, MouseScreenX.i,MouseScreenY.i)
+        If CallBack_Anchors(*This, EventType.i, Buttons, MouseScreenX.i,MouseScreenY.i)
           ProcedureReturn 1
         EndIf
         
@@ -5189,10 +5148,8 @@ Module Widget
           EndIf
         EndIf
         
-       ; Debug ""+*This+" "+EventType +" "+ \Canvas\Mouse\Buttons
-        
         ; get at point buttons
-        If \Canvas\Mouse\Buttons
+        If (mouseB Or Buttons)
         ElseIf (MouseScreenX>=\X And MouseScreenX<\X+\Width And MouseScreenY>\Y And MouseScreenY=<\Y+\Height) 
           If \Box And (MouseScreenX>\Box\x And MouseScreenX=<\Box\x+\Box\Width And  MouseScreenY>\Box\y And MouseScreenY=<\Box\y+\Box\Height)
             \at =- 1
@@ -5203,7 +5160,7 @@ Module Widget
           ElseIf \Box And (MouseScreenX>\Box\x[2] And MouseScreenX=<\Box\x[2]+\Box\Width[2] And MouseScreenY>\Box\y[2] And MouseScreenY=<\Box\y[2]+\Box\Height[2])
             \at = 2
           Else
-            \at =- 1
+            \at =- 1 + Bool(\Type = #PB_GadgetType_Button)*4
           EndIf 
           
           Select EventType 
@@ -5281,7 +5238,7 @@ Module Widget
                 EndIf
               EndIf
               
-            Case #PB_EventType_LeftButtonDown
+            Case #PB_EventType_LeftButtonDown : mouseB = 1
               If \at
                 If *Value\Active <> *This
                   If *Value\Active
@@ -5295,7 +5252,7 @@ Module Widget
                 repaint | Events(*This, \at, EventType, MouseScreenX, MouseScreenY)
               EndIf
               
-            Case #PB_EventType_LeftButtonUp
+            Case #PB_EventType_LeftButtonUp : mouseB = 0
               If Down
                 repaint | Events(*This, Down, EventType, MouseScreenX, MouseScreenY)
                 Down = 0
@@ -5497,60 +5454,6 @@ Module Widget
     ProcedureReturn *This
   EndProcedure
   
-  Procedure.i ComboBox(X.i,Y.i,Width.i,Height.i, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    
-    With *This
-      \Type = #PB_GadgetType_ComboBox
-      \Color = Colors
-      \color\alpha = 255
-      
-      \fs = 1
-      
-      \Text\Align\Vertical = 1
-      ;\Text\Align\Horizontal = 1
-      
-      \image\Align\Vertical = 1
-      ;\image\Align\Horizontal = 1
-      \Text\x[2] = 5
-      
-      \Box = AllocateStructure(Box_S)
-      \Box\height = Height
-      \Box\width = 15
-      \Box\ArrowSize = 4
-      \Box\ArrowType =- 1
-      
-      \index[1] =- 1
-      \index[2] =- 1
-      \Text\height = 20
-      
-      \sublevellen = 18
-      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-      \Flag\FullSelection = Bool(Not flag&#PB_DisplayMode_NoFullSelection)
-      \Flag\AlwaysSelection = Bool(flag&#PB_DisplayMode_AlwaysShowSelection)
-      
-      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
-      
-      \Canvas\Window = *Value\Window
-      \Canvas\Gadget = *Value\Gadget
-      \Popup = Popup(*This, 0,0,0,0)
-      OpenList(\Popup)
-      Tree(0,0,330,330, #PB_Flag_AutoSize|#PB_Flag_NoLines|#PB_Flag_NoButtons)
-      CloseList()
-      \Popup\Childrens()\s\h\height=0
-      
-      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
   Procedure.i CheckBox(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
     
@@ -5633,6 +5536,58 @@ Module Widget
       \Text\Align\Vertical = 1
       
       SetText(*This, Text.s)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Resize(*This, X.i,Y.i,Width.i,Height)
+      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i ComboBox(X.i,Y.i,Width.i,Height.i, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    
+    With *This
+      \Type = #PB_GadgetType_ComboBox
+      \Color = Colors
+      \color\alpha = 255
+      
+      \fs = 1
+      
+      \Text\Align\Vertical = 1
+      ;\Text\Align\Horizontal = 1
+      
+      \image\Align\Vertical = 1
+      ;\image\Align\Horizontal = 1
+      
+      \Box = AllocateStructure(Box_S)
+      \Box\height = Height
+      \Box\width = 15
+      \Box\ArrowSize = 6
+      \Box\ArrowType =- 1
+      
+      \index[1] =- 1
+      \index[2] =- 1
+      \Text\height = 20
+      
+      \sublevellen = 18
+      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \Flag\FullSelection = Bool(Not flag&#PB_DisplayMode_NoFullSelection)
+      \Flag\AlwaysSelection = Bool(flag&#PB_DisplayMode_AlwaysShowSelection)
+      
+      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+      
+      \Canvas\Window = *Value\Window
+      \Canvas\Gadget = *Value\Gadget
+      \Popup = Popup(*This, 0,0,0,0)
+      OpenList(\Popup)
+      Tree(0,0,0,0, #PB_Flag_AutoSize)
+      CloseList()
+      
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       Resize(*This, X.i,Y.i,Width.i,Height)
       SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
@@ -6068,13 +6023,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     With *Parent
       ; Draw Childrens
-      If ListSize(\Childrens())
+      ;If ListSize(\Childrens())
       ForEach \Childrens() 
         If Not \Childrens()\Hide And \Childrens()\p_i = Bool(*Parent\Type = #PB_GadgetType_Panel) * *Parent\index[2]
           Draws(\Childrens()) 
         EndIf
       Next
-      EndIf
+      ;EndIf
     EndWith
   EndProcedure
   
@@ -6242,6 +6197,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ;     EndIf
     
     
+    
     Select EventType
         ;Case #PB_EventType_Repaint : Repaint = EventData()
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) : Repaint = 1
@@ -6367,16 +6323,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     CloseList()
     
     Widgets("Form_0_ComboBox_5") = ComboBox(10, 10, 100, 26, #PB_Flag_AnchorsGadget) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_0_item", -1 )
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_1_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_2_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_3_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_4_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_5_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_6_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_7_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_8_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_9_item", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "item_0", -1 )
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "item_1", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "item_2", -1) 
     SetData(Widgets("Form_0_ComboBox_5"), 10)
     
     Widgets("Form_0_Option_0") = Option(10, 40, 100, 21, "Option_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_0"), 11)
@@ -6502,5 +6451,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----------------------------------------0-----------------f-0n-----------------------------------------------------8--------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

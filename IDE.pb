@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Global Window_0, Canvas_0, winBackColor = $FFFFFF
   Global NewMap Widgets.i()
-  Global*Widget.Widget_S, x,y
+  Global *Widget.Widget_S, *Parent.Widget_S, x,y
   
   If CreateImage(5, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(5))
     DrawingMode(#PB_2DDrawing_AllChannels) 
@@ -26,158 +26,246 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     StopDrawing()
   EndIf
   
-  If CreateImage(4, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(4))
-    DrawingMode(#PB_2DDrawing_AllChannels) 
-    For x=0 To 600 Step 4
-      For y=0 To 600 Step 4
-        Line(x, y, 1,1, $FF000000)
-      Next y
-    Next x
-    StopDrawing()
-  EndIf
+;   If CreateImage(4, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(4))
+;     DrawingMode(#PB_2DDrawing_AllChannels) 
+;     For x=0 To 600 Step 4
+;       For y=0 To 600 Step 4
+;         Line(x, y, 1,1, $FF000000)
+;       Next y
+;     Next x
+;     StopDrawing()
+;   EndIf
   
-  Procedure LoadControls(Widget)
-    Macro ULCase(String)
-      InsertString(UCase(Left(String,1)), LCase(Right(String,Len(String)-1)), 2)
-    EndMacro
+  Procedure LoadControls(Widget, Directory$)
+    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
-    UsePNGImageDecoder()
-    
-    Protected ZipFile.i, GadgetName.s, GadgetImageSize.i, *GadgetImage, GadgetImage=-1, GadgetCtrlCount.l
-    Define ZipFileTheme.s = GetCurrentDirectory()+"SilkTheme.zip"
-    
-    If FileSize(ZipFileTheme) < 1
+    If FileSize(ZipFile$) < 1
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        ZipFileTheme = #PB_Compiler_Home+"themes\SilkTheme.zip"
+        ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
       CompilerElse
-        ZipFileTheme = #PB_Compiler_Home+"themes/SilkTheme.zip"
+        ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
       CompilerEndIf
-      If FileSize(ZipFileTheme) < 1
-        MessageRequester("Designer Error", "SilkTheme.zip Not found in the Content directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
+      If FileSize(ZipFile$) < 1
+        MessageRequester("Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
         End
       EndIf
     EndIf
+    ;   Directory$ = GetCurrentDirectory()+"images/" ; "";
+    ;   Protected ZipFile$ = Directory$ + "images.zip"
     
-    CompilerIf #PB_Compiler_Version > 522
-      UseZipPacker()
-    CompilerEndIf
     
-    ZipFile = OpenPack(#PB_Any, ZipFileTheme, #PB_PackerPlugin_Zip)
-    If ZipFile
-      If ExaminePack(ZipFile)
-        While NextPackEntry(ZipFile)
-          
-          GadgetName = PackEntryName(ZipFile)
-          GadgetName = ReplaceString(GadgetName,"chart_bar","vd_tabbargadget")   ;use chart_bar png for TabBarGadget
-          GadgetName = ReplaceString(GadgetName,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
-          GadgetName = ReplaceString(GadgetName,"frame3dgadget","framegadget")            ;vd_framegadget.png not found. Use vd_frame3dgadget.png instead
-          
-          If FindString(Left(GadgetName, 3), "vd_")
-            GadgetImageSize = PackEntrySize(ZipFile)
-            *GadgetImage = AllocateMemory(GadgetImageSize)
-            UncompressPackMemory(ZipFile, *GadgetImage, GadgetImageSize)
-            GadgetImage = CatchImage(#PB_Any, *GadgetImage, GadgetImageSize)
-            GadgetName = LCase(GadgetName)
-            GadgetName = ReplaceString(GadgetName,".png","")
-            GadgetName = ReplaceString(GadgetName,"vd_","")
+    If FileSize(ZipFile$) > 0
+      UsePNGImageDecoder()
+      
+      CompilerIf #PB_Compiler_Version > 522
+        UseZipPacker()
+      CompilerEndIf
+      
+      Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+      ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
+      
+      If ZipFile  
+        If ExaminePack(ZipFile)
+          While NextPackEntry(ZipFile)
             
-            Select PackEntryType(ZipFile)
-              Case #PB_Packer_File
-                If GadgetImage
-                  Select GadgetName
-                    Case "buttongadget",
-                         "stringgadget",
-                         "textgadget",
-                         "checkboxgadget",
-                         "optiongadget",
-                         "listviewgadget",
-                         "framegadget",
-                         "comboboxgadget",
-                         "imagegadget",
-                         "hyperlinkgadget",
-                         "containergadget",
-                         "listicongadget",
-                         "ipaddressgadget",
-                         "progressbargadget",
-                         "scrollbargadget",
-                         "scrollareagadget",
-                         "trackbargadget",
-                         ;                        "webgadget",
-                      "buttonimagegadget",
-"calendargadget",
-"dategadget",
-"editorgadget",
-"explorerlistgadget",
-"explorertreegadget",
-"explorercombogadget",
-"spingadget",
-"treegadget",
-"panelgadget",
-"splittergadget",
-"mdigadget",
-"scintillagadget",
-"shortcutgadget",
-"canvasgadget",
-"gadget"
+            PackEntryName.S = PackEntryName(ZipFile)
+            ImageSize = PackEntrySize(ZipFile)
+            If ImageSize
+              *Image = AllocateMemory(ImageSize)
+              UncompressPackMemory(ZipFile, *Image, ImageSize)
+              Image = CatchImage(#PB_Any, *Image, ImageSize)
+              PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
+              If PackEntryName.S="application_form" 
+                PackEntryName.S="vd_windowgadget"
+              EndIf
+              
+              PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+              
+              Select PackEntryType(ZipFile)
+                Case #PB_Packer_File
+                  If Image
+                    If FindString(Left(PackEntryName.S, 3), "vd_")
+                      PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
+                      PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
                       
-                      GadgetName=ULCase(ReplaceString(GadgetName, "gadget",""))
+                      Protected Left.S = UCase(Left(PackEntryName.S,1))
+                      Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
+                      PackEntryName.S = " "+Left.S+Right.S
                       
-                      GadgetName = ReplaceString(GadgetName, "box","Box")
-                      GadgetName = ReplaceString(GadgetName, "link","Link")
-                      GadgetName = ReplaceString(GadgetName, "bar","Bar")
-                      GadgetName = ReplaceString(GadgetName, "area","Area")
-                      GadgetName = ReplaceString(GadgetName, "Ipa","IPA")
-                      
-                      GadgetName = ReplaceString(GadgetName, "view","View")
-                      GadgetName = ReplaceString(GadgetName, "icon","Icon")
-                      GadgetName = ReplaceString(GadgetName, "image","Image")
-                      GadgetName = ReplaceString(GadgetName, "combo","Combo")
-                      GadgetName = ReplaceString(GadgetName, "list","List")
-                      GadgetName = ReplaceString(GadgetName, "tree","Tree")
-                      
-                      AddItem(Widget, -1, GadgetName, GadgetImage)
-                      SetItemData(Widget, CountItems(Widget)-1, GadgetImage)
-                  EndSelect
-                  
-                  
-                EndIf
-            EndSelect
-            
-            FreeMemory(*GadgetImage)
-          EndIf
-        Wend
+                      If FindString(LCase(PackEntryName.S), "cursor")
+                        
+                        ;Debug "add cursor"
+                        AddItem(Widget, 0, PackEntryName.S, Image)
+                        SetItemData(Widget, 0, Image)
+                        
+                        ;                   ElseIf FindString(LCase(PackEntryName.S), "window")
+                        ;                     
+                        ;                     Debug "add window"
+                        ;                     AddItem(Widget, 1, PackEntryName.S, Image)
+                        ;                     SetItemData(Widget, 1, Image)
+                        
+                      Else
+                        AddItem(Widget, -1, PackEntryName.S, Image)
+                        SetItemData(Widget, CountItems(Widget)-1, Image)
+                      EndIf
+                    EndIf
+                  EndIf    
+              EndSelect
+              
+              FreeMemory(*Image)
+            EndIf
+          Wend  
+        EndIf
+        
+        ClosePack(ZipFile)
       EndIf
-      ClosePack(ZipFile)
     EndIf
+  EndProcedure
+  
+  Procedure.i Draws(*Parent.Widget_S)
+    Draw(*Parent)
+    
+    With *Parent
+      ; Draw Childrens
+      ;If ListSize(\Childrens())
+        ForEach \Childrens() 
+          If Not \Childrens()\Hide And \Childrens()\i = Bool(*Parent\Type = #PB_GadgetType_Panel) * *Parent\index[2]
+            Draws(\Childrens()) 
+          EndIf
+        Next
+      ;EndIf
+    EndWith
   EndProcedure
   
   Procedure ReDraw(Canvas)
     If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-      ;     DrawingMode(#PB_2DDrawing_Default)
-      ;     Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+;       DrawingMode(#PB_2DDrawing_Default)
+;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
       FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
       
-;       With Widgets()
-;         ForEach Widgets()
-;           ;If Canvas = \Canvas\Gadget
-;           Draw(Widgets())
-;           ;EndIf
-;         Next
-;       EndWith
-      Draw(Widgets("Splitter_1"))
+      Draws(Widgets("Splitter"))
+      
       StopDrawing()
     EndIf
   EndProcedure
   
-  Procedure Widgets_CallBack()
-    Select EventWidget()
-      Case Widgets("Tree_1") 
-        Select WidgetEventType()
-          Case #PB_EventType_LeftButtonDown
-            ; SetAttribute(Widgets("Form_0_Button_0"), #PB_Button_Image, GetItemData(EventWidget(), GetState(EventWidget())))
-            SetItemAttribute(Widgets("Panel_0"), GetState(Widgets("Panel_0")), #PB_Button_Image, GetItemData(EventWidget(), GetState(EventWidget())))
-        EndSelect
+  Procedure.S Help_Widgets(Class.s)
+    Protected Result.S
+    
+    Select LCase(Trim(Class.s))
+      Case "window"
+        Result.S = "Это окно (Window)"
+        
+      Case "cursor"
+        Result.S = "Это курсор"
+        
+      Case "scintilla"
+        Result.S = "Это редактор (Scintilla)"
+        
+      Case "button"
+        Result.S = "Это кнопка (Button)"
+        
+      Case "buttonimage"
+        Result.S = "Это кнопка картинка (ButtonImage)"
+        
+      Case "checkbox"
+        Result.S = "Это переключатель (CheckBox)"
+        
+      Case "container"
+        Result.S = "Это контейнер для других элементов (Container)"
+        
+      Case "combobox"
+        Result.S = "Это выподающий список (ComboBox)"
+        
+      Default
+        Result.S = "Подсказка еще не реализованно"
+        
     EndSelect
+    
+    ProcedureReturn Result.S
+  EndProcedure
+  
+  Procedure.S Help_Properties(Class.s)
+    Protected Result.S
+    
+    Select Trim(Class.s, ":")
+      Case "Text"
+        Result.S = "Это надпись на виджете"
+        
+      Case "X"
+        Result.S = "Это позиция по оси X"
+        
+      Case "Y"
+        Result.S = "Это позиция по оси Y"
+        
+      Case "Width"
+        Result.S = "Это ширина виджета"
+        
+      Case "Height"
+        Result.S = "Это высота виджета"
+        
+      Default
+        Result.S = "Подсказка еще не реализованно"
+        
+    EndSelect
+    
+    ProcedureReturn Result.S
+  EndProcedure
+  
+  Procedure Widgets_CallBack()
+    ; Debug ""+EventType() +" "+ WidgetEventType() +" "+ EventWidget() +" "+ EventGadget() +" "+ EventData()
+    Protected EventWidget = EventWidget()
+    
+    Select WidgetEvent()
+      Case #PB_EventType_StatusChange
+        Select EventWidget
+          Case Widgets("Widgets") 
+            SetText(Widgets("Widgets_info"), Help_Widgets(GetItemText(EventWidget, EventData())))
+            
+            SetItemAttribute(Widgets("Panel"), GetState(Widgets("Panel")), #PB_Button_Image, GetItemData(EventWidget, EventData())) ; GetState(EventWidget)))
+            
+          Case Widgets("Properties") 
+            SetText(Widgets("Properties_info"), Help_Properties(GetItemText(EventWidget, EventData())))
+        EndSelect
+        
+        Select EventData()
+          Case #PB_EventType_Focus
+            SetState(Widgets("Inspector"), GetData(EventWidget()))
+            
+            SetItemText(Widgets("Properties"), 1, GetText(EventWidget()))
+            SetItemText(Widgets("Properties"), 3, Str(X(EventWidget())))
+            SetItemText(Widgets("Properties"), 4, Str(Y(EventWidget())))
+            SetItemText(Widgets("Properties"), 5, Str(Width(EventWidget())))
+            SetItemText(Widgets("Properties"), 6, Str(Height(EventWidget())))
+            
+          Case #PB_EventType_LostFocus
+            
+        EndSelect  
+    EndSelect
+    ;     EndSelect
+    
+    
+    ; ReDraw(Canvas_0)
+  EndProcedure
+  
+  Procedure CallBacks(*This.Widget_S, EventType, MouseX, MouseY)
+    Protected Repaint 
+    
+    If Not *This\Hide
+      Repaint | CallBack(*This, EventType, MouseX, MouseY)
+      
+      With *This
+        If LastElement(\Childrens())
+        Repeat 
+          If Not \Childrens()\Hide And \Childrens()\i = Bool(*This\Type = #PB_GadgetType_Panel) * *This\index[2]
+            Repaint | CallBacks(\Childrens(), EventType, MouseX, MouseY)
+          EndIf
+        Until Not PreviousElement(\Childrens()) 
+        EndIf
+      EndWith
+    EndIf
+    
+    ProcedureReturn 1
   EndProcedure
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
@@ -188,38 +276,31 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     
+;     *Value\Active = Widgets("Form_0_String_0")
+;     If *Value\Active And CallBack(*Value\Active, EventType, MouseX, MouseY)
+;       If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+;         
+;         Draw(*Value\Active)
+;         
+;         StopDrawing()
+;       EndIf
+;     EndIf
+    
+    
     
     Select EventType
         ;Case #PB_EventType_Repaint : Repaint = EventData()
       Case #PB_EventType_Resize : Repaint = 1
-        Resize(Widgets("Splitter_1"), #PB_Ignore, #PB_Ignore, Width-2, Height-2)
+        Resize(Widgets("Splitter"), #PB_Ignore, #PB_Ignore, Width-2, Height-2)
       Default
         
         If EventType() = #PB_EventType_LeftButtonDown
           SetActiveGadget(Canvas)
         EndIf
         
-        ; Repaint | CallBack(Widgets("Panel_1"), EventType(), MouseX, MouseY)
-        
-        With Widgets()
-          ForEach Widgets()
-            ;           *Widgets = Widgets()
-            ;           If *Widgets\Text\String = "Button_0"
-            ;            Debug 55
-            ;           Else
-            Repaint | CallBack(Widgets(), EventType, MouseX, MouseY)
-            ;         EndIf
-            
-          Next
-        EndWith
+        Repaint | CallBacks(Widgets("Splitter"), EventType, MouseX, MouseY)
         
     EndSelect
-    
-    ;Debug EventType
-    
-    If WidgetEventType()>0
-      Widgets_CallBack()
-    EndIf
     
     If Repaint 
       ReDraw(Canvas)
@@ -308,73 +389,120 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     *value\window = Window_0
     
     ; Main panel
-    Widgets("Panel_0") = Panel(0, 0, 0, 0) 
-    AddItem(Widgets("Panel_0"), -1, "Form")
+    Widgets("Panel") = Panel(0, 0, 0, 0) 
     
-    Widgets("Form_0") = Window(20, 20, 310, 310, "Window_0", #PB_Flag_AnchorsGadget) : *Widget = Widgets("Form_0") : SetImage(*Widget, 5)
-    Widgets("Form_0_Button_0") = Button(10, 10, 100, 30, "Button_0", #PB_Flag_AnchorsGadget)
+    ; panel tab new forms
+    AddItem(Widgets("Panel"), -1, "Form")
+    Widgets("Form_0") = Window(20, 20, 480, 410, "Window_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0"), 0) : *Widget = Widgets("Form_0") : SetImage(*Widget, 5)
+    ;Widgets("Form_0_String_0") = String(340, 10, 100, 26, "String_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_String_0"), 1)
+    Widgets("Form_0_Text_0") = Text(120, 10, 100, 101, "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Text_0"), 2)
+    Widgets("Form_0_Frame_0") = Frame(230, 10, 100, 101, "Frame_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Frame_0"), 3)
+    Widgets("Container_0") = Container(10, 120, 120, 150, #PB_Flag_AnchorsGadget) : SetData(Widgets("Container_0"), 4) : *Widget = Widgets("Container_0")  : SetImage(*Widget, 5)
+    SetColor(Widgets("Container_0"), #PB_Gadget_BackColor, $FF00CDFF)
+    Widgets("Form_0_Container_0_Option_0") = Option(10, 10, 100, 21, "Option_3", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Option_0"), 16)
+    Widgets("Form_0_Container_0_Option_1") = Option(10, 35, 100, 21, "Option_4", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Option_1"), 17)
+    Widgets("Form_0_Container_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_1"), 5)
+    Widgets("Form_0_Container_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_2"), 6)
+    CloseList()
+    Widgets("Container_1") = Container(140, 120, 120, 150, #PB_Flag_AnchorsGadget) : SetData(Widgets("Container_1"), 7) : *Widget = Widgets("Container_1")  : SetImage(*Widget, 5)
+    SetColor(Widgets("Container_1"), #PB_Gadget_BackColor, $FF0CDF0F)
+    Widgets("Form_0_Container_1_Option_0") = Option(10, 10, 100, 21, "Option_5", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_0"), 18)
+    Widgets("Form_0_Container_1_Option_1") = Option(10, 35, 100, 21, "Option_6", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_1"), 19)
+    Widgets("Form_0_Container_1_Button_3") = Button(10, 60, 100, 30, "Button_3", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_3"), 8)
+    Widgets("Form_0_Container_1_Button_4") = Button(10, 110, 100, 30, "Button_4", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_4"), 9)
+    CloseList()
+    Widgets("Form_0_Button_5") = Button(10, 10, 100, 26, "Button_5", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Button_5"), 10)
+    Widgets("Form_0_Option_0") = Option(10, 40, 100, 21, "Option_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_0"), 11)
+    Widgets("Form_0_Option_1") = Option(10, 65, 100, 21, "Option_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_1"), 12)
+    Widgets("Form_0_Option_2") = Option(10, 90, 100, 21, "Option_2", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_2"), 13)
+    SetState(Widgets("Form_0_Option_0"), 1)
     
-    Widgets("Container_0") = Container(60, 60, 210, 210, #PB_Flag_AnchorsGadget) ;: *Widget = Widgets("Container_0")  : SetImage(*Widget, 4)
-    Widgets("Form_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget)
-    Widgets("Form_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget)
+    Widgets("Form_0_CheckBox_0") = CheckBox(340, 40, 100, 21, "CheckBox_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_CheckBox_0"), 14)
+    Widgets("Form_0_CheckBox_1") = CheckBox(340, 65, 100, 21, "CheckBox_1", #PB_Flag_AnchorsGadget|#PB_Flag_ThreeState) : SetData(Widgets("Form_0_CheckBox_1"), 15)
+    SetState(Widgets("Form_0_CheckBox_0"), #PB_Checkbox_Checked)
+    SetState(Widgets("Form_0_CheckBox_1"), #PB_Checkbox_Inbetween)
+    Widgets("Form_0_String_0") = String(10, 280, 450, 26, "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_String_0"), 1)
     CloseList()
     
+    ; panel tab code
+    AddItem(Widgets("Panel"), -1, "Code")
+    Widgets("Code") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
     CloseList()
     
-    AddItem(Widgets("Panel_0"), -1, "Code")
-    Widgets("Editor_0") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
+    ;{- inspector 
+    ; create tree inspector
+    Widgets("Inspector") = Tree(0, 0, 80, 30)
+    AddItem(Widgets("Inspector"), -1, "Window_0", -1 )
+    AddItem(Widgets("Inspector"), -1, "String_0", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Text_0", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Frame_0", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Container_0", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Button_1", -1, 2) 
+    AddItem(Widgets("Inspector"), -1, "Button_2", -1, 2) 
+    AddItem(Widgets("Inspector"), -1, "Container_1", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Button_3", -1, 2) 
+    AddItem(Widgets("Inspector"), -1, "Button_4", -1, 2) 
+    AddItem(Widgets("Inspector"), -1, "Button_5", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Option_0", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Option_1", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Option_2", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "CheckBox_1", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "CheckBox_2", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Option_3", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Option_4", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Option_5", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "Option_6", -1, 1) 
+    SetState(Widgets("Inspector"), 0)
+    
+    ; create panel widget
+    Widgets("Inspector_panel") = Panel(0, 0, 0, 0) 
+    
+    ; Panel tab "properties"
+    AddItem(Widgets("Inspector_panel"), -1, "Properties")
+    Widgets("Properties") = Property(0, 0, 150, 30, 70, #PB_Flag_AutoSize)
+    AddItem(Widgets("Properties"), -1, " Общее", -1, 0)
+    AddItem(Widgets("Properties"), -1, "String Text Button_0", -1, 1)
+    AddItem(Widgets("Properties"), -1, " Координаты", -1, 0)
+    AddItem(Widgets("Properties"), -1, "Spin X 0|100", -1, 1)
+    AddItem(Widgets("Properties"), -1, "Spin Y 0|200", -1, 1)
+    AddItem(Widgets("Properties"), -1, "Spin Width 0|100", -1, 1)
+    AddItem(Widgets("Properties"), -1, "Spin Height 0|200", -1, 1)
+    AddItem(Widgets("Properties"), -1, " Поведение", -1, 0)
+    AddItem(Widgets("Properties"), -1, "Button Puch C:\as\img\image.png", -1, 1)
+    AddItem(Widgets("Properties"), -1, "ComboBox Disable True|False", -1, 1)
+    AddItem(Widgets("Properties"), -1, "ComboBox Flag #_Event_Close|#_Event_Size|#_Event_Move", -1, 1)
+    Widgets("Properties_info") = Text(0, 0, 80, 30, "Тут будет инфо о свойстве")
+    Widgets("Properties_splitter") = Splitter(1,1,778, 548, Widgets("Properties"), Widgets("Properties_info"), #PB_Flag_AutoSize)
+    SetState(Widgets("Properties_splitter"), 450)
+    
+    ; Panel tab "widgets"
+    AddItem(Widgets("Inspector_panel"), -1, "Widgets")
+    Widgets("Widgets") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines)
+    LoadControls(Widgets("Widgets"), GetCurrentDirectory()+"Themes/")
+    SetState(Widgets("Widgets"), 1)
+    Widgets("Widgets_info") = Text(0, 0, 80, 30, "Тут будет инфо о виджете")
+    Widgets("Widgets_splitter") = Splitter(1,1,778, 548, Widgets("Widgets"), Widgets("Widgets_info"), #PB_Flag_AutoSize)
+    SetState(Widgets("Widgets_splitter"), 450)
+    
+    ; Panel tab "events"
+    AddItem(Widgets("Inspector_panel"), -1, "Events")
+    Widgets("Events") = Text(0, 60, 180, 30, "Тут будет событие элементов", #PB_Flag_AutoSize)
+    Widgets("Events_info") = Text(0, 0, 80, 30, "Тут будет инфо о событии")
+    Widgets("Events_splitter") = Splitter(1,1,778, 548, Widgets("Events"), Widgets("Events_info"), #PB_Flag_AutoSize)
+    SetState(Widgets("Events_splitter"), 450)
     CloseList()
     
-    Widgets("Tree_0") = Tree(0, 0, 80, 30)
-    AddItem(Widgets("Tree_0"), 0, "Window_0", -1 )
-    AddItem(Widgets("Tree_0"), 1, "Container_0", -1, 1) 
-    AddItem(Widgets("Tree_0"), 4, "Button_0", -1, 2) 
-    AddItem(Widgets("Tree_0"), 5, "Button_1", -1, 2) 
-    AddItem(Widgets("Tree_0"), 6, "Container_1", -1, 2) 
-    AddItem(Widgets("Tree_0"), 7, "Button_2", -1, 3) 
-    SetState(Widgets("Tree_0"), 0)
+    Widgets("Inspector_splitter") = Splitter(1,1,778, 548, Widgets("Inspector"), Widgets("Inspector_panel"))
+    ;}
     
-    Widgets("Panel_1") = Panel(0, 0, 0, 0) 
-    AddItem(Widgets("Panel_1"), -1, "Properties")
+    Widgets("Splitter") = Splitter(1,1,778, 548, Widgets("Panel"), Widgets("Inspector_splitter"), #PB_Splitter_Vertical)
     
-    Widgets("Tree_3") = Property(0, 0, 150, 30, 70, #PB_Flag_AutoSize)
-    AddItem(Widgets("Tree_3"), -1, " Общее", -1, 0)
-    AddItem(Widgets("Tree_3"), -1, "String Text Button_0", -1, 1)
-    AddItem(Widgets("Tree_3"), -1, " Координаты", -1, 0)
-    AddItem(Widgets("Tree_3"), -1, "Spin X 0|100", -1, 1)
-    AddItem(Widgets("Tree_3"), -1, "Spin Y 0|200", -1, 1)
-    AddItem(Widgets("Tree_3"), -1, "Spin Width 0|100", -1, 1)
-    AddItem(Widgets("Tree_3"), -1, "Spin Height 0|200", -1, 1)
+    SetState(Widgets("Inspector_splitter"), 150)
+    SetState(Widgets("Splitter"), 550)
     
-    AddItem(Widgets("Tree_3"), -1, " Поведение", -1, 0)
-    
-    AddItem(Widgets("Tree_3"), -1, "Button Puch C:\as\Img\Image.png", -1, 1)
-    AddItem(Widgets("Tree_3"), -1, "ComboBox Disable True|False", -1, 1)
-    AddItem(Widgets("Tree_3"), -1, "ComboBox Flag #_Event_Close|#_Event_Size|#_Event_Move", -1, 1)
-    
-    AddItem(Widgets("Panel_1"), -1, "Widgets")
-    Widgets("Tree_1") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines|#PB_Flag_AutoSize)
-    LoadControls(Widgets("Tree_1"))
-    SetState(Widgets("Tree_1"), 1)
-    
-    AddItem(Widgets("Panel_1"), -1, "Events")
-    Widgets("Tree_4") = Text(0, 60, 180, 30, "Тут будет событие элементов", #PB_Flag_AutoSize)
-    CloseList()
-    
-    Widgets("Splitter_0") = Splitter(1,1,778, 548, Widgets("Tree_0"), Widgets("Panel_1"))
-    Widgets("Splitter_1") = Splitter(1,1,778, 548, Widgets("Panel_0"), Widgets("Splitter_0"), #PB_Splitter_Vertical)
-    
-    SetState(Widgets("Splitter_0"), 150)
-    SetState(Widgets("Splitter_1"), 550)
-    
-    ;    ;Editor::SetText(Widgets("Panel_0"), "")
-    ;   Tree::AddItem(Widgets("Tree_0"), -1, "Window_0")
-    ;   
-    ;   Tree::AddItem(Widgets("Tree_1"), -1, "Button")
-    ;   Tree::AddItem(Widgets("Tree_1"), -1, "String")
-    ;   Tree::AddItem(Widgets("Tree_1"), -1, "Text")
-    
+    ; Widgets events callback
     BindEvent(#PB_Event_Widget, @Widgets_CallBack(), Window_0)
+    ;SetActiveGadget(Canvas_0)
     ReDraw(Canvas_0)
   EndProcedure
   
@@ -406,6 +534,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndSelect
   ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = 4------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = ---------
 ; EnableXP
