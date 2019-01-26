@@ -220,6 +220,7 @@ DeclareModule Widget
     Drawing.i
     Container.i
     CountItems.i[2]
+    Interact.i
     
     *Popup.Widget_S
     
@@ -2955,7 +2956,7 @@ Module Widget
       ; Draw arrows
         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
         ;Arrow(\Box\x+(\Box\Width-\Box\ArrowSize)/2, \Box\y+(\Box\Height-\Box\ArrowSize)/2, \Box\ArrowSize, Bool(\Vertical)+2, \Color\Frame[0])&$FFFFFF|Alpha, \Box\ArrowType)
-      Arrow(\Box\x+(\Box\Width-\Box\ArrowSize)/2, \Box\y+(\Box\Height-\Box\ArrowSize)/2, \Box\ArrowSize, Bool(\Box\Checked)*3, \Color\Front[State]&$FFFFFF|Alpha, \Box\ArrowType)
+      Arrow(\Box\x+(\Box\Width-\Box\ArrowSize)/2, \Box\y+(\Box\Height-\Box\ArrowSize)/2, \Box\ArrowSize, Bool(\Box\Checked)+2, \Color\Front[State]&$FFFFFF|Alpha, \Box\ArrowType)
       
       ; Draw frame
       If \Color\Frame[State] 
@@ -5033,9 +5034,10 @@ Module Widget
         
         Select EventType
           Case #PB_EventType_MouseLeave
-            If \Type <> #PB_GadgetType_ScrollBar
-              \Color\State = 0
-            EndIf
+            Select \Type 
+              Case #PB_GadgetType_Button, #PB_GadgetType_ComboBox
+                \Color\State = 0
+            EndSelect
             
             ;If at=-1
             ;  Debug "leave "+\Type +" "+ at
@@ -5073,9 +5075,10 @@ Module Widget
           Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter
             ; Debug "enter "+\Type
             
-            If \Type <> #PB_GadgetType_ScrollBar
+            Select \Type 
+              Case #PB_GadgetType_Button, #PB_GadgetType_ComboBox
               \Color\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
-            EndIf
+            EndSelect
             
             If ((at = 1 And IsStart(*This)) Or (at = 2 And IsStop(*This)))
               \Color[at]\State = 0
@@ -6502,5 +6505,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----------------------------------------0-----------------f-0n-----------------------------------------------------8--------------------
+; Folding = ----------------------------------------0-----------------f-0n--------------------------------------------------8--8--------------------
 ; EnableXP
