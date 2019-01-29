@@ -3,6 +3,8 @@ XIncludeFile "/Users/as/Documents/GitHub/Widget/widgets.pbi"
 ; Declare CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, WindowID = #False, Flag.q = #_Flag_ScreenCentered)
 ; XIncludeFile "CFE_Helper_Image.pbi"
 
+UseModule Widget
+
 Structure Copyies
   Widget.i
   Parent$
@@ -26,9 +28,155 @@ EndStructure
 
 Global NewMap Copyies.Copyies()
 
+Procedure.S GetWidgetEvents(Element)
+  Protected Result.S
+  
+;   With *CreateElement
+;     If IsElement(Element)
+;       PushListPosition(\This()) 
+;       ChangeCurrentElement(\This(), ElementID(Element))
+;       
+;       Result = Trim(\This()\Events$, "|")
+;       
+;       PopListPosition(\This())
+;     EndIf
+;   EndWith
+  
+  ProcedureReturn Result.S
+EndProcedure
 
+Procedure Type(Class.S) ;Returns gadget type from gadget name
+  
+  If     FindString(Class.S, LCase("Desktop")       ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GADGETTYPE_Desktop
+  ElseIf FindString(Class.S, LCase("PopupMenu")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GADGETTYPE_PopupMenu
+  ElseIf FindString(Class.S, LCase("Toolbar")       ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GADGETTYPE_Toolbar
+  ElseIf FindString(Class.S, LCase("Menu")          ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GADGETTYPE_Menu
+  ElseIf FindString(Class.S, LCase("Status")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GADGETTYPE_StatusBar
+  ElseIf FindString(Class.S, LCase("Window")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GADGETTYPE_Window
+  ElseIf FindString(Class.S, LCase("ButtonImage")   ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ButtonImage
+  ElseIf FindString(Class.S, LCase("String")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_String
+  ElseIf FindString(Class.S, LCase("Text")         ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Text
+  ElseIf FindString(Class.S, LCase("CheckBox")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_CheckBox
+  ElseIf FindString(Class.S, LCase("Option")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Option
+  ElseIf FindString(Class.S, LCase("ListView")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ListView
+  ElseIf FindString(Class.S, LCase("Frame")         ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Frame  
+  ElseIf FindString(Class.S, LCase("ComboBox")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ComboBox
+  ElseIf FindString(Class.S, LCase("Image")         ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Image
+  ElseIf FindString(Class.S, LCase("HyperLink")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_HyperLink
+  ElseIf FindString(Class.S, LCase("Container")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Container
+  ElseIf FindString(Class.S, LCase("ListIcon")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ListIcon
+  ElseIf FindString(Class.S, LCase("IPAddress")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_IPAddress
+  ElseIf FindString(Class.S, LCase("ProgressBar")   ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ProgressBar
+  ElseIf FindString(Class.S, LCase("ScrollBar")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ScrollBar
+  ElseIf FindString(Class.S, LCase("ScrollArea")    ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ScrollArea
+  ElseIf FindString(Class.S, LCase("TrackBar")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_TrackBar
+  ElseIf FindString(Class.S, LCase("Web")           ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Web
+  ElseIf FindString(Class.S, LCase("Button")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Button
+  ElseIf FindString(Class.S, LCase("Calendar")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Calendar
+  ElseIf FindString(Class.S, LCase("Date")          ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Date
+  ElseIf FindString(Class.S, LCase("Editor")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Editor
+  ElseIf FindString(Class.S, LCase("ExplorerList")  ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ExplorerList
+  ElseIf FindString(Class.S, LCase("ExplorerTree")  ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ExplorerTree
+  ElseIf FindString(Class.S, LCase("ExplorerCombo") ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_ExplorerCombo
+  ElseIf FindString(Class.S, LCase("Spin")          ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Spin
+  ElseIf FindString(Class.S, LCase("Tree")          ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Tree
+  ElseIf FindString(Class.S, LCase("Panel")         ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Panel
+  ElseIf FindString(Class.S, LCase("Splitter")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Splitter
+  ElseIf FindString(Class.S, LCase("MDI")           ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_MDI
+  ElseIf FindString(Class.S, LCase("Scintilla")     ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Scintilla
+  ElseIf FindString(Class.S, LCase("Shortcut")      ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Shortcut
+  ElseIf FindString(Class.S, LCase("Canvas")        ,-1,#PB_String_NoCase) :ProcedureReturn #PB_GadgetType_Canvas
+  EndIf
+  
+  ProcedureReturn #False
+EndProcedure
+
+Procedure.q Flag(Class.S) ;Returns gadget type from gadget name
+  Protected Result.q
+  
+  ;{- Ok
+  If     FindString(Class.S, LCase("SystemMenu")      ,-1,#PB_String_NoCase) : Result | #_Flag_SystemMenu 
+  ElseIf FindString(Class.S, LCase("MaximizeGadget")      ,-1,#PB_String_NoCase) : Result | #_Flag_MaximizeGadget
+  ElseIf FindString(Class.S, LCase("MinimizeGadget")      ,-1,#PB_String_NoCase) : Result | #_Flag_MinimizeGadget
+  ElseIf FindString(Class.S, LCase("Minimize")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_Minimize
+  ElseIf FindString(Class.S, LCase("Maximize")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_Maximize
+  ElseIf FindString(Class.S, LCase("SizeGadget")      ,-1,#PB_String_NoCase) : Result | #_Flag_SizeGadget
+  ElseIf FindString(Class.S, LCase("ScreenCentered")      ,-1,#PB_String_NoCase) : Result | #_Flag_ScreenCentered
+  ElseIf FindString(Class.S, LCase("WindowCentered")      ,-1,#PB_String_NoCase) : Result | #_Flag_WindowCentered
+  ElseIf FindString(Class.S, LCase("BorderLess")      ,-1,#PB_String_NoCase) : Result | #_Flag_BorderLess
+  ElseIf FindString(Class.S, LCase("Border")      ,-1,#PB_String_NoCase) 
+    
+    If Class.S = "#PB_Text_Border"
+      Result | #_Flag_Double
+    Else
+      Result | #_Flag_Border
+    EndIf
+    
+  ElseIf FindString(Class.S, LCase("Flat")      ,-1,#PB_String_NoCase) : Result | #_Flag_Flat
+  ElseIf FindString(Class.S, LCase("Raised")      ,-1,#PB_String_NoCase) : Result | #_Flag_Raised
+  ElseIf FindString(Class.S, LCase("Single")      ,-1,#PB_String_NoCase) : Result | #_Flag_Single
+  ElseIf FindString(Class.S, LCase("Double")      ,-1,#PB_String_NoCase) : Result | #_Flag_Double
+  ElseIf FindString(Class.S, LCase("Invisible")      ,-1,#PB_String_NoCase) : Result | #_Flag_Invisible
+  ElseIf FindString(Class.S, LCase("Normal")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_Normal
+  ElseIf FindString(Class.S, LCase("TitleBar")      ,-1,#PB_String_NoCase) : Result | #_Flag_TitleBar
+  ElseIf FindString(Class.S, LCase("Tool")      ,-1,#PB_String_NoCase) : Result | #_Flag_Tool
+  ElseIf FindString(Class.S, LCase("NoActivate")      ,-1,#PB_String_NoCase) : Result | #_Flag_NoActivate
+  ElseIf FindString(Class.S, LCase("NoGadgets")      ,-1,#PB_String_NoCase) : Result | #_Flag_NoGadgets
+  ElseIf FindString(Class.S, LCase("MultiLine")      ,-1,#PB_String_NoCase) : Result | #_Flag_MultiLine
+  ElseIf FindString(Class.S, LCase("Default")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_Default
+  ElseIf FindString(Class.S, LCase("Toggle")      ,-1,#PB_String_NoCase) : Result | #_Flag_Toggle
+  ElseIf FindString(Class.S, LCase("Numeric")      ,-1,#PB_String_NoCase) : Result | #_Flag_Numeric
+  ElseIf FindString(Class.S, LCase("Password")      ,-1,#PB_String_NoCase) : Result | #_Flag_Password
+  ElseIf FindString(Class.S, LCase("LowerCase")      ,-1,#PB_String_NoCase) : Result | #_Flag_LowerCase
+  ElseIf FindString(Class.S, LCase("UpperCase")      ,-1,#PB_String_NoCase) : Result | #_Flag_UpperCase
+    
+  ElseIf FindString(Class.S, LCase("Left")      ,-1,#PB_String_NoCase) : Result | #_Flag_Text_Left
+  ElseIf FindString(Class.S, LCase("Right")      ,-1,#PB_String_NoCase) : Result | #_Flag_Text_Right
+  ElseIf FindString(Class.S, LCase("Center")      ,-1,#PB_String_NoCase) : Result | #_Flag_Text_VCenter
+    
+  ElseIf FindString(Class.S, LCase("Editable")      ,-1,#PB_String_NoCase) : Result | #_Flag_Editable
+  ElseIf FindString(Class.S, LCase("Image")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("Underline")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("GridLines")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("Smooth")      ,-1,#PB_String_NoCase)    ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("Ticks")      ,-1,#PB_String_NoCase)     ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("UpDown")      ,-1,#PB_String_NoCase)    ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("ReadOnly")      ,-1,#PB_String_NoCase) : Result | #_Flag_ReadOnly
+  ElseIf FindString(Class.S, LCase("WordWrap")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("ClickSelect")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("MultiSelect")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("HeaderDragDrop")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("FullRowSelect")      ,-1,#PB_String_NoCase)  ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("NoFiles")      ,-1,#PB_String_NoCase)        ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("NoFolders")      ,-1,#PB_String_NoCase)      ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("NoParentFolder")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("NoDirectoryChange")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("NoDriveRequester")      ,-1,#PB_String_NoCase)  ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("NoSort")      ,-1,#PB_String_NoCase)            ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("NoMyDocuments")      ,-1,#PB_String_NoCase)     ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("AutoSort")      ,-1,#PB_String_NoCase)          ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("HiddenFiles")      ,-1,#PB_String_NoCase)       ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("AlwaysShowSelection")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("NoLines")      ,-1,#PB_String_NoCase)             ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("NoButtons")      ,-1,#PB_String_NoCase)           ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("CheckBoxes")      ,-1,#PB_String_NoCase) : Result | #_Flag_CheckBoxes
+  ElseIf FindString(Class.S, LCase("ThreeState")      ,-1,#PB_String_NoCase) : Result | #_Flag_ThreeState
+  ElseIf FindString(Class.S, LCase("Vertical")      ,-1,#PB_String_NoCase) : Result | #_Flag_Vertical
+  ElseIf FindString(Class.S, LCase("Separator")      ,-1,#PB_String_NoCase) : Result | #_Flag_Separator
+  ElseIf FindString(Class.S, LCase("FirstFixed")      ,-1,#PB_String_NoCase) : Result | #_Flag_FirstFixed
+  ElseIf FindString(Class.S, LCase("SecondFixed")      ,-1,#PB_String_NoCase) : Result | #_Flag_SecondFixed
+  ElseIf FindString(Class.S, LCase("ClipMouse")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("Keyboard")      ,-1,#PB_String_NoCase)  ;: Result | #_Flag_
+  ElseIf FindString(Class.S, LCase("DrawFocus")      ,-1,#PB_String_NoCase) ;: Result | #_Flag_
+  EndIf
+  ;}
+  
+  ProcedureReturn Result
+EndProcedure
+
+;- 
 Procedure UpdateWidgetFlag(Panel, pWidget)
-  Protected i, j, Buffer$, Parent, Widget
+  Protected i, j, Buffer$, *Parent.Widget_S, *Widget.Widget_S
   ; Каковы возможные флаги для выбранного гаджета?
   ;Buffer$=MGadget(Gadgets(GetGadgetData(IDGadget))\IdModel)\Flag$
   ClearGadgetItems(pWidget)
@@ -38,11 +186,11 @@ Procedure UpdateWidgetFlag(Panel, pWidget)
     EndIf
   Next
   
-  While Enumerate(@Parent, Panel, 0)
-    Buffer$ +"Global "+ GetWidgetEvents(Parent)+"=-1"
+  While Enumerate(@*Parent, Panel, 0)
+    Buffer$ +"Global "+ GetWidgetEvents(*Parent)+"=-1"
     
-    While Enumerate(@Widget, WidgetID(Parent))
-      If Buffer$ : Buffer$+", " : EndIf : Buffer$ +GetWidgetEvents(Widget)+"=-1"
+    While Enumerate(@*Widget, *Parent)
+      If Buffer$ : Buffer$+", " : EndIf : Buffer$ +GetWidgetEvents(*Widget)+"=-1"
     Wend
     
     Buffer$ +#CRLF$
@@ -156,9 +304,9 @@ Procedure LoadGadgetImage(Gadget, Directory$)
                   If FindString(LCase(PackEntryName.S), "cursor")
                     
                     ;SetGadgetAttribute(Gadget, #PB_Button_Image, Image)
-                    AddGadgetWidgetItem(Gadget, 0, PackEntryName.S, Image)
+                    AddItem(Gadget, 0, PackEntryName.S, Image)
                   Else
-                    AddGadgetWidgetItem(Gadget, -1, PackEntryName.S, Image)
+                    AddItem(Gadget, -1, PackEntryName.S, Image)
                   EndIf
                 EndIf
               EndIf    
@@ -274,35 +422,35 @@ Procedure.S Help(Class.S)
     Case 0
       Result.S = "Элемент не выбран"
       
-    Case #_Type_Date
+    Case #PB_GadgetType_Date
       Result.S = "Первая строка"+#CRLF$+
                  "Вторая строка"
       
-    Case #_Type_Window
+    Case #PB_GADGETTYPE_Window
       Result.S = "Это окно (Window)"
       
-    Case #_Type_Button
+    Case #PB_GadgetType_Button
       Result.S = "Это кнопка (Button)"
       
-    Case #_Type_ButtonImage
+    Case #PB_GadgetType_ButtonImage
       Result.S = "Это кнопка картинка (ButtonImage)"
       
-      ;     Case #_Type_Calendar
+      ;     Case #PB_GADGETTYPE_Calendar
       ;       Result.S = "Это календарь (Calendar)"
       
-      ;     Case #_Type_Canvas
+      ;     Case #PB_GADGETTYPE_Canvas
       ;       Result.S = "Это холст для рисования (Canvas)"
       
-    Case #_Type_CheckBox
+    Case #PB_GadgetType_CheckBox
       Result.S = "Это переключатель (CheckBox)"
       
-    Case #_Type_Container
+    Case #PB_GadgetType_Container
       Result.S = "Это контейнер для других элементов (Container)"
       
-    Case #_Type_ComboBox
+    Case #PB_GadgetType_ComboBox
       Result.S = "Это выподающий список (ComboBox)"
       
-    Case #_Type_Editor
+    Case #PB_GadgetType_Editor
       Result.S = "1строка 2строка 3строка 4строка 5строка 6строка 7строка 8строка 9строка 10строка 11строка 12строка 13строка 14строка 15строка 16строка 17строка 18строка 19строка 20строка 21строка"
       
     Default
@@ -376,9 +524,9 @@ Procedure.S CreateType_PB(Type)
   Protected Result.S
   
   Select Type
-    Case #_Type_Window : Result = "OpenWindow"
-    Case #_Type_Button : Result = "ButtonGadget"
-    Case #_Type_ButtonImage : Result = "ButtonImageGadget"
+    Case #PB_GADGETTYPE_Window : Result = "OpenWindow"
+    Case #PB_GadgetType_Button : Result = "ButtonGadget"
+    Case #PB_GadgetType_ButtonImage : Result = "ButtonImageGadget"
   EndSelect
   
   ProcedureReturn Result
@@ -719,12 +867,12 @@ EndProcedure
 Procedure CreateNewWidget(Widget) ; Then create new Widget
   Protected Item, State
   
-  Item = AddGadgetWidgetItem(Property_Widget, #PB_Any, WidgetClass(WidgetType(Widget))+" ("+GetWidgetClass(Widget)+")") 
+  Item = AddItem(Property_Widget, #PB_Any, WidgetClass(WidgetType(Widget))+" ("+GetWidgetClass(Widget)+")") 
   SetItemData(Property_Widget, Item, Widget)
   SetData(Widget, Item)
   
   State = GetWidgetState(IDE_Widgets) : If State = 0 : State = 1 : EndIf
-  AddGadgetWidgetItem(IDE_Canvas_0, #PB_Any, "", GetWidgetItemImage(IDE_Widgets, State))
+  AddItem(IDE_Canvas_0, #PB_Any, "", GetWidgetItemImage(IDE_Widgets, State))
 EndProcedure
 
 Procedure ResetNewWidget()
@@ -762,7 +910,7 @@ Procedure DeleteNewWidget(Widget)
   
   ;   ClearWidgetItems(Property_Widget)
   ;   While Enumerate(@Enumerate, IDE_cp, 0)
-  ;     AddGadgetWidgetItem(Property_Widget, #PB_Any, WidgetClass(WidgetType(Enumerate))+" ("+Str(Enumerate)+")")
+  ;     AddItem(Property_Widget, #PB_Any, WidgetClass(WidgetType(Enumerate))+" ("+Str(Enumerate)+")")
   ;   Wend
 EndProcedure
 
@@ -788,12 +936,12 @@ Procedure AddNewWidget(Type, Parent, Item, Reset.b)
     If IsWidget(Parent) : OpenWidgetList(Parent, Item) : EndIf
     
     Select Type 
-      Case #_Type_Container, #_Type_ScrollArea, #_Type_Panel, 
-           #_Type_Splitter, #_Type_ListView, #_Type_ListIcon, #_Type_Image 
+      Case #PB_GadgetType_Container, #PB_GadgetType_ScrollArea, #PB_GadgetType_Panel, 
+           #PB_GadgetType_Splitter, #PB_GadgetType_ListView, #PB_GadgetType_ListIcon, #PB_GadgetType_Image 
         Width = 220
         Height = 140
         
-      Case #_Type_Window
+      Case #PB_GADGETTYPE_Window
         Width = 350
         Height = 250
         
@@ -820,11 +968,11 @@ Procedure AddNewWidget(Type, Parent, Item, Reset.b)
     ;SetFont(Widget, FontID(LoadFont(#PB_Any, "Anonymous Pro Minus", 19*0.5, #PB_Font_HighQuality)))
         
     Select Type 
-      Case #_Type_Container, #_Type_ScrollArea, #_Type_Panel, #_Type_Splitter
+      Case #PB_GadgetType_Container, #PB_GadgetType_ScrollArea, #PB_GadgetType_Panel, #PB_GadgetType_Splitter
         img_point = Mosaic(Steps, 0,0,800,600)
         SetBackGroundImage(Widget, img_point)
         
-      Case #_Type_Window
+      Case #PB_GADGETTYPE_Window
         img_point = Mosaic(Steps, 0,0,800,600)
         SetBackGroundImage(Widget, img_point)
         SetImage(Widget, GetIcon("Widgets", "_"))
@@ -1071,10 +1219,10 @@ Procedure NewWidgetEvents(Event.q, EventWidget)
       WidgetType = WidgetType(EventWidget)
       
       Select WidgetType 
-        Case #_Type_Window
+        Case #PB_GADGETTYPE_Window
           ;SetText(IDE_Scintilla_0, Code::Code_Event_Procedure(0, WidgetClass(WidgetType)+"_"+Str(EventWidget)+"_", "Create", ""))
-        Case #_Type_Button
-          Item = AddGadgetWidgetItem(Events_LeftClick, #PB_Any, GetWidgetClass(CheckedWidget)+"_LeftClick_Event")
+        Case #PB_GadgetType_Button
+          Item = AddItem(Events_LeftClick, #PB_Any, GetWidgetClass(CheckedWidget)+"_LeftClick_Event")
           SetState(EventWidget, Item)
           
         Default
@@ -1279,13 +1427,13 @@ Procedure IDE_Property_Events(Event.q, EventWidget)
             
             Select EventWidget 
               Case Events_LeftClick
-                Item = AddGadgetWidgetItem(EventWidget, 0, GetWidgetClass(CheckedWidget)+"_LeftClick_Event")
+                Item = AddItem(EventWidget, 0, GetWidgetClass(CheckedWidget)+"_LeftClick_Event")
                 SetState(EventWidget, Item)
                 
                 SetEvents(CheckedWidget, "LeftClick")
                 
               Case Events_RightClick
-                Item = AddGadgetWidgetItem(EventWidget, 0, GetWidgetClass(CheckedWidget)+"_RightClick_Event")
+                Item = AddItem(EventWidget, 0, GetWidgetClass(CheckedWidget)+"_RightClick_Event")
                 SetState(EventWidget, Item)
                 
                 SetEvents(CheckedWidget, "RightClick")
@@ -1462,7 +1610,7 @@ Procedure IDE_Menu_Events(Event.q, EventWidget)
           LoadFromFile(File$)
           
         Case #IDE_MenuItem_New    
-          AddNewWidget(#_Type_Window, IDE_cp, 0, #True)
+          AddNewWidget(#PB_GADGETTYPE_Window, IDE_cp, 0, #True)
           
         Case #IDE_MenuItem_Delete : DeleteNewWidget(CheckedWidget)
         Case #IDE_MenuItem_First  : SetPosition(CheckedWidget, #_Widget_PositionFirst)
@@ -1622,7 +1770,7 @@ Procedure IDE_Events(Event.q, EventWidget)
             Case "Form" : GeneratePBForm(EventWidget)
             Case "Code" : GeneratePBCode(EventWidget)
             Case "V_Code"
-              ;AddGadgetWidgetItem(IDE_Canvas_0,-1,"Button",png, #_Flag_Border|#_Flag_Image_Left|#_Flag_Text_Center)
+              ;AddItem(IDE_Canvas_0,-1,"Button",png, #_Flag_Border|#_Flag_Image_Left|#_Flag_Text_Center)
               
           EndSelect
           
@@ -1630,7 +1778,7 @@ Procedure IDE_Events(Event.q, EventWidget)
 ;             Case 0 : GeneratePBForm(EventWidget)
 ;             Case 1 : GeneratePBCode(EventWidget)
 ; ;             Case 2 
-; ;               AddGadgetWidgetItem(IDE_Canvas_0,-1,"Button",png, #_Flag_Border|#_Flag_Image_Left|#_Flag_Text_Center)
+; ;               AddItem(IDE_Canvas_0,-1,"Button",png, #_Flag_Border|#_Flag_Image_Left|#_Flag_Text_Center)
 ;           EndSelect
       EndSelect
       
@@ -1730,12 +1878,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ;   If InitScintilla()
     ;     IDE_Scintilla_Gadget = ScintillaGadget(#PB_Any,0,0,0,0,0)
     ;     
-    ;     BindGadgetWidgetEvent(IDE_cp, @IDE_Scintilla_0_Events(), #_Event_Change)
-    ;     BindGadgetWidgetEvent(IDE_Scintilla_0, @IDE_Scintilla_0_Events(), #_Event_Size)
+    ;     BindEvent(IDE_cp, @IDE_Scintilla_0_Events(), #_Event_Change)
+    ;     BindEvent(IDE_Scintilla_0, @IDE_Scintilla_0_Events(), #_Event_Size)
     ;   EndIf
     
-    Define ei=AddGadgetWidgetItem(IDE_cp, -1, "V_Code")
-    IDE_Canvas_0 = CreateWidget(#_Type_Canvas, #PB_Any,0,0,0,0,"Canvas",-1,-1,-1,#_Flag_BorderLess)   
+    Define ei=AddItem(IDE_cp, -1, "V_Code")
+    IDE_Canvas_0 = CreateWidget(#PB_GadgetType_Canvas, #PB_Any,0,0,0,0,"Canvas",-1,-1,-1,#_Flag_BorderLess)   
     SetBackGroundImage(IDE_Canvas_0, img_point)
     SetItemData(IDE_cp, ei, IDE_Canvas_0)
     
@@ -1847,7 +1995,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     
-    AddNewWidget(#_Type_Window, IDE_cp, 0, #True)
+    AddNewWidget(#PB_GADGETTYPE_Window, IDE_cp, 0, #True)
     
     ;     Define File$ = "CFE_Read_Test(variab).pb"
     ;     If File$
@@ -1873,6 +2021,6 @@ CompilerIf #PB_Compiler_IsMainFile
   End
   
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --------------------------------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = ---------------------------------
 ; EnableXP

@@ -15,6 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global Window_0, Canvas_0, winBackColor = $FFFFFF
   Global NewMap Widgets.i()
   Global *Widget.Widget_S, *Parent.Widget_S, x,y
+  Global *Window.Widget_S
   
   If CreateImage(5, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(5))
     DrawingMode(#PB_2DDrawing_AllChannels) 
@@ -26,15 +27,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     StopDrawing()
   EndIf
   
-;   If CreateImage(4, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(4))
-;     DrawingMode(#PB_2DDrawing_AllChannels) 
-;     For x=0 To 600 Step 4
-;       For y=0 To 600 Step 4
-;         Line(x, y, 1,1, $FF000000)
-;       Next y
-;     Next x
-;     StopDrawing()
-;   EndIf
+  ;   If CreateImage(4, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(4))
+  ;     DrawingMode(#PB_2DDrawing_AllChannels) 
+  ;     For x=0 To 600 Step 4
+  ;       For y=0 To 600 Step 4
+  ;         Line(x, y, 1,1, $FF000000)
+  ;       Next y
+  ;     Next x
+  ;     StopDrawing()
+  ;   EndIf
   
   Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
@@ -122,25 +123,25 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
   EndProcedure
   
-  Procedure.i Draws(*Parent.Widget_S)
-    Draw(*Parent)
-    
-    With *Parent
-      ; Draw Childrens
-      ;If ListSize(\Childrens())
-        ForEach \Childrens() 
-          If Not \Childrens()\Hide And \Childrens()\i = Bool(*Parent\Type = #PB_GadgetType_Panel) * *Parent\index[2]
-            Draws(\Childrens()) 
-          EndIf
-        Next
-      ;EndIf
-    EndWith
-  EndProcedure
+;   Procedure.i Draws(*Parent.Widget_S)
+;     Draw(*Parent)
+;     
+;     With *Parent
+;       ; Draw Childrens
+;       If ListSize(\Childrens())
+;       ForEach \Childrens() 
+;         If Not \Childrens()\Hide And \Childrens()\p_i = Bool(*Parent\Type = #PB_GadgetType_Panel) * *Parent\index[2]
+;           Draws(\Childrens()) 
+;         EndIf
+;       Next
+;       EndIf
+;     EndWith
+;   EndProcedure
   
   Procedure ReDraw(Canvas)
     If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-;       DrawingMode(#PB_2DDrawing_Default)
-;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+      ;       DrawingMode(#PB_2DDrawing_Default)
+      ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
       FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
       
       Draws(Widgets("Splitter"))
@@ -212,11 +213,24 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ProcedureReturn Result.S
   EndProcedure
   
+  
   Procedure Widgets_CallBack()
     ; Debug ""+EventType() +" "+ WidgetEventType() +" "+ EventWidget() +" "+ EventGadget() +" "+ EventData()
     Protected EventWidget = EventWidget()
     
     Select WidgetEvent()
+      Case #PB_EventType_LeftClick
+        Debug 7777777
+        *Window = Popup(EventWidget, #PB_Ignore,#PB_Ignore,280,130)
+        
+        OpenList(*Window)
+        Widgets("Widgets_0") = Tree(0, 0, 280, 130, #PB_Flag_NoButtons|#PB_Flag_NoLines)
+        LoadControls(Widgets("Widgets_0"), GetCurrentDirectory()+"Themes/")
+        SetState(Widgets("Widgets_0"), 1)
+        CloseList()
+        
+        ; Draw_Popup(*Window)
+        
       Case #PB_EventType_StatusChange
         Select EventWidget
           Case Widgets("Widgets") 
@@ -248,25 +262,26 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ; ReDraw(Canvas_0)
   EndProcedure
   
-  Procedure CallBacks(*This.Widget_S, EventType, MouseX, MouseY)
-    Protected Repaint 
-    
-    If Not *This\Hide
-      Repaint | CallBack(*This, EventType, MouseX, MouseY)
-      
-      With *This
-        If LastElement(\Childrens())
-        Repeat 
-          If Not \Childrens()\Hide And \Childrens()\i = Bool(*This\Type = #PB_GadgetType_Panel) * *This\index[2]
-            Repaint | CallBacks(\Childrens(), EventType, MouseX, MouseY)
-          EndIf
-        Until Not PreviousElement(\Childrens()) 
-        EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn 1
-  EndProcedure
+;   Procedure CallBacks(*This.Widget_S, EventType, MouseX, MouseY)
+;     Protected Repaint 
+;     
+;     If Not *This\Hide
+;       Repaint | CallBack(*This, EventType, MouseX, MouseY)
+;       
+;       With *This
+;         ;         If LastElement(\Childrens())
+;         ;         Repeat 
+;         ForEach \Childrens()
+;           ;If Not \Childrens()\Hide And \Childrens()\p_i = Bool(*This\Type = #PB_GadgetType_Panel) * *This\index[2]
+;           Repaint | CallBacks(\Childrens(), EventType, MouseX, MouseY)
+;           ;EndIf
+;         Next ; Until Not PreviousElement(\Childrens()) 
+;              ;EndIf
+;       EndWith
+;     EndIf
+;     
+;     ProcedureReturn 1
+;   EndProcedure
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint, *This.Widget_S
@@ -276,21 +291,20 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     
-;     *Value\Active = Widgets("Form_0_String_0")
-;     If *Value\Active And CallBack(*Value\Active, EventType, MouseX, MouseY)
-;       If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-;         
-;         Draw(*Value\Active)
-;         
-;         StopDrawing()
-;       EndIf
-;     EndIf
-    
+    ;     *Value\Active = Widgets("Form_0_String_0")
+    ;     If *Value\Active And CallBack(*Value\Active, EventType, MouseX, MouseY)
+    ;       If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+    ;         
+    ;         Draw(*Value\Active)
+    ;         
+    ;         StopDrawing()
+    ;       EndIf
+    ;     EndIf
     
     
     Select EventType
         ;Case #PB_EventType_Repaint : Repaint = EventData()
-      Case #PB_EventType_Resize : Repaint = 1
+      Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) : Repaint = 1
         Resize(Widgets("Splitter"), #PB_Ignore, #PB_Ignore, Width-2, Height-2)
       Default
         
@@ -393,10 +407,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     ; panel tab new forms
     AddItem(Widgets("Panel"), -1, "Form")
+    
     Widgets("Form_0") = Window(20, 20, 480, 410, "Window_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0"), 0) : *Widget = Widgets("Form_0") : SetImage(*Widget, 5)
     ;Widgets("Form_0_String_0") = String(340, 10, 100, 26, "String_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_String_0"), 1)
     Widgets("Form_0_Text_0") = Text(120, 10, 100, 101, "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Text_0"), 2)
     Widgets("Form_0_Frame_0") = Frame(230, 10, 100, 101, "Frame_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Frame_0"), 3)
+    
     Widgets("Container_0") = Container(10, 120, 120, 150, #PB_Flag_AnchorsGadget) : SetData(Widgets("Container_0"), 4) : *Widget = Widgets("Container_0")  : SetImage(*Widget, 5)
     SetColor(Widgets("Container_0"), #PB_Gadget_BackColor, $FF00CDFF)
     Widgets("Form_0_Container_0_Option_0") = Option(10, 10, 100, 21, "Option_3", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Option_0"), 16)
@@ -404,21 +420,39 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Widgets("Form_0_Container_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_1"), 5)
     Widgets("Form_0_Container_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_2"), 6)
     CloseList()
-    Widgets("Container_1") = Container(140, 120, 120, 150, #PB_Flag_AnchorsGadget) : SetData(Widgets("Container_1"), 7) : *Widget = Widgets("Container_1")  : SetImage(*Widget, 5)
+    
+    Widgets("Container_1") = Panel(140, 120, 120, 150, #PB_Flag_AnchorsGadget) 
+    AddItem(Widgets("Container_1"), -1, "Panel_0") 
+    SetData(Widgets("Container_1"), 7) : *Widget = Widgets("Container_1")  : SetImage(*Widget, 5)
     SetColor(Widgets("Container_1"), #PB_Gadget_BackColor, $FF0CDF0F)
-    Widgets("Form_0_Container_1_Option_0") = Option(10, 10, 100, 21, "Option_5", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_0"), 18)
-    Widgets("Form_0_Container_1_Option_1") = Option(10, 35, 100, 21, "Option_6", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_1"), 19)
+     Widgets("Form_0_Container_1_Option_0") = Option(10, 10, 100, 21, "Option_5", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_0"), 18)
+     Widgets("Form_0_Container_1_Option_1") = Option(10, 35, 100, 21, "Option_6", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_1"), 19)
+    AddItem(Widgets("Container_1"), -1, "Panel_1") 
     Widgets("Form_0_Container_1_Button_3") = Button(10, 60, 100, 30, "Button_3", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_3"), 8)
     Widgets("Form_0_Container_1_Button_4") = Button(10, 110, 100, 30, "Button_4", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_4"), 9)
     CloseList()
-    Widgets("Form_0_Button_5") = Button(10, 10, 100, 26, "Button_5", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Button_5"), 10)
+    
+    Widgets("Form_0_ComboBox_5") = ComboBox(10, 10, 100, 26, #PB_Flag_AnchorsGadget) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_0_item", -1 )
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_1_item", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_2_item", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_3_item", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_4_item", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_5_item", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_6_item", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_7_item", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_8_item", -1) 
+    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_9_item", -1) 
+    SetData(Widgets("Form_0_ComboBox_5"), 10)
+    SetState(Widgets("Form_0_ComboBox_5"), 1)
+    
     Widgets("Form_0_Option_0") = Option(10, 40, 100, 21, "Option_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_0"), 11)
     Widgets("Form_0_Option_1") = Option(10, 65, 100, 21, "Option_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_1"), 12)
     Widgets("Form_0_Option_2") = Option(10, 90, 100, 21, "Option_2", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_2"), 13)
     SetState(Widgets("Form_0_Option_0"), 1)
     
     Widgets("Form_0_CheckBox_0") = CheckBox(340, 40, 100, 21, "CheckBox_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_CheckBox_0"), 14)
-    Widgets("Form_0_CheckBox_1") = CheckBox(340, 65, 100, 21, "CheckBox_1", #PB_Flag_AnchorsGadget|#PB_Flag_ThreeState) : SetData(Widgets("Form_0_CheckBox_1"), 15)
+    Widgets("Form_0_CheckBox_1") = CheckBox(340, 65, 100, 21, "CheckBox_1", #PB_Flag_AnchorsGadget|#PB_CheckBox_ThreeState) : SetData(Widgets("Form_0_CheckBox_1"), 15)
     SetState(Widgets("Form_0_CheckBox_0"), #PB_Checkbox_Checked)
     SetState(Widgets("Form_0_CheckBox_1"), #PB_Checkbox_Inbetween)
     Widgets("Form_0_String_0") = String(10, 280, 450, 26, "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_String_0"), 1)
@@ -442,7 +476,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     AddItem(Widgets("Inspector"), -1, "Container_1", -1, 1) 
     AddItem(Widgets("Inspector"), -1, "Button_3", -1, 2) 
     AddItem(Widgets("Inspector"), -1, "Button_4", -1, 2) 
-    AddItem(Widgets("Inspector"), -1, "Button_5", -1, 1) 
+    AddItem(Widgets("Inspector"), -1, "ComboBox_5", -1, 1) 
     AddItem(Widgets("Inspector"), -1, "Option_0", -1, 1) 
     AddItem(Widgets("Inspector"), -1, "Option_1", -1, 1) 
     AddItem(Widgets("Inspector"), -1, "Option_2", -1, 1) 

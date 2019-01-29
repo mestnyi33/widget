@@ -185,6 +185,7 @@ Module TrackBar
     If *This
       With *This
         \Canvas\Gadget = Gadget
+        
         \Bar = Widget::Track(0,0, Width, Height, Min, Max, Flag)
         
         Draw(*This)

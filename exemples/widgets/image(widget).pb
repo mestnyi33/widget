@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; Get interaction with the scroll Widget
         CallBack(*Image_0, EventType())
         
-        If WidgetEventType() = #PB_EventType_Change
+        If WidgetEvent() = #PB_EventType_Change And EventWidget()
           Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_Bar_Direction)
           
           Select EventWidget()

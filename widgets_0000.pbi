@@ -10,9 +10,9 @@ DeclareModule Widget
     Type.i
     Event.i
     *Function
-     *This.Widget_S
-;     *Last.Widget_S
-;    *Widget.Widget_S
+    *This.Widget_S
+    ;     *Last.Widget_S
+    ;    *Widget.Widget_S
     *Active.Widget_S
     *Focus.Widget_S
   EndStructure
@@ -224,7 +224,7 @@ DeclareModule Widget
     Container.i
     CountItems.i[2]
     Interact.i
-    
+    ;Event.i
     State.i
     
     *Popup.Widget_S
@@ -533,9 +533,7 @@ DeclareModule Widget
   Declare.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=0)
   Declare.i AddItem(*This.Widget_S, Item.i, Text.s, Image.i=-1, Flag.i=0)
   
-  Declare.i Draws(*Parent.Widget_S)
   Declare.i Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
-  Declare.i CallBacks(*This.Widget_S, EventType.i, MouseX.i, MouseY.i)
   Declare.i Updates(*Scroll.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
   Declare.i Arrow(X,Y, Size, Direction, Color, Style.b = 1, Length = 1)
 EndDeclareModule
@@ -1742,11 +1740,6 @@ Module Widget
       Protected clip_x = \clip\x+\Box\Size[1]+3
       Protected clip_width = \clip\width-\Box\Size[1]-\Box\Size[2]-6
       
-      ; draw background
-      If \Color\Back<>-1
-        DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox(\X[2], \Y[2], \Width[2], \Height[2], \Radius, \Radius, $FFFFFF&$FFFFFF|\color\alpha<<24)
-      EndIf
       
       If \width[2]>(\Box\width[1]+\Box\width[2]+4)
         ClipOutput(clip_x, \clip\y, clip_width, \clip\height)
@@ -1795,9 +1788,6 @@ Module Widget
                 DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
               EndIf
               BoxGradient( \Vertical, \items()\X, \items()\Y+Bool(State_3 = 2)*2, \items()\Width, \items()\Height-py-1-Bool(State_3 = 2)*(\items()\Height-4), \Color\Fore[State_3], \Color\Back[State_3], \Radius, \color\alpha)
-              If State_3 = 2
-                BoxGradient( \Vertical, \items()\X, \items()\Y+2, \items()\Width, \items()\Height-py, \Color\Fore[State_3], \Color\Front[State_3], \Radius, \color\alpha)
-              EndIf
             EndIf
             
             ; Draw string
@@ -3215,22 +3205,6 @@ Module Widget
       EndWith 
     EndIf
   EndProcedure
-  
-  Procedure.i Draws(*Parent.Widget_S)
-    Draw(*Parent)
-    
-    With *Parent
-      ; Draw Childrens
-      If ListSize(\Childrens())
-        ForEach \Childrens() 
-          If Not \Childrens()\Hide And \Childrens()\p_i = Bool(*Parent\Type = #PB_GadgetType_Panel) * *Parent\index[2]
-            Draws(\Childrens()) 
-          EndIf
-        Next
-      EndIf
-    EndWith
-  EndProcedure
-  
   
   ;-
   Procedure Draw_Popup(*This.Widget_S)
@@ -5202,7 +5176,7 @@ Module Widget
     
     If *This > 0
       
-      ;; *Value\This = *This
+      *Value\This = *This
       *Value\Type = EventType
       
       With *This
@@ -5233,18 +5207,18 @@ Module Widget
         EndIf
         
         If EventType = #PB_EventType_MouseMove
-          
           ; items at point
           ForEach \items()
             If \items()\Drawing
               If \at=-1 And (MouseScreenX>\items()\X And MouseScreenX=<\items()\X+\items()\Width And 
-                  MouseScreenY>\items()\Y And MouseScreenY=<\items()\Y+\items()\Height)
+                             MouseScreenY>\items()\Y And MouseScreenY=<\items()\Y+\items()\Height)
                 
                 If \index[1] <> \items()\index
                   \index[1] = \items()\index
                   If Not \items()\State
                     \items()\State = 1
                   EndIf
+                  \adress = @\items()
                   
                   If \Change[1] <> \index[1]
                     
@@ -5269,21 +5243,22 @@ Module Widget
         
         Select EventType
           Case #PB_EventType_Focus : \Focus = 1 : Repaint = 1
-            Debug "events() Focus "+\Type
+            ; Debug "events() Focus "+\Type
             
           Case #PB_EventType_LostFocus : \Focus = 0 : Repaint = 1
-            Debug "events() LostFocus "+\Type
+            ; Debug "events() LostFocus "+\Type
             
           Case #PB_EventType_LeftButtonUp : Repaint = 1 : delta = 0
-            Debug "events() LeftButtonUp "+\Type
+            ; Debug "events() LeftButtonUp "+\Type
             
           Case #PB_EventType_LeftClick 
-            Debug "events() LeftClick "+\Type
+            ; Debug "events() LeftClick "+\Type
             If \Type = #PB_GadgetType_Button
               PostEvent(#PB_Event_Widget, *Value\Window, *This, #PB_EventType_LeftClick, \index[1])
-              ;  PostEvent(#PB_Event_Gadget, *Value\Window, *Value\Gadget, #PB_EventType_Repaint)
+              PostEvent(#PB_Event_Gadget, *Value\Window, *Value\Gadget, #PB_EventType_Repaint)
               Repaint = #True
             EndIf
+            
             
           Case #PB_EventType_LeftDoubleClick 
             If \Type = #PB_GadgetType_ScrollBar
@@ -5300,7 +5275,7 @@ Module Widget
             EndIf
             
           Case #PB_EventType_LeftButtonDown
-            Debug "events() LeftButtonDown "+\Type
+            ; Debug "events() LeftButtonDown "+\Type
             
             If \Type = #PB_GadgetType_ComboBox
               \Box\Checked ! 1
@@ -5321,7 +5296,7 @@ Module Widget
               Repaint = SetState(*This, 1)
               
             ElseIf \Type = #PB_GadgetType_Panel
-                
+              
               Protected State
               
               Select at
@@ -5359,15 +5334,14 @@ Module Widget
                   EndIf
                   
                   \Page\Pos = State
-                   Repaint = 1
-                 
+                  Repaint = 1
+                  
                 Default
-                  If \index[1]<>-1
-                    Repaint = SetState(*This, \index[1])
-                  EndIf
+                  Repaint = SetState(*This, \index[1])
               EndSelect
               
-            
+              
+              
             ElseIf \Type = #PB_GadgetType_CheckBox
               Repaint = SetState(*This, Bool(\Box\Checked=#PB_Checkbox_Checked) ! 1)
               
@@ -5414,14 +5388,14 @@ Module Widget
               EndIf
             EndIf
             
-            ; scrollbar & splitter
-            If at = 3                                                  ; Thumb button
-              If \Vertical
-                delta = MouseScreenY - \Thumb\Pos
-              Else
-                delta = MouseScreenX - \Thumb\Pos
-              EndIf
-            EndIf
+            Select at
+              Case 3                                                  ; Thumb button
+                If \Vertical
+                  delta = MouseScreenY - \Thumb\Pos
+                Else
+                  delta = MouseScreenX - \Thumb\Pos
+                EndIf
+            EndSelect
             
           Case #PB_EventType_MouseMove
             If delta
@@ -5432,10 +5406,10 @@ Module Widget
               EndIf
               
               Repaint = SetState(*This, Pos(*This, Repaint))
-            Else
-              If at <> 3
-                SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \Cursor[1])
-              EndIf
+              ;             Else
+              ;               If \Type = #PB_GadgetType_Splitter And at <> 3
+              ;                 SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \Cursor[1])
+              ;               EndIf
             EndIf
             
           Case #PB_EventType_MouseWheel
@@ -5458,16 +5432,11 @@ Module Widget
               Repaint = SetState(*This, (\Page\Pos + Repaint))
             EndIf  
             
-          Case #PB_EventType_MouseEnter
-            ;Debug "events() MouseEnter "+\Type
-            
-          Case #PB_EventType_MouseLeave
-            ;Debug "events() MouseLeave "+\Type
-            
         EndSelect
         
         Select EventType
           Case #PB_EventType_MouseLeave
+            ; Debug "leave "+\Type +" "+ at
             
             Select \Type 
               Case #PB_GadgetType_Button, #PB_GadgetType_ComboBox, #PB_GadgetType_HyperLink
@@ -5494,17 +5463,21 @@ Module Widget
             EndIf
             
             ; Debug \Type
-            ; For list
-            If \Type <> #PB_GadgetType_Panel And \index[1]>=0 And SelectElement(\items(), \index[1])
-              If \items()\State = 1
-                \items()\State = 0
-                \index[1] =- 1
-              EndIf
-            EndIf
+            ;             ; For list
+            ;             If \Type <> #PB_GadgetType_Panel
+            ;               If \adress
+            ;                 ChangeCurrentElement(\items(), \adress)
+            ;                 If \items()\State = 1
+            ;                   \items()\State = 0
+            ;                 EndIf
+            ;                 \index[1] =- 1
+            ;               EndIf
+            ;             EndIf
             
             Repaint = #True
             
           Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, #PB_EventType_MouseEnter
+            ; Debug "enter "+\Type
             
             Select \Type 
               Case #PB_GadgetType_Button, #PB_GadgetType_ComboBox, #PB_GadgetType_HyperLink
@@ -5519,13 +5492,8 @@ Module Widget
             If at>0
               ; Debug "enter "+*This +" "+ \Type
               \Color[at]\State = 1+Bool(EventType=#PB_EventType_LeftButtonDown)
-              ;;Debug at
-              If \Type = #PB_GadgetType_Property
-                If at = 3
-                \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-                SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
-                EndIf
-              ElseIf ((\Type = #PB_GadgetType_Splitter Or \Type = #PB_GadgetType_Property) And at = 3)
+              
+              If (\Type = #PB_GadgetType_Splitter And at = 3)
                 \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
                 SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
               Else
@@ -5538,9 +5506,9 @@ Module Widget
               ; Debug ""+*This +" "+ EventType +" "+ at
               
               If Not \cursor[1]
-              ;  \cursor[1] = GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
+                \cursor[1] = GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
               EndIf
-             ; SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \Cursor[1])
+              SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \Cursor)
               
             EndIf
             
@@ -5574,9 +5542,6 @@ Module Widget
         \Canvas\Mouse\y = MouseScreenY
         
         Select EventType 
-          Case #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
-            EventType = #PB_EventType_MouseMove
-            
           Case #PB_EventType_LeftButtonDown, 
                #PB_EventType_MiddleButtonDown, 
                #PB_EventType_RightButtonDown
@@ -5640,31 +5605,19 @@ Module Widget
             \at =- 1
           EndIf 
           
+          Select EventType 
+            Case #PB_EventType_MouseEnter : EventType = #PB_EventType_MouseMove
+            Case #PB_EventType_MouseLeave : EventType = #PB_EventType_MouseMove
+          EndSelect
+          
           *mouseat = *This
-          
-          
-          If Not \State
-              repaint | Events(*This, \at, #PB_EventType_MouseEnter, MouseScreenX, MouseScreenY)
-              *Value\This = *This
-              \State = 1
-            EndIf
-            
-          Else
-            
-            If \State 
-              If \State = 2 
-                \State = 1
-                repaint | Events(*This, \at, #PB_EventType_LeftButtonUp, MouseScreenX, MouseScreenY)
-              EndIf
-              
-              \State  = 0
-              repaint | Events(*This, \at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
-              If \p : \p\State = 0 : EndIf
-              *Value\This = 0
-            EndIf
-            
+        Else
           \at = 0
           
+          Select EventType 
+            Case #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
+              EventType = #PB_EventType_MouseMove
+          EndSelect
           
           *mouseat = 0
         EndIf
@@ -5741,13 +5694,14 @@ Module Widget
               EndIf
               
             Case #PB_EventType_LeftButtonUp
-              If *Value\Active = *This : \State = 1
+              If *Value\Active = *This 
                 repaint | Events(*Value\Active, *Value\Active\at, EventType, MouseScreenX, MouseScreenY)
-                repaint | Events(*Value\Active, *Value\Active\at, #PB_EventType_LeftClick, MouseScreenX, MouseScreenY)
+                If \State = 2 : \State = 1
+                  repaint | Events(*Value\Active, *Value\Active\at, #PB_EventType_LeftClick, MouseScreenX, MouseScreenY)
+                EndIf
               EndIf
               
             Case #PB_EventType_LeftDoubleClick, 
-                 #PB_EventType_LeftButtonDown, 
                  #PB_EventType_MouseMove
               
               If \at
@@ -5768,22 +5722,6 @@ Module Widget
     EndWith
     
     ProcedureReturn repaint
-  EndProcedure
-  
-  Procedure.i CallBacks(*This.Widget_S, EventType.i, MouseX.i, MouseY.i)
-    Protected Repaint 
-    
-    If *This > 0 And Not *This\Hide
-      Repaint | CallBack(*This, EventType, MouseX, MouseY)
-      
-      With *This
-        ForEach \Childrens()
-          Repaint | CallBacks(\Childrens(), EventType, MouseX, MouseY)
-        Next 
-      EndWith
-    EndIf
-    
-    ProcedureReturn 1
   EndProcedure
   
   
@@ -6421,10 +6359,10 @@ Module Widget
       
       \Page\len = Width
       ;\Max = Width
-      \TabHeight = 25
+      \TabHeight = 27
       
       \fs = 1
-      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      \bs = 1
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
@@ -6511,29 +6449,33 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   Global x,y,i,NewMap Widgets.i()
   
-;   Procedure ReDraw(Gadget.i)
-;     If StartDrawing(CanvasOutput(Gadget))
-;       DrawingMode(#PB_2DDrawing_Default)
-;       Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
-;       
-;       ForEach Widgets()
-;         Draw(Widgets())
-;       Next
-;       
-;       StopDrawing()
-;     EndIf
-;   EndProcedure
-  
-  Procedure ReDraw(Canvas)
-    If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-      ;       DrawingMode(#PB_2DDrawing_Default)
-      ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
+  Procedure ReDraw(Gadget.i)
+    If StartDrawing(CanvasOutput(Gadget))
+      DrawingMode(#PB_2DDrawing_Default)
+      Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
       
-      Draws(Widgets("Container"))
+      ForEach Widgets()
+        Draw(Widgets())
+      Next
       
       StopDrawing()
     EndIf
+  EndProcedure
+  
+  Procedure CallBacks(*This.Widget_S, EventType, MouseX, MouseY)
+    Protected Repaint 
+    
+    If *This > 0 And Not *This\Hide
+      Repaint | CallBack(*This, EventType, MouseX, MouseY)
+      
+      With *This
+        ForEach \Childrens()
+          Repaint | CallBacks(\Childrens(), EventType, MouseX, MouseY)
+        Next 
+      EndWith
+    EndIf
+    
+    ProcedureReturn 1
   EndProcedure
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
@@ -6650,22 +6592,22 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       ;     ExplorerListGadget(#PB_GadgetType_ExplorerList, 500, 305, 160,70,"" )
       ;     ExplorerTreeGadget(#PB_GadgetType_ExplorerTree, 500, 380, 160,70,"" )
       ;     
-      ;     ExplorerComboGadget(#PB_GadgetType_ExplorerCombo, 665, 5, 160,70,"" )
+      ;     ExplorerComboGadget(#PB_GadgetType_ExplorerCombo, 665, 5, 160,70,"" ) , #PB_Flag_AnchorsGadget
       ;     SpinGadget(#PB_GadgetType_Spin, 665, 80, 160,70,0,10)
       Widgets(Str(#PB_GadgetType_Tree)) = Tree( 665, 155, 160, 70 ) : AddItem(Widgets(Str(#PB_GadgetType_Tree)), -1, "Tree_"+Str(#PB_GadgetType_Tree)) : For i=1 To 5 : AddItem(Widgets(Str(#PB_GadgetType_Tree)), i, "item_"+Str(i)) : Next
-      Widgets(Str(#PB_GadgetType_Panel)) = Panel(665, 230, 160,70) : AddItem(Widgets(Str(#PB_GadgetType_Panel)), -1, "Panel_"+Str(#PB_GadgetType_Panel)) : Widgets(Str(255)) = Button(0, 0, 90,20, "Button_255" ) : For i=1 To 5 : AddItem(Widgets(Str(#PB_GadgetType_Panel)), i, "item_"+Str(i)) : Next : CloseList()
-      ;SetState( Widgets(Str(#PB_GadgetType_Panel)), 15)
+      Widgets(Str(#PB_GadgetType_Panel)) = Panel(665, 230, 160,70) : AddItem(Widgets(Str(#PB_GadgetType_Panel)), -1, "Panel_"+Str(#PB_GadgetType_Panel)) : Widgets(Str(255)) = Button(0, 0, 90,20, "Button_255" ) : For i=1 To 15 : AddItem(Widgets(Str(#PB_GadgetType_Panel)), i, "item_"+Str(i)) : Next : CloseList()
+      SetState( Widgets(Str(#PB_GadgetType_Panel)), 15)
       
       Widgets(Str(301)) = Button(0, 0, 100,20, "Button_1")
-      Widgets(Str(302)) = Button(0, 0, 100,20, "Button_2")
-      Widgets(Str(#PB_GadgetType_Splitter)) = Splitter(665, 305, 160,70,Widgets(Str(301)), Widgets(Str(302)), #PB_Splitter_Vertical);, Button(0, 0, 100,20, "ButtonGadget"), Button(0, 0, 0,20, "StringGadget")) 
-                                                                                                             ;     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                                                                                                             ;       MDIGadget(#PB_GadgetType_MDI, 665, 380, 160,70,1, 2);, #PB_MDI_AutoSize)
-                                                                                                             ;     CompilerEndIf
-                                                                                                             ;     InitScintilla()
-                                                                                                             ;     ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,70,0 )
-                                                                                                             ;     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 80, 160,70 ,-1)
-                                                                                                             ;     CanvasGadget(#PB_GadgetType_Canvas, 830, 155, 160,70 )
+      Widgets(Str(302)) = Widgets(Str(#PB_GadgetType_Panel));Button(0, 0, 100,20, "Button_2")
+      Widgets(Str(#PB_GadgetType_Splitter)) = Splitter(665, 305, 160+160,70,Widgets(Str(301)), Widgets(Str(302)), #PB_Splitter_Vertical);, Button(0, 0, 100,20, "ButtonGadget"), Button(0, 0, 0,20, "StringGadget")) 
+                                                                                                                                        ;     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                                                                                                                                        ;       MDIGadget(#PB_GadgetType_MDI, 665, 380, 160,70,1, 2);, #PB_MDI_AutoSize)
+                                                                                                                                        ;     CompilerEndIf
+                                                                                                                                        ;     InitScintilla()
+                                                                                                                                        ;     ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,70,0 )
+                                                                                                                                        ;     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 80, 160,70 ,-1)
+                                                                                                                                        ;     CanvasGadget(#PB_GadgetType_Canvas, 830, 155, 160,70 )
       
       CloseList()
       
@@ -6688,5 +6630,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------v----------------------------4--------------4-030-------------------------------------4--4+40+-f----------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
