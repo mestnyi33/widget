@@ -1,11 +1,11 @@
-﻿IncludePath "../../"
-XIncludeFile "module_bar.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "widgets.pbi"
 
 ;-
 ;- EXAMPLE
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Bar
+  UseModule widget
   
   Global Window_demo, v, h
   
@@ -192,6 +192,26 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(g_Canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-210, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
   EndProcedure
   
+  Procedure.i Bars(*Scroll.Scroll_S, Size.i, Radius.i, Both.b)
+    With *Scroll     
+      \v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_Vertical, Radius)
+      \v\hide = \v\hide[1]
+      ;\v\s = *Scroll
+      
+      If Both
+        \h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
+        \h\hide = \h\hide[1]
+      Else
+        \h.Widget_S = AllocateStructure(Bar_S)
+        \h\hide = 1
+      EndIf
+      ;\h\s = *Scroll
+    EndWith
+    
+    ProcedureReturn *Scroll
+  EndProcedure
+  
+  
   If OpenWindow(0, 0, 0, Width+20, Height+20, "Scroll on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     g_container = ContainerGadget(#PB_Any, 10, 10, 180, 220, #PB_Container_Flat)
     
@@ -219,8 +239,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical,7)
     ;     *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
     Bars(*Scroll, 16, 7, 1)
-    Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
-    Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
+    SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
+    SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
     
     ; Set scroll page position
     SetState(*Scroll\v, 70)
@@ -294,7 +314,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = ------
 ; EnableXP

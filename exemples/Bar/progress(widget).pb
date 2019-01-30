@@ -1,5 +1,5 @@
-﻿IncludePath "../../"
-XIncludeFile "module_bar.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "widgets.pbi"
 
 ;
 ; Module name   : ProgressBar
@@ -17,10 +17,12 @@ DeclareModule ProgressBar
     Window.i
   EndStructure
   
-  Structure Gadget Extends Bar::Coordinate_S
+  UseModule widget
+  Structure Gadget Extends Coordinate_S
     Canvas.Canvas
-    *Bar.Bar::Bar_S
+    *Bar.Bar_S
   EndStructure
+  UnuseModule widget
   
   ;- DECLARE
   Declare GetState(Gadget.i)
@@ -37,7 +39,7 @@ Module ProgressBar
   Procedure Draw(*This.Gadget)
     With *This
       If StartDrawing(CanvasOutput(\Canvas\Gadget))
-        Bar::Draw(\Bar)
+        Widget::Draw(\Bar)
        StopDrawing()
       EndIf
     EndWith 
@@ -54,11 +56,11 @@ Module ProgressBar
         
         Select EventType
           Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-            Bar::Resize(*This\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
+            Widget::Resize(*This\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget))
             Repaint = 1
        EndSelect
         
-        Repaint | Bar::CallBack(\Bar, EventType, Mouse_X, Mouse_Y)
+        Repaint | Widget::CallBack(\Bar, EventType, Mouse_X, Mouse_Y)
         
         If Repaint 
           If \Bar\Change 
@@ -131,11 +133,11 @@ Module ProgressBar
     
     With *This
       Select Attribute
-        Case #PB_ProgressBar_Minimum : Attribute = Bar::#PB_Bar_Minimum
-        Case #PB_ProgressBar_Maximum : Attribute = Bar::#PB_Bar_Maximum
+        Case #PB_ProgressBar_Minimum : Attribute = Widget::#PB_Bar_Minimum
+        Case #PB_ProgressBar_Maximum : Attribute = Widget::#PB_Bar_Maximum
       EndSelect
       
-      If Bar::SetAttribute(*This\Bar, Attribute, Value)
+      If Widget::SetAttribute(*This\Bar, Attribute, Value)
         Draw(*This)
       EndIf
     EndWith
@@ -146,11 +148,11 @@ Module ProgressBar
     
     With *This
       Select Attribute
-        Case #PB_ProgressBar_Minimum : Attribute = Bar::#PB_Bar_Minimum
-        Case #PB_ProgressBar_Maximum : Attribute = Bar::#PB_Bar_Maximum
+        Case #PB_ProgressBar_Minimum : Attribute = Widget::#PB_Bar_Minimum
+        Case #PB_ProgressBar_Maximum : Attribute = Widget::#PB_Bar_Maximum
       EndSelect
       
-      Result = Bar::GetAttribute(*This\Bar, Attribute)
+      Result = Widget::GetAttribute(*This\Bar, Attribute)
     EndWith
     
     ProcedureReturn Result
@@ -160,7 +162,7 @@ Module ProgressBar
     Protected *This.Gadget = GetGadgetData(Gadget)
     
     With *This
-      If Bar::SetState(*This\Bar, State)
+      If Widget::SetState(*This\Bar, State)
         If \Bar\Change 
           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
         EndIf
@@ -172,7 +174,7 @@ Module ProgressBar
   
   Procedure GetState(Gadget.i)
     Protected *This.Gadget = GetGadgetData(Gadget)
-    ProcedureReturn Bar::GetState(*This\Bar)
+    ProcedureReturn Widget::GetState(*This\Bar)
   EndProcedure
   
   Procedure Gadget(Gadget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Flag.i=0)
@@ -182,7 +184,7 @@ Module ProgressBar
     If *This
       With *This
         \Canvas\Gadget = Gadget
-        \Bar = Bar::Progress(0,0, Width, Height, Min, Max, Flag)
+        \Bar = Widget::Progress(0,0, Width, Height, Min, Max, Flag)
 ;         \Bar\Color[3]\Fore[0] = 0
 ;         \Bar\Color[3]\Fore[2] = 0
         
@@ -246,6 +248,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = -f-----
 ; EnableXP

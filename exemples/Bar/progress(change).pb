@@ -1,13 +1,12 @@
-﻿IncludePath "../../"
-XIncludeFile "module_bar.pbi"
-; XIncludeFile "progress(widget).pb"
+﻿IncludePath "../../../"
+XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule Bar
+  UseModule widget
   
-  Global.i gEvent, gQuit, value, direction
+  Global.i gEvent, gQuit, value, direction=1
   Global *Bar_0.Bar_S=AllocateStructure(Bar_S)
   
   Procedure ReDraw(Gadget.i)
@@ -22,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_0()
-      Protected y=50
+    Protected y=50
     If OpenWindow(0, 0, 0, 400, 100+y, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       ProgressBarGadget(2, 15, 10, 370,  30, 20,  50)
@@ -31,9 +30,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CanvasGadget(1, 10,y+10, 380, 50, #PB_Canvas_Keyboard)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
-      *Bar_0 = Progress(5, 10, 370,  30, 20,  50)
       
-      ;ProgressBar::Gadget(1, 5, 10, 370,  30, 20,  50, #PB_ScrollBar_NoButtons)
+      *Bar_0 = Progress(5, 10, 370,  30, 20, 50)
       
       ReDraw(1)
     EndIf
@@ -60,9 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         SetGadgetState(2, value)
         If SetState(*Bar_0, value)
-          If WidgetEventType() = #PB_EventType_Change
-            PostEvent(#PB_Event_Gadget, 0, 1)
-          EndIf
+          PostEvent(#PB_Event_Gadget, 0, 1)
         EndIf
         
       Case #PB_Event_Gadget
@@ -80,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; Get interaction with the scroll bar
         CallBack(*Bar_0, EventType())
         
-        If WidgetEventType() = #PB_EventType_Change
+        If WidgetEvent() = #PB_EventType_Change
           SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
         EndIf
         
@@ -89,6 +85,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

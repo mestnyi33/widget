@@ -1,10 +1,11 @@
-﻿IncludePath "../../"
-XIncludeFile "module_bar.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "widgets.pbi"
+
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule Bar
+  UseModule widget
   
   Global.i gEvent, gQuit
   Global *Bar_0.Bar_S=AllocateStructure(Bar_S)
@@ -28,6 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
       *Bar_0 = Scroll(5, 10, 370,  30, 20,  50, 8, #PB_Bar_NoButtons)
+      *Bar_0\step = 1
       
       ReDraw(1)
     EndIf
@@ -57,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; Get interaction with the scroll bar
         CallBack(*Bar_0, EventType())
         
-        If WidgetEventType() = #PB_EventType_Change
+        If WidgetEvent() = #PB_EventType_Change
           Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_Bar_Direction)
           
           Select EventWidget()
@@ -74,6 +76,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

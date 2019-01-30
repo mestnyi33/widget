@@ -141,7 +141,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure CallBacks()
+  Procedure Canvas_CallBack()
     Protected Result
     Protected Canvas_0 = EventGadget()
     Protected Width = GadgetWidth(Canvas_0)
@@ -297,7 +297,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Canvas_0 = CanvasGadget(-1,  0, 220, 1110, 230, #PB_Canvas_Keyboard)
     SetGadgetAttribute(Canvas_0, #PB_Canvas_Cursor, #PB_Cursor_Cross)
     SetGadgetData(Canvas_0, 0)
-    BindGadgetEvent(Canvas_0, @CallBacks())
+    BindGadgetEvent(Canvas_0, @Canvas_CallBack())
     
     *g0 = Tree(10, 10, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
     ; 1_example
@@ -445,5 +445,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------
+; Folding = ---0---
 ; EnableXP

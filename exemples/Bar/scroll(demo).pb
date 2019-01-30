@@ -1,11 +1,11 @@
-﻿IncludePath "../../"
-XIncludeFile "module_bar.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "widgets.pbi"
 
 ;-
 ;- EXAMPLE
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Bar
+  UseModule widget
   
   Global *Scroll.Scroll_S=AllocateStructure(Scroll_S)
   Global x=101,y=101, Width=600, Height=600 
@@ -22,6 +22,51 @@ CompilerIf #PB_Compiler_IsMainFile
       StopDrawing()
     EndIf
   EndIf
+  
+  Procedure.i Draw_Bars(*Scroll.Scroll_S, ScrollHeight.i, ScrollWidth.i)
+    ;     Protected Repaint
+    
+    With *Scroll
+      UnclipOutput()
+      If \v And \v\page\len And \v\max<>ScrollHeight And 
+         SetAttribute(\v, #PB_ScrollBar_Maximum, ScrollHeight)
+        Resizes(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      EndIf
+      If \h And \h\page\len And \h\max<>ScrollWidth And
+         SetAttribute(\h, #PB_ScrollBar_Maximum, ScrollWidth)
+        Resizes(*Scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      EndIf
+      
+      If \v And Not \v\hide
+        Draw(\v)
+      EndIf
+      If \h And Not \h\hide
+        Draw(\h)
+      EndIf
+      
+      
+      DrawingMode(#PB_2DDrawing_Outlined)
+      ; max coordinate
+      Box(\h\x-GetState(\h), \v\y-GetState(\v), \h\Max, \v\Max, $FF0000)
+      
+      ; page coordinate
+      Box(\h\x, \v\y, \h\Page\Len, \v\Page\Len, $00FF00)
+      
+      ; area coordinate
+      Box(\h\x, \v\y, \h\Area\Len, \v\Area\Len, $00FFFF)
+      
+      ; scroll coordinate
+      Box(\h\x, \v\y, \h\width, \v\height, $FF00FF)
+      
+      ; frame coordinate
+      Box(\h\x, \v\y, 
+          \h\Page\len + (Bool(Not \v\hide) * \v\width),
+          \v\Page\len + (Bool(Not \h\hide) * \h\height), $FFFF00)
+      
+    EndWith
+    
+    ;     ProcedureReturn Repaint
+  EndProcedure
   
   Procedure _Canvas_Events(Canvas.i, EventType.i)
     If EventType = #PB_EventType_ScrollChange ; bug mac os на функциях канваса GetGadgetAttribute()
@@ -49,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
       DrawImage(ImageID(0), x+*Scroll\x, y+*Scroll\y)
       UnclipOutput()
       
-      Draws(*Scroll, *Scroll\Width, *Scroll\Height)
+      Draw_Bars(*Scroll, *Scroll\Width, *Scroll\Height)
       StopDrawing()
     EndIf
   EndProcedure
@@ -223,16 +268,35 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
   EndProcedure
   
+  Procedure.i Bars(*Scroll.Scroll_S, Size.i, Radius.i, Both.b)
+    With *Scroll     
+      \v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_Vertical, Radius)
+      \v\hide = \v\hide[1]
+      ;\v\s = *Scroll
+      
+      If Both
+        \h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
+        \h\hide = \h\hide[1]
+      Else
+        \h.Widget_S = AllocateStructure(Bar_S)
+        \h\hide = 1
+      EndIf
+      ;\h\s = *Scroll
+    EndWith
+    
+    ProcedureReturn *Scroll
+  EndProcedure
+  
   If OpenWindow(0, 0, 0, Width+20, Height+20, "Scroll on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     CanvasGadget(1, 10,10, Width, Height, #PB_Canvas_Keyboard)
     SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
     
-    ; Create both scroll bars
+;     ; Create both scroll bars
 ;     *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical,7)
 ;     *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
     Bars(*Scroll, 16, 7, 1)
-    Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
-    Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
+    SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
+    SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
     
     ;SetAttribute(*Scroll\v, #PB_ScrollBar_Inverted, 1)
     
@@ -252,6 +316,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = 4-8--
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = 4--0--
 ; EnableXP

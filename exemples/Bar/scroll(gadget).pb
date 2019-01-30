@@ -1,9 +1,10 @@
-﻿IncludePath "../../"
-XIncludeFile "module_bar.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "widgets.pbi"
+
 ;
 ; Module name   : ScrollBar
 ; Author        : mestnyi
-; Last updated  : Sep 20, 2018
+; Last updated  : Dec 29, 2018
 ; Forum link    : https://www.purebasic.fr/english/viewtopic.php?f=12&t=70662
 ; 
 
@@ -16,16 +17,16 @@ DeclareModule ScrollBar
     Window.i
   EndStructure
   
-  Structure Gadget Extends Bar::Coordinate_S
-    Type.i
-    fSize.i
-    bSize.i
+  UseModule Widget
+  Structure Gadget Extends Coordinate_S
+    fs.i
+    bs.i
     
     Canvas.Canvas
-    Color.Bar::Color_S
-    *Bar.Bar::Bar_S
+    Color.Color_S
+    *Bar.Bar_S
   EndStructure
-  
+  UnuseModule Widget
   
   ;- DECLARE
   Declare GetState(Gadget.i)
@@ -44,7 +45,7 @@ Module ScrollBar
     With *This
       If StartDrawing(CanvasOutput(\Canvas\Gadget))
         
-        If \fSize
+        If \fs
           DrawingMode(#PB_2DDrawing_Default)
           If \Bar\Vertical
             Line(\X[1],\Y[1]-1,\Width,1,\Color\Frame)
@@ -57,49 +58,27 @@ Module ScrollBar
           EndIf
         EndIf
         
-        Bar::Draw(\Bar)
+        Widget::Draw(\Bar)
         StopDrawing()
       EndIf
     EndWith  
   EndProcedure
   
   Procedure Canvas_Events(EventGadget.i, EventType.i)
-    Protected WheelDelta.i, Mouse_X.i, Mouse_Y.i, *This.Gadget = GetGadgetData(EventGadget)
+    Protected Mouse_X.i, Mouse_Y.i, *This.Gadget = GetGadgetData(EventGadget)
     
     With *This
       \Canvas\Window = EventWindow()
       Mouse_X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
       Mouse_Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
-      WheelDelta = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_WheelDelta)
       
       Select EventType
         Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          \Width = GadgetWidth(\Canvas\Gadget)
-          \Height = GadgetHeight(\Canvas\Gadget)
-          
-            ; Inner coordinae
-          If \Bar\Vertical
-            \X[2]=\bSize
-            \Y[2]=\bSize*2
-            \Width[2] = \Width-\bSize*3
-            \Height[2] = \Height-\bSize*4
-          Else
-            \X[2]=\bSize*2
-            \Y[2]=\bSize
-            \Width[2] = \Width-\bSize*4
-            \Height[2] = \Height-\bSize*3
-          EndIf
-          
-          ; Frame coordinae
-          \X[1]=\X[2]-\fSize
-          \Y[1]=\Y[2]-\fSize
-          \Width[1] = \Width[2]+\fSize*2
-          \Height[1] = \Height[2]+\fSize*2
-          
-         ; Bar::Resize(\Bar, \X[2], \Y[2], \Width[2], \Height[2]) : Draw(*This)
+          Widget::Resize(\Bar, #PB_Ignore, #PB_Ignore, GadgetWidth(\Canvas\Gadget), GadgetHeight(\Canvas\Gadget)) 
+          Draw(*This)
       EndSelect
       
-      If Bar::CallBack(\Bar, EventType, Mouse_X, Mouse_Y) 
+      If Widget::CallBack(\Bar, EventType, Mouse_X, Mouse_Y) 
         If \Bar\Change 
           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change) 
         EndIf
@@ -168,7 +147,7 @@ Module ScrollBar
     Protected *This.Gadget = GetGadgetData(Gadget)
     
     With *This
-      If Bar::SetAttribute(*This\Bar, Attribute, Value)
+      If Widget::SetAttribute(*This\Bar, Attribute, Value)
         Draw(*This)
       EndIf
     EndWith
@@ -192,15 +171,16 @@ Module ScrollBar
     Protected *This.Gadget = GetGadgetData(Gadget)
     
     With *This
-      If Bar::SetState(*This\Bar, State) : Draw(*This)
+      If Widget::SetState(*This\Bar, State)
         PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
+        Draw(*This)
       EndIf
     EndWith
   EndProcedure
   
   Procedure GetState(Gadget.i)
     Protected ScrollPos, *This.Gadget = GetGadgetData(Gadget)
-    ProcedureReturn Bar::GetState(*This\Bar)
+    ProcedureReturn Widget::GetState(*This\Bar)
   EndProcedure
   
   Procedure Gadget(Gadget, X.i, Y.i, Width.i, Height.i, Min.i, Max.i, Pagelength.i, Flag.i=0, Radius.i=0)
@@ -209,40 +189,14 @@ Module ScrollBar
     
     If *This
       With *This
-        \Type = #PB_GadgetType_ScrollBar
         \Canvas\Gadget = Gadget
-        \Width = Width
-        \Height = Height
         
-        \fSize = 0
-        \bSize = \fSize
+        \Bar = Widget::Scroll(0, 0, Width, Height, Min, Max, PageLength, Flag, Radius)
         
-        ; Inner coordinae
-        If Flag&#PB_ScrollBar_Vertical
-          \X[2]=\bSize
-          \Y[2]=\bSize*2
-          \Width[2] = \Width-\bSize*3
-          \Height[2] = \Height-\bSize*4
-        Else
-          \X[2]=\bSize*2
-          \Y[2]=\bSize
-          \Width[2] = \Width-\bSize*4
-          \Height[2] = \Height-\bSize*3
-        EndIf
-        
-        ; Frame coordinae
-        \X[1]=\X[2]-\fSize
-        \Y[1]=\Y[2]-\fSize
-        \Width[1] = \Width[2]+\fSize*2
-        \Height[1] = \Height[2]+\fSize*2
-        
-        \Color\Frame = $C0C0C0
-        
-        \Bar = Bar::Bar(0, 0, \Width[2], \Height[2], Min, Max, PageLength, Flag, Radius)
-        \Bar\ArrowType[1]=1 
-        \Bar\ArrowType[2]=1
-        \Bar\ArrowSize[1]=6 
-        \Bar\ArrowSize[2]=6
+        \Bar\Box\ArrowType[1]=1 
+        \Bar\Box\ArrowType[2]=1
+        \Bar\Box\ArrowSize[1]=6 
+        \Bar\Box\ArrowSize[2]=6
         
         Draw(*This)
         SetGadgetData(Gadget, *This)
@@ -258,18 +212,22 @@ EndModule
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   Procedure v_GadgetCallBack()
+    SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
     ScrollBar::SetState(13, GetGadgetState(EventGadget()))
   EndProcedure
   
   Procedure v_CallBack()
+    SetWindowTitle(EventWindow(), Str(ScrollBar::GetState(EventGadget())))
     SetGadgetState(3, ScrollBar::GetState(EventGadget()))
   EndProcedure
   
   Procedure h_GadgetCallBack()
+    SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
     ScrollBar::SetState(12, GetGadgetState(EventGadget()))
   EndProcedure
   
   Procedure h_CallBack()
+    SetWindowTitle(EventWindow(), Str(ScrollBar::GetState(EventGadget())))
     SetGadgetState(2, ScrollBar::GetState(EventGadget()))
   EndProcedure
   
@@ -282,7 +240,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetFont(-1,FontID(0))
   CompilerEndIf
   
-  ; Flag = Bar::#PB_ScrollBar_NoButtons
+  ; Flag = Widget::#PB_ScrollBar_NoButtons
   
   If OpenWindow(0, 0, 0, 605, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TextGadget       (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
@@ -307,6 +265,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = --+----
 ; EnableXP

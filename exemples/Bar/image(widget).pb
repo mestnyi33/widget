@@ -1,10 +1,10 @@
-﻿;IncludePath "../../"
-XIncludeFile "module_bar_ex.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule Bar
+  UseModule widget
   
   Global.i Window_0, Canvas_0
   Global.i gEvent, gQuit
@@ -51,19 +51,19 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_0()
-    If OpenWindow(0, 0, 0, 300, 280+30, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-      ButtonGadget   (0,    5,   245, 290,  30, "change image", #PB_Button_Toggle)
-      ComboBoxGadget   (1,    5,   245+35, 290,  30)
+    If OpenWindow(0, 0, 0, 250, 280+30, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+      ButtonGadget   (0,    5,   245, 240,  30, "change image", #PB_Button_Toggle)
+      ComboBoxGadget   (1,    5,   245+35, 240,  30)
       AddGadgetItem(1, -1, "Default")
       AddGadgetItem(1, -1, "Center")
       AddGadgetItem(1, -1, "Mosaic")
       AddGadgetItem(1, -1, "Stretch")
       AddGadgetItem(1, -1, "Proportionally")
       
-      Canvas_0 = CanvasGadget(#PB_Any, 10,10, 280, 230, #PB_Canvas_Keyboard)
+      Canvas_0 = CanvasGadget(#PB_Any, 10,10, 230, 230, #PB_Canvas_Keyboard)
       SetGadgetAttribute(Canvas_0, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
-      *Image_0 = Image(10, 10, 260,  210, 0)
+      *Image_0 = Image(10, 10, 210,  210, 0)
       
       ReDraw(Canvas_0)
       BindGadgetEvent(Canvas_0, @Canvas_0_Resize(), #PB_EventType_Resize)
@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; Get interaction with the scroll bar
         CallBack(*Image_0, EventType())
         
-        If WidgetEventType() = #PB_EventType_Change
+        If WidgetEvent() = #PB_EventType_Change
           Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_Bar_Direction)
           
           Select EventWidget()

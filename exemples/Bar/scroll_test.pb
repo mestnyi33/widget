@@ -4,14 +4,14 @@
 ; Event procedures needs to be put in another source file.
 ;
 
-IncludePath "../../"
-XIncludeFile "module_bar.pbi"
+IncludePath "../../../"
+XIncludeFile "widgets.pbi"
 
 ;-
 ;- EXAMPLE
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Bar
+  UseModule widget
   
   
   Global g_container, g_min, g_max, g_page_pos, g_area_pos, g_len, g_value, g_is_vertical, g_set, g_page_len, g_area_len, g_Canvas
@@ -411,9 +411,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 405
-; FirstLine = 325
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = --0---
 ; EnableXP

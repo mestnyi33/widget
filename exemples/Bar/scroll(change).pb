@@ -1,12 +1,13 @@
-﻿IncludePath "../../"
-XIncludeFile "module_bar.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "widgets.pbi"
+
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule Bar
+  UseModule widget
   
-  Global.i gEvent, gQuit, value, direction
+  Global.i gEvent, gQuit, value, direction=1
   Global *Bar_0.Bar_S=AllocateStructure(Bar_S)
   
   Procedure ReDraw(Gadget.i)
@@ -21,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_0()
-    If OpenWindow(0, 0, 0, 400, 100, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    If OpenWindow(0, 0, 0, 400, 100, "Demo change scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ButtonGadget   (0,    5,   65, 390,  30, "start change scrollbar", #PB_Button_Toggle)
       
       CanvasGadget(1, 10,10, 380, 50, #PB_Canvas_Keyboard)
@@ -53,9 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
         value + direction
         
         If SetState(*Bar_0, value)
-          If WidgetEventType() = #PB_EventType_Change
-            PostEvent(#PB_Event_Gadget, 0, 1)
-          EndIf
+          PostEvent(#PB_Event_Gadget, 0, 1)
         EndIf
         
       Case #PB_Event_Gadget
@@ -73,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ; Get interaction with the scroll bar
         CallBack(*Bar_0, EventType())
         
-        If WidgetEventType() = #PB_EventType_Change
+        If WidgetEvent() = #PB_EventType_Change
           SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
         EndIf
         
@@ -82,6 +81,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

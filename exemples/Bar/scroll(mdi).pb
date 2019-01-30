@@ -1,18 +1,11 @@
-﻿IncludePath "/Users/as/Documents/GitHub/Widget/"
-XIncludeFile "module_bar.pbi"
+﻿IncludePath "../../../"
+XIncludeFile "widgets.pbi"
+
 ;-
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Bar
+  UseModule widget
   EnableExplicit
-  
-  Enumeration #PB_Event_FirstCustomValue
-    #PB_Event_Widget
-  EndEnumeration
-  
-  Enumeration #PB_EventType_FirstCustomValue
-    #PB_EventType_ScrollChange
-  EndEnumeration
   
   Structure canvasitem
     img.i
@@ -149,9 +142,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       EndIf
       ;UnclipOutput()
       
-      Bar::Draw(\v)
-      Bar::Draw(\h)
-      
+      Draw(\v)
+      Draw(\h)
+       
       DrawingMode(#PB_2DDrawing_Outlined)
       
       ; widget area coordinate
@@ -230,9 +223,9 @@ EndProcedure
   ;   AddImage(Images(),170,70,hole,1)
   
   
-  Procedure BarUpdates(*v.Bar::Bar_S, *h.Bar::Bar_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height) ; Ok
-    Protected iWidth = (*v\X-*h\X)+ Bool(*v\Hide) * *v\Width                                                          ; Bar::X(*v)
-    Protected iHeight = (*h\Y-*v\Y)+ Bool(*h\Hide) * *h\height                                                        ; Bar::Y(*h)
+  Procedure BarUpdates(*v.Bar_S, *h.Bar_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height) ; Ok
+    Protected iWidth = (*v\X-*h\X)+ Bool(*v\Hide) * *v\Width                                                          ; X(*v)
+    Protected iHeight = (*h\Y-*v\Y)+ Bool(*h\Hide) * *h\height                                                        ; Y(*h)
     Static hPos, vPos : vPos = *v\Page\Pos : hPos = *h\Page\Pos
     
     ; Вправо работает как надо
@@ -259,23 +252,23 @@ EndProcedure
     If ScrollArea_Y<*v\Page\Pos : ScrollArea_Height-ScrollArea_Y-*v\Page\Pos : EndIf
     If ScrollArea_X<*h\Page\Pos : ScrollArea_Width-ScrollArea_X-*h\Page\Pos : EndIf
     
-    Bar::SetAttribute(*v, #PB_ScrollBar_Maximum, ScrollArea_Height)
-    Bar::SetAttribute(*h, #PB_ScrollBar_Maximum, ScrollArea_Width)
+    SetAttribute(*v, #PB_ScrollBar_Maximum, ScrollArea_Height)
+    SetAttribute(*h, #PB_ScrollBar_Maximum, ScrollArea_Width)
     
-    If *v\Page\Len<>iHeight : Bar::SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-    If *h\Page\Len<>iWidth : Bar::SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+    If *v\Page\Len<>iHeight : SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+    If *h\Page\Len<>iWidth : SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
     
     If ScrollArea_Y<>*v\Page\Pos 
-      Bar::SetState(*v, -ScrollArea_Y);(ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) 
+      SetState(*v, -ScrollArea_Y);(ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) 
     EndIf
       
-      ;If ScrollArea_X<0 : Bar::SetState(*h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
+      ;If ScrollArea_X<0 : SetState(*h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
     If ScrollArea_X<>*h\Page\Pos 
-      Bar::SetState(*h, -ScrollArea_X) 
+      SetState(*h, -ScrollArea_X) 
     EndIf
     
-    *v\Hide = Bar::Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*h\Y + Bool(*h\Hide) * *h\Height) - *v\Y) ; #PB_Ignore, *h) 
-    *h\Hide = Bar::Resize(*h, #PB_Ignore, #PB_Ignore, (*v\X + Bool(*v\Hide) * *v\Width) - *h\X, #PB_Ignore)  ; #PB_Ignore, #PB_Ignore, *v)
+    *v\Hide = Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*h\Y + Bool(*h\Hide) * *h\Height) - *v\Y) ; #PB_Ignore, *h) 
+    *h\Hide = Resize(*h, #PB_Ignore, #PB_Ignore, (*v\X + Bool(*v\Hide) * *v\Width) - *h\X, #PB_Ignore)  ; #PB_Ignore, #PB_Ignore, *v)
     
     *Scroll\Y =- *v\Page\Pos
     *Scroll\X =- *h\Page\Pos
@@ -291,7 +284,7 @@ EndProcedure
     ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
   EndProcedure
   
-  Procedure BarResize(*v.Bar::Bar_s, X,Y,Width,Height, *h.Bar::Bar_s )
+  Procedure BarResize(*v.Bar_s, X,Y,Width,Height, *h.Bar_s )
     
     ; ; ;     
     ; ; ;       If y=#PB_Ignore : y = *v\Y : EndIf
@@ -301,19 +294,19 @@ EndProcedure
     ; ; ;       
     ; ; ;       ; Debug ""+Width +" "+ Str(*v\X-*h\X+*v\width)
     ; ; ;       
-    ; ; ;       Bar::SetAttribute(*v, #PB_ScrollBar_PageLength, Height - Bool(*h\hide) * *h\height) 
-    ; ; ;       Bar::SetAttribute(*h, #PB_ScrollBar_PageLength, Width - Bool(*v\hide) * *v\width)  
+    ; ; ;       SetAttribute(*v, #PB_ScrollBar_PageLength, Height - Bool(*h\hide) * *h\height) 
+    ; ; ;       SetAttribute(*h, #PB_ScrollBar_PageLength, Width - Bool(*v\hide) * *v\width)  
     ; ; ;       
-    ; ; ;       *v\Hide = Bar::Resize(*v, x+*h\Page\Len, y, #PB_Ignore, Height)
-    ; ; ;       *h\Hide = Bar::Resize(*h, x, y+*v\Page\len, Width, #PB_Ignore)
+    ; ; ;       *v\Hide = Resize(*v, x+*h\Page\Len, y, #PB_Ignore, Height)
+    ; ; ;       *h\Hide = Resize(*h, x, y+*v\Page\len, Width, #PB_Ignore)
     ; ; ;       
-    ; ; ; ; ;       Bar::SetAttribute(*v, #PB_ScrollBar_PageLength, Height - Bool(Not *h\hide) * *h\height)
-    ; ; ; ; ;       Bar::SetAttribute(*h, #PB_ScrollBar_PageLength, Width - Bool(Not *v\hide) * *v\width)
-    ; ; ; ;        Bar::SetAttribute(*v, #PB_ScrollBar_PageLength, Height - Bool(Not *h\hide) * *h\height) 
-    ; ; ; ;       Bar::SetAttribute(*h, #PB_ScrollBar_PageLength, Width -  Bool(Not *v\hide) * *v\width)  
+    ; ; ; ; ;       SetAttribute(*v, #PB_ScrollBar_PageLength, Height - Bool(Not *h\hide) * *h\height)
+    ; ; ; ; ;       SetAttribute(*h, #PB_ScrollBar_PageLength, Width - Bool(Not *v\hide) * *v\width)
+    ; ; ; ;        SetAttribute(*v, #PB_ScrollBar_PageLength, Height - Bool(Not *h\hide) * *h\height) 
+    ; ; ; ;       SetAttribute(*h, #PB_ScrollBar_PageLength, Width -  Bool(Not *v\hide) * *v\width)  
     ; ; ; ;      
-    ; ; ; ;       *v\Hide = Bar::Resize(*v, x+*h\Page\len, #PB_Ignore, #PB_Ignore, Height + Bool(*v\Radius And Not *h\Hide)*4)
-    ; ; ; ;       *h\Hide = Bar::Resize(*h, #PB_Ignore, y+*v\Page\len, Width + Bool(*h\Radius And Not *v\Hide)*4, #PB_Ignore)
+    ; ; ; ;       *v\Hide = Resize(*v, x+*h\Page\len, #PB_Ignore, #PB_Ignore, Height + Bool(*v\Radius And Not *h\Hide)*4)
+    ; ; ; ;       *h\Hide = Resize(*h, #PB_Ignore, y+*v\Page\len, Width + Bool(*h\Radius And Not *v\Hide)*4, #PB_Ignore)
     
     If Width=#PB_Ignore 
       Width = *v\X+*v\Width
@@ -322,17 +315,17 @@ EndProcedure
       Height = *h\Y+*h\Height
     EndIf
     
-    Bar::SetAttribute(*v, #PB_ScrollBar_PageLength, Height-Bool(Not *h\Hide) * *h\height)
-    Bar::SetAttribute(*h, #PB_ScrollBar_PageLength, Width-Bool(Not *v\Hide) * *v\width)
+    SetAttribute(*v, #PB_ScrollBar_PageLength, Height-Bool(Not *h\Hide) * *h\height)
+    SetAttribute(*h, #PB_ScrollBar_PageLength, Width-Bool(Not *v\Hide) * *v\width)
     
-    *v\Hide = Bar::Resize(*v, (x+Width)-*v\Width, Y, #PB_Ignore, (*h\Y+Bool(*h\Hide) * *h\Height) - *v\Y)
-    *h\Hide = Bar::Resize(*h, X, (y+Height)-*h\Height, (*v\X+Bool(*v\Hide) * *v\width) - *h\X, #PB_Ignore)
+    *v\Hide = Resize(*v, (x+Width)-*v\Width, Y, #PB_Ignore, (*h\Y+Bool(*h\Hide) * *h\Height) - *v\Y)
+    *h\Hide = Resize(*h, X, (y+Height)-*h\Height, (*v\X+Bool(*v\Hide) * *v\width) - *h\X, #PB_Ignore)
     
-    Bar::SetAttribute(*v, #PB_ScrollBar_PageLength, Height-Bool(Not *h\Hide) * *h\height)
-    Bar::SetAttribute(*h, #PB_ScrollBar_PageLength, Width-Bool(Not *v\Hide) * *v\width)
+    SetAttribute(*v, #PB_ScrollBar_PageLength, Height-Bool(Not *h\Hide) * *h\height)
+    SetAttribute(*h, #PB_ScrollBar_PageLength, Width-Bool(Not *v\Hide) * *v\width)
     
-    *v\Hide = Bar::Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, ((*h\Y+Bool(*h\Hide) * *h\Height) - *v\Y) + Bool(*v\Radius And Not *h\Hide)*4)
-    *h\Hide = Bar::Resize(*h, #PB_Ignore, #PB_Ignore, ((*v\X+Bool(*v\Hide) * *v\width) - *h\X) + Bool(*h\Radius And Not *v\Hide)*4, #PB_Ignore)
+    *v\Hide = Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, ((*h\Y+Bool(*h\Hide) * *h\Height) - *v\Y) + Bool(*v\Radius And Not *h\Hide)*4)
+    *h\Hide = Resize(*h, #PB_Ignore, #PB_Ignore, ((*v\X+Bool(*v\Hide) * *v\width) - *h\X) + Bool(*h\Radius And Not *v\Hide)*4, #PB_Ignore)
     ProcedureReturn 1
     
     
@@ -366,20 +359,20 @@ EndProcedure
     ; ;     
     ; ;     Protected iWidth = Width-Width(*v), iHeight = Height-Height(*h)
     ; ;     
-    ; ;     If *v\width And *v\Page\Len<>iHeight : Bar::SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-    ; ;     If *h\height And *h\Page\Len<>iWidth : Bar::SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+    ; ;     If *v\width And *v\Page\Len<>iHeight : SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+    ; ;     If *h\height And *h\Page\Len<>iWidth : SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
     ; ;     
-    ; ;     *v\Hide = Bar::Resize(*v, Width+x-*v\Width, Y, #PB_Ignore, #PB_Ignore, *h) : iWidth = Width-Width(*v)
-    ; ;     *h\Hide = Bar::Resize(*h, X, Height+y-*h\Height, #PB_Ignore, #PB_Ignore, *v) : iHeight = Height-Height(*h)
+    ; ;     *v\Hide = Resize(*v, Width+x-*v\Width, Y, #PB_Ignore, #PB_Ignore, *h) : iWidth = Width-Width(*v)
+    ; ;     *h\Hide = Resize(*h, X, Height+y-*h\Height, #PB_Ignore, #PB_Ignore, *v) : iHeight = Height-Height(*h)
     ; ;     
-    ; ;     If *v\width And *v\Page\Len<>iHeight : Bar::SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-    ; ;     If *h\height And *h\Page\Len<>iWidth : Bar::SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+    ; ;     If *v\width And *v\Page\Len<>iHeight : SetAttribute(*v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+    ; ;     If *h\height And *h\Page\Len<>iWidth : SetAttribute(*h, #PB_ScrollBar_PageLength, iWidth) : EndIf
     ; ;     
     ; ;     If *v\width
-    ; ;       *v\Hide = Bar::Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*h\Y + Bool(*h\Hide) * *h\Height) - *v\Y) ; #PB_Ignore, *h) ;
+    ; ;       *v\Hide = Resize(*v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*h\Y + Bool(*h\Hide) * *h\Height) - *v\Y) ; #PB_Ignore, *h) ;
     ; ;     EndIf
     ; ;     If *h\height
-    ; ;       *h\Hide = Bar::Resize(*h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*v\X + Bool(*v\Hide) * *v\Width) - *h\X, #PB_Ignore) ; #PB_Ignore, #PB_Ignore, *v) ;
+    ; ;       *h\Hide = Resize(*h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, (*v\X + Bool(*v\Hide) * *v\Width) - *h\X, #PB_Ignore) ; #PB_Ignore, #PB_Ignore, *v) ;
     ; ;     EndIf
     ; ;     
     ; ; ;     If *v\Hide 
@@ -414,8 +407,8 @@ EndProcedure
     Height = GadgetHeight(Canvas)
     Protected ScrollX, ScrollY, ScrollWidth, ScrollHeight
     
-    Repaint | Bar::CallBack(*Scroll\v, Event, MouseX, MouseY) 
-    Repaint | Bar::CallBack(*Scroll\h, Event, MouseX, MouseY) 
+    Repaint | CallBack(*Scroll\v, Event, MouseX, MouseY) 
+    Repaint | CallBack(*Scroll\h, Event, MouseX, MouseY) 
     
     
     If *Scroll\v\Change Or *Scroll\h\Change 
@@ -595,37 +588,37 @@ EndProcedure
             hmax = Width-x*2
           EndIf
           
-          Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, vMax)
-          Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, hMax)
+          SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, vMax)
+          SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, hMax)
           
           
           ;            BarResize(*Scroll\v, x, y, Width-x*2, Height-y*2, *Scroll\h)
           
-          Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, vMax)
-          Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, hMax)
+          SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, vMax)
+          SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, hMax)
           
           
           
-          *Scroll\v\Hide = Bar::Resize(*Scroll\v, Width-x-*Scroll\v\Width, Y, #PB_Ignore, iHeight)
-          *Scroll\h\Hide = Bar::Resize(*Scroll\h, X, Height-y-*Scroll\h\Height, iWidth, #PB_Ignore)
-          
-          iWidth = Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width
-          iHeight = Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height
-          
-          Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight)
-          Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth)
-          
-          *Scroll\v\Hide = Bar::Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, iHeight)
-          *Scroll\h\Hide = Bar::Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, iWidth, #PB_Ignore)
+          *Scroll\v\Hide = Resize(*Scroll\v, Width-x-*Scroll\v\Width, Y, #PB_Ignore, iHeight)
+          *Scroll\h\Hide = Resize(*Scroll\h, X, Height-y-*Scroll\h\Height, iWidth, #PB_Ignore)
           
           iWidth = Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width
           iHeight = Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height
           
-          Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight)
-          Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth)
+          SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight)
+          SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth)
           
-          Bar::Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\v\Page\len)
-          Bar::Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, *Scroll\h\Page\len, #PB_Ignore)
+          *Scroll\v\Hide = Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, iHeight)
+          *Scroll\h\Hide = Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, iWidth, #PB_Ignore)
+          
+          iWidth = Width-x*2 - Bool(Not *Scroll\v\hide) * *Scroll\v\width
+          iHeight = Height-y*2 - Bool(Not *Scroll\h\hide) * *Scroll\h\height
+          
+          SetAttribute(*Scroll\v, #PB_ScrollBar_PageLength, iHeight)
+          SetAttribute(*Scroll\h, #PB_ScrollBar_PageLength, iWidth)
+          
+          Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\v\Page\len)
+          Resize(*Scroll\h, #PB_Ignore, #PB_Ignore, *Scroll\h\Page\len, #PB_Ignore)
           
           Repaint = #True
           
@@ -718,6 +711,26 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(g_Canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-210, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
   EndProcedure
   
+  Procedure.i Bars(*Scroll.Scroll_S, Size.i, Radius.i, Both.b)
+    With *Scroll     
+      \v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_Vertical, Radius)
+      \v\hide = \v\hide[1]
+      ;\v\s = *Scroll
+      
+      If Both
+        \h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
+        \h\hide = \h\hide[1]
+      Else
+        \h.Widget_S = AllocateStructure(Bar_S)
+        \h\hide = 1
+      EndIf
+      ;\h\s = *Scroll
+    EndWith
+    
+    ProcedureReturn *Scroll
+  EndProcedure
+  
+  
   If OpenWindow(0, 0, 0, Width+20, Height+20, "Scroll on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     g_container = ContainerGadget(#PB_Any, 10, 10, 180, 240, #PB_Container_Flat)
     
@@ -746,8 +759,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical,7)
     ;     *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
     Bars(*Scroll, 16, 7, 1)
-    Bar::SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
-    Bar::SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
+    SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
+    SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
     
     ; Set scroll page position
     SetState(*Scroll\v, 70)
@@ -913,6 +926,6 @@ CompilerEndIf
 
 
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = 808-t--v-+-8-
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = z0-----v-+-v--
 ; EnableXP

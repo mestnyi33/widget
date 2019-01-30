@@ -11,7 +11,7 @@ DeclareModule Widget
     Event.i
     *Function
      *This.Widget_S
-;     *Last.Widget_S
+     *Last.Widget_S
 ;    *Widget.Widget_S
     *Active.Widget_S
     *Focus.Widget_S
@@ -119,7 +119,10 @@ DeclareModule Widget
     *p.Widget_S ; adress parent
     *s.Scroll_S ; 
     *a.Items_S
-    
+    *SplitterFirst.Widget_S
+    *SplitterSecond.Widget_S
+    First.i
+    Second.i
     ; track bar
     Ticks.b
     
@@ -226,6 +229,8 @@ DeclareModule Widget
     Interact.i
     
     State.i
+    o_i.i ; parent opened item
+    
     
     *Popup.Widget_S
     
@@ -234,8 +239,6 @@ DeclareModule Widget
     Enumerate.i
     *data
     
-    *SplitterFirst.Widget_S
-    *SplitterSecond.Widget_S
     *OptionGroup.Widget_S
     
     fs.i 
@@ -287,11 +290,15 @@ DeclareModule Widget
   #PB_Bar_Minimum = 1
   #PB_Bar_Maximum = 2
   #PB_Bar_PageLength = 3
-  #PB_Bar_NoButtons = 4
-  #PB_Bar_Ticks = 1<<13
-  #PB_Bar_Smooth = 1<<6
   
-  #PB_Bar_Direction = 1<<2
+  #PB_Bar_NoButtons = 5
+  #PB_Bar_Direction = 6
+  
+  EnumerationBinary 4
+    #PB_Bar_Smooth 
+    #PB_Bar_Inverted 
+    #PB_Bar_Ticks 
+  EndEnumeration
   
   #PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
   #PB_Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
@@ -316,7 +323,6 @@ DeclareModule Widget
     #PB_Horizontal
     
     #PB_Toggle
-    #PB_Bar_Inverted
     #PB_BorderLess
     
     #PB_Text_Numeric
@@ -528,14 +534,14 @@ DeclareModule Widget
   Declare.i HyperLink(X.i,Y.i,Width.i,Height.i, Text.s, Color.i, Flag.i=0)
   Declare.i ListView(X.i,Y.i,Width.i,Height.i, Flag.i=0)
   
-  Declare.i OpenList(*This.Widget_S, Item.i=-1)
+  Declare.i OpenList(*This.Widget_S, Item.i=0)
   Declare.i CloseList()
   Declare.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=0)
   Declare.i AddItem(*This.Widget_S, Item.i, Text.s, Image.i=-1, Flag.i=0)
   
   Declare.i Draws(*Parent.Widget_S)
   Declare.i Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
-  Declare.i CallBacks(*This.Widget_S, EventType.i, MouseX.i, MouseY.i)
+  Declare.i CallBacks(*This.Widget_S, EventType.i, MouseX.i=0, MouseY.i=0)
   Declare.i Updates(*Scroll.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
   Declare.i Arrow(X,Y, Size, Direction, Color, Style.b = 1, Length = 1)
 EndDeclareModule
@@ -670,23 +676,18 @@ Module Widget
   Macro SetLastParent(_this_)
     ; Set parent
     If LastElement(*openedlist())
-      If LastElement(*openedlist()\items())
-        If _this_\Type = #PB_GadgetType_Option
-          If ListSize(*openedlist()\Childrens()) 
-            If *openedlist()\Childrens()\Type = #PB_GadgetType_Option
-              _this_\OptionGroup = *openedlist()\Childrens()\OptionGroup 
-            Else
-              _this_\OptionGroup = *openedlist()\Childrens() 
-            EndIf
+      If _this_\Type = #PB_GadgetType_Option
+        If ListSize(*openedlist()\Childrens()) 
+          If *openedlist()\Childrens()\Type = #PB_GadgetType_Option
+            _this_\OptionGroup = *openedlist()\Childrens()\OptionGroup 
+          Else
+            _this_\OptionGroup = *openedlist()\Childrens() 
           EndIf
+        Else
+          _this_\OptionGroup = *openedlist()
         EndIf
-        SetParent(_this_, *openedlist(), ListIndex(*openedlist()\items()))
-      Else
-        If _this_\Type = #PB_GadgetType_Option
-          _this_\OptionGroup = *openedlist() 
-        EndIf
-        SetParent(_this_, *openedlist(), 0)
       EndIf
+      SetParent(_this_, *openedlist(), *openedlist()\o_i)
     EndIf
   EndMacro
   
@@ -3572,12 +3573,13 @@ Module Widget
     EndWith
   EndProcedure
   
-  Procedure.i OpenList(*This.Widget_S, Item.i=-1)
+  Procedure.i OpenList(*This.Widget_S, Item.i=0)
     With *This
       If *This > 0
         LastElement(*openedlist())
         If AddElement(*openedlist())
           *openedlist() = *This 
+         *openedlist()\o_i = Item
         EndIf
       EndIf
     EndWith
@@ -3597,15 +3599,12 @@ Module Widget
     With *This
       
       Select \Type
-        Case #PB_GadgetType_Property
-          ProcedureReturn Property_AddItem(*This, Item.i,Text.s,Image, Flag)
-          
-        Case #PB_GadgetType_Tree, #PB_GadgetType_ListView
-          ProcedureReturn Tree_AddItem(*This, Item.i,Text.s,Image, Flag)
-          
         Case #PB_GadgetType_Panel
           LastElement(\items())
           AddElement(\items())
+          
+          ; last opened item of the parent
+          \o_i = ListIndex(\Items())
           
           \items() = AllocateStructure(Items_S)
           \items()\index = ListIndex(\items())
@@ -3614,10 +3613,13 @@ Module Widget
           \items()\height = \TabHeight
           \CountItems + 1 
           
-          ;           \items()\x = \s\width
-          ;           \s\width + \items()\width
-          
           SetImage(\items(), Image)
+          
+        Case #PB_GadgetType_Property
+          ProcedureReturn Property_AddItem(*This, Item.i,Text.s,Image, Flag)
+          
+        Case #PB_GadgetType_Tree, #PB_GadgetType_ListView
+          ProcedureReturn Tree_AddItem(*This, Item.i,Text.s,Image, Flag)
           
         Case #PB_GadgetType_ComboBox
           Protected *Tree.Widget_S = \Popup\Childrens()
@@ -3749,7 +3751,7 @@ Module Widget
               
               If SelectElement(*t\items(), State)
                 *Value\Type = #PB_EventType_Change
-                ; *Value\This = *This
+                *Value\This = *This
                 *t\items()\State = 2
                 *t\Change = State+1
                 
@@ -3776,7 +3778,7 @@ Module Widget
               
               If SelectElement(\items(), State)
                 *Value\Type = #PB_EventType_Change
-                ; *Value\This = *This
+                *Value\This = *This
                 \items()\State = 2
                 \Change = State+1
                 
@@ -3850,7 +3852,7 @@ Module Widget
                 EndIf
               EndIf
               
-              ; *Value\This = *This
+              *Value\This = *This
               *Value\Type = #PB_EventType_Change
               \Change = \Page\Pos - State
               \Page\Pos = State
@@ -3884,7 +3886,6 @@ Module Widget
   
   Procedure.i GetAttribute(*This.Widget_S, Attribute.i)
     Protected Result.i
-    Debug *This
     
     With *This
       Select \Type
@@ -5202,7 +5203,7 @@ Module Widget
     
     If *This > 0
       
-      ;; *Value\This = *This
+      *Value\This = *This
       *Value\Type = EventType
       
       With *This
@@ -5645,7 +5646,7 @@ Module Widget
           
           If Not \State
               repaint | Events(*This, \at, #PB_EventType_MouseEnter, MouseScreenX, MouseScreenY)
-              *Value\This = *This
+              *Value\Last = *This
               \State = 1
             EndIf
             
@@ -5660,7 +5661,7 @@ Module Widget
               \State  = 0
               repaint | Events(*This, \at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
               If \p : \p\State = 0 : EndIf
-              *Value\This = 0
+              *Value\Last = 0
             EndIf
             
           \at = 0
@@ -5770,7 +5771,7 @@ Module Widget
     ProcedureReturn repaint
   EndProcedure
   
-  Procedure.i CallBacks(*This.Widget_S, EventType.i, MouseX.i, MouseY.i)
+  Procedure.i CallBacks(*This.Widget_S, EventType.i, MouseX.i=0, MouseY.i=0)
     Protected Repaint 
     
     If *This > 0 And Not *This\Hide
@@ -5857,11 +5858,12 @@ Module Widget
   EndProcedure
   
   Procedure.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
-    ProcedureReturn Bar(#PB_GadgetType_ScrollBar, X,Y,Width,Height, Min, Max, PageLength, Flag, Radius)
+    Protected Vertical = (Bool(Flag&#PB_Splitter_Vertical) * #PB_Vertical)
+    ProcedureReturn Bar(#PB_GadgetType_ScrollBar, X,Y,Width,Height, Min, Max, PageLength, Flag|Vertical, Radius)
   EndProcedure
   
   Procedure.i Progress(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
-    Protected Smooth = Bool(Flag&#PB_ProgressBar_Smooth) * #PB_Bar_Smooth
+    Protected Smooth = Bool(Flag&#PB_ProgressBar_Smooth) * #PB_Bar_Smooth ; |(Bool(#PB_Vertical) * #PB_Bar_Inverted)
     Protected Vertical = Bool(Flag&#PB_ProgressBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
     ProcedureReturn Bar(#PB_GadgetType_ProgressBar, X,Y,Width,Height, Min, Max, 0, Smooth|Vertical|#PB_Bar_NoButtons, 0)
   EndProcedure
@@ -6654,7 +6656,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       ;     SpinGadget(#PB_GadgetType_Spin, 665, 80, 160,70,0,10)
       Widgets(Str(#PB_GadgetType_Tree)) = Tree( 665, 155, 160, 70 ) : AddItem(Widgets(Str(#PB_GadgetType_Tree)), -1, "Tree_"+Str(#PB_GadgetType_Tree)) : For i=1 To 5 : AddItem(Widgets(Str(#PB_GadgetType_Tree)), i, "item_"+Str(i)) : Next
       Widgets(Str(#PB_GadgetType_Panel)) = Panel(665, 230, 160,70) : AddItem(Widgets(Str(#PB_GadgetType_Panel)), -1, "Panel_"+Str(#PB_GadgetType_Panel)) : Widgets(Str(255)) = Button(0, 0, 90,20, "Button_255" ) : For i=1 To 5 : AddItem(Widgets(Str(#PB_GadgetType_Panel)), i, "item_"+Str(i)) : Next : CloseList()
-      ;SetState( Widgets(Str(#PB_GadgetType_Panel)), 15)
+      
+      OpenList(Widgets(Str(#PB_GadgetType_Panel)), 1)
+      Container(10,5,150,55, #PB_Container_Flat) 
+      Container(10,5,150,55, #PB_Container_Flat) 
+      Button(10,5,50,35, "butt") 
+      CloseList()
+      CloseList()
+      CloseList()
+      SetState( Widgets(Str(#PB_GadgetType_Panel)), 1)
       
       Widgets(Str(301)) = Button(0, 0, 100,20, "Button_1")
       Widgets(Str(302)) = Button(0, 0, 100,20, "Button_2")
@@ -6688,5 +6698,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------v----------------------------4--------------4-030-------------------------------------4--4+40+-f----------------
+; Folding = -----------------------------v----------------------------------------------40-------------------------------------4--4+40+------------------
 ; EnableXP

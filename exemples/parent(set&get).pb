@@ -9,24 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *w.widget_S, *combo
   Global *window_1.widget_S, *window_2.widget_S, *panel.widget_S, *container.widget_S, *scrollarea.widget_S
   Global *b_0, *b_1, *b_2, *b_3, *b_4, *b_5, *b_6, *b_7, *b_8, *b_9, *b_10
-  
-  Procedure.i Draws(*Parent.Widget_S)
-    Draw(*Parent)
     
-    With *Parent
-      ; Draw Childrens
-      If ListSize(\Childrens())
-        ForEach \Childrens() 
-          If \Childrens()\canvas\gadget = *Parent\canvas\gadget
-            If Not \Childrens()\Hide And \Childrens()\p_i = Bool(*Parent\Type = #PB_GadgetType_Panel) * *Parent\index[2]
-              Draws(\Childrens()) 
-            EndIf
-          EndIf
-        Next
-      EndIf
-    EndWith
-  EndProcedure
-  
   Procedure ReDraw(Canvas)
     If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
       ;       DrawingMode(#PB_2DDrawing_Default)
@@ -46,29 +29,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
       StopDrawing()
     EndIf
-  EndProcedure
-  
-  Procedure CallBacks(*This.Widget_S, EventType, MouseX, MouseY)
-    Protected Repaint 
-    
-    If Not *This\Hide
-      Repaint | CallBack(*This, EventType, MouseX, MouseY)
-      
-      With *This
-        ;         If LastElement(\Childrens())
-        ;         Repeat 
-        ForEach \Childrens()
-          If \Childrens()\canvas\gadget = *This\canvas\gadget
-            ;If Not \Childrens()\Hide And \Childrens()\p_i = Bool(*This\Type = #PB_GadgetType_Panel) * *This\index[2]
-            Repaint | CallBacks(\Childrens(), EventType, MouseX, MouseY)
-            ;EndIf
-          EndIf
-        Next ; Until Not PreviousElement(\Childrens()) 
-             ;EndIf
-      EndWith
-    EndIf
-    
-    ProcedureReturn 1
   EndProcedure
   
   Procedure Canvas_CallBack()
@@ -200,7 +160,8 @@ CompilerIf #PB_Compiler_IsMainFile
         ;           EndIf
     EndSelect
     
-    ; ReDraw(Canvas_0)
+;     ReDraw(100)
+;     ReDraw(200)
   EndProcedure
   
   
@@ -381,5 +342,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------
+; Folding = -----
 ; EnableXP
