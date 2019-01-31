@@ -144,7 +144,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
       FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
       
-      Draws(Widgets("Splitter"))
+      Draw(Widgets("Splitter"), 1)
       
       StopDrawing()
     EndIf
