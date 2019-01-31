@@ -1,6 +1,8 @@
 ﻿
 DeclareModule Widget
   EnableExplicit
+  #Anchors = 9
+  
   
   ;- - STRUCTUREs
   ;- - Default_S
@@ -234,7 +236,7 @@ DeclareModule Widget
     
     *Popup.Widget_S
     
-    *anchor.Anchor_S[10]
+    *anchor.Anchor_S[#Anchors+1]
     Grid.i
     Enumerate.i
     *data
@@ -712,9 +714,6 @@ Module Widget
   ;-
   ;- Anchors
   Macro Draw_Anchors(_this_)
-    DrawingMode(#PB_2DDrawing_Default)
-    If _this_\anchor[9] And _this_\Container  : Box(_this_\anchor[9]\x, _this_\anchor[9]\y, _this_\anchor[9]\width, _this_\anchor[9]\height ,_this_\anchor[9]\color[_this_\anchor[9]\State]\back) : EndIf
-    
     DrawingMode(#PB_2DDrawing_Outlined)
     If _this_\anchor[9] : Box(_this_\anchor[9]\x, _this_\anchor[9]\y, _this_\anchor[9]\width, _this_\anchor[9]\height ,_this_\anchor[9]\color[_this_\anchor[9]\State]\frame) : EndIf
     
@@ -723,7 +722,7 @@ Module Widget
     If _this_\anchor[2] : Box(_this_\anchor[2]\x, _this_\anchor[2]\y, _this_\anchor[2]\width, _this_\anchor[2]\height ,_this_\anchor[2]\color[_this_\anchor[2]\State]\back) : EndIf
     If _this_\anchor[3] : Box(_this_\anchor[3]\x, _this_\anchor[3]\y, _this_\anchor[3]\width, _this_\anchor[3]\height ,_this_\anchor[3]\color[_this_\anchor[3]\State]\back) : EndIf
     If _this_\anchor[4] : Box(_this_\anchor[4]\x, _this_\anchor[4]\y, _this_\anchor[4]\width, _this_\anchor[4]\height ,_this_\anchor[4]\color[_this_\anchor[4]\State]\back) : EndIf
-    If _this_\anchor[5] : Box(_this_\anchor[5]\x, _this_\anchor[5]\y, _this_\anchor[5]\width, _this_\anchor[5]\height ,_this_\anchor[5]\color[_this_\anchor[5]\State]\back) : EndIf
+    If _this_\anchor[5] And Not _this_\Container : Box(_this_\anchor[5]\x, _this_\anchor[5]\y, _this_\anchor[5]\width, _this_\anchor[5]\height ,_this_\anchor[5]\color[_this_\anchor[5]\State]\back) : EndIf
     If _this_\anchor[6] : Box(_this_\anchor[6]\x, _this_\anchor[6]\y, _this_\anchor[6]\width, _this_\anchor[6]\height ,_this_\anchor[6]\color[_this_\anchor[6]\State]\back) : EndIf
     If _this_\anchor[7] : Box(_this_\anchor[7]\x, _this_\anchor[7]\y, _this_\anchor[7]\width, _this_\anchor[7]\height ,_this_\anchor[7]\color[_this_\anchor[7]\State]\back) : EndIf
     If _this_\anchor[8] : Box(_this_\anchor[8]\x, _this_\anchor[8]\y, _this_\anchor[8]\width, _this_\anchor[8]\height ,_this_\anchor[8]\color[_this_\anchor[8]\State]\back) : EndIf
@@ -773,15 +772,10 @@ Module Widget
       _this_\anchor[8]\y = _this_\y+_this_\height-_this_\anchor[8]\Pos
     EndIf
     If _this_\anchor[9] 
-      If _this_\Container
-        _this_\anchor[9]\x = _this_\x+(_this_\anchor[9]\Pos+2)
-        _this_\anchor[9]\y = _this_\y-_this_\anchor[9]\height+_this_\anchor[9]\Pos 
-      Else
-        _this_\anchor[9]\x = _this_\x
-        _this_\anchor[9]\y = _this_\y
-        _this_\anchor[9]\width = _this_\width
-        _this_\anchor[9]\height = _this_\height
-      EndIf
+      _this_\anchor[9]\x = _this_\x
+      _this_\anchor[9]\y = _this_\y
+      _this_\anchor[9]\width = _this_\width
+      _this_\anchor[9]\height = _this_\height
     EndIf
   EndMacro
   
@@ -807,12 +801,20 @@ Module Widget
         Case \anchor[3] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, #PB_Ignore)
         Case \anchor[4] : Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, myh)
           
-        Case \anchor[5] : Resize(*This, mx, my, mw, mh)
+        Case \anchor[5] 
+          If \Container
+            Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
+          Else
+            Resize(*This, mx, my, mw, mh)
+          EndIf
         Case \anchor[6] : Resize(*This, #PB_Ignore, my, mxw, mh)
         Case \anchor[7] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, myh)
         Case \anchor[8] : Resize(*This, mx, #PB_Ignore, mw, myh)
           
-        Case \anchor[9] : Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
+        Case \anchor[9] 
+          If Not \Container
+            Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
+          EndIf
       EndSelect
     EndWith
   EndProcedure
@@ -833,7 +835,7 @@ Module Widget
             ProcedureReturn 1
             
           ElseIf Not Buttons
-            For i = 9 To 1 Step - 1
+            For i = #Anchors To 1 Step - 1
               If \anchor[i]
                 If (MouseScreenX>\anchor[i]\X And MouseScreenX=<\anchor[i]\X+\anchor[i]\Width And 
                     MouseScreenY>\anchor[i]\Y And MouseScreenY=<\anchor[i]\Y+\anchor[i]\Height)
@@ -845,7 +847,7 @@ Module Widget
                     
                     \anchor[i]\Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
                     SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor)
-                    If i<>9
+                    If i<>5
                       Result = 1
                     EndIf
                   EndIf
@@ -889,7 +891,7 @@ Module Widget
     ; ProcedureReturn
     
     Structure DataBuffer
-      cursor.i[10]
+      cursor.i[#Anchors+1]
     EndStructure
     
     Protected *Cursor.DataBuffer = ?CursorsBuffer
@@ -904,7 +906,7 @@ Module Widget
       If State
         Protected i
         
-        For i=1 To 9
+        For i=1 To #Anchors
           \anchor[i] = AllocateStructure(Anchor_S)
           \anchor[i]\p = *This
           \anchor[i]\Cursor = *Cursor\Cursor[i]
@@ -921,8 +923,13 @@ Module Widget
           \anchor[i]\Pos = \anchor[i]\Height/2
         Next i
         
-        \anchor[9]\Width * 2
+         ; \anchor[9]\Width * 2
         
+        If \Container
+          \anchor[5]\Width * 2
+          \anchor[5]\Height * 2
+          \anchor[5]\Pos = 9
+        EndIf
         
       EndIf
     EndWith
@@ -3109,6 +3116,7 @@ Module Widget
       EndIf
       
       \Box\x = \x+\width-\Box\width -\Box\ArrowSize/2
+      \Box\Height = \height[2]
       \Box\y = \y
       
       ; Draw arrows
@@ -3845,6 +3853,9 @@ Module Widget
                 *t\Change = State+1
                 
                 \Text\String[1] = *t\Items()\Text\String
+;                 \Text[1]\String = \Text\String[1]
+;                 \Text\Caret = 1
+;                 \Text\Caret[1] = \Text\Caret
                 \Text\Change = 1
                 
                 ;Debug #PB_GadgetType_ComboBox;\Type
@@ -3947,7 +3958,7 @@ Module Widget
               \Page\Pos = State
               
               If \Type = #PB_GadgetType_Spin
-                \Text\String.s[1] = Str((\Thumb\Pos-\x[2])/13)
+                \Text\String.s[1] = Str(\Page\Pos)
                 \Text\Change = 1
               ElseIf \Type = #PB_GadgetType_Splitter
                 Resize_Splitter(*This)
@@ -5994,14 +6005,13 @@ Module Widget
       ;\Text\Align\Horizontal = 1
       \Text\x[2] = 5
       
-      \Radius = Radius
+      ;\Radius = Radius
       \Ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
       \Smooth = Bool(Flag&#PB_Bar_Smooth=#PB_Bar_Smooth)
       \Vertical = Bool(Not Flag&#PB_Vertical=#PB_Vertical)
       \Box = AllocateStructure(Box_S)
-      \Box\Size[3] = 0 ; min thumb size
       
-      \Text\String.s[1] = "0"
+      \Text\String.s[1] = Str(Min)
       \Text\Change = 1
               
       \Box\ArrowSize[1] = 4
@@ -6027,7 +6037,7 @@ Module Widget
       \color[3]\alpha[1] = 128
       
       
-      \Box\Size[2] = 19
+      \Box\Size[2] = 17
       
       If \Min <> Min : SetAttribute(*This, #PB_Bar_Minimum, Min) : EndIf
       If \Max <> Max : SetAttribute(*This, #PB_Bar_Maximum, Max) : EndIf
@@ -6663,6 +6673,7 @@ Macro EventGadget()
 EndMacro
 
 
+
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   
@@ -6824,7 +6835,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       ;     ExplorerTreeGadget(#PB_GadgetType_ExplorerTree, 500, 380, 160,70,"" )
       ;     
       ;     ExplorerComboGadget(#PB_GadgetType_ExplorerCombo, 665, 5, 160,70,"" )
-      Widgets(Str(#PB_GadgetType_Spin)) = Spin(665, 80, 160,70,0,10)
+      Widgets(Str(#PB_GadgetType_Spin)) = Spin(665, 80, 160,70,20,100)
       Widgets(Str(#PB_GadgetType_Tree)) = Tree( 665, 155, 160, 70 ) : AddItem(Widgets(Str(#PB_GadgetType_Tree)), -1, "Tree_"+Str(#PB_GadgetType_Tree)) : For i=1 To 5 : AddItem(Widgets(Str(#PB_GadgetType_Tree)), i, "item_"+Str(i)) : Next
       Widgets(Str(#PB_GadgetType_Panel)) = Panel(665, 230, 160,70) : AddItem(Widgets(Str(#PB_GadgetType_Panel)), -1, "Panel_"+Str(#PB_GadgetType_Panel)) : Widgets(Str(255)) = Button(0, 0, 90,20, "Button_255" ) : For i=1 To 5 : AddItem(Widgets(Str(#PB_GadgetType_Panel)), i, "item_"+Str(i)) : Next : CloseList()
       
@@ -6869,5 +6880,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------4-----------------------------------------f4------------------f-------------------00-v-0v-------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------HQA-
 ; EnableXP

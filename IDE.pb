@@ -427,9 +427,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     SetColor(Widgets("Container_1"), #PB_Gadget_BackColor, $FF0CDF0F)
      Widgets("Form_0_Container_1_Option_0") = Option(10, 10, 100, 21, "Option_5", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_0"), 18)
      Widgets("Form_0_Container_1_Option_1") = Option(10, 35, 100, 21, "Option_6", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_1"), 19)
-    AddItem(Widgets("Container_1"), -1, "Panel_1") 
-    Widgets("Form_0_Container_1_Button_3") = Button(10, 60, 100, 30, "Button_3", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_3"), 8)
-    Widgets("Form_0_Container_1_Button_4") = Button(10, 110, 100, 30, "Button_4", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_4"), 9)
+     
+     ;AddItem(Widgets("Container_1"), -1, "Panel_1") 
+    Widgets("Form_0_Container_1_Button_3") = Spin(10, 65, 100, 25, 0, 10, #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_3"), 8)
+    Widgets("Form_0_Container_1_Button_4") = Spin(10, 95, 100, 25, 0, 10, #PB_Vertical|#PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_4"), 9)
     CloseList()
     
     Widgets("Form_0_ComboBox_5") = ComboBox(10, 10, 100, 26, #PB_Flag_AnchorsGadget) 
@@ -569,5 +570,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------
+; Folding = --------
 ; EnableXP
