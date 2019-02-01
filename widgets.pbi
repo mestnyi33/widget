@@ -2358,7 +2358,7 @@ Module Widget
             \Step = \Thumb\len
             
             If \Change > 0 And SelectElement(\Items(), \Change-1)
-              Protected State = ((12+(\items()\x+\items()\width)-\x)-\Page\len)
+              Protected State = ((\Box\Size[1]+(\items()\x+\items()\width)-\x[2])-\Page\len)
               
               If State < \Min
                 State = \Min 
@@ -2380,10 +2380,10 @@ Module Widget
         ; Линии на концах для красоты
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
         If Not IsStart(*This)
-          Line(\Box\x[1]+\Box\width[1]+1, \Box\y[1]+2, 1, \TabHeight-5+start, \Color\Frame[start]&$FFFFFF|Alpha)
+          Line(\Box\x[1]+\Box\width[1]+1, \Box\y[1], 1, \TabHeight-5+start, \Color\Frame[start]&$FFFFFF|Alpha)
         EndIf
         If Not IsStop(*This)
-          Line(\Box\x[2]-2, \Box\y[1]+2, 1, \TabHeight-5+stop, \Color\Frame[stop]&$FFFFFF|Alpha)
+          Line(\Box\x[2]-2, \Box\y[1], 1, \TabHeight-5+stop, \Color\Frame[stop]&$FFFFFF|Alpha)
         EndIf
       EndIf
       
@@ -2413,16 +2413,16 @@ Module Widget
         
         If State_1 
           DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          RoundBox( \Box\x[1], \Box\y[1]+2, \Box\Width[1], \Box\Height[1]-4, \Radius, \Radius, \Box\Color[1]\Back[State_1]&$FFFFFF|Alpha)
+          RoundBox( \Box\x[1], \Box\y[1], \Box\Width[1], \Box\Height[1], \Radius, \Radius, \Box\Color[1]\Back[State_1]&$FFFFFF|Alpha)
           DrawingMode( #PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox( \Box\x[1], \Box\y[1]+2, \Box\Width[1], \Box\Height[1]-4, \Radius, \Radius, \Box\Color[1]\Frame[State_1]&$FFFFFF|Alpha)
+          RoundBox( \Box\x[1], \Box\y[1], \Box\Width[1], \Box\Height[1], \Radius, \Radius, \Box\Color[1]\Frame[State_1]&$FFFFFF|Alpha)
         EndIf
         
         If State_2 
           DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          RoundBox( \Box\x[2], \Box\y[2]+2, \Box\Width[2], \Box\Height[2]-4, \Radius, \Radius, \Box\Color[2]\Back[State_2]&$FFFFFF|Alpha)
+          RoundBox( \Box\x[2], \Box\y[2], \Box\Width[2], \Box\Height[2], \Radius, \Radius, \Box\Color[2]\Back[State_2]&$FFFFFF|Alpha)
           DrawingMode( #PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox( \Box\x[2], \Box\y[2]+2, \Box\Width[2], \Box\Height[2]-4, \Radius, \Radius, \Box\Color[2]\Frame[State_2]&$FFFFFF|Alpha)
+          RoundBox( \Box\x[2], \Box\y[2], \Box\Width[2], \Box\Height[2], \Radius, \Radius, \Box\Color[2]\Frame[State_2]&$FFFFFF|Alpha)
         EndIf
         
         ; Draw arrows
@@ -4891,15 +4891,15 @@ Module Widget
             EndIf
             
             \Box\x[1] = \x[2]+1
-            \Box\y[1] = \y[2]-\TabHeight+\bs
+            \Box\y[1] = \y[2]-\TabHeight+\bs+2
             \Box\x[2] = \x[2]+\width[2]-\Box\width[2]-1
             \Box\y[2] = \Box\y[1]
             
             \Box\width[1] = \Box\Size
             \Box\width[2] = \Box\Size
             
-            \Box\height[1] = \TabHeight-1
-            \Box\height[2] = \TabHeight-1
+            \Box\height[1] = \TabHeight-1-4
+            \Box\height[2] = \Box\height[1]
           Else
             If \Vertical
               If \Box\Size
@@ -6364,6 +6364,7 @@ Module Widget
       
       \image\Align\Vertical = 1
       ;\image\Align\Horizontal = 1
+      \Text\MultiLine = 1
       
       \Text\x[2] = 5
       \Flag\Lines = Bool(Flag&#PB_HyperLink_Underline=#PB_HyperLink_Underline)
@@ -6490,6 +6491,7 @@ Module Widget
       \Box\ThreeState = Bool(Flag&#PB_CheckBox_ThreeState=#PB_CheckBox_ThreeState)
       
       \Text\Align\Vertical = 1
+      \Text\MultiLine = 1
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
@@ -6520,7 +6522,7 @@ Module Widget
       \Radius = 7
       
       \Text\Align\Vertical = 1
-      
+      \Text\MultiLine = 1
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
@@ -7125,7 +7127,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       CloseList()
       CloseList()
       CloseList()
-      SetState( Widgets(Str(#PB_GadgetType_Panel)), 1)
+      SetState( Widgets(Str(#PB_GadgetType_Panel)), 15)
       
       Widgets(Str(301)) = Spin(0, 0, 100,20,0,10, #PB_Vertical);, "Button_1")
       Widgets(Str(302)) = Spin(0, 0, 100,20,0,10);, "Button_2")
@@ -7159,5 +7161,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----------------------------4----------fl--------------------------6------------------------------------------------------------------------------PjA+
+; Folding = ----------------------------4----------fl--------------------------9------------------------------------------------------------------------------vRA-
 ; EnableXP
