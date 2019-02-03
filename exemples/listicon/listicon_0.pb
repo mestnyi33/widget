@@ -1,83 +1,67 @@
-﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
-CompilerElse
-  IncludePath "../../"
-CompilerEndIf
-
-XIncludeFile "module_macros.pbi"
-XIncludeFile "module_constants.pbi"
-XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scroll.pbi"
-XIncludeFile "module_text.pbi"
-XIncludeFile "module_editor.pbi"
-XIncludeFile "module_listicon.pbi"
+﻿IncludePath "../../"
+XIncludeFile "widgets.pbi"
 
 ;- 
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule ListIcon
+  UseModule widget
   
-  Procedure CallBacks()
-    Protected Result
-    Protected Canvas = EventGadget()
+  Global *w_0.Widget_S, *w_1.Widget_S, *w_2.Widget_S
+  LN=1500 ; количесвто итемов 
+  
+  Procedure ReDraw(Canvas)
+    If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+      ;       DrawingMode(#PB_2DDrawing_Default)
+      ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
+      
+      Draw(*w_0)
+      Draw(*w_1)
+      Draw(*w_2)
+      
+      StopDrawing()
+    EndIf
+  EndProcedure
+  
+  Procedure Canvas_CallBack()
+    Protected Canvas.i=EventGadget()
+    Protected EventType.i = EventType()
+    Protected Repaint, iWidth, iHeight
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    Protected mouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     
-    Select EventType()
-      Case #PB_EventType_KeyDown ; Debug  " key "+GetGadgetAttribute(Canvas, #PB_Canvas_Key)
-        Select GetGadgetAttribute(Canvas, #PB_Canvas_Key)
-          Case #PB_Shortcut_Tab
-            ForEach List()
-              If List()\Widget = List()\Widget\Focus
-                Result | CallBack(List()\Widget, #PB_EventType_LostFocus);, Canvas) 
-                NextElement(List())
-                ;Debug List()\Widget
-                Result | CallBack(List()\Widget, #PB_EventType_Focus);, Canvas) 
-                Break
-              EndIf
-            Next
-        EndSelect
+    Select EventType
+      Case #PB_EventType_Repaint : Repaint = 1 
+      Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+        Resize(*w_0, #PB_Ignore, #PB_Ignore, Width, Height)  
+        Resize(*w_1, #PB_Ignore, #PB_Ignore, Width, Height)  
+        Resize(*w_2, #PB_Ignore, #PB_Ignore, Width, Height)  
+        Repaint = 1 
     EndSelect
     
-    Select EventType()
-      Case #PB_EventType_Repaint : Result = 1
-      Case #PB_EventType_Resize : Result = 1
-      Default
-        
-        If EventType() = #PB_EventType_LeftButtonDown
-          SetActiveGadget(EventGadget())
-        EndIf
-        
-        ForEach List()
-          If Canvas = List()\Widget\Canvas\Gadget
-            Result | CallBack(List()\Widget, EventType()) 
-          EndIf
-        Next
-    EndSelect
+    Repaint | CallBack(*w_0, EventType, mouseX,mouseY)
+    Repaint | CallBack(*w_1, EventType, mouseX,mouseY)
+    Repaint | CallBack(*w_2, EventType, mouseX,mouseY)
     
-    If Result
-       ForEach List()
-        ReDraw(List()\Widget);, Canvas, winBackColor)
-      Next
+    If Repaint
+      ReDraw(Canvas)
     EndIf
-    
   EndProcedure
   
   Procedure Events()
     If EventType() = #PB_EventType_LeftClick
-;       If GadgetType(EventGadget()) = #PB_GadgetType_ListIcon
-;         Debug GetGadgetText(EventGadget())
-;         Debug GetGadgetState(EventGadget())
-;         Debug GetGadgetItemState(EventGadget(), GetGadgetState(EventGadget()))
-;       Else
-;         Debug ListIcon::GetText(EventGadget())
-;         Debug ListIcon::GetState(EventGadget())
-;         Debug ListIcon::GetItemState(EventGadget(), ListIcon::GetState(EventGadget()))
-;       EndIf
+      ;       If GadgetType(EventGadget()) = #PB_GadgetType_ListIcon
+      ;         Debug GetGadgetText(EventGadget())
+      ;         Debug GetGadgetState(EventGadget())
+      ;         Debug GetGadgetItemState(EventGadget(), GetGadgetState(EventGadget()))
+      ;       Else
+      ;         Debug ListIcon::GetText(EventGadget())
+      ;         Debug ListIcon::GetState(EventGadget())
+      ;         Debug ListIcon::GetItemState(EventGadget(), ListIcon::GetState(EventGadget()))
+      ;       EndIf
     EndIf
   EndProcedure
   
@@ -112,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 3
-    ListIconGadget(g, 350, 10, 430, 210,"Column_1",90, #PB_ListIcon_FullRowSelect|#PB_ListIcon_GridLines|#PB_ListIcon_CheckBoxes)                                         
+    ListIconGadget(g, 350, 10, 440, 210,"Column_1",90, #PB_ListIcon_FullRowSelect|#PB_ListIcon_GridLines|#PB_ListIcon_CheckBoxes)                                         
     
     ;HideGadget(g,1)
     For i=1 To 2
@@ -130,38 +114,40 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{ - widget
     ; Demo draw string on the canvas
-    CanvasGadget(10,  10, 230, 780, 210, #PB_Canvas_Keyboard)
-    SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
-    BindGadgetEvent(10, @CallBacks())
-    g = 10
+    CanvasGadget(100, 10, 230, 780, 210, #PB_Canvas_Keyboard )
+    BindGadgetEvent(100, @Canvas_CallBack())
+    Use(0, 100)
+    g = 100
     
     t=ElapsedMilliseconds()
+    
+    
     ;g = 11
-    *g = Create(g, -1, 10, 230, 165, 210,"Column_1",90)                                      
-    For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
+    *w_0 = ListIcon(0, 0, 165, 210,"Column_1",90)                                      
+    For i=1 To 2 : AddColumn(*w_0, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To 7
-      AddItem(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                           
+      AddItem(*w_0, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                           
     Next
     
     ;g = 12
-    *g = Create(g, -1, 180, 230, 165, 210,"Column_1",90, #PB_Flag_FullSelection)                                         
-    For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
+    *w_1 = ListIcon(170, 0, 165, 210,"Column_1",90, #PB_Flag_FullSelection)                                         
+    For i=1 To 2 : AddColumn(*w_1, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To Count
-      AddItem(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", -1)                                           
+      AddItem(*w_1, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", -1)                                           
     Next
     
     ;g = 13
-    *g = Create(g, -1, 350, 230, 430, 210,"Column_1",90, #PB_Flag_FullSelection|#PB_Flag_GridLines|#PB_Flag_CheckBoxes)                                     
+    *w_2 = ListIcon(340, 0, 440, 210,"Column_1",90, #PB_Flag_FullSelection|#PB_Flag_GridLines|#PB_Flag_CheckBoxes)                                     
     
     ;HideGadget(g,1)
     For i=1 To 2
-      AddColumn(*g, i,"Column_"+Str(i+1),90)
+      AddColumn(*w_2, i,"Column_"+Str(i+1),90)
     Next
     ; 1_example
     For i=0 To 15
-      AddItem(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                           
+      AddItem(*w_2, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                           
     Next
     ;HideGadget(g,0)
     
@@ -173,8 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;   With *This\Columns()
     ;     Debug "Scroll_Height "+*This\Scroll\Height
     ;   EndWith
-    PostEvent(#PB_Event_Gadget, 0, 10, #PB_EventType_Resize)
-        
+    ReDraw(100)
     
     Repeat
       Select WaitWindowEvent()   
@@ -213,6 +198,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = --8-
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = ----
 ; EnableXP
