@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -17,15 +17,15 @@ CompilerIf #PB_Compiler_IsMainFile
       FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
       
       If Canvas = *window_1\canvas\gadget
-        Draws(*window_1)
+        Draw(*window_1, 1)
       EndIf
       If Canvas = *window_2\canvas\gadget
-        Draws(*window_2)
+        Draw(*window_2, 1)
       EndIf
       
-      If Canvas = *w\canvas\gadget
-        Draw(*w)
-      EndIf
+;       If Canvas = *w\canvas\gadget
+;         Draw(*w)
+;       EndIf
       
       StopDrawing()
     EndIf
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     
     Select EventType
-      Case #PB_EventType_Repaint : Repaint = 1 
+      Case #PB_EventType_Repaint : ReDraw(Canvas) 
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
         If Canvas = *window_1\canvas\gadget
           Resize(*window_1, #PB_Ignore, #PB_Ignore, Width, Height)  
@@ -60,9 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     If Repaint
-      ;ReDraw(Canvas)
-      ReDraw(100)
-      ReDraw(200)
+      ReDraw(Canvas)
     EndIf
   EndProcedure
   
@@ -171,12 +169,12 @@ CompilerIf #PB_Compiler_IsMainFile
   BindGadgetEvent(100, @Canvas_CallBack())
   Use(10, 100)
   
-  *window_1 = Window(1, 1, 640-2, 430-2, "demo set  new parent");, Flags )
+  *window_1 = Window(0, 0, 640, 430, "demo set  new parent");, Flags )
   
-  *b_0 = Button(30,90,150,30,"move to Window")
-  *panel=Panel(10,150,200,160) :AddItem(*panel,-1,"Panel") :Button(30,90,150,30,"Button_panel") :AddItem(*panel,-1,"Second") :AddItem(*panel,-1,"Third") :CloseList()
-  *container = Container(215,150,200,160,#PB_Container_Flat) :Button(30,90,150,30,"Container button")  :CloseList() ; Container
-  *scrollarea = ScrollArea(420,150,200,160,200,160,10,#PB_ScrollArea_Flat) :Button(30,90,150,30,"ScrollArea button") :CloseList()
+  *b_0 = Button(30,90,150,30,"Button >>(Window)")
+  *panel=Panel(10,150,200,160) : AddItem(*panel,-1,"Panel") : Button(30,90,150,30,"Button >>(Panel)") : AddItem(*panel,-1,"Second") : AddItem(*panel,-1,"Third") : CloseList()
+  *container = Container(215,150,200,160,#PB_Container_Flat) : Button(30,90,150,30,"Button >>(Container)") : CloseList() ; Container
+  *scrollarea = ScrollArea(420,150,200,160,200,160,10,#PB_ScrollArea_Flat) : Button(30,90,150,30,"Button >>(ScrollArea)") : CloseList()
   
   *b_4 = Button(50,320,100,30,"move to Desktop") 
   *b_5 = Button(150,320,100,30,"move to Window") 
@@ -192,7 +190,7 @@ CompilerIf #PB_Compiler_IsMainFile
   BindGadgetEvent(200, @Canvas_CallBack())
   Use(20, 200)
   
-  *window_2 = Window(1, 1, 200-2, 430-2, "demo set  new parent");, Flags )
+  *window_2 = Window(0, 0, 200, 430, "demo set  new parent");, Flags )
   *w = Button(30,10,150,70,"Button") 
   
   *combo = ComboBox( 30,90,150,30 ) 
@@ -342,5 +340,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----
+; Folding = ---8-
 ; EnableXP

@@ -6,8 +6,28 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Widget
   
-  Global NewMap Widgets.i()
   Global.i gEvent, gQuit, value, direction, x=10,y=10
+  Global *window
+  
+  ;-
+  ; Получить Z-позицию элемента в окне
+  Procedure GetPosition(*This.Widget_S, Position=#PB_Default)
+    Protected Result.i
+    
+;     Select Position
+;       Case #PB_List_First  : Result = FirstElement(*List())
+;       Case #PB_List_Before : ChangeCurrentElement(*List(), *This\adress) : Result = PreviousElement(*List())
+;       Case #PB_List_After  : ChangeCurrentElement(*List(), *This\adress) : Result = NextElement(*List())
+;       Case #PB_List_Last   : Result = LastElement(*List())
+;       Default
+;         ProcedureReturn *This\adress
+;     EndSelect
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  ; Позиционирование элементов (Positioning This)
+  
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint, *This.Widget_S
@@ -17,23 +37,31 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     
-    Protected *Window.Widget_s = GetGadgetData(Canvas)
     
     Select EventType
         ;Case #PB_EventType_Repaint : Repaint = EventData()
       Case #PB_EventType_Resize : Repaint = 1
-        Resize(*Window, #PB_Ignore, #PB_Ignore, Width-2, Height-2)
+        Resize(*window, #PB_Ignore, #PB_Ignore, Width, Height)
       Default
         
         If EventType() = #PB_EventType_LeftButtonDown
           SetActiveGadget(Canvas)
         EndIf
         
-        *This  = at(*Window, MouseX, MouseY)
-        If *This
-          Repaint | CallBack(*This, EventType, MouseX, MouseY)
-        EndIf
+        *This = at(*window, MouseX, MouseY)
         
+        If *This
+          Repaint | CallBack(*This, EventType(), MouseX, MouseY)
+          
+          Select EventType
+            Case #PB_EventType_LeftButtonDown
+              ;             Protected *First = FirstElement(*list())
+              ;             Protected *last = LastElement(*list())
+              
+              SetPosition(*This, #PB_List_Last)
+              Repaint = 1
+          EndSelect
+        EndIf
         
     EndSelect
     
@@ -101,95 +129,40 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(10, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
   
-  Procedure.i _SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
-    ;ProcedureReturn SetAlignment(*This.Widget_S, Mode.i, Type.i)
-    With *This
-      Select Type
-        Case 1 ; widget
-        Case 2 ; text
-        Case 3 ; image
-      EndSelect
-      
-      \Align.Align_S = AllocateStructure(Align_S)
-      
-      \Align\Right = 0
-      \Align\Bottom = 0
-      \Align\Left = 0
-      \Align\Top = 0
-      \Align\Horizontal = 0
-      \Align\Vertical = 0
-      
-      If Mode&#PB_Right=#PB_Right
-        \Align\x = (\Parent\Width-\Parent\bs*2 - (\x-\Parent\x-\Parent\bs)) - \Width
-        \Align\Right = 1
-      EndIf
-      If Mode&#PB_Bottom=#PB_Bottom
-        \Align\y = (\Parent\height -\Parent\bs*2- (\y-\Parent\y-\Parent\bs)) - \height
-        \Align\Bottom = 1
-      EndIf
-      If Mode&#PB_Left=#PB_Left
-        \Align\Left = 1
-        If Mode&#PB_Right=#PB_Right
-          \Align\x1 = (\Parent\Width - \Parent\bs*2) - \Width
-        EndIf
-      EndIf
-      If Mode&#PB_Top=#PB_Top
-        \Align\Top = 1
-        If Mode&#PB_Bottom=#PB_Bottom
-          \Align\y1 = (\Parent\height -\Parent\bs*2)- \height
-        EndIf
-      EndIf
-      
-      If Mode&#PB_Center=#PB_Center
-        \Align\Vertical = 1
-        \Align\Horizontal = 1
-      EndIf
-      If Mode&#PB_Vertical=#PB_Vertical
-        \Align\Vertical = 1
-      EndIf
-      If Mode&#PB_Horizontal=#PB_Horizontal
-        \Align\Horizontal = 1
-      EndIf
-      
-      Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-    EndWith
-  EndProcedure
-  
   Procedure Window_0()
     Protected i
     
     If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      Define *w.Widget_s = OpenList(0)
-      Define canvas = *w\Canvas\Gadget
+      ButtonGadget   (10,    5,   565, 590,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      ;Widgets(Str(50)) = Window(50, 50, 280, 200, "Demo dock widgets", #PB_Flag_AnchorsGadget)
-      Widgets(Str(0)) = Container(50, 50, 280, 200, #PB_Flag_AnchorsGadget)
+      CanvasGadget(1, 10,10, 580, 550, #PB_Canvas_Keyboard|#PB_Canvas_Container)
+      SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
-      Widgets(Str(1)) = Button(0, (200-20)/2, 80, 20, "Left_Center_"+Str(1))
-      Widgets(Str(2)) = Button((280-80)/2, 0, 80, 20, "Top_Center_"+Str(2))
-      Widgets(Str(3)) = Button(280-80, (200-20)/2, 80, 20, Str(3)+"_Center_Right")
-      Widgets(Str(4)) = Button((280-80)/2, 200-20, 80, 20, Str(4)+"_Center_Bottom")
-      Widgets(Str(5)) = Button(0, 0, 80, 20, "Default_"+Str(5))
-      Widgets(Str(6)) = Button(280-80, 0, 80, 20, "Right_"+Str(6))
-      Widgets(Str(7)) = Button(280-80, 200-20, 80, 20, "Bottom_"+Str(7))
-      Widgets(Str(8)) = Button(0, 200-20, 80, 20, Str(8)+"_Bottom_Right")
-      Widgets(Str(9)) = Button((280-80)/2, (200-20)/2, 80, 20, "Bottom_"+Str(9))
+      *window = openlist(0, 1)
+;       *window = Window(150, 50, 280, 200, "Window_1")
+;       SetGadgetData(1, *window)
+      
+      ;       Widgets(Hex(1)) = Window(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
+      ;       Widgets(Hex(2)) = Window(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
+      ;       Widgets(Hex(3)) = Window(20, 150, 280, 200, "Window_3");, #PB_Flag_AnchorsGadget)
+      Window(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
+      Window(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
+      Window(20, 150, 280, 200, "Window_3") ;, #PB_Flag_AnchorsGadget)
+      
+      Button(100, 20, 80, 80, "Button_1");, #PB_Flag_AnchorsGadget)
+      Button(130, 80, 80, 80, "Button_2");, #PB_Flag_AnchorsGadget)
+      Button(70, 80, 80, 80, "Button_3") ;, #PB_Flag_AnchorsGadget)
+      
+      ;Widgets(Hex(2)) = Button(91, 21, 280-2-182, 200-2-42, "Full_"+Str(5))
       
       CloseList()
       
-      _SetAlignment(Widgets(Str(1)), #PB_Vertical)
-      _SetAlignment(Widgets(Str(2)), #PB_Horizontal)
-      _SetAlignment(Widgets(Str(3)), #PB_Vertical|#PB_Right)
-      _SetAlignment(Widgets(Str(4)), #PB_Horizontal|#PB_Bottom)
-      _SetAlignment(Widgets(Str(5)), 0)
-      _SetAlignment(Widgets(Str(6)), #PB_Right)
-      _SetAlignment(Widgets(Str(7)), #PB_Right|#PB_Bottom)
-      _SetAlignment(Widgets(Str(8)), #PB_Bottom)
-      _SetAlignment(Widgets(Str(9)), #PB_Center)
       
+      BindGadgetEvent(1, @Canvas_CallBack())
       
-      BindGadgetEvent(canvas, @Canvas_CallBack())
-      ReDraw(canvas)
+      CloseGadgetList()
+      
+      ReDraw(1)
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
@@ -205,11 +178,48 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_Event_CloseWindow
         gQuit= #True
         
+      Case #PB_Event_Timer
+        ;         If IsStart(*Bar_0)
+        ;           direction = 1
+        ;         EndIf
+        ;         If IsStop(*Bar_0)
+        ;           direction =- 1
+        ;         EndIf
+        ;         
+        ;         value + direction
+        ;         
+        ;         If SetState(*Bar_0, value)
+        ;           ;PostEvent(#PB_Event_Gadget, 0, 1, -1)
+        ;           ReDraw(1)
+        ;         EndIf
+        
+      Case #PB_Event_Gadget
+        
+        ;         Select EventGadget()
+        ;           Case 10
+        ;             value = GetState(*Bar_0)
+        ;             If GetGadgetState(10)
+        ;               AddWindowTimer(0, 1, 10)
+        ;             Else
+        ;               RemoveWindowTimer(0, 1)
+        ;             EndIf
+        ;         EndSelect
+        ;         
+        ;         ; Get interaction with the scroll bar
+        ;         CallBack(*Bar_0, EventType())
+        ;         
+        ;         If WidgetEventType() = #PB_EventType_Change
+        ;           SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
+        ;         EndIf
+        ;         
+        ;         ReDraw(1)
     EndSelect
     
   Until gQuit
 CompilerEndIf
 
+
+
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -+---
+; Folding = -8--
 ; EnableXP

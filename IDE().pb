@@ -7,6 +7,20 @@ XIncludeFile "widgets.pbi"
 ; Event procedures needs to be put in another source file.
 ;
 
+; DeclareModule Helper
+;   Declare.i Image(X.i,Y.i,Width.i,Height.i, Title.s, Flag.i=0)
+; EndDeclareModule
+; 
+; Module Helper
+;   
+;   Procedure.i Image(X.i,Y.i,Width.i,Height.i, Title.s, Flag.i=0)
+;     Protected *Window.Widget::Widget_S 
+;     *Window = Widget::Window(X.i,Y.i,Width.i,Height.i, Title.s, Flag.i)
+;     
+;   EndProcedure
+; EndModule
+
+
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
@@ -27,7 +41,80 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     StopDrawing()
   EndIf
   
-  Procedure.i Load_Widgets(Widget, Directory$)
+  ;   If CreateImage(4, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(4))
+  ;     DrawingMode(#PB_2DDrawing_AllChannels) 
+  ;     For x=0 To 600 Step 4
+  ;       For y=0 To 600 Step 4
+  ;         Line(x, y, 1,1, $FF000000)
+  ;       Next y
+  ;     Next x
+  ;     StopDrawing()
+  ;   EndIf
+  
+  Procedure.S Help_Widgets(Class.s)
+    Protected Result.S
+    
+    Select LCase(Trim(Class.s))
+      Case "window"
+        Result.S = "Это окно (Window)"
+        
+      Case "cursor"
+        Result.S = "Это курсор"
+        
+      Case "scintilla"
+        Result.S = "Это редактор (Scintilla)"
+        
+      Case "button"
+        Result.S = "Это кнопка (Button)"
+        
+      Case "buttonimage"
+        Result.S = "Это кнопка картинка (ButtonImage)"
+        
+      Case "checkbox"
+        Result.S = "Это переключатель (CheckBox)"
+        
+      Case "container"
+        Result.S = "Это контейнер для других элементов (Container)"
+        
+      Case "combobox"
+        Result.S = "Это выподающий список (ComboBox)"
+        
+      Default
+        Result.S = "Подсказка еще не реализованно"
+        
+    EndSelect
+    
+    ProcedureReturn Result.S
+  EndProcedure
+  
+  Procedure.S Help_Properties(Class.s)
+    Protected Result.S
+    
+    Select Trim(Class.s, ":")
+      Case "Text"
+        Result.S = "Это надпись на виджете"
+        
+      Case "X"
+        Result.S = "Это позиция по оси X"
+        
+      Case "Y"
+        Result.S = "Это позиция по оси Y"
+        
+      Case "Width"
+        Result.S = "Это ширина виджета"
+        
+      Case "Height"
+        Result.S = "Это высота виджета"
+        
+      Default
+        Result.S = "Подсказка еще не реализованно"
+        
+    EndSelect
+    
+    ProcedureReturn Result.S
+  EndProcedure
+  
+  Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
     If FileSize(ZipFile$) < 1
@@ -113,69 +200,18 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
   EndProcedure
   
-  Procedure.s Help_Widgets(Class.s)
-    Protected Result.S
-    
-    Select LCase(Trim(Class.s))
-      Case "window"
-        Result.S = "Это окно (Window)"
-        
-      Case "cursor"
-        Result.S = "Это курсор"
-        
-      Case "scintilla"
-        Result.S = "Это редактор (Scintilla)"
-        
-      Case "button"
-        Result.S = "Это кнопка (Button)"
-        
-      Case "buttonimage"
-        Result.S = "Это кнопка картинка (ButtonImage)"
-        
-      Case "checkbox"
-        Result.S = "Это переключатель (CheckBox)"
-        
-      Case "container"
-        Result.S = "Это контейнер для других элементов (Container)"
-        
-      Case "combobox"
-        Result.S = "Это выподающий список (ComboBox)"
-        
-      Default
-        Result.S = "Подсказка еще не реализованно"
-        
-    EndSelect
-    
-    ProcedureReturn Result.S
-  EndProcedure
   
-  Procedure.s Help_Properties(Class.s)
-    Protected Result.S
-    
-    Select Trim(Class.s, ":")
-      Case "Text"
-        Result.S = "Это надпись на виджете"
-        
-      Case "X"
-        Result.S = "Это позиция по оси X"
-        
-      Case "Y"
-        Result.S = "Это позиция по оси Y"
-        
-      Case "Width"
-        Result.S = "Это ширина виджета"
-        
-      Case "Height"
-        Result.S = "Это высота виджета"
-        
-      Default
-        Result.S = "Подсказка еще не реализованно"
-        
-    EndSelect
-    
-    ProcedureReturn Result.S
-  EndProcedure
-  
+;   Procedure ReDraw(Canvas)
+;     If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+;       ;       DrawingMode(#PB_2DDrawing_Default)
+;       ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+;       FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
+;       
+;       Draw(Widgets("Window"), 1)
+;       
+;       StopDrawing()
+;     EndIf
+;   EndProcedure
   
   Procedure Widgets_CallBack()
     ; Debug ""+EventType() +" "+ WidgetEventType() +" "+ EventWidget() +" "+ EventGadget() +" "+ EventData()
@@ -188,7 +224,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         
         OpenList(*Window)
         Widgets("Widgets_0") = Tree(0, 0, 280, 130, #PB_Flag_NoButtons|#PB_Flag_NoLines)
-        Load_Widgets(Widgets("Widgets_0"), GetCurrentDirectory()+"Themes/")
+        LoadControls(Widgets("Widgets_0"), GetCurrentDirectory()+"Themes/")
         SetState(Widgets("Widgets_0"), 1)
         CloseList()
         
@@ -226,7 +262,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndProcedure
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
-    Protected Repaint, *This.Widget_S, *Window.Widget_s = GetGadgetData(Canvas)
+    Protected Repaint, *This.Widget_S
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
@@ -236,27 +272,27 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Select EventType
         ;Case #PB_EventType_Repaint : Repaint = EventData()
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) : Repaint = 1
-        Resize(*Window, #PB_Ignore, #PB_Ignore, Width, Height)
+        Resize(Widgets("Window"), 0, 0, Width, Height)
       Default
         
         If EventType() = #PB_EventType_LeftButtonDown
           SetActiveGadget(Canvas)
         EndIf
         
-        *This  = at(*Window, MouseX, MouseY)
+        *This  = at(0, MouseX, MouseY)
         If *This
           Repaint | CallBack(*This, EventType, MouseX, MouseY)
         EndIf
         
     EndSelect
     
-;     Select *Value\Event ; WidgetEvent()
-;       Case #PB_EventType_LeftButtonDown
-;         Debug "#PB_EventType_LeftButtonDown " + *value\This\type
-;         
-;       Case #PB_EventType_LeftButtonUp
-;         Debug "#PB_EventType_LeftButtonUp " + *value\This\type
-;     EndSelect
+    Select *Value\Event ; WidgetEvent()
+      Case #PB_EventType_LeftButtonDown
+        Debug "#PB_EventType_LeftButtonDown " + *value\This\type
+        
+      Case #PB_EventType_LeftButtonUp
+        Debug "#PB_EventType_LeftButtonUp " + *value\This\type
+    EndSelect
     
     If Repaint 
       ReDraw(Canvas)
@@ -330,21 +366,21 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndProcedure
   
   Procedure Window_0_Resize()
-    ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(Window_0)-20, WindowHeight(Window_0)-50)
+    ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(Window_0), WindowHeight(Window_0))
   EndProcedure
   
   Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 600)
-    Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+    Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_BorderLess|#PB_Window_SizeGadget)
     BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), Window_0)
     
     ; Demo draw widgets on the canvas
-    Canvas_0 = CanvasGadget(#PB_Any,  10, 40, 780, 550, #PB_Canvas_Keyboard)
+    Define *w.Widget_s = OpenList(Window_0)
+    Canvas_0 = *w\Canvas\Gadget
     BindGadgetEvent(Canvas_0, @Canvas_0_CallBack())
-;     *value\gadget = Canvas_0
-;     *value\window = Window_0
-    OpenList(Window_0, Canvas_0)
     
-    ; Main panel
+    Widgets("Window") = Window(0, 0, width, height,"") 
+   
+   ; Main panel
     Widgets("Panel") = Panel(0, 0, 0, 0) 
     
     ; panel tab new forms
@@ -437,8 +473,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ; Panel tab "properties"
     AddItem(Widgets("Inspector_panel"), -1, "Properties")
     Widgets("Properties") = Property(0, 0, 150, 30, 70, #PB_Flag_AutoSize)
-    ; SetColor(Widgets("Properties"))
-    
     AddItem(Widgets("Properties"), -1, " Общее", -1, 0)
     AddItem(Widgets("Properties"), -1, "String Text Button_0", -1, 1)
     AddItem(Widgets("Properties"), -1, " Координаты", -1, 0)
@@ -457,7 +491,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ; Panel tab "widgets"
     AddItem(Widgets("Inspector_panel"), -1, "Widgets")
     Widgets("Widgets") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines)
-    Load_Widgets(Widgets("Widgets"), GetCurrentDirectory()+"Themes/")
+    LoadControls(Widgets("Widgets"), GetCurrentDirectory()+"Themes/")
     SetState(Widgets("Widgets"), 1)
     Widgets("Widgets_info") = Text(0, 0, 80, 30, "Тут будет инфо о виджете")
     Widgets("Widgets_splitter") = Splitter(1,1,778, 548, Widgets("Widgets"), Widgets("Widgets_info"), #PB_Flag_AutoSize)
@@ -467,14 +501,14 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     AddItem(Widgets("Inspector_panel"), -1, "Events")
     Widgets("Events") = Text(0, 60, 180, 30, "Тут будет событие элементов", #PB_Flag_AutoSize)
     Widgets("Events_info") = Text(0, 0, 80, 30, "Тут будет инфо о событии")
-    Widgets("Events_splitter") = Splitter(1,1,778, 548, Widgets("Events"), Widgets("Events_info"), #PB_Flag_AutoSize)
+    Widgets("Events_splitter") = Splitter(0,0,width, height, Widgets("Events"), Widgets("Events_info"), #PB_Flag_AutoSize)
     SetState(Widgets("Events_splitter"), 450)
     CloseList()
     
-    Widgets("Inspector_splitter") = Splitter(1,1,778, 548, Widgets("Inspector"), Widgets("Inspector_panel"))
+    Widgets("Inspector_splitter") = Splitter(0,0,width, height, Widgets("Inspector"), Widgets("Inspector_panel"))
     ;}
     
-    Widgets("Splitter") = Splitter(1,1,778, 548, Widgets("Panel"), Widgets("Inspector_splitter"), #PB_Splitter_Vertical|#PB_Flag_AutoSize)
+    Widgets("Splitter") = Splitter(0,0,width, height, Widgets("Panel"), Widgets("Inspector_splitter"), #PB_Splitter_Vertical|#PB_Flag_AutoSize)
     
     SetState(Widgets("Inspector_splitter"), 150)
     SetState(Widgets("Splitter"), 550)
@@ -514,5 +548,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 8-v7f----
+; Folding = -----+---
 ; EnableXP

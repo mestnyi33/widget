@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -19,23 +19,6 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure ReDraw(Gadget.i)
-    If StartDrawing(CanvasOutput(Gadget))
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
-      
-      With Widgets()
-        ForEach Widgets()
-          ;If Canvas = \Canvas\Gadget
-          Draw(Widgets())
-          ;EndIf
-        Next
-      EndWith
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
-  
   Procedure Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint, *This.Widget_S
     Protected Width = GadgetWidth(Canvas)
@@ -44,30 +27,23 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     
+    Protected *Window.Widget_s = GetGadgetData(Canvas)
     
     Select EventType
         ;Case #PB_EventType_Repaint : Repaint = EventData()
       Case #PB_EventType_Resize : Repaint = 1
-        Resize(Widgets("0"), #PB_Ignore, #PB_Ignore, Width-2, Height-2)
+        Resize(*Window, #PB_Ignore, #PB_Ignore, Width-2, Height-2)
       Default
         
         If EventType() = #PB_EventType_LeftButtonDown
           SetActiveGadget(Canvas)
         EndIf
         
-        ; Repaint | CallBack(Widgets("Panel_1"), EventType(), MouseX, MouseY)
+        *This  = at(*Window, MouseX, MouseY)
+        If *This
+          Repaint | CallBack(*This, EventType, MouseX, MouseY)
+        EndIf
         
-        With Widgets()
-          ForEach Widgets()
-            ;           *Widgets = Widgets()
-            ;           If *Widgets\Text\String = "Button_0"
-            ;            Debug 55
-            ;           Else
-            Repaint | CallBack(Widgets(), EventType, MouseX, MouseY)
-            ;         EndIf
-            
-          Next
-        EndWith
         
     EndSelect
     
@@ -154,23 +130,23 @@ CompilerIf #PB_Compiler_IsMainFile
       \Align\Vertical = 0
       
       If Mode&#PB_Right=#PB_Right
-        \Align\x = (\p\Width-\p\bs*2 - (\x-\p\x-\p\bs)) - \Width
+        \Align\x = (\Parent\Width-\Parent\bs*2 - (\x-\Parent\x-\Parent\bs)) - \Width
         \Align\Right = 1
       EndIf
       If Mode&#PB_Bottom=#PB_Bottom
-        \Align\y = (\p\height-\p\bs*2 - (\y-\p\y-\p\bs)) - \height
+        \Align\y = (\Parent\height-\Parent\bs*2 - (\y-\Parent\y-\Parent\bs)) - \height
         \Align\Bottom = 1
       EndIf
       If Mode&#PB_Left=#PB_Left
         \Align\Left = 1
         If Mode&#PB_Right=#PB_Right
-          \Align\x1 = (\p\Width - \p\bs*2) - \Width
+          \Align\x1 = (\Parent\Width - \Parent\bs*2) - \Width
         EndIf
       EndIf
       If Mode&#PB_Top=#PB_Top
         \Align\Top = 1
         If Mode&#PB_Bottom=#PB_Bottom
-          \Align\y1 = (\p\height -\p\bs*2)- \height
+          \Align\y1 = (\Parent\height -\Parent\bs*2)- \height
         EndIf
       EndIf
       
@@ -185,7 +161,7 @@ CompilerIf #PB_Compiler_IsMainFile
         \Align\Horizontal = 1
       EndIf
       
-      Resize(\p, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
     EndWith
   EndProcedure
   
@@ -193,12 +169,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected i
     
     If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      ButtonGadget   (10,    5,   565, 590,  30, "start change scrollbar", #PB_Button_Toggle)
+      Define *w.Widget_s = OpenList(0)
+      Define canvas = *w\Canvas\Gadget
       
-      CanvasGadget(1, 10,10, 580, 550, #PB_Canvas_Keyboard|#PB_Canvas_Container)
-      SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
-      
-      Widgets(Str(0)) = Container(50, 50, 280, 200, #PB_Flag_AnchorsGadget)
+      ;Widgets(Str(50)) = Window(50, 50, 280, 200, "Demo dock widgets", #PB_Flag_AnchorsGadget)
+      Widgets(Str(0)) = Container(50, 50, 280, 200, #PB_Flag_AnchorsGadget);#PB_Flag_AutoSize)
       
       Widgets(Str(5)) = Button(91, 21, 280-2-182, 200-2-42, "Full_"+Str(5))
       Widgets(Str(1)) = Button(0, 21, 91, 200-2-42, "Left_"+Str(1))
@@ -214,11 +189,8 @@ CompilerIf #PB_Compiler_IsMainFile
       _SetAlignment(Widgets(Str(3)), #PB_Top|#PB_Bottom|#PB_Right)
       _SetAlignment(Widgets(Str(4)), #PB_Left|#PB_Bottom|#PB_Right)
       
-      BindGadgetEvent(1, @Canvas_CallBack())
-      
-      CloseGadgetList()
-      
-      ReDraw(1)
+      BindGadgetEvent(canvas, @Canvas_CallBack())
+      ReDraw(canvas)
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
@@ -274,5 +246,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = f4-0--
+; Folding = 48f---
 ; EnableXP
