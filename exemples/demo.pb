@@ -1,224 +1,187 @@
-﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
-CompilerElse
-  IncludePath "../"
-CompilerEndIf
+﻿IncludePath "../"
+XIncludeFile "widgets.pbi"
 
-XIncludeFile "module_draw.pbi"
-XIncludeFile "module_macros.pbi"
-XIncludeFile "module_constants.pbi"
-XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scroll.pbi"
-XIncludeFile "module_text.pbi"
-XIncludeFile "module_button.pbi"
-XIncludeFile "module_string.pbi"
-XIncludeFile "module_editor.pbi"
-XIncludeFile "module_listview.pbi"
-XIncludeFile "module_tree.pbi"
-XIncludeFile "module_widget.pbi"
-
-
-Procedure CallBack(*This.Widget_S, EventType.i)
-  Protected Repaint
+;- EXAMPLE
+CompilerIf #PB_Compiler_IsMainFile ;= 100
+  EnableExplicit
+  UseModule Widget
   
-  With *This
-    Select \Type 
-      Case #PB_GadgetType_Tree : Repaint | Tree::CallBack(*This, EventType)
-      Case #PB_GadgetType_Button : Repaint | Button::CallBack(*This, EventType)
-      Case #PB_GadgetType_String : Repaint | String::CallBack(*This, EventType)
-      Case #PB_GadgetType_Editor : Repaint | Editor::CallBack(*This, EventType)
-      Case #PB_GadgetType_ListView : Repaint | ListView::CallBack(*This, EventType)
-    EndSelect
-  EndWith
+  UsePNGImageDecoder()
   
-  ProcedureReturn Repaint
-EndProcedure
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
+    End
+  EndIf
   
-
-CompilerIf #PB_Compiler_IsMainFile
-  ;-
-  Procedure CallBacks()
-    Protected Result
-    Protected Canvas = EventGadget()
-    Protected Window = EventWindow()
+  If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+    End
+  EndIf
+  
+  Global x,y,i,NewMap Widgets.i()
+  
+  Procedure Canvas_Events(Canvas.i, EventType.i)
+    Protected *This.Widget_S, *main.Widget_S = GetGadgetData(Canvas)
+    Protected Repaint, iWidth, iHeight
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    Protected mouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     
-    Select EventType()
-      Case #PB_EventType_Repaint : Result = 1
-      Case #PB_EventType_Resize : Result = 1
-      Default
-        If EventType() = #PB_EventType_LeftButtonDown
-          SetActiveGadget(EventGadget())
-        EndIf
-        
-        ForEach List()
-          ; If List()\Widget\Canvas\Gadget = GetActiveGadget()
-          If Canvas = List()\Widget\Canvas\Gadget
-            Result | CallBack(List()\Widget, EventType()) 
-          EndIf
-        Next
-        
+    Select EventType
+      Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+        Resize(*main, x, y, Width-x*2, Height-y*2)  
+        Repaint = 1 
     EndSelect
     
-    If Result
-      Text::ReDraw(0, Canvas)
+    *This = at(*main, mouseX, mouseY)
+    
+    If *This
+      Repaint | CallBack(*This, EventType, mouseX,mouseY)
+    EndIf
+    
+    If Repaint
+      ReDraw(Canvas)
     EndIf
   EndProcedure
   
-  Procedure Events()
-    Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
+  Procedure Canvas_CallBack()
+    ; Canvas events bug fix
+    Protected Result.b
+    Static MouseLeave.b
+    Protected EventGadget.i = EventGadget()
+    Protected EventType.i = EventType()
+    Protected Width = GadgetWidth(EventGadget)
+    Protected Height = GadgetHeight(EventGadget)
+    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
+    
+    ; Это из за ошибки в мак ос и линукс
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
+      Select EventType 
+        Case #PB_EventType_MouseEnter 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 0
+          EndIf
+          
+        Case #PB_EventType_MouseLeave 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 1
+          EndIf
+          
+        Case #PB_EventType_LeftButtonDown
+          If GetActiveGadget()<>EventGadget
+            SetActiveGadget(EventGadget)
+          EndIf
+          
+        Case #PB_EventType_LeftButtonUp
+          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
+            MouseLeave = 0
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+              Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+              EventType = #PB_EventType_MouseLeave
+            CompilerEndIf
+          Else
+            MouseLeave =- 1
+            Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+            EventType = #PB_EventType_LeftClick
+          EndIf
+          
+        Case #PB_EventType_LeftClick : ProcedureReturn 0
+      EndSelect
+    CompilerEndIf
+    
+    Result | Canvas_Events(EventGadget, EventType)
+    
+    ProcedureReturn Result
   EndProcedure
   
-  Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu ; | #PB_Window_ScreenCentered 
-  OpenWindow(20, 110, 210, 630, 400, "demo set gadget new parent", Flags )
   
-  ; Demo draw widgets on the canvas
-  CanvasGadget(20,  0, 0, WindowWidth( 20 ), WindowHeight( 20 ), #PB_Canvas_Keyboard)
-  SetGadgetAttribute(20, #PB_Canvas_Cursor, #PB_Cursor_Cross)
-  SetGadgetData(20,20)
-  BindGadgetEvent(20, @CallBacks())
   
+  If OpenWindow(3, 0, 0, 995, 455, "Position de la souris sur la fenêtre", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    CanvasGadget(100, 0, 0, 995, 455, #PB_Canvas_Keyboard)
+    BindGadgetEvent(100, @Canvas_CallBack())
     
-  
-;   SetActiveWindow(20)
-;   PostEvent(#PB_Event_ActivateWindow, 20, #PB_Ignore)
-;   While WindowEvent() : Wend
-;    Debug GetActiveWindow()
-  
-  ; Button::Create(20,-1,30,10,150,70,"ButtonGadget") 
-  ;Widget::Button(20,30,10,150,70,"ButtonGadget") 
-  
-
-  Flags = #PB_Window_Invisible | #PB_Window_TitleBar
-  OpenWindow(10, WindowX( 20 )+20+WindowWidth( 20 ), WindowY( 20 ), 200, 400, "old parent", Flags, WindowID(20))
-  
-  ComboBoxGadget( 21,10,10,180,30 ) 
-  AddGadgetItem( 21, -1, "Selected gadget to move")
-  AddGadgetItem( 21, -1, "ButtonGadget")
-  AddGadgetItem( 21, -1, "StringGadget")
-  AddGadgetItem( 21, -1, "TextGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"CheckBoxGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"OptionGadget")
-  AddGadgetItem( 21, -1, "ListViewGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"FrameGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"ComboBoxGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"ImageGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"HyperLinkGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"ContainerGadget") ; Win = Ok
-  AddGadgetItem( 21, -1, "ListIconGadget")
-  AddGadgetItem( 21, -1, "IPAddressGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"ProgressBarGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"ScrollBarGadget") ; Win = Ok
-  AddGadgetItem( 21, -1, "(No) - "+"ScrollAreaGadget"); Win = Ok
-  AddGadgetItem( 21, -1, "(No) - "+"TrackBarGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"WebGadget")
-  AddGadgetItem( 21, -1, "ButtonImageGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"CalendarGadget")
-  AddGadgetItem( 21, -1, "(No) - "+"DateGadget") ; Win = Ok
-  AddGadgetItem( 21, -1, "EditorGadget") ; Win = Ok
-  AddGadgetItem( 21, -1, "(No) - "+"ExplorerListGadget") ; Win = Ok
-  AddGadgetItem( 21, -1, "(No) - "+"ExplorerTreeGadget") ; Win = Ok
-  AddGadgetItem( 21, -1, "(No) - "+"ExplorerComboGadget"); Win = Ok
-  AddGadgetItem( 21, -1, "SpinGadget")         ; Win = Ok
-  AddGadgetItem( 21, -1, "TreeGadget")         ; Ok
-  AddGadgetItem( 21, -1, "(No) - "+"PanelGadget")        ; Ok
-  AddGadgetItem( 21, -1, "(No) - "+"SplitterGadget")     ; Win = Ok
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    AddGadgetItem( 21, -1, "(No) - "+"MDIGadget") ; Ok
-  CompilerEndIf
-  AddGadgetItem( 21, -1, "(No) - "+"ScintillaGadget") ; Ok
-  AddGadgetItem( 21, -1, "(No) - "+"ShortcutGadget")  ; Ok
-  AddGadgetItem( 21, -1, "(No) - "+"CanvasGadget")    ;Ok
-  
-  SetGadgetState( 21, #PB_GadgetType_Button) : PostEvent(#PB_Event_Gadget, 20, 21, #PB_EventType_Change)
-  
-  HideWindow(10,0)
-  HideWindow(20,0)
-  
-  Repeat
-    Define Event=WaitWindowEvent()
+    If OpenList(3, 100)
+      
+      ;Widgets("Container") = Container(0, 0, 995, 455);, #PB_Flag_AutoSize) 
+      
+      Widgets(Str(#PB_GadgetType_Button)) = Button(5, 5, 160,70, "Button_"+Str(#PB_GadgetType_Button) ) ; ok
+      Widgets(Str(#PB_GadgetType_String)) = String(5, 80, 160,70, "String_"+Str(#PB_GadgetType_String)) ; ok
+      Widgets(Str(#PB_GadgetType_Text)) = Text(5, 155, 160,70, "Text_"+Str(#PB_GadgetType_Text))        ; ok
+      Widgets(Str(#PB_GadgetType_CheckBox)) = CheckBox(5, 230, 160,70, "CheckBox_"+Str(#PB_GadgetType_CheckBox), #PB_CheckBox_ThreeState) : SetState(Widgets(Str(#PB_GadgetType_CheckBox)), #PB_Checkbox_Inbetween); ok
+      Widgets(Str(#PB_GadgetType_Option)) = Option(5, 305, 160,70, "Option_"+Str(#PB_GadgetType_Option) ) : SetState(Widgets(Str(#PB_GadgetType_Option)), 1)                                                       ; ok
+      Widgets(Str(#PB_GadgetType_ListView)) = ListView(5, 380, 160,70) : AddItem(Widgets(Str(#PB_GadgetType_ListView)), -1, "ListView_"+Str(#PB_GadgetType_ListView)) : For i=1 To 5 : AddItem(Widgets(Str(#PB_GadgetType_ListView)), i, "item_"+Str(i)) : Next
+      
+      Widgets(Str(#PB_GadgetType_Frame)) = Frame(170, 5, 160,70, "Frame_"+Str(#PB_GadgetType_Frame) )
+      Widgets(Str(#PB_GadgetType_ComboBox)) = ComboBox(170, 80, 160,70) : AddItem(Widgets(Str(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Str(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(Widgets(Str(#PB_GadgetType_ComboBox)), i, "item_"+Str(i)) : Next : SetState(Widgets(Str(#PB_GadgetType_ComboBox)), 0) 
+      Widgets(Str(#PB_GadgetType_Image)) = Image(170, 155, 160,70, 0, #PB_Image_Border ) ; ok
+      Widgets(Str(#PB_GadgetType_HyperLink)) = HyperLink(170, 230, 160,70,"HyperLink_"+Str(#PB_GadgetType_HyperLink), $00FF00, #PB_HyperLink_Underline ) ; ok
+      Widgets(Str(#PB_GadgetType_Container)) = Container(170, 305, 160,70, #PB_Container_Flat )
+      Widgets(Str(101)) = Option(10, 10, 110,20, "Container_"+Str(#PB_GadgetType_Container) )  : SetState(Widgets(Str(101)), 1)  
+      Widgets(Str(102)) = Option(10, 40, 110,20, "Option_widget" )  
+      CloseList()
+      ;     ListIconGadget(#PB_GadgetType_ListIcon, 170, 380, 160,70,"ListIconGadget_"+Str(#PB_GadgetType_ListIcon),120 )                           ; ok
+      
+      ;     IPAddressGadget(#PB_GadgetType_IPAddress, 335, 5, 160,70 ) : SetGadgetState(#PB_GadgetType_IPAddress, MakeIPAddress(1, 2, 3, 4))    ; ok
+      Widgets(Str(#PB_GadgetType_ProgressBar)) = Progress(335, 80, 160,70,0,100) : SetState(Widgets(Str(#PB_GadgetType_ProgressBar)), 50)
+      Widgets(Str(#PB_GadgetType_ScrollBar)) = Scroll(335, 155, 160,70,0,100,20) : SetState(Widgets(Str(#PB_GadgetType_ScrollBar)), 40)
+      Widgets(Str(#PB_GadgetType_ScrollArea)) = ScrollArea(335, 230, 160,70,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Str(201)) = Button(0, 0, 150,20, "ScrollArea_"+Str(#PB_GadgetType_ScrollArea) ) : Widgets(Str(202)) = Button(180-150, 90-20, 150,20, "Button_"+Str(202) ) : CloseList()
+      Widgets(Str(#PB_GadgetType_TrackBar)) = Track(335, 305, 160,70,0,100) : SetState(Widgets(Str(#PB_GadgetType_TrackBar)), 25)
+      ;     WebGadget(#PB_GadgetType_Web, 335, 380, 160,70,"" )
+      
+      Widgets(Str(#PB_GadgetType_ButtonImage)) = Button(500, 5, 160,70, "", 0, 1)
+      ;     CalendarGadget(#PB_GadgetType_Calendar, 500, 80, 160,70 )
+      ;     DateGadget(#PB_GadgetType_Date, 500, 155, 160,70 )
+      ;     EditorGadget(#PB_GadgetType_Editor, 500, 230, 160,70 ) : AddGadgetItem(#PB_GadgetType_Editor, -1, "EditorGadget_"+Str(#PB_GadgetType_Editor))  
+      ;     ExplorerListGadget(#PB_GadgetType_ExplorerList, 500, 305, 160,70,"" )
+      ;     ExplorerTreeGadget(#PB_GadgetType_ExplorerTree, 500, 380, 160,70,"" )
+      ;     
+      ;     ExplorerComboGadget(#PB_GadgetType_ExplorerCombo, 665, 5, 160,70,"" )
+      Widgets(Str(#PB_GadgetType_Spin)) = Spin(665, 80, 160,70,20,100)
+      Widgets(Str(#PB_GadgetType_Tree)) = Tree( 665, 155, 160, 70 ) : AddItem(Widgets(Str(#PB_GadgetType_Tree)), -1, "Tree_"+Str(#PB_GadgetType_Tree)) : For i=1 To 5 : AddItem(Widgets(Str(#PB_GadgetType_Tree)), i, "item_"+Str(i)) : Next
+      Widgets(Str(#PB_GadgetType_Panel)) = Panel(665, 230, 160,70) : AddItem(Widgets(Str(#PB_GadgetType_Panel)), -1, "Panel_"+Str(#PB_GadgetType_Panel)) : Widgets(Str(255)) = Button(0, 0, 90,20, "Button_255" ) : For i=1 To 15 : AddItem(Widgets(Str(#PB_GadgetType_Panel)), i, "item_"+Str(i)) : Next : CloseList()
+      
+      OpenList(Widgets(Str(#PB_GadgetType_Panel)), 1)
+      Container(10,5,150,55, #PB_Container_Flat) 
+      Container(10,5,150,55, #PB_Container_Flat) 
+      Button(10,5,50,35, "butt") 
+      CloseList()
+      CloseList()
+      CloseList()
+      SetState( Widgets(Str(#PB_GadgetType_Panel)), 12)
+      
+      Widgets(Str(301)) = Spin(0, 0, 100,20,0,10, #PB_Vertical);, "Button_1")
+      Widgets(Str(302)) = Spin(0, 0, 100,20,0,10);, "Button_2")
+      Widgets(Str(#PB_GadgetType_Splitter)) = Splitter(665, 305, 160,70,Widgets(Str(301)), Widgets(Str(302)));, #PB_Splitter_Vertical);, Button(0, 0, 100,20, "ButtonGadget"), Button(0, 0, 0,20, "StringGadget")) 
+                                                                                                             ;     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                                                                                                             ;       MDIGadget(#PB_GadgetType_MDI, 665, 380, 160,70,1, 2);, #PB_MDI_AutoSize)
+                                                                                                             ;     CompilerEndIf
+                                                                                                             ;     InitScintilla()
+                                                                                                             ;     ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,70,0 )
+                                                                                                             ;     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 80, 160,70 ,-1)
+                                                                                                             ;     CanvasGadget(#PB_GadgetType_Canvas, 830, 155, 160,70 )
+      
+      CloseList()
+      
+      ReDraw(100)
+    EndIf
     
-     If Event=#PB_Event_Gadget 
-      Select EventType()
-        Case #PB_EventType_LeftClick, #PB_EventType_Change
-          Select EventGadget()
-            Case 21
-              Select EventType()
-                Case #PB_EventType_Change
-                  ;Define ParentID = Get( GadgetID(20) )
-                  w=590
-                  h=360
-                  
-                  Select GetGadgetState( 21 )
-                    Case 1 : Button::Create(20,-1,20,20,w,h,"Button") 
-                    Case 2 : String::Create(20,-1,20,20,w,h,"String") 
-                    Case 3 : Text::Create(20,-1,20,20,w,h,"Text", #PB_Text_Border) 
-;                     Case 4 :Option(20,20,20,w,h,"Option") 
-;                     Case 5 :CheckBox(20,20,20,w,h,"CheckBox") 
-                    Case 6 : *w=ListView::Create(20,-1,20,20,w,h, "") : ListView::AddItem(*w,-1, "ListView")
-;                     Case 7 :Frame(20,20,20,w,h,"Frame") 
-;                     Case 8 :ComboBox(20,20,20,w,h) :AddItem(20,-1,"ComboBox") :SetState(20,0)
-;                     Case 9 :Image(20,20,20,w,h,0,#PB_Image_Border) 
-;                     Case 10 :HyperLink(20,20,20,w,h,"HyperLink",0) 
-;                     Case 11 :Container(20,20,20,w,h,#PB_Container_Flat)   :Button(-1,0,0,80,20,"Button") :CloseList() ; Container
-;                     Case 12 :ListIcon(20,20,20,w,h,"",88) 
-;                     Case 13 :IPAddress(20,20,20,w,h) 
-;                     Case 14 :ProgressBar(20,20,20,w,h,0,5)
-;                     Case 15 :ScrollBar(20,20,20,w,h,5,335,9)
-;                     Case 16 :ScrollArea(20,20,20,w,h,205,305,9,#PB_ScrollArea_Flat) :Button(-1,0,0,80,20,"Button") :CloseList()
-;                     Case 17 :TrackBar(20,20,20,w,h,0,5)
-;                     Case 18 :Web(20,20,20,w,h,"") ; bug 531 linux
-;                     Case 19 :ButtonImage(20,20,20,w,h,0)
-;                     Case 20 :Calendar(20,20,20,w,h) 
-;                     Case  21 :Date(20,20,20,w,h)
-                    Case 22 : *w=Editor::Create(20,-1, 20,20,w,h, "") : Editor::AddItem(*w,-1,"Editor")
-;                     Case 23 :ExplorerList(20,20,20,w,h,"")
-;                     Case 24 :ExplorerTree(20,20,20,w,h,"")
-;                     Case 25 :ExplorerCombo(20,20,20,w,h,"")
-;                     Case 26 :Spin(20,20,20,w,h,0,5,#PB_Spin_Numeric)
-                     Case 27 :*w=Tree::Create(20,-1, 20,20,w,h,"", #pb_Flag_FullSelection) : Tree::AddItem(*w,-1,"Tree") : Tree::AddItem(*w,-1,"SubLavel",0,1)
-;                     Case 28 :Panel(20,20,20,w,h) :AddItem(20,-1,"Panel") :CloseList()
-;                     Case 29 
-;                       Button(201,0,0,20,h,"1")
-;                       Button(202,0,0,20,h,"2")
-;                       Splitter(20,20,20,w,h,201,202)
-;                       Case 30 :MDI(20,20,10,w,70,0,0)
-;                       Case 31 :InitScintilla() :Scintilla(20,20,10,w,70,0)
-;                       Case 32 :Shortcut(20,20,10,w,70,0)
-;                       Case 33 :Canvas(20,20,10,w,70) 
-                    Default
-                      Debug " пока еще нет"
-                  EndSelect
-                  
-                  ;Resize(20,30,10,150,70)
-                  
-;                   Set(20, ParentID) ; GadgetID(3));
-                  
-              EndSelect
-          EndSelect
-          
-;           If (EventGadget()<>20)
-;             Define Parent=Parent(20)
-;             If IsGadget(Parent)
-;               Debug "get parent "+Parent
-;             Else
-;               Debug "get parent "+Window(20)
-;             EndIf
-;             
-;             If IsGadget(201)
-;               Debug Str(Parent(201))+" "+GadgetX(201)+" "+GadgetY(201)+" "+GadgetWidth(201)+" "+GadgetHeight(201)
-;             EndIf
-;           EndIf
-      EndSelect
-    EndIf  
-  Until Event=#PB_Event_CloseWindow
-  
+    Repeat
+      Define  Event = WaitWindowEvent()
+      ;       If Event
+      ;       Define  Window = EventWindow()
+      ;         If IsWindow(Window)
+      ;            MouseState( )
+      ;           Select Window
+      ;             Case 1 :EventMain(Event, Window)
+      ;           EndSelect
+      ;         EndIf
+      ;       EndIf
+    Until Event= #PB_Event_CloseWindow
+    
+  EndIf   
 CompilerEndIf
-
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

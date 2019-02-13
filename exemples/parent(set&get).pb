@@ -10,26 +10,26 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *window_1.widget_S, *window_2.widget_S, *panel.widget_S, *container.widget_S, *scrollarea.widget_S
   Global *b_0, *b_1, *b_2, *b_3, *b_4, *b_5, *b_6, *b_7, *b_8, *b_9, *b_10
     
-  Procedure ReDraw(Canvas)
-    If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-      ;       DrawingMode(#PB_2DDrawing_Default)
-      ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
-      
-      If Canvas = *window_1\canvas\gadget
-        Draw(*window_1, 1)
-      EndIf
-      If Canvas = *window_2\canvas\gadget
-        Draw(*window_2, 1)
-      EndIf
-      
-;       If Canvas = *w\canvas\gadget
-;         Draw(*w)
+;   Procedure ReDraw(Canvas)
+;     If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+;       ;       DrawingMode(#PB_2DDrawing_Default)
+;       ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+;       FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
+;       
+;       If Canvas = *window_1\canvas\gadget
+;         Draw(*window_1, 1)
 ;       EndIf
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
+;       If Canvas = *window_2\canvas\gadget
+;         Draw(*window_2, 1)
+;       EndIf
+;       
+; ;       If Canvas = *w\canvas\gadget
+; ;         Draw(*w)
+; ;       EndIf
+;       
+;       StopDrawing()
+;     EndIf
+;   EndProcedure
   
   Procedure Canvas_CallBack()
     Protected Canvas.i=EventGadget()
@@ -40,24 +40,33 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected mouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
     Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     
+    Protected *window_1.Widget_S = GetGadgetData(Canvas)
+    
+    
     Select EventType
       Case #PB_EventType_Repaint : ReDraw(Canvas) 
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        If Canvas = *window_1\canvas\gadget
+;         If Canvas = *window_1\canvas\gadget
           Resize(*window_1, #PB_Ignore, #PB_Ignore, Width, Height)  
-        EndIf
-        If Canvas = *window_2\canvas\gadget
-          Resize(*window_2, #PB_Ignore, #PB_Ignore, Width, Height)  
-        EndIf
+;         EndIf
+;         If Canvas = *window_2\canvas\gadget
+;           Resize(*window_2, #PB_Ignore, #PB_Ignore, Width, Height)  
+;         EndIf
         Repaint = 1 
     EndSelect
     
-    If Canvas = *window_1\canvas\gadget
-      Repaint | CallBacks(*window_1, EventType, mouseX,mouseY)
+Protected *This.Widget_S = at(*window_1, mouseX, mouseY)
+    
+    If *This
+      Repaint | CallBack(*This, EventType, mouseX,mouseY)
     EndIf
-    If Canvas = *window_2\canvas\gadget
-      Repaint | CallBacks(*window_2, EventType, mouseX,mouseY)
-    EndIf
+   
+;     If Canvas = *window_1\canvas\gadget
+;       Repaint | CallBacks(*window_1, EventType, mouseX,mouseY)
+;     EndIf
+;     If Canvas = *window_2\canvas\gadget
+;       Repaint | CallBacks(*window_2, EventType, mouseX,mouseY)
+;     EndIf
     
     If Repaint
       ReDraw(Canvas)
@@ -167,12 +176,12 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(10, 0, 0, 640, 430, "demo set  new parent", Flags )
   CanvasGadget(100, 0, 0, 640, 430, #PB_Canvas_Keyboard )
   BindGadgetEvent(100, @Canvas_CallBack())
-  Use(10, 100)
+  OpenList(10, 100)
   
   *window_1 = Window(0, 0, 640, 430, "demo set  new parent");, Flags )
   
   *b_0 = Button(30,90,150,30,"Button >>(Window)")
-  *panel=Panel(10,150,200,160) : AddItem(*panel,-1,"Panel") : Button(30,90,150,30,"Button >>(Panel)") : AddItem(*panel,-1,"Second") : AddItem(*panel,-1,"Third") : CloseList()
+  *panel=Panel(10,150,200,160) : AddItem(*panel,-1,"Panel") : Button(30,90,150,30,"Button >>(Panel (1))") : AddItem(*panel,-1,"Second") : Button(30,90,150,30,"Button >>(Panel (2))") : AddItem(*panel,-1,"Third") : Button(30,90,150,30,"Button >>(Panel (3))") : CloseList()
   *container = Container(215,150,200,160,#PB_Container_Flat) : Button(30,90,150,30,"Button >>(Container)") : CloseList() ; Container
   *scrollarea = ScrollArea(420,150,200,160,200,160,10,#PB_ScrollArea_Flat) : Button(30,90,150,30,"Button >>(ScrollArea)") : CloseList()
   
@@ -188,7 +197,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(20, WindowX( 10 )+20+WindowWidth( 10 ), WindowY( 10 ), 200, 430, "old parent", Flags, WindowID(10))
   CanvasGadget(200, 0, 0, 200, 430, #PB_Canvas_Keyboard )
   BindGadgetEvent(200, @Canvas_CallBack())
-  Use(20, 200)
+  OpenList(20, 200)
   
   *window_2 = Window(0, 0, 200, 430, "demo set  new parent");, Flags )
   *w = Button(30,10,150,70,"Button") 
@@ -248,6 +257,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Select EventWidget()
             Case *b_4 : SetParent(*w, 0)
             Case *b_5 : SetParent(*w, *window_1)
+              
             Case *b_6 : SetParent(*w, *panel)
             Case *b_7 : SetParent(*w, *container)
             Case *b_8 : SetParent(*w, *scrollarea)
@@ -340,5 +350,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---8-
+; Folding = f-8
 ; EnableXP

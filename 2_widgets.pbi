@@ -517,29 +517,18 @@ DeclareModule Widget
   ;-
   ;- - DECLAREs GLOBALs
   Global *Value.Default_S
-  Global *Root.Widget_S = AllocateStructure(Default_S)
-;   *Value = AllocateStructure(Default_S)
-;   *Value\This = AllocateStructure(Widget_S)
-  Global NewList *openedlist.Widget_S()
-  
+  *Value = AllocateStructure(Default_S)
+  *Value\This = AllocateStructure(Widget_S)
   ;-
   ;- - DECLAREs MACROs
   Macro PB(Function) : Function : EndMacro
-  
-  Macro Root()
-    Widget::*Root
-  EndMacro
-  
-  Macro Adress(_this_)
-    Widget::_this_\Adress
-  EndMacro
   
   ;   Macro IsBar(_this_)
   ;     Bool(_this_ And (_this_\Type = #PB_GadgetType_ScrollBar Or _this_\Type = #PB_GadgetType_TrackBar Or _this_\Type = #PB_GadgetType_ProgressBar Or _this_\Type = #PB_GadgetType_Splitter))
   ;   EndMacro
   
   Macro IsWidget(_this_)
-    Bool(_this_>*Root And _this_<AllocateStructure(Widget_S)) * _this_ ; Bool(MemorySize(_this_)=MemorySize(AllocateStructure(Widget_S))) * _this_
+    Bool(_this_>*value\this And _this_<AllocateStructure(Widget_S)) * _this_ ; Bool(MemorySize(_this_)=MemorySize(AllocateStructure(Widget_S))) * _this_
   EndMacro
   
   ;   Define w  ;TypeOf(_this_)  ; 
@@ -619,7 +608,7 @@ DeclareModule Widget
   Declare.i CallBack(*This.Widget_S, EventType.i, mouseX=0, mouseY=0)
   Declare.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.i Resize(*This.Widget_S, iX.i,iY.i,iWidth.i,iHeight.i);, *That.Widget_S=#Null)
-  Declare.i Hide(*This.Widget_S, State.i=-1)
+  Declare.i Hide(*This.Widget_S, State.i)
   Declare.i SetImage(*This.Widget_S, Image.i)
   Declare.i GetImage(*This.Widget_S)
   Declare.i GetType(*This.Widget_S)
@@ -632,8 +621,7 @@ DeclareModule Widget
   Declare.i GetParent(*This.Widget_S)
   Declare.i GetParentItem(*This.Widget_S)
   Declare.i at(*this.Widget_S, MouseX.i, MouseY.i)
-  Declare.i GetPosition(*This.Widget_S, Position.i)
-  Declare.i SetPosition(*This.Widget_S, Position.i, *Widget_2 =- 1)
+  Declare.i SetPosition(*This.Widget_S, Position, Widget_2 =- 1)
   
   Declare.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
   Declare.i SetItemData(*This.Widget_S, Item.i, *Data)
@@ -664,21 +652,21 @@ DeclareModule Widget
   Declare.i Panel(X.i,Y.i,Width.i,Height.i, Flag.i=0)
   Declare.i Text(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
   Declare.i Tree(X.i,Y.i,Width.i,Height.i, Flag.i=0)
+  Declare.i Window(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
   Declare.i Property(X.i,Y.i,Width.i,Height.i, SplitterPos.i = 80, Flag.i=0)
   Declare.i String(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
   Declare.i CheckBox(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
   Declare.i Option(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
+  Declare.i Popup(*Widget.Widget_S, X.i,Y.i,Width.i,Height.i, Flag.i=0)
   Declare.i ComboBox(X.i,Y.i,Width.i,Height.i, Flag.i=0)
   Declare.i HyperLink(X.i,Y.i,Width.i,Height.i, Text.s, Color.i, Flag.i=0)
   Declare.i ListView(X.i,Y.i,Width.i,Height.i, Flag.i=0)
   Declare.i Spin(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
   Declare.i ListIcon(X.i,Y.i,Width.i,Height.i, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
-  Declare.i Popup(*Widget.Widget_S, X.i,Y.i,Width.i,Height.i, Flag.i=0)
-  Declare.i Window(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget.Widget_S=0)
   
-  Declare.i CloseList()
   Declare.i OpenList(*This.Widget_S, Item.i=0)
-  Declare.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=-1)
+  Declare.i CloseList()
+  Declare.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=0)
   Declare.i AddItem(*This.Widget_S, Item.i, Text.s, Image.i=-1, Flag.i=0)
   
   Declare.i Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
@@ -693,6 +681,7 @@ Module Widget
   
   ;- GLOBALs
   Global Color_Default.Color_S
+  Global NewList *openedlist.Widget_S()
   
   
   *Value = AllocateStructure(Default_S)
@@ -852,10 +841,6 @@ Module Widget
   Procedure.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
     ProcedureReturn ((Bool(Value>Max) * Max) + (Bool(Grid And Value<Max) * (Round((Value/Grid), #PB_Round_Nearest) * Grid)))
   EndProcedure
-  
-  Macro AddChildren(_list_, _this_)
-    LastElement(_list_) : If AddElement(_list_) : _list_ = _this_  : _list_\adress = @_list_ : EndIf
-  EndMacro
   
   ;-
   ;- Anchors
@@ -4137,45 +4122,31 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i GetPosition(*This.Widget_S, Position.i)
-    Protected Result.i
+  Procedure.i SetPosition(*This.Widget_S, Position, Widget_2 =- 1) ; Ok
     
     With *This
       If *This And \Parent
-        Select Position
-          Case #PB_List_First  : Result = FirstElement(\Parent\Childrens())
-          Case #PB_List_Before : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = PreviousElement(\Parent\Childrens())
-          Case #PB_List_After  : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = NextElement(\Parent\Childrens())
-          Case #PB_List_Last   : Result = LastElement(\Parent\Childrens())
-        EndSelect
-      EndIf
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i SetPosition(*This.Widget_S, Position.i, *Widget_2 =- 1) ; Ok SetStacking()
-    
-    With *This\Parent
-      If *This And *This\Parent
-;         ForEach \Parent\Childrens()
-;           If *This = \Parent\Childrens()
-;             Break
-;           EndIf
-;         Next
-        ChangeCurrentElement(\Childrens(), Adress(*This))
+        ;Debug "Position "+\text\string
         
-        If *Widget_2 =- 1
+        ForEach \Parent\Childrens()
+          If *This = \Parent\Childrens()
+            Break
+          EndIf
+        Next
+        ;ChangeCurrentElement(\Parent\Childrens(), \adress)
+        ;Debug "SetPosition "+\Parent\Childrens()\text\string
+        
+        If Widget_2 =- 1
           Select Position
-            Case #PB_List_First  : MoveElement(\Childrens(), #PB_List_First)
-            Case #PB_List_Before : PreviousElement(\Childrens()) : MoveElement(\Childrens(), #PB_List_After, Adress(\Childrens()))
-            Case #PB_List_After  : NextElement(\Childrens())     : MoveElement(\Childrens(), #PB_List_Before, Adress(\Childrens()))
-            Case #PB_List_Last   : MoveElement(\Childrens(), #PB_List_Last)
+            Case #PB_List_First  : MoveElement(\Parent\Childrens(), #PB_List_First)
+            Case #PB_List_Before : PreviousElement(\Parent\Childrens()) : MoveElement(\Parent\Childrens(), #PB_List_After, \Parent\Childrens()\adress)
+            Case #PB_List_After  : NextElement(\Parent\Childrens())     : MoveElement(\Parent\Childrens(), #PB_List_Before, \Parent\Childrens()\adress)
+            Case #PB_List_Last   : MoveElement(\Parent\Childrens(), #PB_List_Last)
           EndSelect
-        ElseIf *Widget_2
+        Else
           Select Position
-            Case #PB_List_Before : MoveElement(\Childrens(), #PB_List_Before, *Widget_2)
-            Case #PB_List_After  : MoveElement(\Childrens(), #PB_List_After, *Widget_2)
+            Case #PB_List_Before : MoveElement(\Parent\Childrens(), #PB_List_Before, Widget_2)
+            Case #PB_List_After  : MoveElement(\Parent\Childrens(), #PB_List_After, Widget_2)
           EndSelect
         EndIf
       EndIf 
@@ -4231,19 +4202,15 @@ Module Widget
     EndWith
   EndProcedure
   
-  Procedure.i Hide(*This.Widget_S, State.i=-1)
+  Procedure.i Hide(*This.Widget_S, State.i)
     With *This
-      If State.i=-1
-        ProcedureReturn \Hide 
-      Else
-        \Hide = State
-        \Hide[1] = \Hide
-        
-        If ListSize(\Childrens())
-          ForEach \Childrens()
-            Hides(\Childrens(), State)
-          Next
-        EndIf
+      \Hide = State
+      \Hide[1] = \Hide
+      
+      If ListSize(\Childrens())
+        ForEach \Childrens()
+          Hides(\Childrens(), State)
+        Next
       EndIf
     EndWith
   EndProcedure
@@ -4260,42 +4227,51 @@ Module Widget
     ProcedureReturn *This\p_i
   EndProcedure
   
-  Procedure.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=-1)
+  Procedure.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=0)
     Protected x,y
     
     With *This
       If *This > 0
-        If Item.i=-1
-          Item = *Parent\index[2]
-        EndIf
+        x = \x[3]
+        y = \y[3]
+        ;Debug ""+\y+" "+\y[3]
         
-        If \Parent <> *Parent Or \p_i <> Item
-          x = \x[3]
-          y = \y[3]
+        If \Parent And ListSize(\Parent\Childrens())
+          ;           ForEach \Parent\Childrens()
+          ;             If \Parent\Childrens() = *This
+          ;               Debug ""+ \Parent\Childrens()\type +" "+ \Parent\Childrens()\text\string
+          ;               DeleteElement(\Parent\Childrens())
+          ;             EndIf
+          ;           Next
           
-          If \Parent And ListSize(\Parent\Childrens())
-            If ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : DeleteElement(\Parent\Childrens())
-              PostEvent(#PB_Event_Gadget, \Parent\Canvas\Window, \Parent\Canvas\Gadget, #PB_EventType_Repaint)
-              If \Parent<>*Parent
-                PostEvent(#PB_Event_Gadget, *Parent\Canvas\Window, *Parent\Canvas\Gadget, #PB_EventType_Repaint)
-              EndIf
+          If ChangeCurrentElement(\Parent\Childrens(), *This\adress) : DeleteElement(\Parent\Childrens())
+            PostEvent(#PB_Event_Gadget, \Parent\Canvas\Window, \Parent\Canvas\Gadget, #PB_EventType_Repaint)
+            If \Parent<>*Parent
+              PostEvent(#PB_Event_Gadget, *Parent\Canvas\Window, *Parent\Canvas\Gadget, #PB_EventType_Repaint)
             EndIf
           EndIf
-          
-          \p_i = Item
-          \Parent = *Parent
-          \Window = *Parent\Window
-          \Canvas = \Parent\Canvas
-          \Hide = Bool(\p_i > 0 Or \Parent\Hide)
-          
-          If \Parent\s
-            x-\Parent\s\h\Page\Pos
-            y-\Parent\s\v\Page\Pos
-          EndIf
-          
-          AddChildren(\Parent\Childrens(), *This)
-          Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
         EndIf
+        
+        \Parent = *Parent
+        \Window = *Parent\Window
+        
+        \p_i = Item
+        \Canvas = \Parent\Canvas
+        
+        \Hide = Bool(Item > 0 Or \Parent\Hide)
+        
+        LastElement(\Parent\Childrens())
+        If AddElement(\Parent\Childrens())
+          \Parent\Childrens() = *This 
+          \Parent\Childrens()\adress = @\Parent\Childrens()
+        EndIf
+        
+        If \Parent\s
+          x-\Parent\s\h\Page\Pos
+          y-\Parent\s\v\Page\Pos
+        EndIf
+        
+        Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
       EndIf
     EndWith
   EndProcedure
@@ -4326,9 +4302,6 @@ Module Widget
         If AddElement(*openedlist())
           *openedlist() = *This 
         EndIf
-        
-        *Root = *openedlist()
-        *Root\adress = @*openedlist()
         
         ProcedureReturn *This
         
@@ -6194,7 +6167,7 @@ Module Widget
         Width = X+\Childrens()\clip\Width
         Height = Y+\Childrens()\clip\Height
         
-        If Not \Childrens()\Hide And \Childrens()\p_i = Bool(\Type = #PB_GadgetType_Panel) * \index[2] And ;\Childrens()\p_i = *This\index[2] And 
+        If Not \Childrens()\Hide And \Childrens()\p_i = *This\index[2] And 
            (MouseX >=  X And MouseX < Width And MouseY >=  Y And MouseY < Height)
           If ListSize(\Childrens()\Childrens()) 
             *Result = at(\Childrens(), MouseX, MouseY)
@@ -6213,15 +6186,6 @@ Module Widget
       ;EndIf
     EndWith
     
-    ; scrollbars events
-    If *Result And *Result\s
-      If *Result\s\v And Not *Result\s\v\Hide And *Result\s\v\Type And (MouseX>*Result\s\v\x And MouseX=<*Result\s\v\x+*Result\s\v\Width And  MouseY>*Result\s\v\y And MouseY=<*Result\s\v\y+*Result\s\v\Height)
-        *Result = *Result\s\v
-      ElseIf *Result\s\h And Not *Result\s\h\Hide And *Result\s\h\Type And (MouseX>*Result\s\h\x And MouseX=<*Result\s\h\x+*Result\s\h\Width And  MouseY>*Result\s\h\y And MouseY=<*Result\s\h\y+*Result\s\h\Height)
-        *Result = *Result\s\h
-      EndIf
-    EndIf
-        
     If *Result
       With *Result 
         \Canvas\Mouse\X = MouseX
@@ -6776,7 +6740,6 @@ Module Widget
     
     With *This
       If *This
-        
         If *Value\Last <> *This
           If *Value\Last And *Value\Last <> \Parent And Not *Value\Last\Canvas\Mouse\Buttons
             Events(*Value\Last, *Value\Last\at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
@@ -7720,18 +7683,11 @@ Module Widget
     ProcedureReturn *This
   EndProcedure
   
-  Procedure.i Window(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget.Widget_S=0)
+  Procedure.i Window(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
     
-;     If LastElement(*openedlist()) And *openedlist()\Type =- 1
-;       CloseList()
-;     EndIf
-    
-    If Not *Widget And LastElement(*openedlist()) 
-      ChangeCurrentElement(*openedlist(), Adress(Root()))
-      While NextElement(*openedlist())
-        DeleteElement(*openedlist())
-      Wend
+    If LastElement(*openedlist()) And *openedlist()\Type =- 1
+      CloseList()
     EndIf
     
     With *This
@@ -7826,12 +7782,6 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   
   Global.i gEvent, gQuit, value, direction, x=10,y=10
-  Global *i.Widget_S
-  Global *s.Widget_S
-  Global *p.Widget_S
-  
-  Global *sp.Widget_S
-  Global *sp.Widget_S
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint, *This.Widget_S
@@ -7942,15 +7892,7 @@ CompilerIf #PB_Compiler_IsMainFile
       BindGadgetEvent(1, @Canvas_CallBack())
       
       If OpenList(0, 1)
-        Define w=Window(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
-        
-        *i.Widget_S  = Image(0, 0, 0, 0, 0)
-        *s.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : closelist() : SetState(*s\s\h, 45)
-        *p.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*p, 50)
-        
-        *sp.Widget_S = Splitter(10, 10, 360,  330, *i, *s)
-        *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical)
-      
+        Window(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
         Window(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
         
         Container(30,30,280-60, 200-60)
@@ -7958,13 +7900,10 @@ CompilerIf #PB_Compiler_IsMainFile
         Button(100, 20, 80, 80, "Button_1");, #PB_Flag_AnchorsGadget)
         Button(130, 80, 80, 80, "Button_2");, #PB_Flag_AnchorsGadget)
         Button(70, 80, 80, 80, "Button_3") ;, #PB_Flag_AnchorsGadget)
-;         CloseList()
-;         CloseList()
+        CloseList()
+        CloseList()
         
         Window(20, 150, 280, 200, "Window_3") ;, #PB_Flag_AnchorsGadget)
-        
-;         ; demo set 
-;         OpenList(w)
         
         ScrollArea(30,30,280-60, 200-60, 300, 250)
         Button(100, 20, 80, 80, "Button_1");, #PB_Flag_AnchorsGadget)
@@ -8028,6 +7967,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
+
+
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------4--
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

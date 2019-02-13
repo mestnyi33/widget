@@ -9,21 +9,107 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, value, direction, x=10,y=10
   Global *window
   
-  ;-
-  ; Получить Z-позицию элемента в окне
-  Procedure GetPosition(*This.Widget_S, Position=#PB_Default)
+  Procedure.i GetIndex(*This.Widget_S, Position.i)
     Protected Result.i
     
-;     Select Position
-;       Case #PB_List_First  : Result = FirstElement(*List())
-;       Case #PB_List_Before : ChangeCurrentElement(*List(), *This\adress) : Result = PreviousElement(*List())
-;       Case #PB_List_After  : ChangeCurrentElement(*List(), *This\adress) : Result = NextElement(*List())
-;       Case #PB_List_Last   : Result = LastElement(*List())
-;       Default
-;         ProcedureReturn *This\adress
-;     EndSelect
+    With *This
+      If *This And \Parent
+        Select Position
+          Case #PB_List_First  : Result = FirstElement(\Parent\Childrens())
+          Case #PB_List_Before : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = PreviousElement(\Parent\Childrens())
+          Case #PB_List_After  : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = NextElement(\Parent\Childrens())
+          Case #PB_List_Last   : Result = LastElement(\Parent\Childrens())
+        EndSelect
+        Result = ListIndex(\Parent\Childrens())
+      EndIf
+    EndWith
     
     ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i SetIndex(*This.Widget_S, Position.i, *Widget_2 =- 1) ; Ok SetStacking()
+    
+    With *This\Parent
+      If *This And *This\Parent
+;         ForEach \Parent\Childrens()
+;           If *This = \Parent\Childrens()
+;             Break
+;           EndIf
+;         Next
+        ChangeCurrentElement(\Childrens(), Adress(*This))
+        
+        If *Widget_2 =- 1
+          Select Position
+            Case #PB_List_First  : MoveElement(\Childrens(), #PB_List_First)
+            Case #PB_List_Before : PreviousElement(\Childrens()) : MoveElement(\Childrens(), #PB_List_After, Adress(\Childrens()))
+            Case #PB_List_After  : NextElement(\Childrens())     : MoveElement(\Childrens(), #PB_List_Before, Adress(\Childrens()))
+            Case #PB_List_Last   : MoveElement(\Childrens(), #PB_List_Last)
+          EndSelect
+        ElseIf *Widget_2
+          Select Position
+            Case #PB_List_Before : MoveElement(\Childrens(), #PB_List_Before, *Widget_2)
+            Case #PB_List_After  : MoveElement(\Childrens(), #PB_List_After, *Widget_2)
+          EndSelect
+        EndIf
+      EndIf 
+    EndWith
+    
+  EndProcedure
+  
+  
+  ;-
+  ; Получить Z-позицию элемента в окне
+  Procedure _GetPosition(*This.Widget_S, Position=#PB_Default)
+    Protected Result.i
+    
+    With *This
+      If *This And \Parent
+        Select Position
+          Case #PB_List_First  : Result = FirstElement(\Parent\Childrens())
+          Case #PB_List_Before : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = PreviousElement(\Parent\Childrens())
+          Case #PB_List_After  : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = NextElement(\Parent\Childrens())
+          Case #PB_List_Last   : Result = LastElement(\Parent\Childrens())
+          Default              : Result = Adress(*This)
+        EndSelect
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i _SetPosition(*This.Widget_S, Position, Widget_2 =- 1) ; Ok
+    
+    With *This
+      If *This And \Parent
+        ;Debug "Position "+\text\string
+        
+;         ForEach \Parent\Childrens()
+;           If *This = \Parent\Childrens()
+;             Break
+;           EndIf
+;         Next
+        ChangeCurrentElement(\Parent\Childrens(), Adress(*This))
+        Debug "SetPosition "+\Parent\Childrens()\text\string +" "+ ListIndex(\Parent\Childrens())
+        
+        If Widget_2 =- 1
+          Select Position
+            Case #PB_List_First  : MoveElement(\Parent\Childrens(), #PB_List_First)
+            Case #PB_List_Before : PreviousElement(\Parent\Childrens()) : MoveElement(\Parent\Childrens(), #PB_List_After, Adress(\Parent\Childrens()))
+            Case #PB_List_After  : NextElement(\Parent\Childrens())     : MoveElement(\Parent\Childrens(), #PB_List_Before, Adress(\Parent\Childrens()))
+            Case #PB_List_Last   : MoveElement(\Parent\Childrens(), #PB_List_Last)
+          EndSelect
+        Else
+          Select Position
+            Case #PB_List_Before : MoveElement(\Parent\Childrens(), #PB_List_Before, Widget_2)
+            Case #PB_List_After  : MoveElement(\Parent\Childrens(), #PB_List_After, Widget_2)
+          EndSelect
+        EndIf
+        
+        ;\Parent\Childrens()\Adress = @\Parent\Childrens()
+        
+      EndIf 
+    EndWith
+    
   EndProcedure
   
   ; Позиционирование элементов (Positioning This)
@@ -36,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    
+    Static *After
     
     Select EventType
         ;Case #PB_EventType_Repaint : Repaint = EventData()
@@ -55,10 +141,13 @@ CompilerIf #PB_Compiler_IsMainFile
           
           Select EventType
             Case #PB_EventType_LeftButtonDown
-              ;             Protected *First = FirstElement(*list())
-              ;             Protected *last = LastElement(*list())
+              *After = GetPosition(*This, #PB_List_After)
               
               SetPosition(*This, #PB_List_Last)
+              Repaint = 1
+              
+            Case #PB_EventType_LeftButtonUp
+              SetPosition(*This, #PB_List_Before, *After)
               Repaint = 1
           EndSelect
         EndIf
@@ -219,7 +308,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 
-
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -8--
+; Folding = --+f--
 ; EnableXP

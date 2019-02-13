@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -7,6 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   
   Global.i gEvent, gQuit, value, direction, x=10,y=10
+  Global *w.Widget_S=AllocateStructure(Widget_S)
   Global *Bar_0.Widget_S=AllocateStructure(Widget_S)
   Global *Bar_1.Widget_S=AllocateStructure(Widget_S)
   Global *Scroll_1.Widget_S=AllocateStructure(Widget_S)
@@ -27,36 +28,6 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure ReDraw(Gadget.i)
-;     With *Bar_1
-;       If (\Change Or \Resize)
-;         Bar::Resize(\s\v, \x[1], \y[1], \width[1], \height[1])
-;         Bar::Resize(\s\h, \x[2], \y[2], \width[2], \height[2])
-;       EndIf
-;     EndWith
-;     
-;     With *Bar_0
-;       If (\Change Or \Resize)
-;         Bar::Resize(\s\v, \x[1], \y[1], \width[1], \height[1])
-;         Bar::Resize(\s\h, \x[2], \y[2], \width[2], \height[2])
-;       EndIf
-;     EndWith
-    
-    If StartDrawing(CanvasOutput(Gadget))
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
-      
-      Draw(*Bar_1)
-      Draw(*Bar_0)
-      
-;       Draw(*Scroll_1)
-;       Draw(*Scroll_2)
-     ;  Draw(*Scroll_3)
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
-  
   Procedure Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint, iWidth, iHeight
     Protected Width = GadgetWidth(Canvas)
@@ -67,17 +38,12 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select EventType
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        Resize(*Bar_1, x, y, Width-x*2, Height-y*2)  
+        Resize(*w, x, y, Width-x*2, Height-y*2)  
         Repaint = 1 
     EndSelect
     
-    Repaint | CallBack(*Bar_1, EventType, mouseX,mouseY)
-;     Repaint | CallBack(*child_0, EventType, mouseX,mouseY)
-;     Repaint | CallBack(*child_2, EventType, mouseX,mouseY)
-;     Repaint | CallBack(*Bar_0, EventType, mouseX,mouseY)
-;     Repaint | CallBack(*Scroll_3, EventType, mouseX,mouseY)
-;     Repaint | CallBack(*ScrollArea, EventType, mouseX,mouseY)
-;     Repaint | CallBack(*Scroll_1, EventType, mouseX,mouseY)
+    Protected *this = at(*w, mouseX, mouseY)
+    Repaint | CallBack(*this, EventType, mouseX,mouseY)
     
     If Repaint
       ReDraw(1)
@@ -146,8 +112,9 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 400, 400, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (10,    5,   365, 390,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      CanvasGadget(1, 10,10, 380, 350, #PB_Canvas_Keyboard|#PB_Canvas_Container)
+      CanvasGadget(1, 10,10, 380, 350, #PB_Canvas_Keyboard)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+      *w=openlist(0,1)
       
       *Scroll_1.Widget_S  = Image(0, 0, 0, 0, 0); : SetState(*Scroll_1, 1) 
       *Scroll_2.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : closelist() : SetState(*Scroll_2\s\h, 45)
@@ -181,9 +148,6 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       SetState(*Bar_0, 25)
       
       BindGadgetEvent(1, @Canvas_CallBack())
-      
-      CloseGadgetList()
-      
       ReDraw(1)
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
@@ -239,38 +203,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; 
-; 
-; 
-; Protected fs=2
-;           If \p And \p\clip\x>\x+fs
-;             \clip\x = \p\clip\x
-;           Else
-;             \clip\x = \x+fs
-;           EndIf
-;           
-;           If \p And \p\clip\y>\y+fs
-;             \clip\y = \p\clip\y
-;           Else
-;             \clip\y = \y+fs
-;           EndIf
-;           
-;           If \p And \p\s
-;             Protected xl=Bool(Not \p\s\v\Hide And \p\s\v\type = #PB_GadgetType_ScrollBar)*\p\s\v\width
-;             Protected yl=Bool(Not \p\s\h\Hide And \p\s\h\type = #PB_GadgetType_ScrollBar)*\p\s\h\height
-;           EndIf
-;           
-;           If \p And \x+\width-fs>\p\clip\x+\p\clip\width-xl
-;             \clip\width = \p\clip\width-xl-(\clip\x-\p\clip\x)
-;           Else
-;             \clip\width = \width-(\clip\x-\x)-fs
-;           EndIf
-;           
-;           If \p And \y+\height-fs>\p\clip\y+\p\clip\height-yl
-;             \clip\height = \p\clip\height-yl-(\clip\y-\p\clip\y)
-;           Else
-;             \clip\height = \height-(\clip\y-\y)-fs
-;           EndIf
+
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = ----
 ; EnableXP
