@@ -3044,8 +3044,8 @@ Procedure WE_Open(ParentID=0, Flag.i=#PB_Window_SystemMenu)
     ; Demo draw widgets on the canvas
     Canvas_0 = CanvasGadget(#PB_Any,  10, 40, 900, 600, #PB_Canvas_Keyboard)
     BindGadgetEvent(Canvas_0, @Canvas_0_CallBack())
-    Widget::*value\gadget = Canvas_0
-    Widget::*value\window = WE
+    Widget::*value\Canvas\gadget = Canvas_0
+    Widget::*value\Canvas\window = WE
     
     WE_Panel_1 = Widget::Panel(5, 159, 315, 261, Widget::#PB_Flag_AutoSize)
     

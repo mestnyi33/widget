@@ -5,6 +5,7 @@
 ;      ||------w||
 ;      ||       ||
 ;
+;   Скроллбар у скроллареа,трии, листикон, радител не правильно
 
 DeclareModule Widget
   EnableExplicit
@@ -4698,7 +4699,6 @@ Module Widget
             y-\Parent\s\v\Page\Pos
           EndIf
           
-          Debug \Parent
           AddChildren(\Parent, *This)
           Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
         EndIf
@@ -5507,6 +5507,14 @@ Module Widget
       EndIf
       
       With *This
+        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And 
+           \Align And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
+          X = 0
+          Y = 0
+          Width = \Parent\width[2]
+          Height = \Parent\height[2]
+        EndIf
+        
         ; Set widget coordinate
         If X<>#PB_Ignore : If \Parent : \x[3] = X : X+\Parent\x+\Parent\bs : EndIf : If \X <> X : Change_x = x-\x : \X = X : \x[2] = \x+\bs : \x[1] = \x[2]-\fs : \Resize | 1<<1 : EndIf : EndIf  
         If Y<>#PB_Ignore : If \Parent : \y[3] = Y : Y+\Parent\y+\Parent\bs+\Parent\TabHeight : EndIf : If \Y <> Y : Change_y = y-\y : \Y = Y : \y[2] = \y+\bs+\TabHeight : \y[1] = \y[2]-\fs : \Resize | 1<<2 : EndIf : EndIf  
@@ -7974,7 +7982,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasGadget(1, 10,10, 580, 550, #PB_Canvas_Keyboard|#PB_Canvas_Container)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       BindGadgetEvent(1, @Canvas_CallBack())
-      Define Editable = #PB_Flag_AnchorsGadget
+      Define Editable ;= #PB_Flag_AnchorsGadget
       
       If OpenList(0, 1)
         Define w=Window(150, 50, 280, 200, "Window_1", Editable)
@@ -7984,7 +7992,7 @@ CompilerIf #PB_Compiler_IsMainFile
         *p.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*p, 50)
         
         *sp.Widget_S = Splitter(10, 10, 360,  330, *i, *s)
-        *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical)
+        *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical|#PB_Flag_AutoSize)
       
         Window(280, 100, 280, 200, "Window_2", Editable)
         
@@ -7999,11 +8007,14 @@ CompilerIf #PB_Compiler_IsMainFile
         Window(20, 150, 280, 200, "Window_3", Editable)
         
         ScrollArea(30,30,280-60, 200-60, 300, 250)
+        SetState(Option(10, 10, 100, 21, "Option_2", #PB_Flag_AnchorsGadget), 1)
+        
         Button(100, 20, 80, 80, "Button_1", Editable)
         Button(130, 80, 80, 80, "Button_2", Editable)
         Button(70, 80, 80, 80, "Button_3", Editable)
         CloseList()
         
+        SetPosition(w, #PB_List_Last)
         ReDraw(1)
       EndIf
       

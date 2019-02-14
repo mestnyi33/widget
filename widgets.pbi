@@ -807,9 +807,6 @@ Module Widget
   CompilerEndIf
   
   Macro SetAutoSize(_this_, _state_)
-    _this_\Canvas\Gadget = *Value\Canvas\Gadget
-    _this_\Canvas\Window = *Value\Canvas\Window
-    
     If Bool(_state_) : x=0 : y=0
       _this_\Align = AllocateStructure(Align_S)
       _this_\Align\Left = 1
@@ -819,7 +816,11 @@ Module Widget
     EndIf
   EndMacro
   
-  Macro SetLastParent(_this_)
+  Macro SetLastParent(_this_, _type_)
+    _this_\Type = _type_
+    _this_\Canvas\Gadget = *Value\Canvas\Gadget
+    _this_\Canvas\Window = *Value\Canvas\Window
+    
     ; Set parent
     If LastElement(*openedlist())
       If _this_\Type = #PB_GadgetType_Option
@@ -3157,18 +3158,19 @@ Module Widget
     
     With *This
       Protected Alpha = \color\alpha<<24
+      Protected Radius = \box\width/2
       \box\x = \x[2]+3
       \box\y = \y[2]+(\height[2]-\Box\width)/2
       
       DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      RoundBox( \box\x,\box\y,\box\width,\box\width, \Radius, \Radius, \Color\Back&$FFFFFF|Alpha)
+      RoundBox( \box\x,\box\y,\box\width,\box\width, Radius, Radius, \Color\Back&$FFFFFF|Alpha)
       
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      Circle(\box\x+\box\width/2,\box\y+\box\width/2,\box\width/2, \Color\Frame[\Focus*2]&$FFFFFF|Alpha)
+      Circle(\box\x+Radius,\box\y+Radius, Radius, \Color\Frame[\Focus*2]&$FFFFFF|Alpha)
       
       If \box\Checked > 0
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        Circle(\box\x+\box\width/2,\box\y+\box\width/2,2, \Color\Frame[\Focus*2]&$FFFFFFFF|Alpha)
+        Circle(\box\x+Radius,\box\y+Radius, 2, \Color\Frame[\Focus*2]&$FFFFFFFF|Alpha)
       EndIf
       
       ; Draw string
@@ -4727,7 +4729,6 @@ Module Widget
             y-\Parent\s\v\Page\Pos
           EndIf
           
-          Debug \Parent
           AddChildren(\Parent, *This)
           Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
         EndIf
@@ -4762,6 +4763,9 @@ Module Widget
             Case #PB_List_After  : MoveElement(\Parent\Childrens(), #PB_List_After, *Widget_2)
           EndSelect
         EndIf
+        
+       ; \Parent\Childrens()\Adress = @\Parent\Childrens()
+        
       EndIf 
     EndWith
     
@@ -5536,6 +5540,14 @@ Module Widget
       EndIf
       
       With *This
+        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And 
+           \Align And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
+          X = 0
+          Y = 0
+          Width = \Parent\width[2]
+          Height = \Parent\height[2]
+        EndIf
+        
         ; Set widget coordinate
         If X<>#PB_Ignore : If \Parent : \x[3] = X : X+\Parent\x+\Parent\bs : EndIf : If \X <> X : Change_x = x-\x : \X = X : \x[2] = \x+\bs : \x[1] = \x[2]-\fs : \Resize | 1<<1 : EndIf : EndIf  
         If Y<>#PB_Ignore : If \Parent : \y[3] = Y : Y+\Parent\y+\Parent\bs+\Parent\TabHeight : EndIf : If \Y <> Y : Change_y = y-\y : \Y = Y : \y[2] = \y+\bs+\TabHeight : \y[1] = \y[2]-\fs : \Resize | 1<<2 : EndIf : EndIf  
@@ -7026,8 +7038,9 @@ Module Widget
     EndIf
     
     *This = Bar(#PB_GadgetType_ScrollBar, Size, Min, Max, PageLength, Flag|Vertical, Radius)
+    SetLastParent(*This, #PB_GadgetType_ScrollBar) 
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -7039,8 +7052,9 @@ Module Widget
     Protected Vertical = Bool(Flag&#PB_ProgressBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
     
     *This = Bar(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Smooth|Vertical|#PB_Bar_NoButtons, 0)
+    SetLastParent(*This, #PB_GadgetType_ProgressBar) 
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -7052,8 +7066,9 @@ Module Widget
     Protected Vertical = Bool(Flag&#PB_TrackBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
     
     *This = Bar(#PB_GadgetType_TrackBar, 0, Min, Max, 0, Ticks|Vertical|#PB_Bar_NoButtons, 0)
+    SetLastParent(*This, #PB_GadgetType_TrackBar)
+    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -7065,14 +7080,13 @@ Module Widget
     Protected *Bar.Widget_S, *This.Widget_S, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
     
     *This = Bar(0, 0, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
+    SetLastParent(*This, #PB_GadgetType_Splitter) 
+    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     Resize(*This, X,Y,Width,Height)
-    
-    With *This
-      \Thumb\len = 7
-      \Type = #PB_GadgetType_Splitter
-      
+ 
+   With *This
+     \Thumb\len = 7
       \SplitterFirst = First
       \SplitterSecond = Second
       
@@ -7101,13 +7115,13 @@ Module Widget
   
   Procedure.i Spin(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
     Protected *This.Widget_S = AllocateStructure(Widget_S)
+    SetLastParent(*This, #PB_GadgetType_Spin) 
     
     ;Flag | Bool(Not Flag&#PB_Vertical) * (#PB_Bar_Inverted)
     
     With *This
       \X =- 1
       \Y =- 1
-      \Type = #PB_GadgetType_Spin
       
       \fs = 1
       \bs = 2
@@ -7160,8 +7174,8 @@ Module Widget
       
     EndWith
     
+    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -7169,12 +7183,11 @@ Module Widget
   
   Procedure.i Image(X.i,Y.i,Width.i,Height.i, Image.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_Image) 
     
     With *This
       \X =- 1
       \Y =- 1
-      \s = AllocateStructure(Scroll_S)
-      \Type = #PB_GadgetType_Image
       \Color = Color_Default
       \color\alpha = 255
       
@@ -7184,11 +7197,12 @@ Module Widget
       \Image = AllocateStructure(Image_S)
       Set_Image(*This, Image)
       
-      \s\v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,\image\height, Height, #PB_Vertical, 7) : \s\v\Parent = *This
-      \s\h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,\image\width,Width, 0, 7) : \s\h\Parent = *This
+      \s = AllocateStructure(Scroll_S) 
+      \s\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7197,11 +7211,11 @@ Module Widget
   
   Procedure.i Button(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, Image.i=-1)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_Button) 
     
     With *This
       \X =- 1
       \Y =- 1
-      \Type = #PB_GadgetType_Button
       \Color = Color_Default
       \color\alpha = 255
       
@@ -7220,7 +7234,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7229,12 +7243,12 @@ Module Widget
   
   Procedure.i HyperLink(X.i,Y.i,Width.i,Height.i, Text.s, Color.i, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_HyperLink) 
     
     With *This
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_Hand
-      \Type = #PB_GadgetType_HyperLink
       \Color = Color_Default
       \color\alpha = 255
       
@@ -7258,7 +7272,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7267,11 +7281,11 @@ Module Widget
   
   Procedure.i Text(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_Text)
     
     With *This
       \X =- 1
       \Y =- 1
-      \Type = #PB_GadgetType_Text
       \Color = Color_Default
       \color\alpha = 255
       
@@ -7295,7 +7309,7 @@ Module Widget
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7304,11 +7318,11 @@ Module Widget
   
   Procedure.i ComboBox(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_ComboBox)
     
     With *This
       \X =- 1
       \Y =- 1
-      \Type = #PB_GadgetType_ComboBox
       \Color = Color_Default
       \color\alpha = 255
       
@@ -7356,7 +7370,7 @@ Module Widget
       
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7365,11 +7379,11 @@ Module Widget
   
   Procedure.i CheckBox(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_CheckBox) 
     
     With *This
       \X =- 1
       \Y =- 1
-      \Type = #PB_GadgetType_CheckBox
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
@@ -7391,7 +7405,7 @@ Module Widget
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7400,11 +7414,11 @@ Module Widget
   
   Procedure.i Option(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    
+    SetLastParent(*This, #PB_GadgetType_Option) 
+      
     With *This
       \X =- 1
       \Y =- 1
-      \Type = #PB_GadgetType_Option
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
@@ -7420,12 +7434,12 @@ Module Widget
       \Box = AllocateStructure(Box_S)
       \Box\height = 15
       \Box\width = 15
-      \Radius = 7
+      \Radius = 0
       
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7434,13 +7448,13 @@ Module Widget
   
   Procedure.i String(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_String)
     
     With *This
       \X =- 1
       \Y =- 1
       \s = AllocateStructure(Scroll_S) 
       \Cursor = #PB_Cursor_IBeam
-      \Type = #PB_GadgetType_String
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
@@ -7459,7 +7473,7 @@ Module Widget
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7468,13 +7482,12 @@ Module Widget
   
   Procedure.i Tree(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_Tree)
     
     With *This
       \X =- 1
       \Y =- 1
       ;\Cursor = #PB_Cursor_Hand
-      \s = AllocateStructure(Scroll_S) 
-      \Type = #PB_GadgetType_Tree
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
@@ -7500,11 +7513,12 @@ Module Widget
       \fs = 1
       \bs = 2
       
-      \s\v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,Height, #PB_Vertical, 7) : \s\v\Parent = *This
-      \s\h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,Width, 0, 7) : \s\h\Parent = *This
-      
+      \s = AllocateStructure(Scroll_S) 
+      \s\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7513,13 +7527,12 @@ Module Widget
   
   Procedure.i ListIcon(X.i,Y.i,Width.i,Height.i, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_ListIcon)
     
     With *This
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_LeftRight
-      \s = AllocateStructure(Scroll_S) 
-      \Type = #PB_GadgetType_ListIcon
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
@@ -7543,11 +7556,12 @@ Module Widget
       \fs = 1
       \bs = 2
       
-      \s\v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,Height, #PB_Vertical, 7) : \s\v\Parent = *This
-      \s\h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,Width, 0, 7) : \s\h\Parent = *This
+      \s = AllocateStructure(Scroll_S) 
+      \s\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       
       AddColumn(*This, 0, FirstColumnTitle, FirstColumnWidth)
@@ -7558,13 +7572,12 @@ Module Widget
   
   Procedure.i ListView(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_ListView)
     
     With *This
       \X =- 1
       \Y =- 1
       ;\Cursor = #PB_Cursor_Hand
-      \s = AllocateStructure(Scroll_S) 
-      \Type = #PB_GadgetType_ListView
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
@@ -7595,11 +7608,12 @@ Module Widget
       \fs = 1
       \bs = 2
       
-      \s\v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,Height, #PB_Vertical, 7) : \s\v\Parent = *This
-      \s\h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,0, 0,0,0, 0, 0) : \s\h\Parent = *This
-      
+      \s = AllocateStructure(Scroll_S) 
+      \s\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7608,12 +7622,12 @@ Module Widget
   
   Procedure.i Frame(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_Frame)
     
     With *This
       \X =- 1
       \Y =- 1
       \Container =- 2
-      \Type = #PB_GadgetType_Frame
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
@@ -7628,7 +7642,7 @@ Module Widget
       \Text\Change = 1
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7637,6 +7651,7 @@ Module Widget
   
   Procedure.i Property(X.i,Y.i,Width.i,Height.i, SplitterPos.i = 80, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_Property)
     
     With *This
       \X =- 1
@@ -7648,14 +7663,12 @@ Module Widget
       SetAttribute(*This, #PB_Bar_Maximum, Width) 
       
       ;\Container = 1
-      \Type = #PB_GadgetType_Property
       
       
       \Cursor = #PB_Cursor_LeftRight
       SetState(*This, SplitterPos)
       
       
-      \s = AllocateStructure(Scroll_S) 
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
@@ -7682,11 +7695,12 @@ Module Widget
       \fs = 1
       \bs = 2
       
-      \s\v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,Height, #PB_Vertical, 7) : \s\v\Parent = *This
-      \s\h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,Width, 0, 7) : \s\h\Parent = *This
-      
+      \s = AllocateStructure(Scroll_S) 
+      \s\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7696,12 +7710,12 @@ Module Widget
   ;- Containers
   Procedure.i ScrollArea(X.i,Y.i,Width.i,Height.i, ScrollAreaWidth.i, ScrollAreaHeight.i, ScrollStep.i=1, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_ScrollArea)
     
     With *This
       \X =- 1
       \Y =- 1
       \Container = 1
-      \Type = #PB_GadgetType_ScrollArea
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
@@ -7721,7 +7735,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
     EndWith
@@ -7731,12 +7745,12 @@ Module Widget
   
   Procedure.i Container(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_Container) 
     
     With *This
       \X =- 1
       \Y =- 1
       \Container = 1
-      \Type = #PB_GadgetType_Container
       \Color = Color_Default
       \color\alpha = 255
       \color\Fore = 0
@@ -7754,7 +7768,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
     EndWith
@@ -7764,12 +7778,12 @@ Module Widget
   
   Procedure.i Panel(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    
+    SetLastParent(*This, #PB_GadgetType_Panel)
+      
     With *This
       \X =- 1
       \Y =- 1
       \Container = 1
-      \Type = #PB_GadgetType_Panel
       \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
@@ -7805,7 +7819,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
     EndWith
@@ -7827,11 +7841,12 @@ Module Widget
       Wend
     EndIf
     
+    SetLastParent(*This, #PB_GadgetType_Window) 
+      
     With *This
       \X =- 1
       \Y =- 1
       \Container =- 1
-      \Type =- 1
       \Color = Color_Default
       \color\Fore = 0
       \color\Back = $FFF0F0F0
@@ -7874,7 +7889,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
       SetActive(*This)
@@ -8031,7 +8046,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasGadget(1, 10,10, 580, 550, #PB_Canvas_Keyboard|#PB_Canvas_Container)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       BindGadgetEvent(1, @Canvas_CallBack())
-      Define Editable = #PB_Flag_AnchorsGadget
+      Define Editable ;= #PB_Flag_AnchorsGadget
       
       If OpenList(0, 1)
         Define w=Window(150, 50, 280, 200, "Window_1", Editable)
@@ -8041,8 +8056,8 @@ CompilerIf #PB_Compiler_IsMainFile
         *p.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*p, 50)
         
         *sp.Widget_S = Splitter(10, 10, 360,  330, *i, *s)
-        *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical)
-      
+        *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical|#PB_Flag_AutoSize)
+        
         Window(280, 100, 280, 200, "Window_2", Editable)
         
         Container(30,30,280-60, 200-60, Editable)
@@ -8056,11 +8071,16 @@ CompilerIf #PB_Compiler_IsMainFile
         Window(20, 150, 280, 200, "Window_3", Editable)
         
         ScrollArea(30,30,280-60, 200-60, 300, 250)
+        SetState(Option(10, 10, 100, 21, "Option_2", #PB_Flag_AnchorsGadget), 1)
+        
         Button(100, 20, 80, 80, "Button_1", Editable)
         Button(130, 80, 80, 80, "Button_2", Editable)
         Button(70, 80, 80, 80, "Button_3", Editable)
         CloseList()
         
+        
+        ;Resize(w, #PB_Ignore, #PB_Ignore, 280, 200)
+        SetPosition(w, #PB_List_Last)
         ReDraw(1)
       EndIf
       
@@ -8118,5 +8138,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------0-----------
+; Folding = ---------------------------------------------------------------------------------------------------------------------8-------------------------------------8-8fYAB-----
 ; EnableXP
