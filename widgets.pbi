@@ -2082,7 +2082,8 @@ Module Widget
       ; Draw scroll bar background
       If \Color\Back[State_0]<>-1
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox( \X[2], \Y[2], \Width[2], \Height[2], \Radius, \Radius, \Color\Back[State_0]&$FFFFFF|Alpha)
+       ; RoundBox( \X[2], \Y[2], \Width[2], \Height[2], \Radius, \Radius, \Color\Back[State_0]&$FFFFFF|Alpha)
+        RoundBox( \X, \Y, \Width, \Height, \Radius, \Radius, \Color\Back[State_0]&$FFFFFF|Alpha)
       EndIf
       
       ; Draw line
@@ -2158,14 +2159,16 @@ Module Widget
         EndIf
         
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        Protected size = \Box\ArrowSize[2]+3
+        
         If \Vertical
-          Line( \Box\x[3]+(\Box\Width[3]-8)/2, \Box\y[3]+\Box\Height[3]/2-3,9,1, LinesColor)
-          Line( \Box\x[3]+(\Box\Width[3]-8)/2, \Box\y[3]+\Box\Height[3]/2,9,1, LinesColor)
-          Line( \Box\x[3]+(\Box\Width[3]-8)/2, \Box\y[3]+\Box\Height[3]/2+3,9,1, LinesColor)
+          Line( \Box\x[3]+(\Box\Width[3]-(size-1))/2, \Box\y[3]+\Box\Height[3]/2-3,size,1, LinesColor)
+          Line( \Box\x[3]+(\Box\Width[3]-(size-1))/2, \Box\y[3]+\Box\Height[3]/2,size,1, LinesColor)
+          Line( \Box\x[3]+(\Box\Width[3]-(size-1))/2, \Box\y[3]+\Box\Height[3]/2+3,size,1, LinesColor)
         Else
-          Line( \Box\x[3]+\Box\Width[3]/2-3, \Box\y[3]+(\Box\Height[3]-8)/2,1,9, LinesColor)
-          Line( \Box\x[3]+\Box\Width[3]/2, \Box\y[3]+(\Box\Height[3]-8)/2,1,9, LinesColor)
-          Line( \Box\x[3]+\Box\Width[3]/2+3, \Box\y[3]+(\Box\Height[3]-8)/2,1,9, LinesColor)
+          Line( \Box\x[3]+\Box\Width[3]/2-3, \Box\y[3]+(\Box\Height[3]-(size-1))/2,1,size, LinesColor)
+          Line( \Box\x[3]+\Box\Width[3]/2, \Box\y[3]+(\Box\Height[3]-(size-1))/2,1,size, LinesColor)
+          Line( \Box\x[3]+\Box\Width[3]/2+3, \Box\y[3]+(\Box\Height[3]-(size-1))/2,1,size, LinesColor)
         EndIf
       EndIf
       
@@ -3845,6 +3848,13 @@ Module Widget
             Case #PB_GadgetType_ScrollArea : Draw_ScrollArea(*This, x,y)
           EndSelect
           
+          
+          If \s 
+            ; ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
+            If \s\v And \s\v\Type And Not \s\v\Hide : Draw_Scroll(\s\v, x,y) : EndIf
+            If \s\h And \s\h\Type And Not \s\h\Hide : Draw_Scroll(\s\h, x,y) : EndIf
+          EndIf
+          
           ; Draw Childrens
           If Childrens And ListSize(\Childrens())
             ForEach \Childrens() 
@@ -3853,13 +3863,6 @@ Module Widget
                 Draw(\Childrens(), Childrens) 
               EndIf
             Next
-          EndIf
-          
-          
-          If \s 
-            ; ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
-            If \s\v And \s\v\Type And Not \s\v\Hide : Draw_Scroll(\s\v, x,y) : EndIf
-            If \s\h And \s\h\Type And Not \s\h\Hide : Draw_Scroll(\s\h, x,y) : EndIf
           EndIf
           
           ; Demo clip
@@ -4132,6 +4135,8 @@ Module Widget
       With *Result 
         \Canvas\Mouse\X = MouseX
         \Canvas\Mouse\Y = MouseY
+        *Value\Canvas\Mouse\X = MouseX
+        *Value\Canvas\Mouse\Y = MouseY
         
         If \Box And (MouseX>\Box\x[1] And MouseX=<\Box\x[1]+\Box\Width[1] And  MouseY>\Box\y[1] And MouseY=<\Box\y[1]+\Box\Height[1])
           \at = 1
@@ -4814,16 +4819,43 @@ Module Widget
     
     With *This
       If \Window And *Value\Active <> \Window
-        If *Value\Active : \Window\Deactive = *Value\Active : EndIf
-        If Not \Window\Deactive : \Window\Deactive = \Window : EndIf
-        *Value\Active = \Window
+        If *Value\Active 
+          \Window\Deactive = *Value\Active 
+          *Value\Active\Focus = 0
+          *Value\Active\anchor = 0 
+        EndIf
+        If Not \Window\Deactive 
+          \Window\Deactive = \Window 
+        EndIf
+        \Window\anchor = \Window\anchor[9]
+        
+        If *Value\Focus ; Если деактивировали окно то убираем также якорь с гаджета
+          If *Value\Focus\Window = \Window\Deactive
+            *Value\Focus\Focus = 0
+            *Value\Focus\anchor = 0 
+          ElseIf *Value\Focus\Window = \Window
+            *Value\Focus\Focus = 1
+            *Value\Focus\anchor = *Value\Focus\anchor[9] 
+          EndIf
+        EndIf
+        
         Result = \Window\Deactive
+        *Value\Active = \Window
+        \Window\Focus = 1
       EndIf
       
       If *This And *Value\Focus <> *This And \Type <> #PB_GadgetType_Window ; And \Type <> #PB_GadgetType_Button 
-        If *Value\Focus : \Deactive = *Value\Focus : EndIf
-        If Not \Deactive : \Deactive = *This : EndIf
+        If *Value\Focus
+          \Deactive = *Value\Focus 
+          *Value\Focus\anchor = 0 
+          *Value\Focus\Focus = 1
+        EndIf
+        If Not \Deactive 
+          \Deactive = *This 
+        EndIf
+        \anchor = \anchor[9]
         *Value\Focus = *This
+        \Focus = 1
       EndIf
     EndWith
     
@@ -6186,7 +6218,7 @@ Module Widget
             Else
               Repaint = 1
               
-              If \Text[2]\Len
+              If \Text[2] And \Text[2]\Len
                 If *This\Text\Caret[1] > *This\Text\Caret : *This\Text\Caret[1] = *This\Text\Caret : EndIf
                 
                 If *This\Text\Caret[1] < Caret And Caret < *This\Text\Caret[1] + \Text[2]\Len
@@ -6333,30 +6365,30 @@ Module Widget
         Protected window = \Canvas\Window
         Protected canvas = \canvas\Gadget
         
-        If \anchor[1]
-          If EventType = #PB_EventType_MouseEnter
-            If (\Type = #PB_GadgetType_Splitter And at = 3)
-              \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
-            Else
-              \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
-            EndIf
-          EndIf
-          
-          ;           If EventType = #PB_EventType_LeftButtonDown 
-          ;             If *Value\Focus <> *This
-          ;               If *Value\Focus
-          ;                 PostEvent(#PB_Event_Widget, *Value\Canvas\Window, *Value\Focus, #PB_EventType_StatusChange, #PB_EventType_LostFocus)
-          ;               EndIf
-          ;               PostEvent(#PB_Event_Widget, *Value\Canvas\Window, *This, #PB_EventType_StatusChange, #PB_EventType_Focus)
-          ;               PostEvent(#PB_Event_Gadget, *Value\Canvas\Window, *Value\Canvas\Gadget, #PB_EventType_Repaint)
-          ;               
-          ;               *Value\Focus = *This
-          ;             EndIf
-          ;           EndIf
-          ProcedureReturn - 1
-        EndIf
+;         If \anchor[1]
+;           If EventType = #PB_EventType_MouseEnter
+;             If (\Type = #PB_GadgetType_Splitter And at = 3)
+;               \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+;               SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
+;             Else
+;               \Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
+;               SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \Cursor)
+;             EndIf
+;           EndIf
+;           
+;           ;           If EventType = #PB_EventType_LeftButtonDown 
+;           ;             If *Value\Focus <> *This
+;           ;               If *Value\Focus
+;           ;                 PostEvent(#PB_Event_Widget, *Value\Canvas\Window, *Value\Focus, #PB_EventType_StatusChange, #PB_EventType_LostFocus)
+;           ;               EndIf
+;           ;               PostEvent(#PB_Event_Widget, *Value\Canvas\Window, *This, #PB_EventType_StatusChange, #PB_EventType_Focus)
+;           ;               PostEvent(#PB_Event_Gadget, *Value\Canvas\Window, *Value\Canvas\Gadget, #PB_EventType_Repaint)
+;           ;               
+;           ;               *Value\Focus = *This
+;           ;             EndIf
+;           ;           EndIf
+;           ProcedureReturn - 1
+;         EndIf
         
         Select EventType 
           Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp
@@ -6495,7 +6527,7 @@ Module Widget
         EndSelect
         
         Select EventType
-          Case #PB_EventType_Focus : \Focus = 1 : Repaint = 1
+          Case #PB_EventType_Focus : Repaint = 1
             If \Text And CountString(\Text\String, "_")
               If \Type =- 1
                 Debug "Active "+ Val(StringField(\Text\String, 2, "_")) ; +\Type +" "+ at +" "+ *This
@@ -6506,7 +6538,7 @@ Module Widget
               Debug "events() Focus " +\Type +" "+ at +" "+ *This
             EndIf
             
-          Case #PB_EventType_LostFocus : \Focus = 0 : Repaint = 1
+          Case #PB_EventType_LostFocus : Repaint = 1
             If \Text And CountString(\Text\String, "_")
               If \Type =- 1
                 Debug "DeActive "+ Val(StringField(\Text\String, 2, "_")) ; +\Type +" "+ at +" "+ *This
@@ -6853,6 +6885,10 @@ Module Widget
     
     With *This
       If *This
+;         ; anchors events
+;         If CallBack_Anchors(*This, EventType.i, \Canvas\Mouse\Buttons, MouseScreenX.i,MouseScreenY.i)
+;           ProcedureReturn 1
+;         EndIf
         
         If *Value\Last <> *This
           If *Value\Last And *Value\Last <> \Parent And Not *Value\Last\Canvas\Mouse\Buttons
@@ -6879,12 +6915,26 @@ Module Widget
         Select EventType 
           Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
             If *Value\Last = *This 
+              If \Canvas\Mouse\Buttons
+                If \anchor
+                  ;Events_Anchors(*This, *Value\Canvas\Mouse\x, *Value\Canvas\Mouse\y)
+                  Resize(*This, *Value\Canvas\Mouse\x-\Canvas\Mouse\Delta\x, *Value\Canvas\Mouse\y-\Canvas\Mouse\Delta\y, #PB_Ignore, #PB_Ignore)
+                  repaint = 1
+                EndIf
+              EndIf
+              
               repaint | Events(*This, \at, #PB_EventType_MouseMove, MouseScreenX, MouseScreenY)
             EndIf
             
           Case #PB_EventType_LeftButtonDown, #PB_EventType_RightButtonDown
             If *Value\Last = *This : \State = 2
               SetForeground(*This.Widget_S)
+              
+              If \anchor
+                ; Поднимаем гаджет
+                Static *Pos : *Pos = GetPosition(*This, #PB_List_After)
+                SetPosition(*This, #PB_List_Last)
+              EndIf
               
               repaint | Events(*This, \at, EventType, MouseScreenX, MouseScreenY)
               repaint = 1
@@ -6894,6 +6944,11 @@ Module Widget
             If *Value\Focus And *Value\Focus\State = 2 : *Value\Focus\State = 1 : *Value\Focus\Canvas\Mouse\Buttons = 0
               repaint | Events(*Value\Focus, *Value\Focus\at, EventType, MouseScreenX, MouseScreenY)
               
+              If \anchor And *Pos
+                ; Возврашаем на место
+                SetPosition(*This, #PB_List_Before, *Pos)
+              EndIf
+            
               If Bool(MouseScreenX>=*Value\Focus\X And MouseScreenX<*Value\Focus\X+*Value\Focus\Width And 
                       MouseScreenY>*Value\Focus\Y And MouseScreenY=<*Value\Focus\Y+*Value\Focus\Height) 
                 
@@ -6938,6 +6993,11 @@ Module Widget
              #PB_EventType_MiddleButtonDown, 
              #PB_EventType_RightButtonDown 
           If *This
+            
+            \Canvas\Mouse\Delta = AllocateStructure(Mouse_S)
+            \Canvas\Mouse\Delta\X = \Canvas\Mouse\x-\x[3]
+            \Canvas\Mouse\Delta\Y = \Canvas\Mouse\y-\y[3]
+            
             \Canvas\Mouse\Buttons = 1
           EndIf
           *Value\Canvas\Mouse\Buttons = 1
@@ -6952,6 +7012,11 @@ Module Widget
           EndIf
           
           If *This
+            If \Canvas\Mouse\Delta
+              FreeStructure(\Canvas\Mouse\Delta)
+              \Canvas\Mouse\Delta = 0
+            EndIf
+            
             \Canvas\Mouse\Buttons = 0
           EndIf
           *Value\Canvas\Mouse\Buttons = 0
@@ -8046,7 +8111,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CanvasGadget(1, 10,10, 580, 550, #PB_Canvas_Keyboard|#PB_Canvas_Container)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       BindGadgetEvent(1, @Canvas_CallBack())
-      Define Editable ;= #PB_Flag_AnchorsGadget
+      Define Editable = #PB_Flag_AnchorsGadget
       
       If OpenList(0, 1)
         Define w=Window(150, 50, 280, 200, "Window_1", Editable)
@@ -8071,7 +8136,8 @@ CompilerIf #PB_Compiler_IsMainFile
         Window(20, 150, 280, 200, "Window_3", Editable)
         
         ScrollArea(30,30,280-60, 200-60, 300, 250)
-        SetState(Option(10, 10, 100, 21, "Option_2", #PB_Flag_AnchorsGadget), 1)
+        SetState(Option(10, 10, 100, 21, "Option_2", Editable), 1)
+        SetState(Option(10, 30, 100, 21, "Option_2", Editable), 1)
         
         Button(100, 20, 80, 80, "Button_1", Editable)
         Button(130, 80, 80, 80, "Button_2", Editable)
@@ -8079,7 +8145,6 @@ CompilerIf #PB_Compiler_IsMainFile
         CloseList()
         
         
-        ;Resize(w, #PB_Ignore, #PB_Ignore, 280, 200)
         SetPosition(w, #PB_List_Last)
         ReDraw(1)
       EndIf
@@ -8138,5 +8203,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------8-------------------------------------8-8fYAB-----
+; Folding = ---------------------------------------------------------------------------------------------------------------------v---------------------z----------------+-+XGQw-88v-
 ; EnableXP
