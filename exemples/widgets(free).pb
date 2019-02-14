@@ -7,126 +7,52 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   
   Global.i gEvent, gQuit, value, direction, x=10,y=10
-  Global *window
+  Global *window.Widget_S
   
-  Procedure.i GetIndex(*This.Widget_S, Position.i)
+  Procedure.i _Free(*This.Widget_S)
     Protected Result.i
     
     With *This
-      If *This And \Parent
-        Select Position
-          Case #PB_List_First  : Result = FirstElement(\Parent\Childrens())
-          Case #PB_List_Before : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = PreviousElement(\Parent\Childrens())
-          Case #PB_List_After  : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = NextElement(\Parent\Childrens())
-          Case #PB_List_Last   : Result = LastElement(\Parent\Childrens())
-        EndSelect
-        Result = ListIndex(\Parent\Childrens())
+      If *This
+        If \s
+          If \s\v
+            FreeStructure(\s\v) : \s\v = 0
+          EndIf
+          If \s\h
+            FreeStructure(\s\h)  : \s\h = 0
+          EndIf
+          FreeStructure(\s) : \s = 0
+        EndIf
+        
+        If \Box
+          FreeStructure(\Box) : \Box = 0
+        EndIf
+        
+        If \Image
+          FreeStructure(\Image) : \Image = 0
+        EndIf
+        
+        If \Image[1]
+          FreeStructure(\Image[1]) : \Image[1] = 0
+        EndIf
+        
+        If \Text
+          FreeStructure(\Text) : \Text = 0
+        EndIf
+        
+        FreeStructure(*This) 
+        *Value\Active = 0
+        *Value\Focus = 0
+        
+        If \Parent And ListSize(\Parent\Childrens()) : \Parent\CountItems - 1
+          ChangeCurrentElement(\Parent\Childrens(), Adress(*This))
+          Result = DeleteElement(\Parent\Childrens())
+        EndIf
       EndIf
     EndWith
     
     ProcedureReturn Result
   EndProcedure
-  
-  Procedure.i SetIndex(*This.Widget_S, Position.i, *Widget_2 =- 1) ; Ok SetStacking()
-    
-    With *This\Parent
-      If *This And *This\Parent
-;         ForEach \Parent\Childrens()
-;           If *This = \Parent\Childrens()
-;             Break
-;           EndIf
-;         Next
-        ChangeCurrentElement(\Childrens(), Adress(*This))
-        
-        If *Widget_2 =- 1
-          Select Position
-            Case #PB_List_First  : MoveElement(\Childrens(), #PB_List_First)
-            Case #PB_List_Before : PreviousElement(\Childrens()) : MoveElement(\Childrens(), #PB_List_After, Adress(\Childrens()))
-            Case #PB_List_After  : NextElement(\Childrens())     : MoveElement(\Childrens(), #PB_List_Before, Adress(\Childrens()))
-            Case #PB_List_Last   : MoveElement(\Childrens(), #PB_List_Last)
-          EndSelect
-        ElseIf *Widget_2
-          Select Position
-            Case #PB_List_Before : MoveElement(\Childrens(), #PB_List_Before, *Widget_2)
-            Case #PB_List_After  : MoveElement(\Childrens(), #PB_List_After, *Widget_2)
-          EndSelect
-        EndIf
-      EndIf 
-    EndWith
-    
-  EndProcedure
-  
-  
-  ;-
-  ; Получить Z-позицию элемента в окне
-  Procedure _GetPosition(*This.Widget_S, Position=#PB_Default)
-    Protected Result.i
-    
-    With *This
-      If *This And \Parent
-        If (\Type = #PB_GadgetType_ScrollBar And 
-            \Parent\Type = #PB_GadgetType_ScrollArea) Or
-           \Parent\Type = #PB_GadgetType_Splitter
-          *This = \Parent
-        EndIf
-        
-        Select Position
-          Case #PB_List_First  : Result = FirstElement(\Parent\Childrens())
-          Case #PB_List_Before : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = PreviousElement(\Parent\Childrens())
-          Case #PB_List_After  : ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : Result = NextElement(\Parent\Childrens())
-          Case #PB_List_Last   : Result = LastElement(\Parent\Childrens())
-          Default              : Result = Adress(*This)
-        EndSelect
-      EndIf
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i _SetPosition(*This.Widget_S, Position, *Widget_2 =- 1) ; Ok
-    
-    With *This
-      If *This And \Parent
-        ;Debug "Position "+\text\string
-        
-;         ForEach \Parent\Childrens()
-;           If *This = \Parent\Childrens()
-;             Break
-;           EndIf
-;         Next
-        If (\Type = #PB_GadgetType_ScrollBar And 
-            \Parent\Type = #PB_GadgetType_ScrollArea) Or
-           \Parent\Type = #PB_GadgetType_Splitter
-          *This = \Parent
-        EndIf
-        ;Debug "SetPosition "+\Parent\Childrens()\text\string +" "+ ListIndex(\Parent\Childrens())
-        
-        ChangeCurrentElement(\Parent\Childrens(), Adress(*This))
-        Debug *This 
-        
-        If *Widget_2 =- 1
-          Select Position
-            Case #PB_List_First  : MoveElement(\Parent\Childrens(), #PB_List_First)
-            Case #PB_List_Before : PreviousElement(\Parent\Childrens()) : MoveElement(\Parent\Childrens(), #PB_List_After, Adress(\Parent\Childrens()))
-            Case #PB_List_After  : NextElement(\Parent\Childrens())     : MoveElement(\Parent\Childrens(), #PB_List_Before, Adress(\Parent\Childrens()))
-            Case #PB_List_Last   : MoveElement(\Parent\Childrens(), #PB_List_Last)
-          EndSelect
-        ElseIf *Widget_2
-          Select Position
-            Case #PB_List_Before : MoveElement(\Parent\Childrens(), #PB_List_Before, *Widget_2)
-            Case #PB_List_After  : MoveElement(\Parent\Childrens(), #PB_List_After, *Widget_2)
-          EndSelect
-        EndIf
-        
-        ;\Parent\Childrens()\Adress = @\Parent\Childrens()
-        
-      EndIf 
-    EndWith
-    
-  EndProcedure
-  
-  ; Позиционирование элементов (Positioning This)
-  
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint, *This.Widget_S
@@ -149,21 +75,25 @@ CompilerIf #PB_Compiler_IsMainFile
         
         *This = at(*window, MouseX, MouseY)
         
-        If *This
-          Repaint | CallBack(*This, EventType(), MouseX, MouseY)
-          
-          Select EventType
+        Select EventType
             Case #PB_EventType_LeftButtonDown
-              *After = _GetPosition(*This, #PB_List_After)
+              ; *After = _GetPosition(*This, #PB_List_After)
               
-              _SetPosition(*This, #PB_List_Last)
+              *This = Free(*This)
               Repaint = 1
-              
+              ;*This = at(*window, MouseX, MouseY)
+        
             Case #PB_EventType_LeftButtonUp
-              _SetPosition(*This, #PB_List_Before, *After)
+              Debug "free "+ *This; SetPosition(*This, #PB_List_Before, *After)
+              Debug CountItems(*window) ; ListSize(*window\Childrens())
               Repaint = 1
           EndSelect
-        EndIf
+          
+          
+         If *This
+          ; Debug *This
+          ; Repaint | CallBack(*This, EventType(), MouseX, MouseY)
+         EndIf
         
     EndSelect
     
@@ -237,7 +167,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (10,    5,   565, 590,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      CanvasGadget(1, 10,10, 580, 550, #PB_Canvas_Keyboard|#PB_Canvas_Container)
+      CanvasGadget(1, 10,10, 580, 550, #PB_Canvas_Keyboard)
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
       *window = openlist(0, 1)
@@ -255,15 +185,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ScrollArea(130, 80, 80, 80, 0,100,100) : CloseList() ; "Button_2");, #PB_Flag_AnchorsGadget)
       ScrollArea(70, 80, 80, 80, 0,100,100) : CloseList() ; "Button_3") ;, #PB_Flag_AnchorsGadget)
       
-      ;Widgets(Hex(2)) = Button(91, 21, 280-2-182, 200-2-42, "Full_"+Str(5))
-      
-      CloseList()
       
       
       BindGadgetEvent(1, @Canvas_CallBack())
-      
-      CloseGadgetList()
-      
       ReDraw(1)
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
@@ -321,5 +245,5 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----0--
+; Folding = --f--
 ; EnableXP

@@ -634,7 +634,6 @@ DeclareModule Widget
   Declare.i at(*this.Widget_S, MouseX.i, MouseY.i)
   Declare.i GetPosition(*This.Widget_S, Position.i)
   Declare.i SetPosition(*This.Widget_S, Position.i, *Widget_2 =- 1)
-  Declare.i Free(*This.Widget_S)
   
   Declare.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
   Declare.i SetItemData(*This.Widget_S, Item.i, *Data)
@@ -4320,46 +4319,18 @@ Module Widget
     
     With *This
       If *This
-        If \s
-          If \s\v
-            FreeStructure(\s\v) : \s\v = 0
-          EndIf
-          If \s\h
-            FreeStructure(\s\h)  : \s\h = 0
-          EndIf
-          FreeStructure(\s) : \s = 0
-        EndIf
-        
-        If \Box
-          FreeStructure(\Box) : \Box = 0
-        EndIf
-        
-        If \Image
-          FreeStructure(\Image) : \Image = 0
-        EndIf
-        
-        If \Image[1]
-          FreeStructure(\Image[1]) : \Image[1] = 0
-        EndIf
-        
-        If \Text
-          FreeStructure(\Text) : \Text = 0
-        EndIf
-        
-        FreeStructure(*This) 
-        *Value\Active = 0
-        *Value\Focus = 0
-        
-        If \Parent And ListSize(\Parent\Childrens()) : \Parent\CountItems - 1
+        If \Parent And ListSize(\Parent\Childrens())
           ChangeCurrentElement(\Parent\Childrens(), Adress(*This))
           Result = DeleteElement(\Parent\Childrens())
         EndIf
+        
+        FreeStructure(*This) 
+        *This = 0
       EndIf
     EndWith
     
     ProcedureReturn Result
   EndProcedure
-  
   
   ;- ADD
   Procedure.i AddItem(*This.Widget_S, Item.i, Text.s, Image.i=-1, Flag.i=0)
@@ -6952,14 +6923,13 @@ Module Widget
   
   
   ;-
-  Procedure.i Bar(Type.i, Size.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7, SliderLen.i=7, Parent.i=0)
+  Procedure.i Bar(Type.i, X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7, SliderLen.i=7)
     Protected *This.Widget_S = AllocateStructure(Widget_S)
     
     With *This
       \X =- 1
       \Y =- 1
       \Type = Type
-      \Parent = Parent
       \Radius = Radius
       \Ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
       \Smooth = Bool(Flag&#PB_Bar_Smooth=#PB_Bar_Smooth)
@@ -6992,16 +6962,18 @@ Module Widget
       \color[3]\alpha[1] = 128
       
       If Not Bool(Flag&#PB_Bar_NoButtons=#PB_Bar_NoButtons)
-        If Size < 21
-          \Box\Size = Size - 1
-        Else
-          \Box\Size = 17
-        EndIf
-        
         If \Vertical
-          \width = Size
+          If width < 21
+            \Box\Size = width - 1
+          Else
+            \Box\Size = 17
+          EndIf
         Else
-          \height = Size
+          If height < 21
+            \Box\Size = height - 1
+          Else
+            \Box\Size = 17
+          EndIf
         EndIf
       EndIf
       
@@ -7012,91 +6984,28 @@ Module Widget
       
     EndWith
     
+    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    Resize(*This, X,Y,Width,Height)
+    
     ProcedureReturn *This
   EndProcedure
   
   Procedure.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
-    Protected *This.Widget_S, Size
     Protected Vertical = (Bool(Flag&#PB_Splitter_Vertical) * #PB_Vertical)
-    
-    If Vertical
-      Size = width
-    Else
-      Size =  height
-    EndIf
-    
-    *This = Bar(#PB_GadgetType_ScrollBar, Size, Min, Max, PageLength, Flag|Vertical, Radius)
-    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    Resize(*This, X,Y,Width,Height)
-    
-    ProcedureReturn *This
+    ProcedureReturn Bar(#PB_GadgetType_ScrollBar, X,Y,Width,Height, Min, Max, PageLength, Flag|Vertical, Radius)
   EndProcedure
   
   Procedure.i Progress(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
-    Protected *This.Widget_S
     Protected Smooth = Bool(Flag&#PB_ProgressBar_Smooth) * #PB_Bar_Smooth ; |(Bool(#PB_Vertical) * #PB_Bar_Inverted)
     Protected Vertical = Bool(Flag&#PB_ProgressBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
-    
-    *This = Bar(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Smooth|Vertical|#PB_Bar_NoButtons, 0)
-    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    Resize(*This, X,Y,Width,Height)
-    
-    ProcedureReturn *This
+    ProcedureReturn Bar(#PB_GadgetType_ProgressBar, X,Y,Width,Height, Min, Max, 0, Smooth|Vertical|#PB_Bar_NoButtons, 0)
   EndProcedure
   
   Procedure.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
-    Protected *This.Widget_S
     Protected Ticks = Bool(Flag&#PB_TrackBar_Ticks) * #PB_Bar_Ticks
     Protected Vertical = Bool(Flag&#PB_TrackBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
-    
-    *This = Bar(#PB_GadgetType_TrackBar, 0, Min, Max, 0, Ticks|Vertical|#PB_Bar_NoButtons, 0)
-    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    Resize(*This, X,Y,Width,Height)
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Splitter(X.i,Y.i,Width.i,Height.i, First.i, Second.i, Flag.i=0)
-    Protected Vertical = Bool(Not Flag&#PB_Splitter_Vertical) * #PB_Vertical
-    Protected Auto = Bool(Flag&#PB_Flag_AutoSize) * #PB_Flag_AutoSize
-    Protected *Bar.Widget_S, *This.Widget_S, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
-    
-    *This = Bar(0, 0, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
-    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetLastParent(*This) : SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    Resize(*This, X,Y,Width,Height)
-    
-    With *This
-      \Thumb\len = 7
-      \Type = #PB_GadgetType_Splitter
-      
-      \SplitterFirst = First
-      \SplitterSecond = Second
-      
-      If \SplitterFirst
-        \Type[1] = \SplitterFirst\Type
-      EndIf
-      
-      If \SplitterSecond
-        \Type[2] = \SplitterSecond\Type
-      EndIf
-      
-      SetParent(\SplitterFirst, *This)
-      SetParent(\SplitterSecond, *This)
-      
-      If \Vertical
-        \Cursor = #PB_Cursor_UpDown
-        SetState(*This, \height/2-1)
-      Else
-        \Cursor = #PB_Cursor_LeftRight
-        SetState(*This, \width/2-1)
-      EndIf
-    EndWith
-    
-    ProcedureReturn *This
+    ProcedureReturn Bar(#PB_GadgetType_TrackBar, X,Y,Width,Height, Min, Max, 0, Ticks|Vertical|#PB_Bar_NoButtons, 0)
   EndProcedure
   
   Procedure.i Spin(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
@@ -7635,6 +7544,42 @@ Module Widget
     ProcedureReturn *This
   EndProcedure
   
+  Procedure.i Splitter(X.i,Y.i,Width.i,Height.i, First.i, Second.i, Flag.i=0)
+    Protected Vertical = Bool(Not Flag&#PB_Splitter_Vertical) * #PB_Vertical
+    Protected Auto = Bool(Flag&#PB_Flag_AutoSize) * #PB_Flag_AutoSize
+    Protected *Bar.Widget_S, *This.Widget_S, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
+    *This = Bar(0, X,Y,Width,Height, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
+    
+    With *This
+      \Thumb\len = 7
+      \Type = #PB_GadgetType_Splitter
+      
+      \SplitterFirst = First
+      \SplitterSecond = Second
+      
+      If \SplitterFirst
+        \Type[1] = \SplitterFirst\Type
+      EndIf
+      
+      If \SplitterSecond
+        \Type[2] = \SplitterSecond\Type
+      EndIf
+      
+      SetParent(\SplitterFirst, *This)
+      SetParent(\SplitterSecond, *This)
+      
+      If \Vertical
+        \Cursor = #PB_Cursor_UpDown
+        SetState(*This, \height/2-1)
+      Else
+        \Cursor = #PB_Cursor_LeftRight
+        SetState(*This, \width/2-1)
+      EndIf
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
   Procedure.i Property(X.i,Y.i,Width.i,Height.i, SplitterPos.i = 80, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
     
@@ -7713,10 +7658,8 @@ Module Widget
       \Image[1] = AllocateStructure(Image_S)
       
       \s = AllocateStructure(Scroll_S) 
-      \s\v = Bar(#PB_GadgetType_ScrollBar,Size,0,ScrollAreaHeight,Height, #PB_Vertical, 7, 7, *This)
-      \s\h = Bar(#PB_GadgetType_ScrollBar,Size, 0,ScrollAreaWidth,Width, 0, 7, 7, *This)
-;       Resize(\s\v, #PB_Ignore,#PB_Ignore,Size,#PB_Ignore)
-;       Resize(\s\h, #PB_Ignore,#PB_Ignore,#PB_Ignore,Size)
+      \s\v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,ScrollAreaHeight,Height, #PB_Vertical, 7) : \s\v\Parent = *This
+      \s\h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,ScrollAreaWidth,Width, 0, 7) : \s\h\Parent = *This
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
@@ -8118,5 +8061,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------0-----------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
