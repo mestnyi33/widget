@@ -177,47 +177,50 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndProcedure
   
   
-  Procedure Widgets_CallBack()
+  Procedure Widgets_CallBack(EventWidget.i, EventType.i, EventItem.i)
     ; Debug ""+EventType() +" "+ WidgetEventType() +" "+ EventWidget() +" "+ EventGadget() +" "+ EventData()
-    Protected EventWidget = EventWidget()
+    ;Protected EventWidget = EventWidget()
     
-    Select WidgetEvent()
+    Select EventType ; WidgetEvent()
       Case #PB_EventType_LeftClick
-        Debug 7777777
-        *Window = Popup(EventWidget, #PB_Ignore,#PB_Ignore,280,130)
-        
-        OpenList(*Window)
-        Widgets("Widgets_0") = Tree(0, 0, 280, 130, #PB_Flag_NoButtons|#PB_Flag_NoLines)
-        Load_Widgets(Widgets("Widgets_0"), GetCurrentDirectory()+"Themes/")
-        SetState(Widgets("Widgets_0"), 1)
-        CloseList()
-        
-        ; Draw_Popup(*Window)
-        
+        Select EventWidget
+          Case Widgets("Button_1")
+            Debug 7777777
+            *Window = Popup(EventWidget, #PB_Ignore,#PB_Ignore,280,130)
+            
+            OpenList(*Window)
+            Widgets("Widgets_0") = Tree(0, 0, 280, 130, #PB_Flag_NoButtons|#PB_Flag_NoLines)
+            Load_Widgets(Widgets("Widgets_0"), GetCurrentDirectory()+"Themes/")
+            SetState(Widgets("Widgets_0"), 1)
+            CloseList()
+            
+            ; Draw_Popup(*Window)
+        EndSelect
+          
       Case #PB_EventType_StatusChange
         Select EventWidget
           Case Widgets("Widgets") 
-            SetText(Widgets("Widgets_info"), Help_Widgets(GetItemText(EventWidget, EventData())))
+            SetText(Widgets("Widgets_info"), Help_Widgets(GetItemText(EventWidget, EventItem)))
             
-            SetItemAttribute(Widgets("Panel"), GetState(Widgets("Panel")), #PB_Button_Image, GetItemData(EventWidget, EventData())) ; GetState(EventWidget)))
+            SetItemAttribute(Widgets("Panel"), GetState(Widgets("Panel")), #PB_Button_Image, GetItemData(EventWidget, EventItem)) ; GetState(EventWidget)))
             
           Case Widgets("Properties") 
-            SetText(Widgets("Properties_info"), Help_Properties(GetItemText(EventWidget, EventData())))
+            SetText(Widgets("Properties_info"), Help_Properties(GetItemText(EventWidget, EventItem)))
         EndSelect
         
-        Select EventData()
-          Case #PB_EventType_Focus
-            SetState(Widgets("Inspector"), GetData(EventWidget()))
-            
-            SetItemText(Widgets("Properties"), 1, GetText(EventWidget()))
-            SetItemText(Widgets("Properties"), 3, Str(X(EventWidget())))
-            SetItemText(Widgets("Properties"), 4, Str(Y(EventWidget())))
-            SetItemText(Widgets("Properties"), 5, Str(Width(EventWidget())))
-            SetItemText(Widgets("Properties"), 6, Str(Height(EventWidget())))
-            
-          Case #PB_EventType_LostFocus
-            
-        EndSelect  
+      Case #PB_EventType_Focus
+        Debug "фокус"
+        SetFocus(GetWindow(EventWidget), 1)
+        
+        SetState(Widgets("Inspector"), GetData(EventWidget))
+        SetItemText(Widgets("Properties"), 1, GetText(EventWidget))
+        SetItemText(Widgets("Properties"), 3, Str(X(EventWidget)))
+        SetItemText(Widgets("Properties"), 4, Str(Y(EventWidget)))
+        SetItemText(Widgets("Properties"), 5, Str(Width(EventWidget)))
+        SetItemText(Widgets("Properties"), 6, Str(Height(EventWidget)))
+        
+      Case #PB_EventType_LostFocus
+        
     EndSelect
     ;     EndSelect
     
@@ -338,149 +341,149 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), Window_0)
     
     ; Demo draw widgets on the canvas
-    Canvas_0 = CanvasGadget(#PB_Any,  10, 40, 780, 550, #PB_Canvas_Keyboard)
+    Canvas_0 = CanvasGadget(#PB_Any, 10, 40, 780, 550, #PB_Canvas_Keyboard)
     BindGadgetEvent(Canvas_0, @Canvas_0_CallBack())
-;     *value\gadget = Canvas_0
-;     *value\window = Window_0
-    OpenList(Window_0, Canvas_0)
+    ;BindEvent(#PB_Event_Widget, @Widgets_CallBack(), Window_0) ; Widgets events callback
     
-    ; Main panel
-    Widgets("Panel") = Panel(0, 0, 0, 0) 
+    If OpenList(Window_0, Canvas_0, #PB_GadgetType_Window)
+      ; Main panel
+      Widgets("Panel") = Panel(0, 0, 0, 0) 
+      
+      ; panel tab new forms
+      AddItem(Widgets("Panel"), -1, "Form")
+      
+      Widgets("Form_0") = Window(20, 20, 480, 410, "Window_0", #PB_Flag_AnchorsGadget, Widgets("Panel")) : SetData(Widgets("Form_0"), 0) : *Widget = Widgets("Form_0") : SetImage(*Widget, 5)
+      ;Widgets("Form_0_String_0") = String(340, 10, 100, 26, "String_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_String_0"), 1)
+      Widgets("Form_0_Text_0") = Text(120, 10, 100, 101, "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Text_0"), 2)
+      Widgets("Form_0_Frame_0") = Frame(230, 10, 100, 101, "Frame_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Frame_0"), 3)
+      
+      Widgets("Container_0") = Container(10, 120, 120, 150, #PB_Flag_AnchorsGadget) : SetData(Widgets("Container_0"), 4) : *Widget = Widgets("Container_0")  : SetImage(*Widget, 5)
+      SetColor(Widgets("Container_0"), #PB_Gadget_BackColor, $FF00CDFF)
+      Widgets("Form_0_Container_0_Option_0") = Option(10, 10, 100, 21, "Option_3", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Option_0"), 16)
+      Widgets("Form_0_Container_0_Option_1") = Option(10, 35, 100, 21, "Option_4", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Option_1"), 17)
+      Widgets("Form_0_Container_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_1"), 5)
+      Widgets("Form_0_Container_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_2"), 6)
+      CloseList()
+      
+      Widgets("Container_1") = Panel(140, 120, 120, 150, #PB_Flag_AnchorsGadget) 
+      AddItem(Widgets("Container_1"), -1, "Panel_0") 
+      SetData(Widgets("Container_1"), 7) : *Widget = Widgets("Container_1")  : SetImage(*Widget, 5)
+      SetColor(Widgets("Container_1"), #PB_Gadget_BackColor, $FF0CDF0F)
+      Widgets("Form_0_Container_1_Option_0") = Option(10, 10, 100, 21, "Option_5", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_0"), 18)
+      Widgets("Form_0_Container_1_Option_1") = Option(10, 35, 100, 21, "Option_6", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_1"), 19)
+      
+      ;AddItem(Widgets("Container_1"), -1, "Panel_1") 
+      Widgets("Form_0_Container_1_Button_3") = Spin(10, 65, 100, 25, 0, 10, #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_3"), 8)
+      Widgets("Form_0_Container_1_Button_4") = Spin(10, 95, 100, 25, 0, 10, #PB_Vertical|#PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_4"), 9)
+      CloseList()
+      
+      Widgets("Form_0_ComboBox_5") = ComboBox(10, 10, 100, 26, #PB_Flag_AnchorsGadget) 
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_0_item", -1 )
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_1_item", -1) 
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_2_item", -1) 
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_3_item", -1) 
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_4_item", -1) 
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_5_item", -1) 
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_6_item", -1) 
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_7_item", -1) 
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_8_item", -1) 
+      AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_9_item", -1) 
+      SetData(Widgets("Form_0_ComboBox_5"), 10)
+      SetState(Widgets("Form_0_ComboBox_5"), 1)
+      
+      Widgets("Form_0_Option_0") = Option(10, 40, 100, 21, "Option_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_0"), 11)
+      Widgets("Form_0_Option_1") = Option(10, 65, 100, 21, "Option_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_1"), 12)
+      Widgets("Form_0_Option_2") = Option(10, 90, 100, 21, "Option_2", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_2"), 13)
+      SetState(Widgets("Form_0_Option_0"), 1)
+      
+      Widgets("Form_0_CheckBox_0") = CheckBox(340, 40, 100, 21, "CheckBox_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_CheckBox_0"), 14)
+      Widgets("Form_0_CheckBox_1") = CheckBox(340, 65, 100, 21, "CheckBox_1", #PB_Flag_AnchorsGadget|#PB_CheckBox_ThreeState) : SetData(Widgets("Form_0_CheckBox_1"), 15)
+      SetState(Widgets("Form_0_CheckBox_0"), #PB_Checkbox_Checked)
+      SetState(Widgets("Form_0_CheckBox_1"), #PB_Checkbox_Inbetween)
+      Widgets("Form_0_String_0") = String(10, 280, 450, 26, "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_String_0"), 1)
+      CloseList()
+      
+      ; panel tab code
+      AddItem(Widgets("Panel"), -1, "Code")
+      Widgets("Code") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
+      CloseList()
+      
+      ;{- inspector 
+      ; create tree inspector
+      Widgets("Inspector") = Tree(0, 0, 80, 30)
+      AddItem(Widgets("Inspector"), -1, "Window_0", -1 )
+      AddItem(Widgets("Inspector"), -1, "String_0", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Text_0", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Frame_0", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Container_0", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Button_1", -1, 2) 
+      AddItem(Widgets("Inspector"), -1, "Button_2", -1, 2) 
+      AddItem(Widgets("Inspector"), -1, "Container_1", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Button_3", -1, 2) 
+      AddItem(Widgets("Inspector"), -1, "Button_4", -1, 2) 
+      AddItem(Widgets("Inspector"), -1, "ComboBox_5", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Option_0", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Option_1", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Option_2", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "CheckBox_1", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "CheckBox_2", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Option_3", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Option_4", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Option_5", -1, 1) 
+      AddItem(Widgets("Inspector"), -1, "Option_6", -1, 1) 
+      SetState(Widgets("Inspector"), 0)
+      
+      ; create panel widget
+      Widgets("Inspector_panel") = Panel(0, 0, 0, 0) 
+      
+      ; Panel tab "properties"
+      AddItem(Widgets("Inspector_panel"), -1, "Properties")
+      Widgets("Properties") = Property(0, 0, 150, 30, 70, #PB_Flag_AutoSize)
+      ; SetColor(Widgets("Properties"))
+      
+      AddItem(Widgets("Properties"), -1, " Общее", -1, 0)
+      AddItem(Widgets("Properties"), -1, "String Text Button_0", -1, 1)
+      AddItem(Widgets("Properties"), -1, " Координаты", -1, 0)
+      AddItem(Widgets("Properties"), -1, "Spin X 0|100", -1, 1)
+      AddItem(Widgets("Properties"), -1, "Spin Y 0|200", -1, 1)
+      AddItem(Widgets("Properties"), -1, "Spin Width 0|100", -1, 1)
+      AddItem(Widgets("Properties"), -1, "Spin Height 0|200", -1, 1)
+      AddItem(Widgets("Properties"), -1, " Поведение", -1, 0)
+      AddItem(Widgets("Properties"), -1, "Button Puch C:\as\img\image.png", -1, 1)
+      AddItem(Widgets("Properties"), -1, "ComboBox Disable True|False", -1, 1)
+      AddItem(Widgets("Properties"), -1, "ComboBox Flag #_Event_Close|#_Event_Size|#_Event_Move", -1, 1)
+      Widgets("Properties_info") = Text(0, 0, 80, 30, "Тут будет инфо о свойстве")
+      Widgets("Properties_splitter") = Splitter(1,1,778, 548, Widgets("Properties"), Widgets("Properties_info"), #PB_Flag_AutoSize)
+      SetState(Widgets("Properties_splitter"), 450)
+      
+      ; Panel tab "widgets"
+      AddItem(Widgets("Inspector_panel"), -1, "Widgets")
+      Widgets("Widgets") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines)
+      Load_Widgets(Widgets("Widgets"), GetCurrentDirectory()+"Themes/")
+      SetState(Widgets("Widgets"), 1)
+      Widgets("Widgets_info") = Text(0, 0, 80, 30, "Тут будет инфо о виджете")
+      Widgets("Widgets_splitter") = Splitter(1,1,778, 548, Widgets("Widgets"), Widgets("Widgets_info"), #PB_Flag_AutoSize)
+      SetState(Widgets("Widgets_splitter"), 450)
+      
+      ; Panel tab "events"
+      AddItem(Widgets("Inspector_panel"), -1, "Events")
+      Widgets("Events") = Text(0, 60, 180, 30, "Тут будет событие элементов", #PB_Flag_AutoSize)
+      Widgets("Events_info") = Text(0, 0, 80, 30, "Тут будет инфо о событии")
+      Widgets("Events_splitter") = Splitter(1,1,778, 548, Widgets("Events"), Widgets("Events_info"), #PB_Flag_AutoSize)
+      SetState(Widgets("Events_splitter"), 450)
+      CloseList()
+      
+      Widgets("Inspector_splitter") = Splitter(1,1,778, 548, Widgets("Inspector"), Widgets("Inspector_panel"))
+      ;}
+      
+      Widgets("Splitter") = Splitter(1,1,778, 548, Widgets("Panel"), Widgets("Inspector_splitter"), #PB_Splitter_Vertical|#PB_Flag_AutoSize)
+      
+      SetState(Widgets("Inspector_splitter"), 150)
+      SetState(Widgets("Splitter"), 550)
+    EndIf
     
-    ; panel tab new forms
-    AddItem(Widgets("Panel"), -1, "Form")
+    Bind(@Widgets_CallBack(), Widgets("Form_0")) ; Widgets events callback
     
-    Widgets("Form_0") = Window(20, 20, 480, 410, "Window_0", #PB_Flag_AnchorsGadget, Widgets("Panel")) : SetData(Widgets("Form_0"), 0) : *Widget = Widgets("Form_0") : SetImage(*Widget, 5)
-    ;Widgets("Form_0_String_0") = String(340, 10, 100, 26, "String_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_String_0"), 1)
-    Widgets("Form_0_Text_0") = Text(120, 10, 100, 101, "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Text_0"), 2)
-    Widgets("Form_0_Frame_0") = Frame(230, 10, 100, 101, "Frame_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Frame_0"), 3)
-    
-    Widgets("Container_0") = Container(10, 120, 120, 150, #PB_Flag_AnchorsGadget) : SetData(Widgets("Container_0"), 4) : *Widget = Widgets("Container_0")  : SetImage(*Widget, 5)
-    SetColor(Widgets("Container_0"), #PB_Gadget_BackColor, $FF00CDFF)
-    Widgets("Form_0_Container_0_Option_0") = Option(10, 10, 100, 21, "Option_3", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Option_0"), 16)
-    Widgets("Form_0_Container_0_Option_1") = Option(10, 35, 100, 21, "Option_4", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Option_1"), 17)
-    Widgets("Form_0_Container_0_Button_1") = Button(10, 60, 100, 30, "Button_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_1"), 5)
-    Widgets("Form_0_Container_0_Button_2") = Button(10, 110, 100, 30, "Button_2", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_0_Button_2"), 6)
-    CloseList()
-    
-    Widgets("Container_1") = Panel(140, 120, 120, 150, #PB_Flag_AnchorsGadget) 
-    AddItem(Widgets("Container_1"), -1, "Panel_0") 
-    SetData(Widgets("Container_1"), 7) : *Widget = Widgets("Container_1")  : SetImage(*Widget, 5)
-    SetColor(Widgets("Container_1"), #PB_Gadget_BackColor, $FF0CDF0F)
-     Widgets("Form_0_Container_1_Option_0") = Option(10, 10, 100, 21, "Option_5", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_0"), 18)
-     Widgets("Form_0_Container_1_Option_1") = Option(10, 35, 100, 21, "Option_6", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Option_1"), 19)
-     
-     ;AddItem(Widgets("Container_1"), -1, "Panel_1") 
-    Widgets("Form_0_Container_1_Button_3") = Spin(10, 65, 100, 25, 0, 10, #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_3"), 8)
-    Widgets("Form_0_Container_1_Button_4") = Spin(10, 95, 100, 25, 0, 10, #PB_Vertical|#PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Container_1_Button_4"), 9)
-    CloseList()
-    
-    Widgets("Form_0_ComboBox_5") = ComboBox(10, 10, 100, 26, #PB_Flag_AnchorsGadget) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_0_item", -1 )
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_1_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_2_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_3_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_4_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_5_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_6_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_7_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_8_item", -1) 
-    AddItem(Widgets("Form_0_ComboBox_5"), -1, "ComboBox_9_item", -1) 
-    SetData(Widgets("Form_0_ComboBox_5"), 10)
-    SetState(Widgets("Form_0_ComboBox_5"), 1)
-    
-    Widgets("Form_0_Option_0") = Option(10, 40, 100, 21, "Option_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_0"), 11)
-    Widgets("Form_0_Option_1") = Option(10, 65, 100, 21, "Option_1", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_1"), 12)
-    Widgets("Form_0_Option_2") = Option(10, 90, 100, 21, "Option_2", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_Option_2"), 13)
-    SetState(Widgets("Form_0_Option_0"), 1)
-    
-    Widgets("Form_0_CheckBox_0") = CheckBox(340, 40, 100, 21, "CheckBox_0", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_CheckBox_0"), 14)
-    Widgets("Form_0_CheckBox_1") = CheckBox(340, 65, 100, 21, "CheckBox_1", #PB_Flag_AnchorsGadget|#PB_CheckBox_ThreeState) : SetData(Widgets("Form_0_CheckBox_1"), 15)
-    SetState(Widgets("Form_0_CheckBox_0"), #PB_Checkbox_Checked)
-    SetState(Widgets("Form_0_CheckBox_1"), #PB_Checkbox_Inbetween)
-    Widgets("Form_0_String_0") = String(10, 280, 450, 26, "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget", #PB_Flag_AnchorsGadget) : SetData(Widgets("Form_0_String_0"), 1)
-    CloseList()
-    
-    ; panel tab code
-    AddItem(Widgets("Panel"), -1, "Code")
-    Widgets("Code") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
-    CloseList()
-    
-    ;{- inspector 
-    ; create tree inspector
-    Widgets("Inspector") = Tree(0, 0, 80, 30)
-    AddItem(Widgets("Inspector"), -1, "Window_0", -1 )
-    AddItem(Widgets("Inspector"), -1, "String_0", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Text_0", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Frame_0", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Container_0", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Button_1", -1, 2) 
-    AddItem(Widgets("Inspector"), -1, "Button_2", -1, 2) 
-    AddItem(Widgets("Inspector"), -1, "Container_1", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Button_3", -1, 2) 
-    AddItem(Widgets("Inspector"), -1, "Button_4", -1, 2) 
-    AddItem(Widgets("Inspector"), -1, "ComboBox_5", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Option_0", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Option_1", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Option_2", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "CheckBox_1", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "CheckBox_2", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Option_3", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Option_4", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Option_5", -1, 1) 
-    AddItem(Widgets("Inspector"), -1, "Option_6", -1, 1) 
-    SetState(Widgets("Inspector"), 0)
-    
-    ; create panel widget
-    Widgets("Inspector_panel") = Panel(0, 0, 0, 0) 
-    
-    ; Panel tab "properties"
-    AddItem(Widgets("Inspector_panel"), -1, "Properties")
-    Widgets("Properties") = Property(0, 0, 150, 30, 70, #PB_Flag_AutoSize)
-    ; SetColor(Widgets("Properties"))
-    
-    AddItem(Widgets("Properties"), -1, " Общее", -1, 0)
-    AddItem(Widgets("Properties"), -1, "String Text Button_0", -1, 1)
-    AddItem(Widgets("Properties"), -1, " Координаты", -1, 0)
-    AddItem(Widgets("Properties"), -1, "Spin X 0|100", -1, 1)
-    AddItem(Widgets("Properties"), -1, "Spin Y 0|200", -1, 1)
-    AddItem(Widgets("Properties"), -1, "Spin Width 0|100", -1, 1)
-    AddItem(Widgets("Properties"), -1, "Spin Height 0|200", -1, 1)
-    AddItem(Widgets("Properties"), -1, " Поведение", -1, 0)
-    AddItem(Widgets("Properties"), -1, "Button Puch C:\as\img\image.png", -1, 1)
-    AddItem(Widgets("Properties"), -1, "ComboBox Disable True|False", -1, 1)
-    AddItem(Widgets("Properties"), -1, "ComboBox Flag #_Event_Close|#_Event_Size|#_Event_Move", -1, 1)
-    Widgets("Properties_info") = Text(0, 0, 80, 30, "Тут будет инфо о свойстве")
-    Widgets("Properties_splitter") = Splitter(1,1,778, 548, Widgets("Properties"), Widgets("Properties_info"), #PB_Flag_AutoSize)
-    SetState(Widgets("Properties_splitter"), 450)
-    
-    ; Panel tab "widgets"
-    AddItem(Widgets("Inspector_panel"), -1, "Widgets")
-    Widgets("Widgets") = Tree(0, 0, 80, 30, #PB_Flag_NoButtons|#PB_Flag_NoLines)
-    Load_Widgets(Widgets("Widgets"), GetCurrentDirectory()+"Themes/")
-    SetState(Widgets("Widgets"), 1)
-    Widgets("Widgets_info") = Text(0, 0, 80, 30, "Тут будет инфо о виджете")
-    Widgets("Widgets_splitter") = Splitter(1,1,778, 548, Widgets("Widgets"), Widgets("Widgets_info"), #PB_Flag_AutoSize)
-    SetState(Widgets("Widgets_splitter"), 450)
-    
-    ; Panel tab "events"
-    AddItem(Widgets("Inspector_panel"), -1, "Events")
-    Widgets("Events") = Text(0, 60, 180, 30, "Тут будет событие элементов", #PB_Flag_AutoSize)
-    Widgets("Events_info") = Text(0, 0, 80, 30, "Тут будет инфо о событии")
-    Widgets("Events_splitter") = Splitter(1,1,778, 548, Widgets("Events"), Widgets("Events_info"), #PB_Flag_AutoSize)
-    SetState(Widgets("Events_splitter"), 450)
-    CloseList()
-    
-    Widgets("Inspector_splitter") = Splitter(1,1,778, 548, Widgets("Inspector"), Widgets("Inspector_panel"))
-    ;}
-    
-    Widgets("Splitter") = Splitter(1,1,778, 548, Widgets("Panel"), Widgets("Inspector_splitter"), #PB_Splitter_Vertical|#PB_Flag_AutoSize)
-    
-    SetState(Widgets("Inspector_splitter"), 150)
-    SetState(Widgets("Splitter"), 550)
-    
-    ; Widgets events callback
-    BindEvent(#PB_Event_Widget, @Widgets_CallBack(), Window_0)
     ;SetActiveGadget(Canvas_0)
     ReDraw(Canvas_0)
   EndProcedure
@@ -514,5 +517,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 8-v7f----
+; Folding = 8-v+f--0-
 ; EnableXP

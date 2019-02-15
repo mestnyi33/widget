@@ -5,17 +5,17 @@ UseModule Widget
 Global *w
 LN=1500; количесвто итемов 
 
-Procedure ReDraw(Canvas)
-  If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-    ;       DrawingMode(#PB_2DDrawing_Default)
-    ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-    FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
-    
-    Draw(*w)
-    
-    StopDrawing()
-  EndIf
-EndProcedure
+; Procedure ReDraw(Canvas)
+;   If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+;     ;       DrawingMode(#PB_2DDrawing_Default)
+;     ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+;     FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
+;     
+;     Draw(*w)
+;     
+;     StopDrawing()
+;   EndIf
+; EndProcedure
 
 Procedure Canvas_CallBack()
   Protected Canvas.i=EventGadget()
@@ -25,6 +25,7 @@ Procedure Canvas_CallBack()
   Protected Height = GadgetHeight(Canvas)
   Protected mouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
   Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
+  Protected *w = GetGadgetData(Canvas)
   
   Select EventType
     Case #PB_EventType_Repaint : Repaint = 1 
@@ -33,7 +34,7 @@ Procedure Canvas_CallBack()
       Repaint = 1 
   EndSelect
   
-  Repaint | CallBack(*w, EventType, mouseX,mouseY)
+  Repaint | CallBack(at(*w, mouseX,mouseY), EventType, mouseX,mouseY)
   
   If Repaint
     ReDraw(Canvas)
@@ -43,7 +44,7 @@ EndProcedure
 If OpenWindow(0, 100, 50, 530, 700, "treeGadget", #PB_Window_SystemMenu)
   CanvasGadget(100, 270, 10, 250, 680, #PB_Canvas_Keyboard )
   BindGadgetEvent(100, @Canvas_CallBack())
-  Use(0, 100)
+  OpenList(0, 100)
   
   *w=listicon(0, 0, 250, 680, "column_0", 200, #PB_Flag_FullSelection)
   

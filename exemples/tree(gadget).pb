@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../"
 XIncludeFile "widgets.pbi"
 
 ;- 
@@ -124,24 +124,100 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure ReDraw(Canvas)
-    If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-      ;     DrawingMode(#PB_2DDrawing_Default)
-      ;     Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
-      
-      Draw(*g0)
-      Draw(*g1)
-      Draw(*g2)
-      Draw(*g3)
-      Draw(*g4)
-      Draw(*g5)
-      
-      StopDrawing()
+  Procedure Canvas_Events(Canvas.i, EventType.i)
+    Protected Repaint, *This.Widget_S
+    Protected Width = GadgetWidth(Canvas)
+    Protected Height = GadgetHeight(Canvas)
+    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
+    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    Protected *w = GetGadgetData(Canvas)
+    
+    Select EventType
+        ;Case #PB_EventType_Repaint : Repaint = EventData()
+      Case #PB_EventType_Resize : Repaint = 1
+        Resize(*w, #PB_Ignore, #PB_Ignore, Width, Height)
+      Default
+        
+        If EventType() = #PB_EventType_LeftButtonDown
+          SetActiveGadget(Canvas)
+        EndIf
+        
+        *This = at(*w, MouseX, MouseY)
+        
+        If *This
+          Repaint | CallBack(*This, EventType(), MouseX, MouseY)
+          
+          Select EventType
+            Case #PB_EventType_LeftButtonDown
+              
+              
+              Repaint = 1
+          EndSelect
+        EndIf
+        
+    EndSelect
+    
+    If Repaint 
+      ReDraw(Canvas)
     EndIf
+    
   EndProcedure
   
   Procedure Canvas_CallBack()
+    ; Canvas events bug fix
+    Protected Result.b
+    Static MouseLeave.b
+    Protected EventGadget.i = EventGadget()
+    Protected EventType.i = EventType()
+    Protected Width = GadgetWidth(EventGadget)
+    Protected Height = GadgetHeight(EventGadget)
+    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
+    
+    ; Это из за ошибки в мак ос и линукс
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
+      Select EventType 
+        Case #PB_EventType_MouseEnter 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 0
+          EndIf
+          
+        Case #PB_EventType_MouseLeave 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 1
+          EndIf
+          
+        Case #PB_EventType_LeftButtonDown
+          If GetActiveGadget()<>EventGadget
+            SetActiveGadget(EventGadget)
+          EndIf
+          
+        Case #PB_EventType_LeftButtonUp
+          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
+            MouseLeave = 0
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+              Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+              EventType = #PB_EventType_MouseLeave
+            CompilerEndIf
+          Else
+            MouseLeave =- 1
+            Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+            EventType = #PB_EventType_LeftClick
+          EndIf
+          
+        Case #PB_EventType_LeftClick : ProcedureReturn 0
+      EndSelect
+    CompilerEndIf
+    
+    Result | Canvas_Events(EventGadget, EventType)
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure _Canvas_CallBack() ; С ним почему то не работает событие
     Protected Result
     Protected Canvas_0 = EventGadget()
     Protected Width = GadgetWidth(Canvas_0)
@@ -149,6 +225,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected MouseX = GetGadgetAttribute(Canvas_0, #PB_Canvas_MouseX)
     Protected MouseY = GetGadgetAttribute(Canvas_0, #PB_Canvas_MouseY)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    Protected *This.Widget_S, *window.Widget_S = GetGadgetData(Canvas_0)
     
     Select EventType()
       Case #PB_EventType_Resize : Result = 1
@@ -158,12 +235,12 @@ CompilerIf #PB_Compiler_IsMainFile
           SetActiveGadget(EventGadget())
         EndIf
         
-        Result | CallBack(*g0, EventType()) 
-        Result | CallBack(*g1, EventType()) 
-        Result | CallBack(*g2, EventType()) 
-        Result | CallBack(*g3, EventType()) 
-        Result | CallBack(*g4, EventType()) 
-        Result | CallBack(*g5, EventType()) 
+        *This = at(*window, MouseX, MouseY)
+        
+        If *This
+          Result | CallBack(*This, EventType()) 
+        EndIf
+        
     EndSelect
     
     If Result
@@ -296,8 +373,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Demo draw string on the canvas
     Canvas_0 = CanvasGadget(-1,  0, 220, 1110, 230, #PB_Canvas_Keyboard)
     SetGadgetAttribute(Canvas_0, #PB_Canvas_Cursor, #PB_Cursor_Cross)
-    SetGadgetData(Canvas_0, 0)
     BindGadgetEvent(Canvas_0, @Canvas_CallBack())
+    OpenList(0, Canvas_0)
     
     *g0 = Tree(10, 10, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
     ; 1_example
@@ -445,5 +522,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---0---
+; Folding = 0-ff--8--
 ; EnableXP

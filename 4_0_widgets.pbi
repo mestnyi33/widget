@@ -159,7 +159,6 @@ DeclareModule Widget
   
   ;- - Bar_S
   Structure Bar_S Extends Coordinate_S
-    *Root.Widget_S ; adress window
     *Window.Widget_S ; adress window
     *Parent.Widget_S ; adress parent
     *s.Scroll_S      ; 
@@ -638,9 +637,6 @@ DeclareModule Widget
   Declare.i GetPosition(*This.Widget_S, Position.i)
   Declare.i SetPosition(*This.Widget_S, Position.i, *Widget_2 =- 1)
   Declare.i Free(*This.Widget_S)
-  Declare.i SetFocus(*This.Widget_S, State.i)
-  Declare.i GetWindow(*This.Widget_S)
-  Declare.i GetRoot(*This.Widget_S)
   
   Declare.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
   Declare.i SetItemData(*This.Widget_S, Item.i, *Data)
@@ -3059,7 +3055,6 @@ Module Widget
                     ;EndIf
                   EndIf
                 EndIf
-                
               EndIf
               
               ; Draw boxes
@@ -4228,8 +4223,6 @@ Module Widget
           \at = 3
         ElseIf \Box And (MouseX>\Box\x[2] And MouseX=<\Box\x[2]+\Box\Width[2] And MouseY>\Box\y[2] And MouseY=<\Box\y[2]+\Box\Height[2])
           \at = 2
-        ElseIf \Box And (MouseX>\Box\x And MouseX=<\Box\x+\Box\Width And MouseY>\Box\y And MouseY=<\Box\y+\Box\Height) And \Type =- 1
-          \at = 0
         Else
           \at =- 1
         EndIf 
@@ -4503,10 +4496,6 @@ Module Widget
     ProcedureReturn *Value\Active
   EndProcedure
   
-  Procedure.i GetRoot(*This.Widget_S)
-    ProcedureReturn *This\Root
-  EndProcedure
-  
   Procedure.i GetParent(*This.Widget_S)
     ProcedureReturn *This\Parent
   EndProcedure
@@ -4727,15 +4716,14 @@ Module Widget
           Resize(*This, 0, 0, GadgetWidth(Item), GadgetHeight(Item))
         EndIf
         
-        \Root = *This
         SetGadgetData(Item, *This)
         
         LastElement(*openedlist())
         If AddElement(*openedlist())
-          *openedlist() = \Root
+          *openedlist() = *This 
         EndIf
         
-        *Root = \Root
+        *Root = *openedlist()
         *Root\adress = @*openedlist()
         
         ProcedureReturn *This
@@ -4782,7 +4770,6 @@ Module Widget
           
           \p_i = Item
           \Parent = *Parent
-          \Root = *Parent\Root
           \Window = *Parent\Window
           If \s
             If \s\v
@@ -4842,12 +4829,163 @@ Module Widget
     
   EndProcedure
   
-  Procedure.i SetFocus(*This.Widget_S, State.i)
-    *This\Focus = State
-    *This\anchor = *This\anchor[9]
+  Procedure.i SetFocus(*This.Widget_S)
+    ; Возвращаемые значения
+    ; Если функция завершается успешно, возвращаемое значения - дескриптор до этого активного окна.
+    
+    Protected repaint, Window.i, MouseScreenX, MouseScreenY
+    
+    With *This
+      MouseScreenX = \Canvas\Mouse\X
+      MouseScreenY = \Canvas\Mouse\y
+      
+      If *Value\Active <> \Window
+        ; Set foreground window
+        SetPosition(\Window, #PB_List_Last)
+        
+        If *Value\Active
+          *Value\Active\repaint | Events(*Value\Active, *Value\Active\at, #PB_EventType_LostFocus, MouseScreenX, MouseScreenY)
+        EndIf
+        
+        \Window\repaint | Events(\Window, \at, #PB_EventType_Focus, MouseScreenX, MouseScreenY)
+        *Value\Active = \Window
+      EndIf
+      
+      If *Value\Focus <> *This And \Type <> #PB_GadgetType_Window 
+        If *Value\Focus
+          *Value\Focus\repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_LostFocus, MouseScreenX, MouseScreenY)
+        EndIf
+        
+        \repaint | Events(*This, \at, #PB_EventType_Focus, MouseScreenX, MouseScreenY)
+        *Value\Focus = *This
+      EndIf
+      
+    EndWith
+    
+    ProcedureReturn repaint
   EndProcedure
   
   Procedure.i SetActive(*This.Widget_S)
+    ; Возвращаемые значения
+    ; Если функция завершается успешно, 
+    ; возвращаемое значения - дескриптор 
+    ; последнего активного окна.
+    Protected Result.i
+    
+    With *This
+      If *Root\Type = #PB_GadgetType_Window
+        *Root\Focus = 1
+      EndIf
+        
+      If *This And *Value\Active <> *This               And \Window<>*Root 
+        If *Value\Active                                And *Value\Active<>*Root
+          If *Value\Active <> \Window
+            *Value\Active\Window\anchor = 0
+            *Value\Active\Window\Focus = 0
+            
+            \Deactive = *Value\Active 
+            *Value\Active\anchor = 0 
+            *Value\Active\Focus = 0
+          EndIf
+        EndIf
+        
+        If Not \Deactive 
+          \Deactive = *This 
+        EndIf
+        
+        \anchor = \anchor[9]
+        *Value\Active = *This
+        \Focus = 1
+        
+        If *This <> \Window
+          \Window\Focus = 1
+          \Window\anchor = \Window\anchor[9]
+        EndIf
+      EndIf
+      
+      If *This And *Value\Focus <> *This And \Type <> #PB_GadgetType_Window 
+        If *Value\Focus
+          \Deactive = *Value\Focus 
+          *Value\Focus\anchor = 0 
+          *Value\Focus\Focus = 0
+        EndIf
+        If Not \Deactive 
+          \Deactive = *This 
+        EndIf
+        \anchor = \anchor[9]
+        *Value\Focus = *This
+        \Focus = 1
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i __SetActive(*This.Widget_S)
+    ; Возвращаемые значения
+    ; Если функция завершается успешно, 
+    ; возвращаемое значения - дескриптор 
+    ; последнего активного окна.
+    Protected Result.i
+    
+    With *This
+      If *Root\Type = #PB_GadgetType_Window
+        *Root\Focus = 1
+      EndIf
+      
+;       If \Window And *Value\Active <> \Window                                     And \Window<>*Root And Not \anchor[9]
+;         If *Value\Active                                                          And *Value\Active<>*Root
+;           \Window\Deactive = *Value\Active 
+;           *Value\Active\Focus = 0
+;           *Value\Active\anchor = 0 
+;         EndIf
+;         If Not \Window\Deactive 
+;           \Window\Deactive = \Window 
+;         EndIf
+;         \Window\anchor = \Window\anchor[9]
+;         
+;         If *Value\Focus ; Если деактивировали окно то деактивируем и гаджет
+;           If *Value\Focus\Window = \Window\Deactive
+;             *Value\Focus\Focus = 0
+;             *Value\Focus\anchor = 0 
+;           ElseIf *Value\Focus\Window = \Window
+;             *Value\Focus\Focus = 1
+;             *Value\Focus\anchor = *Value\Focus\anchor[9] 
+;           EndIf
+;         EndIf
+;         
+;         Result = \Window\Deactive
+;         *Value\Active = \Window
+;         \Window\Focus = 1
+;       EndIf
+      
+      If *This And *Value\Focus <> *This
+        If *Value\Focus And *Value\Focus <> \Window
+          *Value\Focus\Window\anchor = 0
+          *Value\Focus\Window\Focus = 0
+          
+          \Deactive = *Value\Focus 
+          *Value\Focus\anchor = 0 
+          *Value\Focus\Focus = 0
+        EndIf
+        If Not \Deactive 
+          \Deactive = *This 
+        EndIf
+        \anchor = \anchor[9]
+        *Value\Focus = *This
+        \Focus = 1
+        
+        If *This <> \Window
+          \Window\Focus = 1
+          \Window\anchor = \Window\anchor[9]
+        EndIf
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i _SetActive(*This.Widget_S)
     ; Возвращаемые значения
     ; Если функция завершается успешно, 
     ; возвращаемое значения - дескриптор 
@@ -4886,7 +5024,7 @@ Module Widget
       EndIf
       
       If *This And *Value\Focus <> *This And (\Type <> #PB_GadgetType_Window        Or \anchor[9])
-        If *Value\Focus                                                             ;And (*Value\Focus\Type <> #PB_GadgetType_Window  And *Value\Focus\anchor[9])
+        If *Value\Focus                                                             And (*Value\Focus\Type <> #PB_GadgetType_Window  And *Value\Focus\anchor[9])
           \Deactive = *Value\Focus 
           *Value\Focus\anchor = 0 
           *Value\Focus\Focus = 0
@@ -6394,7 +6532,7 @@ Module Widget
   ;- 
   Procedure.i Event_Widgets(*This.Widget_S, EventType.i, EventItem.i=-1)
     Protected Result.i 
-    ; Debug "  "+EventType +" - event "+ EventItem+ " - item "+ *This +" - widget"
+    ; Debug "  "+EventType +" - event "+ Item+ " - item "+ *This +" - widget"
     With *This      
       If \Function
         Result = CallCFunctionFast(\Function, *This, EventType, EventItem)
@@ -6877,19 +7015,8 @@ Module Widget
         Select EventType 
           Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
             If *Value\Last = *This 
-              If *This And \Canvas\Mouse\Buttons
-                ; Drag start
-                If Not (\Canvas\Mouse\x>\Canvas\Mouse\Delta\x-8 And 
-                        \Canvas\Mouse\x<\Canvas\Mouse\Delta\x+8 And 
-                        \Canvas\Mouse\y>\Canvas\Mouse\Delta\y-8 And
-                        \Canvas\Mouse\y<\Canvas\Mouse\Delta\y+8)
-                  If Not \Drag
-                    Event_Widgets(*This, #PB_EventType_DragStart, \index[1])
-                    \Drag = 1
-                  EndIf
-                EndIf
-                
-                If \at = 0 Or (\anchor And Not \Container)
+              If \Canvas\Mouse\Buttons
+                If \anchor
                   ;Events_Anchors(*This, *Value\Canvas\Mouse\x, *Value\Canvas\Mouse\y)
                   Resize(*This, *Value\Canvas\Mouse\x-\Canvas\Mouse\Delta\x, *Value\Canvas\Mouse\y-\Canvas\Mouse\Delta\y, #PB_Ignore, #PB_Ignore)
                   repaint = 1
@@ -6914,23 +7041,23 @@ Module Widget
             EndIf
             
           Case #PB_EventType_LeftButtonUp, #PB_EventType_RightButtonUp
-            If *Value\Focus And *Value\Focus\State = 2 : *Value\Focus\State = 1 : *Value\Focus\Canvas\Mouse\Buttons = 0
-              repaint | Events(*Value\Focus, *Value\Focus\at, EventType, MouseScreenX, MouseScreenY)
+            If *Value\Active And *Value\Active\State = 2 : *Value\Active\State = 1 : *Value\Active\Canvas\Mouse\Buttons = 0
+              repaint | Events(*Value\Active, *Value\Active\at, EventType, MouseScreenX, MouseScreenY)
               
               If \anchor And *Pos
                 ; Возврашаем на место
                 SetPosition(*This, #PB_List_Before, *Pos)
               EndIf
             
-              If Bool(MouseScreenX>=*Value\Focus\X And MouseScreenX<*Value\Focus\X+*Value\Focus\Width And 
-                      MouseScreenY>*Value\Focus\Y And MouseScreenY=<*Value\Focus\Y+*Value\Focus\Height) 
+              If Bool(MouseScreenX>=*Value\Active\X And MouseScreenX<*Value\Active\X+*Value\Active\Width And 
+                      MouseScreenY>*Value\Active\Y And MouseScreenY=<*Value\Active\Y+*Value\Active\Height) 
                 
-                If *Value\Focus = *This       
+                If *Value\Active = *This       
                   If EventType = #PB_EventType_LeftButtonUp
-                    repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_LeftClick, MouseScreenX, MouseScreenY)
+                    repaint | Events(*Value\Active, *Value\Active\at, #PB_EventType_LeftClick, MouseScreenX, MouseScreenY)
                   EndIf
                   If EventType = #PB_EventType_RightClick
-                    repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_RightClick, MouseScreenX, MouseScreenY)
+                    repaint | Events(*Value\Active, *Value\Active\at, #PB_EventType_RightClick, MouseScreenX, MouseScreenY)
                   EndIf
                 EndIf
                 
@@ -6939,8 +7066,8 @@ Module Widget
                 ;                 EndIf
                 
               Else
-                *Value\Focus\State = 0
-                repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
+                *Value\Active\State = 0
+                repaint | Events(*Value\Active, *Value\Active\at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
               EndIf
             EndIf
             repaint = 1
@@ -6954,7 +7081,7 @@ Module Widget
             \Canvas\Key = GetGadgetAttribute(Canvas, #PB_Canvas_Key)
             \Canvas\Key[1] = GetGadgetAttribute(Canvas, #PB_Canvas_Modifiers)
             
-            If *Value\Focus = *This Or *This = *Value\Active
+            If *This = *Value\Active
               repaint | Events(*This, 0, EventType, MouseScreenX, MouseScreenY)
             EndIf
             
@@ -6962,11 +7089,25 @@ Module Widget
       EndIf
       
       Select EventType 
+        Case #PB_EventType_MouseMove
+          If *This And \Canvas\Mouse\Buttons
+            If Not (\Canvas\Mouse\x>\Canvas\Mouse\Delta\x-8 And 
+                    \Canvas\Mouse\x<\Canvas\Mouse\Delta\x+8 And 
+                    \Canvas\Mouse\y>\Canvas\Mouse\Delta\y-8 And
+                    \Canvas\Mouse\y<\Canvas\Mouse\Delta\y+8)
+              If Not \Drag
+                Event_Widgets(*This, #PB_EventType_DragStart, \index[1])
+                \Drag = 1
+              EndIf
+            EndIf
+          EndIf
+          
+              
         Case #PB_EventType_LeftButtonDown, 
              #PB_EventType_MiddleButtonDown, 
              #PB_EventType_RightButtonDown 
-            
           If *This
+            
             \Canvas\Mouse\Delta = AllocateStructure(Mouse_S)
             \Canvas\Mouse\Delta\X = \Canvas\Mouse\x-\x[3]
             \Canvas\Mouse\Delta\Y = \Canvas\Mouse\y-\y[3]
@@ -6979,8 +7120,8 @@ Module Widget
              #PB_EventType_MiddleButtonUp,
              #PB_EventType_RightButtonUp 
           ;Debug *Value\Active\Canvas\Mouse\Buttons
-          If *Value\Focus And *Value\Focus\Canvas\Mouse\Buttons
-            ;*Value\Focus
+          If *Value\Active And *Value\Active\Canvas\Mouse\Buttons
+            ;*Value\Active
             Debug 9797987
           EndIf
           
@@ -8262,5 +8403,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------f----------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
