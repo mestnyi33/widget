@@ -539,8 +539,12 @@ DeclareModule Widget
     Widget::*value\Canvas\Gadget
   EndMacro
   
-  Macro GetDisplay(_this_)
-    Widget::_this_\Canvas\Gadget
+  Macro Focus() ; active gadget
+    Widget::*Value\Focus
+  EndMacro
+  
+  Macro Active() ; active window
+    Widget::*Value\Active
   EndMacro
   
   Macro Adress(_this_)
@@ -623,6 +627,12 @@ DeclareModule Widget
   ;-
   ;- - DECLAREs
   ;-
+  Declare.s Class(Type.i)
+  Declare.i Type(Class.s)
+  
+  Declare.i GetDisplay(*This.Widget_S)
+  Declare.i GetMouseX(*This.Widget_S)
+  Declare.i GetMouseY(*This.Widget_S)
   Declare.i GetImage(*This.Widget_S)
   Declare.i GetType(*This.Widget_S)
   Declare.i GetData(*This.Widget_S)
@@ -641,15 +651,16 @@ DeclareModule Widget
   Declare.s GetItemText(*This.Widget_S, Item.i)
   Declare.i GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
   
+  Declare.i SetAnchors(*This.Widget_S)
   Declare.s SetClass(*This.Widget_S, Class.s)
   Declare.i GetLevel(*This.Widget_S)
   Declare.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
   Declare.i Bind(*Function, *This.Widget_S=#PB_All, EventType.i=#PB_All)
   Declare.i SetActive(*This.Widget_S)
-  Declare.i Y(*This.Widget_S)
-  Declare.i X(*This.Widget_S)
-  Declare.i Width(*This.Widget_S)
-  Declare.i Height(*This.Widget_S)
+  Declare.i Y(*This.Widget_S, Mode.i=0)
+  Declare.i X(*This.Widget_S, Mode.i=0)
+  Declare.i Width(*This.Widget_S, Mode.i=0)
+  Declare.i Height(*This.Widget_S, Mode.i=0)
   Declare.i Draw(*This.Widget_S, Childrens=0)
   Declare.i GetState(*This.Widget_S)
   Declare.i SetState(*This.Widget_S, State.i)
@@ -1078,7 +1089,7 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure SetAnchors(*This.Widget_S, State)
+  Procedure Set_Anchors(*This.Widget_S, State)
     ; ProcedureReturn
     
     Structure DataBuffer
@@ -1145,60 +1156,98 @@ Module Widget
   EndProcedure
   
   ;-
-  Procedure.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
-    With *This
-      Select Type
-        Case 1 ; widget
-          If \Parent
-            If Not \Align
-              \Align.Align_S = AllocateStructure(Align_S)
-            EndIf
-            
-            \Align\Right = 0
-            \Align\Bottom = 0
-            \Align\Left = 0
-            \Align\Top = 0
-            \Align\Horizontal = 0
-            \Align\Vertical = 0
-            
-            If Mode&#PB_Right=#PB_Right
-              \Align\x = (\Parent\Width-\Parent\bs*2 - (\x-\Parent\x-\Parent\bs)) - \Width
-              \Align\Right = 1
-            EndIf
-            If Mode&#PB_Bottom=#PB_Bottom
-              \Align\y = (\Parent\height-\Parent\bs*2 - (\y-\Parent\y-\Parent\bs)) - \height
-              \Align\Bottom = 1
-            EndIf
-            If Mode&#PB_Left=#PB_Left
-              \Align\Left = 1
-              If Mode&#PB_Right=#PB_Right
-                \Align\x1 = (\Parent\Width - \Parent\bs*2) - \Width
-              EndIf
-            EndIf
-            If Mode&#PB_Top=#PB_Top
-              \Align\Top = 1
-              If Mode&#PB_Bottom=#PB_Bottom
-                \Align\y1 = (\Parent\height -\Parent\bs*2)- \height
-              EndIf
-            EndIf
-            
-            If Mode&#PB_Center=#PB_Center
-              \Align\Horizontal = 1
-              \Align\Vertical = 1
-            EndIf
-            If Mode&#PB_Horizontal=#PB_Horizontal
-              \Align\Horizontal = 1
-            EndIf
-            If Mode&#PB_Vertical=#PB_Vertical
-              \Align\Vertical = 1
-            EndIf
-            
-            Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
-        Case 2 ; text
-        Case 3 ; image
-      EndSelect
-    EndWith
+  Procedure.s Class(Type.i)
+    Protected Result.s
+    
+    Select Type
+      Case #PB_GadgetType_Button         : Result = "Button"
+      Case #PB_GadgetType_ButtonImage    : Result = "ButtonImage"
+      Case #PB_GadgetType_Calendar       : Result = "Calendar"
+      Case #PB_GadgetType_Canvas         : Result = "Canvas"
+      Case #PB_GadgetType_CheckBox       : Result = "CheckBox"
+      Case #PB_GadgetType_ComboBox       : Result = "ComboBox"
+      Case #PB_GadgetType_Container      : Result = "Container"
+      Case #PB_GadgetType_Date           : Result = "Date"
+      Case #PB_GadgetType_Editor         : Result = "Editor"
+      Case #PB_GadgetType_ExplorerCombo  : Result = "ExplorerCombo"
+      Case #PB_GadgetType_ExplorerList   : Result = "ExplorerList"
+      Case #PB_GadgetType_ExplorerTree   : Result = "ExplorerTree"
+      Case #PB_GadgetType_Frame          : Result = "Frame"
+      Case #PB_GadgetType_HyperLink      : Result = "HyperLink"
+      Case #PB_GadgetType_Image          : Result = "Image"
+      Case #PB_GadgetType_IPAddress      : Result = "IPAddress"
+      Case #PB_GadgetType_ListIcon       : Result = "ListIcon"
+      Case #PB_GadgetType_ListView       : Result = "ListView"
+      Case #PB_GadgetType_MDI            : Result = "MDI"
+      Case #PB_GadgetType_OpenGL         : Result = "OpenGL"
+      Case #PB_GadgetType_Option         : Result = "Option"
+      Case #PB_GadgetType_Popup          : Result = "Popup"
+      Case #PB_GadgetType_Panel          : Result = "Panel"
+      Case #PB_GadgetType_Property       : Result = "Property"
+      Case #PB_GadgetType_ProgressBar    : Result = "ProgressBar"
+      Case #PB_GadgetType_Scintilla      : Result = "Scintilla"
+      Case #PB_GadgetType_ScrollArea     : Result = "ScrollArea"
+      Case #PB_GadgetType_ScrollBar      : Result = "ScrollBar"
+      Case #PB_GadgetType_Shortcut       : Result = "Shortcut"
+      Case #PB_GadgetType_Spin           : Result = "Spin"
+      Case #PB_GadgetType_Splitter       : Result = "Splitter"
+      Case #PB_GadgetType_String         : Result = "String"
+      Case #PB_GadgetType_Text           : Result = "Text"
+      Case #PB_GadgetType_TrackBar       : Result = "TrackBar"
+      Case #PB_GadgetType_Tree           : Result = "Tree"
+      Case #PB_GadgetType_Unknown        : Result = "Unknown"
+      Case #PB_GadgetType_Web            : Result = "Web"
+      Case #PB_GadgetType_Window         : Result = "Window"
+    EndSelect
+    
+    ProcedureReturn Result.s
+  EndProcedure
+  
+  Procedure.i Type(Class.s)
+    Protected Result.i
+    
+    Select Trim(Class.s)
+      Case "Button"         : Result = #PB_GadgetType_Button
+      Case "ButtonImage"    : Result = #PB_GadgetType_ButtonImage
+      Case "Calendar"       : Result = #PB_GadgetType_Calendar
+      Case "Canvas"         : Result = #PB_GadgetType_Canvas
+      Case "CheckBox"       : Result = #PB_GadgetType_CheckBox
+      Case "ComboBox"       : Result = #PB_GadgetType_ComboBox
+      Case "Container"      : Result = #PB_GadgetType_Container
+      Case "Date"           : Result = #PB_GadgetType_Date
+      Case "Editor"         : Result = #PB_GadgetType_Editor
+      Case "ExplorerCombo"  : Result = #PB_GadgetType_ExplorerCombo
+      Case "ExplorerList"   : Result = #PB_GadgetType_ExplorerList
+      Case "ExplorerTree"   : Result = #PB_GadgetType_ExplorerTree
+      Case "Frame"          : Result = #PB_GadgetType_Frame
+      Case "HyperLink"      : Result = #PB_GadgetType_HyperLink
+      Case "Image"          : Result = #PB_GadgetType_Image
+      Case "IPAddress"      : Result = #PB_GadgetType_IPAddress
+      Case "ListIcon"       : Result = #PB_GadgetType_ListIcon
+      Case "ListView"       : Result = #PB_GadgetType_ListView
+      Case "MDI"            : Result = #PB_GadgetType_MDI
+      Case "OpenGL"         : Result = #PB_GadgetType_OpenGL
+      Case "Option"         : Result = #PB_GadgetType_Option
+      Case "Popup"          : Result = #PB_GadgetType_Popup
+      Case "Panel"          : Result = #PB_GadgetType_Panel
+      Case "Property"       : Result = #PB_GadgetType_Property
+      Case "ProgressBar"    : Result = #PB_GadgetType_ProgressBar
+      Case "Scintilla"      : Result = #PB_GadgetType_Scintilla
+      Case "ScrollArea"     : Result = #PB_GadgetType_ScrollArea
+      Case "ScrollBar"      : Result = #PB_GadgetType_ScrollBar
+      Case "Shortcut"       : Result = #PB_GadgetType_Shortcut
+      Case "Spin"           : Result = #PB_GadgetType_Spin
+      Case "Splitter"       : Result = #PB_GadgetType_Splitter
+      Case "String"         : Result = #PB_GadgetType_String
+      Case "Text"           : Result = #PB_GadgetType_Text
+      Case "TrackBar"       : Result = #PB_GadgetType_TrackBar
+      Case "Tree"           : Result = #PB_GadgetType_Tree
+      Case "Unknown"        : Result = #PB_GadgetType_Unknown
+      Case "Web"            : Result = #PB_GadgetType_Web
+      Case "Window"         : Result = #PB_GadgetType_Window
+    EndSelect
+    
+    ProcedureReturn Result
   EndProcedure
   
   Procedure.s Make(*This.Widget_S, Text.s)
@@ -1508,15 +1557,15 @@ Module Widget
         Item = ListIndex(\items())
       Else
         SelectElement(\items(), Item)
-        ;       PreviousElement(\items())
-        ;       If \a\sublevel = \items()\sublevel
-        ;          \a = \items()
-        ;       EndIf
+              PreviousElement(\items())
+              If \a\sublevel = \items()\sublevel
+                 \a = \items()
+              EndIf
         
-        ;       SelectElement(\items(), Item)
-        If *last And \a\sublevel = *last\sublevel
-          \a = *last
-        EndIf
+              SelectElement(\items(), Item)
+;         If *last And \a\sublevel = *last\sublevel
+;           \a = *last
+;         EndIf
         
         If \items()\sublevel>sublevel
           sublevel=\items()\sublevel
@@ -4018,6 +4067,11 @@ Module Widget
           
           Draw(*This, 1)
           
+          ; Selector
+          If \anchor 
+            Box(\anchor\x, \anchor\y, \anchor\width, \anchor\height ,\anchor\color[\anchor\State]\frame) 
+          EndIf
+      
           StopDrawing()
         EndIf
       EndWith
@@ -4369,15 +4423,15 @@ Module Widget
     ProcedureReturn *Result
   EndProcedure
   
-  Procedure.i X(*This.Widget_S)
+  Procedure.i X(*This.Widget_S, Mode.i=0)
     Protected Result.i
     
     If *This
       With *This
         If Not \Hide[1] And \Color\Alpha
-          Result = \X
+          Result = \X[Mode]
         Else
-          Result = \X+\Width
+          Result = \X[Mode]+\Width
         EndIf
       EndWith
     EndIf
@@ -4385,15 +4439,15 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Y(*This.Widget_S)
+  Procedure.i Y(*This.Widget_S, Mode.i=0)
     Protected Result.i
     
     If *This
       With *This
         If Not \Hide[1] And \Color\Alpha
-          Result = \Y
+          Result = \Y[Mode]
         Else
-          Result = \Y+\Height
+          Result = \Y[Mode]+\Height
         EndIf
       EndWith
     EndIf
@@ -4401,13 +4455,13 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Width(*This.Widget_S)
+  Procedure.i Width(*This.Widget_S, Mode.i=0)
     Protected Result.i
     
     If *This
       With *This
-        If Not \Hide[1] And \Width And \Color\Alpha
-          Result = \Width
+        If Not \Hide[1] And \Width[Mode] And \Color\Alpha
+          Result = \Width[Mode]
         EndIf
       EndWith
     EndIf
@@ -4415,13 +4469,13 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i Height(*This.Widget_S)
+  Procedure.i Height(*This.Widget_S, Mode.i=0)
     Protected Result.i
     
     If *This
       With *This
-        If Not \Hide[1] And \Height And \Color\Alpha
-          Result = \Height
+        If Not \Hide[1] And \Height[Mode] And \Color\Alpha
+          Result = \Height[Mode]
         EndIf
       EndWith
     EndIf
@@ -4629,6 +4683,26 @@ Module Widget
   
   
   ;- GET
+  Procedure.i GetDisplay(*This.Widget_S)
+    ProcedureReturn *This\Canvas\Gadget
+  EndProcedure
+  
+  Procedure.i GetDeltaX(*This.Widget_S)
+    ProcedureReturn *This\Canvas\Mouse\X-*This\X[2]-*This\fs
+  EndProcedure
+  
+  Procedure.i GetDeltaY(*This.Widget_S)
+    ProcedureReturn *This\Canvas\Mouse\Y-*This\Y[2]-*This\fs
+  EndProcedure
+  
+  Procedure.i GetMouseX(*This.Widget_S)
+    ProcedureReturn *This\Canvas\Mouse\X-*This\X[2]-*This\fs
+  EndProcedure
+  
+  Procedure.i GetMouseY(*This.Widget_S)
+    ProcedureReturn *This\Canvas\Mouse\Y-*This\Y[2]-*This\fs
+  EndProcedure
+  
   Procedure.i GetAnchors(*This.Widget_S)
     ProcedureReturn Bool(*This\anchor[9]) * *This
   EndProcedure
@@ -4645,11 +4719,11 @@ Module Widget
     ProcedureReturn *This\Level
   EndProcedure
   
-  Procedure.i GetFocus()
+  Procedure.i GetFocus() ; active gadget
     ProcedureReturn *Value\Focus
   EndProcedure
   
-  Procedure.i GetActive()
+  Procedure.i GetActive() ; active window
     ProcedureReturn *Value\Active
   EndProcedure
   
@@ -4757,7 +4831,7 @@ Module Widget
       Select \Type
         Case #PB_GadgetType_Tree
           ForEach \items()
-            If \items()\index= Item 
+            If \items()\index = Item 
               Select Attribute
                 Case #PB_Tree_SubLevel
                   Result = \items()\sublevel
@@ -4842,6 +4916,56 @@ Module Widget
   
   
   ;- SET
+  Procedure.i SetAnchors(*This.Widget_S)
+    Protected Result.i
+    Static *Last.Widget_S
+    Static *Pos
+    
+    With *This
+      If *This\anchor[9] And *Last <> *This
+        If *Last
+;           *Last\Focus = 0
+          *Last\anchor = 0
+          
+;           If *Last\Parent
+; ;           \Parent\Focus = 1
+;           *Last\Parent\anchor = 0
+;           EndIf
+          
+          If *Pos
+            ; Возврашаем на место
+            SetPosition(*Last, #PB_List_Before, *Pos)
+            *Pos = 0
+          EndIf
+          
+        EndIf
+        
+;         \Focus = 1
+        \anchor = \anchor[9]
+        
+;         If \Window
+; ;           \Window\Focus = 1
+;          \Window\anchor = \Window\anchor[9]
+;         EndIf
+;         
+;         If \Parent
+; ;           \Parent\Focus = 1
+;           \Parent\anchor = \Parent\anchor[9]
+;         EndIf
+        
+        
+        ; Поднимаем гаджет
+        *Pos = GetPosition(*This, #PB_List_After)
+        SetPosition(*This, #PB_List_Last)
+        
+        *Last = *This
+        Result = 1
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
   Procedure.s SetClass(*This.Widget_S, Class.s)
     Protected Result.s
     
@@ -4851,46 +4975,7 @@ Module Widget
       If Class.s
         \Class = Class
       Else
-        Select \Type
-          Case #PB_GadgetType_Button         : \Class = "Button"
-          Case #PB_GadgetType_ButtonImage    : \Class = "ButtonImage"
-          Case #PB_GadgetType_Calendar       : \Class = "Calendar"
-          Case #PB_GadgetType_Canvas         : \Class = "Canvas"
-          Case #PB_GadgetType_CheckBox       : \Class = "CheckBox"
-          Case #PB_GadgetType_ComboBox       : \Class = "ComboBox"
-          Case #PB_GadgetType_Container      : \Class = "Container"
-          Case #PB_GadgetType_Date           : \Class = "Date"
-          Case #PB_GadgetType_Editor         : \Class = "Editor"
-          Case #PB_GadgetType_ExplorerCombo  : \Class = "ExplorerCombo"
-          Case #PB_GadgetType_ExplorerList   : \Class = "ExplorerList"
-          Case #PB_GadgetType_ExplorerTree   : \Class = "ExplorerTree"
-          Case #PB_GadgetType_Frame          : \Class = "Frame"
-          Case #PB_GadgetType_HyperLink      : \Class = "HyperLink"
-          Case #PB_GadgetType_Image          : \Class = "Image"
-          Case #PB_GadgetType_IPAddress      : \Class = "IPAddress"
-          Case #PB_GadgetType_ListIcon       : \Class = "ListIcon"
-          Case #PB_GadgetType_ListView       : \Class = "ListView"
-          Case #PB_GadgetType_MDI            : \Class = "MDI"
-          Case #PB_GadgetType_OpenGL         : \Class = "OpenGL"
-          Case #PB_GadgetType_Option         : \Class = "Option"
-          Case #PB_GadgetType_Popup          : \Class = "Popup"
-          Case #PB_GadgetType_Panel          : \Class = "Panel"
-          Case #PB_GadgetType_Property       : \Class = "Property"
-          Case #PB_GadgetType_ProgressBar    : \Class = "ProgressBar"
-          Case #PB_GadgetType_Scintilla      : \Class = "Scintilla"
-          Case #PB_GadgetType_ScrollArea     : \Class = "ScrollArea"
-          Case #PB_GadgetType_ScrollBar      : \Class = "ScrollBar"
-          Case #PB_GadgetType_Shortcut       : \Class = "Shortcut"
-          Case #PB_GadgetType_Spin           : \Class = "Spin"
-          Case #PB_GadgetType_Splitter       : \Class = "Splitter"
-          Case #PB_GadgetType_String         : \Class = "String"
-          Case #PB_GadgetType_Text           : \Class = "Text"
-          Case #PB_GadgetType_TrackBar       : \Class = "TrackBar"
-          Case #PB_GadgetType_Tree           : \Class = "Tree"
-          Case #PB_GadgetType_Unknown        : \Class = "Unknown"
-          Case #PB_GadgetType_Web            : \Class = "Web"
-          Case #PB_GadgetType_Window         : \Class = "Window"
-        EndSelect
+        \Class = Class(\Type)
       EndIf
       
     EndWith
@@ -5136,7 +5221,7 @@ Module Widget
         \Window\Focus = 1
       EndIf
       
-      If *This And *Value\Focus <> *This And (\Type <> #PB_GadgetType_Window)
+      If *This And *Value\Focus <> *This And (\Type <> #PB_GadgetType_Window Or \anchor[9])
         If *Value\Focus
           \Deactive = *Value\Focus 
           *Value\Focus\Focus = 0
@@ -5170,7 +5255,7 @@ Module Widget
     
     With *This
       If Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget
-        SetAnchors(*This, 1)
+        Set_Anchors(*This, 1)
         Resize_Anchors(*This)
       EndIf
     EndWith
@@ -5798,6 +5883,62 @@ Module Widget
     EndWith
     
     ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
+    With *This
+      Select Type
+        Case 1 ; widget
+          If \Parent
+            If Not \Align
+              \Align.Align_S = AllocateStructure(Align_S)
+            EndIf
+            
+            \Align\Right = 0
+            \Align\Bottom = 0
+            \Align\Left = 0
+            \Align\Top = 0
+            \Align\Horizontal = 0
+            \Align\Vertical = 0
+            
+            If Mode&#PB_Right=#PB_Right
+              \Align\x = (\Parent\Width-\Parent\bs*2 - (\x-\Parent\x-\Parent\bs)) - \Width
+              \Align\Right = 1
+            EndIf
+            If Mode&#PB_Bottom=#PB_Bottom
+              \Align\y = (\Parent\height-\Parent\bs*2 - (\y-\Parent\y-\Parent\bs)) - \height
+              \Align\Bottom = 1
+            EndIf
+            If Mode&#PB_Left=#PB_Left
+              \Align\Left = 1
+              If Mode&#PB_Right=#PB_Right
+                \Align\x1 = (\Parent\Width - \Parent\bs*2) - \Width
+              EndIf
+            EndIf
+            If Mode&#PB_Top=#PB_Top
+              \Align\Top = 1
+              If Mode&#PB_Bottom=#PB_Bottom
+                \Align\y1 = (\Parent\height -\Parent\bs*2)- \height
+              EndIf
+            EndIf
+            
+            If Mode&#PB_Center=#PB_Center
+              \Align\Horizontal = 1
+              \Align\Vertical = 1
+            EndIf
+            If Mode&#PB_Horizontal=#PB_Horizontal
+              \Align\Horizontal = 1
+            EndIf
+            If Mode&#PB_Vertical=#PB_Vertical
+              \Align\Vertical = 1
+            EndIf
+            
+            Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          EndIf
+        Case 2 ; text
+        Case 3 ; image
+      EndSelect
+    EndWith
   EndProcedure
   
   Procedure.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=0, Item.i=0)
@@ -6833,6 +6974,8 @@ Module Widget
               Next
               
             EndIf
+            
+            Repaint | Event_Widgets(*This, #PB_EventType_MouseMove, at)
         EndSelect
         
         Select EventType
@@ -7113,6 +7256,7 @@ Module Widget
                         \Canvas\Mouse\x<\Canvas\Mouse\Delta\x+8 And 
                         \Canvas\Mouse\y>\Canvas\Mouse\Delta\y-8 And
                         \Canvas\Mouse\y<\Canvas\Mouse\Delta\y+8)
+                  
                   If Not \Drag
                     Event_Widgets(*This, #PB_EventType_DragStart, \index[1])
                     \Drag = 1
@@ -7131,13 +7275,7 @@ Module Widget
             
           Case #PB_EventType_LeftButtonDown, #PB_EventType_RightButtonDown
             If *Value\Last = *This : \State = 2
-              SetForeground(*This.Widget_S)
-              
-              If \anchor
-                ; Поднимаем гаджет
-                Static *Pos : *Pos = GetPosition(*This, #PB_List_After)
-                SetPosition(*This, #PB_List_Last)
-              EndIf
+              SetForeground(*This)
               
               repaint | Events(*This, \at, EventType, MouseScreenX, MouseScreenY)
               repaint = 1
@@ -7147,11 +7285,6 @@ Module Widget
             If *Value\Focus And *Value\Focus\State = 2 : *Value\Focus\State = 1 : *Value\Focus\Canvas\Mouse\Buttons = 0
               repaint | Events(*Value\Focus, *Value\Focus\at, EventType, MouseScreenX, MouseScreenY)
               
-              If \anchor And *Pos
-                ; Возврашаем на место
-                SetPosition(*This, #PB_List_Before, *Pos)
-              EndIf
-            
               If Bool(MouseScreenX>=*Value\Focus\X And MouseScreenX<*Value\Focus\X+*Value\Focus\Width And 
                       MouseScreenY>*Value\Focus\Y And MouseScreenY=<*Value\Focus\Y+*Value\Focus\Height) 
                 
@@ -7173,6 +7306,7 @@ Module Widget
                 repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
               EndIf
             EndIf
+            
             repaint = 1
             
             ; active widget key state
@@ -7313,7 +7447,7 @@ Module Widget
     *This = Bar(#PB_GadgetType_ScrollBar, Size, Min, Max, PageLength, Flag|Vertical, Radius)
     SetLastParent(*This, #PB_GadgetType_ScrollBar) 
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -7327,7 +7461,7 @@ Module Widget
     *This = Bar(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Smooth|Vertical|#PB_Bar_NoButtons, 0)
     SetLastParent(*This, #PB_GadgetType_ProgressBar) 
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -7340,7 +7474,7 @@ Module Widget
     
     *This = Bar(#PB_GadgetType_TrackBar, 0, Min, Max, 0, Ticks|Vertical|#PB_Bar_NoButtons, 0)
     SetLastParent(*This, #PB_GadgetType_TrackBar)
-    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
     Resize(*This, X,Y,Width,Height)
     
@@ -7354,7 +7488,7 @@ Module Widget
     
     *This = Bar(0, 0, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
     SetLastParent(*This, #PB_GadgetType_Splitter) 
-    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
     Resize(*This, X,Y,Width,Height)
  
@@ -7447,7 +7581,7 @@ Module Widget
       
     EndWith
     
-    SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
     Resize(*This, X,Y,Width,Height)
     
@@ -7475,7 +7609,7 @@ Module Widget
       \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7507,7 +7641,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7545,7 +7679,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7575,7 +7709,7 @@ Module Widget
       \Text\Change = 1
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7612,7 +7746,7 @@ Module Widget
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7673,7 +7807,7 @@ Module Widget
       
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7708,7 +7842,7 @@ Module Widget
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7742,7 +7876,7 @@ Module Widget
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7776,7 +7910,7 @@ Module Widget
       
       SetText(*This, Text.s)
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7823,7 +7957,7 @@ Module Widget
       \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
        
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7873,7 +8007,7 @@ Module Widget
       \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
        
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -7919,7 +8053,7 @@ Module Widget
       \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       
       AddColumn(*This, 0, FirstColumnTitle, FirstColumnWidth)
@@ -7979,7 +8113,7 @@ Module Widget
       \s\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
        
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -8031,7 +8165,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
     EndWith
@@ -8064,7 +8198,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
     EndWith
@@ -8099,7 +8233,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
     EndWith
@@ -8164,7 +8298,7 @@ Module Widget
       \Flag\Window\BorderLess = Bool(Flag&#PB_Window_BorderLess)
       
       \fs = 1
-      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      \bs = 1 ;Bool(Not Flag&#PB_Flag_AnchorsGadget)
       
       ; Background image
       \Image[1] = AllocateStructure(Image_S)
@@ -8173,7 +8307,7 @@ Module Widget
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
       ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
       ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      SetAnchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
       SetActive(*This)
@@ -8542,5 +8676,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------n--------------------------------------------------------------------f-4-------------+-----------------------------------------------f-u24Wr---------------8------
+; Folding = ------------Pf0-----------------------------------------------------------------v---------------------------------------v-f-------------------------08Wfbt+--------------8------
 ; EnableXP

@@ -329,7 +329,7 @@ Structure IMG
   Name$
 EndStructure
 
-Structure ParseStruct Extends ObjectStruct
+Structure Parser_S Extends ObjectStruct
   Item.i
   SubLevel.i ; 
   Container.i
@@ -352,11 +352,11 @@ Structure ParseStruct Extends ObjectStruct
   Args$
 EndStructure
 
-Structure ThisStruct Extends ParseStruct
+Structure ThisStruct Extends Parser_S
   Map get.ObjectStruct()
 EndStructure
 
-Global NewList ParsePBObject.ParseStruct() 
+Global NewList ParsePBObject.Parser_S() 
 Global *This.ThisStruct = AllocateStructure(ThisStruct)
 ;
 *This\Index=-1
@@ -808,7 +808,7 @@ EndProcedure
 
 ;-
 ;- PARSER_CODE
-Procedure PC_Add(*This.ParseStruct, Index)
+Procedure PC_Add(*This.Parser_S, Index)
   Protected Result
   
   With *This
@@ -905,10 +905,10 @@ Procedure PC_Add(*This.ParseStruct, Index)
   
 EndProcedure
 
-Procedure PC_Set(*ThisParse.ParseStruct)
+Procedure PC_Set(Parser.Parser_S)
   Protected Result, I, ID
   
-  With *ThisParse ; 
+  With Parser ; 
     ID = *This\get(\Object\s.s)\Object\i.i
     
     Select \Type\s.s
@@ -1225,11 +1225,11 @@ Procedure CO_Events()
   EndSelect
 EndProcedure
 
-Procedure CO_Insert(*ThisParse.ParseStruct, Parent)
+Procedure CO_Insert(Parser.Parser_S, Parent)
   Protected ID$, Handle$
   CodeShow = 1
   
-  With *ThisParse
+  With Parser
     
     ; 
     Protected Variable$, VariableLength
@@ -1394,8 +1394,8 @@ Procedure CO_Create(Type$, X, Y, Parent=-1)
         \Type\s.s = ReplaceString(\Type\s.s, "tree","Tree")
     EndSelect
     
-    Protected *ThisParse.ParseStruct = AddElement(ParsePBObject())
-    If  *ThisParse
+    Protected Parser.Parser_S = AddElement(ParsePBObject())
+    If  Parser
       Restore Model 
       For i=1 To 1+33 ; gadget count
         For j=1 To 7  ; i.i count
@@ -1502,7 +1502,7 @@ Procedure CO_Create(Type$, X, Y, Parent=-1)
         \get(\get(Str(Parent))\Object\s.s)\Code("Code_Object")\Position = 249+75+2
       EndIf
       
-      CO_Insert(*ThisParse, Parent) 
+      CO_Insert(Parser, Parent) 
       \Parent\i.i = Parent
     EndIf
    
@@ -1904,10 +1904,10 @@ Procedure CO_Open() ; Ok
   EndWith
 EndProcedure
 
-Procedure CO_Save(*ThisParse.ParseStruct) ; Ok
+Procedure CO_Save(Parser.Parser_S) ; Ok
   Protected Result$, ID$, Handle$, Result, i
   
-  With *ThisParse
+  With Parser
     If \Content\String$
       Debug "      "+\Content\String$
       
@@ -2385,9 +2385,9 @@ Procedure ParsePBFile(FileName.s)
                       \Param2\s.s = ""
                       \Param3\s.s = ""
                       \Caption\s.s = ""
-                      ;ClearStructure(*This, ParseStruct)
+                      ;ClearStructure(*This, Parser_S)
                       ;                         FreeStructure(*This)
-                      ;                         *This.ParseStruct = AllocateStructure(ParseStruct)
+                      ;                         *This.Parser_S = AllocateStructure(Parser_S)
                       
                     Default
                       If ExamineRegularExpression(#RegEx_Arguments, \Args$) : Index=0
@@ -3183,6 +3183,7 @@ Procedure WE_Events(Event)
           Select EventType()
             Case #PB_EventType_DragStart
               DragText(GetGadgetItemText(WE_Objects, GetGadgetState(WE_Objects)))
+              
           EndSelect
           
       EndSelect
@@ -3279,5 +3280,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Wend
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----v-----------------------------------------------------------8------
+; Folding = 0---v--------------vf-f-----------0---------------------+--+----8------
 ; EnableXP
