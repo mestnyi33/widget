@@ -236,7 +236,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     Select Type
       Case #PB_GadgetType_Window    
-        *This = Window(10,10,Width*3,Height*2, "", #PB_Flag_AnchorsGadget, Parent) : X = 0 : Y = 0
+        *This = Window(20,20,Width*3,Height*2, "", #PB_Flag_AnchorsGadget, Parent) : X = 0 : Y = 0
       Case #PB_GadgetType_Container : *This = Container(X,Y,Width,Height, #PB_Flag_AnchorsGadget) : X = 0 : Y = 0
       Case #PB_GadgetType_Button    : *This = Button(X,Y,Width,Height, "", #PB_Flag_AnchorsGadget)
     EndSelect
@@ -343,20 +343,17 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     If Open(Window_0, 10, 40, 780, 550, "IDE") 
       Canvas_0 = Display()
       
-;       ; Main panel
-;       Widgets("Panel") = Panel(0, 0, 0, 0) 
-;       
-;       ; panel tab new forms
-;       AddItem(Widgets("Panel"), -1, "Form")
-       Widgets("MDI") = ScrollArea(0, 0, 0, 0, 0, 780, 550, #PB_Flag_AutoSize) : CloseList()
-;       
-;       
-;       ; panel tab code
-;       AddItem(Widgets("Panel"), -1, "Code")
-       Widgets("Code") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
-;       CloseList()
-       
-      Widgets("Panel") = Splitter(0, 0, 780, 550, Widgets("MDI"),Widgets("Code"))
+      ; Main panel
+      Widgets("Panel") = Panel(0, 0, 0, 0) 
+      
+      ; panel tab new forms
+      AddItem(Widgets("Panel"), -1, "Form")
+      
+      
+      ; panel tab code
+      AddItem(Widgets("Panel"), -1, "Code")
+      Widgets("Code") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
+      CloseList()
       
       ;{- inspector 
       ; create tree inspector
@@ -414,7 +411,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
     
     
-    Define *n=AddWidget(Widgets("Inspector"), Widgets("MDI"), #PB_GadgetType_Window)
+    Define *n=AddWidget(Widgets("Inspector"), Widgets("Panel"), #PB_GadgetType_Window)
     ;AddWidget(Widgets("Inspector"), *n, #PB_GadgetType_Window)
     AddWidget(Widgets("Inspector"), 0, #PB_GadgetType_Button)
     AddWidget(Widgets("Inspector"), 0, #PB_GadgetType_Button)
@@ -460,5 +457,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 8-v3-00-
+; Folding = --------
 ; EnableXP

@@ -171,12 +171,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
       *window = openlist(0, 1)
-;       *window = Window(150, 50, 280, 200, "Window_1")
-;       SetGadgetData(1, *window)
       
-      ;       Widgets(Hex(1)) = Window(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
-      ;       Widgets(Hex(2)) = Window(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
-      ;       Widgets(Hex(3)) = Window(20, 150, 280, 200, "Window_3");, #PB_Flag_AnchorsGadget)
       Window(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
       Window(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
       Window(20, 150, 280, 200, "Window_3") ;, #PB_Flag_AnchorsGadget)
@@ -243,7 +238,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --f--
+; Folding = 0ff-0
 ; EnableXP

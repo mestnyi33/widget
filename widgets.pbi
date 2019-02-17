@@ -261,11 +261,14 @@ DeclareModule Widget
     Enumerate.i
     TabHeight.i
     
+    Level.i ; Вложенность виджета
+    Class.s ; 
     
     List *Childrens.Widget_S()
     List *Items.Items_S()
     List *Columns.Widget_S()
     ;List *Draws.Items_S()
+    Map *Count()
     
     Flag.Flag_S
     *Text.Text_S[4]
@@ -532,6 +535,14 @@ DeclareModule Widget
     Widget::*Root
   EndMacro
   
+  Macro Display()
+    Widget::*value\Canvas\Gadget
+  EndMacro
+  
+  Macro GetDisplay(_this_)
+    Widget::_this_\Canvas\Gadget
+  EndMacro
+  
   Macro Adress(_this_)
     Widget::_this_\Adress
   EndMacro
@@ -542,6 +553,10 @@ DeclareModule Widget
   
   Macro IsWidget(_this_)
     Bool(_this_>*Root And _this_<AllocateStructure(Widget_S)) * _this_ ; Bool(MemorySize(_this_)=MemorySize(AllocateStructure(Widget_S))) * _this_
+  EndMacro
+  
+  Macro IsChildrens(_this_)
+    ListSize(_this_\Childrens())
   EndMacro
   
   ;   Define w  ;TypeOf(_this_)  ; 
@@ -608,6 +623,27 @@ DeclareModule Widget
   ;-
   ;- - DECLAREs
   ;-
+  Declare.i GetImage(*This.Widget_S)
+  Declare.i GetType(*This.Widget_S)
+  Declare.i GetData(*This.Widget_S)
+  Declare.s GetText(*This.Widget_S)
+  Declare.i GetPosition(*This.Widget_S, Position.i)
+  Declare.i GetWindow(*This.Widget_S)
+  Declare.i GetRoot(*This.Widget_S)
+  Declare.i GetAnchors(*This.Widget_S)
+  Declare.i GetCount(*This.Widget_S)
+  Declare.s GetClass(*This.Widget_S)
+  Declare.i GetAttribute(*This.Widget_S, Attribute.i)
+  Declare.i GetParent(*This.Widget_S)
+  Declare.i GetParentItem(*This.Widget_S)
+  Declare.i GetItemData(*This.Widget_S, Item.i)
+  Declare.i GetItemImage(*This.Widget_S, Item.i)
+  Declare.s GetItemText(*This.Widget_S, Item.i)
+  Declare.i GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
+  
+  Declare.s SetClass(*This.Widget_S, Class.s)
+  Declare.i GetLevel(*This.Widget_S)
+  Declare.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
   Declare.i Bind(*Function, *This.Widget_S=#PB_All, EventType.i=#PB_All)
   Declare.i SetActive(*This.Widget_S)
   Declare.i Y(*This.Widget_S)
@@ -617,45 +653,31 @@ DeclareModule Widget
   Declare.i Draw(*This.Widget_S, Childrens=0)
   Declare.i GetState(*This.Widget_S)
   Declare.i SetState(*This.Widget_S, State.i)
-  Declare.i GetAttribute(*This.Widget_S, Attribute.i)
   Declare.i SetAttribute(*This.Widget_S, Attribute.i, Value.i)
   Declare.i CallBack(*This.Widget_S, EventType.i, mouseX=0, mouseY=0)
   Declare.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.i Resize(*This.Widget_S, iX.i,iY.i,iWidth.i,iHeight.i);, *That.Widget_S=#Null)
   Declare.i Hide(*This.Widget_S, State.i=-1)
   Declare.i SetImage(*This.Widget_S, Image.i)
-  Declare.i GetImage(*This.Widget_S)
-  Declare.i GetType(*This.Widget_S)
   Declare.i SetData(*This.Widget_S, *Data)
-  Declare.i GetData(*This.Widget_S)
   Declare.i SetText(*This.Widget_S, Text.s)
-  Declare.s GetText(*This.Widget_S)
   Declare.i GetItemState(*This.Widget_S, Item.i)
   Declare.i SetItemState(*This.Widget_S, Item.i, State.i)
-  Declare.i GetParent(*This.Widget_S)
-  Declare.i GetParentItem(*This.Widget_S)
   Declare.i at(*this.Widget_S, MouseX.i, MouseY.i)
-  Declare.i GetPosition(*This.Widget_S, Position.i)
   Declare.i SetPosition(*This.Widget_S, Position.i, *Widget_2 =- 1)
   Declare.i Free(*This.Widget_S)
   Declare.i SetFocus(*This.Widget_S, State.i)
-  Declare.i GetWindow(*This.Widget_S)
-  Declare.i GetRoot(*This.Widget_S)
   
   Declare.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
   Declare.i SetItemData(*This.Widget_S, Item.i, *Data)
-  Declare.i GetItemData(*This.Widget_S, Item.i)
   Declare.i CountItems(*This.Widget_S)
   Declare.i ClearItems(*This.Widget_S)
   Declare.i RemoveItem(*This.Widget_S, Item.i)
   Declare.i SetItemAttribute(*This.Widget_S, Item.i, Attribute.i, Value.i)
-  Declare.i GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
   Declare.i Enumerate(*This.Integer, *Parent.Widget_S, Item.i=0)
   Declare.i SetItemText(*This.Widget_S, Item.i, Text.s)
-  Declare.s GetItemText(*This.Widget_S, Item.i)
   Declare.i AddColumn(*This.Widget_S, Position.i, Title.s, Width.i)
   Declare.i SetFlag(*This.Widget_S, Flag.i)
-  Declare.i GetItemImage(*This.Widget_S, Item.i)
   Declare.i SetItemImage(*This.Widget_S, Item.i, Image.i)
   Declare.i ReDraw(Canvas.i)
   
@@ -696,7 +718,7 @@ EndDeclareModule
 Module Widget
   ;- MODULE
   ;
-  Declare.i Event_Widgets(*This.Widget_S, EventType.i, Item.i=-1)
+  Declare.i Event_Widgets(*This.Widget_S, EventType.i, EventItem.i=-1, EventData.i=0)
   Declare.i Events(*This.Widget_S, at.i, EventType.i, MouseScreenX.i, MouseScreenY.i, WheelDelta.i = 0)
   
   ;- GLOBALs
@@ -1081,7 +1103,8 @@ Module Widget
       EndIf
       
       If State
-        
+        SetClass(*This, "")
+      
         For i = 1 To #Anchors
           \anchor[i] = AllocateStructure(Anchor_S)
           \anchor[i]\Color[0]\Frame = $000000
@@ -1491,7 +1514,7 @@ Module Widget
         ;       EndIf
         
         ;       SelectElement(\items(), Item)
-        If \a\sublevel = *last\sublevel
+        If *last And \a\sublevel = *last\sublevel
           \a = *last
         EndIf
         
@@ -1852,11 +1875,11 @@ Module Widget
             If \index[2] >= 0 And SelectElement(*Item(), \index[2])
               *Item()\State = 0
             EndIf
+            ; GetState() - Value = \index[2]
+            \index[2] = State
             
             ; Post change event to widget (tree, listview)
             Event_Widgets(*This, #PB_EventType_Change, State)
-            
-            \index[2] = State
           EndIf
           
           Repaint = 1
@@ -4167,6 +4190,113 @@ Module Widget
     Draw_Popup(*Widget)
   EndProcedure
   
+  
+  Procedure Canvas_Events(Canvas.i, EventType.i)
+    Protected Repaint, *This.Widget_S
+    Protected Width = GadgetWidth(Canvas)
+    Protected Height = GadgetHeight(Canvas)
+    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
+    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    Protected *Window.Widget_s = GetGadgetData(Canvas)
+    
+    Select EventType
+        ;Case #PB_EventType_Repaint : Repaint = EventData()
+      Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) : Repaint = 1
+        Resize(*Window, #PB_Ignore, #PB_Ignore, Width, Height)
+      Default
+        
+        If EventType() = #PB_EventType_LeftButtonDown
+          SetActiveGadget(Canvas)
+        EndIf
+        
+        *This = at(*Window, MouseX, MouseY)
+        If *This
+          Repaint | CallBack(*This, EventType, MouseX, MouseY)
+        EndIf
+        
+    EndSelect
+    
+;     Select *Value\Event ; WidgetEvent()
+;       Case #PB_EventType_LeftButtonDown
+;         Debug "#PB_EventType_LeftButtonDown " + *value\This\type
+;         
+;       Case #PB_EventType_LeftButtonUp
+;         Debug "#PB_EventType_LeftButtonUp " + *value\This\type
+;     EndSelect
+    
+    If Repaint 
+      ReDraw(Canvas)
+    EndIf
+  EndProcedure
+  
+  Procedure.i Canvas_CallBack()
+    ; Canvas events bug fix
+    Protected Result.b
+    Static MouseLeave.b
+    Protected EventGadget.i = EventGadget()
+    Protected EventType.i = EventType()
+    Protected Width = GadgetWidth(EventGadget)
+    Protected Height = GadgetHeight(EventGadget)
+    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
+    
+    ; Это из за ошибки в мак ос и линукс
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
+      Select EventType 
+        Case #PB_EventType_MouseEnter 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 0
+          EndIf
+          
+        Case #PB_EventType_MouseLeave 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 1
+          EndIf
+          
+        Case #PB_EventType_LeftButtonDown
+          If GetActiveGadget()<>EventGadget
+            SetActiveGadget(EventGadget)
+          EndIf
+          
+        Case #PB_EventType_LeftButtonUp
+          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
+            MouseLeave = 0
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+              Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+              EventType = #PB_EventType_MouseLeave
+            CompilerEndIf
+          Else
+            MouseLeave =- 1
+            Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+            EventType = #PB_EventType_LeftClick
+          EndIf
+          
+        Case #PB_EventType_LeftClick : ProcedureReturn 0
+      EndSelect
+    CompilerEndIf
+    
+    
+    If EventType = #PB_EventType_MouseMove
+            Static Last_X, Last_Y
+            If Last_Y <> Mousey
+              Last_Y = Mousey
+      Result | Canvas_Events(EventGadget, EventType)
+            EndIf
+            If Last_x <> Mousex
+              Last_x = Mousex
+              Result | Canvas_Events(EventGadget, EventType)
+            EndIf
+    Else
+      Result | Canvas_Events(EventGadget, EventType)
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  
   ;-
   ;- ADD & GET & SET
   ;-
@@ -4385,7 +4515,7 @@ Module Widget
     
     With *Parent
       If Not *This
-        ProcedureReturn 0
+      ;  ProcedureReturn 0
       EndIf
       
       If Not \Enumerate
@@ -4397,9 +4527,13 @@ Module Widget
       \Enumerate = Result
       
       If Result
-        If \Childrens()\p_i <> Item
+        If \Childrens()\p_i <> Item 
           ProcedureReturn Enumerate(*This, *Parent, Item)
         EndIf
+        
+;         If ListSize(\Childrens()\Childrens())
+;           ProcedureReturn Enumerate(*This, \Childrens(), Item)
+;         EndIf
         
         PokeI(*This, PeekI(@\Childrens()))
       EndIf
@@ -4495,6 +4629,22 @@ Module Widget
   
   
   ;- GET
+  Procedure.i GetAnchors(*This.Widget_S)
+    ProcedureReturn Bool(*This\anchor[9]) * *This
+  EndProcedure
+  
+  Procedure.s GetClass(*This.Widget_S)
+    ProcedureReturn *This\Class
+  EndProcedure
+  
+  Procedure.i GetCount(*This.Widget_S)
+    ProcedureReturn *This\index ; Parent\Count(Hex(*This\Parent)+"_"+Hex(*This\Type))
+  EndProcedure
+  
+  Procedure.i GetLevel(*This.Widget_S)
+    ProcedureReturn *This\Level
+  EndProcedure
+  
   Procedure.i GetFocus()
     ProcedureReturn *Value\Focus
   EndProcedure
@@ -4692,6 +4842,62 @@ Module Widget
   
   
   ;- SET
+  Procedure.s SetClass(*This.Widget_S, Class.s)
+    Protected Result.s
+    
+    With *This
+      Result.s = \Class
+      
+      If Class.s
+        \Class = Class
+      Else
+        Select \Type
+          Case #PB_GadgetType_Button         : \Class = "Button"
+          Case #PB_GadgetType_ButtonImage    : \Class = "ButtonImage"
+          Case #PB_GadgetType_Calendar       : \Class = "Calendar"
+          Case #PB_GadgetType_Canvas         : \Class = "Canvas"
+          Case #PB_GadgetType_CheckBox       : \Class = "CheckBox"
+          Case #PB_GadgetType_ComboBox       : \Class = "ComboBox"
+          Case #PB_GadgetType_Container      : \Class = "Container"
+          Case #PB_GadgetType_Date           : \Class = "Date"
+          Case #PB_GadgetType_Editor         : \Class = "Editor"
+          Case #PB_GadgetType_ExplorerCombo  : \Class = "ExplorerCombo"
+          Case #PB_GadgetType_ExplorerList   : \Class = "ExplorerList"
+          Case #PB_GadgetType_ExplorerTree   : \Class = "ExplorerTree"
+          Case #PB_GadgetType_Frame          : \Class = "Frame"
+          Case #PB_GadgetType_HyperLink      : \Class = "HyperLink"
+          Case #PB_GadgetType_Image          : \Class = "Image"
+          Case #PB_GadgetType_IPAddress      : \Class = "IPAddress"
+          Case #PB_GadgetType_ListIcon       : \Class = "ListIcon"
+          Case #PB_GadgetType_ListView       : \Class = "ListView"
+          Case #PB_GadgetType_MDI            : \Class = "MDI"
+          Case #PB_GadgetType_OpenGL         : \Class = "OpenGL"
+          Case #PB_GadgetType_Option         : \Class = "Option"
+          Case #PB_GadgetType_Popup          : \Class = "Popup"
+          Case #PB_GadgetType_Panel          : \Class = "Panel"
+          Case #PB_GadgetType_Property       : \Class = "Property"
+          Case #PB_GadgetType_ProgressBar    : \Class = "ProgressBar"
+          Case #PB_GadgetType_Scintilla      : \Class = "Scintilla"
+          Case #PB_GadgetType_ScrollArea     : \Class = "ScrollArea"
+          Case #PB_GadgetType_ScrollBar      : \Class = "ScrollBar"
+          Case #PB_GadgetType_Shortcut       : \Class = "Shortcut"
+          Case #PB_GadgetType_Spin           : \Class = "Spin"
+          Case #PB_GadgetType_Splitter       : \Class = "Splitter"
+          Case #PB_GadgetType_String         : \Class = "String"
+          Case #PB_GadgetType_Text           : \Class = "Text"
+          Case #PB_GadgetType_TrackBar       : \Class = "TrackBar"
+          Case #PB_GadgetType_Tree           : \Class = "Tree"
+          Case #PB_GadgetType_Unknown        : \Class = "Unknown"
+          Case #PB_GadgetType_Web            : \Class = "Web"
+          Case #PB_GadgetType_Window         : \Class = "Window"
+        EndSelect
+      EndIf
+      
+    EndWith
+    
+    ProcedureReturn Result.s
+  EndProcedure
+  
   Procedure.i CloseList()
     If LastElement(*openedlist())
       If *openedlist()\Type = #PB_GadgetType_Popup
@@ -4707,6 +4913,7 @@ Module Widget
       If IsWindow(*This)
         If Not Bool(IsGadget(Item) And GadgetType(Item) = #PB_GadgetType_Canvas)
           Item = CanvasGadget(#PB_Any, 0,0, WindowWidth(*This, #PB_Window_InnerCoordinate), WindowHeight(*This, #PB_Window_InnerCoordinate), #PB_Canvas_Keyboard)
+          BindGadgetEvent(Item, @Canvas_CallBack())
         EndIf
         
         *value\Canvas\window = *This
@@ -4759,6 +4966,22 @@ Module Widget
     ProcedureReturn *This\Container
   EndProcedure
   
+  Procedure Make_CountType(*This.Widget_S)
+    
+    With *This
+      Protected Type = \Window
+      
+      If \Window
+        \index = \Window\Count(Hex(Type)+"_"+Hex(\Type))
+      
+      \Window\Count(Hex(Type)+"_"+Hex(\Type)) + 1
+    EndIf
+    ;\Parent\Count(Hex(\Type)) + 1
+    EndWith
+    
+  EndProcedure
+  
+  
   Procedure.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=-1)
     Protected x,y
     
@@ -4782,8 +5005,15 @@ Module Widget
           
           \p_i = Item
           \Parent = *Parent
+          
           \Root = *Parent\Root
           \Window = *Parent\Window
+          
+          ;If *Parent <> \Root
+            \Level = *Parent\Level + 1
+          ;EndIf
+            
+            
           If \s
             If \s\v
               \s\v\Window = \Window
@@ -4792,6 +5022,7 @@ Module Widget
               \s\h\Window = \Window
             EndIf
           EndIf
+          
           \Canvas = \Parent\Canvas
           \Hide = Bool(\p_i > 0 Or \Parent\Hide)
           
@@ -4801,6 +5032,7 @@ Module Widget
           EndIf
           
           AddChildren(\Parent, *This)
+          Make_CountType(*This)
           Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
         EndIf
       EndIf
@@ -4843,8 +5075,27 @@ Module Widget
   EndProcedure
   
   Procedure.i SetFocus(*This.Widget_S, State.i)
-    *This\Focus = State
-    *This\anchor = *This\anchor[9]
+    With *This
+     
+      If State =- 1
+        If *This And *Value\Focus <> *This ;And (\Type <> #PB_GadgetType_Window)
+          If *Value\Focus 
+            \Deactive = *Value\Focus 
+            *Value\Focus\anchor = 0 
+            *Value\Focus\Focus = 0
+          EndIf
+          If Not \Deactive 
+            \Deactive = *This 
+          EndIf
+          \anchor = \anchor[9]
+          *Value\Focus = *This
+          \Focus = 1
+        EndIf
+      Else
+        \Focus = State
+        \anchor = Bool(State) * \anchor[9]
+      EndIf
+    EndWith
   EndProcedure
   
   Procedure.i SetActive(*This.Widget_S)
@@ -4855,6 +5106,10 @@ Module Widget
     Protected Result.i
     
     With *This
+;       If \anchor[9] And Not \anchor
+;         Event_Widgets(*This, #PB_EventType_Change, \anchor)
+;       EndIf
+      
       If *Root\Type = #PB_GadgetType_Window
         *Root\Focus = 1
       EndIf
@@ -4863,20 +5118,16 @@ Module Widget
         If *Value\Active                                                          And *Value\Active<>*Root
           \Window\Deactive = *Value\Active 
           *Value\Active\Focus = 0
-          *Value\Active\anchor = 0 
         EndIf
         If Not \Window\Deactive 
           \Window\Deactive = \Window 
         EndIf
-        \Window\anchor = \Window\anchor[9]
         
         If *Value\Focus ; Если деактивировали окно то деактивируем и гаджет
           If *Value\Focus\Window = \Window\Deactive
             *Value\Focus\Focus = 0
-            *Value\Focus\anchor = 0 
           ElseIf *Value\Focus\Window = \Window
             *Value\Focus\Focus = 1
-            *Value\Focus\anchor = *Value\Focus\anchor[9] 
           EndIf
         EndIf
         
@@ -4885,16 +5136,16 @@ Module Widget
         \Window\Focus = 1
       EndIf
       
-      If *This And *Value\Focus <> *This And (\Type <> #PB_GadgetType_Window        Or \anchor[9])
-        If *Value\Focus                                                             ;And (*Value\Focus\Type <> #PB_GadgetType_Window  And *Value\Focus\anchor[9])
+      If *This And *Value\Focus <> *This And (\Type <> #PB_GadgetType_Window)
+        If *Value\Focus
           \Deactive = *Value\Focus 
-          *Value\Focus\anchor = 0 
           *Value\Focus\Focus = 0
         EndIf
+        
         If Not \Deactive 
           \Deactive = *This 
         EndIf
-        \anchor = \anchor[9]
+        
         *Value\Focus = *This
         \Focus = 1
       EndIf
@@ -4931,7 +5182,7 @@ Module Widget
     If Text.s="" : Text.s=#LF$ : EndIf
     
     With *This
-      If \Text\String.s[1] <> Text.s
+      If \Text And \Text\String.s[1] <> Text.s
         \Text\String.s[1] = Make(*This, Text.s)
         
         If \Text\String.s[1]
@@ -5013,6 +5264,7 @@ Module Widget
                 *t\Change = State+1
                 
                 \Text\String[1] = *t\Items()\Text\String
+                \Text\String = \Text\String[1]
                 ;                 \Text[1]\String = \Text\String[1]
                 ;                 \Text\Caret = 1
                 ;                 \Text\Caret[1] = \Text\Caret
@@ -6392,23 +6644,22 @@ Module Widget
   EndProcedure
   
   ;- 
-  Procedure.i Event_Widgets(*This.Widget_S, EventType.i, EventItem.i=-1)
+  Procedure.i Event_Widgets(*This.Widget_S, EventType.i, EventItem.i=-1, EventData.i=0)
     Protected Result.i 
     ; Debug "  "+EventType +" - event "+ EventItem+ " - item "+ *This +" - widget"
+    
     With *This      
       If \Function
-        Result = CallCFunctionFast(\Function, *This, EventType, EventItem)
+        Result = CallCFunctionFast(\Function, *This, EventType, EventItem, EventData)
       EndIf
        
-      If \Window And *This<>\Window And \Window\Function
-        Result = CallCFunctionFast(\Window\Function, *This, EventType, EventItem)
+      If \Window And \Window<>\Root And *This<>\Window And \Window\Function
+        Result = CallCFunctionFast(\Window\Function, *This, EventType, EventItem, EventData)
       EndIf
        
-      If *Root\Function
-        Result = CallCFunctionFast(*Root\Function, *This, EventType, EventItem)
+      If \Root And \Root\Function
+        Result = CallCFunctionFast(\Root\Function, *This, EventType, EventItem, EventData)
       EndIf
-      
-      ; PostEvent(#PB_Event_Widget, *Value\Canvas\Window, *This, EventType, Item)
     EndWith
     
     ProcedureReturn Result
@@ -6457,6 +6708,7 @@ Module Widget
           Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp
             ; Columns at point
             If ListSize(\Columns())
+              
               ForEach \Columns()
                 If \Columns()\Drawing
                   If \at=-1 And (MouseScreenX>=\Columns()\X And MouseScreenX=<\Columns()\X+\Columns()\Width+1 And 
@@ -6525,7 +6777,6 @@ Module Widget
                     EndIf
                   EndIf
                 Next
-                
               Next 
               
               If Buttons
@@ -6550,7 +6801,6 @@ Module Widget
                 EndIf
                 \Columns()\State = 1
               EndIf
-              
               
             Else
               
@@ -6586,31 +6836,11 @@ Module Widget
         EndSelect
         
         Select EventType
-          Case #PB_EventType_Focus : Repaint = 1
-            Event_Widgets(*This, EventType, at)
-;             If \Text And CountString(\Text\String, "_")
-;               If \Type =- 1
-;                 Debug "Active "+ Val(StringField(\Text\String, 2, "_")) ; +\Type +" "+ at +" "+ *This
-;               Else
-;                 Debug "Focus "+ Val(StringField(\Text\String, 2, "_")) ; +\Type +" "+ at +" "+ *This
-;               EndIf
-;             Else
-;               Debug "events() Focus " +\Type +" "+ at +" "+ *This
-;             EndIf
+          Case #PB_EventType_Focus : Repaint = 1 : Repaint | Event_Widgets(*This, EventType, at, \Deactive)
             
-          Case #PB_EventType_LostFocus : Repaint = 1
-            Event_Widgets(*This, EventType, at)
-;             If \Text And CountString(\Text\String, "_")
-;               If \Type =- 1
-;                 Debug "DeActive "+ Val(StringField(\Text\String, 2, "_")) ; +\Type +" "+ at +" "+ *This
-;               Else
-;                 Debug "LostFocus "+ Val(StringField(\Text\String, 2, "_")) ; +\Type +" "+ at +" "+ *This
-;               EndIf
-;             Else
-;               Debug "events() LostFocus " +\Type +" "+ at +" "+ *This
-;             EndIf
+          Case #PB_EventType_LostFocus : Repaint = 1 : Repaint | Event_Widgets(*This, EventType, at)
             
-          Case #PB_EventType_LeftButtonUp : Repaint = 1 : delta = 0
+          Case #PB_EventType_LeftButtonUp : Repaint = 1 : delta = 0  : Repaint | Event_Widgets(*This, EventType, at)
             ;             Debug "events() LeftButtonUp "+\Type +" "+ at +" "+ *This
             
           Case #PB_EventType_LeftDoubleClick 
@@ -6636,11 +6866,11 @@ Module Widget
                    #PB_GadgetType_ListIcon
                 
                 If Not \Drag
-                  Repaint = Event_Widgets(*This, EventType, \index[1])
+                  Repaint | Event_Widgets(*This, EventType, \index[1])
                 EndIf
             EndSelect
             
-          Case #PB_EventType_LeftButtonDown
+          Case #PB_EventType_LeftButtonDown : Repaint | Event_Widgets(*This, EventType, at)
             ;             Debug "events() LeftButtonDown "+\Type +" "+ at +" "+ *This
             Select \Type 
               Case #PB_GadgetType_Window
@@ -7012,6 +7242,7 @@ Module Widget
       \Type = Type
       \Parent = Parent
       If \Parent
+        \Root = \Parent\Root
         \Window = \Parent\Window
       EndIf
       \Radius = Radius
@@ -7340,6 +7571,7 @@ Module Widget
       
       \Text = AllocateStructure(Text_S)
       \Text\String.s[1] = Text.s
+      \Text\String.s = Text.s
       \Text\Change = 1
       
       SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
@@ -7878,18 +8110,22 @@ Module Widget
   Procedure.i Window(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget.Widget_S=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
     
-;     If LastElement(*openedlist()) And *openedlist()\Type =- 1
-;       CloseList()
-;     EndIf
-    
-    If Not *Widget And LastElement(*openedlist()) 
+    If *Widget 
+      *This\Type = #PB_GadgetType_Window
+      *This\Canvas\Gadget = *Value\Canvas\Gadget
+      *This\Canvas\Window = *Value\Canvas\Window
+      
+      SetParent(*This, *Widget)
+    Else
+      If LastElement(*openedlist()) 
       ChangeCurrentElement(*openedlist(), Adress(Root()))
       While NextElement(*openedlist())
         DeleteElement(*openedlist())
       Wend
+      EndIf
+      SetLastParent(*This, #PB_GadgetType_Window) 
     EndIf
     
-    SetLastParent(*This, #PB_GadgetType_Window) 
       
     With *This
       \X =- 1
@@ -7941,6 +8177,50 @@ Module Widget
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
       SetActive(*This)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
+    Protected Canvas.i, *This.Widget_S
+    
+    With *This
+      If Not IsWindow(Window)
+        Window = OpenWindow(#PB_Any, X,Y,Width,Height, Text.s, Flag)
+      EndIf
+      
+      Canvas = CanvasGadget(#PB_Any, X,Y,Width,Height, #PB_Canvas_Keyboard)
+      BindGadgetEvent(Canvas, @Canvas_CallBack())
+      
+      *value\Canvas\window = Window
+      *value\Canvas\gadget = Canvas
+      
+      If Text.s ; Flag & #PB_Window_SystemMenu = #PB_Window_SystemMenu
+        *This = Window(0, 0, Width-2, Height-2-25, Text.s)
+      Else
+        *This = AllocateStructure(Widget_S)
+        \x =- 1
+        \y =- 1
+        \Type =- 5
+        \Container =- 5
+        \color\alpha = 255
+        \Canvas\window = *value\Canvas\window 
+        \Canvas\gadget = *value\Canvas\gadget
+        
+        Resize(*This, 0, 0, Width,Height)
+      EndIf
+      
+      \Root = *This
+      SetGadgetData(Canvas, *This)
+      
+      LastElement(*openedlist())
+      If AddElement(*openedlist())
+        *openedlist() = \Root
+      EndIf
+      
+      *Root = \Root
+      *Root\adress = @*openedlist()
     EndWith
     
     ProcedureReturn *This
@@ -8262,5 +8542,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------f----------------------------
+; Folding = ------------n--------------------------------------------------------------------f-4-------------+-----------------------------------------------f-u24Wr---------------8------
 ; EnableXP

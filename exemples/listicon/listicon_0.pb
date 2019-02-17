@@ -10,47 +10,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *w_0.Widget_S, *w_1.Widget_S, *w_2.Widget_S
   LN=1500 ; количесвто итемов 
   
-  Procedure ReDraw(Canvas)
-    If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-      ;       DrawingMode(#PB_2DDrawing_Default)
-      ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
-      
-      Draw(*w_0)
-      Draw(*w_1)
-      Draw(*w_2)
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
-  
-  Procedure Canvas_CallBack()
-    Protected Canvas.i=EventGadget()
-    Protected EventType.i = EventType()
-    Protected Repaint, iWidth, iHeight
-    Protected Width = GadgetWidth(Canvas)
-    Protected Height = GadgetHeight(Canvas)
-    Protected mouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    
-    Select EventType
-      Case #PB_EventType_Repaint : Repaint = 1 
-      Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        Resize(*w_0, #PB_Ignore, #PB_Ignore, Width, Height)  
-        Resize(*w_1, #PB_Ignore, #PB_Ignore, Width, Height)  
-        Resize(*w_2, #PB_Ignore, #PB_Ignore, Width, Height)  
-        Repaint = 1 
-    EndSelect
-    
-    Repaint | CallBack(*w_0, EventType, mouseX,mouseY)
-    Repaint | CallBack(*w_1, EventType, mouseX,mouseY)
-    Repaint | CallBack(*w_2, EventType, mouseX,mouseY)
-    
-    If Repaint
-      ReDraw(Canvas)
-    EndIf
-  EndProcedure
-  
   Procedure Events()
     If EventType() = #PB_EventType_LeftClick
       ;       If GadgetType(EventGadget()) = #PB_GadgetType_ListIcon
@@ -114,11 +73,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{ - widget
     ; Demo draw string on the canvas
-    CanvasGadget(100, 10, 230, 780, 210, #PB_Canvas_Keyboard )
-    BindGadgetEvent(100, @Canvas_CallBack())
-    Use(0, 100)
-    g = 100
-    
+    Open(0, 10, 230, 780, 210, "")
     t=ElapsedMilliseconds()
     
     
@@ -159,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;   With *This\Columns()
     ;     Debug "Scroll_Height "+*This\Scroll\Height
     ;   EndWith
-    ReDraw(100)
+    ReDraw(Display())
     
     Repeat
       Select WaitWindowEvent()   
@@ -199,5 +154,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----
+; Folding = ---
 ; EnableXP
