@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   
   Global NewMap Widgets.i()
-  Global.i gEvent, gQuit, value, direction, x=10,y=10
+  Global.i gEvent, gQuit, x=10,y=10
   
   Procedure Window_0_Resize()
     ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
@@ -71,8 +71,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_0()
     Protected i
     
-    If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      Define *w.Widget_s = OpenList(0)
+    If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
+       
+       Define *w.Widget_s = Open(0, 10, 10, 580, 600-50, "")
       Define canvas = *w\Canvas\Gadget
       
       ;Widgets(Str(50)) = Window(50, 50, 280, 200, "Demo dock widgets", #PB_Flag_AnchorsGadget)
@@ -109,7 +111,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Window_0()
   
-  direction = 1
+  Define direction = 1
+  Define Width, Height
+  
   Repeat
     gEvent= WaitWindowEvent()
     
@@ -117,10 +121,40 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_Event_CloseWindow
         gQuit= #True
         
+      Case #PB_Event_Timer
+        If Width = 100
+           direction = 1
+        EndIf
+        If Width = Width(Root())-100
+          direction =- 1
+        EndIf
+;         
+        Width + direction
+        Height + direction
+        
+        If Resize(Widgets(Str(0)), #PB_Ignore, #PB_Ignore, Width, Height)
+          ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
+        EndIf
+        ReDraw(Display())
+    
+      Case #PB_Event_Gadget
+        
+        Select EventGadget()
+          Case 0
+            Width = Width(Widgets(Str(0)))
+            Height = Height(Widgets(Str(0)))
+            
+            If GetGadgetState(0)
+              AddWindowTimer(0, 1, 10)
+            Else
+              RemoveWindowTimer(0, 1)
+            EndIf
+        EndSelect
+        
     EndSelect
     
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = ----
 ; EnableXP

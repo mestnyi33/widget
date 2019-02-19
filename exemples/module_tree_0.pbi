@@ -1,6 +1,20 @@
 ﻿IncludePath "../"
 XIncludeFile "widgets.pbi"
 
+UseModule Widget
+Procedure Gadget(Window, X,Y,Width,Height, Flag=0)
+  Open(0, X,Y,Width,Height,"")
+  Root() = Tree(0, 0, Width,Height, Flag)
+  PostEvent(#PB_Event_Gadget, 0, Display(), #PB_EventType_Repaint)
+  ProcedureReturn Root()\Canvas\Gadget
+EndProcedure
+#PB_Flag_AlwaysSelection=40
+#PB_Flag_BorderLess = 1
+Macro GetGadgetData(Gadget)
+  Root()
+EndMacro
+
+;
 ;- 
 ;- example
 ;-
@@ -151,7 +165,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Next
   Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*g)
   
-  Text::Redraw(*g)
+;   Text::Redraw(*g)
   
 ; ; ;     ; 1_example
 ; ; ;     AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   

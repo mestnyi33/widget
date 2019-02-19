@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;-
@@ -115,7 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure ReDraw (canvas.i, List Images.canvasitem())
+  Procedure Canvas_ReDraw (canvas.i, List Images.canvasitem())
     With *Scroll
        SetGadgetState(v, GetState(\v))
         SetGadgetAttribute(v, #PB_ScrollBar_Minimum, GetAttribute(\v, #PB_ScrollBar_Minimum))
@@ -625,7 +625,7 @@ EndProcedure
       EndSelect
     EndIf 
     
-    If Repaint : ReDraw(g_Canvas, Images()) : EndIf
+    If Repaint : Canvas_ReDraw(g_Canvas, Images()) : EndIf
   EndProcedure
   
   
@@ -916,7 +916,7 @@ CompilerIf #PB_Compiler_IsMainFile
               
               Debug "vmi "+ GetAttribute(*Scroll\v, #PB_ScrollBar_Minimum) +" vma "+ GetAttribute(*Scroll\v, #PB_ScrollBar_Maximum) +" vpl "+ GetAttribute(*Scroll\v, #PB_ScrollBar_PageLength)
               
-              ReDraw(g_Canvas, Images())
+              Canvas_ReDraw(g_Canvas, Images())
           EndSelect
           
       EndSelect

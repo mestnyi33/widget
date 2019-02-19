@@ -642,10 +642,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ProcedureReturn Root()\anchor\Height
   EndProcedure
   
-  Procedure.i GetButtons(*This.Widget_S)
-    ProcedureReturn *This\Canvas\Mouse\Buttons
-  EndProcedure
-  
   Procedure.i FreeSelector(*This.Widget_S)
     *This\Root\anchor = 0
   EndProcedure
@@ -657,11 +653,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Procedure.i UpdateSelector(*This.Widget_S)
     Protected MouseX, MouseY, DeltaX, DeltaY
     
-    If *This And Not *This\Root\anchor
+    If *This And Not *This\Root\anchor And GetButtons(*This)
       *This\Root\anchor = AllocateStructure(Anchor_S)
     EndIf
     
-    If *This And GetButtons(*This) And *This\Root\anchor
+    If *This And *This\Root\anchor
       MouseX = GetMouseX(*This)
       MouseY = GetMouseY(*This)
       ;       MouseX = *Value\Canvas\Mouse\X
@@ -680,12 +676,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         MouseY = GetDeltaY(*This)
       EndIf
       
-      *This\Root\anchor\X = X(*This, 2)+DeltaX
-      *This\Root\anchor\Y = Y(*This, 2)+DeltaY
+      *This\Root\anchor\X = *This\X[2]+DeltaX
+      *This\Root\anchor\Y = *This\Y[2]+DeltaY
       *This\Root\anchor\Width = MouseX-DeltaX
       *This\Root\anchor\Height = MouseY-DeltaY
       
-      ReDraw(GetDisplay(*This\Root))
+      ReDraw(*This\Root)
     EndIf
     
     If *This\Drag
@@ -910,7 +906,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Bind(@Widgets_Events()) ; Widgets events callback
     
     ;SetActiveGadget(Canvas_0)
-    ReDraw(Canvas_0)
+    ReDraw(Root())
   EndProcedure
   
   Procedure Window_0_Events(event)
@@ -942,5 +938,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------x----
+; Folding = -------------5---
 ; EnableXP

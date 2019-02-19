@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -9,28 +9,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit
   Global *Bar_0.Bar_S=AllocateStructure(Bar_S)
   
-  Procedure ReDraw(Gadget.i)
-    If StartDrawing(CanvasOutput(Gadget))
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
-      
-      Draw(*Bar_0)
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
-  
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 400, 100, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ButtonGadget   (0,    5,   65, 390,  30, "set  standart scrollbar", #PB_Button_Toggle)
       
-      CanvasGadget(1, 10,10, 380, 50, #PB_Canvas_Keyboard)
-      SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+      Open(0, 10,10, 380, 50)
       
       *Bar_0 = Scroll(5, 10, 370, 30, 20, 50, 8, #PB_Bar_Inverted)
       *Bar_0\step = 1
       
-      ReDraw(1)
+      ReDraw(*Bar_0)
     EndIf
   EndProcedure
   
@@ -70,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndSelect
         EndIf
         
-        ReDraw(1)
+        ReDraw(*Bar_0)
     EndSelect
     
   Until gQuit

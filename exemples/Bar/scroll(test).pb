@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;-
@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndIf
   
-  Procedure ReDraw(Canvas)
+  Procedure _ReDraw(Canvas)
     With *Scroll
       If StartDrawing(CanvasOutput(Canvas))
         ; back ground
@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
     
     If Repaint
-      ReDraw(g_Canvas)
+      _ReDraw(g_Canvas)
     EndIf
   EndProcedure
   
@@ -307,7 +307,7 @@ CompilerIf #PB_Compiler_IsMainFile
               
               Debug "vmi "+ GetAttribute(*Scroll\v, #PB_ScrollBar_Minimum) +" vma "+ GetAttribute(*Scroll\v, #PB_ScrollBar_Maximum) +" vpl "+ GetAttribute(*Scroll\v, #PB_ScrollBar_PageLength)
               
-              ReDraw(g_Canvas)
+              _ReDraw(g_Canvas)
           EndSelect
           
       EndSelect
@@ -315,5 +315,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------
+; Folding = Xv----
 ; EnableXP

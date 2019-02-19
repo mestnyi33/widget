@@ -260,20 +260,26 @@ CompilerIf #PB_Compiler_IsMainFile
     Define i,a,g = 1
     ;{ - gadget
     TreeGadget(g, 10, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
-    ; 1_example
-    AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
-    AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)      
-    AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)         
-    AddGadgetItem(g, -1, "Sub-Item 2", 0, 11)
-    AddGadgetItem(g, -1, "Sub-Item 3", 0, 1)
-    AddGadgetItem(g, -1, "Sub-Item 4", 0, 1)         
-    AddGadgetItem(g, -1, "Sub-Item 5", 0, 11)
-    AddGadgetItem(g, -1, "Sub-Item 6", 0, 1)
-    AddGadgetItem(g, -1, "File "+Str(a), 0, 0) 
+;     ; 1_example
+;     AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
+;     AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)      
+;     AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)         
+;     AddGadgetItem(g, -1, "Sub-Item 2", 0, 11)
+;     AddGadgetItem(g, -1, "Sub-Item 3", 0, 1)
+;     AddGadgetItem(g, -1, "Sub-Item 4", 0, 1)         
+;     AddGadgetItem(g, -1, "Sub-Item 5", 0, 11)
+;     AddGadgetItem(g, -1, "Sub-Item 6", 0, 1)
+;     AddGadgetItem(g, -1, "File "+Str(a), 0, 0) 
+    AddGadgetItem(g, 0, "Tree_0 (NoButtons)", 0 )
+    AddGadgetItem(g, 1, "Tree_1", 0, 1) 
+    AddGadgetItem(g, 2, "Tree_2_1", 0, 2) 
+    AddGadgetItem(g, 3, "Tree_2_1", 0, 1) 
+    AddGadgetItem(g, 3, "Tree_2_2", 0, 2) 
+    
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
-    ; RemoveGadgetItem(g,1)
-    SetGadgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+;     ; RemoveGadgetItem(g,1)
+;     SetGadgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
     
     ;SetActiveGadget(g)
     ;SetGadgetState(g, 1)
@@ -377,16 +383,22 @@ CompilerIf #PB_Compiler_IsMainFile
     OpenList(0, Canvas_0)
     
     *g0 = Tree(10, 10, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
-    ; 1_example
-    AddItem (*g0, 0, "Normal Item "+Str(a), -1, 0)                                   
-    AddItem (*g0, -1, "Node "+Str(a), 0, 0)                                         
-    AddItem (*g0, -1, "Sub-Item 1", -1, 1)                                           
-    AddItem (*g0, -1, "Sub-Item 2", -1, 11)
-    AddItem (*g0, -1, "Sub-Item 3", -1, 1)
-    AddItem (*g0, -1, "Sub-Item 4", -1, 1)                                           
-    AddItem (*g0, -1, "Sub-Item 5", -1, 11)
-    AddItem (*g0, -1, "Sub-Item 6", -1, 1)
-    AddItem (*g0, -1, "File "+Str(a), -1, 0)  
+;     ; 1_example
+;     AddItem (*g0, 0, "Normal Item "+Str(a), -1, 0)                                   
+;     AddItem (*g0, -1, "Node "+Str(a), 0, 0)                                         
+;     AddItem (*g0, -1, "Sub-Item 1", -1, 1)                                           
+;     AddItem (*g0, -1, "Sub-Item 2", -1, 11)
+;     AddItem (*g0, -1, "Sub-Item 3", -1, 1)
+;     AddItem (*g0, -1, "Sub-Item 4", -1, 1)                                           
+;     AddItem (*g0, -1, "Sub-Item 5", -1, 11)
+;     AddItem (*g0, -1, "Sub-Item 6", -1, 1)
+;     AddItem (*g0, -1, "File "+Str(a), -1, 0)  
+    AddItem(*g0, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g0, 1, "Tree_1", -1, 1) 
+    AddItem(*g0, 2, "Tree_2_1", -1, 2) 
+    AddItem(*g0, 3, "Tree_2_1", -1, 1) 
+    AddItem(*g0, 4, "Tree_2_2", -1, 2) 
+    
     ; For i=0 To CountItems(*g0) : SetItemState(*g0, i, #PB_Tree_Expanded) : Next
     
     ; RemoveItem(*g0,1)
@@ -522,5 +534,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0-ff--8--
+; Folding = 0-ff-0---
 ; EnableXP

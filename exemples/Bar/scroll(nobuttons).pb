@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -8,9 +8,9 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule widget
   
   Global.i gEvent, gQuit
-  Global *Bar_0.Bar_S=AllocateStructure(Bar_S)
+  Global *Bar_0.Bar_S;=AllocateStructure(Bar_S)
   
-  Procedure ReDraw(Gadget.i)
+  Procedure _ReDraw(Gadget.i)
     If StartDrawing(CanvasOutput(Gadget))
       DrawingMode(#PB_2DDrawing_Default)
       Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *Bar_0 = Scroll(5, 10, 370,  30, 20,  50, 8, #PB_Bar_NoButtons)
       *Bar_0\step = 1
       
-      ReDraw(1)
+      _ReDraw(1)
     EndIf
   EndProcedure
   
@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndSelect
         EndIf
         
-        ReDraw(1)
+        _ReDraw(1)
     EndSelect
     
   Until gQuit
