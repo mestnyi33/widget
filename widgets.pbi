@@ -423,6 +423,7 @@ DeclareModule Widget
   #PB_GadgetType_Popup =- 10
   #PB_GadgetType_Property = 40
   #PB_GadgetType_Window =- 1
+  #PB_GadgetType_Root =- 5
   ;
   #PB_Bar_Minimum = 1
   #PB_Bar_Maximum = 2
@@ -1220,6 +1221,7 @@ Module Widget
       Case #PB_GadgetType_Unknown        : Result = "Unknown"
       Case #PB_GadgetType_Web            : Result = "Web"
       Case #PB_GadgetType_Window         : Result = "Window"
+      Case #PB_GadgetType_Root           : Result = "Root"
     EndSelect
     
     ProcedureReturn Result.s
@@ -4947,8 +4949,8 @@ Module Widget
             *This = AllocateStructure(Widget_S)
             \x =- 1
             \y =- 1
-            \Type =- 5
-            \Container =- 5
+            \Type = #PB_GadgetType_Root
+            \Container = #PB_GadgetType_Root
             \color\alpha = 255
             
             Resize(*This, 0, 0, GadgetWidth(Canvas), GadgetHeight(Canvas))
@@ -5007,7 +5009,7 @@ Module Widget
   
   
   Procedure.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=-1)
-    Protected x,y
+    Protected x.i,y.i, *LastParent.Widget_S
     
     With *This
       If *This > 0 
@@ -5020,11 +5022,9 @@ Module Widget
           y = \y[3]
           
           If \Parent And ListSize(\Parent\Childrens())
-            ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) : DeleteElement(\Parent\Childrens())
-            PostEvent(#PB_Event_Gadget, \Parent\Root\Window, \Parent\Root\Parent, #PB_EventType_Repaint)
-            If \Parent<>*Parent
-              PostEvent(#PB_Event_Gadget, *Parent\Root\Window, *Parent\Root\Parent, #PB_EventType_Repaint)
-            EndIf
+            ChangeCurrentElement(\Parent\Childrens(), Adress(*This)) 
+            DeleteElement(\Parent\Childrens())
+            *LastParent = Bool(\Parent<>*Parent) * \Parent
           EndIf
           
           \p_i = Item
@@ -5052,7 +5052,7 @@ Module Widget
           EndIf
           
           \Canvas = \Parent\Canvas
-          \Hide = Bool(\p_i > 0 Or \Parent\Hide)
+          \Hide = Bool((\p_i > 0 And \p_i <> \Parent\index[2]) Or \Parent\Hide)
           
           If \Parent\s
             x-\Parent\s\h\Page\Pos
@@ -5062,6 +5062,13 @@ Module Widget
           AddChildren(\Parent, *This)
           Make_CountType(*This)
           Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
+          
+          If *LastParent
+           ; Debug "Set new parent ("+ Class(*Parent\Type) +") old parent ("+ Class(*LastParent\Type) +")"
+            Debug "From ("+ Class(*LastParent\Type) +") to (" + Class(*Parent\Type) +")"
+            ReDraw(*Parent)
+            ReDraw(*LastParent)
+          EndIf
         EndIf
       EndIf
     EndWith
@@ -8461,8 +8468,8 @@ Module Widget
         *This = AllocateStructure(Widget_S)
         \x =- 1
         \y =- 1
-        \Type =- 5
-        \Container =- 5
+        \Type = #PB_GadgetType_Root
+        \Container = #PB_GadgetType_Root
         \color\alpha = 255
         
         Resize(*This, 0, 0, Width,Height)
@@ -8505,8 +8512,8 @@ Module Widget
       *This = AllocateStructure(Widget_S)
       \x =- 1
       \y =- 1
-      \Type =- 5
-      \Container =- 5
+      \Type = #PB_GadgetType_Root
+      \Container = #PB_GadgetType_Root
       \color\alpha = 255
       
       Resize(*This, 0, 0, Width,Height)
@@ -8849,5 +8856,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------u--------4+-------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------u--------4--------
 ; EnableXP

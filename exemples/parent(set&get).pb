@@ -8,25 +8,26 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *w.widget_S, *combo
   Global *window_1.widget_S, *window_2.widget_S, *panel.widget_S, *container.widget_S, *scrollarea.widget_S
-  Global *b_0, *b_1, *b_2, *b_3, *b_4, *b_5, *b_6, *b_7, *b_8, *b_9, *b_10
+  Global *w_0, *d_0, *b_0, *b_1, *p_0, *p_1, *p_2, *c_0, *s_0
     
   
   Procedure Widgets_CallBack(EventWidget.i, EventType.i, EventItem.i, EventData.i)
     ; Debug ""+EventType() +" "+ WidgetEventType() +" "+ EventWidget() +" "+ EventGadget() +" "+ EventData()
-    ;Protected EventWidget = EventWidget()
+    ; Protected EventWidget = EventWidget()
     
     Select EventType
       Case #PB_EventType_LeftClick, #PB_EventType_Change
         
         Select EventWidget
-          Case *b_4 : SetParent(*w, 0)
+          Case *d_0 : SetParent(*w, GetRoot(EventWidget))
             
-          Case *b_5 : SetParent(*w, *window_1)
-          Case *b_6 : SetParent(*w, *panel)
-          Case *b_7 : SetParent(*w, *container)
-            Debug *w
-          Case *b_8 : SetParent(*w, *scrollarea)
-          Case *b_9 : SetParent(*w, *window_2)
+          Case *w_0 : SetParent(*w, *window_1)
+          Case *p_0 : SetParent(*w, *panel, 0)
+          Case *p_1 : SetParent(*w, *panel, 1)
+          Case *p_2 : SetParent(*w, *panel, 2)
+          Case *c_0 : SetParent(*w, *container)
+          Case *s_0 : SetParent(*w, *scrollarea)
+          Case *b_0, *b_1 : SetParent(*w, *window_2)
             
           Case *combo
             Select EventType
@@ -91,48 +92,40 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
         EndSelect
         
-        ;           If (Event()<>20)
-        ;             Define Parent=Parent(20)
-        ;             If Is(Parent)
-        ;               Debug "get parent "+Parent
-        ;             Else
-        ;               Debug "get parent "+Window(20)
-        ;             EndIf
-        ;             
-        ;             If IsWidget(201)
-        ;               Debug Str(Parent(201))+" "+X(201)+" "+Y(201)+" "+Width(201)+" "+Height(201)
-        ;             EndIf
-        ;           EndIf
+        If (EventWidget<>*w)
+          SetText(*window_1, Class(GetType(GetParent(*w))) +" - parent class & parent item ("+Str(GetParentItem(*w))+")")
+        EndIf
     EndSelect
     
-;     ReDraw(100)
-;     ReDraw(200)
   EndProcedure
   
   
   Define X,Y,Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered ;| #PB_Window_BorderLess
-  *window_1 = Open(10, 0, 0, 640, 430, "demo set  new parent", Flags )
+  OpenWindow(10, 0, 0, 833, 346, "demo set  new parent", Flags )
   
-  *b_0 = Button(30,90,150,30,"Button >>(Window)")
-  *panel=Panel(10,150,200,160) : AddItem(*panel,-1,"Panel") : Button(30,90,150,30,"Button >>(Panel (1))") : AddItem(*panel,-1,"Second") : Button(30,90,150,30,"Button >>(Panel (2))") : AddItem(*panel,-1,"Third") : Button(30,90,150,30,"Button >>(Panel (3))") : CloseList()
-  *container = Container(215,150,200,160,#PB_Container_Flat) : Button(30,90,150,30,"Button >>(Container)") : CloseList() ; Container
-  *scrollarea = ScrollArea(420,150,200,160,200,160,10,#PB_ScrollArea_Flat) : Button(30,90,150,30,"Button >>(ScrollArea)") : CloseList()
+  ; Create desktop for the widgets
+  Open(10, 0, 0, 833, 346)
+  *d_0 = Button(30,90,150,30,"Button >>(Desktop)") 
   
-  *b_4 = Button(50,320,100,30,"move to Desktop") 
-  *b_5 = Button(150,320,100,30,"move to Window") 
-  *b_6 = Button(250,320,100,30,"move to Panel") 
-  *b_7 = Button(350,320,100,30,"move to Container") 
-  *b_8 = Button(450,320,100,30,"move to Scroll") 
+  *window_1 = Window(202, 0, 630, 319, "demo set  new parent", Flags )
   
-  *b_9 = Button(100,350,400,30,"back") 
-  Bind(@Widgets_CallBack())
-;   ReDraw(Root())
-   
-  Flags = #PB_Window_Invisible | #PB_Window_TitleBar
-  X = WindowX( 10 )+20+WindowWidth( 10 )
+  *w_0 = Button(30,90,150,30,"Button >>(Window)")
+  *panel=Panel(10,150,200,160) : AddItem(*panel,-1,"Panel") : *p_0=Button(30,90,150,30,"Button >>(Panel (0))") : AddItem(*panel,-1,"Second") : *p_1=Button(35,90,150,30,"Button >>(Panel (1))") : AddItem(*panel,-1,"Third") : *p_2=Button(40,90,150,30,"Button >>(Panel (2))") : CloseList()
+  *container = Container(215,150,200,160,#PB_Container_Flat) : *c_0=Button(30,90,150,30,"Button >>(Container)") : CloseList() ; Container
+  *scrollarea = ScrollArea(420,150,200,160,200,160,10,#PB_ScrollArea_Flat) : *s_0=Button(30,90,150,30,"Button >>(ScrollArea)") : CloseList()
+  
+  *b_0 = Button(450,90,150,30,"Button >>(Back)") 
+  
+  Bind(@Widgets_CallBack(), Root())
+  ;ReDraw(Root())
+  
+  ResizeWindow(10, WindowX( 10 )-100, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #PB_Window_BorderLess
+  X = WindowX( 10 )+5+WindowWidth( 10 )
   Y = WindowY( 10 )
-  *window_2 = Open(20, X, Y, 200, 430, "old parent", Flags, WindowID(GetRootWindow(*window_1)))
+  *window_2 = Open(20, X, Y, 200, 346+22, "old parent", Flags, WindowID(GetRootWindow(*window_1)))
   *w = Button(30,10,150,70,"Button") 
+  
   
   *combo = ComboBox( 30,90,150,30 ) 
   AddItem( *combo, -1, "Selected  to move")
@@ -174,11 +167,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   SetState( *combo, #PB_GadgetType_Button) ; : PostEvent(#PB_Event_Widget, 20, *combo, #PB_EventType_Change)
   
-  HideWindow(GetRootWindow(*window_1),0)
-  HideWindow(GetRootWindow(*window_2),0)
-  
   ReDraw(GetRoot(*window_1))
   ReDraw(GetRoot(*window_2))
+  
+  HideWindow(GetRootWindow(*window_1),0)
+  HideWindow(GetRootWindow(*window_2),0)
   
   Repeat
     Define Event=WaitWindowEvent()
@@ -186,5 +179,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = t-
+; Folding = v-
 ; EnableXP
