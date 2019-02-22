@@ -69,12 +69,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_0()
-    Protected i
-    
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
-       
-       Define *w.Widget_s = Open(0, 10, 10, 580, 600-50, "")
+      ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
+      
+      Define *w.Widget_s = Open(0, 10, 10, 580, 600-50, "")
       Define canvas = *w\Canvas\Gadget
       
       ;Widgets(Str(50)) = Window(50, 50, 280, 200, "Demo dock widgets", #PB_Flag_AnchorsGadget)
@@ -103,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
       _SetAlignment(Widgets(Str(9)), #PB_Center)
       
       
-      ReDraw(canvas)
+      ReDraw(Root())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
@@ -123,20 +121,20 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_Event_Timer
         If Width = 100
-           direction = 1
+          direction = 1
         EndIf
         If Width = Width(Root())-100
           direction =- 1
         EndIf
-;         
+        ;         
         Width + direction
         Height + direction
         
         If Resize(Widgets(Str(0)), #PB_Ignore, #PB_Ignore, Width, Height)
           ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
         EndIf
-        ReDraw(Display())
-    
+        ReDraw(Root())
+        
       Case #PB_Event_Gadget
         
         Select EventGadget()

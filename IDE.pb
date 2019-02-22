@@ -100,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global DragText.s, SubLevel.i, WE_Selecting
   
   
-  
+  ; point 
   If CreateImage(5, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(5))
     DrawingMode(#PB_2DDrawing_AllChannels) 
     For x=0 To 600 Step 5
@@ -334,6 +334,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndProcedure
   
+  ;-
   Procedure.i Load_Widgets(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
@@ -613,18 +614,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ProcedureReturn *This
   EndProcedure
   
-  
-  Procedure.i GetDeltaX(*This.Widget_S)
-    If *This\Canvas\Mouse\Delta
-      ProcedureReturn (*This\Canvas\Mouse\Delta\X-*This\X[2]-*This\fs)+*This\X[3]
-    EndIf
-  EndProcedure
-  
-  Procedure.i GetDeltaY(*This.Widget_S)
-    If *This\Canvas\Mouse\Delta
-      ProcedureReturn (*This\Canvas\Mouse\Delta\Y-*This\Y[2]-*This\fs)+*This\Y[3]
-    EndIf
-  EndProcedure
   
   Procedure.i GetSelectorX(*This.Widget_S)
     ProcedureReturn Root()\anchor\x-*This\X[2]
@@ -938,5 +927,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------5---
+; Folding = BY--8-vu8---j----
 ; EnableXP

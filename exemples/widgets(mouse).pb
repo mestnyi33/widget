@@ -4,12 +4,12 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   
-  Procedure Widget_Handler(EventGadget, EventType, EventItem, EventData)
+  Procedure Widget_Handler(EventWidget.i, EventType.i, EventItem.i, EventData.i)
     ;   Select Event()
     ;     Case #PB_Event_Widget
-    ; If Not (EventType = #PB_EventType_MouseMove And Not GetButtons(EventGadget))
+    ; If Not (EventType = #PB_EventType_MouseMove And Not GetButtons(EventWidget))
     If EventType <> #PB_EventType_MouseMove
-      Debug ""+GetData(EventGadget)+" "+EventType
+      Debug ""+GetData(EventWidget)+" "+EventType
     EndIf
     
     ;   EndSelect

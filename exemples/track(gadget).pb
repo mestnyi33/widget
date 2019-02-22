@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../"
 XIncludeFile "widgets.pbi"
 
 ;

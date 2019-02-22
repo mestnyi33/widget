@@ -7985,6 +7985,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Define Editable ;= #PB_Flag_AnchorsGadget
       
       If OpenList(0, 1)
+        Define i, *combo=ComboBox(10, 10, 160,70) 
+        AddItem(*combo, -1, "ComboBox_"+Str(#PB_GadgetType_ComboBox)) 
+        For i=1 To 5 : AddItem(*combo, i, "item_"+Str(i)) : Next 
+        SetState(*combo, 0) 
+        
         Define w=Window(150, 50, 280, 200, "Window_1", Editable)
         
         *i.Widget_S  = Image(0, 0, 0, 0, 0)

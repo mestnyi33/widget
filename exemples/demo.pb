@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
     
     If Repaint
-      ReDraw(Canvas)
+      ReDraw(*main)
     EndIf
   EndProcedure
   
@@ -164,7 +164,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       
       CloseList()
       
-      ReDraw(100)
+      ReDraw(Root())
     EndIf
     
     Repeat
@@ -183,5 +183,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = -0-
 ; EnableXP

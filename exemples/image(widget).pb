@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -20,24 +20,14 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure ReDraw(Gadget.i)
-    If StartDrawing(CanvasOutput(Gadget))
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
-      
-      Draw(*Image_0)
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
-  
   Procedure Canvas_0_Resize()
     Protected Canvas = EventGadget()
+    Protected *window = GetGadgetData(Canvas)
     
     Select EventType()
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
         If Resize(*Image_0, #PB_Ignore, #PB_Ignore, GadgetWidth(Canvas)-20, GadgetHeight(Canvas)-20)
-          ReDraw(Canvas)
+          ReDraw(*window)
         EndIf
         
     EndSelect
@@ -60,12 +50,12 @@ CompilerIf #PB_Compiler_IsMainFile
       AddGadgetItem(1, -1, "Stretch")
       AddGadgetItem(1, -1, "Proportionally")
       
-      Canvas_0 = CanvasGadget(#PB_Any, 10,10, 280, 230, #PB_Canvas_Keyboard)
-      SetGadgetAttribute(Canvas_0, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+     Open(0, 10,10, 280, 230)
+      Canvas_0 = Display()
       
       *Image_0 = Image(10, 10, 260,  210, 0)
       
-      ReDraw(Canvas_0)
+      ReDraw(Root())
       BindGadgetEvent(Canvas_0, @Canvas_0_Resize(), #PB_EventType_Resize)
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize())
     EndIf
@@ -104,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndSelect
         EndIf
         
-        ReDraw(Canvas_0)
+        ReDraw(Root())
     EndSelect
     
   Until gQuit

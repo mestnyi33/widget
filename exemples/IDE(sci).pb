@@ -9,7 +9,7 @@ CompilerEndIf
 XIncludeFile "module_macros.pbi"
 XIncludeFile "module_constants.pbi"
 XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scroll.pbi"
+XIncludeFile "module_bar.pbi"
 XIncludeFile "module_text.pbi"
 XIncludeFile "module_button.pbi"
 XIncludeFile "module_string.pbi"
@@ -76,6 +76,6 @@ Repeat
       
   EndSelect
 ForEver
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

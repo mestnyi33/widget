@@ -192,7 +192,7 @@ CompilerIf #PB_Compiler_IsMainFile
       _SetAlignment(Widgets(Str(4)), #PB_Left|#PB_Bottom|#PB_Right)
       
       BindGadgetEvent(canvas, @Canvas_CallBack())
-      ReDraw(canvas)
+      ReDraw(Root())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
@@ -224,7 +224,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If Resize(Widgets(Str(0)), #PB_Ignore, #PB_Ignore, Width, Height)
           ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
         EndIf
-        ReDraw(Display())
+        ReDraw(Root())
     
       Case #PB_Event_Gadget
         

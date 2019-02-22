@@ -22,14 +22,8 @@ DeclareModule Widget
     *Delta.Mouse_S
   EndStructure
   
-  ;- - Canvas_S
-  Structure Canvas_S
-    Mouse.Mouse_S
-    Gadget.i
-    Window.i
-    
-    *Widget.Widget_S
-    
+  ;- - Keyboard_S
+  Structure Keyboard_S
     Input.c
     Key.i[2]
   EndStructure
@@ -240,11 +234,14 @@ DeclareModule Widget
     Gadget.i
     Window.i
     
-    *Widget.Widget_S
+    ; *Widget.Widget_S
   EndStructure
   
   ;- - Widget_S
   Structure Widget_S Extends Bar_S
+    Canvas.i
+    CanvasWindow.i
+    
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
     adress.i
     Drawing.i
@@ -254,13 +251,12 @@ DeclareModule Widget
     
     State.i
     o_i.i ; parent opened item
-    p_i.i ; index parent tab item
+    ParentItem.i ; index parent tab item
     *a.Items_S
     *data
     
     *Deactive.Widget_S
     
-    _popup.Popup_S
     *Popup.Widget_S
     *anchor.Anchor_S[#Anchors+1]
     *OptionGroup.Widget_S
@@ -290,8 +286,11 @@ DeclareModule Widget
     sublevellen.i
     Drag.i[2]
     Attribute.i
-    Canvas.Canvas_S
-    repaint.i
+    
+    Mouse.Mouse_S
+    Keyboard.Keyboard_S
+    
+    Repaint.i
   EndStructure
   
   ;- - Anchor_S
@@ -310,7 +309,7 @@ DeclareModule Widget
   
   ;- - Default_S
   Structure Default_S
-    Canvas.Canvas_S
+    Mouse.Mouse_S
     Type.i
     Event.i
     ;*Function
@@ -550,15 +549,15 @@ DeclareModule Widget
   EndMacro
   
   Macro RootGadget()
-    Widget::Root()\Parent
+    Widget::Root()\Canvas
   EndMacro
   
   Macro RootWindow()
-    Widget::Root()\Window
+    Widget::Root()\CanvasWindow
   EndMacro
   
   Macro Display()
-    Widget::Root()\Parent
+    Widget::Root()\Canvas
   EndMacro
   
   Macro Focus() ; active gadget
@@ -656,6 +655,8 @@ DeclareModule Widget
   Declare.i GetRootWindow(*This.Widget_S)
   Declare.i GetButtons(*This.Widget_S)
   Declare.i GetDisplay(*This.Widget_S)
+  Declare.i GetDeltaX(*This.Widget_S)
+  Declare.i GetDeltaY(*This.Widget_S)
   Declare.i GetMouseX(*This.Widget_S)
   Declare.i GetMouseY(*This.Widget_S)
   Declare.i GetImage(*This.Widget_S)
@@ -710,7 +711,7 @@ DeclareModule Widget
   Declare.i ClearItems(*This.Widget_S)
   Declare.i RemoveItem(*This.Widget_S, Item.i)
   Declare.i SetItemAttribute(*This.Widget_S, Item.i, Attribute.i, Value.i)
-  Declare.i Enumerate(*This.Integer, *Parent.Widget_S, Item.i=0)
+  Declare.i Enumerate(*This.Integer, *Parent.Widget_S, ParentItem.i=0)
   Declare.i SetItemText(*This.Widget_S, Item.i, Text.s)
   Declare.i AddColumn(*This.Widget_S, Position.i, Title.s, Width.i)
   Declare.i SetFlag(*This.Widget_S, Flag.i)
@@ -743,7 +744,7 @@ DeclareModule Widget
   
   Declare.i CloseList()
   Declare.i OpenList(*This.Widget_S, Item.i=0, Type=-5)
-  Declare.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=-1)
+  Declare.i SetParent(*This.Widget_S, *Parent.Widget_S, ParentItem.i=-1)
   Declare.i AddItem(*This.Widget_S, Item.i, Text.s, Image.i=-1, Flag.i=0)
   
   Declare.i Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
@@ -763,8 +764,8 @@ Module Widget
   
   *Value = AllocateStructure(Default_S)
   *Value\Type =- 1
-  Root()\Parent =- 1
-  Root()\Window =- 1
+  Root()\Canvas =- 1
+  Root()\CanvasWindow =- 1
   
   With Color_Default                          
     \State = 0
@@ -1177,6 +1178,147 @@ Module Widget
       Data.i #PB_Cursor_Arrows
     EndDataSection
   EndProcedure
+  
+  ;-
+  ;- DRAWPOPUP
+  ;-
+  Procedure CallBack_Popup()
+    Protected *This.Widget_S = GetWindowData(EventWindow())
+    Protected EventItem.i
+    Protected MouseX =- 1
+    Protected MouseY =- 1
+    
+    If *This
+      With *This
+        Select Event()
+          Case #PB_Event_ActivateWindow
+            Protected *Widget.Widget_S = GetGadgetData(\Root\Canvas)
+            
+            If CallBack(\Childrens(), #PB_EventType_LeftButtonDown, WindowMouseX(\Root\CanvasWindow), WindowMouseY(\Root\CanvasWindow))
+              SetText(*Widget, GetItemText(\Childrens(), \Childrens()\index[1]))
+              \Childrens()\index[2] = \Childrens()\index[1]
+              \Childrens()\Mouse\Buttons = 0
+              \Childrens()\index[1] =- 1
+              \Childrens()\Focus = 1
+              \Mouse\Buttons = 0
+              ReDraw(*This)
+            EndIf
+          
+            SetActiveGadget(*Widget\Root\Canvas)
+            *Widget\Color\State = 0
+            *Widget\Box\Checked = 0
+            SetActive(*Widget)
+            ReDraw(*Widget\Root)
+            HideWindow(\Root\CanvasWindow, 1)
+            
+          Case #PB_Event_Gadget
+            MouseX = GetGadgetAttribute(\Root\Canvas, #PB_Canvas_MouseX)
+            MouseY= GetGadgetAttribute(\Root\Canvas, #PB_Canvas_MouseY)
+            
+            If CallBack(at(*This, MouseX, MouseY), EventType(), MouseX, MouseY)
+              ReDraw(*This)
+            EndIf
+             
+        EndSelect
+      EndWith
+    EndIf
+  EndProcedure
+  
+  Procedure.i Display_Popup(*This.Widget_S, *Widget.Widget_S, x.i=#PB_Ignore,y.i=#PB_Ignore)
+    With *This
+      If X=#PB_Ignore 
+        X = \x+GadgetX(\Root\Canvas, #PB_Gadget_ScreenCoordinate)
+      EndIf
+      If Y=#PB_Ignore 
+        Y = \y+\height+GadgetY(\Root\Canvas, #PB_Gadget_ScreenCoordinate)
+      EndIf
+      
+      If StartDrawing(CanvasOutput(\Root\Canvas))
+        
+        ForEach *Widget\Childrens()\Items()
+          If *Widget\Childrens()\items()\text\change = 1
+            *Widget\Childrens()\items()\text\height = TextHeight("A")
+            *Widget\Childrens()\items()\text\width = TextWidth(*Widget\Childrens()\items()\text\string.s)
+          EndIf
+          
+          If *Widget\Childrens()\s\Width < (10+*Widget\Childrens()\items()\text\width)+*Widget\Childrens()\s\h\Page\Pos
+            *Widget\Childrens()\s\Width = (10+*Widget\Childrens()\items()\text\width)+*Widget\Childrens()\s\h\Page\Pos
+          EndIf
+        Next
+        
+        StopDrawing()
+      EndIf
+      
+      SetActive(*Widget\Childrens())
+      ;*Widget\Childrens()\Focus = 1
+      
+      Protected Width = *Widget\Childrens()\s\width + *Widget\Childrens()\bs*2 
+      Protected Height = *Widget\Childrens()\s\height + *Widget\Childrens()\bs*2 
+      
+      If Width < \width
+        Width = \width
+      EndIf
+      
+      Resize(*Widget, 0,0, width, Height )
+      If *Widget\Resize
+        ResizeWindow(*Widget\Root\CanvasWindow, x, y, width, Height)
+        ResizeGadget(*Widget\Root\Canvas, #PB_Ignore, #PB_Ignore, width, Height)
+      EndIf
+    EndWith
+    
+    ReDraw(*Widget)
+  EndProcedure
+  
+  Procedure.i Popup(*Widget.Widget_S, X.i,Y.i,Width.i,Height.i, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    
+    With *This
+      If *This
+        \Root = *This
+        \Type = #PB_GadgetType_Popup
+        \Container = #PB_GadgetType_Popup
+        \Color = Color_Default
+        \color\Fore = 0
+        \color\Back = $FFF0F0F0
+        \color\alpha = 255
+        \Color[1]\Alpha = 128
+        \Color[2]\Alpha = 128
+        \Color[3]\Alpha = 128
+        
+        If X=#PB_Ignore 
+          X = *Widget\x+GadgetX(*Widget\Root\Canvas, #PB_Gadget_ScreenCoordinate)
+        EndIf
+        If Y=#PB_Ignore 
+          Y = *Widget\y+*Widget\height+GadgetY(*Widget\Root\Canvas, #PB_Gadget_ScreenCoordinate)
+        EndIf
+        If Width=#PB_Ignore
+          Width = *Widget\width
+        EndIf
+        If Height=#PB_Ignore
+          Height = *Widget\height
+        EndIf
+        
+        If IsWindow(*Widget\Root\CanvasWindow)
+          Protected WindowID = WindowID(*Widget\Root\CanvasWindow)
+        EndIf
+        
+        ; \Parent = *Widget
+        \Root\CanvasWindow = OpenWindow(#PB_Any, X,Y,Width,Height, "", #PB_Window_BorderLess|#PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID) ;|#PB_Window_NoGadgets
+        \Root\Canvas = CanvasGadget(#PB_Any,0,0,Width,Height)
+        Resize(\Root, 0,0, width, Height)
+        
+        SetWindowData(\Root\CanvasWindow, *This)
+        SetGadgetData(\Root\Canvas, *Widget)
+        
+        BindEvent(#PB_Event_ActivateWindow, @CallBack_Popup(), \Root\CanvasWindow);, \Canvas )
+        BindGadgetEvent(\Root\Canvas, @CallBack_Popup())
+      EndIf
+    EndWith  
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  
   
   ;-
   Procedure.s Class(Type.i)
@@ -1768,7 +1910,7 @@ Module Widget
         
         \image\width = \Columns()\Items()\image\width
         ;         If ListIndex(\Columns()\Items()) = 0
-        ;           PostEvent(#PB_Event_Gadget, \Root\Window, \Root\Parent, #PB_EventType_Repaint)
+        ;           PostEvent(#PB_Event_Gadget, \Root\CanvasWindow, \Root\Canvas, #PB_EventType_Repaint)
         ;         EndIf
       Next
       
@@ -1869,20 +2011,20 @@ Module Widget
     If *This
       With *This
         If ListSize(\Childrens())
-        ForEach \Childrens()
-          If \Childrens()\Deactive
-            If \Childrens()\Deactive <> \Childrens()
-              Events(\Childrens()\Deactive, \Childrens()\Deactive\at, #PB_EventType_LostFocus, 0, 0)
+          ForEach \Childrens()
+            If \Childrens()\Deactive
+              If \Childrens()\Deactive <> \Childrens()
+                Events(\Childrens()\Deactive, \Childrens()\Deactive\at, #PB_EventType_LostFocus, 0, 0)
+              EndIf
+              
+              Events(\Childrens(), \Childrens()\at, #PB_EventType_Focus, 0, 0)
+              \Childrens()\Deactive = 0
             EndIf
             
-            Events(\Childrens(), \Childrens()\at, #PB_EventType_Focus, 0, 0)
-            \Childrens()\Deactive = 0
-          EndIf
-          
-          If ListSize(\Childrens()\Childrens())
-            InitEvent(\Childrens())
-          EndIf
-        Next
+            If ListSize(\Childrens()\Childrens())
+              InitEvent(\Childrens())
+            EndIf
+          Next
         EndIf
       EndWith
     EndIf
@@ -1901,7 +2043,7 @@ Module Widget
       ElseIf \S\X > Left
         ; Scroll::SetState(\S\h, -Left) 
         \S\X = Left
-      ElseIf (\S\X < 0 And \Canvas\Input = 65535 ) : \Canvas\Input = 0
+      ElseIf (\S\X < 0 And \Keyboard\Input = 65535 ) : \Keyboard\Input = 0
         \S\X = (Width-\Items()\Text[3]\Width) + Right
         If \S\X>0 : \S\X=0 : EndIf
       EndIf
@@ -1916,8 +2058,8 @@ Module Widget
     
     With *This
       If ListSize(*Item())
-        Mouse_X = \Canvas\Mouse\x
-        Mouse_Y = \Canvas\Mouse\y
+        Mouse_X = \Mouse\x
+        Mouse_Y = \Mouse\y
         
         If State >= 0 And SelectElement(*Item(), State) 
           If (Mouse_Y > (*Item()\box\y[1]) And Mouse_Y =< ((*Item()\box\y[1]+*Item()\box\height[1]))) And 
@@ -4037,7 +4179,7 @@ Module Widget
           If Childrens And ListSize(\Childrens())
             ForEach \Childrens() 
               ; Only selected item widgets draw
-              If \Childrens()\p_i = Bool(\Type = #PB_GadgetType_Panel) * \index[2]
+              If \Childrens()\ParentItem = Bool(\Type = #PB_GadgetType_Panel) * \index[2]
                 Draw(\Childrens(), Childrens) 
               EndIf
             Next
@@ -4076,20 +4218,10 @@ Module Widget
   EndProcedure
   
   Procedure.i ReDraw(*This.Widget_S)
-    Protected Canvas.i
-    
-    With *This
-;       If *This 
-;         If *This = \Root
-;           Canvas = \Parent
-;         Else
-           Canvas = \Root\Parent
-;         EndIf
-;       EndIf
-      
+    With *This     
       InitEvent(*This)
       
-      If StartDrawing(CanvasOutput(Canvas))
+      If StartDrawing(CanvasOutput(\Root\Canvas))
         ;DrawingMode(#PB_2DDrawing_Default)
         ;Box(0,0,OutputWidth(),OutputHeight(), *This\Color\Back)
         FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
@@ -4106,175 +4238,6 @@ Module Widget
     EndWith
   EndProcedure
   
-  
-  ;-
-  Procedure Draw_Popup(*This.Widget_S)
-    
-    With *This
-      
-      If StartDrawing(CanvasOutput(\Canvas\Gadget))
-        ;  Debug ""+Widgets("Widgets_0") +" "+\Childrens()
-        ;       DrawingMode(#PB_2DDrawing_Default)
-        ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-        FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
-        
-        ForEach \Childrens()
-          ;           If ListSize(\Childrens()\Items())
-          ;             Debug \Childrens()\Items()\Text\String
-          ;           EndIf
-          Draw(\Childrens())
-        Next
-        
-        StopDrawing()
-      EndIf
-      
-    EndWith
-  EndProcedure
-  
-  Procedure CallBack_Popup()
-    Protected Repaint, *This.Widget_S
-    
-    Select Event()
-      Case #PB_Event_ActivateWindow
-        *This.Widget_S = GetWindowData(EventWindow())
-        
-        PostEvent(#PB_Event_Gadget, EventWindow(), *This\Root\Parent, #PB_EventType_LeftButtonDown)
-        SetActiveWindow(*This\Canvas\Widget\Canvas\Window)
-        ;SetActiveGadget(*This\Canvas\Widget\Canvas\Gadget)
-        SetText(*This\Canvas\Widget, GetItemText(*This\Childrens(), *This\Childrens()\index[1]))
-        ;*This\Canvas\Widget\Canvas\Mouse\Buttons = 0
-        *This\Canvas\Widget\Color\State = 0
-        *This\Canvas\Widget\Box\Checked = 0
-        HideWindow(EventWindow(), 1)
-        *This = 0
-        
-      Case #PB_Event_Repaint
-        *This.Widget_S = GetWindowData(EventWindow())
-      Case #PB_Event_Gadget
-        *This.Widget_S = GetGadgetData(EventGadget())
-    EndSelect
-    
-    If *This
-      With *This
-        If ListSize(\Childrens())
-          ForEach \Childrens()
-            Repaint | CallBack(\Childrens(), EventType())
-          Next
-        EndIf
-        
-        If Repaint
-          Draw_Popup(*This)
-          If EventType() = #PB_EventType_LeftButtonDown
-            *This\Canvas\Mouse\Buttons = 0
-            *This\Childrens()\Canvas\Mouse\Buttons = 0
-            
-            ;PostEvent(#PB_Event_Widget, *This\Canvas\Widget\Canvas\Window, *This\Canvas\Widget\Canvas\Gadget, #PB_EventType_Change)
-            ; HideWindow(EventWindow(), 1)
-          EndIf
-        EndIf
-      EndWith
-    EndIf
-  EndProcedure
-  
-  Procedure.i Popup(*Widget.Widget_S, X.i,Y.i,Width.i,Height.i, Flag.i=0)
-    Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    
-    With *This
-      If *This
-        \Type = #PB_GadgetType_Popup
-        
-        If X=#PB_Ignore 
-          X = *Widget\x+GadgetX(\Root\Parent, #PB_Gadget_ScreenCoordinate)
-        EndIf
-        If Y=#PB_Ignore 
-          Y = *Widget\y+*Widget\height+GadgetY(\Root\Parent, #PB_Gadget_ScreenCoordinate)
-        EndIf
-        If Width=#PB_Ignore
-          Width = *Widget\width
-        EndIf
-        If Height=#PB_Ignore
-          Height = *Widget\height
-        EndIf
-        
-        If IsWindow(*Widget\Canvas\Window)
-          Protected WindowID = WindowID(*Widget\Canvas\Window)
-        EndIf
-        
-        ; Debug "show tooltip "+\string
-        ;         If Not Window
-        \Canvas\Widget = *Widget
-        \Canvas\Window = OpenWindow(#PB_Any, X,Y,Width,Height, "", #PB_Window_BorderLess|#PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID) ;|#PB_Window_NoGadgets
-        \Canvas\Gadget = CanvasGadget(#PB_Any,0,0,Width,Height)
-        Resize(*This, 0,0, width, Height)
-        
-        SetWindowData(\Canvas\Window, *This)
-        SetGadgetData(\Canvas\Gadget, *This)
-        
-        ;BindEvent(#PB_Event_SizeWindow, @CallBack_Popup(), \Canvas\Window, \Canvas\Gadget )
-        BindEvent(#PB_Event_ActivateWindow, @CallBack_Popup(), \Canvas\Window);, \Canvas\Gadget )
-                                                                              ;BindEvent(#PB_Event_Repaint, @CallBack_Popup(), \Canvas\Window, \Canvas\Gadget )
-        BindGadgetEvent(\Canvas\Gadget, @CallBack_Popup())
-        ;Draw_Popup(*This)
-        ;         ;         Else
-        ;         ;           ResizeWindow(Window, \x[1],\y[1],\width,\height[1])
-        ;         ;           SetGadgetText(GetWindowData(Window), \string)
-        ;         ;           HideWindow(Window, 0, #PB_Window_NoActivate)
-        ;         ;         EndIf
-        ;       ElseIf IsWindow(Window)
-        ;         ;         HideWindow(Window, 1, #PB_Window_NoActivate)
-        ;         CloseWindow(Window)
-        ;         ;  Debug "hide tooltip "
-      EndIf
-    EndWith  
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Display_Popup(*This.Widget_S, *Widget.Widget_S, x.i=#PB_Ignore,y.i=#PB_Ignore)
-    With *This
-      If X=#PB_Ignore 
-        X = \x+GadgetX(\Canvas\Gadget, #PB_Gadget_ScreenCoordinate)
-      EndIf
-      If Y=#PB_Ignore 
-        Y = \y+\height+GadgetY(\Canvas\Gadget, #PB_Gadget_ScreenCoordinate)
-      EndIf
-      
-      If StartDrawing(CanvasOutput(\Root\Parent))
-        
-        ForEach *Widget\Childrens()\Items()
-          If *Widget\Childrens()\items()\text\change = 1
-            *Widget\Childrens()\items()\text\height = TextHeight("A")
-            *Widget\Childrens()\items()\text\width = TextWidth(*Widget\Childrens()\items()\text\string.s)
-          EndIf
-          
-          If *Widget\Childrens()\s\Width < (10+*Widget\Childrens()\items()\text\width)+*Widget\Childrens()\s\h\Page\Pos
-            *Widget\Childrens()\s\Width = (10+*Widget\Childrens()\items()\text\width)+*Widget\Childrens()\s\h\Page\Pos
-          EndIf
-        Next
-        
-        StopDrawing()
-      EndIf
-      
-      Protected *Tree.Widget_S = *Widget\Childrens()
-      *Tree\Focus=1
-      Protected Width = *Tree\s\width + *Tree\bs*2 
-      Protected Height = *Tree\s\height + *Tree\bs*2 ; CountItems * *Tree\Text\height + *Tree\bs*2
-      
-      If Width < \width
-        Width = \width
-      EndIf
-      
-      Resize(*Widget, 0,0, width, Height )
-      ResizeWindow(*Widget\Canvas\Window, x, y, width, Height)
-      ResizeGadget(\Root\Parent, #PB_Ignore, #PB_Ignore, width, Height)
-      ;Resize(*Widget, 0,0, width, Height )
-    EndWith
-    
-    Draw_Popup(*Widget)
-  EndProcedure
-  
-  
-  
   ;-
   ;- ADD & GET & SET
   ;-
@@ -4286,7 +4249,7 @@ Module Widget
     EndIf
     
     With *This
-      If *This And \CountItems ; ListSize(\Childrens()) ; Not *Value\Canvas\Mouse\Buttons
+      If *This And \CountItems ; ListSize(\Childrens()) ; Not *Value\Mouse\Buttons
         PushListPosition(\Childrens()) ;
         LastElement(\Childrens())      ; Что бы начать с последнего элемента
         Repeat                         ; Перебираем с низу верх
@@ -4295,7 +4258,7 @@ Module Widget
           Width = X+\Childrens()\clip\Width
           Height = Y+\Childrens()\clip\Height
           
-          If Not \Childrens()\Hide And \Childrens()\p_i = Bool(\Type = #PB_GadgetType_Panel) * \index[2] And ;\Childrens()\p_i = *This\index[2] And 
+          If Not \Childrens()\Hide And \Childrens()\ParentItem = Bool(\Type = #PB_GadgetType_Panel) * \index[2] And ;\Childrens()\ParentItem = *This\index[2] And 
              (MouseX >=  X And MouseX < Width And MouseY >=  Y And MouseY < Height)
             If ListSize(\Childrens()\Childrens()) 
               *Result = at(\Childrens(), MouseX, MouseY)
@@ -4325,10 +4288,10 @@ Module Widget
     
     If *Result
       With *Result 
-        \Canvas\Mouse\X = MouseX
-        \Canvas\Mouse\Y = MouseY
-        *Value\Canvas\Mouse\X = MouseX
-        *Value\Canvas\Mouse\Y = MouseY
+        \Mouse\X = MouseX
+        \Mouse\Y = MouseY
+        *Value\Mouse\X = MouseX
+        *Value\Mouse\Y = MouseY
         
         If \Box And (MouseX>\Box\x[1] And MouseX=<\Box\x[1]+\Box\Width[1] And  MouseY>\Box\y[1] And MouseY=<\Box\y[1]+\Box\Height[1])
           \at = 1
@@ -4461,7 +4424,7 @@ Module Widget
       \s\h\Hide = 1
       
       ;       If Not \Repaint : \Repaint = 1
-      ;        PostEvent(#PB_Event_Gadget, \Root\Window, \Root\Parent, #PB_EventType_Repaint)
+      ;        PostEvent(#PB_Event_Gadget, \Root\CanvasWindow, \Root\Canvas, #PB_EventType_Repaint)
       ;       EndIf
     EndWith
   EndProcedure
@@ -4475,7 +4438,7 @@ Module Widget
         \CountItems = 0 
         \Text\String = #LF$
         ;         If Not \Repaint : \Repaint = 1
-        ;           PostEvent(#PB_Event_Gadget, \Root\Window, \Root\Parent, #PB_EventType_Repaint)
+        ;           PostEvent(#PB_Event_Gadget, \Root\CanvasWindow, \Root\Canvas, #PB_EventType_Repaint)
         ;         EndIf
       Else
         Debug Item
@@ -4488,7 +4451,7 @@ Module Widget
     EndWith
   EndProcedure
   
-  Procedure.i Enumerate(*This.Integer, *Parent.Widget_S, Item.i=0)
+  Procedure.i Enumerate(*This.Integer, *Parent.Widget_S, ParentItem.i=0)
     Protected Result.i
     
     With *Parent
@@ -4505,8 +4468,8 @@ Module Widget
       \Enumerate = Result
       
       If Result
-        If \Childrens()\p_i <> Item 
-          ProcedureReturn Enumerate(*This, *Parent, Item)
+        If \Childrens()\ParentItem <> ParentItem 
+          ProcedureReturn Enumerate(*This, *Parent, ParentItem)
         EndIf
         
         ;         If ListSize(\Childrens()\Childrens())
@@ -4608,27 +4571,31 @@ Module Widget
   
   ;- GET
   Procedure.i GetButtons(*This.Widget_S)
-    ProcedureReturn *This\Canvas\Mouse\Buttons
+    ProcedureReturn *This\Mouse\Buttons
   EndProcedure
   
   Procedure.i GetDisplay(*This.Widget_S)
-    ProcedureReturn *This\Root\Parent
-  EndProcedure
-  
-  Procedure.i GetDeltaX(*This.Widget_S)
-    ProcedureReturn *This\Canvas\Mouse\X-*This\X[2]-*This\fs
-  EndProcedure
-  
-  Procedure.i GetDeltaY(*This.Widget_S)
-    ProcedureReturn *This\Canvas\Mouse\Y-*This\Y[2]-*This\fs
+    ProcedureReturn *This\Root\Canvas
   EndProcedure
   
   Procedure.i GetMouseX(*This.Widget_S)
-    ProcedureReturn *This\Canvas\Mouse\X-*This\X[2]-*This\fs
+    ProcedureReturn *This\Mouse\X-*This\X[2]-*This\fs
   EndProcedure
   
   Procedure.i GetMouseY(*This.Widget_S)
-    ProcedureReturn *This\Canvas\Mouse\Y-*This\Y[2]-*This\fs
+    ProcedureReturn *This\Mouse\Y-*This\Y[2]-*This\fs
+  EndProcedure
+  
+  Procedure.i GetDeltaX(*This.Widget_S)
+    If *This\Mouse\Delta
+      ProcedureReturn (*This\Mouse\Delta\X-*This\X[2]-*This\fs)+*This\X[3]
+    EndIf
+  EndProcedure
+  
+  Procedure.i GetDeltaY(*This.Widget_S)
+    If *This\Mouse\Delta
+      ProcedureReturn (*This\Mouse\Delta\Y-*This\Y[2]-*This\fs)+*This\Y[3]
+    EndIf
   EndProcedure
   
   Procedure.i GetAnchors(*This.Widget_S)
@@ -4660,11 +4627,11 @@ Module Widget
   EndProcedure
   
   Procedure.i GetRootWindow(*This.Widget_S)
-    ProcedureReturn *This\Root\Window
+    ProcedureReturn *This\Root\CanvasWindow
   EndProcedure
   
   Procedure.i GetRootGadget(*This.Widget_S)
-    ProcedureReturn *This\Root\Parent
+    ProcedureReturn *This\Root\Canvas
   EndProcedure
   
   Procedure.i GetParent(*This.Widget_S)
@@ -4676,7 +4643,7 @@ Module Widget
   EndProcedure
   
   Procedure.i GetParentItem(*This.Widget_S)
-    ProcedureReturn *This\p_i
+    ProcedureReturn *This\ParentItem
   EndProcedure
   
   Procedure.i GetPosition(*This.Widget_S, Position.i)
@@ -4922,7 +4889,7 @@ Module Widget
   Procedure.i CloseList()
     If LastElement(*openedlist())
       If *openedlist()\Type = #PB_GadgetType_Popup
-        Draw_Popup(*openedlist())
+        ReDraw(*openedlist())
       EndIf
       
       DeleteElement(*openedlist())
@@ -4964,8 +4931,8 @@ Module Widget
           
           \Root = *This
           Root() = \Root
-          Root()\Window = Window
-          Root()\Parent = Canvas
+          Root()\CanvasWindow = Window
+          Root()\Canvas = Canvas
           Root()\adress = @*openedlist()
           
           SetGadgetData(Canvas, *This)
@@ -5008,16 +4975,16 @@ Module Widget
   EndProcedure
   
   
-  Procedure.i SetParent(*This.Widget_S, *Parent.Widget_S, Item.i=-1)
+  Procedure.i SetParent(*This.Widget_S, *Parent.Widget_S, ParentItem.i=-1)
     Protected x.i,y.i, *LastParent.Widget_S
     
     With *This
       If *This > 0 
-        If Item.i=-1
-          Item = *Parent\index[2]
+        If ParentItem.i=-1
+          ParentItem = *Parent\index[2]
         EndIf
         
-        If \Parent <> *Parent Or \p_i <> Item
+        If \Parent <> *Parent Or \ParentItem <> ParentItem
           x = \x[3]
           y = \y[3]
           
@@ -5027,7 +4994,7 @@ Module Widget
             *LastParent = Bool(\Parent<>*Parent) * \Parent
           EndIf
           
-          \p_i = Item
+          \ParentItem = ParentItem
           \Parent = *Parent
           \Root = *Parent\Root
           
@@ -5051,8 +5018,10 @@ Module Widget
             EndIf
           EndIf
           
-          \Canvas = \Parent\Canvas
-          \Hide = Bool((\p_i > 0 And \p_i <> \Parent\index[2]) Or \Parent\Hide)
+          \Canvas = \Parent\Canvas ; ????
+                                   ; Скрываем все виджеты скрытого родителя,
+                                   ; и кроме тех чьи родителский итем не выбран
+          \Hide = Bool(\Parent\Hide Or \ParentItem <> \Parent\index[2])
           
           If \Parent\s
             x-\Parent\s\h\Page\Pos
@@ -5064,10 +5033,16 @@ Module Widget
           Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
           
           If *LastParent
-           ; Debug "Set new parent ("+ Class(*Parent\Type) +") old parent ("+ Class(*LastParent\Type) +")"
-            Debug "From ("+ Class(*LastParent\Type) +") to (" + Class(*Parent\Type) +")"
-            ReDraw(*Parent)
-            ReDraw(*LastParent)
+            ; Debug ""+*Root\width+" "+*LastParent\Root\width+" "+*Parent\Root\width 
+            ; Debug "From ("+ Class(*LastParent\Type) +") to (" + Class(*Parent\Type) +") - SetParent()"
+            
+            If *LastParent\Window <> *Parent\Window 
+              Select Root() 
+                Case *Parent\Root     : ReDraw(*Parent)
+                Case *LastParent\Root : ReDraw(*LastParent)
+              EndSelect
+            EndIf
+            
           EndIf
         EndIf
       EndIf
@@ -5187,10 +5162,10 @@ Module Widget
       
       If \Window
         If \Window\Root
-          PostEvent(#PB_Event_Gadget, \Window\Root\Window, \Window\Root\Parent, #PB_EventType_Repaint)
+          PostEvent(#PB_Event_Gadget, \Window\Root\CanvasWindow, \Window\Root\Canvas, #PB_EventType_Repaint)
         EndIf
         If \Window\Deactive And \Window<>\Window\Deactive
-          PostEvent(#PB_Event_Gadget, \Window\Deactive\Root\Window, \Window\Deactive\Root\Parent, #PB_EventType_Repaint)
+          PostEvent(#PB_Event_Gadget, \Window\Deactive\Root\CanvasWindow, \Window\Deactive\Root\Canvas, #PB_EventType_Repaint)
         EndIf
       EndIf
     EndWith
@@ -5202,7 +5177,7 @@ Module Widget
     Protected repaint
     
     With *This
-      ; SetActiveGadget(\Root\Parent)
+      ; SetActiveGadget(\Root\Canvas)
       SetPosition(\Window, #PB_List_Last)
       SetActive(*This)
     EndWith
@@ -5315,8 +5290,8 @@ Module Widget
                 \Text\Change = 1
                 
                 ;Debug #PB_GadgetType_ComboBox;\Type
-                PostEvent(#PB_Event_Widget, \Root\Window, *This, #PB_EventType_Change)
-                PostEvent(#PB_Event_Gadget, \Root\Window, \Root\Parent, #PB_EventType_Repaint)
+                PostEvent(#PB_Event_Widget, \Root\CanvasWindow, *This, #PB_EventType_Change)
+                PostEvent(#PB_Event_Gadget, \Root\CanvasWindow, \Root\Canvas, #PB_EventType_Repaint)
               EndIf
               
               *t\index[2] = State
@@ -5339,8 +5314,8 @@ Module Widget
                 \items()\State = 2
                 \Change = State+1
                 
-                PostEvent(#PB_Event_Widget, \Root\Window, *This, #PB_EventType_Change)
-                PostEvent(#PB_Event_Gadget, \Root\Window, \Root\Parent, #PB_EventType_Repaint)
+                PostEvent(#PB_Event_Widget, \Root\CanvasWindow, *This, #PB_EventType_Change)
+                PostEvent(#PB_Event_Gadget, \Root\CanvasWindow, \Root\Canvas, #PB_EventType_Repaint)
               EndIf
               
               \index[2] = State
@@ -5368,7 +5343,7 @@ Module Widget
             If \index[2] <> State : \index[2] = State
               
               ForEach \Childrens()
-                Hides(\Childrens(), Bool(\Childrens()\p_i<>State))
+                Hides(\Childrens(), Bool(\Childrens()\ParentItem<>State))
               Next
               
               \Change = State+1
@@ -6119,7 +6094,7 @@ Module Widget
         If \Parent And \x < \Parent\clip\x+\Parent\bs : \clip\x = \Parent\clip\x+\Parent\bs : Else : \clip\x = \x : EndIf
         If \Parent And \y < \Parent\clip\y+\Parent\bs+\Parent\TabHeight : \clip\y = \Parent\clip\y+\Parent\bs+\Parent\TabHeight : Else : \clip\y = \y : EndIf
         
-        If \Parent And \Parent\s And \Parent\s\v And \Parent\s\h
+        If Not IsRoot(*This) And \Parent And \Parent\s And \Parent\s\v And \Parent\s\h
           Protected v=Bool(\Parent\width=\Parent\clip\width And Not \Parent\s\v\Hide And \Parent\s\v\type = #PB_GadgetType_ScrollBar)*(\Parent\s\v\width) ;: If Not v : v = \Parent\bs : EndIf
           Protected h=Bool(\Parent\height=\Parent\clip\height And Not \Parent\s\h\Hide And \Parent\s\h\type = #PB_GadgetType_ScrollBar)*(\Parent\s\h\height) ;: If Not h : h = \Parent\bs : EndIf
         EndIf
@@ -6342,12 +6317,12 @@ Module Widget
       FontID = \Text\FontID
       String.s = \Text\String.s[1]
       
-      If \Root\Parent And StartDrawing(CanvasOutput(\Root\Parent)) 
+      If \Root\Canvas And StartDrawing(CanvasOutput(\Root\Canvas)) 
         If FontID : DrawingFont(FontID) : EndIf
         
         For i = 0 To Len
           CursorX = X + TextWidth(Left(String.s, i))
-          Distance = (\Canvas\Mouse\X-CursorX)*(\Canvas\Mouse\X-CursorX)
+          Distance = (\Mouse\X-CursorX)*(\Mouse\X-CursorX)
           
           ; Получаем позицию коpректора
           If MinDistance > Distance 
@@ -6503,8 +6478,8 @@ Module Widget
     Protected Repaint, Input, Input_2, Chr.s
     
     With *This
-      If \Canvas\input
-        Chr.s = Make(*This, Chr(\Canvas\input))
+      If \Keyboard\Input
+        Chr.s = Make(*This, Chr(\Keyboard\Input))
         
         If Chr.s
           If \Text[2]\Len 
@@ -6512,7 +6487,7 @@ Module Widget
           EndIf
           
           \Text\Caret + 1
-          ; \items()\Text\String.s[1] = \items()\Text[1]\String.s + Chr(\Canvas\input) + \items()\Text[3]\String.s ; сним не выравнивается строка при вводе слов
+          ; \items()\Text\String.s[1] = \items()\Text[1]\String.s + Chr(\Keyboard\Input) + \items()\Text[3]\String.s ; сним не выравнивается строка при вводе слов
           \Text\String.s[1] = InsertString(\Text\String.s[1], Chr.s, \Text\Pos+\Text\Caret)
           \Text\Len = Len(\Text\String.s[1]) 
           \Text\Caret[1] = \Text\Caret 
@@ -6531,12 +6506,12 @@ Module Widget
   Procedure ToBack(*This.Widget_S)
     Protected Repaint, String.s 
     
-    If *This\Canvas\input : *This\Canvas\input = 0
+    If *This\Keyboard\Input : *This\Keyboard\Input = 0
       ToInput(*This) ; Сбросить Dot&Minus
     EndIf
     
     With *This
-      \Canvas\input = 65535
+      \Keyboard\Input = 65535
       
       If \Text[2]\Len
         If \Text\Caret > \Text\Caret[1] 
@@ -6569,8 +6544,8 @@ Module Widget
       With *This
         Select EventType
           Case #PB_EventType_LeftButtonUp
-            If \Root\Parent And #PB_Cursor_Default = GetGadgetAttribute(\Root\Parent, #PB_Canvas_Cursor)
-              SetGadgetAttribute(\Root\Parent, #PB_Canvas_Cursor, *This\Cursor)
+            If \Root\Canvas And #PB_Cursor_Default = GetGadgetAttribute(\Root\Canvas, #PB_Canvas_Cursor)
+              SetGadgetAttribute(\Root\Canvas, #PB_Canvas_Cursor, *This\Cursor)
             EndIf
             
             If *This\Text\Editable And *This\Drag[1] : *This\Drag[1] = 0
@@ -6615,7 +6590,7 @@ Module Widget
                 If *This\Text\Caret[1] > *This\Text\Caret : *This\Text\Caret[1] = *This\Text\Caret : EndIf
                 
                 If *This\Text\Caret[1] < Caret And Caret < *This\Text\Caret[1] + \Text[2]\Len
-                  SetGadgetAttribute(\Root\Parent, #PB_Canvas_Cursor, #PB_Cursor_Default)
+                  SetGadgetAttribute(\Root\Canvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
                   \Text\Caret[2] = *This\Text\Caret[1] + 1
                 Else
                   Repaint =- 1
@@ -6634,13 +6609,13 @@ Module Widget
             Repaint =- 1
             
           Case #PB_EventType_MouseMove
-            If *This\Canvas\Mouse\Buttons & #PB_Canvas_LeftButton 
+            If *This\Mouse\Buttons & #PB_Canvas_LeftButton 
               Caret = Caret(*This)
               If *This\Text\Caret <> Caret
                 
-                If \Text\Caret[2] ; *This\Cursor <> GetGadgetAttribute(\Root\Parent, #PB_Canvas_Cursor)
+                If \Text\Caret[2] ; *This\Cursor <> GetGadgetAttribute(\Root\Canvas, #PB_Canvas_Cursor)
                   If \Text\Caret[2] < Caret + 1 And Caret + 1 < \Text\Caret[2] + \Text[2]\Len
-                    SetGadgetAttribute(\Root\Parent, #PB_Canvas_Cursor, #PB_Cursor_Default)
+                    SetGadgetAttribute(\Root\Canvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
                   Else
                     \Text[1]\String.s = Left(*This\Text\String.s[1], \Text\Pos+*This\Text\Caret) : \Text[1]\Change = #True
                   EndIf
@@ -6657,9 +6632,9 @@ Module Widget
         EndSelect
         
         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-          Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Command)
+          Control = Bool(*This\Keyboard\Key[1] & #PB_Canvas_Command)
         CompilerElse
-          Control = Bool(*This\Canvas\Key[1] & #PB_Canvas_Control)
+          Control = Bool(*This\Keyboard\Key[1] & #PB_Canvas_Control)
         CompilerEndIf
         
         Select EventType
@@ -6672,7 +6647,7 @@ Module Widget
             Repaint = #True 
             
           Case #PB_EventType_KeyDown
-            Select *This\Canvas\Key
+            Select *This\Keyboard\Key
               Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Text\Caret = 0 : *This\Text\Caret[1] = *This\Text\Caret : Repaint = #True 
               Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Text\Caret = \Text\Len : *This\Text\Caret[1] = *This\Text\Caret : Repaint = #True 
                 
@@ -6746,19 +6721,26 @@ Module Widget
   ;- 
   Procedure.i Event_Widgets(*This.Widget_S, EventType.i, EventItem.i=-1, EventData.i=0)
     Protected Result.i 
-    ; Debug "  "+EventType +" - event "+ EventItem+ " - item "+ *This +" - widget"
     
-    With *This   
-      If *This And \Canvas\Mouse\Buttons And EventType = #PB_EventType_MouseMove
-        If \at = 0 Or (\anchor And Not \Container)
-          ;Events_Anchors(*This, *Value\Canvas\Mouse\x, *Value\Canvas\Mouse\y)
-          Resize(*This, *Value\Canvas\Mouse\x-\Canvas\Mouse\Delta\x, *Value\Canvas\Mouse\y-\Canvas\Mouse\Delta\y, #PB_Ignore, #PB_Ignore)
-          Result = 1
-        EndIf
-      EndIf
-      
-      
+    With *This 
       If *This
+        ; Scrollbar
+        If \Parent And \Parent\s 
+          Select *This 
+            Case \Parent\s\v, \Parent\s\h 
+              *This = \Parent
+          EndSelect
+        EndIf
+        
+        If \Mouse\Buttons And EventType = #PB_EventType_MouseMove
+          If \at = 0 Or (\anchor And Not \Container)
+            ;Events_Anchors(*This, *Value\Mouse\x, *Value\Mouse\y)
+            Resize(*This, *Value\Mouse\x-\Mouse\Delta\x, *Value\Mouse\y-\Mouse\Delta\y, #PB_Ignore, #PB_Ignore)
+            Result = 1
+          EndIf
+        EndIf
+        
+        
         If \Function
           Result = CallCFunctionFast(\Function, *This, EventType, EventItem, EventData)
         EndIf
@@ -6786,9 +6768,9 @@ Module Widget
       *Value\This = *This
       
       With *This
-        Protected window = \Root\Window
-        Protected canvas = \Root\Parent
-          
+        Protected window = \Root\CanvasWindow
+        Protected canvas = \Root\Canvas
+        
         Select EventType 
           Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp
             ; Columns at point
@@ -6807,13 +6789,13 @@ Module Widget
                     ElseIf Not Buttons 
                       If (MouseScreenX<\Columns()\X+2 Or MouseScreenX>\Columns()\X+\Columns()\Width-2)
                         ;Debug \Columns()\Text\String
-                        If Not \Canvas\Mouse\Buttons And \cursor <> GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
+                        If Not \Mouse\Buttons And \cursor <> GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
                           \cursor[1] = GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
                           SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \cursor)
                         EndIf
                         \Columns()\State = 0
                       Else
-                        If Not \Canvas\Mouse\Buttons And \cursor[1] <> GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
+                        If Not \Mouse\Buttons And \cursor[1] <> GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
                           SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \cursor[1])
                         EndIf
                         \Columns()\State = 1
@@ -6827,7 +6809,7 @@ Module Widget
                     \Columns()\State = 0
                     \index[1] =- 1
                     
-                    If Not \Canvas\Mouse\Buttons And \cursor[1] <> GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
+                    If Not \Mouse\Buttons And \cursor[1] <> GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
                       \cursor[1] = GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
                       ;Debug 7807897  
                       SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \cursor)
@@ -6867,10 +6849,10 @@ Module Widget
               If Buttons
                 PushListPosition(\Columns())
                 If \index[1] >=0 And SelectElement(\Columns(), \index[1])
-                  If (\Canvas\Mouse\X-\Columns()\x) < 0
+                  If (\Mouse\X-\Columns()\x) < 0
                     \Columns()\width = 0
                   Else
-                    \Columns()\width = \Canvas\Mouse\X-\Columns()\x
+                    \Columns()\width = \Mouse\X-\Columns()\x
                   EndIf
                 EndIf
                 PopListPosition(\Columns())
@@ -6918,8 +6900,6 @@ Module Widget
               Next
               
             EndIf
-            
-            Repaint | Event_Widgets(*This, #PB_EventType_MouseMove, at)
         EndSelect
         
         Select EventType
@@ -6965,7 +6945,7 @@ Module Widget
                   Free(*This)
                   
                   If *This = \Root
-                    PostEvent(#PB_Event_CloseWindow, \Root\Window, *This)
+                    PostEvent(#PB_Event_CloseWindow, \Root\CanvasWindow, *This)
                   EndIf
                 EndIf
                 
@@ -6974,9 +6954,9 @@ Module Widget
                 
                 If \Box\Checked
                   Display_Popup(*This, \Popup)
-                  HideWindow(\Popup\Canvas\Window, 0, #PB_Window_NoActivate)
+                  HideWindow(\Popup\Root\CanvasWindow, 0, #PB_Window_NoActivate)
                 Else
-                  HideWindow(\Popup\Canvas\Window, 1)
+                  HideWindow(\Popup\Root\CanvasWindow, 1)
                 EndIf
                 
               Case #PB_GadgetType_Option
@@ -7061,7 +7041,6 @@ Module Widget
               EndIf
             EndIf
             
-            
           Case #PB_EventType_MouseWheel
             
             If WheelDelta <> 0
@@ -7084,14 +7063,14 @@ Module Widget
             EndIf  
             
           Case #PB_EventType_MouseEnter
-            If Not *Value\Canvas\Mouse\Buttons And IsGadget(canvas)
+            If Not *Value\Mouse\Buttons And IsGadget(canvas)
               \Cursor[1] = GetGadgetAttribute(canvas, #PB_Canvas_Cursor)
               SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \Cursor)
               ;             Debug "events() MouseEnter " +" "+ at +" "+ *This;+\Type +" "+ \Cursor[1]  +" "+ \Cursor
             EndIf
             
           Case #PB_EventType_MouseLeave
-            If Not *Value\Canvas\Mouse\Buttons And IsGadget(canvas)
+            If Not *Value\Mouse\Buttons And IsGadget(canvas)
               SetGadgetAttribute(canvas, #PB_Canvas_Cursor, \cursor[1])
               ;             Debug "events() MouseLeave " +" "+ at +" "+ *This;+\Type +" "+ \Cursor[1]  +" "+ \Cursor
             EndIf
@@ -7153,7 +7132,7 @@ Module Widget
             EndSelect
         EndSelect
         
-        If \Text And \Text\Editable
+        If \Text And \Text[1] And \Text[2] And \Text[3] And \Text\Editable
           Repaint | Editable(*This, EventType, MouseScreenX.i, MouseScreenY.i)
         EndIf
         
@@ -7166,52 +7145,52 @@ Module Widget
   
   Macro _mouse_pos_(_this_)
     
-      ; Enter/Leave events
-      If *Value\Last <> _this_
-        If *Value\Last<>Root()
-          
-;           If *Value\Last = Parent
-;             Debug "leave first"
-;           Else
-;             Debug "enter Parent"
-;           EndIf
-          
-          repaint = 1
-        EndIf
+    ; Enter/Leave events
+    If *Value\Last <> _this_
+      If *Value\Last<>Root()
         
-        If *Value\Last And *Value\Last <> Parent And *Value\Last <> Root() 
-          If *Value\Last\Canvas\Mouse\Buttons
-;             Debug "selected out"
-          Else
-            Events(*Value\Last, *Value\Last\at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
-            Event_Widgets(*Value\Last, #PB_EventType_MouseLeave, *Value\Last\at)
-          EndIf
-        EndIf
+        ;           If *Value\Last = Parent
+        ;             Debug "leave first"
+        ;           Else
+        ;             Debug "enter Parent"
+        ;           EndIf
         
-        If _this_
-          If (Not *Value\Last Or (*Value\Last And *Value\Last\Parent <> _this_))
-;             If Not *Value\Last
-;               Debug "enter first"
-;             EndIf
-;             
-;             If (*Value\Last And *Value\Last\Parent <> _this_)
-;               Debug "leave parent"
-;             EndIf
-            
-            If _this_\Canvas\Mouse\Buttons
-;               Debug "selected ower"
-            Else
-              Events(_this_, _this_\at, #PB_EventType_MouseEnter, MouseScreenX, MouseScreenY)
-              Event_Widgets(_this_, #PB_EventType_MouseEnter, _this_\at)
-            EndIf
-          EndIf
-          
-          *Value\Last = _this_
+        repaint = 1
+      EndIf
+      
+      If *Value\Last And *Value\Last <> Parent And *Value\Last <> Root() 
+        If *Value\Last\Mouse\Buttons
+          ;             Debug "selected out"
         Else
-          *Value\Last = Root()
+          Events(*Value\Last, *Value\Last\at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
+          Event_Widgets(*Value\Last, #PB_EventType_MouseLeave, *Value\Last\at)
         EndIf
       EndIf
       
+      If _this_
+        If (Not *Value\Last Or (*Value\Last And *Value\Last\Parent <> _this_))
+          ;             If Not *Value\Last
+          ;               Debug "enter first"
+          ;             EndIf
+          ;             
+          ;             If (*Value\Last And *Value\Last\Parent <> _this_)
+          ;               Debug "leave parent"
+          ;             EndIf
+          
+          If _this_\Mouse\Buttons
+            ;               Debug "selected ower"
+          Else
+            Events(_this_, _this_\at, #PB_EventType_MouseEnter, MouseScreenX, MouseScreenY)
+            Event_Widgets(_this_, #PB_EventType_MouseEnter, _this_\at)
+          EndIf
+        EndIf
+        
+        *Value\Last = _this_
+      Else
+        *Value\Last = Root()
+      EndIf
+    EndIf
+    
   EndMacro
   
   Procedure.i CallBack(*This.Widget_S, EventType.i, MouseScreenX.i=0, MouseScreenY.i=0)
@@ -7229,7 +7208,7 @@ Module Widget
       EndIf
       
       ;         ; anchors events
-      ;         If CallBack_Anchors(*This, EventType.i, \Canvas\Mouse\Buttons, MouseScreenX.i,MouseScreenY.i)
+      ;         If CallBack_Anchors(*This, EventType.i, \Mouse\Buttons, MouseScreenX.i,MouseScreenY.i)
       ;           ProcedureReturn 1
       ;         EndIf
       
@@ -7239,12 +7218,12 @@ Module Widget
       Select EventType 
         Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave
           If *This And *Value\Last = *This 
-            If \Canvas\Mouse\Buttons
+            If \Mouse\Buttons
               ; Drag start
-              If Not (\Canvas\Mouse\x>\Canvas\Mouse\Delta\x-8 And 
-                      \Canvas\Mouse\x<\Canvas\Mouse\Delta\x+8 And 
-                      \Canvas\Mouse\y>\Canvas\Mouse\Delta\y-8 And
-                      \Canvas\Mouse\y<\Canvas\Mouse\Delta\y+8) And \Canvas\Mouse\Delta
+              If Not (\Mouse\x>\Mouse\Delta\x-8 And 
+                      \Mouse\x<\Mouse\Delta\x+8 And 
+                      \Mouse\y>\Mouse\Delta\y-8 And
+                      \Mouse\y<\Mouse\Delta\y+8) And \Mouse\Delta
                 
                 If Not \Drag
                   Event_Widgets(*This, #PB_EventType_DragStart, \index[1])
@@ -7253,14 +7232,16 @@ Module Widget
               EndIf
             EndIf
             
+                
+            Repaint | Event_Widgets(*This, #PB_EventType_MouseMove, \at)
             repaint | Events(*This, \at, #PB_EventType_MouseMove, MouseScreenX, MouseScreenY)
             Event_Widgets(*This, #PB_EventType_MouseMove, \at)
             repaint = 1
           EndIf
           
           If *Value\Focus And *Value\Last <> *Value\Focus
+            Repaint | Event_Widgets(*Value\Focus, #PB_EventType_MouseMove, *Value\Focus\at)
             repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_MouseMove, MouseScreenX, MouseScreenY)
-            Event_Widgets(*Value\Focus, #PB_EventType_MouseMove, *Value\Focus\at)
             repaint = 1
           EndIf
           
@@ -7283,7 +7264,7 @@ Module Widget
           
         Case #PB_EventType_LeftButtonUp, #PB_EventType_RightButtonUp
           If *Value\Focus And *Value\Focus\State = 2
-            *Value\Focus\Canvas\Mouse\Buttons = 0   
+            *Value\Focus\Mouse\Buttons = 0   
             *Value\Focus\State = 1 
             repaint | Events(*Value\Focus, *Value\Focus\at, EventType, MouseScreenX, MouseScreenY)
             
@@ -7313,9 +7294,9 @@ Module Widget
              #PB_EventType_KeyDown, 
              #PB_EventType_KeyUp
           
-          \Canvas\input = GetGadgetAttribute(Canvas, #PB_Canvas_Input)
-          \Canvas\Key = GetGadgetAttribute(Canvas, #PB_Canvas_Key)
-          \Canvas\Key[1] = GetGadgetAttribute(Canvas, #PB_Canvas_Modifiers)
+          \Keyboard\Input = GetGadgetAttribute(Canvas, #PB_Canvas_Input)
+          \Keyboard\Key = GetGadgetAttribute(Canvas, #PB_Canvas_Key)
+          \Keyboard\Key[1] = GetGadgetAttribute(Canvas, #PB_Canvas_Modifiers)
           
           If *This And (*Value\Focus = *This Or *This = *Value\Active)
             repaint | Events(*This, 0, EventType, MouseScreenX, MouseScreenY)
@@ -7329,28 +7310,28 @@ Module Widget
              #PB_EventType_RightButtonDown 
           
           If *This
-            \Canvas\Mouse\Delta = AllocateStructure(Mouse_S)
-            \Canvas\Mouse\Delta\X = \Canvas\Mouse\x-\x[3]
-            \Canvas\Mouse\Delta\Y = \Canvas\Mouse\y-\y[3]
+            \Mouse\Delta = AllocateStructure(Mouse_S)
+            \Mouse\Delta\X = \Mouse\x-\x[3]
+            \Mouse\Delta\Y = \Mouse\y-\y[3]
             
-            \Canvas\Mouse\Buttons = 1
+            \Mouse\Buttons = 1
           EndIf
-          *Value\Canvas\Mouse\Buttons = 1
+          *Value\Mouse\Buttons = 1
           
         Case #PB_EventType_LeftButtonUp, 
              #PB_EventType_MiddleButtonUp,
              #PB_EventType_RightButtonUp 
           
           If *This
-            If \Canvas\Mouse\Delta
-              FreeStructure(\Canvas\Mouse\Delta)
-              \Canvas\Mouse\Delta = 0
+            If \Mouse\Delta
+              FreeStructure(\Mouse\Delta)
+              \Mouse\Delta = 0
               \Drag = 0
             EndIf
             
-            \Canvas\Mouse\Buttons = 0
+            \Mouse\Buttons = 0
           EndIf
-          *Value\Canvas\Mouse\Buttons = 0
+          *Value\Mouse\Buttons = 0
           
       EndSelect
     EndWith
@@ -7364,31 +7345,32 @@ Module Widget
     Protected Height = GadgetHeight(Canvas)
     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-;      MouseX = DesktopMouseX()-GadgetX(Canvas, #PB_Gadget_ScreenCoordinate)
-;      MouseY = DesktopMouseY()-GadgetY(Canvas, #PB_Gadget_ScreenCoordinate)
+    ;      MouseX = DesktopMouseX()-GadgetX(Canvas, #PB_Gadget_ScreenCoordinate)
+    ;      MouseY = DesktopMouseY()-GadgetY(Canvas, #PB_Gadget_ScreenCoordinate)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    Protected *Window.Widget_s = GetGadgetData(Canvas)
+    Protected *Root.Widget_s = GetGadgetData(Canvas)
     
     
     Select EventType
-;       Case #PB_EventType_Repaint ;: Repaint = 1
-;         MouseX = 0
-;         MouseY = 0
+        ;       Case #PB_EventType_Repaint ;: Repaint = 1
+        ;         MouseX = 0
+        ;         MouseY = 0
         
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        Resize(*Window, #PB_Ignore, #PB_Ignore, Width, Height)  
+        Resize(*Root, #PB_Ignore, #PB_Ignore, Width, Height)  
         Repaint = 1
+        
       Default
         
         If EventType() = #PB_EventType_LeftButtonDown
           SetActiveGadget(Canvas)
         EndIf
         
-        Repaint | CallBack(at(*Window, MouseX, MouseY), EventType, MouseX, MouseY)
+        Repaint | CallBack(at(*Root, MouseX, MouseY), EventType, MouseX, MouseY)
     EndSelect
     
     If Repaint 
-      ReDraw(*Window)
+      ReDraw(*Root)
     EndIf
   EndProcedure
   
@@ -7408,7 +7390,7 @@ Module Widget
       If #PB_Compiler_OS = #PB_OS_MacOS And EventType = #PB_EventType_MouseEnter And GetActiveGadget()<>EventGadget
         SetActiveGadget(EventGadget)
       EndIf
-        
+      
       Select EventType 
         Case #PB_EventType_MouseEnter 
           If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
@@ -8075,7 +8057,7 @@ Module Widget
       
       
       \Text = AllocateStructure(Text_S)
-      If StartDrawing(CanvasOutput(\Root\Parent))
+      If StartDrawing(CanvasOutput(\Root\Canvas))
         
         \Text\height = TextHeight("A")
         
@@ -8406,7 +8388,7 @@ Module Widget
     ProcedureReturn *This
   EndProcedure
   
-  Procedure.i _Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
+  Procedure.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
     Protected w.i, Canvas.i, *This.Widget_S
     
     With *This
@@ -8422,7 +8404,7 @@ Module Widget
       Canvas = CanvasGadget(#PB_Any, X,Y,Width,Height, #PB_Canvas_Keyboard)
       BindGadgetEvent(Canvas, @Canvas_CallBack())
       
-      If Text.s 
+      If Text.s ;And Flag=0
         *This = AllocateStructure(Widget_S)
         \X =- 1
         \Y =- 1
@@ -8482,59 +8464,12 @@ Module Widget
       
       \Root = *This
       Root() = \Root
-      Root()\Window = Window
-      Root()\Parent = Canvas
+      Root()\CanvasWindow = Window
+      Root()\Canvas = Canvas
       Root()\adress = @*openedlist()
       
       SetGadgetData(Canvas, *This)
       SetWindowData(Window, Canvas)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
-    Protected w.i, Canvas.i, *This.Widget_S
-    
-    With *This
-      If Not IsWindow(Window)
-        w = OpenWindow(Window, X,Y,Width,Height, Text.s, Flag, WindowID) 
-        If Window =- 1 
-          Window = w 
-        EndIf
-        X = 0 
-        Y = 0
-      EndIf
-      
-      Canvas = CanvasGadget(#PB_Any, X,Y,Width,Height, #PB_Canvas_Keyboard)
-      BindGadgetEvent(Canvas, @Canvas_CallBack())
-      
-      *This = AllocateStructure(Widget_S)
-      \x =- 1
-      \y =- 1
-      \Type = #PB_GadgetType_Root
-      \Container = #PB_GadgetType_Root
-      \color\alpha = 255
-      
-      Resize(*This, 0, 0, Width,Height)
-      
-      LastElement(*openedlist())
-      If AddElement(*openedlist())
-        *openedlist() = *This
-      EndIf
-      
-      \Root = *This
-      Root() = \Root
-      Root()\Window = Window
-      Root()\Parent = Canvas
-      Root()\adress = @*openedlist()
-      
-      SetGadgetData(Canvas, *This)
-      SetWindowData(Window, Canvas)
-      
-      If Text.s
-        *This = Window(0, 0, Width-2, Height-2-25, Text.s)
-      EndIf
     EndWith
     
     ProcedureReturn *This
@@ -8555,23 +8490,11 @@ Module Widget
           FreeStructure(\s) : \s = 0
         EndIf
         
-        If \Box
-          FreeStructure(\Box) : \Box = 0
-        EndIf
+        If \Box : FreeStructure(\Box) : \Box = 0 : EndIf
+        If \Text : FreeStructure(\Text) : \Text = 0 : EndIf
+        If \Image : FreeStructure(\Image) : \Image = 0 : EndIf
+        If \Image[1] : FreeStructure(\Image[1]) : \Image[1] = 0 : EndIf
         
-        If \Image
-          FreeStructure(\Image) : \Image = 0
-        EndIf
-        
-        If \Image[1]
-          FreeStructure(\Image[1]) : \Image[1] = 0
-        EndIf
-        
-        If \Text
-          FreeStructure(\Text) : \Text = 0
-        EndIf
-        
-        FreeStructure(*This) 
         *Value\Active = 0
         *Value\Focus = 0
         
@@ -8579,6 +8502,9 @@ Module Widget
           ChangeCurrentElement(\Parent\Childrens(), Adress(*This))
           Result = DeleteElement(\Parent\Childrens())
         EndIf
+        
+        ; FreeStructure(*This) 
+        ClearStructure(*This, Widget_S) 
       EndIf
     EndWith
     
@@ -8600,7 +8526,7 @@ Macro WidgetEvent()
 EndMacro
 
 ; Macro EventGadget()
-;   (Bool(Event()<>Widget::#PB_Event_Widget) * Widget::PB(EventGadget)() + Bool(Event()=Widget::#PB_Event_Widget) * Widget::Root()\Parent)
+;   (Bool(Event()<>Widget::#PB_Event_Widget) * Widget::PB(EventGadget)() + Bool(Event()=Widget::#PB_Event_Widget) * Widget::Root()\Canvas)
 ; EndMacro
 
 DeclareModule Helper
@@ -8736,6 +8662,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Define Editable = #PB_Flag_AnchorsGadget
       
       If OpenList(0, 1, #PB_GadgetType_Window)
+        Define i, *combo=ComboBox(10, 10, 160,70) 
+        AddItem(*combo, -1, "ComboBox_"+Str(#PB_GadgetType_ComboBox)) 
+        For i=1 To 5 : AddItem(*combo, i, "item_"+Str(i)) : Next 
+        SetState(*combo, 0) 
+        
         Define w=Window(150, 50, 280, 200, "Window_1", Editable)
         
         *i.Widget_S  = Image(0, 0, 0, 0, 0)
@@ -8856,5 +8787,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------u--------4--------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

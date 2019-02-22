@@ -135,6 +135,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    Protected *window = GetGadgetData(Canvas)
     Static *After
     
     Select EventType
@@ -168,7 +169,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If Repaint 
-      ReDraw(Canvas)
+      ReDraw(*window)
     EndIf
     
   EndProcedure
@@ -264,7 +265,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseGadgetList()
       
-      ReDraw(1)
+      ReDraw(*window)
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
@@ -272,54 +273,16 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Window_0()
   
-  direction = 1
   Repeat
     gEvent= WaitWindowEvent()
     
     Select gEvent
       Case #PB_Event_CloseWindow
         gQuit= #True
-        
-      Case #PB_Event_Timer
-        ;         If IsStart(*Bar_0)
-        ;           direction = 1
-        ;         EndIf
-        ;         If IsStop(*Bar_0)
-        ;           direction =- 1
-        ;         EndIf
-        ;         
-        ;         value + direction
-        ;         
-        ;         If SetState(*Bar_0, value)
-        ;           ;PostEvent(#PB_Event_Gadget, 0, 1, -1)
-        ;           ReDraw(1)
-        ;         EndIf
-        
-      Case #PB_Event_Gadget
-        
-        ;         Select EventGadget()
-        ;           Case 10
-        ;             value = GetState(*Bar_0)
-        ;             If GetGadgetState(10)
-        ;               AddWindowTimer(0, 1, 10)
-        ;             Else
-        ;               RemoveWindowTimer(0, 1)
-        ;             EndIf
-        ;         EndSelect
-        ;         
-        ;         ; Get interaction with the scroll bar
-        ;         CallBack(*Bar_0, EventType())
-        ;         
-        ;         If WidgetEventType() = #PB_EventType_Change
-        ;           SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
-        ;         EndIf
-        ;         
-        ;         ReDraw(1)
     EndSelect
     
   Until gQuit
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----0--
+; Folding = t40-0--
 ; EnableXP
