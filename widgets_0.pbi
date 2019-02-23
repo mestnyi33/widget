@@ -479,6 +479,10 @@ DeclareModule Widget
   ;-
   ;- - DECLAREs
   ;-
+  Declare.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
+  Declare.i ReDraw(*This.Widget_S)
+  
+  
   Declare.i Y(*This.Widget_S)
   Declare.i X(*This.Widget_S)
   Declare.i Width(*This.Widget_S)
@@ -3580,6 +3584,27 @@ Module Widget
         ;*Value\This = 0
       EndWith 
     EndIf
+  EndProcedure
+  
+  Procedure.i ReDraw(*This.Widget_S)
+    With *This     
+;       InitEvent(*This)
+      
+      If StartDrawing(CanvasOutput(*Value\Gadget))
+        ;DrawingMode(#PB_2DDrawing_Default)
+        ;Box(0,0,OutputWidth(),OutputHeight(), *This\Color\Back)
+        FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FFEEEEEE)
+        
+        Draw(*This, 1)
+        
+        ; Selector
+        If \anchor 
+          Box(\anchor\x, \anchor\y, \anchor\width, \anchor\height ,\anchor\color[\anchor\State]\frame) 
+        EndIf
+        
+        StopDrawing()
+      EndIf
+    EndWith
   EndProcedure
   
   ;-
@@ -6946,7 +6971,95 @@ Module Widget
     
     ProcedureReturn *This
   EndProcedure
-EndModule
+  
+  Procedure.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
+    Protected w.i, Canvas.i, *This.Widget_S
+    
+    With *This
+      If Not IsWindow(Window)
+        w = OpenWindow(Window, X,Y,Width,Height, Text.s, Flag, WindowID) 
+        If Window =- 1 
+          Window = w 
+        EndIf
+        X = 0 
+        Y = 0
+      EndIf
+      
+      Canvas = CanvasGadget(#PB_Any, X,Y,Width,Height, #PB_Canvas_Keyboard)
+      ;BindGadgetEvent(Canvas, @Canvas_CallBack())
+      
+      If Text.s ;And Flag=0
+        *This = AllocateStructure(Widget_S)
+        \X =- 1
+        \Y =- 1
+        \Type =- 1
+        \Container =- 1
+        \Color = Colors
+        \color\Fore = 0
+        \color\Back = $FFF0F0F0
+        \color\alpha = 255
+        \Color[1]\Alpha = 128
+        \Color[2]\Alpha = 128
+        \Color[3]\Alpha = 128
+        
+        \index[1] =- 1
+        \index[2] = 0
+        \TabHeight = 25
+        
+        ;\Image = AllocateStructure(Image_S)
+        \image\x[2] = 5 ; padding 
+        
+        ;\Text = AllocateStructure(Text_S)
+        \Text\Align\Horizontal = 1
+        
+        \Box = AllocateStructure(Box_S)
+        \Box\Size = 12
+        \Box\Color = Colors
+        \Box\color\alpha = 255
+        
+;         \Flag\Window\SizeGadget = Bool(Flag&#PB_Window_SizeGadget)
+;         \Flag\Window\SystemMenu = Bool(Flag&#PB_Window_SystemMenu)
+;         \Flag\Window\BorderLess = Bool(Flag&#PB_Window_BorderLess)
+        
+        \fs = 1
+        \bs = 1
+        
+        ; Background image
+        ;\Image[1] = AllocateStructure(Image_S)
+        
+        SetText(*This, Text.s)
+        Resize(*This, 0,0,Width.i,Height)
+        ;SetActive(*This)
+      Else
+        *This = AllocateStructure(Widget_S)
+        \x =- 1
+        \y =- 1
+        \Type =- 5
+        \Container =- 1
+        \color\alpha = 255
+        
+        Resize(*This, 0, 0, Width,Height)
+      EndIf
+      
+      LastElement(*openedlist())
+      If AddElement(*openedlist())
+        *openedlist() = *This
+      EndIf
+      
+;       \Root = *This
+;       Root() = \Root
+;       Root()\CanvasWindow = Window
+;       Root()\Canvas = Canvas
+;       Root()\adress = @*openedlist()
+      
+      SetGadgetData(Canvas, *This)
+      SetWindowData(Window, Canvas)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  EndModule
 
 ;-
 Macro GetActiveWidget()
@@ -7001,17 +7114,17 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 ;     EndIf
 ;   EndProcedure
   
-  Procedure ReDraw(Canvas)
-    If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
-      ;       DrawingMode(#PB_2DDrawing_Default)
-      ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
-      FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FFEEEEEE)
-      
-      Draw(Widgets("Container"), 1)
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
+;   Procedure ReDraw(Canvas)
+;     If IsGadget(Canvas) And StartDrawing(CanvasOutput(Canvas))
+;       ;       DrawingMode(#PB_2DDrawing_Default)
+;       ;       Box(0,0,OutputWidth(),OutputHeight(), winBackColor)
+;       FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FFEEEEEE)
+;       
+;       Draw(Widgets("Container"), 1)
+;       
+;       StopDrawing()
+;     EndIf
+;   EndProcedure
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint, iWidth, iHeight
@@ -7029,7 +7142,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Repaint | CallBacks(Widgets("Container"), EventType, mouseX,mouseY)
     
     If Repaint
-      ReDraw(Canvas)
+      ReDraw(Widgets("Container"))
     EndIf
   EndProcedure
   
@@ -7154,7 +7267,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       
       CloseList()
       
-      ReDraw(100)
+      ReDraw(Widgets("Container"))
     EndIf
     
     Repeat
@@ -7173,5 +7286,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------f-----------------------------------------------------------------------------f---------4-----------------
+; Folding = --------------------------------------------f---------------------0------------------------------------------------------------------+-----------------
 ; EnableXP

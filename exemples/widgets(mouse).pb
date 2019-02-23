@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         EndIf
           
         If EventType() <> #PB_EventType_MouseMove ;Not (EventType() = #PB_EventType_MouseMove And Not GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons))
-          Debug ""+EventGadget()+" "+EventType()
+          Debug ""+Str(EventGadget())+" "+Str(EventType())
         EndIf
         
     EndSelect
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; 
     BindEvent(#PB_Event_Gadget, @Handler())
-    Open(0, 0, 0, 220, 220)
+    Open(0, 0, 0, 220, 220, "w")
     SetData(Container(20, 20, 180, 180), 1)
     SetData(Container(20, 20, 180, 180), 10)
     SetData(Button(20, 20, 180, 50, ""), 100)
@@ -77,12 +77,20 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     Bind(@Widget_Handler())
     
     ; Create new pb window and new pb canvas
-    Open(10, 0, 0, 220, 220)
-    SetData(Container(20, 20, 180, 180), 1)
-    SetData(Container(20, 20, 180, 180), 10)
-    SetData(Button(20, 20, 180, 50, ""), 100)
-    SetData(Container(20, 70, 180, 180), 20)
-    SetData(Button(20, 20, 180, 50, ""), 200)
+    Open(10, 0, 0, 220, 220,"", #PB_Window_ScreenCentered)
+    ;Define *w_0 = Container(20, 20, 180, 180) : SetData(*w_0, 1)
+    Define *w_1 = Container(0, 20, 180, 180) : SetData(*w_1, 10) : CloseList()
+    
+    Define *w_2 = Container(0, 20, 180, 180) : SetData(*w_2, 20)
+;     Define *w_11 = Container(0, 0, 0, 0) : SetData(*w_11, 110) : CloseList()
+;     Define *w_12 = Container(0, 0, 0, 0) : SetData(*w_12, 120) : CloseList()
+;     Define *w_13 = Splitter(0, 0, 180, 180/2, *w_11,*w_12) : SetData(*w_13, 130)  
+    CloseList()
+    
+    Define *w_3 = Splitter(10, 10, 180, 180, *w_1,*w_2) : SetData(*w_3, 30)
+   
+    
+    ;SetData(Button(0, 0, 180, 50, "Button"), 100)
     
     Redraw(Root())
     Bind(@Widget_Handler())

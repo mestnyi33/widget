@@ -159,7 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If Repaint 
-      ReDraw(Canvas)
+      ReDraw(*w)
     EndIf
     
   EndProcedure
@@ -494,7 +494,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     ;Free(*g5)
     
-    ReDraw(Canvas_0)
+    ReDraw(Root())
     
     Repeat
       Select WaitWindowEvent()   
@@ -534,5 +534,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0-ff-0---
+; Folding = 0--f-0---
 ; EnableXP

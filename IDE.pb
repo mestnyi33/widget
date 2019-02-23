@@ -807,7 +807,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     AddGadgetItem(WE_Selecting, -1, "Proect")
     
     If Open(Window_0, 10, 40, 580, 550, "IDE") 
-      Canvas_0 = Display()
+      Canvas_0 = RootGadget()
       
       ;       ; Main panel
       ;       Widgets("Panel") = Panel(0, 0, 0, 0) 

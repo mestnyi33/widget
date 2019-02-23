@@ -103,7 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If Result 
       SetWindowTitle(0, "SizeOf(Widget_S) - "+Str(SizeOf(Widget_S)))
     
-      ReDraw(Canvas)
+      ReDraw(*Window)
     EndIf
     
   EndProcedure
@@ -137,9 +137,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If OpenWindow(0, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If OpenWindow(10, 0, 0, 615, 310, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define height, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
-    winBackColor = GetWindowBackgroundColor(WindowID(0))
+    winBackColor = GetWindowBackgroundColor(WindowID(10))
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       height = 19
@@ -192,11 +192,12 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerEndIf
     
     ; Demo draw string on the canvas
-    CanvasGadget(10,  305, 0, 310, 310, #PB_Canvas_Keyboard)
-    SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
-    BindGadgetEvent(10, @Canvas_CallBacks())
+;     CanvasGadget(10,  305, 0, 310, 310, #PB_Canvas_Keyboard)
+;     SetGadgetAttribute(10, #PB_Canvas_Cursor, #PB_Cursor_Cross)
+;     BindGadgetEvent(10, @Canvas_CallBacks())
+;     OpenList(0,10)
+    Open(10,  305, 0, 310, 310)
     
-    OpenList(0,10)
     *S_0 = String(8,  10, 290, height, "Normal StringGadget...",0)
     *S_1 = String(8,  35, 290, height, "123-only-4567", #PB_Flag_Flat|#PB_Text_Numeric|#PB_Text_Center)
     *S_2 = String(8,  60, 290, height, "StringGadget to right", #PB_Flag_Single|#PB_Text_Right)
@@ -211,7 +212,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     Next
     
     *S_8 = String(8,  210, 290, 90, Text);, #PB_Text_MultiLine);, #PB_Text_Top)
-    CloseList()
+    ; CloseList()
     
     SetText(*S_6, "GaT")
     Debug "password: "+GetText(*S_6)
@@ -220,7 +221,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     SetColor(*S_2, #PB_Gadget_BackColor, $FFF0F0F0)
     ;     SetColor(*S_3, #PB_Gadget_BackColor, $FFF0F0F0)
     ;     SetColor(*S_4, #PB_Gadget_BackColor, $FFF0F0F0)
-    ReDraw(10)
+    ReDraw(Root())
     
     BindEvent(#PB_Event_Widget, @Widget_Events())
     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
@@ -228,5 +229,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -v0
+; Folding = dv9
 ; EnableXP

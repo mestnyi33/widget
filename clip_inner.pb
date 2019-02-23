@@ -6176,37 +6176,42 @@ Module Widget
         
         ; set clip coordinate
         If Not IsRoot(*This) And \Parent 
-          Protected v,h,clip_x, clip_y, clip_width, clip_height
+          If \x < \Parent\clip\x : \clip\x = \Parent\clip\x : Else : \clip\x = \x[2] : EndIf
+          If \y < \Parent\clip\y : \clip\y = \Parent\clip\y : Else : \clip\y = \y[2] : EndIf
           
-          If \Parent\Scroll 
-            If \Parent\Scroll\v : v = Bool(\Parent\width=\Parent\clip\width And Not \Parent\Scroll\v\Hide And \Parent\Scroll\v\type = #PB_GadgetType_ScrollBar)*(\Parent\Scroll\v\width) : EndIf
-            If \Parent\Scroll\h : h = Bool(\Parent\height=\Parent\clip\height And Not \Parent\Scroll\h\Hide And \Parent\Scroll\h\type = #PB_GadgetType_ScrollBar)*(\Parent\Scroll\h\height) : EndIf
+;           If \x < \Parent\clip\x+\Parent\bs : \clip\x = \Parent\clip\x+\Parent\bs : Else : \clip\x = \x : EndIf
+;           If \y < \Parent\clip\y+\Parent\bs+\Parent\TabHeight : \clip\y = \Parent\clip\y+\Parent\bs+\Parent\TabHeight : Else : \clip\y = \y : EndIf
+          
+;           If \Parent\Scroll 
+;             If \Parent\Scroll\v
+              Protected v;=Bool(\Parent\width=\Parent\clip\width And Not \Parent\Scroll\v\Hide And \Parent\Scroll\v\type = #PB_GadgetType_ScrollBar)*(\Parent\Scroll\v\width) ;: If Not v : v = \Parent\bs : EndIf
+;             EndIf
+;             If \Parent\Scroll\h 
+              Protected h;=Bool(\Parent\height=\Parent\clip\height And Not \Parent\Scroll\h\Hide And \Parent\Scroll\h\type = #PB_GadgetType_ScrollBar)*(\Parent\Scroll\h\height) ;: If Not h : h = \Parent\bs : EndIf
+;             EndIf
+;           EndIf
+          
+          ;If \x+\width>\Parent\clip\x+\Parent\clip\width-v-\Parent\bs : \clip\width = \Parent\clip\width-v-\Parent\bs-(\clip\x-\Parent\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
+          ;If \y+\height>=\Parent\clip\y+\Parent\clip\height-h-\Parent\bs : \clip\height = \Parent\clip\height-h-\Parent\bs-(\clip\y-\Parent\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
+         ;If \x+\width>\x+(\Parent\clip\width-v-((\clip\x+\bs)-\Parent\clip\x))
+          
+          If \x[2]+\width[2] > \Parent\clip\x+\Parent\clip\width-v
+            \clip\width = (\Parent\clip\x+\Parent\clip\width-v) - \clip\x
+          Else 
+            \clip\width = \width[2]-(\clip\x-\x[2]) 
           EndIf
           
-          clip_x = \Parent\clip\x+Bool(\Parent\clip\x<\Parent\x+\Parent\bs)*\Parent\bs
-          clip_y = \Parent\clip\y+Bool(\Parent\clip\y<\Parent\y+\Parent\bs)*(\Parent\bs+\Parent\TabHeight) 
-          clip_width = ((\Parent\clip\x+\Parent\clip\width)-Bool((\Parent\clip\x+\Parent\clip\width)>(\Parent\x[2]+\Parent\width[2]))*\Parent\bs)-v 
-          clip_height = ((\Parent\clip\y+\Parent\clip\height)-Bool((\Parent\clip\y+\Parent\clip\height)>(\Parent\y[2]+\Parent\height[2]))*\Parent\bs)-h 
+          If \y[2]+\height[2] > \Parent\clip\y+\Parent\clip\height-h
+            \clip\height = (\Parent\clip\y+\Parent\clip\height-h) - \clip\y
+          Else 
+            \clip\height = \height[2]-(\clip\y-\y[2]) 
+          EndIf
+        Else
+          \clip\x = \x[2]
+          \clip\y = \y[2]
+          \clip\width = \width[2]-(\clip\x-\x[2]) 
+          \clip\height = \height[2]-(\clip\y-\y[2])
         EndIf
-        
-        If clip_x And \x < clip_x : \clip\x = clip_x : Else : \clip\x = \x : EndIf
-        If clip_y And \y < clip_y : \clip\y = clip_y : Else : \clip\y = \y : EndIf
-        If clip_width And (\x+\width) > clip_width : \clip\width = clip_width - \clip\x : Else : \clip\width = \width - (\clip\x-\x) : EndIf
-        If clip_height And (\y+\height) > clip_height : \clip\height = clip_height - \clip\y : Else : \clip\height = \height - (\clip\y-\y) : EndIf
-          
-        
-        
-;         ; set clip coordinate
-;         If \Parent And \x < \Parent\clip\x+\Parent\bs : \clip\x = \Parent\clip\x+\Parent\bs : Else : \clip\x = \x : EndIf
-;         If \Parent And \y < \Parent\clip\y+\Parent\bs+\Parent\TabHeight : \clip\y = \Parent\clip\y+\Parent\bs+\Parent\TabHeight : Else : \clip\y = \y : EndIf
-;         
-;         If \Parent And \Parent\Scroll And \Parent\Scroll\v And \Parent\Scroll\h
-;           Protected v=Bool(\Parent\width=\Parent\clip\width And Not \Parent\Scroll\v\Hide And \Parent\Scroll\v\type = #PB_GadgetType_ScrollBar)*(\Parent\Scroll\v\width) ;: If Not v : v = \Parent\bs : EndIf
-;           Protected h=Bool(\Parent\height=\Parent\clip\height And Not \Parent\Scroll\h\Hide And \Parent\Scroll\h\type = #PB_GadgetType_ScrollBar)*(\Parent\Scroll\h\height) ;: If Not h : h = \Parent\bs : EndIf
-;         EndIf
-;         
-;         If \Parent And \x+\width>\Parent\clip\x+\Parent\clip\width-v-\Parent\bs : \clip\width = \Parent\clip\width-v-\Parent\bs-(\clip\x-\Parent\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
-;         If \Parent And \y+\height>=\Parent\clip\y+\Parent\clip\height-h-\Parent\bs : \clip\height = \Parent\clip\height-h-\Parent\bs-(\clip\y-\Parent\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
         
         ; Resize scrollbars
         If \Scroll And \Scroll\v And \Scroll\h
@@ -8683,77 +8688,80 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       ;       BindGadgetEvent(1, @Canvas_CallBack())
       ;       If OpenList(0, 1, #PB_GadgetType_Window)
-      Define Editable = #PB_Flag_AnchorsGadget
+      Define Editable ;= #PB_Flag_AnchorsGadget
       
-      If Open(0, 10,10, 580, 550," root ")
-        Define i, *combo=ComboBox(10, 10, 160,70) 
-        AddItem(*combo, -1, "ComboBox_"+Str(#PB_GadgetType_ComboBox)) 
-        For i=1 To 5 : AddItem(*combo, i, "item_"+Str(i)) : Next 
-        SetState(*combo, 0) 
+      If Open(0, 10,10, 580, 550);," root ")
+;         Define i, *combo=ComboBox(10, 10, 160,70) 
+;         AddItem(*combo, -1, "ComboBox_"+Str(#PB_GadgetType_ComboBox)) 
+;         For i=1 To 5 : AddItem(*combo, i, "item_"+Str(i)) : Next 
+;         SetState(*combo, 0) 
+;         
+; ;         Define w=Window(150, 50, 280, 200, "Window_1", Editable)
+; ;         
+; ;         *i.Widget_S  = Image(0, 0, 0, 0, 0)
+; ;         *s.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : closelist() : SetState(*s\Scroll\h, 45)
+; ;         *p.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*p, 50)
+; ;         
+; ;         *sp.Widget_S = Splitter(10, 10, 360,  330, *i, *s)
+; ;         *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical|#PB_Flag_AutoSize)
+;         
+        Window(180, 100, 280, 200, "Window_2", Editable)
         
-        Define w=Window(150, 50, 280, 200, "Window_1", Editable)
+        Container(10,10,280-60, 200-60, Editable)
+        Container(10,10,280-60-25, 200-60-25, Editable)
+        Container(10,10,280-60, 200-60, Editable)
+        Container(10,10,280-60, 200-60, Editable)
+        Button(50, 10, 280-60, 20, "Button_1_container", Editable)
         
-        *i.Widget_S  = Image(0, 0, 0, 0, 0)
-        *s.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : closelist() : SetState(*s\Scroll\h, 45)
-        *p.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*p, 50)
-        
-        *sp.Widget_S = Splitter(10, 10, 360,  330, *i, *s)
-        *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical|#PB_Flag_AutoSize)
-        
-        Window(280, 100, 280, 200, "Window_2", Editable)
-        
-        Container(30,30,280-60, 200-60, Editable)
-        Container(20,20,280-60, 200-60, Editable)
-        Button(100, 20, 80, 80, "Button_1", Editable)
-        Button(130, 80, 80, 80, "Button_2", Editable)
-        Button(70, 80, 80, 80, "Button_3", Editable)
+        CloseList()
+        CloseList()
         CloseList()
         CloseList()
         
-        Window(20, 150, 280, 200, "Window_3", Editable)
-        
-        ScrollArea(30,30,280-60, 200-60, 300, 250)
-        SetState(Option(10, 10, 100, 21, "Option_2", Editable), 1)
-        SetState(Option(10, 30, 100, 21, "Option_2", Editable), 1)
-        
-        Button(100, 20, 80, 80, "Button_1", Editable)
-        Button(130, 80, 80, 80, "Button_2", Editable)
-        Button(70, 80, 80, 80, "Button_3", Editable)
-        CloseList()
-        
-        Window(300, 280, 230, 230, "Window_4", Editable)
-        Define i,*g1 = Tree(10, 10, 210, 210, #PB_Flag_CheckBoxes)                                         
-        AddItem(*g1, 0, "Tree_0", 0 )
-        AddItem(*g1, 1, "Tree_1_1", 0, 1) 
-        AddItem(*g1, 4, "Tree_1_1_1", 0, 2) 
-        AddItem(*g1, 5, "Tree_1_1_2uuuuuuuuuuuuuuuuu", 0, 2) 
-        AddItem(*g1, 6, "Tree_1_1_2_1", 0, 3) 
-        AddItem(*g1, 8, "Tree_1_1_2_1_1_4 and scroll end", 0, 4) 
-        AddItem(*g1, 7, "Tree_1_1_2_2", 0, 3) 
-        AddItem(*g1, 2, "Tree_1_2", 0, 1) 
-        AddItem(*g1, 3, "Tree_1_3", 0, 1) 
-        AddItem(*g1, 9, "Tree_2 ",0 )
-        AddItem(*g1, 10, "Tree_3", 0 )
-        For i=11 To 17
-          AddItem(*g1, i, "Tree_"+Str(i), 0 )
-        Next
-        
-        Window(10, 250, 380, 230, "Window_4", Editable)
-        Define i,*g1 = Tree(10, 10, 210, 210, #PB_Flag_CheckBoxes)                                         
-        ;g = 13
-        *g1 = ListIcon(10, 10, 360, 210,"Column_1",90, #PB_Flag_FullSelection|#PB_Flag_GridLines|#PB_Flag_CheckBoxes)                                     
-        
-        ;HideGadget(g,1)
-        For i=1 To 2
-          AddColumn(*g1, i,"Column_"+Str(i+1),90)
-        Next
-        ; 1_example
-        For i=0 To 15
-          AddItem(*g1, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                           
-        Next
-        
-        
-        SetPosition(w, #PB_List_Last)
+;         Window(20, 150, 280, 200, "Window_3", Editable)
+;         
+;         ScrollArea(30,30,280-60, 200-60, 300, 250)
+;         SetState(Option(10, 10, 100, 21, "Option_2", Editable), 1)
+;         SetState(Option(10, 30, 100, 21, "Option_2", Editable), 1)
+;         
+;         Button(100, 20, 80, 80, "Button_1", Editable)
+;         Button(130, 80, 80, 80, "Button_2", Editable)
+;         Button(70, 80, 80, 80, "Button_3", Editable)
+;         CloseList()
+;         
+;         Window(300, 280, 230, 230, "Window_4", Editable)
+;         Define i,*g1 = Tree(10, 10, 210, 210, #PB_Flag_CheckBoxes)                                         
+;         AddItem(*g1, 0, "Tree_0", 0 )
+;         AddItem(*g1, 1, "Tree_1_1", 0, 1) 
+;         AddItem(*g1, 4, "Tree_1_1_1", 0, 2) 
+;         AddItem(*g1, 5, "Tree_1_1_2uuuuuuuuuuuuuuuuu", 0, 2) 
+;         AddItem(*g1, 6, "Tree_1_1_2_1", 0, 3) 
+;         AddItem(*g1, 8, "Tree_1_1_2_1_1_4 and scroll end", 0, 4) 
+;         AddItem(*g1, 7, "Tree_1_1_2_2", 0, 3) 
+;         AddItem(*g1, 2, "Tree_1_2", 0, 1) 
+;         AddItem(*g1, 3, "Tree_1_3", 0, 1) 
+;         AddItem(*g1, 9, "Tree_2 ",0 )
+;         AddItem(*g1, 10, "Tree_3", 0 )
+;         For i=11 To 17
+;           AddItem(*g1, i, "Tree_"+Str(i), 0 )
+;         Next
+;         
+;         Window(10, 250, 380, 230, "Window_4", Editable)
+;         Define i,*g1 = Tree(10, 10, 210, 210, #PB_Flag_CheckBoxes)                                         
+;         ;g = 13
+;         *g1 = ListIcon(10, 10, 360, 210,"Column_1",90, #PB_Flag_FullSelection|#PB_Flag_GridLines|#PB_Flag_CheckBoxes)                                     
+;         
+;         ;HideGadget(g,1)
+;         For i=1 To 2
+;           AddColumn(*g1, i,"Column_"+Str(i+1),90)
+;         Next
+;         ; 1_example
+;         For i=0 To 15
+;           AddItem(*g1, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                           
+;         Next
+;         
+;         
+;         SetPosition(w, #PB_List_Last)
         ReDraw(Root())
       EndIf
       
@@ -8811,5 +8819,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------04----------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
