@@ -52,7 +52,9 @@ CompilerIf #PB_Compiler_IsMainFile
         CloseList()
         CloseList()
         CloseList()
-
+        
+        
+        
         ReDraw(Root())
       EndIf
       

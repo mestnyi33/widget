@@ -896,25 +896,33 @@ CompilerIf #PB_Compiler_IsMainFile
     Define i,a,g = 1
     ;{ - gadget
     TreeGadget(g, 10, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
-    ; 1_example
-    AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
-    AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)      
-    AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)         
-    AddGadgetItem(g, -1, "Sub-Item 2", 0, 11)
-    AddGadgetItem(g, -1, "Sub-Item 3", 0, 1)
-    AddGadgetItem(g, -1, "Sub-Item 4", 0, 1)         
-    AddGadgetItem(g, -1, "Sub-Item 5", 0, 11)
-    AddGadgetItem(g, -1, "Sub-Item 6", 0, 1)
-    AddGadgetItem(g, -1, "File "+Str(a), 0, 0) 
+;     ; 1_example
+;     AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
+;     AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)      
+;     AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)         
+;     AddGadgetItem(g, -1, "Sub-Item 2", 0, 11)
+;     AddGadgetItem(g, -1, "Sub-Item 3", 0, 1)
+;     AddGadgetItem(g, -1, "Sub-Item 4", 0, 1)         
+;     AddGadgetItem(g, -1, "Sub-Item 5", 0, 11)
+;     AddGadgetItem(g, -1, "Sub-Item 6", 0, 1)
+;     AddGadgetItem(g, -1, "File "+Str(a), 0, 0) 
+    
+     AddGadgetItem(g, 0, "Tree_0 (NoButtons)", 0 )
+    AddGadgetItem(g, 1, "Tree_1_1", 0, 1) 
+    AddGadgetItem(g, 2, "Tree_2_2", 0, 2) 
+    AddGadgetItem(g, 3, "Tree_3_3", 0, 3) 
+    AddGadgetItem(g, 4, "Tree_4_2", 0, 2) 
+    AddGadgetItem(g, 4, "Tree_4_3", 0, 3) 
+    
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
-    ; RemoveGadgetItem(g,1)
-    SetGadgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
-    BindGadgetEvent(g, @Events())
-    
-    ;SetActiveGadget(g)
-    ;SetGadgetState(g, 1)
-    ;     Debug "g "+ GetGadgetText(g)
+;     ; RemoveGadgetItem(g,1)
+;     SetGadgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+;     BindGadgetEvent(g, @Events())
+;     
+;     ;SetActiveGadget(g)
+;     ;SetGadgetState(g, 1)
+;     ;     Debug "g "+ GetGadgetText(g)
     
     g = 2
     TreeGadget(g, 230, 10, 210, 210, #PB_Tree_AlwaysShowSelection)                                         
@@ -1009,23 +1017,31 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(g, @CallBacks())
     
     *g = Create(g, -1, 10, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
-    ; 1_example
-    AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
-    AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-    AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 2", -1, 11)
-    AddItem (*g, -1, "Sub-Item 3", -1, 1)
-    AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 5", -1, 11)
-    AddItem (*g, -1, "Sub-Item 6", -1, 1)
-    AddItem (*g, -1, "File "+Str(a), -1, 0)  
+;     ; 1_example
+;     AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
+;     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+;     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+;     AddItem (*g, -1, "Sub-Item 2", -1, 11)
+;     AddItem (*g, -1, "Sub-Item 3", -1, 1)
+;     AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
+;     AddItem (*g, -1, "Sub-Item 5", -1, 11)
+;     AddItem (*g, -1, "Sub-Item 6", -1, 1)
+;     AddItem (*g, -1, "File "+Str(a), -1, 0)  
+    
+    AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g, 1, "Tree_1_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    AddItem(*g, 3, "Tree_3_3", -1, 3) 
+    AddItem(*g, 4, "Tree_4_2", -1, 2) 
+    AddItem(*g, 4, "Tree_4_3", -1, 3) 
+    
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
-    ; RemoveItem(*g,1)
-    Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
-    BindGadgetEvent(g, @Events())
-    ;Tree::SetState(*g, 1)
-    ;Tree::SetState(*g, -1)
+;     ; RemoveItem(*g,1)
+;     Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+;     BindGadgetEvent(g, @Events())
+;     ;Tree::SetState(*g, 1)
+;     ;Tree::SetState(*g, -1)
     
     
     *g = Create(g, -1, 230, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
@@ -1054,23 +1070,40 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; ClearItems(*g)
     
-    *g = Create(g, -1, 450, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes |#PB_Flag_NoLines|#PB_Flag_NoButtons )    ;                                
-                                                                                                                                                            ;   ;  2_example
-                                                                                                                                                            ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
-                                                                                                                                                            ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
-                                                                                                                                                            ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
-                                                                                                                                                            ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
-                                                                                                                                                            ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
+    *g = Create(g, -1, 450, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes); |#PB_Flag_NoLines|#PB_Flag_NoButtons )    ;                                
+; ;                                                                                                                                                             ;   ;  2_example
+; ;                                                                                                                                                             ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
+; ;                                                                                                                                                             ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
+; ;                                                                                                                                                             ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
+; ;                                                                                                                                                             ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
+; ;                                                                                                                                                             ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
+; ;     
+; ;     ;  2_example
+; ;     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
+; ;     For i=1 To 20
+; ;       If i=5
+; ;         AddItem(*g, -1, "Tree_"+Str(i), -1) 
+; ;       Else
+; ;         AddItem(*g, -1, "Tree_"+Str(i), 0) 
+; ;       EndIf
+; ;     Next
     
-    ;  2_example
-    AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
-    For i=1 To 20
-      If i=5
-        AddItem(*g, -1, "Tree_"+Str(i), -1) 
-      Else
-        AddItem(*g, -1, "Tree_"+Str(i), 0) 
-      EndIf
-    Next
+    *g2 = *g
+     AddItem(*g2, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g2, 1, "Tree_1_1", -1, 1) 
+    AddItem(*g2, 2, "Tree_2_2", -1, 2) 
+    AddItem(*g2, 3, "Tree_3_2", -1, 2) 
+    AddItem(*g2, 4, "Tree_4_3", -1, 3) 
+    AddItem(*g2, 5, "Tree_5_2", -1, 2) 
+    AddItem(*g2, 5, "Tree_5_3", -1, 3) 
+    AddItem(*g2, 7, "Tree_7_2", -1, 2) 
+    AddItem(*g2, 8, "Tree_8_2", -1, 2) 
+    AddItem(*g2, 6, "Tree_6_3", -1, 3) 
+    AddItem(*g2, 7, "Tree_7_3", -1, 3) 
+    AddItem(*g2, 8, "Tree_8_4", -1, 4) 
+    AddItem(*g2, 12, "Tree_12_2", -1, 2) 
+    AddItem(*g2, 9, "Tree_9_4", -1, 4) 
+  
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
     *g = Create(g, -1, 670, 10, 210, 210, "", #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
@@ -1148,5 +1181,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -8--------------------
+; Folding = ----------------------
 ; EnableXP

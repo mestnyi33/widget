@@ -5,8 +5,8 @@ UseModule Widget
 Procedure Gadget(Window, X,Y,Width,Height, Flag=0)
   Open(0, X,Y,Width,Height,"")
   Root() = Tree(0, 0, Width,Height, Flag)
-  PostEvent(#PB_Event_Gadget, 0, Display(), #PB_EventType_Repaint)
-  ProcedureReturn Root()\Canvas\Gadget
+  PostEvent(#PB_Event_Gadget, 0, RootGadget(), #PB_EventType_Repaint)
+  ProcedureReturn Root()\Canvas
 EndProcedure
 #PB_Flag_AlwaysSelection=40
 #PB_Flag_BorderLess = 1
@@ -217,22 +217,38 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 12
     Gadget(g, 450, 230, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes)    ; |#PB_Flag_NoLines|#PB_Flag_NoButtons                                    
     *g = GetGadgetData(g)
-    ;   ;  2_example
-    ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
-    ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
-    ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
-    ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
-    ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
-    
-    ;  2_example
-    AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
-    For i=1 To 20
-      If i=5
-        AddItem(*g, -1, "Tree_"+Str(i), -1) 
-      Else
-        AddItem(*g, -1, "Tree_"+Str(i), 0) 
-      EndIf
-    Next
+; ;     ;   ;  2_example
+; ;     ;   AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                    
+; ;     ;   AddItem (*g, 1, "Node "+Str(a), -1, 1)                                           
+; ;     ;   AddItem (*g, 4, "Sub-Item 1", -1, 2)                                            
+; ;     ;   AddItem (*g, 2, "Sub-Item 2", -1, 1)
+; ;     ;   AddItem (*g, 3, "Sub-Item 3", -1, 1)
+; ;     
+; ;     ;  2_example
+; ;     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
+; ;     For i=1 To 20
+; ;       If i=5
+; ;         AddItem(*g, -1, "Tree_"+Str(i), -1) 
+; ;       Else
+; ;         AddItem(*g, -1, "Tree_"+Str(i), 0) 
+; ;       EndIf
+; ;     Next
+    *g2 = *g
+     AddItem(*g2, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g2, 1, "Tree_1_1", -1, 1) 
+    AddItem(*g2, 2, "Tree_2_2", -1, 2) 
+    AddItem(*g2, 3, "Tree_3_2", -1, 2) 
+    AddItem(*g2, 4, "Tree_4_3", -1, 3) 
+    AddItem(*g2, 5, "Tree_5_2", -1, 2) 
+    AddItem(*g2, 5, "Tree_5_3", -1, 3) 
+    AddItem(*g2, 7, "Tree_7_2", -1, 2) 
+    AddItem(*g2, 8, "Tree_8_2", -1, 2) 
+    AddItem(*g2, 6, "Tree_6_3", -1, 3) 
+    AddItem(*g2, 7, "Tree_7_3", -1, 3) 
+    AddItem(*g2, 8, "Tree_8_4", -1, 4) 
+    AddItem(*g2, 12, "Tree_12_2", -1, 2) 
+    AddItem(*g2, 9, "Tree_9_4", -1, 4) 
+  
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
     g = 13

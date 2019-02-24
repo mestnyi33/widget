@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         ForEach List()
 ;           If Canvas = List()\Widget\Canvas\Gadget
         
-        *This = at(*Window, MouseX, MouseY)
+        *This = From(*Window, MouseX, MouseY)
         If *This
           Result | CallBack(*This, EventType()) 
         EndIf
@@ -229,5 +229,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = dv9
+; Folding = 0v9
 ; EnableXP

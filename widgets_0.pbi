@@ -4955,18 +4955,38 @@ Module Widget
           
         EndIf 
         
-        ; set clip coordinate
-        If \p And \x < \p\clip\x+\p\bs : \clip\x = \p\clip\x+\p\bs : Else : \clip\x = \x : EndIf
-        If \p And \y < \p\clip\y+\p\bs+\p\TabHeight : \clip\y = \p\clip\y+\p\bs+\p\TabHeight : Else : \clip\y = \y : EndIf
+;         ; set clip coordinate
+;         If \p And \x < \p\clip\x+\p\bs : \clip\x = \p\clip\x+\p\bs : Else : \clip\x = \x : EndIf
+;         If \p And \y < \p\clip\y+\p\bs+\p\TabHeight : \clip\y = \p\clip\y+\p\bs+\p\TabHeight : Else : \clip\y = \y : EndIf
+;         
+;         If \p And \p\s And \p\s\v And \p\s\h
+;           Protected v=Bool(\p\width=\p\clip\width And Not \p\s\v\Hide And \p\s\v\type = #PB_GadgetType_ScrollBar)*(\p\s\v\width) ;: If Not v : v = \p\bs : EndIf
+;           Protected h=Bool(\p\height=\p\clip\height And Not \p\s\h\Hide And \p\s\h\type = #PB_GadgetType_ScrollBar)*(\p\s\h\height) ;: If Not h : h = \p\bs : EndIf
+;         EndIf
+;         
+;         If \p And \x+\width>\p\clip\x+\p\clip\width-v-\p\bs : \clip\width = \p\clip\width-v-\p\bs-(\clip\x-\p\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
+;         If \p And \y+\height>=\p\clip\y+\p\clip\height-h-\p\bs : \clip\height = \p\clip\height-h-\p\bs-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
         
-        If \p And \p\s And \p\s\v And \p\s\h
-          Protected v=Bool(\p\width=\p\clip\width And Not \p\s\v\Hide And \p\s\v\type = #PB_GadgetType_ScrollBar)*(\p\s\v\width) ;: If Not v : v = \p\bs : EndIf
-          Protected h=Bool(\p\height=\p\clip\height And Not \p\s\h\Hide And \p\s\h\type = #PB_GadgetType_ScrollBar)*(\p\s\h\height) ;: If Not h : h = \p\bs : EndIf
+        ; set clip coordinate
+        If \p 
+          Protected v,h,clip_x, clip_y, clip_width, clip_height
+          
+          If \p\s 
+            If \p\s\v : v = Bool(\p\width=\p\clip\width And Not \p\s\v\Hide And \p\s\v\type = #PB_GadgetType_ScrollBar)*(\p\s\v\width) : EndIf
+            If \p\s\h : h = Bool(\p\height=\p\clip\height And Not \p\s\h\Hide And \p\s\h\type = #PB_GadgetType_ScrollBar)*(\p\s\h\height) : EndIf
+          EndIf
+          
+          clip_x = \p\clip\x+Bool(\p\clip\x<\p\x+\p\bs)*\p\bs
+          clip_y = \p\clip\y+Bool(\p\clip\y<\p\y+\p\bs)*(\p\bs+\p\TabHeight) 
+          clip_width = ((\p\clip\x+\p\clip\width)-Bool((\p\clip\x+\p\clip\width)>(\p\x[2]+\p\width[2]))*\p\bs)-v 
+          clip_height = ((\p\clip\y+\p\clip\height)-Bool((\p\clip\y+\p\clip\height)>(\p\y[2]+\p\height[2]))*\p\bs)-h 
         EndIf
         
-        If \p And \x+\width>\p\clip\x+\p\clip\width-v-\p\bs : \clip\width = \p\clip\width-v-\p\bs-(\clip\x-\p\clip\x) : Else : \clip\width = \width-(\clip\x-\x) : EndIf
-        If \p And \y+\height>=\p\clip\y+\p\clip\height-h-\p\bs : \clip\height = \p\clip\height-h-\p\bs-(\clip\y-\p\clip\y) : Else : \clip\height = \height-(\clip\y-\y) : EndIf
-        
+        If clip_x And \x < clip_x : \clip\x = clip_x : Else : \clip\x = \x : EndIf
+        If clip_y And \y < clip_y : \clip\y = clip_y : Else : \clip\y = \y : EndIf
+        If clip_width And (\x+\width) > clip_width : \clip\width = clip_width - \clip\x : Else : \clip\width = \width - (\clip\x-\x) : EndIf
+        If clip_height And (\y+\height) > clip_height : \clip\height = clip_height - \clip\y : Else : \clip\height = \height - (\clip\y-\y) : EndIf
+         
         ; Resize scrollbars
         If \s 
           Resizes(\s, 0,0, \Width[2],\Height[2])
@@ -7286,5 +7306,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------f---------------------0------------------------------------------------------------------+-----------------
+; Folding = --------------------------------------------f---------------------0-----------------------------------8------------------------------4-----------------
 ; EnableXP

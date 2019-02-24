@@ -803,10 +803,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 600)
     Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
     BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), Window_0)
-    WE_Selecting = TreeGadget(#PB_Any, 600, 40, 190, 185, #PB_Tree_AlwaysShowSelection)
-    AddGadgetItem(WE_Selecting, -1, "Proect")
     
-    If Open(Window_0, 10, 40, 580, 550, "IDE") 
+    WE_Selecting = TreeGadget(#PB_Any, 600, 40, 190, 185, #PB_Tree_AlwaysShowSelection) : AddGadgetItem(WE_Selecting, -1, "Proect")
+    
+    If Open(Window_0, 10, 40, 580+200, 550, "IDE") 
       Canvas_0 = RootGadget()
       
       ;       ; Main panel
