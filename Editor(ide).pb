@@ -1397,6 +1397,7 @@ Procedure CO_Create(Type$, X, Y, Parent=-1)
     Protected Parser.Parser_S = AddElement(ParsePBObject())
     If  Parser
       Restore Model 
+      
       For i=1 To 1+33 ; gadget count
         For j=1 To 7  ; i.i count
           Read.s Buffer
@@ -3280,5 +3281,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Wend
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0---v--------------vf-f-----------0---------------------+--+----8------
+; Folding = 0---v--------------vf-f--------f--0---------------------+--+----8------
 ; EnableXP

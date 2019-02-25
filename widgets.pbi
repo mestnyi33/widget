@@ -201,7 +201,7 @@ DeclareModule Widget
   ;- - Items_S
   Structure Items_S Extends Coordinate_S
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    *a.Items_S
+    *i_Parent.Items_S
     Drawing.i
     
     Image.Image_S
@@ -235,6 +235,8 @@ DeclareModule Widget
     Canvas.i
     CanvasWindow.i
     
+    Type_Index.i
+    
     index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
     adress.i
     Drawing.i
@@ -245,11 +247,12 @@ DeclareModule Widget
     State.i
     o_i.i ; parent opened item
     ParentItem.i ; index parent tab item
-    *a.Items_S
+    *i_Parent.Items_S
     *data
     
     *Deactive.Widget_S
     *Leave.Widget_S
+    at.i
     
     *Popup.Widget_S
     *anchor.Anchor_S[#Anchors+1]
@@ -732,6 +735,8 @@ DeclareModule Widget
   Declare.i ListIcon(X.i,Y.i,Width.i,Height.i, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
   Declare.i Popup(*Widget.Widget_S, X.i,Y.i,Width.i,Height.i, Flag.i=0)
   Declare.i Window(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget.Widget_S=0)
+  Declare.i Create(Type.i, X.i,Y.i,Width.i,Height.i, Text.s, Param_1.i=0, Param_2.i=0, Param_3.i=0, Flag.i=0, Parent.i=0, ParentItem.i=0)
+  
   
   Declare.i CloseList()
   Declare.i OpenList(*This.Widget_S, Item.i=0, Type=-5)
@@ -906,24 +911,35 @@ Module Widget
     : If _this_\Box : If _this_\Vertical And Bool(_this_\Type <> #PB_GadgetType_Spin) : _this_\Box\y[3] = _this_\Thumb\Pos : Else : _this_\Box\x[3] = _this_\Thumb\Pos : EndIf : EndIf
   EndMacro
   
-  Macro PagePos(_this_, _state_)
-    If _state_ < _this_\Min : _this_\Page\Pos = _this_\Min : EndIf
-    
-    If _state_ > _this_\Max-_this_\Page\len
-      If _this_\Max > _this_\Page\len 
-        _this_\Page\Pos = _this_\Max-_this_\Page\len
-      Else
-        _this_\Page\Pos = _this_\Min 
+  Procedure PagePos(*This.Widget_S, State.i)
+    With *This
+      If State < \Min : State = \Min : EndIf
+      
+      If State > \Max-\Page\len
+        If \Max > \Page\len 
+          State = \Max-\Page\len
+        Else
+          State = \Min 
+        EndIf
       EndIf
-    EndIf
-  EndMacro
+    EndWith
+    
+    ProcedureReturn State
+  EndProcedure
   
   Procedure.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
     ProcedureReturn ((Bool(Value>Max) * Max) + (Bool(Grid And Value<Max) * (Round((Value/Grid), #PB_Round_Nearest) * Grid)))
   EndProcedure
   
   Macro AddChildren(_parent_, _this_)
-    LastElement(_parent_\Childrens()) : If AddElement(_parent_\Childrens()) : _parent_\Childrens() = _this_  : _parent_\Childrens()\adress = @_parent_\Childrens() : _parent_\CountItems + 1 : EndIf
+    LastElement(_parent_\Childrens()) 
+    _this_\index = _this_\Root\CountItems 
+    _this_\adress = AddElement(_parent_\Childrens())
+    If _this_\adress
+      _parent_\Childrens() = _this_ 
+      _this_\Root\CountItems + 1 
+      _parent_\CountItems + 1 
+    EndIf
   EndMacro
   
   ;-
@@ -1701,7 +1717,7 @@ Module Widget
     Next
   EndMacro
   
-  Procedure Tree_AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+  Procedure AddItem_Tree(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
     Static *last.Items_S
     
     If Not *This
@@ -1721,10 +1737,6 @@ Module Widget
         EndIf
         InsertElement(\items())
         
-;         If *last And sublevel >= *last\sublevel
-;           \a = *last
-;         EndIf
-;         
         PushListPosition(\items())
         While NextElement(\items())
           \items()\index = ListIndex(\items())
@@ -1749,28 +1761,27 @@ Module Widget
         PushListPosition(\Items())
         While PreviousElement(\Items()) 
           If subLevel = \Items()\subLevel
-            \a = \Items()\a
+            \i_Parent = \Items()\i_Parent
             Break
           ElseIf subLevel > \Items()\subLevel
-            \a = \Items()
+            \i_Parent = \Items()
             Break
           EndIf
         Wend 
-        
-        If \a
-          If subLevel > \a\subLevel
-            sublevel = \a\sublevel + 1
-            \a\childrens + 1
-            ;  \a\Box\Checked = 1
-            ;  \a\hide = 1
+        PopListPosition(\Items())
+       
+        If \i_Parent
+          If subLevel > \i_Parent\subLevel
+            sublevel = \i_Parent\sublevel + 1
+            \i_Parent\childrens + 1
+            ;  \i_Parent\Box\Checked = 1
+            ;  \i_Parent\hide = 1
           EndIf
         EndIf
-        PopListPosition(\Items())
       Else                                      
-        \a = first
+        \i_Parent = first
       EndIf
       
-      \Items()\a = \a
       \items()\change = 1
       \items()\index= Item
       \items()\index[1] =- 1
@@ -1778,6 +1789,7 @@ Module Widget
       \items()\text\string.s = Text.s
       \items()\sublevel = sublevel
       \items()\height = \Text\height
+      \Items()\i_Parent = \i_Parent
       
       Set_Image(\items(), Image)
       
@@ -1793,7 +1805,7 @@ Module Widget
     ProcedureReturn Item
   EndProcedure
   
-  Procedure ListIcon_AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+  Procedure AddItem_ListIcon(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
     Static *last.Items_S
     Static adress.i
     Protected Childrens.i, hide.b, height.i
@@ -1821,13 +1833,13 @@ Module Widget
         Else
           SelectElement(\Columns()\items(), Item)
           ;       PreviousElement(\Columns()\items())
-          ;       If \a\sublevel = \Columns()\items()\sublevel
-          ;          \a = \Columns()\items()
+          ;       If \i_Parent\sublevel = \Columns()\items()\sublevel
+          ;          \i_Parent = \Columns()\items()
           ;       EndIf
           
           ;       SelectElement(\Columns()\items(), Item)
-          If \a\sublevel = *last\sublevel
-            \a = *last
+          If \i_Parent\sublevel = *last\sublevel
+            \i_Parent = *last
           EndIf
           
           If \Columns()\items()\sublevel>sublevel
@@ -1852,28 +1864,28 @@ Module Widget
           EndIf
         EndIf
         
-        If \a
-          If subLevel = \a\subLevel 
-            \Columns()\items()\a = \a\a
-          ElseIf subLevel > \a\subLevel 
-            \Columns()\items()\a = \a
+        If \i_Parent
+          If subLevel = \i_Parent\subLevel 
+            \Columns()\items()\i_Parent = \i_Parent\i_Parent
+          ElseIf subLevel > \i_Parent\subLevel 
+            \Columns()\items()\i_Parent = \i_Parent
             *last = \Columns()\items()
-          ElseIf \a\a
-            \Columns()\items()\a = \a\a\a
+          ElseIf \i_Parent\i_Parent
+            \Columns()\items()\i_Parent = \i_Parent\i_Parent\i_Parent
           EndIf
           
-          If \Columns()\items()\a And subLevel > \Columns()\items()\a\subLevel
-            sublevel = \Columns()\items()\a\sublevel + 1
-            \Columns()\items()\a\childrens + 1
-            ;             \Columns()\items()\a\Box\Checked = 1
+          If \Columns()\items()\i_Parent And subLevel > \Columns()\items()\i_Parent\subLevel
+            sublevel = \Columns()\items()\i_Parent\sublevel + 1
+            \Columns()\items()\i_Parent\childrens + 1
+            ;             \Columns()\items()\i_Parent\Box\Checked = 1
             ;             \Columns()\items()\hide = 1
           EndIf
         Else
-          \Columns()\items()\a = \Columns()\items()
+          \Columns()\items()\i_Parent = \Columns()\items()
         EndIf
         
         
-        \a = \Columns()\items()
+        \i_Parent = \Columns()\items()
         \Columns()\items()\change = 1
         \Columns()\items()\index= Item
         \Columns()\items()\index[1] =- 1
@@ -1914,7 +1926,7 @@ Module Widget
     ProcedureReturn Item
   EndProcedure
   
-  Procedure Property_AddItem(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
+  Procedure AddItem_Property(*This.Widget_S,Item.i,Text.s,Image.i=-1,sublevel.i=0)
     Static *adress.Items_S
     
     If Not *This
@@ -1954,7 +1966,7 @@ Module Widget
         PushListPosition(\items()) 
         While PreviousElement(\items()) 
           If subLevel = \items()\subLevel
-            *adress = \items()\a
+            *adress = \items()\i_Parent
             Break
           ElseIf subLevel > \items()\subLevel
             *adress = \items()
@@ -1976,7 +1988,7 @@ Module Widget
       \items()\change = 1
       \items()\index= Item
       \items()\index[1] =- 1
-      \items()\a = *adress
+      \items()\i_Parent = *adress
       \items()\text\change = 1
       
       Protected Type$ = Trim(StringField(Text, 1, " "))
@@ -2001,22 +2013,22 @@ Module Widget
     ProcedureReturn Item
   EndProcedure
   
-  Procedure InitEvent( *This.Widget_S)
+  Procedure Init_Event( *This.Widget_S)
     If *This
       With *This
         If ListSize(\Childrens())
           ForEach \Childrens()
             If \Childrens()\Deactive
               If \Childrens()\Deactive <> \Childrens()
-                Events(\Childrens()\Deactive, \Childrens()\Deactive\index[1], #PB_EventType_LostFocus, 0, 0)
+                Events(\Childrens()\Deactive, \Childrens()\Deactive\at, #PB_EventType_LostFocus, 0, 0)
               EndIf
               
-              Events(\Childrens(), \Childrens()\index[1], #PB_EventType_Focus, 0, 0)
+              Events(\Childrens(), \Childrens()\at, #PB_EventType_Focus, 0, 0)
               \Childrens()\Deactive = 0
             EndIf
             
             If ListSize(\Childrens()\Childrens())
-              InitEvent(\Childrens())
+              Init_Event(\Childrens())
             EndIf
           Next
         EndIf
@@ -2072,8 +2084,8 @@ Module Widget
             While NextElement(*Item())
               If sublevel = *Item()\sublevel
                 Break
-              ElseIf sublevel < *Item()\sublevel And *Item()\a
-                *Item()\hide = Bool(*Item()\a\Box\Checked Or *Item()\a\hide) * 1
+              ElseIf sublevel < *Item()\sublevel And *Item()\i_Parent
+                *Item()\hide = Bool(*Item()\i_Parent\Box\Checked Or *Item()\i_Parent\hide) * 1
               EndIf
             Wend
             PopListPosition(*Item())
@@ -3066,13 +3078,13 @@ Module Widget
                   Line(x_point,y_point,line_size,1, point_color&$FFFFFF|alpha<<24)
                   
                   ; Vertical plot
-                  If \items()\a 
+                  If \items()\i_Parent 
                     start=Bool(Not \items()\sublevel)
                     
                     If start 
-                      start = (\y+\fs*2+\items()\a\height/2)-\Scroll\v\Page\Pos
+                      start = (\y+\fs*2+\items()\i_Parent\height/2)-\Scroll\v\Page\Pos
                     Else 
-                      start = \items()\a\y+\items()\a\height+\items()\a\height/2-line_size
+                      start = \items()\i_Parent\y+\items()\i_Parent\height+\items()\i_Parent\height/2-line_size
                     EndIf
                     
                     Line(x_point,start,1,y_point-start, point_color&$FFFFFF|alpha<<24)
@@ -3327,13 +3339,13 @@ Module Widget
                   Line(x_point,y_point,\Flag\Lines,1, point_color&$FFFFFF|alpha<<24)
                   
                   ; Vertical plot
-                  If \items()\a 
+                  If \items()\i_Parent 
                     start=Bool(Not \items()\sublevel)
                     
                     If start 
-                      start = (\y+\fs*2+\items()\a\height/2)-\Scroll\v\Page\Pos
+                      start = (\y+\fs*2+\items()\i_Parent\height/2)-\Scroll\v\Page\Pos
                     Else 
-                      start = \items()\a\y+\items()\a\height+\items()\a\height/2-\Flag\Lines
+                      start = \items()\i_Parent\y+\items()\i_Parent\height+\items()\i_Parent\height/2-\Flag\Lines
                     EndIf
                     
                     Line(x_point,start,1,y_point-start, point_color&$FFFFFF|alpha<<24)
@@ -4215,7 +4227,7 @@ Module Widget
   
   Procedure.i ReDraw(*This.Widget_S)
     With *This     
-      InitEvent(*This)
+      Init_Event(*This)
       
       If StartDrawing(CanvasOutput(\Root\Canvas))
         ;DrawingMode(#PB_2DDrawing_Default)
@@ -4237,131 +4249,6 @@ Module Widget
   ;-
   ;- ADD & GET & SET
   ;-
-  Procedure.i From(*This.Widget_S, MouseX.i, MouseY.i)
-    Protected *Result.Widget_S, X.i,Y.i,Width.i,Height.i, ParentItem.i
-    
-    If Not *This
-      *This = GetGadgetData(EventGadget())
-    EndIf
-    
-    With *This
-      If *This And ListSize(\Childrens()) ; \CountItems ; Not *Value\Mouse\Buttons
-        ParentItem = Bool(\Type = #PB_GadgetType_Panel) * \index[2]
-        
-        PushListPosition(\Childrens())    ;
-        LastElement(\Childrens())         ; Что бы начать с последнего элемента
-        Repeat                            ; Перебираем с низу верх
-          X = \Childrens()\clip\X
-          Y = \Childrens()\clip\Y
-          Width = X+\Childrens()\clip\Width
-          Height = Y+\Childrens()\clip\Height
-          
-          If Not \Childrens()\Hide And \Childrens()\ParentItem = ParentItem And 
-             (MouseX >=  X And MouseX < Width And MouseY >=  Y And MouseY < Height)
-            
-            If ListSize(\Childrens()\Childrens())
-              *Result = From(\Childrens(), MouseX, MouseY)
-              
-              If Not *Result
-                *Result = \Childrens()
-              EndIf
-            Else
-              *Result = \Childrens()
-            EndIf
-            
-            Break
-          EndIf
-          
-        Until PreviousElement(\Childrens()) = #False 
-        PopListPosition(\Childrens())
-      EndIf
-    EndWith
-    
-    If *Result
-      With *Result 
-        \Mouse\X = MouseX
-        \Mouse\Y = MouseY
-        *Value\Mouse\X = MouseX
-        *Value\Mouse\Y = MouseY
-        
-        If \Scroll
-          ; scrollbars events
-          If \Scroll\v And Not \Scroll\v\Hide And \Scroll\v\Type And (MouseX>\Scroll\v\x And MouseX=<\Scroll\v\x+\Scroll\v\Width And  MouseY>\Scroll\v\y And MouseY=<\Scroll\v\y+\Scroll\v\Height)
-            *Result = \Scroll\v
-          ElseIf \Scroll\h And Not \Scroll\h\Hide And \Scroll\h\Type And (MouseX>\Scroll\h\x And MouseX=<\Scroll\h\x+\Scroll\h\Width And  MouseY>\Scroll\h\y And MouseY=<\Scroll\h\y+\Scroll\h\Height)
-            *Result = \Scroll\h
-          EndIf
-        EndIf
-        
-        If \Box 
-          If (MouseX>\Box\x[3] And MouseX=<\Box\x[3]+\Box\Width[3] And MouseY>\Box\y[3] And MouseY=<\Box\y[3]+\Box\Height[3])
-            \index[1] = 3
-          ElseIf (MouseX>\Box\x[2] And MouseX=<\Box\x[2]+\Box\Width[2] And MouseY>\Box\y[2] And MouseY=<\Box\y[2]+\Box\Height[2])
-            \index[1] = 2
-          ElseIf (MouseX>\Box\x[1] And MouseX=<\Box\x[1]+\Box\Width[1] And  MouseY>\Box\y[1] And MouseY=<\Box\y[1]+\Box\Height[1])
-            \index[1] = 1
-          ElseIf (MouseX>\Box\x And MouseX=<\Box\x+\Box\Width And MouseY>\Box\y And MouseY=<\Box\y+\Box\Height)
-            \index[1] = 0
-          Else
-            \index[1] =- 1
-          EndIf
-        Else
-          \index[1] =- 1
-        EndIf 
-        
-            ; Columns at point
-            If ListSize(\Columns())
-              
-              ForEach \Columns()
-                If \Columns()\Drawing
-                  If (MouseX>=\Columns()\X And MouseX=<\Columns()\X+\Columns()\Width+1 And 
-                                 MouseY>=\Columns()\Y And MouseY=<\Columns()\Y+\Columns()\Height)
-                    
-                    \index[1] = \Columns()\index
-                    Break
-                  Else
-                    \index[1] =- 1
-                  EndIf
-                EndIf
-                
-                ; columns items at point
-                ForEach \Columns()\items()
-                  If \Columns()\items()\Drawing
-                    If (MouseX>\X[2] And MouseX=<\X[2]+\Width[2] And 
-                                   MouseY>\Columns()\items()\Y And MouseY=<\Columns()\items()\Y+\Columns()\items()\Height)
-                       \Columns()\index[1] = \Columns()\items()\index
-                       
-                     EndIf
-                  EndIf
-                Next
-                
-              Next 
-             
-            ElseIf ListSize(\items())
-              
-              ; items at point
-              ForEach \items()
-                If \items()\Drawing
-                  If (MouseX>\items()\X And MouseX=<\items()\X+\items()\Width And 
-                                 MouseY>\items()\Y And MouseY=<\items()\Y+\items()\Height)
-                    
-                    \index[1] = \items()\index
-                    Break
-                  Else
-                    \index[1] =- 1
-                  EndIf
-                EndIf
-              Next
-              
-            EndIf
-            
-          ;  Debug \index[1]
-      EndWith
-    EndIf
-    
-    ProcedureReturn *Result
-  EndProcedure
-  
   Procedure.i X(*This.Widget_S, Mode.i=0)
     Protected Result.i
     
@@ -4578,13 +4465,13 @@ Module Widget
           Set_Image(\items(), Image)
           
         Case #PB_GadgetType_Property
-          ProcedureReturn Property_AddItem(*This, Item.i,Text.s,Image, Flag)
+          ProcedureReturn AddItem_Property(*This, Item.i,Text.s,Image, Flag)
           
         Case #PB_GadgetType_Tree, #PB_GadgetType_ListView
-          ProcedureReturn Tree_AddItem(*This, Item.i,Text.s,Image, Flag)
+          ProcedureReturn AddItem_Tree(*This, Item.i,Text.s,Image, Flag)
           
         Case #PB_GadgetType_ListIcon
-          ProcedureReturn ListIcon_AddItem(*This, Item.i,Text.s,Image, Flag)
+          ProcedureReturn AddItem_ListIcon(*This, Item.i,Text.s,Image, Flag)
           
         Case #PB_GadgetType_ComboBox
           Protected *Tree.Widget_S = \Popup\Childrens()
@@ -4678,7 +4565,7 @@ Module Widget
   EndProcedure
   
   Procedure.i GetCount(*This.Widget_S)
-    ProcedureReturn *This\index ; Parent\Count(Hex(*This\Parent)+"_"+Hex(*This\Type))
+    ProcedureReturn *This\Type_Index ; Parent\Count(Hex(*This\Parent)+"_"+Hex(*This\Type))
   EndProcedure
   
   Procedure.i GetLevel(*This.Widget_S)
@@ -4851,6 +4738,12 @@ Module Widget
       Next
       PopListPosition(\items())
     EndWith
+    
+    If Result
+      Protected *w.Widget_S = Result
+      
+      Debug "GetItemData "+Item +" "+ Result +" "+  *w\Class
+    EndIf
     
     ProcedureReturn Result
   EndProcedure
@@ -5036,7 +4929,7 @@ Module Widget
       Protected Type = \Window
       
       If \Window
-        \index = \Window\Count(Hex(Type)+"_"+Hex(\Type))
+        \Type_Index = \Window\Count(Hex(Type)+"_"+Hex(\Type))
         
         \Window\Count(Hex(Type)+"_"+Hex(\Type)) + 1
       EndIf
@@ -5075,9 +4968,7 @@ Module Widget
             \Window = *Parent\Window
           EndIf
           
-          ;If *Parent <> \Root
-          \Level = *Parent\Level + 1
-          ;EndIf
+          \Level = *Parent\Level + Bool(*Parent <> \Root)
           
           
           If \Scroll
@@ -5417,17 +5308,7 @@ Module Widget
               State = Invert(*This, State, \inverted)
             EndIf
             
-            If State < \Min
-              State = \Min 
-            EndIf
-            
-            If State > \Max-\Page\len
-              If \Max > \Page\len 
-                State = \Max-\Page\len
-              Else
-                State = \Min 
-              EndIf
-            EndIf
+            State = PagePos(*This, State)
             
             If \Page\Pos <> State 
               \Thumb\Pos = ThumbPos(*This, State)
@@ -5806,8 +5687,9 @@ Module Widget
   EndProcedure
   
   Procedure.i SetItemData(*This.Widget_S, Item.i, *Data)
-    Protected Result.i
-    ;   Debug "SetItemData "+Item +" "+ *Data
+    Protected Result.i;, *w.Widget_S = *Data
+    
+    ;Debug "SetItemData "+Item +" "+ *Data ;+" "+  *w\index
     ;     
     With *This
       PushListPosition(\items()) 
@@ -6130,14 +6012,14 @@ Module Widget
                 \Thumb\Pos = ThumbPos(*This, \Page\Pos)
               EndIf
               
+              \Box\width[1] = \Box\Size : \Box\height[1] = \TabHeight-1-4
+              \Box\width[2] = \Box\Size : \Box\height[2] = \Box\height[1]
+              
               \Box\x[1] = \x[2]+1
               \Box\y[1] = \y[2]-\TabHeight+\bs+2
               \Box\x[2] = \x[2]+\width[2]-\Box\width[2]-1
               \Box\y[2] = \Box\y[1]
-              
-              \Box\width[1] = \Box\Size : \Box\height[1] = \TabHeight-1-4
-              \Box\width[2] = \Box\Size : \Box\height[2] = \Box\height[1]
-              
+             
             Case #PB_GadgetType_Spin
               If \Vertical
                 \Box\y[1] = \y[2]+\Height[2]/2+Bool(\Height[2]%2) : \Box\Height[1] = \Height[2]/2 : \Box\Width[1] = \Box\Size[2] : \Box\x[1] = \x[2]+\width[2]-\Box\Size[2] ; Top button coordinate
@@ -6804,6 +6686,134 @@ Module Widget
   EndProcedure
   
   ;- 
+  Procedure.i From(*This.Widget_S, MouseX.i, MouseY.i)
+    Protected *Result.Widget_S, X.i,Y.i,Width.i,Height.i, ParentItem.i
+    
+    If Not *This
+      *This = GetGadgetData(EventGadget())
+    EndIf
+    
+    With *This
+      If *This And ListSize(\Childrens()) ; \CountItems ; Not *Value\Mouse\Buttons
+        ParentItem = Bool(\Type = #PB_GadgetType_Panel) * \index[2]
+        
+        PushListPosition(\Childrens())    ;
+        LastElement(\Childrens())         ; Что бы начать с последнего элемента
+        Repeat                            ; Перебираем с низу верх
+          X = \Childrens()\clip\X
+          Y = \Childrens()\clip\Y
+          Width = X+\Childrens()\clip\Width
+          Height = Y+\Childrens()\clip\Height
+          
+          If Not \Childrens()\Hide And \Childrens()\ParentItem = ParentItem And 
+             (MouseX >=  X And MouseX < Width And MouseY >=  Y And MouseY < Height)
+            
+            If ListSize(\Childrens()\Childrens())
+              *Result = From(\Childrens(), MouseX, MouseY)
+              
+              If Not *Result
+                *Result = \Childrens()
+              EndIf
+            Else
+              *Result = \Childrens()
+            EndIf
+            
+            Break
+          EndIf
+          
+        Until PreviousElement(\Childrens()) = #False 
+        PopListPosition(\Childrens())
+      EndIf
+    EndWith
+    
+    If *Result
+      With *Result 
+        \Mouse\X = MouseX
+        \Mouse\Y = MouseY
+        *Value\Mouse\X = MouseX
+        *Value\Mouse\Y = MouseY
+        
+        If \Scroll
+          ; scrollbars events
+          If \Scroll\v And Not \Scroll\v\Hide And \Scroll\v\Type And (MouseX>\Scroll\v\x And MouseX=<\Scroll\v\x+\Scroll\v\Width And  MouseY>\Scroll\v\y And MouseY=<\Scroll\v\y+\Scroll\v\Height)
+            *Result = \Scroll\v
+          ElseIf \Scroll\h And Not \Scroll\h\Hide And \Scroll\h\Type And (MouseX>\Scroll\h\x And MouseX=<\Scroll\h\x+\Scroll\h\Width And  MouseY>\Scroll\h\y And MouseY=<\Scroll\h\y+\Scroll\h\Height)
+            *Result = \Scroll\h
+          EndIf
+        EndIf
+        
+        If \Box 
+          If (MouseX>\Box\x[3] And MouseX=<\Box\x[3]+\Box\Width[3] And MouseY>\Box\y[3] And MouseY=<\Box\y[3]+\Box\Height[3])
+            \at = 3
+          ElseIf (MouseX>\Box\x[2] And MouseX=<\Box\x[2]+\Box\Width[2] And MouseY>\Box\y[2] And MouseY=<\Box\y[2]+\Box\Height[2])
+            \at = 2
+          ElseIf (MouseX>\Box\x[1] And MouseX=<\Box\x[1]+\Box\Width[1] And  MouseY>\Box\y[1] And MouseY=<\Box\y[1]+\Box\Height[1])
+            \at = 1
+          ElseIf (MouseX>\Box\x And MouseX=<\Box\x+\Box\Width And MouseY>\Box\y And MouseY=<\Box\y+\Box\Height)
+            \at = 0
+          Else
+            \at =- 1
+          EndIf
+        Else
+          \at =- 1
+        EndIf 
+        
+        If \at =- 1
+            ; Columns at point
+            If ListSize(\Columns())
+              
+              ForEach \Columns()
+                If \Columns()\Drawing
+                  If (MouseX>=\Columns()\X And MouseX=<\Columns()\X+\Columns()\Width+1 And 
+                                 MouseY>=\Columns()\Y And MouseY=<\Columns()\Y+\Columns()\Height)
+                    
+                    \index[1] = \Columns()\index
+                    Break
+                  Else
+                    \index[1] =- 1
+                  EndIf
+                EndIf
+                
+                ; columns items at point
+                ForEach \Columns()\items()
+                  If \Columns()\items()\Drawing
+                    If (MouseX>\X[2] And MouseX=<\X[2]+\Width[2] And 
+                                   MouseY>\Columns()\items()\Y And MouseY=<\Columns()\items()\Y+\Columns()\items()\Height)
+                       \Columns()\index[1] = \Columns()\items()\index
+                       
+                     EndIf
+                  EndIf
+                Next
+                
+              Next 
+             
+            ElseIf ListSize(\items())
+              
+              ; items at point
+              ForEach \items()
+                If \items()\Drawing
+                  If (MouseX>\items()\X And MouseX=<\items()\X+\items()\Width And 
+                                 MouseY>\items()\Y And MouseY=<\items()\Y+\items()\Height)
+                    
+                    \index[1] = \items()\index
+                    Debug " i "+\index[1]+" "+ListIndex(\items())
+                    Break
+                  Else
+                    \index[1] =- 1
+                  EndIf
+                EndIf
+              Next
+              
+            EndIf
+        EndIf
+          
+         ;   Debug \index[1]
+      EndWith
+    EndIf
+    
+    ProcedureReturn *Result
+  EndProcedure
+  
   Procedure.i Event_Widgets(*This.Widget_S, EventType.i, EventItem.i=-1, EventData.i=0)
     Protected Result.i 
     
@@ -6818,39 +6828,39 @@ Module Widget
         EndIf
         
         If \Mouse\Buttons And EventType = #PB_EventType_MouseMove
-          If \index[1] = 0 Or (\anchor And Not \Container)
+          If \at = 0 Or (\anchor And Not \Container)
             ;Events_Anchors(*This, *Value\Mouse\x, *Value\Mouse\y)
             Resize(*This, *Value\Mouse\x-\Mouse\Delta\x, *Value\Mouse\y-\Mouse\Delta\y, #PB_Ignore, #PB_Ignore)
             Result = 1
           EndIf
         EndIf
         
-        If Not *value\Mouse\Buttons
-          Select EventType
-            Case #PB_EventType_MouseEnter
-              
-              If \index[1]=-1
-                If \Leave
-                  Debug "en "+\Type+" "+\Cursor[1]+" "+\Leave\Cursor
-                  \Cursor[1] = \Leave\Cursor
-                Else
-                  \Cursor[1] = Get_Cursor(*This)
-                  Debug " en "+\Type+" "+\Cursor[1]
-                EndIf
-                
-                Set_Cursor(*This, \Cursor)
-              EndIf
-              
-            Case #PB_EventType_MouseLeave
-              If \Text
-                Debug "le "+\Type+" "+\Text\String
-              Else
-                Debug "le "+\Type
-              EndIf
-              Set_Cursor(*This, \Cursor[1])
-              
-          EndSelect
-        EndIf
+;         If Not *value\Mouse\Buttons
+;           Select EventType
+;             Case #PB_EventType_MouseEnter
+;               
+;               If \at=-1
+;                 If \Leave
+;                   Debug "en "+\Type+" "+\Cursor[1]+" "+\Leave\Cursor
+;                   \Cursor[1] = \Leave\Cursor
+;                 Else
+;                   \Cursor[1] = Get_Cursor(*This)
+;                   Debug " en "+\Type+" "+\Cursor[1]
+;                 EndIf
+;                 
+;                 Set_Cursor(*This, \Cursor)
+;               EndIf
+;               
+;             Case #PB_EventType_MouseLeave
+;               If \Text
+;                 Debug "le "+\Type+" "+\Text\String
+;               Else
+;                 Debug "le "+\Type
+;               EndIf
+;               Set_Cursor(*This, \Cursor[1])
+;               
+;           EndSelect
+;         EndIf
         
         
         If \Function
@@ -6961,8 +6971,8 @@ Module Widget
                 
               Case #PB_GadgetType_Panel
                 Select at
-                  Case 1 : PagePos(*This, (\Page\Pos - \Step)) : Repaint = 1
-                  Case 2 : PagePos(*This, (\Page\Pos + \Step)) : Repaint = 1
+                  Case 1 : \Page\Pos = PagePos(*This, (\Page\Pos - \Step)) : Repaint = 1
+                  Case 2 : \Page\Pos = PagePos(*This, (\Page\Pos + \Step)) : Repaint = 1
                   Default
                     If \index[1] >= 0
                       Repaint = SetState(*This, \index[1])
@@ -7148,8 +7158,8 @@ Module Widget
         If *Value\Last\Mouse\Buttons
           ;             Debug "selected out"
         Else
-          Events(*Value\Last, *Value\Last\index[1], #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
-          Event_Widgets(*Value\Last, #PB_EventType_MouseLeave, *Value\Last\index[1])
+          Events(*Value\Last, *Value\Last\at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
+          Event_Widgets(*Value\Last, #PB_EventType_MouseLeave, *Value\Last\at)
         EndIf
       EndIf
       
@@ -7166,8 +7176,8 @@ Module Widget
           If _this_\Mouse\Buttons
             ;               Debug "selected ower"
           Else
-            Events(_this_, _this_\index[1], #PB_EventType_MouseEnter, MouseScreenX, MouseScreenY)
-            Event_Widgets(_this_, #PB_EventType_MouseEnter, _this_\index[1])
+            Events(_this_, _this_\at, #PB_EventType_MouseEnter, MouseScreenX, MouseScreenY)
+            Event_Widgets(_this_, #PB_EventType_MouseEnter, _this_\at)
           EndIf
         EndIf
         
@@ -7218,22 +7228,22 @@ Module Widget
                       \Mouse\y<\Mouse\Delta\y+8) And \Mouse\Delta
                 
                 If Not \Drag
-                  Event_Widgets(*This, #PB_EventType_DragStart, \index[1])
+                  Event_Widgets(*This, #PB_EventType_DragStart, \at)
                   \Drag = 1
                 EndIf
               EndIf
             EndIf
             
             
-            Repaint | Event_Widgets(*This, #PB_EventType_MouseMove, \index[1])
-            repaint | Events(*This, \index[1], #PB_EventType_MouseMove, MouseScreenX, MouseScreenY)
-            Event_Widgets(*This, #PB_EventType_MouseMove, \index[1])
+            Repaint | Event_Widgets(*This, #PB_EventType_MouseMove, \at)
+            repaint | Events(*This, \at, #PB_EventType_MouseMove, MouseScreenX, MouseScreenY)
+            Event_Widgets(*This, #PB_EventType_MouseMove, \at)
             repaint = 1
           EndIf
           
           If *Value\Focus And *Value\Last <> *Value\Focus
-            Repaint | Event_Widgets(*Value\Focus, #PB_EventType_MouseMove, *Value\Focus\index[1])
-            repaint | Events(*Value\Focus, *Value\Focus\index[1], #PB_EventType_MouseMove, MouseScreenX, MouseScreenY)
+            Repaint | Event_Widgets(*Value\Focus, #PB_EventType_MouseMove, *Value\Focus\at)
+            repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_MouseMove, MouseScreenX, MouseScreenY)
             repaint = 1
           EndIf
           
@@ -7243,14 +7253,14 @@ Module Widget
             
             If \Deactive
               If \Deactive <> *This
-                repaint | Events(\Deactive, \Deactive\index[1], #PB_EventType_LostFocus, MouseScreenX, MouseScreenY)
+                repaint | Events(\Deactive, \Deactive\at, #PB_EventType_LostFocus, MouseScreenX, MouseScreenY)
               EndIf
               
-              repaint | Events(*This, \index[1], #PB_EventType_Focus, MouseScreenX, MouseScreenY)
+              repaint | Events(*This, \at, #PB_EventType_Focus, MouseScreenX, MouseScreenY)
               \Deactive = 0
             EndIf
             
-            repaint | Events(*This, \index[1], EventType, MouseScreenX, MouseScreenY)
+            repaint | Events(*This, \at, EventType, MouseScreenX, MouseScreenY)
             repaint = 1
           EndIf
           
@@ -7258,24 +7268,24 @@ Module Widget
           If *Value\Focus And *Value\Focus\State = 2
             *Value\Focus\Mouse\Buttons = 0   
             *Value\Focus\State = 1 
-            repaint | Events(*Value\Focus, *Value\Focus\index[1], EventType, MouseScreenX, MouseScreenY)
+            repaint | Events(*Value\Focus, *Value\Focus\at, EventType, MouseScreenX, MouseScreenY)
             
             If Bool(MouseScreenX>=*Value\Focus\Clip\X And MouseScreenX<*Value\Focus\Clip\X+*Value\Focus\Clip\Width And 
                     MouseScreenY>*Value\Focus\Clip\Y And MouseScreenY=<*Value\Focus\Clip\Y+*Value\Focus\Clip\Height) 
               
               If *Value\Focus = *This       
                 If EventType = #PB_EventType_LeftButtonUp
-                  repaint | Events(*Value\Focus, *Value\Focus\index[1], #PB_EventType_LeftClick, MouseScreenX, MouseScreenY)
+                  repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_LeftClick, MouseScreenX, MouseScreenY)
                 EndIf
                 If EventType = #PB_EventType_RightClick
-                  repaint | Events(*Value\Focus, *Value\Focus\index[1], #PB_EventType_RightClick, MouseScreenX, MouseScreenY)
+                  repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_RightClick, MouseScreenX, MouseScreenY)
                 EndIf
               EndIf
               
             Else
               *Value\Focus\State = 0
-              repaint | Events(*Value\Focus, *Value\Focus\index[1], #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
-              Event_Widgets(*Value\Focus, #PB_EventType_MouseLeave, *Value\Focus\index[1])
+              repaint | Events(*Value\Focus, *Value\Focus\at, #PB_EventType_MouseLeave, MouseScreenX, MouseScreenY)
+              Event_Widgets(*Value\Focus, #PB_EventType_MouseLeave, *Value\Focus\at)
             EndIf
             
             repaint = 1
@@ -8477,6 +8487,33 @@ Module Widget
     ProcedureReturn *This
   EndProcedure
   
+  Procedure.i Create(Type.i, X.i,Y.i,Width.i,Height.i, Text.s, Param_1.i=0, Param_2.i=0, Param_3.i=0, Flag.i=0, Parent.i=0, ParentItem.i=0)
+    Protected Result
+    
+    If Type = #PB_GadgetType_Window
+      Result = Window(X,Y,Width,Height, Text.s, Flag, Parent)
+    Else
+      If Parent
+        OpenList(Parent, ParentItem)
+      EndIf
+      
+      Select Type
+        Case #PB_GadgetType_Panel      : Result = Panel(X,Y,Width,Height, Flag)
+        Case #PB_GadgetType_Container  : Result = Container(X,Y,Width,Height, Flag)
+        Case #PB_GadgetType_ScrollArea : Result = ScrollArea(X,Y,Width,Height, Param_1, Param_2, Param_3, Flag)
+        Case #PB_GadgetType_Button     : Result = Button(X,Y,Width,Height, Text.s, Flag)
+        Case #PB_GadgetType_String     : Result = String(X,Y,Width,Height, Text.s, Flag)
+        Case #PB_GadgetType_Text       : Result = Text(X,Y,Width,Height, Text.s, Flag)
+      EndSelect
+      
+      If Parent
+        CloseList()
+      EndIf
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
   Procedure.i Free(*This.Widget_S)
     Protected Result.i
     
@@ -8679,15 +8716,15 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;         *sp.Widget_S = Splitter(10, 10, 360,  330, *i, *s)
 ; ;         *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical|#PB_Flag_AutoSize)
 ; ;         
-; ;         Window(280, 100, 280, 200, "Window_2", Editable)
-; ;         
-; ;         Container(30,30,280-60, 200-60, Editable)
-; ;         Container(20,20,280-60, 200-60, Editable)
-; ;         Button(100, 20, 80, 80, "Button_1", Editable)
-; ;         Button(130, 80, 80, 80, "Button_2", Editable)
-; ;         Button(70, 80, 80, 80, "Button_3", Editable)
-; ;         CloseList()
-; ;         CloseList()
+        Window(280, 100, 280, 200, "Window_2", Editable)
+        
+        Container(30,30,280-60, 200-60, Editable)
+        Container(20,20,280-60, 200-60, Editable)
+        Button(100, 20, 80, 80, "Button_1", Editable)
+        Button(130, 80, 80, 80, "Button_2", Editable)
+        Button(70, 80, 80, 80, "Button_3", Editable)
+        CloseList()
+        CloseList()
 ; ;         
 ; ;         Window(20, 150, 280, 200, "Window_3", Editable)
 ; ;         
@@ -8701,6 +8738,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;         CloseList()
         
         Window(300, 200, 230, 230, "Window_4", Editable)
+        ;Define i,*g1 = Panel(10, 10, 210, 210)                                         
         Define i,*g1 = Tree(10, 10, 210, 210, #PB_Flag_CheckBoxes)                                         
         AddItem(*g1, 0, "Tree_0", 0 )
         AddItem(*g1, 1, "Tree_1_1", 0, 1) 
@@ -8716,6 +8754,8 @@ CompilerIf #PB_Compiler_IsMainFile
         For i=11 To 17
           AddItem(*g1, i, "Tree_"+Str(i), 0 )
         Next
+        
+        Debug "sub "+GetItemAttribute(*g1, 7, #PB_Tree_SubLevel)
         
 ; ;         Window(10, 250, 380, 230, "Window_4", Editable)
 ; ;         Define i,*g1 = Tree(10, 10, 210, 210, #PB_Flag_CheckBoxes)                                         
@@ -8790,5 +8830,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------r+v-0-+--------8------------------------------------------Pu-f+-----------------------------------------8-4--+Pe0--0-----------------------------------------------
+; Folding = -----------------f2-0v-X+-------f-------------------------------------------x0-z--------------------------------------4-v--0f9+--8---------------------0--f-------------------------
 ; EnableXP

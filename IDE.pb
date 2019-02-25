@@ -403,7 +403,20 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
                         ;                     AddItem(Widget, 1, PackEntryName.S, Image)
                         ;                     SetItemData(Widget, 1, Image)
                         
-                      Else
+                      ElseIf FindString(LCase(PackEntryName.S), "buttonimage")
+                      ElseIf FindString(LCase(PackEntryName.S), "window")
+                        AddItem(Widget, -1, PackEntryName.S, Image)
+                        SetItemData(Widget, CountItems(Widget)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "button")
+                        AddItem(Widget, -1, PackEntryName.S, Image)
+                        SetItemData(Widget, CountItems(Widget)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "container")
+                        AddItem(Widget, -1, PackEntryName.S, Image)
+                        SetItemData(Widget, CountItems(Widget)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "panel")
+                        AddItem(Widget, -1, PackEntryName.S, Image)
+                        SetItemData(Widget, CountItems(Widget)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "scrollarea")
                         AddItem(Widget, -1, PackEntryName.S, Image)
                         SetItemData(Widget, CountItems(Widget)-1, Image)
                       EndIf
@@ -500,32 +513,44 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndProcedure
   
-  Procedure WE_Position_Selecting(Gadget, *Parent.Widget_S)
-    Protected i, Position=-1 ; 
+  Procedure AddPosition(Tree, *This.Widget_S)
+    Protected i, Position = 1 ; Начальная позиция
+    Protected Parent = GetParent(*This)
+    Protected SubLevel = GetLevel(Parent)
+    Protected CountItems = CountItems(Tree)
+    Protected Class.s = GetClass(*This) +"_"+ GetCount(*This)
     
-    ; Определяем позицию в списке
-    If *Parent\Type =- 1
-      Position = CountItems(Gadget)
-      SubLevel = 1
-    Else
-      For i=0 To CountItems(Gadget)-1
-        If *Parent=GetItemData(Gadget, i) 
-          SubLevel=GetItemAttribute(Gadget, i, #PB_Tree_SubLevel)+1
-          Position=(i+1)
-          Break
-        EndIf
-      Next 
-      For i=Position To CountItems(Gadget)-1
-        If SubLevel=<GetItemAttribute(Gadget, i, #PB_Tree_SubLevel)
-          Position+1
-        EndIf
-      Next 
-    EndIf
+    For i = 0 To CountItems - 1
+      If Parent = GetItemData(Tree, i) 
+        Position = (i+1)
+        Break
+      EndIf
+    Next 
+    
+    For i = Position To CountItems - 1
+      If SubLevel > GetItemAttribute(Tree, i, #PB_Tree_SubLevel) 
+        Break
+      Else
+        Position = (i+1)
+      EndIf
+    Next 
+    
+    AddItem(Tree, Position, Class.s, #PB_Default, SubLevel)
+    SetItemData(Tree, Position, *This)
+    ; SetState(Tree, Position) ; Bug
+    SetItemState(Tree, Position, #PB_Tree_Selected)
+    SetData(*This, Position)
+    
+    
+    ;       AddGadgetItem(WE_Selecting, Position, Class.s, 0, Level )
+    ;       SetGadgetItemData(WE_Selecting, Position, *This)
+    ;       SetGadgetState(WE_Selecting, Position) ; Bug
+    ;       SetGadgetItemState(WE_Selecting, Position, #PB_Tree_Selected)
     
     ProcedureReturn Position
   EndProcedure
   
-  Procedure.i AddWidget(Tree, Type, Parent, X=0,Y=0,Width=0,Height=0)
+  Procedure.i AddWidget(Tree, Parent, Type, X=0,Y=0,Width=0,Height=0)
     Protected *This.Widget_S, Class.s, Level.i
     Static X1, Y1
     Protected Position =- 1
@@ -538,74 +563,64 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       y=y1
     EndIf
     
-    If Not Width
-      Width=100
-    EndIf
-    
-    If Not Height
-      Height=100
-    EndIf
+    Select Type
+      Case #PB_GadgetType_Window    
+        If Not Width
+          Width=350
+        EndIf
+        
+        If Not Height
+          Height=250
+        EndIf
+        
+      Case #PB_GadgetType_Container, #PB_GadgetType_ScrollArea, #PB_GadgetType_Panel, 
+           #PB_GadgetType_Splitter, #PB_GadgetType_ListView, #PB_GadgetType_ListIcon, #PB_GadgetType_Image 
+        
+        If Not Width
+          Width=220
+        EndIf
+        
+        If Not Height
+          Height=140
+        EndIf
+        
+      Default
+        If Not Width : Width=100 : EndIf
+        If Not Height : Height=30 : EndIf
+        
+    EndSelect
     
     If Parent
       OpenList(Parent, 0)
     EndIf
     
     Select Type
-      Case #PB_GadgetType_Window    
-        *This = Window(10,10,Width*3+1,Height*2+1, "", #PB_Flag_AnchorsGadget, Parent) : X1 = 0 : Y1 = 0
-        SetImage(*This, 5)
-        
-      Case #PB_GadgetType_Container : *This = Container(X,Y,Width,Height, #PB_Flag_AnchorsGadget) : X1 = 0 : Y1 = 0
-        SetImage(*This, 5)
-        
-      Case #PB_GadgetType_Button    : *This = Button(X,Y,Width,Height, "", #PB_Flag_AnchorsGadget)
+      Case #PB_GadgetType_Window     : *This = Window(10,10,Width+1,Height+1, "", #PB_Flag_AnchorsGadget, Parent)
+      Case #PB_GadgetType_Panel      : *This = Panel(X,Y,Width,Height, #PB_Flag_AnchorsGadget)
+      Case #PB_GadgetType_Container  : *This = Container(X,Y,Width,Height, #PB_Flag_AnchorsGadget)
+      Case #PB_GadgetType_ScrollArea : *This = ScrollArea(X,Y,Width,Height, 100, 100, 1, #PB_Flag_AnchorsGadget)
+      Case #PB_GadgetType_Button     : *This = Button(X,Y,Width,Height, "", #PB_Flag_AnchorsGadget)
     EndSelect
+    
+    If *This\container
+      SetImage(*This, 5)
+      : X1 = 0 : Y1 = 0 
+    EndIf
+    
     
     X1 + 10
     Y1 + 10
     
     If *This
       Class.s = GetClass(*This)+"_"+GetCount(*This)
-      Level = GetLevel(*This) - GetLevel(GetWindow(*This)) + 1  ;  Widgets("MDI")) ; 
       SetText(*This, Class.s)
       
-      ;Position = CountItems(Tree)
-      Position = WE_Position_Selecting(Tree, Parent)
-      ;Level = SubLevel
-      Debug "get pos "+Position +" "+ Level
-      ;       If Parent And Parent <> Widgets("MDI")
-      ;         If GetType(Parent)>0
-      ;           Protected *t = GetItemData(Tree, 2)
-      ;           If *t
-      ;             SetData(*t, Position)
-      ;           EndIf
-      ;           Debug 878878787
-      ;           Position = 2
-      ;           Level = 0
-      ;         EndIf
-      ;       EndIf
-      
-      
-      AddGadgetItem(WE_Selecting, Position, Class.s, 0, Level )
-      SetGadgetItemData(WE_Selecting, Position, *This)
-      SetGadgetState(WE_Selecting, Position) ; Bug
-      SetGadgetItemState(WE_Selecting, Position, #PB_Tree_Selected)
-      
-      AddItem(Tree, Position, Class.s, #PB_Default, Level )
-      SetItemData(Tree, Position, *This)
-      SetState(Tree, Position) ; Bug
-      SetItemState(Tree, Position, #PB_Tree_Selected)
-      
-      SetData(*This, Position)
-      
+      AddPosition(Tree, *This)
       
       If SetAnchors(*This)
         Update_Inspector(*This)
       EndIf
-      
-      Debug "set - "+Position +" "+ *This
     EndIf
-    
     
     If Parent
       CloseList()
@@ -676,7 +691,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     If *This\Drag
       ProcedureReturn *This
     EndIf
-  
+    
   EndProcedure
   
   
@@ -744,13 +759,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
               
               If DragText
                 If Drag
-                  AddWidget(Widgets("Inspector"), Type(DragText), *This, GetSelectorX(*This), GetSelectorY(*This), GetSelectorWidth(*This), GetSelectorHeight(*This)) ; DeltaX, DeltaY, MouseX-DeltaX, MouseY-DeltaY)
+                  AddWidget(Widgets("Inspector"), *This, Type(DragText), GetSelectorX(*This), GetSelectorY(*This), GetSelectorWidth(*This), GetSelectorHeight(*This)) ; DeltaX, DeltaY, MouseX-DeltaX, MouseY-DeltaY)
                   
                   FreeSelector(*This)
                   Drag = 0
                 Else
                   
-                  AddWidget(Widgets("Inspector"), Type(DragText), *This, GetMouseX(*This), GetMouseY(*This))
+                  AddWidget(Widgets("Inspector"), *This, Type(DragText), GetMouseX(*This), GetMouseY(*This))
                   
                 EndIf
                 
@@ -804,7 +819,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
     BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), Window_0)
     
-    WE_Selecting = TreeGadget(#PB_Any, 600, 40, 190, 185, #PB_Tree_AlwaysShowSelection) : AddGadgetItem(WE_Selecting, -1, "Proect")
+    ; WE_Selecting = TreeGadget(#PB_Any, 600, 40, 190, 185, #PB_Tree_AlwaysShowSelection) : AddGadgetItem(WE_Selecting, -1, "Proect")
     
     If Open(Window_0, 10, 40, 580+200, 550, "IDE") 
       Canvas_0 = RootGadget()
@@ -876,25 +891,24 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       
       Widgets("Splitter") = Splitter(1,1,778, 548, Widgets("Panel"), Widgets("Inspector_splitter"), #PB_Splitter_Vertical|#PB_Flag_AutoSize)
       
-      SetState(Widgets("Inspector_splitter"), 150)
+      SetState(Widgets("Inspector_splitter"), 250)
       SetState(Widgets("Splitter"), 550)
     EndIf
     
-    
-    Define *n=AddWidget(Widgets("Inspector"), #PB_GadgetType_Window, Widgets("MDI"))
-    ;     ;AddWidget(Widgets("Inspector"), *n, #PB_GadgetType_Window)
-    ;     AddWidget(Widgets("Inspector"), #PB_GadgetType_Button, 0)
-    ;     AddWidget(Widgets("Inspector"), #PB_GadgetType_Button, 0)
-    ;     AddWidget(Widgets("Inspector"), #PB_GadgetType_Container, 0)
-    ;      AddWidget(Widgets("Inspector"), #PB_GadgetType_Button, 0)
-    ; ;     AddWidget(Widgets("Inspector"), #PB_GadgetType_Button, 0)
+    Define *n=AddWidget(Widgets("Inspector"), Widgets("MDI"), #PB_GadgetType_Window)
+    Define *c1=AddWidget(Widgets("Inspector"), *n, #PB_GadgetType_Container, 50, 10, 200, 100)
+    Define *c2=AddWidget(Widgets("Inspector"), *n, #PB_GadgetType_Container, 50, 120, 200, 100)
+    AddWidget(Widgets("Inspector"), *c1, #PB_GadgetType_Button)
+    AddWidget(Widgets("Inspector"), *c2, #PB_GadgetType_Button)
+    AddWidget(Widgets("Inspector"), *c1, #PB_GadgetType_Button)
+    AddWidget(Widgets("Inspector"), *c2, #PB_GadgetType_Button)
+    AddWidget(Widgets("Inspector"), *c1, #PB_GadgetType_Button)
+    AddWidget(Widgets("Inspector"), *c2, #PB_GadgetType_Button)
+    AddWidget(Widgets("Inspector"), *n, #PB_GadgetType_Button, 210, 90, 100, 50)
     ; ;     ;CloseList()
-    ;     AddWidget(Widgets("Inspector"), #PB_GadgetType_Button, *n)
     
-    ;Bind(@Widgets_Events(), Widgets("Form_0")) ; Widgets events callback
-    Bind(@Widgets_Events()) ; Widgets events callback
-    
-    ;SetActiveGadget(Canvas_0)
+    ; Widgets events callback
+    Bind(@Widgets_Events())
     ReDraw(Root())
   EndProcedure
   
@@ -927,5 +941,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = BY--8-vu8---j----
+; Folding = ------------------
 ; EnableXP
