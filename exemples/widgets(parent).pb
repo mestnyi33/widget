@@ -31,62 +31,61 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case *combo
             Select EventType
-              Case #PB_EventType_Change
-                Define ParentID = GetParent( *w )
+              Case #PB_EventType_Change  ; : Debug "Combo change " + GetState( *combo )
+                Define i, ParentID = GetParent( *w )
+                
+                ; If GetState( *combo ) >- 1
+                  Free(*w)  
+                ; EndIf
                 
                 Select GetState( *combo )
-                  Case 1 :Button(30,20,150,30,"Button") 
-                  Case 2 :String(30,20,150,30,"String") 
-                  Case 3 :Text(30,20,150,30,"Text", #PB_Text_Border) 
-                  Case 4 :Option(30,20,150,30,"Option") 
-                  Case 5 :CheckBox(30,20,150,30,"CheckBox") 
-                  Case 6 :ListView(30,20,150,30) 
-                  Case 7 :Frame(30,20,150,30,"Frame") 
-                  Case 8 :ComboBox(30,20,150,30) :AddItem(20,-1,"ComboBox") :SetState(20,0)
-                  Case 9 :Image(30,20,150,30,0,#PB_Image_Border) 
-                  Case 10 :HyperLink(30,20,150,30,"HyperLink",0) 
-                  Case 11 :Container(30,20,150,30,#PB_Container_Flat)   :Button(0,0,80,20,"Button") :CloseList() ; Container
-                                                                                                                 ;Case 12 :ListIcon(30,20,150,30,"",88) 
-                                                                                                                 ;Case 13 :IPAddress(30,20,150,30) 
-                  Case 14 :Progress(30,20,150,30,0,5)
-                  Case 15 :Scroll(30,20,150,30,5,335,9)
-                  Case 16 :ScrollArea(30,20,150,30,305,305,9,#PB_ScrollArea_Flat) :Button(0,0,80,20,"Button") :CloseList()
-                  Case 17 :Track(30,20,150,30,0,5)
-                    ;Case 18 :Web(30,20,150,30,"") ; bug 531 linux
-                    ;                     Case 19 :ButtonImage(30,20,150,30,0)
-                    ;Case 20 :Calendar(30,20,150,30) 
-                    ;Case 21 :Date(30,20,150,30)
-                    ;Case 22 :Editor(30,20,150,30)  : AddItem(20,-1,"Editor")
-                    ;                     Case 23 :ExplorerList(30,20,150,30,"")
-                    ;                     Case 24 :ExplorerTree(30,20,150,30,"")
-                    ;                     Case 25 :ExplorerCombo(30,20,150,30,"")
-                    ;                     Case 26 :Spin(30,20,150,30,0,5,#PB_Spin_Numeric)
-                  Case 27 :Tree(30,20,150,30) : AddItem(20,-1,"Tree") : AddItem(20,-1,"SubLavel",0,1)
-                  Case 28 :Panel(30,20,150,30) :AddItem(20,-1,"Panel") :CloseList()
-                  Case 29 
-                    Button(0,0,30,30,"1")
-                    Button(0,0,30,30,"2")
-                    Splitter(30,20,150,30,201,202)
+                  Case 1  : *w = Button(30,20,150,30,"Button") 
+                  Case 2  : *w = String(30,20,150,30,"String") 
+                  Case 3  : *w = Text(30,20,150,30,"Text", #PB_Text_Border) 
+                  Case 4  : *w = Option(30,20,150,30,"Option") 
+                  Case 5  : *w = CheckBox(30,20,150,30,"CheckBox") 
+                  Case 6  : *w = ListView(30,20,150,30) 
+                  Case 7  : *w = Frame(30,20,150,30,"Frame") 
+                  Case 8  : *w = ComboBox(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"ComboBox_"+Str(i)) : Next : SetState(*w,0)
+                  Case 9  : *w = Image(30,20,150,30,0,#PB_Image_Border) 
+                  Case 10 : *w = HyperLink(30,20,150,30,"HyperLink", $FF00FF, #PB_HyperLink_Underline) 
+                  Case 11 : *w = Container(30,20,150,30,#PB_Container_Flat) : Button(0,0,80,20,"Button") : CloseList() ; Container
+                  Case 12 : *w = ListIcon(30,20,150,30,"ListIcon",88) 
+                  Case 13 : *w = IPAddress(30,20,150,30) 
+                  Case 14 : *w = Progress(30,20,150,30,0,5)
+                  Case 15 : *w = Scroll(30,20,150,30,5,335,9)
+                  Case 16 : *w = ScrollArea(30,20,150,30,305,305,9,#PB_ScrollArea_Flat) : Button(0,0,80,20,"Button") : CloseList()
+                  Case 17 : *w = Track(30,20,150,30,0,5)
+                    ; Case 18 : *w = Web(30,20,150,30,"") 
+                  Case 19 : *w = Button(30,20,150,30, "", 0, 0)
+                    ;Case 20 : *w = Calendar(30,20,150,30) 
+                    ;Case 21 : *w = Date(30,20,150,30)
+                    ;Case 22 : *w = Editor(30,20,150,30) : AddItem(20,-1,"Editor")
+                  Case 23 : *w = ExplorerList(30,20,150,30,"")
+                    ;                     Case 24 : *w = ExplorerTree(30,20,150,30,"")
+                    ;                     Case 25 : *w = ExplorerCombo(30,20,150,30,"")
+                  Case 26 : *w = Spin(30,20,150,30,0,5,#PB_Spin_Numeric)
+                  Case 27 : *w = Tree(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"Tree_"+Str(i), -1, Bool(i=1 Or i=3 Or i=5 Or i=7 Or i=9)) : Next
+                  Case 28 : *w = Panel(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"Panel_"+Str(i)) : Next : CloseList()
+                  Case 29 : *w = Splitter(30,20,150,30, Button(0,0,0,0,"1"), Button(0,0,0,0,"2"))
                 EndSelect
                 
                 ;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                 ;                     Select GetState( *combo )
-                ;                       Case 30 :MDI(30,10,150,70,0,0)
-                ;                       Case 31 :InitScintilla() :Scintilla(30,10,150,70,0)
-                ;                       Case 32 :Shortcut(30,10,150,70,0)
-                ;                       Case 33 :Canvas(30,10,150,70) 
+                ;                       Case 30 : MDI(30,10,150,70,0,0)
+                ;                       Case 31 : InitScintilla() :Scintilla(30,10,150,70,0)
+                ;                       Case 32 : Shortcut(30,10,150,70,0)
+                ;                       Case 33 : Canvas(30,10,150,70) 
                 ;                     EndSelect
                 ;                   CompilerElse
                 ;                     Select GetState( *combo )
-                ;                       Case 30 :InitScintilla() :Scintilla(30,10,150,70,0)
-                ;                       Case 31 :Shortcut(30,10,150,70,0)
-                ;                       Case 32 :Canvas(30,10,150,70) 
+                ;                       Case 30 : InitScintilla() :Scintilla(30,10,150,70,0)
+                ;                       Case 31 : Shortcut(30,10,150,70,0)
+                ;                       Case 32 : Canvas(30,10,150,70) 
                 ;                     EndSelect
                 ;                   CompilerEndIf
                 
-                ;Resize(*w,30,10,150,70)
-                
-                Debug 765555
+                Resize(*w,30,10,150,70)
                 SetParent(*w, ParentID)
                 
             EndSelect
@@ -128,6 +127,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   *combo = ComboBox( 30,90,150,30 ) 
+  Bind(@Widgets_CallBack(), *combo)
+  
   AddItem( *combo, -1, "Selected  to move")
   AddItem( *combo, -1, "Button")
   AddItem( *combo, -1, "String")
@@ -179,5 +180,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = v-
+; Folding = --
 ; EnableXP

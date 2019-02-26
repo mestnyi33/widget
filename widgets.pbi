@@ -332,6 +332,7 @@ DeclareModule Widget
     #PB_EventType_Free
     #PB_EventType_Create
     
+    #PB_EventType_Drop
     #PB_EventType_Repaint
     #PB_EventType_ScrollChange
   EndEnumeration
@@ -644,6 +645,7 @@ DeclareModule Widget
   Declare.s Class(Type.i)
   Declare.i Type(Class.s)
   
+  Declare.i IsContainer(*This.Widget_S)
   Declare.i GetRootGadget(*This.Widget_S)
   Declare.i GetRootWindow(*This.Widget_S)
   Declare.i GetButtons(*This.Widget_S)
@@ -669,12 +671,13 @@ DeclareModule Widget
   Declare.i GetItemImage(*This.Widget_S, Item.i)
   Declare.s GetItemText(*This.Widget_S, Item.i)
   Declare.i GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
-  Declare.i EnableDrop(*This.Widget_S, Format.i, Actions.i, PrivateType.i=0)
+  ;;;Declare.i EnableDrop(*This.Widget_S, Format.i, Actions.i, PrivateType.i=0)
   
   Declare.i SetAnchors(*This.Widget_S)
   Declare.s SetClass(*This.Widget_S, Class.s)
   Declare.i GetLevel(*This.Widget_S)
   Declare.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
+  Declare.i Post(EventType.i, *This.Widget_S, EventItem.i=#PB_All, *Data=0)
   Declare.i Bind(*Function, *This.Widget_S=#PB_All, EventType.i=#PB_All)
   Declare.i SetActive(*This.Widget_S)
   Declare.i Y(*This.Widget_S, Mode.i=0)
@@ -736,8 +739,9 @@ DeclareModule Widget
   Declare.i Popup(*Widget.Widget_S, X.i,Y.i,Width.i,Height.i, Flag.i=0)
   Declare.i Window(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget.Widget_S=0)
   Declare.i Create(Type.i, X.i,Y.i,Width.i,Height.i, Text.s, Param_1.i=0, Param_2.i=0, Param_3.i=0, Flag.i=0, Parent.i=0, ParentItem.i=0)
-  
-  
+  Declare.i ExplorerList(X.i,Y.i,Width.i,Height.i, Directory.s, Flag.i=0)
+  Declare.i IPAddress(X.i,Y.i,Width.i,Height.i)
+
   Declare.i CloseList()
   Declare.i OpenList(*This.Widget_S, Item.i=0, Type=-5)
   Declare.i SetParent(*This.Widget_S, *Parent.Widget_S, ParentItem.i=-1)
@@ -1202,13 +1206,18 @@ Module Widget
             Protected *Widget.Widget_S = GetGadgetData(\Root\Canvas)
             
             If CallBack(\Childrens(), #PB_EventType_LeftButtonDown, WindowMouseX(\Root\CanvasWindow), WindowMouseY(\Root\CanvasWindow))
-              SetText(*Widget, GetItemText(\Childrens(), \Childrens()\index[1]))
-              \Childrens()\index[2] = \Childrens()\index[1]
-              \Childrens()\Mouse\Buttons = 0
-              \Childrens()\index[1] =- 1
-              \Childrens()\Focus = 1
-              \Mouse\Buttons = 0
-              ReDraw(*This)
+              ; If \Childrens()\index[2] <> \Childrens()\index[1]
+                *Widget\index[2] = \Childrens()\index[1]
+                Post(#PB_EventType_Change, *Widget, \Childrens()\index[1])
+                
+                SetText(*Widget, GetItemText(\Childrens(), \Childrens()\index[1]))
+                \Childrens()\index[2] = \Childrens()\index[1]
+                \Childrens()\Mouse\Buttons = 0
+                \Childrens()\index[1] =- 1
+                \Childrens()\Focus = 1
+                \Mouse\Buttons = 0
+                ReDraw(*This)
+              ; EndIf
             EndIf
             
             SetActiveGadget(*Widget\Root\Canvas)
@@ -2097,7 +2106,8 @@ Module Widget
             ; GetState() - Value = \index[2]
             \index[2] = State
             
-            ; Post change event to widget (tree, listview)
+             Debug "set_state() - "+\index[1]+" "+ListIndex(\items())
+                   ; Post change event to widget (tree, listview)
             Event_Widgets(*This, #PB_EventType_Change, State)
           EndIf
           
@@ -2117,6 +2127,26 @@ Module Widget
         Root()\Function = *Function
       Else
         \Function = *Function
+      EndIf
+    EndWith
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure.i Post(EventType.i, *This.Widget_S, EventItem.i=#PB_All, *Data=0)
+    Protected Repaint.i
+    
+    With *This
+      If \Function
+        Repaint = CallCFunctionFast(\Function, *This, EventType, EventItem, *Data)
+      EndIf
+      
+      If (\Window And \Window<>\Root And \Window<>*This And \Root<>*This And \Window\Function)
+        Repaint = CallCFunctionFast(\Window\Function, *This, EventType, EventItem, *Data)
+      EndIf
+      
+      If \Root And \Root\Function
+        Repaint = CallCFunctionFast(\Root\Function, *This, EventType, EventItem, *Data)
       EndIf
     EndWith
     
@@ -4156,8 +4186,13 @@ Module Widget
             Case #PB_GadgetType_Window : Draw_Window(*This)
             Case #PB_GadgetType_HyperLink : Draw_HyperLink(*This)
             Case #PB_GadgetType_Property : Draw_Property(*This)
+              
             Case #PB_GadgetType_String : Draw_String(*This)
+            Case #PB_GadgetType_IPAddress : Draw_String(*This)
+              
+            Case #PB_GadgetType_ExplorerList : Draw_ListIcon(*This)
             Case #PB_GadgetType_ListIcon : Draw_ListIcon(*This)
+              
             Case #PB_GadgetType_ListView : Draw_Tree(*This)
             Case #PB_GadgetType_Tree : Draw_Tree(*This)
             Case #PB_GadgetType_Text : Draw_Text(*This)
@@ -4528,6 +4563,10 @@ Module Widget
   
   
   ;- GET
+  Procedure.i IsContainer(*This.Widget_S)
+    ProcedureReturn *This\Container
+  EndProcedure
+  
   Procedure.i GetButtons(*This.Widget_S)
     ProcedureReturn *This\Mouse\Buttons
   EndProcedure
@@ -4637,6 +4676,8 @@ Module Widget
              #PB_GadgetType_CheckBox 
           Result = \Box\Checked
           
+        Case #PB_GadgetType_IPAddress : Result = \index[2]
+        Case #PB_GadgetType_ComboBox : Result = \index[2]
         Case #PB_GadgetType_Tree : Result = \index[2]
         Case #PB_GadgetType_ListView : Result = \index[2]
         Case #PB_GadgetType_Panel : Result = \index[2]
@@ -4995,10 +5036,10 @@ Module Widget
           Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
           
           If *LastParent
-            ; Debug ""+*Root\width+" "+*LastParent\Root\width+" "+*Parent\Root\width 
-            ; Debug "From ("+ Class(*LastParent\Type) +") to (" + Class(*Parent\Type) +") - SetParent()"
+;             Debug ""+*Root\width+" "+*LastParent\Root\width+" "+*Parent\Root\width 
+;             Debug "From ("+ Class(*LastParent\Type) +") to (" + Class(*Parent\Type) +") - SetParent()"
             
-            If *LastParent\Window <> *Parent\Window 
+            If *LastParent <> *Parent
               Select Root() 
                 Case *Parent\Root     : ReDraw(*Parent)
                 Case *LastParent\Root : ReDraw(*LastParent)
@@ -5200,6 +5241,14 @@ Module Widget
     With *This
       If *This > 0
         Select \Type
+          Case #PB_GadgetType_IPAddress
+            If \index[2] <> State : \index[2] = State
+              SetText(*This, Str(IPAddressField(State,0))+"."+
+                             Str(IPAddressField(State,1))+"."+
+                             Str(IPAddressField(State,2))+"."+
+                             Str(IPAddressField(State,3)))
+            EndIf
+            
           Case #PB_GadgetType_CheckBox
             Select State
               Case #PB_Checkbox_Unchecked,
@@ -5237,6 +5286,9 @@ Module Widget
                 *t\items()\State = 0
               EndIf
               
+              *t\index[2] = State
+              \index[2] = State
+              
               If SelectElement(*t\items(), State)
                 *t\items()\State = 2
                 *t\Change = State+1
@@ -5251,7 +5303,6 @@ Module Widget
                 Event_Widgets(*This, #PB_EventType_Change, State)
               EndIf
               
-              *t\index[2] = State
               ProcedureReturn 1
             EndIf
             
@@ -5260,18 +5311,19 @@ Module Widget
             If State > \CountItems - 1 : State = \CountItems - 1 :  EndIf
             
             If \index[2] <> State
-              If \index[2] >= 0 And SelectElement(\items(), \index[2]) 
+              If \index[2] >= 0 And 
+                 SelectElement(\items(), \index[2]) 
                 \items()\State = 0
               EndIf
               
-              If SelectElement(\items(), State)
+              \index[2] = State
+              
+              If SelectElement(\items(), \index[2])
                 \items()\State = 2
-                \Change = State+1
-                
-                Event_Widgets(*This, #PB_EventType_Change, State)
+                \Change = \index[2]+1
+                ; Event_Widgets(*This, #PB_EventType_Change, \index[2])
               EndIf
               
-              \index[2] = State
               ProcedureReturn 1
             EndIf
             
@@ -5874,11 +5926,15 @@ Module Widget
     ProcedureReturn *This\Cursor
   EndProcedure
   
-  Procedure.i SetCursor(*This.Widget_S, Cursor.i)
+  Procedure.i SetCursor(*This.Widget_S, Cursor.i, CursorType.i=#PB_Canvas_Cursor)
     Protected Result.i
     
     With *This
-      \Cursor = Cursor
+      If \Cursor <> Cursor
+         SetGadgetAttribute(\Root\Canvas, CursorType, Cursor)
+  
+        \Cursor = Cursor
+      EndIf
     EndWith
     
     ProcedureReturn Result
@@ -6796,7 +6852,7 @@ Module Widget
                                  MouseY>\items()\Y And MouseY=<\items()\Y+\items()\Height)
                     
                     \index[1] = \items()\index
-                    Debug " i "+\index[1]+" "+ListIndex(\items())
+                   ; Debug " i "+\index[1]+" "+ListIndex(\items())
                     Break
                   Else
                     \index[1] =- 1
@@ -6820,9 +6876,11 @@ Module Widget
     With *This 
       If *This
         ; Scrollbar
-        If \Parent And \Parent\Scroll 
+        If \Parent And 
+           \Parent\Scroll 
           Select *This 
-            Case \Parent\Scroll\v, \Parent\Scroll\h 
+            Case \Parent\Scroll\v, 
+                 \Parent\Scroll\h 
               *This = \Parent
           EndSelect
         EndIf
@@ -8009,6 +8067,54 @@ Module Widget
     ProcedureReturn *This
   EndProcedure
   
+  Procedure.i IPAddress(X.i,Y.i,Width.i,Height.i)
+    Protected Text.s="0.0.0.0", Flag.i=#PB_Text_Center
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_IPAddress)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Cursor = #PB_Cursor_IBeam
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFFFFFFF
+      
+      \bs = 1
+      \fs = 1
+      
+      \Text = AllocateStructure(Text_S)
+      \Text[1] = AllocateStructure(Text_S)
+      \Text[2] = AllocateStructure(Text_S)
+      \Text[3] = AllocateStructure(Text_S)
+      \Text\Editable = 1
+      \Text\x[2] = 3
+      \Text\y[2] = 0
+      \Text\Align\Vertical = 1
+      
+      \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+      \Text\MultiLine = (Bool(Flag&#PB_Text_MultiLine) * 1)+(Bool(Flag&#PB_Text_WordWrap) * - 1)
+      \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
+      \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
+      \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
+      \Text\Pass = Bool(Flag&#PB_Text_Password)
+      
+      ;\Text\Align\Vertical = Bool(Not Flag&#PB_Text_Top)
+      \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
+      \Text\Align\Right = Bool(Flag&#PB_Text_Right)
+      ;\Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
+      
+      
+      SetText(*This, Text.s)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
   ;- 
   ;- Lists
   Procedure.i Tree(X.i,Y.i,Width.i,Height.i, Flag.i=0)
@@ -8149,6 +8255,54 @@ Module Widget
       Resize(*This, X.i,Y.i,Width.i,Height)
       
       AddColumn(*This, 0, FirstColumnTitle, FirstColumnWidth)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i ExplorerList(X.i,Y.i,Width.i,Height.i, Directory.s, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    SetLastParent(*This, #PB_GadgetType_ListIcon)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Cursor = #PB_Cursor_LeftRight
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFF9F9F9
+      
+      \index[1] =- 1
+      \index[2] =- 1
+      \TabHeight = 24
+      
+      \Image = AllocateStructure(Image_S)
+      \Text = AllocateStructure(Text_S)
+      \Text\height = 20
+      
+      \sublevellen = 18
+      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \Flag\FullSelection = 1
+      \Flag\AlwaysSelection = 1
+      
+      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+      
+      \fs = 1
+      \bs = 2
+      
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+      
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+      Resize(*This, X.i,Y.i,Width.i,Height)
+      
+      AddColumn(*This, 0, Directory, 200)
     EndWith
     
     ProcedureReturn *This
@@ -8580,6 +8734,155 @@ Module Helper
   EndProcedure
 EndModule
 
+DeclareModule Drag
+  ;- - Drop_S
+  Structure Drop_S
+    Text.s
+    ImageID.i
+    ImageWidth.i
+    ImageHeight.i
+    Actions.i
+    Format.i
+    PrivateType.i
+  EndStructure
+  
+  Declare.s DropText(Object.i)
+  Declare.i DropImage(Object.i, Image.i=-1, Depth.i=24)
+  Declare.i DropAction(Object.i)
+  
+  Declare.i Text(Object.i, Text.S="", Actions.i=#PB_Drag_Copy)
+  Declare.i Image(Object.i, Image.i=-1, Actions.i=#PB_Drag_Copy)
+  Declare.i Private(Object.i, Type.i=-1, Actions.i=#PB_Drag_Copy)
+  
+  Declare.i EnableDrop(Object.i, Format.i, Actions.i, PrivateType.i=0)
+EndDeclareModule
+
+Module Drag
+  Global *Drop.Drop_S = AllocateStructure(Drop_S)
+  Global NewMap Drag.Drop_S()
+  
+  Procedure Events(EventGadget, EventType, EventItem, EventData)
+  
+  ; DragStart event on the source s, initiate a drag & drop
+  ;
+  Select EventType
+    Case #PB_EventType_LeftButtonDown
+      Debug 5555666
+      
+    Case #PB_EventType_LeftButtonUp
+      Debug 22222222
+      
+    Case #PB_EventType_DragStart
+      
+;     Case #PB_EventType_Drop
+      
+  EndSelect
+  
+EndProcedure
+
+  Procedure.i EnableDrop(Object.i, Format.i, Actions.i, PrivateType.i=0)
+    ; Format
+    ; #PB_Drop_Text    : Accept text on this gadget
+    ; #PB_Drop_Image   : Accept images on this gadget
+    ; #PB_Drop_Files   : Accept filenames on this gadget
+    ; #PB_Drop_Private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
+    
+    ; Actions
+    ; #PB_Drag_None    : The Data format will Not be accepted on the gadget
+    ; #PB_Drag_Copy    : The Data can be copied
+    ; #PB_Drag_Move    : The Data can be moved
+    ; #PB_Drag_Link    : The Data can be linked
+    
+    Drag(Hex(Object))
+    
+      With Drag()
+        \Format = Format
+        \Actions = Actions
+        \PrivateType = PrivateType
+        
+        Widget::Bind(@Events());, Object)
+      EndWith
+    
+  EndProcedure
+  
+  Procedure.i Text(Object.i, Text.S="", Actions.i=#PB_Drag_Copy)
+    
+    With *Drop
+      Debug "Drag text - " + Text
+      \Text = Text
+      \Actions = Actions
+    EndWith
+     
+  EndProcedure
+  
+  Procedure.i Image(Object.i, Image.i=-1, Actions.i=#PB_Drag_Copy)
+    
+    With *Drop
+      Debug "Drag image - " + Image
+      \ImageID = ImageID(Image)
+      \ImageWidth = ImageWidth(Image)
+      \ImageHeight = ImageHeight(Image)
+      \Actions = Actions
+    EndWith
+     
+  EndProcedure
+  
+  Procedure.i Private(Object.i, Type.i=-1, Actions.i=#PB_Drag_Copy)
+    
+    With *Drop
+      Debug "Drag private - " + Type
+      \ImageID = ImageID(Image)
+      \ImageWidth = ImageWidth(Image)
+      \ImageHeight = ImageHeight(Image)
+      \Actions = Actions
+    EndWith
+     
+  EndProcedure
+  
+  Procedure.i DropAction(Object.i)
+    ProcedureReturn Drag(Hex(Object))\Actions
+  EndProcedure
+  
+  Procedure.s DropText(Object.i)
+    If DropAction(Object)
+      ProcedureReturn *Drop\Text
+    EndIf
+  EndProcedure
+  
+  Procedure.i DropPrivate(Object.i)
+    If DropAction(Object)
+      ProcedureReturn *Drop\Format
+    EndIf
+  EndProcedure
+  
+  Procedure.i DropImage(Object.i, Image.i=-1, Depth.i=24)
+    Protected Result.i
+    
+    If DropAction(Object) And *Drop\ImageID
+      If Image =- 1
+        Result = CreateImage(#PB_Any, *Drop\ImageWidth, *Drop\ImageHeight) : Image = Result
+      Else
+        Result = IsImage(Image)
+      EndIf
+      
+      If Result And StartDrawing(ImageOutput(Image))
+        If Depth = 32
+          DrawAlphaImage(*Drop\ImageID, 0, 0)
+        Else
+          DrawImage(*Drop\ImageID, 0, 0)
+        EndIf
+        StopDrawing()
+      EndIf  
+      
+      ProcedureReturn Result
+    EndIf
+  EndProcedure
+EndModule
+
+
+
+
+
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -8592,6 +8895,72 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global *sp.Widget_S
   Global *sp.Widget_S
+  
+  Procedure Widgets_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+    Protected *This.Widget_S, MouseX, MouseY, DeltaX, DeltaY
+    Static Drag.i
+    
+    ; Protected EventWidget = EventWidget()
+    ; Protected EventType = WidgetEvent()
+    ; Protected EventItem = GetState(EventWidget)))
+    
+    ;Select EventWidget
+   ;   Default
+        
+        Select EventType 
+          Case #PB_EventType_Drop
+            
+          Case #PB_EventType_MouseMove
+;             If Drag
+;               If Not UpdateSelector(Drag)
+;                 Drag = 0
+;               EndIf
+;             EndIf
+            
+          Case #PB_EventType_LeftButtonUp
+            *This = GetAnchors(EventWidget)
+            
+;             If *This
+;               Debug "изменено up "+ *This
+;               
+;               If DragText
+;                 If Drag
+;                   AddWidget(*This, Type(DragText), GetSelectorX(*This), GetSelectorY(*This), GetSelectorWidth(*This), GetSelectorHeight(*This)) ; DeltaX, DeltaY, MouseX-DeltaX, MouseY-DeltaY)
+;                   
+;                   FreeSelector(*This)
+;                   Drag = 0
+;                 Else
+;                   
+;                   AddWidget(*This, Type(DragText), GetMouseX(*This), GetMouseY(*This))
+;                   
+;                 EndIf
+;                 
+;                 DragText = ""
+;               Else
+;                 Update_Inspector(*This)
+;               EndIf
+;             EndIf
+            
+          Case #PB_EventType_LeftButtonDown
+            *This = GetAnchors(EventWidget)
+            
+            If *This   
+;               If DragText
+;                 Drag = *This ; SetSelector(*This)
+;               Else
+                If SetAnchors(*This)
+                  Debug "изменено down"+ *This
+                  Debug Drag::DropText(*This)
+                EndIf
+;               EndIf
+            EndIf
+            
+         
+        EndSelect
+        
+    ;EndSelect
+    
+  EndProcedure
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint, *This.Widget_S
@@ -8716,15 +9085,20 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;         *sp.Widget_S = Splitter(10, 10, 360,  330, *i, *s)
 ; ;         *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical|#PB_Flag_AutoSize)
 ; ;         
-        Window(280, 100, 280, 200, "Window_2", Editable)
+        Define *win=Window(80, 100, 280, 200, "Window_2", Editable)
+        Drag::EnableDrop(*win, #PB_Drop_Text, #PB_Drag_Copy)
         
         Container(30,30,280-60, 200-60, Editable)
-        Container(20,20,280-60, 200-60, Editable)
+        Define *con=Container(20,20,280-60, 200-60, Editable)
+        Drag::EnableDrop(*con, #PB_Drop_Text, #PB_Drag_Copy)
         Button(100, 20, 80, 80, "Button_1", Editable)
-        Button(130, 80, 80, 80, "Button_2", Editable)
+        Define *but=Button(130, 80, 80, 80, "Button_2", Editable)
         Button(70, 80, 80, 80, "Button_3", Editable)
         CloseList()
         CloseList()
+        
+        Drag::Text(*but, "my_drag")
+        
 ; ;         
 ; ;         Window(20, 150, 280, 200, "Window_3", Editable)
 ; ;         
@@ -8740,20 +9114,33 @@ CompilerIf #PB_Compiler_IsMainFile
         Window(300, 200, 230, 230, "Window_4", Editable)
         ;Define i,*g1 = Panel(10, 10, 210, 210)                                         
         Define i,*g1 = Tree(10, 10, 210, 210, #PB_Flag_CheckBoxes)                                         
-        AddItem(*g1, 0, "Tree_0", 0 )
-        AddItem(*g1, 1, "Tree_1_1", 0, 1) 
-        AddItem(*g1, 4, "Tree_1_1_1", 0, 2) 
-        AddItem(*g1, 5, "Tree_1_1_2uuuuuuuuuuuuuuuuu", 0, 2) 
-        AddItem(*g1, 6, "Tree_1_1_2_1", 0, 3) 
-        AddItem(*g1, 8, "Tree_1_1_2_1_1_4 and scroll end", 0, 4) 
-        AddItem(*g1, 7, "Tree_1_1_2_2", 0, 3) 
-        AddItem(*g1, 2, "Tree_1_2", 0, 1) 
-        AddItem(*g1, 3, "Tree_1_3", 0, 1) 
-        AddItem(*g1, 9, "Tree_2 ",0 )
-        AddItem(*g1, 10, "Tree_3", 0 )
-        For i=11 To 17
-          AddItem(*g1, i, "Tree_"+Str(i), 0 )
-        Next
+        AddItem(*g1, 0, "Window_0", 0 )
+        AddItem(*g1, 1, "Container_0", 0, 1) 
+        AddItem(*g1, 2, "Button_0", 0, 2) 
+        AddItem(*g1, 3, "Button_1", 0, 2) 
+        AddItem(*g1, 4, "Container_1", 0, 1) 
+        AddItem(*g1, 5, "Button_2", 0, 2) 
+        AddItem(*g1, 6, "Button_3 ",0 , 2)
+        AddItem(*g1, 7, "Button_5", 0 , 1)
+        
+        
+; ;         Window(300, 200, 230, 230, "Window_4", Editable)
+; ;         ;Define i,*g1 = Panel(10, 10, 210, 210)                                         
+; ;         Define i,*g1 = Tree(10, 10, 210, 210, #PB_Flag_CheckBoxes)                                         
+; ;         AddItem(*g1, 0, "Tree_0", 0 )
+; ;         AddItem(*g1, 1, "Tree_1_1", 0, 1) 
+; ;         AddItem(*g1, 4, "Tree_1_1_1", 0, 2) 
+; ;         AddItem(*g1, 5, "Tree_1_1_2uuuuuuuuuuuuuuuuu", 0, 2) 
+; ;         AddItem(*g1, 6, "Tree_1_1_2_1", 0, 3) 
+; ;         AddItem(*g1, 8, "Tree_1_1_2_1_1_4 and scroll end", 0, 4) 
+; ;         AddItem(*g1, 7, "Tree_1_1_2_2", 0, 3) 
+; ;         AddItem(*g1, 2, "Tree_1_2", 0, 1) 
+; ;         AddItem(*g1, 3, "Tree_1_3", 0, 1) 
+; ;         AddItem(*g1, 9, "Tree_2 ",0 )
+; ;         AddItem(*g1, 10, "Tree_3", 0 )
+; ;         For i=11 To 17
+; ;           AddItem(*g1, i, "Tree_"+Str(i), 0 )
+; ;         Next
         
         Debug "sub "+GetItemAttribute(*g1, 7, #PB_Tree_SubLevel)
         
@@ -8773,6 +9160,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;         
         
 ; ;         SetPosition(w, #PB_List_Last)
+        Bind(@Widgets_Events())
         ReDraw(Root())
       EndIf
       
@@ -8830,5 +9218,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------f2-0v-X+-------f-------------------------------------------x0-z--------------------------------------4-v--0f9+--8---------------------0--f-------------------------
+; Folding = -----------------f2-0v-X+--------4------------------------------------------fc--9--------------------------------------4-v--8-50--4-------------------v-8---+-------------f------4---44--
 ; EnableXP

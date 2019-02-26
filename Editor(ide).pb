@@ -1509,7 +1509,7 @@ Procedure CO_Create(Type$, X, Y, Parent=-1)
    
     Position = WE_Position_Selecting(WE_Selecting, Parent)
     
-    Object=CallFunctionFast(@CO_Open())
+    Object=CO_Open();CallFunctionFast(@CO_Open())
     
     If IsGadget(Object)
       ;       Select \Type\i.i
@@ -3281,5 +3281,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Wend
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0---v--------------vf-f--------f--0---------------------+--+----8------
+; Folding = 0---v--------------vf-f--------f----v-------------------+--+---u8------
 ; EnableXP
