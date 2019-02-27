@@ -612,7 +612,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         EndIf
         
         If Not Height
-          Height=250
+          Height=200
         EndIf
         
       Case #PB_GadgetType_Container, #PB_GadgetType_ScrollArea, #PB_GadgetType_Panel, 
@@ -648,7 +648,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       SetImage(*This, 5)
       : X1 = 0 : Y1 = 0 
     EndIf
-    
     
     X1 + 10
     Y1 + 10
@@ -941,15 +940,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
     
     Define *n=AddWidget(Widgets("MDI"), #PB_GadgetType_Window)
-    Define *c1=AddWidget(*n, #PB_GadgetType_Container, 50, 10, 200, 100)
-    Define *c2=AddWidget(*n, #PB_GadgetType_Container, 50, 120, 200, 100)
+    Define *c1=AddWidget(*n, #PB_GadgetType_Container, 50, 5, 200, 90)
+    Define *c2=AddWidget(*n, #PB_GadgetType_Container, 50, 105, 200, 90)
     AddWidget(*c1, #PB_GadgetType_Button)
     AddWidget(*c2, #PB_GadgetType_Button)
     AddWidget(*c1, #PB_GadgetType_Button)
     AddWidget(*c2, #PB_GadgetType_Button)
     AddWidget(*c1, #PB_GadgetType_Button)
     AddWidget(*c2, #PB_GadgetType_Button)
-    AddWidget(*n, #PB_GadgetType_Button, 210, 90, 100, 50)
+    AddWidget(*n, #PB_GadgetType_Button, 210, 75, 100, 50)
     ; ;     ;CloseList()
     
     ; Widgets events callback
@@ -997,5 +996,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------0-----
+; Folding = ------------00----
 ; EnableXP

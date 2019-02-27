@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   Case 3  : *w = Text(30,20,150,30,"Text", #PB_Text_Border) 
                   Case 4  : *w = Option(30,20,150,30,"Option") 
                   Case 5  : *w = CheckBox(30,20,150,30,"CheckBox") 
-                  Case 6  : *w = ListView(30,20,150,30) 
+                  Case 6  : *w = ListView(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"ListView_"+Str(i)) : Next : SetState(*w,5)
                   Case 7  : *w = Frame(30,20,150,30,"Frame") 
                   Case 8  : *w = ComboBox(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"ComboBox_"+Str(i)) : Next : SetState(*w,0)
                   Case 9  : *w = Image(30,20,150,30,0,#PB_Image_Border) 
