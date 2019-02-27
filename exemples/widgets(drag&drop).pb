@@ -35,14 +35,25 @@ Procedure Events(EventGadget, EventType, EventItem, EventData)
   ; DragStart event on the source s, initiate a drag & drop
   ;
   Select EventType
+    Case #PB_EventType_MouseLeave
+      eg = 0
+      
     Case #PB_EventType_MouseEnter
-      eg = EventGadget
+      If Drag::DropAction(EventGadget)
+        eg = EventGadget
+        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Hand)
+      Else
+        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+      EndIf
       
     Case #PB_EventType_LeftButtonUp
-      If Drag::DropAction(eg)
+      Debug eg
+      
+      If Drag::DropAction(eg) 
         ;Post(#PB_EventType_Drop, eg, EventItem, EventData)
         Events(eg, #PB_EventType_Drop, EventItem, EventData)
         eg=0
+        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
       EndIf
       
     Case #PB_EventType_DragStart
@@ -139,7 +150,7 @@ If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_
   
   ; Create and fill the source s
   ;
-  SourceText = tree(10, 10, 140, 140);, "Drag Text here", 130)   
+  SourceText = ListIcon(10, 10, 140, 140, "Drag Text here", 130)   
   SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
   SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
   SourcePrivate = ListIcon(610, 10, 140, 140, "Drag private stuff here", 260)

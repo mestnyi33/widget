@@ -667,7 +667,7 @@ DeclareModule Widget
   Declare.i GetParentItem(*This.Widget_S)
   Declare.i GetItemData(*This.Widget_S, Item.i)
   Declare.i GetItemImage(*This.Widget_S, Item.i)
-  Declare.s GetItemText(*This.Widget_S, Item.i)
+  Declare.s GetItemText(*This.Widget_S, Item.i, Column.i=0)
   Declare.i GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
   ;;;Declare.i EnableDrop(*This.Widget_S, Format.i, Actions.i, PrivateType.i=0)
   
@@ -2281,7 +2281,7 @@ Module Widget
             ; GetState() - Value = \index[2]
             \index[2] = State
             
-             Debug "set_state() - "+\index[1]+" "+ListIndex(\items())
+             Debug "set_state() - "+State;\index[1]+" "+ListIndex(\items())
                    ; Post change event to widget (tree, listview)
             Event_Widgets(*This, #PB_EventType_Change, State)
           EndIf
@@ -4885,6 +4885,7 @@ Module Widget
         Case #PB_GadgetType_IPAddress : Result = \index[2]
         Case #PB_GadgetType_ComboBox : Result = \index[2]
         Case #PB_GadgetType_Tree : Result = \index[2]
+        Case #PB_GadgetType_ListIcon : Result = \index[2]
         Case #PB_GadgetType_ListView : Result = \index[2]
         Case #PB_GadgetType_Panel : Result = \index[2]
         Case #PB_GadgetType_Image : Result = \image\index
@@ -4975,15 +4976,19 @@ Module Widget
     Protected Result.i
     
     With *This
-      PushListPosition(\items()) 
-      ForEach \items()
-        If \items()\index = Item 
-          Result = \items()\data
-          ; Debug \items()\Text\String
-          Break
-        EndIf
-      Next
-      PopListPosition(\items())
+      Select \Type
+        Case #PB_GadgetType_Tree,
+             #PB_GadgetType_ListView
+          PushListPosition(\items()) 
+          ForEach \items()
+            If \items()\index = Item 
+              Result = \items()\data
+              ; Debug \items()\Text\String
+              Break
+            EndIf
+          Next
+          PopListPosition(\items())
+      EndSelect
     EndWith
     
 ;     If Result
@@ -4995,16 +5000,33 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.s GetItemText(*This.Widget_S, Item.i)
+  Procedure.s GetItemText(*This.Widget_S, Item.i, Column.i=0)
     Protected Result.s
     
     With *This
-      ForEach \items()
-        If \items()\index = Item 
-          Result = \items()\Text\String.s
-          Break
-        EndIf
-      Next
+      
+      Select \Type
+        Case #PB_GadgetType_Tree,
+             #PB_GadgetType_ListView
+          
+          ForEach \items()
+            If \items()\index = Item 
+              Result = \items()\Text\String.s
+              Break
+            EndIf
+          Next
+          
+        Case #PB_GadgetType_ListIcon
+          SelectElement(\Columns(), Column)
+          
+          ForEach \Columns()\items()
+            If \Columns()\items()\index = Item 
+              Result = \Columns()\items()\Text\String.s
+              Break
+            EndIf
+          Next
+      EndSelect
+      
     EndWith
     
     ProcedureReturn Result
@@ -8925,7 +8947,7 @@ DeclareModule Drag
 EndDeclareModule
 
 Module Drag
-  Global *Drop.Drop_S = AllocateStructure(Drop_S)
+  Global *Drop.Drop_S
   Global NewMap Drag.Drop_S()
   
   Procedure Events(EventGadget, EventType, EventItem, EventData)
@@ -8973,9 +8995,11 @@ EndProcedure
   EndProcedure
   
   Procedure.i Text(Object.i, Text.S="", Actions.i=#PB_Drag_Copy)
+    If Not *Drop : *Drop = AllocateStructure(Drop_S) : EndIf
     
     With *Drop
       Debug "Drag text - " + Text
+      \Format = #PB_Drop_Text
       \Text = Text
       \Actions = Actions
     EndWith
@@ -8983,9 +9007,11 @@ EndProcedure
   EndProcedure
   
   Procedure.i Image(Object.i, Image.i=-1, Actions.i=#PB_Drag_Copy)
+    If Not *Drop : *Drop = AllocateStructure(Drop_S) : EndIf
     
     With *Drop
       Debug "Drag image - " + Image
+      \Format = #PB_Drop_Image
       \ImageID = ImageID(Image)
       \ImageWidth = ImageWidth(Image)
       \ImageHeight = ImageHeight(Image)
@@ -8995,9 +9021,12 @@ EndProcedure
   EndProcedure
   
   Procedure.i Private(Object.i, Type.i=-1, Actions.i=#PB_Drag_Copy)
+    If Not *Drop : *Drop = AllocateStructure(Drop_S) : EndIf
     
     With *Drop
       Debug "Drag private - " + Type
+      \Format = #PB_Drop_Private
+      \PrivateType = Type
       \ImageID = ImageID(Image)
       \ImageWidth = ImageWidth(Image)
       \ImageHeight = ImageHeight(Image)
@@ -9007,7 +9036,13 @@ EndProcedure
   EndProcedure
   
   Procedure.i DropAction(Object.i)
-    ProcedureReturn Drag(Hex(Object))\Actions
+    If Not Object
+      *Drop = 0
+    EndIf
+    
+    If *Drop
+      ProcedureReturn Bool(Drag(Hex(Object))\Format = *Drop\Format And (Drag(Hex(Object))\PrivateType = *Drop\PrivateType)) * Drag(Hex(Object))\Actions  
+    EndIf
   EndProcedure
   
   Procedure.s DropText(Object.i)
@@ -9018,7 +9053,7 @@ EndProcedure
   
   Procedure.i DropPrivate(Object.i)
     If DropAction(Object)
-      ProcedureReturn *Drop\Format
+      ProcedureReturn *Drop\PrivateType
     EndIf
   EndProcedure
   
@@ -9397,5 +9432,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---0--------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------
+; Folding = ---0---------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------
 ; EnableXP
