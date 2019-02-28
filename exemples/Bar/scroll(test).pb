@@ -234,6 +234,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(g_Canvas, #PB_Canvas_Cursor, #PB_Cursor_Hand)
     v = ScrollBarGadget(-1, #PB_Ignore, #PB_Ignore, 1, 1, 0,0,0, #PB_ScrollBar_Vertical)
     CloseGadgetList()
+    OpenList(0, g_Canvas)
     
     ; Create both scroll bars
     ;     *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical,7)

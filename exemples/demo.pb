@@ -17,92 +17,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf
   
   Global x,y,i,NewMap Widgets.i()
-  
-  Procedure Canvas_Events(Canvas.i, EventType.i)
-    Protected *This.Widget_S, *main.Widget_S = GetGadgetData(Canvas)
-    Protected Repaint, iWidth, iHeight
-    Protected Width = GadgetWidth(Canvas)
-    Protected Height = GadgetHeight(Canvas)
-    Protected mouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected mouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    
-    Select EventType
-      Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-        Resize(*main, x, y, Width-x*2, Height-y*2)  
-        Repaint = 1 
-    EndSelect
-    
-    *This = at(*main, mouseX, mouseY)
-    
-    If *This
-      Repaint | CallBack(*This, EventType, mouseX,mouseY)
-    EndIf
-    
-    If Repaint
-      ReDraw(*main)
-    EndIf
-  EndProcedure
-  
-  Procedure Canvas_CallBack()
-    ; Canvas events bug fix
-    Protected Result.b
-    Static MouseLeave.b
-    Protected EventGadget.i = EventGadget()
-    Protected EventType.i = EventType()
-    Protected Width = GadgetWidth(EventGadget)
-    Protected Height = GadgetHeight(EventGadget)
-    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
-    
-    ; Это из за ошибки в мак ос и линукс
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
-      Select EventType 
-        Case #PB_EventType_MouseEnter 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
-            EventType = #PB_EventType_MouseMove
-            MouseLeave = 0
-          EndIf
-          
-        Case #PB_EventType_MouseLeave 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
-            EventType = #PB_EventType_MouseMove
-            MouseLeave = 1
-          EndIf
-          
-        Case #PB_EventType_LeftButtonDown
-          If GetActiveGadget()<>EventGadget
-            SetActiveGadget(EventGadget)
-          EndIf
-          
-        Case #PB_EventType_LeftButtonUp
-          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
-            MouseLeave = 0
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-              Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
-              EventType = #PB_EventType_MouseLeave
-            CompilerEndIf
-          Else
-            MouseLeave =- 1
-            Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
-            EventType = #PB_EventType_LeftClick
-          EndIf
-          
-        Case #PB_EventType_LeftClick : ProcedureReturn 0
-      EndSelect
-    CompilerEndIf
-    
-    Result | Canvas_Events(EventGadget, EventType)
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  
+ 
   
   If OpenWindow(3, 0, 0, 995, 455, "Position de la souris sur la fenêtre", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    CanvasGadget(100, 0, 0, 995, 455, #PB_Canvas_Keyboard)
-    BindGadgetEvent(100, @Canvas_CallBack())
-    
-    If OpenList(3, 100)
+    If Open(3, 0, 0, 995, 455)
       
       ;Widgets("Container") = Container(0, 0, 995, 455);, #PB_Flag_AutoSize) 
       
@@ -121,9 +39,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       Widgets(Str(101)) = Option(10, 10, 110,20, "Container_"+Str(#PB_GadgetType_Container) )  : SetState(Widgets(Str(101)), 1)  
       Widgets(Str(102)) = Option(10, 40, 110,20, "Option_widget" )  
       CloseList()
-      ;     ListIconGadget(#PB_GadgetType_ListIcon, 170, 380, 160,70,"ListIconGadget_"+Str(#PB_GadgetType_ListIcon),120 )                           ; ok
+      Widgets(Str(#PB_GadgetType_ListIcon)) = ListIcon(170, 380, 160,70,"ListIcon_"+Str(#PB_GadgetType_ListIcon),120 )                           ; ok
       
-      ;     IPAddressGadget(#PB_GadgetType_IPAddress, 335, 5, 160,70 ) : SetGadgetState(#PB_GadgetType_IPAddress, MakeIPAddress(1, 2, 3, 4))    ; ok
+      Widgets(Str(#PB_GadgetType_IPAddress)) = IPAddress(335, 5, 160,70 ) : SetState(Widgets(Str(#PB_GadgetType_IPAddress)), MakeIPAddress(1, 2, 3, 4))    ; ok
       Widgets(Str(#PB_GadgetType_ProgressBar)) = Progress(335, 80, 160,70,0,100) : SetState(Widgets(Str(#PB_GadgetType_ProgressBar)), 50)
       Widgets(Str(#PB_GadgetType_ScrollBar)) = Scroll(335, 155, 160,70,0,100,20) : SetState(Widgets(Str(#PB_GadgetType_ScrollBar)), 40)
       Widgets(Str(#PB_GadgetType_ScrollArea)) = ScrollArea(335, 230, 160,70,180,90,1, #PB_ScrollArea_Flat ) : Widgets(Str(201)) = Button(0, 0, 150,20, "ScrollArea_"+Str(#PB_GadgetType_ScrollArea) ) : Widgets(Str(202)) = Button(180-150, 90-20, 150,20, "Button_"+Str(202) ) : CloseList()
@@ -183,5 +101,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -0-
+; Folding = -
 ; EnableXP

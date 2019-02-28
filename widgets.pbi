@@ -6,20 +6,240 @@
 ;      ||       ||
 ;
 
+DeclareModule DD
+  ;- - Drop_S
+  Structure Drop_S
+    Text.s
+    ImageID.i
+    ImageWidth.i
+    ImageHeight.i
+    Actions.i
+    Format.i
+    PrivateType.i
+  EndStructure
+  
+  Enumeration #PB_EventType_FirstCustomValue
+    #PB_EventType_Drop
+  EndEnumeration
+  
+  Global Object.i, Event.i
+  
+  Declare.s DropText(Object.i)
+  Declare.i DropImage(Object.i, Image.i=-1, Depth.i=24)
+  Declare.i DropAction(Object.i)
+  
+  Declare.i Text(Object.i, Text.S="", Actions.i=#PB_Drag_Copy)
+  Declare.i Image(Object.i, Image.i=-1, Actions.i=#PB_Drag_Copy)
+  Declare.i Private(Object.i, Type.i=-1, Actions.i=#PB_Drag_Copy)
+  
+  Declare.i EnableDrop(Object.i, Format.i, Actions.i, PrivateType.i=0)
+  Declare.i CallBack(*Object, EventType.i, Mouse_X.i, Mouse_Y.i)
+EndDeclareModule
+
+Module DD
+  Global *Drop.Drop_S
+  Global NewMap Drag.Drop_S()
+  
+  Procedure Events(EventGadget, EventType, EventItem, EventData)
+    
+    ; DragStart event on the source s, initiate a drag & drop
+    ;
+    Select EventType
+      Case #PB_EventType_LeftButtonDown
+        Debug 5555666
+        
+      Case #PB_EventType_LeftButtonUp
+        Debug 22222222
+        
+      Case #PB_EventType_DragStart
+        
+        ;     Case #PB_EventType_Drop
+        
+    EndSelect
+    
+  EndProcedure
+  
+  Procedure.i EnableDrop(Object.i, Format.i, Actions.i, PrivateType.i=0)
+    ; Format
+    ; #PB_Drop_Text    : Accept text on this gadget
+    ; #PB_Drop_Image   : Accept images on this gadget
+    ; #PB_Drop_Files   : Accept filenames on this gadget
+    ; #PB_Drop_Private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
+    
+    ; Actions
+    ; #PB_Drag_None    : The Data format will Not be accepted on the gadget
+    ; #PB_Drag_Copy    : The Data can be copied
+    ; #PB_Drag_Move    : The Data can be moved
+    ; #PB_Drag_Link    : The Data can be linked
+    
+    Drag(Hex(Object))
+    
+    With Drag()
+      \Format = Format
+      \Actions = Actions
+      \PrivateType = PrivateType
+      
+      ;  Widget::Bind(@Events());, Object)
+    EndWith
+    
+  EndProcedure
+  
+  Procedure.i Text(Object.i, Text.S="", Actions.i=#PB_Drag_Copy)
+    If Not *Drop : *Drop = AllocateStructure(Drop_S) : EndIf
+    
+    With *Drop
+      Debug "Drag text - " + Text
+      \Format = #PB_Drop_Text
+      \Text = Text
+      \Actions = Actions
+    EndWith
+    
+  EndProcedure
+  
+  Procedure.i Image(Object.i, Image.i=-1, Actions.i=#PB_Drag_Copy)
+    If Not *Drop : *Drop = AllocateStructure(Drop_S) : EndIf
+    
+    With *Drop
+      Debug "Drag image - " + Image
+      \Format = #PB_Drop_Image
+      \ImageID = ImageID(Image)
+      \ImageWidth = ImageWidth(Image)
+      \ImageHeight = ImageHeight(Image)
+      \Actions = Actions
+    EndWith
+    
+  EndProcedure
+  
+  Procedure.i Private(Object.i, Type.i=-1, Actions.i=#PB_Drag_Copy)
+    If Not *Drop : *Drop = AllocateStructure(Drop_S) : EndIf
+    
+    With *Drop
+      Debug "Drag private - " + Type
+      \Format = #PB_Drop_Private
+      \PrivateType = Type
+      \ImageID = ImageID(Image)
+      \ImageWidth = ImageWidth(Image)
+      \ImageHeight = ImageHeight(Image)
+      \Actions = Actions
+    EndWith
+    
+  EndProcedure
+  
+  Procedure.i DropAction(Object.i)
+    If Not Object
+      *Drop = 0
+    EndIf
+    
+    If *Drop
+      ProcedureReturn Bool(Drag(Hex(Object))\Format = *Drop\Format And (Drag(Hex(Object))\PrivateType = *Drop\PrivateType)) * Drag(Hex(Object))\Actions  
+    EndIf
+  EndProcedure
+  
+  Procedure.s DropText(Object.i)
+    If DropAction(Object)
+      ProcedureReturn *Drop\Text
+    EndIf
+  EndProcedure
+  
+  Procedure.i DropPrivate(Object.i)
+    If DropAction(Object)
+      ProcedureReturn *Drop\PrivateType
+    EndIf
+  EndProcedure
+  
+  Procedure.i DropImage(Object.i, Image.i=-1, Depth.i=24)
+    Protected Result.i
+    
+    If DropAction(Object) And *Drop\ImageID
+      If Image =- 1
+        Result = CreateImage(#PB_Any, *Drop\ImageWidth, *Drop\ImageHeight) : Image = Result
+      Else
+        Result = IsImage(Image)
+      EndIf
+      
+      If Result And StartDrawing(ImageOutput(Image))
+        If Depth = 32
+          DrawAlphaImage(*Drop\ImageID, 0, 0)
+        Else
+          DrawImage(*Drop\ImageID, 0, 0)
+        EndIf
+        StopDrawing()
+      EndIf  
+      
+      ProcedureReturn Result
+    EndIf
+  EndProcedure
+  
+  Procedure.i CallBack(*Object, EventType.i, Mouse_X.i, Mouse_Y.i)
+    Protected result, drag_value = 1
+    Static Drag, Drag_x, Drag_y
+    
+    Select EventType
+      Case #PB_EventType_LeftButtonDown
+        Drag = 1
+        Drag_x = mouse_x
+        Drag_y = mouse_y
+        
+      Case #PB_EventType_MouseMove
+        If Drag And 
+           Not (mouse_x>Drag_x-drag_value And 
+                mouse_x<Drag_x+drag_value And 
+                mouse_y>Drag_y-drag_value And
+                mouse_y<Drag_y+drag_value)
+          
+          Object = *Object
+          Event = #PB_EventType_DragStart
+          
+          Drag = 0
+          ProcedureReturn 1
+        EndIf
+        
+      Case #PB_EventType_MouseLeave
+        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+        Object = 0
+        
+      Case #PB_EventType_MouseEnter
+        If DropAction(*Object) : Object = *Object
+          SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Hand)
+        Else
+          SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+        EndIf
+        
+      Case #PB_EventType_LeftButtonUp : Drag = 0
+        If DropAction(Object) : Event = #PB_EventType_Drop
+          SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+          ProcedureReturn 1
+        EndIf
+        
+    EndSelect
+    
+  EndProcedure
+  
+  
+  
+EndModule
+
+
+;-
 DeclareModule Widget
   EnableExplicit
   #Anchors = 9+4
   
   #Anchor_moved = 9
   
+;   Structure Type_S
+;     b.b
+;     i.i 
+;     s.s
+;   EndStructure
+  
   ;- - STRUCTUREs
   ;- - Mouse_S
   Structure Mouse_S
     X.i
     Y.i
-    ; at.i ; at point widget
-    ; Wheel.i ; delta
-    Buttons.i ; state
+    
+    Buttons.i 
     *Delta.Mouse_S
   EndStructure
   
@@ -161,7 +381,7 @@ DeclareModule Widget
     *Scroll.Scroll_S 
     *First.Widget_S
     *Second.Widget_S
- 
+    
     Ticks.b  ; track bar
     Smooth.b ; progress bar
     
@@ -328,13 +548,14 @@ DeclareModule Widget
     #PB_Event_Widget
   EndEnumeration
   
+  #PB_EventType_Drop = DD::#PB_EventType_Drop
+  
   Enumeration #PB_EventType_FirstCustomValue
     CompilerIf #PB_Compiler_Version<547 : #PB_EventType_Resize : CompilerEndIf
     
     #PB_EventType_Free
     #PB_EventType_Create
     
-    #PB_EventType_Drop
     #PB_EventType_Repaint
     #PB_EventType_ScrollChange
   EndEnumeration
@@ -637,6 +858,36 @@ DeclareModule Widget
     ((_mask_ & _flag_) = _flag_)
   EndMacro
   
+  ;- DRAG&DROP
+  Macro DropText()
+    DD::DropText(Widget::*Value\This)
+  EndMacro
+  
+  Macro DropAction()
+    DD::DropAction(Widget::*Value\This)
+  EndMacro
+  
+  Macro DropImage(_image_, _depth_=24)
+    DD::DropImage(Widget::*Value\This, _image_, _depth_)
+  EndMacro
+  
+  Macro DragText(_text_, _actions_=#PB_Drag_Copy)
+    DD::Text(Widget::*Value\This, _text_, _actions_)
+  EndMacro
+  
+  Macro DragImage(_image_, _actions_=#PB_Drag_Copy)
+    DD::Image(Widget::*Value\This, _image_, _actions_)
+  EndMacro
+  
+  Macro DragPrivate(_type_, _actions_=#PB_Drag_Copy)
+    DD::Private(Widget::*Value\This, _type_, _actions_)
+  EndMacro
+  
+  Macro EnableDrop(_this_, _format_, _actions_, _private_type_=0)
+     DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
+  EndMacro
+  
+  
   ;-
   ;- - DECLAREs
   ;-
@@ -669,7 +920,6 @@ DeclareModule Widget
   Declare.i GetItemImage(*This.Widget_S, Item.i)
   Declare.s GetItemText(*This.Widget_S, Item.i, Column.i=0)
   Declare.i GetItemAttribute(*This.Widget_S, Item.i, Attribute.i)
-  ;;;Declare.i EnableDrop(*This.Widget_S, Format.i, Actions.i, PrivateType.i=0)
   
   Declare.i SetTransparency(*This.Widget_S, Transparency.a)
   Declare.i SetAnchors(*This.Widget_S)
@@ -740,7 +990,7 @@ DeclareModule Widget
   Declare.i Create(Type.i, X.i,Y.i,Width.i,Height.i, Text.s, Param_1.i=0, Param_2.i=0, Param_3.i=0, Flag.i=0, Parent.i=0, ParentItem.i=0)
   Declare.i ExplorerList(X.i,Y.i,Width.i,Height.i, Directory.s, Flag.i=0)
   Declare.i IPAddress(X.i,Y.i,Width.i,Height.i)
-
+  
   Declare.i CloseList()
   Declare.i OpenList(*This.Widget_S, Item.i=0, Type=-5)
   Declare.i SetParent(*This.Widget_S, *Parent.Widget_S, ParentItem.i=-1)
@@ -1259,13 +1509,13 @@ Module Widget
         
         If i=10 Or i=12
           \anchor[i]\Color[0]\Frame = $0000FF
-;           \anchor[i]\Color[1]\Frame = $0000FF
-;           \anchor[i]\Color[2]\Frame = $0000FF
+          ;           \anchor[i]\Color[1]\Frame = $0000FF
+          ;           \anchor[i]\Color[2]\Frame = $0000FF
         EndIf
         If i=11 Or i=13
           \anchor[i]\Color[0]\Frame = $FF0000
-;           \anchor[i]\Color[1]\Frame = $FF0000
-;           \anchor[i]\Color[2]\Frame = $FF0000
+          ;           \anchor[i]\Color[1]\Frame = $FF0000
+          ;           \anchor[i]\Color[2]\Frame = $FF0000
         EndIf
         
         \anchor[i]\Pos = \anchor[i]\Width-3
@@ -1382,16 +1632,16 @@ Module Widget
             
             If CallBack(\Childrens(), #PB_EventType_LeftButtonDown, WindowMouseX(\Root\CanvasWindow), WindowMouseY(\Root\CanvasWindow))
               ; If \Childrens()\index[2] <> \Childrens()\index[1]
-                *Widget\index[2] = \Childrens()\index[1]
-                Post(#PB_EventType_Change, *Widget, \Childrens()\index[1])
-                
-                SetText(*Widget, GetItemText(\Childrens(), \Childrens()\index[1]))
-                \Childrens()\index[2] = \Childrens()\index[1]
-                \Childrens()\Mouse\Buttons = 0
-                \Childrens()\index[1] =- 1
-                \Childrens()\Focus = 1
-                \Mouse\Buttons = 0
-                ReDraw(*This)
+              *Widget\index[2] = \Childrens()\index[1]
+              Post(#PB_EventType_Change, *Widget, \Childrens()\index[1])
+              
+              SetText(*Widget, GetItemText(\Childrens(), \Childrens()\index[1]))
+              \Childrens()\index[2] = \Childrens()\index[1]
+              \Childrens()\Mouse\Buttons = 0
+              \Childrens()\index[1] =- 1
+              \Childrens()\Focus = 1
+              \Mouse\Buttons = 0
+              ReDraw(*This)
               ; EndIf
             EndIf
             
@@ -1953,7 +2203,7 @@ Module Widget
           EndIf
         Wend 
         PopListPosition(\Items())
-       
+        
         If \i_Parent
           If subLevel > \i_Parent\subLevel
             sublevel = \i_Parent\sublevel + 1
@@ -2281,8 +2531,8 @@ Module Widget
             ; GetState() - Value = \index[2]
             \index[2] = State
             
-             Debug "set_state() - "+State;\index[1]+" "+ListIndex(\items())
-                   ; Post change event to widget (tree, listview)
+            Debug "set_state() - "+State;\index[1]+" "+ListIndex(\items())
+                                        ; Post change event to widget (tree, listview)
             Event_Widgets(*This, #PB_EventType_Change, State)
           EndIf
           
@@ -3394,7 +3644,7 @@ Module Widget
             ; \Scroll\v\Max = \CountItems*\Text\height
             ; Debug ""+Str(\Change*\Text\height-\Scroll\v\Page\len+\Scroll\v\Thumb\len) +" "+ \Scroll\v\Max
             If (\Change*\Text\height-\Scroll\v\Page\len) <> \Scroll\v\Page\Pos  ;> \Scroll\v\Max
-                                                                      ; \Scroll\v\Page\Pos = (\Change*\Text\height-\Scroll\v\Page\len)
+                                                                                ; \Scroll\v\Page\Pos = (\Change*\Text\height-\Scroll\v\Page\len)
               SetState(\Scroll\v, (\Change*\Text\height-\Scroll\v\Page\len))
               Debug ""+\Scroll\v\Page\Pos+" "+Str(\Change*\Text\height-\Scroll\v\Page\len)  +" "+\Scroll\v\Max                                               
               
@@ -4280,7 +4530,7 @@ Module Widget
       Next
       
       \Scroll\height = (y+\Scroll\v\Page\Pos)-\y[2]-1;\Flag\GridLines
-                                           ; set vertical scrollbar max value
+                                                     ; set vertical scrollbar max value
       If \Scroll\v And \Scroll\v\Page\Len And \Scroll\v\Max<>\Scroll\height And 
          SetAttribute(\Scroll\v, #PB_Bar_Maximum, \Scroll\height) : \Scroll\v\Step = \Text\height
         Resizes(\Scroll, 0,0, #PB_Ignore, #PB_Ignore)
@@ -4305,169 +4555,169 @@ Module Widget
   Procedure.i Draw(*This.Widget_S, Childrens=0)
     Protected ParentItem.i
     
-      With *This
-        CompilerIf #PB_Compiler_OS <>#PB_OS_MacOS 
-          DrawingFont(GetGadgetFont(-1))
-        CompilerEndIf
-        
-        ; Get text size
-        If (\Text And \Text\Change)
-          \Text\width = TextWidth(\Text\String.s[1])
-          \Text\height = TextHeight("A")
-        EndIf
-        
-        If \Image 
-          If (\Image\Change Or \Resize Or \Change)
-            ; Image default position
-            If \image\imageID
-              If (\Type = #PB_GadgetType_Image)
-                \image\x[1] = \image\x[2] + (Bool(\Scroll\h\Page\len>\image\width And (\image\Align\Right Or \image\Align\Horizontal)) * (\Scroll\h\Page\len-\image\width)) / (\image\Align\Horizontal+1)
-                \image\y[1] = \image\y[2] + (Bool(\Scroll\v\Page\len>\image\height And (\image\Align\Bottom Or \image\Align\Vertical)) * (\Scroll\v\Page\len-\image\height)) / (\image\Align\Vertical+1)
-                \image\y = \Scroll\y+\image\y[1]+\y[2]
-                \image\x = \Scroll\x+\image\x[1]+\x[2]
-                
-              ElseIf (\Type = #PB_GadgetType_Window)
-                \image\x[1] = \image\x[2] + (Bool(\image\Align\Right Or \image\Align\Horizontal) * (\width-\image\width)) / (\image\Align\Horizontal+1)
-                \image\y[1] = \image\y[2] + (Bool(\image\Align\Bottom Or \image\Align\Vertical) * (\height-\image\height)) / (\image\Align\Vertical+1)
-                \image\x = \image\x[1]+\x[2]
-                \image\y = \image\y[1]+\y+\bs+(\TabHeight-\image\height)/2
-                \Text\x[2] = \image\x[2] + \image\width
-              Else
-                \image\x[1] = \image\x[2] + (Bool(\image\Align\Right Or \image\Align\Horizontal) * (\width-\image\width)) / (\image\Align\Horizontal+1)
-                \image\y[1] = \image\y[2] + (Bool(\image\Align\Bottom Or \image\Align\Vertical) * (\height-\image\height)) / (\image\Align\Vertical+1)
-                \image\x = \image\x[1]+\x[2]
-                \image\y = \image\y[1]+\y[2]
-              EndIf
-            EndIf
-          EndIf
-          
-          Protected image_width = \Image\width
-        EndIf
-        
-        If \Text And (\Text\Change Or \Resize Or \Change)
-          ; Make multi line text
-          If \Text\MultiLine > 0
-            \Text\String.s = Text_Wrap(*This, \Text\String.s[1], \Width-\bs*2, \Text\MultiLine)
-            \CountItems = CountString(\Text\String.s, #LF$)
-          Else
-            \Text\String.s = \Text\String.s[1]
-          EndIf
-          
-          ; Text default position
-          If \Text\String
-            \Text\x[1] = \Text\x[2] + (Bool((\Text\Align\Right Or \Text\Align\Horizontal)) * (\width[2]-\Text\width-image_width)) / (\Text\Align\Horizontal+1)
-            \Text\y[1] = \Text\y[2] + (Bool((\Text\Align\Bottom Or \Text\Align\Vertical)) * (\height[2]-\Text\height)) / (\Text\Align\Vertical+1)
-            
-            If \Type = #PB_GadgetType_Frame
-              \Text\x = \Text\x[1]+\x[2]+8
-              \Text\y = \Text\y[1]+\y
-              
-            ElseIf \Type = #PB_GadgetType_Window
-              \Text\x = \Text\x[1]+\x[2]+5
-              \Text\y = \Text\y[1]+\y+\bs+(\TabHeight-\Text\height)/2
-            Else
-              \Text\x = \Text\x[1]+\x[2]
-              \Text\y = \Text\y[1]+\y[2]
-            EndIf
-          EndIf
-        EndIf
-        
-        ; 
-        If \height>0 And \width>0 And Not \hide And \color\alpha 
-          ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
-          
-          If \Image[1] And \Container
-            \image[1]\x = \x[2] 
-            \image[1]\y = \y[2]
-          EndIf
-          
-;           SetOrigin(\x,\y)
-;           
-;           If Not Post(#PB_EventType_Repaint, *This)
-;             SetOrigin(0,0)
-            
-            
-            Select \Type
-              Case #PB_GadgetType_Window : Draw_Window(*This)
-              Case #PB_GadgetType_HyperLink : Draw_HyperLink(*This)
-              Case #PB_GadgetType_Property : Draw_Property(*This)
-                
-              Case #PB_GadgetType_String : Draw_String(*This)
-              Case #PB_GadgetType_IPAddress : Draw_String(*This)
-                
-              Case #PB_GadgetType_ExplorerList : Draw_ListIcon(*This)
-              Case #PB_GadgetType_ListIcon : Draw_ListIcon(*This)
-                
-              Case #PB_GadgetType_ListView : Draw_Tree(*This)
-              Case #PB_GadgetType_Tree : Draw_Tree(*This)
-              Case #PB_GadgetType_Text : Draw_Text(*This)
-              Case #PB_GadgetType_ComboBox : Draw_ComboBox(*This)
-              Case #PB_GadgetType_CheckBox : Draw_CheckBox(*This)
-              Case #PB_GadgetType_Option : Draw_Option(*This)
-              Case #PB_GadgetType_Panel : Draw_Panel(*This)
-              Case #PB_GadgetType_Frame : Draw_Frame(*This)
-              Case #PB_GadgetType_Image : Draw_Image(*This)
-              Case #PB_GadgetType_Button : Draw_Button(*This)
-              Case #PB_GadgetType_TrackBar : Draw_Track(*This)
-              Case #PB_GadgetType_Spin : Draw_Spin(*This)
-              Case #PB_GadgetType_ScrollBar : Draw_Scroll(*This)
-              Case #PB_GadgetType_Splitter : Draw_Splitter(*This)
-              Case #PB_GadgetType_Container : Draw_Container(*This)
-              Case #PB_GadgetType_ProgressBar : Draw_Progress(*This)
-              Case #PB_GadgetType_ScrollArea : Draw_ScrollArea(*This)
-            EndSelect
-            
-            If \Scroll 
-              If \Scroll\v And \Scroll\v\Type And Not \Scroll\v\Hide : Draw_Scroll(\Scroll\v) : EndIf
-              If \Scroll\h And \Scroll\h\Type And Not \Scroll\h\Hide : Draw_Scroll(\Scroll\h) : EndIf
-            EndIf
-            
-            ; Draw Childrens
-            If Childrens And ListSize(\Childrens())
-              ; Only selected item widgets draw
-              ParentItem = Bool(\Type = #PB_GadgetType_Panel) * \index[2]
-              ForEach \Childrens() 
-                ;If Not Send(\Childrens(), #PB_EventType_Repaint)
-                
-                If \Childrens()\clip\width > 0 And 
-                   \Childrens()\clip\height > 0 And 
-                   \Childrens()\ParentItem = ParentItem
-                  Draw(\Childrens(), Childrens) 
-                EndIf
-                
-                ;EndIf
-                Draw_Anchors(\Childrens())
-              Next
-            EndIf
-          
-          If \clip\width > 0 And \clip\height > 0
-            ; Demo clip coordinate
-            DrawingMode(#PB_2DDrawing_Outlined)
-            Box(\clip\x,\clip\y,\clip\width,\clip\height, $0000FF)
-            
-            ; Demo default coordinate
-            DrawingMode(#PB_2DDrawing_Outlined)
-            Box(\x,\y,\width,\height, $F00F00)
-          EndIf
-          
-          UnclipOutput()
-        EndIf
-        
-        ; reset 
-        \Change = 0
-        \Resize = 0
-        If \Text
-          \Text\Change = 0
-        EndIf
-        If \Image
-          \image\change = 0
-        EndIf
-        
-        ; *Value\Type =- 1 
-        ; *Value\This = 0
-      EndWith 
+    With *This
+      CompilerIf #PB_Compiler_OS <>#PB_OS_MacOS 
+        DrawingFont(GetGadgetFont(-1))
+      CompilerEndIf
       
-      ProcedureReturn *This
+      ; Get text size
+      If (\Text And \Text\Change)
+        \Text\width = TextWidth(\Text\String.s[1])
+        \Text\height = TextHeight("A")
+      EndIf
+      
+      If \Image 
+        If (\Image\Change Or \Resize Or \Change)
+          ; Image default position
+          If \image\imageID
+            If (\Type = #PB_GadgetType_Image)
+              \image\x[1] = \image\x[2] + (Bool(\Scroll\h\Page\len>\image\width And (\image\Align\Right Or \image\Align\Horizontal)) * (\Scroll\h\Page\len-\image\width)) / (\image\Align\Horizontal+1)
+              \image\y[1] = \image\y[2] + (Bool(\Scroll\v\Page\len>\image\height And (\image\Align\Bottom Or \image\Align\Vertical)) * (\Scroll\v\Page\len-\image\height)) / (\image\Align\Vertical+1)
+              \image\y = \Scroll\y+\image\y[1]+\y[2]
+              \image\x = \Scroll\x+\image\x[1]+\x[2]
+              
+            ElseIf (\Type = #PB_GadgetType_Window)
+              \image\x[1] = \image\x[2] + (Bool(\image\Align\Right Or \image\Align\Horizontal) * (\width-\image\width)) / (\image\Align\Horizontal+1)
+              \image\y[1] = \image\y[2] + (Bool(\image\Align\Bottom Or \image\Align\Vertical) * (\height-\image\height)) / (\image\Align\Vertical+1)
+              \image\x = \image\x[1]+\x[2]
+              \image\y = \image\y[1]+\y+\bs+(\TabHeight-\image\height)/2
+              \Text\x[2] = \image\x[2] + \image\width
+            Else
+              \image\x[1] = \image\x[2] + (Bool(\image\Align\Right Or \image\Align\Horizontal) * (\width-\image\width)) / (\image\Align\Horizontal+1)
+              \image\y[1] = \image\y[2] + (Bool(\image\Align\Bottom Or \image\Align\Vertical) * (\height-\image\height)) / (\image\Align\Vertical+1)
+              \image\x = \image\x[1]+\x[2]
+              \image\y = \image\y[1]+\y[2]
+            EndIf
+          EndIf
+        EndIf
+        
+        Protected image_width = \Image\width
+      EndIf
+      
+      If \Text And (\Text\Change Or \Resize Or \Change)
+        ; Make multi line text
+        If \Text\MultiLine > 0
+          \Text\String.s = Text_Wrap(*This, \Text\String.s[1], \Width-\bs*2, \Text\MultiLine)
+          \CountItems = CountString(\Text\String.s, #LF$)
+        Else
+          \Text\String.s = \Text\String.s[1]
+        EndIf
+        
+        ; Text default position
+        If \Text\String
+          \Text\x[1] = \Text\x[2] + (Bool((\Text\Align\Right Or \Text\Align\Horizontal)) * (\width[2]-\Text\width-image_width)) / (\Text\Align\Horizontal+1)
+          \Text\y[1] = \Text\y[2] + (Bool((\Text\Align\Bottom Or \Text\Align\Vertical)) * (\height[2]-\Text\height)) / (\Text\Align\Vertical+1)
+          
+          If \Type = #PB_GadgetType_Frame
+            \Text\x = \Text\x[1]+\x[2]+8
+            \Text\y = \Text\y[1]+\y
+            
+          ElseIf \Type = #PB_GadgetType_Window
+            \Text\x = \Text\x[1]+\x[2]+5
+            \Text\y = \Text\y[1]+\y+\bs+(\TabHeight-\Text\height)/2
+          Else
+            \Text\x = \Text\x[1]+\x[2]
+            \Text\y = \Text\y[1]+\y[2]
+          EndIf
+        EndIf
+      EndIf
+      
+      ; 
+      If \height>0 And \width>0 And Not \hide And \color\alpha 
+        ClipOutput(\clip\x,\clip\y,\clip\width,\clip\height)
+        
+        If \Image[1] And \Container
+          \image[1]\x = \x[2] 
+          \image[1]\y = \y[2]
+        EndIf
+        
+        ;           SetOrigin(\x,\y)
+        ;           
+        ;           If Not Post(#PB_EventType_Repaint, *This)
+        ;             SetOrigin(0,0)
+        
+        
+        Select \Type
+          Case #PB_GadgetType_Window : Draw_Window(*This)
+          Case #PB_GadgetType_HyperLink : Draw_HyperLink(*This)
+          Case #PB_GadgetType_Property : Draw_Property(*This)
+            
+          Case #PB_GadgetType_String : Draw_String(*This)
+          Case #PB_GadgetType_IPAddress : Draw_String(*This)
+            
+          Case #PB_GadgetType_ExplorerList : Draw_ListIcon(*This)
+          Case #PB_GadgetType_ListIcon : Draw_ListIcon(*This)
+            
+          Case #PB_GadgetType_ListView : Draw_Tree(*This)
+          Case #PB_GadgetType_Tree : Draw_Tree(*This)
+          Case #PB_GadgetType_Text : Draw_Text(*This)
+          Case #PB_GadgetType_ComboBox : Draw_ComboBox(*This)
+          Case #PB_GadgetType_CheckBox : Draw_CheckBox(*This)
+          Case #PB_GadgetType_Option : Draw_Option(*This)
+          Case #PB_GadgetType_Panel : Draw_Panel(*This)
+          Case #PB_GadgetType_Frame : Draw_Frame(*This)
+          Case #PB_GadgetType_Image : Draw_Image(*This)
+          Case #PB_GadgetType_Button : Draw_Button(*This)
+          Case #PB_GadgetType_TrackBar : Draw_Track(*This)
+          Case #PB_GadgetType_Spin : Draw_Spin(*This)
+          Case #PB_GadgetType_ScrollBar : Draw_Scroll(*This)
+          Case #PB_GadgetType_Splitter : Draw_Splitter(*This)
+          Case #PB_GadgetType_Container : Draw_Container(*This)
+          Case #PB_GadgetType_ProgressBar : Draw_Progress(*This)
+          Case #PB_GadgetType_ScrollArea : Draw_ScrollArea(*This)
+        EndSelect
+        
+        If \Scroll 
+          If \Scroll\v And \Scroll\v\Type And Not \Scroll\v\Hide : Draw_Scroll(\Scroll\v) : EndIf
+          If \Scroll\h And \Scroll\h\Type And Not \Scroll\h\Hide : Draw_Scroll(\Scroll\h) : EndIf
+        EndIf
+        
+        ; Draw Childrens
+        If Childrens And ListSize(\Childrens())
+          ; Only selected item widgets draw
+          ParentItem = Bool(\Type = #PB_GadgetType_Panel) * \index[2]
+          ForEach \Childrens() 
+            ;If Not Send(\Childrens(), #PB_EventType_Repaint)
+            
+            If \Childrens()\clip\width > 0 And 
+               \Childrens()\clip\height > 0 And 
+               \Childrens()\ParentItem = ParentItem
+              Draw(\Childrens(), Childrens) 
+            EndIf
+            
+            ;EndIf
+            Draw_Anchors(\Childrens())
+          Next
+        EndIf
+        
+        If \clip\width > 0 And \clip\height > 0
+          ; Demo clip coordinate
+          DrawingMode(#PB_2DDrawing_Outlined)
+          Box(\clip\x,\clip\y,\clip\width,\clip\height, $0000FF)
+          
+          ; Demo default coordinate
+          DrawingMode(#PB_2DDrawing_Outlined)
+          Box(\x,\y,\width,\height, $F00F00)
+        EndIf
+        
+        UnclipOutput()
+      EndIf
+      
+      ; reset 
+      \Change = 0
+      \Resize = 0
+      If \Text
+        \Text\Change = 0
+      EndIf
+      If \Image
+        \image\change = 0
+      EndIf
+      
+      ; *Value\Type =- 1 
+      ; *Value\This = 0
+    EndWith 
+    
+    ProcedureReturn *This
   EndProcedure
   
   Procedure.i ReDraw(*This.Widget_S)
@@ -4666,26 +4916,6 @@ Module Widget
     
     ProcedureReturn Result
   EndProcedure
-  
-  Procedure.i EnableDrop(*This.Widget_S, Format.i, Actions.i, PrivateType.i=0)
-    ; Format
-    ; #PB_Drop_Text    : Accept text on this gadget
-    ; #PB_Drop_Image   : Accept images on this gadget
-    ; #PB_Drop_Files   : Accept filenames on this gadget
-    ; #PB_Drop_Private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
-    
-    ; Actions
-    ; #PB_Drag_None    : The Data format will Not be accepted on the gadget
-    ; #PB_Drag_Copy    : The Data can be copied
-    ; #PB_Drag_Move    : The Data can be moved
-    ; #PB_Drag_Link    : The Data can be linked
-    
-    With *This
-      
-    EndWith
-    
-  EndProcedure
-  
   
   
   ;- ADD
@@ -4991,11 +5221,11 @@ Module Widget
       EndSelect
     EndWith
     
-;     If Result
-;       Protected *w.Widget_S = Result
-;       
-;       Debug "GetItemData "+Item +" "+ Result +" "+  *w\Class
-;     EndIf
+    ;     If Result
+    ;       Protected *w.Widget_S = Result
+    ;       
+    ;       Debug "GetItemData "+Item +" "+ Result +" "+  *w\Class
+    ;     EndIf
     
     ProcedureReturn Result
   EndProcedure
@@ -5224,8 +5454,8 @@ Module Widget
           Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
           
           If *LastParent
-;             Debug ""+*Root\width+" "+*LastParent\Root\width+" "+*Parent\Root\width 
-;             Debug "From ("+ Class(*LastParent\Type) +") to (" + Class(*Parent\Type) +") - SetParent()"
+            ;             Debug ""+*Root\width+" "+*LastParent\Root\width+" "+*Parent\Root\width 
+            ;             Debug "From ("+ Class(*LastParent\Type) +") to (" + Class(*Parent\Type) +") - SetParent()"
             
             If *LastParent <> *Parent
               Select Root() 
@@ -6119,8 +6349,8 @@ Module Widget
     
     With *This
       If \Cursor <> Cursor
-         SetGadgetAttribute(\Root\Canvas, CursorType, Cursor)
-  
+        SetGadgetAttribute(\Root\Canvas, CursorType, Cursor)
+        
         \Cursor = Cursor
       EndIf
     EndWith
@@ -6163,7 +6393,7 @@ Module Widget
           If Width<>#PB_Ignore : If \Width <> Width : Change_width = width-\width : \Width = Width+Bool(\Type=-1)*(\bs*2) : \width[2] = width-Bool(\Type<>-1)*(\bs*2) : \width[1] = \width[2]+\fs*2 : \Resize | 1<<3 : EndIf : EndIf  
           If Height<>#PB_Ignore : If \Height <> Height : Change_height = height-\height : \Height = Height+Bool(\Type=-1)*(\TabHeight+\bs*2) : \height[2] = height-Bool(\Type<>-1)*(\TabHeight+\bs*2) : \height[1] = \height[2]+\fs*2 : \Resize | 1<<4 : EndIf : EndIf 
         EndIf
-      
+        
         If \Box And \Resize
           \hide[1] = Bool(\Page\len And Not ((\Max-\Min) > \Page\Len))
           
@@ -6258,7 +6488,7 @@ Module Widget
               \Box\y[1] = \y[2]-\TabHeight+\bs+2
               \Box\x[2] = \x[2]+\width[2]-\Box\width[2]-1
               \Box\y[2] = \Box\y[1]
-             
+              
             Case #PB_GadgetType_Spin
               If \Vertical
                 \Box\y[1] = \y[2]+\Height[2]/2+Bool(\Height[2]%2) : \Box\Height[1] = \Height[2]/2 : \Box\Width[1] = \Box\Size[2] : \Box\x[1] = \x[2]+\width[2]-\Box\Size[2] ; Top button coordinate
@@ -6307,7 +6537,7 @@ Module Widget
         If clip_y And \y < clip_y : \clip\y = clip_y : Else : \clip\y = \y : EndIf
         If clip_width And (\x+\width) > clip_width : \clip\width = clip_width - \clip\x : Else : \clip\width = \width - (\clip\x-\x) : EndIf
         If clip_height And (\y+\height) > clip_height : \clip\height = clip_height - \clip\y : Else : \clip\height = \height - (\clip\y-\y) : EndIf
-               
+        
         ; Resize scrollbars
         If \Scroll And \Scroll\v And \Scroll\h
           Resizes(\Scroll, 0,0, \Width[2],\Height[2])
@@ -6999,54 +7229,54 @@ Module Widget
         EndIf 
         
         If \at =- 1
-            ; Columns at point
-            If ListSize(\Columns())
-              
-              ForEach \Columns()
-                If \Columns()\Drawing
-                  If (MouseX>=\Columns()\X And MouseX=<\Columns()\X+\Columns()\Width+1 And 
-                                 MouseY>=\Columns()\Y And MouseY=<\Columns()\Y+\Columns()\Height)
-                    
-                    \index[1] = \Columns()\index
-                    Break
-                  Else
-                    \index[1] =- 1
-                  EndIf
+          ; Columns at point
+          If ListSize(\Columns())
+            
+            ForEach \Columns()
+              If \Columns()\Drawing
+                If (MouseX>=\Columns()\X And MouseX=<\Columns()\X+\Columns()\Width+1 And 
+                    MouseY>=\Columns()\Y And MouseY=<\Columns()\Y+\Columns()\Height)
+                  
+                  \index[1] = \Columns()\index
+                  Break
+                Else
+                  \index[1] =- 1
                 EndIf
-                
-                ; columns items at point
-                ForEach \Columns()\items()
-                  If \Columns()\items()\Drawing
-                    If (MouseX>\X[2] And MouseX=<\X[2]+\Width[2] And 
-                                   MouseY>\Columns()\items()\Y And MouseY=<\Columns()\items()\Y+\Columns()\items()\Height)
-                       \Columns()\index[1] = \Columns()\items()\index
-                       
-                     EndIf
-                  EndIf
-                Next
-                
-              Next 
-             
-            ElseIf ListSize(\items())
+              EndIf
               
-              ; items at point
-              ForEach \items()
-                If \items()\Drawing
-                  If (MouseX>\items()\X And MouseX=<\items()\X+\items()\Width And 
-                                 MouseY>\items()\Y And MouseY=<\items()\Y+\items()\Height)
+              ; columns items at point
+              ForEach \Columns()\items()
+                If \Columns()\items()\Drawing
+                  If (MouseX>\X[2] And MouseX=<\X[2]+\Width[2] And 
+                      MouseY>\Columns()\items()\Y And MouseY=<\Columns()\items()\Y+\Columns()\items()\Height)
+                    \Columns()\index[1] = \Columns()\items()\index
                     
-                    \index[1] = \items()\index
-                   ; Debug " i "+\index[1]+" "+ListIndex(\items())
-                    Break
-                  Else
-                    \index[1] =- 1
                   EndIf
                 EndIf
               Next
               
-            EndIf
+            Next 
+            
+          ElseIf ListSize(\items())
+            
+            ; items at point
+            ForEach \items()
+              If \items()\Drawing
+                If (MouseX>\items()\X And MouseX=<\items()\X+\items()\Width And 
+                    MouseY>\items()\Y And MouseY=<\items()\Y+\items()\Height)
+                  
+                  \index[1] = \items()\index
+                  ; Debug " i "+\index[1]+" "+ListIndex(\items())
+                  Break
+                Else
+                  \index[1] =- 1
+                EndIf
+              EndIf
+            Next
+            
+          EndIf
         EndIf
-          
+        
       EndWith
     EndIf
     
@@ -7078,50 +7308,56 @@ Module Widget
         
         
         
-;         If Not Root()\Mouse\Buttons
-;           Select EventType
-;             Case #PB_EventType_MouseEnter
-;               
-;               If \at=-1
-;                 If \Leave
-;                   Debug "en "+\Type+" "+\Cursor[1]+" "+\Leave\Cursor
-;                   \Cursor[1] = \Leave\Cursor
-;                 Else
-;                   \Cursor[1] = Get_Cursor(*This)
-;                   Debug " en "+\Type+" "+\Cursor[1]
-;                 EndIf
-;                 
-;                 Set_Cursor(*This, \Cursor)
-;               EndIf
-;               
-;             Case #PB_EventType_MouseLeave
-;               If \Text
-;                 Debug "le "+\Type+" "+\Text\String
-;               Else
-;                 Debug "le "+\Type
-;               EndIf
-;               Set_Cursor(*This, \Cursor[1])
-;               
-;           EndSelect
-;         EndIf
+        ;         If Not Root()\Mouse\Buttons
+        ;           Select EventType
+        ;             Case #PB_EventType_MouseEnter
+        ;               
+        ;               If \at=-1
+        ;                 If \Leave
+        ;                   Debug "en "+\Type+" "+\Cursor[1]+" "+\Leave\Cursor
+        ;                   \Cursor[1] = \Leave\Cursor
+        ;                 Else
+        ;                   \Cursor[1] = Get_Cursor(*This)
+        ;                   Debug " en "+\Type+" "+\Cursor[1]
+        ;                 EndIf
+        ;                 
+        ;                 Set_Cursor(*This, \Cursor)
+        ;               EndIf
+        ;               
+        ;             Case #PB_EventType_MouseLeave
+        ;               If \Text
+        ;                 Debug "le "+\Type+" "+\Text\String
+        ;               Else
+        ;                 Debug "le "+\Type
+        ;               EndIf
+        ;               Set_Cursor(*This, \Cursor[1])
+        ;               
+        ;           EndSelect
+        ;         EndIf
         
         *Value\This = *This
         \Event = EventType
         
+        If DD::CallBack(*This, EventType, \Mouse\x , \Mouse\y)
+          Event_Widgets(DD::Object, DD::Event, EventItem, EventData)
+        EndIf
+        
+        
+        
         ; PostEvent(#PB_Event_Widget, \Root\Window, \Root\Parent, EventType, EventData)
         
         If \Function And 
-          CallCFunctionFast(\Function, *This, EventType, EventItem, EventData)
+           CallCFunctionFast(\Function, *This, EventType, EventItem, EventData)
           Result = 1
         ElseIf (\Window And \Window\Function And \Window<>\Root And \Window<>*This And \Root<>*This) And 
-          CallCFunctionFast(\Window\Function, *This, EventType, EventItem, EventData)
+               CallCFunctionFast(\Window\Function, *This, EventType, EventItem, EventData)
           Result = 1
         ElseIf \Root And \Root\Function And 
-          CallCFunctionFast(\Root\Function, *This, EventType, EventItem, EventData)
+               CallCFunctionFast(\Root\Function, *This, EventType, EventItem, EventData)
           Result = 1
         EndIf
         
-;         Send(*This, EventType, EventItem, EventData)
+        ;         Send(*This, EventType, EventItem, EventData)
       EndIf
     EndWith
     
@@ -7134,8 +7370,8 @@ Module Widget
     
     If *This > 0
       
-;       *Value\Type = EventType
-;       *Value\This = *This
+      ;       *Value\Type = EventType
+      ;       *Value\This = *This
       
       With *This
         Protected canvas = \Root\Canvas
@@ -7476,7 +7712,7 @@ Module Widget
                     \Mouse\y<\Mouse\Delta\y+8)
               
               If Not \Drag
-                Event_Widgets(*This, #PB_EventType_DragStart, \at)
+                ; Event_Widgets(*This, #PB_EventType_DragStart, \at)
                 \Drag = 1
               EndIf
             EndIf
@@ -8809,7 +9045,7 @@ Module Widget
         \Container = #PB_GadgetType_Root
         \color\alpha = 255
       EndIf
-        
+      
       Resize(*This, 0, 0, Width,Height)
       
       LastElement(*Value\OpenedList())
@@ -8923,166 +9159,6 @@ Module Helper
   EndProcedure
 EndModule
 
-DeclareModule Drag
-  ;- - Drop_S
-  Structure Drop_S
-    Text.s
-    ImageID.i
-    ImageWidth.i
-    ImageHeight.i
-    Actions.i
-    Format.i
-    PrivateType.i
-  EndStructure
-  
-  Declare.s DropText(Object.i)
-  Declare.i DropImage(Object.i, Image.i=-1, Depth.i=24)
-  Declare.i DropAction(Object.i)
-  
-  Declare.i Text(Object.i, Text.S="", Actions.i=#PB_Drag_Copy)
-  Declare.i Image(Object.i, Image.i=-1, Actions.i=#PB_Drag_Copy)
-  Declare.i Private(Object.i, Type.i=-1, Actions.i=#PB_Drag_Copy)
-  
-  Declare.i EnableDrop(Object.i, Format.i, Actions.i, PrivateType.i=0)
-EndDeclareModule
-
-Module Drag
-  Global *Drop.Drop_S
-  Global NewMap Drag.Drop_S()
-  
-  Procedure Events(EventGadget, EventType, EventItem, EventData)
-  
-  ; DragStart event on the source s, initiate a drag & drop
-  ;
-  Select EventType
-    Case #PB_EventType_LeftButtonDown
-      Debug 5555666
-      
-    Case #PB_EventType_LeftButtonUp
-      Debug 22222222
-      
-    Case #PB_EventType_DragStart
-      
-;     Case #PB_EventType_Drop
-      
-  EndSelect
-  
-EndProcedure
-
-  Procedure.i EnableDrop(Object.i, Format.i, Actions.i, PrivateType.i=0)
-    ; Format
-    ; #PB_Drop_Text    : Accept text on this gadget
-    ; #PB_Drop_Image   : Accept images on this gadget
-    ; #PB_Drop_Files   : Accept filenames on this gadget
-    ; #PB_Drop_Private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
-    
-    ; Actions
-    ; #PB_Drag_None    : The Data format will Not be accepted on the gadget
-    ; #PB_Drag_Copy    : The Data can be copied
-    ; #PB_Drag_Move    : The Data can be moved
-    ; #PB_Drag_Link    : The Data can be linked
-    
-    Drag(Hex(Object))
-    
-      With Drag()
-        \Format = Format
-        \Actions = Actions
-        \PrivateType = PrivateType
-        
-        Widget::Bind(@Events());, Object)
-      EndWith
-    
-  EndProcedure
-  
-  Procedure.i Text(Object.i, Text.S="", Actions.i=#PB_Drag_Copy)
-    If Not *Drop : *Drop = AllocateStructure(Drop_S) : EndIf
-    
-    With *Drop
-      Debug "Drag text - " + Text
-      \Format = #PB_Drop_Text
-      \Text = Text
-      \Actions = Actions
-    EndWith
-     
-  EndProcedure
-  
-  Procedure.i Image(Object.i, Image.i=-1, Actions.i=#PB_Drag_Copy)
-    If Not *Drop : *Drop = AllocateStructure(Drop_S) : EndIf
-    
-    With *Drop
-      Debug "Drag image - " + Image
-      \Format = #PB_Drop_Image
-      \ImageID = ImageID(Image)
-      \ImageWidth = ImageWidth(Image)
-      \ImageHeight = ImageHeight(Image)
-      \Actions = Actions
-    EndWith
-     
-  EndProcedure
-  
-  Procedure.i Private(Object.i, Type.i=-1, Actions.i=#PB_Drag_Copy)
-    If Not *Drop : *Drop = AllocateStructure(Drop_S) : EndIf
-    
-    With *Drop
-      Debug "Drag private - " + Type
-      \Format = #PB_Drop_Private
-      \PrivateType = Type
-      \ImageID = ImageID(Image)
-      \ImageWidth = ImageWidth(Image)
-      \ImageHeight = ImageHeight(Image)
-      \Actions = Actions
-    EndWith
-     
-  EndProcedure
-  
-  Procedure.i DropAction(Object.i)
-    If Not Object
-      *Drop = 0
-    EndIf
-    
-    If *Drop
-      ProcedureReturn Bool(Drag(Hex(Object))\Format = *Drop\Format And (Drag(Hex(Object))\PrivateType = *Drop\PrivateType)) * Drag(Hex(Object))\Actions  
-    EndIf
-  EndProcedure
-  
-  Procedure.s DropText(Object.i)
-    If DropAction(Object)
-      ProcedureReturn *Drop\Text
-    EndIf
-  EndProcedure
-  
-  Procedure.i DropPrivate(Object.i)
-    If DropAction(Object)
-      ProcedureReturn *Drop\PrivateType
-    EndIf
-  EndProcedure
-  
-  Procedure.i DropImage(Object.i, Image.i=-1, Depth.i=24)
-    Protected Result.i
-    
-    If DropAction(Object) And *Drop\ImageID
-      If Image =- 1
-        Result = CreateImage(#PB_Any, *Drop\ImageWidth, *Drop\ImageHeight) : Image = Result
-      Else
-        Result = IsImage(Image)
-      EndIf
-      
-      If Result And StartDrawing(ImageOutput(Image))
-        If Depth = 32
-          DrawAlphaImage(*Drop\ImageID, 0, 0)
-        Else
-          DrawImage(*Drop\ImageID, 0, 0)
-        EndIf
-        StopDrawing()
-      EndIf  
-      
-      ProcedureReturn Result
-    EndIf
-  EndProcedure
-EndModule
-
-
-
 
 
 
@@ -9164,7 +9240,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;               Else
                 If SetAnchors(*This)
                   Debug "изменено down"+ *This
-                  Debug Drag::DropText(*This)
+                  Debug DD::DropText(*This)
                 EndIf
 ;               EndIf
             EndIf
@@ -9300,18 +9376,18 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;         *sp.Widget_S = Splitter(10, 10, 360,  330, *p, *sp, #PB_Splitter_Vertical|#PB_Flag_AutoSize)
 ; ;         
         Define *win=Window(80, 100, 280, 200, "Window_2", Editable)
-        Drag::EnableDrop(*win, #PB_Drop_Text, #PB_Drag_Copy)
+        EnableDrop(*win, #PB_Drop_Text, #PB_Drag_Copy)
         
         Container(30,30,280-60, 200-60, Editable)
         Define *con=Container(20,20,280-60, 200-60, Editable)
-        Drag::EnableDrop(*con, #PB_Drop_Text, #PB_Drag_Copy)
+        EnableDrop(*con, #PB_Drop_Text, #PB_Drag_Copy)
         Button(100, 20, 80, 80, "Button_1", Editable)
         Define *but=Button(130, 80, 80, 80, "Button_2", Editable)
         Button(70, 80, 80, 80, "Button_3", Editable)
         CloseList()
         CloseList()
         
-        Drag::Text(*but, "my_drag")
+        DD::Text(*but, "my_drag")
         
 ; ;         
 ; ;         Window(20, 150, 280, 200, "Window_3", Editable)
@@ -9432,5 +9508,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---0---------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vBAw0
 ; EnableXP

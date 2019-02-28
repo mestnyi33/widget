@@ -905,10 +905,10 @@ Procedure PC_Add(*This.Parser_S, Index)
   
 EndProcedure
 
-Procedure PC_Set(Parser.Parser_S)
+Procedure PC_Set(*Parser.Parser_S)
   Protected Result, I, ID
   
-  With Parser ; 
+  With *Parser ; 
     ID = *This\get(\Object\s.s)\Object\i.i
     
     Select \Type\s.s
@@ -1101,9 +1101,11 @@ Procedure CO_Change(Object.i)
   PushListPosition(ParsePBObject())
   If ChangeCurrentElement(ParsePBObject(), *This\get(Str(Object))\Adress)
     With ParsePBObject()
+      If \Object > 100
       Properties::Init(\Object\i.i, \Object\s.s, \Flag\s.s)
       Transformation::Change(\Object\i.i)
-    EndWith
+    EndIf
+  EndWith
   EndIf
   PopListPosition(ParsePBObject())
 EndProcedure
@@ -1225,11 +1227,11 @@ Procedure CO_Events()
   EndSelect
 EndProcedure
 
-Procedure CO_Insert(Parser.Parser_S, Parent)
+Procedure CO_Insert(*Parser.Parser_S, Parent)
   Protected ID$, Handle$
   CodeShow = 1
   
-  With Parser
+  With *Parser
     
     ; 
     Protected Variable$, VariableLength
@@ -1394,8 +1396,8 @@ Procedure CO_Create(Type$, X, Y, Parent=-1)
         \Type\s.s = ReplaceString(\Type\s.s, "tree","Tree")
     EndSelect
     
-    Protected Parser.Parser_S = AddElement(ParsePBObject())
-    If  Parser
+    Protected *Parser.Parser_S = AddElement(ParsePBObject())
+    If  *Parser
       Restore Model 
       
       For i=1 To 1+33 ; gadget count
@@ -1503,7 +1505,7 @@ Procedure CO_Create(Type$, X, Y, Parent=-1)
         \get(\get(Str(Parent))\Object\s.s)\Code("Code_Object")\Position = 249+75+2
       EndIf
       
-      CO_Insert(Parser, Parent) 
+      CO_Insert(*Parser, Parent) 
       \Parent\i.i = Parent
     EndIf
    
@@ -1649,7 +1651,6 @@ Procedure CO_Open() ; Ok
     Select \Type\s.s
       Case "WindowGadget"          : \Type\i.i =- 1  : \Window\i.i =- 1  
         \Flag\i.i = #PB_Canvas_Container
-        ;\Object\i.i = CanvasGadget        (#PB_Any, \X\i.i,\Y\i.i,\Width\i.i,\Height\i.i, #PB_Canvas_Container) 
         \Object\i.i = Widget::Window(\X\i.i,\Y\i.i,\Width\i.i,\Height\i.i, \Caption\s.s) 
       Case "OpenWindow"          : \Type\i.i =- 1  : \Window\i.i =- 1  : \Object\i.i = OpenWindow          (#PB_Any, \X\i.i,\Y\i.i,\Width\i.i,\Height\i.i, \Caption\s.s, \Flag\i.i, \Param1\i.i)
       Case "ButtonGadget"        : \Type\i.i = #PB_GadgetType_Button        : \Object\i.i = ButtonGadget        (#PB_Any, \X\i.i,\Y\i.i,\Width\i.i,\Height\i.i, \Caption\s.s, \Flag\i.i)
@@ -1905,10 +1906,10 @@ Procedure CO_Open() ; Ok
   EndWith
 EndProcedure
 
-Procedure CO_Save(Parser.Parser_S) ; Ok
+Procedure CO_Save(*Parser.Parser_S) ; Ok
   Protected Result$, ID$, Handle$, Result, i
   
-  With Parser
+  With *Parser
     If \Content\String$
       Debug "      "+\Content\String$
       
@@ -3043,10 +3044,9 @@ Procedure WE_Open(ParentID=0, Flag.i=#PB_Window_SystemMenu)
     
     
     ; Demo draw widgets on the canvas
-    Canvas_0 = CanvasGadget(#PB_Any,  10, 40, 900, 600, #PB_Canvas_Keyboard)
-    BindGadgetEvent(Canvas_0, @Canvas_0_CallBack())
-    Widget::*value\Canvas\gadget = Canvas_0
-    Widget::*value\Canvas\window = WE
+    Widget::Open(WE,  10, 40, 900, 600)
+    ;BindGadgetEvent(Canvas_0, @Canvas_0_CallBack())
+    Canvas_0 = Widget::RootGadget()
     
     WE_Panel_1 = Widget::Panel(5, 159, 315, 261, Widget::#PB_Flag_AutoSize)
     
@@ -3281,5 +3281,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Wend
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0---v--------------vf-f--------f----v-------------------+--+---u8------
+; Folding = 0---r--------------vf--+-----------0f-------------------0--0---d4------
 ; EnableXP

@@ -755,6 +755,7 @@ CompilerIf #PB_Compiler_IsMainFile
     v = ScrollBarGadget(-1, #PB_Ignore, #PB_Ignore, 1, 1, 0,0,0, #PB_ScrollBar_Vertical)
     CloseGadgetList()
     
+    OpenList(0, g_Canvas)
     ; Create both scroll bars
     ;     *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical,7)
     ;     *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
@@ -927,5 +928,5 @@ CompilerEndIf
 
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = z0-----v-+-v--
+; Folding = z0-----v-y-v--
 ; EnableXP

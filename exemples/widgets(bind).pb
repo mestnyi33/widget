@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
             If *This   
                 If SetAnchors(*This)
                   Debug "изменено down"+ *This
-                  Debug Drag::DropText(*This)
+                  Debug DropText()
                 EndIf
             EndIf
             
@@ -127,5 +127,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = f3-
+; Folding = -4-
 ; EnableXP

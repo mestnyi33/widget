@@ -20,52 +20,30 @@ EndEnumeration
 
 Global SourceText,
        SourceImage,
-  SourceFiles,
-  SourcePrivate,
-  TargetText,
-  TargetImage,
-  TargetFiles,
-  TargetPrivate1,
-  TargetPrivate2
-
+       SourceFiles,
+       SourcePrivate,
+       TargetText,
+       TargetImage,
+       TargetFiles,
+       TargetPrivate1,
+       TargetPrivate2
 
 
 Procedure Events(EventGadget, EventType, EventItem, EventData)
-  Static eg
+  
   ; DragStart event on the source s, initiate a drag & drop
   ;
   Select EventType
-    Case #PB_EventType_MouseLeave
-      eg = 0
-      
-    Case #PB_EventType_MouseEnter
-      If Drag::DropAction(EventGadget)
-        eg = EventGadget
-        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Hand)
-      Else
-        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-      EndIf
-      
-    Case #PB_EventType_LeftButtonUp
-      Debug eg
-      
-      If Drag::DropAction(eg) 
-        ;Post(#PB_EventType_Drop, eg, EventItem, EventData)
-        Events(eg, #PB_EventType_Drop, EventItem, EventData)
-        eg=0
-        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-      EndIf
-      
     Case #PB_EventType_DragStart
       
       Select EventGadget
           
         Case SourceText
           Text$ = GetItemText(SourceText, GetState(SourceText))
-          Drag::Text(SourceText, Text$)
+          DragText(Text$)
           
         Case SourceImage
-          Drag::Image(SourceImage, (#ImageSource))
+          DragImage((#ImageSource))
           
         Case SourceFiles
           Files$ = ""       
@@ -83,9 +61,9 @@ Procedure Events(EventGadget, EventType, EventItem, EventData)
           ;
         Case SourcePrivate
           If GetState(SourcePrivate) = 0
-            Drag::Private(SourcePrivate, 1)
+            DragPrivate(1)
           Else
-            Drag::Private(SourcePrivate, 2)
+            DragPrivate(2)
           EndIf
           
       EndSelect
@@ -97,11 +75,10 @@ Procedure Events(EventGadget, EventType, EventItem, EventData)
       Select EventGadget
           
         Case TargetText
-          Debug Drag::DropText(TargetText)
-          AddItem(TargetText, -1, Drag::DropText(TargetText))
+          AddItem(TargetText, -1, DropText())
           
         Case TargetImage
-          If Drag::DropImage(TargetImage, #ImageTarget)
+          If DropImage(#ImageTarget)
             SetState(TargetImage, (#ImageTarget))
           EndIf
           
@@ -154,7 +131,7 @@ If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_
   SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
   SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
   SourcePrivate = ListIcon(610, 10, 140, 140, "Drag private stuff here", 260)
-     
+  
   AddItem(SourceText, -1, "hello world")
   AddItem(SourceText, -1, "The quick brown fox jumped over the lazy dog")
   AddItem(SourceText, -1, "abcdefg")
@@ -163,7 +140,7 @@ If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_
   AddItem(SourcePrivate, -1, "Private type 1")
   AddItem(SourcePrivate, -1, "Private type 2")
   
-
+  
   ; Create the target s
   ;
   TargetText = ListIcon(10, 160, 140, 140, "Drop Text here", 130)
@@ -171,15 +148,15 @@ If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_
   TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
   TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
   TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
-
+  
   
   ; Now enable the dropping on the target s
   ;
-  Drag::EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
-  Drag::EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
-  Drag::EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
-  Drag::EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
-  Drag::EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
+  EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
+  EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
+  EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
+  EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
+  EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
   
   Bind(@Events())
   ReDraw(Root())
@@ -191,5 +168,5 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = --
 ; EnableXP
