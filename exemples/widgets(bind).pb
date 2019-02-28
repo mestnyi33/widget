@@ -9,6 +9,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure Widgets_Gadget_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+    Protected *This.Widget_S
+    
     Select EventType 
       Case #PB_EventType_MouseEnter
         Debug ""+EventWidget +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
@@ -19,15 +21,21 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftButtonDown
         Debug "Widgets_Gadget_Events"
         
+        *This = GetAnchors(EventWidget)
+            If *This   
+                If SetAnchors(*This)
+                  Debug "изменено down"+ *This
+                  Debug DropText()
+                EndIf
+            EndIf
+            
 ;         ; Отключает передачу сообщений в 
 ;         ; оконную и рутовскую процедуру
-;         ProcedureReturn 1
+         ProcedureReturn 1
     EndSelect
   EndProcedure
   
   Procedure Widgets_Window_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
-    Protected *This.Widget_S, MouseX, MouseY, DeltaX, DeltaY
-    Static Drag.i
     
     ; Protected EventWidget = EventWidget()
     ; Protected EventType = WidgetEvent()
@@ -38,15 +46,8 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventType 
           Case #PB_EventType_LeftButtonDown
-            *This = GetAnchors(EventWidget)
             Debug "Widgets_Window_Events"
             
-            If *This   
-                If SetAnchors(*This)
-                  Debug "изменено down"+ *This
-                  Debug DropText()
-                EndIf
-            EndIf
             
             ;         ; Отключает передачу сообщений в 
             ;         ; рутовскую процедуру

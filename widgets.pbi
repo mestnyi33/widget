@@ -6687,8 +6687,8 @@ Module Widget
   EndProcedure
   
   ;-
-  ;- EDITABLE
-  Procedure.i Remove(*This.Widget_S)
+  ;- STRING_EDITABLE
+  Procedure String_Remove(*This.Widget_S)
     With *This
       If \Text\Caret > \Text\Caret[1] : \Text\Caret = \Text\Caret[1] : EndIf
       \Text\String.s[1] = RemoveString(\Text\String.s[1], \Text[2]\String.s, #PB_String_CaseSensitive, \Text\Pos+\Text\Caret, 1)
@@ -6696,10 +6696,10 @@ Module Widget
     EndWith
   EndProcedure
   
-  Procedure.i SelLimits(*This.Widget_S)
+  Procedure String_SelLimits(*This.Widget_S)
     Protected i, char.i
     
-    Macro _is_selection_end_(_char_)
+    Macro _string_is_selection_end_(_char_)
       Bool((_char_ > = ' ' And _char_ = < '/') Or 
            (_char_ > = ':' And _char_ = < '@') Or 
            (_char_ > = '[' And _char_ = < 96) Or 
@@ -6708,14 +6708,14 @@ Module Widget
     
     With *This
       char = Asc(Mid(\Text\String.s[1], \Text\Caret + 1, 1))
-      If _is_selection_end_(char)
+      If _string_is_selection_end_(char)
         \Text\Caret + 1
         \Text[2]\Len = 1 
       Else
         ; |<<<<<< left edge of the word 
         For i = \Text\Caret To 1 Step - 1
           char = Asc(Mid(\Text\String.s[1], i, 1))
-          If _is_selection_end_(char)
+          If _string_is_selection_end_(char)
             Break
           EndIf
         Next 
@@ -6725,7 +6725,7 @@ Module Widget
         ; >>>>>>| right edge of the word
         For i = \Text\Caret To \Text\Len
           char = Asc(Mid(\Text\String.s[1], i, 1))
-          If _is_selection_end_(char)
+          If _string_is_selection_end_(char)
             Break
           EndIf
         Next 
@@ -6736,7 +6736,7 @@ Module Widget
     EndWith           
   EndProcedure
   
-  Procedure Caret(*This.Widget_S, Line.i = 0)
+  Procedure String_Caret(*This.Widget_S, Line.i = 0)
     Static LastLine.i,  LastItem.i
     Protected Item.i, SelectionLen.i=0
     Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
@@ -6774,7 +6774,7 @@ Module Widget
     ProcedureReturn Position
   EndProcedure
   
-  Procedure SelectionText(*This.Widget_S) ; Ok
+  Procedure String_SelectionText(*This.Widget_S) ; Ok
     Static Caret.i =- 1, Caret1.i =- 1, Line.i =- 1
     Protected Position.i
     
@@ -6847,7 +6847,7 @@ Module Widget
     ProcedureReturn Position
   EndProcedure
   
-  Procedure ToLeft(*This.Widget_S)
+  Procedure String_ToLeft(*This.Widget_S)
     Protected Repaint
     
     With *This
@@ -6868,7 +6868,7 @@ Module Widget
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure ToRight(*This.Widget_S)
+  Procedure String_ToRight(*This.Widget_S)
     Protected Repaint
     
     With *This
@@ -6889,13 +6889,13 @@ Module Widget
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure ToDelete(*This.Widget_S)
+  Procedure String_ToDelete(*This.Widget_S)
     Protected Repaint
     
     With *This
       If \Text\Caret[1] < \Text\Len
         If \Text[2]\Len 
-          Remove(*This)
+          String_Remove(*This)
         Else
           \Text\String.s[1] = Left(\Text\String.s[1], \Text\Pos+\Text\Caret) + Mid(\Text\String.s[1],  \Text\Pos+\Text\Caret + 2)
           \Text\Len = Len(\Text\String.s[1]) 
@@ -6909,7 +6909,7 @@ Module Widget
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure ToInput(*This.Widget_S)
+  Procedure String_ToInput(*This.Widget_S)
     Static Dot, Minus, Color.i
     Protected Repaint, Input, Input_2, Chr.s
     
@@ -6919,7 +6919,7 @@ Module Widget
         
         If Chr.s
           If \Text[2]\Len 
-            Remove(*This)
+            String_Remove(*This)
           EndIf
           
           \Text\Caret + 1
@@ -6939,11 +6939,11 @@ Module Widget
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure ToBack(*This.Widget_S)
+  Procedure String_ToBack(*This.Widget_S)
     Protected Repaint, String.s 
     
     If *This\Keyboard\Input : *This\Keyboard\Input = 0
-      ToInput(*This) ; Сбросить Dot&Minus
+      String_ToInput(*This) ; Сбросить Dot&Minus
     EndIf
     
     With *This
@@ -6953,7 +6953,7 @@ Module Widget
         If \Text\Caret > \Text\Caret[1] 
           Swap \Text\Caret, \Text\Caret[1]
         EndIf  
-        Remove(*This)
+        String_Remove(*This)
         
       ElseIf \Text\Caret[1] > 0 
         \Text\String.s[1] = Left(\Text\String.s[1], \Text\Pos+\Text\Caret - 1) + Mid(\Text\String.s[1],  \Text\Pos+\Text\Caret + 1)
@@ -6971,7 +6971,7 @@ Module Widget
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.i Editable(*This.Widget_S, EventType.i, MouseScreenX.i, MouseScreenY.i)
+  Procedure String_Editable(*This.Widget_S, EventType.i, MouseScreenX.i, MouseScreenY.i)
     Protected Repaint.i, Control.i, Caret.i, String.s
     
     If *This
@@ -7012,7 +7012,7 @@ Module Widget
             EndIf
             
           Case #PB_EventType_LeftButtonDown
-            Caret = Caret(*This)
+            Caret = String_Caret(*This)
             
             If \Text\Caret[1] =- 1 : \Text\Caret[1] = 0
               *This\Text\Caret = 0
@@ -7041,12 +7041,12 @@ Module Widget
             
           Case #PB_EventType_LeftDoubleClick 
             \Text\Caret[1] =- 1 ; Запоминаем что сделали двойной клик
-            SelLimits(*This)    ; Выделяем слово
+            String_SelLimits(*This)    ; Выделяем слово
             Repaint =- 1
             
           Case #PB_EventType_MouseMove
             If *This\Mouse\Buttons & #PB_Canvas_LeftButton 
-              Caret = Caret(*This)
+              Caret = String_Caret(*This)
               If *This\Text\Caret <> Caret
                 
                 If \Text\Caret[2] ; *This\Cursor <> GetGadgetAttribute(\Root\Canvas, #PB_Canvas_Cursor)
@@ -7076,7 +7076,7 @@ Module Widget
         Select EventType
           Case #PB_EventType_Input
             If Not Control
-              Repaint = ToInput(*This)
+              Repaint = String_ToInput(*This)
             EndIf
             
           Case #PB_EventType_KeyUp
@@ -7087,10 +7087,10 @@ Module Widget
               Case #PB_Shortcut_Home : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Text\Caret = 0 : *This\Text\Caret[1] = *This\Text\Caret : Repaint = #True 
               Case #PB_Shortcut_End : \Text[2]\String.s = "" : \Text[2]\Len = 0 : *This\Text\Caret = \Text\Len : *This\Text\Caret[1] = *This\Text\Caret : Repaint = #True 
                 
-              Case #PB_Shortcut_Left, #PB_Shortcut_Up : Repaint = ToLeft(*This) ; Ok
-              Case #PB_Shortcut_Right, #PB_Shortcut_Down : Repaint = ToRight(*This) ; Ok
-              Case #PB_Shortcut_Back : Repaint = ToBack(*This)
-              Case #PB_Shortcut_Delete : Repaint = ToDelete(*This)
+              Case #PB_Shortcut_Left, #PB_Shortcut_Up : Repaint = String_ToLeft(*This) ; Ok
+              Case #PB_Shortcut_Right, #PB_Shortcut_Down : Repaint = String_ToRight(*This) ; Ok
+              Case #PB_Shortcut_Back : Repaint = String_ToBack(*This)
+              Case #PB_Shortcut_Delete : Repaint = String_ToDelete(*This)
                 
               Case #PB_Shortcut_A
                 If Control
@@ -7103,7 +7103,7 @@ Module Widget
               Case #PB_Shortcut_X
                 If Control And \Text[2]\String.s 
                   SetClipboardText(\Text[2]\String.s)
-                  Remove(*This)
+                  String_Remove(*This)
                   *This\Text\Caret[1] = *This\Text\Caret
                   \Text\Len = Len(\Text\String.s[1])
                   Repaint = #True 
@@ -7120,7 +7120,7 @@ Module Widget
                   
                   If ClipboardText.s
                     If \Text[2]\String.s
-                      Remove(*This)
+                      String_Remove(*This)
                     EndIf
                     
                     Select #True
@@ -7145,7 +7145,7 @@ Module Widget
         EndSelect
         
         If Repaint =- 1
-          SelectionText(*This)
+          String_SelectionText(*This)
         EndIf
         
       EndWith
@@ -7153,6 +7153,7 @@ Module Widget
     
     ProcedureReturn Repaint
   EndProcedure
+  
   
   ;- 
   Procedure.i From(*This.Widget_S, MouseX.i, MouseY.i)
@@ -7613,7 +7614,7 @@ Module Widget
         EndSelect
         
         If \Text And \Text[1] And \Text[2] And \Text[3] And \Text\Editable
-          Repaint | Editable(*This, EventType, MouseScreenX.i, MouseScreenY.i)
+          Repaint | String_Editable(*This, EventType, MouseScreenX.i, MouseScreenY.i)
         EndIf
         
         
@@ -8726,7 +8727,28 @@ Module Widget
       Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       
-      AddColumn(*This, 0, Directory, 200)
+      AddColumn(*This, 0, "Name", 200)
+      AddColumn(*This, 0, "Type", 100)
+      AddColumn(*This, 0, "Size", 100)
+      
+      If Directory.s = ""
+        Directory.s = GetHomeDirectory() ; Lists all files and folder in the home directory
+      EndIf
+      If ExamineDirectory(0, Directory.s, "*.*")  
+        While NextDirectoryEntry(0)
+          If DirectoryEntryType(0) = #PB_DirectoryEntry_File
+            Protected Type$ = "[File] "
+            Protected Size$ = " (Size: " + DirectoryEntrySize(0) + ")"
+          Else
+            Type$ = "[Directory] "
+            Size$ = "" ; A directory doesn't have a size
+          EndIf
+          
+           AddItem(*This, -1, DirectoryEntryName(0) +#LF$+ Type$ +#LF$+ Size$)
+          ; Debug Type$ + DirectoryEntryName(0) + Size$
+        Wend
+        FinishDirectory(0)
+      EndIf
     EndWith
     
     ProcedureReturn *This
@@ -9508,5 +9530,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vBAw0
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------vev-d4u4-----------------------------------NAAu
 ; EnableXP
