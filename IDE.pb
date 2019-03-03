@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   UseModule Widget
   
   ;-
-  ;- STRUCTURE
+  ;- STRUCTUREs
   Structure ArgumentStruct
     i.i 
     s.s
@@ -88,18 +88,19 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Structure ThisStruct Extends ParseStruct
     Map get.ObjectStruct()
   EndStructure
+  ;- END_STRUCTUREs
   
   ;-
+  ;- GLOBALs
+  Global NewMap Widgets.i()
   Global NewList ParsePBObject.ParseStruct() 
   Global *This.ThisStruct = AllocateStructure(ThisStruct)
-  
   Global Window_0, Canvas_0, winBackColor = $FFFFFF
-  Global NewMap Widgets.i()
-  Global *Widget.Widget_S, *Parent.Widget_S, x,y
-  Global *Window.Widget_S
-  Global DragText.s, SubLevel.i, WE_Selecting
+  Global *Widget.Widget_S, *Parent.Widget_S, *Window.Widget_S, x,y
+  Global DragText.s, SubLevel.i, WE_Selecting, WE_Code
+  ;- END_GLOBALs
   
-  
+  ;-
   ; point 
   If CreateImage(5, 600,600, 32,#PB_Image_Transparent) And StartDrawing(ImageOutput(5))
     DrawingMode(#PB_2DDrawing_AllChannels) 
@@ -521,7 +522,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
                        Text.s + ", "+Str(Y(Value))+
                        Text.s + ", "+Str(Width(Value))+
                        Text.s + ", "+Str(Height(Value))+
-                       Text.s + ", "+GetText(Value)+
+                       Text.s + ", "+~"\""+GetText(Value)+~"\""+
                        ; Text.s + ", "+GetFlag(Value)
     Text.s + ")"
     
@@ -533,13 +534,20 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     If IsContainer(Value) > 0
       ; OpenList = GetParent(Value)
       AddItem(Widgets("Code"), -1, "CloseList()" )
+    If IsGadget(WE_Code)
+      AddGadgetItem(WE_Code, -1, "CloseList()" )
     EndIf
+  EndIf
     ;     
     ;     If OpenList
     ;       Position + 1
     ;     EndIf
-    
     AddItem(Widgets("Code"), Position, Text.s )
+    
+    If IsGadget(WE_Code)
+      AddGadgetItem(WE_Code, Position, Text.s)
+    EndIf
+  
   EndProcedure
   
   Procedure Get_Position(*This, SubLevel)
@@ -581,11 +589,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     SetState(Tree, Position)
     SetItemState(Tree, Position, #PB_Tree_Selected)
     
-    AddGadgetItem(WE_Selecting, Position, Class.s, 0, SubLevel )
-    SetGadgetItemData(WE_Selecting, Position, *This)
-    SetGadgetState(WE_Selecting, Position) ; Bug
-    SetGadgetItemState(WE_Selecting, Position, #PB_Tree_Selected)
-    
+    If IsGadget(WE_Selecting)
+      AddGadgetItem(WE_Selecting, Position, Class.s, 0, SubLevel )
+      SetGadgetItemData(WE_Selecting, Position, *This)
+      SetGadgetState(WE_Selecting, Position) ; Bug
+      SetGadgetItemState(WE_Selecting, Position, #PB_Tree_Selected)
+    EndIf
+  
     SetData(*This, Position)
     Add_Code(*This, Position-1, SubLevel)
     
@@ -721,15 +731,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         MouseY = GetDeltaY(*This)
       EndIf
       
-      *This\Root\anchor\X = *This\X[2]+DeltaX
-      *This\Root\anchor\Y = *This\Y[2]+DeltaY
-      *This\Root\anchor\Width = MouseX-DeltaX
-      *This\Root\anchor\Height = MouseY-DeltaY
+      *This\Root\anchor\X = Match(*This\X[2]+DeltaX, 5)-1
+      *This\Root\anchor\Y = Match(*This\Y[2]+DeltaY, 5)-1
+      *This\Root\anchor\Width = Match(MouseX-DeltaX, 5)+1
+      *This\Root\anchor\Height = Match(MouseY-DeltaY, 5)+1
       
       ReDraw(*This\Root)
     EndIf
     
-    If *This\Drag
+    If *This\Root\Drag
       ProcedureReturn *This
     EndIf
     
@@ -737,9 +747,15 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   
   ;-
+  ;- BEGIN
   Procedure Widgets_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
     Protected *This.Widget_S, MouseX, MouseY, DeltaX, DeltaY
     Static Drag.i
+    
+;     Select EventType
+;       Case #PB_EventType_Create
+;         Debug "class - "+GetClass(EventWidget) +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
+;     EndSelect
     
     ; Protected EventWidget = EventWidget()
     ; Protected EventType = WidgetEvent()
@@ -762,6 +778,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             DragText = GetItemText(EventWidget, EventItem) 
             ; DragText(GetItemText(EventWidget, EventItem))
             ; SetItemAttribute(Widgets("Inspector_panel"), GetState(Widgets("Inspector_panel")), #PB_Button_Image, GetItemData(EventWidget, EventItem))
+            Debug "DragText "+DragText
             
           Case #PB_EventType_StatusChange
             SetText(Widgets("Widgets_info"), Help_Widgets(GetItemText(EventWidget, EventItem)))
@@ -776,15 +793,20 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             
             If *This And SetAnchors(*This)
               Debug "изменено "+ GetState(EventWidget)
-              SetGadgetState(WE_Selecting, GetState(EventWidget))
+              If IsGadget(WE_Selecting)
+                SetGadgetState(WE_Selecting, GetState(EventWidget))
+              EndIf
               Update_Inspector(*This)
             EndIf
             
         EndSelect
         
       Default
-        
+        ;Debug DragText
         Select EventType 
+          Case #PB_EventType_Drop
+             ;Debug DragText
+            
           Case #PB_EventType_MouseMove
             If Drag
               If Not UpdateSelector(Drag)
@@ -794,7 +816,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             
           Case #PB_EventType_LeftButtonUp
             *This = GetAnchors(EventWidget)
-            
+           
             If *This
               Debug "изменено up "+ *This
               
@@ -826,7 +848,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
                 If SetAnchors(*This)
                   Debug "изменено down"+ *This
                   SetState(Widgets("Inspector"), GetData(*This))
-                  SetGadgetState(WE_Selecting, GetData(*This))
+                  If IsGadget(WE_Selecting)
+                    SetGadgetState(WE_Selecting, GetData(*This))
+                  EndIf
                   Update_Inspector(*This)
                 EndIf
               EndIf
@@ -858,13 +882,14 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndProcedure
   
   ;-
-  Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 600)
+  Procedure Window_0_Open(x = 0, y = 0, width = 800, height = 700)
     Window_0 = OpenWindow(#PB_Any, x, y, width, height, "", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
     BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), Window_0)
     
-    WE_Selecting = TreeGadget(#PB_Any, 800-150, 40, 140, 550, #PB_Tree_AlwaysShowSelection) : AddGadgetItem(WE_Selecting, -1, "Proect")
+    ;WE_Selecting = TreeGadget(#PB_Any, 800-150, 40, 140, 750, #PB_Tree_AlwaysShowSelection) : AddGadgetItem(WE_Selecting, -1, "Proect")
+    ;WE_Code = EditorGadget(#PB_Any, 10, 800-190, 780-150, 180)
     
-    If Open(Window_0, 10, 40, 630, 550, "IDE") ;+200
+    If Open(Window_0, 10, 40, width-Bool(WE_Selecting) * 150-20, height-Bool(WE_Code) * 190-10-40, "IDE") ;+200
       Canvas_0 = RootGadget()
       
       ;       ; Main panel
@@ -872,16 +897,16 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       ;       
       ;       ; panel tab new forms
       ;       AddItem(Widgets("Panel"), -1, "Form")
-      Widgets("MDI") = ScrollArea(0, 0, 0, 0, 0, 780, 550, #PB_Flag_AutoSize) : CloseList()
+      Widgets("MDI") = ScrollArea(0, 0, 0, 0, 900, 600, 1, #PB_Flag_AutoSize) : CloseList()
       ;       
       ;       
       ;       ; panel tab code
       ;       AddItem(Widgets("Panel"), -1, "Code")
-      ;Widgets("Code") = Text(0, 0, 180, 230, "Тут будут строки кода", #PB_Flag_AutoSize)
-      Widgets("Code") = Tree(0, 0, 180, 230, #PB_Flag_AutoSize)
+      Widgets("Code") = Editor(0, 0, 0, 0, #PB_Flag_AutoSize)
+      Widgets("Panel") = Splitter(0, 0, Width(Root()), Height(Root()), Widgets("MDI"),Widgets("Code"))
+      SetState(Widgets("Panel"), Height(Root())-250)
       ;       CloseList()
       
-      Widgets("Panel") = Splitter(0, 0, 780, 550, Widgets("MDI"),Widgets("Code"))
       
       ;{- inspector 
       ; create tree inspector
@@ -897,7 +922,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       Load_Widgets(Widgets("Widgets"), GetCurrentDirectory()+"Themes/")
       SetState(Widgets("Widgets"), 1)
       Widgets("Widgets_info") = Text(0, 0, 80, 30, "Тут будет инфо о виджете")
-      Widgets("Widgets_splitter") = Splitter(1,1,778, 548, Widgets("Widgets"), Widgets("Widgets_info"), #PB_Flag_AutoSize)
+      Widgets("Widgets_splitter") = Splitter(1,1,Width(Root()), Height(Root()), Widgets("Widgets"), Widgets("Widgets_info"), #PB_Flag_AutoSize)
       SetState(Widgets("Widgets_splitter"), 450)
       
       ; Panel tab "properties"
@@ -919,24 +944,24 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       AddItem(Widgets("Properties"), -1, "ComboBox Disable True|False", -1, 1)
       AddItem(Widgets("Properties"), -1, "ComboBox Flag #_Event_Close|#_Event_Size|#_Event_Move", -1, 1)
       Widgets("Properties_info") = Text(0, 0, 80, 30, "Тут будет инфо о свойстве")
-      Widgets("Properties_splitter") = Splitter(1,1,778, 548, Widgets("Properties"), Widgets("Properties_info"), #PB_Flag_AutoSize)
+      Widgets("Properties_splitter") = Splitter(1,1,Width(Root()), Height(Root()), Widgets("Properties"), Widgets("Properties_info"), #PB_Flag_AutoSize)
       SetState(Widgets("Properties_splitter"), 450)
       
       ; Panel tab "events"
       AddItem(Widgets("Inspector_panel"), -1, "Events")
       Widgets("Events") = Text(0, 60, 180, 30, "Тут будет событие элементов", #PB_Flag_AutoSize)
       Widgets("Events_info") = Text(0, 0, 80, 30, "Тут будет инфо о событии")
-      Widgets("Events_splitter") = Splitter(1,1,778, 548, Widgets("Events"), Widgets("Events_info"), #PB_Flag_AutoSize)
+      Widgets("Events_splitter") = Splitter(1,1,Width(Root()), Height(Root()), Widgets("Events"), Widgets("Events_info"), #PB_Flag_AutoSize)
       SetState(Widgets("Events_splitter"), 450)
       CloseList()
       
-      Widgets("Inspector_splitter") = Splitter(1,1,778, 548, Widgets("Inspector"), Widgets("Inspector_panel"))
+      Widgets("Inspector_splitter") = Splitter(1,1,Width(Root()), Height(Root()), Widgets("Inspector"), Widgets("Inspector_panel"))
       ;}
       
-      Widgets("Splitter") = Splitter(1,1,778, 548, Widgets("Panel"), Widgets("Inspector_splitter"), #PB_Splitter_Vertical|#PB_Flag_AutoSize)
+      Widgets("Splitter") = Splitter(1,1,Width(Root()), Height(Root()), Widgets("Panel"), Widgets("Inspector_splitter"), #PB_Splitter_Vertical|#PB_Flag_AutoSize)
       
-      SetState(Widgets("Inspector_splitter"), 250)
-      SetState(Widgets("Splitter"), 550)
+      SetState(Widgets("Inspector_splitter"), Height(Root())-250)
+      SetState(Widgets("Splitter"), Width(Root())-170)
     EndIf
     
     Define *n=AddWidget(Widgets("MDI"), #PB_GadgetType_Window)
@@ -994,7 +1019,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         EndSelect
     EndSelect
   ForEver
+  ;- END
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------0X----
+; Folding = BAAAEdP5hAMAy-+jnD5
 ; EnableXP

@@ -61,6 +61,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Widgets_Root_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
     Select EventType 
+      Case #PB_EventType_Create
+        Debug "class - "+GetClass(EventWidget) +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
+        ; ProcedureReturn 1
+        
       Case #PB_EventType_LeftButtonDown
         Debug "Widgets_Root_Events"
     EndSelect

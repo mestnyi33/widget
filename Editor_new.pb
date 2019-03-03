@@ -1,141 +1,592 @@
-﻿; ++ надо исправить на последней строке ентер дает ошибку
-; + если есть вертикальный скроллбар авто прокручивает в конец файла
-; + горизонтальный скролл не перемешает текст если строка выбрана
-; - при выделении не прокручивает текст
-; - при перемещении корета вниз не прокручивается страница
-; + если добавить слова в конец текста и нажать ентер есть ошибки
-; + если добавить букву в конец текста потом убрать с помошью бекспейс затем нажать ентер то переносится удаленная буква
-; + если выделить слова в одной строке и нажать бекспейс затем нажать ентер то переносятся удаленые слова
-; + При переходе на предыдущую строку если переходящая строка длинее предыдушего была ошибка перемещения корета на предыдущей строке
-; + когда выделяем 2-3 строки затем вырезаем затем ставляем, курсон не перемещается правильно
-; + после запуска если шелкнуть в начале строки курсор оказывается в конце строки и строка выделяется полностью
-; - если текст веденный спомощью settext() шире ширины виджета то additem() не работает
+﻿DeclareModule Structures
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    ; PB Interne Struktur Gadget MacOS
+    Structure sdkGadget
+      *gadget
+      *container
+      *vt
+      UserData.i
+      Window.i
+      Type.i
+      Flags.i
+    EndStructure
+  CompilerEndIf
+  
+  ;- STRUCTURE
+  ;- - Point_S
+  Structure Point_S
+    y.i
+    x.i
+  EndStructure
+  
+  ;- - Coordinate_S
+  Structure Coordinate_S
+    y.i[4]
+    x.i[4]
+    height.i[4]
+    width.i[4]
+  EndStructure
+  
+  ;- - Mouse_S
+  Structure Mouse_S
+    X.i
+    Y.i
+    at.i ; at point widget
+    Wheel.i ; delta
+    Buttons.i ; state
+    *Delta.Mouse_S
+  EndStructure
+  
+  ;- - Align_S
+  Structure Align_S
+    Right.b
+    Bottom.b
+    Vertical.b
+    Horizontal.b
+  EndStructure
+  
+  ;- - Page_S
+  Structure Page_S
+    Pos.i
+    len.i
+  EndStructure
+  
+  ;- - Color_S
+  Structure Color_S
+    State.b
+    Front.i[4]
+    Fore.i[4]
+    Back.i[4]
+    Line.i[4]
+    Frame.i[4]
+    Alpha.a[2]
+  EndStructure
+  
+  ;- - Flag_S
+  Structure Flag_S
+    InLine.b
+    Lines.b
+    Buttons.b
+    GridLines.b
+    CheckBoxes.b
+    FullSelection.b
+    AlwaysSelection.b
+    MultiSelect.b
+    ClickSelect.b
+  EndStructure
+  
+  ;- - Image_S
+  Structure Image_S Extends Coordinate_S
+    handle.i[2]
+    change.b
+    Align.Align_S
+  EndStructure
+  
+  ;- - Text_S
+  Structure Text_S Extends Coordinate_S
+    Big.i[3]
+    Pos.i
+    Len.i
+    Caret.i[3] ; 0 = Pos ; 1 = PosFixed
+    
+    FontID.i
+    String.s[3]
+    Change.b
+    
+    Lower.b
+    Upper.b
+    Pass.b
+    Editable.b
+    Numeric.b
+    MultiLine.b
+    Vertical.b
+    Rotate.f
+    
+    Align.Align_S
+    ;List Char.c()
+    ;Map Char.i()
+  EndStructure
+    
+  ;- - Bar_S
+  Structure Bar_S Extends Coordinate_S  ; Bar::Bar_S ; 
+    *s.Scroll_S
+    
+    ; splitter bar
+    *First.Bar_S 
+    *Second.Bar_S
+    
+    ; track bar
+    Ticks.b
+    
+    ; progress bar
+    Smooth.b
+    
+    at.b
+    Type.i[3] ; [2] for splitter
+    Radius.a
+    ArrowSize.a[3]
+    ArrowType.b[3]
+    
+    Max.i
+    Min.i
+    *Step
+    Hide.b[2]
+    
+    Focus.b
+    Change.b
+    Resize.b
+    Vertical.b
+    Inverted.b
+    Direction.i
+    ButtonLen.i[4]
+    
+    Page.Page_S
+    Area.Page_S
+    Thumb.Page_S
+    Color.Color_S[4]
+  EndStructure
+  
+  ;- - Event_S
+  Structure Post_S
+    Gadget.i
+    Window.i
+    Type.i
+    Event.i
+    *Function
+    *Widget.Bar_S
+    *Active.Bar_S
+  EndStructure
+  
+  ;- - Scroll_S
+  Structure Scroll_S Extends Coordinate_S
+    ;Post.Post_S
+    
+    *v.Bar_S
+    *h.Bar_S
+  EndStructure
+  
+  ;- - Canvas_S
+  Structure Canvas_S
+    Mouse.Mouse_S
+    Gadget.i[3]
+    Window.i
+    Widget.i
+    
+    Input.c
+    Key.i[2]
+  EndStructure
+  
+  ;- - Margin_S
+  Structure Margin_S
+    FonyID.i
+    Width.i
+    Color.Color_S
+  EndStructure
+  
+  ;- - Scintilla_S
+  Structure Scintilla_S
+    Margin.Margin_S
+  EndStructure
+  
+  ;- - Row_S
+  Structure Row_S Extends Coordinate_S
+    Color.Color_S
+  EndStructure
+  
+  ;- - Color_S
+  Structure Colors_S
+    State.b
+;     Front.i[4]
+;     Fore.i[4]
+;     Back.i[4]
+;     Line.i[4]
+;     Frame.i[4]
+;      Alpha.a[2]
+  EndStructure
+  
+  ;- - Rows_S
+  Structure Rows_S Extends Coordinate_S
+    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
+    handle.i[2]
+    
+    Color.Colors_S
+    Text.Text_S[4]
+    Image.Image_S
+    box.Coordinate_S
+    
+    Hide.b[2]
+    Caret.i[3] ; 0 = Pos ; 1 = PosFixed
+    
+    Focus.i
+    LostFocus.i
+    
+    Checked.b[2]
+    Vertical.b
+    Radius.i
+    
+    change.b
+    sublevel.i
+    ;sublevelpos.i
+    sublevellen.i
+    
+    collapsed.b
+    childrens.i
+    *data  ; set/get item data
+  EndStructure
+  
+  ;- - Widget_S
+  Structure Widget_S Extends Coordinate_S
+    Type.i
+    handle.i    ; Adress of new list element
+    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
+   ;;; line.i[3]   ; 
+    
+    CountItems.i[2]
+    
+    Margin.Margin_S
+    *Widget.Widget_S
+    Canvas.Canvas_S
+    Color.Color_S
+    Text.Text_S[4]
+    Clip.Coordinate_S
+    *tooltip.Text_S
+    scroll.Scroll_S
+    image.Image_S
+    flag.Flag_S
+    
+    bSize.b
+    fSize.b[2]
+    Hide.b[2]
+    Disable.b[2]
+    Interact.b ; будет ли взаимодействовать с пользователем?
+    Cursor.i[2]
+    
+    
+    Focus.i
+    LostFocus.i
+    
+    Drag.b[2]
+    Resize.b ; 
+    Toggle.b ; 
+    Buttons.i
+    
+    *data
+    change.b
+    radius.i
+    vertical.b
+    checked.b[2]
+    sublevellen.i
+    
+    attribute.i
+    
+    *Default
+    row.Row_S
+    List *Items.Rows_S()
+    List *Lines.Rows_S()
+    List *Columns.Widget_S()
+    Repaint.i ; Будем посылать сообщение что надо перерисовать а после надо сбрасывать переменую
+  EndStructure
+  
+  ;-
+  ;- Colors
+  ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;
+  Global Colors.Color_S
+  
+  With Colors                          
+    \State = 0
+    
+    ;- Серые цвета 
+    ;     ; Цвета по умолчанию
+    ;     \Front[0] = $FF000000
+    ;     \Fore[0] = $FFFCFCFC ; $FFF6F6F6 
+    ;     \Back[0] = $FFE2E2E2 ; $FFE8E8E8 ; 
+    ;     \Line[0] = $FFA3A3A3
+    ;     \Frame[0] = $FFA5A5A5 ; $FFBABABA
+    ;     
+    ;     ; Цвета если мышь на виджете
+    ;     \Front[1] = $FF000000
+    ;     \Fore[1] = $FFF5F5F5 ; $FFF5F5F5 ; $FFEAEAEA
+    ;     \Back[1] = $FFCECECE ; $FFEAEAEA ; 
+    ;     \Line[1] = $FF5B5B5B
+    ;     \Frame[1] = $FF8F8F8F
+    ;     
+    ;     ; Цвета если нажали на виджет
+    ;     \Front[2] = $FFFFFFFF
+    ;     \Fore[2] = $FFE2E2E2
+    ;     \Back[2] = $FFB4B4B4
+    ;     \Line[2] = $FFFFFFFF
+    ;     \Frame[2] = $FF6F6F6F
+    
+    ;- Зеленые цвета
+    ;             ; Цвета по умолчанию
+    ;             \Front[0] = $FF000000
+    ;             \Fore[0] = $FFFFFFFF
+    ;             \Back[0] = $FFDAFCE1  
+    ;             \Frame[0] = $FF6AFF70 
+    ;             
+    ;             ; Цвета если мышь на виджете
+    ;             \Front[1] = $FF000000
+    ;             \Fore[1] = $FFE7FFEC
+    ;             \Back[1] = $FFBCFFC5
+    ;             \Frame[1] = $FF46E064 ; $FF51AB50
+    ;             
+    ;             ; Цвета если нажали на виджет
+    ;             \Front[2] = $FFFEFEFE
+    ;             \Fore[2] = $FFC3FDB7
+    ;             \Back[2] = $FF00B002
+    ;             \Frame[2] = $FF23BE03
+    
+    ;- Синие цвета
+    ; Цвета по умолчанию
+    \Front[0] = $80000000
+    \Fore[0] = $FFF8F8F8 
+    \Back[0] = $80E2E2E2
+    \Frame[0] = $80C8C8C8
+    
+    ; Цвета если мышь на виджете
+    \Front[1] = $80000000
+    \Fore[1] = $FFFAF8F8
+    \Back[1] = $80FCEADA
+    \Frame[1] = $80FFC288
+    
+    ; Цвета если нажали на виджет
+    \Front[2] = $FFFEFEFE
+    \Fore[2] = $FFE9BA81;$C8FFFCFA
+    \Back[2] = $FFE89C3D ; $80E89C3D
+    \Frame[2] = $FFDC9338; $80DC9338
+    
+    ;         ;- Синие цвета 2
+    ;         ; Цвета по умолчанию
+    ;         \Front[0] = $FF000000
+    ;         \Fore[0] = $FFF8F8F8 ; $FFF0F0F0 
+    ;         \Back[0] = $FFE5E5E5
+    ;         \Frame[0] = $FFACACAC 
+    ;         
+    ;         ; Цвета если мышь на виджете
+    ;         \Front[1] = $FF000000
+    ;         \Fore[1] = $FFFAF8F8 ; $FFFCF4EA
+    ;         \Back[1] = $FFFAE8DB ; $FFFCECDC
+    ;         \Frame[1] = $FFFC9F00
+    ;         
+;             ; Цвета если нажали на виджет
+;             \Front[2] = $FF000000;$FFFFFFFF
+;             \Fore[2] = $FFFDF7EF
+;             \Back[2] = $FFFBD9B7
+;             \Frame[2] = $FFE59B55
+    
+  EndWith
+  
+  Global *Focus.Widget_S
+  Global NewList List.Widget_S()
+  Global Use_List_Canvas_Gadget,  _scroll_height_2
+            
+EndDeclareModule 
 
-; Home - переместить курсор в начало строки 
-; End - переместить курсор в конец строки 
-; Ctrl-Home - переместить курсор в начало первой строки
-; Ctrl-End - переместить курсор в конец последней строки 
+Module Structures 
+  
+EndModule 
 
-; Crtl-A - Выбрать все 
-; Crtl-C - копировать выделенный текст в буфер обмена 
-; Crtl-V - вставить буфер обмена в позицию курсора 
-; Crtl-X - вырезать и копировать выделенный текст в буфер обмена 
+DeclareModule Constants
+  #VectorDrawing = 0
+  
+  ;CompilerIf #VectorDrawing
+  ;  UseModule Draw
+  ;CompilerEndIf
+  
+  Enumeration #PB_Event_FirstCustomValue
+    #PB_Event_Widget
+  EndEnumeration
+  
+  Enumeration #PB_EventType_FirstCustomValue
+    CompilerIf #PB_Compiler_Version =< 546
+      #PB_EventType_Resize
+    CompilerEndIf
+    #PB_EventType_Free
+    #PB_EventType_Create
+    
+    #PB_EventType_Repaint
+    #PB_EventType_ScrollChange
+  EndEnumeration
+  
+  EnumerationBinary WidgetFlags
+;     #PB_Text_Center
+;     #PB_Text_Right
+    #PB_Text_Left = 4
+    #PB_Text_Bottom
+    #PB_Text_Middle 
+    #PB_Text_Top
+    
+    #PB_Text_Numeric
+    #PB_Text_ReadOnly
+    #PB_Text_LowerCase 
+    #PB_Text_UpperCase
+    #PB_Text_Password
+    #PB_Text_WordWrap
+    #PB_Text_MultiLine 
+     
+    #PB_Text_Reverse ; Mirror
+    #PB_Text_InLine
+    
+    #PB_Flag_Vertical
+    #PB_Flag_BorderLess
+    #PB_Flag_Double
+    #PB_Flag_Flat
+    #PB_Flag_Raised
+    #PB_Flag_Single
+    
+    #PB_Flag_Default
+    #PB_Flag_Toggle
+    
+    #PB_Flag_GridLines
+    #PB_Flag_Invisible
+    
+    #PB_Flag_MultiSelect
+    #PB_Flag_ClickSelect
+    
+    #PB_Flag_AutoSize
+    #PB_Flag_AutoRight
+    #PB_Flag_AutoBottom
+    
+    #PB_Flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
+    ; #____End____
+  EndEnumeration
+  
+  #PB_Flag_Numeric = #PB_Text_Numeric
+  #PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
+  #PB_Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
+  
+  #PB_Flag_CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
+  #PB_Flag_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
+    
+  #PB_Flag_AlwaysSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
+  
+  #PB_Attribute_Selected = #PB_Tree_Selected                       ; 1
+  #PB_Attribute_Expanded = #PB_Tree_Expanded                       ; 2
+  #PB_Attribute_Checked = #PB_Tree_Checked                         ; 4
+  #PB_Attribute_Collapsed = #PB_Tree_Collapsed                     ; 8
+  
+  #PB_Attribute_SmallIcon = #PB_ListIcon_LargeIcon                 ; 0 0
+  #PB_Attribute_LargeIcon = #PB_ListIcon_SmallIcon                 ; 1 1
+  
+  #PB_Attribute_Numeric = 1
+;   #PB_Text_Left = ~#PB_Text_Center
+;   #PB_Text_Top = ~#PB_Text_Middle
+;   
+   EnumerationBinary WidgetFlags
+      #PB_Flag_Limit
+    EndEnumeration
+    
+    If (#PB_Flag_Limit>>1) > 2147483647 ; 8589934592
+    Debug "Исчерпан лимит в x32 ("+Str(#PB_Flag_Limit>>1)+")"
+  EndIf
+  
+  #PB_Gadget_FrameColor = 10
+  
+  #PB_ScrollBar_Direction = 1<<2
+  #PB_ScrollBar_NoButtons = 1<<3
+  #PB_ScrollBar_Inverted = 1<<4
+  
+EndDeclareModule 
 
+Module Constants
+  
+EndModule 
 
-; Crtl-Up - переместить курсор в начало предыдущего абзаца.
-; Ctrl-Down - переместить курсор в начало следующего абзаца 
-; Crtl-Left - переместить курсор в начало предыдущего слова 
-; Crtl-Right - переместить курсор в начало следующего слова. 
-
-
-
-; http://www.hot-keys.ru/comment_1235822771.html
-; Использование горячих клавиш для работы с текстом возможно практически в любой программе на вашем компьютере.
-; Особенно примечательно то, что именно при работе с текстом, выгодно использовать клавиатуру «по полной программе», поскольку руки уже на ней!
-; Для того, что б выделить, вырезать, вставить, удалить или переместить фрагмент текста, совершенно не обязательно каждый раз переносить руку на мышь. И, конечно, эти сочетания работают во всех текстовых редакторах. И в самом простом Notepad, и в профессиональном Word.
-; Здесь и сейчас я приведу горячие клавиши для работы с обычным блокнотом – Notepad.
-; Вызвать его из командной строки, то есть без помощи мышки можно следующим образом:
-; Сначала нажатием клавиш Win+R вызвать командную строку (клавиша Win с логотипом windows – окном, в последней версии окно уже пластиковое :-). Ввести в командную строку слово notepad и нажать клавишу Enter.
-; Обязательно сделайте это прямо сейчас!
-; Получилось? Теперь скопируйте текст ниже, из этой страницы в блокнот! Запомнить все, сразу применив на практике, легче! Да еще и в самой программе.
-; Собственно пройти этот урок вы можете в любое время, если сохраните этот открытый файл .txt со вставленным текстом. Тогда и Интернет отключать не придется :-)
-; Урок по использованию горячих клавиш для работы с текстом:
-; Перемещение: (< ^ > v этими закорючками обозначены клавиши стрелки, не путаете с символами возле Б и Ю)
-; < ^ > v Попробуйте перемещать курсор, при помощи клавиш-стрелок.
-; Конечно, этим Вас не удивишь, но все равно попрыгаете по тексту вниз, вправо, влево, вверх и вернитесь назад, нажав Ctrl+Home.
-; Ctrl+>< Перемещение курсора на одно слово вправо или влево. Уже веселее! Перемещение по словам, происходит куда быстрее, чем по буквам. Надеюсь, Вы уже пробуете нажимать на стрелки вправо, влево, удерживая Ctrl.
-; Попробовали? Опять нажмите Ctrl+Home и попробуйте перемещаться в конец и начало строки, нажимая клавиши:
-; End и Home (обычно эти кнопки находятся чуть выше клавиш-стрелок)
-; Попробовали? Получается?...
-; Ctrl+Home перемещает курсор в начало текста, это Вы уже знаете, а вот
-; Ctrl+End переместит курсор в самый конец текста! Тоже нажмите, не забыв вернуться :-)
-; Назначение клавиш End и Home понятно из названия, а вот то, что они работают везде и всегда возьмите на заметку. Проверить сможете на любой странице в Интернет...
-; Tab добавит 10 пробелов (все знают, никто не считал), соответственно Backspase вернет курсор на десять пробелов назад, а нажатие Enter перенесет курсор к следующей строке, обычно нажатием Enter заканчивают строку.
-; А вот если курсор переместить в середину текста и нажать Enter, он тоже перейдет на следующую строку причем вместе с тем текстом, который справа от него. Backspase вернет все на место.
-; Попробуйте все это, немного "покалечив" этот текст.
-; Выделение:
-; Ctrl+A Выделит весь текст, всегда и везде! А именно здесь выделит все, с одновременным переносом курсора в конец текста.
-; Нажмите сейчас Ctrl+A, потом Ctrl+C, потом Win+R (в строке должна была сохраниться запись - notepad) если да, жмем Enter (если нет, набираем notepad, потом жмем Enter), потом Ctrl+V, теперь Alt+F4, стрелку (>)вправо и Enter.
-; Этим мы выделили весь текст, скопировали его, вызвали блокнот через командную строку, вставили в новый документ весь текст, потом удовлетворенно, закрыли новый документ, не сохранив, ничего.
-; Могли и сохранить, конечно, но и так забежали немного вперед.
-; Забежали, чтоб понять, в каком случае часто применяется сочетание Ctrl+A (выделить все!).
-; Shift+>< Выделение по буквам. Удерживание Shift во время перемещения клавишами стрелками будет выделять текст в зависимости от направления стрелки. Вправо-влево выделение по одной букве, вниз-вверх по одной строке. Попробовать это, чтоб понять, намного легче, чем вникать в любые объяснения. Посему, попробуйте!
-; Часто выделить мышью с точностью до одной буквы просто не возможно! С Шифтом такого не бывает!
-; Помните, удерживая Ctrl, мы перемещали курсор по словам? Так вот, если "разбавить" эту комбинацию Шифтом, мы будем выделять по словам, соответственно.
-; Пробуйте сейчас!
-; Так же по аналогии:
-; Shift+Home Выделить до начала строки
-; Shift+End Выделить до конца строки
-; Ctrl+Shift+Home Выделить до начала текста
-; Ctrl+Shift+End Выделить до конца текста
-; Попробуйте все четыре, в зависимости от места расположения курсора...
-; Удаление:
-; Delete удаление символа справа от курсора или удаление чего-то выделенного.
-; Backspace и Shift+Delete удаление символа слева от курсора.
-; Ctrl+Delete удаление символов справа до конца строки.
-; Кнопка тоже говорит сама за себя и используется вместе с модификаторами Ctrl и Shift.
-; Запомнить не трудно, посему и потренируйтесь на этой строке... удалив ее.
-; Группа сочетаний "под левую руку"
-; Вырезание:
-; Ctrl+X вырезать предварительно выделенное.
-; Вырезают понятно для того, что б, куда нибудь вставить. Вырезать можно один раз, а вставить несколько.
-; Отмена:
-; Ctrl+Z отменить последнее действие. Самое время вспомнить об этом сочетании, поскольку нужда в нем возникает, обычно после удаления или вырезания.
-; Благодаря этому сочетанию "отмерять семь раз" совсем не обязательно!
-; Это действие дает возможность исправить любую ошибку, просто отменив ошибочное действие и вернув все в исходное состояние. Проверим?
-; Нажмите Ctrl+А теперь внимание! Запомнили о Ctrl+Z ? Нажмите Delete, а потом Ctrl+Z !!! Надеюсь, мы снова вместе...
-; Копирование, Вставка:
-; Ctrl+C копировать! Это мы любим... В Интернет часто работают такие сочетания Ctrl+А плюс Ctrl+C плюс Ctrl+V = плагиат :-)
-; Ctrl+V вставить! Эти сочетания, во истину лидеры среди себе подобных. Не использовать их просто грех :-) Насколько я помню, Вы уже делали копи-паст выше по тексту.
-; Касается работы с текстом и вставка символа:
-; Alt+Число вставить символ! Удерживая Alt, наберите любое число на дополнительной цифровой клавиатуре. Например, у меня при наборе Alt+753 появляется буква ё, хотя её и в помине нет на моей клавиатуре (я нахожусь в Армении)
-; А символ "собака" получается нажатием Alt+64. В общем, с этим сочетанием экспериментируйте...
-; Сохранение:
-; Ctrl+S сохранить!
-; Ничего особенного вроде бы нет, но когда после 15 минут (а то и больше) работы с документом отключат свет, Вы вспомните, что Ctrl+S(свет) надо было время от времени нажимать.
-; Я, например, нажимаю после каждой записанной законченной мысли. Хотя если вы за ноутбуком, Вам это не грозит, как и при наличии "бесперебойника".
-; Во всех других случаях, если Вы творите, а не созерцаете, время от времени прижимайте Ctrl+S(свет), работает почти везде.
-; Поиск и замена:
-; Ну и напоследок пару слов о поиске текста. Иногда бывает нужно организовать поиск слова или фразы по одному единственному документу. Делается это в две секунды нажатием:
-; Ctrl+F найти букву, слово, текст. Попробуйте найти в этом тексте слово Собака (кроме этого)
-; Получилось? :-) Внимательно рассмотрите диалоговое окно поиска, авось пригодится.
-; Ctrl+H найти и заменить используется редко, но зато находит и заменяет метко! Об этом не мешает знать.
+UseModule Constants
+UseModule Structures
 
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/"
-CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-  ;  IncludePath "/Users/as/Documents/GitHub/Widget/"
-CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-  ;  IncludePath "/Users/a/Documents/GitHub/Widget/"
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
-  XIncludeFile "module_draw.pbi"
-  
-  XIncludeFile "module_macros.pbi"
-  XIncludeFile "module_constants.pbi"
-  XIncludeFile "module_structures.pbi"
   XIncludeFile "module_bar.pbi"
-  XIncludeFile "module_text.pbi"
-  
-  CompilerIf #VectorDrawing
-    UseModule Draw
-  CompilerEndIf
 CompilerEndIf
 
 DeclareModule Editor
   EnableExplicit
-  UseModule Macros
+
   UseModule Constants
   UseModule Structures
   
-  CompilerIf #VectorDrawing
-    UseModule Draw
-  CompilerEndIf
-  
   ;- - DECLAREs MACROs
-  Macro Resize(_adress_, _x_,_y_,_width_,_height_) : Text::Resize(_adress_, _x_,_y_,_width_,_height_) : EndMacro
+Macro RowBackColor(_this_, _state_)
+    _this_\Row\Color\Back[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
+  EndMacro
+  Macro RowForeColor(_this_, _state_)
+    _this_\Row\Color\Fore[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
+  EndMacro
+  Macro RowFrameColor(_this_, _state_)
+    _this_\Row\Color\Frame[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
+  EndMacro
+  Macro RowFontColor(_this_, _state_)
+    _this_\Color\Front[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
+  EndMacro
+  Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
+    BackColor(_color_1_&$FFFFFF|_alpha_<<24)
+    FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
+    If _type_
+      LinearGradient(_x_,_y_, (_x_+_width_), _y_)
+    Else
+      LinearGradient(_x_,_y_, _x_, (_y_+_height_))
+    EndIf
+    RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
+    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
+  EndMacro
+ Macro isItem(_item_, _list_)
+    Bool(_item_ >= 0 And _item_ < ListSize(_list_))
+  EndMacro
+  
+  Macro itemSelect(_item_, _list_)
+    Bool(isItem(_item_, _list_) And _item_ <> ListIndex(_list_) And SelectElement(_list_, _item_))
+  EndMacro
+  
+  Macro add_widget(_widget_, _hande_)
+    If _widget_ =- 1 Or _widget_ > ListSize(List()) - 1
+      LastElement(List())
+      _hande_ = AddElement(List()) 
+      _widget_ = ListIndex(List())
+    Else
+      _hande_ = SelectElement(List(), _widget_)
+      ; _hande_ = InsertElement(List())
+      PushListPosition(List())
+      While NextElement(List())
+        List()\Widget\Index = ListIndex(List())
+      Wend
+      PopListPosition(List())
+    EndIf
+  EndMacro
+  
+  Macro Text_CountItems(_this_)
+    _this_\CountItems
+  EndMacro
+  
+  Macro Text_ClearItems(_this_) 
+    _this_\CountItems = 0
+    _this_\Text\Change = 1 
+    If _this_\Text\Editable
+      _this_\Text\String = #LF$
+    EndIf
+    If Not _this_\Repaint : _this_\Repaint = 1
+      PostEvent(#PB_Event_Gadget, _this_\Canvas\Window, _this_\Canvas\Gadget, #PB_EventType_Repaint)
+    EndIf
+  EndMacro
+  
+  Macro Text_RemoveItem(_this_, _item_) 
+    _this_\CountItems - 1
+    _this_\Text\Change = 1
+    If _this_\CountItems =- 1 
+      _this_\CountItems = 0 
+      _this_\Text\String = #LF$
+      If Not _this_\Repaint : _this_\Repaint = 1
+        PostEvent(#PB_Event_Gadget, _this_\Canvas\Window, _this_\Canvas\Gadget, #PB_EventType_Repaint)
+      EndIf
+    Else
+      _this_\Text\String = RemoveString(_this_\Text\String, StringField(_this_\Text\String, _item_+1, #LF$) + #LF$)
+    EndIf
+  EndMacro
+  
   Declare.i Update(*This.Widget_S)
   
   ;- DECLARE
@@ -458,6 +909,174 @@ Module Editor
   EndProcedure
   
   ;-
+  Procedure.s Text_Make(*This.Widget_S, Text.s)
+    Protected String.s, i.i, Len.i
+    
+    With *This
+      If \Text\Numeric And Text.s <> #LF$
+        Static Dot, Minus
+        Protected Chr.s, Input.i, left.s, count.i
+        
+        Len = Len(Text.s) 
+        For i = 1 To Len 
+          Chr = Mid(Text.s, i, 1)
+          Input = Asc(Chr)
+          
+          Select Input
+            Case '0' To '9', '.','-'
+            Case 'Ю','ю','Б','б',44,47,60,62,63 : Input = '.' : Chr = Chr(Input)
+            Default
+              Input = 0
+          EndSelect
+          
+          If Input
+            If \Type = #PB_GadgetType_IPAddress
+              left.s = Left(\Text\String, \Text\Caret)
+              Select CountString(left.s, ".")
+                Case 0 : left.s = StringField(left.s, 1, ".")
+                Case 1 : left.s = StringField(left.s, 2, ".")
+                Case 2 : left.s = StringField(left.s, 3, ".")
+                Case 3 : left.s = StringField(left.s, 4, ".")
+              EndSelect                                           
+              count = Len(left.s+Trim(StringField(Mid(\Text\String, \Text\Caret+1), 1, "."), #LF$))
+              If count < 3 And (Val(left.s) > 25 Or Val(left.s+Chr.s) > 255)
+                Continue
+                ;               ElseIf Mid(\Text\String, \Text\Caret + 1, 1) = "."
+                ;                 \Text\Caret + 1 : \Text\Caret[1]=\Text\Caret
+              EndIf
+            EndIf
+            
+            If Not Dot And Input = '.' And Mid(\Text\String, \Text\Caret + 1, 1) <> "."
+              Dot = 1
+            ElseIf Input <> '.' And count < 3
+              Dot = 0
+            Else
+              Continue
+            EndIf
+            
+            If Not Minus And Input = '-' And Mid(\Text\String, \Text\Caret + 1, 1) <> "-"
+              Minus = 1
+            ElseIf Input <> '-'
+              Minus = 0
+            Else
+              Continue
+            EndIf
+            
+            String.s + Chr
+          EndIf
+        Next
+        
+      ElseIf \Text\Pass
+        Len = Len(Text.s) 
+        For i = 1 To Len : String.s + "●" : Next
+        
+      Else
+        Select #True
+          Case \Text\Lower : String.s = LCase(Text.s)
+          Case \Text\Upper : String.s = UCase(Text.s)
+          Default
+            String.s = Text.s
+        EndSelect
+      EndIf
+    EndWith
+    
+    ProcedureReturn String.s
+  EndProcedure
+  
+  Procedure.s Text_Wrap(*This.Widget_S, Text.s, Width.i, Mode=-1, nl$=#LF$, DelimList$=" "+Chr(9))
+    Protected.i CountString, i, start, ii, found, length
+    Protected line$, ret$="", LineRet$="", TextWidth
+    
+    ;     Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
+    ;     Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
+    ;     Text.s = ReplaceString(Text.s, #CR$, #LF$)
+    ;     Text.s + #LF$
+    ;  
+    
+    
+    CountString = CountString(Text.s, #LF$) 
+    ; Protected time = ElapsedMilliseconds()
+    
+    ; ;     Protected Len
+    ; ;     Protected *s_0.Character = @Text.s
+    ; ;     Protected *e_0.Character = @Text.s 
+    ; ;     #SOC = SizeOf (Character)
+    ; ;       While *e_0\c 
+    ; ;         If *e_0\c = #LF
+    ; ;           Len = (*e_0-*s_0)>>#PB_Compiler_Unicode
+    ; ;           line$ = PeekS(*s_0, Len) ;Trim(, #LF$)
+    
+    For i = 1 To CountString
+      line$ = StringField(Text.s, i, #LF$)
+      start = Len(line$)
+      length = start
+      
+      ; Get text len
+      While length > 1
+        ; Debug ""+TextWidth(RTrim(Left(Line$, length))) +" "+ GetTextWidth(RTrim(Left(Line$, length)), length)
+        If width > TextWidth(RTrim(Left(Line$, length))) ; GetTextWidth(RTrim(Left(Line$, length)), length) ;   
+          Break
+        Else
+          length - 1
+        EndIf
+      Wend 
+      
+      ;  Debug ""+start +" "+ length
+      While start > length 
+        If mode
+          For ii = length To 0 Step - 1
+            If mode = 2 And CountString(Left(line$,ii), " ") > 1     And width > 71 ; button
+              found + FindString(delimList$, Mid(RTrim(line$),ii,1))
+              If found <> 2
+                Continue
+              EndIf
+            Else
+              found = FindString(delimList$, Mid(line$,ii,1))
+            EndIf
+            
+            If found
+              start = ii
+              Break
+            EndIf
+          Next
+        EndIf
+        
+        If found
+          found = 0
+        Else
+          start = length
+        EndIf
+        
+        LineRet$ + Left(line$, start) + nl$
+        line$ = LTrim(Mid(line$, start+1))
+        start = Len(line$)
+        length = start
+        
+        ; Get text len
+        While length > 1
+          ; Debug ""+TextWidth(RTrim(Left(Line$, length))) +" "+ GetTextWidth(RTrim(Left(Line$, length)), length)
+          If width > TextWidth(RTrim(Left(Line$, length))) ; GetTextWidth(RTrim(Left(Line$, length)), length) ; 
+            Break
+          Else
+            length - 1
+          EndIf
+        Wend 
+        
+      Wend   
+      
+      ret$ + LineRet$ + line$ + #CR$+nl$
+      LineRet$=""
+    Next
+    
+    ; ;       *s_0 = *e_0 + #SOC : EndIf : *e_0 + #SOC : Wend
+    ;Debug  ElapsedMilliseconds()-time
+    ; MessageRequester("",Str( ElapsedMilliseconds()-time))
+    
+    If Width > 1
+      ProcedureReturn ret$ ; ReplaceString(ret$, " ", "*")
+    EndIf
+  EndProcedure
+  
   Procedure Move(*This.Widget_S, Width)
     Protected Left,Right
     
@@ -586,7 +1205,7 @@ Module Editor
     Protected Repaint, Input, Input_2, String.s, Count.i
     
     With *This
-      Chr.s = Text::Make(*This, Chr.s)
+      Chr.s = Text_Make(*This, Chr.s)
       
       If Chr.s
         Count = CountString(Chr.s, #LF$)
@@ -708,7 +1327,41 @@ Module Editor
   Procedure AddLine(*This.Widget_S, Line.i, String.s) ;,Image.i=-1,Sublevel.i=0)
     Protected Image_Y, Image_X, Text_X, Text_Y, Height, Width, Indent = 4
     
-    Macro _set_content_Y_(_this_)
+    Macro _set_scroll_height_(_this_)
+    If _this_\Scroll And Not _this_\hide And Not _this_\Items()\Hide
+      _this_\Scroll\Height+_this_\Text\Height
+      
+      
+     ; _this_\scroll\v\max = _this_\scroll\Height
+    EndIf
+  EndMacro
+  
+  Macro _set_scroll_width_(_this_)
+    If _this_\Scroll And Not _this_\items()\hide And
+       _this_\Scroll\width<(_this_\margin\width + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
+      _this_\scroll\width=(_this_\margin\width + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
+;        _this_\Scroll\width<(_this_\margin\width + (_this_\sublevellen -Bool(_this_\Scroll\h\Radius)*4) + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
+;       _this_\scroll\width=(_this_\margin\width + (_this_\sublevellen -Bool(_this_\Scroll\h\Radius)*4) + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
+      
+;       If _this_\scroll\width < _this_\width[2]-(Bool(Not _this_\Scroll\v\Hide) * _this_\Scroll\v\width)
+;         _this_\scroll\width = _this_\width[2]-(Bool(Not _this_\Scroll\v\Hide) * _this_\Scroll\v\width)
+;       EndIf
+      
+;        If _this_\scroll\Height < _this_\Height[2]-(Bool(Not _this_\Scroll\h\Hide) * _this_\Scroll\h\Height)
+;         _this_\scroll\Height = _this_\Height[2]-(Bool(Not _this_\Scroll\h\Hide) * _this_\Scroll\h\Height)
+;       EndIf
+     
+      _this_\Text\Big = _this_\Items()\Index ; Позиция в тексте самой длинной строки
+      _this_\Text\Big[1] = _this_\Items()\Text\Pos ; Может и не понадобятся
+      _this_\Text\Big[2] = _this_\Items()\Text\Len ; Может и не понадобятся
+      
+          
+     ; _this_\scroll\h\max = _this_\scroll\width
+     ;  Debug "   "+_this_\width +" "+ _this_\scroll\width
+    EndIf
+  EndMacro
+  
+  Macro _set_content_Y_(_this_)
       If _this_\Image\handle
         If _this_\Flag\InLine
           Text_Y=((Height-(_this_\Text\Height*_this_\CountItems))/2)
@@ -751,7 +1404,7 @@ Module Editor
         ElseIf _this_\Text\Align\Horizontal
           Text_X=(Width-_this_\Items()\Text\Width-Bool(_this_\Items()\Text\Width % 2))/2 
         Else
-          Text_X=_this_\sci\margin\width
+          Text_X=_this_\margin\width
         EndIf
       EndIf
     EndMacro
@@ -790,7 +1443,7 @@ Module Editor
         Height = \Width[1]-\Text\y*2
       Else
         CompilerIf Not Defined(Bar, #PB_Module)
-          \scroll\width[2] = \width[2]-\sci\margin\width
+          \scroll\width[2] = \width[2]-\margin\width
           \scroll\height[2] = \height[2]
         CompilerEndIf
       EndIf
@@ -842,7 +1495,7 @@ Module Editor
         Width = \Height[2]-\Text\X*2
         Height = \Width[2]-\Text\y*2
       Else
-        width = \scroll\width[2]-\Text\X*2-\sci\margin\width
+        width = \scroll\width[2]-\Text\X*2-\margin\width
         height = \scroll\height[2]
       EndIf
       
@@ -1079,94 +1732,6 @@ Module Editor
   
   ;-
   ;- - DRAWINGs
-  Procedure CheckBox(X,Y, Width, Height, Type, Checked, Color, BackColor, Radius, Alpha=255) 
-    Protected I, checkbox_backcolor
-    
-    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-    If Checked
-      BackColor = $F67905&$FFFFFF|255<<24
-      BackColor($FFB775&$FFFFFF|255<<24) 
-      FrontColor($F67905&$FFFFFF|255<<24)
-    Else
-      BackColor = $7E7E7E&$FFFFFF|255<<24
-      BackColor($FFFFFF&$FFFFFF|255<<24)
-      FrontColor($EEEEEE&$FFFFFF|255<<24)
-    EndIf
-    
-    LinearGradient(X,Y, X, (Y+Height))
-    RoundBox(X,Y,Width,Height, Radius,Radius)
-    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
-    
-    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-    RoundBox(X,Y,Width,Height, Radius,Radius, BackColor)
-    
-    If Checked
-      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      If Type = 1
-        Circle(x+5,y+5,2,Color&$FFFFFF|alpha<<24)
-      ElseIf Type = 3
-        For i = 0 To 1
-          LineXY((X+2),(i+Y+6),(X+3),(i+Y+7),Color&$FFFFFF|alpha<<24) ; Левая линия
-          LineXY((X+7+i),(Y+2),(X+4+i),(Y+8),Color&$FFFFFF|alpha<<24) ; правая линия
-                                                                      ;           LineXY((X+1),(i+Y+5),(X+3),(i+Y+7),Color&$FFFFFF|alpha<<24) ; Левая линия
-                                                                      ;           LineXY((X+8+i),(Y+3),(X+3+i),(Y+8),Color&$FFFFFF|alpha<<24) ; правая линия
-        Next
-      EndIf
-    EndIf
-    
-  EndProcedure
-  
-  Procedure Selection(X, Y, SourceColor, TargetColor)
-    Protected Color, Dot.b=4, line.b = 10, Length.b = (Line+Dot*2+1)
-    Static Len.b
-    
-    If ((Len%Length)<line Or (Len%Length)=(line+Dot))
-      If (Len>(Line+Dot)) : Len=0 : EndIf
-      Color = SourceColor
-    Else
-      Color = TargetColor
-    EndIf
-    
-    Len+1
-    ProcedureReturn Color
-  EndProcedure
-  
-  Procedure PlotX(X, Y, SourceColor, TargetColor)
-    Protected Color
-    
-    If x%2
-      Select TargetColor
-        Case $FFECAE62, $FFECB166, $FFFEFEFE, $FFE89C3D, $FFF3CD9D
-          Color = $FFFEFEFE
-        Default
-          Color = SourceColor
-      EndSelect
-    Else
-      Color = TargetColor
-    EndIf
-    
-    ProcedureReturn Color
-  EndProcedure
-  
-  Procedure PlotY(X, Y, SourceColor, TargetColor)
-    Protected Color
-    
-    If y%2
-      Select TargetColor
-        Case $FFECAE62, $FFECB166, $FFFEFEFE, $FFE89C3D, $FFF3CD9D
-          Color = $FFFEFEFE
-        Case $FFF1F1F1, $FFF3F3F3, $FFF5F5F5, $FFF7F7F7, $FFF9F9F9, $FFFBFBFB, $FFFDFDFD, $FFFCFCFC, $FFFEFEFE, $FF7E7E7E
-          Color = TargetColor
-        Default
-          Color = SourceColor
-      EndSelect
-    Else
-      Color = TargetColor
-    EndIf
-    
-    ProcedureReturn Color
-  EndProcedure
-  
   Procedure.i Draw(*This.Widget_S)
     Protected String.s, StringWidth, ix, iy, iwidth, iheight
     Protected IT,Text_Y,Text_X, X,Y, Width,Height, Drawing
@@ -1182,10 +1747,10 @@ Module Editor
         
         ; Then changed text
         If \Text\Change
-          If set_text_width
-            SetTextWidth(set_text_width, Len(set_text_width))
-            set_text_width = ""
-          EndIf
+;           If set_text_width
+;             SetTextWidth(set_text_width, Len(set_text_width))
+;             set_text_width = ""
+;           EndIf
           
           \Text\Height[1] = TextHeight("A") + Bool(\CountItems<>1 And \Flag\GridLines)
           If \Type = #PB_GadgetType_Tree
@@ -1195,10 +1760,10 @@ Module Editor
           EndIf
           \Text\Width = TextWidth(\Text\String.s)
           
-          If \sci\margin\width 
+          If \margin\width 
             \CountItems = CountString(\Text\String.s, #LF$)
-            \sci\margin\width = TextWidth(Str(\CountItems))+11
-            ;  Bar::Resizes(\Scroll, \x[2]+\sci\margin\width+1,\Y[2],\Width[2]-\sci\margin\width-1,\Height[2])
+            \margin\width = TextWidth(Str(\CountItems))+11
+            ;  Bar::Resizes(\Scroll, \x[2]+\margin\width+1,\Y[2],\Width[2]-\margin\width-1,\Height[2])
           EndIf
         EndIf
         
@@ -1208,7 +1773,7 @@ Module Editor
           PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
           
           CompilerIf Defined(Bar, #PB_Module)
-            ;  Bar::Resizes(\Scroll, \x[2]+\sci\margin\width,\Y[2],\Width[2]-\sci\margin\width,\Height[2])
+            ;  Bar::Resizes(\Scroll, \x[2]+\margin\width,\Y[2],\Width[2]-\margin\width,\Height[2])
             Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
             \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
             \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
@@ -1280,7 +1845,6 @@ Module Editor
           EndIf
         EndIf 
         
-        _clip_output_(*This, \X,\Y,\Width,\Height)
         
         ;
         If \Text\Editable And ListSize(\Items())
@@ -1349,9 +1913,9 @@ Module Editor
         EndIf
         
         ; Draw margin back color
-        If \sci\margin\width
+        If \margin\width
           DrawingMode(#PB_2DDrawing_Default)
-          Box(ix, iy, \sci\margin\width, \Height[2], \sci\margin\Color\Back); $C8D7D7D7)
+          Box(ix, iy, \margin\width, \Height[2], \margin\Color\Back); $C8D7D7D7)
         EndIf
       EndWith 
       
@@ -1374,7 +1938,6 @@ Module Editor
                 ;               ElseIf *This\Text\FontID 
                 ;                 DrawingFont(*This\Text\FontID) 
               EndIf
-              _clip_output_(*This, *This\X[2], #PB_Ignore, *This\Width[2], #PB_Ignore) 
               
               If \Text\Change : \Text\Change = #False
                 \Text\Width = TextWidth(\Text\String.s) 
@@ -1420,12 +1983,6 @@ Module Editor
             Text_Y = \Text\Y+*This\Scroll\Y
             ; Debug Text_X
             
-            ; expanded & collapsed box
-            _set_open_box_XY_(*This, *This\Items(), *This\x+*This\Scroll\X, Y)
-            
-            ; checked box
-            _set_check_box_XY_(*This, *This\Items(), *This\x+*This\Scroll\X, Y)
-            
             ; Draw selections
             If Drawing And (\Index=*This\Index[1] Or \Index=\focus Or \Index=\Index[1]) ; \Color\State;
               If *This\Row\Color\Back[\Color\State]<>-1                                 ; no draw transparent
@@ -1444,34 +2001,8 @@ Module Editor
               EndIf
             EndIf
             
-            ; Draw plot
-            _draw_plots_(*This, *This\Items(), *This\x+*This\Scroll\X, \box\y+\box\height/2)
-            
             If Drawing
-              ; Draw boxes
-              If *This\flag\buttons And \childrens
-                DrawingMode(#PB_2DDrawing_Default)
-                CompilerIf Defined(Bar, #PB_Module)
-                  Bar::Arrow(\box\X[0]+(\box\Width[0]-6)/2,\box\Y[0]+(\box\Height[0]-6)/2, 6, Bool(Not \collapsed)+2, RowFontColor(*This, \Color\State), 0,0) 
-                CompilerEndIf
-              EndIf
-              
-              ; Draw checkbox
-              If *This\Flag\CheckBoxes
-                DrawingMode(#PB_2DDrawing_Default)
-                CheckBox(\box\x[1],\box\y[1],\box\width[1],\box\height[1], 3, \checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
-              EndIf
-              
-              ; Draw image
-              If \Image\handle
-                DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                DrawAlphaImage(\Image\handle, \Image\x+*This\Scroll\X, \Image\y+*This\Scroll\Y, *This\row\color\alpha)
-              EndIf
-              
               ; Draw text
-              _clip_output_(*This, \X-1, #PB_Ignore, \Width+2+*This\sci\margin\width, #PB_Ignore) 
-              ; _clip_output_(*This, *This\X[2], #PB_Ignore, *This\scroll\width[2], #PB_Ignore) 
-              
               Angle = Bool(\Text\Vertical)**This\Text\Rotate
               Protected Front_BackColor_1 = RowFontColor(*This, *This\Color\State) ; *This\Color\Front[*This\Color\State]&$FFFFFFFF|*This\row\color\alpha<<24
               Protected Front_BackColor_2 = RowFontColor(*This, 2)                 ; *This\Color\Front[2]&$FFFFFFFF|*This\row\color\alpha<<24
@@ -1568,9 +2099,9 @@ Module Editor
               EndIf
               
               ; Draw margin
-              If *This\sci\margin\width
+              If *This\margin\width
                 DrawingMode(#PB_2DDrawing_Transparent)
-                DrawText(*This\sci\margin\width-TextWidth(Str(\Index))-3, \Y+*This\Scroll\Y, Str(\Index), *This\sci\margin\Color\Front);, *This\sci\margin\Color\Back)
+                DrawText(*This\margin\width-TextWidth(Str(\Index))-3, \Y+*This\Scroll\Y, Str(\Index), *This\margin\Color\Front);, *This\margin\Color\Back)
               EndIf
             EndIf
             
@@ -1595,8 +2126,6 @@ Module Editor
           Line((\Items()\Text\X+\Scroll\X) + \Text\Caret[2] - Bool(#PB_Compiler_OS = #PB_OS_Windows) - Bool(Left < \Scroll\X), \Items()\Y+\Scroll\Y, 1, Height, $FFFFFFFF)
         EndIf
         
-        UnclipOutput()
-        
         ; Draw scroll bars
         CompilerIf Defined(Bar, #PB_Module)
           ;           If \Scroll\v And \Scroll\v\Max <> \Scroll\Height And 
@@ -1610,73 +2139,17 @@ Module Editor
           
           Bar::Draw(\Scroll\v)
           Bar::Draw(\Scroll\h)
-         ; (_this_\sci\margin\width + (_this_\sublevellen -Bool(_this_\Scroll\h\Radius)*4) + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
+         ; (_this_\margin\width + (_this_\sublevellen -Bool(_this_\Scroll\h\Radius)*4) + _this_\items()\text\x+_this_\items()\text\width)-_this_\x
           
           DrawingMode(#PB_2DDrawing_Outlined)
           Box(*This\Scroll\h\x-Bar::GetState(*This\Scroll\h), *This\Scroll\v\y-Bar::GetState(*This\Scroll\v), *This\Scroll\h\Max, *This\Scroll\v\Max, $FF0000)
           Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Page\Len, *This\Scroll\v\Page\Len, $FF00FF00)
           Box(*This\Scroll\h\x, *This\Scroll\v\y, *This\Scroll\h\Area\Len, *This\Scroll\v\Area\Len, $FF00FFFF)
         CompilerEndIf
-        
-        _clip_output_(*This, \X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2)
-        
       EndWith
       
       ; Draw frames
       With *This
-        DrawingMode(#PB_2DDrawing_Outlined)
-        
-        If \Focus = *This
-          If \Color\State = 2
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\front[2])
-            If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\front[2]) : EndIf  ; Сглаживание краев )))
-          Else
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[2])
-            If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,\Color\Frame[2]) : EndIf  ; Сглаживание краев )))
-          EndIf
-          RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,\Color\Frame[2])
-        ElseIf \fSize
-          Select \fSize[1] 
-            Case 1 ; Flat
-              RoundBox(iX-1,iY-1,iWidth+2,iHeight+2,\Radius,\Radius, $FFE1E1E1)  
-              
-            Case 2 ; Single
-              _frame_(*This, iX,iY,iWidth,iHeight, $FFE1E1E1, $FFFFFFFF)
-              
-            Case 3 ; Double
-              _frame_(*This, iX-1,iY-1,iWidth+2,iHeight+2, $FF888888, $FFFFFFFF)
-              If \Radius : RoundBox(iX-1,iY-1-1,iWidth+2,iHeight+2+1,\Radius,\Radius,$FF888888) : EndIf  ; Сглаживание краев )))
-              If \Radius : RoundBox(iX-2,iY-1-1,iWidth+3,iHeight+2+1,\Radius,\Radius,$FF888888) : EndIf  ; Сглаживание краев )))
-              _frame_(*This, iX,iY,iWidth,iHeight, $FF888888, $FFE1E1E1)
-              
-            Case 4 ; Raised
-              _frame_(*This, iX-1,iY-1,iWidth+2,iHeight+2, $FFE1E1E1, $FF9E9E9E)
-              If \Radius : RoundBox(iX-1,iY-1,iWidth+3,iHeight+2+1,\Radius,\Radius,$FF9E9E9E) : EndIf  ; Сглаживание краев )))
-              If \Radius : RoundBox(iX-1,iY-1,iWidth+2,iHeight+2+1,\Radius,\Radius,$FF9E9E9E) : EndIf  ; Сглаживание краев )))
-              _frame_(*This, iX,iY,iWidth,iHeight, $FFFFFFFF, $FF888888)
-              
-            Default 
-              RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,\Color\Frame[\Color\State])
-              
-          EndSelect
-        EndIf
-        
-        If \Default
-          ; DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@DrawFilterCallback())
-          If \Default = *This : \Default = 0
-            DrawingMode(#PB_2DDrawing_Outlined)
-            RoundBox(\X[1]-1,\Y[1]-1,\Width[1]+2,\Height[1]+2,\Radius,\Radius,$FF004DFF)
-            If \Radius : RoundBox(\X[1],\Y[1]-1,\Width[1],\Height[1]+2,\Radius,\Radius,$FF004DFF) : EndIf
-            RoundBox(\X[1],\Y[1],\Width[1],\Height[1],\Radius,\Radius,$FF004DFF)
-          Else
-            If \Color\State = 2
-              RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\front[2])
-            Else
-              RoundBox(\X[1]+2,\Y[1]+2,\Width[1]-4,\Height[1]-4,\Radius,\Radius,\Color\Frame[2])
-            EndIf
-          EndIf
-        EndIf
-        
         If \Text\Change : \Text\Change = 0 : EndIf
         If \Resize : \Resize = 0 : EndIf
       EndWith
@@ -2079,6 +2552,42 @@ Module Editor
   
   ;-
   ;- - (SET&GET)s
+   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
+    
+    With *This
+      If X<>#PB_Ignore And 
+         \X[0] <> X
+        \X[0] = X 
+        \X[2]=\X[0]+\bSize
+        \X[1]=\X[2]-\fSize
+        \Resize | 1<<1
+      EndIf
+      If Y<>#PB_Ignore And 
+         \Y[0] <> Y
+        \Y[0] = Y
+        \Y[2]=\Y[0]+\bSize
+        \Y[1]=\Y[2]-\fSize
+        \Resize | 1<<2
+      EndIf
+      If Width<>#PB_Ignore And
+         \Width[0] <> Width 
+        \Width[0] = Width 
+        \Width[2] = \Width[0]-\bSize*2
+        \Width[1] = \Width[2]+\fSize*2
+        \Resize | 1<<3
+      EndIf
+      If Height<>#PB_Ignore And 
+         \Height[0] <> Height
+        \Height[0] = Height 
+        \Height[2] = \Height[0]-\bSize*2
+        \Height[1] = \Height[2]+\fSize*2
+        \Resize | 1<<4
+      EndIf
+      
+      ProcedureReturn \Resize
+    EndWith
+  EndProcedure
+  
   Procedure.i Text_AddLine(*This.Widget_S, Line.i, Text.s)
     Protected Result.i, String.s, i.i
     
@@ -2363,27 +2872,63 @@ Module Editor
   EndProcedure
   
   Procedure ClearItems(*This.Widget_S)
-    Text::ClearItems(*This)
+    Text_ClearItems(*This)
     ProcedureReturn 1
   EndProcedure
   
   Procedure.i CountItems(*This.Widget_S)
-    ProcedureReturn Text::CountItems(*This)
+    ProcedureReturn Text_CountItems(*This)
   EndProcedure
   
   Procedure.i RemoveItem(*This.Widget_S, Item.i)
-    Text::RemoveItem(*This, Item)
+    Text_RemoveItem(*This, Item)
   EndProcedure
   
   Procedure.s GetText(*This.Widget_S)
-    ProcedureReturn Text::GetText(*This)
+    With *This
+      If \Text\Pass
+        ProcedureReturn \Text\String.s[1]
+      Else
+        ProcedureReturn \Text\String
+      EndIf
+    EndWith
   EndProcedure
   
   Procedure.i SetText(*This.Widget_S, Text.s, Item.i=0)
-    Protected i
+    Protected Result.i, Len.i, String.s, i.i
+    If Text.s="" : Text.s=#LF$ : EndIf
+    
     
     With *This
-      If Text::SetText(*This, Text.s)
+      If \Text\String.s <> Text.s
+        \Text\String.s = Text_Make(*This, Text.s)
+        
+        If \Text\String.s
+          \Text\String.s[1] = Text.s
+          
+          If \Text\MultiLine
+            Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
+            Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
+            Text.s = ReplaceString(Text.s, #CR$, #LF$)
+            
+            If \Text\MultiLine > 0
+              Text.s + #LF$
+            EndIf
+            
+            \Text\String.s = Text.s
+            \CountItems = CountString(\Text\String.s, #LF$)
+          Else
+            \Text\String.s = RemoveString(\Text\String.s, #LF$) + #LF$
+            ; \Text\String.s = RTrim(ReplaceString(\Text\String.s, #LF$, " ")) + #LF$
+          EndIf
+          
+          \Text\Len = Len(\Text\String.s)
+          \Text\Change = #True
+          Result = #True
+        EndIf
+      EndIf
+    
+      If Result
         If Not \Repaint : \Repaint = 1
           PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
         EndIf
@@ -2394,9 +2939,16 @@ Module Editor
   EndProcedure
   
   Procedure.i SetFont(*This.Widget_S, FontID.i)
+      Protected Result.i
     
     With *This
-      If Text::SetFont(*This, FontID)
+      If \Text\FontID <> FontID 
+        \Text\FontID = FontID
+        \Text\Change = 1
+        Result = #True
+      EndIf
+      
+      If Result
         If Not Bool(\CountItems[1] And \CountItems[1] <> \CountItems)
           Redraw(*This, \Canvas\Gadget)
         EndIf
@@ -2576,7 +3128,7 @@ Module Editor
             Select EventType 
               Case #PB_EventType_LeftDoubleClick 
                 \Items()\Text\Caret[1] =- 1 ; Запоминаем что сделали двойной клик
-                Text::SelLimits(*This)      ; Выделяем слово
+                SelLimits(*This)      ; Выделяем слово
                 SelectionText(*This)
                 
                 ;                 \Items()\Text[2]\Change = 1
@@ -2650,10 +3202,285 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    ProcedureReturn Text::CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
+ Procedure.i Text_Events(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+    Macro From(_this_, _buttons_=0)
+    Bool(_this_\Canvas\Mouse\X>=_this_\x[_buttons_] And _this_\Canvas\Mouse\X<_this_\x[_buttons_]+_this_\Width[_buttons_] And 
+         _this_\Canvas\Mouse\Y>=_this_\y[_buttons_] And _this_\Canvas\Mouse\Y<_this_\y[_buttons_]+_this_\Height[_buttons_])
+  EndMacro
+  Static *Last.Widget_S, *Widget.Widget_S    ; *Focus.Widget_S, 
+    Static Text$, DoubleClick, LastX, LastY, Last, Drag
+    Protected.i Result, Repaint, Control, Buttons, Widget
+    
+    ; widget_events_type
+    If *This
+      With *This
+        If Canvas=-1 
+          Widget = *This
+          Canvas = EventGadget()
+        Else
+          Widget = Canvas
+        EndIf
+        ;         If Canvas <> \Canvas\Gadget
+        ;           ProcedureReturn 
+        ;         EndIf
+        
+        ; Get at point widget
+        \Canvas\mouse\at = From(*This)
+        
+        Select EventType 
+          Case #PB_EventType_LeftButtonUp 
+            If *Last = *This
+              If *Widget <> *Focus
+                ProcedureReturn 0 
+              EndIf
+            EndIf
+            
+          Case #PB_EventType_LeftClick 
+            ; Debug ""+\Canvas\Mouse\buttons+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*This
+            If *Last = *This : *Last = *Widget
+              If *Widget <> *Focus
+                ProcedureReturn 0 
+              EndIf
+            EndIf
+            
+            If Not *This\Canvas\mouse\at 
+              ProcedureReturn 0
+            EndIf
+        EndSelect
+        
+        If Not \Hide And Not \Disable And \Interact And Widget <> Canvas And CanvasModifiers 
+          Select EventType 
+            Case #PB_EventType_Focus : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
+            Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonUp
+              If Not \Canvas\Mouse\buttons 
+                If \Canvas\mouse\at
+                  If *Last <> *This 
+                    If *Last
+                      If (*Last\Index > *This\Index)
+                        ProcedureReturn 0
+                      Else
+                        ; Если с нижнего виджета перешли на верхный, 
+                        ; то посылаем событие выход для нижнего
+                        Text_Events(*Function, *Last, #PB_EventType_MouseLeave, Canvas, 0)
+                        *Last = *This
+                      EndIf
+                    Else
+                      *Last = *This
+                    EndIf
+                    
+                    EventType = #PB_EventType_MouseEnter
+                    *Widget = *Last
+                  EndIf
+                  
+                ElseIf (*Last = *This)
+                  If EventType = #PB_EventType_LeftButtonUp 
+                    Text_Events(*Function, *Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
+                  EndIf
+                  
+                  EventType = #PB_EventType_MouseLeave
+                  *Last = *Widget
+                  *Widget = 0
+                EndIf
+              EndIf
+              
+            Case #PB_EventType_LostFocus
+              If (*Focus = *This)
+                *Last = *Focus
+                Text_Events(*Function, *Focus, #PB_EventType_LostFocus, Canvas, 0)
+                *Last = *Widget
+              EndIf
+              
+            Case #PB_EventType_LeftButtonDown
+              If (*Last = *This)
+                PushListPosition(List())
+                ForEach List()
+                  If List()\Widget\Focus = List()\Widget And List()\Widget <> *This 
+                    
+                    List()\Widget\Focus = 0
+                    *Last = List()\Widget
+                    Text_Events(*Function, List()\Widget, #PB_EventType_LostFocus, List()\Widget\Canvas\Gadget, 0)
+                    *Last = *Widget 
+                    
+                    ; 
+                    If Not List()\Widget\Repaint : List()\Widget\Repaint = 1
+                      PostEvent(#PB_Event_Gadget, List()\Widget\Canvas\Window, List()\Widget\Canvas\Gadget, #PB_EventType_Repaint)
+                    EndIf
+                    Break 
+                  EndIf
+                Next
+                PopListPosition(List())
+                
+                If *This <> \Focus : \Focus = *This : *Focus = *This
+                  Text_Events(*Function, *This, #PB_EventType_Focus, Canvas, 0)
+                EndIf
+              EndIf
+              
+          EndSelect
+        EndIf
+        
+        If (*Last = *This) 
+          Select EventType
+            Case #PB_EventType_LeftButtonDown
+              If Not \Canvas\Mouse\Delta
+                \Canvas\Mouse\Delta = AllocateStructure(Mouse_S)
+                \Canvas\Mouse\Delta\X = \Canvas\Mouse\X
+                \Canvas\Mouse\Delta\Y = \Canvas\Mouse\Y
+                \Canvas\Mouse\delta\at = \Canvas\mouse\at
+                \Canvas\Mouse\Delta\buttons = \Canvas\Mouse\buttons
+              EndIf
+              
+            Case #PB_EventType_LeftButtonUp : \Drag = 0
+              FreeStructure(\Canvas\Mouse\Delta) : \Canvas\Mouse\Delta = 0
+              ; ResetStructure(\Canvas\Mouse\Delta, Mouse_S)
+              
+            Case #PB_EventType_MouseMove
+              If \Drag = 0 And \Canvas\Mouse\buttons And \Canvas\Mouse\Delta And 
+                 (Abs((\Canvas\Mouse\X-\Canvas\Mouse\Delta\X)+(\Canvas\Mouse\Y-\Canvas\Mouse\Delta\Y)) >= 6) : \Drag=1
+                ; PostEvent(#PB_Event_Widget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_DragStart)
+              EndIf
+              
+            Case #PB_EventType_MouseLeave
+              If CanvasModifiers 
+                ; Если перешли на другой виджет
+                PushListPosition(List())
+                ForEach List()
+                  If List()\Widget\Canvas\Gadget = Canvas And List()\Widget\Focus <> List()\Widget And List()\Widget <> *This
+                    List()\Widget\Canvas\mouse\at = From(List()\Widget)
+                    
+                    If List()\Widget\Canvas\mouse\at
+                      If *Last
+                        Text_Events(*Function, *Last, #PB_EventType_MouseLeave, Canvas, 0)
+                      EndIf     
+                      
+                      *Last = List()\Widget
+                      *Widget = List()\Widget
+                      ProcedureReturn Text_Events(*Function, *Last, #PB_EventType_MouseEnter, Canvas, 0)
+                    EndIf
+                  EndIf
+                Next
+                PopListPosition(List())
+              EndIf
+              
+              If \Cursor[1] <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor[1])
+                \Cursor[1] = 0
+              EndIf
+              
+            Case #PB_EventType_MouseEnter    
+              If Not \Cursor[1] 
+                \Cursor[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+              EndIf
+              SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
+              
+            Case #PB_EventType_MouseMove ; bug mac os
+              If \Canvas\Mouse\buttons And #PB_Compiler_OS = #PB_OS_MacOS ; And \Cursor <> GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor)
+                                                                          ; Debug 555
+                SetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Cursor, \Cursor)
+              EndIf
+              
+          EndSelect
+        EndIf 
+        
+      EndWith
+    EndIf
+    
+    If (*Last = *This) Or (*Focus = *This And *This\Text\Editable); Or (*Last = *Focus)
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        Result | CallFunctionFast(*Function, *This, EventType)
+      CompilerElse
+        Result | CallCFunctionFast(*Function, *This, EventType)
+      CompilerEndIf
+    EndIf
+    
+    ProcedureReturn Result
   EndProcedure
   
+  Procedure.i Text_CallBack(*Function, *This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+    ; Canvas events bug fix
+    Protected Result.b
+    Static MouseLeave.b
+    Protected EventGadget.i = EventGadget()
+    
+    Protected Width = GadgetWidth(EventGadget)
+    Protected Height = GadgetHeight(EventGadget)
+    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
+    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
+    
+    If Canvas =- 1
+      With *This
+        Select EventType
+          Case #PB_EventType_Repaint
+            Debug " -- Canvas repaint -- "
+          Case #PB_EventType_Input 
+            \Canvas\Input = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Input)
+            \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
+          Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
+            \Canvas\Key = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Key)
+            \Canvas\Key[1] = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Modifiers)
+          Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
+            \Canvas\Mouse\X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
+            \Canvas\Mouse\Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
+          Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
+               #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
+               #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
+            
+            CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+              \Canvas\Mouse\buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
+                                      (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
+                                      (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
+            CompilerElse
+              \Canvas\Mouse\buttons = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_Buttons)
+            CompilerEndIf
+        EndSelect
+      EndWith
+    EndIf
+    
+    ; Это из за ошибки в мак ос и линукс
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
+      Select EventType 
+        Case #PB_EventType_MouseEnter 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 0
+          EndIf
+          
+        Case #PB_EventType_MouseLeave 
+          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
+            EventType = #PB_EventType_MouseMove
+            MouseLeave = 1
+          EndIf
+          
+        Case #PB_EventType_LeftButtonDown
+          If GetActiveGadget()<>EventGadget
+            SetActiveGadget(EventGadget)
+          EndIf
+          
+        Case #PB_EventType_LeftButtonUp
+          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
+            MouseLeave = 0
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+              Result | Text_Events(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+              EventType = #PB_EventType_MouseLeave
+            CompilerEndIf
+          Else
+            MouseLeave =- 1
+            Result | Text_Events(*Function, *This, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
+            EventType = #PB_EventType_LeftClick
+          EndIf
+          
+        Case #PB_EventType_LeftClick : ProcedureReturn 0
+      EndSelect
+    CompilerEndIf
+    
+    Result | Text_Events(*Function, *This, EventType, Canvas, CanvasModifiers)
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i CallBack(*This.Widget_S, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+    ProcedureReturn Text_CallBack(@Events(), *This, EventType, Canvas, CanvasModifiers)
+  EndProcedure
+   
   Procedure.i Widget(*This.Widget_S, Canvas.i, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
     If *This
       With *This
@@ -2729,8 +3556,8 @@ Module Editor
         \Color = Colors
         \Color\Fore[0] = 0
         
-        \sci\margin\width = Bool(Flag&#PB_Flag_Numeric)
-        \sci\margin\Color\Back = $C8F0F0F0 ; \Color\Back[0] 
+        \margin\width = Bool(Flag&#PB_Flag_Numeric)
+        \margin\Color\Back = $C8F0F0F0 ; \Color\Back[0] 
         
         \Row\color\alpha = 255
         \Row\Color = Colors
@@ -2988,5 +3815,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 4-4--------------------------------------------------------
+; Folding = +--P-----------------------------------------------------v---------------
 ; EnableXP
