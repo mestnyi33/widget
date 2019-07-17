@@ -39,53 +39,53 @@ CompilerIf #PB_Compiler_IsMainFile
                 ; EndIf
                 
                 Select GetState( *combo )
-                  Case 1  : *w = Button(30,20,150,30,"Button") 
-                  Case 2  : *w = String(30,20,150,30,"String") 
-                  Case 3  : *w = Text(30,20,150,30,"Text", #PB_Text_Border) 
-                  Case 4  : *w = Option(30,20,150,30,"Option") 
-                  Case 5  : *w = CheckBox(30,20,150,30,"CheckBox") 
-                  Case 6  : *w = ListView(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"ListView_"+Str(i)) : Next : SetState(*w,5)
-                  Case 7  : *w = Frame(30,20,150,30,"Frame") 
-                  Case 8  : *w = ComboBox(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"ComboBox_"+Str(i)) : Next : SetState(*w,0)
-                  Case 9  : *w = Image(30,20,150,30,0,#PB_Image_Border) 
-                  Case 10 : *w = HyperLink(30,20,150,30,"HyperLink", $FF00FF, #PB_HyperLink_Underline) 
-                  Case 11 : *w = Container(30,20,150,30,#PB_Container_Flat) : Button(0,0,80,20,"Button") : CloseList() ; Container
-                  Case 12 : *w = ListIcon(30,20,150,30,"ListIcon",88) 
-                  Case 13 : *w = IPAddress(30,20,150,30) 
-                  Case 14 : *w = Progress(30,20,150,30,0,5)
-                  Case 15 : *w = Scroll(30,20,150,30,5,335,9)
-                  Case 16 : *w = ScrollArea(30,20,150,30,305,305,9,#PB_ScrollArea_Flat) : Button(0,0,80,20,"Button") : CloseList()
-                  Case 17 : *w = Track(30,20,150,30,0,5)
-                    ; Case 18 : *w = Web(30,20,150,30,"") 
-                  Case 19 : *w = Button(30,20,150,30, "", 0, 0)
-                    ;Case 20 : *w = Calendar(30,20,150,30) 
-                    ;Case 21 : *w = Date(30,20,150,30)
-                    ;Case 22 : *w = Editor(30,20,150,30) : AddItem(20,-1,"Editor")
-                  Case 23 : *w = ExplorerList(30,20,150,30,"")
-                    ;                     Case 24 : *w = ExplorerTree(30,20,150,30,"")
-                    ;                     Case 25 : *w = ExplorerCombo(30,20,150,30,"")
-                  Case 26 : *w = Spin(30,20,150,30,0,5,#PB_Spin_Numeric)
-                  Case 27 : *w = Tree(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"Tree_"+Str(i), -1, Bool(i=1 Or i=3 Or i=5 Or i=7 Or i=9)) : Next
-                  Case 28 : *w = Panel(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"Panel_"+Str(i)) : Next : CloseList()
-                  Case 29 : *w = Splitter(30,20,150,30, Button(0,0,0,0,"1"), Button(0,0,0,0,"2"))
+                  Case 1  : *w = Button(30,20,160,30,"Button") 
+                  Case 2  : *w = String(30,20,160,30,"String") 
+                  Case 3  : *w = Text(30,20,160,30,"Text", #PB_Text_Border) 
+                  Case 4  : *w = Option(30,20,160,30,"Option") 
+                  Case 5  : *w = CheckBox(30,20,160,30,"CheckBox") 
+                  Case 6  : *w = ListView(30,20,160,30) : For i=0 To 10 : AddItem(*w,-1,"ListView_"+Str(i)) : Next : SetState(*w,5)
+                  Case 7  : *w = Frame(30,20,160,30,"Frame") 
+                  Case 8  : *w = ComboBox(30,20,160,30) : For i=0 To 10 : AddItem(*w,-1,"ComboBox_"+Str(i)) : Next : SetState(*w,0)
+                  Case 9  : *w = Image(30,20,160,30,0,#PB_Image_Border) 
+                  Case 10 : *w = HyperLink(30,20,160,30,"HyperLink", $FF00FF, #PB_HyperLink_Underline) 
+                  Case 11 : *w = Container(30,20,160,30,#PB_Container_Flat) : Button(0,0,80,20,"Button") : CloseList() ; Container
+                  Case 12 : *w = ListIcon(30,20,160,30,"ListIcon",88) 
+                  Case 13 : *w = IPAddress(30,20,160,30) 
+                  Case 14 : *w = Progress(30,20,160,30,0,5)
+                  Case 15 : *w = Scroll(30,20,160,30,5,335,9)
+                  Case 16 : *w = ScrollArea(30,20,160,30,305,305,9,#PB_ScrollArea_Flat) : Button(0,0,80,20,"Button") : CloseList()
+                  Case 17 : *w = Track(30,20,160,30,0,5)
+                    ; Case 18 : *w = Web(30,20,160,30,"") 
+                  Case 19 : *w = Button(30,20,160,30, "", 0, 0)
+                    ;Case 20 : *w = Calendar(30,20,160,30) 
+                    ;Case 21 : *w = Date(30,20,160,30)
+                    ;Case 22 : *w = Editor(30,20,160,30) : AddItem(20,-1,"Editor")
+                  Case 23 : *w = ExplorerList(30,20,160,30,"")
+                    ;                     Case 24 : *w = ExplorerTree(30,20,160,30,"")
+                    ;                     Case 25 : *w = ExplorerCombo(30,20,160,30,"")
+                  Case 26 : *w = Spin(30,20,160,30,0,5,#PB_Spin_Numeric)
+                  Case 27 : *w = Tree(30,20,160,30) : For i=0 To 10 : AddItem(*w,-1,"Tree_"+Str(i), -1, Bool(i=1 Or i=3 Or i=5 Or i=7 Or i=9)) : Next
+                  Case 28 : *w = Panel(30,20,160,30) : For i=0 To 10 : AddItem(*w,-1,"Panel_"+Str(i)) : Next : CloseList()
+                  Case 29 : *w = Splitter(30,20,160,30, Button(0,0,0,0,"1"), Button(0,0,0,0,"2"))
                 EndSelect
                 
                 ;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                 ;                     Select GetState( *combo )
-                ;                       Case 30 : MDI(30,10,150,70,0,0)
-                ;                       Case 31 : InitScintilla() :Scintilla(30,10,150,70,0)
-                ;                       Case 32 : Shortcut(30,10,150,70,0)
-                ;                       Case 33 : Canvas(30,10,150,70) 
+                ;                       Case 30 : MDI(30,10,160,70,0,0)
+                ;                       Case 31 : InitScintilla() :Scintilla(30,10,160,70,0)
+                ;                       Case 32 : Shortcut(30,10,160,70,0)
+                ;                       Case 33 : Canvas(30,10,160,70) 
                 ;                     EndSelect
                 ;                   CompilerElse
                 ;                     Select GetState( *combo )
-                ;                       Case 30 : InitScintilla() :Scintilla(30,10,150,70,0)
-                ;                       Case 31 : Shortcut(30,10,150,70,0)
-                ;                       Case 32 : Canvas(30,10,150,70) 
+                ;                       Case 30 : InitScintilla() :Scintilla(30,10,160,70,0)
+                ;                       Case 31 : Shortcut(30,10,160,70,0)
+                ;                       Case 32 : Canvas(30,10,160,70) 
                 ;                     EndSelect
                 ;                   CompilerEndIf
                 
-                Resize(*w,30,10,150,70)
+                Resize(*w,30,10,160,70)
                 SetParent(*w, ParentID)
                 
             EndSelect
@@ -104,16 +104,16 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; Create desktop for the widgets
   Open(10, 0, 0, 833, 346)
-  *d_0 = Button(30,90,150,30,"Button >>(Desktop)") 
+  *d_0 = Button(30,90,160,30,"Button >>(Desktop)") 
   
-  *window_1 = Window(202, 0, 630, 319, "demo set  new parent", Flags )
+  *window_1 = Form(202, 0, 630, 319, "demo set  new parent", Flags )
   
-  *w_0 = Button(30,90,150,30,"Button >>(Window)")
-  *panel=Panel(10,150,200,160) : AddItem(*panel,-1,"Panel") : *p_0=Button(30,90,150,30,"Button >>(Panel (0))") : AddItem(*panel,-1,"Second") : *p_1=Button(35,90,150,30,"Button >>(Panel (1))") : AddItem(*panel,-1,"Third") : *p_2=Button(40,90,150,30,"Button >>(Panel (2))") : CloseList()
-  *container = Container(215,150,200,160,#PB_Container_Flat) : *c_0=Button(30,90,150,30,"Button >>(Container)") : CloseList() ; Container
-  *scrollarea = ScrollArea(420,150,200,160,200,160,10,#PB_ScrollArea_Flat) : *s_0=Button(30,90,150,30,"Button >>(ScrollArea)") : CloseList()
+  *w_0 = Button(30,90,160,30,"Button >>(Window)")
+  *panel=Panel(10,150,200,160) : AddItem(*panel,-1,"Panel") : *p_0=Button(30,90,160,30,"Button >>(Panel (0))") : AddItem(*panel,-1,"Second") : *p_1=Button(35,90,160,30,"Button >>(Panel (1))") : AddItem(*panel,-1,"Third") : *p_2=Button(40,90,160,30,"Button >>(Panel (2))") : CloseList()
+  *container = Container(215,150,200,160,#PB_Container_Flat) : *c_0=Button(30,90,160,30,"Button >>(Container)") : CloseList() ; Container
+  *scrollarea = ScrollArea(420,150,200,160,200,160,10,#PB_ScrollArea_Flat) : *s_0=Button(30,90,160,30,"Button >>(ScrollArea)") : CloseList()
   
-  *b_0 = Button(450,90,150,30,"Button >>(Back)") 
+  *b_0 = Button(450,90,160,30,"Button >>(Back)") 
   
   Bind(@Widgets_CallBack(), Root())
   ;ReDraw(Root())
@@ -123,10 +123,10 @@ CompilerIf #PB_Compiler_IsMainFile
   X = WindowX( 10 )+5+WindowWidth( 10 )
   Y = WindowY( 10 )
   *window_2 = Open(20, X, Y, 200, 346+22, "old parent", Flags, WindowID(GetRootWindow(*window_1)))
-  *w = Button(30,10,150,70,"Button") 
+  *w = Button(30,10,160,70,"Button") 
   
   
-  *combo = ComboBox( 30,90,150,30 ) 
+  *combo = ComboBox( 30,90,160,30 ) 
   Bind(@Widgets_CallBack(), *combo)
   
   AddItem( *combo, -1, "Selected  to move")

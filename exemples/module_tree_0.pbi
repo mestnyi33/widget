@@ -5,7 +5,7 @@ UseModule Widget
 Procedure Gadget(Window, X,Y,Width,Height, Flag=0)
   Open(0, X,Y,Width,Height,"")
   Root() = Tree(0, 0, Width,Height, Flag)
-  PostEvent(#PB_Event_Gadget, 0, RootGadget(), #PB_EventType_Repaint)
+  PostEvent(#PB_Event_Gadget, 0, _Gadget(), #PB_EventType_Repaint)
   ProcedureReturn Root()\Canvas
 EndProcedure
 #PB_Flag_AlwaysSelection=40

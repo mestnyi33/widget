@@ -279,7 +279,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
           SetActiveGadget(Canvas)
         EndIf
         
-        *This  = at(0, MouseX, MouseY)
+        *This  = from(0, MouseX, MouseY)
         If *This
           Repaint | CallBack(*This, EventType, MouseX, MouseY)
         EndIf

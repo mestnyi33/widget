@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Widget
   
-  Global.i gEvent, gQuit, x=10,y=10
+  Global.i Canvas_0, gEvent, gQuit, x=10,y=10
   Global NewMap Widgets.i()
   
   UsePNGImageDecoder()
@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
           SetActiveGadget(Canvas)
         EndIf
         
-        *This  = at(*Window, MouseX, MouseY)
+        *This  = from(*Window, MouseX, MouseY)
         If *This
           Repaint | CallBack(*This, EventType, MouseX, MouseY)
         EndIf
@@ -107,8 +107,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_0_Resize()
-    ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
-    ResizeGadget(10, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
+    ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
+    ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
   
   Procedure.i _SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
@@ -172,7 +172,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
        
        Define *w.Widget_s = Open(0, 10, 10, 580, 600-50, "")
-      Define canvas = *w\Canvas\Gadget
+      Canvas_0 = _Gadget()
       
       ;Widgets(Str(50)) = Window(50, 50, 280, 200, "Demo dock widgets", #PB_Flag_AnchorsGadget)
       Widgets(Str(0)) = Container(50, 50, 280, 200, #PB_Flag_AnchorsGadget);#PB_Flag_AutoSize)
@@ -191,7 +191,7 @@ CompilerIf #PB_Compiler_IsMainFile
       _SetAlignment(Widgets(Str(3)), #PB_Top|#PB_Bottom|#PB_Right)
       _SetAlignment(Widgets(Str(4)), #PB_Left|#PB_Bottom|#PB_Right)
       
-      BindGadgetEvent(canvas, @Canvas_CallBack())
+      BindGadgetEvent(Canvas_0, @Canvas_CallBack())
       ReDraw(Root())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
@@ -245,5 +245,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 48f----
+; Folding = -8f----
 ; EnableXP

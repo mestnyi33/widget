@@ -1,35 +1,44 @@
-﻿; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-;   IncludePath "/Users/as/Documents/GitHub/Widget/"
-; CompilerElse
-   IncludePath "../../"
-; CompilerEndIf
+﻿; ; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+; ;   IncludePath "/Users/as/Documents/GitHub/Widget/"
+; ; CompilerElse
+;    IncludePath "../../"
+; ; CompilerEndIf
+; 
+; XIncludeFile "module_macros.pbi"
+; XIncludeFile "module_constants.pbi"
+; XIncludeFile "module_structures.pbi"
+; XIncludeFile "module_bar.pbi"
+; XIncludeFile "module_text.pbi"
+; XIncludeFile "module_editor.pbi"
+; XIncludeFile "module_tree.pbi"
+IncludePath "../../"
+XIncludeFile "widgets.pbi"
 
-XIncludeFile "module_macros.pbi"
-XIncludeFile "module_constants.pbi"
-XIncludeFile "module_structures.pbi"
-XIncludeFile "module_scroll.pbi"
-XIncludeFile "module_text.pbi"
-XIncludeFile "module_editor.pbi"
-XIncludeFile "module_tree.pbi"
+UseModule Widget
+Procedure Gadget(Window, X,Y,Width,Height, Flag)
+  Open(Window, X,Y,Width,Height,"")
+  ProcedureReturn Tree(0, 0, Width,Height, Flag)
+EndProcedure
 
 LN=1500; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "treeGadget", #PB_Window_SystemMenu)
   TreeGadget(0, 10, 10, 250, 680)
-  tree::Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : *w=GetGadgetData(1)
+  ;Tree(1, 270, 10, 250, 680, #PB_Flag_FullSelection) : *w=GetGadgetData(1)
+  *w=Gadget(0, 270, 10, 250, 680, #PB_Flag_FullSelection)
   
   Define time = ElapsedMilliseconds()
   For a = 0 To LN
-    tree::AddItem (*w, -1, "Item "+Str(a), -1);,Random(5)+1)
+    AddItem (*w, -1, "Item "+Str(a), -1);,Random(5)+1)
     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
     EndIf
     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
       Debug a
     EndIf
   Next
-  Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + tree::CountItems(*w)
+  Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
   
-  Text::Redraw(*w)
+  Redraw(*w)
   
   ; HideGadget(0, 1)
   Define time = ElapsedMilliseconds()
@@ -47,6 +56,6 @@ If OpenWindow(0, 100, 50, 530, 700, "treeGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.70 beta 1 (MacOS X - x64)
-; Folding = -
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = --
 ; EnableXP

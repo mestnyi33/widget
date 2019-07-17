@@ -30,7 +30,6 @@ Global SourceText,
 
 
 Procedure Events(EventGadget, EventType, EventItem, EventData)
-  Protected i, Text$, Files$, Count
   
   ; DragStart event on the source s, initiate a drag & drop
   ;
@@ -76,7 +75,7 @@ Procedure Events(EventGadget, EventType, EventItem, EventData)
       Select EventGadget
           
         Case TargetText
-          AddItem(TargetText, -1, DropText())
+          settext(TargetText, DropText())
           
         Case TargetImage
           If DropImage(#ImageTarget)
@@ -107,7 +106,6 @@ If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_
   
   ; Create some images for the image demonstration
   ; 
-  Define i, Event
   CreateImage(#ImageSource, 136, 136)
   If StartDrawing(ImageOutput(#ImageSource))
     Box(0, 0, 136, 136, $FFFFFF)
@@ -145,7 +143,7 @@ If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_
   
   ; Create the target s
   ;
-  TargetText = ListIcon(10, 160, 140, 140, "Drop Text here", 130)
+  TargetText = Window(10, 160, 140, 140, "Drop Text here")
   TargetImage = Image(160, 160, 140, 140, (#ImageTarget), #PB_Image_Border) 
   TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
   TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)

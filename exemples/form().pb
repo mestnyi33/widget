@@ -631,7 +631,6 @@ DeclareModule Widget
     at.b ; - editor
     Buttons.i 
     *Delta.Mouse_S
-    Direction.i
   EndStructure
   
   ;- - Keyboard_S
@@ -1387,7 +1386,7 @@ DeclareModule Widget
   Declare.i AddColumn(*This.Widget_S, Position.i, Title.s, Width.i)
   Declare.i SetFlag(*This.Widget_S, Flag.i)
   Declare.i SetItemImage(*This.Widget_S, Item.i, Image.i)
-  Declare.i ReDraw(*This.Widget_S=#Null)
+  Declare.i ReDraw(*This.Widget_S)
   
   Declare.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
   Declare.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
@@ -1460,7 +1459,6 @@ Module Widget
     \Frame[2] = $C8DC9338; $80DC9338
   EndWith
   
-  ;- MACOS
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     Global _drawing_mode_
     
@@ -1540,39 +1538,19 @@ Module Widget
       CocoaMessage(0, CocoaMessage(0, 0, "NSBezierPath bezierPathWithRect:@", @Rect), "setClip")
       ;CocoaMessage(0, CocoaMessage(0, 0, "NSBezierPath bezierPathWithRect:@", @Rect), "addClip")
     EndProcedure
-    
-    Procedure OSX_NSColorToRGBA(NSColor)
-      Protected.cgfloat red, green, blue, alpha
-      Protected nscolorspace, rgba
-      nscolorspace = CocoaMessage(0, nscolor, "colorUsingColorSpaceName:$", @"NSCalibratedRGBColorSpace")
-      If nscolorspace
-        CocoaMessage(@red, nscolorspace, "redComponent")
-        CocoaMessage(@green, nscolorspace, "greenComponent")
-        CocoaMessage(@blue, nscolorspace, "blueComponent")
-        CocoaMessage(@alpha, nscolorspace, "alphaComponent")
-        rgba = RGBA(red * 255.9, green * 255.9, blue * 255.9, alpha * 255.)
-        ProcedureReturn rgba
-      EndIf
-    EndProcedure
-    
-    Procedure OSX_NSColorToRGB(NSColor)
-      Protected.cgfloat red, green, blue
-      Protected r, g, b, a
-      Protected nscolorspace, rgb
-      nscolorspace = CocoaMessage(0, nscolor, "colorUsingColorSpaceName:$", @"NSCalibratedRGBColorSpace")
-      If nscolorspace
-        CocoaMessage(@red, nscolorspace, "redComponent")
-        CocoaMessage(@green, nscolorspace, "greenComponent")
-        CocoaMessage(@blue, nscolorspace, "blueComponent")
-        rgb = RGB(red * 255.0, green * 255.0, blue * 255.0)
-        ProcedureReturn rgb
-      EndIf
-    EndProcedure
-  
   CompilerEndIf
   
-  ;-
-  Macro _set_last_parameters_(_this_, _type_, _flag_)
+  Macro SetAutoSize(_this_, _state_)
+    If Bool(_state_) : x=0 : y=0
+      _this_\Align = AllocateStructure(Align_S)
+      _this_\Align\Left = 1
+      _this_\Align\Top = 1
+      _this_\Align\Right = 1
+      _this_\Align\Bottom = 1
+    EndIf
+  EndMacro
+  
+  Macro _set_last_parent_(_this_, _type_)
     _this_\Type = _type_
     _this_\Class = #PB_Compiler_Procedure
     
@@ -1589,32 +1567,8 @@ Module Widget
           _this_\OptionGroup = *Value\OpenedList()
         EndIf
       EndIf
-      
       SetParent(_this_, *Value\OpenedList(), *Value\OpenedList()\o_i)
     EndIf
-    
-    ; _set_auto_size_
-    If Bool(_flag_ & #PB_Flag_AutoSize=#PB_Flag_AutoSize) : x=0 : y=0
-      _this_\Align = AllocateStructure(Align_S)
-      _this_\Align\Left = 1
-      _this_\Align\Top = 1
-      _this_\Align\Right = 1
-      _this_\Align\Bottom = 1
-    EndIf
-    
-    If Bool(_flag_ & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget)
-        
-        AddAnchors(_this_)
-        
-      EndIf
-  EndMacro
-  
-  Macro Set_Cursor(_this_, _cursor_)
-    SetGadgetAttribute(_this_\Root\Canvas, #PB_Canvas_Cursor, _cursor_)
-  EndMacro
-  
-  Macro Get_Cursor(_this_)
-    GetGadgetAttribute(_this_\Root\Canvas, #PB_Canvas_Cursor)
   EndMacro
   
   Macro ThumbLength(_this_)
@@ -1645,7 +1599,18 @@ Module Widget
     
     ProcedureReturn State
   EndProcedure
- 
+  
+  Macro AddChildren(_parent_, _this_)
+    LastElement(_parent_\Childrens()) 
+    _this_\index = _this_\Root\CountItems 
+    _this_\adress = AddElement(_parent_\Childrens())
+    If _this_\adress
+      _parent_\Childrens() = _this_ 
+      _this_\Root\CountItems + 1 
+      _parent_\CountItems + 1 
+    EndIf
+  EndMacro
+  
   ;-
   ;- Anchors
   Macro Draw_Anchors(_this_)
@@ -1994,7 +1959,17 @@ Module Widget
     EndDataSection
   EndProcedure
   
- 
+  Procedure Set_Anchors(*This.Widget_S, State)
+    With *This
+      If State
+        SetClass(*This, "")
+        
+        AddAnchors(*This)
+        
+      EndIf
+    EndWith
+  EndProcedure
+  
   Procedure.i GetAnchors(*This.Widget_S, index.i=-1)
     ProcedureReturn Bool(*This\anchor[(Bool(index.i=-1) * #Anchor_moved) + (Bool(index.i>0) * index)]) * *This
   EndProcedure
@@ -6800,12 +6775,8 @@ Module Widget
     ProcedureReturn *This
   EndProcedure
   
-  Procedure.i ReDraw(*This.Widget_S=#Null)
+  Procedure.i ReDraw(*This.Widget_S)
     With *This     
-      If Not  *This
-        *This = Root()
-      EndIf
-      
       Init_Event(*This)
       
       If StartDrawing(CanvasOutput(\Root\Canvas))
@@ -7387,10 +7358,6 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i IsContainer(*This.Widget_S)
-    ProcedureReturn *This\Container
-  EndProcedure
-  
   
   ;- ADD
   Procedure.i AddItem(*This.Widget_S, Item.i, Text.s, Image.i=-1, Flag.i=0)
@@ -7480,6 +7447,10 @@ Module Widget
   
   
   ;- GET
+  Procedure.i IsContainer(*This.Widget_S)
+    ProcedureReturn *This\Container
+  EndProcedure
+  
   Procedure.i GetAdress(*This.Widget_S)
     ProcedureReturn *This\Adress
   EndProcedure
@@ -7769,27 +7740,116 @@ Module Widget
     With *This
       Result.s = \Class
       
-;       If Class.s
-         \Class = Class
-;       Else
-;         \Class = Class(\Type)
-;       EndIf
+      If Class.s
+        \Class = Class
+      Else
+        \Class = Class(\Type)
+      EndIf
       
     EndWith
     
     ProcedureReturn Result.s
   EndProcedure
   
+  Procedure.i CloseList()
+    If LastElement(*Value\OpenedList())
+      If *Value\OpenedList()\Type = #PB_GadgetType_Popup
+        ReDraw(*Value\OpenedList())
+      EndIf
+      
+      DeleteElement(*Value\OpenedList())
+    EndIf
+  EndProcedure
+  
+  Procedure.i OpenList(*This.Widget_S, Item.i=0, Type=-5)
+    With *This
+      Protected Window = *This
+      Protected Canvas = Item
+      
+      If IsWindow(Window)
+        ;         If Not Bool(IsGadget(Canvas) And GadgetType(Canvas) = #PB_GadgetType_Canvas)
+        ;           Canvas = CanvasGadget(#PB_Any, 0,0, WindowWidth(Window, #PB_Window_InnerCoordinate), WindowHeight(Window, #PB_Window_InnerCoordinate), #PB_Canvas_Keyboard)
+        ;           BindGadgetEvent(Canvas, @Canvas_CallBack())
+        ;         EndIf
+        
+        If Not Bool(IsGadget(Canvas) And GadgetType(Canvas) = #PB_GadgetType_Canvas)
+          *This = Open(Window, 0,0, WindowWidth(Window, #PB_Window_InnerCoordinate), WindowHeight(Window, #PB_Window_InnerCoordinate))
+        Else
+          If Type = #PB_GadgetType_Window
+            *This = Form(0, 0, GadgetWidth(Canvas)-2, GadgetHeight(Canvas)-2-25, "")
+          Else
+            *This = AllocateStructure(Widget_S)
+            \x =- 1
+            \y =- 1
+            \Type = #PB_GadgetType_Root
+            \Container = #PB_GadgetType_Root
+            \color\alpha = 255
+            
+            Resize(*This, 0, 0, GadgetWidth(Canvas), GadgetHeight(Canvas))
+          EndIf
+          
+          
+          LastElement(*Value\OpenedList())
+          If AddElement(*Value\OpenedList())
+            *Value\OpenedList() = *This
+          EndIf
+          
+          \Root = *This
+          Root() = \Root
+          Root()\CanvasWindow = Window
+          Root()\Canvas = Canvas
+          Root()\adress = @*Value\OpenedList()
+          
+          SetGadgetData(Canvas, *This)
+        EndIf
+        
+        ProcedureReturn *This
+        
+      ElseIf *This > 0
+        
+        If \Type = #PB_GadgetType_Window
+          \Window = *This
+        EndIf
+        
+        LastElement(*Value\OpenedList())
+        If AddElement(*Value\OpenedList())
+          *Value\OpenedList() = *This 
+          *Value\OpenedList()\o_i = Item
+        EndIf
+      EndIf
+      
+      
+    EndWith
+    
+    ProcedureReturn *This\Container
+  EndProcedure
+  
+  Procedure Make_CountType(*This.Widget_S)
+    
+    With *This
+      Protected Type = \Window
+      
+      If \Window
+        \Type_Index = \Window\Count(Hex(Type)+"_"+Hex(\Type))
+        
+        \Window\Count(Hex(Type)+"_"+Hex(\Type)) + 1
+      EndIf
+      ;\Parent\Count(Hex(\Type)) + 1
+    EndWith
+    
+  EndProcedure
+  
+  
   Procedure.i SetParent(*This.Widget_S, *Parent.Widget_S, ParentItem.i=-1)
     Protected x.i,y.i, *LastParent.Widget_S
     
     With *This
       If *This > 0 
-        If ParentItem =- 1
+        If ParentItem.i=-1
           ParentItem = *Parent\index[2]
         EndIf
         
-        If *Parent <> \Parent Or \ParentItem <> ParentItem
+        If \Parent <> *Parent Or \ParentItem <> ParentItem
           x = \x[3]
           y = \y[3]
           
@@ -7811,6 +7871,7 @@ Module Widget
           
           \Level = *Parent\Level + Bool(*Parent <> \Root)
           
+          
           If \Scroll
             If \Scroll\v
               \Scroll\v\Window = \Window
@@ -7829,26 +7890,8 @@ Module Widget
             y-\Parent\Scroll\v\Page\Pos
           EndIf
           
-          ; Add new children 
-          LastElement(\Parent\Childrens()) 
-          \index = \Root\CountItems 
-          \adress = AddElement(\Parent\Childrens())
-          
-          If \adress
-            \Parent\Childrens() = *This 
-            \Root\CountItems + 1 
-            \Parent\CountItems + 1 
-          EndIf
-          
-          ; Make count type
-          Protected Type = \Window
-          If \Window
-            \Type_Index = \Window\Count(Hex(Type)+"_"+Hex(\Type))
-            \Window\Count(Hex(Type)+"_"+Hex(\Type)) + 1
-          EndIf
-          ;\Parent\Count(Hex(\Type)) + 1
-          
-          ;
+          AddChildren(\Parent, *This)
+          Make_CountType(*This)
           Resize(*This, x, y, #PB_Ignore, #PB_Ignore)
           
           If *LastParent
@@ -7871,13 +7914,10 @@ Module Widget
   Procedure.i SetPosition(*This.Widget_S, Position.i, *Widget_2 =- 1) ; Ok SetStacking()
     
     With *This
-      If IsRoot(*This)
-        ProcedureReturn
-      EndIf
-      
-      If \Parent
+      If Not IsRoot(*This) And \Parent
         ;
-        If (\Type = #PB_GadgetType_ScrollBar And \Parent\Type = #PB_GadgetType_ScrollArea) Or
+        If (\Type = #PB_GadgetType_ScrollBar And 
+            \Parent\Type = #PB_GadgetType_ScrollArea) Or
            \Parent\Type = #PB_GadgetType_Splitter
           *This = \Parent
         EndIf
@@ -8011,7 +8051,7 @@ Module Widget
     
     With *This
       If Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget
-        AddAnchors(*This)
+        Set_Anchors(*This, 1)
         Resize_Anchors(*This)
       EndIf
     EndWith
@@ -8794,6 +8834,16 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
+  
+  Macro Set_Cursor(_this_, _cursor_)
+    SetGadgetAttribute(_this_\Root\Canvas, #PB_Canvas_Cursor, _cursor_)
+  EndMacro
+  
+  Macro Get_Cursor(_this_)
+    GetGadgetAttribute(_this_\Root\Canvas, #PB_Canvas_Cursor)
+  EndMacro
+  
+  
   ;-
   ;- CHANGE
   Procedure.i Resize(*This.Widget_S, X.i,Y.i,Width.i,Height.i)
@@ -8947,17 +8997,17 @@ Module Widget
         
         ; set clip coordinate
         If Not IsRoot(*This) And \Parent 
-          Protected clip_v, clip_h, clip_x, clip_y, clip_width, clip_height
+          Protected v,h, clip_x, clip_y, clip_width, clip_height
           
           If \Parent\Scroll 
-            If \Parent\Scroll\v : clip_v = Bool(\Parent\width=\Parent\clip\width And Not \Parent\Scroll\v\Hide And \Parent\Scroll\v\type = #PB_GadgetType_ScrollBar)*\Parent\Scroll\v\width : EndIf
-            If \Parent\Scroll\h : clip_h = Bool(\Parent\height=\Parent\clip\height And Not \Parent\Scroll\h\Hide And \Parent\Scroll\h\type = #PB_GadgetType_ScrollBar)*\Parent\Scroll\h\height : EndIf
+            If \Parent\Scroll\v : v = Bool(\Parent\width=\Parent\clip\width And Not \Parent\Scroll\v\Hide And \Parent\Scroll\v\type = #PB_GadgetType_ScrollBar)*(\Parent\Scroll\v\width) : EndIf
+            If \Parent\Scroll\h : h = Bool(\Parent\height=\Parent\clip\height And Not \Parent\Scroll\h\Hide And \Parent\Scroll\h\type = #PB_GadgetType_ScrollBar)*(\Parent\Scroll\h\height) : EndIf
           EndIf
           
           clip_x = \Parent\clip\x+Bool(\Parent\clip\x<\Parent\x+\Parent\bs)*\Parent\bs
           clip_y = \Parent\clip\y+Bool(\Parent\clip\y<\Parent\y+\Parent\bs)*(\Parent\bs+\Parent\TabHeight) 
-          clip_width = ((\Parent\clip\x+\Parent\clip\width)-Bool((\Parent\clip\x+\Parent\clip\width)>(\Parent\x[2]+\Parent\width[2]))*\Parent\bs)-clip_v 
-          clip_height = ((\Parent\clip\y+\Parent\clip\height)-Bool((\Parent\clip\y+\Parent\clip\height)>(\Parent\y[2]+\Parent\height[2]))*\Parent\bs)-clip_h 
+          clip_width = ((\Parent\clip\x+\Parent\clip\width)-Bool((\Parent\clip\x+\Parent\clip\width)>(\Parent\x[2]+\Parent\width[2]))*\Parent\bs)-v 
+          clip_height = ((\Parent\clip\y+\Parent\clip\height)-Bool((\Parent\clip\y+\Parent\clip\height)>(\Parent\y[2]+\Parent\height[2]))*\Parent\bs)-h 
         EndIf
         
         If clip_x And \x < clip_x : \clip\x = clip_x : Else : \clip\x = \x : EndIf
@@ -9584,62 +9634,47 @@ Module Widget
   
   ;- 
   Procedure.i From(*This.Widget_S, MouseX.i, MouseY.i)
-    Protected *Result.Widget_S, Change.b, X.i,Y.i,Width.i,Height.i, ParentItem.i
-    Static *r.Widget_S
+    Protected *Result.Widget_S, X.i,Y.i,Width.i,Height.i, ParentItem.i
     
-    If Root()\Mouse\X <> MouseX
-      Root()\Mouse\X = MouseX
-      Change = 1
+    Root()\Mouse\X = MouseX
+    Root()\Mouse\Y = MouseY
+    
+    If Not *This
+      *This = GetGadgetData(EventGadget())
     EndIf
     
-    If Root()\Mouse\Y <> MouseY
-      Root()\Mouse\Y = MouseY
-      Change = 1
-    EndIf
-    
-   If Not *This
-      *This = Root() ; GetGadgetData(EventGadget())
-    EndIf
-    
-    If Change 
-      With *This
-        If *This And ListSize(\Childrens()) ; \CountItems ; Not Root()\Mouse\Buttons
-          ParentItem = Bool(\Type = #PB_GadgetType_Panel) * \index[2]
+    With *This
+      If *This And ListSize(\Childrens()) ; \CountItems ; Not Root()\Mouse\Buttons
+        ParentItem = Bool(\Type = #PB_GadgetType_Panel) * \index[2]
+        
+        PushListPosition(\Childrens())    ;
+        LastElement(\Childrens())         ; Что бы начать с последнего элемента
+        Repeat                            ; Перебираем с низу верх
+          X = \Childrens()\clip\X
+          Y = \Childrens()\clip\Y
+          Width = X+\Childrens()\clip\Width
+          Height = Y+\Childrens()\clip\Height
           
-          PushListPosition(\Childrens())    ;
-          LastElement(\Childrens())         ; Что бы начать с последнего элемента
-          Repeat                            ; Перебираем с низу верх
-            X = \Childrens()\clip\X
-            Y = \Childrens()\clip\Y
-            Width = X+\Childrens()\clip\Width
-            Height = Y+\Childrens()\clip\Height
+          If Not \Childrens()\Hide And \Childrens()\ParentItem = ParentItem And 
+             (MouseX >=  X And MouseX < Width And MouseY >=  Y And MouseY < Height)
             
-            If Not \Childrens()\Hide And \Childrens()\ParentItem = ParentItem And 
-               (MouseX >=  X And MouseX < Width And MouseY >=  Y And MouseY < Height)
+            If ListSize(\Childrens()\Childrens())
+              *Result = From(\Childrens(), MouseX, MouseY)
               
-              If ListSize(\Childrens()\Childrens())
-                Root()\Mouse\X = 0
-                Root()\Mouse\Y = 0
-                *Result = From(\Childrens(), MouseX, MouseY)
-                
-                If Not *Result
-                  *Result = \Childrens()
-                EndIf
-              Else
+              If Not *Result
                 *Result = \Childrens()
               EndIf
-              
-              Break
+            Else
+              *Result = \Childrens()
             EndIf
             
-          Until PreviousElement(\Childrens()) = #False 
-          PopListPosition(\Childrens())
-        EndIf
-      EndWith
-      *r = *Result
-    Else
-      *Result = *r
-    EndIf
+            Break
+          EndIf
+          
+        Until PreviousElement(\Childrens()) = #False 
+        PopListPosition(\Childrens())
+      EndIf
+    EndWith
     
     If *Result
       With *Result 
@@ -9722,7 +9757,7 @@ Module Widget
         
       EndWith
     EndIf
-  
+    
     ProcedureReturn *Result
   EndProcedure
   
@@ -10132,13 +10167,11 @@ Module Widget
     ; ProcedureReturn Editor_CallBack(*This, EventType.i)
     
     With *This
-      If Not Bool(*This And *This\Root)
-        ProcedureReturn
-      EndIf
-      
-      Window = \Window 
+      If *This 
+        Window = \Window 
         Parent = \Parent 
         Canvas = \Root\Canvas
+      EndIf
       
       If Not MouseScreenX
         MouseScreenX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
@@ -10284,7 +10317,7 @@ Module Widget
           
       EndSelect
       
-      EndWith
+    EndWith
     
     ProcedureReturn repaint
   EndProcedure
@@ -10478,7 +10511,9 @@ Module Widget
     EndIf
     
     *This = Bar(#PB_GadgetType_ScrollBar, Size, Min, Max, PageLength, Flag|Vertical, Radius)
-    _set_last_parameters_(*This, #PB_GadgetType_ScrollBar, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_ScrollBar) 
+    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -10490,7 +10525,9 @@ Module Widget
     Protected Vertical = Bool(Flag&#PB_ProgressBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
     
     *This = Bar(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Smooth|Vertical|#PB_Bar_NoButtons, 0)
-    _set_last_parameters_(*This, #PB_GadgetType_ProgressBar, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_ProgressBar) 
+    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -10502,7 +10539,9 @@ Module Widget
     Protected Vertical = Bool(Flag&#PB_TrackBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
     
     *This = Bar(#PB_GadgetType_TrackBar, 0, Min, Max, 0, Ticks|Vertical|#PB_Bar_NoButtons, 0)
-    _set_last_parameters_(*This, #PB_GadgetType_TrackBar, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_TrackBar)
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -10514,9 +10553,9 @@ Module Widget
     Protected *Bar.Widget_S, *This.Widget_S, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
     
     *This = Bar(0, 0, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
-    *This\Class = #PB_Compiler_Procedure
-    
-    _set_last_parameters_(*This, #PB_GadgetType_Splitter, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_Splitter) 
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
     Resize(*This, X,Y,Width,Height)
     
     With *This
@@ -10549,7 +10588,7 @@ Module Widget
   
   Procedure.i Spin(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
     Protected *This.Widget_S = AllocateStructure(Widget_S)
-    _set_last_parameters_(*This, #PB_GadgetType_Spin, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_Spin) 
     
     ;Flag | Bool(Not Flag&#PB_Vertical) * (#PB_Bar_Inverted)
     
@@ -10608,6 +10647,8 @@ Module Widget
       
     EndWith
     
+    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
+    SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
     Resize(*This, X,Y,Width,Height)
     
     ProcedureReturn *This
@@ -10615,7 +10656,7 @@ Module Widget
   
   Procedure.i Image(X.i,Y.i,Width.i,Height.i, Image.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Image, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_Image) 
     
     With *This
       \X =- 1
@@ -10633,6 +10674,8 @@ Module Widget
       \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
       \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10641,7 +10684,7 @@ Module Widget
   
   Procedure.i Button(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, Image.i=-1)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Button, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_Button) 
     
     With *This
       \X =- 1
@@ -10661,6 +10704,10 @@ Module Widget
       
       SetText(*This, Text.s)
       Set_Image(*This, Image)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
+      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10669,7 +10716,7 @@ Module Widget
   
   Procedure.i HyperLink(X.i,Y.i,Width.i,Height.i, Text.s, Color.i, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_HyperLink, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_HyperLink) 
     
     With *This
       \X =- 1
@@ -10695,6 +10742,10 @@ Module Widget
       \Flag\Lines = Bool(Flag&#PB_HyperLink_Underline=#PB_HyperLink_Underline)
       
       SetText(*This, Text.s)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
+      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10703,7 +10754,7 @@ Module Widget
   
   Procedure.i Frame(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Frame, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_Frame)
     
     With *This
       \X =- 1
@@ -10723,6 +10774,8 @@ Module Widget
       \Text\String.s = Text.s
       \Text\Change = 1
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10731,7 +10784,7 @@ Module Widget
   
   Procedure.i Text(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Text, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_Text)
     
     With *This
       \X =- 1
@@ -10758,6 +10811,8 @@ Module Widget
       EndIf
       
       SetText(*This, Text.s)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10766,7 +10821,7 @@ Module Widget
   
   Procedure.i ComboBox(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_ComboBox, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_ComboBox)
     
     With *This
       \X =- 1
@@ -10813,6 +10868,9 @@ Module Widget
       Tree(0,0,0,0, #PB_Flag_AutoSize|#PB_Flag_NoLines|#PB_Flag_NoButtons) : \Popup\Childrens()\Scroll\h\height=0
       CloseList()
       
+      
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10821,7 +10879,7 @@ Module Widget
   
   Procedure.i CheckBox(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_CheckBox, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_CheckBox) 
     
     With *This
       \X =- 1
@@ -10846,6 +10904,8 @@ Module Widget
       
       
       SetText(*This, Text.s)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10854,7 +10914,7 @@ Module Widget
   
   Procedure.i Option(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Option, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_Option) 
     
     With *This
       \X =- 1
@@ -10878,6 +10938,8 @@ Module Widget
       
       
       SetText(*This, Text.s)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10886,7 +10948,7 @@ Module Widget
   
   Procedure.i String(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_String, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_String)
     
     With *This
       \X =- 1
@@ -10923,6 +10985,8 @@ Module Widget
       
       
       SetText(*This, Text.s)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10932,7 +10996,7 @@ Module Widget
   Procedure.i IPAddress(X.i,Y.i,Width.i,Height.i)
     Protected Text.s="0.0.0.0", Flag.i=#PB_Text_Center
     Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_IPAddress, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_IPAddress)
     
     With *This
       \X =- 1
@@ -10969,6 +11033,8 @@ Module Widget
       
       
       SetText(*This, Text.s)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10977,7 +11043,7 @@ Module Widget
   
   Procedure.i Editor(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Editor, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_Editor)
     
     With *This
       \X =- 1
@@ -11058,6 +11124,8 @@ Module Widget
       
       
       SetText(*This, "")
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -11068,7 +11136,7 @@ Module Widget
   ;- Lists
   Procedure.i Tree(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Tree, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_Tree)
     
     With *This
       \X =- 1
@@ -11103,6 +11171,8 @@ Module Widget
       \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
       \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -11111,7 +11181,7 @@ Module Widget
   
   Procedure.i ListView(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_ListView, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_ListView)
     
     With *This
       \X =- 1
@@ -11151,6 +11221,8 @@ Module Widget
       \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
       \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -11159,7 +11231,7 @@ Module Widget
   
   Procedure.i ListIcon(X.i,Y.i,Width.i,Height.i, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_ListIcon, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_ListIcon)
     
     With *This
       \X =- 1
@@ -11195,6 +11267,8 @@ Module Widget
       \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
       \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       
       AddColumn(*This, 0, FirstColumnTitle, FirstColumnWidth)
@@ -11205,7 +11279,7 @@ Module Widget
   
   Procedure.i ExplorerList(X.i,Y.i,Width.i,Height.i, Directory.s, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_ListIcon, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_ListIcon)
     
     With *This
       \X =- 1
@@ -11241,6 +11315,8 @@ Module Widget
       \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
       \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       
       AddColumn(*This, 0, "Name", 200)
@@ -11285,7 +11361,7 @@ Module Widget
   
   Procedure.i Property(X.i,Y.i,Width.i,Height.i, SplitterPos.i = 80, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Property, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_Property)
     
     With *This
       \X =- 1
@@ -11333,6 +11409,8 @@ Module Widget
       \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
       \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -11343,7 +11421,7 @@ Module Widget
   ;- Containers
   Procedure.i Panel(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Panel, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_Panel)
     
     With *This
       \X =- 1
@@ -11381,6 +11459,10 @@ Module Widget
       ; Background image
       \Image[1] = AllocateStructure(Image_S)
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
+      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
     EndWith
@@ -11390,7 +11472,7 @@ Module Widget
   
   Procedure.i Container(X.i,Y.i,Width.i,Height.i, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_Container, Flag) 
+    _set_last_parent_(*This, #PB_GadgetType_Container) 
     
     With *This
       \X =- 1
@@ -11410,6 +11492,10 @@ Module Widget
       ; Background image
       \Image[1] = AllocateStructure(Image_S)
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
+      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
     EndWith
@@ -11419,7 +11505,7 @@ Module Widget
   
   Procedure.i ScrollArea(X.i,Y.i,Width.i,Height.i, ScrollAreaWidth.i, ScrollAreaHeight.i, ScrollStep.i=1, Flag.i=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parameters_(*This, #PB_GadgetType_ScrollArea, Flag)
+    _set_last_parent_(*This, #PB_GadgetType_ScrollArea)
     
     With *This
       \X =- 1
@@ -11441,6 +11527,10 @@ Module Widget
       ;       Resize(\Scroll\v, #PB_Ignore,#PB_Ignore,Size,#PB_Ignore)
       ;       Resize(\Scroll\h, #PB_Ignore,#PB_Ignore,#PB_Ignore,Size)
       
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
+      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
     EndWith
@@ -11451,15 +11541,9 @@ Module Widget
   Procedure.i Form(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget.Widget_S=0)
     Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
     
-    *This\Class = #PB_Compiler_Procedure
-    
     If *Widget 
       *This\Type = #PB_GadgetType_Window
       SetParent(*This, *Widget)
-      
-      If Bool(Flag & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget)
-        AddAnchors(*This)
-      EndIf
     Else ;If *Root
       If LastElement(*Value\OpenedList()) 
         ChangeCurrentElement(*Value\OpenedList(), Adress(Root()))
@@ -11467,7 +11551,7 @@ Module Widget
           DeleteElement(*Value\OpenedList())
         Wend
       EndIf
-      _set_last_parameters_(*This, #PB_GadgetType_Window, Flag) 
+      _set_last_parent_(*This, #PB_GadgetType_Window) 
     EndIf
     
     With *This
@@ -11513,6 +11597,10 @@ Module Widget
       \Image[1] = AllocateStructure(Image_S)
       
       SetText(*This, Text.s)
+      SetAutoSize(*This, Bool(Flag&#PB_Flag_AutoSize=#PB_Flag_AutoSize))
+      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
+      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
+      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
       Resize(*This, X.i,Y.i,Width.i,Height)
       OpenList(*This)
       SetActive(*This)
@@ -11521,87 +11609,11 @@ Module Widget
     ProcedureReturn *This
   EndProcedure
   
-  ;-
-  Procedure.i CloseList()
-    If LastElement(*Value\OpenedList())
-      If *Value\OpenedList()\Type = #PB_GadgetType_Popup
-        ReDraw(*Value\OpenedList())
-      EndIf
-      
-      DeleteElement(*Value\OpenedList())
-    EndIf
-  EndProcedure
-  
-  Procedure.i OpenList(*This.Widget_S, Item.i=0, Type=-5)
-    With *This
-      Protected Window = *This
-      Protected Canvas = Item
-      
-      If IsWindow(Window)
-        ;         If Not Bool(IsGadget(Canvas) And GadgetType(Canvas) = #PB_GadgetType_Canvas)
-        ;           Canvas = CanvasGadget(#PB_Any, 0,0, WindowWidth(Window, #PB_Window_InnerCoordinate), WindowHeight(Window, #PB_Window_InnerCoordinate), #PB_Canvas_Keyboard)
-        ;           BindGadgetEvent(Canvas, @Canvas_CallBack())
-        ;         EndIf
-        
-        If Not Bool(IsGadget(Canvas) And GadgetType(Canvas) = #PB_GadgetType_Canvas)
-          *This = Open(Window, 0,0, WindowWidth(Window, #PB_Window_InnerCoordinate), WindowHeight(Window, #PB_Window_InnerCoordinate))
-        Else
-          If Type = #PB_GadgetType_Window
-            *This = Form(0, 0, GadgetWidth(Canvas)-2, GadgetHeight(Canvas)-2-25, "")
-          Else
-            *This = AllocateStructure(Widget_S)
-            \x =- 1
-            \y =- 1
-            \Type = #PB_GadgetType_Root
-            \Container = #PB_GadgetType_Root
-            \color\alpha = 255
-            
-            \Text = AllocateStructure(Text_S) ; без него в окнах вилетает ошибка
-        
-            Resize(*This, 0, 0, GadgetWidth(Canvas), GadgetHeight(Canvas))
-          EndIf
-          
-          
-          LastElement(*Value\OpenedList())
-          If AddElement(*Value\OpenedList())
-            *Value\OpenedList() = *This
-          EndIf
-          
-          \Root = *This
-          Root() = \Root
-          Root()\CanvasWindow = Window
-          Root()\Canvas = Canvas
-          Root()\adress = @*Value\OpenedList()
-          
-          SetGadgetData(Canvas, *This)
-        EndIf
-        
-        ProcedureReturn *This
-        
-      ElseIf *This > 0
-        
-        If \Type = #PB_GadgetType_Window
-          \Window = *This
-        EndIf
-        
-        LastElement(*Value\OpenedList())
-        If AddElement(*Value\OpenedList())
-          *Value\OpenedList() = *This 
-          *Value\OpenedList()\o_i = Item
-        EndIf
-      EndIf
-      
-      
-    EndWith
-    
-    ProcedureReturn *This\Container
-  EndProcedure
-  
   Procedure.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
-    Protected w.i=-1, Canvas.i=-1, *This.Widget_S = AllocateStructure(Widget_S)
+    Protected w.i, Canvas.i, *This.Widget_S
     
     With *This
-      If Not IsWindow(Window) And Window >- 2
+      If Not IsWindow(Window)
         w = OpenWindow(Window, X,Y,Width,Height, Text.s, Flag, WindowID) 
         If Window =- 1 
           Window = w 
@@ -11610,11 +11622,9 @@ Module Widget
         Y = 0
       EndIf
       
-      If Window <>- 2 ; IsWindow(w)
-        Canvas = CanvasGadget(#PB_Any, X,Y,Width,Height, #PB_Canvas_Keyboard)
-        BindGadgetEvent(Canvas, @Canvas_CallBack())
-      EndIf
-    
+      Canvas = CanvasGadget(#PB_Any, X,Y,Width,Height, #PB_Canvas_Keyboard)
+      BindGadgetEvent(Canvas, @Canvas_CallBack())
+      *This = AllocateStructure(Widget_S)
       \X =- 1
       \Y =- 1
       \Root = *This
@@ -11660,9 +11670,6 @@ Module Widget
       Else
         \Type = #PB_GadgetType_Root
         \Container = #PB_GadgetType_Root
-        
-        \Text = AllocateStructure(Text_S) ; без него в окнах вилетает ошибка
-        
         \color\alpha = 255
       EndIf
       
@@ -11679,11 +11686,8 @@ Module Widget
       Root()\adress = @*Value\OpenedList()
       
       *Value\Last = Root()
-      
-      If IsGadget(Canvas)
-        SetGadgetData(Canvas, *This)
-        SetWindowData(Window, Canvas)
-      EndIf
+      SetGadgetData(Canvas, *This)
+      SetWindowData(Window, Canvas)
     EndWith
     
     ProcedureReturn *This
@@ -11784,181 +11788,185 @@ EndModule
 
 
 
-
-;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
+  
   UseModule Widget
+  EnableExplicit
   
-  ;
-  ; ------------------------------------------------------------
-  ;
-  ;   PureBasic - Drag & Drop
-  ;
-  ;    (c) Fantaisie Software
-  ;
-  ; ------------------------------------------------------------
-  ;
-  
-  #Window = 0
-  
-  Enumeration    ; Images
-    #ImageSource
-    #ImageTarget
-  EndEnumeration
-  
-  Global SourceText,
-         SourceImage,
-         SourceFiles,
-         SourcePrivate,
-         TargetText,
-         TargetImage,
-         TargetFiles,
-         TargetPrivate1,
-         TargetPrivate2
-  
-  
-  Procedure Events(EventGadget, EventType, EventItem, EventData)
-    Protected i, Text$, Files$, Count
+  Global *w.widget_S, *combo
+  Global *window_1.widget_S, *window_2.widget_S, *panel.widget_S, *container.widget_S, *scrollarea.widget_S
+  Global *w_0, *d_0, *b_0, *b_1, *p_0, *p_1, *p_2, *c_0, *s_0
     
-    ; DragStart event on the source s, initiate a drag & drop
-    ;
+  
+  Procedure Widgets_CallBack(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+    ; Debug ""+EventType() +" "+ WidgetEventType() +" "+ EventWidget() +" "+ EventGadget() +" "+ EventData()
+    ; Protected EventWidget = EventWidget()
+    
     Select EventType
-      Case #PB_EventType_DragStart
+      Case #PB_EventType_LeftClick, #PB_EventType_Change
         
-        Select EventGadget
+        Select EventWidget
+          Case *d_0 : SetParent(*w, GetRoot(EventWidget))
             
-          Case SourceText
-            Text$ = GetItemText(SourceText, GetState(SourceText))
-            DragText(Text$)
+          Case *w_0 : SetParent(*w, *window_1)
+          Case *p_0 : SetParent(*w, *panel, 0)
+          Case *p_1 : SetParent(*w, *panel, 1)
+          Case *p_2 : SetParent(*w, *panel, 2)
+          Case *c_0 : SetParent(*w, *container)
+          Case *s_0 : SetParent(*w, *scrollarea)
+          Case *b_0, *b_1 : SetParent(*w, *window_2)
             
-          Case SourceImage
-            DragImage((#ImageSource))
-            
-          Case SourceFiles
-            Files$ = ""       
-            For i = 0 To CountItems(SourceFiles)-1
-              If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
-                Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
-              EndIf
-            Next i 
-            If Files$ <> ""
-              DragFiles(Files$)
-            EndIf
-            
-            ; "Private" Drags only work within the program, everything else
-            ; also works with other applications (Explorer, Word, etc)
-            ;
-          Case SourcePrivate
-            If GetState(SourcePrivate) = 0
-              DragPrivate(1)
-            Else
-              DragPrivate(2)
-            EndIf
-            
+          Case *combo
+            Select EventType
+              Case #PB_EventType_Change  ; : Debug "Combo change " + GetState( *combo )
+                Define i, ParentID = GetParent( *w )
+                
+                ; If GetState( *combo ) >- 1
+                  Free(*w)  
+                ; EndIf
+                
+                Select GetState( *combo )
+                  Case 1  : *w = Button(30,20,150,30,"Button") 
+                  Case 2  : *w = String(30,20,150,30,"String") 
+                  Case 3  : *w = Text(30,20,150,30,"Text", #PB_Text_Border) 
+                  Case 4  : *w = Option(30,20,150,30,"Option") 
+                  Case 5  : *w = CheckBox(30,20,150,30,"CheckBox") 
+                  Case 6  : *w = ListView(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"ListView_"+Str(i)) : Next : SetState(*w,5)
+                  Case 7  : *w = Frame(30,20,150,30,"Frame") 
+                  Case 8  : *w = ComboBox(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"ComboBox_"+Str(i)) : Next : SetState(*w,0)
+                  Case 9  : *w = Image(30,20,150,30,0,#PB_Image_Border) 
+                  Case 10 : *w = HyperLink(30,20,150,30,"HyperLink", $FF00FF, #PB_HyperLink_Underline) 
+                  Case 11 : *w = Container(30,20,150,30,#PB_Container_Flat) : Button(0,0,80,20,"Button") : CloseList() ; Container
+                  Case 12 : *w = ListIcon(30,20,150,30,"ListIcon",88) 
+                  Case 13 : *w = IPAddress(30,20,150,30) 
+                  Case 14 : *w = Progress(30,20,150,30,0,5)
+                  Case 15 : *w = Scroll(30,20,150,30,5,335,9)
+                  Case 16 : *w = ScrollArea(30,20,150,30,305,305,9,#PB_ScrollArea_Flat) : Button(0,0,80,20,"Button") : CloseList()
+                  Case 17 : *w = Track(30,20,150,30,0,5)
+                    ; Case 18 : *w = Web(30,20,150,30,"") 
+                  Case 19 : *w = Button(30,20,150,30, "", 0, 0)
+                    ;Case 20 : *w = Calendar(30,20,150,30) 
+                    ;Case 21 : *w = Date(30,20,150,30)
+                    ;Case 22 : *w = Editor(30,20,150,30) : AddItem(20,-1,"Editor")
+                  Case 23 : *w = ExplorerList(30,20,150,30,"")
+                    ;                     Case 24 : *w = ExplorerTree(30,20,150,30,"")
+                    ;                     Case 25 : *w = ExplorerCombo(30,20,150,30,"")
+                  Case 26 : *w = Spin(30,20,150,30,0,5,#PB_Spin_Numeric)
+                  Case 27 : *w = Tree(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"Tree_"+Str(i), -1, Bool(i=1 Or i=3 Or i=5 Or i=7 Or i=9)) : Next
+                  Case 28 : *w = Panel(30,20,150,30) : For i=0 To 10 : AddItem(*w,-1,"Panel_"+Str(i)) : Next : CloseList()
+                  Case 29 : *w = Splitter(30,20,150,30, Button(0,0,0,0,"1"), Button(0,0,0,0,"2"))
+                EndSelect
+                
+                ;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                ;                     Select GetState( *combo )
+                ;                       Case 30 : MDI(30,10,150,70,0,0)
+                ;                       Case 31 : InitScintilla() :Scintilla(30,10,150,70,0)
+                ;                       Case 32 : Shortcut(30,10,150,70,0)
+                ;                       Case 33 : Canvas(30,10,150,70) 
+                ;                     EndSelect
+                ;                   CompilerElse
+                ;                     Select GetState( *combo )
+                ;                       Case 30 : InitScintilla() :Scintilla(30,10,150,70,0)
+                ;                       Case 31 : Shortcut(30,10,150,70,0)
+                ;                       Case 32 : Canvas(30,10,150,70) 
+                ;                     EndSelect
+                ;                   CompilerEndIf
+                
+                Resize(*w,30,10,150,70)
+                SetParent(*w, ParentID)
+                
+            EndSelect
         EndSelect
         
-        ; Drop event on the target gadgets, receive the dropped data
-        ;
-      Case #PB_EventType_Drop
-        
-        Select EventGadget
-            
-          Case TargetText
-            AddItem(TargetText, -1, DropText())
-            
-          Case TargetImage
-            If DropImage(#ImageTarget)
-              SetState(TargetImage, (#ImageTarget))
-            EndIf
-            
-          Case TargetFiles
-            Files$ = EventDropFiles()
-            Count  = CountString(Files$, Chr(10)) + 1
-            For i = 1 To Count
-              AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
-            Next i
-            
-          Case TargetPrivate1
-            AddItem(TargetPrivate1, -1, "Private type 1 dropped")
-            
-          Case TargetPrivate2
-            AddItem(TargetPrivate2, -1, "Private type 2 dropped")
-            
-        EndSelect
-        
+        If (EventWidget<>*w)
+          SetText(*window_1, Class(GetType(GetParent(*w))) +" - parent class & parent item ("+Str(GetParentItem(*w))+")")
+        EndIf
     EndSelect
     
   EndProcedure
   
-  If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
-    Open(#Window, 0, 0, 760, 310)
-    
-    ; Create some images for the image demonstration
-    ; 
-    Define i, Event
-    CreateImage(#ImageSource, 136, 136)
-    If StartDrawing(ImageOutput(#ImageSource))
-      Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drag this image", $000000, $FFFFFF)        
-      For i = 45 To 1 Step -1
-        Circle(70, 80, i, Random($FFFFFF))
-      Next i        
-      
-      StopDrawing()
-    EndIf  
-    
-    CreateImage(#ImageTarget, 136, 136)
-    If StartDrawing(ImageOutput(#ImageTarget))
-      Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drop images here", $000000, $FFFFFF)
-      StopDrawing()
-    EndIf  
-    
-    
-    ; Create and fill the source s
-    ;
-    SourceText = ListIcon(10, 10, 140, 140, "Drag Text here", 130)   
-    SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
-    SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
-    SourcePrivate = ListIcon(610, 10, 140, 140, "Drag private stuff here", 260)
-    
-    AddItem(SourceText, -1, "hello world")
-    AddItem(SourceText, -1, "The quick brown fox jumped over the lazy dog")
-    AddItem(SourceText, -1, "abcdefg")
-    AddItem(SourceText, -1, "123456789")
-    
-    AddItem(SourcePrivate, -1, "Private type 1")
-    AddItem(SourcePrivate, -1, "Private type 2")
-    
-    
-    ; Create the target s
-    ;
-    TargetText = ListIcon(10, 160, 140, 140, "Drop Text here", 130)
-    TargetImage = Image(160, 160, 140, 140, (#ImageTarget), #PB_Image_Border) 
-    TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
-    TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
-    TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
-    
-    
-    ; Now enable the dropping on the target s
-    ;
-    EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
-    EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
-    EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
-    EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
-    EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
-    
-    Bind(@Events())
-    ReDraw(Root())
-    
-    Repeat
-      Event = WaitWindowEvent()
-    Until Event = #PB_Event_CloseWindow
-  EndIf
   
-  End
+  Define X,Y,Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered ;| #PB_Window_BorderLess
+  OpenWindow(10, 0, 0, 833, 346, "demo set  new parent", Flags )
+  
+  ; Create desktop for the widgets
+  Open(10, 0, 0, 833, 346)
+  *d_0 = Button(30,90,150,30,"Button >>(Desktop)") 
+  
+  *window_1 = Form(202, 0, 630, 319, "demo set  new parent", Flags )
+  
+  *w_0 = Button(30,90,150,30,"Button >>(Window)")
+  *panel=Panel(10,150,200,160) : AddItem(*panel,-1,"Panel") : *p_0=Button(30,90,150,30,"Button >>(Panel (0))") : AddItem(*panel,-1,"Second") : *p_1=Button(35,90,150,30,"Button >>(Panel (1))") : AddItem(*panel,-1,"Third") : *p_2=Button(40,90,150,30,"Button >>(Panel (2))") : CloseList()
+  *container = Container(215,150,200,160,#PB_Container_Flat) : *c_0=Button(30,90,150,30,"Button >>(Container)") : CloseList() ; Container
+  *scrollarea = ScrollArea(420,150,200,160,200,160,10,#PB_ScrollArea_Flat) : *s_0=Button(30,90,150,30,"Button >>(ScrollArea)") : CloseList()
+  
+  *b_0 = Button(450,90,150,30,"Button >>(Back)") 
+  
+  Bind(@Widgets_CallBack(), Root())
+  ;ReDraw(Root())
+  
+  ResizeWindow(10, WindowX( 10 )-100, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #PB_Window_BorderLess
+  X = WindowX( 10 )+5+WindowWidth( 10 )
+  Y = WindowY( 10 )
+  *window_2 = Open(20, X, Y, 200, 346+22, "old parent", Flags, WindowID(GetRootWindow(*window_1)))
+  *w = Button(30,10,150,70,"Button") 
+  
+  
+  *combo = ComboBox( 30,90,150,30 ) 
+  Bind(@Widgets_CallBack(), *combo)
+  
+  AddItem( *combo, -1, "Selected  to move")
+  AddItem( *combo, -1, "Button")
+  AddItem( *combo, -1, "String")
+  AddItem( *combo, -1, "Text")
+  AddItem( *combo, -1, "CheckBox")
+  AddItem( *combo, -1, "Option")
+  AddItem( *combo, -1, "ListView")
+  AddItem( *combo, -1, "Frame")
+  AddItem( *combo, -1, "ComboBox")
+  AddItem( *combo, -1, "Image")
+  AddItem( *combo, -1, "HyperLink")
+  AddItem( *combo, -1, "Container") ; Win = Ok
+  AddItem( *combo, -1, "ListIcon")
+  AddItem( *combo, -1, "IPAddress")
+  AddItem( *combo, -1, "ProgressBar")
+  AddItem( *combo, -1, "ScrollBar") ; Win = Ok
+  AddItem( *combo, -1, "ScrollArea"); Win = Ok
+  AddItem( *combo, -1, "TrackBar")
+  AddItem( *combo, -1, "Web")
+  AddItem( *combo, -1, "ButtonImage")
+  AddItem( *combo, -1, "Calendar")
+  AddItem( *combo, -1, "Date") ; Win = Ok
+  AddItem( *combo, -1, "Editor") ; Win = Ok
+  AddItem( *combo, -1, "ExplorerList") ; Win = Ok
+  AddItem( *combo, -1, "ExplorerTree") ; Win = Ok
+  AddItem( *combo, -1, "ExplorerCombo"); Win = Ok
+  AddItem( *combo, -1, "Spin")         ; Win = Ok
+  AddItem( *combo, -1, "Tree")         ; Ok
+  AddItem( *combo, -1, "Panel")        ; Ok
+  AddItem( *combo, -1, "Splitter")     ; Win = Ok
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    AddItem( *combo, -1, "MDI") ; Ok
+  CompilerEndIf
+  AddItem( *combo, -1, "Scintilla") ; Ok
+  AddItem( *combo, -1, "Shortcut")  ; Ok
+  AddItem( *combo, -1, "Canvas")    ;Ok
+  
+  SetState( *combo, #PB_GadgetType_Button) ; : PostEvent(#PB_Event_Widget, 20, *combo, #PB_EventType_Change)
+  
+  ReDraw(GetRoot(*window_1))
+  ReDraw(GetRoot(*window_2))
+  
+  HideWindow(GetRootWindow(*window_1),0)
+  HideWindow(GetRootWindow(*window_2),0)
+  
+  Repeat
+    Define Event=WaitWindowEvent()
+  Until Event=#PB_Event_CloseWindow
+  
 CompilerEndIf
+
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------x8-0-v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

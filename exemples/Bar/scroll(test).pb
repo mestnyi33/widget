@@ -15,6 +15,22 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *Scroll.Scroll_S=AllocateStructure(Scroll_S)
   Global x=101,y=101, Width=790, Height=600 
   
+  Procedure pb_scroll_update()
+    With *Scroll
+      SetGadgetState(v, GetState(\v))
+      SetGadgetAttribute(v, #PB_ScrollBar_Minimum, GetAttribute(\v, #PB_ScrollBar_Minimum))
+      SetGadgetAttribute(v, #PB_ScrollBar_Maximum, GetAttribute(\v, #PB_ScrollBar_Maximum))
+      SetGadgetAttribute(v, #PB_ScrollBar_PageLength, GetAttribute(\v, #PB_ScrollBar_PageLength))
+      ResizeGadget(v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\height)
+      
+      SetGadgetState(h, GetState(\h))
+      SetGadgetAttribute(h, #PB_ScrollBar_Minimum, GetAttribute(\h, #PB_ScrollBar_Minimum))
+      SetGadgetAttribute(h, #PB_ScrollBar_Maximum, GetAttribute(\h, #PB_ScrollBar_Maximum))
+      SetGadgetAttribute(h, #PB_ScrollBar_PageLength, GetAttribute(\h, #PB_ScrollBar_PageLength))
+      ResizeGadget(h, #PB_Ignore, #PB_Ignore, \h\width, #PB_Ignore)
+    EndWith
+  EndProcedure
+  
   If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
     ResizeImage(0,ImageWidth(0)*2,ImageHeight(0)*2)
     
@@ -30,6 +46,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure _ReDraw(Canvas)
     With *Scroll
+      pb_scroll_update()
+      
       If StartDrawing(CanvasOutput(Canvas))
         ; back ground
         DrawingMode(#PB_2DDrawing_Default)
@@ -86,10 +104,6 @@ CompilerIf #PB_Compiler_IsMainFile
         
         StopDrawing()
         
-        SetGadgetState(v, GetState(*Scroll\v))
-        SetGadgetAttribute(v, #PB_ScrollBar_Minimum, GetAttribute(*Scroll\v, #PB_ScrollBar_Minimum))
-        SetGadgetAttribute(v, #PB_ScrollBar_Maximum, GetAttribute(*Scroll\v, #PB_ScrollBar_Maximum))
-        SetGadgetAttribute(v, #PB_ScrollBar_PageLength, GetAttribute(*Scroll\v, #PB_ScrollBar_PageLength))
         
       EndIf
     EndWith
@@ -108,16 +122,18 @@ CompilerIf #PB_Compiler_IsMainFile
         Repaint | Resizes(*Scroll, x, y, Width-x*2, Height-y*2)                                        ;, *Scroll\h)
                                                                                                        ;  Resize(*Scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, *Scroll\h)
         ResizeGadget(v,  *Scroll\v\x+20, *Scroll\v\y, *Scroll\v\Width, *Scroll\v\Height)
+        ResizeGadget(h,  *Scroll\h\x, *Scroll\h\y+20, *Scroll\h\Width, *Scroll\h\Height)
     EndSelect
     
-    Repaint | CallBack(*Scroll\v, EventType, mouseX,mouseY)
-    Repaint | CallBack(*Scroll\h, EventType, mouseX,mouseY)
+    Repaint | CallBack(From(Root(), mouseX,mouseY), EventType, mouseX,mouseY)
+    ;Repaint | CallBack(*Scroll\v, EventType, mouseX,mouseY)
+    ;Repaint | CallBack(*Scroll\h, EventType, mouseX,mouseY)
     
     If Not (*Scroll\v\at Or *Scroll\h\at)
       Select EventType
         Case #PB_EventType_LeftButtonDown
-          SetAttribute(*Scroll\h, #PB_Bar_Inverted, *Scroll\h\Inverted!1)
-          Debug "#PB_EventType_LeftButtonDown *Scroll\h\Inverted " + *Scroll\h\Inverted
+         ; SetAttribute(*Scroll\h, #PB_Bar_Inverted, *Scroll\h\Inverted!1)
+         ; Debug "#PB_EventType_LeftButtonDown *Scroll\h\Inverted " + *Scroll\h\Inverted
           
           Repaint = 1
       EndSelect
@@ -232,16 +248,24 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Canvas = CanvasGadget(#PB_Any, 200, 10, 380, 380, #PB_Canvas_Keyboard)
     g_Canvas = CanvasGadget(#PB_Any, 200,10, 600, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container)
     SetGadgetAttribute(g_Canvas, #PB_Canvas_Cursor, #PB_Cursor_Hand)
-    v = ScrollBarGadget(-1, #PB_Ignore, #PB_Ignore, 1, 1, 0,0,0, #PB_ScrollBar_Vertical)
-    CloseGadgetList()
+    v = ScrollBarGadget(-1, x-18, y,  16, 300 ,0,ImageHeight(0), 240-16, #PB_ScrollBar_Vertical)
+      h = ScrollBarGadget(-1, x, y-18, 300,  16 ,0,ImageWidth(0), 405-16)
+      ;     SetGadgetAttribute(v, #PB_ScrollBar_Maximum, ImageHeight(0))
+      ;     SetGadgetAttribute(h, #PB_ScrollBar_Maximum, ImageWidth(0))
+      
+      ; Set scroll page position
+      SetGadgetState(v, 70)
+      SetGadgetState(h, 55)
+      CloseGadgetList()
     OpenList(0, g_Canvas)
     
     ; Create both scroll bars
-    ;     *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical,7)
-    ;     *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
-    Bars(*Scroll, 16, 7, 1)
-    SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
-    SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
+        *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical,7)
+        *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
+    ; Bars(*Scroll, 16, 7, 1)
+      
+;     SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
+;     SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
     
     ; Set scroll page position
     SetState(*Scroll\v, 70)
@@ -250,6 +274,8 @@ CompilerIf #PB_Compiler_IsMainFile
     PostEvent(#PB_Event_Gadget, 0,g_Canvas,#PB_EventType_Resize)
     BindGadgetEvent(g_Canvas, @Canvas_CallBack())
     
+    
+    ;_ReDraw(g_Canvas)
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack())
     
     Define Event, value
@@ -316,5 +342,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = Xv----
+; Folding = xfD24-
 ; EnableXP

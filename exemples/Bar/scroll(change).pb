@@ -1,14 +1,5 @@
 ﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
-
-Procedure Gadget(Window, X,Y,Width,Height, Min.i,Max.i,pageLen, Flag=0)
- UseModule Widget
-  Open(0, X,Y,Width,Height,"")
-  Root() = Tree(0, 0, Width,Height, Flag)
-  PostEvent(#PB_Event_Gadget, 0, Display(), #PB_EventType_Repaint)
-  ProcedureReturn Root()\Canvas\Gadget
-EndProcedure
-
 ;
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -40,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *Bar_0 = Scroll(5, 10, 370,  30, 20,  50, 8)
       *Bar_0\Step=1
       
-      ReDraw(Root())
+      ReDraw()
     EndIf
   EndProcedure
   
@@ -54,10 +45,10 @@ CompilerIf #PB_Compiler_IsMainFile
         gQuit= #True
         
       Case #PB_Event_Timer
-        If IsStart(*Bar_0)
+        If _scroll_in_start_(*Bar_0)
           direction = 1
         EndIf
-        If IsStop(*Bar_0)
+        If _scroll_in_stop_(*Bar_0)
           direction =- 1
         EndIf
         
@@ -82,7 +73,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         ; ; Get interaction with the scroll bar
-        ; CallBack(*Bar_0, EventType())
+         CallBack(*Bar_0, EventType())
         
         SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
           
@@ -90,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
           SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
         EndIf
         
-        ReDraw(Root())
+        ReDraw()
     EndSelect
     
   Until gQuit

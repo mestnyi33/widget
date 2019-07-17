@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;-
@@ -288,15 +288,16 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, Width+20, Height+20, "Scroll on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    CanvasGadget(1, 10,10, Width, Height, #PB_Canvas_Keyboard)
-    SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+;     CanvasGadget(1, 10,10, Width, Height, #PB_Canvas_Keyboard)
+;     SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+    Open(0, 10,10, Width, Height)
     
 ;     ; Create both scroll bars
-;     *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical,7)
-;     *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
-    Bars(*Scroll, 16, 7, 1)
-    SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
-    SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
+    *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #PB_ScrollBar_Vertical,7)
+    *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
+;     Bars(*Scroll, 16, 7, 1)
+;     SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
+;     SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
     
     ;SetAttribute(*Scroll\v, #PB_ScrollBar_Inverted, 1)
     
@@ -304,18 +305,19 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(*Scroll\v, 70)
     SetState(*Scroll\h, 55)
     
-    PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
-    BindGadgetEvent(1, @Canvas_CallBack())
+;     PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
+;     BindGadgetEvent(1, @Canvas_CallBack())
     
     ;     BindEvent(#PB_Event_Widget, @Widget_Events(), 0, *Scroll\v)
     ;     BindEvent(#PB_Event_Widget, @Widget_Events(), 0, *Scroll\h)
     
     ;     BindEvent(#PB_Event_Widget, @Widget_Events(), 0, 1)
+    ReDraw(Root())
     
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack())
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 4--0--
+; Folding = 4z+0X+
 ; EnableXP

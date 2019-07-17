@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *window = Open(0, 10,10, 880, 550, "")
       
       If *window
-        Widget(Hex(100)) = Window(520, 140, 200+2, 260+26+2, "Window_100", #PB_Window_ScreenCentered) : SetData(Widget(Hex(100)), 100)
+        Widget(Hex(100)) = Form(520, 140, 200+2, 260+26+2, "Window_100", #PB_Window_ScreenCentered) : SetData(Widget(Hex(100)), 100)
         Widget(Hex(500)) = Panel(0,0, 200+2, 260+26+2)
         AddItem(Widget(Hex(500)),-1,"Panel")
         
@@ -56,15 +56,15 @@ CompilerIf #PB_Compiler_IsMainFile
         Widget(Hex(109)) = Button(10, 85+85+60, 180, 20, "109 Focus gadget - 22") : SetData(Widget(Hex(109)), 109)
         CloseList()
         
-        Widget(Hex(0)) = Window(100, 100, 200, 200, "Window_0", #PB_Window_SystemMenu) : SetData(Widget(Hex(0)), 0)
+        Widget(Hex(0)) = Form(100, 100, 200, 200, "Window_0", #PB_Window_SystemMenu) : SetData(Widget(Hex(0)), 0)
         Widget(Hex(1)) = String(10, 10, 180, 85, "String_1") : SetData(Widget(Hex(1)), 1)
         Widget(Hex(2)) = String(10, 105, 180, 85, "String_2") : SetData(Widget(Hex(2)), 2) 
         
-        Widget(Hex(10)) = Window(160, 120, 200, 200, "Window_10", #PB_Window_SystemMenu) : SetData(Widget(Hex(10)), 10)
+        Widget(Hex(10)) = Form(160, 120, 200, 200, "Window_10", #PB_Window_SystemMenu) : SetData(Widget(Hex(10)), 10)
         Widget(Hex(11)) = String(10, 10, 180, 85, "String_11") : SetData(Widget(Hex(11)), 11)
         Widget(Hex(12)) = String(10, 105, 180, 85, "String_12") : SetData(Widget(Hex(12)), 12)
         
-        Widget(Hex(20)) = Window(220, 140, 200, 200, "Window_20", #PB_Window_SystemMenu) : SetData(Widget(Hex(20)), 20)
+        Widget(Hex(20)) = Form(220, 140, 200, 200, "Window_20", #PB_Window_SystemMenu) : SetData(Widget(Hex(20)), 20)
         Widget(Hex(21)) = String(10, 10, 180, 85, "String_21") : SetData(Widget(Hex(21)), 21)
         Widget(Hex(22)) = String(10, 105, 180, 85, "String_22") : SetData(Widget(Hex(22)), 22)
         
@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Case #PB_EventType_LeftClick
             Debug ""
             
-            Select GetData(at(*window, GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX), GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY)))
+            Select GetData(from(*window, GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX), GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY)))
               Case 101
                 SetActive(Widget(Hex(0)))
               Case 102

@@ -9,31 +9,19 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit
   Global Button_0, Button_1, Button_2, *Splitter_0.Widget_S, *Splitter_1.Widget_S
 
-  Procedure _ReDraw(Gadget.i)
-    If StartDrawing(CanvasOutput(Gadget))
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
-      
-      Draw(*Splitter_1)
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
-  
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 430, 280, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ButtonGadget   (0,    5,   245, 420,  30, "start change scrollbar", #PB_Button_Toggle)
       
-;       CanvasGadget(1, 10,10, 410, 230, #PB_Canvas_Keyboard)
-;       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
-      Open(0,10,10, 410, 230)
+      Open(0, 10,10, 410, 230)
       
       Button_0 = Button(0, 0, 0, 0, "Button 0") ; No need to specify size or coordinates
       Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
       Button_2 = Button(0, 0, 0, 0, "Button 2") ; as they will be sized automatically
       *Splitter_0 = Splitter(0, 0, 390, 210, Button_0, Button_1, #PB_Splitter_Separator)
       *Splitter_1 = Splitter(10, 10, 390, 210, Button_2, *Splitter_0, #PB_Splitter_Vertical)
-
+      
+      Debug *Splitter_0\class
       ReDraw(Root())
     EndIf
   EndProcedure
@@ -61,6 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If SetState(*Splitter_1, value)
           ReDraw(Root())
+          SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Splitter_1, #PB_Bar_Direction)))
+        ;  SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Splitter_1, #PB_Bar_Direction)))
         EndIf
         
       Case #PB_Event_Gadget
@@ -68,19 +58,22 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventGadget()
           Case 0
             value = GetState(*Splitter_1)
+            
             If GetGadgetState(0)
               AddWindowTimer(0, 1, 10)
+              SetGadgetText(0, "stop change scrollbar")
             Else
               RemoveWindowTimer(0, 1)
+              SetGadgetText(0, "start change scrollbar")
             EndIf
         EndSelect
         
-        ; Get interaction with the scroll bar
-        ;CallBacks(*Splitter_1, EventType())
-        
-        If WidgetEvent() = #PB_EventType_Change
-          SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
-        EndIf
+;         ; Get interaction with the scroll bar
+;         ;CallBacks(*Splitter_1, EventType())
+;         
+;         If WidgetEvent() = #PB_EventType_Change
+;           SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
+;         EndIf
         
         ReDraw(Root())
     EndSelect
@@ -88,5 +81,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = --
 ; EnableXP

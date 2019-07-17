@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;
@@ -189,6 +189,7 @@ Module ScrollBar
     
     If *This
       With *This
+       ; \Bar\Root = AllocateStructure(Widget::Widget_S)
         \Canvas\Gadget = Gadget
         
         \Bar = Widget::Scroll(0, 0, Width, Height, Min, Max, PageLength, Flag, Radius)
@@ -250,6 +251,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ScrollBarGadget  (3, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
     SetGadgetState   (3, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
+    Widget::Open(0, 300,  5, 300, 190)
+    
     TextGadget       (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
     ScrollBar::Gadget  (12,  300+10, 42, 250,  20, 30, 100+1, 30, Flag)
     ScrollBar::SetState   (12,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
@@ -262,6 +265,8 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(12,@h_CallBack(), #PB_EventType_Change)
     BindGadgetEvent(3,@v_GadgetCallBack())
     BindGadgetEvent(13,@v_CallBack(), #PB_EventType_Change)
+    Widget::ReDraw()
+    
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf

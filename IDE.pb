@@ -647,7 +647,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
     
     Select Type
-      Case #PB_GadgetType_Window     : *This = Window(10,10,Width+1,Height+1, "", #PB_Flag_AnchorsGadget, Parent)
+      Case #PB_GadgetType_Window     : *This = Form(10,10,Width+1,Height+1, "", #PB_Flag_AnchorsGadget, Parent)
       Case #PB_GadgetType_Panel      : *This = Panel(X,Y,Width,Height, #PB_Flag_AnchorsGadget)
       Case #PB_GadgetType_Container  : *This = Container(X,Y,Width,Height, #PB_Flag_AnchorsGadget)
       Case #PB_GadgetType_ScrollArea : *This = ScrollArea(X,Y,Width,Height, 100, 100, 1, #PB_Flag_AnchorsGadget)
@@ -655,7 +655,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndSelect
     
     If *This\container
-      SetImage(*This, 5)
+      EnableDrop(*This, #PB_Drop_Text, #PB_Drag_Copy)
+        
+       SetImage(*This, 5)
       : X1 = 0 : Y1 = 0 
     EndIf
     
@@ -680,7 +682,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ProcedureReturn *This
   EndProcedure
   
-  
+  ;-
   Procedure.i GetSelectorX(*This.Widget_S)
     ProcedureReturn Root()\anchor\x-*This\X[2]
   EndProcedure
@@ -804,8 +806,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       Default
         ;Debug DragText
         Select EventType 
+          Case #PB_EventType_MouseEnter
+            Debug 777888
+            
           Case #PB_EventType_Drop
-             ;Debug DragText
+             Debug "drop "+DragText
             
           Case #PB_EventType_MouseMove
             If Drag
@@ -889,8 +894,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ;WE_Selecting = TreeGadget(#PB_Any, 800-150, 40, 140, 750, #PB_Tree_AlwaysShowSelection) : AddGadgetItem(WE_Selecting, -1, "Proect")
     ;WE_Code = EditorGadget(#PB_Any, 10, 800-190, 780-150, 180)
     
+    ;;;; Canvas(Window_0, 10, 40, width-Bool(WE_Selecting) * 150-20)
+    
     If Open(Window_0, 10, 40, width-Bool(WE_Selecting) * 150-20, height-Bool(WE_Code) * 190-10-40, "IDE") ;+200
-      Canvas_0 = RootGadget()
+      Canvas_0 = _Gadget()
       
       ;       ; Main panel
       ;       Widgets("Panel") = Panel(0, 0, 0, 0) 
@@ -975,7 +982,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     AddWidget(*c2, #PB_GadgetType_Button)
     AddWidget(*n, #PB_GadgetType_Button, 210, 75, 100, 50)
     ; ;     ;CloseList()
-    
+    Debug getClass(*n)
+  
     ; Widgets events callback
     Bind(@Widgets_Events())
     ReDraw(Root())
@@ -1022,5 +1030,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;- END
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = BAAAEdP5hAMAy-+jnD5
+; Folding = FAAgCdPwhBsBy-+jnC5
 ; EnableXP

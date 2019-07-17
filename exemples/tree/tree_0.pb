@@ -23,7 +23,7 @@ If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
       Debug a
     EndIf
   Next
-  ReDraw(Display())
+  ReDraw(Root())
   
   Debug "---------------END "+Str(ElapsedMilliseconds()-time)
   

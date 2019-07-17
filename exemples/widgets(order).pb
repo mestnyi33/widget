@@ -148,7 +148,7 @@ CompilerIf #PB_Compiler_IsMainFile
           SetActiveGadget(Canvas)
         EndIf
         
-        *This = at(*window, MouseX, MouseY)
+        *This = from(*window, MouseX, MouseY)
         
         If *This
           Repaint | CallBack(*This, EventType(), MouseX, MouseY)
@@ -242,15 +242,15 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
       
       *window = openlist(0, 1)
-;       *window = Window(150, 50, 280, 200, "Window_1")
+;       *window = Form(150, 50, 280, 200, "Window_1")
 ;       SetGadgetData(1, *window)
       
-      ;       Widgets(Hex(1)) = Window(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
-      ;       Widgets(Hex(2)) = Window(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
-      ;       Widgets(Hex(3)) = Window(20, 150, 280, 200, "Window_3");, #PB_Flag_AnchorsGadget)
-      Window(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
-      Window(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
-      Window(20, 150, 280, 200, "Window_3") ;, #PB_Flag_AnchorsGadget)
+      ;       Widgets(Hex(1)) = Form(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
+      ;       Widgets(Hex(2)) = Form(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
+      ;       Widgets(Hex(3)) = Form(20, 150, 280, 200, "Window_3");, #PB_Flag_AnchorsGadget)
+      Form(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
+      Form(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
+      Form(20, 150, 280, 200, "Window_3") ;, #PB_Flag_AnchorsGadget)
       
       Panel(100, 20, 80, 80) : CloseList() ; "Button_1");, #PB_Flag_AnchorsGadget)
       ScrollArea(130, 80, 80, 80, 0,100,100) : CloseList() ; "Button_2");, #PB_Flag_AnchorsGadget)

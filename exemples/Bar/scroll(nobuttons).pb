@@ -7,31 +7,21 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule widget
   
-  Global.i gEvent, gQuit
-  Global *Bar_0.Bar_S;=AllocateStructure(Bar_S)
-  
-  Procedure _ReDraw(Gadget.i)
-    If StartDrawing(CanvasOutput(Gadget))
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(0,0,OutputWidth(),OutputHeight(), $FFFFFF)
-      
-      Draw(*Bar_0)
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
+  Global.i gEvent, gQuit, canvas
+  Global *b.Bar_S;= AllocateStructure(Bar_S)
   
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 400, 100, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ButtonGadget   (0,    5,   65, 390,  30, "show scrollbar buttons", #PB_Button_Toggle)
       
-      CanvasGadget(1, 10,10, 380, 50, #PB_Canvas_Keyboard)
-      SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+      Open(0,10,10, 380, 50)
+      ; canvas = _Gadget()
+      ; ResizeGadget(OpenList(0), 10,10, 380, 50)
       
-      *Bar_0 = Scroll(5, 10, 370,  30, 20,  50, 8, #PB_Bar_NoButtons)
-      *Bar_0\step = 1
+      *b = Scroll(5, 10, 370,  30, 20,  50, 8, #PB_Bar_NoButtons)
+      *b\step = 1
       
-      _ReDraw(1)
+      ReDraw(*b)
     EndIf
   EndProcedure
   
@@ -48,7 +38,8 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            SetAttribute(*Bar_0, #PB_Bar_NoButtons, GetGadgetState(0) * 17)
+            SetAttribute(*b, #PB_Bar_NoButtons, GetGadgetState(0) * 17)
+            
             If GetGadgetState(0)
               SetGadgetText(0, "hide scrollbar buttons")
             Else
@@ -56,22 +47,22 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
         EndSelect
         
-        ; Get interaction with the scroll bar
-        CallBack(*Bar_0, EventType())
+;         ; Get interaction with the scroll bar
+;         CallBack(*b, EventType())
+;         
+;         If WidgetEvent() = #PB_EventType_Change
+;           Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_Bar_Direction)
+;           
+;           Select EventWidget()
+;               
+;             Case *b
+;               SetWindowTitle(0, Str(GetState(*b)))
+;               SetGadgetState(1, GetState(*b))
+;               
+;           EndSelect
+;         EndIf
         
-        If WidgetEvent() = #PB_EventType_Change
-          Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_Bar_Direction)
-          
-          Select EventWidget()
-              
-            Case *Bar_0
-              SetWindowTitle(0, Str(GetState(*Bar_0)))
-              SetGadgetState(1, GetState(*Bar_0))
-              
-          EndSelect
-        EndIf
-        
-        _ReDraw(1)
+        ReDraw(*b)
     EndSelect
     
   Until gQuit

@@ -17,14 +17,14 @@ CompilerIf #PB_Compiler_IsMainFile
     
     With *This
       If *This
-        If \s
-          If \s\v
-            FreeStructure(\s\v) : \s\v = 0
+        If \Scroll
+          If \Scroll\v
+            FreeStructure(\Scroll\v) : \Scroll\v = 0
           EndIf
-          If \s\h
-            FreeStructure(\s\h)  : \s\h = 0
+          If \Scroll\h
+            FreeStructure(\Scroll\h)  : \Scroll\h = 0
           EndIf
-          FreeStructure(\s) : \s = 0
+          FreeStructure(\Scroll) : \Scroll = 0
         EndIf
         
         If \Box
@@ -110,5 +110,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0--
+; Folding = ---
 ; EnableXP
