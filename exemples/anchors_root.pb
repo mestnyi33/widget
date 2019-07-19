@@ -683,14 +683,14 @@ DeclareModule Widget
   Structure Align_S
     X.i
     y.i
-    x1.i
-    y1.i
+    
     Left.b
     Top.b
     Right.b
     Bottom.b
     Vertical.b
     Horizontal.b
+    AutoSize.b
   EndStructure
   
   
@@ -872,6 +872,7 @@ DeclareModule Widget
     
     *Popup.Widget_S
     *anchor.Anchor_S[#Anchors+1]
+    *selector.Anchor_S[#Anchors+1]
     *OptionGroup.Widget_S
     
     fs.i 
@@ -919,18 +920,19 @@ DeclareModule Widget
   
   ;- - Anchor_S
   Structure Anchor_S
-    X.i[2] ; [1] - delta_x
-    Y.i[2] ; [1] - delta_y
-    Width.i
-    Height.i
+    x.i[2] ; [1] - delta_x
+    y.i[2] ; [1] - delta_y
+    width.i
+    height.i
     
     hide.i
-    Pos.i ; anchor position on the widget
-    State.i ; mouse state 
-    Cursor.i[2]
+    pos.i ; anchor position on the widget
+    state.b ; mouse state 
+    cursor.i[2]
     class.s
+    *widget.Widget_S
     
-    Color.Color_S[4]
+    color.color_S[4]
   EndStructure
   
   ;- - Value_S
@@ -1083,6 +1085,7 @@ DeclareModule Widget
     #PB_Bottom
     #PB_Vertical 
     #PB_Horizontal
+    #PB_Flag_AutoSize
     
     #PB_Toggle
     #PB_BorderLess
@@ -1107,7 +1110,6 @@ DeclareModule Widget
     #PB_Flag_MultiSelect
     #PB_Flag_ClickSelect
     
-    #PB_Flag_AutoSize
     #PB_Flag_AutoRight
     #PB_Flag_AutoBottom
     #PB_Flag_AnchorsGadget
@@ -1116,6 +1118,8 @@ DeclareModule Widget
     
     #PB_Flag_Limit
   EndEnumeration
+  
+  #PB_AutoSize = #PB_Flag_AutoSize
   
   If (#PB_Flag_Limit>>1) > 2147483647 ; 8589934592
     Debug "Исчерпан лимит в x32 ("+Str(#PB_Flag_Limit>>1)+")"
@@ -1612,15 +1616,16 @@ Module Widget
     ; _set_auto_size_
     If Bool(_flag_ & #PB_Flag_AutoSize=#PB_Flag_AutoSize) : x=0 : y=0
       _this_\Align = AllocateStructure(Align_S)
+      _this_\Align\AutoSize = 1
       _this_\Align\Left = 1
       _this_\Align\Top = 1
       _this_\Align\Right = 1
       _this_\Align\Bottom = 1
     EndIf
     
-    If Bool(_flag_ & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget)
+    If Bool(_flag_ & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget) And _this_\root And Not _this_\root\anchor
         
-        AddAnchors(_this_)
+         AddAnchors(_this_\root)
         
       EndIf
   EndMacro
@@ -1665,193 +1670,85 @@ Module Widget
   ;-
   ;- Anchors
   Macro Draw_Anchors(_this_)
-    If _this_\anchor
+    If _this_\root\anchor
       DrawingMode(#PB_2DDrawing_Outlined)
-      If _this_\anchor[#Anchor_moved] : Box(_this_\anchor[#Anchor_moved]\x, _this_\anchor[#Anchor_moved]\y, _this_\anchor[#Anchor_moved]\width, _this_\anchor[#Anchor_moved]\height ,_this_\anchor[#Anchor_moved]\color[_this_\anchor[#Anchor_moved]\State]\frame) : EndIf
+      If _this_\root\anchor[#Anchor_moved] : Box(_this_\root\anchor[#Anchor_moved]\x, _this_\root\anchor[#Anchor_moved]\y, _this_\root\anchor[#Anchor_moved]\width, _this_\root\anchor[#Anchor_moved]\height ,_this_\root\anchor[#Anchor_moved]\color[_this_\root\anchor[#Anchor_moved]\State]\frame) : EndIf
       
       DrawingMode(#PB_2DDrawing_Default)
-      If _this_\anchor[1] : Box(_this_\anchor[1]\x, _this_\anchor[1]\y, _this_\anchor[1]\width, _this_\anchor[1]\height ,_this_\anchor[1]\color[_this_\anchor[1]\State]\back) : EndIf
-      If _this_\anchor[2] : Box(_this_\anchor[2]\x, _this_\anchor[2]\y, _this_\anchor[2]\width, _this_\anchor[2]\height ,_this_\anchor[2]\color[_this_\anchor[2]\State]\back) : EndIf
-      If _this_\anchor[3] : Box(_this_\anchor[3]\x, _this_\anchor[3]\y, _this_\anchor[3]\width, _this_\anchor[3]\height ,_this_\anchor[3]\color[_this_\anchor[3]\State]\back) : EndIf
-      If _this_\anchor[4] : Box(_this_\anchor[4]\x, _this_\anchor[4]\y, _this_\anchor[4]\width, _this_\anchor[4]\height ,_this_\anchor[4]\color[_this_\anchor[4]\State]\back) : EndIf
-      If _this_\anchor[5] And Not _this_\Container : Box(_this_\anchor[5]\x, _this_\anchor[5]\y, _this_\anchor[5]\width, _this_\anchor[5]\height ,_this_\anchor[5]\color[_this_\anchor[5]\State]\back) : EndIf
-      If _this_\anchor[6] : Box(_this_\anchor[6]\x, _this_\anchor[6]\y, _this_\anchor[6]\width, _this_\anchor[6]\height ,_this_\anchor[6]\color[_this_\anchor[6]\State]\back) : EndIf
-      If _this_\anchor[7] : Box(_this_\anchor[7]\x, _this_\anchor[7]\y, _this_\anchor[7]\width, _this_\anchor[7]\height ,_this_\anchor[7]\color[_this_\anchor[7]\State]\back) : EndIf
-      If _this_\anchor[8] : Box(_this_\anchor[8]\x, _this_\anchor[8]\y, _this_\anchor[8]\width, _this_\anchor[8]\height ,_this_\anchor[8]\color[_this_\anchor[8]\State]\back) : EndIf
+      If _this_\root\anchor[1] : Box(_this_\root\anchor[1]\x, _this_\root\anchor[1]\y, _this_\root\anchor[1]\width, _this_\root\anchor[1]\height ,_this_\root\anchor[1]\color[_this_\root\anchor[1]\State]\back) : EndIf
+      If _this_\root\anchor[2] : Box(_this_\root\anchor[2]\x, _this_\root\anchor[2]\y, _this_\root\anchor[2]\width, _this_\root\anchor[2]\height ,_this_\root\anchor[2]\color[_this_\root\anchor[2]\State]\back) : EndIf
+      If _this_\root\anchor[3] : Box(_this_\root\anchor[3]\x, _this_\root\anchor[3]\y, _this_\root\anchor[3]\width, _this_\root\anchor[3]\height ,_this_\root\anchor[3]\color[_this_\root\anchor[3]\State]\back) : EndIf
+      If _this_\root\anchor[4] : Box(_this_\root\anchor[4]\x, _this_\root\anchor[4]\y, _this_\root\anchor[4]\width, _this_\root\anchor[4]\height ,_this_\root\anchor[4]\color[_this_\root\anchor[4]\State]\back) : EndIf
+      If _this_\root\anchor[5] And Not _this_\Container : Box(_this_\root\anchor[5]\x, _this_\root\anchor[5]\y, _this_\root\anchor[5]\width, _this_\root\anchor[5]\height ,_this_\root\anchor[5]\color[_this_\root\anchor[5]\State]\back) : EndIf
+      If _this_\root\anchor[6] : Box(_this_\root\anchor[6]\x, _this_\root\anchor[6]\y, _this_\root\anchor[6]\width, _this_\root\anchor[6]\height ,_this_\root\anchor[6]\color[_this_\root\anchor[6]\State]\back) : EndIf
+      If _this_\root\anchor[7] : Box(_this_\root\anchor[7]\x, _this_\root\anchor[7]\y, _this_\root\anchor[7]\width, _this_\root\anchor[7]\height ,_this_\root\anchor[7]\color[_this_\root\anchor[7]\State]\back) : EndIf
+      If _this_\root\anchor[8] : Box(_this_\root\anchor[8]\x, _this_\root\anchor[8]\y, _this_\root\anchor[8]\width, _this_\root\anchor[8]\height ,_this_\root\anchor[8]\color[_this_\root\anchor[8]\State]\back) : EndIf
       
       DrawingMode(#PB_2DDrawing_Outlined)
-      If _this_\anchor[1] : Box(_this_\anchor[1]\x, _this_\anchor[1]\y, _this_\anchor[1]\width, _this_\anchor[1]\height ,_this_\anchor[1]\color[_this_\anchor[1]\State]\frame) : EndIf
-      If _this_\anchor[2] : Box(_this_\anchor[2]\x, _this_\anchor[2]\y, _this_\anchor[2]\width, _this_\anchor[2]\height ,_this_\anchor[2]\color[_this_\anchor[2]\State]\frame) : EndIf
-      If _this_\anchor[3] : Box(_this_\anchor[3]\x, _this_\anchor[3]\y, _this_\anchor[3]\width, _this_\anchor[3]\height ,_this_\anchor[3]\color[_this_\anchor[3]\State]\frame) : EndIf
-      If _this_\anchor[4] : Box(_this_\anchor[4]\x, _this_\anchor[4]\y, _this_\anchor[4]\width, _this_\anchor[4]\height ,_this_\anchor[4]\color[_this_\anchor[4]\State]\frame) : EndIf
-      If _this_\anchor[5] : Box(_this_\anchor[5]\x, _this_\anchor[5]\y, _this_\anchor[5]\width, _this_\anchor[5]\height ,_this_\anchor[5]\color[_this_\anchor[5]\State]\frame) : EndIf
-      If _this_\anchor[6] : Box(_this_\anchor[6]\x, _this_\anchor[6]\y, _this_\anchor[6]\width, _this_\anchor[6]\height ,_this_\anchor[6]\color[_this_\anchor[6]\State]\frame) : EndIf
-      If _this_\anchor[7] : Box(_this_\anchor[7]\x, _this_\anchor[7]\y, _this_\anchor[7]\width, _this_\anchor[7]\height ,_this_\anchor[7]\color[_this_\anchor[7]\State]\frame) : EndIf
-      If _this_\anchor[8] : Box(_this_\anchor[8]\x, _this_\anchor[8]\y, _this_\anchor[8]\width, _this_\anchor[8]\height ,_this_\anchor[8]\color[_this_\anchor[8]\State]\frame) : EndIf
+      If _this_\root\anchor[1] : Box(_this_\root\anchor[1]\x, _this_\root\anchor[1]\y, _this_\root\anchor[1]\width, _this_\root\anchor[1]\height ,_this_\root\anchor[1]\color[_this_\root\anchor[1]\State]\frame) : EndIf
+      If _this_\root\anchor[2] : Box(_this_\root\anchor[2]\x, _this_\root\anchor[2]\y, _this_\root\anchor[2]\width, _this_\root\anchor[2]\height ,_this_\root\anchor[2]\color[_this_\root\anchor[2]\State]\frame) : EndIf
+      If _this_\root\anchor[3] : Box(_this_\root\anchor[3]\x, _this_\root\anchor[3]\y, _this_\root\anchor[3]\width, _this_\root\anchor[3]\height ,_this_\root\anchor[3]\color[_this_\root\anchor[3]\State]\frame) : EndIf
+      If _this_\root\anchor[4] : Box(_this_\root\anchor[4]\x, _this_\root\anchor[4]\y, _this_\root\anchor[4]\width, _this_\root\anchor[4]\height ,_this_\root\anchor[4]\color[_this_\root\anchor[4]\State]\frame) : EndIf
+      If _this_\root\anchor[5] : Box(_this_\root\anchor[5]\x, _this_\root\anchor[5]\y, _this_\root\anchor[5]\width, _this_\root\anchor[5]\height ,_this_\root\anchor[5]\color[_this_\root\anchor[5]\State]\frame) : EndIf
+      If _this_\root\anchor[6] : Box(_this_\root\anchor[6]\x, _this_\root\anchor[6]\y, _this_\root\anchor[6]\width, _this_\root\anchor[6]\height ,_this_\root\anchor[6]\color[_this_\root\anchor[6]\State]\frame) : EndIf
+      If _this_\root\anchor[7] : Box(_this_\root\anchor[7]\x, _this_\root\anchor[7]\y, _this_\root\anchor[7]\width, _this_\root\anchor[7]\height ,_this_\root\anchor[7]\color[_this_\root\anchor[7]\State]\frame) : EndIf
+      If _this_\root\anchor[8] : Box(_this_\root\anchor[8]\x, _this_\root\anchor[8]\y, _this_\root\anchor[8]\width, _this_\root\anchor[8]\height ,_this_\root\anchor[8]\color[_this_\root\anchor[8]\State]\frame) : EndIf
       
       
-      If _this_\anchor[10] : Box(_this_\anchor[10]\x, _this_\anchor[10]\y, _this_\anchor[10]\width, _this_\anchor[10]\height ,_this_\anchor[10]\color[_this_\anchor[10]\State]\frame) : EndIf
-      If _this_\anchor[11] : Box(_this_\anchor[11]\x, _this_\anchor[11]\y, _this_\anchor[11]\width, _this_\anchor[11]\height ,_this_\anchor[11]\color[_this_\anchor[11]\State]\frame) : EndIf
-      If _this_\anchor[12] : Box(_this_\anchor[12]\x, _this_\anchor[12]\y, _this_\anchor[12]\width, _this_\anchor[12]\height ,_this_\anchor[12]\color[_this_\anchor[12]\State]\frame) : EndIf
-      If _this_\anchor[13] : Box(_this_\anchor[13]\x, _this_\anchor[13]\y, _this_\anchor[13]\width, _this_\anchor[13]\height ,_this_\anchor[13]\color[_this_\anchor[13]\State]\frame) : EndIf
+      If _this_\root\anchor[10] : Box(_this_\root\anchor[10]\x, _this_\root\anchor[10]\y, _this_\root\anchor[10]\width, _this_\root\anchor[10]\height ,_this_\root\anchor[10]\color[_this_\root\anchor[10]\State]\frame) : EndIf
+      If _this_\root\anchor[11] : Box(_this_\root\anchor[11]\x, _this_\root\anchor[11]\y, _this_\root\anchor[11]\width, _this_\root\anchor[11]\height ,_this_\root\anchor[11]\color[_this_\root\anchor[11]\State]\frame) : EndIf
+      If _this_\root\anchor[12] : Box(_this_\root\anchor[12]\x, _this_\root\anchor[12]\y, _this_\root\anchor[12]\width, _this_\root\anchor[12]\height ,_this_\root\anchor[12]\color[_this_\root\anchor[12]\State]\frame) : EndIf
+      If _this_\root\anchor[13] : Box(_this_\root\anchor[13]\x, _this_\root\anchor[13]\y, _this_\root\anchor[13]\width, _this_\root\anchor[13]\height ,_this_\root\anchor[13]\color[_this_\root\anchor[13]\State]\frame) : EndIf
     EndIf
   EndMacro
   
   Macro Resize_Anchors(_this_)
-    If _this_\anchor[1] ; left
-      _this_\anchor[1]\x = _this_\x[1]-_this_\anchor[1]\width+_this_\anchor[1]\Pos
-      _this_\anchor[1]\y = _this_\y+(_this_\height-_this_\anchor[1]\height)/2
+    If _this_\root\anchor[1] ; left
+      _this_\root\anchor[1]\x = _this_\x-_this_\root\anchor[1]\width+_this_\root\anchor[1]\Pos
+      _this_\root\anchor[1]\y = _this_\y+(_this_\height-_this_\root\anchor[1]\height)/2
     EndIf
-    If _this_\anchor[2] ; top
-      _this_\anchor[2]\x = _this_\x+(_this_\width-_this_\anchor[2]\width)/2
-      _this_\anchor[2]\y = _this_\y[1]-_this_\TabHeight-_this_\anchor[2]\height+_this_\anchor[2]\Pos
+    If _this_\root\anchor[2] ; top
+      _this_\root\anchor[2]\x = _this_\x+(_this_\width-_this_\root\anchor[2]\width)/2
+      _this_\root\anchor[2]\y = _this_\y-_this_\root\anchor[2]\height+_this_\root\anchor[2]\Pos
     EndIf
-    If  _this_\anchor[3] ; right
-      _this_\anchor[3]\x = _this_\x[1]+_this_\width[1]-_this_\anchor[3]\Pos
-      _this_\anchor[3]\y = _this_\y+(_this_\height-_this_\anchor[3]\height)/2
+    If  _this_\root\anchor[3] ; right
+      _this_\root\anchor[3]\x = _this_\x+_this_\width-_this_\root\anchor[3]\Pos
+      _this_\root\anchor[3]\y = _this_\y+(_this_\height-_this_\root\anchor[3]\height)/2
     EndIf
-    If _this_\anchor[4] ; bottom
-      _this_\anchor[4]\x = _this_\x+(_this_\width-_this_\anchor[4]\width)/2
-      _this_\anchor[4]\y = _this_\y[1]+_this_\height[1]-_this_\anchor[4]\Pos
-    EndIf
-    
-    If _this_\anchor[5] ; left&top
-      _this_\anchor[5]\x = _this_\x[1]-_this_\anchor[5]\width+_this_\anchor[5]\Pos
-      _this_\anchor[5]\y = _this_\y[1]-_this_\TabHeight-_this_\anchor[5]\height+_this_\anchor[5]\Pos
-    EndIf
-    If _this_\anchor[6] ; right&top
-      _this_\anchor[6]\x = _this_\x[1]+_this_\width[1]-_this_\anchor[6]\Pos
-      _this_\anchor[6]\y = _this_\y[1]-_this_\TabHeight-_this_\anchor[6]\height+_this_\anchor[6]\Pos
-    EndIf
-    If _this_\anchor[7] ; right&bottom
-      _this_\anchor[7]\x = _this_\x[1]+_this_\width[1]-_this_\anchor[7]\Pos
-      _this_\anchor[7]\y = _this_\y[1]+_this_\height[1]-_this_\anchor[7]\Pos
-    EndIf
-    If _this_\anchor[8] ; left&bottom
-      _this_\anchor[8]\x = _this_\x[1]-_this_\anchor[8]\width+_this_\anchor[8]\Pos
-      _this_\anchor[8]\y = _this_\y[1]+_this_\height[1]-_this_\anchor[8]\Pos
+    If _this_\root\anchor[4] ; bottom
+      _this_\root\anchor[4]\x = _this_\x+(_this_\width-_this_\root\anchor[4]\width)/2
+      _this_\root\anchor[4]\y = _this_\y+_this_\height-_this_\root\anchor[4]\Pos
     EndIf
     
-    If _this_\anchor[#Anchor_moved] 
-      _this_\anchor[#Anchor_moved]\x = _this_\x
-      _this_\anchor[#Anchor_moved]\y = _this_\y
-      _this_\anchor[#Anchor_moved]\width = _this_\width
-      _this_\anchor[#Anchor_moved]\height = _this_\height
+    If _this_\root\anchor[5] ; left&top
+      _this_\root\anchor[5]\x = _this_\x-_this_\root\anchor[5]\width+_this_\root\anchor[5]\Pos
+      _this_\root\anchor[5]\y = _this_\y-_this_\root\anchor[5]\height+_this_\root\anchor[5]\Pos
+    EndIf
+    If _this_\root\anchor[6] ; right&top
+      _this_\root\anchor[6]\x = _this_\x+_this_\width-_this_\root\anchor[6]\Pos
+      _this_\root\anchor[6]\y = _this_\y-_this_\root\anchor[6]\height+_this_\root\anchor[6]\Pos
+    EndIf
+    If _this_\root\anchor[7] ; right&bottom
+      _this_\root\anchor[7]\x = _this_\x+_this_\width-_this_\root\anchor[7]\Pos
+      _this_\root\anchor[7]\y = _this_\y+_this_\height-_this_\root\anchor[7]\Pos
+    EndIf
+    If _this_\root\anchor[8] ; left&bottom
+      _this_\root\anchor[8]\x = _this_\x-_this_\root\anchor[8]\width+_this_\root\anchor[8]\Pos
+      _this_\root\anchor[8]\y = _this_\y+_this_\height-_this_\root\anchor[8]\Pos
     EndIf
     
-    If _this_\anchor[10] And _this_\anchor[11] And _this_\anchor[12] And _this_\anchor[13]
+    If _this_\root\anchor[#Anchor_moved] 
+      _this_\root\anchor[#Anchor_moved]\x = _this_\x
+      _this_\root\anchor[#Anchor_moved]\y = _this_\y
+      _this_\root\anchor[#Anchor_moved]\width = _this_\width
+      _this_\root\anchor[#Anchor_moved]\height = _this_\height
+    EndIf
+    
+    If _this_\root\anchor[10] And _this_\root\anchor[11] And _this_\root\anchor[12] And _this_\root\anchor[13]
       Lines_Anchors(_this_)
     EndIf
     
   EndMacro
-  
-  Procedure Events_Anchors(*This.Widget_S, mouse_x,mouse_y)
-    With *This
-      Protected px,py,Grid = \Grid
-      
-      If \Parent
-        px = \Parent\x[2]
-        py = \Parent\y[2]
-      EndIf
-      
-      Protected mx = Match(mouse_x-px, Grid)
-      Protected my = Match(mouse_y-py, Grid)
-      Protected mw = Match((\x+\Width-Bool(Grid>1))-mouse_x, Grid)+Bool(Grid>1)
-      Protected mh = Match((\y+\height-Bool(Grid>1))-mouse_y, Grid)+Bool(Grid>1)
-      Protected mxw = Match(mouse_x-\x, Grid)+Bool(Grid>1)
-      Protected myh = Match(mouse_y-\y, Grid)+Bool(Grid>1)
-      
-      Select \anchor
-        Case \anchor[1] : Resize(*This, mx, #PB_Ignore, mw, #PB_Ignore)
-        Case \anchor[2] : Resize(*This, #PB_Ignore, my, #PB_Ignore, mh)
-        Case \anchor[3] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, #PB_Ignore)
-        Case \anchor[4] : Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, myh)
-          
-        Case \anchor[5] 
-          If \Container
-            Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
-          Else
-            Resize(*This, mx, my, mw, mh)
-          EndIf
-        Case \anchor[6] : Resize(*This, #PB_Ignore, my, mxw, mh)
-        Case \anchor[7] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, myh)
-        Case \anchor[8] : Resize(*This, mx, #PB_Ignore, mw, myh)
-          
-        Case \anchor[#Anchor_moved] 
-          If Not \Container
-            Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
-          EndIf
-      EndSelect
-    EndWith
-  EndProcedure
-  
-  Procedure CallBack_Anchors(*This.Widget_S, EventType.i, Buttons.i, MouseScreenX.i,MouseScreenY.i)
-    Protected i 
-    Static Result.i, *p.Widget_S
-    
-    With *This
-      Select EventType 
-        Case #PB_EventType_MouseMove
-          If *p And *p\anchor
-            Protected x = MouseScreenX-*p\anchor\x[1]
-            Protected y = MouseScreeny-*p\anchor\y[1]
-            
-            Events_Anchors(*p, x,y)
-            
-            ProcedureReturn 1
-            
-          ElseIf Not Buttons
-            For i = #Anchors To 1 Step - 1
-              If \anchor[i]
-                If (MouseScreenX>\anchor[i]\X And MouseScreenX=<\anchor[i]\X+\anchor[i]\Width And 
-                    MouseScreenY>\anchor[i]\Y And MouseScreenY=<\anchor[i]\Y+\anchor[i]\Height)
-                  
-                  If \anchor <> \anchor[i] : \anchor = \anchor[i]
-                    If Not \anchor[i]\State
-                      \anchor[i]\State = 1
-                    EndIf
-                    
-                    \anchor[i]\Cursor[1] = GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor)
-                    SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor)
-                    If i<>5
-                      Result = 1
-                    EndIf
-                  EndIf
-                  
-                ElseIf \anchor[i]\State = 1
-                  \anchor[i]\State = 0
-                  \anchor = 0
-                  
-                  If GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) <> \anchor[i]\Cursor[1]
-                    SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor[i]\Cursor[1])
-                  EndIf
-                  Result = 0
-                EndIf
-              EndIf
-            Next
-          EndIf
-          
-        Case #PB_EventType_LeftButtonDown
-          
-          If \anchor : \anchor\State = 2 : *p = *This 
-            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor)
-            \anchor\x[1] = MouseScreenX-\anchor\x
-            \anchor\y[1] = MouseScreenY-\anchor\y
-            ProcedureReturn 0
-          EndIf
-          
-        Case #PB_EventType_LeftButtonUp
-          If \anchor : \anchor\State = 1 : *p = 0
-            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, \anchor\Cursor[1])
-            ProcedureReturn 0
-          EndIf
-          
-      EndSelect
-      
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
   
   Procedure Lines_Anchors(*Gadget.Widget_S=-1, distance=0)
     Protected ls=1, top_x1,left_y2,top_x2,left_y1,bottom_x1,right_y2,bottom_x2,right_y1
@@ -1882,15 +1779,15 @@ Module Widget
               If left_y1 > relative_y1 : left_y1 = relative_y1 : EndIf
               If left_y2 < relative_y2 : left_y2 = relative_y2 : EndIf
               
-              ; \anchor[10]\Color[0]\Frame = $0000FF
-              \anchor[10]\hide = 0
-              \anchor[10]\x = checked_x1
-              \anchor[10]\y = left_y1
-              \anchor[10]\Width = ls
-              \anchor[10]\Height = left_y2-left_y1
+              ; \root\anchor[10]\Color[0]\Frame = $0000FF
+              \root\anchor[10]\hide = 0
+              \root\anchor[10]\x = checked_x1
+              \root\anchor[10]\y = left_y1
+              \root\anchor[10]\Width = ls
+              \root\anchor[10]\Height = left_y2-left_y1
             Else
-              ; \anchor[10]\Color[0]\Frame = $000000
-              \anchor[10]\hide = 1
+              ; \root\anchor[10]\Color[0]\Frame = $000000
+              \root\anchor[10]\hide = 1
             EndIf
             
             ;Right_line
@@ -1898,13 +1795,13 @@ Module Widget
               If right_y1 > relative_y1 : right_y1 = relative_y1 : EndIf
               If right_y2 < relative_y2 : right_y2 = relative_y2 : EndIf
               
-              \anchor[12]\hide = 0
-              \anchor[12]\x = checked_x2-ls
-              \anchor[12]\y = right_y1
-              \anchor[12]\Width = ls
-              \anchor[12]\Height = right_y2-right_y1
+              \root\anchor[12]\hide = 0
+              \root\anchor[12]\x = checked_x2-ls
+              \root\anchor[12]\y = right_y1
+              \root\anchor[12]\Width = ls
+              \root\anchor[12]\Height = right_y2-right_y1
             Else
-              \anchor[12]\hide = 1
+              \root\anchor[12]\hide = 1
             EndIf
             
             ;Top_line
@@ -1912,13 +1809,13 @@ Module Widget
               If top_x1 > relative_x1 : top_x1 = relative_x1 : EndIf
               If top_x2 < relative_x2 : top_x2 = relative_x2: EndIf
               
-              \anchor[11]\hide = 0
-              \anchor[11]\x = top_x1
-              \anchor[11]\y = checked_y1
-              \anchor[11]\Width = top_x2-top_x1
-              \anchor[11]\Height = ls
+              \root\anchor[11]\hide = 0
+              \root\anchor[11]\x = top_x1
+              \root\anchor[11]\y = checked_y1
+              \root\anchor[11]\Width = top_x2-top_x1
+              \root\anchor[11]\Height = ls
             Else
-              \anchor[11]\hide = 1
+              \root\anchor[11]\hide = 1
             EndIf
             
             ;Bottom_line
@@ -1926,18 +1823,102 @@ Module Widget
               If bottom_x1 > relative_x1 : bottom_x1 = relative_x1 : EndIf
               If bottom_x2 < relative_x2 : bottom_x2 = relative_x2: EndIf
               
-              \anchor[13]\hide = 0
-              \anchor[13]\x = bottom_x1
-              \anchor[13]\y = checked_y2-ls
-              \anchor[13]\Width = bottom_x2-bottom_x1
-              \anchor[13]\Height = ls
+              \root\anchor[13]\hide = 0
+              \root\anchor[13]\x = bottom_x1
+              \root\anchor[13]\y = checked_y2-ls
+              \root\anchor[13]\Width = bottom_x2-bottom_x1
+              \root\anchor[13]\Height = ls
             Else
-              \anchor[13]\hide = 1
+              \root\anchor[13]\hide = 1
             EndIf
           EndIf
         Next
         PopListPosition(\Parent\Childrens())
         
+      EndIf
+    EndWith
+  EndProcedure
+  
+  Procedure Anchors_Events(*This.Widget_S, mouse_x.i, mouse_y.i)
+    With *This
+      Protected.i Px,Py, Grid = \Grid, IsGrid = Bool(Grid>1)
+      
+      If \Parent
+        Px = \Parent\x[2]
+        Py = \Parent\y[2]
+      EndIf
+      
+      Protected mx = Match(mouse_x-Px, Grid)
+      Protected my = Match(mouse_y-Py, Grid)
+      Protected mw = Match((\x+\Width-IsGrid)-mouse_x, Grid)+IsGrid
+      Protected mh = Match((\y+\height-IsGrid)-mouse_y, Grid)+IsGrid
+      Protected mxw = Match(mouse_x-\x, Grid)+IsGrid
+      Protected myh = Match(mouse_y-\y, Grid)+IsGrid
+      
+      Select \root\anchor
+        Case \root\anchor[1] : Resize(*This, mx, #PB_Ignore, mw, #PB_Ignore)
+        Case \root\anchor[2] : Resize(*This, #PB_Ignore, my, #PB_Ignore, mh)
+        Case \root\anchor[3] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, #PB_Ignore)
+        Case \root\anchor[4] : Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, myh)
+          
+        Case \root\anchor[5] 
+          If \Container ; Form, Container, ScrollArea, Panel
+            Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
+          Else
+            Resize(*This, mx, my, mw, mh)
+          EndIf
+          
+        Case \root\anchor[6] : Resize(*This, #PB_Ignore, my, mxw, mh)
+        Case \root\anchor[7] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, myh)
+        Case \root\anchor[8] : Resize(*This, mx, #PB_Ignore, mw, myh)
+          
+        Case \root\anchor[#Anchor_moved] 
+          If Not \Container
+            Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
+          EndIf
+      EndSelect
+    EndWith
+    
+    ProcedureReturn 1
+  EndProcedure
+  
+  Procedure CallBack_Anchors(*This.Widget_S, EventType.i, Buttons.i, MouseScreenX.i,MouseScreenY.i)
+    Protected i 
+    
+    With *This
+      If \root\anchor 
+        Select EventType 
+          Case #PB_EventType_MouseMove
+            If \root\anchor\state = 2
+              
+              ProcedureReturn Anchors_Events(\root\anchor\widget, MouseScreenX-\root\anchor\x[1], MouseScreeny-\root\anchor\y[1])
+              
+            ElseIf Not Buttons
+              ; From anchor
+              For i = 1 To #Anchors 
+                If \root\anchor[i]
+                  If (MouseScreenX>\root\anchor[i]\X And MouseScreenX=<\root\anchor[i]\X+\root\anchor[i]\Width And 
+                      MouseScreenY>\root\anchor[i]\Y And MouseScreenY=<\root\anchor[i]\Y+\root\anchor[i]\Height)
+                    
+                    \root\anchor\state = 0
+                    \root\anchor\widget = 0
+                    \root\anchor = \root\anchor[i]
+                    \root\anchor\widget = *This
+                    Break
+                  EndIf
+                EndIf
+              Next
+            EndIf
+            
+          Case #PB_EventType_LeftButtonDown
+            \root\anchor\state = 2 
+            \root\anchor\x[1] = MouseScreenX-\root\anchor\x
+            \root\anchor\y[1] = MouseScreenY-\root\anchor\y
+            
+          Case #PB_EventType_LeftButtonUp
+            \root\anchor\State = 1 
+            
+        EndSelect
       EndIf
     EndWith
   EndProcedure
@@ -1965,47 +1946,47 @@ Module Widget
       EndIf
       
       For i = 1 To #Anchors
-        \anchor[i] = AllocateStructure(Anchor_S)
-        \anchor[i]\Color[0]\Frame = $000000
-        \anchor[i]\Color[1]\Frame = $FF0000
-        \anchor[i]\Color[2]\Frame = $0000FF
+        \root\anchor[i] = AllocateStructure(Anchor_S)
+        \root\anchor[i]\Color[0]\Frame = $000000
+        \root\anchor[i]\Color[1]\Frame = $FF0000
+        \root\anchor[i]\Color[2]\Frame = $0000FF
         
-        \anchor[i]\Color[0]\Back = $FFFFFF
-        \anchor[i]\Color[1]\Back = $FFFFFF
-        \anchor[i]\Color[2]\Back = $FFFFFF
+        \root\anchor[i]\Color[0]\Back = $FFFFFF
+        \root\anchor[i]\Color[1]\Back = $FFFFFF
+        \root\anchor[i]\Color[2]\Back = $FFFFFF
         
-        \anchor[i]\Width = 6
-        \anchor[i]\Height = 6
+        \root\anchor[i]\Width = 6
+        \root\anchor[i]\Height = 6
         
         If \Container And i = 5
-          \anchor[5]\Width * 2
-          \anchor[5]\Height * 2
+          \root\anchor[5]\Width * 2
+          \root\anchor[5]\Height * 2
         EndIf
         
         If i=10 Or i=12
-          \anchor[i]\Color[0]\Frame = $0000FF
-          ;           \anchor[i]\Color[1]\Frame = $0000FF
-          ;           \anchor[i]\Color[2]\Frame = $0000FF
+          \root\anchor[i]\Color[0]\Frame = $0000FF
+          ;           \root\anchor[i]\Color[1]\Frame = $0000FF
+          ;           \root\anchor[i]\Color[2]\Frame = $0000FF
         EndIf
         If i=11 Or i=13
-          \anchor[i]\Color[0]\Frame = $FF0000
-          ;           \anchor[i]\Color[1]\Frame = $FF0000
-          ;           \anchor[i]\Color[2]\Frame = $FF0000
+          \root\anchor[i]\Color[0]\Frame = $FF0000
+          ;           \root\anchor[i]\Color[1]\Frame = $FF0000
+          ;           \root\anchor[i]\Color[2]\Frame = $FF0000
         EndIf
         
-        \anchor[i]\Pos = \anchor[i]\Width-3
+        \root\anchor[i]\Pos = \root\anchor[i]\Width-3
       Next i
       
        
-        \anchor[1]\class = "left"
-        \anchor[2]\class = "top"
-        \anchor[3]\class = "right"
-        \anchor[4]\class = "botom"
-        \anchor[5]\class = "lefttop"
-        \anchor[6]\class = "righttop"
-        \anchor[7]\class = "rightbottom"
-        \anchor[8]\class = "leftbottom"
-        \anchor[9]\class = "move"
+        \root\anchor[1]\class = "left"
+        \root\anchor[2]\class = "top"
+        \root\anchor[3]\class = "right"
+        \root\anchor[4]\class = "botom"
+        \root\anchor[5]\class = "lefttop"
+        \root\anchor[6]\class = "righttop"
+        \root\anchor[7]\class = "rightbottom"
+        \root\anchor[8]\class = "leftbottom"
+        \root\anchor[9]\class = "move"
         
       
     EndWith
@@ -2027,16 +2008,16 @@ Module Widget
   
  
   Procedure.i GetAnchors(*This.Widget_S, index.i=-1)
-    ProcedureReturn Bool(*This\anchor[(Bool(index.i=-1) * #Anchor_moved) + (Bool(index.i>0) * index)]) * *This
+    ProcedureReturn Bool(*This\root\anchor[(Bool(index.i=-1) * #Anchor_moved) + (Bool(index.i>0) * index)]) * *This
   EndProcedure
   
   Procedure.i RemoveAnchors(*This.Widget_S)
     Protected Result.i
     
     With *This
-      If \anchor
-        Result = \anchor
-        \anchor = 0
+      If \root\anchor
+        Result = \root\anchor
+        \root\anchor = 0
       EndIf
     EndWith
     
@@ -2045,57 +2026,26 @@ Module Widget
   
   Procedure.i SetAnchors(*This.Widget_S)
     Protected Result.i
-    Static *LastPos, *LastParentPos, *Last.Widget_S
+    Static *LastPos, *Last.Widget_S
     
     With *This
-      If *This\anchor[#Anchor_moved] And *Last <> *This
-        If *Last ; And *Last<>*This\Parent
-                 ;           *Last\Focus = 0
-          *Last\anchor = 0
-          
-          ;           If *Last\Parent
-          ; ;           \Parent\Focus = 1
-          ;           *Last\Parent\anchor = 0
-          ;           EndIf
-          
+      If \root\anchor[#Anchor_moved] And *Last <> *This
+        If *Last
           If *LastPos
             ; Возврашаем на место
             SetPosition(*Last, #PB_List_Before, *LastPos)
             *LastPos = 0
-            
-            ;             If *LastParentPos 
-            ;               SetPosition(*Last\Parent, #PB_List_Before, *LastParentPos)
-            ;               *LastParentPos = 0
-            ;             EndIf
           EndIf
-          
         EndIf
         
-        ;         \Focus = 1
-        \anchor = \anchor[#Anchor_moved]
-        
-        ;         If \Window
-        ; ;           \Window\Focus = 1
-        ;          \Window\anchor = \Window\anchor[#Anchor_moved]
-        ;         EndIf
-        ;         
-        ;         If \Parent
-        ; ;           \Parent\Focus = 1
-        ;           \Parent\anchor = \Parent\anchor[#Anchor_moved]
-        ;         EndIf
-        
-        
-        ; Поднимаем гаджет
-        ;         If *This\Parent
-        ;           *LastParentPos = GetPosition(*This\Parent, #PB_List_After)
-        ;           SetPosition(*This\Parent, #PB_List_Last)
-        ;         EndIf
-        ;If Not *LastPos
         *LastPos = GetPosition(*This, #PB_List_After)
         SetPosition(*This, #PB_List_Last)
-        ;EndIf
-        
         *Last = *This
+        
+        \root\anchor = \root\anchor[#Anchor_moved]
+        \Root\anchor\Widget = *This
+        Resize_Anchors(*This)
+        
         Result = 1
       EndIf
     EndWith
@@ -6797,7 +6747,12 @@ Module Widget
             EndIf
             
             ;EndIf
-            Draw_Anchors(\Childrens())
+            
+            ; Draw anchors 
+            If \Childrens()\root And \Childrens()\root\anchor And \Childrens()\root\anchor\widget = \Childrens()
+              Draw_Anchors(\Childrens()\root\anchor\widget)
+            EndIf
+            
           Next
         EndIf
         
@@ -6812,6 +6767,7 @@ Module Widget
         EndIf
         
         UnclipOutput()
+        
       EndIf
       
       ; reset 
@@ -6846,10 +6802,11 @@ Module Widget
         
         Draw(*This, 1)
         
-        ; Selector
-        If \anchor 
-          Box(\anchor\x, \anchor\y, \anchor\width, \anchor\height ,\anchor\color[\anchor\State]\frame) 
-        EndIf
+        
+;       ; Selector
+;         If \root\anchor 
+;           Box(\root\anchor\x, \root\anchor\y, \root\anchor\width, \root\anchor\height ,\root\anchor\color[\root\anchor\State]\frame) 
+;         EndIf
         
         StopDrawing()
       EndIf
@@ -7784,6 +7741,110 @@ Module Widget
   
   
   ;- SET
+  Procedure.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
+    With *This
+      Select Type
+        Case 1 ; widget
+          If \Parent
+            If Not \Align
+              \Align.Align_S = AllocateStructure(Align_S)
+            EndIf
+            
+            If Not \Align\AutoSize
+              \Align\Top = Bool(Mode&#PB_Top=#PB_Top)
+              \Align\Left = Bool(Mode&#PB_Left=#PB_Left)
+              \Align\Right = Bool(Mode&#PB_Right=#PB_Right)
+              \Align\Bottom = Bool(Mode&#PB_Bottom=#PB_Bottom)
+               
+              If Bool(Mode&#PB_Center=#PB_Center)
+                \Align\Horizontal = 1
+                \Align\Vertical = 1
+              Else
+                \Align\Horizontal = Bool(Mode&#PB_Horizontal=#PB_Horizontal)
+                \Align\Vertical = Bool(Mode&#PB_Vertical=#PB_Vertical)
+              EndIf
+            EndIf
+            
+            If Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize)
+              If Bool(Mode&#PB_Full=#PB_Full) 
+                \Align\Top = 1
+                \Align\Left = 1
+                \Align\Right = 1
+                \Align\Bottom = 1
+                \Align\AutoSize = 0
+              EndIf
+              
+              ; Auto dock
+              Static y2,x2,y1,x1
+              Protected width = #PB_Ignore, height = #PB_Ignore
+              
+              If \Align\Left And \Align\Right
+                \x = x2
+                width = \Parent\width[2] - x1 - x2
+              EndIf
+              If \Align\Top And \Align\Bottom 
+                \y = y2
+                height = \Parent\height[2] - y1 - y2
+              EndIf
+              
+              If \Align\Left And Not \Align\Right
+                \x = x2
+                \y = y2
+                x2 + \width
+                height = \Parent\height[2] - y1 - y2
+              EndIf
+              If \Align\Right And Not \Align\Left
+                \x = \Parent\width[2] - \width - x1
+                \y = y2
+                x1 + \width
+                height = \Parent\height[2] - y1 - y2
+              EndIf
+              
+              If \Align\Top And Not \Align\Bottom 
+                \x = 0
+                \y = y2
+                y2 + \height
+                width = \Parent\width[2] - x1 - x2
+              EndIf
+              If \Align\Bottom And Not \Align\Top
+                \x = 0
+                \y = \Parent\height[2] - \height - y1
+                y1 + \height
+                width = \Parent\width[2] - x1 - x2
+              EndIf
+              
+              Resize(*this, \x, \y, width, height)
+              
+              \Align\Top = Bool(Mode&#PB_Top=#PB_Top)+Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Left=#PB_Left)
+              \Align\Left = Bool(Mode&#PB_Left=#PB_Left)+Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Top=#PB_Top)
+              \Align\Right = Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Top=#PB_Top)+Bool(Mode&#PB_Bottom=#PB_Bottom)
+              \Align\Bottom = Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Left=#PB_Left)
+              
+            EndIf
+            
+            If \Align\Right
+              If \Align\Left And \Align\Right
+                \Align\x = \Parent\width[2] - \width
+              Else
+                \Align\x = \Parent\width[2] - (\x-\Parent\x[2]) ; \Parent\Width[2] - (\Parent\width[2] - \width)
+              EndIf
+            EndIf
+            If \Align\Bottom
+              If \Align\Top And \Align\Bottom
+                \Align\y = \Parent\height[2] - \height
+              Else
+                \Align\y = \Parent\height[2] - (\y-\Parent\y[2]) ; \Parent\height[2] - (\Parent\height[2] - \height)
+              EndIf
+            EndIf
+            
+            Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          EndIf
+        Case 2 ; text
+        Case 3 ; image
+      EndSelect
+    EndWith
+  EndProcedure
+  
   Procedure.i SetTransparency(*This.Widget_S, Transparency.a) ; opacity
     Protected Result.i
     
@@ -7944,19 +8005,19 @@ Module Widget
         If *This And *Value\Focus <> *This ;And (\Type <> #PB_GadgetType_Window)
           If *Value\Focus 
             \Deactive = *Value\Focus 
-            *Value\Focus\anchor = 0 
+            ;*Value\Focus\root\anchor = 0 
             *Value\Focus\Focus = 0
           EndIf
           If Not \Deactive 
             \Deactive = *This 
           EndIf
-          \anchor = \anchor[#Anchor_moved]
+          ;\root\anchor = \root\anchor[#Anchor_moved]
           *Value\Focus = *This
           \Focus = 1
         EndIf
       Else
         \Focus = State
-        \anchor = Bool(State) * \anchor[#Anchor_moved]
+        ;\root\anchor = Bool(State) * \root\anchor[#Anchor_moved]
       EndIf
     EndWith
   EndProcedure
@@ -7969,15 +8030,15 @@ Module Widget
     Protected Result.i
     
     With *This
-      ;       If \anchor[#Anchor_moved] And Not \anchor
-      ;         Event_Widgets(*This, #PB_EventType_Change, \anchor)
+      ;       If \root\anchor[#Anchor_moved] And Not \root\anchor
+      ;         Event_Widgets(*This, #PB_EventType_Change, \root\anchor)
       ;       EndIf
       
       If *This And \Root And \Root\Type = #PB_GadgetType_Window
         \Root\Focus = 1
       EndIf
       
-      If \Window And *Value\Active <> \Window                                     And \Window<>Root() And Not \anchor[#Anchor_moved]
+      If \Window And *Value\Active <> \Window                                     And \Window<>Root() And Not \root\anchor[#Anchor_moved]
         If *Value\Active                                                          And *Value\Active<>Root()
           \Window\Deactive = *Value\Active 
           *Value\Active\Focus = 0
@@ -7999,7 +8060,7 @@ Module Widget
         \Window\Focus = 1
       EndIf
       
-      If *This And *Value\Focus <> *This And (\Type <> #PB_GadgetType_Window Or \anchor[#Anchor_moved])
+      If *This And *Value\Focus <> *This And (\Type <> #PB_GadgetType_Window Or \root\anchor[#Anchor_moved])
         If *Value\Focus
           \Deactive = *Value\Focus 
           *Value\Focus\Focus = 0
@@ -8042,7 +8103,7 @@ Module Widget
     
     With *This
       If Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget
-        AddAnchors(*This)
+;         AddAnchors(*This)
         Resize_Anchors(*This)
       EndIf
     EndWith
@@ -8663,62 +8724,6 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
-    With *This
-      Select Type
-        Case 1 ; widget
-          If \Parent
-            If Not \Align
-              \Align.Align_S = AllocateStructure(Align_S)
-            EndIf
-            
-            \Align\Right = 0
-            \Align\Bottom = 0
-            \Align\Left = 0
-            \Align\Top = 0
-            \Align\Horizontal = 0
-            \Align\Vertical = 0
-            
-            If Mode&#PB_Right=#PB_Right
-              \Align\x = (\Parent\Width-\Parent\bs*2 - (\x-\Parent\x-\Parent\bs)) - \Width
-              \Align\Right = 1
-            EndIf
-            If Mode&#PB_Bottom=#PB_Bottom
-              \Align\y = (\Parent\height-\Parent\bs*2 - (\y-\Parent\y-\Parent\bs)) - \height
-              \Align\Bottom = 1
-            EndIf
-            If Mode&#PB_Left=#PB_Left
-              \Align\Left = 1
-              If Mode&#PB_Right=#PB_Right
-                \Align\x1 = (\Parent\Width - \Parent\bs*2) - \Width
-              EndIf
-            EndIf
-            If Mode&#PB_Top=#PB_Top
-              \Align\Top = 1
-              If Mode&#PB_Bottom=#PB_Bottom
-                \Align\y1 = (\Parent\height -\Parent\bs*2)- \height
-              EndIf
-            EndIf
-            
-            If Mode&#PB_Center=#PB_Center
-              \Align\Horizontal = 1
-              \Align\Vertical = 1
-            EndIf
-            If Mode&#PB_Horizontal=#PB_Horizontal
-              \Align\Horizontal = 1
-            EndIf
-            If Mode&#PB_Vertical=#PB_Vertical
-              \Align\Vertical = 1
-            EndIf
-            
-            Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
-        Case 2 ; text
-        Case 3 ; image
-      EndSelect
-    EndWith
-  EndProcedure
-  
   Procedure.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=0, Item.i=0)
     Protected Result, Count 
     State =- 1
@@ -8832,12 +8837,12 @@ Module Widget
     
     If *This > 0
       With *This
-        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And 
-           \Align And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
-          X = 0
-          Y = 0
-          Width = \Parent\width[2]
-          Height = \Parent\height[2]
+        ; #PB_Flag_AutoSize
+        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And \Align And \Align\AutoSize And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
+          X = 0; \Align\x
+          Y = 0; \Align\y
+          Width = \Parent\width[2] ; - \Align\x
+          Height = \Parent\height[2] ; - \Align\y
         EndIf
         
         ; Set widget coordinate
@@ -9011,7 +9016,7 @@ Module Widget
                 If \Childrens()\Align\Horizontal
                   x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width))/2
                 ElseIf \Childrens()\Align\Right And Not \Childrens()\Align\Left
-                  x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width));+Bool(\Grid>1)
+                  x = \width[2] - \Childrens()\Align\x
                 Else
                   If \x[2]
                     x = (\Childrens()\x-\x[2]) + Change_x 
@@ -9023,7 +9028,7 @@ Module Widget
                 If \Childrens()\Align\Vertical
                   y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height))/2 
                 ElseIf \Childrens()\Align\Bottom And Not \Childrens()\Align\Top
-                  y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height));+Bool(\Grid>1)
+                  y = \height[2] - \Childrens()\Align\y
                 Else
                   If \y[2]
                     y = (\Childrens()\y-\y[2]) + Change_y 
@@ -9033,13 +9038,13 @@ Module Widget
                 EndIf
                 
                 If \Childrens()\Align\Top And \Childrens()\Align\Bottom
-                  Height = \height[2]-\Childrens()\Align\y1;+Bool(\Grid>1)
+                  Height = \height[2] - \Childrens()\Align\y
                 Else
                   Height = #PB_Ignore
                 EndIf
                 
                 If \Childrens()\Align\Left And \Childrens()\Align\Right
-                  Width = \width[2]-\Childrens()\Align\x1;+Bool(\Grid>1)
+                  Width = \width[2] - \Childrens()\Align\x
                 Else
                   Width = #PB_Ignore
                 EndIf
@@ -9053,7 +9058,9 @@ Module Widget
         EndIf
         
         ; anchors widgets
-        Resize_Anchors(*This)
+        If \Root And \Root\anchor And \Root\anchor\Widget = *This
+          Resize_Anchors(*This)
+        EndIf
         
         ProcedureReturn \hide[1]
       EndWith
@@ -9875,6 +9882,12 @@ Module Widget
       
       SetText(*This, Text.s)
       Set_Image(*This, Image)
+      
+;       ; временно из-за этого (контейнер \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget))
+;       If \Parent And \Parent\root\anchor[1]
+;         x+\Parent\fs
+;         y+\Parent\fs
+;       EndIf
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -10672,7 +10685,7 @@ Module Widget
       SetParent(*This, *Widget)
       
       If Bool(Flag & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget)
-        AddAnchors(*This)
+;         AddAnchors(*This)
       EndIf
     Else ;If *Root
       If LastElement(*Value\OpenedList()) 
@@ -10887,6 +10900,7 @@ Module Widget
         *Value\OpenedList() = *This
       EndIf
       
+      ;AddAnchors(\Root)
       Root() = \Root
       Root()\CanvasWindow = Window
       Root()\Canvas = Canvas
@@ -11127,7 +11141,7 @@ Module Widget
         EndIf
         
         If \Mouse\Buttons And EventType = #PB_EventType_MouseMove
-          If \at = 0 Or (\anchor And Not \Container)
+          If \at = 0 Or (\root\anchor And Not \Container)
             ;Events_Anchors(*This, Root()\Mouse\x, Root()\Mouse\y)
             Resize(*This, Root()\Mouse\x-\Mouse\Delta\x, Root()\Mouse\y-\Mouse\Delta\y, #PB_Ignore, #PB_Ignore)
             Result = 1
@@ -12493,37 +12507,37 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   ;-
   Procedure.i GetSelectorX(*This.Widget_S)
-    ProcedureReturn Root()\anchor\x-*This\X[2]
+    ProcedureReturn Root()\selector\x-*This\X[2]
   EndProcedure
   
   Procedure.i GetSelectorY(*This.Widget_S)
-    ProcedureReturn Root()\anchor\y-*This\Y[2]
+    ProcedureReturn Root()\selector\y-*This\Y[2]
   EndProcedure
   
   Procedure.i GetSelectorWidth(*This.Widget_S)
-    ProcedureReturn Root()\anchor\Width
+    ProcedureReturn Root()\selector\Width
   EndProcedure
   
   Procedure.i GetSelectorHeight(*This.Widget_S)
-    ProcedureReturn Root()\anchor\Height
+    ProcedureReturn Root()\selector\Height
   EndProcedure
   
   Procedure.i FreeSelector(*This.Widget_S)
-    *This\Root\anchor = 0
+    *This\Root\selector = 0
   EndProcedure
   
   Procedure.i SetSelector(*This.Widget_S)
-    *This\Root\anchor = AllocateStructure(Anchor_S)
+    *This\Root\selector = AllocateStructure(Anchor_S)
   EndProcedure
   
   Procedure.i UpdateSelector(*This.Widget_S)
     Protected MouseX, MouseY, DeltaX, DeltaY
     
-    If *This And Not *This\Root\anchor And GetButtons(*This)
-      *This\Root\anchor = AllocateStructure(Anchor_S)
+    If *This And Not *This\Root\selector And GetButtons(*This)
+      *This\Root\selector = AllocateStructure(Anchor_S)
     EndIf
     
-    If *This And *This\Root\anchor
+    If *This And *This\Root\selector
       MouseX = GetMouseX(*This)
       MouseY = GetMouseY(*This)
       ;       MouseX = *Value\Canvas\Mouse\X
@@ -12542,10 +12556,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         MouseY = GetDeltaY(*This)
       EndIf
       
-      *This\Root\anchor\X = Match(*This\X[2]+DeltaX, 5)-1
-      *This\Root\anchor\Y = Match(*This\Y[2]+DeltaY, 5)-1
-      *This\Root\anchor\Width = Match(MouseX-DeltaX, 5)+1
-      *This\Root\anchor\Height = Match(MouseY-DeltaY, 5)+1
+      *This\Root\selector\X = Match(*This\X[2]+DeltaX, 5)-1
+      *This\Root\selector\Y = Match(*This\Y[2]+DeltaY, 5)-1
+      *This\Root\selector\Width = Match(MouseX-DeltaX, 5)+1
+      *This\Root\selector\Height = Match(MouseY-DeltaY, 5)+1
       
       ReDraw(*This\Root)
     EndIf
@@ -12613,10 +12627,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         EndSelect
         
       Default
-        ;Debug DragText
         Select EventType 
           Case #PB_EventType_MouseEnter
-            Debug 777888
             
           Case #PB_EventType_Drop
              Debug "drop "+DragText
@@ -12673,7 +12685,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
           Case #PB_EventType_LeftClick
             Select EventWidget
               Case Widgets("Button_1")
-                Debug 7777777
                 *Window = Popup(EventWidget, #PB_Ignore,#PB_Ignore,280,130)
                 
                 OpenList(*Window)
@@ -12781,8 +12792,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
     
     Define *n=AddWidget(Widgets("MDI"), #PB_GadgetType_Window)
-    Define *c1=AddWidget(*n, #PB_GadgetType_Container, 50, 5, 200, 90)
-    Define *c2=AddWidget(*n, #PB_GadgetType_Panel, 50, 105, 200, 90)
+    Define *c1=AddWidget(*n, #PB_GadgetType_Panel, 50, 5, 200, 90)
+    Define *c2=AddWidget(*n, #PB_GadgetType_Container, 50, 105, 200, 90)
 ;     AddItem(*c2, 0, "11111")
 ;     AddItem(*c2, 0, "22222")
     
@@ -12842,5 +12853,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;- END
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------
+; Folding = AAACAAEAACFAgBAAAAABYbDAAAAAAAAAAAQAAAAAAFAAAAkgAAAAAAAAAAAAAAAGAAAAEEAAAAAAAAAAAAAAAAAAAAAAQAACAAEACAAIAAAAAAAAAAAAAAAAAAYAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAGDGAAAAAAAGAAAAYPAgA9DAw-vHBIAAAAAACAAAeQ5AAAAAAAAAgHAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAG5-HgAAA-
 ; EnableXP

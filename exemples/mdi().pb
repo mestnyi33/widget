@@ -683,14 +683,14 @@ DeclareModule Widget
   Structure Align_S
     X.i
     y.i
-    x1.i
-    y1.i
+    
     Left.b
     Top.b
     Right.b
     Bottom.b
     Vertical.b
     Horizontal.b
+    AutoSize.b
   EndStructure
   
   
@@ -928,6 +928,7 @@ DeclareModule Widget
     Pos.i ; anchor position on the widget
     State.i ; mouse state 
     Cursor.i[2]
+    class.s
     
     Color.Color_S[4]
   EndStructure
@@ -1082,6 +1083,7 @@ DeclareModule Widget
     #PB_Bottom
     #PB_Vertical 
     #PB_Horizontal
+    #PB_Flag_AutoSize
     
     #PB_Toggle
     #PB_BorderLess
@@ -1106,7 +1108,6 @@ DeclareModule Widget
     #PB_Flag_MultiSelect
     #PB_Flag_ClickSelect
     
-    #PB_Flag_AutoSize
     #PB_Flag_AutoRight
     #PB_Flag_AutoBottom
     #PB_Flag_AnchorsGadget
@@ -1115,6 +1116,8 @@ DeclareModule Widget
     
     #PB_Flag_Limit
   EndEnumeration
+  
+  #PB_AutoSize = #PB_Flag_AutoSize
   
   If (#PB_Flag_Limit>>1) > 2147483647 ; 8589934592
     Debug "Исчерпан лимит в x32 ("+Str(#PB_Flag_Limit>>1)+")"
@@ -1278,9 +1281,9 @@ DeclareModule Widget
                                          _this_\Root<>_this_) << 2) + (Bool(_this_\Root And _this_\Root\Function) << 3)
   EndMacro
   
-  Macro Match(_value_, _grid_, _max_=$7FFFFFFF)
-    ((Bool((_value_)>(_max_)) * (_max_)) + (Bool((_grid_) And (_value_)<(_max_)) * (Round(((_value_)/(_grid_)), #PB_Round_Nearest) * (_grid_))))
-  EndMacro
+;   Macro Match(_value_, _grid_, _max_=$7FFFFFFF)
+;     ((Bool((_value_)>(_max_)) * (_max_)) + (Bool((_grid_) And (_value_)<(_max_)) * (Round(((_value_)/(_grid_)), #PB_Round_Nearest) * (_grid_))))
+;   EndMacro
   
   
   ;- - DRAG&DROP
@@ -1425,11 +1428,26 @@ DeclareModule Widget
   Declare.i Resizes(*Scroll.Scroll_S, X.i,Y.i,Width.i,Height.i)
   Declare.i Updates(*Scroll.Scroll_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
   Declare.i Arrow(X,Y, Size, Direction, Color, Style.b = 1, Length = 1)
+  Declare.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
 EndDeclareModule
 
 Module Widget
+  Procedure.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
+    If Grid 
+      Value = Round((Value/Grid), #PB_Round_Nearest) * Grid 
+      If Value>Max 
+        Value=Max 
+      EndIf
+    EndIf
+    
+    ProcedureReturn Value
+;   Procedure.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
+;     ProcedureReturn ((Bool(Value>Max) * Max) + (Bool(Grid And Value<Max) * (Round((Value/Grid), #PB_Round_Nearest) * Grid)))
+  EndProcedure
+  
   ;- MODULE
   ;
+  Declare.i Canvas_CallBack()
   Declare.i Event_Widgets(*This.Widget_S, EventType.i, EventItem.i=-1, EventData.i=0)
   Declare.i Events(*This.Widget_S, at.i, EventType.i, MouseScreenX.i, MouseScreenY.i, WheelDelta.i = 0)
   
@@ -1572,7 +1590,7 @@ Module Widget
   CompilerEndIf
   
   ;-
-  Macro _set_last_parent_(_this_, _type_)
+  Macro _set_last_parameters_(_this_, _type_, _flag_)
     _this_\Type = _type_
     _this_\Class = #PB_Compiler_Procedure
     
@@ -1593,16 +1611,21 @@ Module Widget
       SetParent(_this_, *Value\OpenedList(), *Value\OpenedList()\o_i)
     EndIf
     
-  EndMacro
-  
-  Macro _set_auto_size_(_this_, _state_)
-    If Bool(_state_) : x=0 : y=0
+    ; _set_auto_size_
+    If Bool(_flag_ & #PB_Flag_AutoSize=#PB_Flag_AutoSize) : x=0 : y=0
       _this_\Align = AllocateStructure(Align_S)
+      _this_\Align\AutoSize = 1
       _this_\Align\Left = 1
       _this_\Align\Top = 1
       _this_\Align\Right = 1
       _this_\Align\Bottom = 1
     EndIf
+    
+    If Bool(_flag_ & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget)
+        
+        AddAnchors(_this_)
+        
+      EndIf
   EndMacro
   
   Macro Set_Cursor(_this_, _cursor_)
@@ -1678,38 +1701,40 @@ Module Widget
   EndMacro
   
   Macro Resize_Anchors(_this_)
-    If _this_\anchor[1] 
+    If _this_\anchor[1] ; left
       _this_\anchor[1]\x = _this_\x-_this_\anchor[1]\width+_this_\anchor[1]\Pos
       _this_\anchor[1]\y = _this_\y+(_this_\height-_this_\anchor[1]\height)/2
     EndIf
-    If _this_\anchor[2] 
+    If _this_\anchor[2] ; top
       _this_\anchor[2]\x = _this_\x+(_this_\width-_this_\anchor[2]\width)/2
       _this_\anchor[2]\y = _this_\y-_this_\anchor[2]\height+_this_\anchor[2]\Pos
     EndIf
-    If  _this_\anchor[3]
+    If  _this_\anchor[3] ; right
       _this_\anchor[3]\x = _this_\x+_this_\width-_this_\anchor[3]\Pos
       _this_\anchor[3]\y = _this_\y+(_this_\height-_this_\anchor[3]\height)/2
     EndIf
-    If _this_\anchor[4] 
+    If _this_\anchor[4] ; bottom
       _this_\anchor[4]\x = _this_\x+(_this_\width-_this_\anchor[4]\width)/2
       _this_\anchor[4]\y = _this_\y+_this_\height-_this_\anchor[4]\Pos
     EndIf
-    If _this_\anchor[5] 
+    
+    If _this_\anchor[5] ; left&top
       _this_\anchor[5]\x = _this_\x-_this_\anchor[5]\width+_this_\anchor[5]\Pos
       _this_\anchor[5]\y = _this_\y-_this_\anchor[5]\height+_this_\anchor[5]\Pos
     EndIf
-    If _this_\anchor[6] 
+    If _this_\anchor[6] ; right&top
       _this_\anchor[6]\x = _this_\x+_this_\width-_this_\anchor[6]\Pos
       _this_\anchor[6]\y = _this_\y-_this_\anchor[6]\height+_this_\anchor[6]\Pos
     EndIf
-    If _this_\anchor[7] 
+    If _this_\anchor[7] ; right&bottom
       _this_\anchor[7]\x = _this_\x+_this_\width-_this_\anchor[7]\Pos
       _this_\anchor[7]\y = _this_\y+_this_\height-_this_\anchor[7]\Pos
     EndIf
-    If _this_\anchor[8] 
+    If _this_\anchor[8] ; left&bottom
       _this_\anchor[8]\x = _this_\x-_this_\anchor[8]\width+_this_\anchor[8]\Pos
       _this_\anchor[8]\y = _this_\y+_this_\height-_this_\anchor[8]\Pos
     EndIf
+    
     If _this_\anchor[#Anchor_moved] 
       _this_\anchor[#Anchor_moved]\x = _this_\x
       _this_\anchor[#Anchor_moved]\y = _this_\y
@@ -1723,21 +1748,21 @@ Module Widget
     
   EndMacro
   
-  Procedure Events_Anchors(*This.Widget_S, mouse_x,mouse_y)
+  Procedure Anchors_Events(*This.Widget_S, mouse_x.i, mouse_y.i)
     With *This
-      Protected px,py,Grid = \Grid
+      Protected.i Px,Py, Grid = \Grid, IsGrid = Bool(Grid>1)
       
       If \Parent
-        px = \Parent\x[2]
-        py = \Parent\y[2]
+        Px = \Parent\x[2]
+        Py = \Parent\y[2]
       EndIf
       
-      Protected mx = Match(mouse_x-px, Grid)
-      Protected my = Match(mouse_y-py, Grid)
-      Protected mw = Match((\x+\Width-Bool(Grid>1))-mouse_x, Grid)+Bool(Grid>1)
-      Protected mh = Match((\y+\height-Bool(Grid>1))-mouse_y, Grid)+Bool(Grid>1)
-      Protected mxw = Match(mouse_x-\x, Grid)+Bool(Grid>1)
-      Protected myh = Match(mouse_y-\y, Grid)+Bool(Grid>1)
+      Protected mx = Match(mouse_x-Px, Grid)
+      Protected my = Match(mouse_y-Py, Grid)
+      Protected mw = Match((\x+\Width-IsGrid)-mouse_x, Grid)+IsGrid
+      Protected mh = Match((\y+\height-IsGrid)-mouse_y, Grid)+IsGrid
+      Protected mxw = Match(mouse_x-\x, Grid)+IsGrid
+      Protected myh = Match(mouse_y-\y, Grid)+IsGrid
       
       Select \anchor
         Case \anchor[1] : Resize(*This, mx, #PB_Ignore, mw, #PB_Ignore)
@@ -1746,11 +1771,12 @@ Module Widget
         Case \anchor[4] : Resize(*This, #PB_Ignore, #PB_Ignore, #PB_Ignore, myh)
           
         Case \anchor[5] 
-          If \Container
+          If \Container ; Form, Container, ScrollArea, Panel
             Resize(*This, mx, my, #PB_Ignore, #PB_Ignore)
           Else
             Resize(*This, mx, my, mw, mh)
           EndIf
+          
         Case \anchor[6] : Resize(*This, #PB_Ignore, my, mxw, mh)
         Case \anchor[7] : Resize(*This, #PB_Ignore, #PB_Ignore, mxw, myh)
         Case \anchor[8] : Resize(*This, mx, #PB_Ignore, mw, myh)
@@ -1761,6 +1787,8 @@ Module Widget
           EndIf
       EndSelect
     EndWith
+    
+    ProcedureReturn 1
   EndProcedure
   
   Procedure CallBack_Anchors(*This.Widget_S, EventType.i, Buttons.i, MouseScreenX.i,MouseScreenY.i)
@@ -1771,12 +1799,8 @@ Module Widget
       Select EventType 
         Case #PB_EventType_MouseMove
           If *p And *p\anchor
-            Protected x = MouseScreenX-*p\anchor\x[1]
-            Protected y = MouseScreeny-*p\anchor\y[1]
             
-            Events_Anchors(*p, x,y)
-            
-            ProcedureReturn 1
+            ProcedureReturn Anchors_Events(*p, MouseScreenX-*p\anchor\x[1], MouseScreeny-*p\anchor\y[1])
             
           ElseIf Not Buttons
             For i = #Anchors To 1 Step - 1
@@ -1973,6 +1997,19 @@ Module Widget
         
         \anchor[i]\Pos = \anchor[i]\Width-3
       Next i
+      
+       
+        \anchor[1]\class = "left"
+        \anchor[2]\class = "top"
+        \anchor[3]\class = "right"
+        \anchor[4]\class = "botom"
+        \anchor[5]\class = "lefttop"
+        \anchor[6]\class = "righttop"
+        \anchor[7]\class = "rightbottom"
+        \anchor[8]\class = "leftbottom"
+        \anchor[9]\class = "move"
+        
+      
     EndWith
     
     DataSection
@@ -1990,16 +2027,7 @@ Module Widget
     EndDataSection
   EndProcedure
   
-  Procedure Set_Anchors(*This.Widget_S, State)
-    With *This
-      If State
-        
-        AddAnchors(*This)
-        
-      EndIf
-    EndWith
-  EndProcedure
-  
+ 
   Procedure.i GetAnchors(*This.Widget_S, index.i=-1)
     ProcedureReturn Bool(*This\anchor[(Bool(index.i=-1) * #Anchor_moved) + (Bool(index.i>0) * index)]) * *This
   EndProcedure
@@ -7758,6 +7786,110 @@ Module Widget
   
   
   ;- SET
+  Procedure.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
+    With *This
+      Select Type
+        Case 1 ; widget
+          If \Parent
+            If Not \Align
+              \Align.Align_S = AllocateStructure(Align_S)
+            EndIf
+            
+            If Not \Align\AutoSize
+              \Align\Top = Bool(Mode&#PB_Top=#PB_Top)
+              \Align\Left = Bool(Mode&#PB_Left=#PB_Left)
+              \Align\Right = Bool(Mode&#PB_Right=#PB_Right)
+              \Align\Bottom = Bool(Mode&#PB_Bottom=#PB_Bottom)
+               
+              If Bool(Mode&#PB_Center=#PB_Center)
+                \Align\Horizontal = 1
+                \Align\Vertical = 1
+              Else
+                \Align\Horizontal = Bool(Mode&#PB_Horizontal=#PB_Horizontal)
+                \Align\Vertical = Bool(Mode&#PB_Vertical=#PB_Vertical)
+              EndIf
+            EndIf
+            
+            If Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize)
+              If Bool(Mode&#PB_Full=#PB_Full) 
+                \Align\Top = 1
+                \Align\Left = 1
+                \Align\Right = 1
+                \Align\Bottom = 1
+                \Align\AutoSize = 0
+              EndIf
+              
+              ; Auto dock
+              Static y2,x2,y1,x1
+              Protected width = #PB_Ignore, height = #PB_Ignore
+              
+              If \Align\Left And \Align\Right
+                \x = x2
+                width = \Parent\width[2] - x1 - x2
+              EndIf
+              If \Align\Top And \Align\Bottom 
+                \y = y2
+                height = \Parent\height[2] - y1 - y2
+              EndIf
+              
+              If \Align\Left And Not \Align\Right
+                \x = x2
+                \y = y2
+                x2 + \width
+                height = \Parent\height[2] - y1 - y2
+              EndIf
+              If \Align\Right And Not \Align\Left
+                \x = \Parent\width[2] - \width - x1
+                \y = y2
+                x1 + \width
+                height = \Parent\height[2] - y1 - y2
+              EndIf
+              
+              If \Align\Top And Not \Align\Bottom 
+                \x = 0
+                \y = y2
+                y2 + \height
+                width = \Parent\width[2] - x1 - x2
+              EndIf
+              If \Align\Bottom And Not \Align\Top
+                \x = 0
+                \y = \Parent\height[2] - \height - y1
+                y1 + \height
+                width = \Parent\width[2] - x1 - x2
+              EndIf
+              
+              Resize(*this, \x, \y, width, height)
+              
+              \Align\Top = Bool(Mode&#PB_Top=#PB_Top)+Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Left=#PB_Left)
+              \Align\Left = Bool(Mode&#PB_Left=#PB_Left)+Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Top=#PB_Top)
+              \Align\Right = Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Top=#PB_Top)+Bool(Mode&#PB_Bottom=#PB_Bottom)
+              \Align\Bottom = Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Left=#PB_Left)
+              
+            EndIf
+            
+            If \Align\Right
+              If \Align\Left And \Align\Right
+                \Align\x = \Parent\width[2] - \width
+              Else
+                \Align\x = \Parent\width[2] - (\x-\Parent\x[2]) ; \Parent\Width[2] - (\Parent\width[2] - \width)
+              EndIf
+            EndIf
+            If \Align\Bottom
+              If \Align\Top And \Align\Bottom
+                \Align\y = \Parent\height[2] - \height
+              Else
+                \Align\y = \Parent\height[2] - (\y-\Parent\y[2]) ; \Parent\height[2] - (\Parent\height[2] - \height)
+              EndIf
+            EndIf
+            
+            Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          EndIf
+        Case 2 ; text
+        Case 3 ; image
+      EndSelect
+    EndWith
+  EndProcedure
+  
   Procedure.i SetTransparency(*This.Widget_S, Transparency.a) ; opacity
     Protected Result.i
     
@@ -8016,7 +8148,7 @@ Module Widget
     
     With *This
       If Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget
-        Set_Anchors(*This, 1)
+        AddAnchors(*This)
         Resize_Anchors(*This)
       EndIf
     EndWith
@@ -8637,62 +8769,6 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
-    With *This
-      Select Type
-        Case 1 ; widget
-          If \Parent
-            If Not \Align
-              \Align.Align_S = AllocateStructure(Align_S)
-            EndIf
-            
-            \Align\Right = 0
-            \Align\Bottom = 0
-            \Align\Left = 0
-            \Align\Top = 0
-            \Align\Horizontal = 0
-            \Align\Vertical = 0
-            
-            If Mode&#PB_Right=#PB_Right
-              \Align\x = (\Parent\Width-\Parent\bs*2 - (\x-\Parent\x-\Parent\bs)) - \Width
-              \Align\Right = 1
-            EndIf
-            If Mode&#PB_Bottom=#PB_Bottom
-              \Align\y = (\Parent\height-\Parent\bs*2 - (\y-\Parent\y-\Parent\bs)) - \height
-              \Align\Bottom = 1
-            EndIf
-            If Mode&#PB_Left=#PB_Left
-              \Align\Left = 1
-              If Mode&#PB_Right=#PB_Right
-                \Align\x1 = (\Parent\Width - \Parent\bs*2) - \Width
-              EndIf
-            EndIf
-            If Mode&#PB_Top=#PB_Top
-              \Align\Top = 1
-              If Mode&#PB_Bottom=#PB_Bottom
-                \Align\y1 = (\Parent\height -\Parent\bs*2)- \height
-              EndIf
-            EndIf
-            
-            If Mode&#PB_Center=#PB_Center
-              \Align\Horizontal = 1
-              \Align\Vertical = 1
-            EndIf
-            If Mode&#PB_Horizontal=#PB_Horizontal
-              \Align\Horizontal = 1
-            EndIf
-            If Mode&#PB_Vertical=#PB_Vertical
-              \Align\Vertical = 1
-            EndIf
-            
-            Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
-        Case 2 ; text
-        Case 3 ; image
-      EndSelect
-    EndWith
-  EndProcedure
-  
   Procedure.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=0, Item.i=0)
     Protected Result, Count 
     State =- 1
@@ -8806,12 +8882,12 @@ Module Widget
     
     If *This > 0
       With *This
-        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And 
-           \Align And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
-          X = 0
-          Y = 0
-          Width = \Parent\width[2]
-          Height = \Parent\height[2]
+        ; #PB_Flag_AutoSize
+        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And \Align And \Align\AutoSize And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
+          X = 0; \Align\x
+          Y = 0; \Align\y
+          Width = \Parent\width[2] ; - \Align\x
+          Height = \Parent\height[2] ; - \Align\y
         EndIf
         
         ; Set widget coordinate
@@ -8985,7 +9061,7 @@ Module Widget
                 If \Childrens()\Align\Horizontal
                   x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width))/2
                 ElseIf \Childrens()\Align\Right And Not \Childrens()\Align\Left
-                  x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width));+Bool(\Grid>1)
+                  x = \width[2] - \Childrens()\Align\x
                 Else
                   If \x[2]
                     x = (\Childrens()\x-\x[2]) + Change_x 
@@ -8997,7 +9073,7 @@ Module Widget
                 If \Childrens()\Align\Vertical
                   y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height))/2 
                 ElseIf \Childrens()\Align\Bottom And Not \Childrens()\Align\Top
-                  y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height));+Bool(\Grid>1)
+                  y = \height[2] - \Childrens()\Align\y
                 Else
                   If \y[2]
                     y = (\Childrens()\y-\y[2]) + Change_y 
@@ -9007,13 +9083,13 @@ Module Widget
                 EndIf
                 
                 If \Childrens()\Align\Top And \Childrens()\Align\Bottom
-                  Height = \height[2]-\Childrens()\Align\y1;+Bool(\Grid>1)
+                  Height = \height[2] - \Childrens()\Align\y
                 Else
                   Height = #PB_Ignore
                 EndIf
                 
                 If \Childrens()\Align\Left And \Childrens()\Align\Right
-                  Width = \width[2]-\Childrens()\Align\x1;+Bool(\Grid>1)
+                  Width = \width[2] - \Childrens()\Align\x
                 Else
                   Width = #PB_Ignore
                 EndIf
@@ -9587,6 +9663,1366 @@ Module Widget
   EndProcedure
   
   
+  ;-
+  Procedure.i Bar(Type.i, Size.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7, SliderLen.i=7, Parent.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Type = Type
+      \Parent = Parent
+      If \Parent
+        \Root = \Parent\Root
+        \Window = \Parent\Window
+      EndIf
+      \Radius = Radius
+      \Ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
+      \Smooth = Bool(Flag&#PB_Bar_Smooth=#PB_Bar_Smooth)
+      \Vertical = Bool(Flag&#PB_Vertical=#PB_Vertical)
+      \Box = AllocateStructure(Box_S)
+      \Box\Size[3] = SliderLen ; min thumb size
+      
+      \Box\ArrowSize[1] = 4
+      \Box\ArrowSize[2] = 4
+      \Box\ArrowType[1] =- 1 ; -1 0 1
+      \Box\ArrowType[2] =- 1 ; -1 0 1
+      
+      ; Цвет фона скролла
+      \color[0]\alpha = 255
+      \color\alpha[1] = 0
+      \Color\State = 0
+      \Color\Back = $FFF9F9F9
+      \Color\Frame = \Color\Back
+      \Color\Line = $FFFFFFFF
+      
+      \Color[1] = Color_Default
+      \Color[2] = Color_Default
+      \Color[3] = Color_Default
+      
+      \color[1]\alpha = 255
+      \color[2]\alpha = 255
+      \color[3]\alpha = 255
+      \color[1]\alpha[1] = 128
+      \color[2]\alpha[1] = 128
+      \color[3]\alpha[1] = 128
+      
+      If Not Bool(Flag&#PB_Bar_NoButtons=#PB_Bar_NoButtons)
+        If Size < 21
+          \Box\Size = Size - 1
+        Else
+          \Box\Size = 17
+        EndIf
+        
+        If \Vertical
+          \width = Size
+        Else
+          \height = Size
+        EndIf
+      EndIf
+      
+      If \Min <> Min : SetAttribute(*This, #PB_Bar_Minimum, Min) : EndIf
+      If \Max <> Max : SetAttribute(*This, #PB_Bar_Maximum, Max) : EndIf
+      If \Page\len <> Pagelength : SetAttribute(*This, #PB_Bar_PageLength, Pagelength) : EndIf
+      If Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted) : SetAttribute(*This, #PB_Bar_Inverted, #True) : EndIf
+      
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
+    Protected *This.Widget_S, Size
+    Protected Vertical = (Bool(Flag&#PB_Splitter_Vertical) * #PB_Vertical)
+    
+    If Vertical
+      Size = width
+    Else
+      Size =  height
+    EndIf
+    
+    *This = Bar(#PB_GadgetType_ScrollBar, Size, Min, Max, PageLength, Flag|Vertical, Radius)
+    _set_last_parameters_(*This, #PB_GadgetType_ScrollBar, Flag) 
+    Resize(*This, X,Y,Width,Height)
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Progress(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
+    Protected *This.Widget_S
+    Protected Smooth = Bool(Flag&#PB_ProgressBar_Smooth) * #PB_Bar_Smooth ; |(Bool(#PB_Vertical) * #PB_Bar_Inverted)
+    Protected Vertical = Bool(Flag&#PB_ProgressBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
+    
+    *This = Bar(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Smooth|Vertical|#PB_Bar_NoButtons, 0)
+    _set_last_parameters_(*This, #PB_GadgetType_ProgressBar, Flag) 
+    Resize(*This, X,Y,Width,Height)
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
+    Protected *This.Widget_S
+    Protected Ticks = Bool(Flag&#PB_TrackBar_Ticks) * #PB_Bar_Ticks
+    Protected Vertical = Bool(Flag&#PB_TrackBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
+    
+    *This = Bar(#PB_GadgetType_TrackBar, 0, Min, Max, 0, Ticks|Vertical|#PB_Bar_NoButtons, 0)
+    _set_last_parameters_(*This, #PB_GadgetType_TrackBar, Flag)
+    Resize(*This, X,Y,Width,Height)
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Splitter(X.i,Y.i,Width.i,Height.i, First.i, Second.i, Flag.i=0)
+    Protected Vertical = Bool(Not Flag&#PB_Splitter_Vertical) * #PB_Vertical
+    Protected Auto = Bool(Flag&#PB_Flag_AutoSize) * #PB_Flag_AutoSize
+    Protected *Bar.Widget_S, *This.Widget_S, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
+    
+    *This = Bar(0, 0, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
+    *This\Class = #PB_Compiler_Procedure
+    
+    _set_last_parameters_(*This, #PB_GadgetType_Splitter, Flag) 
+    Resize(*This, X,Y,Width,Height)
+    
+    With *This
+      \Thumb\len = 7
+      \First = First
+      \Second = Second
+      
+      If \First
+        \Type[1] = \First\Type
+      EndIf
+      
+      If \Second
+        \Type[2] = \Second\Type
+      EndIf
+      
+      SetParent(\First, *This)
+      SetParent(\Second, *This)
+      
+      If \Vertical
+        \Cursor = #PB_Cursor_UpDown
+        SetState(*This, \height/2-1)
+      Else
+        \Cursor = #PB_Cursor_LeftRight
+        SetState(*This, \width/2-1)
+      EndIf
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Spin(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
+    Protected *This.Widget_S = AllocateStructure(Widget_S)
+    _set_last_parameters_(*This, #PB_GadgetType_Spin, Flag) 
+    
+    ;Flag | Bool(Not Flag&#PB_Vertical) * (#PB_Bar_Inverted)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      
+      \fs = 1
+      \bs = 2
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\Align\Vertical = 1
+      ;\Text\Align\Horizontal = 1
+      \Text\x[2] = 5
+      
+      ;\Radius = Radius
+      \Ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
+      \Smooth = Bool(Flag&#PB_Bar_Smooth=#PB_Bar_Smooth)
+      \Vertical = Bool(Not Flag&#PB_Vertical=#PB_Vertical)
+      \Box = AllocateStructure(Box_S)
+      
+      \Text\String.s[1] = Str(Min)
+      \Text\Change = 1
+      
+      \Box\ArrowSize[1] = 4
+      \Box\ArrowSize[2] = 4
+      \Box\ArrowType[1] =- 1 ; -1 0 1
+      \Box\ArrowType[2] =- 1 ; -1 0 1
+      
+      ; Цвет фона скролла
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFFFFFFF
+      \Text\Editable = 1
+      
+      \Color[1] = Color_Default
+      \Color[2] = Color_Default
+      \Color[3] = Color_Default
+      
+      \color[1]\alpha = 255
+      \color[2]\alpha = 255
+      \color[3]\alpha = 255
+      \color[1]\alpha[1] = 128
+      \color[2]\alpha[1] = 128
+      \color[3]\alpha[1] = 128
+      
+      
+      \Box\Size[2] = 17
+      
+      If \Min <> Min : SetAttribute(*This, #PB_Bar_Minimum, Min) : EndIf
+      If \Max <> Max : SetAttribute(*This, #PB_Bar_Maximum, Max) : EndIf
+      
+      If Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted) : SetAttribute(*This, #PB_Bar_Inverted, #True) : EndIf
+      ;\Page\len = 10
+      \Step = 1
+      
+    EndWith
+    
+    Resize(*This, X,Y,Width,Height)
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Image(X.i,Y.i,Width.i,Height.i, Image.i, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Image, Flag) 
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Color = Color_Default
+      \color\alpha = 255
+      
+      \fs = 1
+      \bs = 2
+      
+      \Image = AllocateStructure(Image_S)
+      Set_Image(*This, Image)
+      
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Button(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, Image.i=-1)
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Button, Flag) 
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Color = Color_Default
+      \color\alpha = 255
+      
+      \fs = 1
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\Align\Vertical = 1
+      \Text\Align\Horizontal = 1
+      
+      \Image = AllocateStructure(Image_S)
+      \image\Align\Vertical = 1
+      \image\Align\Horizontal = 1
+      
+      SetText(*This, Text.s)
+      Set_Image(*This, Image)
+      
+;       ; временно из-за этого (контейнер \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget))
+;       If \Parent And \Parent\anchor[1]
+;         x+\Parent\fs
+;         y+\Parent\fs
+;       EndIf
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i HyperLink(X.i,Y.i,Width.i,Height.i, Text.s, Color.i, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_HyperLink, Flag) 
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Cursor = #PB_Cursor_Hand
+      \Color = Color_Default
+      \color\alpha = 255
+      
+      \fs = 1
+      \Color\Front[1] = Color
+      \Color\Front[2] = Color
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\Align\Vertical = 1
+      ;\Text\Align\Horizontal = 1
+      \Text\MultiLine = 1
+      \Text\x[2] = 5
+      
+      \Image = AllocateStructure(Image_S)
+      \image\Align\Vertical = 1
+      ;\image\Align\Horizontal = 1
+      
+      \Flag\Lines = Bool(Flag&#PB_HyperLink_Underline=#PB_HyperLink_Underline)
+      
+      SetText(*This, Text.s)
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Frame(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Frame, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Container =- 2
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFF9F9F9
+      
+      \TabHeight = 16
+      
+      \bs = 1
+      \fs = 1
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\String.s[1] = Text.s
+      \Text\String.s = Text.s
+      \Text\Change = 1
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Text(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Text, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Color = Color_Default
+      \color\alpha = 255
+      
+      \fs = 1
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\x[2] = 3
+      \Text\y[2] = 0
+      
+      Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#PB_Flag_BorderLess
+      
+      If Bool(Flag&#PB_Text_WordWrap)
+        Flag&~#PB_Text_MultiLine
+        \Text\MultiLine =- 1
+      EndIf
+      
+      If Bool(Flag&#PB_Text_MultiLine)
+        Flag&~#PB_Text_WordWrap
+        \Text\MultiLine = 1
+      EndIf
+      
+      SetText(*This, Text.s)
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i ComboBox(X.i,Y.i,Width.i,Height.i, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_ComboBox, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Color = Color_Default
+      \color\alpha = 255
+      
+      \fs = 1
+      \index[1] =- 1
+      \index[2] =- 1
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\Align\Vertical = 1
+      ;\Text\Align\Horizontal = 1
+      \Text\x[2] = 5
+      \Text\height = 20
+      
+      \Image = AllocateStructure(Image_S)
+      \image\Align\Vertical = 1
+      ;\image\Align\Horizontal = 1
+      
+      \Box = AllocateStructure(Box_S)
+      \Box\height = Height
+      \Box\width = 15
+      \Box\ArrowSize = 4
+      \Box\ArrowType =- 1
+      
+      \index[1] =- 1
+      \index[2] =- 1
+      
+      \sublevellen = 18
+      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \Flag\FullSelection = 1
+      \Flag\AlwaysSelection = 1
+      
+      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+      
+      \Popup = Popup(*This, 0,0,0,0)
+      OpenList(\Popup)
+      Tree(0,0,0,0, #PB_Flag_AutoSize|#PB_Flag_NoLines|#PB_Flag_NoButtons) : \Popup\Childrens()\Scroll\h\height=0
+      CloseList()
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i CheckBox(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_CheckBox, Flag) 
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFFFFFFF
+      \Color\Frame = $FF7E7E7E
+      
+      \fs = 1
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\Align\Vertical = 1
+      \Text\MultiLine = 1
+      \Text\x[2] = 25
+      
+      \Radius = 3
+      \Box = AllocateStructure(Box_S)
+      \Box\height = 15
+      \Box\width = 15
+      \Box\ThreeState = Bool(Flag&#PB_CheckBox_ThreeState=#PB_CheckBox_ThreeState)
+      
+      
+      SetText(*This, Text.s)
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Option(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Option, Flag) 
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFFFFFFF
+      \Color\Frame = $FF7E7E7E
+      
+      \fs = 1
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\Align\Vertical = 1
+      \Text\MultiLine = 1
+      \Text\x[2] = 25
+      
+      \Box = AllocateStructure(Box_S)
+      \Box\height = 15
+      \Box\width = 15
+      \Radius = 0
+      
+      
+      SetText(*This, Text.s)
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i String(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_String, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Cursor = #PB_Cursor_IBeam
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFFFFFFF
+      
+      \bs = 1
+      \fs = 1
+      
+      \Text = AllocateStructure(Text_S)
+      \Text[1] = AllocateStructure(Text_S)
+      \Text[2] = AllocateStructure(Text_S)
+      \Text[3] = AllocateStructure(Text_S)
+      \Text\Editable = 1
+      \Text\x[2] = 3
+      \Text\y[2] = 0
+      \Text\Align\Vertical = 1
+      
+      \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+      \Text\MultiLine = (Bool(Flag&#PB_Text_MultiLine) * 1)+(Bool(Flag&#PB_Text_WordWrap) * - 1)
+      \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
+      \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
+      \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
+      \Text\Pass = Bool(Flag&#PB_Text_Password)
+      
+      ;\Text\Align\Vertical = Bool(Not Flag&#PB_Text_Top)
+      \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
+      \Text\Align\Right = Bool(Flag&#PB_Text_Right)
+      ;\Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
+      
+      
+      SetText(*This, Text.s)
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i IPAddress(X.i,Y.i,Width.i,Height.i)
+    Protected Text.s="0.0.0.0", Flag.i=#PB_Text_Center
+    Protected *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_IPAddress, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Cursor = #PB_Cursor_IBeam
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFFFFFFF
+      
+      \bs = 1
+      \fs = 1
+      
+      \Text = AllocateStructure(Text_S)
+      \Text[1] = AllocateStructure(Text_S)
+      \Text[2] = AllocateStructure(Text_S)
+      \Text[3] = AllocateStructure(Text_S)
+      \Text\Editable = 1
+      \Text\x[2] = 3
+      \Text\y[2] = 0
+      \Text\Align\Vertical = 1
+      
+      \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+      \Text\MultiLine = (Bool(Flag&#PB_Text_MultiLine) * 1)+(Bool(Flag&#PB_Text_WordWrap) * - 1)
+      \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
+      \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
+      \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
+      \Text\Pass = Bool(Flag&#PB_Text_Password)
+      
+      ;\Text\Align\Vertical = Bool(Not Flag&#PB_Text_Top)
+      \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
+      \Text\Align\Right = Bool(Flag&#PB_Text_Right)
+      ;\Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
+      
+      
+      SetText(*This, Text.s)
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Editor(X.i,Y.i,Width.i,Height.i, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Editor, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Cursor = #PB_Cursor_IBeam
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFFFFFFF
+      
+      \bs = 1
+      \fs = 1
+      
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+      
+      \Image = AllocateStructure(Image_S)
+      
+      
+      \Text = AllocateStructure(Text_S)
+      \Text[1] = AllocateStructure(Text_S)
+      \Text[2] = AllocateStructure(Text_S)
+      \Text[3] = AllocateStructure(Text_S)
+      \Text\Editable = 1
+      \Text\x[2] = 3
+      \Text\y[2] = 0
+      ;\Text\Align\Vertical = 1
+      
+      ;       \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
+      \Text\MultiLine = 1;(Bool(Flag&#PB_Text_MultiLine) * 1)+(Bool(Flag&#PB_Text_WordWrap) * - 1)
+                         ;\Text\Numeric = Bool(Flag&#PB_Text_Numeric)
+      \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
+      \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
+      \Text\Pass = Bool(Flag&#PB_Text_Password)
+      
+      ;       ;\Text\Align\Vertical = Bool(Not Flag&#PB_Text_Top)
+      ;       \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
+      ;       \Text\Align\Right = Bool(Flag&#PB_Text_Right)
+      ;       ;\Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
+      
+      
+      
+      \Color = Color_Default
+      \Color\Fore[0] = 0
+      
+      \margin\width = 100;Bool(Flag&#PB_Flag_Numeric)
+      \margin\Color\Back = $C8F0F0F0 ; \Color\Back[0] 
+      
+      \color\alpha = 255
+      \Color = Color_Default
+      \Color\Fore[0] = 0
+      \Color\Fore[1] = 0
+      \Color\Fore[2] = 0
+      \Color\Back[0] = \Color\Back[1]
+      \Color\Frame[0] = \Color\Frame[1]
+      ;\Color\Back[1] = \Color\Back[0]
+      
+      
+      
+      If \Text\Editable
+        \Color\Back[0] = $FFFFFFFF 
+      Else
+        \Color\Back[0] = $FFF0F0F0  
+      EndIf
+      
+      
+      \Interact = 1
+      \Text\Caret[1] =- 1
+      \Index[1] =- 1
+      \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
+      \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
+      \Flag\FullSelection = Bool(Not flag&#PB_Flag_FullSelection)*7
+      ;\Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
+      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
+      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+      
+      ;\Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
+      
+      
+      SetText(*This, "")
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  ;- 
+  ;- Lists
+  Procedure.i Tree(X.i,Y.i,Width.i,Height.i, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Tree, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      ;\Cursor = #PB_Cursor_Hand
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFF9F9F9
+      
+      \index[1] =- 1
+      \index[2] =- 1
+      
+      \Image = AllocateStructure(Image_S)
+      \Text = AllocateStructure(Text_S)
+      \Text\height = 20
+      
+      \sublevellen = 18
+      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \Flag\FullSelection = 1
+      \Flag\AlwaysSelection = 1
+      
+      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+      
+      \fs = 1
+      \bs = 2
+      
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i ListView(X.i,Y.i,Width.i,Height.i, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_ListView, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      ;\Cursor = #PB_Cursor_Hand
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFF9F9F9
+      
+      \index[1] =- 1
+      \index[2] =- 1
+      
+      
+      \Text = AllocateStructure(Text_S)
+      If StartDrawing(CanvasOutput(\Root\Canvas))
+        
+        \Text\height = TextHeight("A")
+        
+        StopDrawing()
+      EndIf
+      
+      \sublevellen = 0
+      \Flag\Lines = 0
+      \flag\buttons = 0
+      
+      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \Flag\FullSelection = 1
+      \Flag\AlwaysSelection = 1
+      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+      
+      \fs = 1
+      \bs = 2
+      
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i ListIcon(X.i,Y.i,Width.i,Height.i, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_ListIcon, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Cursor = #PB_Cursor_LeftRight
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFF9F9F9
+      
+      \index[1] =- 1
+      \index[2] =- 1
+      \TabHeight = 24
+      
+      \Image = AllocateStructure(Image_S)
+      \Text = AllocateStructure(Text_S)
+      \Text\height = 20
+      
+      \sublevellen = 18
+      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \Flag\FullSelection = 1
+      \Flag\AlwaysSelection = 1
+      
+      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+      
+      \fs = 1
+      \bs = 2
+      
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+      
+      AddColumn(*This, 0, FirstColumnTitle, FirstColumnWidth)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i ExplorerList(X.i,Y.i,Width.i,Height.i, Directory.s, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_ListIcon, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Cursor = #PB_Cursor_LeftRight
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFF9F9F9
+      
+      \index[1] =- 1
+      \index[2] =- 1
+      \TabHeight = 24
+      
+      \Image = AllocateStructure(Image_S)
+      \Text = AllocateStructure(Text_S)
+      \Text\height = 20
+      
+      \sublevellen = 18
+      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \Flag\FullSelection = 1
+      \Flag\AlwaysSelection = 1
+      
+      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+      
+      \fs = 1
+      \bs = 2
+      
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+      
+      AddColumn(*This, 0, "Name", 200)
+      AddColumn(*This, 0, "Size", 100)
+      AddColumn(*This, 0, "Type", 100)
+      AddColumn(*This, 0, "Modified", 100)
+      
+      If Directory.s = ""
+        Directory.s = GetHomeDirectory() ; Lists all files and folder in the home directory
+      EndIf
+      Protected Size$, Type$, Modified$
+      
+      If ExamineDirectory(0, Directory.s, "*.*")  
+        
+        While NextDirectoryEntry(0)
+          If DirectoryEntryType(0) = #PB_DirectoryEntry_Directory
+            Type$ = "[Directory] "
+            Size$ = "" ; A directory doesn't have a size
+            Modified$ = FormatDate("%mm/%dd/%yyyy", DirectoryEntryDate(0, #PB_Date_Modified))
+            AddItem(*This, -1, DirectoryEntryName(0) +#LF$+ Size$ +#LF$+ Type$ +#LF$+ Modified$)
+          EndIf
+        Wend
+        FinishDirectory(0)
+      EndIf
+      
+      If ExamineDirectory(0, Directory.s, "*.*")  
+        While NextDirectoryEntry(0)
+          If DirectoryEntryType(0) = #PB_DirectoryEntry_File
+            Type$ = "[File] "
+            Size$ = " (Size: " + DirectoryEntrySize(0) + ")"
+            Modified$ = FormatDate("%mm/%dd/%yyyy", DirectoryEntryDate(0, #PB_Date_Modified))
+            AddItem(*This, -1, DirectoryEntryName(0) +#LF$+ Size$ +#LF$+ Type$ +#LF$+ Modified$)
+          EndIf
+        Wend
+        
+        FinishDirectory(0)
+      EndIf
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Property(X.i,Y.i,Width.i,Height.i, SplitterPos.i = 80, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Property, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      
+      \Box = AllocateStructure(Box_S)
+      \Thumb\len = 7
+      \Box\Size[3] = 7 ; min thumb size
+      SetAttribute(*This, #PB_Bar_Maximum, Width) 
+      
+      ;\Container = 1
+      
+      
+      \Cursor = #PB_Cursor_LeftRight
+      SetState(*This, SplitterPos)
+      
+      
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFF9F9F9
+      
+      \index[1] =- 1
+      \index[2] =- 1
+      
+      \Image = AllocateStructure(Image_S)
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\height = 20
+      
+      \sublevellen = 18
+      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
+      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \Flag\FullSelection = 1
+      \Flag\AlwaysSelection = 1
+      
+      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+      
+      \fs = 1
+      \bs = 2
+      
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
+      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  ;-
+  ;- Containers
+  Procedure.i Panel(X.i,Y.i,Width.i,Height.i, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Panel, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Container = 1
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFF9F9F9
+      
+      \index[1] =- 1
+      \index[2] = 0
+      
+      \Box = AllocateStructure(Box_S)
+      \Box\Size = 13 
+      
+      \Box\ArrowSize[1] = 6
+      \Box\ArrowSize[2] = 6
+      \Box\ArrowType[1] =- 1
+      \Box\ArrowType[2] =- 1
+      
+      \Box\Color[1] = Color_Default
+      \Box\Color[2] = Color_Default
+      
+      \Box\color[1]\alpha = 255
+      \Box\color[2]\alpha = 255
+      
+      \Page\len = Width
+      
+      \TabHeight = 25
+      \Step = 10
+      
+      \fs = 1
+      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      
+      ; Background image
+      \Image[1] = AllocateStructure(Image_S)
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+      OpenList(*This)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Container(X.i,Y.i,Width.i,Height.i, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_Container, Flag) 
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Container = 1
+      \Color = Color_Default
+      \color\alpha = 255
+      \color\Fore = 0
+      \color\Back = $FFF6F6F6
+      
+      \index[1] =- 1
+      \index[2] = 0
+      
+      \fs = 1
+      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      
+      ; Background image
+      \Image[1] = AllocateStructure(Image_S)
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+      OpenList(*This)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i ScrollArea(X.i,Y.i,Width.i,Height.i, ScrollAreaWidth.i, ScrollAreaHeight.i, ScrollStep.i=1, Flag.i=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    _set_last_parameters_(*This, #PB_GadgetType_ScrollArea, Flag)
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Container = 1
+      \Color = Color_Default
+      \color\alpha = 255
+      \Color\Back = $FFF9F9F9
+      
+      \fs = 1
+      \bs = 2
+      
+      ; Background image
+      \Image[1] = AllocateStructure(Image_S)
+      
+      \Scroll = AllocateStructure(Scroll_S) 
+      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,ScrollAreaHeight,Height, #PB_Vertical, 7, 7, *This)
+      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size, 0,ScrollAreaWidth,Width, 0, 7, 7, *This)
+      ;       Resize(\Scroll\v, #PB_Ignore,#PB_Ignore,Size,#PB_Ignore)
+      ;       Resize(\Scroll\h, #PB_Ignore,#PB_Ignore,#PB_Ignore,Size)
+      
+      Resize(*This, X.i,Y.i,Width.i,Height)
+      OpenList(*This)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Form(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget.Widget_S=0)
+    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
+    
+    *This\Class = #PB_Compiler_Procedure
+    
+    If *Widget 
+      *This\Type = #PB_GadgetType_Window
+      SetParent(*This, *Widget)
+      
+      If Bool(Flag & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget)
+        AddAnchors(*This)
+      EndIf
+    Else ;If *Root
+      If LastElement(*Value\OpenedList()) 
+        ChangeCurrentElement(*Value\OpenedList(), Adress(Root()))
+        While NextElement(*Value\OpenedList())
+          DeleteElement(*Value\OpenedList())
+        Wend
+      EndIf
+      _set_last_parameters_(*This, #PB_GadgetType_Window, Flag) 
+    EndIf
+    
+    With *This
+      \X =- 1
+      \Y =- 1
+      \Container =- 1
+      \Color = Color_Default
+      \color\Fore = 0
+      \color\Back = $FFF0F0F0
+      \color\alpha = 255
+      \Color[1]\Alpha = 128
+      \Color[2]\Alpha = 128
+      \Color[3]\Alpha = 128
+      
+      \index[1] =- 1
+      \index[2] = 0
+      \TabHeight = 25
+      
+      \Image = AllocateStructure(Image_S)
+      \image\x[2] = 5 ; padding 
+      
+      \Text = AllocateStructure(Text_S)
+      \Text\Align\Horizontal = 1
+      
+      \Box = AllocateStructure(Box_S)
+      \Box\Size = 12
+      \Box\Color = Color_Default
+      \Box\color\alpha = 255
+      
+      ;       \Box\Color[1]\Alpha = 128
+      ;       \Box\Color[2]\Alpha = 128
+      ;       \Box\Color[3]\Alpha = 128
+      
+      
+      \Flag\Window\SizeGadget = Bool(Flag&#PB_Window_SizeGadget)
+      \Flag\Window\SystemMenu = Bool(Flag&#PB_Window_SystemMenu)
+      \Flag\Window\BorderLess = Bool(Flag&#PB_Window_BorderLess)
+      
+      \fs = 1
+      \bs = 1 ;Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      
+      ; Background image
+      \Image[1] = AllocateStructure(Image_S)
+      
+      SetText(*This, Text.s)
+      Resize(*This, X.i,Y.i,Width.i,Height)
+      OpenList(*This)
+      SetActive(*This)
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  ;-
+  Procedure.i CloseList()
+    If LastElement(*Value\OpenedList())
+      If *Value\OpenedList()\Type = #PB_GadgetType_Popup
+        ReDraw(*Value\OpenedList())
+      EndIf
+      
+      DeleteElement(*Value\OpenedList())
+    EndIf
+  EndProcedure
+  
+  Procedure.i OpenList(*This.Widget_S, Item.i=0, Type=-5)
+    With *This
+      Protected Window = *This
+      Protected Canvas = Item
+      
+      If IsWindow(Window)
+        ;         If Not Bool(IsGadget(Canvas) And GadgetType(Canvas) = #PB_GadgetType_Canvas)
+        ;           Canvas = CanvasGadget(#PB_Any, 0,0, WindowWidth(Window, #PB_Window_InnerCoordinate), WindowHeight(Window, #PB_Window_InnerCoordinate), #PB_Canvas_Keyboard)
+        ;           BindGadgetEvent(Canvas, @Canvas_CallBack())
+        ;         EndIf
+        
+        If Not Bool(IsGadget(Canvas) And GadgetType(Canvas) = #PB_GadgetType_Canvas)
+          *This = Open(Window, 0,0, WindowWidth(Window, #PB_Window_InnerCoordinate), WindowHeight(Window, #PB_Window_InnerCoordinate))
+        Else
+          If Type = #PB_GadgetType_Window
+            *This = Form(0, 0, GadgetWidth(Canvas)-2, GadgetHeight(Canvas)-2-25, "")
+          Else
+            *This = AllocateStructure(Widget_S)
+            \x =- 1
+            \y =- 1
+            \Type = #PB_GadgetType_Root
+            \Container = #PB_GadgetType_Root
+            \color\alpha = 255
+            
+            \Text = AllocateStructure(Text_S) ; без него в окнах вилетает ошибка
+        
+            Resize(*This, 0, 0, GadgetWidth(Canvas), GadgetHeight(Canvas))
+          EndIf
+          
+          
+          LastElement(*Value\OpenedList())
+          If AddElement(*Value\OpenedList())
+            *Value\OpenedList() = *This
+          EndIf
+          
+          \Root = *This
+          Root() = \Root
+          Root()\CanvasWindow = Window
+          Root()\Canvas = Canvas
+          Root()\adress = @*Value\OpenedList()
+          
+          SetGadgetData(Canvas, *This)
+        EndIf
+        
+        ProcedureReturn *This
+        
+      ElseIf *This > 0
+        
+        If \Type = #PB_GadgetType_Window
+          \Window = *This
+        EndIf
+        
+        LastElement(*Value\OpenedList())
+        If AddElement(*Value\OpenedList())
+          *Value\OpenedList() = *This 
+          *Value\OpenedList()\o_i = Item
+        EndIf
+      EndIf
+      
+      
+    EndWith
+    
+    ProcedureReturn *This\Container
+  EndProcedure
+  
+  Procedure.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
+    Protected w.i=-1, Canvas.i=-1, *This.Widget_S = AllocateStructure(Widget_S)
+    
+    With *This
+      If Not IsWindow(Window) And Window >- 2
+        w = OpenWindow(Window, X,Y,Width,Height, Text.s, Flag, WindowID) 
+        If Window =- 1 
+          Window = w 
+        EndIf
+        X = 0 
+        Y = 0
+      EndIf
+      
+      If Window <>- 2 ; IsWindow(w)
+        Canvas = CanvasGadget(#PB_Any, X,Y,Width,Height, #PB_Canvas_Keyboard)
+        BindGadgetEvent(Canvas, @Canvas_CallBack())
+      EndIf
+    
+      \X =- 1
+      \Y =- 1
+      \Root = *This
+      
+      If Text.s
+        \Type =- 1
+        \Container =- 1
+        \Color = Color_Default
+        \color\Fore = 0
+        \color\Back = $FFF0F0F0
+        \color\alpha = 255
+        \Color[1]\Alpha = 128
+        \Color[2]\Alpha = 128
+        \Color[3]\Alpha = 128
+        
+        \index[1] =- 1
+        \index[2] = 0
+        \TabHeight = 25
+        
+        \Image = AllocateStructure(Image_S)
+        \image\x[2] = 5 ; padding 
+        
+        \Text = AllocateStructure(Text_S)
+        \Text\Align\Horizontal = 1
+        
+        \Box = AllocateStructure(Box_S)
+        \Box\Size = 12
+        \Box\Color = Color_Default
+        \Box\color\alpha = 255
+        
+        \Flag\Window\SizeGadget = Bool(Flag&#PB_Window_SizeGadget)
+        \Flag\Window\SystemMenu = Bool(Flag&#PB_Window_SystemMenu)
+        \Flag\Window\BorderLess = Bool(Flag&#PB_Window_BorderLess)
+        
+        \fs = 1
+        \bs = 1
+        
+        ; Background image
+        \Image[1] = AllocateStructure(Image_S)
+        
+        SetText(*This, Text.s)
+        SetActive(*This)
+      Else
+        \Type = #PB_GadgetType_Root
+        \Container = #PB_GadgetType_Root
+        
+        \Text = AllocateStructure(Text_S) ; без него в окнах вилетает ошибка
+        
+        \color\alpha = 255
+      EndIf
+      
+      Resize(*This, 0, 0, Width,Height)
+      
+      LastElement(*Value\OpenedList())
+      If AddElement(*Value\OpenedList())
+        *Value\OpenedList() = *This
+      EndIf
+      
+      Root() = \Root
+      Root()\CanvasWindow = Window
+      Root()\Canvas = Canvas
+      Root()\adress = @*Value\OpenedList()
+      
+      *Value\Last = Root()
+      
+      If IsGadget(Canvas)
+        SetGadgetData(Canvas, *This)
+        SetWindowData(Window, Canvas)
+      EndIf
+    EndWith
+    
+    ProcedureReturn *This
+  EndProcedure
+  
+  Procedure.i Create(Type.i, X.i,Y.i,Width.i,Height.i, Text.s, Param_1.i=0, Param_2.i=0, Param_3.i=0, Flag.i=0, Parent.i=0, ParentItem.i=0)
+    Protected Result
+    
+    If Type = #PB_GadgetType_Window
+      Result = Form(X,Y,Width,Height, Text.s, Flag, Parent)
+    Else
+      If Parent
+        OpenList(Parent, ParentItem)
+      EndIf
+      
+      Select Type
+        Case #PB_GadgetType_Panel      : Result = Panel(X,Y,Width,Height, Flag)
+        Case #PB_GadgetType_Container  : Result = Container(X,Y,Width,Height, Flag)
+        Case #PB_GadgetType_ScrollArea : Result = ScrollArea(X,Y,Width,Height, Param_1, Param_2, Param_3, Flag)
+        Case #PB_GadgetType_Button     : Result = Button(X,Y,Width,Height, Text.s, Flag)
+        Case #PB_GadgetType_String     : Result = String(X,Y,Width,Height, Text.s, Flag)
+        Case #PB_GadgetType_Text       : Result = Text(X,Y,Width,Height, Text.s, Flag)
+      EndSelect
+      
+      If Parent
+        CloseList()
+      EndIf
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i Free(*This.Widget_S)
+    Protected Result.i
+    
+    With *This
+      If *This
+        If \Scroll
+          If \Scroll\v
+            FreeStructure(\Scroll\v) : \Scroll\v = 0
+          EndIf
+          If \Scroll\h
+            FreeStructure(\Scroll\h)  : \Scroll\h = 0
+          EndIf
+          FreeStructure(\Scroll) : \Scroll = 0
+        EndIf
+        
+        If \Box : FreeStructure(\Box) : \Box = 0 : EndIf
+        If \Text : FreeStructure(\Text) : \Text = 0 : EndIf
+        If \Image : FreeStructure(\Image) : \Image = 0 : EndIf
+        If \Image[1] : FreeStructure(\Image[1]) : \Image[1] = 0 : EndIf
+        
+        *Value\Active = 0
+        *Value\Focus = 0
+        
+        If \Parent And ListSize(\Parent\Childrens()) : \Parent\CountItems - 1
+          ChangeCurrentElement(\Parent\Childrens(), Adress(*This))
+          Result = DeleteElement(\Parent\Childrens())
+        EndIf
+        
+        ; FreeStructure(*This) 
+        ClearStructure(*This, Widget_S) 
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+
+  
   ;- 
   Procedure.i From(*This.Widget_S, MouseX.i, MouseY.i)
     Protected *Result.Widget_S, Change.b, X.i,Y.i,Width.i,Height.i, ParentItem.i
@@ -10152,10 +11588,10 @@ Module Widget
         MouseScreenY= GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
       EndIf
       
-      ;         ; anchors events
-      ;         If CallBack_Anchors(*This, EventType.i, \Mouse\Buttons, MouseScreenX.i,MouseScreenY.i)
-      ;           ProcedureReturn 1
-      ;         EndIf
+              ; anchors events
+              If CallBack_Anchors(*This, EventType.i, \Mouse\Buttons, MouseScreenX.i,MouseScreenY.i)
+                ProcedureReturn 1
+              EndIf
       
       ; Enter/Leave mouse events
       _mouse_pos_(*This)
@@ -10403,1419 +11839,6 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  
-  ;-
-  Procedure.i Bar(Type.i, Size.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7, SliderLen.i=7, Parent.i=0)
-    Protected *This.Widget_S = AllocateStructure(Widget_S)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Type = Type
-      \Parent = Parent
-      If \Parent
-        \Root = \Parent\Root
-        \Window = \Parent\Window
-      EndIf
-      \Radius = Radius
-      \Ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
-      \Smooth = Bool(Flag&#PB_Bar_Smooth=#PB_Bar_Smooth)
-      \Vertical = Bool(Flag&#PB_Vertical=#PB_Vertical)
-      \Box = AllocateStructure(Box_S)
-      \Box\Size[3] = SliderLen ; min thumb size
-      
-      \Box\ArrowSize[1] = 4
-      \Box\ArrowSize[2] = 4
-      \Box\ArrowType[1] =- 1 ; -1 0 1
-      \Box\ArrowType[2] =- 1 ; -1 0 1
-      
-      ; Цвет фона скролла
-      \color[0]\alpha = 255
-      \color\alpha[1] = 0
-      \Color\State = 0
-      \Color\Back = $FFF9F9F9
-      \Color\Frame = \Color\Back
-      \Color\Line = $FFFFFFFF
-      
-      \Color[1] = Color_Default
-      \Color[2] = Color_Default
-      \Color[3] = Color_Default
-      
-      \color[1]\alpha = 255
-      \color[2]\alpha = 255
-      \color[3]\alpha = 255
-      \color[1]\alpha[1] = 128
-      \color[2]\alpha[1] = 128
-      \color[3]\alpha[1] = 128
-      
-      If Not Bool(Flag&#PB_Bar_NoButtons=#PB_Bar_NoButtons)
-        If Size < 21
-          \Box\Size = Size - 1
-        Else
-          \Box\Size = 17
-        EndIf
-        
-        If \Vertical
-          \width = Size
-        Else
-          \height = Size
-        EndIf
-      EndIf
-      
-      If \Min <> Min : SetAttribute(*This, #PB_Bar_Minimum, Min) : EndIf
-      If \Max <> Max : SetAttribute(*This, #PB_Bar_Maximum, Max) : EndIf
-      If \Page\len <> Pagelength : SetAttribute(*This, #PB_Bar_PageLength, Pagelength) : EndIf
-      If Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted) : SetAttribute(*This, #PB_Bar_Inverted, #True) : EndIf
-      
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
-    Protected *This.Widget_S, Size
-    Protected Vertical = (Bool(Flag&#PB_Splitter_Vertical) * #PB_Vertical)
-    
-    If Vertical
-      Size = width
-    Else
-      Size =  height
-    EndIf
-    
-    *This = Bar(#PB_GadgetType_ScrollBar, Size, Min, Max, PageLength, Flag|Vertical, Radius)
-    
-    _set_last_parent_(*This, #PB_GadgetType_ScrollBar) 
-    _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    Resize(*This, X,Y,Width,Height)
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Progress(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
-    Protected *This.Widget_S
-    Protected Smooth = Bool(Flag&#PB_ProgressBar_Smooth) * #PB_Bar_Smooth ; |(Bool(#PB_Vertical) * #PB_Bar_Inverted)
-    Protected Vertical = Bool(Flag&#PB_ProgressBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
-    
-    *This = Bar(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Smooth|Vertical|#PB_Bar_NoButtons, 0)
-    _set_last_parent_(*This, #PB_GadgetType_ProgressBar) 
-    _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    Resize(*This, X,Y,Width,Height)
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
-    Protected *This.Widget_S
-    Protected Ticks = Bool(Flag&#PB_TrackBar_Ticks) * #PB_Bar_Ticks
-    Protected Vertical = Bool(Flag&#PB_TrackBar_Vertical) * (#PB_Vertical|#PB_Bar_Inverted)
-    
-    *This = Bar(#PB_GadgetType_TrackBar, 0, Min, Max, 0, Ticks|Vertical|#PB_Bar_NoButtons, 0)
-    _set_last_parent_(*This, #PB_GadgetType_TrackBar)
-    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-    Resize(*This, X,Y,Width,Height)
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Splitter(X.i,Y.i,Width.i,Height.i, First.i, Second.i, Flag.i=0)
-    Protected Vertical = Bool(Not Flag&#PB_Splitter_Vertical) * #PB_Vertical
-    Protected Auto = Bool(Flag&#PB_Flag_AutoSize) * #PB_Flag_AutoSize
-    Protected *Bar.Widget_S, *This.Widget_S, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
-    
-    *This = Bar(0, 0, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
-    *This\Class = #PB_Compiler_Procedure
-    
-    _set_last_parent_(*This, #PB_GadgetType_Splitter) 
-    _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    Resize(*This, X,Y,Width,Height)
-    
-    With *This
-      \Thumb\len = 7
-      \First = First
-      \Second = Second
-      
-      If \First
-        \Type[1] = \First\Type
-      EndIf
-      
-      If \Second
-        \Type[2] = \Second\Type
-      EndIf
-      
-      SetParent(\First, *This)
-      SetParent(\Second, *This)
-      
-      If \Vertical
-        \Cursor = #PB_Cursor_UpDown
-        SetState(*This, \height/2-1)
-      Else
-        \Cursor = #PB_Cursor_LeftRight
-        SetState(*This, \width/2-1)
-      EndIf
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Spin(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
-    Protected *This.Widget_S = AllocateStructure(Widget_S)
-    _set_last_parent_(*This, #PB_GadgetType_Spin) 
-    
-    ;Flag | Bool(Not Flag&#PB_Vertical) * (#PB_Bar_Inverted)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      
-      \fs = 1
-      \bs = 2
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\Align\Vertical = 1
-      ;\Text\Align\Horizontal = 1
-      \Text\x[2] = 5
-      
-      ;\Radius = Radius
-      \Ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
-      \Smooth = Bool(Flag&#PB_Bar_Smooth=#PB_Bar_Smooth)
-      \Vertical = Bool(Not Flag&#PB_Vertical=#PB_Vertical)
-      \Box = AllocateStructure(Box_S)
-      
-      \Text\String.s[1] = Str(Min)
-      \Text\Change = 1
-      
-      \Box\ArrowSize[1] = 4
-      \Box\ArrowSize[2] = 4
-      \Box\ArrowType[1] =- 1 ; -1 0 1
-      \Box\ArrowType[2] =- 1 ; -1 0 1
-      
-      ; Цвет фона скролла
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFFFFFFF
-      \Text\Editable = 1
-      
-      \Color[1] = Color_Default
-      \Color[2] = Color_Default
-      \Color[3] = Color_Default
-      
-      \color[1]\alpha = 255
-      \color[2]\alpha = 255
-      \color[3]\alpha = 255
-      \color[1]\alpha[1] = 128
-      \color[2]\alpha[1] = 128
-      \color[3]\alpha[1] = 128
-      
-      
-      \Box\Size[2] = 17
-      
-      If \Min <> Min : SetAttribute(*This, #PB_Bar_Minimum, Min) : EndIf
-      If \Max <> Max : SetAttribute(*This, #PB_Bar_Maximum, Max) : EndIf
-      
-      If Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted) : SetAttribute(*This, #PB_Bar_Inverted, #True) : EndIf
-      ;\Page\len = 10
-      \Step = 1
-      
-    EndWith
-    
-    _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-    Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-    Resize(*This, X,Y,Width,Height)
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Image(X.i,Y.i,Width.i,Height.i, Image.i, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Image) 
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Color = Color_Default
-      \color\alpha = 255
-      
-      \fs = 1
-      \bs = 2
-      
-      \Image = AllocateStructure(Image_S)
-      Set_Image(*This, Image)
-      
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
-      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Button(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, Image.i=-1)
-    Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Button) 
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Color = Color_Default
-      \color\alpha = 255
-      
-      \fs = 1
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\Align\Vertical = 1
-      \Text\Align\Horizontal = 1
-      
-      \Image = AllocateStructure(Image_S)
-      \image\Align\Vertical = 1
-      \image\Align\Horizontal = 1
-      
-      SetText(*This, Text.s)
-      Set_Image(*This, Image)
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
-      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i HyperLink(X.i,Y.i,Width.i,Height.i, Text.s, Color.i, Flag.i=0)
-    Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_HyperLink) 
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Cursor = #PB_Cursor_Hand
-      \Color = Color_Default
-      \color\alpha = 255
-      
-      \fs = 1
-      \Color\Front[1] = Color
-      \Color\Front[2] = Color
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\Align\Vertical = 1
-      ;\Text\Align\Horizontal = 1
-      \Text\MultiLine = 1
-      \Text\x[2] = 5
-      
-      \Image = AllocateStructure(Image_S)
-      \image\Align\Vertical = 1
-      ;\image\Align\Horizontal = 1
-      
-      \Flag\Lines = Bool(Flag&#PB_HyperLink_Underline=#PB_HyperLink_Underline)
-      
-      SetText(*This, Text.s)
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
-      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Frame(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Frame)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Container =- 2
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFF9F9F9
-      
-      \TabHeight = 16
-      
-      \bs = 1
-      \fs = 1
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\String.s[1] = Text.s
-      \Text\String.s = Text.s
-      \Text\Change = 1
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Text(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
-    Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Text)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Color = Color_Default
-      \color\alpha = 255
-      
-      \fs = 1
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\x[2] = 3
-      \Text\y[2] = 0
-      
-      Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#PB_Flag_BorderLess
-      
-      If Bool(Flag&#PB_Text_WordWrap)
-        Flag&~#PB_Text_MultiLine
-        \Text\MultiLine =- 1
-      EndIf
-      
-      If Bool(Flag&#PB_Text_MultiLine)
-        Flag&~#PB_Text_WordWrap
-        \Text\MultiLine = 1
-      EndIf
-      
-      SetText(*This, Text.s)
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i ComboBox(X.i,Y.i,Width.i,Height.i, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_ComboBox)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Color = Color_Default
-      \color\alpha = 255
-      
-      \fs = 1
-      \index[1] =- 1
-      \index[2] =- 1
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\Align\Vertical = 1
-      ;\Text\Align\Horizontal = 1
-      \Text\x[2] = 5
-      \Text\height = 20
-      
-      \Image = AllocateStructure(Image_S)
-      \image\Align\Vertical = 1
-      ;\image\Align\Horizontal = 1
-      
-      \Box = AllocateStructure(Box_S)
-      \Box\height = Height
-      \Box\width = 15
-      \Box\ArrowSize = 4
-      \Box\ArrowType =- 1
-      
-      \index[1] =- 1
-      \index[2] =- 1
-      
-      \sublevellen = 18
-      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-      \Flag\FullSelection = 1
-      \Flag\AlwaysSelection = 1
-      
-      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
-      
-      \Popup = Popup(*This, 0,0,0,0)
-      OpenList(\Popup)
-      Tree(0,0,0,0, #PB_Flag_AutoSize|#PB_Flag_NoLines|#PB_Flag_NoButtons) : \Popup\Childrens()\Scroll\h\height=0
-      CloseList()
-      
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i CheckBox(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
-    Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_CheckBox) 
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFFFFFFF
-      \Color\Frame = $FF7E7E7E
-      
-      \fs = 1
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\Align\Vertical = 1
-      \Text\MultiLine = 1
-      \Text\x[2] = 25
-      
-      \Radius = 3
-      \Box = AllocateStructure(Box_S)
-      \Box\height = 15
-      \Box\width = 15
-      \Box\ThreeState = Bool(Flag&#PB_CheckBox_ThreeState=#PB_CheckBox_ThreeState)
-      
-      
-      SetText(*This, Text.s)
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Option(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
-    Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Option) 
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFFFFFFF
-      \Color\Frame = $FF7E7E7E
-      
-      \fs = 1
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\Align\Vertical = 1
-      \Text\MultiLine = 1
-      \Text\x[2] = 25
-      
-      \Box = AllocateStructure(Box_S)
-      \Box\height = 15
-      \Box\width = 15
-      \Radius = 0
-      
-      
-      SetText(*This, Text.s)
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i String(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0)
-    Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_String)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Cursor = #PB_Cursor_IBeam
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFFFFFFF
-      
-      \bs = 1
-      \fs = 1
-      
-      \Text = AllocateStructure(Text_S)
-      \Text[1] = AllocateStructure(Text_S)
-      \Text[2] = AllocateStructure(Text_S)
-      \Text[3] = AllocateStructure(Text_S)
-      \Text\Editable = 1
-      \Text\x[2] = 3
-      \Text\y[2] = 0
-      \Text\Align\Vertical = 1
-      
-      \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-      \Text\MultiLine = (Bool(Flag&#PB_Text_MultiLine) * 1)+(Bool(Flag&#PB_Text_WordWrap) * - 1)
-      \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
-      \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
-      \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
-      \Text\Pass = Bool(Flag&#PB_Text_Password)
-      
-      ;\Text\Align\Vertical = Bool(Not Flag&#PB_Text_Top)
-      \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
-      \Text\Align\Right = Bool(Flag&#PB_Text_Right)
-      ;\Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
-      
-      
-      SetText(*This, Text.s)
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i IPAddress(X.i,Y.i,Width.i,Height.i)
-    Protected Text.s="0.0.0.0", Flag.i=#PB_Text_Center
-    Protected *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_IPAddress)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Cursor = #PB_Cursor_IBeam
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFFFFFFF
-      
-      \bs = 1
-      \fs = 1
-      
-      \Text = AllocateStructure(Text_S)
-      \Text[1] = AllocateStructure(Text_S)
-      \Text[2] = AllocateStructure(Text_S)
-      \Text[3] = AllocateStructure(Text_S)
-      \Text\Editable = 1
-      \Text\x[2] = 3
-      \Text\y[2] = 0
-      \Text\Align\Vertical = 1
-      
-      \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-      \Text\MultiLine = (Bool(Flag&#PB_Text_MultiLine) * 1)+(Bool(Flag&#PB_Text_WordWrap) * - 1)
-      \Text\Numeric = Bool(Flag&#PB_Text_Numeric)
-      \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
-      \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
-      \Text\Pass = Bool(Flag&#PB_Text_Password)
-      
-      ;\Text\Align\Vertical = Bool(Not Flag&#PB_Text_Top)
-      \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
-      \Text\Align\Right = Bool(Flag&#PB_Text_Right)
-      ;\Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
-      
-      
-      SetText(*This, Text.s)
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Editor(X.i,Y.i,Width.i,Height.i, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Editor)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Cursor = #PB_Cursor_IBeam
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFFFFFFF
-      
-      \bs = 1
-      \fs = 1
-      
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
-      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
-      
-      \Image = AllocateStructure(Image_S)
-      
-      
-      \Text = AllocateStructure(Text_S)
-      \Text[1] = AllocateStructure(Text_S)
-      \Text[2] = AllocateStructure(Text_S)
-      \Text[3] = AllocateStructure(Text_S)
-      \Text\Editable = 1
-      \Text\x[2] = 3
-      \Text\y[2] = 0
-      ;\Text\Align\Vertical = 1
-      
-      ;       \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
-      \Text\MultiLine = 1;(Bool(Flag&#PB_Text_MultiLine) * 1)+(Bool(Flag&#PB_Text_WordWrap) * - 1)
-                         ;\Text\Numeric = Bool(Flag&#PB_Text_Numeric)
-      \Text\Lower = Bool(Flag&#PB_Text_LowerCase)
-      \Text\Upper = Bool(Flag&#PB_Text_UpperCase)
-      \Text\Pass = Bool(Flag&#PB_Text_Password)
-      
-      ;       ;\Text\Align\Vertical = Bool(Not Flag&#PB_Text_Top)
-      ;       \Text\Align\Horizontal = Bool(Flag&#PB_Text_Center)
-      ;       \Text\Align\Right = Bool(Flag&#PB_Text_Right)
-      ;       ;\Text\Align\Bottom = Bool(Flag&#PB_Text_Bottom)
-      
-      
-      
-      \Color = Color_Default
-      \Color\Fore[0] = 0
-      
-      \margin\width = 100;Bool(Flag&#PB_Flag_Numeric)
-      \margin\Color\Back = $C8F0F0F0 ; \Color\Back[0] 
-      
-      \color\alpha = 255
-      \Color = Color_Default
-      \Color\Fore[0] = 0
-      \Color\Fore[1] = 0
-      \Color\Fore[2] = 0
-      \Color\Back[0] = \Color\Back[1]
-      \Color\Frame[0] = \Color\Frame[1]
-      ;\Color\Back[1] = \Color\Back[0]
-      
-      
-      
-      If \Text\Editable
-        \Color\Back[0] = $FFFFFFFF 
-      Else
-        \Color\Back[0] = $FFF0F0F0  
-      EndIf
-      
-      
-      \Interact = 1
-      \Text\Caret[1] =- 1
-      \Index[1] =- 1
-      \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
-      \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
-      \Flag\FullSelection = Bool(Not flag&#PB_Flag_FullSelection)*7
-      ;\Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
-      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
-      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-      
-      ;\Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
-      
-      
-      SetText(*This, "")
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  ;- 
-  ;- Lists
-  Procedure.i Tree(X.i,Y.i,Width.i,Height.i, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Tree)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      ;\Cursor = #PB_Cursor_Hand
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFF9F9F9
-      
-      \index[1] =- 1
-      \index[2] =- 1
-      
-      \Image = AllocateStructure(Image_S)
-      \Text = AllocateStructure(Text_S)
-      \Text\height = 20
-      
-      \sublevellen = 18
-      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-      \Flag\FullSelection = 1
-      \Flag\AlwaysSelection = 1
-      
-      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
-      
-      \fs = 1
-      \bs = 2
-      
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
-      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i ListView(X.i,Y.i,Width.i,Height.i, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_ListView)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      ;\Cursor = #PB_Cursor_Hand
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFF9F9F9
-      
-      \index[1] =- 1
-      \index[2] =- 1
-      
-      
-      \Text = AllocateStructure(Text_S)
-      If StartDrawing(CanvasOutput(\Root\Canvas))
-        
-        \Text\height = TextHeight("A")
-        
-        StopDrawing()
-      EndIf
-      
-      \sublevellen = 0
-      \Flag\Lines = 0
-      \flag\buttons = 0
-      
-      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-      \Flag\FullSelection = 1
-      \Flag\AlwaysSelection = 1
-      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
-      
-      \fs = 1
-      \bs = 2
-      
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
-      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i ListIcon(X.i,Y.i,Width.i,Height.i, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_ListIcon)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Cursor = #PB_Cursor_LeftRight
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFF9F9F9
-      
-      \index[1] =- 1
-      \index[2] =- 1
-      \TabHeight = 24
-      
-      \Image = AllocateStructure(Image_S)
-      \Text = AllocateStructure(Text_S)
-      \Text\height = 20
-      
-      \sublevellen = 18
-      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-      \Flag\FullSelection = 1
-      \Flag\AlwaysSelection = 1
-      
-      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
-      
-      \fs = 1
-      \bs = 2
-      
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
-      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-      
-      AddColumn(*This, 0, FirstColumnTitle, FirstColumnWidth)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i ExplorerList(X.i,Y.i,Width.i,Height.i, Directory.s, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_ListIcon)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Cursor = #PB_Cursor_LeftRight
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFF9F9F9
-      
-      \index[1] =- 1
-      \index[2] =- 1
-      \TabHeight = 24
-      
-      \Image = AllocateStructure(Image_S)
-      \Text = AllocateStructure(Text_S)
-      \Text\height = 20
-      
-      \sublevellen = 18
-      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-      \Flag\FullSelection = 1
-      \Flag\AlwaysSelection = 1
-      
-      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
-      
-      \fs = 1
-      \bs = 2
-      
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
-      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-      
-      AddColumn(*This, 0, "Name", 200)
-      AddColumn(*This, 0, "Size", 100)
-      AddColumn(*This, 0, "Type", 100)
-      AddColumn(*This, 0, "Modified", 100)
-      
-      If Directory.s = ""
-        Directory.s = GetHomeDirectory() ; Lists all files and folder in the home directory
-      EndIf
-      Protected Size$, Type$, Modified$
-      
-      If ExamineDirectory(0, Directory.s, "*.*")  
-        
-        While NextDirectoryEntry(0)
-          If DirectoryEntryType(0) = #PB_DirectoryEntry_Directory
-            Type$ = "[Directory] "
-            Size$ = "" ; A directory doesn't have a size
-            Modified$ = FormatDate("%mm/%dd/%yyyy", DirectoryEntryDate(0, #PB_Date_Modified))
-            AddItem(*This, -1, DirectoryEntryName(0) +#LF$+ Size$ +#LF$+ Type$ +#LF$+ Modified$)
-          EndIf
-        Wend
-        FinishDirectory(0)
-      EndIf
-      
-      If ExamineDirectory(0, Directory.s, "*.*")  
-        While NextDirectoryEntry(0)
-          If DirectoryEntryType(0) = #PB_DirectoryEntry_File
-            Type$ = "[File] "
-            Size$ = " (Size: " + DirectoryEntrySize(0) + ")"
-            Modified$ = FormatDate("%mm/%dd/%yyyy", DirectoryEntryDate(0, #PB_Date_Modified))
-            AddItem(*This, -1, DirectoryEntryName(0) +#LF$+ Size$ +#LF$+ Type$ +#LF$+ Modified$)
-          EndIf
-        Wend
-        
-        FinishDirectory(0)
-      EndIf
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Property(X.i,Y.i,Width.i,Height.i, SplitterPos.i = 80, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Property)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      
-      \Box = AllocateStructure(Box_S)
-      \Thumb\len = 7
-      \Box\Size[3] = 7 ; min thumb size
-      SetAttribute(*This, #PB_Bar_Maximum, Width) 
-      
-      ;\Container = 1
-      
-      
-      \Cursor = #PB_Cursor_LeftRight
-      SetState(*This, SplitterPos)
-      
-      
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFF9F9F9
-      
-      \index[1] =- 1
-      \index[2] =- 1
-      
-      \Image = AllocateStructure(Image_S)
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\height = 20
-      
-      \sublevellen = 18
-      \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
-      \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
-      \Flag\FullSelection = 1
-      \Flag\AlwaysSelection = 1
-      
-      \Flag\Lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
-      
-      \fs = 1
-      \bs = 2
-      
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Height, #PB_Vertical, 7, 7, *This)
-      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,0,Width, 0, 7, 7, *This)
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  ;-
-  ;- Containers
-  Procedure.i Panel(X.i,Y.i,Width.i,Height.i, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Panel)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Container = 1
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFF9F9F9
-      
-      \index[1] =- 1
-      \index[2] = 0
-      
-      \Box = AllocateStructure(Box_S)
-      \Box\Size = 13 
-      
-      \Box\ArrowSize[1] = 6
-      \Box\ArrowSize[2] = 6
-      \Box\ArrowType[1] =- 1
-      \Box\ArrowType[2] =- 1
-      
-      \Box\Color[1] = Color_Default
-      \Box\Color[2] = Color_Default
-      
-      \Box\color[1]\alpha = 255
-      \Box\color[2]\alpha = 255
-      
-      \Page\len = Width
-      
-      \TabHeight = 25
-      \Step = 10
-      
-      \fs = 1
-      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
-      
-      ; Background image
-      \Image[1] = AllocateStructure(Image_S)
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
-      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-      OpenList(*This)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Container(X.i,Y.i,Width.i,Height.i, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_Container) 
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Container = 1
-      \Color = Color_Default
-      \color\alpha = 255
-      \color\Fore = 0
-      \color\Back = $FFF6F6F6
-      
-      \index[1] =- 1
-      \index[2] = 0
-      
-      \fs = 1
-      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
-      
-      ; Background image
-      \Image[1] = AllocateStructure(Image_S)
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
-      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-      OpenList(*This)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i ScrollArea(X.i,Y.i,Width.i,Height.i, ScrollAreaWidth.i, ScrollAreaHeight.i, ScrollStep.i=1, Flag.i=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    _set_last_parent_(*This, #PB_GadgetType_ScrollArea)
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Container = 1
-      \Color = Color_Default
-      \color\alpha = 255
-      \Color\Back = $FFF9F9F9
-      
-      \fs = 1
-      \bs = 2
-      
-      ; Background image
-      \Image[1] = AllocateStructure(Image_S)
-      
-      \Scroll = AllocateStructure(Scroll_S) 
-      \Scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,ScrollAreaHeight,Height, #PB_Vertical, 7, 7, *This)
-      \Scroll\h = Bar(#PB_GadgetType_ScrollBar,Size, 0,ScrollAreaWidth,Width, 0, 7, 7, *This)
-      ;       Resize(\Scroll\v, #PB_Ignore,#PB_Ignore,Size,#PB_Ignore)
-      ;       Resize(\Scroll\h, #PB_Ignore,#PB_Ignore,#PB_Ignore,Size)
-      
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
-      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-      OpenList(*This)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Form(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget.Widget_S=0)
-    Protected Size = 16, *This.Widget_S = AllocateStructure(Widget_S) 
-    
-    *This\Class = #PB_Compiler_Procedure
-    
-    If *Widget 
-      *This\Type = #PB_GadgetType_Window
-      SetParent(*This, *Widget)
-    Else ;If *Root
-      If LastElement(*Value\OpenedList()) 
-        ChangeCurrentElement(*Value\OpenedList(), Adress(Root()))
-        While NextElement(*Value\OpenedList())
-          DeleteElement(*Value\OpenedList())
-        Wend
-      EndIf
-      _set_last_parent_(*This, #PB_GadgetType_Window) 
-    EndIf
-    
-    With *This
-      \X =- 1
-      \Y =- 1
-      \Container =- 1
-      \Color = Color_Default
-      \color\Fore = 0
-      \color\Back = $FFF0F0F0
-      \color\alpha = 255
-      \Color[1]\Alpha = 128
-      \Color[2]\Alpha = 128
-      \Color[3]\Alpha = 128
-      
-      \index[1] =- 1
-      \index[2] = 0
-      \TabHeight = 25
-      
-      \Image = AllocateStructure(Image_S)
-      \image\x[2] = 5 ; padding 
-      
-      \Text = AllocateStructure(Text_S)
-      \Text\Align\Horizontal = 1
-      
-      \Box = AllocateStructure(Box_S)
-      \Box\Size = 12
-      \Box\Color = Color_Default
-      \Box\color\alpha = 255
-      
-      ;       \Box\Color[1]\Alpha = 128
-      ;       \Box\Color[2]\Alpha = 128
-      ;       \Box\Color[3]\Alpha = 128
-      
-      
-      \Flag\Window\SizeGadget = Bool(Flag&#PB_Window_SizeGadget)
-      \Flag\Window\SystemMenu = Bool(Flag&#PB_Window_SystemMenu)
-      \Flag\Window\BorderLess = Bool(Flag&#PB_Window_BorderLess)
-      
-      \fs = 1
-      \bs = 1 ;Bool(Not Flag&#PB_Flag_AnchorsGadget)
-      
-      ; Background image
-      \Image[1] = AllocateStructure(Image_S)
-      
-      SetText(*This, Text.s)
-      _set_auto_size_(*This, Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize)
-      ;       Width=Match(Width,\Grid)+Bool(\Grid>1)
-      ;       Height=Match(Height,\Grid)+Bool(\Grid>1)
-      Set_Anchors(*This, Bool(Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget))
-      Resize(*This, X.i,Y.i,Width.i,Height)
-      OpenList(*This)
-      SetActive(*This)
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  ;-
-  Procedure.i CloseList()
-    If LastElement(*Value\OpenedList())
-      If *Value\OpenedList()\Type = #PB_GadgetType_Popup
-        ReDraw(*Value\OpenedList())
-      EndIf
-      
-      DeleteElement(*Value\OpenedList())
-    EndIf
-  EndProcedure
-  
-  Procedure.i OpenList(*This.Widget_S, Item.i=0, Type=-5)
-    With *This
-      Protected Window = *This
-      Protected Canvas = Item
-      
-      If IsWindow(Window)
-        ;         If Not Bool(IsGadget(Canvas) And GadgetType(Canvas) = #PB_GadgetType_Canvas)
-        ;           Canvas = CanvasGadget(#PB_Any, 0,0, WindowWidth(Window, #PB_Window_InnerCoordinate), WindowHeight(Window, #PB_Window_InnerCoordinate), #PB_Canvas_Keyboard)
-        ;           BindGadgetEvent(Canvas, @Canvas_CallBack())
-        ;         EndIf
-        
-        If Not Bool(IsGadget(Canvas) And GadgetType(Canvas) = #PB_GadgetType_Canvas)
-          *This = Open(Window, 0,0, WindowWidth(Window, #PB_Window_InnerCoordinate), WindowHeight(Window, #PB_Window_InnerCoordinate))
-        Else
-          If Type = #PB_GadgetType_Window
-            *This = Form(0, 0, GadgetWidth(Canvas)-2, GadgetHeight(Canvas)-2-25, "")
-          Else
-            *This = AllocateStructure(Widget_S)
-            \x =- 1
-            \y =- 1
-            \Type = #PB_GadgetType_Root
-            \Container = #PB_GadgetType_Root
-            \color\alpha = 255
-            
-            \Text = AllocateStructure(Text_S) ; без него в окнах вилетает ошибка
-        
-            Resize(*This, 0, 0, GadgetWidth(Canvas), GadgetHeight(Canvas))
-          EndIf
-          
-          
-          LastElement(*Value\OpenedList())
-          If AddElement(*Value\OpenedList())
-            *Value\OpenedList() = *This
-          EndIf
-          
-          \Root = *This
-          Root() = \Root
-          Root()\CanvasWindow = Window
-          Root()\Canvas = Canvas
-          Root()\adress = @*Value\OpenedList()
-          
-          SetGadgetData(Canvas, *This)
-        EndIf
-        
-        ProcedureReturn *This
-        
-      ElseIf *This > 0
-        
-        If \Type = #PB_GadgetType_Window
-          \Window = *This
-        EndIf
-        
-        LastElement(*Value\OpenedList())
-        If AddElement(*Value\OpenedList())
-          *Value\OpenedList() = *This 
-          *Value\OpenedList()\o_i = Item
-        EndIf
-      EndIf
-      
-      
-    EndWith
-    
-    ProcedureReturn *This\Container
-  EndProcedure
-  
-  Procedure.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
-    Protected w.i=-1, Canvas.i=-1, *This.Widget_S = AllocateStructure(Widget_S)
-    
-    With *This
-      If Not IsWindow(Window) And Window >- 2
-        w = OpenWindow(Window, X,Y,Width,Height, Text.s, Flag, WindowID) 
-        If Window =- 1 
-          Window = w 
-        EndIf
-        X = 0 
-        Y = 0
-      EndIf
-      
-      If Window <>- 2 ; IsWindow(w)
-        Canvas = CanvasGadget(#PB_Any, X,Y,Width,Height, #PB_Canvas_Keyboard)
-        BindGadgetEvent(Canvas, @Canvas_CallBack())
-      EndIf
-    
-      \X =- 1
-      \Y =- 1
-      \Root = *This
-      
-      If Text.s
-        \Type =- 1
-        \Container =- 1
-        \Color = Color_Default
-        \color\Fore = 0
-        \color\Back = $FFF0F0F0
-        \color\alpha = 255
-        \Color[1]\Alpha = 128
-        \Color[2]\Alpha = 128
-        \Color[3]\Alpha = 128
-        
-        \index[1] =- 1
-        \index[2] = 0
-        \TabHeight = 25
-        
-        \Image = AllocateStructure(Image_S)
-        \image\x[2] = 5 ; padding 
-        
-        \Text = AllocateStructure(Text_S)
-        \Text\Align\Horizontal = 1
-        
-        \Box = AllocateStructure(Box_S)
-        \Box\Size = 12
-        \Box\Color = Color_Default
-        \Box\color\alpha = 255
-        
-        \Flag\Window\SizeGadget = Bool(Flag&#PB_Window_SizeGadget)
-        \Flag\Window\SystemMenu = Bool(Flag&#PB_Window_SystemMenu)
-        \Flag\Window\BorderLess = Bool(Flag&#PB_Window_BorderLess)
-        
-        \fs = 1
-        \bs = 1
-        
-        ; Background image
-        \Image[1] = AllocateStructure(Image_S)
-        
-        SetText(*This, Text.s)
-        SetActive(*This)
-      Else
-        \Type = #PB_GadgetType_Root
-        \Container = #PB_GadgetType_Root
-        
-        \Text = AllocateStructure(Text_S) ; без него в окнах вилетает ошибка
-        
-        \color\alpha = 255
-      EndIf
-      
-      Resize(*This, 0, 0, Width,Height)
-      
-      LastElement(*Value\OpenedList())
-      If AddElement(*Value\OpenedList())
-        *Value\OpenedList() = *This
-      EndIf
-      
-      Root() = \Root
-      Root()\CanvasWindow = Window
-      Root()\Canvas = Canvas
-      Root()\adress = @*Value\OpenedList()
-      
-      *Value\Last = Root()
-      
-      If IsGadget(Canvas)
-        SetGadgetData(Canvas, *This)
-        SetWindowData(Window, Canvas)
-      EndIf
-    EndWith
-    
-    ProcedureReturn *This
-  EndProcedure
-  
-  Procedure.i Create(Type.i, X.i,Y.i,Width.i,Height.i, Text.s, Param_1.i=0, Param_2.i=0, Param_3.i=0, Flag.i=0, Parent.i=0, ParentItem.i=0)
-    Protected Result
-    
-    If Type = #PB_GadgetType_Window
-      Result = Form(X,Y,Width,Height, Text.s, Flag, Parent)
-    Else
-      If Parent
-        OpenList(Parent, ParentItem)
-      EndIf
-      
-      Select Type
-        Case #PB_GadgetType_Panel      : Result = Panel(X,Y,Width,Height, Flag)
-        Case #PB_GadgetType_Container  : Result = Container(X,Y,Width,Height, Flag)
-        Case #PB_GadgetType_ScrollArea : Result = ScrollArea(X,Y,Width,Height, Param_1, Param_2, Param_3, Flag)
-        Case #PB_GadgetType_Button     : Result = Button(X,Y,Width,Height, Text.s, Flag)
-        Case #PB_GadgetType_String     : Result = String(X,Y,Width,Height, Text.s, Flag)
-        Case #PB_GadgetType_Text       : Result = Text(X,Y,Width,Height, Text.s, Flag)
-      EndSelect
-      
-      If Parent
-        CloseList()
-      EndIf
-    EndIf
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i Free(*This.Widget_S)
-    Protected Result.i
-    
-    With *This
-      If *This
-        If \Scroll
-          If \Scroll\v
-            FreeStructure(\Scroll\v) : \Scroll\v = 0
-          EndIf
-          If \Scroll\h
-            FreeStructure(\Scroll\h)  : \Scroll\h = 0
-          EndIf
-          FreeStructure(\Scroll) : \Scroll = 0
-        EndIf
-        
-        If \Box : FreeStructure(\Box) : \Box = 0 : EndIf
-        If \Text : FreeStructure(\Text) : \Text = 0 : EndIf
-        If \Image : FreeStructure(\Image) : \Image = 0 : EndIf
-        If \Image[1] : FreeStructure(\Image[1]) : \Image[1] = 0 : EndIf
-        
-        *Value\Active = 0
-        *Value\Focus = 0
-        
-        If \Parent And ListSize(\Parent\Childrens()) : \Parent\CountItems - 1
-          ChangeCurrentElement(\Parent\Childrens(), Adress(*This))
-          Result = DeleteElement(\Parent\Childrens())
-        EndIf
-        
-        ; FreeStructure(*This) 
-        ClearStructure(*This, Widget_S) 
-      EndIf
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
 EndModule
 
 ;-
@@ -12964,5 +12987,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------HAAA5HAAQAAAAAA+
+; Folding = 3--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------HAAA5HAAQAAAAAA+
 ; EnableXP

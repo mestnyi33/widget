@@ -683,14 +683,14 @@ DeclareModule Widget
   Structure Align_S
     X.i
     y.i
-    x1.i
-    y1.i
+    
     Left.b
     Top.b
     Right.b
     Bottom.b
     Vertical.b
     Horizontal.b
+    AutoSize.b
   EndStructure
   
   
@@ -872,6 +872,7 @@ DeclareModule Widget
     
     *Popup.Widget_S
     *anchor.Anchor_S[#Anchors+1]
+    *selector.Anchor_S[#Anchors+1]
     *OptionGroup.Widget_S
     
     fs.i 
@@ -919,18 +920,19 @@ DeclareModule Widget
   
   ;- - Anchor_S
   Structure Anchor_S
-    X.i[2] ; [1] - delta_x
-    Y.i[2] ; [1] - delta_y
-    Width.i
-    Height.i
+    x.i[2] ; [1] - delta_x
+    y.i[2] ; [1] - delta_y
+    width.i
+    height.i
     
     hide.i
-    Pos.i ; anchor position on the widget
-    State.i ; mouse state 
-    Cursor.i[2]
+    pos.i ; anchor position on the widget
+    state.b ; mouse state 
+    cursor.i[2]
     class.s
+    *widget.Widget_S
     
-    Color.Color_S[4]
+    color.color_S[4]
   EndStructure
   
   ;- - Value_S
@@ -1083,6 +1085,7 @@ DeclareModule Widget
     #PB_Bottom
     #PB_Vertical 
     #PB_Horizontal
+    #PB_Flag_AutoSize
     
     #PB_Toggle
     #PB_BorderLess
@@ -1107,7 +1110,6 @@ DeclareModule Widget
     #PB_Flag_MultiSelect
     #PB_Flag_ClickSelect
     
-    #PB_Flag_AutoSize
     #PB_Flag_AutoRight
     #PB_Flag_AutoBottom
     #PB_Flag_AnchorsGadget
@@ -1116,6 +1118,8 @@ DeclareModule Widget
     
     #PB_Flag_Limit
   EndEnumeration
+  
+  #PB_AutoSize = #PB_Flag_AutoSize
   
   If (#PB_Flag_Limit>>1) > 2147483647 ; 8589934592
     Debug "Исчерпан лимит в x32 ("+Str(#PB_Flag_Limit>>1)+")"
@@ -1612,6 +1616,7 @@ Module Widget
     ; _set_auto_size_
     If Bool(_flag_ & #PB_Flag_AutoSize=#PB_Flag_AutoSize) : x=0 : y=0
       _this_\Align = AllocateStructure(Align_S)
+      _this_\Align\AutoSize = 1
       _this_\Align\Left = 1
       _this_\Align\Top = 1
       _this_\Align\Right = 1
@@ -1805,7 +1810,7 @@ Module Widget
                 If (MouseScreenX>\anchor[i]\X And MouseScreenX=<\anchor[i]\X+\anchor[i]\Width And 
                     MouseScreenY>\anchor[i]\Y And MouseScreenY=<\anchor[i]\Y+\anchor[i]\Height)
                   
-                  If \anchor <> \anchor[i] : \anchor = \anchor[i]
+                  If \anchor <> \anchor[i] And \anchor : \anchor = \anchor[i]
                     If Not \anchor[i]\State
                       \anchor[i]\State = 1
                     EndIf
@@ -2024,7 +2029,6 @@ Module Widget
     EndDataSection
   EndProcedure
   
- 
   Procedure.i GetAnchors(*This.Widget_S, index.i=-1)
     ProcedureReturn Bool(*This\anchor[(Bool(index.i=-1) * #Anchor_moved) + (Bool(index.i>0) * index)]) * *This
   EndProcedure
@@ -2048,52 +2052,19 @@ Module Widget
     
     With *This
       If *This\anchor[#Anchor_moved] And *Last <> *This
-        If *Last ; And *Last<>*This\Parent
-                 ;           *Last\Focus = 0
+        If *Last
           *Last\anchor = 0
-          
-          ;           If *Last\Parent
-          ; ;           \Parent\Focus = 1
-          ;           *Last\Parent\anchor = 0
-          ;           EndIf
           
           If *LastPos
             ; Возврашаем на место
             SetPosition(*Last, #PB_List_Before, *LastPos)
             *LastPos = 0
-            
-            ;             If *LastParentPos 
-            ;               SetPosition(*Last\Parent, #PB_List_Before, *LastParentPos)
-            ;               *LastParentPos = 0
-            ;             EndIf
           EndIf
-          
         EndIf
         
-        ;         \Focus = 1
         \anchor = \anchor[#Anchor_moved]
-        
-        ;         If \Window
-        ; ;           \Window\Focus = 1
-        ;          \Window\anchor = \Window\anchor[#Anchor_moved]
-        ;         EndIf
-        ;         
-        ;         If \Parent
-        ; ;           \Parent\Focus = 1
-        ;           \Parent\anchor = \Parent\anchor[#Anchor_moved]
-        ;         EndIf
-        
-        
-        ; Поднимаем гаджет
-        ;         If *This\Parent
-        ;           *LastParentPos = GetPosition(*This\Parent, #PB_List_After)
-        ;           SetPosition(*This\Parent, #PB_List_Last)
-        ;         EndIf
-        ;If Not *LastPos
         *LastPos = GetPosition(*This, #PB_List_After)
         SetPosition(*This, #PB_List_Last)
-        ;EndIf
-        
         *Last = *This
         Result = 1
       EndIf
@@ -7783,6 +7754,110 @@ Module Widget
   
   
   ;- SET
+  Procedure.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
+    With *This
+      Select Type
+        Case 1 ; widget
+          If \Parent
+            If Not \Align
+              \Align.Align_S = AllocateStructure(Align_S)
+            EndIf
+            
+            If Not \Align\AutoSize
+              \Align\Top = Bool(Mode&#PB_Top=#PB_Top)
+              \Align\Left = Bool(Mode&#PB_Left=#PB_Left)
+              \Align\Right = Bool(Mode&#PB_Right=#PB_Right)
+              \Align\Bottom = Bool(Mode&#PB_Bottom=#PB_Bottom)
+               
+              If Bool(Mode&#PB_Center=#PB_Center)
+                \Align\Horizontal = 1
+                \Align\Vertical = 1
+              Else
+                \Align\Horizontal = Bool(Mode&#PB_Horizontal=#PB_Horizontal)
+                \Align\Vertical = Bool(Mode&#PB_Vertical=#PB_Vertical)
+              EndIf
+            EndIf
+            
+            If Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize)
+              If Bool(Mode&#PB_Full=#PB_Full) 
+                \Align\Top = 1
+                \Align\Left = 1
+                \Align\Right = 1
+                \Align\Bottom = 1
+                \Align\AutoSize = 0
+              EndIf
+              
+              ; Auto dock
+              Static y2,x2,y1,x1
+              Protected width = #PB_Ignore, height = #PB_Ignore
+              
+              If \Align\Left And \Align\Right
+                \x = x2
+                width = \Parent\width[2] - x1 - x2
+              EndIf
+              If \Align\Top And \Align\Bottom 
+                \y = y2
+                height = \Parent\height[2] - y1 - y2
+              EndIf
+              
+              If \Align\Left And Not \Align\Right
+                \x = x2
+                \y = y2
+                x2 + \width
+                height = \Parent\height[2] - y1 - y2
+              EndIf
+              If \Align\Right And Not \Align\Left
+                \x = \Parent\width[2] - \width - x1
+                \y = y2
+                x1 + \width
+                height = \Parent\height[2] - y1 - y2
+              EndIf
+              
+              If \Align\Top And Not \Align\Bottom 
+                \x = 0
+                \y = y2
+                y2 + \height
+                width = \Parent\width[2] - x1 - x2
+              EndIf
+              If \Align\Bottom And Not \Align\Top
+                \x = 0
+                \y = \Parent\height[2] - \height - y1
+                y1 + \height
+                width = \Parent\width[2] - x1 - x2
+              EndIf
+              
+              Resize(*this, \x, \y, width, height)
+              
+              \Align\Top = Bool(Mode&#PB_Top=#PB_Top)+Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Left=#PB_Left)
+              \Align\Left = Bool(Mode&#PB_Left=#PB_Left)+Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Top=#PB_Top)
+              \Align\Right = Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Top=#PB_Top)+Bool(Mode&#PB_Bottom=#PB_Bottom)
+              \Align\Bottom = Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Left=#PB_Left)
+              
+            EndIf
+            
+            If \Align\Right
+              If \Align\Left And \Align\Right
+                \Align\x = \Parent\width[2] - \width
+              Else
+                \Align\x = \Parent\width[2] - (\x-\Parent\x[2]) ; \Parent\Width[2] - (\Parent\width[2] - \width)
+              EndIf
+            EndIf
+            If \Align\Bottom
+              If \Align\Top And \Align\Bottom
+                \Align\y = \Parent\height[2] - \height
+              Else
+                \Align\y = \Parent\height[2] - (\y-\Parent\y[2]) ; \Parent\height[2] - (\Parent\height[2] - \height)
+              EndIf
+            EndIf
+            
+            Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          EndIf
+        Case 2 ; text
+        Case 3 ; image
+      EndSelect
+    EndWith
+  EndProcedure
+  
   Procedure.i SetTransparency(*This.Widget_S, Transparency.a) ; opacity
     Protected Result.i
     
@@ -8662,48 +8737,6 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
-    With *This
-      Select Type
-        Case 1 ; widget
-          If \Parent
-            If Not \Align
-              \Align.Align_S = AllocateStructure(Align_S)
-            EndIf
-            
-            \Align\Right = Bool(Mode&#PB_Right=#PB_Right)
-            \Align\Bottom = Bool(Mode&#PB_Bottom=#PB_Bottom)
-            \Align\Left = Bool(Mode&#PB_Left=#PB_Left)
-            \Align\Top = Bool(Mode&#PB_Top=#PB_Top)
-            \Align\Horizontal = Bool(Mode&#PB_Horizontal=#PB_Horizontal)
-            \Align\Vertical = Bool(Mode&#PB_Vertical=#PB_Vertical)
-            
-            If Mode&#PB_Center=#PB_Center
-              \Align\Horizontal = 1
-              \Align\Vertical = 1
-            EndIf
-            
-            If \Align\Right
-              \Align\x = (\Parent\Width-\Parent\bs*2 - (\x-\Parent\x-\Parent\bs)) - \Width
-            EndIf
-            If \Align\Bottom
-              \Align\y = (\Parent\height-\Parent\bs*2 - (\y-\Parent\y-\Parent\bs)) - \height
-            EndIf
-            If \Align\Left And \Align\Right
-              \Align\x1 = (\Parent\Width - \Parent\bs*2) - \Width
-            EndIf
-            If \Align\Top And \Align\Bottom
-              \Align\y1 = (\Parent\height -\Parent\bs*2)- \height
-            EndIf
-            
-            Resize(\Parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
-        Case 2 ; text
-        Case 3 ; image
-      EndSelect
-    EndWith
-  EndProcedure
-  
   Procedure.i SetColor(*This.Widget_S, ColorType.i, Color.i, State.i=0, Item.i=0)
     Protected Result, Count 
     State =- 1
@@ -8817,12 +8850,12 @@ Module Widget
     
     If *This > 0
       With *This
-        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And 
-           \Align And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
-          X = 0
-          Y = 0
-          Width = \Parent\width[2]
-          Height = \Parent\height[2]
+        ; #PB_Flag_AutoSize
+        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And \Align And \Align\AutoSize And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
+          X = 0; \Align\x
+          Y = 0; \Align\y
+          Width = \Parent\width[2] ; - \Align\x
+          Height = \Parent\height[2] ; - \Align\y
         EndIf
         
         ; Set widget coordinate
@@ -8996,7 +9029,7 @@ Module Widget
                 If \Childrens()\Align\Horizontal
                   x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width))/2
                 ElseIf \Childrens()\Align\Right And Not \Childrens()\Align\Left
-                  x = (\width[2] - (\Childrens()\Align\x+\Childrens()\width));+Bool(\Grid>1)
+                  x = \width[2] - \Childrens()\Align\x
                 Else
                   If \x[2]
                     x = (\Childrens()\x-\x[2]) + Change_x 
@@ -9008,7 +9041,7 @@ Module Widget
                 If \Childrens()\Align\Vertical
                   y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height))/2 
                 ElseIf \Childrens()\Align\Bottom And Not \Childrens()\Align\Top
-                  y = (\height[2] - (\Childrens()\Align\y+\Childrens()\height));+Bool(\Grid>1)
+                  y = \height[2] - \Childrens()\Align\y
                 Else
                   If \y[2]
                     y = (\Childrens()\y-\y[2]) + Change_y 
@@ -9018,13 +9051,13 @@ Module Widget
                 EndIf
                 
                 If \Childrens()\Align\Top And \Childrens()\Align\Bottom
-                  Height = \height[2]-\Childrens()\Align\y1;+Bool(\Grid>1)
+                  Height = \height[2] - \Childrens()\Align\y
                 Else
                   Height = #PB_Ignore
                 EndIf
                 
                 If \Childrens()\Align\Left And \Childrens()\Align\Right
-                  Width = \width[2]-\Childrens()\Align\x1;+Bool(\Grid>1)
+                  Width = \width[2] - \Childrens()\Align\x
                 Else
                   Width = #PB_Ignore
                 EndIf
@@ -9860,6 +9893,12 @@ Module Widget
       
       SetText(*This, Text.s)
       Set_Image(*This, Image)
+      
+;       ; временно из-за этого (контейнер \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget))
+;       If \Parent And \Parent\anchor[1]
+;         x+\Parent\fs
+;         y+\Parent\fs
+;       EndIf
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -12598,10 +12637,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         EndSelect
         
       Default
-        ;Debug DragText
         Select EventType 
           Case #PB_EventType_MouseEnter
-            Debug 777888
             
           Case #PB_EventType_Drop
              Debug "drop "+DragText
@@ -12658,7 +12695,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
           Case #PB_EventType_LeftClick
             Select EventWidget
               Case Widgets("Button_1")
-                Debug 7777777
                 *Window = Popup(EventWidget, #PB_Ignore,#PB_Ignore,280,130)
                 
                 OpenList(*Window)
@@ -12766,8 +12802,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
     
     Define *n=AddWidget(Widgets("MDI"), #PB_GadgetType_Window)
-    Define *c1=AddWidget(*n, #PB_GadgetType_Container, 50, 5, 200, 90)
-    Define *c2=AddWidget(*n, #PB_GadgetType_Panel, 50, 105, 200, 90)
+    Define *c1=AddWidget(*n, #PB_GadgetType_Panel, 50, 5, 200, 90)
+    Define *c2=AddWidget(*n, #PB_GadgetType_Container, 50, 105, 200, 90)
 ;     AddItem(*c2, 0, "11111")
 ;     AddItem(*c2, 0, "22222")
     
@@ -12827,5 +12863,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;- END
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------H-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = AAACAA9-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------HAAAAAAAAAAgBAAAAAAA-
 ; EnableXP
