@@ -1083,7 +1083,6 @@ DeclareModule Widget
     #PB_Bottom
     #PB_Vertical 
     #PB_Horizontal
-    #PB_Flag_AutoSize
     
     #PB_Toggle
     #PB_BorderLess
@@ -1108,6 +1107,7 @@ DeclareModule Widget
     #PB_Flag_MultiSelect
     #PB_Flag_ClickSelect
     
+    #PB_Flag_AutoSize
     #PB_Flag_AutoRight
     #PB_Flag_AutoBottom
     #PB_Flag_AnchorsGadget
@@ -1614,7 +1614,6 @@ Module Widget
     ; _set_auto_size_
     If Bool(_flag_ & #PB_Flag_AutoSize=#PB_Flag_AutoSize) : x=0 : y=0
       _this_\Align = AllocateStructure(Align_S)
-      _this_\Align\AutoSize = 1
       _this_\Align\Left = 1
       _this_\Align\Top = 1
       _this_\Align\Right = 1
@@ -1626,6 +1625,7 @@ Module Widget
         AddAnchors(_this_)
         
       EndIf
+      
   EndMacro
   
   Macro Set_Cursor(_this_, _cursor_)
@@ -7810,7 +7810,9 @@ Module Widget
               EndIf
             EndIf
             
-            If Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize)
+            ;\Align\AutoSize = Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize)
+            
+            If Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize) ; \Align\AutoSize
               If Bool(Mode&#PB_Full=#PB_Full) 
                 \Align\Top = 1
                 \Align\Left = 1
@@ -7818,7 +7820,7 @@ Module Widget
                 \Align\Bottom = 1
                 \Align\AutoSize = 0
               EndIf
-              
+            
               ; Auto dock
               Static y2,x2,y1,x1
               Protected width = #PB_Ignore, height = #PB_Ignore
@@ -7864,12 +7866,18 @@ Module Widget
               \Align\Left = Bool(Mode&#PB_Left=#PB_Left)+Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Top=#PB_Top)
               \Align\Right = Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Top=#PB_Top)+Bool(Mode&#PB_Bottom=#PB_Bottom)
               \Align\Bottom = Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Left=#PB_Left)
-              
             EndIf
+             
+;             If \Align\AutoSize
+;               \Align\Top = 1
+;               \Align\Left = 1
+; ;               \Align\Right = 1
+; ;               \Align\Bottom = 1
+;             EndIf
             
             If \Align\Right
               If \Align\Left And \Align\Right
-                \Align\x = \Parent\width[2] - \width
+                \Align\x = \Parent\Width[2] - \Width
               Else
                 \Align\x = \Parent\width[2] - (\x-\Parent\x[2]) ; \Parent\Width[2] - (\Parent\width[2] - \width)
               EndIf
@@ -8882,12 +8890,12 @@ Module Widget
     
     If *This > 0
       With *This
-        ; #PB_Flag_AutoSize
-        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And \Align And \Align\AutoSize And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
-          X = 0; \Align\x
-          Y = 0; \Align\y
-          Width = \Parent\width[2] ; - \Align\x
-          Height = \Parent\height[2] ; - \Align\y
+        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And 
+           \Align And \Align\AutoSize And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
+          X = 0
+          Y = 0
+          Width = \Parent\width[2]
+          Height = \Parent\height[2]
         EndIf
         
         ; Set widget coordinate
@@ -9926,11 +9934,11 @@ Module Widget
       SetText(*This, Text.s)
       Set_Image(*This, Image)
       
-;       ; временно из-за этого (контейнер \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget))
-;       If \Parent And \Parent\anchor[1]
-;         x+\Parent\fs
-;         y+\Parent\fs
-;       EndIf
+      ; 
+      If \Parent And \Parent\anchor[1]
+        x+\Parent\fs
+        y+\Parent\fs
+      EndIf
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -11871,182 +11879,210 @@ Module Helper
 EndModule
 
 
-
+;-
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Widget
   
-  ;
-  ; ------------------------------------------------------------
-  ;
-  ;   PureBasic - Drag & Drop
-  ;
-  ;    (c) Fantaisie Software
-  ;
-  ; ------------------------------------------------------------
-  ;
+  Global.i Canvas_0, gEvent, gQuit, x=10,y=10
+  Global NewMap Widgets.i()
   
-  #Window = 0
+  UsePNGImageDecoder()
   
-  Enumeration    ; Images
-    #ImageSource
-    #ImageTarget
-  EndEnumeration
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
+    End
+  EndIf
   
-  Global SourceText,
-         SourceImage,
-         SourceFiles,
-         SourcePrivate,
-         TargetText,
-         TargetImage,
-         TargetFiles,
-         TargetPrivate1,
-         TargetPrivate2
+  If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+    End
+  EndIf
   
+  Procedure Window_0_Resize()
+    ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
+    ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
+  EndProcedure
   
-  Procedure Events(EventGadget, EventType, EventItem, EventData)
-    Protected i, Text$, Files$, Count
+  Procedure Window_0()
+    Protected i
     
-    ; DragStart event on the source s, initiate a drag & drop
-    ;
-    Select EventType
-      Case #PB_EventType_DragStart
+; ; ;     If OpenWindow(0, 0, 0, 600, 600, "Demo docking widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+; ; ;       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
+; ; ;        
+; ; ;        Define bs, *w.Widget_s = Open(0, 10, 10, 580, 600-50, "")
+; ; ;       
+; ; ;       Widgets(Str(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #PB_Flag_AnchorsGadget)
+; ; ;       ;Widgets(Str(0)) = Container(50, 50, 280, 200) : bs = 2 ;, #PB_Flag_AnchorsGadget)
+; ; ;       ;Widgets(Str(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Str(0)), -1, "panel")
+; ; ;       ;Widgets(Str(0)) = ScrollArea(50, 50, 280, 200, 280,200)
+; ; ;       
+; ; ;       Widgets(Str(1)) = Button(0, (200-20)/2, 80, 20, "Left_Center_"+Str(1))
+; ; ;       Widgets(Str(2)) = Button((280-80)/2, 0, 80, 20, "Top_Center_"+Str(2))
+; ; ;       Widgets(Str(3)) = Button(280-80-bs, (200-20)/2, 80, 20, Str(3)+"_Center_Right")
+; ; ;       Widgets(Str(4)) = Button((280-80)/2, 200-20-bs, 80, 20, Str(4)+"_Center_Bottom")
+; ; ;       Widgets(Str(5)) = Button(0, 0, 80, 20, "Default_"+Str(5))
+; ; ;       Widgets(Str(6)) = Button(280-80-bs, 0, 80, 20, "Right_"+Str(6))
+; ; ;       Widgets(Str(7)) = Button(280-80-bs, 200-20-bs, 80, 20, "Bottom_"+Str(7))
+; ; ;       Widgets(Str(8)) = Button(0, 200-20-bs, 80, 20, Str(8)+"_Bottom_Right")
+; ; ;       Widgets(Str(9)) = Button((280-80)/2, (200-20)/2, 80, 20, "Bottom_"+Str(9))
+; ; ;       
+; ; ;       CloseList()
+; ; ;       
+; ; ;       SetAlignment(Widgets(Str(1)), #PB_Vertical)
+; ; ;       SetAlignment(Widgets(Str(2)), #PB_Horizontal)
+; ; ;       SetAlignment(Widgets(Str(3)), #PB_Vertical|#PB_Right)
+; ; ;       SetAlignment(Widgets(Str(4)), #PB_Horizontal|#PB_Bottom)
+; ; ;       SetAlignment(Widgets(Str(5)), 0)
+; ; ;       SetAlignment(Widgets(Str(6)), #PB_Right)
+; ; ;       SetAlignment(Widgets(Str(7)), #PB_AutoSize|#PB_Right|#PB_Bottom)
+; ; ;       SetAlignment(Widgets(Str(8)), #PB_Bottom)
+; ; ;       SetAlignment(Widgets(Str(9)), #PB_Center)
+; ; ;       
+; ; ;       ReDraw(Root())
+; ; ;       
+; ; ;       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
+; ; ;     EndIf
+    
+    
+    CreateImage(0,200,60):StartDrawing(ImageOutput(0)):Define i:For i=0 To 200:Circle(100,30,200-i,(i+50)*$010101):Next:StopDrawing()
+    
+    If OpenWindow(0, 0, 0, 700, 600, "Resize gadget",#PB_Window_ScreenCentered | #PB_Window_SizeGadget) 
+      WindowBounds(0, WindowWidth(0), WindowHeight(0), #PB_Ignore, #PB_Ignore)
+      ButtonGadget   (0, 5, 600-35, 690,  30, "resize", #PB_Button_Toggle)
+      
+      Define bs, *w.Widget_s = Open(0, 10, 10, 680, 600-50, "")
+      
+      Widgets(Str(0)) = Form(50, 50, 512, 200, "Demo dock widgets");, #PB_Flag_AnchorsGadget)
+; ; ;       ;Widgets(Str(0)) = Container(50, 50, 280, 200) : bs = 2 ;, #PB_Flag_AnchorsGadget)
+; ; ;       ;Widgets(Str(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Str(0)), -1, "panel")
+; ; ;       ;Widgets(Str(0)) = ScrollArea(50, 50, 280, 200, 280,200)
+
+      Widgets(Str(1)) = Text(10,  10, 200, 50, "Resize the window, the gadgets will be automatically resized",#PB_Text_Center)
+      Widgets(Str(3)) = Button(10, 70, 200, 60, "", 0)
+      Widgets(Str(2)) = Editor(10,  140, 200, 20) : SetText(Widgets(Str(2)),"Editor")
+      Widgets(Str(4)) = Button(10, 170, 490, 20, "Button / toggle", #PB_Button_Toggle)
+      Widgets(Str(5)) = Text(220,10,190,20,"Text",#PB_Text_Center) : SetColor(Widgets(Str(5)), #PB_Gadget_BackColor, $00FFFF)
+      Widgets(Str(6)) = Container( 220, 30, 190, 100,#PB_Container_Single) : SetColor(Widgets(Str(6)), #PB_Gadget_BackColor, $cccccc) 
+      Widgets(Str(7)) = Editor(10,  10, 170, 50) : SetText(Widgets(Str(7)),"Editor")
+      Widgets(Str(8)) = Button(10, 70, 80, 20, "Button") 
+      Widgets(Str(9)) = Button(100, 70, 80, 20, "Button") 
+      CloseList() 
+      Widgets(Str(10)) = String(220,  140, 190, 20, "String")
+      Widgets(Str(11)) = Button(420,  10, 80, 80, "Bouton")
+      Widgets(Str(12)) = CheckBox(420,  90, 80, 20, "CheckBox")
+      Widgets(Str(13)) = CheckBox(420,  110, 80, 20, "CheckBox")
+      Widgets(Str(14)) = CheckBox(420,  130, 80, 20, "CheckBox")
+      Widgets(Str(15)) = CheckBox(420,  150, 80, 20, "CheckBox")
+      
+      
+      ;SetAlignment(Widgets(Str(1)), #PB_Vertical)
+       SetAlignment(Widgets(Str(2)), #PB_Left|#PB_Bottom|#PB_Top)
+;       SetAlignment(Widgets(Str(3)), #PB_Vertical|#PB_Right)
+       SetAlignment(Widgets(Str(4)), #PB_Left|#PB_Bottom|#PB_Right)
+       SetAlignment(Widgets(Str(5)), #PB_Left|#PB_Top|#PB_Right)
+       SetAlignment(Widgets(Str(6)), #PB_Full)
+       SetAlignment(Widgets(Str(7)), #PB_Full)
+       
+;       SetAlignment(Widgets(Str(8)), #PB_Left|#PB_Bottom|#PB_Right)
+;       SetAlignment(Widgets(Str(9)), #PB_Left|#PB_Bottom|#PB_Right)
+       
+       SetAlignment(Widgets(Str(10)), #PB_Left|#PB_Bottom|#PB_Right)
+       SetAlignment(Widgets(Str(11)), #PB_Top|#PB_Bottom|#PB_Right)
+       
+       SetAlignment(Widgets(Str(12)), #PB_Bottom|#PB_Right)
+       SetAlignment(Widgets(Str(13)), #PB_Bottom|#PB_Right)
+       SetAlignment(Widgets(Str(14)), #PB_Bottom|#PB_Right)
+       SetAlignment(Widgets(Str(15)), #PB_Bottom|#PB_Right)
+
+;        If Mode = 0
+;       SetWindowTitle(RS_window, "Demo align "+GetWindowTitle(RS_window))
+;       ; Align 
+;       ButtonGadget(RS_window+1, ot, (Height-h)/2, w, h,"left_center "+Str(RS_window+1))                     :Register(RS_window+1, 0,3) ;#PB_Align_Left   |#PB_Align_Center)
+;       ButtonGadget(RS_window+2, (Width-(ox-ot)-w)/2, ot, w, h,"top_center "+Str(RS_window+2))               :Register(RS_window+2, 3,0) ;#PB_Align_Top    |#PB_Align_Center)
+;       ButtonGadget(RS_window+3, (Width-w)-ox, (Height-h)/2, w, h,"right_center "+Str(RS_window+3))          :Register(RS_window+3, 1,3) ;#PB_Align_Right  |#PB_Align_Center)
+;       ButtonGadget(RS_window+4, (Width-(ox-ot)-w)/2, (Height-h)-oy, w, h,"bottom_center "+Str(RS_window+4)) :Register(RS_window+4, 3,1) ;#PB_Align_Bottom |#PB_Align_Center)
+;       ButtonGadget(RS_window+5, (Width-(ox-ot)-w)/2, (Height-h)/2, w, h,"center "+Str(RS_window+5))         :Register(RS_window+5, 3,3) ;#PB_Align_Center )
+;                                                                                                                                         ;       
+;       ButtonGadget(RS_window+6, ot, ot, w, h,"left_top "+Str(RS_window+6))                                  :Register(RS_window+6, 0,0) ;#PB_Align_Top)
+;       ButtonGadget(RS_window+7, (Width-w)-ox, ot, w, h,"right_top "+Str(RS_window+7))                       :Register(RS_window+7, 1,0) ;#PB_Align_Right)
+;       ButtonGadget(RS_window+8, (Width-w)-ox, (Height-h)-oy, w, h,"right_bottom "+Str(RS_window+8))         :Register(RS_window+8, 1,1) ;#PB_Align_Bottom)
+;       ButtonGadget(RS_window+9, ot, (Height-h)-oy, w, h,"left_bottom "+Str(RS_window+9))                    :Register(RS_window+9, 0,1) ;#PB_Align_Left)
+;       
+;     ElseIf Mode = 1
+;       SetWindowTitle(RS_window, "Demo auto dock "+GetWindowTitle(RS_window))
+;       ; Auto Dock
+;       ButtonGadget(RS_window+1, 0, 0, w, h,"left_full "+Str(RS_window+1))                                   :Register(RS_window+1, 0,2,1) ; #PB_Align_Left   |#PB_Align_Full)
+;       ButtonGadget(RS_window+3, 0, 0, w, h,"right_full "+Str(RS_window+3))                                  :Register(RS_window+3, 1,2,1) ; #PB_Align_Right  |#PB_Align_Full)
+;       ButtonGadget(RS_window+2, 0, 0, w, h,"top_full "+Str(RS_window+2))                                    :Register(RS_window+2, 2,0,1) ; #PB_Align_Top    |#PB_Align_Full)
+;       ButtonGadget(RS_window+4, 0, 0, w, h,"bottom_full "+Str(RS_window+4))                                 :Register(RS_window+4, 2,1,1) ; #PB_Align_Bottom |#PB_Align_Full)
+;       ButtonGadget(RS_window+14, 0, 0, w, h*2,"14bottom_full "+Str(RS_window+14))                           :Register(RS_window+14, 2,1,1); #PB_Align_Bottom |#PB_Align_Full)
+;       ButtonGadget(RS_window+5, 0, 0, w, h,"full")                                                          :Register(RS_window+5, 2,2,1) ; #PB_Align_Full   )
+;       
+;     Else
+;       SetWindowTitle(RS_window, "Demo dock "+GetWindowTitle(RS_window))
+;       ; Dock
+;       ButtonGadget(RS_window+1, ot, h+ot, w, Height-oy-h*2-(h+10)-ot,"left_full "+Str(RS_window+1))              :Register(RS_window+1, 0,2)  ; #PB_Align_Left   |#PB_Align_Full)
+;       ButtonGadget(RS_window+3, (Width-w)-oy, h+ot, w, Height-oy-h*2-(h+10)-ot,"right_full "+Str(RS_window+3))   :Register(RS_window+3, 1,2)  ; #PB_Align_Right  |#PB_Align_Full)
+;       ButtonGadget(RS_window+2, ot, ot, Width-oy-ot, h,"top_full "+Str(RS_window+2))                             :Register(RS_window+2, 2,0)  ; #PB_Align_Top    |#PB_Align_Full)
+;       ButtonGadget(RS_window+4, ot, (Height-h)-oy, Width-oy-ot, h,"bottom_full "+Str(RS_window+4))               :Register(RS_window+4, 2,1)  ; #PB_Align_Bottom |#PB_Align_Full)
+;       ButtonGadget(RS_window+14, ot, (Height-h-(h+10))-oy, Width-oy-ot, h+10,"14bottom_full "+Str(RS_window+14)) :Register(RS_window+14, 2,1) ; #PB_Align_Bottom |#PB_Align_Full)
+;       ButtonGadget(RS_window+5, w+ot, h+ot, Width-oy-w*2-ot, Height-oy-h*2-(h+10)-ot,"full")                     :Register(RS_window+5, 2,2)  ; #PB_Align_Full   )
+;       
+;     EndIf
+;     
+      ReDraw(Root())
+      
+      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
+    EndIf
+  EndProcedure
+  
+  Window_0()
+  
+  Define direction = 1
+  Define Width, Height
+  
+  Repeat
+    gEvent= WaitWindowEvent()
+    
+    Select gEvent
+      Case #PB_Event_CloseWindow
+        gQuit= #True
         
-        Select EventGadget
+      Case #PB_Event_Timer
+        If Width = 100
+           direction = 1
+        EndIf
+        If Width = Width(Root())-100
+          direction =- 1
+        EndIf
+;         
+        Width + direction
+        Height + direction
+        
+        If Resize(Widgets(Str(0)), #PB_Ignore, #PB_Ignore, Width, Height)
+          ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
+        EndIf
+        ReDraw(Root())
+    
+      Case #PB_Event_Gadget
+        
+        Select EventGadget()
+          Case 0
+            Width = Width(Widgets(Str(0)))
+            Height = Height(Widgets(Str(0)))
             
-          Case SourceText
-            Text$ = GetItemText(SourceText, GetState(SourceText))
-            DragText(Text$)
-            
-          Case SourceImage
-            DragImage((#ImageSource))
-            
-          Case SourceFiles
-            Files$ = ""       
-            For i = 0 To CountItems(SourceFiles)-1
-              If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
-                Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
-              EndIf
-            Next i 
-            If Files$ <> ""
-              DragFiles(Files$)
-            EndIf
-            
-            ; "Private" Drags only work within the program, everything else
-            ; also works with other applications (Explorer, Word, etc)
-            ;
-          Case SourcePrivate
-            If GetState(SourcePrivate) = 0
-              DragPrivate(1)
+            If GetGadgetState(0)
+              AddWindowTimer(0, 1, 10)
             Else
-              DragPrivate(2)
+              RemoveWindowTimer(0, 1)
             EndIf
-            
-        EndSelect
-        
-        ; Drop event on the target gadgets, receive the dropped data
-        ;
-      Case #PB_EventType_Drop
-        
-        Select EventGadget
-            
-          Case TargetText
-            AddItem(TargetText, -1, DropText())
-            
-          Case TargetImage
-            If DropImage(#ImageTarget)
-              SetState(TargetImage, (#ImageTarget))
-            EndIf
-            
-          Case TargetFiles
-            Files$ = EventDropFiles()
-            Count  = CountString(Files$, Chr(10)) + 1
-            For i = 1 To Count
-              AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
-            Next i
-            
-          Case TargetPrivate1
-            AddItem(TargetPrivate1, -1, "Private type 1 dropped")
-            
-          Case TargetPrivate2
-            AddItem(TargetPrivate2, -1, "Private type 2 dropped")
-            
         EndSelect
         
     EndSelect
     
-  EndProcedure
-  
-  If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
-    Open(#Window, 0, 0, 760, 310)
-    
-    ; Create some images for the image demonstration
-    ; 
-    Define i, Event
-    CreateImage(#ImageSource, 136, 136)
-    If StartDrawing(ImageOutput(#ImageSource))
-      Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drag this image", $000000, $FFFFFF)        
-      For i = 45 To 1 Step -1
-        Circle(70, 80, i, Random($FFFFFF))
-      Next i        
-      
-      StopDrawing()
-    EndIf  
-    
-    CreateImage(#ImageTarget, 136, 136)
-    If StartDrawing(ImageOutput(#ImageTarget))
-      Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drop images here", $000000, $FFFFFF)
-      StopDrawing()
-    EndIf  
-    
-    
-    ; Create and fill the source s
-    ;
-    SourceText = ListIcon(10, 10, 140, 140, "Drag Text here", 130)   
-    SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
-    SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
-    SourcePrivate = ListIcon(610, 10, 140, 140, "Drag private stuff here", 260)
-    
-    AddItem(SourceText, -1, "hello world")
-    AddItem(SourceText, -1, "The quick brown fox jumped over the lazy dog")
-    AddItem(SourceText, -1, "abcdefg")
-    AddItem(SourceText, -1, "123456789")
-    
-    AddItem(SourcePrivate, -1, "Private type 1")
-    AddItem(SourcePrivate, -1, "Private type 2")
-    
-    
-    ; Create the target s
-    ;
-    TargetText = ListIcon(10, 160, 140, 140, "Drop Text here", 130)
-    TargetImage = Image(160, 160, 140, 140, (#ImageTarget), #PB_Image_Border) 
-    TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
-    TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
-    TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
-    
-    
-    ; Now enable the dropping on the target s
-    ;
-    EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
-    EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
-    EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
-    EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
-    EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
-    
-    Bind(@Events())
-    ReDraw(Root())
-    
-    Repeat
-      Event = WaitWindowEvent()
-    Until Event = #PB_Event_CloseWindow
-  EndIf
-  
-  End
+  Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------0---X--4--------------------------------------------------------------------------------------------------------------------------------------------------------4--f-----------------------------fv-8---+4------v---v4-----
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--f-------------------------------------------------------
 ; EnableXP

@@ -683,7 +683,8 @@ DeclareModule Widget
   Structure Align_S
     X.i
     y.i
-    
+;     x1.i
+;     y1.i
     Left.b
     Top.b
     Right.b
@@ -1083,7 +1084,6 @@ DeclareModule Widget
     #PB_Bottom
     #PB_Vertical 
     #PB_Horizontal
-    #PB_Flag_AutoSize
     
     #PB_Toggle
     #PB_BorderLess
@@ -1108,6 +1108,7 @@ DeclareModule Widget
     #PB_Flag_MultiSelect
     #PB_Flag_ClickSelect
     
+    #PB_Flag_AutoSize
     #PB_Flag_AutoRight
     #PB_Flag_AutoBottom
     #PB_Flag_AnchorsGadget
@@ -1626,6 +1627,7 @@ Module Widget
         AddAnchors(_this_)
         
       EndIf
+      
   EndMacro
   
   Macro Set_Cursor(_this_, _cursor_)
@@ -7810,7 +7812,9 @@ Module Widget
               EndIf
             EndIf
             
-            If Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize)
+            ;\Align\AutoSize = Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize)
+            
+            If Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize) ; \Align\AutoSize
               If Bool(Mode&#PB_Full=#PB_Full) 
                 \Align\Top = 1
                 \Align\Left = 1
@@ -7818,7 +7822,7 @@ Module Widget
                 \Align\Bottom = 1
                 \Align\AutoSize = 0
               EndIf
-              
+            
               ; Auto dock
               Static y2,x2,y1,x1
               Protected width = #PB_Ignore, height = #PB_Ignore
@@ -7864,12 +7868,18 @@ Module Widget
               \Align\Left = Bool(Mode&#PB_Left=#PB_Left)+Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Top=#PB_Top)
               \Align\Right = Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Top=#PB_Top)+Bool(Mode&#PB_Bottom=#PB_Bottom)
               \Align\Bottom = Bool(Mode&#PB_Bottom=#PB_Bottom)+Bool(Mode&#PB_Right=#PB_Right)+Bool(Mode&#PB_Left=#PB_Left)
-              
             EndIf
+             
+;             If \Align\AutoSize
+;               \Align\Top = 1
+;               \Align\Left = 1
+; ;               \Align\Right = 1
+; ;               \Align\Bottom = 1
+;             EndIf
             
             If \Align\Right
               If \Align\Left And \Align\Right
-                \Align\x = \Parent\width[2] - \width
+                \Align\x = \Parent\Width[2] - \Width
               Else
                 \Align\x = \Parent\width[2] - (\x-\Parent\x[2]) ; \Parent\Width[2] - (\Parent\width[2] - \width)
               EndIf
@@ -8882,12 +8892,12 @@ Module Widget
     
     If *This > 0
       With *This
-        ; #PB_Flag_AutoSize
-        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And \Align And \Align\AutoSize And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
-          X = 0; \Align\x
-          Y = 0; \Align\y
-          Width = \Parent\width[2] ; - \Align\x
-          Height = \Parent\height[2] ; - \Align\y
+        If \Parent And \Parent\Type <> #PB_GadgetType_Splitter And 
+           \Align And \Align\AutoSize And \Align\Left And \Align\Top And \Align\Right And \Align\Bottom
+          X = 0
+          Y = 0
+          Width = \Parent\width[2]
+          Height = \Parent\height[2]
         EndIf
         
         ; Set widget coordinate
@@ -9083,13 +9093,13 @@ Module Widget
                 EndIf
                 
                 If \Childrens()\Align\Top And \Childrens()\Align\Bottom
-                  Height = \height[2] - \Childrens()\Align\y
+                  Height = \height[2]-\Childrens()\Align\y;+Bool(\Grid>1)
                 Else
                   Height = #PB_Ignore
                 EndIf
                 
                 If \Childrens()\Align\Left And \Childrens()\Align\Right
-                  Width = \width[2] - \Childrens()\Align\x
+                  Width = \width[2]-\Childrens()\Align\x;+Bool(\Grid>1)
                 Else
                   Width = #PB_Ignore
                 EndIf
@@ -9926,11 +9936,11 @@ Module Widget
       SetText(*This, Text.s)
       Set_Image(*This, Image)
       
-;       ; временно из-за этого (контейнер \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget))
-;       If \Parent And \Parent\anchor[1]
-;         x+\Parent\fs
-;         y+\Parent\fs
-;       EndIf
+      ; 
+      If \Parent And \Parent\anchor[1]
+        x+\Parent\fs
+        y+\Parent\fs
+      EndIf
       Resize(*This, X.i,Y.i,Width.i,Height)
     EndWith
     
@@ -11871,182 +11881,112 @@ Module Helper
 EndModule
 
 
-
+;-
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Widget
   
-  ;
-  ; ------------------------------------------------------------
-  ;
-  ;   PureBasic - Drag & Drop
-  ;
-  ;    (c) Fantaisie Software
-  ;
-  ; ------------------------------------------------------------
-  ;
+  Global.i Canvas_0, gEvent, gQuit, x=10,y=10
+  Global NewMap Widgets.i()
   
-  #Window = 0
+  UsePNGImageDecoder()
   
-  Enumeration    ; Images
-    #ImageSource
-    #ImageTarget
-  EndEnumeration
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
+    End
+  EndIf
   
-  Global SourceText,
-         SourceImage,
-         SourceFiles,
-         SourcePrivate,
-         TargetText,
-         TargetImage,
-         TargetFiles,
-         TargetPrivate1,
-         TargetPrivate2
+  If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+    End
+  EndIf
   
+  Procedure Window_0_Resize()
+    ResizeGadget(Canvas_0, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
+    ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
+  EndProcedure
   
-  Procedure Events(EventGadget, EventType, EventItem, EventData)
-    Protected i, Text$, Files$, Count
+  Procedure Window_0()
+    Protected i
     
-    ; DragStart event on the source s, initiate a drag & drop
-    ;
-    Select EventType
-      Case #PB_EventType_DragStart
+    If OpenWindow(0, 0, 0, 600, 600, "Demo docking widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
+       
+       Define *w.Widget_s = Open(0, 10, 10, 580, 600-50, "")
+      
+      Widgets(Str(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #PB_Flag_AnchorsGadget)
+      ;Widgets(Str(0)) = Container(50, 50, 280, 200);, #PB_Flag_AnchorsGadget);#PB_Flag_AutoSize)
+      ;Widgets(Str(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Str(0)), -1, "panel")
+      ;Widgets(Str(0)) = ScrollArea(50, 50, 280, 200, 280,200)
+      
+      Widgets(Str(5)) = Button(100, 100, 80, 21, "Full_"+Str(5), #PB_Flag_AutoSize)
+      Widgets(Str(2)) = Button(10, 10, 80, 21, "Top_"+Str(2))
+      Widgets(Str(1)) = Button(10, 10, 80, 21, "Left_"+Str(1))
+      Widgets(Str(3)) = Button(10, 10, 80, 21, Str(3)+"_Right")
+      Widgets(Str(4)) = Button(10, 10, 80, 30, Str(4)+"_Bottom")
+      Widgets(Str(6)) = Button(10, 10, 80, 21, Str(6)+"_Bottom");, #PB_Flag_AutoSize)
+      
+      CloseList()
+      
+      SetAlignment(Widgets(Str(4)), #PB_AutoSize|#PB_Bottom)
+      SetAlignment(Widgets(Str(6)), #PB_AutoSize|#PB_Bottom)
+      SetAlignment(Widgets(Str(1)), #PB_AutoSize|#PB_Top)
+      SetAlignment(Widgets(Str(2)), #PB_AutoSize|#PB_Left)
+      SetAlignment(Widgets(Str(3)), #PB_AutoSize|#PB_Right)
+      SetAlignment(Widgets(Str(5)), #PB_AutoSize|#PB_Full)
+      
+      ReDraw(Root())
+      
+      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
+    EndIf
+  EndProcedure
+  
+  Window_0()
+  
+  Define direction = 1
+  Define Width, Height
+  
+  Repeat
+    gEvent= WaitWindowEvent()
+    
+    Select gEvent
+      Case #PB_Event_CloseWindow
+        gQuit= #True
         
-        Select EventGadget
+      Case #PB_Event_Timer
+        If Width = 100
+           direction = 1
+        EndIf
+        If Width = Width(Root())-100
+          direction =- 1
+        EndIf
+;         
+        Width + direction
+        Height + direction
+        
+        If Resize(Widgets(Str(0)), #PB_Ignore, #PB_Ignore, Width, Height)
+          ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
+        EndIf
+        ReDraw(Root())
+    
+      Case #PB_Event_Gadget
+        
+        Select EventGadget()
+          Case 0
+            Width = Width(Widgets(Str(0)))
+            Height = Height(Widgets(Str(0)))
             
-          Case SourceText
-            Text$ = GetItemText(SourceText, GetState(SourceText))
-            DragText(Text$)
-            
-          Case SourceImage
-            DragImage((#ImageSource))
-            
-          Case SourceFiles
-            Files$ = ""       
-            For i = 0 To CountItems(SourceFiles)-1
-              If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
-                Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
-              EndIf
-            Next i 
-            If Files$ <> ""
-              DragFiles(Files$)
-            EndIf
-            
-            ; "Private" Drags only work within the program, everything else
-            ; also works with other applications (Explorer, Word, etc)
-            ;
-          Case SourcePrivate
-            If GetState(SourcePrivate) = 0
-              DragPrivate(1)
+            If GetGadgetState(0)
+              AddWindowTimer(0, 1, 10)
             Else
-              DragPrivate(2)
+              RemoveWindowTimer(0, 1)
             EndIf
-            
-        EndSelect
-        
-        ; Drop event on the target gadgets, receive the dropped data
-        ;
-      Case #PB_EventType_Drop
-        
-        Select EventGadget
-            
-          Case TargetText
-            AddItem(TargetText, -1, DropText())
-            
-          Case TargetImage
-            If DropImage(#ImageTarget)
-              SetState(TargetImage, (#ImageTarget))
-            EndIf
-            
-          Case TargetFiles
-            Files$ = EventDropFiles()
-            Count  = CountString(Files$, Chr(10)) + 1
-            For i = 1 To Count
-              AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
-            Next i
-            
-          Case TargetPrivate1
-            AddItem(TargetPrivate1, -1, "Private type 1 dropped")
-            
-          Case TargetPrivate2
-            AddItem(TargetPrivate2, -1, "Private type 2 dropped")
-            
         EndSelect
         
     EndSelect
     
-  EndProcedure
-  
-  If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
-    Open(#Window, 0, 0, 760, 310)
-    
-    ; Create some images for the image demonstration
-    ; 
-    Define i, Event
-    CreateImage(#ImageSource, 136, 136)
-    If StartDrawing(ImageOutput(#ImageSource))
-      Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drag this image", $000000, $FFFFFF)        
-      For i = 45 To 1 Step -1
-        Circle(70, 80, i, Random($FFFFFF))
-      Next i        
-      
-      StopDrawing()
-    EndIf  
-    
-    CreateImage(#ImageTarget, 136, 136)
-    If StartDrawing(ImageOutput(#ImageTarget))
-      Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drop images here", $000000, $FFFFFF)
-      StopDrawing()
-    EndIf  
-    
-    
-    ; Create and fill the source s
-    ;
-    SourceText = ListIcon(10, 10, 140, 140, "Drag Text here", 130)   
-    SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
-    SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
-    SourcePrivate = ListIcon(610, 10, 140, 140, "Drag private stuff here", 260)
-    
-    AddItem(SourceText, -1, "hello world")
-    AddItem(SourceText, -1, "The quick brown fox jumped over the lazy dog")
-    AddItem(SourceText, -1, "abcdefg")
-    AddItem(SourceText, -1, "123456789")
-    
-    AddItem(SourcePrivate, -1, "Private type 1")
-    AddItem(SourcePrivate, -1, "Private type 2")
-    
-    
-    ; Create the target s
-    ;
-    TargetText = ListIcon(10, 160, 140, 140, "Drop Text here", 130)
-    TargetImage = Image(160, 160, 140, 140, (#ImageTarget), #PB_Image_Border) 
-    TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
-    TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
-    TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
-    
-    
-    ; Now enable the dropping on the target s
-    ;
-    EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
-    EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
-    EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
-    EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
-    EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
-    
-    Bind(@Events())
-    ReDraw(Root())
-    
-    Repeat
-      Event = WaitWindowEvent()
-    Until Event = #PB_Event_CloseWindow
-  EndIf
-  
-  End
+  Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------0---X--4--------------------------------------------------------------------------------------------------------------------------------------------------------4--f-----------------------------fv-8---+4------v---v4-----
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--f-------------------------------------------------------
 ; EnableXP
