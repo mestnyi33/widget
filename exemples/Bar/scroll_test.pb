@@ -4,7 +4,7 @@
 ; Event procedures needs to be put in another source file.
 ;
 
-IncludePath "../../../"
+IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;-
@@ -153,7 +153,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn 1
     EndProcedure
     
-    Procedure ReDraw(Canvas)
+    Procedure _ReDraw(Canvas)
     With *Scroll
       If StartDrawing(CanvasOutput(Canvas))
         ; back ground

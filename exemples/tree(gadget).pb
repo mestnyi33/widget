@@ -7,16 +7,16 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   Global Canvas_0
-  Global *g0.Widget_S
-  Global *g1.Widget_S
-  Global *g2.Widget_S
-  Global *g3.Widget_S
-  Global *g4.Widget_S
-  Global *g5.Widget_S
-  Global *g6.Widget_S
-  Global *g7.Widget_S
-  Global *g8.Widget_S
-  Global *g9.Widget_S
+  Global *g0._S_widget
+  Global *g1._S_widget
+  Global *g2._S_widget
+  Global *g3._S_widget
+  Global *g4._S_widget
+  Global *g5._S_widget
+  Global *g6._S_widget
+  Global *g7._S_widget
+  Global *g8._S_widget
+  Global *g9._S_widget
   
   Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
@@ -125,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
-    Protected Repaint, *This.Widget_S
+    Protected Repaint, *This._S_widget
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
@@ -225,7 +225,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected MouseX = GetGadgetAttribute(Canvas_0, #PB_Canvas_MouseX)
     Protected MouseY = GetGadgetAttribute(Canvas_0, #PB_Canvas_MouseY)
     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    Protected *This.Widget_S, *window.Widget_S = GetGadgetData(Canvas_0)
+    Protected *This._S_widget, *window._S_widget = GetGadgetData(Canvas_0)
     
     Select EventType()
       Case #PB_EventType_Resize : Result = 1

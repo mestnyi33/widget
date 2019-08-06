@@ -7,16 +7,17 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule widget
   
   Global.i gEvent, gQuit
-  Global *Bar_0.Bar_S = AllocateStructure(Bar_S)
+  Global *Bar_0._S_bar = AllocateStructure(_S_bar)
   
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 400, 100, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      ButtonGadget   (0,    5,   65, 390,  30, "set  standart scrollbar", #PB_Button_Toggle)
-      
+      ButtonGadget   (0,    5,   65, 390,  30, "set  inverted scrollbar", #PB_Button_Toggle)
+      SetGadgetState(0, 1)
+     
       Open(0, 10,10, 380, 50)
       
       *Bar_0 = Scroll(5, 10, 370, 30, 20, 50, 8, #PB_Bar_Inverted) ; Button ( 5, 65, 390, 30, "set  standart scrollbar"); 
-      *Bar_0\step = 1
+      *Bar_0\scrollstep = 1
       
       ReDraw(*Bar_0)
     EndIf
@@ -67,8 +68,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 1
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;
@@ -230,6 +230,8 @@ CompilerIf #PB_Compiler_IsMainFile
     TextGadget    (-1,  90, 180, 200, 20, "TrackBar Vertical", #PB_Text_Right)
     TrackBarGadget(2, 270, 10, 20, 170, 100, 10000, #PB_TrackBar_Vertical)
     SetGadgetState(2, 8000)
+    
+    widget::open(0, 300,10,250,180)
     
     TextGadget    (-1, 300+10,  20, 250, 20,"TrackBar Standard", #PB_Text_Center)
     TrackBar::Gadget(10, 300+10,  40, 250, 20, 0, 10000)

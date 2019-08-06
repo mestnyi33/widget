@@ -3,7 +3,7 @@ XIncludeFile "widgets.pbi"
 UseModule Widget
 
 Global *w
-LN=1500; количесвто итемов 
+LN=800; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "treeGadget", #PB_Window_SystemMenu)
   
@@ -21,7 +21,7 @@ If OpenWindow(0, 100, 50, 530, 700, "treeGadget", #PB_Window_SystemMenu)
   Next
   Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
   
-  Redraw(Display())
+  Redraw() ; Display() ; 
   
   ListIconGadget(0, 10, 10, 250, 680, "column_0", 200)
   ; HideGadget(0, 1)

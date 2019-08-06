@@ -648,20 +648,6 @@ DeclareModule Widget
     width.i[4]
   EndStructure
   
-  ;- - Box_S
-  Structure Box_S Extends Coordinate_S
-    Size.i[4]
-    Hide.b[4]
-    Checked.b[2] 
-    ;Toggle.b
-    
-    ArrowSize.a[3]
-    ArrowType.b[3]
-    
-    ThreeState.b
-    *Color.Color_S[4]
-  EndStructure
-  
   ;- - Color_S
   Structure Color_S
     State.b ; entered; selected; focused; lostfocused
@@ -739,6 +725,52 @@ DeclareModule Widget
     Change.b
     
     Align.Align_S
+  EndStructure
+  
+  ;- - Anchor_S
+  Structure Anchor_S
+    x.i[2] ; [1] - delta_x
+    y.i[2] ; [1] - delta_y
+    width.i
+    height.i
+    
+    hide.i
+    pos.i ; anchor position on the widget
+    state.b ; mouse state 
+    cursor.i[2]
+    class.s
+    *widget.Widget_S
+    
+    color.Color_S[4]
+  EndStructure
+  
+  ;- - Popup_S
+  Structure Popup_S
+    Gadget.i
+    Window.i
+    
+    ; *Widget.Widget_S
+  EndStructure
+  
+  ;- - Margin_S
+  Structure Margin_S
+    FonyID.i
+    Width.i
+    Color.Color_S
+  EndStructure
+  
+  ;- - Box_S
+  Structure Box_S Extends Coordinate_S
+    Size.i[4]
+    Hide.b[4]
+    Checked.b[2] 
+    ;Toggle.b
+    
+    ArrowSize.a[3]
+    ArrowType.b[3]
+    
+    ThreeState.b
+    *Color.Color_S[4]
   EndStructure
   
   ;- - Text_S
@@ -834,21 +866,6 @@ DeclareModule Widget
     *data      ; set/get item data
   EndStructure
   
-  ;- - Popup_S
-  Structure Popup_S
-    Gadget.i
-    Window.i
-    
-    ; *Widget.Widget_S
-  EndStructure
-  
-  ;- - Margin_S
-  Structure Margin_S
-    FonyID.i
-    Width.i
-    Color.Color_S
-  EndStructure
-  
   ;- - Widget_S
   Structure Widget_S Extends Bar_S
     Type_Index.i
@@ -916,23 +933,6 @@ DeclareModule Widget
   Structure Root_S Extends Widget_S
     Canvas.i
     CanvasWindow.i
-  EndStructure
-  
-  ;- - Anchor_S
-  Structure Anchor_S
-    x.i[2] ; [1] - delta_x
-    y.i[2] ; [1] - delta_y
-    width.i
-    height.i
-    
-    hide.i
-    pos.i ; anchor position on the widget
-    state.b ; mouse state 
-    cursor.i[2]
-    class.s
-    *widget.Widget_S
-    
-    color.color_S[4]
   EndStructure
   
   ;- - Value_S
@@ -10825,7 +10825,7 @@ Module Widget
   EndProcedure
   
   Procedure.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
-    Protected w.i=-1, Canvas.i=-1, *This.Widget_S = AllocateStructure(Widget_S)
+    Protected w.i=-1, Canvas.i=-1, *This.Root_S = AllocateStructure(Root_S) ;, *This.Widget_S = AllocateStructure(Widget_S)
     
     With *This
       If Not IsWindow(Window) And Window >- 2
@@ -12853,5 +12853,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;- END
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = AAACAAEAACFAgBAAAAABYbDAAAAAAAAAAAQAAAAAAFAAAAkgAAAAAAAAAAAAAAAGAAAAEEAAAAAAAAAAAAAAAAAAAAAAQAACAAEACAAIAAAAAAAAAAAAAAAAAAYAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAGDGAAAAAAAGAAAAYPAgA9DAw-vHBIAAAAAACAAAeQ5AAAAAAAAAgHAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAG5-HgAAA-
+; Folding = AAACAAEAgQNAgBABAAABYbDAAAAAAAAAAAQgBAAAAFAAAAkgAAAAAAAAAAAAAAAGAAAAEEAAAAAAAAAAAAAAAAAAAAAAQAACAAEACAAIAAAAAAAAAAAAAAAAAAYAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAGDGAAAAAAAGAAAAYPAgA9DAw-vHBIAAAAAACAAAeQ5AAAAAAABCgHAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAG5-HgAAA-
 ; EnableXP

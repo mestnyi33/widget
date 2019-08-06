@@ -7,7 +7,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseModule widget
   
-  Global *Scroll.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Scroll._S_scroll=AllocateStructure(_S_scroll)
   Global x=101,y=101, Width=600, Height=600 
   
   If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndIf
   
-  Procedure.i Draw_Bars(*Scroll.Scroll_S, ScrollHeight.i, ScrollWidth.i)
+  Procedure.i Draw_Bars(*Scroll._S_scroll, ScrollHeight.i, ScrollWidth.i)
     ;     Protected Repaint
     
     With *Scroll
@@ -265,10 +265,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure ResizeCallBack()
-    ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
+    ResizeGadget(_Gadget(), #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
   EndProcedure
   
-  Procedure.i Bars(*Scroll.Scroll_S, Size.i, Radius.i, Both.b)
+  Procedure.i Bars(*Scroll._S_scroll, Size.i, Radius.i, Both.b)
     With *Scroll     
       \v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_Vertical, Radius)
       \v\hide = \v\hide[1]
@@ -278,7 +278,7 @@ CompilerIf #PB_Compiler_IsMainFile
         \h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
         \h\hide = \h\hide[1]
       Else
-        \h.Widget_S = AllocateStructure(Bar_S)
+        \h._S_widget = AllocateStructure(_S_Bar)
         \h\hide = 1
       EndIf
       ;\h\s = *Scroll
@@ -306,7 +306,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(*Scroll\h, 55)
     
 ;     PostEvent(#PB_Event_Gadget, 0,1,#PB_EventType_Resize)
-;     BindGadgetEvent(1, @Canvas_CallBack())
+     BindGadgetEvent(_Gadget(), @Canvas_CallBack())
     
     ;     BindEvent(#PB_Event_Widget, @Widget_Events(), 0, *Scroll\v)
     ;     BindEvent(#PB_Event_Widget, @Widget_Events(), 0, *Scroll\h)
@@ -319,5 +319,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 4z+0X+
+; Folding = -z+04-
 ; EnableXP

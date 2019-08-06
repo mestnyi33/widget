@@ -38,15 +38,15 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   Global winBackColor
   
-  Global *S_0.Widget_S = AllocateStructure(Widget_S)
-  Global *S_1.Widget_S = AllocateStructure(Widget_S)
-  Global *S_2.Widget_S = AllocateStructure(Widget_S)
-  Global *S_3.Widget_S = AllocateStructure(Widget_S)
-  Global *S_4.Widget_S = AllocateStructure(Widget_S)
-  Global *S_5.Widget_S = AllocateStructure(Widget_S)
-  Global *S_6.Widget_S = AllocateStructure(Widget_S)
-  Global *S_7.Widget_S = AllocateStructure(Widget_S)
-  Global *S_8.Widget_S = AllocateStructure(Widget_S)
+  Global *S_0._S_widget = AllocateStructure(_S_widget)
+  Global *S_1._S_widget = AllocateStructure(_S_widget)
+  Global *S_2._S_widget = AllocateStructure(_S_widget)
+  Global *S_3._S_widget = AllocateStructure(_S_widget)
+  Global *S_4._S_widget = AllocateStructure(_S_widget)
+  Global *S_5._S_widget = AllocateStructure(_S_widget)
+  Global *S_6._S_widget = AllocateStructure(_S_widget)
+  Global *S_7._S_widget = AllocateStructure(_S_widget)
+  Global *S_8._S_widget = AllocateStructure(_S_widget)
   
   
   UsePNGImageDecoder()
@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Canvas_CallBacks()
     Protected Result
     Protected Canvas = EventGadget()
-    Protected *Window.Widget_s = GetGadgetData(Canvas)
+    Protected *Window._S_widget = GetGadgetData(Canvas)
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     If Result 
-      SetWindowTitle(0, "SizeOf(Widget_S) - "+Str(SizeOf(Widget_S)))
+      SetWindowTitle(0, "SizeOf(_S_widget) - "+Str(SizeOf(_S_widget)))
     
       ReDraw(*Window)
     EndIf

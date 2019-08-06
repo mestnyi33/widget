@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure Widgets_Gadget_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
-    Protected *This.Widget_S
+    Protected *This._S_widget
     
     Select EventType 
       Case #PB_EventType_MouseEnter
@@ -87,7 +87,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define Editable = #PB_Flag_AnchorsGadget
       
       If Open(0, 10,10, 580, 550," root ")
-        *win=Window(80, 100, 280, 200, "Window_2", Editable)
+        *win=Form(80, 100, 280, 200, "Window_2", Editable)
         
         Container(30,30,280-60, 200-60, Editable)
         Container(20,20,280-60, 200-60, Editable)

@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global g_container, g_value, g_is_vertical, g_min, g_max, g_pos, g_len, g_set, g_page_pos, g_page_len, g_area_pos, g_area_len, g_Canvas
   
-  Global *Scroll.Scroll_S=AllocateStructure(Scroll_S)
+  Global *Scroll._S_scroll=AllocateStructure(_S_scroll)
   Global x=151,y=151, Width=790, Height=600 , focus
   
   Global isCurrentItem=#False
@@ -236,7 +236,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   AddImage(Images(),170,70,hole,1)
   
   
-  Procedure BarUpdates(*v.Bar_S, *h.Bar_S, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height) ; Ok
+  Procedure BarUpdates(*v._S_bar, *h._S_bar, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height) ; Ok
     Protected iWidth = (*v\X-*h\X)+ Bool(*v\Hide) * *v\Width                                                ; X(*v)
     Protected iHeight = (*h\Y-*v\Y)+ Bool(*h\Hide) * *h\height                                              ; Y(*h)
     Static hPos, vPos : vPos = *v\Page\Pos : hPos = *h\Page\Pos
@@ -297,7 +297,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
   EndProcedure
   
-  Procedure BarResize(*v.Bar_s, X,Y,Width,Height, *h.Bar_s )
+  Procedure BarResize(*v._S_bar, X,Y,Width,Height, *h._S_bar )
     
     ; ; ;     
     ; ; ;       If y=#PB_Ignore : y = *v\Y : EndIf
@@ -724,7 +724,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ResizeGadget(g_Canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-210, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
     EndProcedure
     
-    Procedure.i Bars(*Scroll.Scroll_S, Size.i, Radius.i, Both.b)
+    Procedure.i Bars(*Scroll._S_scroll, Size.i, Radius.i, Both.b)
       With *Scroll     
         \v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #PB_Vertical, Radius)
         \v\hide = \v\hide[1]
@@ -734,7 +734,7 @@ CompilerIf #PB_Compiler_IsMainFile
           \h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, Radius)
           \h\hide = \h\hide[1]
         Else
-          \h.Widget_S = AllocateStructure(Bar_S)
+          \h._S_widget = AllocateStructure(_S_Bar)
           \h\hide = 1
         EndIf
         ;\h\s = *Scroll

@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;   With *This\Columns()
     ;     Debug "Scroll_Height "+*This\Scroll\Height
     ;   EndWith
-    ReDraw(Display())
+    ReDraw();Display())
     
     Repeat
       Select WaitWindowEvent()   

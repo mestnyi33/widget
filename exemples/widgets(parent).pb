@@ -6,8 +6,8 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   EnableExplicit
   
-  Global *w.widget_S, *combo
-  Global *window_1.widget_S, *window_2.widget_S, *panel.widget_S, *container.widget_S, *scrollarea.widget_S
+  Global *w._S_widget, *combo
+  Global *window_1._S_widget, *window_2._S_widget, *panel._S_widget, *container._S_widget, *scrollarea._S_widget
   Global *w_0, *d_0, *b_0, *b_1, *p_0, *p_1, *p_2, *c_0, *s_0
     
   

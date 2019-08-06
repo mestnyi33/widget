@@ -96,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global NewList ParsePBObject.ParseStruct() 
   Global *This.ThisStruct = AllocateStructure(ThisStruct)
   Global Window_0, Canvas_0, winBackColor = $FFFFFF
-  Global *Widget.Widget_S, *Parent.Widget_S, *Window.Widget_S, x,y
+  Global *Widget._S_widget, *Parent._S_widget, *Window._S_widget, x,y
   Global DragText.s, SubLevel.i, WE_Selecting, WE_Code
   ;- END_GLOBALs
   
@@ -534,10 +534,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     If IsContainer(Value) > 0
       ; OpenList = GetParent(Value)
       AddItem(Widgets("Code"), -1, "CloseList()" )
-    If IsGadget(WE_Code)
-      AddGadgetItem(WE_Code, -1, "CloseList()" )
+      If IsGadget(WE_Code)
+        AddGadgetItem(WE_Code, -1, "CloseList()" )
+      EndIf
     EndIf
-  EndIf
     ;     
     ;     If OpenList
     ;       Position + 1
@@ -547,7 +547,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     If IsGadget(WE_Code)
       AddGadgetItem(WE_Code, Position, Text.s)
     EndIf
-  
+    
   EndProcedure
   
   Procedure Get_Position(*This, SubLevel)
@@ -577,7 +577,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ProcedureReturn Position
   EndProcedure
   
-  Procedure Add_Position(*This.Widget_S, Class.s)
+  Procedure Add_Position(*This._S_widget, Class.s)
     Protected Tree = Widgets("Inspector")
     Protected Parent = GetParent(*This)
     Protected SubLevel = GetLevel(Parent)
@@ -595,7 +595,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       SetGadgetState(WE_Selecting, Position) ; Bug
       SetGadgetItemState(WE_Selecting, Position, #PB_Tree_Selected)
     EndIf
-  
+    
     SetData(*This, Position)
     Add_Code(*This, Position-1, SubLevel)
     
@@ -605,7 +605,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Procedure.i AddWidget(Parent, Type, X=0,Y=0,Width=0,Height=0)
     Static X1, Y1
     Protected Position =- 1
-    Protected *This.Widget_S, Class.s
+    Protected *This._S_widget, Class.s
     
     If Not X
       x=x1
@@ -648,7 +648,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     Select Type
       Case #PB_GadgetType_Window     : *This = Form(10,10,Width+1,Height+1, "", #PB_Flag_AnchorsGadget, Parent)
-      Case #PB_GadgetType_Panel      : *This = Panel(X,Y,Width,Height, #PB_Flag_AnchorsGadget)
+      Case #PB_GadgetType_Panel      : *This = Panel(X,Y,Width,Height, #PB_Flag_AnchorsGadget) : AddItem(*This, -1, "Panel") : AddItem(*This, -1, "+")
       Case #PB_GadgetType_Container  : *This = Container(X,Y,Width,Height, #PB_Flag_AnchorsGadget)
       Case #PB_GadgetType_ScrollArea : *This = ScrollArea(X,Y,Width,Height, 100, 100, 1, #PB_Flag_AnchorsGadget)
       Case #PB_GadgetType_Button     : *This = Button(X,Y,Width,Height, "", #PB_Flag_AnchorsGadget)
@@ -656,8 +656,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     If *This\container
       EnableDrop(*This, #PB_Drop_Text, #PB_Drag_Copy)
-        
-       SetImage(*This, 5)
+      
+      SetImage(*This, 5)
       : X1 = 0 : Y1 = 0 
     EndIf
     
@@ -683,35 +683,35 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndProcedure
   
   ;-
-  Procedure.i GetSelectorX(*This.Widget_S)
+  Procedure.i GetSelectorX(*This._S_widget)
     ProcedureReturn Root()\selector\x-*This\X[2]
   EndProcedure
   
-  Procedure.i GetSelectorY(*This.Widget_S)
+  Procedure.i GetSelectorY(*This._S_widget)
     ProcedureReturn Root()\selector\y-*This\Y[2]
   EndProcedure
   
-  Procedure.i GetSelectorWidth(*This.Widget_S)
+  Procedure.i GetSelectorWidth(*This._S_widget)
     ProcedureReturn Root()\selector\Width
   EndProcedure
   
-  Procedure.i GetSelectorHeight(*This.Widget_S)
+  Procedure.i GetSelectorHeight(*This._S_widget)
     ProcedureReturn Root()\selector\Height
   EndProcedure
   
-  Procedure.i FreeSelector(*This.Widget_S)
+  Procedure.i FreeSelector(*This._S_widget)
     *This\Root\selector = 0
   EndProcedure
   
-  Procedure.i SetSelector(*This.Widget_S)
-    *This\Root\selector = AllocateStructure(Anchor_S)
+  Procedure.i SetSelector(*This._S_widget)
+    *This\Root\selector = AllocateStructure(_S_anchor)
   EndProcedure
   
-  Procedure.i UpdateSelector(*This.Widget_S)
+  Procedure.i UpdateSelector(*This._S_widget)
     Protected MouseX, MouseY, DeltaX, DeltaY
     
     If *This And Not *This\Root\selector And GetButtons(*This)
-      *This\Root\selector = AllocateStructure(Anchor_S)
+      *This\Root\selector = AllocateStructure(_S_anchor)
     EndIf
     
     If *This And *This\Root\selector
@@ -751,13 +751,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;-
   ;- BEGIN
   Procedure Widgets_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
-    Protected *This.Widget_S, MouseX, MouseY, DeltaX, DeltaY
+    Protected *This._S_widget, MouseX, MouseY, DeltaX, DeltaY
     Static Drag.i
     
-;     Select EventType
-;       Case #PB_EventType_Create
-;         Debug "class - "+GetClass(EventWidget) +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
-;     EndSelect
+    ;     Select EventType
+    ;       Case #PB_EventType_Create
+    ;         Debug "class - "+GetClass(EventWidget) +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
+    ;     EndSelect
     
     ; Protected EventWidget = EventWidget()
     ; Protected EventType = WidgetEvent()
@@ -810,7 +810,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             Debug 777888
             
           Case #PB_EventType_Drop
-             Debug "drop "+DragText
+            Debug "drop "+DragText
             
           Case #PB_EventType_MouseMove
             If Drag
@@ -821,7 +821,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             
           Case #PB_EventType_LeftButtonUp
             *This = GetAnchors(EventWidget)
-           
+            
             If *This
               Debug "изменено up "+ *This
               
@@ -972,7 +972,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
     
     Define *n=AddWidget(Widgets("MDI"), #PB_GadgetType_Window)
-    Define *c1=AddWidget(*n, #PB_GadgetType_Container, 50, 5, 200, 90)
+    Define *c1=AddWidget(*n, #PB_GadgetType_Panel, 50, 5, 200, 90)
     Define *c2=AddWidget(*n, #PB_GadgetType_Container, 50, 105, 200, 90)
     AddWidget(*c1, #PB_GadgetType_Button)
     AddWidget(*c2, #PB_GadgetType_Button)
@@ -983,7 +983,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     AddWidget(*n, #PB_GadgetType_Button, 210, 75, 100, 50)
     ; ;     ;CloseList()
     Debug getClass(*n)
-  
+    
     ; Widgets events callback
     Bind(@Widgets_Events())
     ReDraw(Root())
@@ -1030,5 +1030,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;- END
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = FAAgCdPwhBsz--+jnC8
+; Folding = -------------------
 ; EnableXP

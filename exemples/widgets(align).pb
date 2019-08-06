@@ -14,15 +14,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
   
-  Procedure.i _SetAlignment(*This.Widget_S, Mode.i, Type.i=1)
-    ProcedureReturn SetAlignment(*This.Widget_S, Mode.i, Type.i)
+  Procedure.i _SetAlignment(*This._S_widget, Mode.i, Type.i=1)
+    ProcedureReturn SetAlignment(*This._S_widget, Mode.i, Type.i)
   EndProcedure
   
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
       
-      Define *w.Widget_s = Open(0, 10, 10, 580, 600-50, "")
+      Define *w._S_widget = Open(0, 10, 10, 580, 600-50, "")
       Canvas_0 = _Gadget()
       
       Widgets(Str(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #PB_Flag_AnchorsGadget)
@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
       WindowBounds(0, WindowWidth(0), WindowHeight(0), #PB_Ignore, #PB_Ignore)
       ButtonGadget   (0, 5, 600-35, 690,  30, "resize", #PB_Button_Toggle)
       
-      Define bs, *w.Widget_s = Open(0, 10, 10, 680, 600-50, "")
+      Define bs, *w._S_widget = Open(0, 10, 10, 680, 600-50, "")
       
       Widgets(Str(0)) = Form(50, 50, 512, 200, "Demo dock widgets");, #PB_Flag_AnchorsGadget)
                                                                    ; ; ;       ;Widgets(Str(0)) = Container(50, 50, 512, 200) : bs = 2 ;, #PB_Flag_AnchorsGadget)
@@ -160,5 +160,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 4-
+; Folding = --
 ; EnableXP

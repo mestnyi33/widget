@@ -19,11 +19,12 @@ IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 UseModule Widget
+
 Procedure Gadget(Window, X,Y,Width,Height, Flag=0)
   Open(0, X,Y,Width,Height,"")
   Root() = Tree(0, 0, Width,Height, Flag)
-  PostEvent(#PB_Event_Gadget, 0, Display(), #PB_EventType_Repaint)
-  ProcedureReturn Root()\Canvas\Gadget
+  PostEvent(#PB_Event_Gadget, _window(), _gadget(), #PB_EventType_Repaint)
+  ProcedureReturn Root()\canvas
 EndProcedure
 
 Macro GetGadgetData(Gadget)

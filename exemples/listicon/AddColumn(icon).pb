@@ -33,17 +33,18 @@ Procedure Canvas_CallBack()
       Repaint = 1 
   EndSelect
   
-  Repaint | CallBack(at(0, mouseX,mouseY), EventType, mouseX,mouseY)
+  Repaint | CallBack(from(0, mouseX,mouseY), EventType, mouseX,mouseY)
   
   If Repaint
-    ReDraw(Canvas)
+    ReDraw()
   EndIf
 EndProcedure
 
 If OpenWindow(0, 100, 50, 530, 700, "treeGadget", #PB_Window_SystemMenu)
-  CanvasGadget(100, 270, 10, 250, 680, #PB_Canvas_Keyboard )
-  BindGadgetEvent(100, @Canvas_CallBack())
-  OpenList(0, 100)
+;   CanvasGadget(100, 270, 10, 250, 680, #PB_Canvas_Keyboard )
+;   BindGadgetEvent(100, @Canvas_CallBack())
+;   OpenList(0, 100)
+  Open(0, 270, 10, 250, 680)
   
   *w=listicon(0, 0, 250, 680, "column_0", 200, #PB_Flag_FullSelection) 
   
@@ -58,7 +59,7 @@ If OpenWindow(0, 100, 50, 530, 700, "treeGadget", #PB_Window_SystemMenu)
   Next
   Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
   
-  Redraw(100)
+  Redraw()
   
   ListIconGadget(0, 10, 10, 250, 680, "column_0", 200)
   ; HideGadget(0, 1)
