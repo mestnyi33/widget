@@ -339,34 +339,88 @@ Module Scroll
     ProcedureReturn Value
   EndProcedure
   
-  Procedure.b Draw_Splitter(*this._S_widget)
+  Procedure.i Draw_Splitter(*this._S_widget)
+    Protected IsVertical,Pos, Size, X,Y,Width,Height, fColor, f2Color, Color
+    Protected Radius.d = 2, Border=1, Circle=1, Separator=0
+    
     With *this
-      If Not \hide And \color\alpha
-        ; Draw scroll bar background
-        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox(\X,\Y,\Width,\height,\Radius,\Radius,\Color\Back&$FFFFFF|\color\alpha<<24)
+      Protected Alpha = \color\alpha<<24
+      
+      If *this > 0
+        X = \X
+        Y = \Y
+        Width = \Width 
+        Height = \Height
         
+        ; Позиция сплиттера 
+        Size = \Thumb\len
         
         If \Vertical
-            DrawingMode(#PB_2DDrawing_Outlined)
-            Box(\X,\thumb\pos+\thumb\len,\width,\Height-(\thumb\pos+\thumb\len-\y),\Color[3]\frame)
-            
-            DrawingMode(#PB_2DDrawing_Outlined)
-            Box(\X,\Y,\width,\thumb\pos-\y,\Color[3]\frame[2])
-          Else
-            DrawingMode(#PB_2DDrawing_Outlined)
-            Box(\thumb\pos+\thumb\len,\Y,\Width-(\thumb\pos+\thumb\len-\x),\height,\Color[3]\frame)
-            ;Box(\button[#Thumb]\x+\button[#Thumb]\width,\button[#Thumb]\y,\width-(\button[#Thumb]\x+\button[#Thumb]\width-\x),\button[#Thumb]\height,  \Color[3]\frame[\color[3]\state]&$FFFFFF|\color\alpha<<24)
-            
-            DrawingMode(#PB_2DDrawing_Outlined)
-            Box(\X,\Y,\thumb\pos-\x,\height,\Color[3]\frame[2])
-            ;Box(\x,\button[#Thumb]\y,\button[#Thumb]\x-\x,\button[#Thumb]\height,  \Color[3]\frame[\color[3]\state]&$FFFFFF|\color\alpha<<24)
-            
-            ;Box(\button[#Thumb]\x,\button[#Thumb]\y,\button[#Thumb]\width,\button[#Thumb]\height,  \Color[3]\frame[\color[3]\state]&$FFFFFF|\color\alpha<<24)
+          Pos = \Thumb\Pos-y
+        Else
+          Pos = \Thumb\Pos-x
+        EndIf
         
+;         If Border And (Pos > 0 And pos < \Area\len)
+          fColor = \Color[3]\Frame[2]&$FFFFFF|Alpha;\Color[3]\Frame[0]
+          f2Color = \Color[3]\Frame&$FFFFFF|Alpha;\Color[3]\Frame[0]
+          
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend) 
+           If \Vertical
+;             If \Type[1]<>#PB_GadgetType_Splitter
+               Box(X,Y,Width,Pos,fColor) 
+;             EndIf
+;             If \Type[2]<>#PB_GadgetType_Splitter
+               Box( X,Y+(Pos+Size),Width,(Height-(Pos+Size)),f2Color)
+;             EndIf
+           Else
+;             If \Type[1]<>#PB_GadgetType_Splitter
+               Box(X,Y,Pos,Height,fColor) 
+;             EndIf 
+;             If \Type[2]<>#PB_GadgetType_Splitter
+               Box(X+(Pos+Size), Y,(Width-(Pos+Size)),Height,f2Color)
+;             EndIf
+           EndIf
+;         EndIf
+        
+        If Circle
+          Color = $FF000000;\Color[3]\Frame[\Color[3]\State]
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend) 
+          If \Vertical ; horisontal
+           Circle(X+((Width-Radius)/2-((Radius*2+2)*2+2)),Y+Pos+Size/2,Radius,Color)
+            Circle(X+((Width-Radius)/2-(Radius*2+2)),Y+Pos+Size/2,Radius,Color)
+            Circle(X+((Width-Radius)/2),Y+Pos+Size/2,Radius,Color)
+            Circle(X+((Width-Radius)/2+(Radius*2+2)),Y+Pos+Size/2,Radius,Color)
+           Circle(X+((Width-Radius)/2+((Radius*2+2)*2+2)),Y+Pos+Size/2,Radius,Color)
+          Else
+           Circle(X+Pos+Size/2,Y+((Height-Radius)/2-((Radius*2+2)*2+2)),Radius,Color)
+            Circle(X+Pos+Size/2,Y+((Height-Radius)/2-(Radius*2+2)),Radius,Color)
+            Circle(X+Pos+Size/2,Y+((Height-Radius)/2),Radius,Color)
+            Circle(X+Pos+Size/2,Y+((Height-Radius)/2+(Radius*2+2)),Radius,Color)
+           Circle(X+Pos+Size/2,Y+((Height-Radius)/2+((Radius*2+2)*2+2)),Radius,Color)
           EndIf
+          
+        ElseIf Separator
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend) 
+          If \Vertical
+            ;box(X,(Y+Pos),Width,Size,Color)
+            Line(X,(Y+Pos)+Size/2,Width,1,\Color\Frame&$FFFFFF|Alpha)
+          Else
+            ;box(X+Pos,Y,Size,Height,Color)
+            Line((X+Pos)+Size/2,Y,1,Height,\Color\Frame&$FFFFFF|Alpha)
+          EndIf
+        EndIf
+        
+        ; ;         If \Vertical
+        ; ;           ;box(\box\x[3], \box\y[3]+\box\Height[3]-\Thumb\len, \box\Width[3], \Thumb\len, $FF0000)
+        ; ;           box(X,Y,Width,Height/2,$FF0000)
+        ; ;         Else
+        ; ;           ;box(\box\x[3]+\box\Width[3]-\Thumb\len, \box\y[3], \Thumb\len, \box\Height[3], $FF0000)
+        ; ;           box(X,Y,Width/2,Height,$FF0000)
+        ; ;         EndIf
       EndIf
-    EndWith 
+      
+    EndWith
   EndProcedure
   
   Procedure.b Draw_Track(*this._S_widget)
@@ -765,7 +819,7 @@ Module Scroll
         If \Area\len > 0
           \thumb\pos = _thumb_pos_(*this, _scroll_invert_(*this, \page\pos, \inverted))
           
-          If \type <> #PB_GadgetType_TrackBar And \thumb\pos = \area\end
+          If \type = #PB_GadgetType_ScrollBar And \thumb\pos = \area\end
             SetState(*this, \max)
           EndIf
         EndIf
@@ -1059,9 +1113,9 @@ Module Scroll
         \button\len = 7
         
         If \vertical
-         max = Height
+         max = Height-\button\len
         Else
-         max = Width
+         max = Width-\button\len
         EndIf
         
         min = 0
@@ -1204,12 +1258,12 @@ CompilerIf #PB_Compiler_IsMainFile
     TextGadget       (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
     ButtonGadget(100, 0, 0, 0, 0, "100") ; No need to specify size or coordinates
     ButtonGadget(200, 0, 0, 0, 0, "200") ; as they will be sized automatically
-    SplitterGadget  (2,  10, 42, 250,  20, 100, 200, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+    SplitterGadget  (2,  10, 42, 230,  60, 100, 200, #PB_Splitter_Vertical)
     SetGadgetState   (2,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     ButtonGadget(300, 0, 0, 0, 0, "300") ; No need to specify size or coordinates
     ButtonGadget(400, 0, 0, 0, 0, "400") ; as they will be sized automatically
-    SplitterGadget  (3, 270, 10,  25, 120 ,300, 400, #PB_Splitter_Separator)
+    SplitterGadget  (3, 250, 10,  40, 120 ,300, 400, 0)
     SetGadgetState   (3, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     g_Canvas = CanvasGadget(-1, 305, 0, 300, 140)
@@ -1217,10 +1271,10 @@ CompilerIf #PB_Compiler_IsMainFile
     PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
   
     ;TextGadget       (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    *w_1 = Gadget  (10, 42, 250,  20, 0, 0, 0, 0)
+    *w_1 = Gadget  (10, 42, 230,  60, 0, 0, 0, 0)
     SetState   (*w_1,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     ;TextGadget       (-1,  300+10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    *w_2 = Gadget  (270, 10,  25, 120 ,0, 0, 0, #PB_ScrollBar_Vertical)
+    *w_2 = Gadget  (250, 10,  40, 120 ,0, 0, 0, #PB_ScrollBar_Vertical)
     SetState   (*w_2, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     AddElement(*List())
@@ -1236,5 +1290,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------------------
+; Folding = ----0-------------------------
 ; EnableXP

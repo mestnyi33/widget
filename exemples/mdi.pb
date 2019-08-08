@@ -1,4 +1,4 @@
-﻿IncludePath "/Users/as/Documents/GitHub/Widget/exemples/"
+﻿; IncludePath "/Users/as/Documents/GitHub/Widget/exemples/"
 XIncludeFile "scroll_new000_____.pb"
 
 
@@ -628,6 +628,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
 ; Folding = 0-t-----f+DAA5
 ; EnableXP

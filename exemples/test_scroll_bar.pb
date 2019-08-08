@@ -1012,12 +1012,28 @@ Module Scroll
       \color[#Thumb] = Color_Default
       
       \type = #PB_GadgetType_ScrollBar
-      \vertical = Bool(Flag&#PB_Bar_Vertical)
+      \vertical = Bool(Flag&#PB_Bar_Vertical=#PB_Bar_Vertical)
       \inverted = Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted)
+      \ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
       
       If \type = #PB_GadgetType_TrackBar
-        \inverted = Bool(Flag&#PB_Bar_Vertical)
         Flag|#PB_Bar_NoButtons
+        \inverted = \vertical
+        \button\len = 7
+      EndIf
+      
+      If \type = #PB_GadgetType_Splitter
+        Flag|#PB_Bar_NoButtons
+        \button\len = 7
+        
+        If \vertical
+         max = Height-\button\len
+        Else
+         max = Width-\button\len
+        EndIf
+        
+        min = 0
+        PageLength = 0
       EndIf
       
       If Width = #PB_Ignore
@@ -1181,5 +1197,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------
+; Folding = --------------------------bw-
 ; EnableXP

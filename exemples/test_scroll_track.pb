@@ -1017,9 +1017,23 @@ Module Scroll
       \ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
       
       If \type = #PB_GadgetType_TrackBar
+        Flag|#PB_Bar_NoButtons
         \inverted = \vertical
+        \button\len = 7
+      EndIf
+      
+      If \type = #PB_GadgetType_Splitter
         Flag|#PB_Bar_NoButtons
         \button\len = 7
+        
+        If \vertical
+         max = Height-\button\len
+        Else
+         max = Width-\button\len
+        EndIf
+        
+        min = 0
+        PageLength = 0
       EndIf
       
       If Width = #PB_Ignore
