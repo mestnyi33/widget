@@ -472,12 +472,32 @@ Module Scroll
             Box(\thumb\pos+\thumb\len,\Y+p,\Width-(\thumb\pos+\thumb\len-\x),s,\Color[3]\frame)
           EndIf
           
-          If \Ticks
-            Protected i, track_pos.f, _thumb_ = (\thumb\len/2)
-            For i=0 To \page\end
-              track_pos = (\area\pos + Round((i-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+          Protected i, track_pos.f, _thumb_ = (\thumb\len/2)
+          
+          If \vertical
+            If \Ticks
+              For i=0 To \page\end
+                track_pos = (\area\pos + Round((i-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+                LineXY(\button[3]\x+\button[3]\width-1,track_pos,\button[3]\x+\button[3]\width-4,track_pos,\Color[3]\Frame)
+              Next
+            Else
+              track_pos = (\area\pos + Round((0-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+              LineXY(\button[3]\x+\button[3]\width-1,track_pos,\button[3]\x+\button[3]\width-4,track_pos,\Color[3]\Frame)
+              track_pos = (\area\pos + Round((\page\end-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+              LineXY(\button[3]\x+\button[3]\width-1,track_pos,\button[3]\x+\button[3]\width-4,track_pos,\Color[3]\Frame)
+            EndIf
+          Else
+            If \Ticks
+              For i=0 To \page\end
+                track_pos = (\area\pos + Round((i-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+                LineXY(track_pos,\button[3]\y+\button[3]\height-1,track_pos,\button[3]\y+\button[3]\height-4,\Color[3]\Frame)
+              Next
+            Else
+              track_pos = (\area\pos + Round((0-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
               LineXY(track_pos,\button[3]\y+\button[3]\height-1,track_pos,\button[3]\y+\button[3]\height-4,\Color[3]\Frame)
-            Next
+              track_pos = (\area\pos + Round((\page\end-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+              LineXY(track_pos,\button[3]\y+\button[3]\height-1,track_pos,\button[3]\y+\button[3]\height-4,\Color[3]\Frame)
+            EndIf
           EndIf
           
           If \thumb\len
@@ -497,35 +517,35 @@ Module Scroll
               EndIf
             EndIf
             
-            If \Vertical
-              Line(\button[3]\x,\button[3]\y+2,\button[3]\width/2+4,1,color_3)
-              Line(\button[3]\x,\button[3]\y+\button[3]\height-2-1,\button[3]\width/2+4,1,color_3)
-              
-              If \thumb\len <> 7
-                Line(\button[3]\x,\button[3]\y+\button[3]\height/2,\button[3]\width/2+7,1,color_3)
-              EndIf
-              
-              Line(\button[3]\x,\button[3]\y,1,\button[3]\height,color_3)
-              Line(\button[3]\x,\button[3]\y,\button[3]\width/2,1,color_3)
-              Line(\button[3]\x,\button[3]\y+\button[3]\height-1,\button[3]\width/2,1,color_3)
-              Line(\button[3]\x+\button[3]\width/2,\button[3]\y,\button[3]\width/2,\button[3]\height/2+1,color_3)
-              Line(\button[3]\x+\button[3]\width/2,\button[3]\y+\button[3]\height-1,\button[3]\width/2,-\button[3]\height/2-1,color_3)
-              
-            Else
-              Line(\button[3]\x+2,\button[3]\y,1,\button[3]\height/2+3,color_3)
-              Line(\button[3]\x+\button[3]\width-2-1,\button[3]\y,1,\button[3]\height/2+3,color_3)
-              
-              If \thumb\len <> 7
-                Line(\button[3]\x+\button[3]\width/2,\button[3]\y,1,\button[3]\height/2+6,color_3)
-              EndIf
-              
-              Line(\thumb\pos,\button[3]\y,\thumb\len,1,color_3)
-              Line(\thumb\pos,\button[3]\y,1,\button[3]\height/2-1,color_3)
-              Line(\button[3]\x+\button[3]\width-1,\button[3]\y,1,\button[3]\height/2-1,color_3)
-              Line(\button[3]\x,\button[3]\y+\button[3]\height/2-1,\button[3]\width/2+1,\button[3]\height/2,color_3)
-              Line(\button[3]\x+\button[3]\width-1,\button[3]\y+\button[3]\height/2-1,-\button[3]\width/2-1,\button[3]\height/2,color_3)
+          If \Vertical
+            Line(\button[3]\x,\button[3]\y+2,\button[3]\width/2+4,1,color_3)
+            Line(\button[3]\x,\button[3]\y+\button[3]\height-2-1,\button[3]\width/2+4,1,color_3)
+            
+            If \thumb\len <> 7
+              Line(\button[3]\x,\button[3]\y+\button[3]\height/2,\button[3]\width/2+9,1,color_3)
             EndIf
+            
+            Line(\button[3]\x,\button[3]\y,1,\button[3]\height,color_3)
+            Line(\button[3]\x,\button[3]\y,\button[3]\width/2,1,color_3)
+            Line(\button[3]\x,\button[3]\y+\button[3]\height-1,\button[3]\width/2,1,color_3)
+            Line(\button[3]\x+\button[3]\width/2,\button[3]\y,\button[3]\width/2,\button[3]\height/2+1,color_3)
+            Line(\button[3]\x+\button[3]\width/2,\button[3]\y+\button[3]\height-1,\button[3]\width/2,-\button[3]\height/2-1,color_3)
+            
+          Else
+            Line(\button[3]\x+2,\button[3]\y,1,\button[3]\height/2+3,color_3)
+            Line(\button[3]\x+\button[3]\width-2-1,\button[3]\y,1,\button[3]\height/2+3,color_3)
+            
+            If \thumb\len <> 7
+              Line(\button[3]\x+\button[3]\width/2,\button[3]\y,1,\button[3]\height/2+8,color_3)
+            EndIf
+            
+            Line(\button[3]\x,\button[3]\y,\button[3]\width,1,color_3)
+            Line(\button[3]\x,\button[3]\y,1,\button[3]\height/2-1,color_3)
+            Line(\button[3]\x+\button[3]\width-1,\button[3]\y,1,\button[3]\height/2-1,color_3)
+            Line(\button[3]\x,\button[3]\y+\button[3]\height/2-1,\button[3]\width/2+1,\button[3]\height/2,color_3)
+            Line(\button[3]\x+\button[3]\width-1,\button[3]\y+\button[3]\height/2-1,-\button[3]\width/2-1,\button[3]\height/2,color_3)
           EndIf
+        EndIf
           
         EndIf
         
@@ -1576,5 +1596,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = v-----+f------------------------------
+; Folding = v-------------------------------------
 ; EnableXP
