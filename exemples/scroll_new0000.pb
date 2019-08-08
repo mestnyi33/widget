@@ -2644,7 +2644,92 @@ Procedure.b _Resize(*This._S_widget, X.l,Y.l,Width.l,Height.l, *Scroll._S_widget
 EndProcedure
 
 
-Procedure ScrollUpdates(*Scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
+Procedure _ScrollUpdates(*scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
+    With *scroll
+      Protected iWidth = X(\v), iHeight = Y(\h)
+      Static hPos, vPos : vPos = \v\page\pos : hPos = \h\page\pos
+      
+      ; Вправо работает как надо
+      If ScrollArea_Width<\h\page\pos+iWidth 
+        ScrollArea_Width=\h\page\pos+iWidth
+        ; Влево работает как надо
+      ElseIf ScrollArea_X>\h\page\pos And
+             ScrollArea_Width=\h\page\pos+iWidth 
+        ScrollArea_Width = iWidth 
+      EndIf
+      
+      ; Вниз работает как надо
+      If ScrollArea_Height<\v\page\pos+iHeight
+        ScrollArea_Height=\v\page\pos+iHeight 
+        ; Верх работает как надо
+      ElseIf ScrollArea_Y>\v\page\pos And
+             ScrollArea_Height=\v\page\pos+iHeight 
+        ScrollArea_Height = iHeight 
+      EndIf
+      
+      If ScrollArea_X > 0 : ScrollArea_X = 0 : EndIf
+      If ScrollArea_Y > 0 : ScrollArea_Y = 0 : EndIf
+      
+      If ScrollArea_X < 0 : ScrollArea_Width-ScrollArea_X : EndIf
+      ;If ScrollArea_X<\h\page\pos : ScrollArea_Width-ScrollArea_X : EndIf
+      If ScrollArea_Y<\v\page\pos : ScrollArea_Height-ScrollArea_Y : EndIf
+      
+      If \h\max <> ScrollArea_Width 
+        SetAttribute(\h, #PB_ScrollBar_Maximum, ScrollArea_Width) 
+      EndIf
+      If \v\max <> ScrollArea_Height 
+        SetAttribute(\v, #PB_ScrollBar_Maximum, ScrollArea_Height) 
+      EndIf
+      
+      If \v\page\len <> iHeight 
+        SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) 
+      EndIf
+      If \h\page\len <> iWidth 
+        SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) 
+      EndIf
+      
+      If -\h\page\pos > ScrollArea_X
+        SetState(\h, _scroll_invert_(\h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width, \h\inverted)) 
+      EndIf
+      If -\v\page\pos > ScrollArea_Y
+        SetState(\v, _scroll_invert_(\v, (ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height, \v\inverted)) 
+      EndIf
+      
+      \h\thumb\len = _thumb_len_(\h)
+      \h\thumb\pos = _thumb_pos_(\h, _scroll_invert_(\h, \h\page\pos, \h\inverted))
+      
+      \v\thumb\len = _thumb_len_(\v)
+      \v\thumb\pos = _thumb_pos_(\v, _scroll_invert_(\v, \v\page\pos, \v\inverted))
+      
+      ;       \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y + Bool(\h\hide) * \h\height) - \v\y+Bool(Not \h\hide And \v\Radius And \h\Radius)*(\v\width/4))
+      ;       \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x + Bool(\v\hide) * \v\width) - \h\x+Bool(Not \v\hide And \v\Radius And \h\Radius)*(\h\height/4), #PB_Ignore)
+      
+      If \v\hide 
+        \v\page\pos = 0 
+        
+        If vPos 
+          \v\hide = Bool(vPos) 
+        EndIf 
+      Else 
+        \v\page\pos = vPos
+      EndIf
+      
+      If \h\hide 
+        \h\page\pos = 0 
+        
+        If hPos 
+          \h\hide = Bool(hPos)
+        EndIf
+      Else 
+        \h\page\pos = hPos 
+      EndIf
+      
+      Debug " pp-"+\h\page\pos +" pl-"+ \h\page\len +" tp-"+ \h\thumb\pos +" tl-"+ \h\thumb\len +" ap-"+ \h\area\pos +" al-"+ \h\area\len +" m-"+ \h\max
+      ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
+    EndWith
+  EndProcedure
+  
+  Procedure ScrollUpdates(*Scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
   Protected iWidth = X(*Scroll\v), iHeight = Y(*Scroll\h)
   Static hPos, vPos : vPos = *Scroll\v\Page\Pos : hPos = *Scroll\h\Page\Pos
   
@@ -2826,5 +2911,5 @@ Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = YAAAKAgDACAAQM5ABE6HAAwfAAAAAA8BAgA9DPA5------B9AwAAAAAoBAgHAw-fAGM+
+; Folding = YAAAKAgDACAAQM5ABE6HAAwfAAAAAA8BAgA9DPA5------B9AwAAAAAoBAgHA+--6-PADG-
 ; EnableXP

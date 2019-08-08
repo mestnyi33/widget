@@ -18,9 +18,9 @@ DeclareModule TrackBar
   EndStructure
   
   UseModule widget
-  Structure Gadget Extends Coordinate_S
+  Structure Gadget Extends _S_Coordinate
     Canvas.Canvas
-    *Bar.Bar_S
+    *Bar._S_Bar
   EndStructure
   UnuseModule widget
   

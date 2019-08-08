@@ -1124,6 +1124,7 @@ DeclareModule Widget
     #PB_Flag_Limit
   EndEnumeration
   
+  #PB_Bar_Vertical = #PB_Vertical
   #PB_AutoSize = #PB_Flag_AutoSize
   
   If (#PB_Flag_Limit>>1) > 2147483647 ; 8589934592
@@ -1644,8 +1645,74 @@ Module Widget
     GetGadgetAttribute(_this_\root\Canvas, #PB_Canvas_Cursor)
   EndMacro
   
+; ; ;   ; Extract thumb len from (max area page) len
+; ; ;   Macro _thumb_len_(_this_)
+; ; ;     Round(_this_\area\len - (_this_\area\len / (_this_\max-_this_\min)) * ((_this_\max-_this_\min) - _this_\page\len), #PB_Round_Nearest)
+; ; ;     
+; ; ;     If _this_\thumb\len > _this_\area\len 
+; ; ;       _this_\thumb\len = _this_\area\len 
+; ; ;     EndIf 
+; ; ;     
+; ; ; ;     If _this_\Vertical
+; ; ; ;       _this_\button[#Thumb]\height = _this_\thumb\len
+; ; ; ;     Else
+; ; ; ;       _this_\button[#Thumb]\width = _this_\thumb\len
+; ; ; ;     EndIf
+; ; ;     If _this_\box 
+; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
+; ; ;         _this_\box\height[3] = _this_\thumb\len 
+; ; ;       Else 
+; ; ;         _this_\box\width[3] = _this_\thumb\len 
+; ; ;       EndIf
+; ; ;     EndIf
+; ; ;     
+; ; ;     _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
+; ; ;   EndMacro
+; ; ;   
+; ; ;   Macro _thumb_pos_(_this_, _scroll_pos_)
+; ; ;     (_this_\area\pos + Round(((_scroll_pos_)-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
+; ; ;     
+; ; ;     If _this_\thumb\pos < _this_\area\pos 
+; ; ;       _this_\thumb\pos = _this_\area\pos 
+; ; ;     EndIf 
+; ; ;     
+; ; ;     If _this_\thumb\pos > _this_\area\end
+; ; ;       _this_\thumb\pos = _this_\area\end
+; ; ;     EndIf
+; ; ;     
+; ; ;     ; _start_
+; ; ;     If _this_\thumb\pos = _this_\area\pos
+; ; ;       _this_\color[1]\state = 3
+; ; ;     Else
+; ; ;       _this_\color[1]\state = 0
+; ; ;     EndIf 
+; ; ;     
+; ; ;     ; _stop_
+; ; ;     If _this_\thumb\pos = _this_\area\end
+; ; ;       _this_\color[2]\state = 3
+; ; ;     Else
+; ; ;       _this_\color[2]\state = 0
+; ; ;     EndIf 
+; ; ;     
+; ; ; ; ;     If _this_\vertical
+; ; ; ; ;       _this_\button[#Thumb]\y = _this_\thumb\pos
+; ; ; ; ;     Else
+; ; ; ; ;       _this_\button[#Thumb]\x = _this_\thumb\pos
+; ; ; ; ;     EndIf
+; ; ;     If _this_\box
+; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
+; ; ;         _this_\box\y[3] = _this_\thumb\pos 
+; ; ;       Else 
+; ; ;         _this_\box\x[3] = _this_\thumb\pos 
+; ; ;       EndIf
+; ; ;     EndIf
+; ; ;       
+; ; ;     _this_\page\end = (_this_\min + Round((_this_\area\end - _this_\area\pos) / (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
+; ; ;   EndMacro
+  
+  
   ; SCROLLBAR
-  Macro ThumbLength(_this_)
+  Macro _thumb_len_(_this_)
     Round(_this_\area\len - (_this_\area\len / (_this_\max-_this_\min)) * ((_this_\max-_this_\min) - _this_\page\len), #PB_Round_Nearest)
     
 ;     If _this_\thumb\len > _this_\area\len 
@@ -1660,10 +1727,10 @@ Module Widget
       EndIf
     EndIf
     
-    ; _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
+    _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
   EndMacro
   
-  Macro ThumbPos(_this_, _scroll_pos_)
+  Macro _thumb_pos_(_this_, _scroll_pos_)
     (_this_\area\pos + Round((_scroll_pos_-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
     
 ;     If _this_\thumb\pos < _this_\area\pos 
@@ -1699,33 +1766,33 @@ Module Widget
     ProcedureReturn State
   EndProcedure
   
-  Procedure.i _ScrollPos(*this._S_widget, ThumbPos.i)
+  Procedure.i _ScrollPos(*this._S_widget, _thumb_pos_.i)
     Static ScrollPos.i
     Protected Result.i
     
     With *this
-      ThumbPos = \min + Round((ThumbPos - \area\pos) / (\area\len / (\max-\min)), #PB_Round_Nearest)
+      _thumb_pos_ = \min + Round((_thumb_pos_ - \area\pos) / (\area\len / (\max-\min)), #PB_Round_Nearest)
       If \scrollstep > 1
-        ThumbPos = Round(ThumbPos / \scrollstep, #PB_Round_Nearest) * \scrollstep
+        _thumb_pos_ = Round(_thumb_pos_ / \scrollstep, #PB_Round_Nearest) * \scrollstep
       EndIf
       
-      If ThumbPos < \min : ThumbPos = \min : EndIf
-      If ThumbPos > (\max-\page\len) : ThumbPos = (\max-\page\len) : EndIf
+      If _thumb_pos_ < \min : _thumb_pos_ = \min : EndIf
+      If _thumb_pos_ > (\max-\page\len) : _thumb_pos_ = (\max-\page\len) : EndIf
       
-      If ScrollPos <> ThumbPos 
+      If ScrollPos <> _thumb_pos_ 
         If #PB_GadgetType_TrackBar = \type And \vertical 
-          ThumbPos = _invert_(*this, ThumbPos, \inverted)
+          _thumb_pos_ = _invert_(*this, _thumb_pos_, \inverted)
         EndIf
         
-        Result = SetState(*this, ThumbPos)
-        ScrollPos = ThumbPos
+        Result = SetState(*this, _thumb_pos_)
+        ScrollPos = _thumb_pos_
       EndIf
     EndWith
     
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i ScrollPos(*this._S_widget, ThumbPos.i)
+  Procedure.i ScrollPos(*this._S_widget, _thumb_pos_.i)
     Static Pos.i
     Protected Result.i
     Protected ScrollPos.i
@@ -1740,11 +1807,11 @@ Module Widget
 ;       EndIf
 ;       Debug ""+ThumbLen +" "+ \areaend +" "+ Str(\area\pos+(\area\len-ThumbLen)) +" "+ \area\len
       
-      If ThumbPos < \area\pos : ThumbPos = \area\pos : EndIf
-      If ThumbPos > \area\end : ThumbPos = \area\end : EndIf
+      If _thumb_pos_ < \area\pos : _thumb_pos_ = \area\pos : EndIf
+      If _thumb_pos_ > \area\end : _thumb_pos_ = \area\end : EndIf
       
-      If Pos <> ThumbPos 
-        ScrollPos = \min + Round((ThumbPos - \area\pos) / (\area\len / (\max-\min)), #PB_Round_Nearest)
+      If Pos <> _thumb_pos_ 
+        ScrollPos = \min + Round((_thumb_pos_ - \area\pos) / (\area\len / (\max-\min)), #PB_Round_Nearest)
 ;         If \scrollstep > 1
 ;           ScrollPos = Round(ScrollPos / \scrollstep, #PB_Round_Nearest) * \scrollstep
 ;         EndIf
@@ -1760,7 +1827,7 @@ Module Widget
         Result = SetState(*this, ScrollPos)
         ;         Pos = ScrollPos
         
-        Pos = ThumbPos
+        Pos = _thumb_pos_
       EndIf
     EndWith
     
@@ -5383,7 +5450,7 @@ Module Widget
           If \Max <> Value : \Max = Value
             \Area\Pos = \X[2]+\box\Size[1]
             \Area\len = \width[2]-(\box\Size[1]+\box\Size[2])
-            \Thumb\len = ThumbLength(*this)
+            \Thumb\len = _thumb_len_(*this)
             ;\scrollstep = 10;\Thumb\len
             
             If \Change > 0 And SelectElement(\Items(), \Change-1)
@@ -6004,6 +6071,68 @@ Module Widget
     
   EndProcedure
   
+  Procedure.i Draw_Track(*this._S_widget)
+    With *this 
+      Protected i, a = 3
+      DrawingMode(#PB_2DDrawing_Default)
+      Box(*this\X[0],*this\Y[0],*this\Width[0],*this\Height[0],\Color[0]\Back)
+      
+      If \Vertical
+        DrawingMode(#PB_2DDrawing_Default)
+        Box(\X[0]+5,\Y[0],a,\Height[0],\Color[3]\Frame)
+        Box(\X[0]+5,\Y[0]+\Thumb\Pos,a,(\y+\height)-\Thumb\Pos,\Color[3]\Back[2])
+      Else
+        DrawingMode(#PB_2DDrawing_Default)
+        Box(\X[0],\Y[0]+5,\Width[0],a,\Color[3]\Frame)
+        Box(\X[0],\Y[0]+5,\Thumb\Pos-\x,a,\Color[3]\Back[2])
+      EndIf
+      
+      If \Vertical
+        DrawingMode(#PB_2DDrawing_Default)
+        Box(\box\x[3],\box\y[3],\box\Width[3]/2,\box\Height[3],\Color[3]\Back[\Color[3]\State])
+        
+        Line(\box\x[3],\box\y[3],1,\box\Height[3],\Color[3]\Frame[\Color[3]\State])
+        Line(\box\x[3],\box\y[3],\box\Width[3]/2,1,\Color[3]\Frame[\Color[3]\State])
+        Line(\box\x[3],\box\y[3]+\box\Height[3]-1,\box\Width[3]/2,1,\Color[3]\Frame[\Color[3]\State])
+        Line(\box\x[3]+\box\Width[3]/2,\box\y[3],\box\Width[3]/2,\box\Height[3]/2+1,\Color[3]\Frame[\Color[3]\State])
+        Line(\box\x[3]+\box\Width[3]/2,\box\y[3]+\box\Height[3]-1,\box\Width[3]/2,-\box\Height[3]/2-1,\Color[3]\Frame[\Color[3]\State])
+        
+      Else
+        DrawingMode(#PB_2DDrawing_Default)
+        Box(\box\x[3],\box\y[3],\box\Width[3],\box\Height[3]/2,\Color[3]\Back[\Color[3]\State])
+        
+        Line(\box\x[3],\box\y[3],\box\Width[3],1,\Color[3]\Frame[\Color[3]\State])
+        Line(\box\x[3],\box\y[3],1,\box\Height[3]/2,\Color[3]\Frame[\Color[3]\State])
+        Line(\box\x[3]+\box\Width[3]-1,\box\y[3],1,\box\Height[3]/2,\Color[3]\Frame[\Color[3]\State])
+        Line(\box\x[3],\box\y[3]+\box\Height[3]/2,\box\Width[3]/2+1,\box\Height[3]/2,\Color[3]\Frame[\Color[3]\State])
+        Line(\box\x[3]+\box\Width[3]-1,\box\y[3]+\box\Height[3]/2,-\box\Width[3]/2-1,\box\Height[3]/2,\Color[3]\Frame[\Color[3]\State])
+      EndIf
+      
+      If \Ticks
+          Protected ii.f, _thumb_ = (\thumb\len/2-2)
+            For i=0 To \page\end
+              ii = (\area\pos + Round(((i)-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+              LineXY(\X+ii,\box\y[3]+\box\height[3]-1,\X+ii,\box\y[3]+\box\height[3]-4,\Color[3]\Frame)
+            Next
+          
+;         Protected PlotStep = 5;(\width)/(\Max-\Min)
+;         
+;         For i=3 To (\Width-PlotStep)/2 
+;           If Not ((\X+i-3)%PlotStep)
+;             Box(\X+i, \Y[3]+\box\Height[3]-4, 1, 4, $FF808080)
+;           EndIf
+;         Next
+;         For i=\Width To (\Width-PlotStep)/2+3 Step - 1
+;           If Not ((\X+i-6)%PlotStep)
+;             Box(\X+i, \box\y[3]+\box\Height[3]-4, 1, 4, $FF808080)
+;           EndIf
+;         Next
+      EndIf
+      
+      
+    EndWith
+  EndProcedure
+  
   Procedure.i Draw_Text(*this._S_widget)
     Protected i.i, y.i
     
@@ -6242,62 +6371,6 @@ Module Widget
         ; ;           box(X,Y,Width/2,Height,$FF0000)
         ; ;         EndIf
       EndIf
-      
-    EndWith
-  EndProcedure
-  
-  Procedure.i Draw_Track(*this._S_widget)
-    With *this 
-      Protected i, a = 3
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(*this\X[0],*this\Y[0],*this\Width[0],*this\Height[0],\Color[0]\Back)
-      
-      If \Vertical
-        DrawingMode(#PB_2DDrawing_Default)
-        Box(\X[0]+5,\Y[0],a,\Height[0],\Color[3]\Frame)
-        Box(\X[0]+5,\Y[0]+\Thumb\Pos,a,(\y+\height)-\Thumb\Pos,\Color[3]\Back[2])
-      Else
-        DrawingMode(#PB_2DDrawing_Default)
-        Box(\X[0],\Y[0]+5,\Width[0],a,\Color[3]\Frame)
-        Box(\X[0],\Y[0]+5,\Thumb\Pos-\x,a,\Color[3]\Back[2])
-      EndIf
-      
-      If \Vertical
-        DrawingMode(#PB_2DDrawing_Default)
-        Box(\box\x[3],\box\y[3],\box\Width[3]/2,\box\Height[3],\Color[3]\Back[\Color[3]\State])
-        
-        Line(\box\x[3],\box\y[3],1,\box\Height[3],\Color[3]\Frame[\Color[3]\State])
-        Line(\box\x[3],\box\y[3],\box\Width[3]/2,1,\Color[3]\Frame[\Color[3]\State])
-        Line(\box\x[3],\box\y[3]+\box\Height[3]-1,\box\Width[3]/2,1,\Color[3]\Frame[\Color[3]\State])
-        Line(\box\x[3]+\box\Width[3]/2,\box\y[3],\box\Width[3]/2,\box\Height[3]/2+1,\Color[3]\Frame[\Color[3]\State])
-        Line(\box\x[3]+\box\Width[3]/2,\box\y[3]+\box\Height[3]-1,\box\Width[3]/2,-\box\Height[3]/2-1,\Color[3]\Frame[\Color[3]\State])
-        
-      Else
-        DrawingMode(#PB_2DDrawing_Default)
-        Box(\box\x[3],\box\y[3],\box\Width[3],\box\Height[3]/2,\Color[3]\Back[\Color[3]\State])
-        
-        Line(\box\x[3],\box\y[3],\box\Width[3],1,\Color[3]\Frame[\Color[3]\State])
-        Line(\box\x[3],\box\y[3],1,\box\Height[3]/2,\Color[3]\Frame[\Color[3]\State])
-        Line(\box\x[3]+\box\Width[3]-1,\box\y[3],1,\box\Height[3]/2,\Color[3]\Frame[\Color[3]\State])
-        Line(\box\x[3],\box\y[3]+\box\Height[3]/2,\box\Width[3]/2+1,\box\Height[3]/2,\Color[3]\Frame[\Color[3]\State])
-        Line(\box\x[3]+\box\Width[3]-1,\box\y[3]+\box\Height[3]/2,-\box\Width[3]/2-1,\box\Height[3]/2,\Color[3]\Frame[\Color[3]\State])
-      EndIf
-      
-      If \Ticks
-        Protected PlotStep = 5;(\width)/(\Max-\Min)
-        
-        For i=3 To (\Width-PlotStep)/2 
-          If Not ((\X+i-3)%PlotStep)
-            Box(\X+i, \Y[3]+\box\Height[3]-4, 1, 4, $FF808080)
-          EndIf
-        Next
-        For i=\Width To (\Width-PlotStep)/2+3 Step - 1
-          If Not ((\X+i-6)%PlotStep)
-            Box(\X+i, \box\y[3]+\box\Height[3]-4, 1, 4, $FF808080)
-          EndIf
-        Next
-      EndIf
-      
       
     EndWith
   EndProcedure
@@ -8370,7 +8443,7 @@ Module Widget
             State = PagePos(*this, State)
             
             If \Page\Pos <> State 
-              \Thumb\Pos = ThumbPos(*this, State)
+              \Thumb\Pos = _thumb_pos_(*this, State)
               
               If \inverted
                 If \Page\Pos > State
@@ -8484,9 +8557,9 @@ Module Widget
               Case #PB_Bar_Inverted
                 \inverted = Bool(Value)
                 \Page\Pos = _invert_(*this, \Page\Pos)
-                \Thumb\Pos = ThumbPos(*this, \Page\Pos)
+                \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
                 
-                ; \thumb\pos = ThumbPos(*this, _invert_(*this, \page\pos, \inverted))
+                ; \thumb\pos = _thumb_pos_(*this, _invert_(*this, \page\pos, \inverted))
                ProcedureReturn 1
                 
               Case #PB_Bar_Minimum ; 1 -m&l
@@ -8503,8 +8576,8 @@ Module Widget
                   EndIf
                   
                   If \Max > \Min
-                    \Thumb\Pos = ThumbPos(*this, \Page\Pos)
-                    \Thumb\len = ThumbLength(*this)
+                    \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
+                    \Thumb\len = _thumb_len_(*this)
                   Else
                     \Thumb\Pos = \Area\Pos
                     \Thumb\len = \Area\len
@@ -8529,10 +8602,10 @@ Module Widget
                     \Page\Pos = \Min
                   EndIf
                   
-                  \Thumb\Pos = ThumbPos(*this, \Page\Pos)
+                  \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
                   
                   If \Max > \Min
-                    \Thumb\len = ThumbLength(*this)
+                    \Thumb\len = _thumb_len_(*this)
                   Else
                     \Thumb\len = \Area\len
                     
@@ -8561,10 +8634,10 @@ Module Widget
                   EndIf
                   \Page\len = Value
                   
-                  \Thumb\Pos = ThumbPos(*this, \Page\Pos)
+                  \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
                   
                   If \Page\len > \Min
-                    \Thumb\len = ThumbLength(*this)
+                    \Thumb\len = _thumb_len_(*this)
                   Else
                     \Thumb\len = \box\Size[3]
                   EndIf
@@ -8984,14 +9057,14 @@ Module Widget
           EndIf
           
           If (\Type <> #PB_GadgetType_Splitter) And Bool(\Resize & (1<<4 | 1<<3))
-            \Thumb\len = ThumbLength(*this)
-            \area\end = \area\pos + (\area\len-\Thumb\len)
+            \Thumb\len = _thumb_len_(*this)
+            
             
             If (\Area\len > \box\Size)
               If \box\Size
                 If (\Thumb\len < \box\Size)
                   \Area\len = Round(\Area\len - (\box\Size[2]-\Thumb\len), #PB_Round_Nearest)
-                  \area\end = \area\pos + (\height[2]-\box\Size[2]) 
+                  \area\end = \area\pos + (\area\len- (\box\Size[2]-\Thumb\len))
                   \Thumb\len = \box\Size[2] 
                 EndIf
               Else
@@ -9002,9 +9075,9 @@ Module Widget
                 EndIf
               EndIf
             Else
-                \area\end = \area\pos + (\height[2]-\Area\len)
-                \Thumb\len = \Area\len 
-              EndIf
+              \area\end = \area\pos + (\height[2]-\Area\len)
+              \Thumb\len = \Area\len 
+            EndIf
           EndIf
           
 ;           If \Area\len > 0 And \Type <> #PB_GadgetType_Panel
@@ -9012,10 +9085,10 @@ Module Widget
 ;               SetState(*this, \Max)
 ;             EndIf
 ;             
-;             \Thumb\Pos = ThumbPos(*this, \Page\Pos)
+;             \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
 ;           EndIf
           If \Area\len > 0 And \Type <> #PB_GadgetType_Panel
-            \thumb\pos = ThumbPos(*this, _invert_(*this, \page\pos, \inverted))
+            \thumb\pos = _thumb_pos_(*this, _invert_(*this, \page\pos, \inverted))
             
             If \type <> #PB_GadgetType_TrackBar And \thumb\pos = \area\end
               SetState(*this, \max)
@@ -9060,7 +9133,7 @@ Module Widget
                 EndIf
                 
                 \Page\Pos = \Max
-                \Thumb\Pos = ThumbPos(*this, \Page\Pos)
+                \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
               EndIf
               
               \box\width[1] = \box\Size : \box\height[1] = \TabHeight-1-4
@@ -9760,7 +9833,9 @@ Module Widget
       \Radius = Radius
       \Ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
       \Smooth = Bool(Flag&#PB_Bar_Smooth=#PB_Bar_Smooth)
-      \Vertical = Bool(Flag&#PB_Vertical=#PB_Vertical)
+      \Vertical = Bool(Flag&#PB_Bar_Vertical=#PB_Bar_Vertical)
+      \inverted = Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted)
+      
       \box = AllocateStructure(_S_box)
       \box\Size[3] = SliderLen ; min thumb size
       
@@ -12126,5 +12201,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------4-------------------------------------------------------------------------------------------------------------------------------------------------0e----------------------------------------------------------------------
+; Folding = ------------------f4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
