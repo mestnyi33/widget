@@ -1254,13 +1254,13 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  If OpenWindow(0, 0, 0, 605, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    TextGadget       (-1,  10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+  If OpenWindow(0, 0, 0, 605, 140, "SplitterBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    TextGadget       (-1,  10, 25, 250,  20, "SplitterBar Standard  (start=50, page=30/100)",#PB_Text_Center)
     ButtonGadget(100, 0, 0, 0, 0, "100") ; No need to specify size or coordinates
     ButtonGadget(200, 0, 0, 0, 0, "200") ; as they will be sized automatically
     SplitterGadget  (2,  10, 42, 230,  60, 100, 200, #PB_Splitter_Vertical)
     SetGadgetState   (2,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
+    TextGadget       (-1,  10,115, 250,  20, "SplitterBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     ButtonGadget(300, 0, 0, 0, 0, "300") ; No need to specify size or coordinates
     ButtonGadget(400, 0, 0, 0, 0, "400") ; as they will be sized automatically
     SplitterGadget  (3, 250, 10,  40, 120 ,300, 400, 0)
@@ -1270,10 +1270,10 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(g_Canvas, @Canvas_Events())
     PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
   
-    ;TextGadget       (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
+    TextGadget       (-1,  300+10, 25, 250,  20, "SplitterBar Standard  (start=50, page=30/100)",#PB_Text_Center)
     *w_1 = Gadget  (10, 42, 230,  60, 0, 0, 0, 0)
     SetState   (*w_1,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    ;TextGadget       (-1,  300+10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
+    TextGadget       (-1,  300+10,115, 250,  20, "SplitterBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     *w_2 = Gadget  (250, 10,  40, 120 ,0, 0, 0, #PB_ScrollBar_Vertical)
     SetState   (*w_2, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
@@ -1290,5 +1290,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----0-------------------------
+; Folding = ----0--------------------+--v-
 ; EnableXP
