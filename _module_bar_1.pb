@@ -539,8 +539,8 @@ Module Bar
         
         If \vertical
           If \Ticks
-            For i=0 To \page\end
-              track_pos = (\area\pos + Round((i-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+            For i=0 To \page\end-\min
+              track_pos = (\area\pos + Round(i * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
               LineXY(\button[3]\x+\button[3]\width-1,track_pos,\button[3]\x+\button[3]\width-4,track_pos,\Color[3]\Frame)
             Next
           Else
@@ -551,8 +551,8 @@ Module Bar
           EndIf
         Else
           If \Ticks
-            For i=0 To \page\end
-              track_pos = (\area\pos + Round((i-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+            For i=0 To \page\end-\min
+              track_pos = (\area\pos + Round(i * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
               LineXY(track_pos,\button[3]\y+\button[3]\height-1,track_pos,\button[3]\y+\button[3]\height-4,\Color[3]\Frame)
             Next
           Else
@@ -562,6 +562,7 @@ Module Bar
             LineXY(track_pos,\button[3]\y+\button[3]\height-1,track_pos,\button[3]\y+\button[3]\height-4,\Color[3]\Frame)
           EndIf
         EndIf
+        
         
         If \thumb\len
           Protected color_3 = \Color[3]\front[\color[1]\state+\color[2]\state]&$FFFFFF|\color\alpha<<24

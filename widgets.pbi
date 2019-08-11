@@ -1329,6 +1329,7 @@ DeclareModule Widget
   ;-
   Declare.s Class(Type.i)
   Declare.i Type(Class.s)
+  Declare.i SetFont(*this._S_widget, FontID.i)
   
   Declare.i IsContainer(*this._S_widget)
   Declare.i Get_Gadget(*this._S_widget)
@@ -7481,9 +7482,11 @@ Module Widget
       EndIf
       
       ClearList(\Items())
-      \Scroll\v\Hide = 1
+      If \Scroll
+        \Scroll\v\Hide = 1
       \Scroll\h\Hide = 1
-      
+    EndIf
+    
       ;       If Not \Repaint : \Repaint = 1
       ;        PostEvent(#PB_Event_Gadget, \root\canvas_window, \root\Canvas, #PB_EventType_Repaint)
       ;       EndIf
@@ -8275,6 +8278,14 @@ Module Widget
         ;         AddAnchors(*this)
         Resize_Anchors(*this)
       EndIf
+    EndWith
+    
+  EndProcedure
+  
+  Procedure.i SetFont(*this._S_widget, FontID.i)
+    
+    With *this
+      \Text\fontID = FontID
     EndWith
     
   EndProcedure
@@ -12201,5 +12212,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------f4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------f4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
