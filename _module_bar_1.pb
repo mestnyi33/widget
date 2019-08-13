@@ -1485,10 +1485,10 @@ CompilerIf #PB_Compiler_IsMainFile
     TextGadget       (-1,  300+10, 25, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
     AddElement(*List()) : *List() = Scroll  (10, 42, 250,  20, 30, 100, 30, 0)
     SetState   (*List(),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    Debug GetState(*List())
     TextGadget       (-1,  300+10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     AddElement(*List()) : *List() = Scroll  (270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
     SetState   (*List(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
     BindGadgetEvent(1,@h_GadgetCallBack())
     BindGadgetEvent(2,@v_GadgetCallBack())
     

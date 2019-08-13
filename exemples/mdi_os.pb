@@ -217,8 +217,8 @@ CompilerIf #PB_Compiler_IsMainFile
           SetGadgetAttribute(v, #PB_ScrollBar_PageLength, Height-16)
           SetGadgetAttribute(h, #PB_ScrollBar_PageLength, Width-16)
           
-          ResizeGadget(v, Width-20+10, #PB_Ignore, #PB_Ignore, Height-16)
-          ResizeGadget(h, #PB_Ignore, Height-20+110, Width-16, #PB_Ignore)
+;           ResizeGadget(v, Width-20, #PB_Ignore, #PB_Ignore, Height-16)
+;           ResizeGadget(h, #PB_Ignore, Height-20, Width-16, #PB_Ignore)
           Repaint = #True
           
       EndSelect
@@ -242,6 +242,63 @@ CompilerIf #PB_Compiler_IsMainFile
     _Draw(#MyCanvas) 
     EndProcedure
 
+  Procedure Gadgets_CallBack()
+       Select Event()
+      Case #PB_Event_Gadget
+        Select EventGadget()
+          Case v
+            SetWindowTitle(EventWindow(), Str(GetGadgetState(v)))
+          Case h
+            SetWindowTitle(EventWindow(), Str(GetGadgetState(h)))
+          Case 6
+            If GetGadgetState(5)
+              If GetGadgetState(2)
+                ResizeGadget(v, #PB_Ignore, GetGadgetState(6), #PB_Ignore, 380-GetGadgetState(6))
+                ResizeGadget(h, #PB_Ignore, GadgetY(v)+GadgetHeight(v), #PB_Ignore, #PB_Ignore)
+                Debug GetGadgetAttribute(v, #PB_ScrollBar_PageLength)
+              EndIf
+            Else
+              If GetGadgetState(2)
+                ResizeGadget(v, #PB_Ignore, #PB_Ignore, #PB_Ignore, 380-GetGadgetState(6))
+                ResizeGadget(h, #PB_Ignore, GadgetY(v)+GadgetHeight(v), #PB_Ignore, #PB_Ignore)
+              Else
+              ;  Resizes(*Scroll, #PB_Ignore, #PB_Ignore, 400-GetGadgetState(6), #PB_Ignore)
+              EndIf
+            EndIf
+;             ReDraw(#MyCanvas) 
+            
+;           Case 2 
+;             If GetGadgetState(2)
+;               SetGadgetState(3, GetAttribute(*Scroll\v, #PB_Bar_Inverted))
+;             Else
+;               SetGadgetState(3, GetAttribute(*Scroll\h, #PB_Bar_Inverted))
+;             EndIf
+;             
+;           Case 3
+;             If GetGadgetState(2)
+;               SetAttribute(*Scroll\v, #PB_Bar_Inverted, Bool(GetGadgetState(3)))
+;               SetWindowTitle(0, Str(GetState(*Scroll\v)))
+;             Else
+;               SetAttribute(*Scroll\h, #PB_Bar_Inverted, Bool(GetGadgetState(3)))
+;               SetWindowTitle(0, Str(GetState(*Scroll\h)))
+;             EndIf
+;             ReDraw(#MyCanvas) 
+;             
+;           Case 4
+;             If GetGadgetState(2)
+;               SetAttribute(*Scroll\v, #PB_Bar_NoButtons, Bool( Not GetGadgetState(4)) * vButton) 
+;               SetWindowTitle(0, Str(GetState(*Scroll\v)))
+;             Else
+;               SetAttribute(*Scroll\h, #PB_Bar_NoButtons, Bool( Not GetGadgetState(4)) * hButton)
+;               SetWindowTitle(0, Str(GetState(*Scroll\h)))
+;             EndIf
+;             ReDraw(#MyCanvas) 
+            
+        EndSelect
+    EndSelect
+  
+  EndProcedure
+
   If Not OpenWindow(0, 0, 0, 420, 420+100, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
@@ -251,12 +308,17 @@ CompilerIf #PB_Compiler_IsMainFile
   CheckBoxGadget(2, 10, 10, 80,20, "vertical") : SetGadgetState(2, 1)
   CheckBoxGadget(3, 10, 30, 80,20, "invert")
   CheckBoxGadget(4, 10, 50, 80,20, "noButtons")
+  CheckBoxGadget(5, 10, 70, 80,20, "Pos&len")
+  TrackBarGadget(6, 10, 95, 400,20, 0, 400, #PB_TrackBar_Ticks)
+  SetGadgetState(5,1)
+  
   
   CanvasGadget(#MyCanvas, 10, 110, 400, 400, #PB_Canvas_Container)
+  
+  v = ScrollBarGadget(-1,380, 0,  20, 380, 0, 0, 0, #PB_ScrollBar_Vertical)
+  h = ScrollBarGadget(-1,0, 380, 380,  20, 0, 0, 0, 0)
   CloseGadgetList()
   
-  v = ScrollBarGadget(-1,380, 110,  20, 380, 0, 0, 0, #PB_ScrollBar_Vertical)
-  h = ScrollBarGadget(-1,10, 380+110, 380,  20, 0, 0, 0, 0)
   BindGadgetEvent(v, @BindHScrollDatas())
   BindGadgetEvent(h, @BindVScrollDatas())
   
@@ -265,12 +327,15 @@ CompilerIf #PB_Compiler_IsMainFile
   PostEvent(#PB_Event_Gadget, 0,#MyCanvas, #PB_EventType_Resize)
   BindGadgetEvent(#MyCanvas, @Canvas_CallBack())
   BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
+  BindEvent(#PB_Event_Gadget, @Gadgets_CallBack(), 0)
   
   Repeat
     Event = WaitWindowEvent()
     
-  Until Event = #PB_Event_CloseWindow
+ Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------
+; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
+; CursorPosition = 264
+; FirstLine = 244
+; Folding = --------
 ; EnableXP

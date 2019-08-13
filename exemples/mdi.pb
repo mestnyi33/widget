@@ -1,10 +1,10 @@
-﻿; IncludePath "/Users/as/Documents/GitHub/Widget/exemples/"
-XIncludeFile "scroll_new000_____.pb"
+﻿IncludePath "/Users/as/Documents/GitHub/Widget/"
+XIncludeFile "_module_bar.pb"
 
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Scroll
+  UseModule Bar
   EnableExplicit
   
   Global *Scroll._S_scroll=AllocateStructure(_S_scroll)
@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ; Scroll area coordinate
         ; Box(\h\x-\h\Page\Pos, \v\y-\v\Page\Pos, \h\Max, \v\Max, $FF0000)
-         Box(\h\x-\h\Page\end, \v\y-\v\Page\end, \h\Max, \v\Max, $FF0000)
+        Box(\h\x-\h\Page\pos, \v\y-\v\Page\pos, \h\Max, \v\Max, $FF0000)
         ;Box(\h\x-_scroll_pos_(\h), \v\y-_scroll_pos_(\v), \h\Max, \v\Max, $FF0000)
         
         ; page coordinate
@@ -145,19 +145,19 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  AddImage(Images(),  10, 10, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
+  AddImage(Images(),  - 20, 10, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
   AddImage(Images(), 100,100, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/GeeBee2.bmp"))
-  AddImage(Images(), 50,150, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+  AddImage(Images(), 200,150, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
   
-  hole = CreateImage(#PB_Any,100,100,32)
-  If StartDrawing(ImageOutput(hole))
-    DrawingMode(#PB_2DDrawing_AllChannels)
-    Box(0,0,100,100,RGBA($00,$00,$00,$00))
-    Circle(50,50,48,RGBA($00,$FF,$FF,$FF))
-    Circle(50,50,30,RGBA($00,$00,$00,$00))
-    StopDrawing()
-  EndIf
-  AddImage(Images(),170,70,hole,1)
+;   hole = CreateImage(#PB_Any,100,100,32)
+;   If StartDrawing(ImageOutput(hole))
+;     DrawingMode(#PB_2DDrawing_AllChannels)
+;     Box(0,0,100,100,RGBA($00,$00,$00,$00))
+;     Circle(50,50,48,RGBA($00,$FF,$FF,$FF))
+;     Circle(50,50,30,RGBA($00,$00,$00,$00))
+;     StopDrawing()
+;   EndIf
+;   AddImage(Images(),170,70,hole,1)
   
   
   Macro GetScrollCoordinate()
@@ -174,6 +174,22 @@ CompilerIf #PB_Compiler_IsMainFile
       If ScrollHeight < Images()\Y+Images()\height : ScrollHeight = Images()\Y+Images()\height : EndIf
     Next
     PopListPosition(Images())
+  EndMacro
+  
+  Macro _thumb_len_(_this_)
+    Round(_this_\area\len - (_this_\area\len / (_this_\max-_this_\min)) * ((_this_\max-_this_\min) - _this_\page\len), #PB_Round_Nearest)
+    
+    If _this_\thumb\len > _this_\area\len 
+      _this_\thumb\len = _this_\area\len 
+    EndIf 
+    
+    If _this_\Vertical
+      _this_\button[#_3]\height = _this_\thumb\len
+    Else
+      _this_\button[#_3]\width = _this_\thumb\len
+    EndIf
+    
+    _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
   EndMacro
   
   Procedure ScrollUpdates(*scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
@@ -269,6 +285,84 @@ CompilerIf #PB_Compiler_IsMainFile
     EndWith
   EndProcedure
   
+  Procedure BarUpdates(*Scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height) ; Ok
+    With *Scroll
+      Protected iWidth = (\v\X-\h\X)+ Bool(\v\Hide) * \v\Width                                                ; X(\v)
+      Protected iHeight = (\h\Y-\v\Y)+ Bool(\h\Hide) * \h\height                                              ; Y(\h)
+      Static hPos, vPos : vPos = \v\Page\Pos : hPos = \h\Page\Pos
+      
+      ; Вправо работает как надо
+      If ScrollArea_Width<\h\Page\Pos+iWidth 
+        ScrollArea_Width=\h\Page\Pos+iWidth
+        ; Влево работает как надо
+      ElseIf ScrollArea_X>\h\Page\Pos And
+             ScrollArea_Width=\h\Page\Pos+iWidth 
+        ScrollArea_Width = iWidth
+      EndIf
+      
+      ; Вниз работает как надо
+      If ScrollArea_Height<\v\Page\Pos+iHeight
+        ScrollArea_Height=\v\Page\Pos+iHeight 
+        ; Верх работает как надо
+      ElseIf ScrollArea_Y>\v\Page\Pos And
+             ScrollArea_Height=\v\Page\Pos+iHeight 
+        ScrollArea_Height = iHeight 
+      EndIf
+      
+      If ScrollArea_X>0 : ScrollArea_X=0 : EndIf
+      If ScrollArea_Y>0 : ScrollArea_Y=0 : EndIf
+      
+      If ScrollArea_Y<\v\Page\Pos : ScrollArea_Height-ScrollArea_Y-\v\Page\Pos : EndIf
+      If ScrollArea_X<\h\Page\Pos : ScrollArea_Width-ScrollArea_X-\h\Page\Pos : EndIf
+      
+      SetAttribute(\v, #PB_ScrollBar_Maximum, ScrollArea_Height)
+      SetAttribute(\h, #PB_ScrollBar_Maximum, ScrollArea_Width)
+      
+      If \v\Page\Len<>iHeight : SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+      If \h\Page\Len<>iWidth : SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+      
+      If ScrollArea_Y<>\v\Page\Pos 
+        SetState(\v, -ScrollArea_Y);(ScrollArea_Height-ScrollArea_Y)-ScrollArea_Height) 
+      EndIf
+      
+      ;If ScrollArea_X<0 : SetState(\h, (ScrollArea_Width-ScrollArea_X)-ScrollArea_Width) : EndIf
+      If ScrollArea_X<>\h\Page\Pos 
+        SetState(\h, -ScrollArea_X) 
+      EndIf
+      
+      \v\Hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\Y + Bool(\h\Hide) * \h\Height) - \v\Y) ; #PB_Ignore, \h) 
+      \h\Hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\X + Bool(\v\Hide) * \v\Width) - \h\X, #PB_Ignore)  ; #PB_Ignore, #PB_Ignore, \v)
+      
+;        If \v\hide 
+;         \v\page\pos = 0 
+;         
+;         If vPos 
+;           \v\hide = Bool(vPos) 
+;         EndIf 
+;       Else 
+;         \v\page\pos = vPos
+;       EndIf
+;       
+;       If \h\hide 
+;         \h\page\pos = 0 
+;         
+;         If hPos 
+;           \h\hide = Bool(hPos)
+;         EndIf
+;       Else 
+;         \h\page\pos = hPos 
+;       EndIf
+      
+      Debug " pp-"+\h\page\pos +" pl-"+ \h\page\len +" tp-"+ \h\thumb\pos +" tl-"+ \h\thumb\len +" ap-"+ \h\area\pos +" al-"+ \h\area\len +" m-"+ \h\max
+      *Scroll\Y =- \v\Page\Pos
+      *Scroll\X =- \h\Page\Pos
+      *Scroll\width = \v\Max
+      *Scroll\height = \h\Max
+      
+      ProcedureReturn Bool(ScrollArea_Height>=iHeight Or ScrollArea_Width>=iWidth)
+    EndWith
+  EndProcedure
+  
   Procedure.i Canvas_CallBack() ; Canvas_Events(Canvas.i, EventType.i)
     Protected Repaint
     Protected Canvas = EventGadget()
@@ -356,7 +450,8 @@ CompilerIf #PB_Compiler_IsMainFile
                 SetWindowTitle(EventWindow(), Str(Images()\x))
                 
                 GetScrollCoordinate()
-                Repaint = Updates(*scroll, ScrollX, ScrollY, ScrollWidth, ScrollHeight)
+               ; Repaint = Updates(*scroll, ScrollX, ScrollY, ScrollWidth, ScrollHeight)
+                Repaint = BarUpdates(*scroll, ScrollX, ScrollY, ScrollWidth, ScrollHeight)
               EndIf
             EndIf
           EndIf
@@ -451,8 +546,8 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseGadgetList()
       
       ; Create both scroll bars
-      *Scroll\v = Gadget(0, 0,  16, 0 ,0, 0, 0, #PB_ScrollBar_Vertical,7)
-      *Scroll\h = Gadget(0, 0,  0, 16 ,0, 0, 0, 0, 7)
+      *Scroll\v = Scroll(0, 0,  16, 0 ,0, 0, 0, #PB_ScrollBar_Vertical,7)
+      *Scroll\h = Scroll(0, 0,  0, 16 ,0, 0, 0, 0, 7)
       
       ;     SetAttribute(*Scroll\v, #PB_ScrollBar_Maximum, ImageHeight(0))
       ;     SetAttribute(*Scroll\h, #PB_ScrollBar_Maximum, ImageWidth(0))
@@ -628,6 +723,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
-; Folding = 0-t-----f+DAA5
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = 0-4--8----f-BAA9
 ; EnableXP

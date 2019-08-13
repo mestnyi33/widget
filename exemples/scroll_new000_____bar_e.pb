@@ -240,6 +240,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ScrollBar::SetState   (13, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     
+    Debug ScrollBar::getstate(12)
+    
     BindGadgetEvent(2,@h_GadgetCallBack())
     BindGadgetEvent(12,@h_CallBack(), #PB_EventType_Change)
     BindGadgetEvent(3,@v_GadgetCallBack())
@@ -248,5 +250,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----
+; Folding = ------
 ; EnableXP
