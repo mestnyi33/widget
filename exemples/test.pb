@@ -7,16 +7,16 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   
   Global.i gEvent, gQuit, value, direction, x=10,y=10
-  Global *w.Widget_S=AllocateStructure(Widget_S)
-  Global *Bar_0.Widget_S=AllocateStructure(Widget_S)
-  Global *Bar_1.Widget_S=AllocateStructure(Widget_S)
-  Global *Scroll_1.Widget_S=AllocateStructure(Widget_S)
-  Global *Scroll_2.Widget_S=AllocateStructure(Widget_S)
-  Global *Scroll_3.Widget_S=AllocateStructure(Widget_S)
-  Global *child_0.Widget_S=AllocateStructure(Widget_S)
-  Global *child_1.Widget_S=AllocateStructure(Widget_S)
-  Global *child_2.Widget_S=AllocateStructure(Widget_S)
-  Global *ScrollArea.Widget_S=AllocateStructure(Widget_S)
+  Global *w._S_widget=AllocateStructure(_S_widget)
+  Global *Bar_0._S_widget=AllocateStructure(_S_widget)
+  Global *Bar_1._S_widget=AllocateStructure(_S_widget)
+  Global *Scroll_1._S_widget=AllocateStructure(_S_widget)
+  Global *Scroll_2._S_widget=AllocateStructure(_S_widget)
+  Global *Scroll_3._S_widget=AllocateStructure(_S_widget)
+  Global *child_0._S_widget=AllocateStructure(_S_widget)
+  Global *child_1._S_widget=AllocateStructure(_S_widget)
+  Global *child_2._S_widget=AllocateStructure(_S_widget)
+  Global *ScrollArea._S_widget=AllocateStructure(_S_widget)
   
   UsePNGImageDecoder()
   
@@ -42,11 +42,11 @@ CompilerIf #PB_Compiler_IsMainFile
         Repaint = 1 
     EndSelect
     
-    Protected *this = at(*w, mouseX, mouseY)
+    Protected *this = from(*w, mouseX, mouseY)
     Repaint | CallBack(*this, EventType, mouseX,mouseY)
     
     If Repaint
-      ReDraw(1)
+      ReDraw()
     EndIf
   EndProcedure
   
@@ -112,22 +112,22 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 400, 400, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (10,    5,   365, 390,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      CanvasGadget(1, 10,10, 380, 350, #PB_Canvas_Keyboard)
-      SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
-      *w=openlist(0,1)
+;       CanvasGadget(1, 10,10, 380, 350, #PB_Canvas_Keyboard)
+;       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+      *w=open(0,10,10, 380, 350)
       
-      *Scroll_1.Widget_S  = Image(0, 0, 0, 0, 0); : SetState(*Scroll_1, 1) 
-      *Scroll_2.Widget_S  = ScrollArea(0, 0, 0, 0, 250,250) : closelist() : SetState(*Scroll_2\s\h, 45)
-      *Scroll_3.Widget_S  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_3, 50)
+      *Scroll_1._S_widget  = Image(0, 0, 0, 0, 0); : SetState(*Scroll_1, 1) 
+      *Scroll_2._S_widget  = ScrollArea(0, 0, 0, 0, 250,250) : closelist() : SetState(*Scroll_2\scroll\h, 45)
+      *Scroll_3._S_widget  = Progress(0, 0, 0, 0, 0,100,0) : SetState(*Scroll_3, 50)
       
       *Bar_0 = Splitter(10, 10, 360,  330, *Scroll_1, *Scroll_2)
       *Bar_1 = Splitter(10, 10, 360,  330, *Scroll_3, *Bar_0, #PB_Splitter_Vertical)
       
-      *child_0.Widget_S  = Scroll(10, 10, 80, 20, 0,200,100) : SetState(*child_0, 20)
-      *child_1.Widget_S  = Progress(10, 40, 80, 20, 0,200,100) : SetState(*child_1, 50)
-      *child_2.Widget_S  = Scroll(10, 70, 80, 20, 0,200,100) : SetState(*child_2, 80)
+      *child_0._S_widget  = Scroll(10, 10, 80, 20, 0,200,100) : SetState(*child_0, 20)
+      *child_1._S_widget  = Progress(10, 40, 80, 20, 0,200,100) : SetState(*child_1, 50)
+      *child_2._S_widget  = Scroll(10, 70, 80, 20, 0,200,100) : SetState(*child_2, 80)
       
-      *ScrollArea.Widget_S  = ScrollArea(50, 50, 150, 150, 250,250) : closelist() : SetParent(*ScrollArea, *Scroll_2)
+      *ScrollArea._S_widget  = ScrollArea(50, 50, 150, 150, 250,250) : closelist() : SetParent(*ScrollArea, *Scroll_2)
       
       SetParent(*child_0, *ScrollArea)
       SetParent(*child_1, *ScrollArea)
@@ -147,8 +147,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
 ;       SetState(*Bar_0, 25)
       
-      BindGadgetEvent(1, @Canvas_CallBack())
-      ReDraw(1)
+      BindGadgetEvent(_gadget(), @Canvas_CallBack())
+      ReDraw()
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
@@ -203,7 +203,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

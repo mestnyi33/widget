@@ -648,6 +648,13 @@ DeclareModule Widget
     width.i[4]
   EndStructure
   
+  ;- - _S_button
+  Structure _S_button Extends _S_coordinate
+    len.a
+    arrow_size.a
+    arrow_type.b
+  EndStructure
+  
   ;- - _S_box
   Structure _S_box Extends _S_coordinate
     size.i[4]
@@ -12212,5 +12219,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------f4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------u-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

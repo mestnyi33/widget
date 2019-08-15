@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;
@@ -17,9 +17,9 @@ DeclareModule Splitter
     Window.i
   EndStructure
   
-  Structure Gadget Extends Widget::Coordinate_S
+  Structure Gadget Extends Widget::_S_Coordinate
     Canvas.Canvas
-    *Bar.Widget::Bar_S
+    *Bar.Widget::_S_Bar
   EndStructure
   
   ;- DECLARE
@@ -239,6 +239,9 @@ Module Splitter
     CompilerIf #PB_Compiler_OS = #PB_OS_Linux
       gtk_widget_reparent_( GadgetID(Gadget_1), GadgetID(Gadget) )
       gtk_widget_reparent_( GadgetID(Gadget_2), GadgetID(Gadget) )
+    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+      SetParent_( GadgetID(First), GadgetID(Gadget) )
+      SetParent_( GadgetID(Second), GadgetID(Gadget) )
     CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
       CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (Gadget_1)) 
       CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (Gadget_2)) 
