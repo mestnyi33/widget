@@ -1,7 +1,7 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElse
-  IncludePath "../../"
+  IncludePath "../"
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   XIncludeFile "module_macros.pbi"
   XIncludeFile "module_constants.pbi"
   XIncludeFile "module_structures.pbi"
-  XIncludeFile "module_scroll.pbi"
+  XIncludeFile "module_bar.pbi"
   XIncludeFile "module_text.pbi"
   XIncludeFile "module_button.pbi"
   XIncludeFile "module_editor.pbi"
@@ -425,8 +425,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 175
-; FirstLine = 165
+; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = --------
 ; EnableXP

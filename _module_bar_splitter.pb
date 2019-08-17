@@ -228,8 +228,6 @@ Module Splitter
         
         \widget = Bar::Splitter(\X[2], \Y[2], \Width[2], \Height[2], First, Second, Flag)
         
-        \widget\mode = 0
-        
         ;g_Resize(\widget)
         
         SetGadgetData(Gadget, *This)
@@ -376,6 +374,8 @@ CompilerEndIf
 ;     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ;   EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
+; CursorPosition = 229
+; FirstLine = 220
 ; Folding = -------
 ; EnableXP
