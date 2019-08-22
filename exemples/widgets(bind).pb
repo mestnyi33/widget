@@ -9,65 +9,76 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure Widgets_Gadget_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
-    Protected *This._S_widget
+    If EventType <> #PB_EventType_MouseMove
+      Debug " gadget "+ EventType
+    EndIf
     
-    Select EventType 
-      Case #PB_EventType_MouseEnter
-        Debug ""+EventWidget +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
-        
-      Case #PB_EventType_MouseLeave
-        Debug ""+EventWidget +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
-        
-      Case #PB_EventType_LeftButtonDown
-        Debug "Widgets_Gadget_Events"
-        
-        *This = GetAnchors(EventWidget)
-            If *This   
-                If SetAnchors(*This)
-                  Debug "изменено down"+ *This
-                  Debug DropText()
-                EndIf
-            EndIf
-            
-;         ; Отключает передачу сообщений в 
-;         ; оконную и рутовскую процедуру
-         ProcedureReturn 1
-    EndSelect
+;     Protected *This._S_widget
+;     
+;     Select EventType 
+;       Case #PB_EventType_MouseEnter
+;         Debug ""+EventWidget +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
+;         
+;       Case #PB_EventType_MouseLeave
+;         Debug ""+EventWidget +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
+;         
+;       Case #PB_EventType_LeftButtonDown
+;         Debug "Widgets_Gadget_Events"
+;         
+;         *This = GetAnchors(EventWidget)
+;             If *This   
+;                 If SetAnchors(*This)
+;                   Debug "изменено down"+ *This
+;                   Debug DropText()
+;                 EndIf
+;             EndIf
+;             
+; ;         ; Отключает передачу сообщений в 
+; ;         ; оконную и рутовскую процедуру
+;          ProcedureReturn 1
+;     EndSelect
   EndProcedure
   
   Procedure Widgets_Window_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+    If EventType <> #PB_EventType_MouseMove
+      Debug " window "+ EventType
+    EndIf
     
-    ; Protected EventWidget = EventWidget()
-    ; Protected EventType = WidgetEvent()
-    ; Protected EventItem = GetState(EventWidget)))
-    
-    ;Select EventWidget
-   ;   Default
-        
-        Select EventType 
-          Case #PB_EventType_LeftButtonDown
-            Debug "Widgets_Window_Events"
-            
-            
-            ;         ; Отключает передачу сообщений в 
-            ;         ; рутовскую процедуру
-            ;         ProcedureReturn 1
-            
-        EndSelect
-        
-    ;EndSelect
+;     ; Protected EventWidget = EventWidget()
+;     ; Protected EventType = WidgetEvent()
+;     ; Protected EventItem = GetState(EventWidget)))
+;     
+;     ;Select EventWidget
+;    ;   Default
+;         
+;         Select EventType 
+;           Case #PB_EventType_LeftButtonDown
+;             Debug "Widgets_Window_Events"
+;             
+;             
+;             ;         ; Отключает передачу сообщений в 
+;             ;         ; рутовскую процедуру
+;             ;         ProcedureReturn 1
+;             
+;         EndSelect
+;         
+;     ;EndSelect
     
   EndProcedure
   
   Procedure Widgets_Root_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
-    Select EventType 
-      Case #PB_EventType_Create
-        Debug "class - "+GetClass(EventWidget) +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
-        ; ProcedureReturn 1
-        
-      Case #PB_EventType_LeftButtonDown
-        Debug "Widgets_Root_Events"
-    EndSelect
+    If EventType <> #PB_EventType_MouseMove
+      Debug " root "+ EventType
+    EndIf
+    
+;     Select EventType 
+;       Case #PB_EventType_Create
+;         Debug "class - "+GetClass(EventWidget) +" "+ EventWidget() +" "+ EventType +" "+ WidgetEvent()
+;         ; ProcedureReturn 1
+;         
+;       Case #PB_EventType_LeftButtonDown
+;         Debug "Widgets_Root_Events"
+;     EndSelect
   EndProcedure
   
   
@@ -80,20 +91,28 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (10,    5,   565, 590,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      ;       CanvasGadget(1, 10,10, 580, 550, #PB_Canvas_Keyboard|#PB_Canvas_Container)
-      ;       SetGadgetAttribute(1, #PB_Canvas_Cursor, #PB_Cursor_Hand)
-      ;       BindGadgetEvent(1, @Canvas_CallBack())
-      ;       If OpenList(0, 1, #PB_GadgetType_Window)
-      Define Editable = #PB_Flag_AnchorsGadget
+      Define Editable ; = #PB_Flag_AnchorsGadget
       
       If Open(0, 10,10, 580, 550," root ")
-        *win=Form(80, 100, 280, 200, "Window_2", Editable)
+        *win=Form(80, 100, 400, 360, "Window_2", Editable)
         
-        Container(30,30,280-60, 200-60, Editable)
-        Container(20,20,280-60, 200-60, Editable)
+        Container(30,30,400-60, 360-60, Editable)
+        Container(20,20,400-60, 360-60, Editable)
         *but=Button(100, 20, 80, 80, "Button_1", Editable)
-        Button(130, 80, 80, 80, "Button_2", Editable)
-        Button(70, 80, 80, 80, "Button_3", Editable)
+    
+        Tree(130, 80, 180, 180, Editable)
+        
+        Define i
+        For i=0 To 20
+          AddItem(Widget(), i, "item_"+ Str(i))
+        Next
+        
+        Define *progress = Progress(30, 80, 80+40, 80, 30, 60, Editable)
+        Define *track = Track(30, 170, 80+40, 30, 30, 60, Editable)
+        Define *splitter = Splitter(10, 80, 130, 150, *progress, *track, #PB_Splitter_Separator)
+        SetState(*progress, 50)
+        SetState(*track, 50)
+        
         CloseList()
         CloseList()
   
@@ -132,5 +151,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -4-
+; Folding = -0-
 ; EnableXP

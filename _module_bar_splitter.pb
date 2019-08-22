@@ -55,30 +55,6 @@ Module Splitter
     EndWith  
   EndProcedure
   
-  Procedure.l g_Resize(*this.Bar::_S_bar)
-    If *this\type = #PB_GadgetType_Splitter
-      If (#PB_Compiler_OS = #PB_OS_MacOS)
-        If *this\splitter\first
-          ResizeGadget(*this\splitter\first, *this\button[1]\x, (*this\button[2]\height+*this\thumb\len)-*this\button[1]\y, *this\button[1]\width, *this\button[1]\height)
-          ;g_Resize(*this\splitter\first)
-        EndIf
-        If *this\splitter\second
-          ResizeGadget(*this\splitter\second, *this\button[2]\x, (*this\button[1]\height+*this\thumb\len)-*this\button[2]\y, *this\button[2]\width, *this\button[2]\height)
-          ;g_Resize(*this\splitter\second)
-        EndIf
-      Else
-        If *this\splitter\first
-          ResizeGadget(*this\splitter\first, *this\button[1]\x, *this\button[1]\y, *this\button[1]\width, *this\button[1]\height)
-          ;g_Resize(*this\splitter\first)
-        EndIf
-        If *this\splitter\second
-          ResizeGadget(*this\splitter\second, *this\button[2]\x, *this\button[2]\y, *this\button[2]\width, *this\button[2]\height)
-          ;g_Resize(*this\splitter\second)
-        EndIf
-      EndIf
-    EndIf
-  EndProcedure
-  
   Procedure CallBack()
     Protected WheelDelta.i, Mouse_X.i, Mouse_Y.i, *This.Gadget = GetGadgetData(EventGadget())
     
@@ -112,16 +88,11 @@ Module Splitter
           \Width[1] = \Width[2]+\fSize*2
           \Height[1] = \Height[2]+\fSize*2
           
-          Bar::Resize(\widget, \X[2], \Y[2], \Width[2], \Height[2]) : ReDraw(*This)
+          Bar::Resize(\widget, \X[2], \Y[2], \Width[2], \Height[2]) 
+          ReDraw(*This)
       EndSelect
       
       If Bar::CallBack(\widget, EventType(), Mouse_X, Mouse_Y, WheelDelta)
-        If \widget\change 
-          ;g_Resize(\widget)
-        
-          \widget\change = 0
-        EndIf      
-        
         ReDraw(*This)
       EndIf
     EndWith
@@ -153,8 +124,8 @@ Module Splitter
       Select Attribute
         Case #PB_Splitter_FirstGadget    : Result = \widget\splitter\first
         Case #PB_Splitter_SecondGadget   : Result = \widget\splitter\second
-        Case #PB_Splitter_FirstMinimumSize    : Result = \widget\button[Bar::#_1]\len
-        Case #PB_Splitter_SecondMinimumSize   : Result = \widget\button[Bar::#_2]\len
+        Case #PB_Splitter_FirstMinimumSize    : Result = \widget\button[Bar::#_b_1]\len
+        Case #PB_Splitter_SecondMinimumSize   : Result = \widget\button[Bar::#_b_2]\len
       EndSelect
     EndWith
     
@@ -173,10 +144,7 @@ Module Splitter
   
   Procedure GetState(Gadget.i)
     Protected *This.Gadget = GetGadgetData(Gadget)
-    
-    With *This
-      ProcedureReturn \widget\Page\Pos
-    EndWith
+    ProcedureReturn *This\widget\Page\Pos
   EndProcedure
   
   Procedure Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, First.i, Second.i, Flag.i=0)
@@ -227,8 +195,6 @@ Module Splitter
         \Color\Frame = $C0C0C0
         
         \widget = Bar::Splitter(\X[2], \Y[2], \Width[2], \Height[2], First, Second, Flag)
-        
-        ;g_Resize(\widget)
         
         SetGadgetData(Gadget, *This)
         BindGadgetEvent(Gadget, @CallBack())
@@ -295,29 +261,45 @@ UseModule Bar
     EndIf
   EndProcedure
   
-  Global Button_1, Button_2, Button_3, Button_4, Splitter_1, Splitter_2, Splitter_3
-
-If OpenWindow(0, 0, 0, 850, 280, "SplitterWidget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  
+  If OpenWindow(0, 0, 0, 850, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
     Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+    
     Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
     Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
     Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
     
-    Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Separator)
-    Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_1, #PB_Splitter_Separator)
-    Splitter_3 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Button_1, Splitter_2, #PB_Splitter_Vertical)
-
+    Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
+    Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
+;         SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+;         SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+    ;     ;SetGadgetState(Splitter_1, 20)
+    Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
+    Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
+    Splitter_4 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
+    
     TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
-    
+   
+    Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
     Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+    
     Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
     Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
     Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
     
-    Splitter_1 = Splitter::Gadget(#PB_Any, 430, 10, 410, 210, Button_3, Button_4, #PB_Splitter_Separator)
-    Splitter_2 = Splitter::Gadget(#PB_Any, 430, 10, 410, 210, Button_2, Splitter_1, #PB_Splitter_Separator)
-    Splitter_3 = Splitter::Gadget(#PB_Any, 430, 10, 410, 210, Button_1, Splitter_2, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-
+    Splitter_0 = Splitter::Gadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
+    Splitter_1 = Splitter::Gadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
+;         Splitter::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+;         Splitter::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+    ;     ;Splitter::SetState(Splitter_1, 20)
+    Splitter_2 = Splitter::Gadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
+    Splitter_3 = Splitter::Gadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
+    Splitter_4 = Splitter::Gadget(#PB_Any, 430, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
+    
     TextGadget(#PB_Any, 530, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
@@ -374,8 +356,6 @@ CompilerEndIf
 ;     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ;   EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
-; CursorPosition = 229
-; FirstLine = 220
-; Folding = -------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = -+----
 ; EnableXP

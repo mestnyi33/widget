@@ -12,402 +12,41 @@
 ;
 
 DeclareModule DD
+  EnableExplicit
+  
   ;- - Drop_S
   Structure Drop_S
-    Text.s
-    ImageID.i
-    ImageWidth.i
-    ImageHeight.i
-    Actions.i
+    widget.i
+    
+    Type.i
     Format.i
-    PrivateType.i
-    Map *Drop.Drop_S()
+    Actions.i
+    Text.s
+    Image.i
+    ImageID.i
+    
+    Width.i
+    Height.i
   EndStructure
   
-  Enumeration #PB_EventType_FirstCustomValue
-    #PB_EventType_Drop
-  EndEnumeration
+  Global *Drag.Drop_S
+  Global NewMap *Drop.Drop_S()
   
-  Global Object.i, Event.i
-  Global *Buffer.Drop_S
+  Declare.s DropText(*this)
+  Declare.i DropImage(*this, Image.i=-1, Depth.i=24)
+  Declare.i DropAction(*this)
   
-  Macro DropBuffer()
-    *Buffer
-  EndMacro
+  Declare.i Text(*this, Text.S, Actions.i=#PB_Drag_Copy)
+  Declare.i Image(*this, Image.i, Actions.i=#PB_Drag_Copy)
+  Declare.i Private(*this, Type.i, Actions.i=#PB_Drag_Copy)
   
-  Declare.s DropText(Object.i)
-  Declare.i DropImage(Object.i, Image.i=-1, Depth.i=24)
-  Declare.i DropAction(Object.i)
-  
-  Declare.i Text(Object.i, Text.S, Actions.i=#PB_Drag_Copy)
-  Declare.i Image(Object.i, Image.i, Actions.i=#PB_Drag_Copy)
-  Declare.i Private(Object.i, Type.i, Actions.i=#PB_Drag_Copy)
-  
-  Declare.i EnableDrop(Object.i, Format.i, Actions.i, PrivateType.i=0)
-  Declare.i CallBack(*Object, EventType.i, Mouse_X.i, Mouse_Y.i)
+  Declare.i EnableDrop(*this, Format.i, Actions.i, PrivateType.i=0)
+  Declare.i CallBack(*this, EventType.i)
 EndDeclareModule
 
 Module DD
-  Procedure.i SetCursor(Canvas, Cursor.i, CursorType.i=#PB_Canvas_Cursor)
-    Protected Result.i
-    
-    With *this
-      If Canvas
-        If CursorType = #PB_Canvas_CustomCursor
-          If Cursor
-            Protected.i x=3, y=3, ImageID = Cursor
-            
-            CompilerSelect #PB_Compiler_OS
-              CompilerCase #PB_OS_Windows
-                Protected ico.ICONINFO
-                ico\fIcon = 0
-                ico\xHotspot =- x 
-                ico\yHotspot =- y 
-                ico\hbmMask = ImageID
-                ico\hbmColor = ImageID
-                
-                Protected *Cursor = createIconIndirect_(ico)
-                If Not *Cursor 
-                  *Cursor = ImageID 
-                EndIf
-                
-              CompilerCase #PB_OS_Linux
-                Protected *Cursor.GdkCursor = gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
-                
-              CompilerCase #PB_OS_MacOS
-                Protected Hotspot.NSPoint
-                Hotspot\x = x
-                Hotspot\y = y
-                Protected *Cursor = CocoaMessage(0, 0, "NSCursor alloc")
-                CocoaMessage(0, *Cursor, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
-                
-            CompilerEndSelect
-            
-            Cursor = *Cursor
-          EndIf
-        EndIf
-        
-        
-        SetGadgetAttribute(Canvas, CursorType, Cursor)
-      EndIf
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i EnableDrop(Object.i, Format.i, Actions.i, PrivateType.i=0)
-    ; Format
-    ; #PB_Drop_Text    : Accept text on this gadget
-    ; #PB_Drop_Image   : Accept images on this gadget
-    ; #PB_Drop_Files   : Accept filenames on this gadget
-    ; #PB_Drop_Private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
-    
-    ; Actions
-    ; #PB_Drag_None    : The Data format will Not be accepted on the gadget
-    ; #PB_Drag_Copy    : The Data can be copied
-    ; #PB_Drag_Move    : The Data can be moved
-    ; #PB_Drag_Link    : The Data can be linked
-    
-    If Not DropBuffer() 
-      DropBuffer() = AllocateStructure(Drop_S) 
-    EndIf
-    
-    With *Buffer
-      If AddMapElement(\Drop(), Hex(Object))
-        \Drop() = AllocateStructure(Drop_S)
-        
-        Debug "Enable drop - " + Object
-        \Drop()\Format = Format
-        \Drop()\Actions = Actions
-        \Drop()\PrivateType = PrivateType
-      EndIf
-    EndWith
-  EndProcedure
-  
-  Procedure.i Text(Object.i, Text.s, Actions.i=#PB_Drag_Copy)
-    If Not DropBuffer()
-      DropBuffer() = AllocateStructure(Drop_S)
-    EndIf
-    
-    Debug "Drag text - " + Text
-    DropBuffer()\Format = #PB_Drop_Text
-    DropBuffer()\Text = Text
-    DropBuffer()\Actions = Actions
-  EndProcedure
-  
-  Procedure.i Image(Object.i, Image.i, Actions.i=#PB_Drag_Copy)
-    If Not DropBuffer()
-      DropBuffer() = AllocateStructure(Drop_S)
-    EndIf
-    
-    Debug "Drag image - " + Image
-    DropBuffer()\Format = #PB_Drop_Image
-    DropBuffer()\ImageID = ImageID(Image)
-    DropBuffer()\ImageWidth = ImageWidth(Image)
-    DropBuffer()\ImageHeight = ImageHeight(Image)
-    DropBuffer()\Actions = Actions
-  EndProcedure
-  
-  Procedure.i Private(Object.i, Type.i, Actions.i=#PB_Drag_Copy)
-    If Not DropBuffer()
-      DropBuffer() = AllocateStructure(Drop_S)
-    EndIf
-    
-    Debug "Drag private - " + Type
-    DropBuffer()\Format = #PB_Drop_Private
-    DropBuffer()\PrivateType = Type
-    DropBuffer()\ImageID = ImageID(Image)
-    DropBuffer()\ImageWidth = ImageWidth(Image)
-    DropBuffer()\ImageHeight = ImageHeight(Image)
-    DropBuffer()\Actions = Actions
-  EndProcedure
-  
-  Procedure.i DropAction(Object.i)
-    If Not Object And DropBuffer() : DropBuffer() = 0 : EndIf
-    
-    If DropBuffer() And DropBuffer()\Drop() And FindMapElement(DropBuffer()\Drop(), Hex(Object))
-      ProcedureReturn Bool(DropBuffer()\Drop()\Format = DropBuffer()\Format And (DropBuffer()\Drop()\PrivateType = DropBuffer()\PrivateType)) * DropBuffer()\Drop()\Actions  
-    EndIf
-  EndProcedure
-  
-  Procedure.s DropText(Object.i)
-    If DropAction(Object)
-      Debug "Drop text - "+DropBuffer()\Text
-      ProcedureReturn DropBuffer()\Text
-    EndIf
-  EndProcedure
-  
-  Procedure.i DropPrivate(Object.i)
-    If DropAction(Object)
-      Debug "Drop type - "+DropBuffer()\PrivateType
-      ProcedureReturn DropBuffer()\PrivateType
-    EndIf
-  EndProcedure
-  
-  Procedure.i DropImage(Object.i, Image.i=-1, Depth.i=24)
-    Protected Result.i
-    
-    If DropAction(Object) And DropBuffer()\ImageID
-      Debug "Drop image - "+DropBuffer()\ImageID
-      
-      If Image =- 1
-        Result = CreateImage(#PB_Any, DropBuffer()\ImageWidth, DropBuffer()\ImageHeight) : Image = Result
-      Else
-        Result = IsImage(Image)
-      EndIf
-      
-      If Result And StartDrawing(ImageOutput(Image))
-        If Depth = 32
-          DrawAlphaImage(DropBuffer()\ImageID, 0, 0)
-        Else
-          DrawImage(DropBuffer()\ImageID, 0, 0)
-        EndIf
-        StopDrawing()
-      EndIf  
-      
-      ProcedureReturn Result
-    EndIf
-    
-  EndProcedure
-  
-  Procedure Cursor(Type.i=#PB_Cursor_Default)
-    Protected cursor
-    #PB_Cursor_Help = 50
-    #PB_Cursor_Alternate = 51
-    #PB_Cursor_Handwriting = 52
-    
-    UsePNGImageDecoder()
-    UseZipPacker()
-    
-    Select Type
-      Case #PB_Cursor_Handwriting
-        *unpacked = AllocateMemory(670)
-        UncompressMemory(?cursor_handwriting, 547, *unpacked, 670)
-        cursor = CatchImage(#PB_Any, *unpacked, 670)
-        
-      Case #PB_Cursor_Alternate
-        *unpacked = AllocateMemory(643)
-        UncompressMemory(?cursor_alternate, 466, *unpacked, 643)
-        cursor = CatchImage(#PB_Any, *unpacked, 643)
-        
-      Case #PB_Cursor_Default
-        *unpacked = AllocateMemory(737)
-        UncompressMemory(?cursor_normal, 594, *unpacked, 737)
-        cursor = CatchImage(#PB_Any, *unpacked, 737)
-        
-      Case #PB_Cursor_Denied
-        ; ; ;         *unpacked = AllocateMemory(1076)
-        ; ; ;         UncompressMemory(?cursor_denied, 992, *unpacked, 1076)
-        ; ; ;         cursor = CatchImage(#PB_Any, *unpacked, 1076)
-        *unpacked = AllocateMemory(839)
-        UncompressMemory(?cursor_denied, 830, *unpacked, 839)
-        cursor = CatchImage(#PB_Any, *unpacked, 839)
-        
-      Case #PB_Cursor_Hand
-        *unpacked = AllocateMemory(1063)
-        UncompressMemory(?cursor_hand, 929, *unpacked, 1063)
-        cursor = CatchImage(#PB_Any, *unpacked, 1063)
-        
-      Case #PB_Cursor_Arrows
-        ; ; ;         *unpacked = AllocateMemory(714)
-        ; ; ;         UncompressMemory(?cursor_move, 698, *unpacked, 714)
-        ; ; ;         cursor = CatchImage(#PB_Any, *unpacked, 714)
-        
-        *unpacked = AllocateMemory(784)
-        UncompressMemory(?cursor_move, 774, *unpacked, 784)
-        cursor = CatchImage(#PB_Any, *unpacked, 784)
-        
-      Case #PB_Cursor_IBeam
-        *unpacked = AllocateMemory(508)
-        UncompressMemory(?cursor_ibeam, 368, *unpacked, 508)
-        cursor = CatchImage(#PB_Any, *unpacked, 508)
-        
-      Case #PB_Cursor_LeftDownRightUp
-        *unpacked = AllocateMemory(532)
-        UncompressMemory(?cursor_diagonal_1, 434, *unpacked, 532)
-        cursor = CatchImage(#PB_Any, *unpacked, 532)
-        
-      Case #PB_Cursor_LeftUpRightDown
-        *unpacked = AllocateMemory(519)
-        UncompressMemory(?cursor_diagonal_2, 429, *unpacked, 519)
-        cursor = CatchImage(#PB_Any, *unpacked, 519)
-        
-      Case #PB_Cursor_LeftRight
-        *unpacked = AllocateMemory(474)
-        UncompressMemory(?cursor_horizontal, 382, *unpacked, 474)
-        cursor = CatchImage(#PB_Any, *unpacked, 474)
-        
-      Case #PB_Cursor_UpDown
-        *unpacked = AllocateMemory(428)
-        UncompressMemory(?cursor_vertical, 396, *unpacked, 428)
-        cursor = CatchImage(#PB_Any, *unpacked, 428)
-        
-      Case #PB_Cursor_Help
-        *unpacked = AllocateMemory(725)
-        UncompressMemory(?cursor_help, 605, *unpacked, 725)
-        cursor = CatchImage(#PB_Any, *unpacked, 725)
-        
-      Case #PB_Cursor_Cross
-        *unpacked = AllocateMemory(472)
-        UncompressMemory(?cursor_cross, 393, *unpacked, 472)
-        cursor = CatchImage(#PB_Any, *unpacked, 472)
-        
-    EndSelect
-    
-    
-    ; If img0 ;createImage(110, 20, 20, 32,#PB_Image_Transparent)
-    ; 
-    ;     StartDrawing(ImageOutput(110))
-    ;     
-    ;     DrawingMode(#PB_2DDrawing_AllChannels) 
-    ;     box(0,0,OutputWidth(),OutputHeight(), $FF000000)
-    ;     
-    ;     StopDrawing() ; This is absolutely needed when the drawing operations are finished !!! Never forget it !
-    ;     
-    ;     EndIf
-    ;     ProcedureReturn ImageID(110)
-    ;Debug cursor
-    ProcedureReturn ImageID(cursor)
-    
-    DataSection
-      cursor_hand:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$CC2C4042D2020970,$003DACF957240CC1,$18191D7D1DD258A4,$F2056449FF73F636,
-             $9DD6189DDC838B19,$047B2428E4097993,$343031A9543032F9,$BC350A02FC3030B4,$9578606035286060,$BC4181833560C0C0,
-             $B6BEA01B40AECE60,$9190300657109F00,$8090909717171191,$20949495D5D5D570,$89A6D369FD7D7D6C,$95400540D9008888,
-             $CDCDCB2B2B20300C,$0E2020202DADADAD,$1B0B0AE760424206,$8165013131301818,$62525252D2D2D282,$2C2C305036406262,
-             $6214D4D4CE4E4E4C,$CECED959595C5008,$876A05151515C20E,$78308050525E4173,$81EA800202037979,$3610FDFDFD51A06C,
-             $203235024A4A4810,$0E0E2DA056565601,$36361110CCCCCC0E,$1D1D1D114045A036,$A05C810505042FB8,$81B0180A81DA80BF,
-             $D6FFFFFFFE7F3F9F,$F7FBFFDFEFF75BAD,$FD3E9F4EF379BCEF,$64676FB7DBE7F3F9,$FCDCDCC673399C64,$7ABD7EBF5FD7EBF5,
-             $3B9DCEBF5FAFEAF5,$7FBFDFEFC5E2F177,$6666F7FBFDE9F4FA,$EAEAFF4026262666,$63F1F8FDE9E9EAEA,$7CBA3D1E8F1D8EC7,
-             $FC7E3E773B9DF2F9,$F5B627D3BFDFEFF8,$660BF2092C4A6D01,$C3EA499AA6F35E60,$3F04BAFF77C65527,$C3E3F9BFE597905C,
-             $FEFD66783C2FE7FA,$9B0FB7C29ED5F1F7,$D3E5FEC2A77DFF3F,$72183F7F07DE7D7B,$8EF6FE6F15667F7B,$5E9F4E7CE5DFEAE3,
-             $1CF97F2688B272EB,$0FD7EBE5F7192425,$53F85B6F3FAFD26C,$A7C040CECD53C4D8,$76F249BA500DCEE1,$0B4C0B29DED24977,
-             $FA40C5911E059C0C,$2416BE7AFF271804,$30018A0E98E05658,$AF17502E6735FF6E,$04E4E5C488638BA7,$60754C4B4A494820,
-             $84E6273329D379CC,$7A7B369E3B9CCC52,$6A649E78FE6A9C34,$C82835C5AAF13A72,$09A5955511C8F2D5,$297A6E7A65192E87,
-             $072EAE27E6727459,$4EAE434253A988E6,$5749A4D17269B4DA,$F1996C4A764D4D8A,$140B0A49D2D6D3F9,$302FEF1DBBFBC33C,
-             $4AC5A57340C27958,$4C662793CD654D15,$734D131ACAE4783D,$692A566D2B3A95CD,$D0E7783D4C77BA7A,$7172568DCB25AE25,
-             $9C8EC48773FB5EAC,$8C84D0A706EC9C96,$179BAB4C250CF7F4,$B35C0B48050AE707,$EF67D3CE69A3BDDC,$795931EC9BF2461E,
-             $BA7A8637F66DF4F0,$70D6392C97FFF6F1,$B9EA1584B6C288E0,$FF290E873DBD4E4E,$7F52E8F7609C5E51,$E9EE9ED3CF61675F,
-             $396BABEF7C77D56D,$10D9A32FBC7152DE,$999B298F81B3B911,$FE4282A17DADF3A1,$9446B896A9086002,$A517255AA49624A4,
-             $5D4B430323062902,$530310B3035D6303,$036D63532B03432B,$0CAE9AC683032B03,$95699929F9B90D14,$5985843441183458,
-             $CB9FABA7A2528026,$610EF6002684A73A
-      Data.b $72
-      end_cursor_hand:
-      
-      cursor_denied:
-      ; ; ;   Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C1CC200AD2020970,$52031D74965D240C,$1B0C0C8EBE8EE92C,$932482B224FFB9FB,
-      ; ; ;          $18D4AA18197C823D,$85017E18185A1A18,$30301A9430305E1A,$C0C19AB060604ABC,$030DA05767305E20,$032B884F80796303,
-      ; ; ;          $BDDEEF72E2E2E021,$C3FEFF7FBD5EAF57,$8FC7E3E0C0EF0F87,$8F47A3D9405A5A5A,$65656D7EBF5EA442,$00A816FB7DBEE405,
-      ; ; ;          $CDFCBE5F2ECA05C8,$085E2F179140379B,$18A818FC7E3D0909,$9ECF67BADD6EB522,$F4FA7C5E2F171901,$04411E8F47AEC429,
-      ; ; ;          $A003C1E0FBBDDEEF,$EA753A9ADD6EB769,$5F2E383838E773B9,$7B7B7B4DE6F37CBE,$EDD4A022A2A282A0,$F6E402D96CB7B7DB,
-      ; ; ;          $B75B2280A501F5F5,$1A07AA0028282D6E,$BDFEFEFECCE6733B,$C1E0E974BA5EF77B,$FC1414102C160B83,$2B2B2B3D503FFFFF,
-      ; ; ;          $272738B8B89F1F1F,$AF103BD00888A887,$2F97CBDE740A9D01,$A074FA7D37DBEDF7,$4C5A6D369F2E8033,$E78AD03E7E7E4C4C,
-      ; ; ;          $8BCBCBCD2D039FCF,$6BB5DAFB3A068E8E,$7AB93C9E4FB9B9B9,$D7FDD01454546AF5,$8C8C89C9C9CF5FAF,$D9D989C4E27FBA04,
-      ; ; ;          $DB7F7FBFDC9740D9,$E572B84C26136DB6,$DC73B9DCEF30300A,$4125011DD013EAAB,$02323C1C2C0CC17E,$AB11EC8C2212063A,
-      ; ; ;          $6AC124C41E5F3C5E,$EF8FDC548992ED77,$DE489BBE3F1E9CFE,$7DB5241397C4C4BC,$5E6FFAE79BCA9739,$1AE7766119555EEC,
-      ; ; ;          $15E2761FCFD246BB,$51E9B9DD25C47F3F,$AC9BC91CF6CDFBB9,$BB79263366801BA9,$E403D9F3CE3C04BB,$663FB2BAFA7897B0,
-      ; ; ;          $1065AAE666936366,$588638BA79C74A02,$41C87C1E989D6E9C,$37D7C6D161D14DA0,$368F5D935CDD7BAB,$C411A11397105DED,
-      ; ; ;          $BDE3D7F2F8C4D2A2,$E4EDE73CFD0F6D2C,$74EEF9736EC67F7F,$304B6C164B891783,$79781CE4EC3DCE72,$6C87909315C04183,
-      ; ; ;          $623C115EE91E38AF,$80BB807BE3B942BD,$52C726A10C6982FC,$D223594D82CCDA24,$4FC889656CF4671D,$B4DD762B3D9A9691,
-      ; ; ;          $7465DD87D5BEDB6B,$939C9DF33C9EBF48,$87FFD7ABC66ACCC1,$483738F788082624,$C179E92A4BAE55C9,$06F96D40CE3D4C78,
-      ; ; ;          $9FD6E505BBBED3AB,$41DE6BD6D2ADFB7F,$482BD473D79B0FE9,$3C4F9EA9D732B170,$8B9F60AF21F4A7B4,$65383A7BA9968BF2,
-      ; ; ;          $335028BC9A13AEFE,$3BA9FE16A50FD4EC,$596B520C7C7878A6,$C4E2F547C732DFEA,$F56A7E36627C7BA9,$D86A6D4733746E58,
-      ; ; ;          $C528CAB6278FAD27,$F27714EA3A2B3C6B,$CE7BF37ADB1991F5,$BE773B7B7E0526EA,$897CABA488F7D956,$A810E07E1E6215FF,
-      ; ; ;          $AB4846A0A7B4183F,$E270E457904DCAB8,$2B2B37A916F1B9F6,$31F039E3EF6EFF4B,$A2E33CFB43204A2C,$991C669AFBE2DC7F,
-      ; ; ;          $5C4B55F0301CEFB0,$92AD524B12524A23,$A18191831481528B,$885981AEB181AEA5,$B18195B991959981,$C67F0181958181B6,
-      ; ; ;          $3253F3721A285DD4,$65D533A86B712AD3,$75973F574F1CE503,$5DE4C2D3004D094E
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C1CC200AD2020970,$5207AA6F166F2402,$1B0C0C8EBE8EE92C,$932482B224FFB9FB,
-             $18D4AA18197C823D,$85017E18185A1A18,$30301A9430305E1A,$C0C19AB060604ABC,$500DA05767305E20,$7FE185DDDBC92982,
-             $897B1E40FD99FF7B,$36366663FB2BAFA7,$79401388A55AE135,$6FE38F10C7174F7F,$CDB44A04847AF8A7,$1A0233F9F5F1783F,
-             $D24E961252D45C2B,$92D225CCA2E895FB,$D8B2EEF33ACD3821,$1FB23E57B5C770E8,$60E95C76E47165CA,$7A24C9557828A594,
-             $F361F92527E4C646,$4BCC5F7D53BB9E5E,$E7F11ADD58D5C9E5,$AE7E5F79AF7ECE73,$A729E1FDE5C6EEDC,$F766C95956EDCE77,
-             $AFCDBBE2CFBB0E71,$39E7BB3EFC37F324,$CD79CDAF7387DE5B,$97BA1414F7C95F1E,$7DE0AFD7F2712B56,$3EF3EF33C5BC52EF,
-             $A598E4EA60D5B15A,$325CCD1FD33A973E,$C6ECCB7512DD68D9,$5359934AAE456B64,$57EBA53AEF9A7897,$7E8B673516A715DC,
-             $7DBF8EE24FA54A6F,$6E70971AE383B76E,$626CF8253DE999CF,$97179583DE75B99E,$995190F29E719F29,$9FE34F4AFCBDE677,
-             $1D4534B805D7449F,$65DB50904931EF6B,$2529BCF3FC25A0BB,$09CD2E5967898515,$CFC628502A50FC9F,$D8DB5ED9E39ED2EA,
-             $96FCE6B49EEE788F,$CCDE67323757EDA2,$7A8F5D8CF172F0DF,$29C8CB7C7C99749E,$65C2DDCB4D79EB16,$A519D6AA6FB8C1D5,
-             $5963AC4DE6CD0B12,$82ED379718C2D9E2,$6CCF29AB97F3536B,$5D5B78DB66C4B24E,$46CF4381B67C735A,$3C6A37DF3CA5E546,
-             $9053ED3C3A7EB866,$3D26526E41FBDEDF,$3DBF27CA9C0353AD,$94E9604F364B3BC9,$CA985C7FBFBA31BF,$DFACCB93CAC9F4F4,
-             $F5359DB4310E2D08,$8E0173DB61F75D52,$529EB1EAE1DCE6B2,$75BB186F437C8D67,$B1D4F193BA8BDE14,$F1C9CCD26A6750F8,
-             $32C273DDAF67AF41,$D9724DA59959E1E9,$3AD394ECCFCFD72F,$93258AC362BF29F4,$28BDF3D85F55BA57,$6314E5E3AF6D3F8A,
-             $67953F8911A9F557,$B22C78BB7E160B67,$47CCFE56BCEFB82F,$B8D672F4FD3FF19A,$3CD376091567BDD4,$F75A56D7A720C22A,
-             $0DB5E55AE97FDDA8,$F1FFE6181A5C8B4E,$9CF70BFE2BFD583B,$0791ED5A36ABE1EF,$949288D712D536A6,$2054A2E4AB5492C4,
-             $606BA968606460C5,$6566606216606BAC,$60606DA96865616C,$A28EA7EE6E106065,$B712AD33253F3721,$181A81B36FACB506,
-             $342539D65CFD5D3C
-      Data.b $01,$00,$0B,$B6,$5D,$99
-      end_cursor_denied:
-      
-      cursor_handwriting:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C22C403CD2020970,$819474F4FB240CC1,$C30323AFA3BA4B14,$3E40AC893FEE7EC6,
-             $73BAC313BB907163,$208F64851C812F32,$868606352A86065F,$1786A1405F860616,$12AF0C0C06A50C0C,$1788303066AC1818,
-             $145894036815D9CC,$F87C3FA40AE213E0,$F3F830062DD6EB70,$D7EBF5F82A030FE7,$FF7FBE459193C9E4,$A9A9B73854EA753E,
-             $7764082815B5B5A9,$78C818FC7E3C7474,$519A0D4D4D6DF6FB,$FFFE0DC0643E1F0F,$EEF99CCE67240FFF,$FBFDFE9F4FA7BBDD,
-             $7ABD5EAFD7EBF5F7,$24AF42501374B378,$38D05CAD21982FC8,$EAEE628477F64037,$AAA135DCA11B0CC0,$33A6B3FD3CD66BC2,
-             $BD4C9302E0AAE6FD,$2A3A22BCDA3E5E1B,$00A0B1AE0E56DC9C,$2CB90BD17776F24A,$15B9BBE670E40ED0,$7C9833B310506903,
-             $824478160907CE60,$6BE7AFF271804F04,$20A0E98E05658241,$1902E6735FF6E305,$7D9712218E2E9E6D,$7D61E0326B173FCF,
-             $41E0A05989A34AB0,$BFFDEEBBC99D2AC2,$F3F9BC5EF478619A,$49331B5E253D2FD7,$79905C1C0AB04BF8,$D4E68CFB3181A8EA,
-             $98CBE1FA0D8AB5EF,$3A1FF99786C9D66A,$F566BC3571C25FC6,$020C7183D976EF41,$D54F328272ECE11D,$CF6216FD1F8C9BD4,
-             $FCEF2FE57358F5D2,$F93141B18AE7B17C,$DD3DF55E86E683DF,$C126E4B32B6FF366,$A917403115FD0D5C,$A49624A49446B896,
-             $23062902A517255A,$035D63035D4B4303,$2B03432B530310B3,$83032B03036D2313,$E6E434509D1B0BD7,$EB30D6E255A664A7,
-             $FABA78CC503FE58F,$C20002684A73ACB9
-      Data.b $C5,$D0,$E0
-      end_cursor_handwriting:
-      
-      cursor_alternate:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$CC2C40FCD2020970,$00CF96642B240CC1,$0C0C8EBE8EE92C52,$F902B224FFB9FB1B,
-             $CEEB0C4EEE41C58C,$823D92147204BCC9,$1A1818D4AA18197C,$5E1A85017E18185A,$4ABC30301A943030,$305E201A02B06060,
-             $C025A2500DA05767,$FFFFC1406195C427,$90230B3F0F2481FF,$6460660BF2092AD2,$936213E6E1E56166,$C94F0AF262E594E4,
-             $4994CE332B57E0E7,$14161117168C5252,$F8928D8E098B1015,$926317503364FFE8,$F32BBEF0568BBBB7,$A862B7377CCE1C80,
-             $41FBDB0D870C8CD9,$6013C120911E0582,$5960905AF9EBFC9C,$F6E30056903A6381,$2E9EBD1902E6735F,$66DC2F7D9712218E,
-             $4139980861E0526A,$B7CD9166EEF44BB1,$FAA593BABFFFFC7F,$27064ED3D30DE556,$366DBA3BC4542304,$32B894BCCF7BB439,
-             $371B0729ABCD6AC8,$A6C14E6737D2FFFF,$9B9AD7223B898F30,$F7D4FACD39BB6CD4,$B8167F44C51DAF17,$7F1B661199B45CD8,
-             $B789BDFC465EFB4B,$E3E26EFB9D9DF1EF,$BF9D34820D93FFF5,$E334CF6BD9AEFD17,$0FAB655B8C7FACDA,$ACEC567327DECDFE,
-             $2D530E8177938AF6,$B5492C4949288D71,$06460C52054A2E4A,$6606BAC606BA9686,$0656160656A60621,$7B0606560606DA46,
-             $4FCDC868A0F40937,$FBCCE1ADC4AB4CC9,$73F574F2E0A00615,$9A900004D094E759
-      Data.b $A4,$C1
-      end_cursor_alternate:
-      
-      cursor_normal:
+  DataSection
+    cursor_normal:
       Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C62C4002D2020970,$03F1BC95FF240CC1,$0C0C8EBE8EE92C52,$F902B224FFB9FB1B,
              $CEEB0C4EEE41C58C,$823D92147204BCC9,$1A1818D4AA18197C,$5E1A85017E18185A,$4ABC30301A943030,$5E20C0C19AB06060,
              $7B62500DA0576730,$E4F036032B884F80,$101389C4FB3813C9,$E7738C21FFFFFFC6,$3D9F5FAFD71841CE,$6EF5919BCDE6F67B,
@@ -423,189 +62,280 @@ Module DD
              $B9FABA79C45004CB,$F66D0002684A73AC
       Data.b $DD,$C6
       end_cursor_normal:
-      
-      cursor_move:
-      ; ; ;       Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C1CC200AD2020970,$5207AA6F166F2402,$1B0C0C8EBE8EE92C,$932482B224FFB9FB,
-      ; ; ;              $18D4AA18197C823D,$85017E18185A1A18,$30301A9430305E1A,$C0C19AB060604ABC,$500DA05767305E20,$7FE185DDDBC92982,
-      ; ; ;              $897B1E40FD99FF7B,$56366663FB2BAFA7,$0C0C566663A28601,$8E3C431C5D3C978C,$E250383B37BC9DBF,$ABDEF8F33577FD58,
-      ; ; ;              $CEB614EAD597C545,$145BEA6A6BE269E5,$E09A5241E9AB52FC,$F1E9EA0E47ECBF9D,$FBA1A1A078BC6929,$A582CA665643A94E,
-      ; ; ;              $BACE7A77CDE44C37,$B3D6F38DCF8EC4F7,$B6AE1CF7F9552763,$C6B9F55CF6BEFF78,$CB3E9A66F15BB54E,$E536E7DD5DFB7633,
-      ; ; ;              $7775EFEDD9917EC7,$D8BC8EEE29569994,$72E2F29CF7744976,$D6C6D66F2AACE383,$F619E6A7DECB7C06,$6FBBD555A2ADE97F,
-      ; ; ;              $4828D7BD7AA96774,$454D3051ECCB265B,$8AF6D3D8B6DDF8B0,$EB3F5EEAB412EF42,$F359693F19A312FB,$8A5E2EFBC93E25BC,
-      ; ; ;              $78F0AC70A1629C99,$9E959E0A3ECBC9EE,$5A9E3954CFBE7297,$DF6FEFE2CCF045F5,$6367DC57B6BEDCDE,$1736DD81730E830E,
-      ; ; ;              $6E9B8694E56E6CCE,$32FA7DC76E4DF3FE,$7C8BC691E574EE5D,$69B591386FF75B3A,$6B2CF23D8E0FCB12,$88F6B3717F654F4A,
-      ; ; ;              $3FADBEF5F15FEEBE,$B7A60DA5A5C96B6F,$30B1DBF59FFBAE0E,$366F25A5F865E2BD,$DD6EFE581C9BD67B,$1B9DAC3CACDB9F9E,
-      ; ; ;              $A1BC73B4D7FDD776,$919FBAD149E64B3A,$FF4E7A592F024A93,$29D0E55B88533512,$FDEF957AD74D9D46,$AF373AAABDF3E04A,
-      ; ; ;              $8B66F65FF1F9D5A0,$EAEA7BA936AE279D,$9DBD27D977B67B6E,$5871D73F8A3FECF6,$6281F13568C79D6F,$A4A47B6ACB1BE2ED,
-      ; ; ;              $78312D3732D819F8,$765FA7E4A8519171,$06C69723E0433B0C,$D43ADFD205D50139,$A1F9EDDC62FFC57E,$5708C05EB3CEC5E5,
-      ; ; ;              $492C4949288D712D,$460C52054A2E4AB5,$06BAC606BA968606,$56668656A6062166,$6BF2400606DA0606,$53F3721A286BBBD6,
-      ; ; ;              $0F31686B712AD332,$73F574F0606A02CB,$61970004D094E759
-      ; ; ;       Data.b $25,$66
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C1CC200AD2020970,$5207AA6F166F2402,$1B0C0C8EBE8EE92C,$932482B224FFB9FB,
-             $18D4AA18197C823D,$85017E18185A1A18,$30301A9430305E1A,$C0C19AB060604ABC,$500DA05767305E20,$7FE185DDDBC92982,
-             $897B1E40FD99FF7B,$36366663FB2BAFA7,$79403A924E15C335,$6FE38F10C7174F09,$8AD4CA170B67F683,$D05DF6E370E18E5F,
-             $80F2E86764B0BC19,$F57A59DD89CF074B,$A610AD58D62696E0,$713B658B757E1747,$AD7CDCD85B5DF1F2,$DB7AA7BE11F0A7E9,
-             $FA5F192E1D325802,$DE649F2FEEC6E93C,$EFB67CCD349CA909,$FF7CF7FBB5A787FD,$54AB4B799EFF635B,$FC40666B95528F4A,
-             $92AEF97F36A72BDD,$C5A31EADE24FE3BE,$A5DE7BB9C5CBDA92,$2AF990D05EE0BFBF,$777DE0B93F7CDBF3,$E7BC78BC2936581E,
-             $793DD2BBE5595FE3,$5C5864FA6D1BF1B9,$DDEAF32F3D5D19EF,$8A37BC449B7FC0D7,$F3EB64B19A5076BC,$6FB2EA34BBEE320F,
-             $7371ABC2DB4CC907,$C71DDFF2D8DDCC4F,$ECD27B7A5CEF2A6F,$857F7ADE5FCAFBBF,$7FB89D7DF9E78D93,$B7DEBD8E2D8D0AAF,
-             $3DFBF45B2976D395,$25F8EE45261B990E,$B1CAE1854670AA66,$343833F0F16FA737,$2315CAA7E15EFE76,$567D82CAE64B37D2,
-             $593B92829A38BFB9,$2E18F008F99AF30E,$ADB351DBED79D99E,$7C2C6FD4EE0FEA2F,$E3754931AAB67DC6,$0A9B0E824E778CB7,
-             $AA157B1C597534E7,$BB8FDCF2E870EAC4,$6BCC73FA935E6F6B,$BF9BB179B5D35D96,$333C589568DBEA9E,$8BD1258CECF221A1,
-             $2F972978A3D97EBF,$E5DCBCE5A0476DA5,$BBFE6EC9FEDD6E5F,$D06763B0DBBCAE3E,$270FCC2C9FF2CE9B,$F1D7B9582B63177C,
-             $1EE6643F7DA88CC8,$D9602EF75F0ED450,$D99F9A29E326C499,$DDC03F3C7EBF2ACF,$709DAF7CA520A192,$9AE5F2E265FAA6C1,
-             $E537E3EF5D6E0CEC,$399141FA7B703E09,$6D7FFD20975CF4F6,$F27FF7D96149011A,$7CFEEB714D4F3405,$85C325BB13793CD9,
-             $BEBC76AFAD4FB57C,$27F60FEF8F21E731,$1CA2BFFEBDAFFC4B,$524A235C4B546C98,$81528B92AD524B12,$81AEA5A181918314,
-             $959981885981AEB1,$8181B6A5899585B1,$14670775FC818195,$B895699929F9B90D,$C0D40FF8FD75E435,$A129CEB2E7EAE9E0
-      Data.b $09,$00,$D2,$24,$51,$DF
-      end_cursor_move:
-      
-      cursor_ibeam:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C82C40ECD2020970,$81D2DD98D5240CC1,$C30323AFA3BA4B14,$3E40AC893FEE7EC6,
-             $73BAC313BB907163,$208F64851C812F32,$868606352A86065F,$1786A1405F860616,$12AF0C0C06A50C0C,$1788303066AC1818,
-             $0E4894036815D9CC,$FFF831A0657109F0,$964033A0B5DA7FFF,$8383C3305F90497C,$7F573E4B2D7B8E6E,$8134CC97FD4AB2AB,
-             $D74697CD53AFF325,$F71D26B62C1C3BFB,$45DDDBC929790197,$59C390036DB67361,$71804FA40C5911E0,$056582416BE7AFF2,
-             $5FF6E30050C0A08E,$8E2E9EEE1902E673,$D292521393D71C21,$3F9F921253531212,$83C2426259E8F278,$192B191819D38FA7,
-             $362E986F9C2ACE0D,$A6E14AE16165DC45,$47AE2A3C4A3AEA59,$B25C9155551C6E2D,$238612E9E5225524,$01CE3AAF6BDBCCFC,
-             $9292511AE25AA91A,$A40A945C956A9258,$8C0D752D0C0C8C18,$0CAD4C0C42CC0D75,$AC0C0DB4CD4CAC0D,$A28F3D2CBB2E0C0C,
-             $8B12AD33253F3721,$DFD91FC986885306,$9D65CFD5D3C84281,$A57D182E00134253
-      end_cursor_ibeam:
-      
-      cursor_cross:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C2CC2082D2020970,$52049D473A4F240C,$1B0C0C8EBE8EE92C,$8CF902B224FFB9FB,
-             $C9CEEB0C4EEE41C5,$7C823D92147204BC,$5A1A1818D4AA1819,$305E1A85017E1818,$604ABC30301A9430,$305E20C0C19AB060,
-             $C02B42500DA05767,$F0F87C090195C427,$FFFC15019EBEBEA1,$8FC7E3EE4E515FFF,$4BB9F2001CDF0BCE,$040478581982FC82,
-             $7456644C0C555815,$BBB79245720E3EAE,$9C352023F5FCB70B,$881D9A40C56E6EF9,$0481D4F1BFF81839,$38C0278241223C0B,
-             $02B2C120B5F3D7F9,$D7FDB8C1BB9074C7,$638BA7B44640B99C,$09848484E4F5C708,$2E5ADE30300F74F7,$111DB665F5E740BA,
-             $C4C73B97177A7A3A,$56AF7F7F2A6C4848,$C606F9CB625843AA,$F71C1A6721A6DD80,$2DF65252F6FE4E2E,$F5FDAB63B1D38F17,
-             $4A3A8C121484CCCD,$E574EFB7E5058FA5,$FF3A9EF2B0C82358,$4B546B4029CF7F64,$AD524B12524A235C,$8191831481528B92,
-             $5981AEB181AEA5A1,$A99581A195A98188,$65C181958181B699,$A7E6E43451E7A597,$5248B0D6E255A664,$973F574F0655E416,
-             $82E4C1004D094E75
-      Data.b $BC
-      end_cursor_cross:
-      
-      cursor_help:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C02C403CD2020970,$0299E7F745240CC1,$8606475F47749629,$7C8159127FDCFD8D,
-             $E77586277720E2C6,$411EC90A39025E64,$0D0C0C6A550C0CBE,$2F0D4280BF0C0C2D,$255E18180D4A1818,$2F106060CD583030,
-             $29712806D02BB398,$7EBE0C0195C427C0,$7EBF5FEFF7FBFAFD,$66B35DC809F4FA7D,$ECB80FC7E3FD900D,$BFDFEFEC205F2F97,
-             $0E0E08C813F9FCFF,$87C3F0440DE6F37E,$2EA07140C9C9C90F,$9FCFAAD56AB05406,$F0783E0B2015033F,$F6FB7DBC04116200,
-             $81B018A3708FC7E3,$CEC7B3D9EFFFFFFF,$B75AD2D2D6C80ECE,$11515170B0B09D6E,$3DBEDF6FDEA01CD0,$010189C4E274FA7D,
-             $5915012EE2879201,$794CB03305F90494,$4E0DD1EA5183BF74,$527FDEC4D8272BF6,$DFF4C3E75D45F9DD,$F9EF267B531575BF,
-             $8FC2FECF4B9B4EF5,$3ECDAB5F8799795C,$FCF3F764A81959E7,$DE49B41415347C49,$035E97D80B162EEE,$F4818B223C0B3872,
-             $482D7CF5FE4E3009,$60EE141D31C0ACB0,$8663205CCE6BFEDC,$1EDF75C708638BA7,$62E916110726B177,$8936748334EE4337,
-             $71954FFE3B490D1F,$83AB22EB2AB6FDAD,$99865552FFA58A97,$33C798D476BEE739,$F44A7DC7B86D2D74,$BC589FA6E709D5C4,
-             $BD57DDD0A779CD41,$539B3EAE8BF982D6,$7F96D6B553FF8BBE,$9D33D62DDD521609,$5A3A69B18CDCF7AE,$F77B25DF2228FAA4,
-             $1B0E8B4A81FAD7ED,$F8786FE83A50ADA6,$77E667FE07ECA2C9,$6FD8DDCB6E46B6D4,$A3CE03F2A664C671,$02B448BACE5D2533,
-             $9292511AE25AA8DD,$A40A945C956A9258,$8C0D752D0C0C8C18,$0CAD4C0C42CC0D75,$AC0C0DB52C4CAC0D,$4503BABB2E5E0C0C,
-             $6E255A664A7E6E43,$CCA280B2E77E330D,$1342539D65CFD5D3
-      Data.b $00,$3D,$9E,$0B,$9F
-      end_cursor_help:
-      
-      cursor_vertical:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C1CC200AD2020970,$5207AA6F166F2402,$1B0C0C8EBE8EE92C,$932482B224FFB9FB,
-             $18D4AA18197C823D,$85017E18185A1A18,$30301A9430305E1A,$C0C19AB060604ABC,$500DA05767305E20,$7FE185DDDBC92982,
-             $897B1E40FD99FF7B,$36366663FB2BAFA7,$D0A042EEAD515516,$6FE38F10C7174F16,$7AE220643BE42D27,$21D782827854595E,
-             $6FDFFDBE2C1B07FE,$CAC9824581040864,$DACCBF1DBBBC5B2A,$2BB1A7FBF973BFA6,$D1497D38DE9D7956,$DAE3571DAD02E9EE,
-             $EB7B2EF82E586C7E,$5CB7C7BB648666C1,$FBBFC7A6BBCC1D5F,$67868BC5C1BF2286,$783454979CD40F65,$B4871FF93BFD91C4,
-             $4D53A67EDC830A7D,$F27D11724E3EB83F,$C146F732825E4F60,$78EF389F27F35B39,$1D9647DCCB42837E,$C9A9574D1676CFFD,
-             $79C3A3E641CD3E9A,$A6CB8CC586C60D07,$D92D4585FF657DEC,$EE804B9BB5DCFF77,$2C4949288D712D57,$0C52054A2E4AB549,
-             $BAC606BA96860646,$2606566606216606,$06560606DAE6C656,$90D140E96F3EC706,$C35B895699929F9B,$9E0C0D40263C75F6,
-             $009A129CEB2E7EAE
-      Data.b $6B,$00,$95,$B8
-      end_cursor_vertical:
-      
-      cursor_horizontal:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C5CC4042D2020970,$01278553BD240CC2,$8606475F47749629,$7C8159127FDCFD8D,
-             $E77586277720E2C6,$411EC90A39025E64,$0D0C0C6A550C0CBE,$2F0D4280BF0C0C2D,$255E18180D4A1818,$2F106060CD583030,
-             $10612806D02BB398,$FFF80440CAE213E0,$161646461EC83FFF,$9E1C81136497BD96,$111E160660BF2092,$990113031D1B0D15,
-             $BC928A400BB5A6FB,$032607371A785DDD,$9A40C56E6EF99C39,$FBA931C16181A40D,$09E090488F02C120,$B0482D7CF5FE4E30,
-             $6E307CE41D31C0AC,$E9E611902E6735FF,$E121393D71C218E2,$E9439E1E31C3258A,$242624EF3F0606FC,$8E4EF1C6CD59D96C,
-             $2ACF35B36B2EEB81,$D54AECDA1CD56B87,$3BECE9BCDE3B8E1D,$E599E7A78DBAC737,$3218238AF3B5B0F2,$BC56AF2798983ABC,
-             $B0C6C068CAA6E360,$7559C963A1934FBF,$292511AE25AA0DA0,$40A945C956A92589,$C0D752D0C0C8C18A,$CAD4C0C42CC0D758,
-             $C0C0DB52C4CAC0D0,$503BABB2E5E0C0CA,$E255A664A7E6E434,$EC280B2E77E330D6,$342539D65CFD5D3C
-      Data.b $01,$00,$E8,$67,$77,$1A
-      end_cursor_horizontal:
-      
-      cursor_diagonal_1:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C1CC2002D2020970,$148183F97435240C,$C6C30323AFA3BA4B,$633E40AC893FEE7E,
-             $3273BAC313BB9071,$5F208F64851C812F,$16868606352A8606,$0C1786A1405F8606,$1812AF0C0C06A50C,$CC1788303066AC18,
-             $F008F094036815D9,$2C2C2C00C0657109,$898A531858585240,$903FFFFFF8C20989,$F7FB636367676764,$297CA595BC501FEF,
-             $81982FC824A84850,$98518580C0454785,$5598C447414346C3,$26A720BAD9FEEA7F,$01C9EF5508BBBB79,$320C56E6EF99C199,
-             $0F6B6B7B1066C405,$804F048244781462,$6582416BE7AFF271,$FB7181CF20E98E05,$174F228C817339AF,$C5AFFDB1CB8910C7,
-             $12B985B25A04141C,$F13D755F9BFF2AC3,$7971CEE733FBF6E7,$5099FC68F76D086A,$A6DB98A3B95CB0E7,$59C4C71283B5D7F9,
-             $D9AC7E7418B49252,$107559BE898BE4B8,$9C9CD7C7E54AE2B3,$3C632F2F6DE6E6B6,$8D8C5FFFB4D2ECFC,$DB3DF9A3791E143F,
-             $0542459315FFC7EE,$CC58A0C3DC4FABD6,$D51D8A0B9665E2C9,$5492C4949288D712,$6460C52054A2E4AB,$606BAC606BA96860,
-             $656160656A606216,$B0606560606DA460,$FCDC868A0F409377,$BCCE1ADC4AB4CC94,$3F574F1F0A00615F,$F86A004D094E7597
-      Data.b $8B,$46
-      end_cursor_diagonal_1:
-      
-      cursor_diagonal_2:
-      Data.q $E5E773F00CEB9C78,$F4F5E0606062E292,$C1CC2002D2020970,$148183F97435240C,$C6C30323AFA3BA4B,$633E40AC893FEE7E,
-             $3273BAC313BB9071,$5F208F64851C812F,$16868606352A8606,$0C1786A1405F8606,$1812AF0C0C06A50C,$CC1788303066AC18,
-             $F00A7094036815D9,$4159580DC0657109,$E2E2B843F3F3F3C6,$FFFE1B0D86C610E2,$8D97FBFDFC640FFF,$47207BD891E84D8D,
-             $478581982FC824A8,$41485186DF40C045,$F5F783845B559442,$76F24C8E407365A1,$80320393DEAA1177,$83B34818ADCDDF33,
-             $8C41ED6D6F620CD8,$4E3009E090488F02,$C0ACB0482D7CF5FE,$35FF6E302DE41D31,$18E2E9ED91902E67,$8358A2FFB5397122,
-             $1E572994E44B8080,$76A57A5ECD37AFFD,$2326370E670EE5B6,$E68CB8CE8900EE5D,$BC66CF8659848D4C,$AF7AE923B797A43F,
-             $979336E79AF69251,$DD8563577DD8B2FE,$E3FA938E05994B1A,$A77F547203E5D3B9,$F67FDCEFBC7ACA0B,$9BF6BF1FA2E4BC7E,
-             $71C27FE5619CD606,$96A930505FF54B76,$5AA49624A49446B8,$0323062902A51725,$B3035D63035D4B43,$132B03432B530310,
-             $DF03032B03036D63,$A7E6E43450DF5D6B,$D10460D16255A664,$78C0503FE58FEB30,$02684A73ACB9FABA
-      Data.b $00,$8F,$A6,$8C,$6D
-      end_cursor_diagonal_2:
     EndDataSection
+   Global *unpacked = AllocateMemory(737)
+        UncompressMemory(?cursor_normal, 594, *unpacked, 737)
+        Global d_cursor = CatchImage(#PB_Any, *unpacked, 737)
+      
+  Procedure.i SetCursor(Canvas, ImageID.i, x=0, y=0)
+    Protected Result.i
+    
+    With *this
+      If Canvas And ImageID
+        CompilerSelect #PB_Compiler_OS
+          CompilerCase #PB_OS_Windows
+            Protected ico.ICONINFO
+            ico\fIcon = 0
+            ico\xHotspot =- x 
+            ico\yHotspot =- y 
+            ico\hbmMask = ImageID
+            ico\hbmColor = ImageID
+            
+            Protected *Cursor = createIconIndirect_(ico)
+            If Not *Cursor 
+              *Cursor = ImageID 
+            EndIf
+            
+          CompilerCase #PB_OS_Linux
+            Protected *Cursor.GdkCursor = gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
+            
+          CompilerCase #PB_OS_MacOS
+            Protected Hotspot.NSPoint
+           ; Debug ""+Hotspot\x +" "+ x
+            Hotspot\x = x
+            Hotspot\y = y
+            Protected *Cursor = CocoaMessage(0, 0, "NSCursor alloc")
+            CocoaMessage(0, *Cursor, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
+            
+        CompilerEndSelect
+        
+        SetGadgetAttribute(Canvas, #PB_Canvas_CustomCursor, *Cursor)
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i EnableDrop(*this, Format.i, Actions.i, PrivateType.i=0)
+    ; Format
+    ; #PB_Drop_Text    : Accept text on this gadget
+    ; #PB_Drop_Image   : Accept images on this gadget
+    ; #PB_Drop_Files   : Accept filenames on this gadget
+    ; #PB_Drop_Private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
+    
+    ; Actions
+    ; #PB_Drag_None    : The Data format will Not be accepted on the gadget
+    ; #PB_Drag_Copy    : The Data can be copied
+    ; #PB_Drag_Move    : The Data can be moved
+    ; #PB_Drag_Link    : The Data can be linked
+    
+    If Not *Drag 
+      *Drag = AllocateStructure(Drop_S) 
+    EndIf
+    
+    With *Drag
+      If AddMapElement(*Drop(), Hex(*this))
+        *Drop() = AllocateStructure(Drop_S)
+        
+        Debug "Enable drop - " + *this
+        *Drop()\Format = Format
+        *Drop()\Actions = Actions
+        *Drop()\Type = PrivateType
+      EndIf
+    EndWith
+  EndProcedure
+  
+  Procedure.i Text(*this, Text.s, Actions.i=#PB_Drag_Copy)
+    Debug "Drag text - " + Text
+    *Drag = AllocateStructure(Drop_S)
+    *Drag\Format = #PB_Drop_Text
+    *Drag\Text = Text
+    *Drag\Actions = Actions
+    
+    *Drag\Image = CreateImage(#PB_Any, 16,16, 32, #PB_Image_Transparent)
+    
+    If *Drag\Text
+      If StartDrawing(ImageOutput(*Drag\Image))
+        *Drag\Width = TextWidth(*Drag\Text) + 8
+        *Drag\Height = TextHeight(*Drag\Text) + 8
+        StopDrawing()
+      EndIf  
+      
+      ResizeImage(*Drag\Image, *Drag\Width, *Drag\Height)
+      
+      If StartDrawing(ImageOutput(*Drag\Image))
+        If *Drag\Text
+          DrawingMode(#PB_2DDrawing_AlphaBlend)
+          DrawText(8,8, *Drag\Text, $FF000000, $FFF0F0F0)
+        EndIf
+        StopDrawing()
+      EndIf  
+      
+      SetCursor(EventGadget(), ImageID(*Drag\Image), 0,0)
+    EndIf
     
   EndProcedure
   
-  Procedure.i CallBack(*Object, EventType.i, Mouse_X.i, Mouse_Y.i)
-    Protected result, drag_value = 1
-    Static Drag, Drag_x, Drag_y
+  Procedure.i Image(*this, Image.i, Actions.i=#PB_Drag_Copy)
+    Debug "Drag image - " + Image
+    *Drag = AllocateStructure(Drop_S)
+    *Drag\Format = #PB_Drop_Image
+    *Drag\Actions = Actions
     
-    Select EventType
-      Case #PB_EventType_DragStart
-        Debug 556556565
-        Object = *Object
-        SetCursor(EventGadget(), Cursor(#PB_Cursor_Denied), #PB_Canvas_CustomCursor)
-        
-      Case #PB_EventType_LeftButtonDown
-        Drag = 1
-        Drag_x = mouse_x
-        Drag_y = mouse_y
-        
-      Case #PB_EventType_MouseMove
-        If Drag And 
-           Not (mouse_x>Drag_x-drag_value And 
-                mouse_x<Drag_x+drag_value And 
-                mouse_y>Drag_y-drag_value And
-                mouse_y<Drag_y+drag_value)
-          
-          Object = *Object
-          Event = #PB_EventType_DragStart
-          
-          Drag = 0
-          ProcedureReturn 1
+    If IsImage(Image)
+      *Drag\ImageID = ImageID(Image)
+      *Drag\Width = ImageWidth(Image) + 8
+      *Drag\Height = ImageHeight(Image) + 8
+      *Drag\Image = CreateImage(#PB_Any, *Drag\Width, *Drag\Height, 32, #PB_Image_Transparent)
+      
+      If StartDrawing(ImageOutput(*Drag\Image))
+        If *Drag\Image  
+          DrawAlphaImage(*Drag\ImageID, 8,8, 220)
         EndIf
-        
-      Case #PB_EventType_MouseLeave
-        ;SetCursor(EventGadget(), Cursor(#PB_Cursor_Denied), #PB_Canvas_CustomCursor)
-        Object = 0
-        
-      Case #PB_EventType_MouseEnter
-        Debug "drop enter mouse - "+*Object +" "+ DropAction(*Object)
-        
-        If DropAction(*Object) : Object = *Object
-          SetCursor(EventGadget(), Cursor(#PB_Cursor_Hand), #PB_Canvas_CustomCursor)
-        Else
-          SetCursor(EventGadget(), Cursor(#PB_Cursor_Denied), #PB_Canvas_CustomCursor)
-        EndIf
-        
-      Case #PB_EventType_LeftButtonUp : Drag = 0
-        If DropAction(Object) : Event = #PB_EventType_Drop
-          SetCursor(EventGadget(), Cursor(#PB_Cursor_Default), #PB_Canvas_CustomCursor)
-          ;SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-          ProcedureReturn 1
-        EndIf
-        
-    EndSelect
+        StopDrawing()
+      EndIf  
+      
+      SetCursor(EventGadget(), ImageID(*Drag\Image), 0,0)
+    EndIf
+  EndProcedure
+  
+  Procedure.i Private(*this, Type.i, Actions.i=#PB_Drag_Copy)
+    Debug "Drag private - " + Type
+    *Drag = AllocateStructure(Drop_S)
+    *Drag\Format = #PB_Drop_Private
+    *Drag\Actions = Actions
+    *Drag\Type = Type
     
+    If *Drag\Type
+      *Drag\Image = CreateImage(#PB_Any, 16,16, 32, #PB_Image_Transparent)
+      
+      If StartDrawing(ImageOutput(*Drag\Image))
+        ;         DrawingMode(#PB_2DDrawing_AlphaBlend)
+        ;         Line(0, 2, 5, 1, $FF000000)
+        ;         Line(2, 0, 1, 5, $FF000000)
+        
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        Box(6,6, OutputWidth()-6-1, OutputHeight()-6, $FF000000)
+        
+        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        Box(4,4, OutputWidth()-4-2-1, OutputHeight()-4-2, $FFFFFFFF)
+        
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        Box(4,4, OutputWidth()-4-2-1, OutputHeight()-4-2, $FF000000)
+        StopDrawing()
+      EndIf
+    
+      SetCursor(EventGadget(), ImageID(*Drag\Image), 0,0)
+    EndIf  
+  EndProcedure
+  
+  Procedure.i DropAction(*this)
+    If *Drag And *Drop() And FindMapElement(*Drop(), Hex(*this))
+      If *Drop()\Format = *Drag\Format And *Drop()\Type = *Drag\Type 
+        ProcedureReturn *Drop()\Actions 
+      EndIf
+    EndIf
+  EndProcedure
+  
+  Procedure.s DropText(*this)
+    Protected result.s
+    
+    If DropAction(*this)
+      Debug "Drop text - "+*Drag\Text
+      result = *Drag\Text
+      FreeStructure(*Drag) 
+      *Drag = 0
+      
+      ProcedureReturn result
+    EndIf
+  EndProcedure
+  
+  Procedure.i DropPrivate(*this)
+    Protected result.i
+    
+    If DropAction(*this)
+      Debug "Drop type - "+*Drag\Type
+      result = *Drag\Type
+      FreeStructure(*Drag)
+      *Drag = 0
+      
+      ProcedureReturn result
+    EndIf
+  EndProcedure
+  
+  Procedure.i DropImage(*this, Image.i=-1, Depth.i=24)
+    Protected result.i
+    
+    If DropAction(*this) And *Drag\ImageID
+      Debug "Drop image - "+*Drag\Image
+      
+      If Image =- 1 Or Depth = 32
+        Image = *Drag\Image
+      EndIf
+        
+      Result = IsImage(Image)
+      
+      If Result And StartDrawing(ImageOutput(Image))
+        DrawAlphaImage(*Drag\ImageID, 0, 0)
+        StopDrawing()
+      EndIf  
+      
+      FreeStructure(*Drag)
+      *Drag = 0
+      
+      ProcedureReturn Result
+    EndIf
+    
+  EndProcedure
+  
+  Procedure.i CallBack(*this, EventType.i)
+    If *Drag
+      
+      Select EventType
+        Case #PB_EventType_MouseEnter
+          
+          If DropAction(*this)
+            *Drag\widget = *this
+            Debug "set handle cursor"
+            Protected Image = CopyImage(*Drag\Image, -1)
+              
+            If StartDrawing(ImageOutput(Image))
+;               ;               If *Drag\Type
+;               DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+;               Box(0, 1, 6, 3, $FFFFFFFF)
+;               Box(1, 0, 3, 6, $FFFFFFFF)
+;               
+;               DrawingMode(#PB_2DDrawing_AlphaBlend)
+;               Line(0, 2, 5, 1, $FF000000)
+;               Line(2, 0, 1, 5, $FF000000)
+;               ;               Else
+                              DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+                            Box(0, 3, 10, 4, $FFFFFFFF)
+                            Box(3, 0, 4, 10, $FFFFFFFF)
+                            
+                            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                            Box(1, 3+1, 8, 2, $FF000000)
+                            Box(3+1, 1, 2, 8, $FF000000)
+              ;             EndIf
+              ;             
+              
+;               DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+;               Box(0, 0, *Drag\Width, *Drag\Height, $FF000000)
+              
+              StopDrawing()
+            EndIf  
+            SetCursor(EventGadget(), ImageID(Image), 0,0);(*Drag\Width)/2, (*Drag\Height)/2)
+            
+            
+          Else
+            Debug "set denied cursor"
+            ; SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+            SetCursor(EventGadget(), ImageID(*Drag\Image), 0,0);, *Drag\Width/2, *Drag\Height/2)
+            *Drag\widget = 0
+          EndIf
+          
+        Case #PB_EventType_LeftButtonUp
+          Debug "set default cursor"
+           SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+            
+          If DropAction(*Drag\widget) 
+            ; SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+            ProcedureReturn *Drag\widget
+          EndIf
+          
+      EndSelect
+      
+    EndIf
   EndProcedure
 EndModule
 
@@ -613,351 +343,6 @@ EndModule
 ;-
 DeclareModule Widget
   EnableExplicit
-  #Anchors = 9+4
-  
-  #Anchor_moved = 9
-  
-  ;   Structure _S_type
-  ;     b.b
-  ;     i.i 
-  ;     s.s
-  ;   EndStructure
-  
-  ;- - STRUCTUREs
-  ;- - _S_Mouse
-  Structure _S_mouse
-    x.i
-    y.i
-    
-    at.b ; - editor
-    buttons.i 
-    *delta._S_mouse
-    direction.i
-  EndStructure
-  
-  ;- - _S_Keyboard
-  Structure _S_keyboard
-    input.c
-    key.i[2]
-  EndStructure
-  
-  ;- - _S_Coordinate
-  Structure _S_coordinate
-    y.i[4]
-    x.i[4]
-    height.i[4]
-    width.i[4]
-  EndStructure
-  
-  ;- - _S_button
-  Structure _S_button Extends _S_coordinate
-    len.a
-    arrow_size.a
-    arrow_type.b
-  EndStructure
-  
-  ;- - _S_box
-  Structure _S_box Extends _S_coordinate
-    size.i[4]
-    hide.b[4]
-    checked.b[2] 
-    ;toggle.b
-    
-    arrow_size.a[3]
-    arrow_type.b[3]
-    
-    threeState.b
-    *color._S_color[4]
-  EndStructure
-  
-  ;- - _S_Color
-  Structure _S_color
-    state.b ; entered; selected; focused; lostfocused
-    front.i[4]
-    line.i[4]
-    fore.i[4]
-    back.i[4]
-    frame.i[4]
-    alpha.a[2]
-  EndStructure
-  
-  ;- - _S_anchor
-  Structure _S_anchor
-    x.i
-    y.i
-    width.i
-    height.i
-    
-    delta_x.i
-    delta_y.i
-    
-    class.s
-    hide.i
-    pos.i ; anchor position on the widget
-    state.b ; mouse state 
-    cursor.i[2]
-    
-    *widget._S_widget
-    color._S_color[4]
-  EndStructure
-  
-  ;- - _S_Page
-  Structure _S_page
-    pos.i
-    len.i
-    *end
-  EndStructure
-  
-  ;- - _S_Align
-  Structure _S_align
-    x.i
-    y.i
-    
-    left.b
-    top.b
-    right.b
-    bottom.b
-    vertical.b
-    horizontal.b
-    autosize.b
-  EndStructure
-  
-  
-  ;- - _S_WindowFlag
-  Structure _S_windowFlag
-    SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
-    MinimizeGadget.b ; 13238272   - #PB_Window_MinimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-    MaximizeGadget.b ; 13172736   - #PB_Window_MaximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-    SizeGadget.b     ; 12845056   - #PB_Window_SizeGadget      ; Adds the sizeable feature To a Window.
-    Invisible.b      ; 268435456  - #PB_Window_Invisible       ; creates the Window but don't display.
-    TitleBar.b       ; 12582912   - #PB_Window_TitleBar        ; creates a Window With a titlebar.
-    Tool.b           ; 4          - #PB_Window_Tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
-    BorderLess.b     ; 2147483648 - #PB_Window_BorderLess      ; creates a Window without any borders.
-    ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
-    WindowCentered.b ; 2          - #PB_Window_WindowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
-                     ;                X,Y parameters are ignored.
-    Maximize.b       ; 16777216   - #PB_Window_Maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
-    Minimize.b       ; 536870912  - #PB_Window_Minimize        ; Opens the Window minimized.
-    NoGadgets.b      ; 8          - #PB_Window_NoGadgets       ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
-    NoActivate.b     ; 33554432   - #PB_Window_NoActivate      ; Don't activate the window after opening.
-  EndStructure
-  
-  ;- - _S_Flag
-  Structure _S_flag
-    Window._S_windowFlag
-    InLine.b
-    Lines.b
-    Buttons.b
-    GridLines.b
-    Checkboxes.b
-    FullSelection.b
-    AlwaysSelection.b
-    MultiSelect.b
-    ClickSelect.b
-  EndStructure
-  
-  ;- - _S_Image
-  Structure _S_image
-    y.i[3]
-    x.i[3]
-    height.i
-    width.i
-    
-    index.i
-    imageID.i[2] ; - editor
-    change.b
-    
-    align._S_align
-  EndStructure
-  
-  ;- - _S_Text
-  Structure _S_text Extends _S_coordinate
-    big.i[3]
-    pos.i
-    len.i
-    caret.i[3] ; 0 = Pos ; 1 = PosFixed
-    
-    fontID.i
-    string.s[3]
-    change.b
-    
-    lower.b
-    upper.b
-    pass.b
-    editable.b
-    numeric.b
-    multiLine.b
-    vertical.b
-    rotate.f
-    
-    align._S_align
-  EndStructure
-  
-  ;- - _S_Bar
-  Structure _S_bar Extends _S_coordinate
-    *root._S_root   ; adress root
-    *window._S_widget ; adress window
-    *parent._S_widget ; adress parent
-    *scroll._S_scroll 
-    *first._S_widget
-    *second._S_widget
-    
-    ticks.b  ; track bar
-    smooth.b ; progress bar
-    
-    type.b[3] ; [2] for splitter
-    radius.a
-    cursor.i[2]
-    
-    max.i
-    min.i
-    
-    hide.b[2]
-    *box._S_box
-    
-    focus.b
-    change.i[2]
-    resize.b
-    vertical.b
-    inverted.b
-    direction.i
-    scrollstep.i
-    
-    page._S_page
-    area._S_page
-    thumb._S_page
-    color._S_color[4]
-  EndStructure
-  
-  ;- - _S_Scroll
-  Structure _S_scroll
-    y.i
-    x.i
-    height.i[4] ; - EditorGadget
-    width.i[4]
-    
-    *v._S_widget
-    *h._S_widget
-  EndStructure
-  
-  ;- - _S_Items
-  Structure _S_items Extends _S_coordinate
-    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    *i_parent._S_items
-    drawing.i
-    
-    image._S_image
-    text._S_text[4]
-    *box._S_box
-    
-    state.b
-    hide.b[2]
-    caret.i[3]  ; 0 = Pos ; 1 = PosFixed
-    vertical.b
-    radius.a
-    
-    change.b
-    sublevel.i
-    sublevellen.i
-    
-    childrens.i
-    *data      ; set/get item data
-  EndStructure
-  
-  ;- - _S_Popup
-  Structure _S_popup
-    gadget.i
-    window.i
-    
-    ; *Widget._S_widget
-  EndStructure
-  
-  ;- - _S_Margin
-  Structure _S_margin
-    FonyID.i
-    Width.i
-    Color._S_color
-  EndStructure
-  
-  ;- - _S_widget
-  Structure _S_widget Extends _S_bar
-    Type_Index.i
-    
-    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    adress.i
-    Drawing.i
-    Container.i
-    CountItems.i[2]
-    Interact.i
-    
-    State.i
-    o_i.i ; parent opened item
-    ParentItem.i ; index parent tab item
-    *i_Parent._S_items
-    *data
-    
-    *Deactive._S_widget
-    *Leave._S_widget
-    at.i
-    
-    *Popup._S_widget
-    *OptionGroup._S_widget
-    
-    fs.i 
-    bs.i
-    Grid.i
-    Enumerate.i
-    TabHeight.i
-    
-    Level.i ; Вложенность виджета
-    Class.s ; 
-    
-    List *childrens._S_widget()
-    List *items._S_items()
-    List *columns._S_widget()
-    ;List *draws._S_items()
-    Map *Count()
-    
-    Flag._S_flag
-    *Text._S_text[4]
-    *Image._S_image[2]
-    clip._S_coordinate
-    *Align._S_align
-    
-    *Function[4] ; IsFunction *Function=0 >> Gadget *Function=1 >> Window *Function=2 >> Root *Function=3
-    sublevellen.i
-    Drag.i[2]
-    Attribute.i
-    
-    Mouse._S_mouse
-    Keyboard._S_keyboard
-    
-    margin._S_margin
-    create.b
-    
-    event.i
-    ;message.i
-    repaint.i
-    *anchor._S_anchor[#Anchors+1]
-    *selector._S_anchor[#Anchors+1]
-  EndStructure
-  
-  ;- - _S_root
-  Structure _S_root Extends _S_widget
-    canvas.i
-    canvas_window.i
-  EndStructure
-  
-  ;- - _S_value
-  Structure _S_value
-    *root._S_root
-    *this._S_widget
-    *last._S_widget
-    *active._S_widget
-    *focus._S_widget
-    
-    List *openedList._S_widget()
-  EndStructure
   
   
   
@@ -968,7 +353,13 @@ DeclareModule Widget
     #PB_Event_Widget
   EndEnumeration
   
-  #PB_EventType_Drop = DD::#PB_EventType_Drop
+  Enumeration #PB_EventType_FirstCustomValue
+    #PB_EventType_Drop
+  EndEnumeration
+  
+  #Anchors = 9+4
+  
+  #Anchor_moved = 9
   
   Enumeration #PB_EventType_FirstCustomValue
     CompilerIf #PB_Compiler_Version<547 : #PB_EventType_Resize : CompilerEndIf
@@ -1172,6 +563,352 @@ DeclareModule Widget
   EndEnumeration
   ;}
   
+  
+  ;- - STRUCTUREs
+  ;- - _S_Mouse
+  Structure _S_mouse
+    x.i
+    y.i
+    
+    at.b ; - editor
+    buttons.i 
+    *delta._S_mouse
+    direction.i
+  EndStructure
+  
+  ;- - _S_Keyboard
+  Structure _S_keyboard
+    input.c
+    key.i[2]
+  EndStructure
+  
+  ;- - _S_Coordinate
+  Structure _S_coordinate
+    y.i[4]
+    x.i[4]
+    height.i[4]
+    width.i[4]
+  EndStructure
+  
+  ;- - _S_button
+  Structure _S_button Extends _S_coordinate
+    len.a
+    arrow_size.a
+    arrow_type.b
+  EndStructure
+  
+  ;- - _S_box
+  Structure _S_box Extends _S_coordinate
+    size.i[4]
+    hide.b[4]
+    checked.b[2] 
+    ;toggle.b
+    
+    arrow_size.a[3]
+    arrow_type.b[3]
+    
+    threeState.b
+    *color._S_color[4]
+  EndStructure
+  
+  ;- - _S_Color
+  Structure _S_color
+    state.b ; entered; selected; focused; lostfocused
+    front.i[4]
+    line.i[4]
+    fore.i[4]
+    back.i[4]
+    frame.i[4]
+    alpha.a[2]
+  EndStructure
+  
+  ;- - _S_anchor
+  Structure _S_anchor
+    x.i
+    y.i
+    width.i
+    height.i
+    
+    delta_x.i
+    delta_y.i
+    
+    class.s
+    hide.i
+    pos.i ; anchor position on the widget
+    state.b ; mouse state 
+    cursor.i[2]
+    
+    *widget._S_widget
+    color._S_color[4]
+  EndStructure
+  
+  ;- - _S_Page
+  Structure _S_page
+    pos.i
+    len.i
+    *end
+  EndStructure
+  
+  ;- - _S_Align
+  Structure _S_align
+    x.i
+    y.i
+    
+    left.b
+    top.b
+    right.b
+    bottom.b
+    vertical.b
+    horizontal.b
+    autosize.b
+  EndStructure
+  
+  ;- - _S_WindowFlag
+  Structure _S_windowFlag
+    SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
+    MinimizeGadget.b ; 13238272   - #PB_Window_MinimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+    MaximizeGadget.b ; 13172736   - #PB_Window_MaximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+    SizeGadget.b     ; 12845056   - #PB_Window_SizeGadget      ; Adds the sizeable feature To a Window.
+    Invisible.b      ; 268435456  - #PB_Window_Invisible       ; creates the Window but don't display.
+    TitleBar.b       ; 12582912   - #PB_Window_TitleBar        ; creates a Window With a titlebar.
+    Tool.b           ; 4          - #PB_Window_Tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
+    BorderLess.b     ; 2147483648 - #PB_Window_BorderLess      ; creates a Window without any borders.
+    ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
+    WindowCentered.b ; 2          - #PB_Window_WindowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
+                     ;                X,Y parameters are ignored.
+    Maximize.b       ; 16777216   - #PB_Window_Maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
+    Minimize.b       ; 536870912  - #PB_Window_Minimize        ; Opens the Window minimized.
+    NoGadgets.b      ; 8          - #PB_Window_NoGadgets       ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+    NoActivate.b     ; 33554432   - #PB_Window_NoActivate      ; Don't activate the window after opening.
+  EndStructure
+  
+  ;- - _S_Flag
+  Structure _S_flag
+    Window._S_windowFlag
+    InLine.b
+    Lines.b
+    Buttons.b
+    GridLines.b
+    Checkboxes.b
+    FullSelection.b
+    AlwaysSelection.b
+    MultiSelect.b
+    ClickSelect.b
+  EndStructure
+  
+  ;- - _S_Image
+  Structure _S_image
+    y.i[3]
+    x.i[3]
+    height.i
+    width.i
+    
+    index.i
+    imageID.i[2] ; - editor
+    change.b
+    
+    align._S_align
+  EndStructure
+  
+  ;- - _S_Text
+  Structure _S_text Extends _S_coordinate
+    big.i[3]
+    pos.i
+    len.i
+    caret.i[3] ; 0 = Pos ; 1 = PosFixed
+    
+    fontID.i
+    string.s[3]
+    change.b
+    
+    lower.b
+    upper.b
+    pass.b
+    editable.b
+    numeric.b
+    multiLine.b
+    vertical.b
+    rotate.f
+    
+    align._S_align
+  EndStructure
+  
+  ;- - _S_Scroll
+  Structure _S_scroll
+    y.i
+    x.i
+    height.i[4] ; - EditorGadget
+    width.i[4]
+    
+    *v._S_widget
+    *h._S_widget
+  EndStructure
+  
+  ;- - _S_Items
+  Structure _S_items Extends _S_coordinate
+    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
+    *i_parent._S_items
+    drawing.i
+    
+    image._S_image
+    text._S_text[4]
+    *box._S_box
+    
+    state.b
+    hide.b[2]
+    caret.i[3]  ; 0 = Pos ; 1 = PosFixed
+    vertical.b
+    radius.a
+    
+    change.b
+    sublevel.i
+    sublevellen.i
+    
+    childrens.i
+    *data      ; set/get item data
+  EndStructure
+  
+  ;- - _S_Popup
+  Structure _S_popup
+    gadget.i
+    window.i
+    
+    ; *Widget._S_widget
+  EndStructure
+  
+  ;- - _S_Margin
+  Structure _S_margin
+    FonyID.i
+    Width.i
+    Color._S_color
+  EndStructure
+  
+  ;- - _S_event
+  Prototype pFunc2()
+  Structure _S_event
+    widget.i
+    item.i
+    type.i
+    *data
+    *callback.pFunc2
+  EndStructure
+  
+  ;- - _S_widget
+  Structure _S_widget Extends _S_coordinate
+    *event._S_event 
+    
+    *root._S_root   ; adress root
+    *window._S_widget ; adress window
+    *parent._S_widget ; adress parent
+    *scroll._S_scroll 
+    *first._S_widget
+    *second._S_widget
+    
+    ticks.b  ; track bar
+    smooth.b ; progress bar
+    
+    type.b[3] ; [2] for splitter
+    radius.a
+    cursor.i[2]
+    
+    max.i
+    min.i
+    
+    hide.b[2]
+    *box._S_box
+    
+    focus.b
+    change.i[2]
+    resize.b
+    vertical.b
+    inverted.b
+    direction.i
+    scrollstep.i
+    
+    page._S_page
+    area._S_page
+    thumb._S_page
+    color._S_color[4]
+    
+    Type_Index.i
+    
+    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
+    adress.i
+    Drawing.i
+    Container.i
+    CountItems.i[2]
+    Interact.i
+    
+    State.i
+    o_i.i ; parent opened item
+    ParentItem.i ; index parent tab item
+    *i_Parent._S_items
+    *data
+    
+    *Deactive._S_widget
+    *Leave._S_widget
+    at.i
+    
+    *Popup._S_widget
+    *OptionGroup._S_widget
+    
+    fs.i 
+    bs.i
+    Grid.i
+    Enumerate.i
+    TabHeight.i
+    
+    Level.i ; Вложенность виджета
+    Class.s ; 
+    
+    List *childrens._S_widget()
+    List *items._S_items()
+    List *columns._S_widget()
+    ;List *draws._S_items()
+    Map *Count()
+    
+    Flag._S_flag
+    *Text._S_text[4]
+    *Image._S_image[2]
+    clip._S_coordinate
+    *Align._S_align
+    
+    ;*Function[4] ; IsFunction *Function=0 >> Gadget *Function=1 >> Window *Function=2 >> Root *Function=3
+    sublevellen.i
+    Drag.i[2]
+    Attribute.i
+    
+    Mouse._S_mouse
+    Keyboard._S_keyboard
+    
+    margin._S_margin
+    create.b
+    
+    ; event.i
+    ;message.i
+    repaint.i
+    *anchor._S_anchor[#Anchors+1]
+    *selector._S_anchor[#Anchors+1]
+  EndStructure
+  
+  ;- - _S_root
+  Structure _S_root Extends _S_widget
+    canvas.i
+    canvas_window.i
+  EndStructure
+  
+  ;- - _S_value
+  Structure _S_value
+    event._S_event
+    
+    *root._S_root
+    *last._S_widget
+    *active._S_widget
+    *focus._S_widget
+    
+    List *openedList._S_widget()
+  EndStructure
+  
   ;-
   ;- - DECLAREs GLOBALs
   Global *Value._S_value = AllocateStructure(_S_value)
@@ -1197,13 +934,21 @@ DeclareModule Widget
   EndMacro
   
   Macro Widget()
-    *Value\This
+    *Value\event\widget
   EndMacro
   
   Macro Type()
-    Widget()\Event
+    *Value\event\type
   EndMacro
-
+  
+  Macro Data()
+    *Value\event\data
+  EndMacro
+  
+  Macro Item()
+    *Value\event\item
+  EndMacro
+  
   Macro GetFocus() ; active gadget 
     *Value\Focus
   EndMacro
@@ -1215,6 +960,7 @@ DeclareModule Widget
   Macro Adress(_this_)
     _this_\Adress
   EndMacro
+  
   
   ;   Macro IsBar(_this_)
   ;     Bool(_this_ And (_this_\Type = #PB_GadgetType_ScrollBar Or _this_\Type = #PB_GadgetType_TrackBar Or _this_\Type = #PB_GadgetType_ProgressBar Or _this_\Type = #PB_GadgetType_Splitter))
@@ -1304,27 +1050,27 @@ DeclareModule Widget
   
   ;- - DRAG&DROP
   Macro DropText()
-    DD::DropText(Widget::*Value\This)
+    DD::DropText(Widget())
   EndMacro
   
   Macro DropAction()
-    DD::DropAction(Widget::*Value\This)
+    DD::DropAction(Widget())
   EndMacro
   
   Macro DropImage(_image_, _depth_=24)
-    DD::DropImage(Widget::*Value\This, _image_, _depth_)
+    DD::DropImage(Widget(), _image_, _depth_)
   EndMacro
   
   Macro DragText(_text_, _actions_=#PB_Drag_Copy)
-    DD::Text(Widget::*Value\This, _text_, _actions_)
+    DD::Text(Widget(), _text_, _actions_)
   EndMacro
   
   Macro DragImage(_image_, _actions_=#PB_Drag_Copy)
-    DD::Image(Widget::*Value\This, _image_, _actions_)
+    DD::Image(Widget(), _image_, _actions_)
   EndMacro
   
   Macro DragPrivate(_type_, _actions_=#PB_Drag_Copy)
-    DD::Private(Widget::*Value\This, _type_, _actions_)
+    DD::Private(Widget(), _type_, _actions_)
   EndMacro
   
   Macro EnableDrop(_this_, _format_, _actions_, _private_type_=0)
@@ -1337,77 +1083,78 @@ DeclareModule Widget
   ;-
   Declare.s Class(Type.i)
   Declare.i ClassType(Class.s)
-  Declare.i SetFont(*this._S_widget, FontID.i)
+  Declare.i SetFont(*this, FontID.i)
   
-  Declare.i IsContainer(*this._S_widget)
-  Declare.i Get_Gadget(*this._S_widget)
-  Declare.i GetRootWindow(*this._S_widget)
-  Declare.i GetButtons(*this._S_widget)
-  Declare.i GetDisplay(*this._S_widget)
-  Declare.i GetDeltaX(*this._S_widget)
-  Declare.i GetDeltaY(*this._S_widget)
-  Declare.i GetMouseX(*this._S_widget)
-  Declare.i GetMouseY(*this._S_widget)
-  Declare.i GetImage(*this._S_widget)
-  Declare.i GetType(*this._S_widget)
-  Declare.i GetData(*this._S_widget)
-  Declare.s GetText(*this._S_widget)
-  Declare.i GetPosition(*this._S_widget, Position.i)
-  Declare.i GetWindow(*this._S_widget)
-  Declare.i GetRoot(*this._S_widget)
-  Declare.i GetAnchors(*this._S_widget, index.i=-1)
-  Declare.i GetCount(*this._S_widget)
-  Declare.s GetClass(*this._S_widget)
-  Declare.i GetAttribute(*this._S_widget, Attribute.i)
-  Declare.i GetParent(*this._S_widget)
-  Declare.i GetParentItem(*this._S_widget)
-  Declare.i GetItemData(*this._S_widget, Item.i)
-  Declare.i GetItemImage(*this._S_widget, Item.i)
-  Declare.s GetItemText(*this._S_widget, Item.i, Column.i=0)
-  Declare.i GetItemAttribute(*this._S_widget, Item.i, Attribute.i)
+  Declare.i IsContainer(*this)
+  Declare.i Get_Gadget(*this)
+  Declare.i GetRootWindow(*this)
+  Declare.i GetButtons(*this)
+  Declare.i GetDisplay(*this)
+  Declare.i GetDeltaX(*this)
+  Declare.i GetDeltaY(*this)
+  Declare.i GetMouseX(*this)
+  Declare.i GetMouseY(*this)
+  Declare.i GetImage(*this)
+  Declare.i GetType(*this)
+  Declare.i GetData(*this)
+  Declare.s GetText(*this)
+  Declare.i GetPosition(*this, Position.i)
+  Declare.i GetWindow(*this)
+  Declare.i GetRoot(*this)
+  Declare.i GetAnchors(*this, index.i=-1)
+  Declare.i GetCount(*this)
+  Declare.s GetClass(*this)
+  Declare.i GetAttribute(*this, Attribute.i)
+  Declare.i GetParent(*this)
+  Declare.i GetParentItem(*this)
+  Declare.i GetItemData(*this, Item.i)
+  Declare.i GetItemImage(*this, Item.i)
+  Declare.s GetItemText(*this, Item.i, Column.i=0)
+  Declare.i GetItemAttribute(*this, Item.i, Attribute.i)
   
-  Declare.i SetTransparency(*this._S_widget, Transparency.a)
-  Declare.i SetAnchors(*this._S_widget)
-  Declare.s SetClass(*this._S_widget, Class.s)
-  Declare.i GetLevel(*this._S_widget)
+  Declare.i SetTransparency(*this, Transparency.a)
+  Declare.i SetAnchors(*this)
+  Declare.s SetClass(*this, Class.s)
+  Declare.i GetLevel(*this)
   Declare.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
-  Declare.i Post(EventType.i, *this._S_widget, EventItem.i=#PB_All, *Data=0)
-  Declare.i Bind(*Function, *this._S_widget=#PB_All, EventType.i=#PB_All)
-  Declare.i SetActive(*this._S_widget)
-  Declare.i Y(*this._S_widget, Mode.i=0)
-  Declare.i X(*this._S_widget, Mode.i=0)
-  Declare.i Width(*this._S_widget, Mode.i=0)
-  Declare.i Height(*this._S_widget, Mode.i=0)
-  Declare.i Draw(*this._S_widget, Childrens=0)
-  Declare.i GetState(*this._S_widget)
-  Declare.i SetState(*this._S_widget, State.i)
-  Declare.i SetAttribute(*this._S_widget, Attribute.i, Value.i)
-  Declare.i CallBack(*this._S_widget, EventType.i, mouseX=0, mouseY=0)
-  Declare.i SetColor(*this._S_widget, ColorType.i, Color.i, State.i=0, Item.i=0)
-  Declare.i Resize(*this._S_widget, iX.i,iY.i,iWidth.i,iHeight.i);, *That._S_widget=#Null)
-  Declare.i Hide(*this._S_widget, State.i=-1)
-  Declare.i SetImage(*this._S_widget, Image.i)
-  Declare.i SetData(*this._S_widget, *Data)
-  Declare.i SetText(*this._S_widget, Text.s)
-  Declare.i GetItemState(*this._S_widget, Item.i)
-  Declare.i SetItemState(*this._S_widget, Item.i, State.i)
-  Declare.i From(*this._S_widget, MouseX.i, MouseY.i)
-  Declare.i SetPosition(*this._S_widget, Position.i, *Widget_2 =- 1)
-  Declare.i Free(*this._S_widget)
-  Declare.i SetFocus(*this._S_widget, State.i)
+  Declare.i Post(EventType.i, *this, EventItem.i=#PB_All, *Data=0)
+  Declare.i Bind(*callback, *this=#PB_All, EventType.i=#PB_All)
+  Declare.i Unbind(*callback, *this=#PB_All, EventType.i=#PB_All)
+  Declare.i SetActive(*this)
+  Declare.i Y(*this, Mode.i=0)
+  Declare.i X(*this, Mode.i=0)
+  Declare.i Width(*this, Mode.i=0)
+  Declare.i Height(*this, Mode.i=0)
+  Declare.i Draw(*this, Childrens=0)
+  Declare.i GetState(*this)
+  Declare.i SetState(*this, State.i)
+  Declare.i SetAttribute(*this, Attribute.i, Value.i)
+  Declare.i CallBack(*this, EventType.i, mouseX=0, mouseY=0)
+  Declare.i SetColor(*this, ColorType.i, Color.i, State.i=0, Item.i=0)
+  Declare.i Resize(*this, iX.i,iY.i,iWidth.i,iHeight.i);, *That=#Null)
+  Declare.i Hide(*this, State.i=-1)
+  Declare.i SetImage(*this, Image.i)
+  Declare.i SetData(*this, *Data)
+  Declare.i SetText(*this, Text.s)
+  Declare.i GetItemState(*this, Item.i)
+  Declare.i SetItemState(*this, Item.i, State.i)
+  Declare.i From(*this, MouseX.i, MouseY.i)
+  Declare.i SetPosition(*this, Position.i, *Widget_2 =- 1)
+  Declare.i Free(*this)
+  Declare.i SetFocus(*this, State.i)
   
-  Declare.i SetAlignment(*this._S_widget, Mode.i, Type.i=1)
-  Declare.i SetItemData(*this._S_widget, Item.i, *Data)
-  Declare.i CountItems(*this._S_widget)
-  Declare.i ClearItems(*this._S_widget)
-  Declare.i RemoveItem(*this._S_widget, Item.i)
-  Declare.i SetItemAttribute(*this._S_widget, Item.i, Attribute.i, Value.i)
-  Declare.i Enumerate(*this.Integer, *Parent._S_widget, ParentItem.i=0)
-  Declare.i SetItemText(*this._S_widget, Item.i, Text.s)
-  Declare.i AddColumn(*this._S_widget, Position.i, Title.s, Width.i)
-  Declare.i SetFlag(*this._S_widget, Flag.i)
-  Declare.i SetItemImage(*this._S_widget, Item.i, Image.i)
-  Declare.i ReDraw(*this._S_widget=#Null)
+  Declare.i SetAlignment(*this, Mode.i, Type.i=1)
+  Declare.i SetItemData(*this, Item.i, *Data)
+  Declare.i CountItems(*this)
+  Declare.i ClearItems(*this)
+  Declare.i RemoveItem(*this, Item.i)
+  Declare.i SetItemAttribute(*this, Item.i, Attribute.i, Value.i)
+  Declare.i Enumerate(*this.Integer, *Parent, ParentItem.i=0)
+  Declare.i SetItemText(*this, Item.i, Text.s)
+  Declare.i AddColumn(*this, Position.i, Title.s, Width.i)
+  Declare.i SetFlag(*this, Flag.i)
+  Declare.i SetItemImage(*this, Item.i, Image.i)
+  Declare.i ReDraw(*this=#Null)
   
   Declare.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
   Declare.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
@@ -1430,17 +1177,17 @@ DeclareModule Widget
   Declare.i ListView(X.i,Y.i,Width.i,Height.i, Flag.i=0)
   Declare.i Spin(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
   Declare.i ListIcon(X.i,Y.i,Width.i,Height.i, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
-  Declare.i Popup(*Widget._S_widget, X.i,Y.i,Width.i,Height.i, Flag.i=0)
-  Declare.i Form(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget._S_widget=0)
+  Declare.i Popup(*Widget, X.i,Y.i,Width.i,Height.i, Flag.i=0)
+  Declare.i Form(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget=0)
   Declare.i Create(Type.i, X.i,Y.i,Width.i,Height.i, Text.s, Param_1.i=0, Param_2.i=0, Param_3.i=0, Flag.i=0, Parent.i=0, ParentItem.i=0)
   Declare.i ExplorerList(X.i,Y.i,Width.i,Height.i, Directory.s, Flag.i=0)
   Declare.i IPAddress(X.i,Y.i,Width.i,Height.i)
   Declare.i Editor(X.i,Y.i,Width.i,Height.i, Flag.i=0)
   
   Declare.i CloseList()
-  Declare.i OpenList(*this._S_widget, Item.i=0, Type=-5)
-  Declare.i SetParent(*this._S_widget, *Parent._S_widget, ParentItem.i=-1)
-  Declare.i AddItem(*this._S_widget, Item.i, Text.s, Image.i=-1, Flag.i=0)
+  Declare.i OpenList(*this, Item.i=0, Type=-5)
+  Declare.i SetParent(*this, *Parent, ParentItem.i=-1)
+  Declare.i AddItem(*this, Item.i, Text.s, Image.i=-1, Flag.i=0)
   
   Declare.i Resizes(*Scroll._S_scroll, X.i,Y.i,Width.i,Height.i)
   Declare.i Updates(*Scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
@@ -1465,13 +1212,13 @@ Module Widget
   ;- MODULE
   ;
   Declare.i Canvas_CallBack()
-  Declare.i Event_Widgets(*this._S_widget, EventType.i, EventItem.i=-1, EventData.i=0)
-  Declare.i Events(*this._S_widget, at.i, EventType.i, MouseScreenX.i, MouseScreenY.i, WheelDelta.i = 0)
+  Declare.i Event_Widgets(*this, EventType.i, EventItem.i=-1, EventData.i=0)
+  Declare.i Events(*this, at.i, EventType.i, MouseScreenX.i, MouseScreenY.i, WheelDelta.i = 0)
   
   ;- GLOBALs
-  Global def_colors._S_color
+  Global Color_Default._S_color
   
-   With def_colors                          
+  With Color_Default                          
     \state = 0
     \alpha = 255
     
@@ -1480,19 +1227,19 @@ Module Widget
     \front[0] = $80000000
     \fore[0] = $FFF6F6F6 ; $FFF8F8F8 
     \back[0] = $FFE2E2E2 ; $80E2E2E2
-    \frame[0] = $FFBABABA ; $80C8C8C8
+    \frame[0] = $FFBABABA; $80C8C8C8
     
     ; Цвета если мышь на виджете
     \front[1] = $80000000
     \fore[1] = $FFEAEAEA ; $FFFAF8F8
     \back[1] = $FFCECECE ; $80FCEADA
-    \frame[1] = $FF8F8F8F ; $80FFC288
+    \frame[1] = $FF8F8F8F; $80FFC288
     
     ; Цвета если нажали на виджет
     \front[2] = $FFFEFEFE
     \fore[2] = $FFE2E2E2 ; $C8E9BA81 ; $C8FFFCFA
     \back[2] = $FFB4B4B4 ; $C8E89C3D ; $80E89C3D
-    \frame[2] = $FF6F6F6F ; $C8DC9338 ; $80DC9338
+    \frame[2] = $FF6F6F6F; $C8DC9338 ; $80DC9338
   EndWith
   
   ;- MACOS
@@ -1608,7 +1355,7 @@ Module Widget
   
   ;-
   Macro _set_last_parameters_(_this_, _type_, _flag_)
-    *Value\this = _this_
+    *Value\event\widget = _this_
     _this_\Type = _type_
     _this_\Class = #PB_Compiler_Procedure
     
@@ -1655,79 +1402,79 @@ Module Widget
     GetGadgetAttribute(_this_\root\Canvas, #PB_Canvas_Cursor)
   EndMacro
   
-; ; ;   ; Extract thumb len from (max area page) len
-; ; ;   Macro _thumb_len_(_this_)
-; ; ;     Round(_this_\area\len - (_this_\area\len / (_this_\max-_this_\min)) * ((_this_\max-_this_\min) - _this_\page\len), #PB_Round_Nearest)
-; ; ;     
-; ; ;     If _this_\thumb\len > _this_\area\len 
-; ; ;       _this_\thumb\len = _this_\area\len 
-; ; ;     EndIf 
-; ; ;     
-; ; ; ;     If _this_\Vertical
-; ; ; ;       _this_\button[#Thumb]\height = _this_\thumb\len
-; ; ; ;     Else
-; ; ; ;       _this_\button[#Thumb]\width = _this_\thumb\len
-; ; ; ;     EndIf
-; ; ;     If _this_\box 
-; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
-; ; ;         _this_\box\height[3] = _this_\thumb\len 
-; ; ;       Else 
-; ; ;         _this_\box\width[3] = _this_\thumb\len 
-; ; ;       EndIf
-; ; ;     EndIf
-; ; ;     
-; ; ;     _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
-; ; ;   EndMacro
-; ; ;   
-; ; ;   Macro _thumb_pos_(_this_, _scroll_pos_)
-; ; ;     (_this_\area\pos + Round(((_scroll_pos_)-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
-; ; ;     
-; ; ;     If _this_\thumb\pos < _this_\area\pos 
-; ; ;       _this_\thumb\pos = _this_\area\pos 
-; ; ;     EndIf 
-; ; ;     
-; ; ;     If _this_\thumb\pos > _this_\area\end
-; ; ;       _this_\thumb\pos = _this_\area\end
-; ; ;     EndIf
-; ; ;     
-; ; ;     ; _start_
-; ; ;     If _this_\thumb\pos = _this_\area\pos
-; ; ;       _this_\color[1]\state = 3
-; ; ;     Else
-; ; ;       _this_\color[1]\state = 0
-; ; ;     EndIf 
-; ; ;     
-; ; ;     ; _stop_
-; ; ;     If _this_\thumb\pos = _this_\area\end
-; ; ;       _this_\color[2]\state = 3
-; ; ;     Else
-; ; ;       _this_\color[2]\state = 0
-; ; ;     EndIf 
-; ; ;     
-; ; ; ; ;     If _this_\vertical
-; ; ; ; ;       _this_\button[#Thumb]\y = _this_\thumb\pos
-; ; ; ; ;     Else
-; ; ; ; ;       _this_\button[#Thumb]\x = _this_\thumb\pos
-; ; ; ; ;     EndIf
-; ; ;     If _this_\box
-; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
-; ; ;         _this_\box\y[3] = _this_\thumb\pos 
-; ; ;       Else 
-; ; ;         _this_\box\x[3] = _this_\thumb\pos 
-; ; ;       EndIf
-; ; ;     EndIf
-; ; ;       
-; ; ;     _this_\page\end = (_this_\min + Round((_this_\area\end - _this_\area\pos) / (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
-; ; ;   EndMacro
+  ; ; ;   ; Extract thumb len from (max area page) len
+  ; ; ;   Macro _thumb_len_(_this_)
+  ; ; ;     Round(_this_\area\len - (_this_\area\len / (_this_\max-_this_\min)) * ((_this_\max-_this_\min) - _this_\page\len), #PB_Round_Nearest)
+  ; ; ;     
+  ; ; ;     If _this_\thumb\len > _this_\area\len 
+  ; ; ;       _this_\thumb\len = _this_\area\len 
+  ; ; ;     EndIf 
+  ; ; ;     
+  ; ; ; ;     If _this_\Vertical
+  ; ; ; ;       _this_\button[#Thumb]\height = _this_\thumb\len
+  ; ; ; ;     Else
+  ; ; ; ;       _this_\button[#Thumb]\width = _this_\thumb\len
+  ; ; ; ;     EndIf
+  ; ; ;     If _this_\box 
+  ; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
+  ; ; ;         _this_\box\height[3] = _this_\thumb\len 
+  ; ; ;       Else 
+  ; ; ;         _this_\box\width[3] = _this_\thumb\len 
+  ; ; ;       EndIf
+  ; ; ;     EndIf
+  ; ; ;     
+  ; ; ;     _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
+  ; ; ;   EndMacro
+  ; ; ;   
+  ; ; ;   Macro _thumb_pos_(_this_, _scroll_pos_)
+  ; ; ;     (_this_\area\pos + Round(((_scroll_pos_)-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
+  ; ; ;     
+  ; ; ;     If _this_\thumb\pos < _this_\area\pos 
+  ; ; ;       _this_\thumb\pos = _this_\area\pos 
+  ; ; ;     EndIf 
+  ; ; ;     
+  ; ; ;     If _this_\thumb\pos > _this_\area\end
+  ; ; ;       _this_\thumb\pos = _this_\area\end
+  ; ; ;     EndIf
+  ; ; ;     
+  ; ; ;     ; _start_
+  ; ; ;     If _this_\thumb\pos = _this_\area\pos
+  ; ; ;       _this_\color[1]\state = 3
+  ; ; ;     Else
+  ; ; ;       _this_\color[1]\state = 0
+  ; ; ;     EndIf 
+  ; ; ;     
+  ; ; ;     ; _stop_
+  ; ; ;     If _this_\thumb\pos = _this_\area\end
+  ; ; ;       _this_\color[2]\state = 3
+  ; ; ;     Else
+  ; ; ;       _this_\color[2]\state = 0
+  ; ; ;     EndIf 
+  ; ; ;     
+  ; ; ; ; ;     If _this_\vertical
+  ; ; ; ; ;       _this_\button[#Thumb]\y = _this_\thumb\pos
+  ; ; ; ; ;     Else
+  ; ; ; ; ;       _this_\button[#Thumb]\x = _this_\thumb\pos
+  ; ; ; ; ;     EndIf
+  ; ; ;     If _this_\box
+  ; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
+  ; ; ;         _this_\box\y[3] = _this_\thumb\pos 
+  ; ; ;       Else 
+  ; ; ;         _this_\box\x[3] = _this_\thumb\pos 
+  ; ; ;       EndIf
+  ; ; ;     EndIf
+  ; ; ;       
+  ; ; ;     _this_\page\end = (_this_\min + Round((_this_\area\end - _this_\area\pos) / (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
+  ; ; ;   EndMacro
   
   
   ; SCROLLBAR
   Macro _thumb_len_(_this_)
     Round(_this_\area\len - (_this_\area\len / (_this_\max-_this_\min)) * ((_this_\max-_this_\min) - _this_\page\len), #PB_Round_Nearest)
     
-;     If _this_\thumb\len > _this_\area\len 
-;       _this_\thumb\len = _this_\area\len 
-;     EndIf 
+    ;     If _this_\thumb\len > _this_\area\len 
+    ;       _this_\thumb\len = _this_\area\len 
+    ;     EndIf 
     
     If _this_\box 
       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
@@ -1743,13 +1490,13 @@ Module Widget
   Macro _thumb_pos_(_this_, _scroll_pos_)
     (_this_\area\pos + Round((_scroll_pos_-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
     
-;     If _this_\thumb\pos < _this_\area\pos 
-;       _this_\thumb\pos = _this_\area\pos 
-;     EndIf 
-;     
-;     If _this_\thumb\pos > _this_\area\pos+_this_\area\len 
-;       _this_\thumb\pos = (_this_\area\pos+_this_\area\len)-_this_\thumb\len 
-;     EndIf 
+    ;     If _this_\thumb\pos < _this_\area\pos 
+    ;       _this_\thumb\pos = _this_\area\pos 
+    ;     EndIf 
+    ;     
+    ;     If _this_\thumb\pos > _this_\area\pos+_this_\area\len 
+    ;       _this_\thumb\pos = (_this_\area\pos+_this_\area\len)-_this_\thumb\len 
+    ;     EndIf 
     
     If _this_\box
       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
@@ -1808,26 +1555,26 @@ Module Widget
     Protected ScrollPos.i
     
     With *this
-;       Protected ThumbLen 
-;       If \thumb\len = \box\size
-;        ; ThumbLen = (Round(\area\len - (\area\len / (\max-\min)) * ((\max-\min) - \page\len), #PB_Round_Nearest) - \thumb\len) - \thumb\len - 1
-;        ThumbLen = (Round(\area\len - (\area\len / (\max-\min)) * ((\max-\min) - \page\len), #PB_Round_Nearest) - \thumb\len) - \thumb\len - 1 - 2
-;       Else
-;         ThumbLen = \thumb\len - 1
-;       EndIf
-;       Debug ""+ThumbLen +" "+ \areaend +" "+ Str(\area\pos+(\area\len-ThumbLen)) +" "+ \area\len
+      ;       Protected ThumbLen 
+      ;       If \thumb\len = \box\size
+      ;        ; ThumbLen = (Round(\area\len - (\area\len / (\max-\min)) * ((\max-\min) - \page\len), #PB_Round_Nearest) - \thumb\len) - \thumb\len - 1
+      ;        ThumbLen = (Round(\area\len - (\area\len / (\max-\min)) * ((\max-\min) - \page\len), #PB_Round_Nearest) - \thumb\len) - \thumb\len - 1 - 2
+      ;       Else
+      ;         ThumbLen = \thumb\len - 1
+      ;       EndIf
+      ;       Debug ""+ThumbLen +" "+ \areaend +" "+ Str(\area\pos+(\area\len-ThumbLen)) +" "+ \area\len
       
       If _thumb_pos_ < \area\pos : _thumb_pos_ = \area\pos : EndIf
       If _thumb_pos_ > \area\end : _thumb_pos_ = \area\end : EndIf
       
       If Pos <> _thumb_pos_ 
         ScrollPos = \min + Round((_thumb_pos_ - \area\pos) / (\area\len / (\max-\min)), #PB_Round_Nearest)
-;         If \scrollstep > 1
-;           ScrollPos = Round(ScrollPos / \scrollstep, #PB_Round_Nearest) * \scrollstep
-;         EndIf
+        ;         If \scrollstep > 1
+        ;           ScrollPos = Round(ScrollPos / \scrollstep, #PB_Round_Nearest) * \scrollstep
+        ;         EndIf
         
-;         If ScrollPos < \min : ScrollPos = \min : EndIf
-;         If ScrollPos > (\max-\page\len) : ScrollPos = (\max-\page\len) : EndIf
+        ;         If ScrollPos < \min : ScrollPos = \min : EndIf
+        ;         If ScrollPos > (\max-\page\len) : ScrollPos = (\max-\page\len) : EndIf
         
         ;       If Pos <> ScrollPos 
         If #PB_GadgetType_TrackBar = \type And \vertical 
@@ -2346,7 +2093,7 @@ Module Widget
         \Root = *this
         \Type = #PB_GadgetType_Popup
         \Container = #PB_GadgetType_Popup
-        \Color = def_colors
+        \Color = Color_Default
         \color\Fore = 0
         \color\Back = $FFF0F0F0
         \color\alpha = 255
@@ -2641,40 +2388,40 @@ Module Widget
   EndProcedure
   
   ; SET_
-  Procedure.i Set_State(*this._S_widget, List *Item._S_items(), State.i)
+  Procedure.i Set_State(*this._S_widget, List *this_item._S_items(), State.i)
     Protected Repaint.i, sublevel.i, Mouse_X.i, Mouse_Y.i
     
     With *this
-      If ListSize(*Item())
+      If ListSize(*this_Item())
         Mouse_X = \Mouse\x
         Mouse_Y = \Mouse\y
         
-        If State >= 0 And SelectElement(*Item(), State) 
-          If (Mouse_Y > (*Item()\box\y[1]) And Mouse_Y =< ((*Item()\box\y[1]+*Item()\box\height[1]))) And 
-             ((Mouse_X > *Item()\box\x[1]) And (Mouse_X =< (*Item()\box\x[1]+*Item()\box\width[1])))
+        If State >= 0 And SelectElement(*this_Item(), State) 
+          If (Mouse_Y > (*this_Item()\box\y[1]) And Mouse_Y =< ((*this_Item()\box\y[1]+*this_Item()\box\height[1]))) And 
+             ((Mouse_X > *this_Item()\box\x[1]) And (Mouse_X =< (*this_Item()\box\x[1]+*this_Item()\box\width[1])))
             
-            *Item()\box\Checked[1] ! 1
-          ElseIf (\flag\buttons And *Item()\childrens) And
-                 (Mouse_Y > (*Item()\box\y[0]) And Mouse_Y =< ((*Item()\box\y[0]+*Item()\box\height[0]))) And 
-                 ((Mouse_X > *Item()\box\x[0]) And (Mouse_X =< (*Item()\box\x[0]+*Item()\box\width[0])))
+            *this_Item()\box\Checked[1] ! 1
+          ElseIf (\flag\buttons And *this_Item()\childrens) And
+                 (Mouse_Y > (*this_Item()\box\y[0]) And Mouse_Y =< ((*this_Item()\box\y[0]+*this_Item()\box\height[0]))) And 
+                 ((Mouse_X > *this_Item()\box\x[0]) And (Mouse_X =< (*this_Item()\box\x[0]+*this_Item()\box\width[0])))
             
-            sublevel = *Item()\sublevel
-            *Item()\box\Checked ! 1
+            sublevel = *this_Item()\sublevel
+            *this_Item()\box\Checked ! 1
             \Change = 1
             
-            PushListPosition(*Item())
-            While NextElement(*Item())
-              If sublevel = *Item()\sublevel
+            PushListPosition(*this_Item())
+            While NextElement(*this_Item())
+              If sublevel = *this_Item()\sublevel
                 Break
-              ElseIf sublevel < *Item()\sublevel And *Item()\i_Parent
-                *Item()\hide = Bool(*Item()\i_Parent\box\Checked Or *Item()\i_Parent\hide) * 1
+              ElseIf sublevel < *this_Item()\sublevel And *this_Item()\i_Parent
+                *this_Item()\hide = Bool(*this_Item()\i_Parent\box\Checked Or *this_Item()\i_Parent\hide) * 1
               EndIf
             Wend
-            PopListPosition(*Item())
+            PopListPosition(*this_Item())
             
-          ElseIf \index[2] <> State : *Item()\State = 2
-            If \index[2] >= 0 And SelectElement(*Item(), \index[2])
-              *Item()\State = 0
+          ElseIf \index[2] <> State : *this_Item()\State = 2
+            If \index[2] >= 0 And SelectElement(*this_Item(), \index[2])
+              *this_Item()\State = 0
             EndIf
             ; GetState() - Value = \index[2]
             \index[2] = State
@@ -2692,66 +2439,62 @@ Module Widget
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.i Bind(*Function, *this._S_widget=#PB_All, EventType.i=#PB_All)
-    Protected Repaint.i
-    
-    With *this
-      If *this = #PB_All
-        Root()\Function[1] = *Function
-      ElseIf Not \Function[1]
-        \Function[1] = *Function
-      EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  Procedure.i UnBind(*Function, *this._S_widget=#PB_All, EventType.i=#PB_All)
-    Protected Repaint.i
-    
-    With *this
-      If *this = #PB_All And Root()\Function = *Function
-        Root()\Function = 0
-        Root()\Function[1] = 0
-        Root()\Function[2] = 0
-        Root()\Function[3] = 0
-      ElseIf \Function = *Function
-        \Function = 0
-        \Function[1] = 0
-        \Function[2] = 0
-        \Function[3] = 0
-      EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  Macro Send(_this_, _event_type_, _event_item_, _event_data_)
-    If _this_\Function And 
-       CallCFunctionFast(_this_\Function, _this_, _event_type_, _event_item_, _event_data_)
-    ElseIf (_this_\Window And _this_\Window<>_this_\Root And _this_\Window<>_this_ And _this_\Root<>_this_ And _this_\Window\Function) And 
-           CallCFunctionFast(_this_\Window\Function, _this_, _event_type_, _event_item_, _event_data_)
-    ElseIf _this_\Root And _this_\root\Function And 
-           CallCFunctionFast(_this_\root\Function, _this_, _event_type_, _event_item_, _event_data_)
-    EndIf
-  EndMacro
-  
   Procedure.i Post(EventType.i, *this._S_widget, EventItem.i=#PB_All, *Data=0)
+    Protected result.i
+    
+    *Value\event\widget = *this
+    *Value\event\type = eventtype
+    *Value\event\data = *data
+    
+    If *this\event And
+       (*this\event\type = #PB_All Or
+        *this\event\type = eventtype)
+      
+      result = *this\event\callback()
+    EndIf
+    
+    If result <> #PB_Ignore And 
+       *this\window <> *this And 
+       *this\root <> *this\window And 
+       *this\window\event And 
+       (*this\window\event\type = #PB_All Or
+        *this\window\event\type = eventtype)
+      
+      result = *this\window\event\callback()
+    EndIf
+    
+    If result <> #PB_Ignore And
+       Root()\event And 
+       (Root()\event\type = #PB_All Or 
+        Root()\event\type = eventtype) 
+      
+      result = Root()\event\callback()
+    EndIf
+    
+    ProcedureReturn result
+  EndProcedure
+  
+  Procedure.i Bind(*callback, *this._S_widget=#PB_All, EventType.i=#PB_All)
     Protected Repaint.i
     
-    With *this
-      If \Function
-        Repaint = CallCFunctionFast(\Function, *this, EventType, EventItem, *Data)
-      EndIf
-      
-      If (\Window And \Window<>\Root And \Window<>*this And \Root<>*this And \Window\Function)
-        Repaint = CallCFunctionFast(\Window\Function, *this, EventType, EventItem, *Data)
-      EndIf
-      
-      If \Root And \root\Function
-        Repaint = CallCFunctionFast(\root\Function, *this, EventType, EventItem, *Data)
-      EndIf
-    EndWith
+    If *this = #PB_All
+      *this = Root()
+    EndIf
+    
+    *this\event = AllocateStructure(_S_event)
+    *this\event\type = eventtype
+    *this\event\callback = *callback
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure.i Unbind(*callback, *this._S_widget=#PB_All, EventType.i=#PB_All)
+    Protected Repaint.i
+    
+    *this\event\type = 0
+    *this\event\callback = 0
+    FreeStructure(*this\event)
+    *this\event = 0
     
     ProcedureReturn Repaint
   EndProcedure
@@ -6119,24 +5862,24 @@ Module Widget
       EndIf
       
       If \Ticks
-          Protected ii.f, _thumb_ = (\thumb\len/2-2)
-            For i=0 To \page\end
-              ii = (\area\pos + Round(((i)-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
-              LineXY(\X+ii,\box\y[3]+\box\height[3]-1,\X+ii,\box\y[3]+\box\height[3]-4,\Color[3]\Frame)
-            Next
-          
-;         Protected PlotStep = 5;(\width)/(\Max-\Min)
-;         
-;         For i=3 To (\Width-PlotStep)/2 
-;           If Not ((\X+i-3)%PlotStep)
-;             Box(\X+i, \Y[3]+\box\Height[3]-4, 1, 4, $FF808080)
-;           EndIf
-;         Next
-;         For i=\Width To (\Width-PlotStep)/2+3 Step - 1
-;           If Not ((\X+i-6)%PlotStep)
-;             Box(\X+i, \box\y[3]+\box\Height[3]-4, 1, 4, $FF808080)
-;           EndIf
-;         Next
+        Protected ii.f, _thumb_ = (\thumb\len/2-2)
+        For i=0 To \page\end
+          ii = (\area\pos + Round(((i)-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+          LineXY(\X+ii,\box\y[3]+\box\height[3]-1,\X+ii,\box\y[3]+\box\height[3]-4,\Color[3]\Frame)
+        Next
+        
+        ;         Protected PlotStep = 5;(\width)/(\Max-\Min)
+        ;         
+        ;         For i=3 To (\Width-PlotStep)/2 
+        ;           If Not ((\X+i-3)%PlotStep)
+        ;             Box(\X+i, \Y[3]+\box\Height[3]-4, 1, 4, $FF808080)
+        ;           EndIf
+        ;         Next
+        ;         For i=\Width To (\Width-PlotStep)/2+3 Step - 1
+        ;           If Not ((\X+i-6)%PlotStep)
+        ;             Box(\X+i, \box\y[3]+\box\Height[3]-4, 1, 4, $FF808080)
+        ;           EndIf
+        ;         Next
       EndIf
       
       
@@ -6783,11 +6526,11 @@ Module Widget
     
     With *this
       If \root And \root\create And Not \create 
-        If Not IsRoot(*this)
-          \Function[2] = Bool(\Window And \Window\Function[1] And \Window<>\Root And \Window<>*this) * \Window\Function[1]
-          \Function[3] = Bool(\Root And \root\Function[1]) * \root\Function[1]
-        EndIf
-        \Function = Bool(\Function[1] Or \Function[2] Or \Function[3])
+        ;         If Not IsRoot(*this)
+        ;           \Function[2] = Bool(\Window And \Window\Function[1] And \Window<>\Root And \Window<>*this) * \Window\Function[1]
+        ;           \Function[3] = Bool(\Root And \root\Function[1]) * \root\Function[1]
+        ;         EndIf
+        ;         \Function = Bool(\Function[1] Or \Function[2] Or \Function[3])
         
         Event_Widgets(*this, #PB_EventType_create, - 1)
         
@@ -7270,7 +7013,7 @@ Module Widget
         
         
         \Columns()\Items()\text\string.s = StringField(Text.s, ListIndex(\Columns()) + 1, #LF$)
-        \Columns()\Color = def_colors
+        \Columns()\Color = Color_Default
         \Columns()\Color\Fore[0] = 0 
         \Columns()\Color\Fore[1] = 0
         \Columns()\Color\Fore[2] = 0
@@ -7493,9 +7236,9 @@ Module Widget
       ClearList(\Items())
       If \Scroll
         \Scroll\v\Hide = 1
-      \Scroll\h\Hide = 1
-    EndIf
-    
+        \Scroll\h\Hide = 1
+      EndIf
+      
       ;       If Not \Repaint : \Repaint = 1
       ;        PostEvent(#PB_Event_Gadget, \root\canvas_window, \root\Canvas, #PB_EventType_Repaint)
       ;       EndIf
@@ -8580,7 +8323,7 @@ Module Widget
                 \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
                 
                 ; \thumb\pos = _thumb_pos_(*this, _invert_(*this, \page\pos, \inverted))
-               ProcedureReturn 1
+                ProcedureReturn 1
                 
               Case #PB_Bar_Minimum ; 1 -m&l
                 If \Min <> Value 
@@ -9100,13 +8843,13 @@ Module Widget
             EndIf
           EndIf
           
-;           If \Area\len > 0 And \Type <> #PB_GadgetType_Panel
-;             If _scroll_in_stop_(*this) And (\Type = #PB_GadgetType_ScrollBar)
-;               SetState(*this, \Max)
-;             EndIf
-;             
-;             \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
-;           EndIf
+          ;           If \Area\len > 0 And \Type <> #PB_GadgetType_Panel
+          ;             If _scroll_in_stop_(*this) And (\Type = #PB_GadgetType_ScrollBar)
+          ;               SetState(*this, \Max)
+          ;             EndIf
+          ;             
+          ;             \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
+          ;           EndIf
           If \Area\len > 0 And \Type <> #PB_GadgetType_Panel
             \thumb\pos = _thumb_pos_(*this, _invert_(*this, \page\pos, \inverted))
             
@@ -9344,7 +9087,7 @@ Module Widget
       
       If \v\width And \v\Page\len<>iHeight : SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
       If \h\height And \h\Page\len<>iWidth : SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
-  
+      
       \v\hide = Resize(\v, Width+x-\v\width, y, #PB_Ignore, \v\page\len)
       \h\hide = Resize(\h, x, Height+y-\h\height, \h\page\len, #PB_Ignore)
       
@@ -9353,10 +9096,10 @@ Module Widget
       
       If \v\width And \v\Page\len<>iHeight : SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
       If \h\height And \h\Page\len<>iWidth : SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
-  
+      
       If \v\page\len <> \v\height : \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\page\len) : EndIf
       If \h\page\len <> \h\width : \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, \h\page\len, #PB_Ignore) : EndIf
-       
+      
       If Not \v\hide And \v\width 
         \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x-\h\x)+Bool(\v\Radius And \h\Radius)*(\v\box\size/4+1), #PB_Ignore)
       EndIf
@@ -9367,7 +9110,7 @@ Module Widget
       ProcedureReturn #True
     EndWith
   EndProcedure
-
+  
   ;-
   ;- STRING_EDITABLE
   Procedure String_Remove(*this._S_widget)
@@ -9872,9 +9615,9 @@ Module Widget
       \Color\Frame = \Color\Back
       \Color\Line = $FFFFFFFF
       
-      \Color[1] = def_colors
-      \Color[2] = def_colors
-      \Color[3] = def_colors
+      \Color[1] = Color_Default
+      \Color[2] = Color_Default
+      \Color[3] = Color_Default
       
       \color[1]\alpha = 255
       \color[2]\alpha = 255
@@ -10020,14 +9763,14 @@ Module Widget
       \box\arrow_type[2] =- 1 ; -1 0 1
       
       ; Цвет фона скролла
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       \Text\Editable = 1
       
-      \Color[1] = def_colors
-      \Color[2] = def_colors
-      \Color[3] = def_colors
+      \Color[1] = Color_Default
+      \Color[2] = Color_Default
+      \Color[3] = Color_Default
       
       \color[1]\alpha = 255
       \color[2]\alpha = 255
@@ -10060,7 +9803,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10086,7 +9829,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10121,7 +9864,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_Hand
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10155,7 +9898,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container =- 2
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10182,7 +9925,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10217,7 +9960,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10272,7 +10015,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       \Color\Frame = $FF7E7E7E
@@ -10305,7 +10048,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       \Color\Frame = $FF7E7E7E
@@ -10339,7 +10082,7 @@ Module Widget
       \Y =- 1
       \Scroll = AllocateStructure(_S_scroll) 
       \Cursor = #PB_Cursor_IBeam
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       
@@ -10385,7 +10128,7 @@ Module Widget
       \Y =- 1
       \Scroll = AllocateStructure(_S_scroll) 
       \Cursor = #PB_Cursor_IBeam
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       
@@ -10429,7 +10172,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_IBeam
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       
@@ -10466,14 +10209,14 @@ Module Widget
       
       
       
-      \Color = def_colors
+      \Color = Color_Default
       \Color\Fore[0] = 0
       
       \margin\width = 100;Bool(Flag&#PB_Flag_Numeric)
       \margin\Color\Back = $C8F0F0F0 ; \Color\Back[0] 
       
       \color\alpha = 255
-      \Color = def_colors
+      \Color = Color_Default
       \Color\Fore[0] = 0
       \Color\Fore[1] = 0
       \Color\Fore[2] = 0
@@ -10520,7 +10263,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       ;\Cursor = #PB_Cursor_Hand
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10563,7 +10306,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       ;\Cursor = #PB_Cursor_Hand
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10611,7 +10354,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_LeftRight
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10657,7 +10400,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_LeftRight
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10749,7 +10492,7 @@ Module Widget
       SetState(*this, SplitterPos)
       
       
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10795,7 +10538,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container = 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10810,8 +10553,8 @@ Module Widget
       \box\arrow_type[1] =- 1
       \box\arrow_type[2] =- 1
       
-      \box\Color[1] = def_colors
-      \box\Color[2] = def_colors
+      \box\Color[1] = Color_Default
+      \box\Color[2] = Color_Default
       
       \box\color[1]\alpha = 255
       \box\color[2]\alpha = 255
@@ -10842,7 +10585,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container = 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \color\Fore = 0
       \color\Back = $FFF6F6F6
@@ -10871,7 +10614,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container = 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10920,7 +10663,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\Fore = 0
       \color\Back = $FFF0F0F0
       \color\alpha = 255
@@ -10940,7 +10683,7 @@ Module Widget
       
       \box = AllocateStructure(_S_box)
       \box\Size = 12
-      \box\Color = def_colors
+      \box\Color = Color_Default
       \box\color\alpha = 255
       
       ;       \box\Color[1]\Alpha = 128
@@ -11068,7 +10811,7 @@ Module Widget
       If Text.s
         \Type =- 1
         \Container =- 1
-        \Color = def_colors
+        \Color = Color_Default
         \color\Fore = 0
         \color\Back = $FFF0F0F0
         \color\alpha = 255
@@ -11088,7 +10831,7 @@ Module Widget
         
         \box = AllocateStructure(_S_box)
         \box\Size = 12
-        \box\Color = def_colors
+        \box\Color = Color_Default
         \box\color\alpha = 255
         
         \Flag\Window\SizeGadget = Bool(Flag&#PB_Window_SizeGadget)
@@ -11368,57 +11111,12 @@ Module Widget
         EndIf
         
         
-        If EventType = #PB_EventType_MouseEnter
-          ;  Debug "enter "
+        If *this And *this <> \Root And \root\Drag And DD::CallBack(*this, EventType)
+          Post(#PB_EventType_Drop, DD::*Drag\widget, \index[2], EventData)
+        Else
+          Post(EventType, *this, EventItem, EventData)
         EndIf
         
-        ;         If Not Root()\Mouse\Buttons
-        ;           Select EventType
-        ;             Case #PB_EventType_MouseEnter
-        ;               
-        ;               If \at=-1
-        ;                 If \Leave
-        ;                   Debug "en "+\Type+" "+\Cursor[1]+" "+\Leave\Cursor
-        ;                   \Cursor[1] = \Leave\Cursor
-        ;                 Else
-        ;                   \Cursor[1] = Get_Cursor(*this)
-        ;                   Debug " en "+\Type+" "+\Cursor[1]
-        ;                 EndIf
-        ;                 
-        ;                 Set_Cursor(*this, \Cursor)
-        ;               EndIf
-        ;               
-        ;             Case #PB_EventType_MouseLeave
-        ;               If \Text
-        ;                 Debug "le "+\Type+" "+\Text\String
-        ;               Else
-        ;                 Debug "le "+\Type
-        ;               EndIf
-        ;               Set_Cursor(*this, \Cursor[1])
-        ;               
-        ;           EndSelect
-        ;         EndIf
-        
-        *Value\This = *this
-        \Event = EventType
-        
-        If *this And *this <> \Root And \root\Drag And DD::CallBack(*this, EventType, \Mouse\x , \Mouse\y)
-          Event_Widgets(DD::Object, DD::Event, \index[2], EventData)
-        EndIf
-        
-        ; PostEvent(#PB_Event_Widget, \root\Window, \root\Parent, EventType, EventData)
-        If \Function[1] And 
-           CallCFunctionFast(\Function[1], *this, EventType, EventItem, EventData)
-          Result = 1
-        ElseIf \Function[2] And 
-               CallCFunctionFast(\Window\Function[1], *this, EventType, EventItem, EventData)
-          Result = 1
-        ElseIf \Function[3] And 
-               CallCFunctionFast(\root\Function[1], *this, EventType, EventItem, EventData)
-          Result = 1
-        EndIf
-        
-        ;         Send(*this, EventType, EventItem, EventData)
       EndIf
     EndWith
     
@@ -11526,7 +11224,7 @@ Module Widget
                 Select at
                   Case 1 : Repaint = SetState(*this, (\Page\Pos - \scrollstep)) ; Up button
                   Case 2 : Repaint = SetState(*this, (\Page\Pos + \scrollstep)) ; Down button
-                  Case 3                                                  ; Thumb button
+                  Case 3                                                        ; Thumb button
                     If \Vertical And Bool(\Type <> #PB_GadgetType_Spin)
                       delta = MouseScreenY - \Thumb\Pos
                     Else
@@ -12014,37 +11712,10 @@ Module Widget
   
 EndModule
 
+
+;- 
+;- example
 ;-
-Macro GetActiveWidget()
-  Widget::*Value\Focus
-EndMacro
-
-Macro EventWidget()
-  Widget::*Value\This
-EndMacro
-
-Macro WidgetEvent()
-  EventWidget()\Event
-EndMacro
-
-; Macro EventGadget()
-;   (Bool(Event()<>Widget::#PB_Event_Widget) * Widget::PB(EventGadget)() + Bool(Event()=Widget::#PB_Event_Widget) * Widget::Root()\Canvas)
-; EndMacro
-
-DeclareModule Helper
-  Declare.i Image(X.i,Y.i,Width.i,Height.i, Title.s, Flag.i=0)
-EndDeclareModule
-
-Module Helper
-  
-  Procedure.i Image(X.i,Y.i,Width.i,Height.i, Title.s, Flag.i=0)
-    Protected *Window.Widget::_S_widget = Widget::Form(X.i,Y.i,Width.i,Height.i, Title.s, Flag.i)
-    
-  EndProcedure
-EndModule
-
-
-
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -12079,14 +11750,21 @@ CompilerIf #PB_Compiler_IsMainFile
          TargetPrivate2
   
   
-  Procedure Events(EventGadget, EventType, EventItem, EventData)
+  Procedure Events()
+    Protected EventGadget.i, EventType.i, EventItem.i, EventData.i
+    
+    EventGadget = Widget()
+    EventType = Type()
+    EventItem = Item()
+    EventData = Data()
+    
     Protected i, Text$, Files$, Count
     
     ; DragStart event on the source s, initiate a drag & drop
     ;
     Select EventType
       Case #PB_EventType_DragStart
-        
+        Debug "     #PB_EventType_DragStart"
         Select EventGadget
             
           Case SourceText
@@ -12221,5 +11899,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------u---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

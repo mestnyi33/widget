@@ -827,13 +827,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
               
               If DragText
                 If Drag
-                  AddWidget(*This, Type(DragText), GetSelectorX(*This), GetSelectorY(*This), GetSelectorWidth(*This), GetSelectorHeight(*This)) ; DeltaX, DeltaY, MouseX-DeltaX, MouseY-DeltaY)
+                  AddWidget(*This, ClassType(DragText), GetSelectorX(*This), GetSelectorY(*This), GetSelectorWidth(*This), GetSelectorHeight(*This)) ; DeltaX, DeltaY, MouseX-DeltaX, MouseY-DeltaY)
                   
                   FreeSelector(*This)
                   Drag = 0
                 Else
                   
-                  AddWidget(*This, Type(DragText), GetMouseX(*This), GetMouseY(*This))
+                  AddWidget(*This, ClassType(DragText), GetMouseX(*This), GetMouseY(*This))
                   
                 EndIf
                 

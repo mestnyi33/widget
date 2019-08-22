@@ -1,4 +1,4 @@
-﻿; _s_module_bar_4_ orig
+﻿;
 ; Os              : All
 ; Version         : 3
 ; License         : Free
@@ -121,7 +121,7 @@ DeclareModule Bar
     *first;._S_bar
     *second;._S_bar
     
-    fixed.l[3]
+    fixed.i[3]
     
     g_first.b
     g_second.b
@@ -987,13 +987,15 @@ Module Bar
         \page\pos = ScrollPos
         \thumb\pos = _thumb_pos_(*this, _scroll_invert_(*this, ScrollPos, \inverted))
         
-        If \splitter And \splitter\fixed = #_b_1
-          \splitter\fixed[\splitter\fixed] = \thumb\pos - \area\pos
-          \page\pos = 0
-        EndIf
-        If \splitter And \splitter\fixed = #_b_2
-          \splitter\fixed[\splitter\fixed] = \area\len - ((\thumb\pos+\thumb\len)-\area\pos)
-          \page\pos = \max
+        If \splitter And \splitter\fixed
+          If \splitter\fixed = #_b_1
+            \splitter\fixed[\splitter\fixed] = \thumb\pos - \area\pos
+            \page\pos = 0
+          EndIf
+          If \splitter\fixed = #_b_2
+            \splitter\fixed[\splitter\fixed] = \area\len - ((\thumb\pos+\thumb\len)-\area\pos)
+            \page\pos = \max
+          EndIf
         EndIf
         
         Result = #True
@@ -1169,19 +1171,19 @@ Module Bar
             EndIf
           EndIf
           
-         ; Debug ""+\area\len +" "+ Str(\button[#_b_1]\len + \button[#_b_2]\len)
-          
-          If \area\len =< \button\len
-            \page\pos = \max/2
-            
-            If \Vertical
-              \area\pos = \Y 
-              \area\len = \Height
-            Else
-              \area\pos = \X
-              \area\len = \width 
-            EndIf
-          EndIf
+;          ; Debug ""+\area\len +" "+ Str(\button[#_b_1]\len + \button[#_b_2]\len)
+;           
+;           If \area\len =< \button\len
+;             \page\pos = \max/2
+;             
+;             If \Vertical
+;               \area\pos = \Y 
+;               \area\len = \Height
+;             Else
+;               \area\pos = \X
+;               \area\len = \width 
+;             EndIf
+;           EndIf
           
         EndIf
         
@@ -1868,8 +1870,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     TextGadget       (-1,  300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical);|#PB_Bar_Inverted)
-                                                                                                       ;AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 100 ,0, 521, 96, #PB_ScrollBar_Vertical)
-    SetState   (Widget(), 100)                                                                         ; set 2nd scrollbar (ID = 1) to 100 of 300
+    ;AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 100 ,0, 521, 96, #PB_ScrollBar_Vertical)
+    SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     BindGadgetEvent(1,@h_GadgetCallBack())
     BindGadgetEvent(2,@v_GadgetCallBack())
@@ -1941,7 +1943,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState   (32, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     TextGadget       (-1,  300+10, 140+200+140+10, 230,  20, "SplitterBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    *b1 = Splitter  (0, 0, 0, 0, 0, 0, #PB_Splitter_Vertical|#PB_Splitter_Separator);|#PB_Splitter_FirstFixed)
+    *b1 = Splitter  (0, 0, 0, 0, 0, 0, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     *b2 = Progress  (0, 0, 0, 0, 30, 100, 0)
     ;SetState   (*b1, 30) 
     SetState   (*b2, 50) 

@@ -1,4 +1,4 @@
-﻿; _s_module_bar_4_ orig
+﻿;
 ; Os              : All
 ; Version         : 3
 ; License         : Free
@@ -121,8 +121,7 @@ DeclareModule Bar
     *first;._S_bar
     *second;._S_bar
     
-    fixed.l[3]
-    
+    fixed.i[3]
     g_first.b
     g_second.b
     
@@ -286,7 +285,7 @@ Module Bar
         ; Top button coordinate on vertical scroll bar
         _this_\button[#_b_1]\x = _this_\X + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
         _this_\button[#_b_1]\y = _this_\Y 
-        _this_\button[#_b_1]\width = _this_\width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+        _this_\button[#_b_1]\width = _this_\Width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
         _this_\button[#_b_1]\height = _this_\button[#_b_1]\len                   
       Else 
         ; Left button coordinate on horizontal scroll bar
@@ -321,7 +320,7 @@ Module Bar
       If _this_\Vertical 
         ; Botom button coordinate on vertical scroll bar
         _this_\button[#_b_2]\x = _this_\X + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-        _this_\button[#_b_2]\width = _this_\width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+        _this_\button[#_b_2]\width = _this_\Width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
         _this_\button[#_b_2]\height = _this_\button[#_b_2]\len 
         _this_\button[#_b_2]\y = _this_\Y+_this_\Height-_this_\button[#_b_2]\height
       Else 
@@ -329,32 +328,30 @@ Module Bar
         _this_\button[#_b_2]\y = _this_\Y + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
         _this_\button[#_b_2]\height = _this_\Height - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
         _this_\button[#_b_2]\width = _this_\button[#_b_2]\len 
-        _this_\button[#_b_2]\x = _this_\X+_this_\width-_this_\button[#_b_2]\width 
+        _this_\button[#_b_2]\x = _this_\X+_this_\Width-_this_\button[#_b_2]\width 
       EndIf
       
     Else
       If _this_\Vertical
         _this_\button[#_b_2]\x = _this_\x
         _this_\button[#_b_2]\y = _this_\thumb\pos+_this_\thumb\len
-        _this_\button[#_b_2]\width = _this_\width
+        _this_\button[#_b_2]\width = _this_\Width
         _this_\button[#_b_2]\height = _this_\height-(_this_\thumb\pos+_this_\thumb\len-_this_\y)
       Else
         _this_\button[#_b_2]\x = _this_\thumb\pos+_this_\thumb\len
         _this_\button[#_b_2]\y = _this_\Y
-        _this_\button[#_b_2]\width = _this_\width-(_this_\thumb\pos+_this_\thumb\len-_this_\x)
+        _this_\button[#_b_2]\width = _this_\Width-(_this_\thumb\pos+_this_\thumb\len-_this_\x)
         _this_\button[#_b_2]\height = _this_\height
       EndIf
     EndIf
     
     ; Thumb coordinate on scroll bar
     If _this_\thumb\len
-      If _this_\button[#_b_3]\len <> _this_\thumb\len
-        _this_\button[#_b_3]\len = _this_\thumb\len
-      EndIf
+      _this_\button[#_b_3]\len = _this_\thumb\len
       
       If _this_\Vertical
         _this_\button[#_b_3]\x = _this_\X + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-        _this_\button[#_b_3]\width = _this_\width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+        _this_\button[#_b_3]\width = _this_\Width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
         _this_\button[#_b_3]\y = _this_\thumb\pos
         _this_\button[#_b_3]\height = _this_\thumb\len                              
       Else
@@ -401,40 +398,7 @@ Module Bar
     (Bool(_inverted_) * ((_this_\min + (_this_\max - _this_\page\len)) - (_scroll_pos_)) + Bool(Not _inverted_) * (_scroll_pos_))
   EndMacro
   
-  Macro _set_area_coordinate_(_this_)
-    If _this_\vertical
-      _this_\area\pos = _this_\y + _this_\button[#_b_1]\len
-      _this_\area\len = _this_\height - (_this_\button[#_b_1]\len + _this_\button[#_b_2]\len)
-    Else
-      _this_\area\pos = _this_\x + _this_\button[#_b_1]\len
-      _this_\area\len = _this_\width - (_this_\button[#_b_1]\len + _this_\button[#_b_2]\len)
-    EndIf
-    
-    _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
-  EndMacro
-  
-  Macro Resize_Splitter(_this_)
-    If _this_\Vertical
-      If _this_\splitter\first
-        Resize(_this_\splitter\first, _this_\x, _this_\y, _this_\width, _this_\thumb\pos-_this_\y)
-      EndIf
-      If _this_\splitter\second
-        Resize(_this_\splitter\second, _this_\x, (_this_\thumb\pos+_this_\thumb\len), _this_\width, _this_\height-((_this_\thumb\pos+_this_\thumb\len)-_this_\y))
-      EndIf
-    Else
-      If _this_\splitter\first
-        Resize(_this_\splitter\first, _this_\x, _this_\y, _this_\thumb\pos-_this_\x, _this_\height)
-      EndIf
-      If _this_\splitter\second
-        Resize(_this_\splitter\second, (_this_\thumb\pos+_this_\thumb\len), _this_\y, _this_\width-((_this_\thumb\pos+_this_\thumb\len)-_this_\x), _this_\height)
-      EndIf
-    EndIf
-  EndMacro
-  
   Procedure.b splitter_size(*this._S_bar)
-    ;     Resize_Splitter(*this)
-    ;     ProcedureReturn
-    
     If *this\splitter
       If *this\splitter\first
         If *this\splitter\g_first
@@ -444,9 +408,6 @@ Module Bar
             ResizeGadget(*this\splitter\first, *this\button[#_b_1]\x, *this\button[#_b_1]\y, *this\button[#_b_1]\width, *this\button[#_b_1]\height)
           EndIf
         Else
-          ;           If *this\focus = 1111
-          ;             Debug *this\button[#_b_1]\x
-          ;           EndIf
           Resize(*this\splitter\first, *this\button[#_b_1]\x, *this\button[#_b_1]\y, *this\button[#_b_1]\width, *this\button[#_b_1]\height)
           ; splitter_size(*this\splitter\first)
         EndIf
@@ -570,7 +531,7 @@ Module Bar
       If Not \hide And \color\alpha
         ; Draw scroll bar background
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox(\X,\Y,\width,\height,\Radius,\Radius,\Color\Back&$FFFFFF|\color\alpha<<24)
+        RoundBox(\X,\Y,\Width,\height,\Radius,\Radius,\Color\Back&$FFFFFF|\color\alpha<<24)
         
         If \Vertical
           Line( \x, \y, 1, \page\len + Bool(\height<>\page\len), \color\front&$FFFFFF|\color\alpha<<24) ;   $FF000000) ;
@@ -906,10 +867,6 @@ Module Bar
     Protected ScrollPos.i, Result.i
     
     With *this
-      If \splitter And \splitter\fixed
-        _set_area_coordinate_(*this)
-      EndIf
-      
       If ThumbPos < \area\pos : ThumbPos = \area\pos : EndIf
       If ThumbPos > \area\end : ThumbPos = \area\end : EndIf
       
@@ -986,15 +943,7 @@ Module Bar
         
         \page\pos = ScrollPos
         \thumb\pos = _thumb_pos_(*this, _scroll_invert_(*this, ScrollPos, \inverted))
-        
-        If \splitter And \splitter\fixed = #_b_1
-          \splitter\fixed[\splitter\fixed] = \thumb\pos - \area\pos
-          \page\pos = 0
-        EndIf
-        If \splitter And \splitter\fixed = #_b_2
-          \splitter\fixed[\splitter\fixed] = \area\len - ((\thumb\pos+\thumb\len)-\area\pos)
-          \page\pos = \max
-        EndIf
+        ; Debug ""+\thumb\pos+" "+\area\end+" "+\page\pos+" "+\page\end+" "+\page\len+" "+\max+" "+\min+" "+\height
         
         Result = #True
       EndIf
@@ -1021,11 +970,11 @@ Module Bar
         Case #PB_Bar_FirstMinimumSize
           \button[#_b_1]\len = Value
           Result = Bool(\max)
-          
+        
         Case #PB_Bar_SecondMinimumSize
           \button[#_b_2]\len = Value
           Result = Bool(\max)
-          
+        
         Case #PB_Bar_NoButtons
           If \button\len <> Value
             \button\len = Value
@@ -1118,116 +1067,111 @@ Module Bar
   ;-
   Procedure.b Resize(*this._S_bar, X.l,Y.l,Width.l,Height.l)
     With *this
-      If X <> #PB_Ignore : \X = X : EndIf 
-      If Y <> #PB_Ignore : \Y = Y : EndIf 
-      If Width <> #PB_Ignore : \width = Width : EndIf 
-      If Height <> #PB_Ignore : \Height = height : EndIf
+      If X<>#PB_Ignore 
+        \X = X 
+      EndIf 
+      If Y<>#PB_Ignore 
+        \Y = Y 
+      EndIf 
+      If Width<>#PB_Ignore 
+        \Width = Width 
+      EndIf 
+      If Height<>#PB_Ignore 
+        \Height = height 
+      EndIf
+      
+;       ;
+;       If Not \max
+;         If \vertical
+;           If \height
+;             \max = \Height-\button\len
+;             If \page\pos
+;               SetState(*this, \page\pos)
+;             Else
+;               SetState(*this, \max/2)
+;             EndIf
+;           EndIf
+;         Else
+;           If \width
+;             \max = \Width-\button\len*2
+;             If \page\pos
+;               SetState(*this, \page\pos)
+;             Else
+;               SetState(*this, \max/2)
+;             EndIf
+;           EndIf
+;         EndIf
+;       EndIf
+
+      If Not \max And \width And \height
+        If \vertical
+          If \height
+            \max = \Height-\button\len
+          EndIf
+        Else
+          If \width
+            \max = \width-\button\len
+          EndIf
+        EndIf
+        
+        If Not \page\pos
+          \page\pos = \max/2
+        EndIf
+      EndIf
       
       ;
       If (\max-\min) >= \page\len
-        ; Get area screen coordinate pos (x&y) and len (width&height)
-        _set_area_coordinate_(*this)
-        
-        If Not \max And \width And \height
-;           If \vertical
-;             If \height
-;               \max = \Height-\button\len
-;             EndIf
-;           Else
-;             If \width
-;               \max = \width-\button\len
-;             EndIf
-;           EndIf
-          \max = \area\len-\button\len
-          
-          If Not \page\pos
-            \page\pos = \max/2
-          EndIf
-          
-          ; if splitter fixed set splitter pos to center
-          If \splitter And \splitter\fixed = #_b_1
-            \splitter\fixed[\splitter\fixed] = \page\pos
-          EndIf
-          If \splitter And \splitter\fixed = #_b_2
-            \splitter\fixed[\splitter\fixed] = \area\len-\page\pos-\button\len
-          EndIf
+        If \Vertical
+          \Area\pos = \Y + \button[#_b_1]\len
+          \Area\len = \Height - (\button[#_b_1]\len + \button[#_b_2]\len)
+        Else
+          \Area\pos = \X + \button[#_b_1]\len
+          \Area\len = \Width - (\button[#_b_1]\len + \button[#_b_2]\len)
         EndIf
         
-        ;
-        If \splitter 
-          If \splitter\fixed
-            If \area\len - \button\len > \splitter\fixed[\splitter\fixed] 
-               \page\pos = Bool(\splitter\fixed = 2) * \max
-             
-              If \splitter\fixed[\splitter\fixed] > \button\len
-                \area\pos + \splitter\fixed[1]
-                \area\len - \splitter\fixed[2]
-              EndIf
-            Else
-              \splitter\fixed[\splitter\fixed] = \area\len - \button\len
-              \page\pos = Bool(\splitter\fixed = 1) * \max
-            EndIf
-          EndIf
-          
-         ; Debug ""+\area\len +" "+ Str(\button[#_b_1]\len + \button[#_b_2]\len)
-          
-          If \area\len =< \button\len
-            \page\pos = \max/2
-            
-            If \Vertical
-              \area\pos = \Y 
-              \area\len = \Height
-            Else
-              \area\pos = \X
-              \area\len = \width 
-            EndIf
-          EndIf
-          
-        EndIf
-        
-        If \area\len > \button\len
+        If \Area\len > \button\len
           \thumb\len = Round(\area\len - (\area\len / (\max-\min)) * ((\max-\min) - \page\len), #PB_Round_Nearest)
           
           If \thumb\len > \area\len 
+            ; Debug " line-" + #PB_Compiler_Line + "   \thumb\len > \area\len"
             \thumb\len = \area\len 
           EndIf 
           
           If \thumb\len > \button\len
+            ; Debug " line-" + #PB_Compiler_Line + "   \thumb\len > \button\len"
             \area\end = \area\pos + (\area\len-\thumb\len)
           Else
+            ; Debug " line-" + #PB_Compiler_Line +" \thumb\len-"+ \thumb\len +" \button\len-"+ \button\len + "   \thumb\len =< \button\len"
             \area\len = \area\len - (\button\len-\thumb\len)
             \area\end = \area\pos + (\area\len-\thumb\len)                              
             \thumb\len = \button\len
           EndIf
-          
         Else
-          If \splitter
-            \thumb\len = \width
-          Else
-            \thumb\len = 0
-          EndIf
-          
+          ; Debug " line-" + #PB_Compiler_Line + "   \Area\len > 0 And \Area\len =< \button\len"
+          \thumb\len = 0
           If \Vertical
-            \area\pos = \Y
-            \area\len = \Height
+            \Area\pos = \Y
+            \Area\len = \Height
           Else
-            \area\pos = \X
-            \area\len = \width 
+            \Area\pos = \X
+            \Area\len = \Width 
           EndIf
-          
           \area\end = \area\pos + (\area\len - \thumb\len)
         EndIf
         
-        \page\end = \max - \page\len
-        \thumb\pos = _thumb_pos_(*this, _scroll_invert_(*this, \page\pos, \inverted))
-        
-        If \thumb\pos = \area\end And \type = #PB_GadgetType_ScrollBar
-          ; Debug " line-" + #PB_Compiler_Line +" "+  \type 
-          SetState(*this, \max)
+          \page\end = \max - \page\len
+          \thumb\pos = _thumb_pos_(*this, _scroll_invert_(*this, \page\pos, \inverted))
+          
+        If \Area\len > 0
+          If \type <> #PB_GadgetType_TrackBar And \thumb\pos = \area\end
+            ; Debug " line-" + #PB_Compiler_Line +" "+  \type 
+            SetState(*this, \max)
+          EndIf
         EndIf
       EndIf
       
       \hide[1] = Bool(Not ((\max-\min) > \page\len))
+      
       ProcedureReturn \hide[1]
     EndWith
   EndProcedure
@@ -1489,8 +1433,6 @@ Module Bar
         \button\len = 3
       EndIf
       
-      ;\thumb\len=\button\len
-      
       If (Width+Height)
         Resize(*this, X,Y,Width,Height)
       EndIf
@@ -1546,13 +1488,13 @@ Module Bar
       If Down ; GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
         from = \from 
       Else
-        If Not \hide And (Mousex>=\x And Mousex<\x+\width And Mousey>\y And Mousey=<\y+\height) 
+        If Not \hide And (Mousex>=\x And Mousex<\x+\Width And Mousey>\y And Mousey=<\y+\height) 
           If \button 
             If \button[#_b_3]\len And (MouseX>\button[#_b_3]\x And MouseX=<\button[#_b_3]\x+\button[#_b_3]\width And MouseY>\button[#_b_3]\y And MouseY=<\button[#_b_3]\y+\button[#_b_3]\height)
               from = #_b_3
-            ElseIf \button[#_b_2]\len And (MouseX>\button[#_b_2]\x And MouseX=<\button[#_b_2]\x+\button[#_b_2]\width And MouseY>\button[#_b_2]\y And MouseY=<\button[#_b_2]\y+\button[#_b_2]\height)
+            ElseIf \button[#_b_2]\len And (MouseX>\button[#_b_2]\x And MouseX=<\button[#_b_2]\x+\button[#_b_2]\Width And MouseY>\button[#_b_2]\y And MouseY=<\button[#_b_2]\y+\button[#_b_2]\height)
               from = #_b_2
-            ElseIf \button[#_b_1]\len And (MouseX>\button[#_b_1]\x And MouseX=<\button[#_b_1]\x+\button[#_b_1]\width And  MouseY>\button[#_b_1]\y And MouseY=<\button[#_b_1]\y+\button[#_b_1]\height)
+            ElseIf \button[#_b_1]\len And (MouseX>\button[#_b_1]\x And MouseX=<\button[#_b_1]\x+\button[#_b_1]\Width And  MouseY>\button[#_b_1]\y And MouseY=<\button[#_b_1]\y+\button[#_b_1]\height)
               from = #_b_1
             Else
               from =- 1
@@ -1868,8 +1810,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     TextGadget       (-1,  300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical);|#PB_Bar_Inverted)
-                                                                                                       ;AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 100 ,0, 521, 96, #PB_ScrollBar_Vertical)
-    SetState   (Widget(), 100)                                                                         ; set 2nd scrollbar (ID = 1) to 100 of 300
+    ;AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 100 ,0, 521, 96, #PB_ScrollBar_Vertical)
+    SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     BindGadgetEvent(1,@h_GadgetCallBack())
     BindGadgetEvent(2,@v_GadgetCallBack())
@@ -1941,7 +1883,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState   (32, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     TextGadget       (-1,  300+10, 140+200+140+10, 230,  20, "SplitterBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    *b1 = Splitter  (0, 0, 0, 0, 0, 0, #PB_Splitter_Vertical|#PB_Splitter_Separator);|#PB_Splitter_FirstFixed)
+    *b1 = Splitter  (0, 0, 0, 0, 0, 0, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     *b2 = Progress  (0, 0, 0, 0, 30, 100, 0)
     ;SetState   (*b1, 30) 
     SetState   (*b2, 50) 
@@ -1974,5 +1916,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------
+; Folding = ------------------------------------------
 ; EnableXP

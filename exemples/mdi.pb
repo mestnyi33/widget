@@ -184,9 +184,9 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf 
     
     If _this_\Vertical
-      _this_\button[#_3]\height = _this_\thumb\len
+      _this_\button[3]\height = _this_\thumb\len
     Else
-      _this_\button[#_3]\width = _this_\thumb\len
+      _this_\button[3]\width = _this_\thumb\len
     EndIf
     
     _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)

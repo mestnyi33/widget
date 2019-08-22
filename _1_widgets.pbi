@@ -306,7 +306,6 @@ Module DD
     ;     
     ;     EndIf
     ;     ProcedureReturn ImageID(110)
-    ;Debug cursor
     ProcedureReturn ImageID(cursor)
     
     DataSection
@@ -613,351 +612,6 @@ EndModule
 ;-
 DeclareModule Widget
   EnableExplicit
-  #Anchors = 9+4
-  
-  #Anchor_moved = 9
-  
-  ;   Structure _S_type
-  ;     b.b
-  ;     i.i 
-  ;     s.s
-  ;   EndStructure
-  
-  ;- - STRUCTUREs
-  ;- - _S_Mouse
-  Structure _S_mouse
-    x.i
-    y.i
-    
-    at.b ; - editor
-    buttons.i 
-    *delta._S_mouse
-    direction.i
-  EndStructure
-  
-  ;- - _S_Keyboard
-  Structure _S_keyboard
-    input.c
-    key.i[2]
-  EndStructure
-  
-  ;- - _S_Coordinate
-  Structure _S_coordinate
-    y.i[4]
-    x.i[4]
-    height.i[4]
-    width.i[4]
-  EndStructure
-  
-  ;- - _S_button
-  Structure _S_button Extends _S_coordinate
-    len.a
-    arrow_size.a
-    arrow_type.b
-  EndStructure
-  
-  ;- - _S_box
-  Structure _S_box Extends _S_coordinate
-    size.i[4]
-    hide.b[4]
-    checked.b[2] 
-    ;toggle.b
-    
-    arrow_size.a[3]
-    arrow_type.b[3]
-    
-    threeState.b
-    *color._S_color[4]
-  EndStructure
-  
-  ;- - _S_Color
-  Structure _S_color
-    state.b ; entered; selected; focused; lostfocused
-    front.i[4]
-    line.i[4]
-    fore.i[4]
-    back.i[4]
-    frame.i[4]
-    alpha.a[2]
-  EndStructure
-  
-  ;- - _S_anchor
-  Structure _S_anchor
-    x.i
-    y.i
-    width.i
-    height.i
-    
-    delta_x.i
-    delta_y.i
-    
-    class.s
-    hide.i
-    pos.i ; anchor position on the widget
-    state.b ; mouse state 
-    cursor.i[2]
-    
-    *widget._S_widget
-    color._S_color[4]
-  EndStructure
-  
-  ;- - _S_Page
-  Structure _S_page
-    pos.i
-    len.i
-    *end
-  EndStructure
-  
-  ;- - _S_Align
-  Structure _S_align
-    x.i
-    y.i
-    
-    left.b
-    top.b
-    right.b
-    bottom.b
-    vertical.b
-    horizontal.b
-    autosize.b
-  EndStructure
-  
-  
-  ;- - _S_WindowFlag
-  Structure _S_windowFlag
-    SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
-    MinimizeGadget.b ; 13238272   - #PB_Window_MinimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-    MaximizeGadget.b ; 13172736   - #PB_Window_MaximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-    SizeGadget.b     ; 12845056   - #PB_Window_SizeGadget      ; Adds the sizeable feature To a Window.
-    Invisible.b      ; 268435456  - #PB_Window_Invisible       ; creates the Window but don't display.
-    TitleBar.b       ; 12582912   - #PB_Window_TitleBar        ; creates a Window With a titlebar.
-    Tool.b           ; 4          - #PB_Window_Tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
-    BorderLess.b     ; 2147483648 - #PB_Window_BorderLess      ; creates a Window without any borders.
-    ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
-    WindowCentered.b ; 2          - #PB_Window_WindowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
-                     ;                X,Y parameters are ignored.
-    Maximize.b       ; 16777216   - #PB_Window_Maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
-    Minimize.b       ; 536870912  - #PB_Window_Minimize        ; Opens the Window minimized.
-    NoGadgets.b      ; 8          - #PB_Window_NoGadgets       ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
-    NoActivate.b     ; 33554432   - #PB_Window_NoActivate      ; Don't activate the window after opening.
-  EndStructure
-  
-  ;- - _S_Flag
-  Structure _S_flag
-    Window._S_windowFlag
-    InLine.b
-    Lines.b
-    Buttons.b
-    GridLines.b
-    Checkboxes.b
-    FullSelection.b
-    AlwaysSelection.b
-    MultiSelect.b
-    ClickSelect.b
-  EndStructure
-  
-  ;- - _S_Image
-  Structure _S_image
-    y.i[3]
-    x.i[3]
-    height.i
-    width.i
-    
-    index.i
-    imageID.i[2] ; - editor
-    change.b
-    
-    align._S_align
-  EndStructure
-  
-  ;- - _S_Text
-  Structure _S_text Extends _S_coordinate
-    big.i[3]
-    pos.i
-    len.i
-    caret.i[3] ; 0 = Pos ; 1 = PosFixed
-    
-    fontID.i
-    string.s[3]
-    change.b
-    
-    lower.b
-    upper.b
-    pass.b
-    editable.b
-    numeric.b
-    multiLine.b
-    vertical.b
-    rotate.f
-    
-    align._S_align
-  EndStructure
-  
-  ;- - _S_Bar
-  Structure _S_bar Extends _S_coordinate
-    *root._S_root   ; adress root
-    *window._S_widget ; adress window
-    *parent._S_widget ; adress parent
-    *scroll._S_scroll 
-    *first._S_widget
-    *second._S_widget
-    
-    ticks.b  ; track bar
-    smooth.b ; progress bar
-    
-    type.b[3] ; [2] for splitter
-    radius.a
-    cursor.i[2]
-    
-    max.i
-    min.i
-    
-    hide.b[2]
-    *box._S_box
-    
-    focus.b
-    change.i[2]
-    resize.b
-    vertical.b
-    inverted.b
-    direction.i
-    scrollstep.i
-    
-    page._S_page
-    area._S_page
-    thumb._S_page
-    color._S_color[4]
-  EndStructure
-  
-  ;- - _S_Scroll
-  Structure _S_scroll
-    y.i
-    x.i
-    height.i[4] ; - EditorGadget
-    width.i[4]
-    
-    *v._S_widget
-    *h._S_widget
-  EndStructure
-  
-  ;- - _S_Items
-  Structure _S_items Extends _S_coordinate
-    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    *i_parent._S_items
-    drawing.i
-    
-    image._S_image
-    text._S_text[4]
-    *box._S_box
-    
-    state.b
-    hide.b[2]
-    caret.i[3]  ; 0 = Pos ; 1 = PosFixed
-    vertical.b
-    radius.a
-    
-    change.b
-    sublevel.i
-    sublevellen.i
-    
-    childrens.i
-    *data      ; set/get item data
-  EndStructure
-  
-  ;- - _S_Popup
-  Structure _S_popup
-    gadget.i
-    window.i
-    
-    ; *Widget._S_widget
-  EndStructure
-  
-  ;- - _S_Margin
-  Structure _S_margin
-    FonyID.i
-    Width.i
-    Color._S_color
-  EndStructure
-  
-  ;- - _S_widget
-  Structure _S_widget Extends _S_bar
-    Type_Index.i
-    
-    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
-    adress.i
-    Drawing.i
-    Container.i
-    CountItems.i[2]
-    Interact.i
-    
-    State.i
-    o_i.i ; parent opened item
-    ParentItem.i ; index parent tab item
-    *i_Parent._S_items
-    *data
-    
-    *Deactive._S_widget
-    *Leave._S_widget
-    at.i
-    
-    *Popup._S_widget
-    *OptionGroup._S_widget
-    
-    fs.i 
-    bs.i
-    Grid.i
-    Enumerate.i
-    TabHeight.i
-    
-    Level.i ; Вложенность виджета
-    Class.s ; 
-    
-    List *childrens._S_widget()
-    List *items._S_items()
-    List *columns._S_widget()
-    ;List *draws._S_items()
-    Map *Count()
-    
-    Flag._S_flag
-    *Text._S_text[4]
-    *Image._S_image[2]
-    clip._S_coordinate
-    *Align._S_align
-    
-    *Function[4] ; IsFunction *Function=0 >> Gadget *Function=1 >> Window *Function=2 >> Root *Function=3
-    sublevellen.i
-    Drag.i[2]
-    Attribute.i
-    
-    Mouse._S_mouse
-    Keyboard._S_keyboard
-    
-    margin._S_margin
-    create.b
-    
-    event.i
-    ;message.i
-    repaint.i
-    *anchor._S_anchor[#Anchors+1]
-    *selector._S_anchor[#Anchors+1]
-  EndStructure
-  
-  ;- - _S_root
-  Structure _S_root Extends _S_widget
-    canvas.i
-    canvas_window.i
-  EndStructure
-  
-  ;- - _S_value
-  Structure _S_value
-    *root._S_root
-    *this._S_widget
-    *last._S_widget
-    *active._S_widget
-    *focus._S_widget
-    
-    List *openedList._S_widget()
-  EndStructure
   
   
   
@@ -969,6 +623,9 @@ DeclareModule Widget
   EndEnumeration
   
   #PB_EventType_Drop = DD::#PB_EventType_Drop
+  #Anchors = 9+4
+  
+  #Anchor_moved = 9
   
   Enumeration #PB_EventType_FirstCustomValue
     CompilerIf #PB_Compiler_Version<547 : #PB_EventType_Resize : CompilerEndIf
@@ -1172,6 +829,352 @@ DeclareModule Widget
   EndEnumeration
   ;}
   
+  
+  ;- - STRUCTUREs
+  ;- - _S_Mouse
+  Structure _S_mouse
+    x.i
+    y.i
+    
+    at.b ; - editor
+    buttons.i 
+    *delta._S_mouse
+    direction.i
+  EndStructure
+  
+  ;- - _S_Keyboard
+  Structure _S_keyboard
+    input.c
+    key.i[2]
+  EndStructure
+  
+  ;- - _S_Coordinate
+  Structure _S_coordinate
+    y.i[4]
+    x.i[4]
+    height.i[4]
+    width.i[4]
+  EndStructure
+  
+  ;- - _S_button
+  Structure _S_button Extends _S_coordinate
+    len.a
+    arrow_size.a
+    arrow_type.b
+  EndStructure
+  
+  ;- - _S_box
+  Structure _S_box Extends _S_coordinate
+    size.i[4]
+    hide.b[4]
+    checked.b[2] 
+    ;toggle.b
+    
+    arrow_size.a[3]
+    arrow_type.b[3]
+    
+    threeState.b
+    *color._S_color[4]
+  EndStructure
+  
+  ;- - _S_Color
+  Structure _S_color
+    state.b ; entered; selected; focused; lostfocused
+    front.i[4]
+    line.i[4]
+    fore.i[4]
+    back.i[4]
+    frame.i[4]
+    alpha.a[2]
+  EndStructure
+  
+  ;- - _S_anchor
+  Structure _S_anchor
+    x.i
+    y.i
+    width.i
+    height.i
+    
+    delta_x.i
+    delta_y.i
+    
+    class.s
+    hide.i
+    pos.i ; anchor position on the widget
+    state.b ; mouse state 
+    cursor.i[2]
+    
+    *widget._S_widget
+    color._S_color[4]
+  EndStructure
+  
+  ;- - _S_Page
+  Structure _S_page
+    pos.i
+    len.i
+    *end
+  EndStructure
+  
+  ;- - _S_Align
+  Structure _S_align
+    x.i
+    y.i
+    
+    left.b
+    top.b
+    right.b
+    bottom.b
+    vertical.b
+    horizontal.b
+    autosize.b
+  EndStructure
+  
+  ;- - _S_WindowFlag
+  Structure _S_windowFlag
+    SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
+    MinimizeGadget.b ; 13238272   - #PB_Window_MinimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+    MaximizeGadget.b ; 13172736   - #PB_Window_MaximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+    SizeGadget.b     ; 12845056   - #PB_Window_SizeGadget      ; Adds the sizeable feature To a Window.
+    Invisible.b      ; 268435456  - #PB_Window_Invisible       ; creates the Window but don't display.
+    TitleBar.b       ; 12582912   - #PB_Window_TitleBar        ; creates a Window With a titlebar.
+    Tool.b           ; 4          - #PB_Window_Tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
+    BorderLess.b     ; 2147483648 - #PB_Window_BorderLess      ; creates a Window without any borders.
+    ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
+    WindowCentered.b ; 2          - #PB_Window_WindowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
+                     ;                X,Y parameters are ignored.
+    Maximize.b       ; 16777216   - #PB_Window_Maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
+    Minimize.b       ; 536870912  - #PB_Window_Minimize        ; Opens the Window minimized.
+    NoGadgets.b      ; 8          - #PB_Window_NoGadgets       ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+    NoActivate.b     ; 33554432   - #PB_Window_NoActivate      ; Don't activate the window after opening.
+  EndStructure
+  
+  ;- - _S_Flag
+  Structure _S_flag
+    Window._S_windowFlag
+    InLine.b
+    Lines.b
+    Buttons.b
+    GridLines.b
+    Checkboxes.b
+    FullSelection.b
+    AlwaysSelection.b
+    MultiSelect.b
+    ClickSelect.b
+  EndStructure
+  
+  ;- - _S_Image
+  Structure _S_image
+    y.i[3]
+    x.i[3]
+    height.i
+    width.i
+    
+    index.i
+    imageID.i[2] ; - editor
+    change.b
+    
+    align._S_align
+  EndStructure
+  
+  ;- - _S_Text
+  Structure _S_text Extends _S_coordinate
+    big.i[3]
+    pos.i
+    len.i
+    caret.i[3] ; 0 = Pos ; 1 = PosFixed
+    
+    fontID.i
+    string.s[3]
+    change.b
+    
+    lower.b
+    upper.b
+    pass.b
+    editable.b
+    numeric.b
+    multiLine.b
+    vertical.b
+    rotate.f
+    
+    align._S_align
+  EndStructure
+  
+  ;- - _S_Scroll
+  Structure _S_scroll
+    y.i
+    x.i
+    height.i[4] ; - EditorGadget
+    width.i[4]
+    
+    *v._S_widget
+    *h._S_widget
+  EndStructure
+  
+  ;- - _S_Items
+  Structure _S_items Extends _S_coordinate
+    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
+    *i_parent._S_items
+    drawing.i
+    
+    image._S_image
+    text._S_text[4]
+    *box._S_box
+    
+    state.b
+    hide.b[2]
+    caret.i[3]  ; 0 = Pos ; 1 = PosFixed
+    vertical.b
+    radius.a
+    
+    change.b
+    sublevel.i
+    sublevellen.i
+    
+    childrens.i
+    *data      ; set/get item data
+  EndStructure
+  
+  ;- - _S_Popup
+  Structure _S_popup
+    gadget.i
+    window.i
+    
+    ; *Widget._S_widget
+  EndStructure
+  
+  ;- - _S_Margin
+  Structure _S_margin
+    FonyID.i
+    Width.i
+    Color._S_color
+  EndStructure
+  
+  ;- - _S_event
+  Prototype pFunc2()
+  Structure _S_event
+    widget.i
+    item.i
+    type.i
+    *data
+    *callback.pFunc2
+  EndStructure
+  
+  ;- - _S_widget
+  Structure _S_widget Extends _S_coordinate
+    *event._S_event 
+    
+    *root._S_root   ; adress root
+    *window._S_widget ; adress window
+    *parent._S_widget ; adress parent
+    *scroll._S_scroll 
+    *first._S_widget
+    *second._S_widget
+    
+    ticks.b  ; track bar
+    smooth.b ; progress bar
+    
+    type.b[3] ; [2] for splitter
+    radius.a
+    cursor.i[2]
+    
+    max.i
+    min.i
+    
+    hide.b[2]
+    *box._S_box
+    
+    focus.b
+    change.i[2]
+    resize.b
+    vertical.b
+    inverted.b
+    direction.i
+    scrollstep.i
+    
+    page._S_page
+    area._S_page
+    thumb._S_page
+    color._S_color[4]
+    
+    Type_Index.i
+    
+    index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
+    adress.i
+    Drawing.i
+    Container.i
+    CountItems.i[2]
+    Interact.i
+    
+    State.i
+    o_i.i ; parent opened item
+    ParentItem.i ; index parent tab item
+    *i_Parent._S_items
+    *data
+    
+    *Deactive._S_widget
+    *Leave._S_widget
+    at.i
+    
+    *Popup._S_widget
+    *OptionGroup._S_widget
+    
+    fs.i 
+    bs.i
+    Grid.i
+    Enumerate.i
+    TabHeight.i
+    
+    Level.i ; Вложенность виджета
+    Class.s ; 
+    
+    List *childrens._S_widget()
+    List *items._S_items()
+    List *columns._S_widget()
+    ;List *draws._S_items()
+    Map *Count()
+    
+    Flag._S_flag
+    *Text._S_text[4]
+    *Image._S_image[2]
+    clip._S_coordinate
+    *Align._S_align
+    
+    ;*Function[4] ; IsFunction *Function=0 >> Gadget *Function=1 >> Window *Function=2 >> Root *Function=3
+    sublevellen.i
+    Drag.i[2]
+    Attribute.i
+    
+    Mouse._S_mouse
+    Keyboard._S_keyboard
+    
+    margin._S_margin
+    create.b
+    
+    ; event.i
+    ;message.i
+    repaint.i
+    *anchor._S_anchor[#Anchors+1]
+    *selector._S_anchor[#Anchors+1]
+  EndStructure
+  
+  ;- - _S_root
+  Structure _S_root Extends _S_widget
+    canvas.i
+    canvas_window.i
+  EndStructure
+  
+  ;- - _S_value
+  Structure _S_value
+    event._S_event
+    
+    *root._S_root
+    *last._S_widget
+    *active._S_widget
+    *focus._S_widget
+    
+    List *openedList._S_widget()
+  EndStructure
+  
   ;-
   ;- - DECLAREs GLOBALs
   Global *Value._S_value = AllocateStructure(_S_value)
@@ -1197,13 +1200,21 @@ DeclareModule Widget
   EndMacro
   
   Macro Widget()
-    *Value\This
+    *Value\event\widget
   EndMacro
   
   Macro Type()
-    Widget()\Event
+    *Value\event\type
   EndMacro
-
+  
+  Macro Data()
+    *Value\event\data
+  EndMacro
+  
+  Macro Item()
+    *Value\event\item
+  EndMacro
+  
   Macro GetFocus() ; active gadget 
     *Value\Focus
   EndMacro
@@ -1215,6 +1226,7 @@ DeclareModule Widget
   Macro Adress(_this_)
     _this_\Adress
   EndMacro
+  
   
   ;   Macro IsBar(_this_)
   ;     Bool(_this_ And (_this_\Type = #PB_GadgetType_ScrollBar Or _this_\Type = #PB_GadgetType_TrackBar Or _this_\Type = #PB_GadgetType_ProgressBar Or _this_\Type = #PB_GadgetType_Splitter))
@@ -1304,27 +1316,27 @@ DeclareModule Widget
   
   ;- - DRAG&DROP
   Macro DropText()
-    DD::DropText(Widget::*Value\This)
+    DD::DropText(Widget())
   EndMacro
   
   Macro DropAction()
-    DD::DropAction(Widget::*Value\This)
+    DD::DropAction(Widget())
   EndMacro
   
   Macro DropImage(_image_, _depth_=24)
-    DD::DropImage(Widget::*Value\This, _image_, _depth_)
+    DD::DropImage(Widget(), _image_, _depth_)
   EndMacro
   
   Macro DragText(_text_, _actions_=#PB_Drag_Copy)
-    DD::Text(Widget::*Value\This, _text_, _actions_)
+    DD::Text(Widget(), _text_, _actions_)
   EndMacro
   
   Macro DragImage(_image_, _actions_=#PB_Drag_Copy)
-    DD::Image(Widget::*Value\This, _image_, _actions_)
+    DD::Image(Widget(), _image_, _actions_)
   EndMacro
   
   Macro DragPrivate(_type_, _actions_=#PB_Drag_Copy)
-    DD::Private(Widget::*Value\This, _type_, _actions_)
+    DD::Private(Widget(), _type_, _actions_)
   EndMacro
   
   Macro EnableDrop(_this_, _format_, _actions_, _private_type_=0)
@@ -1337,77 +1349,78 @@ DeclareModule Widget
   ;-
   Declare.s Class(Type.i)
   Declare.i ClassType(Class.s)
-  Declare.i SetFont(*this._S_widget, FontID.i)
+  Declare.i SetFont(*this, FontID.i)
   
-  Declare.i IsContainer(*this._S_widget)
-  Declare.i Get_Gadget(*this._S_widget)
-  Declare.i GetRootWindow(*this._S_widget)
-  Declare.i GetButtons(*this._S_widget)
-  Declare.i GetDisplay(*this._S_widget)
-  Declare.i GetDeltaX(*this._S_widget)
-  Declare.i GetDeltaY(*this._S_widget)
-  Declare.i GetMouseX(*this._S_widget)
-  Declare.i GetMouseY(*this._S_widget)
-  Declare.i GetImage(*this._S_widget)
-  Declare.i GetType(*this._S_widget)
-  Declare.i GetData(*this._S_widget)
-  Declare.s GetText(*this._S_widget)
-  Declare.i GetPosition(*this._S_widget, Position.i)
-  Declare.i GetWindow(*this._S_widget)
-  Declare.i GetRoot(*this._S_widget)
-  Declare.i GetAnchors(*this._S_widget, index.i=-1)
-  Declare.i GetCount(*this._S_widget)
-  Declare.s GetClass(*this._S_widget)
-  Declare.i GetAttribute(*this._S_widget, Attribute.i)
-  Declare.i GetParent(*this._S_widget)
-  Declare.i GetParentItem(*this._S_widget)
-  Declare.i GetItemData(*this._S_widget, Item.i)
-  Declare.i GetItemImage(*this._S_widget, Item.i)
-  Declare.s GetItemText(*this._S_widget, Item.i, Column.i=0)
-  Declare.i GetItemAttribute(*this._S_widget, Item.i, Attribute.i)
+  Declare.i IsContainer(*this)
+  Declare.i Get_Gadget(*this)
+  Declare.i GetRootWindow(*this)
+  Declare.i GetButtons(*this)
+  Declare.i GetDisplay(*this)
+  Declare.i GetDeltaX(*this)
+  Declare.i GetDeltaY(*this)
+  Declare.i GetMouseX(*this)
+  Declare.i GetMouseY(*this)
+  Declare.i GetImage(*this)
+  Declare.i GetType(*this)
+  Declare.i GetData(*this)
+  Declare.s GetText(*this)
+  Declare.i GetPosition(*this, Position.i)
+  Declare.i GetWindow(*this)
+  Declare.i GetRoot(*this)
+  Declare.i GetAnchors(*this, index.i=-1)
+  Declare.i GetCount(*this)
+  Declare.s GetClass(*this)
+  Declare.i GetAttribute(*this, Attribute.i)
+  Declare.i GetParent(*this)
+  Declare.i GetParentItem(*this)
+  Declare.i GetItemData(*this, Item.i)
+  Declare.i GetItemImage(*this, Item.i)
+  Declare.s GetItemText(*this, Item.i, Column.i=0)
+  Declare.i GetItemAttribute(*this, Item.i, Attribute.i)
   
-  Declare.i SetTransparency(*this._S_widget, Transparency.a)
-  Declare.i SetAnchors(*this._S_widget)
-  Declare.s SetClass(*this._S_widget, Class.s)
-  Declare.i GetLevel(*this._S_widget)
+  Declare.i SetTransparency(*this, Transparency.a)
+  Declare.i SetAnchors(*this)
+  Declare.s SetClass(*this, Class.s)
+  Declare.i GetLevel(*this)
   Declare.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
-  Declare.i Post(EventType.i, *this._S_widget, EventItem.i=#PB_All, *Data=0)
-  Declare.i Bind(*Function, *this._S_widget=#PB_All, EventType.i=#PB_All)
-  Declare.i SetActive(*this._S_widget)
-  Declare.i Y(*this._S_widget, Mode.i=0)
-  Declare.i X(*this._S_widget, Mode.i=0)
-  Declare.i Width(*this._S_widget, Mode.i=0)
-  Declare.i Height(*this._S_widget, Mode.i=0)
-  Declare.i Draw(*this._S_widget, Childrens=0)
-  Declare.i GetState(*this._S_widget)
-  Declare.i SetState(*this._S_widget, State.i)
-  Declare.i SetAttribute(*this._S_widget, Attribute.i, Value.i)
-  Declare.i CallBack(*this._S_widget, EventType.i, mouseX=0, mouseY=0)
-  Declare.i SetColor(*this._S_widget, ColorType.i, Color.i, State.i=0, Item.i=0)
-  Declare.i Resize(*this._S_widget, iX.i,iY.i,iWidth.i,iHeight.i);, *That._S_widget=#Null)
-  Declare.i Hide(*this._S_widget, State.i=-1)
-  Declare.i SetImage(*this._S_widget, Image.i)
-  Declare.i SetData(*this._S_widget, *Data)
-  Declare.i SetText(*this._S_widget, Text.s)
-  Declare.i GetItemState(*this._S_widget, Item.i)
-  Declare.i SetItemState(*this._S_widget, Item.i, State.i)
-  Declare.i From(*this._S_widget, MouseX.i, MouseY.i)
-  Declare.i SetPosition(*this._S_widget, Position.i, *Widget_2 =- 1)
-  Declare.i Free(*this._S_widget)
-  Declare.i SetFocus(*this._S_widget, State.i)
+  Declare.i Post(EventType.i, *this, EventItem.i=#PB_All, *Data=0)
+  Declare.i Bind(*callback, *this=#PB_All, EventType.i=#PB_All)
+  Declare.i Unbind(*callback, *this=#PB_All, EventType.i=#PB_All)
+  Declare.i SetActive(*this)
+  Declare.i Y(*this, Mode.i=0)
+  Declare.i X(*this, Mode.i=0)
+  Declare.i Width(*this, Mode.i=0)
+  Declare.i Height(*this, Mode.i=0)
+  Declare.i Draw(*this, Childrens=0)
+  Declare.i GetState(*this)
+  Declare.i SetState(*this, State.i)
+  Declare.i SetAttribute(*this, Attribute.i, Value.i)
+  Declare.i CallBack(*this, EventType.i, mouseX=0, mouseY=0)
+  Declare.i SetColor(*this, ColorType.i, Color.i, State.i=0, Item.i=0)
+  Declare.i Resize(*this, iX.i,iY.i,iWidth.i,iHeight.i);, *That=#Null)
+  Declare.i Hide(*this, State.i=-1)
+  Declare.i SetImage(*this, Image.i)
+  Declare.i SetData(*this, *Data)
+  Declare.i SetText(*this, Text.s)
+  Declare.i GetItemState(*this, Item.i)
+  Declare.i SetItemState(*this, Item.i, State.i)
+  Declare.i From(*this, MouseX.i, MouseY.i)
+  Declare.i SetPosition(*this, Position.i, *Widget_2 =- 1)
+  Declare.i Free(*this)
+  Declare.i SetFocus(*this, State.i)
   
-  Declare.i SetAlignment(*this._S_widget, Mode.i, Type.i=1)
-  Declare.i SetItemData(*this._S_widget, Item.i, *Data)
-  Declare.i CountItems(*this._S_widget)
-  Declare.i ClearItems(*this._S_widget)
-  Declare.i RemoveItem(*this._S_widget, Item.i)
-  Declare.i SetItemAttribute(*this._S_widget, Item.i, Attribute.i, Value.i)
-  Declare.i Enumerate(*this.Integer, *Parent._S_widget, ParentItem.i=0)
-  Declare.i SetItemText(*this._S_widget, Item.i, Text.s)
-  Declare.i AddColumn(*this._S_widget, Position.i, Title.s, Width.i)
-  Declare.i SetFlag(*this._S_widget, Flag.i)
-  Declare.i SetItemImage(*this._S_widget, Item.i, Image.i)
-  Declare.i ReDraw(*this._S_widget=#Null)
+  Declare.i SetAlignment(*this, Mode.i, Type.i=1)
+  Declare.i SetItemData(*this, Item.i, *Data)
+  Declare.i CountItems(*this)
+  Declare.i ClearItems(*this)
+  Declare.i RemoveItem(*this, Item.i)
+  Declare.i SetItemAttribute(*this, Item.i, Attribute.i, Value.i)
+  Declare.i Enumerate(*this.Integer, *Parent, ParentItem.i=0)
+  Declare.i SetItemText(*this, Item.i, Text.s)
+  Declare.i AddColumn(*this, Position.i, Title.s, Width.i)
+  Declare.i SetFlag(*this, Flag.i)
+  Declare.i SetItemImage(*this, Item.i, Image.i)
+  Declare.i ReDraw(*this=#Null)
   
   Declare.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i=0, Radius.i=7)
   Declare.i Track(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0)
@@ -1430,17 +1443,17 @@ DeclareModule Widget
   Declare.i ListView(X.i,Y.i,Width.i,Height.i, Flag.i=0)
   Declare.i Spin(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
   Declare.i ListIcon(X.i,Y.i,Width.i,Height.i, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
-  Declare.i Popup(*Widget._S_widget, X.i,Y.i,Width.i,Height.i, Flag.i=0)
-  Declare.i Form(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget._S_widget=0)
+  Declare.i Popup(*Widget, X.i,Y.i,Width.i,Height.i, Flag.i=0)
+  Declare.i Form(X.i,Y.i,Width.i,Height.i, Text.s, Flag.i=0, *Widget=0)
   Declare.i Create(Type.i, X.i,Y.i,Width.i,Height.i, Text.s, Param_1.i=0, Param_2.i=0, Param_3.i=0, Flag.i=0, Parent.i=0, ParentItem.i=0)
   Declare.i ExplorerList(X.i,Y.i,Width.i,Height.i, Directory.s, Flag.i=0)
   Declare.i IPAddress(X.i,Y.i,Width.i,Height.i)
   Declare.i Editor(X.i,Y.i,Width.i,Height.i, Flag.i=0)
   
   Declare.i CloseList()
-  Declare.i OpenList(*this._S_widget, Item.i=0, Type=-5)
-  Declare.i SetParent(*this._S_widget, *Parent._S_widget, ParentItem.i=-1)
-  Declare.i AddItem(*this._S_widget, Item.i, Text.s, Image.i=-1, Flag.i=0)
+  Declare.i OpenList(*this, Item.i=0, Type=-5)
+  Declare.i SetParent(*this, *Parent, ParentItem.i=-1)
+  Declare.i AddItem(*this, Item.i, Text.s, Image.i=-1, Flag.i=0)
   
   Declare.i Resizes(*Scroll._S_scroll, X.i,Y.i,Width.i,Height.i)
   Declare.i Updates(*Scroll._S_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
@@ -1465,13 +1478,13 @@ Module Widget
   ;- MODULE
   ;
   Declare.i Canvas_CallBack()
-  Declare.i Event_Widgets(*this._S_widget, EventType.i, EventItem.i=-1, EventData.i=0)
-  Declare.i Events(*this._S_widget, at.i, EventType.i, MouseScreenX.i, MouseScreenY.i, WheelDelta.i = 0)
+  Declare.i Event_Widgets(*this, EventType.i, EventItem.i=-1, EventData.i=0)
+  Declare.i Events(*this, at.i, EventType.i, MouseScreenX.i, MouseScreenY.i, WheelDelta.i = 0)
   
   ;- GLOBALs
-  Global def_colors._S_color
+  Global Color_Default._S_color
   
-   With def_colors                          
+  With Color_Default                          
     \state = 0
     \alpha = 255
     
@@ -1480,19 +1493,19 @@ Module Widget
     \front[0] = $80000000
     \fore[0] = $FFF6F6F6 ; $FFF8F8F8 
     \back[0] = $FFE2E2E2 ; $80E2E2E2
-    \frame[0] = $FFBABABA ; $80C8C8C8
+    \frame[0] = $FFBABABA; $80C8C8C8
     
     ; Цвета если мышь на виджете
     \front[1] = $80000000
     \fore[1] = $FFEAEAEA ; $FFFAF8F8
     \back[1] = $FFCECECE ; $80FCEADA
-    \frame[1] = $FF8F8F8F ; $80FFC288
+    \frame[1] = $FF8F8F8F; $80FFC288
     
     ; Цвета если нажали на виджет
     \front[2] = $FFFEFEFE
     \fore[2] = $FFE2E2E2 ; $C8E9BA81 ; $C8FFFCFA
     \back[2] = $FFB4B4B4 ; $C8E89C3D ; $80E89C3D
-    \frame[2] = $FF6F6F6F ; $C8DC9338 ; $80DC9338
+    \frame[2] = $FF6F6F6F; $C8DC9338 ; $80DC9338
   EndWith
   
   ;- MACOS
@@ -1608,7 +1621,7 @@ Module Widget
   
   ;-
   Macro _set_last_parameters_(_this_, _type_, _flag_)
-    *Value\this = _this_
+    *Value\event\widget = _this_
     _this_\Type = _type_
     _this_\Class = #PB_Compiler_Procedure
     
@@ -1655,79 +1668,79 @@ Module Widget
     GetGadgetAttribute(_this_\root\Canvas, #PB_Canvas_Cursor)
   EndMacro
   
-; ; ;   ; Extract thumb len from (max area page) len
-; ; ;   Macro _thumb_len_(_this_)
-; ; ;     Round(_this_\area\len - (_this_\area\len / (_this_\max-_this_\min)) * ((_this_\max-_this_\min) - _this_\page\len), #PB_Round_Nearest)
-; ; ;     
-; ; ;     If _this_\thumb\len > _this_\area\len 
-; ; ;       _this_\thumb\len = _this_\area\len 
-; ; ;     EndIf 
-; ; ;     
-; ; ; ;     If _this_\Vertical
-; ; ; ;       _this_\button[#Thumb]\height = _this_\thumb\len
-; ; ; ;     Else
-; ; ; ;       _this_\button[#Thumb]\width = _this_\thumb\len
-; ; ; ;     EndIf
-; ; ;     If _this_\box 
-; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
-; ; ;         _this_\box\height[3] = _this_\thumb\len 
-; ; ;       Else 
-; ; ;         _this_\box\width[3] = _this_\thumb\len 
-; ; ;       EndIf
-; ; ;     EndIf
-; ; ;     
-; ; ;     _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
-; ; ;   EndMacro
-; ; ;   
-; ; ;   Macro _thumb_pos_(_this_, _scroll_pos_)
-; ; ;     (_this_\area\pos + Round(((_scroll_pos_)-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
-; ; ;     
-; ; ;     If _this_\thumb\pos < _this_\area\pos 
-; ; ;       _this_\thumb\pos = _this_\area\pos 
-; ; ;     EndIf 
-; ; ;     
-; ; ;     If _this_\thumb\pos > _this_\area\end
-; ; ;       _this_\thumb\pos = _this_\area\end
-; ; ;     EndIf
-; ; ;     
-; ; ;     ; _start_
-; ; ;     If _this_\thumb\pos = _this_\area\pos
-; ; ;       _this_\color[1]\state = 3
-; ; ;     Else
-; ; ;       _this_\color[1]\state = 0
-; ; ;     EndIf 
-; ; ;     
-; ; ;     ; _stop_
-; ; ;     If _this_\thumb\pos = _this_\area\end
-; ; ;       _this_\color[2]\state = 3
-; ; ;     Else
-; ; ;       _this_\color[2]\state = 0
-; ; ;     EndIf 
-; ; ;     
-; ; ; ; ;     If _this_\vertical
-; ; ; ; ;       _this_\button[#Thumb]\y = _this_\thumb\pos
-; ; ; ; ;     Else
-; ; ; ; ;       _this_\button[#Thumb]\x = _this_\thumb\pos
-; ; ; ; ;     EndIf
-; ; ;     If _this_\box
-; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
-; ; ;         _this_\box\y[3] = _this_\thumb\pos 
-; ; ;       Else 
-; ; ;         _this_\box\x[3] = _this_\thumb\pos 
-; ; ;       EndIf
-; ; ;     EndIf
-; ; ;       
-; ; ;     _this_\page\end = (_this_\min + Round((_this_\area\end - _this_\area\pos) / (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
-; ; ;   EndMacro
+  ; ; ;   ; Extract thumb len from (max area page) len
+  ; ; ;   Macro _thumb_len_(_this_)
+  ; ; ;     Round(_this_\area\len - (_this_\area\len / (_this_\max-_this_\min)) * ((_this_\max-_this_\min) - _this_\page\len), #PB_Round_Nearest)
+  ; ; ;     
+  ; ; ;     If _this_\thumb\len > _this_\area\len 
+  ; ; ;       _this_\thumb\len = _this_\area\len 
+  ; ; ;     EndIf 
+  ; ; ;     
+  ; ; ; ;     If _this_\Vertical
+  ; ; ; ;       _this_\button[#Thumb]\height = _this_\thumb\len
+  ; ; ; ;     Else
+  ; ; ; ;       _this_\button[#Thumb]\width = _this_\thumb\len
+  ; ; ; ;     EndIf
+  ; ; ;     If _this_\box 
+  ; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
+  ; ; ;         _this_\box\height[3] = _this_\thumb\len 
+  ; ; ;       Else 
+  ; ; ;         _this_\box\width[3] = _this_\thumb\len 
+  ; ; ;       EndIf
+  ; ; ;     EndIf
+  ; ; ;     
+  ; ; ;     _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
+  ; ; ;   EndMacro
+  ; ; ;   
+  ; ; ;   Macro _thumb_pos_(_this_, _scroll_pos_)
+  ; ; ;     (_this_\area\pos + Round(((_scroll_pos_)-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
+  ; ; ;     
+  ; ; ;     If _this_\thumb\pos < _this_\area\pos 
+  ; ; ;       _this_\thumb\pos = _this_\area\pos 
+  ; ; ;     EndIf 
+  ; ; ;     
+  ; ; ;     If _this_\thumb\pos > _this_\area\end
+  ; ; ;       _this_\thumb\pos = _this_\area\end
+  ; ; ;     EndIf
+  ; ; ;     
+  ; ; ;     ; _start_
+  ; ; ;     If _this_\thumb\pos = _this_\area\pos
+  ; ; ;       _this_\color[1]\state = 3
+  ; ; ;     Else
+  ; ; ;       _this_\color[1]\state = 0
+  ; ; ;     EndIf 
+  ; ; ;     
+  ; ; ;     ; _stop_
+  ; ; ;     If _this_\thumb\pos = _this_\area\end
+  ; ; ;       _this_\color[2]\state = 3
+  ; ; ;     Else
+  ; ; ;       _this_\color[2]\state = 0
+  ; ; ;     EndIf 
+  ; ; ;     
+  ; ; ; ; ;     If _this_\vertical
+  ; ; ; ; ;       _this_\button[#Thumb]\y = _this_\thumb\pos
+  ; ; ; ; ;     Else
+  ; ; ; ; ;       _this_\button[#Thumb]\x = _this_\thumb\pos
+  ; ; ; ; ;     EndIf
+  ; ; ;     If _this_\box
+  ; ; ;       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
+  ; ; ;         _this_\box\y[3] = _this_\thumb\pos 
+  ; ; ;       Else 
+  ; ; ;         _this_\box\x[3] = _this_\thumb\pos 
+  ; ; ;       EndIf
+  ; ; ;     EndIf
+  ; ; ;       
+  ; ; ;     _this_\page\end = (_this_\min + Round((_this_\area\end - _this_\area\pos) / (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
+  ; ; ;   EndMacro
   
   
   ; SCROLLBAR
   Macro _thumb_len_(_this_)
     Round(_this_\area\len - (_this_\area\len / (_this_\max-_this_\min)) * ((_this_\max-_this_\min) - _this_\page\len), #PB_Round_Nearest)
     
-;     If _this_\thumb\len > _this_\area\len 
-;       _this_\thumb\len = _this_\area\len 
-;     EndIf 
+    ;     If _this_\thumb\len > _this_\area\len 
+    ;       _this_\thumb\len = _this_\area\len 
+    ;     EndIf 
     
     If _this_\box 
       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
@@ -1743,13 +1756,13 @@ Module Widget
   Macro _thumb_pos_(_this_, _scroll_pos_)
     (_this_\area\pos + Round((_scroll_pos_-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
     
-;     If _this_\thumb\pos < _this_\area\pos 
-;       _this_\thumb\pos = _this_\area\pos 
-;     EndIf 
-;     
-;     If _this_\thumb\pos > _this_\area\pos+_this_\area\len 
-;       _this_\thumb\pos = (_this_\area\pos+_this_\area\len)-_this_\thumb\len 
-;     EndIf 
+    ;     If _this_\thumb\pos < _this_\area\pos 
+    ;       _this_\thumb\pos = _this_\area\pos 
+    ;     EndIf 
+    ;     
+    ;     If _this_\thumb\pos > _this_\area\pos+_this_\area\len 
+    ;       _this_\thumb\pos = (_this_\area\pos+_this_\area\len)-_this_\thumb\len 
+    ;     EndIf 
     
     If _this_\box
       If _this_\Vertical And Bool(_this_\type <> #PB_GadgetType_Spin) 
@@ -1808,26 +1821,26 @@ Module Widget
     Protected ScrollPos.i
     
     With *this
-;       Protected ThumbLen 
-;       If \thumb\len = \box\size
-;        ; ThumbLen = (Round(\area\len - (\area\len / (\max-\min)) * ((\max-\min) - \page\len), #PB_Round_Nearest) - \thumb\len) - \thumb\len - 1
-;        ThumbLen = (Round(\area\len - (\area\len / (\max-\min)) * ((\max-\min) - \page\len), #PB_Round_Nearest) - \thumb\len) - \thumb\len - 1 - 2
-;       Else
-;         ThumbLen = \thumb\len - 1
-;       EndIf
-;       Debug ""+ThumbLen +" "+ \areaend +" "+ Str(\area\pos+(\area\len-ThumbLen)) +" "+ \area\len
+      ;       Protected ThumbLen 
+      ;       If \thumb\len = \box\size
+      ;        ; ThumbLen = (Round(\area\len - (\area\len / (\max-\min)) * ((\max-\min) - \page\len), #PB_Round_Nearest) - \thumb\len) - \thumb\len - 1
+      ;        ThumbLen = (Round(\area\len - (\area\len / (\max-\min)) * ((\max-\min) - \page\len), #PB_Round_Nearest) - \thumb\len) - \thumb\len - 1 - 2
+      ;       Else
+      ;         ThumbLen = \thumb\len - 1
+      ;       EndIf
+      ;       Debug ""+ThumbLen +" "+ \areaend +" "+ Str(\area\pos+(\area\len-ThumbLen)) +" "+ \area\len
       
       If _thumb_pos_ < \area\pos : _thumb_pos_ = \area\pos : EndIf
       If _thumb_pos_ > \area\end : _thumb_pos_ = \area\end : EndIf
       
       If Pos <> _thumb_pos_ 
         ScrollPos = \min + Round((_thumb_pos_ - \area\pos) / (\area\len / (\max-\min)), #PB_Round_Nearest)
-;         If \scrollstep > 1
-;           ScrollPos = Round(ScrollPos / \scrollstep, #PB_Round_Nearest) * \scrollstep
-;         EndIf
+        ;         If \scrollstep > 1
+        ;           ScrollPos = Round(ScrollPos / \scrollstep, #PB_Round_Nearest) * \scrollstep
+        ;         EndIf
         
-;         If ScrollPos < \min : ScrollPos = \min : EndIf
-;         If ScrollPos > (\max-\page\len) : ScrollPos = (\max-\page\len) : EndIf
+        ;         If ScrollPos < \min : ScrollPos = \min : EndIf
+        ;         If ScrollPos > (\max-\page\len) : ScrollPos = (\max-\page\len) : EndIf
         
         ;       If Pos <> ScrollPos 
         If #PB_GadgetType_TrackBar = \type And \vertical 
@@ -2346,7 +2359,7 @@ Module Widget
         \Root = *this
         \Type = #PB_GadgetType_Popup
         \Container = #PB_GadgetType_Popup
-        \Color = def_colors
+        \Color = Color_Default
         \color\Fore = 0
         \color\Back = $FFF0F0F0
         \color\alpha = 255
@@ -2641,40 +2654,40 @@ Module Widget
   EndProcedure
   
   ; SET_
-  Procedure.i Set_State(*this._S_widget, List *Item._S_items(), State.i)
+  Procedure.i Set_State(*this._S_widget, List *this_item._S_items(), State.i)
     Protected Repaint.i, sublevel.i, Mouse_X.i, Mouse_Y.i
     
     With *this
-      If ListSize(*Item())
+      If ListSize(*this_Item())
         Mouse_X = \Mouse\x
         Mouse_Y = \Mouse\y
         
-        If State >= 0 And SelectElement(*Item(), State) 
-          If (Mouse_Y > (*Item()\box\y[1]) And Mouse_Y =< ((*Item()\box\y[1]+*Item()\box\height[1]))) And 
-             ((Mouse_X > *Item()\box\x[1]) And (Mouse_X =< (*Item()\box\x[1]+*Item()\box\width[1])))
+        If State >= 0 And SelectElement(*this_Item(), State) 
+          If (Mouse_Y > (*this_Item()\box\y[1]) And Mouse_Y =< ((*this_Item()\box\y[1]+*this_Item()\box\height[1]))) And 
+             ((Mouse_X > *this_Item()\box\x[1]) And (Mouse_X =< (*this_Item()\box\x[1]+*this_Item()\box\width[1])))
             
-            *Item()\box\Checked[1] ! 1
-          ElseIf (\flag\buttons And *Item()\childrens) And
-                 (Mouse_Y > (*Item()\box\y[0]) And Mouse_Y =< ((*Item()\box\y[0]+*Item()\box\height[0]))) And 
-                 ((Mouse_X > *Item()\box\x[0]) And (Mouse_X =< (*Item()\box\x[0]+*Item()\box\width[0])))
+            *this_Item()\box\Checked[1] ! 1
+          ElseIf (\flag\buttons And *this_Item()\childrens) And
+                 (Mouse_Y > (*this_Item()\box\y[0]) And Mouse_Y =< ((*this_Item()\box\y[0]+*this_Item()\box\height[0]))) And 
+                 ((Mouse_X > *this_Item()\box\x[0]) And (Mouse_X =< (*this_Item()\box\x[0]+*this_Item()\box\width[0])))
             
-            sublevel = *Item()\sublevel
-            *Item()\box\Checked ! 1
+            sublevel = *this_Item()\sublevel
+            *this_Item()\box\Checked ! 1
             \Change = 1
             
-            PushListPosition(*Item())
-            While NextElement(*Item())
-              If sublevel = *Item()\sublevel
+            PushListPosition(*this_Item())
+            While NextElement(*this_Item())
+              If sublevel = *this_Item()\sublevel
                 Break
-              ElseIf sublevel < *Item()\sublevel And *Item()\i_Parent
-                *Item()\hide = Bool(*Item()\i_Parent\box\Checked Or *Item()\i_Parent\hide) * 1
+              ElseIf sublevel < *this_Item()\sublevel And *this_Item()\i_Parent
+                *this_Item()\hide = Bool(*this_Item()\i_Parent\box\Checked Or *this_Item()\i_Parent\hide) * 1
               EndIf
             Wend
-            PopListPosition(*Item())
+            PopListPosition(*this_Item())
             
-          ElseIf \index[2] <> State : *Item()\State = 2
-            If \index[2] >= 0 And SelectElement(*Item(), \index[2])
-              *Item()\State = 0
+          ElseIf \index[2] <> State : *this_Item()\State = 2
+            If \index[2] >= 0 And SelectElement(*this_Item(), \index[2])
+              *this_Item()\State = 0
             EndIf
             ; GetState() - Value = \index[2]
             \index[2] = State
@@ -2692,66 +2705,62 @@ Module Widget
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.i Bind(*Function, *this._S_widget=#PB_All, EventType.i=#PB_All)
-    Protected Repaint.i
-    
-    With *this
-      If *this = #PB_All
-        Root()\Function[1] = *Function
-      ElseIf Not \Function[1]
-        \Function[1] = *Function
-      EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  Procedure.i UnBind(*Function, *this._S_widget=#PB_All, EventType.i=#PB_All)
-    Protected Repaint.i
-    
-    With *this
-      If *this = #PB_All And Root()\Function = *Function
-        Root()\Function = 0
-        Root()\Function[1] = 0
-        Root()\Function[2] = 0
-        Root()\Function[3] = 0
-      ElseIf \Function = *Function
-        \Function = 0
-        \Function[1] = 0
-        \Function[2] = 0
-        \Function[3] = 0
-      EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  Macro Send(_this_, _event_type_, _event_item_, _event_data_)
-    If _this_\Function And 
-       CallCFunctionFast(_this_\Function, _this_, _event_type_, _event_item_, _event_data_)
-    ElseIf (_this_\Window And _this_\Window<>_this_\Root And _this_\Window<>_this_ And _this_\Root<>_this_ And _this_\Window\Function) And 
-           CallCFunctionFast(_this_\Window\Function, _this_, _event_type_, _event_item_, _event_data_)
-    ElseIf _this_\Root And _this_\root\Function And 
-           CallCFunctionFast(_this_\root\Function, _this_, _event_type_, _event_item_, _event_data_)
-    EndIf
-  EndMacro
-  
   Procedure.i Post(EventType.i, *this._S_widget, EventItem.i=#PB_All, *Data=0)
+    Protected result.i
+    
+    *Value\event\widget = *this
+    *Value\event\type = eventtype
+    *Value\event\data = *data
+    
+    If *this\event And
+       (*this\event\type = #PB_All Or
+        *this\event\type = eventtype)
+      
+      result = *this\event\callback()
+    EndIf
+    
+    If result <> #PB_Ignore And 
+       *this\window <> *this And 
+       *this\root <> *this\window And 
+       *this\window\event And 
+       (*this\window\event\type = #PB_All Or
+        *this\window\event\type = eventtype)
+      
+      result = *this\window\event\callback()
+    EndIf
+    
+    If result <> #PB_Ignore And
+       Root()\event And 
+       (Root()\event\type = #PB_All Or 
+        Root()\event\type = eventtype)
+      
+      result = Root()\event\callback()
+    EndIf
+    
+    ProcedureReturn result
+  EndProcedure
+  
+  Procedure.i Bind(*callback, *this._S_widget=#PB_All, EventType.i=#PB_All)
     Protected Repaint.i
     
-    With *this
-      If \Function
-        Repaint = CallCFunctionFast(\Function, *this, EventType, EventItem, *Data)
-      EndIf
-      
-      If (\Window And \Window<>\Root And \Window<>*this And \Root<>*this And \Window\Function)
-        Repaint = CallCFunctionFast(\Window\Function, *this, EventType, EventItem, *Data)
-      EndIf
-      
-      If \Root And \root\Function
-        Repaint = CallCFunctionFast(\root\Function, *this, EventType, EventItem, *Data)
-      EndIf
-    EndWith
+    If *this = #PB_All
+      *this = Root()
+    EndIf
+    
+    *this\event = AllocateStructure(_S_event)
+    *this\event\type = eventtype
+    *this\event\callback = *callback
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Procedure.i Unbind(*callback, *this._S_widget=#PB_All, EventType.i=#PB_All)
+    Protected Repaint.i
+    
+    *this\event\type = 0
+    *this\event\callback = 0
+    FreeStructure(*this\event)
+    *this\event = 0
     
     ProcedureReturn Repaint
   EndProcedure
@@ -6119,24 +6128,24 @@ Module Widget
       EndIf
       
       If \Ticks
-          Protected ii.f, _thumb_ = (\thumb\len/2-2)
-            For i=0 To \page\end
-              ii = (\area\pos + Round(((i)-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
-              LineXY(\X+ii,\box\y[3]+\box\height[3]-1,\X+ii,\box\y[3]+\box\height[3]-4,\Color[3]\Frame)
-            Next
-          
-;         Protected PlotStep = 5;(\width)/(\Max-\Min)
-;         
-;         For i=3 To (\Width-PlotStep)/2 
-;           If Not ((\X+i-3)%PlotStep)
-;             Box(\X+i, \Y[3]+\box\Height[3]-4, 1, 4, $FF808080)
-;           EndIf
-;         Next
-;         For i=\Width To (\Width-PlotStep)/2+3 Step - 1
-;           If Not ((\X+i-6)%PlotStep)
-;             Box(\X+i, \box\y[3]+\box\Height[3]-4, 1, 4, $FF808080)
-;           EndIf
-;         Next
+        Protected ii.f, _thumb_ = (\thumb\len/2-2)
+        For i=0 To \page\end
+          ii = (\area\pos + Round(((i)-\min) * (\area\len / (\max-\min)), #PB_Round_Nearest)) + _thumb_
+          LineXY(\X+ii,\box\y[3]+\box\height[3]-1,\X+ii,\box\y[3]+\box\height[3]-4,\Color[3]\Frame)
+        Next
+        
+        ;         Protected PlotStep = 5;(\width)/(\Max-\Min)
+        ;         
+        ;         For i=3 To (\Width-PlotStep)/2 
+        ;           If Not ((\X+i-3)%PlotStep)
+        ;             Box(\X+i, \Y[3]+\box\Height[3]-4, 1, 4, $FF808080)
+        ;           EndIf
+        ;         Next
+        ;         For i=\Width To (\Width-PlotStep)/2+3 Step - 1
+        ;           If Not ((\X+i-6)%PlotStep)
+        ;             Box(\X+i, \box\y[3]+\box\Height[3]-4, 1, 4, $FF808080)
+        ;           EndIf
+        ;         Next
       EndIf
       
       
@@ -6783,11 +6792,11 @@ Module Widget
     
     With *this
       If \root And \root\create And Not \create 
-        If Not IsRoot(*this)
-          \Function[2] = Bool(\Window And \Window\Function[1] And \Window<>\Root And \Window<>*this) * \Window\Function[1]
-          \Function[3] = Bool(\Root And \root\Function[1]) * \root\Function[1]
-        EndIf
-        \Function = Bool(\Function[1] Or \Function[2] Or \Function[3])
+        ;         If Not IsRoot(*this)
+        ;           \Function[2] = Bool(\Window And \Window\Function[1] And \Window<>\Root And \Window<>*this) * \Window\Function[1]
+        ;           \Function[3] = Bool(\Root And \root\Function[1]) * \root\Function[1]
+        ;         EndIf
+        ;         \Function = Bool(\Function[1] Or \Function[2] Or \Function[3])
         
         Event_Widgets(*this, #PB_EventType_create, - 1)
         
@@ -7270,7 +7279,7 @@ Module Widget
         
         
         \Columns()\Items()\text\string.s = StringField(Text.s, ListIndex(\Columns()) + 1, #LF$)
-        \Columns()\Color = def_colors
+        \Columns()\Color = Color_Default
         \Columns()\Color\Fore[0] = 0 
         \Columns()\Color\Fore[1] = 0
         \Columns()\Color\Fore[2] = 0
@@ -7493,9 +7502,9 @@ Module Widget
       ClearList(\Items())
       If \Scroll
         \Scroll\v\Hide = 1
-      \Scroll\h\Hide = 1
-    EndIf
-    
+        \Scroll\h\Hide = 1
+      EndIf
+      
       ;       If Not \Repaint : \Repaint = 1
       ;        PostEvent(#PB_Event_Gadget, \root\canvas_window, \root\Canvas, #PB_EventType_Repaint)
       ;       EndIf
@@ -8580,7 +8589,7 @@ Module Widget
                 \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
                 
                 ; \thumb\pos = _thumb_pos_(*this, _invert_(*this, \page\pos, \inverted))
-               ProcedureReturn 1
+                ProcedureReturn 1
                 
               Case #PB_Bar_Minimum ; 1 -m&l
                 If \Min <> Value 
@@ -9100,13 +9109,13 @@ Module Widget
             EndIf
           EndIf
           
-;           If \Area\len > 0 And \Type <> #PB_GadgetType_Panel
-;             If _scroll_in_stop_(*this) And (\Type = #PB_GadgetType_ScrollBar)
-;               SetState(*this, \Max)
-;             EndIf
-;             
-;             \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
-;           EndIf
+          ;           If \Area\len > 0 And \Type <> #PB_GadgetType_Panel
+          ;             If _scroll_in_stop_(*this) And (\Type = #PB_GadgetType_ScrollBar)
+          ;               SetState(*this, \Max)
+          ;             EndIf
+          ;             
+          ;             \Thumb\Pos = _thumb_pos_(*this, \Page\Pos)
+          ;           EndIf
           If \Area\len > 0 And \Type <> #PB_GadgetType_Panel
             \thumb\pos = _thumb_pos_(*this, _invert_(*this, \page\pos, \inverted))
             
@@ -9344,7 +9353,7 @@ Module Widget
       
       If \v\width And \v\Page\len<>iHeight : SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
       If \h\height And \h\Page\len<>iWidth : SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
-  
+      
       \v\hide = Resize(\v, Width+x-\v\width, y, #PB_Ignore, \v\page\len)
       \h\hide = Resize(\h, x, Height+y-\h\height, \h\page\len, #PB_Ignore)
       
@@ -9353,10 +9362,10 @@ Module Widget
       
       If \v\width And \v\Page\len<>iHeight : SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
       If \h\height And \h\Page\len<>iWidth : SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
-  
+      
       If \v\page\len <> \v\height : \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\page\len) : EndIf
       If \h\page\len <> \h\width : \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, \h\page\len, #PB_Ignore) : EndIf
-       
+      
       If Not \v\hide And \v\width 
         \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x-\h\x)+Bool(\v\Radius And \h\Radius)*(\v\box\size/4+1), #PB_Ignore)
       EndIf
@@ -9367,7 +9376,7 @@ Module Widget
       ProcedureReturn #True
     EndWith
   EndProcedure
-
+  
   ;-
   ;- STRING_EDITABLE
   Procedure String_Remove(*this._S_widget)
@@ -9872,9 +9881,9 @@ Module Widget
       \Color\Frame = \Color\Back
       \Color\Line = $FFFFFFFF
       
-      \Color[1] = def_colors
-      \Color[2] = def_colors
-      \Color[3] = def_colors
+      \Color[1] = Color_Default
+      \Color[2] = Color_Default
+      \Color[3] = Color_Default
       
       \color[1]\alpha = 255
       \color[2]\alpha = 255
@@ -10020,14 +10029,14 @@ Module Widget
       \box\arrow_type[2] =- 1 ; -1 0 1
       
       ; Цвет фона скролла
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       \Text\Editable = 1
       
-      \Color[1] = def_colors
-      \Color[2] = def_colors
-      \Color[3] = def_colors
+      \Color[1] = Color_Default
+      \Color[2] = Color_Default
+      \Color[3] = Color_Default
       
       \color[1]\alpha = 255
       \color[2]\alpha = 255
@@ -10060,7 +10069,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10086,7 +10095,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10121,7 +10130,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_Hand
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10155,7 +10164,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container =- 2
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10182,7 +10191,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10217,7 +10226,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       
       \fs = 1
@@ -10272,7 +10281,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       \Color\Frame = $FF7E7E7E
@@ -10305,7 +10314,7 @@ Module Widget
     With *this
       \X =- 1
       \Y =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       \Color\Frame = $FF7E7E7E
@@ -10339,7 +10348,7 @@ Module Widget
       \Y =- 1
       \Scroll = AllocateStructure(_S_scroll) 
       \Cursor = #PB_Cursor_IBeam
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       
@@ -10385,7 +10394,7 @@ Module Widget
       \Y =- 1
       \Scroll = AllocateStructure(_S_scroll) 
       \Cursor = #PB_Cursor_IBeam
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       
@@ -10429,7 +10438,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_IBeam
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFFFFFFF
       
@@ -10466,14 +10475,14 @@ Module Widget
       
       
       
-      \Color = def_colors
+      \Color = Color_Default
       \Color\Fore[0] = 0
       
       \margin\width = 100;Bool(Flag&#PB_Flag_Numeric)
       \margin\Color\Back = $C8F0F0F0 ; \Color\Back[0] 
       
       \color\alpha = 255
-      \Color = def_colors
+      \Color = Color_Default
       \Color\Fore[0] = 0
       \Color\Fore[1] = 0
       \Color\Fore[2] = 0
@@ -10520,7 +10529,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       ;\Cursor = #PB_Cursor_Hand
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10563,7 +10572,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       ;\Cursor = #PB_Cursor_Hand
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10611,7 +10620,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_LeftRight
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10657,7 +10666,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Cursor = #PB_Cursor_LeftRight
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10749,7 +10758,7 @@ Module Widget
       SetState(*this, SplitterPos)
       
       
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10795,7 +10804,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container = 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10810,8 +10819,8 @@ Module Widget
       \box\arrow_type[1] =- 1
       \box\arrow_type[2] =- 1
       
-      \box\Color[1] = def_colors
-      \box\Color[2] = def_colors
+      \box\Color[1] = Color_Default
+      \box\Color[2] = Color_Default
       
       \box\color[1]\alpha = 255
       \box\color[2]\alpha = 255
@@ -10842,7 +10851,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container = 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \color\Fore = 0
       \color\Back = $FFF6F6F6
@@ -10871,7 +10880,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container = 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\alpha = 255
       \Color\Back = $FFF9F9F9
       
@@ -10920,7 +10929,7 @@ Module Widget
       \X =- 1
       \Y =- 1
       \Container =- 1
-      \Color = def_colors
+      \Color = Color_Default
       \color\Fore = 0
       \color\Back = $FFF0F0F0
       \color\alpha = 255
@@ -10940,7 +10949,7 @@ Module Widget
       
       \box = AllocateStructure(_S_box)
       \box\Size = 12
-      \box\Color = def_colors
+      \box\Color = Color_Default
       \box\color\alpha = 255
       
       ;       \box\Color[1]\Alpha = 128
@@ -11068,7 +11077,7 @@ Module Widget
       If Text.s
         \Type =- 1
         \Container =- 1
-        \Color = def_colors
+        \Color = Color_Default
         \color\Fore = 0
         \color\Back = $FFF0F0F0
         \color\alpha = 255
@@ -11088,7 +11097,7 @@ Module Widget
         
         \box = AllocateStructure(_S_box)
         \box\Size = 12
-        \box\Color = def_colors
+        \box\Color = Color_Default
         \box\color\alpha = 255
         
         \Flag\Window\SizeGadget = Bool(Flag&#PB_Window_SizeGadget)
@@ -11399,26 +11408,15 @@ Module Widget
         ;           EndSelect
         ;         EndIf
         
-        *Value\This = *this
-        \Event = EventType
+        ; *Value\This = *this
+        ;;\Event = EventType
         
         If *this And *this <> \Root And \root\Drag And DD::CallBack(*this, EventType, \Mouse\x , \Mouse\y)
           Event_Widgets(DD::Object, DD::Event, \index[2], EventData)
         EndIf
         
-        ; PostEvent(#PB_Event_Widget, \root\Window, \root\Parent, EventType, EventData)
-        If \Function[1] And 
-           CallCFunctionFast(\Function[1], *this, EventType, EventItem, EventData)
-          Result = 1
-        ElseIf \Function[2] And 
-               CallCFunctionFast(\Window\Function[1], *this, EventType, EventItem, EventData)
-          Result = 1
-        ElseIf \Function[3] And 
-               CallCFunctionFast(\root\Function[1], *this, EventType, EventItem, EventData)
-          Result = 1
-        EndIf
+        Post(EventType, *this, EventItem, EventData)
         
-        ;         Send(*this, EventType, EventItem, EventData)
       EndIf
     EndWith
     
@@ -11526,7 +11524,7 @@ Module Widget
                 Select at
                   Case 1 : Repaint = SetState(*this, (\Page\Pos - \scrollstep)) ; Up button
                   Case 2 : Repaint = SetState(*this, (\Page\Pos + \scrollstep)) ; Down button
-                  Case 3                                                  ; Thumb button
+                  Case 3                                                        ; Thumb button
                     If \Vertical And Bool(\Type <> #PB_GadgetType_Spin)
                       delta = MouseScreenY - \Thumb\Pos
                     Else
@@ -12014,212 +12012,137 @@ Module Widget
   
 EndModule
 
+
+;- 
+;- example
 ;-
-Macro GetActiveWidget()
-  Widget::*Value\Focus
-EndMacro
-
-Macro EventWidget()
-  Widget::*Value\This
-EndMacro
-
-Macro WidgetEvent()
-  EventWidget()\Event
-EndMacro
-
-; Macro EventGadget()
-;   (Bool(Event()<>Widget::#PB_Event_Widget) * Widget::PB(EventGadget)() + Bool(Event()=Widget::#PB_Event_Widget) * Widget::Root()\Canvas)
-; EndMacro
-
-DeclareModule Helper
-  Declare.i Image(X.i,Y.i,Width.i,Height.i, Title.s, Flag.i=0)
-EndDeclareModule
-
-Module Helper
-  
-  Procedure.i Image(X.i,Y.i,Width.i,Height.i, Title.s, Flag.i=0)
-    Protected *Window.Widget::_S_widget = Widget::Form(X.i,Y.i,Width.i,Height.i, Title.s, Flag.i)
-    
-  EndProcedure
-EndModule
-
-
-
-
-;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Widget
   
-  ;
-  ; ------------------------------------------------------------
-  ;
-  ;   PureBasic - Drag & Drop
-  ;
-  ;    (c) Fantaisie Software
-  ;
-  ; ------------------------------------------------------------
-  ;
+  Global.i gEvent, gQuit, *but, *win
   
-  #Window = 0
-  
-  Enumeration    ; Images
-    #ImageSource
-    #ImageTarget
-  EndEnumeration
-  
-  Global SourceText,
-         SourceImage,
-         SourceFiles,
-         SourcePrivate,
-         TargetText,
-         TargetImage,
-         TargetFiles,
-         TargetPrivate1,
-         TargetPrivate2
-  
-  
-  Procedure Events(EventGadget, EventType, EventItem, EventData)
-    Protected i, Text$, Files$, Count
+  Procedure Widgets_Gadget_Events()
+    Protected EventWidget.i, EventType.i, EventItem.i, EventData.i
     
-    ; DragStart event on the source s, initiate a drag & drop
-    ;
-    Select EventType
-      Case #PB_EventType_DragStart
-        
-        Select EventGadget
-            
-          Case SourceText
-            Text$ = GetItemText(SourceText, GetState(SourceText))
-            DragText(Text$)
-            
-          Case SourceImage
-            DragImage((#ImageSource))
-            
-          Case SourceFiles
-            Files$ = ""       
-            For i = 0 To CountItems(SourceFiles)-1
-              If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
-                Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
-              EndIf
-            Next i 
-            If Files$ <> ""
-              DragFiles(Files$)
-            EndIf
-            
-            ; "Private" Drags only work within the program, everything else
-            ; also works with other applications (Explorer, Word, etc)
-            ;
-          Case SourcePrivate
-            If GetState(SourcePrivate) = 0
-              DragPrivate(1)
-            Else
-              DragPrivate(2)
-            EndIf
-            
-        EndSelect
-        
-        ; Drop event on the target gadgets, receive the dropped data
-        ;
-      Case #PB_EventType_Drop
-        
-        Select EventGadget
-            
-          Case TargetText
-            AddItem(TargetText, -1, DropText())
-            
-          Case TargetImage
-            If DropImage(#ImageTarget)
-              SetState(TargetImage, (#ImageTarget))
-            EndIf
-            
-          Case TargetFiles
-            Files$ = EventDropFiles()
-            Count  = CountString(Files$, Chr(10)) + 1
-            For i = 1 To Count
-              AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
-            Next i
-            
-          Case TargetPrivate1
-            AddItem(TargetPrivate1, -1, "Private type 1 dropped")
-            
-          Case TargetPrivate2
-            AddItem(TargetPrivate2, -1, "Private type 2 dropped")
-            
-        EndSelect
+    EventWidget = Widget()
+    EventType = Type()
+    EventItem = Item()
+    EventData = Data()
+    
+    If EventType <> #PB_EventType_MouseMove
+      Debug " gadget "+ EventType
+    EndIf
+   
+    Select EventType 
+      Case #PB_EventType_LeftButtonDown
+        Protected *This._S_widget
+     
+        *This = GetAnchors(EventWidget)
+        If *This   
+          If SetAnchors(*This)
+            Debug "изменено down"+ *This
+           ; Unbind(@Widgets_Gadget_Events(), *This)
+           ; Debug DropText()
+          EndIf
+        EndIf
         
     EndSelect
     
+    ; Отключает передачу сообщений в 
+    ; оконную и рутовскую процедуру
+    ProcedureReturn #PB_Ignore
   EndProcedure
   
-  If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
-    Open(#Window, 0, 0, 760, 310)
+  Procedure Widgets_Window_Events()
+    Protected EventWidget.i, EventType.i, EventItem.i, EventData.i
     
-    ; create some images for the image demonstration
-    ; 
-    Define i, Event
-    CreateImage(#ImageSource, 136, 136)
-    If StartDrawing(ImageOutput(#ImageSource))
-      Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drag this image", $000000, $FFFFFF)        
-      For i = 45 To 1 Step -1
-        Circle(70, 80, i, Random($FFFFFF))
-      Next i        
-      
-      StopDrawing()
-    EndIf  
+    EventWidget = Widget()
+    EventType = Type()
+    EventItem = Item()
+    EventData = Data()
     
-    CreateImage(#ImageTarget, 136, 136)
-    If StartDrawing(ImageOutput(#ImageTarget))
-      Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drop images here", $000000, $FFFFFF)
-      StopDrawing()
-    EndIf  
-    
-    
-    ; create and fill the source s
-    ;
-    SourceText = ListIcon(10, 10, 140, 140, "Drag Text here", 130)   
-    SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
-    SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
-    SourcePrivate = ListIcon(610, 10, 140, 140, "Drag private stuff here", 260)
-    
-    AddItem(SourceText, -1, "hello world")
-    AddItem(SourceText, -1, "The quick brown fox jumped over the lazy dog")
-    AddItem(SourceText, -1, "abcdefg")
-    AddItem(SourceText, -1, "123456789")
-    
-    AddItem(SourcePrivate, -1, "Private type 1")
-    AddItem(SourcePrivate, -1, "Private type 2")
-    
-    
-    ; create the target s
-    ;
-    TargetText = ListIcon(10, 160, 140, 140, "Drop Text here", 130)
-    TargetImage = Image(160, 160, 140, 140, (#ImageTarget), #PB_Image_Border) 
-    TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
-    TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
-    TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
-    
-    
-    ; Now enable the dropping on the target s
-    ;
-    EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
-    EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
-    EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
-    EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
-    EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
-    
-    Bind(@Events())
-    ReDraw(Root())
-    
-    Repeat
-      Event = WaitWindowEvent()
-    Until Event = #PB_Event_CloseWindow
-  EndIf
+    If EventType <> #PB_EventType_MouseMove
+      Debug " window "+ EventType
+    EndIf
+  EndProcedure
   
-  End
+  Procedure Widgets_Root_Events()
+    Protected EventWidget.i, EventType.i, EventItem.i, EventData.i
+    
+    EventWidget = Widget()
+    EventType = Type()
+    EventItem = Item()
+    EventData = Data()
+    
+    If EventType <> #PB_EventType_MouseMove
+      Debug " root "+ EventType
+    EndIf
+  EndProcedure
+  
+  
+  Procedure Window_0_Resize()
+    ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
+    ResizeGadget(10, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
+  EndProcedure
+  
+  Procedure Window_0()
+    If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      ButtonGadget   (10,    5,   565, 590,  30, "start change scrollbar", #PB_Button_Toggle)
+      
+      Define Editable = #PB_Flag_AnchorsGadget
+      
+      If Open(0, 10,10, 580, 550," root ")
+        *win=Form(80, 100, 400, 360, "Window_2", Editable)
+        
+        Container(30,30,400-60, 360-60, Editable)
+        Container(20,20,400-60, 360-60, Editable)
+        *but=Button(100, 20, 80, 80, "Button_1", Editable)
+        Tree(130, 80, 180, 180, Editable)
+        
+        Define i
+        For i=0 To 20
+          AddItem(Widget(), i, "item_"+ Str(i))
+        Next
+        
+        Button(70, 80, 80, 80, "Button_3", Editable)
+        CloseList()
+        CloseList()
+        
+        
+        Bind(@Widgets_Gadget_Events(), *but)
+        Bind(@Widgets_Window_Events(), *win)
+        Bind(@Widgets_Root_Events())
+        ReDraw(Root())
+      EndIf
+      
+      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
+    EndIf
+  EndProcedure
+  
+  Window_0()
+  
+  Repeat
+    gEvent= WaitWindowEvent()
+    
+    Select gEvent
+      Case #PB_Event_CloseWindow
+        gQuit= #True
+        
+        ;       Case #PB_Event_Gadget;Widget
+        ;         Debug ""+gettext(EventWidget()) +" "+ WidgetEvent() ;+" "+ *Value\This +" "+ *Value\Type
+        ;         
+        ;         Select EventWidget()
+        ;           Case *but
+        ;             
+        ;             Debug *but
+        ;             
+        ;         EndSelect
+        ;         
+    EndSelect
+    
+  Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------u---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

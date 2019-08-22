@@ -149,6 +149,6 @@ Repeat
   EndSelect
   
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Linux - x64)
 ; Folding = --
 ; EnableXP
