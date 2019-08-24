@@ -642,6 +642,7 @@ DeclareModule Widget
   ;- - _S_button
   Structure _S_button Extends _S_coordinate
     len.a
+    interact.b
     arrow_size.a
     arrow_type.b
   EndStructure
@@ -1580,32 +1581,46 @@ Module Widget
       _this_\thumb\pos = _this_\area\end
     EndIf
     
+    If _this_\Vertical 
+      _this_\button\x = _this_\X + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+      _this_\button\y = _this_\area\pos
+      _this_\button\width = _this_\width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+      _this_\button\height = _this_\area\len               
+    Else 
+      _this_\button\x = _this_\area\pos
+      _this_\button\y = _this_\Y + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+      _this_\button\width = _this_\area\len
+      _this_\button\height = _this_\Height - Bool(_this_\type=#PB_GadgetType_ScrollBar)  
+    EndIf
+    
     ; _start_
     If _this_\button[#_b_1]\len And _this_\button[#_b_1]\len <> 1
       If _scroll_pos_ = _this_\min
         _this_\color[#_b_1]\state = #Disabled
+        _this_\button[#_b_1]\interact = 0
       Else
         _this_\color[#_b_1]\state = #Normal
+        _this_\button[#_b_1]\interact = 1
       EndIf 
     EndIf
     
     If _this_\type=#PB_GadgetType_ScrollBar
       If _this_\Vertical 
         ; Top button coordinate on vertical scroll bar
-        _this_\button[#_b_1]\x = _this_\x + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-        _this_\button[#_b_1]\y = _this_\y 
-        _this_\button[#_b_1]\width = _this_\width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+        _this_\button[#_b_1]\x = _this_\button\x
+        _this_\button[#_b_1]\y = _this_\Y 
+        _this_\button[#_b_1]\width = _this_\button\width
         _this_\button[#_b_1]\height = _this_\button[#_b_1]\len                   
       Else 
         ; Left button coordinate on horizontal scroll bar
-        _this_\button[#_b_1]\x = _this_\x 
-        _this_\button[#_b_1]\y = _this_\y + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+        _this_\button[#_b_1]\x = _this_\X 
+        _this_\button[#_b_1]\y = _this_\button\y
         _this_\button[#_b_1]\width = _this_\button[#_b_1]\len 
-        _this_\button[#_b_1]\height = _this_\height - Bool(_this_\type=#PB_GadgetType_ScrollBar)  
+        _this_\button[#_b_1]\height = _this_\button\height 
       EndIf
     Else
-      _this_\button[#_b_1]\x = _this_\x
-      _this_\button[#_b_1]\y = _this_\y
+      _this_\button[#_b_1]\x = _this_\X
+      _this_\button[#_b_1]\y = _this_\Y
       
       If _this_\Vertical
         _this_\button[#_b_1]\width = _this_\width
@@ -1620,24 +1635,26 @@ Module Widget
     If _this_\button[#_b_2]\len And _this_\button[#_b_2]\len <> 1
       If _scroll_pos_ = _this_\page\end
         _this_\color[#_b_2]\state = #Disabled
+        _this_\button[#_b_2]\interact = 0
       Else
         _this_\color[#_b_2]\state = #Normal
+        _this_\button[#_b_2]\interact = 1
       EndIf 
     EndIf
     
     If _this_\type=#PB_GadgetType_ScrollBar
       If _this_\Vertical 
         ; Botom button coordinate on vertical scroll bar
-        _this_\button[#_b_2]\x = _this_\x + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-        _this_\button[#_b_2]\width = _this_\width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+        _this_\button[#_b_2]\x = _this_\button\x
+        _this_\button[#_b_2]\width = _this_\button\width
         _this_\button[#_b_2]\height = _this_\button[#_b_2]\len 
-        _this_\button[#_b_2]\y = _this_\y+_this_\height-_this_\button[#_b_2]\height
+        _this_\button[#_b_2]\y = _this_\Y+_this_\Height-_this_\button[#_b_2]\height
       Else 
         ; Right button coordinate on horizontal scroll bar
-        _this_\button[#_b_2]\y = _this_\y + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-        _this_\button[#_b_2]\height = _this_\height - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+        _this_\button[#_b_2]\y = _this_\button\y
+        _this_\button[#_b_2]\height = _this_\button\height
         _this_\button[#_b_2]\width = _this_\button[#_b_2]\len 
-        _this_\button[#_b_2]\x = _this_\x+_this_\width-_this_\button[#_b_2]\width 
+        _this_\button[#_b_2]\x = _this_\X+_this_\width-_this_\button[#_b_2]\width 
       EndIf
       
     Else
@@ -1648,7 +1665,7 @@ Module Widget
         _this_\button[#_b_2]\height = _this_\height-(_this_\thumb\pos+_this_\thumb\len-_this_\y)
       Else
         _this_\button[#_b_2]\x = _this_\thumb\pos+_this_\thumb\len
-        _this_\button[#_b_2]\y = _this_\y
+        _this_\button[#_b_2]\y = _this_\Y
         _this_\button[#_b_2]\width = _this_\width-(_this_\thumb\pos+_this_\thumb\len-_this_\x)
         _this_\button[#_b_2]\height = _this_\height
       EndIf
@@ -1656,49 +1673,52 @@ Module Widget
     
     ; Thumb coordinate on scroll bar
     If _this_\thumb\len
-      _this_\button[#_b_3]\len = _this_\thumb\len
+      If _this_\button[#_b_3]\len <> _this_\thumb\len
+        _this_\button[#_b_3]\len = _this_\thumb\len
+      EndIf
       
       If _this_\Vertical
-        _this_\button[#_b_3]\x = _this_\x + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-        _this_\button[#_b_3]\width = _this_\width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+        _this_\button[#_b_3]\x = _this_\button\x 
+        _this_\button[#_b_3]\width = _this_\button\width 
         _this_\button[#_b_3]\y = _this_\thumb\pos
         _this_\button[#_b_3]\height = _this_\thumb\len                              
       Else
-        _this_\button[#_b_3]\y = _this_\y + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-        _this_\button[#_b_3]\height = _this_\height - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
+        _this_\button[#_b_3]\y = _this_\button\y 
+        _this_\button[#_b_3]\height = _this_\button\height
         _this_\button[#_b_3]\x = _this_\thumb\pos 
         _this_\button[#_b_3]\width = _this_\thumb\len                                  
       EndIf
       
     Else
-      ; Эфект спин гаджета
-      If _this_\Vertical
-        _this_\button[#_b_2]\height = _this_\height/2 
-        _this_\button[#_b_2]\y = _this_\y+_this_\button[#_b_2]\height+Bool(_this_\height%2) 
-        
-        _this_\button[#_b_1]\y = _this_\y 
-        _this_\button[#_b_1]\height = _this_\height/2
-        
-      Else
-        _this_\button[#_b_2]\width = _this_\width/2 
-        _this_\button[#_b_2]\x = _this_\x+_this_\button[#_b_2]\width+Bool(_this_\width%2) 
-        
-        _this_\button[#_b_1]\x = _this_\x 
-        _this_\button[#_b_1]\width = _this_\width/2
+      If _this_\type <> #PB_GadgetType_ProgressBar
+        ; Эфект спин гаджета
+        If _this_\Vertical
+          _this_\button[#_b_2]\Height = _this_\Height/2 
+          _this_\button[#_b_2]\y = _this_\y+_this_\button[#_b_2]\Height+Bool(_this_\Height%2) 
+          
+          _this_\button[#_b_1]\y = _this_\y 
+          _this_\button[#_b_1]\Height = _this_\Height/2
+          
+        Else
+          _this_\button[#_b_2]\width = _this_\width/2 
+          _this_\button[#_b_2]\x = _this_\x+_this_\button[#_b_2]\width+Bool(_this_\width%2) 
+          
+          _this_\button[#_b_1]\x = _this_\x 
+          _this_\button[#_b_1]\width = _this_\width/2
+        EndIf
       EndIf
     EndIf
     
-    ; Splitter childrens auto resize       
-    If _this_\splitter
-        Resize_Splitter(_this_)
-        ; _this_\splitter\resize(_this_)
+    If _this_\text
+      _this_\text\change = 1
     EndIf
     
-    If _this_\change ;And _this_\event And *event 
-                     ;       *event\widget = _this_
-                     ;       *event\data = _this_\direction
-                     ;       *event\type = #PB_EventType_StatusChange
-                     ;       _this_\Event()
+    ; Splitter childrens auto resize       
+    If _this_\Splitter And _this_\Splitter\resize
+      _this_\Splitter\resize(_this_)
+    EndIf
+    
+    If _this_\change
       Post(#PB_EventType_StatusChange, _this_, _this_\from, _this_\direction)
     EndIf
   EndMacro
@@ -9078,28 +9098,19 @@ Module Widget
         _set_area_coordinate_(*this)
         
         If Not \max And \width And \height
-          ;           If \vertical
-          ;             If \height
-          ;               \max = \Height-\button\len
-          ;             EndIf
-          ;           Else
-          ;             If \width
-          ;               \max = \width-\button\len
-          ;             EndIf
-          ;           EndIf
           \max = \area\len-\button\len
           
           If Not \page\pos
             \page\pos = \max/2
           EndIf
           
-          ; if splitter fixed set splitter pos to center
-          If \splitter And \splitter\fixed = #_b_1
-            \splitter\fixed[\splitter\fixed] = \page\pos
-          EndIf
-          If \splitter And \splitter\fixed = #_b_2
-            \splitter\fixed[\splitter\fixed] = \area\len-\page\pos-\button\len
-          EndIf
+          ;           ; if splitter fixed set splitter pos to center
+          ;           If \splitter And \splitter\fixed = #_b_1
+          ;             \splitter\fixed[\splitter\fixed] = \page\pos
+          ;           EndIf
+          ;           If \splitter And \splitter\fixed = #_b_2
+          ;             \splitter\fixed[\splitter\fixed] = \area\len-\page\pos-\button\len
+          ;           EndIf
         EndIf
         
         ;
@@ -9118,19 +9129,19 @@ Module Widget
             EndIf
           EndIf
           
-          ;          ; Debug ""+\area\len +" "+ Str(\button[#_b_1]\len + \button[#_b_2]\len)
-          ;           
-          ;           If \area\len =< \button\len
-          ;             \page\pos = \max/2
-          ;             
-          ;             If \Vertical
-          ;               \area\pos = \Y 
-          ;               \area\len = \Height
-          ;             Else
-          ;               \area\pos = \X
-          ;               \area\len = \width 
-          ;             EndIf
-          ;           EndIf
+          ; Debug ""+\area\len +" "+ Str(\button[#_b_1]\len + \button[#_b_2]\len)
+          
+          If \area\len =< \button\len
+            \page\pos = \max/2
+            
+            If \Vertical
+              \area\pos = \Y 
+              \area\len = \Height
+            Else
+              \area\pos = \X
+              \area\len = \width 
+            EndIf
+          EndIf
           
         EndIf
         
@@ -10030,6 +10041,9 @@ Module Widget
       \radius = 7
     
       \button\len = Size-1
+      \button[#_b_1]\interact = 1
+      \button[#_b_2]\interact = 1
+      \button[#_b_3]\interact = 1
       \button[#_b_1]\arrow_type =- 1
       \button[#_b_2]\arrow_type =- 1
       \button[#_b_1]\arrow_size = 4
@@ -10053,6 +10067,9 @@ Module Widget
       \type = #PB_GadgetType_ScrollBar
       \radius = 7
       \button\len = Size-1
+      \button[#_b_1]\interact = 1
+      \button[#_b_2]\interact = 1
+      \button[#_b_3]\interact = 1
       \button[#_b_1]\arrow_type =- 1
       \button[#_b_2]\arrow_type =- 1
       \button[#_b_1]\arrow_size = 4
@@ -10083,6 +10100,11 @@ Module Widget
       \vertical = Bool(Flag&#PB_Bar_Vertical=#PB_Bar_Vertical)
       \inverted = Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted)
     
+      ;\interact = 1
+      \button[#_b_1]\interact = 1
+      \button[#_b_2]\interact = 1
+      \button[#_b_3]\interact = 1
+      
       \button[#_b_1]\arrow_type = 1
       \button[#_b_2]\arrow_type = 1
       \button[#_b_1]\arrow_size = 6
@@ -10135,6 +10157,7 @@ Module Widget
       \radius = 7
       \button\len = 15
       \inverted = \vertical
+      \button[#_b_3]\interact = 1
       \color[#_b_1]\state = Bool(Not \vertical) * #Selected
       \color[#_b_2]\state = Bool(\vertical) * #Selected
       \button[#_b_1]\len = 1
@@ -10209,6 +10232,7 @@ Module Widget
 ;       \splitter\resize = @splitter_size()
 ;       \splitter\g_first = IsGadget(First)
 ;       \splitter\g_second = IsGadget(Second)
+      \button[#_b_3]\interact = 1
       
       If Flag&#PB_Splitter_SecondFixed
         \splitter\fixed = 2
@@ -12007,24 +12031,25 @@ Module Widget
     
   EndMacro
   
-  Procedure.b CallBack_Bar(*this._S_widget, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
+  Declare.b CallBack_Bar(*this._S_widget, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
+  Procedure.b _CallBack_Bar(*this._S_widget, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
     Protected Result, from
     Static LastX, LastY, Last, *thisis._S_widget, Cursor, Drag, Down
     
     With *this
       
-;       If \splitter And \from <> #_b_3
-;         If \splitter\first And Not \splitter\g_first
-;           If CallBack(\splitter\first, EventType, MouseX, MouseY)
-;             ProcedureReturn 1
-;           EndIf
-;         EndIf
-;         If \splitter\second And Not \splitter\g_second
-;           If CallBack(\splitter\second, EventType, MouseX, MouseY)
-;             ProcedureReturn 1
-;           EndIf
-;         EndIf
-;       EndIf
+      If \splitter And \from <> #_b_3
+        If \splitter\first And Not \splitter\g_first
+          If CallBack_Bar(\splitter\first, EventType, MouseX, MouseY)
+            ProcedureReturn 1
+          EndIf
+        EndIf
+        If \splitter\second And Not \splitter\g_second
+          If CallBack_Bar(\splitter\second, EventType, MouseX, MouseY)
+            ProcedureReturn 1
+          EndIf
+        EndIf
+      EndIf
       
       ; get at point buttons
       If Down ; GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
@@ -12087,17 +12112,17 @@ Module Widget
             Case 1 
               If \button[from]\len > 1 And \color[from]\state <> #Disabled
                 If \inverted
-                  Result = SetState(*this, _scroll_invert_(*this, (\page\pos + \scrollstep), \inverted))
+                  Result = SetState_Bar(*this, _scroll_invert_(*this, (\page\pos + \scrollstep), \inverted))
                 Else
-                  Result = SetState(*this, _scroll_invert_(*this, (\page\pos - \scrollstep), \inverted))
+                  Result = SetState_Bar(*this, _scroll_invert_(*this, (\page\pos - \scrollstep), \inverted))
                 EndIf
               EndIf
             Case 2 
               If \button[from]\len > 1 And \color[from]\state <> #Disabled
                 If \inverted
-                  Result = SetState(*this, _scroll_invert_(*this, (\page\pos - \scrollstep), \inverted))
+                  Result = SetState_Bar(*this, _scroll_invert_(*this, (\page\pos - \scrollstep), \inverted))
                 Else
-                  Result = SetState(*this, _scroll_invert_(*this, (\page\pos + \scrollstep), \inverted))
+                  Result = SetState_Bar(*this, _scroll_invert_(*this, (\page\pos + \scrollstep), \inverted))
                 EndIf
               EndIf
               
@@ -12189,6 +12214,260 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
+  Procedure.b CallBack_Bar(*this._S_widget, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
+    Protected Result, from
+    Static cursor_change, LastX, LastY, Last, *leave._S_widget, Down
+    
+    Macro _callback_(_this_, _type_)
+      Select _type_
+        Case #PB_EventType_MouseLeave
+          ; Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
+          _this_\color[_this_\from]\state = #Normal 
+          
+          If _this_\cursor And cursor_change
+            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default) ; cursor_change - 1)
+            cursor_change = 0
+          EndIf
+          Result = #True
+          
+        Case #PB_EventType_MouseEnter
+          ; Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
+          _this_\color[_this_\from]\state = #Entered 
+          
+          ; Set splitter cursor
+          If _this_\from = #_b_3 And _this_\type = #PB_GadgetType_Splitter And _this_\cursor
+            cursor_change = 1;GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) + 1
+            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, _this_\cursor)
+          EndIf
+          Result = #True
+          
+        Case #PB_EventType_LeftButtonDown
+           ; Debug ""+#PB_Compiler_Line +" нажали " + _this_ +" "+ _this_\from
+          
+          Select _this_\from
+            Case 1 
+              If _this_\inverted
+                Result = SetState_Bar(_this_, _scroll_invert_(_this_, (_this_\page\pos + _this_\scrollstep), _this_\inverted))
+              Else
+                Result = SetState_Bar(_this_, _scroll_invert_(_this_, (_this_\page\pos - _this_\scrollstep), _this_\inverted))
+              EndIf
+              
+            Case 2 
+              If _this_\inverted
+                Result = SetState_Bar(_this_, _scroll_invert_(_this_, (_this_\page\pos - _this_\scrollstep), _this_\inverted))
+              Else
+                Result = SetState_Bar(_this_, _scroll_invert_(_this_, (_this_\page\pos + _this_\scrollstep), _this_\inverted))
+              EndIf
+              
+            Case 3 
+              LastX = MouseX - _this_\thumb\pos 
+              LastY = MouseY - _this_\thumb\pos
+              
+            Default
+              Result = #True
+              
+          EndSelect
+          
+          _this_\color[_this_\from]\state = #Selected
+          
+        Case #PB_EventType_LeftButtonUp
+          ; Debug ""+#PB_Compiler_Line +" отпустили " + _this_ +" "+ _this_\from
+          _this_\color[_this_\from]\state = #Entered 
+          Result = #True
+          
+      EndSelect
+    EndMacro
+    
+    With *this
+;       ; from the very beginning we'll process 
+;       ; the splitter children’s widget
+;       If \from <> #_b_3
+;         If \splitter And \splitter\first And Not \splitter\g_first
+;           If CallBack_Bar(\splitter\first, EventType, MouseX, MouseY)
+;             ProcedureReturn 1
+;           EndIf
+;         EndIf
+;         If \splitter And \splitter\second And Not \splitter\g_second
+;           If CallBack_Bar(\splitter\second, EventType, MouseX, MouseY)
+;             ProcedureReturn 1
+;           EndIf
+;         EndIf
+;       EndIf
+;            
+      ; get at point buttons
+      If Down ; GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
+        If \from =- 1 Or (\from > 0 And MouseX>\button[\from ]\x And MouseX=<\button[\from ]\x+\button[\from ]\width And 
+                          MouseY>\button[\from ]\y And MouseY=<\button[\from ]\y+\button[\from ]\height)
+          from = \from 
+        EndIf
+      Else
+        If Not \hide And (Mousex>=\x And Mousex<\x+\width And Mousey>\y And Mousey=<\y+\height) 
+          If \button 
+            If \button[#_b_3]\len And (MouseX>\button[#_b_3]\x And MouseX=<\button[#_b_3]\x+\button[#_b_3]\width And 
+                                       MouseY>\button[#_b_3]\y And MouseY=<\button[#_b_3]\y+\button[#_b_3]\height)
+              from = #_b_3
+            ElseIf \button[#_b_2]\len And (MouseX>\button[#_b_2]\x And MouseX=<\button[#_b_2]\x+\button[#_b_2]\width And 
+                                           MouseY>\button[#_b_2]\y And MouseY=<\button[#_b_2]\y+\button[#_b_2]\height)
+              from = #_b_2
+            ElseIf \button[#_b_1]\len And (MouseX>\button[#_b_1]\x And MouseX=<\button[#_b_1]\x+\button[#_b_1]\width And 
+                                           MouseY>\button[#_b_1]\y And MouseY=<\button[#_b_1]\y+\button[#_b_1]\height)
+              from = #_b_1
+            ElseIf (MouseX>\button\x And MouseX=<\button\x+\button\width And 
+                    MouseY>\button\y And MouseY=<\button\y+\button\height)
+              from =- 1
+            EndIf
+            
+            If \type = #PB_GadgetType_TrackBar ;Or \type = #PB_GadgetType_ProgressBar
+              Select from
+                Case #_b_1, #_b_2
+                  from =- 1
+                  
+              EndSelect
+              ; ElseIf \type = #PB_GadgetType_ProgressBar
+              ;  from = 0
+            EndIf
+            
+          Else
+            from =- 1
+          EndIf 
+        Else
+          If \from > 0 And \button[\from]\interact
+            If EventType = #PB_EventType_LeftButtonUp
+              _callback_(*this, #PB_EventType_LeftButtonUp)
+            EndIf
+            
+           ; Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
+            _callback_(*this, #PB_EventType_MouseLeave)
+          EndIf 
+          
+          \from = 0
+        EndIf 
+      EndIf
+      
+      ; get
+      Select EventType
+        Case #PB_EventType_MouseWheel  
+          If *leave = *this
+            Select WheelDelta
+              Case-1 : Result = SetState_Bar(*this, \page\pos - (\max-\min)/30)
+              Case 1 : Result = SetState_Bar(*this, \page\pos + (\max-\min)/30)
+            EndSelect
+          EndIf
+          
+        Case #PB_EventType_MouseLeave 
+          If Not Down : \from = 0 : from = 0 : LastX = 0 : LastY = 0 : EndIf
+          
+        Case #PB_EventType_LeftButtonUp 
+          Down = 0 : LastX = 0 : LastY = 0
+          
+          If \from > 0 And \button[\from]\interact
+            _callback_(*this, #PB_EventType_LeftButtonUp)
+            
+            If Not from > 0
+              ; Debug ""+#PB_Compiler_Line +" Мышь cнаружи итема"
+              _callback_(*this, #PB_EventType_MouseLeave)
+              \from = 0
+            EndIf
+          EndIf
+        
+        Case #PB_EventType_LeftButtonDown
+          If from =- 1 And \button[#_b_3]\interact 
+            If \Vertical
+              Result = SetPos_Bar(*this, (MouseY-\thumb\len/2))
+            Else
+              Result = SetPos_Bar(*this, (MouseX-\thumb\len/2))
+            EndIf
+            
+            from = 3
+          EndIf
+          
+          If from > 0 And \button[from]\interact
+            Down = 1
+            \from = from 
+            *leave = *this
+            
+            _callback_(*this, #PB_EventType_LeftButtonDown)
+          EndIf
+          
+          ; Чтобы не пропускать событие
+          ; внутри детей сплиттера
+          If \from ; > 0 And \button[\from]\interact 
+            Result = #True
+          EndIf
+          
+        Case #PB_EventType_MouseMove
+          If Down
+            
+            If *leave = *this And Bool(LastX|LastY) 
+              If \Vertical
+                Result = SetPos_Bar(*this, (MouseY-LastY))
+              Else
+                Result = SetPos_Bar(*this, (MouseX-LastX))
+              EndIf
+            EndIf
+            
+          Else
+            If from
+              If \from <> from
+                If *leave > 0 And *leave\from > 0
+                  If Not (MouseX>*leave\button[*leave\from]\x And MouseX=<*leave\button[*leave\from]\x+*leave\button[*leave\from]\width And 
+                          MouseY>*leave\button[*leave\from]\y And MouseY=<*leave\button[*leave\from]\y+*leave\button[*leave\from]\height)
+                    
+                    ; set mouse leave from item
+                    If *leave\button[*leave\from]\interact
+                      _callback_(*leave, #PB_EventType_MouseLeave)
+                      *leave\from = 0
+                    EndIf
+                  Else
+                    *leave\from = 0 
+                    *leave = 0
+                  EndIf
+                EndIf
+                
+                \from = from
+                
+                If \from > 0 And \button[\from]\interact
+                  ; 10>>20>>30 
+;                   If (*leave And *leave\from =- 1)
+; ;                     If *leave
+; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from +" "+ *leave\from
+; ;                     Else
+; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from
+; ;                     EndIf
+;                     _callback_(*this, #PB_EventType_MouseEnter)
+;                    ; *leave\from = 0
+;                    ; ProcedureReturn
+;                   EndIf
+;                   
+;                   If Not (*leave And *leave\from =- 1)
+                    _callback_(*this, #PB_EventType_MouseEnter)
+;                   EndIf
+                EndIf
+                
+                If *leave <> *this 
+                  
+                  *leave = *this
+                EndIf
+              EndIf
+              
+            ElseIf *leave = *this
+              If \from > 0 And \button[\from]\interact
+               ; Debug ""+#PB_Compiler_Line +" Мышь перешел с итем"
+               _callback_(*this, #PB_EventType_MouseLeave)
+              EndIf 
+              
+               ; Debug ""+#PB_Compiler_Line +" Мышь находится снаружи"
+              \from = 0
+              *leave = 0
+            EndIf
+          EndIf
+          
+      EndSelect
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
   Procedure.i CallBack(*this._S_widget, EventType.i, MouseX.i=0, MouseY.i=0)
     Protected repaint.i, Parent.i, Window.i, Canvas = EventGadget()
     ;Static lastat.i, Down.i, *Lastat._S_widget, *Last._S_widget, *mouseat._S_widget
@@ -12223,13 +12502,13 @@ Module Widget
         ProcedureReturn 1
       EndIf
       
-      ; bars events
-      If CallBack_Bar(*this, EventType, MouseX,MouseY)
-        ProcedureReturn 1
-      EndIf
-      
       ; Enter/Leave mouse events
       _mouse_pos_(*this)
+      
+      ; bars events
+      If CallBack_Bar(*this, EventType, MouseX,MouseY) Or *this\from
+        ProcedureReturn 1
+      EndIf
       
       Select EventType 
         Case #PB_EventType_MouseMove,
@@ -12614,5 +12893,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----XQAUkAAwAwIAAh-fA33gfAAAAAAAAIABAAAAAFAAAAkgEEAAAAAAAAAAAAAGAAAAEEAAAAAAA9-84PAAAAAAAAAAAABgAAABgAAACAAAAAAAAAAAAAAADAAAAAAAACAAAAAAAAAAAAAAALAAAAAAAeMCGAOwYwExAAAAAzAAAAA9-ftHAACkfDA+n0-IABAAAACQAAg9w--DeHAAAIAAAAA9AAAgH-EwDAAgHADAA52P-fCAACA4
+; Folding = 7----XwAUkAAwAwIAAx-fA33gfAAAAAAAAIABAAAAAFAAAAkgEEAAAAAAAAAAAAAGAAAAEEAAAAAAA9-84PAAAAAAAAAAAABgAAABgAAACAAAAAAAAAAAAAAADAAAAAAAACAAAAAAAAAAAAAAALAAAAAAAeMCGAOwYwExAAAAAzAAAAI9-ftHAACkfDA+n0-IABAAAACQAAg5g8-DeHAAAIAAAAA9AAAgH-EwDAAgz-----------vf+-EAAEAu
 ; EnableXP

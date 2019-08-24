@@ -65,6 +65,7 @@ DeclareModule Bar
     #PB_EventType_ScrollChange
   EndEnumeration
   
+  Prototype pFunc(*this)
   Prototype pFunc2()
   
   ;- STRUCTUREs
@@ -125,14 +126,31 @@ DeclareModule Bar
     
     g_first.b
     g_second.b
+    
+    *resize.pFunc
   EndStructure
   
   ;- - _S_Text
   Structure _S_text Extends _S_coordinate
+    ;     big.i[3]
+    ;     pos.i
+    ;     len.i
+    ;     caret.i[3] ; 0 = Pos ; 1 = PosFixed
+    ;     
     fontID.i
-    string.s
+    string.s;[3]
     change.b
+    ;     
+    ;     lower.b
+    ;     upper.b
+    ;     pass.b
+    ;     editable.b
+    ;     numeric.b
+    ;     multiLine.b
+    ;     vertical.b
     rotate.f
+    
+    ;     align._S_align
   EndStructure
   
   ;- - _S_bar
@@ -142,14 +160,16 @@ DeclareModule Bar
     focus.l
     radius.l
     
-    mode.l
-    change.l
-    cursor.l
     hide.b[2]
+    ; disable.b[2]
     vertical.b
     inverted.b
     direction.l
     scrollstep.l
+    change.l
+    mode.l
+    cursor.l
+    
     
     max.l
     min.l
@@ -159,7 +179,8 @@ DeclareModule Bar
     color._S_color[4]
     button._S_button[4] 
     
-    *text._S_text
+    *text._S_text;[4]
+    
     *event._S_event 
     *splitter._S_splitter
   EndStructure
@@ -291,7 +312,7 @@ Module Bar
     EndIf
     
     ; _start_
-    If _this_\button[#_b_1]\len And _this_\page\len
+    If _this_\button[#_b_1]\len And _this_\button[#_b_1]\len <> 1
       If _scroll_pos_ = _this_\min
         _this_\color[#_b_1]\state = #Disabled
         _this_\button[#_b_1]\interact = 0
@@ -329,7 +350,7 @@ Module Bar
     EndIf
     
     ; _stop_
-    If _this_\button[#_b_2]\len And _this_\page\len
+    If _this_\button[#_b_2]\len And _this_\button[#_b_2]\len <> 1
       If _scroll_pos_ = _this_\page\end
         _this_\color[#_b_2]\state = #Disabled
         _this_\button[#_b_2]\interact = 0
@@ -412,7 +433,7 @@ Module Bar
     
     ; Splitter childrens auto resize       
     If _this_\Splitter
-      splitter_size(_this_)
+      _this_\Splitter\resize(_this_)
     EndIf
     
     If _this_\change
@@ -437,7 +458,28 @@ Module Bar
     _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
   EndMacro
   
+  Macro Resize_Splitter(_this_)
+    If _this_\Vertical
+      If _this_\splitter\first
+        Resize(_this_\splitter\first, _this_\x, _this_\y, _this_\width, _this_\thumb\pos-_this_\y)
+      EndIf
+      If _this_\splitter\second
+        Resize(_this_\splitter\second, _this_\x, (_this_\thumb\pos+_this_\thumb\len), _this_\width, _this_\height-((_this_\thumb\pos+_this_\thumb\len)-_this_\y))
+      EndIf
+    Else
+      If _this_\splitter\first
+        Resize(_this_\splitter\first, _this_\x, _this_\y, _this_\thumb\pos-_this_\x, _this_\height)
+      EndIf
+      If _this_\splitter\second
+        Resize(_this_\splitter\second, (_this_\thumb\pos+_this_\thumb\len), _this_\y, _this_\width-((_this_\thumb\pos+_this_\thumb\len)-_this_\x), _this_\height)
+      EndIf
+    EndIf
+  EndMacro
+  
   Procedure.b splitter_size(*this._S_bar)
+    ;     Resize_Splitter(*this)
+    ;     ProcedureReturn
+    
     If *this\splitter
       If *this\splitter\first
         If *this\splitter\g_first
@@ -447,7 +489,11 @@ Module Bar
             ResizeGadget(*this\splitter\first, *this\button[#_b_1]\x, *this\button[#_b_1]\y, *this\button[#_b_1]\width, *this\button[#_b_1]\height)
           EndIf
         Else
+          ;           If *this\focus = 1111
+          ;             Debug *this\button[#_b_1]\x
+          ;           EndIf
           Resize(*this\splitter\first, *this\button[#_b_1]\x, *this\button[#_b_1]\y, *this\button[#_b_1]\width, *this\button[#_b_1]\height)
+          ; splitter_size(*this\splitter\first)
         EndIf
       EndIf
       
@@ -460,10 +506,13 @@ Module Bar
           EndIf
         Else
           Resize(*this\splitter\second, *this\button[#_b_2]\x, *this\button[#_b_2]\y, *this\button[#_b_2]\width, *this\button[#_b_2]\height)
+          ; splitter_size(*this\splitter\second)
         EndIf   
       EndIf   
     EndIf
   EndProcedure
+  
+  
   
   ;-
   ;- - DRAW
@@ -1405,7 +1454,7 @@ Module Bar
       
       \button[#_b_3]\interact = 1
       \button[#_b_3]\arrow_size = 6
-      \button[#_b_3]\arrow_type = 0
+      \button[#_b_3]\arrow_type = 1
       
       \cursor = #PB_Cursor_Hand
       
@@ -1430,7 +1479,7 @@ Module Bar
       \color[#_b_1]\state = Bool(Not \vertical) * #Selected
       \color[#_b_2]\state = Bool(\vertical) * #Selected
       
-       \button[#_b_3]\interact = 1
+      \button[#_b_3]\interact = 1
       \text = AllocateStructure(_S_text)
       \text\change = 1
       \text\rotate = \vertical * 90 ; 270
@@ -1469,6 +1518,7 @@ Module Bar
       \Splitter = AllocateStructure(_S_splitter)
       \Splitter\first = First
       \Splitter\second = Second
+      \splitter\resize = @splitter_size()
       \splitter\g_first = IsGadget(First)
       \splitter\g_second = IsGadget(Second)
       \button[#_b_3]\interact = 1
@@ -1522,70 +1572,34 @@ Module Bar
     *this\event\callback = *callBack
   EndProcedure
   
+  Macro _mouse_leave_(_this_)
+    Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
+    
+    ;If _this_\button[_this_\from]\interact 
+      _this_\color[_this_\from]\state = #Normal 
+      
+      If _this_\cursor And cursor_change
+        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default) ; cursor_change - 1)
+        cursor_change = 0
+      EndIf
+    ;EndIf  
+  EndMacro
+  
+  Macro _mouse_enter_(_this_)
+    Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
+    _this_\color[_this_\from]\state = #Entered 
+    ; Set splitter cursor
+    
+    If _this_\from = #_b_3 And _this_\type = #PB_GadgetType_Splitter And _this_\cursor
+      cursor_change = 1;GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) + 1
+      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, _this_\cursor)
+    EndIf
+    
+  EndMacro
   
   Procedure.b CallBack(*this._S_bar, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
     Protected Result, from
-    Static cursor_change, LastX, LastY, Last, *leave._S_bar, Down
-    
-    Macro _callback_(_this_, _type_)
-      Select _type_
-        Case #PB_EventType_MouseLeave
-          ; Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
-          _this_\color[_this_\from]\state = #Normal 
-          
-          If _this_\cursor And cursor_change
-            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default) ; cursor_change - 1)
-            cursor_change = 0
-          EndIf
-          Result = #True
-          
-        Case #PB_EventType_MouseEnter
-          ; Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
-          _this_\color[_this_\from]\state = #Entered 
-          
-          ; Set splitter cursor
-          If _this_\from = #_b_3 And _this_\type = #PB_GadgetType_Splitter And _this_\cursor
-            cursor_change = 1;GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) + 1
-            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, _this_\cursor)
-          EndIf
-          Result = #True
-          
-        Case #PB_EventType_LeftButtonDown
-          ; Debug ""+#PB_Compiler_Line +" нажали " + _this_ +" "+ _this_\from
-          
-          Select _this_\from
-            Case 1 
-              If _this_\inverted
-                Result = SetState(_this_, _scroll_invert_(_this_, (_this_\page\pos + _this_\scrollstep), _this_\inverted))
-              Else
-                Result = SetState(_this_, _scroll_invert_(_this_, (_this_\page\pos - _this_\scrollstep), _this_\inverted))
-              EndIf
-              
-            Case 2 
-              If _this_\inverted
-                Result = SetState(_this_, _scroll_invert_(_this_, (_this_\page\pos - _this_\scrollstep), _this_\inverted))
-              Else
-                Result = SetState(_this_, _scroll_invert_(_this_, (_this_\page\pos + _this_\scrollstep), _this_\inverted))
-              EndIf
-              
-            Case 3 
-              LastX = MouseX - _this_\thumb\pos 
-              LastY = MouseY - _this_\thumb\pos
-              
-            Default
-              Result = #True
-              
-          EndSelect
-          
-          _this_\color[_this_\from]\state = #Selected
-          
-        Case #PB_EventType_LeftButtonUp
-          ; Debug ""+#PB_Compiler_Line +" отпустили " + _this_ +" "+ _this_\from
-          _this_\color[_this_\from]\state = #Entered 
-          Result = #True
-          
-      EndSelect
-    EndMacro
+    Static cursor_change, LastX, LastY, Last, *leave._S_bar, Drag, Down
     
     With *this
       ; from the very beginning we'll process 
@@ -1641,12 +1655,9 @@ Module Bar
           EndIf 
         Else
           If \from > 0 And \button[\from]\interact
-            If EventType = #PB_EventType_LeftButtonUp
-              _callback_(*this, #PB_EventType_LeftButtonUp)
-            EndIf
-            
-           ; Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
-            _callback_(*this, #PB_EventType_MouseLeave)
+            Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
+            _mouse_leave_(*this)
+            Result = #True
           EndIf 
           
           \from = 0
@@ -1664,22 +1675,11 @@ Module Bar
           EndIf
           
         Case #PB_EventType_MouseLeave 
-          If Not Down : \from = 0 : from = 0 : LastX = 0 : LastY = 0 : EndIf
+          If Not Drag : \from = 0 : from = 0 : LastX = 0 : LastY = 0 : EndIf
+        Case #PB_EventType_LeftButtonUp : Down = 0 :  Drag = 0 :  LastX = 0 : LastY = 0
+        Case #PB_EventType_LeftButtonDown : Down = 1
+          Debug ""+#PB_Compiler_Line +" "+from
           
-        Case #PB_EventType_LeftButtonUp 
-          Down = 0 : LastX = 0 : LastY = 0
-          
-          If \from > 0 And \button[\from]\interact
-            _callback_(*this, #PB_EventType_LeftButtonUp)
-            
-            If Not from > 0
-              ; Debug ""+#PB_Compiler_Line +" Мышь cнаружи итема"
-              _callback_(*this, #PB_EventType_MouseLeave)
-              \from = 0
-            EndIf
-          EndIf
-        
-        Case #PB_EventType_LeftButtonDown
           If from =- 1 And \button[#_b_3]\interact 
             If \Vertical
               Result = SetPos(*this, (MouseY-\thumb\len/2))
@@ -1691,21 +1691,35 @@ Module Bar
           EndIf
           
           If from > 0 And \button[from]\interact
-            Down = 1
+            
+            Drag = 1 
             \from = from 
             *leave = *this
             
-            _callback_(*this, #PB_EventType_LeftButtonDown)
-          EndIf
-          
-          ; Чтобы не пропускать событие
-          ; внутри детей сплиттера
-          If \from ; > 0 And \button[\from]\interact 
-            Result = #True
+            Select from
+              Case 1 
+                If \inverted
+                  Result = SetState(*this, _scroll_invert_(*this, (\page\pos + \scrollstep), \inverted))
+                Else
+                  Result = SetState(*this, _scroll_invert_(*this, (\page\pos - \scrollstep), \inverted))
+                EndIf
+                
+              Case 2 
+                If \inverted
+                  Result = SetState(*this, _scroll_invert_(*this, (\page\pos - \scrollstep), \inverted))
+                Else
+                  Result = SetState(*this, _scroll_invert_(*this, (\page\pos + \scrollstep), \inverted))
+                EndIf
+                
+              Case 3 
+                LastX = MouseX - \thumb\pos 
+                LastY = MouseY - \thumb\pos
+                
+            EndSelect
           EndIf
           
         Case #PB_EventType_MouseMove
-          If Down
+          If Drag
             
             If *leave = *this And Bool(LastX|LastY) 
               If \Vertical
@@ -1724,8 +1738,9 @@ Module Bar
                     
                     ; set mouse leave from item
                     If *leave\button[*leave\from]\interact
-                      _callback_(*leave, #PB_EventType_MouseLeave)
+                      _mouse_leave_(*leave)
                       *leave\from = 0
+                      Result = #True
                     EndIf
                   Else
                     *leave\from = 0 
@@ -1733,44 +1748,79 @@ Module Bar
                   EndIf
                 EndIf
                 
+                
                 \from = from
                 
                 If \from > 0 And \button[\from]\interact
-                  ; 10>>20>>30 
-;                   If (*leave And *leave\from =- 1)
-; ;                     If *leave
-; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from +" "+ *leave\from
-; ;                     Else
-; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from
-; ;                     EndIf
-;                     _callback_(*this, #PB_EventType_MouseEnter)
-;                    ; *leave\from = 0
-;                    ; ProcedureReturn
-;                   EndIf
-;                   
-;                   If Not (*leave And *leave\from =- 1)
-                    _callback_(*this, #PB_EventType_MouseEnter)
-;                   EndIf
+                  If Not (*leave And *leave\from =- 1)
+                    _mouse_enter_(*this)
+                  EndIf
+                  Result = #True
                 EndIf
                 
                 If *leave <> *this 
-                  
+                  ;                   If \from > 0 And (MouseX>\button[\from ]\x And MouseX=<\button[\from ]\x+\button[\from ]\width And 
+                  ;                      MouseY>\button[\from ]\y And MouseY=<\button[\from ]\y+\button[\from ]\height)
+                  ;                     Debug ""+#PB_Compiler_Line +" Мышь находится внутри"
+                  ;                   EndIf
                   *leave = *this
                 EndIf
+                
+                ;                 EventType = #PB_EventType_MouseEnter
               EndIf
               
             ElseIf *leave = *this
+              ; set mouse leave from item
               If \from > 0 And \button[\from]\interact
-               ; Debug ""+#PB_Compiler_Line +" Мышь перешел с итем"
-               _callback_(*this, #PB_EventType_MouseLeave)
+                Debug ""+#PB_Compiler_Line +" Мышь перешел с итем"
+               _mouse_leave_(*this)
+                Result = #True
               EndIf 
               
                ; Debug ""+#PB_Compiler_Line +" Мышь находится снаружи"
-              \from = 0
+                \from = 0
               *leave = 0
+              EventType = #PB_EventType_MouseLeave
             EndIf
           EndIf
           
+      EndSelect
+      
+      ; set colors
+      Select EventType
+        Case #PB_EventType_LeftButtonDown,
+             #PB_EventType_LeftButtonUp, 
+             #PB_EventType_MouseEnter,
+             #PB_EventType_MouseLeave
+          
+          
+          If from > 0 And \button[from]\interact
+            \color[from]\state = #Entered + Bool(EventType=#PB_EventType_LeftButtonDown)
+            
+          ElseIf Not Drag
+            If \color\state <> #Disabled : \color\state = #Normal : EndIf
+            If \from > 0
+              Debug ""+#PB_Compiler_Line +" Мышь cнаружи итема"
+              _mouse_leave_(*this)
+            EndIf
+            
+            ; Debug ""+#PB_Compiler_Line +" "+\from
+;             If \button[#_b_1]\interact : \color[#_b_1]\state = #Normal : EndIf
+;             If \button[#_b_2]\interact : \color[#_b_2]\state = #Normal : EndIf
+;             If \button[#_b_3]\interact : \color[#_b_3]\state = #Normal : EndIf
+            
+;             ; Debug ""+from+" "+\from
+;             ; Reset splitter cursor
+;             If cursor_change
+;               SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, 0)
+;               cursor_change = 0
+;             EndIf
+;             
+            
+          EndIf
+          
+         \from = from
+         Result = #True
       EndSelect
     EndWith
     
@@ -2099,5 +2149,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------0-----------6----------
+; Folding = ---------------------------------f---x-------
 ; EnableXP

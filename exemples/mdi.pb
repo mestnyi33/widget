@@ -45,6 +45,14 @@ CompilerIf #PB_Compiler_IsMainFile
     (_this_\min + Round((_this_\thumb\pos - _this_\area\pos) / (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Down)) 
   EndMacro
   
+  Macro _scroll_invert_(_this_, _scroll_pos_, _inverted_=#True)
+    (Bool(_inverted_) * ((_this_\min + (_this_\max - _this_\page\len)) - (_scroll_pos_)) + Bool(Not _inverted_) * (_scroll_pos_))
+  EndMacro
+  
+  Macro _thumb_pos_(_this_, _scroll_pos_)
+    (_this_\area\pos + Round(((_scroll_pos_)-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
+  EndMacro
+  
   Procedure ReDraw(canvas.i)
     With *Scroll
       
@@ -724,5 +732,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0-4-------f-BAA9
+; Folding = --0-------4fAAA-
 ; EnableXP

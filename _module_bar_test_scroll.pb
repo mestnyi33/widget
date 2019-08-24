@@ -293,7 +293,7 @@ CompilerIf #PB_Compiler_IsMainFile
             If \h\max<>ScrollWidth : SetAttribute(\h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
             If \v\max<>ScrollHeight : SetAttribute(\v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
             
-            Resizes2(*scroll, 0, 30, Width, Height-30)
+            Resizes2(*scroll, 0, 0, Width, Height)
             Repaint = #True
             
         EndSelect

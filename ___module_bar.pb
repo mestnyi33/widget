@@ -129,10 +129,25 @@ DeclareModule Bar
   
   ;- - _S_Text
   Structure _S_text Extends _S_coordinate
+    ;     big.i[3]
+    ;     pos.i
+    ;     len.i
+    ;     caret.i[3] ; 0 = Pos ; 1 = PosFixed
+    ;     
     fontID.i
-    string.s
+    string.s;[3]
     change.b
+    ;     
+    ;     lower.b
+    ;     upper.b
+    ;     pass.b
+    ;     editable.b
+    ;     numeric.b
+    ;     multiLine.b
+    ;     vertical.b
     rotate.f
+    
+    ;     align._S_align
   EndStructure
   
   ;- - _S_bar
@@ -142,14 +157,16 @@ DeclareModule Bar
     focus.l
     radius.l
     
-    mode.l
-    change.l
-    cursor.l
     hide.b[2]
+    ; disable.b[2]
     vertical.b
     inverted.b
     direction.l
     scrollstep.l
+    change.l
+    mode.l
+    cursor.l
+    
     
     max.l
     min.l
@@ -159,9 +176,10 @@ DeclareModule Bar
     color._S_color[4]
     button._S_button[4] 
     
-    *text._S_text
+    *text._S_text;[4]
     *event._S_event 
     *splitter._S_splitter
+    *scroll._S_scroll
   EndStructure
   
   Global *event._S_event = AllocateStructure(_S_event)
@@ -189,6 +207,7 @@ DeclareModule Bar
   Declare.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
   Declare.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, Radius.l=0)
   Declare.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=7)
+  Declare.i ScrollArea(X.l, Y.l, Width.l, Height.l, AreaWidth.l, AreaHeight.l, ScrollStep.l, Flag.l=0)
   
   Declare.b Resizes(*scroll._S_scroll, X.l,Y.l,Width.l,Height.l)
   Declare.b Updates(*scroll._S_scroll, ScrollArea_X.l, ScrollArea_Y.l, ScrollArea_Width.l, ScrollArea_Height.l)
@@ -266,6 +285,28 @@ Module Bar
     \frame[#Disabled] = $FFBABABA
     
   EndWith
+  
+  Macro _set_def_colors_(_this_)
+    _this_\scrollstep = 1
+    
+    ; Цвет фона скролла
+    _this_\color\alpha[0] = 255
+    _this_\color\alpha[1] = 0
+    
+    _this_\color\back = $FFF9F9F9
+    _this_\color\frame = _this_\color\back
+    _this_\color\front = $FFFFFFFF ; line
+    
+    _this_\color[#_b_1] = def_colors
+    _this_\color[#_b_2] = def_colors
+    _this_\color[#_b_3] = def_colors
+  EndMacro
+  
+  Macro _set_last_parameters_(_this_, _type_, _flag_)
+    *event\widget = _this_
+    _this_\type = _type_
+    ;     _this_\class = #PB_Compiler_Procedure
+  EndMacro
   
   Macro _thumb_pos_(_this_, _scroll_pos_)
     (_this_\area\pos + Round(((_scroll_pos_)-_this_\min) * (_this_\area\len / (_this_\max-_this_\min)), #PB_Round_Nearest)) 
@@ -464,6 +505,8 @@ Module Bar
       EndIf   
     EndIf
   EndProcedure
+  
+  
   
   ;-
   ;- - DRAW
@@ -847,6 +890,16 @@ Module Bar
         Case #PB_GadgetType_ProgressBar : Draw_Progress(*this)
       EndSelect
       
+      ; Draw scrollbars
+      If \scroll 
+        If \scroll\v 
+          Draw_Scroll(\scroll\v )
+        EndIf
+        If \scroll\h 
+          Draw_Scroll(\scroll\h )
+        EndIf
+      EndIf
+      
     EndWith
   EndProcedure
   
@@ -1213,6 +1266,11 @@ Module Bar
         EndIf
       EndIf
       
+      ; Resize scrollbars
+      If \scroll And \scroll\v And \scroll\h
+        Resizes(\scroll, \x+2,\y+2, \width-4,\height-4)
+      EndIf
+      
       \hide[1] = Bool(Not ((\max-\min) > \page\len))
       ProcedureReturn \hide[1]
     EndWith
@@ -1320,45 +1378,84 @@ Module Bar
   EndProcedure
   
   ;-
-  Macro _bar_(_this_, _min_, _max_, _page_length_, _flag_, _radius_=0)
-    *event\widget = _this_
-    _this_\scrollstep = 1
-    _this_\radius = _radius_
+  Procedure.i Area(*parent, X.i,Y.i,Width.i,Height.i, Size, Mode.i=0)
+    Protected *this._S_scroll = AllocateStructure(_S_scroll)
     
-    ; Цвет фона скролла
-    _this_\color\alpha[0] = 255
-    _this_\color\alpha[1] = 0
+    *this\v._S_bar = AllocateStructure(_S_bar)
+    *this\h._S_bar = AllocateStructure(_S_bar)
     
-    _this_\color\back = $FFF9F9F9
-    _this_\color\frame = _this_\color\back
-    _this_\color\front = $FFFFFFFF ; line
+    With *this
+      _set_def_colors_(\v)
+      _set_def_colors_(\h)
+      
+      \v\type = #PB_GadgetType_ScrollBar
+      \v\vertical = 1
+      \v\radius = 7
+      
+      \h\type = #PB_GadgetType_ScrollBar
+      \h\radius = 7
+      
+      \v\button\len = Size-1
+      \v\button[#_b_1]\interact = 1
+      \v\button[#_b_2]\interact = 1
+      \v\button[#_b_3]\interact = 1
+      \v\button[#_b_1]\arrow_type =- 1
+      \v\button[#_b_2]\arrow_type =- 1
+      \v\button[#_b_1]\arrow_size = 4
+      \v\button[#_b_2]\arrow_size = 4
+      \v\button[#_b_1]\len = \v\button\len
+      \v\button[#_b_2]\len = \v\button\len
+      
+      \h\button\len = Size-1
+      \h\button[#_b_1]\interact = 1
+      \h\button[#_b_2]\interact = 1
+      \h\button[#_b_3]\interact = 1
+      \h\button[#_b_1]\arrow_type =- 1
+      \h\button[#_b_2]\arrow_type =- 1
+      \h\button[#_b_1]\arrow_size = 4
+      \h\button[#_b_2]\arrow_size = 4
+      \h\button[#_b_1]\len = \h\button\len
+      \h\button[#_b_2]\len = \h\button\len
+      
+      ;       If *parent
+      ;         \v\parent = *parent
+      ;         \v\root = \v\parent\root
+      ;         \v\window = \v\parent\window
+      ;       EndIf
+      
+      ;       If *parent
+      ;         \h\parent = *parent
+      ;         \h\root = \h\parent\root
+      ;         \h\window = \h\parent\window
+      ;       EndIf
+      
+      Resize(\v, Width-Size,0,Size,Height)
+      Resize(\h, 0,Height-Size,Width,Bool(mode)*Size)
+    EndWith
     
-    _this_\color[#_b_1] = def_colors
-    _this_\color[#_b_2] = def_colors
-    _this_\color[#_b_3] = def_colors
-    
-    _this_\vertical = Bool(_flag_&#PB_Bar_Vertical=#PB_Bar_Vertical)
-    _this_\inverted = Bool(_flag_&#PB_Bar_Inverted=#PB_Bar_Inverted)
-    
-    If _this_\min <> _min_ : SetAttribute(_this_, #PB_Bar_Minimum, _min_) : EndIf
-    If _this_\max <> _max_ : SetAttribute(_this_, #PB_Bar_Maximum, _max_) : EndIf
-    If _this_\page\len <> _page_length_ : SetAttribute(_this_, #PB_Bar_PageLength, _page_length_) : EndIf
-  EndMacro
+    ProcedureReturn *this
+  EndProcedure
   
   Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, Radius.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
-    _bar_(*this, min, max, PageLength, Flag, Radius)
     
     With *this
-      \type = #PB_GadgetType_ScrollBar
-      \button[#_b_1]\arrow_type = 1
-      \button[#_b_2]\arrow_type = 1
-      \button[#_b_1]\arrow_size = 6
-      \button[#_b_2]\arrow_size = 6
+      _set_def_colors_(*this)
+      _set_last_parameters_(*this, #PB_GadgetType_ScrollBar, Flag) 
+      
+      \radius = Radius
+      \vertical = Bool(Flag&#PB_Bar_Vertical=#PB_Bar_Vertical)
+      \inverted = Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted)
+      
       ;\interact = 1
       \button[#_b_1]\interact = 1
       \button[#_b_2]\interact = 1
       \button[#_b_3]\interact = 1
+      
+      \button[#_b_1]\arrow_type = 1
+      \button[#_b_2]\arrow_type = 1
+      \button[#_b_1]\arrow_size = 6
+      \button[#_b_2]\arrow_size = 6
       
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
@@ -1382,35 +1479,46 @@ Module Bar
         \button[#_b_2]\len = \button\len
       EndIf
       
+      SetAttribute(*this, #PB_Bar_Minimum, Min)
+      SetAttribute(*this, #PB_Bar_Maximum, Max)
+      SetAttribute(*this, #PB_Bar_PageLength, PageLength) 
+      
       If (Width+Height)
         Resize(*this, X,Y,Width,Height)
       EndIf
     EndWith
+    
     ProcedureReturn *this
   EndProcedure
   
   Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=7)
     Protected *this._S_bar = AllocateStructure(_S_bar)
-    _bar_(*this, min, max, 0, Flag, Radius)
     
     With *this
-      \type = #PB_GadgetType_TrackBar
-      \inverted = \vertical
+      _set_def_colors_(*this)
+      _set_last_parameters_(*this, #PB_GadgetType_TrackBar, Flag)
+      
+      \vertical = Bool(Flag&#PB_Bar_Vertical=#PB_Bar_Vertical)
       \mode = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks) * #PB_Bar_Ticks
-      \color[#_b_1]\state = Bool(Not \vertical) * #Selected
-      \color[#_b_2]\state = Bool(\vertical) * #Selected
+      
+      \radius = 7
       \button\len = 15
+      \inverted = \vertical
       \button[#_b_1]\len = 1
       \button[#_b_2]\len = 1
-      
       \button[#_b_3]\interact = 1
-      \button[#_b_3]\arrow_size = 6
+      
+      \button[#_b_3]\arrow_size = 4
       \button[#_b_3]\arrow_type = 0
       
-      \cursor = #PB_Cursor_Hand
+      \color[#_b_1]\state = Bool(Not \vertical) * #Selected
+      \color[#_b_2]\state = Bool(\vertical) * #Selected
       
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
+      
+      SetAttribute(*this, #PB_Bar_Minimum, Min)
+      SetAttribute(*this, #PB_Bar_Maximum, Max)
       
       If (Width+Height)
         Resize(*this, X,Y,Width,Height)
@@ -1422,15 +1530,18 @@ Module Bar
   
   Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
-    _bar_(*this, min, max, 0, Flag, Radius)
     
     With *this
-      \type = #PB_GadgetType_ProgressBar
+      _set_def_colors_(*this)
+      _set_last_parameters_(*this, #PB_GadgetType_ProgressBar, Flag) 
+      
+      \vertical = Bool(Flag&#PB_Bar_Vertical=#PB_Bar_Vertical)
       \inverted = \vertical
       \color[#_b_1]\state = Bool(Not \vertical) * #Selected
       \color[#_b_2]\state = Bool(\vertical) * #Selected
       
-       \button[#_b_3]\interact = 1
+      \button[#_b_3]\interact = 1
+      
       \text = AllocateStructure(_S_text)
       \text\change = 1
       \text\rotate = \vertical * 90 ; 270
@@ -1442,6 +1553,9 @@ Module Bar
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
       
+      SetAttribute(*this, #PB_Bar_Minimum, Min)
+      SetAttribute(*this, #PB_Bar_Maximum, Max)
+      
       If (Width+Height)
         Resize(*this, X,Y,Width,Height)
       EndIf
@@ -1451,11 +1565,12 @@ Module Bar
   
   Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, Radius.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
-    _bar_(*this, 0, 0, 0, Flag, Radius)
     
     With *this
-      \type = #PB_GadgetType_Splitter
-      \vertical ! 1 ; = Bool(Flag&#PB_Splitter_Vertical=0)
+      _set_def_colors_(*this)
+      _set_last_parameters_(*this, #PB_GadgetType_Splitter, Flag) 
+      
+      \vertical = Bool(Flag&#PB_Splitter_Vertical=0)
       
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
@@ -1488,12 +1603,29 @@ Module Bar
         \button\len = 3
       EndIf
       
-      ;\thumb\len=\button\len
+      ;       SetParent(\Splitter\First, *this)
+      ;       SetParent(\Splitter\Second, *this)
       
       If (Width+Height)
         Resize(*this, X,Y,Width,Height)
       EndIf
+    EndWith
+    
+    ProcedureReturn *this
+  EndProcedure
+  
+  Procedure.i ScrollArea(X.l, Y.l, Width.l, Height.l, AreaWidth.l, AreaHeight.l, ScrollStep.l, Flag.l=0)
+   Protected *this._S_bar = AllocateStructure(_S_bar)
+    
+    With *this
+      _set_def_colors_(*this)
+      _set_last_parameters_(*this, #PB_GadgetType_ScrollArea, Flag) 
       
+      \scroll = Area(*this, 0,0,0,0, 16, 1)
+    
+      If (Width+Height)
+        Resize(*this, X,Y,Width,Height)
+      EndIf
     EndWith
     
     ProcedureReturn *this
@@ -1602,7 +1734,7 @@ Module Bar
           EndIf
         EndIf
       EndIf
-           
+      
       ; get at point buttons
       If Down ; GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
         If \from =- 1 Or (\from > 0 And MouseX>\button[\from ]\x And MouseX=<\button[\from ]\x+\button[\from ]\width And 
@@ -1645,7 +1777,7 @@ Module Bar
               _callback_(*this, #PB_EventType_LeftButtonUp)
             EndIf
             
-           ; Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
+            ; Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
             _callback_(*this, #PB_EventType_MouseLeave)
           EndIf 
           
@@ -1678,7 +1810,7 @@ Module Bar
               \from = 0
             EndIf
           EndIf
-        
+          
         Case #PB_EventType_LeftButtonDown
           If from =- 1 And \button[#_b_3]\interact 
             If \Vertical
@@ -1737,20 +1869,20 @@ Module Bar
                 
                 If \from > 0 And \button[\from]\interact
                   ; 10>>20>>30 
-;                   If (*leave And *leave\from =- 1)
-; ;                     If *leave
-; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from +" "+ *leave\from
-; ;                     Else
-; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from
-; ;                     EndIf
-;                     _callback_(*this, #PB_EventType_MouseEnter)
-;                    ; *leave\from = 0
-;                    ; ProcedureReturn
-;                   EndIf
-;                   
-;                   If Not (*leave And *leave\from =- 1)
-                    _callback_(*this, #PB_EventType_MouseEnter)
-;                   EndIf
+                  ;                   If (*leave And *leave\from =- 1)
+                  ; ;                     If *leave
+                  ; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from +" "+ *leave\from
+                  ; ;                     Else
+                  ; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from
+                  ; ;                     EndIf
+                  ;                     _callback_(*this, #PB_EventType_MouseEnter)
+                  ;                    ; *leave\from = 0
+                  ;                    ; ProcedureReturn
+                  ;                   EndIf
+                  ;                   
+                  ;                   If Not (*leave And *leave\from =- 1)
+                  _callback_(*this, #PB_EventType_MouseEnter)
+                  ;                   EndIf
                 EndIf
                 
                 If *leave <> *this 
@@ -1761,11 +1893,11 @@ Module Bar
               
             ElseIf *leave = *this
               If \from > 0 And \button[\from]\interact
-               ; Debug ""+#PB_Compiler_Line +" Мышь перешел с итем"
-               _callback_(*this, #PB_EventType_MouseLeave)
+                ; Debug ""+#PB_Compiler_Line +" Мышь перешел с итем"
+                _callback_(*this, #PB_EventType_MouseLeave)
               EndIf 
               
-               ; Debug ""+#PB_Compiler_Line +" Мышь находится снаружи"
+              ; Debug ""+#PB_Compiler_Line +" Мышь находится снаружи"
               \from = 0
               *leave = 0
             EndIf
@@ -2064,7 +2196,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     Button_0 = Bar::Progress(0, 0, 0, 0, 0,100) ; No need to specify size or coordinates
-    Button_1 = Bar::Progress(0, 0, 0, 0, 10,100); No need to specify size or coordinates
+    Button_1 = Bar::ScrollArea(0, 0, 0, 0, 100,100, 1); No need to specify size or coordinates
     Button_2 = Bar::Progress(0, 0, 0, 0, 20,100); as they will be sized automatically
     Button_3 = Bar::Progress(0, 0, 0, 0, 30,100); as they will be sized automatically
     Button_4 = Bar::Progress(0, 0, 0, 0, 40,100); as they will be sized automatically
@@ -2099,5 +2231,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------0-----------6----------
+; Folding = ---f+------------------------4f--------------
 ; EnableXP
