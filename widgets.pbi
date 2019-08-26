@@ -2667,7 +2667,7 @@ Module Widget
               If sublevel = *Item()\sublevel
                 Break
               ElseIf sublevel < *Item()\sublevel And *Item()\i_Parent
-                *Item()\hide = Bool(*Item()\i_Parent\box\Checked Or *Item()\i_Parent\hide) * 1
+                *Item()\hide = Bool(*Item()\i_Parent\box\Checked | *Item()\i_Parent\hide)
               EndIf
             Wend
             PopListPosition(*Item())
@@ -12221,5 +12221,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------u---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---
+; Folding = -------------------u----------------------------------------------------------------------------v------------------------------Pz------------------------------------------------------------------------------8-------------------------0---
 ; EnableXP
