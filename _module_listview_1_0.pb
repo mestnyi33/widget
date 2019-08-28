@@ -2000,6 +2000,7 @@ Module Bar
       \button[#_b_1]\interact = 1
       \button[#_b_2]\interact = 1
       \button[#_b_3]\interact = 1
+      \from =- 1
       
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
@@ -2049,6 +2050,7 @@ Module Bar
       \button[#_b_3]\arrow_type = 0
       
       \cursor = #PB_Cursor_Hand
+      \from =- 1
       
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
@@ -2079,6 +2081,7 @@ Module Bar
       CompilerIf #PB_Compiler_OS <>#PB_OS_MacOS 
         \text\fontID = GetGadgetFont(#PB_Default)
       CompilerEndIf
+      \from =- 1
       
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
@@ -2128,6 +2131,7 @@ Module Bar
         \mode = 1
         \button\len = 3
       EndIf
+      \from =- 1
       
       ;\thumb\len=\button\len
       
@@ -2165,15 +2169,13 @@ Module Bar
   
   
   Procedure.b CallBack(*this._S_bar, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
-    Protected Result, from =- 1 
+    Protected Result, from
     Static cursor_change, LastX, LastY, Last, *leave._S_bar, Down
     
     Macro _callback_(_this_, _type_)
       Select _type_
         Case #PB_EventType_MouseLeave
-          ;If _this_\from = 3
-          Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
-          ;EndIf
+          ; Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
           _this_\color[_this_\from]\state = #Normal 
           
           If _this_\cursor And cursor_change
@@ -2183,9 +2185,7 @@ Module Bar
           Result = #True
           
         Case #PB_EventType_MouseEnter
-          ;If _this_\from = 3
-          Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
-          ;EndIf
+          ; Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
           _this_\color[_this_\from]\state = #Entered 
           
           ; Set splitter cursor
@@ -2249,93 +2249,83 @@ Module Bar
       EndIf
       
       ; get at point buttons
-      If Not \hide And ((Mousex>=\x And Mousex=<\x+\width And Mousey>\y And Mousey=<\y+\height) Or Down)
-        If \button 
-          If \button[#_b_3]\len And (MouseX>\button[#_b_3]\x And MouseX=<\button[#_b_3]\x+\button[#_b_3]\width And 
-                                     MouseY>\button[#_b_3]\y And MouseY=<\button[#_b_3]\y+\button[#_b_3]\height)
-            from = #_b_3
-          ElseIf \button[#_b_2]\len And (MouseX>\button[#_b_2]\x And MouseX=<\button[#_b_2]\x+\button[#_b_2]\width And 
-                                         MouseY>\button[#_b_2]\y And MouseY=<\button[#_b_2]\y+\button[#_b_2]\height)
-            from = #_b_2
-          ElseIf \button[#_b_1]\len And (MouseX>\button[#_b_1]\x And MouseX=<\button[#_b_1]\x+\button[#_b_1]\width And 
-                                         MouseY>\button[#_b_1]\y And MouseY=<\button[#_b_1]\y+\button[#_b_1]\height)
-            from = #_b_1
-          ElseIf (MouseX>\button\x And MouseX=<\button\x+\button\width And 
-                  MouseY>\button\y And MouseY=<\button\y+\button\height)
-            from = 0
-          EndIf
-          
-          If \type = #PB_GadgetType_TrackBar ;Or \type = #PB_GadgetType_ProgressBar
-            Select from
-              Case #_b_1, #_b_2
-                from = 0
-                
-            EndSelect
-            ; ElseIf \type = #PB_GadgetType_ProgressBar
-            ;  
-          EndIf
-        Else
-          from = 0
-        EndIf 
-        
-        If Not Down And \from <> from
-          If *leave > 0 And *leave\from >= 0
-            If *leave\button[*leave\from]\interact And 
-               Not (MouseX>*leave\button[*leave\from]\x And MouseX=<*leave\button[*leave\from]\x+*leave\button[*leave\from]\width And 
-                    MouseY>*leave\button[*leave\from]\y And MouseY=<*leave\button[*leave\from]\y+*leave\button[*leave\from]\height)
-              
-              ; set mouse leave from item
-                _callback_(*leave, #PB_EventType_MouseLeave)
+      If Down ; GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
+        If \from =- 1 Or (\from > 0 And MouseX>\button[\from ]\x And MouseX=<\button[\from ]\x+\button[\from ]\width And 
+                          MouseY>\button[\from ]\y And MouseY=<\button[\from ]\y+\button[\from ]\height)
+          from = \from 
+        EndIf
+      Else
+        If Not \hide And (Mousex>=\x And Mousex<\x+\width And Mousey>\y And Mousey=<\y+\height) 
+          If \button 
+            If \button[#_b_3]\len And (MouseX>\button[#_b_3]\x And MouseX=<\button[#_b_3]\x+\button[#_b_3]\width And 
+                                       MouseY>\button[#_b_3]\y And MouseY=<\button[#_b_3]\y+\button[#_b_3]\height)
+              from = #_b_3
+            ElseIf \button[#_b_2]\len And (MouseX>\button[#_b_2]\x And MouseX=<\button[#_b_2]\x+\button[#_b_2]\width And 
+                                           MouseY>\button[#_b_2]\y And MouseY=<\button[#_b_2]\y+\button[#_b_2]\height)
+              from = #_b_2
+            ElseIf \button[#_b_1]\len And (MouseX>\button[#_b_1]\x And MouseX=<\button[#_b_1]\x+\button[#_b_1]\width And 
+                                           MouseY>\button[#_b_1]\y And MouseY=<\button[#_b_1]\y+\button[#_b_1]\height)
+              from = #_b_1
+            ElseIf (MouseX>\button\x And MouseX=<\button\x+\button\width And 
+                    MouseY>\button\y And MouseY=<\button\y+\button\height)
+              from =- 1
             EndIf
             
-            *leave\from = 0
-          EndIf
+            If \type = #PB_GadgetType_TrackBar ;Or \type = #PB_GadgetType_ProgressBar
+              Select from
+                Case #_b_1, #_b_2
+                  from =- 1
+                  
+              EndSelect
+              ; ElseIf \type = #PB_GadgetType_ProgressBar
+              ;  from = 0
+            EndIf
+            
+          Else
+            from =- 1
+          EndIf 
+        Else
+          If \from > 0 And \button[\from]\interact
+            If EventType = #PB_EventType_LeftButtonUp
+              _callback_(*this, #PB_EventType_LeftButtonUp)
+            EndIf
+            
+            ; Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
+            _callback_(*this, #PB_EventType_MouseLeave)
+          EndIf 
           
-          \from = from
-           *leave = *this
-         
-          If \from >= 0 And \button[\from]\interact
-            _callback_(*this, #PB_EventType_MouseEnter)
-          EndIf
-        EndIf
-        
-      Else
-        If \from >= 0 And \button[\from]\interact
-          If EventType = #PB_EventType_LeftButtonUp
-            _callback_(*this, #PB_EventType_LeftButtonUp)
-          EndIf
-          
-          Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
-          _callback_(*this, #PB_EventType_MouseLeave)
+          \from = 0
         EndIf 
-        
-        \from =- 1
-        
-        If *leave = *this
-          *leave = 0
-        EndIf
       EndIf
       
       ; get
       Select EventType
+        Case #PB_EventType_MouseWheel  
+          If *leave = *this
+            Select WheelDelta
+              Case-1 : Result = SetState(*this, \page\pos - (\max-\min)/30)
+              Case 1 : Result = SetState(*this, \page\pos + (\max-\min)/30)
+            EndSelect
+          EndIf
+          
         Case #PB_EventType_MouseLeave 
-          If Not Down : \from =- 1 : from =- 1 : LastX = 0 : LastY = 0 : EndIf
+          If Not Down : \from = 0 : from = 0 : LastX = 0 : LastY = 0 : EndIf
           
         Case #PB_EventType_LeftButtonUp 
           Down = 0 : LastX = 0 : LastY = 0
           
-          If \from >= 0 ;And \button[\from]\interact
+          If \from > 0 And \button[\from]\interact
             _callback_(*this, #PB_EventType_LeftButtonUp)
             
-            If from =- 1
+            If Not from > 0
               ; Debug ""+#PB_Compiler_Line +" Мышь cнаружи итема"
               _callback_(*this, #PB_EventType_MouseLeave)
-              \from =- 1
+              \from = 0
             EndIf
           EndIf
           
         Case #PB_EventType_LeftButtonDown
-          If from = 0 And \button[#_b_3]\interact 
+          If from =- 1 And \button[#_b_3]\interact 
             If \Vertical
               Result = SetPos(*this, (MouseY-\thumb\len/2))
             Else
@@ -2345,7 +2335,7 @@ Module Bar
             from = 3
           EndIf
           
-          If from >= 0 And \button[from]\interact
+          If from > 0 And \button[from]\interact
             Down = 1
             \from = from 
             *leave = *this
@@ -2355,16 +2345,74 @@ Module Bar
           
           ; Чтобы не пропускать событие
           ; внутри детей сплиттера
-          If \from >= 0 ;And \button[\from]\interact 
+          If \from ; > 0 And \button[\from]\interact 
             Result = #True
           EndIf
           
         Case #PB_EventType_MouseMove
-          If Down And *leave = *this And Bool(LastX|LastY) 
-            If \Vertical
-              Result = SetPos(*this, (MouseY-LastY))
-            Else
-              Result = SetPos(*this, (MouseX-LastX))
+          If Down
+            
+            If *leave = *this And Bool(LastX|LastY) 
+              If \Vertical
+                Result = SetPos(*this, (MouseY-LastY))
+              Else
+                Result = SetPos(*this, (MouseX-LastX))
+              EndIf
+            EndIf
+            
+          Else
+            If from
+              If \from <> from
+                If *leave > 0 And *leave\from > 0
+                  If Not (MouseX>*leave\button[*leave\from]\x And MouseX=<*leave\button[*leave\from]\x+*leave\button[*leave\from]\width And 
+                          MouseY>*leave\button[*leave\from]\y And MouseY=<*leave\button[*leave\from]\y+*leave\button[*leave\from]\height)
+                    
+                    ; set mouse leave from item
+                    If *leave\button[*leave\from]\interact
+                      _callback_(*leave, #PB_EventType_MouseLeave)
+                      *leave\from = 0
+                    EndIf
+                  Else
+                    *leave\from = 0 
+                    *leave = 0
+                  EndIf
+                EndIf
+                
+                \from = from
+                
+                If \from > 0 And \button[\from]\interact
+                  ; 10>>20>>30 
+                  ;                   If (*leave And *leave\from =- 1)
+                  ; ;                     If *leave
+                  ; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from +" "+ *leave\from
+                  ; ;                     Else
+                  ; ;                       Debug ""+#PB_Compiler_Line +" "+ *this +" "+ *leave +" "+ *this\from
+                  ; ;                     EndIf
+                  ;                     _callback_(*this, #PB_EventType_MouseEnter)
+                  ;                    ; *leave\from = 0
+                  ;                    ; ProcedureReturn
+                  ;                   EndIf
+                  ;                   
+                  ;                   If Not (*leave And *leave\from =- 1)
+                  _callback_(*this, #PB_EventType_MouseEnter)
+                  ;                   EndIf
+                EndIf
+                
+                If *leave <> *this 
+                  
+                  *leave = *this
+                EndIf
+              EndIf
+              
+            ElseIf *leave = *this
+              If \from > 0 And \button[\from]\interact
+                ; Debug ""+#PB_Compiler_Line +" Мышь перешел с итем"
+                _callback_(*this, #PB_EventType_MouseLeave)
+              EndIf 
+              
+              ; Debug ""+#PB_Compiler_Line +" Мышь находится снаружи"
+              \from = 0
+              *leave = 0
             EndIf
           EndIf
           
@@ -3157,78 +3205,17 @@ Module ListView
               _clip_output_(*This, \X, #PB_Ignore, \Width, #PB_Ignore) 
               
               ; Draw string
-              If \Text[2]\Len > 0 And *This\Color\Front <> *This\Color\Front[2]
-                
-                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If (*This\Caret[1] > *This\Caret And *This\Line[1] = *This\Line) Or (*This\Line[1] > *This\Line And *This\Line = \Item)
-                    \Text[3]\X = Text_X+TextWidth(Left(\Text\String.s, *This\Caret[1])) 
-                    
-                    If *This\Line[1] = *This\Line
-                      \Text[2]\X = \Text[3]\X-\Text[2]\Width
-                    EndIf
-                    
-                    If \Text[3]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawText(\Text[3]\X, Text_Y, \Text[3]\String.s, *This\Color\Front)
-                    EndIf
-                    
-                    DrawingMode(#PB_2DDrawing_Default)
-                    Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                    
-                    If \Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawText(Text_X, Text_Y, \Text[1]\String.s+\Text[2]\String.s, *This\Color\Front[2])
-                    EndIf
-                    
-                    If \Text[1]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawText(Text_X, Text_Y, \Text[1]\String.s, *This\Color\Front)
-                    EndIf
-                  Else
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawText(Text_X, Text_Y, \Text\String.s, *This\Color\Front)
-                    
-                    DrawingMode(#PB_2DDrawing_Default)
-                    Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                    
-                    If \Text[2]\String.s
-                      DrawingMode(#PB_2DDrawing_Transparent)
-                      DrawText(\Text[2]\X, Text_Y, \Text[2]\String.s, *This\Color\Front[2])
-                    EndIf
-                  EndIf
-                CompilerElse
-                  If \Text[1]\String.s
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(Text_X, Text_Y, \Text[1]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                  EndIf
-                  
-                  DrawingMode(#PB_2DDrawing_Default)
-                  Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                  
-                  If \Text[2]\String.s
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(\Text[2]\X, Text_Y, \Text[2]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[2])
-                  EndIf
-                  
-                  If \Text[3]\String.s
-                    DrawingMode(#PB_2DDrawing_Transparent)
-                    DrawRotatedText(\Text[3]\X, Text_Y, \Text[3]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front)
-                  EndIf
-                CompilerEndIf
-                
+              If \Text[2]\Len > 0
+                DrawingMode(#PB_2DDrawing_Default)
+                Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
+              EndIf
+              
+              If \Color\State = 2
+                DrawingMode(#PB_2DDrawing_Transparent)
+                DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, \Color\Front[\Color\State])
               Else
-                If \Text[2]\Len > 0
-                  DrawingMode(#PB_2DDrawing_Default)
-                  Box(\Text[2]\X, Y, \Text[2]\Width+\Text[2]\Width[2], Height, *This\Color\Frame[2])
-                EndIf
-                
-                If \Color\State = 2
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, \Color\Front[\Color\State])
-                Else
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
-                EndIf
+                DrawingMode(#PB_2DDrawing_Transparent)
+                DrawRotatedText(Text_X, Text_Y, \Text[0]\String.s, Bool(\Text\Vertical)**This\Text\Rotate, *This\Color\Front[*This\Color\State])
               EndIf
               
             EndIf
@@ -3774,7 +3761,7 @@ Module ListView
         
         ;         PushListPosition(\items())
         ;         ForEach \items()
-        ;           If (MouseY>\items()\y And MouseY=<\items()\y+\items()\height)
+        ;           If Not \items()\hide And (MouseY>\items()\y-\scroll\v\Page\Pos And MouseY=<\items()\y+\items()\height-\scroll\v\Page\Pos)
         ;             from = \items()\item
         ;             Break
         ;           EndIf
@@ -3798,35 +3785,22 @@ Module ListView
             SelectElement(\items(), *leave\from)
             
             If Not (MouseX>*leave\items()\x And MouseX=<*leave\items()\x+*leave\items()\width And 
-                    MouseY>*leave\items()\y And MouseY=<*leave\items()\y+*leave\items()\height)
+                    MouseY>*leave\items()\y And MouseY=<*leave\items()\y+*leave\items()\height) ; And \button[\from]\interact
               
-              ; set mouse leave from item
-              ;If *leave\button[*leave\from]\interact
               _callback_(*leave, #PB_EventType_MouseLeave)
-              *leave\from =- 1
-              ;EndIf
-            Else
-              *leave\from =- 1
-              *leave = 0
             EndIf
+             
+             *leave\from =- 1
           EndIf
           
           \from = from
-          
-          If \from >= 0 ; And \button[\from]\interact ;(*leave = *this Or Not Down) And 
+          *leave = *this
+        
+          If \from >= 0 ; And \button[\from]\interact
             SelectElement(\items(), \from)
             
-            If Not (*leave And *leave\from =- 1)
-              _callback_(*this, #PB_EventType_MouseEnter)
-            EndIf
+            _callback_(*this, #PB_EventType_MouseEnter)
           EndIf
-          
-          If *leave <> *this 
-            *leave = *this
-          EndIf
-          
-        Else
-          ;      _callback_(*this, #PB_EventType_MouseMove)
         EndIf
         
       Else
@@ -3857,7 +3831,7 @@ Module ListView
           If \from >= 0 ;And \button[\from]\interact
             _callback_(*this, #PB_EventType_LeftButtonUp)
             
-            If Not from >= 0
+            If from =- 1
               ; Debug ""+#PB_Compiler_Line +" Мышь cнаружи итема"
               _callback_(*this, #PB_EventType_MouseLeave)
               \from =- 1
@@ -3922,7 +3896,7 @@ Module ListView
       ;If *This And (Not *This\scroll\v\from And Not *This\scroll\h\from)
       ;\Flag\clickselect = 1
       
-      If Not (\scroll\v\from > 0 Or \scroll\h\from > 0) And _CallBack(*this, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
+      If Not (\scroll\v\from Or \scroll\h\from) And _CallBack(*this, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
         ProcedureReturn 1
       ElseIf \from =- 1
         Repaint | Bar::CallBack(\scroll\v, EventType, \Canvas\Mouse\X, \Canvas\Mouse\Y)
@@ -3959,6 +3933,7 @@ Module ListView
         \Line =- 1
         \X =- 1
         \Y =- 1
+        \from =- 1
         
         ; Set the Default widget flag
         If Bool(Flag&#PB_Text_WordWrap)
@@ -4193,8 +4168,10 @@ CompilerIf #PB_Compiler_IsMainFile
           
         Case #PB_Event_LeftClick  
           SetActiveGadget(0)
+          
         Case #PB_Event_RightClick 
           SetActiveGadget(10)
+          
       EndSelect
     Until Event = #PB_Event_CloseWindow
   EndIf
@@ -4203,5 +4180,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------v+------------------
+; Folding = -------vv-------------------------040+-------+---v-+--v-------------4--8--0------
 ; EnableXP
