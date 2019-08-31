@@ -3240,7 +3240,7 @@ Module Tree
           _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
   EndMacro
   
-  Procedure.b _CallBack(*this._S_widget, EventType.l, MouseX.l=0, MouseY.l=0, WheelDelta.l=0)
+  Procedure.b _CallBack(*this._S_widget, EventType.l, mouse_x.l=0, mouse_y.l=0, WheelDelta.l=0)
     Protected Result, from =- 1
     Static *l._S_widget
     Static cursor_change, LastX, LastY, Last, *leave._S_widget, Down
@@ -3351,26 +3351,30 @@ Module Tree
       ;       ; the splitter children’s widget
       ;       If \splitter And \from <> #_b_3
       ;         If \splitter\first And Not \splitter\g_first
-      ;           If CallBack(\splitter\first, EventType, MouseX, MouseY)
+      ;           If CallBack(\splitter\first, EventType, mouse_x, mouse_y)
       ;             ProcedureReturn 1
       ;           EndIf
       ;         EndIf
       ;         If \splitter\second And Not \splitter\g_second
-      ;           If CallBack(\splitter\second, EventType, MouseX, MouseY)
+      ;           If CallBack(\splitter\second, EventType, mouse_x, mouse_y)
       ;             ProcedureReturn 1
       ;           EndIf
       ;         EndIf
       ;       EndIf
       
       ; get at point buttons
-      If Not \hide And _from_point_(Mousex, Mousey, *this, [2]) ; ((Mousex>\x[2] And Mousex=<\x[2]+\width[2] And Mousey>\y[2] And Mousey=<\y[2]+\height[2]) Or Down)
+      If Not \hide And (_from_point_(mouse_x, mouse_y, *this, [2]) Or Down) ; ((mouse_x>\x[2] And mouse_x=<\x[2]+\width[2] And mouse_y>\y[2] And mouse_y=<\y[2]+\height[2]) Or Down)
         If Down
           *this = Down
         EndIf
         
         PushListPosition(\items())
         ForEach \items()
-          If Not \items()\hide And \items()\draw And (MouseY>\items()\y-\scroll\v\page\pos And MouseY=<\items()\y+\items()\height-\scroll\v\page\pos)
+          If Not \items()\draw And Not Down
+            Continue
+          EndIf
+          
+          If Not \items()\hide And (mouse_y>\items()\y-\scroll\v\page\pos And mouse_y=<\items()\y+\items()\height-\scroll\v\page\pos)
             from = \items()\index
             Break
           EndIf
@@ -3381,10 +3385,14 @@ Module Tree
         ;         from = ((\Canvas\Mouse\Y-\Y[2]+\scroll\v\Page\Pos - 2) / \text\height) 
         ;         If from < 0 : from = 0 : Else : If from < ListSize(\items()) : SelectElement(\items(), from) : Else : from = ListSize(\items()) - 1 : EndIf : EndIf
         
-        If \from <> from
-          If *leave > 0 And *leave\from >= 0 And SelectElement(*leave\Items(), *leave\from)
-            _callback_(*leave, #PB_EventType_MouseLeave)
-            *leave\from =- 1
+        If \from <> from And Not (from =- 1 And Down)
+          If *leave > 0 And *leave\from >= 0
+           ; _from_point_(mouse_x, mouse_y, *leave, [2]) And
+           If SelectElement(*leave\Items(), *leave\from)
+              
+              _callback_(*leave, #PB_EventType_MouseLeave)
+              *leave\from =- 1
+            EndIf
           EndIf
           
           \from = from
@@ -3427,12 +3435,12 @@ Module Tree
               _callback_(*this, #PB_EventType_LeftButtonUp)
             EndIf
             
-            If from >= 0
-              ; Debug ""+#PB_Compiler_Line +" Мышь cнаружи итема"
+            If from =- 1
+               ; Debug ""+#PB_Compiler_Line +" Мышь cнаружи итема"
               _callback_(*this, #PB_EventType_MouseLeave)
               \from =- 1
             EndIf
-          EndIf
+           EndIf
           
         Case #PB_EventType_LeftButtonDown
           If from >= 0 ;And SelectElement(\items(), from)
@@ -3444,7 +3452,8 @@ Module Tree
               
               \items()\box[1]\checked ! 1
               
-            ElseIf (\flag\buttons And \items()\childrens) And
+             Result = #True
+             ElseIf (\flag\buttons And \items()\childrens) And
                    _from_point_(\canvas\mouse\x, \canvas\mouse\y, \items()\box[0])
               
               Protected sublevel
@@ -3462,10 +3471,10 @@ Module Tree
               Wend
               PopListPosition(\items())
               
-              If StartDrawing(CanvasOutput(EventGadget()))
-                _update_items_(*this)
-                StopDrawing()
-              EndIf
+;               If StartDrawing(CanvasOutput(EventGadget()))
+                 _update_items_(*this)
+;                 StopDrawing()
+;               EndIf
               
               Result = #True
               ; Break
