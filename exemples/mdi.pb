@@ -417,7 +417,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect     
     
     
-    If (*scroll\h\from Or *scroll\v\from)
+    If Not (*scroll\h\from=-1 Or *scroll\v\from=-1)
       Select EventType
         Case #PB_EventType_LeftButtonUp
           Debug "----------Up---------"
@@ -732,5 +732,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --0-------4fAAA-
+; Folding = --0------0-fFAA-
 ; EnableXP

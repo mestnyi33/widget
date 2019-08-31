@@ -330,7 +330,6 @@ Module Bar
     
     ; _stop_
     If _this_\button[#_b_2]\len And _this_\page\len
-      ; Debug ""+ Bool(_this_\thumb\pos = _this_\area\end) +" "+ Bool(_scroll_pos_ = _this_\page\end)
       If _scroll_pos_ = _this_\page\end
         _this_\color[#_b_2]\state = #Disabled
         _this_\button[#_b_2]\interact = 0
@@ -340,7 +339,7 @@ Module Bar
       EndIf 
     EndIf
     
-    If _this_\type = #PB_GadgetType_ScrollBar
+    If _this_\type=#PB_GadgetType_ScrollBar
       If _this_\Vertical 
         ; Botom button coordinate on vertical scroll bar
         _this_\button[#_b_2]\x = _this_\button\x
@@ -1534,15 +1533,22 @@ Module Bar
     
     Macro _callback_(_this_, _type_)
       Select _type_
-        Case #PB_EventType_MouseLeave ; : Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
+        Case #PB_EventType_MouseLeave
+          ;If _this_\from = 3
+          ;Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
+          ;EndIf
           _this_\color[_this_\from]\state = #Normal 
           
           If _this_\cursor And cursor_change
             SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default) ; cursor_change - 1)
             cursor_change = 0
           EndIf
+          Result = #True
           
-        Case #PB_EventType_MouseEnter ; : Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
+        Case #PB_EventType_MouseEnter
+          ;If _this_\from = 3
+         ; Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
+          ;EndIf
           _this_\color[_this_\from]\state = #Entered 
           
           ; Set splitter cursor
@@ -1550,10 +1556,12 @@ Module Bar
             cursor_change = 1;GetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor) + 1
             SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, _this_\cursor)
           EndIf
+          Result = #True
           
-        Case #PB_EventType_LeftButtonDown ; : Debug ""+#PB_Compiler_Line +" нажали " + _this_ +" "+ _this_\from
-          _this_\color[_this_\from]\state = #Selected
-          
+        Case #PB_EventType_LeftButtonDown
+          ; Debug ""+#PB_Compiler_Line +" нажали " + _this_ +" "+ _this_\from
+           _this_\color[_this_\from]\state = #Selected
+         
           Select _this_\from
             Case 1 
               If _this_\inverted
@@ -1572,11 +1580,17 @@ Module Bar
             Case 3 
               LastX = MouseX - _this_\thumb\pos 
               LastY = MouseY - _this_\thumb\pos
+              
+            Default
               Result = #True
+              
           EndSelect
           
-        Case #PB_EventType_LeftButtonUp ; : Debug ""+#PB_Compiler_Line +" отпустили " + _this_ +" "+ _this_\from
+          
+        Case #PB_EventType_LeftButtonUp
+          ; Debug ""+#PB_Compiler_Line +" отпустили " + _this_ +" "+ _this_\from
           _this_\color[_this_\from]\state = #Entered 
+          Result = #True
           
       EndSelect
     EndMacro
@@ -1627,48 +1641,53 @@ Module Bar
           from = 0
         EndIf 
         
-        If \from <> from And Not Down
-          If *leave > 0 And *leave\from >= 0 And *leave\button[*leave\from]\interact And 
-             Not (MouseX>*leave\button[*leave\from]\x And MouseX=<*leave\button[*leave\from]\x+*leave\button[*leave\from]\width And 
-                  MouseY>*leave\button[*leave\from]\y And MouseY=<*leave\button[*leave\from]\y+*leave\button[*leave\from]\height)
-            
-            _callback_(*leave, #PB_EventType_MouseLeave)
-            *leave\from = 0
-            
-            Result = #True
+      Else
+        If \from >= 0 ;And \button[\from]\interact
+          If EventType = #PB_EventType_LeftButtonUp
+            _callback_(*this, #PB_EventType_LeftButtonUp)
           EndIf
           
-          If from > 0
-            \from = from
-            *leave = *this
+          ;Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
+          _callback_(*this, #PB_EventType_MouseLeave)
+        EndIf 
+        
+        \from =- 1
+        
+      EndIf
+      
+      If Not Down
+      If from > 0
+        If \from <> from
+          If *leave > 0 And *leave\from >= 0
+            If *leave\button[*leave\from]\interact And Not (MouseX>*leave\button[*leave\from]\x And MouseX=<*leave\button[*leave\from]\x+*leave\button[*leave\from]\width And 
+                    MouseY>*leave\button[*leave\from]\y And MouseY=<*leave\button[*leave\from]\y+*leave\button[*leave\from]\height)
+              
+              _callback_(*leave, #PB_EventType_MouseLeave)
+                *leave\from = 0
+            EndIf
           EndIf
+          
+          \from = from
+          *leave = *this
           
           If \from >= 0 And \button[\from]\interact
             _callback_(*this, #PB_EventType_MouseEnter)
-            
-            Result = #True
           EndIf
         EndIf
         
       Else
         If \from >= 0 And \button[\from]\interact
-          If EventType = #PB_EventType_LeftButtonUp
-           ; Debug ""+#PB_Compiler_Line +" Мышь up"
-           _callback_(*this, #PB_EventType_LeftButtonUp)
-          EndIf
-          
-          ; Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
+          ; Debug ""+#PB_Compiler_Line +" Мышь перешел с итем"
           _callback_(*this, #PB_EventType_MouseLeave)
-          
-          Result = #True
         EndIf 
         
         \from =- 1
-        
         If *leave = *this
           *leave = 0
         EndIf
       EndIf
+      EndIf
+      
       
       ; get
       Select EventType
@@ -1681,12 +1700,11 @@ Module Bar
           If \from >= 0 And \button[\from]\interact
             _callback_(*this, #PB_EventType_LeftButtonUp)
             
-            If from >= 0
+            If Not from >= 0
+              ; Debug ""+#PB_Compiler_Line +" Мышь cнаружи итема"
               _callback_(*this, #PB_EventType_MouseLeave)
               \from =- 1
             EndIf
-            
-            Result = #True
           EndIf
           
         Case #PB_EventType_LeftButtonDown
@@ -1707,18 +1725,22 @@ Module Bar
             
             If \button[from]\interact
               _callback_(*this, #PB_EventType_LeftButtonDown)
-            Else
-              Result = #True
             EndIf
+            
+            Result = #True
           EndIf
           
         Case #PB_EventType_MouseMove
-          If Down And *leave = *this And Bool(LastX|LastY) 
-            If \Vertical
-              Result = SetPos(*this, (MouseY-LastY))
-            Else
-              Result = SetPos(*this, (MouseX-LastX))
+          If Down
+            
+            If *leave = *this And Bool(LastX|LastY) 
+              If \Vertical
+                Result = SetPos(*this, (MouseY-LastY))
+              Else
+                Result = SetPos(*this, (MouseX-LastX))
+              EndIf
             EndIf
+            
           EndIf
           
       EndSelect
@@ -2049,5 +2071,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------440-7----
+; Folding = -------------------------------------------
 ; EnableXP

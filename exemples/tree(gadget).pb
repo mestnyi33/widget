@@ -276,7 +276,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     AddGadgetItem(g, 3, "Tree_2_1", 0, 1) 
 ; ;     AddGadgetItem(g, 3, "Tree_2_2", 0, 2) 
     AddGadgetItem(g, 0, "Tree_0 (NoButtons)", 0 )
-    AddGadgetItem(g, 1, "Tree_1_1", 0, 1) 
+    ;AddGadgetItem(g, 1, "Tree_1_1", 0, 1) 
     AddGadgetItem(g, 2, "Tree_2_2", 0, 2) 
     AddGadgetItem(g, 3, "Tree_3_3", 0, 3) 
     AddGadgetItem(g, 4, "Tree_4_2", 0, 2) 
@@ -316,6 +316,11 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     ; ClearGadgetItems(g)
+    
+    ; demo
+    g = 1
+    AddGadgetItem(g, 1, "Tree_1_1", 0, 1) 
+    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     g = 3
     TreeGadget(g, 450, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes |#PB_Tree_NoLines|#PB_Tree_NoButtons)  ;                                       
@@ -405,7 +410,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     AddItem(*g0, 3, "Tree_2_1", -1, 1) 
 ; ;     AddItem(*g0, 4, "Tree_2_2", -1, 2) 
     AddItem(*g0, 0, "Tree_0 (NoButtons)", -1 )
-    AddItem(*g0, 1, "Tree_1_1", -1, 1) 
+    ;AddItem(*g0, 1, "Tree_1_1", -1, 1) 
     AddItem(*g0, 2, "Tree_2_2", -1, 2) 
     AddItem(*g0, 3, "Tree_3_3", -1, 3) 
     AddItem(*g0, 4, "Tree_4_2", -1, 2) 
@@ -468,6 +473,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     LoadControls(*g2, GetCurrentDirectory()+"Themes/")
     ;For i=0 To CountItems(*g2) : SetItemState(*g2, i, #PB_Tree_Expanded) : Next
+    
+    ; demo
+    AddItem(*g0, 1, "Tree_1_1", -1, 1) 
     
     *g3 = Tree(670, 10, 210, 210, #PB_Tree_NoLines)                                         
     ;  4_example
@@ -545,6 +553,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
+; CursorPosition = 319
+; FirstLine = 93
 ; Folding = 0-ff-0---
 ; EnableXP
