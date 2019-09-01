@@ -2,12 +2,12 @@
 XIncludeFile "_module_tree_6.pb"
 
 UseModule Tree
-LN=1000; количесвто итемов 
+LN=10000; количесвто итемов 
 Global *w._S_widget
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
-  TreeGadget(0, 10, 10, 250, 680)
-  Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection|#PB_Flag_GridLines) : *w=GetGadgetData(1) ; |#PB_Tree_NoLines|#PB_Tree_NoButtons
+  TreeGadget(0, 10, 10, 250, 680, #PB_Tree_NoLines|#PB_Tree_NoButtons)
+  Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection|#PB_Flag_GridLines|#PB_Tree_NoLines|#PB_Tree_NoButtons) : *w=GetGadgetData(1) ; 
   
   Define time = ElapsedMilliseconds()
   For a = 0 To LN
@@ -38,8 +38,6 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
-; CursorPosition = 4
-; FirstLine = 3
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

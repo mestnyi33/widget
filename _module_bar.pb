@@ -228,6 +228,11 @@ DeclareModule Bar
     BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
   EndMacro
   
+  Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
+    Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ =< (_type_\x#_mode_+_type_\width#_mode_) And 
+          _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
+  EndMacro
+  
 EndDeclareModule
 
 ;- >>> MODULE
@@ -2058,5 +2063,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----------------------------------v-------
+; Folding = ----------------------------------f--------
 ; EnableXP

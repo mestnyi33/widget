@@ -2999,18 +2999,21 @@ Module Tree
     ProcedureReturn *Item
   EndProcedure
   
-  Procedure.i SetItemState(*This._S_widget, Item.i, State.i)
-    Protected Result
+  Procedure.i SetItemState(*this._S_widget, Item.i, State.i)
+    Protected Result,*a, *i
     
-    With *This
+    With *this
       If (\flag\multiSelect Or \flag\clickSelect)
-        PushListPosition(\items())
+;         *i = \items()\index
+;         *a = @\items()
+;         PushListPosition(\items())
         Result = SelectElement(\items(), Item) 
         If Result 
-          \items()\color\state = 1
-          \items()\color\state = Bool(State)+1
+          \items()\color\state = Bool(State) * 2
         EndIf
-        PopListPosition(\items())
+;         PopListPosition(\items())
+        ; ChangeCurrentElement(\items(), *a)
+        ;SelectElement(\items(), *i) ; 302
       EndIf
     EndWith
     
@@ -4125,5 +4128,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------0-------------
 ; EnableXP
