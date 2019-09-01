@@ -183,7 +183,7 @@ DeclareModule Bar
   Declare.b SetColor(*this, ColorType.l, Color.l, Item.l=- 1, State.l=1)
   
   Declare.b Resize(*this, iX.l,iY.l,iWidth.l,iHeight.l)
-  Declare.b CallBack(*this, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
+  Declare.b CallBack(*this, EventType.l, mouse_x.l, mouse_y.l, WheelDelta.l=0)
   
   Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, Radius.l=0)
   Declare.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
@@ -1537,7 +1537,7 @@ Module Bar
   EndProcedure
   
   
-  Procedure.b CallBack(*this._S_bar, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
+  Procedure.b CallBack(*this._S_bar, EventType.l, mouse_x.l, mouse_y.l, WheelDelta.l=0)
     Protected Result, from =- 1 
     Static cursor_change, LastX, LastY, Last, *leave._S_bar, Down
     
@@ -1579,8 +1579,8 @@ Module Bar
               EndIf
               
             Case 3 
-              LastX = MouseX - _this_\thumb\pos 
-              LastY = MouseY - _this_\thumb\pos
+              LastX = mouse_x - _this_\thumb\pos 
+              LastY = mouse_y - _this_\thumb\pos
               Result = #True
               
           EndSelect
@@ -1596,38 +1596,30 @@ Module Bar
       ; the splitter children’s widget
       If \splitter And \from <> #_b_3
         If \splitter\first And Not \splitter\g_first
-          If CallBack(\splitter\first, EventType, MouseX, MouseY)
+          If CallBack(\splitter\first, EventType, mouse_x, mouse_y)
             ProcedureReturn 1
           EndIf
         EndIf
         If \splitter\second And Not \splitter\g_second
-          If CallBack(\splitter\second, EventType, MouseX, MouseY)
+          If CallBack(\splitter\second, EventType, mouse_x, mouse_y)
             ProcedureReturn 1
           EndIf
         EndIf
       EndIf
       
       ; get at point buttons
-      If Not \hide And ((Mousex>=\x And Mousex=<\x+\width And Mousey>\y And Mousey=<\y+\height) Or Down)
-        If Down
-         ; *this = Down
-        EndIf
-        
+      If Not \hide And (_from_point_(mouse_x, mouse_y, *this) Or Down)
         If \button 
-          If \button[#_b_3]\len And (MouseX>\button[#_b_3]\x And MouseX=<\button[#_b_3]\x+\button[#_b_3]\width And 
-                                     MouseY>\button[#_b_3]\y And MouseY=<\button[#_b_3]\y+\button[#_b_3]\height)
+          If \button[#_b_3]\len And _from_point_(mouse_x, mouse_y, \button[#_b_3])
             from = #_b_3
-          ElseIf \button[#_b_2]\len And (MouseX>\button[#_b_2]\x And MouseX=<\button[#_b_2]\x+\button[#_b_2]\width And 
-                                         MouseY>\button[#_b_2]\y And MouseY=<\button[#_b_2]\y+\button[#_b_2]\height)
+          ElseIf \button[#_b_2]\len And _from_point_(mouse_x, mouse_y, \button[#_b_2])
             from = #_b_2
-          ElseIf \button[#_b_1]\len And (MouseX>\button[#_b_1]\x And MouseX=<\button[#_b_1]\x+\button[#_b_1]\width And 
-                                         MouseY>\button[#_b_1]\y And MouseY=<\button[#_b_1]\y+\button[#_b_1]\height)
+          ElseIf \button[#_b_1]\len And _from_point_(mouse_x, mouse_y, \button[#_b_1])
             from = #_b_1
-          ElseIf (MouseX>\button\x And MouseX=<\button\x+\button\width And 
-                  MouseY>\button\y And MouseY=<\button\y+\button\height)
+          ElseIf _from_point_(mouse_x, mouse_y, \button[0])
             from = 0
           EndIf
-          
+       
           If \type = #PB_GadgetType_TrackBar ;Or \type = #PB_GadgetType_ProgressBar
             Select from
               Case #_b_1, #_b_2
@@ -1643,8 +1635,8 @@ Module Bar
         
         If \from <> from And Not Down
           If *leave > 0 And *leave\from >= 0 And *leave\button[*leave\from]\interact And 
-             Not (MouseX>*leave\button[*leave\from]\x And MouseX=<*leave\button[*leave\from]\x+*leave\button[*leave\from]\width And 
-                  MouseY>*leave\button[*leave\from]\y And MouseY=<*leave\button[*leave\from]\y+*leave\button[*leave\from]\height)
+             Not (mouse_x>*leave\button[*leave\from]\x And mouse_x=<*leave\button[*leave\from]\x+*leave\button[*leave\from]\width And 
+                  mouse_y>*leave\button[*leave\from]\y And mouse_y=<*leave\button[*leave\from]\y+*leave\button[*leave\from]\height)
             
             _callback_(*leave, #PB_EventType_MouseLeave)
             *leave\from = 0
@@ -1695,7 +1687,7 @@ Module Bar
           
             _callback_(*this, #PB_EventType_LeftButtonUp)
             
-            If from >= 0
+            If from =- 1
               _callback_(*this, #PB_EventType_MouseLeave)
               \from =- 1
             EndIf
@@ -1706,9 +1698,9 @@ Module Bar
         Case #PB_EventType_LeftButtonDown
           If from = 0 And \button[#_b_3]\interact 
             If \Vertical
-              Result = SetPos(*this, (MouseY-\thumb\len/2))
+              Result = SetPos(*this, (mouse_y-\thumb\len/2))
             Else
-              Result = SetPos(*this, (MouseX-\thumb\len/2))
+              Result = SetPos(*this, (mouse_x-\thumb\len/2))
             EndIf
             
             from = 3
@@ -1729,9 +1721,9 @@ Module Bar
         Case #PB_EventType_MouseMove
           If Down And *leave = *this And Bool(LastX|LastY) 
             If \Vertical
-              Result = SetPos(*this, (MouseY-LastY))
+              Result = SetPos(*this, (mouse_y-LastY))
             Else
-              Result = SetPos(*this, (MouseX-LastX))
+              Result = SetPos(*this, (mouse_x-LastX))
             EndIf
           EndIf
           
@@ -2063,5 +2055,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----------------------------------f--------
+; Folding = ------------------------------------------
 ; EnableXP
