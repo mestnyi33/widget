@@ -639,7 +639,12 @@ DeclareModule Structures
     \back[2] = $C8E89C3D; $80E89C3D
     \frame[2] = $C8DC9338; $80DC9338
     
-    ;         ;- Синие цвета 2
+   ; Цвета если дисабле виджет
+    \front[3] = $FFBABABA
+    \fore[3] = $FFF6F6F6 
+    \back[3] = $FFE2E2E2 
+    \frame[3] = $FFBABABA
+     ;         ;- Синие цвета 2
     ;         ; Цвета по умолчанию
     ;         \front[0] = $FF000000
     ;         \fore[0] = $FFF8F8F8 ; $FFF0F0F0 
@@ -2446,7 +2451,7 @@ DeclareModule Tree
   
   ; Declare.i GetItemState(*This, Item.i)
   Declare.i SetItemState(*This, Item.i, State.i)
-  Declare.i CallBack(*This, EventType.i)
+  Declare.l CallBack(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
   Declare.i Create(Canvas.i, Widget, X.i, Y.i, Width.i, Height.i, Text.s, Flag.i=0, Radius.i=0)
   Declare.i Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, Flag.i=0)
   
@@ -2570,7 +2575,9 @@ Module Tree
         EndIf
       EndIf
       
-      PushListPosition(_this_\items())
+      SortStructuredList(_this_\items(), #PB_Sort_Ascending, OffsetOf(_S_items\index), TypeOf(_S_items\index))
+      
+      ;PushListPosition(_this_\items())
       ForEach _this_\items()
         If Not _this_\items()\hide
           If _this_\items()\text\change 
@@ -2623,7 +2630,7 @@ Module Tree
           EndIf
         EndIf
       Next
-      PopListPosition(_this_\items())
+      ;PopListPosition(_this_\items())
       
       
       SortStructuredList(_this_\items(), #PB_Sort_Descending, OffsetOf(_S_items\draw), TypeOf(_S_items\draw))
@@ -2643,8 +2650,6 @@ Module Tree
       EndIf
       
       If _this_\change <> 0 
-        _this_\change = 0
-        
         _this_\width[2] = (_this_\scroll\v\x + Bool(_this_\scroll\v\hide) * _this_\scroll\v\width) - _this_\x[2]
         _this_\height[2] = (_this_\scroll\h\y + Bool(_this_\scroll\h\hide) * _this_\scroll\h\height) - _this_\y[2]
       EndIf
@@ -2663,6 +2668,7 @@ Module Tree
         
         If \change
           _update_items_(*This)
+          \change = 0
         EndIf 
         
         ; Draw items text
@@ -2676,7 +2682,6 @@ Module Tree
             If Not \items()\draw 
               Break
             EndIf
-            ;Debug \items()\index
             
             If \items()\draw
               If \items()\text\fontID 
@@ -3175,16 +3180,64 @@ Module Tree
     EndWith              
   EndProcedure
   
-  Procedure.b _CallBack(*this._S_widget, EventType.l, MouseX.l=0, MouseY.l=0, WheelDelta.l=0)
+   Procedure.l CallBack(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
     Protected Result, from =- 1
-    Static *l._S_widget
-    Static cursor_change, LastX, LastY, Last, *leave._S_widget, Down
+    Shared *focus._S_widget
+    Static *leave._S_widget
     
-    Macro _callback_(_this_, _type_)
+    Static cursor_change, LastX, LastY, Last, Down
+    
+    If mouse_x =- 1 And mouse_y =- 1
+      Select EventType
+        Case #PB_EventType_Repaint
+          Debug " -- Canvas repaint -- "
+        Case #PB_EventType_Input 
+          *this\canvas\input = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Input)
+          *this\canvas\Key[1] = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Modifiers)
+        Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
+          *this\canvas\Key = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Key)
+          *this\canvas\Key[1] = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Modifiers)
+        Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
+          *this\canvas\mouse\x = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_MouseX)
+          *this\canvas\mouse\y = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_MouseY)
+        Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
+             #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
+             #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
+          
+          CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+            *this\canvas\mouse\buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
+                                         (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
+                                         (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
+          CompilerElse
+            *this\canvas\mouse\buttons = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Buttons)
+          CompilerEndIf
+      EndSelect
+      
+      mouse_x = *this\canvas\mouse\x
+      mouse_y = *this\canvas\mouse\y
+    EndIf
+    
+    Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
+    Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ =< (_type_\x#_mode_+_type_\width#_mode_) And 
+          _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
+  EndMacro
+  
+  Macro _callback_(_this_, _type_)
       Select _type_
+;         Case #PB_EventType_LostFocus  : Debug ""+#PB_Compiler_Line +" lost focus " + _this_ +" "+ _this_\from
+;           
+;           _this_\items()\color\state = 3
+;           _this_\color\state = 0
+;           Result = #True
+;           
+;         Case #PB_EventType_Focus  : Debug ""+#PB_Compiler_Line +" focus " + _this_ +" "+ _this_\from
+;           
+;           _this_\color\state = 2
+;           Result = #True
+          
         Case #PB_EventType_MouseLeave  ;: Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
           
-          If (_this_\items()\color\state <> 2 Or down)
+          If (_this_\items()\color\state = 1 Or down)
             _this_\items()\color\state = 0
             Result = #True
           EndIf
@@ -3198,7 +3251,7 @@ Module Tree
                 If ((_this_\_i_selected\index >= _this_\items()\index And _this_\from =< _this_\items()\index) Or ; верх
                     (_this_\_i_selected\index =< _this_\items()\index And _this_\from >= _this_\items()\index))   ; вниз
                   
-                   _this_\items()\color\state = 2
+                  _this_\items()\color\state = 2
                 Else
                   _this_\items()\color\state = 1
                 EndIf
@@ -3208,7 +3261,7 @@ Module Tree
             
             Result = #True
             
-          ElseIf _this_\items()\color\state <> 2
+          ElseIf _this_\items()\color\state = 0
             _this_\items()\color\state = 1+Bool(down)
             
             Result = #True
@@ -3282,53 +3335,48 @@ Module Tree
     EndMacro
     
     With *this
-      ;       ; from the very beginning we'll process 
-      ;       ; the splitter children’s widget
-      ;       If \splitter And \from <> #_b_3
-      ;         If \splitter\first And Not \splitter\g_first
-      ;           If CallBack(\splitter\first, EventType, MouseX, MouseY)
-      ;             ProcedureReturn 1
-      ;           EndIf
-      ;         EndIf
-      ;         If \splitter\second And Not \splitter\g_second
-      ;           If CallBack(\splitter\second, EventType, MouseX, MouseY)
-      ;             ProcedureReturn 1
-      ;           EndIf
-      ;         EndIf
-      ;       EndIf
+      If \from =- 1
+        Result | Bar::CallBack(\scroll\v, EventType, mouse_x, mouse_y)
+        Result | Bar::CallBack(\scroll\h, EventType, mouse_x, mouse_y)
+        
+        If \scroll\v\change Or \scroll\h\change
+          _update_items_(*this)
+          \scroll\v\change = 0 
+          \scroll\h\change = 0
+        EndIf
+        
+        If Result
+          ProcedureReturn Result
+        EndIf
+      EndIf
       
       ; get at point buttons
-      If Not \hide And ((Mousex>\x[2] And Mousex=<\x[2]+\width[2] And Mousey>\y[2] And Mousey=<\y[2]+\height[2]) Or Down)
-        If Down
-          *this = Down
-        EndIf
+      If Not \hide And \scroll\v\from =- 1 And \scroll\h\from =- 1 And
+         ((_from_point_(mouse_x, mouse_y, *this, [2]) And Not Down) Or Down = *this)
         
         PushListPosition(\items())
         ForEach \items()
-          If Not \items()\hide And (MouseY>\items()\y-\scroll\v\page\pos And MouseY=<\items()\y+\items()\height-\scroll\v\page\pos)
-            from = \items()\index
+          If (Not \items()\draw And Not Down)
+            Break
+          EndIf
+          
+          If Not \items()\hide And
+             (mouse_y > \items()\y-\scroll\v\page\pos And
+              mouse_y =< \items()\y+\items()\height-\scroll\v\page\pos)
+            from = ListIndex(\items());\items()\index
             Break
           EndIf
         Next
         PopListPosition(\items())
         
-          
-;         Protected gridlines = 0
-;         Protected text_height = 20
-;         
-;         from = ((\Canvas\Mouse\Y-\Y[2]+\scroll\v\Page\Pos - ((gridlines*(\Canvas\Mouse\Y-\Y[2]+\scroll\v\Page\Pos) / text_height))) / text_height)
-;         If from < 0 : from = 0 : Else : If from < ListSize(\items()) : SelectElement(\items(), from) : Else : from = ListSize(\items()) - 1 : EndIf : EndIf
-        
-        If \from <> from
-          If *leave > 0 And *leave\from >= 0 
-            
-            If Not (MouseX>*leave\x[2] And MouseX=<*leave\x[2]+*leave\width[2] And 
-                    MouseY>*leave\items()\y And MouseY=<*leave\items()\y+*leave\items()\height) And 
-               SelectElement(*leave\items(), *leave\from)
+        If \from <> from And Not (from =- 1 And Down)
+          If *leave > 0 And *leave\from >= 0
+            ; _from_point_(mouse_x, mouse_y, *leave, [2]) And
+            If SelectElement(*leave\Items(), *leave\from)
+              
               _callback_(*leave, #PB_EventType_MouseLeave)
+              *leave\from =- 1
             EndIf
-            
-            *leave\from =- 1
           EndIf
           
           \from = from
@@ -3338,9 +3386,8 @@ Module Tree
             _callback_(*this, #PB_EventType_MouseEnter)
           EndIf
         EndIf
-        
       Else
-        If \from >= 0 And SelectElement(\items(), \from)
+        If \from >= 0 ;And SelectElement(\items(), \from)
           If EventType = #PB_EventType_LeftButtonUp
             _callback_(*this, #PB_EventType_LeftButtonUp)
           EndIf
@@ -3362,20 +3409,17 @@ Module Tree
           If Not Down : \from =- 1 : from =- 1 : LastX = 0 : LastY = 0 : EndIf
           
         Case #PB_EventType_LeftButtonUp 
-          If \from >= 0 And SelectElement(\items(), \from)
+          If \from >= 0 And Down = *this ; SelectElement(\items(), \from)
             Down = 0 : LastX = 0 : LastY = 0
-            If (\canvas\mouse\y > (\items()\box[1]\y) And \canvas\mouse\y =< ((\items()\box[1]\y+\items()\box[1]\height))) And 
-               ((\canvas\mouse\x > \items()\box[1]\x) And (\canvas\mouse\x =< (\items()\box[1]\x+\items()\box[1]\width)))
+            
+            If Not ((\flag\buttons And \items()\childrens And 
+                     _from_point_(\canvas\mouse\x, \canvas\mouse\y, \items()\box[0])) Or
+                    _from_point_(\canvas\mouse\x, \canvas\mouse\y, \items()\box[1]))
               
-            ElseIf (\flag\buttons And \items()\childrens) And
-                   (\canvas\mouse\y > (\items()\box[0]\y) And \canvas\mouse\y =< ((\items()\box[0]\y+\items()\box[0]\height))) And 
-                   ((\canvas\mouse\x > \items()\box[0]\x) And (\canvas\mouse\x =< (\items()\box[0]\x+\items()\box[0]\width)))
-              
-            Else
               _callback_(*this, #PB_EventType_LeftButtonUp)
             EndIf
             
-            If from >= 0
+            If from =- 1
               ; Debug ""+#PB_Compiler_Line +" Мышь cнаружи итема"
               _callback_(*this, #PB_EventType_MouseLeave)
               \from =- 1
@@ -3383,45 +3427,60 @@ Module Tree
           EndIf
           
         Case #PB_EventType_LeftButtonDown
-          If from >= 0 And SelectElement(\items(), from)
+          If from >= 0 ; And SelectElement(\items(), from)
             Down = *this
             \from = from 
             *leave = *this
             
-            If (\canvas\mouse\y > (\items()\box[1]\y) And \canvas\mouse\y =< ((\items()\box[1]\y+\items()\box[1]\height))) And 
-                 ((\canvas\mouse\x > \items()\box[1]\x) And (\canvas\mouse\x =< (\items()\box[1]\x+\items()\box[1]\width)))
-                
-                \items()\box[1]\checked ! 1
-                
-              ElseIf (\flag\buttons And \items()\childrens) And
-                     (\canvas\mouse\y > (\items()\box[0]\y) And \canvas\mouse\y =< ((\items()\box[0]\y+\items()\box[0]\height))) And 
-                    ((\canvas\mouse\x > \items()\box[0]\x) And (\canvas\mouse\x =< (\items()\box[0]\x+\items()\box[0]\width)))
-              
-                Protected sublevel
-                sublevel = \items()\sublevel
-                \items()\box[0]\checked ! 1
-                \change = 1
-                
-                PushListPosition(\items())
-                While NextElement(\items())
-                  If \items()\sublevel = sublevel
-                    Break
-                  ElseIf \items()\sublevel > sublevel 
-                    \items()\hide = Bool(\items()\i_parent\box[0]\checked | \items()\i_parent\hide)
-                  EndIf
-                Wend
-                PopListPosition(\items())
-                
-                If StartDrawing(CanvasOutput(EventGadget()))
-                  _update_items_(*this)
-                  StopDrawing()
-                EndIf
-                
-                Result = #True
-                ; Break
-              Else
-                _callback_(*this, #PB_EventType_LeftButtonDown)
+            If *focus <> *this
+              If *focus And *focus\_i_selected 
+;                 If SelectElement(*focus\items(), *focus\_i_selected\index)
+;                   _callback_(*focus, #PB_EventType_LostFocus)
+;                 EndIf
+                *focus\_i_selected\color\state = 3
+                *focus\color\state = 0
               EndIf
+              
+;               If SelectElement(\items(), \from)
+;                 _callback_(*this, #PB_EventType_Focus)
+;               EndIf
+              \color\state = 2
+              *focus = *this
+            EndIf
+            
+            If _from_point_(\canvas\mouse\x, \canvas\mouse\y, \items()\box[1])
+              
+              \items()\box[1]\checked ! 1
+              
+              Result = #True
+            ElseIf (\flag\buttons And \items()\childrens) And
+                   _from_point_(\canvas\mouse\x, \canvas\mouse\y, \items()\box[0])
+              
+              Protected sublevel
+              sublevel = \items()\sublevel
+              \items()\box[0]\checked ! 1
+              
+              PushListPosition(\items())
+              While NextElement(\items())
+                If \items()\sublevel = sublevel
+                  Break
+                ElseIf \items()\sublevel > sublevel 
+                  \items()\hide = Bool(\items()\i_parent\box[0]\checked | \items()\i_parent\hide)
+                EndIf
+              Wend
+              PopListPosition(\items())
+              
+              ;               If StartDrawing(CanvasOutput(EventGadget()))
+              \change = 1
+              _update_items_(*this)
+              \change = 1
+              ;                 StopDrawing()
+              ;               EndIf
+              
+              Result = #True
+            Else
+              _callback_(*this, #PB_EventType_LeftButtonDown)
+            EndIf
           EndIf
           
       EndSelect
@@ -3429,64 +3488,7 @@ Module Tree
     
     ProcedureReturn Result
   EndProcedure
-  
-  Procedure.i CallBack(*This._S_widget, EventType.i)
-    With *This
-      Select EventType
-        Case #PB_EventType_Repaint
-          Debug " -- Canvas repaint -- "
-        Case #PB_EventType_Input 
-          \canvas\input = GetGadgetAttribute(\canvas\gadget, #PB_Canvas_Input)
-          \canvas\Key[1] = GetGadgetAttribute(\canvas\gadget, #PB_Canvas_Modifiers)
-        Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
-          \canvas\Key = GetGadgetAttribute(\canvas\gadget, #PB_Canvas_Key)
-          \canvas\Key[1] = GetGadgetAttribute(\canvas\gadget, #PB_Canvas_Modifiers)
-        Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
-          \canvas\mouse\x = GetGadgetAttribute(\canvas\gadget, #PB_Canvas_MouseX)
-          \canvas\mouse\y = GetGadgetAttribute(\canvas\gadget, #PB_Canvas_MouseY)
-        Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
-             #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
-             #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
-          
-          CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-            \canvas\mouse\buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
-                                    (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
-                                    (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
-          CompilerElse
-            \canvas\mouse\buttons = GetGadgetAttribute(\canvas\gadget, #PB_Canvas_Buttons)
-          CompilerEndIf
-      EndSelect
-      
-    EndWith
-    
-    Static DoubleClick.i
-    Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
-    
-    With *This
-      
-      ;If *This And (Not *This\scroll\v\from And Not *This\scroll\h\from)
-      ;\flag\clickselect = 1
-      
-      If Not (\scroll\v\from<>-1 Or \scroll\h\from<>-1) And _CallBack(*this, EventType, \canvas\mouse\x, \canvas\mouse\y)
-        ProcedureReturn 1
-      ElseIf \from =- 1
-        Repaint | Bar::CallBack(\scroll\v, EventType, \canvas\mouse\x, \canvas\mouse\y)
-        Repaint | Bar::CallBack(\scroll\h, EventType, \canvas\mouse\x, \canvas\mouse\y)
-        
-        If \scroll\v\change Or \scroll\h\change
-          _update_items_(*This)
-          \scroll\v\change = 0 
-          \scroll\h\change = 0
-        EndIf
-        
-        ProcedureReturn Repaint
-      EndIf
-    EndWith
-    
-    ProcedureReturn Repaint
-  EndProcedure
-  
-  
+ 
   Procedure.i Widget(X.i, Y.i, Width.i, Height.i, Flag.i=0, Radius.i=0)
     Protected *This._S_widget = AllocateStructure(_S_widget)
     
@@ -3583,13 +3585,9 @@ Module Tree
         \text\change = 1
         \color = Colors
         \color\fore[0] = 0
-        
-        If \text\editable
-          \text\editable = 0
-          \color[0]\back[0] = $FFFFFFFF 
-        Else
-          \color[0]\back[0] = $FFF0F0F0  
-        EndIf
+          \color\back[0] = $FFFFFFFF 
+         \color\back[1] = $FFFFFFFF 
+         \color\back[2] = $FFFFFFFF 
         
       EndIf
       
@@ -3640,7 +3638,10 @@ Module Tree
       Repaint | CallBack(*This, EventType())
       
       If Repaint 
-        ReDraw(*This)
+        If *this And StartDrawing(CanvasOutput(\canvas\gadget))
+          Draw(*this)
+          StopDrawing()
+        EndIf
       EndIf
       
     EndWith
@@ -3970,62 +3971,62 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(g_Canvas, @Canvas_Events())
     PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
     
-;     g = 10
-;     *g = Widget(10, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
-;     AddElement(*List()) : *List() = *g
-;     
-;     ; 1_example
-;     AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
-;     ;AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-;     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-;     AddItem (*g, -1, "Sub-Item 2", -1, 11)
-;     AddItem (*g, -1, "Sub-Item 3", -1, 1)
-;     AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
-;     AddItem (*g, -1, "Sub-Item 5", -1, 11)
-;     AddItem (*g, -1, "Sub-Item 6", -1, 1)
-;     AddItem (*g, -1, "File "+Str(a), -1, 0)  
-;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     ; RemoveItem(*g,1)
-;     Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
-;     ;BindGadgetEvent(g, @Events())
-;     ;Tree::SetState(*g, 1)
-;     ;Tree::SetState(*g, -1)
-;     ;     Debug "c "+Tree::GetText(*g)
-;     
-;     g = 11
-;     *g = Widget(230, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
-;     ;  3_example
-;     AddItem(*g, 0, "Tree_0", -1 )
-;     AddItem(*g, 1, "Tree_1_1", 0, 1) 
-;     AddItem(*g, 4, "Tree_1_1_1", -1, 2) 
-;     AddItem(*g, 5, "Tree_1_1_2", -1, 2) 
-;     AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
-;     AddItem(*g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", -1, 4) 
-;     AddItem(*g, 7, "Tree_1_1_2_2 980980_", -1, 3) 
-;     AddItem(*g, 2, "Tree_1_2", -1, 1) 
-;     AddItem(*g, 3, "Tree_1_3", -1, 1) 
-;     AddItem(*g, 9, "Tree_2",-1 )
-;     AddItem(*g, 10, "Tree_3", -1 )
-;     AddItem(*g, 11, "Tree_4", -1 )
-;     AddItem(*g, 12, "Tree_5", -1 )
-;     AddItem(*g, 13, "Tree_6", -1 )
-;     
-;     ;;;;
-;     AddItem (*List(), 1, "Node "+Str(a), 0, 0)                                         
-;    AddElement(*List()) : *List() = *g
-;      
-;     ;     AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
-;     ;     AddItem(*g, 8, "Tree_1_1_2_1_1_8", -1, 4) 
-;     ;     AddItem(*g, 7, "Tree_1_1_2_2", -1, 3) 
-;     ;     AddItem(*g, 2, "Tree_1_2", -1, 1) 
-;     ;     AddItem(*g, 3, "Tree_1_3", -1, 1) 
-;     ;     AddItem(*g, 9, "Tree_2",-1 )
-;     ;     AddItem(*g, 10, "Tree_3", -1 )
-;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     ; ClearItems(*g)
-;     
+    g = 10
+    *g = Widget(10, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_CheckBoxes|#PB_Flag_FullSelection)                                         
+    AddElement(*List()) : *List() = *g
+    
+    ; 1_example
+    AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
+    ;AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+    AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+    AddItem (*g, -1, "Sub-Item 2", -1, 11)
+    AddItem (*g, -1, "Sub-Item 3", -1, 1)
+    AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
+    AddItem (*g, -1, "Sub-Item 5", -1, 11)
+    AddItem (*g, -1, "Sub-Item 6", -1, 1)
+    AddItem (*g, -1, "File "+Str(a), -1, 0)  
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    ; RemoveItem(*g,1)
+    Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+    ;BindGadgetEvent(g, @Events())
+    ;Tree::SetState(*g, 1)
+    ;Tree::SetState(*g, -1)
+    ;     Debug "c "+Tree::GetText(*g)
+    
+    g = 11
+    *g = Widget(230, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
+    ;  3_example
+    AddItem(*g, 0, "Tree_0", -1 )
+    AddItem(*g, 1, "Tree_1_1", 0, 1) 
+    AddItem(*g, 4, "Tree_1_1_1", -1, 2) 
+    AddItem(*g, 5, "Tree_1_1_2", -1, 2) 
+    AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
+    AddItem(*g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", -1, 4) 
+    AddItem(*g, 7, "Tree_1_1_2_2 980980_", -1, 3) 
+    AddItem(*g, 2, "Tree_1_2", -1, 1) 
+    AddItem(*g, 3, "Tree_1_3", -1, 1) 
+    AddItem(*g, 9, "Tree_2",-1 )
+    AddItem(*g, 10, "Tree_3", -1 )
+    AddItem(*g, 11, "Tree_4", -1 )
+    AddItem(*g, 12, "Tree_5", -1 )
+    AddItem(*g, 13, "Tree_6", -1 )
+    
+    ;;;;
+    AddItem (*List(), 1, "Node "+Str(a), 0, 0)                                         
+   AddElement(*List()) : *List() = *g
+     
+    ;     AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
+    ;     AddItem(*g, 8, "Tree_1_1_2_1_1_8", -1, 4) 
+    ;     AddItem(*g, 7, "Tree_1_1_2_2", -1, 3) 
+    ;     AddItem(*g, 2, "Tree_1_2", -1, 1) 
+    ;     AddItem(*g, 3, "Tree_1_3", -1, 1) 
+    ;     AddItem(*g, 9, "Tree_2",-1 )
+    ;     AddItem(*g, 10, "Tree_3", -1 )
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    ; ClearItems(*g)
+    
     g = 12
     *g = Widget(450, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes |#PB_Flag_NoLines|#PB_Flag_NoButtons )                               
     AddElement(*List()) : *List() = *g
@@ -4046,49 +4047,49 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     g = 13
-;     *g = Widget(670, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
-;     AddElement(*List()) : *List() = *g
-;     ;  4_example
-;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
-;     AddItem(*g, 1, "Tree_1", -1, 1) 
-;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
-;     AddItem(*g, 3, "Tree_3_1", -1, 1) 
-;     AddItem(*g, 3, "Tree_3_2", -1, 2) 
-;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     
-;     g = 14
-;     *g = Widget(890, 100, 103, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
-;     AddElement(*List()) : *List() = *g
-;     ;  5_example
-;     AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
-;     AddItem(*g, 1, "Tree_1", -1, 1) 
-;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
-;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     g = 15
-;     *g = Widget(890+106, 100, 103, 210, #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
-;     AddElement(*List()) : *List() = *g
-;     ;  6_example
-;     AddItem(*g, 0, "Tree_1", -1, 1) 
-;     AddItem(*g, 0, "Tree_2_1", -1, 2) 
-;     AddItem(*g, 0, "Tree_2_2", -1, 3) 
-;     
-;     For i = 0 To 24
-;       If i % 5 = 0
-;         AddItem(*g, -1, "Directory" + Str(i), -1, 0)
-;       Else
-;         AddItem(*g, -1, "Item" + Str(i), -1, 1)
-;       EndIf
-;     Next i
-;     
-;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-;     
-;     ;Free(*g)
+    
+    g = 13
+    *g = Widget(670, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
+    AddElement(*List()) : *List() = *g
+    ;  4_example
+    AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
+    AddItem(*g, 1, "Tree_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    AddItem(*g, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g, 3, "Tree_3_1", -1, 1) 
+    AddItem(*g, 3, "Tree_3_2", -1, 2) 
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    
+    g = 14
+    *g = Widget(890, 100, 103, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoButtons)                                         
+    AddElement(*List()) : *List() = *g
+    ;  5_example
+    AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g, 1, "Tree_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    g = 15
+    *g = Widget(890+106, 100, 103, 210, #PB_Flag_AlwaysSelection|#PB_Flag_BorderLess)                                         
+    AddElement(*List()) : *List() = *g
+    ;  6_example
+    AddItem(*g, 0, "Tree_1", -1, 1) 
+    AddItem(*g, 0, "Tree_2_1", -1, 2) 
+    AddItem(*g, 0, "Tree_2_2", -1, 3) 
+    
+    For i = 0 To 24
+      If i % 5 = 0
+        AddItem(*g, -1, "Directory" + Str(i), -1, 0)
+      Else
+        AddItem(*g, -1, "Item" + Str(i), -1, 1)
+      EndIf
+    Next i
+    
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    ;Free(*g)
     
     Repeat
       Select WaitWindowEvent()   
@@ -4128,5 +4129,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------0-------------
+; Folding = -------------------------------------------------4-----------d+------------
 ; EnableXP

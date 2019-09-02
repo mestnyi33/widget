@@ -427,9 +427,9 @@ CompilerIf #PB_Compiler_IsMainFile
     *g1 = Tree(230, 10, 210, 210, #PB_Flag_FullSelection)                                         
     ;  3_example
     
-    AddItem(*g1, 0, "Tree_0", 0 )
+    AddItem(*g1, 0, "Tree_0", -1 )
     AddItem(*g1, 1, "Tree_1_1", 0, 1) 
-    AddItem(*g1, 4, "Tree_1_1_1", 0, 2) 
+    AddItem(*g1, 4, "Tree_1_1_1", -1, 2) 
     AddItem(*g1, 5, "Tree_1_1_2uuuuuuuuuuuuuuuuu", 0, 2) 
     AddItem(*g1, 6, "Tree_1_1_2_1", 0, 3) 
     AddItem(*g1, 8, "Tree_1_1_2_1_1_4 and scroll end", 0, 4) 
@@ -553,8 +553,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
-; CursorPosition = 319
-; FirstLine = 93
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = 0-ff-0---
 ; EnableXP
