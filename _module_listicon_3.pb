@@ -283,6 +283,10 @@ DeclareModule Constants
   EndIf
   
   #PB_Gadget_FrameColor = 10
+  #Normal = 0
+  #Entered = 1
+  #Selected = 2
+  #Disabled = 3
   
 EndDeclareModule 
 
@@ -293,6 +297,7 @@ EndModule
 UseModule Constants
 
 DeclareModule Structures
+  UseModule Constants
   
   ;- STRUCTURE
   ;- STRUCTUREs
@@ -601,86 +606,34 @@ DeclareModule Structures
   ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;
   Global Colors._S_color
   With Colors                          
-    \State = 0
-    \Alpha = 255
-    ;     ;- Серые цвета 
-    ;     ; Цвета по умолчанию
-    ;     \Front[0] = $FF000000
-    ;     \Fore[0] = $FFFCFCFC ; $FFF6F6F6 
-    ;     \Back[0] = $FFE2E2E2 ; $FFE8E8E8 ; 
-    ;     \Line[0] = $FFA3A3A3
-    ;     \Frame[0] = $FFA5A5A5 ; $FFBABABA
-    ;     
-    ;     ; Цвета если мышь на виджете
-    ;     \Front[1] = $FF000000
-    ;     \Fore[1] = $FFF5F5F5 ; $FFF5F5F5 ; $FFEAEAEA
-    ;     \Back[1] = $FFCECECE ; $FFEAEAEA ; 
-    ;     \Line[1] = $FF5B5B5B
-    ;     \Frame[1] = $FF8F8F8F
-    ;     
-    ;     ; Цвета если нажали на виджет
-    ;     \Front[2] = $FFFFFFFF
-    ;     \Fore[2] = $FFE2E2E2
-    ;     \Back[2] = $FFB4B4B4
-    ;     \Line[2] = $FFFFFFFF
-    ;     \Frame[2] = $FF6F6F6F
-    
-    ;             ;- Зеленые цвета
-    ;             ; Цвета по умолчанию
-    ;             \Front[0] = $FF000000
-    ;             \Fore[0] = $FFFFFFFF
-    ;             \Back[0] = $FFDAFCE1  
-    ;             \Frame[0] = $FF6AFF70 
-    ;             
-    ;             ; Цвета если мышь на виджете
-    ;             \Front[1] = $FF000000
-    ;             \Fore[1] = $FFE7FFEC
-    ;             \Back[1] = $FFBCFFC5
-    ;             \Frame[1] = $FF46E064 ; $FF51AB50
-    ;             
-    ;             ; Цвета если нажали на виджет
-    ;             \Front[2] = $FFFEFEFE
-    ;             \Fore[2] = $FFC3FDB7
-    ;             \Back[2] = $FF00B002
-    ;             \Frame[2] = $FF23BE03
+    \state = 0
+    \alpha[0] = 255
+    \alpha[1] = 255
     
     ;- Синие цвета
     ; Цвета по умолчанию
-    \Front[0] = $80000000
-    \Fore[0] = $FFF8F8F8 
-    \Back[0] = $80E2E2E2
-    \Frame[0] = $80C8C8C8
+    \front[#Normal] = $80000000
+    \fore[#Normal] = $FFF8F8F8 
+    \back[#Normal] = $80E2E2E2
+    \frame[#Normal] = $80C8C8C8
     
     ; Цвета если мышь на виджете
-    \Front[1] = $80000000
-    \Fore[1] = $FFFAF8F8
-    \Back[1] = $80FCEADA
-    \Frame[1] = $80FFC288
+    \front[#Entered] = $80000000
+    \fore[#Entered] = $FFFAF8F8
+    \back[#Entered] = $80FCEADA
+    \frame[#Entered] = $80FFC288
     
     ; Цвета если нажали на виджет
-    \Front[2] = $FFFEFEFE
-    \Fore[2] = $C8E9BA81;$C8FFFCFA
-    \Back[2] = $C8E89C3D; $80E89C3D
-    \Frame[2] = $C8DC9338; $80DC9338
+    \front[#Selected] = $FFFEFEFE
+    \fore[#Selected] = $C8E9BA81;$C8FFFCFA
+    \back[#Selected] = $C8E89C3D; $80E89C3D
+    \frame[#Selected] = $C8DC9338; $80DC9338
     
-    ;         ;- Синие цвета 2
-    ;         ; Цвета по умолчанию
-    ;         \Front[0] = $FF000000
-    ;         \Fore[0] = $FFF8F8F8 ; $FFF0F0F0 
-    ;         \Back[0] = $FFE5E5E5
-    ;         \Frame[0] = $FFACACAC 
-    ;         
-    ;         ; Цвета если мышь на виджете
-    ;         \Front[1] = $FF000000
-    ;         \Fore[1] = $FFFAF8F8 ; $FFFCF4EA
-    ;         \Back[1] = $FFFAE8DB ; $FFFCECDC
-    ;         \Frame[1] = $FFFC9F00
-    ;         
-    ;             ; Цвета если нажали на виджет
-    ;             \Front[2] = $FF000000;$FFFFFFFF
-    ;             \Fore[2] = $FFFDF7EF
-    ;             \Back[2] = $FFFBD9B7
-    ;             \Frame[2] = $FFE59B55
+    ; Цвета если дисабле виджет
+    \front[#Disabled] = $FFBABABA
+    \fore[#Disabled] = $FFF6F6F6 
+    \back[#Disabled] = $FFE2E2E2 
+    \frame[#Disabled] = $FFBABABA
     
   EndWith
   
@@ -2542,9 +2495,9 @@ Module ListIcon
     Protected box_size = *this\flag\buttons
     Protected check_size = *this\flag\checkBoxes
     
-    Macro _update_items_(_this_)
+    Macro _update_(_this_)
       If _this_\change <> 0
-        _this_\scroll\width = 0
+        _this_\scroll\width = Bool(_this_\flag\checkBoxes) * 20 + _this_\sublevel
         
         If _this_\Text\Change
           _this_\Text\Height = TextHeight("A") + Bool(_this_\Flag\GridLines) + Bool(#PB_Compiler_OS = #PB_OS_Windows) * 2
@@ -2563,9 +2516,8 @@ Module ListIcon
         If _this_\change <> 0
           _this_\scroll\height = _this_\Columns()\height-Bool(_this_\flag\gridlines=1)
           
-          ;           _this_\Columns()\items()\sublevel[1] = 6 + _this_\Columns()\items()\sublevel * _this_\sublevel + _this_\flag\buttons + _this_\flag\checkBoxes + Bool(_this_\flag\buttons) * 5
-          ;               _this_\Columns()\items()\sublevel[2] = _this_\Columns()\items()\sublevel[1] + _this_\image\width + Bool(_this_\image\width) * 3
-          _this_\Columns()\x =  _this_\x[2] + _this_\scroll\width + Bool(_this_\flag\checkBoxes) * 20 + _this_\sublevel ; 6 + _this_\sublevel + _this_\flag\buttons + _this_\flag\checkBoxes + Bool(_this_\flag\buttons) * 5
+          _this_\Columns()\x =  _this_\x[2] + _this_\scroll\width
+          _this_\Columns()\y =  _this_\y[2]
         EndIf
         
         If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
@@ -2621,7 +2573,7 @@ Module ListIcon
             EndIf
             
             If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
-              _this_\Columns()\items()\draw = Bool(_this_\Columns()\items()\y+_this_\Columns()\items()\height-_this_\scroll\v\page\pos>_this_\y[2] And 
+              _this_\Columns()\items()\draw = Bool(_this_\Columns()\items()\y+_this_\Columns()\items()\height-_this_\scroll\v\page\pos>_this_\y[2]+_this_\Columns()\height And 
                                                    (_this_\Columns()\items()\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
               
               _this_\Columns()\items()\image\x = _this_\Columns()\x - Bool(_this_\Columns()\image\width) * 20 -_this_\scroll\h\page\pos
@@ -2691,13 +2643,6 @@ Module ListIcon
     Protected box_1_pos.b = 0, checkbox_color = $FFFFFF, checkbox_backcolor, box_type.b = 4
     Protected Drawing.b,column_width,column_height,column_x,l=1, n, height = 18, text_color=$000000
     
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      height = 16
-    CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-      height = 20
-    CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-      height = 18
-    CompilerEndIf
     
     With *this
       If Not \hide
@@ -2705,12 +2650,18 @@ Module ListIcon
         DrawingMode(#PB_2DDrawing_Default)
         RoundBox(\x[1],\y[1],\width[1],\height[1],\radius,\radius,\color\back[\color\state])
         
+        ; Draw image
+        If \image\handle
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
+        EndIf
+        
         If \text\fontID 
           DrawingFont(\text\fontID) 
         EndIf
         
         If \change
-          _update_items_(*this)
+          _update_(*this)
           \change = 0
         EndIf 
         
@@ -2744,24 +2695,26 @@ Module ListIcon
                   RoundBox(\x[2],Y,\width[2],\Columns()\items()\height,\Columns()\items()\radius,\Columns()\items()\radius, \Columns()\items()\color\frame[\Columns()\items()\color\state])
                 EndIf
                 
-                ; Draw arrow
-                If \Columns()\items()\childrens And \flag\buttons
-                  DrawingMode(#PB_2DDrawing_Default)
-                  Bar::Arrow(\Columns()\items()\box[0]\x+(\Columns()\items()\box[0]\width-6)/2,\Columns()\items()\box[0]\y+(\Columns()\items()\box[0]\height-6)/2-1, 6, Bool(Not \Columns()\items()\box[0]\checked)+2, $FF7E7E7E, 0,0) 
+                If  Not \Columns()\index
+                  ; Draw arrow
+                  If \Columns()\items()\childrens And \flag\buttons
+                    DrawingMode(#PB_2DDrawing_Default)
+                    Bar::Arrow(\Columns()\items()\box[0]\x+(\Columns()\items()\box[0]\width-6)/2,\Columns()\items()\box[0]\y+(\Columns()\items()\box[0]\height-6)/2-1, 6, Bool(Not \Columns()\items()\box[0]\checked)+2, $FF7E7E7E, 0,0) 
+                  EndIf
+                  
+                  ; Draw checkbox
+                  If \flag\checkboxes
+                    DrawingMode(#PB_2DDrawing_Default)
+                    CheckBox(\Columns()\items()\box[1]\x,\Columns()\items()\box[1]\y,\Columns()\items()\box[1]\width,\Columns()\items()\box[1]\height, 3, \Columns()\items()\box[1]\checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
+                  EndIf
+                  
+                  ; Draw image
+                  If \Columns()\items()\image\handle
+                    DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                    DrawAlphaImage(\Columns()\items()\image\handle, \Columns()\items()\image\x, \Columns()\items()\image\y, \Columns()\items()\color\alpha)
+                  EndIf
                 EndIf
-                
-                ; Draw checkbox
-                If \flag\checkboxes
-                  DrawingMode(#PB_2DDrawing_Default)
-                  CheckBox(\Columns()\items()\box[1]\x,\Columns()\items()\box[1]\y,\Columns()\items()\box[1]\width,\Columns()\items()\box[1]\height, 3, \Columns()\items()\box[1]\checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
-                EndIf
-                
-                ; Draw image
-                If \Columns()\items()\image\handle
-                  DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                  DrawAlphaImage(\Columns()\items()\image\handle, \Columns()\items()\image\x, \Columns()\items()\image\y, \Columns()\items()\color\alpha)
-                EndIf
-                
+              
                 ; Draw text
                 If \Columns()\items()\text\string.s
                   DrawingMode(#PB_2DDrawing_Transparent)
@@ -2769,78 +2722,79 @@ Module ListIcon
                 EndIf
               EndIf
               
-              ; Draw plots
-              If \flag\lines And \sublevel
-                ; DrawingMode(#PB_2DDrawing_XOr)
-                Protected start
-                Protected x_point=\Columns()\items()\box[0]\x+\Columns()\items()\box[0]\width/2
-                Protected y_point=\Columns()\items()\box[0]\y+\Columns()\items()\box[0]\height/2
-                
-                If \Columns()\items()\draw And x_point>\x[2] - line_size
-                  ; Draw horisontal plot
-                  ; DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
-                  Line(x_point,y_point-1,line_size,1, $FF7E7E7E)
+              If  Not \Columns()\index
+                ; Draw plots
+                If \flag\lines And \sublevel
+                  ; DrawingMode(#PB_2DDrawing_XOr)
+                  Protected start
+                  Protected x_point=\Columns()\items()\box[0]\x+\Columns()\items()\box[0]\width/2
+                  Protected y_point=\Columns()\items()\box[0]\y+\Columns()\items()\box[0]\height/2
+                  
+                  If \Columns()\items()\draw And x_point>\x[2] - line_size
+                    ; Draw horisontal plot
+                    ; DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
+                    Line(x_point,y_point-1,line_size,1, $FF7E7E7E)
+                  EndIf
+                  
+                  ; Vertical plot
+                  If \Columns()\items()\parent And x_point>\x
+                    If \Columns()\items()\sublevel 
+                      start = \Columns()\items()\parent\y+\Columns()\items()\parent\height+\Columns()\items()\parent\height/2 -\scroll\v\page\pos - line_size + 1
+                    Else 
+                      start = \y[2]+\Columns()\items()\parent\height/2 -\scroll\v\page\pos
+                    EndIf
+                    
+                    If start < \y[2]
+                      start = \y[2]
+                    EndIf
+                    
+                    If y_point < \y[2]
+                      y_point = \y[2]
+                    EndIf
+                    
+                    If (y_point-start) > \height[2]
+                      y_point = \y[2]+\height[2] 
+                    EndIf
+                    
+                    If start + (y_point-start) > \y[2]+\height[2] + \Columns()\items()\height
+                      start = y_point
+                    EndIf
+                    
+                    ; Draw vertical plot
+                    ; DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
+                    Line(x_point,start,1,y_point-start, $FF7E7E7E)
+                  EndIf
                 EndIf
                 
-                ; Vertical plot
-                If \Columns()\items()\parent And x_point>\x
-                  If \Columns()\items()\sublevel 
-                    start = \Columns()\items()\parent\y+\Columns()\items()\parent\height+\Columns()\items()\parent\height/2 -\scroll\v\page\pos - line_size + 1
-                  Else 
-                    start = \y[2]+\Columns()\items()\parent\height/2 -\scroll\v\page\pos
-                  EndIf
-                  
-                  If start < \y[2]
-                    start = \y[2]
-                  EndIf
-                  
-                  If y_point < \y[2]
-                    y_point = \y[2]
-                  EndIf
-                  
-                  If (y_point-start) > \height[2]
-                    y_point = \y[2]+\height[2] 
-                  EndIf
-                  
-                  If start + (y_point-start) > \y[2]+\height[2] + \Columns()\items()\height
-                    start = y_point
-                  EndIf
-                  
-                  ; Draw vertical plot
-                  ; DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
-                  Line(x_point,start,1,y_point-start, $FF7E7E7E)
+                If \Flag\GridLines
+                  ; Horizontal line
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                  Box(\x[2], (\Columns()\items()\y+\Columns()\items()\height+Bool(\flag\gridlines>1))-\scroll\v\page\pos, \width[2], l, $ADADAE&$FFFFFF|alpha<<24)
+                  ;Box(*This\Columns()\x-column_x, (\y+\height)+l, *This\Columns()\width+column_x, l, $ADADAE&$FFFFFF|alpha<<24)
                 EndIf
-              EndIf
-              
-              If \Flag\GridLines
-                ; Horizontal line
-                DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                Box(\x[2], (\Columns()\items()\y+\Columns()\items()\height+Bool(\flag\gridlines>1))-\scroll\v\page\pos, \width[2], l, $ADADAE&$FFFFFF|alpha<<24)
-                ;Box(*This\Columns()\x-column_x, (\y+\height)+l, *This\Columns()\width+column_x, l, $ADADAE&$FFFFFF|alpha<<24)
               EndIf
             Next
             
-            If ListIndex(*This\Columns())=0
+            ; Columns title
+            If Not \Columns()\index
               DrawingMode(#PB_2DDrawing_Gradient)
-              bar::_box_gradient_(0,*This\bs, 0, \width[2], \Columns()\height, $FFFFFF,$F4F4F5)
+              bar::_box_gradient_(0,\x[2], 0, \width[2], \Columns()\height, $FFFFFF,$F4F4F5)
               DrawingMode(#PB_2DDrawing_Default)
               Box(\x[2], \Columns()\height, \width[2],1, $ADADAE)
             EndIf
             
-            
-            
-            ; Vertical line
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            If \Flag\GridLines And ListIndex(*This\Columns())=0
-              Box(*This\Columns()\x- 1, \y[2], l, \Columns()\height + Bool(*This\Flag\GridLines) * (\height[2]-\Columns()\height), $ADADAE&$FFFFFF|alpha<<24)
-            EndIf
-            Box(*This\Columns()\x+*This\Columns()\width-1, \y[2], l, \Columns()\height + Bool(*This\Flag\GridLines) * (\height[2]-\Columns()\height), $ADADAE&$FFFFFF|alpha<<24)
-            
-            If *This\Columns()\text\string.s
+            ; Text of the column
+            If \Columns()\text\string.s
               DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-              DrawText(*This\Columns()\text\x, *This\Columns()\text\y, *This\Columns()\text\string.s, $000000&$FFFFFF|alpha<<24)
+              DrawText(\Columns()\text\x, \Columns()\text\y, \Columns()\text\string.s, $000000&$FFFFFF|alpha<<24)
             EndIf
             
+            ; Vertical grid lines
+            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+            If Not \Columns()\index ; \Flag\GridLines And 
+              Box(\Columns()\x - 1, \y[2], l, \Columns()\height - 3+ Bool(\Flag\GridLines) * (\height[2]-\Columns()\height), $ADADAE&$FFFFFF|alpha<<24)
+            EndIf
+            Box(\Columns()\x+\Columns()\width - 1, \y[2], l, \Columns()\height - 3+ Bool(\Flag\GridLines) * (\height[2]-\Columns()\height), $ADADAE&$FFFFFF|alpha<<24)
           Next
           PopListPosition(\Columns()) ; 
           
@@ -2848,31 +2802,14 @@ Module ListIcon
         
         ; Draw scroll bars
         If \scroll
-          CompilerIf Defined(Bar, #PB_Module)
-            Bar::Draw(\scroll\v)
-            Bar::Draw(\scroll\h)
-          CompilerEndIf
-        EndIf
-        
-        ; Draw image
-        If \image\handle
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
+          Bar::Draw(\scroll\v)
+          Bar::Draw(\scroll\h)
         EndIf
         
         ; Draw frames
         DrawingMode(#PB_2DDrawing_Outlined)
-        
-        If \color\state
-          ; RoundBox(\x[1]+Bool(\fs),\y[1]+Bool(\fs),\width[1]-Bool(\fs)*2,\height[1]-Bool(\fs)*2,\radius,\radius,0);\color\back)
-          RoundBox(\x[2]-Bool(\fs),\y[2]-Bool(\fs),\width[2]+Bool(\fs)*2,\height[2]+Bool(\fs)*2,\radius,\radius,\color\back)
-          RoundBox(\x[1],\y[1],\width[1],\height[1],\radius,\radius,\color\frame[2])
-          ;           If \radius : RoundBox(\x[1],\y[1]-1,\width[1],\height[1]+2,\radius,\radius,\color\frame[2]) : EndIf  ; Сглаживание краев )))
-          ;           RoundBox(\x[1]-1,\y[1]-1,\width[1]+2,\height[1]+2,\radius,\radius,\color\frame[2])
-        ElseIf \fs
-          RoundBox(\x[1],\y[1],\width[1],\height[1],\radius,\radius,\color\frame[\color\state])
-        EndIf
-        
+        RoundBox(\x[1],\y[1],\width[1],\height[1],\radius,\radius,\color\frame[\color\state])
+        RoundBox(\x[2]-Bool(\fs),\y[2]-Bool(\fs),\width[2]+Bool(\fs)*2,\height[2]+Bool(\fs)*2 ,\radius,\radius,\color\back)
         
         If \text\change : \text\change = 0 : EndIf
         If \resize : \resize = 0 : EndIf
@@ -2921,6 +2858,11 @@ Module ListIcon
         \Columns()\text\string.s = Text.s
         \Columns()\text\change = 1
       EndIf
+      
+;       If Not \Columns()\index
+;         \y[2] + \Columns()\height
+;        \height[2] - \Columns()\height
+;       EndIf
       
       If Result =- 1
         ProcedureReturn \Columns()\handle
@@ -3640,7 +3582,7 @@ Module ListIcon
         Result | Bar::CallBack(\scroll\h, EventType, mouse_x, mouse_y)
         
         If (\scroll\v\change Or \scroll\h\change)
-          _update_items_(*this)
+          _update_(*this)
           \scroll\v\change = 0 
           \scroll\h\change = 0
         EndIf
@@ -3689,7 +3631,7 @@ Module ListIcon
           EndIf
         EndIf
       Else
-        If \from >= 0 ;And SelectElement(\columns()\items(), \from)
+        If \from >= 0 And SelectElement(\columns()\items(), \from)
           If EventType = #PB_EventType_LeftButtonUp
             _callback_(*this, #PB_EventType_LeftButtonUp)
           EndIf
@@ -3711,7 +3653,7 @@ Module ListIcon
           If Not Down : \from =- 1 : from =- 1 : LastX = 0 : LastY = 0 : EndIf
           
         Case #PB_EventType_LeftButtonUp 
-          If \from >= 0 And Down = *this ; SelectElement(\items(), \from)
+          If \from >= 0 And Down = *this And SelectElement(\columns()\items(), \from)
             Down = 0 : LastX = 0 : LastY = 0
             
             If Not ((\Flag\buttons And \columns()\items()\childrens And 
@@ -3729,7 +3671,7 @@ Module ListIcon
           EndIf
           
         Case #PB_EventType_LeftButtonDown
-          If from >= 0 ; And SelectElement(\items(), from)
+          If from >= 0 And SelectElement(\columns()\items(), \from)
             Down = *this
             \from = from 
             *leave = *this
@@ -3739,6 +3681,7 @@ Module ListIcon
                 ;                 If SelectElement(*focus\items(), *focus\_i_selected\index)
                 ;                   _callback_(*focus, #PB_EventType_LostFocus)
                 ;                 EndIf
+                
                 *focus\_i_selected\color\state = 3
                 *focus\color\state = 0
               EndIf
@@ -3751,15 +3694,13 @@ Module ListIcon
             EndIf
             
             If _from_point_(\canvas\mouse\x, \canvas\mouse\y, \columns()\items()\box[1])
-              
               \Columns()\Items()\box[1]\checked ! 1
-              
+             
               Result = #True
             ElseIf (\Flag\buttons And \Columns()\Items()\childrens) And
                    _from_point_(\canvas\mouse\x, \canvas\mouse\y, \columns()\items()\box[0])
               
-              Protected sublevel
-              sublevel = \columns()\items()\sublevel
+              Protected sublevel = \columns()\items()\sublevel
               \columns()\items()\box[0]\checked ! 1
               
               PushListPosition(\columns()\items())
@@ -3772,11 +3713,8 @@ Module ListIcon
               Wend
               PopListPosition(\columns()\items())
               
-              ;               If StartDrawing(CanvasOutput(EventGadget()))
               \change = 1
-              _update_items_(*this)
-              ;                 StopDrawing()
-              ;               EndIf
+              _update_(*this)
               
               Result = #True
             Else
@@ -3821,8 +3759,8 @@ Module ListIcon
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fs = Bool(Not Flag&#PB_Flag_BorderLess)*2
-        \bs = \fs
+        \bs = Bool(Not Flag&#PB_Flag_BorderLess)*2
+        \fs = \bs
         
         \Flag\MultiSelect = Bool(flag&#PB_Flag_MultiSelect)
         \Flag\ClickSelect = Bool(flag&#PB_Flag_ClickSelect)
@@ -4134,5 +4072,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------v60---4v--------------------------
+; Folding = -----------------------------------------------Dh94--84--------------4+--8-------
 ; EnableXP

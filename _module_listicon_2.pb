@@ -2919,7 +2919,7 @@ Module ListIcon
 ;         Result | Bar::CallBack(\scroll\h, EventType, mouse_x, mouse_y)
 ;         
 ; ;         If (\scroll\v\change Or \scroll\h\change)
-; ;           _update_items_(*this)
+; ;           _update_(*this)
 ; ;           \scroll\v\change = 0 
 ; ;           \scroll\h\change = 0
 ; ;         EndIf
@@ -3053,7 +3053,7 @@ Module ListIcon
               
               ;               If StartDrawing(CanvasOutput(EventGadget()))
               \change = 1
-;               _update_items_(*this)
+;               _update_(*this)
               ;                 StopDrawing()
               ;               EndIf
               

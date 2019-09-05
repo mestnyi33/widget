@@ -2555,7 +2555,7 @@ Module Tree
     Protected box_size = *This\flag\buttons
     Protected check_size = *This\flag\checkBoxes
     
-    Macro _update_items_(_this_)
+    Macro _update_(_this_)
       If _this_\change <> 0
         _this_\scroll\width = 0
         _this_\scroll\height = 0
@@ -2664,7 +2664,7 @@ Module Tree
         EndIf
         
         If \change
-          _update_items_(*This)
+          _update_(*This)
         EndIf 
         
         ; Draw items text
@@ -3327,7 +3327,7 @@ Module Tree
         Result | Bar::CallBack(\scroll\h, EventType, mouse_x, mouse_y)
         
         If \scroll\v\change Or \scroll\h\change
-          _update_items_(*this)
+          _update_(*this)
           \scroll\v\change = 0 
           \scroll\h\change = 0
         EndIf
@@ -3459,7 +3459,7 @@ Module Tree
               PopListPosition(\items())
               
               ;               If StartDrawing(CanvasOutput(EventGadget()))
-              _update_items_(*this)
+              _update_(*this)
               ;                 StopDrawing()
               ;               EndIf
               
