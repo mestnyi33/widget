@@ -2723,7 +2723,7 @@ Module Tree
       
     EndMacro
     
-  Procedure.l _Draw(*this._S_widget)
+  Procedure.l Draw(*this._S_widget)
     Protected Y, state.b
     Protected box_size = *this\flag\buttons
     Protected check_size = *this\flag\checkBoxes
@@ -2885,7 +2885,7 @@ Module Tree
     
   EndProcedure
   
-  Procedure.l Draw(*this._S_widget)
+  Procedure.l _Draw(*this._S_widget)
     Protected Y, state.b
     Protected line_size = *this\flag\lines
     Protected box_size = *this\flag\buttons
@@ -4300,5 +4300,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------+8-n---------X4-uu-----------------
+; Folding = --------------------------------------------------8-nf--------X4-uu-----------------
 ; EnableXP

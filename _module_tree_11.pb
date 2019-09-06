@@ -2344,7 +2344,7 @@ Module Bar
           
         Case #PB_EventType_LeftButtonUp : Down = 0 : LastX = 0 : LastY = 0
           
-         If \from >= 0 And \button[\from]\interact
+          If \from >= 0 And \button[\from]\interact
             _callback_(*this, #PB_EventType_LeftButtonUp)
             
             If from =- 1
@@ -2797,7 +2797,7 @@ Module Tree
     
   EndMacro
   
-  Procedure.l _Draw(*this._S_widget)
+  Procedure.l Draw(*this._S_widget)
     Protected Y, state.b
     Protected box_size = *this\flag\buttons
     Protected check_size = *this\flag\checkBoxes
@@ -2859,59 +2859,21 @@ Module Tree
             
             ; Draw plots
             If \flag\lines And \row\sublevellen
+              DrawingMode(#PB_2DDrawing_XOr)
               
-              If \items()\line\v\width
-                Line(\items()\line\v\x+Random(5), \items()\line\v\y,\items()\line\v\width,\items()\line\v\height, $FF7E7E7E)
+              If \draws()\line\v\width
+                 ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
+                 Line(\draws()\line\v\x, \draws()\line\v\y,\draws()\line\v\width,\draws()\line\v\height, $FF7E7E7E)
               EndIf
-              If \items()\line\h\height
-                Line(\items()\line\h\x , \items()\line\h\y,\items()\line\h\width,\items()\line\h\height, $FF7E7E7E)
+              If \draws()\line\h\height
+                 ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
+                 Line(\draws()\line\h\x , \draws()\line\h\y,\draws()\line\h\width,\draws()\line\h\height, $FF7E7E7E)
               EndIf
               
-              
-              ;               DrawingMode(#PB_2DDrawing_XOr)
-              ;               Protected h_point
-              ;               Protected line_size = \flag\lines
-              ;               Protected x_point=\draws()\box[0]\x+\draws()\box[0]\width/2
-              ;               Protected y_point=\draws()\box[0]\y+\draws()\box[0]\height/2
-              ;               
-              ;               ; Draw plot
-              ;               If (\x[2]-x_point) < \flag\lines
-              ;                 If x_point<\x[2]
-              ;                   line_size =  (\flag\lines - (\x[2]-x_point))
-              ;                 EndIf
-              ;                 
-              ;                 If y_point > \y[2] And y_point < \y[2]+\height[2]
-              ;                   ; DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
-              ;                   Line(x_point + (\flag\lines-line_size), y_point,line_size+2,1, $FF7E7E7E)
-              ;                 EndIf
-              ;                 
-              ;                 ; Vertical plot
-              ;                 If \draws()\first And \x[2]<x_point
-              ;                   y_point = (\draws()\first\y+\draws()\first\height- Bool(\draws()\first\sublevel = \draws()\sublevel) * \draws()\first\height/2) - \scroll\v\page\pos
-              ;                   If y_point < \y[2] : y_point = \y[2] : EndIf
-              ;                   
-              ;                   h_point = (\draws()\y+\draws()\height/2)-y_point - \scroll\v\page\pos
-              ;                   If h_point < 0 : h_point = 0 : EndIf
-              ;                   If y_point + h_point > \y[2]+\height[2] 
-              ;                     If y_point > \y[2]+\height[2] 
-              ;                       h_point = 0
-              ;                     Else
-              ;                       h_point = (\y[2] + \height[2]) -  y_point 
-              ;                     EndIf
-              ;                   EndIf
-              ;                   
-              ;                   If h_point
-              ;                     ; DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
-              ;                     Line(x_point,y_point,1,h_point, $FF7E7E7E)
-              ;                   EndIf
-              ;                   
-              ;                   If \row\selected And \row\selected\childrens And \flag\buttons
-              ;                     DrawingMode(#PB_2DDrawing_Default)
-              ;                     Bar::Arrow(\row\selected\box[0]\x+(\row\selected\box[0]\width-6)/2,\row\selected\box[0]\y+(\row\selected\box[0]\height-6)/2, 6, Bool(Not \row\selected\box[0]\checked)+2, \row\selected\color\front[\row\selected\color\state], 0,0) 
-              ;                   EndIf
-              ;                   
-              ;                 EndIf
-              ;               EndIf
+              If \row\selected And \row\selected\childrens And \flag\buttons
+                DrawingMode(#PB_2DDrawing_Default)
+                Bar::Arrow(\row\selected\box[0]\x+(\row\selected\box[0]\width-6)/2,\row\selected\box[0]\y+(\row\selected\box[0]\height-6)/2, 6, Bool(Not \row\selected\box[0]\checked)+2, \row\selected\color\front[\row\selected\color\state], 0,0) 
+              EndIf
               
             EndIf
             
@@ -2968,7 +2930,7 @@ Module Tree
     
   EndProcedure
   
-  Procedure.l Draw(*this._S_widget)
+  Procedure.l _Draw(*this._S_widget)
     Protected Y, state.b
     Protected line_size = *this\flag\lines
     Protected box_size = *this\flag\buttons
