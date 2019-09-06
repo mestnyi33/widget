@@ -513,7 +513,7 @@ DeclareModule Structures
     color._S_color
     image._S_image
     box._S_box[2]
-    line._S_line
+    l._S_line ; 
     
     *last._S_items
     *first._S_items
@@ -2576,14 +2576,7 @@ Module Tree
     Protected Color
     
     If x%2
-      Select TargetColor
-        Case $FFECAE62, $FFECB166, $FFFEFEFE, $FFE89C3D, $FFF3CD9D
-          Color = $FFFEFEFE
-        Case $FFF1F1F1, $FFF3F3F3, $FFF5F5F5, $FFF7F7F7, $FFF9F9F9, $FFFBFBFB, $FFFDFDFD, $FFFCFCFC, $FFFEFEFE, $FF7E7E7E
-          Color = TargetColor
-        Default
-          Color = SourceColor
-      EndSelect
+      Color = SourceColor
     Else
       Color = TargetColor
     EndIf
@@ -2595,14 +2588,7 @@ Module Tree
     Protected Color
     
     If y%2
-      Select TargetColor
-        Case $FFECAE62, $FFECB166, $FFFEFEFE, $FFE89C3D, $FFF3CD9D
-          Color = $FFFEFEFE
-        Case $FFF1F1F1, $FFF3F3F3, $FFF5F5F5, $FFF7F7F7, $FFF9F9F9, $FFFBFBFB, $FFFDFDFD, $FFFCFCFC, $FFFEFEFE, $FF7E7E7E
-          Color = TargetColor
-        Default
-          Color = SourceColor
-      EndSelect
+      Color = SourceColor
     Else
       Color = TargetColor
     EndIf
@@ -2610,333 +2596,279 @@ Module Tree
     ProcedureReturn Color
   EndProcedure
   
-  Macro _update_(_this_)
-    If _this_\change <> 0
-      _this_\scroll\width = 0
-      _this_\scroll\height = 0
-      
-      If _this_\Text\Change
-        _this_\Text\Height = TextHeight("A") + Bool(_this_\Flag\GridLines) + Bool(#PB_Compiler_OS = #PB_OS_Windows) * 2
-        _this_\Text\Width = TextWidth(_this_\Text\String.s)
-      EndIf
-    EndIf
-    
-    If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
-      ClearList(_this_\draws())
-    EndIf
-    
-    PushListPosition(_this_\items())
-    ForEach _this_\items()
-      If _this_\items()\hide
-        _this_\items()\draw = 0
-      Else
-        If _this_\items()\text\change 
-          _this_\items()\text\change = #False
-          
-          If _this_\items()\text\fontID 
-            DrawingFont(_this_\items()\text\fontID) 
-          EndIf
-          _this_\items()\text\width = TextWidth(_this_\items()\text\string.s) 
-          _this_\items()\text\height = TextHeight("A") 
-        EndIf 
-        
-        If _this_\change
-          _this_\items()\height = _this_\Text\Height
-          _this_\items()\y = _this_\y[2]+_this_\scroll\height
-          
-        EndIf
-        
-        If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
-          ; check box
-          If _this_\flag\checkBoxes
-            _this_\items()\box[1]\x = _this_\x[2] + 3 - _this_\scroll\h\page\pos
-            _this_\items()\box[1]\y = (_this_\items()\y+_this_\items()\height)-(_this_\items()\height+_this_\items()\box[1]\height)/2-_this_\scroll\v\page\pos
-          EndIf
-          
-          ; expanded & collapsed box
-          If _this_\flag\buttons Or _this_\flag\lines 
-            _this_\items()\box[0]\x = _this_\x[2] + _this_\items()\sublevellen - _this_\row\sublevellen + Bool(_this_\flag\buttons) * 5 + Bool(Not _this_\flag\buttons And _this_\flag\lines) * 9 - _this_\scroll\h\page\pos 
-            _this_\items()\box[0]\y = (_this_\items()\y+_this_\items()\height)-(_this_\items()\height+_this_\items()\box[0]\height)/2-_this_\scroll\v\page\pos
-          EndIf
-          
-          _this_\items()\image\x = _this_\x[2] + _this_\image\padding\left + _this_\items()\sublevellen - _this_\scroll\h\page\pos
-          _this_\items()\text\x = _this_\x[2] + _this_\text\padding\left + _this_\items()\sublevellen + _this_\row\sublevel - _this_\scroll\h\page\pos
-          _this_\items()\image\y = _this_\items()\y + (_this_\items()\height-_this_\items()\image\height)/2-_this_\scroll\v\page\pos
-          _this_\items()\text\y = _this_\items()\y + (_this_\items()\height-_this_\items()\text\height)/2-_this_\scroll\v\page\pos
-          
-          _this_\items()\draw = Bool(_this_\items()\y+_this_\items()\height-_this_\scroll\v\page\pos>_this_\y[2] And 
-                                     (_this_\items()\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
-          
-          ; vertical lines for tree widget
-          If _this_\flag\lines And _this_\row\sublevellen
-            If _this_\items()\parent 
-              
-              If _this_\items()\draw
-                If _this_\items()\parent\last
-                  _this_\items()\parent\last\line\v\height = 0
-                  
-                  _this_\items()\parent\last\first = 0
-                EndIf
-                
-                _this_\items()\first = _this_\items()\parent
-                _this_\items()\parent\last = _this_\items()
-              Else
-                
-                If _this_\items()\parent\last
-                  _this_\items()\parent\last\line\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\items()\parent\last\line\v\y 
-                EndIf
-                
-              EndIf
-              
-            Else
-              If _this_\items()\draw
-                If _this_\row\first\last And
-                   _this_\row\first\sublevel = _this_\row\first\last\sublevel
-                  If _this_\row\first\last\first
-                    _this_\row\first\last\line\v\height = 0
-                    
-                    _this_\row\first\last\first = 0
-                  EndIf
-                EndIf
-                
-                _this_\items()\first = _this_\row\first
-                _this_\row\first\last = _this_\items()
-                
-              Else
-                If _this_\row\first\last And
-                   _this_\row\first\sublevel = _this_\row\first\last\sublevel
-                  
-                  _this_\row\first\last\line\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\row\first\last\line\v\y
-                  ;Debug _this_\items()\text\string
-                EndIf
-              EndIf
-            EndIf
-            
-            _this_\items()\line\h\y = _this_\items()\box[0]\y+_this_\items()\box[0]\height/2
-            _this_\items()\line\v\x = _this_\items()\box[0]\x+_this_\items()\box[0]\width/2
-            
-            If (_this_\x[2]-_this_\items()\line\v\x) < _this_\flag\lines
-              If _this_\items()\line\v\x<_this_\x[2]
-                _this_\items()\line\h\width =  (_this_\flag\lines - (_this_\x[2]-_this_\items()\line\v\x))
-              Else
-                _this_\items()\line\h\width = _this_\flag\lines
-              EndIf
-              
-              If _this_\items()\draw And _this_\items()\line\h\y > _this_\y[2] And _this_\items()\line\h\y < _this_\y[2]+_this_\height[2]
-                _this_\items()\line\h\x = _this_\items()\line\v\x + (_this_\flag\lines-_this_\items()\line\h\width)
-                _this_\items()\line\h\height = 1
-              Else
-                _this_\items()\line\h\height = 0
-              EndIf
-              
-              ; Vertical plot
-              If _this_\items()\first And _this_\x[2]<_this_\items()\line\v\x
-                _this_\items()\line\v\y = 1+(_this_\items()\first\y+_this_\items()\first\height- Bool(_this_\items()\first\sublevel = _this_\items()\sublevel) * _this_\items()\first\height/2) - _this_\scroll\v\page\pos
-                If _this_\items()\line\v\y < _this_\y[2] : _this_\items()\line\v\y = _this_\y[2] : EndIf
-                
-                _this_\items()\line\v\height = (_this_\items()\y+_this_\items()\height/2)-_this_\items()\line\v\y - _this_\scroll\v\page\pos
-                If _this_\items()\line\v\height < 0 : _this_\items()\line\v\height = 0 : EndIf
-                If _this_\items()\line\v\y + _this_\items()\line\v\height > _this_\y[2]+_this_\height[2] 
-                  If _this_\items()\line\v\y > _this_\y[2]+_this_\height[2] 
-                    _this_\items()\line\v\height = 0
-                  Else
-                    _this_\items()\line\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\items()\line\v\y 
-                  EndIf
-                EndIf
-                
-                If _this_\items()\line\v\height
-                  _this_\items()\line\v\width = 1
-                Else
-                  _this_\items()\line\v\width = 0
-                EndIf
-              EndIf 
-              
-            EndIf
-          EndIf
-          
-          If _this_\items()\draw And 
-             Not _this_\items()\hide And 
-             AddElement(_this_\Draws())
-            _this_\draws() = _this_\items()
-          EndIf
-        EndIf
-        
-        If _this_\change <> 0
-          _this_\scroll\height + _this_\items()\height ;+ _this_\Flag\GridLines
-          
-          If _this_\scroll\h\height And _this_\scroll\width < ((_this_\items()\text\x + _this_\items()\text\width + _this_\scroll\h\page\pos) - _this_\x[2])
-            _this_\scroll\width = ((_this_\items()\text\x + _this_\items()\text\width + _this_\scroll\h\page\pos) - _this_\x[2])
-          EndIf
-        EndIf
-      EndIf
-    Next
-    PopListPosition(_this_\items())
-    
-    If _this_\scroll\v\page\len And _this_\scroll\v\max<>_this_\scroll\height-Bool(_this_\flag\gridlines) And
-       Bar::SetAttribute(_this_\scroll\v, #PB_ScrollBar_Maximum, _this_\scroll\height-Bool(_this_\flag\gridlines))
-      
-      Bar::Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-    EndIf
-    
-    If _this_\scroll\h\page\len And _this_\scroll\h\max<>_this_\scroll\width And
-       Bar::SetAttribute(_this_\scroll\h, #PB_ScrollBar_Maximum, _this_\scroll\width)
-      
-      Bar::Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-    EndIf
-    
-    If _this_\change <> 0
-      _this_\width[2] = (_this_\scroll\v\x + Bool(_this_\scroll\v\hide) * _this_\scroll\v\width) - _this_\x[2]
-      _this_\height[2] = (_this_\scroll\h\y + Bool(_this_\scroll\h\hide) * _this_\scroll\h\height) - _this_\y[2]
-      
-      If _this_\row\selected And _this_\row\selected\change 
-        _this_\row\selected\change = 0
-        
-        Bar::SetState(_this_\scroll\v, ((_this_\row\selected\index * _this_\text\height) - _this_\scroll\v\height) + _this_\text\height) 
-        _this_\change = 1
-        Draw(_this_)
-      EndIf
-    EndIf
-    
-  EndMacro
-  
-  Procedure.l _Draw(*this._S_widget)
-    Protected Y, state.b
-    Protected box_size = *this\flag\buttons
-    Protected check_size = *this\flag\checkBoxes
-    
-    With *this
-      If Not \hide
-        ; Draw back color
-        DrawingMode(#PB_2DDrawing_Default)
-        RoundBox(\x[1],\y[1],\width[1],\height[1],\radius,\radius,\color\back[\color\state])
-        
-        If \text\fontID 
-          DrawingFont(\text\fontID) 
-        EndIf
-        
-        If \change <> 0
-          _update_(*this)
-          \change = 0
-        EndIf 
-        
-        ; Draw draws text
-        If \row\count
-          ClipOutput(\x[2],\y[2],\width[2],\height[2])
-          
-          PushListPosition(\draws())
-          ForEach \draws()
-            If \draws()\text\fontID 
-              DrawingFont(\draws()\text\fontID) 
-            EndIf
-            
-            Y = \draws()\y-\scroll\v\page\pos
-            state = \draws()\color\state + Bool(\color\state<>2 And \draws()\color\state=2)
-            
-            ; Draw selections
-            If state 
-              If \draws()\color\fore[state]
-                DrawingMode(#PB_2DDrawing_Gradient)
-                Bar::_box_gradient_(0,\x[2],Y,\width[2],\draws()\height,\draws()\color\fore[state],\draws()\color\back[state],\draws()\radius)
-              Else
-                DrawingMode(#PB_2DDrawing_Default)
-                RoundBox(\x[2],Y,\width[2],\draws()\height,\draws()\radius,\draws()\radius,\draws()\color\back[state])
-              EndIf
-              
-              DrawingMode(#PB_2DDrawing_Outlined)
-              RoundBox(\x[2],Y,\width[2],\draws()\height,\draws()\radius,\draws()\radius, \draws()\color\frame[state])
-            EndIf
-            
-            ; Draw checkbox
-            If \flag\checkboxes
-              DrawingMode(#PB_2DDrawing_Default)
-              CheckBox(\draws()\box[1]\x,\draws()\box[1]\y,\draws()\box[1]\width,\draws()\box[1]\height, 3, \draws()\box[1]\checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
-            EndIf
-            
-            ; Draw arrow
-            If \draws()\childrens And \flag\buttons And state <> 2
-              ;DrawingMode(#PB_2DDrawing_XOr)
-              DrawingMode(#PB_2DDrawing_Default)
-              Bar::Arrow(\draws()\box[0]\x+(\draws()\box[0]\width-6)/2,\draws()\box[0]\y+(\draws()\box[0]\height-6)/2, 6, Bool(Not \draws()\box[0]\checked)+2, $FF2E7E7E, 0,0) 
-            EndIf
-            
-            ; Draw plots
-            If \flag\lines And \row\sublevellen
-              DrawingMode(#PB_2DDrawing_XOr)
-              
-              If \draws()\line\v\width
-                ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
-                Line(\draws()\line\v\x, \draws()\line\v\y,\draws()\line\v\width,\draws()\line\v\height, $FF7E7E7E)
-              EndIf
-              If \draws()\line\h\height
-                ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
-                Line(\draws()\line\h\x , \draws()\line\h\y,\draws()\line\h\width,\draws()\line\h\height, $FF7E7E7E)
-              EndIf
-              
-              If \row\selected And \row\selected\childrens And \flag\buttons
-                DrawingMode(#PB_2DDrawing_Default)
-                Bar::Arrow(\row\selected\box[0]\x+(\row\selected\box[0]\width-6)/2,\row\selected\box[0]\y+(\row\selected\box[0]\height-6)/2, 6, Bool(Not \row\selected\box[0]\checked)+2, \row\selected\color\front[\row\selected\color\state], 0,0) 
-              EndIf
-              
-            EndIf
-            
-            ; Draw image
-            If \draws()\image\handle
-              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-              DrawAlphaImage(\draws()\image\handle, \draws()\image\x, \draws()\image\y, \draws()\color\alpha)
-            EndIf
-            
-            ; Draw text
-            If \draws()\text\string.s
-              DrawingMode(#PB_2DDrawing_Transparent)
-              DrawRotatedText(\draws()\text\x, \draws()\text\y, \draws()\text\string.s, Bool(\draws()\text\vertical)*\text\rotate, \draws()\color\front[state])
-            EndIf
-            
-          Next
-          PopListPosition(\draws()) ; 
-          
-          UnclipOutput()
-        EndIf
-        
-        ; Draw scroll bars
-        If \scroll
-          CompilerIf Defined(Bar, #PB_Module)
-            Bar::Draw(\scroll\v)
-            Bar::Draw(\scroll\h)
-          CompilerEndIf
-        EndIf
-        
-        ; Draw image
-        If \image\handle
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
-        EndIf
-        
-        ; Draw frames
-        DrawingMode(#PB_2DDrawing_Outlined)
-        
-        If \color\state
-          ; RoundBox(\x[1]+Bool(\fs),\y[1]+Bool(\fs),\width[1]-Bool(\fs)*2,\height[1]-Bool(\fs)*2,\radius,\radius,0);\color\back)
-          RoundBox(\x[2]-Bool(\fs),\y[2]-Bool(\fs),\width[2]+Bool(\fs)*2,\height[2]+Bool(\fs)*2,\radius,\radius,\color\back)
-          RoundBox(\x[1],\y[1],\width[1],\height[1],\radius,\radius,\color\frame[2])
-          ;           If \radius : RoundBox(\x[1],\y[1]-1,\width[1],\height[1]+2,\radius,\radius,\color\frame[2]) : EndIf  ; Сглаживание краев )))
-          ;           RoundBox(\x[1]-1,\y[1]-1,\width[1]+2,\height[1]+2,\radius,\radius,\color\frame[2])
-        ElseIf \fs
-          RoundBox(\x[1],\y[1],\width[1],\height[1],\radius,\radius,\color\frame[\color\state])
-        EndIf
-        
-        
-        If \text\change : \text\change = 0 : EndIf
-        If \resize : \resize = 0 : EndIf
-      EndIf
-    EndWith
-    
-  EndProcedure
-  
+  ;-
   Procedure.l Draw(*this._S_widget)
     Protected Y, state.b
     Protected line_size = *this\flag\lines
     Protected box_size = *this\flag\buttons
     Protected check_size = *this\flag\checkBoxes
+    
+    Macro _update_(_this_)
+      If _this_\change <> 0
+        _this_\scroll\width = 0
+        _this_\scroll\height = 0
+        
+        If _this_\Text\Change
+          _this_\Text\Height = TextHeight("A") + Bool(_this_\Flag\GridLines) + Bool(#PB_Compiler_OS = #PB_OS_Windows) * 2
+          _this_\Text\Width = TextWidth(_this_\Text\String.s)
+        EndIf
+      EndIf
+      
+      If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
+        ClearList(_this_\draws())
+      EndIf
+      
+      PushListPosition(_this_\items())
+      ForEach _this_\items()
+        If _this_\items()\hide
+          _this_\items()\draw = 0
+        Else
+          If _this_\items()\text\change 
+            _this_\items()\text\change = #False
+            
+            If _this_\items()\text\fontID 
+              DrawingFont(_this_\items()\text\fontID) 
+            EndIf
+            _this_\items()\text\width = TextWidth(_this_\items()\text\string.s) 
+            _this_\items()\text\height = TextHeight("A") 
+          EndIf 
+          
+          If _this_\change
+            _this_\items()\height = _this_\Text\Height
+            _this_\items()\y = _this_\y[2]+_this_\scroll\height
+            
+          EndIf
+          
+          If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
+            ; check box
+            If _this_\flag\checkBoxes
+              _this_\items()\box[1]\x = _this_\x[2] + 3 - _this_\scroll\h\page\pos
+              _this_\items()\box[1]\y = (_this_\items()\y+_this_\items()\height)-(_this_\items()\height+_this_\items()\box[1]\height)/2-_this_\scroll\v\page\pos
+            EndIf
+            
+            ; expanded & collapsed box
+            If _this_\flag\buttons Or _this_\flag\lines 
+              _this_\items()\box[0]\x = _this_\x[2] + _this_\items()\sublevellen - _this_\row\sublevellen + Bool(_this_\flag\buttons) * 5 + Bool(Not _this_\flag\buttons And _this_\flag\lines) * 9 - _this_\scroll\h\page\pos 
+              _this_\items()\box[0]\y = (_this_\items()\y+_this_\items()\height)-(_this_\items()\height+_this_\items()\box[0]\height)/2-_this_\scroll\v\page\pos
+            EndIf
+            
+            _this_\items()\image\x = _this_\x[2] + _this_\image\padding\left + _this_\items()\sublevellen - _this_\scroll\h\page\pos
+            _this_\items()\text\x = _this_\x[2] + _this_\text\padding\left + _this_\items()\sublevellen + _this_\row\sublevel - _this_\scroll\h\page\pos
+            _this_\items()\image\y = _this_\items()\y + (_this_\items()\height-_this_\items()\image\height)/2-_this_\scroll\v\page\pos
+            _this_\items()\text\y = _this_\items()\y + (_this_\items()\height-_this_\items()\text\height)/2-_this_\scroll\v\page\pos
+            
+            _this_\items()\draw = Bool(_this_\items()\y+_this_\items()\height-_this_\scroll\v\page\pos>_this_\y[2] And 
+                                       (_this_\items()\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
+            
+            ; vertical lines for tree widget
+            If _this_\flag\lines And _this_\row\sublevellen
+              If _this_\items()\parent 
+                
+                If _this_\items()\draw
+                  If _this_\items()\parent\last
+                    _this_\items()\parent\last\l\v\height = 0
+                    
+                    _this_\items()\parent\last\first = 0
+                  EndIf
+                  
+                  _this_\items()\first = _this_\items()\parent
+                  _this_\items()\parent\last = _this_\items()
+                Else
+                  
+                  If _this_\items()\parent\last
+                    _this_\items()\parent\last\l\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\items()\parent\last\l\v\y 
+                  EndIf
+                  
+                EndIf
+                
+              Else
+                If _this_\items()\draw
+                  If _this_\row\first\last And
+                     _this_\row\first\sublevel = _this_\row\first\last\sublevel
+                    If _this_\row\first\last\first
+                      _this_\row\first\last\l\v\height = 0
+                      
+                      _this_\row\first\last\first = 0
+                    EndIf
+                  EndIf
+                  
+                  _this_\items()\first = _this_\row\first
+                  _this_\row\first\last = _this_\items()
+                  
+                Else
+                  If _this_\row\first\last And
+                     _this_\row\first\sublevel = _this_\row\first\last\sublevel
+                    
+                    _this_\row\first\last\l\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\row\first\last\l\v\y
+                    ;Debug _this_\items()\text\string
+                  EndIf
+                EndIf
+              EndIf
+              
+              _this_\items()\l\h\y = _this_\items()\box[0]\y+_this_\items()\box[0]\height/2
+              _this_\items()\l\v\x = _this_\items()\box[0]\x+_this_\items()\box[0]\width/2
+              
+              If (_this_\x[2]-_this_\items()\l\v\x) < _this_\flag\lines
+                If _this_\items()\l\v\x<_this_\x[2]
+                  _this_\items()\l\h\width =  (_this_\flag\lines - (_this_\x[2]-_this_\items()\l\v\x))
+                Else
+                  _this_\items()\l\h\width = _this_\flag\lines
+                EndIf
+                
+                If _this_\items()\draw And _this_\items()\l\h\y > _this_\y[2] And _this_\items()\l\h\y < _this_\y[2]+_this_\height[2]
+                  _this_\items()\l\h\x = _this_\items()\l\v\x + (_this_\flag\lines-_this_\items()\l\h\width)
+                  _this_\items()\l\h\height = 1
+                Else
+                  _this_\items()\l\h\height = 0
+                EndIf
+                
+                ; Vertical plot
+                If _this_\items()\first And _this_\x[2]<_this_\items()\l\v\x
+                  _this_\items()\l\v\y = 1+(_this_\items()\first\y+_this_\items()\first\height- Bool(_this_\items()\first\sublevel = _this_\items()\sublevel) * _this_\items()\first\height/2) - _this_\scroll\v\page\pos
+                  If _this_\items()\l\v\y < _this_\y[2] : _this_\items()\l\v\y = _this_\y[2] : EndIf
+                  
+                  _this_\items()\l\v\height = (_this_\items()\y+_this_\items()\height/2)-_this_\items()\l\v\y - _this_\scroll\v\page\pos
+                  If _this_\items()\l\v\height < 0 : _this_\items()\l\v\height = 0 : EndIf
+                  If _this_\items()\l\v\y + _this_\items()\l\v\height > _this_\y[2]+_this_\height[2] 
+                    If _this_\items()\l\v\y > _this_\y[2]+_this_\height[2] 
+                      _this_\items()\l\v\height = 0
+                    Else
+                      _this_\items()\l\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\items()\l\v\y 
+                    EndIf
+                  EndIf
+                  
+                  If _this_\items()\l\v\height
+                    _this_\items()\l\v\width = 1
+                  Else
+                    _this_\items()\l\v\width = 0
+                  EndIf
+                EndIf 
+                
+              EndIf
+            EndIf
+            
+            If _this_\items()\draw And 
+               Not _this_\items()\hide And 
+               AddElement(_this_\Draws())
+              _this_\draws() = _this_\items()
+            EndIf
+          EndIf
+          
+          If _this_\change <> 0
+            _this_\scroll\height + _this_\items()\height ;+ _this_\Flag\GridLines
+            
+            If _this_\scroll\h\height And _this_\scroll\width < ((_this_\items()\text\x + _this_\items()\text\width + _this_\scroll\h\page\pos) - _this_\x[2])
+              _this_\scroll\width = ((_this_\items()\text\x + _this_\items()\text\width + _this_\scroll\h\page\pos) - _this_\x[2])
+            EndIf
+          EndIf
+        EndIf
+      Next
+      PopListPosition(_this_\items())
+      
+      If _this_\scroll\v\page\len And _this_\scroll\v\max<>_this_\scroll\height-Bool(_this_\flag\gridlines) And
+         Bar::SetAttribute(_this_\scroll\v, #PB_ScrollBar_Maximum, _this_\scroll\height-Bool(_this_\flag\gridlines))
+        
+        Bar::Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      EndIf
+      
+      If _this_\scroll\h\page\len And _this_\scroll\h\max<>_this_\scroll\width And
+         Bar::SetAttribute(_this_\scroll\h, #PB_ScrollBar_Maximum, _this_\scroll\width)
+        
+        Bar::Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      EndIf
+      
+      If _this_\change <> 0
+        _this_\width[2] = (_this_\scroll\v\x + Bool(_this_\scroll\v\hide) * _this_\scroll\v\width) - _this_\x[2]
+        _this_\height[2] = (_this_\scroll\h\y + Bool(_this_\scroll\h\hide) * _this_\scroll\h\height) - _this_\y[2]
+        
+        If _this_\row\selected And _this_\row\selected\change 
+          _this_\row\selected\change = 0
+          
+          Bar::SetState(_this_\scroll\v, ((_this_\row\selected\index * _this_\text\height) - _this_\scroll\v\height) + _this_\text\height) 
+          _this_\change = 1
+          Draw(_this_)
+        EndIf
+      EndIf
+      
+    EndMacro
+    
+    Macro _draw_(_this_, _items_)
+      
+      PushListPosition(_items_)
+      ForEach _items_
+        If _items_\draw
+          
+          If _items_\text\fontID 
+            DrawingFont(_items_\text\fontID) 
+          EndIf
+          
+          Y = _items_\y - _this_\scroll\v\page\pos
+          state = _items_\color\state + Bool(_this_\color\state<>2 And _items_\color\state=2)
+          
+          ; Draw selections
+          If state 
+            If _items_\color\fore[state]
+              DrawingMode(#PB_2DDrawing_Gradient)
+              Bar::_box_gradient_(0,_this_\x[2],Y,_this_\width[2],_items_\height,_items_\color\fore[state],_items_\color\back[state],_items_\radius)
+            Else
+              DrawingMode(#PB_2DDrawing_Default)
+              RoundBox(_this_\x[2],Y,_this_\width[2],_items_\height,_items_\radius,_items_\radius,_items_\color\back[state])
+            EndIf
+            
+            DrawingMode(#PB_2DDrawing_Outlined)
+            RoundBox(_this_\x[2],Y,_this_\width[2],_items_\height,_items_\radius,_items_\radius, _items_\color\frame[state])
+          EndIf
+          
+          ; Draw plots
+          If _this_\flag\lines And _this_\row\sublevellen
+            DrawingMode(#PB_2DDrawing_XOr)
+            ; DrawingMode(#PB_2DDrawing_CustomFilter) 
+            
+            If _items_\l\h\height
+              ; CustomFilterCallback(@PlotX())
+              Line(_items_\l\h\x, _items_\l\h\y, _items_\l\h\width, _items_\l\h\height, $FF7E7E7E)
+            EndIf
+            
+            If _items_\l\v\width
+              ; CustomFilterCallback(@PlotY())
+              Line(_items_\l\v\x, _items_\l\v\y, _items_\l\v\width, _items_\l\v\height, $FF7E7E7E)
+            EndIf
+          EndIf
+          
+          ; Draw checkbox
+          If _this_\flag\checkboxes
+            DrawingMode(#PB_2DDrawing_Default)
+            CheckBox(_items_\box[1]\x,_items_\box[1]\y,_items_\box[1]\width,_items_\box[1]\height, 3, _items_\box[1]\checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
+          EndIf
+          
+          ; Draw arrow
+          If _this_\flag\buttons
+            DrawingMode(#PB_2DDrawing_Default)
+            If _items_\childrens And state <> 2
+              Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-6)/2,_items_\box[0]\y+(_items_\box[0]\height-6)/2, 6, Bool(Not _items_\box[0]\checked)+2, $FF2E7E7E, 0,0) 
+              
+            ElseIf _this_\row\selected And _this_\row\selected\childrens
+              Bar::Arrow(_this_\row\selected\box[0]\x+(_this_\row\selected\box[0]\width-6)/2,_this_\row\selected\box[0]\y+(_this_\row\selected\box[0]\height-6)/2, 6, Bool(Not _this_\row\selected\box[0]\checked)+2, _this_\row\selected\color\front[_this_\row\selected\color\state], 0,0) 
+            EndIf
+          EndIf
+          
+          ; Draw image
+          If _items_\image\handle
+            DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+            DrawAlphaImage(_items_\image\handle, _items_\image\x, _items_\image\y, _items_\color\alpha)
+          EndIf
+          
+          ; Draw text
+          If _items_\text\string.s
+            DrawingMode(#PB_2DDrawing_Transparent)
+            DrawRotatedText(_items_\text\x, _items_\text\y, _items_\text\string.s, _this_\text\rotate, _items_\color\front[state])
+          EndIf
+          
+        EndIf
+      Next
+      PopListPosition(_items_) ; 
+      
+    EndMacro
     
     With *this
       If Not \hide
@@ -2957,76 +2889,8 @@ Module Tree
         If \row\count
           ClipOutput(\x[2],\y[2],\width[2],\height[2])
           
-          PushListPosition(\items())
-          ForEach \items()
-            If \items()\draw
-              If \items()\text\fontID 
-                DrawingFont(\items()\text\fontID) 
-              EndIf
-              
-              Y = \items()\y-\scroll\v\page\pos
-              state = \items()\color\state + Bool(\color\state<>2 And \items()\color\state=2)
-              
-              ; Draw selections
-              If state 
-                If \items()\color\fore[state]
-                  DrawingMode(#PB_2DDrawing_Gradient)
-                  Bar::_box_gradient_(0,\x[2],Y,\width[2],\items()\height,\items()\color\fore[state],\items()\color\back[state],\items()\radius)
-                Else
-                  DrawingMode(#PB_2DDrawing_Default)
-                  RoundBox(\x[2],Y,\width[2],\items()\height,\items()\radius,\items()\radius,\items()\color\back[state])
-                EndIf
-                
-                DrawingMode(#PB_2DDrawing_Outlined)
-                RoundBox(\x[2],Y,\width[2],\items()\height,\items()\radius,\items()\radius, \items()\color\frame[state])
-              EndIf
-              
-              ; Draw arrow
-              If \items()\childrens And \flag\buttons
-                DrawingMode(#PB_2DDrawing_Default)
-                Bar::Arrow(\items()\box[0]\x+(\items()\box[0]\width-6)/2,\items()\box[0]\y+(\items()\box[0]\height-6)/2, 6, Bool(Not \items()\box[0]\checked)+2, $FF7E7E7E, 0,0) 
-              EndIf
-              
-              ; Draw checkbox
-              If \flag\checkboxes
-                DrawingMode(#PB_2DDrawing_Default)
-                CheckBox(\items()\box[1]\x,\items()\box[1]\y,\items()\box[1]\width,\items()\box[1]\height, 3, \items()\box[1]\checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
-              EndIf
-              
-              ; Draw image
-              If \items()\image\handle
-                DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                DrawAlphaImage(\items()\image\handle, \items()\image\x, \items()\image\y, \items()\color\alpha)
-              EndIf
-              
-              ; Draw text
-              If \items()\text\string.s
-                DrawingMode(#PB_2DDrawing_Transparent)
-                DrawRotatedText(\items()\text\x, \items()\text\y, \items()\text\string.s, Bool(\items()\text\vertical)*\text\rotate, \items()\color\front[state])
-              EndIf
-              
-              ; Draw plots
-              If \flag\lines And \row\sublevellen
-                DrawingMode(#PB_2DDrawing_XOr)
-                
-                If \items()\line\h\height
-                  ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
-                  Line(\items()\line\h\x , \items()\line\h\y, \items()\line\h\width, \items()\line\h\height, $FF7E7E7E)
-                EndIf
-                
-                If \items()\line\v\width
-                  ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
-                  Line(\items()\line\v\x, \items()\line\v\y, \items()\line\v\width, \items()\line\v\height, $FF7E7E7E)
-                EndIf
-                
-                If \row\selected And \row\selected\childrens And \flag\buttons
-                  DrawingMode(#PB_2DDrawing_Default)
-                  Bar::Arrow(\row\selected\box[0]\x+(\row\selected\box[0]\width-6)/2,\row\selected\box[0]\y+(\row\selected\box[0]\height-6)/2, 6, Bool(Not \row\selected\box[0]\checked)+2, \row\selected\color\front[\row\selected\color\state], 0,0) 
-                EndIf
-              EndIf
-            EndIf
-          Next
-          PopListPosition(\items()) ; 
+          ;_draw_(*this, \items())
+          _draw_(*this, \draws())
           
           UnclipOutput()
         EndIf
@@ -4323,5 +4187,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------0--------------------------------
+; Folding = ----------------------------------------------------------------------------
 ; EnableXP
