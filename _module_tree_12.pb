@@ -60,37 +60,39 @@ DeclareModule Macros
   ; val = %10011110
   ; Debug Bin(GetBits(val, 0, 3))
   
-  Global _drawing_mode_
-  
-  Macro PB(Function)
-    Function
-  EndMacro
-  
-  Macro DrawingMode(_mode_)
-    PB(DrawingMode)(_mode_) : _drawing_mode_ = _mode_
-  EndMacro
-  
-  Macro ClipOutput(x, y, width, height)
-    PB(ClipOutput)(x, y, width, height)
-    ClipOutput_(x, y, width, height)
-  EndMacro
-  
-  Macro UnclipOutput()
-    PB(UnclipOutput)()
-    ClipOutput_(0, 0, OutputWidth(), OutputHeight())
-  EndMacro
-  
-  Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
-    DrawRotatedText_(x, y, Text, 0, FrontColor, BackColor)
-  EndMacro
-  
-  Macro DrawRotatedText(x, y, Text, Angle, FrontColor=$ffffff, BackColor=0)
-    DrawRotatedText_(x, y, Text, Angle, FrontColor, BackColor)
-  EndMacro
-  
-  
-  Declare.i DrawRotatedText_(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
-  Declare.i ClipOutput_(x.i, y.i, width.i, height.i)
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    Global _drawing_mode_
+    
+    Macro PB(Function)
+      Function
+    EndMacro
+    
+    Macro DrawingMode(_mode_)
+      PB(DrawingMode)(_mode_) : _drawing_mode_ = _mode_
+    EndMacro
+    
+    Macro ClipOutput(x, y, width, height)
+      PB(ClipOutput)(x, y, width, height)
+      ClipOutput_(x, y, width, height)
+    EndMacro
+    
+    Macro UnclipOutput()
+      PB(UnclipOutput)()
+      ClipOutput_(0, 0, OutputWidth(), OutputHeight())
+    EndMacro
+    
+    Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
+      DrawRotatedText_(x, y, Text, 0, FrontColor, BackColor)
+    EndMacro
+    
+    Macro DrawRotatedText(x, y, Text, Angle, FrontColor=$ffffff, BackColor=0)
+      DrawRotatedText_(x, y, Text, Angle, FrontColor, BackColor)
+    EndMacro
+    
+    
+    Declare.i DrawRotatedText_(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
+    Declare.i ClipOutput_(x.i, y.i, width.i, height.i)
+  CompilerEndIf
 EndDeclareModule 
 
 Module Macros
@@ -527,6 +529,7 @@ DeclareModule Structures
     count.l
     sublevel.l
     sublevellen.l
+    FontID.i
     
     *first._S_items
     *selected._S_items
@@ -2433,13 +2436,21 @@ DeclareModule Tree
   
   
   ;- DECLAREs PROCEDUREs
-  Declare.l SetFont(*this, FontID.i)
-  
-  Declare.l GetState(*this)
+  Declare.l SetText(*this, Text.s)
+  Declare.i SetFont(*this, Font.i)
   Declare.l SetState(*this, State.l)
-  Declare.b GetItemState(*this, Item.l)
+  Declare.i SetItemFont(*this, Item.l, Font.i)
+  Declare.l SetItemText(*this, Item.l, Text.s)
   Declare.l SetItemState(*this, Item.l, State.b)
   Declare.i SetItemImage(*this, Item.l, Image.i)
+  
+  Declare.s GetText(*this)
+  Declare.i GetFont(*this)
+  Declare.l GetState(*this)
+  Declare.i GetItemFont(*this, Item.l)
+  Declare.s GetItemText(*this, Item.l)
+  Declare.b GetItemState(*this, Item.l)
+  Declare.i GetItemImage(*this, Item.l)
   
   Declare.i AddItem(*this, Item.l, Text.s, Image.i=-1, sublevel.i=0)
   Declare.i Create(Canvas.i, Widget, X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=0, Radius.l=0)
@@ -2453,6 +2464,47 @@ DeclareModule Tree
 EndDeclareModule
 
 Module Tree
+  Macro _box_(_x_,_y_, _width_, _height_, _checked_, _type_, _color_=$FFFFFFFF, _radius_=2, _alpha_=255) 
+    
+    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+    If _checked_
+      BackColor($FFB775&$FFFFFF|255<<24) 
+      FrontColor($F67905&$FFFFFF|255<<24)
+      
+      LinearGradient(_x_,_y_, _x_, (_y_+_height_))
+      RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
+      
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_, $F67905&$FFFFFF|255<<24)
+      
+    Else
+      BackColor($FFFFFF&$FFFFFF|255<<24)
+      FrontColor($EEEEEE&$FFFFFF|255<<24)
+      
+      LinearGradient(_x_,_y_, _x_, (_y_+_height_))
+      RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
+      
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_, $7E7E7E&$FFFFFF|255<<24)
+    EndIf
+    
+    If _checked_
+      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+      
+      If _type_ = 1
+        Circle(_x_+5,_y_+5,2,_color_&$FFFFFF|_alpha_<<24)
+        
+      ElseIf _type_ = 3
+        LineXY((_x_+2),(_y_+6),(_x_+3),(_y_+7),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
+        LineXY((_x_+2),(_y_+7),(_x_+3),(_y_+8),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
+        
+        LineXY((_x_+7),(_y_+2),(_x_+4),(_y_+8),_color_&$FFFFFF|_alpha_<<24) ; правая линия
+        LineXY((_x_+8),(_y_+2),(_x_+5),(_y_+8),_color_&$FFFFFF|_alpha_<<24) ; правая линия
+      EndIf
+    EndIf
+    
+  EndMacro
+  
   Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
     Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ =< (_type_\x#_mode_+_type_\width#_mode_) And 
           _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
@@ -2520,43 +2572,6 @@ Module Tree
   ;-
   ;- PROCEDUREs
   ;-
-  Procedure CheckBox(X,Y, Width, Height, Type, Checked, Color, BackColor, Radius, Alpha=255) 
-    Protected I, checkbox_backcolor
-    
-    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-    If Checked
-      BackColor = $F67905&$FFFFFF|255<<24
-      BackColor($FFB775&$FFFFFF|255<<24) 
-      FrontColor($F67905&$FFFFFF|255<<24)
-    Else
-      BackColor = $7E7E7E&$FFFFFF|255<<24
-      BackColor($FFFFFF&$FFFFFF|255<<24)
-      FrontColor($EEEEEE&$FFFFFF|255<<24)
-    EndIf
-    
-    LinearGradient(X,Y, X, (Y+Height))
-    RoundBox(X,Y,Width,Height, Radius,Radius)
-    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
-    
-    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-    RoundBox(X,Y,Width,Height, Radius,Radius, BackColor)
-    
-    If Checked
-      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      If Type = 1
-        Circle(x+5,y+5,2,Color&$FFFFFF|alpha<<24)
-      ElseIf Type = 3
-        For i = 0 To 1
-          LineXY((X+2),(i+Y+6),(X+3),(i+Y+7),Color&$FFFFFF|alpha<<24) ; Левая линия
-          LineXY((X+7+i),(Y+2),(X+4+i),(Y+8),Color&$FFFFFF|alpha<<24) ; правая линия
-                                                                      ;           LineXY((X+1),(i+Y+5),(X+3),(i+Y+7),Color&$FFFFFF|alpha<<24) ; Левая линия
-                                                                      ;           LineXY((X+8+i),(Y+3),(X+3+i),(Y+8),Color&$FFFFFF|alpha<<24) ; правая линия
-        Next
-      EndIf
-    EndIf
-    
-  EndProcedure
-  
   Procedure Selection(X, Y, SourceColor, TargetColor)
     Protected Color, Dot.b=4, line.b = 10, Length.b = (Line+Dot*2+1)
     Static Len.b
@@ -2608,7 +2623,7 @@ Module Tree
         _this_\scroll\width = 0
         _this_\scroll\height = 0
         
-        If _this_\Text\Change
+        If _this_\text\change
           _this_\Text\Height = TextHeight("A") + Bool(_this_\Flag\GridLines) + Bool(#PB_Compiler_OS = #PB_OS_Windows) * 2
           _this_\Text\Width = TextWidth(_this_\Text\String.s)
         EndIf
@@ -2623,12 +2638,17 @@ Module Tree
         If _this_\items()\hide
           _this_\items()\draw = 0
         Else
-          If _this_\items()\text\change 
+          If _this_\text\change Or _this_\items()\text\change
             _this_\items()\text\change = #False
+            
+            If _this_\text\fontID 
+              DrawingFont(_this_\text\fontID) 
+            EndIf
             
             If _this_\items()\text\fontID 
               DrawingFont(_this_\items()\text\fontID) 
             EndIf
+            
             _this_\items()\text\width = TextWidth(_this_\items()\text\string.s) 
             _this_\items()\text\height = TextHeight("A") 
           EndIf 
@@ -2636,7 +2656,6 @@ Module Tree
           If _this_\change
             _this_\items()\height = _this_\Text\Height
             _this_\items()\y = _this_\y[2]+_this_\scroll\height
-            
           EndIf
           
           If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
@@ -2755,7 +2774,7 @@ Module Tree
           EndIf
           
           If _this_\change <> 0
-            _this_\scroll\height + _this_\items()\height ;+ _this_\Flag\GridLines
+            _this_\scroll\height + _this_\items()\height + _this_\Flag\GridLines
             
             If _this_\scroll\h\height And _this_\scroll\width < ((_this_\items()\text\x + _this_\items()\text\width + _this_\scroll\h\page\pos) - _this_\x[2])
               _this_\scroll\width = ((_this_\items()\text\x + _this_\items()\text\width + _this_\scroll\h\page\pos) - _this_\x[2])
@@ -2784,7 +2803,8 @@ Module Tree
         If _this_\row\selected And _this_\row\selected\change 
           _this_\row\selected\change = 0
           
-          Bar::SetState(_this_\scroll\v, ((_this_\row\selected\index * _this_\text\height) - _this_\scroll\v\height) + _this_\text\height) 
+          Bar::SetState(_this_\scroll\v, ((_this_\row\selected\index * (_this_\text\height + _this_\Flag\GridLines)) - _this_\scroll\v\height) + _this_\text\height ) 
+          _this_\scroll\v\change = 0 
           _this_\change = 1
           Draw(_this_)
         EndIf
@@ -2799,7 +2819,13 @@ Module Tree
         If _items_\draw
           
           If _items_\text\fontID 
+            _this_\row\fontID = _items_\text\fontID 
             DrawingFont(_items_\text\fontID) 
+            
+          ElseIf _this_\text\fontID And 
+                 _this_\row\fontID <> _this_\text\fontID
+            _this_\row\fontID = _this_\text\fontID
+            DrawingFont(_this_\text\fontID) 
           EndIf
           
           Y = _items_\y - _this_\scroll\v\page\pos
@@ -2821,16 +2847,16 @@ Module Tree
           
           ; Draw plots
           If _this_\flag\lines And _this_\row\sublevellen
-            DrawingMode(#PB_2DDrawing_XOr)
-            ; DrawingMode(#PB_2DDrawing_CustomFilter) 
+             ; DrawingMode(#PB_2DDrawing_CustomFilter) 
+             DrawingMode(#PB_2DDrawing_XOr)
             
             If _items_\l\h\height
-              ; CustomFilterCallback(@PlotX())
+             ;  CustomFilterCallback(@PlotX())
               Line(_items_\l\h\x, _items_\l\h\y, _items_\l\h\width, _items_\l\h\height, $FF7E7E7E)
             EndIf
             
             If _items_\l\v\width
-              ; CustomFilterCallback(@PlotY())
+             ;  CustomFilterCallback(@PlotY())
               Line(_items_\l\v\x, _items_\l\v\y, _items_\l\v\width, _items_\l\v\height, $FF7E7E7E)
             EndIf
           EndIf
@@ -2838,7 +2864,7 @@ Module Tree
           ; Draw checkbox
           If _this_\flag\checkboxes
             DrawingMode(#PB_2DDrawing_Default)
-            CheckBox(_items_\box[1]\x,_items_\box[1]\y,_items_\box[1]\width,_items_\box[1]\height, 3, _items_\box[1]\checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
+            _box_(_items_\box[1]\x, _items_\box[1]\y, _items_\box[1]\width, _items_\box[1]\height, _items_\box[1]\checked, 3, $FFFFFFFF, 2, 255)
           EndIf
           
           ; Draw arrow
@@ -3041,7 +3067,7 @@ Module Tree
           
           ; add lines
           \items()\index = Item
-          \items()\text\fontID = \text\fontID
+          ;\items()\text\fontID = \text\fontID
           
           If Text
             \items()\text\string = Text
@@ -3077,8 +3103,18 @@ Module Tree
   EndProcedure
   
   ;- SETs
-  Procedure.l SetFont(*this._S_widget, FontID.i)
+  Procedure.l SetText(*this._S_widget, Text.s)
     Protected Result.l
+    
+    If *this\row\selected 
+      *this\row\selected\text\string = Text
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i SetFont(*this._S_widget, Font.i)
+    Protected Result.i, FontID.i = FontID(Font)
     
     With *this
       If \text\fontID <> FontID 
@@ -3092,9 +3128,18 @@ Module Tree
   EndProcedure
   
   Procedure.l SetState(*this._S_widget, State.l)
+    
     With *this
-      If State < 0 : State = 0 : EndIf
-      If State > *this\row\count - 1 : State = *this\row\count - 1 :  EndIf
+      If 0 > State Or State > \row\count - 1
+        If \row\selected
+          State = \row\selected\color\state
+          \row\selected\color\state = 0
+          \row\selected\change = 0
+          \row\selected = 0
+        EndIf
+        
+        ProcedureReturn State
+      EndIf
       
       If \row\selected
         \row\selected\color\state = 0
@@ -3105,6 +3150,45 @@ Module Tree
       \items()\color\state = 2 
       \items()\change = 1
     EndWith
+    
+  EndProcedure
+  
+  Procedure.i SetItemFont(*this._S_widget, Item.l, Font.i)
+    Protected Result.i, FontID.i = FontID(Font)
+    
+    If Item < 0 : Item = 0 : EndIf
+    If Item > *this\row\count - 1 
+      Item = *this\row\count - 1 
+    EndIf
+    
+    If SelectElement(*this\Items(), Item) And 
+       *this\Items()\text\fontID <> FontID
+      *this\Items()\text\fontID = FontID
+;       *this\Items()\text\change = 1
+;       *this\change = 1
+      Result = #True
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.l SetItemText(*this._S_widget, Item.l, Text.s)
+    Protected Result.l
+    
+    If Item < 0 : Item = 0 : EndIf
+    If Item > *this\row\count - 1 
+      Item = *this\row\count - 1 
+    EndIf
+    
+    If SelectElement(*this\Items(), Item) And 
+       *this\Items()\text\string <> Text 
+       *this\Items()\text\string = Text 
+      *this\Items()\text\change = 1
+      *this\change = 1
+      Result = #True
+    EndIf
+    
+    ProcedureReturn Result
   EndProcedure
   
   Procedure.l SetItemState(*this._S_widget, Item.l, State.b)
@@ -3166,11 +3250,51 @@ Module Tree
   EndProcedure
   
   ;- GETs
+  Procedure.s GetText(*this._S_widget)
+    If *this\row\selected 
+      ProcedureReturn *this\row\selected\text\string
+    EndIf
+  EndProcedure
+  
+  Procedure.i GetFont(*this._S_widget)
+    ProcedureReturn *this\text\fontID
+  EndProcedure
+  
   Procedure.l GetState(*this._S_widget)
     Protected Result.l =- 1
     
     If *this\row\selected
       Result = *this\row\selected\index
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i GetItemFont(*this._S_widget, Item.l)
+    Protected Result.i =- 1
+    
+    If Item < 0 : Item = 0 : EndIf
+    If Item > *this\row\count - 1 
+      Item = *this\row\count - 1 
+    EndIf
+    
+    If SelectElement(*this\items(), Item) 
+      Result = *this\items()\text\FontID
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.s GetItemText(*this._S_widget, Item.l)
+    Protected Result.s
+    
+    If Item < 0 : Item = 0 : EndIf
+    If Item > *this\row\count - 1 
+      Item = *this\row\count - 1 
+    EndIf
+    
+    If SelectElement(*this\items(), Item) 
+      Result = *this\items()\text\string
     EndIf
     
     ProcedureReturn Result
@@ -3607,9 +3731,13 @@ Module Tree
         ;\text\change = 1 ; set auto size items
         \text\height = 18 
         
-        If Not \text\fontID
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+          Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
+          \text\fontID = GetGadgetFont(TextGadget) 
+          FreeGadget(TextGadget)
+        CompilerElse
           \text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-        EndIf
+        CompilerEndIf
         
         \row\sublevellen = 18
         \text\padding\left = 4
@@ -4036,11 +4164,13 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
     ; RemoveItem(*g,1)
-    Tree::SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+    SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
     ;BindGadgetEvent(g, @Events())
-    ;Tree::SetState(*g, 1)
-    ;Tree::SetState(*g, -1)
-    ;     Debug "c "+Tree::GetText(*g)
+;     SetState(*g, 3)
+;     SetState(*g, -1)
+    Debug " - "+GetText(*g)
+    LoadFont(3, "Arial", 24)
+    SetFont(*g, 3)
     
     g = 11
     *g = Widget(230, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection)                                         
@@ -4077,7 +4207,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ClearItems(*g)
     
     g = 12
-    *g = Widget(450, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_FullSelection|#PB_Flag_CheckBoxes  |#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_MultiSelect  )                            
+    *g = Widget(450, 100, 210, 210, #PB_Flag_CheckBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_MultiSelect|#PB_Flag_GridLines  )                            
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;   ;  2_example
@@ -4097,6 +4227,11 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    LoadFont(5, "Arial", 16)
+    SetItemFont(*g, 3, 5)
+    SetItemText(*g, 3, "font and text change")
+    
     
     g = 13
     *g = Widget(670, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Tree_NoLines)                                         
@@ -4186,6 +4321,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------
+; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
+; CursorPosition = 4170
+; FirstLine = 3418
+; Folding = ---f7-------------------------------------------z--3f-u-u-dp8u---f8------------
 ; EnableXP

@@ -1,5 +1,6 @@
-﻿IncludePath "/Users/as/Documents/GitHub/Widget/"
-XIncludeFile "_module_tree_7.pb"
+﻿;IncludePath "/Users/as/Documents/GitHub/Widget/"
+XIncludeFile "_module_tree_12.pb"
+;XIncludeFile "_module_tree_7.pb"
 
 UseModule Tree
 LN=1000; количесвто итемов 
@@ -47,7 +48,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Next
   Debug " "+Str(ElapsedMilliseconds()-time) + " - gadget add items time count - " + CountGadgetItems(0)
   
-  ;Redraw(*w)
+  Redraw(*w)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf

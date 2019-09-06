@@ -513,7 +513,7 @@ DeclareModule Structures
     color._S_color
     image._S_image
     box._S_box[2]
-    line._S_line
+    l._S_line
     
     *last._S_items
     *first._S_items
@@ -2453,6 +2453,47 @@ DeclareModule Tree
 EndDeclareModule
 
 Module Tree
+  Macro _box_(_x_,_y_, _width_, _height_, _checked_, _type_, _color_=$FFFFFFFF, _radius_=2, _alpha_=255) 
+    
+    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+    If _checked_
+      BackColor($FFB775&$FFFFFF|255<<24) 
+      FrontColor($F67905&$FFFFFF|255<<24)
+      
+      LinearGradient(_x_,_y_, _x_, (_y_+_height_))
+      RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
+      
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_, $F67905&$FFFFFF|255<<24)
+      
+    Else
+      BackColor($FFFFFF&$FFFFFF|255<<24)
+      FrontColor($EEEEEE&$FFFFFF|255<<24)
+      
+      LinearGradient(_x_,_y_, _x_, (_y_+_height_))
+      RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
+      
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_, $7E7E7E&$FFFFFF|255<<24)
+    EndIf
+    
+    If _checked_
+      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+      
+      If _type_ = 1
+        Circle(_x_+5,_y_+5,2,_color_&$FFFFFF|_alpha_<<24)
+        
+      ElseIf _type_ = 3
+        LineXY((_x_+2),(_y_+6),(_x_+3),(_y_+7),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
+        LineXY((_x_+2),(_y_+7),(_x_+3),(_y_+8),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
+        
+        LineXY((_x_+7),(_y_+2),(_x_+4),(_y_+8),_color_&$FFFFFF|_alpha_<<24) ; правая линия
+        LineXY((_x_+8),(_y_+2),(_x_+5),(_y_+8),_color_&$FFFFFF|_alpha_<<24) ; правая линия
+      EndIf
+    EndIf
+    
+  EndMacro
+  
   Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
     Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ =< (_type_\x#_mode_+_type_\width#_mode_) And 
           _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
@@ -2520,43 +2561,6 @@ Module Tree
   ;-
   ;- PROCEDUREs
   ;-
-  Procedure CheckBox(X,Y, Width, Height, Type, Checked, Color, BackColor, Radius, Alpha=255) 
-    Protected I, checkbox_backcolor
-    
-    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-    If Checked
-      BackColor = $F67905&$FFFFFF|255<<24
-      BackColor($FFB775&$FFFFFF|255<<24) 
-      FrontColor($F67905&$FFFFFF|255<<24)
-    Else
-      BackColor = $7E7E7E&$FFFFFF|255<<24
-      BackColor($FFFFFF&$FFFFFF|255<<24)
-      FrontColor($EEEEEE&$FFFFFF|255<<24)
-    EndIf
-    
-    LinearGradient(X,Y, X, (Y+Height))
-    RoundBox(X,Y,Width,Height, Radius,Radius)
-    BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
-    
-    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-    RoundBox(X,Y,Width,Height, Radius,Radius, BackColor)
-    
-    If Checked
-      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      If Type = 1
-        Circle(x+5,y+5,2,Color&$FFFFFF|alpha<<24)
-      ElseIf Type = 3
-        For i = 0 To 1
-          LineXY((X+2),(i+Y+6),(X+3),(i+Y+7),Color&$FFFFFF|alpha<<24) ; Левая линия
-          LineXY((X+7+i),(Y+2),(X+4+i),(Y+8),Color&$FFFFFF|alpha<<24) ; правая линия
-                                                                      ;           LineXY((X+1),(i+Y+5),(X+3),(i+Y+7),Color&$FFFFFF|alpha<<24) ; Левая линия
-                                                                      ;           LineXY((X+8+i),(Y+3),(X+3+i),(Y+8),Color&$FFFFFF|alpha<<24) ; правая линия
-        Next
-      EndIf
-    EndIf
-    
-  EndProcedure
-  
   Procedure Selection(X, Y, SourceColor, TargetColor)
     Protected Color, Dot.b=4, line.b = 10, Length.b = (Line+Dot*2+1)
     Static Len.b
@@ -2673,7 +2677,7 @@ Module Tree
               
               If _this_\items()\draw
                 If _this_\items()\parent\last
-                  _this_\items()\parent\last\line\v\height = 0
+                  _this_\items()\parent\last\l\v\height = 0
                   
                   _this_\items()\parent\last\first = 0
                 EndIf
@@ -2683,7 +2687,7 @@ Module Tree
               Else
                 
                 If _this_\items()\parent\last
-                  _this_\items()\parent\last\line\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\items()\parent\last\line\v\y 
+                  _this_\items()\parent\last\l\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\items()\parent\last\l\v\y 
                 EndIf
                 
               EndIf
@@ -2693,7 +2697,7 @@ Module Tree
                 If _this_\row\first\last And
                    _this_\row\first\sublevel = _this_\row\first\last\sublevel
                   If _this_\row\first\last\first
-                    _this_\row\first\last\line\v\height = 0
+                    _this_\row\first\last\l\v\height = 0
                     
                     _this_\row\first\last\first = 0
                   EndIf
@@ -2706,48 +2710,48 @@ Module Tree
                 If _this_\row\first\last And
                    _this_\row\first\sublevel = _this_\row\first\last\sublevel
                   
-                  _this_\row\first\last\line\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\row\first\last\line\v\y
+                  _this_\row\first\last\l\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\row\first\last\l\v\y
                   ;Debug _this_\items()\text\string
                 EndIf
               EndIf
             EndIf
             
-            _this_\items()\line\h\y = _this_\items()\box[0]\y+_this_\items()\box[0]\height/2
-            _this_\items()\line\v\x = _this_\items()\box[0]\x+_this_\items()\box[0]\width/2
+            _this_\items()\l\h\y = _this_\items()\box[0]\y+_this_\items()\box[0]\height/2
+            _this_\items()\l\v\x = _this_\items()\box[0]\x+_this_\items()\box[0]\width/2
             
-            If (_this_\x[2]-_this_\items()\line\v\x) < _this_\flag\lines
-              If _this_\items()\line\v\x<_this_\x[2]
-                _this_\items()\line\h\width =  (_this_\flag\lines - (_this_\x[2]-_this_\items()\line\v\x))
+            If (_this_\x[2]-_this_\items()\l\v\x) < _this_\flag\lines
+              If _this_\items()\l\v\x<_this_\x[2]
+                _this_\items()\l\h\width =  (_this_\flag\lines - (_this_\x[2]-_this_\items()\l\v\x))
               Else
-                _this_\items()\line\h\width = _this_\flag\lines
+                _this_\items()\l\h\width = _this_\flag\lines
               EndIf
               
-              If _this_\items()\draw And _this_\items()\line\h\y > _this_\y[2] And _this_\items()\line\h\y < _this_\y[2]+_this_\height[2]
-                _this_\items()\line\h\x = _this_\items()\line\v\x + (_this_\flag\lines-_this_\items()\line\h\width)
-                _this_\items()\line\h\height = 1
+              If _this_\items()\draw And _this_\items()\l\h\y > _this_\y[2] And _this_\items()\l\h\y < _this_\y[2]+_this_\height[2]
+                _this_\items()\l\h\x = _this_\items()\l\v\x + (_this_\flag\lines-_this_\items()\l\h\width)
+                _this_\items()\l\h\height = 1
               Else
-                _this_\items()\line\h\height = 0
+                _this_\items()\l\h\height = 0
               EndIf
               
               ; Vertical plot
-              If _this_\items()\first And _this_\x[2]<_this_\items()\line\v\x
-                _this_\items()\line\v\y = 1+(_this_\items()\first\y+_this_\items()\first\height- Bool(_this_\items()\first\sublevel = _this_\items()\sublevel) * _this_\items()\first\height/2) - _this_\scroll\v\page\pos
-                If _this_\items()\line\v\y < _this_\y[2] : _this_\items()\line\v\y = _this_\y[2] : EndIf
+              If _this_\items()\first And _this_\x[2]<_this_\items()\l\v\x
+                _this_\items()\l\v\y = 1+(_this_\items()\first\y+_this_\items()\first\height- Bool(_this_\items()\first\sublevel = _this_\items()\sublevel) * _this_\items()\first\height/2) - _this_\scroll\v\page\pos
+                If _this_\items()\l\v\y < _this_\y[2] : _this_\items()\l\v\y = _this_\y[2] : EndIf
                 
-                _this_\items()\line\v\height = (_this_\items()\y+_this_\items()\height/2)-_this_\items()\line\v\y - _this_\scroll\v\page\pos
-                If _this_\items()\line\v\height < 0 : _this_\items()\line\v\height = 0 : EndIf
-                If _this_\items()\line\v\y + _this_\items()\line\v\height > _this_\y[2]+_this_\height[2] 
-                  If _this_\items()\line\v\y > _this_\y[2]+_this_\height[2] 
-                    _this_\items()\line\v\height = 0
+                _this_\items()\l\v\height = (_this_\items()\y+_this_\items()\height/2)-_this_\items()\l\v\y - _this_\scroll\v\page\pos
+                If _this_\items()\l\v\height < 0 : _this_\items()\l\v\height = 0 : EndIf
+                If _this_\items()\l\v\y + _this_\items()\l\v\height > _this_\y[2]+_this_\height[2] 
+                  If _this_\items()\l\v\y > _this_\y[2]+_this_\height[2] 
+                    _this_\items()\l\v\height = 0
                   Else
-                    _this_\items()\line\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\items()\line\v\y 
+                    _this_\items()\l\v\height = (_this_\y[2] + _this_\height[2]) -  _this_\items()\l\v\y 
                   EndIf
                 EndIf
                 
-                If _this_\items()\line\v\height
-                  _this_\items()\line\v\width = 1
+                If _this_\items()\l\v\height
+                  _this_\items()\l\v\width = 1
                 Else
-                  _this_\items()\line\v\width = 0
+                  _this_\items()\l\v\width = 0
                 EndIf
               EndIf 
               
@@ -2849,7 +2853,7 @@ Module Tree
             ; Draw checkbox
             If \flag\checkboxes
               DrawingMode(#PB_2DDrawing_Default)
-              CheckBox(\draws()\box[1]\x,\draws()\box[1]\y,\draws()\box[1]\width,\draws()\box[1]\height, 3, \draws()\box[1]\checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
+              _box_(\draws()\box[1]\x,\draws()\box[1]\y,\draws()\box[1]\width,\draws()\box[1]\height, \draws()\box[1]\checked, 3, $FFFFFFFF, 2, 255)
             EndIf
             
             ; Draw arrow
@@ -2863,13 +2867,13 @@ Module Tree
             If \flag\lines And \row\sublevellen
               DrawingMode(#PB_2DDrawing_XOr)
               
-              If \draws()\line\v\width
+              If \draws()\l\v\width
                 ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
-                Line(\draws()\line\v\x, \draws()\line\v\y,\draws()\line\v\width,\draws()\line\v\height, $FF7E7E7E)
+                Line(\draws()\l\v\x, \draws()\l\v\y,\draws()\l\v\width,\draws()\l\v\height, $FF7E7E7E)
               EndIf
-              If \draws()\line\h\height
+              If \draws()\l\h\height
                 ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
-                Line(\draws()\line\h\x , \draws()\line\h\y,\draws()\line\h\width,\draws()\line\h\height, $FF7E7E7E)
+                Line(\draws()\l\h\x , \draws()\l\h\y,\draws()\l\h\width,\draws()\l\h\height, $FF7E7E7E)
               EndIf
               
               If \row\selected And \row\selected\childrens And \flag\buttons
@@ -2990,7 +2994,7 @@ Module Tree
               ; Draw checkbox
               If \flag\checkboxes
                 DrawingMode(#PB_2DDrawing_Default)
-                CheckBox(\items()\box[1]\x,\items()\box[1]\y,\items()\box[1]\width,\items()\box[1]\height, 3, \items()\box[1]\checked, $FFFFFFFF, $FF7E7E7E, 2, 255)
+                _box_(\items()\box[1]\x,\items()\box[1]\y,\items()\box[1]\width,\items()\box[1]\height, \items()\box[1]\checked, 3, $FFFFFFFF, 2, 255)
               EndIf
               
               ; Draw image
@@ -3009,14 +3013,14 @@ Module Tree
               If \flag\lines And \row\sublevellen
                 DrawingMode(#PB_2DDrawing_XOr)
                 
-                If \items()\line\h\height
+                If \items()\l\h\height
                   ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotX())
-                  Line(\items()\line\h\x , \items()\line\h\y, \items()\line\h\width, \items()\line\h\height, $FF7E7E7E)
+                  Line(\items()\l\h\x , \items()\l\h\y, \items()\l\h\width, \items()\l\h\height, $FF7E7E7E)
                 EndIf
                 
-                If \items()\line\v\width
+                If \items()\l\v\width
                   ;DrawingMode(#PB_2DDrawing_CustomFilter) : CustomFilterCallback(@PlotY())
-                  Line(\items()\line\v\x, \items()\line\v\y, \items()\line\v\width, \items()\line\v\height, $FF7E7E7E)
+                  Line(\items()\l\v\x, \items()\l\v\y, \items()\l\v\width, \items()\l\v\height, $FF7E7E7E)
                 EndIf
                 
                 If \row\selected And \row\selected\childrens And \flag\buttons
@@ -3230,7 +3234,9 @@ Module Tree
   Procedure.l SetState(*this._S_widget, State.l)
     With *this
       If State < 0 : State = 0 : EndIf
-      If State > *this\row\count - 1 : State = *this\row\count - 1 :  EndIf
+      If State > *this\row\count - 1 
+        State = *this\row\count - 1 
+      EndIf
       
       If \row\selected
         \row\selected\color\state = 0
@@ -4323,5 +4329,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------0--------------------------------
+; Folding = ---------------------------------------------------------------------------------
 ; EnableXP
