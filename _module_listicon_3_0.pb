@@ -486,11 +486,20 @@ DeclareModule Structures
     
   EndStructure
   
+  ;- - _S_padding
+  Structure _S_padding
+    left.l
+    top.l
+    right.l
+    bottom.l
+  EndStructure
+  
   ;- - _S_image
   Structure _S_image Extends _S_coordinate
     index.l
     handle.i
     change.b
+    padding._S_padding
     Align._S_align
   EndStructure
   
@@ -513,6 +522,7 @@ DeclareModule Structures
     Vertical.b
     Rotate.f
     
+    padding._S_padding
     Align._S_align
   EndStructure
   
@@ -578,6 +588,12 @@ DeclareModule Structures
     *data      ; set/get item data
   EndStructure
   
+  ;- - _S_row
+  Structure _S_row 
+    count.l
+    *selected._S_items
+  EndStructure
+  
   Structure _S_columns Extends _S_coordinate
     Index.i  ; Index of new list element
     Handle.i ; Adress of new list element
@@ -589,7 +605,7 @@ DeclareModule Structures
     ;From.i
     sub_len.l
     sub_level.l
-    ;*_i_selected._S_items
+    ;*row\selected._S_items
     List Items._S_items()
   EndStructure
   
@@ -708,9 +724,9 @@ DeclareModule Structures
     
     ;DrawingMode.i
     
-    *_i_selected._S_items
+    row._S_row
 ;     List Items._S_items()
-    List Columns._S_columns()
+    List *Columns._S_columns()
     ;ColumnWidth.i
   EndStructure
   
@@ -748,9 +764,8 @@ DeclareModule Structures
     
   EndWith
   
-  Global *Focus._S_widget
+  Global *active._S_widget
   Global NewList List._S_widget()
-  Global Use_List_Canvas_Gadget
   
 EndDeclareModule 
 
@@ -2525,6 +2540,68 @@ DeclareModule ListIcon
 EndDeclareModule
 
 Module ListIcon
+   Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
+    Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ =< (_type_\x#_mode_+_type_\width#_mode_) And 
+          _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
+  EndMacro
+  
+  Macro _multi_select_(_this_)
+    PushListPosition(_this_\columns()\items()) 
+    ForEach _this_\columns()\items()
+      If Not _this_\columns()\items()\hide
+        _this_\columns()\items()\color\state =  Bool((_this_\row\selected\index >= _this_\columns()\items()\index And _this_\from =< _this_\columns()\items()\index) Or ; верх
+                                           (_this_\row\selected\index =< _this_\columns()\items()\index And _this_\from >= _this_\columns()\items()\index)) * 2  ; вниз
+        
+      EndIf
+    Next
+    PopListPosition(_this_\columns()\items()) 
+  EndMacro
+  
+  Macro _set_active_(_this_)
+    If *active <> _this_
+      If *active 
+        If *active\row\selected 
+          *active\row\selected\color\state = 3
+        EndIf
+        
+        *active\color\state = 0
+      EndIf
+      
+      If _this_\row\selected And _this_\row\selected\color\state = 3
+        _this_\row\selected\color\state = 2
+      EndIf
+      _this_\color\state = 2
+      *active = _this_
+      Result = #True
+    EndIf
+  EndMacro
+  
+  Macro _set_item_image_(_this_, _image_, _padding_x_)
+    _this_\columns()\items()\image\change = IsImage(_image_)
+    
+    If _this_\columns()\items()\image\change
+      Select _this_\attribute
+        Case #PB_Attribute_LargeIcon
+          _this_\columns()\items()\image\width = 32
+          _this_\columns()\items()\image\height = 32
+          ResizeImage(_this_\columns()\items()\image\index, _this_\columns()\items()\image\width, _this_\columns()\items()\image\height)
+          
+        Case #PB_Attribute_SmallIcon
+          _this_\columns()\items()\image\width = 16
+          _this_\columns()\items()\image\height = 16
+          ResizeImage(_this_\columns()\items()\image\index, _this_\columns()\items()\image\width, _this_\columns()\items()\image\height)
+          
+        Default
+          _this_\columns()\items()\image\width = ImageWidth(_this_\columns()\items()\image\index)
+          _this_\columns()\items()\image\height = ImageHeight(_this_\columns()\items()\image\index)
+      EndSelect   
+      
+      _this_\columns()\items()\image\index = _image_ 
+      _this_\columns()\items()\Image\handle = ImageID(_image_)
+      _this_\columns()\items()\image\padding\left = _padding_x_
+      _this_\sub_level = _this_\columns()\items()\image\padding\left + _this_\columns()\items()\image\width
+    EndIf
+  EndMacro
   
   ;- - DRAWINGs
   Procedure CheckBox(X,Y, Width, Height, Type, Checked, Color, BackColor, Radius, Alpha=255) 
@@ -2653,32 +2730,7 @@ Module ListIcon
               _this_\Columns()\items()\text\width = TextWidth(_this_\Columns()\items()\text\string.s) 
               _this_\Columns()\items()\text\height = TextHeight("A") 
             EndIf 
-            
-            If _this_\Columns()\items()\image\change And ListIndex(_this_\Columns()) = 0
-              _this_\Columns()\items()\image\change = 0
-              
-              Select _this_\attribute
-                Case #PB_Attribute_LargeIcon
-                  _this_\Columns()\items()\image\width = 32
-                  _this_\Columns()\items()\image\height = 32
-                  ResizeImage(_this_\Columns()\items()\image\index, _this_\Columns()\items()\image\width, _this_\Columns()\items()\image\height)
-                  
-                Case #PB_Attribute_SmallIcon
-                  _this_\Columns()\items()\image\width = 16
-                  _this_\Columns()\items()\image\height = 16
-                  ResizeImage(_this_\Columns()\items()\image\index, _this_\Columns()\items()\image\width, _this_\Columns()\items()\image\height)
-                  
-                Default
-                  _this_\Columns()\items()\image\width = ImageWidth(_this_\Columns()\items()\image\index)
-                  _this_\Columns()\items()\image\height = ImageHeight(_this_\Columns()\items()\image\index)
-              EndSelect   
-              
-              _this_\Columns()\items()\image\handle = ImageID(_this_\Columns()\items()\image\index)
-              
-              _this_\Columns()\image\width = _this_\Columns()\items()\image\width
-              _this_\Columns()\image\height = _this_\Columns()\items()\image\height
-            EndIf
-            
+                        
             If _this_\change
               _this_\Columns()\items()\height = _this_\Text\Height
               _this_\Columns()\items()\y = _this_\y[2]+_this_\scroll\height
@@ -2691,7 +2743,7 @@ Module ListIcon
               _this_\Columns()\items()\draw = Bool(_this_\Columns()\items()\y+_this_\Columns()\items()\height-_this_\scroll\v\page\pos>_this_\y[2]+_this_\Columns()\height And 
                                                    (_this_\Columns()\items()\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
               
-              _this_\Columns()\items()\image\x = _this_\Columns()\x - Bool(_this_\Columns()\image\width) * 20 -_this_\scroll\h\page\pos
+              _this_\Columns()\items()\image\x = _this_\Columns()\x - Bool(_this_\Columns()\items()\image\width) * 20 -_this_\scroll\h\page\pos
               _this_\Columns()\items()\text\x = _this_\Columns()\x+ _this_\Columns()\items()\sub_len + _this_\Columns()\sub_len  -_this_\scroll\h\page\pos + 5
               _this_\Columns()\items()\image\y = _this_\Columns()\items()\y + (_this_\Columns()\items()\height-_this_\Columns()\items()\image\height)/2-_this_\scroll\v\page\pos
               _this_\Columns()\items()\text\y = _this_\Columns()\items()\y + (_this_\Columns()\items()\height-_this_\Columns()\items()\text\height)/2-_this_\scroll\v\page\pos
@@ -2742,10 +2794,10 @@ Module ListIcon
         _this_\height[2] = (_this_\scroll\h\y + Bool(_this_\scroll\h\hide) * _this_\scroll\h\height) - _this_\y[2]
         
         
-        If _this_\_i_selected And _this_\_i_selected\change 
-          _this_\_i_selected\change = 0
+        If _this_\row\selected And _this_\row\selected\change 
+          _this_\row\selected\change = 0
           
-          Bar::SetState(_this_\scroll\v, ((_this_\_i_selected\index * _this_\text\height) - _this_\scroll\v\height) + _this_\text\height) 
+          Bar::SetState(_this_\scroll\v, ((_this_\row\selected\index * _this_\text\height) - _this_\scroll\v\height) + _this_\text\height) 
           _this_\change = 1
           Draw(_this_)
         EndIf
@@ -2830,8 +2882,8 @@ Module ListIcon
                 EndIf
               
                 ; Draw text
-                If \_i_selected And \_i_selected\index = \Columns()\items()\index
-                  Protected state = \_i_selected\color\state 
+                If \row\selected And \row\selected\index = \Columns()\items()\index
+                  Protected state = \row\selected\color\state 
                 Else
                   state = \Columns()\items()\color\state 
                 EndIf
@@ -2894,7 +2946,7 @@ Module ListIcon
               EndIf
             Next
             
-            If \Flag\GridLines ;And Not \text\count
+            If \Flag\GridLines ;And Not \row\count
               Protected i, s=((\scroll\v\page\pos+\Columns()\height)/(\text\height+\flag\gridlines))
               Protected t=(\height[2]-\Columns()\height+\scroll\v\page\pos)/(\text\height+\Flag\GridLines)
               For i=s To t
@@ -2953,7 +3005,7 @@ Module ListIcon
   EndProcedure
   
   Procedure.i AddColumn(*this._S_widget, Position.l, Text.s, Width.l, Image.i=-1)
-    Protected Result.i
+    Protected Result.i, handle.i
     
     With *this
       If Position =- 1
@@ -2963,11 +3015,11 @@ Module ListIcon
       If Position < 0 Or 
          Position > ListSize(\Columns()) - 1
         LastElement(\Columns())
-        \Columns()\handle = AddElement(\Columns()) 
+        handle = AddElement(\Columns()) 
         Position = ListIndex(\Columns())
       Else
         SelectElement(\Columns(), Position)
-        \Columns()\handle = InsertElement(\Columns())
+        handle = InsertElement(\Columns())
         
         ; Исправляем идентификатор
         PushListPosition(\Columns())
@@ -2977,27 +3029,28 @@ Module ListIcon
         PopListPosition(\Columns())
       EndIf
       
+      \columns() = AllocateStructure(_S_columns)
       \Columns()\height = 24
       \Columns()\width = Width
       \Columns()\index = Position
+      \Columns()\handle = handle
       
       If Text.s
         \Columns()\text\string.s = Text.s
         \Columns()\text\change = 1
       EndIf
       
-;       If Not \Columns()\index
-;         \y[2] + \Columns()\height
-;        \height[2] - \Columns()\height
-;       EndIf
-      
-      If Result =- 1
-        ProcedureReturn \Columns()\handle
-      Else
-        ProcedureReturn Position
-      EndIf
+      ;       If Not \Columns()\index
+      ;         \y[2] + \Columns()\height
+      ;        \height[2] - \Columns()\height
+      ;       EndIf
     EndWith
     
+    If Result =- 1
+      ProcedureReturn handle
+    Else
+      ProcedureReturn Position
+    EndIf
   EndProcedure
   
   Procedure.i AddItem(*This._S_widget, Item.l, Text.s, Image.i=-1, sublevel.i=0)
@@ -3093,13 +3146,8 @@ Module ListIcon
         \Columns()\items()\text\fontID = \text\fontID
         \Columns()\Items()\text\string.s = StringField(Text.s, \Columns()\index + 1, #LF$)
         
-        \Columns()\items()\image\index = Image
-        \Columns()\items()\image\change = IsImage(Image)
-        
-        If Not \Columns()\index And 
-           \Columns()\items()\image\change
-          \sub_level = 25
-          \Columns()\sub_level = 25
+        If Not \Columns()\index 
+          _set_item_image_(*This, Image, 6)
         EndIf
         
         \Columns()\items()\color = colors
@@ -3109,7 +3157,7 @@ Module ListIcon
         \Columns()\items()\color\fore[2] = 0
         \Columns()\items()\color\fore[3] = 0
         
-        \text\count + 1
+        \row\count + 1
       Next
       
       If ListIndex(\Columns()\Items()) = 0
@@ -3315,20 +3363,16 @@ Module ListIcon
   
   Procedure SetItemImage(Gadget.i, Item.i, image.i)
     Protected Result.i, *This._S_widget
-    If IsGadget(Gadget) : *This._S_widget = GetGadgetData(Gadget) : EndIf
     
-    If *This
-      With *This
-        PushListPosition(\Columns()\Items()) 
-        ForEach \Columns()\Items()
-          If \Columns()\Items()\index = Item And IsImage(image)
-            \Columns()\Items()\Image\handle = ImageID(image)
-            \Columns()\Items()\image\index = image 
-            Break
-          EndIf
-        Next
-        PopListPosition(\Columns()\Items())
-      EndWith
+    If Item < 0 : Item = 0 : EndIf
+    If Item > *this\row\count - 1 : Item = *this\row\count - 1 :  EndIf
+    
+    If SelectElement(*this\Columns()\Items(), Item)
+      *this\Columns()\Items()\change = IsImage(image)
+      If *this\Columns()\Items()\change
+        *this\Columns()\Items()\Image\handle = ImageID(image)
+        *this\Columns()\Items()\image\index = image 
+      EndIf
     EndIf
     
     ProcedureReturn Result
@@ -3561,7 +3605,7 @@ Module ListIcon
   
   Procedure.l CallBack(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
     Protected Result, from =- 1
-    Shared *focus._S_widget
+    Shared *active._S_widget
     Static *leave._S_widget
     
     Static cursor_change, LastX, LastY, Last, Down
@@ -3619,32 +3663,24 @@ Module ListIcon
         Case #PB_EventType_MouseEnter  ;: Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
           
           If down And _this_\flag\multiselect 
-            PushListPosition(_this_\columns()\items()) 
-            ForEach _this_\columns()\items()
-              If  Not _this_\columns()\items()\hide
-                If ((_this_\_i_selected\index >= _this_\columns()\items()\index And _this_\from =< _this_\columns()\items()\index) Or ; верх
-                    (_this_\_i_selected\index =< _this_\columns()\items()\index And _this_\from >= _this_\columns()\items()\index))   ; вниз
-                  
-                  _this_\columns()\items()\color\state = 2
-                Else
-                  _this_\columns()\items()\color\state = 1
-                EndIf
-              EndIf
-            Next
-            PopListPosition(_this_\columns()\items()) 
+            _multi_select_(_this_)
             
             Result = #True
             
           ElseIf _this_\columns()\items()\color\state = 0
             _this_\columns()\items()\color\state = 1+Bool(down)
             
+            If down
+              _this_\row\selected = _this_\columns()\items()
+            EndIf
+            
             Result = #True
           EndIf
           
         Case #PB_EventType_LeftButtonDown ; : Debug ""+#PB_Compiler_Line +" нажали " + _this_ +" "+ _this_\from
           
-          If Not _this_\flag\clickselect And _this_\_i_selected
-            _this_\_i_selected\color\state = 0
+          If Not _this_\flag\clickselect And _this_\row\selected
+            _this_\row\selected\color\state = 0
           EndIf
           
           If _this_\columns()\items()\color\state = 2
@@ -3653,22 +3689,10 @@ Module ListIcon
             _this_\columns()\items()\color\state = 2
           EndIf
           
-          _this_\_i_selected = _this_\columns()\items()
+          _this_\row\selected = _this_\columns()\items()
           
           If  _this_\flag\multiselect
-            PushListPosition(_this_\columns()\items()) 
-            ForEach _this_\columns()\items()
-              If  Not _this_\columns()\items()\hide
-                If ((_this_\_i_selected\index >= _this_\columns()\items()\index And _this_\from =< _this_\columns()\items()\index) Or ; верх
-                    (_this_\_i_selected\index =< _this_\columns()\items()\index And _this_\from >= _this_\columns()\items()\index))   ; вниз
-                  
-                  _this_\columns()\items()\color\state = 2
-                Else
-                  _this_\columns()\items()\color\state = 1
-                EndIf
-              EndIf
-            Next
-            PopListPosition(_this_\columns()\items()) 
+            _multi_select_(_this_)
           EndIf
           
           Result = #True
@@ -3677,11 +3701,11 @@ Module ListIcon
           
           If Not _this_\flag\multiselect
             If Not _this_\flag\clickselect
-              If _this_\_i_selected 
-                _this_\_i_selected\color\state = 0
+              If _this_\row\selected 
+                _this_\row\selected\color\state = 0
               EndIf
               
-              _this_\_i_selected = _this_\columns()\items()
+              _this_\row\selected = _this_\columns()\items()
               _this_\columns()\items()\color\state = 2
               
               Result = #True
@@ -3689,11 +3713,6 @@ Module ListIcon
           EndIf
           
       EndSelect
-    EndMacro
-    
-    Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
-      Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ =< (_type_\x#_mode_+_type_\width#_mode_) And 
-            _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
     EndMacro
     
     With *this
@@ -3720,9 +3739,9 @@ Module ListIcon
         PushListPosition(\columns()\items())
         ;ForEach \columns()
         ForEach \columns()\items()
-          ;           If \items()\hide Or (Not \items()\draw And Not Down)
-          ;             Continue
-          ;           EndIf
+          If \columns()\items()\hide Or (Not \columns()\items()\draw And Not Down)
+            Continue
+          EndIf
           
           If (mouse_y > \columns()\items()\y-\scroll\v\page\pos And
               mouse_y =< \columns()\items()\y+\columns()\items()\height-\scroll\v\page\pos)
@@ -3744,13 +3763,14 @@ Module ListIcon
           EndIf
           
           \from = from
-          *leave = *this
           
           If \from >= 0 And SelectElement(\columns()\items(), \from)
             _callback_(*this, #PB_EventType_MouseEnter)
           EndIf
         EndIf
-      Else
+        
+        *leave = *this
+       Else
         If \from >= 0 And SelectElement(\columns()\items(), \from)
           If EventType = #PB_EventType_LeftButtonUp
             _callback_(*this, #PB_EventType_LeftButtonUp)
@@ -3791,27 +3811,13 @@ Module ListIcon
           EndIf
           
         Case #PB_EventType_LeftButtonDown
+          If *leave = *this
+            _set_active_(*this)
+          EndIf
+          
           If from >= 0 And SelectElement(\columns()\items(), \from)
             Down = *this
             \from = from 
-            *leave = *this
-            
-            If *focus <> *this
-              If *focus And *focus\_i_selected 
-                ;                 If SelectElement(*focus\items(), *focus\_i_selected\index)
-                ;                   _callback_(*focus, #PB_EventType_LostFocus)
-                ;                 EndIf
-                
-                *focus\_i_selected\color\state = 3
-                *focus\color\state = 0
-              EndIf
-              
-              ;               If SelectElement(\items(), \from)
-              ;                 _callback_(*this, #PB_EventType_Focus)
-              ;               EndIf
-              \color\state = 2
-              *focus = *this
-            EndIf
             
             If _from_point_(\canvas\mouse\x, \canvas\mouse\y, \columns()\items()\box[1])
               \Columns()\Items()\box[1]\checked ! 1
@@ -4245,7 +4251,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 11
-    *g = Widget(180, 100, 160, 210,"Column_1",90)                                         
+    *g = Widget(180, 100, 160, 210,"Column_1",90, #PB_Flag_multiSelect)                                         
     AddElement(*List()) : *List() = *g
     
     For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
@@ -4316,5 +4322,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------HF8f5v4---------------v0------------
+; Folding = ----------+---------------------------------------XF8-5-4---------------f8------------
 ; EnableXP

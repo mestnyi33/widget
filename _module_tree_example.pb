@@ -1,5 +1,6 @@
 ﻿;IncludePath "/Users/as/Documents/GitHub/Widget/"
-XIncludeFile "_module_tree_7_1_0.pb"
+XIncludeFile "_module_tree_10_0.pb"
+;XIncludeFile "_module_tree_7_1_0.pb"
 
 UseModule Tree
 LN=50000 ; количесвто итемов 

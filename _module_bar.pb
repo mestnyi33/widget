@@ -1681,10 +1681,9 @@ Module Bar
         Case #PB_EventType_MouseLeave 
           If Not Down : \from =- 1 : from =- 1 : LastX = 0 : LastY = 0 : EndIf
           
-        Case #PB_EventType_LeftButtonUp 
-          If \from >= 0 And \button[\from]\interact
-            Down = 0 : LastX = 0 : LastY = 0
+        Case #PB_EventType_LeftButtonUp : Down = 0 : LastX = 0 : LastY = 0
           
+          If \from >= 0 And \button[\from]\interact
             _callback_(*this, #PB_EventType_LeftButtonUp)
             
             If from =- 1
@@ -2055,5 +2054,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------------------------------
+; Folding = ---------------------------------4--------
 ; EnableXP
