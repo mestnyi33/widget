@@ -11750,7 +11750,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EventData = Data()
     
     Protected i, Text$, Files$, Count
-    
+    ;Debug "     "+EventType
     ; DragStart event on the source s, initiate a drag & drop
     ;
     Select EventType

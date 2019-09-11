@@ -12842,7 +12842,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Container(20,20,400-60, 360-60, Editable)
         *but=Button(100, 20, 80, 80, "Button_1", Editable)
         
-        Tree(130, 80, 180, 180, Editable)
+        Tree(130, 80, 180, 180, Editable|#PB_Flag_Checkboxes|#PB_Tree_ThreeState)
         
         Define i
         For i=0 To 20

@@ -161,6 +161,13 @@ Module Splitter
     CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
       CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (First)) 
       CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (Second)) 
+      
+;       Protected Point.NSPoint
+;       Point\x = 100
+;       Point\y = 100
+;       CocoaMessage (0, WindowID (0), "center")
+;       CocoaMessage (0, WindowID (0), "setFrameTopLeftPoint:@", @Point) ; Установить верхнюю левую координату окна
+;       CocoaMessage (0, WindowID (0), "setFrameOrigin:@", @Point) ; Установить нижнюю левую координату окна
     CompilerEndIf
     
     If *This
@@ -357,5 +364,5 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -+----
+; Folding = ------
 ; EnableXP

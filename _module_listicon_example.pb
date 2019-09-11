@@ -1,5 +1,6 @@
 ﻿;IncludePath "/Users/as/Documents/GitHub/Widget/"
-XIncludeFile "_module_listicon_3_0.pb"
+;XIncludeFile "_module_listicon_3_0.pb"
+XIncludeFile "_module_list_1_0.pb"
 
 UseModule ListIcon
 Global g_Canvas, NewMap *List._S_widget()
@@ -92,6 +93,7 @@ If OpenWindow(0, 0, 0, 1030, 800, "ListIconGadgets", #PB_Window_SystemMenu | #PB
   ListIconGadget(7,   x, 140, 330, 100, "Column 1", 100, #PB_ListIcon_Report)
   TextGadget(#PB_Any, x, 235, 330, 20, "ListIcon Standard with large icons",#PB_Text_Center)
   ListIconGadget(8,   x, 260, 330, 100, "", 200)
+  ;CocoaMessage (0, GadgetID (8), "setHeaderView:", 0)
   
   For a = 0 To 8
     If a<>3 And a<>8
@@ -157,8 +159,6 @@ If OpenWindow(0, 0, 0, 1030, 800, "ListIconGadgets", #PB_Window_SystemMenu | #PB
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
-; CursorPosition = 148
-; FirstLine = 126
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

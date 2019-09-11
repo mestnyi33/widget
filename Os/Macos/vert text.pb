@@ -8,6 +8,7 @@ PanelGadget(0, 10, 10, WindowWidth(0) - 20, 180)
 AddGadgetItem (0, -1, "Tab 1")
 AddGadgetItem (0, -1, "Tab 2")
 CloseGadgetList()
+
 FrameGadget(1, 30, 210, WindowWidth(0) - 60, 80, "Tab location")
 OptionGadget(2, 130, GadgetY(1) + 20, 80, 20, "Top")
 OptionGadget(3, 50, GadgetY(1) + 35, 80, 20, "Left")
@@ -27,6 +28,6 @@ Repeat
       EndIf
   EndSelect
 ForEver
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

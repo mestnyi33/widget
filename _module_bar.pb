@@ -183,7 +183,7 @@ DeclareModule Bar
   Declare.b SetColor(*this, ColorType.l, Color.l, Item.l=- 1, State.l=1)
   
   Declare.b Resize(*this, iX.l,iY.l,iWidth.l,iHeight.l)
-  Declare.b CallBack(*this, EventType.l, mouse_x.l, mouse_y.l, WheelDelta.l=0)
+  Declare.b CallBack(*this, EventType.l, mouse_x.l, mouse_y.l, Wheel_X.b=0, Wheel_Y.b=0)
   
   Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, Radius.l=0)
   Declare.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
@@ -239,6 +239,7 @@ EndDeclareModule
 Module Bar
   ;- GLOBALs
   Global def_colors._S_color
+  Global *active._S_bar
   
   With def_colors                          
     \state = 0
@@ -1537,7 +1538,7 @@ Module Bar
   EndProcedure
   
   
-  Procedure.b CallBack(*this._S_bar, EventType.l, mouse_x.l, mouse_y.l, WheelDelta.l=0)
+  Procedure.b CallBack(*this._S_bar, EventType.l, mouse_x.l, mouse_y.l, Wheel_X.b=0, Wheel_Y.b=0)
     Protected Result, from =- 1 
     Static cursor_change, LastX, LastY, Last, *leave._S_bar, Down
     
@@ -1619,7 +1620,7 @@ Module Bar
           ElseIf _from_point_(mouse_x, mouse_y, \button[0])
             from = 0
           EndIf
-       
+          
           If \type = #PB_GadgetType_TrackBar ;Or \type = #PB_GadgetType_ProgressBar
             Select from
               Case #_b_1, #_b_2
@@ -1659,8 +1660,8 @@ Module Bar
       Else
         If \from >= 0 And \button[\from]\interact
           If EventType = #PB_EventType_LeftButtonUp
-           ; Debug ""+#PB_Compiler_Line +" Мышь up"
-           _callback_(*this, #PB_EventType_LeftButtonUp)
+            ; Debug ""+#PB_Compiler_Line +" Мышь up"
+            _callback_(*this, #PB_EventType_LeftButtonUp)
           EndIf
           
           ; Debug ""+#PB_Compiler_Line +" Мышь покинул итем"
@@ -1678,6 +1679,15 @@ Module Bar
       
       ; get
       Select EventType
+        Case #PB_EventType_MouseWheel
+          If *This = *active
+            If \vertical
+              Result = SetState(*This, (\page\pos + Wheel_Y))
+            Else
+              Result = SetState(*This, (\page\pos + Wheel_X))
+            EndIf
+          EndIf
+          
         Case #PB_EventType_MouseLeave 
           If Not Down : \from =- 1 : from =- 1 : LastX = 0 : LastY = 0 : EndIf
           
@@ -1695,6 +1705,30 @@ Module Bar
           EndIf
           
         Case #PB_EventType_LeftButtonDown
+          Macro _set_active_(_this_)
+            If *active <> _this_
+              If *active 
+                ;                 If *active\row\selected 
+                ;                   *active\row\selected\color\state = 3
+                ;                 EndIf
+                
+                *active\color\state = 0
+              EndIf
+              
+              ;               If _this_\row\selected And _this_\row\selected\color\state = 3
+              ;                 _this_\row\selected\color\state = 2
+              ;               EndIf
+              
+              _this_\color\state = 2
+              *active = _this_
+              Result = #True
+            EndIf
+          EndMacro
+          
+          If *leave = *this
+            _set_active_(*this)
+          EndIf
+          
           If from = 0 And \button[#_b_3]\interact 
             If \Vertical
               Result = SetPos(*this, (mouse_y-\thumb\len/2))
@@ -1708,7 +1742,6 @@ Module Bar
           If from >= 0
             Down = *this
             \from = from 
-            *leave = *this
             
             If \button[from]\interact
               _callback_(*this, #PB_EventType_LeftButtonDown)
@@ -1744,6 +1777,32 @@ CompilerIf #PB_Compiler_IsMainFile
   Global g_Canvas, NewList *List._S_bar()
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Procedure GetCurrentEvent()
+      Protected app = CocoaMessage(0,0,"NSApplication sharedApplication")
+      If app
+        ProcedureReturn CocoaMessage(0,app,"currentEvent")
+      EndIf
+    EndProcedure
+    
+    Procedure.CGFloat GetWheelDeltaX()
+      Protected wheelDeltaX.CGFloat = 0.0
+      Protected currentEvent = GetCurrentEvent()
+      If currentEvent
+        CocoaMessage(@wheelDeltaX,currentEvent,"scrollingDeltaX")
+      EndIf
+      ProcedureReturn wheelDeltaX
+    EndProcedure
+    
+    Procedure.CGFloat GetWheelDeltaY()
+      Protected wheelDeltaY.CGFloat = 0.0
+      Protected currentEvent = GetCurrentEvent()
+      If currentEvent
+        CocoaMessage(@wheelDeltaY,currentEvent,"scrollingDeltaY")
+      EndIf
+      ProcedureReturn wheelDeltaY
+    EndProcedure
+  CompilerEndIf
   
   Procedure ReDraw(Canvas)
     If StartDrawing(CanvasOutput(Canvas))
@@ -1832,9 +1891,19 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     ;      MouseX = DesktopMouseX()-GadgetX(Canvas, #PB_Gadget_ScreenCoordinate)
     ;      MouseY = DesktopMouseY()-GadgetY(Canvas, #PB_Gadget_ScreenCoordinate)
-    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
+    Protected WheelDelta ; = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
     Protected *callback = GetGadgetData(Canvas)
     ;     Protected *this._S_bar = GetGadgetData(Canvas)
+    
+    If EventType = #PB_EventType_MouseWheel
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+        Protected wheel_X.CGFloat = GetWheelDeltaX()
+        Protected wheel_Y.CGFloat = GetWheelDeltaY()
+      CompilerElse
+        Protected wheel_X
+        Protected wheel_Y
+      CompilerEndIf
+    EndIf
     
     Select EventType
       Case #PB_EventType_Resize ; : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -1849,7 +1918,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     ForEach *List()
-      Repaint | CallBack(*List(), EventType, MouseX, MouseY)
+      Repaint | CallBack(*List(), EventType, MouseX, MouseY, wheel_X, wheel_Y)
       
       If *List()\change
         
@@ -2053,6 +2122,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------4--------
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 2123
+; FirstLine = 2094
+; Folding = ---------------------------------------------
 ; EnableXP

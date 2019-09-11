@@ -9,7 +9,7 @@ Global *w._S_widget
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   TreeGadget(0, 10, 10, 250, 680, #PB_Tree_NoLines|#PB_Tree_NoButtons)
-  Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection|#PB_Flag_GridLines|#PB_Tree_NoLines|#PB_Tree_NoButtons) : *w=GetGadgetData(1) ; 
+  *w=Gadget(1, 270, 10, 250, 680, #PB_Flag_GridLines|#PB_Tree_NoLines|#PB_Tree_NoButtons); 
   
   Define time = ElapsedMilliseconds()
   For a = 0 To LN
@@ -23,7 +23,9 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
   
   ;*w\change = 1
+  Define time = ElapsedMilliseconds()
   Redraw(*w)
+  Debug Str(ElapsedMilliseconds()-time) + " - items draw times"
   
 ;   ; HideGadget(0, 1)
 ;   Define time = ElapsedMilliseconds()
