@@ -3610,7 +3610,7 @@ Module Tree
       EndWith
     EndIf
     
-    ProcedureReturn g
+    ProcedureReturn *this
   EndProcedure
   
 EndModule
