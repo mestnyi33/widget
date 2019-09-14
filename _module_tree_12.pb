@@ -1321,7 +1321,7 @@ Module Bar
           
         Case #PB_EventType_MouseEnter ; : Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
           _this_\color[_this_\from]\state = #Entered 
-        
+          
         Case #PB_EventType_LeftButtonDown ; : Debug ""+#PB_Compiler_Line +" нажали " + _this_ +" "+ _this_\from
           _this_\color[_this_\from]\state = #Selected
           
@@ -1658,11 +1658,11 @@ Module Tree
   EndMacro
   
   Macro _repaint_(_this_)
-;     ;Debug " "+#PB_Compiler_Line + " "+ _this_\row\count +" "+ _this_\row\draw+ " "+ Bool(_this_\row\draw And ((_this_\row\count-1) % _this_\row\draw) = 0)
-;     
-;     If _this_\row\draw
-;     ;Debug " "+#PB_Compiler_Line + " "+ Str((_this_\row\count) % _this_\row\draw)
-;     EndIf
+    ;     ;Debug " "+#PB_Compiler_Line + " "+ _this_\row\count +" "+ _this_\row\draw+ " "+ Bool(_this_\row\draw And ((_this_\row\count-1) % _this_\row\draw) = 0)
+    ;     
+    ;     If _this_\row\draw
+    ;     ;Debug " "+#PB_Compiler_Line + " "+ Str((_this_\row\count) % _this_\row\draw)
+    ;     EndIf
     
     If _this_\row\count < 2 Or (Not _this_\hide And _this_\row\draw And (_this_\row\count % _this_\row\draw) = 0)
       _this_\change = 1
@@ -2155,18 +2155,26 @@ Module Tree
   EndProcedure
   
   Procedure.l SetState(*this._S_widget, State.l)
+    Protected *Result
+    
     With *this
-      If \row\selected
-        \row\selected\color\state = 0
-        \row\selected\_to = 0
-        \row\selected = 0
+      If State >= 0 And State < \row\count
+        *Result = SelectElement(\items(), State) 
       EndIf
       
-      If State >= 0 And State < \row\count And 
-         SelectElement(\items(), State) 
-        \row\selected = \items()
-        \items()\color\state = 2 
-        \items()\_to = 1
+      If \row\selected <> *Result
+        If \row\selected
+          \row\selected\color\state = 0
+          \row\selected\_to = 0
+        EndIf
+        
+        \row\selected = *Result
+        
+        If \row\selected
+          \row\selected\color\state = 2
+          \row\selected\_to = 1
+        EndIf
+        
         _repaint_(*this)
       EndIf
     EndWith
@@ -2305,7 +2313,7 @@ Module Tree
           *this\change = 1
           Repaint = 1
         EndIf  
-          
+        
         PushListPosition(*this\Items())
         While NextElement(*this\Items())
           If *this\items()\parent And *this\items()\sublevel > *this\items()\parent\sublevel 
@@ -2494,10 +2502,9 @@ Module Tree
         While NextElement(*this\Items())
           If *this\items()\sublevel > sublevel 
             ;Debug *this\items()\text\string
-            ;*this\items()\hide = Bool(*this\items()\parent\box[0]\checked | *this\items()\parent\hide)
             DeleteElement(*this\items())
           Else
-           Break
+            Break
           EndIf
         Wend
         PopListPosition(*this\Items())
@@ -2507,19 +2514,9 @@ Module Tree
       
       DeleteElement(*this\items())
       
-; ;       If *this\row\selected And 
-; ;          *this\row\selected\index = Item 
-; ;         ;PushListPosition(*this\items())
-; ;         *this\row\selected = NextElement(*this\items())
-; ;         If *this\row\selected
-; ;           *this\row\selected\color\state = 2 + Bool(*active<>*this)
-; ;         EndIf
-; ;         ;PopListPosition(*this\items())
-; ;       EndIf
-      
       If (*this\row\draw And (*this\row\count % *this\row\draw) = 0) Or 
          *this\row\draw < 2 ; Это на тот случай когда итеми менше первого обнавления
-      
+        
         ; Debug "    "+*this\row\count +" "+ *this\row\draw
         
         PushListPosition(*this\items())
@@ -2532,7 +2529,7 @@ Module Tree
       If *this\row\selected And *this\row\selected\index >= Item 
         *this\row\selected\color\state = 0
         
-        ;PushListPosition(*this\Items())
+        PushListPosition(*this\Items())
         If *this\row\selected\index <> Item 
           SelectElement(*this\items(), *this\row\selected\index)
         EndIf
@@ -2544,12 +2541,11 @@ Module Tree
             Break
           EndIf
         Wend
-        ;PopListPosition(*this\items())
+        PopListPosition(*this\items())
       EndIf
       
-      
-        _repaint_(*this)
-       *this\row\count - 1
+      _repaint_(*this)
+      *this\row\count - 1
     EndIf
   EndProcedure
   
@@ -2804,7 +2800,7 @@ Module Tree
         ; а не канвас гаджет
         ; _repaint_(*this)
       EndIf
-        
+      
       ProcedureReturn \resize
     EndWith
   EndProcedure
@@ -2963,15 +2959,15 @@ Module Tree
           EndIf
         Next
         ;PopListPosition(\draws())
-;         PushListPosition(\Items())
-;         ForEach \Items()
-;           If \items()\draw And (mouse_y > \Items()\y-\scroll\v\page\pos And
-;               mouse_y =< \Items()\y+\Items()\height-\scroll\v\page\pos)
-;             from = \Items()\index ; ListIndex(\Items());\index
-;             Break
-;           EndIf
-;         Next
-;         PopListPosition(\Items())
+        ;         PushListPosition(\Items())
+        ;         ForEach \Items()
+        ;           If \items()\draw And (mouse_y > \Items()\y-\scroll\v\page\pos And
+        ;               mouse_y =< \Items()\y+\Items()\height-\scroll\v\page\pos)
+        ;             from = \Items()\index ; ListIndex(\Items());\index
+        ;             Break
+        ;           EndIf
+        ;         Next
+        ;         PopListPosition(\Items())
         
         If \from <> from And Not (from =- 1 And Down)
           If *leave > 0 And *leave\from >= 0
@@ -3210,7 +3206,7 @@ Module Tree
         \y =- 1
         \from =- 1
         \change = 1
-;         \row\from =- 3
+        ;         \row\from =- 3
         \interact = 1
         \radius = Radius
         
@@ -3784,5 +3780,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = +-------f----------------+---D+-+-2r4---ka4---+0Xeo---8-P-------------
+; Folding = ----------------------------------f-----------------------------------
 ; EnableXP

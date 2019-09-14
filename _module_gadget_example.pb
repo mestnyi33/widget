@@ -53,11 +53,15 @@ Procedure events_tree_gadget()
         SetGadgetState(0, 0)
         SetGadgetState(1, 0)
       EndIf
-      If EventGadget = 77
+      If EventGadget = 8
+        SetGadgetState(0, -1)
+        SetGadgetState(1, -1)
+      EndIf
+      If EventGadget = 9
         SetGadgetState(0, CountGadgetItems(0)-1)
         SetGadgetState(1, CountGadgetItems(1)-1)
       EndIf
-      If EventGadget = 8
+      If EventGadget = 10
         ClearGadgetItems(0)
         ClearGadgetItems(1)
       EndIf
@@ -92,8 +96,8 @@ Procedure events_tree_gadget()
 EndProcedure  
 
 If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  ListViewGadget(0, 10, 10, 160, 160);, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-  ;PB(TreeGadget)(0, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
+  ;ListViewGadget(0, 10, 10, 160, 160) 
+  PB(TreeGadget)(0, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
   TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_Collapse | #PB_Tree_GridLines | #PB_Tree_AlwaysShowSelection)    ; TreeGadget with Checkboxes + NoLines
   
   For ID = 0 To 1
@@ -101,6 +105,7 @@ If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
       AddGadgetItem (ID, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
       AddGadgetItem (ID, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
       AddGadgetItem(ID, -1, "Sub-Item 1", 0, 1)           ; These are on the 1st sublevel
+      AddGadgetItem(ID, -1, "Sub-Item 1_2", 0, 2)           ; These are on the 1st sublevel
       AddGadgetItem(ID, -1, "Sub-Item 2", 0, 1)
       AddGadgetItem(ID, -1, "Sub-Item 3", 0, 1)
       AddGadgetItem(ID, -1, "Sub-Item 4", 0, 1)
@@ -119,12 +124,14 @@ If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
   
   ButtonGadget(6, 10, 210, 100, 24, "set image Item")
   BindGadgetEvent(6, @events_tree_gadget())
-  ButtonGadget(7, 120, 210, 50, 24, "first")
+  ButtonGadget(7, 120, 210, 35, 24, "<")
   BindGadgetEvent(7, @events_tree_gadget())
-  ButtonGadget(77, 170, 210, 50, 24, "last")
-  BindGadgetEvent(77, @events_tree_gadget())
-  ButtonGadget(8, 230, 210, 100, 24, "clears Items")
+  ButtonGadget(8, 155, 210, 30, 24, "0")
   BindGadgetEvent(8, @events_tree_gadget())
+  ButtonGadget(9, 185, 210, 35, 24, ">")
+  BindGadgetEvent(9, @events_tree_gadget())
+  ButtonGadget(10, 230, 210, 100, 24, "clears Items")
+  BindGadgetEvent(10, @events_tree_gadget())
   
   BindGadgetEvent(0, @events_tree_gadget())
   BindGadgetEvent(1, @events_tree_gadget())
