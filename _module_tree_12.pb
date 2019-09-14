@@ -227,6 +227,7 @@ DeclareModule Constants
   EndEnumeration
   
   #PB_Tree_Collapse = #PB_Flag_Collapse
+  #PB_Tree_GridLines = #PB_Flag_GridLines
   
   #PB_Gadget_FrameColor = 10
   
@@ -2506,15 +2507,15 @@ Module Tree
       
       DeleteElement(*this\items())
       
-      If *this\row\selected And 
-         *this\row\selected\index = Item 
-        ;PushListPosition(*this\items())
-        *this\row\selected = NextElement(*this\items())
-        If *this\row\selected
-          *this\row\selected\color\state = 2 + Bool(*active<>*this)
-        EndIf
-        ;PopListPosition(*this\items())
-      EndIf
+; ;       If *this\row\selected And 
+; ;          *this\row\selected\index = Item 
+; ;         ;PushListPosition(*this\items())
+; ;         *this\row\selected = NextElement(*this\items())
+; ;         If *this\row\selected
+; ;           *this\row\selected\color\state = 2 + Bool(*active<>*this)
+; ;         EndIf
+; ;         ;PopListPosition(*this\items())
+; ;       EndIf
       
       If (*this\row\draw And (*this\row\count % *this\row\draw) = 0) Or 
          *this\row\draw < 2 ; Это на тот случай когда итеми менше первого обнавления
@@ -2527,6 +2528,25 @@ Module Tree
         Next
         PopListPosition(*this\items())
       EndIf 
+      
+      If *this\row\selected And *this\row\selected\index >= Item 
+        *this\row\selected\color\state = 0
+        
+        ;PushListPosition(*this\Items())
+        If *this\row\selected\index <> Item 
+          SelectElement(*this\items(), *this\row\selected\index)
+        EndIf
+        
+        While NextElement(*this\Items())
+          If *this\items()\sublevel = sublevel 
+            *this\row\selected = *this\items()
+            *this\row\selected\color\state = 2 + Bool(*active<>*this)
+            Break
+          EndIf
+        Wend
+        ;PopListPosition(*this\items())
+      EndIf
+      
       
         _repaint_(*this)
        *this\row\count - 1
@@ -3764,5 +3784,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = +-------f----------------+---D+-+-2r4---ka4--f-+LP1---0-n-------------
+; Folding = +-------f----------------+---D+-+-2r4---ka4---+0Xeo---8-P-------------
 ; EnableXP

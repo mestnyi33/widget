@@ -50,8 +50,12 @@ Procedure events_tree_gadget()
         SetGadgetItemImage(1, GetGadgetState(1), ImageID(0))
       EndIf
       If EventGadget = 7
-        SetGadgetState(0, 76)
-        SetGadgetState(1, 76)
+        SetGadgetState(0, 0)
+        SetGadgetState(1, 0)
+      EndIf
+      If EventGadget = 77
+        SetGadgetState(0, CountGadgetItems(0)-1)
+        SetGadgetState(1, CountGadgetItems(1)-1)
       EndIf
       If EventGadget = 8
         ClearGadgetItems(0)
@@ -88,8 +92,9 @@ Procedure events_tree_gadget()
 EndProcedure  
 
 If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  PB(TreeGadget)(0, 10, 10, 160, 160)                                         ; TreeGadget standard
-  TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_Collapse | #PB_Tree_AlwaysShowSelection)    ; TreeGadget with Checkboxes + NoLines
+  ListViewGadget(0, 10, 10, 160, 160);, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
+  ;PB(TreeGadget)(0, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
+  TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_Collapse | #PB_Tree_GridLines | #PB_Tree_AlwaysShowSelection)    ; TreeGadget with Checkboxes + NoLines
   
   For ID = 0 To 1
     For a = 0 To 10
@@ -114,8 +119,10 @@ If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
   
   ButtonGadget(6, 10, 210, 100, 24, "set image Item")
   BindGadgetEvent(6, @events_tree_gadget())
-  ButtonGadget(7, 120, 210, 100, 24, "set state")
+  ButtonGadget(7, 120, 210, 50, 24, "first")
   BindGadgetEvent(7, @events_tree_gadget())
+  ButtonGadget(77, 170, 210, 50, 24, "last")
+  BindGadgetEvent(77, @events_tree_gadget())
   ButtonGadget(8, 230, 210, 100, 24, "clears Items")
   BindGadgetEvent(8, @events_tree_gadget())
   
