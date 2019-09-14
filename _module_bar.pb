@@ -1061,6 +1061,10 @@ Module Bar
               \max = Value
             EndIf
             
+            If \max = 0
+              \page\pos = 0
+            EndIf
+            
             Result = #True
           EndIf
           
@@ -2122,8 +2126,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 2123
-; FirstLine = 2094
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = ---------------------------------------------
 ; EnableXP

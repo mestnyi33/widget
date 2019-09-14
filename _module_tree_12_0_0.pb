@@ -1,5 +1,5 @@
 ﻿
-DeclareModule mac_os_bug_fix
+DeclareModule Macros
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     Structure _S_drawing
       mode.i
@@ -59,7 +59,7 @@ DeclareModule mac_os_bug_fix
   CompilerEndIf
 EndDeclareModule 
 
-Module mac_os_bug_fix
+Module Macros
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     Procedure.i TextHeight_(Text.s)
       ;       Protected NSString, Attributes, NSSize.NSSize
@@ -183,30 +183,22 @@ Module mac_os_bug_fix
   CompilerEndIf
 EndModule 
 
-UseModule mac_os_bug_fix
+UseModule Macros
 
 ;- >>>
 DeclareModule Constants
   Enumeration #PB_Event_FirstCustomValue
     #PB_Event_Widget
-    #PB_Event_Create
-    #PB_Event_MouseMove
-    #PB_Event_LeftButtonDown
-    #PB_Event_LeftButtonUp
-    #PB_Event_Destroy
   EndEnumeration
   
   Enumeration #PB_EventType_FirstCustomValue
-    #PB_EventType_Move
-    #PB_EventType_Size
-    
     CompilerIf #PB_Compiler_Version < 547
       #PB_EventType_Resize
     CompilerEndIf
     
     #PB_EventType_Free
     #PB_EventType_Create
-    ;#PB_EventType_Destroy
+    
     #PB_EventType_Repaint
     #PB_EventType_ScrollChange
   EndEnumeration
@@ -222,8 +214,8 @@ DeclareModule Constants
     #PB_Flag_ClickSelect
     #PB_Flag_MultiSelect
     #PB_Flag_GridLines
-    #PB_Flag_AlwaysSelection
     #PB_Flag_BorderLess
+    #PB_Flag_AlwaysSelection
   EndEnumeration
   
   #PB_Tree_Collapse = #PB_Flag_Collapse
@@ -473,7 +465,6 @@ DeclareModule Structures
     from.l
     draw.l
     drag.b
-    resize.l
     
     count.l
     FontID.i
@@ -1107,10 +1098,6 @@ Module Bar
               \max = Value
             EndIf
             
-            If \max = 0
-              \page\pos = 0
-            EndIf
-            
             Result = #True
           EndIf
           
@@ -1483,7 +1470,7 @@ EndModule
 ;- >>> 
 DeclareModule Tree
   EnableExplicit
-  UseModule mac_os_bug_fix
+  UseModule Macros
   UseModule Constants
   UseModule Structures
   
@@ -1589,6 +1576,30 @@ Module Tree
           _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
   EndMacro
   
+  Macro _set_active_(_this_)
+    If *active <> _this_
+      If *active 
+        If *active\row\selected 
+          *active\row\selected\color\state = 3
+        EndIf
+        
+        If _this_\canvas\gadget <> *active\canvas\gadget 
+          ; set lost focus canvas
+          PostEvent(#PB_Event_Gadget, *active\canvas\window, *active\canvas\gadget, #PB_EventType_Repaint)
+        EndIf
+        
+        *active\color\state = 0
+      EndIf
+      
+      If _this_\row\selected And _this_\row\selected\color\state = 3
+        _this_\row\selected\color\state = 2
+      EndIf
+      _this_\color\state = 2
+      *active = _this_
+      Result = #True
+    EndIf
+  EndMacro
+  
   Macro _multi_select_(_this_,  _index_, _selected_index_)
     PushListPosition(_this_\items()) 
     ForEach _this_\items()
@@ -1627,47 +1638,7 @@ Module Tree
       _item_\image\index = _image_ 
       _item_\Image\handle = ImageID(_image_)
       _this_\row\sublevel = _this_\image\padding\left + _item_\image\width
-    Else
-      _item_\image\index =- 1
     EndIf
-  EndMacro
-  
-  Macro _set_active_(_this_)
-    If *active <> _this_
-      If *active 
-        If *active\row\selected 
-          *active\row\selected\color\state = 3
-        EndIf
-        
-        If _this_\canvas\gadget <> *active\canvas\gadget 
-          ; set lost focus canvas
-          PostEvent(#PB_Event_Gadget, *active\canvas\window, *active\canvas\gadget, #PB_EventType_Repaint)
-        EndIf
-        
-        *active\color\state = 0
-      EndIf
-      
-      If _this_\row\selected And _this_\row\selected\color\state = 3
-        _this_\row\selected\color\state = 2
-      EndIf
-      _this_\color\state = 2
-      *active = _this_
-      Result = #True
-    EndIf
-  EndMacro
-  
-  Macro _repaint_(_this_)
-;     ;Debug " "+#PB_Compiler_Line + " "+ _this_\row\count +" "+ _this_\row\draw+ " "+ Bool(_this_\row\draw And ((_this_\row\count-1) % _this_\row\draw) = 0)
-;     
-;     If _this_\row\draw
-;     ;Debug " "+#PB_Compiler_Line + " "+ Str((_this_\row\count) % _this_\row\draw)
-;     EndIf
-    
-    If _this_\row\count < 2 Or (Not _this_\hide And _this_\row\draw And (_this_\row\count % _this_\row\draw) = 0)
-      _this_\change = 1
-      PostEvent(#PB_Event_Gadget, _this_\canvas\window, _this_\canvas\gadget, #PB_EventType_Repaint)
-      ;ReDraw(*this)
-    EndIf  
   EndMacro
   
   
@@ -1898,8 +1869,6 @@ Module Tree
         
         Bar::Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
       EndIf
-      Debug ""+_this_\scroll\v\max +" "+ _this_\scroll\height +" "+ _this_\scroll\v\page\pos +" "+ _this_\scroll\v\page\len
-      
       
       If _this_\scroll\h\page\len And _this_\scroll\h\max<>_this_\scroll\width And
          Bar::SetAttribute(_this_\scroll\h, #PB_ScrollBar_Maximum, _this_\scroll\width)
@@ -2060,6 +2029,12 @@ Module Tree
     
     With *this
       If Not \hide
+        ; ClearItems()
+        If Not \row\count
+          ClearList(\draws())
+          ClearList(\items())
+        EndIf
+        
         If \text\fontID 
           DrawingFont(\text\fontID) 
         EndIf
@@ -2154,21 +2129,29 @@ Module Tree
   EndProcedure
   
   Procedure.l SetState(*this._S_widget, State.l)
+    
     With *this
+      If 0 > State Or State > \row\count - 1
+        If \row\selected
+          State = \row\selected\color\state
+          \row\selected\color\state = 0
+          \row\selected\_to = 0
+          \row\selected = 0
+        EndIf
+        
+        ProcedureReturn State
+      EndIf
+      
       If \row\selected
         \row\selected\color\state = 0
         \row\selected\_to = 0
-        \row\selected = 0
       EndIf
       
-      If State >= 0 And State < \row\count And 
-         SelectElement(\items(), State) 
-        \row\selected = \items()
-        \items()\color\state = 2 
-        \items()\_to = 1
-        _repaint_(*this)
-      EndIf
+      \row\selected = SelectElement(\items(), State) 
+      \items()\color\state = 2 
+      \items()\_to = 1
     EndWith
+    
   EndProcedure
   
   Procedure.i SetAttribute(*this._S_widget, Attribute.i, Value.l)
@@ -2272,10 +2255,6 @@ Module Tree
     If Result 
       If State & #PB_Tree_Selected
         If *this\row\selected <> *this\items()
-          If *this\row\selected
-            *this\row\selected\color\state = 0
-          EndIf
-          
           *this\row\selected = *this\items()
           *this\row\selected\color\state = 2 + Bool(*active<>*this)
           Repaint = 1
@@ -2325,19 +2304,16 @@ Module Tree
       EndIf
       
       If Repaint
-        _repaint_(*this)
+        PostEvent(#PB_Event_Gadget, *this\canvas\window, *this\canvas\gadget, #PB_EventType_Repaint)
       EndIf
     EndIf
     
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetItemImage(*this._S_widget, Item.l, Image.i) ; Ok
+  Procedure.i SetItemImage(*this._S_widget, Item.l, Image.i)
     If Item >= 0 And Item < *this\row\count And SelectElement(*this\Items(), Item)
-      If *this\Items()\image\index <> Image
-        _set_item_image_(*this, *this\Items(), Image)
-        _repaint_(*this)
-      EndIf
+      _set_item_image_(*this, *this\Items(), Image)
     EndIf
   EndProcedure
   
@@ -2481,17 +2457,15 @@ Module Tree
   
   ;-
   Procedure RemoveItem(*this._S_widget, Item.l) 
-    Protected sublevel.l
     
     If Item >= 0 And Item < *this\row\count And SelectElement(*this\items(), Item)
       ;       Debug ""+*this\items()\index +" "+ Item
       
       If *this\Items()\childrens
-        sublevel = *this\items()\sublevel
         
         PushListPosition(*this\Items())
         While NextElement(*this\Items())
-          If *this\items()\sublevel > sublevel 
+          If *this\items()\parent And *this\items()\sublevel > *this\items()\parent\sublevel 
             ;Debug *this\items()\text\string
             ;*this\items()\hide = Bool(*this\items()\parent\box[0]\checked | *this\items()\parent\hide)
             DeleteElement(*this\items())
@@ -2506,61 +2480,57 @@ Module Tree
       
       DeleteElement(*this\items())
       
-      If *this\row\selected And 
-         *this\row\selected\index = Item 
-        ;PushListPosition(*this\items())
-        *this\row\selected = NextElement(*this\items())
-        If *this\row\selected
-          *this\row\selected\color\state = 2 + Bool(*active<>*this)
-        EndIf
-        ;PopListPosition(*this\items())
+      If *this\row\selected And *this\row\selected\index = Item 
+        NextElement(*this\items())
+        *this\row\selected = *this\items()
+        *this\row\selected\color\state = 2 + Bool(*active<>*this)
       EndIf
       
-      If (*this\row\draw And (*this\row\count % *this\row\draw) = 0) Or 
-         *this\row\draw < 2 ; Это на тот случай когда итеми менше первого обнавления
+      ; "Это на тот случай когда итеми менше первого обнавления
+      If Not *this\row\draw
+        ; count items < 14
+        Debug ""+*this\row\count +" "+ *this\row\draw
+        PushListPosition(*this\items())
+        While NextElement(*this\items())
+          *this\items()\index = ListIndex(*this\items())
+        Wend
+        PopListPosition(*this\items())
+      EndIf
       
-        ; Debug "    "+*this\row\count +" "+ *this\row\draw
+      If *this\row\draw And (*this\row\count % *this\row\draw) = 0
+        Debug "    "+*this\row\count +" "+ *this\row\draw
         
         PushListPosition(*this\items())
         ForEach *this\items()
           *this\items()\index = ListIndex(*this\items())
         Next
         PopListPosition(*this\items())
+        
+        *this\change = 1
+        PostEvent(#PB_Event_Gadget, *this\canvas\window, *this\canvas\gadget, #PB_EventType_Repaint)
       EndIf 
       
-        _repaint_(*this)
        *this\row\count - 1
+      
     EndIf
   EndProcedure
   
-  Procedure.l CountItems(*this._S_widget) ; Ok
+  Procedure.l CountItems(*this._S_widget)
     ProcedureReturn *this\row\count
   EndProcedure
   
-  Procedure ClearItems(*this._S_widget) ; Ok
-    If *this\row\count <> 0
-      *this\change =- 1
-      *this\row\draw = 0
+  Procedure ClearItems(*this._S_widget) 
+    If *this\row\count
+      *this\change = 1
       *this\row\count = 0
-      *this\row\sublevel = 0
-      
-      If *this\row\selected 
-        *this\row\selected\color\state = 0
-        *this\row\selected = 0
-      EndIf
-      
-      ClearList(*this\items())
-      
-      If StartDrawing(CanvasOutput(*this\canvas\gadget))
-        Draw(*this)
-        StopDrawing()
-      EndIf
-      Post(#PB_EventType_Change, *this, #PB_All)
+      Post(#PB_EventType_Change, *this, *this\from)
+      PostEvent(#PB_Event_Gadget, *this\canvas\window, *this\canvas\gadget, #PB_EventType_Repaint)
     EndIf
   EndProcedure
   
   Procedure.i AddItem(*this._S_widget, Item.l, Text.s, Image.i=-1, subLevel.i=0)
-    Protected handle, *parent._S_items
+    Protected handle
+    Protected *parent._S_items
     
     With *this
       If *this
@@ -2684,14 +2654,15 @@ Module Tree
             \items()\sublength = \items()\sublevel * \row\sublength + Bool(\flag\buttons) * 20 + Bool(\flag\checkBoxes) * 18 
           EndIf
           
-          If *this\row\selected 
-            *this\row\selected\color\state = 0
-            *this\row\selected = *this\items() 
-            *this\row\selected\color\state = 2 + Bool(*active<>*this)
-          EndIf
-          
-          _repaint_(*this)
           \row\count + 1
+          
+          If Not \hide And \row\draw And (\row\count % \row\draw) = 0
+            ; Debug ""+\row\count+" "+\row\draw
+            \change = 1
+            PostEvent(#PB_Event_Gadget, \canvas\window, \canvas\gadget, #PB_EventType_Repaint)
+            ;ReDraw(*this)
+          EndIf  
+
         EndIf
       EndIf
     EndWith
@@ -2778,18 +2749,55 @@ Module Tree
         \resize = 1<<4
       EndIf
       
-      If \resize
-        ; можно обновлять если 
-        ; виджет измениля в размерах 
-        ; а не канвас гаджет
-        ; _repaint_(*this)
-      EndIf
-        
       ProcedureReturn \resize
     EndWith
   EndProcedure
   
   ;-
+  Procedure ToolTip(*this._S_text=0, ColorFont=0, ColorBack=0, ColorFrame=$FF)
+    Protected Gadget
+    Static Window
+    Protected Color._S_color = def_colors
+    With *this
+      If *this
+        ; Debug "show tooltip "+\string
+        ;         If Not Window
+        Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
+        Gadget = CanvasGadget(#PB_Any,0,0,\width+8,\height[1])
+        If StartDrawing(CanvasOutput(Gadget))
+          If \fontID : DrawingFont(\fontID) : EndIf 
+          DrawingMode(#PB_2DDrawing_Default)
+          Box(1,1,\width-2+8,\height[1]-2, Color\back[1])
+          DrawingMode(#PB_2DDrawing_Transparent)
+          DrawText(3, (\height[1]-\height)/2, \string, Color\front[1])
+          DrawingMode(#PB_2DDrawing_Outlined)
+          Box(0,0,\width+8,\height[1], Color\frame[1])
+          StopDrawing()
+        EndIf
+        
+        ; ;         Window = OpenWindow(#PB_Any, \x[1]-3,\y[1],\width+8,\height[1], "", #PB_Window_BorderLess|#PB_Window_NoActivate|#PB_Window_Tool) ;|#PB_Window_NoGadgets
+        ; ;         SetGadgetColor(ContainerGadget(#PB_Any,1,1,\width-2+8,\height[1]-2), #PB_Gadget_BackColor, Color\back[1])
+        ; ;         Gadget = StringGadget(#PB_Any,0,(\height[1]-\height)/2-1,\width-2+8,\height[1]-2, \string, #PB_String_BorderLess)
+        ; ;         SetGadgetColor(Gadget, #PB_Gadget_BackColor, Color\back[1])
+        ; ;         SetWindowColor(Window, Color\frame[1])
+        ; ;         SetGadgetFont(Gadget, \fontID)
+        ; ;         CloseGadgetList()
+        
+        
+        SetWindowData(Window, Gadget)
+        ;         Else
+        ;           ResizeWindow(Window, \x[1],\y[1],\width,\height[1])
+        ;           SetGadgetText(GetWindowData(Window), \string)
+        ;           HideWindow(Window, 0, #PB_Window_NoActivate)
+        ;         EndIf
+      ElseIf IsWindow(Window)
+        ;         HideWindow(Window, 1, #PB_Window_NoActivate)
+        CloseWindow(Window)
+        ;  Debug "hide tooltip "
+      EndIf
+    EndWith              
+  EndProcedure
+  
   Procedure.l CallBack(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
     Protected Result, from =- 1
     Shared *active._S_widget
@@ -3039,8 +3047,7 @@ Module Tree
                 \row\from = 0
               EndIf
             EndIf
-            
-            ; Debug " "+\row\from +" "+\from
+            ;Debug " "+\row\from +" "+\from
             
             If Not ((\flag\buttons And \items()\childrens And 
                      _from_point_(\canvas\mouse\x, \canvas\mouse\y, \items()\box[0])) Or
@@ -3048,8 +3055,7 @@ Module Tree
               
               _callback_(*this, #PB_EventType_LeftButtonUp)
               
-              If (\row\from >= 0 And \row\from <> \from) Or Not \row\from
-                \row\from = \from
+              If \row\from >= 0 And \row\from <> \from : \row\from = \from
                 Post(#PB_EventType_Change, *this, \from)
               EndIf
             EndIf
@@ -3140,31 +3146,7 @@ Module Tree
           
         Case #PB_EventType_Resize : ResizeGadget(\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
           Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\canvas\gadget), GadgetHeight(\canvas\gadget))   
-          
-          If \scroll\v\page\len And \scroll\v\max<>\scroll\height-Bool(\flag\gridlines) And
-             Bar::SetAttribute(\scroll\v, #PB_ScrollBar_Maximum, \scroll\height-Bool(\flag\gridlines))
-            
-            Bar::Resizes(\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
-          
-          If \scroll\h\page\len And \scroll\h\max<>\scroll\width And
-             Bar::SetAttribute(\scroll\h, #PB_ScrollBar_Maximum, \scroll\width)
-            
-            Bar::Resizes(\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
-          
-          If \resize = 1<<3
-            \width[2] = (\scroll\v\x + Bool(\scroll\v\hide) * \scroll\v\width) - \x[2]
-          EndIf 
-          
-          If \resize = 1<<4
-            \height[2] = (\scroll\h\y + Bool(\scroll\h\hide) * \scroll\h\height) - \y[2]
-          EndIf
-          
-          If StartDrawing(CanvasOutput(\canvas\gadget))
-            Draw(*this)
-            StopDrawing()
-          EndIf
+          Repaint = 1
       EndSelect
       
       Repaint | CallBack(*this, EventType())
@@ -3190,7 +3172,6 @@ Module Tree
         \y =- 1
         \from =- 1
         \change = 1
-;         \row\from =- 3
         \interact = 1
         \radius = Radius
         
@@ -3278,11 +3259,11 @@ Module Tree
         SetGadgetData(Gadget, *this)
         BindGadgetEvent(Gadget, @g_CallBack())
         ;BindEvent(#PB_Event_Repaint, @w_CallBack() )
-        _repaint_(*this)
+        PostEvent(#PB_Event_Gadget, *this\canvas\window, *this\canvas\gadget, #PB_EventType_Repaint)
       EndWith
     EndIf
     
-    ProcedureReturn Gadget
+    ProcedureReturn *this
   EndProcedure
   
   ;-
@@ -3764,5 +3745,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = +-------f----------------+---D+-+-2r4---ka4--f-+LP1---0-n-------------
+; Folding = ---------------------------------------------------------------------
 ; EnableXP

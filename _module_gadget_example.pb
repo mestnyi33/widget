@@ -1,12 +1,19 @@
 ﻿;IncludePath "/Users/as/Documents/GitHub/Widget/"
 XIncludeFile "_module_gadget.pb"
 
+UseModule Gadget
+
 Macro PB(Function)
   Function
 EndMacro
 
 #PB_Tree_Collapse = 16
-
+UsePNGImageDecoder()
+  
+If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") 
+  End
+  EndIf
+  
 Procedure events_tree_gadget()
   ;Debug " gadget - "+EventGadget()+" "+EventType()
   Static click
@@ -23,17 +30,35 @@ Procedure events_tree_gadget()
       If EventGadget = 3
         click ! 1
         If click
+          SetGadgetItemState(0, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
           SetGadgetItemState(1, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
         Else
+          SetGadgetItemState(0, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
           SetGadgetItemState(1, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
         EndIf
       EndIf
       If EventGadget = 4
-        RemoveGadgetItem(1, GetGadgetState(1))
+        AddGadgetItem(0, 1, "added item "+Str(CountGadgetItems(0)))
+        AddGadgetItem(1, 1, "added item "+Str(CountGadgetItems(1)))
       EndIf
       If EventGadget = 5
+        RemoveGadgetItem(0, 1)
         RemoveGadgetItem(1, 1)
       EndIf
+      If EventGadget = 6
+        SetGadgetItemImage(0, GetGadgetState(0), ImageID(0))
+        SetGadgetItemImage(1, GetGadgetState(1), ImageID(0))
+      EndIf
+      If EventGadget = 7
+        SetGadgetState(0, 76)
+        SetGadgetState(1, 76)
+      EndIf
+      If EventGadget = 8
+        ClearGadgetItems(0)
+        ClearGadgetItems(1)
+      EndIf
+      
+     ; Tree::Redraw(GetGadgetData(1))
       
     Case #PB_EventType_LeftDoubleClick : Debug "gadget ldclick item = " + EventItem +" data "+ EventData +" State "+ State
     Case #PB_EventType_DragStart : Debug "gadget sdrag item = " + EventItem +" data "+ EventData +" State "+ State
@@ -62,8 +87,8 @@ Procedure events_tree_gadget()
 
 EndProcedure  
 
-If OpenWindow(0, 0, 0, 355, 210, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  ListViewGadget(0, 10, 10, 160, 160)                                         ; TreeGadget standard
+If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  PB(TreeGadget)(0, 10, 10, 160, 160)                                         ; TreeGadget standard
   TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_Collapse | #PB_Tree_AlwaysShowSelection)    ; TreeGadget with Checkboxes + NoLines
   
   For ID = 0 To 1
@@ -82,10 +107,17 @@ If OpenWindow(0, 0, 0, 355, 210, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
   
   ButtonGadget(3, 10, 180, 100, 24, "set state Item")
   BindGadgetEvent(3, @events_tree_gadget())
-  ButtonGadget(4, 120, 180, 100, 24, "remove Item")
+  ButtonGadget(4, 120, 180, 100, 24, "add Item")
   BindGadgetEvent(4, @events_tree_gadget())
   ButtonGadget(5, 230, 180, 100, 24, "remove Item")
   BindGadgetEvent(5, @events_tree_gadget())
+  
+  ButtonGadget(6, 10, 210, 100, 24, "set image Item")
+  BindGadgetEvent(6, @events_tree_gadget())
+  ButtonGadget(7, 120, 210, 100, 24, "set state")
+  BindGadgetEvent(7, @events_tree_gadget())
+  ButtonGadget(8, 230, 210, 100, 24, "clears Items")
+  BindGadgetEvent(8, @events_tree_gadget())
   
   BindGadgetEvent(0, @events_tree_gadget())
   BindGadgetEvent(1, @events_tree_gadget())
@@ -93,5 +125,5 @@ If OpenWindow(0, 0, 0, 355, 210, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = ----
 ; EnableXP

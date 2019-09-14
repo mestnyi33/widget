@@ -6,10 +6,11 @@ XIncludeFile "_module_tree_12.pb"
 
 UseModule Tree
 Global *w._S_widget
-LN=14  ; 14 количесвто итемов 32 плохо работает
+LN=1000  ; 14 количесвто итемов 32 плохо работает
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
-  *w=Gadget(5, 270, 10, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines) 
+  *w=GetGadgetData(Gadget(5, 270, 10, 250, 680, #PB_Tree_NoButtons|#PB_Tree_NoLines)) 
+  
   *w\hide = 1
   Define time = ElapsedMilliseconds()
   For a = 0 To LN
