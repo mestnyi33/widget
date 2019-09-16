@@ -23,7 +23,7 @@ Procedure events_tree_widget()
 EndProcedure
 
 If OpenWindow(0, 0, 0, 355, 180, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  *w = Gadget(0, 10, 10, 160, 160)
+  *w = GetGadgetData(Gadget(0, 10, 10, 160, 160))
   StringGadget(1, 200, 10, 100, 22, "")
   
   For a = 0 To 10

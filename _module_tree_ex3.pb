@@ -19,7 +19,7 @@ AddGadgetItem(0, -1, "Item 4", 0, 1)
 SetGadgetItemState(0, 1, #PB_Tree_Expanded)
 
 
- *w = Gadget(10, 205, 5, 200, 260)
+ *w = GetGadgetData(Gadget(10, 205, 5, 200, 260))
 ButtonGadget(1, 25, 270, 120, 24, "Add Item")
 
 AddItem(*w, -1, "Item 1", 0, 0)

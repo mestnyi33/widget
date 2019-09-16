@@ -14,11 +14,11 @@ Global Window_0
 Global widget, Container_0, functions, flags, set, value, text, get, remove, clears, add, removes, adds
 
 UsePNGImageDecoder()
-  
+
 If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") 
   End
-  EndIf
-  
+EndIf
+
 Procedure events_tree_gadget()
   ;Debug " gadget - "+EventGadget()+" "+EventType()
   Static click
@@ -29,6 +29,8 @@ Procedure events_tree_gadget()
   Protected State = GetGadgetItemState(EventGadget, EventItem)
   
   Select EventType
+    Case #PB_EventType_LeftClick
+      
     Case #PB_EventType_Change
       Debug "#PB_EventType_Change - "+ EventGadget
       
@@ -42,8 +44,14 @@ Procedure events_tree_gadget()
               AddGadgetItem(flags, -1, "#PB_Tree_NoButtons")
               AddGadgetItem(flags, -1, "#PB_Tree_NoLines")
               AddGadgetItem(flags, -1, "#PB_Tree_ThreeState")
-            
+              
             Case "AddGadgetItem()" ; Add an item (With an optional picture in the standard 16x16 icon size). 
+              AddGadgetItem(flags, -1, "1") ;The item should be expanded.
+              AddGadgetItem(flags, -1, "10") ;The item should be selected.
+              AddGadgetItem(flags, -1, "100") ;The item should be expanded.
+              AddGadgetItem(flags, -1, "1000") ;The item should be selected.
+              AddGadgetItem(flags, -1, "10000") ;The item should be expanded.
+              
             Case "RemoveGadgetItem()" ; Remove an item (And all its child-items). 
               AddGadgetItem(flags, -1, "#All items") ;The item should be expanded.
               AddGadgetItem(flags, -1, "#Selected items") ;The item should be selected.
@@ -57,7 +65,7 @@ Procedure events_tree_gadget()
               AddGadgetItem(flags, -1, "#PB_Tree_Collapsed");The item should be collapsed. If neither AddGadgetItem(flags, -1, "#PB_Tree_Expanded nor AddGadgetItem(flags, -1, "#PB_Tree_Collapsed is set, this state will Not be changed.
               AddGadgetItem(flags, -1, "#PB_Tree_Checked")  ;The items checkbox should be checked.
               AddGadgetItem(flags, -1, "#PB_Tree_Inbetween");The items checkbox should be in the in between state.
-
+              
             Case "GetGadgetItemText()"  ; Return the current text of the specified item. 
             Case "SetGadgetItemText()"  ; Change the current text of the specified item. 
             Case "SetGadgetItemImage()" ; Change the current image of the specified item. 
@@ -72,50 +80,50 @@ Procedure events_tree_gadget()
             Case "GetGadgetItemAttribute()" ; With the following attribute" ;
           EndSelect
           
-       ;   Tree::Redraw(GetGadgetData(flags))
-       
+          ;   Tree::Redraw(GetGadgetData(flags))
+          
       EndSelect
       
-     ; Tree::Redraw(GetGadgetData(widget))
+      ; Tree::Redraw(GetGadgetData(widget))
       
     Case #PB_EventType_Repaint
       Debug "#PB_EventType_Repaint - "+ EventGadget
-     ; Tree::Redraw(GetGadgetData(EventGadget))
+      ; Tree::Redraw(GetGadgetData(EventGadget))
       
   EndSelect 
   
   
-;   Select EventType
-;       ;     Case #PB_EventType_Focus    : Debug "gadget focus item = " + EventItem +" data "+ EventData
-;       ;     Case #PB_EventType_LostFocus    : Debug "gadget lfocus item = " + EventItem +" data "+ EventData
-;     Case #PB_EventType_LeftClick : Debug "gadget lclick item = " + EventItem +" data "+ EventData +" State "+ State
-;     Case #PB_EventType_LeftDoubleClick : Debug "gadget ldclick item = " + EventItem +" data "+ EventData +" State "+ State
-;     Case #PB_EventType_DragStart : Debug "gadget sdrag item = " + EventItem +" data "+ EventData +" State "+ State
-;     Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData +" State "+ State
-;     Case #PB_EventType_RightClick : Debug "gadget rclick item = " + EventItem +" data "+ EventData +" State "+ State
-;     Case #PB_EventType_RightDoubleClick : Debug "gadget rdclick item = " + EventItem +" data "+ EventData +" State "+ State
-;     Case #PB_EventType_Repaint
-;       Debug 8888
-;   EndSelect 
+  ;   Select EventType
+  ;       ;     Case #PB_EventType_Focus    : Debug "gadget focus item = " + EventItem +" data "+ EventData
+  ;       ;     Case #PB_EventType_LostFocus    : Debug "gadget lfocus item = " + EventItem +" data "+ EventData
+  ;     Case #PB_EventType_LeftClick : Debug "gadget lclick item = " + EventItem +" data "+ EventData +" State "+ State
+  ;     Case #PB_EventType_LeftDoubleClick : Debug "gadget ldclick item = " + EventItem +" data "+ EventData +" State "+ State
+  ;     Case #PB_EventType_DragStart : Debug "gadget sdrag item = " + EventItem +" data "+ EventData +" State "+ State
+  ;     Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData +" State "+ State
+  ;     Case #PB_EventType_RightClick : Debug "gadget rclick item = " + EventItem +" data "+ EventData +" State "+ State
+  ;     Case #PB_EventType_RightDoubleClick : Debug "gadget rdclick item = " + EventItem +" data "+ EventData +" State "+ State
+  ;     Case #PB_EventType_Repaint
+  ;       Debug 8888
+  ;   EndSelect 
   
-;   If EventType = #PB_EventType_LeftClick
-;     If State & #PB_Tree_Selected
-;       Debug "Selected "+#PB_Tree_Selected
-;     EndIf
-;     If State & #PB_Tree_Expanded
-;       Debug "Expanded "+#PB_Tree_Expanded
-;     EndIf
-;     If State & #PB_Tree_Collapsed
-;       Debug "Collapsed "+#PB_Tree_Collapsed
-;     EndIf
-;     If State & #PB_Tree_Checked
-;       Debug "Checked "+#PB_Tree_Checked
-;     EndIf
-;     If State & #PB_Tree_Inbetween
-;       Debug "Inbetween "+#PB_Tree_Inbetween
-;     EndIf
-;   EndIf
-
+  ;   If EventType = #PB_EventType_LeftClick
+  ;     If State & #PB_Tree_Selected
+  ;       Debug "Selected "+#PB_Tree_Selected
+  ;     EndIf
+  ;     If State & #PB_Tree_Expanded
+  ;       Debug "Expanded "+#PB_Tree_Expanded
+  ;     EndIf
+  ;     If State & #PB_Tree_Collapsed
+  ;       Debug "Collapsed "+#PB_Tree_Collapsed
+  ;     EndIf
+  ;     If State & #PB_Tree_Checked
+  ;       Debug "Checked "+#PB_Tree_Checked
+  ;     EndIf
+  ;     If State & #PB_Tree_Inbetween
+  ;       Debug "Inbetween "+#PB_Tree_Inbetween
+  ;     EndIf
+  ;   EndIf
+  
 EndProcedure  
 
 
@@ -168,11 +176,11 @@ Procedure Window_0_Events(event)
   Select event
     Case #PB_Event_CloseWindow
       ProcedureReturn #False
-
+      
     Case #PB_Event_Menu
       Select EventMenu()
       EndSelect
-
+      
     Case #PB_Event_Gadget
       Select EventGadget()
       EndSelect
@@ -184,5 +192,5 @@ EndProcedure
 OpenWindow_0()
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --
+; Folding = 4-
 ; EnableXP

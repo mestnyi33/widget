@@ -26,7 +26,7 @@ Procedure events_tree_gadget()
   Select EventType
       ;     Case #PB_EventType_Focus    : Debug "gadget focus item = " + EventItem +" data "+ EventData
       ;     Case #PB_EventType_LostFocus    : Debug "gadget lfocus item = " + EventItem +" data "+ EventData
-    Case #PB_EventType_LeftClick : Debug "gadget lclick item = " + EventItem +" data "+ EventData +" State "+ State
+    Case #PB_EventType_LeftClick : Debug "gadget " +EventGadget+ " lclick item = " + EventItem +" data "+ EventData +" State "+ State
       If EventGadget = 3
         click ! 1
         If click
@@ -37,6 +37,7 @@ Procedure events_tree_gadget()
           SetGadgetItemState(1, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
         EndIf
       EndIf
+      
       If EventGadget = 4
         AddGadgetItem(0, 1, "added item "+Str(CountGadgetItems(0)))
         AddGadgetItem(1, 1, "added item "+Str(CountGadgetItems(1)))
@@ -68,11 +69,11 @@ Procedure events_tree_gadget()
       
      ; Tree::Redraw(GetGadgetData(1))
       
-    Case #PB_EventType_LeftDoubleClick : Debug "gadget ldclick item = " + EventItem +" data "+ EventData +" State "+ State
-    Case #PB_EventType_DragStart : Debug "gadget sdrag item = " + EventItem +" data "+ EventData +" State "+ State
-    Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData +" State "+ State
-    Case #PB_EventType_RightClick : Debug "gadget rclick item = " + EventItem +" data "+ EventData +" State "+ State
-    Case #PB_EventType_RightDoubleClick : Debug "gadget rdclick item = " + EventItem +" data "+ EventData +" State "+ State
+    Case #PB_EventType_LeftDoubleClick : Debug "gadget " +EventGadget+ " ldclick item = " + EventItem +" data "+ EventData +" State "+ State
+    Case #PB_EventType_DragStart : Debug "gadget " +EventGadget+ " sdrag item = " + EventItem +" Data "+ EventData +" State "+ State
+    Case #PB_EventType_Change    : Debug "gadget " +EventGadget+ " change item = " + EventItem +" data "+ EventData +" State "+ State
+    Case #PB_EventType_RightClick : Debug "gadget " +EventGadget+ " rclick item = " + EventItem +" data "+ EventData +" State "+ State
+    Case #PB_EventType_RightDoubleClick : Debug "gadget " +EventGadget+ " rdclick item = " + EventItem +" data "+ EventData +" State "+ State
   EndSelect 
   
   If EventType = #PB_EventType_LeftClick

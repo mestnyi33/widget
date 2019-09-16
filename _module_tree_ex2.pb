@@ -10,8 +10,8 @@ Macro AddGadgetItem(Gadget, Position, Text, ImageID=-1, Flags=0)
 EndMacro
 
 If OpenWindow(0, 0, 0, 355, 180, "Tree", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Gadget(0, 10, 10, 160, 160)                                         ; TreeGadget standard
-    Gadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_AlwaysShowSelection)  ; TreeGadget with Checkboxes + NoLines
+    Gadget(0, 10, 10, 160, 160, #PB_Tree_Collapse)                                         ; TreeGadget standard
+    Gadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_AlwaysShowSelection | #PB_Tree_Collapse)  ; TreeGadget with Checkboxes + NoLines
     
     For i = 0 To 1
       ID = GetGadgetData(i)

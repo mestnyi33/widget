@@ -2711,7 +2711,7 @@ Module ListIcon
       EndIf
     EndMacro
     
-    Macro _update_(_this_)
+    Macro _update_(_this_, _columns_)
       If _this_\change <> 0
         _this_\scroll\width = Bool(_this_\flag\checkBoxes) * 20 + _this_\row\sublevel - Bool(_this_\flag\checkBoxes And Not _this_\Flag\GridLines) * 2
         
@@ -2721,87 +2721,87 @@ Module ListIcon
         EndIf
       EndIf
       
-      PushListPosition(_this_\Columns())
-      ForEach _this_\Columns()
-        If _this_\Columns()\text\change = 1
-          _this_\Columns()\text\height = TextHeight("A") 
-          _this_\Columns()\text\width = TextWidth(_this_\Columns()\text\string.s)
-          _this_\Columns()\text\change = 0
+      PushListPosition(_columns_)
+      ForEach _columns_
+        If _columns_\text\change = 1
+          _columns_\text\height = TextHeight("A") 
+          _columns_\text\width = TextWidth(_columns_\text\string.s)
+          _columns_\text\change = 0
         EndIf
         
         If _this_\change <> 0
-          _this_\scroll\height = _this_\Columns()\height
+          _this_\scroll\height = _columns_\height
           
-          _this_\Columns()\x = _this_\x[2] + _this_\scroll\width
-          _this_\Columns()\y = _this_\y[1]
+          _columns_\x = _this_\x[2] + _this_\scroll\width
+          _columns_\y = _this_\y[1]
           
           ; 
-          _this_\Columns()\x[1] = _this_\Columns()\x
-          _this_\Columns()\y[1] = _this_\y[2]
-          _this_\Columns()\width[1] = _this_\Columns()\width
-          _this_\Columns()\height[1] = _this_\height[2]
+          _columns_\x[1] = _columns_\x
+          _columns_\y[1] = _this_\y[2]
+          _columns_\width[1] = _columns_\width
+          _columns_\height[1] = _this_\height[2]
         EndIf
         
         If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
-          _this_\Columns()\text\x = _this_\Columns()\x - _this_\scroll\h\page\pos + _this_\Columns()\text\padding\left
-          _this_\Columns()\text\y = _this_\Columns()\y + (_this_\Columns()\height - _this_\Columns()\text\height)/2
+          _columns_\text\x = _columns_\x - _this_\scroll\h\page\pos + _columns_\text\padding\left
+          _columns_\text\y = _columns_\y + (_columns_\height - _columns_\text\height)/2
         EndIf
         
-        ForEach _this_\Columns()\items()
-          If _this_\Columns()\items()\hide
-            _this_\Columns()\items()\draw = 0
+        ForEach _columns_\items()
+          If _columns_\items()\hide
+            _columns_\items()\draw = 0
           Else
-            If _this_\Columns()\items()\text\change 
-              _this_\Columns()\items()\text\change = #False
+            If _columns_\items()\text\change 
+              _columns_\items()\text\change = #False
               
-              If _this_\Columns()\items()\text\fontID 
-                DrawingFont(_this_\Columns()\items()\text\fontID) 
+              If _columns_\items()\text\fontID 
+                DrawingFont(_columns_\items()\text\fontID) 
               EndIf
-              _this_\Columns()\items()\text\width = TextWidth(_this_\Columns()\items()\text\string.s) 
-              _this_\Columns()\items()\text\height = TextHeight("A") 
+              _columns_\items()\text\width = TextWidth(_columns_\items()\text\string.s) 
+              _columns_\items()\text\height = TextHeight("A") 
             EndIf 
             
             If _this_\change
-              _this_\Columns()\items()\height = _this_\Text\Height
-              _this_\Columns()\items()\y = _this_\y[2]+_this_\scroll\height
+              _columns_\items()\height = _this_\Text\Height
+              _columns_\items()\y = _this_\y[2]+_this_\scroll\height
             EndIf
             
             If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
-              _this_\Columns()\items()\draw = Bool(_this_\Columns()\items()\y+_this_\Columns()\items()\height-_this_\scroll\v\page\pos>_this_\y[2]+_this_\Columns()\height And 
-                                                   (_this_\Columns()\items()\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
+              _columns_\items()\draw = Bool(_columns_\items()\y+_columns_\items()\height-_this_\scroll\v\page\pos>_this_\y[2]+_columns_\height And 
+                                                   (_columns_\items()\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
               If _this_\flag\checkBoxes
-                _this_\Columns()\items()\box[1]\x = _this_\x[2] + 3 - _this_\scroll\h\page\pos
-                _this_\Columns()\items()\box[1]\y = (_this_\Columns()\items()\y+_this_\Columns()\items()\height)-(_this_\Columns()\items()\height+_this_\Columns()\items()\box[1]\height)/2-_this_\scroll\v\page\pos
+                _columns_\items()\box[1]\x = _this_\x[2] + 3 - _this_\scroll\h\page\pos
+                _columns_\items()\box[1]\y = (_columns_\items()\y+_columns_\items()\height)-(_columns_\items()\height+_columns_\items()\box[1]\height)/2-_this_\scroll\v\page\pos
               EndIf
               
               ; expanded & collapsed box
               If _this_\flag\buttons Or _this_\flag\lines 
-                _this_\Columns()\items()\box[0]\x = _this_\Columns()\x + _this_\Columns()\items()\sublevellen - _this_\row\sublevellen + Bool(_this_\flag\buttons And Not _this_\flag\gridlines) * 4 + Bool(Not _this_\flag\buttons And _this_\flag\lines) * 8 - _this_\scroll\h\page\pos - _this_\row\sublevel
-                _this_\Columns()\items()\box[0]\y = (_this_\Columns()\items()\y+_this_\Columns()\items()\height)-(_this_\Columns()\items()\height+_this_\Columns()\items()\box[0]\height)/2-_this_\scroll\v\page\pos
+                _columns_\items()\box[0]\x = _columns_\x + _columns_\items()\sublevellen - _this_\row\sublevellen + Bool(_this_\flag\buttons And Not _this_\flag\gridlines) * 4 + Bool(Not _this_\flag\buttons And _this_\flag\lines) * 8 - _this_\scroll\h\page\pos - _this_\row\sublevel
+                _columns_\items()\box[0]\y = (_columns_\items()\y+_columns_\items()\height)-(_columns_\items()\height+_columns_\items()\box[0]\height)/2-_this_\scroll\v\page\pos
               EndIf
               
-              _this_\Columns()\items()\image\x = _this_\Columns()\x + _this_\image\padding\left + _this_\Columns()\items()\sublevellen -_this_\scroll\h\page\pos - _this_\row\sublevel
-              _this_\Columns()\items()\text\x = _this_\Columns()\x + _this_\text\padding\left + _this_\Columns()\items()\sublevellen + _this_\Columns()\sublevel  -_this_\scroll\h\page\pos
-              _this_\Columns()\items()\image\y = _this_\Columns()\items()\y + (_this_\Columns()\items()\height-_this_\Columns()\items()\image\height)/2-_this_\scroll\v\page\pos
-              _this_\Columns()\items()\text\y = _this_\Columns()\items()\y + (_this_\Columns()\items()\height-_this_\Columns()\items()\text\height)/2-_this_\scroll\v\page\pos
+              _columns_\items()\image\x = _columns_\x + _this_\image\padding\left + _columns_\items()\sublevellen -_this_\scroll\h\page\pos - _this_\row\sublevel
+              _columns_\items()\text\x = _columns_\x + _this_\text\padding\left + _columns_\items()\sublevellen + _columns_\sublevel  -_this_\scroll\h\page\pos
+              _columns_\items()\image\y = _columns_\items()\y + (_columns_\items()\height-_columns_\items()\image\height)/2-_this_\scroll\v\page\pos
+              _columns_\items()\text\y = _columns_\items()\y + (_columns_\items()\height-_columns_\items()\text\height)/2-_this_\scroll\v\page\pos
               
               If _this_\flag\lines And _this_\row\sublevellen
-                _lines_(_this_, _this_\Columns()\items())
+                _lines_(_this_, _columns_\items())
               EndIf
               
             EndIf
             
             If _this_\change <> 0
-              _this_\scroll\height + _this_\Columns()\items()\height + _this_\Flag\GridLines
+              _this_\scroll\height + _columns_\items()\height + _this_\Flag\GridLines
             EndIf
           EndIf
         Next
         
         If _this_\change <> 0
-          _this_\scroll\width + _this_\Columns()\width
+          _this_\scroll\width + _columns_\width
         EndIf
       Next
-      PopListPosition(_this_\Columns())
+      PopListPosition(_columns_)
       
       If _this_\scroll\v\page\len And _this_\scroll\v\max<>_this_\scroll\height-_this_\flag\gridlines And
          Bar::SetAttribute(_this_\scroll\v, #PB_ScrollBar_Maximum, _this_\scroll\height-_this_\flag\gridlines)
@@ -2821,10 +2821,10 @@ Module ListIcon
         _this_\height[2] = (_this_\scroll\h\y + Bool(_this_\scroll\h\hide) * _this_\scroll\h\height) - _this_\y[2]
         
         
-        If _this_\columns()\row\selected And _this_\columns()\row\selected\change 
-          _this_\columns()\row\selected\change = 0
+        If _columns_\row\selected And _columns_\row\selected\change 
+          _columns_\row\selected\change = 0
           
-          Bar::SetState(_this_\scroll\v, ((_this_\columns()\row\selected\index * _this_\text\height) - _this_\scroll\v\height) + _this_\text\height) 
+          Bar::SetState(_this_\scroll\v, ((_columns_\row\selected\index * _this_\text\height) - _this_\scroll\v\height) + _this_\text\height) 
           _this_\change = 1
           Draw(_this_)
         EndIf
@@ -2931,7 +2931,7 @@ Module ListIcon
         EndIf
         
         If \change
-          _update_(*this)
+          _update_(*this, \Columns())
           \change = 0
         EndIf 
         
@@ -3721,7 +3721,7 @@ Module ListIcon
         Result | Bar::CallBack(\scroll\h, EventType, mouse_x, mouse_y)
         
         If (\scroll\v\change Or \scroll\h\change)
-          _update_(*this)
+          _update_(*this, \Columns())
           \scroll\v\change = 0 
           \scroll\h\change = 0
         EndIf
@@ -3873,7 +3873,7 @@ Module ListIcon
               
               If StartDrawing(CanvasOutput(\canvas\gadget))
                 \change = 1
-                _update_(*this)
+                _update_(*this, \Columns())
                 StopDrawing()
               EndIf
               
@@ -4459,8 +4459,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (Windows - x64)
-; CursorPosition = 4182
-; FirstLine = 4176
-; Folding = ----------------------------------------------------------------------------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = ------------------------------------------------f---------------------------
 ; EnableXP
