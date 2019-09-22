@@ -1,6 +1,6 @@
 ﻿
 ;IncludePath "/Users/as/Documents/GitHub/Widget/"
-XIncludeFile "_module_tree_12.pb"
+XIncludeFile "_module_tree_15.pb"
 
 ;- >>>
 DeclareModule Gadget
@@ -111,6 +111,10 @@ DeclareModule Gadget
       ClearGadgetItems_(_gadget_)
     EndMacro
     
+    Macro FreeGadget(_gadget_)
+      FreeGadget_(_gadget_)
+    EndMacro
+    
     Macro RemoveGadgetItem(_gadget_, _position_)
       RemoveGadgetItem_(_gadget_, _position_)
     EndMacro
@@ -168,12 +172,15 @@ DeclareModule Gadget
     Declare RemoveGadgetItem_(Gadget, Position)
     Declare ClearGadgetItems_(Gadget)
     Declare GadgetType_(Gadget)
+    Declare FreeGadget_(Gadget)
     Declare EventData_()
     Declare EventType_()
     Declare EventGadget_()
   EndDeclareModule
   
   Module Gadget
+    Global *this.Structures::_S_widget
+    
     Macro PB(Function)
       Function
     EndMacro
@@ -219,9 +226,24 @@ DeclareModule Gadget
       EndIf
     EndProcedure
     
+    Procedure  FreeGadget_(Gadget)
+      If PB(IsGadget)(Gadget)
+        If PB(GadgetType)(Gadget) = #PB_GadgetType_Canvas
+          Protected *data = PB(GetGadgetData)(Gadget)
+          If *data
+            *this = *data
+            ProcedureReturn Tree::Free(*this)
+          EndIf
+        Else
+          ProcedureReturn PB(FreeGadget)(Gadget)
+        EndIf
+      Else
+        *this = Gadget
+        ProcedureReturn Tree::Free(*this)
+      EndIf
+    EndProcedure
+    
     Procedure GadgetType_(Gadget)
-      Protected *this.Structures::_S_widget
-      
       If PB(IsGadget)(Gadget)
         If PB(GadgetType)(Gadget) = #PB_GadgetType_Canvas
           Protected *data = PB(GetGadgetData)(Gadget)
@@ -239,8 +261,6 @@ DeclareModule Gadget
     EndProcedure
     
     Procedure BindGadgetEvent_(Gadget, *Callback, EventType=#PB_All)
-      Protected *this.Structures::_S_widget
-      
       If PB(IsGadget)(Gadget)
         If PB(GadgetType)(Gadget) = #PB_GadgetType_Canvas
           Protected *data = PB(GetGadgetData)(Gadget)
@@ -616,5 +636,5 @@ DeclareModule Gadget
   
   
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = +----f------------------
+; Folding = -------------------------
 ; EnableXP

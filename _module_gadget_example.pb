@@ -50,15 +50,18 @@ Procedure events_tree_gadget()
         SetGadgetItemImage(0, GetGadgetState(0), ImageID(0))
         SetGadgetItemImage(1, GetGadgetState(1), ImageID(0))
       EndIf
-      If EventGadget = 7
+      If EventGadget = 7 ; <<
+;         FreeGadget(0)
+;         FreeGadget(1)
+        
         SetGadgetState(0, 0)
         SetGadgetState(1, 0)
       EndIf
-      If EventGadget = 8
+      If EventGadget = 8 ; 0
         SetGadgetState(0, -1)
         SetGadgetState(1, -1)
       EndIf
-      If EventGadget = 9
+      If EventGadget = 9 ; >>
         SetGadgetState(0, CountGadgetItems(0)-1)
         SetGadgetState(1, CountGadgetItems(1)-1)
       EndIf

@@ -549,7 +549,7 @@ DeclareModule Structures
   Structure _S_canvas
     window.i
     gadget.i
-   ; widget.i
+    ; widget.i
     
     input.c
     key.i[2]
@@ -1868,7 +1868,7 @@ Module Tree
             
             DrawingFont(_items_\fontID) 
             _items_\text\height = TextHeight("A") 
-           ; Debug  " - "+_items_\text\height +" "+ _items_\text\string
+            ; Debug  " - "+_items_\text\height +" "+ _items_\text\string
           EndIf
         ElseIf _this_\text\fontID  
           If _items_\fontID <> _this_\text\fontID
@@ -1876,7 +1876,7 @@ Module Tree
             
             DrawingFont(_items_\fontID) 
             _items_\text\height = _this_\text\height
-           ; Debug  " - "+_items_\text\height +" "+ _items_\text\string
+            ; Debug  " - "+_items_\text\height +" "+ _items_\text\string
           EndIf
         EndIf
         
@@ -1919,7 +1919,7 @@ Module Tree
             _items_\text\y = _items_\y + (_items_\height-_items_\text\height)/2-_this_\scroll\v\page\pos
             
             _items_\draw = Bool(_items_\y+_items_\height-_this_\scroll\v\page\pos>_this_\y[2] And 
-                                       (_items_\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
+                                (_items_\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
             
             ; lines for tree widget
             If _this_\flag\lines And _this_\row\sublength
@@ -1986,9 +1986,9 @@ Module Tree
             _this_\row\fontID = _items_\fontID
             DrawingFont(_items_\fontID) 
             
-          ;  Debug "    "+ _items_\text\height +" "+ _items_\text\string
+            ;  Debug "    "+ _items_\text\height +" "+ _items_\text\string
           EndIf
-         
+          
           
           Y = _items_\y - _this_\scroll\v\page\pos
           state = _items_\color\state + Bool(_this_\color\state<>2 And _items_\color\state=2)
@@ -2076,7 +2076,7 @@ Module Tree
         If \text\fontID 
           DrawingFont(\text\fontID) 
         EndIf
-         
+        
         If \change
           If \text\change
             \text\height = TextHeight("A") + Bool(#PB_Compiler_OS = #PB_OS_Windows) * 2
@@ -2694,17 +2694,17 @@ Module Tree
           
           If \flag\OptionBoxes 
             If \items()\parent ; ListSize(*Value\OpenedList()\childrens()) 
-;               If \items()\parent\optiongroup; *Value\OpenedList()\childrens()\type = #PB_GadgetType_Option
-;                 \items()\optiongroup = *Value\OpenedList()\childrens()\optiongroup 
-;               Else
-;                 \items()\optiongroup = *Value\OpenedList()\childrens() 
-;               EndIf
+                               ;               If \items()\parent\optiongroup; *Value\OpenedList()\childrens()\type = #PB_GadgetType_Option
+                               ;                 \items()\optiongroup = *Value\OpenedList()\childrens()\optiongroup 
+                               ;               Else
+                               ;                 \items()\optiongroup = *Value\OpenedList()\childrens() 
+                               ;               EndIf
               \items()\optiongroup = \items()\parent
             Else
               \items()\optiongroup = \row\first
             EndIf
           EndIf
-      
+          
           ; add lines
           \items()\index = Item
           
@@ -2738,11 +2738,11 @@ Module Tree
           
           If \row\sublength 
             If (\flag\buttons Or \flag\lines)
-            \items()\sublength = \items()\sublevel * \row\sublength + Bool(\flag\buttons) * 20 + Bool(\flag\checkBoxes) * 18 
-          Else
-            \items()\sublength =  Bool(\flag\checkBoxes) * 18 
+              \items()\sublength = \items()\sublevel * \row\sublength + Bool(\flag\buttons) * 20 + Bool(\flag\checkBoxes) * 18 
+            Else
+              \items()\sublength =  Bool(\flag\checkBoxes) * 18 
+            EndIf
           EndIf
-        EndIf
           
           If *this\row\selected 
             *this\row\selected\color\state = 0
@@ -2850,46 +2850,101 @@ Module Tree
   EndProcedure
   
   ;-
+  Declare ToolTip(*this._S_widget, x,y, *color._S_color)
+  
+  Structure _S_tooltip Extends _S_coordinate
+    window.i
+    gadget.i
+    
+    text._S_text
+    image._S_image
+    color._S_color
+  EndStructure
+  
+  Procedure t_draw(*parent._S_widget)
+    If IsWindow(*parent\row\tooltip)
+      Protected width, gadget = GetWindowData(*parent\row\tooltip)
+    
+    With *parent
+      If StartDrawing(CanvasOutput(Gadget))
+      width = OutputWidth()
+      
+      If \items()\fontID 
+            DrawingFont(\items()\fontID) 
+          EndIf 
+          DrawingMode(#PB_2DDrawing_Default)
+          Box(0,1,width,\items()\height-2, \items()\color\back[\items()\color\state])
+          DrawingMode(#PB_2DDrawing_Transparent)
+          DrawText(0, (\items()\text\y-\items()\y)+\scroll\v\page\pos, \items()\text\string, \items()\color\front[\items()\color\state])
+          DrawingMode(#PB_2DDrawing_Outlined)
+          Line(0,0,width,1, \items()\color\frame[\items()\color\state])
+          Line(0,\items()\height-1,width,1, \items()\color\frame[\items()\color\state])
+          Line(width-1,0,1,\items()\height, \items()\color\frame[\items()\color\state])
+          StopDrawing()
+        EndIf
+        
+        *event\widget = *parent
+      EndWith
+     EndIf 
+  EndProcedure
+  
+  Procedure t_CallBack()
+    Select Event()
+      Case #PB_Event_ActivateWindow
+        Debug 777
+        UnbindEvent(#PB_Event_ActivateWindow, @t_CallBack(), EventWindow())
+        SetActiveWindow(*event\widget\canvas\window)
+        DisableWindow(EventWindow(), 1)
+        ;SetActiveGadget(*event\widget\canvas\gadget)
+        
+        If *event\widget\row\selected
+          *event\widget\row\selected\color\State = 0
+        EndIf
+        
+        *event\widget\row\selected = *event\widget\items()
+        *event\widget\items()\color\State = 2
+        *event\widget\color\State = 2
+        
+        t_draw(*event\widget)
+        redraw(*event\widget)
+    EndSelect
+  EndProcedure
+  
   Procedure ToolTip(*this._S_widget, x,y, *color._S_color)
     Protected Gadget
     Static Window
     
     With *this
       If *this
-     ; Debug "show tooltip "+IsWindow(Window)
-;                 If Not Window
-        \row\tooltip = 1
+        ; Debug "show tooltip "+IsWindow(Window)
+        ;                 If Not Window
         Protected width = \items()\len+5-(\items()\text\x-\items()\x)
         
         Window = OpenWindow(#PB_Any, x+\items()\text\x,y+\items()\y-\scroll\v\page\pos,width,\items()\height, "", #PB_Window_BorderLess|#PB_Window_NoActivate, WindowID(\canvas\window)) ;|#PB_Window_NoGadgets
         Gadget = CanvasGadget(#PB_Any,0,0,width,\items()\height)
-        If StartDrawing(CanvasOutput(Gadget))
-          If \items()\fontID 
-            DrawingFont(\items()\fontID) 
-          EndIf 
-          DrawingMode(#PB_2DDrawing_Default)
-          Box(0,1,width,\items()\height-2, *color\back[1])
-          DrawingMode(#PB_2DDrawing_Transparent)
-          DrawText(0, (\items()\text\y-\items()\y)+\scroll\v\page\pos, \items()\text\string, *color\front[1])
-          DrawingMode(#PB_2DDrawing_Outlined)
-          Line(0,0,width,1, *color\frame[1])
-          Line(0,\items()\height-1,width,1, *color\frame[1])
-          Line(width-1,0,1,\items()\height, *color\frame[1])
-          StopDrawing()
-        EndIf
-         
-     *event\widget = *this
         SetWindowData(Window, Gadget)
-;                 Else
-;                   ResizeWindow(Window, \x[1],\y[1],\width,\height[1])
-;                   SetGadgetText(GetWindowData(Window), \text\string)
-;                   HideWindow(Window, 0, #PB_Window_NoActivate)
-;                 EndIf
+        
+        \row\tooltip = Window
+        
+        t_draw(*this)
+        
+       ; BindGadgetEvent(Gadget, @t_CallBack())
+        ; BindEvent(#PB_Event_DeactivateWindow, @t_CallBack(), \canvas\window)
+       BindEvent(#PB_Event_ActivateWindow, @t_CallBack(), Window)
+     ;   BindEvent(#PB_Event_LeftClick, @t_CallBack(), Window)  
+;         BindEvent(#PB_Event_Repaint, @t_CallBack(), Window)
+        ;         BindEvent(#PB_Event_DeactivateWindow, @t_CallBack(), \canvas\Window)
+        
+        ;                 Else
+        ;                   ResizeWindow(Window, \x[1],\y[1],\width,\height[1])
+        ;                   SetGadgetText(GetWindowData(Window), \text\string)
+        ;                   HideWindow(Window, 0, #PB_Window_NoActivate)
+        ;                 EndIf
       ElseIf IsWindow(Window)
         ;         HideWindow(Window, 1, #PB_Window_NoActivate)
-       ;   PostEvent(#PB_Event_Gadget, *event\widget\canvas\window, *event\widget\canvas\gadget, #PB_EventType_Repaint, *event\widget)
+        ;   PostEvent(#PB_Event_Gadget, *event\widget\canvas\window, *event\widget\canvas\gadget, #PB_EventType_Repaint, *event\widget)
         CloseWindow(Window)
-         ; Debug "hide tooltip "+IsWindow(Window)
+        ; Debug "hide tooltip "+IsWindow(Window)
       EndIf
     EndWith              
   EndProcedure
@@ -2948,20 +3003,23 @@ Module Tree
           
         Case #PB_EventType_MouseLeave  ;: Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
           
-          If _this_\row\from >= 0 And (_this_\items()\color\state = 1 Or down)
-            _this_\items()\color\state = 0
+          If _this_\row\from >= 0 
+            If (_this_\items()\color\state = 1 Or down)
+              _this_\items()\color\state = 0
+            EndIf
             
             If Bool((_this_\flag\buttons=0 And _this_\flag\lines=0))
               If _this_\items()\len > _this_\width[2]
-                 Debug "leave - "+_this_\items()\text\string
+                Debug "leave - "+_this_\items()\text\string
                 ;_this_\items()\width = _this_\width[2]
-              ToolTip(0,0,0,0)
-             EndIf
+                ToolTip(0,0,0,0)
+              EndIf
             EndIf
-             
+            
             Result = #True
           EndIf
           
+           
         Case #PB_EventType_MouseEnter  ;: Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
           
           If _this_\row\from >= 0
@@ -2981,11 +3039,11 @@ Module Tree
             
             If Bool((_this_\flag\buttons=0 And _this_\flag\lines=0))
               If _this_\items()\len > _this_\width[2]
-                 Debug "enter - "+_this_\items()\text\string;_from_point_(mouse_x, mouse_y, _this_\items())
-                ;_this_\items()\width = _this_\width[2]
-               ToolTip(_this_, GadgetX(_this_\canvas\gadget, #PB_Gadget_ScreenCoordinate), GadgetY(_this_\canvas\gadget, #PB_Gadget_ScreenCoordinate), _this_\items()\color)
-               ;SelectElement(_this_\items(), _this_\from+1)
-             EndIf
+                Debug "enter - "+_this_\items()\text\string;_from_point_(mouse_x, mouse_y, _this_\items())
+                                                           ;_this_\items()\width = _this_\width[2]
+                ToolTip(_this_, GadgetX(_this_\canvas\gadget, #PB_Gadget_ScreenCoordinate), GadgetY(_this_\canvas\gadget, #PB_Gadget_ScreenCoordinate), _this_\items()\color)
+                ;SelectElement(_this_\items(), _this_\from+1)
+              EndIf
             EndIf
             
           EndIf
@@ -3012,7 +3070,17 @@ Module Tree
             _multi_select_(_this_, _this_\from, _this_\row\selected\index)
           EndIf
           
-          Result = #True
+          If Bool((_this_\flag\buttons=0 And _this_\flag\lines=0))
+              If _this_\items()\len > _this_\width[2]
+                
+;                 ToolTip(0,0,0,0)
+;                 ToolTip(_this_, GadgetX(_this_\canvas\gadget, #PB_Gadget_ScreenCoordinate), GadgetY(_this_\canvas\gadget, #PB_Gadget_ScreenCoordinate), _this_\items()\color)
+                t_draw(_this_)
+                ;SelectElement(_this_\items(), _this_\from+1)
+              EndIf
+            EndIf
+            
+            Result = #True
           
         Case #PB_EventType_LeftButtonUp ; : Debug ""+#PB_Compiler_Line +" отпустили " + _this_ +" "+ _this_\from
           
@@ -3113,26 +3181,26 @@ Module Tree
       
       ; get
       Select EventType
-;         Case #PB_EventType_MouseEnter
-;           If *leave = *this
-;             Debug \from
-;             If \from >= 0 And SelectElement(\items(), \from)
-;               Debug " - "+ \items()\text\string
-;               _callback_(*this, #PB_EventType_MouseEnter)
-;             EndIf
-;           EndIf
+          ;         Case #PB_EventType_MouseEnter
+          ;           If *leave = *this
+          ;             Debug \from
+          ;             If \from >= 0 And SelectElement(\items(), \from)
+          ;               Debug " - "+ \items()\text\string
+          ;               _callback_(*this, #PB_EventType_MouseEnter)
+          ;             EndIf
+          ;           EndIf
           
-;         Case #PB_EventType_MouseLeave
-; ;          If *leave = *this
-; ; ;           If Not \row\tooltip ; \from >= 0 And SelectElement(\items(), \from)
-; ; ;             Debug " ---- -- "+ \items()\text\string
-; ; ;             _callback_(*this, #PB_EventType_MouseLeave)
-; ; ;           EndIf
-; ;         EndIf
-;         Case #PB_EventType_MouseLeave 
-;           If Not Down : \from =- 1 : from =- 1 : LastX = 0 : LastY = 0 : EndIf
-;           
-           
+          ;         Case #PB_EventType_MouseLeave
+          ; ;          If *leave = *this
+          ; ; ;           If Not \row\tooltip ; \from >= 0 And SelectElement(\items(), \from)
+          ; ; ;             Debug " ---- -- "+ \items()\text\string
+          ; ; ;             _callback_(*this, #PB_EventType_MouseLeave)
+          ; ; ;           EndIf
+          ; ;         EndIf
+          ;         Case #PB_EventType_MouseLeave 
+          ;           If Not Down : \from =- 1 : from =- 1 : LastX = 0 : LastY = 0 : EndIf
+          ;           
+          
         Case #PB_EventType_Focus
           If *leave = *this
             _set_active_(*this)
@@ -3298,7 +3366,7 @@ Module Tree
         Case #PB_EventType_Repaint
           \row\draw = \row\count
           Repaint = 1
-         
+          
         Case #PB_EventType_Resize : ResizeGadget(\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
           Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\canvas\gadget), GadgetHeight(\canvas\gadget))   
           
@@ -3898,30 +3966,30 @@ CompilerIf #PB_Compiler_IsMainFile
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  4_example
-; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
-; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
-; ;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-; ;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
-; ;     AddItem(*g, 3, "Tree_3_1", -1, 1) 
-; ;     AddItem(*g, 3, "Tree_3_2", -1, 2) 
-; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    ; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
+    ; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
+    ; ;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    ; ;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
+    ; ;     AddItem(*g, 3, "Tree_3_1", -1, 1) 
+    ; ;     AddItem(*g, 3, "Tree_3_2", -1, 2) 
+    ; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     AddItem (*g, -1, "#PB_Window_MinimizeGadget", -1) ; Adds the minimize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
-  AddItem (*g, -1, "#PB_Window_MaximizeGadget", -1) ; Adds the maximize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
-;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
-  AddItem (*g, -1, "#PB_Window_SizeGadget    ", -1) ; Adds the sizeable feature To a window.
-  AddItem (*g, -1, "#PB_Window_Invisible     ", -1) ; Creates the window but don't display.
-  AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1) ; Enables the system menu on the window title bar (Default", -1).
-  AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
-  AddItem (*g, -1, "#PB_Window_Tool          ", -1,1) ; Creates a window With a smaller titlebar And no taskbar entry. 
-  AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
-  AddItem (*g, -1, "#PB_Window_ScreenCentered", -1) ; Centers the window in the middle of the screen. x,y parameters are ignored.
-  AddItem (*g, -1, "#PB_Window_WindowCentered", -1) ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
-  AddItem (*g, -1, "#PB_Window_Maximize      ", -1, 1) ; Opens the window maximized. (Note", -1) ; on Linux, Not all Windowmanagers support this", -1)
-  AddItem (*g, -1, "#PB_Window_Minimize      ", -1, 1) ; Opens the window minimized.
-  AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1) ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
-  AddItem (*g, -1, "#PB_Window_NoActivate    ", -1) ; Don't activate the window after opening.
-  
-  
+    AddItem (*g, -1, "#PB_Window_MaximizeGadget", -1) ; Adds the maximize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
+                                                      ;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
+    AddItem (*g, -1, "#PB_Window_SizeGadget    ", -1) ; Adds the sizeable feature To a window.
+    AddItem (*g, -1, "#PB_Window_Invisible     ", -1) ; Creates the window but don't display.
+    AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1) ; Enables the system menu on the window title bar (Default", -1).
+    AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
+    AddItem (*g, -1, "#PB_Window_Tool          ", -1,1) ; Creates a window With a smaller titlebar And no taskbar entry. 
+    AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
+    AddItem (*g, -1, "#PB_Window_ScreenCentered", -1)   ; Centers the window in the middle of the screen. x,y parameters are ignored.
+    AddItem (*g, -1, "#PB_Window_WindowCentered", -1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
+    AddItem (*g, -1, "#PB_Window_Maximize      ", -1, 1); Opens the window maximized. (Note", -1) ; on Linux, Not all Windowmanagers support this", -1)
+    AddItem (*g, -1, "#PB_Window_Minimize      ", -1, 1); Opens the window minimized.
+    AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1)   ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
+    AddItem (*g, -1, "#PB_Window_NoActivate    ", -1)   ; Don't activate the window after opening.
+    
+    
     
     g = 14
     *g = Widget(890, 100, 103, 210, #PB_Tree_NoButtons)                                         
@@ -3968,6 +4036,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------0---------------8-------+--0-------------
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 2896
+; FirstLine = 2889
+; Folding = ---------------------------------------------------------+----------------
 ; EnableXP
