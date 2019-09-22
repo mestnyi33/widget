@@ -2079,7 +2079,7 @@ Module Tree
         
         If _this_\canvas\gadget <> *event\active\canvas\gadget 
           ; set lost focus canvas
-          PostEvent(#PB_Event_Gadget, *event\active\canvas\window, *event\active\canvas\gadget, #PB_EventType_Repaint, *event\active)
+          PostEvent(#PB_Event_Gadget, *event\active\canvas\window, *event\active\canvas\gadget, #PB_EventType_Repaint);, *event\active)
         EndIf
         
         Result | Events(*event\active, #PB_EventType_LostFocus, mouse_x, mouse_y)
@@ -3386,21 +3386,25 @@ Module Tree
         
       Case #PB_EventType_Focus
         Debug "focus - "+*this
+        Result = 1
         
       Case #PB_EventType_LostFocus
         Debug "lost focus - "+*this
+        Result = 1
         
       Case #PB_EventType_LeftButtonDown
         Debug "left down - "+*this
-        
+       
       Case #PB_EventType_LeftButtonUp
         Debug "left up - "+*this
         
       Case #PB_EventType_MouseEnter
         Debug "enter - "+*this +" "+ *this\mouse\buttons
+        Result = 1
         
       Case #PB_EventType_MouseLeave
         Debug "leave - "+*this
+        Result = 1
         
       Case #PB_EventType_MouseMove
         ; Debug "move - "+*this
@@ -3411,8 +3415,9 @@ Module Tree
           Else
             _callback_(*this, #PB_EventType_MouseLeave)
           EndIf
+          
+          Result = 1
         EndIf
-        
     EndSelect
     
     If Not position
@@ -3430,7 +3435,7 @@ Module Tree
       EndIf
     EndIf
     
-    ProcedureReturn 1
+    ProcedureReturn Result
   EndProcedure
   
   Procedure.l CallBack(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
@@ -3492,9 +3497,10 @@ Module Tree
         If Not *this\canvas\mouse\buttons
           Result | Events(*leave, #PB_EventType_MouseLeave, mouse_x, mouse_y)
           
-          ;           If *leave And *leave\canvas\gadget <> *this\canvas\gadget
-          ;             PostEvent(#PB_Event_Gadget, *leave\canvas\window, *leave\canvas\gadget, #PB_EventType_Repaint, *leave)
-          ;           EndIf
+          If *leave And *leave\canvas\gadget <> *this\canvas\gadget
+            ReDraw(*leave)
+            ; _repaint_(*leave)
+          EndIf
         EndIf
         
         *leave\from =- 1
@@ -3665,7 +3671,6 @@ Module Tree
             *event\active\row\selected\color\state = 3
           EndIf
           
-          ;PostEvent(#PB_Event_Gadget, *event\active\canvas\window, *event\active\canvas\gadget, #PB_EventType_Repaint, *this)
           Result | Events(*this, #PB_EventType_LostFocus, mouse_x, mouse_y)
           
           *event\active\color\state = 0
@@ -3701,7 +3706,7 @@ Module Tree
           
           If *this\from >= 0
             ;Debug " leave items"
-            _callback_(*this, #PB_EventType_MouseLeave)
+            Result | Events(*this, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
             *this\from =- 1
           EndIf
           
@@ -3757,11 +3762,7 @@ Module Tree
       EndSelect
     EndWith
     
-    ProcedureReturn 1;Result
-  EndProcedure
-  
-  Procedure w_Callback()
-    Debug "-- Window repaint --"
+    ProcedureReturn Result
   EndProcedure
   
   Procedure g_CallBack()
@@ -3808,6 +3809,7 @@ Module Tree
       
       If Repaint And 
          StartDrawing(CanvasOutput(\canvas\gadget))
+       ; Debug \canvas\gadget
         Draw(*this)
         StopDrawing()
       EndIf
@@ -4216,6 +4218,8 @@ CompilerIf #PB_Compiler_IsMainFile
           
           ;ReDraw(*this, $F6)
           ProcedureReturn
+        Else
+          Repaint = 1
         EndIf
         
       Case #PB_EventType_Resize ; : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -4544,5 +4548,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------
+; Folding = --------------------------------f-nv+-----------------------------+-2n-----g------------
 ; EnableXP
