@@ -1,6 +1,6 @@
 ﻿;IncludePath "/Users/as/Documents/GitHub/Widget/"
 ;XIncludeFile "_module_tree_7.pb"
-XIncludeFile "_module_tree_12.pb"
+XIncludeFile "_module_tree_16.pb"
 
 UseModule Tree
 LN=1000; количесвто итемов 
@@ -8,7 +8,7 @@ Global *w._S_widget
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   ListViewGadget(0, 10, 10, 250, 680)    ;, #PB_ListView_MultiSelect
-  Gadget(1, 270, 10, 250, 680, #PB_Flag_FullSelection|#PB_Flag_GridLines|#PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#PB_Flag_MultiSelect
+  Gadget(1, 270, 10, 250, 680, #PB_Flag_GridLines|#PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#PB_Flag_MultiSelect
   *w=GetGadgetData(1)
   
 ;   a=0
@@ -67,7 +67,6 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.70 LTS beta 4 (Windows - x64)
-; CursorPosition = 5
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

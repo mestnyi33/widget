@@ -503,14 +503,14 @@ DeclareModule Structures
     index.l
     ;handle.i
     
-    box.l
+    box.b
     draw.l
     drag.b
     ;resize.l
     
     count.l
     FontID.i
-    tovisible.b
+    scrolled.b
     
     *tt._S_tt
     
@@ -2112,6 +2112,8 @@ Module Tree
   ;-
   ;- PROCEDUREs
   ;-
+  Declare Events(*this, eventtype.l, mouse_x.l=-1, mouse_y.l=-1, position.l=0)
+  
   Procedure Selection(X, Y, SourceColor, TargetColor)
     Protected Color, Dot.b=4, line.b = 10, Length.b = (Line+Dot*2+1)
     Static Len.b
@@ -2354,11 +2356,11 @@ Module Tree
         _this_\width[2] = (_this_\scroll\v\x + Bool(_this_\scroll\v\hide) * _this_\scroll\v\width) - _this_\x[2]
         _this_\height[2] = (_this_\scroll\h\y + Bool(_this_\scroll\h\hide) * _this_\scroll\h\height) - _this_\y[2]
         
-        If _this_\row\selected And _this_\row\tovisible
-          Bar::SetState(_this_\scroll\v, ((_this_\row\selected\index * (_this_\row\selected\height + _this_\flag\GridLines)) - _this_\scroll\v\height) + _this_\row\selected\height ) 
+        If _this_\row\selected And _this_\row\scrolled
+          Bar::SetState(_this_\scroll\v, ((_this_\row\selected\y-_this_\scroll\v\y) - (Bool(_this_\row\scrolled>0) * (_this_\height[2]-_this_\row\selected\height))) ) 
           _this_\scroll\v\change = 0 
-          _this_\row\tovisible = 0
-          ;_this_\change = 1
+          _this_\row\scrolled = 0
+          
           Draw(_this_)
         EndIf
       EndIf
@@ -2583,7 +2585,7 @@ Module Tree
         
         If \row\selected
           \row\selected\color\state = 2
-          \row\tovisible = 1
+          \row\scrolled = 1
         EndIf
         
         _repaint_(*this)
@@ -2747,6 +2749,7 @@ Module Tree
         
         If Repaint = 1
           Post(#PB_EventType_Change, *this, Item)
+          ;Events(*this, #PB_EventType_Change)
         EndIf
         
         _repaint_(*this)
@@ -3390,6 +3393,7 @@ Module Tree
       Case #PB_EventType_Change
         Debug "change - "+*this
         Post(eventtype, *this, *this\row\index)
+        Result = 1
         
       Case #PB_EventType_DragStart
         Debug "drag - "+*this
@@ -3405,7 +3409,7 @@ Module Tree
         
       Case #PB_EventType_LeftButtonDown
         Debug "left down - "+*this
-       
+        
       Case #PB_EventType_LeftButtonUp
         Debug "left up - "+*this
         
@@ -3451,7 +3455,7 @@ Module Tree
   
   Procedure.l CallBack(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
     Protected Result, from =- 1
-    Static cursor_change, Down, buttons, *leave._S_widget, *row_selected._S_items
+    Static cursor_change, Down, *leave._S_widget, *row_selected._S_items
     
     If Not *this\handle
       ProcedureReturn 0
@@ -3485,7 +3489,6 @@ Module Tree
             *this\canvas\mouse\buttons = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Buttons)
           CompilerEndIf
           
-          buttons = *this\canvas\mouse\buttons
       EndSelect
       
       mouse_x = *this\canvas\mouse\x
@@ -3608,7 +3611,7 @@ Module Tree
                 Result = #True
               Else
                 
-                If *this\row\selected <> *this\items()
+                If *row_selected <> *this\items()
                   If *this\row\selected 
                     *this\row\selected\color\state = 0
                   EndIf
@@ -3669,7 +3672,7 @@ Module Tree
             EndIf
           EndIf
           
-          If (*this = *leave And Not *event\leave)
+          If *this = *leave And Not *event\leave
             Result | Events(*leave, #PB_EventType_MouseEnter, mouse_x, mouse_y)
             *event\leave = *leave
           EndIf
@@ -3677,7 +3680,7 @@ Module Tree
         Case #PB_EventType_LostFocus
           ; если фокус получил PB gadget
           ; то убираем фокус с виджета
-          If *event\active = *this
+          If *this = *event\active
             If *event\active\row\selected 
               *event\active\row\selected\color\state = 3
             EndIf
@@ -3688,10 +3691,102 @@ Module Tree
             *event\active = 0
           EndIf
           
+        Case #PB_EventType_KeyDown
+          If *this = *event\active
+            
+            Select *this\canvas\key
+              Case #PB_Shortcut_PageUp
+                If *this\canvas\key[1] = 4 And Bar::SetState(*this\scroll\v, 0) 
+                  *this\change = 1 
+                  Result = 1
+                EndIf
+                
+              Case #PB_Shortcut_PageDown
+                If *this\canvas\key[1] = 4 And Bar::SetState(*this\scroll\v, *this\scroll\v\page\end) 
+                  *this\change = 1 
+                  Result = 1
+                EndIf
+                
+              Case #PB_Shortcut_Up
+                If *this\row\selected
+                  If *this\canvas\key[1] = 6
+                    If Bar::SetState(*this\scroll\v, *this\scroll\v\page\pos-18) 
+                      *this\change = 1 
+                      Result = 1
+                    EndIf
+                    
+                  ElseIf *this\row\selected\index > 0
+                    ; select modifiers key
+                    Select *this\canvas\key[1] 
+                      Case 2
+                        SelectElement(*this\items(), 0)
+                      Default
+                        SelectElement(*this\items(), *this\row\selected\index - 1)
+                    EndSelect
+                    
+                    If *this\row\selected <> *this\items()
+                      *this\row\selected\color\state = 0
+                      *this\row\selected  = *this\items()
+                      *this\items()\color\state = 2
+                      
+                      Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
+                    EndIf
+                    
+                    If ((*this\scroll\v\y - *this\row\selected\y) + *this\scroll\v\page\pos) > 0
+                      *this\change = Bar::SetState(*this\scroll\v, (*this\row\selected\y - *this\scroll\v\y)) 
+                     
+                      ; Если виделенная линия ниже позиции виджете
+                    ElseIf (*this\row\selected\y-*this\scroll\v\y-*this\scroll\v\page\pos) > (*this\height[2]-*this\row\selected\height) 
+                      *this\change = Bar::SetState(*this\scroll\v, (*this\row\selected\y-*this\scroll\v\y) - (*this\height[2]-*this\row\selected\height)) 
+                      
+                    EndIf
+                  EndIf
+                EndIf
+                
+              Case #PB_Shortcut_Down
+                If *this\row\selected
+                  If *this\canvas\key[1] = 6
+                    If Bar::SetState(*this\scroll\v, *this\scroll\v\page\pos+18) 
+                      *this\change = 1 
+                      Result = 1
+                    EndIf
+                    
+                  ElseIf *this\row\selected\index < (*this\row\count - 1)
+                    ; select modifiers key
+                    Select *this\canvas\key[1] 
+                      Case 2
+                        SelectElement(*this\items(), (*this\row\count - 1))
+                      Default
+                        SelectElement(*this\items(), *this\row\selected\index + 1)
+                    EndSelect
+                    
+                    If *this\row\selected <> *this\items()
+                      *this\row\selected\color\state = 0
+                      *this\row\selected  = *this\items()
+                      *this\items()\color\state = 2
+                      
+                      Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
+                    EndIf
+                    
+                    If (*this\row\selected\y-*this\scroll\v\y-*this\scroll\v\page\pos) > (*this\height[2]-*this\row\selected\height) 
+                      *this\change = Bar::SetState(*this\scroll\v, (*this\row\selected\y-*this\scroll\v\y) - (*this\height[2]-*this\row\selected\height)) 
+                      
+                      ; Если виделенная линия выше позиции виджете
+                    ElseIf ((*this\scroll\v\y - *this\row\selected\y) + *this\scroll\v\page\pos) > 0
+                      *this\change = Bar::SetState(*this\scroll\v, (*this\row\selected\y - *this\scroll\v\y)) 
+                      
+                    EndIf
+                  EndIf
+                EndIf
+                
+            EndSelect
+            
+          EndIf
+          
       EndSelect
       
       
-      If *this = *leave And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ; And Not *this\mouse\buttons
+      If *this = *leave And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ;And Not *this\canvas\key; And Not *this\mouse\buttons
         If _from_point_(mouse_x, mouse_y, *this, [2]) 
           
           ; at item from points
@@ -3731,7 +3826,7 @@ Module Tree
         EndIf
         
         ; post change and drag start 
-        If *this\mouse\buttons And *this\row\drag = 0 And 
+        If *this\canvas\mouse\buttons And *this\row\drag = 0 And 
            (Abs((mouse_x-*this\delta\x)+(mouse_y-*this\delta\y)) >= 6)
           *this\row\drag = 1
           
@@ -3753,35 +3848,35 @@ Module Tree
       
       
       ; 
-;       Select *this
-;         Case *event\leave, *event\active
-;           
-;           If EventType = #PB_EventType_MouseEnter
-;           ElseIf EventType = #PB_EventType_MouseLeave
-;           ElseIf EventType = #PB_EventType_LeftButtonDown 
-;           ElseIf EventType = #PB_EventType_LeftButtonUp
-;           ElseIf EventType = #PB_EventType_LeftClick
-;           ElseIf EventType = #PB_EventType_Focus
-;           ElseIf EventType = #PB_EventType_LostFocus
-;           ElseIf EventType = #PB_EventType_MouseMove
-;           ElseIf EventType = #PB_EventType_DragStart
-;           Else
-;             Result | Events(*this, EventType, mouse_x, mouse_y)
-;           EndIf
-;        EndSelect
-         
-       ; reset mouse buttons
-       If \mouse\buttons
-         If EventType = #PB_EventType_LeftButtonUp
-           \mouse\buttons &~ #PB_Canvas_LeftButton
-         ElseIf EventType = #PB_EventType_RightButtonUp
-           \mouse\buttons &~ #PB_Canvas_RightButton
-         ElseIf EventType = #PB_EventType_MiddleButtonUp
-           \mouse\buttons &~ #PB_Canvas_MiddleButton
-         EndIf
-       EndIf
-     EndWith
-     
+      ;       Select *this
+      ;         Case *event\leave, *event\active
+      ;           
+      ;           If EventType = #PB_EventType_MouseEnter
+      ;           ElseIf EventType = #PB_EventType_MouseLeave
+      ;           ElseIf EventType = #PB_EventType_LeftButtonDown 
+      ;           ElseIf EventType = #PB_EventType_LeftButtonUp
+      ;           ElseIf EventType = #PB_EventType_LeftClick
+      ;           ElseIf EventType = #PB_EventType_Focus
+      ;           ElseIf EventType = #PB_EventType_LostFocus
+      ;           ElseIf EventType = #PB_EventType_MouseMove
+      ;           ElseIf EventType = #PB_EventType_DragStart
+      ;           Else
+      ;             Result | Events(*this, EventType, mouse_x, mouse_y)
+      ;           EndIf
+      ;        EndSelect
+      
+      ; reset mouse buttons
+      If \mouse\buttons
+        If EventType = #PB_EventType_LeftButtonUp
+          \mouse\buttons &~ #PB_Canvas_LeftButton
+        ElseIf EventType = #PB_EventType_RightButtonUp
+          \mouse\buttons &~ #PB_Canvas_RightButton
+        ElseIf EventType = #PB_EventType_MiddleButtonUp
+          \mouse\buttons &~ #PB_Canvas_MiddleButton
+        EndIf
+      EndIf
+    EndWith
+    
     ProcedureReturn Result
   EndProcedure
   
@@ -3829,7 +3924,7 @@ Module Tree
       
       If Repaint And 
          StartDrawing(CanvasOutput(\canvas\gadget))
-       ; Debug \canvas\gadget
+        ; Debug \canvas\gadget
         Draw(*this)
         StopDrawing()
       EndIf
@@ -4490,12 +4585,14 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemColor(*g, 5, #PB_Gadget_BackColor, $FFFF00FF)
     SetItemText(*g, 5, "backcolor and text change")
     LoadFont(6, "Arial", 25)
-    SetItemFont(*g, 0, 6)
-    SetItemText(*g, 0, "25_font and text change")
+    SetItemFont(*g, 4, 6)
+    SetItemText(*g, 4, "25_font and text change")
+    SetItemFont(*g, 14, 6)
+    SetItemText(*g, 14, "25_font and text change")
     Bind(*g, @events_tree_widget())
     
     g = 13
-    *g = Widget(600, 160, 210, 210, #PB_Flag_OptionBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_ClickSelect)                                         
+    *g = Widget(600+70, 160, 210, 210, #PB_Flag_OptionBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_ClickSelect)                                         
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  4_example
@@ -4568,5 +4665,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------t8b--f-f--------------
+; Folding = -------------------------------------B+-----------------------------0-vP------------------
 ; EnableXP
