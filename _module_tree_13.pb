@@ -2358,10 +2358,14 @@ Module Tree
         EndIf
       EndIf
       
-      If State & #PB_Tree_Inbetween
-        *this\items()\box[1]\checked = 2
-      ElseIf State & #PB_Tree_Checked
-        *this\items()\box[1]\checked = 1
+      If *this\items()\box[1]\checked = 0
+        If State & #PB_Tree_Inbetween
+          *this\items()\box[1]\checked = 2
+        ElseIf State & #PB_Tree_Checked
+          *this\items()\box[1]\checked = 1
+        EndIf
+        
+        Repaint = 2
       EndIf
       
       If State & #PB_Tree_Collapsed
@@ -2376,7 +2380,7 @@ Module Tree
         ; 
         If Not *this\hide And *this\row\draw And (*this\row\count % *this\row\draw) = 0
           *this\change = 1
-          Repaint = 1
+          Repaint = 3
         EndIf  
         
         PushListPosition(*this\items())
@@ -2390,15 +2394,15 @@ Module Tree
         PopListPosition(*this\items())
       EndIf
       
-      If State & #PB_Tree_Checked Or State & #PB_Tree_Inbetween
-        Post(#PB_EventType_StatusChange, *this, Item)
-      EndIf
-      
-      If State & #PB_Tree_Selected
-        Post(#PB_EventType_Change, *this, Item)
-      EndIf
-      
       If Repaint
+        If Repaint = 2
+          Post(#PB_EventType_StatusChange, *this, Item)
+        EndIf
+        
+        If Repaint = 1
+          Post(#PB_EventType_Change, *this, Item)
+        EndIf
+        
         _repaint_(*this)
       EndIf
     EndIf
@@ -4059,10 +4063,10 @@ CompilerIf #PB_Compiler_IsMainFile
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  5_example
-    ;     AddItem(*g, 0, "Tree_0", -1 )
-    ;     AddItem(*g, 1, "Tree_1", -1, 0) 
-    ;     AddItem(*g, 2, "Tree_2", -1, 0) 
-    ;     AddItem(*g, 3, "Tree_3", -1, 0) 
+        AddItem(*g, 0, "Tree_0", -1 )
+        AddItem(*g, 1, "Tree_1", -1, 0) 
+        AddItem(*g, 2, "Tree_2", -1, 0) 
+        AddItem(*g, 3, "Tree_3", -1, 0) 
     AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
     AddItem(*g, 1, "Tree_1", -1, 1) 
     AddItem(*g, 2, "Tree_2_1", -1, 1) 

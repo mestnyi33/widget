@@ -500,7 +500,10 @@ DeclareModule Structures
   
   ;- - _S_row
   Structure _S_row 
-    ;from.l
+    index.l
+    ;handle.i
+    
+    box.l
     draw.l
     drag.b
     ;resize.l
@@ -3331,9 +3334,9 @@ Module Tree
   
   Macro _callback_(_this_, _type_)
     Select _type_
-      Case #PB_EventType_MouseLeave  ;: Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
+      Case #PB_EventType_MouseLeave  ;: Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\row\index
         
-        If _this_\from >= 0
+        If _this_\row\index >= 0
           If (_this_\items()\color\state = 1 Or down)
             _this_\items()\color\state = 0
           EndIf
@@ -3347,11 +3350,11 @@ Module Tree
         EndIf
         
         
-      Case #PB_EventType_MouseEnter  ;: Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
+      Case #PB_EventType_MouseEnter  ;: Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\row\index
         
-        If _this_\from >= 0
+        If _this_\row\index >= 0
           If down And _this_\flag\multiselect 
-            _multi_select_(_this_, _this_\from, _this_\row\selected\index)
+            _multi_select_(_this_, _this_\row\index, _this_\row\selected\index)
             Result = #True
             
           ElseIf _this_\items()\color\state = 0
@@ -3382,15 +3385,15 @@ Module Tree
     Select eventtype
       Case #PB_EventType_LeftClick
         Debug "click - "+*this
-        Post(eventtype, *this, *this\from)
+        Post(eventtype, *this, *this\row\index)
         
       Case #PB_EventType_Change
         Debug "change - "+*this
-        Post(eventtype, *this, *this\from)
+        Post(eventtype, *this, *this\row\index)
         
       Case #PB_EventType_DragStart
         Debug "drag - "+*this
-        Post(eventtype, *this, *this\from)
+        Post(eventtype, *this, *this\row\index)
         
       Case #PB_EventType_Focus
         Debug "focus - "+*this
@@ -3491,13 +3494,13 @@ Module Tree
     
     With *this
       ;       DD::DropStart(_this_)
-      ;       Post(#PB_EventType_Drop, DD::DropStop(_this_), _this_\from)
+      ;       Post(#PB_EventType_Drop, DD::DropStop(_this_), _this_\row\index)
       
       Protected enter = Bool(*leave <> *this And Not (*leave And *leave\index > *this\index) And _from_point_(mouse_x, mouse_y, *this))
       Protected leave = Bool(*leave And (enter Or (*leave = *this And Not _from_point_(mouse_x, mouse_y, *leave))))
       
       If leave
-        If *leave\from >= 0 ;And SelectElement(*leave\items(), *leave\from)
+        If *leave\row\index >= 0 ;And SelectElement(*leave\items(), *leave\row\index)
           Result | Events(*leave, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
         EndIf
         
@@ -3511,7 +3514,7 @@ Module Tree
           EndIf
         EndIf
         
-        *leave\from =- 1
+        *leave\row\index =- 1
         *leave = 0
       EndIf
       
@@ -3524,183 +3527,186 @@ Module Tree
         EndIf
       EndIf
       
-      If EventType = #PB_EventType_LeftButtonDown
-        If *this = *leave 
-          ; set mouse buttons
-          If EventType = #PB_EventType_LeftButtonDown
-            \mouse\buttons | #PB_Canvas_LeftButton
-          ElseIf EventType = #PB_EventType_RightButtonDown
-            \mouse\buttons | #PB_Canvas_RightButton
-          ElseIf EventType = #PB_EventType_MiddleButtonDown
-            \mouse\buttons | #PB_Canvas_MiddleButton
-          EndIf
-          
-          If *event\active <> *this
-            _set_active_(*this)
-          EndIf
-          
-          Result | Events(*this, EventType, mouse_x, mouse_y)
-          
-          If *this\from >= 0
-            *this\delta\x = mouse_x
-            *this\delta\y = mouse_y
-            
-            If _from_point_(mouse_x, mouse_y, *this\items()\box[1])
-              If *this\flag\OptionBoxes
-                If *this\items()\optiongroup\box[1]\checked And (Not *this\items()\parent And Not *this\items()\childrens)
-                  *this\items()\optiongroup\box[1]\checked = 0
-                EndIf
-                
-                If *this\items()\optiongroup\optiongroup <> *this\items() And *this\items()\parent
-                  If *this\items()\optiongroup\optiongroup
-                    *this\items()\optiongroup\optiongroup\box[1]\checked = 0
-                  EndIf
-                  *this\items()\optiongroup\optiongroup = *this\items()
-                EndIf
-                
-                *this\items()\box[1]\checked ! 1
-                
-              Else
-                If *this\flag\threestate
-                  Select *this\items()\box[1]\checked 
-                    Case 0
-                      *this\items()\box[1]\checked = 2
-                    Case 1
-                      *this\items()\box[1]\checked = 0
-                    Case 2
-                      *this\items()\box[1]\checked = 1
-                  EndSelect
-                Else
-                  *this\items()\box[1]\checked ! 1
-                EndIf
-              EndIf
-              
-              Result = #True
-            ElseIf (*this\flag\buttons And *this\items()\childrens) And
-                   _from_point_(mouse_x, mouse_y, *this\items()\box[0])
-              
-              *this\change = 1
-              *this\items()\box[0]\checked ! 1
-              
-              PushListPosition(*this\items())
-              While NextElement(*this\items())
-                If *this\items()\parent And *this\items()\sublevel > *this\items()\parent\sublevel 
-                  *this\items()\hide = Bool(*this\items()\parent\box[0]\checked | *this\items()\parent\hide)
-                Else
-                  Break
-                EndIf
-              Wend
-              PopListPosition(*this\items())
-              
-              If StartDrawing(CanvasOutput(*this\canvas\gadget))
-                _update_(*this, *this\items())
-                StopDrawing()
-              EndIf
-              
-              Result = #True
-            Else
-              
-              If *this\row\selected <> *this\items()
-                If *this\row\selected 
-                  *this\row\selected\color\state = 0
-                EndIf
-                
-                *row_selected = *this\items()
-                *this\items()\color\state = 2
-              EndIf
-              
-              
-              ;                   If \flag\multiselect
-              ;                     _multi_select_(*this, \from, \row\selected\index)
-              ;                   EndIf
-              
-              If *this\row\tt And *this\row\tt\visible
-                tt_close(*this\row\tt)
-              EndIf
-              
-              Result = #True
-            EndIf
-          EndIf
-          
-        Else
-          *event\leave = *leave
+      ; set mouse buttons
+      If *this = *leave 
+        If EventType = #PB_EventType_LeftButtonDown
+          \mouse\buttons | #PB_Canvas_LeftButton
+        ElseIf EventType = #PB_EventType_RightButtonDown
+          \mouse\buttons | #PB_Canvas_RightButton
+        ElseIf EventType = #PB_EventType_MiddleButtonDown
+          \mouse\buttons | #PB_Canvas_MiddleButton
         EndIf
       EndIf
       
-      If EventType = #PB_EventType_LeftButtonUp 
-        If *this = *event\leave And *event\leave\mouse\buttons : *event\leave\mouse\buttons = 0
-          
-          If *this\from >= 0 And Not *this\row\drag And 
-             Not (*row_selected And (*this\flag\buttons And *row_selected\childrens And 
-                   _from_point_(mouse_x, mouse_y, *row_selected\box[0])) Or
-                  _from_point_(mouse_x, mouse_y, *row_selected\box[1]))
-            
-            If *this\row\selected <> *row_selected
-              *this\row\selected = *row_selected
-              *this\row\selected\color\state = 2
-              
-              Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
+      ; post widget events
+      Select EventType 
+        Case #PB_EventType_LeftButtonDown
+          If *this = *leave 
+            If *event\active <> *this
+              _set_active_(*this)
             EndIf
+            
+            Result | Events(*this, EventType, mouse_x, mouse_y)
+            
+            If *this\row\index >= 0
+              *this\delta\x = mouse_x
+              *this\delta\y = mouse_y
+              
+              If _from_point_(mouse_x, mouse_y, *this\items()\box[1])
+                *this\row\box = 1
+                
+                If *this\flag\OptionBoxes
+                  If *this\items()\optiongroup\box[1]\checked And (Not *this\items()\parent And Not *this\items()\childrens)
+                    *this\items()\optiongroup\box[1]\checked = 0
+                  EndIf
+                  
+                  If *this\items()\optiongroup\optiongroup <> *this\items() And *this\items()\parent
+                    If *this\items()\optiongroup\optiongroup
+                      *this\items()\optiongroup\optiongroup\box[1]\checked = 0
+                    EndIf
+                    *this\items()\optiongroup\optiongroup = *this\items()
+                  EndIf
+                  
+                  *this\items()\box[1]\checked ! 1
+                  
+                Else
+                  If *this\flag\threestate
+                    Select *this\items()\box[1]\checked 
+                      Case 0
+                        *this\items()\box[1]\checked = 2
+                      Case 1
+                        *this\items()\box[1]\checked = 0
+                      Case 2
+                        *this\items()\box[1]\checked = 1
+                    EndSelect
+                  Else
+                    *this\items()\box[1]\checked ! 1
+                  EndIf
+                EndIf
+                
+                Result = #True
+              ElseIf *this\flag\buttons And *this\items()\childrens And _from_point_(mouse_x, mouse_y, *this\items()\box[0])
+                *this\change = 1
+                *this\row\box = 2
+                *this\items()\box[0]\checked ! 1
+                
+                PushListPosition(*this\items())
+                While NextElement(*this\items())
+                  If *this\items()\parent And *this\items()\sublevel > *this\items()\parent\sublevel 
+                    *this\items()\hide = Bool(*this\items()\parent\box[0]\checked | *this\items()\parent\hide)
+                  Else
+                    Break
+                  EndIf
+                Wend
+                PopListPosition(*this\items())
+                
+                If StartDrawing(CanvasOutput(*this\canvas\gadget))
+                  _update_(*this, *this\items())
+                  StopDrawing()
+                EndIf
+                
+                Result = #True
+              Else
+                
+                If *this\row\selected <> *this\items()
+                  If *this\row\selected 
+                    *this\row\selected\color\state = 0
+                  EndIf
+                  
+                  *row_selected = *this\items()
+                  *this\items()\color\state = 2
+                EndIf
+                
+                
+                ;                   If \flag\multiselect
+                ;                     _multi_select_(*this, \row\index, \row\selected\index)
+                ;                   EndIf
+                
+                If *this\row\tt And *this\row\tt\visible
+                  tt_close(*this\row\tt)
+                EndIf
+                
+                Result = #True
+              EndIf
+            EndIf
+            
+          Else
+            *event\leave = *leave
           EndIf
           
-          Result | Events(*this, #PB_EventType_LeftButtonUp, mouse_x, mouse_y)
-          
-          If *this\from >= 0 
+        Case #PB_EventType_LeftButtonUp 
+          If *this = *event\leave And *event\leave\mouse\buttons
+            *event\leave\mouse\buttons = 0
+            
+            If *this\row\box 
+              *this\row\box = 0
+            ElseIf *this\row\index >= 0 And Not *this\row\drag
+              
+              If *this\row\selected <> *row_selected
+                *this\row\selected = *row_selected
+                *this\row\selected\color\state = 2
+                
+                Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
+              EndIf
+            EndIf
+            
+            Result | Events(*this, #PB_EventType_LeftButtonUp, mouse_x, mouse_y)
+            
             If *this\row\drag 
               *this\row\drag = 0
-            Else
+            ElseIf *this\row\index >= 0 
               Result | Events(*this, #PB_EventType_LeftClick, mouse_x, mouse_y)
             EndIf
-          EndIf
-          
-          If *event\leave <> *leave
-            Result | Events(*event\leave, #PB_EventType_MouseLeave, mouse_x, mouse_y) 
-            *event\leave\from =- 1
-            *event\leave = *leave
             
-            If *leave
-              Result | Events(*leave, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+            If *event\leave <> *leave
+              Result | Events(*event\leave, #PB_EventType_MouseLeave, mouse_x, mouse_y) 
+              *event\leave\row\index =- 1
+              *event\leave = *leave
+              
+              If *leave
+                Result | Events(*leave, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+              EndIf
             EndIf
           EndIf
-        EndIf
-        
-        If *this = *leave And Not *event\leave
-          Result | Events(*leave, #PB_EventType_MouseEnter, mouse_x, mouse_y)
-          *event\leave = *leave
-        EndIf
-      EndIf
-      
-      If EventType =  #PB_EventType_LostFocus
-        ; если фокус получил PB gadget
-        ; то убираем фокус с виджета
-        If *event\active = *this
-          If *event\active\row\selected 
-            *event\active\row\selected\color\state = 3
+          
+          If (*this = *leave And Not *event\leave)
+            Result | Events(*leave, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+            *event\leave = *leave
           EndIf
           
-          Result | Events(*this, #PB_EventType_LostFocus, mouse_x, mouse_y)
+        Case #PB_EventType_LostFocus
+          ; если фокус получил PB gadget
+          ; то убираем фокус с виджета
+          If *event\active = *this
+            If *event\active\row\selected 
+              *event\active\row\selected\color\state = 3
+            EndIf
+            
+            Result | Events(*this, #PB_EventType_LostFocus, mouse_x, mouse_y)
+            
+            *event\active\color\state = 0
+            *event\active = 0
+          EndIf
           
-          *event\active\color\state = 0
-          *event\active = 0
-        EndIf
-      EndIf
+      EndSelect
       
       
       If *this = *leave And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ; And Not *this\mouse\buttons
         If _from_point_(mouse_x, mouse_y, *this, [2]) 
+          
           ; at item from points
           ForEach *this\draws()
             If (mouse_y >= *this\draws()\y-*this\scroll\v\page\pos And
                 mouse_y < *this\draws()\y+*this\draws()\height-*this\scroll\v\page\pos)
               
-              If *this\from <> *this\draws()\index
-                If *this\from >= 0 ;And SelectElement(\items(), \from)
+              If *this\row\index <> *this\draws()\index
+                If *this\row\index >= 0 ;And SelectElement(\items(), \row\index)
                   Result | Events(*this, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
                 EndIf
                 
-                *this\from = *this\draws()\index
+                *this\row\index = *this\draws()\index
                 
-                If *this\from >= 0 And SelectElement(*this\items(), *this\from)
+                If *this\row\index >= 0 And SelectElement(*this\items(), *this\row\index)
                   Result | Events(*this, #PB_EventType_MouseMove, mouse_x, mouse_y, 1)
                 EndIf
               EndIf
@@ -3709,12 +3715,17 @@ Module Tree
             EndIf
           Next
           
+          If *this\row\index >= 0 And Not (mouse_y >= *this\items()\y-*this\scroll\v\page\pos And
+                                           mouse_y < *this\items()\y+*this\items()\height-*this\scroll\v\page\pos)
+            Result | Events(*this, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
+            *this\row\index =- 1
+          EndIf
         Else
           
-          If *this\from >= 0
+          If *this\row\index >= 0
             ;Debug " leave items"
             Result | Events(*this, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
-            *this\from =- 1
+            *this\row\index =- 1
           EndIf
           
         EndIf
@@ -3735,40 +3746,42 @@ Module Tree
       EndIf
       
       If EventType = #PB_EventType_MouseMove
-        If *event\leave And *event\leave\from =- 1
+        If *event\leave And *event\leave\row\index =- 1
           Result | Events(*event\leave, #PB_EventType_MouseMove, mouse_x, mouse_y)
         EndIf
       EndIf
       
       
       ; 
-      Select *this
-        Case *event\leave, *event\active
-          
-          If EventType = #PB_EventType_MouseEnter
-          ElseIf EventType = #PB_EventType_MouseLeave
-          ElseIf EventType = #PB_EventType_LeftButtonDown 
-          ElseIf EventType = #PB_EventType_LeftButtonUp
-          ElseIf EventType = #PB_EventType_LeftClick
-          ElseIf EventType = #PB_EventType_Focus
-          ElseIf EventType = #PB_EventType_LostFocus
-          ElseIf EventType = #PB_EventType_MouseMove
-          ElseIf EventType = #PB_EventType_DragStart
-          Else
-            Result | Events(*this, EventType, mouse_x, mouse_y)
-          EndIf
-          
-          ; reset mouse buttons
-          If EventType = #PB_EventType_LeftButtonUp
-            \mouse\buttons &~ #PB_Canvas_LeftButton
-          ElseIf EventType = #PB_EventType_RightButtonUp
-            \mouse\buttons &~ #PB_Canvas_RightButton
-          ElseIf EventType = #PB_EventType_MiddleButtonUp
-            \mouse\buttons &~ #PB_Canvas_MiddleButton
-          EndIf
-      EndSelect
-    EndWith
-    
+;       Select *this
+;         Case *event\leave, *event\active
+;           
+;           If EventType = #PB_EventType_MouseEnter
+;           ElseIf EventType = #PB_EventType_MouseLeave
+;           ElseIf EventType = #PB_EventType_LeftButtonDown 
+;           ElseIf EventType = #PB_EventType_LeftButtonUp
+;           ElseIf EventType = #PB_EventType_LeftClick
+;           ElseIf EventType = #PB_EventType_Focus
+;           ElseIf EventType = #PB_EventType_LostFocus
+;           ElseIf EventType = #PB_EventType_MouseMove
+;           ElseIf EventType = #PB_EventType_DragStart
+;           Else
+;             Result | Events(*this, EventType, mouse_x, mouse_y)
+;           EndIf
+;        EndSelect
+         
+       ; reset mouse buttons
+       If \mouse\buttons
+         If EventType = #PB_EventType_LeftButtonUp
+           \mouse\buttons &~ #PB_Canvas_LeftButton
+         ElseIf EventType = #PB_EventType_RightButtonUp
+           \mouse\buttons &~ #PB_Canvas_RightButton
+         ElseIf EventType = #PB_EventType_MiddleButtonUp
+           \mouse\buttons &~ #PB_Canvas_MiddleButton
+         EndIf
+       EndIf
+     EndWith
+     
     ProcedureReturn Result
   EndProcedure
   
@@ -3835,7 +3848,7 @@ Module Tree
         \type = #PB_GadgetType_Tree
         \x =- 1
         \y =- 1
-        \from =- 1
+        \row\index =- 1
         \change = 1
         
         \interact = 1
@@ -4555,5 +4568,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------f-nv+--------v--------------------0-rP-----B------------
+; Folding = ------------------------------------------------------------------t8b--f-f--------------
 ; EnableXP
