@@ -3335,51 +3335,6 @@ Module Tree
     EndIf
   EndProcedure
   
-  Macro _callback_(_this_, _type_)
-    Select _type_
-      Case #PB_EventType_MouseLeave  ;: Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\row\index
-        
-        If _this_\row\index >= 0
-          If (_this_\items()\color\state = 1 Or down)
-            _this_\items()\color\state = 0
-          EndIf
-          
-          ; close tooltip on the item
-          If _this_\row\tt And _this_\row\tt\visible
-            tt_close(_this_\row\tt)
-          EndIf
-          
-          Result = #True
-        EndIf
-        
-        
-      Case #PB_EventType_MouseEnter  ;: Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\row\index
-        
-        If _this_\row\index >= 0
-          If down And _this_\flag\multiselect 
-            _multi_select_(_this_, _this_\row\index, _this_\row\selected\index)
-            Result = #True
-            
-          ElseIf _this_\items()\color\state = 0
-            _this_\items()\color\state = 1+Bool(down)
-            
-            If down
-              _this_\row\selected = _this_\items()
-            EndIf
-            
-            Result = #True
-          EndIf
-          
-          ; create tooltip on the item
-          If Bool((_this_\flag\buttons=0 And _this_\flag\lines=0)) And _this_\items()\len > _this_\width[2]
-            tt_creare(_this_, GadgetX(_this_\canvas\gadget, #PB_Gadget_ScreenCoordinate), GadgetY(_this_\canvas\gadget, #PB_Gadget_ScreenCoordinate))
-          EndIf
-          
-          
-        EndIf
-    EndSelect  
-  EndMacro
-  
   
   ;-
   Procedure Events(*this._S_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1, position.l=0)
@@ -3424,14 +3379,41 @@ Module Tree
       Case #PB_EventType_MouseMove
         ; Debug "move - "+*this
         
-        If position
+        If position And *this\row\index >= 0
+          ; down = *this\mouse\buttons
+          
+          ; event mouse enter line
           If position > 0
-            _callback_(*this, #PB_EventType_MouseEnter)
+            If down And *this\flag\multiselect 
+              _multi_select_(*this, *this\row\index, *this\row\selected\index)
+              
+            ElseIf *this\items()\color\state = 0
+              *this\items()\color\state = 1+Bool(down)
+              
+              If down
+                *this\row\selected = *this\items()
+              EndIf
+            EndIf
+            
+            ; create tooltip on the item
+            If Bool((*this\flag\buttons=0 And *this\flag\lines=0)) And *this\items()\len > *this\width[2]
+              tt_creare(*this, GadgetX(*this\canvas\gadget, #PB_Gadget_ScreenCoordinate), GadgetY(*this\canvas\gadget, #PB_Gadget_ScreenCoordinate))
+            EndIf
+            
+            ; event mouse leave line
           Else
-            _callback_(*this, #PB_EventType_MouseLeave)
+            If (*this\items()\color\state = 1 Or down)
+              *this\items()\color\state = 0
+            EndIf
+            
+            ; close tooltip on the item
+            If *this\row\tt And *this\row\tt\visible
+              tt_close(*this\row\tt)
+            EndIf
+            
           EndIf
           
-          Result = 1
+          Result = #True
         EndIf
     EndSelect
     
@@ -3469,7 +3451,6 @@ Module Tree
           *this\canvas\mouse\wheel\y = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_WheelDelta)
         Case #PB_EventType_Input 
           *this\canvas\input = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Input)
-          *this\canvas\Key[1] = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Modifiers)
         Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
           *this\canvas\Key = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Key)
           *this\canvas\Key[1] = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Modifiers)
@@ -3696,20 +3677,22 @@ Module Tree
             
             Select *this\canvas\key
               Case #PB_Shortcut_PageUp
-                If *this\canvas\key[1] = 4 And Bar::SetState(*this\scroll\v, 0) 
+                If Bar::SetState(*this\scroll\v, 0) 
                   *this\change = 1 
                   Result = 1
                 EndIf
                 
               Case #PB_Shortcut_PageDown
-                If *this\canvas\key[1] = 4 And Bar::SetState(*this\scroll\v, *this\scroll\v\page\end) 
+                If Bar::SetState(*this\scroll\v, *this\scroll\v\page\end) 
                   *this\change = 1 
                   Result = 1
                 EndIf
                 
-              Case #PB_Shortcut_Up
+              Case #PB_Shortcut_Up, #PB_Shortcut_Home
                 If *this\row\selected
-                  If *this\canvas\key[1] = 6
+                  If (*this\canvas\key[1] & #PB_Canvas_Alt) And
+                     (*this\canvas\key[1] & #PB_Canvas_Control)
+                    
                     If Bar::SetState(*this\scroll\v, *this\scroll\v\page\pos-18) 
                       *this\change = 1 
                       Result = 1
@@ -3717,13 +3700,13 @@ Module Tree
                     
                   ElseIf *this\row\selected\index > 0
                     ; select modifiers key
-                    Select *this\canvas\key[1] 
-                      Case 2
-                        SelectElement(*this\items(), 0)
-                      Default
-                        SelectElement(*this\items(), *this\row\selected\index - 1)
-                    EndSelect
-                    
+                    If (*this\canvas\key = #PB_Shortcut_Home Or
+                        (*this\canvas\key[1] & #PB_Canvas_Alt))
+                      SelectElement(*this\items(), 0)
+                    Else
+                      SelectElement(*this\items(), *this\row\selected\index - 1)
+                    EndIf
+                   
                     If *this\row\selected <> *this\items()
                       *this\row\selected\color\state = 0
                       *this\row\selected  = *this\items()
@@ -3743,9 +3726,11 @@ Module Tree
                   EndIf
                 EndIf
                 
-              Case #PB_Shortcut_Down
+              Case #PB_Shortcut_Down, #PB_Shortcut_End
                 If *this\row\selected
-                  If *this\canvas\key[1] = 6
+                  If (*this\canvas\key[1] & #PB_Canvas_Alt) And
+                     (*this\canvas\key[1] & #PB_Canvas_Control)
+                    
                     If Bar::SetState(*this\scroll\v, *this\scroll\v\page\pos+18) 
                       *this\change = 1 
                       Result = 1
@@ -3753,13 +3738,13 @@ Module Tree
                     
                   ElseIf *this\row\selected\index < (*this\row\count - 1)
                     ; select modifiers key
-                    Select *this\canvas\key[1] 
-                      Case 2
-                        SelectElement(*this\items(), (*this\row\count - 1))
-                      Default
-                        SelectElement(*this\items(), *this\row\selected\index + 1)
-                    EndSelect
-                    
+                    If (*this\canvas\key = #PB_Shortcut_End Or
+                        (*this\canvas\key[1] & #PB_Canvas_Alt))
+                      SelectElement(*this\items(), (*this\row\count - 1))
+                    Else
+                      SelectElement(*this\items(), *this\row\selected\index + 1)
+                    EndIf
+                   
                     If *this\row\selected <> *this\items()
                       *this\row\selected\color\state = 0
                       *this\row\selected  = *this\items()
@@ -3777,6 +3762,22 @@ Module Tree
                       
                     EndIf
                   EndIf
+                EndIf
+                
+              Case #PB_Shortcut_Left
+                If (*this\canvas\key[1] & #PB_Canvas_Alt) And
+                     (*this\canvas\key[1] & #PB_Canvas_Control)
+                  
+                  *this\change = Bar::SetState(*this\scroll\h, *this\scroll\h\page\pos-(*this\scroll\h\page\end/10)) 
+                  Result = 1
+                EndIf
+                
+              Case #PB_Shortcut_Right
+                If (*this\canvas\key[1] & #PB_Canvas_Alt) And
+                     (*this\canvas\key[1] & #PB_Canvas_Control)
+                  
+                  *this\change = Bar::SetState(*this\scroll\h, *this\scroll\h\page\pos+(*this\scroll\h\page\end/10)) 
+                  Result = 1
                 EndIf
                 
             EndSelect
@@ -4665,5 +4666,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------B+-----------------------------0-vP------------------
+; Folding = -------------------------------------B+-----------------------------f--XXxxn---------------
 ; EnableXP
