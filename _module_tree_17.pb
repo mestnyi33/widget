@@ -284,6 +284,7 @@ DeclareModule Structures
   ;- - _S_event
   Structure _S_event
     *leave._S_widget  
+    *enter._S_widget  
     *active._S_widget
     *widget._S_widget
     
@@ -657,341 +658,6 @@ EndModule
 ;- <<<
 
 UseModule Structures
-
-DeclareModule DD
-  EnableExplicit
-  
-  ;- - _S_drop
-  Structure _S_drop
-    widget.i
-    
-    Type.i
-    Format.i
-    Actions.i
-    Text.s
-    ImageID.i
-    
-    Width.i
-    Height.i
-  EndStructure
-  
-  Global *Drag._S_drop
-  Global NewMap *Drop._S_drop()
-  
-  Declare.s DropText(*this)
-  Declare.i DropImage(*this, Image.i=-1, Depth.i=24)
-  Declare.i DropAction(*this)
-  
-  Declare.i Text(*this, Text.S, Actions.i=#PB_Drag_Copy)
-  Declare.i Image(*this, Image.i, Actions.i=#PB_Drag_Copy)
-  Declare.i Private(*this, Type.i, Actions.i=#PB_Drag_Copy)
-  
-  Declare.i EnableDrop(*this, Format.i, Actions.i, PrivateType.i=0)
-  Declare.i CallBack(*this, EventType.i)
-  Declare.i DropStart(*this)
-  Declare.i DropStop(*this)
-EndDeclareModule
-
-Module DD
-  Procedure.i SetCursor(Canvas, ImageID.i, x=0, y=0)
-    Protected Result.i
-    
-    With *this
-      If Canvas And ImageID
-        CompilerSelect #PB_Compiler_OS
-          CompilerCase #PB_OS_Windows
-            Protected ico.ICONINFO
-            ico\fIcon = 0
-            ico\xHotspot =- x 
-            ico\yHotspot =- y 
-            ico\hbmMask = ImageID
-            ico\hbmColor = ImageID
-            
-            Protected *Cursor = CreateIconIndirect_(ico)
-            If Not *Cursor 
-              *Cursor = ImageID 
-            EndIf
-            
-          CompilerCase #PB_OS_Linux
-            Protected *Cursor.GdkCursor = gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
-            
-          CompilerCase #PB_OS_MacOS
-            Protected Hotspot.NSPoint
-            Hotspot\x = x
-            Hotspot\y = y
-            Protected *Cursor = CocoaMessage(0, 0, "NSCursor alloc")
-            CocoaMessage(0, *Cursor, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
-            
-        CompilerEndSelect
-        
-        SetGadgetAttribute(Canvas, #PB_Canvas_CustomCursor, *Cursor)
-      EndIf
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i Cur(type)
-    Protected x=1,y=1, Image
-    UsePNGImageDecoder()
-    
-    If type
-      Image = CatchImage(#PB_Any, ?add, 601)
-    Else
-      Image = CatchImage(#PB_Any, ?copy, 530)
-    EndIf
-    
-    SetCursor(EventGadget(), ImageID(Image), x,y)
-    
-    DataSection
-      add: ; memory_size - (601)
-      Data.q $0A1A0A0D474E5089,$524448490D000000,$1A00000017000000,$0FBDF60000000408,$4D416704000000F5,$61FC0B8FB1000041,
-             $5248632000000005,$800000267A00004D,$80000000FA000084,$EA000030750000E8,$170000983A000060,$0000003C51BA9C70,
-             $87FF0044474B6202,$7009000000BFCC8F,$00C8000000735948,$ADE7FA6300C80000,$454D497407000000,$450A0F0B1308E307,
-             $63100000000C6AC0,$0020000000764E61,$0002000000200000,$000C8D7E6F010000,$3854414449300100,$1051034ABB528DCB,
-             $58DB084146C5293D,$82361609B441886C,$AA4910922C455E92,$C2C105F996362274,$FC2FF417B0504FC2,$DEF7BB3BB9ACF1A0,
-             $B99CE66596067119,$2DB03A16C1101E67,$12D0B4D87B0D0B8F,$11607145542B450C,$190D04A4766FDCAA,$4129428FD14DCD04,
-             $98F0D525AEFE8865,$A1C4924AD95B44D0,$26A2499413E13040,$F4F9F612B8726298,$62A6ED92C07D5B54,$E13897C2BE814222,
-             $A75C5C6365448A6C,$D792BBFAE41D2925,$1A790C0B8161DC2F,$224D78F4C611BD60,$A1E8C72566AB9F6F,$2023A32BDB05D21B,
-             $0E3BC7FEBAF316E4,$8E25C73B08CF01B1,$385C7629FEB45FBE,$8BB5746D80621D9F,$9A5AC7132FE2EC2B,$956786C4AE73CBF3,
-             $FE99E13C707BB5EB,$C2EA47199109BF48,$01FE0FA33F4D71EF,$EE0F55B370F8C437,$F12CD29C356ED20C,$CBC4BD4A70C833B1,
-             $FFCD97200103FC1C,$742500000019D443,$3A65746164745845,$3200657461657263,$312D38302D393130,$3A35313A31315439,
-             $30303A30302B3930,$25000000B3ACC875,$6574616474584574,$00796669646F6D3A,$2D38302D39313032,$35313A3131543931,
-             $303A30302B35303A,$0000007B7E35C330,$6042AE444E454900
-      Data.b $82
-      add_end:
-      ;     EndDataSection
-      ;       
-      ;     DataSection
-      copy: ; memory_size - (530)
-      Data.q $0A1A0A0D474E5089,$524448490D000000,$1A00000010000000,$1461140000000408,$4D4167040000008C,$61FC0B8FB1000041,
-             $5248632000000005,$800000267A00004D,$80000000FA000084,$EA000030750000E8,$170000983A000060,$0000003C51BA9C70,
-             $87FF0044474B6202,$7009000000BFCC8F,$00C8000000735948,$ADE7FA6300C80000,$454D497407000000,$450A0F0B1308E307,
-             $63100000000C6AC0,$0020000000764E61,$0002000000200000,$000C8D7E6F010000,$2854414449E90000,$1040C20A31D27DCF,
-             $8B08226C529FD005,$961623685304458D,$05E8A288B1157A4A,$785858208E413C44,$AD03C2DE8803C505,$74CCDD93664D9893,
-             $5C25206CCCECC7D9,$0AF51740A487B038,$E4950624ACF41B10,$0B03925602882A0F,$504520607448C0E1,$714E75682A0F7A22,
-             $1EC4707FBC91940F,$EF1F26F801E80C33,$6FE840E84635C148,$47D13D78D54EC071,$5BDF86398A726F4D,$7DD0539F268C6356,
-             $39B40B3759101A3E,$2EEB2D02D7DBC170,$49172CA44A415AD2,$52B82E69FF1E0AC0,$CC0D0D97E9B7299E,$046FA509CA4B09C0,
-             $CB03993630382B86,$5E4840261A49AA98,$D3951E21331B30CF,$262C1B127F8F8BD3,$250000007DB05216,$6574616474584574,
-             $006574616572633A,$2D38302D39313032,$35313A3131543931,$303A30302B37303A,$000000EED7F72530,$7461647458457425,
-             $796669646F6D3A65,$38302D3931303200,$313A31315439312D,$3A30302B35303A35,$00007B7E35C33030,$42AE444E45490000
-      Data.b $60,$82
-      copy_end:
-    EndDataSection
-    
-  EndProcedure
-  
-  Procedure.i EnableDrop(*this, Format.i, Actions.i, PrivateType.i=0)
-    ; Format
-    ; #PB_Drop_Text    : Accept text on this gadget
-    ; #PB_Drop_Image   : Accept images on this gadget
-    ; #PB_Drop_Files   : Accept filenames on this gadget
-    ; #PB_Drop_Private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
-    
-    ; Actions
-    ; #PB_Drag_None    : The Data format will Not be accepted on the gadget
-    ; #PB_Drag_Copy    : The Data can be copied
-    ; #PB_Drag_Move    : The Data can be moved
-    ; #PB_Drag_Link    : The Data can be linked
-    
-    If Not *Drag 
-      *Drag = AllocateStructure(_S_drop) 
-    EndIf
-    
-    With *Drag
-      If AddMapElement(*Drop(), Hex(*this))
-        *Drop() = AllocateStructure(_S_drop)
-        
-        Debug "Enable drop - " + *this
-        *Drop()\Format = Format
-        *Drop()\Actions = Actions
-        *Drop()\Type = PrivateType
-      EndIf
-    EndWith
-  EndProcedure
-  
-  Procedure.i Text(*this, Text.s, Actions.i=#PB_Drag_Copy)
-    Debug "Drag text - " + Text
-    *Drag = AllocateStructure(_S_drop)
-    *Drag\Format = #PB_Drop_Text
-    *Drag\Text = Text
-    *Drag\Actions = Actions
-    Cur(0)
-  EndProcedure
-  
-  Procedure.i Image(*this, Image.i, Actions.i=#PB_Drag_Copy)
-    Debug "Drag image - " + Image
-    *Drag = AllocateStructure(_S_drop)
-    *Drag\Format = #PB_Drop_Image
-    *Drag\ImageID = ImageID(Image)
-    *Drag\Width = ImageWidth(Image)
-    *Drag\Height = ImageHeight(Image)
-    *Drag\Actions = Actions
-    Cur(0)
-  EndProcedure
-  
-  Procedure.i Private(*this, Type.i, Actions.i=#PB_Drag_Copy)
-    Debug "Drag private - " + Type
-    *Drag = AllocateStructure(_S_drop)
-    *Drag\Format = #PB_Drop_Private
-    *Drag\Actions = Actions
-    *Drag\Type = Type
-    Cur(0)
-  EndProcedure
-  
-  Procedure.i DropAction(*this)
-    If *Drag And *Drop() And FindMapElement(*Drop(), Hex(*this))
-      If *Drop()\Format = *Drag\Format And *Drop()\Type = *Drag\Type 
-        ProcedureReturn *Drop()\Actions 
-      EndIf
-    EndIf
-  EndProcedure
-  
-  Procedure.s DropText(*this)
-    Protected result.s
-    
-    If DropAction(*this)
-      Debug "Drop text - "+*Drag\Text
-      result = *Drag\Text
-      FreeStructure(*Drag) 
-      *Drag = 0
-      
-      ProcedureReturn result
-    EndIf
-  EndProcedure
-  
-  Procedure.i DropPrivate(*this)
-    Protected result.i
-    
-    If DropAction(*this)
-      Debug "Drop type - "+*Drag\Type
-      result = *Drag\Type
-      FreeStructure(*Drag)
-      *Drag = 0
-      
-      ProcedureReturn result
-    EndIf
-  EndProcedure
-  
-  Procedure.i DropImage(*this, Image.i=-1, Depth.i=24)
-    Protected result.i
-    
-    If DropAction(*this) And *Drag\ImageID
-      Debug "Drop image - "+*Drag\ImageID
-      
-      If Image =- 1
-        Result = CreateImage(#PB_Any, *Drag\Width, *Drag\Height) : Image = Result
-      Else
-        Result = IsImage(Image)
-      EndIf
-      
-      If Result And StartDrawing(ImageOutput(Image))
-        If Depth = 32
-          DrawAlphaImage(*Drag\ImageID, 0, 0)
-        Else
-          DrawImage(*Drag\ImageID, 0, 0)
-        EndIf
-        StopDrawing()
-      EndIf  
-      
-      FreeStructure(*Drag)
-      *Drag = 0
-      
-      ProcedureReturn Result
-    EndIf
-    
-  EndProcedure
-  
-  Procedure.i DropStart(*this)
-    
-    If *Drag
-      If DropAction(*this)
-        *Drag\widget = *this
-        Debug "set handle cursor"
-        Cur(1)
-      Else
-        Debug "set denied cursor"
-        Cur(0)
-        *Drag\widget = 0
-      EndIf
-    EndIf  
-    
-  EndProcedure
-  
-  Procedure.i DropStop(*this)
-    
-    If *Drag
-      Debug "set default cursor"
-      SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-      
-      If DropAction(*Drag\widget) 
-        ;SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-        ProcedureReturn *Drag\widget
-      EndIf
-    EndIf  
-    
-  EndProcedure
-  
-  Procedure.i CallBack(*this, EventType.i)
-    If *Drag
-      
-      Select EventType
-        Case #PB_EventType_MouseEnter
-          
-          If DropAction(*this)
-            *Drag\widget = *this
-            Debug "set handle cursor"
-            Cur(1)
-          Else
-            Debug "set denied cursor"
-            Cur(0)
-            *Drag\widget = 0
-          EndIf
-          
-        Case #PB_EventType_LeftButtonUp
-          Debug "set default cursor"
-          SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-          
-          If DropAction(*Drag\widget) 
-            ;SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-            ProcedureReturn *Drag\widget
-          EndIf
-          
-      EndSelect
-      
-    EndIf
-  EndProcedure
-  
-  ;- - DRAG&DROP
-  Macro DropText()
-    DD::DropText(Widget())
-  EndMacro
-  
-  Macro DropAction()
-    DD::DropAction(Widget())
-  EndMacro
-  
-  Macro DropImage(_image_, _depth_=24)
-    DD::DropImage(Widget(), _image_, _depth_)
-  EndMacro
-  
-  Macro DragText(_text_, _actions_=#PB_Drag_Copy)
-    DD::Text(Widget(), _text_, _actions_)
-  EndMacro
-  
-  Macro DragImage(_image_, _actions_=#PB_Drag_Copy)
-    DD::Image(Widget(), _image_, _actions_)
-  EndMacro
-  
-  Macro DragPrivate(_type_, _actions_=#PB_Drag_Copy)
-    DD::Private(Widget(), _type_, _actions_)
-  EndMacro
-  
-  Macro EnableDrop(_this_, _format_, _actions_, _private_type_=0)
-    DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
-  EndMacro
-  
-EndModule
 
 ;- >>>
 DeclareModule Bar
@@ -1852,6 +1518,290 @@ Module Bar
   EndProcedure
 EndModule
 ;- <<< 
+
+;- <<<
+DeclareModule DD
+  EnableExplicit
+  
+  ;- - _S_drop
+  Structure _S_drop
+    widget.i
+    cursor.i
+    
+    Type.i
+    Format.i
+    Actions.i
+    Text.s
+    ImageID.i
+    
+    Width.i
+    Height.i
+  EndStructure
+  
+  Global *Drag._S_drop
+  Global NewMap *Drop._S_drop()
+  
+  Declare.s DropText(*this)
+  Declare.i DropImage(*this, Image.i=-1, Depth.i=24)
+  Declare.i DropAction(*this)
+  
+  Declare.i Text(*this, Text.S, Actions.i=#PB_Drag_Copy)
+  Declare.i Image(*this, Image.i, Actions.i=#PB_Drag_Copy)
+  Declare.i Private(*this, Type.i, Actions.i=#PB_Drag_Copy)
+  
+  Declare.i EnableDrop(*this, Format.i, Actions.i, PrivateType.i=0)
+  Declare.i DropStart(*this)
+  Declare.i DropStop(*this)
+EndDeclareModule
+
+Module DD
+  Macro _action_(_this_)
+    Bool(_this_ And *Drag And *Drop() And FindMapElement(*Drop(), Hex(_this_)) And *Drop()\Format = *Drag\Format And *Drop()\Type = *Drag\Type And *Drop()\Actions)
+  EndMacro
+  
+  Procedure.i SetCursor(Canvas, ImageID.i, x=0, y=0)
+    Protected Result.i
+    
+    With *this
+      If Canvas And ImageID
+        CompilerSelect #PB_Compiler_OS
+          CompilerCase #PB_OS_Windows
+            Protected ico.ICONINFO
+            ico\fIcon = 0
+            ico\xHotspot =- x 
+            ico\yHotspot =- y 
+            ico\hbmMask = ImageID
+            ico\hbmColor = ImageID
+            
+            Protected *Cursor = CreateIconIndirect_(ico)
+            If Not *Cursor 
+              *Cursor = ImageID 
+            EndIf
+            
+          CompilerCase #PB_OS_Linux
+            Protected *Cursor.GdkCursor = gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, x, y)
+            
+          CompilerCase #PB_OS_MacOS
+            Protected Hotspot.NSPoint
+            Hotspot\x = x
+            Hotspot\y = y
+            Protected *Cursor = CocoaMessage(0, 0, "NSCursor alloc")
+            CocoaMessage(0, *Cursor, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
+            
+        CompilerEndSelect
+        
+        SetGadgetAttribute(Canvas, #PB_Canvas_CustomCursor, *Cursor)
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.i Cur(type)
+    Protected x=1,y=1
+    UsePNGImageDecoder()
+    
+    If type And *Drop()
+      *Drop()\cursor = CatchImage(#PB_Any, ?add, 601)
+      SetCursor(EventGadget(), ImageID(*Drop()\cursor), x,y)
+    Else
+      *Drag\cursor = CatchImage(#PB_Any, ?copy, 530)
+      SetCursor(EventGadget(), ImageID(*Drag\cursor), x,y)
+    EndIf
+    
+    DataSection
+      add: ; memory_size - (601)
+      Data.q $0A1A0A0D474E5089,$524448490D000000,$1A00000017000000,$0FBDF60000000408,$4D416704000000F5,$61FC0B8FB1000041,
+             $5248632000000005,$800000267A00004D,$80000000FA000084,$EA000030750000E8,$170000983A000060,$0000003C51BA9C70,
+             $87FF0044474B6202,$7009000000BFCC8F,$00C8000000735948,$ADE7FA6300C80000,$454D497407000000,$450A0F0B1308E307,
+             $63100000000C6AC0,$0020000000764E61,$0002000000200000,$000C8D7E6F010000,$3854414449300100,$1051034ABB528DCB,
+             $58DB084146C5293D,$82361609B441886C,$AA4910922C455E92,$C2C105F996362274,$FC2FF417B0504FC2,$DEF7BB3BB9ACF1A0,
+             $B99CE66596067119,$2DB03A16C1101E67,$12D0B4D87B0D0B8F,$11607145542B450C,$190D04A4766FDCAA,$4129428FD14DCD04,
+             $98F0D525AEFE8865,$A1C4924AD95B44D0,$26A2499413E13040,$F4F9F612B8726298,$62A6ED92C07D5B54,$E13897C2BE814222,
+             $A75C5C6365448A6C,$D792BBFAE41D2925,$1A790C0B8161DC2F,$224D78F4C611BD60,$A1E8C72566AB9F6F,$2023A32BDB05D21B,
+             $0E3BC7FEBAF316E4,$8E25C73B08CF01B1,$385C7629FEB45FBE,$8BB5746D80621D9F,$9A5AC7132FE2EC2B,$956786C4AE73CBF3,
+             $FE99E13C707BB5EB,$C2EA47199109BF48,$01FE0FA33F4D71EF,$EE0F55B370F8C437,$F12CD29C356ED20C,$CBC4BD4A70C833B1,
+             $FFCD97200103FC1C,$742500000019D443,$3A65746164745845,$3200657461657263,$312D38302D393130,$3A35313A31315439,
+             $30303A30302B3930,$25000000B3ACC875,$6574616474584574,$00796669646F6D3A,$2D38302D39313032,$35313A3131543931,
+             $303A30302B35303A,$0000007B7E35C330,$6042AE444E454900
+      Data.b $82
+      add_end:
+      ;     EndDataSection
+      ;       
+      ;     DataSection
+      copy: ; memory_size - (530)
+      Data.q $0A1A0A0D474E5089,$524448490D000000,$1A00000010000000,$1461140000000408,$4D4167040000008C,$61FC0B8FB1000041,
+             $5248632000000005,$800000267A00004D,$80000000FA000084,$EA000030750000E8,$170000983A000060,$0000003C51BA9C70,
+             $87FF0044474B6202,$7009000000BFCC8F,$00C8000000735948,$ADE7FA6300C80000,$454D497407000000,$450A0F0B1308E307,
+             $63100000000C6AC0,$0020000000764E61,$0002000000200000,$000C8D7E6F010000,$2854414449E90000,$1040C20A31D27DCF,
+             $8B08226C529FD005,$961623685304458D,$05E8A288B1157A4A,$785858208E413C44,$AD03C2DE8803C505,$74CCDD93664D9893,
+             $5C25206CCCECC7D9,$0AF51740A487B038,$E4950624ACF41B10,$0B03925602882A0F,$504520607448C0E1,$714E75682A0F7A22,
+             $1EC4707FBC91940F,$EF1F26F801E80C33,$6FE840E84635C148,$47D13D78D54EC071,$5BDF86398A726F4D,$7DD0539F268C6356,
+             $39B40B3759101A3E,$2EEB2D02D7DBC170,$49172CA44A415AD2,$52B82E69FF1E0AC0,$CC0D0D97E9B7299E,$046FA509CA4B09C0,
+             $CB03993630382B86,$5E4840261A49AA98,$D3951E21331B30CF,$262C1B127F8F8BD3,$250000007DB05216,$6574616474584574,
+             $006574616572633A,$2D38302D39313032,$35313A3131543931,$303A30302B37303A,$000000EED7F72530,$7461647458457425,
+             $796669646F6D3A65,$38302D3931303200,$313A31315439312D,$3A30302B35303A35,$00007B7E35C33030,$42AE444E45490000
+      Data.b $60,$82
+      copy_end:
+    EndDataSection
+    
+  EndProcedure
+  
+  Procedure.i EnableDrop(*this, Format.i, Actions.i, PrivateType.i=0)
+    ; Format
+    ; #PB_Drop_Text    : Accept text on this gadget
+    ; #PB_Drop_Image   : Accept images on this gadget
+    ; #PB_Drop_Files   : Accept filenames on this gadget
+    ; #PB_Drop_Private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
+    
+    ; Actions
+    ; #PB_Drag_None    : The Data format will Not be accepted on the gadget
+    ; #PB_Drag_Copy    : The Data can be copied
+    ; #PB_Drag_Move    : The Data can be moved
+    ; #PB_Drag_Link    : The Data can be linked
+    
+    If Not *Drag 
+      *Drag = AllocateStructure(_S_drop) 
+    EndIf
+    
+    With *Drag
+      If AddMapElement(*Drop(), Hex(*this))
+        *Drop() = AllocateStructure(_S_drop)
+        
+        Debug "Enable drop - " + *this
+        *Drop()\Format = Format
+        *Drop()\Actions = Actions
+        *Drop()\Type = PrivateType
+      EndIf
+    EndWith
+  EndProcedure
+  
+  Procedure.i Text(*this, Text.s, Actions.i=#PB_Drag_Copy)
+    Debug "Drag text - " + Text
+    *Drag = AllocateStructure(_S_drop)
+    *Drag\Format = #PB_Drop_Text
+    *Drag\Text = Text
+    *Drag\Actions = Actions
+    Cur(0)
+  EndProcedure
+  
+  Procedure.i Image(*this, Image.i, Actions.i=#PB_Drag_Copy)
+    Debug "Drag image - " + Image
+    *Drag = AllocateStructure(_S_drop)
+    *Drag\Format = #PB_Drop_Image
+    *Drag\ImageID = ImageID(Image)
+    *Drag\Width = ImageWidth(Image)
+    *Drag\Height = ImageHeight(Image)
+    *Drag\Actions = Actions
+    Cur(0)
+  EndProcedure
+  
+  Procedure.i Private(*this, Type.i, Actions.i=#PB_Drag_Copy)
+    Debug "Drag private - " + Type
+    *Drag = AllocateStructure(_S_drop)
+    *Drag\Format = #PB_Drop_Private
+    *Drag\Actions = Actions
+    *Drag\Type = Type
+    Cur(0)
+  EndProcedure
+  
+  Procedure.i DropAction(*this)
+    If _action_(*this) 
+      ProcedureReturn *Drop()\Actions 
+    EndIf
+  EndProcedure
+  
+  Procedure.s DropText(*this)
+    Protected result.s
+    
+    If _action_(*this)
+      Debug "  Drop text - "+*Drag\Text
+      result = *Drag\Text
+      FreeStructure(*Drag) 
+      *Drag = 0
+      
+      ProcedureReturn result
+    EndIf
+  EndProcedure
+  
+  Procedure.i DropPrivate(*this)
+    Protected result.i
+    
+    If _action_(*this)
+      Debug "  Drop type - "+*Drag\Type
+      result = *Drag\Type
+      FreeStructure(*Drag)
+      *Drag = 0
+      
+      ProcedureReturn result
+    EndIf
+  EndProcedure
+  
+  Procedure.i DropImage(*this, Image.i=-1, Depth.i=24)
+    Protected result.i
+    
+    If _action_(*this) And *Drag\ImageID
+      Debug "  Drop image - "+*Drag\ImageID
+      
+      If Image =- 1
+        Result = CreateImage(#PB_Any, *Drag\Width, *Drag\Height) : Image = Result
+      Else
+        Result = IsImage(Image)
+      EndIf
+      
+      If Result And StartDrawing(ImageOutput(Image))
+        If Depth = 32
+          DrawAlphaImage(*Drag\ImageID, 0, 0)
+        Else
+          DrawImage(*Drag\ImageID, 0, 0)
+        EndIf
+        StopDrawing()
+      EndIf  
+      
+      FreeStructure(*Drag)
+      *Drag = 0
+      
+      ProcedureReturn Result
+    EndIf
+    
+  EndProcedure
+  
+  Procedure.i DropStart(*this)
+    
+    If _action_(*this)
+      If Not *Drop()\cursor
+        *Drag\cursor = 0
+        *Drag\widget = *this
+        ;Debug "set handle cursor"
+        Cur(1)
+      EndIf
+    ElseIf *Drag
+      If Not *Drag\cursor
+        *Drop()\cursor = 0
+        ;Debug "set denied cursor"
+        Cur(0)
+        *Drag\widget = 0
+      EndIf
+    EndIf
+    
+  EndProcedure
+  
+  Procedure.i DropStop(*this)
+    
+    If *Drag 
+      If *Drag\cursor Or *Drop()\cursor
+        *Drag\cursor = 0
+        *Drop()\cursor = 0
+        ;Debug "set default cursor"
+        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+      EndIf
+      
+      ProcedureReturn _action_(*this)
+    EndIf  
+    
+  EndProcedure
+EndModule
+;- >>>
 
 ;- >>> 
 DeclareModule Tree
@@ -3354,6 +3304,10 @@ Module Tree
         Debug "drag - "+*this
         Post(eventtype, *this, *this\row\index)
         
+      Case #PB_EventType_Drop
+        Debug "drop - "+*this
+        Post(eventtype, *this, *this\row\index)
+        
       Case #PB_EventType_Focus
         Debug "focus - "+*this
         Result = 1
@@ -3437,7 +3391,7 @@ Module Tree
   
   Procedure.l CallBack(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
     Protected Result, from =- 1
-    Static cursor_change, Down, *leave._S_widget, *row_selected._S_items
+    Static cursor_change, Down, *row_selected._S_items
     
     If Not *this\handle
       ProcedureReturn 0
@@ -3480,39 +3434,49 @@ Module Tree
       ;       DD::DropStart(_this_)
       ;       Post(#PB_EventType_Drop, DD::DropStop(_this_), _this_\row\index)
       
-      Protected enter = Bool(*leave <> *this And Not (*leave And *leave\index > *this\index) And _from_point_(mouse_x, mouse_y, *this))
-      Protected leave = Bool(*leave And (enter Or (*leave = *this And Not _from_point_(mouse_x, mouse_y, *leave))))
+      Protected enter = Bool(*event\enter <> *this And Not (*event\enter And *event\enter\index > *this\index) And _from_point_(mouse_x, mouse_y, *this))
+      Protected leave = Bool(*event\enter And (enter Or (*event\enter = *this And Not _from_point_(mouse_x, mouse_y, *event\enter))))
       
       If leave
-        If *leave\row\index >= 0 ;And SelectElement(*leave\items(), *leave\row\index)
-          Result | Events(*leave, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
+        If *event\enter\row\index >= 0 ;And SelectElement(*event\enter\items(), *event\enter\row\index)
+          Result | Events(*event\enter, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
         EndIf
         
-        ;If Not *leave\mouse\buttons
+        ;If Not *event\enter\mouse\buttons
         If Not *this\canvas\mouse\buttons
-          Result | Events(*leave, #PB_EventType_MouseLeave, mouse_x, mouse_y)
+          Result | Events(*event\enter, #PB_EventType_MouseLeave, mouse_x, mouse_y)
           
-          If *leave And *leave\canvas\gadget <> *this\canvas\gadget
-            ReDraw(*leave)
-            ; _repaint_(*leave)
+          If *event\enter And *event\enter\canvas\gadget <> *this\canvas\gadget
+            ReDraw(*event\enter)
+            ; _repaint_(*event\enter)
           EndIf
         EndIf
         
-        *leave\row\index =- 1
-        *leave = 0
+        ; reset drop start
+        If *event\leave And *event\leave\row\drag
+          DD::DropStart(0)
+        EndIf
+        
+        *event\enter\row\index =- 1
+        *event\enter = 0
       EndIf
       
       If enter
-        *leave = *this
+        *event\enter = *this
+        
+        ; set drop start
+        If *event\leave And *event\leave\row\drag
+          DD::DropStart(*event\enter)
+        EndIf
         
         If *this\canvas\mouse\buttons = 0
-          Result | Events(*leave, #PB_EventType_MouseEnter, mouse_x, mouse_y)
-          *event\leave = *leave
+          Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+          *event\leave = *event\enter
         EndIf
       EndIf
       
       ; set mouse buttons
-      If *this = *leave 
+      If *this = *event\enter 
         If EventType = #PB_EventType_LeftButtonDown
           \mouse\buttons | #PB_Canvas_LeftButton
         ElseIf EventType = #PB_EventType_RightButtonDown
@@ -3525,7 +3489,7 @@ Module Tree
       ; post widget events
       Select EventType 
         Case #PB_EventType_LeftButtonDown
-          If *this = *leave 
+          If *this = *event\enter 
             If *event\active <> *this
               _set_active_(*this)
             EndIf
@@ -3615,7 +3579,7 @@ Module Tree
             EndIf
             
           Else
-            *event\leave = *leave
+            *event\leave = *event\enter
           EndIf
           
         Case #PB_EventType_LeftButtonUp 
@@ -3624,6 +3588,7 @@ Module Tree
             
             If *this\row\box 
               *this\row\box = 0
+              
             ElseIf *this\row\index >= 0 And Not *this\row\drag
               
               If *this\row\selected <> *row_selected
@@ -3638,24 +3603,31 @@ Module Tree
             
             If *this\row\drag 
               *this\row\drag = 0
+              
             ElseIf *this\row\index >= 0 
               Result | Events(*this, #PB_EventType_LeftClick, mouse_x, mouse_y)
             EndIf
             
-            If *event\leave <> *leave
+            If *event\leave <> *event\enter
               Result | Events(*event\leave, #PB_EventType_MouseLeave, mouse_x, mouse_y) 
               *event\leave\row\index =- 1
-              *event\leave = *leave
+              *event\leave = *event\enter
               
-              If *leave
-                Result | Events(*leave, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+              ; post enter event
+              If *event\enter
+                Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+              EndIf
+              
+              ; post drop event
+              If DD::DropStop(*event\enter)
+                Result | Events(*event\enter, #PB_EventType_Drop, mouse_x, mouse_y)
               EndIf
             EndIf
           EndIf
           
-          If *this = *leave And Not *event\leave
-            Result | Events(*leave, #PB_EventType_MouseEnter, mouse_x, mouse_y)
-            *event\leave = *leave
+          If *this = *event\enter And Not *event\leave
+            Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+          *event\leave = *event\enter
           EndIf
           
         Case #PB_EventType_LostFocus
@@ -3786,8 +3758,7 @@ Module Tree
           
       EndSelect
       
-      
-      If *this = *leave And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ;And Not *this\canvas\key; And Not *this\mouse\buttons
+      If *this = *event\enter And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ;And Not *this\canvas\key; And Not *this\mouse\buttons
         If _from_point_(mouse_x, mouse_y, *this, [2]) 
           
           ; at item from points
@@ -3827,7 +3798,7 @@ Module Tree
         EndIf
         
         ; post change and drag start 
-        If *this\canvas\mouse\buttons And *this\row\drag = 0 And 
+        If *this\mouse\buttons And *this\row\drag = 0 And 
            (Abs((mouse_x-*this\delta\x)+(mouse_y-*this\delta\y)) >= 6)
           *this\row\drag = 1
           
@@ -4100,189 +4071,70 @@ EndModule
 ;-
 ;- EXAMPLE
 ;-
+
+;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    Procedure GadgetsClipCallBack( GadgetID, lParam )
-      If GadgetID
-        Protected Gadget = GetProp_( GadgetID, "PB_ID" )
-        
-        If GetWindowLongPtr_( GadgetID, #GWL_STYLE ) & #WS_CLIPSIBLINGS = #False 
-          SetWindowLongPtr_( GadgetID, #GWL_STYLE, GetWindowLongPtr_( GadgetID, #GWL_STYLE ) | #WS_CLIPSIBLINGS|#WS_CLIPCHILDREN )
-          
-          If IsGadget( Gadget ) 
-            Select GadgetType( Gadget )
-              Case #PB_GadgetType_ComboBox
-                Protected Height = GadgetHeight( Gadget )
-                
-              Case #PB_GadgetType_Text
-                If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE) & #SS_NOTIFY) = #False
-                  SetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE) | #SS_NOTIFY)
-                EndIf
-                
-              Case #PB_GadgetType_Frame, #PB_GadgetType_Image
-                If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-                  SetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-                EndIf
-                
-                ; Для панел гаджета темный фон убирать
-              Case #PB_GadgetType_Panel 
-                If Not IsGadget( Gadget ) And (GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-                  SetWindowLongPtr_(GadgetID, #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-                EndIf
-                
-            EndSelect
-            
-            ;             If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-            ;               SetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-            ;             EndIf
-          EndIf
-          
-          
-          If Height
-            ResizeGadget( Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height )
-          EndIf
-          
-          SetWindowPos_( GadgetID, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
-        EndIf
-        
-      EndIf
-      
-      ProcedureReturn GadgetID
-    EndProcedure
-  CompilerEndIf
+  EnableExplicit
   
-  Procedure ClipGadgets( WindowID )
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      WindowID = GetAncestor_( WindowID, #GA_ROOT )
-      If Not (GetWindowLongPtr_(WindowID, #GWL_STYLE)&#WS_CLIPCHILDREN)
-        SetWindowLongPtr_( WindowID, #GWL_STYLE, GetWindowLongPtr_( WindowID, #GWL_STYLE )|#WS_CLIPCHILDREN )
-      EndIf
-      EnumChildWindows_( WindowID, @GadgetsClipCallBack(), 0 )
-    CompilerEndIf
-  EndProcedure
+  ;- - DRAG&DROP
+  Macro DropText()
+    DD::DropText(*event\enter)
+  EndMacro
   
+  Macro DropAction()
+    DD::DropAction(*event\enter)
+  EndMacro
   
-  UseModule tree
-  Global Canvas_0
-  Global *g._S_widget
-  Global *g0._S_widget
-  Global *g1._S_widget
-  Global *g2._S_widget
-  Global *g3._S_widget
-  Global *g4._S_widget
-  Global *g5._S_widget
-  Global *g6._S_widget
-  Global *g7._S_widget
-  Global *g8._S_widget
-  Global *g9._S_widget
+  Macro DropImage(_image_, _depth_=24)
+    DD::DropImage(*event\enter, _image_, _depth_)
+  EndMacro
   
-  Procedure LoadControls(Widget, Directory$)
-    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
-    
-    If FileSize(ZipFile$) < 1
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        ZipFile$ = #PB_Compiler_Home+"themes\silkTheme.zip"
-      CompilerElse
-        ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
-      CompilerEndIf
-      If FileSize(ZipFile$) < 1
-        MessageRequester("Designer Error", "Themes\silkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
-        End
-      EndIf
-    EndIf
-    ;   Directory$ = GetCurrentDirectory()+"images/" ; "";
-    ;   Protected ZipFile$ = Directory$ + "images.zip"
-    
-    
-    If FileSize(ZipFile$) > 0
-      UsePNGImageDecoder()
-      
-      CompilerIf #PB_Compiler_Version > 522
-        UseZipPacker()
-      CompilerEndIf
-      
-      Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
-      ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
-      
-      If ZipFile  
-        If ExaminePack(ZipFile)
-          While NextPackEntry(ZipFile)
-            
-            PackEntryName.S = PackEntryName(ZipFile)
-            ImageSize = PackEntrySize(ZipFile)
-            If ImageSize
-              *Image = AllocateMemory(ImageSize)
-              UncompressPackMemory(ZipFile, *Image, ImageSize)
-              Image = CatchImage(#PB_Any, *Image, ImageSize)
-              PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
-              If PackEntryName.S="application_form" 
-                PackEntryName.S="vd_windowgadget"
-              EndIf
-              
-              PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
-              
-              Select PackEntryType(ZipFile)
-                Case #PB_Packer_File
-                  If Image
-                    If FindString(Left(PackEntryName.S, 3), "vd_")
-                      PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
-                      PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
-                      
-                      Protected Left.S = UCase(Left(PackEntryName.S,1))
-                      Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
-                      PackEntryName.S = " "+Left.S+Right.S
-                      
-                      If IsGadget(Widget)
-                        If FindString(LCase(PackEntryName.S), "cursor")
-                          
-                          ;Debug "add cursor"
-                          AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 0, ImageID(Image))
-                          
-                        ElseIf FindString(LCase(PackEntryName.S), "window")
-                          
-                          ;Debug "add gadget window"
-                          AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 1, ImageID(Image))
-                          
-                        Else
-                          AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
-                        EndIf
-                        
-                      Else
-                        If FindString(LCase(PackEntryName.S), "cursor")
-                          
-                          ;Debug "add cursor"
-                          AddItem(Widget, 0, PackEntryName.S, Image)
-                          ;SetItemData(Widget, 0, Image)
-                          
-                        ElseIf FindString(LCase(PackEntryName.S), "window")
-                          
-                          Debug "add window"
-                          AddItem(Widget, 1, PackEntryName.S, Image)
-                          ;SetItemData(Widget, 1, Image)
-                          
-                        Else
-                          AddItem(Widget, -1, PackEntryName.S, Image)
-                          ;SetItemData(Widget, CountItems(Widget)-1, Image)
-                        EndIf
-                      EndIf
-                    EndIf
-                  EndIf    
-              EndSelect
-              
-              FreeMemory(*Image)
-            EndIf
-          Wend  
-        EndIf
-        
-        ClosePack(ZipFile)
-      EndIf
-    EndIf
-  EndProcedure
+  Macro DragText(_text_, _actions_=#PB_Drag_Copy)
+    DD::Text(*event\enter, _text_, _actions_)
+  EndMacro
   
-  Global g_Canvas, NewList *List._S_widget()
+  Macro DragImage(_image_, _actions_=#PB_Drag_Copy)
+    DD::Image(*event\enter, _image_, _actions_)
+  EndMacro
+  
+  Macro DragPrivate(_type_, _actions_=#PB_Drag_Copy)
+    DD::Private(*event\enter, _type_, _actions_)
+  EndMacro
+  
+  Macro EnableDrop(_this_, _format_, _actions_, _private_type_=0)
+    DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
+  EndMacro
+  
+  UseModule Tree
+  
+  ;
+  ; ------------------------------------------------------------
+  ;
+  ;   PureBasic - Drag & Drop
+  ;
+  ;    (c) Fantaisie Software
+  ;
+  ; ------------------------------------------------------------
+  ;
+  
+  #Window = 0
+  
+  Enumeration    ; Images
+    #ImageSource
+    #ImageTarget
+  EndEnumeration
+  
+  Global SourceText,
+         SourceImage,
+         SourceFiles,
+         SourcePrivate,
+         TargetText,
+         TargetImage,
+         TargetFiles,
+         TargetPrivate1,
+         TargetPrivate2
+  
+  Global g_Canvas, *g._S_widget, NewList *List._S_widget()
   
   Procedure _ReDraw(Canvas)
     If StartDrawing(CanvasOutput(Canvas))
@@ -4371,300 +4223,169 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure events_tree_gadget()
-    ;Debug " gadget - "+EventGadget()+" "+EventType()
-    Protected EventGadget = EventGadget()
-    Protected EventType = EventType()
-    Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
+  Procedure Events()
+    Protected EventGadget.i, EventType.i, EventItem.i, EventData.i
     
+    EventGadget = *event\widget ; Widget()
+    EventType = *event\type ; Type()
+    EventItem = *event\item ; Item()
+    EventData = *event\data ; Data()
+    
+    Protected i, Text$, Files$, Count
+    ;Debug "     "+EventType
+    ; DragStart event on the source s, initiate a drag & drop
+    ;
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "gadget click item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_DragStart
+        Select EventGadget
+            
+          Case SourceText
+            Text$ = GetItemText(SourceText, GetState(SourceText))
+            DragText(Text$)
+            
+;           Case SourceImage
+;             DragImage((#ImageSource))
+;             
+;           Case SourceFiles
+;             Files$ = ""       
+;             For i = 0 To CountItems(SourceFiles)-1
+;               If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
+;                 Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
+;               EndIf
+;             Next i 
+;             If Files$ <> ""
+;               DragFiles(Files$)
+;             EndIf
+;             
+;             ; "Private" Drags only work within the program, everything else
+;             ; also works with other applications (Explorer, Word, etc)
+;             ;
+;           Case SourcePrivate
+;             If GetState(SourcePrivate) = 0
+;               DragPrivate(1)
+;             Else
+;               DragPrivate(2)
+;             EndIf
+            
+        EndSelect
+        
+        ; Drop event on the target gadgets, receive the dropped data
+        ;
+      Case #PB_EventType_Drop
+        
+        Select EventGadget
+            
+          Case TargetText
+            AddItem(TargetText, -1, DropText())
+            
+;           Case TargetImage
+;             If DropImage(#ImageTarget)
+;               SetState(TargetImage, (#ImageTarget))
+;             EndIf
+;             
+;           Case TargetFiles
+;             Files$ = EventDropFiles()
+;             Count  = CountString(Files$, Chr(10)) + 1
+;             For i = 1 To Count
+;               AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
+;             Next i
+;             
+;           Case TargetPrivate1
+;             AddItem(TargetPrivate1, -1, "Private type 1 dropped")
+;             
+;           Case TargetPrivate2
+;             AddItem(TargetPrivate2, -1, "Private type 2 dropped")
+            
+        EndSelect
+        
     EndSelect
+    
   EndProcedure
   
-  Procedure events_tree_widget()
-    ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget = *event\widget
-    Protected EventType = *event\type
-    Protected EventData = *event\data
-    Protected EventItem = GetState(EventGadget)
+  If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
     
-    Select EventType
-      Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
-    EndSelect
-  EndProcedure
-  
-  If OpenWindow(0, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Define i,a,g = 1
-    TreeGadget(g, 10, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
-    ; 1_example
-    AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
-    AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)      
-    AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)         
-    AddGadgetItem(g, -1, "Sub-Item 2", 0, 11)
-    AddGadgetItem(g, -1, "Sub-Item 3", 0, 1)
-    AddGadgetItem(g, -1, "Sub-Item 4", 0, 1)         
-    AddGadgetItem(g, -1, "Sub-Item 5", 0, 11)
-    AddGadgetItem(g, -1, "Sub-Item 6", 0, 1)
-    AddGadgetItem(g, -1, "File "+Str(a), 0, 0) 
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    
-    ; RemoveGadgetItem(g,1)
-    SetGadgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
-    ;BindGadgetEvent(g, @Events())
-    
-    ;SetActiveGadget(g)
-    ;SetGadgetState(g, 1)
-    ;     Debug "g "+ GetGadgetText(g)
-    
-    g = 2
-    TreeGadget(g, 230, 10, 210, 210, #PB_Tree_AlwaysShowSelection)                                         
-    ; 3_example
-    AddGadgetItem(g, 0, "Tree_0", 0 )
-    AddGadgetItem(g, 1, "Tree_1_1", ImageID(0), 1) 
-    AddGadgetItem(g, 4, "Tree_1_1_1", 0, 2) 
-    AddGadgetItem(g, 5, "Tree_1_1_2", 0, 2) 
-    AddGadgetItem(g, 6, "Tree_1_1_2_1", 0, 3) 
-    AddGadgetItem(g, 8, "Tree_1_1_2_1_1", 0, 4) 
-    AddGadgetItem(g, 7, "Tree_1_1_2_2", 0, 3) 
-    AddGadgetItem(g, 2, "Tree_1_2", 0, 1) 
-    AddGadgetItem(g, 3, "Tree_1_3", 0, 1) 
-    AddGadgetItem(g, 9, "Tree_2" )
-    AddGadgetItem(g, 10, "Tree_3", 0 )
-    AddGadgetItem(g, 11, "Tree_4" )
-    AddGadgetItem(g, 12, "Tree_5", 0 )
-    AddGadgetItem(g, 13, "Tree_6", 0 )
-    
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    
-    
-    g = 3
-    TreeGadget(g, 450, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes |#PB_Tree_NoLines|#PB_Tree_NoButtons|#PB_ListView_MultiSelect | #PB_Tree_ThreeState)                                      
-    ;  2_example
-    AddGadgetItem(g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)",ImageID(0)) 
-    For i=1 To 20
-      If i=5
-        AddGadgetItem(g, -1, "Tree_"+Str(i), 0) 
-      Else
-        AddGadgetItem(g, -1, "Tree_"+Str(i), ImageID(0)) 
-      EndIf
-    Next
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    
-    BindGadgetEvent(g, @events_tree_gadget())
-    
-    
-    g = 4
-    TreeGadget(g, 670, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_NoLines)                                         
-    ; 4_example
-    AddGadgetItem(g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", 0 )
-    AddGadgetItem(g, 1, "Tree_1", 0, 1) 
-    AddGadgetItem(g, 2, "Tree_2_2", 0, 2) 
-    AddGadgetItem(g, 2, "Tree_2_1", 0, 1) 
-    AddGadgetItem(g, 3, "Tree_3_1", 0, 1) 
-    AddGadgetItem(g, 3, "Tree_3_2", 0, 2) 
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    
-    g = 5
-    TreeGadget(g, 890, 10, 103, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_NoButtons)                                         
-    ; 5_example
-    AddGadgetItem(g, 0, "Tree_0 (NoButtons)", 0 )
-    AddGadgetItem(g, 1, "Tree_1", 0, 1) 
-    AddGadgetItem(g, 2, "Tree_2_1", 0, 1) 
-    AddGadgetItem(g, 2, "Tree_2_2", 0, 2) 
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    SetGadgetItemImage(g, 0, ImageID(0))
-    
-    g = 6
-    TreeGadget(g, 890+106, 10, 103, 210, #PB_Tree_AlwaysShowSelection)                                         
-    ;  6_example
-    AddGadgetItem(g, 0, "Tree_1", 0, 1) 
-    AddGadgetItem(g, 0, "Tree_2_1", 0, 2) 
-    AddGadgetItem(g, 0, "Tree_2_2", 0, 3) 
-    
-    For i = 0 To 24
-      If i % 5 = 0
-        AddGadgetItem(g, -1, "Directory" + Str(i), 0, 0)
-      Else
-        AddGadgetItem(g, -1, "Item" + Str(i), 0, 1)
-      EndIf
-    Next i
-    
-    ;For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    
-    Define widget = 0
-    
-    ;If widget
-    g_Canvas = CanvasGadget(-1, 0, 225, 1110, 425, #PB_Canvas_Keyboard|#PB_Canvas_Container)
+    g_Canvas = CanvasGadget(-1, 0, 0, 760, 310, #PB_Canvas_Keyboard|#PB_Canvas_Container)
     BindGadgetEvent(g_Canvas, @Canvas_Events())
-    ;PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
-    ;EndIf
     
-    g = 10
+    ; create some images for the image demonstration
+    ; 
+    Define i, Event
+    CreateImage(#ImageSource, 136, 136)
+    If StartDrawing(ImageOutput(#ImageSource))
+      Box(0, 0, 136, 136, $FFFFFF)
+      DrawText(5, 5, "Drag this image", $000000, $FFFFFF)        
+      For i = 45 To 1 Step -1
+        Circle(70, 80, i, Random($FFFFFF))
+      Next i        
+      
+      StopDrawing()
+    EndIf  
     
-    If widget
-      *g = Widget(10, 100, 210, 210, #PB_Tree_CheckBoxes)                                         
-      *g\canvas\Gadget = g_Canvas
-      AddElement(*List()) : *List() = *g
-    Else
-      *g = GetGadgetData(Gadget(g, 10, 100, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_MultiSelect))
-    EndIf
+    CreateImage(#ImageTarget, 136, 136)
+    If StartDrawing(ImageOutput(#ImageTarget))
+      Box(0, 0, 136, 136, $FFFFFF)
+      DrawText(5, 5, "Drop images here", $000000, $FFFFFF)
+      StopDrawing()
+    EndIf  
     
-    ; 1_example
-    AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
-    AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-    AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 2", -1, 11)
-    AddItem (*g, -1, "Sub-Item 3", -1, 1)
-    AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 5", -1, 11)
-    AddItem (*g, -1, "Sub-Item 6", -1, 1)
-    AddItem (*g, -1, "File "+Str(a), -1, 0)  
-    ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
-    ; RemoveItem(*g,1)
-    SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
-    ;BindGadgetEvent(g, @Events())
-    ;     SetState(*g, 3)
-    ;     SetState(*g, -1)
-    ;Debug " - "+GetText(*g)
-    LoadFont(3, "Arial", 18)
-    SetFont(*g, 3)
-    
-    g = 11
-    If widget
-      *g = Widget(230, 100, 210, 210, #PB_Flag_AlwaysSelection);|#PB_Flag_Collapsed)                                         
-      *g\canvas\Gadget = g_Canvas
-      AddElement(*List()) : *List() = *g
-    Else
-      *g = GetGadgetData(Gadget(g, 160, 120, 210, 210, #PB_Flag_AlwaysSelection))
-    EndIf
-    
-    ;  3_example
-    AddItem(*g, 0, "Tree_0", -1 )
-    AddItem(*g, 1, "Tree_1_1", 0, 1) 
-    AddItem(*g, 4, "Tree_1_1_1", -1, 2) 
-    AddItem(*g, 5, "Tree_1_1_2", -1, 2) 
-    AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
-    AddItem(*g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", -1, 4) 
-    AddItem(*g, 7, "Tree_1_1_2_2 980980_", -1, 3) 
-    AddItem(*g, 2, "Tree_1_2", -1, 1) 
-    AddItem(*g, 3, "Tree_1_3", -1, 1) 
-    AddItem(*g, 9, "Tree_2",-1 )
-    AddItem(*g, 10, "Tree_3", -1 )
-    AddItem(*g, 11, "Tree_4", -1 )
-    AddItem(*g, 12, "Tree_5", -1 )
-    AddItem(*g, 13, "Tree_6", -1 )
-    
-    g = 12
-    *g = Widget(450, 100, 210, 210, #PB_Flag_CheckBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_GridLines | #PB_Flag_ThreeState )                            
+    ; create and fill the source s
+    ;
+    SourceText = widget(10, 10, 140, 140);, "Drag Text here", 130)   
+    *g = SourceText
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
-    ;  2_example
-    AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
-    For i=1 To 20
-      If i=5
-        AddItem(*g, -1, "Tree_"+Str(i), -1) 
-      Else
-        AddItem(*g, -1, "Tree_"+Str(i), 0) 
-      EndIf
-    Next
-    ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    LoadFont(5, "Arial", 16)
-    SetItemFont(*g, 3, 5)
-    SetItemText(*g, 3, "16_font and text change")
-    SetItemColor(*g, 5, #PB_Gadget_FrontColor, $FFFFFF00)
-    SetItemColor(*g, 5, #PB_Gadget_BackColor, $FFFF00FF)
-    SetItemText(*g, 5, "backcolor and text change")
-    LoadFont(6, "Arial", 25)
-    SetItemFont(*g, 4, 6)
-    SetItemText(*g, 4, "25_font and text change")
-    SetItemFont(*g, 14, 6)
-    SetItemText(*g, 14, "25_font and text change")
-    Bind(*g, @events_tree_widget())
+    ;SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
+    ;SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
+    ;SourcePrivate = ListIcon(610, 10, 140, 140, "Drag private stuff here", 260)
     
-    g = 13
-    *g = Widget(600+70, 160, 210, 210, #PB_Flag_OptionBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_ClickSelect)                                         
+    AddItem(SourceText, -1, "hello world")
+    AddItem(SourceText, -1, "The quick brown fox jumped over the lazy dog")
+    AddItem(SourceText, -1, "abcdefg")
+    AddItem(SourceText, -1, "123456789")
+    
+;     AddItem(SourcePrivate, -1, "Private type 1")
+;     AddItem(SourcePrivate, -1, "Private type 2")
+    
+    
+    ; create the target s
+    ;
+    TargetText = Widget(10, 160, 140, 140);, "Drop Text here", 130)
+    *g = TargetText
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
-    ;  4_example
-    ; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
-    ; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
-    ; ;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-    ; ;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
-    ; ;     AddItem(*g, 3, "Tree_3_1", -1, 1) 
-    ; ;     AddItem(*g, 3, "Tree_3_2", -1, 2) 
-    ; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    AddItem (*g, -1, "#PB_Window_MinimizeGadget", -1) ; Adds the minimize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
-    AddItem (*g, -1, "#PB_Window_MaximizeGadget", -1) ; Adds the maximize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
-                                                      ;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
-    AddItem (*g, -1, "#PB_Window_SizeGadget    ", -1) ; Adds the sizeable feature To a window.
-    AddItem (*g, -1, "#PB_Window_Invisible     ", -1) ; Creates the window but don't display.
-    AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1) ; Enables the system menu on the window title bar (Default", -1).
-    AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
-    AddItem (*g, -1, "#PB_Window_Tool          ", -1,1) ; Creates a window With a smaller titlebar And no taskbar entry. 
-    AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
-    AddItem (*g, -1, "#PB_Window_ScreenCentered", -1)   ; Centers the window in the middle of the screen. x,y parameters are ignored.
-    AddItem (*g, -1, "#PB_Window_WindowCentered", -1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
-    AddItem (*g, -1, "#PB_Window_Maximize      ", -1, 1); Opens the window maximized. (Note", -1) ; on Linux, Not all Windowmanagers support this", -1)
-    AddItem (*g, -1, "#PB_Window_Minimize      ", -1, 1); Opens the window minimized.
-    AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1)   ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
-    AddItem (*g, -1, "#PB_Window_NoActivate    ", -1)   ; Don't activate the window after opening.
     
-    
-    
-    g = 14
-    *g = Widget(750, 100, 103, 210, #PB_Tree_NoButtons)                                         
+    TargetImage = Widget(160, 160, 140, 140);, (#ImageTarget), #PB_Image_Border) 
+    *g = TargetImage
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
-    ;  5_example
-    AddItem(*g, 0, "Tree_0", -1 )
-    AddItem(*g, 1, "Tree_1", -1, 0) 
-    AddItem(*g, 2, "Tree_2", -1, 0) 
-    AddItem(*g, 3, "Tree_3", -1, 0) 
-    AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
-    AddItem(*g, 1, "Tree_1", -1, 1) 
-    AddItem(*g, 2, "Tree_2_1", -1, 1) 
-    AddItem(*g, 2, "Tree_2_2", -1, 2) 
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    SetItemImage(*g, 0, 0)
     
-    g = 15
-    *g = Widget(890+106, 100, 103, 210, #PB_Flag_BorderLess|#PB_Flag_Collapse)                                         
-    *g\canvas\Gadget = g_Canvas
-    AddElement(*List()) : *List() = *g
-    ;  6_example
-    AddItem(*g, 0, "Tree_1", -1, 1) 
-    AddItem(*g, 0, "Tree_2_1", -1, 2) 
-    AddItem(*g, 0, "Tree_2_2", -1, 3) 
+;     TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
+;     TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
+;     TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
     
-    For i = 0 To 24
-      If i % 5 = 0
-        AddItem(*g, -1, "Directory" + Str(i), -1, 0)
-      Else
-        AddItem(*g, -1, "Item" + Str(i), -1, 1)
-      EndIf
-    Next i
     
-    ; Free(*g)
-    ;ClipGadgets( UseGadgetList(0) )
+    ; Now enable the dropping on the target s
+    ;
+    EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
+;     EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
+;     EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
+;     EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
+;     EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
+    
+    Bind(SourceText, @Events(), #PB_EventType_DragStart)
+    Bind(TargetText, @Events(), #PB_EventType_Drop)
+    
+    ;     Bind(@Events())
+;     ReDraw(Root())
+    
     Repeat
-      Select WaitWindowEvent()   
-        Case #PB_Event_CloseWindow
-          End 
-      EndSelect
-    ForEver
+      Event = WaitWindowEvent()
+    Until Event = #PB_Event_CloseWindow
   EndIf
+  
+  End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------
+; Folding = AAAAAAAAAAAAAghAAAAeA9-Y5AAAAOLDV-PBIAAMAAAAAAAAAAQAAAAAAAAAAAYAIE-BAw+AAAEwCAAB9v0-z
 ; EnableXP
