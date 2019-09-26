@@ -1541,22 +1541,55 @@ DeclareModule DD
   Global *Drag._S_drop
   Global NewMap *Drop._S_drop()
   
-  Declare.s DropText(*this)
-  Declare.i DropImage(*this, Image.i=-1, Depth.i=24)
-  Declare.i DropAction(*this)
+  Macro EventDropText()
+    DD::DropText()
+  EndMacro
   
-  Declare.i Text(*this, Text.S, Actions.i=#PB_Drag_Copy)
-  Declare.i Image(*this, Image.i, Actions.i=#PB_Drag_Copy)
-  Declare.i Private(*this, Type.i, Actions.i=#PB_Drag_Copy)
+  Macro EventDropAction()
+    DD::DropAction()
+  EndMacro
+  
+  Macro EventDropType()
+    DD::DropType()
+  EndMacro
+  
+  Macro EventDropImage(_image_, _depth_=24)
+    DD::DropImage(_image_, _depth_)
+  EndMacro
+  
+  Macro DragText(_text_, _actions_=#PB_Drag_Copy)
+    DD::Text(_text_, _actions_)
+  EndMacro
+  
+  Macro DragImage(_image_, _actions_=#PB_Drag_Copy)
+    DD::Image(_image_, _actions_)
+  EndMacro
+  
+  Macro DragPrivate(_type_, _actions_=#PB_Drag_Copy)
+    DD::Private(_type_, _actions_)
+  EndMacro
+  
+  Macro EnableGadgetDrop(_this_, _format_, _actions_, _private_type_=0)
+    DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
+  EndMacro
+  
+  
+  Declare.s DropText()
+  Declare.i DropType()
+  Declare.i DropAction()
+  Declare.i DropImage(Image.i=-1, Depth.i=24)
+  
+  Declare.i Text(Text.S, Actions.i=#PB_Drag_Copy)
+  Declare.i Image(Image.i, Actions.i=#PB_Drag_Copy)
+  Declare.i Private(Type.i, Actions.i=#PB_Drag_Copy)
   
   Declare.i EnableDrop(*this, Format.i, Actions.i, PrivateType.i=0)
-  Declare.i DropStart(*this)
-  Declare.i DropStop(*this)
+  Declare.i EventDrop(*this, eventtype.l)
 EndDeclareModule
 
 Module DD
   Macro _action_(_this_)
-    Bool(_this_ And *Drag And *Drop() And FindMapElement(*Drop(), Hex(_this_)) And *Drop()\Format = *Drag\Format And *Drop()\Type = *Drag\Type And *Drop()\Actions)
+    Bool(*Drag And _this_ And MapSize(*Drop()) And FindMapElement(*Drop(), Hex(_this_)) And *Drop()\Format = *Drag\Format And *Drop()\Type = *Drag\Type And *Drop()\Actions)
   EndMacro
   
   Procedure.i SetCursor(Canvas, ImageID.i, x=0, y=0)
@@ -1672,11 +1705,12 @@ Module DD
         *Drop()\Format = Format
         *Drop()\Actions = Actions
         *Drop()\Type = PrivateType
+        *Drop()\widget = *this
       EndIf
     EndWith
   EndProcedure
   
-  Procedure.i Text(*this, Text.s, Actions.i=#PB_Drag_Copy)
+  Procedure.i Text(Text.s, Actions.i=#PB_Drag_Copy)
     Debug "Drag text - " + Text
     *Drag = AllocateStructure(_S_drop)
     *Drag\Format = #PB_Drop_Text
@@ -1685,7 +1719,7 @@ Module DD
     Cur(0)
   EndProcedure
   
-  Procedure.i Image(*this, Image.i, Actions.i=#PB_Drag_Copy)
+  Procedure.i Image(Image.i, Actions.i=#PB_Drag_Copy)
     Debug "Drag image - " + Image
     *Drag = AllocateStructure(_S_drop)
     *Drag\Format = #PB_Drop_Image
@@ -1696,7 +1730,7 @@ Module DD
     Cur(0)
   EndProcedure
   
-  Procedure.i Private(*this, Type.i, Actions.i=#PB_Drag_Copy)
+  Procedure.i Private(Type.i, Actions.i=#PB_Drag_Copy)
     Debug "Drag private - " + Type
     *Drag = AllocateStructure(_S_drop)
     *Drag\Format = #PB_Drop_Private
@@ -1705,16 +1739,22 @@ Module DD
     Cur(0)
   EndProcedure
   
-  Procedure.i DropAction(*this)
-    If _action_(*this) 
+  Procedure.i DropAction()
+    If _action_(*Drag\widget) 
       ProcedureReturn *Drop()\Actions 
     EndIf
   EndProcedure
   
-  Procedure.s DropText(*this)
+  Procedure.i DropType()
+    If _action_(*Drag\widget) 
+      ProcedureReturn *Drop()\Type 
+    EndIf
+  EndProcedure
+  
+  Procedure.s DropText()
     Protected result.s
     
-    If _action_(*this)
+    If _action_(*Drag\widget)
       Debug "  Drop text - "+*Drag\Text
       result = *Drag\Text
       FreeStructure(*Drag) 
@@ -1724,10 +1764,10 @@ Module DD
     EndIf
   EndProcedure
   
-  Procedure.i DropPrivate(*this)
+  Procedure.i DropPrivate()
     Protected result.i
     
-    If _action_(*this)
+    If _action_(*Drag\widget)
       Debug "  Drop type - "+*Drag\Type
       result = *Drag\Type
       FreeStructure(*Drag)
@@ -1737,10 +1777,10 @@ Module DD
     EndIf
   EndProcedure
   
-  Procedure.i DropImage(*this, Image.i=-1, Depth.i=24)
+  Procedure.i DropImage(Image.i=-1, Depth.i=24)
     Protected result.i
     
-    If _action_(*this) And *Drag\ImageID
+    If _action_(*Drag\widget) And *Drag\ImageID
       Debug "  Drop image - "+*Drag\ImageID
       
       If Image =- 1
@@ -1766,39 +1806,44 @@ Module DD
     
   EndProcedure
   
-  Procedure.i DropStart(*this)
+  Procedure.i EventDrop(*this, eventtype.l)
     
-    If _action_(*this)
-      If Not *Drop()\cursor
-        *Drag\cursor = 0
-        *Drag\widget = *this
-        ;Debug "set handle cursor"
-        Cur(1)
-      EndIf
-    ElseIf *Drag
-      If Not *Drag\cursor
-        *Drop()\cursor = 0
-        ;Debug "set denied cursor"
-        Cur(0)
-        *Drag\widget = 0
-      EndIf
-    EndIf
-    
-  EndProcedure
-  
-  Procedure.i DropStop(*this)
-    
-    If *Drag 
-      If *Drag\cursor Or *Drop()\cursor
-        *Drag\cursor = 0
-        *Drop()\cursor = 0
-        ;Debug "set default cursor"
-        SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-      EndIf
-      
-      ProcedureReturn _action_(*this)
-    EndIf  
-    
+    Select eventtype
+      Case #PB_EventType_MouseEnter
+        If _action_(*this)
+          If Not *Drop()\cursor
+            *Drag\widget = *this
+            *Drag\cursor = 0
+            Cur(1)
+          EndIf
+        ElseIf *Drag
+          If Not *Drag\cursor
+            *Drop()\cursor = 0
+            *Drag\widget = 0
+            Cur(0)
+          EndIf
+        EndIf
+        
+      Case #PB_EventType_MouseLeave
+        If *Drag And Not *Drag\cursor
+          *Drop()\cursor = 0
+          *Drag\widget = 0
+          Cur(0)
+        EndIf
+        
+      Case #PB_EventType_LeftButtonUp
+        If *Drag And MapSize(*Drop())
+          If *Drag\cursor Or *Drop()\cursor
+            *Drag\cursor = 0
+            *Drop()\cursor = 0
+            ;Debug "set default cursor"
+            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+          EndIf
+          
+          ProcedureReturn _action_(*this)
+        EndIf  
+    EndSelect
+
   EndProcedure
 EndModule
 ;- >>>
@@ -3285,7 +3330,17 @@ Module Tree
     EndIf
   EndProcedure
   
+  Procedure enterID(WindowID)
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      Protected pt.NSPoint
+      
+      Protected CV = CocoaMessage(0, WindowID, "contentView")
+      CocoaMessage(@pt, WindowID, "mouseLocationOutsideOfEventStream")
+      ProcedureReturn CocoaMessage(0, CV, "hitTest:@", @pt)
+    CompilerEndIf
+  EndProcedure
   
+
   ;-
   Procedure Events(*this._S_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1, position.l=0)
     Protected Result, down
@@ -3454,7 +3509,7 @@ Module Tree
         
         ; reset drop start
         If *event\leave And *event\leave\row\drag
-          DD::DropStart(0)
+          DD::EventDrop(0, #PB_EventType_MouseLeave)
         EndIf
         
         *event\enter\row\index =- 1
@@ -3466,7 +3521,7 @@ Module Tree
         
         ; set drop start
         If *event\leave And *event\leave\row\drag
-          DD::DropStart(*event\enter)
+          DD::EventDrop(*event\enter, #PB_EventType_MouseEnter)
         EndIf
         
         If *this\canvas\mouse\buttons = 0
@@ -3490,6 +3545,9 @@ Module Tree
       Select EventType 
         Case #PB_EventType_LeftButtonDown
           If *this = *event\enter 
+            *this\delta\x = mouse_x
+            *this\delta\y = mouse_y
+              
             If *event\active <> *this
               _set_active_(*this)
             EndIf
@@ -3497,9 +3555,6 @@ Module Tree
             Result | Events(*this, EventType, mouse_x, mouse_y)
             
             If *this\row\index >= 0
-              *this\delta\x = mouse_x
-              *this\delta\y = mouse_y
-              
               If _from_point_(mouse_x, mouse_y, *this\items()\box[1])
                 *this\row\box = 1
                 
@@ -3619,9 +3674,13 @@ Module Tree
               EndIf
               
               ; post drop event
-              If DD::DropStop(*event\enter)
+              If DD::EventDrop(*event\enter, #PB_EventType_LeftButtonUp)
                 Result | Events(*event\enter, #PB_EventType_Drop, mouse_x, mouse_y)
               EndIf
+              
+;               If Not *event\enter
+;                 Debug GetWindowTitle(EventWindow())
+;               EndIf
             EndIf
           EndIf
           
@@ -3645,7 +3704,7 @@ Module Tree
           EndIf
           
         Case #PB_EventType_KeyDown
-          If *this = *event\active
+            If *this = *event\active
             
             Select *this\canvas\key
               Case #PB_Shortcut_PageUp
@@ -3677,13 +3736,22 @@ Module Tree
                       SelectElement(*this\items(), 0)
                     Else
                       SelectElement(*this\items(), *this\row\selected\index - 1)
+                      
+                      If *this\items()\hide
+                        While PreviousElement(*this\items())
+                          If Not *this\items()\hide
+                            Break
+                          EndIf
+                        Wend
+                      EndIf
                     EndIf
                    
                     If *this\row\selected <> *this\items()
                       *this\row\selected\color\state = 0
                       *this\row\selected  = *this\items()
                       *this\items()\color\state = 2
-                      
+                      *row_selected = *this\items()
+                  
                       Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
                     EndIf
                     
@@ -3715,13 +3783,22 @@ Module Tree
                       SelectElement(*this\items(), (*this\row\count - 1))
                     Else
                       SelectElement(*this\items(), *this\row\selected\index + 1)
+                      
+                      If *this\items()\hide
+                        While NextElement(*this\items())
+                          If Not *this\items()\hide
+                            Break
+                          EndIf
+                        Wend
+                      EndIf
                     EndIf
-                   
+                    
                     If *this\row\selected <> *this\items()
                       *this\row\selected\color\state = 0
                       *this\row\selected  = *this\items()
                       *this\items()\color\state = 2
-                      
+                      *row_selected = *this\items()
+                  
                       Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
                     EndIf
                     
@@ -3755,7 +3832,7 @@ Module Tree
             EndSelect
             
           EndIf
-          
+        
       EndSelect
       
       If *this = *event\enter And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ;And Not *this\canvas\key; And Not *this\mouse\buttons
@@ -4075,38 +4152,8 @@ EndModule
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  
-  ;- - DRAG&DROP
-  Macro DropText()
-    DD::DropText(*event\enter)
-  EndMacro
-  
-  Macro DropAction()
-    DD::DropAction(*event\enter)
-  EndMacro
-  
-  Macro DropImage(_image_, _depth_=24)
-    DD::DropImage(*event\enter, _image_, _depth_)
-  EndMacro
-  
-  Macro DragText(_text_, _actions_=#PB_Drag_Copy)
-    DD::Text(*event\enter, _text_, _actions_)
-  EndMacro
-  
-  Macro DragImage(_image_, _actions_=#PB_Drag_Copy)
-    DD::Image(*event\enter, _image_, _actions_)
-  EndMacro
-  
-  Macro DragPrivate(_type_, _actions_=#PB_Drag_Copy)
-    DD::Private(*event\enter, _type_, _actions_)
-  EndMacro
-  
-  Macro EnableDrop(_this_, _format_, _actions_, _private_type_=0)
-    DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
-  EndMacro
-  
   UseModule Tree
-  
+  UseModule DD
   ;
   ; ------------------------------------------------------------
   ;
@@ -4387,5 +4434,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = AAAAAAAAAAAAAghAAAAeA9-Y5AAAAOLDV-PBIAAMAAAAAAAAAAQAAAAAAAAAAAYAIE-BAw+AAAEwCAAB9v0-z
+; Folding = ----------------------------------------------------------------f----4-----------------
 ; EnableXP
