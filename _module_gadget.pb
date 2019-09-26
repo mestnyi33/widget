@@ -19,38 +19,6 @@ DeclareModule Gadget
       PB_Image_Objects.i
     EndImport
     
-    Macro EventDropText()
-      DD::DropText()
-    EndMacro
-    
-    Macro EventDropAction()
-      DD::DropAction()
-    EndMacro
-    
-    Macro EventDropType()
-      DD::DropType()
-    EndMacro
-  
-    Macro EventDropImage(_image_, _depth_=24)
-      DD::DropImage(_image_, _depth_)
-    EndMacro
-    
-    Macro DragText(_text_, _actions_=#PB_Drag_Copy)
-      DD::Text(_text_, _actions_)
-    EndMacro
-    
-    Macro DragImage(_image_, _actions_=#PB_Drag_Copy)
-      DD::Image(_image_, _actions_)
-    EndMacro
-    
-    Macro DragPrivate(_type_, _actions_=#PB_Drag_Copy)
-      DD::Private(_type_, _actions_)
-    EndMacro
-    
-    Macro EnableGadgetDrop(_this_, _format_, _actions_, _private_type_=0)
-      DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
-    EndMacro
-    
     ;   
     Macro SetGadgetAttribute(_gadget_, _attribute_, _value_)
       SetGadgetAttribute_(_gadget_, _attribute_, _value_)
@@ -667,5 +635,5 @@ DeclareModule Gadget
   
   
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------
+; Folding = -------------------------
 ; EnableXP

@@ -1572,6 +1572,9 @@ DeclareModule DD
   Macro EnableGadgetDrop(_this_, _format_, _actions_, _private_type_=0)
     DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
   EndMacro
+  Macro EnableWindowDrop(_this_, _format_, _actions_, _private_type_=0)
+    DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
+  EndMacro
   
   
   Declare.s DropText()
@@ -1693,21 +1696,15 @@ Module DD
     ; #PB_Drag_Move    : The Data can be moved
     ; #PB_Drag_Link    : The Data can be linked
     
-    If Not *Drag 
-      *Drag = AllocateStructure(_S_drop) 
+    If AddMapElement(*Drop(), Hex(*this))
+      Debug "Enable drop - " + *this
+      *Drop() = AllocateStructure(_S_drop)
+      *Drop()\Format = Format
+      *Drop()\Actions = Actions
+      *Drop()\Type = PrivateType
+      *Drop()\widget = *this
     EndIf
     
-    With *Drag
-      If AddMapElement(*Drop(), Hex(*this))
-        *Drop() = AllocateStructure(_S_drop)
-        
-        Debug "Enable drop - " + *this
-        *Drop()\Format = Format
-        *Drop()\Actions = Actions
-        *Drop()\Type = PrivateType
-        *Drop()\widget = *this
-      EndIf
-    EndWith
   EndProcedure
   
   Procedure.i Text(Text.s, Actions.i=#PB_Drag_Copy)
@@ -1832,6 +1829,7 @@ Module DD
         EndIf
         
       Case #PB_EventType_LeftButtonUp
+        
         If *Drag And MapSize(*Drop())
           If *Drag\cursor Or *Drop()\cursor
             *Drag\cursor = 0
@@ -3369,13 +3367,82 @@ Module Tree
     EndIf
   EndProcedure
   
-  Procedure enterID(WindowID)
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    Import ""
+      PB_Object_EnumerateStart( PB_Objects )
+      PB_Object_EnumerateNext( PB_Objects, *ID.Integer )
+      PB_Object_EnumerateAbort( PB_Objects )
+      ;PB_Object_GetObject( PB_Object , DynamicOrArrayID)
+      PB_Window_Objects.i
+      PB_Gadget_Objects.i
+      PB_Image_Objects.i
+      ;PB_Font_Objects.i
+    EndImport
+  CompilerElse
+    ImportC ""
+      PB_Object_EnumerateStart( PB_Objects )
+      PB_Object_EnumerateNext( PB_Objects, *ID.Integer )
+      PB_Object_EnumerateAbort( PB_Objects )
+      ;PB_Object_GetObject( PB_Object , DynamicOrArrayID)
+      PB_Window_Objects.i
+      PB_Gadget_Objects.i
+      PB_Image_Objects.i
+      ;PB_Font_Objects.i
+    EndImport
+  CompilerEndIf
+ 
+;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;     ; PB Interne Struktur Gadget MacOS
+;     Structure sdkGadget
+;       *gadget
+;       *container
+;       *vt
+;       UserData.i
+;       Window.i
+;       Type.i
+;       Flags.i
+;     EndStructure
+;   CompilerEndIf
+  
+  Procedure WindowPB(WindowID) ; Find pb-id over handle
+    Protected result, window
+    result = -1
+    PB_Object_EnumerateStart(PB_Window_Objects)
+    While PB_Object_EnumerateNext(PB_Window_Objects, @window)
+      If WindowID = WindowID(window)
+        result = window
+        Break
+      EndIf
+    Wend
+    PB_Object_EnumerateAbort(PB_Window_Objects)
+    ProcedureReturn result
+  EndProcedure
+ 
+  Procedure enterID()
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      Protected pt.NSPoint
+      ;       Protected pt.NSPoint
+      ;       
+      ;       Protected CV = CocoaMessage(0, WindowID, "contentView")
+      ;       CocoaMessage(@pt, WindowID, "mouseLocationOutsideOfEventStream")
+      ;       ProcedureReturn CocoaMessage(0, CV, "hitTest:@", @pt)
       
-      Protected CV = CocoaMessage(0, WindowID, "contentView")
-      CocoaMessage(@pt, WindowID, "mouseLocationOutsideOfEventStream")
-      ProcedureReturn CocoaMessage(0, CV, "hitTest:@", @pt)
+      Protected i,CV, w, id, pt.NSPoint
+      
+      Protected app =  CocoaMessage(0, 0, "NSApplication sharedApplication")
+      Protected windows = CocoaMessage(0, app, "windows")
+      Protected count = CocoaMessage(0, windows, "count") -1
+      
+      For i=count To 0 Step -1
+        id = CocoaMessage(0, windows, "objectAtIndex:", i)
+        CV = CocoaMessage(0, id, "contentView")
+        CocoaMessage(@pt, id, "mouseLocationOutsideOfEventStream")
+        
+        If CocoaMessage(0, CV, "hitTest:@", @pt)
+          Break
+        EndIf
+      Next
+      
+      ProcedureReturn WindowPB(id)
     CompilerEndIf
   EndProcedure
   
@@ -3683,15 +3750,18 @@ Module Tree
               If *event\enter
                 Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
               EndIf
-              
-              ; post drop event
-              If DD::EventDrop(*event\enter, #PB_EventType_LeftButtonUp)
-                Result | Events(*event\enter, #PB_EventType_Drop, mouse_x, mouse_y)
-              EndIf
-              
-;               If Not *event\enter
-;                 Debug GetWindowTitle(EventWindow())
-;               EndIf
+            EndIf
+            
+            ; post drop event
+            If DD::EventDrop(*event\enter, #PB_EventType_LeftButtonUp)
+              Result | Events(*event\enter, #PB_EventType_Drop, mouse_x, mouse_y)
+            EndIf
+            
+            If Not *event\enter
+              Debug "title - "+GetWindowTitle(enterID())
+              DD::EventDrop(enterID(), #PB_EventType_MouseEnter)
+              DD::EventDrop(enterID(), #PB_EventType_LeftButtonUp)
+              PostEvent(#PB_Event_WindowDrop, enterID(), 0)
             EndIf
           EndIf
           
@@ -4719,296 +4789,216 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat
       Select WaitWindowEvent()   
         Case #PB_Event_CloseWindow
-          End 
+          CloseWindow(EventWindow()) 
+          Break
       EndSelect
     ForEver
   EndIf
 CompilerEndIf
 
-; ;- EXAMPLE
-; CompilerIf #PB_Compiler_IsMainFile
-;   EnableExplicit
-;   UseModule Tree
-;   UseModule DD
-;   ;
-;   ; ------------------------------------------------------------
-;   ;
-;   ;   PureBasic - Drag & Drop
-;   ;
-;   ;    (c) Fantaisie Software
-;   ;
-;   ; ------------------------------------------------------------
-;   ;
-;   
-;   #Window = 0
-;   
-;   Enumeration    ; Images
-;     #ImageSource
-;     #ImageTarget
-;   EndEnumeration
-;   
-;   Global SourceText,
-;          SourceImage,
-;          SourceFiles,
-;          SourcePrivate,
-;          TargetText,
-;          TargetImage,
-;          TargetFiles,
-;          TargetPrivate1,
-;          TargetPrivate2
-;   
-;   Global g_Canvas, *g._S_widget, NewList *List._S_widget()
-;   
-;   Procedure _ReDraw(Canvas)
-;     If StartDrawing(CanvasOutput(Canvas))
-;       FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F6)
-;       
-;       ; PushListPosition(*List())
-;       ForEach *List()
-;         If Not *List()\hide
-;           Draw(*List())
-;         EndIf
-;       Next
-;       ; PopListPosition(*List())
-;       
-;       StopDrawing()
-;     EndIf
-;   EndProcedure
-;   
-;   Procedure.i Canvas_Events()
-;     Protected Canvas.i = EventGadget()
-;     Protected EventType.i = EventType()
-;     Protected Repaint
-;     Protected Width = GadgetWidth(Canvas)
-;     Protected Height = GadgetHeight(Canvas)
-;     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-;     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-;     ;      MouseX = DesktopMouseX()-GadgetX(Canvas, #PB_Gadget_ScreenCoordinate)
-;     ;      MouseY = DesktopMouseY()-GadgetY(Canvas, #PB_Gadget_ScreenCoordinate)
-;     Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-;     Protected *callback = GetGadgetData(Canvas)
-;     Protected *this._S_widget ; = GetGadgetData(Canvas)
-;     
-;     Select EventType
-;       Case #PB_EventType_Repaint
-;         *this = EventData()
-;         
-;         If *this And *this\handle
-;           *this\row\draw = *this\row\count
-;           CallBack(*this, EventType)
-;           
-;           If StartDrawing(CanvasOutput(*this\canvas\gadget))
-;             If *event\draw = 0
-;               *event\draw = 1
-;               FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F6)
+;- EXAMPLE
+CompilerIf #PB_Compiler_IsMainFile
+  EnableExplicit
+  UseModule Tree
+  UseModule DD
+  ;
+  ; ------------------------------------------------------------
+  ;
+  ;   PureBasic - Drag & Drop
+  ;
+  ;    (c) Fantaisie Software
+  ;
+  ; ------------------------------------------------------------
+  ;
+  
+  #Window = 0
+  
+  Enumeration    ; Images
+    #ImageSource
+    #ImageTarget
+  EndEnumeration
+  
+  Global SourceText,
+         SourceImage,
+         SourceFiles,
+         SourcePrivate,
+         TargetText,
+         TargetImage,
+         TargetFiles,
+         TargetPrivate1,
+         TargetPrivate2
+  
+  Global g_Canvas, *g._S_widget, NewList *List._S_widget()
+  
+  UsePNGImageDecoder()
+  
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
+    End
+  EndIf
+  
+  Procedure Events()
+    Protected EventGadget.i, EventType.i, EventItem.i, EventData.i
+    
+    EventGadget = *event\widget ; Widget()
+    EventType = *event\type ; Type()
+    EventItem = *event\item ; Item()
+    EventData = *event\data ; Data()
+    
+    Protected i, Text$, Files$, Count
+    ;Debug "     "+EventType
+    ; DragStart event on the source s, initiate a drag & drop
+    ;
+    Select EventType
+      Case #PB_EventType_DragStart
+        Select EventGadget
+            
+          Case SourceText
+            Text$ = GetItemText(SourceText, GetState(SourceText))
+            DragText(Text$)
+            
+;           Case SourceImage
+;             DragImage((#ImageSource))
+;             
+;           Case SourceFiles
+;             Files$ = ""       
+;             For i = 0 To CountItems(SourceFiles)-1
+;               If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
+;                 Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
+;               EndIf
+;             Next i 
+;             If Files$ <> ""
+;               DragFiles(Files$)
 ;             EndIf
 ;             
-;             Draw(*this)
-;             StopDrawing()
-;           EndIf
-;           
-;           ;ReDraw(*this, $F6)
-;           ProcedureReturn
-;         Else
-;           Repaint = 1
-;         EndIf
-;         
-;       Case #PB_EventType_Resize ; : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-;                                 ;          ForEach *List()
-;                                 ;            Resize(*List(), #PB_Ignore, #PB_Ignore, Width, Height)  
-;                                 ;          Next
-;         Repaint = 1
-;         
-;       Case #PB_EventType_LeftButtonDown
-;         SetActiveGadget(Canvas)
-;         
-;     EndSelect
-;     
-;     ForEach *List()
-;       If Not *List()\handle
-;         DeleteElement(*List())
-;       EndIf
-;       
-;       *List()\canvas\gadget = EventGadget()
-;       *List()\canvas\window = EventWindow()
-;       
-;       Repaint | CallBack(*List(), EventType);, MouseX, MouseY)
-;     Next
-;     
-;     If Repaint 
-;       _ReDraw(Canvas)
-;     EndIf
-;   EndProcedure
-;   
-;   UsePNGImageDecoder()
-;   
-;   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
-;     End
-;   EndIf
-;   
-;   Procedure Events()
-;     Protected EventGadget.i, EventType.i, EventItem.i, EventData.i
-;     
-;     EventGadget = *event\widget ; Widget()
-;     EventType = *event\type ; Type()
-;     EventItem = *event\item ; Item()
-;     EventData = *event\data ; Data()
-;     
-;     Protected i, Text$, Files$, Count
-;     ;Debug "     "+EventType
-;     ; DragStart event on the source s, initiate a drag & drop
-;     ;
-;     Select EventType
-;       Case #PB_EventType_DragStart
-;         Select EventGadget
+;             ; "Private" Drags only work within the program, everything else
+;             ; also works with other applications (Explorer, Word, etc)
+;             ;
+;           Case SourcePrivate
+;             If GetState(SourcePrivate) = 0
+;               DragPrivate(1)
+;             Else
+;               DragPrivate(2)
+;             EndIf
+            
+        EndSelect
+        
+        ; Drop event on the target gadgets, receive the dropped data
+        ;
+      Case #PB_EventType_Drop
+        
+        Select EventGadget
+            
+          Case TargetText
+            AddItem(TargetText, -1, DropText())
+            
+;           Case TargetImage
+;             If DropImage(#ImageTarget)
+;               SetState(TargetImage, (#ImageTarget))
+;             EndIf
 ;             
-;           Case SourceText
-;             Text$ = GetItemText(SourceText, GetState(SourceText))
-;             DragText(Text$)
+;           Case TargetFiles
+;             Files$ = EventDropFiles()
+;             Count  = CountString(Files$, Chr(10)) + 1
+;             For i = 1 To Count
+;               AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
+;             Next i
 ;             
-; ;           Case SourceImage
-; ;             DragImage((#ImageSource))
-; ;             
-; ;           Case SourceFiles
-; ;             Files$ = ""       
-; ;             For i = 0 To CountItems(SourceFiles)-1
-; ;               If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
-; ;                 Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
-; ;               EndIf
-; ;             Next i 
-; ;             If Files$ <> ""
-; ;               DragFiles(Files$)
-; ;             EndIf
-; ;             
-; ;             ; "Private" Drags only work within the program, everything else
-; ;             ; also works with other applications (Explorer, Word, etc)
-; ;             ;
-; ;           Case SourcePrivate
-; ;             If GetState(SourcePrivate) = 0
-; ;               DragPrivate(1)
-; ;             Else
-; ;               DragPrivate(2)
-; ;             EndIf
+;           Case TargetPrivate1
+;             AddItem(TargetPrivate1, -1, "Private type 1 dropped")
 ;             
-;         EndSelect
-;         
-;         ; Drop event on the target gadgets, receive the dropped data
-;         ;
-;       Case #PB_EventType_Drop
-;         
-;         Select EventGadget
-;             
-;           Case TargetText
-;             AddItem(TargetText, -1, DropText())
-;             
-; ;           Case TargetImage
-; ;             If DropImage(#ImageTarget)
-; ;               SetState(TargetImage, (#ImageTarget))
-; ;             EndIf
-; ;             
-; ;           Case TargetFiles
-; ;             Files$ = EventDropFiles()
-; ;             Count  = CountString(Files$, Chr(10)) + 1
-; ;             For i = 1 To Count
-; ;               AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
-; ;             Next i
-; ;             
-; ;           Case TargetPrivate1
-; ;             AddItem(TargetPrivate1, -1, "Private type 1 dropped")
-; ;             
-; ;           Case TargetPrivate2
-; ;             AddItem(TargetPrivate2, -1, "Private type 2 dropped")
-;             
-;         EndSelect
-;         
-;     EndSelect
-;     
-;   EndProcedure
-;   
-;   If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
-;     
-;     g_Canvas = CanvasGadget(-1, 0, 0, 760, 310, #PB_Canvas_Keyboard|#PB_Canvas_Container)
-;     BindGadgetEvent(g_Canvas, @Canvas_Events())
-;     
-;     ; create some images for the image demonstration
-;     ; 
-;     Define i, Event
-;     CreateImage(#ImageSource, 136, 136)
-;     If StartDrawing(ImageOutput(#ImageSource))
-;       Box(0, 0, 136, 136, $FFFFFF)
-;       DrawText(5, 5, "Drag this image", $000000, $FFFFFF)        
-;       For i = 45 To 1 Step -1
-;         Circle(70, 80, i, Random($FFFFFF))
-;       Next i        
-;       
-;       StopDrawing()
-;     EndIf  
-;     
-;     CreateImage(#ImageTarget, 136, 136)
-;     If StartDrawing(ImageOutput(#ImageTarget))
-;       Box(0, 0, 136, 136, $FFFFFF)
-;       DrawText(5, 5, "Drop images here", $000000, $FFFFFF)
-;       StopDrawing()
-;     EndIf  
-;     
-;     
-;     ; create and fill the source s
-;     ;
-;     SourceText = widget(10, 10, 140, 140);, "Drag Text here", 130)   
-;     *g = SourceText
-;     *g\canvas\Gadget = g_Canvas
-;     AddElement(*List()) : *List() = *g
-;     ;SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
-;     ;SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
-;     ;SourcePrivate = ListIcon(610, 10, 140, 140, "Drag private stuff here", 260)
-;     
-;     AddItem(SourceText, -1, "hello world")
-;     AddItem(SourceText, -1, "The quick brown fox jumped over the lazy dog")
-;     AddItem(SourceText, -1, "abcdefg")
-;     AddItem(SourceText, -1, "123456789")
-;     
-; ;     AddItem(SourcePrivate, -1, "Private type 1")
-; ;     AddItem(SourcePrivate, -1, "Private type 2")
-;     
-;     
-;     ; create the target s
-;     ;
-;     TargetText = Widget(10, 160, 140, 140);, "Drop Text here", 130)
-;     *g = TargetText
-;     *g\canvas\Gadget = g_Canvas
-;     AddElement(*List()) : *List() = *g
-;     
-;     TargetImage = Widget(160, 160, 140, 140);, (#ImageTarget), #PB_Image_Border) 
-;     *g = TargetImage
-;     *g\canvas\Gadget = g_Canvas
-;     AddElement(*List()) : *List() = *g
-;     
-; ;     TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
-; ;     TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
-; ;     TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
-;     
-;     
-;     ; Now enable the dropping on the target s
-;     ;
-;     EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
-; ;     EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
-; ;     EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
-; ;     EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
-; ;     EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
-;     
-;     Bind(SourceText, @Events(), #PB_EventType_DragStart)
-;     Bind(TargetText, @Events(), #PB_EventType_Drop)
-;     
-;     ;     Bind(@Events())
-; ;     ReDraw(Root())
-;     
-;     Repeat
-;       Event = WaitWindowEvent()
-;     Until Event = #PB_Event_CloseWindow
-;   EndIf
-;   
-;   End
-; CompilerEndIf
+;           Case TargetPrivate2
+;             AddItem(TargetPrivate2, -1, "Private type 2 dropped")
+            
+        EndSelect
+        
+    EndSelect
+    
+  EndProcedure
+  
+  If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
+    
+    g_Canvas = CanvasGadget(-1, 0, 0, 760, 310, #PB_Canvas_Keyboard|#PB_Canvas_Container)
+    BindGadgetEvent(g_Canvas, @Canvas_Events())
+    
+    ; create some images for the image demonstration
+    ; 
+    Define i, Event
+    CreateImage(#ImageSource, 136, 136)
+    If StartDrawing(ImageOutput(#ImageSource))
+      Box(0, 0, 136, 136, $FFFFFF)
+      DrawText(5, 5, "Drag this image", $000000, $FFFFFF)        
+      For i = 45 To 1 Step -1
+        Circle(70, 80, i, Random($FFFFFF))
+      Next i        
+      
+      StopDrawing()
+    EndIf  
+    
+    CreateImage(#ImageTarget, 136, 136)
+    If StartDrawing(ImageOutput(#ImageTarget))
+      Box(0, 0, 136, 136, $FFFFFF)
+      DrawText(5, 5, "Drop images here", $000000, $FFFFFF)
+      StopDrawing()
+    EndIf  
+    
+    
+    ; create and fill the source s
+    ;
+    SourceText = widget(10, 10, 140, 140);, "Drag Text here", 130)   
+    *g = SourceText
+    *g\canvas\Gadget = g_Canvas
+    AddElement(*List()) : *List() = *g
+    ;SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
+    ;SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
+    ;SourcePrivate = ListIcon(610, 10, 140, 140, "Drag private stuff here", 260)
+    
+    AddItem(SourceText, -1, "hello world")
+    AddItem(SourceText, -1, "The quick brown fox jumped over the lazy dog")
+    AddItem(SourceText, -1, "abcdefg")
+    AddItem(SourceText, -1, "123456789")
+    
+;     AddItem(SourcePrivate, -1, "Private type 1")
+;     AddItem(SourcePrivate, -1, "Private type 2")
+    
+    
+    ; create the target s
+    ;
+    TargetText = Widget(10, 160, 140, 140);, "Drop Text here", 130)
+    *g = TargetText
+    *g\canvas\Gadget = g_Canvas
+    AddElement(*List()) : *List() = *g
+    
+    TargetImage = Widget(160, 160, 140, 140);, (#ImageTarget), #PB_Image_Border) 
+    *g = TargetImage
+    *g\canvas\Gadget = g_Canvas
+    AddElement(*List()) : *List() = *g
+    
+;     TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
+;     TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
+;     TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
+    
+    
+    ; Now enable the dropping on the target s
+    ;
+    EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
+;     EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
+;     EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
+;     EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
+;     EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
+    
+    Bind(SourceText, @Events(), #PB_EventType_DragStart)
+    Bind(TargetText, @Events(), #PB_EventType_Drop)
+    
+    ;     Bind(@Events())
+;     ReDraw(Root())
+    
+    Repeat
+      Event = WaitWindowEvent()
+    Until Event = #PB_Event_CloseWindow
+  EndIf
+  
+  End
+CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------4v---------8------------------------
+; Folding = --------------------------------------------------------------------9-8-y---------------------
 ; EnableXP
