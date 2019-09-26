@@ -350,7 +350,7 @@ DeclareModule Structures
     buttons.b
     gridlines.b
     checkboxes.b
-    optiongroup.b
+    OptionBoxes.b
     threestate.b
     collapse.b
     alwaysselection.b
@@ -1991,7 +1991,7 @@ Module Tree
       DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
       
       If _type_ = 1
-        RoundBox(_x_+(_width_-4)/2,_y_+(_height_-4)/2, 4,4, 4,4,_color_&$FFFFFF|_alpha_<<24) ; правая линия
+        RoundBox(_x_+(_width_-5)/2,_y_+(_height_-5)/2, 5,5, 5,5,_color_&$FFFFFF|_alpha_<<24) ; правая линия
                                                                                              ; RoundBox(_x_+(_width_-8)/2,_y_+(_height_-8)/2, 8,8, 4,4,_color_&$FFFFFF|_alpha_<<24) ; правая линия
       ElseIf _type_ = 3
         If _checked_ > 1
@@ -2091,35 +2091,6 @@ Module Tree
       *event\active = _this_
       Result | Events(_this_, #PB_EventType_Focus, mouse_x, mouse_y)
     EndIf
-  EndMacro
-  
-  Macro _set_state_(_this_, _items_, _state_)
-    
-    If _this_\flag\optiongroup
-      If _items_\optiongroup\optiongroup <> _items_ And _items_\parent
-        If _items_\optiongroup\optiongroup
-          _items_\optiongroup\optiongroup\box[1]\checked = 0
-        EndIf
-        _items_\optiongroup\optiongroup = _items_
-      EndIf
-      
-      _items_\box[1]\checked ! _state_
-      
-    Else
-      If _this_\flag\threestate
-        Select _items_\box[1]\checked 
-          Case 0
-            _items_\box[1]\checked = 2
-          Case 1
-            _items_\box[1]\checked = 0
-          Case 2
-            _items_\box[1]\checked = 1
-        EndSelect
-      Else
-        _items_\box[1]\checked ! _state_
-      EndIf
-    EndIf
-    
   EndMacro
   
   Macro _repaint_(_this_)
@@ -2319,14 +2290,14 @@ Module Tree
           
           If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
             ; check box
-            If _this_\flag\checkBoxes Or _this_\flag\optiongroup
+            If _this_\flag\checkBoxes Or _this_\flag\OptionBoxes
               _items_\box[1]\x = _items_\x + 3 - _this_\scroll\h\page\pos
               _items_\box[1]\y = (_items_\y+_items_\height)-(_items_\height+_items_\box[1]\height)/2-_this_\scroll\v\page\pos
             EndIf
             
             ; expanded & collapsed box
             If _this_\flag\buttons Or _this_\flag\lines 
-              _items_\box[0]\x = _items_\x + _items_\sublength - _this_\row\sublength + Bool(_this_\flag\buttons) * 4 + Bool(Not _this_\flag\buttons And _this_\flag\lines) * 8 - _this_\scroll\h\page\pos 
+              _items_\box[0]\x = _items_\x + _items_\sublength - _this_\row\sublength + Bool(_this_\flag\buttons) * 4 + Bool(Not _this_\flag\buttons And _this_\flag\lines) * 7 - _this_\scroll\h\page\pos 
               _items_\box[0]\y = (_items_\y+_items_\height)-(_items_\height+_items_\box[0]\height)/2-_this_\scroll\v\page\pos
             EndIf
             
@@ -2341,7 +2312,7 @@ Module Tree
                                 (_items_\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
             
             ; lines for tree widget
-            If _this_\flag\lines And _this_\row\sublength
+            If _this_\flag\lines And _this_\row\sublength And Not (_this_\flag\OptionBoxes And _items_\sublevel)
               _lines_(_this_, _items_)
             EndIf
             
@@ -2426,16 +2397,28 @@ Module Tree
           
           ; Draw checkbox
           ; Draw option
-          If _this_\flag\optiongroup And _items_\parent
+          If _this_\flag\OptionBoxes And _items_\parent ;And _items_\optiongroup And Not _items_\childrens
             DrawingMode(#PB_2DDrawing_Default)
             _box_(_items_\box[1]\x, _items_\box[1]\y, _items_\box[1]\width, _items_\box[1]\height, _items_\box[1]\checked, 1, $FFFFFFFF, 7, 255)
             
+;             ; Draw buttons
+; ;           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+; ;           _box_gradient_(0,_items_\box[1]\x, _items_\box[1]\y, _items_\box[1]\width, _items_\box[1]\height, _items_\Color[#_b_1]\fore[_items_\color[#_b_1]\state],_items_\Color[#_b_1]\Back[_items_\color[#_b_1]\state], _items_\Radius, _items_\color\alpha)
+;           
+;           ; Draw buttons frame
+;           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+;           RoundBox(_items_\box[1]\x, _items_\box[1]\y, _items_\box[1]\width, _items_\box[1]\height, 7,7, $FF000000)
+;           
+; ;           ; Draw arrows
+; ;           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+; ;           Arrow(\button[#_b_1]\x+(\button[#_b_1]\width-\button[#_b_1]\arrow_size)/2,\button[#_b_1]\y+(\button[#_b_1]\height-\button[#_b_1]\arrow_size)/2, \button[#_b_1]\arrow_size, Bool(\Vertical), \Color[#_b_1]\front[\color[#_b_1]\state]&$FFFFFF|\color\alpha<<24, \button[#_b_1]\arrow_type)
+          
           ElseIf _this_\flag\checkboxes
             DrawingMode(#PB_2DDrawing_Default)
             _box_(_items_\box[1]\x, _items_\box[1]\y, _items_\box[1]\width, _items_\box[1]\height, _items_\box[1]\checked, 3, $FFFFFFFF, 2, 255)
           EndIf
           
-          ; Draw image
+           ; Draw image
           If _items_\image\handle
             DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
             DrawAlphaImage(_items_\image\handle, _items_\image\x, _items_\image\y, _items_\color\alpha)
@@ -2472,22 +2455,21 @@ Module Tree
               ;  CustomFilterCallback(@PlotY())
               Line(_items_\l\v\x, _items_\l\v\y, _items_\l\v\width, _items_\l\v\height, _items_\color\line)
             EndIf
+            
           EndIf    
         Next
       EndIf
       
       ; Draw arrow
-      If _this_\flag\buttons ;And Not _this_\flag\optiongroup
+      If _this_\flag\buttons
         DrawingMode(#PB_2DDrawing_Default)
         
         ForEach _items_
           If _items_\draw And _items_\childrens
-            Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-6)/2,_items_\box[0]\y+(_items_\box[0]\height-6)/2, 6, Bool(Not _items_\box[0]\checked)+2, _items_\color\front[_items_\color\state], 0,0) 
-;             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-;             ;RoundBox(_items_\box[0]\x-3, _items_\box[0]\y-3, _items_\box[0]\width+6, _items_\box[0]\height+6, 7,7, _items_\color\front[_items_\color\state])
-;             RoundBox(_items_\box[0]\x-1, _items_\box[0]\y-1, _items_\box[0]\width+2, _items_\box[0]\height+2, 7,7, _items_\color\front[_items_\color\state])
-;             Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-4)/2,_items_\box[0]\y+(_items_\box[0]\height-4)/2, 4, Bool(Not _items_\box[0]\checked)+2, _items_\color\front[_items_\color\state], 0,0) 
-          EndIf    
+            Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-4)/2,_items_\box[0]\y+(_items_\box[0]\height-4)/2, 4, Bool(Not _items_\box[0]\checked)+2, _items_\color\front[_items_\color\state], 0,0) 
+          EndIf 
+          
+         
         Next
       EndIf
       
@@ -2623,14 +2605,10 @@ Module Tree
   
   Procedure.i SetAttribute(*this._S_widget, Attribute.i, Value.l)
     Protected Result.i =- 1
-        
+    
     Select Attribute
       Case #PB_Flag_Collapse
         *this\flag\collapse = Bool(Not Value) 
-        
-      Case #PB_Flag_OptionBoxes
-        *this\flag\optiongroup = Bool(Value)*12
-        *this\flag\checkBoxes = *this\flag\optiongroup
         
     EndSelect
     
@@ -2739,13 +2717,12 @@ Module Tree
       EndIf
       
       If *this\items()\box[1]\checked = 0
-;         If State & #PB_Tree_Inbetween
-;           *this\items()\box[1]\checked = 2
-;         ElseIf State & #PB_Tree_Checked
-;           *this\items()\box[1]\checked = 1
-;         EndIf
-        _set_state_(*this, *this\items(), State)
-                
+        If State & #PB_Tree_Inbetween
+          *this\items()\box[1]\checked = 2
+        ElseIf State & #PB_Tree_Checked
+          *this\items()\box[1]\checked = 1
+        EndIf
+        
         Repaint = 2
       EndIf
       
@@ -3039,14 +3016,8 @@ Module Tree
     
     With *this
       If *this
-        If sublevel =- 1
-          *parent = *this
-          \flag\optiongroup = 12
-          \flag\checkBoxes = \flag\optiongroup
-        EndIf
-        
-        If \flag\optiongroup
-          If subLevel > 1
+        If \flag\OptionBoxes
+          If subLevel = 0
             subLevel = 1
           EndIf
         EndIf
@@ -3059,35 +3030,16 @@ Module Tree
         Else
           handle = SelectElement(\items(), Item)
           
-          Protected Lastlevel, Parent, mac = 0
-          If mac 
-            PreviousElement(\items())
-            If \items()\sublevel = sublevel
-              Lastlevel = \items()\sublevel 
-              \items()\childrens = 0
-            EndIf
-            SelectElement(\items(), Item)
-          Else
-            If sublevel < \items()\sublevel
-              sublevel = \items()\sublevel  
-            EndIf
+          If sublevel < \items()\sublevel
+            sublevel = \items()\sublevel  
           EndIf
           
           handle = InsertElement(\items())
-          
-          If mac And subLevel = Lastlevel
-            \items()\childrens = 1
-            Parent = \items()
-          EndIf
           
           ; Исправляем идентификатор итема  
           PushListPosition(\items())
           While NextElement(\items())
             \items()\index = ListIndex(\items())
-            
-            If mac And \items()\sublevel = sublevel + 1
-              \items()\parent = Parent
-            EndIf
           Wend
           PopListPosition(\items())
         EndIf
@@ -3102,10 +3054,22 @@ Module Tree
               \row\first = \items()
             EndIf
             
-            If subLevel
-              If sublevel>Item
-                sublevel=Item
+            If Not \flag\buttons ; subLevel =- 1
+                *parent = *this
               EndIf
+              
+              
+            If subLevel
+              If \flag\OptionBoxes
+                If subLevel > 0 
+                  subLevel = 0
+                EndIf
+              Else
+                If sublevel>Item
+                  sublevel=Item
+                EndIf
+              EndIf
+              Debug subLevel
               
               PushListPosition(\items())
               While PreviousElement(\items()) 
@@ -3136,8 +3100,8 @@ Module Tree
             EndIf
           EndIf
           
-          ; set option group
-          If \flag\optiongroup 
+          
+          If \flag\OptionBoxes 
             If \items()\parent
               \items()\optiongroup = \items()\parent
             Else
@@ -3171,7 +3135,7 @@ Module Tree
             \items()\box[0]\height = \flag\buttons
           EndIf
           
-          If \flag\checkBoxes Or \flag\optiongroup
+          If \flag\checkBoxes Or \flag\OptionBoxes
             \items()\box[1]\width = \flag\checkBoxes
             \items()\box[1]\height = \flag\checkBoxes
           EndIf
@@ -3594,12 +3558,7 @@ Module Tree
             Result | Events(*this, EventType, mouse_x, mouse_y)
             
             If *this\row\index >= 0
-              If _from_point_(mouse_x, mouse_y, *this\items()\box[1])
-                _set_state_(*this, *this\items(), 1)
-                *this\row\box = 1
-                
-                Result = #True
-              ElseIf *this\flag\buttons And *this\items()\childrens And _from_point_(mouse_x, mouse_y, *this\items()\box[0])
+              If *this\flag\buttons And *this\items()\childrens And _from_point_(mouse_x, mouse_y, *this\items()\box[0])
                 *this\change = 1
                 *this\row\box = 2
                 *this\items()\box[0]\checked ! 1
@@ -3617,6 +3576,41 @@ Module Tree
                 If StartDrawing(CanvasOutput(*this\canvas\gadget))
                   _update_(*this, *this\items())
                   StopDrawing()
+                EndIf
+                
+                Result = #True
+               ElseIf _from_point_(mouse_x, mouse_y, *this\items()\box[1])
+                *this\row\box = 1
+                
+                If *this\flag\OptionBoxes
+                  If *this\items()\optiongroup\box[1]\checked ;And *this\items()\optiongroup\parent <> *this\items()
+                    Debug 7777
+                    *this\items()\optiongroup\box[1]\checked = 0
+                  EndIf
+                  
+                  If *this\items()\optiongroup\optiongroup <> *this\items() ;And *this\items()\optiongroup <> *this\items()\parent
+                    Debug 888
+                    If *this\items()\optiongroup\optiongroup
+                      *this\items()\optiongroup\optiongroup\box[1]\checked = 0
+                    EndIf
+                    *this\items()\optiongroup\optiongroup = *this\items()
+                  EndIf
+                  
+                  *this\items()\box[1]\checked ! 1
+                  
+                Else
+                  If *this\flag\threestate
+                    Select *this\items()\box[1]\checked 
+                      Case 0
+                        *this\items()\box[1]\checked = 2
+                      Case 1
+                        *this\items()\box[1]\checked = 0
+                      Case 2
+                        *this\items()\box[1]\checked = 1
+                    EndSelect
+                  Else
+                    *this\items()\box[1]\checked ! 1
+                  EndIf
                 EndIf
                 
                 Result = #True
@@ -3715,7 +3709,7 @@ Module Tree
           EndIf
           
         Case #PB_EventType_KeyDown
-            If *this = *event\active
+          If *this = *event\active
             
             Select *this\canvas\key
               Case #PB_Shortcut_PageUp
@@ -3843,7 +3837,7 @@ Module Tree
             EndSelect
             
           EndIf
-        
+          
       EndSelect
       
       If *this = *event\enter And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ;And Not *this\canvas\key; And Not *this\mouse\buttons
@@ -4048,13 +4042,13 @@ Module Tree
         
         \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8 ; Это еще будет размер линии
         \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер кнопки
-        \flag\checkBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
+        \flag\checkBoxes = Bool(flag&#PB_Flag_CheckBoxes)*13; Это еще будет размер чек бокса
         \flag\collapse = Bool(flag&#PB_Flag_Collapse) 
         \flag\threestate = Bool(flag&#PB_Flag_ThreeState) 
         
-        \flag\optiongroup = Bool(flag&#PB_Flag_OptionBoxes)*12; Это еще будет размер
-        If \flag\optiongroup
-          \flag\checkBoxes = 12; Это еще будет размер чек бокса
+        \flag\OptionBoxes = Bool(flag&#PB_Flag_OptionBoxes)*13; Это еще будет размер
+        If \flag\OptionBoxes
+          \flag\checkBoxes = 13; Это еще будет размер чек бокса
         EndIf
         
         
@@ -4159,6 +4153,8 @@ EndModule
 ;-
 ;- EXAMPLE
 ;-
+
+;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     Procedure GadgetsClipCallBack( GadgetID, lParam )
@@ -4220,8 +4216,10 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerEndIf
   EndProcedure
   
+  EnableExplicit
+  UseModule Tree
+  UseModule DD
   
-  UseModule tree
   Global Canvas_0
   Global *g._S_widget
   Global *g0._S_widget
@@ -4560,7 +4558,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
-    Define widget = 0
+    Define widget = 1
     
     ;If widget
     g_Canvas = CanvasGadget(-1, 0, 225, 1110, 425, #PB_Canvas_Keyboard|#PB_Canvas_Container)
@@ -4571,23 +4569,20 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 10
     
     If widget
-      *g = Widget(10, 100, 210, 210, #PB_Tree_CheckBoxes)                                         
+      *g = Widget(10, 100, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_OptionBoxes);|#PB_Flag_NoButtons)                                         
       *g\canvas\Gadget = g_Canvas
       AddElement(*List()) : *List() = *g
     Else
-      *g = GetGadgetData(Gadget(g, 10, 100, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_MultiSelect))
+      *g = GetGadgetData(Gadget(g, 10, 100, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_OptionBoxes))
     EndIf
     
     ; 1_example
-    AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
-    AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-    AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 2", -1, 11)
-    AddItem (*g, -1, "Sub-Item 3", -1, 1)
-    AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 5", -1, 11)
-    AddItem (*g, -1, "Sub-Item 6", -1, 1)
-    AddItem (*g, -1, "File "+Str(a), -1, 0)  
+    AddItem (*g, -1, "checkbox_0", -1,-1) 
+    AddItem (*g, -1, "option_1", -1,0)
+    AddItem (*g, -1, "option_2", -1,0)
+    AddItem (*g, -1, "checkbox_1", -1,-1)
+    AddItem (*g, -1, "option_4", -1,0) 
+    AddItem (*g, -1, "option_5", -1,0)
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     
     ; RemoveItem(*g,1)
@@ -4601,121 +4596,78 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 11
     If widget
-      *g = Widget(230, 100, 210, 210, #PB_Flag_AlwaysSelection);|#PB_Flag_Collapsed)                                         
+      *g = Widget(230, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_OptionBoxes)                                         
       *g\canvas\Gadget = g_Canvas
       AddElement(*List()) : *List() = *g
     Else
-      *g = GetGadgetData(Gadget(g, 160, 120, 210, 210, #PB_Flag_AlwaysSelection))
+      *g = GetGadgetData(Gadget(g, 160, 120, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_OptionBoxes))
     EndIf
     
     ;  3_example
-    AddItem(*g, 0, "Tree_0", -1 )
-    AddItem(*g, 1, "Tree_1_1", 0, 1) 
-    AddItem(*g, 4, "Tree_1_1_1", -1, 2) 
-    AddItem(*g, 5, "Tree_1_1_2", -1, 2) 
-    AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
-    AddItem(*g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", -1, 4) 
-    AddItem(*g, 7, "Tree_1_1_2_2 980980_", -1, 3) 
-    AddItem(*g, 2, "Tree_1_2", -1, 1) 
-    AddItem(*g, 3, "Tree_1_3", -1, 1) 
-    AddItem(*g, 9, "Tree_2",-1 )
-    AddItem(*g, 10, "Tree_3", -1 )
-    AddItem(*g, 11, "Tree_4", -1 )
-    AddItem(*g, 12, "Tree_5", -1 )
-    AddItem(*g, 13, "Tree_6", -1 )
+    AddItem (*g, -1, "option_0", -1,-1) 
+    AddItem (*g, -1, "option_1", -1,-1)
+    AddItem (*g, -1, "option_2", -1,-1)
+    AddItem (*g, -1, "option_3", -1,-1)
+    AddItem (*g, -1, "option_4", -1,-1) 
+    AddItem (*g, -1, "option_5", -1,-1)
+;     AddItem (*g, -1, "option_0", -1,0) 
+;     AddItem (*g, -1, "option_1", -1,0)
+;     AddItem (*g, -1, "option_2", -1,0)
+;     AddItem (*g, -1, "option_3", -1,0)
+;     AddItem (*g, -1, "option_4", -1,0) 
+;     AddItem (*g, -1, "option_5", -1,0)
     
     g = 12
-    *g = Widget(450, 100, 210, 210, #PB_Flag_CheckBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_GridLines | #PB_Flag_ThreeState| #PB_Flag_OptionBoxes)                            
-    *g\canvas\Gadget = g_Canvas
-    AddElement(*List()) : *List() = *g
-    ;  2_example
-    AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
-    For i=1 To 20
-      If i=5 ;Or i%3=0
-        AddItem(*g, -1, "Tree_"+Str(i), -1, 0) 
-      Else
-        AddItem(*g, -1, "Tree_"+Str(i), 0, -1) 
-      EndIf
-    Next
-    ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    LoadFont(5, "Arial", 16)
-    SetItemFont(*g, 3, 5)
-    SetItemText(*g, 3, "16_font and text change")
-    SetItemColor(*g, 5, #PB_Gadget_FrontColor, $FFFFFF00)
-    SetItemColor(*g, 5, #PB_Gadget_BackColor, $FFFF00FF)
-    SetItemText(*g, 5, "backcolor and text change")
-    LoadFont(6, "Arial", 25)
-    SetItemFont(*g, 4, 6)
-    SetItemText(*g, 4, "25_font and text change")
-    SetItemFont(*g, 14, 6)
-    SetItemText(*g, 14, "25_font and text change")
-    Bind(*g, @events_tree_widget())
+    If widget
+      *g = Widget(450, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_OptionBoxes)                                         
+      *g\canvas\Gadget = g_Canvas
+      AddElement(*List()) : *List() = *g
+    Else
+      *g = GetGadgetData(Gadget(g, 160, 120, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_OptionBoxes))
+    EndIf
+    
+    ;  3_example
+    AddItem (*g, -1, "box_0", -1,-1) 
+    AddItem (*g, -1, "box_1", -1,-1) 
+    AddItem (*g, -1, "option_1", -1,1)
+    AddItem (*g, -1, "option_2", -1,1)
+    AddItem (*g, -1, "box_2", -1,-1) 
+    AddItem (*g, -1, "box_3", -1,-1)
+    AddItem (*g, -1, "option_4", -1,1) 
+    AddItem (*g, -1, "option_5", -1,1)
+     
+;     AddItem (*g, -1, "box_0", -1,0) 
+;     AddItem (*g, -1, "box_1", -1,0) 
+;     AddItem (*g, -1, "option_1", -1,-1)
+;     AddItem (*g, -1, "option_2", -1,-1)
+;     AddItem (*g, -1, "box_2", -1,0) 
+;     AddItem (*g, -1, "box_3", -1,0)
+;     AddItem (*g, -1, "option_4", -1,-1) 
+;     AddItem (*g, -1, "option_5", -1,-1)
     
     g = 13
-    *g = Widget(600+70, 100, 210, 210, #PB_Flag_OptionBoxes|#PB_Flag_NoButtons|#PB_Flag_NoLines|#PB_Flag_ClickSelect) ;                                        
+    *g = Widget(600+70, 100, 210, 210, #PB_Flag_OptionBoxes|#PB_Flag_ClickSelect)                                         
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  4_example
-    ; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
-    ; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
-    ; ;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-    ; ;     AddItem(*g, 2, "Tree_2_1", -1, 1) 
-    ; ;     AddItem(*g, 3, "Tree_3_1", -1, 1) 
-    ; ;     AddItem(*g, 3, "Tree_3_2", -1, 2) 
-    ; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    AddItem (*g, -1, "#PB_Window_MinimizeGadget", -1) ; Adds the minimize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
-    AddItem (*g, -1, "#PB_Window_MaximizeGadget", -1) ; Adds the maximize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
-                                                      ;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
-    AddItem (*g, -1, "#PB_Window_SizeGadget    ", -1) ; Adds the sizeable feature To a window.
-    AddItem (*g, -1, "#PB_Window_Invisible     ", -1) ; Creates the window but don't display.
-    AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1) ; Enables the system menu on the window title bar (Default", -1).
+;     AddItem (*g, -1, "#PB_Window_MinimizeGadget", -1, -1) ; Adds the minimize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
+;     AddItem (*g, -1, "#PB_Window_MaximizeGadget", -1, -1) ; Adds the maximize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
+;                                                       ;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
+    AddItem (*g, -1, "#PB_Window_SizeGadget    ", -1, -1) ; Adds the sizeable feature To a window.
+    AddItem (*g, -1, "#PB_Window_Invisible     ", -1, -1) ; Creates the window but don't display.
+    AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1, -1) ; Enables the system menu on the window title bar (Default", -1).
     AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
     AddItem (*g, -1, "#PB_Window_Tool          ", -1,1) ; Creates a window With a smaller titlebar And no taskbar entry. 
     AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
-    AddItem (*g, -1, "#PB_Window_ScreenCentered", -1)   ; Centers the window in the middle of the screen. x,y parameters are ignored.
-    AddItem (*g, -1, "#PB_Window_WindowCentered", -1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
+    AddItem (*g, -1, "#PB_Window_ScreenCentered", -1, -1)   ; Centers the window in the middle of the screen. x,y parameters are ignored.
+    AddItem (*g, -1, "#PB_Window_WindowCentered", -1, -1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
     AddItem (*g, -1, "#PB_Window_Maximize      ", -1, 1); Opens the window maximized. (Note", -1) ; on Linux, Not all Windowmanagers support this", -1)
     AddItem (*g, -1, "#PB_Window_Minimize      ", -1, 1); Opens the window minimized.
-    AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1)   ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
-    AddItem (*g, -1, "#PB_Window_NoActivate    ", -1)   ; Don't activate the window after opening.
+    AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1, -1)   ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
+    AddItem (*g, -1, "#PB_Window_NoActivate    ", -1, -1)   ; Don't activate the window after opening.
     
     
     
-    g = 14
-    *g = Widget(750+135, 100, 103, 210, #PB_Tree_NoButtons)                                         
-    *g\canvas\Gadget = g_Canvas
-    AddElement(*List()) : *List() = *g
-    ;  5_example
-    AddItem(*g, 0, "Tree_0", -1 )
-    AddItem(*g, 1, "Tree_1", -1, 0) 
-    AddItem(*g, 2, "Tree_2", -1, 0) 
-    AddItem(*g, 3, "Tree_3", -1, 0) 
-    AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
-    AddItem(*g, 1, "Tree_1", -1, 1) 
-    AddItem(*g, 2, "Tree_2_1", -1, 1) 
-    AddItem(*g, 2, "Tree_2_2", -1, 2) 
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-    SetItemImage(*g, 0, 0)
-    
-    g = 15
-    *g = Widget(890+106, 100, 103, 210, #PB_Flag_BorderLess|#PB_Flag_Collapse)                                         
-    *g\canvas\Gadget = g_Canvas
-    AddElement(*List()) : *List() = *g
-    ;  6_example
-    AddItem(*g, 0, "Tree_1", -1, 1) 
-    AddItem(*g, 0, "Tree_2_1", -1, 2) 
-    AddItem(*g, 0, "Tree_2_2", -1, 3) 
-    
-    For i = 0 To 24
-      If i % 5 = 0
-        AddItem(*g, -1, "Directory" + Str(i), -1, 0)
-      Else
-        AddItem(*g, -1, "Item" + Str(i), -1, 1)
-      EndIf
-    Next i
-    
-    ; Free(*g)
-    ;ClipGadgets( UseGadgetList(0) )
     Repeat
       Select WaitWindowEvent()   
         Case #PB_Event_CloseWindow
@@ -4725,7 +4677,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
-; ;- EXAMPLE
 ; CompilerIf #PB_Compiler_IsMainFile
 ;   EnableExplicit
 ;   UseModule Tree
@@ -5010,5 +4961,5 @@ CompilerEndIf
 ;   End
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------4v---------8------------------------
+; Folding = ---------------------------------------------------------+----------------------------------
 ; EnableXP

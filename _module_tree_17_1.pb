@@ -350,7 +350,7 @@ DeclareModule Structures
     buttons.b
     gridlines.b
     checkboxes.b
-    optiongroup.b
+    OptionBoxes.b
     threestate.b
     collapse.b
     alwaysselection.b
@@ -2093,35 +2093,6 @@ Module Tree
     EndIf
   EndMacro
   
-  Macro _set_state_(_this_, _items_, _state_)
-    
-    If _this_\flag\optiongroup
-      If _items_\optiongroup\optiongroup <> _items_ And _items_\parent
-        If _items_\optiongroup\optiongroup
-          _items_\optiongroup\optiongroup\box[1]\checked = 0
-        EndIf
-        _items_\optiongroup\optiongroup = _items_
-      EndIf
-      
-      _items_\box[1]\checked ! _state_
-      
-    Else
-      If _this_\flag\threestate
-        Select _items_\box[1]\checked 
-          Case 0
-            _items_\box[1]\checked = 2
-          Case 1
-            _items_\box[1]\checked = 0
-          Case 2
-            _items_\box[1]\checked = 1
-        EndSelect
-      Else
-        _items_\box[1]\checked ! _state_
-      EndIf
-    EndIf
-    
-  EndMacro
-  
   Macro _repaint_(_this_)
     If _this_\row\count = 0 Or 
        (Not _this_\hide And _this_\row\draw And 
@@ -2319,7 +2290,7 @@ Module Tree
           
           If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
             ; check box
-            If _this_\flag\checkBoxes Or _this_\flag\optiongroup
+            If _this_\flag\checkBoxes Or _this_\flag\OptionBoxes
               _items_\box[1]\x = _items_\x + 3 - _this_\scroll\h\page\pos
               _items_\box[1]\y = (_items_\y+_items_\height)-(_items_\height+_items_\box[1]\height)/2-_this_\scroll\v\page\pos
             EndIf
@@ -2426,7 +2397,7 @@ Module Tree
           
           ; Draw checkbox
           ; Draw option
-          If _this_\flag\optiongroup And _items_\parent
+          If _this_\flag\OptionBoxes And _items_\parent
             DrawingMode(#PB_2DDrawing_Default)
             _box_(_items_\box[1]\x, _items_\box[1]\y, _items_\box[1]\width, _items_\box[1]\height, _items_\box[1]\checked, 1, $FFFFFFFF, 7, 255)
             
@@ -2477,16 +2448,25 @@ Module Tree
       EndIf
       
       ; Draw arrow
-      If _this_\flag\buttons ;And Not _this_\flag\optiongroup
+      If _this_\flag\buttons
         DrawingMode(#PB_2DDrawing_Default)
         
         ForEach _items_
           If _items_\draw And _items_\childrens
-            Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-6)/2,_items_\box[0]\y+(_items_\box[0]\height-6)/2, 6, Bool(Not _items_\box[0]\checked)+2, _items_\color\front[_items_\color\state], 0,0) 
-;             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-;             ;RoundBox(_items_\box[0]\x-3, _items_\box[0]\y-3, _items_\box[0]\width+6, _items_\box[0]\height+6, 7,7, _items_\color\front[_items_\color\state])
-;             RoundBox(_items_\box[0]\x-1, _items_\box[0]\y-1, _items_\box[0]\width+2, _items_\box[0]\height+2, 7,7, _items_\color\front[_items_\color\state])
-;             Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-4)/2,_items_\box[0]\y+(_items_\box[0]\height-4)/2, 4, Bool(Not _items_\box[0]\checked)+2, _items_\color\front[_items_\color\state], 0,0) 
+;             Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-6)/2,_items_\box[0]\y+(_items_\box[0]\height-6)/2, 6, Bool(Not _items_\box[0]\checked)+2, _items_\color\front[_items_\color\state], 0,0) 
+            DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+            Bar::_box_gradient_(0,_items_\box[0]\x-3, _items_\box[0]\y-3, _items_\box[0]\width+6, _items_\box[0]\height+6, $FFF8F8F8,$80E2E2E2, 7, _items_\color\alpha)
+            
+            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+           ;RoundBox(_items_\box[0]\x-3, _items_\box[0]\y-3, _items_\box[0]\width+6, _items_\box[0]\height+6, 7,7, _items_\color\front[_items_\color\state])
+           _box_(_items_\box[0]\x-3, _items_\box[0]\y-3, _items_\box[0]\width+6, _items_\box[0]\height+6, 1, $FFFFFFFF, 7, 255)
+           
+           If _items_\color\state
+             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+           RoundBox(_items_\box[0]\x-3, _items_\box[0]\y-3, _items_\box[0]\width+6, _items_\box[0]\height+6, 7,7, _items_\color\front[_items_\color\state])
+         EndIf
+         
+           Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-4)/2,_items_\box[0]\y+(_items_\box[0]\height-4)/2, 4, Bool(Not _items_\box[0]\checked)+2, $FFFFFFFF, 0,0) 
           EndIf    
         Next
       EndIf
@@ -2629,8 +2609,8 @@ Module Tree
         *this\flag\collapse = Bool(Not Value) 
         
       Case #PB_Flag_OptionBoxes
-        *this\flag\optiongroup = Bool(Value)*12
-        *this\flag\checkBoxes = *this\flag\optiongroup
+        *this\flag\OptionBoxes = Bool(Value)*12
+        *this\flag\checkBoxes = *this\flag\OptionBoxes
         
     EndSelect
     
@@ -2739,13 +2719,12 @@ Module Tree
       EndIf
       
       If *this\items()\box[1]\checked = 0
-;         If State & #PB_Tree_Inbetween
-;           *this\items()\box[1]\checked = 2
-;         ElseIf State & #PB_Tree_Checked
-;           *this\items()\box[1]\checked = 1
-;         EndIf
-        _set_state_(*this, *this\items(), State)
-                
+        If State & #PB_Tree_Inbetween
+          *this\items()\box[1]\checked = 2
+        ElseIf State & #PB_Tree_Checked
+          *this\items()\box[1]\checked = 1
+        EndIf
+        
         Repaint = 2
       EndIf
       
@@ -3039,13 +3018,7 @@ Module Tree
     
     With *this
       If *this
-        If sublevel =- 1
-          *parent = *this
-          \flag\optiongroup = 12
-          \flag\checkBoxes = \flag\optiongroup
-        EndIf
-        
-        If \flag\optiongroup
+        If \flag\OptionBoxes
           If subLevel > 1
             subLevel = 1
           EndIf
@@ -3136,12 +3109,17 @@ Module Tree
             EndIf
           EndIf
           
-          ; set option group
-          If \flag\optiongroup 
-            If \items()\parent
+          
+          If \flag\OptionBoxes 
+            If \items()\parent ; ListSize(*Value\OpenedList()\childrens()) 
+                               ;               If \items()\parent\optiongroup; *Value\OpenedList()\childrens()\type = #PB_GadgetType_Option
+                               ;                 \items()\optiongroup = *Value\OpenedList()\childrens()\optiongroup 
+                               ;               Else
+                               ;                 \items()\optiongroup = *Value\OpenedList()\childrens() 
+                               ;               EndIf
               \items()\optiongroup = \items()\parent
             Else
-              \items()\optiongroup = *this
+              \items()\optiongroup = \row\first
             EndIf
           EndIf
           
@@ -3171,14 +3149,14 @@ Module Tree
             \items()\box[0]\height = \flag\buttons
           EndIf
           
-          If \flag\checkBoxes Or \flag\optiongroup
+          If \flag\checkBoxes Or \flag\OptionBoxes
             \items()\box[1]\width = \flag\checkBoxes
             \items()\box[1]\height = \flag\checkBoxes
           EndIf
           
           If \row\sublength 
             If (\flag\buttons Or \flag\lines)
-              \items()\sublength = \items()\sublevel * \row\sublength + Bool(\flag\buttons) * 19 + Bool(\flag\checkBoxes) * 18
+              \items()\sublength = \items()\sublevel * \row\sublength + Bool(\flag\buttons) * 19 + Bool(\flag\checkBoxes) * 18 
             Else
               \items()\sublength =  Bool(\flag\checkBoxes) * 18 
             EndIf
@@ -3595,8 +3573,36 @@ Module Tree
             
             If *this\row\index >= 0
               If _from_point_(mouse_x, mouse_y, *this\items()\box[1])
-                _set_state_(*this, *this\items(), 1)
                 *this\row\box = 1
+                
+                If *this\flag\OptionBoxes
+                  If *this\items()\optiongroup\box[1]\checked And (Not *this\items()\parent And Not *this\items()\childrens)
+                    *this\items()\optiongroup\box[1]\checked = 0
+                  EndIf
+                  
+                  If *this\items()\optiongroup\optiongroup <> *this\items() And *this\items()\parent
+                    If *this\items()\optiongroup\optiongroup
+                      *this\items()\optiongroup\optiongroup\box[1]\checked = 0
+                    EndIf
+                    *this\items()\optiongroup\optiongroup = *this\items()
+                  EndIf
+                  
+                  *this\items()\box[1]\checked ! 1
+                  
+                Else
+                  If *this\flag\threestate
+                    Select *this\items()\box[1]\checked 
+                      Case 0
+                        *this\items()\box[1]\checked = 2
+                      Case 1
+                        *this\items()\box[1]\checked = 0
+                      Case 2
+                        *this\items()\box[1]\checked = 1
+                    EndSelect
+                  Else
+                    *this\items()\box[1]\checked ! 1
+                  EndIf
+                EndIf
                 
                 Result = #True
               ElseIf *this\flag\buttons And *this\items()\childrens And _from_point_(mouse_x, mouse_y, *this\items()\box[0])
@@ -4046,14 +4052,14 @@ Module Tree
         \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
         \flag\alwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
         
-        \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8 ; Это еще будет размер линии
+        \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*10 ; Это еще будет размер линии
         \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер кнопки
         \flag\checkBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12; Это еще будет размер чек бокса
         \flag\collapse = Bool(flag&#PB_Flag_Collapse) 
         \flag\threestate = Bool(flag&#PB_Flag_ThreeState) 
         
-        \flag\optiongroup = Bool(flag&#PB_Flag_OptionBoxes)*12; Это еще будет размер
-        If \flag\optiongroup
+        \flag\OptionBoxes = Bool(flag&#PB_Flag_OptionBoxes)*12; Это еще будет размер
+        If \flag\OptionBoxes
           \flag\checkBoxes = 12; Это еще будет размер чек бокса
         EndIf
         
@@ -4625,16 +4631,16 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 13, "Tree_6", -1 )
     
     g = 12
-    *g = Widget(450, 100, 210, 210, #PB_Flag_CheckBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_GridLines | #PB_Flag_ThreeState| #PB_Flag_OptionBoxes)                            
+    *g = Widget(450, 100, 210, 210, #PB_Flag_CheckBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_GridLines | #PB_Flag_ThreeState )                            
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  2_example
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
-      If i=5 ;Or i%3=0
-        AddItem(*g, -1, "Tree_"+Str(i), -1, 0) 
+      If i=5
+        AddItem(*g, -1, "Tree_"+Str(i), -1) 
       Else
-        AddItem(*g, -1, "Tree_"+Str(i), 0, -1) 
+        AddItem(*g, -1, "Tree_"+Str(i), 0) 
       EndIf
     Next
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
@@ -4652,7 +4658,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*g, @events_tree_widget())
     
     g = 13
-    *g = Widget(600+70, 100, 210, 210, #PB_Flag_OptionBoxes|#PB_Flag_NoButtons|#PB_Flag_NoLines|#PB_Flag_ClickSelect) ;                                        
+    *g = Widget(600+70, 160, 210, 210, #PB_Flag_OptionBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_ClickSelect)                                         
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  4_example
@@ -4682,7 +4688,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g = 14
-    *g = Widget(750+135, 100, 103, 210, #PB_Tree_NoButtons)                                         
+    *g = Widget(750, 100, 103, 210, #PB_Tree_NoButtons)                                         
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  5_example
@@ -5010,5 +5016,5 @@ CompilerEndIf
 ;   End
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------4v---------8------------------------
+; Folding = ---------------------------------------------------------------------------------------------
 ; EnableXP

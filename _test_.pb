@@ -30,6 +30,14 @@ Procedure events_tree_gadget()
   
   Select EventType
     Case #PB_EventType_LeftClick
+      Select GetGadgetText(functions)
+        Case "SetGadgetFlag_"
+        Case "AddGadgetItem()"
+          If EventGadget = set
+            Debug 555
+            AddGadgetItem(widget, -1, "add item")
+          EndIf
+      EndSelect
       
     Case #PB_EventType_Change
       Debug "#PB_EventType_Change - "+ EventGadget
@@ -46,11 +54,13 @@ Procedure events_tree_gadget()
               AddGadgetItem(flags, -1, "#PB_Tree_ThreeState")
               
             Case "AddGadgetItem()" ; Add an item (With an optional picture in the standard 16x16 icon size). 
-              AddGadgetItem(flags, -1, "1") ;The item should be expanded.
-              AddGadgetItem(flags, -1, "10") ;The item should be selected.
-              AddGadgetItem(flags, -1, "100") ;The item should be expanded.
-              AddGadgetItem(flags, -1, "1000") ;The item should be selected.
-              AddGadgetItem(flags, -1, "10000") ;The item should be expanded.
+              ;SetGadgetAttribute(flags, #PB_Flag_OptionBoxes, 1)
+              AddGadgetItem(flags, -1, "1",-1,-1) ;The item should be expanded.
+              AddGadgetItem(flags, -1, "10",-1,-1) ;The item should be selected.
+              AddGadgetItem(flags, -1, "100",-1,-1) ;The item should be expanded.
+              AddGadgetItem(flags, -1, "1000",-1,-1) ;The item should be selected.
+              AddGadgetItem(flags, -1, "10000",-1,-1) ;The item should be expanded.
+              SetGadgetItemState(flags, 0, #PB_Tree_Checked)
               
             Case "RemoveGadgetItem()" ; Remove an item (And all its child-items). 
               AddGadgetItem(flags, -1, "#All items") ;The item should be expanded.
@@ -150,6 +160,8 @@ Procedure OpenWindow_0(x = 0, y = 0, width = 590, height = 380)
   
   BindGadgetEvent(functions, @events_tree_gadget())
   BindGadgetEvent(flags, @events_tree_gadget())
+  BindGadgetEvent(set, @events_tree_gadget())
+  BindGadgetEvent(get, @events_tree_gadget())
   
   AddGadgetItem(functions, -1, "SetGadgetFlag_")
   AddGadgetItem(functions, -1, "AddGadgetItem()") ; Add an item (With an optional picture in the standard 16x16 icon size). 
@@ -192,5 +204,5 @@ EndProcedure
 OpenWindow_0()
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 4-
+; Folding = ---
 ; EnableXP
