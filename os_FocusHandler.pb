@@ -2,6 +2,7 @@
   Select Event()
     Case #PB_Event_ActivateWindow    : Debug "Activate - " + EventWindow()
     Case #PB_Event_DeactivateWindow  : Debug "Deactivate - " + EventWindow()
+      
     Case #PB_Event_Gadget
       Select EventType()
         Case #PB_EventType_Focus     : Debug "Focus - " + EventGadget()
@@ -43,6 +44,8 @@ OpenWindow(20, 220, 140, 200, 200, "Window_20", #PB_Window_SystemMenu, WindowID(
 StringGadget(21, 10, 10, 180, 85, "String_21")
 StringGadget(22, 10, 105, 180, 85, "String_22")
 
+SetActiveGadget(22)
+SetActiveGadget(2)
 Repeat
   Event = WaitWindowEvent()
   
@@ -67,6 +70,8 @@ Repeat
   EndSelect
   
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
+; CursorPosition = 46
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

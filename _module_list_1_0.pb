@@ -3449,7 +3449,7 @@ Module ListIcon
               EndIf
               
               If \row\sublevellen
-                \Columns()\items()\sublevellen = \Columns()\items()\sublevel * \row\sublevellen + Bool(\flag\buttons) * 20 ; + Bool(\flag\checkBoxes) * 18 
+                \Columns()\items()\sublevellen = \Columns()\items()\sublevel * \row\sublevellen + Bool(\flag\buttons) * 19 ; + Bool(\flag\checkBoxes) * 18 
               EndIf
             EndIf
             

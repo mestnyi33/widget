@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global.i gEvent, gQuit
   
-  Procedure.i _Free(*This.Widget_S)
+  Procedure.i _Free(*This._S_widget)
     Protected Result.i
     
     With *This
@@ -57,13 +57,13 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Result
   EndProcedure
   
-  Procedure Widget_Handler(*This.Widget_S, EventType.i, EventItem.i, EventData.i)
+  Procedure Widget_Handler()
     
-    Select EventType
+    Select *value\event\type
       Case #PB_EventType_LeftButtonDown
-        If *This\type>0
-          Debug "free - "+ Class(*This\type)
-          Free(*This)
+        If *value\event\widget\type>0
+          Debug "free - "+ Class(*value\event\widget\type)
+          Free(*value\event\widget)
         EndIf
         
     EndSelect
@@ -76,8 +76,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Open(0, 10,10, 580, 550);, "h")
 
-      Window(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
-      Window(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
+      form(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
+      form(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
         Container(30,30,280-60, 200-60)
         Container(20,20,280-60, 200-60)
         Button(100, 20, 80, 80, "Button_1")
@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
         CloseList()
         CloseList()
         
-      Window(20, 150, 280, 200, "Window_3") ;, #PB_Flag_AnchorsGadget)
+      form(20, 150, 280, 200, "Window_3") ;, #PB_Flag_AnchorsGadget)
       
       Panel(100, 20, 80, 80) : CloseList() ; "Button_1");, #PB_Flag_AnchorsGadget)
       ScrollArea(130, 80, 80, 80, 0,100,100) : CloseList() ; "Button_2");, #PB_Flag_AnchorsGadget)

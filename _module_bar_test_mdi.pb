@@ -425,7 +425,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repaint | CallBack(*Scroll\v, Event, MouseX, MouseY) 
     Repaint | CallBack(*Scroll\h, Event, MouseX, MouseY) 
     
-    
     If *Scroll\v\Change Or *Scroll\h\Change 
       ;       *Scroll\X =- *Scroll\h\Page\Pos
       ;       *Scroll\Y =- *Scroll\v\Page\Pos
@@ -507,7 +506,8 @@ CompilerIf #PB_Compiler_IsMainFile
         Repaint = #True
     EndSelect     
     
-    If Not Bool(*Scroll\h\from Or *Scroll\v\from)
+    If (*Scroll\h\from=-1 And *Scroll\v\from=-1)
+    ;If Not Bool(*Scroll\h\from Or *Scroll\v\from)
       Select Event
         Case #PB_EventType_LeftButtonUp : Drag = #False
           

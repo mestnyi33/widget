@@ -619,26 +619,55 @@ DeclareModule Structures
     \alpha[0] = 255
     \alpha[1] = 255
     
-    ;- Синие цвета
+    ;     ;- Синие цвета
+    ;     ; Цвета по умолчанию
+    ;     \front[#Normal] = $80000000
+    ;     \fore[#Normal] = $FFF8F8F8 
+    ;     \back[#Normal] = $80E2E2E2
+    ;     \frame[#Normal] = $80C8C8C8
+    ;     \line[#Normal] = $FF7E7E7E
+    ;     
+    ;     ; Цвета если мышь на виджете
+    ;     \front[#Entered] = $80000000
+    ;     \fore[#Entered] = $FFFAF8F8
+    ;     \back[#Entered] = $80FCEADA
+    ;     \frame[#Entered] = $80FFC288
+    ;     \line[#Entered] = $FF7E7E7E
+    ;     
+    ;     ; Цвета если нажали на виджет
+    ;     \front[#Selected] = $FFFEFEFE
+    ;     \fore[#Selected] = $C8E9BA81;$C8FFFCFA
+    ;     \back[#Selected] = $C8E89C3D; $80E89C3D
+    ;     \frame[#Selected] = $C8DC9338; $80DC9338
+    ;     \line[#Selected] = $FF7E7E7E
+    ;     
+    ;     ; Цвета если дисабле виджет
+    ;     \front[#Disabled] = $FFBABABA
+    ;     \fore[#Disabled] = $FFF6F6F6 
+    ;     \back[#Disabled] = $FFE2E2E2 
+    ;     \frame[#Disabled] = $FFBABABA
+    ;     \line[#Disabled] = $FF7E7E7E
+    
+    ; - Серые цвета
     ; Цвета по умолчанию
     \front[#Normal] = $80000000
-    \fore[#Normal] = $FFF8F8F8 
-    \back[#Normal] = $80E2E2E2
-    \frame[#Normal] = $80C8C8C8
+    \fore[#Normal] = $FFF6F6F6 ; $FFF8F8F8 
+    \back[#Normal] = $FFE2E2E2 ; $80E2E2E2
+    \frame[#Normal] = $FFBABABA; $80C8C8C8
     \line[#Normal] = $FF7E7E7E
     
     ; Цвета если мышь на виджете
     \front[#Entered] = $80000000
-    \fore[#Entered] = $FFFAF8F8
-    \back[#Entered] = $80FCEADA
-    \frame[#Entered] = $80FFC288
+    \fore[#Entered] = $FFEAEAEA ; $FFFAF8F8
+    \back[#Entered] = $FFCECECE ; $80FCEADA
+    \frame[#Entered] = $FF8F8F8F; $80FFC288
     \line[#Entered] = $FF7E7E7E
     
     ; Цвета если нажали на виджет
     \front[#Selected] = $FFFEFEFE
-    \fore[#Selected] = $C8E9BA81;$C8FFFCFA
-    \back[#Selected] = $C8E89C3D; $80E89C3D
-    \frame[#Selected] = $C8DC9338; $80DC9338
+    \fore[#Selected] = $FFE2E2E2 ; $C8E9BA81 ; $C8FFFCFA
+    \back[#Selected] = $FFB4B4B4 ; $C8E89C3D ; $80E89C3D
+    \frame[#Selected] = $FF6F6F6F; $C8DC9338 ; $80DC9338
     \line[#Selected] = $FF7E7E7E
     
     ; Цвета если дисабле виджет
@@ -647,7 +676,6 @@ DeclareModule Structures
     \back[#Disabled] = $FFE2E2E2 
     \frame[#Disabled] = $FFBABABA
     \line[#Disabled] = $FF7E7E7E
-    
   EndWith
   
 EndDeclareModule 
@@ -1595,6 +1623,112 @@ Module DD
     Bool(*Drag And _this_ And MapSize(*Drop()) And FindMapElement(*Drop(), Hex(_this_)) And *Drop()\Format = *Drag\Format And *Drop()\Type = *Drag\Type And *Drop()\Actions)
   EndMacro
   
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    Import ""
+      PB_Object_EnumerateStart( PB_Objects )
+      PB_Object_EnumerateNext( PB_Objects, *ID.Integer )
+      PB_Object_EnumerateAbort( PB_Objects )
+      ;PB_Object_GetObject( PB_Object , DynamicOrArrayID)
+      PB_Window_Objects.i
+      PB_Gadget_Objects.i
+      PB_Image_Objects.i
+      ;PB_Font_Objects.i
+    EndImport
+  CompilerElse
+    ImportC ""
+      PB_Object_EnumerateStart( PB_Objects )
+      PB_Object_EnumerateNext( PB_Objects, *ID.Integer )
+      PB_Object_EnumerateAbort( PB_Objects )
+      ;PB_Object_GetObject( PB_Object , DynamicOrArrayID)
+      PB_Window_Objects.i
+      PB_Gadget_Objects.i
+      PB_Image_Objects.i
+      ;PB_Font_Objects.i
+    EndImport
+  CompilerEndIf
+  
+  ;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+  ;     ; PB Interne Struktur Gadget MacOS
+  ;     Structure sdkGadget
+  ;       *gadget
+  ;       *container
+  ;       *vt
+  ;       UserData.i
+  ;       Window.i
+  ;       Type.i
+  ;       Flags.i
+  ;     EndStructure
+  ;   CompilerEndIf
+  
+  Procedure WindowPB(WindowID) ; Find pb-id over handle
+    Protected result, window
+    result = -1
+    PB_Object_EnumerateStart(PB_Window_Objects)
+    While PB_Object_EnumerateNext(PB_Window_Objects, @window)
+      If WindowID = WindowID(window)
+        result = window
+        Break
+      EndIf
+    Wend
+    PB_Object_EnumerateAbort(PB_Window_Objects)
+    ProcedureReturn result
+  EndProcedure
+  
+  Procedure GadgetPB(GadgetID) ; Find pb-id over handle
+    Protected result, Gadget
+    result = -1
+    PB_Object_EnumerateStart(PB_Gadget_Objects)
+    While PB_Object_EnumerateNext(PB_Gadget_Objects, @Gadget)
+      If GadgetID = GadgetID(Gadget)
+        result = Gadget
+        Break
+      EndIf
+    Wend
+    PB_Object_EnumerateAbort(PB_Gadget_Objects)
+    ProcedureReturn result
+  EndProcedure
+  
+  Procedure GetWindowUnderMouse()
+    
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
+      
+      CocoaMessage(@Point, 0, "NSEvent mouseLocation")
+      WindowNumber = CocoaMessage(0, 0, "NSWindow windowNumberAtPoint:@", @Point, "belowWindowWithWindowNumber:", 0)
+      NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
+      NSWindow = CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
+      
+      ProcedureReturn NSWindow
+    CompilerEndIf
+    
+  EndProcedure
+  
+  Procedure enterID()
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      Protected.i NSWindow = GetWindowUnderMouse()
+      Protected pt.NSPoint
+      
+      If NSWindow
+        Protected CV = CocoaMessage(0, NSWindow, "contentView")
+        CocoaMessage(@pt, NSWindow, "mouseLocationOutsideOfEventStream")
+        Protected NsGadget = CocoaMessage(0, CV, "hitTest:@", @pt)
+      EndIf
+      
+      If NsGadget <> CV And NsGadget
+        If CV = CocoaMessage(0, NsGadget, "superview")
+          ProcedureReturn GadgetPB(NsGadget)
+        Else
+          ProcedureReturn GadgetPB(CocoaMessage(0, NsGadget, "superview"))
+        EndIf
+      Else
+        ProcedureReturn WindowPB(NSWindow)
+      EndIf
+      
+    CompilerEndIf
+  EndProcedure
+  
+  
+  
   Procedure.i SetCursor(Canvas, ImageID.i, x=0, y=0)
     Protected Result.i
     
@@ -1804,44 +1938,66 @@ Module DD
   EndProcedure
   
   Procedure.i EventDrop(*this, eventtype.l)
-    
-    Select eventtype
-      Case #PB_EventType_MouseEnter
-        If _action_(*this)
-          If Not *Drop()\cursor
-            *Drag\widget = *this
-            *Drag\cursor = 0
-            Cur(1)
+    If *this =- 1
+      *this = enterID()
+      Debug "is gadget - "+IsGadget(*this)
+      Debug "is window - "+IsWindow(*this)
+      
+;       ;               If IsWindow(*this)
+;       ;                 Debug "title - "+GetWindowTitle(*this)
+;       ;               EndIf
+        
+      If _action_(*this)
+        *Drag\widget = *this
+        
+        If IsGadget(*this)
+          PostEvent(#PB_Event_GadgetDrop, WindowPB(GetWindowUnderMouse()), *this)
+        ElseIf IsWindow(*this)
+          PostEvent(#PB_Event_WindowDrop, *this, 0)
+        EndIf
+      EndIf
+      
+    Else
+      
+      Select eventtype
+        Case #PB_EventType_MouseEnter
+          If _action_(*this)
+            If Not *Drop()\cursor
+              *Drag\widget = *this
+              *Drag\cursor = 0
+              Cur(1)
+            EndIf
+          ElseIf *Drag
+            If Not *Drag\cursor
+              *Drop()\cursor = 0
+              *Drag\widget = 0
+              Cur(0)
+            EndIf
           EndIf
-        ElseIf *Drag
-          If Not *Drag\cursor
+          
+        Case #PB_EventType_MouseLeave
+          If *Drag And Not *Drag\cursor
             *Drop()\cursor = 0
             *Drag\widget = 0
             Cur(0)
           EndIf
-        EndIf
-        
-      Case #PB_EventType_MouseLeave
-        If *Drag And Not *Drag\cursor
-          *Drop()\cursor = 0
-          *Drag\widget = 0
-          Cur(0)
-        EndIf
-        
-      Case #PB_EventType_LeftButtonUp
-        
-        If *Drag And MapSize(*Drop())
-          If *Drag\cursor Or *Drop()\cursor
-            *Drag\cursor = 0
-            *Drop()\cursor = 0
-            ;Debug "set default cursor"
-            SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
-          EndIf
           
-          ProcedureReturn _action_(*this)
-        EndIf  
-    EndSelect
-
+        Case #PB_EventType_LeftButtonUp
+          
+          If *Drag And MapSize(*Drop())
+            If *Drag\cursor Or *Drop()\cursor
+              *Drag\cursor = 0
+              *Drop()\cursor = 0
+              ;Debug "set default cursor"
+              SetGadgetAttribute(EventGadget(), #PB_Canvas_Cursor, #PB_Cursor_Default)
+            EndIf
+            
+            ProcedureReturn _action_(*this)
+          EndIf  
+      EndSelect
+      
+    EndIf
+    
   EndProcedure
 EndModule
 ;- >>>
@@ -2093,28 +2249,34 @@ Module Tree
   
   Macro _set_state_(_this_, _items_, _state_)
     
-    If _this_\flag\optiongroup
-      If _items_\optiongroup\optiongroup <> _items_ And _items_\parent
+    If _this_\flag\optiongroup And _items_\parent
+      If _items_\optiongroup\optiongroup <> _items_
         If _items_\optiongroup\optiongroup
           _items_\optiongroup\optiongroup\box[1]\checked = 0
         EndIf
         _items_\optiongroup\optiongroup = _items_
       EndIf
       
-      _items_\box[1]\checked ! _state_
+      _items_\box[1]\checked ! Bool(_state_)
       
     Else
       If _this_\flag\threestate
-        Select _items_\box[1]\checked 
-          Case 0
-            _items_\box[1]\checked = 2
-          Case 1
-            _items_\box[1]\checked = 0
-          Case 2
-            _items_\box[1]\checked = 1
-        EndSelect
+        If _state_ & #PB_Tree_Inbetween
+          _items_\box[1]\checked = 2
+        ElseIf _state_ & #PB_Tree_Checked
+          _items_\box[1]\checked = 1
+        Else
+          Select _items_\box[1]\checked 
+            Case 0
+              _items_\box[1]\checked = 2
+            Case 1
+              _items_\box[1]\checked = 0
+            Case 2
+              _items_\box[1]\checked = 1
+          EndSelect
+        EndIf
       Else
-        _items_\box[1]\checked ! _state_
+        _items_\box[1]\checked ! Bool(_state_)
       EndIf
     EndIf
     
@@ -2481,10 +2643,10 @@ Module Tree
         ForEach _items_
           If _items_\draw And _items_\childrens
             Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-6)/2,_items_\box[0]\y+(_items_\box[0]\height-6)/2, 6, Bool(Not _items_\box[0]\checked)+2, _items_\color\front[_items_\color\state], 0,0) 
-;             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-;             ;RoundBox(_items_\box[0]\x-3, _items_\box[0]\y-3, _items_\box[0]\width+6, _items_\box[0]\height+6, 7,7, _items_\color\front[_items_\color\state])
-;             RoundBox(_items_\box[0]\x-1, _items_\box[0]\y-1, _items_\box[0]\width+2, _items_\box[0]\height+2, 7,7, _items_\color\front[_items_\color\state])
-;             Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-4)/2,_items_\box[0]\y+(_items_\box[0]\height-4)/2, 4, Bool(Not _items_\box[0]\checked)+2, _items_\color\front[_items_\color\state], 0,0) 
+            ;             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+            ;             ;RoundBox(_items_\box[0]\x-3, _items_\box[0]\y-3, _items_\box[0]\width+6, _items_\box[0]\height+6, 7,7, _items_\color\front[_items_\color\state])
+            ;             RoundBox(_items_\box[0]\x-1, _items_\box[0]\y-1, _items_\box[0]\width+2, _items_\box[0]\height+2, 7,7, _items_\color\front[_items_\color\state])
+            ;             Bar::Arrow(_items_\box[0]\x+(_items_\box[0]\width-4)/2,_items_\box[0]\y+(_items_\box[0]\height-4)/2, 4, Bool(Not _items_\box[0]\checked)+2, _items_\color\front[_items_\color\state], 0,0) 
           EndIf    
         Next
       EndIf
@@ -2621,7 +2783,7 @@ Module Tree
   
   Procedure.i SetAttribute(*this._S_widget, Attribute.i, Value.l)
     Protected Result.i =- 1
-        
+    
     Select Attribute
       Case #PB_Flag_Collapse
         *this\flag\collapse = Bool(Not Value) 
@@ -2736,14 +2898,9 @@ Module Tree
         EndIf
       EndIf
       
-      If *this\items()\box[1]\checked = 0
-;         If State & #PB_Tree_Inbetween
-;           *this\items()\box[1]\checked = 2
-;         ElseIf State & #PB_Tree_Checked
-;           *this\items()\box[1]\checked = 1
-;         EndIf
+      If State & #PB_Tree_Inbetween Or State & #PB_Tree_Checked
         _set_state_(*this, *this\items(), State)
-                
+        
         Repaint = 2
       EndIf
       
@@ -3340,9 +3497,13 @@ Module Tree
         \row\tt\y = y+\items()\y-\scroll\v\page\pos
         \row\tt\width = \items()\len - \items()\width + 5
         \row\tt\height = \items()\height
+        Protected flag
+        CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+          flag = #PB_Window_Tool
+        CompilerEndIf
         
         \row\tt\Window = OpenWindow(#PB_Any, \row\tt\x, \row\tt\y, \row\tt\width, \row\tt\height, "", 
-                                    #PB_Window_BorderLess|#PB_Window_NoActivate, WindowID(\canvas\window))
+                                    #PB_Window_BorderLess|#PB_Window_NoActivate|flag, WindowID(\canvas\window))
         
         \row\tt\gadget = CanvasGadget(#PB_Any,0,0, \row\tt\width, \row\tt\height)
         \row\tt\color = \items()\color
@@ -3367,86 +3528,6 @@ Module Tree
     EndIf
   EndProcedure
   
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    Import ""
-      PB_Object_EnumerateStart( PB_Objects )
-      PB_Object_EnumerateNext( PB_Objects, *ID.Integer )
-      PB_Object_EnumerateAbort( PB_Objects )
-      ;PB_Object_GetObject( PB_Object , DynamicOrArrayID)
-      PB_Window_Objects.i
-      PB_Gadget_Objects.i
-      PB_Image_Objects.i
-      ;PB_Font_Objects.i
-    EndImport
-  CompilerElse
-    ImportC ""
-      PB_Object_EnumerateStart( PB_Objects )
-      PB_Object_EnumerateNext( PB_Objects, *ID.Integer )
-      PB_Object_EnumerateAbort( PB_Objects )
-      ;PB_Object_GetObject( PB_Object , DynamicOrArrayID)
-      PB_Window_Objects.i
-      PB_Gadget_Objects.i
-      PB_Image_Objects.i
-      ;PB_Font_Objects.i
-    EndImport
-  CompilerEndIf
- 
-;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-;     ; PB Interne Struktur Gadget MacOS
-;     Structure sdkGadget
-;       *gadget
-;       *container
-;       *vt
-;       UserData.i
-;       Window.i
-;       Type.i
-;       Flags.i
-;     EndStructure
-;   CompilerEndIf
-  
-  Procedure WindowPB(WindowID) ; Find pb-id over handle
-    Protected result, window
-    result = -1
-    PB_Object_EnumerateStart(PB_Window_Objects)
-    While PB_Object_EnumerateNext(PB_Window_Objects, @window)
-      If WindowID = WindowID(window)
-        result = window
-        Break
-      EndIf
-    Wend
-    PB_Object_EnumerateAbort(PB_Window_Objects)
-    ProcedureReturn result
-  EndProcedure
- 
-  Procedure enterID()
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      ;       Protected pt.NSPoint
-      ;       
-      ;       Protected CV = CocoaMessage(0, WindowID, "contentView")
-      ;       CocoaMessage(@pt, WindowID, "mouseLocationOutsideOfEventStream")
-      ;       ProcedureReturn CocoaMessage(0, CV, "hitTest:@", @pt)
-      
-      Protected i,CV, w, id, pt.NSPoint
-      
-      Protected app =  CocoaMessage(0, 0, "NSApplication sharedApplication")
-      Protected windows = CocoaMessage(0, app, "windows")
-      Protected count = CocoaMessage(0, windows, "count") -1
-      
-      For i=count To 0 Step -1
-        id = CocoaMessage(0, windows, "objectAtIndex:", i)
-        CV = CocoaMessage(0, id, "contentView")
-        CocoaMessage(@pt, id, "mouseLocationOutsideOfEventStream")
-        
-        If CocoaMessage(0, CV, "hitTest:@", @pt)
-          Break
-        EndIf
-      Next
-      
-      ProcedureReturn WindowPB(id)
-    CompilerEndIf
-  EndProcedure
-  
-
   ;-
   Procedure Events(*this._S_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1, position.l=0)
     Protected Result, down
@@ -3653,7 +3734,7 @@ Module Tree
           If *this = *event\enter 
             *this\delta\x = mouse_x
             *this\delta\y = mouse_y
-              
+            
             If *event\active <> *this
               _set_active_(*this)
             EndIf
@@ -3758,16 +3839,15 @@ Module Tree
             EndIf
             
             If Not *event\enter
-              Debug "title - "+GetWindowTitle(enterID())
-              DD::EventDrop(enterID(), #PB_EventType_MouseEnter)
-              DD::EventDrop(enterID(), #PB_EventType_LeftButtonUp)
-              PostEvent(#PB_Event_WindowDrop, enterID(), 0)
+              
+              DD::EventDrop(-1, #PB_EventType_LeftButtonUp)
+              
             EndIf
           EndIf
           
           If *this = *event\enter And Not *event\leave
             Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
-          *event\leave = *event\enter
+            *event\leave = *event\enter
           EndIf
           
         Case #PB_EventType_LostFocus
@@ -3785,7 +3865,7 @@ Module Tree
           EndIf
           
         Case #PB_EventType_KeyDown
-            If *this = *event\active
+          If *this = *event\active
             
             Select *this\canvas\key
               Case #PB_Shortcut_PageUp
@@ -3826,19 +3906,19 @@ Module Tree
                         Wend
                       EndIf
                     EndIf
-                   
+                    
                     If *this\row\selected <> *this\items()
                       *this\row\selected\color\state = 0
                       *this\row\selected  = *this\items()
                       *this\items()\color\state = 2
                       *row_selected = *this\items()
-                  
+                      
                       Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
                     EndIf
                     
                     If ((*this\scroll\v\y - *this\row\selected\y) + *this\scroll\v\page\pos) > 0
                       *this\change = Bar::SetState(*this\scroll\v, (*this\row\selected\y - *this\scroll\v\y)) 
-                     
+                      
                       ; Если виделенная линия ниже позиции виджете
                     ElseIf (*this\row\selected\y-*this\scroll\v\y-*this\scroll\v\page\pos) > (*this\height[2]-*this\row\selected\height) 
                       *this\change = Bar::SetState(*this\scroll\v, (*this\row\selected\y-*this\scroll\v\y) - (*this\height[2]-*this\row\selected\height)) 
@@ -3879,7 +3959,7 @@ Module Tree
                       *this\row\selected  = *this\items()
                       *this\items()\color\state = 2
                       *row_selected = *this\items()
-                  
+                      
                       Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
                     EndIf
                     
@@ -3896,7 +3976,7 @@ Module Tree
                 
               Case #PB_Shortcut_Left
                 If (*this\canvas\key[1] & #PB_Canvas_Alt) And
-                     (*this\canvas\key[1] & #PB_Canvas_Control)
+                   (*this\canvas\key[1] & #PB_Canvas_Control)
                   
                   *this\change = Bar::SetState(*this\scroll\h, *this\scroll\h\page\pos-(*this\scroll\h\page\end/10)) 
                   Result = 1
@@ -3904,7 +3984,7 @@ Module Tree
                 
               Case #PB_Shortcut_Right
                 If (*this\canvas\key[1] & #PB_Canvas_Alt) And
-                     (*this\canvas\key[1] & #PB_Canvas_Control)
+                   (*this\canvas\key[1] & #PB_Canvas_Control)
                   
                   *this\change = Bar::SetState(*this\scroll\h, *this\scroll\h\page\pos+(*this\scroll\h\page\end/10)) 
                   Result = 1
@@ -3913,7 +3993,7 @@ Module Tree
             EndSelect
             
           EndIf
-        
+          
       EndSelect
       
       If *this = *event\enter And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ;And Not *this\canvas\key; And Not *this\mouse\buttons
@@ -3962,6 +4042,7 @@ Module Tree
           
           If *this\row\selected <> *row_selected
             *this\row\selected = *row_selected
+            ;*this\row\selected\color\state = 2
             
             Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
           EndIf
@@ -4577,7 +4658,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g = 3
-    TreeGadget(g, 450, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes |#PB_Tree_NoLines|#PB_Tree_NoButtons|#PB_ListView_MultiSelect | #PB_Tree_ThreeState)                                      
+    TreeGadget(g, 450, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes |#PB_Tree_NoLines|#PB_Tree_NoButtons | #PB_Tree_ThreeState)                                      
     ;  2_example
     AddGadgetItem(g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)",ImageID(0)) 
     For i=1 To 20
@@ -4589,6 +4670,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
+    SetGadgetItemState(g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+    SetGadgetItemState(g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
     BindGadgetEvent(g, @events_tree_gadget())
     
     
@@ -4606,10 +4689,14 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 5
     TreeGadget(g, 890, 10, 103, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_NoButtons)                                         
     ; 5_example
-    AddGadgetItem(g, 0, "Tree_0 (NoButtons)", 0 )
-    AddGadgetItem(g, 1, "Tree_1", 0, 1) 
-    AddGadgetItem(g, 2, "Tree_2_1", 0, 1) 
-    AddGadgetItem(g, 2, "Tree_2_2", 0, 2) 
+    AddGadgetItem(g, 0, "Tree_0",0 )
+    AddGadgetItem(g, 1, "Tree_1",0, 0) 
+    AddGadgetItem(g, 2, "Tree_2",0, 0) 
+    AddGadgetItem(g, 3, "Tree_3",0, 0) 
+    AddGadgetItem(g, 0, "Tree_0 (NoButtons)",0 )
+    AddGadgetItem(g, 1, "Tree_1",0, 1) 
+    AddGadgetItem(g, 2, "Tree_2_1",0, 1) 
+    AddGadgetItem(g, 2, "Tree_2_2",0, 2) 
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     SetGadgetItemImage(g, 0, ImageID(0))
     
@@ -4695,7 +4782,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 13, "Tree_6", -1 )
     
     g = 12
-    *g = Widget(450, 100, 210, 210, #PB_Flag_CheckBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_GridLines | #PB_Flag_ThreeState| #PB_Flag_OptionBoxes)                            
+    *g = Widget(450, 100, 210, 210, #PB_Flag_CheckBoxes|#PB_Flag_NoLines|#PB_Flag_NoButtons|#PB_Flag_GridLines | #PB_Flag_ThreeState | #PB_Flag_OptionBoxes)                            
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  2_example
@@ -4708,6 +4795,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+    SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+    
     LoadFont(5, "Arial", 16)
     SetItemFont(*g, 3, 5)
     SetItemText(*g, 3, "16_font and text change")
@@ -4840,9 +4930,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventGadget.i, EventType.i, EventItem.i, EventData.i
     
     EventGadget = *event\widget ; Widget()
-    EventType = *event\type ; Type()
-    EventItem = *event\item ; Item()
-    EventData = *event\data ; Data()
+    EventType = *event\type     ; Type()
+    EventItem = *event\item     ; Item()
+    EventData = *event\data     ; Data()
     
     Protected i, Text$, Files$, Count
     ;Debug "     "+EventType
@@ -4856,29 +4946,29 @@ CompilerIf #PB_Compiler_IsMainFile
             Text$ = GetItemText(SourceText, GetState(SourceText))
             DragText(Text$)
             
-;           Case SourceImage
-;             DragImage((#ImageSource))
-;             
-;           Case SourceFiles
-;             Files$ = ""       
-;             For i = 0 To CountItems(SourceFiles)-1
-;               If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
-;                 Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
-;               EndIf
-;             Next i 
-;             If Files$ <> ""
-;               DragFiles(Files$)
-;             EndIf
-;             
-;             ; "Private" Drags only work within the program, everything else
-;             ; also works with other applications (Explorer, Word, etc)
-;             ;
-;           Case SourcePrivate
-;             If GetState(SourcePrivate) = 0
-;               DragPrivate(1)
-;             Else
-;               DragPrivate(2)
-;             EndIf
+            ;           Case SourceImage
+            ;             DragImage((#ImageSource))
+            ;             
+            ;           Case SourceFiles
+            ;             Files$ = ""       
+            ;             For i = 0 To CountItems(SourceFiles)-1
+            ;               If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
+            ;                 Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
+            ;               EndIf
+            ;             Next i 
+            ;             If Files$ <> ""
+            ;               DragFiles(Files$)
+            ;             EndIf
+            ;             
+            ;             ; "Private" Drags only work within the program, everything else
+            ;             ; also works with other applications (Explorer, Word, etc)
+            ;             ;
+            ;           Case SourcePrivate
+            ;             If GetState(SourcePrivate) = 0
+            ;               DragPrivate(1)
+            ;             Else
+            ;               DragPrivate(2)
+            ;             EndIf
             
         EndSelect
         
@@ -4891,23 +4981,23 @@ CompilerIf #PB_Compiler_IsMainFile
           Case TargetText
             AddItem(TargetText, -1, DropText())
             
-;           Case TargetImage
-;             If DropImage(#ImageTarget)
-;               SetState(TargetImage, (#ImageTarget))
-;             EndIf
-;             
-;           Case TargetFiles
-;             Files$ = EventDropFiles()
-;             Count  = CountString(Files$, Chr(10)) + 1
-;             For i = 1 To Count
-;               AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
-;             Next i
-;             
-;           Case TargetPrivate1
-;             AddItem(TargetPrivate1, -1, "Private type 1 dropped")
-;             
-;           Case TargetPrivate2
-;             AddItem(TargetPrivate2, -1, "Private type 2 dropped")
+            ;           Case TargetImage
+            ;             If DropImage(#ImageTarget)
+            ;               SetState(TargetImage, (#ImageTarget))
+            ;             EndIf
+            ;             
+            ;           Case TargetFiles
+            ;             Files$ = EventDropFiles()
+            ;             Count  = CountString(Files$, Chr(10)) + 1
+            ;             For i = 1 To Count
+            ;               AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
+            ;             Next i
+            ;             
+            ;           Case TargetPrivate1
+            ;             AddItem(TargetPrivate1, -1, "Private type 1 dropped")
+            ;             
+            ;           Case TargetPrivate2
+            ;             AddItem(TargetPrivate2, -1, "Private type 2 dropped")
             
         EndSelect
         
@@ -4957,8 +5047,8 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(SourceText, -1, "abcdefg")
     AddItem(SourceText, -1, "123456789")
     
-;     AddItem(SourcePrivate, -1, "Private type 1")
-;     AddItem(SourcePrivate, -1, "Private type 2")
+    ;     AddItem(SourcePrivate, -1, "Private type 1")
+    ;     AddItem(SourcePrivate, -1, "Private type 2")
     
     
     ; create the target s
@@ -4973,24 +5063,24 @@ CompilerIf #PB_Compiler_IsMainFile
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     
-;     TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
-;     TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
-;     TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
+    ;     TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)
+    ;     TargetPrivate1 = ListIcon(460, 160, 140, 140, "Drop Private Type 1 here", 130)
+    ;     TargetPrivate2 = ListIcon(610, 160, 140, 140, "Drop Private Type 2 here", 130)
     
     
     ; Now enable the dropping on the target s
     ;
     EnableDrop(TargetText,     #PB_Drop_Text,    #PB_Drag_Copy)
-;     EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
-;     EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
-;     EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
-;     EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
+    ;     EnableDrop(TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy)
+    ;     EnableDrop(TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy)
+    ;     EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
+    ;     EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
     
     Bind(SourceText, @Events(), #PB_EventType_DragStart)
     Bind(TargetText, @Events(), #PB_EventType_Drop)
     
     ;     Bind(@Events())
-;     ReDraw(Root())
+    ;     ReDraw(Root())
     
     Repeat
       Event = WaitWindowEvent()
@@ -4999,6 +5089,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------9-8-y---------------------
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
+; CursorPosition = 276
+; FirstLine = 4
+; Folding = +-+-X-----5-04v-f--+-0-8-6---FA70---------------------------------------------------------------
 ; EnableXP

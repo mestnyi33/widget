@@ -4,7 +4,12 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   
-  Procedure Widget_Handler(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+  Procedure Widget_Handler()
+    Protected EventWidget.i = *value\event\widget,
+              EventType.i = *value\event\type,
+              EventItem.i = *value\event\item, 
+              EventData.i = *value\event\data
+    
     ;   Select Event()
     ;     Case #PB_Event_Widget
     ; If Not (EventType = #PB_EventType_MouseMove And Not GetButtons(EventWidget))
@@ -58,9 +63,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Open(0, 0, 0, 220, 220, "w")
     SetData(Container(20, 20, 180, 180), 1)
     SetData(Container(20, 20, 180, 180), 10)
-    SetData(Button(20, 20, 180, 50, ""), 100)
+    SetData(Button(20, 20, 180, 60, "butt_0"), 100)
     SetData(Container(20, 70, 180, 180), 20)
-    SetData(Button(20, 20, 180, 50, ""), 200)
+    SetData(Button(20, 20, 180, 50, "butt_1"), 200)
     
     Redraw(Root())
     Bind(@Widget_Handler())

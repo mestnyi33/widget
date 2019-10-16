@@ -8,7 +8,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global.i gEvent, gQuit, *but, *win
   
-  Procedure Widgets_Gadget_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+  Procedure Widgets_Gadget_Events()
+    Protected EventWidget.i = *value\event\widget,
+              EventType.i = *value\event\type,
+              EventItem.i = *value\event\item, 
+              EventData.i = *value\event\data
+    
     If EventType <> #PB_EventType_MouseMove
       Debug " gadget "+ EventType
     EndIf
@@ -39,7 +44,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     EndSelect
   EndProcedure
   
-  Procedure Widgets_Window_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+  Procedure Widgets_Window_Events()
+    Protected EventWidget.i = *value\event\widget,
+              EventType.i = *value\event\type,
+              EventItem.i = *value\event\item, 
+              EventData.i = *value\event\data
+    
     If EventType <> #PB_EventType_MouseMove
       Debug " window "+ EventType
     EndIf
@@ -66,7 +76,12 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
-  Procedure Widgets_Root_Events(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+  Procedure Widgets_Root_Events()
+    Protected EventWidget.i = *value\event\widget,
+              EventType.i = *value\event\type,
+              EventItem.i = *value\event\item, 
+              EventData.i = *value\event\data
+    
     If EventType <> #PB_EventType_MouseMove
       Debug " root "+ EventType
     EndIf

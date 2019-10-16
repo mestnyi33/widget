@@ -1,6 +1,7 @@
 ﻿IncludePath "../"
 XIncludeFile "widgets.pbi"
 UseModule Widget
+
 ;
 ; ------------------------------------------------------------
 ;
@@ -29,8 +30,13 @@ Global SourceText,
        TargetPrivate2
 
 
-Procedure Events(EventGadget, EventType, EventItem, EventData)
-  Protected i, Text$, Files$, Count
+Procedure Events()
+    Protected EventWidget.i = *value\event\widget,
+              EventType.i = *value\event\type,
+              EventItem.i = *value\event\item, 
+              EventData.i = *value\event\data
+    
+    Protected i, Text$, Files$, Count
   
   ; DragStart event on the source s, initiate a drag & drop
   ;

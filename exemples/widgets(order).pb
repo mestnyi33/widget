@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, value, direction, x=10,y=10
   Global *window
   
-  Procedure.i GetIndex(*This.Widget_S, Position.i)
+  Procedure.i GetIndex(*This._S_widget, Position.i)
     Protected Result.i
     
     With *This
@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetIndex(*This.Widget_S, Position.i, *Widget_2 =- 1) ; Ok SetStacking()
+  Procedure.i SetIndex(*This._S_widget, Position.i, *Widget_2 =- 1) ; Ok SetStacking()
     
     With *This\Parent
       If *This And *This\Parent
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;-
   ; Получить Z-позицию элемента в окне
-  Procedure _GetPosition(*This.Widget_S, Position=#PB_Default)
+  Procedure _GetPosition(*This._S_widget, Position=#PB_Default)
     Protected Result.i
     
     With *This
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i _SetPosition(*This.Widget_S, Position, *Widget_2 =- 1) ; Ok
+  Procedure.i _SetPosition(*This._S_widget, Position, *Widget_2 =- 1) ; Ok
     
     With *This
       If *This And \Parent
@@ -129,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure Canvas_Events(Canvas.i, EventType.i)
-    Protected Repaint, *This.Widget_S
+    Protected Repaint, *This._S_widget
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
@@ -284,5 +284,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = t40-0--
+; Folding = ----0--
 ; EnableXP

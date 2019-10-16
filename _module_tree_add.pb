@@ -1,5 +1,5 @@
 ﻿;IncludePath "/Users/as/Documents/GitHub/Widget/"
-XIncludeFile "_module_tree_12.pb"
+XIncludeFile "_module_tree_18.pb"
 ;XIncludeFile "_module_tree_7.pb"
 
 UseModule Tree
@@ -8,7 +8,7 @@ Global *w._S_widget
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   ListViewGadget(0, 10, 10, 250, 680, #PB_ListView_MultiSelect)
-  *w=Gadget(1, 270, 10, 250, 680, #PB_Flag_GridLines|#PB_Tree_NoButtons|#PB_Tree_NoLines |#PB_Flag_MultiSelect)
+  *w=GetGadgetData(Gadget(1, 270, 10, 250, 680, #PB_Flag_GridLines|#PB_Tree_NoButtons|#PB_Tree_NoLines |#PB_Flag_MultiSelect))
   
   a=0
   *w\hide = 1

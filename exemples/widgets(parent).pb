@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets().pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -11,7 +11,12 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *w_0, *d_0, *b_0, *b_1, *p_0, *p_1, *p_2, *c_0, *s_0
     
   
-  Procedure Widgets_CallBack(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+  Procedure Widgets_CallBack()
+    Protected EventWidget.i = *event\widget,
+              EventType.i = *event\type,
+              EventItem.i = *event\item, 
+              EventData.i = *event\data
+    
     ; Debug ""+EventType() +" "+ WidgetEventType() +" "+ EventWidget() +" "+ EventGadget() +" "+ EventData()
     ; Protected EventWidget = EventWidget()
     
@@ -116,13 +121,14 @@ CompilerIf #PB_Compiler_IsMainFile
   *b_0 = Button(450,90,160,30,"Button >>(Back)") 
   
   Bind(@Widgets_CallBack(), Root())
-  ;ReDraw(Root())
   
   ResizeWindow(10, WindowX( 10 )-100, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #PB_Window_BorderLess
+  Flags = #PB_Window_Invisible | #PB_Window_TitleBar ;| #PB_Window_BorderLess
   X = WindowX( 10 )+5+WindowWidth( 10 )
   Y = WindowY( 10 )
-  *window_2 = Open(20, X, Y, 200, 346+22, "old parent", Flags, WindowID(GetRootWindow(*window_1)))
+  
+  *window_2 = Open(20, X, Y, 200, 346, "", Flags, WindowID(GetWindow(GetRoot(*window_1))))
+  SetWindowTitle(GetWindow(Root()), "old parent") 
   *w = Button(30,10,160,70,"Button") 
   
   
@@ -171,8 +177,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ReDraw(GetRoot(*window_1))
   ReDraw(GetRoot(*window_2))
   
-  HideWindow(GetRootWindow(*window_1),0)
-  HideWindow(GetRootWindow(*window_2),0)
+  HideWindow(GetWindow(GetRoot(*window_1)),0)
+  HideWindow(GetWindow(GetRoot(*window_2)),0)
   
   Repeat
     Define Event=WaitWindowEvent()
@@ -180,5 +186,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --
+; Folding = 8-
 ; EnableXP

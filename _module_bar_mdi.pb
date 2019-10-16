@@ -10,7 +10,7 @@ DeclareModule Bar
   
   EnumerationBinary 4
     #PB_Bar_ScrollStep
-    #PB_Bar_NoButtons 
+    #PB_Bar_ButtonSize 
     #PB_Bar_Direction 
     #PB_Bar_Inverted 
     #PB_Bar_Ticks
@@ -857,7 +857,7 @@ Module Bar
         Case #PB_Bar_PageLength : Result = \page\len
         Case #PB_Bar_Inverted : Result = \inverted
         Case #PB_Bar_Direction : Result = \direction
-        Case #PB_Bar_NoButtons : Result = \button\len 
+        Case #PB_Bar_ButtonSize : Result = \button\len 
         Case #PB_Bar_ScrollStep : Result = \scrollstep
       EndSelect
     EndWith
@@ -948,7 +948,7 @@ Module Bar
         Case #PB_Bar_ScrollStep 
           \scrollstep = Value
           
-        Case #PB_Bar_NoButtons
+        Case #PB_Bar_ButtonSize
           If \button\len <> Value
             \button\len = Value
             \button[#_1]\len = Value
@@ -1258,7 +1258,7 @@ Module Bar
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
       
-      If Not Bool(Flag&#PB_Bar_NoButtons=#PB_Bar_NoButtons)
+      If Not Bool(Flag&#PB_Bar_ButtonSize=#PB_Bar_ButtonSize)
         If \vertical
           If width < 21
             \button\len = width - 1
@@ -1285,7 +1285,7 @@ Module Bar
   EndProcedure
   
   Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
-    Protected *this._S_bar = bar(min, max, 0, Flag|#PB_Bar_NoButtons, 7)
+    Protected *this._S_bar = bar(min, max, 0, Flag|#PB_Bar_ButtonSize, 7)
     
     With *this
       \type = #PB_GadgetType_TrackBar
@@ -1308,7 +1308,7 @@ Module Bar
   EndProcedure
   
   Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
-    Protected *this._S_bar = bar(min, max, 0, Flag|#PB_Bar_NoButtons, Radius)
+    Protected *this._S_bar = bar(min, max, 0, Flag|#PB_Bar_ButtonSize, Radius)
     
     With *this
       \type = #PB_GadgetType_ProgressBar
@@ -1328,7 +1328,7 @@ Module Bar
   EndProcedure
   
   Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, Radius.l=0)
-    Protected max.l, *this._S_bar = bar(0, 0, 0, Flag|#PB_Bar_NoButtons, Radius)
+    Protected max.l, *this._S_bar = bar(0, 0, 0, Flag|#PB_Bar_ButtonSize, Radius)
     
     With *this
       \type = #PB_GadgetType_Splitter

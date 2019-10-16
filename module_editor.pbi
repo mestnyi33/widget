@@ -101,7 +101,6 @@
 ; Получилось? :-) Внимательно рассмотрите диалоговое окно поиска, авось пригодится.
 ; Ctrl+H найти и заменить используется редко, но зато находит и заменяет метко! Об этом не мешает знать.
 
-
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows

@@ -1,4 +1,13 @@
-﻿DeclareModule Structures
+﻿
+CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  IncludePath "/Users/as/Documents/GitHub/Widget/"
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile
+  XIncludeFile "module_bar.pbi"
+CompilerEndIf
+
+DeclareModule Structures
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     ; PB Interne Struktur Gadget MacOS
     Structure sdkGadget
@@ -495,15 +504,6 @@ EndModule
 UseModule Constants
 UseModule Structures
 
-
-CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/"
-CompilerEndIf
-
-CompilerIf #PB_Compiler_IsMainFile
-  XIncludeFile "module_bar.pbi"
-CompilerEndIf
-
 DeclareModule Editor
   EnableExplicit
 
@@ -511,7 +511,7 @@ DeclareModule Editor
   UseModule Structures
   
   ;- - DECLAREs MACROs
-Macro RowBackColor(_this_, _state_)
+  Macro RowBackColor(_this_, _state_)
     _this_\Row\Color\Back[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
   EndMacro
   Macro RowForeColor(_this_, _state_)
@@ -523,6 +523,7 @@ Macro RowBackColor(_this_, _state_)
   Macro RowFontColor(_this_, _state_)
     _this_\Color\Front[_state_]&$FFFFFFFF|_this_\row\color\alpha<<24
   EndMacro
+  
   Macro BoxGradient(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
     BackColor(_color_1_&$FFFFFF|_alpha_<<24)
     FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
@@ -3579,7 +3580,9 @@ Module Editor
       EndIf
       
       ; create scrollbars
-      Bar::Bars(\Scroll, 16, 7, Bool(\Text\MultiLine <> 1))
+      ;Bar::Bars(\Scroll, 16, 7, Bool(\Text\MultiLine <> 1))
+      \scroll\v = Bar::Scroll(0, 0, 16, 0, 0,0,0, #PB_ScrollBar_Vertical, 7)
+      \scroll\h = Bar::Scroll(0, 0, 0, Bool(\Text\MultiLine <> 1)*16, 0,0,0, 0, 7)
       
       Resize(*This, X,Y,Width,Height)
       ;       \Text\String = #LF$
@@ -3815,5 +3818,5 @@ CompilerEndIf
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = +--P-----------------------------------------------------v---------------
+; Folding = 8---9----------------------------------------------------v---------------
 ; EnableXP

@@ -224,7 +224,7 @@ DeclareModule Constants
     #PB_Flag_ClickSelect
     #PB_Flag_MultiSelect
     #PB_Flag_GridLines
-    #PB_Flag_OptionBoxes
+    #PB_Flag_optiongroup
     #PB_Flag_BorderLess
   EndEnumeration
   
@@ -350,7 +350,7 @@ DeclareModule Structures
     buttons.b
     gridlines.b
     checkboxes.b
-    OptionBoxes.b
+    optiongroup.b
     threestate.b
     collapse.b
     alwaysselection.b
@@ -2290,7 +2290,7 @@ Module Tree
           
           If (_this_\change Or _this_\scroll\v\change Or _this_\scroll\h\change)
             ; check box
-            If _this_\flag\checkBoxes Or _this_\flag\OptionBoxes
+            If _this_\flag\checkBoxes Or _this_\flag\optiongroup
               _items_\box[1]\x = _items_\x + 3 - _this_\scroll\h\page\pos
               _items_\box[1]\y = (_items_\y+_items_\height)-(_items_\height+_items_\box[1]\height)/2-_this_\scroll\v\page\pos
             EndIf
@@ -2312,7 +2312,7 @@ Module Tree
                                 (_items_\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
             
             ; lines for tree widget
-            If _this_\flag\lines And _this_\row\sublength And Not (_this_\flag\OptionBoxes And _items_\sublevel)
+            If _this_\flag\lines And _this_\row\sublength And Not (_this_\flag\optiongroup And _items_\sublevel)
               _lines_(_this_, _items_)
             EndIf
             
@@ -2397,7 +2397,7 @@ Module Tree
           
           ; Draw checkbox
           ; Draw option
-          If _this_\flag\OptionBoxes And _items_\parent ;And _items_\optiongroup And Not _items_\childrens
+          If _this_\flag\optiongroup And _items_\parent ;And _items_\optiongroup And Not _items_\childrens
             DrawingMode(#PB_2DDrawing_Default)
             _box_(_items_\box[1]\x, _items_\box[1]\y, _items_\box[1]\width, _items_\box[1]\height, _items_\box[1]\checked, 1, $FFFFFFFF, 7, 255)
             
@@ -3016,7 +3016,7 @@ Module Tree
     
     With *this
       If *this
-        If \flag\OptionBoxes
+        If \flag\optiongroup
           If subLevel = 0
             subLevel = 1
           EndIf
@@ -3060,7 +3060,7 @@ Module Tree
               
               
             If subLevel
-              If \flag\OptionBoxes
+              If \flag\optiongroup
                 If subLevel > 0 
                   subLevel = 0
                 EndIf
@@ -3101,7 +3101,7 @@ Module Tree
           EndIf
           
           
-          If \flag\OptionBoxes 
+          If \flag\optiongroup 
             If \items()\parent
               \items()\optiongroup = \items()\parent
             Else
@@ -3135,7 +3135,7 @@ Module Tree
             \items()\box[0]\height = \flag\buttons
           EndIf
           
-          If \flag\checkBoxes Or \flag\OptionBoxes
+          If \flag\checkBoxes Or \flag\optiongroup
             \items()\box[1]\width = \flag\checkBoxes
             \items()\box[1]\height = \flag\checkBoxes
           EndIf
@@ -3582,7 +3582,7 @@ Module Tree
                ElseIf _from_point_(mouse_x, mouse_y, *this\items()\box[1])
                 *this\row\box = 1
                 
-                If *this\flag\OptionBoxes
+                If *this\flag\optiongroup
                   If *this\items()\optiongroup\box[1]\checked ;And *this\items()\optiongroup\parent <> *this\items()
                     Debug 7777
                     *this\items()\optiongroup\box[1]\checked = 0
@@ -4046,8 +4046,8 @@ Module Tree
         \flag\collapse = Bool(flag&#PB_Flag_Collapse) 
         \flag\threestate = Bool(flag&#PB_Flag_ThreeState) 
         
-        \flag\OptionBoxes = Bool(flag&#PB_Flag_OptionBoxes)*13; Это еще будет размер
-        If \flag\OptionBoxes
+        \flag\optiongroup = Bool(flag&#PB_Flag_optiongroup)*13; Это еще будет размер
+        If \flag\optiongroup
           \flag\checkBoxes = 13; Это еще будет размер чек бокса
         EndIf
         
@@ -4569,11 +4569,11 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 10
     
     If widget
-      *g = Widget(10, 100, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_OptionBoxes);|#PB_Flag_NoButtons)                                         
+      *g = Widget(10, 100, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_optiongroup);|#PB_Flag_NoButtons)                                         
       *g\canvas\Gadget = g_Canvas
       AddElement(*List()) : *List() = *g
     Else
-      *g = GetGadgetData(Gadget(g, 10, 100, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_OptionBoxes))
+      *g = GetGadgetData(Gadget(g, 10, 100, 210, 210, #PB_Tree_CheckBoxes|#PB_Flag_optiongroup))
     EndIf
     
     ; 1_example
@@ -4596,11 +4596,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 11
     If widget
-      *g = Widget(230, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_OptionBoxes)                                         
+      *g = Widget(230, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_optiongroup)                                         
       *g\canvas\Gadget = g_Canvas
       AddElement(*List()) : *List() = *g
     Else
-      *g = GetGadgetData(Gadget(g, 160, 120, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_OptionBoxes))
+      *g = GetGadgetData(Gadget(g, 160, 120, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_optiongroup))
     EndIf
     
     ;  3_example
@@ -4619,11 +4619,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 12
     If widget
-      *g = Widget(450, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_OptionBoxes)                                         
+      *g = Widget(450, 100, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_optiongroup)                                         
       *g\canvas\Gadget = g_Canvas
       AddElement(*List()) : *List() = *g
     Else
-      *g = GetGadgetData(Gadget(g, 160, 120, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_OptionBoxes))
+      *g = GetGadgetData(Gadget(g, 160, 120, 210, 210, #PB_Flag_AlwaysSelection|#PB_Flag_optiongroup))
     EndIf
     
     ;  3_example
@@ -4646,7 +4646,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     AddItem (*g, -1, "option_5", -1,-1)
     
     g = 13
-    *g = Widget(600+70, 100, 210, 210, #PB_Flag_OptionBoxes|#PB_Flag_ClickSelect)                                         
+    *g = Widget(600+70, 100, 210, 210, #PB_Flag_optiongroup|#PB_Flag_ClickSelect)                                         
     *g\canvas\Gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  4_example

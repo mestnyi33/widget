@@ -4036,8 +4036,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
 ; CursorPosition = 2896
 ; FirstLine = 2889
-; Folding = ---------------------------------------------------------+----------------
+; Folding = --------------------------------------------------------------------------
 ; EnableXP

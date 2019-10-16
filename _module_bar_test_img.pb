@@ -128,7 +128,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Repaint | CallBack(*Scroll\v, EventType, mouseX,mouseY)
     Repaint | CallBack(*Scroll\h, EventType, mouseX,mouseY)
     
-    If Not (*Scroll\v\from Or *Scroll\h\from)
+    If Not (*Scroll\v\from =- 1 And *Scroll\h\from =- 1)
       Select EventType
         Case #PB_EventType_LeftButtonDown
          ; SetAttribute(*Scroll\h, #PB_Bar_Inverted, *Scroll\h\Inverted!1)

@@ -34,7 +34,7 @@ Procedure events_tree_gadget()
         Case "SetGadgetFlag_"
         Case "AddGadgetItem()"
           If EventGadget = set
-            Debug 555
+            Debug GetGadgetState(flags)
             AddGadgetItem(widget, -1, "add item")
           EndIf
       EndSelect
@@ -54,7 +54,6 @@ Procedure events_tree_gadget()
               AddGadgetItem(flags, -1, "#PB_Tree_ThreeState")
               
             Case "AddGadgetItem()" ; Add an item (With an optional picture in the standard 16x16 icon size). 
-              ;SetGadgetAttribute(flags, #PB_Flag_OptionBoxes, 1)
               AddGadgetItem(flags, -1, "1",-1,-1) ;The item should be expanded.
               AddGadgetItem(flags, -1, "10",-1,-1) ;The item should be selected.
               AddGadgetItem(flags, -1, "100",-1,-1) ;The item should be expanded.

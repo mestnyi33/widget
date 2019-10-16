@@ -195,14 +195,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected ScrollX, ScrollY, ScrollWidth, ScrollHeight
     
     With *scroll
-      
       If CallBack(\v, EventType, MouseX, MouseY, WheelDelta) 
         Repaint = #True 
       EndIf
       If CallBack(\h, EventType, MouseX, MouseY, WheelDelta) 
         Repaint = #True 
       EndIf
-      
       
       
       ;If Not Bool(\h\from And \v\from)
@@ -234,11 +232,11 @@ CompilerIf #PB_Compiler_IsMainFile
       ;EndIf
       
       
-      If (\h\from Or \v\from)
-        If \v\from And \v\change
+      If Not (\h\from=-1 And \v\from=-1)
+        If \v\change
           SetWindowTitle(EventWindow(), Str(\v\page\pos))
         EndIf
-        If \h\from And \h\change
+        If \h\change
           SetWindowTitle(EventWindow(), Str(\h\page\pos))
         EndIf
         
@@ -295,7 +293,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Resizes2(*scroll, 0, 0, Width, Height)
             Repaint = #True
-            
+           
         EndSelect
       EndIf 
       
@@ -336,8 +334,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(3, GetAttribute(*Scroll\h, #PB_Bar_Inverted))
   EndIf
   
-  Define vButton = GetAttribute(*Scroll\v, #PB_Bar_NoButtons)
-  Define hButton = GetAttribute(*Scroll\h, #PB_Bar_NoButtons)
+  Define vButton = GetAttribute(*Scroll\v, #PB_Bar_ButtonSize)
+  Define hButton = GetAttribute(*Scroll\h, #PB_Bar_ButtonSize)
   
   PostEvent(#PB_Event_Gadget, 0,#MyCanvas, #PB_EventType_Resize)
   BindGadgetEvent(#MyCanvas, @Canvas_CallBack())
@@ -386,10 +384,10 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case 4
             If GetGadgetState(2)
-              SetAttribute(*Scroll\v, #PB_Bar_NoButtons, Bool( Not GetGadgetState(4)) * vButton) 
+              SetAttribute(*Scroll\v, #PB_Bar_ButtonSize, Bool( Not GetGadgetState(4)) * vButton) 
               SetWindowTitle(0, Str(GetState(*Scroll\v)))
             Else
-              SetAttribute(*Scroll\h, #PB_Bar_NoButtons, Bool( Not GetGadgetState(4)) * hButton)
+              SetAttribute(*Scroll\h, #PB_Bar_ButtonSize, Bool( Not GetGadgetState(4)) * hButton)
               SetWindowTitle(0, Str(GetState(*Scroll\h)))
             EndIf
             ReDraw(#MyCanvas) 
@@ -399,5 +397,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -8---------
+; Folding = -8---0j---
 ; EnableXP

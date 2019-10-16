@@ -3770,7 +3770,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;     Debug 4444
   ;   EndProcedure
   
-  Procedure Canvas_Events(Canvas.i, EventType.i)
+  Procedure g_Events(Canvas.i, EventType.i)
     Protected Repaint, iWidth, iHeight
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
@@ -3801,7 +3801,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndIf
   EndProcedure
   
-  Procedure Canvas_CallBack()
+  Procedure g_CallBack()
     ; Canvas events bug fix
     Protected Result.b
     Static MouseLeave.b
@@ -3836,12 +3836,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
           If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
             MouseLeave = 0
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-              Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+              Result | g_Events(EventGadget, #PB_EventType_LeftButtonUp)
               EventType = #PB_EventType_MouseLeave
             CompilerEndIf
           Else
             MouseLeave =- 1
-            Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
+            Result | g_Events(EventGadget, #PB_EventType_LeftButtonUp)
             EventType = #PB_EventType_LeftClick
           EndIf
           
@@ -3849,7 +3849,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       EndSelect
     CompilerEndIf
     
-    Result | Canvas_Events(EventGadget, EventType)
+    Result | g_Events(EventGadget, EventType)
     
     ProcedureReturn Result
   EndProcedure
@@ -3948,7 +3948,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       
       ;       SetState(*Bar_0, 25)
       
-      BindGadgetEvent(1, @Canvas_CallBack())
+      BindGadgetEvent(1, @g_CallBack())
       
       CloseGadgetList()
       

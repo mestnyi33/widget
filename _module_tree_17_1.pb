@@ -1912,7 +1912,7 @@ EndDeclareModule
 Module Tree
   Macro _box_(_x_,_y_, _width_, _height_, _checked_, _type_, _color_=$FFFFFFFF, _radius_=2, _alpha_=255) 
     
-    If _type_ = 1
+    if _type_ = 1
       If _checked_
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
         
@@ -2436,12 +2436,12 @@ Module Tree
           If _items_\draw 
             If _items_\l\h\height
               ;  CustomFilterCallback(@PlotX())
-              Line(_items_\l\h\x, _items_\l\h\y, _items_\l\h\width, _items_\l\h\height, _items_\color\line)
+              Line(_items_\l\h\x, _items_\l\h\y, _items_\l\h\width, _items_\l\h\height, $0579F6&$FFFFFF|255<<24)
             EndIf
             
             If _items_\l\v\width
               ;  CustomFilterCallback(@PlotY())
-              Line(_items_\l\v\x, _items_\l\v\y, _items_\l\v\width, _items_\l\v\height, _items_\color\line)
+              Line(_items_\l\v\x, _items_\l\v\y, _items_\l\v\width, _items_\l\v\height, $0579F6&$FFFFFF|255<<24);_items_\color\line)
             EndIf
           EndIf    
         Next
@@ -2482,7 +2482,7 @@ Module Tree
         
         If \change
           If \text\change
-            \text\height = TextHeight("A") + Bool(#PB_Compiler_OS = #PB_OS_Windows) * 2
+            \text\height = TextHeight("A") + Bool(#PB_Compiler_OS = #PB_OS_Windows) * 2 + 1
             \text\width = TextWidth(\text\string.s)
           EndIf
           
@@ -4016,7 +4016,7 @@ Module Tree
         \radius = Radius
         
         \text\change = 1 ; set auto size items
-        \text\height = 18 
+        \text\height = 19
         
         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
@@ -5016,5 +5016,5 @@ CompilerEndIf
 ;   End
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------f-----------------------------------------------------
 ; EnableXP

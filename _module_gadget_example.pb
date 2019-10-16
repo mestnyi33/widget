@@ -2,6 +2,7 @@
 XIncludeFile "_module_gadget.pb"
 
 UseModule Gadget
+UseModule DD
 
 Macro PB(Function)
   Function
@@ -73,10 +74,18 @@ Procedure events_tree_gadget()
      ; Tree::Redraw(GetGadgetData(1))
       
     Case #PB_EventType_LeftDoubleClick : Debug "gadget " +EventGadget+ " ldclick item = " + EventItem +" data "+ EventData +" State "+ State
-    Case #PB_EventType_DragStart : Debug "gadget " +EventGadget+ " sdrag item = " + EventItem +" Data "+ EventData +" State "+ State
     Case #PB_EventType_Change    : Debug "gadget " +EventGadget+ " change item = " + EventItem +" data "+ EventData +" State "+ State
     Case #PB_EventType_RightClick : Debug "gadget " +EventGadget+ " rclick item = " + EventItem +" data "+ EventData +" State "+ State
     Case #PB_EventType_RightDoubleClick : Debug "gadget " +EventGadget+ " rdclick item = " + EventItem +" data "+ EventData +" State "+ State
+      
+    Case #PB_EventType_DragStart : Debug "gadget " +EventGadget+ " sdrag item = " + EventItem +" Data "+ EventData +" State "+ State
+      Text$ = GetGadgetItemText(EventGadget, GetGadgetState(EventGadget))
+      DragText(Text$)
+          
+    Case #PB_EventType_Drop
+      AddGadgetItem(EventGadget, -1, EventDropText())
+          
+      
   EndSelect 
   
   If EventType = #PB_EventType_LeftClick
@@ -117,6 +126,7 @@ If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
     Next
     
     Debug " gadget "+ ID +" count items "+ CountGadgetItems(ID) +" "+ GadgetType(ID)
+    EnableGadgetDrop(ID, #PB_Drop_Text, #PB_Drag_Copy)
   Next
   
   ButtonGadget(3, 10, 180, 100, 24, "set state Item")
@@ -143,5 +153,5 @@ If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----
+; Folding = vA9-
 ; EnableXP

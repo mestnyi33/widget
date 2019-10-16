@@ -38,7 +38,7 @@ DeclareModule Bar
     #PB_Bar_ArrowSize 
     #PB_Bar_ButtonSize 
     #PB_Bar_ScrollStep
-    #PB_Bar_NoButtons 
+     
     #PB_Bar_Direction 
     #PB_Bar_Inverted 
     #PB_Bar_Ticks
@@ -99,8 +99,20 @@ DeclareModule Bar
   ;- - _S_button
   Structure _S_button Extends _S_coordinate
     len.a
+    interact.b
     arrow_size.a
     arrow_type.b
+  EndStructure
+  
+  ;- - _S_splitter
+  Structure _S_splitter
+    *first;._S_bar
+    *second;._S_bar
+    
+    fixed.l[3]
+    
+    g_first.b
+    g_second.b
   EndStructure
   
   ;- - _S_bar
@@ -125,6 +137,8 @@ DeclareModule Bar
     
     *first
     *second
+      *splitter._S_splitter
+  cursor.l
     
     page._S_page
     area._S_page
@@ -162,7 +176,7 @@ DeclareModule Bar
   Declare.b SetColor(*this._S_bar, ColorType.l, Color.l, Item.l=- 1, State.l=1)
   
   Declare.b Resize(*this._S_bar, iX.l,iY.l,iWidth.l,iHeight.l)
-  Declare.b CallBack(*this._S_bar, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
+  Declare.b CallBack(*this._S_bar, EventType.l, MouseX.l, MouseY.l, Wheel_X.b=0, Wheel_Y.b=0)
   
   Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, Radius.l=0)
   Declare.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
@@ -326,6 +340,23 @@ DeclareModule Bar
     EndIf
   EndMacro
   
+  Macro _set_area_coordinate_(_this_)
+    If _this_\vertical
+      _this_\area\pos = _this_\y + _this_\button[#_1]\len
+      _this_\area\len = _this_\height - (_this_\button[#_1]\len + _this_\button[#_2]\len)
+    Else
+      _this_\area\pos = _this_\x + _this_\button[#_1]\len
+      _this_\area\len = _this_\width - (_this_\button[#_1]\len + _this_\button[#_2]\len)
+    EndIf
+    
+    _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
+  EndMacro
+  
+    Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
+    Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ =< (_type_\x#_mode_+_type_\width#_mode_) And 
+          _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
+  EndMacro
+
 EndDeclareModule
 
 ;- >>> MODULE
@@ -387,34 +418,6 @@ Module Bar
     ; ;     \back[#Disabled] = $FFE2E2E2 
     ; ;     \frame[#Disabled] = $FFBABABA
   EndWith
-  
-  Procedure.i ScrollPos(*this._S_bar, ThumbPos.i)
-    Protected ScrollPos.i, Result.i
-    
-    With *this
-      If ThumbPos < \area\pos : ThumbPos = \area\pos : EndIf
-      If ThumbPos > \area\end : ThumbPos = \area\end : EndIf
-      
-      If \thumb\end <> ThumbPos 
-        \thumb\end = ThumbPos
-        
-        ; from thumb pos get scroll pos 
-        If \area\end <> ThumbPos
-          ScrollPos = \min + Round((ThumbPos - \area\pos) / (\area\len / (\max-\min)), #PB_Round_Nearest)
-        Else
-          ScrollPos = \page\end
-        EndIf
-        
-        If #PB_GadgetType_TrackBar = \type And \vertical
-          ScrollPos = _scroll_invert_(*this, ScrollPos, \inverted)
-        EndIf
-        
-        Result = SetState(*this, ScrollPos)
-      EndIf
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
   
   ;-
   Procedure.i Arrow(X.i,Y.i, Size.i, Direction.i, Color.i, Style.b = 1, Length.i = 1)
@@ -890,7 +893,7 @@ Module Bar
         Case #PB_Bar_PageLength : Result = \page\len
         Case #PB_Bar_Inverted : Result = \inverted
         Case #PB_Bar_Direction : Result = \direction
-        Case #PB_Bar_NoButtons : Result = \button\len 
+        Case #PB_Bar_ButtonSize : Result = \button\len 
         Case #PB_Bar_ScrollStep : Result = \scrollstep
       EndSelect
     EndWith
@@ -900,6 +903,34 @@ Module Bar
   
   
   ;- SET
+  Procedure.i SetPos(*this._S_bar, ThumbPos.i)
+    Protected ScrollPos.i, Result.i
+    
+    With *this
+      If ThumbPos < \area\pos : ThumbPos = \area\pos : EndIf
+      If ThumbPos > \area\end : ThumbPos = \area\end : EndIf
+      
+      If \thumb\end <> ThumbPos 
+        \thumb\end = ThumbPos
+        
+        ; from thumb pos get scroll pos 
+        If \area\end <> ThumbPos
+          ScrollPos = \min + Round((ThumbPos - \area\pos) / (\area\len / (\max-\min)), #PB_Round_Nearest)
+        Else
+          ScrollPos = \page\end
+        EndIf
+        
+        If #PB_GadgetType_TrackBar = \type And \vertical
+          ScrollPos = _scroll_invert_(*this, ScrollPos, \inverted)
+        EndIf
+        
+        Result = SetState(*this, ScrollPos)
+      EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
   Procedure.b SetState(*this._S_bar, ScrollPos.l)
     Protected Result.b
     
@@ -981,7 +1012,7 @@ Module Bar
         Case #PB_Bar_ScrollStep 
           \scrollstep = Value
           
-        Case #PB_Bar_NoButtons
+        Case #PB_Bar_ButtonSize
           If \button\len <> Value
             \button\len = Value
             \button[#_1]\len = Value
@@ -1302,7 +1333,7 @@ Module Bar
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
       
-      If Not Bool(Flag&#PB_Bar_NoButtons=#PB_Bar_NoButtons)
+      If Not Bool(Flag&#PB_Bar_ButtonSize=#PB_Bar_ButtonSize)
         If \vertical
           If width < 21
             \button\len = width - 1
@@ -1330,7 +1361,7 @@ Module Bar
   
   Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
-    _bar_(*this, min, max, 0, Flag|#PB_Bar_NoButtons, 7)
+    _bar_(*this, min, max, 0, Flag|#PB_Bar_ButtonSize, 7)
     
     With *this
       \type = #PB_GadgetType_TrackBar
@@ -1354,7 +1385,7 @@ Module Bar
   
   Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
-    _bar_(*this, min, max, 0, Flag|#PB_Bar_NoButtons, Radius)
+    _bar_(*this, min, max, 0, Flag|#PB_Bar_ButtonSize, Radius)
     
     With *this
       \type = #PB_GadgetType_ProgressBar
@@ -1375,7 +1406,7 @@ Module Bar
   
   Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, Radius.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
-    _bar_(*this, 0, 0, 0, Flag|#PB_Bar_NoButtons, Radius)
+    _bar_(*this, 0, 0, 0, Flag|#PB_Bar_ButtonSize, Radius)
     
     With *this
       \mode = 1
@@ -1406,7 +1437,7 @@ Module Bar
     ProcedureReturn *this
   EndProcedure
   
-  Procedure.b CallBack(*this._S_bar, EventType.l, MouseX.l, MouseY.l, WheelDelta.l=0)
+  Procedure.b CallBack(*this._S_bar, EventType.l, MouseX.l, MouseY.l, Wheel_X.b=0, Wheel_Y.b=0)
     Protected Result, from
     Static LastX, LastY, Last, *thisis._S_bar, Cursor, Drag, Down
     
@@ -1438,7 +1469,7 @@ Module Bar
       Select EventType
         Case #PB_EventType_MouseWheel  
           If *thisis = *this
-            Select WheelDelta
+            Select Wheel_Y
               Case-1 : Result = SetState(*this, \page\pos - (\max-\min)/30)
               Case 1 : Result = SetState(*this, \page\pos + (\max-\min)/30)
             EndSelect
@@ -1454,9 +1485,9 @@ Module Bar
             Case - 1
               If *thisis = *this
                 If \Vertical
-                  Result = ScrollPos(*this, (MouseY-\thumb\len/2))
+                  Result = SetPos(*this, (MouseY-\thumb\len/2))
                 Else
-                  Result = ScrollPos(*this, (MouseX-\thumb\len/2))
+                  Result = SetPos(*this, (MouseX-\thumb\len/2))
                 EndIf
                 
                 \from = 3
@@ -1465,9 +1496,9 @@ Module Bar
               If \button[from]\len And \color[from]\state <> #Disabled
                 
                 ; ;               If \inverted
-                ; ;                 Result = ScrollPos(*this, _scroll_invert_(*this, (\thumb\pos + \scrollstep), \inverted))
+                ; ;                 Result = SetPos(*this, _scroll_invert_(*this, (\thumb\pos + \scrollstep), \inverted))
                 ; ;               Else
-                ; ;                 Result = ScrollPos(*this, _scroll_invert_(*this, (\thumb\pos - \scrollstep), \inverted))
+                ; ;                 Result = SetPos(*this, _scroll_invert_(*this, (\thumb\pos - \scrollstep), \inverted))
                 ; ;               EndIf
                 
                 If \inverted
@@ -1480,9 +1511,9 @@ Module Bar
               If \button[from]\len And \color[from]\state <> #Disabled
                 
                 ; ;               If \inverted
-                ; ;                 Result = ScrollPos(*this, _scroll_invert_(*this, (\thumb\pos - \scrollstep), \inverted))
+                ; ;                 Result = SetPos(*this, _scroll_invert_(*this, (\thumb\pos - \scrollstep), \inverted))
                 ; ;               Else
-                ; ;                 Result = ScrollPos(*this, _scroll_invert_(*this, (\thumb\pos + \scrollstep), \inverted))
+                ; ;                 Result = SetPos(*this, _scroll_invert_(*this, (\thumb\pos + \scrollstep), \inverted))
                 ; ;               EndIf
                 
                 If \inverted
@@ -1499,9 +1530,9 @@ Module Bar
           If Drag
             If *thisis = *this And Bool(LastX|LastY) 
               If \Vertical
-                Result = ScrollPos(*this, (MouseY-LastY))
+                Result = SetPos(*this, (MouseY-LastY))
               Else
-                Result = ScrollPos(*this, (MouseX-LastX))
+                Result = SetPos(*this, (MouseX-LastX))
               EndIf
             EndIf
           Else
@@ -1848,5 +1879,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------------------
+; Folding = ---8-tv--ufD5--0-0+-0-v----------------
 ; EnableXP

@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets().pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -7,24 +7,32 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   
   Global.i gEvent, gQuit
-  Global *window, NewMap Widget.i()
+  Global *this, *root, NewMap w_list.i()
   
-  Procedure Widget_Handler(EventWidget.i, EventType.i, EventItem.i, EventData.i)
+  Procedure Widget_Handler()
+    Protected EventWidget.i = *event\widget,
+              EventType.i = *event\type,
+              EventItem.i = *event\item, 
+              EventData.i = *event\data
+    
     Select EventType
       Case #PB_EventType_Focus   
-        If GetType(EventWidget) =- 1
-          Debug "Active "+ GetData(EventWidget)
-        Else
+        If GetType(EventWidget) > 0
           Debug "Focus "+ GetData(EventWidget)
+        Else
+          Debug "Active "+ GetData(EventWidget)
         EndIf
         
       Case #PB_EventType_LostFocus 
-        If GetType(EventWidget) =- 1
-          Debug " DeActive "+ GetData(EventWidget) ;Val(StringField(GetText(EventWidget), 2, "_")) ; +\Type +" "+ at +" "+ *This
-        Else
+        If GetType(EventWidget) > 0
           Debug " LostFocus "+ GetData(EventWidget) ;Val(StringField(GetText(EventWidget), 2, "_")) ; +\Type +" "+ at +" "+ *This
+        Else
+          Debug " DeActive "+ GetData(EventWidget) ;Val(StringField(GetText(EventWidget), 2, "_")) ; +\Type +" "+ at +" "+ *This
         EndIf
+        
     EndSelect
+    
+    ProcedureReturn 1
   EndProcedure
   
   Procedure Window_0_Resize()
@@ -33,51 +41,220 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_0()
-    If OpenWindow(0, 0, 0, 900, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+    w_list(Hex(110)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+    SetWindowTitle(Root()\canvas\window, "Window_110") 
+    ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+    ;       w_list(Hex(110)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+    w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
+    w_list(Hex(112)) = String(10, 105, 180, 85, "String_112") : SetData(w_list(Hex(112)), 112) 
+    
+    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    Bind(@Widget_Handler())
+    ReDraw(Root())
+  EndProcedure
+  
+  Procedure Window_1()
+    w_list(Hex(110)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+    SetWindowTitle(Root()\canvas\window, "Window_110") 
+    ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+    ;       w_list(Hex(110)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+    w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
+    w_list(Hex(112)) = String(10, 105, 180, 85, "String_112") : SetData(w_list(Hex(112)), 112) 
+    
+    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    Bind(@Widget_Handler())
+    ReDraw(Root())
+    ;       
+    w_list(Hex(120)) = Open(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
+    ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+    ;       w_list(Hex(120)) = Form(0, 0, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
+    w_list(Hex(121)) = String(10, 10, 180, 85, "String_121") : SetData(w_list(Hex(121)), 121)
+    w_list(Hex(122)) = String(10, 105, 180, 85, "String_122") : SetData(w_list(Hex(122)), 122)
+    
+    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    Bind(@Widget_Handler())
+    ReDraw(Root())
+    
+    w_list(Hex(130)) = Open(#PB_Any, 220, 140, 200, 200, "Window_130") : SetData(w_list(Hex(130)), 130)
+    ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+    ;       w_list(Hex(130)) = Form(0, 0, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(130)), 130)
+    w_list(Hex(131)) = String(10, 10, 180, 85, "String_131") : SetData(w_list(Hex(131)), 131)
+    w_list(Hex(132)) = String(10, 105, 180, 85, "String_132") : SetData(w_list(Hex(132)), 132)
+    
+    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    Bind(@Widget_Handler())
+    ReDraw(Root())
+  EndProcedure
+  
+  Procedure Window_2()
+    If OpenWindow(0, 0, 0, 830, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (10,    5,   565, 890,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      *window = Open(0, 10,10, 880, 550, "")
-      
-      If *window
-        Widget(Hex(100)) = Form(520, 140, 200+2, 260+26+2, "Window_100", #PB_Window_ScreenCentered) : SetData(Widget(Hex(100)), 100)
-        Widget(Hex(500)) = Panel(0,0, 200+2, 260+26+2)
-        AddItem(Widget(Hex(500)),-1,"Panel")
+      w_list(Hex(10)) = Open(0, 10,10, 400, 550, "") : SetData(w_list(Hex(10)), 10)
+      If w_list(Hex(10))
+        w_list(Hex(110)) = Form(100, 100, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+        w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
+        w_list(Hex(112)) = String(10, 105, 180, 85, "String_112") : SetData(w_list(Hex(112)), 112) 
         
-        Widget(Hex(101)) = Button(10, 10, 180, 20, "101 Active window - 0") : SetData(Widget(Hex(101)), 101)
-        Widget(Hex(102)) = Button(10, 35, 180, 20, "102 Focus gadget - 1") : SetData(Widget(Hex(102)), 102)
-        Widget(Hex(103)) = Button(10, 60, 180, 20, "103 Focus gadget - 2") : SetData(Widget(Hex(103)), 103)
+        w_list(Hex(120)) = Form(160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
+        w_list(Hex(121)) = String(10, 10, 180, 85, "String_121") : SetData(w_list(Hex(121)), 121)
+        w_list(Hex(122)) = String(10, 105, 180, 85, "String_122") : SetData(w_list(Hex(122)), 122)
         
-        Widget(Hex(104)) = Button(10, 85+10, 180, 20, "104 Active window - 10") : SetData(Widget(Hex(104)), 104)
-        Widget(Hex(105)) = Button(10, 85+35, 180, 20, "105 Focus gadget - 11") : SetData(Widget(Hex(105)), 105)
-        Widget(Hex(106)) = Button(10, 85+60, 180, 20, "106 Focus gadget - 12") : SetData(Widget(Hex(106)), 106)
+        w_list(Hex(130)) = Form(220, 140, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(130)), 130)
+        w_list(Hex(131)) = String(10, 10, 180, 85, "String_131") : SetData(w_list(Hex(131)), 131)
+        w_list(Hex(132)) = String(10, 105, 180, 85, "String_132") : SetData(w_list(Hex(132)), 132)
         
-        Widget(Hex(107)) = Button(10, 85+85+10, 180, 20, "107 Active window - 20") : SetData(Widget(Hex(107)), 107)
-        Widget(Hex(108)) = Button(10, 85+85+35, 180, 20, "108 Focus gadget - 21") : SetData(Widget(Hex(108)), 108)
-        Widget(Hex(109)) = Button(10, 85+85+60, 180, 20, "109 Focus gadget - 22") : SetData(Widget(Hex(109)), 109)
-        CloseList()
-        
-        Widget(Hex(0)) = Form(100, 100, 200, 200, "Window_0", #PB_Window_SystemMenu) : SetData(Widget(Hex(0)), 0)
-        Widget(Hex(1)) = String(10, 10, 180, 85, "String_1") : SetData(Widget(Hex(1)), 1)
-        Widget(Hex(2)) = String(10, 105, 180, 85, "String_2") : SetData(Widget(Hex(2)), 2) 
-        
-        Widget(Hex(10)) = Form(160, 120, 200, 200, "Window_10", #PB_Window_SystemMenu) : SetData(Widget(Hex(10)), 10)
-        Widget(Hex(11)) = String(10, 10, 180, 85, "String_11") : SetData(Widget(Hex(11)), 11)
-        Widget(Hex(12)) = String(10, 105, 180, 85, "String_12") : SetData(Widget(Hex(12)), 12)
-        
-        Widget(Hex(20)) = Form(220, 140, 200, 200, "Window_20", #PB_Window_SystemMenu) : SetData(Widget(Hex(20)), 20)
-        Widget(Hex(21)) = String(10, 10, 180, 85, "String_21") : SetData(Widget(Hex(21)), 21)
-        Widget(Hex(22)) = String(10, 105, 180, 85, "String_22") : SetData(Widget(Hex(22)), 22)
+        ;         SetActive(w_list(Hex(22)))
+        ;         SetActive(w_list(Hex(2)))
         
         Bind(@Widget_Handler())
-        ReDraw(*window)
+        ReDraw(Root())
       EndIf
       
+      Debug ""
+      
+      w_list(Hex(20)) = Open(0, 420,10, 400, 550, "") : SetData(w_list(Hex(20)), 20)
+      If w_list(Hex(20))
+        w_list(Hex(140)) = Form(100, 100, 200, 200, "Window_140", #PB_Window_SystemMenu) : SetData(w_list(Hex(140)), 140)
+        w_list(Hex(141)) = String(10, 10, 180, 85, "String_141") : SetData(w_list(Hex(141)), 141)
+        w_list(Hex(142)) = String(10, 105, 180, 85, "String_142") : SetData(w_list(Hex(142)), 142) 
+        
+        w_list(Hex(150)) = Form(160, 120, 200, 200, "Window_150", #PB_Window_SystemMenu) : SetData(w_list(Hex(150)), 150)
+        w_list(Hex(151)) = String(10, 10, 180, 85, "String_151") : SetData(w_list(Hex(151)), 151)
+        w_list(Hex(152)) = String(10, 105, 180, 85, "String_152") : SetData(w_list(Hex(152)), 152)
+        
+        w_list(Hex(160)) = Form(220, 140, 200, 200, "Window_160", #PB_Window_SystemMenu) : SetData(w_list(Hex(160)), 160)
+        w_list(Hex(161)) = String(10, 10, 180, 85, "String_161") : SetData(w_list(Hex(161)), 161)
+        w_list(Hex(162)) = String(10, 105, 180, 85, "String_162") : SetData(w_list(Hex(162)), 162)
+        
+        ;         SetActive(w_list(Hex(1022)))
+        ;         SetActive(w_list(Hex(102)))
+        
+        Bind(@Widget_Handler())
+        ReDraw(Root())
+      EndIf
+      
+      w_list(Hex(210)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 210)
+      SetWindowTitle(Root()\canvas\window, "Window_210") 
+      ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+      ;       w_list(Hex(210)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 110)
+      w_list(Hex(211)) = String(10, 10, 180, 85, "String_211") : SetData(w_list(Hex(211)), 211)
+      w_list(Hex(212)) = String(10, 105, 180, 85, "String_212") : SetData(w_list(Hex(212)), 212) 
+      
+      Bind(@Widget_Handler())
+      ReDraw(Root())
+      
+      w_list(Hex(220)) = Open(#PB_Any, 160, 120, 200, 200, "Window_220", #PB_Window_SystemMenu) : SetData(w_list(Hex(220)), 220)
+      ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+      ;       w_list(Hex(220)) = Form(0, 0, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(220)), 120)
+      w_list(Hex(221)) = String(10, 10, 180, 85, "String_221") : SetData(w_list(Hex(221)), 221)
+      w_list(Hex(222)) = String(10, 105, 180, 85, "String_222") : SetData(w_list(Hex(222)), 222)
+      
+      Bind(@Widget_Handler())
+      ReDraw(Root())
+      
+      w_list(Hex(230)) = Open(#PB_Any, 220, 140, 200, 200, "Window_230") : SetData(w_list(Hex(230)), 230)
+      ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+      ;       w_list(Hex(230)) = Form(0, 0, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(230)), 130)
+      w_list(Hex(231)) = String(10, 10, 180, 85, "String_231") : SetData(w_list(Hex(231)), 231)
+      w_list(Hex(232)) = String(10, 105, 180, 85, "String_232") : SetData(w_list(Hex(232)), 232)
+      
+      Bind(@Widget_Handler())
+      ReDraw(Root())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
   EndProcedure
   
-  Window_0()
+  Procedure Window_3()
+    If OpenWindow(0, 0, 0, 900, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      ButtonGadget   (10,    5,   565, 890,  30, "start change scrollbar", #PB_Button_Toggle)
+      
+      w_list(Hex(-1)) = Open(0, 10,10, 880, 550, "") : SetData(w_list(Hex(-1)), -1)
+      
+      If w_list(Hex(-1))
+        w_list(Hex(100)) = Form(520, 140, 200+2, 260+26+2, "Window_100", #PB_Window_ScreenCentered) : SetData(w_list(Hex(100)), 100)
+        w_list(Hex(500)) = Panel(0,0, 200+2, 260+26+2)
+        AddItem(w_list(Hex(500)),-1,"Panel")
+        
+        w_list(Hex(101)) = Button(10, 10, 180, 20, "101 Active window - 0") : SetData(w_list(Hex(101)), 101)
+        w_list(Hex(102)) = Button(10, 35, 180, 20, "102 Focus gadget - 1") : SetData(w_list(Hex(102)), 102)
+        w_list(Hex(103)) = Button(10, 60, 180, 20, "103 Focus gadget - 2") : SetData(w_list(Hex(103)), 103)
+        
+        w_list(Hex(104)) = Button(10, 85+10, 180, 20, "104 Active window - 10") : SetData(w_list(Hex(104)), 104)
+        w_list(Hex(105)) = Button(10, 85+35, 180, 20, "105 Focus gadget - 11") : SetData(w_list(Hex(105)), 105)
+        w_list(Hex(106)) = Button(10, 85+60, 180, 20, "106 Focus gadget - 12") : SetData(w_list(Hex(106)), 106)
+        
+        w_list(Hex(107)) = Button(10, 85+85+10, 180, 20, "107 Active window - 20") : SetData(w_list(Hex(107)), 107)
+        w_list(Hex(108)) = Button(10, 85+85+35, 180, 20, "108 Focus gadget - 21") : SetData(w_list(Hex(108)), 108)
+        w_list(Hex(109)) = Button(10, 85+85+60, 180, 20, "109 Focus gadget - 22") : SetData(w_list(Hex(109)), 109)
+        CloseList()
+        
+        w_list(Hex(0)) = Form(100, 100, 200, 200, "Window_0", #PB_Window_SystemMenu) : SetData(w_list(Hex(0)), 0)
+        w_list(Hex(1)) = String(10, 10, 180, 85, "String_1") : SetData(w_list(Hex(1)), 1)
+        w_list(Hex(2)) = String(10, 105, 180, 85, "String_2") : SetData(w_list(Hex(2)), 2) 
+        
+        w_list(Hex(10)) = Form(160, 120, 200, 200, "Window_10", #PB_Window_SystemMenu) : SetData(w_list(Hex(10)), 10)
+        w_list(Hex(11)) = String(10, 10, 180, 85, "String_11") : SetData(w_list(Hex(11)), 11)
+        w_list(Hex(12)) = String(10, 105, 180, 85, "String_12") : SetData(w_list(Hex(12)), 12)
+        
+        w_list(Hex(20)) = Form(220, 140, 200, 200, "Window_20", #PB_Window_SystemMenu) : SetData(w_list(Hex(20)), 20)
+        w_list(Hex(21)) = String(10, 10, 180, 85, "String_21") : SetData(w_list(Hex(21)), 21)
+        w_list(Hex(22)) = String(10, 105, 180, 85, "String_22") : SetData(w_list(Hex(22)), 22)
+        
+        SetActive(w_list(Hex(22)))
+        SetActive(w_list(Hex(2)))
+        
+        Bind(@Widget_Handler());, w_list(Hex(22)))
+        ReDraw(Root())
+      EndIf
+      
+      Debug "-----"
+      
+      w_list(Hex(110)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+      SetWindowTitle(Root()\canvas\window, "Window_110") 
+      ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+      ;       w_list(Hex(110)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+      w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
+      w_list(Hex(112)) = String(10, 105, 180, 85, "String_112") : SetData(w_list(Hex(112)), 112) 
+      
+      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      Bind(@Widget_Handler())
+      ReDraw(Root())
+      ;       
+      w_list(Hex(120)) = Open(#PB_Any, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
+      ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+      ;       w_list(Hex(120)) = Form(0, 0, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
+      w_list(Hex(121)) = String(10, 10, 180, 85, "String_121") : SetData(w_list(Hex(121)), 121)
+      w_list(Hex(122)) = String(10, 105, 180, 85, "String_122") : SetData(w_list(Hex(122)), 122)
+      
+      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      Bind(@Widget_Handler())
+      ReDraw(Root())
+      
+      w_list(Hex(130)) = Open(#PB_Any, 220, 140, 200, 200, "Window_130") : SetData(w_list(Hex(130)), 130)
+      ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+      ;       w_list(Hex(130)) = Form(0, 0, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(130)), 130)
+      w_list(Hex(131)) = String(10, 10, 180, 85, "String_131") : SetData(w_list(Hex(131)), 131)
+      w_list(Hex(132)) = String(10, 105, 180, 85, "String_132") : SetData(w_list(Hex(132)), 132)
+      
+      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      Bind(@Widget_Handler())
+      ReDraw(Root())
+      
+      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
+    EndIf
+  EndProcedure
+  
+  
+  Window_2()
   
   Repeat
     gEvent= WaitWindowEvent()
@@ -91,38 +268,42 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventType()
           Case #PB_EventType_LeftClick
             Debug ""
+            *root = GetGadgetData(EventGadget())
+            *this = from(*root, GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX), GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY))
             
-            Select GetData(from(*window, GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX), GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY)))
-              Case 101
-                SetActive(Widget(Hex(0)))
-              Case 102
-                SetActive(Widget(Hex(1)))
-              Case 103
-                SetActive(Widget(Hex(2)))
-                
-              Case 104
-                SetActive(Widget(Hex(10)))
-              Case 105
-                SetActive(Widget(Hex(11)))
-              Case 106
-                SetActive(Widget(Hex(12)))
-                
-              Case 107
-                SetActive(Widget(Hex(20)))
-                
-              Case 108
-                SetActive(Widget(Hex(21)))
-              Case 109
-                SetActive(Widget(Hex(22)))
-            EndSelect
-            
-            ReDraw(*window)
+            If *this
+              Select GetData(*this)
+                Case 101
+                  SetActive(w_list(Hex(0)))
+                Case 102
+                  SetActive(w_list(Hex(1)))
+                Case 103
+                  SetActive(w_list(Hex(2)))
+                  
+                Case 104
+                  SetActive(w_list(Hex(10)))
+                Case 105
+                  SetActive(w_list(Hex(11)))
+                Case 106
+                  SetActive(w_list(Hex(12)))
+                  
+                Case 107
+                  SetActive(w_list(Hex(20)))
+                  
+                Case 108
+                  SetActive(w_list(Hex(21)))
+                Case 109
+                  SetActive(w_list(Hex(22)))
+              EndSelect
+              
+              ReDraw(*root)
+            EndIf
             
         EndSelect
-     EndSelect
+    EndSelect
     
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = --+-
 ; EnableXP

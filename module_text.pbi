@@ -988,7 +988,7 @@ Module Text
         ElseIf _this_\Text\Align\Horizontal
           Text_X=(Width-_this_\Items()\Text\Width-Bool(_this_\Items()\Text\Width % 2))/2 
         Else
-          Text_X=_this_\margin\width
+          Text_X=_this_\Sci\margin\width
         EndIf
       EndIf
     EndMacro
@@ -1202,7 +1202,7 @@ Module Text
         Width = \Height[2]-\Text\X*2
         Height = \Width[2]-\Text\y*2
       Else
-        width = \scroll\width[2]-\Text\X*2-\margin\width
+        width = \scroll\width[2]-\Text\X*2-\Sci\margin\width
         height = \scroll\height[2]
       EndIf
       
@@ -1507,7 +1507,7 @@ Module Text
             ; Посылаем сообщение об изменении размера 
             PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
             CompilerIf Defined(Bar, #PB_Module)
-              ;  Bar::Resizes(\Scroll, \x[2]+\margin\width,\Y[2],\Width[2]-\margin\width,\Height[2])
+              ;  Bar::Resizes(\Scroll, \x[2]+\Sci\margin\width,\Y[2],\Width[2]-\Sci\margin\width,\Height[2])
               Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
               \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
               \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
@@ -1565,9 +1565,9 @@ Module Text
         EndIf
         
         ; Draw margin back color
-        If \margin\width
+        If \Sci\margin\width
           DrawingMode(#PB_2DDrawing_Default)
-          Box(ix, iy, \margin\width, iHeight, \margin\Color\Back); $C8D7D7D7)
+          Box(ix, iy, \Sci\margin\width, iHeight, \Sci\margin\Color\Back); $C8D7D7D7)
         EndIf
         
           
@@ -1795,9 +1795,9 @@ Module Text
               EndIf
               
               ; Draw margin
-              If *This\margin\width
+              If *This\Sci\margin\width
                 DrawingMode(#PB_2DDrawing_Transparent)
-                DrawText(*This\margin\width-TextWidth(Str(\Index)) - 5, \Y+*This\Scroll\Y, Str(\Index), *This\margin\Color\Front)
+                DrawText(*This\Sci\margin\width-TextWidth(Str(\Index)) - 5, \Y+*This\Scroll\Y, Str(\Index), *This\Sci\margin\Color\Front)
               EndIf
               
             EndIf
@@ -1931,7 +1931,7 @@ Module Text
             PostEvent(#PB_Event_Widget, \Canvas\Window, *This, #PB_EventType_Resize, \Resize)
             CompilerIf Defined(Bar, #PB_Module)
               If *This\Scroll\v And *This\Scroll\h
-                ;  Bar::Resizes(\Scroll, \x[2]+\margin\width,\Y[2],\Width[2]-\margin\width,\Height[2])
+                ;  Bar::Resizes(\Scroll, \x[2]+\Sci\margin\width,\Y[2],\Width[2]-\Sci\margin\width,\Height[2])
                 Bar::Resizes(\Scroll, \x[2],\Y[2],\Width[2],\Height[2])
                 \scroll\height[2] = *This\Scroll\v\Page\len; y(*This\Scroll\h)-*This\Scroll\v\y ;
                 \scroll\width[2] = *This\Scroll\h\Page\len ; x(*This\Scroll\v)-*This\Scroll\h\x ; 
@@ -1999,9 +1999,9 @@ Module Text
         EndIf
         
         ; Draw margin back color
-        If \margin\width
+        If \Sci\margin\width
           DrawingMode(#PB_2DDrawing_Default)
-          Box(ix, iy, \margin\width, iHeight, \margin\Color\Back); $C8D7D7D7)
+          Box(ix, iy, \Sci\margin\width, iHeight, \Sci\margin\Color\Back); $C8D7D7D7)
         EndIf
         
         ; Caaret move
@@ -2250,9 +2250,9 @@ Module Text
               EndIf
               
               ; Draw margin
-              If *This\margin\width
+              If *This\Sci\margin\width
                 DrawingMode(#PB_2DDrawing_Transparent)
-                DrawText(*This\margin\width-TextWidth(Str(\Index)) - 5, \Y+*This\Scroll\Y, Str(\Index), *This\margin\Color\Front)
+                DrawText(*This\Sci\margin\width-TextWidth(Str(\Index)) - 5, \Y+*This\Scroll\Y, Str(\Index), *This\Sci\margin\Color\Front)
               EndIf
               
             EndIf

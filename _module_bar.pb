@@ -25,27 +25,20 @@ DeclareModule Bar
   EnableExplicit
   
   ;- CONSTANTs
-  #PB_Bar_Vertical = 1
   
   #PB_Bar_Minimum = 1
   #PB_Bar_Maximum = 2
   #PB_Bar_PageLength = 3
   
-  EnumerationBinary 4
-    #PB_Bar_ArrowSize 
+  EnumerationBinary 16
+    #PB_Bar_Vertical
+    
+    ;#PB_Bar_ArrowSize 
     #PB_Bar_ButtonSize 
     #PB_Bar_ScrollStep
-    #PB_Bar_NoButtons 
     #PB_Bar_Direction 
     #PB_Bar_Inverted 
     #PB_Bar_Ticks
-    
-    #PB_Bar_First
-    #PB_Bar_Second
-    #PB_Bar_FirstFixed
-    #PB_Bar_SecondFixed
-    #PB_Bar_FirstMinimumSize
-    #PB_Bar_SecondMinimumSize
   EndEnumeration
   
   #Normal = 0
@@ -65,7 +58,7 @@ DeclareModule Bar
     #PB_EventType_ScrollChange
   EndEnumeration
   
-  Prototype pFunc2()
+  Prototype pFunc()
   
   ;- STRUCTUREs
   ;- - _S_event
@@ -74,7 +67,7 @@ DeclareModule Bar
     type.l
     item.l
     *data
-    *callback.pFunc2
+    *callback.pFunc
   EndStructure
   
   ;- - _S_coordinate
@@ -164,6 +157,10 @@ DeclareModule Bar
     *splitter._S_splitter
   EndStructure
   
+  Structure _S_widget Extends _S_coordinate
+    
+  EndStructure
+  
   Global *event._S_event = AllocateStructure(_S_event)
   
   ;-
@@ -190,6 +187,7 @@ DeclareModule Bar
   Declare.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, Radius.l=0)
   Declare.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=7)
   
+  Declare.b Update(*this, position.l, size.l)
   Declare.b Resizes(*scroll._S_scroll, X.l,Y.l,Width.l,Height.l)
   Declare.b Updates(*scroll._S_scroll, ScrollArea_X.l, ScrollArea_Y.l, ScrollArea_Width.l, ScrollArea_Height.l)
   Declare.b Arrow(X.l,Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1)
@@ -232,7 +230,6 @@ DeclareModule Bar
     Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ =< (_type_\x#_mode_+_type_\width#_mode_) And 
           _mouse_y_ > _type_\y#_mode_ And _mouse_y_ =< (_type_\y#_mode_+_type_\height#_mode_))
   EndMacro
-  
 EndDeclareModule
 
 ;- >>> MODULE
@@ -898,7 +895,7 @@ Module Bar
         Case #PB_Bar_PageLength : Result = \page\len
         Case #PB_Bar_Inverted : Result = \inverted
         Case #PB_Bar_Direction : Result = \direction
-        Case #PB_Bar_NoButtons : Result = \button\len 
+        Case #PB_Bar_ButtonSize : Result = \button\len 
         Case #PB_Bar_ScrollStep : Result = \scrollstep
       EndSelect
     EndWith
@@ -1015,72 +1012,74 @@ Module Bar
     With *this
       If \splitter
         Select Attribute
-          Case #PB_Splitter_FirstMinimumSize : Attribute = #PB_Bar_FirstMinimumSize
-          Case #PB_Splitter_SecondMinimumSize : Attribute = #PB_Bar_SecondMinimumSize
+          Case #PB_Splitter_FirstMinimumSize
+            \button[#_b_1]\len = Value
+            Result = Bool(\max)
+            
+          Case #PB_Splitter_SecondMinimumSize
+            \button[#_b_2]\len = Value
+            Result = Bool(\max)
+            
+             
+        EndSelect
+      Else
+        Select Attribute
+          Case #PB_Bar_Minimum
+            If \min <> Value
+              \min = Value
+              \page\pos = Value
+              Result = #True
+            EndIf
+            
+          Case #PB_Bar_Maximum
+            If \max <> Value
+              If \min > Value
+                \max = \min + 1
+              Else
+                \max = Value
+              EndIf
+              
+              If \max = 0
+                \page\pos = 0
+              EndIf
+              
+              Result = #True
+            EndIf
+            
+          Case #PB_Bar_PageLength
+            If \page\len <> Value
+              If Value > (\max-\min) 
+                ;\max = Value ; Если этого page_length вызвать раньше maximum то не правильно работает
+                If \Max = 0 
+                  \Max = Value 
+                EndIf
+                \page\len = (\max-\min)
+              Else
+                \page\len = Value
+              EndIf
+              
+              Result = #True
+            EndIf
+            
+          Case #PB_Bar_ScrollStep 
+            \scrollstep = Value
+            
+          Case #PB_Bar_ButtonSize
+            If \button\len <> Value
+              \button\len = Value
+              \button[#_b_1]\len = Value
+              \button[#_b_2]\len = Value
+              Result = #True
+            EndIf
+            
+          Case #PB_Bar_Inverted
+            If \inverted <> Bool(Value)
+              \inverted = Bool(Value)
+              \thumb\pos = _thumb_pos_(*this, _scroll_invert_(*this, \page\pos, \inverted))
+            EndIf
+            
         EndSelect
       EndIf
-      
-      Select Attribute
-        Case #PB_Bar_ScrollStep 
-          \scrollstep = Value
-          
-        Case #PB_Bar_FirstMinimumSize
-          \button[#_b_1]\len = Value
-          Result = Bool(\max)
-          
-        Case #PB_Bar_SecondMinimumSize
-          \button[#_b_2]\len = Value
-          Result = Bool(\max)
-          
-        Case #PB_Bar_NoButtons
-          If \button\len <> Value
-            \button\len = Value
-            \button[#_b_1]\len = Value
-            \button[#_b_2]\len = Value
-            Result = #True
-          EndIf
-          
-        Case #PB_Bar_Inverted
-          If \inverted <> Bool(Value)
-            \inverted = Bool(Value)
-            \thumb\pos = _thumb_pos_(*this, _scroll_invert_(*this, \page\pos, \inverted))
-          EndIf
-          
-        Case #PB_Bar_Minimum
-          If \min <> Value
-            \min = Value
-            \page\pos = Value
-            Result = #True
-          EndIf
-          
-        Case #PB_Bar_Maximum
-          If \max <> Value
-            If \min > Value
-              \max = \min + 1
-            Else
-              \max = Value
-            EndIf
-            
-            If \max = 0
-              \page\pos = 0
-            EndIf
-            
-            Result = #True
-          EndIf
-          
-        Case #PB_Bar_PageLength
-          If \page\len <> Value
-            If Value > (\max-\min) 
-              \max = Value ; Если этого page_length вызвать раньше maximum то не правильно работает
-              \page\len = (\max-\min)
-            Else
-              \page\len = Value
-            EndIf
-            
-            Result = #True
-          EndIf
-          
-      EndSelect
       
       If Result
         \hide = Resize(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -1126,6 +1125,21 @@ Module Bar
   EndProcedure
   
   ;-
+  Procedure.b Update(*this._S_bar, position.l, size.l)
+    ; size = bottom visible 
+    Protected.b result
+    
+    With *this
+      position - \y
+      size = (\page\len-size)
+      result | Bool((position-\page\pos) < 0 And SetState(*this, position))
+      result | Bool((position-\page\pos) > size And SetState(*this, position-size))
+      \change = 0
+    EndWith
+    
+    ProcedureReturn result
+  EndProcedure
+  
   Procedure.b Resize(*this._S_bar, X.l,Y.l,Width.l,Height.l)
     With *this
       If X <> #PB_Ignore : \X = X : EndIf 
@@ -1135,7 +1149,8 @@ Module Bar
       
       ;
       If (\max-\min) >= \page\len
-        ; Get area screen coordinate pos (x&y) and len (width&height)
+        ; Get area screen coordinate 
+        ; pos (x&y) And Len (width&height)
         _set_area_coordinate_(*this)
         
         If Not \max And \width And \height
@@ -1145,13 +1160,13 @@ Module Bar
             \page\pos = \max/2
           EndIf
           
-          ;           ; if splitter fixed set splitter pos to center
-          ;           If \splitter And \splitter\fixed = #_b_1
-          ;             \splitter\fixed[\splitter\fixed] = \page\pos
-          ;           EndIf
-          ;           If \splitter And \splitter\fixed = #_b_2
-          ;             \splitter\fixed[\splitter\fixed] = \area\len-\page\pos-\button\len
-          ;           EndIf
+;           ; if splitter fixed set splitter pos to center
+;           If \splitter And \splitter\fixed = #_b_1
+;             \splitter\fixed[\splitter\fixed] = \page\pos
+;           EndIf
+;           If \splitter And \splitter\fixed = #_b_2
+;             \splitter\fixed[\splitter\fixed] = \area\len-\page\pos-\button\len
+;           EndIf
         EndIf
         
         ;
@@ -1228,7 +1243,10 @@ Module Bar
         EndIf
       EndIf
       
-      \hide[1] = Bool(Not ((\max-\min) > \page\len))
+      If \type = #PB_GadgetType_ScrollBar
+        \hide[1] = Bool(Not ((\max-\min) > \page\len))
+      EndIf
+      
       ProcedureReturn \hide[1]
     EndWith
   EndProcedure
@@ -1300,6 +1318,10 @@ Module Bar
     With *scroll
       Protected iHeight, iWidth
       
+      If Not *scroll\v Or Not *scroll\h
+        ProcedureReturn
+      EndIf
+      
       If y=#PB_Ignore : y = \v\y : EndIf
       If x=#PB_Ignore : x = \h\x : EndIf
       If Width=#PB_Ignore : Width = \v\x-\h\x+\v\width : EndIf
@@ -1362,6 +1384,11 @@ Module Bar
   
   Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, Radius.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
+    If Flag&#PB_ScrollBar_Vertical
+      Flag&~#PB_ScrollBar_Vertical
+      Flag|#PB_Bar_Vertical
+    EndIf
+    
     _bar_(*this, min, max, PageLength, Flag, Radius)
     
     With *this
@@ -1379,7 +1406,7 @@ Module Bar
       If Width = #PB_Ignore : Width = 0 : EndIf
       If Height = #PB_Ignore : Height = 0 : EndIf
       
-      If Not Bool(Flag&#PB_Bar_NoButtons=#PB_Bar_NoButtons)
+      If Not Bool(Flag&#PB_Bar_ButtonSize=#PB_Bar_ButtonSize)
         If \vertical
           If width < 21
             \button\len = width - 1
@@ -1407,12 +1434,22 @@ Module Bar
   
   Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=7)
     Protected *this._S_bar = AllocateStructure(_S_bar)
+    If Flag&#PB_TrackBar_Vertical
+      Flag&~#PB_TrackBar_Vertical
+      Flag|#PB_Bar_Vertical
+    EndIf
+    
+    If Flag&#PB_TrackBar_Ticks
+      Flag&~#PB_TrackBar_Ticks
+      Flag|#PB_Bar_Ticks
+    EndIf
+    
     _bar_(*this, min, max, 0, Flag, Radius)
     
     With *this
       \type = #PB_GadgetType_TrackBar
       \inverted = \vertical
-      \mode = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks) * #PB_Bar_Ticks
+      \mode = Bool(Flag&#PB_Bar_Ticks) * #PB_Bar_Ticks
       \color[#_b_1]\state = Bool(Not \vertical) * #Selected
       \color[#_b_2]\state = Bool(\vertical) * #Selected
       \button\len = 15
@@ -1439,6 +1476,11 @@ Module Bar
   
   Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
+    If Flag&#PB_ProgressBar_Vertical
+      Flag&~#PB_ProgressBar_Vertical
+      Flag|#PB_Bar_Vertical
+    EndIf
+    
     _bar_(*this, min, max, 0, Flag, Radius)
     
     With *this
@@ -1469,6 +1511,12 @@ Module Bar
   
   Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, Radius.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
+    
+    If Flag&#PB_Splitter_Vertical
+      Flag&~#PB_Splitter_Vertical
+      Flag|#PB_Bar_Vertical
+    EndIf
+    
     _bar_(*this, 0, 0, 0, Flag, Radius)
     
     With *this
@@ -1968,7 +2016,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState   (Widget(),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     
     TextGadget       (-1,  300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical);|#PB_Bar_Inverted)
+    AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_Bar_Vertical);|#PB_Bar_Inverted)
                                                                                                        ;AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 100 ,0, 521, 96, #PB_ScrollBar_Vertical)
     SetState   (Widget(), 100)                                                                         ; set 2nd scrollbar (ID = 1) to 100 of 300
     
@@ -1995,7 +2043,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Widget(), 5000)
     TextGadget    (-1, 300+10, 140+90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
     ;     AddElement(*List()) : *List() = Track(300+10, 140+120, 250, 20, 0, 30, #PB_Bar_Ticks)
-    AddElement(*List()) : *List() = Track(300+10, 140+120, 250, 20, 30, 60, #PB_Bar_Ticks)
+    AddElement(*List()) : *List() = Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
     SetState(Widget(), 60)
     TextGadget    (-1,  300+60, 140+160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
     AddElement(*List()) : *List() = Track(300+270, 140+10, 25, 170, 0, 10000, #PB_Bar_Vertical)
@@ -2127,5 +2175,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------
+; Folding = ---v-4---------v--------v--0-f--0--0----------
 ; EnableXP

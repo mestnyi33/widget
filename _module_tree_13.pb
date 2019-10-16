@@ -4101,6 +4101,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
+; CursorPosition = 25
 ; Folding = ----------------------------------------------------------------------------
 ; EnableXP
+; SubSystem = gtk2

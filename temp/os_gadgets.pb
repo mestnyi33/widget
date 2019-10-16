@@ -67,9 +67,6 @@
   Until Event= #PB_Event_CloseWindow
   
 EndIf   
-; IDE Options = PureBasic 5.70 LTS (Linux - x64)
-; CursorPosition = 20
-; FirstLine = 4
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP
-; SubSystem = qt

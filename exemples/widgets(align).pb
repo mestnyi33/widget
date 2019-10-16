@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets().pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
       
       Define *w._S_widget = Open(0, 10, 10, 580, 600-50, "")
-      Canvas_0 = _Gadget()
+      Canvas_0 = GetGadget(Root())
       
       Widgets(Str(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #PB_Flag_AnchorsGadget)
       ;Widgets(Str(0)) = Container(50, 50, 280, 200);, #PB_Flag_AnchorsGadget);#PB_Flag_AutoSize)
@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Window_1()
+  Window_0()
   
   Define direction = 1
   Define Width, Height
@@ -160,5 +160,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --
+; Folding = X-
 ; EnableXP
