@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets(6).pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(10, 0, 0, 833, 346, "demo set  new parent", Flags )
   
   ; Create desktop for the widgets
-  Open(10, 0, 0, 833, 346)
+  Open(10, 0, 0, 833, 346, "");, #PB_Window_BorderLess)
   *d_0 = Button(30,90,160,30,"Button >>(Desktop)") 
   
   *window_1 = Form(202, 0, 630, 319, "demo set  new parent", Flags )
@@ -186,5 +186,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 8-
+; Folding = --
 ; EnableXP

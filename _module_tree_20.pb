@@ -233,14 +233,14 @@ DeclareModule Constants
   
   #PB_Gadget_FrameColor = 10
   
-  #Normal = 0
-  #Entered = 1
-  #Selected = 2
-  #Disabled = 3
+  #s_0 = 0
+  #s_1 = 1
+  #s_2 = 2
+  #s_3 = 3
   
-  #_b_1 = 1
-  #_b_2 = 2
-  #_b_3 = 3
+  #bb_1 = 1
+  #bb_2 = 2
+  #bb_3 = 3
   
   
   ;- BAR CONSTANTs
@@ -427,12 +427,18 @@ DeclareModule Structures
     checked.b
   EndStructure
   
+  ;- - _s_arrow
+  Structure _s_arrow
+    size.a
+    type.b
+   ; direction.b
+  EndStructure
+  
   ;- - _S_button
   Structure _S_button Extends _S_coordinate
     len.a
     interact.b
-    arrow_size.a
-    arrow_type.b
+    arrow._s_arrow
   EndStructure
   
   ;- - _S_splitter
@@ -577,8 +583,8 @@ DeclareModule Structures
     
     type.l   ; 
     from.l   ; at point item index
-    hide.b[2] ; [1] - hide state
-    change.b  ; is repaint widget?
+    hide.b[2]; [1] - hide state
+    change.b ; is repaint widget?
     Interact.b ; будет ли взаимодействовать с пользователем?
     
     canvas._S_canvas
@@ -599,7 +605,7 @@ DeclareModule Structures
     *event._S_event
     
     row._S_row
-    mouse._S_mouse
+    ;mouse._S_mouse
     
     *data
   EndStructure
@@ -614,61 +620,61 @@ DeclareModule Structures
     
     ;- Синие цвета
     ; Цвета по умолчанию
-    \front[#Normal] = $80000000
-    \fore[#Normal] = $FFF8F8F8 
-    \back[#Normal] = $80E2E2E2
-    \frame[#Normal] = $80C8C8C8
-    \line[#Normal] = $FF7E7E7E
+    \front[#s_0] = $80000000
+    \fore[#s_0] = $FFF8F8F8 
+    \back[#s_0] = $80E2E2E2
+    \frame[#s_0] = $80C8C8C8
+    \line[#s_0] = $FF7E7E7E
     
     ; Цвета если мышь на виджете
-    \front[#Entered] = $80000000
-    \fore[#Entered] = $FFFAF8F8
-    \back[#Entered] = $80FCEADA
-    \frame[#Entered] = $80FFC288
-    \line[#Entered] = $FF7E7E7E
+    \front[#s_1] = $80000000
+    \fore[#s_1] = $FFFAF8F8
+    \back[#s_1] = $80FCEADA
+    \frame[#s_1] = $80FFC288
+    \line[#s_1] = $FF7E7E7E
     
     ; Цвета если нажали на виджет
-    \front[#Selected] = $FFFEFEFE
-    \fore[#Selected] = $C8E9BA81;$C8FFFCFA
-    \back[#Selected] = $C8E89C3D; $80E89C3D
-    \frame[#Selected] = $C8DC9338; $80DC9338
-    \line[#Selected] = $FF7E7E7E
+    \front[#s_2] = $FFFEFEFE
+    \fore[#s_2] = $C8E9BA81;$C8FFFCFA
+    \back[#s_2] = $C8E89C3D; $80E89C3D
+    \frame[#s_2] = $C8DC9338; $80DC9338
+    \line[#s_2] = $FF7E7E7E
     
     ; Цвета если дисабле виджет
-    \front[#Disabled] = $FFBABABA
-    \fore[#Disabled] = $FFF6F6F6 
-    \back[#Disabled] = $FFE2E2E2 
-    \frame[#Disabled] = $FFBABABA
-    \line[#Disabled] = $FF7E7E7E
+    \front[#s_3] = $FFBABABA
+    \fore[#s_3] = $FFF6F6F6 
+    \back[#s_3] = $FFE2E2E2 
+    \frame[#s_3] = $FFBABABA
+    \line[#s_3] = $FF7E7E7E
     
     ;     ; - Серые цвета
     ;     ; Цвета по умолчанию
-    ;     \front[#Normal] = $80000000
-    ;     \fore[#Normal] = $FFF6F6F6 ; $FFF8F8F8 
-    ;     \back[#Normal] = $FFE2E2E2 ; $80E2E2E2
-    ;     \frame[#Normal] = $FFBABABA; $80C8C8C8
-    ;     \line[#Normal] = $FF7E7E7E
+    ;     \front[#s_0] = $80000000
+    ;     \fore[#s_0] = $FFF6F6F6 ; $FFF8F8F8 
+    ;     \back[#s_0] = $FFE2E2E2 ; $80E2E2E2
+    ;     \frame[#s_0] = $FFBABABA; $80C8C8C8
+    ;     \line[#s_0] = $FF7E7E7E
     ;     
     ;     ; Цвета если мышь на виджете
-    ;     \front[#Entered] = $80000000
-    ;     \fore[#Entered] = $FFEAEAEA ; $FFFAF8F8
-    ;     \back[#Entered] = $FFCECECE ; $80FCEADA
-    ;     \frame[#Entered] = $FF8F8F8F; $80FFC288
-    ;     \line[#Entered] = $FF7E7E7E
+    ;     \front[#s_1] = $80000000
+    ;     \fore[#s_1] = $FFEAEAEA ; $FFFAF8F8
+    ;     \back[#s_1] = $FFCECECE ; $80FCEADA
+    ;     \frame[#s_1] = $FF8F8F8F; $80FFC288
+    ;     \line[#s_1] = $FF7E7E7E
     ;     
     ;     ; Цвета если нажали на виджет
-    ;     \front[#Selected] = $FFFEFEFE
-    ;     \fore[#Selected] = $FFE2E2E2 ; $C8E9BA81 ; $C8FFFCFA
-    ;     \back[#Selected] = $FFB4B4B4 ; $C8E89C3D ; $80E89C3D
-    ;     \frame[#Selected] = $FF6F6F6F; $C8DC9338 ; $80DC9338
-    ;     \line[#Selected] = $FF7E7E7E
+    ;     \front[#s_2] = $FFFEFEFE
+    ;     \fore[#s_2] = $FFE2E2E2 ; $C8E9BA81 ; $C8FFFCFA
+    ;     \back[#s_2] = $FFB4B4B4 ; $C8E89C3D ; $80E89C3D
+    ;     \frame[#s_2] = $FF6F6F6F; $C8DC9338 ; $80DC9338
+    ;     \line[#s_2] = $FF7E7E7E
     ;     
     ;     ; Цвета если дисабле виджет
-    ;     \front[#Disabled] = $FFBABABA
-    ;     \fore[#Disabled] = $FFF6F6F6 
-    ;     \back[#Disabled] = $FFE2E2E2 
-    ;     \frame[#Disabled] = $FFBABABA
-    ;     \line[#Disabled] = $FF7E7E7E
+    ;     \front[#s_3] = $FFBABABA
+    ;     \fore[#s_3] = $FFF6F6F6 
+    ;     \back[#s_3] = $FFE2E2E2 
+    ;     \frame[#s_3] = $FFBABABA
+    ;     \line[#s_3] = $FF7E7E7E
   EndWith
   
 EndDeclareModule 
@@ -746,94 +752,94 @@ Module Bar
     EndIf
     
     ; _start_
-    If _this_\button[#_b_1]\len And _this_\page\len
+    If _this_\button[#bb_1]\len And _this_\page\len
       If _scroll_pos_ = _this_\min
-        _this_\color[#_b_1]\state = #Disabled
-        _this_\button[#_b_1]\interact = 0
+        _this_\color[#bb_1]\state = #s_3
+        _this_\button[#bb_1]\interact = 0
       Else
-        If _this_\color[#_b_1]\state <> #Selected
-          _this_\color[#_b_1]\state = #Normal
+        If _this_\color[#bb_1]\state <> #s_2
+          _this_\color[#bb_1]\state = #s_0
         EndIf
-        _this_\button[#_b_1]\interact = 1
+        _this_\button[#bb_1]\interact = 1
       EndIf 
     EndIf
     
     If _this_\Vertical 
       ; Top button coordinate on vertical scroll bar
-      _this_\button[#_b_1]\x = _this_\button\x
-      _this_\button[#_b_1]\y = _this_\Y 
-      _this_\button[#_b_1]\width = _this_\button\width
-      _this_\button[#_b_1]\height = _this_\button[#_b_1]\len                   
+      _this_\button[#bb_1]\x = _this_\button\x
+      _this_\button[#bb_1]\y = _this_\Y 
+      _this_\button[#bb_1]\width = _this_\button\width
+      _this_\button[#bb_1]\height = _this_\button[#bb_1]\len                   
     Else 
       ; Left button coordinate on horizontal scroll bar
-      _this_\button[#_b_1]\x = _this_\X 
-      _this_\button[#_b_1]\y = _this_\button\y
-      _this_\button[#_b_1]\width = _this_\button[#_b_1]\len 
-      _this_\button[#_b_1]\height = _this_\button\height 
+      _this_\button[#bb_1]\x = _this_\X 
+      _this_\button[#bb_1]\y = _this_\button\y
+      _this_\button[#bb_1]\width = _this_\button[#bb_1]\len 
+      _this_\button[#bb_1]\height = _this_\button\height 
     EndIf
     
     ; _stop_
-    If _this_\button[#_b_2]\len And _this_\page\len
+    If _this_\button[#bb_2]\len And _this_\page\len
       ; Debug ""+ Bool(_this_\thumb\pos = _this_\area\end) +" "+ Bool(_scroll_pos_ = _this_\page\end)
       If _scroll_pos_ = _this_\page\end
-        _this_\color[#_b_2]\state = #Disabled
-        _this_\button[#_b_2]\interact = 0
+        _this_\color[#bb_2]\state = #s_3
+        _this_\button[#bb_2]\interact = 0
       Else
-        If _this_\color[#_b_2]\state <> #Selected
-          _this_\color[#_b_2]\state = #Normal
+        If _this_\color[#bb_2]\state <> #s_2
+          _this_\color[#bb_2]\state = #s_0
         EndIf
-        _this_\button[#_b_2]\interact = 1
+        _this_\button[#bb_2]\interact = 1
       EndIf 
     EndIf
     
     If _this_\Vertical 
       ; Botom button coordinate on vertical scroll bar
-      _this_\button[#_b_2]\x = _this_\button\x
-      _this_\button[#_b_2]\width = _this_\button\width
-      _this_\button[#_b_2]\height = _this_\button[#_b_2]\len 
-      _this_\button[#_b_2]\y = _this_\Y+_this_\height-_this_\button[#_b_2]\height
+      _this_\button[#bb_2]\x = _this_\button\x
+      _this_\button[#bb_2]\width = _this_\button\width
+      _this_\button[#bb_2]\height = _this_\button[#bb_2]\len 
+      _this_\button[#bb_2]\y = _this_\Y+_this_\height-_this_\button[#bb_2]\height
     Else 
       ; Right button coordinate on horizontal scroll bar
-      _this_\button[#_b_2]\y = _this_\button\y
-      _this_\button[#_b_2]\height = _this_\button\height
-      _this_\button[#_b_2]\width = _this_\button[#_b_2]\len 
-      _this_\button[#_b_2]\x = _this_\X+_this_\width-_this_\button[#_b_2]\width 
+      _this_\button[#bb_2]\y = _this_\button\y
+      _this_\button[#bb_2]\height = _this_\button\height
+      _this_\button[#bb_2]\width = _this_\button[#bb_2]\len 
+      _this_\button[#bb_2]\x = _this_\X+_this_\width-_this_\button[#bb_2]\width 
     EndIf
     
     
     ; Thumb coordinate on scroll bar
     If _this_\thumb\len
-      If _this_\button[#_b_3]\len <> _this_\thumb\len
-        _this_\button[#_b_3]\len = _this_\thumb\len
+      If _this_\button[#bb_3]\len <> _this_\thumb\len
+        _this_\button[#bb_3]\len = _this_\thumb\len
       EndIf
       
       If _this_\Vertical
-        _this_\button[#_b_3]\x = _this_\button\x 
-        _this_\button[#_b_3]\width = _this_\button\width 
-        _this_\button[#_b_3]\y = _this_\thumb\pos
-        _this_\button[#_b_3]\height = _this_\thumb\len                              
+        _this_\button[#bb_3]\x = _this_\button\x 
+        _this_\button[#bb_3]\width = _this_\button\width 
+        _this_\button[#bb_3]\y = _this_\thumb\pos
+        _this_\button[#bb_3]\height = _this_\thumb\len                              
       Else
-        _this_\button[#_b_3]\y = _this_\button\y 
-        _this_\button[#_b_3]\height = _this_\button\height
-        _this_\button[#_b_3]\x = _this_\thumb\pos 
-        _this_\button[#_b_3]\width = _this_\thumb\len                                  
+        _this_\button[#bb_3]\y = _this_\button\y 
+        _this_\button[#bb_3]\height = _this_\button\height
+        _this_\button[#bb_3]\x = _this_\thumb\pos 
+        _this_\button[#bb_3]\width = _this_\thumb\len                                  
       EndIf
       
     Else
       ; Эфект спин гаджета
       If _this_\Vertical
-        _this_\button[#_b_2]\height = _this_\height/2 
-        _this_\button[#_b_2]\y = _this_\y+_this_\button[#_b_2]\height+Bool(_this_\height%2) 
+        _this_\button[#bb_2]\height = _this_\height/2 
+        _this_\button[#bb_2]\y = _this_\y+_this_\button[#bb_2]\height+Bool(_this_\height%2) 
         
-        _this_\button[#_b_1]\y = _this_\y 
-        _this_\button[#_b_1]\height = _this_\height/2
+        _this_\button[#bb_1]\y = _this_\y 
+        _this_\button[#bb_1]\height = _this_\height/2
         
       Else
-        _this_\button[#_b_2]\width = _this_\width/2 
-        _this_\button[#_b_2]\x = _this_\x+_this_\button[#_b_2]\width+Bool(_this_\width%2) 
+        _this_\button[#bb_2]\width = _this_\width/2 
+        _this_\button[#bb_2]\x = _this_\x+_this_\button[#bb_2]\width+Bool(_this_\width%2) 
         
-        _this_\button[#_b_1]\x = _this_\x 
-        _this_\button[#_b_1]\width = _this_\width/2
+        _this_\button[#bb_1]\x = _this_\x 
+        _this_\button[#bb_1]\width = _this_\width/2
       EndIf
     EndIf
   EndMacro
@@ -845,11 +851,11 @@ Module Bar
   
   Macro _set_area_coordinate_(_this_)
     If _this_\vertical
-      _this_\area\pos = _this_\y + _this_\button[#_b_1]\len
-      _this_\area\len = _this_\height - (_this_\button[#_b_1]\len + _this_\button[#_b_2]\len)
+      _this_\area\pos = _this_\y + _this_\button[#bb_1]\len
+      _this_\area\len = _this_\height - (_this_\button[#bb_1]\len + _this_\button[#bb_2]\len)
     Else
-      _this_\area\pos = _this_\x + _this_\button[#_b_1]\len
-      _this_\area\len = _this_\width - (_this_\button[#_b_1]\len + _this_\button[#_b_2]\len)
+      _this_\area\pos = _this_\x + _this_\button[#bb_1]\len
+      _this_\area\len = _this_\width - (_this_\button[#bb_1]\len + _this_\button[#bb_2]\len)
     EndIf
     
     _this_\area\end = _this_\area\pos + (_this_\area\len-_this_\thumb\len)
@@ -974,41 +980,41 @@ Module Bar
         If \thumb\len
           ; Draw thumb
           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          _box_gradient_(\vertical,\button[#_b_3]\x,\button[#_b_3]\y,\button[#_b_3]\width,\button[#_b_3]\height,\color[3]\fore[\color[3]\state],\color[3]\back[\color[3]\state], \radius, \color\alpha)
+          _box_gradient_(\vertical,\button[#bb_3]\x,\button[#bb_3]\y,\button[#bb_3]\width,\button[#bb_3]\height,\color[3]\fore[\color[3]\state],\color[3]\back[\color[3]\state], \radius, \color\alpha)
           
           ; Draw thumb frame
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox(\button[#_b_3]\x,\button[#_b_3]\y,\button[#_b_3]\width,\button[#_b_3]\height,\radius,\radius,\color[3]\frame[\color[3]\state]&$FFFFFF|\color\alpha<<24)
+          RoundBox(\button[#bb_3]\x,\button[#bb_3]\y,\button[#bb_3]\width,\button[#bb_3]\height,\radius,\radius,\color[3]\frame[\color[3]\state]&$FFFFFF|\color\alpha<<24)
           
           Protected h=9
           ; Draw thumb lines
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
           If \vertical
-            Line(\button[#_b_3]\x+(\button[#_b_3]\width-h)/2,\button[#_b_3]\y+\button[#_b_3]\height/2-3,h,1,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
-            Line(\button[#_b_3]\x+(\button[#_b_3]\width-h)/2,\button[#_b_3]\y+\button[#_b_3]\height/2,h,1,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
-            Line(\button[#_b_3]\x+(\button[#_b_3]\width-h)/2,\button[#_b_3]\y+\button[#_b_3]\height/2+3,h,1,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
+            Line(\button[#bb_3]\x+(\button[#bb_3]\width-h)/2,\button[#bb_3]\y+\button[#bb_3]\height/2-3,h,1,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
+            Line(\button[#bb_3]\x+(\button[#bb_3]\width-h)/2,\button[#bb_3]\y+\button[#bb_3]\height/2,h,1,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
+            Line(\button[#bb_3]\x+(\button[#bb_3]\width-h)/2,\button[#bb_3]\y+\button[#bb_3]\height/2+3,h,1,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
           Else
-            Line(\button[#_b_3]\x+\button[#_b_3]\width/2-3,\button[#_b_3]\y+(\button[#_b_3]\height-h)/2,1,h,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
-            Line(\button[#_b_3]\x+\button[#_b_3]\width/2,\button[#_b_3]\y+(\button[#_b_3]\height-h)/2,1,h,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
-            Line(\button[#_b_3]\x+\button[#_b_3]\width/2+3,\button[#_b_3]\y+(\button[#_b_3]\height-h)/2,1,h,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
+            Line(\button[#bb_3]\x+\button[#bb_3]\width/2-3,\button[#bb_3]\y+(\button[#bb_3]\height-h)/2,1,h,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
+            Line(\button[#bb_3]\x+\button[#bb_3]\width/2,\button[#bb_3]\y+(\button[#bb_3]\height-h)/2,1,h,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
+            Line(\button[#bb_3]\x+\button[#bb_3]\width/2+3,\button[#bb_3]\y+(\button[#bb_3]\height-h)/2,1,h,\color[3]\front[\color[3]\state]&$FFFFFF|\color\alpha<<24)
           EndIf
         EndIf
         
         If \button\len
           ; Draw buttons
           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          _box_gradient_(\vertical,\button[#_b_1]\x,\button[#_b_1]\y,\button[#_b_1]\width,\button[#_b_1]\height,\color[#_b_1]\fore[\color[#_b_1]\state],\color[#_b_1]\back[\color[#_b_1]\state], \radius, \color\alpha)
-          _box_gradient_(\vertical,\button[#_b_2]\x,\button[#_b_2]\y,\button[#_b_2]\width,\button[#_b_2]\height,\color[#_b_2]\fore[\color[#_b_2]\state],\color[#_b_2]\back[\color[#_b_2]\state], \radius, \color\alpha)
+          _box_gradient_(\vertical,\button[#bb_1]\x,\button[#bb_1]\y,\button[#bb_1]\width,\button[#bb_1]\height,\color[#bb_1]\fore[\color[#bb_1]\state],\color[#bb_1]\back[\color[#bb_1]\state], \radius, \color\alpha)
+          _box_gradient_(\vertical,\button[#bb_2]\x,\button[#bb_2]\y,\button[#bb_2]\width,\button[#bb_2]\height,\color[#bb_2]\fore[\color[#bb_2]\state],\color[#bb_2]\back[\color[#bb_2]\state], \radius, \color\alpha)
           
           ; Draw buttons frame
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox(\button[#_b_1]\x,\button[#_b_1]\y,\button[#_b_1]\width,\button[#_b_1]\height,\radius,\radius,\color[#_b_1]\frame[\color[#_b_1]\state]&$FFFFFF|\color\alpha<<24)
-          RoundBox(\button[#_b_2]\x,\button[#_b_2]\y,\button[#_b_2]\width,\button[#_b_2]\height,\radius,\radius,\color[#_b_2]\frame[\color[#_b_2]\state]&$FFFFFF|\color\alpha<<24)
+          RoundBox(\button[#bb_1]\x,\button[#bb_1]\y,\button[#bb_1]\width,\button[#bb_1]\height,\radius,\radius,\color[#bb_1]\frame[\color[#bb_1]\state]&$FFFFFF|\color\alpha<<24)
+          RoundBox(\button[#bb_2]\x,\button[#bb_2]\y,\button[#bb_2]\width,\button[#bb_2]\height,\radius,\radius,\color[#bb_2]\frame[\color[#bb_2]\state]&$FFFFFF|\color\alpha<<24)
           
           ; Draw arrows
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          Arrow(\button[#_b_1]\x+(\button[#_b_1]\width-\button[#_b_1]\arrow_size)/2,\button[#_b_1]\y+(\button[#_b_1]\height-\button[#_b_1]\arrow_size)/2, \button[#_b_1]\arrow_size, Bool(\vertical), \color[#_b_1]\front[\color[#_b_1]\state]&$FFFFFF|\color\alpha<<24, \button[#_b_1]\arrow_type)
-          Arrow(\button[#_b_2]\x+(\button[#_b_2]\width-\button[#_b_2]\arrow_size)/2,\button[#_b_2]\y+(\button[#_b_2]\height-\button[#_b_2]\arrow_size)/2, \button[#_b_2]\arrow_size, Bool(\vertical)+2, \color[#_b_2]\front[\color[#_b_2]\state]&$FFFFFF|\color\alpha<<24, \button[#_b_2]\arrow_type)
+          Arrow(\button[#bb_1]\x+(\button[#bb_1]\width-\button[#bb_1]\arrow\size)/2,\button[#bb_1]\y+(\button[#bb_1]\height-\button[#bb_1]\arrow\size)/2, \button[#bb_1]\arrow\size, Bool(\vertical), \color[#bb_1]\front[\color[#bb_1]\state]&$FFFFFF|\color\alpha<<24, \button[#bb_1]\arrow\type)
+          Arrow(\button[#bb_2]\x+(\button[#bb_2]\width-\button[#bb_2]\arrow\size)/2,\button[#bb_2]\y+(\button[#bb_2]\height-\button[#bb_2]\arrow\size)/2, \button[#bb_2]\arrow\size, Bool(\vertical)+2, \color[#bb_2]\front[\color[#bb_2]\state]&$FFFFFF|\color\alpha<<24, \button[#bb_2]\arrow\type)
         EndIf
       EndIf
     EndWith 
@@ -1100,11 +1106,11 @@ Module Bar
         \page\pos = ScrollPos
         \thumb\pos = _thumb_pos_(*this, _scroll_invert_(*this, ScrollPos, \inverted))
         
-        If \splitter And \splitter\fixed = #_b_1
+        If \splitter And \splitter\fixed = #bb_1
           \splitter\fixed[\splitter\fixed] = \thumb\pos - \area\pos
           \page\pos = 0
         EndIf
-        If \splitter And \splitter\fixed = #_b_2
+        If \splitter And \splitter\fixed = #bb_2
           \splitter\fixed[\splitter\fixed] = \area\len - ((\thumb\pos+\thumb\len)-\area\pos)
           \page\pos = \max
         EndIf
@@ -1132,18 +1138,18 @@ Module Bar
           \scrollstep = Value
           
         Case #PB_Bar_FirstMinimumSize
-          \button[#_b_1]\len = Value
+          \button[#bb_1]\len = Value
           Result = Bool(\max)
           
         Case #PB_Bar_SecondMinimumSize
-          \button[#_b_2]\len = Value
+          \button[#bb_2]\len = Value
           Result = Bool(\max)
           
         Case #PB_Bar_NoButtons
           If \button\len <> Value
             \button\len = Value
-            \button[#_b_1]\len = Value
-            \button[#_b_2]\len = Value
+            \button[#bb_1]\len = Value
+            \button[#bb_2]\len = Value
             Result = #True
           EndIf
           
@@ -1433,14 +1439,14 @@ Module Bar
     
     With *this
       \type = #PB_GadgetType_ScrollBar
-      \button[#_b_1]\arrow_type =- 1
-      \button[#_b_2]\arrow_type =- 1
-      \button[#_b_1]\arrow_size = 4
-      \button[#_b_2]\arrow_size = 4
+      \button[#bb_1]\arrow\type =- 1
+      \button[#bb_2]\arrow\type =- 1
+      \button[#bb_1]\arrow\size = 4
+      \button[#bb_2]\arrow\size = 4
       ;\interact = 1
-      \button[#_b_1]\interact = 1
-      \button[#_b_2]\interact = 1
-      \button[#_b_3]\interact = 1
+      \button[#bb_1]\interact = 1
+      \button[#bb_2]\interact = 1
+      \button[#bb_3]\interact = 1
       \from =- 1
       \scrollstep = 1
       \radius = Radius
@@ -1453,9 +1459,9 @@ Module Bar
       \color\frame = \color\back
       \color\front = $FFFFFFFF ; line
       
-      \color[#_b_1] = def_colors
-      \color[#_b_2] = def_colors
-      \color[#_b_3] = def_colors
+      \color[#bb_1] = def_colors
+      \color[#bb_2] = def_colors
+      \color[#bb_3] = def_colors
       
       \vertical = Bool(Flag&#PB_Bar_Vertical=#PB_Bar_Vertical)
       \inverted = Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted)
@@ -1479,8 +1485,8 @@ Module Bar
           EndIf
         EndIf
         
-        \button[#_b_1]\len = \button\len
-        \button[#_b_2]\len = \button\len
+        \button[#bb_1]\len = \button\len
+        \button[#bb_2]\len = \button\len
       EndIf
       
       If \min <> Min : SetAttribute(*this, #PB_Bar_Minimum, Min) : EndIf
@@ -1501,13 +1507,13 @@ Module Bar
     Macro _callback_(_this_, _type_)
       Select _type_
         Case #PB_EventType_MouseLeave ; : Debug ""+#PB_Compiler_Line +" Мышь находится снаружи итема " + _this_ +" "+ _this_\from
-          _this_\color[_this_\from]\state = #Normal 
+          _this_\color[_this_\from]\state = #s_0 
           
         Case #PB_EventType_MouseEnter ; : Debug ""+#PB_Compiler_Line +" Мышь находится внутри итема " + _this_ +" "+ _this_\from
-          _this_\color[_this_\from]\state = #Entered 
+          _this_\color[_this_\from]\state = #s_1 
           
         Case #PB_EventType_LeftButtonDown ; : Debug ""+#PB_Compiler_Line +" нажали " + _this_ +" "+ _this_\from
-          _this_\color[_this_\from]\state = #Selected
+          _this_\color[_this_\from]\state = #s_2
           
           Select _this_\from
             Case 1 
@@ -1531,7 +1537,7 @@ Module Bar
           EndSelect
           
         Case #PB_EventType_LeftButtonUp ; : Debug ""+#PB_Compiler_Line +" отпустили " + _this_ +" "+ _this_\from
-          _this_\color[_this_\from]\state = #Entered 
+          _this_\color[_this_\from]\state = #s_1 
           
       EndSelect
     EndMacro
@@ -1540,12 +1546,12 @@ Module Bar
       ; get at point buttons
       If Not \hide And (_from_point_(mouse_x, mouse_y, *this) Or Down)
         If \button 
-          If \button[#_b_3]\len And _from_point_(mouse_x, mouse_y, \button[#_b_3])
-            from = #_b_3
-          ElseIf \button[#_b_2]\len And _from_point_(mouse_x, mouse_y, \button[#_b_2])
-            from = #_b_2
-          ElseIf \button[#_b_1]\len And _from_point_(mouse_x, mouse_y, \button[#_b_1])
-            from = #_b_1
+          If \button[#bb_3]\len And _from_point_(mouse_x, mouse_y, \button[#bb_3])
+            from = #bb_3
+          ElseIf \button[#bb_2]\len And _from_point_(mouse_x, mouse_y, \button[#bb_2])
+            from = #bb_2
+          ElseIf \button[#bb_1]\len And _from_point_(mouse_x, mouse_y, \button[#bb_1])
+            from = #bb_1
           ElseIf _from_point_(mouse_x, mouse_y, \button[0])
             from = 0
           EndIf
@@ -1626,7 +1632,7 @@ Module Bar
           EndIf
           
         Case #PB_EventType_LeftButtonDown
-          If from = 0 And \button[#_b_3]\interact 
+          If from = 0 And \button[#bb_3]\interact 
             If \vertical
               Result = SetPos(*this, (mouse_y-\thumb\len/2))
             Else
@@ -1844,7 +1850,7 @@ Module Tree
     ForEach _this_\row\rows()
       If _this_\row\rows()\draw
         _this_\row\rows()\color\state =  Bool((_selected_index_ >= _this_\row\rows()\index And _index_ =< _this_\row\rows()\index) Or ; верх
-                                          (_selected_index_ =< _this_\row\rows()\index And _index_ >= _this_\row\rows()\index)) * 2  ; вниз
+                                              (_selected_index_ =< _this_\row\rows()\index And _index_ >= _this_\row\rows()\index)) * 2  ; вниз
       EndIf
     Next
     PopListPosition(_this_\row\rows()) 
@@ -1886,7 +1892,7 @@ Module Tree
     If *event\active <> _this_
       If *event\active 
         *event\active\color\state = 0
-        *event\active\mouse\buttons = 0
+        *event\active\canvas\mouse\buttons = 0
         
         If *event\active\row\selected 
           *event\active\row\selected\color\state = 3
@@ -3186,14 +3192,14 @@ Module Tree
         ;         \color\fore[0] = 0
         ;         \color\fore[1] = 0
         ;         \color\fore[2] = 0
-        \color\frame[#Normal] = $80C8C8C8 
-        ;\color\frame[#Entered] = $80FFC288 
-        \color\frame[#Selected] = $C8DC9338 
-        \color\frame[#Disabled] = $FFBABABA
-        \color\back[#Normal] = $FFFFFFFF 
-        ;\color\back[#Entered] = $FFFFFFFF 
-        \color\back[#Selected] = $FFFFFFFF 
-        \color\back[#Disabled] = $FFE2E2E2 
+        \color\frame[#s_0] = $80C8C8C8 
+        ;\color\frame[#s_1] = $80FFC288 
+        \color\frame[#s_2] = $C8DC9338 
+        \color\frame[#s_3] = $FFBABABA
+        \color\back[#s_0] = $FFFFFFFF 
+        ;\color\back[#s_1] = $FFFFFFFF 
+        \color\back[#s_2] = $FFFFFFFF 
+        \color\back[#s_3] = $FFE2E2E2 
         ; \color\line = $FFF0F0F0
       EndIf
       
@@ -3328,7 +3334,7 @@ Module Tree
         Debug "left up - "+*this
         
       Case #PB_EventType_MouseEnter
-        Debug "enter - "+*this +" "+ *this\mouse\buttons
+        Debug "enter - "+*this +" "+ *this\canvas\mouse\buttons
         Result = 1
         
       Case #PB_EventType_MouseLeave
@@ -3339,7 +3345,7 @@ Module Tree
         ; Debug "move - "+*this
         
         If position And *this\row\index >= 0
-          down = *this\mouse\buttons
+          ;down = *this\canvas\mouse\buttons
           
           ; event mouse enter line
           If position > 0
@@ -3394,116 +3400,17 @@ Module Tree
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l CallBack(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
+  Procedure.l Tree_Events(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
     Protected Result, from =- 1
     Static cursor_change, Down, *row_selected._S_rows
     
-    If Not *this Or 
-       Not *this\handle
-      ProcedureReturn 0
-    EndIf
-    
-    If mouse_x =- 1 And mouse_y =- 1
-      Select EventType
-        Case #PB_EventType_Repaint
-          Debug " -- Canvas repaint -- " + *this\row\draw
-        Case #PB_EventType_MouseWheel
-          *this\canvas\mouse\wheel\y = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_WheelDelta)
-        Case #PB_EventType_Input 
-          *this\canvas\keyboard\input = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Input)
-        Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
-          *this\canvas\keyboard\Key = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Key)
-          *this\canvas\keyboard\Key[1] = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Modifiers)
-        Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
-          *this\canvas\mouse\x = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_MouseX)
-          *this\canvas\mouse\y = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_MouseY)
-          
-        Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
-             #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
-             #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
-          
-          CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-            *this\canvas\mouse\buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
-                                         (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
-                                         (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
-          CompilerElse
-            *this\canvas\mouse\buttons = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Buttons)
-          CompilerEndIf
-          
-      EndSelect
-      
-      mouse_x = *this\canvas\mouse\x
-      mouse_y = *this\canvas\mouse\y
-    EndIf
-    
     With *this
-      ;       DD::DropStart(_this_)
-      ;       Post(#PB_EventType_Drop, DD::DropStop(_this_), _this_\row\index)
-      
-      Protected enter = Bool(*event\enter <> *this And Not (*event\enter And *event\enter\index > *this\index) And _from_point_(mouse_x, mouse_y, *this))
-      Protected leave = Bool(*event\enter And (enter Or (*event\enter = *this And Not _from_point_(mouse_x, mouse_y, *event\enter))))
-      
-      If leave
-        If *event\enter\row\count And *event\enter\row\index >= 0 ;And SelectElement(*event\enter\row\rows(), *event\enter\row\index)
-          Result | Events(*event\enter, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
-        EndIf
-        
-        ;If Not *event\enter\mouse\buttons
-        If Not *this\canvas\mouse\buttons ; And *event\enter <> *this\parent
-          Result | Events(*event\enter, #PB_EventType_MouseLeave, mouse_x, mouse_y)
-          
-          If *event\enter And *event\enter\canvas\gadget <> *this\canvas\gadget
-            ReDraw(*event\enter)
-            ; _repaint_(*event\enter)
-          EndIf
-          
-          *event\leave = *event\enter ; надо проверить нужен или нет (а так для них нужен *event\enter <> *this\parent)
-        EndIf
-        
-        ; reset drop start
-        CompilerIf Defined(DD, #PB_Module)
-          If *event\leave And *event\leave\row\drag
-            DD::EventDrop(0, #PB_EventType_MouseLeave)
-          EndIf
-        CompilerEndIf
-        
-        *event\enter\row\index =- 1
-        *event\enter = 0
-      EndIf
-      
-      If enter
-        *event\enter = *this
-        
-        ; set drop start
-        CompilerIf Defined(DD, #PB_Module)
-          If *event\leave And *event\leave\row\drag
-            DD::EventDrop(*event\enter, #PB_EventType_MouseEnter)
-          EndIf
-        CompilerEndIf
-        
-        If Not *this\canvas\mouse\buttons ; And Not (*event\leave And *event\leave\parent = *this)
-          Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
-          *event\leave = *event\enter
-        EndIf
-      EndIf
-      
-      ; set mouse buttons
-      If *this = *event\enter 
-        If EventType = #PB_EventType_LeftButtonDown
-          \mouse\buttons | #PB_Canvas_LeftButton
-        ElseIf EventType = #PB_EventType_RightButtonDown
-          \mouse\buttons | #PB_Canvas_RightButton
-        ElseIf EventType = #PB_EventType_MiddleButtonDown
-          \mouse\buttons | #PB_Canvas_MiddleButton
-        EndIf
-      EndIf
-      
       ; post widget events                     
       Select EventType 
         Case #PB_EventType_LeftButtonDown
           If *this = *event\enter  ; *event\leave;
-            *this\mouse\delta\x = mouse_x
-            *this\mouse\delta\y = mouse_y
+            *this\canvas\mouse\delta\x = mouse_x
+            *this\canvas\mouse\delta\y = mouse_y
             
             If *event\active <> *this
               _set_active_(*this)
@@ -3567,8 +3474,8 @@ Module Tree
           EndIf
           
         Case #PB_EventType_LeftButtonUp 
-          If *this = *event\leave And *event\leave\mouse\buttons
-            *event\leave\mouse\buttons = 0
+          If *this = *event\leave And *event\leave\canvas\mouse\buttons
+            *event\leave\canvas\mouse\buttons = 0
             
             If *this\row\box 
               *this\row\box = 0
@@ -3755,7 +3662,9 @@ Module Tree
           
       EndSelect
       
-      If *this = *event\enter And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ;And Not *this\canvas\key; And Not *this\mouse\buttons
+      If *this = *event\enter And
+         *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ;And Not *this\canvas\key; And Not *this\canvas\mouse\buttons
+        
         If _from_point_(mouse_x, mouse_y, *this, [2]) 
           
           ; at item from points
@@ -3795,8 +3704,8 @@ Module Tree
         EndIf
         
         ; post change and drag start 
-        If *this\mouse\buttons And *this\row\drag = 0 And 
-           (Abs((mouse_x-*this\mouse\delta\x)+(mouse_y-*this\mouse\delta\y)) >= 6)
+        If *this\canvas\mouse\buttons And *this\row\drag = 0 And 
+           (Abs((mouse_x-*this\canvas\mouse\delta\x)+(mouse_y-*this\canvas\mouse\delta\y)) >= 6)
           *this\row\drag = 1
           
           If *this\row\selected <> *row_selected
@@ -3815,34 +3724,115 @@ Module Tree
           Result | Events(*event\leave, #PB_EventType_MouseMove, mouse_x, mouse_y)
         EndIf
       EndIf
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure.l CallBack(*this._S_widget, EventType.l, mouse_x.l=-1, mouse_y.l=-1)
+    Protected Result, from =- 1
+    Static cursor_change, Down, *row_selected._S_rows
+    
+    If Not *this Or 
+       Not *this\handle
+      ProcedureReturn 0
+    EndIf
+    
+    Select EventType
+      Case #PB_EventType_Repaint
+        Debug " -- Canvas repaint -- " + *this\row\draw
+      Case #PB_EventType_MouseWheel
+        *this\canvas\mouse\wheel\y = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_WheelDelta)
+      Case #PB_EventType_Input 
+        *this\canvas\keyboard\input = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Input)
+      Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
+        *this\canvas\keyboard\Key = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Key)
+        *this\canvas\keyboard\Key[1] = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_Modifiers)
+      Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
+        *this\canvas\mouse\x = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_MouseX)
+        *this\canvas\mouse\y = GetGadgetAttribute(*this\canvas\gadget, #PB_Canvas_MouseY)
+        
+    EndSelect
+    
+    mouse_x = *this\canvas\mouse\x
+    mouse_y = *this\canvas\mouse\y
+    
+    With *this
+      ;       DD::DropStart(_this_)
+      ;       Post(#PB_EventType_Drop, DD::DropStop(_this_), _this_\row\index)
+      
+      Protected enter = Bool(*event\enter <> *this And Not (*event\enter And *event\enter\index > *this\index) And _from_point_(mouse_x, mouse_y, *this))
+      Protected leave = Bool(*event\enter And (enter Or (*event\enter = *this And Not _from_point_(mouse_x, mouse_y, *event\enter))))
+      
+      If leave
+        If *event\enter\row\count And *event\enter\row\index >= 0 ;And SelectElement(*event\enter\row\rows(), *event\enter\row\index)
+          Result | Events(*event\enter, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
+        EndIf
+        
+        ;If Not *event\enter\mouse\buttons
+        If Not *this\canvas\mouse\buttons ; And *event\enter <> *this\parent
+          Result | Events(*event\enter, #PB_EventType_MouseLeave, mouse_x, mouse_y)
+          
+          If *event\enter And *event\enter\canvas\gadget <> *this\canvas\gadget
+            ReDraw(*event\enter)
+            ; _repaint_(*event\enter)
+          EndIf
+          
+          *event\leave = *event\enter ; надо проверить нужен или нет (а так для них нужен *event\enter <> *this\parent)
+        EndIf
+        
+        ; reset drop start
+        CompilerIf Defined(DD, #PB_Module)
+          If *event\leave And *event\leave\row\drag
+            DD::EventDrop(0, #PB_EventType_MouseLeave)
+          EndIf
+        CompilerEndIf
+        
+        *event\enter\row\index =- 1
+        *event\enter = 0
+      EndIf
+      
+      If enter
+        *event\enter = *this
+        
+        ; set drop start
+        CompilerIf Defined(DD, #PB_Module)
+          If *event\leave And *event\leave\row\drag
+            DD::EventDrop(*event\enter, #PB_EventType_MouseEnter)
+          EndIf
+        CompilerEndIf
+        
+        If Not *this\canvas\mouse\buttons ; And Not (*event\leave And *event\leave\parent = *this)
+          Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+          *event\leave = *event\enter
+        EndIf
+      EndIf
+      
+      ; set mouse buttons
+      If *this = *event\enter 
+        If EventType = #PB_EventType_LeftButtonDown
+          \canvas\mouse\buttons | #PB_Canvas_LeftButton
+        ElseIf EventType = #PB_EventType_RightButtonDown
+          \canvas\mouse\buttons | #PB_Canvas_RightButton
+        ElseIf EventType = #PB_EventType_MiddleButtonDown
+          \canvas\mouse\buttons | #PB_Canvas_MiddleButton
+        EndIf
+      EndIf
       
       
-      ; 
-      ;       Select *this
-      ;         Case *event\leave, *event\active
-      ;           
-      ;           If EventType = #PB_EventType_MouseEnter
-      ;           ElseIf EventType = #PB_EventType_MouseLeave
-      ;           ElseIf EventType = #PB_EventType_LeftButtonDown 
-      ;           ElseIf EventType = #PB_EventType_LeftButtonUp
-      ;           ElseIf EventType = #PB_EventType_LeftClick
-      ;           ElseIf EventType = #PB_EventType_Focus
-      ;           ElseIf EventType = #PB_EventType_LostFocus
-      ;           ElseIf EventType = #PB_EventType_MouseMove
-      ;           ElseIf EventType = #PB_EventType_DragStart
-      ;           Else
-      ;             Result | Events(*this, EventType, mouse_x, mouse_y)
-      ;           EndIf
-      ;        EndSelect
+      If (*this = *event\enter Or *this = *event\leave Or *this = *event\active)
+       Result = Tree_Events(*this, EventType, mouse_x, mouse_y)
+      EndIf
+      
       
       ; reset mouse buttons
-      If \mouse\buttons
+      If \canvas\mouse\buttons
         If EventType = #PB_EventType_LeftButtonUp
-          \mouse\buttons &~ #PB_Canvas_LeftButton
+          \canvas\mouse\buttons &~ #PB_Canvas_LeftButton
         ElseIf EventType = #PB_EventType_RightButtonUp
-          \mouse\buttons &~ #PB_Canvas_RightButton
+          \canvas\mouse\buttons &~ #PB_Canvas_RightButton
         ElseIf EventType = #PB_EventType_MiddleButtonUp
-          \mouse\buttons &~ #PB_Canvas_MiddleButton
+          \canvas\mouse\buttons &~ #PB_Canvas_MiddleButton
         EndIf
       EndIf
     EndWith
@@ -4759,5 +4749,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------v----------------------------------------v----------------------------
+; Folding = ----------------------------------------------------------------f0--f----------------------
 ; EnableXP

@@ -741,6 +741,8 @@ DeclareModule Widget
   Declare.i SetData(*this, *Data)
   Declare.i ReDraw(*this=#Null)
   Declare.i Container(index.l, X.i,Y.i,Width.i,Height.i, Flag.i=0)
+  Declare.i Form(ident.l, X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, *Widget._S_widget=0)
+  Declare.i SetActive(*this._S_widget)
   
   Declare.i CloseList()
   Declare.i OpenList(*this, Item.i=0, Type=-5)
@@ -2031,27 +2033,6 @@ Module Widget
   EndProcedure
   
   Procedure.i SetFocus(*this._S_widget, State.i)
-    With *this
-      
-      If State =- 1
-        If *this And *Value\focus <> *this ;And (\type <> #PB_GadgetType_Window)
-          If *Value\focus 
-            \deactive = *Value\focus 
-            ;*Value\focus\root\anchor = 0 
-            *Value\focus\focus = 0
-          EndIf
-          If Not \deactive 
-            \deactive = *this 
-          EndIf
-          ;\root\anchor = \root\anchor[#Anchor_moved]
-          *Value\focus = *this
-          \focus = 1
-        EndIf
-      Else
-        \focus = State
-        ;\root\anchor = Bool(State) * \root\anchor[#Anchor_moved]
-      EndIf
-    EndWith
   EndProcedure
   
   Procedure.i SetActive(*this._S_widget)
@@ -2501,6 +2482,78 @@ Module Widget
     ProcedureReturn *this\container
   EndProcedure
   
+  Procedure.i Form(ident.l, X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, *Widget._S_widget=0)
+    Protected *this._S_widget = AllocateStructure(_S_widget) 
+    
+    
+    If *Widget 
+      *Value\event\widget = *this
+      *this\type = #PB_GadgetType_Window
+      *this\class = #PB_Compiler_Procedure
+      
+      SetParent(*this, *Widget)
+      
+    Else
+      If ListSize(*value\OpenedList()) 
+        ChangeCurrentElement(*value\OpenedList(), Root()\Adress)
+        While NextElement(*value\OpenedList())
+          DeleteElement(*value\OpenedList())
+        Wend
+      EndIf
+      
+      _set_last_parameters_(*this, #PB_GadgetType_Window, Flag) 
+    EndIf
+    
+    With *this
+      \x =- 1
+      \y =- 1
+      \index = ident
+      \index[#Entered] =- 1
+      \index[#Selected] = 0
+      
+      \container =- 1
+      \color = def_colors
+      \color\fore = 0
+      \color\back = $FFF0F0F0
+      \color\alpha = 255
+      \color[1]\alpha = 128
+      \color[2]\alpha = 128
+      \color[3]\alpha = 128
+      
+      \tabHeight = 25
+      
+      \image = AllocateStructure(_S_image)
+      \image\x[2] = 5 ; padding 
+      
+      \text = AllocateStructure(_S_text)
+      \text\align\horizontal = 1
+      
+      \box = AllocateStructure(_S_box)
+      \box\size = 12
+      \box\color = def_colors
+      \box\color\alpha = 255
+      
+      \flag\window\sizeGadget = Bool(Flag&#PB_Window_SizeGadget)
+      \flag\window\systemMenu = Bool(Flag&#PB_Window_SystemMenu)
+      \flag\window\borderLess = Bool(Flag&#PB_Window_BorderLess)
+      
+      \fs = 1
+      \bs = 1 ;Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      
+      ; Background image
+      \image[1] = AllocateStructure(_S_image)
+      
+      ;SetText(*this, Text.s)
+      Resize(*this, X,Y,Width,Height)
+      If Not Flag&#PB_Flag_NoGadget
+        OpenList(*this)
+      EndIf
+      SetActive(*this)
+    EndWith
+    
+    ProcedureReturn *this
+  EndProcedure
+  
   Procedure.i Open(Window.i, X.i,Y.i,Width.i,Height.i, Text.s="", Flag.i=0, WindowID.i=0)
     Protected w.i=-1, Canvas.i=-1, *this._S_root = AllocateStructure(_S_root)
     
@@ -2738,7 +2791,7 @@ Module Widget
       Else
         
         If EventType = #PB_EventType_LeftButtonDown
-          Debug *value\event\enter
+          Debug ""+*this +" "+ *Value\event\enter
         EndIf
         
       EndIf
@@ -2842,39 +2895,239 @@ EndModule
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
+  EnableExplicit
   UseModule Widget
   
-  If OpenWindow(0, 100, 100, 220, 220, "Window_0", #PB_Window_SystemMenu);, WindowID(100))
+  Global.i gEvent, gQuit
+  Global *this, *root, *window, NewMap w_list.i()
+  
+  Procedure Widget_Handler()
+    Protected EventWidget.i = *Value\event\widget,
+              EventType.i = *Value\event\type,
+              EventItem.i = *Value\event\item, 
+              EventData.i = *Value\event\data
     
-    ; 
-    Open(0, 0, 0, 220, 220)
-    Container(1, 20, 20, 180, 180)
-    Container(9,70, 10, 70, 180, #PB_Flag_NoGadget) ; bug
-    Container(2,20, 20, 180, 180)
-    Container(3,20, 20, 180, 180)
-    ;     Container(20, 20, 180, 180), 30)
-    Container(4,0, 20, 180, 30, #PB_Flag_NoGadget)
-    Container(5,0, 35, 180, 30, #PB_Flag_NoGadget)
-    Container(6,0, 50, 180, 30, #PB_Flag_NoGadget)
-    Container(7,20, 70, 180, 180, #PB_Flag_NoGadget)
-    ;  Container(20, 20, 180, 50), 200)
-    CloseList()
-    CloseList()
+    Select EventType
+      Case #PB_EventType_Focus   
+        If *Value\event\widget\type =- 1
+          Debug "Active "+ *Value\event\widget\data
+        Else
+          Debug "Focus "+ *Value\event\widget\data
+        EndIf
+        
+      Case #PB_EventType_LostFocus 
+        If *Value\event\widget\type =- 1
+          Debug " DeActive "+ *Value\event\widget\data
+        Else
+          Debug " LostFocus "+ *Value\event\widget\data
+        EndIf
+        
+    EndSelect
+  EndProcedure
+  
+  Procedure Window_0_Resize()
+    ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
+    ResizeGadget(10, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
+  EndProcedure
+  
+  Procedure Window_0()
+    w_list(Hex(110)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+    SetWindowTitle(Root()\canvas\window, "Window_110") 
+    ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+    ;       w_list(Hex(110)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+    w_list(Hex(111)) = Container(111, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(111)), 111)
+    w_list(Hex(112)) = Container(112, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(112)), 112) 
     
-    Container(8,10, 70, 70, 180)
-    Container(10,10, 10, 70, 30, #PB_Flag_NoGadget)
-    Container(10,10, 20, 70, 30, #PB_Flag_NoGadget)
-    Container(10,10, 30, 70, 30, #PB_Flag_NoGadget)
-    CloseList()
-    
-    Redraw(Root())
-    
-    Repeat
-      Event = WaitWindowEvent()
+    ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+    Bind(@Widget_Handler())
+    ReDraw(Root())
+  EndProcedure
+  
+  Procedure Window_1()
+    If OpenWindow(0, 0, 0, 830, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      ButtonGadget   (10,    5,   565, 890,  30, "start change scrollbar", #PB_Button_Toggle)
       
-    Until Event = #PB_Event_CloseWindow
-  EndIf
+      If Open(0, 10,10, 400, 550, "")
+        w_list(Hex(10)) = Form(10, 100, 100, 200, 200, "Window_0", #PB_Window_SystemMenu) : SetData(w_list(Hex(10)), 10)
+        w_list(Hex(11)) = Container(11, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(11)), 11)
+        w_list(Hex(12)) = Container(12, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(12)), 12) 
+        
+        w_list(Hex(20)) = Form(20, 160, 120, 200, 200, "Window_10", #PB_Window_SystemMenu) : SetData(w_list(Hex(20)), 20)
+        w_list(Hex(21)) = Container(21, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(21)), 21)
+        w_list(Hex(22)) = Container(22, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(22)), 22)
+        
+        w_list(Hex(30)) = Form(30, 220, 140, 200, 200, "Window_20", #PB_Window_SystemMenu) : SetData(w_list(Hex(30)), 30)
+        w_list(Hex(31)) = Container(31, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(31)), 31)
+        w_list(Hex(32)) = Container(32, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(32)), 32)
+        
+        ;         SetActive(w_list(Hex(22)))
+        ;         SetActive(w_list(Hex(2)))
+        
+        Bind(@Widget_Handler())
+        ReDraw(Root())
+      EndIf
+      
+      Debug ""
+      
+      If Open(0, 420,10, 400, 550, "")
+        w_list(Hex(110)) = Form(110, 100, 200, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+        w_list(Hex(111)) = Container(111, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(111)), 111)
+        w_list(Hex(112)) = Container(112, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(112)), 112)
+        
+        w_list(Hex(120)) = Form(120, 160, 220, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
+        w_list(Hex(121)) = Container(121, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(121)), 121)
+        w_list(Hex(122)) = Container(122, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(122)), 122)
+        
+        w_list(Hex(130)) = Form(130, 220, 240, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(130)), 130)
+        w_list(Hex(131)) = Container(131, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(131)), 131)
+        w_list(Hex(132)) = Container(132, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(132)), 132) 
+        
+        ;         SetActive(w_list(Hex(1022)))
+        ;         SetActive(w_list(Hex(102)))
+        
+        Bind(@Widget_Handler())
+        ReDraw(Root())
+      EndIf
+      
+      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
+    EndIf
+  EndProcedure
+  
+  Procedure Window_2()
+    If OpenWindow(0, 0, 0, 900, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      ButtonGadget   (10,    5,   565, 890,  30, "start change scrollbar", #PB_Button_Toggle)
+      
+      w_list(Hex(-1)) = Open(0, 10,10, 880, 550, "") : SetData(w_list(Hex(-1)), -1)
+      
+      If w_list(Hex(-1))
+        w_list(Hex(1)) = Form(1, 520, 140, 200+2, 260+26+2, "Window_1", #PB_Window_ScreenCentered) : SetData(w_list(Hex(1)), 1)
+        w_list(Hex(2)) = Container(2, 20, 20, 180, 180) : SetData(w_list(Hex(2)), 2)
+        
+        w_list(Hex(10)) = Container(10,70, 10, 70, 180, #PB_Flag_NoGadget) : SetData(w_list(Hex(10)), 10)
+        
+        w_list(Hex(3)) = Container(3,20, 20, 180, 180) : SetData(w_list(Hex(3)), 3)
+        w_list(Hex(4)) = Container(4,20, 20, 180, 180)
+        
+        w_list(Hex(5)) = Container(5,0, 20, 180, 30, #PB_Flag_NoGadget)
+        w_list(Hex(6)) = Container(6,0, 35, 180, 30, #PB_Flag_NoGadget)
+        w_list(Hex(7)) = Container(7,0, 50, 180, 30, #PB_Flag_NoGadget)
+        w_list(Hex(8)) = Container(8,20, 70, 180, 180, #PB_Flag_NoGadget)
+        
+        CloseList()
+        CloseList()
+        
+        w_list(Hex(9)) = Container(9,10, 70, 70, 180)
+        w_list(Hex(10)) = Container(11,10, 10, 70, 30, #PB_Flag_NoGadget)
+        w_list(Hex(12)) = Container(12,10, 20, 70, 30, #PB_Flag_NoGadget)
+        w_list(Hex(13)) = Container(13,10, 30, 70, 30, #PB_Flag_NoGadget)
+        CloseList()
+        
+        
+        w_list(Hex(110)) = Form(110, 100, 200, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+        w_list(Hex(111)) = Container(111, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(111)), 111)
+        w_list(Hex(112)) = Container(112, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(112)), 112)
+        
+        w_list(Hex(120)) = Form(120, 160, 220, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
+        w_list(Hex(121)) = Container(121, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(121)), 121)
+        w_list(Hex(122)) = Container(122, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(122)), 122)
+        
+        w_list(Hex(130)) = Form(130, 220, 240, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(130)), 130)
+        w_list(Hex(131)) = Container(131, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(131)), 131)
+        w_list(Hex(132)) = Container(132, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(132)), 132) 
+        
+        SetActive(w_list(Hex(132)))
+        SetActive(w_list(Hex(112)))
+        
+        Bind(@Widget_Handler())
+        ReDraw(Root())
+      EndIf
+      
+      w_list(Hex(140)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(140)), 140)
+      SetWindowTitle(Root()\canvas\window, "Window_140") 
+      ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+      ;       w_list(Hex(110)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+      w_list(Hex(141)) = Container(141, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(141)), 141)
+      w_list(Hex(142)) = Container(142, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(142)), 142) 
+      
+      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      Bind(@Widget_Handler())
+      ReDraw(Root())
+      ;       
+      w_list(Hex(150)) = Open(#PB_Any, 160, 120, 200, 200, "Window_150", #PB_Window_SystemMenu) : SetData(w_list(Hex(150)), 150)
+      ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+      ;       w_list(Hex(120)) = Form(0, 0, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
+      w_list(Hex(151)) = Container(151, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(121)), 121)
+      w_list(Hex(152)) = Container(152, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(122)), 122)
+      
+      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      Bind(@Widget_Handler())
+      ReDraw(Root())
+      
+      w_list(Hex(160)) = Open(#PB_Any, 220, 140, 200, 200, "Window_160") : SetData(w_list(Hex(160)), 160)
+      ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
+      ;       w_list(Hex(130)) = Form(0, 0, 200, 200, "Window_130", #PB_Window_SystemMenu) : SetData(w_list(Hex(130)), 130)
+      w_list(Hex(161)) = Container(161, 10, 10, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(161)), 161)
+      w_list(Hex(162)) = Container(162, 10, 105, 180, 85, #PB_Flag_NoGadget) : SetData(w_list(Hex(162)), 162)
+      
+      ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
+      Bind(@Widget_Handler())
+      ReDraw(Root())
+      
+      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
+    EndIf
+  EndProcedure
+  
+  Window_1()
+  
+  Repeat
+    gEvent= WaitWindowEvent()
+    
+    Select gEvent
+      Case #PB_Event_CloseWindow
+        gQuit= #True
+        
+    EndSelect
+    
+  Until gQuit
 CompilerEndIf
+; CompilerIf #PB_Compiler_IsMainFile
+;   UseModule Widget
+;   
+;   If OpenWindow(0, 100, 100, 220, 220, "Window_0", #PB_Window_SystemMenu);, WindowID(100))
+;     
+;     ; 
+;     Open(0, 0, 0, 220, 220)
+;     Container(1, 20, 20, 180, 180)
+;     Container(9,70, 10, 70, 180, #PB_Flag_NoGadget) ; bug
+;     Container(2,20, 20, 180, 180)
+;     Container(3,20, 20, 180, 180)
+;     ;     Container(20, 20, 180, 180), 30)
+;     Container(4,0, 20, 180, 30, #PB_Flag_NoGadget)
+;     Container(5,0, 35, 180, 30, #PB_Flag_NoGadget)
+;     Container(6,0, 50, 180, 30, #PB_Flag_NoGadget)
+;     Container(7,20, 70, 180, 180, #PB_Flag_NoGadget)
+;     ;  Container(20, 20, 180, 50), 200)
+;     CloseList()
+;     CloseList()
+;     
+;     Container(8,10, 70, 70, 180)
+;     Container(10,10, 10, 70, 30, #PB_Flag_NoGadget)
+;     Container(10,10, 20, 70, 30, #PB_Flag_NoGadget)
+;     Container(10,10, 30, 70, 30, #PB_Flag_NoGadget)
+;     CloseList()
+;     
+;     Redraw(Root())
+;     
+;     Repeat
+;       Event = WaitWindowEvent()
+;       
+;     Until Event = #PB_Event_CloseWindow
+;   EndIf
+; CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------z---
+; Folding = -----------------------------------------f-u--9----
 ; EnableXP

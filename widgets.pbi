@@ -630,7 +630,7 @@ DeclareModule Widget
     #PB_Flag_AutoSize
     
     ;#PB_Toggle
-    #PB_BorderLess
+    #PB_Flag_BorderLess
     
     #PB_Text_Numeric
     #PB_Text_ReadOnly
@@ -7385,6 +7385,7 @@ Module Widget
   ;- ADD
   Procedure.i AddItem(*this._S_widget, Item.i, Text.s, Image.i=-1, Flag.i=0)
     With *this
+      Debug *this
       
       Select \type
         Case #PB_GadgetType_Panel
@@ -10816,7 +10817,7 @@ Module Widget
       \color[2]\alpha = 128
       \color[3]\alpha = 128
       
-      If Not flag&#PB_Window_BorderLess
+      If Not flag&#PB_Flag_BorderLess
         \tabHeight = 23
       EndIf
       
@@ -10833,7 +10834,7 @@ Module Widget
       
       \flag\window\sizeGadget = Bool(Flag&#PB_Window_SizeGadget)
       \flag\window\systemMenu = Bool(Flag&#PB_Window_SystemMenu)
-      \flag\window\borderLess = Bool(Flag&#PB_Window_BorderLess)
+      \flag\window\borderLess = Bool(Flag&#PB_Flag_BorderLess)
       
       \fs = 1
       \bs = 1 ;Bool(Not Flag&#PB_Flag_AnchorsGadget)
@@ -10894,7 +10895,7 @@ Module Widget
         \index[#Entered] =- 1
         \index[#Selected] = 0
         
-        If Not flag&#PB_Window_BorderLess
+        If Not flag&#PB_Flag_BorderLess
           \tabHeight = 23
         EndIf
         
@@ -10911,7 +10912,7 @@ Module Widget
         
         \flag\window\sizeGadget = Bool(Flag&#PB_Window_SizeGadget)
         \flag\window\systemMenu = Bool(Flag&#PB_Window_SystemMenu)
-        \flag\window\borderLess = Bool(Flag&#PB_Window_BorderLess)
+        \flag\window\borderLess = Bool(Flag&#PB_Flag_BorderLess)
         
         \fs = 1
         \bs = 1
@@ -12011,5 +12012,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------v---8----------------------------------------------f---bv--4---4v8------------84------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------v---8----------------------------------------------f---b---4---4v8------------84------
 ; EnableXP

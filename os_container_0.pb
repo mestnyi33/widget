@@ -1,21 +1,21 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    Procedure GadgetsClipCallBack( GadgetID, lParam )
-      If GadgetID And GetWindowLongPtr_( GadgetID, #GWL_STYLE ) & #WS_CLIPSIBLINGS = #False 
-          SetWindowLongPtr_( GadgetID, #GWL_STYLE, GetWindowLongPtr_( GadgetID, #GWL_STYLE ) | #WS_CLIPSIBLINGS|#WS_CLIPCHILDREN )
-          SetWindowPos_( GadgetID, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
-      EndIf
-      
-      ProcedureReturn GadgetID
-    EndProcedure
-  CompilerEndIf
-  
-  Procedure ClipGadgets( WindowID )
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      EnumChildWindows_( WindowID, @GadgetsClipCallBack(), 0 )
-    CompilerEndIf
+  Procedure GadgetsClipCallBack( GadgetID, lParam )
+    If GadgetID And GetWindowLongPtr_( GadgetID, #GWL_STYLE ) & #WS_CLIPSIBLINGS = #False 
+      SetWindowLongPtr_( GadgetID, #GWL_STYLE, GetWindowLongPtr_( GadgetID, #GWL_STYLE ) | #WS_CLIPSIBLINGS|#WS_CLIPCHILDREN )
+      SetWindowPos_( GadgetID, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
+    EndIf
+    
+    ProcedureReturn GadgetID
   EndProcedure
-  
-  Procedure draw(g, text.s, color=$F0F0F0)
+CompilerEndIf
+
+Procedure ClipGadgets( WindowID )
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    EnumChildWindows_( WindowID, @GadgetsClipCallBack(), 0 )
+  CompilerEndIf
+EndProcedure
+
+Procedure draw(g, text.s, color=$F0F0F0)
   StartDrawing(CanvasOutput(g))
   DrawingMode(#PB_2DDrawing_Default)
   Box(0,0,OutputWidth(), OutputHeight(), color)
@@ -70,8 +70,6 @@ If OpenWindow(0, 100, 100, 220, 220, "Window_0", #PB_Window_SystemMenu);, Window
     
   Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 62
-; FirstLine = 43
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

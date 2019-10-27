@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, value, direction, x=10,y=10
     
   Procedure Window_0_Resize()
-    ResizeGadget(_Gadget(), #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
+    ResizeGadget(GetGadget(Root()), #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
     ResizeGadget(0, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
   EndProcedure
   

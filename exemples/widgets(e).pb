@@ -2993,9 +2993,9 @@ Module Widget
             
           EndIf
           
-;           If ListSize(\childrens()\childrens())
-;             Callback(\childrens(), eventtype, mouse_x, mouse_y)
-;           EndIf
+          If ListSize(\childrens()\childrens())
+            Callback(\childrens(), eventtype, mouse_x, mouse_y)
+          EndIf
           
         Next ; Until PreviousElement(\childrens()) = #False 
         
@@ -3313,7 +3313,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 
-
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------f---------f--
+; Folding = -----------------------------------------f----------+-
 ; EnableXP
