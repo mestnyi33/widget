@@ -5747,75 +5747,75 @@ Module Widget
   EndProcedure
   
   Procedure.i Draw_Spin(*this._S_widget)
-        Protected.i State_0, State_1, State_2, State_3, Alpha, LinesColor
+    Protected.i State_0, State_1, State_2, State_3, Alpha, LinesColor
+    
+    With *this 
+      State_0 = \color[0]\state
+      State_1 = \color[1]\state
+      State_2 = \color[2]\state
+      State_3 = \color[3]\state
+      Alpha = \color\alpha<<24
+      LinesColor = \color[3]\front[State_3]&$FFFFFF|Alpha
+      
+      ; Draw scroll bar background
+      If \color\back[State_0]<>-1
+        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        RoundBox( \x[2], \y[2], \width[2], \height[2], \radius, \radius, \color\back[State_0]&$FFFFFF|Alpha)
+      EndIf
+      
+      ; Draw string
+      If \text\string
+        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+        DrawText(\text\x, \text\y, \text\string, \color\front[State_3]&$FFFFFF|Alpha)
+      EndIf
+      ; Draw_String(*this._S_widget)
+      
+      If \bar\button\len
+        Protected Radius = \height[2]/7
+        ;             If Radius > 2
+        Radius = 7
+        ;             EndIf
         
-        With *this 
-          State_0 = \color[0]\state
-          State_1 = \color[1]\state
-          State_2 = \color[2]\state
-          State_3 = \color[3]\state
-          Alpha = \color\alpha<<24
-          LinesColor = \color[3]\front[State_3]&$FFFFFF|Alpha
-          
-          ; Draw scroll bar background
-          If \color\back[State_0]<>-1
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            RoundBox( \x[2], \y[2], \width[2], \height[2], \radius, \radius, \color\back[State_0]&$FFFFFF|Alpha)
+        ; Draw buttons
+        If \color[1]\back[State_1]<>-1
+          If \color[1]\fore[State_1]
+            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
           EndIf
-          
-          ; Draw string
-          If \text\string
-            DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-            DrawText(\text\x, \text\y, \text\string, \color\front[State_3]&$FFFFFF|Alpha)
+          _box_gradient_( \bar\Vertical, \bar\button[#bb_1]\x, \bar\button[#bb_1]\y, \bar\button[#bb_1]\width, \bar\button[#bb_1]\height, \color[1]\fore[State_1], \color[1]\back[State_1], Radius, \color\alpha)
+        EndIf
+        
+        ; Draw buttons
+        If \color[2]\back[State_2]<>-1
+          If \color[2]\fore[State_2]
+            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
           EndIf
-          ; Draw_String(*this._S_widget)
-          
-          If \bar\button\len
-            Protected Radius = \height[2]/7
-            If Radius > 4
-              Radius = 7
-            EndIf
-            
-            ; Draw buttons
-            If \color[1]\back[State_1]<>-1
-              If \color[1]\fore[State_1]
-                DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-              EndIf
-              _box_gradient_( \bar\Vertical, \bar\button[#bb_1]\x, \bar\button[#bb_1]\y, \bar\button[#bb_1]\width, \bar\button[#bb_1]\height, \color[1]\fore[State_1], \color[1]\back[State_1], Radius, \color\alpha)
-            EndIf
-            
-            ; Draw buttons
-            If \color[2]\back[State_2]<>-1
-              If \color[2]\fore[State_2]
-                DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-              EndIf
-              _box_gradient_( \Vertical, \bar\button[#bb_2]\x, \bar\button[#bb_2]\y, \bar\button[#bb_2]\width, \bar\button[#bb_2]\height, \color[2]\fore[State_2], \color[2]\back[State_2], Radius, \color\alpha)
-            EndIf
-            
-            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            
-            ; Draw buttons frame
-            If \color[1]\frame[State_1]
-              RoundBox( \bar\button[#bb_1]\x, \bar\button[#bb_1]\y, \bar\button[#bb_1]\width, \bar\button[#bb_1]\height, Radius, Radius, \color[1]\frame[State_1]&$FFFFFF|Alpha)
-            EndIf
-            
-            ; Draw buttons frame
-            If \color[2]\frame[State_2]
-              RoundBox( \bar\button[#bb_2]\x, \bar\button[#bb_2]\y, \bar\button[#bb_2]\width, \bar\button[#bb_2]\height, Radius, Radius, \color[2]\frame[State_2]&$FFFFFF|Alpha)
-            EndIf
-            
-            ; Draw arrows
-            Arrow( \bar\button[#bb_1]\x+( \bar\button[#bb_1]\width-\bar\button[#bb_1]\arrow\size)/2, \bar\button[#bb_1]\y+( \bar\button[#bb_1]\height-\bar\button[#bb_1]\arrow\size)/2, \bar\button[#bb_1]\arrow\size, Bool(\bar\Vertical)*3,
-                   (Bool(Not _bar_in_start_(*this\bar)) * \color[1]\front[State_1] + _bar_in_start_(*this\bar) * \color[1]\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_1]\arrow\type)
-            
-            ; Draw arrows
-            Arrow( \bar\button[#bb_2]\x+( \bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2, \bar\button[#bb_2]\y+( \bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2, \bar\button[#bb_2]\arrow\size, Bool(Not \bar\Vertical)+1, 
-                   (Bool(Not _bar_in_stop_(*this\bar)) * \color[2]\front[State_2] + _bar_in_stop_(*this\bar) * \color[2]\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_2]\arrow\type)
-            
-            
-            Line(\bar\button[#bb_1]\x-2, \y[2],1,\height[2], \color\frame&$FFFFFF|Alpha)
-          EndIf      
-        EndWith
+          _box_gradient_( \Vertical, \bar\button[#bb_2]\x, \bar\button[#bb_2]\y, \bar\button[#bb_2]\width, \bar\button[#bb_2]\height, \color[2]\fore[State_2], \color[2]\back[State_2], Radius, \color\alpha)
+        EndIf
+        
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        
+        ; Draw buttons frame
+        If \color[1]\frame[State_1]
+          RoundBox( \bar\button[#bb_1]\x, \bar\button[#bb_1]\y, \bar\button[#bb_1]\width, \bar\button[#bb_1]\height, Radius, Radius, \color[1]\frame[State_1]&$FFFFFF|Alpha)
+        EndIf
+        
+        ; Draw buttons frame
+        If \color[2]\frame[State_2]
+          RoundBox( \bar\button[#bb_2]\x, \bar\button[#bb_2]\y, \bar\button[#bb_2]\width, \bar\button[#bb_2]\height, Radius, Radius, \color[2]\frame[State_2]&$FFFFFF|Alpha)
+        EndIf
+        
+        ; Draw arrows
+        Arrow( \bar\button[#bb_1]\x+( \bar\button[#bb_1]\width-\bar\button[#bb_1]\arrow\size)/2, \bar\button[#bb_1]\y+( \bar\button[#bb_1]\height-\bar\button[#bb_1]\arrow\size)/2, \bar\button[#bb_1]\arrow\size, Bool(\bar\Vertical)*3,
+               (Bool(Not _bar_in_start_(*this\bar)) * \color[1]\front[State_1] + _bar_in_start_(*this\bar) * \color[1]\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_1]\arrow\type)
+        
+        ; Draw arrows
+        Arrow( \bar\button[#bb_2]\x+( \bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2, \bar\button[#bb_2]\y+( \bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2, \bar\button[#bb_2]\arrow\size, Bool(Not \bar\Vertical)+1, 
+               (Bool(Not _bar_in_stop_(*this\bar)) * \color[2]\front[State_2] + _bar_in_stop_(*this\bar) * \color[2]\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_2]\arrow\type)
+        
+        
+        Line(\bar\button[#bb_1]\x-2, \y[2],1,\height[2], \color\frame&$FFFFFF|Alpha)
+      EndIf      
+    EndWith
   EndProcedure
   
   ;-
@@ -9741,10 +9741,10 @@ Module Widget
           Case #PB_GadgetType_Spin
             If \bar\vertical
               \bar\button[#bb_1]\y = \y[2]+\height[2]/2+Bool(\height[2]%2) : \bar\button[#bb_1]\height = \height[2]/2 : \bar\button[#bb_1]\width = \bar\button\len : \bar\button[#bb_1]\x = \x[2]+\width[2]-\bar\button\len ; Top button coordinate
-              \bar\button[#bb_2]\y = \y[2] : \bar\button[#bb_2]\height = \height[2]/2 : \bar\button[#bb_2]\width = \bar\button\len : \bar\button[#bb_2]\x = \x[2]+\width[2]-\bar\button\len                 ; Bottom button coordinate
+              \bar\button[#bb_2]\y = \y[2] : \bar\button[#bb_2]\height = \height[2]/2 : \bar\button[#bb_2]\width = \bar\button\len : \bar\button[#bb_2]\x = \x[2]+\width[2]-\bar\button\len                                 ; Bottom button coordinate
             Else
               \bar\button[#bb_1]\y = \y[2] : \bar\button[#bb_1]\height = \height[2] : \bar\button[#bb_1]\width = \bar\button\len/2 : \bar\button[#bb_1]\x = \x[2]+\width[2]-\bar\button\len                                 ; Left button coordinate
-              \bar\button[#bb_2]\y = \y[2] : \bar\button[#bb_2]\height = \height[2] : \bar\button[#bb_2]\width = \bar\button\len/2 : \bar\button[#bb_2]\x = \x[2]+\width[2]-\bar\button\len/2               ; Right button coordinate
+              \bar\button[#bb_2]\y = \y[2] : \bar\button[#bb_2]\height = \height[2] : \bar\button[#bb_2]\width = \bar\button\len/2 : \bar\button[#bb_2]\x = \x[2]+\width[2]-\bar\button\len/2                               ; Right button coordinate
             EndIf
             
             
@@ -9964,65 +9964,65 @@ Module Widget
   EndProcedure
   
   Procedure.i Spin(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
-        Protected *this._S_widget = AllocateStructure(_S_widget)
-        _set_last_parameters_(*this, #PB_GadgetType_Spin, Flag, Root()\opened) 
-        
-        ;Flag | Bool(Not Flag&#PB_Vertical) * (#PB_Bar_Inverted)
-        
-        With *this
-          \x =- 1
-          \y =- 1
-          
-          \fs = 1
-          \bs = 2
-          
-          \text = AllocateStructure(_S_text)
-          \text\align\Vertical = 1
-          ;\text\align\horizontal = 1
-          \text\x[2] = 5
-          
-          ;\radius = Radius
-          ;\ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
-          
-          \text\string.s[1] = Str(Min)
-          \text\change = 1
-          
-          ; Цвет фона скролла
-          \color = def_colors
-          \color\alpha = 255
-          \color\back = $FFFFFFFF
-          \text\editable = 1
-          
-          \color[1] = def_colors
-          \color[2] = def_colors
-          \color[3] = def_colors
-          
-          \color[1]\alpha = 255
-          \color[2]\alpha = 255
-          \color[3]\alpha = 255
-          \color[1]\alpha[1] = 128
-          \color[2]\alpha[1] = 128
-          \color[3]\alpha[1] = 128
-          
-          \bar\scrollstep = 1
-          \bar\button\len = 15
-          \bar\button[#bb_1]\arrow\size = 2
-          \bar\button[#bb_2]\arrow\size = 2
-          \bar\button[#bb_1]\arrow\type =- 1 ; -1 0 1
-          \bar\button[#bb_2]\arrow\type =- 1 ; -1 0 1
-          \bar\button[#bb_1]\len = \bar\button\len
-          \bar\button[#bb_2]\len = \bar\button\len
-          \bar\Vertical = Bool(Not Flag&#PB_Flag_Vertical=#PB_Flag_Vertical)
-          
-          If \bar\min <> Min : SetAttribute(*this, #PB_Bar_Minimum, Min) : EndIf
-          If \bar\max <> Max : SetAttribute(*this, #PB_Bar_Maximum, Max) : EndIf
-          
-          If Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted) : SetAttribute(*this, #PB_Bar_Inverted, #True) : EndIf
-        EndWith
-        
-        Resize(*this, X,Y,Width,Height)
-        
-        ProcedureReturn *this
+    Protected *this._S_widget = AllocateStructure(_S_widget)
+    _set_last_parameters_(*this, #PB_GadgetType_Spin, Flag, Root()\opened) 
+    
+    ;Flag | Bool(Not Flag&#PB_Vertical) * (#PB_Bar_Inverted)
+    
+    With *this
+      \x =- 1
+      \y =- 1
+      
+      \fs = 1
+      \bs = 2
+      
+      \text = AllocateStructure(_S_text)
+      \text\align\Vertical = 1
+      ;\text\align\horizontal = 1
+      \text\x[2] = 5
+      
+      ;\radius = Radius
+      ;\ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
+      
+      \text\string.s[1] = Str(Min)
+      \text\change = 1
+      
+      ; Цвет фона скролла
+      \color = def_colors
+      \color\alpha = 255
+      \color\back = $FFFFFFFF
+      \text\editable = 1
+      
+      \color[1] = def_colors
+      \color[2] = def_colors
+      \color[3] = def_colors
+      
+      \color[1]\alpha = 255
+      \color[2]\alpha = 255
+      \color[3]\alpha = 255
+      \color[1]\alpha[1] = 128
+      \color[2]\alpha[1] = 128
+      \color[3]\alpha[1] = 128
+      
+      \bar\scrollstep = 1
+      \bar\button\len = 15
+      \bar\button[#bb_1]\arrow\size = 2
+      \bar\button[#bb_2]\arrow\size = 2
+      \bar\button[#bb_1]\arrow\type =- 1 ; -1 0 1
+      \bar\button[#bb_2]\arrow\type =- 1 ; -1 0 1
+      \bar\button[#bb_1]\len = \bar\button\len
+      \bar\button[#bb_2]\len = \bar\button\len
+      \bar\Vertical = Bool(Not Flag&#PB_Flag_Vertical=#PB_Flag_Vertical)
+      
+      If \bar\min <> Min : SetAttribute(*this, #PB_Bar_Minimum, Min) : EndIf
+      If \bar\max <> Max : SetAttribute(*this, #PB_Bar_Maximum, Max) : EndIf
+      
+      If Bool(Flag&#PB_Bar_Inverted=#PB_Bar_Inverted) : SetAttribute(*this, #PB_Bar_Inverted, #True) : EndIf
+    EndWith
+    
+    Resize(*this, X,Y,Width,Height)
+    
+    ProcedureReturn *this
   EndProcedure
   
   ;-
@@ -11468,129 +11468,129 @@ Module Widget
     
     If _event_type_ = #PB_EventType_MouseMove
       ;If _this_\tab\count
-        If _this_\bar\button[#bb_2]\len And 
-           _from_point_(_mouse_x_, _mouse_y_, _this_\bar\button[#bb_2])
-          
-          If _this_\bar\button[#bb_2]\color\state <> #s_1
-            If _this_\bar\button[#bb_2]\color\state <> #s_3
-              _this_\bar\button[#bb_2]\color\state = #s_1
-            EndIf
-            
-            If _this_\bar\button[#bb_1]\color\state <> #s_0
-              Debug " leave tab button - left to right"
-              If _this_\bar\button[#bb_1]\color\state <> #s_3 
-                _this_\bar\button[#bb_1]\color\state = #s_0
-              EndIf
-            EndIf
-            
-            If _this_\tab\index[#s_1] >= 0
-              Debug " leave tab - " + _this_\tab\index[#s_1]
-              _this_\tab\index[#s_1] =- 1
-            EndIf
-            Debug " enter tab button - right"
+      If _this_\bar\button[#bb_2]\len And 
+         _from_point_(_mouse_x_, _mouse_y_, _this_\bar\button[#bb_2])
+        
+        If _this_\bar\button[#bb_2]\color\state <> #s_1
+          If _this_\bar\button[#bb_2]\color\state <> #s_3
+            _this_\bar\button[#bb_2]\color\state = #s_1
           EndIf
           
-        ElseIf _this_\bar\button[#bb_1]\len And
-               _from_point_(_mouse_x_, _mouse_y_, _this_\bar\button[#bb_1])
-          
-          If _this_\bar\button[#bb_1]\color\state <> #s_1
-            If _this_\bar\button[#bb_1]\color\state <> #s_3
-              _this_\bar\button[#bb_1]\color\state = #s_1
-            EndIf
-            
-            If _this_\bar\button[#bb_2]\color\state <> #s_0
-              Debug " leave tab button - right to left"
-              If _this_\bar\button[#bb_2]\color\state <> #s_3  
-                _this_\bar\button[#bb_2]\color\state = #s_0
-              EndIf
-            EndIf
-            
-            If _this_\tab\index[#s_1] >= 0
-              Debug " leave tab - " + _this_\tab\index[#s_1]
-              _this_\tab\index[#s_1] =- 1
-            EndIf
-            Debug " enter tab button - left"
-          EndIf
-          
-        Else
-          If _this_\tab\index[#s_1] =- 1
-            If _this_\bar\button[#bb_1]\color\state <> #s_0
-              Debug " leave tab button - left"
-              If _this_\bar\button[#bb_1]\color\state <> #s_3 
-                _this_\bar\button[#bb_1]\color\state = #s_0
-              EndIf
-            EndIf
-            
-            If _this_\bar\button[#bb_2]\color\state <> #s_0
-              Debug " leave tab button - right"
-              If _this_\bar\button[#bb_2]\color\state <> #s_3  
-                _this_\bar\button[#bb_2]\color\state = #s_0
-              EndIf
+          If _this_\bar\button[#bb_1]\color\state <> #s_0
+            Debug " leave tab button - left to right"
+            If _this_\bar\button[#bb_1]\color\state <> #s_3 
+              _this_\bar\button[#bb_1]\color\state = #s_0
             EndIf
           EndIf
           
-;           ForEach _this_\tab\tabs()
-;             If _this_\tab\tabs()\drawing
-;               If _from_point_(mouse_x, mouse_y, _this_\tab\tabs()) And
-;                  _from_point_(_mouse_x_, _mouse_y_, _this_\bar\button[#bb_3])
-;                 
-;                 If _this_\tab\index[#s_1] <> _this_\tab\tabs()\index
-;                   If _this_\tab\index[#s_1] >= 0
-;                     Debug " leave tab - " + _this_\tab\index[#s_1]
-;                   EndIf
-;                   
-;                   _this_\tab\index[#s_1] = _this_\tab\tabs()\index
-;                   Debug " enter tab - " + _this_\tab\index[#s_1]
-;                 EndIf
-;                 Break
-;                 
-;               ElseIf _this_\tab\index[#s_1] = _this_\tab\tabs()\index
-;                 Debug " leave tab - " + _this_\tab\index[#s_1]
-;                 _this_\tab\index[#s_1] =- 1
-;                 Break
-;               EndIf
-;             EndIf
-;           Next
+          If _this_\tab\index[#s_1] >= 0
+            Debug " leave tab - " + _this_\tab\index[#s_1]
+            _this_\tab\index[#s_1] =- 1
+          EndIf
+          Debug " enter tab button - right"
         EndIf
-     ; EndIf
+        
+      ElseIf _this_\bar\button[#bb_1]\len And
+             _from_point_(_mouse_x_, _mouse_y_, _this_\bar\button[#bb_1])
+        
+        If _this_\bar\button[#bb_1]\color\state <> #s_1
+          If _this_\bar\button[#bb_1]\color\state <> #s_3
+            _this_\bar\button[#bb_1]\color\state = #s_1
+          EndIf
+          
+          If _this_\bar\button[#bb_2]\color\state <> #s_0
+            Debug " leave tab button - right to left"
+            If _this_\bar\button[#bb_2]\color\state <> #s_3  
+              _this_\bar\button[#bb_2]\color\state = #s_0
+            EndIf
+          EndIf
+          
+          If _this_\tab\index[#s_1] >= 0
+            Debug " leave tab - " + _this_\tab\index[#s_1]
+            _this_\tab\index[#s_1] =- 1
+          EndIf
+          Debug " enter tab button - left"
+        EndIf
+        
+      Else
+        If _this_\tab\index[#s_1] =- 1
+          If _this_\bar\button[#bb_1]\color\state <> #s_0
+            Debug " leave tab button - left"
+            If _this_\bar\button[#bb_1]\color\state <> #s_3 
+              _this_\bar\button[#bb_1]\color\state = #s_0
+            EndIf
+          EndIf
+          
+          If _this_\bar\button[#bb_2]\color\state <> #s_0
+            Debug " leave tab button - right"
+            If _this_\bar\button[#bb_2]\color\state <> #s_3  
+              _this_\bar\button[#bb_2]\color\state = #s_0
+            EndIf
+          EndIf
+        EndIf
+        
+        ;           ForEach _this_\tab\tabs()
+        ;             If _this_\tab\tabs()\drawing
+        ;               If _from_point_(mouse_x, mouse_y, _this_\tab\tabs()) And
+        ;                  _from_point_(_mouse_x_, _mouse_y_, _this_\bar\button[#bb_3])
+        ;                 
+        ;                 If _this_\tab\index[#s_1] <> _this_\tab\tabs()\index
+        ;                   If _this_\tab\index[#s_1] >= 0
+        ;                     Debug " leave tab - " + _this_\tab\index[#s_1]
+        ;                   EndIf
+        ;                   
+        ;                   _this_\tab\index[#s_1] = _this_\tab\tabs()\index
+        ;                   Debug " enter tab - " + _this_\tab\index[#s_1]
+        ;                 EndIf
+        ;                 Break
+        ;                 
+        ;               ElseIf _this_\tab\index[#s_1] = _this_\tab\tabs()\index
+        ;                 Debug " leave tab - " + _this_\tab\index[#s_1]
+        ;                 _this_\tab\index[#s_1] =- 1
+        ;                 Break
+        ;               EndIf
+        ;             EndIf
+        ;           Next
+      EndIf
+      ; EndIf
       
     ElseIf _event_type_ = #PB_EventType_LeftButtonDown
-;       If _this_\tab\index[#s_1] =- 1
-;         Select #s_1
-;           Case _this_\bar\button[#bb_1]\color\state
-;             If Bar_ChangePos(_this_\bar, (_this_\bar\page\pos - _this_\bar\scrollstep))   
-;               If Not _bar_in_start_(_this_\bar) And 
-;                  _this_\bar\button[#bb_2]\color\state = #s_3 
-;                 
-;                 Debug " enable tab button - right"
-;                 _this_\bar\button[#bb_2]\color\state = #s_0
-;               EndIf
-;               
-;               _this_\bar\button[#bb_1]\color\state = #s_2
-;               Repaint = #True
-;             Else
-;               _this_\bar\button[#bb_1]\color\state = #s_3
-;             EndIf
-;             
-;           Case _this_\bar\button[#bb_2]\color\state 
-;             If Bar_ChangePos(_this_\bar, (_this_\bar\page\pos + _this_\bar\scrollstep)) 
-;               If Not _bar_in_stop_(_this_\bar) And 
-;                  _this_\bar\button[#bb_1]\color\state = #s_3 
-;                 
-;                 Debug " enable tab button - left"
-;                 _this_\bar\button[#bb_1]\color\state = #s_0
-;               EndIf
-;               
-;               _this_\bar\button[#bb_2]\color\state = #s_2 
-;               Repaint = #True
-;             Else
-;               _this_\bar\button[#bb_2]\color\state = #s_3
-;             EndIf
-;             
-;         EndSelect
-;       Else
-;         Repaint = SetState(_this_, _this_\tab\index[#s_1])
-;       EndIf
+      ;       If _this_\tab\index[#s_1] =- 1
+      ;         Select #s_1
+      ;           Case _this_\bar\button[#bb_1]\color\state
+      ;             If Bar_ChangePos(_this_\bar, (_this_\bar\page\pos - _this_\bar\scrollstep))   
+      ;               If Not _bar_in_start_(_this_\bar) And 
+      ;                  _this_\bar\button[#bb_2]\color\state = #s_3 
+      ;                 
+      ;                 Debug " enable tab button - right"
+      ;                 _this_\bar\button[#bb_2]\color\state = #s_0
+      ;               EndIf
+      ;               
+      ;               _this_\bar\button[#bb_1]\color\state = #s_2
+      ;               Repaint = #True
+      ;             Else
+      ;               _this_\bar\button[#bb_1]\color\state = #s_3
+      ;             EndIf
+      ;             
+      ;           Case _this_\bar\button[#bb_2]\color\state 
+      ;             If Bar_ChangePos(_this_\bar, (_this_\bar\page\pos + _this_\bar\scrollstep)) 
+      ;               If Not _bar_in_stop_(_this_\bar) And 
+      ;                  _this_\bar\button[#bb_1]\color\state = #s_3 
+      ;                 
+      ;                 Debug " enable tab button - left"
+      ;                 _this_\bar\button[#bb_1]\color\state = #s_0
+      ;               EndIf
+      ;               
+      ;               _this_\bar\button[#bb_2]\color\state = #s_2 
+      ;               Repaint = #True
+      ;             Else
+      ;               _this_\bar\button[#bb_2]\color\state = #s_3
+      ;             EndIf
+      ;             
+      ;         EndSelect
+      ;       Else
+      ;         Repaint = SetState(_this_, _this_\tab\index[#s_1])
+      ;       EndIf
     EndIf
     
   EndMacro
@@ -11681,7 +11681,7 @@ Module Widget
         If *this And ListSize(\childrens()) ; \count ; Not Root()\mouse\buttons
           PushListPosition(\childrens())    ;
           LastElement(\childrens())         ; Что бы начать с последнего элемента
-          Repeat                                ; Перебираем с низу верх
+          Repeat                            ; Перебираем с низу верх
             If Not \childrens()\hide And _from_point_(mouse_x,mouse_y, \childrens(), [#c_4])
               
               If ListSize(\childrens()\childrens())
@@ -12645,5 +12645,5 @@ CompilerEndIf
 ; ; ;   Until gQuit
 ; ; ; CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = AAAAAAAAAAKAAAgGAAMAAgFAgRAAAAwAAAg43GAAAAAe-+AAAw-DBAAA9DAAAASQAAAAAAAAAAAAAAADAAAACCAAAAAggGAAAA5x-AAAAAAAAAAEgAAACgAAABAAAAAAAAAAAAAAAAAAAAAQAAAEAifUAgeZd-0nFAAAAAAAzBo+XAcgxgDAAwAAAwYoBABAAgf3eC+0fA++-PADgAYACGMeAAAQ9BAGAAAAACw1PAAAPZ+
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -420,7 +420,7 @@ DeclareModule Widget
     sublevel.i
     sublevellen.i
     
-    children_list.i
+    childrens.i
     *data      ; set/get item data
   EndStructure
   
@@ -565,7 +565,7 @@ DeclareModule Widget
     type_count.l
     
     tab._s_tab
-    List *children_list._s_widget()
+    List *childrens._s_widget()
     List *items._s_items()
     List *columns._s_widget()
     ;List *draws._s_items()
@@ -706,7 +706,7 @@ DeclareModule Widget
   ;   Declare.i Enumerate(*this.Integer, *Parent, parent_item.i=0)
   
   Declare.i ReDraw(*this=#Null)
-  ;   Declare.i Draw(*this, children_list=0)
+  ;   Declare.i Draw(*this, childrens=0)
   ;   Declare.i Y(*this, Mode.i=0)
   ;   Declare.i X(*this, Mode.i=0)
   ;   Declare.i Width(*this, Mode.i=0)
@@ -789,15 +789,15 @@ DeclareModule Widget
   Declare.i Combobox(X.l,Y.l,Width.l,Height.l, Flag.i=0)
   ;   Declare.i HyperLink(X.l,Y.l,Width.l,Height.l, Text.s, Color.i, Flag.i=0)
   ;   Declare.i ListView(X.l,Y.l,Width.l,Height.l, Flag.i=0)
-  ;   Declare.i Spin(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
+     Declare.i Spin(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0, Increment.f=1, Radius.i=7)
   ;   Declare.i ListIcon(X.l,Y.l,Width.l,Height.l, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
   Declare.i Form(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, *Widget=0)
   ;   Declare.i ExplorerList(X.l,Y.l,Width.l,Height.l, Directory.s, Flag.i=0)
   ;   Declare.i IPAddress(X.l,Y.l,Width.l,Height.l)
   ;   Declare.i Editor(X.l,Y.l,Width.l,Height.l, Flag.i=0)
   ;   
-  ;   Declare.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.i=0)
-  ;   Declare.i ScrollArea(X.l,Y.l,Width.l,Height.l, ScrollAreaWidth.i, ScrollAreaHeight.i, ScrollStep.i=1, Flag.i=0)
+     Declare.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.i=0)
+     Declare.i ScrollArea(X.l,Y.l,Width.l,Height.l, ScrollAreaWidth.i, ScrollAreaHeight.i, ScrollStep.i=1, Flag.i=0)
   ;   Declare.i Container(X.l,Y.l,Width.l,Height.l, Flag.i=0)
   ;   Declare.i Frame(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0)
   ;   Declare.i Panel(X.l,Y.l,Width.l,Height.l, Flag.i=0)
@@ -1095,12 +1095,12 @@ Module Widget
   
   ;-
   ; SCROLLBAR
-  Macro _children_list_move_(_this_, _change_x_, _change_y_)
-    If ListSize(_this_\children_list())
-      ForEach _this_\children_list()
-        Resize(_this_\children_list(), 
-               (_this_\children_list()\x-_this_\x-_this_\bs) + _change_x_,
-               (_this_\children_list()\y-_this_\y-_this_\bs-_this_\__height) + _change_y_, 
+  Macro _childrens_move_(_this_, _change_x_, _change_y_)
+    If ListSize(_this_\childrens())
+      ForEach _this_\childrens()
+        Resize(_this_\childrens(), 
+               (_this_\childrens()\x-_this_\x-_this_\bs) + _change_x_,
+               (_this_\childrens()\y-_this_\y-_this_\bs-_this_\__height) + _change_y_, 
                #PB_Ignore, #PB_Ignore)
       Next
     EndIf
@@ -1333,7 +1333,7 @@ Module Widget
     ;       _this_\bar\text\change = 1
     ;     EndIf
     ;     
-    ; Splitter children_list auto resize       
+    ; Splitter childrens auto resize       
     If _this_\Splitter And _this_\bar\change
       ;splitter_size(_this_)
       ;     If \type = #PB_GadgetType_Spin
@@ -1343,17 +1343,17 @@ Module Widget
       _bar_splitter_size_(_this_)
     EndIf
     
-    ; ScrollArea children_list auto resize 
+    ; ScrollArea childrens auto resize 
     If _this_\parent And _this_\bar\change
       _this_\parent\change =- 1
       
       If _this_\parent\scroll
         If _this_\bar\vertical
           _this_\parent\scroll\y =- _this_\bar\page\pos 
-          _children_list_move_(_this_\parent, 0, _this_\bar\change)
+          _childrens_move_(_this_\parent, 0, _this_\bar\change)
         Else
           _this_\parent\scroll\x =- _this_\bar\page\pos
-          _children_list_move_(_this_\parent, _this_\bar\change, 0)
+          _childrens_move_(_this_\parent, _this_\bar\change, 0)
         EndIf
       EndIf
     EndIf
@@ -1758,14 +1758,14 @@ Module Widget
         right_y1 = checked_y1 : right_y2 = checked_y2
         bottom_x1 = checked_x1 : bottom_x2 = checked_x2
         
-        If \parent And ListSize(\parent\children_list())
-          PushListPosition(\parent\children_list())
-          ForEach \parent\children_list()
-            If Not \parent\children_list()\hide
-              relative_x1 = \parent\children_list()\x
-              relative_y1 = \parent\children_list()\y
-              relative_x2 = relative_x1+\parent\children_list()\width
-              relative_y2 = relative_y1+\parent\children_list()\height
+        If \parent And ListSize(\parent\childrens())
+          PushListPosition(\parent\childrens())
+          ForEach \parent\childrens()
+            If Not \parent\childrens()\hide
+              relative_x1 = \parent\childrens()\x
+              relative_y1 = \parent\childrens()\y
+              relative_x2 = relative_x1+\parent\childrens()\width
+              relative_y2 = relative_y1+\parent\childrens()\height
               
               ;Left_line
               If checked_x1 = relative_x1
@@ -1826,7 +1826,7 @@ Module Widget
               EndIf
             EndIf
           Next
-          PopListPosition(\parent\children_list())
+          PopListPosition(\parent\childrens())
         EndIf
         
       EndIf
@@ -2089,16 +2089,16 @@ Module Widget
           Case #PB_Event_ActivateWindow
             Protected *Widget._s_widget = GetGadgetData(\root\canvas\gadget)
             
-            If CallBack(\children_list(), #PB_EventType_LeftButtonDown, WindowMouseX(\root\canvas\window), WindowMouseY(\root\canvas\window))
-              ; If \children_list()\index[#s_2] <> \children_list()\index[#s_1]
-              *Widget\index[#s_2] = \children_list()\index[#s_1]
-              Post(#PB_EventType_Change, *Widget, \children_list()\index[#s_1])
+            If CallBack(\childrens(), #PB_EventType_LeftButtonDown, WindowMouseX(\root\canvas\window), WindowMouseY(\root\canvas\window))
+              ; If \childrens()\index[#s_2] <> \childrens()\index[#s_1]
+              *Widget\index[#s_2] = \childrens()\index[#s_1]
+              Post(#PB_EventType_Change, *Widget, \childrens()\index[#s_1])
               
-              SetText(*Widget, GetItemText(\children_list(), \children_list()\index[#s_1]))
-              \children_list()\index[#s_2] = \children_list()\index[#s_1]
-              ;\children_list()\canvas\mouse\buttons = 0
-              \children_list()\index[#s_1] =- 1
-              \children_list()\focus = 1
+              SetText(*Widget, GetItemText(\childrens(), \childrens()\index[#s_1]))
+              \childrens()\index[#s_2] = \childrens()\index[#s_1]
+              ;\childrens()\canvas\mouse\buttons = 0
+              \childrens()\index[#s_1] =- 1
+              \childrens()\focus = 1
               ;\canvas\mouse\buttons = 0
               ReDraw(*this)
               ; EndIf
@@ -2135,25 +2135,25 @@ Module Widget
       
       If StartDrawing(CanvasOutput(\root\canvas\gadget))
         
-        ForEach *Widget\children_list()\items()
-          If *Widget\children_list()\items()\text\change = 1
-            *Widget\children_list()\items()\text\height = TextHeight("A")
-            *Widget\children_list()\items()\text\width = TextWidth(*Widget\children_list()\items()\text\string.s)
+        ForEach *Widget\childrens()\items()
+          If *Widget\childrens()\items()\text\change = 1
+            *Widget\childrens()\items()\text\height = TextHeight("A")
+            *Widget\childrens()\items()\text\width = TextWidth(*Widget\childrens()\items()\text\string.s)
           EndIf
           
-          If *Widget\children_list()\scroll\width < (10+*Widget\children_list()\items()\text\width)+*Widget\children_list()\scroll\h\bar\page\pos
-            *Widget\children_list()\scroll\width = (10+*Widget\children_list()\items()\text\width)+*Widget\children_list()\scroll\h\bar\page\pos
+          If *Widget\childrens()\scroll\width < (10+*Widget\childrens()\items()\text\width)+*Widget\childrens()\scroll\h\bar\page\pos
+            *Widget\childrens()\scroll\width = (10+*Widget\childrens()\items()\text\width)+*Widget\childrens()\scroll\h\bar\page\pos
           EndIf
         Next
         
         StopDrawing()
       EndIf
       
-      SetActive(*Widget\children_list())
-      ;*Widget\children_list()\focus = 1
+      SetActive(*Widget\childrens())
+      ;*Widget\childrens()\focus = 1
       
-      Protected Width = *Widget\children_list()\scroll\width + *Widget\children_list()\bs*2 
-      Protected Height = *Widget\children_list()\scroll\height + *Widget\children_list()\bs*2 
+      Protected Width = *Widget\childrens()\scroll\width + *Widget\childrens()\bs*2 
+      Protected Height = *Widget\childrens()\scroll\height + *Widget\childrens()\bs*2 
       
       If Width < \width
         Width = \width
@@ -2499,7 +2499,7 @@ Module Widget
              ((Mouse_X > *this_item()\box[1]\x) And (Mouse_X =< (*this_item()\box[1]\x+*this_item()\box[1]\width)))
             
             *this_item()\box[1]\checked ! 1
-          ElseIf (\flag\buttons And *this_item()\children_list) And
+          ElseIf (\flag\buttons And *this_item()\childrens) And
                  (Mouse_Y > (*this_item()\box[0]\y) And Mouse_Y =< ((*this_item()\box[0]\y+*this_item()\box[0]\height))) And 
                  ((Mouse_X > *this_item()\box[0]\x) And (Mouse_X =< (*this_item()\box[0]\x+*this_item()\box[0]\width)))
             
@@ -3050,7 +3050,7 @@ Module Widget
               EndIf
               
               ; Draw boxes
-              If \flag\buttons And \items()\children_list
+              If \flag\buttons And \items()\childrens
                 If box_type=-1
                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                   Widget::Arrow(\items()\box[0]\x+(\items()\box[0]\width-6)/2,\items()\box[0]\y+(\items()\box[0]\height-6)/2, 6, Bool(Not \items()\box[0]\checked)+2, \color\front[Bool(\focus) * State_3]&$FFFFFFFF|alpha<<24, 0,0) 
@@ -3287,7 +3287,7 @@ Module Widget
   EndProcedure
   
   ;-
-  Procedure.i Draw(*this._s_widget, children_list=0)
+  Procedure.i Draw(*this._s_widget, childrens=0)
     Protected parent_item.i
     
     With *this
@@ -3386,28 +3386,28 @@ Module Widget
           If \scroll\h And \scroll\h\type And Not \scroll\h\hide : Draw_Scroll(\scroll\h) : EndIf
         EndIf
         
-        ; Draw children_list
-        If children_list And ListSize(\children_list())
+        ; Draw childrens
+        If childrens And ListSize(\childrens())
           ; Only selected item widgets draw
           
-          ForEach \children_list() 
-            ;If Not Send(\children_list(), #PB_EventType_Repaint)
+          ForEach \childrens() 
+            ;If Not Send(\childrens(), #PB_EventType_Repaint)
             
-            If \children_list()\width[#c_4] > 0 And 
-               \children_list()\height[#c_4] > 0 And 
-               \children_list()\tab\index = \tab\index[#s_2]
-              Draw(\children_list(), children_list) 
+            If \childrens()\width[#c_4] > 0 And 
+               \childrens()\height[#c_4] > 0 And 
+               \childrens()\tab\index = \tab\index[#s_2]
+              Draw(\childrens(), childrens) 
             EndIf
             
             ;EndIf
             
             ;             ; Draw anchors 
-            ;             If \children_list()\root And \children_list()\root\anchor And \children_list()\root\anchor\widget = \children_list()
-            ;               a_Draw(\children_list()\root\anchor\widget)
+            ;             If \childrens()\root And \childrens()\root\anchor And \childrens()\root\anchor\widget = \childrens()
+            ;               a_Draw(\childrens()\root\anchor\widget)
             ;             EndIf
             ;             
-            SetOrigin(\children_list()\x,\children_list()\y)
-            Post(#PB_EventType_Repaint, \children_list())
+            SetOrigin(\childrens()\x,\childrens()\y)
+            Post(#PB_EventType_Repaint, \childrens())
             SetOrigin(0,0)
             
             
@@ -3494,9 +3494,9 @@ Module Widget
         \scroll\h\hide = \scroll\h\bar\hide 
       EndIf
       
-      If ListSize(\children_list())
-        ForEach \children_list()
-          set_hide_state(\children_list(), State)
+      If ListSize(\childrens())
+        ForEach \childrens()
+          set_hide_state(\childrens(), State)
         Next
       EndIf
     EndWith
@@ -3510,9 +3510,9 @@ Module Widget
         \hide = State
         \hide[1] = \hide
         
-        If ListSize(\children_list())
-          ForEach \children_list()
-            set_hide_state(\children_list(), State)
+        If ListSize(\childrens())
+          ForEach \childrens()
+            set_hide_state(\childrens(), State)
           Next
         EndIf
       EndIf
@@ -3711,9 +3711,9 @@ Module Widget
           x = \x[3]
           y = \y[3]
           
-          If \parent And ListSize(\parent\children_list())
-            ChangeCurrentElement(\parent\children_list(), GetAdress(*this)) 
-            DeleteElement(\parent\children_list())
+          If \parent And ListSize(\parent\childrens())
+            ChangeCurrentElement(\parent\childrens(), GetAdress(*this)) 
+            DeleteElement(\parent\childrens())
             *LastParent = Bool(\parent<>*Parent) * \parent
           EndIf
           
@@ -3750,11 +3750,11 @@ Module Widget
           EndIf
           
           ; Add new children 
-          LastElement(\parent\children_list()) 
-          \adress = AddElement(\parent\children_list())
+          LastElement(\parent\childrens()) 
+          \adress = AddElement(\parent\childrens())
           
           If \adress
-            \parent\children_list() = *this 
+            \parent\childrens() = *this 
             \index = \root\countItems 
           EndIf
           
@@ -3809,8 +3809,8 @@ Module Widget
           y = \y[3]
           
           If \parent And \parent\countItems > 0
-            ChangeCurrentElement(\parent\children_list(), GetAdress(*this)) 
-            DeleteElement(\parent\children_list())  
+            ChangeCurrentElement(\parent\childrens(), GetAdress(*this)) 
+            DeleteElement(\parent\childrens())  
             \parent\countItems - 1
             *LastParent = Bool(\parent<>*Parent) * \parent
           EndIf
@@ -3842,16 +3842,16 @@ Module Widget
             EndIf
           EndIf
           
-          ; for the scroll area children_list
+          ; for the scroll area childrens
           If \parent\scroll
             x-\parent\scroll\h\bar\page\pos
             y-\parent\scroll\v\bar\page\pos
           EndIf
           
           ; Add new children to the parent
-          LastElement(\parent\children_list()) 
-          \adress = AddElement(\parent\children_list())
-          \parent\children_list() = *this 
+          LastElement(\parent\childrens()) 
+          \adress = AddElement(\parent\childrens())
+          \parent\childrens() = *this 
           
           ; Make count type
           If \window
@@ -3898,24 +3898,24 @@ Module Widget
           *this = \parent
         EndIf
         
-        ChangeCurrentElement(\parent\children_list(), GetAdress(*this))
+        ChangeCurrentElement(\parent\childrens(), GetAdress(*this))
         
         If *Widget_2 =- 1
           Select Position
-            Case #PB_List_First  : MoveElement(\parent\children_list(), #PB_List_First)
-            Case #PB_List_Before : PreviousElement(\parent\children_list()) : MoveElement(\parent\children_list(), #PB_List_After, GetAdress(\parent\children_list()))
-            Case #PB_List_After  : NextElement(\parent\children_list())     : MoveElement(\parent\children_list(), #PB_List_Before, GetAdress(\parent\children_list()))
-            Case #PB_List_Last   : MoveElement(\parent\children_list(), #PB_List_Last)
+            Case #PB_List_First  : MoveElement(\parent\childrens(), #PB_List_First)
+            Case #PB_List_Before : PreviousElement(\parent\childrens()) : MoveElement(\parent\childrens(), #PB_List_After, GetAdress(\parent\childrens()))
+            Case #PB_List_After  : NextElement(\parent\childrens())     : MoveElement(\parent\childrens(), #PB_List_Before, GetAdress(\parent\childrens()))
+            Case #PB_List_Last   : MoveElement(\parent\childrens(), #PB_List_Last)
           EndSelect
           
         ElseIf *Widget_2
           Select Position
-            Case #PB_List_Before : MoveElement(\parent\children_list(), #PB_List_Before, *Widget_2)
-            Case #PB_List_After  : MoveElement(\parent\children_list(), #PB_List_After, *Widget_2)
+            Case #PB_List_Before : MoveElement(\parent\childrens(), #PB_List_Before, *Widget_2)
+            Case #PB_List_After  : MoveElement(\parent\childrens(), #PB_List_After, *Widget_2)
           EndSelect
         EndIf
         
-        ; \parent\children_list()\adress = @\parent\children_list()
+        ; \parent\childrens()\adress = @\parent\childrens()
         
       EndIf 
     EndWith
@@ -4070,7 +4070,7 @@ Module Widget
             ;             EndIf
             ;             
           Case #PB_GadgetType_ComboBox
-            Protected *t._s_widget = \popup\children_list()
+            Protected *t._s_widget = \popup\childrens()
             
             If State < 0 : State = 0 : EndIf
             If State > *t\countItems - 1 : State = *t\countItems - 1 :  EndIf
@@ -4142,8 +4142,8 @@ Module Widget
             
             If \tab\index[#s_2] <> State : \tab\index[#s_2] = State
               
-              ForEach \children_list()
-                set_hide_state(\children_list(), Bool(\children_list()\tab\index<>\tab\index[#s_2]))
+              ForEach \childrens()
+                set_hide_state(\childrens(), Bool(\childrens()\tab\index<>\tab\index[#s_2]))
               Next
               
               ;\tab\selected = SelectElement(\tab\tabs(), State)
@@ -4291,7 +4291,7 @@ Module Widget
         If \i_Parent
           If subLevel > \i_Parent\subLevel
             sublevel = \i_Parent\sublevel + 1
-            \i_Parent\children_list + 1
+            \i_Parent\childrens + 1
             ;  \i_Parent\box\checked = 1
             ;  \i_Parent\hide = 1
           EndIf
@@ -4335,7 +4335,7 @@ Module Widget
           ProcedureReturn AddItem_Tree(*this, Item,Text.s,Image, Flag)
           
         Case #PB_GadgetType_ComboBox
-          Protected *Tree._s_widget = \popup\children_list()
+          Protected *Tree._s_widget = \popup\childrens()
           
           LastElement(*Tree\items())
           AddElement(*Tree\items())
@@ -4468,52 +4468,52 @@ Module Widget
           Resizes(\scroll, 0,0, \width[2],\height[2])
         EndIf
         
-        ; Resize children_list
-        If ListSize(\children_list())
+        ; Resize childrens
+        If ListSize(\childrens())
           If \type = #PB_GadgetType_Splitter
             _bar_splitter_size_(*this)
           Else
-            ForEach \children_list()
-              If \children_list()\align
-                If \children_list()\align\horizontal
-                  x = (\width[2] - (\children_list()\align\x+\children_list()\width))/2
-                ElseIf \children_list()\align\right And Not \children_list()\align\left
-                  x = \width[2] - \children_list()\align\x
+            ForEach \childrens()
+              If \childrens()\align
+                If \childrens()\align\horizontal
+                  x = (\width[2] - (\childrens()\align\x+\childrens()\width))/2
+                ElseIf \childrens()\align\right And Not \childrens()\align\left
+                  x = \width[2] - \childrens()\align\x
                 Else
                   If \x[2]
-                    x = (\children_list()\x-\x[2]) + Change_x 
+                    x = (\childrens()\x-\x[2]) + Change_x 
                   Else
                     x = 0
                   EndIf
                 EndIf
                 
-                If \children_list()\align\Vertical
-                  y = (\height[2] - (\children_list()\align\y+\children_list()\height))/2 
-                ElseIf \children_list()\align\bottom And Not \children_list()\align\top
-                  y = \height[2] - \children_list()\align\y
+                If \childrens()\align\Vertical
+                  y = (\height[2] - (\childrens()\align\y+\childrens()\height))/2 
+                ElseIf \childrens()\align\bottom And Not \childrens()\align\top
+                  y = \height[2] - \childrens()\align\y
                 Else
                   If \y[2]
-                    y = (\children_list()\y-\y[2]) + Change_y 
+                    y = (\childrens()\y-\y[2]) + Change_y 
                   Else
                     y = 0
                   EndIf
                 EndIf
                 
-                If \children_list()\align\top And \children_list()\align\bottom
-                  Height = \height[2] - \children_list()\align\y
+                If \childrens()\align\top And \childrens()\align\bottom
+                  Height = \height[2] - \childrens()\align\y
                 Else
                   Height = #PB_Ignore
                 EndIf
                 
-                If \children_list()\align\left And \children_list()\align\right
-                  Width = \width[2] - \children_list()\align\x
+                If \childrens()\align\left And \childrens()\align\right
+                  Width = \width[2] - \childrens()\align\x
                 Else
                   Width = #PB_Ignore
                 EndIf
                 
-                Resize(\children_list(), x, y, Width, Height)
+                Resize(\childrens(), x, y, Width, Height)
               Else
-                Resize(\children_list(), (\children_list()\x-\x[2]) + Change_x, (\children_list()\y-\y[2]) + Change_y, #PB_Ignore, #PB_Ignore)
+                Resize(\childrens(), (\childrens()\x-\x[2]) + Change_x, (\childrens()\y-\y[2]) + Change_y, #PB_Ignore, #PB_Ignore)
               EndIf
             Next
           EndIf
@@ -4739,7 +4739,7 @@ Module Widget
       \popup = Popup(*this, 0,0,0,0)
       OpenList(\popup)
       Tree(0,0,0,0, #PB_Flag_AutoSize|#PB_Flag_NoLines|#PB_Flag_NoButtons) 
-      Debug \popup\children_list()
+      Debug \popup\childrens()
       CloseList()
       
       Resize(*this, X,Y,Width,Height)
@@ -4826,6 +4826,83 @@ Module Widget
     
     ProcedureReturn *this
   EndProcedure
+  
+  Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.i=0)
+    Protected Vertical = Bool(Not Flag&#PB_Splitter_Vertical) * #PB_Flag_Vertical
+    Protected Auto = Bool(Flag&#PB_Flag_AutoSize) * #PB_Flag_AutoSize
+    Protected *Bar._S_widget, *this._S_widget, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
+    
+    *this = Bar(0, 0, 0, Max, 0, Auto|Vertical|#PB_Bar_ButtonSize, 0, 7)
+    
+    _set_last_parameters_(*this, #PB_GadgetType_Splitter, Flag, Root()\opened) 
+    
+    With *this
+      \bar\button\len = 7
+      \bar\thumb\len = 7
+      \mode = #PB_Splitter_Separator
+      
+      \splitter = AllocateStructure(_S_splitter)
+      \splitter\first = First
+      \splitter\second = Second
+      
+      If Flag&#PB_Splitter_SecondFixed
+        \splitter\fixed = 2
+      EndIf
+      If Flag&#PB_Splitter_FirstFixed
+        \splitter\fixed = 1
+      EndIf
+      
+      Resize(*this, X,Y,Width,Height)
+      
+      If \bar\vertical
+        \cursor = #PB_Cursor_UpDown
+        SetState(*this, \height/2-1)
+      Else
+        \cursor = #PB_Cursor_LeftRight
+        SetState(*this, \width/2-1)
+      EndIf
+      
+      SetParent(\splitter\first, *this)
+      SetParent(\splitter\second, *this)
+      
+    EndWith
+    
+    ProcedureReturn *this
+  EndProcedure
+  
+  Procedure.i ScrollArea(X.l,Y.l,Width.l,Height.l, ScrollAreaWidth.i, ScrollAreaHeight.i, ScrollStep.i=1, Flag.i=0)
+    Protected Size = 16, *this._S_widget = AllocateStructure(_S_widget) 
+    _set_last_parameters_(*this, #PB_GadgetType_ScrollArea, Flag, Root()\opened)
+    
+    With *this
+      \x =- 1
+      \y =- 1
+      \container = 1
+      \color = def_colors
+      \color\alpha = 255
+      \color\back = $FFF9F9F9
+      
+      \fs = 1
+      \bs = 2
+      
+      ; Background image
+      \image[1] = AllocateStructure(_S_image)
+      
+      \scroll = AllocateStructure(_S_scroll) 
+      \scroll\v = Bar(#PB_GadgetType_ScrollBar, Size, 0,ScrollAreaHeight,Height, #PB_Bar_Vertical, 7, 7, *this)
+      \scroll\h = Bar(#PB_GadgetType_ScrollBar, Size, 0,ScrollAreaWidth,Width, 0, 7, 7, *this)
+      ;       Resize(\scroll\v, #PB_Ignore,#PB_Ignore,Size,#PB_Ignore)
+      ;       Resize(\scroll\h, #PB_Ignore,#PB_Ignore,#PB_Ignore,Size)
+      
+      Resize(*this, X,Y,Width,Height)
+      If Not Flag&#PB_Flag_NoGadget
+        OpenList(*this)
+      EndIf
+    EndWith
+    
+    ProcedureReturn *this
+  EndProcedure
+  
   
   ;-
   Procedure.i CloseList()
@@ -5414,29 +5491,29 @@ Module Widget
     
     If Change 
       With *this
-        If *this And ListSize(\children_list()) ; \countItems ; Not Root()\canvas\mouse\buttons
-          PushListPosition(\children_list())    ;
-          LastElement(\children_list())         ; Что бы начать с последнего элемента
+        If *this And ListSize(\childrens()) ; \countItems ; Not Root()\canvas\mouse\buttons
+          PushListPosition(\childrens())    ;
+          LastElement(\childrens())         ; Что бы начать с последнего элемента
           Repeat                                ; Перебираем с низу верх
-            If Not \children_list()\hide And _from_point_(mouse_x,mouse_y, \children_list(), [#c_4])
+            If Not \childrens()\hide And _from_point_(mouse_x,mouse_y, \childrens(), [#c_4])
               
-              If ListSize(\children_list()\children_list())
+              If ListSize(\childrens()\childrens())
                 Root()\canvas\mouse\x = 0
                 Root()\canvas\mouse\y = 0
-                *enter = From(\children_list(), mouse_x, mouse_y)
+                *enter = From(\childrens(), mouse_x, mouse_y)
                 
                 If Not *enter
-                  *enter = \children_list()
+                  *enter = \childrens()
                 EndIf
               Else
-                *enter = \children_list()
+                *enter = \childrens()
               EndIf
               
               Break
             EndIf
             
-          Until PreviousElement(\children_list()) = #False 
-          PopListPosition(\children_list())
+          Until PreviousElement(\childrens()) = #False 
+          PopListPosition(\childrens())
         EndIf
       EndWith
       *r = *enter
@@ -6067,35 +6144,71 @@ EndModule
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Widget
-  Global *w, *w1
   
-  If Open(#PB_Any, 100, 0, 180, 210, "", #PB_Flag_BorderLess | #PB_Window_SystemMenu | #pb_flag_AnchorsGadget)
-    SetWindowTitle(GetWindow(Root()), "openlist")
-    Button( 50, 95, 80,20,"button")
-    *w = Root()
-  EndIf
+  Global *c, *s
   
-  If Open(#PB_Any, 300, 0, 180, 210, "", #PB_Flag_BorderLess | #PB_Window_SystemMenu | #pb_flag_AnchorsGadget)
-    SetWindowTitle(GetWindow(Root()), "openlist")
-    Button( 50, 95, 80,20,"button")
-    *w1 = Root()
-  EndIf
+  Procedure Enumerates(*this._S_widget, *callback)
+    With *this
+      If *callback
+        CallCFunctionFast(*callback, *this)
+        
+        If ListSize(\childrens())
+          ForEach \childrens()
+            Enumerates(\childrens(), *callback)
+          Next
+        EndIf
+      EndIf
+    EndWith
+  EndProcedure
   
-  OpenList(*w)
-  Combobox(50, 15, 80, 24)
-  AddItem(Widget(), -1, "Combobox")
-  SetState(Widget(), 0)
-  CloseList()
+  Procedure enum(*this._S_widget)
+    If Not *this\hide
+      Debug " class - " + *this\Class +" ("+ *this\tab\index +" - parent_item)"
+    EndIf
+  EndProcedure
   
-  Combobox(50, 35, 80, 24)
-  AddItem(Widget(), -1, "Combobox")
-  SetState(Widget(), 0)
+  Procedure Events()
+    
+  EndProcedure
   
-  ReDraw(*w)
-  ReDraw(*w1)
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  If OpenWindow(3, 0, 0, 655, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    If Open(3, 0, 0, 655, 605, "Root", #PB_Flag_AnchorsGadget|#PB_Flag_BorderLess)
+      Define *w,*w1,*w2
+      
+      
+      Define *f=Form     (388, 8, 256, 303, "window1", 0)
+      ;       Form     ( 8, 8, 256, 303, "window3", 0, Root()\opened)
+      ;       Form     ( 8, 8, 256, 303, "window4", 0, Root()\opened)
+      ScrollArea(10,10,140,140, 200,200)
+      ;Button(10, 15, 80, 24,"Кнопка 1")
+      Combobox(10, 15, 80, 24)
+      AddItem(Widget(), -1, "Combobox")
+      SetState(Widget(), 0)
+      
+      Button(95, 15, 80, 24,"Кнопка 2")
+      CloseList()
+      
+      Spin(160, 10, 90, 41, 0, 10)
+      Spin(160, 60, 90, 41, 0, 10, #PB_Flag_Vertical)
+      
+      *s=Splitter(10, 155, 300, 152, Splitter(5,5, 300, 152, Button(0, 0, 0, 0,"кнопка 15"), 
+      Button(0, 0, 0, 0,"кнопка 15")), Button(0, 0, 0, 0,"кнопка 15"), #PB_Splitter_Vertical) 
+      
+      ;       ForEach Root()\childrens()
+      ;         Debug Root()\childrens()\text\string
+      ;       Next
+      
+      ReDraw(Root())
+    EndIf
+    
+    Repeat
+      Define Event = WaitWindowEvent()
+    Until Event= #PB_Event_CloseWindow
+    
+  EndIf   
 CompilerEndIf
+
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------4-
+; Folding = ---------------------------------------------------------------------------------------------------------------------
 ; EnableXP
