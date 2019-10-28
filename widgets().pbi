@@ -979,7 +979,7 @@ DeclareModule Widget
     vertical.b
     
     color._s_color[4]
-    ;box._s_box[4]
+    box._s_box[4]
     
     *splitter._s_splitter
     bar._S_bar
@@ -5885,51 +5885,51 @@ Module Widget
   EndProcedure
   
   Procedure.i Draw_Combobox(*this._s_widget)
-    ;     With *this
-    ;       Protected State = \color\state
-    ;       Protected Alpha = \color\alpha<<24
-    ;       
-    ;       If \box\checked
-    ;         State = 2
-    ;       EndIf
-    ;       
-    ;       ; Draw background  
-    ;       If \color\back[State]<>-1
-    ;         If \color\fore[State]
-    ;           DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-    ;         EndIf
-    ;         _box_gradient_( \bar\vertical, \x[2], \y[2], \width[2], \height[2], \color\fore[State], \color\back[State], \radius, \color\alpha)
-    ;       EndIf
-    ;       
-    ;       ; Draw image
-    ;       If \image\handle
-    ;         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-    ;         DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
-    ;       EndIf
-    ;       
-    ;       ; Draw string
-    ;       If \text\string
-    ;         ClipOutput(\x[#c_4],\y[#c_4],\width[#c_4]-\box\width-\text\x[2],\height[#c_4])
-    ;         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-    ;         DrawText(\text\x, \text\y, \text\string.s, \color\front[State]&$FFFFFF|Alpha)
-    ;         ClipOutput(\x[#c_4],\y[#c_4],\width[#c_4],\height[#c_4])
-    ;       EndIf
-    ;       
-    ;       \box\x = \x+\width-\box\width -\box\arrow\size/2
-    ;       \box\height = \height[2]
-    ;       \box\y = \y
-    ;       
-    ;       ; Draw arrows
-    ;       DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-    ;       Arrow(\box\x+(\box\width-\box\arrow\size)/2, \box\y+(\box\height-\box\arrow\size)/2, \box\arrow\size, Bool(\box\checked)+2, \color\front[State]&$FFFFFF|Alpha, \box\arrow\type)
-    ;       
-    ;       ; Draw frame
-    ;       If \color\frame[State] 
-    ;         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-    ;         RoundBox(\x[1], \y[1], \width[1], \height[1], \radius, \radius, \color\frame[State]&$FFFFFF|Alpha)
-    ;       EndIf
-    ;       
-    ;     EndWith 
+        With *this
+          Protected State = \color\state
+          Protected Alpha = \color\alpha<<24
+          
+          If \box\checked
+            State = 2
+          EndIf
+          
+          ; Draw background  
+          If \color\back[State]<>-1
+            If \color\fore[State]
+              DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+            EndIf
+            _box_gradient_( \bar\vertical, \x[2], \y[2], \width[2], \height[2], \color\fore[State], \color\back[State], \radius, \color\alpha)
+          EndIf
+          
+          ; Draw image
+          If \image\handle
+            DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+            DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
+          EndIf
+          
+          ; Draw string
+          If \text\string
+            ClipOutput(\x[#c_4],\y[#c_4],\width[#c_4]-\box\width-\text\x[2],\height[#c_4])
+            DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+            DrawText(\text\x, \text\y, \text\string.s, \color\front[State]&$FFFFFF|Alpha)
+            ClipOutput(\x[#c_4],\y[#c_4],\width[#c_4],\height[#c_4])
+          EndIf
+          
+          \box\x = \x+\width-\box\width -\box\arrow\size/2
+          \box\height = \height[2]
+          \box\y = \y
+          
+          ; Draw arrows
+          DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+          Arrow(\box\x+(\box\width-\box\arrow\size)/2, \box\y+(\box\height-\box\arrow\size)/2, \box\arrow\size, Bool(\box\checked)+2, \color\front[State]&$FFFFFF|Alpha, \box\arrow\type)
+          
+          ; Draw frame
+          If \color\frame[State] 
+            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+            RoundBox(\x[1], \y[1], \width[1], \height[1], \radius, \radius, \color\frame[State]&$FFFFFF|Alpha)
+          EndIf
+          
+        EndWith 
   EndProcedure
   
   ;-
@@ -8459,6 +8459,101 @@ Module Widget
     EndWith
   EndProcedure
   
+  Procedure.i _SetParent(*this._S_widget, *Parent._S_widget, parent_item.i=-1)
+    Protected x.i,y.i, *LastParent._S_widget
+    
+    With *this
+      If *this > 0 
+        ; set root parent
+        If Not *Parent\type And *this <> *Parent\parent
+          ;  Debug ""+*this+" "+*Parent+" "+*Parent\parent+" "+*Parent\type
+          *Parent = *Parent\parent
+        EndIf
+        
+        If parent_item =- 1
+          parent_item = *Parent\index[#s_2]
+        EndIf
+        
+        If *Parent <> \parent Or \tab\index <> parent_item : \tab\index = parent_item
+          x = \x[3]
+          y = \y[3]
+          
+          If \parent And \parent\countItems > 0
+            ChangeCurrentElement(\parent\childrens(), GetAdress(*this)) 
+            DeleteElement(\parent\childrens())  
+            \parent\countItems - 1
+            *LastParent = Bool(\parent<>*Parent) * \parent
+          EndIf
+          
+          \parent = *Parent
+          \root = *Parent\root
+          
+          \index = \root\countItems : \root\countItems + 1 
+          
+          If \parent = \root
+            \window = \parent
+          Else
+            \window = \parent\window
+            \parent\countItems + 1 
+            \level = \parent\level + 1
+          EndIf
+          
+          ; Скрываем все виджеты скрытого родителя,
+          ; и кроме тех чьи родителский итем не выбран
+          \hide = Bool(\parent\hide Or \tab\index <> \parent\tab\index[#s_2])
+          
+          ; ????????
+          If \scroll
+            If \scroll\v
+              \scroll\v\window = \window
+            EndIf
+            If \scroll\h
+              \scroll\h\window = \window
+            EndIf
+          EndIf
+          
+          ; for the scroll area childrens
+          If \parent\scroll
+            x-\parent\scroll\h\bar\page\pos
+            y-\parent\scroll\v\bar\page\pos
+          EndIf
+          
+          ; Add new children to the parent
+          LastElement(\parent\childrens()) 
+          \adress = AddElement(\parent\childrens())
+          \parent\childrens() = *this 
+          
+          ; Make count type
+          If \window
+            Static NewMap typecount.l()
+            
+            \type_index = typecount(Hex(\window)+"_"+Hex(\type))
+            typecount(Hex(\window)+"_"+Hex(\type)) + 1
+            
+            \type_count = typecount(Hex(\parent)+"__"+Hex(\type))
+            typecount(Hex(\parent)+"__"+Hex(\type)) + 1
+          EndIf
+          
+          ;
+          Resize(*this, x, y, #PB_Ignore, #PB_Ignore)
+          
+          If *LastParent
+            ;             Debug ""+*root\width+" "+*LastParent\root\width+" "+*Parent\root\width 
+            ;             Debug "From ("+ Class(*LastParent\type) +") to (" + Class(*Parent\type) +") - SetParent()"
+            
+            If *LastParent <> *Parent
+              Select Root()
+                Case *Parent\root : ReDraw(*Parent)
+                Case *LastParent\root     : ReDraw(*LastParent)
+              EndSelect
+            EndIf
+            
+          EndIf
+        EndIf
+      EndIf
+    EndWith
+  EndProcedure
+  
   Procedure.i SetPosition(*this._s_widget, Position.i, *Widget_2 =- 1) ; Ok SetStacking()
     
     With *this
@@ -10107,9 +10202,9 @@ Module Widget
           ;\image\align\horizontal = 1
           
 ;           \box\height = Height
-;           \box\width = 15
-;           \box\arrow\size = 4
-;           \box\arrow\type =- 1
+           \box\width = 15
+          \box\arrow\size = 4
+          \box\arrow\type =- 1
           
           \index[#s_1] =- 1
           \index[#s_2] =- 1
@@ -10932,6 +11027,8 @@ Module Widget
   
   ;-
   Procedure.i CloseList()
+    Debug ""+Root() +" "+ Root()\opened +" "+ Root()\opened\parent +" "+ Root()\parent
+    
     If Root()\opened\parent And Root()\opened\parent\root = Root()\opened\root
       Root()\opened = Root()\opened\parent
     Else
@@ -11751,20 +11848,20 @@ Module Widget
                 EndIf
                 
               Case #PB_GadgetType_ComboBox
-                ;                 \box\checked ! 1
-                ;                 
-                ;                 If \box\checked
-                ;                   Display_Popup(*this, \popup)
-                ;                 Else
-                ;                   HideWindow(\popup\root\canvas\window, 1)
-                ;                 EndIf
+                                \box\checked ! 1
+                                
+                                If \box\checked
+                                  Display_Popup(*this, \popup)
+                                Else
+                                  HideWindow(\popup\root\canvas\window, 1)
+                                EndIf
                 
-                ;               Case #PB_GadgetType_Option
-                ;                 Repaint = SetState(*this, 1)
-                ;                 
-                ;               Case #PB_GadgetType_CheckBox
-                ;                 Repaint = SetState(*this, Bool(\box\checked=#PB_Checkbox_Checked) ! 1)
-                ;                 
+                              Case #PB_GadgetType_Option
+                                Repaint = SetState(*this, 1)
+                                
+                              Case #PB_GadgetType_CheckBox
+                                Repaint = SetState(*this, Bool(\box\checked=#PB_Checkbox_Checked) ! 1)
+                                
               Case #PB_GadgetType_Tree,
                    #PB_GadgetType_ListView
                 Repaint = Set_State(*this, \items(), \index[#s_1]) 
@@ -12401,7 +12498,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Form     ( 8, 8, 256, 303, "window3", 0, Root()\opened)
       Form     ( 8, 8, 256, 303, "window4", 0, Root()\opened)
       ScrollArea(10,10,140,140, 200,200)
-      Button(10, 15, 80, 24,"Кнопка 1")
+      ;Button(10, 15, 80, 24,"Кнопка 1")
+      Combobox(10, 15, 80, 24)
+      AddItem(Widget(), -1, "Combobox")
+      SetState(Widget(), 0)
+      
       Button(95, 15, 80, 24,"Кнопка 2")
       CloseList()
       
@@ -12558,5 +12659,5 @@ CompilerEndIf
 ; ; ;   Until gQuit
 ; ; ; CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------804----------------------------------------------------------------------------------------------------------------------f-f------------------------------------------+--------------------------
 ; EnableXP

@@ -695,13 +695,13 @@ DeclareModule Constants
   
   ; color
   Enumeration 1
-    #Color_Front
-    #Color_Back
-    #Color_Line
-    #Color_TitleFront
-    #Color_TitleBack
-    #Color_GrayText 
-    #Color_Frame
+    #__Color_Front
+    #__Color_Back
+    #__Color_Line
+    #__Color_TitleFront
+    #__Color_TitleBack
+    #__Color_GrayText 
+    #__Color_Frame
   EndEnumeration
   
   ;color state
@@ -2942,16 +2942,16 @@ Module Tree
         PushListPosition(\row\rows()) 
         ForEach \row\rows()
           Select ColorType
-            Case #Color_Back
+            Case #__Color_Back
               \row\rows()\color\back[Column] = Color
               
-            Case #Color_Front
+            Case #__Color_Front
               \row\rows()\color\front[Column] = Color
               
-            Case #Color_Frame
+            Case #__Color_Frame
               \row\rows()\color\frame[Column] = Color
               
-            Case #Color_Line
+            Case #__Color_Line
               \row\rows()\color\line[Column] = Color
               
           EndSelect
@@ -2961,16 +2961,16 @@ Module Tree
       Else
         If Item >= 0 And Item < *this\row\count And SelectElement(*this\row\rows(), Item)
           Select ColorType
-            Case #Color_Back
+            Case #__Color_Back
               \row\rows()\color\back[Column] = Color
               
-            Case #Color_Front
+            Case #__Color_Front
               \row\rows()\color\front[Column] = Color
               
-            Case #Color_Frame
+            Case #__Color_Frame
               \row\rows()\color\frame[Column] = Color
               
-            Case #Color_Line
+            Case #__Color_Line
               \row\rows()\color\line[Column] = Color
               
           EndSelect
@@ -3137,16 +3137,16 @@ Module Tree
     With *this
       If Item >= 0 And Item < *this\row\count And SelectElement(*this\row\rows(), Item)
         Select ColorType
-          Case #Color_Back
+          Case #__Color_Back
             Result = \row\rows()\color\back[Column]
             
-          Case #Color_Front
+          Case #__Color_Front
             Result = \row\rows()\color\front[Column]
             
-          Case #Color_Frame
+          Case #__Color_Frame
             Result = \row\rows()\color\frame[Column]
             
-          Case #Color_Line
+          Case #__Color_Line
             Result = \row\rows()\color\line[Column]
             
         EndSelect
@@ -3796,7 +3796,7 @@ Module Tree
               _set_active_(*this)
             EndIf
             
-            Result | Events(*this, EventType, mouse_x, mouse_y)
+            ;Result | Events(*this, EventType, mouse_x, mouse_y)
             
             If *this\row\index[#s_1] >= 0
               If _from_point_(mouse_x, mouse_y, *this\row\rows()\box[1])
@@ -4181,7 +4181,7 @@ Module Tree
       EndIf
     EndIf
     
-    ;Result | Tree_Events(*this, EventType, mouse_x, mouse_y)
+    Result | Tree_Events(*this, EventType, mouse_x, mouse_y)
     
     ProcedureReturn Result
   EndProcedure
@@ -5000,8 +5000,8 @@ CompilerIf #PB_Compiler_IsMainFile
     LoadFont(5, "Arial", 16)
     SetItemFont(*g, 3, 5)
     SetItemText(*g, 3, "16_font and text change")
-    SetItemColor(*g, 5, #Color_Front, $FFFFFF00)
-    SetItemColor(*g, 5, #Color_Back, $FFFF00FF)
+    SetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
+    SetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
     SetItemText(*g, 5, "backcolor and text change")
     LoadFont(6, "Arial", 25)
     SetItemFont(*g, 4, 6)
@@ -5290,5 +5290,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------v-0-4-t--8-0-----
+; Folding = ---------------------------------------------------------------------------8-8---0---v-0-4-t--8-0-----
 ; EnableXP

@@ -710,51 +710,51 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndProcedure
   
   Procedure.i FreeSelector(*this._S_widget)
-    ;*this\Root\selector = 0
+    *this\Root\selector = 0
   EndProcedure
   
   Procedure.i SetSelector(*this._S_widget)
-   ; *this\Root\selector = AllocateStructure(_S_anchor)
+   *this\Root\selector = AllocateStructure(_S_anchor)
   EndProcedure
   
   Procedure.i UpdateSelector(*this._S_widget)
-;     Protected MouseX, MouseY, DeltaX, DeltaY
-;     
-;     If *this And Not *this\Root\selector And GetButtons(*this)
-;       *this\Root\selector = AllocateStructure(_S_anchor)
-;     EndIf
-;     
-;     If *this And *this\Root\selector
-;       MouseX = GetMouseX(*this)
-;       MouseY = GetMouseY(*this)
-;       ;       MouseX = *Value\Canvas\Mouse\X
-;       ;       MouseY = *Value\Canvas\Mouse\Y
-;       
-;       DeltaX = GetDeltaX(*this)
-;       DeltaY = GetDeltaY(*this)
-;       
-;       If GetDeltaX(*this) > GetMouseX(*this)
-;         DeltaX = GetMouseX(*this)
-;         MouseX = GetDeltaX(*this)
-;       EndIf
-;       
-;       If GetDeltaY(*this) > GetMouseY(*this)
-;         DeltaY = GetMouseY(*this)
-;         MouseY = GetDeltaY(*this)
-;       EndIf
-;       
-;       *this\Root\selector\X = Match(*this\X[2]+DeltaX, 5)-1
-;       *this\Root\selector\Y = Match(*this\Y[2]+DeltaY, 5)-1
-;       *this\Root\selector\Width = Match(MouseX-DeltaX, 5)+1
-;       *this\Root\selector\Height = Match(MouseY-DeltaY, 5)+1
-;       
-;       ReDraw(*this\Root)
-;     EndIf
-;     
-;     If *this\Root\Drag
-;       ProcedureReturn *this
-;     EndIf
-;     
+    Protected MouseX, MouseY, DeltaX, DeltaY
+    
+    If *this And Not *this\Root\selector And GetButtons(*this)
+      *this\Root\selector = AllocateStructure(_S_anchor)
+    EndIf
+    
+    If *this And *this\Root\selector
+      MouseX = GetMouseX(*this)
+      MouseY = GetMouseY(*this)
+      ;       MouseX = *Value\Canvas\Mouse\X
+      ;       MouseY = *Value\Canvas\Mouse\Y
+      
+      DeltaX = GetDeltaX(*this)
+      DeltaY = GetDeltaY(*this)
+      
+      If GetDeltaX(*this) > GetMouseX(*this)
+        DeltaX = GetMouseX(*this)
+        MouseX = GetDeltaX(*this)
+      EndIf
+      
+      If GetDeltaY(*this) > GetMouseY(*this)
+        DeltaY = GetMouseY(*this)
+        MouseY = GetDeltaY(*this)
+      EndIf
+      
+      *this\Root\selector\X = Match(*this\X[2]+DeltaX, 5)-1
+      *this\Root\selector\Y = Match(*this\Y[2]+DeltaY, 5)-1
+      *this\Root\selector\Width = Match(MouseX-DeltaX, 5)+1
+      *this\Root\selector\Height = Match(MouseY-DeltaY, 5)+1
+      
+      ReDraw(*this\Root)
+    EndIf
+    
+    If *this\Root\Drag
+      ProcedureReturn *this
+    EndIf
+    
   EndProcedure
   
   
@@ -1046,5 +1046,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ;- END
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----8-------------
+; Folding = ----8--------------
 ; EnableXP

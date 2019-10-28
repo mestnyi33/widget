@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets(6).pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Window_0()
     w_list(Hex(110)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
-    SetWindowTitle(Root()\canvas\window, "Window_110") 
+    SetWindowTitle(GetWindow(Root()), "Window_110") 
     ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
     ;       w_list(Hex(110)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
     w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Window_1()
     w_list(Hex(110)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
-    SetWindowTitle(Root()\canvas\window, "Window_110") 
+    SetWindowTitle(GetWindow(Root()), "Window_110") 
     ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
     ;       w_list(Hex(110)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
     w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
@@ -117,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug ""
       
-      w_list(Hex(20)) = Open(0, 420,10, 400, 550, "") : SetData(w_list(Hex(20)), 20)
+      w_list(Hex(20)) = Open(0, 420,10, 400, 550, "", #PB_Flag_BorderLess) : SetData(w_list(Hex(20)), 20)
       If w_list(Hex(20))
         w_list(Hex(140)) = Form(100, 100, 200, 200, "Window_140", #PB_Window_SystemMenu) : SetData(w_list(Hex(140)), 140)
         w_list(Hex(141)) = String(10, 10, 180, 85, "String_141") : SetData(w_list(Hex(141)), 141)
@@ -138,8 +138,8 @@ CompilerIf #PB_Compiler_IsMainFile
         ReDraw(Root())
       EndIf
       
-      w_list(Hex(210)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 210)
-      SetWindowTitle(Root()\canvas\window, "Window_210") 
+      w_list(Hex(210)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu | #PB_Flag_BorderLess) : SetData(w_list(Hex(210)), 210)
+      SetWindowTitle(GetWindow(Root()), "Window_210") 
       ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(210)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 110)
       w_list(Hex(211)) = String(10, 10, 180, 85, "String_211") : SetData(w_list(Hex(211)), 211)
@@ -216,7 +216,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "-----"
       
       w_list(Hex(110)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
-      SetWindowTitle(Root()\canvas\window, "Window_110") 
+      SetWindowTitle(GetWindow(Root()), "Window_110") 
       ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(110)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
       w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
@@ -305,5 +305,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --+-
+; Folding = ----
 ; EnableXP

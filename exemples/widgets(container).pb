@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets(6).pbi"
 
 ;- 
 ;- example
@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_MouseLeave
         Debug "leave - "+*event\widget\index
-        *event\widget\color\back = $00FF00
+        *event\widget\color\back = $FF0000
         
        Case #PB_EventType_Repaint
          DrawingMode(#PB_2DDrawing_Transparent)
@@ -29,14 +29,28 @@ CompilerIf #PB_Compiler_IsMainFile
       If *callback
         CallCFunctionFast(*callback, *this)
         
-        If ListSize(\Childrens())
-          ForEach \Childrens()
-            Enumerates(\Childrens(), *callback)
+        If \children_count
+          ForEach \children_list()
+            Enumerates(\children_list(), *callback)
           Next
         EndIf
       EndIf
     EndWith
   EndProcedure
+  
+;   Procedure Enumerates(*this._S_widget, *callback)
+;     With *this
+;       If *callback
+;         CallCFunctionFast(*callback, *this)
+;         
+;         If ListSize(\Childrens())
+;           ForEach \Childrens()
+;             Enumerates(\Childrens(), *callback)
+;           Next
+;         EndIf
+;       EndIf
+;     EndWith
+;   EndProcedure
   
   Procedure enum(*this._S_widget)
      Bind(@Events(), *this)
@@ -46,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 100, 100, 220, 220, "Window_0", #PB_Window_SystemMenu);, WindowID(100))
     
     ; 
-    Open(0, 0, 0, 220, 220)
+    Open(0, 0, 0, 220, 220, "", #PB_Flag_BorderLess)
     Container(20, 20, 180, 180)
     
     Container(70, 10, 70, 180, #PB_Flag_NoGadget) ; bug

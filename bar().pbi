@@ -49,13 +49,13 @@ DeclareModule Bar
   EndEnumeration
 
   Enumeration 1
-    #Color_Front
-    #Color_Back
-    #Color_Line
-    #Color_TitleFront
-    #Color_TitleBack
-    #Color_GrayText 
-    #Color_Frame
+    #__Color_Front
+    #__Color_Back
+    #__Color_Line
+    #__Color_TitleFront
+    #__Color_TitleBack
+    #__Color_GrayText 
+    #__Color_Frame
   EndEnumeration
 
   #Bar_Minimum = 1
@@ -1125,23 +1125,23 @@ Module Bar
     
     With *this
       Select ColorType
-        Case #Color_Line
+        Case #__Color_Line
           If Item=- 1
             \Color\front[State] = Color
           Else
             \bar\button[Item]\Color\front[State] = Color
           EndIf
           
-        Case #Color_Back
+        Case #__Color_Back
           If Item=- 1
             \Color\Back[State] = Color
           Else
             \bar\button[Item]\Color\Back[State] = Color
           EndIf
           
-        Case #Color_Front
+        Case #__Color_Front
           
-        Case #Color_Frame
+        Case #__Color_Frame
           If Item=- 1
             \Color\frame[State] = Color
           Else

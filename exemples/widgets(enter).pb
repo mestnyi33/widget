@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets(6).pbi"
 
 ;- 
 ;- example
@@ -11,11 +11,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Select *event\type
       Case #PB_EventType_MouseEnter
         Debug "enter - "+*event\widget\index
-        *event\widget\color\back = $0000FF
+        If GetButtons(*event\widget)
+          *event\widget\color\back = $00FF00
+        Else
+          *event\widget\color\back = $0000FF
+        EndIf
         
       Case #PB_EventType_MouseLeave
         Debug "leave - "+*event\widget\index
-        *event\widget\color\back = $00FF00
+        *event\widget\color\back = $FF0000
         
        Case #PB_EventType_Repaint
          DrawingMode(#PB_2DDrawing_Transparent)
@@ -29,14 +33,28 @@ CompilerIf #PB_Compiler_IsMainFile
       If *callback
         CallCFunctionFast(*callback, *this)
         
-        If ListSize(\Childrens())
-          ForEach \Childrens()
-            Enumerates(\Childrens(), *callback)
+        If \children_count
+          ForEach \children_list()
+            Enumerates(\children_list(), *callback)
           Next
         EndIf
       EndIf
     EndWith
   EndProcedure
+  
+;   Procedure Enumerates(*this._S_widget, *callback)
+;     With *this
+;       If *callback
+;         CallCFunctionFast(*callback, *this)
+;         
+;         If ListSize(\Childrens())
+;           ForEach \Childrens()
+;             Enumerates(\Childrens(), *callback)
+;           Next
+;         EndIf
+;       EndIf
+;     EndWith
+;   EndProcedure
   
   Procedure enum(*this._S_widget)
      Bind(@Events(), *this)

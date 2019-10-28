@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets(6).pbi"
 
 
 ;- EXAMPLE
@@ -8,17 +8,21 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
   Global *w
   
-  If Open(#PB_Any, 0, 0, 180, 210, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(#PB_Any, 0, 0, 180, 210, "", #PB_Flag_BorderLess | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetWindowTitle(GetWindow(Root()), "OptionGadget")
     
-    Option( 50, 20, 80, 20, "Option 1")
+    Checkbox( 50, 20, 80, 20, "Checkbox 1")
+    SetState(Widget(), 1) 
+    
     *w=Option( 50, 45, 80, 20, "Option 2")
     Option( 50, 70, 80, 20, "Option 3")
     SetState(*w, 1)   ; set second option as active one
     
     Button( 50, 95, 80,20,"button")
     
-    Option( 50, 120, 80, 20, "Option 1")
+    Checkbox( 50, 120, 80, 20, "Checkbox 1")
+    SetState(Widget(), 1) 
+    
     *w=Option( 50, 145, 80, 20, "Option 2")
     Option( 50, 170, 80, 20, "Option 3")
     SetState(*w, 1)   ; set second option as active one
