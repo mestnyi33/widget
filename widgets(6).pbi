@@ -900,7 +900,7 @@ DeclareModule Widget
     vertical.b
     inverted.b
     direction.l
-    scrollstep.l
+    scrollstep.f
     page._S_page
     area._S_page
     thumb._S_page  
@@ -5526,6 +5526,203 @@ Module Widget
     
   EndProcedure
   
+  ;-
+  Procedure.i Draw_Text(*this._S_widget)
+    Protected i.i, y.i
+    
+    With *this
+      Protected Alpha = \color\alpha<<24
+      
+      ; Draw string
+      If \text\string
+        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+        
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+          DrawText(\text\x, \text\y, \text\string.s, \color\front&$FFFFFF|Alpha)
+          
+        CompilerElse
+          Protected *Sta.Character = @\text\string.s
+          Protected *End.Character = @\text\string.s 
+          #SOC = SizeOf(Character)
+          
+          While *End\c 
+            If *End\c = #LF
+              DrawText(\text\x, \text\y+y, PeekS(*Sta, (*End-*Sta)>>#PB_Compiler_Unicode), \color\front&$FFFFFF|Alpha)
+              *Sta = *End + #SOC 
+              y+\text\height
+            EndIf 
+            *End + #SOC 
+          Wend
+          
+          ;         For i=1 To \countItems
+          ;           DrawText(\text\x, \text\y+y, StringField(\text\string.s, i, #LF$), \color\front&$FFFFFF|Alpha)
+          ;           y+\text\height
+          ;         Next
+        CompilerEndIf  
+      EndIf
+      
+      ; Draw frame
+      If \color\frame
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        RoundBox( \x[1], \y[1], \width[1], \height[1], \radius, \radius, \color\frame&$FFFFFF|Alpha)
+      EndIf
+    EndWith 
+  EndProcedure
+  
+  Procedure.i Draw_String(*this._S_widget)
+    
+    With *this
+      Protected Alpha = \color\alpha<<24
+      
+      ; Draw frame
+      If \color\back
+        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        RoundBox( \x[2], \y[2], \width[2], \height[2], \radius, \radius, \color\back&$FFFFFF|Alpha)
+      EndIf
+      
+      ;       If \text\change : \text\change = #False
+      ;         \text\width = TextWidth(\text\string.s) 
+      ;         
+      ;         If \text\fontID 
+      ;           \text\height = TextHeight("A") 
+      ;         Else
+      ;           \text\height = *this\text\height[1]
+      ;         EndIf
+      ;       EndIf 
+      
+      If \text[1]\change : \text[1]\change = #False
+        \text[1]\width = TextWidth(\text[1]\string.s) 
+      EndIf 
+      
+      If \text[3]\change : \text[3]\change = #False 
+        \text[3]\width = TextWidth(\text[3]\string.s)
+      EndIf 
+      
+      If \text[2]\change : \text[2]\change = #False 
+        \text[2]\x = \text\x+\text[1]\width
+        ; Debug "get caret "+\text[3]\len
+        \text[2]\width = TextWidth(\text[2]\string.s) ;+ Bool(\text\len = \text[2]\len Or \text[2]\len =- 1 Or \text[3]\len = 0) * *this\flag\fullSelection ; TextWidth() - bug in mac os
+        \text[3]\x = \text[2]\x+\text[2]\width
+      EndIf 
+      
+      Protected IT,Text_Y,Text_X, X,Y, Width,Height, Drawing
+      Protected angle.f
+      
+      
+      Height = \text\height
+      Y = \text\y
+      Text_X = \text\x
+      Text_Y = \text\y
+      Angle = Bool(\text\Vertical) * *this\text\rotate
+      Protected Front_BackColor_1 = *this\color\front[*this\color\state]&$FFFFFF|*this\color\alpha<<24
+      Protected Front_BackColor_2 = *this\color\front[2]&$FFFFFF|*this\color\alpha<<24 
+      
+      ; Draw string
+      If \text[2]\len And *this\color\front <> *this\color\front[2]
+        
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+          If (*this\text\caret[1] > *this\text\caret And *this\index[#s_2] = *this\index[#s_1]) Or
+             (\index = *this\index[#s_1] And *this\index[#s_2] > *this\index[#s_1])
+            \text[3]\x = \text\x+TextWidth(Left(\text\string.s, *this\text\caret[1])) 
+            
+            If *this\index[#s_2] = *this\index[#s_1]
+              \text[2]\x = \text[3]\x-\text[2]\width
+            EndIf
+            
+            If \text[3]\string.s
+              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+              DrawRotatedText(\text[3]\x, Text_Y, \text[3]\string.s, angle, Front_BackColor_1)
+            EndIf
+            
+            If *this\color\fore[2]
+              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+              _box_gradient_(\Vertical,\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height,\color\fore[2]&$FFFFFF|\color\alpha<<24,\color\back[2]&$FFFFFF|\color\alpha<<24,\radius)
+            Else
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              Box(\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height, \color\back[2]&$FFFFFF|\color\alpha<<24 )
+            EndIf
+            
+            If \text[2]\string.s
+              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+              DrawRotatedText(Text_X, Text_Y, \text[1]\string.s+\text[2]\string.s, angle, Front_BackColor_2)
+            EndIf
+            
+            If \text[1]\string.s
+              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+              DrawRotatedText(Text_X, Text_Y, \text[1]\string.s, angle, Front_BackColor_1)
+            EndIf
+          Else
+            DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+            DrawRotatedText(Text_X, Text_Y, \text\string.s, angle, Front_BackColor_1)
+            
+            If *this\color\fore[2]
+              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+              _box_gradient_(\Vertical,\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height,\color\fore[2]&$FFFFFF|\color\alpha<<24,\color\back[2]&$FFFFFF|\color\alpha<<24,\radius)
+            Else
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              Box(\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height, \color\back[2]&$FFFFFF|\color\alpha<<24)
+            EndIf
+            
+            If \text[2]\string.s
+              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+              DrawRotatedText(\text[2]\x, Text_Y, \text[2]\string.s, angle, Front_BackColor_2)
+            EndIf
+          EndIf
+        CompilerElse
+          If \text[1]\string.s
+            DrawingMode(#PB_2DDrawing_Transparent)
+            DrawRotatedText(Text_X, Text_Y, \text[1]\string.s, angle, Front_BackColor_1)
+          EndIf
+          
+          If *this\color\fore[2]
+            DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+            _box_gradient_(\Vertical,\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height,\color\fore[2]&$FFFFFF|\color\alpha<<24,\color\back[2]&$FFFFFF|\color\alpha<<24,\radius)
+          Else
+            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+            Box(\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height, \color\back[2]&$FFFFFF|\color\alpha<<24)
+          EndIf
+          
+          If \text[2]\string.s
+            DrawingMode(#PB_2DDrawing_Transparent)
+            DrawRotatedText(\text[2]\x, Text_Y, \text[2]\string.s, angle, Front_BackColor_2)
+          EndIf
+          
+          If \text[3]\string.s
+            DrawingMode(#PB_2DDrawing_Transparent)
+            DrawRotatedText(\text[3]\x, Text_Y, \text[3]\string.s, angle, Front_BackColor_1)
+          EndIf
+        CompilerEndIf
+        
+      Else
+        If \text[2]\len
+          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+          Box(\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height, \color\back[2]&$FFFFFF|\color\alpha<<24)
+        EndIf
+        
+        If \color\state = 2
+          DrawingMode(#PB_2DDrawing_Transparent)
+          DrawRotatedText(Text_X, Text_Y, \text[0]\string.s, angle, Front_BackColor_2)
+        Else
+          DrawingMode(#PB_2DDrawing_Transparent)
+          DrawRotatedText(Text_X, Text_Y, \text[0]\string.s, angle, Front_BackColor_1)
+        EndIf
+      EndIf
+      
+      ; Draw caret
+      If \text\editable And \focus : DrawingMode(#PB_2DDrawing_XOr)   
+        Line(\text\x + \text[1]\width + Bool(\text\caret[1] > \text\caret) * \text[2]\width - Bool(#PB_Compiler_OS = #PB_OS_Windows), \text\y, 1, \text\height, $FFFFFFFF)
+      EndIf
+      
+      
+      ; Draw frame
+      If \color\frame
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        RoundBox( \x[1], \y[1], \width[1], \height[1], \radius, \radius, \color\frame&$FFFFFF|Alpha)
+      EndIf
+    EndWith 
+  EndProcedure
+  
+  ;-
   Procedure.i Draw_Scroll(*this._S_widget)
     Protected.i State_0, State_1, State_2, State_3, Alpha, LinesColor
     
@@ -5747,15 +5944,11 @@ Module Widget
   EndProcedure
   
   Procedure.i Draw_Spin(*this._S_widget)
-    Protected.i State_0, State_1, State_2, State_3, Alpha, LinesColor
+    Protected.i State_0, State_3, Alpha
     
     With *this 
-      State_0 = \color[0]\state
-      State_1 = \color[1]\state
-      State_2 = \color[2]\state
-      State_3 = \color[3]\state
+      State_0 = \color\state
       Alpha = \color\alpha<<24
-      LinesColor = \color[3]\front[State_3]&$FFFFFF|Alpha
       
       ; Draw scroll bar background
       If \color\back[State_0]<>-1
@@ -5763,57 +5956,73 @@ Module Widget
         RoundBox( \x[2], \y[2], \width[2], \height[2], \radius, \radius, \color\back[State_0]&$FFFFFF|Alpha)
       EndIf
       
+       Line(\bar\button[#bb_1]\x-2, \y[2],1,\height[2], \color\frame&$FFFFFF|Alpha)
+       RoundBox( \x[2]+\width[2]-16, \y[2], 16, \height[2], \radius, \radius, $F0F0F0&$FFFFFF|Alpha)
+      
       ; Draw string
       If \text\string
         DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawText(\text\x, \text\y, \text\string, \color\front[State_3]&$FFFFFF|Alpha)
+        DrawText(\text\x, \text\y, \text\string, \color\front[State_0]&$FFFFFF|Alpha)
       EndIf
       ; Draw_String(*this._S_widget)
       
       If \bar\button\len
-        Protected Radius = \height[2]/7
-        ;             If Radius > 2
-        Radius = 7
-        ;             EndIf
-        
-        ; Draw buttons
-        If \color[1]\back[State_1]<>-1
-          If \color[1]\fore[State_1]
-            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          EndIf
-          _box_gradient_( \bar\Vertical, \bar\button[#bb_1]\x, \bar\button[#bb_1]\y, \bar\button[#bb_1]\width, \bar\button[#bb_1]\height, \color[1]\fore[State_1], \color[1]\back[State_1], Radius, \color\alpha)
+        Protected Radius = (\height[2]/2)
+        If Radius > 6
+          Radius = 7
+        Else
+          Radius = 3
         EndIf
         
         ; Draw buttons
-        If \color[2]\back[State_2]<>-1
-          If \color[2]\fore[State_2]
+        If \bar\button[#bb_1]\color\back[\bar\button[#bb_1]\color\state]<>-1
+          If \bar\button[#bb_1]\color\fore[\bar\button[#bb_1]\color\state]
             DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
           EndIf
-          _box_gradient_( \Vertical, \bar\button[#bb_2]\x, \bar\button[#bb_2]\y, \bar\button[#bb_2]\width, \bar\button[#bb_2]\height, \color[2]\fore[State_2], \color[2]\back[State_2], Radius, \color\alpha)
+          _box_gradient_( \bar\Vertical, \bar\button[#bb_1]\x, \bar\button[#bb_1]\y, \bar\button[#bb_1]\width,
+                          \bar\button[#bb_1]\height, \bar\button[#bb_1]\color\fore[\bar\button[#bb_1]\color\state], 
+                          \bar\button[#bb_1]\color\back[\bar\button[#bb_1]\color\state], Radius, \color\alpha)
+        EndIf
+        
+        ; Draw buttons
+        If \bar\button[#bb_2]\color\back[\bar\button[#bb_2]\color\state]<>-1
+          If \bar\button[#bb_2]\color\fore[\bar\button[#bb_2]\color\state]
+            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          EndIf
+          _box_gradient_( \bar\Vertical, \bar\button[#bb_2]\x, \bar\button[#bb_2]\y, \bar\button[#bb_2]\width,
+                          \bar\button[#bb_2]\height, \bar\button[#bb_2]\color\fore[\bar\button[#bb_2]\color\state], 
+                          \bar\button[#bb_2]\color\back[\bar\button[#bb_2]\color\state], Radius, \color\alpha)
         EndIf
         
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
         
         ; Draw buttons frame
-        If \color[1]\frame[State_1]
-          RoundBox( \bar\button[#bb_1]\x, \bar\button[#bb_1]\y, \bar\button[#bb_1]\width, \bar\button[#bb_1]\height, Radius, Radius, \color[1]\frame[State_1]&$FFFFFF|Alpha)
+        If \bar\button[#bb_1]\color\frame[\bar\button[#bb_1]\color\state]
+          RoundBox( \bar\button[#bb_1]\x, \bar\button[#bb_1]\y, \bar\button[#bb_1]\width, 
+                    \bar\button[#bb_1]\height, Radius, Radius, \bar\button[#bb_1]\color\frame[\bar\button[#bb_1]\color\state]&$FFFFFF|Alpha)
         EndIf
         
         ; Draw buttons frame
-        If \color[2]\frame[State_2]
-          RoundBox( \bar\button[#bb_2]\x, \bar\button[#bb_2]\y, \bar\button[#bb_2]\width, \bar\button[#bb_2]\height, Radius, Radius, \color[2]\frame[State_2]&$FFFFFF|Alpha)
+        If \bar\button[#bb_2]\color\frame[\bar\button[#bb_2]\color\state]
+          RoundBox( \bar\button[#bb_2]\x, \bar\button[#bb_2]\y, \bar\button[#bb_2]\width,
+                    \bar\button[#bb_2]\height, Radius, Radius, \bar\button[#bb_2]\color\frame[\bar\button[#bb_2]\color\state]&$FFFFFF|Alpha)
         EndIf
         
         ; Draw arrows
-        Arrow( \bar\button[#bb_1]\x+( \bar\button[#bb_1]\width-\bar\button[#bb_1]\arrow\size)/2, \bar\button[#bb_1]\y+( \bar\button[#bb_1]\height-\bar\button[#bb_1]\arrow\size)/2, \bar\button[#bb_1]\arrow\size, Bool(\bar\Vertical)*3,
-               (Bool(Not _bar_in_start_(*this\bar)) * \color[1]\front[State_1] + _bar_in_start_(*this\bar) * \color[1]\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_1]\arrow\type)
+        Arrow( \bar\button[#bb_1]\x+( \bar\button[#bb_1]\width-\bar\button[#bb_1]\arrow\size)/2, 
+               \bar\button[#bb_1]\y+( \bar\button[#bb_1]\height-\bar\button[#bb_1]\arrow\size)/2, 
+               \bar\button[#bb_1]\arrow\size, Bool(\bar\Vertical)*3,
+               (Bool(Not _bar_in_start_(*this\bar)) * \bar\button[#bb_1]\color\front[\bar\button[#bb_1]\color\state] +
+                _bar_in_start_(*this\bar) * \bar\button[#bb_1]\color\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_1]\arrow\type)
         
         ; Draw arrows
-        Arrow( \bar\button[#bb_2]\x+( \bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2, \bar\button[#bb_2]\y+( \bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2, \bar\button[#bb_2]\arrow\size, Bool(Not \bar\Vertical)+1, 
-               (Bool(Not _bar_in_stop_(*this\bar)) * \color[2]\front[State_2] + _bar_in_stop_(*this\bar) * \color[2]\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_2]\arrow\type)
+        Arrow( \bar\button[#bb_2]\x+( \bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2, 
+               \bar\button[#bb_2]\y+( \bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2,
+               \bar\button[#bb_2]\arrow\size, Bool(Not \bar\Vertical)+1, 
+               (Bool(Not _bar_in_stop_(*this\bar)) * \bar\button[#bb_2]\color\front[\bar\button[#bb_2]\color\state] + 
+                _bar_in_stop_(*this\bar) * \bar\button[#bb_2]\color\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_2]\arrow\type)
         
         
-        Line(\bar\button[#bb_1]\x-2, \y[2],1,\height[2], \color\frame&$FFFFFF|Alpha)
       EndIf      
     EndWith
   EndProcedure
@@ -6849,202 +7058,6 @@ Module Widget
           ;         Next
         CompilerEndIf  
       EndIf
-      
-      ; Draw frame
-      If \color\frame
-        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        RoundBox( \x[1], \y[1], \width[1], \height[1], \radius, \radius, \color\frame&$FFFFFF|Alpha)
-      EndIf
-    EndWith 
-  EndProcedure
-  
-  ;-
-  Procedure.i Draw_Text(*this._S_widget)
-    Protected i.i, y.i
-    
-    With *this
-      Protected Alpha = \color\alpha<<24
-      
-      ; Draw string
-      If \text\string
-        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        
-        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-          DrawText(\text\x, \text\y, \text\string.s, \color\front&$FFFFFF|Alpha)
-          
-        CompilerElse
-          Protected *Sta.Character = @\text\string.s
-          Protected *End.Character = @\text\string.s 
-          #SOC = SizeOf(Character)
-          
-          While *End\c 
-            If *End\c = #LF
-              DrawText(\text\x, \text\y+y, PeekS(*Sta, (*End-*Sta)>>#PB_Compiler_Unicode), \color\front&$FFFFFF|Alpha)
-              *Sta = *End + #SOC 
-              y+\text\height
-            EndIf 
-            *End + #SOC 
-          Wend
-          
-          ;         For i=1 To \countItems
-          ;           DrawText(\text\x, \text\y+y, StringField(\text\string.s, i, #LF$), \color\front&$FFFFFF|Alpha)
-          ;           y+\text\height
-          ;         Next
-        CompilerEndIf  
-      EndIf
-      
-      ; Draw frame
-      If \color\frame
-        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        RoundBox( \x[1], \y[1], \width[1], \height[1], \radius, \radius, \color\frame&$FFFFFF|Alpha)
-      EndIf
-    EndWith 
-  EndProcedure
-  
-  Procedure.i Draw_String(*this._S_widget)
-    
-    With *this
-      Protected Alpha = \color\alpha<<24
-      
-      ; Draw frame
-      If \color\back
-        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox( \x[2], \y[2], \width[2], \height[2], \radius, \radius, \color\back&$FFFFFF|Alpha)
-      EndIf
-      
-      ;       If \text\change : \text\change = #False
-      ;         \text\width = TextWidth(\text\string.s) 
-      ;         
-      ;         If \text\fontID 
-      ;           \text\height = TextHeight("A") 
-      ;         Else
-      ;           \text\height = *this\text\height[1]
-      ;         EndIf
-      ;       EndIf 
-      
-      If \text[1]\change : \text[1]\change = #False
-        \text[1]\width = TextWidth(\text[1]\string.s) 
-      EndIf 
-      
-      If \text[3]\change : \text[3]\change = #False 
-        \text[3]\width = TextWidth(\text[3]\string.s)
-      EndIf 
-      
-      If \text[2]\change : \text[2]\change = #False 
-        \text[2]\x = \text\x+\text[1]\width
-        ; Debug "get caret "+\text[3]\len
-        \text[2]\width = TextWidth(\text[2]\string.s) ;+ Bool(\text\len = \text[2]\len Or \text[2]\len =- 1 Or \text[3]\len = 0) * *this\flag\fullSelection ; TextWidth() - bug in mac os
-        \text[3]\x = \text[2]\x+\text[2]\width
-      EndIf 
-      
-      Protected IT,Text_Y,Text_X, X,Y, Width,Height, Drawing
-      Protected angle.f
-      
-      
-      Height = \text\height
-      Y = \text\y
-      Text_X = \text\x
-      Text_Y = \text\y
-      Angle = Bool(\text\Vertical) * *this\text\rotate
-      Protected Front_BackColor_1 = *this\color\front[*this\color\state]&$FFFFFF|*this\color\alpha<<24
-      Protected Front_BackColor_2 = *this\color\front[2]&$FFFFFF|*this\color\alpha<<24 
-      
-      ; Draw string
-      If \text[2]\len And *this\color\front <> *this\color\front[2]
-        
-        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-          If (*this\text\caret[1] > *this\text\caret And *this\index[#s_2] = *this\index[#s_1]) Or
-             (\index = *this\index[#s_1] And *this\index[#s_2] > *this\index[#s_1])
-            \text[3]\x = \text\x+TextWidth(Left(\text\string.s, *this\text\caret[1])) 
-            
-            If *this\index[#s_2] = *this\index[#s_1]
-              \text[2]\x = \text[3]\x-\text[2]\width
-            EndIf
-            
-            If \text[3]\string.s
-              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-              DrawRotatedText(\text[3]\x, Text_Y, \text[3]\string.s, angle, Front_BackColor_1)
-            EndIf
-            
-            If *this\color\fore[2]
-              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-              _box_gradient_(\Vertical,\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height,\color\fore[2]&$FFFFFF|\color\alpha<<24,\color\back[2]&$FFFFFF|\color\alpha<<24,\radius)
-            Else
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              Box(\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height, \color\back[2]&$FFFFFF|\color\alpha<<24 )
-            EndIf
-            
-            If \text[2]\string.s
-              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-              DrawRotatedText(Text_X, Text_Y, \text[1]\string.s+\text[2]\string.s, angle, Front_BackColor_2)
-            EndIf
-            
-            If \text[1]\string.s
-              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-              DrawRotatedText(Text_X, Text_Y, \text[1]\string.s, angle, Front_BackColor_1)
-            EndIf
-          Else
-            DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-            DrawRotatedText(Text_X, Text_Y, \text\string.s, angle, Front_BackColor_1)
-            
-            If *this\color\fore[2]
-              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-              _box_gradient_(\Vertical,\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height,\color\fore[2]&$FFFFFF|\color\alpha<<24,\color\back[2]&$FFFFFF|\color\alpha<<24,\radius)
-            Else
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              Box(\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height, \color\back[2]&$FFFFFF|\color\alpha<<24)
-            EndIf
-            
-            If \text[2]\string.s
-              DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-              DrawRotatedText(\text[2]\x, Text_Y, \text[2]\string.s, angle, Front_BackColor_2)
-            EndIf
-          EndIf
-        CompilerElse
-          If \text[1]\string.s
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawRotatedText(Text_X, Text_Y, \text[1]\string.s, angle, Front_BackColor_1)
-          EndIf
-          
-          If *this\color\fore[2]
-            DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-            _box_gradient_(\Vertical,\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height,\color\fore[2]&$FFFFFF|\color\alpha<<24,\color\back[2]&$FFFFFF|\color\alpha<<24,\radius)
-          Else
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            Box(\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height, \color\back[2]&$FFFFFF|\color\alpha<<24)
-          EndIf
-          
-          If \text[2]\string.s
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawRotatedText(\text[2]\x, Text_Y, \text[2]\string.s, angle, Front_BackColor_2)
-          EndIf
-          
-          If \text[3]\string.s
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawRotatedText(\text[3]\x, Text_Y, \text[3]\string.s, angle, Front_BackColor_1)
-          EndIf
-        CompilerEndIf
-        
-      Else
-        If \text[2]\len
-          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          Box(\text[2]\x, Y, \text[2]\width+\text[2]\width[2], Height, \color\back[2]&$FFFFFF|\color\alpha<<24)
-        EndIf
-        
-        If \color\state = 2
-          DrawingMode(#PB_2DDrawing_Transparent)
-          DrawRotatedText(Text_X, Text_Y, \text[0]\string.s, angle, Front_BackColor_2)
-        Else
-          DrawingMode(#PB_2DDrawing_Transparent)
-          DrawRotatedText(Text_X, Text_Y, \text[0]\string.s, angle, Front_BackColor_1)
-        EndIf
-      EndIf
-      
-      ; Draw caret
-      If \text\editable And \focus : DrawingMode(#PB_2DDrawing_XOr)   
-        Line(\text\x + \text[1]\width + Bool(\text\caret[1] > \text\caret) * \text[2]\width - Bool(#PB_Compiler_OS = #PB_OS_Windows), \text\y, 1, \text\height, $FFFFFFFF)
-      EndIf
-      
       
       ; Draw frame
       If \color\frame
@@ -9739,12 +9752,30 @@ Module Widget
             \caption\button[2]\y = \caption\button[0]\y
             
           Case #PB_GadgetType_Spin
-            If \bar\vertical
-              \bar\button[#bb_1]\y = \y[2]+\height[2]/2+Bool(\height[2]%2) : \bar\button[#bb_1]\height = \height[2]/2 : \bar\button[#bb_1]\width = \bar\button\len : \bar\button[#bb_1]\x = \x[2]+\width[2]-\bar\button\len ; Top button coordinate
-              \bar\button[#bb_2]\y = \y[2] : \bar\button[#bb_2]\height = \height[2]/2 : \bar\button[#bb_2]\width = \bar\button\len : \bar\button[#bb_2]\x = \x[2]+\width[2]-\bar\button\len                                 ; Bottom button coordinate
-            Else
-              \bar\button[#bb_1]\y = \y[2] : \bar\button[#bb_1]\height = \height[2] : \bar\button[#bb_1]\width = \bar\button\len/2 : \bar\button[#bb_1]\x = \x[2]+\width[2]-\bar\button\len                                 ; Left button coordinate
-              \bar\button[#bb_2]\y = \y[2] : \bar\button[#bb_2]\height = \height[2] : \bar\button[#bb_2]\width = \bar\button\len/2 : \bar\button[#bb_2]\x = \x[2]+\width[2]-\bar\button\len/2                               ; Right button coordinate
+            If \bar\vertical      
+              ; Top button coordinate
+              \bar\button[#bb_1]\y = \y[2]+\height[2]/2 + Bool(\height[2]%2) 
+              \bar\button[#bb_1]\height = \height[2]/2 
+              \bar\button[#bb_1]\width = \bar\button\len 
+              \bar\button[#bb_1]\x = \x[2]+\width[2]-\bar\button\len
+              
+              ; Bottom button coordinate
+              \bar\button[#bb_2]\y = \y[2] 
+              \bar\button[#bb_2]\height = \height[2]/2 
+              \bar\button[#bb_2]\width = \bar\button\len 
+              \bar\button[#bb_2]\x = \x[2]+\width[2]-\bar\button\len                                 
+            Else    
+              ; Left button coordinate
+              \bar\button[#bb_1]\y = \y[2] 
+              \bar\button[#bb_1]\height = \height[2] 
+              \bar\button[#bb_1]\width = \bar\button\len/2 
+              \bar\button[#bb_1]\x = \x[2]+\width[2]-\bar\button\len    
+              
+              ; Right button coordinate
+              \bar\button[#bb_2]\y = \y[2] 
+              \bar\button[#bb_2]\height = \height[2] 
+              \bar\button[#bb_2]\width = \bar\button\len/2 
+              \bar\button[#bb_2]\x = \x[2]+\width[2]-\bar\button\len/2                               
             EndIf
             
             
@@ -9981,9 +10012,6 @@ Module Widget
       ;\text\align\horizontal = 1
       \text\x[2] = 5
       
-      ;\radius = Radius
-      ;\ticks = Bool(Flag&#PB_Bar_Ticks=#PB_Bar_Ticks)
-      
       \text\string.s[1] = Str(Min)
       \text\change = 1
       
@@ -9993,25 +10021,22 @@ Module Widget
       \color\back = $FFFFFFFF
       \text\editable = 1
       
-      \color[1] = def_colors
-      \color[2] = def_colors
-      \color[3] = def_colors
-      
-      \color[1]\alpha = 255
-      \color[2]\alpha = 255
-      \color[3]\alpha = 255
-      \color[1]\alpha[1] = 128
-      \color[2]\alpha[1] = 128
-      \color[3]\alpha[1] = 128
-      
       \bar\scrollstep = 1
-      \bar\button\len = 15
+      
+      \bar\button\color = def_colors
+      \bar\button[#bb_1]\color = def_colors
+      \bar\button[#bb_2]\color = def_colors
+      
       \bar\button[#bb_1]\arrow\size = 2
       \bar\button[#bb_2]\arrow\size = 2
+      
       \bar\button[#bb_1]\arrow\type =- 1 ; -1 0 1
       \bar\button[#bb_2]\arrow\type =- 1 ; -1 0 1
+      
+      \bar\button\len = 15
       \bar\button[#bb_1]\len = \bar\button\len
       \bar\button[#bb_2]\len = \bar\button\len
+      
       \bar\Vertical = Bool(Not Flag&#PB_Flag_Vertical=#PB_Flag_Vertical)
       
       If \bar\min <> Min : SetAttribute(*this, #PB_Bar_Minimum, Min) : EndIf
@@ -11726,8 +11751,8 @@ Module Widget
         ;_from_point_button_(*enter)
         ;_from_point_tab_(*enter, mouse_x, mouse_y, \tab)
         Protected Repaint
-        _events_bar_(*enter, #PB_EventType_MouseMove, mouse_x, mouse_y)
-        _events_panel_(*enter, #PB_EventType_MouseMove, mouse_x, mouse_y)
+;          _events_bar_(*enter, #PB_EventType_MouseMove, mouse_x, mouse_y)
+;         _events_panel_(*enter, #PB_EventType_MouseMove, mouse_x, mouse_y)
         _events_spin_(*enter, #PB_EventType_MouseMove, mouse_x, mouse_y)
         
         If ListSize(\items())
@@ -12645,5 +12670,5 @@ CompilerEndIf
 ; ; ;   Until gQuit
 ; ; ; CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------0----4--v8-f4---------------------------------------------------------------------------------------4-----------------------------------
 ; EnableXP
