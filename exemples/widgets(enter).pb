@@ -33,9 +33,9 @@ CompilerIf #PB_Compiler_IsMainFile
       If *callback
         CallCFunctionFast(*callback, *this)
         
-        If \children_count
-          ForEach \children_list()
-            Enumerates(\children_list(), *callback)
+        If \count
+          ForEach \childrens()
+            Enumerates(\childrens(), *callback)
           Next
         EndIf
       EndIf

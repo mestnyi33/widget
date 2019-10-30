@@ -691,6 +691,7 @@ DeclareModule Constants
     #Tree_MultiSelect
     #Tree_FullSelection
     #Tree_AlwaysSelection
+    #Tree_Alternatinglines ; чередующиеся строки
   EndEnumeration
   
   ; color
@@ -5290,5 +5291,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------8-8---0---v-0-4-t--8-0-----
+; Folding = ---------------------------------------------------------------------------8-8---0-f-v00-4-t--8-0-----
 ; EnableXP
