@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets(6).pbi"
+XIncludeFile "widgets(8).pbi"
 
 ;- 
 ;- example

@@ -920,7 +920,7 @@ DeclareModule Structures
     radius.a
     sublevel.l
     childrens.l
-    sublength.l
+    sublevellen.l
     
     ;Font._S_font
     fontID.i
@@ -957,7 +957,7 @@ DeclareModule Structures
     *tt._S_tt
     
     sublevel.l
-    sublength.l
+    sublevellen.l
     
     ;Font._S_font
     
@@ -2624,22 +2624,22 @@ Module Tree
             
             ; expanded & collapsed box
             If _this_\flag\buttons Or _this_\flag\lines 
-              _items_\box[0]\x = _items_\x + _items_\sublength - _this_\row\sublength + Bool(_this_\flag\buttons) * 4 + Bool(Not _this_\flag\buttons And _this_\flag\lines) * 8 - _this_\scroll\h\page\pos 
+              _items_\box[0]\x = _items_\x + _items_\sublevellen - _this_\row\sublevellen + Bool(_this_\flag\buttons) * 4 + Bool(Not _this_\flag\buttons And _this_\flag\lines) * 8 - _this_\scroll\h\page\pos 
               _items_\box[0]\y = (_items_\y+_items_\height)-(_items_\height+_items_\box[0]\height)/2-_this_\scroll\v\page\pos
             EndIf
             
             ;
-            _items_\image\x = _items_\x + _this_\image\padding\left + _items_\sublength - _this_\scroll\h\page\pos
+            _items_\image\x = _items_\x + _this_\image\padding\left + _items_\sublevellen - _this_\scroll\h\page\pos
             _items_\image\y = _items_\y + (_items_\height-_items_\image\height)/2-_this_\scroll\v\page\pos
             
-            _items_\text\x = _items_\x + _this_\text\padding\left + _items_\sublength + _this_\row\sublevel - _this_\scroll\h\page\pos
+            _items_\text\x = _items_\x + _this_\text\padding\left + _items_\sublevellen + _this_\row\sublevel - _this_\scroll\h\page\pos
             _items_\text\y = _items_\y + (_items_\height-_items_\text\height)/2-_this_\scroll\v\page\pos
             
             _items_\draw = Bool(_items_\y+_items_\height-_this_\scroll\v\page\pos>_this_\y[2] And 
                                 (_items_\y-_this_\y[2])-_this_\scroll\v\page\pos<_this_\height[2])
             
             ; lines for tree widget
-            If _this_\flag\lines And _this_\row\sublength
+            If _this_\flag\lines And _this_\row\sublevellen
               _lines_(_this_, _items_)
             EndIf
             
@@ -3390,7 +3390,7 @@ Module Tree
           ;;;; \row\rows() = AllocateStructure(_S_rows) с ним setstate работать перестает
           \row\rows()\handle = handle
           
-          If \row\sublength
+          If \row\sublevellen
             If Not position
               \row\first = \row\rows()
             EndIf
@@ -3469,11 +3469,11 @@ Module Tree
             \row\rows()\box[1]\height = \flag\checkBoxes
           EndIf
           
-          If \row\sublength 
+          If \row\sublevellen 
             If (\flag\buttons Or \flag\lines)
-              \row\rows()\sublength = \row\rows()\sublevel * \row\sublength + Bool(\flag\buttons) * 19 + Bool(\flag\checkBoxes) * 18
+              \row\rows()\sublevellen = \row\rows()\sublevel * \row\sublevellen + Bool(\flag\buttons) * 19 + Bool(\flag\checkBoxes) * 18
             Else
-              \row\rows()\sublength =  Bool(\flag\checkBoxes) * 18 
+              \row\rows()\sublevellen =  Bool(\flag\checkBoxes) * 18 
             EndIf
           EndIf
           
@@ -3652,7 +3652,7 @@ Module Tree
         
         
         If \flag\lines Or \flag\buttons Or \flag\checkBoxes
-          \row\sublength = 18
+          \row\sublevellen = 18
         EndIf
         
         ;\color = def_colors
@@ -5291,5 +5291,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------8-8---0-f-v00-4-t--8-0-----
+; Folding = -----------------------------------------------------------------------------8--------00-4-t--8-0-----
 ; EnableXP

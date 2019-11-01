@@ -554,13 +554,12 @@ Module Bar
     
     
     If Direction = 1 ; top
-      If Style > 0 : x-1 : y+2
-        Size / 2
+      If Style > 0 : y + 1 : size / 2 : x+size 
         For i = 0 To Size 
-          LineXY((X+1+i)+Size,(Y+i-1)-(Style),(X+1+i)+Size,(Y+i-1)+(Style),Color)         ; Левая линия
-          LineXY(((X+1+(Size))-i),(Y+i-1)-(Style),((X+1+(Size))-i),(Y+i-1)+(Style),Color) ; правая линия
+          LineXY(x-i,y+i-Style,x-i,y+i+Style,Color) ; left line
+          LineXY(x+i,y+i-Style,x+i,y+i+Style,Color) ; right line
         Next
-      Else : x-1 : y-1
+      Else : x-1 : y-Bool(Size>4)
         For i = 1 To Length 
           If Style =- 1
             LineXY(x+i, (Size+y), x+Length, y, Color)
@@ -575,32 +574,46 @@ Module Bar
         LineXY(x+Length*2, (Size+y)+Bool(i=0), x+Length, y+1, Color) ; bug
       EndIf
     ElseIf Direction = 3 ; bottom
-      If Style > 0 : x-1 : y+2
-        Size / 2
-        For i = 0 To Size
-          LineXY((X+1+i),(Y+i)-(Style),(X+1+i),(Y+i)+(Style),Color) ; Левая линия
-          LineXY(((X+1+(Size*2))-i),(Y+i)-(Style),((X+1+(Size*2))-i),(Y+i)+(Style),Color) ; правая линия
+      If Style > 0 : y+size - 1 : size / 2 : x+size 
+        For i = 0 To Size 
+          LineXY(x-i,y-i-Style,x-i,y-i+Style,Color) ; left line
+          LineXY(x+i,y-i-Style,x+i,y-i+Style,Color) ; right line
         Next
-      Else : x-1 : y+1
+      Else ;: x-1 : y+Bool(Size>4)
+        : y+size-Length  ;: size / 2 
+        x+Length - 1
         For i = 0 To Length 
           If Style =- 1
-            LineXY(x+i, y, x+Length, (Size+y), Color)
-            LineXY(x+Length*2-i, y, x+Length, (Size+y), Color)
+            
+            LineXY(x-i, y, x, y+i, Color)
+            LineXY(x+i, y, x, y+i, Color)
+            
+;             ; top
+;             LineXY(x, y+i, x-i, y+i, Color)
+;             LineXY(x, y+i, x+i, y+i, Color)
+            
+;             ;left
+;             LineXY(x-i, y, x, y-i, Color)
+;             LineXY(x-i, y, x, y+i, Color)
+;             
+;             ; right
+;             LineXY(x-i, y, x-i, y-i, Color)
+;             LineXY(x-i, y, x-i, y+i, Color)
+            
+            ;LineXY(x-i, y-size, x, y, Color)
           Else
-            LineXY(x+i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
-            LineXY(x+Length*2-i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
+            LineXY(x+i, y-Size+i/2-Bool(i=0), x, y, Color)
+            LineXY(x-i, y-Size+i/2-Bool(i=0), x, y, Color)
           EndIf
         Next
       EndIf
-    ElseIf Direction = 0 ; в лево
-      If Style > 0 : y-1
-        Size / 2
+    ElseIf Direction = 0 ; left
+      If Style > 0 : x + 1 : size / 2 : y+size
         For i = 0 To Size 
-          ; в лево
-          LineXY(((X+1)+i)-(Style),(((Y+1)+(Size))-i),((X+1)+i)+(Style),(((Y+1)+(Size))-i),Color) ; правая линия
-          LineXY(((X+1)+i)-(Style),((Y+1)+i)+Size,((X+1)+i)+(Style),((Y+1)+i)+Size,Color)         ; Левая линия
+          LineXY(x+i-Style,y-i,x+i+Style,y-i,Color) ; top line
+          LineXY(x+i-Style,y+i,x+i+Style,y+i,Color) ; bottom line
         Next  
-      Else : x-1 : y-1
+      Else : x-Bool(Size>4) : y-1
         For i = 1 To Length
           If Style =- 1
             LineXY((Size+x), y+i, x, y+Length, Color)
@@ -614,15 +627,13 @@ Module Bar
         LineXY((Size+x)+Bool(i=0), y, x+1, y+Length, Color) 
         LineXY((Size+x)+Bool(i=0), y+Length*2, x+1, y+Length, Color)
       EndIf
-    ElseIf Direction = 2 ; в право
-      If Style > 0 : y-1 : x + 1
-        Size / 2
+    ElseIf Direction = 2 ; right
+      If Style > 0 : x+size - 1 : size / 2 : y+size
         For i = 0 To Size 
-          ; в право
-          LineXY(((X+1)+i)-(Style),((Y+1)+i),((X+1)+i)+(Style),((Y+1)+i),Color) ; Левая линия
-          LineXY(((X+1)+i)-(Style),(((Y+1)+(Size*2))-i),((X+1)+i)+(Style),(((Y+1)+(Size*2))-i),Color) ; правая линия
+          LineXY(x-i-Style,y-i,x-i+Style,y-i,Color) ; top line
+          LineXY(x-i-Style,y+i,x-i+Style,y+i,Color) ; bottom line
         Next
-      Else : y-1 : x+1
+      Else : y-1 : x+Bool(Size>4)
         For i = 0 To Length 
           If Style =- 1
             LineXY(x, y+i, Size+x, y+Length, Color)
@@ -746,7 +757,8 @@ Module Bar
         If \bar\thumb\len
           ; Draw thumb
           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          _box_gradient_(\bar\vertical,\bar\button[#bb_3]\x,\bar\button[#bb_3]\y,\bar\button[#bb_3]\width,\bar\button[#bb_3]\height,\bar\button[#bb_3]\color\fore[\bar\button[#bb_3]\color\state],\bar\button[#bb_3]\color\Back[\bar\button[#bb_3]\color\state], \round, \bar\button[#bb_3]\color\alpha)
+          _box_gradient_(\bar\vertical,\bar\button[#bb_3]\x,\bar\button[#bb_3]\y,\bar\button[#bb_3]\width,\bar\button[#bb_3]\height,
+                         \bar\button[#bb_3]\color\fore[\bar\button[#bb_3]\color\state],\bar\button[#bb_3]\color\Back[\bar\button[#bb_3]\color\state], \round, \bar\button[#bb_3]\color\alpha)
           
           ; Draw thumb frame
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
@@ -769,8 +781,11 @@ Module Bar
         If \bar\button\len
           ; Draw buttons
           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          _box_gradient_(\bar\vertical,\bar\button[#bb_1]\x,\bar\button[#bb_1]\y,\bar\button[#bb_1]\width,\bar\button[#bb_1]\height,\bar\button[#bb_1]\color\fore[\bar\button[#bb_1]\color\state],\bar\button[#bb_1]\color\Back[\bar\button[#bb_1]\color\state], \round, \bar\button[#bb_1]\color\alpha)
-          _box_gradient_(\bar\vertical,\bar\button[#bb_2]\x,\bar\button[#bb_2]\y,\bar\button[#bb_2]\width,\bar\button[#bb_2]\height,\bar\button[#bb_2]\color\fore[\bar\button[#bb_2]\color\state],\bar\button[#bb_2]\color\Back[\bar\button[#bb_2]\color\state], \round, \bar\button[#bb_2]\color\alpha)
+          _box_gradient_(\bar\vertical,\bar\button[#bb_1]\x,\bar\button[#bb_1]\y,\bar\button[#bb_1]\width,\bar\button[#bb_1]\height,
+                         \bar\button[#bb_1]\color\fore[\bar\button[#bb_1]\color\state],\bar\button[#bb_1]\color\Back[\bar\button[#bb_1]\color\state], \round, \bar\button[#bb_1]\color\alpha)
+          
+          _box_gradient_(\bar\vertical,\bar\button[#bb_2]\x,\bar\button[#bb_2]\y,\bar\button[#bb_2]\width,\bar\button[#bb_2]\height,
+                         \bar\button[#bb_2]\color\fore[\bar\button[#bb_2]\color\state],\bar\button[#bb_2]\color\Back[\bar\button[#bb_2]\color\state], \round, \bar\button[#bb_2]\color\alpha)
           
           ; Draw buttons frame
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
@@ -779,8 +794,11 @@ Module Bar
           
           ; Draw arrows
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          Arrow(\bar\button[#bb_1]\x+(\bar\button[#bb_1]\width-\bar\button[#bb_1]\arrow\size)/2,\bar\button[#bb_1]\y+(\bar\button[#bb_1]\height-\bar\button[#bb_1]\arrow\size)/2, \bar\button[#bb_1]\arrow\size, Bool(\bar\vertical), \bar\button[#bb_1]\color\front[\bar\button[#bb_1]\color\state]&$FFFFFF|\bar\button[#bb_1]\color\alpha<<24, \bar\button[#bb_1]\arrow\type)
-          Arrow(\bar\button[#bb_2]\x+(\bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2,\bar\button[#bb_2]\y+(\bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2, \bar\button[#bb_2]\arrow\size, Bool(\bar\vertical)+2, \bar\button[#bb_2]\color\front[\bar\button[#bb_2]\color\state]&$FFFFFF|\bar\button[#bb_2]\color\alpha<<24, \bar\button[#bb_2]\arrow\type)
+          Arrow(\bar\button[#bb_1]\x+(\bar\button[#bb_1]\width-\bar\button[#bb_1]\arrow\size)/2,\bar\button[#bb_1]\y+(\bar\button[#bb_1]\height-\bar\button[#bb_1]\arrow\size)/2, 
+                \bar\button[#bb_1]\arrow\size, Bool(\bar\vertical), \bar\button[#bb_1]\color\front[\bar\button[#bb_1]\color\state]&$FFFFFF|\bar\button[#bb_1]\color\alpha<<24, \bar\button[#bb_1]\arrow\type)
+          
+          Arrow(\bar\button[#bb_2]\x+(\bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2,\bar\button[#bb_2]\y+(\bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2, 
+                \bar\button[#bb_2]\arrow\size, Bool(\bar\vertical)+2, \bar\button[#bb_2]\color\front[\bar\button[#bb_2]\color\state]&$FFFFFF|\bar\button[#bb_2]\color\alpha<<24, \bar\button[#bb_2]\arrow\type)
         EndIf
       EndIf
     EndWith 
@@ -2397,5 +2415,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----0-------------------------------------8-------
+; Folding = ----0-+8--v-------------------------------8-------
 ; EnableXP

@@ -492,7 +492,8 @@ DeclareModule Widget
   #Anchors = 9+4
   
   #a_moved = 9
-  
+  #arrow_type =- 1
+
   ;bar buttons
   Enumeration
     #bb_1 = 1
@@ -2966,85 +2967,52 @@ Module Widget
     EndIf
     Length = (Size+2)/2
     
-    
     If Direction = 1 ; top
-      If Style > 0 : x-1 : y+2
-        Size / 2
+      If Style > 0 : y + 1 : size / 2 : x+size 
         For i = 0 To Size 
-          LineXY((X+1+i)+Size,(Y+i-1)-(Style),(X+1+i)+Size,(Y+i-1)+(Style),Color)         ; Левая линия
-          LineXY(((X+1+(Size))-i),(Y+i-1)-(Style),((X+1+(Size))-i),(Y+i-1)+(Style),Color) ; правая линия
+          LineXY(x-i,y+i-Style,x-i,y+i+Style,Color) ; left line
+          LineXY(x+i,y+i-Style,x+i,y+i+Style,Color) ; right line
         Next
-      Else : x-1 : y-1
-        For i = 1 To Length 
-          If Style =- 1
-            LineXY(x+i, (Size+y), x+Length, y, Color)
-            LineXY(x+Length*2-i, (Size+y), x+Length, y, Color)
-          Else
-            LineXY(x+i, (Size+y)-i/2, x+Length, y, Color)
-            LineXY(x+Length*2-i, (Size+y)-i/2, x+Length, y, Color)
-          EndIf
+      Else : x+Length - 1
+        For i = 0 To Length 
+          LineXY(x-i, y+i, x, y+i, Color)
+          LineXY(x+i, y+i, x, y+i, Color)
         Next 
-        i = Bool(Style =- 1) 
-        LineXY(x, (Size+y)+Bool(i=0), x+Length, y+1, Color) 
-        LineXY(x+Length*2, (Size+y)+Bool(i=0), x+Length, y+1, Color) ; bug
       EndIf
     ElseIf Direction = 3 ; bottom
-      If Style > 0 : x-1 : y+2
-        Size / 2
-        For i = 0 To Size
-          LineXY((X+1+i),(Y+i)-(Style),(X+1+i),(Y+i)+(Style),Color) ; Левая линия
-          LineXY(((X+1+(Size*2))-i),(Y+i)-(Style),((X+1+(Size*2))-i),(Y+i)+(Style),Color) ; правая линия
+      If Style > 0 : y+size - 1 : size / 2 : x+size 
+        For i = 0 To Size 
+          LineXY(x-i,y-i-Style,x-i,y-i+Style,Color) ; left line
+          LineXY(x+i,y-i-Style,x+i,y-i+Style,Color) ; right line
         Next
-      Else : x-1 : y+1
+      Else : x+Length - 1 : y+size
         For i = 0 To Length 
-          If Style =- 1
-            LineXY(x+i, y, x+Length, (Size+y), Color)
-            LineXY(x+Length*2-i, y, x+Length, (Size+y), Color)
-          Else
-            LineXY(x+i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
-            LineXY(x+Length*2-i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
-          EndIf
+          LineXY(x-i, y-i, x, y-i, Color)
+          LineXY(x+i, y-i, x, y-i, Color)
         Next
       EndIf
-    ElseIf Direction = 0 ; в лево
-      If Style > 0 : y-1
-        Size / 2
+    ElseIf Direction = 0 ; left
+      If Style > 0 : x + 1 : size / 2 : y+size
         For i = 0 To Size 
-          ; в лево
-          LineXY(((X+1)+i)-(Style),(((Y+1)+(Size))-i),((X+1)+i)+(Style),(((Y+1)+(Size))-i),Color) ; правая линия
-          LineXY(((X+1)+i)-(Style),((Y+1)+i)+Size,((X+1)+i)+(Style),((Y+1)+i)+Size,Color)         ; Левая линия
+          LineXY(x+i-Style,y-i,x+i+Style,y-i,Color) ; top line
+          LineXY(x+i-Style,y+i,x+i+Style,y+i,Color) ; bottom line
         Next  
-      Else : x-1 : y-1
-        For i = 1 To Length
-          If Style =- 1
-            LineXY((Size+x), y+i, x, y+Length, Color)
-            LineXY((Size+x), y+Length*2-i, x, y+Length, Color)
-          Else
-            LineXY((Size+x)-i/2, y+i, x, y+Length, Color)
-            LineXY((Size+x)-i/2, y+Length*2-i, x, y+Length, Color)
-          EndIf
+      Else : y+Length - 1 : x+Length 
+        For i = 0 To Length
+            LineXY(x-i, y, x, y-i, Color)
+            LineXY(x-i, y, x, y+i, Color)
         Next 
-        i = Bool(Style =- 1) 
-        LineXY((Size+x)+Bool(i=0), y, x+1, y+Length, Color) 
-        LineXY((Size+x)+Bool(i=0), y+Length*2, x+1, y+Length, Color)
-      EndIf
-    ElseIf Direction = 2 ; в право
-      If Style > 0 : y-1
-        Size / 2
+     EndIf
+    ElseIf Direction = 2 ; right
+      If Style > 0 : x+size - 1 : size / 2 : y+size
         For i = 0 To Size 
-          ; в право
-          LineXY(((X+1)+i)-(Style),((Y+1)+i),((X+1)+i)+(Style),((Y+1)+i),Color) ; Левая линия
-          LineXY(((X+1)+i)-(Style),(((Y+1)+(Size*2))-i),((X+1)+i)+(Style),(((Y+1)+(Size*2))-i),Color) ; правая линия
+          LineXY(x-i-Style,y-i,x-i+Style,y-i,Color) ; top line
+          LineXY(x-i-Style,y+i,x-i+Style,y+i,Color) ; bottom line
         Next
-      Else : y-1 : x+1
+      Else : y+Length - 1 : x+size
         For i = 0 To Length 
-          If Style =- 1
-            LineXY(x, y+i, Size+x, y+Length, Color)
-            LineXY(x, y+Length*2-i, Size+x, y+Length, Color)
-          Else
-            LineXY(x+i/2-Bool(i=0), y+i, Size+x, y+Length, Color)
-            LineXY(x+i/2-Bool(i=0), y+Length*2-i, Size+x, y+Length, Color)
-          EndIf
+          LineXY(x-i, y, x-i, y-i, Color)
+          LineXY(x-i, y, x-i, y+i, Color)
         Next
       EndIf
     EndIf
@@ -6006,7 +5974,7 @@ Module Widget
         EndIf
         
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        Protected size = \bar\button[2]\arrow\size
+        Protected size = \bar\button[2]\arrow\size+1
         
         If \bar\Vertical
           Line( \bar\button[#bb_3]\x+(\bar\button[#bb_3]\width-(size-1))/2, \bar\button[#bb_3]\y+\bar\button[#bb_3]\height/2-3,size,1, LinesColor)
@@ -6145,9 +6113,9 @@ Module Widget
       
 ;        Line(\bar\button[#bb_1]\x-2, \y[2],1,\height[2], \color\frame&$FFFFFF|Alpha)
 ;        RoundBox( \x[2]+\width[2]-16, \y[2], 16, \height[2], \round, \round, $F0F0F0&$FFFFFF|Alpha)
-        RoundBox(\bar\button\X,\Y,\bar\button\width,\height,\round,\round,\bar\button[#bb_3]\Color\Back&$FFFFFF|\color\alpha<<24)
-        Box(\bar\button\X,\Y,\bar\button\width/2,\height,\bar\button[#bb_3]\Color\Back&$FFFFFF|\color\alpha<<24)
-        Line( \bar\button\X, \y, 1, \height, \bar\button[#bb_3]\color\frame&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
+        RoundBox(\bar\button\X,\Y,\bar\button\width,\height,\round,\round,\bar\button\Color\Back&$FFFFFF|\color\alpha<<24)
+        Box(\bar\button\X,\Y,\bar\button\width/2,\height,\bar\button\Color\Back&$FFFFFF|\color\alpha<<24)
+        Line( \bar\button\X, \y, 1, \height, \bar\button\color\frame&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
         
       ; Draw string
       If \text\string
@@ -6163,6 +6131,7 @@ Module Widget
         Else
           round = 3
         EndIf
+        round = 1
         
         ; Draw buttons
         If \bar\button[#bb_1]\color\back[\bar\button[#bb_1]\color\state]<>-1
@@ -6199,15 +6168,15 @@ Module Widget
         EndIf
         
         ; Draw arrows
-        Arrow( \bar\button[#bb_1]\x+( \bar\button[#bb_1]\width-\bar\button[#bb_1]\arrow\size)/2, 
-               \bar\button[#bb_1]\y+( \bar\button[#bb_1]\height-\bar\button[#bb_1]\arrow\size)/2, 
+        Arrow( \bar\button[#bb_1]\x+(\bar\button[#bb_1]\width-\bar\button[#bb_1]\arrow\size)/2, 
+               \bar\button[#bb_1]\y+(\bar\button[#bb_1]\height-\bar\button[#bb_1]\arrow\size)/2, 
                \bar\button[#bb_1]\arrow\size, Bool(\bar\Vertical)*3,
                (Bool(Not _bar_in_start_(*this\bar)) * \bar\button[#bb_1]\color\front[\bar\button[#bb_1]\color\state] +
                 _bar_in_start_(*this\bar) * \bar\button[#bb_1]\color\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_1]\arrow\type)
         
         ; Draw arrows
-        Arrow( \bar\button[#bb_2]\x+( \bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2, 
-               \bar\button[#bb_2]\y+( \bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2,
+        Arrow( \bar\button[#bb_2]\x+(\bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2, 
+               \bar\button[#bb_2]\y+(\bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2,
                \bar\button[#bb_2]\arrow\size, Bool(Not \bar\Vertical)+1, 
                (Bool(Not _bar_in_stop_(*this\bar)) * \bar\button[#bb_2]\color\front[\bar\button[#bb_2]\color\state] + 
                 _bar_in_stop_(*this\bar) * \bar\button[#bb_2]\color\frame[0])&$FFFFFF|Alpha, \bar\button[#bb_2]\arrow\type)
@@ -6496,7 +6465,7 @@ Module Widget
               If \flag\buttons And \items()\childrens
                 If box_type=-1
                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                  Widget::Arrow(\items()\box[0]\x+(\items()\box[0]\width-6)/2,\items()\box[0]\y+(\items()\box[0]\height-6)/2, 6, Bool(Not \items()\box[0]\checked)+2, \color\front[Bool(\focus) * State_3]&$FFFFFFFF|alpha<<24, 0,0) 
+                  Arrow(\items()\box[0]\x+(\items()\box[0]\width-6)/2,\items()\box[0]\y+(\items()\box[0]\height-6)/2, 6, Bool(Not \items()\box[0]\checked)+2, \color\front[Bool(\focus) * State_3]&$FFFFFFFF|alpha<<24, #arrow_type) 
                 Else
                   DrawingMode(#PB_2DDrawing_Gradient)
                   BackColor($FFFFFF) : FrontColor($EEEEEE)
@@ -8606,6 +8575,12 @@ Module Widget
             \level = \parent\level + 1
           EndIf
           
+          ; Add new children to the parent
+          LastElement(\parent\childrens()) 
+          \adress = AddElement(\parent\childrens())
+          \parent\childrens() = *this 
+          
+          
           ; Скрываем все виджеты скрытого родителя,
           ; и кроме тех чьи родителский итем не выбран
           \hide = Bool(\parent\hide Or \tab\index <> \parent\tab\index[#s_2])
@@ -8625,11 +8600,6 @@ Module Widget
             x-\parent\scroll\h\bar\page\pos
             y-\parent\scroll\v\bar\page\pos
           EndIf
-          
-          ; Add new children to the parent
-          LastElement(\parent\childrens()) 
-          \adress = AddElement(\parent\childrens())
-          \parent\childrens() = *this 
           
           ; Make count type
           If \window
@@ -10092,8 +10062,8 @@ Module Widget
       
       \bar\button[1]\arrow\size = 4
       \bar\button[2]\arrow\size = 4
-      \bar\button[1]\arrow\type =- 1 ; -1 0 1
-      \bar\button[2]\arrow\type =- 1 ; -1 0 1
+      \bar\button[1]\arrow\type = #arrow_type ; -1 0 1
+      \bar\button[2]\arrow\type = #arrow_type ; -1 0 1
       
       ; Цвет фона скролла
       \color[0]\alpha = 255
@@ -10187,7 +10157,7 @@ Module Widget
   Procedure.i Spin(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0, Increment.f=1, round.i=7)
     Protected *this._S_widget = AllocateStructure(_S_widget)
     _set_last_parameters_(*this, #PB_GadgetType_Spin, Flag, Root()\opened) 
-    
+    round = 0
     ;Flag | Bool(Not Flag&#PB_Vertical) * (#PB_Bar_Inverted)
     
     With *this
@@ -10221,8 +10191,8 @@ Module Widget
       \bar\button[#bb_1]\arrow\size = 2
       \bar\button[#bb_2]\arrow\size = 2
       
-      \bar\button[#bb_1]\arrow\type =- 1 ; -1 0 1
-      \bar\button[#bb_2]\arrow\type =- 1 ; -1 0 1
+      \bar\button[#bb_1]\arrow\type = #arrow_type ; -1 0 1
+      \bar\button[#bb_2]\arrow\type = #arrow_type ; -1 0 1
       
       \bar\button\len = 15
       \bar\button[#bb_1]\len = \bar\button\len
@@ -10323,7 +10293,7 @@ Module Widget
       \combo_box\height = Height
       \combo_box\width = 15
       \combo_box\arrow\size = 4
-      \combo_box\arrow\type =- 1
+      \combo_box\arrow\type = #arrow_type
       
       \index[#s_1] =- 1
       \index[#s_2] =- 1
@@ -11121,8 +11091,8 @@ Module Widget
       
       \tab\bar\button[#bb_1]\arrow\size = 6
       \tab\bar\button[#bb_2]\arrow\size = 6
-      \tab\bar\button[#bb_1]\arrow\type =- 1
-      \tab\bar\button[#bb_2]\arrow\type =- 1
+      \tab\bar\button[#bb_1]\arrow\type = #arrow_type + Bool(#arrow_type>0)
+      \tab\bar\button[#bb_2]\arrow\type = #arrow_type + Bool(#arrow_type>0)
       
       \tab\bar\button[#bb_1]\color = def_colors
       \tab\bar\button[#bb_2]\color = def_colors
@@ -11694,17 +11664,17 @@ Module Widget
           EndIf
           
           If _this_\bar\button[#bb_1]\color\state <> #s_0
-            Debug " leave tab button - left to right"
+            Debug " leave spin button - left to right"
             If _this_\bar\button[#bb_1]\color\state <> #s_3 
               _this_\bar\button[#bb_1]\color\state = #s_0
             EndIf
           EndIf
           
           If _this_\tab\index[#s_1] >= 0
-            Debug " leave tab - " + _this_\tab\index[#s_1]
+            Debug " leave spin - " + _this_\tab\index[#s_1]
             _this_\tab\index[#s_1] =- 1
           EndIf
-          Debug " enter tab button - right"
+          Debug " enter spin button - right"
         EndIf
         
       ElseIf _this_\bar\button[#bb_1]\len And
@@ -11716,30 +11686,30 @@ Module Widget
           EndIf
           
           If _this_\bar\button[#bb_2]\color\state <> #s_0
-            Debug " leave tab button - right to left"
+            Debug " leave spin button - right to left"
             If _this_\bar\button[#bb_2]\color\state <> #s_3  
               _this_\bar\button[#bb_2]\color\state = #s_0
             EndIf
           EndIf
           
           If _this_\tab\index[#s_1] >= 0
-            Debug " leave tab - " + _this_\tab\index[#s_1]
+            Debug " leave spin - " + _this_\tab\index[#s_1]
             _this_\tab\index[#s_1] =- 1
           EndIf
-          Debug " enter tab button - left"
+          Debug " enter spin button - left"
         EndIf
         
       Else
         If _this_\tab\index[#s_1] =- 1
           If _this_\bar\button[#bb_1]\color\state <> #s_0
-            Debug " leave tab button - left"
+            Debug " leave spin button - left"
             If _this_\bar\button[#bb_1]\color\state <> #s_3 
               _this_\bar\button[#bb_1]\color\state = #s_0
             EndIf
           EndIf
           
           If _this_\bar\button[#bb_2]\color\state <> #s_0
-            Debug " leave tab button - right"
+            Debug " leave spin button - right"
             If _this_\bar\button[#bb_2]\color\state <> #s_3  
               _this_\bar\button[#bb_2]\color\state = #s_0
             EndIf
@@ -12455,7 +12425,8 @@ Module Widget
           *root\mouse\buttons | #PB_Canvas_MiddleButton
         EndIf
         
-        Repaint | CallBack(From(*root, mouse_x, mouse_y), EventType, mouse_x, mouse_y)
+        Protected *this = From(*root, mouse_x, mouse_y)
+        Repaint | CallBack(*this, EventType, mouse_x, mouse_y)
         
         ; reset mouse buttons
         If *root\mouse\buttons
@@ -12546,19 +12517,39 @@ Module Widget
   
 EndModule
 
-;- EXAMPLE
+;- 
+;- example
+;-
 CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
   UseModule Widget
   
-  Global *c, *s
+  Procedure Events()
+    Select *event\type
+      Case #PB_EventType_MouseEnter
+        Debug "enter - "+*event\widget\index
+        If GetButtons(*event\widget)
+          *event\widget\color\back = $00FF00
+        Else
+          *event\widget\color\back = $0000FF
+        EndIf
+        
+      Case #PB_EventType_MouseLeave
+        Debug "leave - "+*event\widget\index
+        *event\widget\color\back = $FF0000
+        
+      Case #PB_EventType_Repaint
+        DrawingMode(#PB_2DDrawing_Transparent)
+        DrawText(2,0, Str(*event\widget\index), 0)
+        
+    EndSelect
+  EndProcedure
   
   Procedure Enumerates(*this._S_widget, *callback)
     With *this
       If *callback
         CallCFunctionFast(*callback, *this)
         
-        If ListSize(\childrens())
+        If \count ; ListSize(\Childrens())
           ForEach \childrens()
             Enumerates(\childrens(), *callback)
           Next
@@ -12568,44 +12559,62 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure enum(*this._S_widget)
-    If Not *this\hide
-      Debug " class - " + *this\Class +" ("+ *this\tab\index +" - parent_item)"
-    EndIf
+    ;  Bind(@Events(), *this)
   EndProcedure
   
-  Procedure Events()
-    Select *event\type
-      Case #PB_EventType_LeftButtonDown
-        
-        Select GetText(*event\widget)
-          Case "hide_2"
-            hide(*c, 1)
-            ; Disable(*c, 1)
-            
-          Case "show_2" 
-            hide(*c, 0)
-            
-          Case "hide_3"
-            hide(*s, 1)
-            
-          Case "show_3" 
-            hide(*s, 0)
-            
-        EndSelect
-        
-      Case #PB_EventType_LeftButtonUp
-        ClearDebugOutput()
-        Enumerates(root(), @enum())
-        
-      Case #PB_EventType_Change
-        Debug "hide c - "+hide(*c)+" s - "+hide(*s)
-        
-    EndSelect
-  EndProcedure
-  
-  
-  If OpenWindow(3, 0, 0, 755, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-    If Open(3, 0, 0, 755, 605, "Root", #PB_Flag_AnchorsGadget|#PB_Flag_BorderLess);|#PB_Flag_AutoSize)
+  If OpenWindow(0, 100, 100, 220, 220, "Window_0", #PB_Window_SystemMenu);, WindowID(100))
+    
+    ; 
+    Open(0, 0, 0, 220, 220, "", #PB_Flag_BorderLess)
+    ;     Container(1, 20, 20, 180, 180)
+    ;     Container(9,70, 10, 70, 180, #PB_Flag_NoGadget) ; bug
+    ;     Container(2,20, 20, 180, 180)
+    ;     Container(3,20, 20, 180, 180)
+    ;     ;     Container(20, 20, 180, 180), 30)
+    ;     Container(4,0, 20, 180, 30, #PB_Flag_NoGadget)
+    ;     Container(5,0, 35, 180, 30, #PB_Flag_NoGadget)
+    ;     Container(6,0, 50, 180, 30, #PB_Flag_NoGadget)
+    ;     Container(7,20, 70, 180, 180, #PB_Flag_NoGadget)
+    ;     ;  Container(20, 20, 180, 50), 200)
+    ;     CloseList()
+    ;     CloseList()
+    ;     
+    ;     Container(8,10, 70, 70, 180)
+    ;     Container(10,10, 10, 70, 30, #PB_Flag_NoGadget)
+    ;     Container(11,10, 20, 70, 30, #PB_Flag_NoGadget)
+    ;     Container(12,10, 30, 70, 30, #PB_Flag_NoGadget)
+    ;     CloseList()
+    
+    SetData(Container(20, 20, 180, 180), 1)
+    SetData(Container(70, 10, 70, 180, #PB_Flag_NoGadget), 9) 
+    SetData(Container(20, 20, 180, 180), 2)
+    SetData(Container(20, 20, 180, 180), 3)
+    
+    SetData(Container(0, 20, 180, 30, #PB_Flag_NoGadget), 4) 
+    SetData(Container(0, 35, 180, 30, #PB_Flag_NoGadget), 5) 
+    SetData(Container(0, 50, 180, 30, #PB_Flag_NoGadget), 6) 
+    SetData(Splitter(20, 70, 180, 50, Container(0,0,0,0, #PB_Flag_NoGadget), Container(0,0,0,0, #PB_Flag_NoGadget), #PB_Splitter_Vertical), 7) 
+    
+    CloseList()
+    CloseList()
+    SetData(Container(10, 70, 70, 180), 8) 
+    SetData(Container(10, 10, 70, 30, #PB_Flag_NoGadget), 10) 
+    SetData(Container(10, 20, 70, 30, #PB_Flag_NoGadget), 11) 
+    SetData(Container(10, 30, 70, 30, #PB_Flag_NoGadget), 12) 
+    CloseList()
+    
+    ;     Define widget
+    ;     While Enumerate(@widget, root())
+    ;       Debug widget
+    ;       Bind(@Events(), widget)
+    ;     Wend
+    Enumerates(root(), @enum())
+    
+    Bind(@Events(), root())
+    Redraw(Root())
+    
+    
+    If Open(-1, 0, 0, 755, 605, "Root", #PB_Flag_AnchorsGadget|#PB_Window_ScreenCentered);|#PB_Flag_AutoSize)
       Define *w,*w1,*w2
       
       Form     (8, 8, 356, 203, "window0")
@@ -12726,142 +12735,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndIf   
 CompilerEndIf
-; ; ; ;- 
-; ; ; ;- example
-; ; ; ;-
-; ; ; CompilerIf #PB_Compiler_IsMainFile
-; ; ;   EnableExplicit
-; ; ;   UseModule Widget
-; ; ;   
-; ; ;   Global.i gEvent, gQuit, *but, *win
-; ; ;   
-; ; ;   Procedure Widgets_Gadget_Events()
-; ; ;     Protected EventWidget.i, EventType.i, EventItem.i, EventData.i
-; ; ;     
-; ; ;     EventWidget = Widget()
-; ; ;     EventType = Type()
-; ; ;     EventItem = Item()
-; ; ;     EventData = Data()
-; ; ;     
-; ; ;     If EventType <> #PB_EventType_MouseMove
-; ; ;       Debug " gadget "+ EventType
-; ; ;     EndIf
-; ; ;    
-; ; ;     Select EventType 
-; ; ;       Case #PB_EventType_LeftButtonDown
-; ; ;         Protected *This._S_widget
-; ; ;      
-; ; ;         *This = a_Get(EventWidget)
-; ; ;         If *This   
-; ; ;           If a_Set(*This)
-; ; ;             Debug "изменено down"+ *This
-; ; ;            ; Unbind(@Widgets_Gadget_Events(), *This)
-; ; ;            ; Debug DropText()
-; ; ;           EndIf
-; ; ;         EndIf
-; ; ;         
-; ; ;     EndSelect
-; ; ;     
-; ; ;     ; Отключает передачу сообщений в 
-; ; ;     ; оконную и рутовскую процедуру
-; ; ;     ProcedureReturn #PB_Ignore
-; ; ;   EndProcedure
-; ; ;   
-; ; ;   Procedure Widgets_Window_Events()
-; ; ;     Protected EventWidget.i, EventType.i, EventItem.i, EventData.i
-; ; ;     
-; ; ;     EventWidget = Widget()
-; ; ;     EventType = Type()
-; ; ;     EventItem = Item()
-; ; ;     EventData = Data()
-; ; ;     
-; ; ;     If EventType <> #PB_EventType_MouseMove
-; ; ;       Debug " window "+ EventType
-; ; ;     EndIf
-; ; ;   EndProcedure
-; ; ;   
-; ; ;   Procedure Widgets_Root_Events()
-; ; ;     Protected EventWidget.i, EventType.i, EventItem.i, EventData.i
-; ; ;     
-; ; ;     EventWidget = Widget()
-; ; ;     EventType = Type()
-; ; ;     EventItem = Item()
-; ; ;     EventData = Data()
-; ; ;     
-; ; ;     If EventType <> #PB_EventType_MouseMove
-; ; ;       Debug " root "+ EventType
-; ; ;     EndIf
-; ; ;   EndProcedure
-; ; ;   
-; ; ;   
-; ; ;   Procedure Window_0_Resize()
-; ; ;     ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
-; ; ;     ResizeGadget(10, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
-; ; ;   EndProcedure
-; ; ;   
-; ; ;   Procedure Window_0()
-; ; ;     If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-; ; ;       ButtonGadget   (10,    5,   565, 590,  30, "start change scrollbar", #PB_Button_Toggle)
-; ; ;       
-; ; ;       Define Editable ; = #PB_Flag_AnchorsGadget
-; ; ;       
-; ; ;       If Open(0, 10,10, 580, 550," root ")
-; ; ;         *win=Form(80, 100, 400, 360, "Window_2", Editable)
-; ; ;         
-; ; ;         Container(30,30,400-60, 360-60, Editable)
-; ; ;         Container(20,20,400-60, 360-60, Editable)
-; ; ;         *but=Button(100, 20, 80, 80, "Button_1", Editable)
-; ; ;         
-; ; ;         Tree(130, 80, 180, 180, Editable|#PB_Flag_Checkboxes|#PB_Tree_ThreeState)
-; ; ;         
-; ; ;         Define i
-; ; ;         For i=0 To 20
-; ; ;           AddItem(Widget(), i, "item_"+ Str(i))
-; ; ;         Next
-; ; ;         
-; ; ;         Define *progress = Progress(30, 80, 80+40, 80, 30, 60, Editable)
-; ; ;         Define *track = Track(30, 170, 80+40, 30, 30, 60, Editable)
-; ; ;         Define *splitter = Splitter(10, 80, 130, 150, *progress, *track, #PB_Splitter_Separator)
-; ; ;         SetState(*progress, 50)
-; ; ;         SetState(*track, 50)
-; ; ;         
-; ; ;         CloseList()
-; ; ;         CloseList()
-; ; ;         
-; ; ;         
-; ; ;         Bind(@Widgets_Gadget_Events(), *but)
-; ; ;         Bind(@Widgets_Window_Events(), *win)
-; ; ;         Bind(@Widgets_Root_Events())
-; ; ;         ReDraw(Root())
-; ; ;       EndIf
-; ; ;       
-; ; ;       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
-; ; ;     EndIf
-; ; ;   EndProcedure
-; ; ;   
-; ; ;   Window_0()
-; ; ;   
-; ; ;   Repeat
-; ; ;     gEvent= WaitWindowEvent()
-; ; ;     
-; ; ;     Select gEvent
-; ; ;       Case #PB_Event_CloseWindow
-; ; ;         gQuit= #True
-; ; ;         
-; ; ;         ;       Case #PB_Event_Gadget;Widget
-; ; ;         ;         Debug ""+gettext(EventWidget()) +" "+ WidgetEvent() ;+" "+ Root()\this +" "+ Root()\type
-; ; ;         ;         
-; ; ;         ;         Select EventWidget()
-; ; ;         ;           Case *but
-; ; ;         ;             
-; ; ;         ;             Debug *but
-; ; ;         ;             
-; ; ;         ;         EndSelect
-; ; ;         ;         
-; ; ;     EndSelect
-; ; ;     
-; ; ;   Until gQuit
-; ; ; CompilerEndIf
+
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------O9v-v-----v---------
 ; EnableXP
