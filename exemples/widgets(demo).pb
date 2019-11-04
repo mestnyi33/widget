@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets(bar).pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
@@ -19,9 +19,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global x,y,i,NewMap Widgets.i()
   
   
-  If Open(#PB_Any, 0, 0, 995, 605, "", #PB_Flag_BorderLess | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    
-    ;Widgets("Container") = Container(0, 0, 995, 455);, #PB_Flag_AutoSize) 
+  If Open(#PB_Any, 0, 0, 995, 605, "", #__flag_BorderLess | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    ;
+    ;Widgets("Container") = Container(0, 0, 995, 455);, #__flag_AutoSize) 
     
     Widgets(Hex(#PB_GadgetType_Button)) = Button(5, 5, 160,95, "Button_"+Hex(#PB_GadgetType_Button) ) ; ok
     Widgets(Hex(#PB_GadgetType_String)) = String(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)); ok
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Widgets(Hex(#PB_GadgetType_ListView)) = ListView(5, 505, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), -1, "ListView_"+Hex(#PB_GadgetType_ListView)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), i, "item_"+Hex(i)) : Next
     
     Widgets(Hex(#PB_GadgetType_Frame)) = Frame(170, 5, 160,95, "Frame_"+Hex(#PB_GadgetType_Frame) )
-    Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBox(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)) : Next : SetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
+    ;Widgets(Hex(#PB_GadgetType_ComboBox)) = ComboBox(170, 105, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), -1, "ComboBox_"+Hex(#PB_GadgetType_ComboBox)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ComboBox)), i, "item_"+Hex(i)) : Next : SetState(Widgets(Hex(#PB_GadgetType_ComboBox)), 0) 
     Widgets(Hex(#PB_GadgetType_Image)) = Image(170, 205, 160,95, 0, #PB_Image_Border ) ; ok
     Widgets(Hex(#PB_GadgetType_HyperLink)) = HyperLink(170, 305, 160,95,"HyperLink_"+Hex(#PB_GadgetType_HyperLink), $00FF00, #PB_HyperLink_Underline ) ; ok
     Widgets(Hex(#PB_GadgetType_Container)) = Container(170, 405, 160,95, #PB_Container_Flat )
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     CloseList()
     ;SetState( Widgets(Hex(#PB_GadgetType_Panel)), 12)
     
-    Widgets(Hex(301)) = Spin(0, 0, 100,20,0,10, #PB_Flag_Vertical);, "Button_1")
+    Widgets(Hex(301)) = Spin(0, 0, 100,20,0,10, #__flag_Vertical);, "Button_1")
     Widgets(Hex(302)) = Spin(0, 0, 100,20,0,10)              ;, "Button_2")
     Widgets(Hex(#PB_GadgetType_Splitter)) = Splitter(665, 405, 160,95,Widgets(Hex(301)), Widgets(Hex(302)));, #PB_Splitter_Vertical);, Button(0, 0, 100,20, "ButtonGadget"), Button(0, 0, 0,20, "StringGadget")) 
                                                                                                            ;     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -89,6 +89,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 21
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
