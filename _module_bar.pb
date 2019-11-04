@@ -133,7 +133,7 @@ DeclareModule Bar
     type.l
     from.l
     focus.l
-    radius.l
+    round.l
     
     mode.l
     change.l
@@ -182,10 +182,10 @@ DeclareModule Bar
   Declare.b Resize(*this, iX.l,iY.l,iWidth.l,iHeight.l)
   Declare.b CallBack(*this, EventType.l, mouse_x.l, mouse_y.l, Wheel_X.b=0, Wheel_Y.b=0)
   
-  Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, Radius.l=0)
-  Declare.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
-  Declare.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, Radius.l=0)
-  Declare.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=7)
+  Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, round.l=0)
+  Declare.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, round.l=0)
+  Declare.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, round.l=0)
+  Declare.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, round.l=7)
   
   Declare.b Update(*this, position.l, size.l)
   Declare.b Resizes(*scroll._S_scroll, X.l,Y.l,Width.l,Height.l)
@@ -214,7 +214,7 @@ DeclareModule Bar
   
   ; Extract thumb len from (max area page) len
   ; Draw gradient box
-  Macro _box_gradient_(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _radius_=0, _alpha_=255)
+  Macro _box_gradient_(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _round_=0, _alpha_=255)
     BackColor(_color_1_&$FFFFFF|_alpha_<<24)
     FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
     If _type_
@@ -222,7 +222,7 @@ DeclareModule Bar
     Else
       LinearGradient(_x_,_y_, _x_, (_y_+_height_))
     EndIf
-    RoundBox(_x_,_y_,_width_,_height_, _radius_,_radius_)
+    RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
     BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
   EndMacro
   
@@ -574,16 +574,16 @@ Module Bar
       If Not \hide And \color\alpha
         ; Draw scroll bar background
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox(\X,\Y,\width,\height,\Radius,\Radius,\Color\Back&$FFFFFF|\color\alpha<<24)
+        RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
         
         If \Vertical
-          If (\page\len+Bool(\Radius)*(\width/4)) = \height
+          If (\page\len+Bool(\round)*(\width/4)) = \height
             Line( \x, \y, 1, \page\len+1, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
           Else
             Line( \x, \y, 1, \height, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
           EndIf
         Else
-          If (\page\len+Bool(\Radius)*(\height/4)) = \width
+          If (\page\len+Bool(\round)*(\height/4)) = \width
             Line( \x, \y, \page\len+1, 1, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
           Else
             Line( \x, \y, \width, 1, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
@@ -593,11 +593,11 @@ Module Bar
         If \thumb\len
           ; Draw thumb
           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          _box_gradient_(\Vertical,\button[#_b_3]\x,\button[#_b_3]\y,\button[#_b_3]\width,\button[#_b_3]\height,\Color[3]\fore[\color[3]\state],\Color[3]\Back[\color[3]\state], \Radius, \color\alpha)
+          _box_gradient_(\Vertical,\button[#_b_3]\x,\button[#_b_3]\y,\button[#_b_3]\width,\button[#_b_3]\height,\Color[3]\fore[\color[3]\state],\Color[3]\Back[\color[3]\state], \round, \color\alpha)
           
           ; Draw thumb frame
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox(\button[#_b_3]\x,\button[#_b_3]\y,\button[#_b_3]\width,\button[#_b_3]\height,\Radius,\Radius,\Color[3]\frame[\color[3]\state]&$FFFFFF|\color\alpha<<24)
+          RoundBox(\button[#_b_3]\x,\button[#_b_3]\y,\button[#_b_3]\width,\button[#_b_3]\height,\round,\round,\Color[3]\frame[\color[3]\state]&$FFFFFF|\color\alpha<<24)
           
           Protected h=9
           ; Draw thumb lines
@@ -616,13 +616,13 @@ Module Bar
         If \button\len
           ; Draw buttons
           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          _box_gradient_(\Vertical,\button[#_b_1]\x,\button[#_b_1]\y,\button[#_b_1]\width,\button[#_b_1]\height,\Color[#_b_1]\fore[\color[#_b_1]\state],\Color[#_b_1]\Back[\color[#_b_1]\state], \Radius, \color\alpha)
-          _box_gradient_(\Vertical,\button[#_b_2]\x,\button[#_b_2]\y,\button[#_b_2]\width,\button[#_b_2]\height,\Color[#_b_2]\fore[\color[#_b_2]\state],\Color[#_b_2]\Back[\color[#_b_2]\state], \Radius, \color\alpha)
+          _box_gradient_(\Vertical,\button[#_b_1]\x,\button[#_b_1]\y,\button[#_b_1]\width,\button[#_b_1]\height,\Color[#_b_1]\fore[\color[#_b_1]\state],\Color[#_b_1]\Back[\color[#_b_1]\state], \round, \color\alpha)
+          _box_gradient_(\Vertical,\button[#_b_2]\x,\button[#_b_2]\y,\button[#_b_2]\width,\button[#_b_2]\height,\Color[#_b_2]\fore[\color[#_b_2]\state],\Color[#_b_2]\Back[\color[#_b_2]\state], \round, \color\alpha)
           
           ; Draw buttons frame
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox(\button[#_b_1]\x,\button[#_b_1]\y,\button[#_b_1]\width,\button[#_b_1]\height,\Radius,\Radius,\Color[#_b_1]\frame[\color[#_b_1]\state]&$FFFFFF|\color\alpha<<24)
-          RoundBox(\button[#_b_2]\x,\button[#_b_2]\y,\button[#_b_2]\width,\button[#_b_2]\height,\Radius,\Radius,\Color[#_b_2]\frame[\color[#_b_2]\state]&$FFFFFF|\color\alpha<<24)
+          RoundBox(\button[#_b_1]\x,\button[#_b_1]\y,\button[#_b_1]\width,\button[#_b_1]\height,\round,\round,\Color[#_b_1]\frame[\color[#_b_1]\state]&$FFFFFF|\color\alpha<<24)
+          RoundBox(\button[#_b_2]\x,\button[#_b_2]\y,\button[#_b_2]\width,\button[#_b_2]\height,\round,\round,\Color[#_b_2]\frame[\color[#_b_2]\state]&$FFFFFF|\color\alpha<<24)
           
           ; Draw arrows
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
@@ -645,31 +645,31 @@ Module Bar
         If \Vertical
           ; Back
           DrawingMode(#PB_2DDrawing_Gradient)
-          _box_gradient_(\vertical, \X+_pos_,\thumb\pos+\thumb\len-\button[#_b_2]\len,_size_,\Height-(\thumb\pos+\thumb\len-\y),\Color[#_b_2]\fore[\color[#_b_2]\state],\Color[#_b_2]\back[\color[#_b_2]\state], Bool(\radius))
+          _box_gradient_(\vertical, \X+_pos_,\thumb\pos+\thumb\len-\button[#_b_2]\len,_size_,\Height-(\thumb\pos+\thumb\len-\y),\Color[#_b_2]\fore[\color[#_b_2]\state],\Color[#_b_2]\back[\color[#_b_2]\state], Bool(\round))
           
           DrawingMode(#PB_2DDrawing_Outlined)
-          RoundBox(\X+_pos_,\thumb\pos+\thumb\len-\button[#_b_2]\len,_size_,\Height-(\thumb\pos+\thumb\len-\y),Bool(\radius),Bool(\radius),\Color[#_b_2]\frame[\color[#_b_2]\state])
+          RoundBox(\X+_pos_,\thumb\pos+\thumb\len-\button[#_b_2]\len,_size_,\Height-(\thumb\pos+\thumb\len-\y),Bool(\round),Bool(\round),\Color[#_b_2]\frame[\color[#_b_2]\state])
           
           ; Back
           DrawingMode(#PB_2DDrawing_Gradient)
-          _box_gradient_(\vertical, \X+_pos_,\Y+\button[#_b_1]\len,_size_,\thumb\pos-\y,\Color[#_b_1]\fore[\color[#_b_1]\state],\Color[#_b_1]\back[\color[#_b_1]\state], Bool(\radius))
+          _box_gradient_(\vertical, \X+_pos_,\Y+\button[#_b_1]\len,_size_,\thumb\pos-\y,\Color[#_b_1]\fore[\color[#_b_1]\state],\Color[#_b_1]\back[\color[#_b_1]\state], Bool(\round))
           
           DrawingMode(#PB_2DDrawing_Outlined)
-          RoundBox(\X+_pos_,\Y+\button[#_b_1]\len,_size_,\thumb\pos-\y,Bool(\radius),Bool(\radius),\Color[#_b_1]\frame[\color[#_b_1]\state])
+          RoundBox(\X+_pos_,\Y+\button[#_b_1]\len,_size_,\thumb\pos-\y,Bool(\round),Bool(\round),\Color[#_b_1]\frame[\color[#_b_1]\state])
           
         Else
           ; Back
           DrawingMode(#PB_2DDrawing_Gradient)
-          _box_gradient_(\vertical, \X+\button[#_b_1]\len,\Y+_pos_,\thumb\pos-\x,_size_,\Color[#_b_1]\fore[\color[#_b_1]\state],\Color[#_b_1]\back[\color[#_b_1]\state], Bool(\radius))
+          _box_gradient_(\vertical, \X+\button[#_b_1]\len,\Y+_pos_,\thumb\pos-\x,_size_,\Color[#_b_1]\fore[\color[#_b_1]\state],\Color[#_b_1]\back[\color[#_b_1]\state], Bool(\round))
           
           DrawingMode(#PB_2DDrawing_Outlined)
-          RoundBox(\X+\button[#_b_1]\len,\Y+_pos_,\thumb\pos-\x,_size_,Bool(\radius),Bool(\radius),\Color[#_b_1]\frame[\color[#_b_1]\state])
+          RoundBox(\X+\button[#_b_1]\len,\Y+_pos_,\thumb\pos-\x,_size_,Bool(\round),Bool(\round),\Color[#_b_1]\frame[\color[#_b_1]\state])
           
           DrawingMode(#PB_2DDrawing_Gradient)
-          _box_gradient_(\vertical, \thumb\pos+\thumb\len-\button[#_b_2]\len,\Y+_pos_,\Width-(\thumb\pos+\thumb\len-\x),_size_,\Color[#_b_2]\fore[\color[#_b_2]\state],\Color[#_b_2]\back[\color[#_b_2]\state], Bool(\radius))
+          _box_gradient_(\vertical, \thumb\pos+\thumb\len-\button[#_b_2]\len,\Y+_pos_,\Width-(\thumb\pos+\thumb\len-\x),_size_,\Color[#_b_2]\fore[\color[#_b_2]\state],\Color[#_b_2]\back[\color[#_b_2]\state], Bool(\round))
           
           DrawingMode(#PB_2DDrawing_Outlined)
-          RoundBox(\thumb\pos+\thumb\len-\button[#_b_2]\len,\Y+_pos_,\Width-(\thumb\pos+\thumb\len-\x),_size_,Bool(\radius),Bool(\radius),\Color[#_b_2]\frame[\color[#_b_2]\state])
+          RoundBox(\thumb\pos+\thumb\len-\button[#_b_2]\len,\Y+_pos_,\Width-(\thumb\pos+\thumb\len-\x),_size_,Bool(\round),Bool(\round),\Color[#_b_2]\frame[\color[#_b_2]\state])
         EndIf
         
         
@@ -701,11 +701,11 @@ Module Bar
           
           ; Draw thumb
           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          _box_gradient_(\Vertical,\button[#_b_3]\x+Bool(\vertical),\button[#_b_3]\y+Bool(Not \vertical),\button[#_b_3]\len,\button[#_b_3]\len,\Color[3]\fore[#_b_2],\Color[3]\Back[#_b_2], \Radius, \color\alpha)
+          _box_gradient_(\Vertical,\button[#_b_3]\x+Bool(\vertical),\button[#_b_3]\y+Bool(Not \vertical),\button[#_b_3]\len,\button[#_b_3]\len,\Color[3]\fore[#_b_2],\Color[3]\Back[#_b_2], \round, \color\alpha)
           
           ; Draw thumb frame
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox(\button[#_b_3]\x+Bool(\vertical),\button[#_b_3]\y+Bool(Not \vertical),\button[#_b_3]\len,\button[#_b_3]\len,\Radius,\Radius,\Color[3]\frame[#_b_2]&$FFFFFF|\color\alpha<<24)
+          RoundBox(\button[#_b_3]\x+Bool(\vertical),\button[#_b_3]\y+Bool(Not \vertical),\button[#_b_3]\len,\button[#_b_3]\len,\round,\round,\Color[3]\frame[#_b_2]&$FFFFFF|\color\alpha<<24)
           
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
           Arrow(\button[#_b_3]\x+(\button[#_b_3]\len-\button[#_b_3]\arrow_size)/2+Bool(\Vertical),\button[#_b_3]\y+(\button[#_b_3]\len-\button[#_b_3]\arrow_size)/2+Bool(Not \Vertical), 
@@ -801,7 +801,7 @@ Module Bar
   EndProcedure
   
   Procedure.b Draw_Splitter(*this._S_bar)
-    Protected Pos, Size, Radius.d = 2
+    Protected Pos, Size, round.d = 2
     
     With *this
       If *this > 0
@@ -824,17 +824,17 @@ Module Bar
           Pos = \Thumb\Pos+Size
           
           If \Vertical ; horisontal
-            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-Radius)/2-((Radius*2+2)*2+2)), Pos,Radius,\Color[#_b_3]\Frame[#Selected])
-            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-Radius)/2-(Radius*2+2)),       Pos,Radius,\Color[#_b_3]\Frame[#Selected])
-            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-Radius)/2),                    Pos,Radius,\Color[#_b_3]\Frame[#Selected])
-            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-Radius)/2+(Radius*2+2)),       Pos,Radius,\Color[#_b_3]\Frame[#Selected])
-            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-Radius)/2+((Radius*2+2)*2+2)), Pos,Radius,\Color[#_b_3]\Frame[#Selected])
+            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-round)/2-((round*2+2)*2+2)), Pos,round,\Color[#_b_3]\Frame[#Selected])
+            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-round)/2-(round*2+2)),       Pos,round,\Color[#_b_3]\Frame[#Selected])
+            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-round)/2),                    Pos,round,\Color[#_b_3]\Frame[#Selected])
+            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-round)/2+(round*2+2)),       Pos,round,\Color[#_b_3]\Frame[#Selected])
+            Circle(\button[#_b_3]\X+((\button[#_b_3]\Width-round)/2+((round*2+2)*2+2)), Pos,round,\Color[#_b_3]\Frame[#Selected])
           Else
-            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-Radius)/2-((Radius*2+2)*2+2)),Radius,\Color[#_b_3]\Frame[#Selected])
-            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-Radius)/2-(Radius*2+2)),      Radius,\Color[#_b_3]\Frame[#Selected])
-            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-Radius)/2),                   Radius,\Color[#_b_3]\Frame[#Selected])
-            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-Radius)/2+(Radius*2+2)),      Radius,\Color[#_b_3]\Frame[#Selected])
-            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-Radius)/2+((Radius*2+2)*2+2)),Radius,\Color[#_b_3]\Frame[#Selected])
+            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-round)/2-((round*2+2)*2+2)),round,\Color[#_b_3]\Frame[#Selected])
+            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-round)/2-(round*2+2)),      round,\Color[#_b_3]\Frame[#Selected])
+            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-round)/2),                   round,\Color[#_b_3]\Frame[#Selected])
+            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-round)/2+(round*2+2)),      round,\Color[#_b_3]\Frame[#Selected])
+            Circle(Pos,\button[#_b_3]\Y+((\button[#_b_3]\Height-round)/2+((round*2+2)*2+2)),round,\Color[#_b_3]\Frame[#Selected])
           EndIf
         EndIf
       EndIf
@@ -1153,7 +1153,7 @@ Module Bar
         ; pos (x&y) And Len (width&height)
         _set_area_coordinate_(*this)
         
-        If Not \max And \width And \height
+        If Not \max And \width And \height And (\splitter Or \page\pos) 
           \max = \area\len-\button\len
           
           If Not \page\pos
@@ -1297,8 +1297,8 @@ Module Bar
         SetState(\h, -ScrollArea_X) 
       EndIf
       
-      \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y + Bool(\h\hide) * \h\height) - \v\y + Bool(Not \h\hide And \v\Radius And \h\Radius)*(\v\width/4))
-      \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x + Bool(\v\hide) * \v\width) - \h\x + Bool(Not \v\hide And \v\Radius And \h\Radius)*(\h\height/4), #PB_Ignore)
+      \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y + Bool(\h\hide) * \h\height) - \v\y + Bool(Not \h\hide And \v\round And \h\round)*(\v\width/4))
+      \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x + Bool(\v\hide) * \v\width) - \h\x + Bool(Not \v\hide And \v\round And \h\round)*(\h\height/4), #PB_Ignore)
       
       *Scroll\Y =- \v\Page\Pos
       *Scroll\X =- \h\Page\Pos
@@ -1346,10 +1346,10 @@ Module Bar
       If \h\page\len <> \h\width : \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, \h\page\len, #PB_Ignore) : EndIf
       
       If Not \v\hide And \v\width 
-        \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x-\h\x) + Bool(\v\Radius And \h\Radius)*(\v\width/4), #PB_Ignore)
+        \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x-\h\x) + Bool(\v\round And \h\round)*(\v\width/4), #PB_Ignore)
       EndIf
       If Not \h\hide And \h\height
-        \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y-\v\y) + Bool(\v\Radius And \h\Radius)*(\h\height/4))
+        \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y-\v\y) + Bool(\v\round And \h\round)*(\h\height/4))
       EndIf
       
       ProcedureReturn #True
@@ -1357,10 +1357,10 @@ Module Bar
   EndProcedure
   
   ;-
-  Macro _bar_(_this_, _min_, _max_, _page_length_, _flag_, _radius_=0)
+  Macro _bar_(_this_, _min_, _max_, _page_length_, _flag_, _round_=0)
     *event\widget = _this_
     _this_\scrollstep = 1
-    _this_\radius = _radius_
+    _this_\round = _round_
     
     ; Цвет фона скролла
     _this_\color\alpha[0] = 255
@@ -1382,14 +1382,14 @@ Module Bar
     If _this_\page\len <> _page_length_ : SetAttribute(_this_, #PB_Bar_PageLength, _page_length_) : EndIf
   EndMacro
   
-  Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, Radius.l=0)
+  Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, round.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
     If Flag&#PB_ScrollBar_Vertical
       Flag&~#PB_ScrollBar_Vertical
       Flag|#PB_Bar_Vertical
     EndIf
     
-    _bar_(*this, min, max, PageLength, Flag, Radius)
+    _bar_(*this, min, max, PageLength, Flag, round)
     
     With *this
       \type = #PB_GadgetType_ScrollBar
@@ -1432,7 +1432,7 @@ Module Bar
     ProcedureReturn *this
   EndProcedure
   
-  Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=7)
+  Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, round.l=7)
     Protected *this._S_bar = AllocateStructure(_S_bar)
     If Flag&#PB_TrackBar_Vertical
       Flag&~#PB_TrackBar_Vertical
@@ -1444,7 +1444,7 @@ Module Bar
       Flag|#PB_Bar_Ticks
     EndIf
     
-    _bar_(*this, min, max, 0, Flag, Radius)
+    _bar_(*this, min, max, 0, Flag, round)
     
     With *this
       \type = #PB_GadgetType_TrackBar
@@ -1474,14 +1474,14 @@ Module Bar
     ProcedureReturn *this
   EndProcedure
   
-  Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, Radius.l=0)
+  Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, Flag.l=0, round.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
     If Flag&#PB_ProgressBar_Vertical
       Flag&~#PB_ProgressBar_Vertical
       Flag|#PB_Bar_Vertical
     EndIf
     
-    _bar_(*this, min, max, 0, Flag, Radius)
+    _bar_(*this, min, max, 0, Flag, round)
     
     With *this
       \type = #PB_GadgetType_ProgressBar
@@ -1509,7 +1509,7 @@ Module Bar
     ProcedureReturn *this
   EndProcedure
   
-  Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, Radius.l=0)
+  Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.l=0, round.l=0)
     Protected *this._S_bar = AllocateStructure(_S_bar)
     
     If Flag&#PB_Splitter_Vertical
@@ -1517,7 +1517,7 @@ Module Bar
       Flag|#PB_Bar_Vertical
     EndIf
     
-    _bar_(*this, 0, 0, 0, Flag, Radius)
+    _bar_(*this, 0, 0, 0, Flag, round)
     
     With *this
       \type = #PB_GadgetType_Splitter

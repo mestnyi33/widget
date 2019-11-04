@@ -1,5 +1,5 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets().pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule widget
   
   Global.i gEvent, gQuit
-  Global Button_0, Button_1, Button_2, *Splitter_0.Widget_S, *Splitter_1.Widget_S
+  Global Button_0, Button_1, Button_2, *Splitter_0._S_widget, *Splitter_1._S_widget
 
   Procedure _ReDraw(Gadget.i)
     If StartDrawing(CanvasOutput(Gadget))
@@ -44,49 +44,49 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat
     gEvent= WaitWindowEvent()
     
-    Select gEvent
-      Case #PB_Event_CloseWindow
-        gQuit= #True
-        
-      Case #PB_Event_Timer
-        If _scroll_in_start_(*Splitter_1)
-          direction = 1
-        EndIf
-        
-        If _scroll_in_stop_(*Splitter_1)
-          direction =- 1
-        EndIf
-        
-        value + direction
-        
-        If SetState(*Splitter_1, value)
-          ReDraw(Root())
-        EndIf
-        
-      Case #PB_Event_Gadget
-        
-        Select EventGadget()
-          Case 0
-            value = GetState(*Splitter_1)
-            If GetGadgetState(0)
-              AddWindowTimer(0, 1, 10)
-            Else
-              RemoveWindowTimer(0, 1)
-            EndIf
-        EndSelect
-        
-        ; Get interaction with the scroll bar
-        ;CallBacks(*Splitter_1, EventType())
-        
-        If WidgetEvent() = #PB_EventType_Change
-          SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
-        EndIf
-        
-        ReDraw(Root())
-    EndSelect
-    
+;     Select gEvent
+;       Case #PB_Event_CloseWindow
+;         gQuit= #True
+;         
+;       Case #PB_Event_Timer
+;         If _scroll_in_start_(*Splitter_1)
+;           direction = 1
+;         EndIf
+;         
+;         If _scroll_in_stop_(*Splitter_1)
+;           direction =- 1
+;         EndIf
+;         
+;         value + direction
+;         
+;         If SetState(*Splitter_1, value)
+;           ReDraw(Root())
+;         EndIf
+;         
+;       Case #PB_Event_Gadget
+;         
+;         Select EventGadget()
+;           Case 0
+;             value = GetState(*Splitter_1)
+;             If GetGadgetState(0)
+;               AddWindowTimer(0, 1, 10)
+;             Else
+;               RemoveWindowTimer(0, 1)
+;             EndIf
+;         EndSelect
+;         
+;         ; Get interaction with the scroll bar
+;         ;CallBacks(*Splitter_1, EventType())
+;         
+;         If WidgetEvent() = #PB_EventType_Change
+;           SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(EventWidget(), #PB_Bar_Direction)))
+;         EndIf
+;         
+;         ReDraw(Root())
+;     EndSelect
+;     
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = -
 ; EnableXP

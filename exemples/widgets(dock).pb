@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets(6).pbi"
+XIncludeFile "widgets().pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -117,5 +117,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ---
+; Folding = +--
 ; EnableXP

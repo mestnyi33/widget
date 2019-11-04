@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets(6).pbi"
+XIncludeFile "widgets().pbi"
 
 
 ;- EXAMPLE
@@ -37,9 +37,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Button( 50, 55, 80,20,"button (open)")
   
-  ReDraw(*w)
-  ReDraw(*w1)
-  ReDraw(*w2)
+  ;ReDraw(*w)
+  ;ReDraw(*w1)
+  ;ReDraw(*w2)
+  
+  ReDraw(Root())
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf

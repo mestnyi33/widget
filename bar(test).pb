@@ -1,5 +1,6 @@
-﻿IncludePath "/Users/as/Documents/GitHub/Widget/"
-XIncludeFile "_module_bar.pb"
+﻿;IncludePath "/Users/as/Documents/GitHub/Widget/"
+XIncludeFile "bar().pbi"
+;XIncludeFile "_module_bar.pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -43,13 +44,13 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure ReDraw (canvas.i)
     With *scroll
       If StartDrawing(CanvasOutput(canvas))
-        ; ClipOutput(\h\x, \v\y, \h\page\len, \v\page\len)
+        ; ClipOutput(\h\x, \v\y, \h\bar\page\len, \v\bar\page\len)
         
         FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FF)
         
         DrawingMode(#PB_2DDrawing_AlphaBlend)
         ForEach Images()
-          DrawImage(ImageID(Images()\img), Images()\x - \h\page\pos, Images()\y - \v\page\pos) ; draw all images with z-order
+          DrawImage(ImageID(Images()\img), Images()\x - \h\bar\page\pos, Images()\y - \v\bar\page\pos) ; draw all images with z-order
         Next
         
         UnclipOutput()
@@ -58,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If Not \h\hide : Draw(\h) : EndIf
         
         DrawingMode(#PB_2DDrawing_Outlined)
-        Box(\h\x, \v\y, \h\page\len, \v\page\len, $0000FF)
+        Box(\h\x, \v\y, \h\bar\page\len, \v\bar\page\len, $0000FF)
         
         
         StopDrawing()
@@ -74,11 +75,11 @@ CompilerIf #PB_Compiler_IsMainFile
       With *scroll
         
         Repeat
-          image_x = \h\x + Images()\x - \h\page\pos
-          image_y = \v\y + Images()\y - \v\page\pos
+          image_x = \h\x + Images()\x - \h\bar\page\pos
+          image_y = \v\y + Images()\y - \v\bar\page\pos
           
-          If mouse_x > image_x And mouse_x =< image_x+Images()\width And ; Images()\x + Images()\width - \h\page\pos  ;  
-             mouse_y > image_y And mouse_y =< image_y+Images()\height    ; Images()\y + Images()\height - \v\page\pos  ;   
+          If mouse_x > image_x And mouse_x =< image_x+Images()\width And ; Images()\x + Images()\width - \h\bar\page\pos  ;  
+             mouse_y > image_y And mouse_y =< image_y+Images()\height    ; Images()\y + Images()\height - \v\bar\page\pos  ;   
             
             If Images()\alphatest And 
                ImageDepth(Images()\img)>31 And 
@@ -152,11 +153,11 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       iWidth = (\v\x + Bool(\v\hide) * \v\width) - \h\x
 ;       iHeight = (\h\y + Bool(\h\hide) * \h\height) - \v\y
       
-      If \v\width And \v\page\len<>iHeight : SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-      If \h\height And \h\page\len<>iWidth : SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+      If \v\width And \v\bar\page\len<>iHeight : SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+      If \h\height And \h\bar\page\len<>iWidth : SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
       
-      \v\hide = Resize(\v, Width+x-\v\width, y, #PB_Ignore, \v\page\len)
-      \h\hide = Resize(\h, x, Height+y-\h\height, \h\page\len, #PB_Ignore)
+      \v\hide = Resize(\v, Width+x-\v\width, y, #PB_Ignore, \v\bar\page\len)
+      \h\hide = Resize(\h, x, Height+y-\h\height, \h\bar\page\len, #PB_Ignore)
       
       iHeight = Height - Bool(Not \h\hide And \h\height) * \h\height
       iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width
@@ -164,19 +165,19 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       iWidth = (\v\x + Bool(\v\hide) * \v\width) - \h\x
 ;       iHeight = (\h\y + Bool(\h\hide) * \h\height) - \v\y
       
-      If \v\width And \v\page\len<>iHeight : SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
-      If \h\height And \h\page\len<>iWidth : SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
+      If \v\width And \v\bar\page\len<>iHeight : SetAttribute(\v, #PB_ScrollBar_PageLength, iHeight) : EndIf
+      If \h\height And \h\bar\page\len<>iWidth : SetAttribute(\h, #PB_ScrollBar_PageLength, iWidth) : EndIf
       
-      If \v\page\len <> \v\height : \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\page\len) : EndIf
-      If \h\page\len <> \h\width : \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, \h\page\len, #PB_Ignore) : EndIf
+      If \v\bar\page\len <> \v\height : \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len) : EndIf
+      If \h\bar\page\len <> \h\width : \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, \h\bar\page\len, #PB_Ignore) : EndIf
       If Not \v\hide And \v\width 
         \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x-\h\x) + Bool(\v\round And \h\round)*(\v\width/4), #PB_Ignore)
       EndIf
       If Not \h\hide And \h\height
         \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y-\v\y) + Bool(\v\round And \h\round)*(\h\height/4))
       EndIf
-;       \v\page\pos =- 30
-;       Debug \v\page\pos
+;       \v\bar\page\pos =- 30
+;       Debug \v\bar\page\pos
       
       ProcedureReturn #True
     EndWith
@@ -221,10 +222,10 @@ CompilerIf #PB_Compiler_IsMainFile
             PopListPosition(Images())
             
             If ScrollX<0
-              *scroll\h\page\pos =- ScrollX+*scroll\h\page\pos
+              *scroll\h\bar\page\pos =- ScrollX+*scroll\h\bar\page\pos
             EndIf
             If ScrollY<0
-              *scroll\v\page\pos =- ScrollY+*scroll\v\page\pos
+              *scroll\v\bar\page\pos =- ScrollY+*scroll\v\bar\page\pos
             EndIf
           EndIf
           
@@ -234,10 +235,12 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Not (\h\from=-1 And \v\from=-1)
         If \v\change
-          SetWindowTitle(EventWindow(), Str(\v\page\pos))
+          SetWindowTitle(EventWindow(), Str(\v\bar\page\pos))
+          \v\change = 0
         EndIf
         If \h\change
-          SetWindowTitle(EventWindow(), Str(\h\page\pos))
+          SetWindowTitle(EventWindow(), Str(\h\bar\page\pos))
+          \h\change = 0
         EndIf
         
         Select EventType
@@ -245,11 +248,11 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "----------Up---------"
             GetScrollCoordinate()
             
-            ;               Debug ""+Scrollx+" "+*scroll\h\page\pos
+            ;               Debug ""+Scrollx+" "+*scroll\h\bar\page\pos
             ;               
-            ;               If *scroll\h\page\pos<>Scrollx
-            ;                 ScrollWidth - *scroll\h\page\pos
-            ;                 *scroll\h\page\pos = Scrollx
+            ;               If *scroll\h\bar\page\pos<>Scrollx
+            ;                 ScrollWidth - *scroll\h\bar\page\pos
+            ;                 *scroll\h\bar\page\pos = Scrollx
             ;               EndIf 
             ;                Debug ""+Scrollx+" "+ScrollWidth
             
@@ -288,8 +291,8 @@ CompilerIf #PB_Compiler_IsMainFile
           Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
             GetScrollCoordinate()
             
-            If \h\max<>ScrollWidth : SetAttribute(\h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
-            If \v\max<>ScrollHeight : SetAttribute(\v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
+            If \h\bar\max<>ScrollWidth : SetAttribute(\h, #PB_ScrollBar_Maximum, ScrollWidth) : EndIf
+            If \v\bar\max<>ScrollHeight : SetAttribute(\v, #PB_ScrollBar_Maximum, ScrollHeight) : EndIf
             
             Resizes2(*scroll, 0, 0, Width, Height)
             Repaint = #True
@@ -329,19 +332,19 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*Scroll\h, 30)
   
   If GetGadgetState(2)
-    SetGadgetState(3, GetAttribute(*Scroll\v, #PB_Bar_Inverted))
+    SetGadgetState(3, GetAttribute(*Scroll\v, #Bar_Inverted))
   Else
-    SetGadgetState(3, GetAttribute(*Scroll\h, #PB_Bar_Inverted))
+    SetGadgetState(3, GetAttribute(*Scroll\h, #Bar_Inverted))
   EndIf
   
-  Define vButton = GetAttribute(*Scroll\v, #PB_Bar_ButtonSize)
-  Define hButton = GetAttribute(*Scroll\h, #PB_Bar_ButtonSize)
+  Define vButton = GetAttribute(*Scroll\v, #Bar_ButtonSize)
+  Define hButton = GetAttribute(*Scroll\h, #Bar_ButtonSize)
   
   PostEvent(#PB_Event_Gadget, 0,#MyCanvas, #PB_EventType_Resize)
   BindGadgetEvent(#MyCanvas, @Canvas_CallBack())
   BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
   
-  ;Resize(*Scroll\v, #PB_Ignore, 30, #PB_Ignore, (*scroll\v\page\len + Bool(*scroll\v\round And *scroll\h\round)*(*scroll\h\height/4))-30)
+  ;Resize(*Scroll\v, #PB_Ignore, 30, #PB_Ignore, (*scroll\v\bar\page\len + Bool(*scroll\v\round And *scroll\h\round)*(*scroll\h\height/4))-30)
               
   Repeat
     Event = WaitWindowEvent()
@@ -352,9 +355,9 @@ CompilerIf #PB_Compiler_IsMainFile
           Case 6
             If GetGadgetState(5)
               If GetGadgetState(2)
-                Resize(*Scroll\v, #PB_Ignore, GetGadgetState(6), #PB_Ignore, (*scroll\v\page\len + Bool(*scroll\v\round And *scroll\h\round)*(*scroll\h\height/4))-GetGadgetState(6))
+                Resize(*Scroll\v, #PB_Ignore, GetGadgetState(6), #PB_Ignore, (*scroll\v\bar\page\len + Bool(*scroll\v\round And *scroll\h\round)*(*scroll\h\height/4))-GetGadgetState(6))
               Else
-                Resize(*Scroll\h, GetGadgetState(6), #PB_Ignore, (*scroll\h\page\len + Bool(*scroll\v\round And *scroll\h\round)*(*scroll\v\width/4))-GetGadgetState(6), #PB_Ignore)
+                Resize(*Scroll\h, GetGadgetState(6), #PB_Ignore, (*scroll\h\bar\page\len + Bool(*scroll\v\round And *scroll\h\round)*(*scroll\v\width/4))-GetGadgetState(6), #PB_Ignore)
               EndIf
             Else
               If GetGadgetState(2)
@@ -367,27 +370,27 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case 2 
             If GetGadgetState(2)
-              SetGadgetState(3, GetAttribute(*Scroll\v, #PB_Bar_Inverted))
+              SetGadgetState(3, GetAttribute(*Scroll\v, #Bar_Inverted))
             Else
-              SetGadgetState(3, GetAttribute(*Scroll\h, #PB_Bar_Inverted))
+              SetGadgetState(3, GetAttribute(*Scroll\h, #Bar_Inverted))
             EndIf
             
           Case 3
             If GetGadgetState(2)
-              SetAttribute(*Scroll\v, #PB_Bar_Inverted, Bool(GetGadgetState(3)))
+              SetAttribute(*Scroll\v, #Bar_Inverted, Bool(GetGadgetState(3)))
               SetWindowTitle(0, Str(GetState(*Scroll\v)))
             Else
-              SetAttribute(*Scroll\h, #PB_Bar_Inverted, Bool(GetGadgetState(3)))
+              SetAttribute(*Scroll\h, #Bar_Inverted, Bool(GetGadgetState(3)))
               SetWindowTitle(0, Str(GetState(*Scroll\h)))
             EndIf
             ReDraw(#MyCanvas) 
             
           Case 4
             If GetGadgetState(2)
-              SetAttribute(*Scroll\v, #PB_Bar_ButtonSize, Bool( Not GetGadgetState(4)) * vButton) 
+              SetAttribute(*Scroll\v, #Bar_ButtonSize, Bool( Not GetGadgetState(4)) * vButton) 
               SetWindowTitle(0, Str(GetState(*Scroll\v)))
             Else
-              SetAttribute(*Scroll\h, #PB_Bar_ButtonSize, Bool( Not GetGadgetState(4)) * hButton)
+              SetAttribute(*Scroll\h, #Bar_ButtonSize, Bool( Not GetGadgetState(4)) * hButton)
               SetWindowTitle(0, Str(GetState(*Scroll\h)))
             EndIf
             ReDraw(#MyCanvas) 
@@ -397,5 +400,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -8---0P----
+; Folding = -----------
 ; EnableXP

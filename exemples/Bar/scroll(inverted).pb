@@ -51,16 +51,19 @@ CompilerIf #PB_Compiler_IsMainFile
         If *Bar_0\Root ; IsWidget(*Bar_0) 
           CallBack(*Bar_0, EventType())
         
-          If WidgetEvent() = #PB_EventType_Change
-            Debug "Change scroll direction "+ GetAttribute(EventWidget(), #PB_Bar_Direction)
-            
-            Select EventWidget()
-                
-              Case *Bar_0
-                SetWindowTitle(0, Str(GetState(*Bar_0)))
-                
-            EndSelect
+;           If WidgetEvent() = #PB_EventType_Change
+          If *Bar_0\change
+            Debug "Change scroll direction "+ GetAttribute(*Bar_0, #PB_Bar_Direction)
+            *Bar_0\change = 0
           EndIf
+          ;             
+;             Select EventWidget()
+;                 
+;               Case *Bar_0
+                 SetWindowTitle(0, Str(GetState(*Bar_0)))
+;                 
+;             EndSelect
+;           EndIf
           
           ReDraw(*Bar_0)
         EndIf
