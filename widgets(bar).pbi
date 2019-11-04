@@ -1330,9 +1330,11 @@ DeclareModule Widget
   Declare.i AddColumn(*this, Position.i, Title.s, Width.i)
   Declare.i Resize(*this, X.l,Y.l,Width.l,Height.l)
   
-  Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, PageLength.i, Flag.i=0, round.i=7)
-  Declare.i Track(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0)
-  Declare.i Progress(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0)
+  Declare.i Track(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0)
+  Declare.i Progress(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0)
+  Declare.i Spin(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0, increment.f=1.0)
+  Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
+  
   Declare.i Image(X.l,Y.l,Width.l,Height.l, Image.i, Flag.i=0)
   Declare.i Button(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, Image.i=-1)
   Declare.i Text(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0)
@@ -1344,7 +1346,6 @@ DeclareModule Widget
   Declare.i Combobox(X.l,Y.l,Width.l,Height.l, Flag.i=0)
   Declare.i HyperLink(X.l,Y.l,Width.l,Height.l, Text.s, Color.i, Flag.i=0)
   Declare.i ListView(X.l,Y.l,Width.l,Height.l, Flag.i=0)
-  Declare.i Spin(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0, Increment.f=1, round.i=7)
   Declare.i ListIcon(X.l,Y.l,Width.l,Height.l, FirstColumnTitle.s, FirstColumnWidth.i, Flag.i=0)
   Declare.i ExplorerList(X.l,Y.l,Width.l,Height.l, Directory.s, Flag.i=0)
   Declare.i IPAddress(X.l,Y.l,Width.l,Height.l)
@@ -2046,8 +2047,8 @@ Module Widget
         EndIf
       EndIf
       
-;       ; bar change
-;       Post(#PB_EventType_StatusChange, _this_, _this_\from, _this_\bar\direction)
+      ;       ; bar change
+      ;       Post(#PB_EventType_StatusChange, _this_, _this_\from, _this_\bar\direction)
     EndIf
     
   EndMacro
@@ -2067,12 +2068,12 @@ Module Widget
       If \page\pos <> ScrollPos
         \change = \page\pos - ScrollPos
         
-          If \page\pos > ScrollPos
-            \direction =- ScrollPos
-          Else
-            \direction = ScrollPos
-          EndIf
-
+        If \page\pos > ScrollPos
+          \direction =- ScrollPos
+        Else
+          \direction = ScrollPos
+        EndIf
+        
         \page\pos = ScrollPos
         ProcedureReturn #True
       EndIf
@@ -5977,9 +5978,9 @@ Module Widget
   
   Procedure.b Draw_Progress(*this._s_widget)
     ;ResetGradientColors()
-      *this\bar\button[#bb_1]\color\state = Bool(Not *this\bar\vertical) * #s_2
-      *this\bar\button[#bb_2]\color\state = Bool(*this\bar\vertical) * #s_2
-      
+    *this\bar\button[#bb_1]\color\state = Bool(Not *this\bar\vertical) * #s_2
+    *this\bar\button[#bb_2]\color\state = Bool(*this\bar\vertical) * #s_2
+    
     ; Selected Back
     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
     _box_gradient_(*this\bar\vertical, *this\bar\button[#bb_1]\X,*this\bar\button[#bb_1]\Y,*this\bar\button[#bb_1]\width,*this\bar\button[#bb_1]\height,
@@ -5990,10 +5991,10 @@ Module Widget
     _box_gradient_(*this\bar\vertical, *this\bar\button[#bb_2]\x, *this\bar\button[#bb_2]\y,*this\bar\button[#bb_2]\width,*this\bar\button[#bb_2]\height,
                    *this\bar\button[#bb_2]\color\fore[*this\bar\button[#bb_2]\color\state],*this\bar\button[#bb_2]\color\back[*this\bar\button[#bb_2]\color\state])
     
-;     With *this
-;       DrawingMode(#PB_2DDrawing_Default)
-;         RoundBox(*this\bar\button[#bb_1]\X,*this\bar\button[#bb_1]\Y,*this\bar\button[#bb_1]\width,*this\bar\button[#bb_1]\height, \round, \round,*this\bar\button[#bb_1]\color\back[2])
-;       EndWith
+    ;     With *this
+    ;       DrawingMode(#PB_2DDrawing_Default)
+    ;         RoundBox(*this\bar\button[#bb_1]\X,*this\bar\button[#bb_1]\Y,*this\bar\button[#bb_1]\width,*this\bar\button[#bb_1]\height, \round, \round,*this\bar\button[#bb_1]\color\back[2])
+    ;       EndWith
     If *this\bar\vertical
       ; Frame_1
       DrawingMode(#PB_2DDrawing_Outlined)
@@ -6157,13 +6158,13 @@ Module Widget
   Procedure.i Draw_Spin(*this._S_widget) 
     Draw_Scroll(*this)
     ; Draw string
-      If *this\text\string
-        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawText(*this\text\x, *this\text\y, *this\text\string, *this\color\front[*this\color\state]&$FFFFFF|255)
-      EndIf
-      
-      ProcedureReturn
-      
+    If *this\text\string
+      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+      DrawText(*this\text\x, *this\text\y, *this\text\string, *this\color\front[*this\color\state]&$FFFFFF|255)
+    EndIf
+    
+    ProcedureReturn
+    
     Protected.i State_0, State_3, Alpha
     
     With *this 
@@ -10127,7 +10128,7 @@ Module Widget
     If _this_\bar\page\len <> _page_length_ : SetAttribute(_this_, #Bar_PageLength, _page_length_) : EndIf
   EndMacro
   
-  Procedure.i Bar(Type.i, Size.i, Min.i, Max.i, PageLength.i, Flag.i=0, round.i=7, SliderLen.i=7, Parent.i=0)
+  Procedure.i Bar(Type.l, Size.l, Min.l, Max.l, PageLength.l, Flag.i=0, round.l=7, SliderLen.l=7, Parent.i=0)
     Protected *this._S_widget = AllocateStructure(_S_widget)
     
     With *this
@@ -10208,30 +10209,24 @@ Module Widget
     ProcedureReturn *this
   EndProcedure
   
-  Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, PageLength.i, Flag.i=0, round.i=7)
-    Protected *this._S_widget, Size
-    Protected Vertical = (Bool(Flag&#PB_Splitter_Vertical) * #Flag_Vertical)
-    
-    If Vertical
-      Size = width
-    Else
-      Size =  height
+  Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0)
+    If Flag&#Bar_Vertical
+      Flag|#Bar_Inverted
     EndIf
     
-    *this = Bar(#PB_GadgetType_ScrollBar, Size, Min, Max, PageLength, Flag|Vertical, round)
-    _set_last_parameters_(*this, #PB_GadgetType_ScrollBar, Flag, Root()\opened) 
+    Protected *this._S_widget = Bar(#PB_GadgetType_TrackBar, 0, Min, Max, 0, Flag|#Bar_ButtonSize, round)
+    _set_last_parameters_(*this, *this\type, Flag, Root()\opened)
     Resize(*this, X,Y,Width,Height)
     
     ProcedureReturn *this
   EndProcedure
   
-  Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0)
-    Protected *this._S_widget
+  Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0)
     If Flag&#Bar_Vertical
       Flag|#Bar_Inverted
     EndIf
     
-    *this = Bar(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Flag|#Bar_ButtonSize, 0)
+    Protected *this._S_widget = Bar(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Flag|#Bar_ButtonSize, round)
     
     With *this
       \text = AllocateStructure(_S_text)
@@ -10246,38 +10241,25 @@ Module Widget
       CompilerEndIf
     EndWith
     
-    _set_last_parameters_(*this, #PB_GadgetType_ProgressBar, Flag, Root()\opened) 
+    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
     Resize(*this, X,Y,Width,Height)
     
     ProcedureReturn *this
   EndProcedure
   
-  Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0)
-    Protected *this._S_widget
-    If Flag&#Bar_Vertical
-      Flag|#Bar_Inverted
-    EndIf
-    
-    *this = Bar(#PB_GadgetType_TrackBar, 0, Min, Max, 0, Flag|#Bar_ButtonSize, 0)
-    _set_last_parameters_(*this, #PB_GadgetType_TrackBar, Flag, Root()\opened)
-    Resize(*this, X,Y,Width,Height)
-    
-    ProcedureReturn *this
-  EndProcedure
-  
-  Procedure.i Spin(X.l,Y.l,Width.l,Height.l, Min.i, Max.i, Flag.i=0, Increment.f=1, round.i=7)
+  Procedure.i Spin(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0, Increment.f=1.0)
     Protected *this._S_widget = AllocateStructure(_S_widget)
     _set_last_parameters_(*this, #PB_GadgetType_Spin, Flag, Root()\opened) 
     round = 0
     
-        If Flag&#Bar_Vertical
-          Flag&~#Bar_Vertical
-          ;Flag|#Bar_Inverted
-        Else
-          Flag|#Bar_Vertical
-          Flag|#Bar_Inverted
-        EndIf
-        
+    If Flag&#Bar_Vertical
+      Flag&~#Bar_Vertical
+      ;Flag|#Bar_Inverted
+    Else
+      Flag|#Bar_Vertical
+      Flag|#Bar_Inverted
+    EndIf
+    
     
     If Flag&#Bar_Reverse
       Flag|#Bar_Inverted
@@ -10332,6 +10314,23 @@ Module Widget
       
     EndWith
     
+    Resize(*this, X,Y,Width,Height)
+    
+    ProcedureReturn *this
+  EndProcedure
+  
+  Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
+    Protected *this._S_widget, Size
+    Protected Vertical = (Bool(Flag&#PB_Splitter_Vertical) * #Flag_Vertical)
+    
+    If Vertical
+      Size = width
+    Else
+      Size =  height
+    EndIf
+    
+    *this = Bar(#PB_GadgetType_ScrollBar, Size, Min, Max, PageLength, Flag|Vertical, round)
+    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
     Resize(*this, X,Y,Width,Height)
     
     ProcedureReturn *this
@@ -11897,7 +11896,7 @@ Module Widget
             EndIf
             Repaint = #True
           EndIf
-        
+          
           If _this_\count\items
             ForEach _this_\tab\tabs()
               If _this_\tab\tabs()\draw
@@ -11931,7 +11930,8 @@ Module Widget
       ;       If _this_\index[#s_1] =- 1
       Select #s_1
         Case _this_\bar\button[#bb_1]\color\state
-          If Bar_ChangePos(_this_\bar, Bool(_this_\bar\inverted) * (_this_\bar\page\pos + _this_\bar\scrollstep) + Bool(Not _this_\bar\inverted) * (_this_\bar\page\pos - _this_\bar\scrollstep));_bar_invert_(_this_\bar, (_this_\bar\page\pos + _this_\bar\scrollstep), _this_\bar\inverted))   
+          If Bar_ChangePos(_this_\bar, Bool(_this_\bar\inverted) * (_this_\bar\page\pos + _this_\bar\scrollstep) + 
+                                       Bool(Not _this_\bar\inverted) * (_this_\bar\page\pos - _this_\bar\scrollstep))
             If Not _bar_in_start_(_this_\bar) And 
                _this_\bar\button[#bb_2]\color\state = #s_3 
               
@@ -11952,7 +11952,8 @@ Module Widget
           EndIf
           
         Case _this_\bar\button[#bb_2]\color\state 
-          If Bar_ChangePos(_this_\bar, Bool(_this_\bar\inverted) * (_this_\bar\page\pos - _this_\bar\scrollstep) + Bool(Not _this_\bar\inverted) * (_this_\bar\page\pos + _this_\bar\scrollstep));_bar_invert_(_this_\bar, (_this_\bar\page\pos - _this_\bar\scrollstep), _this_\bar\inverted)) ;(_this_\bar\page\pos + _this_\bar\scrollstep)) 
+          If Bar_ChangePos(_this_\bar, Bool(_this_\bar\inverted) * (_this_\bar\page\pos - _this_\bar\scrollstep) + 
+                                       Bool(Not _this_\bar\inverted) * (_this_\bar\page\pos + _this_\bar\scrollstep))
             If Not _bar_in_stop_(_this_\bar) And 
                _this_\bar\button[#bb_1]\color\state = #s_3 
               
@@ -12213,22 +12214,22 @@ Module Widget
                    #PB_GadgetType_ProgressBar,
                    #PB_GadgetType_ScrollBar, 
                    ;#PB_GadgetType_Spin,
-                   #PB_GadgetType_Splitter
+                #PB_GadgetType_Splitter
                 
                 _events_spin_(*this, #PB_EventType_LeftButtonDown, mouse_x, mouse_y)
-               
-;                 Select \from
-;                   Case #bb_1 : Repaint = SetState(*this, (\bar\page\pos - \bar\scrollstep)) ; Up button
-;                   Case #bb_2 : Repaint = SetState(*this, (\bar\page\pos + \bar\scrollstep)) ; Down button
-;                   Case #bb_3                                                                ; Thumb button
-;                                                                                             ;If \type <> #PB_GadgetType_Spin
-;                     If \bar\vertical
-;                       delta = mouse_y - \bar\thumb\pos
-;                     Else
-;                       delta = mouse_x - \bar\thumb\pos
-;                     EndIf
-;                     ;EndIf
-;                 EndSelect
+                
+                ;                 Select \from
+                ;                   Case #bb_1 : Repaint = SetState(*this, (\bar\page\pos - \bar\scrollstep)) ; Up button
+                ;                   Case #bb_2 : Repaint = SetState(*this, (\bar\page\pos + \bar\scrollstep)) ; Down button
+                ;                   Case #bb_3                                                                ; Thumb button
+                ;                                                                                             ;If \type <> #PB_GadgetType_Spin
+                ;                     If \bar\vertical
+                ;                       delta = mouse_y - \bar\thumb\pos
+                ;                     Else
+                ;                       delta = mouse_x - \bar\thumb\pos
+                ;                     EndIf
+                ;                     ;EndIf
+                ;                 EndSelect
                 
                 repaint = 1
                 
@@ -12718,19 +12719,19 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Widget(), 5)
     
     
-;     Scroll(160, 370, 150, 40, 0, 50, 30)
-;     SetState(Widget(), 5)
-;     Track(160, 370+55, 150, 40, 0, 20)
-;     SetState(Widget(), 5)
-;     Progress(160, 370+110, 150, 40, 0, 20)
-;     SetState(Widget(), 5)
-;     
-;     Scroll(320, 370, 40, 150, 0, 50, 30, #Bar_Vertical)
-;     SetState(Widget(), 5)
-;     Track(320+55, 370, 40, 150, 0, 20, #Bar_Vertical)
-;     SetState(Widget(), 5)
-;     Progress(320+110, 370, 40, 150, 0, 20, #Bar_Vertical)
-;     SetState(Widget(), 5)
+    ;     Scroll(160, 370, 150, 40, 0, 50, 30)
+    ;     SetState(Widget(), 5)
+    ;     Track(160, 370+55, 150, 40, 0, 20)
+    ;     SetState(Widget(), 5)
+    ;     Progress(160, 370+110, 150, 40, 0, 20)
+    ;     SetState(Widget(), 5)
+    ;     
+    ;     Scroll(320, 370, 40, 150, 0, 50, 30, #Bar_Vertical)
+    ;     SetState(Widget(), 5)
+    ;     Track(320+55, 370, 40, 150, 0, 20, #Bar_Vertical)
+    ;     SetState(Widget(), 5)
+    ;     Progress(320+110, 370, 40, 150, 0, 20, #Bar_Vertical)
+    ;     SetState(Widget(), 5)
     
     ReDraw(Root())
   EndIf
@@ -12741,5 +12742,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --------------------------44--440-4---------------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------f-v-----------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

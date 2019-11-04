@@ -766,17 +766,10 @@ Module Bar
           _box_gradient_(\bar\vertical,\bar\button[#bb_1]\x,\bar\button[#bb_1]\y,\bar\button[#bb_1]\width,\bar\button[#bb_1]\height,\bar\button[#bb_1]\Color\fore[\bar\button[#bb_1]\Color\state],\bar\button[#bb_1]\Color\Back[\bar\button[#bb_1]\Color\state], \round, \color\alpha)
           _box_gradient_(\bar\vertical,\bar\button[#bb_2]\x,\bar\button[#bb_2]\y,\bar\button[#bb_2]\width,\bar\button[#bb_2]\height,\bar\button[#bb_2]\Color\fore[\bar\button[#bb_2]\Color\state],\bar\button[#bb_2]\Color\Back[\bar\button[#bb_2]\Color\state], \round, \color\alpha)
           
-          If Not \bar\vertical
-            ; Draw buttons frame
-            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\bar\button[#bb_1]\x,\bar\button[#bb_1]\y,\bar\button[#bb_1]\width,\bar\button[#bb_1]\height,\round,\round,\bar\button[#bb_1]\Color\frame[\bar\button[#bb_1]\Color\state]&$FFFFFF|\color\alpha<<24)
-            RoundBox(\bar\button[#bb_2]\x,\bar\button[#bb_2]\y,\bar\button[#bb_2]\width,\bar\button[#bb_2]\height,\round,\round,\bar\button[#bb_2]\Color\frame[\bar\button[#bb_2]\Color\state]&$FFFFFF|\color\alpha<<24)
-          EndIf
-        
-          ; Draw arrows
+         ; Draw arrows
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
           Arrow(\bar\button[#bb_1]\x+(\bar\button[#bb_1]\width-\bar\button[#bb_1]\arrow\size)/2,\bar\button[#bb_1]\y+(\bar\button[#bb_1]\height-\bar\button[#bb_1]\arrow\size)/2, \bar\button[#bb_1]\arrow\size, Bool(\bar\vertical), \bar\button[#bb_1]\Color\front[\bar\button[#bb_1]\Color\state]&$FFFFFF|\color\alpha<<24, \bar\button[#bb_1]\arrow\type)
-          Arrow(\bar\button[#bb_2]\x+(\bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2,\bar\button[#bb_2]\y+(\bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2-Bool(\bar\vertical)*2, \bar\button[#bb_2]\arrow\size, Bool(\bar\vertical)+2, \bar\button[#bb_2]\Color\front[\bar\button[#bb_2]\Color\state]&$FFFFFF|\color\alpha<<24, \bar\button[#bb_2]\arrow\type)
+          Arrow(\bar\button[#bb_2]\x+(\bar\button[#bb_2]\width-\bar\button[#bb_2]\arrow\size)/2-Bool(Not \bar\vertical)*2,\bar\button[#bb_2]\y+(\bar\button[#bb_2]\height-\bar\button[#bb_2]\arrow\size)/2-Bool(\bar\vertical)*2, \bar\button[#bb_2]\arrow\size, Bool(\bar\vertical)+2, \bar\button[#bb_2]\Color\front[\bar\button[#bb_2]\Color\state]&$FFFFFF|\color\alpha<<24, \bar\button[#bb_2]\arrow\type)
         EndIf
         
         ; Text
@@ -808,9 +801,11 @@ Module Bar
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
         RoundBox(\X,\Y,\width,\height,\round,\round,\bar\button[#bb_1]\Color\frame&$FFFFFF|\color\alpha<<24)
         
+        Line( \bar\button[#bb_1]\X, \y, 1, \height, \bar\button[#bb_1]\color\frame&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
         If \bar\vertical
-          Line( \bar\button[#bb_1]\X, \y, 1, \height, \bar\button[#bb_1]\color\frame&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
           Line( \bar\button[#bb_1]\X, \bar\button[#bb_2]\y-1, \bar\button[#bb_1]\width, 1, \bar\button[#bb_1]\color\frame&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
+        Else
+          Line( \bar\button[#bb_2]\X-1, \bar\button[#bb_1]\y, 1, \bar\button[#bb_1]\height, \bar\button[#bb_1]\color\frame&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
         EndIf
         
       EndIf
@@ -1646,8 +1641,8 @@ Module Bar
       \bar\button[#bb_1]\arrow\type = 1
       \bar\button[#bb_2]\arrow\type = 1
       
-      \bar\button[#bb_1]\arrow\size = 6
-      \bar\button[#bb_2]\arrow\size = 6
+      \bar\button[#bb_1]\arrow\size = 4
+      \bar\button[#bb_2]\arrow\size = 4
       
       \bar\button[#bb_1]\interact = 1
       \bar\button[#bb_2]\interact = 1
@@ -2093,18 +2088,12 @@ Module Bar
               
               Select \from
                 Case #bb_1 
-                  If \bar\inverted
-                    Result = SetState(*this, (\bar\page\pos + \bar\scrollstep))
-                  Else
-                    Result = SetState(*this, (\bar\page\pos - \bar\scrollstep))
-                  EndIf
+                  Result = SetState(*this, Bool(\bar\inverted) * (\bar\page\pos + \bar\scrollstep) +
+                                           Bool(Not \bar\inverted) * (\bar\page\pos - \bar\scrollstep))
                   
                 Case #bb_2 
-                  If \bar\inverted
-                    Result = SetState(*this, (\bar\page\pos - \bar\scrollstep))
-                  Else
-                    Result = SetState(*this, (\bar\page\pos + \bar\scrollstep))
-                  EndIf
+                  Result = SetState(*this, Bool(Not \bar\inverted) * (\bar\page\pos + \bar\scrollstep) +
+                                           Bool(\bar\inverted) * (\bar\page\pos - \bar\scrollstep))
                   
                 Case #bb_3 
                   LastX = mouse_x - \bar\thumb\pos 
@@ -2382,5 +2371,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = JAAgAAAAAAAAAAAwAAupOAAAgH-z9-gBYYMgBAAAQAABAAAw
+; Folding = JAAgAAA5IAAAAAAYAA4UHAAAwj-Z+f1AMMGwABAAJwJAAAA+
 ; EnableXP
