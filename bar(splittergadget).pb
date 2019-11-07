@@ -1,5 +1,6 @@
 ﻿; IncludePath "/Users/as/Documents/GitHub/Widget/"
-XIncludeFile "bar().pbi"
+;XIncludeFile "bar().pbi"
+XIncludeFile "bar(widgets).pb"
 
 ; Module name   : Splitter
 ; Author        : mestnyi
@@ -124,8 +125,8 @@ Module Splitter
       Select Attribute
         Case #PB_Splitter_FirstGadget    : Result = \widget\splitter\first
         Case #PB_Splitter_SecondGadget   : Result = \widget\splitter\second
-        Case #PB_Splitter_FirstMinimumSize    : Result = \widget\bar\button[Bar::#bb_1]\len
-        Case #PB_Splitter_SecondMinimumSize   : Result = \widget\bar\button[Bar::#bb_2]\len
+        Case #PB_Splitter_FirstMinimumSize    : Result = \widget\bar\button[Bar::#__bb_1]\len
+        Case #PB_Splitter_SecondMinimumSize   : Result = \widget\bar\button[Bar::#__bb_2]\len
       EndSelect
     EndWith
     
@@ -333,26 +334,26 @@ CompilerEndIf
 ;   
 ;   
 ;   If OpenWindow(0, 0, 0, 460, 180, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-;     #Button1  = 0
-;     #Button2  = 1
+;     #__button1  = 0
+;     #__button2  = 1
 ;     #Splitter = 2
 ;     
-;     ButtonGadget(#Button1, 0, 0, 0, 0, "Button 1") ; No need to specify size or coordinates
-;     ButtonGadget(#Button2, 0, 0, 0, 0, "Button 2") ; as they will be sized automatically
-;     SplitterGadget(#Splitter, 5, 5, 220, 120, #Button1, #Button2, #PB_Splitter_Separator)
+;     ButtonGadget(#__button1, 0, 0, 0, 0, "Button 1") ; No need to specify size or coordinates
+;     ButtonGadget(#__button2, 0, 0, 0, 0, "Button 2") ; as they will be sized automatically
+;     SplitterGadget(#Splitter, 5, 5, 220, 120, #__button1, #__button2, #PB_Splitter_Separator)
 ;     
 ;     SetGadgetAttribute(#Splitter, #PB_Splitter_FirstMinimumSize, 20)
 ;     SetGadgetAttribute(#Splitter, #PB_Splitter_SecondMinimumSize, 20)
 ;     
 ;     TextGadget(33, 10, 135, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
 ;     
-;     #Button3  = 3
-;     #Button4  = 4
+;     #__button3  = 3
+;     #__button4  = 4
 ;     #Splitter1 = 6
 ;     
-;     ButtonGadget(#Button3, 0, 0, 0, 0, "Button 1") ; No need to specify size or coordinates
-;     ButtonGadget(#Button4, 0, 0, 0, 0, "Button 2") ; as they will be sized automatically
-;     Splitter::Gadget(#Splitter1, 235, 5, 220, 120, #Button3, #Button4, #PB_Splitter_Separator)
+;     ButtonGadget(#__button3, 0, 0, 0, 0, "Button 1") ; No need to specify size or coordinates
+;     ButtonGadget(#__button4, 0, 0, 0, 0, "Button 2") ; as they will be sized automatically
+;     Splitter::Gadget(#Splitter1, 235, 5, 220, 120, #__button3, #__button4, #PB_Splitter_Separator)
 ;     
 ;     Splitter::SetAttribute(#Splitter1, #PB_Splitter_FirstMinimumSize, 20)
 ;     Splitter::SetAttribute(#Splitter1, #PB_Splitter_SecondMinimumSize, 20)
@@ -363,6 +364,6 @@ CompilerEndIf
 ;     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ;   EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; Folding = ------
 ; EnableXP

@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;*Bar_0\scrollstep = 1
     If *Bar_0\change
-      Debug "Change scroll direction "+ GetAttribute(*Bar_0, #Bar_Direction)
+      Debug "Change scroll direction "+ GetAttribute(*Bar_0, #__Bar_Direction)
       SetWindowTitle(0, Str(GetState(*Bar_0)))
       *Bar_0\change = 0
     EndIf
@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
       BindGadgetEvent(g_Canvas, @Canvas_Events())
       PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
       
-      *Bar_0 = Scroll(5, 10, 370, 30, 20, 50, 8, #Bar_Inverted) ; Button ( 5, 65, 390, 30, "set  standart scrollbar"); 
+      *Bar_0 = Scroll(5, 10, 370, 30, 20, 50, 8, #__Bar_Inverted) ; Button ( 5, 65, 390, 30, "set  standart scrollbar"); 
       
       SetWindowTitle(0, Str(GetState(*Bar_0)))
       ReDraw(g_Canvas)
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            SetAttribute(*Bar_0, #Bar_Inverted, Bool(GetGadgetState(0)))
+            SetAttribute(*Bar_0, #__Bar_Inverted, Bool(GetGadgetState(0)))
             SetWindowTitle(0, Str(GetState(*Bar_0)))
             
             If GetGadgetState(0)

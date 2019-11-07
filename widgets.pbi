@@ -477,7 +477,7 @@ DeclareModule Widget
   
   #Normal = 0
   #Entered = 1
-  #Selected = 2
+  #__selected = 2
   #Disabled = 3
   
   #_b_1 = 1
@@ -606,10 +606,10 @@ DeclareModule Widget
     #PB_Bar_Ticks 
   EndEnumeration
   
-  #PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
-  #PB_Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
-  #PB_Flag_Checkboxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
-                                                              ; #PB_Flag_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
+  #__Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
+  #__Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
+  #__Flag_Checkboxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
+                                                              ; #__Flag_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
   
   
   #PB_Widget_First = 1<<7
@@ -627,10 +627,10 @@ DeclareModule Widget
     #PB_Bottom
     #PB_Vertical 
     #PB_Horizontal
-    #PB_Flag_AutoSize
+    #__Flag_AutoSize
     
     ;#PB_Toggle
-    #PB_Flag_BorderLess
+    #__Flag_BorderLess
     
     #PB_Text_Numeric
     #PB_Text_ReadOnly
@@ -641,33 +641,33 @@ DeclareModule Widget
     #PB_Text_MultiLine 
     #PB_Text_InLine
     
-    #PB_Flag_Double
-    #PB_Flag_Flat
-    #PB_Flag_Raised
-    #PB_Flag_Single
+    #__Flag_Double
+    #__Flag_Flat
+    #__Flag_Raised
+    #__Flag_Single
     
-    #PB_Flag_GridLines
-    #PB_Flag_Invisible
+    #__Flag_GridLines
+    #__Flag_Invisible
     
-    #PB_Flag_MultiSelect
-    #PB_Flag_ClickSelect
+    #__Flag_MultiSelect
+    #__Flag_ClickSelect
     
-    #PB_Flag_AutoRight
-    #PB_Flag_AutoBottom
-    #PB_Flag_AnchorsGadget
+    #__Flag_AutoRight
+    #__Flag_AutoBottom
+    #__Flag_AnchorsGadget
     
-    #PB_Flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
-    #PB_Flag_NoGadget
-    ;#PB_Flag_Root
+    #__Flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
+    #__Flag_NoGadget
+    ;#__Flag_Root
     
-    #PB_Flag_Limit
+    #__Flag_Limit
   EndEnumeration
   
   #PB_Bar_Vertical = #PB_Vertical
-  #PB_AutoSize = #PB_Flag_AutoSize
+  #PB_AutoSize = #__Flag_AutoSize
   
-  If (#PB_Flag_Limit>>1) > 2147483647 ; 8589934592
-    Debug "Исчерпан лимит в x32 ("+Str(#PB_Flag_Limit>>1)+")"
+  If (#__Flag_Limit>>1) > 2147483647 ; 8589934592
+    Debug "Исчерпан лимит в x32 ("+Str(#__Flag_Limit>>1)+")"
   EndIf
   
   #PB_Full = #PB_Left|#PB_Right|#PB_Top|#PB_Bottom
@@ -1530,7 +1530,7 @@ Module Widget
     EndIf
     
     ; _set_auto_size_
-    If Bool(_flag_ & #PB_Flag_AutoSize=#PB_Flag_AutoSize) : x=0 : y=0
+    If Bool(_flag_ & #__Flag_AutoSize=#__Flag_AutoSize) : x=0 : y=0
       _this_\align = AllocateStructure(_S_align)
       _this_\align\autoSize = 1
       _this_\align\left = 1
@@ -1539,7 +1539,7 @@ Module Widget
       _this_\align\bottom = 1
     EndIf
     
-    If Bool(_flag_ & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget) And _this_\root And Not _this_\root\anchor
+    If Bool(_flag_ & #__Flag_AnchorsGadget=#__Flag_AnchorsGadget) And _this_\root And Not _this_\root\anchor
       
       AddAnchors(_this_\root)
       SetAnchors(_this_)
@@ -2157,12 +2157,12 @@ Module Widget
             Protected *Widget._S_widget = GetGadgetData(\root\canvas\gadget)
             
             If CallBack(\childrens(), #PB_EventType_LeftButtonDown, WindowMouseX(\root\canvas\window), WindowMouseY(\root\canvas\window))
-              ; If \childrens()\index[#Selected] <> \childrens()\index[#Entered]
-              *Widget\index[#Selected] = \childrens()\index[#Entered]
+              ; If \childrens()\index[#__selected] <> \childrens()\index[#Entered]
+              *Widget\index[#__selected] = \childrens()\index[#Entered]
               Post(#PB_EventType_Change, *Widget, \childrens()\index[#Entered])
               
               SetText(*Widget, GetItemText(\childrens(), \childrens()\index[#Entered]))
-              \childrens()\index[#Selected] = \childrens()\index[#Entered]
+              \childrens()\index[#__selected] = \childrens()\index[#Entered]
               \childrens()\mouse\buttons = 0
               \childrens()\index[#Entered] =- 1
               \childrens()\focus = 1
@@ -2549,12 +2549,12 @@ Module Widget
             Wend
             PopListPosition(*Item())
             
-          ElseIf \index[#Selected] <> State : *Item()\state = 2
-            If \index[#Selected] >= 0 And SelectElement(*Item(), \index[#Selected])
+          ElseIf \index[#__selected] <> State : *Item()\state = 2
+            If \index[#__selected] >= 0 And SelectElement(*Item(), \index[#__selected])
               *Item()\state = 0
             EndIf
-            ; GetState() - Value = \index[#Selected]
-            \index[#Selected] = State
+            ; GetState() - Value = \index[#__selected]
+            \index[#__selected] = State
             
             Debug "set_state() - "+State;\index[#Entered]+" "+ListIndex(\items())
                                         ; Post change event to widget (tree, listview)
@@ -2650,8 +2650,8 @@ Module Widget
     Protected line$, ret$="", LineRet$="", TextWidth
     
     ;     Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
-    ;     Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
-    ;     Text.s = ReplaceString(Text.s, #CR$, #LF$)
+    ;     Text.s = ReplaceString(Text.s, #crLF$, #LF$)
+    ;     Text.s = ReplaceString(Text.s, #cr$, #LF$)
     ;     Text.s + #LF$
     ;  
     
@@ -2662,7 +2662,7 @@ Module Widget
     ; ;     Protected Len
     ; ;     Protected *s_0.Character = @Text.s
     ; ;     Protected *e_0.Character = @Text.s 
-    ; ;     #SOC = SizeOf (Character)
+    ; ;     #__sOC = SizeOf (Character)
     ; ;       While *e_0\c 
     ; ;         If *e_0\c = #LF
     ; ;           Len = (*e_0-*s_0)>>#PB_Compiler_Unicode
@@ -2730,7 +2730,7 @@ Module Widget
       LineRet$=""
     Next
     
-    ; ;       *s_0 = *e_0 + #SOC : EndIf : *e_0 + #SOC : Wend
+    ; ;       *s_0 = *e_0 + #__sOC : EndIf : *e_0 + #__sOC : Wend
     ;Debug  ElapsedMilliseconds()-time
     ; MessageRequester("",Str( ElapsedMilliseconds()-time))
     
@@ -2789,9 +2789,9 @@ Module Widget
             ;               \items()\text[2]\width[2] = 0
             ;               
             ;               If (\items()\text\string.s = "" And Item = \index[#Entered] And Position = len) Or
-            ;                  \index[#Selected] > \index[#Entered] Or                                            ; Если выделяем снизу вверх
-            ;                  (\index[#Selected] =< \index[#Entered] And \index[#Entered] = Item And Position = len) Or ; Если позиция курсора неже половини высоты линии
-            ;                  (\index[#Selected] < \index[#Entered] And                                          ; Если выделяем сверху вниз
+            ;                  \index[#__selected] > \index[#Entered] Or                                            ; Если выделяем снизу вверх
+            ;                  (\index[#__selected] =< \index[#Entered] And \index[#Entered] = Item And Position = len) Or ; Если позиция курсора неже половини высоты линии
+            ;                  (\index[#__selected] < \index[#Entered] And                                          ; Если выделяем сверху вниз
             ;                   PreviousElement(*this\items()))                                    ; то выбираем предыдущую линию
             ;                 
             ;                 If Position = len And Not \items()\text[2]\len : \items()\text[2]\len = 1
@@ -2832,10 +2832,10 @@ Module Widget
       \items()\text[2]\len = Len
       
       ; text string/pos/len/state
-      If (\index[#Selected] > \index[#Entered] Or \index[#Selected] = \items()\index)
+      If (\index[#__selected] > \index[#Entered] Or \index[#__selected] = \items()\index)
         \text[1]\change = #True
       EndIf
-      If (\index[#Selected] < \index[#Entered] Or \index[#Selected] = \items()\index) 
+      If (\index[#__selected] < \index[#Entered] Or \index[#__selected] = \items()\index) 
         \text[3]\change = 1
       EndIf
       
@@ -2895,13 +2895,13 @@ Module Widget
     Protected Pos.i, Len.i
     
     With *this
-      ;Debug "7777    "+\text\caret +" "+ \text\caret[1] +" "+\index[#Entered] +" "+ \index[#Selected] +" "+ \items()\text\string
+      ;Debug "7777    "+\text\caret +" "+ \text\caret[1] +" "+\index[#Entered] +" "+ \index[#__selected] +" "+ \items()\text\string
       
       If (Caret <> \text\caret Or Line <> \index[#Entered] Or (\text\caret[1] >= 0 And Caret1 <> \text\caret[1]))
         \items()\text[2]\string.s = ""
         
         PushListPosition(\items())
-        If \index[#Selected] = \index[#Entered]
+        If \index[#__selected] = \index[#Entered]
           If \text\caret[1] = \text\caret And \items()\text[2]\len 
             \items()\text[2]\len = 0 
             \items()\text[2]\width = 0 
@@ -2910,7 +2910,7 @@ Module Widget
             \items()\text[2]\width[2] = 0 
             \items()\text[2]\len = 0 
           EndIf
-        ElseIf \index[#Selected] > \index[#Entered]
+        ElseIf \index[#__selected] > \index[#Entered]
           If PreviousElement(\items()) And \items()\text[2]\len 
             \items()\text[2]\len = 0 
           EndIf
@@ -2921,7 +2921,7 @@ Module Widget
         EndIf
         PopListPosition(\items())
         
-        If \index[#Selected] = \index[#Entered]
+        If \index[#__selected] = \index[#Entered]
           If \text\caret[1] = \text\caret 
             Pos = \text\caret[1]
             ;             If \text\caret[1] = \items()\text\len
@@ -2940,7 +2940,7 @@ Module Widget
           EndIf
           
           ; Если выделяем снизу вверх
-        ElseIf \index[#Selected] > \index[#Entered]
+        ElseIf \index[#__selected] > \index[#Entered]
           ; <<<<<|
           Pos = \text\caret
           Len = \items()\text\len-Pos
@@ -3066,23 +3066,23 @@ Module Widget
     Protected Repaint.i
     
     With *this
-      If \index[#Entered] <> \index[#Selected] ; Это значить строки выделени
-        If \index[#Selected] > \index[#Entered] : Swap \index[#Selected], \index[#Entered] : EndIf
+      If \index[#Entered] <> \index[#__selected] ; Это значить строки выделени
+        If \index[#__selected] > \index[#Entered] : Swap \index[#__selected], \index[#Entered] : EndIf
         
         Editor_SelReset(*this)
         
         If Count
-          \index[#Selected] + Count
+          \index[#__selected] + Count
           \text\caret = Len(StringField(Chr.s, 1 + Count, #LF$))
         ElseIf Chr.s = #LF$ ; to return
-          \index[#Selected] + 1
+          \index[#__selected] + 1
           \text\caret = 0
         Else
           \text\caret = \items()\text[1]\len + Len(Chr.s)
         EndIf
         
         \text\caret[1] = \text\caret
-        \index[#Entered] = \index[#Selected]
+        \index[#Entered] = \index[#__selected]
         \text\change =- 1 ; - 1 post event change widget
         Repaint = 1 
       EndIf
@@ -3117,8 +3117,8 @@ Module Widget
           \items()\text\len = \items()\text[1]\len + \items()\text[3]\len : \items()\text\change = 1
           
           If Count
-            \index[#Selected] + Count
-            \index[#Entered] = \index[#Selected] 
+            \index[#__selected] + Count
+            \index[#Entered] = \index[#__selected] 
             \text\caret = Len(StringField(Chr.s, 1 + Count, #LF$))
           Else
             \text\caret + Len(Chr.s) 
@@ -3130,7 +3130,7 @@ Module Widget
           \text\change =- 1 ; - 1 post event change widget
         EndIf
         
-        SelectElement(\items(), \index[#Selected]) 
+        SelectElement(\items(), \index[#__selected]) 
         Repaint = 1 
       EndIf
     EndWith
@@ -3286,7 +3286,7 @@ Module Widget
       ; Scroll hight length
       _set_scroll_height_(*this)
       
-      If \index[#Selected] = ListIndex(\items())
+      If \index[#__selected] = ListIndex(\items())
         ;Debug " string "+String.s
         \items()\text[1]\string.s = Left(\items()\text\string.s, \text\caret) : \items()\text[1]\change = #True
         \items()\text[3]\string.s = Right(\items()\text\string.s, \items()\text\len-(\text\caret + \items()\text[2]\len)) : \items()\text[3]\change = #True
@@ -3419,7 +3419,7 @@ Module Widget
             
             
             ;             ;; 294 ; 124
-            ;             Protected *Sta.Character = @\text\string.s[2], *End.Character = @\text\string.s[2] : #SOC = SizeOf (Character)
+            ;             Protected *Sta.Character = @\text\string.s[2], *End.Character = @\text\string.s[2] : #__sOC = SizeOf (Character)
             ;While *End\c 
             ;               If *End\c = #LF And AddElement(\items())
             ;                 Len = (*End-*Sta)>>#PB_Compiler_Unicode
@@ -3444,7 +3444,7 @@ Module Widget
             ;                 \items()\text\len = Len                                                  ; (\items()\text\string.s)
             ;                 \text\pos + \items()\text\len + 1                                        ; Len(#LF$)
             ;                 
-            ;                 ; Debug "f - "+String.s +" "+ CountString(String, #CR$) +" "+ CountString(String, #LF$) +" - "+ \items()\text\pos +" "+ \items()\text\len
+            ;                 ; Debug "f - "+String.s +" "+ CountString(String, #cr$) +" "+ CountString(String, #LF$) +" - "+ \items()\text\pos +" "+ \items()\text\len
             ;                 
             ;                 _set_content_X_(*this)
             ;                 _line_resize_X_(*this)
@@ -3456,10 +3456,10 @@ Module Widget
             ;                 ; Scroll hight length
             ;                 _set_scroll_height_(*this)
             ;                 
-            ;                 *Sta = *End + #SOC 
+            ;                 *Sta = *End + #__sOC 
             ;               EndIf 
             ;               
-            ;               *End + #SOC 
+            ;               *End + #__sOC 
             ;             Wend
             ;;;;  FreeMemory(*End)
             
@@ -3598,8 +3598,8 @@ Module Widget
           Editor_MultiLine(*this)
           
           ;This is for the caret and scroll when entering the key - (enter & beckspace)
-          If \text\change And \index[#Selected] >= 0 And \index[#Selected] < ListSize(\items())
-            SelectElement(\items(), \index[#Selected])
+          If \text\change And \index[#__selected] >= 0 And \index[#__selected] < ListSize(\items())
+            SelectElement(\items(), \index[#__selected])
             
             CompilerIf Defined(Bar, #PB_Module)
               If \scroll\v And \scroll\v\max <> \scroll\height And 
@@ -3685,7 +3685,7 @@ Module Widget
             EndIf
             
             ;             If Caret<>\text\caret[2]
-            ;               Debug "Caret change " + caret +" "+ caret1 +" "+ \text\caret[2] +" "+\index[#Entered] +" "+\index[#Selected]
+            ;               Debug "Caret change " + caret +" "+ caret1 +" "+ \text\caret[2] +" "+\index[#Entered] +" "+\index[#__selected]
             ;               caret = \text\caret[2]
             ;             EndIf
             
@@ -3797,7 +3797,7 @@ Module Widget
               
               ;               Protected State_3, item_alpha = 255, back_color=$FFFFFF
               ;               
-              ;               If Bool(\index = *this\index[#Selected])
+              ;               If Bool(\index = *this\index[#__selected])
               ;                 State_3 = 2
               ;               Else
               ;                 State_3 = Bool(\index = *this\index[#Entered])
@@ -3842,11 +3842,11 @@ Module Widget
               If \text[2]\len And *this\color\front <> *this\color\front[2]
                 
                 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If (*this\text\caret[1] > *this\text\caret And *this\index[#Selected] = *this\index[#Entered]) Or
-                     (\index = *this\index[#Entered] And *this\index[#Selected] > *this\index[#Entered])
+                  If (*this\text\caret[1] > *this\text\caret And *this\index[#__selected] = *this\index[#Entered]) Or
+                     (\index = *this\index[#Entered] And *this\index[#__selected] > *this\index[#Entered])
                     \text[3]\x = \text\x+TextWidth(Left(\text\string.s, *this\text\caret[1])) 
                     
-                    If *this\index[#Selected] = *this\index[#Entered]
+                    If *this\index[#__selected] = *this\index[#Entered]
                       \text[2]\x = \text[3]\x-\text[2]\width
                     EndIf
                     
@@ -3996,8 +3996,8 @@ Module Widget
     ; переходим в конец предыдущего итема
     
     With *this
-      If (\index[#Selected] > 0 And \index[#Entered] = \index[#Selected]) : \index[#Selected] - 1 : \index[#Entered] = \index[#Selected]
-        SelectElement(\items(), \index[#Selected])
+      If (\index[#__selected] > 0 And \index[#Entered] = \index[#__selected]) : \index[#__selected] - 1 : \index[#Entered] = \index[#__selected]
+        SelectElement(\items(), \index[#__selected])
         ;If (\items()\y+\scroll\y =< \y[2])
         SetState(\scroll\v, (\items()\y-((\scroll\height[2]+\text\y)-\items()\height)))
         ;EndIf
@@ -4024,25 +4024,25 @@ Module Widget
     With *this
       If Shift
         
-        If \index[#Entered] = \index[#Selected]
+        If \index[#Entered] = \index[#__selected]
           SelectElement(\items(), \index[#Entered]) 
           Editor_Change(*this, \text\caret[1], \items()\text\len-\text\caret[1])
         Else
-          SelectElement(\items(), \index[#Selected]) 
+          SelectElement(\items(), \index[#__selected]) 
           Editor_Change(*this, 0, \items()\text\len)
         EndIf
         ; Debug \text\caret[1]
-        \index[#Selected] + 1
-        ;         \text\caret = Editor_Caret(*this, \index[#Selected]) 
+        \index[#__selected] + 1
+        ;         \text\caret = Editor_Caret(*this, \index[#__selected]) 
         ;         \text\caret[1] = \text\caret
-        SelectElement(\items(), \index[#Selected]) 
+        SelectElement(\items(), \index[#__selected]) 
         Editor_Change(*this, 0, \text\caret[1]) 
         Editor_SelText(*this)
         Repaint = 1 
         
       Else
-        If (\index[#Entered] < ListSize(\items()) - 1 And \index[#Entered] = \index[#Selected]) : \index[#Selected] + 1 : \index[#Entered] = \index[#Selected]
-          SelectElement(\items(), \index[#Selected]) 
+        If (\index[#Entered] < ListSize(\items()) - 1 And \index[#Entered] = \index[#__selected]) : \index[#__selected] + 1 : \index[#Entered] = \index[#__selected]
+          SelectElement(\items(), \index[#__selected]) 
           ;If (\items()\y >= (\scroll\height[2]-\items()\height))
           SetState(\scroll\v, (\items()\y-((\scroll\height[2]+\text\y)-\items()\height)))
           ;EndIf
@@ -4067,23 +4067,23 @@ Module Widget
     
     With *this
       If \items()\text[2]\len And Not Shift
-        If \index[#Selected] > \index[#Entered] 
-          Swap \index[#Selected], \index[#Entered]
+        If \index[#__selected] > \index[#Entered] 
+          Swap \index[#__selected], \index[#Entered]
           
-          If SelectElement(\items(), \index[#Selected]) 
+          If SelectElement(\items(), \index[#__selected]) 
             \items()\text[1]\string.s = Left(\items()\text\string.s, \text\caret[1]) 
             \items()\text[1]\change = #True
           EndIf
-        ElseIf \index[#Entered] > \index[#Selected] And 
+        ElseIf \index[#Entered] > \index[#__selected] And 
                \text\caret[1] > \text\caret
           Swap \text\caret[1], \text\caret
         ElseIf \text\caret > \text\caret[1] 
           Swap \text\caret, \text\caret[1]
         EndIf
         
-        If \index[#Entered] <> \index[#Selected]
+        If \index[#Entered] <> \index[#__selected]
           Editor_SelReset(*this)
-          \index[#Entered] = \index[#Selected]
+          \index[#Entered] = \index[#__selected]
         Else
           \text\caret[1] = \text\caret 
         EndIf 
@@ -4115,23 +4115,23 @@ Module Widget
     Protected Repaint.i, Shift.i = Bool(*this\keyboard\key[1] & #PB_Canvas_Shift)
     
     With *this
-      ;       If \index[#Entered] <> \index[#Selected]
+      ;       If \index[#Entered] <> \index[#__selected]
       ;         If Shift 
       ;           \text\caret + 1
-      ;           Swap \index[#Selected], \index[#Entered] 
+      ;           Swap \index[#__selected], \index[#Entered] 
       ;         Else
-      ;           If \index[#Entered] > \index[#Selected] 
-      ;             Swap \index[#Entered], \index[#Selected] 
+      ;           If \index[#Entered] > \index[#__selected] 
+      ;             Swap \index[#Entered], \index[#__selected] 
       ;             Swap \text\caret, \text\caret[1]
       ;             
-      ;             If SelectElement(\items(), \index[#Selected]) 
+      ;             If SelectElement(\items(), \index[#__selected]) 
       ;               \items()\text[1]\string.s = Left(\items()\text\string.s, \text\caret[1]) 
       ;               \items()\text[1]\change = #True
       ;             EndIf
       ;             
       ;             Editor_SelReset(*this)
       ;             \text\caret = \text\caret[1] 
-      ;             \index[#Entered] = \index[#Selected]
+      ;             \index[#Entered] = \index[#__selected]
       ;           EndIf
       ;           
       ;         EndIf
@@ -4150,23 +4150,23 @@ Module Widget
       ;         
       ;         Repaint =- 1
       If \items()\text[2]\len And Not Shift
-        If \index[#Entered] > \index[#Selected] 
-          Swap \index[#Entered], \index[#Selected] 
+        If \index[#Entered] > \index[#__selected] 
+          Swap \index[#Entered], \index[#__selected] 
           Swap \text\caret, \text\caret[1]
           
-          If SelectElement(\items(), \index[#Selected]) 
+          If SelectElement(\items(), \index[#__selected]) 
             \items()\text[1]\string.s = Left(\items()\text\string.s, \text\caret[1]) 
             \items()\text[1]\change = #True
           EndIf
           
           ;           Editor_SelReset(*this)
           ;           \text\caret = \text\caret[1] 
-          ;           \index[#Entered] = \index[#Selected]
+          ;           \index[#Entered] = \index[#__selected]
         EndIf
         
-        If \index[#Entered] <> \index[#Selected]
+        If \index[#Entered] <> \index[#__selected]
           Editor_SelReset(*this)
-          \index[#Entered] = \index[#Selected]
+          \index[#Entered] = \index[#__selected]
         Else
           \text\caret = \text\caret[1] 
         EndIf 
@@ -4212,9 +4212,9 @@ Module Widget
     
     With  *this
       If Not Editor_Paste(*this, #LF$)
-        \index[#Selected] + 1
+        \index[#__selected] + 1
         \text\caret = 0
-        \index[#Entered] = \index[#Selected]
+        \index[#Entered] = \index[#__selected]
         \text\caret[1] = \text\caret
         \text\change =- 1 ; - 1 post event change widget
       EndIf
@@ -4256,7 +4256,7 @@ Module Widget
         Else
           ; Если дошли до начала строки то 
           ; переходим в конец предыдущего итема
-          If \index[#Selected] > 0 
+          If \index[#__selected] > 0 
             \text\string.s[1] = RemoveString(\text\string.s[1], #LF$, #PB_String_CaseSensitive, \items()\text\pos+\text\caret, 1)
             
             Editor_ToUp(*this)
@@ -4305,7 +4305,7 @@ Module Widget
           \text\string.s[1] = \text[1]\string + \text[3]\string
           \text\change =- 1 ; - 1 post event change widget
         Else
-          If \index[#Selected] < (\countItems-1) ; ListSize(\items()) - 1
+          If \index[#__selected] < (\countItems-1) ; ListSize(\items()) - 1
             \text\string.s[1] = RemoveString(\text\string.s[1], #LF$, #PB_String_CaseSensitive, \items()\text\pos+\text\caret, 1)
             \text\change =- 1 ; - 1 post event change widget
           EndIf
@@ -4342,7 +4342,7 @@ Module Widget
       EndIf
       
       \text\caret[1] = \text\caret
-      \index[#Selected] = \index[#Entered] 
+      \index[#__selected] = \index[#Entered] 
       Repaint =- 1 
       
     EndWith
@@ -4393,7 +4393,7 @@ Module Widget
                 
                 \text[1]\len = 0 : \text[1]\string = ""
                 \text[3]\len = 0 : \text[3]\string = #LF$
-                \index[#Selected] = 0 : \index[#Entered] = ListSize(\items()) - 1
+                \index[#__selected] = 0 : \index[#Entered] = ListSize(\items()) - 1
                 \text\caret = \items()\text\len : \text\caret[1] = \text\caret
                 \text[2]\string = \text\string : \text[2]\len = \text\len
                 Repaint = 1
@@ -4478,12 +4478,12 @@ Module Widget
       ; Выделение конца строки
       PushListPosition(\items()) 
       ForEach \items()
-        If (\index[#Entered] = \items()\index Or \index[#Selected] = \items()\index)
+        If (\index[#Entered] = \items()\index Or \index[#__selected] = \items()\index)
           \items()\text[2]\change = 1
           \items()\text[2]\len - Bool(Not \items()\text\len) ; Выделение пустой строки
                                                              ;           
-        ElseIf ((\index[#Selected] < \index[#Entered] And \index[#Selected] < \items()\index And \index[#Entered] > \items()\index) Or
-                (\index[#Selected] > \index[#Entered] And \index[#Selected] > \items()\index And \index[#Entered] < \items()\index)) 
+        ElseIf ((\index[#__selected] < \index[#Entered] And \index[#__selected] < \items()\index And \index[#Entered] > \items()\index) Or
+                (\index[#__selected] > \index[#Entered] And \index[#__selected] > \items()\index And \index[#Entered] < \items()\index)) 
           
           \items()\text[2]\change = 1
           \items()\text[2]\string = \items()\text\string 
@@ -4553,11 +4553,11 @@ Module Widget
                     \text\caret = Caret
                     \text\caret[1] = \text\caret
                     \index[#Entered] = \items()\index 
-                    \index[#Selected] = \index[#Entered]
+                    \index[#__selected] = \index[#Entered]
                     
                     PushListPosition(\items())
                     ForEach \items() 
-                      If \index[#Selected] <> ListIndex(\items())
+                      If \index[#__selected] <> ListIndex(\items())
                         \items()\text[1]\string = ""
                         \items()\text[2]\string = ""
                         \items()\text[3]\string = ""
@@ -4582,7 +4582,7 @@ Module Widget
                 EndIf
                 
               Default
-                itemSelect(\index[#Selected], \items())
+                itemSelect(\index[#__selected], \items())
             EndSelect
           EndIf
           
@@ -4726,11 +4726,11 @@ Module Widget
       If \text[2]\len And *this\color\front <> *this\color\front[2]
         
         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-          If (*this\text\caret[1] > *this\text\caret And *this\index[#Selected] = *this\index[#Entered]) Or
-             (\index = *this\index[#Entered] And *this\index[#Selected] > *this\index[#Entered])
+          If (*this\text\caret[1] > *this\text\caret And *this\index[#__selected] = *this\index[#Entered]) Or
+             (\index = *this\index[#Entered] And *this\index[#__selected] > *this\index[#Entered])
             \text[3]\x = \text\x+TextWidth(Left(\text\string.s, *this\text\caret[1])) 
             
-            If *this\index[#Selected] = *this\index[#Entered]
+            If *this\index[#__selected] = *this\index[#Entered]
               \text[2]\x = \text[3]\x-\text[2]\width
             EndIf
             
@@ -5189,7 +5189,7 @@ Module Widget
         ClipOutput(clip_x, \y[#_c_4], clip_width, \height[#_c_4])
         
         ForEach \items()
-          If \index[#Selected] = \items()\index
+          If \index[#__selected] = \items()\index
             State_3 = 2
             \items()\y = \y+2
             \items()\height=\tabHeight-1
@@ -5784,7 +5784,7 @@ Module Widget
             
             If \items()\drawing
               \items()\width=\scroll\h\page\len
-              If Bool(\items()\index = \index[#Selected])
+              If Bool(\items()\index = \index[#__selected])
                 State_3 = 2
               Else
                 State_3 = Bool(\items()\index = \index[#Entered])
@@ -5972,15 +5972,15 @@ Module Widget
         CompilerElse
           Protected *Sta.Character = @\text\string.s
           Protected *End.Character = @\text\string.s 
-          #SOC = SizeOf(Character)
+          #__sOC = SizeOf(Character)
           
           While *End\c 
             If *End\c = #LF
               DrawText(\text\x, \text\y+y, PeekS(*Sta, (*End-*Sta)>>#PB_Compiler_Unicode), \color\front&$FFFFFF|Alpha)
-              *Sta = *End + #SOC 
+              *Sta = *End + #__sOC 
               y+\text\height
             EndIf 
-            *End + #SOC 
+            *End + #__sOC 
           Wend
           
           ;         For i=1 To \countItems
@@ -6033,15 +6033,15 @@ Module Widget
         CompilerElse
           Protected *Sta.Character = @\text\string.s
           Protected *End.Character = @\text\string.s 
-          #SOC = SizeOf(Character)
+          #__sOC = SizeOf(Character)
           
           While *End\c 
             If *End\c = #LF
               DrawText(\text\x, \text\y+y, PeekS(*Sta, (*End-*Sta)>>#PB_Compiler_Unicode), \color\front&$FFFFFF|Alpha)
-              *Sta = *End + #SOC 
+              *Sta = *End + #__sOC 
               y+\text\height
             EndIf 
-            *End + #SOC 
+            *End + #__sOC 
           Wend
           
           ;         For i=1 To \countItems
@@ -6090,15 +6090,15 @@ Module Widget
         CompilerElse
           Protected *Sta.Character = @\text\string.s
           Protected *End.Character = @\text\string.s 
-          #SOC = SizeOf(Character)
+          #__sOC = SizeOf(Character)
           
           While *End\c 
             If *End\c = #LF
               DrawText(\text\x, \text\y+y, PeekS(*Sta, (*End-*Sta)>>#PB_Compiler_Unicode), \color\front&$FFFFFF|Alpha)
-              *Sta = *End + #SOC 
+              *Sta = *End + #__sOC 
               y+\text\height
             EndIf 
-            *End + #SOC 
+            *End + #__sOC 
           Wend
           
           ;         For i=1 To \countItems
@@ -6335,15 +6335,15 @@ Module Widget
         CompilerElse
           Protected *Sta.Character = @\text\string.s
           Protected *End.Character = @\text\string.s 
-          #SOC = SizeOf(Character)
+          #__sOC = SizeOf(Character)
           
           While *End\c 
             If *End\c = #LF
               DrawText(\text\x, \text\y+y, PeekS(*Sta, (*End-*Sta)>>#PB_Compiler_Unicode), \color\front[\color\state]&$FFFFFF|Alpha)
-              *Sta = *End + #SOC 
+              *Sta = *End + #__sOC 
               y+\text\height
             EndIf 
-            *End + #SOC 
+            *End + #__sOC 
           Wend
           
           ;         For i=1 To \countItems
@@ -6444,7 +6444,7 @@ Module Widget
             y + \columns()\items()\height + \flag\gridLines + GridLines * 2
           EndIf
           
-          If \index[#Selected] = \columns()\items()\index
+          If \index[#__selected] = \columns()\items()\index
             State_3 = 2
           Else
             State_3 = \columns()\items()\state
@@ -6728,7 +6728,7 @@ Module Widget
         ; Draw Childrens
         If Childrens And ListSize(\childrens())
           ; Only selected item widgets draw
-          parent_item = Bool(\type = #PB_GadgetType_Panel) * \index[#Selected]
+          parent_item = Bool(\type = #PB_GadgetType_Panel) * \index[#__selected]
           
           ForEach \childrens() 
             ;If Not Send(\childrens(), #PB_EventType_Repaint)
@@ -7267,7 +7267,7 @@ Module Widget
   
   Procedure.b set_hide_state(*this._S_widget, State.b)
     With *this
-      \hide = Bool(State Or \hide[1] Or \parent\hide Or \parent_item <> \parent\index[#Selected])
+      \hide = Bool(State Or \hide[1] Or \parent\hide Or \parent_item <> \parent\index[#__selected])
       
       If \scroll And \scroll\v And \scroll\h
         \scroll\v\hide = \scroll\v\hide[1]
@@ -7451,7 +7451,7 @@ Module Widget
       EndIf
       
       \columns()\index[#Entered] =- 1
-      \columns()\index[#Selected] =- 1
+      \columns()\index[#__selected] =- 1
       \columns()\index = Position
       \columns()\width = Width
       
@@ -7570,12 +7570,12 @@ Module Widget
              #PB_GadgetType_CheckBox 
           Result = \box\checked
           
-        Case #PB_GadgetType_IPAddress : Result = \index[#Selected]
-        Case #PB_GadgetType_ComboBox : Result = \index[#Selected]
-        Case #PB_GadgetType_Tree : Result = \index[#Selected]
-        Case #PB_GadgetType_ListIcon : Result = \index[#Selected]
-        Case #PB_GadgetType_ListView : Result = \index[#Selected]
-        Case #PB_GadgetType_Panel : Result = \index[#Selected]
+        Case #PB_GadgetType_IPAddress : Result = \index[#__selected]
+        Case #PB_GadgetType_ComboBox : Result = \index[#__selected]
+        Case #PB_GadgetType_Tree : Result = \index[#__selected]
+        Case #PB_GadgetType_ListIcon : Result = \index[#__selected]
+        Case #PB_GadgetType_ListView : Result = \index[#__selected]
+        Case #PB_GadgetType_Panel : Result = \index[#__selected]
         Case #PB_GadgetType_Image : Result = \image\index
           
         Case #PB_GadgetType_ScrollBar, 
@@ -7764,7 +7764,7 @@ Module Widget
               EndIf
             EndIf
             
-            If Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize)
+            If Bool(Mode&#__Flag_AutoSize=#__Flag_AutoSize)
               If Bool(Mode&#PB_Full=#PB_Full) 
                 \align\top = 1
                 \align\left = 1
@@ -7877,7 +7877,7 @@ Module Widget
     With *this
       If *this > 0 
         If parent_item =- 1
-          parent_item = *Parent\index[#Selected]
+          parent_item = *Parent\index[#__selected]
         EndIf
         
         If *Parent <> \parent Or \parent_item <> parent_item
@@ -7906,7 +7906,7 @@ Module Widget
           
           ; Скрываем все виджеты скрытого родителя,
           ; и кроме тех чьи родителский итем не выбран
-          \hide = Bool(\parent\hide Or \parent_item <> \parent\index[#Selected])
+          \hide = Bool(\parent\hide Or \parent_item <> \parent\index[#__selected])
           
           If \scroll
             If \scroll\v
@@ -8110,7 +8110,7 @@ Module Widget
   Procedure.i SetFlag(*this._S_widget, Flag.i)
     
     With *this
-      If Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget
+      If Flag&#__Flag_AnchorsGadget=#__Flag_AnchorsGadget
         ;         AddAnchors(*this)
         Resize_Anchors(*this)
       EndIf
@@ -8138,7 +8138,7 @@ Module Widget
           If \text\multiLine
             Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
             Text.s = ReplaceString(Text.s, #CRLF$, #LF$)
-            Text.s = ReplaceString(Text.s, #CR$, #LF$)
+            Text.s = ReplaceString(Text.s, #cr$, #LF$)
             
             If \text\multiLine > 0
               Text.s + #LF$
@@ -8169,7 +8169,7 @@ Module Widget
       If *this > 0
         Select \type
           Case #PB_GadgetType_IPAddress
-            If \index[#Selected] <> State : \index[#Selected] = State
+            If \index[#__selected] <> State : \index[#__selected] = State
               SetText(*this, Str(IPAddressField(State,0))+"."+
                              Str(IPAddressField(State,1))+"."+
                              Str(IPAddressField(State,2))+"."+
@@ -8208,13 +8208,13 @@ Module Widget
             If State < 0 : State = 0 : EndIf
             If State > *t\countItems - 1 : State = *t\countItems - 1 :  EndIf
             
-            If *t\index[#Selected] <> State
-              If *t\index[#Selected] >= 0 And SelectElement(*t\items(), *t\index[#Selected]) 
+            If *t\index[#__selected] <> State
+              If *t\index[#__selected] >= 0 And SelectElement(*t\items(), *t\index[#__selected]) 
                 *t\items()\state = 0
               EndIf
               
-              *t\index[#Selected] = State
-              \index[#Selected] = State
+              *t\index[#__selected] = State
+              \index[#__selected] = State
               
               If SelectElement(*t\items(), State)
                 *t\items()\state = 2
@@ -8237,18 +8237,18 @@ Module Widget
             If State < 0 : State = 0 : EndIf
             If State > \countItems - 1 : State = \countItems - 1 :  EndIf
             
-            If \index[#Selected] <> State
-              If \index[#Selected] >= 0 And 
-                 SelectElement(\items(), \index[#Selected]) 
+            If \index[#__selected] <> State
+              If \index[#__selected] >= 0 And 
+                 SelectElement(\items(), \index[#__selected]) 
                 \items()\state = 0
               EndIf
               
-              \index[#Selected] = State
+              \index[#__selected] = State
               
-              If SelectElement(\items(), \index[#Selected])
+              If SelectElement(\items(), \index[#__selected])
                 \items()\state = 2
-                \change = \index[#Selected]+1
-                ; w_Events(*this, #PB_EventType_Change, \index[#Selected])
+                \change = \index[#__selected]+1
+                ; w_Events(*this, #PB_EventType_Change, \index[#__selected])
               EndIf
               
               ProcedureReturn 1
@@ -8272,10 +8272,10 @@ Module Widget
             If State < 0 : State = 0 : EndIf
             If State > \countItems - 1 : State = \countItems - 1 :  EndIf
             
-            If \index[#Selected] <> State : \index[#Selected] = State
+            If \index[#__selected] <> State : \index[#__selected] = State
               
               ForEach \childrens()
-                set_hide_state(\childrens(), Bool(\childrens()\parent_item<>\childrens()\parent\index[#Selected]))
+                set_hide_state(\childrens(), Bool(\childrens()\parent_item<>\childrens()\parent\index[#__selected]))
               Next
               
               \change = State + 1
@@ -8574,8 +8574,8 @@ Module Widget
           If Item < 0 : Item = 0 : EndIf
           If Item > \countItems : Item = \countItems :  EndIf
           ;       
-          ;       If \index[#Selected] <> Item
-          ;         If \index[#Selected] >= 0 And SelectElement(\items(), \index[#Selected]) 
+          ;       If \index[#__selected] <> Item
+          ;         If \index[#__selected] >= 0 And SelectElement(\items(), \index[#__selected]) 
           ;           \items()\state = 0
           ;         EndIf
           ;         
@@ -8589,7 +8589,7 @@ Module Widget
           ;           PostEvent(#PB_Event_Gadget, *value\window, *value\gadget, #PB_EventType_Repaint)
           ;         EndIf
           ;         
-          ;         \index[#Selected] = Item
+          ;         \index[#__selected] = Item
           ;         ProcedureReturn 1
           ;       EndIf
           
@@ -8652,11 +8652,11 @@ Module Widget
           ;                   Wend
           ;                   PopListPosition(\items())
           ;                   
-          ;                 ElseIf \index[#Selected] <> \index[#Entered] : \items()\state = 2
-          ;                   If \index[#Selected] >= 0 And SelectElement(\items(), \index[#Selected])
+          ;                 ElseIf \index[#__selected] <> \index[#Entered] : \items()\state = 2
+          ;                   If \index[#__selected] >= 0 And SelectElement(\items(), \index[#__selected])
           ;                     \items()\state = 0
           ;                   EndIf
-          ;                   \index[#Selected] = \index[#Entered]
+          ;                   \index[#__selected] = \index[#Entered]
           ;                 EndIf
           ;                 
           ;                 Repaint = 1
@@ -8855,7 +8855,7 @@ Module Widget
     
     If *this > 0
       With *this
-        ; #PB_Flag_AutoSize
+        ; #__Flag_AutoSize
         If \parent And \parent\type <> #PB_GadgetType_Splitter And \align And \align\autoSize And \align\left And \align\top And \align\right And \align\bottom
           X = 0; \align\x
           Y = 0; \align\y
@@ -9293,7 +9293,7 @@ Module Widget
       If Caret <> *this\text\caret Or Line <> *this\index[#Entered] Or (*this\text\caret[1] >= 0 And Caret1 <> *this\text\caret[1])
         \text[2]\string.s = ""
         
-        If *this\index[#Selected] = *this\index[#Entered]
+        If *this\index[#__selected] = *this\index[#Entered]
           If *this\text\caret[1] > *this\text\caret 
             ; |<<<<<< to left
             Position = *this\text\caret
@@ -9330,7 +9330,7 @@ Module Widget
             EndIf
             
           CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            If *this\index[#Entered] > *this\index[#Selected]
+            If *this\index[#Entered] > *this\index[#__selected]
               ; <<<<<|
               Position = *this\text\caret[1]
               \text[2]\len = \text\len-Position
@@ -9778,7 +9778,7 @@ Module Widget
   
   Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.i=0)
     Protected Vertical = Bool(Not Flag&#PB_Splitter_Vertical) * #PB_Vertical
-    Protected Auto = Bool(Flag&#PB_Flag_AutoSize) * #PB_Flag_AutoSize
+    Protected Auto = Bool(Flag&#__Flag_AutoSize) * #__Flag_AutoSize
     Protected *Bar._S_widget, *this._S_widget, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
     
     *this = Bar(0, 0, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
@@ -9930,7 +9930,7 @@ Module Widget
       SetText(*this, Text.s)
       Set_Image(*this, Image)
       
-      ;       ; временно из-за этого (контейнер \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget))
+      ;       ; временно из-за этого (контейнер \bs = Bool(Not Flag&#__Flag_AnchorsGadget))
       ;       If \parent And \parent\root\anchor[1]
       ;         x+\parent\fs
       ;         y+\parent\fs
@@ -10019,7 +10019,7 @@ Module Widget
       \text\x[2] = 3
       \text\y[2] = 0
       
-      Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#PB_Flag_BorderLess
+      Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#__Flag_BorderLess
       
       If Bool(Flag&#PB_Text_WordWrap)
         Flag&~#PB_Text_MultiLine
@@ -10050,7 +10050,7 @@ Module Widget
       
       \fs = 1
       \index[#Entered] =- 1
-      \index[#Selected] =- 1
+      \index[#__selected] =- 1
       
       \text = AllocateStructure(_S_text)
       \text\align\Vertical = 1
@@ -10069,22 +10069,22 @@ Module Widget
       \box\arrow_type =- 1
       
       \index[#Entered] =- 1
-      \index[#Selected] =- 1
+      \index[#__selected] =- 1
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__Flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__Flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__Flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__Flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \popup = Popup(*this, 0,0,0,0)
       OpenList(\popup)
-      Tree(0,0,0,0, #PB_Flag_AutoSize|#PB_Flag_NoLines|#PB_Flag_NoButtons) : \popup\childrens()\scroll\h\height=0
+      Tree(0,0,0,0, #__Flag_AutoSize|#__Flag_NoLines|#__Flag_NoButtons) : \popup\childrens()\scroll\h\height=0
       CloseList()
       
       Resize(*this, X,Y,Width,Height)
@@ -10297,7 +10297,7 @@ Module Widget
       \color = def_colors
       \color\fore[0] = 0
       
-      \margin\width = 100;Bool(Flag&#PB_Flag_Numeric)
+      \margin\width = 100;Bool(Flag&#__Flag_Numeric)
       \margin\color\back = $C8F0F0F0 ; \color\back[0] 
       
       \color\alpha = 255
@@ -10321,14 +10321,14 @@ Module Widget
       \interact = 1
       \text\caret[1] =- 1
       \index[#Entered] =- 1
-      \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
-      \flag\lines = Bool(flag&#PB_Flag_NoLines)
-      \flag\fullSelection = Bool(Not flag&#PB_Flag_FullSelection)*7
-      ;\flag\alwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12 ; Это еще будет размер чек бокса
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
+      \flag\buttons = Bool(flag&#__Flag_NoButtons)
+      \flag\lines = Bool(flag&#__Flag_NoLines)
+      \flag\fullSelection = Bool(Not flag&#__Flag_FullSelection)*7
+      ;\flag\alwaysSelection = Bool(flag&#__Flag_AlwaysSelection)
+      \flag\checkboxes = Bool(flag&#__Flag_Checkboxes)*12 ; Это еще будет размер чек бокса
+      \flag\gridLines = Bool(flag&#__Flag_GridLines)
       
-      ;\text\Vertical = Bool(Flag&#PB_Flag_Vertical)
+      ;\text\Vertical = Bool(Flag&#__Flag_Vertical)
       
       
       SetText(*this, "")
@@ -10353,22 +10353,22 @@ Module Widget
       \color\back = $FFF9F9F9
       
       \index[#Entered] =- 1
-      \index[#Selected] =- 1
+      \index[#__selected] =- 1
       
       \image = AllocateStructure(_S_image)
       \text = AllocateStructure(_S_text)
       \text\height = 20
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__Flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__Flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__Flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__Flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10396,7 +10396,7 @@ Module Widget
       \color\back = $FFF9F9F9
       
       \index[#Entered] =- 1
-      \index[#Selected] =- 1
+      \index[#__selected] =- 1
       
       
       \text = AllocateStructure(_S_text)
@@ -10411,12 +10411,12 @@ Module Widget
       \flag\lines = 0
       \flag\buttons = 0
       
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__Flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__Flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__Flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__Flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10444,7 +10444,7 @@ Module Widget
       \color\back = $FFF9F9F9
       
       \index[#Entered] =- 1
-      \index[#Selected] =- 1
+      \index[#__selected] =- 1
       \tabHeight = 24
       
       \image = AllocateStructure(_S_image)
@@ -10452,15 +10452,15 @@ Module Widget
       \text\height = 20
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__Flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__Flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__Flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__Flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10490,7 +10490,7 @@ Module Widget
       \color\back = $FFF9F9F9
       
       \index[#Entered] =- 1
-      \index[#Selected] =- 1
+      \index[#__selected] =- 1
       \tabHeight = 24
       
       \image = AllocateStructure(_S_image)
@@ -10498,15 +10498,15 @@ Module Widget
       \text\height = 20
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__Flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__Flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__Flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__Flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10565,7 +10565,7 @@ Module Widget
       \x =- 1
       \y =- 1
       \index[#Entered] =- 1
-      \index[#Selected] =- 1
+      \index[#__selected] =- 1
       
       \box = AllocateStructure(_S_box)
       \thumb\len = 7
@@ -10589,15 +10589,15 @@ Module Widget
       \text\height = 20
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__Flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__Flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__Flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__Flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__Flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__Flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10639,7 +10639,7 @@ Module Widget
       ;       Resize(\scroll\h, #PB_Ignore,#PB_Ignore,#PB_Ignore,Size)
       
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#PB_Flag_NoGadget
+      If Not Flag&#__Flag_NoGadget
         OpenList(*this)
       EndIf
     EndWith
@@ -10656,7 +10656,7 @@ Module Widget
       \y =- 1
       \container = 1
       \index[#Entered] =- 1
-      \index[#Selected] = 0
+      \index[#__selected] = 0
       
       \color = def_colors
       \color\alpha = 255
@@ -10664,13 +10664,13 @@ Module Widget
       \color\back = $FFF6F6F6
       
       \fs = 1
-      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      \bs = Bool(Not Flag&#__Flag_AnchorsGadget)
       
       ; Background image
       \image[1] = AllocateStructure(_S_image)
       
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#PB_Flag_NoGadget
+      If Not Flag&#__Flag_NoGadget
         OpenList(*this)
       EndIf
     EndWith
@@ -10686,7 +10686,7 @@ Module Widget
       \x =- 1
       \y =- 1
       \index[#Entered] =- 1
-      \index[#Selected] = 0
+      \index[#__selected] = 0
       
       \container = 1
       
@@ -10714,13 +10714,13 @@ Module Widget
       \scrollstep = 10
       
       \fs = 1
-      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      \bs = Bool(Not Flag&#__Flag_AnchorsGadget)
       
       ; Background image
       \image[1] = AllocateStructure(_S_image)
       
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#PB_Flag_NoGadget
+      If Not Flag&#__Flag_NoGadget
         OpenList(*this)
       EndIf
     EndWith
@@ -10776,7 +10776,7 @@ Module Widget
       SetParent(*this, *Widget)
       
       ; _set_auto_size_
-      If Bool(Flag & #PB_Flag_AutoSize=#PB_Flag_AutoSize) : x=0 : y=0
+      If Bool(Flag & #__Flag_AutoSize=#__Flag_AutoSize) : x=0 : y=0
         *this\align = AllocateStructure(_S_align)
         *this\align\autoSize = 1
         *this\align\left = 1
@@ -10785,7 +10785,7 @@ Module Widget
         *this\align\bottom = 1
       EndIf
       
-      If Bool(Flag & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget) And *this\root And Not *this\root\anchor
+      If Bool(Flag & #__Flag_AnchorsGadget=#__Flag_AnchorsGadget) And *this\root And Not *this\root\anchor
         
         AddAnchors(*this\root)
         SetAnchors(*this)
@@ -10806,7 +10806,7 @@ Module Widget
       \x =- 1
       \y =- 1
       \index[#Entered] =- 1
-      \index[#Selected] = 0
+      \index[#__selected] = 0
       
       \container =- 1
       \color = def_colors
@@ -10817,7 +10817,7 @@ Module Widget
       \color[2]\alpha = 128
       \color[3]\alpha = 128
       
-      If Not flag&#PB_Flag_BorderLess
+      If Not flag&#__Flag_BorderLess
         \tabHeight = 23
       EndIf
       
@@ -10834,17 +10834,17 @@ Module Widget
       
       \flag\window\sizeGadget = Bool(Flag&#PB_Window_SizeGadget)
       \flag\window\systemMenu = Bool(Flag&#PB_Window_SystemMenu)
-      \flag\window\borderLess = Bool(Flag&#PB_Flag_BorderLess)
+      \flag\window\borderLess = Bool(Flag&#__Flag_BorderLess)
       
       \fs = 1
-      \bs = 1 ;Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      \bs = 1 ;Bool(Not Flag&#__Flag_AnchorsGadget)
       
       ; Background image
       \image[1] = AllocateStructure(_S_image)
       
       SetText(*this, Text.s)
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#PB_Flag_NoGadget
+      If Not Flag&#__Flag_NoGadget
         OpenList(*this)
       EndIf
       SetActive(*this)
@@ -10893,9 +10893,9 @@ Module Widget
         \color[3]\alpha = 128
         
         \index[#Entered] =- 1
-        \index[#Selected] = 0
+        \index[#__selected] = 0
         
-        If Not flag&#PB_Flag_BorderLess
+        If Not flag&#__Flag_BorderLess
           \tabHeight = 23
         EndIf
         
@@ -10912,7 +10912,7 @@ Module Widget
         
         \flag\window\sizeGadget = Bool(Flag&#PB_Window_SizeGadget)
         \flag\window\systemMenu = Bool(Flag&#PB_Window_SystemMenu)
-        \flag\window\borderLess = Bool(Flag&#PB_Flag_BorderLess)
+        \flag\window\borderLess = Bool(Flag&#__Flag_BorderLess)
         
         \fs = 1
         \bs = 1
@@ -11695,7 +11695,7 @@ Module Widget
                     Root()\mouse\y<Root()\mouse\delta\y+1)
               
               If Not Root()\drag : Root()\drag = 1
-                w_Events(*this, #PB_EventType_DragStart, \index[#Selected])
+                w_Events(*this, #PB_EventType_DragStart, \index[#__selected])
               EndIf
             EndIf
             
@@ -11933,7 +11933,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   If OpenWindow(3, 0, 0, 995, 605, "Position de la souris sur la fenêtre", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     If Open(3, 0, 0, 995, 605)
       
-      ;Widgets("Container") = Container(0, 0, 995, 455);, #PB_Flag_AutoSize) 
+      ;Widgets("Container") = Container(0, 0, 995, 455);, #__Flag_AutoSize) 
       
       Widgets(Hex(#PB_GadgetType_Button)) = Button(5, 5, 160,95, "Button_"+Hex(#PB_GadgetType_Button) ) ; ok
       Widgets(Hex(#PB_GadgetType_String)) = String(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)) ; ok
@@ -12012,5 +12012,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------v---8----------------------------------------------f---b---4---4v8------------84-----+
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------v--------------------------------------------------f---b---4---4v8------------8-------
 ; EnableXP
