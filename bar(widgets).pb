@@ -546,7 +546,7 @@ Module Bar
     
     If _this_\Splitter 
       ; Splitter childrens auto resize       
-      _bar_size_splitter_(_this_)
+      _bar_splitter_size_(_this_)
       ;_bar_splitter_size_(_this_)
     EndIf
     If _this_\bar\change
@@ -582,7 +582,7 @@ Module Bar
     _this_\bar\area\end = _this_\bar\area\pos + (_this_\bar\area\len-_this_\bar\thumb\len)
   EndMacro
   
-  Macro _bar_size_splitter_(_this_)
+  Macro _bar_splitter_size_(_this_)
     If _this_\splitter
       If _this_\splitter\first
         If _this_\splitter\g_first
@@ -766,7 +766,7 @@ Module Bar
           _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\Color\fore[\bar\button[#__b_1]\Color\state],\bar\button[#__b_1]\Color\Back[\bar\button[#__b_1]\Color\state], \round, \color\alpha)
           _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\Color\fore[\bar\button[#__b_2]\Color\state],\bar\button[#__b_2]\Color\Back[\bar\button[#__b_2]\Color\state], \round, \color\alpha)
           
-         ; Draw arrows
+          ; Draw arrows
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
           Arrow(\bar\button[#__b_1]\x+(\bar\button[#__b_1]\width-\bar\button[#__b_1]\arrow\size)/2,\bar\button[#__b_1]\y+(\bar\button[#__b_1]\height-\bar\button[#__b_1]\arrow\size)/2, \bar\button[#__b_1]\arrow\size, Bool(\bar\vertical), \bar\button[#__b_1]\Color\front[\bar\button[#__b_1]\Color\state]&$FFFFFF|\color\alpha<<24, \bar\button[#__b_1]\arrow\type)
           Arrow(\bar\button[#__b_2]\x+(\bar\button[#__b_2]\width-\bar\button[#__b_2]\arrow\size)/2-Bool(Not \bar\vertical)*2,\bar\button[#__b_2]\y+(\bar\button[#__b_2]\height-\bar\button[#__b_2]\arrow\size)/2-Bool(\bar\vertical)*2, \bar\button[#__b_2]\arrow\size, Bool(\bar\vertical)+2, \bar\button[#__b_2]\Color\front[\bar\button[#__b_2]\Color\state]&$FFFFFF|\color\alpha<<24, \bar\button[#__b_2]\arrow\type)
@@ -886,6 +886,9 @@ Module Bar
   EndProcedure
   
   Procedure.b Draw_Track(*this._s_widget)
+    *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
+    *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
+    
     With *This
       
       If Not \Hide
@@ -974,6 +977,8 @@ Module Bar
   EndProcedure
   
   Procedure.b Draw_Progress(*this._s_widget)
+    *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
+    *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
     
     ; Selected Back
     DrawingMode(#PB_2DDrawing_Gradient)
@@ -1254,10 +1259,10 @@ Module Bar
           \bar\thumb\pos = _bar_pos_(*this, _bar_invert_(*this\bar, \bar\page\pos, \bar\inverted))
           
           If #PB_GadgetType_ScrollBar = \bar\type And \bar\thumb\pos = \bar\area\end And \bar\page\pos <> \bar\page\end And _bar_in_stop_(\bar)
-          ;If \bar\thumb\pos = \bar\area\end And \bar\type = #PB_GadgetType_ScrollBar
+            ;If \bar\thumb\pos = \bar\area\end And \bar\type = #PB_GadgetType_ScrollBar
             ; Debug " line-" + #PB_Compiler_Line +" "+  \bar\type 
-             SetState(*this, _bar_invert_(*this\bar, \bar\page\end, \bar\inverted))
-           ; SetState(*this, \bar\page\end)
+            SetState(*this, _bar_invert_(*this\bar, \bar\page\end, \bar\inverted))
+            ; SetState(*this, \bar\page\end)
           EndIf
         EndIf
       EndIf
@@ -2224,31 +2229,31 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure v_CallBack(GetState, type)
-;     Select type
-;       Case #PB_GadgetType_ScrollBar
-;         SetGadgetState(2, GetState)
-;       Case #PB_GadgetType_TrackBar
-;         SetGadgetState(12, GetState)
-;       Case #PB_GadgetType_ProgressBar
-;         SetGadgetState(22, GetState)
-;       Case #PB_GadgetType_Splitter
-;         ; SetGadgetState(Splitter_4, GetState)
-;     EndSelect
-;     
+    ;     Select type
+    ;       Case #PB_GadgetType_ScrollBar
+    ;         SetGadgetState(2, GetState)
+    ;       Case #PB_GadgetType_TrackBar
+    ;         SetGadgetState(12, GetState)
+    ;       Case #PB_GadgetType_ProgressBar
+    ;         SetGadgetState(22, GetState)
+    ;       Case #PB_GadgetType_Splitter
+    ;         ; SetGadgetState(Splitter_4, GetState)
+    ;     EndSelect
+    ;     
     SetWindowTitle(EventWindow(), Str(GetState))
   EndProcedure
   
   Procedure h_CallBack(GetState, type)
-;     Select type
-;       Case #PB_GadgetType_ScrollBar
-;         SetGadgetState(1, GetState)
-;       Case #PB_GadgetType_TrackBar
-;         SetGadgetState(11, GetState)
-;       Case #PB_GadgetType_ProgressBar
-;         SetGadgetState(21, GetState)
-;       Case #PB_GadgetType_Splitter
-;         ; SetGadgetState(Splitter_3, GetState)
-;     EndSelect
+    ;     Select type
+    ;       Case #PB_GadgetType_ScrollBar
+    ;         SetGadgetState(1, GetState)
+    ;       Case #PB_GadgetType_TrackBar
+    ;         SetGadgetState(11, GetState)
+    ;       Case #PB_GadgetType_ProgressBar
+    ;         SetGadgetState(21, GetState)
+    ;       Case #PB_GadgetType_Splitter
+    ;         ; SetGadgetState(Splitter_3, GetState)
+    ;     EndSelect
     
     SetWindowTitle(EventWindow(), Str(GetState))
   EndProcedure
@@ -2332,7 +2337,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Scroll(160, 5, 150, 20, 0, 50, 30) : AddElement(*List()) : *List() = Widget()
     SetState(Widget(), 5)
-    Scroll(160, 5+25, 150, 20, 0, 50, 30, #__bar_Inverted) : AddElement(*List()) : *List() = Widget()
+    Scroll(160, 5+25, 150, 10, 0, 50, 30, #__bar_Inverted) : AddElement(*List()) : *List() = Widget()
     SetState(Widget(), 5)
     
     Track(160, 5+53, 150, 20, 0, 20) : AddElement(*List()) : *List() = Widget()
@@ -2349,7 +2354,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Scroll(320, 5, 20, 150, 0, 50, 30, #__bar_Vertical) : AddElement(*List()) : *List() = Widget()
     SetState(Widget(), 5)
-    Scroll(320+25, 5, 20, 150, 0, 50, 30, #__bar_Vertical) : AddElement(*List()) : *List() = Widget()
+    Scroll(320+25, 5, 10, 150, 0, 50, 30, #__bar_Vertical) : AddElement(*List()) : *List() = Widget()
     SetState(Widget(), 5)
     SetAttribute(Widget(), #__bar_Inverted, 1)
     
@@ -2375,16 +2380,16 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Widget(), 15)
     Splitter(320+155, 5, 150, 150, *w1, *w2, #__bar_Vertical) : AddElement(*List()) : *List() = Widget()
     
-;     Widget() = Button_3
-;     Widget()\height = 30
-;     Widget()\width = 30
-;     Widget()\bar\button[#__b_3]\len = 30
-;     Resize(Widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+    ;     Widget() = Button_3
+    ;     Widget()\height = 30
+    ;     Widget()\width = 30
+    ;     Widget()\bar\button[#__b_3]\len = 30
+    ;     Resize(Widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
     
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ZQAgAHAw658-4PA+-K-9d-DIAP+n6-6H+3e1Hc5DkQnAAAA5
+; Folding = ------------------------------------------------
 ; EnableXP
