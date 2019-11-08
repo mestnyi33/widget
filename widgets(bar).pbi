@@ -8883,7 +8883,9 @@ Module Widget
   Procedure.i SetFont(*this._S_widget, FontID.i)
     
     With *this
-      \text\fontID = FontID
+      If \text
+        \text\fontID = FontID
+      EndIf
     EndWith
     
   EndProcedure
@@ -12157,8 +12159,13 @@ Module Widget
       
       Select EventType 
         Case #PB_EventType_MouseEnter
-          If *this <> \window ; \interact
-            \color\state = #__s_1
+          If *this <> *this\window ; \interact
+            *this\color\state = #__s_1
+            
+            If *this\cursor
+              set_cursor(*this, *this\cursor)
+            EndIf
+            
             repaint = 1
           EndIf
           Post(EventType, *this)
@@ -12166,6 +12173,12 @@ Module Widget
         Case #PB_EventType_MouseLeave
           ;           If \interact
           \color\state = #__s_0
+          
+          If *this\cursor
+              set_cursor(*this, #PB_Cursor_Default)
+            EndIf
+            
+            
           repaint = 1
           ;           EndIf
           Post(EventType, *this)
@@ -12759,5 +12772,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
