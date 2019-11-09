@@ -21,6 +21,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Protected EventWidget = EventWidget()
     
     Select EventType
+      Case #PB_EventType_MouseEnter
+        ; bug in mac os
+        If GetActiveGadget() <> EventGadget()
+          SetActiveGadget(EventGadget())
+        EndIf
+       
       Case #PB_EventType_LeftClick, #PB_EventType_Change
         
         Select EventWidget
@@ -188,5 +194,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --
+; Folding = v-
 ; EnableXP

@@ -78,7 +78,6 @@ Procedure Events()
       ; Drop event on the target gadgets, receive the dropped data
       ;
     Case #PB_EventType_Drop
-      Debug 9080098
       Select EventWidget
           
         Case TargetText

@@ -12142,6 +12142,7 @@ Module Widget
             
             repaint = 1
           EndIf
+          
           Post(EventType, *this)
           
         Case #PB_EventType_MouseLeave
@@ -12268,7 +12269,9 @@ Module Widget
           ;             Case #PB_GadgetType_Spin
           ;               _events_bar_(*this, #PB_EventType_MouseMove, mouse_x, mouse_y)
           ;           EndSelect
-          Post(EventType, *this)
+          
+          
+            Post(EventType, *this)
            repaint = 1
           
           ; active widget key state
@@ -12317,7 +12320,8 @@ Module Widget
                #PB_EventType_Drop
             
             Select \type
-              Case #PB_GadgetType_Tree, 
+              Case #PB_GadgetType_Image, 
+                   #PB_GadgetType_Tree, 
                    #PB_GadgetType_ListView, 
                    #PB_GadgetType_ListIcon
                 
@@ -12515,7 +12519,10 @@ Module Widget
         *this\state = #__s_1
         root()\entered = *this
         
-        If Not root()\mouse\buttons
+        If root()\mouse\buttons
+          ; set drop start
+          DD::EventDrop(root()\entered, #PB_EventType_MouseEnter)
+        Else
           Repaint | CallBack(root()\entered, #PB_EventType_MouseEnter, mouse_x, mouse_y)
         EndIf
       EndIf
@@ -12570,6 +12577,18 @@ Module Widget
       EndIf
       
       If Not root()\mouse\buttons
+        ; post drop event
+        If DD::EventDrop(Root()\entered, #PB_EventType_LeftButtonUp)
+          Debug 4444
+          CallBack(Root()\entered, #PB_EventType_Drop, mouse_x, mouse_y)
+        EndIf
+        
+        ;             If Not Root()\entered
+        ;               
+        ;               DD::EventDrop(-1, #PB_EventType_LeftButtonUp)
+        ;               
+        ;             EndIf
+        
         If GetActive() 
           If GetActive()\state
             If Not root()\drag
@@ -12796,5 +12815,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------4-V-v---------B+
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------4-V-vr+-------D9
 ; EnableXP
