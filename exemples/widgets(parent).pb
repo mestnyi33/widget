@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(10, 0, 0, 833, 346, "demo set  new parent", Flags )
   
   ; Create desktop for the widgets
-  Open(10, 0, 0, 833, 346, "", #PB_Flag_BorderLess)
+  Open(10, 0, 0, 833, 346, "", #__flag_BorderLess)
   *d_0 = Button(30,90,160,30,"Button >>(Desktop)") 
   
   *window_1 = Form(202, 0, 630, 319, "demo set  new parent", Flags )
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Bind(@Widgets_CallBack(), Root())
   
   ResizeWindow(10, WindowX( 10 )-100, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #PB_Flag_BorderLess
+  Flags = #PB_Window_Invisible | #PB_Window_TitleBar | #__flag_BorderLess
   X = WindowX( 10 )+5+WindowWidth( 10 )
   Y = WindowY( 10 )
   
@@ -182,6 +182,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Repeat
     Define Event=WaitWindowEvent()
+    
+    ; repaint()
   Until Event=#PB_Event_CloseWindow
   
 CompilerEndIf

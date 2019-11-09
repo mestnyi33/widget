@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets().pbi"
 UseModule Widget
 
 ;
@@ -29,21 +29,21 @@ Global SourceText,
        TargetPrivate1,
        TargetPrivate2
 
+Global i, Event
 
 Procedure Events()
-    Protected EventWidget.i = *value\event\widget,
-              EventType.i = *value\event\type,
-              EventItem.i = *value\event\item, 
-              EventData.i = *value\event\data
-    
-    Protected i, Text$, Files$, Count
+  Protected EventWidget.i = *event\widget,
+            EventType.i = *event\type,
+            EventItem.i = *event\item, 
+            EventData.i = *event\data
+  
+  Protected i, Text$, Files$, Count
   
   ; DragStart event on the source s, initiate a drag & drop
   ;
   Select EventType
     Case #PB_EventType_DragStart
-      
-      Select EventGadget
+      Select EventWidget
           
         Case SourceText
           Text$ = GetItemText(SourceText, GetState(SourceText))
@@ -78,8 +78,8 @@ Procedure Events()
       ; Drop event on the target gadgets, receive the dropped data
       ;
     Case #PB_EventType_Drop
-      
-      Select EventGadget
+      Debug 9080098
+      Select EventWidget
           
         Case TargetText
           AddItem(TargetText, -1, DropText())
@@ -108,12 +108,10 @@ Procedure Events()
   
 EndProcedure
 
-If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
-  Open(#Window, 0, 0, 760, 310)
+If Open(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
   
   ; Create some images for the image demonstration
   ; 
-  Define i, Event
   CreateImage(#ImageSource, 136, 136)
   If StartDrawing(ImageOutput(#ImageSource))
     Box(0, 0, 136, 136, $FFFFFF)

@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets(6).pbi"
+XIncludeFile "widgets().pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -16,6 +16,12 @@ CompilerIf #PB_Compiler_IsMainFile
               EventData.i = *event\data
     
     Select EventType
+      Case #PB_EventType_MouseEnter
+        ; bug in mac os
+        If GetActiveGadget() <> EventGadget()
+          SetActiveGadget(EventGadget())
+        EndIf
+       
       Case #PB_EventType_Focus   
         If GetType(EventWidget) > 0
           Debug "Focus "+ GetData(EventWidget)
@@ -25,9 +31,22 @@ CompilerIf #PB_Compiler_IsMainFile
         
       Case #PB_EventType_LostFocus 
         If GetType(EventWidget) > 0
-          Debug " LostFocus "+ GetData(EventWidget) ;Val(StringField(GetText(EventWidget), 2, "_")) ; +\Type +" "+ at +" "+ *This
+          Debug " LostFocus "+ GetData(EventWidget) 
         Else
-          Debug " DeActive "+ GetData(EventWidget) ;Val(StringField(GetText(EventWidget), 2, "_")) ; +\Type +" "+ at +" "+ *This
+          Debug " DeActive "+ GetData(EventWidget)
+        EndIf
+        
+      Case #PB_EventType_Repaint
+        ; draw active window focused frame
+        If GetActive() = EventWidget
+          DrawingMode(#PB_2DDrawing_Outlined)
+          Box(0, 0, width(EventWidget), height(EventWidget), $FFFF00FF)
+        EndIf
+        
+        ; draw active gadget focused frame
+        If GetGadget(GetActive()) = EventWidget
+          DrawingMode(#PB_2DDrawing_Outlined)
+          Box(0, 0, width(EventWidget), height(EventWidget), $FFFFFF00)
         EndIf
         
     EndSelect
@@ -94,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 830, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (10,    5,   565, 890,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      w_list(Hex(10)) = Open(0, 10,10, 400, 550, "") : SetData(w_list(Hex(10)), 10)
+      w_list(Hex(10)) = Open(0, 10,10, 400, 550, "", #__flag_BorderLess) : SetData(w_list(Hex(10)), 10)
       If w_list(Hex(10))
         w_list(Hex(110)) = Form(100, 100, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
         w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
@@ -117,7 +136,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Debug ""
       
-      w_list(Hex(20)) = Open(0, 420,10, 400, 550, "", #PB_Flag_BorderLess) : SetData(w_list(Hex(20)), 20)
+      w_list(Hex(20)) = Open(0, 420,10, 400, 550, "", #__flag_BorderLess) : SetData(w_list(Hex(20)), 20)
       If w_list(Hex(20))
         w_list(Hex(140)) = Form(100, 100, 200, 200, "Window_140", #PB_Window_SystemMenu) : SetData(w_list(Hex(140)), 140)
         w_list(Hex(141)) = String(10, 10, 180, 85, "String_141") : SetData(w_list(Hex(141)), 141)
@@ -138,7 +157,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ReDraw(Root())
       EndIf
       
-      w_list(Hex(210)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu | #PB_Flag_BorderLess) : SetData(w_list(Hex(210)), 210)
+      w_list(Hex(210)) = Open(#PB_Any, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 210)
       SetWindowTitle(GetWindow(Root()), "Window_210") 
       ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(210)) = Form(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 110)
@@ -254,7 +273,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  Window_2()
+  Window_1()
   
   Repeat
     gEvent= WaitWindowEvent()
@@ -267,7 +286,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventType()
           Case #PB_EventType_LeftClick
-            Debug ""
+            Debug " --- "
             *root = GetGadgetData(EventGadget())
             *this = from(*root, GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX), GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY))
             
@@ -296,14 +315,19 @@ CompilerIf #PB_Compiler_IsMainFile
                   SetActive(w_list(Hex(22)))
               EndSelect
               
-              ReDraw(*root)
+             ; ReDraw(*root)
             EndIf
             
         EndSelect
     EndSelect
     
+    If root()\repaint
+      redraw(root())
+    EndIf
+    
+    ;Repaint()
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = ----
+; Folding = -H4-
 ; EnableXP

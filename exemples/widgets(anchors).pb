@@ -606,10 +606,10 @@ DeclareModule Widget
     #PB_Bar_Ticks 
   EndEnumeration
   
-  #PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
-  #PB_Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
-  #PB_Flag_Checkboxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
-                                                              ; #PB_Flag_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
+  #__flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
+  #__flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
+  #__flag_Checkboxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
+                                                              ; #__flag_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
   
   
   #PB_Widget_First = 1<<7
@@ -627,7 +627,7 @@ DeclareModule Widget
     #PB_Bottom
     #PB_Vertical 
     #PB_Horizontal
-    #PB_Flag_AutoSize
+    #__flag_AutoSize
     
     ;#PB_Toggle
     #PB_BorderLess
@@ -641,33 +641,33 @@ DeclareModule Widget
     #PB_Text_MultiLine 
     #PB_Text_InLine
     
-    #PB_Flag_Double
-    #PB_Flag_Flat
-    #PB_Flag_Raised
-    #PB_Flag_Single
+    #__flag_Double
+    #__flag_Flat
+    #__flag_Raised
+    #__flag_Single
     
-    #PB_Flag_GridLines
-    #PB_Flag_Invisible
+    #__flag_GridLines
+    #__flag_Invisible
     
-    #PB_Flag_MultiSelect
-    #PB_Flag_ClickSelect
+    #__flag_MultiSelect
+    #__flag_ClickSelect
     
-    #PB_Flag_AutoRight
-    #PB_Flag_AutoBottom
-    #PB_Flag_AnchorsGadget
+    #__flag_AutoRight
+    #__flag_AutoBottom
+    #__flag_AnchorsGadget
     
-    #PB_Flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
-    #PB_Flag_NoGadget
-    ;#PB_Flag_Root
+    #__flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
+    #__flag_NoGadget
+    ;#__flag_Root
     
-    #PB_Flag_Limit
+    #__flag_Limit
   EndEnumeration
   
   #PB_Bar_Vertical = #PB_Vertical
-  #PB_AutoSize = #PB_Flag_AutoSize
+  #PB_AutoSize = #__flag_AutoSize
   
-  If (#PB_Flag_Limit>>1) > 2147483647 ; 8589934592
-    Debug "Исчерпан лимит в x32 ("+Str(#PB_Flag_Limit>>1)+")"
+  If (#__flag_Limit>>1) > 2147483647 ; 8589934592
+    Debug "Исчерпан лимит в x32 ("+Str(#__flag_Limit>>1)+")"
   EndIf
   
   #PB_Full = #PB_Left|#PB_Right|#PB_Top|#PB_Bottom
@@ -1622,7 +1622,7 @@ Module Widget
     EndIf
     
     ; _set_auto_size_
-    If Bool(_flag_ & #PB_Flag_AutoSize=#PB_Flag_AutoSize) : x=0 : y=0
+    If Bool(_flag_ & #__flag_AutoSize=#__flag_AutoSize) : x=0 : y=0
       _this_\align = AllocateStructure(_S_align)
       _this_\align\autoSize = 1
       _this_\align\left = 1
@@ -1631,7 +1631,7 @@ Module Widget
       _this_\align\bottom = 1
     EndIf
     
-    If Bool(_flag_ & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget)
+    If Bool(_flag_ & #__flag_AnchorsGadget=#__flag_AnchorsGadget)
       
       a_Add(_this_)
       a_Set(_this_)
@@ -7961,7 +7961,7 @@ EndProcedure
               EndIf
             EndIf
             
-            If Bool(Mode&#PB_Flag_AutoSize=#PB_Flag_AutoSize)
+            If Bool(Mode&#__flag_AutoSize=#__flag_AutoSize)
               If Bool(Mode&#PB_Full=#PB_Full) 
                 \align\top = 1
                 \align\left = 1
@@ -8271,7 +8271,7 @@ EndProcedure
   Procedure.i SetFlag(*this._S_widget, Flag.i)
     
     With *this
-      If Flag&#PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget
+      If Flag&#__flag_AnchorsGadget=#__flag_AnchorsGadget
         ;         a_Add(*this)
         a_Resize(*this)
       EndIf
@@ -9520,7 +9520,7 @@ EndProcedure
     
     If *this > 0
       With *this
-        ; #PB_Flag_AutoSize
+        ; #__flag_AutoSize
         If \parent And \parent\type <> #PB_GadgetType_Splitter And \align And \align\autoSize And \align\left And \align\top And \align\right And \align\bottom
           X = 0; \align\x
           Y = 0; \align\y
@@ -10044,19 +10044,19 @@ EndProcedure
       \index[#Selected] =- 1
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \popup = Popup(*this, 0,0,0,0)
       OpenList(\popup)
-      Tree(0,0,0,0, #PB_Flag_AutoSize|#PB_Flag_NoLines|#PB_Flag_NoButtons) 
+      Tree(0,0,0,0, #__flag_AutoSize|#__flag_NoLines|#__flag_NoButtons) 
       \popup\childrens()\scroll\h\height=0
       CloseList()
       
@@ -10090,7 +10090,7 @@ EndProcedure
       SetText(*this, Text.s)
       _set_image_(*this, *this, Image)
       
-      ;       ; временно из-за этого (контейнер \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget))
+      ;       ; временно из-за этого (контейнер \bs = Bool(Not Flag&#__flag_AnchorsGadget))
       ;       If \parent And \parent\root\anchor\id[1]
       ;         x+\parent\fs
       ;         y+\parent\fs
@@ -10226,7 +10226,7 @@ EndProcedure
       \text\x[2] = 3
       \text\y[2] = 0
       
-      Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#PB_Flag_BorderLess
+      Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#__flag_BorderLess
       
       If Bool(Flag&#PB_Text_WordWrap)
         Flag&~#PB_Text_MultiLine
@@ -10384,7 +10384,7 @@ EndProcedure
       \color = def_colors
       \color\fore[0] = 0
       
-      \margin\width = 100;Bool(Flag&#PB_Flag_Numeric)
+      \margin\width = 100;Bool(Flag&#__flag_Numeric)
       \margin\color\back = $C8F0F0F0 ; \color\back[0] 
       
       \color\alpha = 255
@@ -10408,14 +10408,14 @@ EndProcedure
       \interact = 1
       \text\caret[1] =- 1
       \index[#Entered] =- 1
-      \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
-      \flag\lines = Bool(flag&#PB_Flag_NoLines)
-      \flag\fullSelection = Bool(Not flag&#PB_Flag_FullSelection)*7
-      ;\flag\alwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12 ; Это еще будет размер чек бокса
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
+      \flag\buttons = Bool(flag&#__flag_NoButtons)
+      \flag\lines = Bool(flag&#__flag_NoLines)
+      \flag\fullSelection = Bool(Not flag&#__flag_FullSelection)*7
+      ;\flag\alwaysSelection = Bool(flag&#__flag_AlwaysSelection)
+      \flag\checkboxes = Bool(flag&#__flag_Checkboxes)*12 ; Это еще будет размер чек бокса
+      \flag\gridLines = Bool(flag&#__flag_GridLines)
       
-      ;\text\Vertical = Bool(Flag&#PB_Flag_Vertical)
+      ;\text\Vertical = Bool(Flag&#__flag_Vertical)
       
       
       SetText(*this, "")
@@ -10446,15 +10446,15 @@ EndProcedure
       \text\height = 20
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10497,12 +10497,12 @@ EndProcedure
       \flag\lines = 0
       \flag\buttons = 0
       
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10538,15 +10538,15 @@ EndProcedure
       \text\height = 20
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10584,15 +10584,15 @@ EndProcedure
       \text\height = 20
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10674,15 +10674,15 @@ EndProcedure
       \text\height = 20
       
       \sublevellen = 18
-      \flag\gridLines = Bool(flag&#PB_Flag_GridLines)
-      \flag\multiSelect = Bool(flag&#PB_Flag_MultiSelect)
-      \flag\clickSelect = Bool(flag&#PB_Flag_ClickSelect)
+      \flag\gridLines = Bool(flag&#__flag_GridLines)
+      \flag\multiSelect = Bool(flag&#__flag_MultiSelect)
+      \flag\clickSelect = Bool(flag&#__flag_ClickSelect)
       \flag\fullSelection = 1
       \flag\alwaysSelection = 1
       
-      \flag\lines = Bool(Not flag&#PB_Flag_NoLines)*8
-      \flag\buttons = Bool(Not flag&#PB_Flag_NoButtons)*9 ; Это еще будет размер чек бокса
-      \flag\checkboxes = Bool(flag&#PB_Flag_Checkboxes)*12; Это еще будет размер чек бокса
+      \flag\lines = Bool(Not flag&#__flag_NoLines)*8
+      \flag\buttons = Bool(Not flag&#__flag_NoButtons)*9 ; Это еще будет размер чек бокса
+      \flag\checkboxes = Bool(flag&#__flag_Checkboxes)*12; Это еще будет размер чек бокса
       
       \fs = 1
       \bs = 2
@@ -10700,7 +10700,7 @@ EndProcedure
   ;-
   Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.i=0)
     Protected Vertical = Bool(Not Flag&#PB_Splitter_Vertical) * #PB_Vertical
-    Protected Auto = Bool(Flag&#PB_Flag_AutoSize) * #PB_Flag_AutoSize
+    Protected Auto = Bool(Flag&#__flag_AutoSize) * #__flag_AutoSize
     Protected *Bar._S_widget, *this._S_widget, Max : If Vertical : Max = Height : Else : Max = Width : EndIf
     
     *this = Bar(0, 0, 0, Max, 0, Auto|Vertical|#PB_Bar_NoButtons, 0, 7)
@@ -10763,7 +10763,7 @@ EndProcedure
       ;       Resize(\scroll\h, #PB_Ignore,#PB_Ignore,#PB_Ignore,Size)
       
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#PB_Flag_NoGadget
+      If Not Flag&#__flag_NoGadget
         OpenList(*this)
       EndIf
     EndWith
@@ -10788,13 +10788,13 @@ EndProcedure
       \color\back = $FFF6F6F6
       
       \fs = 1
-      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      \bs = Bool(Not Flag&#__flag_AnchorsGadget)
       
       ; Background image
       \image[1] = AllocateStructure(_S_image)
       
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#PB_Flag_NoGadget
+      If Not Flag&#__flag_NoGadget
         OpenList(*this)
       EndIf
     EndWith
@@ -10842,13 +10842,13 @@ EndProcedure
       \tab\box[1]\color\alpha = 255
       
       \fs = 1
-      \bs = Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      \bs = Bool(Not Flag&#__flag_AnchorsGadget)
       
       ; Background image
       \image[1] = AllocateStructure(_S_image)
       
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#PB_Flag_NoGadget
+      If Not Flag&#__flag_NoGadget
         OpenList(*this)
       EndIf
     EndWith
@@ -10925,14 +10925,14 @@ EndProcedure
       \flag\window\borderLess = Bool(Flag&#PB_Window_BorderLess)
       
       \fs = 1
-      \bs = 1 ;Bool(Not Flag&#PB_Flag_AnchorsGadget)
+      \bs = 1 ;Bool(Not Flag&#__flag_AnchorsGadget)
       
       ; Background image
       \image[1] = AllocateStructure(_S_image)
       
       SetText(*this, Text.s)
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#PB_Flag_NoGadget
+      If Not Flag&#__flag_NoGadget
         OpenList(*this)
       EndIf
       SetActive(*this)
@@ -11034,7 +11034,7 @@ EndProcedure
       EndIf
       
       
-      If Bool(flag & #PB_Flag_AnchorsGadget=#PB_Flag_AnchorsGadget)
+      If Bool(flag & #__flag_AnchorsGadget=#__flag_AnchorsGadget)
         
         a_Add(*this)
         
@@ -12096,7 +12096,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If OpenWindow(3, 0, 0, 455, 305, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    If Open(3, 0, 0, 455, 605, "", #PB_Flag_AnchorsGadget)
+    If Open(3, 0, 0, 455, 605, "", #__flag_AnchorsGadget)
       Define *w,*w1,*w2
       
       Form     (8, 8, 376, 203, "window")
@@ -12106,7 +12106,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *w1=Panel (5, 30, 340, 166)
       AddItem(*w1, -1, "Под-Панель 1")
       
-      Tree(5, 5, 180, 100, #PB_Flag_Checkboxes|#PB_Tree_ThreeState)
+      Tree(5, 5, 180, 100, #__flag_Checkboxes|#PB_Tree_ThreeState)
       
       Define i
       For i=0 To 20
@@ -12261,7 +12261,7 @@ CompilerEndIf
 ; ; ;     If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
 ; ; ;       ButtonGadget   (10,    5,   565, 590,  30, "start change scrollbar", #PB_Button_Toggle)
 ; ; ;       
-; ; ;       Define Editable ; = #PB_Flag_AnchorsGadget
+; ; ;       Define Editable ; = #__flag_AnchorsGadget
 ; ; ;       
 ; ; ;       If Open(0, 10,10, 580, 550," root ")
 ; ; ;         *win=Form(80, 100, 400, 360, "Window_2", Editable)
@@ -12270,7 +12270,7 @@ CompilerEndIf
 ; ; ;         Container(20,20,400-60, 360-60, Editable)
 ; ; ;         *but=Button(100, 20, 80, 80, "Button_1", Editable)
 ; ; ;         
-; ; ;         Tree(130, 80, 180, 180, Editable|#PB_Flag_Checkboxes|#PB_Tree_ThreeState)
+; ; ;         Tree(130, 80, 180, 180, Editable|#__flag_Checkboxes|#PB_Tree_ThreeState)
 ; ; ;         
 ; ; ;         Define i
 ; ; ;         For i=0 To 20
@@ -12320,7 +12320,6 @@ CompilerEndIf
 ; ; ;     
 ; ; ;   Until gQuit
 ; ; ; CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 18
-; Folding = --------------------------5--+z4-------------------------------------------------------------------------------------------------------x-+0-------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; Folding = +-------------------------5--+z4-------------------------------------------------------------------------------------------------------x-+0-------------------------------------------------------------------------------------------------------
 ; EnableXP

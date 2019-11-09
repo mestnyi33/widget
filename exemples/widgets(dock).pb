@@ -34,10 +34,10 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 600, 600, "Demo docking widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
        
-     Open(0, 10, 10, 580, 600-50, "", #PB_Flag_BorderLess)
+     Open(0, 10, 10, 580, 600-50, "", #__flag_BorderLess)
       
-      Widgets(Str(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #PB_Flag_Flag_AnchorsGadget)
-      ;Widgets(Str(0)) = Container(50, 50, 280, 200);, #PB_Flag_Flag_AnchorsGadget);#PB_Flag_Flag_AutoSize)
+      Widgets(Str(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_Flag_AnchorsGadget)
+      ;Widgets(Str(0)) = Container(50, 50, 280, 200);, #__flag_Flag_AnchorsGadget);#__flag_Flag_AutoSize)
       ;Widgets(Str(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Str(0)), -1, "panel")
       ;Widgets(Str(0)) = ScrollArea(50, 50, 280, 200, 280,200)
       
@@ -50,18 +50,18 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseList()
       
-;       _SetAlignment(Widgets(Str(1)), #PB_Flag_Flag_AutoSize|#PB_Flag_Left|#PB_Flag_Right)
-;       _SetAlignment(Widgets(Str(2)), #PB_Flag_Flag_AutoSize|#PB_Flag_Top|#PB_Flag_Bottom)
-;       _SetAlignment(Widgets(Str(3)), #PB_Flag_Flag_AutoSize|#PB_Flag_Top|#PB_Flag_Bottom|#PB_Flag_Right)
-;       _SetAlignment(Widgets(Str(4)), #PB_Flag_Flag_AutoSize|#PB_Flag_Left|#PB_Flag_Right|#PB_Flag_Bottom)
-;       _SetAlignment(Widgets(Str(5)), #PB_Flag_Flag_AutoSize|#PB_Flag_Full)
+;       _SetAlignment(Widgets(Str(1)), #__flag_Flag_AutoSize|#__flag_Left|#__flag_Right)
+;       _SetAlignment(Widgets(Str(2)), #__flag_Flag_AutoSize|#__flag_Top|#__flag_Bottom)
+;       _SetAlignment(Widgets(Str(3)), #__flag_Flag_AutoSize|#__flag_Top|#__flag_Bottom|#__flag_Right)
+;       _SetAlignment(Widgets(Str(4)), #__flag_Flag_AutoSize|#__flag_Left|#__flag_Right|#__flag_Bottom)
+;       _SetAlignment(Widgets(Str(5)), #__flag_Flag_AutoSize|#__flag_Full)
       
-      SetAlignment(Widgets(Str(4)), #PB_Flag_AutoSize|#PB_Flag_Bottom)
-      SetAlignment(Widgets(Str(6)), #PB_Flag_AutoSize|#PB_Flag_Bottom)
-      SetAlignment(Widgets(Str(1)), #PB_Flag_AutoSize|#PB_Flag_Top)
-      SetAlignment(Widgets(Str(2)), #PB_Flag_AutoSize|#PB_Flag_Left)
-      SetAlignment(Widgets(Str(3)), #PB_Flag_AutoSize|#PB_Flag_Right)
-      SetAlignment(Widgets(Str(5)), #PB_Flag_AutoSize|#PB_Flag_Full)
+      SetAlignment(Widgets(Str(4)), #__flag_AutoSize|#__flag_Bottom)
+      SetAlignment(Widgets(Str(6)), #__flag_AutoSize|#__flag_Bottom)
+      SetAlignment(Widgets(Str(1)), #__flag_AutoSize|#__flag_Top)
+      SetAlignment(Widgets(Str(2)), #__flag_AutoSize|#__flag_Left)
+      SetAlignment(Widgets(Str(3)), #__flag_AutoSize|#__flag_Right)
+      SetAlignment(Widgets(Str(5)), #__flag_AutoSize|#__flag_Full)
       
       ;BindGadgetEvent(Canvas_0, @Canvas_CallBack())
       ReDraw(Root())
@@ -117,5 +117,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = +--
+; Folding = ---
 ; EnableXP

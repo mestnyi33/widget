@@ -59,8 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If OpenWindow(3, 0, 0, 455, 305, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    If Open(3, 0, 0, 455, 605, "window")
+  If Open(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       Define *w,*w1,*w2
       
       *w=Panel     (8, 8, 356, 203)
@@ -69,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *w1=Panel (5, 30, 340, 166)
       AddItem(*w1, -1, "Под-Панель 1")
       
-      Tree(5, 5, 180, 100, #PB_Flag_Checkboxes|#PB_Tree_ThreeState)
+      Tree(5, 5, 180, 100, #__flag_Checkboxes|#PB_Tree_ThreeState)
       
       Define i
       For i=0 To 20
@@ -139,7 +138,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       Bind(@Events(), *w2)
       
       ReDraw(Root())
-    EndIf
     
     Repeat
       Define Event = WaitWindowEvent()
@@ -148,5 +146,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0--
+; Folding = 0-
 ; EnableXP

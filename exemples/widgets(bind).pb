@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets().pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -9,10 +9,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, *but, *win
   
   Procedure Widgets_Gadget_Events()
-    Protected EventWidget.i = *value\event\widget,
-              EventType.i = *value\event\type,
-              EventItem.i = *value\event\item, 
-              EventData.i = *value\event\data
+    Protected EventWidget.i = *event\widget,
+              EventType.i = *event\type,
+              EventItem.i = *event\item, 
+              EventData.i = *event\data
     
     If EventType <> #PB_EventType_MouseMove
       Debug " gadget "+ EventType
@@ -45,10 +45,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Widgets_Window_Events()
-    Protected EventWidget.i = *value\event\widget,
-              EventType.i = *value\event\type,
-              EventItem.i = *value\event\item, 
-              EventData.i = *value\event\data
+    Protected EventWidget.i = *event\widget,
+              EventType.i = *event\type,
+              EventItem.i = *event\item, 
+              EventData.i = *event\data
     
     If EventType <> #PB_EventType_MouseMove
       Debug " window "+ EventType
@@ -77,10 +77,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Widgets_Root_Events()
-    Protected EventWidget.i = *value\event\widget,
-              EventType.i = *value\event\type,
-              EventItem.i = *value\event\item, 
-              EventData.i = *value\event\data
+    Protected EventWidget.i = *event\widget,
+              EventType.i = *event\type,
+              EventItem.i = *event\item, 
+              EventData.i = *event\data
     
     If EventType <> #PB_EventType_MouseMove
       Debug " root "+ EventType
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (10,    5,   565, 590,  30, "start change scrollbar", #PB_Button_Toggle)
       
-      Define Editable ; = #PB_Flag_AnchorsGadget
+      Define Editable ; = #__flag_AnchorsGadget
       
       If Open(0, 10,10, 580, 550," root ")
         *win=Form(80, 100, 400, 360, "Window_2", Editable)
