@@ -54,11 +54,13 @@ Procedure Events()
           
         Case SourceFiles
           Files$ = ""       
-          For i = 0 To CountItems(SourceFiles)-1
-            If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
-              Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) + Chr(10)
-            EndIf
-          Next i 
+;           For i = 0 To CountItems(SourceFiles)-1
+;             If GetItemState(SourceFiles, i) & #PB_Explorer_Selected
+          i=GetState(SourceFiles)
+          Files$ + GetText(SourceFiles) + GetItemText(SourceFiles, i) ; + Chr(10)
+;             EndIf
+;           Next i 
+          
           If Files$ <> ""
             DragFiles(Files$)
           EndIf
@@ -89,7 +91,7 @@ Procedure Events()
           EndIf
           
         Case TargetFiles
-          Files$ = EventDropFiles()
+          Files$ = DropFiles()
           Count  = CountString(Files$, Chr(10)) + 1
           For i = 1 To Count
             AddItem(TargetFiles, -1, StringField(Files$, i, Chr(10)))
@@ -173,5 +175,5 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = --
+; Folding = +-
 ; EnableXP

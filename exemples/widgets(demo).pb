@@ -1,5 +1,6 @@
 ﻿IncludePath "../"
 XIncludeFile "widgets().pbi"
+;XIncludeFile "widgets(_align_0_0_0).pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
@@ -19,11 +20,11 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global x,y,i,NewMap Widgets.i()
   
   
-  If Open(#PB_Any, 0, 0, 995, 605, "", #__flag_BorderLess | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(#PB_Any, 0, 0, 995, 605, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;
     ;Widgets("Container") = Container(0, 0, 995, 455);, #__flag_AutoSize) 
     
-    Widgets(Hex(#PB_GadgetType_Button)) = Button(5, 5, 160,95, "Button_"+Hex(#PB_GadgetType_Button) ) ; ok
+    Widgets(Hex(#PB_GadgetType_Button)) = Button(5, 5, 160,95, " Multiline Button_"+Hex(#PB_GadgetType_Button)+" (longer text gets automatically multiline)", #__button_MultiLine ) ; ok
     Widgets(Hex(#PB_GadgetType_String)) = String(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)); ok
     Widgets(Hex(#PB_GadgetType_Text)) = Text(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text))        ; ok
     Widgets(Hex(#PB_GadgetType_CheckBox)) = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox), #PB_CheckBox_ThreeState) : SetState(Widgets(Hex(#PB_GadgetType_CheckBox)), #PB_Checkbox_Inbetween); ok

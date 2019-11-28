@@ -1,5 +1,6 @@
 ﻿IncludePath "../"
 XIncludeFile "widgets().pbi"
+;XIncludeFile "widgets(_align_0_0_0).pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
