@@ -1,8 +1,4 @@
-﻿
-; Выделение с конца сверху в конец вниз
-; Выделение с конца внизу в конец сверх
-
-; ++ надо исправить на последней строке ентер дает ошибку
+﻿; ++ надо исправить на последней строке ентер дает ошибку
 ; + если есть вертикальный скроллбар авто прокручивает в конец файла
 ; + горизонтальный скролл не перемешает текст если строка выбрана
 ; - при выделении не прокручивает текст
@@ -122,8 +118,6 @@
 ;                                                           ⌥Option (Alt) + Delete — удаление всех символов слева от курсора в пределах слова.
 ;                                                                    ⌘Cmd + Delete — удаление всех символов слева от курсора в пределах строки.
 
-
-; 
 DeclareModule Macros
   Macro isItem(_item_, _list_)
     Bool(_item_ >= 0 And _item_ < ListSize(_list_))
@@ -752,8 +746,6 @@ DeclareModule Structures
     y.l
     width.l
     height.l
-    
-    len.l
     
     *pos
     *end
@@ -2416,11 +2408,9 @@ Module Editor
         
         If MinDistance > Distance 
           MinDistance = Distance
-          \text\caret\len = X ; len
           Position = i        ; pos
-          \text\caret\x = (\items()\text\x-\scroll\h\page\pos) + \text\caret\len - Bool(#PB_Compiler_OS = #PB_OS_Windows)
-          \text\caret\y = \items()\y-\scroll\v\page\pos
-          
+          \text\caret\x = \items()\text\x + x - Bool(#PB_Compiler_OS = #PB_OS_Windows)
+          \text\caret\y = \items()\y
         EndIf
       Next 
       
@@ -2432,7 +2422,7 @@ Module Editor
     ProcedureReturn Position
   EndProcedure
   
-  Macro _text_sel_set_(_this_, _pos_, _len_)
+  Macro __text_sel_set_(_this_, _pos_, _len_)
     _this_\items()\text[2]\pos = _pos_
     _this_\items()\text[2]\len = _len_
     
@@ -2443,11 +2433,11 @@ Module Editor
     _this_\items()\text[1]\string.s = Left(_this_\items()\text\string.s, _this_\items()\text[1]\len) 
     ;EndIf
     
-    ;If _this_\items()\text[3]\pos <> (_pos_ + Bool(_len_ > 0) * _len_)
-      _this_\items()\text[3]\change = #True
-      _this_\items()\text[3]\pos = (_pos_ + Bool(_len_ > 0) * _len_)
-      _this_\items()\text[3]\len = (_this_\items()\text\len-_this_\items()\text[3]\pos)
-      _this_\items()\text[3]\string.s = Right(_this_\items()\text\string.s, _this_\items()\text[3]\len) 
+    ;If _this_\items()\text[3]\pos <> _pos_ + _len_
+    _this_\items()\text[3]\pos = _pos_ + _len_
+    _this_\items()\text[3]\change = #True
+    _this_\items()\text[3]\len = (_this_\items()\text\len-_this_\items()\text[3]\pos)
+    _this_\items()\text[3]\string.s = Right(_this_\items()\text\string.s, _this_\items()\text[3]\len) 
     ;EndIf
     
     ; text/pos/len/state
@@ -2465,25 +2455,76 @@ Module Editor
       _this_\text[3]\string.s = Right(_this_\text\string.s, _this_\text[3]\len)
     EndIf
     
-    If *this\text[1]\len <> *this\text[3]\pos  ; _this_\items()\text[2]\len
-      ;Debug ""+ListIndex(_this_\items())+" "+_this_\items()\index+" "+_this_\items()\text[2]\pos+" "+_this_\items()\text[2]\len
-      
-      _this_\text[2]\len = (_this_\text[3]\pos-_this_\text[2]\pos)
-      
-      _this_\text[2]\change = #True 
-      _this_\items()\text[2]\change = #True 
-      _this_\text[2]\string.s = Mid(_this_\text\string.s, 1 + _this_\text[2]\pos, _this_\text[2]\len) 
-      _this_\items()\text[2]\string.s = Mid(_this_\items()\text\string.s, 1 + _this_\items()\text[2]\pos, _this_\items()\text[2]\len) 
-      
-      ; если позиция 1 а длина -1 то это пустая строка.  
-      If _this_\items()\text[2]\len < 0
-        _this_\items()\text[2]\pos = _this_\items()\text\len+1
+    If _this_\items()\text[2]\len
+      If _this_\items()\text[2]\len > 0
+        _this_\text[2]\len = (_this_\text[3]\pos-_this_\text[2]\pos)
+         
+        _this_\text[2]\change = #True 
+        _this_\items()\text[2]\change = #True 
+        _this_\text[2]\string.s = Mid(_this_\text\string.s, 1 + _this_\text[2]\pos, _this_\text[2]\len) 
+        _this_\items()\text[2]\string.s = Mid(_this_\items()\text\string.s, 1 + _this_\items()\text[2]\pos, _this_\items()\text[2]\len) 
+        
+        ; если позиция 1 а длина -1 то это пустая строка.  
+      Else
+        _this_\items()\text[2]\pos = 1
         _this_\items()\text[2]\x = _this_\items()\text\x
         _this_\items()\text[2]\width = _this_\flag\fullSelection
         _this_\items()\text[3]\x = _this_\items()\text[2]\x+_this_\items()\text[2]\width
       EndIf
     EndIf
   EndMacro
+  
+  Procedure.i _text_sel_set_(*this._s_widget, _pos_, _len_)
+    With *this
+      *this\items()\text[2]\pos = _pos_
+      *this\items()\text[2]\len = _len_
+      
+      ; lines string/pos/len/state
+      *this\items()\text[1]\change = #True
+      *this\items()\text[1]\len = *this\items()\text[2]\pos
+      *this\items()\text[1]\string.s = Left(*this\items()\text\string.s, *this\items()\text[1]\len) 
+      
+      *this\items()\text[3]\change = #True
+      *this\items()\text[3]\pos = (*this\items()\text[2]\pos + *this\items()\text[2]\len)
+      *this\items()\text[3]\len = (*this\items()\text\len - *this\items()\text[3]\pos)
+      *this\items()\text[3]\string.s = Right(*this\items()\text\string.s, *this\items()\text[3]\len) 
+      
+      If (*this\index[2] >= *this\items()\index)
+        *this\text[1]\len = (*this\items()\text\pos + *this\items()\text[1]\len)
+        *this\text[1]\string.s = Left(*this\text\string.s, *this\text[1]\len) 
+        *this\text[2]\pos = *this\text[1]\len
+      EndIf
+      
+      If (*this\index[2] =< *this\items()\index)
+        *this\text[3]\pos = (*this\items()\text\pos + *this\items()\text[3]\pos)
+        *this\text[3]\len = (*this\text\len - *this\text[3]\pos)
+        *this\text[3]\string.s = Right(*this\text\string.s, *this\text[3]\len)
+      EndIf
+      
+      If *this\text[1]\len <> *this\text[3]\pos  ; *this\items()\text[2]\len
+        ;If *this\items()\text[2]\len > 0
+          *this\items()\text[2]\change = #True 
+          *this\items()\text[2]\string.s = Mid(*this\items()\text\string.s, 1 + *this\items()\text[2]\pos, *this\items()\text[2]\len) 
+          
+          *this\text[2]\change = #True 
+          *this\text[2]\len = (*this\text[3]\pos-*this\text[2]\pos)
+          *this\text[2]\string.s = Mid(*this\text\string.s, 1 + *this\text[2]\pos, *this\text[2]\len) 
+          
+          ; если позиция=1 ,а длина=-1 то это пустая строка.  
+        Else
+          ;*this\items()\text[2]\pos = 1
+          *this\items()\text[2]\x = *this\items()\text\x
+          *this\items()\text[2]\width = *this\flag\fullSelection
+          *this\items()\text[3]\x = *this\items()\text[2]\x+*this\items()\text[2]\width
+        ;EndIf
+        
+ ;       Else
+        ;*this\items()\text[2]\len = 0
+        *this\items()\text[2]\string.s = ""
+      EndIf
+      
+    EndWith
+  EndProcedure
   
   Procedure _text_sel_change_(*this._s_widget, _index_) ; Ok
     Protected Pos.i, Len.i
@@ -2496,7 +2537,7 @@ Module Editor
       ElseIf *this\text\caret\end > *this\text\caret\pos 
         ; |<<<<<< to left
         Pos = *this\text\caret\pos 
-        Len = (*this\text\caret\end-Pos) + Bool(*this\text\caret\end = *this\items()\text\len)
+        Len = (*this\text\caret\end-Pos)
       Else 
         ; >>>>>>| to right
         Pos = *this\text\caret\end
@@ -2506,15 +2547,15 @@ Module Editor
       ; Если выделяем снизу вверх
     ElseIf *this\index[2] > _index_
       ; to top
-      Pos = *this\text\caret\pos
-      Len = (*this\items()\text\len-Pos) - Bool(Pos = *this\items()\text\len) ; 
+      Pos = *this\text\caret\pos 
+      Len = (*this\items()\text\len-Pos) - Bool(Not *this\items()\text\len) ; 
     Else
       ; to bottom
       Pos = 0
       Len = *this\text\caret\pos
     EndIf
     
-    _text_sel_set_(*this, Pos, Len)
+    _text_sel_set_(*this, Pos + Bool(Not *this\items()\text\len), Len)
     
   EndProcedure
   
@@ -2549,12 +2590,14 @@ Module Editor
            If *this\index[2] = *this\index[1] 
             SelectElement(*this\items(), *this\index[2]) 
             
+            *this\text\caret\pos = Bool(_line_>*this\index[1]) * *this\items()\text\len
+            
             If *this\index[2] > _line_
               ; |<<<<<< to top
-              _text_sel_set_(*this, 0, *this\text\caret\end )
+              _text_sel_set_(*this, *this\text\caret\pos, (*this\text\caret\end-*this\text\caret\pos) )
             Else 
               ; >>>>>>| to bottom
-              _text_sel_set_(*this, *this\text\caret\end, (*this\items()\text\len-*this\text\caret\end) - Bool(*this\text\caret\end = *this\items()\text\len) )
+              _text_sel_set_(*this, *this\text\caret\end, (*this\text\caret\pos-*this\text\caret\end) - Bool(Not *this\items()\text\len)) ; Выделение пустой строки
             EndIf
           EndIf
           
@@ -2581,7 +2624,7 @@ Module Editor
               *this\items()\text[3]\string = ""
               
               *this\items()\text[1]\width = 0 
-              *this\items()\text[2]\width = 0 
+              *this\items()\text[2]\width = Bool(Not *this\items()\text\len) * *this\flag\fullSelection 
               *this\items()\text[3]\width = 0 
               
               *this\items()\text[1]\x = *this\items()\text\x 
@@ -3247,9 +3290,7 @@ Module Editor
             Debug "get caret "+\items()\index +" "+ Str(\items()\text[2]\pos + \items()\text[2]\len) +" "+ \items()\text\len
             \items()\text[2]\x = \items()\text\x+\items()\text[1]\width
             
-            \items()\text[2]\width = TextWidth(\items()\text[2]\string.s) + 
-                                     Bool(*this\index[2] > *this\items()\index And (*this\items()\text[2]\pos + *this\items()\text[2]\len) = *this\items()\text\len) * *this\flag\fullSelection
-            ;Bool((\items()\text[2]\pos + \items()\text[2]\len) = \items()\text\len) * *this\flag\fullSelection; + Bool(\items()\text[2]\len =- 1) * \flag\fullSelection ; TextWidth() - bug in mac os
+            \items()\text[2]\width = TextWidth(\items()\text[2]\string.s) + Bool((\items()\text[2]\pos + \items()\text[2]\len) = \items()\text\len) * *this\flag\fullSelection; + Bool(\items()\text[2]\len =- 1) * \flag\fullSelection ; TextWidth() - bug in mac os
             
             \items()\text[3]\x = \items()\text[2]\x+\items()\text[2]\width
           EndIf 
@@ -3325,28 +3366,10 @@ Module Editor
             EndIf
             
             
-            If \items()\change = 1 : \items()\change = 0
-              Protected indent = 8 + Bool(*this\image\width)*4
-              ; Draw coordinates 
-              \items()\sublevellen = *this\text\x + (7 - *this\sublevellen) + ((\items()\sublevel + Bool(*this\flag\buttons)) * *this\sublevellen) + Bool(*this\flag\checkBoxes)*17
-              \items()\image\x + \items()\sublevellen + indent
-              \items()\text\x + \items()\sublevellen + *this\image\width + indent
-              
-              ; Scroll width length
-              _set_scroll_width_(*this)
-            EndIf
-            
             Height = \items()\height
             Y = \items()\y+*this\scroll\y
             Text_X = \items()\text\x+*this\scroll\x
             Text_Y = \items()\text\y+*this\scroll\y
-            ; Debug Text_X
-            
-            ; expanded & collapsed box
-            _set_open_box_XY_(*this, \items(), *this\x+*this\scroll\x, Y)
-            
-            ; checked box
-            _set_check_box_XY_(*this, \items(), *this\x+*this\scroll\x, Y)
             
             ; Draw selections
             If Drawing And (\items()\index=*this\index[1] Or \items()\index=\items()\focus Or \items()\index=\items()\index[1]) ; \color\state;
@@ -3365,9 +3388,6 @@ Module Editor
                 RoundBox(*this\x[2],Y,iwidth,\items()\height,\items()\round,\items()\round, RowFrameColor(*this, \items()\color\state) )
               EndIf
             EndIf
-            
-            ; Draw plot
-            ;_draw_plots_(*this, *this\items(), *this\x+*this\scroll\x, \items()\box\y+\items()\box\height/2)
             
             If Drawing
               ; Draw boxes
@@ -3492,9 +3512,7 @@ Module Editor
         
         ; Draw caret
         If *this\text\editable And *this\focus = *this : DrawingMode(#PB_2DDrawing_XOr)             
-          ;  Line((\items()\text\x-\scroll\h\page\pos) + \text\caret\len - Bool(#PB_Compiler_OS = #PB_OS_Windows) - Bool(Left < \scroll\x), \items()\y+\scroll\y, 1, Height, $FFFFFFFF)
-          ;  Line(\text\caret\x - Bool(Left < \scroll\x), \text\caret\y, \text\caret\width, \text\caret\height, $FFFFFFFF)
-          Line(\text\caret\x - Bool(Left < \scroll\x), \text\caret\y, 1, height, $FFFFFFFF)
+          Line(\text\caret\x-\scroll\h\page\pos - Bool(Left < \scroll\x), \text\caret\y-\scroll\v\page\pos, 1, height, $FFFFFFFF)
         EndIf
         
         ; Draw scroll bars
@@ -4454,7 +4472,7 @@ Module Editor
                 
               Case #PB_EventType_LeftButtonUp  
                 
-                Debug "#PB_EventType_LeftButtonUp"
+                Debug 7777
                 ; Выделение конца строки
                 PushListPosition(\items()) 
                 ForEach \items()
@@ -4876,9 +4894,6 @@ Module Editor
       
       ; create scrollbars
       Scroll::Bars(\scroll, 16, 7, Bool(\text\multiLine <> 1))
-;       \scroll = AllocateStructure(_S_scroll) 
-;       \scroll\v = Bar(#PB_GadgetType_ScrollBar,Size, 0,0,0, #__flag_vertical, 7, *this)
-;       \scroll\h = Bar(#PB_GadgetType_ScrollBar,Bool(\flag\buttons Or \flag\lines) * Size, 0,0,0, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)
       ;       \text\string = #LF$
@@ -4986,7 +5001,8 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work."
   
   Procedure ResizeCallBack()
-    ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16-25-5)
+    ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
+    ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
     CompilerIf #PB_Compiler_Version =< 546
       PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
     CompilerEndIf
@@ -5018,7 +5034,7 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work." ;+ m.s; +
   
   If OpenWindow(0, 0, 0, 422, 491, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ButtonGadget(100, 8,8,67,25,"gettext")
+    ButtonGadget(100, 490-60,490-30,67,25,"gettext")
     
     EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap) 
     SetGadgetText(0, Text.s) 
@@ -5029,6 +5045,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For a = 4 To 6
       AddGadgetItem(0, a, "Line "+Str(a))
     Next
+    ;SetGadgetFont(0, FontID(0))
     
     
     g=16
@@ -5045,11 +5062,9 @@ CompilerIf #PB_Compiler_IsMainFile
     For a = 4 To 6
       Editor::AddItem(*g, a, "Line "+Str(a))
     Next
-    
-    ;SetGadgetFont(0, FontID(0))
     ;Editor::SetFont(*g, FontID(0))
     
-    SplitterGadget(10,8, 8+25+5, 306, 491-16 , 0,g)
+    SplitterGadget(10,8, 8, 306, 491-16, 0,g)
     CompilerIf #PB_Compiler_Version =< 546
       BindGadgetEvent(10, @SplitterCallBack())
     CompilerEndIf
@@ -5080,7 +5095,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   Debug "3) -----right------"
                   Debug *E\text[3]\string
                 EndIf
-                Debug "------end------"
+                Debug "(end line)"
                 
                 ; ; ;                 *E\text\multiLine !- 1
                 ; ; ;                 If  *E\text\multiLine = 1

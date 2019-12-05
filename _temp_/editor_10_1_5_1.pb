@@ -761,7 +761,7 @@ DeclareModule Structures
   
   ;- - _s_text
   Structure _s_text ;Extends _s_coordinate
-    ;     ;     Char.c
+                    ;     ;     Char.c
     x.l
     y.l
     width.l
@@ -2396,228 +2396,300 @@ Module Editor
   
   ;-
   ;- PUBLIC
+  
+  Procedure _start_drawing_(*this._s_widget)
+    If StartDrawing(CanvasOutput(*this\root\canvas)) 
+      
+      If *this\text\fontID 
+        DrawingFont(*this\text\fontID) 
+      EndIf
+      
+      ProcedureReturn #True
+    EndIf    
+  EndProcedure
+  
+  Procedure _stop_drawing_(*this._s_widget)
+    StopDrawing()    
+  EndProcedure
+  
   Procedure.i text_caret(*this._s_widget)
-    Protected Position.i =- 1, i.i, Len.i, X.i, FontID.i, String.s, 
-              CursorX.i, MouseX.i, Distance.f, MinDistance.f = Infinity()
+    Protected Position.i =- 1, i.l, x.l, 
+              MouseX.i, Distance.f, MinDistance.f = Infinity()
     
     With *this
-      
-      FontID = \items()\text\fontID
-      If Not FontID : FontID = \text\fontID : EndIf
-      MouseX = \root\mouse\x - (\items()\text\x+\scroll\x)
-      
-      ;If StartDrawing(CanvasOutput(\root\canvas)) 
-      If FontID : DrawingFont(FontID) : EndIf
+      MouseX = \root\mouse\x - (\items()\text\x-\scroll\h\page\pos)
       
       ; Get caret pos & len
       For i = 0 To \items()\text\len
         X = TextWidth(Left(\items()\text\string, i))
         Distance = (MouseX-X)*(MouseX-X)
         
-        If MinDistance > Distance 
-          MinDistance = Distance
-          \text\caret\len = X ; len
-          Position = i        ; pos
-          \text\caret\x = (\items()\text\x-\scroll\h\page\pos) + \text\caret\len - Bool(#PB_Compiler_OS = #PB_OS_Windows)
-          \text\caret\y = \items()\y-\scroll\v\page\pos
-          
+        If MinDistance > Distance : MinDistance = Distance
+          \text\caret\x = \items()\text\x + x 
+          \text\caret\y = \items()\y
+          \text\caret\len = x
+          Position = i
         EndIf
       Next 
-      
-      ;             StopDrawing()
-      ;           EndIf
-      
     EndWith
     
     ProcedureReturn Position
   EndProcedure
   
-  Macro _text_sel_set_(_this_, _pos_, _len_)
-    _this_\items()\text[2]\pos = _pos_
-    _this_\items()\text[2]\len = _len_
+  Global selection 
+  
+  Procedure _text_sel_set_(*this._s_widget, _pos_, _len_)
+    *this\items()\text[1]\pos = 0 
+    *this\items()\text[1]\len = _pos_ 
     
-    ; string/pos/len/state
-    ;If _this_\items()\text[1]\len = _pos_
-    _this_\items()\text[1]\len = _pos_
-    _this_\items()\text[1]\change = #True
-    _this_\items()\text[1]\string.s = Left(_this_\items()\text\string.s, _this_\items()\text[1]\len) 
-    ;EndIf
+    *this\items()\text[2]\pos = *this\items()\text[1]\len
+    *this\items()\text[2]\len = _len_
     
-    ;If _this_\items()\text[3]\pos <> (_pos_ + Bool(_len_ > 0) * _len_)
-      _this_\items()\text[3]\change = #True
-      _this_\items()\text[3]\pos = (_pos_ + Bool(_len_ > 0) * _len_)
-      _this_\items()\text[3]\len = (_this_\items()\text\len-_this_\items()\text[3]\pos)
-      _this_\items()\text[3]\string.s = Right(_this_\items()\text\string.s, _this_\items()\text[3]\len) 
-    ;EndIf
+    *this\items()\text[3]\pos = *this\items()\text[2]\pos+*this\items()\text[2]\len 
+    *this\items()\text[3]\len = *this\items()\text\len-*this\items()\text[3]\pos
+    
+    ;selection = Bool(*this\index[2] = *this\index[1] And _pos_=*this\text\caret\pos And (*this\items()\text[2]\pos + *this\items()\text[2]\len) = *this\items()\text\len) * *this\flag\fullSelection
+    
+    If *this\items()\text[1]\len > 0
+      *this\items()\text[1]\string = Left(*this\items()\text\string, *this\items()\text[1]\len)
+      *this\items()\text[1]\width = TextWidth(*this\items()\text[1]\string)  
+    Else
+      *this\items()\text[1]\string = ""
+      *this\items()\text[1]\width = 0
+    EndIf
+    If *this\items()\text[2]\len > 0
+      *this\items()\text[2]\string = Mid(*this\items()\text\string, 1 + *this\items()\text[2]\pos, *this\items()\text[2]\len)
+      *this\items()\text[2]\width = TextWidth(*this\items()\text[2]\string) + selection
+    Else
+      *this\items()\text[2]\string = ""
+      *this\items()\text[2]\width = selection
+    EndIf
+    If *this\items()\text[3]\len > 0
+      *this\items()\text[3]\string = Right(*this\items()\text\string, *this\items()\text[3]\len)
+      *this\items()\text[3]\width = TextWidth(*this\items()\text[3]\string)  
+    Else
+      *this\items()\text[3]\string = ""
+      *this\items()\text[3]\width = 0
+    EndIf
     
     ; text/pos/len/state
-    If (_this_\index[2] >= _this_\items()\index)
-      _this_\text[1]\change = #True
-      _this_\text[1]\len = (_this_\items()\text\pos+_this_\items()\text[2]\pos)
-      _this_\text[1]\string.s = Left(_this_\text\string.s, _this_\text[1]\len) 
-      _this_\text[2]\pos = _this_\text[1]\len
+    If (*this\index[2] >= *this\items()\index)
+      *this\text[1]\len = (*this\items()\text\pos+*this\items()\text[2]\pos)
+      *this\text[2]\pos = *this\text[1]\len
     EndIf
     
-    If (_this_\index[2] =< _this_\items()\index)
-      _this_\text[3]\change = #True
-      _this_\text[3]\pos = (_this_\items()\text\pos+_this_\items()\text[3]\pos)
-      _this_\text[3]\len = (_this_\text\len - _this_\text[3]\pos)
-      _this_\text[3]\string.s = Right(_this_\text\string.s, _this_\text[3]\len)
+    If (*this\index[2] =< *this\items()\index)
+      *this\text[3]\pos = (*this\items()\text\pos+*this\items()\text[3]\pos)
+      *this\text[3]\len = (*this\text\len-*this\text[3]\pos)
     EndIf
     
-    If *this\text[1]\len <> *this\text[3]\pos  ; _this_\items()\text[2]\len
-      ;Debug ""+ListIndex(_this_\items())+" "+_this_\items()\index+" "+_this_\items()\text[2]\pos+" "+_this_\items()\text[2]\len
-      
-      _this_\text[2]\len = (_this_\text[3]\pos-_this_\text[2]\pos)
-      
-      _this_\text[2]\change = #True 
-      _this_\items()\text[2]\change = #True 
-      _this_\text[2]\string.s = Mid(_this_\text\string.s, 1 + _this_\text[2]\pos, _this_\text[2]\len) 
-      _this_\items()\text[2]\string.s = Mid(_this_\items()\text\string.s, 1 + _this_\items()\text[2]\pos, _this_\items()\text[2]\len) 
-      
-      ; если позиция 1 а длина -1 то это пустая строка.  
-      If _this_\items()\text[2]\len < 0
-        _this_\items()\text[2]\pos = _this_\items()\text\len+1
-        _this_\items()\text[2]\x = _this_\items()\text\x
-        _this_\items()\text[2]\width = _this_\flag\fullSelection
-        _this_\items()\text[3]\x = _this_\items()\text[2]\x+_this_\items()\text[2]\width
-      EndIf
-    EndIf
-  EndMacro
-  
-  Procedure _text_sel_change_(*this._s_widget, _index_) ; Ok
-    Protected Pos.i, Len.i
+    *this\text[2]\len = (*this\text[3]\pos-*this\text[2]\pos)
     
-    If *this\index[2] = _index_
-      If *this\text\caret\end = *this\text\caret\pos 
-        Pos = *this\text\caret\end
-        
-        ; Если выделяем справо на лево
-      ElseIf *this\text\caret\end > *this\text\caret\pos 
-        ; |<<<<<< to left
-        Pos = *this\text\caret\pos 
-        Len = (*this\text\caret\end-Pos) + Bool(*this\text\caret\end = *this\items()\text\len)
-      Else 
-        ; >>>>>>| to right
-        Pos = *this\text\caret\end
-        Len = (*this\text\caret\pos-Pos)
-      EndIf
-      
-      ; Если выделяем снизу вверх
-    ElseIf *this\index[2] > _index_
-      ; to top
-      Pos = *this\text\caret\pos
-      Len = (*this\items()\text\len-Pos) - Bool(Pos = *this\items()\text\len) ; 
+    If *this\text[1]\len > 0
+      *this\text[1]\string = Left(*this\text\string.s, *this\text[1]\len) 
     Else
-      ; to bottom
-      Pos = 0
-      Len = *this\text\caret\pos
+      *this\text[1]\string = ""
+    EndIf
+    If *this\text[2]\len > 0
+      *this\text[2]\string = Mid(*this\text\string.s, 1 + *this\text[2]\pos, *this\text[2]\len) 
+    Else
+      *this\text[2]\string = ""
+    EndIf
+    If *this\text[3]\len > 0
+      *this\text[3]\string = Right(*this\text\string.s, *this\text[3]\len)
+    Else
+      *this\text[3]\string = ""
     EndIf
     
-    _text_sel_set_(*this, Pos, Len)
+    *this\items()\text[1]\x = *this\items()\text\x 
+    *this\items()\text[2]\x = *this\items()\text[1]\x+*this\items()\text[1]\width  
+    *this\items()\text[3]\x = *this\items()\text[2]\x+*this\items()\text[2]\width
+    
+    
+;     ClearDebugOutput()
+;     Debug *this\text[1]\len
+;     Debug *this\text[1]\string.s
+    
+    selection = 0
     
   EndProcedure
   
-  Procedure editor_setsel(*this._s_widget, _line_)
-    Protected Repaint.i, _caret_
+  Procedure _text_sel_change_(*this._s_widget, _line_, _caret_) ; Ok
+    Protected Repaint.l, Pos.l, Len.l, _last_line_
+    
+    If *this\text\caret\pos <> _caret_
+      *this\text\caret\pos = _caret_
+      Repaint =- 1
+    EndIf
+    
+    If *this\index[1] <> _line_ 
+      
+      If *this\index[2] = *this\index[1]
+        PushListPosition(*this\items())
+        SelectElement(*this\items(), *this\index[2]) 
+        
+        If *this\index[2] > _line_
+          ; to top
+          Pos = 0
+          Len = *this\text\caret\end    
+        Else
+          ; to bottom
+          Pos = *this\text\caret\end
+          Len = (*this\items()\text\len-Pos)
+          selection = *this\flag\fullSelection   
+          ;*this\items()\text\caret\len = *this\flag\fullSelection
+        EndIf
+        
+        _text_sel_set_(*this, Pos, Len)
+        PopListPosition(*this\items())
+        ; SelectElement(*this\items(), _line_) 
+      EndIf
+      
+      ; *this\text\caret\y = *this\items()\y
+      *this\index[1] = _line_
+      Repaint = 1
+    EndIf
+    
+    If Repaint
+      If *this\index[2] = _line_
+        If *this\text\caret\end = *this\text\caret\pos 
+          Pos = *this\text\caret\end
+          ; Если выделяем справо на лево
+        ElseIf *this\text\caret\end > *this\text\caret\pos 
+          ; |<<<<<< to left
+          Pos = *this\text\caret\pos 
+          Len = (*this\text\caret\end-Pos)
+        Else 
+          ; >>>>>>| to right
+          Pos = *this\text\caret\end
+          Len = (*this\text\caret\pos-Pos)
+        EndIf
+        
+        ; Если выделяем снизу вверх
+      ElseIf *this\index[2] > _line_
+        ; to top
+        Pos = *this\text\caret\pos
+        Len = (*this\items()\text\len-Pos)
+        selection = *this\flag\fullSelection
+        ;*this\items()\text\caret\len = *this\flag\fullSelection
+        
+      Else
+        ; to bottom
+        Pos = 0
+        Len = *this\text\caret\pos
+      EndIf
+      
+      _text_sel_set_(*this, Pos, Len)
+      
+;       ; keyboard
+;       If *this\text\caret\pos = *this\text\caret\end
+;         If *this\index[2] < _line_
+;           *this\text\caret\x = *this\items()\text\x+*this\items()\text[2]\width
+;         Else
+;           *this\text\caret\x = *this\items()\text\x+*this\items()\text[1]\width
+;         EndIf
+;         
+;       Else
+;         If *this\text\caret\pos > *this\text\caret\end
+;           *this\text\caret\x = *this\items()\text\x+*this\items()\text[2]\width
+;         Else
+;           *this\text\caret\x = *this\items()\text\x+*this\items()\text[1]\width
+;         EndIf
+;       EndIf
+;         
+;         *this\text\caret\y = *this\items()\y
+      
+      
+      If Repaint > 0
+        ;Debug "    "+#PB_Compiler_Procedure
+         
+        ;PushListPosition(\items()) 
+        ForEach *this\items()
+          If Bool((*this\index[2] > *this\items()\index And _line_ < *this\items()\index) Or   ; верх
+                  (*this\index[2] < *this\items()\index And _line_ > *this\items()\index))     ; вниз
+            
+            ; Выделения целых строк
+            *this\items()\text[1]\len = 0 
+            *this\items()\text[3]\len = 0 
+            
+            ;*this\items()\text[1]\pos = 0 
+            *this\items()\text[2]\pos = 0
+            *this\items()\text[3]\pos = 0 
+            
+            *this\items()\text[1]\string = ""
+            *this\items()\text[2]\string = *this\items()\text\string 
+            *this\items()\text[3]\string = ""
+            
+            *this\items()\text[1]\width = 0 
+            If *this\items()\text[2]\string
+              *this\items()\text[2]\len = *this\items()\text\len
+              *this\items()\text[2]\width = TextWidth(*this\items()\text[2]\string) + *this\flag\fullSelection
+            Else
+              ;  *this\items()\text[2]\len =- 1
+              *this\items()\text[2]\width = *this\flag\fullSelection
+            EndIf
+            *this\items()\text[3]\width = 0 
+            
+            *this\items()\text[1]\x = *this\items()\text\x 
+            *this\items()\text[2]\x = *this\items()\text\x  
+            *this\items()\text[3]\x = *this\items()\text\x  
+            
+          ElseIf (*this\items()\text[2]\width And *this\index[2] <> *this\items()\index And _line_ <> *this\items()\index)
+            
+            ; Сброс выделения целых строк
+            *this\items()\text[1]\len = 0 
+            *this\items()\text[2]\len = 0 
+            *this\items()\text[3]\len = 0 
+            
+            ;*this\items()\text[1]\pos = 0 
+            *this\items()\text[2]\pos = 0 
+            *this\items()\text[3]\pos = 0 
+            
+            *this\items()\text[1]\width = 0 
+            *this\items()\text[2]\width = 0 
+            *this\items()\text[3]\width = 0 
+            
+            *this\items()\text[1]\string = ""
+            *this\items()\text[2]\string = "" 
+            *this\items()\text[3]\string = ""
+            
+          EndIf
+        Next
+        ;PopListPosition(*this\items()) 
+        
+        
+      EndIf
+    EndIf 
+    
+    ProcedureReturn Repaint
+  EndProcedure
+  
+  Macro _bar_update_(_this_, _pos_, _len_)
+    Bool(Bool((_pos_-_this_\y-_this_\page\pos) < 0 And Scroll::SetState(_this_, (_pos_-_this_\y))) Or
+         Bool((_pos_-_this_\y-_this_\page\pos) > (_this_\page\len-_len_) And
+              Scroll::SetState(_this_, (_pos_-_this_\y) - (_this_\page\len-_len_)))) ; : _this_\change = 0
+  EndMacro
+  
+  Procedure _text_set_selector_(*this._s_widget, _line_, _caret_=-1)
+    Protected Repaint.b
     
     With *this
-      If StartDrawing(CanvasOutput(*this\root\canvas)) 
-        If *this\text\fontID 
-          DrawingFont(*this\text\fontID) 
+      ; select enter mouse item
+      If _line_ >= 0 And 
+         _line_ < *this\countitems And 
+         _line_ <> *this\items()\index And
+        SelectElement(*this\items(), _line_) 
+      EndIf
+      
+      If _start_drawing_(*this)
+        
+        If _caret_ =- 1
+          _caret_ = text_caret(*this) 
         EndIf
         
-        ; select enter mouse item
-        If _line_ >= 0 And 
-           _line_ < *this\countitems And 
-           _line_ <> ListIndex(\items())
-          SelectElement(*this\items(), _line_) 
-        EndIf
+        Repaint = Bool(_text_sel_change_(*this, _line_, _caret_))
         
-        _caret_ = text_caret(*this) 
-        
-        If *this\index[1] <> _line_ Or
-           *this\text\caret\pos <> _caret_
-          *this\text\caret\pos = _caret_
-          
-          _text_sel_change_(*this, _line_)
-          Repaint = #True 
-        EndIf 
-        
-        If *this\index[1] <> _line_ 
-          
-           If *this\index[2] = *this\index[1] 
-            SelectElement(*this\items(), *this\index[2]) 
-            
-            If *this\index[2] > _line_
-              ; |<<<<<< to top
-              _text_sel_set_(*this, 0, *this\text\caret\end )
-            Else 
-              ; >>>>>>| to bottom
-              _text_sel_set_(*this, *this\text\caret\end, (*this\items()\text\len-*this\text\caret\end) - Bool(*this\text\caret\end = *this\items()\text\len) )
-            EndIf
-          EndIf
-          
-          *this\index[1] = _line_
-          
-          ;PushListPosition(\items()) 
-          ForEach *this\items()
-            
-            If Bool((*this\index[2] > *this\items()\index And _line_ < *this\items()\index) Or   ; верх
-                    (*this\index[2] < *this\items()\index And _line_ > *this\items()\index))     ; вниз
-              
-              ; Выделения целых строк
-              ;_text_sel_set_(*this, 0, *this\items()\text\len - Bool(Not *this\items()\text\len) )  ; Выделение пустой строки
-              *this\items()\text[1]\len = 0 
-              *this\items()\text[2]\len = *this\items()\text\len - Bool(Not *this\items()\text\len) ; Выделение пустой строки
-              *this\items()\text[3]\len = 0 
-              
-              *this\items()\text[1]\pos = 0 
-              *this\items()\text[2]\pos = Bool(Not *this\items()\text\len)  ; если позиция=1 ,а длина=-1 то это пустая строка.
-              *this\items()\text[3]\pos = 0 
-              
-              *this\items()\text[1]\string = ""
-              *this\items()\text[2]\string = *this\items()\text\string 
-              *this\items()\text[3]\string = ""
-              
-              *this\items()\text[1]\width = 0 
-              *this\items()\text[2]\width = 0 
-              *this\items()\text[3]\width = 0 
-              
-              *this\items()\text[1]\x = *this\items()\text\x 
-              *this\items()\text[2]\x = *this\items()\text\x  
-              *this\items()\text[3]\x = *this\items()\text\x  
-              
-              *this\items()\text[2]\change = 1
-              
-            ElseIf (*this\items()\text[2]\len And *this\index[2] <> *this\items()\index And _line_ <> *this\items()\index)
-              
-              ; Сброс выделения целых строк
-              ; _text_sel_set_(*this, 0, 0)
-              \items()\text[1]\len = 0 
-              \items()\text[2]\len = 0 
-              \items()\text[3]\len = 0 
-              
-              \items()\text[1]\pos = 0 
-              \items()\text[2]\pos = 0 
-              \items()\text[3]\pos = 0 
-              
-              \items()\text[1]\string = ""
-              \items()\text[2]\string = "" 
-              \items()\text[3]\string = ""
-              
-              \items()\text[1]\width = 0 
-              \items()\text[2]\width = 0 
-              \items()\text[3]\width = 0 
-              
-            EndIf
-          Next
-          ;PopListPosition(*this\items()) 
-          
-          Repaint = #True
-        EndIf
-        
-        StopDrawing()
+        _stop_drawing_(*this)
       EndIf
     EndWith
     
@@ -2628,12 +2700,22 @@ Module Editor
     With *this
       PushListPosition(\items())
       ForEach \items() 
-        If \items()\text[2]\len <> 0
+        If \items()\text[2]\width <> 0
+          \items()\text[1]\len = 0 
           \items()\text[2]\len = 0 
+          \items()\text[3]\len = 0 
+          
+          \items()\text[1]\pos = 0 
+          \items()\text[2]\pos = 0 
+          \items()\text[3]\pos = 0 
+          
+          \items()\text[1]\width = 0 
+          \items()\text[2]\width = 0 
+          \items()\text[3]\width = 0 
+          
           \items()\text[1]\string = ""
           \items()\text[2]\string = "" 
           \items()\text[3]\string = ""
-          \items()\text[2]\width = 0 
         EndIf
       Next
       PopListPosition(\items())
@@ -3227,36 +3309,39 @@ Module Editor
         EndIf 
         
         ;
-        If \text\editable And ListSize(\items())
+        If \text\editable And \countitems
           If \text\change =- 1
             \text[1]\change = 1
             \text[3]\change = 1
             \text\len = Len(\text\string.s)
+            
+            ClearDebugOutput()
+            Debug "draw - \text\change =- 1"
+            
             _text_sel_set_(*this, \text\caret\pos , 0)
+            
+            ; Caaret pos & len
+            If \items()\text[1]\change : \items()\text[1]\change = #False
+              \items()\text[1]\width = TextWidth(\items()\text[1]\string.s)
+            EndIf
+            
+            If \items()\text[2]\change : \items()\text[2]\change = #False 
+              Debug "get caret "+\items()\index +" "+ Str(\items()\text[2]\pos + \items()\text[2]\len) +" "+ \items()\text\len
+              \items()\text[2]\x = \items()\text\x+\items()\text[1]\width
+              
+              \items()\text[2]\width = TextWidth(\items()\text[2]\string.s) + Bool((\items()\text[2]\pos + \items()\text[2]\len) = \items()\text\len) * *this\flag\fullSelection; + Bool(\items()\text[2]\len =- 1) * \flag\fullSelection ; TextWidth() - bug in mac os
+              
+              \items()\text[3]\x = \items()\text[2]\x+\items()\text[2]\width
+            EndIf 
+            
+            If \items()\text[3]\change : \items()\text[3]\change = #False 
+              \items()\text[3]\width = TextWidth(\items()\text[3]\string.s)
+            EndIf 
+            
             
             ; Посылаем сообщение об изменении содержимого 
             PostEvent(#PB_Event_Widget, \root\window, *this, #PB_EventType_Change)
           EndIf
-          
-          ; Caaret pos & len
-          If \items()\text[1]\change : \items()\text[1]\change = #False
-            \items()\text[1]\width = TextWidth(\items()\text[1]\string.s)
-          EndIf
-          
-          If \items()\text[2]\change : \items()\text[2]\change = #False 
-            Debug "get caret "+\items()\index +" "+ Str(\items()\text[2]\pos + \items()\text[2]\len) +" "+ \items()\text\len
-            \items()\text[2]\x = \items()\text\x+\items()\text[1]\width
-            
-            \items()\text[2]\width = TextWidth(\items()\text[2]\string.s) + 
-                                     Bool(*this\index[2] > *this\items()\index And (*this\items()\text[2]\pos + *this\items()\text[2]\len) = *this\items()\text\len) * *this\flag\fullSelection
-            ;Bool((\items()\text[2]\pos + \items()\text[2]\len) = \items()\text\len) * *this\flag\fullSelection; + Bool(\items()\text[2]\len =- 1) * \flag\fullSelection ; TextWidth() - bug in mac os
-            
-            \items()\text[3]\x = \items()\text[2]\x+\items()\text[2]\width
-          EndIf 
-          
-          If \items()\text[3]\change : \items()\text[3]\change = #False 
-            \items()\text[3]\width = TextWidth(\items()\text[3]\string.s)
-          EndIf 
           
           If (\focus = *this And \root\mouse\buttons And (Not \scroll\v\from And Not \scroll\h\from)) 
             Protected Left = text_scroll(*this, \items()\width)
@@ -3308,33 +3393,22 @@ Module Editor
               EndIf 
               
               If \items()\text[1]\change : \items()\text[1]\change = #False
-                \items()\text[1]\width = TextWidth(\items()\text[1]\string.s) 
+                ;  \items()\text[1]\width = TextWidth(\items()\text[1]\string.s) 
               EndIf 
               
               If \items()\text[3]\change : \items()\text[3]\change = #False 
-                \items()\text[3]\width = TextWidth(\items()\text[3]\string.s)
+                ;  \items()\text[3]\width = TextWidth(\items()\text[3]\string.s)
               EndIf 
               
               If \items()\text[2]\change : \items()\text[2]\change = #False 
-                \items()\text[2]\x = \items()\text\x+\items()\text[1]\width
-                ; Debug "get caret "+\index +" "+ Str(\items()\text[2]\pos + \items()\text[2]\len) +" "+ \items()\text\len
-                \items()\text[2]\width = TextWidth(\items()\text[2]\string.s) + Bool((\items()\text[2]\pos + \items()\text[2]\len) = \items()\text\len) * *this\flag\fullSelection ; TextWidth() - bug in mac os
-                ;\items()\text[2]\width = TextWidth(\items()\text[2]\string.s) + Bool(\items()\text\len = \items()\text[2]\len Or \items()\text[2]\len =- 1 Or \items()\text[3]\len = 0) * *this\flag\fullSelection ; TextWidth() - bug in mac os
-                \items()\text[3]\x = \items()\text[2]\x+\items()\text[2]\width
+                ;                 \items()\text[2]\x = \items()\text\x+\items()\text[1]\width
+                ;                 ; Debug "get caret "+\index +" "+ Str(\items()\text[2]\pos + \items()\text[2]\len) +" "+ \items()\text\len
+                ;                 \items()\text[2]\width = TextWidth(\items()\text[2]\string.s) + Bool((\items()\text[2]\pos + \items()\text[2]\len) = \items()\text\len) * *this\flag\fullSelection ; TextWidth() - bug in mac os
+                ;                 ;\items()\text[2]\width = TextWidth(\items()\text[2]\string.s) + Bool(\items()\text\len = \items()\text[2]\len Or \items()\text[2]\len =- 1 Or \items()\text[3]\len = 0) * *this\flag\fullSelection ; TextWidth() - bug in mac os
+                ;                 \items()\text[3]\x = \items()\text[2]\x+\items()\text[2]\width
               EndIf 
             EndIf
             
-            
-            If \items()\change = 1 : \items()\change = 0
-              Protected indent = 8 + Bool(*this\image\width)*4
-              ; Draw coordinates 
-              \items()\sublevellen = *this\text\x + (7 - *this\sublevellen) + ((\items()\sublevel + Bool(*this\flag\buttons)) * *this\sublevellen) + Bool(*this\flag\checkBoxes)*17
-              \items()\image\x + \items()\sublevellen + indent
-              \items()\text\x + \items()\sublevellen + *this\image\width + indent
-              
-              ; Scroll width length
-              _set_scroll_width_(*this)
-            EndIf
             
             Height = \items()\height
             Y = \items()\y+*this\scroll\y
@@ -3342,15 +3416,9 @@ Module Editor
             Text_Y = \items()\text\y+*this\scroll\y
             ; Debug Text_X
             
-            ; expanded & collapsed box
-            _set_open_box_XY_(*this, \items(), *this\x+*this\scroll\x, Y)
-            
-            ; checked box
-            _set_check_box_XY_(*this, \items(), *this\x+*this\scroll\x, Y)
-            
             ; Draw selections
             If Drawing And (\items()\index=*this\index[1] Or \items()\index=\items()\focus Or \items()\index=\items()\index[1]) ; \color\state;
-              If *this\row\color\back[\items()\color\state]<>-1                                 ; no draw transparent
+              If *this\row\color\back[\items()\color\state]<>-1                                                                 ; no draw transparent
                 If *this\row\color\fore[\items()\color\state]
                   DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
                   BoxGradient(\items()\Vertical,*this\x[2],Y,iwidth,\items()\height,RowForeColor(*this, \items()\color\state) ,RowBackColor(*this, \items()\color\state) ,\items()\round)
@@ -3390,7 +3458,7 @@ Module Editor
               Protected Front_BackColor_2 = RowFontColor(*this, 2)                 ; *this\color\front[2]&$FFFFFFFF|*this\row\color\alpha<<24
               
               ; Draw string
-              If \items()\text[2]\len And *this\color\front <> *this\row\color\front[2]
+              If \items()\text[2]\width And *this\color\front <> *this\row\color\front[2]
                 
                 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   If (*this\text\caret\end > *this\text\caret\pos And *this\index[2] = *this\index[1]) Or
@@ -3494,7 +3562,7 @@ Module Editor
         If *this\text\editable And *this\focus = *this : DrawingMode(#PB_2DDrawing_XOr)             
           ;  Line((\items()\text\x-\scroll\h\page\pos) + \text\caret\len - Bool(#PB_Compiler_OS = #PB_OS_Windows) - Bool(Left < \scroll\x), \items()\y+\scroll\y, 1, Height, $FFFFFFFF)
           ;  Line(\text\caret\x - Bool(Left < \scroll\x), \text\caret\y, \text\caret\width, \text\caret\height, $FFFFFFFF)
-          Line(\text\caret\x - Bool(Left < \scroll\x), \text\caret\y, 1, height, $FFFFFFFF)
+          Line(\text\caret\x - Bool(Left < \scroll\x)-\scroll\h\page\pos, \text\caret\y-\scroll\v\page\pos, 1, height, $FFFFFFFF)
         EndIf
         
         ; Draw scroll bars
@@ -3613,24 +3681,35 @@ Module Editor
   ;-
   ;- - KEYBOARDs
   Procedure.i ToUp(*this._s_widget)
-    Protected Repaint
+    Static Line
+    Protected Repaint, _line_, Shift.i = Bool(*this\root\keyboard\key[1] & #PB_Canvas_Shift)
     ; Если дошли до начала строки то 
     ; переходим в конец предыдущего итема
     
     With *this
-      If (\index[2] > 0 And \index[1] = \index[2]) : \index[2] - 1 : \index[1] = \index[2]
-        SelectElement(\items(), \index[2])
-        ;If (\items()\y+\scroll\y =< \y[2])
-        Scroll::SetState(\scroll\v, (\items()\y-((\scroll\height[2]+\text\y)-\items()\height)))
-        ;EndIf
-        ; При вводе перемещаем текста
-        If \items()\text\x+\items()\text\width > \items()\x+\items()\width
-          Scroll::SetState(\scroll\h, (\items()\text\x+\items()\text\width))
-        Else
-          Scroll::SetState(\scroll\h, 0)
+      If Shift
+        If \index[1] > 0
+          Repaint = _text_set_selector_(*this, *this\index[1] - 1, *this\text\caret\pos)  
+          
+          
+          *this\change = _bar_update_(*this\scroll\v, (*this\index[1] * *this\text\height), *this\text\height)
+          
+        EndIf                               
+      Else
+        If (\index[2] > 0 And \index[1] = \index[2]) : \index[2] - 1 : \index[1] = \index[2]
+          SelectElement(\items(), \index[2])
+          ;If (\items()\y+\scroll\y =< \y[2])
+          Scroll::SetState(\scroll\v, (\items()\y-((\scroll\height[2]+\text\y)-\items()\height)))
+          ;EndIf
+          ; При вводе перемещаем текста
+          If \items()\text\x+\items()\text\width > \items()\x+\items()\width
+            Scroll::SetState(\scroll\h, (\items()\text\x+\items()\text\width))
+          Else
+            Scroll::SetState(\scroll\h, 0)
+          EndIf
+          ;_text_sel_set_(*this, \text\caret\pos , 0)
+          Repaint =- 1 
         EndIf
-        ;_text_sel_set_(*this, \text\caret\pos , 0)
-        Repaint =- 1 
       EndIf
     EndWith
     
@@ -3639,29 +3718,50 @@ Module Editor
   
   Procedure.i ToDown(*this._s_widget)
     Static Line
-    Protected Repaint, Shift.i = Bool(*this\root\keyboard\key[1] & #PB_Canvas_Shift)
+    Protected Repaint, _line_, Shift.i = Bool(*this\root\keyboard\key[1] & #PB_Canvas_Shift)
     ; Если дошли до начала строки то 
     ; переходим в конец предыдущего итема
     
     With *this
       If Shift
+        If (\index[1] < \countitems) 
+          Repaint = _text_set_selector_(*this, \index[1] + 1, \text\caret\pos) 
+          
+          
+          
+;           If *this\row\selected\index < (*this\count\items - 1)
+;           ; select modifiers key
+;           If (*this\root\keyboard\key = #PB_Shortcut_End Or
+;               (*this\root\keyboard\key[1] & #PB_Canvas_Alt))
+;             SelectElement(*this\row\rows(), (*this\count\items - 1))
+;           Else
+;             SelectElement(*this\row\rows(), *this\row\selected\index + 1)
+;             
+;             If *this\row\rows()\hide
+;               While NextElement(*this\row\rows())
+;                 If Not *this\row\rows()\hide
+;                   Break
+;                 EndIf
+;               Wend
+;             EndIf
+;           EndIf
+          
+;           If *this\row\selected <> *this\row\rows()
+;             *this\row\selected\color\state = 0
+;             *this\row\selected  = *this\row\rows()
+;             *this\row\rows()\color\state = 2
+;             *row_selected = *this\row\rows()
+;             
+;             Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
+;           EndIf
+          
+;           *this\change = _bar_update_(*this\scroll\v, *this\row\selected\y, *this\row\selected\height)
+          *this\change = _bar_update_(*this\scroll\v, (\index[1] * \text\height), \text\height)
+          
+;         EndIf
         
-        If \index[1] = \index[2]
-          SelectElement(\items(), \index[1]) 
-          _text_sel_set_(*this, \text\caret\end, \items()\text\len-\text\caret\end)
-        Else
-          SelectElement(\items(), \index[2]) 
-          _text_sel_set_(*this, 0, \items()\text\len)
-        EndIf
-        ; Debug \text\caret\end
-        \index[2] + 1
-        ;         \text\caret\pos = text_caret(*this, \index[2]) 
-        ;         \text\caret\end = \text\caret\pos 
-        SelectElement(\items(), \index[2]) 
-        _text_sel_set_(*this, 0, \text\caret\end) 
-        _text_sel_change_(*this, \index[2])
-        Repaint = 1 
         
+        EndIf                               
       Else
         If (\index[1] < ListSize(\items()) - 1 And \index[1] = \index[2]) : \index[2] + 1 : \index[1] = \index[2]
           SelectElement(\items(), \index[2]) 
@@ -4344,6 +4444,8 @@ Module Editor
       EndSelect
       
       If Repaint =- 1
+        _start_drawing_(*this)
+        
         If \text\caret\pos < \text\caret\end
           ; Debug \text\caret\end-\text\caret\pos 
           _text_sel_set_(*this, \text\caret\pos , \text\caret\end-\text\caret\pos )
@@ -4351,6 +4453,8 @@ Module Editor
           ; Debug \text\caret\pos -\text\caret\end
           _text_sel_set_(*this, \text\caret\end, \text\caret\pos-\text\caret\end)
         EndIf
+        
+        _stop_drawing_(*this)
       EndIf                                                  
     EndWith
     
@@ -4359,7 +4463,7 @@ Module Editor
   
   Procedure.i events_editor(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l)
     Static DoubleClick.i=-1
-    Protected Repaint.i, Control.i, Caret.i, Item.i, String.s
+    Protected Repaint.i, Control.i, Caret.i, _line_.l, String.s
     
     With *this
       Repaint | Scroll::CallBack(\scroll\v, EventType, \root\mouse\x, \root\mouse\y)
@@ -4371,9 +4475,9 @@ Module Editor
             ; Get line position
             If \root\mouse\buttons
               If \root\mouse\y < \y
-                Item.i =- 1
+                _line_ =- 1
               Else
-                Item.i = ((\root\mouse\y-\y-\text\y-\scroll\y) / \text\height)
+                _line_ = ((\root\mouse\y-\y-\text\y-\scroll\y) / \text\height)
               EndIf
             EndIf
             
@@ -4381,7 +4485,7 @@ Module Editor
               Case #PB_EventType_LeftDoubleClick 
                 \items()\text\caret\end =- 1 ; Запоминаем что сделали двойной клик
                 text_sellimits(*this)        ; Выделяем слово
-                _text_sel_change_(*this, \index[1])
+                _text_sel_change_(*this, \index[1], \text\caret\pos)
                 
                 ;                 \items()\text[2]\change = 1
                 ;                 \items()\text[2]\len - Bool(Not \items()\text\len) ; Выделение пустой строки
@@ -4389,9 +4493,9 @@ Module Editor
                 Repaint = 1
                 
               Case #PB_EventType_LeftButtonDown
-                If Item > 0 And 
-                   Item < \countitems - 1 And 
-                   SelectElement(\items(), Item) And
+                If _line_ > 0 And 
+                   _line_ < \countitems - 1 And 
+                   SelectElement(\items(), _line_) And
                    StartDrawing(CanvasOutput(\root\canvas)) 
                   
                   If \text\fontID 
@@ -4402,54 +4506,57 @@ Module Editor
                   
                   Caret = text_caret(*this)
                   
+                  
+                  If \items()\text\caret\end =- 1 : \items()\text\caret\end = 0
+                    *this\text\caret\end = 0
+                    *this\text\caret\pos = \items()\text\len
+                    _text_sel_change_(*this, _line_, \text\caret\pos)
+                    Repaint = 1
+                    
+                  Else
+                    text_selreset(*this)
+                    
+                    If \items()\text[2]\len
+                      
+                      
+                      
+                    Else
+                      
+                     ; If \text\caret\pos <> Caret
+                        \text\caret\pos = Caret
+                      \text\caret\end = \text\caret\pos 
+                      \index[1] = \items()\index 
+                      \index[2] = \index[1]
+                      
+                      PushListPosition(\items())
+                      ForEach \items() 
+                        If \index[2] <> ListIndex(\items())
+                          \items()\text[1]\string = ""
+                          \items()\text[2]\string = ""
+                          \items()\text[3]\string = ""
+                        EndIf
+                      Next
+                      PopListPosition(\items())
+                      
+                      If \text\caret\pos = DoubleClick
+                        DoubleClick =- 1
+                        \text\caret\end = \items()\text\len
+                        \text\caret\pos = 0
+                      EndIf 
+                      
+                      _text_sel_change_(*this, _line_, \text\caret\pos)
+                      Repaint = #True
+                    EndIf
+                    EndIf
+                  ;EndIf
+                  
                   StopDrawing()
                 EndIf
                 
                 
-                If \items()\text\caret\end =- 1 : \items()\text\caret\end = 0
-                  *this\text\caret\end = 0
-                  *this\text\caret\pos = \items()\text\len
-                  _text_sel_change_(*this, Item)
-                  Repaint = 1
-                  
-                Else
-                  text_selreset(*this)
-                  
-                  If \items()\text[2]\len
-                    
-                    
-                    
-                  Else
-                    
-                    \text\caret\pos = Caret
-                    \text\caret\end = \text\caret\pos 
-                    \index[1] = \items()\index 
-                    \index[2] = \index[1]
-                    
-                    PushListPosition(\items())
-                    ForEach \items() 
-                      If \index[2] <> ListIndex(\items())
-                        \items()\text[1]\string = ""
-                        \items()\text[2]\string = ""
-                        \items()\text[3]\string = ""
-                      EndIf
-                    Next
-                    PopListPosition(\items())
-                    
-                    If \text\caret\pos = DoubleClick
-                      DoubleClick =- 1
-                      \text\caret\end = \items()\text\len
-                      \text\caret\pos = 0
-                    EndIf 
-                    
-                    _text_sel_change_(*this, Item)
-                    Repaint = #True
-                  EndIf
-                EndIf
-                
               Case #PB_EventType_MouseMove  
                 If \root\mouse\buttons & #PB_Canvas_LeftButton 
-                  Repaint = editor_setsel(*this, Item)
+                  Repaint = _text_set_selector_(*this, _line_)
                 EndIf
                 
               Case #PB_EventType_LeftButtonUp  
@@ -4876,9 +4983,6 @@ Module Editor
       
       ; create scrollbars
       Scroll::Bars(\scroll, 16, 7, Bool(\text\multiLine <> 1))
-;       \scroll = AllocateStructure(_S_scroll) 
-;       \scroll\v = Bar(#PB_GadgetType_ScrollBar,Size, 0,0,0, #__flag_vertical, 7, *this)
-;       \scroll\h = Bar(#PB_GadgetType_ScrollBar,Bool(\flag\buttons Or \flag\lines) * Size, 0,0,0, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)
       ;       \text\string = #LF$
@@ -5151,5 +5255,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------+-4+--------------------------------------------------------
 ; EnableXP

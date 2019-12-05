@@ -79,8 +79,8 @@
 ;
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget"
+  IncludeFile "fixme(mac).pbi"
 CompilerEndIf
-IncludeFile "fixme(pb).pbi"
 
 ;- <<<
 CompilerIf Not Defined(DD, #PB_Module)
@@ -709,7 +709,7 @@ DeclareModule Widget
     ;#__flag_autoRight
     ;#__flag_autoBottom
     #__flag_noActivate
-    #__flag_invisible
+    ;#__flag_invisible
     #__flag_sizegadget
     #__flag_systemmenu
     #__flag_anchorsGadget
@@ -836,8 +836,8 @@ DeclareModule Widget
   Prototype pFunc()
   
   
-  ;-
   ;- - STRUCTUREs
+  ;{ 
   ;- - _S_point
   Structure _S_point
     y.l
@@ -953,6 +953,11 @@ DeclareModule Widget
   
   ;- - _S_caret
   Structure _S_caret
+    x.l
+    y.l
+    width.l
+    height.l
+    
     *pos
     *len
     *end
@@ -1327,6 +1332,7 @@ DeclareModule Widget
     event_count.b
     List *event_list._S_event()
   EndStructure
+  ;}
   
   ;-
   ;- - DECLAREs GLOBALs
@@ -1707,6 +1713,12 @@ Module Widget
     ;             \Back[#__s_2] = $FFFBD9B7
     ;             \Frame[#__s_2] = $FFE59B55
     
+;     ; Цвета если нажали на виджет
+;     \front[#__s_2] = $FF000000
+;     \fore[#__s_2] = $FFFDF7EF
+;     \back[#__s_2] = $FFFBD9B7
+;     \frame[#__s_2] = $FFE59B55
+    
     
     ; Цвета если дисабле виджет
     \front[#__s_3] = $FFBABABA
@@ -1921,6 +1933,62 @@ Module Widget
     ;EndIf
   EndMacro
   
+  Macro _set_text_(_this_, _flag_)
+    If Not _this_\text
+      _this_\text = AllocateStructure(_S_text)
+    EndIf
+    
+    If _this_\text
+      _this_\text\padding = 5
+      _this_\text\change = #True
+      
+      _this_\text\editable = Bool(Not _flag_&#__text_ReadOnly)
+      _this_\text\align\right = Bool(_flag_&#__text_Right)
+      _this_\text\align\bottom = Bool(_flag_&#__text_Bottom)
+      _this_\text\align\vertical = Bool(Not _flag_&#__text_Top Or _flag_&#__text_Center)
+      _this_\text\align\horizontal = Bool(Not _flag_&#__text_Left Or _flag_&#__text_Center)
+      
+      If _this_\text\editable
+        _this_\cursor = #PB_Cursor_IBeam
+      EndIf
+      
+      If _flag_&#__text_WordWrap
+        _this_\Text\MultiLine = 1
+      ElseIf _flag_&#__text_MultiLine
+        _this_\Text\MultiLine =- 1
+      EndIf
+      
+      If Bool(_flag_&#__text_Invert)
+        _this_\Text\Rotate = Bool(_this_\vertical)*90 + Bool(Not _this_\vertical)*180
+      Else
+        _this_\Text\Rotate = Bool(_this_\vertical)*270
+      EndIf
+      
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+        ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
+        ;                     \text\fontID = GetGadgetFont(TextGadget) 
+        ;                     FreeGadget(TextGadget)
+        ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
+        ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
+        ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
+        
+        ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
+        ;\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
+        _this_\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
+        ;
+        ;           \text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
+        ;           CocoaMessage(@FontSize, \text\fontID, "pointSize")
+        ;           
+        ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
+        
+        ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, \text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
+        
+      CompilerElse
+        _this_\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
+      CompilerEndIf
+    EndIf
+    
+  EndMacro
   
   ;-
   Macro _draw_box_(_x_,_y_, _width_, _height_, _checked_, _type_, _color_=$FFFFFFFF, _round_=2, _alpha_=255) 
@@ -2506,6 +2574,15 @@ Module Widget
     
   EndMacro
   
+;   Procedure.i Bar_changePos(*this._S_widget, ScrollPos.f)
+;     Protected *bar._S_bar
+;     
+;     If *this\type = #PB_GadgetType_Panel
+;       *bar = *this\tab\bar
+;     Else
+;       *bar = *this\bar
+;     EndIf
+    
   Procedure.i Bar_changePos(*bar._S_bar, ScrollPos.f)
     With *bar
       If ScrollPos < \min : ScrollPos = \min : EndIf
@@ -11671,57 +11748,6 @@ Module Widget
     ProcedureReturn *this
   EndProcedure
   
-  Macro _set_text_(_this_, _flag_)
-    _this_\text = AllocateStructure(_S_text)
-    
-    If _this_\text
-      _this_\text\padding = 5
-      _this_\text\change = #True
-      
-      If _flag_&#__text_wordwrap
-        _this_\Text\multiline = 1
-      ElseIf _flag_&#__text_multiline
-        _this_\Text\multiline =- 1
-      EndIf
-      
-      If Bool(_flag_&#__text_invert)
-        _this_\Text\Rotate = Bool(_this_\vertical)*90 + Bool(Not _this_\vertical)*180
-      Else
-        _this_\Text\Rotate = Bool(_this_\vertical)*270
-      EndIf
-      
-      _this_\text\align\right = Bool(_flag_&#__text_right)
-      _this_\text\align\bottom = Bool(_flag_&#__text_bottom)
-      _this_\text\align\vertical = Bool(Not _flag_&#__text_top Or _flag_&#__text_center)
-      _this_\text\align\horizontal = Bool(Not _flag_&#__text_left Or _flag_&#__text_center)
-      
-      
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        ;                     Protected TextGadget = TextGadget(#PB_any, 0,0,0,0,"")
-        ;                     \text\fontID = GetGadgetFont(TextGadget) 
-        ;                     FreeGadget(TextGadget)
-        ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
-        ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
-        ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
-        
-        ;\text\fontID = FontID(LoadFont(#PB_any, "Helvetica Neue", 12))
-        ;\text\fontID = FontID(LoadFont(#PB_any, "Tahoma", 12))
-        _this_\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
-        ;
-        ;           \text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
-        ;           CocoaMessage(@FontSize, \text\fontID, "pointSize")
-        ;           
-        ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
-        
-        ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, \text\fontID, "displayName"), "UTF8String"), -1, #PB_uTF8)
-        
-      CompilerElse
-        _this_\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-      CompilerEndIf
-    EndIf
-    
-  EndMacro
-  
   ;-
   Procedure.i Button(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, Image.i=-1, round.l=0)
     Protected *this._S_widget = AllocateStructure(_S_widget) 
@@ -14285,7 +14311,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
-  LoadFont(0, "Arial", 18)
+  LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4)
   
   If Open(0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
@@ -14382,6 +14408,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = 0--------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------82nX0-------------4--------f-------
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; Folding = -----------f------------zfg6f--ff4--+------------------------------+----------------------------------------------------------------------------------v--4----------------------------------------------------------+------rPv7-------------v---------+------
 ; EnableXP

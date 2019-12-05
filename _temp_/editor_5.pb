@@ -5118,16 +5118,30 @@ CompilerIf #PB_Compiler_IsMainFile
                 
                 ClearDebugOutput()
                 If *E\text[1]\string
-                  Debug "1) -"+*E\text[1]\string
-                  Debug "<<<<<<<<<<<"
+                  Debug "1) -----------"
+                  Debug *E\text[1]\string 
                 EndIf
                 If *E\text[2]\string
-                  Debug "2) -"+*E\text[2]\string
+                  Debug "2) -----------"
+                  Debug *E\text[2]\string
                 EndIf
                 If *E\text[3]\string
-                  Debug ">>>>>>>>>>>"
-                  Debug "3) -"+*E\text[3]\string
+                  Debug "3) -----------"
+                  Debug *E\text[3]\string
                 EndIf
+                Debug "(end line)"
+                
+; ;                 If *E\text[1]\string
+; ;                   Debug "1) -"+*E\text[1]\string
+; ;                   Debug "<<<<<<<<<<<"
+; ;                 EndIf
+; ;                 If *E\text[2]\string
+; ;                   Debug "2) -"+*E\text[2]\string
+; ;                 EndIf
+; ;                 If *E\text[3]\string
+; ;                   Debug ">>>>>>>>>>>"
+; ;                   Debug "3) -"+*E\text[3]\string
+; ;                 EndIf
             
 ; ; ;                 *E\text\multiLine !- 1
 ; ; ;                 If  *E\text\multiLine = 1
@@ -5198,5 +5212,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -------------------------------------------8----f0+v4-6-+-v-------------f808b-88-----f--------------------
+; Folding = -------------------------------------------8----f0+v4-6-+---------------f808b-88-----f--------------------
 ; EnableXP

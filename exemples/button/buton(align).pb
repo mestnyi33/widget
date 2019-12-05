@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
-  LoadFont(0, "Arial", 18)
+  LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4)
   
   If Open(0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Width = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate) 
     Protected Height = WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)
     
-    Resize(*Button_0, Width-70, #PB_Ignore, #PB_Ignore, Height-20)
+    Resize(*Button_0, Width-85, #PB_Ignore, #PB_Ignore, Height-30)
     Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-100, #PB_Ignore)
     ResizeGadget(c2, 10, 10, Width-20, Height-20)
     SetWindowTitle(EventWindow(), Str(*Button_1\width))
@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
     c2 = GetGadget(Root())
      
     With *Button_0
-      *Button_0 = Button(270, 10,  60, 120, "Button (Vertical)", #__button_multiline|#__button_vertical)
+      *Button_0 = Button(270, 5,  60, 120, "Button (Vertical)", #__button_multiline|#__button_vertical)
       ;       SetColor(*Button_0, #PB_Gadget_BackColor, $CCBFB4)
       SetColor(*Button_0, #__color_front, $D56F1A)
       SetFont(*Button_0, FontID(0))
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     With *Button_1
       ResizeImage(0, 32,32)
-      *Button_1 = Button(10, 42, 250,  60, "Button (Horisontal)", #__button_multiline,0)
+      *Button_1 = Button(5, 42, 250,  60, "Button (Horisontal)", #__button_multiline,0)
       ;       SetColor(*Button_1, #PB_Gadget_BackColor, $D58119)
       \Cursor = #PB_Cursor_Hand
       SetColor(*Button_1, #__color_front, $4919D5)
@@ -87,6 +87,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 39
+; FirstLine = 18
 ; Folding = --
 ; EnableXP

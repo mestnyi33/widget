@@ -2,7 +2,8 @@
 ;XIncludeFile "editor_6_5.pb"
 ;XIncludeFile "editor_5_2.pb"
 ;XIncludeFile "editor_7.pb"
-XIncludeFile "editor_8_3.pb"
+;XIncludeFile "editor_8_3.pb"
+XIncludeFile "editor_10_1_5_5.pb"
 
 
 LN=1500; количесвто итемов 
