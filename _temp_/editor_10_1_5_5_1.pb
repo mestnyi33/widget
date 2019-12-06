@@ -15,21 +15,32 @@
 ; + после запуска если шелкнуть в начале строки курсор оказывается в конце строки и строка выделяется полностью
 ; - если текст веденный спомощью settext() шире ширины виджета то additem() не работает
 
-; Home - переместить курсор в начало строки 
-; End - переместить курсор в конец строки 
-; Ctrl-Home - переместить курсор в начало первой строки
-; Ctrl-End - переместить курсор в конец последней строки 
+;fn + Backspace — аналог клавиши Delete в Windows PC
+;fn + Up   — аналог клавиши Page Up в Windows PC
+;fn + Down — аналог клавиши Page Down в Windows PC
+;fn + Left — аналог клавиши Home в Windows PC
+;fn + Right — аналог клавиши End в Windows PC
 
-; Crtl-A - Выбрать все 
-; Crtl-C - копировать выделенный текст в буфер обмена 
-; Crtl-V - вставить буфер обмена в позицию курсора 
-; Crtl-X - вырезать и копировать выделенный текст в буфер обмена 
+;+ Home - переместить курсор в начало строки.
+;+ End - переместить курсор в конец строки.
+;+ Ctrl-Home - переместить курсор в начало первой строки
+;+ Ctrl-End - переместить курсор в конец последней строки 
+
+;+ Crtl-A - Выбрать все 
+;+ Crtl-C - копировать выделенный текст в буфер обмена 
+;+ Crtl-V - вставить буфер обмена в позицию курсора 
+;+ Crtl-X - вырезать и копировать выделенный текст в буфер обмена 
 
 
 ; Crtl-Up - переместить курсор в начало предыдущего абзаца.
 ; Ctrl-Down - переместить курсор в начало следующего абзаца 
-; Crtl-Left - переместить курсор в начало предыдущего слова 
-; Crtl-Right - переместить курсор в начало следующего слова. 
+; Crtl-Left - переместить курсор в начало строки. 
+; Crtl-Right - переместить курсор в конец строки. 
+
+; Alt-Up - переместить курсор в начало строки.
+; Alt-Down - переместить курсор в конец строки.
+; Alt-Left - переместить курсор в начало слова 
+; Alt-Right - переместить курсор в конец слова. 
 
 
 
@@ -123,6 +134,7 @@
 ;                                                                    ⌘Cmd + Delete — удаление всех символов слева от курсора в пределах строки.
 
 
+;
 ; 
 DeclareModule Macros
   Macro isItem(_item_, _list_)
@@ -2402,6 +2414,17 @@ Module Editor
   EndProcedure
   
   Procedure _text_sel_(*this._s_widget, _pos_, _len_)
+    If _pos_ < 0 : _pos_ = 0 : EndIf
+    If _len_ < 0 : _len_ = 0 : EndIf
+    
+    If _pos_ > *this\items()\text\len
+      _pos_ = *this\items()\text\len
+    EndIf
+    
+    If _len_ > *this\items()\text\len
+      _len_ = *this\items()\text\len
+    EndIf
+    
     *this\items()\text[1]\pos = 0 
     *this\items()\text[1]\len = _pos_ 
     
@@ -3178,10 +3201,16 @@ Module Editor
   EndProcedure
   
   Procedure.b ToUp(*this._s_widget) ; Ok
-    Protected Repaint.b, _step_ = 1, _end_caret_ = 0, _end_scroll_ = 0
+    Protected Repaint.b, _key_control_, _step_ = 1, _caret_min_ = 0, _line_first_ = 0
     
     With *this
-      If *this\index[1] > _end_scroll_
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+        _key_control_ = Bool((\root\keyboard\key[1] & #PB_Canvas_Control) Or (\root\keyboard\key[1] & #PB_Canvas_Command)) * #PB_Canvas_Control
+      CompilerElse
+        _key_control_ = Bool(*this\root\keyboard\key[1] & #PB_Canvas_Control) * #PB_Canvas_Control
+      CompilerEndIf
+      
+      If *this\index[1] > _line_first_
         If _caret_last_pos_
           If Not *this\root\keyboard\key[1] & #PB_Canvas_Alt 
             *this\text\caret\pos = _caret_last_pos_
@@ -3191,11 +3220,15 @@ Module Editor
         EndIf
         
         If *this\root\keyboard\key[1] & #PB_Canvas_Shift
-          Repaint = _text_set_selector_(*this, *this\index[1] - _step_, *this\text\caret\pos)  
-          
+          If _key_control_
+            Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)  
+            Repaint = _text_set_selector_(*this, 0, 0)  
+          Else
+            Repaint = _text_set_selector_(*this, *this\index[1] - _step_, *this\text\caret\pos)  
+          EndIf
         ElseIf *this\root\keyboard\key[1] & #PB_Canvas_Alt 
-          If *this\text\caret\pos <> _end_caret_ 
-            *this\text\caret\end = _end_caret_
+          If *this\text\caret\pos <> _caret_min_ 
+            *this\text\caret\end = _caret_min_
           Else
             *this\index[2] - _step_ 
           EndIf
@@ -3203,14 +3236,19 @@ Module Editor
           Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)  
           
         Else
-          *this\index[2] - _step_
+          If _key_control_
+            *this\index[2] = 0
+            *this\text\caret\end = 0
+          Else
+            *this\index[2] - _step_
+          EndIf
           
-          Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\pos)  
+          Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)
         EndIf
-      ElseIf *this\index[1] = _end_scroll_
+      ElseIf *this\index[1] = _line_first_
         
-        If *this\text\caret\pos <> _end_caret_ : *this\text\caret\end = _end_caret_ : _caret_last_pos_ = *this\text\caret\pos
-          Repaint = _text_set_selector_(*this, _end_scroll_, *this\text\caret\end)  
+        If *this\text\caret\pos <> _caret_min_ : *this\text\caret\end = _caret_min_ : _caret_last_pos_ = *this\text\caret\pos
+          Repaint = _text_set_selector_(*this, _line_first_, *this\text\caret\end)  
         EndIf
         
       EndIf
@@ -3220,12 +3258,18 @@ Module Editor
   EndProcedure
   
   Procedure.b ToDown(*this._s_widget) ; Ok
-    Protected Repaint.b, _step_ = 1, _end_caret_ = *this\items()\text\len, _end_scroll_ = *this\countitems - 1
+    Protected Repaint.b, _key_control_, _step_ = 1, _caret_max_ = *this\items()\text\len, _line_last_ = *this\countitems - 1
     
     With *this
-      If *this\index[1] < _end_scroll_
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+        _key_control_ = Bool((\root\keyboard\key[1] & #PB_Canvas_Control) Or (\root\keyboard\key[1] & #PB_Canvas_Command)) * #PB_Canvas_Control
+      CompilerElse
+        _key_control_ = Bool(*this\root\keyboard\key[1] & #PB_Canvas_Control) * #PB_Canvas_Control
+      CompilerEndIf
+      
+      If *this\index[1] < _line_last_
         If _caret_last_pos_
-          If Not *this\root\keyboard\key[1] & #PB_Canvas_Alt 
+          If Not *this\root\keyboard\key[1] & #PB_Canvas_Alt And Not _key_control_
             *this\text\caret\pos = _caret_last_pos_
             *this\text\caret\end = _caret_last_pos_
           EndIf
@@ -3233,21 +3277,25 @@ Module Editor
         EndIf
         
         If *this\root\keyboard\key[1] & #PB_Canvas_Shift
-          Repaint = _text_set_selector_(*this, *this\index[1] + _step_, *this\text\caret\pos)  
-          
+          If _key_control_
+            Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)  
+            Repaint = _text_set_selector_(*this, \countitems - 1, *this\text\len)  
+          Else
+            Repaint = _text_set_selector_(*this, *this\index[1] + _step_, *this\text\caret\pos)  
+          EndIf
         ElseIf *this\root\keyboard\key[1] & #PB_Canvas_Alt 
-          If *this\text\caret\pos <> _end_caret_ 
-            *this\text\caret\end = _end_caret_
+          If *this\text\caret\pos <> _caret_max_ 
+            *this\text\caret\end = _caret_max_
           Else
             *this\index[2] + _step_ 
             
             If SelectElement(*this\items(), *this\index[2]) 
-              _end_caret_ = *this\items()\text\len
+              _caret_max_ = *this\items()\text\len
               
-              If *this\text\caret\pos <> _end_caret_
-                *this\text\caret\end = _end_caret_
+              If *this\text\caret\pos <> _caret_max_
+                *this\text\caret\end = _caret_max_
                 
-                Debug ""+#PB_Compiler_Procedure + "*this\text\caret\pos <> _end_caret_"
+                Debug ""+#PB_Compiler_Procedure + "*this\text\caret\pos <> _caret_max_"
               EndIf
             EndIf
           EndIf
@@ -3255,20 +3303,25 @@ Module Editor
           Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)  
           
         Else
-          *this\index[2] + _step_
-          
-          Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\pos)  
-        EndIf
-      ElseIf *this\index[1] = _end_scroll_
+          If _key_control_
+            *this\index[2] = \countitems - 1
+            *this\text\caret\end = *this\text\len
+          Else
+            *this\index[2] + _step_
+          EndIf
         
-        If *this\items()\index <> _end_scroll_ And
-           SelectElement(*this\items(), _end_scroll_) 
-          _end_caret_ = *this\items()\text\len
-          Debug ""+#PB_Compiler_Procedure + "*this\items()\index <> _end_scroll_"
+          Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)  
+        EndIf
+      ElseIf *this\index[1] = _line_last_
+        
+        If *this\items()\index <> _line_last_ And
+           SelectElement(*this\items(), _line_last_) 
+          _caret_max_ = *this\items()\text\len
+          Debug ""+#PB_Compiler_Procedure + "*this\items()\index <> _line_last_"
         EndIf
         
-        If *this\text\caret\pos <> _end_caret_ : *this\text\caret\end = _end_caret_ : _caret_last_pos_ = *this\text\caret\pos
-          Repaint = _text_set_selector_(*this, _end_scroll_, *this\text\caret\end)  
+        If *this\text\caret\pos <> _caret_max_ : *this\text\caret\end = _caret_max_ : _caret_last_pos_ = *this\text\caret\pos
+          Repaint = _text_set_selector_(*this, _line_last_, *this\text\caret\end)  
         EndIf
         
       EndIf
@@ -3278,57 +3331,69 @@ Module Editor
   EndProcedure
   
   Procedure.i ToLeft(*this._s_widget) ; Ok
-    Protected _line_, Repaint.b, _step_ = 1, _end_caret_ = 0, _end_scroll_ = 0
+    Protected Repaint.b, _line_, _key_control_, _step_ = 1, _caret_min_ = 0, _line_first_ = 0
     
     With *this
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+        _key_control_ = Bool((\root\keyboard\key[1] & #PB_Canvas_Control) Or (\root\keyboard\key[1] & #PB_Canvas_Command)) * #PB_Canvas_Control
+      CompilerElse
+        _key_control_ = Bool(*this\root\keyboard\key[1] & #PB_Canvas_Control) * #PB_Canvas_Control
+      CompilerEndIf
+      
       If *this\root\keyboard\key[1] & #PB_Canvas_Shift        
-        _line_ = *this\index[1] - Bool(*this\index[1] > _end_scroll_ And *this\text\caret\pos = _end_caret_) * _step_
-        
-        If *this\items()\index <> _line_ And
-           SelectElement(*this\items(), _line_) 
-        EndIf
-        
-        If *this\text\caret\pos > *this\items()\text\len
-          *this\text\caret\pos = *this\items()\text\len
-        EndIf
-        
-        If *this\index[1] <> _line_
-          Repaint = _text_set_selector_(*this, _line_, *this\items()\text\len)  
+        If _key_control_
+          Repaint = _text_set_selector_(*this, *this\index[2], 0)  
         Else
-          If *this\text\caret\pos > _end_caret_
+          _line_ = *this\index[1] - Bool(*this\index[1] > _line_first_ And *this\text\caret\pos = _caret_min_) * _step_
+          
+          ; коректируем позицию коректора
+          If *this\items()\index <> _line_ And
+             SelectElement(*this\items(), _line_) 
+          EndIf
+          If *this\text\caret\pos > *this\items()\text\len
+            *this\text\caret\pos = *this\items()\text\len
+          EndIf
+          
+          If *this\index[1] <> _line_
+            Repaint = _text_set_selector_(*this, _line_, *this\items()\text\len)  
+          ElseIf *this\text\caret\pos > _caret_min_
             Repaint = _text_set_selector_(*this, _line_, *this\text\caret\pos - _step_)  
           EndIf
         EndIf
         
-      ElseIf *this\index[1] > _end_scroll_
+      ElseIf *this\index[1] > _line_first_
         If *this\root\keyboard\key[1] & #PB_Canvas_Alt 
           *this\text\caret\end = _text_sel_start_(*this)
           
           Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)  
         Else
-          If *this\text\caret\end = *this\text\caret\pos
-            *this\text\caret\end - _step_
+          If _key_control_
+            *this\text\caret\end = 0
           Else
-            *this\text\caret\end = *this\text\caret\pos - _step_ 
-          EndIf
-          
-          If *this\text\caret\pos = _end_caret_
-            *this\index[2] - _step_
+            If *this\text\caret\end = *this\text\caret\pos
+              *this\text\caret\end - _step_
+            Else
+              *this\text\caret\end = *this\text\caret\pos - _step_ 
+            EndIf
             
-            If SelectElement(*this\items(), *this\index[2]) 
-              *this\text\caret\pos = *this\items()\text\len
-              *this\text\caret\end = *this\items()\text\len
+            If *this\text\caret\pos = _caret_min_
+              *this\index[2] - _step_
+              
+              If SelectElement(*this\items(), *this\index[2]) 
+                *this\text\caret\pos = *this\items()\text\len
+                *this\text\caret\end = *this\items()\text\len
+              EndIf
             EndIf
           EndIf
           
           Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)  
         EndIf
         
-      ElseIf *this\index[1] = _end_scroll_
+      ElseIf *this\index[1] = _line_first_
         
-        If *this\text\caret\pos > _end_caret_ 
+        If *this\text\caret\pos > _caret_min_ 
           *this\text\caret\end - _step_
-          Repaint = _text_set_selector_(*this, _end_scroll_, *this\text\caret\end)  
+          Repaint = _text_set_selector_(*this, _line_first_, *this\text\caret\end)  
         EndIf
         
       EndIf
@@ -3338,56 +3403,72 @@ Module Editor
   EndProcedure
   
   Procedure.i ToRight(*this._s_widget) ; Ok
-    Protected _line_, Repaint.b, _step_ = 1, _end_caret_ = *this\items()\text\len, _end_scroll_ = *this\countitems - 1
+    Protected Repaint.b, _line_, _key_control_, _step_ = 1, _caret_max_ = *this\items()\text\len, _line_last_ = *this\countitems - 1
     
     With *this
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+        _key_control_ = Bool((\root\keyboard\key[1] & #PB_Canvas_Control) Or (\root\keyboard\key[1] & #PB_Canvas_Command)) * #PB_Canvas_Control
+      CompilerElse
+        _key_control_ = Bool(*this\root\keyboard\key[1] & #PB_Canvas_Control) * #PB_Canvas_Control
+      CompilerEndIf
+      
       If *this\root\keyboard\key[1] & #PB_Canvas_Shift        
-        If *this\items()\index <> *this\index[1] And
-           SelectElement(*this\items(), *this\index[1]) 
-          _end_caret_ = *this\items()\text\len
+        If _key_control_
+          Repaint = _text_set_selector_(*this, *this\index[2], *this\text\len)  
+        Else
+          If *this\items()\index <> *this\index[1] And
+             SelectElement(*this\items(), *this\index[1]) 
+            _caret_max_ = *this\items()\text\len
+          EndIf
+          
+          If *this\text\caret\pos > _caret_max_
+            *this\text\caret\pos = _caret_max_
+          EndIf
+          
+          _line_ = *this\index[1] + Bool(*this\index[1] < _line_last_ And *this\text\caret\pos = _caret_max_) * _step_
+          
+          ; если дошли в конец строки,
+          ; то переходим в начало
+          If *this\index[1] <> _line_ 
+            Repaint = _text_set_selector_(*this, _line_, 0)  
+          ElseIf *this\text\caret\pos < _caret_max_
+            Repaint = _text_set_selector_(*this, _line_, *this\text\caret\pos + _step_)  
+          EndIf
         EndIf
         
-        If *this\text\caret\pos > _end_caret_
-          *this\text\caret\pos = _end_caret_
-        EndIf
-        
-        _line_ = *this\index[1] + Bool(*this\index[1] < _end_scroll_ And *this\text\caret\pos = _end_caret_) * _step_
-        
-        If *this\index[1] <> _line_ 
-          Repaint = _text_set_selector_(*this, _line_, 0)  
-        ElseIf *this\text\caret\pos < _end_caret_
-          Repaint = _text_set_selector_(*this, _line_, *this\text\caret\pos + _step_)  
-        EndIf
-        
-      ElseIf *this\index[1] < _end_scroll_
+      ElseIf *this\index[1] < _line_last_
         If *this\root\keyboard\key[1] & #PB_Canvas_Alt 
             *this\text\caret\end = _text_sel_stop_(*this)
           
           Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)  
         Else
-          If *this\text\caret\end = *this\text\caret\pos
-            *this\text\caret\end + _step_
+          If _key_control_
+            *this\text\caret\end = *this\text\len
           Else
-            *this\text\caret\end = *this\text\caret\pos + _step_ 
-          EndIf
-          
-          If *this\text\caret\pos = _end_caret_
-            *this\index[2] + _step_
+            If *this\text\caret\end = *this\text\caret\pos
+              *this\text\caret\end + _step_
+            Else
+              *this\text\caret\end = *this\text\caret\pos + _step_ 
+            EndIf
             
-            If SelectElement(*this\items(), *this\index[2]) 
-              *this\text\caret\pos = 0
-              *this\text\caret\end = 0
+            If *this\text\caret\pos = _caret_max_
+              *this\index[2] + _step_
+              
+              If SelectElement(*this\items(), *this\index[2]) 
+                *this\text\caret\pos = 0
+                *this\text\caret\end = 0
+              EndIf
             EndIf
           EndIf
-          
+        
           Repaint = _text_set_selector_(*this, *this\index[2], *this\text\caret\end)  
         EndIf
         
-      ElseIf *this\index[1] = _end_scroll_
+      ElseIf *this\index[1] = _line_last_
         
-        If *this\text\caret\pos < _end_caret_ 
+        If *this\text\caret\pos < _caret_max_ 
           *this\text\caret\end + _step_
-          Repaint = _text_set_selector_(*this, _end_scroll_, *this\text\caret\end)  
+          Repaint = _text_set_selector_(*this, _line_last_, *this\text\caret\end)  
         EndIf
         
       EndIf
@@ -3625,16 +3706,6 @@ Module Editor
           EndIf
         EndIf 
         
-        \width[2] = \scroll\h\page\len
-        \height[2] = \scroll\v\page\len
-            
-        ; Widget inner coordinate
-        iX=\x[2]
-        iY=\y[2]
-        iwidth = \width[2]
-        iheight = \height[2]
-        
-        
         ;
         If \text\editable And \countitems
           If \text\change =- 1
@@ -3655,6 +3726,16 @@ Module Editor
             Protected Left = text_scroll(*this, \items()\width)
           EndIf
         EndIf
+        
+        \width[2] = \scroll\h\page\len
+        \height[2] = \scroll\v\page\len
+            
+        ; Widget inner coordinate
+        iX=\x[2]
+        iY=\y[2]
+        iwidth = \width[2]
+        iheight = \height[2]
+        
         
         ; Draw back color
         If \color\fore[\color\state]
@@ -4239,35 +4320,35 @@ Module Editor
           
         Case #PB_EventType_KeyDown
           Select \root\keyboard\key
-            Case #PB_Shortcut_Home : Repaint = ToPos(*this, 1, Control)
-            Case #PB_Shortcut_End : Repaint = ToPos(*this, - 1, Control)
-            Case #PB_Shortcut_PageUp : Repaint = ToPos(*this, 1, 1)
+            Case #PB_Shortcut_Home
+              If Control
+                \index[2] = 0 
+              EndIf
+              \text\caret\end = 0 
+              Repaint = _text_set_selector_(*this, \index[2], \text\caret\end)
+              
+            Case #PB_Shortcut_End
+              If Control
+                \index[2] = \countitems - 1 
+              EndIf
+              \text\caret\end = \text\len 
+              Repaint = _text_set_selector_(*this, \index[2], \text\caret\end)
+              
+            Case #PB_Shortcut_PageUp   : Repaint = ToPos(*this, 1, 1)
+              Debug 555
             Case #PB_Shortcut_PageDown : Repaint = ToPos(*this, - 1, 1)
               
             Case #PB_Shortcut_A
-              If Control And (\text[2]\len <> \text\len) ; Or Not \text[2]\len)
-                ForEach \items()
-                  \items()\text[2]\len = \items()\text\len - Bool(Not \items()\text\len) ; Выделение пустой строки
-                  \items()\text[2]\string = \items()\text\string : \items()\text[2]\change = 1
-                  \items()\text[1]\string = "" : \items()\text[1]\len = 0 : \items()\text[1]\change = 1
-                  \items()\text[3]\string = "" : \items()\text[3]\len = 0 : \items()\text[3]\change = 1
-                Next
-                
-                \text[1]\len = 0 
-                \text[1]\string = ""
-                
-                \text[2]\len = \text\len
-                \text[2]\string = \text\string 
-                
-                \text[3]\len = 0 
-                \text[3]\string = ""
-                
+              If Control And \text[2]\len <> \text\len
+                ; select first item
                 \index[2] = 0 
-                \index[1] = \countitems - 1
+                \index[1] = 0
                 
-                \text\caret\pos = \text[2]\len 
-                \text\caret\end = \text\caret\pos 
-                Repaint = 1
+                ; set caret to begin
+                \text\caret\end = 0 
+                \text\caret\pos = 0 
+                
+                Repaint = _text_set_selector_(*this, \countitems - 1, \text\len)
               EndIf
               
             Case #PB_Shortcut_Up     : Repaint = ToUp(*this)      ; Ok
@@ -5097,5 +5178,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----8-------------------------------------------8---------------------------------------------------------
+; Folding = ----8-----------------------------------------fA9+----------0------------------------------------------------
 ; EnableXP
