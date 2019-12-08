@@ -5,37 +5,6 @@
 
 ; ; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 ; ;     ; Addition of mk-soft
-; ;     
-; ;     Procedure OSX_NSColorToRGBA(NSColor)
-; ;       Protected.cgfloat red, green, blue, alpha
-; ;       Protected nscolorspace, rgba
-; ;       nscolorspace = CocoaMessage(0, nscolor, "colorUsingColorSpaceName:$", @"NSCalibratedRGBColorSpace")
-; ;       If nscolorspace
-; ;         CocoaMessage(@red, nscolorspace, "redComponent")
-; ;         CocoaMessage(@green, nscolorspace, "greenComponent")
-; ;         CocoaMessage(@blue, nscolorspace, "blueComponent")
-; ;         CocoaMessage(@alpha, nscolorspace, "alphaComponent")
-; ;         rgba = RGBA(red * 255.9, green * 255.9, blue * 255.9, alpha * 255.)
-; ;         ProcedureReturn rgba
-; ;       EndIf
-; ;     EndProcedure
-; ;     
-; ;     Procedure OSX_NSColorToRGB(NSColor)
-; ;       Protected.cgfloat red, green, blue
-; ;       Protected r, g, b, a
-; ;       Protected nscolorspace, rgb
-; ;       nscolorspace = CocoaMessage(0, nscolor, "colorUsingColorSpaceName:$", @"NSCalibratedRGBColorSpace")
-; ;       If nscolorspace
-; ;         CocoaMessage(@red, nscolorspace, "redComponent")
-; ;         CocoaMessage(@green, nscolorspace, "greenComponent")
-; ;         CocoaMessage(@blue, nscolorspace, "blueComponent")
-; ;         rgb = RGB(red * 255.0, green * 255.0, blue * 255.0)
-; ;         ProcedureReturn rgb
-; ;       EndIf
-; ;     EndProcedure
-; ;     
-; ;   CompilerEndIf
-; ;   
 ; ;   Procedure.i BlendColor_(Color1.i, Color2.i, Scale.i=50)
 ; ;     Define.i R1, G1, B1, R2, G2, B2
 ; ;     Define.f Blend = Scale / 100
@@ -8978,7 +8947,7 @@ Module Widget
         
         ; Make multi line text
         If \text\multiline ;> 0
-          Debug 666666
+         ; Debug 666666
           \text\string.s = text_wrap(*this, \text\string.s[1], \width-\bs*2, \text\multiline)
           \count\items = CountString(\text\string.s, #LF$)
         Else
