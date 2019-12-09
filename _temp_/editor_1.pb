@@ -177,7 +177,7 @@ DeclareModule Macros
     If (_this_\flag\buttons Or _this_\flag\lines) 
       _items_\box\width = _this_\flag\buttons
       _items_\box\height = _this_\flag\buttons
-      _items_\box\x = _x_+_items_\margin\width-(_items_\box\width)/2
+      _items_\box\x = _x_+_items_\sublevellen-(_items_\box\width)/2
       _items_\box\y = (_y_+_items_\height)-(_items_\height+_items_\box\height)/2
     EndIf
   EndMacro
@@ -672,6 +672,18 @@ DeclareModule Structures
     *h._s_bar
   EndStructure
   
+  ;- - _s_margin
+  Structure _s_margin
+    FonyID.i
+    Width.i
+    Color._s_color
+  EndStructure
+  
+  ;- - _s_scintilla
+  Structure _s_scintilla
+    Margin._s_margin
+  EndStructure
+  
   ;- - _s_color
   Structure Colors_S
     State.b
@@ -692,18 +704,6 @@ DeclareModule Structures
     checked.b
   EndStructure
   
-  ;- - _s_margin
-  Structure _s_margin
-    level.l
-    
-    y.l
-    x.l
-    height.l
-    width.l
-    
-    color._s_color
-  EndStructure
-  
   ;- - _s_rows
   Structure _s_rows Extends _s_coordinate
     ;index.i[3]  ; Index[0] of new list element ; inex[1]-entered ; index[2]-selected
@@ -722,13 +722,13 @@ DeclareModule Structures
 ;     len.l ; ширина самого длиного итема
 ;     *option_group._s_rows
     
+    Focus.i
+    
 ;     l._s_line ; 
 ;     
 ;     *last._s_rows
 ;     *first._s_rows
 ;     *parent._s_rows
-    
-    margin._s_text
     
 ;     box._s_box[2]                        ; - tree 
     text._s_text[4] ; [4]                  ; - editor
@@ -740,11 +740,7 @@ DeclareModule Structures
   
   ;- - _s_row
   Structure _s_row Extends _s_coordinate
-    index.l
-;     sublevel.l
-;     sublevellen.l
-;     sublevelcolor._s_color
-    margin._s_margin
+    ;drag.b
     box._s_box          ; выделеный прямоугольник
     color._s_color
     caret._s_caret
@@ -764,6 +760,7 @@ DeclareModule Structures
     *widget._s_widget
     *root._s_root
     
+    Sci._s_scintilla
     color._s_color
     text._s_text[4]
     clip._s_coordinate
@@ -2096,7 +2093,7 @@ Module Editor
       ElseIf _this_\text\align\horizontal
         Text_X=(Width-_this_\row\_s()\text\width-Bool(_this_\row\_s()\text\width % 2))/2 
       Else
-        Text_X=_this_\row\margin\width
+        Text_X=_this_\sci\margin\width
       EndIf
     EndIf
   EndMacro
@@ -2168,19 +2165,6 @@ Module Editor
   EndMacro
   
   ;-
-  Macro _text_scroll_x_(_this_)
-    
-    If _this_\row\caret\x And (_this_\scroll\h\page\pos+_this_\text\x+_this_\row\margin\width) > _this_\row\caret\x
-      ; to left 
-      _bar_scrolled_(_this_\scroll\h, _this_\row\caret\x-(_this_\scroll\h\x+_this_\text\x+_this_\row\margin\width), 0)
-    ElseIf _this_\scroll\h\page\pos < (_this_\row\caret\x-_this_\scroll\h\width)
-      ; to right 
-      _bar_scrolled_(_this_\scroll\h, (_this_\row\caret\x+_this_\bs)-_this_\scroll\h\x, 0)
-    EndIf
-    
-  EndMacro
-  
-  
   Macro _text_sel_reset_(_this_)
     _this_\text[1]\len = 0 
     _this_\text[2]\len = 0 
@@ -2445,7 +2429,7 @@ Module Editor
         PopListPosition(*this\row\_s()) 
         
       ElseIf Repaint < 0
-        _text_scroll_x_(*this)
+        *this\change = _bar_scrolled_(*this\scroll\h, (*this\row\_s()\text[1]\width+*this\text\x+*this\bs*2+*this\sci\margin\width)-*this\scroll\h\x, 0)
       EndIf
     EndIf 
     
@@ -2502,7 +2486,6 @@ Module Editor
             *this\row\caret\y = *this\row\_s()\text\y
             *this\row\caret\height = *this\row\_s()\text\height - 1
             *this\row\caret\x = *this\row\_s()\text\x + TextWidth(Left(*this\row\_s()\text\string, _caret_))
-            _text_scroll_x_(*this)
           EndIf
           
         Else
@@ -2635,6 +2618,51 @@ Module Editor
     ProcedureReturn String.s
   EndProcedure
   
+  Procedure.l text_scroll(*this._s_widget, Width.l)
+    Protected.l Left,Right
+    Debug *this\row\selected
+    
+    _bar_scrolled_(*this\scroll\h, (*this\row\_s()\text[1]\width+*this\text\x+*this\bs*2+*this\sci\margin\width)-*this\scroll\h\x, 0)
+    ProcedureReturn 1
+    
+    With *this
+      ; Если строка выходит за предели виджета
+      PushListPosition(\row\_s())
+      If SelectElement(\row\_s(), \text\_scroll_line_index) ;And \row\_s()\text\x+\row\_s()\text\width > \row\_s()\x+\row\_s()\width
+        Protected Caret.i =- 1, i.i, cursor_x.i, Distance.f, MinDistance.f = Infinity()
+        Protected String.s = \row\_s()\text\string.s
+        Protected string_len.i = \row\_s()\text\len
+        Protected mouse_x.i = \root\mouse\x-(\row\_s()\text\x-\scroll\h\page\pos)
+        
+        For i = 0 To string_len
+          cursor_x = TextWidth(Left(String.s, i))
+          Distance = (mouse_x-cursor_x)*(mouse_x-cursor_x)
+          
+          If MinDistance > Distance 
+            MinDistance = Distance
+            Right =- cursor_x
+            Caret = i
+          EndIf
+        Next
+        
+        Left = (Width + Right)
+        \row\_s()\text[3]\width = TextWidth(Right(String.s, string_len-Caret))
+        
+        If \scroll\x < Right
+          Bar::SetState(\scroll\h, -Right) ;: \scroll\x = Right
+        ElseIf \scroll\x > Left
+          Bar::SetState(\scroll\h, -Left) ;: \scroll\x = Left
+        ElseIf (\scroll\x < 0 And \root\keyboard\input = 65535 ) : \root\keyboard\input = 0
+          \scroll\x = (Width-\row\_s()\text[3]\width) + Right
+          If \scroll\x>0 : \scroll\x=0 : EndIf
+        EndIf
+      EndIf
+      PopListPosition(\row\_s())
+    EndWith
+    
+    ProcedureReturn Left
+  EndProcedure
+  
   Procedure.s text_wrap(Text.s, Width.i, Mode.i=-1, nl$=#LF$, DelimList$=" "+Chr(9))
     Protected.i CountString, i, start, ii, found, length
     Protected line$, ret$="", LineRet$=""
@@ -2719,7 +2747,7 @@ Module Editor
         Width = \height[2]
         Height = \width[2]
       Else
-        width = \width[2]-\text\x  ; -\row\margin\width
+        width = \width[2]-\sci\margin\width
         height = \height[2]
       EndIf
       
@@ -2734,10 +2762,6 @@ Module Editor
         string_out = String.s
         \countitems = CountString(String.s, #LF$)
         
-        If \row\margin\level
-          \row\margin\width = TextWidth(Str(\countitems))+11
-        EndIf
-          
         ; reset 
         \text\pos = 0
         \scroll\width = 0
@@ -2745,8 +2769,7 @@ Module Editor
         
         ; 
         If ListSize(\row\_s()) 
-          _text_sel_(*this, *this\row\caret\stop, 0)
-          _text_scroll_x_(*this)
+          Protected Left = text_scroll(*this, Width)
         EndIf
         
         If \text\count <> \countitems 
@@ -2778,8 +2801,10 @@ Module Editor
                   
                   \row\_s()\draw = 1
                   
+                  \row\_s()\focus =- 1
+                  ; \row\_s()\index[1] =- 1
                   \row\_s()\color\state = 1 ; Set line default colors
-                  ;\row\_s()\round = \round
+                  \row\_s()\round = \round
                   \row\_s()\text\string.s = String.s
                   \row\_s()\index = ListIndex(\row\_s())
                   
@@ -2798,10 +2823,11 @@ Module Editor
                   ; Scroll hight length
                   _make_scroll_height_(*this)
                   
-                  *this\row\_s()\margin\padding = 3
-                  *this\row\_s()\margin\string = Str(\row\_s()\index)
-                  *this\row\_s()\margin\x = *this\x[2] + *this\row\margin\width - TextWidth(*this\row\_s()\margin\string) - *this\row\_s()\margin\padding
-                  *this\row\_s()\margin\y = \row\_s()\text\y
+                  ;                     If \index[2] = ListIndex(\row\_s())
+                  ;                       ;Debug " string "+String.s
+                  ;                       \row\_s()\text[1]\string.s = Left(\row\_s()\text\string.s, \row\caret\stop ) : \row\_s()\text[1]\change = #True
+                  ;                       \row\_s()\text[3]\string.s = Right(\row\_s()\text\string.s, \row\_s()\text\len-(\row\caret\stop + \row\_s()\text[2]\len)) : \row\_s()\text[3]\change = #True
+                  ;                     EndIf
                 EndIf
                 
               Wend
@@ -2844,8 +2870,6 @@ Module Editor
                   
                   ; Update line pos in the text
                   _make_line_pos_(*this)
-                  
-                  Protected Left = (*this\row\_s()\text[1]\width+*this\row\_s()\text[2]\width+*this\text\x) - *this\width[2]
                   
                   ; Resize item
                   If (Left And Not  Bool(\scroll\x = Left))
@@ -3001,8 +3025,30 @@ Module Editor
         
         ; Then changed text
         If \text\change
+;           If \type = #PB_GadgetType_Editor
+;             If \text\numeric
+;               \sci\margin\width = \text\numeric
+;               \sci\margin\color\back = $C8F0F0F0 ; \color\back[0] 
+;               \text\numeric = 0
+;             EndIf
+;           EndIf
+          
+          If \sci\margin\width ; = 1 Or \text\change
+            \countitems = CountString(\text\string.s, #LF$)
+            \sci\margin\width = TextWidth(Str(\countitems))+11
+          EndIf
+          
           \text\height = TextHeight("A") + Bool(\countitems<>1 And \flag\gridLines)
           \text\width = TextWidth(\text\string.s)
+        EndIf
+        
+        ; Then resized widget
+        If \resize
+          ; Посылаем сообщение об изменении размера 
+          ; PostEvent(#PB_Event_Widget, \root\window, *this, #PB_EventType_Resize, \resize)
+          
+          ;  Bar::Resizes(\scroll, \x[2]+\sci\margin\width,\y[2],\width[2]-\sci\margin\width,\height[2])
+          Bar::Resizes(\scroll, \x[2],\y[2],\width[2],\height[2])
         EndIf
         
         ; Make output multi line text
@@ -3029,6 +3075,18 @@ Module Editor
               ; This is for the editor widget when you enter the key - (enter & backspace)
               Bar::SetState(\scroll\v, ((\row\_s()\y+\row\_s()\height)-(\height[2]+\text\y)))
             EndIf
+            
+            ; При вводе текста перемещать ползунок
+            If \root\keyboard\input And \row\_s()\text\x+\row\_s()\text\width > \row\_s()\x+\row\_s()\width
+              Debug ""+\scroll\h\max +" "+ Str(\row\_s()\text\x+\row\_s()\text\width)
+              
+              If \scroll\h\max = (\row\_s()\text\x+\row\_s()\text\width)
+                Bar::SetState(\scroll\h, \scroll\h\max)
+              Else
+                Bar::SetState(\scroll\h, \scroll\h\page\pos + TextWidth(Chr(\root\keyboard\input)))
+              EndIf
+            EndIf
+            
           EndIf
         EndIf 
         
@@ -3048,17 +3106,19 @@ Module Editor
             ; PostEvent(#PB_Event_Widget, \root\window, *this, #PB_EventType_Change)
           EndIf
           
-;           If (\focus = *this And \root\mouse\buttons And (Not \scroll\v\from And Not \scroll\h\from)) 
-;             _text_scroll_x_(*this)
-;           EndIf
+          If (\focus = *this And \root\mouse\buttons And (Not \scroll\v\from And Not \scroll\h\from)) 
+            Protected Left = text_scroll(*this, \row\_s()\width)
+          EndIf
         EndIf
         
+        \width[2] = \scroll\h\page\len - \sci\margin\width 
+        \height[2] = \scroll\v\page\len
+        
         ; Widget inner coordinate
-        iX=\x[2] + \row\margin\width 
+        iX=\x[2] + \sci\margin\width 
         iY=\y[2]
         iwidth = \width[2]
         iheight = \height[2]
-        
         
         
         ; Draw back color
@@ -3071,15 +3131,9 @@ Module Editor
         EndIf
         
         ; Draw margin back color
-        If \row\margin\width > 0
-          If (\text\change Or \resize)
-            \row\margin\x = \x[2]
-            \row\margin\y = \y[2]
-            \row\margin\height = \height[2]
-          EndIf
-          
+        If \sci\margin\width
           DrawingMode(#PB_2DDrawing_Default)
-          Box(\row\margin\x, \row\margin\y, \row\margin\width, \row\margin\height, \row\margin\color\back)
+          Box(ix-\sci\margin\width, iy, \sci\margin\width, \height[2], \sci\margin\color\back); $C8D7D7D7)
         EndIf
         
         ; Draw Lines text
@@ -3096,21 +3150,20 @@ Module Editor
             
             ; Draw selections
             If Drawing 
-              ; Draw lines
-              If (\row\_s()\index=*this\index[1] Or \row\_s()\index=\row\index) ; \color\state;
+              If (\row\_s()\index=*this\index[1] Or \row\_s()\index=\row\_s()\focus) ; \color\state;
                 If *this\row\color\back[\row\_s()\color\state]<>-1                                                     ; no draw transparent
                   If *this\row\color\fore[\row\_s()\color\state]
                     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                    _box_gradient_(*this\vertical,iX-\row\margin\width,Y,iwidth+ \row\margin\width ,\row\_s()\height, *this\row\color\fore[*this\row\_s()\color\state], *this\row\color\back[*this\row\_s()\color\state], \row\_s()\round)
+                    _box_gradient_(*this\vertical,iX-\sci\margin\width,Y,iwidth+ \sci\margin\width ,\row\_s()\height, *this\row\color\fore[*this\row\_s()\color\state], *this\row\color\back[*this\row\_s()\color\state], \row\_s()\round)
                   Else
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    RoundBox(iX-\row\margin\width,Y,iwidth+ \row\margin\width ,\row\_s()\height,\row\_s()\round,\row\_s()\round, *this\row\color\back[*this\row\_s()\color\state] )
+                    RoundBox(iX-\sci\margin\width,Y,iwidth+ \sci\margin\width ,\row\_s()\height,\row\_s()\round,\row\_s()\round, *this\row\color\back[*this\row\_s()\color\state] )
                   EndIf
                 EndIf
                 
                 If *this\row\color\frame[\row\_s()\color\state]<>-1 ; no draw transparent
                   DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                  RoundBox(iX-\row\margin\width,Y,iwidth+ \row\margin\width ,\row\_s()\height,\row\_s()\round,\row\_s()\round, *this\row\color\frame[*this\row\_s()\color\state] )
+                  RoundBox(iX-\sci\margin\width,Y,iwidth+ \sci\margin\width ,\row\_s()\height,\row\_s()\round,\row\_s()\round, *this\row\color\frame[*this\row\_s()\color\state] )
                 EndIf
               EndIf
               
@@ -3204,9 +3257,9 @@ Module Editor
               EndIf
               
               ; Draw margin
-              If *this\row\margin\width > 0
+              If *this\sci\margin\width
                 DrawingMode(#PB_2DDrawing_Transparent)
-                DrawText(*this\row\_s()\margin\x, *this\row\_s()\margin\y-*this\scroll\v\page\pos, *this\row\_s()\margin\string, *this\row\margin\color\front)
+                DrawText(*this\sci\margin\width-TextWidth(Str(\row\_s()\index))-3, \row\_s()\y-*this\scroll\v\page\pos, Str(\row\_s()\index), *this\sci\margin\color\front)
               EndIf
             EndIf
           Next
@@ -3224,6 +3277,8 @@ Module Editor
         Bar::Draw(\scroll\h)
         
         ; Draw frames
+        Debug \row\error
+        
         If \row\error
           DrawingMode(#PB_2DDrawing_Outlined)
           RoundBox(\x[1],\y[1],\width[1],\height[1],\round,\round, $FF0000FF)
@@ -3342,7 +3397,7 @@ Module Editor
       PushListPosition(\row\_s())
       Result = SelectElement(\row\_s(), Item) 
       If Result 
-        \row\index = \row\_s()\index
+        \row\_s()\focus = \row\_s()\index
         \row\caret\stop = State
         \row\caret\start = \row\caret\stop 
       EndIf
@@ -3401,7 +3456,7 @@ Module Editor
         \row\_s()\text[1]\change = 1
         \row\caret\start = \row\caret\stop 
         
-        \row\index = \row\_s()\index 
+        \row\_s()\focus = \row\_s()\index 
         Bar::SetState(\scroll\v, (\row\_s()\y-((\scroll\height[2]+\text\y)-\row\_s()\height))) ;((\index[1] * \text\height)-\scroll\v\height) + \text\height)
         
         ;         If Not \repaint : \repaint = 1
@@ -3423,7 +3478,7 @@ Module Editor
     With *this
       PushListPosition(\row\_s())
       ForEach \row\_s()
-        If \row\index = \row\_s()\index
+        If \row\_s()\focus = \row\_s()\index
           Result = \row\_s()\text\pos + \row\caret\stop 
         EndIf
       Next
@@ -3569,20 +3624,6 @@ Module Editor
         \resize = 1<<4
       EndIf
       
-      ; Then resized widget
-      If \resize
-        ; Посылаем сообщение об изменении размера 
-        ; PostEvent(#PB_Event_Widget, \root\window, *this, #PB_EventType_Resize, \resize)
-        
-        ;  Bar::Resizes(\scroll, \x[2]+\row\margin\width,\y[2],\width[2]-\row\margin\width,\height[2])
-        Bar::Resizes(\scroll, \x[2],\y[2],\width[2],\height[2])
-        
-        \width[2] = \scroll\h\page\len - \row\margin\width 
-        \height[2] = \scroll\v\page\len
-        
-      EndIf
-      
-        
       ProcedureReturn \resize
     EndWith
   EndProcedure
@@ -3882,82 +3923,89 @@ Module Editor
                   
                     
                   Repaint = _text_set_selector_(*this, _line_last_, *this\row\caret\start)  
+                  Debug " t - "+*this\width +" "+ Str(*this\width[2]-*this\text\x)+" "+ *this\row\_s()\text[1]\width
+                  
+;                   Protected _pos_=(*this\row\_s()\text[1]\width+*this\sci\margin\width+*this\text\x+*this\bs*2), _len_
+;                   Debug Bool(Bool(((_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)) - *this\scroll\h\page\pos) < 0 And Bar::SetState(*this\scroll\h, (_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)))) Or
+;                        Bool(((_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)) - *this\scroll\h\page\pos) > (*this\scroll\h\page\len-_len_) And
+;                             Bar::SetState(*this\scroll\h, (_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)) - (*this\scroll\h\page\len-_len_)))) ; : *this\change = 0
+                  
+         
+; ; ;                   Protected _pos_=*this\row\_s()\text[1]\width+*this\sci\margin\width+*this\text\x+*this\bs*2, _len_
+; ; ;                   Debug Bool(Bool((_pos_-*this\scroll\h\x-*this\scroll\h\page\pos) < 0 And Bar::SetState(*this\scroll\h, (_pos_-*this\scroll\h\x))) Or
+; ; ;                        Bool((_pos_-*this\scroll\h\x-*this\scroll\h\page\pos) > (*this\scroll\h\page\len-_len_) And
+; ; ;                             Bar::SetState(*this\scroll\h, (_pos_-*this\scroll\h\x) - (*this\scroll\h\page\len-_len_)))) ; : *this\change = 0
+                  
                 EndIf
                 
               EndIf
               
             Case #PB_Shortcut_Back   
-;               ; Сбросить Dot&Minus
-;               If *this\root\keyboard\input
-;                 *this\root\keyboard\input = 0
-;                 
-;                 If Not \row\error
-;                   If text_insert(*this, Chr(\root\keyboard\input))
-;                     ProcedureReturn #True
-;                   Else
-;                     \row\error = 1
-;                     ProcedureReturn - 1
-;                   EndIf
-;                 EndIf
-;                 
-;               EndIf
-              
-              If Not \row\error
-                *this\root\keyboard\input = 65535
+              ; Сбросить Dot&Minus
+              If *this\root\keyboard\input
+                *this\root\keyboard\input = 0
                 
-                If Not text_cut(*this)
-                  If \row\_s()\text[2]\len
-                    
-                    If \row\caret\stop > \row\caret\start : \row\caret\stop = \row\caret\start : EndIf
-                    \row\_s()\text[2]\len = 0 : \row\_s()\text[2]\string.s = "" : \row\_s()\text[2]\change = 1
-                    
-                    \row\_s()\text\string.s = \row\_s()\text[1]\string.s + \row\_s()\text[3]\string.s
-                    \row\_s()\text\len = \row\_s()\text[1]\len + \row\_s()\text[3]\len : \row\_s()\text\change = 1
-                    
-                    \text\string.s = \text[1]\string + \text[3]\string
-                    \text\change =- 1 ; - 1 post event change widget
-                    
-                  ElseIf \row\caret\start > 0 : \row\caret\stop - 1 
-                    \row\_s()\text[1]\string.s = Left(\row\_s()\text\string.s, \row\caret\stop )
-                    \row\_s()\text[1]\len = Len(\row\_s()\text[1]\string.s) : \row\_s()\text[1]\change = 1
-                    
-                    \row\_s()\text\string.s = \row\_s()\text[1]\string.s + \row\_s()\text[3]\string.s
-                    \row\_s()\text\len = \row\_s()\text[1]\len + \row\_s()\text[3]\len : \row\_s()\text\change = 1
-                    
-                    \text\string.s = Left(\text\string.s, \row\_s()\text\pos+\row\caret\stop ) + \text[3]\string
-                    \text\change =- 1 ; - 1 post event change widget
+                If Not \row\error
+                  If text_insert(*this, Chr(\root\keyboard\input))
+                    ProcedureReturn #True
                   Else
-                    ; Если дошли до начала строки то 
-                    ; переходим в конец предыдущего итема
-                    If \index[1] > _line_first_ 
-                      \text\string.s = RemoveString(\text\string.s, #LF$, #PB_String_CaseSensitive, \row\_s()\text\pos+\row\caret\stop, 1)
-                      
-                      ;to up
-                      \index[1] - 1
-                      \index[2] - 1
-                      
-                      If *this\row\_s()\index <> \index[2] And
-                         SelectElement(*this\row\_s(), \index[2]) 
-                      EndIf
-                      ;: _text_set_selector_(*this, \index[2], \text\len)
-                      
-                      \row\caret\stop = \row\_s()\text\len
-                      \text\change =- 1 ; - 1 post event change widget
-                      
-                    Else
-                      \row\error = 1
-                      ProcedureReturn - 1
-                    EndIf
-                    
+                    \row\error = 1
+                    ProcedureReturn - 1
                   EndIf
                 EndIf
                 
-                If \text\change
-                  \row\caret\start = \row\caret\stop 
-                  Repaint =- 1 
+              EndIf
+              
+              *this\root\keyboard\input = 65535
+              
+              If Not text_cut(*this)
+                If \row\_s()\text[2]\len
+                  
+                  If \row\caret\stop > \row\caret\start : \row\caret\stop = \row\caret\start : EndIf
+                  \row\_s()\text[2]\len = 0 : \row\_s()\text[2]\string.s = "" : \row\_s()\text[2]\change = 1
+                  
+                  \row\_s()\text\string.s = \row\_s()\text[1]\string.s + \row\_s()\text[3]\string.s
+                  \row\_s()\text\len = \row\_s()\text[1]\len + \row\_s()\text[3]\len : \row\_s()\text\change = 1
+                  
+                  \text\string.s = \text[1]\string + \text[3]\string
+                  \text\change =- 1 ; - 1 post event change widget
+                  
+                ElseIf \row\caret\start > 0 : \row\caret\stop - 1 
+                  \row\_s()\text[1]\string.s = Left(\row\_s()\text\string.s, \row\caret\stop )
+                  \row\_s()\text[1]\len = Len(\row\_s()\text[1]\string.s) : \row\_s()\text[1]\change = 1
+                  
+                  \row\_s()\text\string.s = \row\_s()\text[1]\string.s + \row\_s()\text[3]\string.s
+                  \row\_s()\text\len = \row\_s()\text[1]\len + \row\_s()\text[3]\len : \row\_s()\text\change = 1
+                  
+                  \text\string.s = Left(\text\string.s, \row\_s()\text\pos+\row\caret\stop ) + \text[3]\string
+                  \text\change =- 1 ; - 1 post event change widget
+                Else
+                  ; Если дошли до начала строки то 
+                  ; переходим в конец предыдущего итема
+                  If \index[1] > _line_first_ 
+                    \text\string.s = RemoveString(\text\string.s, #LF$, #PB_String_CaseSensitive, \row\_s()\text\pos+\row\caret\stop, 1)
+                    
+                    ;to up
+                    \index[1] - 1
+                    \index[2] - 1
+                    
+                    If *this\row\_s()\index <> \index[2] And
+                       SelectElement(*this\row\_s(), \index[2]) 
+                    EndIf
+                    ;: _text_set_selector_(*this, \index[2], \text\len)
+                    
+                    \row\caret\stop = \row\_s()\text\len
+                    \text\change =- 1 ; - 1 post event change widget
+                  EndIf
+                  
                 EndIf
               EndIf
-            
+              
+              If \text\change
+                \row\caret\start = \row\caret\stop 
+                Repaint =- 1 
+              EndIf
+              
             Case #PB_Shortcut_Delete 
               If Not text_cut(*this)
                 If \row\_s()\text[2]\len
@@ -4534,7 +4582,6 @@ Module Editor
         \interact = 1
         
         \row\caret\start =- 1
-        \row\index =- 1
         
         \index[1] =- 1
         \x =- 1
@@ -4566,9 +4613,8 @@ Module Editor
         \text\upper = Bool(Flag&#__text_UpperCase)
         \text\pass = Bool(Flag&#__text_Password)
         
-        \row\margin\level = \text\numeric
-        \row\margin\color\front = $C8000000 ; \color\back[0] 
-        \row\margin\color\back = $C8F0F0F0 ; \color\back[0] 
+        \sci\margin\width = \text\numeric
+        \sci\margin\color\back = $C8F0F0F0 ; \color\back[0] 
         \text\numeric = 0
         
         If Not Flag&#__editor_inline
@@ -4908,5 +4954,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------8----v+-------4---f5v-4-----------------------
+; Folding = ---------------------------------------------------------------------------------------------------------
 ; EnableXP

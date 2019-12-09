@@ -707,23 +707,6 @@ DeclareModule Widget
   #__window_sizegadget = #__flag_sizegadget
   #__window_screencentered = #__flag_center
   
-  ; text
-  #__text_left = #__flag_left
-  #__text_top = #__flag_top
-  #__text_center = #__flag_center
-  #__text_right = #__flag_right
-  #__text_bottom = #__flag_bottom
-  
-  #__text_multiline = #__flag_multiline
-  #__text_numeric = #__flag_numeric
-  #__text_password = #__flag_password
-  #__text_readonly = #__flag_readonly
-  #__text_lowercase = #__flag_lowercase
-  #__text_uppercase = #__flag_uppercase
-  #__text_wordwrap = #__flag_wordwrap
-  #__text_invert = #__flag_inverted
-  #__text_vertical = #__flag_vertical
-  
   ; tree
   #__tree_collapse = #__flag_collapse
   #__tree_optionboxes = #__flag_optionboxes
@@ -737,21 +720,30 @@ DeclareModule Widget
   #__tree_multiselect = #__flag_multiselect
   #__tree_borderless = #__flag_borderless
   
+  ; text
+  #__text_left = #__flag_left
+  #__text_top = #__flag_top
+  #__text_center = #__flag_center
+  #__text_right = #__flag_right
+  #__text_bottom = #__flag_bottom
+  #__text_vertical = #__flag_vertical
+  
+  #__text_multiline = #__flag_multiline
+  #__text_numeric = #__flag_numeric
+  #__text_password = #__flag_password
+  #__text_readonly = #__flag_readonly
+  #__text_lowercase = #__flag_lowercase
+  #__text_uppercase = #__flag_uppercase
+  #__text_wordwrap = #__flag_wordwrap
+  #__text_invert = #__flag_inverted
+  
   ; editor
+  #__editor_wordwrap = #__flag_wordwrap
   #__editor_numeric = #__flag_numeric
   #__editor_fullselection = #__flag_fullselection
   #__editor_alwaysselection = #__flag_alwaysselection
   #__editor_gridlines = #__flag_gridLines
   #__editor_borderless = #__flag_borderless
-  
-  ; button
-  #__button_left = #__text_left
-  #__button_right = #__text_right
-  #__button_toggle = #__flag_collapse
-  #__button_default = #__flag_default
-  #__button_vertical = #__text_vertical
-  #__button_inverted = #__flag_inverted
-  #__button_multiline = #__text_multiline
   
   ; string
   #__string_right = #__text_right
@@ -762,6 +754,15 @@ DeclareModule Widget
   #__string_uppercase = #__text_uppercase
   #__string_lowercase = #__text_lowercase
   #__string_borderless = #__flag_borderless
+  
+  ; button
+  #__button_left = #__text_left
+  #__button_right = #__text_right
+  #__button_toggle = #__flag_collapse
+  #__button_default = #__flag_default
+  #__button_vertical = #__text_vertical
+  #__button_inverted = #__flag_inverted
+  #__button_multiline = #__text_multiline
   
   ; bar
   EnumerationBinary #__flag_numeric;1

@@ -1,9 +1,7 @@
 ﻿
-;XIncludeFile "editor_6_5.pb"
-;XIncludeFile "editor_5_2.pb"
-;XIncludeFile "editor_7.pb"
-;XIncludeFile "editor_8_3.pb"
-XIncludeFile "editor_1.pb"
+IncludePath "../"
+XIncludeFile "editor().pb"
+;XIncludeFile "widgets().pbi"
 
 
 LN=1500; количесвто итемов 

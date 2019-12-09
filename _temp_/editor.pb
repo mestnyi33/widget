@@ -443,19 +443,6 @@ DeclareModule Constants
     #__flag_Limit
   EndEnumeration
   
-  #__tree_Collapse = #__flag_Collapse
-  #__tree_OptionBoxes = #__flag_OptionBoxes
-  #__tree_AlwaysSelection = #__flag_FullSelection
-  #__tree_CheckBoxes = 512
-  #__tree_NoLines = #__flag_NoLines
-  #__tree_NoButtons = #__flag_NoButtons
-  #__tree_GridLines = #__flag_GridLines
-  #__tree_ThreeState = #__flag_ThreeState
-  #__tree_ClickSelect = #__flag_ClickSelect
-  #__tree_MultiSelect = #__flag_MultiSelect
-  #__tree_BorderLess = #__flag_BorderLess
-  
-  
   EnumerationBinary #__flag_Numeric;1
     #__bar_Minimum 
     #__bar_Maximum 
@@ -478,44 +465,43 @@ DeclareModule Constants
   
   #__flag_Full = #__flag_Left|#__flag_Right|#__flag_Top|#__flag_Bottom
   
+  ; text
+  #__text_left = #__flag_left
+  #__text_top = #__flag_top
+  #__text_center = #__flag_center
+  #__text_right = #__flag_right
+  #__text_bottom = #__flag_bottom
   
-  ;   ; Set/Get Attribute
-  #__DisplayMode = 1<<13
-  ;   #PB_Image = 1<<13
-  ;   #PB_Text = 1<<14
-  ;   #PB_Flag = 1<<15
-  ;   #PB_State = 1<<16
+  #__text_multiline = #__flag_multiline
+  #__text_numeric = #__flag_numeric
+  #__text_password = #__flag_password
+  #__text_readonly = #__flag_readonly
+  #__text_lowercase = #__flag_lowercase
+  #__text_uppercase = #__flag_uppercase
+  #__text_wordwrap = #__flag_wordwrap
+  #__text_invert = #__flag_inverted
+  #__text_vertical = #__flag_vertical
   
+  ; editor
+  #__editor_inline = #__flag_InLine
+  #__editor_wordwrap = #__flag_wordwrap
+  #__editor_numeric = #__flag_numeric
+  #__editor_fullselection = #__flag_fullselection
+  #__editor_alwaysselection = #__flag_alwaysselection
+  #__editor_gridlines = #__flag_gridLines
+  #__editor_borderless = #__flag_borderless
   
-  EnumerationBinary Text
-    #__text_Center = #__flag_Horizontal
-    #__text_Right = #__flag_Right
-    ;     #PB_Button_Toggle = 4
-    ;     #PB_Button_Default = 8
-    
-    #__text_MultiLine = #__flag_MultiLine
-    #__text_Numeric = #__flag_Numeric
-    
-    ;     #PB_Widget_BorderLess = #PB_String_BorderLess 
-    ;     #PB_Widget_Vertical
-    
-    #__text_Password = #__flag_Password; = 128
-    #__text_ReadOnly = #__flag_ReadOnly
-    #__text_LowerCase = #__flag_LowerCase
-    #__text_UpperCase = #__flag_UpperCase
-    #__text_WordWrap = #__flag_WordWrap
-    
-    #__text_Bottom = #__flag_Bottom
-    #__text_Middle = #__flag_Vertical
-    #__text_Left = #__flag_Left
-    #__text_Top = #__flag_Top
-    
-    #__text_Invert = #__flag_Inverted
-    
-    
-    #__button_default 
-    #__button_toggle
-  EndEnumeration
+  ; string
+  #__string_right = #__text_right
+  #__string_center = #__text_center
+  #__string_numeric = #__text_numeric
+  #__string_password = #__text_password
+  #__string_readonly = #__text_readonly
+  #__string_uppercase = #__text_uppercase
+  #__string_lowercase = #__text_lowercase
+  #__string_borderless = #__flag_borderless
+  
+  #__string_multiline = #__text_multiline
   
   ;}
   
@@ -628,15 +614,15 @@ DeclareModule Structures
     width.l
     height.l
     
-    len.l
-    *line._s_rows
-    time.l
-    
     start.l
     stop.l
+    time.l
+    *line._s_rows
     
-    *pos
-    *end
+    
+; len.l
+    ;     *pos
+;     *end
   EndStructure
   
   ;- - _s_text
@@ -2160,10 +2146,9 @@ Module Editor
     StopDrawing()    
   EndProcedure
   
-  Macro _bar_update_(_this_, _pos_, _len_)
-    Bool(Bool((_pos_-_this_\y-_this_\page\pos) < 0 And Bar::SetState(_this_, (_pos_-_this_\y))) Or
-         Bool((_pos_-_this_\y-_this_\page\pos) > (_this_\page\len-_len_) And
-              Bar::SetState(_this_, (_pos_-_this_\y) - (_this_\page\len-_len_)))) ; : _this_\change = 0
+  Macro _bar_scrolled_(_this_, _pos_, _len_=0)
+    Bool(Bool(((_pos_)-_this_\page\pos) < 0 And Bar::SetState(_this_, (_pos_))) Or
+         Bool(((_pos_)-_this_\page\pos) > (_this_\page\len-_len_) And Bar::SetState(_this_, (_pos_)-(_this_\page\len-_len_))))
   EndMacro
   
   ;-
@@ -2388,7 +2373,7 @@ Module Editor
       If Repaint > 0
         ;Debug "    "+#PB_Compiler_Procedure
         
-        *this\change = _bar_update_(*this\scroll\v, *this\items()\y, *this\items()\height)
+        *this\change = _bar_scrolled_(*this\scroll\v, *this\items()\y-*this\scroll\v\y, *this\items()\height)
         
         PushListPosition(*this\items()) 
         ForEach *this\items()
@@ -2430,6 +2415,8 @@ Module Editor
         Next
         PopListPosition(*this\items()) 
         
+      ElseIf Repaint < 0
+        *this\change = _bar_scrolled_(*this\scroll\h, (*this\items()\text[1]\width+*this\text\x+*this\bs*2+*this\sci\margin\width)-*this\scroll\h\x, 0)
       EndIf
     EndIf 
     
@@ -2547,7 +2534,7 @@ Module Editor
     Protected String.s, i.i, Len.i
     
     With *this
-      If \text\Numeric And Text.s <> #LF$
+      If \text\numeric And Text.s <> #LF$
         Static Dot, Minus
         Protected Chr.s, Input.i, left.s, count.i
         
@@ -2607,7 +2594,7 @@ Module Editor
       Else
         Select #True
           Case \text\lower : String.s = LCase(Text.s)
-          Case \text\Upper : String.s = UCase(Text.s)
+          Case \text\upper : String.s = UCase(Text.s)
           Default
             String.s = Text.s
         EndSelect
@@ -2619,6 +2606,10 @@ Module Editor
   
   Procedure.l text_scroll(*this._s_widget, Width.l)
     Protected.l Left,Right
+;     Debug *this\text\caret\line
+;     
+;     _bar_scrolled_(*this\scroll\h, (*this\items()\text[1]\width+*this\text\x+*this\bs*2+*this\sci\margin\width)-*this\scroll\h\x, 0)
+;     ProcedureReturn 1
     
     With *this
       ; Если строка выходит за предели виджета
@@ -2639,6 +2630,8 @@ Module Editor
             Caret = i
           EndIf
         Next
+        
+        ;Debug Right
         
         Left = (Width + Right)
         \items()\text[3]\width = TextWidth(Right(String.s, string_len-Caret))
@@ -3020,6 +3013,14 @@ Module Editor
         
         ; Then changed text
         If \text\change
+;           If \type = #PB_GadgetType_Editor
+;             If \text\numeric
+;               \sci\margin\width = \text\numeric
+;               \sci\margin\color\back = $C8F0F0F0 ; \color\back[0] 
+;               \text\numeric = 0
+;             EndIf
+;           EndIf
+          
           If \sci\margin\width ; = 1 Or \text\change
             \countitems = CountString(\text\string.s, #LF$)
             \sci\margin\width = TextWidth(Str(\countitems))+11
@@ -3098,11 +3099,11 @@ Module Editor
           EndIf
         EndIf
         
-        \width[2] = \scroll\h\page\len
+        \width[2] = \scroll\h\page\len - \sci\margin\width 
         \height[2] = \scroll\v\page\len
         
         ; Widget inner coordinate
-        iX=\x[2]
+        iX=\x[2] + \sci\margin\width 
         iY=\y[2]
         iwidth = \width[2]
         iheight = \height[2]
@@ -3120,7 +3121,7 @@ Module Editor
         ; Draw margin back color
         If \sci\margin\width
           DrawingMode(#PB_2DDrawing_Default)
-          Box(ix, iy, \sci\margin\width, \height[2], \sci\margin\color\back); $C8D7D7D7)
+          Box(ix-\sci\margin\width, iy, \sci\margin\width, \height[2], \sci\margin\color\back); $C8D7D7D7)
         EndIf
         
         ; Draw Lines text
@@ -3141,16 +3142,16 @@ Module Editor
                 If *this\row\color\back[\items()\color\state]<>-1                                                     ; no draw transparent
                   If *this\row\color\fore[\items()\color\state]
                     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                    _box_gradient_(\items()\Vertical,*this\x[2],Y,iwidth,\items()\height, *this\row\color\fore[*this\items()\color\state], *this\row\color\back[*this\items()\color\state], \items()\round)
+                    _box_gradient_(\items()\Vertical,iX-\sci\margin\width,Y,iwidth+ \sci\margin\width ,\items()\height, *this\row\color\fore[*this\items()\color\state], *this\row\color\back[*this\items()\color\state], \items()\round)
                   Else
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    RoundBox(*this\x[2],Y,iwidth,\items()\height,\items()\round,\items()\round, *this\row\color\back[*this\items()\color\state] )
+                    RoundBox(iX-\sci\margin\width,Y,iwidth+ \sci\margin\width ,\items()\height,\items()\round,\items()\round, *this\row\color\back[*this\items()\color\state] )
                   EndIf
                 EndIf
                 
                 If *this\row\color\frame[\items()\color\state]<>-1 ; no draw transparent
                   DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-                  RoundBox(*this\x[2],Y,iwidth,\items()\height,\items()\round,\items()\round, *this\row\color\frame[*this\items()\color\state] )
+                  RoundBox(iX-\sci\margin\width,Y,iwidth+ \sci\margin\width ,\items()\height,\items()\round,\items()\round, *this\row\color\frame[*this\items()\color\state] )
                 EndIf
               EndIf
               
@@ -3158,7 +3159,7 @@ Module Editor
               Angle = Bool(\items()\vertical)**this\text\rotate
               
               ; Draw string
-              If \items()\text[2]\width And *this\color\front <> *this\row\color\front[2]
+              If *this\text\editable And \items()\text[2]\width And *this\color\front <> *this\row\color\front[2]
                 
                 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   ; to right
@@ -3231,7 +3232,7 @@ Module Editor
               Else
                 If \items()\text[2]\width
                   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                  Box(\items()\text[2]\x-*this\scroll\h\page\pos, Y, \items()\text[2]\width, Height, *this\row\color\back[2])
+                  Box(\items()\text[2]\x-*this\scroll\h\page\pos, Y, \items()\text[2]\width, Height, $FFFBD9B7);*this\row\color\back[2])
                 EndIf
                 
                 If \color\state = 2
@@ -3889,7 +3890,22 @@ Module Editor
                 
                 If *this\text\caret\stop < _caret_max_ 
                   *this\text\caret\start + _step_
+                  
+                    
                   Repaint = _text_set_selector_(*this, _line_last_, *this\text\caret\start)  
+                  Debug " t - "+*this\width +" "+ Str(*this\width[2]-*this\text\x)+" "+ *this\items()\text[1]\width
+                  
+;                   Protected _pos_=(*this\items()\text[1]\width+*this\sci\margin\width+*this\text\x+*this\bs*2), _len_
+;                   Debug Bool(Bool(((_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)) - *this\scroll\h\page\pos) < 0 And Bar::SetState(*this\scroll\h, (_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)))) Or
+;                        Bool(((_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)) - *this\scroll\h\page\pos) > (*this\scroll\h\page\len-_len_) And
+;                             Bar::SetState(*this\scroll\h, (_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)) - (*this\scroll\h\page\len-_len_)))) ; : *this\change = 0
+                  
+         
+; ; ;                   Protected _pos_=*this\items()\text[1]\width+*this\sci\margin\width+*this\text\x+*this\bs*2, _len_
+; ; ;                   Debug Bool(Bool((_pos_-*this\scroll\h\x-*this\scroll\h\page\pos) < 0 And Bar::SetState(*this\scroll\h, (_pos_-*this\scroll\h\x))) Or
+; ; ;                        Bool((_pos_-*this\scroll\h\x-*this\scroll\h\page\pos) > (*this\scroll\h\page\len-_len_) And
+; ; ;                             Bar::SetState(*this\scroll\h, (_pos_-*this\scroll\h\x) - (*this\scroll\h\page\len-_len_)))) ; : *this\change = 0
+                  
                 EndIf
                 
               EndIf
@@ -4063,33 +4079,33 @@ Module Editor
             
             Select EventType 
               Case #PB_EventType_LeftDoubleClick 
-                ; bug pb
-                ; в мак ос в editorgadget ошибка
-                ; при двойном клике на слове выделяет правильно 
-                ; но стирает вместе с предшествующим пробелом
-                ; в окнах выделяет уще и пробелл но стирает то что выделено
-                
-                ; Событие двойной клик происходит по разному
-                ; - mac os -
-                ; LeftButtonDown 
-                ; LeftButtonUp 
-                ; LeftClick 
-                ; LeftDoubleClick 
-                
-                ; - windows & linux -
-                ; LeftButtonDown
-                ; LeftDoubleClick
-                ; LeftButtonUp
-                ; LeftClick
-                
-                *this\index[2] = _line_
-                
-                Caret = _text_sel_stop_(*this)
-                *this\text\caret\time = ElapsedMilliseconds()
-                *this\text\caret\start = _text_sel_start_(*this)
-                Repaint = _text_set_selector_(*this, *this\index[2], Caret)
-                *this\text\caret\line = \items() ; *this\index[2]
-                DoubleClick = 1
+                  ; bug pb
+                  ; в мак ос в editorgadget ошибка
+                  ; при двойном клике на слове выделяет правильно 
+                  ; но стирает вместе с предшествующим пробелом
+                  ; в окнах выделяет уще и пробелл но стирает то что выделено
+                  
+                  ; Событие двойной клик происходит по разному
+                  ; - mac os -
+                  ; LeftButtonDown 
+                  ; LeftButtonUp 
+                  ; LeftClick 
+                  ; LeftDoubleClick 
+                  
+                  ; - windows & linux -
+                  ; LeftButtonDown
+                  ; LeftDoubleClick
+                  ; LeftButtonUp
+                  ; LeftClick
+                  
+                  *this\index[2] = _line_
+                  
+                  Caret = _text_sel_stop_(*this)
+                  *this\text\caret\time = ElapsedMilliseconds()
+                  *this\text\caret\start = _text_sel_start_(*this)
+                  Repaint = _text_set_selector_(*this, *this\index[2], Caret)
+                  *this\text\caret\line = \items() ; *this\index[2]
+                  DoubleClick = 1
                 
               Case #PB_EventType_LeftButtonDown
                 DoubleClick = 0
@@ -4111,7 +4127,7 @@ Module Editor
                   _start_drawing_(*this)
                   *this\text\caret\line = #Null
                   
-                  If _text_is_sel_line_(*this)
+                  If *this\text\editable And _text_is_sel_line_(*this)
                     *this\text\caret\line = \items()
                     Debug "sel - "+\items()\text[2]\width
                     SetGadgetAttribute(*this\root\canvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
@@ -4144,7 +4160,7 @@ Module Editor
                 EndIf
                 
               Case #PB_EventType_LeftButtonUp  
-                If *this\text\caret\line And Not DoubleClick
+                If *this\text\editable And *this\text\caret\line And Not DoubleClick
 ;                   
 ;                   If _line_ >= 0 And 
 ;                      _line_ < \countitems And 
@@ -4537,15 +4553,6 @@ Module Editor
         \x =- 1
         \y =- 1
         
-        ; Set the Default widget flag
-        If Bool(Flag&#__text_WordWrap)
-          Flag&~#__text_MultiLine
-        EndIf
-        
-        If Bool(Flag&#__text_MultiLine)
-          Flag&~#__text_WordWrap
-        EndIf
-        
         If Not \text\fontID
           \text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
@@ -4553,36 +4560,43 @@ Module Editor
         \fs = Bool(Not Flag&#__flag_BorderLess)+1
         \bs = \fs
         
-        \flag\buttons = Bool(flag&#__flag_NoButtons)
-        \flag\lines = Bool(flag&#__flag_NoLines)
-        \flag\fullSelection = Bool(Not flag&#__flag_FullSelection)*7
-        \flag\alwaysSelection = Bool(flag&#__flag_AlwaysSelection)
-        \flag\checkBoxes = Bool(flag&#__flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
-        \flag\gridLines = Bool(flag&#__flag_GridLines)
+        ;\flag\checkBoxes = Bool(flag&#__flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
+        ;\flag\buttons = Bool(flag&#__flag_NoButtons)
+        ;\flag\lines = Bool(flag&#__flag_NoLines)
         
         \vertical = Bool(Flag&#__flag_Vertical)
-        \text\editable = Bool(Not Flag&#__text_ReadOnly)
         
-        If Bool(Flag&#__text_WordWrap)
-          \text\multiLine = 1
-        ElseIf Bool(Flag&#__text_MultiLine)
-          \text\multiLine = 2
-        Else
-          \text\multiLine =- 1
-        EndIf
+        \flag\fullSelection = Bool(Not flag&#__flag_FullSelection)*7
+        \flag\alwaysSelection = Bool(flag&#__flag_AlwaysSelection)
+        \flag\gridLines = Bool(flag&#__flag_GridLines)
         
         \flag\multiSelect = 1
-        ;\text\Numeric = Bool(Flag&#__text_Numeric)
+        \text\caret\width = 7
+        
+        \text\editable = Bool(Not Flag&#__text_ReadOnly)
+        \text\numeric = Bool(Flag&#__text_Numeric)
         \text\lower = Bool(Flag&#__text_LowerCase)
-        \text\Upper = Bool(Flag&#__text_UpperCase)
+        \text\upper = Bool(Flag&#__text_UpperCase)
         \text\pass = Bool(Flag&#__text_Password)
         
+        \sci\margin\width = \text\numeric
+        \sci\margin\color\back = $C8F0F0F0 ; \color\back[0] 
+        \text\numeric = 0
+        
+        If Not Flag&#__editor_inline
+          If Flag&#__text_WordWrap
+            \text\multiLine = 1
+          ElseIf Bool(Flag&#__text_MultiLine)
+            \text\multiLine = 2
+          Else
+            \text\multiLine =- 1
+          EndIf
+        EndIf
+        
         \text\align\horizontal = Bool(Flag&#__text_Center)
-        \text\align\Vertical = Bool(Flag&#__text_Middle)
+        ;\text\align\Vertical = Bool(Flag&#__text_Middle)
         \text\align\right = Bool(Flag&#__text_Right)
         \text\align\bottom = Bool(Flag&#__text_Bottom)
-        
-        \text\caret\width = 7
         
         If \vertical
           \text\x = \fs 
@@ -4592,14 +4606,9 @@ Module Editor
           \text\y = \fs
         EndIf
         
-        
         \color = Colors
-        \color\fore[0] = 0
+        \color\fore = 0
         
-        \sci\margin\width = Bool(Flag&#__flag_Numeric)
-        \sci\margin\color\back = $C8F0F0F0 ; \color\back[0] 
-        
-        \row\color\alpha = 255
         \row\color = Colors
         \row\color\fore[0] = 0
         \row\color\fore[1] = 0
@@ -4608,14 +4617,11 @@ Module Editor
         \row\color\frame[0] = \row\color\frame[1]
         ;\color\back[1] = \color\back[0]
         
-        
-        
         If \text\editable
           \color\back[0] = $FFFFFFFF 
         Else
           \color\back[0] = $FFF0F0F0  
         EndIf
-        
       EndIf
       
       ; create scrollbars
@@ -4705,7 +4711,7 @@ Module Editor
       EndWith
     EndIf
     
-    ProcedureReturn g
+    ProcedureReturn Gadget
   EndProcedure
   
 EndModule
@@ -4757,6 +4763,7 @@ CompilerIf #PB_Compiler_IsMainFile
            m.s +
            "The string must be very long." + m.s +
            "Otherwise it will not work." ;+ m.s; +
+  
   
   If OpenWindow(0, 0, 0, 422, 491, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     ButtonGadget(100, 8,8,67,25,"gettext")
@@ -4913,5 +4920,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----------------------------------------------+--+-----------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------
 ; EnableXP

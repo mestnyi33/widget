@@ -2168,19 +2168,6 @@ Module Editor
   EndMacro
   
   ;-
-  Macro _text_scroll_x_(_this_)
-    
-    If _this_\row\caret\x And (_this_\scroll\h\page\pos+_this_\text\x+_this_\row\margin\width) > _this_\row\caret\x
-      ; to left 
-      _bar_scrolled_(_this_\scroll\h, _this_\row\caret\x-(_this_\scroll\h\x+_this_\text\x+_this_\row\margin\width), 0)
-    ElseIf _this_\scroll\h\page\pos < (_this_\row\caret\x-_this_\scroll\h\width)
-      ; to right 
-      _bar_scrolled_(_this_\scroll\h, (_this_\row\caret\x+_this_\bs)-_this_\scroll\h\x, 0)
-    EndIf
-    
-  EndMacro
-  
-  
   Macro _text_sel_reset_(_this_)
     _this_\text[1]\len = 0 
     _this_\text[2]\len = 0 
@@ -2445,7 +2432,7 @@ Module Editor
         PopListPosition(*this\row\_s()) 
         
       ElseIf Repaint < 0
-        _text_scroll_x_(*this)
+       ; *this\change = _bar_scrolled_(*this\scroll\h, (*this\row\_s()\text[1]\width+*this\text\x+*this\bs*2+*this\row\margin\width)-*this\scroll\h\x, 0)
       EndIf
     EndIf 
     
@@ -2502,7 +2489,6 @@ Module Editor
             *this\row\caret\y = *this\row\_s()\text\y
             *this\row\caret\height = *this\row\_s()\text\height - 1
             *this\row\caret\x = *this\row\_s()\text\x + TextWidth(Left(*this\row\_s()\text\string, _caret_))
-            _text_scroll_x_(*this)
           EndIf
           
         Else
@@ -2635,6 +2621,28 @@ Module Editor
     ProcedureReturn String.s
   EndProcedure
   
+  Procedure.l text_scroll(*this._s_widget, Width.l)
+;     If *this\row\caret\x And (*this\scroll\h\page\pos+*this\text\x+*this\row\margin\width) > *this\row\caret\x
+;       ; to left Debug 1111 
+;       _bar_scrolled_(*this\scroll\h, *this\row\caret\x-(*this\scroll\h\x+*this\text\x+*this\row\margin\width), 0)
+;     ElseIf *this\scroll\h\page\pos < (*this\row\_s()\text[1]\width+*this\row\_s()\text[2]\width+*this\text\x) - *this\width[2]
+;       ; to right Debug 2222
+;       _bar_scrolled_(*this\scroll\h, (*this\row\_s()\text[1]\width+*this\row\_s()\text[2]\width+*this\text\x+*this\row\margin\width+*this\bs*2)-*this\scroll\h\x, 0)
+;     EndIf
+                ;  *this\row\caret\x - Bool(*this\row\caret\x>0) * (*this\row\margin\width+*this\text\x+*this\bs) ; 
+    Protected caret = (*this\row\_s()\text[1]\width + Bool(*this\row\caret\start < *this\row\caret\stop) * *this\row\_s()\text[2]\width)
+    Debug ""+caret+" "+Str((*this\row\_s()\text[1]\width + Bool(*this\row\caret\start < *this\row\caret\stop) * *this\row\_s()\text[2]\width)) +" "+ *this\row\margin\width
+    If *this\scroll\h\page\pos > (caret + *this\bs)
+      Debug ""+1111 
+      _bar_scrolled_(*this\scroll\h, (caret + *this\bs)-*this\scroll\h\x, 0)
+    ElseIf *this\scroll\h\page\pos < (*this\row\_s()\text[1]\width+*this\row\_s()\text[2]\width) - *this\width[2]
+      Debug 2222
+      _bar_scrolled_(*this\scroll\h, (*this\row\_s()\text[1]\width+*this\row\_s()\text[2]\width+*this\text\x+*this\bs*2+*this\row\margin\width)-*this\scroll\h\x, 0)
+    EndIf
+    
+    ProcedureReturn (*this\row\_s()\text[1]\width+*this\row\_s()\text[2]\width) - *this\width[2]
+  EndProcedure
+  
   Procedure.s text_wrap(Text.s, Width.i, Mode.i=-1, nl$=#LF$, DelimList$=" "+Chr(9))
     Protected.i CountString, i, start, ii, found, length
     Protected line$, ret$="", LineRet$=""
@@ -2719,7 +2727,7 @@ Module Editor
         Width = \height[2]
         Height = \width[2]
       Else
-        width = \width[2]-\text\x  ; -\row\margin\width
+        width = \width[2]-\row\margin\width
         height = \height[2]
       EndIf
       
@@ -2745,8 +2753,7 @@ Module Editor
         
         ; 
         If ListSize(\row\_s()) 
-          _text_sel_(*this, *this\row\caret\stop, 0)
-          _text_scroll_x_(*this)
+          Protected Left = text_scroll(*this, Width)
         EndIf
         
         If \text\count <> \countitems 
@@ -2844,8 +2851,6 @@ Module Editor
                   
                   ; Update line pos in the text
                   _make_line_pos_(*this)
-                  
-                  Protected Left = (*this\row\_s()\text[1]\width+*this\row\_s()\text[2]\width+*this\text\x) - *this\width[2]
                   
                   ; Resize item
                   If (Left And Not  Bool(\scroll\x = Left))
@@ -3005,6 +3010,15 @@ Module Editor
           \text\width = TextWidth(\text\string.s)
         EndIf
         
+        ; Then resized widget
+        If \resize
+          ; Посылаем сообщение об изменении размера 
+          ; PostEvent(#PB_Event_Widget, \root\window, *this, #PB_EventType_Resize, \resize)
+          
+          ;  Bar::Resizes(\scroll, \x[2]+\row\margin\width,\y[2],\width[2]-\row\margin\width,\height[2])
+          Bar::Resizes(\scroll, \x[2],\y[2],\width[2],\height[2])
+        EndIf
+        
         ; Make output multi line text
         If (\text\change Or \resize)
           text_multiline_make(*this)
@@ -3029,6 +3043,18 @@ Module Editor
               ; This is for the editor widget when you enter the key - (enter & backspace)
               Bar::SetState(\scroll\v, ((\row\_s()\y+\row\_s()\height)-(\height[2]+\text\y)))
             EndIf
+            
+            ; При вводе текста перемещать ползунок
+            If \root\keyboard\input And \row\_s()\text\x+\row\_s()\text\width > \row\_s()\x+\row\_s()\width
+              Debug ""+\scroll\h\max +" "+ Str(\row\_s()\text\x+\row\_s()\text\width)
+              
+              If \scroll\h\max = (\row\_s()\text\x+\row\_s()\text\width)
+                Bar::SetState(\scroll\h, \scroll\h\max)
+              Else
+                Bar::SetState(\scroll\h, \scroll\h\page\pos + TextWidth(Chr(\root\keyboard\input)))
+              EndIf
+            EndIf
+            
           EndIf
         EndIf 
         
@@ -3048,10 +3074,13 @@ Module Editor
             ; PostEvent(#PB_Event_Widget, \root\window, *this, #PB_EventType_Change)
           EndIf
           
-;           If (\focus = *this And \root\mouse\buttons And (Not \scroll\v\from And Not \scroll\h\from)) 
-;             _text_scroll_x_(*this)
-;           EndIf
+          If (\focus = *this And \root\mouse\buttons And (Not \scroll\v\from And Not \scroll\h\from)) 
+            Protected Left = text_scroll(*this, \row\_s()\width)
+          EndIf
         EndIf
+        
+        \width[2] = \scroll\h\page\len - \row\margin\width 
+        \height[2] = \scroll\v\page\len
         
         ; Widget inner coordinate
         iX=\x[2] + \row\margin\width 
@@ -3224,6 +3253,8 @@ Module Editor
         Bar::Draw(\scroll\h)
         
         ; Draw frames
+        Debug \row\error
+        
         If \row\error
           DrawingMode(#PB_2DDrawing_Outlined)
           RoundBox(\x[1],\y[1],\width[1],\height[1],\round,\round, $FF0000FF)
@@ -3569,20 +3600,6 @@ Module Editor
         \resize = 1<<4
       EndIf
       
-      ; Then resized widget
-      If \resize
-        ; Посылаем сообщение об изменении размера 
-        ; PostEvent(#PB_Event_Widget, \root\window, *this, #PB_EventType_Resize, \resize)
-        
-        ;  Bar::Resizes(\scroll, \x[2]+\row\margin\width,\y[2],\width[2]-\row\margin\width,\height[2])
-        Bar::Resizes(\scroll, \x[2],\y[2],\width[2],\height[2])
-        
-        \width[2] = \scroll\h\page\len - \row\margin\width 
-        \height[2] = \scroll\v\page\len
-        
-      EndIf
-      
-        
       ProcedureReturn \resize
     EndWith
   EndProcedure
@@ -3882,6 +3899,19 @@ Module Editor
                   
                     
                   Repaint = _text_set_selector_(*this, _line_last_, *this\row\caret\start)  
+                  Debug " t - "+*this\width +" "+ Str(*this\width[2]-*this\text\x)+" "+ *this\row\_s()\text[1]\width
+                  
+;                   Protected _pos_=(*this\row\_s()\text[1]\width+*this\row\margin\width+*this\text\x+*this\bs*2), _len_
+;                   Debug Bool(Bool(((_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)) - *this\scroll\h\page\pos) < 0 And Bar::SetState(*this\scroll\h, (_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)))) Or
+;                        Bool(((_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)) - *this\scroll\h\page\pos) > (*this\scroll\h\page\len-_len_) And
+;                             Bar::SetState(*this\scroll\h, (_pos_-(*this\scroll\h\area\pos-*this\scroll\h\button\len)) - (*this\scroll\h\page\len-_len_)))) ; : *this\change = 0
+                  
+         
+; ; ;                   Protected _pos_=*this\row\_s()\text[1]\width+*this\row\margin\width+*this\text\x+*this\bs*2, _len_
+; ; ;                   Debug Bool(Bool((_pos_-*this\scroll\h\x-*this\scroll\h\page\pos) < 0 And Bar::SetState(*this\scroll\h, (_pos_-*this\scroll\h\x))) Or
+; ; ;                        Bool((_pos_-*this\scroll\h\x-*this\scroll\h\page\pos) > (*this\scroll\h\page\len-_len_) And
+; ; ;                             Bar::SetState(*this\scroll\h, (_pos_-*this\scroll\h\x) - (*this\scroll\h\page\len-_len_)))) ; : *this\change = 0
+                  
                 EndIf
                 
               EndIf
@@ -4908,5 +4938,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------8----v+-------4---f5v-4-----------------------
+; Folding = --------------------------------------------------------------------------------------------------------
 ; EnableXP

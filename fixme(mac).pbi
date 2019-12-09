@@ -98,6 +98,9 @@ Module fixme
   EndProcedure
     
     Procedure.i DrawingMode_(Mode.i)
+      If Not *drawing
+        *drawing = AllocateStructure(_S_drawing)
+      EndIf
       *drawing\mode = Mode
     EndProcedure
     
@@ -198,7 +201,6 @@ EndModule
 UseModule fixme
 
  CompilerEndIf
-
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----
+; Folding = ------
 ; EnableXP

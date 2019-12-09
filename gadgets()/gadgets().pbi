@@ -459,7 +459,6 @@ CompilerEndIf
 ;- >>>
 
 IncludePath "../widgets()"
-;XIncludeFile "_module_tree_18.pb"
 XIncludeFile "tree().pb"
 
 ;- >>>
@@ -1249,5 +1248,5 @@ DeclareModule Gadget
   CompilerEndIf
   
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --------------------------------------
+; Folding = +-------------------------------------
 ; EnableXP
