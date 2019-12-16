@@ -1,7 +1,7 @@
 ﻿; _module_tree_20.pb
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/As/Documents/GitHub/Widget"
+  IncludePath "../" ;/Users/As/Documents/GitHub/Widget"
   IncludeFile "fixme(mac).pbi"
 CompilerEndIf
 
@@ -53,6 +53,15 @@ DeclareModule Constants
   #PB_Tree_Collapse = #__tree_Collapse
   #PB_Tree_GridLines = #__tree_GridLines
   
+  Enumeration 1
+    #__color_front
+    #__color_back
+    #__color_line
+    #__color_titlefront
+    #__color_titleback
+    #__color_graytext 
+    #__color_frame
+  EndEnumeration
   
   #s_0 = 0
   #s_1 = 1
@@ -62,16 +71,6 @@ DeclareModule Constants
   #bb_1 = 1
   #bb_2 = 2
   #bb_3 = 3
-  
-  Enumeration 1
-    #__Color_Front
-    #__Color_Back
-    #__Color_Line
-    #__Color_TitleFront
-    #__Color_TitleBack
-    #__Color_GrayText 
-    #__Color_Frame
-  EndEnumeration
   
   #__tree_Selected = #PB_Tree_Selected
   #__tree_Checked = #PB_Tree_Checked
@@ -196,7 +195,6 @@ DeclareModule Structures
     threestate.b
     collapse.b
     alwaysselection.b
-    fullselection.b
     multiselect.b
     clickselect.b
     iconsize.b
@@ -343,6 +341,7 @@ DeclareModule Structures
     sublevel.l
     sublevellen.l
     
+    len.l ; ширина самого длиного итема
     fontID.i
     childrens.l
     
@@ -1847,21 +1846,6 @@ Module Tree
     EndIf  
   EndMacro
   
-  Macro _make_scroll_height_(_this_)
-    _this_\scroll\height + _this_\row\_s()\height + _this_\flag\gridLines
-    
-;     If _this_\scroll\v\scrollStep <> _this_\row\_s()\height + Bool(_this_\flag\gridLines)
-;       _this_\scroll\v\scrollStep = _this_\row\_s()\height + Bool(_this_\flag\gridLines)
-;     EndIf
-  EndMacro
-  
-  Macro _make_scroll_width_(_this_)
-    If _this_\scroll\width < (_this_\row\_s()\text\x+_this_\row\_s()\text\width + _this_\flag\fullSelection + _this_\scroll\h\page\pos)-_this_\x[2]
-      _this_\scroll\width = (_this_\row\_s()\text\x+_this_\row\_s()\text\width + _this_\flag\fullSelection + _this_\scroll\h\page\pos)-_this_\x[2]
-    EndIf
-  EndMacro
-  
-  
   ;-
   ;- PROCEDUREs
   ;-
@@ -2081,14 +2065,12 @@ Module Tree
           EndIf
           
           If _this_\change <> 0
-            ; _this_\scroll\height + _items_\height + _this_\flag\GridLines
-            _make_scroll_height_(_this_)
-            _make_scroll_width_(_this_)
+            _this_\scroll\height + _items_\height + _this_\flag\GridLines
+            _items_\len = ((_items_\text\x + _items_\text\width + _this_\scroll\h\page\pos) - _this_\x[2])
             
-;             If _this_\scroll\width < ((_items_\text\x + _items_\text\width + _this_\scroll\h\page\pos) - _this_\x[2])
-;               _this_\scroll\width = ((_items_\text\x + _items_\text\width + _this_\scroll\h\page\pos) - _this_\x[2])
-;             EndIf
-            
+            If _this_\scroll\h\height And _this_\scroll\width < _items_\len
+              _this_\scroll\width = _items_\len
+            EndIf
           EndIf
         EndIf
       Next
@@ -2383,16 +2365,16 @@ Module Tree
         PushListPosition(\row\_s()) 
         ForEach \row\_s()
           Select ColorType
-            Case #__color_back
+            Case #__color_Back
               \row\_s()\color\back[Column] = Color
               
-            Case #__color_front
+            Case #__color_Front
               \row\_s()\color\front[Column] = Color
               
-            Case #__color_frame
+            Case #__color_Frame
               \row\_s()\color\frame[Column] = Color
               
-            Case #__color_line
+            Case #__color_Line
               \row\_s()\color\line[Column] = Color
               
           EndSelect
@@ -3257,16 +3239,13 @@ Module Tree
         \row\tt\visible = 1
         \row\tt\x = x+\row\_s()\x+\row\_s()\width-1
         \row\tt\y = y+\row\_s()\y-\scroll\v\page\pos
-        
-        \row\tt\width = \row\_s()\text\width-\width[2] + (\row\_s()\text\x - \row\_s()\x) + 5 ;- (\scroll\width-\width);- \row\_s()\text\x; 105 ;\row\_s()\text\width - (\scroll\width-\row\_s()\width)  ; - 32 + 5 
-        
-        If \row\tt\width < 6
-          \row\tt\width = 0
-        EndIf
-        
-        Debug \row\tt\width ;Str(\row\_s()\text\x - \row\_s()\x)
-        
+        \row\tt\width = \row\_s()\len - \row\_s()\width + 5
         \row\tt\height = \row\_s()\height
+        
+;         \row\tt\width = \row\_s()\text\width-\width[2] + (\row\_s()\text\x - \row\_s()\x) + 5 
+;         If \row\tt\width < 6 : \row\tt\width = 0 : EndIf
+        Debug \row\tt\width
+        
         Protected flag
         CompilerIf #PB_Compiler_OS = #PB_OS_Linux
           flag = #PB_Window_Tool
@@ -3362,7 +3341,7 @@ Module Tree
             EndIf
             
             ; create tooltip on the item
-            If Bool((*this\flag\buttons=0 And *this\flag\lines=0)) And *this\scroll\h\max > *this\width[2]
+            If Bool((*this\flag\buttons=0 And *this\flag\lines=0)) And *this\row\_s()\len > *this\width[2]
               tt_creare(*this, GadgetX(*this\root\canvas, #PB_Gadget_ScreenCoordinate), GadgetY(*this\root\canvas, #PB_Gadget_ScreenCoordinate))
             EndIf
             
@@ -4749,5 +4728,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------
 ; EnableXP

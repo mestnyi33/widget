@@ -1,17 +1,17 @@
 ﻿IncludePath "../"
-XIncludeFile "tree().pb"
+XIncludeFile "editor().pb"
 ;XIncludeFile "widgets().pbi"
 
-UseModule Tree
+UseModule editor
 UseModule constants
 
-Global *w._S_widget
+Global *w._struct_
 
 If OpenWindow(0, 0, 0, 590, 300, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    TreeGadget(0, 10, 10, 280, 280)
+    EditorGadget(0, 10, 10, 280, 280)
     
     For i = 1 To 10
-      AddGadgetItem(0, -1, "Text 1"+Chr(10)+"Text 2")
+      AddGadgetItem(0, -1, "Text "+Str(i))
     Next
 
     SetGadgetItemColor(0, #PB_All, #PB_Gadget_FrontColor, $0000FF)
@@ -21,9 +21,11 @@ If OpenWindow(0, 0, 0, 590, 300, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     *w=GetGadgetData(Gadget(10, 300, 10, 280, 280))
     
     For i = 1 To 10
-      AddItem(*w, -1, "Text 1"+Chr(10)+"Text 2")
+      AddItem(*w, -1, "Text "+Str(i)) ; , "Text 1"+Chr(10)+"Text 2")
     Next
-
+    
+    redraw(*w)
+    
     SetItemColor(*w, #PB_All, #__color_Front, $FF0000FF)
     SetItemColor(*w,  3, #__color_Back,  $FF00FFFF)
     SetItemColor(*w,  9, #__color_Back,  $FFFFFF00)
@@ -34,6 +36,7 @@ If OpenWindow(0, 0, 0, 590, 300, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetItemColor(*w,  #PB_All, #__color_Back,  $FF3F00F0, 2)
     
     SetItemColor(*w,  #PB_All, #__color_Line,  $FF3F00F0)
+    
     Repeat
     Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

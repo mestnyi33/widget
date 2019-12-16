@@ -594,7 +594,6 @@ DeclareModule Structures
     width.l
     height.l
     
-    pos.l
     start.l
     stop.l
     time.l
@@ -891,7 +890,7 @@ DeclareModule Bar
   Declare.i Draws(*Scroll._s_scroll, ScrollHeight.i, ScrollWidth.i)
   Declare.i SetColor(*this, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.b Resize(*this, iX.i,iY.i,iWidth.i,iHeight.i, *that=#Null)
-  Declare.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, round.i=0)
+  Declare.i Bar(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, round.i=0)
   
   Declare.b Resizes(*Scroll._s_scroll, X.i,Y.i,Width.i,Height.i)
   Declare.b Updates(*Scroll._s_scroll, ScrollArea_X, ScrollArea_Y, ScrollArea_Width, ScrollArea_Height)
@@ -1805,7 +1804,7 @@ Module Bar
     ProcedureReturn repaint
   EndProcedure
   
-  Procedure.i Scroll(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, round.i=0)
+  Procedure.i Bar(X.i,Y.i,Width.i,Height.i, Min.i, Max.i, PageLength.i, Flag.i, round.i=0)
     Protected *this._struct_bar_ = AllocateStructure(_struct_bar_)
     
     With *this
@@ -1856,12 +1855,12 @@ Module Bar
   EndProcedure
   
   Procedure.i Bars(*Scroll._s_scroll, Size.i, round.i, Both.b)
-    *Scroll\v = Scroll(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #__bar_Vertical, round)
+    *Scroll\v = Bar(#PB_Ignore,#PB_Ignore,Size,#PB_Ignore, 0,0,0, #__bar_Vertical, round)
     *Scroll\v\hide = *Scroll\v\hide[1]
     *Scroll\v\s = *Scroll
     
     If Both
-      *Scroll\h = Scroll(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, round)
+      *Scroll\h = Bar(#PB_Ignore,#PB_Ignore,#PB_Ignore,Size, 0,0,0, 0, round)
       *Scroll\h\hide = *Scroll\h\hide[1]
     Else
       *Scroll\h._s_bar = AllocateStructure(_s_bar)
@@ -1907,7 +1906,7 @@ DeclareModule Editor
   Declare.i ClearItems(*this)
   Declare.i CountItems(*this)
   Declare.i RemoveItem(*this, Item.i)
-  Declare   SetState(*this, State.l)
+  Declare   SetState(*this, State.i)
   Declare   GetAttribute(*this, Attribute.i)
   Declare   SetAttribute(*this, Attribute.i, Value.i)
   Declare   SetText(*this, Text.s, Item.i=0)
@@ -2270,14 +2269,12 @@ Module Editor
       If _line_ > *this\index[2] Or
          (_line_ = *this\index[2] And *this\row\caret\stop > *this\row\caret\start)
         *this\row\caret\x = *this\row\_s()\text[3]\x
-        *this\row\caret\pos = *this\row\_s()\text\pos + *this\row\_s()\text[3]\pos
       Else
         *this\row\caret\x = *this\row\_s()\text[2]\x
-        *this\row\caret\pos = *this\row\_s()\text\pos + *this\row\_s()\text[2]\pos
       EndIf
       
       *this\row\caret\width = 1
-      
+        
       ProcedureReturn 1
       ;       EndIf
     EndIf
@@ -2303,17 +2300,20 @@ Module Editor
           ElseIf (_line_ < *this\row\_s()\index And *this\index[2] > *this\row\_s()\index) Or   ; верх
                  (_line_ > *this\row\_s()\index And *this\index[2] < *this\row\_s()\index)      ; вниз
             
-            If _line_ < 0
-              ; если курсор перешел за верхный предел
+            If  _line_ < 0
+            ; если курсор перешел за верхный предел
               *this\index[1] = 0
               *this\row\caret\stop = 0
-            ElseIf _line_ > *this\countitems - 1
-              ; если курсор перешел за нижный предел
+            EndIf
+            
+            If  _line_ > *this\countitems - 1
+            ; если курсор перешел за нижный предел
               *this\index[1] = *this\countitems - 1
               *this\row\caret\stop = *this\row\_s()\text\len
             EndIf
             
             _text_sel_(*this, 0, *this\row\_s()\text\len)
+            
             
           ElseIf _line_ = *this\row\_s()\index 
             If _line_ > *this\index[2] 
@@ -2324,20 +2324,34 @@ Module Editor
             
           ElseIf *this\index[2] = *this\row\_s()\index
             
-            
-            If *this\countitems = 1 And 
-               (_line_ < 0 Or _line_ > *this\countitems - 1)
-              ; если курсор перешел за пределы итемов
-              *this\index[1] = 0
-              
-              If *this\row\caret\start > *this\row\caret\stop
-                _text_sel_(*this, 0, *this\row\caret\start)
-              Else
-                *this\row\caret\stop = *this\row\_s()\text\len
-                _text_sel_(*this, *this\row\caret\start, Bool(_line_ <> *this\index[2]) * (*this\row\_s()\text\len - *this\row\caret\start))
+            If (_line_ < 0 Or _line_ > *this\countitems - 1) And *this\countitems = 1
+              If *this\countitems = 1  
+                ; если курсор перешел за пределы итемов
+                *this\index[1] = 0
+                
+                If *this\row\caret\start > *this\row\caret\stop
+                  _text_sel_(*this, 0, *this\row\caret\start)
+                Else
+                  *this\row\caret\stop = *this\row\_s()\text\len
+                  _text_sel_(*this, *this\row\caret\start, Bool(_line_ <> *this\index[2]) * (*this\row\_s()\text\len - *this\row\caret\start))
+                EndIf
+                
+                *this\index[1] = _line_
+                ;               Else
+                ;                 If _line_ < 0
+                ;                   *this\index[1] = 0
+                ;                   *this\row\caret\stop = 0
+                ;                 ElseIf _line_ > *this\countitems - 1
+                ;                   *this\index[1] = *this\countitems - 1
+                ;                   *this\row\caret\stop = *this\row\_s()\text\len
+                ;                 EndIf
+                ;                 
+                ;                 If *this\index[2] > _line_ 
+                ;                   _text_sel_(*this, 0, *this\row\caret\start)
+                ;                 Else
+                ;                   _text_sel_(*this, *this\row\caret\start, *this\row\_s()\text\len - *this\row\caret\start)
+                ;                 EndIf
               EndIf
-              
-              *this\index[1] = _line_
             Else
               If _line_ < 0
                 *this\index[1] = 0
@@ -2346,11 +2360,11 @@ Module Editor
                 *this\index[1] = *this\countitems - 1
                 *this\row\caret\stop = *this\row\_s()\text\len
               EndIf
-              
+                
               If *this\index[2] > _line_ 
                 _text_sel_(*this, 0, *this\row\caret\start)
               Else
-                _text_sel_(*this, *this\row\caret\start, (*this\row\_s()\text\len - *this\row\caret\start))
+                _text_sel_(*this, *this\row\caret\start, *this\row\_s()\text\len - *this\row\caret\start)
               EndIf
             EndIf
             
@@ -3363,9 +3377,9 @@ Module Editor
         EndIf
         
         If (Item > 0 And Item < \countitems - 1)
+          len = 0
           Define *Sta.Character = @\text\string 
           Define *End.Character = @\text\string 
-          len = 0
           
           While *End\c 
             If *End\c = #LF 
@@ -3439,48 +3453,85 @@ Module Editor
     ProcedureReturn Result
   EndProcedure
   
-  Procedure   SetState(*this._struct_, State.l) ; Ok
-    Protected i.l, len.l
+  Procedure.i SetState(*this._struct_, State.i)
+    Protected String.s, *Line
     
     With *this
-      If state < 0 Or state > *this\text\len
-        state = *this\text\len
+      PushListPosition(\row\_s())
+      ForEach \row\_s()
+        If String.s
+          String.s +#LF$+ \row\_s()\text\string.s 
+        Else
+          String.s + \row\_s()\text\string.s
+        EndIf
+      Next : String.s+#LF$
+      PopListPosition(\row\_s())
+      
+      If \text\string.s <> String.s
+        \text\string.s = String.s
+        \text\len = Len(String.s)
+        Redraw(*this)
       EndIf
       
-      If *this\row\caret\pos <> State
-        *this\row\caret\pos = State
+      If State <> #PB_Ignore
+        \focus = *this
+        If GetActiveGadget() <> \root\canvas
+          SetActiveGadget(\root\canvas)
+        EndIf
         
-        Protected *str.Character = @\text\string 
-        Protected *end.Character = @\text\string 
+        PushListPosition(\row\_s())
+        If State =- 1
+          \index[1] = \countitems - 1
+          *Line = LastElement(\row\_s())
+          \row\caret\stop = \row\_s()\text\len
+        Else
+          \index[1] = CountString(Left(String, State), #LF$)
+          *Line = SelectElement(\row\_s(), \index[1])
+          If *Line
+            \row\caret\stop = State-\row\_s()\text\pos
+          EndIf
+        EndIf
         
-        While *end\c 
-          If *end\c = #LF 
-            len + (*end-*str)/#__sOC
-            
-            If len + (*end-*str)/#__sOC > state
-              ;            Debug  PeekS (*str, (*end-*str)/#__sOC)
-              ;            Debug  len
-              *this\index[1] = i
-              *this\index[2] = i
-              
-              *this\row\caret\stop = state - (len-(*end-*str)/#__sOC) - i
-              *this\row\caret\start = *this\row\caret\stop
-              
-              Break
-            EndIf
-            i + 1
-            
-            *str = *end + #__sOC 
-          EndIf 
-          
-          *end + #__sOC 
-        Wend
+        ;If *Line
+        ;         \index[2] = \index[1]
+        ;         \text[1]\change = 1
+        ;         \text[3]\change = 1
+        ;         _text_sel_(*this, \row\caret\stop , 0)
+        
+        \row\_s()\text[1]\string = Left(\row\_s()\text\string, \row\caret\stop )
+        \row\_s()\text[1]\change = 1
+        \row\caret\start = \row\caret\stop 
+        
+        \row\index = \row\_s()\index 
+        Bar::SetState(\scroll\v, (\row\_s()\y-((\height[2]+\text\y)-\row\_s()\height))) ;((\index[1] * \text\height)-\scroll\v\height) + \text\height)
+        
+        ;_repaint_(*this)
+        Redraw(*this)
+        ;EndIf
+        PopListPosition(\row\_s())
+        
+        ; Debug \index[2]
+        
       EndIf
     EndWith
   EndProcedure
   
-  Procedure  GetState(*this._struct_)
-    ProcedureReturn *this\row\caret\pos
+  Procedure GetState(*this._struct_)
+    Protected Result
+    
+    With *this
+      PushListPosition(\row\_s())
+      ForEach \row\_s()
+        If \row\index = \row\_s()\index
+          Result = \row\_s()\text\pos + \row\caret\stop 
+        EndIf
+      Next
+      PopListPosition(\row\_s())
+      
+      ; Debug \text[1]\len
+    EndWith
+    
+    ProcedureReturn Result
   EndProcedure
   
   Procedure ClearItems(*this._struct_)
@@ -4800,9 +4851,8 @@ Module Editor
         EndIf
       EndIf
       
-      ;Bar::Bars(\scroll, 16, 7, Bool(\text\multiline <> 1))
-      \scroll\v = Bar::Scroll(0, 0, 16, 0, 0,0,0, #__Bar_Vertical, 7)
-      \scroll\h = Bar::Scroll(0, 0, 0, Bool(\text\multiline <> 1)*16, 0,0,0, 0, 7)
+      ; create scrollbars
+      Bar::Bars(\scroll, 16, 7, Bool(\text\multiline <> 1))
       
       Resize(*this, X,Y,Width,Height)
       
@@ -5126,5 +5176,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = AAAkAgAgfAAgAACAAwAAAAAPAg-fw-KAAAAAAQ9dAAAwBgwXAAAAAAAAAAgAlAAAAAAAeWAPQAAAAAMAAAAAAACCAAAAAAAAAAAgAARCAA+
+; Folding = ------------------------------------------------------------------------------------------------------------
 ; EnableXP

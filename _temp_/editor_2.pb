@@ -509,38 +509,38 @@ DeclareModule Constants
     #PB_Text_Reverse ; Mirror
     #PB_Text_InLine
     
-    #PB_Flag_Vertical
-    #PB_Flag_BorderLess
-    #PB_Flag_Double
-    #PB_Flag_Flat
-    #PB_Flag_Raised
+    #__Flag_Vertical
+    #__Flag_BorderLess
+    #__Flag_Double
+    #__Flag_Flat
+    #__Flag_Raised
     #PB__s_flagingle
     
-    #PB_Flag_Default
-    #PB_Flag_Toggle
+    #__Flag_Default
+    #__Flag_Toggle
     
-    #PB_Flag_GridLines
-    #PB_Flag_Invisible
+    #__Flag_GridLines
+    #__Flag_Invisible
     
-    #PB_Flag_MultiSelect
-    #PB_Flag_ClickSelect
+    #__Flag_MultiSelect
+    #__Flag_ClickSelect
     
-    #PB_Flag_AutoSize
-    #PB_Flag_AutoRight
-    #PB_Flag_AutoBottom
+    #__Flag_AutoSize
+    #__Flag_AutoRight
+    #__Flag_AutoBottom
     
-    #PB_Flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
+    #__Flag_FullSelection; = 512 ; #PB_ListIcon_FullRowSelect
     ; #____End____
   EndEnumeration
   
-  #PB_Flag_Numeric = #PB_Text_Numeric
-  #PB_Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
-  #PB_Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
+  #__Flag_Numeric = #PB_Text_Numeric
+  #__Flag_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
+  #__Flag_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
   
-  #PB_Flag_CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
-  #PB_Flag_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
+  #__Flag_CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
+  #__Flag_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
     
-  #PB_Flag_AlwaysSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
+  #__Flag_AlwaysSelection = 32 ; #PB_Tree_AlwaysShowSelection ; 0 32 Even If the gadget isn't activated, the selection is still visible.
   
   #PB_Attribute_Selected = #PB_Tree_Selected                       ; 1
   #PB_Attribute_Expanded = #PB_Tree_Expanded                       ; 2
@@ -555,11 +555,11 @@ DeclareModule Constants
 ;   #PB_Text_Top = ~#PB_Text_Middle
 ;   
    EnumerationBinary WidgetFlags
-      #PB_Flag_Limit
+      #__Flag_Limit
     EndEnumeration
     
-    If (#PB_Flag_Limit>>1) > 2147483647 ; 8589934592
-    Debug "Исчерпан лимит в x32 ("+Str(#PB_Flag_Limit>>1)+")"
+    If (#__Flag_Limit>>1) > 2147483647 ; 8589934592
+    Debug "Исчерпан лимит в x32 ("+Str(#__Flag_Limit>>1)+")"
   EndIf
   
   #PB_Gadget_FrameColor = 10
@@ -5784,7 +5784,7 @@ Module Text
         \Y =- 1
         
         ; Set the default widget flag
-        Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#PB_Flag_BorderLess
+        Flag|#PB_Text_MultiLine|#PB_Text_ReadOnly;|#__Flag_BorderLess
         
         If Bool(Flag&#PB_Text_WordWrap)
           Flag&~#PB_Text_MultiLine
@@ -5798,11 +5798,11 @@ Module Text
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_Flag_BorderLess)
+        \fSize = Bool(Not Flag&#__Flag_BorderLess)
         \bSize = \fSize
         
         If Resize(*This, X,Y,Width,Height)
-          \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
+          \Text\Vertical = Bool(Flag&#__Flag_Vertical)
           \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
           If Bool(Flag&#PB_Text_WordWrap)
             \Text\MultiLine =- 1
@@ -8463,17 +8463,17 @@ Module Editor
           \Text\FontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         EndIf
         
-        \fSize = Bool(Not Flag&#PB_Flag_BorderLess)+1
+        \fSize = Bool(Not Flag&#__Flag_BorderLess)+1
         \bSize = \fSize
         
-        \flag\buttons = Bool(flag&#PB_Flag_NoButtons)
-        \Flag\Lines = Bool(flag&#PB_Flag_NoLines)
-        \Flag\FullSelection = Bool(Not flag&#PB_Flag_FullSelection)*7
-        \Flag\AlwaysSelection = Bool(flag&#PB_Flag_AlwaysSelection)
-        \Flag\CheckBoxes = Bool(flag&#PB_Flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
-        \Flag\GridLines = Bool(flag&#PB_Flag_GridLines)
+        \flag\buttons = Bool(flag&#__Flag_NoButtons)
+        \Flag\Lines = Bool(flag&#__Flag_NoLines)
+        \Flag\FullSelection = Bool(Not flag&#__Flag_FullSelection)*7
+        \Flag\AlwaysSelection = Bool(flag&#__Flag_AlwaysSelection)
+        \Flag\CheckBoxes = Bool(flag&#__Flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
+        \Flag\GridLines = Bool(flag&#__Flag_GridLines)
         
-        \Text\Vertical = Bool(Flag&#PB_Flag_Vertical)
+        \Text\Vertical = Bool(Flag&#__Flag_Vertical)
         \Text\Editable = Bool(Not Flag&#PB_Text_ReadOnly)
         
         If Bool(Flag&#PB_Text_WordWrap)
@@ -8507,7 +8507,7 @@ Module Editor
         \Color = Colors
         \Color\Fore[0] = 0
         
-        \sci\margin\width = Bool(Flag&#PB_Flag_Numeric)
+        \sci\margin\width = Bool(Flag&#__Flag_Numeric)
         \sci\margin\Color\Back = $C8F0F0F0 ; \Color\Back[0] 
         
         \Row\color\alpha = 255
@@ -8671,7 +8671,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     g=16
-    Editor::Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines|#PB_Flag_Numeric|#PB_Text_WordWrap) 
+    Editor::Gadget(g, 8, 133+5+8, 306, 133, #__Flag_GridLines|#__Flag_Numeric|#PB_Text_WordWrap) 
     *g._s_widget=GetGadgetData(g)
     
     Editor::SetText(*g, Text.s) 
@@ -8775,6 +8775,6 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; Folding = +-----0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

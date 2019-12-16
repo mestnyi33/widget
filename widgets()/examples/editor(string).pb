@@ -3,6 +3,16 @@ XIncludeFile "editor().pb"
 ;XIncludeFile "widgets().pbi"
 
 DeclareModule String
+  Macro _const_
+    constants::#__
+  EndMacro
+  
+;   Macro _struct_
+;     Structures::_s_widget
+;   EndMacro
+ UseModule constants
+  
+  Structure _struct_ Extends structures::_s_widget : EndStructure
   
   Declare.s GetText(*this)
   Declare   SetText(*this, Text.s)
@@ -10,28 +20,30 @@ DeclareModule String
 EndDeclareModule
 
 Module String
-  Procedure SetText(*this.Structures::_s_widget, Text.s)
+  Procedure SetText(*this._struct_, Text.s)
     ProcedureReturn Editor::SetText(*this, Text.s)
   EndProcedure
   
-  Procedure.s GetText(*this.Structures::_s_widget)
+  Procedure.s GetText(*this._struct_)
     ProcedureReturn Editor::GetText(*this)
   EndProcedure
   
   Procedure.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=#Null)
-    Protected result.i, *this.Structures::_s_widget
+    Protected result.i, *this._struct_
     
     
-    result = Editor::Gadget(Gadget, X, Y, Width, Height, Flag);|constants::#__flag_Vertical)
+    result = Editor::Gadget(Gadget, X, Y, Width, Height, Flag);|_const_flag_vertical)
     
     *this = GetGadgetData(result)
     *this\type = #PB_GadgetType_String
-    *this\text\multiline = Bool(Flag&constants::#__string_multiline)
-    *this\text\Numeric = Bool(Flag&constants::#__string_Numeric)
+    *this\text\multiline = Bool(Flag&_const_string_multiline)
+    *this\text\Numeric = Bool(Flag&_const_string_numeric)
     *this\row\margin\level = 0
     ;*this\text\align\Vertical = 1
     
-    Editor::SetText(*this, Text.s)
+    If Text.s
+      Editor::SetText(*this, Text.s)
+    EndIf
     
     ProcedureReturn result
   EndProcedure
@@ -43,17 +55,21 @@ EndModule
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   UseModule String
+  UseModule constants
+ 
+  Global *S_0._struct_
+  Global *S_1._struct_
+  Global *S_2._struct_
+  Global *S_3._struct_
+  Global *S_4._struct_
+  Global *S_5._struct_
+  Global *S_6._struct_
+  Global *S_7._struct_
+  Global *S_8._struct_
   
-  Global *S_0._s_widget
-  Global *S_1._s_widget
-  Global *S_2._s_widget
-  Global *S_3._s_widget
-  Global *S_4._s_widget
-  Global *S_5._s_widget
-  Global *S_6._s_widget
-  Global *S_7._s_widget
-  Global *S_8._s_widget
-  
+;   *this._const_
+;   
+;   Debug *this;Structures::_s_widget ; String::_struct_; _struct_
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
@@ -164,5 +180,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -0+
+; Folding = -v4-
 ; EnableXP

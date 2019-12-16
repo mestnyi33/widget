@@ -3,10 +3,15 @@
 ;XIncludeFile "editor_5_2.pb"
 ;XIncludeFile "editor_7.pb"
 ;XIncludeFile "editor_8_3.pb"
-XIncludeFile "editor_1.pb"
+
+ ;XIncludeFile "editor.pb"
+
+XIncludeFile "../widgets()/editor(+++).pb"
+UseModule constants
+UseModule structures
 
 
-LN=1500; количесвто итемов 
+LN = 10; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)
