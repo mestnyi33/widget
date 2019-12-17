@@ -524,14 +524,26 @@ DeclareModule Structures
     width.i[4]
   EndStructure
   
+;   ;- - _s_mouse
+;   Structure _s_mouse
+;     drag.b
+;     X.i
+;     Y.i
+;     from.i ; at point widget
+;     ;Wheel.i; delta
+;     Buttons.i ; state
+;     *Delta._s_mouse
+;   EndStructure
+  
   ;- - _s_mouse
-  Structure _s_mouse
-    X.i
-    Y.i
+  Structure _s_mouse Extends _s_point
     from.i ; at point widget
-    Wheel.i; delta
-    Buttons.i ; state
-    *Delta._s_mouse
+    
+    drag.b;[2]
+    change.b
+    buttons.l 
+    wheel._s_point
+    delta._s_point
   EndStructure
   
   ;- - _s_keyboard
@@ -594,9 +606,7 @@ DeclareModule Structures
     width.l
     height.l
     
-    pos.l
-    start.l
-    stop.l
+    pos.l[3]
     time.l
   EndStructure
   
@@ -776,6 +786,20 @@ DeclareModule Structures
     Repaint.i ; Будем посылать сообщение что надо перерисовать а после надо сбрасывать переменую
   EndStructure
   
+  ;- - _s_event
+  Structure _s_event 
+    type.l
+    item.l
+    *data
+    
+    *root._s_root
+    *callback.pFunc
+    *widget._s_widget
+    *active._s_widget ; active window
+    
+    ;draw.b
+  EndStructure
+  
   ;-
   ;- _color_
   ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;
@@ -851,7 +875,6 @@ DeclareModule Structures
     
   EndWith
   
-  Global *Focus._s_widget
   Global NewList List._s_widget()
   Global Use_List_Canvas_Gadget
   
@@ -1897,6 +1920,17 @@ DeclareModule Editor
   
   Structure _struct_ Extends structures::_s_widget : EndStructure
   
+  Global *event._s_event = AllocateStructure(_s_event)
+  
+  Macro Root()
+    *event\root
+  EndMacro
+  
+  Macro GetActive() ; Returns active window
+    *event\active
+  EndMacro
+  
+  
   ;- - DECLAREs MACROs
   ;Declare.i Update(*this)
   
@@ -1915,7 +1949,7 @@ DeclareModule Editor
   Declare.i AddItem(*this, Item.i,Text.s,Image.i=-1,Flag.i=0)
   
   ;Declare.i Make(*this)
-  Declare   CallBack(*this, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
+  Declare   CallBack(*this, EventType.l)
   Declare.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Flag.i=0)
   Declare   ReDraw(*this)
   Declare   Draw(*this)
@@ -1937,7 +1971,7 @@ Module Editor
   ;- PROCEDURE
   ;-
   
-  Declare.i Canvas_CallBack()
+  Declare.i g_callback()
   
   Macro _from_X_(_mouse_x_, _mouse_y_, _type_, _mode_=)
     Bool(_mouse_x_ > _type_\x#_mode_ And _mouse_x_ < (_type_\x#_mode_+_type_\width#_mode_))
@@ -2214,7 +2248,7 @@ Module Editor
     
     ; because bug in mac os
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      If *this\row\_s()\text[2]\width And Not (_line_ = *this\index[2] And *this\row\caret\stop > *this\row\caret\start) And
+      If *this\row\_s()\text[2]\width And Not (_line_ = *this\index[2] And *this\row\caret\pos[1] > *this\row\caret\pos[2]) And
          *this\row\_s()\text[2]\width <> *this\row\_s()\text\width - (*this\row\_s()\text[1]\width+*this\row\_s()\text[3]\width) + _caret_last_len_
         *this\row\_s()\text[2]\width = *this\row\_s()\text\width - (*this\row\_s()\text[1]\width+*this\row\_s()\text[3]\width) + _caret_last_len_
       EndIf
@@ -2268,7 +2302,7 @@ Module Editor
       *this\row\caret\height = *this\row\_s()\text\height
       
       If _line_ > *this\index[2] Or
-         (_line_ = *this\index[2] And *this\row\caret\stop > *this\row\caret\start)
+         (_line_ = *this\index[2] And *this\row\caret\pos[1] > *this\row\caret\pos[2])
         *this\row\caret\x = *this\row\_s()\text[3]\x
         *this\row\caret\pos = *this\row\_s()\text\pos + *this\row\_s()\text[3]\pos
       Else
@@ -2285,6 +2319,9 @@ Module Editor
   EndProcedure
   
   Procedure   _text_sel_set_(*this._struct_, _line_, _scroll_) ; Ok
+;     Debug  ""+*this\row\caret\pos[1] +" "+ *this\row\caret\pos[2]
+;     ProcedureReturn 3
+    
     If _scroll_
       
       PushListPosition(*this\row\_s()) 
@@ -2294,10 +2331,10 @@ Module Editor
            (_line_ > *this\row\_s()\index And *this\index[2] < *this\row\_s()\index)      ; вниз
           
           If _line_ = *this\index[2]  ; And *this\index[2] = *this\row\_s()\index
-            If *this\row\caret\stop > *this\row\caret\start
-              _text_sel_(*this, *this\row\caret\start, *this\row\caret\stop - *this\row\caret\start)
+            If *this\row\caret\pos[1] > *this\row\caret\pos[2]
+              _text_sel_(*this, *this\row\caret\pos[2], *this\row\caret\pos[1] - *this\row\caret\pos[2])
             Else
-              _text_sel_(*this, *this\row\caret\stop, *this\row\caret\start - *this\row\caret\stop)
+              _text_sel_(*this, *this\row\caret\pos[1], *this\row\caret\pos[2] - *this\row\caret\pos[1])
             EndIf
             
           ElseIf (_line_ < *this\row\_s()\index And *this\index[2] > *this\row\_s()\index) Or   ; верх
@@ -2306,20 +2343,20 @@ Module Editor
             If _line_ < 0
               ; если курсор перешел за верхный предел
               *this\index[1] = 0
-              *this\row\caret\stop = 0
+              *this\row\caret\pos[1] = 0
             ElseIf _line_ > *this\countitems - 1
               ; если курсор перешел за нижный предел
               *this\index[1] = *this\countitems - 1
-              *this\row\caret\stop = *this\row\_s()\text\len
+              *this\row\caret\pos[1] = *this\row\_s()\text\len
             EndIf
             
             _text_sel_(*this, 0, *this\row\_s()\text\len)
             
           ElseIf _line_ = *this\row\_s()\index 
             If _line_ > *this\index[2] 
-              _text_sel_(*this, 0, *this\row\caret\stop)
+              _text_sel_(*this, 0, *this\row\caret\pos[1])
             Else
-              _text_sel_(*this, *this\row\caret\stop, *this\row\_s()\text\len - *this\row\caret\stop)
+              _text_sel_(*this, *this\row\caret\pos[1], *this\row\_s()\text\len - *this\row\caret\pos[1])
             EndIf
             
           ElseIf *this\index[2] = *this\row\_s()\index
@@ -2330,27 +2367,27 @@ Module Editor
               ; если курсор перешел за пределы итемов
               *this\index[1] = 0
               
-              If *this\row\caret\start > *this\row\caret\stop
-                _text_sel_(*this, 0, *this\row\caret\start)
+              If *this\row\caret\pos[2] > *this\row\caret\pos[1]
+                _text_sel_(*this, 0, *this\row\caret\pos[2])
               Else
-                *this\row\caret\stop = *this\row\_s()\text\len
-                _text_sel_(*this, *this\row\caret\start, Bool(_line_ <> *this\index[2]) * (*this\row\_s()\text\len - *this\row\caret\start))
+                *this\row\caret\pos[1] = *this\row\_s()\text\len
+                _text_sel_(*this, *this\row\caret\pos[2], Bool(_line_ <> *this\index[2]) * (*this\row\_s()\text\len - *this\row\caret\pos[2]))
               EndIf
               
               *this\index[1] = _line_
             Else
               If _line_ < 0
                 *this\index[1] = 0
-                *this\row\caret\stop = 0
+                *this\row\caret\pos[1] = 0
               ElseIf _line_ > *this\countitems - 1
                 *this\index[1] = *this\countitems - 1
-                *this\row\caret\stop = *this\row\_s()\text\len
+                *this\row\caret\pos[1] = *this\row\_s()\text\len
               EndIf
               
               If *this\index[2] > _line_ 
-                _text_sel_(*this, 0, *this\row\caret\start)
+                _text_sel_(*this, 0, *this\row\caret\pos[2])
               Else
-                _text_sel_(*this, *this\row\caret\start, (*this\row\_s()\text\len - *this\row\caret\start))
+                _text_sel_(*this, *this\row\caret\pos[2], (*this\row\_s()\text\len - *this\row\caret\pos[2]))
               EndIf
             EndIf
             
@@ -2411,9 +2448,9 @@ Module Editor
           EndIf
           
           If _text_sel_is_line_(*this)
-            If *this\row\caret\start <> *this\row\_s()\text[1]\len
-              *this\row\caret\start = *this\row\_s()\text[1]\len
-              *this\row\caret\stop = *this\row\_s()\text[1]\len+*this\row\_s()\text[2]\len
+            If *this\row\caret\pos[2] <> *this\row\_s()\text[1]\len
+              *this\row\caret\pos[2] = *this\row\_s()\text[1]\len
+              *this\row\caret\pos[1] = *this\row\_s()\text[1]\len+*this\row\_s()\text[2]\len
               
               If _caret_ < *this\row\_s()\text[1]\len+*this\row\_s()\text[2]\len/2
                 _caret_ = *this\row\_s()\text[1]\len
@@ -2424,9 +2461,9 @@ Module Editor
               Repaint =- 1
             EndIf
           Else
-            If *this\row\caret\start <> _caret_
-              *this\row\caret\start = _caret_
-              *this\row\caret\stop = _caret_
+            If *this\row\caret\pos[2] <> _caret_
+              *this\row\caret\pos[2] = _caret_
+              *this\row\caret\pos[1] = _caret_
               Repaint =- 1
             EndIf
           EndIf
@@ -2440,8 +2477,8 @@ Module Editor
           EndIf
           
         Else
-          If *this\row\caret\stop <> _caret_
-            *this\row\caret\stop = _caret_
+          If *this\row\caret\pos[1] <> _caret_
+            *this\row\caret\pos[1] = _caret_
             Repaint =- 1 ; scroll horizontal
           EndIf
           
@@ -2468,10 +2505,10 @@ Module Editor
       *this\row\selected = *this\row\_s()
       
       If *this\index[2] = *this\index[1]
-        If *this\row\caret\stop > *this\row\caret\start
-          _text_sel_(*this, *this\row\caret\start , *this\row\caret\stop-*this\row\caret\start)
+        If *this\row\caret\pos[1] > *this\row\caret\pos[2]
+          _text_sel_(*this, *this\row\caret\pos[2] , *this\row\caret\pos[1]-*this\row\caret\pos[2])
         Else
-          _text_sel_(*this, *this\row\caret\stop , *this\row\caret\start-*this\row\caret\stop)
+          _text_sel_(*this, *this\row\caret\pos[1] , *this\row\caret\pos[2]-*this\row\caret\pos[1])
         EndIf
       EndIf
     EndIf
@@ -2483,10 +2520,10 @@ Module Editor
     ;         ;         *this\index[2] = *this\index[1]
     ;         
     ;         If *this\index[2] = *this\index[1]
-    ;           If *this\row\caret\stop<>*this\row\caret\start
-    ;             _text_sel_(*this, 0, *this\row\caret\stop-*this\row\selected\text\len)
+    ;           If *this\row\caret\pos[1]<>*this\row\caret\pos[2]
+    ;             _text_sel_(*this, 0, *this\row\caret\pos[1]-*this\row\selected\text\len)
     ;           Else
-    ;             _text_sel_(*this, *this\row\caret\stop-*this\row\selected\text\len, 0)
+    ;             _text_sel_(*this, *this\row\caret\pos[1]-*this\row\selected\text\len, 0)
     ;           EndIf
     ;         EndIf
     ;         
@@ -2500,10 +2537,10 @@ Module Editor
     
     
     If _line_ = *this\index[2]  ; And *this\index[2] = *this\row\_s()\index
-      If *this\row\caret\stop > *this\row\caret\start
-        _text_sel_(*this, *this\row\caret\start, *this\row\caret\stop - *this\row\caret\start)
+      If *this\row\caret\pos[1] > *this\row\caret\pos[2]
+        _text_sel_(*this, *this\row\caret\pos[2], *this\row\caret\pos[1] - *this\row\caret\pos[2])
       Else
-        _text_sel_(*this, *this\row\caret\stop, *this\row\caret\start - *this\row\caret\stop)
+        _text_sel_(*this, *this\row\caret\pos[1], *this\row\caret\pos[2] - *this\row\caret\pos[1])
       EndIf
       
     ElseIf (*this\index[2] > *this\row\_s()\index And _line_ < *this\row\_s()\index) Or   ; верх
@@ -2513,16 +2550,16 @@ Module Editor
       
     ElseIf _line_ = *this\row\_s()\index 
       If _line_ > *this\index[2] 
-        _text_sel_(*this, 0, *this\row\caret\stop)
+        _text_sel_(*this, 0, *this\row\caret\pos[1])
       Else
-        _text_sel_(*this, *this\row\caret\stop, *this\row\_s()\text\len - *this\row\caret\stop)
+        _text_sel_(*this, *this\row\caret\pos[1], *this\row\_s()\text\len - *this\row\caret\pos[1])
       EndIf
       
     ElseIf *this\index[2] = *this\row\_s()\index
       If *this\index[2] > _line_ 
-        _text_sel_(*this, 0, *this\row\caret\start)
+        _text_sel_(*this, 0, *this\row\caret\pos[2])
       Else
-        _text_sel_(*this, *this\row\caret\start, *this\row\_s()\text\len - *this\row\caret\start)
+        _text_sel_(*this, *this\row\caret\pos[2], *this\row\_s()\text\len - *this\row\caret\pos[2])
       EndIf
       
     EndIf
@@ -2547,18 +2584,18 @@ Module Editor
       ElseIf *this\index[1] = *this\row\_s()\index 
         If *this\index[1] > *this\index[2] 
           *this\row\_s()\text[1]\len = 0 
-          *this\row\_s()\text[2]\len = *this\row\caret\stop
+          *this\row\_s()\text[2]\len = *this\row\caret\pos[1]
         Else
-          *this\row\_s()\text[1]\len = *this\row\caret\stop 
+          *this\row\_s()\text[1]\len = *this\row\caret\pos[1] 
           *this\row\_s()\text[2]\len = *this\row\_s()\text\len - *this\row\_s()\text[1]\len
         EndIf
         
       ElseIf *this\index[2] = *this\row\_s()\index
         If *this\index[2] > *this\index[1] 
           *this\row\_s()\text[1]\len = 0 
-          *this\row\_s()\text[2]\len = *this\row\caret\start
+          *this\row\_s()\text[2]\len = *this\row\caret\pos[2]
         Else
-          *this\row\_s()\text[1]\len = *this\row\caret\start 
+          *this\row\_s()\text[1]\len = *this\row\caret\pos[2] 
           *this\row\_s()\text[2]\len = *this\row\_s()\text\len - *this\row\_s()\text[1]\len
         EndIf
         
@@ -2611,7 +2648,7 @@ Module Editor
         *this\row\caret\height = *this\row\_s()\text\height
         
         If *this\index[1] > *this\index[2] Or
-           (*this\index[1] = *this\index[2] And *this\row\caret\stop > *this\row\caret\start)
+           (*this\index[1] = *this\index[2] And *this\row\caret\pos[1] > *this\row\caret\pos[2])
           *this\row\caret\x = *this\row\_s()\text[3]\x
         Else
           *this\row\caret\x = *this\row\_s()\text[2]\x
@@ -2635,8 +2672,8 @@ Module Editor
     
     With *this
       ; |<<<<<< left edge of the word 
-      If \row\caret\stop > 0 
-        For i = \row\caret\stop - 1 To 1 Step - 1
+      If \row\caret\pos[1] > 0 
+        For i = \row\caret\pos[1] - 1 To 1 Step - 1
           char = Asc(Mid(\row\_s()\text\string.s, i, 1))
           If _text_sel_end_(char)
             Break
@@ -2655,7 +2692,7 @@ Module Editor
     
     With *this
       ; >>>>>>| right edge of the word
-      For i = \row\caret\stop + 2 To \row\_s()\text\len
+      For i = \row\caret\pos[1] + 2 To \row\_s()\text\len
         char = Asc(Mid(\row\_s()\text\string.s, i, 1))
         If _text_sel_end_(char)
           Break
@@ -2690,22 +2727,22 @@ Module Editor
           
           If Input
             If \type = #PB_GadgetType_IPAddress
-              left.s = Left(\text\string, \row\caret\stop )
+              left.s = Left(\text\string, \row\caret\pos[1] )
               Select CountString(left.s, ".")
                 Case 0 : left.s = StringField(left.s, 1, ".")
                 Case 1 : left.s = StringField(left.s, 2, ".")
                 Case 2 : left.s = StringField(left.s, 3, ".")
                 Case 3 : left.s = StringField(left.s, 4, ".")
               EndSelect                                           
-              count = Len(left.s+Trim(StringField(Mid(\text\string, \row\caret\stop +1), 1, "."), #LF$))
+              count = Len(left.s+Trim(StringField(Mid(\text\string, \row\caret\pos[1] +1), 1, "."), #LF$))
               If count < 3 And (Val(left.s) > 25 Or Val(left.s+Chr.s) > 255)
                 Continue
-                ;               ElseIf Mid(\text\string, \row\caret\stop + 1, 1) = "."
-                ;                 \row\caret\stop + 1 : \row\caret\start=\row\caret\stop 
+                ;               ElseIf Mid(\text\string, \row\caret\pos[1] + 1, 1) = "."
+                ;                 \row\caret\pos[1] + 1 : \row\caret\pos[2]=\row\caret\pos[1] 
               EndIf
             EndIf
             
-            If Not Dot And Input = '.' And Mid(\text\string, \row\caret\stop + 1, 1) <> "."
+            If Not Dot And Input = '.' And Mid(\text\string, \row\caret\pos[1] + 1, 1) <> "."
               Dot = 1
             ElseIf Input <> '.' And count < 3
               Dot = 0
@@ -2713,7 +2750,7 @@ Module Editor
               Continue
             EndIf
             
-            If Not Minus And Input = '-' And Mid(\text\string, \row\caret\stop + 1, 1) <> "-"
+            If Not Minus And Input = '-' And Mid(\text\string, \row\caret\pos[1] + 1, 1) <> "-"
               Minus = 1
             ElseIf Input <> '-'
               Minus = 0
@@ -2825,14 +2862,14 @@ Module Editor
         
         If Count
           \index[2] + Count
-          \row\caret\stop = Len(StringField(Chr.s, 1 + Count, #LF$))
+          \row\caret\pos[1] = Len(StringField(Chr.s, 1 + Count, #LF$))
         ElseIf Chr.s = #LF$ ; to return
           \index[2] + 1
-          \row\caret\stop = 0
+          \row\caret\pos[1] = 0
         Else
           SelectElement(\row\_s(), \index[2])
           ;Debug " sss "+\index[2]+" "+\row\_s()\text\string
-          \row\caret\stop = \row\_s()\text[1]\len + Len(Chr.s)
+          \row\caret\pos[1] = \row\_s()\text[1]\len + Len(Chr.s)
         EndIf
         
         ; reset items selection
@@ -2844,7 +2881,7 @@ Module Editor
         Next
         PopListPosition(*this\row\_s())
         
-        \row\caret\start = \row\caret\stop 
+        \row\caret\pos[2] = \row\caret\pos[1] 
         \index[1] = \index[2]
         \text\change =- 1 ; - 1 post event change widget
         Repaint = #True
@@ -2869,7 +2906,7 @@ Module Editor
         
         If Not _text_paste_(*this, Chr.s, Count)
           If \row\_s()\text[2]\len 
-            If \row\caret\stop > \row\caret\start : \row\caret\stop = \row\caret\start : EndIf
+            If \row\caret\pos[1] > \row\caret\pos[2] : \row\caret\pos[1] = \row\caret\pos[2] : EndIf
             \row\_s()\text[2]\len = 0 : \row\_s()\text[2]\string.s = "" : \row\_s()\text[2]\change = 1
           EndIf
           
@@ -2883,13 +2920,13 @@ Module Editor
           If Count
             \index[2] + Count
             \index[1] = \index[2] 
-            \row\caret\stop = Len(StringField(Chr.s, 1 + Count, #LF$))
+            \row\caret\pos[1] = Len(StringField(Chr.s, 1 + Count, #LF$))
           Else
-            \row\caret\stop + Len(Chr.s) 
+            \row\caret\pos[1] + Len(Chr.s) 
           EndIf
           
           \text\string.s = \text[1]\string + Chr.s + \text[3]\string
-          \row\caret\start = \row\caret\stop 
+          \row\caret\pos[2] = \row\caret\pos[1] 
           ;; \countitems = CountString(\text\string.s, #LF$)
           \text\change =- 1 ; - 1 post event change widget
         EndIf
@@ -2926,8 +2963,8 @@ Module Editor
       EndIf
       
       
-      If string_out <> String.s 
-        string_out = String.s
+      If string_out <> String.s+Str(*this) 
+        string_out = String.s+Str(*this) 
         
         \text\len = Len(\text\string.s)
         \countitems = CountString(String.s, #LF$)
@@ -3051,7 +3088,7 @@ Module Editor
             ;               Debug  ""+Str(\row\caret\x+\text\x+\flag\fullselection) +" "+ *this\scroll\h\width
             ;               Debug  \row\_s()\text\string
             ;               ; \row\selected = \row\_s()
-            ;                 _text_sel_(*this, \row\caret\stop-\row\selected\text\len , 0)
+            ;                 _text_sel_(*this, \row\caret\pos[1]-\row\selected\text\len , 0)
             ;               _text_scroll_x_(*this)
             ;             
             ;             EndIf
@@ -3179,7 +3216,7 @@ Module Editor
                 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                   ; to right
                   If (*this\index[1] > *this\index[2] Or 
-                      (*this\index[1] = *this\index[2] And *this\row\caret\stop > *this\row\caret\start))
+                      (*this\index[1] = *this\index[2] And *this\row\caret\pos[1] > *this\row\caret\pos[2]))
                     
                     DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
                     DrawRotatedText(Text_X, Text_Y, \row\_s()\text\string.s, angle, *this\row\color\front[*this\row\color\state])
@@ -3408,7 +3445,7 @@ Module Editor
     EndWith
   EndProcedure
   
-  Procedure GetAttribute(*this._struct_, Attribute.i)
+  Procedure  GetAttribute(*this._struct_, Attribute.i)
     Protected Result
     
     With *this
@@ -3422,16 +3459,17 @@ Module Editor
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetItemState(*this._struct_, Item.i, State.i)
+  Procedure  SetItemState(*this._struct_, Item.i, State.i)
     Protected Result
     
     With *this
       PushListPosition(\row\_s())
       Result = SelectElement(\row\_s(), Item) 
+      
       If Result 
+        \row\caret\pos[1] = State
         \row\index = \row\_s()\index
-        \row\caret\stop = State
-        \row\caret\start = \row\caret\stop 
+        \row\caret\pos[2] = \row\caret\pos[1] 
       EndIf
       PopListPosition(\row\_s())
     EndWith
@@ -3439,11 +3477,12 @@ Module Editor
     ProcedureReturn Result
   EndProcedure
   
-  Procedure   SetState(*this._struct_, State.l) ; Ok
+  Procedure  SetState(*this._struct_, State.l) ; Ok
     Protected i.l, len.l
     
     With *this
-      If state < 0 Or state > *this\text\len
+      If state < 0 Or 
+         state > *this\text\len
         state = *this\text\len
       EndIf
       
@@ -3456,15 +3495,14 @@ Module Editor
         While *end\c 
           If *end\c = #LF 
             len + (*end-*str)/#__sOC
+            ; Debug ""+i+" "+Str(len + i) +" "+ state
             
-            If len + (*end-*str)/#__sOC > state
-              ;            Debug  PeekS (*str, (*end-*str)/#__sOC)
-              ;            Debug  len
+            If len + i >= state
               *this\index[1] = i
               *this\index[2] = i
               
-              *this\row\caret\stop = state - (len-(*end-*str)/#__sOC) - i
-              *this\row\caret\start = *this\row\caret\stop
+              *this\row\caret\pos[1] = state - (len-(*end-*str)/#__sOC) - i
+              *this\row\caret\pos[2] = *this\row\caret\pos[1]
               
               Break
             EndIf
@@ -3475,6 +3513,16 @@ Module Editor
           
           *end + #__sOC 
         Wend
+            
+        ; last line
+        If *this\index[1] <> i 
+          *this\index[1] = i
+          *this\index[2] = i
+          
+          *this\row\caret\pos[1] = (state - len - i) 
+          *this\row\caret\pos[2] = *this\row\caret\pos[1]
+        EndIf
+        
       EndIf
     EndWith
   EndProcedure
@@ -3483,9 +3531,10 @@ Module Editor
     ProcedureReturn *this\row\caret\pos
   EndProcedure
   
-  Procedure ClearItems(*this._struct_)
+  Procedure  ClearItems(*this._struct_)
     *this\countitems = 0
     *this\text\change = 1 
+    
     If *this\text\editable
       *this\text\string = #LF$
     EndIf
@@ -3496,7 +3545,7 @@ Module Editor
   EndProcedure
   
   Procedure.i CountItems(*this._struct_)
-    ProcedureReturn   *this\countitems
+    ProcedureReturn *this\countitems
   EndProcedure
   
   Procedure.i RemoveItem(*this._struct_, Item.i)
@@ -3524,7 +3573,7 @@ Module Editor
     EndWith
   EndProcedure
   
-  Procedure.i text_setText(*this._struct_, Text.s)
+  Procedure.i SetText(*this._struct_, Text.s, Item.i=0)
     Protected Result.i, Len.i, String.s, i.i
     ; If Text.s="" : Text.s=#LF$ : EndIf
     Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
@@ -3536,6 +3585,7 @@ Module Editor
         \text\string.s = _text_insert_make_(*this, Text.s)
         
         If \text\string.s
+          ; set orign
           \text\string.s[1] = Text.s
           
           If \text\multiline
@@ -3557,25 +3607,15 @@ Module Editor
     
           \text\len = Len(\text\string.s)
           \text\change = #True
+          
+          _repaint_(*this)
+          
           Result = #True
         EndIf
       EndIf
     EndWith
     
     ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i SetText(*this._struct_, Text.s, Item.i=0)
-    Protected i
-    
-    With *this
-      If text_setText(*this, Text.s)
-        _repaint_(*this)
-        
-        ProcedureReturn 1
-      EndIf
-    EndWith
-    
   EndProcedure
   
   Procedure.i SetFont(*this._struct_, FontID.i)
@@ -3758,13 +3798,13 @@ Module Editor
           
         Case #PB_EventType_KeyDown
           Select *this\root\keyboard\key
-            Case #PB_Shortcut_Home : *this\row\caret\start = 0
+            Case #PB_Shortcut_Home : *this\row\caret\pos[2] = 0
               If _key_control_ : *this\index[2] = 0 : EndIf
-              Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)
+              Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])
               
-            Case #PB_Shortcut_End : *this\row\caret\start = *this\text\len
+            Case #PB_Shortcut_End : *this\row\caret\pos[2] = *this\text\len
               If _key_control_ : *this\index[2] = *this\countitems - 1 : EndIf
-              Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)
+              Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])
               
             Case #PB_Shortcut_PageUp   ;: Repaint = ToPos(*this, 1, 1)
               
@@ -3775,8 +3815,8 @@ Module Editor
                  \text[2]\len <> \text\len
                 
                 ; set caret to begin
-                \row\caret\start = 0 
-                \row\caret\stop = \text\len ; если поставить ноль то и прокручиваеть в конец строки
+                \row\caret\pos[2] = 0 
+                \row\caret\pos[1] = \text\len ; если поставить ноль то и прокручиваеть в конец строки
                 
                 ; select first item
                 \index[2] = 0 
@@ -3789,42 +3829,42 @@ Module Editor
               If *this\index[1] > _line_first_
                 If _caret_last_pos_
                   If Not *this\root\keyboard\key[1] & #PB_Canvas_Alt 
-                    *this\row\caret\stop = _caret_last_pos_
-                    *this\row\caret\start = _caret_last_pos_
+                    *this\row\caret\pos[1] = _caret_last_pos_
+                    *this\row\caret\pos[2] = _caret_last_pos_
                   EndIf
                   _caret_last_pos_ = 0
                 EndIf
                 
                 If _key_shift_
                   If _key_control_
-                    Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)  
+                    Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])  
                     Repaint = _text_sel_draw_(*this, 0, 0)  
                   Else
-                    Repaint = _text_sel_draw_(*this, *this\index[1] - _step_, *this\row\caret\stop)  
+                    Repaint = _text_sel_draw_(*this, *this\index[1] - _step_, *this\row\caret\pos[1])  
                   EndIf
                 ElseIf *this\root\keyboard\key[1] & #PB_Canvas_Alt 
-                  If *this\row\caret\stop <> _caret_min_ 
-                    *this\row\caret\start = _caret_min_
+                  If *this\row\caret\pos[1] <> _caret_min_ 
+                    *this\row\caret\pos[2] = _caret_min_
                   Else
                     *this\index[2] - _step_ 
                   EndIf
                   
-                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)  
+                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])  
                   
                 Else
                   If _key_control_
                     *this\index[2] = 0
-                    *this\row\caret\start = 0
+                    *this\row\caret\pos[2] = 0
                   Else
                     *this\index[2] - _step_
                   EndIf
                   
-                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)
+                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])
                 EndIf
               ElseIf *this\index[1] = _line_first_
                 
-                If *this\row\caret\stop <> _caret_min_ : *this\row\caret\start = _caret_min_ : _caret_last_pos_ = *this\row\caret\stop
-                  Repaint = _text_sel_draw_(*this, _line_first_, *this\row\caret\start)  
+                If *this\row\caret\pos[1] <> _caret_min_ : *this\row\caret\pos[2] = _caret_min_ : _caret_last_pos_ = *this\row\caret\pos[1]
+                  Repaint = _text_sel_draw_(*this, _line_first_, *this\row\caret\pos[2])  
                 EndIf
                 
               EndIf
@@ -3833,47 +3873,47 @@ Module Editor
               If *this\index[1] < _line_last_
                 If _caret_last_pos_
                   If Not *this\root\keyboard\key[1] & #PB_Canvas_Alt And Not _key_control_
-                    *this\row\caret\stop = _caret_last_pos_
-                    *this\row\caret\start = _caret_last_pos_
+                    *this\row\caret\pos[1] = _caret_last_pos_
+                    *this\row\caret\pos[2] = _caret_last_pos_
                   EndIf
                   _caret_last_pos_ = 0
                 EndIf
                 
                 If _key_shift_
                   If _key_control_
-                    Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)  
+                    Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])  
                     Repaint = _text_sel_draw_(*this, \countitems - 1, *this\text\len)  
                   Else
-                    Repaint = _text_sel_draw_(*this, *this\index[1] + _step_, *this\row\caret\stop)  
+                    Repaint = _text_sel_draw_(*this, *this\index[1] + _step_, *this\row\caret\pos[1])  
                   EndIf
                 ElseIf *this\root\keyboard\key[1] & #PB_Canvas_Alt 
-                  If *this\row\caret\stop <> _caret_max_ 
-                    *this\row\caret\start = _caret_max_
+                  If *this\row\caret\pos[1] <> _caret_max_ 
+                    *this\row\caret\pos[2] = _caret_max_
                   Else
                     *this\index[2] + _step_ 
                     
                     If SelectElement(*this\row\_s(), *this\index[2]) 
                       _caret_max_ = *this\row\_s()\text\len
                       
-                      If *this\row\caret\stop <> _caret_max_
-                        *this\row\caret\start = _caret_max_
+                      If *this\row\caret\pos[1] <> _caret_max_
+                        *this\row\caret\pos[2] = _caret_max_
                         
-                        Debug ""+#PB_Compiler_Procedure + "*this\row\caret\stop <> _caret_max_"
+                        Debug ""+#PB_Compiler_Procedure + "*this\row\caret\pos[1] <> _caret_max_"
                       EndIf
                     EndIf
                   EndIf
                   
-                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)  
+                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])  
                   
                 Else
                   If _key_control_
                     *this\index[2] = \countitems - 1
-                    *this\row\caret\start = *this\text\len
+                    *this\row\caret\pos[2] = *this\text\len
                   Else
                     *this\index[2] + _step_
                   EndIf
                   
-                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)  
+                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])  
                 EndIf
               ElseIf *this\index[1] = _line_last_
                 
@@ -3883,8 +3923,8 @@ Module Editor
                   Debug ""+#PB_Compiler_Procedure + "*this\row\_s()\index <> _line_last_"
                 EndIf
                 
-                If *this\row\caret\stop <> _caret_max_ : *this\row\caret\start = _caret_max_ : _caret_last_pos_ = *this\row\caret\stop
-                  Repaint = _text_sel_draw_(*this, _line_last_, *this\row\caret\start)  
+                If *this\row\caret\pos[1] <> _caret_max_ : *this\row\caret\pos[2] = _caret_max_ : _caret_last_pos_ = *this\row\caret\pos[1]
+                  Repaint = _text_sel_draw_(*this, _line_last_, *this\row\caret\pos[2])  
                 EndIf
                 
               EndIf
@@ -3894,56 +3934,56 @@ Module Editor
                 If _key_control_
                   Repaint = _text_sel_draw_(*this, *this\index[2], 0)  
                 Else
-                  _line_ = *this\index[1] - Bool(*this\index[1] > _line_first_ And *this\row\caret\stop = _caret_min_) * _step_
+                  _line_ = *this\index[1] - Bool(*this\index[1] > _line_first_ And *this\row\caret\pos[1] = _caret_min_) * _step_
                   
                   ; коректируем позицию коректора
                   If *this\row\_s()\index <> _line_ And
                      SelectElement(*this\row\_s(), _line_) 
                   EndIf
-                  If *this\row\caret\stop > *this\row\_s()\text\len
-                    *this\row\caret\stop = *this\row\_s()\text\len
+                  If *this\row\caret\pos[1] > *this\row\_s()\text\len
+                    *this\row\caret\pos[1] = *this\row\_s()\text\len
                   EndIf
                   
                   If *this\index[1] <> _line_
                     Repaint = _text_sel_draw_(*this, _line_, *this\row\_s()\text\len)  
-                  ElseIf *this\row\caret\stop > _caret_min_
-                    Repaint = _text_sel_draw_(*this, _line_, *this\row\caret\stop - _step_)  
+                  ElseIf *this\row\caret\pos[1] > _caret_min_
+                    Repaint = _text_sel_draw_(*this, _line_, *this\row\caret\pos[1] - _step_)  
                   EndIf
                 EndIf
                 
               ElseIf *this\index[1] > _line_first_
                 If *this\root\keyboard\key[1] & #PB_Canvas_Alt 
-                  *this\row\caret\start = _text_sel_start_(*this)
+                  *this\row\caret\pos[2] = _text_sel_start_(*this)
                   
-                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)  
+                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])  
                 Else
                   If _key_control_
-                    *this\row\caret\start = 0
+                    *this\row\caret\pos[2] = 0
                   Else
-                    If *this\row\caret\start = *this\row\caret\stop
-                      *this\row\caret\start - _step_
+                    If *this\row\caret\pos[2] = *this\row\caret\pos[1]
+                      *this\row\caret\pos[2] - _step_
                     Else
-                      *this\row\caret\start = *this\row\caret\stop - _step_ 
+                      *this\row\caret\pos[2] = *this\row\caret\pos[1] - _step_ 
                     EndIf
                     
-                    If *this\row\caret\stop = _caret_min_
+                    If *this\row\caret\pos[1] = _caret_min_
                       *this\index[2] - _step_
                       
                       If SelectElement(*this\row\_s(), *this\index[2]) 
-                        *this\row\caret\stop = *this\row\_s()\text\len
-                        *this\row\caret\start = *this\row\_s()\text\len
+                        *this\row\caret\pos[1] = *this\row\_s()\text\len
+                        *this\row\caret\pos[2] = *this\row\_s()\text\len
                       EndIf
                     EndIf
                   EndIf
                   
-                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)  
+                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])  
                 EndIf
                 
               ElseIf *this\index[1] = _line_first_
                 
-                If *this\row\caret\stop > _caret_min_ 
-                  *this\row\caret\start - _step_
-                  Repaint = _text_sel_draw_(*this, _line_first_, *this\row\caret\start)  
+                If *this\row\caret\pos[1] > _caret_min_ 
+                  *this\row\caret\pos[2] - _step_
+                  Repaint = _text_sel_draw_(*this, _line_first_, *this\row\caret\pos[2])  
                 EndIf
                 
               EndIf
@@ -3958,56 +3998,56 @@ Module Editor
                     _caret_max_ = *this\row\_s()\text\len
                   EndIf
                   
-                  If *this\row\caret\stop > _caret_max_
-                    *this\row\caret\stop = _caret_max_
+                  If *this\row\caret\pos[1] > _caret_max_
+                    *this\row\caret\pos[1] = _caret_max_
                   EndIf
                   
-                  _line_ = *this\index[1] + Bool(*this\index[1] < _line_last_ And *this\row\caret\stop = _caret_max_) * _step_
+                  _line_ = *this\index[1] + Bool(*this\index[1] < _line_last_ And *this\row\caret\pos[1] = _caret_max_) * _step_
                   
                   ; если дошли в конец строки,
                   ; то переходим в начало
                   If *this\index[1] <> _line_ 
                     Repaint = _text_sel_draw_(*this, _line_, 0)  
-                  ElseIf *this\row\caret\stop < _caret_max_
-                    Repaint = _text_sel_draw_(*this, _line_, *this\row\caret\stop + _step_)  
+                  ElseIf *this\row\caret\pos[1] < _caret_max_
+                    Repaint = _text_sel_draw_(*this, _line_, *this\row\caret\pos[1] + _step_)  
                   EndIf
                 EndIf
                 
               ElseIf *this\index[1] < _line_last_
                 If *this\root\keyboard\key[1] & #PB_Canvas_Alt 
-                  *this\row\caret\start = _text_sel_stop_(*this)
+                  *this\row\caret\pos[2] = _text_sel_stop_(*this)
                   
-                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)  
+                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])  
                 Else
                   If _key_control_
-                    *this\row\caret\start = *this\text\len
+                    *this\row\caret\pos[2] = *this\text\len
                   Else
-                    If *this\row\caret\start = *this\row\caret\stop
-                      *this\row\caret\start + _step_
+                    If *this\row\caret\pos[2] = *this\row\caret\pos[1]
+                      *this\row\caret\pos[2] + _step_
                     Else
-                      *this\row\caret\start = *this\row\caret\stop + _step_ 
+                      *this\row\caret\pos[2] = *this\row\caret\pos[1] + _step_ 
                     EndIf
                     
-                    If *this\row\caret\stop = _caret_max_
+                    If *this\row\caret\pos[1] = _caret_max_
                       *this\index[2] + _step_
                       
                       If SelectElement(*this\row\_s(), *this\index[2]) 
-                        *this\row\caret\stop = 0
-                        *this\row\caret\start = 0
+                        *this\row\caret\pos[1] = 0
+                        *this\row\caret\pos[2] = 0
                       EndIf
                     EndIf
                   EndIf
                   
-                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\start)  
+                  Repaint = _text_sel_draw_(*this, *this\index[2], *this\row\caret\pos[2])  
                 EndIf
                 
               ElseIf *this\index[1] = _line_last_
                 
-                If *this\row\caret\stop < _caret_max_ 
-                  *this\row\caret\start + _step_
+                If *this\row\caret\pos[1] < _caret_max_ 
+                  *this\row\caret\pos[2] + _step_
                   
                   
-                  Repaint = _text_sel_draw_(*this, _line_last_, *this\row\caret\start)  
+                  Repaint = _text_sel_draw_(*this, _line_last_, *this\row\caret\pos[2])  
                 EndIf
                 
               EndIf
@@ -4034,7 +4074,7 @@ Module Editor
                 If Not _text_cut_(*this)
                   If \row\_s()\text[2]\len
                     
-                    If \row\caret\stop > \row\caret\start : \row\caret\stop = \row\caret\start : EndIf
+                    If \row\caret\pos[1] > \row\caret\pos[2] : \row\caret\pos[1] = \row\caret\pos[2] : EndIf
                     \row\_s()\text[2]\len = 0 : \row\_s()\text[2]\string.s = "" : \row\_s()\text[2]\change = 1
                     
                     \row\_s()\text\string.s = \row\_s()\text[1]\string.s + \row\_s()\text[3]\string.s
@@ -4043,20 +4083,20 @@ Module Editor
                     \text\string.s = \text[1]\string + \text[3]\string
                     \text\change =- 1 ; - 1 post event change widget
                     
-                  ElseIf \row\caret\start > 0 : \row\caret\stop - 1 
-                    \row\_s()\text[1]\string.s = Left(\row\_s()\text\string.s, \row\caret\stop )
+                  ElseIf \row\caret\pos[2] > 0 : \row\caret\pos[1] - 1 
+                    \row\_s()\text[1]\string.s = Left(\row\_s()\text\string.s, \row\caret\pos[1] )
                     \row\_s()\text[1]\len = Len(\row\_s()\text[1]\string.s) : \row\_s()\text[1]\change = 1
                     
                     \row\_s()\text\string.s = \row\_s()\text[1]\string.s + \row\_s()\text[3]\string.s
                     \row\_s()\text\len = \row\_s()\text[1]\len + \row\_s()\text[3]\len : \row\_s()\text\change = 1
                     
-                    \text\string.s = Left(\text\string.s, \row\_s()\text\pos+\row\caret\stop ) + \text[3]\string
+                    \text\string.s = Left(\text\string.s, \row\_s()\text\pos+\row\caret\pos[1] ) + \text[3]\string
                     \text\change =- 1 ; - 1 post event change widget
                   Else
                     ; Если дошли до начала строки то 
                     ; переходим в конец предыдущего итема
                     If \index[1] > _line_first_ 
-                      \text\string.s = RemoveString(\text\string.s, #LF$, #PB_String_CaseSensitive, \row\_s()\text\pos+\row\caret\stop, 1)
+                      \text\string.s = RemoveString(\text\string.s, #LF$, #PB_String_CaseSensitive, \row\_s()\text\pos+\row\caret\pos[1], 1)
                       
                       ;to up
                       \index[1] - 1
@@ -4067,7 +4107,7 @@ Module Editor
                       EndIf
                       ;: _text_sel_draw_(*this, \index[2], \text\len)
                       
-                      \row\caret\stop = \row\_s()\text\len
+                      \row\caret\pos[1] = \row\_s()\text\len
                       \text\change =- 1 ; - 1 post event change widget
                       
                     Else
@@ -4079,7 +4119,7 @@ Module Editor
                 EndIf
                 
                 If \text\change
-                  \row\caret\start = \row\caret\stop 
+                  \row\caret\pos[2] = \row\caret\pos[1] 
                   Repaint =- 1 
                 EndIf
               EndIf
@@ -4087,7 +4127,7 @@ Module Editor
             Case #PB_Shortcut_Delete 
               If Not _text_cut_(*this)
                 If \row\_s()\text[2]\len
-                  If \row\caret\stop > \row\caret\start : \row\caret\stop = \row\caret\start : EndIf
+                  If \row\caret\pos[1] > \row\caret\pos[2] : \row\caret\pos[1] = \row\caret\pos[2] : EndIf
                   \row\_s()\text[2]\len = 0 : \row\_s()\text[2]\string.s = "" : \row\_s()\text[2]\change = 1
                   
                   \row\_s()\text\string.s = \row\_s()\text[1]\string.s + \row\_s()\text[3]\string.s
@@ -4096,39 +4136,44 @@ Module Editor
                   \text\string.s = \text[1]\string + \text[3]\string
                   \text\change =- 1 ; - 1 post event change widget
                   
-                ElseIf \row\caret\start < \row\_s()\text\len 
-                  \row\_s()\text[3]\string.s = Right(\row\_s()\text\string.s, \row\_s()\text\len - \row\caret\stop - 1)
+                ElseIf \row\caret\pos[2] < \row\_s()\text\len 
+                  \row\_s()\text[3]\string.s = Right(\row\_s()\text\string.s, \row\_s()\text\len - \row\caret\pos[1] - 1)
                   \row\_s()\text[3]\len = Len(\row\_s()\text[3]\string.s) : \row\_s()\text[3]\change = 1
                   
                   \row\_s()\text\string.s = \row\_s()\text[1]\string.s + \row\_s()\text[3]\string.s
                   \row\_s()\text\len = \row\_s()\text[1]\len + \row\_s()\text[3]\len : \row\_s()\text\change = 1
                   
-                  \text[3]\string = Right(\text\string.s, \text\len - (\row\_s()\text\pos + \row\caret\stop ) - 1)
+                  \text[3]\string = Right(\text\string.s, \text\len - (\row\_s()\text\pos + \row\caret\pos[1] ) - 1)
                   \text[3]\len = Len(\text[3]\string.s)
                   
                   \text\string.s = \text[1]\string + \text[3]\string
                   \text\change =- 1 ; - 1 post event change widget
                 Else
                   If \index[2] < \countitems - 1
-                    \text\string.s = RemoveString(\text\string.s, #LF$, #PB_String_CaseSensitive, \row\_s()\text\pos+\row\caret\stop , 1)
+                    \text\string.s = RemoveString(\text\string.s, #LF$, #PB_String_CaseSensitive, \row\_s()\text\pos+\row\caret\pos[1] , 1)
                     \text\change =- 1 ; - 1 post event change widget
                   EndIf
                 EndIf
               EndIf
               
               If \text\change
-                \row\caret\start = \row\caret\stop 
+                \row\caret\pos[2] = \row\caret\pos[1] 
                 Repaint =- 1 
               EndIf
               
               ;- return
             Case #PB_Shortcut_Return 
-              If Not _text_paste_(*this, #LF$)
-                \index[2] + 1
-                \index[1] = \index[2]
-                \row\caret\start = 0
-                \row\caret\stop = 0
-                \text\change =- 1 ; - 1 post event change widget
+              If *this\text\multiline
+                If Not _text_paste_(*this, #LF$)
+                  \index[2] + 1
+                  \index[1] = \index[2]
+                  \row\caret\pos[2] = 0
+                  \row\caret\pos[1] = 0
+                  \text\change =- 1 ; - 1 post event change widget
+                EndIf
+              Else
+                *this\errors = 1
+                ProcedureReturn - 1
               EndIf
               
               If \text\change 
@@ -4136,19 +4181,28 @@ Module Editor
               EndIf
               
             Case #PB_Shortcut_C, #PB_Shortcut_X
-                If _key_control_
-                  SetClipboardText(\text[2]\string)
-                  
-                  If \root\keyboard\key = #PB_Shortcut_X
-                    Repaint = _text_cut_(*this)
-                  EndIf
+              If _key_control_
+                SetClipboardText(\text[2]\string)
+                
+                If \root\keyboard\key = #PB_Shortcut_X
+                  Repaint = _text_cut_(*this)
+                EndIf
+              EndIf
+              
+            Case #PB_Shortcut_V
+              If _key_control_ And \text\editable
+                Protected text.s = GetClipboardText()
+                
+                If Not \text\multiLine
+                  text = ReplaceString(text, #LFCR$, #LF$)
+                  text = ReplaceString(text, #CRLF$, #LF$)
+                  text = ReplaceString(text, #CR$, #LF$)
+                  text = RemoveString(text, #LF$)
                 EndIf
                 
-            Case #PB_Shortcut_V
-                If _key_control_ And \text\editable
-                  Repaint = _text_insert_(*this, GetClipboardText())
-                EndIf  
-                
+                Repaint = _text_insert_(*this, text)
+              EndIf  
+              
           EndSelect 
           
           Select *this\root\keyboard\key
@@ -4183,12 +4237,12 @@ Module Editor
       ;       If Repaint =- 1
       ;         _start_drawing_(*this)
       ;         
-      ;         If \row\caret\stop < \row\caret\start
-      ;           ; Debug \row\caret\start-\row\caret\stop 
-      ;           _text_sel_(*this, \row\caret\stop , \row\caret\start-\row\caret\stop )
+      ;         If \row\caret\pos[1] < \row\caret\pos[2]
+      ;           ; Debug \row\caret\pos[2]-\row\caret\pos[1] 
+      ;           _text_sel_(*this, \row\caret\pos[1] , \row\caret\pos[2]-\row\caret\pos[1] )
       ;         Else
-      ;           ; Debug \row\caret\stop -\row\caret\start
-      ;           _text_sel_(*this, \row\caret\start, \row\caret\stop-\row\caret\start)
+      ;           ; Debug \row\caret\pos[1] -\row\caret\pos[2]
+      ;           _text_sel_(*this, \row\caret\pos[2], \row\caret\pos[1]-\row\caret\pos[2])
       ;         EndIf
       ;         
       ;         StopDrawing() 
@@ -4198,7 +4252,8 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.i events_editor(*this._struct_, eventtype.l, mouse_x.l, mouse_y.l)
+  ;-
+  Procedure   CallBack(*this._struct_, eventtype.l)
     Static DoubleClick.i=-1
     Protected Repaint.i, _key_control_.i, Caret.i, _line_.l, String.s
     
@@ -4243,7 +4298,7 @@ Module Editor
                 
                 Caret = _text_sel_stop_(*this)
                 *this\row\caret\time = ElapsedMilliseconds()
-                *this\row\caret\start = _text_sel_start_(*this)
+                *this\row\caret\pos[2] = _text_sel_start_(*this)
                 Repaint = _text_sel_draw_(*this, *this\index[2], Caret)
                 *this\row\selected = \row\_s() ; *this\index[2]
                 
@@ -4255,56 +4310,62 @@ Module Editor
                    SelectElement(\row\_s(), _line_) 
                 EndIf
                 
-                If *this\row\selected And 
-                   *this\row\selected = \row\_s() And
-                   (ElapsedMilliseconds() - *this\row\caret\time) < 500
-                  
-                  *this\row\caret\start = 0
-                  *this\row\box\checked = #False
-                  *this\row\selected = #Null
-                  Repaint = _text_sel_draw_(*this, _line_, \row\_s()\text\len)
-                  
-                Else
-                  _start_drawing_(*this)
-                  *this\row\selected = \row\_s()
-                  
-                  If *this\text\editable And _text_sel_is_line_(*this)
-                    ; Отмечаем что кликнули
-                    ; по выделеному тексту
-                    *this\row\box\checked = 1
+                If _line_ = \row\_s()\index
+                  If *this\row\selected And 
+                     *this\row\selected = \row\_s() And
+                     (ElapsedMilliseconds() - *this\row\caret\time) < 500
                     
-                    Debug "sel - "+\row\_s()\text[2]\width
-                    SetGadgetAttribute(*this\root\canvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
+                    *this\row\caret\pos[2] = 0
+                    *this\row\box\checked = #False
+                    *this\row\selected = #Null
+                    *this\index[1] = _line_
+                    *this\row\caret\pos[1] = \row\_s()\text\len ; Чтобы не прокручивало в конец строки
+                    Repaint = _text_sel_draw_(*this, _line_, \row\_s()\text\len)
+                    
                   Else
-                    ; reset items selection
-                    PushListPosition(*this\row\_s())
-                    ForEach *this\row\_s()
-                      If *this\row\_s()\text[2]\width <> 0 
-                        _text_sel_reset_(*this\row\_s())
+                    _start_drawing_(*this)
+                    *this\row\selected = \row\_s()
+                    
+                    If *this\text\editable And _text_sel_is_line_(*this)
+                      ; Отмечаем что кликнули
+                      ; по выделеному тексту
+                      *this\row\box\checked = 1
+                      
+                      Debug "sel - "+\row\_s()\text[2]\width
+                      SetGadgetAttribute(*this\root\canvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
+                    Else
+                      ; reset items selection
+                      PushListPosition(*this\row\_s())
+                      ForEach *this\row\_s()
+                        If *this\row\_s()\text[2]\width <> 0 
+                          _text_sel_reset_(*this\row\_s())
+                        EndIf
+                      Next
+                      PopListPosition(*this\row\_s())
+                      
+                      Caret = _text_caret_(*this)
+                      
+                      \index[2] = \row\_s()\index 
+                      
+                      
+                      If *this\row\caret\pos[1] <> Caret
+                        *this\row\caret\pos[1] = Caret
+                        *this\row\caret\pos[2] = Caret 
+                        Repaint =- 1
                       EndIf
-                    Next
-                    PopListPosition(*this\row\_s())
-                    
-                    Caret = _text_caret_(*this)
-                    
-                    \index[2] = \row\_s()\index 
-                    
-                    \row\caret\start = Caret 
-                    
-                    If *this\row\caret\stop <> Caret
-                      *this\row\caret\stop = Caret
-                      Repaint =- 1
+                      
+                      If *this\index[1] <> _line_ 
+                        *this\index[1] = _line_
+                        Repaint = 1
+                      EndIf
+                      
+                      If Repaint
+                        Repaint = Bool(_text_sel_set_(*this, _line_, Repaint))
+                      EndIf
                     EndIf
-                    
-                    If *this\index[1] <> _line_ 
-                      *this\index[1] = _line_
-                      Repaint = 1
-                    EndIf
-                    
-                    Repaint = Bool(_text_sel_set_(*this, _line_, Repaint))
-                  EndIf
                   
-                  StopDrawing() 
+                    StopDrawing() 
+                  EndIf
                 EndIf
                 
                 
@@ -4326,19 +4387,19 @@ Module Editor
                   
                   ; на одной линии работает
                   ; теперь надо сделать чтоб и на другие линии можно было бросать
-                  If *this\row\caret\start = *this\row\caret\stop 
+                  If *this\row\caret\pos[2] = *this\row\caret\pos[1] 
                     
                     ; Если бросили на правую сторону от выделеного текста.
-                    If *this\index[2] = *this\index[1] And *this\row\caret\start > *this\row\selected\text[2]\pos + *this\row\selected\text[2]\len
-                      *this\row\caret\start - *this\row\selected\text[2]\len
+                    If *this\index[2] = *this\index[1] And *this\row\caret\pos[2] > *this\row\selected\text[2]\pos + *this\row\selected\text[2]\len
+                      *this\row\caret\pos[2] - *this\row\selected\text[2]\len
                     EndIf
-                    ; Debug ""+*this\row\caret\start +" "+ *this\row\selected\text[2]\pos
+                    ; Debug ""+*this\row\caret\pos[2] +" "+ *this\row\selected\text[2]\pos
                     
                     *this\row\selected\text\string = RemoveString(*this\row\selected\text\string, *this\row\selected\text[2]\string, #PB_String_CaseSensitive, *this\row\selected\text[2]\pos, 1)
                     *this\text\string = RemoveString(*this\text\string, *this\row\selected\text[2]\string, #PB_String_CaseSensitive, *this\row\selected\text\pos+*this\row\selected\text[2]\pos, 1)
                     
-                    *this\row\_s()\text\string = InsertString(*this\row\_s()\text\string, *this\row\selected\text[2]\string, *this\row\caret\start+1)
-                    *this\text\string = InsertString(*this\text\string, *this\row\selected\text[2]\string, *this\row\_s()\text\pos+*this\row\caret\start+1)
+                    *this\row\_s()\text\string = InsertString(*this\row\_s()\text\string, *this\row\selected\text[2]\string, *this\row\caret\pos[2]+1)
+                    *this\text\string = InsertString(*this\text\string, *this\row\selected\text[2]\string, *this\row\_s()\text\pos+*this\row\caret\pos[2]+1)
                     
                     ;                     _text_insert_(*this, *this\row\selected\text[2]\string)
                     
@@ -4367,14 +4428,14 @@ Module Editor
                       ;                     
                     EndIf
                     
-                    *this\row\caret\stop = *this\row\selected\text[2]\len
+                    *this\row\caret\pos[1] = *this\row\selected\text[2]\len
                     
-                    ;Swap *this\row\caret\stop, *this\row\caret\start
+                    ;Swap *this\row\caret\pos[1], *this\row\caret\pos[2]
                     *this\row\selected = #Null
                     
-                    Repaint = _text_sel_(*this, *this\row\caret\start, *this\row\caret\stop)
-                    ;                     If *this\row\caret\stop <> Caret  ; *this\row\caret\start); + *this\row\selected\text[2]\len
-                    ;                       *this\row\caret\stop = Caret
+                    Repaint = _text_sel_(*this, *this\row\caret\pos[2], *this\row\caret\pos[1])
+                    ;                     If *this\row\caret\pos[1] <> Caret  ; *this\row\caret\pos[2]); + *this\row\selected\text[2]\len
+                    ;                       *this\row\caret\pos[1] = Caret
                     ;                       Repaint =- 1
                     ;                     EndIf
                     ;                     
@@ -4386,12 +4447,12 @@ Module Editor
                     
                     SetGadgetAttribute(*this\root\canvas, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
                   Else
-                    *this\row\caret\start = _text_caret_(*this)
+                    *this\row\caret\pos[2] = _text_caret_(*this)
                     *this\row\_s()\text[2]\len = 0
                     *this\index[2] = _line_
                     
-                    If *this\row\caret\stop <> *this\row\caret\start + *this\row\selected\text[2]\len
-                      *this\row\caret\stop = *this\row\caret\start + *this\row\selected\text[2]\len
+                    If *this\row\caret\pos[1] <> *this\row\caret\pos[2] + *this\row\selected\text[2]\len
+                      *this\row\caret\pos[1] = *this\row\caret\pos[2] + *this\row\selected\text[2]\len
                       Repaint =- 1
                     EndIf
                     
@@ -4415,7 +4476,7 @@ Module Editor
           EndIf
           
           ; edit events
-          If *Focus = *this And (*this\text\editable Or \text\editable)
+          If GetActive() = *this And (*this\text\editable Or \text\editable)
             Repaint | events_key_editor(*this, EventType, \root\mouse\x, \root\mouse\y)
           EndIf
         EndIf
@@ -4425,218 +4486,21 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  ;-
-  Procedure.i Text_Events(*Function, *this._struct_, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    Static *Last._struct_, *Widget._struct_    ; *Focus._struct_, 
-    Static Text$, DoubleClick, LastX, LastY, Last, Drag
-    Protected.i Result, Repaint, _key_control_, Buttons, Widget
-    
-    ; widget_events_type
-    If *this
-      With *this
-        If Canvas=-1 
-          Widget = *this
-          Canvas = EventGadget()
-        Else
-          Widget = Canvas
-        EndIf
-        ;         If Canvas <> \root\canvas
-        ;           ProcedureReturn 
-        ;         EndIf
-        ;         Macro From(_this_, _buttons_=0)
-        ;     Bool(_this_\root\mouse\x>=_this_\x[_buttons_] And _this_\root\mouse\x<_this_\x[_buttons_]+_this_\width[_buttons_] And 
-        ;          _this_\root\mouse\y>=_this_\y[_buttons_] And _this_\root\mouse\y<_this_\y[_buttons_]+_this_\height[_buttons_])
-        ;   EndMacro
-        
-        
-        ; Get at point widget
-        ;\root\mouse\from = From(*this)
-        \root\mouse\from = _from_point_(\root\mouse\x, \root\mouse\y, *this)
-        
-        Select EventType 
-          Case #PB_EventType_LeftButtonUp 
-            If *Last = *this
-              If *Widget <> *Focus
-                ProcedureReturn 0 
-              EndIf
-            EndIf
-            
-          Case #PB_EventType_LeftClick 
-            ; Debug ""+\root\mouse\buttons+" Last - "+*Last +" Widget - "+*Widget +" Focus - "+*Focus +" This - "+*this
-            If *Last = *this : *Last = *Widget
-              If *Widget <> *Focus
-                ProcedureReturn 0 
-              EndIf
-            EndIf
-            
-            If Not *this\root\mouse\from 
-              ProcedureReturn 0
-            EndIf
-        EndSelect
-        
-        If Not \hide And Not \Disable And \interact And Widget <> Canvas And CanvasModifiers 
-          Select EventType 
-            Case #PB_EventType_Focus : ProcedureReturn 0 ; Bug in mac os because it is sent after the mouse left down
-            Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonUp
-              If Not \root\mouse\buttons 
-                If \root\mouse\from
-                  If *Last <> *this 
-                    If *Last
-                      If (*Last\index > *this\index)
-                        ProcedureReturn 0
-                      Else
-                        ; Если с нижнего виджета перешли на верхный, 
-                        ; то посылаем событие выход для нижнего
-                        Text_Events(*Function, *Last, #PB_EventType_MouseLeave, Canvas, 0)
-                        *Last = *this
-                      EndIf
-                    Else
-                      *Last = *this
-                    EndIf
-                    
-                    EventType = #PB_EventType_MouseEnter
-                    *Widget = *Last
-                  EndIf
-                  
-                ElseIf (*Last = *this)
-                  If EventType = #PB_EventType_LeftButtonUp 
-                    Text_Events(*Function, *Widget, #PB_EventType_LeftButtonUp, Canvas, 0)
-                  EndIf
-                  
-                  EventType = #PB_EventType_MouseLeave
-                  *Last = *Widget
-                  *Widget = 0
-                EndIf
-              EndIf
-              
-            Case #PB_EventType_LostFocus
-              If (*Focus = *this)
-                *Last = *Focus
-                Text_Events(*Function, *Focus, #PB_EventType_LostFocus, Canvas, 0)
-                *Last = *Widget
-              EndIf
-              
-            Case #PB_EventType_LeftButtonDown
-              If (*Last = *this)
-                PushListPosition(List())
-                ForEach List()
-                  If List()\widget\focus = List()\widget And List()\widget <> *this 
-                    
-                    List()\widget\focus = 0
-                    *Last = List()\widget
-                    Text_Events(*Function, List()\widget, #PB_EventType_LostFocus, List()\widget\root\canvas, 0)
-                    *Last = *Widget 
-                    
-                    ; 
-                    _repaint_(List()\widget)
-                    Break 
-                  EndIf
-                Next
-                PopListPosition(List())
-                
-                If *this <> \focus : \focus = *this : *Focus = *this
-                  Text_Events(*Function, *this, #PB_EventType_Focus, Canvas, 0)
-                EndIf
-              EndIf
-              
-          EndSelect
-        EndIf
-        
-        If (*Last = *this) 
-          Select EventType
-            Case #PB_EventType_LeftButtonDown
-              If Not \root\mouse\Delta
-                \root\mouse\Delta = AllocateStructure(_s_mouse)
-                \root\mouse\Delta\x = \root\mouse\x
-                \root\mouse\Delta\y = \root\mouse\y
-                \root\mouse\delta\from = \root\mouse\from
-                \root\mouse\Delta\buttons = \root\mouse\buttons
-              EndIf
-              
-            Case #PB_EventType_LeftButtonUp : \Drag = 0
-              FreeStructure(\root\mouse\Delta) : \root\mouse\Delta = 0
-              ; ResetStructure(\root\mouse\Delta, _s_mouse)
-              
-            Case #PB_EventType_MouseMove
-              If \Drag = 0 And \root\mouse\buttons And \root\mouse\Delta And 
-                 (Abs((\root\mouse\x-\root\mouse\Delta\x)+(\root\mouse\y-\root\mouse\Delta\y)) >= 6) : \Drag=1
-                ; PostEvent(#PB_Event_Widget, \root\window, \root\canvas, #PB_EventType_DragStart)
-              EndIf
-              
-            Case #PB_EventType_MouseLeave
-              If CanvasModifiers 
-                ; Если перешли на другой виджет
-                PushListPosition(List())
-                ForEach List()
-                  If List()\widget\root\canvas = Canvas And List()\widget\focus <> List()\widget And List()\widget <> *this
-                    List()\widget\root\mouse\from = _from_point_(List()\widget\root\mouse\x, List()\widget\root\mouse\y, List()\widget)
-                    
-                    If List()\widget\root\mouse\from
-                      If *Last
-                        Text_Events(*Function, *Last, #PB_EventType_MouseLeave, Canvas, 0)
-                      EndIf     
-                      
-                      *Last = List()\widget
-                      *Widget = List()\widget
-                      ProcedureReturn Text_Events(*Function, *Last, #PB_EventType_MouseEnter, Canvas, 0)
-                    EndIf
-                  EndIf
-                Next
-                PopListPosition(List())
-              EndIf
-              
-              If \cursor[1] <> GetGadgetAttribute(\root\canvas, #PB_Canvas_Cursor)
-                SetGadgetAttribute(\root\canvas, #PB_Canvas_Cursor, \cursor[1])
-                \cursor[1] = 0
-              EndIf
-              
-            Case #PB_EventType_MouseEnter    
-              If Not \cursor[1] 
-                \cursor[1] = GetGadgetAttribute(\root\canvas, #PB_Canvas_Cursor)
-              EndIf
-              SetGadgetAttribute(\root\canvas, #PB_Canvas_Cursor, \cursor)
-              
-            Case #PB_EventType_MouseMove ; bug mac os
-              If \root\mouse\buttons And #PB_Compiler_OS = #PB_OS_MacOS ; And \cursor <> GetGadgetAttribute(\root\canvas, #PB_Canvas_Cursor)
-                                                                        ; Debug 555
-                SetGadgetAttribute(\root\canvas, #PB_Canvas_Cursor, \cursor)
-              EndIf
-              
-          EndSelect
-        EndIf 
-        
-      EndWith
-    EndIf
-    
-    If (*Last = *this) Or (*Focus = *this And *this\text\editable); Or (*Last = *Focus)
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        Result | CallFunctionFast(*Function, *this, eventtype, *this\root\mouse\x, *this\root\mouse\y)
-      CompilerElse
-        Result | CallCFunctionFast(*Function, *this, eventtype, *this\root\mouse\x, *this\root\mouse\y)
-      CompilerEndIf
-    EndIf
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i Text_CallBack(*Function, *this._struct_, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    ; Canvas events bug fix
+  Procedure g_callback()
     Protected Result.b
     Static MouseLeave.b
     Protected EventGadget.i = EventGadget()
-    
+    Protected EventType.l = EventType()
     Protected Width = GadgetWidth(EventGadget)
     Protected Height = GadgetHeight(EventGadget)
     Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
     Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
+    Protected Repaint, *this._struct_ = GetGadgetData(EventGadget)
     
-    If Canvas =- 1
-      With *this
+    With *this
         Select EventType
           Case #PB_EventType_Repaint
-            Debug " -- Canvas repaint -- "+Height
-            ;\text\count = \countitems
-            \Repaint = 0
+            Debug " -- Canvas repaint -- "+EventGadget
             
           Case #PB_EventType_Input 
             \root\keyboard\input = GetGadgetAttribute(\root\canvas, #PB_Canvas_Input)
@@ -4651,6 +4515,8 @@ Module Editor
                #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
                #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
             
+            GetActive() = *this
+            
             CompilerIf #PB_Compiler_OS = #PB_OS_Linux
               \root\mouse\buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
                                     (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
@@ -4659,54 +4525,28 @@ Module Editor
               \root\mouse\buttons = GetGadgetAttribute(\root\canvas, #PB_Canvas_Buttons)
             CompilerEndIf
         EndSelect
-      EndWith
-    EndIf
-    
-    ; Это из за ошибки в мак ос и линукс
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
-      Select EventType 
-        Case #PB_EventType_MouseEnter 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
-            EventType = #PB_EventType_MouseMove
-            MouseLeave = 0
+      
+      
+      Select EventType
+        Case #PB_EventType_Repaint 
+          \row\count = \countitems
+          
+          If *this\repaint 
+            *this\repaint = 0
+            Repaint = 1
           EndIf
           
-        Case #PB_EventType_MouseLeave 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
-            EventType = #PB_EventType_MouseMove
-            MouseLeave = 1
-          EndIf
-          
-        Case #PB_EventType_LeftButtonDown
-          If GetActiveGadget()<>EventGadget
-            SetActiveGadget(EventGadget)
-          EndIf
-          
-        Case #PB_EventType_LeftButtonUp
-          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
-            MouseLeave = 0
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-              Result | Text_Events(*Function, *this, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-              EventType = #PB_EventType_MouseLeave
-            CompilerEndIf
-          Else
-            MouseLeave =- 1
-            Result | Text_Events(*Function, *this, #PB_EventType_LeftButtonUp, Canvas, CanvasModifiers)
-            EventType = #PB_EventType_LeftClick
-          EndIf
-          
-        Case #PB_EventType_LeftClick : ProcedureReturn 0
+        Case #PB_EventType_Resize : ResizeGadget(\root\canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Repaint | Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\root\canvas), GadgetHeight(\root\canvas))
       EndSelect
-    CompilerEndIf
-    
-    Result | Text_Events(*Function, *this, EventType, Canvas, CanvasModifiers)
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  
-  Procedure CallBack(*this._struct_, EventType.i, Canvas.i=-1, CanvasModifiers.i=-1)
-    ProcedureReturn Text_CallBack(@events_editor(), *this, EventType, Canvas, CanvasModifiers)
+      
+      Repaint | CallBack(*this, EventType)
+      
+      If Repaint 
+        ReDraw(*this)
+      EndIf
+      
+    EndWith
   EndProcedure
   
   Procedure.i Editor(X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=0, round.i=0)
@@ -4721,9 +4561,9 @@ Module Editor
         \color\alpha = 255
         \interact = 1
         
-        \row\caret\start =- 1
-        \row\caret\stop =- 1
         \row\index =- 1
+        \row\caret\pos[1] =- 1
+        \row\caret\pos[2] =- 1
         
         \index[1] =- 1
         \x =- 1
@@ -4821,32 +4661,6 @@ Module Editor
     ProcedureReturn *this
   EndProcedure
   
-  Procedure Canvas_CallBack()
-    Protected Repaint, *this._struct_ = GetGadgetData(EventGadget())
-    
-    With *this
-      Select EventType()
-        Case #PB_EventType_Repaint 
-          \row\count = \countitems
-          
-          If *this\repaint 
-            *this\repaint = 0
-            Repaint = 1
-          EndIf
-          
-        Case #PB_EventType_Resize : ResizeGadget(\root\canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          Repaint | Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\root\canvas), GadgetHeight(\root\canvas))
-      EndSelect
-      
-      Repaint | CallBack(*this, EventType())
-      
-      If Repaint 
-        ReDraw(*this)
-      EndIf
-      
-    EndWith
-  EndProcedure
-  
   Procedure.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Flag.i=0)
     Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
     Protected *this._struct_ = Editor(0, 0, Width, Height, "", Flag)
@@ -4863,7 +4677,7 @@ Module Editor
         EndIf
         
         SetGadgetData(Gadget, *this)
-        BindGadgetEvent(Gadget, @Canvas_CallBack())
+        BindGadgetEvent(Gadget, @g_callback())
         
         ; z-order
         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -4875,7 +4689,6 @@ Module Editor
     
     ProcedureReturn Gadget
   EndProcedure
-  
 EndModule
 
 
@@ -4928,8 +4741,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If OpenWindow(0, 0, 0, 422, 491, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ButtonGadget(99, 3,8,50,25,"get")
-    ButtonGadget(100, 43,8,50,25,"text")
+    ButtonGadget(100, 8,8,67,25,"gettext")
     ButtonGadget(101, 8+78,8,60,25,"wrap")
     
     g=166
@@ -4999,7 +4811,8 @@ CompilerIf #PB_Compiler_IsMainFile
               Define *eh.Editor::_struct_ = GetGadgetData(166)
               
               If EventGadget() = 99
-                ClearDebugOutput()
+                If *E\focus
+                  ClearDebugOutput()
                 If *E\text[1]\string
                   Debug "1) -----left------"
                   Debug *E\text[1]\string 
@@ -5026,7 +4839,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 PopListPosition(*E\row\_s()) 
                 Debug "-----endlines-----"
                 
-              ElseIf EventGadget() = 100
+              ElseIf *Eh\focus
                 ClearDebugOutput()
                 If *Eh\text[1]\string
                   Debug "1) -----left------"
@@ -5053,7 +4866,8 @@ CompilerIf #PB_Compiler_IsMainFile
                 Next
                 PopListPosition(*Eh\row\_s()) 
                 Debug "-----endlines-----"
-                
+              EndIf
+              
               ElseIf EventGadget() = 101
                 *E\text\multiline ! 1
                 
@@ -5079,36 +4893,7 @@ CompilerIf #PB_Compiler_IsMainFile
                       SetGadgetAttribute(0, #PB_Editor_WordWrap, 0)
                     EndIf
                     
-                    ;                     SetGadgetText(0, Text.s) 
-                    ;                     For a = 0 To 5
-                    ;                       AddGadgetItem(0, a, "Line "+Str(a))
-                    ;                     Next
-                    ;                     ;SetGadgetFont(0, FontID(0))
-                    ;                     
-                    ;                     SplitterGadget(10,8, 8+25+5+10, 306, 491-16-10 , 0,g)
-                    ;                     
-                    ;                     CompilerIf #PB_Compiler_Version =< 546
-                    ;                       BindGadgetEvent(10, @SplitterCallBack())
-                    ;                     CompilerEndIf
-                    ;                     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
-                    ;                     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
-                    
-                    ; ;                     ImportC ""
-                    ; ;                       GetControlProperty(Control, PropertyCreator, PropertyTag, BufferSize, *ActualSize, *PropertyBuffer)
-                    ; ;                       TXNSetTXNObjectControls(TXNObject, ClearAll, ControlCount, ControlTags, ControlData)
-                    ; ;                     EndImport
-                    ; ;                     
-                    ; ;                     Define TXNObject.i
-                    ; ;                     Dim ControlTag.i(0)
-                    ; ;                     Dim ControlData.i(0)
-                    ; ;                     
-                    ; ;                     ControlTag(0) = 'wwrs' ; kTXNwordwrapStateTag
-                    ; ;                     ControlData(0) = 0     ; kTXNAutoWrap
-                    ; ;                     
-                    ; ;                     If GetControlProperty(GadgetID(0), 'PURE', 'TXOB', 4, 0, @TXNObject) = 0
-                    ; ;                       TXNSetTXNObjectControls(TXNObject, #False, 1, @ControlTag(0), @ControlData(0))
-                    ; ;                     EndIf
-                  CompilerCase #PB_OS_Windows
+                   CompilerCase #PB_OS_Windows
                     SendMessage_(GadgetID(0), #EM_SETTARGETDEVICE, 0, 0)
                     ; SendMessage_ (GadgetID (0), #EM_SETTARGETDEVICE, #NULL, $FFFFFF); чтобы снова отключить перенос слов (используйте просто огромное значение, 
                 CompilerEndSelect
@@ -5126,5 +4911,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = AAAkAgAgfAAgAACAAwAAAAAPAg-fw-KAAAAAAQ9dAAAwBgwXAAAAAAAAAAgAlAAAAAAAeWAPQAAAAAMAAAAAAACCAAAAAAAAAAAgAARCAA+
+; Folding = -------------------------------------------------------------n---------88----------------------------
 ; EnableXP

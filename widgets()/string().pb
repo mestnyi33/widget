@@ -1,43 +1,28 @@
-﻿IncludePath "../"
+﻿;IncludePath "../"
 XIncludeFile "editor().pb"
 ;XIncludeFile "widgets().pbi"
 
 DeclareModule String
-  Macro _const_
-    constants::#__
-  EndMacro
-  
-;   Macro _struct_
-;     Structures::_s_widget
-;   EndMacro
- UseModule constants
+  UseModule constants
   
   Structure _struct_ Extends structures::_s_widget : EndStructure
   
-  Declare.s GetText(*this)
-  Declare   SetText(*this, Text.s)
+  Macro GetText(_this_) : Editor::GetText(_this_) : EndMacro
+  Macro SetText(_this_, _text_) : Editor::SetText(_this_, _text_) : EndMacro
+  
   Declare.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=#Null)
 EndDeclareModule
 
 Module String
-  Procedure SetText(*this._struct_, Text.s)
-    ProcedureReturn Editor::SetText(*this, Text.s)
-  EndProcedure
-  
-  Procedure.s GetText(*this._struct_)
-    ProcedureReturn Editor::GetText(*this)
-  EndProcedure
-  
   Procedure.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=#Null)
     Protected result.i, *this._struct_
     
-    
-    result = Editor::Gadget(Gadget, X, Y, Width, Height, Flag);|_const_flag_vertical)
+    result = Editor::Gadget(Gadget, X, Y, Width, Height, Flag)
     
     *this = GetGadgetData(result)
     *this\type = #PB_GadgetType_String
-    *this\text\multiline = Bool(Flag&_const_string_multiline)
-    *this\text\Numeric = Bool(Flag&_const_string_numeric)
+    *this\text\multiline = Bool(Flag&#__string_multiline)
+    *this\text\Numeric = Bool(Flag&#__string_numeric)
     *this\row\margin\level = 0
     ;*this\text\align\Vertical = 1
     
@@ -47,8 +32,6 @@ Module String
     
     ProcedureReturn result
   EndProcedure
-  
-  
 EndModule
 
 
@@ -56,7 +39,7 @@ EndModule
 CompilerIf #PB_Compiler_IsMainFile
   UseModule String
   UseModule constants
- 
+  
   Global *S_0._struct_
   Global *S_1._struct_
   Global *S_2._struct_
@@ -67,9 +50,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *S_7._struct_
   Global *S_8._struct_
   
-;   *this._const_
-;   
-;   Debug *this;Structures::_s_widget ; String::_struct_; _struct_
+  ;   *this._const_
+  ;   
+  ;   Debug *this;Structures::_s_widget ; String::_struct_; _struct_
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
@@ -104,6 +87,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
+  ; Alignment text
+  CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+    ImportC ""
+      gtk_entry_set_alignment(Entry.i, XAlign.f)
+    EndImport
+  CompilerEndIf
+  
   Procedure SetTextAlignment()
     ; Alignment text
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -120,9 +110,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-      ImportC ""
-        gtk_entry_set_alignment(Entry.i, XAlign.f)
-      EndImport
+      ;       ImportC ""
+      ;         gtk_entry_set_alignment(Entry.i, XAlign.f)
+      ;       EndImport
       
       gtk_entry_set_alignment(GadgetID(1), 0.5)
       gtk_entry_set_alignment(GadgetID(2), 1)
@@ -130,17 +120,17 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Define height=60, Text.s = "Vertical & Horizontal" + #LF$ + "   Centered   Text in   " + #LF$ + "Multiline StringGadget H"
-    
+  
   If OpenWindow(0, 0, 0, 615, (height+5)*8+20+90, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-;       height = 20
-;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-;       height = 18
-;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-;       height = 20
-;       LoadFont(0, "monospace", 9)
-;       SetGadgetFont(-1,FontID(0))
-;     CompilerEndIf
+    ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+    ;       height = 20
+    ;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+    ;       height = 18
+    ;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+    ;       height = 20
+    ;       LoadFont(0, "monospace", 9)
+    ;       SetGadgetFont(-1,FontID(0))
+    ;     CompilerEndIf
     
     StringGadget(0, 8,  10, 290, height, "Read-only StringGadget...", #PB_String_ReadOnly)
     StringGadget(1, 8,  (height+5)*1+10, 290, height, "1234567", #PB_String_Numeric)
@@ -174,11 +164,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SetText(*S_6, "GaT")
     Debug "Get widget text "+GetText(*S_6)
     
-;     BindEvent(#PB_Event_Widget, @Events())
-;     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
+    ;     BindEvent(#PB_Event_Widget, @Events())
+    ;     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -v4-
+; Folding = -4z-
 ; EnableXP

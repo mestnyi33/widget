@@ -829,6 +829,7 @@ DeclareModule Widget
   
   ;- - _s_mouse
   Structure _s_mouse Extends _s_point
+    drag.b[2]
     change.b
     buttons.l 
     wheel._s_point
@@ -1290,7 +1291,6 @@ DeclareModule Widget
     margin._s_margin
     
     interact.i 
-    drag.i[2]
     attribute.i
     
     repaint.i
@@ -6789,7 +6789,7 @@ Module Widget
   EndProcedure
   
   Procedure.i GetPush(*this._s_widget) ; pressed pulled ; get traction
-    ProcedureReturn *this\root\drag
+    ProcedureReturn *this\root\mouse\drag
   EndProcedure
   
   Procedure.i GetMouseX(*this._s_widget)
@@ -11403,13 +11403,13 @@ Module Widget
       EndIf
       
       ; Drag start
-      If root()\mouse\buttons And Not root()\drag And
+      If root()\mouse\buttons And Not root()\mouse\drag And
          root()\mouse\x>root()\mouse\delta\x-3 And 
          root()\mouse\x<root()\mouse\delta\x+3 And 
          root()\mouse\y>root()\mouse\delta\y-3 And
          root()\mouse\y<root()\mouse\delta\y+3
         
-        root()\drag = 1
+        root()\mouse\drag = 1
         repaint | CallBack(root()\entered, #PB_EventType_DragStart, mouse_x, mouse_y)
       EndIf
       
@@ -11522,7 +11522,7 @@ Module Widget
         
         If GetActive() 
           If GetActive()\state
-            If Not root()\drag
+            If Not root()\mouse\drag
               Repaint | CallBack(GetActive(), #PB_EventType_LeftClick, mouse_x, mouse_y)
             EndIf
           Else
@@ -11532,7 +11532,7 @@ Module Widget
           
           If GetActive()\gadget
             If GetActive()\gadget\state
-              If Not root()\drag
+              If Not root()\mouse\drag
                 Repaint | CallBack(GetActive()\gadget, #PB_EventType_LeftClick, mouse_x, mouse_y)
               EndIf
             Else
@@ -11543,7 +11543,7 @@ Module Widget
         EndIf
         
         root()\selected = 0
-        root()\drag = 0
+        root()\mouse\drag = 0
       EndIf
     EndIf
     
@@ -11686,5 +11686,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = AAAAAAAAAAAXIAYAg3AAAQACAAAGCEAAwAqeg-HAAAAQgtNAAAAA9AAAAAAgXAQA+-PACAAAAAAAAgJAAQABEAAAAAAA1--AAgSADAEgN9AAQAAAAAAGAAACAAw10DAA9cgLfgAAAwDIGAWOABohsjGAAo9PAMAeAwAQgDOqABABCHAA5-xZ8WAo-fCAYE+HAAAAI1
+; Folding = CAEAAABAAAAXKAYAg+hAAQACAAAGCEAAwAqeg-HAAAAQgtNAAAAA9AAAAAAgXAQA+-PACAAAAAAAAgJAAQABEAAAAAAA1--AAgSADAEgN9AAQAAABAAGAAACAAw10DAA9cgLfgAAAwDIGAWOABohsjGAAo9PAMAeAwAQgDOqABABCHAA5-xZ8WAo-fCAYE+nEAQ0P1
 ; EnableXP
