@@ -37,18 +37,18 @@ If OpenWindow(0, 100, 50, 530, 700, "editor", #PB_Window_SystemMenu)
  ;  editor::Redraw(*w)
   ; Editor::SetFont(*w, FontID(LoadFont(#PB_Any, "Impact", 18 , #PB_Font_HighQuality)))
     
-;   ; HideGadget(0, 1)
-;   Define time = ElapsedMilliseconds()
-;   For a = 0 To LN
-;     AddGadgetItem (0, -1, "Item "+Str(a));, 0, Random(5)+1)
-;     If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
-;     EndIf
-;     If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
-;       Debug a
-;     EndIf
-;   Next
-;   Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
-;   ; HideGadget(0, 0)
+  ; HideGadget(0, 1)
+  Define time = ElapsedMilliseconds()
+  For a = 0 To LN
+    AddGadgetItem (0, -1, "Item "+Str(a));, 0, Random(5)+1)
+    If A & $f=$f:WindowEvent() ; это нужно чтобы раздет немного обновлялся
+    EndIf
+    If A & $8ff=$8ff:WindowEvent() ; это позволяет показывать скоко циклов пройшло
+      Debug a
+    EndIf
+  Next
+  Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
+  ; HideGadget(0, 0)
   
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow

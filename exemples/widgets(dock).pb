@@ -50,18 +50,18 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseList()
       
-;       _SetAlignment(Widgets(Str(1)), #__flag_Flag_AutoSize|#__flag_Left|#__flag_Right)
-;       _SetAlignment(Widgets(Str(2)), #__flag_Flag_AutoSize|#__flag_Top|#__flag_Bottom)
-;       _SetAlignment(Widgets(Str(3)), #__flag_Flag_AutoSize|#__flag_Top|#__flag_Bottom|#__flag_Right)
-;       _SetAlignment(Widgets(Str(4)), #__flag_Flag_AutoSize|#__flag_Left|#__flag_Right|#__flag_Bottom)
-;       _SetAlignment(Widgets(Str(5)), #__flag_Flag_AutoSize|#__flag_Full)
+;       _SetAlignment(Widgets(Str(1)), #__flag_Flag_AutoSize|#__align_left|#__align_right)
+;       _SetAlignment(Widgets(Str(2)), #__flag_Flag_AutoSize|#__align_top|#__align_bottom)
+;       _SetAlignment(Widgets(Str(3)), #__flag_Flag_AutoSize|#__align_top|#__align_bottom|#__align_right)
+;       _SetAlignment(Widgets(Str(4)), #__flag_Flag_AutoSize|#__align_left|#__align_right|#__align_bottom)
+;       _SetAlignment(Widgets(Str(5)), #__flag_Flag_AutoSize|#__align_full)
       
-      SetAlignment(Widgets(Str(4)), #__flag_AutoSize|#__flag_Bottom)
-      SetAlignment(Widgets(Str(6)), #__flag_AutoSize|#__flag_Bottom)
-      SetAlignment(Widgets(Str(1)), #__flag_AutoSize|#__flag_Top)
-      SetAlignment(Widgets(Str(2)), #__flag_AutoSize|#__flag_Left)
-      SetAlignment(Widgets(Str(3)), #__flag_AutoSize|#__flag_Right)
-      SetAlignment(Widgets(Str(5)), #__flag_AutoSize|#__flag_Full)
+      SetAlignment(Widgets(Str(4)), #__flag_AutoSize|#__align_bottom)
+      SetAlignment(Widgets(Str(6)), #__flag_AutoSize|#__align_bottom)
+      SetAlignment(Widgets(Str(1)), #__flag_AutoSize|#__align_top)
+      SetAlignment(Widgets(Str(2)), #__flag_AutoSize|#__align_left)
+      SetAlignment(Widgets(Str(3)), #__flag_AutoSize|#__align_right)
+      SetAlignment(Widgets(Str(5)), #__flag_AutoSize)
       
       ;BindGadgetEvent(Canvas_0, @Canvas_CallBack())
       ReDraw(Root())
@@ -116,6 +116,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

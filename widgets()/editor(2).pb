@@ -1465,46 +1465,76 @@ Module Editor
   EndMacro
   
   
-  Macro _set_content_X_(_this_)
-    If _this_\text\align\right
-      _this_\scroll\x = ((_this_\width[2]-_this_\text\x*2)-_this_\row\_s()\text\width)
-      
-    ElseIf _this_\text\align\horizontal
-      _this_\scroll\x = ((_this_\width[2]-_this_\text\x*2)-_this_\row\_s()\text\width-Bool(_this_\row\_s()\text\width % 2))/2 
-      
+  Macro _set_content_Y_(_this_)
+    If _this_\image\handle
+      If _this_\flag\inLine
+        Text_Y=((Height-(_this_\text\height*_this_\count\items))/2)
+        Image_Y=((Height-_this_\image\height)/2)
+      Else
+        If _this_\text\align\bottom
+          Text_Y=((Height-_this_\image\height-(_this_\text\height*_this_\count\items))/2)-Indent/2
+          Image_Y=(Height-_this_\image\height+(_this_\text\height*_this_\count\items))/2+Indent/2
+        Else
+          Text_Y=((Height-(_this_\text\height*_this_\count\items)+_this_\image\height)/2)+Indent/2
+          Image_Y=(Height-(_this_\text\height*_this_\count\items)-_this_\image\height)/2-Indent/2
+        EndIf
+      EndIf
     Else
-      _this_\scroll\x = _this_\row\margin\width
+      If _this_\text\align\bottom
+        Text_Y=(Height-(_this_\text\height*_this_\count\items)-Text_Y-Image_Y) 
+      ElseIf _this_\text\align\Vertical
+        Text_Y=((Height-(_this_\text\height*_this_\count\items))/2)
+      EndIf
     EndIf
   EndMacro
   
-  Macro _set_content_Y_(_this_)
-    If _this_\text\align\bottom
-      _this_\scroll\y = ((_this_\height[2]-_this_\text\y*2)-(_this_\text\height*_this_\count\items)) 
-      
-    ElseIf _this_\text\align\vertical
-      _this_\scroll\y = (((_this_\height[2]-_this_\text\y*2)-(_this_\text\height*_this_\count\items))/2)
-      
+  Macro _set_content_X_(_this_)
+    If _this_\image\handle
+      If _this_\flag\inLine
+        If _this_\text\align\right
+          Text_X=((Width-_this_\image\width-_this_\row\_s()\text\width)/2)-Indent/2
+          Image_X=(Width-_this_\image\width+_this_\row\_s()\text\width)/2+Indent
+        Else
+          Text_X=((Width-_this_\row\_s()\text\width+_this_\image\width)/2)+Indent
+          Image_X=(Width-_this_\row\_s()\text\width-_this_\image\width)/2-Indent
+        EndIf
+      Else
+        Image_X=(Width-_this_\image\width)/2 
+        Text_X=(Width-_this_\row\_s()\text\width)/2 
+      EndIf
     Else
-      _this_\scroll\y = 0
+      If _this_\text\align\right
+        Text_X=(Width-_this_\row\_s()\text\width)
+      ElseIf _this_\text\align\horizontal
+        Text_X=(Width-_this_\row\_s()\text\width-Bool(_this_\row\_s()\text\width % 2))/2 
+      Else
+        Text_X=_this_\row\margin\width
+      EndIf
     EndIf
   EndMacro
   
   Macro _line_resize_X_(_this_)
+    _this_\row\_s()\x = _this_\x[2]+_this_\text\x+1;_this_\text\caret\width
     _this_\row\_s()\width = Width
-    _this_\row\_s()\x = _this_\x[2] + _this_\text\x ;+ _this_\row\margin\width
-    _this_\row\_s()\text\x = _this_\row\_s()\x
+    _this_\row\_s()\text\x = _this_\row\_s()\x+Text_X
+    
+    _this_\image\x = _this_\x[2]+_this_\text\x+Image_X
+    _this_\row\_s()\image\x = _this_\row\_s()\x+Image_X-4
   EndMacro
   
   Macro _line_resize_Y_(_this_)
+    _this_\row\_s()\y = _this_\y[1]+_this_\text\y+_this_\scroll\height+Text_Y
     _this_\row\_s()\height = _this_\text\height
+    _this_\row\_s()\text\y = _this_\row\_s()\y + (_this_\row\_s()\height-_this_\text\height)/2
     _this_\row\_s()\text\height = _this_\text\height
-    _this_\row\_s()\y = _this_\y[2] + (_this_\scroll\height  - _this_\text\y)
-    _this_\row\_s()\text\y = _this_\row\_s()\y + (_this_\row\_s()\height-_this_\row\_s()\text\height)/2
+    
+    _this_\image\y = _this_\y[1]+_this_\text\y+Image_Y
+    _this_\row\_s()\image\y = _this_\row\_s()\y + (_this_\text\height-_this_\row\_s()\image\height)/2 + Image_Y
   EndMacro
   
   Macro _make_line_pos_(_this_, _len_)
-    _this_\row\_s()\text\len = _len_
     _this_\row\_s()\text\pos = _this_\text\pos
+    _this_\row\_s()\text\len = _len_
     _this_\text\pos + _this_\row\_s()\text\len + 1 ; Len(#LF$)
   EndMacro
   
@@ -1517,8 +1547,11 @@ Module Editor
   EndMacro
   
   Macro _make_scroll_width_(_this_)
-    If _this_\scroll\width < _this_\row\_s()\text\width+_this_\text\x*2
-      _this_\scroll\width = _this_\row\_s()\text\width+_this_\text\x*2
+;     If _this_\scroll\width < (_this_\row\_s()\text\x+_this_\row\_s()\text\width+_this_\text\x+_this_\bs)-_this_\x[2]
+;       _this_\scroll\width = (_this_\row\_s()\text\x+_this_\row\_s()\text\width+_this_\text\x+_this_\bs)-_this_\x[2]
+;     EndIf
+    If _this_\scroll\width < (_this_\row\_s()\text\x+_this_\row\_s()\text\width+_this_\text\x)-_this_\x
+      _this_\scroll\width = (_this_\row\_s()\text\x+_this_\row\_s()\text\width+_this_\text\x)-_this_\x
     EndIf
   EndMacro
   
@@ -1559,12 +1592,37 @@ Module Editor
     _text_paste_(_this_, "")
   EndMacro
   
+  Macro _bar_scrolled_(_this_, _pos_, _len_)
+    Bool(Bool(((_pos_)-_this_\bar\page\pos) < 0 And Bar::SetState(_this_, (_pos_))) Or
+         Bool(((_pos_)-_this_\bar\page\pos) > (_this_\bar\page\len-(_len_)) And Bar::SetState(_this_, (_pos_)-(_this_\bar\page\len-(_len_)))))
+  EndMacro
+  
   Macro _text_scroll_x_(_this_)
-    *this\change = bar::_scrolled_(*this\scroll\h, _this_\text\caret\x-Bool(_this_\text\caret\x>0) * (_this_\scroll\h\x+_this_\text\x+_this_\bs-_this_\text\caret\width), (_this_\text\x*2+_this_\bs+_this_\text\caret\width)) ; ok
+    ;     If _this_\text\caret\x And (_this_\scroll\h\bar\page\pos+_this_\text\x+_this_\row\margin\width) > _this_\text\caret\x
+    ;       ; to left 
+    ;       ;_bar_scrolled_(_this_\scroll\h, _this_\text\caret\x-(_this_\scroll\h\x+_this_\text\x+_this_\row\margin\width), 0)
+    ;       Bar::SetState(_this_\scroll\h, _this_\text\caret\x-(_this_\scroll\h\x+_this_\text\x+_this_\row\margin\width))
+    ;     ElseIf _this_\scroll\h\bar\page\pos < (_this_\text\caret\x-_this_\scroll\h\width-_this_\text\x-1)
+    ;       ; to right 
+    ;       ;_bar_scrolled_(_this_\scroll\h, (_this_\text\caret\x+_this_\bs)-_this_\scroll\h\x, 0)
+    ;       Bar::SetState(_this_\scroll\h, ((_this_\text\caret\x+_this_\text\x+1)-_this_\scroll\h\x)-_this_\scroll\h\bar\page\len)
+    ;     EndIf
+    
+    *this\change = _bar_scrolled_(*this\scroll\h, _this_\text\caret\x-Bool(_this_\text\caret\x>0) * (*this\scroll\h\x+_this_\text\x+_this_\bs-_this_\text\caret\width), (_this_\text\x*2+_this_\bs+_this_\text\caret\width)) ; ok
   EndMacro
   
   Macro _text_scroll_y_(_this_)
-    *this\change = bar::_scrolled_(*this\scroll\v, _this_\text\caret\y-Bool(_this_\text\caret\y>0) * _this_\scroll\v\y, _this_\text\caret\height) ; ok
+    ;     If _this_\text\caret\y And _this_\scroll\v\bar\page\pos > _this_\text\caret\y
+    ;       Debug  444; to top 
+    ;       Bar::SetState(_this_\scroll\v, (_this_\text\caret\y-_this_\scroll\v\y))
+    ;       ; Bar::SetState(_this_\scroll\v, (*this\row\selected\y-_this_\scroll\v\y))
+    ;     ElseIf _this_\scroll\v\bar\page\pos < (_this_\text\caret\y-_this_\scroll\v\height)
+    ;       Debug  555; to bottom 
+    ;       Bar::SetState(_this_\scroll\v, (_this_\text\caret\y-_this_\scroll\v\y)-(_this_\scroll\v\bar\page\len-_this_\text\caret\height))
+    ;       ; Bar::SetState(*this\scroll\v, (*this\row\selected\y-*this\scroll\v\y)-(*this\scroll\v\bar\page\len-*this\row\selected\height))
+    ;     EndIf
+    
+    *this\change = _bar_scrolled_(*this\scroll\v, _this_\text\caret\y-Bool(_this_\text\caret\y>0) * *this\scroll\v\y, _this_\text\caret\height) ; ok
   EndMacro
   
   
@@ -1573,7 +1631,7 @@ Module Editor
     Protected i.l, X.l, Position.l =- 1,  
               MouseX.l, Distance.f, MinDistance.f = Infinity()
     
-    MouseX = *this\root\mouse\x - (*this\row\_s()\text\x+*this\scroll\x)
+    MouseX = *this\root\mouse\x - (*this\row\_s()\text\x-*this\scroll\h\bar\page\pos)
     
     ; Get caret pos
     For i = 0 To *this\row\_s()\text\len
@@ -2372,215 +2430,7 @@ Module Editor
   
   ;-
   ;- - DRAWINGs
-  Procedure.s make_multiline(*this._struct_, String.s)
-    Protected StringWidth
-    Protected IT,Text_Y,Text_X,Width,Height
-    
-    With *This
-      ; Make output text
-      If \Vertical
-        Width = \Height[#__c_2]
-        Height = \Width[#__c_2]
-      Else
-        Width = \Width[#__c_2]
-        Height = \Height[#__c_2]
-      EndIf
-      
-      If \Text\multiline
-        String = Text_wrap(String + #LF$, Width-\Text\padding*2, \Text\multiline)
-        \count\items = CountString(String, #LF$)
-      Else
-        String + #LF$
-        \count\items = 1
-      EndIf
-      
-      If \count\items
-        ClearList(\Items())
-        
-        If \Text\Align\Bottom
-          Text_Y = (Height-(\Text\Height*\count\items)) - \Text\padding
-        ElseIf \Text\Align\Vertical
-          Text_Y = (Height-(\Text\Height*\count\items))/2
-        Else
-          Text_Y = \bs
-        EndIf
-        
-        Protected time = ElapsedMilliseconds()
-        
-        
-        Protected pos, *Sta.Character = @String, *End.Character = @String 
-        While *End\c 
-          If Text_Y+\Text\Height < \bs : Text_Y+\Text\Height : Continue : EndIf
-          
-          If *End\c = #LF And *Sta <> *End And AddElement(\items())
-            \items() = AllocateStructure(structures::_s_items)
-            
-            \items()\text\pos = pos+ListSize(\items()) : pos + \items()\text\Len
-            \items()\text\Len = (*End-*Sta)>>#PB_Compiler_Unicode
-            \items()\text\string.s = PeekS (*Sta, \items()\text\Len)
-            \items()\text\width = TextWidth(\items()\text\string.s)
-            \Items()\Text\Height = \Text\Height
-            
-            ; Debug ""+\items()\text\pos +" "+ \items()\text\string.s
-            ;                     
-            ;\Items()\y = Text_Y 
-            
-            \items()\text\align = \text\align
-            \items()\text\rotate = \text\rotate
-            \items()\text\padding = \text\padding
-            
-            
-            
-             Protected _x_=*this\x, _y_=*this\y, _width_=*this\width, _height_=*this\height, _y2_=Text_Y
-                          
-                ;If _this_\text\vertical
-                If \Items()\text\rotate = 90
-;                   If _y2_ < 0
-;                     \Items()\text\x = _x_ + (_width_-\Items()\text\height)/2
-;                   Else
-                     \Items()\text\x = _x_ + _y2_
-;                   EndIf
-                  
-                  If \Items()\text\align\right
-                    \Items()\text\y = _y_ + \Items()\text\align\height+\Items()\text\width + \Items()\text\padding
-                  ElseIf \Items()\text\align\horizontal
-                    \Items()\text\y = _y_ + (_height_+\Items()\text\align\height+\Items()\text\width)/2
-                  Else
-                    \Items()\text\y = _y_ + _height_-\Items()\text\padding
-                  EndIf
-                  
-                ElseIf \Items()\text\rotate = 270
-                  \Items()\text\x = _x_ + (_width_-_y2_)
-                  
-                  If \Items()\text\align\right
-                    \Items()\text\y = _y_ + (_height_-\Items()\text\width-\Items()\text\padding) 
-                  ElseIf \Items()\text\align\horizontal
-                    \Items()\text\y = _y_ + (_height_-\Items()\text\width)/2 
-                  Else
-                    \Items()\text\y = _y_ + \Items()\text\padding 
-                  EndIf
-                  
-                EndIf
-                
-                ;Else
-                If \Items()\text\rotate = 0
-;                   If _y2_
-;                     \Items()\text\y = _y_ + (_height_-\Items()\text\height)/2
-;                   Else
-                     \Items()\text\y = _y_ + _y2_ ; - Bool(\Items()\text\align\bottom)*\Items()\text\padding
-;                   EndIf
-                  
-                  If \Items()\text\align\right
-                    \Items()\text\x = _x_ + (_width_-\Items()\text\align\width-\Items()\text\width - \Items()\text\padding) 
-                  ElseIf \Items()\text\align\horizontal
-                    \Items()\text\x = _x_ + (_width_-\Items()\text\align\width-\Items()\text\width)/2
-                  Else
-                    \Items()\text\x = _x_ + \Items()\text\padding
-                  EndIf
-                  
-                ElseIf \Items()\text\rotate = 180
-                  \Items()\text\y = _y_ + (_height_-_y2_); + Bool(\Items()\text\align\bottom)*\Items()\text\padding)
-                  
-                  If \Items()\text\align\right
-                    \Items()\text\x = _x_ + \Items()\text\width + \Items()\text\padding 
-                  ElseIf \Items()\text\align\horizontal
-                    \Items()\text\x = _x_ + (_width_+\Items()\text\width)/2 
-                  Else
-                    \Items()\text\x = _x_ + _width_-\Items()\text\padding 
-                  EndIf
-                  
-                EndIf
-                ;EndIf
-            ;;;_text_change_(\Items(), *this\x, *this\y, *this\width, *this\height);, Text_Y)
-            : Text_Y + \Text\Height
-                
-            *Sta = *End + #__sOC 
-          EndIf 
-          
-         If Text_Y > Height : Break : EndIf
-           *End + #__sOC 
-        Wend
-        
-        
-; ;         ;             ; 239
-; ;         If CreateRegularExpression(0, ~".*\n?")
-; ;           If ExamineRegularExpression(0, string.s)
-; ;             While NextRegularExpressionMatch(0) 
-; ;               If Text_Y+\Text\Height < \bs : Text_Y+\Text\Height : Continue : EndIf
-; ;               
-; ;               If AddElement(\items())
-; ;                 \items() = AllocateStructure(_s_items)
-; ;                 \items()\text\pos = RegularExpressionMatchPosition(0)
-; ;                 \items()\text\len = RegularExpressionMatchLength(0)
-; ;                 \items()\text\string.s = RegularExpressionMatchString(0) ; Trim(RegularExpressionMatchString(0), #LF$)
-; ;                 \items()\text\width = TextWidth(\items()\text\string.s) 
-; ;                 \Items()\Text\Height = \Text\Height
-; ;                 
-; ;                 ;Debug ""+\items()\text\pos +" "+ \items()\text\string.s
-; ;                 
-; ;                 \Items()\y = Text_Y
-; ;                 
-; ;                 \items()\text\align = \text\align
-; ;                 \items()\text\rotate = \text\rotate
-; ;                 \items()\text\padding = \text\padding
-; ;                 
-; ;                 _text_change_(\Items(), *this\x, *this\y, *this\width, *this\height, Text_Y)
-; ;                 Text_Y + \Text\Height
-; ;               EndIf
-; ;                 
-; ;               If Text_Y > Height : Break : EndIf
-; ;             Wend
-; ;           EndIf
-; ;           
-; ;           FreeRegularExpression(0)
-; ;         Else
-; ;           Debug RegularExpressionError()
-; ;         EndIf
-; ;         
-; ;         
-; ;         
-; ; ;         Protected pos, *Sta.Character = @String, *End.Character = @String 
-; ; ;         While *End\c 
-; ; ;           If *End\c = #LF And *Sta <> *End And AddElement(\items())
-; ; ;             \items() = AllocateStructure(_s_items)
-; ; ;             
-; ; ;             \items()\text\pos = pos+ListSize(\items()) : pos + \items()\text\Len
-; ; ;             \items()\text\Len = (*End-*Sta)>>#PB_compiler_unicode
-; ; ;             \items()\text\string.s = PeekS (*Sta, \items()\text\Len)
-; ; ;             \items()\text\width = TextWidth(\items()\text\string.s)
-; ; ;             \Items()\Text\Height = \Text\Height
-; ; ;             
-; ; ;             ; Debug ""+\items()\text\pos +" "+ \items()\text\string.s
-; ; ;             ;                     
-; ; ;             \Items()\y = Text_Y 
-; ; ;             
-; ; ;             \items()\text\align = \text\align
-; ; ;             \items()\text\rotate = \text\rotate
-; ; ;             \items()\text\padding = \text\padding
-; ; ;             
-; ; ;             _text_change_(\Items(), *this\x, *this\y, *this\width, *this\height, Text_Y)
-; ; ;             : Text_Y + \Text\Height
-; ; ;           If Text_Y > Height : Break : EndIf
-; ;                 
-; ; ;             *Sta = *End + #__sOC 
-; ; ;           EndIf 
-; ; ;           
-; ; ;           *End + #__sOC 
-; ; ;         Wend
-        
-        ;  MessageRequester("", Str(ElapsedMilliseconds()-time) + " text parse time ")
-        Debug Str(ElapsedMilliseconds()-time) + " text parse time "
-        
-      EndIf
-      ;             EndIf
-      
-    EndWith 
-    
-    ProcedureReturn String
-  EndProcedure
   Procedure.i text_multiline_make(*this._struct_)
-     ;*this\text\string.s = make_multiline(*this, *this\text\string.s+#LF$) : ProcedureReturn
-     
     Static string_out.s
     Protected Repaint, String.s, text_width, len
     Protected IT,Text_Y,Text_X,Width,Height, Image_Y, Image_X, Indent=4
@@ -2601,7 +2451,7 @@ Module Editor
       EndIf
       
       
-      If string_out <> String.s+Str(*this)     ;And (Not \text\multiline And Not ListSize(\row\_s()))
+      If string_out <> String.s+Str(*this) 
         string_out = String.s+Str(*this) 
         
         \text\len = Len(\text\string.s)
@@ -2622,7 +2472,7 @@ Module Editor
         
         If \text\count <> \count\items 
           ; Scroll hight reset 
-          \scroll\height = (\text\y*2 - \flag\gridlines) ; 0
+          \scroll\height = 0
           ClearList(\row\_s())
           Debug  "---- ClearList ----"
           
@@ -2719,34 +2569,20 @@ Module Editor
         
       Else
         ; Scroll hight reset 
-        If \countitems = 0
-          \scroll\width = 0
-        Else
-          \scroll\height = 0
-          _set_content_Y_(*this)
-        EndIf
+        \scroll\height = 0
+        _set_content_Y_(*this)
         Debug  "---- updatelist ----"
         
         ForEach \row\_s()
           If Not \row\_s()\hide
-             _set_content_X_(*this)
-              _line_resize_X_(*this)
-             
-            If \countitems = 0
-              \row\_s()\text\width = TextWidth(\row\_s()\text\string)
-              
-              ; Scroll width length
-              _make_scroll_width_(*this)
-              _edit_sel_update_(*this)
-            Else
-              _line_resize_Y_(*this)
-              
-              ; Scroll hight length
-              _make_scroll_height_(*this)
-              
-            EndIf
-          
-                ; ;             ; key - (return & backspace)
+            _set_content_X_(*this)
+            _line_resize_X_(*this)
+            _line_resize_Y_(*this)
+            
+            ; Scroll hight length
+            _make_scroll_height_(*this)
+            
+            ; ;             ; key - (return & backspace)
             ;             If \text\caret\x+4 > (\width[2]+\row\margin\width) And \index[2]+1 = \row\_s()\index 
             ;               Debug  ""+Str(\text\caret\x+\text\x+\flag\fullselection) +" "+ *this\scroll\h\width
             ;               Debug  \row\_s()\text\string
@@ -2794,53 +2630,25 @@ Module Editor
         EndIf
         
         ; Make output multi line text
-        If (\text\change); And \text\multiline); Or (\resize And \text\multiline))
+        If (\text\change); Or (\resize And \text\multiline))
           text_multiline_make(*this)
         EndIf
         
         If \scroll And \text\change
-          If \scroll\v And \scroll\v\bar\max <> (\scroll\height) ; + \text\y*2 - \flag\gridlines) 
+          If \scroll\v And \scroll\v\bar\max <> (\scroll\height - \flag\gridlines) And 
+             Bar::SetAttribute(\scroll\v, #__bar_Maximum, (\scroll\height - \flag\gridlines)) 
+            Bar::Resizes(\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             
-            If \scroll\y <> \scroll\v\bar\min
-              If \scroll\y < 0
-                \scroll\y = 0
-              EndIf
-              
-              Bar::SetAttribute(\scroll\v, #__bar_Minimum, -\scroll\y)
-            EndIf
-            Bar::SetAttribute(\scroll\v, #__bar_Maximum, (\scroll\height)) ;  + \text\y*2 - \flag\gridlines)) 
-            
-            ;If \text\multiline
-              Bar::Resizes(\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            ;EndIf
-           
             \width[2] = \scroll\h\bar\page\len - \row\margin\width 
           EndIf
           
-          If \scroll\h And \scroll\h\bar\max <> \scroll\width  
+          If \scroll\h And \scroll\h\bar\max <> \scroll\width And 
+             Bar::SetAttribute(\scroll\h, #__bar_Maximum, \scroll\width)
+            Bar::Resizes(\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             
-            If \scroll\x <> \scroll\h\bar\min
-              If \scroll\x < 0
-                \scroll\x = 0
-              EndIf
-              
-              Bar::SetAttribute(\scroll\h, #__bar_Minimum, -\scroll\x)
-            EndIf
-            Bar::SetAttribute(\scroll\h, #__bar_Maximum, \scroll\width)
-            
-            ;If \text\multiline
-              Bar::Resizes(\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            ;EndIf
-        
             \height[2] = \scroll\v\bar\page\len
           EndIf
           
-;           If Not \text\multiline
-;             \scroll\v\hide = 1 
-;             \scroll\v\bar\hide = 1 
-;           EndIf
-            
-         
           ; This is for the caret and scroll when entering the key - (enter & backspace) ;
           ; При вводе enter выделенную строку перемещаем в конец страницы и прокручиваем ползунок
           If \scroll\v
@@ -2850,11 +2658,6 @@ Module Editor
             _text_scroll_x_(*this)
           EndIf 
         EndIf 
-        
-        
-;         ; then change bar position
-;         \scroll\y =- (*this\scroll\v\bar\page\pos-*this\scroll\v\bar\min)
-;         \scroll\x =- (*this\scroll\h\bar\page\pos-*this\scroll\h\bar\min)
         
         ; Draw margin back color
         If \row\margin\width > 0
@@ -2881,16 +2684,16 @@ Module Editor
           ForEach \row\_s()
             ; Is visible lines ---
             \row\_s()\draw = Bool(Not \row\_s()\hide And 
-                                  \row\_s()\y+\row\_s()\height+*this\scroll\y>*this\y[2] And 
-                                  (\row\_s()\y-*this\y[2])+*this\scroll\y<*this\height[2])
+                                  \row\_s()\y+\row\_s()\height-*this\scroll\v\bar\page\pos>*this\y[2] And 
+                                  (\row\_s()\y-*this\y[2])-*this\scroll\v\bar\page\pos<*this\height[2])
             
             ; Draw selections
             If \row\_s()\draw 
-              Y = \row\_s()\y+*this\scroll\y
-              Text_X = \row\_s()\text\x+*this\scroll\x
-              Text_Y = \row\_s()\text\y+*this\scroll\y
+              Y = \row\_s()\y-*this\scroll\v\bar\page\pos
+              Text_X = \row\_s()\text\x-*this\scroll\h\bar\page\pos
+              Text_Y = \row\_s()\text\y-*this\scroll\v\bar\page\pos
               
-              Protected text_x_sel = \row\_s()\text\edit[2]\x+*this\scroll\x
+              Protected text_x_sel = \row\_s()\text\edit[2]\x-*this\scroll\h\bar\page\pos
               Protected sel_x = \x[2]
               
               
@@ -2966,7 +2769,7 @@ Module Editor
                     
                     If \row\_s()\text\edit[3]\string.s
                       DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                      DrawRotatedText(\row\_s()\text\edit[3]\x+*this\scroll\x, Text_Y, \row\_s()\text\edit[3]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
+                      DrawRotatedText(\row\_s()\text\edit[3]\x-*this\scroll\h\bar\page\pos, Text_Y, \row\_s()\text\edit[3]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
                     EndIf
                     
                     If \row\_s()\text\edit[2]\string.s
@@ -2992,13 +2795,13 @@ Module Editor
                   DrawingMode(#PB_2DDrawing_Transparent)
                   
                   If \row\_s()\text\edit[1]\string.s
-                    DrawRotatedText(\row\_s()\text\edit[1]\x+*this\scroll\x, Text_Y, \row\_s()\text\edit[1]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
+                    DrawRotatedText(\row\_s()\text\edit[1]\x-*this\scroll\h\bar\page\pos, Text_Y, \row\_s()\text\edit[1]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
                   EndIf
                   If \row\_s()\text\edit[2]\string.s
                     DrawRotatedText(text_x_sel, Text_Y, \row\_s()\text\edit[2]\string.s, *this\text\rotate, *this\row\_s()\color\front[2])
                   EndIf
                   If \row\_s()\text\edit[3]\string.s
-                    DrawRotatedText(\row\_s()\text\edit[3]\x+*this\scroll\x, Text_Y, \row\_s()\text\edit[3]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
+                    DrawRotatedText(\row\_s()\text\edit[3]\x-*this\scroll\h\bar\page\pos, Text_Y, \row\_s()\text\edit[3]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
                   EndIf
                 CompilerEndIf
                 
@@ -3020,12 +2823,12 @@ Module Editor
               ; Draw margin text
               If *this\row\margin\width > 0
                 DrawingMode(#PB_2DDrawing_Transparent)
-                DrawText(*this\row\_s()\margin\x, *this\row\_s()\margin\y+*this\scroll\y, *this\row\_s()\margin\string, *this\row\margin\color\front)
+                DrawText(*this\row\_s()\margin\x, *this\row\_s()\margin\y-*this\scroll\v\bar\page\pos, *this\row\_s()\margin\string, *this\row\margin\color\front)
               EndIf
               
               ; Horizontal line
               If *this\flag\GridLines And *this\row\_s()\color\line And *this\row\_s()\color\line <> *this\row\_s()\color\back : DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                Box(*this\row\_s()\x, (*this\row\_s()\y+*this\row\_s()\height+Bool(*this\flag\gridlines>1))+*this\scroll\y, *this\row\_s()\width, 1, *this\color\line)
+                Box(*this\row\_s()\x, (*this\row\_s()\y+*this\row\_s()\height+Bool(*this\flag\gridlines>1))-*this\scroll\v\bar\page\pos, *this\row\_s()\width, 1, *this\color\line)
               EndIf
             EndIf
           Next
@@ -3035,17 +2838,13 @@ Module Editor
         ; Draw caret
         If *this\text\editable And GetActive() = *this ; *this\color\state
           DrawingMode(#PB_2DDrawing_XOr)             
-          Box(*this\text\caret\x+*this\scroll\x, *this\text\caret\y+*this\scroll\y, *this\text\caret\width, *this\text\caret\height, $FFFFFFFF)
+          Box(*this\text\caret\x-*this\scroll\h\bar\page\pos, *this\text\caret\y-*this\scroll\v\bar\page\pos, *this\text\caret\width, *this\text\caret\height, $FFFFFFFF)
         EndIf
         
         ; Draw scroll bars
         If \scroll
-          ;If *this\scroll\v\bar\change Or *this\repaint
-            bar::draw(\scroll\v)
-          ;EndIf
-          ;If *this\scroll\v\bar\change Or *this\repaint
-            bar::draw(\scroll\h)
-          ;EndIf
+          Bar::Draw(\scroll\v)
+          Bar::Draw(\scroll\h)
         EndIf
       
         ; Draw frames
@@ -3062,8 +2861,7 @@ Module Editor
         If \scroll And \scroll\v And \scroll\h
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
           ; Scroll area coordinate
-          Box(\scroll\h\x+*this\scroll\x, \scroll\v\y+*this\scroll\y, \scroll\width, (\scroll\height), $FF0000FF) ; + \text\y*2 - \flag\gridlines), $FF0000FF)
-          
+          ;Box(-\scroll\h\bar\page\pos, -\scroll\v\bar\page\pos, \scroll\width, \scroll\height, $FFFF0000)
           ; Debug ""+\scroll\x +" "+ \scroll\y +" "+ \scroll\width +" "+ \scroll\height
           Box(\scroll\h\x-\scroll\h\bar\page\pos, \scroll\v\y-\scroll\v\bar\page\pos, \scroll\h\bar\max, \scroll\v\bar\max, $FFFF0000)
           
@@ -3346,12 +3144,8 @@ Module Editor
           If \text\multiline
             \count\items = CountString(\text\string.s, #LF$)
           Else
-;             If Not \count\items
-              \count\items = 1
-              \text\string.s = RemoveString(\text\string.s, #LF$) 
-;               AddElement(\row\_s())
-;               \row\_s()\text\string = \text\string.s
-;             EndIf
+            \text\string.s = RemoveString(\text\string.s, #LF$) 
+            \count\items = 1
           EndIf
           
           ;           If *this And StartDrawing(CanvasOutput(*this\root\canvas))
@@ -4025,14 +3819,12 @@ Module Editor
           If Not \hide And \interact
             ; Get line position
             ;If \root\mouse\buttons ; сним двойной клик не работает
-            If (\root\mouse\y-\y[2]-\text\y+\scroll\v\bar\page\pos) > 0
-             _line_ = ((\root\mouse\y-\y[2]-\text\y-\scroll\y) / (\text\height + \flag\gridlines))
-             ;  _line_ = ((\root\mouse\y-\y[2]-\text\y+\scroll\v\bar\page\pos) / (\text\height + \flag\gridlines))
-            Else
+            If \root\mouse\y < \y
               _line_ =- 1
+            Else
+              _line_ = ((\root\mouse\y-\y-\text\y+\scroll\v\bar\page\pos) / (\text\height + \flag\gridlines))
             EndIf
             ;EndIf
-            ;Debug  _line_; (\root\mouse\y-\y[2]-\text\y+\scroll\v\bar\page\pos)
             
             Select EventType 
               Case #PB_EventType_LeftDoubleClick 
@@ -4396,30 +4188,18 @@ Module Editor
           EndIf
         EndIf
         
-;         \text\align\horizontal = Bool(Flag&#__text_Center)
-;         \text\align\Vertical = Bool(Flag&#__text_Middle)
-;         \text\align\right = Bool(Flag&#__text_Right)
-;         \text\align\bottom = Bool(Flag&#__text_Bottom)
+        \text\align\horizontal = Bool(Flag&#__text_Center)
+        ;\text\align\Vertical = Bool(Flag&#__text_Middle)
+        \text\align\right = Bool(Flag&#__text_Right)
+        \text\align\bottom = Bool(Flag&#__text_Bottom)
         
-        If Flag&#__align_text
-          \text\align\top = Bool(Flag&#__text_top=#__text_top)
-          \text\align\left = Bool(Flag&#__text_left=#__text_left)
-          \text\align\right = Bool(Flag&#__text_right=#__text_right)
-          \text\align\bottom = Bool(Flag&#__text_bottom=#__text_bottom)
-          
-          If Bool(Flag&#__text_center=#__text_center)
-            \text\align\horizontal = Bool(Not \text\align\right And Not \text\align\left)
-            \text\align\vertical = Bool(Not \text\align\bottom And Not \text\align\top)
-          EndIf
+        If \vertical
+          \text\x = \fs 
+          \text\y = \fs+2
+        Else
+          \text\x = \fs+2
+          \text\y = \fs
         EndIf
-      
-;         If \vertical
-;           \text\x = \fs 
-;           \text\y = \fs+2
-;         Else
-          \text\x = 10;\fs+2
-          \text\y = 10;\fs
-;         EndIf
         
         \color = _get_colors_()
         \color\fore = 0
@@ -4434,10 +4214,10 @@ Module Editor
       EndIf
       
       \scroll = AllocateStructure(_s_scroll) 
-      ;      \scroll\v = Bar::Scroll(0, 0, 16, 0, 0,0,0, #__Bar_Vertical, 7)
-      ;       \scroll\h = Bar::Scroll(0, 0, 0, Bool(\text\multiline <> 1)*16, 0,0,0, 0, 7)
-      \scroll\v = Bar::Bar(#PB_GadgetType_ScrollBar,16, 0,0,0, #PB_ScrollBar_Vertical, 7, *this)
-      \scroll\h = Bar::Bar(#PB_GadgetType_ScrollBar, Bool(\text\multiline <> 1) * 16, 0,0,0, 0, 7, *this)
+      ;Bar::Bars(\scroll, 16, 7, Bool(\text\multiline <> 1))
+       ;\scroll\v = Bar::Scroll(0, 0, 16, 0, 0,0,0, #PB_ScrollBar_Vertical, 7)
+     \scroll\v = Bar::Scroll(0, 0, 16, 0, 0,0,0, #__Bar_Vertical, 7)
+      \scroll\h = Bar::Scroll(0, 0, 0, Bool(\text\multiline <> 1)*16, 0,0,0, 0, 7)
       
       Resize(*this, X,Y,Width,Height)
       
@@ -4459,7 +4239,7 @@ Module Editor
   Procedure.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Flag.i=0)
     Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
     ;Protected *this._struct_ = Editor(30, 30, Width-60, Height-60, "", Flag)
-    Protected *this._struct_ = Editor(50, 0, Width-100, Height, "", Flag)
+    Protected *this._struct_ = Editor(0, 0, Width, Height, "", Flag)
     
     If *this
       With *this
@@ -4698,5 +4478,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------
 ; EnableXP

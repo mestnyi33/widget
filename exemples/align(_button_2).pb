@@ -1573,19 +1573,19 @@ CompilerIf #PB_Compiler_IsMainFile
     *B_3 = Create(10, -1, 100, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Widget_Vertical|#PB_Text_MultiLine|#PB_Text_Invert,8)
     
     
-    ;         *B_0 = Create(10, -1, 10, 10, 100, 80, "Standard Button Button (horizontal)", #PB_Text_Right|#PB_Text_MultiLine,8)
-    ;         *B_1 = Create(10, -1, 10, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Text_Right|#PB_Text_Vertical|#PB_Text_MultiLine,8)
-    ;         *B_2 = Create(10, -1, 120, 10, 100, 80, "Standard Button Button (horizontal)", #PB_Text_Right|#PB_Text_MultiLine|#PB_Text_Invert,8)
-    ;         *B_3 = Create(10, -1, 100, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Text_Right|#PB_Text_Vertical|#PB_Text_MultiLine|#PB_Text_Invert,8)
+;             *B_0 = Create(10, -1, 10, 10, 100, 80, "Standard Button Button (horizontal)", #PB_Text_Right|#PB_Text_MultiLine,8)
+;             *B_1 = Create(10, -1, 10, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Text_Right|#PB_Widget_Vertical|#PB_Text_MultiLine,8)
+;             *B_2 = Create(10, -1, 120, 10, 100, 80, "Standard Button Button (horizontal)", #PB_Text_Right|#PB_Text_MultiLine|#PB_Text_Invert,8)
+;             *B_3 = Create(10, -1, 100, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Text_Right|#PB_Widget_Vertical|#PB_Text_MultiLine|#PB_Text_Invert,8)
     
     
     ;     *B_0 = Create(10, -1, 10, 10, 100, 80, "Standard Button Button (horizontal)", #PB_Text_Bottom|#PB_Text_MultiLine,8)
-    ;     *B_1 = Create(10, -1, 10, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Text_Bottom|#PB_Text_Vertical|#PB_Text_MultiLine,8)
+    ;     *B_1 = Create(10, -1, 10, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Text_Bottom|#PB_Widget_Vertical|#PB_Text_MultiLine,8)
     ;     *B_2 = Create(10, -1, 120, 10, 100, 80, "Standard Button Button (horizontal)", #PB_Text_Bottom|#PB_Text_MultiLine|#PB_Text_Invert,8)
-    ;     *B_3 = Create(10, -1, 100, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Text_Bottom|#PB_Text_Vertical|#PB_Text_MultiLine|#PB_Text_Invert,8)
+    ;     *B_3 = Create(10, -1, 100, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Text_Bottom|#PB_Widget_Vertical|#PB_Text_MultiLine|#PB_Text_Invert,8)
     
     ;     *B_4 = Create(10, -1, 230, 10, 100, 80, "Standard Button Button (horizontal)", #PB_Text_MultiLine,8)
-    ;     *B_5 = Create(10, -1, 190, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Text_Vertical|#PB_Text_MultiLine,8)
+    ;     *B_5 = Create(10, -1, 190, 100, 80, 100, "Standard Button Button (Vertical)", #PB_Widget_Vertical|#PB_Text_MultiLine,8)
     
     
     *B_0 = Create(10, -1, 230, 10, 200, 20, "Standard Button", 0,8)
@@ -1645,6 +1645,6 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = ---v-f--7------------
 ; EnableXP
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = ------------------------------
 ; EnableXP

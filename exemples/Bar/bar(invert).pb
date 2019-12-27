@@ -19,6 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         SetGadgetState(0, GetAttribute(widget(), #__Bar_Inverted))
         SetWindowTitle(0, Str(GetState(widget())))
+        redraw(root())
       EndIf
     EndIf
   EndProcedure
@@ -57,6 +58,6 @@ CompilerIf #PB_Compiler_IsMainFile
     repaint()
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

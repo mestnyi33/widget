@@ -11,6 +11,8 @@ XIncludeFile "widgets().pbi"
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
   UseModule Widget
+  UseModule constants
+  ;UseModule structures
   
   ;-
   ;- STRUCTUREs
@@ -714,14 +716,14 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndProcedure
   
   Procedure.i SetSelector(*this._S_widget)
-   *this\Root\selector = AllocateStructure(_S_anchor)
+   *this\Root\selector = AllocateStructure(structures::_S_anchor)
   EndProcedure
   
   Procedure.i UpdateSelector(*this._S_widget)
     Protected MouseX, MouseY, DeltaX, DeltaY
     
     If *this And Not *this\Root\selector And GetButtons(*this)
-      *this\Root\selector = AllocateStructure(_S_anchor)
+      *this\Root\selector = AllocateStructure(structures::_S_anchor)
     EndIf
     
     If *this And *this\Root\selector
@@ -751,7 +753,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       ReDraw(*this\Root)
     EndIf
     
-    If *this\Root\Drag
+    If *this\Root\mouse\Drag
       ProcedureReturn *this
     EndIf
     
@@ -1045,6 +1047,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
   ;- END
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = ----8--------------
 ; EnableXP

@@ -1,5 +1,6 @@
 ﻿IncludePath "../"
-XIncludeFile "editor().pb"
+;XIncludeFile "editor().pb"
+XIncludeFile "editor.pb"
 ;XIncludeFile "widgets().pbi"
 
 UseModule editor

@@ -34,7 +34,7 @@ If OpenWindow(0, 0, 0, 316, 350, "EditorGadget", #PB_Window_SystemMenu | #PB_Win
    text.s = GetText(*w)
    SetText(*w1, text)
   ;SetText(*w1, "The" + #LF$ + "quick" + #LF$ + "brown" + #LF$ + "fox" + #LF$ + "jumps" + #LF$ + "over" + #LF$ + "the" + #LF$ + "lazy" + #LF$ + "dog.")
-  SetState(*w1, -1)
+  ;SetState(*w1, -1)
   ;redraw(*w1)
   ;SetWindowTitle(0, GetItemText(*w, 2)+ " - get tex item 2")
   
@@ -49,7 +49,7 @@ If OpenWindow(0, 0, 0, 316, 350, "EditorGadget", #PB_Window_SystemMenu | #PB_Win
         LastLine + 1
         
         AddItem(*w1, LastLine, "Line "+Str(LastLine))
-        SetState(*w1, -1)
+        SetItemState(*w1, LastLine, -1)
         redraw(*w1)
       Else
         RemoveWindowTimer(0, 0)

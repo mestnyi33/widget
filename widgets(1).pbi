@@ -52,11 +52,6 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 CompilerEndIf
 
 ;XIncludeFile "_struct_.pbi"
-
-; CompilerIf Not Defined(colors, #PB_Module)
-;   XIncludeFile "colors.pbi"
-; CompilerEndIf
-
 XIncludeFile "widgets()/editor().pb"
 
 ;- <<<
@@ -547,27 +542,276 @@ CompilerEndIf
 ;-
 DeclareModule Widget
   EnableExplicit
-  UseModule constants
+  
+  ;- - CONSTANTs
+  ;{
+  #__round = 7
+  #__draw_clip_box = 0
+  #__draw_scroll_box = 1
+  #__debug_events_tab = 0
+  #__spin_padding_text = 5
+  #__sOC = SizeOf(Character)
+  #__border_scroll = 2
+  #__spin_buttonsize2 = 15
+  #__spin_buttonsize = 18
+  
+  Enumeration #PB_Event_FirstCustomValue
+    #PB_Event_widget
+  EndEnumeration
+  
+  Enumeration #PB_EventType_FirstCustomValue
+    CompilerIf (#PB_Compiler_Version<547) : #PB_EventType_Resize : CompilerEndIf
+    
+    #PB_EventType_free
+    #PB_EventType_create
+    #PB_EventType_Drop
+    
+    #PB_EventType_repaint
+    #PB_EventType_ScrollChange
+  EndEnumeration
+  
+  #__anchors = 9+4
+  
+  #__a_moved = 9
+  #__arrow_type = 1
+  
+  ;bar buttons
+  Enumeration
+    #__b_1 = 1
+    #__b_2 = 2
+    #__b_3 = 3
+  EndEnumeration
+  
+  ;bar position
+  Enumeration
+    #__bp_0 = 0
+    #__bp_1 = 1
+    #__bp_2 = 2
+    #__bp_3 = 3
+  EndEnumeration
+  
+  ;element position
+  Enumeration
+    #last =- 1
+    #first = 0
+    #prev = 1
+    #next = 2
+    #__before = 3
+    #__after = 4
+  EndEnumeration
+  
+  ;element coordinate 
+  Enumeration
+    #__c_0 = 0 ; 
+    #__c_1 = 1 ; frame
+    #__c_2 = 2 ; inner
+    #__c_3 = 3 ; container
+    #__c_4 = 4 ; clip
+  EndEnumeration
+  
+  ;color state
+  Enumeration
+    #__s_0
+    #__s_1
+    #__s_2
+    #__s_3
+  EndEnumeration
+  
+  Enumeration 1
+    #__color_front
+    #__color_back
+    #__color_line
+    #__color_titlefront
+    #__color_titleback
+    #__color_graytext 
+    #__color_frame
+  EndEnumeration
+  
+  #PB_GadgetType_popup =- 10
+  #PB_GadgetType_property = 40
+  #PB_GadgetType_window =- 1
+  #PB_GadgetType_root =- 5
+  ;
+  
+  EnumerationBinary
+    #___text
+    #___image
+    
+    #___center
+    #___right
+    #___left
+    #___top
+    #___bottom
+    #___vertical 
+    #___horizontal
+  EndEnumeration
+  
+  EnumerationBinary WidgetFlags
+    #__flag_left
+    #__flag_top
+    #__flag_right
+    #__flag_bottom
+    #__flag_horizontal
+    
+    #__flag_numeric
+    #__flag_readonly
+    #__flag_lowercase 
+    #__flag_uppercase
+    #__flag_password
+    #__flag_wordwrap
+    #__flag_multiline 
+    #__flag_inline
+    
+    #__flag_nolines
+    #__flag_checkboxes
+    #__flag_optionboxes
+    #__flag_threeState
+    #__flag_collapse
+    #__flag_gridLines
+    #__flag_multiselect
+    #__flag_clickselect
+    #__flag_fullselection
+    
+    #__flag_nobuttons
+    #__flag_inverted
+    
+    ; common
+    #__flag_vertical 
+    #__flag_autoSize
+    ;#__flag_autoRight
+    ;#__flag_autoBottom
+    #__flag_noActivate
+    ;#__flag_invisible
+    #__flag_sizegadget
+    #__flag_systemmenu
+    #__flag_anchorsGadget
+    #__flag_borderless
+    ;         #__flag_Double
+    ;         #__flag_flat
+    ;         #__flag_raised
+    ;         #__flag_Single
+    
+    
+    
+    #__flag_limit
+  EndEnumeration
+  
+  #__flag_noGadget = #__flag_nobuttons
+  #__flag_center = #__flag_vertical|#__flag_horizontal
+  #__flag_full = #__flag_left|#__flag_right|#__flag_top|#__flag_bottom
+  
+  #__flag_default = #__flag_nolines|#__flag_nobuttons|#__flag_checkboxes
+  #__flag_alwaysselection = #__flag_lowercase|#__flag_uppercase
+  
+  ; window
+  #__window_nogadget = #__flag_nobuttons
+  #__window_borderless = #__flag_borderless
+  #__window_systemmenu = #__flag_systemmenu
+  #__window_sizegadget = #__flag_sizegadget
+  #__window_screencentered = #__flag_center
+  
+  ; tree
+  #__tree_collapse = #__flag_collapse
+  #__tree_optionboxes = #__flag_optionboxes
+  #__tree_alwaysselection = #__flag_alwaysselection
+  #__tree_checkboxes = #__flag_checkboxes
+  #__tree_nolines = #__flag_nolines
+  #__tree_nobuttons = #__flag_nobuttons
+  #__tree_gridlines = #__flag_gridLines
+  #__tree_threestate = #__flag_threeState
+  #__tree_clickselect = #__flag_clickselect
+  #__tree_multiselect = #__flag_multiselect
+  #__tree_borderless = #__flag_borderless
+  
+  ; text
+  #__text_left = #__flag_left
+  #__text_top = #__flag_top
+  #__text_center = #__flag_center
+  #__text_right = #__flag_right
+  #__text_bottom = #__flag_bottom
+  #__text_vertical = #__flag_vertical
+  
+  #__text_multiline = #__flag_multiline
+  #__text_numeric = #__flag_numeric
+  #__text_password = #__flag_password
+  #__text_readonly = #__flag_readonly
+  #__text_lowercase = #__flag_lowercase
+  #__text_uppercase = #__flag_uppercase
+  #__text_wordwrap = #__flag_wordwrap
+  #__text_invert = #__flag_inverted
+  
+  ; editor
+  #__editor_wordwrap = #__flag_wordwrap
+  #__editor_numeric = #__flag_numeric
+  #__editor_fullselection = #__flag_fullselection
+  #__editor_alwaysselection = #__flag_alwaysselection
+  #__editor_gridlines = #__flag_gridLines
+  #__editor_borderless = #__flag_borderless
+  
+  ; string
+  #__string_right = #__text_right
+  #__string_center = #__text_center
+  #__string_numeric = #__text_numeric
+  #__string_password = #__text_password
+  #__string_readonly = #__text_readonly
+  #__string_uppercase = #__text_uppercase
+  #__string_lowercase = #__text_lowercase
+  #__string_borderless = #__flag_borderless
+  #__string_multiline = #__text_multiline
+    
+  ; button
+  #__button_left = #__text_left
+  #__button_right = #__text_right
+  #__button_toggle = #__flag_collapse
+  #__button_default = #__flag_default
+  #__button_vertical = #__text_vertical
+  #__button_inverted = #__flag_inverted
+  #__button_multiline = #__text_multiline
+  
+  ; bar
+  EnumerationBinary #__flag_numeric;1
+    #__bar_minimum 
+    #__bar_maximum 
+    #__bar_pageLength 
+    
+    ;#__bar_arrowSize 
+    #__bar_buttonSize 
+    #__bar_ScrollStep
+    #__bar_Direction 
+    #__bar_ticks
+    #__bar_reverse
+    #__bar_inverted = #__flag_inverted
+    
+    #__bar_vertical = #__flag_vertical
+    #__bar_nobuttons = #__bar_buttonSize
+  EndEnumeration
+  
+  If (#__flag_limit>>1) > 2147483647 ; 8589934592
+    Debug "???????? ????? ? x32 ("+Str(#__flag_limit>>1)+")"
+  EndIf
+  
+  
+  
+  ;   ; Set/Get Attribute
+  #__DisplayMode = 1<<13
+  ;   #PB_Image = 1<<13
+  ;   #PB_text = 1<<14
+  ;   #PB_flag = 1<<15
+  ;   #PB_State = 1<<16
+  
+  
+  ;}
+  
+  ;   Structure _s_type
+  ;     b.b
+  ;     i.i 
+  ;     s.s
+  ;   EndStructure
   
   Prototype pFunc()
   
   
-  CompilerIf Not Defined(structures, #PB_Module)
-DeclareModule structures
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    ; PB Interne Struktur Gadget MacOS
-    Structure sdkGadget
-      *gadget
-      *container
-      *vt
-      UserData.i
-      Window.i
-      Type.i
-      Flags.i
-    EndStructure
-  CompilerEndIf
-  Prototype pFunc()
-    #__anchors =9+4
+  ;- - STRUCTUREs
   ;{ 
   ;- - _s_page
   Structure _s_page
@@ -1036,6 +1280,7 @@ DeclareModule structures
     *callback.pFunc
     *widget._s_widget
     *active._s_widget ; active window
+    
     colors._s_color
     ;draw.b
   EndStructure
@@ -1057,135 +1302,10 @@ DeclareModule structures
   EndStructure
   ;}
   
-  
-  Global *Focus._s_widget
-  Global NewList List._s_widget()
-  Global Use_List_Canvas_Gadget
-  
-EndDeclareModule 
-
-Module structures 
-  
-EndModule 
-CompilerEndIf
-
-Global colors_this.structures::_s_color 
-Global *event.structures::_s_event_ = AllocateStructure(structures::_s_event_)
-  Global *row_selected.structures::_s_rows
-  
-  
-Structure _s_widget Extends structures::_s_widget : EndStructure
-Structure _s_event_ Extends structures::_s_event_ : EndStructure
-Structure _s_root Extends structures::_s_root : EndStructure
-Structure _s_scroll Extends structures::_s_scroll : EndStructure
-
-
-  With colors_this                          
-    \state = 0
-    \alpha[0] = 255
-    \alpha[1] = 255
-    
-    ; - Серые цвета
-    ; Цвета по умолчанию
-    \front[0] = $80000000
-    \fore[0] = $FFF6F6F6
-    \back[0] = $FFE8E8E8
-    \frame[0] = $FFBABABA
-    
-    ; Цвета если курсор на виджете
-    \front[1] = $80000000
-    \fore[1] = $FFF2F2F2 
-    \back[1] = $FFDCDCDC 
-    \frame[1] = $FFB0B0B0 
-    
-    ; Цвета если нажали на виджет
-    \front[2] = $FFFEFEFE
-    \fore[2] = $FFE2E2E2
-    \back[2] = $FFB4B4B4
-    \frame[2] = $FF6F6F6F
-    
-    ;     ;- Серые цвета 
-    ;         ; Цвета по умолчанию
-    ;         \front[0] = $FF000000
-    ;         \fore[0] = $FFFCFCFC ; $FFF6F6F6 
-    ;         \back[0] = $FFE2E2E2 ; $FFE8E8E8 ; 
-    ;         \line[0] = $FFA3A3A3
-    ;         \frame[0] = $FFA5A5A5 ; $FFBABABA
-    ;         
-    ;         ; Цвета если мышь на виджете
-    ;         \front[1] = $FF000000
-    ;         \fore[1] = $FFF5F5F5 ; $FFF5F5F5 ; $FFEAEAEA
-    ;         \back[1] = $FFEAEAEA ; $FFCECECE ; 
-    ;         \line[1] = $FF5B5B5B
-    ;         \frame[1] = $FFCECECE ; $FF8F8F8F
-    ;         
-    ;         ; Цвета если нажали на виджет
-    ;         \front[2] = $FFFFFFFF
-    ;         \fore[2] = $FFE2E2E2
-    ;         \back[2] = $FFB4B4B4
-    ;         \line[2] = $FFFFFFFF
-    ;         \frame[2] = $FF6F6F6F
-    
-    ;     ;- Зеленые цвета
-    ;                 ; Цвета по умолчанию
-    ;                 \front[0] = $FF000000
-    ;                 \fore[0] = $FFFFFFFF
-    ;                 \back[0] = $FFDAFCE1  
-    ;                 \frame[0] = $FF6AFF70 
-    ;                 
-    ;                 ; Цвета если мышь на виджете
-    ;                 \front[1] = $FF000000
-    ;                 \fore[1] = $FFE7FFEC
-    ;                 \back[1] = $FFBCFFC5
-    ;                 \frame[1] = $FF46E064 ; $FF51AB50
-    ;                 
-    ;                 ; Цвета если нажали на виджет
-    ;                 \front[2] = $FFFEFEFE
-    ;                 \fore[2] = $FFC3FDB7
-    ;                 \back[2] = $FF00B002
-    ;                 \frame[2] = $FF23BE03
-    
-    ;- Синие цвета
-    ; Цвета по умолчанию
-    \front[0] = $80000000
-    \fore[0] = $FFF8F8F8 
-    \back[0] = $80E2E2E2
-    \frame[0] = $80C8C8C8
-    
-    ; Цвета если мышь на виджете
-    \front[1] = $80000000
-    \fore[1] = $FFFAF8F8
-    \back[1] = $80FCEADA
-    \frame[1] = $80FFC288
-    
-    ; Цвета если нажали на виджет
-    \front[2] = $FFFEFEFE
-    \fore[2] = $FFE9BA81;$C8FFFCFA
-    \back[2] = $FFE89C3D; $80E89C3D
-    \frame[2] = $FFDC9338; $80DC9338
-    
-    ;     ; Цвета если нажали на виджет
-    ;     \front[2] = $80000000
-    ;     \fore[2] = $FFFDF7EF
-    ;     \back[2] = $FFFBD9B7
-    ;     \frame[2] = $FFE59B55
-    
-    
-    
-    
-    
-    ; Цвета если отключили виджет
-    \front[3] = $FFBABABA
-    \fore[3] = $FFF6F6F6 
-    \back[3] = $FFE2E2E2 
-    \frame[3] = $FFCECECE
-  EndWith
   ;-
   ;- - DECLAREs GLOBALs
-  Macro _get_colors_()
-    colors_this
-  EndMacro
-  
+  Global *event._s_event_ = AllocateStructure(_s_event_)
+  Global *row_selected._s_rows
   
   ;-
   ;- - DECLAREs MACROs
@@ -1406,9 +1526,176 @@ Module Widget
   CompilerIf Defined(fixme, #PB_Module)
     UseModule fixme
   CompilerEndIf
-  ;
   ;- MODULE
   ;
+  
+  ;   ;- GLOBALs
+  Global _color_._s_color
+  ;   
+  With _color_                          
+    \state = 0
+    \alpha[0] = 255
+    \alpha[1] = 255
+    ;     
+    ; ; ;     ; - ????? ?????
+    ; ; ;     ; ????? ?? ?????????
+    ; ; ;     \front[#__s_0] = $80000000
+    ; ; ;     \fore[#__s_0] = $FFF6F6F6 ; $FFF8F8F8 
+    ; ; ;     \back[#__s_0] = $FFE2E2E2 ; $80E2E2E2
+    ; ; ;     \frame[#__s_0] = $FFBABABA; $80C8C8C8
+    ; ; ;     
+    ; ; ;     ; ????? ???? ???? ?? ???????
+    ; ; ;     \front[#__s_1] = $80000000
+    ; ; ;     \fore[#__s_1] = $FFEAEAEA ; $FFFAF8F8
+    ; ; ;     \back[#__s_1] = $FFCECECE ; $80FCEADA
+    ; ; ;     \frame[#__s_1] = $FF8F8F8F; $80FFC288
+    ; ; ;     
+    ; ; ;     ; ????? ???? ?????? ?? ??????
+    ; ; ;     \front[#__s_2] = $FFFEFEFE
+    ; ; ;     \fore[#__s_2] = $FFE2E2E2 ; $C8E9BA81 ; $C8FFFCFA
+    ; ; ;     \back[#__s_2] = $FFB4B4B4 ; $C8E89C3D ; $80E89C3D
+    ; ; ;     \frame[#__s_2] = $FF6F6F6F; $C8DC9338 ; $80DC9338
+    ; ; ;     
+    ; ; ;     ; ????? ???? ??????? ??????
+    ; ; ;     \front[#__s_3] = $FFBABABA
+    ; ; ;     \fore[#__s_3] = $FFF6F6F6 
+    ; ; ;     \back[#__s_3] = $FFE2E2E2 
+    ; ; ;     \frame[#__s_3] = $FFBABABA
+    ; ; ;     
+    ; ; ;     
+    ;     
+    ;     ;- ????? ?????
+    ;     ; ????? ?? ?????????
+    ;     \front[#__s_0] = $80000000
+    ;     \fore[#__s_0] = $FFF8F8F8 
+    ;     \back[#__s_0] = $80E2E2E2
+    ;     \frame[#__s_0] = $80C8C8C8
+    ;     \line[#__s_0] = $FF7E7E7E
+    ;     
+    ;     ; ????? ???? ???? ?? ???????
+    ;     \front[#__s_1] = $80000000
+    ;     \fore[#__s_1] = $FFFAF8F8
+    ;     \back[#__s_1] = $80FCEADA
+    ;     \frame[#__s_1] = $80FFC288
+    ;     \line[#__s_1] = $FF7E7E7E
+    ;     
+    ;     ; ????? ???? ?????? ?? ??????
+    ;     \front[#__s_2] = $FFFEFEFE
+    ;     \fore[#__s_2] = $C8E9BA81;$C8FFFCFA
+    ;     \back[#__s_2] = $C8E89C3D; $80E89C3D
+    ;     \frame[#__s_2] = $C8DC9338; $80DC9338
+    ;     \line[#__s_2] = $FF7E7E7E
+    ;     
+    ;     ; ????? ???? ??????? ??????
+    ;     \front[#__s_3] = $FFBABABA
+    ;     \fore[#__s_3] = $FFF6F6F6 
+    ;     \back[#__s_3] = $FFE2E2E2 
+    ;     \frame[#__s_3] = $FFBABABA
+    ;     \line[#__s_3] = $FF7E7E7E
+    ;   EndWith
+    ;   
+    ;   
+    ;   ;-
+    ;   ;- Colors
+    ;   ; $FF24B002 ; $FFD5A719 ; $FFE89C3D ; $FFDE9541 ; $FFFADBB3 ;
+    ;   Global Colors._s_color
+    ;   With Colors                          
+    ;     \State = 0
+    
+    ;- ????? ????? 
+    ;     ; ????? ?? ?????????
+    ;     \Front[#__s_0] = $FF000000
+    ;     \Fore[#__s_0] = $FFFCFCFC ; $FFF6F6F6 
+    ;     \Back[#__s_0] = $FFE2E2E2 ; $FFE8E8E8 ; 
+    ;     \Line[#__s_0] = $FFA3A3A3
+    ;     \Frame[#__s_0] = $FFA5A5A5 ; $FFBABABA
+    ;     
+    ;     ; ????? ???? ???? ?? ???????
+    ;     \Front[#__s_1] = $FF000000
+    ;     \Fore[#__s_1] = $FFF5F5F5 ; $FFF5F5F5 ; $FFEAEAEA
+    ;     \Back[#__s_1] = $FFCECECE ; $FFEAEAEA ; 
+    ;     \Line[#__s_1] = $FF5B5B5B
+    ;     \Frame[#__s_1] = $FF8F8F8F
+    ;     
+    ;     ; ????? ???? ?????? ?? ??????
+    ;     \Front[#__s_2] = $FFFFFFFF
+    ;     \Fore[#__s_2] = $FFE2E2E2
+    ;     \Back[#__s_2] = $FFB4B4B4
+    ;     \Line[#__s_2] = $FFFFFFFF
+    ;     \Frame[#__s_2] = $FF6F6F6F
+    
+    ;- ??????? ?????
+    ;             ; ????? ?? ?????????
+    ;             \Front[#__s_0] = $FF000000
+    ;             \Fore[#__s_0] = $FFFFFFFF
+    ;             \Back[#__s_0] = $FFDAFCE1  
+    ;             \Frame[#__s_0] = $FF6AFF70 
+    ;             
+    ;             ; ????? ???? ???? ?? ???????
+    ;             \Front[#__s_1] = $FF000000
+    ;             \Fore[#__s_1] = $FFE7FFEC
+    ;             \Back[#__s_1] = $FFBCFFC5
+    ;             \Frame[#__s_1] = $FF46E064 ; $FF51AB50
+    ;             
+    ;             ; ????? ???? ?????? ?? ??????
+    ;             \Front[#__s_2] = $FFFEFEFE
+    ;             \Fore[#__s_2] = $FFC3FDB7
+    ;             \Back[#__s_2] = $FF00B002
+    ;             \Frame[#__s_2] = $FF23BE03
+    
+    ;- ????? ?????
+    ; ????? ?? ?????????
+    \Front[#__s_0] = $80000000
+    \Fore[#__s_0] = $FFF8F8F8 
+    \Back[#__s_0] = $80E2E2E2
+    \Frame[#__s_0] = $80C8C8C8
+    
+    ; ????? ???? ???? ?? ???????
+    \Front[#__s_1] = $80000000
+    \Fore[#__s_1] = $FFFAF8F8
+    \Back[#__s_1] = $80FCEADA
+    \Frame[#__s_1] = $80FFC288
+    
+    ; ????? ???? ?????? ?? ??????
+    \Front[#__s_2] = $FFFEFEFE
+    \Fore[#__s_2] = $FFE9BA81;$C8FFFCFA
+    \Back[#__s_2] = $FFE89C3D; $80E89C3D
+    \Frame[#__s_2] = $FFDC9338; $80DC9338
+    
+    ;         ;- ????? ????? 2
+    ;         ; ????? ?? ?????????
+    ;         \Front[#__s_0] = $FF000000
+    ;         \Fore[#__s_0] = $FFF8F8F8 ; $FFF0F0F0 
+    ;         \Back[#__s_0] = $FFE5E5E5
+    ;         \Frame[#__s_0] = $FFACACAC 
+    ;         
+    ;         ; ????? ???? ???? ?? ???????
+    ;         \Front[#__s_1] = $FF000000
+    ;         \Fore[#__s_1] = $FFFAF8F8 ; $FFFCF4EA
+    ;         \Back[#__s_1] = $FFFAE8DB ; $FFFCECDC
+    ;         \Frame[#__s_1] = $FFFC9F00
+    ;         
+    ;             ; ????? ???? ?????? ?? ??????
+    ;             \Front[#__s_2] = $FF000000;$FFFFFFFF
+    ;             \Fore[#__s_2] = $FFFDF7EF
+    ;             \Back[#__s_2] = $FFFBD9B7
+    ;             \Frame[#__s_2] = $FFE59B55
+    
+;     ; ????? ???? ?????? ?? ??????
+;     \front[#__s_2] = $FF000000
+;     \fore[#__s_2] = $FFFDF7EF
+;     \back[#__s_2] = $FFFBD9B7
+;     \frame[#__s_2] = $FFE59B55
+    
+    
+    ; ????? ???? ??????? ??????
+    \front[#__s_3] = $FFBABABA
+    \fore[#__s_3] = $FFF6F6F6 
+    \back[#__s_3] = $FFE2E2E2 
+    \frame[#__s_3] = $FFBABABA
+    \line[#__s_3] = $FF7E7E7E
+    
+  EndWith
   
   Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
     Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ < (_type_\x#_mode_+_type_\width#_mode_) And 
@@ -1493,7 +1780,7 @@ Module Widget
     
     ; _set_auto_size_
     If Bool(_flag_ & #__flag_autoSize=#__flag_autoSize) : x=0 : y=0
-      _this_\align = AllocateStructure(structures::_s_align)
+      _this_\align = AllocateStructure(_s_align)
       _this_\align\autoSize = 1
       _this_\align\left = 1
       _this_\align\top = 1
@@ -2271,7 +2558,7 @@ Module Widget
 ;       *bar = *this\bar
 ;     EndIf
     
-  Procedure.i Bar_changePos(*bar.structures::_s_bar, ScrollPos.f)
+  Procedure.i Bar_changePos(*bar._s_bar, ScrollPos.f)
     With *bar
       If ScrollPos < \min : ScrollPos = \min : EndIf
       
@@ -2577,7 +2864,7 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b Bar_resizes(*scroll.structures::_s_scroll, X.l,Y.l,Width.l,Height.l )
+  Procedure.b Bar_resizes(*scroll._s_scroll, X.l,Y.l,Width.l,Height.l )
     With *scroll
       Protected iHeight, iWidth
       
@@ -2593,8 +2880,8 @@ Module Widget
       iHeight = Height - Bool(Not \h\hide And \h\height) * \h\height
       iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width
       
-      If \v\bar\page\len<>iHeight : Bar_SetAttribute(\v, #__bar_pageLength, iHeight) : EndIf
-      If \h\bar\page\len<>iWidth : Bar_SetAttribute(\h, #__bar_pageLength, iWidth) : EndIf
+      If \v\width And \v\bar\page\len<>iHeight : Bar_SetAttribute(\v, #__bar_pageLength, iHeight) : EndIf
+      If \h\height And \h\bar\page\len<>iWidth : Bar_SetAttribute(\h, #__bar_pageLength, iWidth) : EndIf
       
       \v\hide = Resize(\v, Width+x-\v\width, y, #PB_Ignore, \v\bar\page\len)
       \h\hide = Resize(\h, x, Height+y-\h\height, \h\bar\page\len, #PB_Ignore)
@@ -2602,8 +2889,8 @@ Module Widget
       iHeight = Height - Bool(Not \h\hide And \h\height) * \h\height
       iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width
       
-      If \v\bar\page\len<>iHeight : Bar_SetAttribute(\v, #__bar_pageLength, iHeight) : EndIf
-      If \h\bar\page\len<>iWidth : Bar_SetAttribute(\h, #__bar_pageLength, iWidth) : EndIf
+      If \v\width And \v\bar\page\len<>iHeight : Bar_SetAttribute(\v, #__bar_pageLength, iHeight) : EndIf
+      If \h\height And \h\bar\page\len<>iWidth : Bar_SetAttribute(\h, #__bar_pageLength, iWidth) : EndIf
       
       If \v\bar\page\len <> \v\height : \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len) : EndIf
       If \h\bar\page\len <> \h\width : \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, \h\bar\page\len, #PB_Ignore) : EndIf
@@ -2972,7 +3259,7 @@ Module Widget
       EndIf
       
       If Not \root\anchor
-        \root\anchor = AllocateStructure(structures::_s_anchor)
+        \root\anchor = AllocateStructure(_s_anchor)
         \root\anchor\index = #__a_moved
         \root\anchor\pos = Pos
         \root\anchor\size = Size
@@ -3303,7 +3590,7 @@ Module Widget
         \root = *this
         \type = #PB_GadgetType_popup
         \container = #PB_GadgetType_popup
-        \color = _get_colors_()
+        \color = _color_
         \color\fore = 0
         \color\back = $FFF0F0F0
         \color\alpha = 255
@@ -3612,7 +3899,7 @@ Module Widget
   ;-
   
   ; SET_
-  Procedure.i Set_State(*this._s_widget, List *this_item.structures::_s_items(), State.i)
+  Procedure.i Set_State(*this._s_widget, List *this_item._s_items(), State.i)
     Protected Repaint.i, sublevel.i, Mouse_X.i, Mouse_Y.i
     
     With *this
@@ -5786,7 +6073,7 @@ Module Widget
           If Text_Y+\Text\Height < \bs : Text_Y+\Text\Height : Continue : EndIf
           
           If *End\c = #LF And *Sta <> *End And AddElement(\items())
-            \items() = AllocateStructure(structures::_s_items)
+            \items() = AllocateStructure(_s_items)
             
             \items()\text\pos = pos+ListSize(\items()) : pos + \items()\text\Len
             \items()\text\Len = (*End-*Sta)>>#PB_Compiler_Unicode
@@ -6697,20 +6984,36 @@ Module Widget
         Case 1 ; widget
           If \parent
             If Not \align
-              \align.structures::_s_align = AllocateStructure(structures::_s_align)
+              \align._s_align = AllocateStructure(_s_align)
+            EndIf
+            
+            If Not \align\autoSize
+              \align\top = Bool(Mode&#__flag_top=#__flag_top)
+              \align\left = Bool(Mode&#__flag_left=#__flag_left)
+              \align\right = Bool(Mode&#__flag_right=#__flag_right)
+              \align\bottom = Bool(Mode&#__flag_bottom=#__flag_bottom)
+              
+              If Bool(Mode&#__flag_center=#__flag_center)
+                \align\horizontal = 1
+                \align\Vertical = 1
+              Else
+                \align\horizontal = Bool(Mode&#__flag_horizontal=#__flag_horizontal)
+                \align\Vertical = Bool(Mode&#__flag_vertical=#__flag_vertical)
+              EndIf
             EndIf
             
             If Bool(Mode&#__flag_autoSize=#__flag_autoSize)
-              \align\top = Bool(Not Mode&#__align_bottom)
-              \align\left = Bool(Not Mode&#__align_right)
-              \align\right = Bool(Not Mode&#__align_left)
-              \align\bottom = Bool(Not Mode&#__align_top)
-              \align\autoSize = 0
+              If Bool(Mode&#__flag_full=#__flag_full) 
+                \align\top = 1
+                \align\left = 1
+                \align\right = 1
+                \align\bottom = 1
+                \align\autoSize = 0
+              EndIf
               
               ; Auto dock
               Static y2,x2,y1,x1
-              Protected width = #PB_Ignore
-              Protected height = #PB_Ignore
+              Protected width = #PB_Ignore, height = #PB_Ignore
               
               If \align\left And \align\right
                 \x = x2
@@ -6749,35 +7052,28 @@ Module Widget
               
               Resize(*this, \x, \y, width, height)
               
-            Else
-              \align\top = Bool(Mode&#__align_top=#__align_top)
-              \align\left = Bool(Mode&#__align_left=#__align_left)
-              \align\right = Bool(Mode&#__align_right=#__align_right)
-              \align\bottom = Bool(Mode&#__align_bottom=#__align_bottom)
+              \align\top = Bool(Mode&#__flag_top=#__flag_top)+Bool(Mode&#__flag_right=#__flag_right)+Bool(Mode&#__flag_left=#__flag_left)
+              \align\left = Bool(Mode&#__flag_left=#__flag_left)+Bool(Mode&#__flag_bottom=#__flag_bottom)+Bool(Mode&#__flag_top=#__flag_top)
+              \align\right = Bool(Mode&#__flag_right=#__flag_right)+Bool(Mode&#__flag_top=#__flag_top)+Bool(Mode&#__flag_bottom=#__flag_bottom)
+              \align\bottom = Bool(Mode&#__flag_bottom=#__flag_bottom)+Bool(Mode&#__flag_right=#__flag_right)+Bool(Mode&#__flag_left=#__flag_left)
               
-              If Bool(Mode&#__align_center=#__align_center)
-                \align\horizontal = Bool(Not \align\right And Not \align\left)
-                \align\vertical = Bool(Not \align\bottom And Not \align\top)
-              EndIf
             EndIf
             
             If \align\right
-              If \align\left
+              If \align\left And \align\right
                 \align\width = \parent\width[#__c_2] - \width
               Else
                 \align\width = \parent\width[#__c_2] - (\x-\parent\x[#__c_2]) ; \parent\width[#__c_2] - (\parent\width[#__c_2] - \width)
               EndIf
             EndIf
-            
             If \align\bottom
-              If \align\top
+              If \align\top And \align\bottom
                 \align\height = \parent\height[#__c_2] - \height
               Else
                 \align\height = \parent\height[#__c_2] - (\y-\parent\y[#__c_2]) ; \parent\height[#__c_2] - (\parent\height[#__c_2] - \height)
               EndIf
             EndIf
             
-            ; update parent childrens coordinate
             Resize(\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           EndIf
         Case 2 ; text
@@ -7570,7 +7866,7 @@ Module Widget
   ;- ADD
   ;-
   Procedure.i AddItem_tree(*this._s_widget, position.l, Text.s, Image.i=-1, subLevel.i=0)
-    Protected handle, *parent.structures::_s_rows
+    Protected handle, *parent._s_rows
     
     With *this
       If *this
@@ -7683,7 +7979,7 @@ Module Widget
           ; add lines
           \row\_s()\index = position
           
-          \row\_s()\color = _get_colors_()
+          \row\_s()\color = _color_
           \row\_s()\color\state = 0
           
           \row\_s()\color\back = 0;\color\back 
@@ -7735,7 +8031,7 @@ Module Widget
   EndProcedure
   
   Procedure AddItem_listIcon(*this._s_widget,Item.i,Text.s,Image.i=-1,sublevel.i=0)
-    Static *last.structures::_s_items, *parent.structures::_s_items
+    Static *last._s_items, *parent._s_items
     Static adress.i
     Protected Childrens.i, hide.b, height.i
     
@@ -7784,7 +8080,7 @@ Module Widget
         EndIf
         ;}
         
-        \columns()\items() = AllocateStructure(structures::_s_items)
+        \columns()\items() = AllocateStructure(_s_items)
         ;\columns()\items()\box = AllocateStructure(_s_box)
         
         If subLevel
@@ -7834,7 +8130,7 @@ Module Widget
         
         
         \columns()\items()\text\string.s = StringField(Text.s, ListIndex(\columns()) + 1, #LF$)
-        \columns()\color = _get_colors_()
+        \columns()\color = _color_
         \columns()\color\fore[0] = 0 
         \columns()\color\fore[1] = 0
         \columns()\color\fore[2] = 0
@@ -7856,7 +8152,7 @@ Module Widget
   EndProcedure
   
   Procedure AddItem_property(*this._s_widget,Item.i,Text.s,Image.i=-1,sublevel.i=0)
-    Static *adress.structures::_s_items
+    Static *adress._s_items
     
     If Not *this
       ProcedureReturn 0
@@ -7966,7 +8262,7 @@ Module Widget
         PopListPosition(\tab\_s())
       EndIf
       
-      \tab\_s()\color = _get_colors_()
+      \tab\_s()\color = _color_
       \tab\_s()\index = Item
       \tab\_s()\text\change = 1
       \tab\_s()\text\string = Text.s
@@ -8327,7 +8623,6 @@ Module Widget
         
         If \type = #PB_GadgetType_ScrollBar
           ProcedureReturn \bar\hide
-          
         ElseIf (Change_x Or Change_y Or Change_width Or Change_height)
           ProcedureReturn 1
         EndIf
@@ -8370,9 +8665,9 @@ Module Widget
       \color\line = $FFFFFFFF
       \color\front = $FFFFFFFF
       
-      \bar\button[#__b_1]\color = _get_colors_()
-      \bar\button[#__b_2]\color = _get_colors_()
-      \bar\button[#__b_3]\color = _get_colors_()
+      \bar\button[#__b_1]\color = _color_
+      \bar\button[#__b_2]\color = _color_
+      \bar\button[#__b_3]\color = _color_
       
       If Not Bool(Flag&#__bar_buttonSize)
         If \bar\vertical
@@ -8454,7 +8749,7 @@ Module Widget
         \text\padding = #__spin_padding_text
         
         ; ???? ???? ???????
-        \color = _get_colors_()
+        \color = _color_
         \color\alpha = 255
         \color\back = $FFFFFFFF
         
@@ -8564,7 +8859,7 @@ Module Widget
       *this\index[#__s_1] =- 1
       *this\index[#__s_2] = 0
       
-      \splitter = AllocateStructure(structures::_s_splitter)
+      \splitter = AllocateStructure(_s_splitter)
       \splitter\first = First
       \splitter\second = Second
       
@@ -8612,7 +8907,7 @@ Module Widget
       \scroll\v = Bar(#PB_GadgetType_ScrollBar,Size,0,\image\height,Height-\bs*2, #__flag_vertical, 7, *this)
       \scroll\h = Bar(#PB_GadgetType_ScrollBar,Size,0,\image\width,Width-\bs*2, 0, 7, *this)
       
-      \color = _get_colors_()
+      \color = _color_
       \color\back = \scroll\v\color\back
       
       Resize(*this, X,Y,Width,Height)
@@ -8629,7 +8924,7 @@ Module Widget
       \x =- 1
       \y =- 1
       \container =- 2
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       \color\back = $FFF9F9F9
       
@@ -8656,7 +8951,7 @@ Module Widget
     With *this
       \x =- 1
       \y =- 1
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       
       \fs = 1
@@ -8716,7 +9011,7 @@ Module Widget
       
       \x =- 1
       \y =- 1
-      \color = _get_colors_()
+      \color = _color_
       \interact = 1
       
       \vertical = Bool(Flag&#__flag_vertical)
@@ -8747,7 +9042,7 @@ Module Widget
       \bs = \fs
       \interact = 1
       
-      ;\color = _get_colors_()
+      ;\color = _color_
       \cursor = #PB_Cursor_Hand
       \color\front[1] = Color
       \color\front[2] = Color
@@ -8778,7 +9073,7 @@ Module Widget
     With *this
       \x =- 1
       \y =- 1
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       \color\back = $FFFFFFFF
       \color\frame = $FF7E7E7E
@@ -8823,7 +9118,7 @@ Module Widget
     With *this
       \x =- 1
       \y =- 1
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       \color\back = $FFFFFFFF
       \color\frame = $FF7E7E7E
@@ -8857,7 +9152,7 @@ Module Widget
     With *this
       \x =- 1
       \y =- 1
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       
       \fs = Bool(Not Flag&#__flag_borderless)
@@ -8895,7 +9190,7 @@ Module Widget
       \y =- 1
       \scroll = AllocateStructure(_s_scroll) 
       \cursor = #PB_Cursor_IBeam
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       \color\back = $FFFFFFFF
       \round = Round
@@ -8919,10 +9214,10 @@ Module Widget
       \text\Upper = Bool(Flag&#__flag_uppercase)
       \text\pass = Bool(Flag&#__flag_password)
       
-      ;\text\align\Vertical = Bool(Not Flag&#__align_top)
-      \text\align\horizontal = Bool(Flag&#__align_center)
-      \text\align\right = Bool(Flag&#__align_right)
-      ;\text\align\bottom = Bool(Flag&#__align_bottom)
+      ;\text\align\Vertical = Bool(Not Flag&#__flag_top)
+      \text\align\horizontal = Bool(Flag&#__flag_center)
+      \text\align\right = Bool(Flag&#__flag_right)
+      ;\text\align\bottom = Bool(Flag&#__flag_bottom)
       
       
       SetText(*this, Text.s)
@@ -8933,7 +9228,7 @@ Module Widget
   EndProcedure
   
   Procedure.i IPAddress(X.l,Y.l,Width.l,Height.l)
-    Protected Text.s="0.0.0.0", Flag.i=#__align_center
+    Protected Text.s="0.0.0.0", Flag.i=#__flag_center
     Protected *this._s_widget = AllocateStructure(_s_widget) 
     _set_last_parameters_(*this, #PB_GadgetType_IPAddress, Flag, Root()\opened)
     
@@ -8942,7 +9237,7 @@ Module Widget
       \y =- 1
       \scroll = AllocateStructure(_s_scroll) 
       \cursor = #PB_Cursor_IBeam
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       \color\back = $FFFFFFFF
       
@@ -8965,10 +9260,10 @@ Module Widget
       \text\Upper = Bool(Flag&#__flag_uppercase)
       \text\pass = Bool(Flag&#__flag_password)
       
-      ;\text\align\Vertical = Bool(Not Flag&#__align_top)
-      \text\align\horizontal = Bool(Flag&#__align_center)
-      \text\align\right = Bool(Flag&#__align_right)
-      ;\text\align\bottom = Bool(Flag&#__align_bottom)
+      ;\text\align\Vertical = Bool(Not Flag&#__flag_top)
+      \text\align\horizontal = Bool(Flag&#__flag_center)
+      \text\align\right = Bool(Flag&#__flag_right)
+      ;\text\align\bottom = Bool(Flag&#__flag_bottom)
       
       
       SetText(*this, Text.s)
@@ -9014,14 +9309,14 @@ Module Widget
 ;       \text\Upper = Bool(Flag&#__flag_uppercase)
 ;       \text\pass = Bool(Flag&#__flag_password)
       
-;       ;       ;\text\align\Vertical = Bool(Not Flag&#__align_top)
-;       ;       \text\align\horizontal = Bool(Flag&#__align_center)
-;       ;       \text\align\right = Bool(Flag&#__align_right)
-;       ;       ;\text\align\bottom = Bool(Flag&#__align_bottom)
+;       ;       ;\text\align\Vertical = Bool(Not Flag&#__flag_top)
+;       ;       \text\align\horizontal = Bool(Flag&#__flag_center)
+;       ;       \text\align\right = Bool(Flag&#__flag_right)
+;       ;       ;\text\align\bottom = Bool(Flag&#__flag_bottom)
 ;       
 ;       
       
-;       \color = _get_colors_()
+;       \color = _color_
 ;       \color\alpha = 255
 ;       
 ;       \color\back[#__s_0] = $FFFFFFFF
@@ -9069,10 +9364,10 @@ Module Widget
     If *this
       With *this
         ;\root = Root()
-        \color = _get_colors_()
+        \color = _color_
         \color\alpha = 255
         \color\back = $FFF9F9F9
-        ;\color = _get_colors_()
+        ;\color = _color_
         ;         \color\fore[0] = 0
         ;         \color\fore[1] = 0
         ;         \color\fore[2] = 0
@@ -9177,7 +9472,7 @@ Module Widget
       \x =- 1
       \y =- 1
       ;\cursor = #PB_cursor_hand
-      \color = _get_colors_()
+      \color = _color_
       \color\back = $FFF9F9F9
       
       *this\index[#__s_1] =- 1
@@ -9223,7 +9518,7 @@ Module Widget
       \x =- 1
       \y =- 1
       \cursor = #PB_Cursor_LeftRight
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       \color\back = $FFF9F9F9
       
@@ -9269,7 +9564,7 @@ Module Widget
       \x =- 1
       \y =- 1
       \cursor = #PB_Cursor_LeftRight
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       \color\back = $FFF9F9F9
       
@@ -9365,7 +9660,7 @@ Module Widget
       SetState(*this, SplitterPos)
       
       
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       \color\back = $FFF9F9F9
       
@@ -9404,7 +9699,7 @@ Module Widget
       \x =- 1
       \y =- 1
       \container = 1
-      \color = _get_colors_()
+      \color = _color_
       \color\back = $FFF9F9F9
       
       \fs = Bool(Not Flag&#__flag_borderless)*#__border_scroll
@@ -9438,7 +9733,7 @@ Module Widget
       *this\index[#__s_1] =- 1
       *this\index[#__s_2] = 0
       
-      \color = _get_colors_()
+      \color = _color_
       \color\fore = 0
       \color\back = $FFF6F6F6
       
@@ -9466,7 +9761,7 @@ Module Widget
       
       \container = 1
       
-      \color = _get_colors_()
+      \color = _color_
       \color\alpha = 255
       \color\back = $FFF9F9F9
       
@@ -9489,8 +9784,8 @@ Module Widget
       \tab\bar\button[#__b_1]\arrow\type = #__arrow_type + Bool(#__arrow_type>0)
       \tab\bar\button[#__b_2]\arrow\type = #__arrow_type + Bool(#__arrow_type>0)
       
-      \tab\bar\button[#__b_1]\color = _get_colors_()
-      \tab\bar\button[#__b_2]\color = _get_colors_()
+      \tab\bar\button[#__b_1]\color = _color_
+      \tab\bar\button[#__b_2]\color = _color_
       
       \tab\bar\button[#__b_1]\color\alpha = 255
       \tab\bar\button[#__b_2]\color\alpha = 255
@@ -9565,7 +9860,7 @@ Module Widget
       *this\index[#__s_2] = 0
       
       \container =- 1
-      \color = _get_colors_()
+      \color = _color_
       \color\fore = 0
       \color\back = $FFF0F0F0
       \color\alpha = 255
@@ -9586,7 +9881,7 @@ Module Widget
       
       \caption\len = 12
       \caption\round = 4
-      \caption\color = _get_colors_()
+      \caption\color = _color_
       
       \flag\window\sizeGadget = Bool(Flag&#PB_Window_SizeGadget)
       \flag\window\systemMenu = Bool(Flag&#PB_Window_SystemMenu)
@@ -9623,7 +9918,7 @@ Module Widget
       Root()\height = Height
       ;       Root()\width[#__c_4] = Width
       ;       Root()\height[#__c_4] = Height
-      Root()\color = _get_colors_()
+      Root()\color = _color_
       
       If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
         Root()\flag\transform = 1
@@ -11203,12 +11498,8 @@ EndModule
 ;-
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
+  UseModule Widget
   EnableExplicit
-  
-  UseModule widget
-   UseModule constants
-;   UseModule structures
-  
  
   Global *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
   Global *Button_0._s_widget
@@ -11295,6 +11586,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;SetFont(*Button_0, FontID(0))
     EndWith
     
+    
 ;     With *Button_1
 ;       ResizeImage(0, 32,32)
 ;       *Button_1 = Button(10, 42, 250,  60, "Button (Horisontal)", #__text_multiline,-1)
@@ -11324,5 +11616,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 0----------X-----------------------------------------------------------------------------------------------------------------------------------------------v-----------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

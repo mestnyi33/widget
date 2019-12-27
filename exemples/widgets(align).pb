@@ -42,15 +42,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseList()
       
-      _SetAlignment(Widgets(Hex(1)), #__flag_Vertical)
-      _SetAlignment(Widgets(Hex(2)), #__flag_Horizontal)
-      _SetAlignment(Widgets(Hex(3)), #__flag_Vertical|#__flag_Right)
-      _SetAlignment(Widgets(Hex(4)), #__flag_Horizontal|#__flag_Bottom)
+      _SetAlignment(Widgets(Hex(1)), #__align_Center|#__align_left)
+      _SetAlignment(Widgets(Hex(2)), #__align_Center|#__align_top)
+      _SetAlignment(Widgets(Hex(3)), #__align_Center|#__align_right)
+      _SetAlignment(Widgets(Hex(4)), #__align_Center|#__align_bottom)
       _SetAlignment(Widgets(Hex(5)), 0)
-      _SetAlignment(Widgets(Hex(6)), #__flag_Right)
-      _SetAlignment(Widgets(Hex(7)), #__flag_Right|#__flag_Bottom)
-      _SetAlignment(Widgets(Hex(8)), #__flag_Bottom)
-      _SetAlignment(Widgets(Hex(9)), #__flag_Center)
+      _SetAlignment(Widgets(Hex(6)), #__align_right)
+      _SetAlignment(Widgets(Hex(7)), #__align_right|#__align_bottom)
+      _SetAlignment(Widgets(Hex(8)), #__align_bottom)
+      _SetAlignment(Widgets(Hex(9)), #__align_Center)
       
       
       ReDraw(Root())
@@ -92,23 +92,23 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;SetAlignment(Widgets(Hex(1)), #PB_Vertical)
-      SetAlignment(Widgets(Hex(2)), #__flag_Top|#__flag_Left|#__flag_Bottom)
-      ;       SetAlignment(Widgets(Hex(3)), #__flag_Vertical|#__flag_Right)
-      SetAlignment(Widgets(Hex(4)), #__flag_Bottom|#__flag_Right|#__flag_Left)
-      SetAlignment(Widgets(Hex(5)), #__flag_Top|#__flag_Left|#__flag_Right)
-      SetAlignment(Widgets(Hex(6)), #__flag_Full)
-      SetAlignment(Widgets(Hex(7)), #__flag_Full)
+      SetAlignment(Widgets(Hex(2)), #__align_top|#__align_left|#__align_bottom)
+      ;       SetAlignment(Widgets(Hex(3)), #__flag_Vertical|#__align_right)
+      SetAlignment(Widgets(Hex(4)), #__align_bottom|#__align_right|#__align_left)
+      SetAlignment(Widgets(Hex(5)), #__align_top|#__align_left|#__align_right)
+      SetAlignment(Widgets(Hex(6)), #__align_full)
+      SetAlignment(Widgets(Hex(7)), #__align_full)
       
-      SetAlignment(Widgets(Hex(8)), #__flag_Bottom|#__flag_Right|#__flag_Left)
-      SetAlignment(Widgets(Hex(9)), #__flag_Bottom|#__flag_Right|#__flag_Left)
+      SetAlignment(Widgets(Hex(8)), #__align_bottom|#__align_right|#__align_left)
+      SetAlignment(Widgets(Hex(9)), #__align_bottom|#__align_right|#__align_left)
       
-      SetAlignment(Widgets(Hex(10)), #__flag_Bottom|#__flag_Right|#__flag_Left)
-      SetAlignment(Widgets(Hex(11)), #__flag_Bottom|#__flag_Right|#__flag_Top)
+      SetAlignment(Widgets(Hex(10)), #__align_bottom|#__align_right|#__align_left)
+      SetAlignment(Widgets(Hex(11)), #__align_bottom|#__align_right|#__align_top)
       
-      SetAlignment(Widgets(Hex(12)), #__flag_Bottom|#__flag_Right)
-      SetAlignment(Widgets(Hex(13)), #__flag_Bottom|#__flag_Right)
-      SetAlignment(Widgets(Hex(14)), #__flag_Bottom|#__flag_Right)
-      SetAlignment(Widgets(Hex(15)), #__flag_Bottom|#__flag_Right)
+      SetAlignment(Widgets(Hex(12)), #__align_bottom|#__align_right)
+      SetAlignment(Widgets(Hex(13)), #__align_bottom|#__align_right)
+      SetAlignment(Widgets(Hex(14)), #__align_bottom|#__align_right)
+      SetAlignment(Widgets(Hex(15)), #__align_bottom|#__align_right)
       
       ReDraw(Root())
       
@@ -159,6 +159,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

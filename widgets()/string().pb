@@ -14,6 +14,22 @@ DeclareModule String
 EndDeclareModule
 
 Module String
+  Procedure.i Widget(X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=#Null)
+    Protected *this._struct_ = editor::editor(X, Y, Width, Height, "", Flag)
+    
+    *this\type = #PB_GadgetType_String
+    *this\text\multiline = Bool(Flag&#__string_multiline)
+    *this\text\numeric = Bool(Flag&#__string_numeric)
+    *this\row\margin\hide = 1
+    ;*this\text\align\Vertical = 1
+    
+    If Text.s
+      editor::SetText(*this, Text.s)
+    EndIf
+    
+    ProcedureReturn *this
+  EndProcedure
+  
   Procedure.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=#Null)
     Protected result.i, *this._struct_
     
@@ -21,10 +37,29 @@ Module String
     
     *this = GetGadgetData(result)
     *this\type = #PB_GadgetType_String
-    *this\text\multiline = Bool(Flag&#__string_multiline)
-    *this\text\Numeric = Bool(Flag&#__string_numeric)
-    *this\row\margin\level = 0
-    ;*this\text\align\Vertical = 1
+    
+    If Flag&#__string_multiline
+      *this\text\multiline = 1
+    ElseIf Flag&#__text_wordwrap
+      *this\text\multiline =- 1
+    Else
+      *this\text\multiline = 0
+    EndIf
+  
+    If *this\text\multiline
+      *this\row\margin\hide = 0;Bool(Not Flag&#__string_numeric)
+      *this\row\margin\color\front = $C8000000 ; \color\back[0] 
+      *this\row\margin\color\back = $C8F0F0F0  ; \color\back[0] 
+    Else
+      *this\row\margin\hide = 1
+      *this\text\numeric = Bool(Flag&#__string_numeric)
+    EndIf
+    
+    ;*this\text\align\left = Bool(Not Flag&#__string_center)
+    
+    *this\text\align\vertical = Bool(Not *this\text\align\bottom And Not *this\text\align\top)
+    *this\text\x = 2
+    *this\text\y = 2
     
     If Text.s
       Editor::SetText(*this, Text.s)
@@ -170,5 +205,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -4z-
+; Folding = --09
 ; EnableXP
