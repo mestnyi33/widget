@@ -3,13 +3,18 @@
 ; теперь исправилено 
 
 IncludePath "../"
-XIncludeFile "editor().pb"
-;XIncludeFile "widgets().pbi"
+;XIncludeFile "editor.pb"
+;XIncludeFile "editor.pbi"
+XIncludeFile "string().pbi"
+;XIncludeFile "editor().pbi" ; ok
+;;XIncludeFile "widgets().pbi"
+
 UseModule editor
+UseModule constants
 
 Global *w._struct_, *w1
 
-#MaxLines = 20
+#MaxLines = 10
 
 Define LastLine.I
 
@@ -17,14 +22,14 @@ If OpenWindow(0, 0, 0, 316, 350, "EditorGadget", #PB_Window_SystemMenu | #PB_Win
   TextGadget(-1, 8,8, 146, 20, "add")
   TextGadget(-1, 162,8, 146, 20, "set&get")
   
-  Gadget(0, 8, 30, 146, 111) : *w = GetGadgetData(0)
+  Gadget(0, 8, 30, 186, 111) : *w = GetGadgetData(0)
   For a = 0 To 5
     AddItem(*w, a, "Line "+Str(a))
   Next
   
   ;redraw(*w)
   
-  Gadget(1, 8, 150, 146, 111) : *w1 = GetGadgetData(1)
+  Gadget(1, 8, 150, 186, 111, #__flag_gridlines) : *w1 = GetGadgetData(1)
   ;   Define text.s = "Line 0" +#LF$+ 
   ;                   "Line 1" +#LF$+ 
   ;                   "Line 2" +#LF$+ 
@@ -34,9 +39,8 @@ If OpenWindow(0, 0, 0, 316, 350, "EditorGadget", #PB_Window_SystemMenu | #PB_Win
    text.s = GetText(*w)
    SetText(*w1, text)
   ;SetText(*w1, "The" + #LF$ + "quick" + #LF$ + "brown" + #LF$ + "fox" + #LF$ + "jumps" + #LF$ + "over" + #LF$ + "the" + #LF$ + "lazy" + #LF$ + "dog.")
-  SetState(*w1, -1)
-  ;redraw(*w1)
-  ;SetWindowTitle(0, GetItemText(*w, 2)+ " - get tex item 2")
+   
+   SetState(*w1, -1)
   
   AddWindowTimer(0, 0, 500)
 
@@ -49,7 +53,8 @@ If OpenWindow(0, 0, 0, 316, 350, "EditorGadget", #PB_Window_SystemMenu | #PB_Win
         LastLine + 1
         
         AddItem(*w1, LastLine, "Line "+Str(LastLine))
-        SetState(*w1, -1)
+        SetItemState(*w1, LastLine, -1)
+        
         redraw(*w1)
       Else
         RemoveWindowTimer(0, 0)

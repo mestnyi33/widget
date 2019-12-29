@@ -5,6 +5,7 @@ XIncludeFile "widgets().pbi"
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule widget
+  UseModule constants
   
   Global.i gEvent, gQuit, g_Canvas
   Global *Bar_0

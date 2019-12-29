@@ -6,8 +6,8 @@ XIncludeFile "widgets().pbi"
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Widget
-;   UseModule constants
+  UseModule widget
+   UseModule constants
 ;   UseModule structures
   
   Procedure Events()
@@ -82,6 +82,9 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Widget(), 5)
     
     Editor(320, 5, 150, 100)
+    ; settext(Widget(), "settext")
+    ; Debug  Widget()\text\string
+    
     For i=0 To 20
       If i=3
         AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))

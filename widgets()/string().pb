@@ -1,7 +1,10 @@
 ﻿;IncludePath "../"
-XIncludeFile "editor().pb"
+XIncludeFile "string().pbi"
+; XIncludeFile "editor().pbi"
+;XIncludeFile "editor().pb"
 ;XIncludeFile "widgets().pbi"
 
+CompilerIf Not Defined(String, #PB_Module)
 DeclareModule String
   UseModule constants
   
@@ -68,6 +71,7 @@ Module String
     ProcedureReturn result
   EndProcedure
 EndModule
+CompilerEndIf
 
 
 ;- EXAMPLE
@@ -205,5 +209,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --09
+; Folding = --86-
 ; EnableXP

@@ -5342,7 +5342,7 @@ Module Editor
           EndIf
         EndIf
                 
-        If Flag&#__flag_align_text
+        If Flag&#__align_text
           \text\align\top = Bool(Flag&#__text_top=#__text_top)
           \text\align\left = Bool(Flag&#__text_left=#__text_left)
           \text\align\right = Bool(Flag&#__text_right=#__text_right)

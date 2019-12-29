@@ -57,7 +57,7 @@ CompilerEndIf
 ;   XIncludeFile "colors.pbi"
 ; CompilerEndIf
 
-XIncludeFile "widgets()/editor().pb"
+XIncludeFile "widgets()/string().pbi"
 
 ;- <<<
 CompilerIf Not Defined(DD, #PB_Module)
@@ -1614,37 +1614,64 @@ Module Widget
     ;EndIf
   EndMacro
   
-  Macro _set_text_(_this_, _flag_)
-    If Not _this_\text
-      _this_; \text = AllocateStructure(_s_text)
-    EndIf
+  Macro _set_text_flag_(_this_, _flag_)
+;     If Not _this_\text
+;       _this_\text = AllocateStructure(_s_text)
+;     EndIf
     
     If _this_\text
-      _this_\text\padding = 5
+      _this_\text\x = 2
+      _this_\text\y = 2
+      ; _this_\text\padding = 5
       _this_\text\change = #True
       
-      _this_\text\editable = Bool(Not _flag_&#__text_ReadOnly)
-      _this_\text\align\right = Bool(_flag_&#__text_Right)
-      _this_\text\align\bottom = Bool(_flag_&#__text_Bottom)
-      _this_\text\align\vertical = Bool(Not _flag_&#__text_Top Or _flag_&#__text_Center)
-      _this_\text\align\horizontal = Bool(Not _flag_&#__text_Left Or _flag_&#__text_Center)
+      _this_\text\editable = Bool(Not constants::_check_(_flag_, #__text_readonly))
+      _this_\text\lower = constants::_check_(_flag_, #__text_lowercase)
+      _this_\text\upper = constants::_check_(_flag_, #__text_uppercase)
+      _this_\text\pass = constants::_check_(_flag_, #__text_password)
       
-      If _this_\text\editable
-        _this_\cursor = #PB_Cursor_IBeam
+      If _flag_&#__align_text
+        _this_\text\align\top = constants::_check_(_flag_, #__text_top)
+        _this_\text\align\left = constants::_check_(_flag_, #__text_left)
+        _this_\text\align\right = constants::_check_(_flag_, #__text_right)
+        _this_\text\align\bottom = constants::_check_(_flag_, #__text_bottom)
+        
+        If constants::_check_(_flag_, #__text_center)
+          _this_\text\align\horizontal = Bool(Not _this_\text\align\right And Not _this_\text\align\left)
+          _this_\text\align\vertical = Bool(Not _this_\text\align\bottom And Not _this_\text\align\top)
+        EndIf
       EndIf
       
-      If _flag_&#__text_WordWrap
-        _this_\Text\MultiLine = 1
-      ElseIf _flag_&#__text_MultiLine
-        _this_\Text\MultiLine =- 1
-      EndIf
-      
-      If Bool(_flag_&#__text_Invert)
-        _this_\Text\Rotate = Bool(_this_\vertical)*90 + Bool(Not _this_\vertical)*180
+      If constants::_check_(_flag_, #__text_wordwrap)
+        _this_\text\multiLine =- 1
+      ElseIf constants::_check_(_flag_, #__text_multiline)
+        _this_\text\multiLine = 1
       Else
-        _this_\Text\Rotate = Bool(_this_\vertical)*270
+        _this_\text\multiLine = 0 
       EndIf
       
+      If constants::_check_(_flag_, #__text_invert)
+        _this_\text\Rotate = Bool(_this_\vertical)*90 + Bool(Not _this_\vertical)*180
+      Else
+        _this_\text\Rotate = Bool(_this_\vertical)*270
+      EndIf
+      
+      If _this_\type = #PB_GadgetType_Editor Or
+         _this_\type = #PB_GadgetType_String
+        
+        _this_\color\fore = 0
+        _this_\text\caret\pos[1] =- 1
+        _this_\text\caret\pos[2] =- 1
+        _this_\cursor = #PB_Cursor_IBeam
+        
+        If _this_\text\editable
+          _this_\text\caret\width = 1
+          _this_\color\back[0] = $FFFFFFFF 
+        Else
+          _this_\color\back[0] = $FFF0F0F0  
+        EndIf
+      EndIf
+    
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
         ;                     \text\fontID = GetGadgetFont(TextGadget) 
@@ -1670,7 +1697,7 @@ Module Widget
     EndIf
     
   EndMacro
-  
+ 
   ;-
   Macro _draw_box_(_x_,_y_, _width_, _height_, _checked_, _type_, _color_=$FFFFFFFF, _round_=2, _alpha_=255) 
     
@@ -5998,32 +6025,32 @@ Module Widget
       
       If \text And (\text\change Or \resize Or \change)
         
-        ; Make multi line text
-        If \text\multiline ;> 0
-         ; Debug 666666
-          \text\string.s = text_wrap(*this, \text\edit\string, \width-\bs*2, \text\multiline)
-          \count\items = CountString(\text\string.s, #LF$)
-        Else
-          \text\string.s = \text\edit\string
-        EndIf
+;         ; Make multi line text
+;         If \text\multiline ;> 0
+; ;          ; Debug 666666
+; ;           \text\string.s = text_wrap(*this, \text\edit\string, \width-\bs*2, \text\multiline)
+; ;           \count\items = CountString(\text\string.s, #LF$)
+;         Else
+;           \text\string.s = \text\edit\string
+;         EndIf
         
-        ; Text default position
-        If \text\string
-          \text\x[1] = \text\x[2] + (Bool((\text\align\right Or \text\align\horizontal)) * (\width[#__c_2]-\text\width-image_width)) / (\text\align\horizontal+1)
-          \text\y[1] = \text\y[2] + (Bool((\text\align\bottom Or \text\align\Vertical)) * (\height[#__c_2]-\text\height)) / (\text\align\Vertical+1)
-          
-          If \type = #PB_GadgetType_Frame
-            \text\x = \text\x[1]+\x[#__c_2]+8
-            \text\y = \text\y[1]+\y
-            
-          ElseIf \type = #PB_GadgetType_window
-            \text\x = \text\x[1]+\x[#__c_2]+5
-            \text\y = \text\y[1]+\y+\bs+(\__height-\text\height)/2
-          Else
-            \text\x = \text\x[1]+\x[#__c_2]
-            \text\y = \text\y[1]+\y[#__c_2]
-          EndIf
-        EndIf
+;         ; Text default position
+;         If \text\string
+;           \text\x[1] = \text\x[2] + (Bool((\text\align\right Or \text\align\horizontal)) * (\width[#__c_2]-\text\width-image_width)) / (\text\align\horizontal+1)
+;           \text\y[1] = \text\y[2] + (Bool((\text\align\bottom Or \text\align\Vertical)) * (\height[#__c_2]-\text\height)) / (\text\align\Vertical+1)
+;           
+;           If \type = #PB_GadgetType_Frame
+;             \text\x = \text\x[1]+\x[#__c_2]+8
+;             \text\y = \text\y[1]+\y
+;             
+;           ElseIf \type = #PB_GadgetType_window
+;             \text\x = \text\x[1]+\x[#__c_2]+5
+;             \text\y = \text\y[1]+\y+\bs+(\__height-\text\height)/2
+;           Else
+;             \text\x = \text\x[1]+\x[#__c_2]
+;             \text\y = \text\y[1]+\y[#__c_2]
+;           EndIf
+;         EndIf
         
         If \type = #PB_GadgetType_Button 
           \text\string.s = make_multiline(*this._s_widget, \text\edit\string)
@@ -6074,14 +6101,14 @@ Module Widget
         If \image And \image\handle
           If \scroll And \scroll\v And \scroll\h And 
              \scroll\h\bar\page\len < \width[#__c_4] And \scroll\v\bar\page\len < \height[#__c_4]
-            ClipOutput(\x[#__c_2],\y[#__c_2], \scroll\h\bar\page\len,\scroll\v\bar\page\len)
+            ClipOutput(\x[#__c_2], \y[#__c_2], \scroll\h\bar\page\len, \scroll\v\bar\page\len)
           EndIf
           
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
           DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
           
           If \scroll And \scroll\v And \scroll\h
-            ClipOutput(\x[#__c_4],\y[#__c_4], \width[#__c_4],\height[#__c_4])
+            ClipOutput(\x[#__c_4], \y[#__c_4], \width[#__c_4], \height[#__c_4])
           EndIf
         EndIf
         
@@ -6091,7 +6118,7 @@ Module Widget
           Case #PB_GadgetType_Panel        : Draw_panel(*this)
           Case #PB_GadgetType_Frame        : Draw_frame(*this)
             
-          Case #PB_GadgetType_Text         : Draw_text(*this)
+          Case #PB_GadgetType_Text         : editor::draw(*this)
           Case #PB_GadgetType_Editor       : editor::draw(*this)
           Case #PB_GadgetType_String       : editor::draw(*this)
           Case #PB_GadgetType_IPAddress    : editor::draw(*this)
@@ -7052,7 +7079,7 @@ Module Widget
     
     With *this
       Select \type
-        Case #PB_GadgetType_Editor : ProcedureReturn editor::SetText(*this, text)
+        Case #PB_GadgetType_Editor : ProcedureReturn editor::settext(*this, text)
           
       EndSelect
       
@@ -8000,7 +8027,7 @@ Module Widget
           ProcedureReturn AddItem_tree(*this, Item,Text.s,Image, Flag)
           
         Case #PB_GadgetType_Editor
-          ProcedureReturn editor::additem(*this, Item,Text.s,Image, Flag)
+          ProcedureReturn editor::additem(*this, Item, Text.s, Image, Flag)
           
         Case #PB_GadgetType_ListIcon
           ProcedureReturn AddItem_listIcon(*this, Item,Text.s,Image, Flag)
@@ -8721,8 +8748,16 @@ Module Widget
       
       \vertical = Bool(Flag&#__flag_vertical)
       
-      _set_text_(*this, flag)
+     ; If Not Bool(flag&#__flag_wordwrap)
+      ;    Flag|#__text_center
+      ;  EndIf
+        
+      _set_text_flag_(*this, flag)
       
+     *this\text\padding = 5
+     *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
+     *this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
+    
       ; \image = AllocateStructure(_s_image)
       \image\align\Vertical = 1
       \image\align\horizontal = 1
@@ -11324,5 +11359,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 0----------X-----------------------------------------------------------------------------------------------------------------------------------------------v-----------------------------------------
+; Folding = 0----------X------------v---------------------------------------------------------------------------z-----------------------------------------------------v-----------------------------------------
 ; EnableXP

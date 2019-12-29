@@ -1,5 +1,9 @@
 ﻿CompilerIf Not Defined(constants, #PB_Module)
   DeclareModule constants
+    Macro _check_(_variable_, _constant_)
+      Bool(((_variable_) & _constant_) = _constant_)
+    EndMacro
+    
     ;- - CONSTANTs
     ;{
     #__round = 7
@@ -93,6 +97,7 @@
     
     #__flag_vertical = 1
     
+    ;- _c_align
     EnumerationBinary _c_align 2
       #__align_left
       #__align_top
@@ -106,6 +111,7 @@
     
     #__align_full = #__align_left|#__align_top|#__align_right|#__align_bottom
     
+    ;- _c_flag
     EnumerationBinary _c_flag 256 ; 128
       
       #__flag_numeric
@@ -156,7 +162,7 @@
     #__flag_default = #__flag_nolines|#__flag_nobuttons|#__flag_checkboxes
     #__flag_alwaysselection = #__flag_lowercase|#__flag_uppercase
     
-    ; text
+    ;- _c_text
     #__text_left = #__align_text|#__align_left
     #__text_top = #__align_text|#__align_top
     #__text_center = #__align_text|#__align_center
@@ -173,14 +179,14 @@
     #__text_wordwrap = #__flag_wordwrap
     #__text_invert = #__flag_inverted
     
-    ; window
+    ;- _c_window
     #__window_nogadget = #__flag_nobuttons
     #__window_borderless = #__flag_borderless
     #__window_systemmenu = #__flag_systemmenu
     #__window_sizegadget = #__flag_sizegadget
     #__window_screencentered = #__align_center
     
-    ; tree
+    ;- _c_tree
     #__tree_collapse = #__flag_collapse
     #__tree_optionboxes = #__flag_optionboxes
     #__tree_alwaysselection = #__flag_alwaysselection
@@ -193,7 +199,7 @@
     #__tree_multiselect = #__flag_multiselect
     #__tree_borderless = #__flag_borderless
     
-    ; editor
+    ;- _c_editor
     #__editor_inline = #__flag_InLine
     #__editor_wordwrap = #__flag_wordwrap
     #__editor_numeric = #__flag_numeric
@@ -202,7 +208,7 @@
     #__editor_gridlines = #__flag_gridLines
     #__editor_borderless = #__flag_borderless
     
-    ; string
+    ;- _c_string
     #__string_right = #__text_right
     #__string_center = #__text_center
     #__string_numeric = #__text_numeric
@@ -213,7 +219,7 @@
     #__string_borderless = #__flag_borderless
     #__string_multiline = #__text_multiline
     
-    ; button
+    ;- _c_button
     #__button_left = #__text_left
     #__button_right = #__text_right
     #__button_toggle = #__flag_collapse
@@ -222,7 +228,7 @@
     #__button_inverted = #__flag_inverted
     #__button_multiline = #__text_multiline
     
-    ; bar
+    ;- _c_bar
     EnumerationBinary #__flag_numeric;1
       #__bar_minimum 
       #__bar_maximum 

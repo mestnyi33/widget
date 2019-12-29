@@ -5,7 +5,8 @@ XIncludeFile "widgets().pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
-  UseModule Widget
+  UseModule widget
+  UseModule constants
   
   UsePNGImageDecoder()
   

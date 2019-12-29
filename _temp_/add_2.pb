@@ -6,12 +6,12 @@
 
  ;XIncludeFile "editor.pb"
 
-XIncludeFile "../widgets()/editor(+++).pb"
+XIncludeFile "../widgets()/editor().pbi"
 UseModule constants
 UseModule structures
 
 
-LN = 10; количесвто итемов 
+LN = 100; количесвто итемов 
 
 If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)

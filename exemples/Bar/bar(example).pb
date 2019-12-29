@@ -5,7 +5,8 @@ XIncludeFile "widgets().pbi"
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule Widget
+  UseModule widget
+  UseModule constants
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     LoadFont(0, "Arial", 16)
@@ -224,6 +225,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event= #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
