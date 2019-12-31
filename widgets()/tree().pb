@@ -1551,7 +1551,7 @@ EndModule
 DeclareModule Tree
   EnableExplicit
   CompilerIf Defined(fixme, #PB_Module)
-    Macro PB(Function) : Function : EndMacro
+    ;Macro PB(Function) : Function : EndMacro
     UseModule fixme
   CompilerEndIf
   UseModule Constants

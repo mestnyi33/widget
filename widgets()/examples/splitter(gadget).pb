@@ -31,7 +31,7 @@ DeclareModule Splitter
     
     Canvas.Canvas
     Color._S_color
-    *widget._S_widget
+    *widget._s_widget
   EndStructure
   
   

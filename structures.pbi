@@ -460,12 +460,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       *align._s_align
       
       *selector._s_transform[#__count_anchors_]
-      *event._s_event_
+      *event._s_event
       *data
     EndStructure
     
-    ;- - _s_event_
-    Structure _s_event_ 
+    ;- - _s_event
+    Structure _s_event 
       type.l
       item.l
       *data
@@ -491,16 +491,17 @@ CompilerIf Not Defined(structures, #PB_Module)
       keyboard._s_keyboard
       
       event_count.b
-      List *event_list._s_event_()
+      List *event_list._s_event()
     EndStructure
-    ;}
+
+    Global *event._s_event = AllocateStructure(_s_event)
+
   EndDeclareModule 
   
   Module structures 
     
   EndModule 
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -------
+; Folding = HAAAAg7
 ; EnableXP

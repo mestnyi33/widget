@@ -31,7 +31,7 @@ DeclareModule bar
   EndMacro
   
   ;   ;- GLOBALs
-  Global *event._s_event_ = AllocateStructure(_s_event_)
+  Global *event._s_event = AllocateStructure(_s_event)
   
   Declare.b Draw(*this)
   
@@ -1154,7 +1154,7 @@ Module bar
   EndProcedure
   
   Procedure.b Bind(*callBack, *this._s_widget, eventtype.l=#PB_All)
-    *this\event = AllocateStructure(_s_event_)
+    *this\event = AllocateStructure(_s_event)
     *this\event\type = eventtype
     *this\event\callback = *callBack
   EndProcedure

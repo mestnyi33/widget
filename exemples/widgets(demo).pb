@@ -26,8 +26,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     ;Widgets("Container") = Container(0, 0, 995, 455);, #__flag_AutoSize) 
     
     Widgets(Hex(#PB_GadgetType_Button)) = Button(5, 5, 160,95, " Multiline Button_"+Hex(#PB_GadgetType_Button)+" (longer text gets automatically multiline)", #__button_MultiLine ) ; ok
-    Widgets(Hex(#PB_GadgetType_String)) = String(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)); ok
-    Widgets(Hex(#PB_GadgetType_Text)) = Text(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text))        ; ok
+    Widgets(Hex(#PB_GadgetType_String)) = String(5, 105, 160,95, "String_"+Hex(#PB_GadgetType_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text"); ok
+    Widgets(Hex(#PB_GadgetType_Text)) = Text(5, 205, 160,95, "Text_"+Hex(#PB_GadgetType_Text)+#LF$+"set"+#LF$+"multi"+#LF$+"line"+#LF$+"text"+#LF$+"center", #__text_center)        ; ok
     Widgets(Hex(#PB_GadgetType_CheckBox)) = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#PB_GadgetType_CheckBox), #PB_CheckBox_ThreeState) : SetState(Widgets(Hex(#PB_GadgetType_CheckBox)), #PB_Checkbox_Inbetween); ok
     Widgets(Hex(#PB_GadgetType_Option)) = Option(5, 405, 160,95, "Option_"+Hex(#PB_GadgetType_Option) ) : SetState(Widgets(Hex(#PB_GadgetType_Option)), 1)                                                       ; ok
     Widgets(Hex(#PB_GadgetType_ListView)) = ListView(5, 505, 160,95) : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), -1, "ListView_"+Hex(#PB_GadgetType_ListView)) : For i=1 To 5 : AddItem(Widgets(Hex(#PB_GadgetType_ListView)), i, "item_"+Hex(i)) : Next
@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Widgets(Hex(#PB_GadgetType_ButtonImage)) = Button(500, 5, 160,95, "", 0, 1)
     ;     CalendarGadget(#PB_GadgetType_Calendar, 500, 105, 160,95 )
     ;     DateGadget(#PB_GadgetType_Date, 500, 205, 160,95 )
-    Widgets(Hex(#PB_GadgetType_Editor)) = Editor(500, 305, 160,95 ) : AddItem(Widgets(Hex(#PB_GadgetType_Editor)), -1, "Editor_"+Hex(#PB_GadgetType_Editor))  
+    Widgets(Hex(#PB_GadgetType_Editor)) = Editor(500, 305, 160,95 ) : AddItem(Widgets(Hex(#PB_GadgetType_Editor)), -1, "editor_"+Hex(#PB_GadgetType_Editor) +#LF$+"add"+#LF$+"multi"+#LF$+"line"+#LF$+"text")  
     Widgets(Hex(#PB_GadgetType_ExplorerList)) = ExplorerList(500, 405, 160,95,"" )
     ;     ExplorerTreeGadget(#PB_GadgetType_ExplorerTree, 500, 505, 160,95,"" )
     ;     

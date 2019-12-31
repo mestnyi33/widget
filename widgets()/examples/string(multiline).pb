@@ -4,31 +4,31 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule String
   UseModule constants
   
-  Global *S_0._struct_
-  Global *S_1._struct_
-  Global *S_2._struct_
-  Global *S_3._struct_
-  Global *S_4._struct_
-  Global *S_5._struct_
-  Global *S_6._struct_
-  Global *S_7._struct_
-  Global *S_8._struct_
-  Global *S_9._struct_
+  Global *S_0._s_widget
+  Global *S_1._s_widget
+  Global *S_2._s_widget
+  Global *S_3._s_widget
+  Global *S_4._s_widget
+  Global *S_5._s_widget
+  Global *S_6._s_widget
+  Global *S_7._s_widget
+  Global *S_8._s_widget
+  Global *S_9._s_widget
   
-  Global *S_10._struct_
-  Global *S_11._struct_
-  Global *S_12._struct_
-  Global *S_13._struct_
-  Global *S_14._struct_
-  Global *S_15._struct_
-  Global *S_16._struct_
-  Global *S_17._struct_
-  Global *S_18._struct_
-  Global *S_19._struct_
+  Global *S_10._s_widget
+  Global *S_11._s_widget
+  Global *S_12._s_widget
+  Global *S_13._s_widget
+  Global *S_14._s_widget
+  Global *S_15._s_widget
+  Global *S_16._s_widget
+  Global *S_17._s_widget
+  Global *S_18._s_widget
+  Global *S_19._s_widget
   
   ;   *this._const_
   ;   
-  ;   Debug *this;Structures::_s_widget ; String::_struct_; _struct_
+  ;   Debug *this;Structures::_s_widget ; String::_s_widget; _s_widget
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")

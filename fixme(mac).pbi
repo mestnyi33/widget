@@ -11,9 +11,9 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     
     Global *drawing._S_drawing ; = AllocateStructure(_S_drawing)
     
-;     Macro PB(Function)
-;       Function
-;     EndMacro
+    Macro PB(Function)
+      Function
+    EndMacro
     
     Macro TextHeight(Text)
       TextHeight_(Text)

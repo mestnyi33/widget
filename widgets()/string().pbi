@@ -1,30 +1,6 @@
 ﻿
 
 DeclareModule Macros
-  Macro isItem(_item_, _list_)
-    Bool(_item_ >= 0 And _item_ < ListSize(_list_))
-  EndMacro
-  
-  Macro itemSelect(_item_, _list_)
-    Bool(isItem(_item_, _list_) And _item_ <> ListIndex(_list_) And SelectElement(_list_, _item_))
-  EndMacro
-  
-  Macro add_widget(_widget_, _hande_)
-    If _widget_ =- 1 Or _widget_ > ListSize(List()) - 1
-      LastElement(List())
-      _hande_ = AddElement(List()) 
-      _widget_ = ListIndex(List())
-    Else
-      _hande_ = SelectElement(List(), _widget_)
-      ; _hande_ = InsertElement(List())
-      PushListPosition(List())
-      While NextElement(List())
-        List()\widget\index = ListIndex(List())
-      Wend
-      PopListPosition(List())
-    EndIf
-  EndMacro
-  
   Macro _box_gradient_(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _round_=0, _alpha_=255)
     BackColor(_color_1_&$FFFFFF|_alpha_<<24)
     FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
@@ -106,7 +82,12 @@ EndModule
 
 ;UseModule Macros
 
- IncludePath "/Users/as/Documents/GitHub/Widget/widgets()"
+;IncludePath "/Users/as/Documents/GitHub/Widget/widgets()"
+
+CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  XIncludeFile "../fixme(mac).pbi"
+CompilerEndIf
+
 ;-
 ;- XIncludeFile
 ;-
@@ -143,13 +124,9 @@ DeclareModule Editor
   ;     constants::#__
   ;   EndMacro
   
-  ;   Macro _struct_
+  ;   Macro _s_widget
   ;     structures::_s_widget
   ;   EndMacro
-  
-  Structure _struct_ Extends structures::_s_widget : EndStructure
-  
-  Global *event._s_event_ = AllocateStructure(_s_event_)
   
   Macro Root()
     *event\root
@@ -164,36 +141,40 @@ DeclareModule Editor
   ;Declare.i Update(*this)
   
   ;- DECLARE
-  Declare.i SetItemState(*this, Item.i, State.i)
+  Declare   SetFont(*this, FontID.i)
   Declare   GetState(*this)
-  Declare.s GetText(*this)
-  Declare.i ClearItems(*this)
-  Declare.i CountItems(*this)
-  Declare.i RemoveItem(*this, Item.i)
   Declare   SetState(*this, State.l)
+  Declare.s GetText(*this)
+  Declare   SetText(*this, Text.s, Item.l=0)
+  Declare   ClearItems(*this)
+  Declare   CountItems(*this)
+  Declare   RemoveItem(*this, Item.l)
   Declare   GetAttribute(*this, Attribute.i)
   Declare   SetAttribute(*this, Attribute.i, Value.i)
-  Declare   SetText(*this, Text.s, Item.i=0)
-  Declare   SetFont(*this, FontID.i)
-  Declare.i AddItem(*this, Item.i,Text.s,Image.i=-1,Flag.i=0)
+  Declare   AddItem(*this, Item.l, Text.s, Image.i=-1, Flag.i=0)
+  Declare   SetItemState(*this, Item.l, State.i)
+  Declare.l GetItemColor(*this, Item.l, ColorType.l, Column.l=0)
+  Declare.l SetItemColor(*this, Item.l, ColorType.l, Color.l, Column.l=0)
   
-  ;Declare.i Make(*this)
+  Declare   Draw(*this)
+  Declare   ReDraw(*this)
   Declare   events(*this, EventType.l)
+  Declare   events_key_editor(*this, eventtype.l, mouse_x.l, mouse_y.l)
+  
   Declare.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Flag.i=0)
   Declare.i Editor(X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=0, round.i=0)
-  Declare   ReDraw(*this)
-  Declare   Draw(*this)
-  
-  Declare.l SetItemColor(*this, Item.l, ColorType.l, Color.l, Column.l=0)
-  Declare.l GetItemColor(*this, Item.l, ColorType.l, Column.l=0)
   
 EndDeclareModule
 
 Module Editor
+  CompilerIf Defined(fixme, #PB_Module)
+    UseModule fixme
+  CompilerEndIf
+  
   ;   Global *Buffer = AllocateMemory(10000000)
   ;   Global *Pointer = *Buffer
   ;   
-  ;   Procedure.i Update(*this._struct_)
+  ;   Procedure.i Update(*this._s_widget)
   ;     *this\text\string.s = PeekS(*Buffer)
   ;     *this\text\change = 1
   ;   EndProcedure
@@ -352,7 +333,7 @@ Module Editor
   
   ;-
   ;- PUBLIC
-  Procedure _start_drawing_(*this._struct_)
+  Procedure _start_drawing_(*this._s_widget)
     If StartDrawing(CanvasOutput(*this\root\canvas)) 
       
       If *this\text\fontID
@@ -378,7 +359,7 @@ Module Editor
   
   
   ;-
-  Procedure.l _text_caret_(*this._struct_)
+  Procedure.l _text_caret_(*this._s_widget)
     Protected i.l, X.l, Position.l =- 1,  
               MouseX.l, Distance.f, MinDistance.f = Infinity()
     
@@ -398,7 +379,7 @@ Module Editor
     ProcedureReturn Position
   EndProcedure
   
-  Procedure   _edit_sel_(*this._struct_, _pos_, _len_)
+  Procedure   _edit_sel_(*this._s_widget, _pos_, _len_)
     If _pos_ < 0 : _pos_ = 0 : EndIf
     If _len_ < 0 : _len_ = 0 : EndIf
     
@@ -451,6 +432,7 @@ Module Editor
       *this\row\_s()\text\edit[2]\string = ""
       *this\row\_s()\text\edit[2]\width = _caret_last_len_
     EndIf
+    
     If *this\row\_s()\text\edit[3]\len > 0
       *this\row\_s()\text\edit[3]\string = Right(*this\row\_s()\text\string, *this\row\_s()\text\edit[3]\len)
       *this\row\_s()\text\edit[3]\width = TextWidth(*this\row\_s()\text\edit[3]\string)  
@@ -466,6 +448,11 @@ Module Editor
         *this\row\_s()\text\edit[2]\width = *this\row\_s()\text\width - (*this\row\_s()\text\edit[1]\width+*this\row\_s()\text\edit[3]\width) + _caret_last_len_
       EndIf
     CompilerEndIf
+    
+    ; для красоты
+    If *this\row\_s()\text\edit[2]\width > *this\scroll\width
+      *this\row\_s()\text\edit[2]\width - _caret_last_len_
+    EndIf
     
     ; set position (left;selected;right)
     *this\row\_s()\text\edit[1]\x = *this\row\_s()\text\x 
@@ -531,7 +518,7 @@ Module Editor
     
   EndProcedure
   
-  Procedure   _edit_sel_set_(*this._struct_, _line_, _scroll_) ; Ok
+  Procedure   _edit_sel_set_(*this._s_widget, _line_, _scroll_) ; Ok
                                                                ;     Debug  ""+*this\text\caret\pos[1] +" "+ *this\text\caret\pos[2]
                                                                ;     ProcedureReturn 3
     Macro _edit_sel_reset_(_this_)
@@ -651,7 +638,7 @@ Module Editor
     ProcedureReturn _scroll_
   EndProcedure
   
-  Procedure   _edit_sel_draw_(*this._struct_, _line_, _caret_=-1) ; Ok
+  Procedure   _edit_sel_draw_(*this._s_widget, _line_, _caret_=-1) ; Ok
     Protected Repaint.b
     
     Macro _edit_sel_is_line_(_this_)
@@ -738,7 +725,7 @@ Module Editor
     ProcedureReturn Bool(Repaint)
   EndProcedure
   
-  Procedure   _edit_sel_update_(*this._struct_)
+  Procedure   _edit_sel_update_(*this._s_widget)
     ; ProcedureReturn 
     
     ; key - (return & backspace)
@@ -899,7 +886,7 @@ Module Editor
     
   EndProcedure
   
-  Procedure.i _edit_sel_start_(*this._struct_)
+  Procedure.i _edit_sel_start_(*this._s_widget)
     Protected result.i, i.i, char.i
     
     Macro _edit_sel_end_(_char_)
@@ -926,7 +913,7 @@ Module Editor
     ProcedureReturn result
   EndProcedure
   
-  Procedure.i _edit_sel_stop_(*this._struct_)
+  Procedure.i _edit_sel_stop_(*this._s_widget)
     Protected result.i, i.i, char.i
     
     With *this
@@ -944,7 +931,7 @@ Module Editor
     ProcedureReturn result
   EndProcedure
   
-  Procedure.s _text_insert_make_(*this._struct_, Text.s)
+  Procedure.s _text_insert_make_(*this._s_widget, Text.s)
     Protected String.s, i.i, Len.i
     
     With *this
@@ -1092,7 +1079,7 @@ Module Editor
     EndIf
   EndProcedure
   
-  Procedure.b _text_paste_(*this._struct_, Chr.s, Count.l=0)
+  Procedure.b _text_paste_(*this._s_widget, Chr.s, Count.l=0)
     Protected Repaint.b
     
     With *this
@@ -1133,7 +1120,7 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure.b _text_insert_(*this._struct_, Chr.s)
+  Procedure.b _text_insert_(*this._s_widget, Chr.s)
     Static Dot, Minus, Color.i
     Protected Repaint.b, Input, Input_2, String.s, Count.i
     
@@ -1181,7 +1168,7 @@ Module Editor
   
   ;-
   ;- - DRAWINGs
-  Procedure.s make_multiline(*this._struct_, String.s)
+  Procedure.s make_multiline(*this._s_widget, String.s)
     Protected StringWidth
     Protected IT,Text_Y,Text_X,Width,Height
     
@@ -1387,7 +1374,7 @@ Module Editor
     
     ProcedureReturn String
   EndProcedure
-  Procedure.i text_multiline_make(*this._struct_)
+  Procedure.i text_multiline_make(*this._s_widget)
      ;*this\text\string.s = make_multiline(*this, *this\text\string.s+#LF$) : ProcedureReturn
      
     Static string_out.s
@@ -1583,7 +1570,7 @@ Module Editor
     ProcedureReturn Repaint
   EndProcedure
   
-  Procedure Draw(*this._struct_)
+  Procedure Draw(*this._s_widget)
     Protected String.s, StringWidth, ix, iy, iwidth, iheight
     Protected IT,Text_Y,Text_X, X,Y, Width, Drawing
     
@@ -1921,8 +1908,8 @@ Module Editor
     
   EndProcedure
   
-  Procedure ReDraw(*this._struct_)
-    If *this And StartDrawing(CanvasOutput(*this\root\canvas))
+  Procedure ReDraw(*this._s_widget)
+    If *this And *this\root And StartDrawing(CanvasOutput(*this\root\canvas))
       ; If *this\root\fontID : DrawingFont(*this\root\fontID) : EndIf
         FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FFf0f0f0)
       
@@ -1933,7 +1920,7 @@ Module Editor
   
   ;-
   ;- - (SET&GET)s
-  Procedure.i AddItem(*this._struct_, Item.i,Text.s,Image.i=-1,Flag.i=0)
+  Procedure   AddItem(*this._s_widget, Item.l,Text.s,Image.i=-1,Flag.i=0)
     Static len.l
     Protected l.l, i.l
     
@@ -1985,13 +1972,13 @@ Module Editor
     ProcedureReturn *this\count\items
   EndProcedure
   
-  Procedure   SetAttribute(*this._struct_, Attribute.i, Value.i)
+  Procedure   SetAttribute(*this._s_widget, Attribute.i, Value.i)
     With *this
       
     EndWith
   EndProcedure
   
-  Procedure   GetAttribute(*this._struct_, Attribute.i)
+  Procedure   GetAttribute(*this._s_widget, Attribute.i)
     Protected Result
     
     With *this
@@ -2005,7 +1992,7 @@ Module Editor
     ProcedureReturn Result
   EndProcedure
   
-  Procedure   SetItemState(*this._struct_, Item.i, State.i)
+  Procedure   SetItemState(*this._s_widget, Item.l, State.i)
     Protected Result
     Protected i.l, len.l
     
@@ -2070,7 +2057,7 @@ Module Editor
     ProcedureReturn Result
   EndProcedure
   
-  Procedure   SetState(*this._struct_, State.l) ; Ok
+  Procedure   SetState(*this._s_widget, State.l) ; Ok
     Protected i.l, len.l
     
     With *this
@@ -2120,11 +2107,11 @@ Module Editor
     EndWith
   EndProcedure
   
-  Procedure   GetState(*this._struct_)
+  Procedure   GetState(*this._s_widget)
     ProcedureReturn *this\text\caret\pos
   EndProcedure
   
-  Procedure   ClearItems(*this._struct_)
+  Procedure   ClearItems(*this._s_widget)
     *this\count\items = 0
     *this\text\change = 1 
     
@@ -2137,11 +2124,11 @@ Module Editor
     ProcedureReturn 1
   EndProcedure
   
-  Procedure.i CountItems(*this._struct_)
+  Procedure.i CountItems(*this._s_widget)
     ProcedureReturn *this\count\items
   EndProcedure
   
-  Procedure.i RemoveItem(*this._struct_, Item.i)
+  Procedure.i RemoveItem(*this._s_widget, Item.l)
     *this\count\items - 1
     *this\text\change = 1
     
@@ -2156,7 +2143,7 @@ Module Editor
     EndIf
   EndProcedure
   
-  Procedure.s GetText(*this._struct_)
+  Procedure.s GetText(*this._s_widget)
     With *this
       If \text\pass
         ProcedureReturn \text\edit\string
@@ -2166,7 +2153,7 @@ Module Editor
     EndWith
   EndProcedure
   
-  Procedure.i SetText(*this._struct_, Text.s, Item.i=0)
+  Procedure.i SetText(*this._s_widget, Text.s, Item.l=0)
     Protected Result.i, Len.i, String.s, i.i
     ; If Text.s="" : Text.s=#LF$ : EndIf
     Text.s = ReplaceString(Text.s, #LFCR$, #LF$)
@@ -2217,7 +2204,7 @@ Module Editor
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.i SetFont(*this._struct_, FontID.i)
+  Procedure.i SetFont(*this._s_widget, FontID.i)
     
     With *this
       If \text\fontID <> FontID 
@@ -2233,7 +2220,7 @@ Module Editor
     
   EndProcedure
   
-  Procedure.l SetItemColor(*this._struct_, Item.l, ColorType.l, Color.l, Column.l=0)
+  Procedure.l SetItemColor(*this._s_widget, Item.l, ColorType.l, Color.l, Column.l=0)
     Protected Result
     
     With *this
@@ -2279,7 +2266,7 @@ Module Editor
     
   EndProcedure
   
-  Procedure.l GetItemColor(*this._struct_, Item.l, ColorType.l, Column.l=0)
+  Procedure.l GetItemColor(*this._s_widget, Item.l, ColorType.l, Column.l=0)
     Protected Result
     
     With *this
@@ -2305,7 +2292,7 @@ Module Editor
   EndProcedure
   
   
-  Procedure.i Resize(*this._struct_, X.i,Y.i,Width.i,Height.i)
+  Procedure.i Resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
     With *this
       If x>=0 And X<>#PB_Ignore And 
          \x[0] <> X
@@ -2344,7 +2331,7 @@ Module Editor
         ;  Bar::Resizes(\scroll, \x[2]+\row\margin\width,\y[2],\width[2]-\row\margin\width,\height[2])
         Bar::Resizes(\scroll, \x[0]+\bs,\y[0]+\bs, \width[0]-\bs*2, \height[0]-\bs*2)
         
-        \width[2] = \scroll\h\bar\page\len - \row\margin\width 
+        \width[2] = \scroll\h\bar\page\len ; - \row\margin\width 
         \height[2] = \scroll\v\bar\page\len
         
       EndIf
@@ -2356,7 +2343,7 @@ Module Editor
   
   ;-
   ;- - KEYBOARDs
-  Procedure.i events_key_editor(*this._struct_, eventtype.l, mouse_x.l, mouse_y.l)
+  Procedure   events_key_editor(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l)
     Static _caret_last_pos_, DoubleClick.i
     Protected Repaint.i, _key_control_.i, _key_shift_.i, Caret.i, Item.i, String.s
     Protected _line_, _step_ = 1, _caret_min_ = 0, _caret_max_ = *this\row\_s()\text\len, _line_first_ = 0, _line_last_ = *this\count\items - 1
@@ -2852,7 +2839,7 @@ Module Editor
   EndProcedure
   
   ;-
-  Procedure   events(*this._struct_, eventtype.l)
+  Procedure   events(*this._s_widget, eventtype.l)
     Static DoubleClick.i=-1
     Protected Repaint.i, _key_control_.i, Caret.i, _line_.l, String.s
     
@@ -3084,8 +3071,14 @@ Module Editor
                   Repaint = 1
                 EndIf
                 
-              Default
-                itemSelect(\index[2], \row\_s())
+               Default
+                 If \index[2] >= 0 And 
+                   \index[2] < \count\items And 
+                   \index[2] <> \row\_s()\index  
+                  \row\_s()\color\State = 0
+                  SelectElement(*this\row\_s(), \index[2]) 
+                EndIf
+                
             EndSelect
           EndIf
           
@@ -3109,8 +3102,8 @@ Module Editor
     Protected Height = GadgetHeight(EventGadget)
     Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
     Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
-    Protected Repaint, *this._struct_ = GetGadgetData(EventGadget)
-    Protected *deactive._struct_ = GetActive()
+    Protected Repaint, *this._s_widget = GetGadgetData(EventGadget)
+    Protected *deactive._s_widget = GetActive()
     
     With *this
       If EventType = #PB_EventType_LeftButtonDown
@@ -3264,7 +3257,7 @@ Module Editor
   EndMacro
  
   Procedure.i Editor(X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=0, round.i=0)
-    Protected *this._struct_ = AllocateStructure(_struct_)
+    Protected *this._s_widget = AllocateStructure(_s_widget)
     
     If *this
       With *this
@@ -3304,14 +3297,14 @@ Module Editor
         
      EndIf
       
-      \scroll = AllocateStructure(_s_scroll) 
-      ;      \scroll\v = Bar::Scroll(0, 0, 16, 0, 0,0,0, #__Bar_Vertical, 7)
-      ;       \scroll\h = Bar::Scroll(0, 0, 0, Bool(\text\multiline <> 1)*16, 0,0,0, 0, 7)
-      \scroll\v = Bar::Bar(#PB_GadgetType_ScrollBar,16, 0,0,0, #PB_ScrollBar_Vertical, 7, *this)
-      \scroll\h = Bar::Bar(#PB_GadgetType_ScrollBar, 16, 0,0,0, 0, 7, *this)
-      
-      Resize(*this, X,Y,Width,Height)
-      
+     If Width Or Height
+       \scroll = AllocateStructure(_s_scroll) 
+       \scroll\v = Bar::create(#PB_GadgetType_ScrollBar,16, 0,0,0, #PB_ScrollBar_Vertical, 7, *this)
+       \scroll\h = Bar::create(#PB_GadgetType_ScrollBar, 16, 0,0,0, 0, 7, *this)
+       
+       Resize(*this, X,Y,Width,Height)
+     EndIf
+     
       ; set text
       If Text
         SetText(*this, Text.s)
@@ -3331,9 +3324,9 @@ Module Editor
     Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard) : If Gadget=-1 : Gadget=g : EndIf
     
     CompilerIf #PB_Compiler_IsMainFile
-      Protected *this._struct_ = Editor(50, 0, Width-100, Height, "", Flag)
+      Protected *this._s_widget = Editor(50, 0, Width-100, Height, "", Flag)
     CompilerElse
-      Protected *this._struct_ = Editor(0, 0, Width, Height, "", Flag)
+      Protected *this._s_widget = Editor(0, 0, Width, Height, "", Flag)
     CompilerEndIf
 
     If *this
@@ -3365,7 +3358,7 @@ EndModule
 DeclareModule String
   UseModule constants
   
-  Structure _struct_ Extends structures::_s_widget : EndStructure
+  Structure _s_widget Extends structures::_s_widget : EndStructure
   
   Macro GetText(_this_) : Editor::GetText(_this_) : EndMacro
   Macro SetText(_this_, _text_) : Editor::SetText(_this_, _text_) : EndMacro
@@ -3375,7 +3368,7 @@ EndDeclareModule
 
 Module String
   Procedure.i Widget(X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=#Null)
-    Protected *this._struct_ = editor::editor(X, Y, Width, Height, "", Flag)
+    Protected *this._s_widget = editor::editor(X, Y, Width, Height, "", Flag)
     
     *this\type = #PB_GadgetType_String
     *this\text\multiline = Bool(Flag&#__string_multiline)
@@ -3391,7 +3384,7 @@ Module String
   EndProcedure
   
   Procedure.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=#Null)
-    Protected result.i, *this._struct_
+    Protected result.i, *this._s_widget
     
     result = Editor::Gadget(Gadget, X, Y, Width, Height, Flag)
     
@@ -3433,20 +3426,20 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule String
   UseModule constants
   
-  Global *S_0._struct_
-  Global *S_1._struct_
-  Global *S_2._struct_
-  Global *S_3._struct_
-  Global *S_4._struct_
-  Global *S_5._struct_
-  Global *S_6._struct_
-  Global *S_7._struct_
-  Global *S_8._struct_
-  Global *S_9._struct_
+  Global *S_0._s_widget
+  Global *S_1._s_widget
+  Global *S_2._s_widget
+  Global *S_3._s_widget
+  Global *S_4._s_widget
+  Global *S_5._s_widget
+  Global *S_6._s_widget
+  Global *S_7._s_widget
+  Global *S_8._s_widget
+  Global *S_9._s_widget
   
   ;   *this._const_
   ;   
-  ;   Debug *this;Structures::_s_widget ; String::_struct_; _struct_
+  ;   Debug *this;Structures::_s_widget ; String::_s_widget; _s_widget
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
@@ -3581,5 +3574,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------fC6----------------nd-----f-------------------------------8----
+; Folding = -----------8----------------------0---------v4+-------------------ff----
 ; EnableXP

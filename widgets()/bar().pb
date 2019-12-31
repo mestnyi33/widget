@@ -23,8 +23,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
     colors::this
   EndMacro
   
-  Structure _struct_ Extends _s_widget : EndStructure
-  
   Macro Root()
     *event\root
   EndMacro
@@ -40,10 +38,47 @@ CompilerIf Not Defined(Bar, #PB_Module)
               Bar::SetState(_this_, (_pos_+_this_\bar\min)-(_this_\bar\page\len-(_len_)))))
   EndMacro
   
-  ;   ;- GLOBALs
-  Global *event._s_event_ = AllocateStructure(_s_event_)
+  Macro _thumb_pos_(_bar_, _scroll_pos_)
+    (_bar_\area\pos + Round((_scroll_pos_-_bar_\min) * _bar_\increment, #PB_Round_Nearest)) 
+    ; (_bar_\area\pos + Round((_scroll_pos_-_bar_\min) * (_bar_\area\len / (_bar_\max-_bar_\min)), #PB_round_nearest)) 
+  EndMacro
   
+  Macro _thumb_len_(_bar_)
+    Round(_bar_\area\len - (_bar_\area\len / (_bar_\max-_bar_\min)) * ((_bar_\max-_bar_\min) - _bar_\page\len), #PB_Round_Nearest)
+  EndMacro
+  
+  ; Then scroll bar start position
+  Macro _in_start_(_bar_) : Bool(_bar_\page\pos =< _bar_\min) : EndMacro
+  
+  ; Then scroll bar end position
+  Macro _in_stop_(_bar_) : Bool(_bar_\page\pos >= (_bar_\max-_bar_\page\len)) : EndMacro
+  
+  ; Inverted scroll bar position
+  Macro _invert_(_bar_, _scroll_pos_, _inverted_=#True)
+    (Bool(_inverted_) * ((_bar_\min + (_bar_\max - _bar_\page\len)) - (_scroll_pos_)) + Bool(Not _inverted_) * (_scroll_pos_))
+  EndMacro
+  
+  Macro _area_pos_(_this_)
+    If _this_\bar\vertical
+      _this_\bar\area\pos = _this_\y + _this_\bar\button[#__b_1]\len
+      _this_\bar\area\len = _this_\height - (_this_\bar\button[#__b_1]\len + _this_\bar\button[#__b_2]\len)
+    Else
+      _this_\bar\area\len = _this_\width - (_this_\bar\button[#__b_1]\len + _this_\bar\button[#__b_2]\len)
+      _this_\bar\area\pos = _this_\x + _this_\bar\button[#__b_1]\len
+    EndIf
+    
+    _this_\bar\area\end = _this_\bar\area\pos + (_this_\bar\area\len - _this_\bar\thumb\len)
+    _this_\bar\increment = (_this_\bar\area\len / (_this_\bar\max - _this_\bar\min))
+  EndMacro
+  
+  
+  ;   ;- GLOBALs
   Declare.b Draw(*this)
+  
+  Declare _pos_(*this, _scroll_pos_)
+  Declare.b update(*this)
+  Declare.b change(*bar, ScrollPos.f)
+  Declare.b SetPos(*this, ThumbPos.i)
   
   Declare.b SetState(*this, ScrollPos.f)
   Declare.l SetAttribute(*this, Attribute.l, Value.l)
@@ -54,8 +89,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
   Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
   Declare.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.i=0)
   
-  Declare.i Bar(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scrollstep.f=1.0)
-  ;Declare.i Bar(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, round.l=0)
+  Declare.i create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scrollstep.f=1.0)
+  ;Declare.i create(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, round.l=0)
   Declare.b events(*this, EventType.l, mouse_x.l, mouse_y.l, wheel_x.b=0, wheel_y.b=0)
   
   Declare.b Resize(*this, iX.l,iY.l,iWidth.l,iHeight.l)
@@ -188,7 +223,7 @@ Module bar
     EndIf
   EndMacro
   
-  Procedure.b splitter_size(*this._struct_)
+  Procedure.b splitter_size(*this._s_widget)
     If *this\splitter
       If *this\splitter\first
         If *this\splitter\g_first
@@ -319,40 +354,7 @@ Module bar
   EndMacro
   
   
-  Macro _thumb_pos_(_bar_, _scroll_pos_)
-    (_bar_\area\pos + Round((_scroll_pos_-_bar_\min) * _bar_\increment, #PB_Round_Nearest)) 
-    ; (_bar_\area\pos + Round((_scroll_pos_-_bar_\min) * (_bar_\area\len / (_bar_\max-_bar_\min)), #PB_round_nearest)) 
-  EndMacro
-  
-  Macro _thumb_len_(_bar_)
-    Round(_bar_\area\len - (_bar_\area\len / (_bar_\max-_bar_\min)) * ((_bar_\max-_bar_\min) - _bar_\page\len), #PB_Round_Nearest)
-  EndMacro
-  
-  ; Then scroll bar start position
-  Macro _in_start_(_bar_) : Bool(_bar_\page\pos =< _bar_\min) : EndMacro
-  
-  ; Then scroll bar end position
-  Macro _in_stop_(_bar_) : Bool(_bar_\page\pos >= (_bar_\max-_bar_\page\len)) : EndMacro
-  
-  ; Inverted scroll bar position
-  Macro _invert_(_bar_, _scroll_pos_, _inverted_=#True)
-    (Bool(_inverted_) * ((_bar_\min + (_bar_\max - _bar_\page\len)) - (_scroll_pos_)) + Bool(Not _inverted_) * (_scroll_pos_))
-  EndMacro
-  
-  Macro _area_pos_(_this_)
-    If _this_\bar\vertical
-      _this_\bar\area\pos = _this_\y + _this_\bar\button[#__b_1]\len
-      _this_\bar\area\len = _this_\height - (_this_\bar\button[#__b_1]\len + _this_\bar\button[#__b_2]\len)
-    Else
-      _this_\bar\area\len = _this_\width - (_this_\bar\button[#__b_1]\len + _this_\bar\button[#__b_2]\len)
-      _this_\bar\area\pos = _this_\x + _this_\bar\button[#__b_1]\len
-    EndIf
-    
-    _this_\bar\area\end = _this_\bar\area\pos + (_this_\bar\area\len - _this_\bar\thumb\len)
-    _this_\bar\increment = (_this_\bar\area\len / (_this_\bar\max - _this_\bar\min))
-  EndMacro
-  
-  Procedure _pos_(*this._struct_, _scroll_pos_)
+  Procedure _pos_(*this._s_widget, _scroll_pos_)
     *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
     
     If *this\bar\thumb\pos < *this\bar\area\pos 
@@ -630,290 +632,7 @@ Module bar
     ProcedureReturn *this\bar\thumb\pos
   EndProcedure
   
-  
-;   Macro _pos_(_this_, _scroll_pos_)
-;     _thumb_pos_(_this_\bar, _scroll_pos_)
-;     
-;     If _this_\bar\thumb\pos < _this_\bar\area\pos 
-;       _this_\bar\thumb\pos = _this_\bar\area\pos 
-;     EndIf 
-;     
-;     If _this_\bar\thumb\pos > _this_\bar\area\end
-;       _this_\bar\thumb\pos = _this_\bar\area\end
-;     EndIf
-;     
-;     If _this_\type = #PB_GadgetType_Spin
-;       If _this_\bar\vertical 
-;         _this_\bar\button\x = _this_\X + _this_\width - #__spin_buttonsize2
-;         _this_\bar\button\width = #__spin_buttonsize2
-;       Else 
-;         _this_\bar\button\y = _this_\Y + _this_\Height - #__spin_buttonsize2
-;         _this_\bar\button\height = #__spin_buttonsize2 
-;       EndIf
-;     Else
-;       If _this_\bar\vertical 
-;         _this_\bar\button\x = _this_\X + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-;         _this_\bar\button\width = _this_\width - Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-;         _this_\bar\button\y = _this_\bar\area\pos
-;         _this_\bar\button\height = _this_\bar\area\len               
-;       Else 
-;         _this_\bar\button\y = _this_\Y + Bool(_this_\type=#PB_GadgetType_ScrollBar) 
-;         _this_\bar\button\height = _this_\Height - Bool(_this_\type=#PB_GadgetType_ScrollBar)  
-;         _this_\bar\button\x = _this_\bar\area\pos
-;         _this_\bar\button\width = _this_\bar\area\len
-;       EndIf
-;     EndIf
-;     
-;     ; _start_
-;     If _this_\bar\button[#__b_1]\len 
-;       If _scroll_pos_ = _this_\bar\min
-;         _this_\bar\button[#__b_1]\color\state = #__s_3
-;         _this_\bar\button[#__b_1]\interact = 0
-;       Else
-;         If _this_\bar\button[#__b_1]\color\state <> #__s_2
-;           _this_\bar\button[#__b_1]\color\state = #__s_0
-;         EndIf
-;         _this_\bar\button[#__b_1]\interact = 1
-;       EndIf 
-;     EndIf
-;     
-;     If _this_\type=#PB_GadgetType_ScrollBar Or 
-;        _this_\type=#PB_GadgetType_Spin
-;       
-;       If _this_\bar\vertical 
-;         ; Top button coordinate on vertical scroll bar
-;         _this_\bar\button[#__b_1]\x = _this_\bar\button\x
-;         _this_\bar\button[#__b_1]\y = _this_\Y 
-;         _this_\bar\button[#__b_1]\width = _this_\bar\button\width
-;         _this_\bar\button[#__b_1]\height = _this_\bar\button[#__b_1]\len                   
-;       Else 
-;         ; Left button coordinate on horizontal scroll bar
-;         _this_\bar\button[#__b_1]\x = _this_\X 
-;         _this_\bar\button[#__b_1]\y = _this_\bar\button\y
-;         _this_\bar\button[#__b_1]\width = _this_\bar\button[#__b_1]\len 
-;         _this_\bar\button[#__b_1]\height = _this_\bar\button\height 
-;       EndIf
-;       
-;     ElseIf _this_\type = #PB_GadgetType_TrackBar
-;     Else
-;       _this_\bar\button[#__b_1]\x = _this_\X
-;       _this_\bar\button[#__b_1]\y = _this_\Y
-;       
-;       If _this_\bar\vertical
-;         _this_\bar\button[#__b_1]\width = _this_\width
-;         _this_\bar\button[#__b_1]\height = _this_\bar\thumb\pos-_this_\y 
-;       Else
-;         _this_\bar\button[#__b_1]\width = _this_\bar\thumb\pos-_this_\x 
-;         _this_\bar\button[#__b_1]\height = _this_\height
-;       EndIf
-;     EndIf
-;     
-;     ; _stop_
-;     If _this_\bar\button[#__b_2]\len
-;       ; Debug ""+ Bool(_this_\bar\thumb\pos = _this_\bar\area\end) +" "+ Bool(_scroll_pos_ = _this_\bar\page\end)
-;       If _scroll_pos_ = _this_\bar\page\end
-;         _this_\bar\button[#__b_2]\color\state = #__s_3
-;         _this_\bar\button[#__b_2]\interact = 0
-;       Else
-;         If _this_\bar\button[#__b_2]\color\state <> #__s_2
-;           _this_\bar\button[#__b_2]\color\state = #__s_0
-;         EndIf
-;         _this_\bar\button[#__b_2]\interact = 1
-;       EndIf 
-;     EndIf
-;     
-;     If _this_\type = #PB_GadgetType_ScrollBar Or 
-;        _this_\type = #PB_GadgetType_Spin
-;       If _this_\bar\vertical 
-;         ; Botom button coordinate on vertical scroll bar
-;         _this_\bar\button[#__b_2]\x = _this_\bar\button\x
-;         _this_\bar\button[#__b_2]\width = _this_\bar\button\width
-;         _this_\bar\button[#__b_2]\height = _this_\bar\button[#__b_2]\len 
-;         _this_\bar\button[#__b_2]\y = _this_\Y+_this_\Height-_this_\bar\button[#__b_2]\height
-;       Else 
-;         ; Right button coordinate on horizontal scroll bar
-;         _this_\bar\button[#__b_2]\y = _this_\bar\button\y
-;         _this_\bar\button[#__b_2]\height = _this_\bar\button\height
-;         _this_\bar\button[#__b_2]\width = _this_\bar\button[#__b_2]\len 
-;         _this_\bar\button[#__b_2]\x = _this_\X+_this_\width-_this_\bar\button[#__b_2]\width 
-;       EndIf
-;       
-;     ElseIf _this_\type = #PB_GadgetType_TrackBar
-;     Else
-;       If _this_\bar\vertical
-;         _this_\bar\button[#__b_2]\x = _this_\x
-;         _this_\bar\button[#__b_2]\y = _this_\bar\thumb\pos+_this_\bar\thumb\len
-;         _this_\bar\button[#__b_2]\width = _this_\width
-;         _this_\bar\button[#__b_2]\height = _this_\height-(_this_\bar\thumb\pos+_this_\bar\thumb\len-_this_\y)
-;       Else
-;         _this_\bar\button[#__b_2]\x = _this_\bar\thumb\pos+_this_\bar\thumb\len
-;         _this_\bar\button[#__b_2]\y = _this_\Y
-;         _this_\bar\button[#__b_2]\width = _this_\width-(_this_\bar\thumb\pos+_this_\bar\thumb\len-_this_\x)
-;         _this_\bar\button[#__b_2]\height = _this_\height
-;       EndIf
-;     EndIf
-;     
-;     ; Thumb coordinate on scroll bar
-;     If _this_\bar\thumb\len
-;       ;       If _this_\bar\button[#__b_3]\len <> _this_\bar\thumb\len
-;       ;         _this_\bar\button[#__b_3]\len = _this_\bar\thumb\len
-;       ;       EndIf
-;       
-;       If _this_\bar\vertical
-;         _this_\bar\button[#__b_3]\x = _this_\bar\button\x 
-;         _this_\bar\button[#__b_3]\width = _this_\bar\button\width 
-;         _this_\bar\button[#__b_3]\y = _this_\bar\thumb\pos
-;         _this_\bar\button[#__b_3]\height = _this_\bar\thumb\len                              
-;       Else
-;         _this_\bar\button[#__b_3]\y = _this_\bar\button\y 
-;         _this_\bar\button[#__b_3]\height = _this_\bar\button\height
-;         _this_\bar\button[#__b_3]\x = _this_\bar\thumb\pos 
-;         _this_\bar\button[#__b_3]\width = _this_\bar\thumb\len                                  
-;       EndIf
-;       
-;     Else
-;       If _this_\type = #PB_GadgetType_Spin Or 
-;          _this_\type = #PB_GadgetType_ScrollBar
-;         ; ????? ???? ???????
-;         If _this_\bar\vertical
-;           _this_\bar\button[#__b_2]\Height = _this_\Height/2 
-;           _this_\bar\button[#__b_2]\y = _this_\y+_this_\bar\button[#__b_2]\Height+Bool(_this_\Height%2) 
-;           
-;           _this_\bar\button[#__b_1]\y = _this_\y 
-;           _this_\bar\button[#__b_1]\Height = _this_\Height/2
-;           
-;         Else
-;           _this_\bar\button[#__b_2]\width = _this_\width/2 
-;           _this_\bar\button[#__b_2]\x = _this_\x+_this_\bar\button[#__b_2]\width+Bool(_this_\width%2) 
-;           
-;           _this_\bar\button[#__b_1]\x = _this_\x 
-;           _this_\bar\button[#__b_1]\width = _this_\width/2
-;         EndIf
-;       EndIf
-;     EndIf
-;     
-;     If _this_\type = #PB_GadgetType_Spin
-;       If _this_\bar\vertical      
-;         ; Top button coordinate
-;         _this_\bar\button[#__b_2]\y = _this_\y+_this_\height/2 + Bool(_this_\height%2) 
-;         _this_\bar\button[#__b_2]\height = _this_\height/2 
-;         _this_\bar\button[#__b_2]\width = _this_\bar\button\len 
-;         _this_\bar\button[#__b_2]\x = _this_\x+_this_\width-_this_\bar\button\len
-;         
-;         ; Bottom button coordinate
-;         _this_\bar\button[#__b_1]\y = _this_\y 
-;         _this_\bar\button[#__b_1]\height = _this_\height/2 
-;         _this_\bar\button[#__b_1]\width = _this_\bar\button\len 
-;         _this_\bar\button[#__b_1]\x = _this_\x+_this_\width-_this_\bar\button\len                                 
-;       Else    
-;         ; Left button coordinate
-;         _this_\bar\button[#__b_1]\y = _this_\y 
-;         _this_\bar\button[#__b_1]\height = _this_\height 
-;         _this_\bar\button[#__b_1]\width = _this_\bar\button\len/2 
-;         _this_\bar\button[#__b_1]\x = _this_\x+_this_\width-_this_\bar\button\len    
-;         
-;         ; Right button coordinate
-;         _this_\bar\button[#__b_2]\y = _this_\y 
-;         _this_\bar\button[#__b_2]\height = _this_\height 
-;         _this_\bar\button[#__b_2]\width = _this_\bar\button\len/2 
-;         _this_\bar\button[#__b_2]\x = _this_\x+_this_\width-_this_\bar\button\len/2                               
-;       EndIf
-;     EndIf
-;     
-;     ; draw track bar coordinate
-;     If _this_\type = #PB_GadgetType_TrackBar
-;       If _this_\bar\vertical
-;         _this_\bar\button[#__b_1]\width = 4
-;         _this_\bar\button[#__b_2]\width = 4
-;         _this_\bar\button[#__b_3]\width = _this_\bar\button[#__b_3]\len+(Bool(_this_\bar\button[#__b_3]\len<10)*_this_\bar\button[#__b_3]\len)
-;         
-;         _this_\bar\button[#__b_1]\y = _this_\Y
-;         _this_\bar\button[#__b_1]\height = _this_\bar\thumb\pos-_this_\y + _this_\bar\thumb\len/2
-;         
-;         _this_\bar\button[#__b_2]\y = _this_\bar\thumb\pos+_this_\bar\thumb\len/2
-;         _this_\bar\button[#__b_2]\height = _this_\height-(_this_\bar\thumb\pos+_this_\bar\thumb\len/2-_this_\y)
-;         
-;         If _this_\bar\inverted
-;           _this_\bar\button[#__b_1]\x = _this_\x+6
-;           _this_\bar\button[#__b_2]\x = _this_\x+6
-;           _this_\bar\button[#__b_3]\x = _this_\bar\button[#__b_1]\x-_this_\bar\button[#__b_3]\width/4-1- Bool(_this_\bar\button[#__b_3]\len>10)
-;         Else
-;           _this_\bar\button[#__b_1]\x = _this_\x+_this_\width-_this_\bar\button[#__b_1]\width-6
-;           _this_\bar\button[#__b_2]\x = _this_\x+_this_\width-_this_\bar\button[#__b_2]\width-6 
-;           _this_\bar\button[#__b_3]\x = _this_\bar\button[#__b_1]\x-_this_\bar\button[#__b_3]\width/2 + Bool(_this_\bar\button[#__b_3]\len>10)
-;         EndIf
-;       Else
-;         _this_\bar\button[#__b_1]\height = 4
-;         _this_\bar\button[#__b_2]\height = 4
-;         _this_\bar\button[#__b_3]\height = _this_\bar\button[#__b_3]\len+(Bool(_this_\bar\button[#__b_3]\len<10)*_this_\bar\button[#__b_3]\len)
-;         
-;         _this_\bar\button[#__b_1]\x = _this_\X
-;         _this_\bar\button[#__b_1]\width = _this_\bar\thumb\pos-_this_\x + _this_\bar\thumb\len/2
-;         
-;         _this_\bar\button[#__b_2]\x = _this_\bar\thumb\pos+_this_\bar\thumb\len/2
-;         _this_\bar\button[#__b_2]\width = _this_\width-(_this_\bar\thumb\pos+_this_\bar\thumb\len/2-_this_\x)
-;         
-;         If _this_\bar\inverted
-;           _this_\bar\button[#__b_1]\y = _this_\y+_this_\height-_this_\bar\button[#__b_1]\height-6
-;           _this_\bar\button[#__b_2]\y = _this_\y+_this_\height-_this_\bar\button[#__b_2]\height-6 
-;           _this_\bar\button[#__b_3]\y = _this_\bar\button[#__b_1]\y-_this_\bar\button[#__b_3]\height/2 + Bool(_this_\bar\button[#__b_3]\len>10)
-;         Else
-;           _this_\bar\button[#__b_1]\y = _this_\y+6
-;           _this_\bar\button[#__b_2]\y = _this_\y+6
-;           _this_\bar\button[#__b_3]\y = _this_\bar\button[#__b_1]\y-_this_\bar\button[#__b_3]\height/4-1- Bool(_this_\bar\button[#__b_3]\len>10)
-;         EndIf
-;       EndIf
-;     EndIf
-;     
-;     ;     If _this_\Scroll And _this_\Scroll\v And _this_\Scroll\h
-;     ;       _this_\Scroll\x = _this_\Scroll\h\x-_this_\Scroll\h\bar\page\pos
-;     ;       _this_\Scroll\y = _this_\Scroll\v\y-_this_\Scroll\v\bar\page\pos
-;     ;       _this_\Scroll\width = _this_\Scroll\h\bar\max
-;     ;       _this_\Scroll\height = _this_\Scroll\v\bar\max
-;     ;     EndIf
-;     
-;     If _this_\Splitter 
-;       ; Splitter childrens auto resize       
-;       _splitter_size_(_this_)
-;     EndIf
-;     
-;     If _this_\bar\change
-;       If _this_\text
-;         _this_\text\change = 1
-;         _this_\text\string = "%"+Str(_this_\bar\page\Pos)
-;       EndIf
-;       
-;       
-;       ; ScrollArea childrens auto resize 
-;       If _this_\parent And _this_\parent\scroll
-;         _this_\parent\change =- 1
-;         
-;         If _this_\bar\vertical
-;           _this_\parent\scroll\y = - _this_\bar\page\pos ; _this_\y 
-;                                                          ;_this_\parent\scroll\height = _this_\bar\max
-;           _childrens_move_(_this_\parent, 0, _this_\bar\change)
-;         Else
-;           _this_\parent\scroll\x = - _this_\bar\page\pos ; _this_\x 
-;                                                          ;_this_\parent\scroll\width = _this_\bar\max
-;           _childrens_move_(_this_\parent, _this_\bar\change, 0)
-;         EndIf
-;       EndIf
-;       
-;       ;       ; bar change
-;       ;       Post(#PB_EventType_StatusChange, _this_, _this_\from, _this_\bar\direction)
-;       ;     Else
-;       ;       If _this_\parent\scroll
-;       ;         If _this_\bar\vertical
-;       ;           _this_\parent\scroll\y = _this_\y
-;       ;         Else
-;       ;           _this_\parent\scroll\x = _this_\x
-;       ;         EndIf
-;       ;       EndIf
-;     EndIf
-;     
-;   EndMacro
-;   
-  Procedure.b update(*this._struct_)
+  Procedure.b update(*this._s_widget)
     With *this
       If \bar\max >= \bar\page\len
         ; Get area screen coordinate 
@@ -937,7 +656,8 @@ Module bar
           ;           EndIf
         EndIf
         
-        If \splitter 
+        Debug  \splitter
+        If \splitter And Not (\splitter\g_first Or \splitter\g_second)
           If \splitter\fixed
             If \bar\area\len - \bar\button[#__b_3]\len > \splitter\fixed[\splitter\fixed] 
               \bar\page\pos = Bool(\splitter\fixed = 2) * \bar\max
@@ -1066,7 +786,7 @@ Module bar
     EndWith
   EndProcedure
   
-  Procedure.b SetPos(*this._struct_, ThumbPos.i)
+  Procedure.b SetPos(*this._s_widget, ThumbPos.i)
     Protected ScrollPos.f, Result.b
     
     With *this
@@ -1094,7 +814,7 @@ Module bar
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b SetState(*this._struct_, ScrollPos.f)
+  Procedure.b SetState(*this._s_widget, ScrollPos.f)
     Protected Result.b
     
     With *this
@@ -1120,7 +840,7 @@ Module bar
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.l SetAttribute(*this._struct_, Attribute.l, Value.l)
+  Procedure.l SetAttribute(*this._s_widget, Attribute.l, Value.l)
     Protected Result.l
     
     With *this
@@ -1214,7 +934,7 @@ Module bar
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b resize(*this._struct_, X.l,Y.l,Width.l,Height.l)
+  Procedure.b resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
     With *this
       If X <> #PB_Ignore : \x = X : EndIf 
       If Y <> #PB_Ignore : \y = Y : EndIf 
@@ -1223,6 +943,238 @@ Module bar
       
       ProcedureReturn update(*this)
     EndWith
+  EndProcedure
+  
+  Procedure.b _Resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
+    Protected Lines.i, Change_x, Change_y, Change_width, Change_height
+    
+    If *this > 0
+      With *this
+        ; #__flag_autoSize
+        If \parent And \parent\type <> #PB_GadgetType_Splitter And \align And \align\autoSize And \align\left And \align\top And \align\right And \align\bottom
+          X = 0; \align\width
+          Y = 0; \align\height
+          Width = \parent\width[#__c_2] ; - \align\width
+          Height = \parent\height[#__c_2] ; - \align\height
+        EndIf
+        
+        ;         ; Resize vertical&horizontal scrollbar
+        ;         If (\scroll And \scroll\v And \scroll\h)
+        ;           ; Bar_resizes(\scroll, x,y, width,height)
+        ;           Bar_resizes(\scroll, x,y, width-\bs*2,height-\bs*2)
+        ;         EndIf
+        
+        ;         ; Set widget coordinate
+        ;         If X<>#PB_Ignore : If \parent : \x[#__c_3] = X : X+\parent\x+\parent\bs : EndIf : If \x <> X : Change_x = x-\x : \x = X : \x[#__c_2] = \x+\bs : \x[#__c_1] = \x[#__c_2]-\fs : \resize | 1<<1 : EndIf : EndIf  
+        ;         If Y<>#PB_Ignore : If \parent : \y[#__c_3] = Y : Y+\parent\y+\parent\bs+\parent\__height : EndIf : If \y <> Y : Change_y = y-\y : \y = Y : \y[#__c_2] = \y+\bs+\__height : \y[#__c_1] = \y[#__c_2]-\fs : \resize | 1<<2 : EndIf : EndIf  
+        ;         
+        ;         If IsRoot(*this)
+        ;           If Width<>#PB_Ignore : If \width <> Width : Change_width = width-\width : \width = Width : \width[#__c_2] = \width-\bs*2 : \width[#__c_1] = \width[#__c_2]+\fs*2 : \resize | 1<<3 : EndIf : EndIf  
+        ;           If Height<>#PB_Ignore : If \height <> Height : Change_height = height-\height : \height = Height : \height[#__c_2] = \height-\bs*2-\__height-\__height : \height[#__c_1] = \height[#__c_2]+\fs*2 : \resize | 1<<4 : EndIf : EndIf 
+        ;         Else
+        ;           If Width<>#PB_Ignore : If \width <> Width : Change_width = width-\width : \width = Width+Bool(\type=-1)*(\bs*2) : \width[#__c_2] = width-Bool(\type<>-1)*(\bs*2) : \width[#__c_1] = \width[#__c_2]+\fs*2 : \resize | 1<<3 : EndIf : EndIf  
+        ;           If Height<>#PB_Ignore : If \height <> Height : Change_height = height-\height : \height = Height+Bool(\type=-1)*(\__height+\bs*2) : \height[#__c_2] = height-Bool(\type<>-1)*(\__height+\bs*2) : \height[#__c_1] = \height[#__c_2]+\fs*2 : \resize | 1<<4 : EndIf : EndIf 
+        ;         EndIf
+        
+        
+        ; Set widget coordinate
+        If X<>#PB_Ignore 
+          If \parent 
+            \x[#__c_3] = X 
+            X+\parent\x+\parent\bs 
+          EndIf 
+          
+          If \x <> X 
+            Change_x = x-\x 
+            \x = X 
+            \x[#__c_2] = \x+\bs 
+            \x[#__c_1] = \x[#__c_2]-\fs 
+            \resize | 1<<1 
+          EndIf 
+        EndIf  
+        
+        If Y<>#PB_Ignore 
+          If \parent 
+            \y[#__c_3] = Y 
+            Y+\parent\y+\parent\bs+\parent\__height 
+          EndIf 
+          
+          If \y <> Y 
+            Change_y = y-\y 
+            \y = Y 
+            \y[#__c_2] = \y+\bs+\__height 
+            \y[#__c_1] = \y[#__c_2]-\fs 
+            \resize | 1<<2 
+          EndIf 
+        EndIf  
+        
+        If *this And *this = *this\root ; IsRoot(*this)
+          If Width <> #PB_Ignore 
+            If \width <> Width 
+              Change_width = width-\width 
+              \width = Width 
+              \width[#__c_2] = \width-\bs*2 
+              \width[#__c_1] = \width[#__c_2]+\fs*2 
+              \resize | 1<<3 
+            EndIf 
+          EndIf  
+          
+          If Height <> #PB_Ignore 
+            If \height <> Height 
+              Debug "root resize height"
+              
+              Change_height = height-\height 
+              \height = Height 
+              \height[#__c_2] = height-\bs*2-\__height ; -\__height 
+              \height[#__c_1] = \height[#__c_2]+\fs*2 
+              \resize | 1<<4 
+            EndIf 
+          EndIf 
+          
+        Else
+          If Width <> #PB_Ignore 
+            If \width <> Width 
+              Change_width = width-\width 
+              \width = Width+Bool(\type=-1)*(\bs*2) 
+              \width[#__c_2] = width-Bool(\type<>-1)*(\bs*2) 
+              \width[#__c_1] = \width[#__c_2]+\fs*2 
+              \resize | 1<<3 
+            EndIf 
+          EndIf  
+          
+          If Height <> #PB_Ignore 
+            If \height <> Height 
+              Change_height = height-\height 
+              \height = Height+Bool(\type=-1)*(\__height+\bs*2) 
+              \height[#__c_2] = height-Bool(\type<>-1)*(\__height+\bs*2) 
+              \height[#__c_1] = \height[#__c_2]+\fs*2 
+              \resize | 1<<4 
+              
+              If Bool(\type=-1)
+                Debug "resize window height "+\height +" "+ \height[#__c_2]
+              EndIf
+            EndIf 
+          EndIf 
+        EndIf
+        
+        ; Resize vertical&horizontal scrollbars
+        If (\scroll And \scroll\v And \scroll\h)
+          Bar::resizes(\scroll, 0,0, width-\bs*2, height-\bs*2-\__height)
+          
+          ;  Bar_SetAttribute(\scroll\h, #__bar_maximum, \scroll\width)
+          ;           ;Bar_resizes(\scroll, 0,0, \width[#__c_2],\height[#__c_2])
+          \width[#__c_2] = \scroll\h\bar\page\len
+          \height[#__c_2] = \scroll\v\bar\page\len
+          
+          ;           If StartDrawing(CanvasOutput(*this\root\canvas))
+          ;             _tree_items_update_(*this, *this\row\_s())
+          ;             StopDrawing()
+          ;           EndIf
+          
+        EndIf
+        
+        
+            
+            update(*this)
+            
+        
+        ; set clip coordinate
+        If Not (*this And *this = *this\root) And *this\parent 
+          Protected clip_v, clip_h, clip_x, clip_y, clip_width, clip_height
+          
+          If \parent\scroll 
+            If \parent\scroll\v : clip_v = Bool(\parent\width=\parent\width[#__c_4] And Not \parent\scroll\v\hide And \parent\scroll\v\type = #PB_GadgetType_ScrollBar)*\parent\scroll\v\width : EndIf
+            If \parent\scroll\h : clip_h = Bool(\parent\height=\parent\height[#__c_4] And Not \parent\scroll\h\hide And \parent\scroll\h\type = #PB_GadgetType_ScrollBar)*\parent\scroll\h\height : EndIf
+          EndIf
+          
+          clip_x = \parent\x[#__c_4]+Bool(\parent\x[#__c_4]<\parent\x+\parent\bs)*\parent\bs
+          clip_y = \parent\y[#__c_4]+Bool(\parent\y[#__c_4]<\parent\y+\parent\bs)*(\parent\bs+\parent\__height) 
+          clip_width = ((\parent\x[#__c_4]+\parent\width[#__c_4])-Bool((\parent\x[#__c_4]+\parent\width[#__c_4])>(\parent\x[#__c_2]+\parent\width[#__c_2]))*\parent\bs)-clip_v 
+          clip_height = ((\parent\y[#__c_4]+\parent\height[#__c_4])-Bool((\parent\y[#__c_4]+\parent\height[#__c_4])>(\parent\y[#__c_2]+\parent\height[#__c_2]))*\parent\bs)-clip_h 
+        EndIf
+        
+        If clip_x And \x < clip_x : \x[#__c_4] = clip_x : Else : \x[#__c_4] = \x : EndIf
+        If clip_y And \y < clip_y : \y[#__c_4] = clip_y : Else : \y[#__c_4] = \y : EndIf
+        If clip_width And (\x+\width) > clip_width : \width[#__c_4] = clip_width - \x[#__c_4] : Else : \width[#__c_4] = \width - (\x[#__c_4]-\x) : EndIf
+        If clip_height And (\y+\height) > clip_height : \height[#__c_4] = clip_height - \y[#__c_4] : Else : \height[#__c_4] = \height - (\y[#__c_4]-\y) : EndIf
+        
+        ; Debug ""+height+" "+\height[#__c_0]+" "+\height[#__c_1]+" "+\height[#__c_2]+" "+\height[#__c_3]+" "+\height[#__c_4]
+        
+        ;         ; Resize vertical&horizontal scrollbar
+        ;         If (\scroll And \scroll\v And \scroll\h)
+        ;           Bar_resizes(\scroll, 0,0, \width[#__c_2],\height[#__c_2])
+        ;           ;           If StartDrawing(CanvasOutput(*this\root\canvas))
+        ;           ;             _tree_items_update_(*this, *this\row\_s())
+        ;           ;             StopDrawing()
+        ;           ;           EndIf
+        ;           
+        ;         EndIf
+        ;         
+        ; Resize childrens
+        If \count\childrens
+          If \type = #PB_GadgetType_Splitter
+            _splitter_size_(*this)
+          Else
+            ForEach \childrens()
+              If \childrens()\align
+                If \childrens()\align\horizontal
+                  x = (\width[#__c_2] - (\childrens()\align\width+\childrens()\width))/2
+                ElseIf \childrens()\align\right And Not \childrens()\align\left
+                  x = \width[#__c_2] - \childrens()\align\width
+                Else
+                  If \x[#__c_2]
+                    x = (\childrens()\x-\x[#__c_2]) + Change_x 
+                  Else
+                    x = 0
+                  EndIf
+                EndIf
+                
+                If \childrens()\align\Vertical
+                  y = (\height[#__c_2] - (\childrens()\align\height+\childrens()\height))/2 
+                ElseIf \childrens()\align\bottom And Not \childrens()\align\top
+                  y = \height[#__c_2] - \childrens()\align\height
+                Else
+                  If \y[#__c_2]
+                    y = (\childrens()\y-\y[#__c_2]) + Change_y 
+                  Else
+                    y = 0
+                  EndIf
+                EndIf
+                
+                If \childrens()\align\top And \childrens()\align\bottom
+                  Height = \height[#__c_2] - \childrens()\align\height
+                Else
+                  Height = #PB_Ignore
+                EndIf
+                
+                If \childrens()\align\left And \childrens()\align\right
+                  Width = \width[#__c_2] - \childrens()\align\width
+                Else
+                  Width = #PB_Ignore
+                EndIf
+                
+                Resize(\childrens(), x, y, Width, Height)
+              Else
+                Resize(\childrens(), (\childrens()\x-\x[#__c_2]) + Change_x, (\childrens()\y-\y[#__c_2]) + Change_y, #PB_Ignore, #PB_Ignore)
+              EndIf
+            Next
+          EndIf
+        EndIf
+        
+;         ; anchors widgets
+;         If *this And (\root And \root\anchor And \root\anchor\widget = *this)
+;           a_resize(*this)
+;         EndIf
+;         
+        If \type = #PB_GadgetType_ScrollBar
+          ProcedureReturn \bar\hide
+          
+        ElseIf (Change_x Or Change_y Or Change_width Or Change_height)
+          ProcedureReturn 1
+        EndIf
+      EndWith
+    EndIf
+    
   EndProcedure
   
   Procedure.b Resizes(*scroll._S_scroll, X.l,Y.l,Width.l,Height.l )
@@ -1241,8 +1193,8 @@ Module bar
       iHeight = Height - Bool(Not \h\hide And \h\height) * \h\height
       iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width
       
-      If \v\width And \v\bar\page\len<>iHeight : SetAttribute(\v, #__Bar_PageLength, iHeight) : EndIf
-      If \h\height And \h\bar\page\len<>iWidth : SetAttribute(\h, #__Bar_PageLength, iWidth) : EndIf
+      If \v\width And \v\bar\page\len<>iHeight : bar::SetAttribute(\v, #__Bar_PageLength, iHeight) : EndIf
+      If \h\height And \h\bar\page\len<>iWidth : bar::SetAttribute(\h, #__Bar_PageLength, iWidth) : EndIf
       
       \v\hide = Resize(\v, Width+x-\v\width, y, #PB_Ignore, \v\bar\page\len)
       \h\hide = Resize(\h, x, Height+y-\h\height, \h\bar\page\len, #PB_Ignore)
@@ -1250,17 +1202,17 @@ Module bar
       iHeight = Height - Bool(Not \h\hide And \h\height) * \h\height
       iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width
       
-      If \v\bar\page\len<>iHeight : SetAttribute(\v, #__Bar_PageLength, iHeight) : EndIf
-      If \h\bar\page\len<>iWidth : SetAttribute(\h, #__Bar_PageLength, iWidth) : EndIf
+      If \v\bar\page\len<>iHeight : bar::SetAttribute(\v, #__Bar_PageLength, iHeight) : EndIf
+      If \h\bar\page\len<>iWidth : bar::SetAttribute(\h, #__Bar_PageLength, iWidth) : EndIf
       
-      If \v\bar\page\len <> \v\height : \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len) : EndIf
-      If \h\bar\page\len <> \h\width : \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, \h\bar\page\len, #PB_Ignore) : EndIf
+      If \v\bar\page\len <> \v\height : \v\hide = bar::Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len) : EndIf
+      If \h\bar\page\len <> \h\width : \h\hide = bar::Resize(\h, #PB_Ignore, #PB_Ignore, \h\bar\page\len, #PB_Ignore) : EndIf
       
       If Not \v\hide And \v\width 
-        \h\hide = Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x-\h\x) + Bool(\v\round And \h\round)*(\v\width/4), #PB_Ignore)
+        \h\hide = bar::Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x-\h\x) + Bool(\v\round And \h\round)*(\v\width/4), #PB_Ignore)
       EndIf
       If Not \h\hide And \h\height
-        \v\hide = Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y-\v\y) + Bool(\v\round And \h\round)*(\h\height/4))
+        \v\hide = bar::Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y-\v\y) + Bool(\v\round And \h\round)*(\h\height/4))
       EndIf
       
       ProcedureReturn #True
@@ -1327,7 +1279,7 @@ Module bar
   EndProcedure
   
   Procedure.b Bind(*callBack, *this._s_widget, eventtype.l=#PB_All)
-    *this\event = AllocateStructure(_s_event_)
+    *this\event = AllocateStructure(_s_event)
     *this\event\type = eventtype
     *this\event\callback = *callBack
   EndProcedure
@@ -1588,7 +1540,7 @@ Module bar
     ;     
   EndMacro
   
-  Procedure.b Draw_Scroll(*this._struct_)
+  Procedure.b Draw_Scroll(*this._s_widget)
     With *this
       
       If Not \hide And \color\alpha
@@ -1810,7 +1762,7 @@ Module bar
     EndWith 
   EndProcedure
   
-  Procedure.b Draw_progress(*this._struct_)
+  Procedure.b Draw_progress(*this._s_widget)
     *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
     *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
     
@@ -1823,7 +1775,7 @@ Module bar
     EndIf
   EndProcedure
   
-  Procedure.b Draw_track(*this._struct_)
+  Procedure.b Draw_track(*this._s_widget)
     *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
     *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
     *this\bar\button[#__b_3]\color\state = 2
@@ -1831,7 +1783,7 @@ Module bar
     Draw_Scroll(*this)
   EndProcedure
   
-  Procedure.i Draw_Spin(*this._struct_) 
+  Procedure.i Draw_Spin(*this._s_widget) 
     Draw_Scroll(*this)
     
     ; Draw string
@@ -1841,15 +1793,15 @@ Module bar
     EndIf
   EndProcedure
   
-  Procedure.b Draw_Splitter(*this._struct_)
+  Procedure.b Draw_Splitter(*this._s_widget)
     Protected Pos, Size, round.d = 2
     
     With *this
       If *this > 0
         DrawingMode(#PB_2DDrawing_Outlined)
         If \bar\mode
-          Protected *first._struct_ = \splitter\first
-          Protected *second._struct_ = \splitter\second
+          Protected *first._s_widget = \splitter\first
+          Protected *second._s_widget = \splitter\second
           
           If Not \splitter\g_first And (Not *first Or (*first And Not *first\splitter))
             Box(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
@@ -1883,7 +1835,7 @@ Module bar
     EndWith
   EndProcedure
   
-  Procedure.b draw(*this._struct_)
+  Procedure.b draw(*this._s_widget)
     With *this
       If *this
         If \text 
@@ -1935,8 +1887,8 @@ Module bar
   
   
   ;-
-  Procedure.i Bar(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scrollstep.f=1.0)
-    Protected *this._struct_ = AllocateStructure(_struct_)
+  Procedure.i create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scrollstep.f=1.0)
+    Protected *this._s_widget = AllocateStructure(_s_widget)
     
     With *this
       *event\widget = *this
@@ -2119,21 +2071,21 @@ Module bar
   EndProcedure
   
   Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=7)
-    Protected *this._struct_ = Bar(#PB_GadgetType_TrackBar, 15, Min, Max, 0, Flag|#__bar_nobuttons, round)
+    Protected *this._s_widget = create(#PB_GadgetType_TrackBar, 15, Min, Max, 0, Flag|#__bar_nobuttons, round)
     _set_last_parameters_(*this, *this\type, Flag, Root()\opened)
     Resize(*this, X,Y,Width,Height)
     ProcedureReturn *this
   EndProcedure
   
   Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0)
-    Protected *this._struct_ = Bar(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Flag|#__bar_nobuttons, round)
+    Protected *this._s_widget = create(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Flag|#__bar_nobuttons, round)
     _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
     Resize(*this, X,Y,Width,Height)
     ProcedureReturn *this
   EndProcedure
   
   Procedure.i Spin(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0, Increment.f=1.0)
-    Protected *this._struct_
+    Protected *this._s_widget
     If Flag&#__bar_vertical
       Flag&~#__bar_vertical
       ;Flag|#__bar_inverted
@@ -2146,7 +2098,7 @@ Module bar
       Flag|#__bar_inverted
     EndIf
     
-    *this = Bar(#PB_GadgetType_Spin, 16, Min, Max, 0, Flag, round, 0, Increment)
+    *this = create(#PB_GadgetType_Spin, 16, Min, Max, 0, Flag, round, 0, Increment)
     _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
     Resize(*this, X,Y,Width,Height)
     
@@ -2154,12 +2106,12 @@ Module bar
   EndProcedure
   
   Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
-    Protected *this._struct_
+    Protected *this._s_widget
     
     If (Bool(Flag & #PB_ScrollBar_Vertical = #PB_ScrollBar_Vertical) Or Bool(Flag & #__Bar_Vertical = #__Bar_Vertical))
-      *this = Bar(#PB_GadgetType_ScrollBar, width, Min, Max, PageLength, Flag, round)
+      *this = create(#PB_GadgetType_ScrollBar, width, Min, Max, PageLength, Flag, round)
     Else
-      *this = Bar(#PB_GadgetType_ScrollBar, height, Min, Max, PageLength, Flag, round)
+      *this = create(#PB_GadgetType_ScrollBar, height, Min, Max, PageLength, Flag, round)
     EndIf
     
     _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
@@ -2171,9 +2123,9 @@ Module bar
     Protected *this._s_widget 
     
     If Bool(Not Flag&#PB_Splitter_Vertical)
-      *this = Bar(#PB_GadgetType_Splitter, 7, 0, Height, 0, Flag|#__bar_nobuttons, 0)
+      *this = create(#PB_GadgetType_Splitter, 7, 0, Height, 0, Flag|#__bar_nobuttons, 0)
     Else
-      *this = Bar(#PB_GadgetType_Splitter, 7, 0, Width, 0, Flag|#__bar_nobuttons, 0)
+      *this = create(#PB_GadgetType_Splitter, 7, 0, Width, 0, Flag|#__bar_nobuttons, 0)
     EndIf
     
     _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
@@ -2576,5 +2528,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------------
+; Folding = ---+--z------b-4--------------0---------------------------
 ; EnableXP
