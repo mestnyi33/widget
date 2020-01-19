@@ -1,4 +1,8 @@
-﻿IncludePath "/Users/as/Documents/GitHub/Widget/widgets()"
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  IncludePath "/Users/as/Documents/GitHub/Widget/widgets()"
+  XIncludeFile "../fixme(mac).pbi"
+CompilerEndIf
+
 
 CompilerIf Not Defined(constants, #PB_Module)
   XIncludeFile "../constants.pbi"
@@ -20,7 +24,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
   UseModule structures
   
   Macro _get_colors_()
-    colors::this
+    colors::*this\grey
   EndMacro
   
   Macro Root()
@@ -31,6 +35,18 @@ CompilerIf Not Defined(Bar, #PB_Module)
     *event\widget
   EndMacro
   
+  Macro width(_this_)
+    (Bool(Not _this_\hide) * _this_\width)
+  EndMacro
+
+  Macro height(_this_)
+    (Bool(Not _this_\hide) * _this_\height)
+  EndMacro
+
+  Macro _is_scroll_(_this_)
+    Bool(_this_\parent And _this_\parent\scroll And (_this_\parent\scroll\v = _this_ Or _this_ = _this_\parent\scroll\h))
+  EndMacro
+  
   Macro _scrolled_(_this_, _pos_, _len_)
     Bool(Bool(((_pos_+_this_\bar\min)-_this_\bar\page\pos) < 0 And 
               Bar::SetState(_this_, (_pos_+_this_\bar\min))) Or
@@ -38,13 +54,35 @@ CompilerIf Not Defined(Bar, #PB_Module)
               Bar::SetState(_this_, (_pos_+_this_\bar\min)-(_this_\bar\page\len-(_len_)))))
   EndMacro
   
-  Macro _thumb_pos_(_bar_, _scroll_pos_)
-    (_bar_\area\pos + Round((_scroll_pos_-_bar_\min) * _bar_\increment, #PB_Round_Nearest)) 
-    ; (_bar_\area\pos + Round((_scroll_pos_-_bar_\min) * (_bar_\area\len / (_bar_\max-_bar_\min)), #PB_round_nearest)) 
+  Macro _get_scroll_pos_(_bar_, _thumb_pos_)
+    ; _bar_\increment = (_bar_\area\len / (_bar_\max-_bar_\min))
+    (_bar_\min + Round(((_thumb_pos_) - _bar_\area\pos) / _bar_\increment, #PB_Round_Nearest))
   EndMacro
   
-  Macro _thumb_len_(_bar_)
-    Round(_bar_\area\len - (_bar_\area\len / (_bar_\max-_bar_\min)) * ((_bar_\max-_bar_\min) - _bar_\page\len), #PB_Round_Nearest)
+  Macro _get_thumb_pos_(_bar_, _scroll_pos_)
+    ; _bar_\increment = (_bar_\area\len / (_bar_\max-_bar_\min))
+    (_bar_\area\pos + Round(((_scroll_pos_) - _bar_\min) * _bar_\increment, #PB_Round_Nearest)) 
+  EndMacro
+  
+  Macro _get_thumb_len_(_bar_)
+    ; _bar_\increment = (_bar_\area\len / (_bar_\max-_bar_\min))
+    Round(_bar_\area\len - _bar_\increment * ((_bar_\max-_bar_\min) - _bar_\page\len), #PB_Round_Nearest)
+  EndMacro
+  
+  Macro get_page_height(_scroll_, _round_ = 0)
+    (_scroll_\v\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\h\hide) * (_scroll_\h\height/4)) 
+  EndMacro
+  
+  Macro get_page_width(_scroll_, _round_ = 0)
+    (_scroll_\h\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\v\hide) * (_scroll_\v\width/4))
+  EndMacro
+  
+  Macro make_area_height(_scroll_, _width_, _height_)
+    (_height_ - (Bool((_scroll_\width > _width_) Or Not _scroll_\h\hide) * _scroll_\h\height)) 
+  EndMacro
+  
+  Macro make_area_width(_scroll_, _width_, _height_)
+    (_width_ - (Bool((_scroll_\height > _height_) Or Not _scroll_\v\hide) * _scroll_\v\width))
   EndMacro
   
   ; Then scroll bar start position
@@ -75,11 +113,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
   ;   ;- GLOBALs
   Declare.b Draw(*this)
   
-  Declare _pos_(*this, _scroll_pos_)
-  Declare.b update(*this)
-  Declare.b change(*bar, ScrollPos.f)
+  Declare.b Update(*this)
+  Declare.b Change(*bar, ScrollPos.f)
   Declare.b SetPos(*this, ThumbPos.i)
+  Declare   ThumbPos(*this, _scroll_pos_)
   
+  Declare.f GetState(*this)
   Declare.b SetState(*this, ScrollPos.f)
   Declare.l SetAttribute(*this, Attribute.l, Value.l)
   
@@ -354,8 +393,8 @@ Module bar
   EndMacro
   
   
-  Procedure _pos_(*this._s_widget, _scroll_pos_)
-    *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
+  Procedure ThumbPos(*this._s_widget, _scroll_pos_)
+    *this\bar\thumb\pos = _get_thumb_pos_(*this\bar, _scroll_pos_)
     
     If *this\bar\thumb\pos < *this\bar\area\pos 
       *this\bar\thumb\pos = *this\bar\area\pos 
@@ -632,7 +671,7 @@ Module bar
     ProcedureReturn *this\bar\thumb\pos
   EndProcedure
   
-  Procedure.b update(*this._s_widget)
+  Procedure.b Update(*this._s_widget)
     With *this
       If \bar\max >= \bar\page\len
         ; Get area screen coordinate 
@@ -656,7 +695,6 @@ Module bar
           ;           EndIf
         EndIf
         
-        Debug  \splitter
         If \splitter And Not (\splitter\g_first Or \splitter\g_second)
           If \splitter\fixed
             If \bar\area\len - \bar\button[#__b_3]\len > \splitter\fixed[\splitter\fixed] 
@@ -689,7 +727,7 @@ Module bar
         EndIf
         
         If \bar\area\len > \bar\button[#__b_3]\len
-          \bar\thumb\len = _thumb_len_(\bar)
+          \bar\thumb\len = _get_thumb_len_(\bar)
           
           If \bar\thumb\len > \bar\area\len 
             \bar\thumb\len = \bar\area\len 
@@ -724,7 +762,7 @@ Module bar
         If \bar\area\len 
           \bar\page\end = \bar\max - \bar\page\len
           \bar\increment = (\bar\area\len / (\bar\max - \bar\min))
-          \bar\thumb\pos = _pos_(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
+          \bar\thumb\pos = ThumbPos(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
           
           If #PB_GadgetType_ScrollBar = \type And \bar\thumb\pos = \bar\area\end And \bar\page\pos <> \bar\page\end And _in_stop_(\bar)
             ;    Debug " line-" + #PB_compiler_line +" "+  \bar\max 
@@ -739,13 +777,18 @@ Module bar
         
       If \type = #PB_GadgetType_ScrollBar
         \bar\hide = Bool(Not (\bar\max > \bar\page\len))
+          
+          If \bar\hide
+            \bar\page\pos = \bar\min
+            \bar\thumb\pos = ThumbPos(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
+          EndIf
       EndIf
       
       ProcedureReturn \bar\hide
     EndWith
   EndProcedure
   
-  Procedure.b change(*bar._s_bar, ScrollPos.f)
+  Procedure.b Change(*bar._s_bar, ScrollPos.f)
     With *bar
       If ScrollPos < \min 
         ScrollPos = \min 
@@ -787,8 +830,6 @@ Module bar
   EndProcedure
   
   Procedure.b SetPos(*this._s_widget, ThumbPos.i)
-    Protected ScrollPos.f, Result.b
-    
     With *this
       If \splitter And \splitter\fixed
         _area_pos_(*this)
@@ -800,27 +841,26 @@ Module bar
       If \bar\thumb\end <> ThumbPos 
         \bar\thumb\end = ThumbPos
         
-        ; from thumb pos get scroll pos 
         If \bar\area\end <> ThumbPos
-          ScrollPos = \bar\min + Round((ThumbPos - \bar\area\pos) / (\bar\area\len / (\bar\max-\bar\min)), #PB_Round_Nearest)
+          ProcedureReturn SetState(*this, _invert_(\bar, _get_scroll_pos_(\bar, ThumbPos), \bar\inverted))
         Else
-          ScrollPos = \bar\page\end
+          ProcedureReturn SetState(*this, _invert_(\bar, \bar\page\end, \bar\inverted))
         EndIf
-        
-        Result = SetState(*this, _invert_(*this\bar, ScrollPos, \bar\inverted))
       EndIf
     EndWith
-    
-    ProcedureReturn Result
   EndProcedure
   
+  Procedure.f GetState(*this._s_widget)
+    ProcedureReturn *this\bar\page\pos
+  EndProcedure
+    
   Procedure.b SetState(*this._s_widget, ScrollPos.f)
     Protected Result.b
     
     With *this
 
     If change(*this\bar, ScrollPos)
-        \bar\thumb\pos = _pos_(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
+        \bar\thumb\pos = ThumbPos(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
         
         If \splitter And \splitter\fixed = #__b_1
           \splitter\fixed[\splitter\fixed] = \bar\thumb\pos - \bar\area\pos
@@ -856,6 +896,7 @@ Module bar
             
             
         EndSelect
+        
       Else
         Select Attribute
           Case #__bar_minimum
@@ -883,7 +924,7 @@ Module bar
               Result = #True
             EndIf
             
-          Case #__bar_pageLength
+          Case #__bar_pagelength
             If \bar\page\len <> Value
               \bar\page\len = Value
               
@@ -898,10 +939,7 @@ Module bar
               Result = #True
             EndIf
             
-          Case #__bar_ScrollStep 
-            \bar\scrollstep = Value
-            
-          Case #__bar_buttonSize
+          Case #__bar_buttonsize
             If \bar\button[#__b_3]\len <> Value
               \bar\button[#__b_3]\len = Value
               
@@ -914,27 +952,26 @@ Module bar
             EndIf
             
           Case #__bar_inverted
-            If \bar\inverted <> Bool(Value)
-              \bar\inverted = Bool(Value)
-              ; \bar\thumb\pos = _bar_pos_(*this, _bar_invert_(*this, \bar\page\pos, \bar\inverted))
-              ;  \bar\thumb\pos = _bar_pos_(*this, \bar\page\pos)
-              ;  Result = 1
-            EndIf
+            \bar\inverted = Bool(Value)
+            
+          Case #__bar_scrollstep 
+            \bar\scrollstep = Value
             
         EndSelect
       EndIf
       
       If Result ; And \width And \height ; есть проблемы с imagegadget и scrollareagadget
         ;\bar\change = #True
-        ;\hide = Resize(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) 
-        update(*this)
+        ;Resize(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) 
+        \hide = update(*this)
       EndIf
     EndWith
     
     ProcedureReturn Result
   EndProcedure
   
-  Procedure.b resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
+  
+  Procedure.b Resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
     With *this
       If X <> #PB_Ignore : \x = X : EndIf 
       If Y <> #PB_Ignore : \y = Y : EndIf 
@@ -1177,49 +1214,84 @@ Module bar
     
   EndProcedure
   
-  Procedure.b Resizes(*scroll._S_scroll, X.l,Y.l,Width.l,Height.l )
-    ;     If Not (*scroll\v And *scroll\h)
-    ;       ProcedureReturn
-    ;     EndIf
-    
+  Procedure.b edit_Resizes(*scroll._s_scroll, X.l,Y.l,Width.l,Height.l)
     With *scroll
       Protected iHeight, iWidth
+      
+      If Not *scroll\v Or Not *scroll\h
+        ProcedureReturn
+      EndIf
       
       If y=#PB_Ignore : y = \v\y : EndIf
       If x=#PB_Ignore : x = \h\x : EndIf
       If Width=#PB_Ignore : Width = \v\x-\h\x+\v\width : EndIf
       If Height=#PB_Ignore : Height = \h\y-\v\y+\h\height : EndIf
       
-      iHeight = Height - Bool(Not \h\hide And \h\height) * \h\height
-      iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width
+      iHeight = Height - (Bool(Not \h\hide) * \h\height) + Bool(\v\bar\min<0) * \v\bar\min
+      iWidth = Width - (Bool(Not \v\hide) * \v\width) + Bool(\h\bar\min<0) * \h\bar\min 
       
-      If \v\width And \v\bar\page\len<>iHeight : bar::SetAttribute(\v, #__Bar_PageLength, iHeight) : EndIf
-      If \h\height And \h\bar\page\len<>iWidth : bar::SetAttribute(\h, #__Bar_PageLength, iWidth) : EndIf
-      
-      \v\hide = Resize(\v, Width+x-\v\width, y, #PB_Ignore, \v\bar\page\len)
-      \h\hide = Resize(\h, x, Height+y-\h\height, \h\bar\page\len, #PB_Ignore)
-      
-      iHeight = Height - Bool(Not \h\hide And \h\height) * \h\height
-      iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width
-      
-      If \v\bar\page\len<>iHeight : bar::SetAttribute(\v, #__Bar_PageLength, iHeight) : EndIf
-      If \h\bar\page\len<>iWidth : bar::SetAttribute(\h, #__Bar_PageLength, iWidth) : EndIf
-      
-      If \v\bar\page\len <> \v\height : \v\hide = bar::Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len) : EndIf
-      If \h\bar\page\len <> \h\width : \h\hide = bar::Resize(\h, #PB_Ignore, #PB_Ignore, \h\bar\page\len, #PB_Ignore) : EndIf
-      
-      If Not \v\hide And \v\width 
-        \h\hide = bar::Resize(\h, #PB_Ignore, #PB_Ignore, (\v\x-\h\x) + Bool(\v\round And \h\round)*(\v\width/4), #PB_Ignore)
+      If \v\bar\page\len <> iHeight 
+        bar::SetAttribute(\v, #__bar_pageLength, iHeight) 
       EndIf
-      If Not \h\hide And \h\height
-        \v\hide = bar::Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, (\h\y-\v\y) + Bool(\v\round And \h\round)*(\h\height/4))
+      If \h\bar\page\len <> iWidth 
+        bar::SetAttribute(\h, #__bar_pageLength, iWidth) 
+      EndIf
+      
+      \v\hide = bar::Resize(\v, Width+x-\v\width, y, #PB_Ignore, ((\h\y + Bool(\h\hide) * \h\height)-\v\y) + Bool(\v\round And \h\round And Not \h\hide)*(\h\height/4))
+      \h\hide = bar::Resize(\h, x, Height+y-\h\height, ((\v\x + Bool(\v\hide) * \v\width)-\h\x) + Bool(\v\round And \h\round And Not \v\hide)*(\v\width/4), #PB_Ignore)
+      
+;       iHeight = Height - Bool(Not \h\hide And \h\height) * \h\height + \v\bar\min
+;       iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width + \h\bar\min
+;       
+;       If \v\bar\page\len <> iHeight 
+;         bar::SetAttribute(\v, #__bar_pageLength, iHeight) 
+;       EndIf
+;       If \h\bar\page\len <> iWidth 
+;         bar::SetAttribute(\h, #__bar_pageLength, iWidth) 
+;       EndIf
+;       
+;       \v\hide = bar::Resize(\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, ((\h\y + Bool(\h\hide) * \h\height)-\v\y) + Bool(\v\round And \h\round And Not \h\hide)*(\h\height/4))
+;       \h\hide = bar::Resize(\h, #PB_Ignore, #PB_Ignore, ((\v\x + Bool(\v\hide) * \v\width)-\h\x) + Bool(\v\round And \h\round And Not \v\hide)*(\v\width/4), #PB_Ignore)
+     
+      ProcedureReturn #True
+    EndWith
+  EndProcedure
+  
+  Procedure.b edit2_Resizes(*scroll._s_scroll, X.l,Y.l,Width.l,Height.l)
+    With *scroll
+      Protected iHeight, iWidth
+      
+      If Not *scroll\v Or Not *scroll\h
+        ProcedureReturn
+      EndIf
+      
+      If y=#PB_Ignore : y = \v\y : EndIf
+      If x=#PB_Ignore : x = \h\x : EndIf
+      If Width=#PB_Ignore : Width = \v\x-\h\x+\v\width : EndIf
+      If Height=#PB_Ignore : Height = \h\y-\v\y+\h\height : EndIf
+           
+      Bar::SetAttribute(*scroll\v, #__bar_pagelength, make_area_height(*scroll, Width, Height))
+      *scroll\v\hide = Bar::Resize(*scroll\v, Width+x-*scroll\v\width, y, #PB_Ignore, get_page_height(*scroll, 1))
+      
+      Bar::SetAttribute(*scroll\h, #__bar_pagelength, make_area_width(*scroll, Width, Height))
+      *scroll\h\hide = Bar::Resize(*scroll\h, x, Height+y-*scroll\h\height, get_page_width(*scroll, 1), #PB_Ignore)
+      
+      If Bar::SetAttribute(*scroll\v, #__bar_pagelength, make_area_height(*scroll, Width, Height))
+        *scroll\v\hide = Bar::Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, get_page_height(*scroll, 1))
+      EndIf
+      
+      If Bar::SetAttribute(*scroll\h, #__bar_pagelength, make_area_width(*scroll, Width, Height))
+        *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, #PB_Ignore, get_page_width(*scroll, 1), #PB_Ignore)
       EndIf
       
       ProcedureReturn #True
     EndWith
   EndProcedure
   
-  Procedure.b _Resizes(*scroll._s_scroll, X.l,Y.l,Width.l,Height.l )
+  Procedure.b Resizes(*scroll._s_scroll, X.l,Y.l,Width.l,Height.l)
+    ProcedureReturn edit2_Resizes(*scroll, X,Y,Width,Height)
+    
+    
     With *scroll
       Protected iHeight, iWidth
       
@@ -1233,7 +1305,7 @@ Module bar
       If Height=#PB_Ignore : Height = \h\y-\v\y+\h\height : EndIf
       
       iHeight = Height - Bool(Not \h\hide And \h\height) * \h\height
-      iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width
+      iWidth = Width - Bool(Not \v\hide And \v\width) * \v\width 
       
       If \v\bar\page\len<>iHeight : SetAttribute(\v, #__bar_pageLength, iHeight) : EndIf
       If \h\bar\page\len<>iWidth : SetAttribute(\h, #__bar_pageLength, iWidth) : EndIf
@@ -1260,6 +1332,7 @@ Module bar
       ProcedureReturn #True
     EndWith
   EndProcedure
+  
   
   ;-
   Procedure.b Post(eventtype.l, *this._s_widget, item.l=#PB_All, *data=0)
@@ -1425,7 +1498,8 @@ Module bar
           EndIf
           
         Case #PB_EventType_LeftButtonDown
-          Macro _set_active_(_this_)
+          If *leave = *this And Not _is_scroll_(*this)
+            Macro _set_active_(_this_)
             If *event\active <> _this_
               If *event\active 
                 ;                 If *event\active\row\selected 
@@ -1445,8 +1519,7 @@ Module bar
             EndIf
           EndMacro
           
-          If *leave = *this
-            _set_active_(*this)
+           _set_active_(*this)
           EndIf
           
           If from = 0 And \bar\button[#__b_3]\interact 
@@ -1462,8 +1535,8 @@ Module bar
           If from >= 0 And *this = *leave
             Down = *this
             \from = from 
-            Debug *this
-            
+            ; Debug "  "+*this +"  "+ *this\parent +" - get parent bar()"
+          
             If \bar\button[from]\interact
               \bar\button[\from]\color\state = #__s_2
               
@@ -1540,6 +1613,7 @@ Module bar
     ;     
   EndMacro
   
+  ;-
   Procedure.b Draw_Scroll(*this._s_widget)
     With *this
       
@@ -1966,7 +2040,8 @@ Module bar
       EndIf
       
       If Type = #PB_GadgetType_ProgressBar
-        \bar\vertical = Bool(Flag & #PB_ProgressBar_Vertical = #PB_ProgressBar_Vertical)
+        \bar\vertical = Bool(Flag & #PB_ProgressBar_Vertical = #PB_ProgressBar_Vertical Or
+                            Bool(Flag & #__Bar_Vertical = #__Bar_Vertical))
         \bar\inverted = \bar\vertical
         
         ; \text = AllocateStructure(_s_text)
@@ -1984,7 +2059,7 @@ Module bar
       EndIf
       
       If Type = #PB_GadgetType_TrackBar
-        \bar\vertical = Bool(Flag & #PB_TrackBar_Vertical = #PB_TrackBar_Vertical)
+        \bar\vertical = Bool(Flag & #PB_TrackBar_Vertical = #PB_TrackBar_Vertical); Or Bool(Flag & #__Bar_Vertical = #__Bar_Vertical))
         \bar\inverted = \bar\vertical
         
         \bar\button[#__b_1]\interact = #False
@@ -2486,7 +2561,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Button_0 = Bar::Progress(0, 0, 0, 0, 0,100) ; No need to specify size or coordinates
     Button_1 = Bar::Progress(0, 0, 0, 0, 10, 100); No need to specify size or coordinates
     Button_2 = Bar::Spin(0, 0, 0, 0, 0,20)       ; as they will be sized automatically
-    Button_3 = Bar::Scroll(0, 0, 0, 0, 0, 100, 30, #__bar_vertical|#__bar_inverted) ; as they will be sized automatically
+    Button_3 = Bar::Progress(0, 0, 0, 0, 0, 100, 30) ; as they will be sized automatically
     
     Button_4 = Bar::Progress(0, 0, 0, 0, 40,100) ; as they will be sized automatically
     Button_5 = Bar::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
@@ -2528,5 +2603,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---+--z------b-4--------------0---------------------------
+; Folding = x9+vDAEgAAAAAA----8ff5+LAAA-Ag-+--PCAAQAAAAAAAAAAAAgHACAAAA0
 ; EnableXP

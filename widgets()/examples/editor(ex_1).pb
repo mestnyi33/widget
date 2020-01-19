@@ -11,8 +11,9 @@ XIncludeFile "string().pbi"
 
 UseModule editor
 UseModule constants
+UseModule structures
 
-Global *w._struct_, *w1
+Global *w._s_widget, *w1
 
 #MaxLines = 10
 
@@ -40,6 +41,7 @@ If OpenWindow(0, 0, 0, 316, 350, "EditorGadget", #PB_Window_SystemMenu | #PB_Win
    SetText(*w1, text)
   ;SetText(*w1, "The" + #LF$ + "quick" + #LF$ + "brown" + #LF$ + "fox" + #LF$ + "jumps" + #LF$ + "over" + #LF$ + "the" + #LF$ + "lazy" + #LF$ + "dog.")
    
+   SetActive(*w1)
    SetState(*w1, -1)
   
   AddWindowTimer(0, 0, 500)

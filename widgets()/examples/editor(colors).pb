@@ -1,12 +1,12 @@
 ﻿IncludePath "../"
-;XIncludeFile "editor().pb"
-XIncludeFile "editor.pb"
+XIncludeFile "editor().pbi"
 ;XIncludeFile "widgets().pbi"
 
 UseModule editor
 UseModule constants
+UseModule structures
 
-Global *w._struct_
+Global *w._s_widget
 
 If OpenWindow(0, 0, 0, 590, 300, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     EditorGadget(0, 10, 10, 280, 280)

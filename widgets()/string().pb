@@ -8,7 +8,7 @@ CompilerIf Not Defined(String, #PB_Module)
 DeclareModule String
   UseModule constants
   
-  Structure _struct_ Extends structures::_s_widget : EndStructure
+  Structure _s_widget Extends structures::_s_widget : EndStructure
   
   Macro GetText(_this_) : Editor::GetText(_this_) : EndMacro
   Macro SetText(_this_, _text_) : Editor::SetText(_this_, _text_) : EndMacro
@@ -18,7 +18,7 @@ EndDeclareModule
 
 Module String
   Procedure.i Widget(X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=#Null)
-    Protected *this._struct_ = editor::editor(X, Y, Width, Height, "", Flag)
+    Protected *this._s_widget = editor::editor(X, Y, Width, Height, "", Flag)
     
     *this\type = #PB_GadgetType_String
     *this\text\multiline = Bool(Flag&#__string_multiline)
@@ -34,7 +34,7 @@ Module String
   EndProcedure
   
   Procedure.i Gadget(Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s, Flag.i=#Null)
-    Protected result.i, *this._struct_
+    Protected result.i, *this._s_widget
     
     result = Editor::Gadget(Gadget, X, Y, Width, Height, Flag)
     
@@ -79,19 +79,19 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule String
   UseModule constants
   
-  Global *S_0._struct_
-  Global *S_1._struct_
-  Global *S_2._struct_
-  Global *S_3._struct_
-  Global *S_4._struct_
-  Global *S_5._struct_
-  Global *S_6._struct_
-  Global *S_7._struct_
-  Global *S_8._struct_
+  Global *S_0._s_widget
+  Global *S_1._s_widget
+  Global *S_2._s_widget
+  Global *S_3._s_widget
+  Global *S_4._s_widget
+  Global *S_5._s_widget
+  Global *S_6._s_widget
+  Global *S_7._s_widget
+  Global *S_8._s_widget
   
   ;   *this._const_
   ;   
-  ;   Debug *this;Structures::_s_widget ; String::_struct_; _struct_
+  ;   Debug *this;Structures::_s_widget ; String::_s_widget; _s_widget
   
   UsePNGImageDecoder()
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
@@ -209,5 +209,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --86-
+; Folding = --j6-
 ; EnableXP

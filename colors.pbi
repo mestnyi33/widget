@@ -1,9 +1,16 @@
 ﻿DeclareModule colors
-  UseModule Structures
+  Structure _s_color
+    grey.structures::_s_color
+    grey2.structures::_s_color
+    green.structures::_s_color
+    blue.structures::_s_color
+  EndStructure
   
-  Define this._s_color 
+  Define *this._s_color = AllocateStructure(_s_color)
   
-  With this                          
+  ;
+  ;- grey2 - (серые цвета)
+  With *this\grey2                         
     \state = 0
     \alpha[0] = 255
     \alpha[1] = 255
@@ -68,7 +75,19 @@
     ;                 \back[2] = $FF00B002
     ;                 \frame[2] = $FF23BE03
     
-    ;- Синие цвета
+    ; Цвета если отключили виджет
+    \front[3] = $FFBABABA
+    \fore[3] = $FFF6F6F6 
+    \back[3] = $FFE2E2E2 
+    \frame[3] = $FFCECECE
+  EndWith
+  
+  ;- blue - (синие цвета)
+  With *this\blue                        
+    \state = 0
+    \alpha[0] = 255
+    \alpha[1] = 255
+    
     ; Цвета по умолчанию
     \front[0] = $80000000
     \fore[0] = $FFF8F8F8 
@@ -94,8 +113,67 @@
     ;     \frame[2] = $FFE59B55
     
     
+    ; Цвета если отключили виджет
+    \front[3] = $FFBABABA
+    \fore[3] = $FFF6F6F6 
+    \back[3] = $FFE2E2E2 
+    \frame[3] = $FFCECECE
+  EndWith
+  
+  ;- green - (зеленые цвета)
+  With *this\green                          
+    \state = 0
+    \alpha[0] = 255
+    \alpha[1] = 255
     
+    ; Цвета по умолчанию
+    \front[0] = $FF000000
+    \fore[0] = $FFFFFFFF
+    \back[0] = $FFDAFCE1  
+    \frame[0] = $FF6AFF70 
     
+    ; Цвета если мышь на виджете
+    \front[1] = $FF000000
+    \fore[1] = $FFE7FFEC
+    \back[1] = $FFBCFFC5
+    \frame[1] = $FF46E064 ; $FF51AB50
+    
+    ; Цвета если нажали на виджет
+    \front[2] = $FFFEFEFE
+    \fore[2] = $FFC3FDB7
+    \back[2] = $FF00B002
+    \frame[2] = $FF23BE03
+    
+    ; Цвета если отключили виджет
+    \front[3] = $FFBABABA
+    \fore[3] = $FFFFFFFF
+    \back[3] = $FFDAFCE1  
+    \frame[3] = $CA6AFF70 
+  EndWith
+  
+  ;- grey - (серые цвета)
+  With *this\grey                          
+    \state = 0
+    \alpha[0] = 255
+    \alpha[1] = 255
+    
+    ; Цвета по умолчанию
+    \front[0] = $80000000
+    \fore[0] = $FFF6F6F6
+    \back[0] = $FFE8E8E8
+    \frame[0] = $FFBABABA
+    
+    ; Цвета если курсор на виджете
+    \front[1] = $80000000
+    \fore[1] = $FFF2F2F2 
+    \back[1] = $FFDCDCDC 
+    \frame[1] = $FFB0B0B0 
+    
+    ; Цвета если нажали на виджет
+    \front[2] = $FFFEFEFE
+    \fore[2] = $FFE2E2E2
+    \back[2] = $FFB4B4B4
+    \frame[2] = $FF6F6F6F
     
     ; Цвета если отключили виджет
     \front[3] = $FFBABABA
@@ -107,7 +185,6 @@ EndDeclareModule
 
 Module colors
 EndModule
-
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

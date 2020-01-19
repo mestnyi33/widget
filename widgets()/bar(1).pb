@@ -814,7 +814,7 @@ DeclareModule bar
   
   ;   ;- GLOBALs
   Global *event._s_event_ = AllocateStructure(_s_event_)
-  *event\colors = colors::colors 
+  *event\colors = colors::*this\green 
   
   Declare.b Draw(*this)
   

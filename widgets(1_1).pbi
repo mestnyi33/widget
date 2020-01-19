@@ -3,7 +3,7 @@
 ; RootGadget() > _gadget()
 ; RootWindow() > _window()
 
-; ; CompilerIf #PB_Compiler_OS = #PB_OS_macOS
+; ; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 ; ;     ; Addition of mk-soft
 ; ;   Procedure.i BlendColor_(Color1.i, Color2.i, Scale.i=50)
 ; ;     Define.i R1, G1, B1, R2, G2, B2
@@ -20,13 +20,13 @@
 ; ;             StrgEx()\Color\Front         = GetSysColor_(#COLOR_WINDOWTEXT)
 ; ;             StrgEx()\Color\Back          = GetSysColor_(#COLOR_WINDOW)
 ; ;             StrgEx()\Color\Focus         = GetSysColor_(#COLOR_HIGHLIGHT)
-; ;             StrgEx()\Color\Gadget        = GetSysColor_(#COLOR_mENU)
+; ;             StrgEx()\Color\Gadget        = GetSysColor_(#COLOR_MENU)
 ; ;             StrgEx()\Color\Button        = GetSysColor_(#COLOR_3DLIGHT)
 ; ;             StrgEx()\Color\Border        = GetSysColor_(#COLOR_WINDOWFRAME)
 ; ;             StrgEx()\Color\WordColor     = GetSysColor_(#COLOR_HOTLIGHT)
 ; ;             StrgEx()\Color\Highlight     = GetSysColor_(#COLOR_HIGHLIGHT)
 ; ;             StrgEx()\Color\HighlightText = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
-; ;           CompilerCase #PB_OS_macOS
+; ;           CompilerCase #PB_OS_MacOS
 ; ;             StrgEx()\Color\Front         = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor textColor"))
 ; ;             StrgEx()\Color\Back          = BlendColor_(OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor textBackgroundColor")), $FFFFFF, 80)
 ; ;             StrgEx()\Color\Focus         = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor keyboardFocusIndicatorColor"))
@@ -53,7 +53,7 @@ CompilerEndIf
 
 ;XIncludeFile "_struct_.pbi"
 
-; CompilerIf Not Defined(colors, #PB_module)
+; CompilerIf Not Defined(colors, #PB_Module)
 ;   XIncludeFile "colors.pbi"
 ; CompilerEndIf
 
@@ -338,16 +338,16 @@ CompilerIf Not Defined(DD, #PB_Module)
     
     Procedure.i EnableDrop(*this, Format.i, Actions.i, PrivateType.i=0)
       ; Format
-      ; #PB_drop_text    : Accept text on this gadget
-      ; #PB_drop_image   : Accept images on this gadget
-      ; #PB_drop_files   : Accept filenames on this gadget
-      ; #PB_drop_private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
+      ; #PB_Drop_text    : Accept text on this gadget
+      ; #PB_Drop_image   : Accept images on this gadget
+      ; #PB_Drop_files   : Accept filenames on this gadget
+      ; #PB_Drop_private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
       
       ; Actions
-      ; #PB_drag_none    : The Data format will Not be accepted on the gadget
-      ; #PB_drag_copy    : The Data can be copied
-      ; #PB_drag_move    : The Data can be moved
-      ; #PB_drag_link    : The Data can be linked
+      ; #PB_Drag_none    : The Data format will Not be accepted on the gadget
+      ; #PB_Drag_copy    : The Data can be copied
+      ; #PB_Drag_move    : The Data can be moved
+      ; #PB_Drag_link    : The Data can be linked
       
       If AddMapElement(*Drop(), Hex(*this))
         Debug "Enable drop - " + *this
@@ -1399,6 +1399,90 @@ Module Widget
       a_add(_this_)
       a_Set(_this_)
       
+    EndIf
+    
+  EndMacro
+  
+  Macro _set_text_flag_(_this_, _flag_, _x_=0, _y_=0)
+    ;     If Not _this_\text
+    ;       _this_\text = AllocateStructure(_s_text)
+    ;     EndIf
+    
+    If _this_\text
+      _this_\text\x = _x_
+      _this_\text\y = _y_
+      ; _this_\text\padding = 5
+      _this_\text\change = #True
+      
+      _this_\text\editable = Bool(Not constants::_check_(_flag_, #__text_readonly))
+      _this_\text\lower = constants::_check_(_flag_, #__text_lowercase)
+      _this_\text\upper = constants::_check_(_flag_, #__text_uppercase)
+      _this_\text\pass = constants::_check_(_flag_, #__text_password)
+      
+      If constants::_check_(_flag_, #__align_text)
+        _this_\text\align\top = constants::_check_(_flag_, #__text_top)
+        _this_\text\align\left = constants::_check_(_flag_, #__text_left)
+        _this_\text\align\right = constants::_check_(_flag_, #__text_right)
+        _this_\text\align\bottom = constants::_check_(_flag_, #__text_bottom)
+        
+        If constants::_check_(_flag_, #__text_center)
+          _this_\text\align\horizontal = Bool(Not _this_\text\align\right And Not _this_\text\align\left)
+          _this_\text\align\vertical = Bool(Not _this_\text\align\bottom And Not _this_\text\align\top)
+        EndIf
+      EndIf
+      
+      If constants::_check_(_flag_, #__text_wordwrap)
+        _this_\text\multiLine =- 1
+      ElseIf constants::_check_(_flag_, #__text_multiline)
+        _this_\text\multiLine = 1
+      Else
+        _this_\text\multiLine = 0 
+      EndIf
+      
+      If constants::_check_(_flag_, #__text_invert)
+        _this_\text\Rotate = Bool(_this_\vertical)*270 + Bool(Not _this_\vertical)*180
+      Else
+        _this_\text\Rotate = Bool(_this_\vertical)*90
+      EndIf
+      
+      If _this_\type = #PB_GadgetType_Editor Or
+         _this_\type = #PB_GadgetType_String
+        
+        _this_\color\fore = 0
+        _this_\text\caret\pos[1] =- 1
+        _this_\text\caret\pos[2] =- 1
+        _this_\cursor = #PB_Cursor_IBeam
+        
+        If _this_\text\editable
+          _this_\text\caret\width = 1
+          _this_\color\back[0] = $FFFFFFFF 
+        Else
+          _this_\color\back[0] = $FFF0F0F0  
+        EndIf
+      EndIf
+      
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+        ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
+        ;                     \text\fontID = GetGadgetFont(TextGadget) 
+        ;                     FreeGadget(TextGadget)
+        ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
+        ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
+        ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
+        
+        ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
+        ;\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
+        _this_\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
+        ;
+        ;           \text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
+        ;           CocoaMessage(@FontSize, \text\fontID, "pointSize")
+        ;           
+        ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
+        
+        ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, \text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
+        
+      CompilerElse
+        _this_\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
+      CompilerEndIf
     EndIf
     
   EndMacro
@@ -2686,7 +2770,7 @@ Module Widget
   
   ;-
   ;- Anchors
-  Macro a_draw(_this_)
+  Macro a_Draw(_this_)
     If _this_\root\anchor
       DrawingMode(#PB_2DDrawing_Outlined)
       If _this_\root\anchor\id[1] : Box(_this_\root\anchor\id[1]\x, _this_\root\anchor\id[1]\y, _this_\root\anchor\id[1]\width, _this_\root\anchor\id[1]\height ,_this_\root\anchor\id[1]\color[_this_\root\anchor\id[1]\color\state]\frame) : EndIf
@@ -3738,107 +3822,6 @@ Module Widget
   EndProcedure
   
   ;-
-  Procedure   _draw_text_(*this._s_widget)
-    ; draw text
-    If *this\text\string
-      ForEach *this\row\_s()
-        If *this\row\_s()\text\string
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawRotatedText(*this\row\_s()\text\x+*this\scroll\x, *this\row\_s()\text\y+*this\scroll\y, *this\row\_s()\text\string, *this\text\rotate, *this\color\front[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
-        EndIf
-      Next
-    EndIf
-  EndProcedure
-  
-  Procedure   Draw_button(*this._s_widget)
-    With *this
-      Protected State = \color\state
-      Protected Alpha = \color\alpha<<24
-      
-      ;       ; Draw image
-      ;       If \image\handle
-      ;         DrawingMode(#PB_2DDrawing_transparent|#PB_2DDrawing_alphaBlend)
-      ;         DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
-      ;       EndIf
-      ;       
-      ;       ; Draw string
-      ;       If *this\text\string
-      ;         DrawingMode(#PB_2DDrawing_transparent|#PB_2DDrawing_alphaBlend)
-      ;         DrawRotatedText(*this\text\x, *this\text\y, *this\text\string, *this\text\rotate, \color\front[State]&$FFFFFF|Alpha)
-      ;       EndIf
-      
-      
-    EndWith 
-    
-    ; draw text
-    If *this\text\string
-      _draw_text_(*this)
-    EndIf
-  EndProcedure
-  
-  Procedure   _draw_hyperlink_(*this._s_widget)
-    ; draw text
-    If *this\text\string
-      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-      _draw_text_(*this)
-      
-      If *this\flag\lines
-        Line(*this\text\x, *this\text\y+*this\text\height-2, *this\text\width, 1, *this\color\front[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
-      EndIf
-    EndIf
-  EndProcedure
-  
-  Procedure   _draw_checkbox_(*this._s_widget)
-    ; draw box background
-    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-    RoundBox(*this\check_box\x,*this\check_box\y,*this\check_box\width,*this\check_box\height, *this\round, *this\round, *this\color\back&$FFFFFF|*this\color\alpha<<24)
-    
-    ; draw box frame
-    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-    RoundBox(*this\check_box\x,*this\check_box\y,*this\check_box\width,*this\check_box\height, *this\round, *this\round, *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
-    
-    ; draw box state
-    If *this\check_box\checked = #PB_Checkbox_Checked
-      Protected i.i
-      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      For i = 0 To 2
-        LineXY((*this\check_box\x+3),(i+*this\check_box\y+8),(*this\check_box\x+7),(i+*this\check_box\y+9), *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24) 
-        LineXY((*this\check_box\x+10+i),(*this\check_box\y+3),(*this\check_box\x+6+i),(*this\check_box\y+10), *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
-      Next
-      
-    ElseIf *this\check_box\checked = #PB_Checkbox_Inbetween
-      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      RoundBox( *this\check_box\x+2,*this\check_box\y+2,*this\check_box\width-4,*this\check_box\height-4, *this\round-2, *this\round-2, *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
-    EndIf
-    
-    ; draw text
-    If *this\text\string
-      _draw_text_(*this)
-    EndIf
-  EndProcedure
-  
-  Procedure   _draw_option_(*this._s_widget)
-    ; draw circle background
-    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-    RoundBox(*this\option_box\x, *this\option_box\y, *this\option_box\width, *this\option_box\width, *this\round, *this\round, *this\color\back&$FFFFFF|*this\color\alpha<<24)
-    
-    ; draw circle frame
-    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-    Circle(*this\option_box\x+*this\round, *this\option_box\y+*this\round, *this\round, *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
-    
-    ; draw circle state
-    If *this\option_box\checked > 0
-      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      Circle(*this\option_box\x+*this\round, *this\option_box\y+*this\round, 2, *this\color\frame[*this\color\state]&$FFFFFFFF|*this\color\alpha<<24)
-    EndIf
-    
-    ; draw text
-    If *this\text\string
-      _draw_text_(*this)
-    EndIf
-  EndProcedure
-  
-  ;-
   Procedure.b Draw_Scroll(*this._s_widget)
     With *this
       
@@ -3974,7 +3957,7 @@ Module Widget
           
           ;           If \bar\button[#__b_3]\len
           ;             If \bar\vertical
-          ;               DrawingMode(#PB_2DDrawing_default)
+          ;               DrawingMode(#PB_2DDrawing_Default)
           ;               Box(\bar\button[#__b_3]\x,\bar\button[#__b_3]\y,\bar\button[#__b_3]\width/2,\bar\button[#__b_3]\height,\bar\button[#__b_3]\color\back[_state_3_])
           ;               
           ;               Line(\bar\button[#__b_3]\x,\bar\button[#__b_3]\y,1,\bar\button[#__b_3]\height,\bar\button[#__b_3]\color\frame[_state_3_])
@@ -3984,7 +3967,7 @@ Module Widget
           ;               Line(\bar\button[#__b_3]\x+\bar\button[#__b_3]\width/2,\bar\button[#__b_3]\y+\bar\button[#__b_3]\height-1,\bar\button[#__b_3]\width/2,-\bar\button[#__b_3]\height/2-1,\bar\button[#__b_3]\color\frame[_state_3_])
           ;               
           ;             Else
-          ;               DrawingMode(#PB_2DDrawing_default)
+          ;               DrawingMode(#PB_2DDrawing_Default)
           ;               Box(\bar\button[#__b_3]\x,\bar\button[#__b_3]\y,\bar\button[#__b_3]\width,\bar\button[#__b_3]\height/2,\bar\button[#__b_3]\color\back[_state_3_])
           ;               
           ;               Line(\bar\button[#__b_3]\x,\bar\button[#__b_3]\y,\bar\button[#__b_3]\width,1,\bar\button[#__b_3]\color\frame[_state_3_])
@@ -3999,7 +3982,7 @@ Module Widget
         
         If \type = #PB_GadgetType_ProgressBar 
           
-          ;           DrawingMode(#PB_2DDrawing_default|#PB_2DDrawing_alphaBlend)
+          ;           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_alphaBlend)
           ;           RoundBox(\bar\thumb\pos-1-\bar\button[#__b_2]\round,\bar\button[#__b_1]\y,1+\bar\button[#__b_2]\round,\bar\button[#__b_1]\height,
           ;                    \bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
           ;           RoundBox(\bar\thumb\pos+\bar\button[#__b_2]\round,\bar\button[#__b_1]\y,1+\bar\button[#__b_2]\round,\bar\button[#__b_1]\height,
@@ -4067,9 +4050,10 @@ Module Widget
     
     Draw_Scroll(*this)
     
-    ; draw text
-    If *this\text\string
-      _draw_text_(*this)
+    ; Draw string
+    If *this\text And *this\text\string
+      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+      DrawRotatedText(*this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\bar\button[#__b_3]\color\frame[*this\bar\button[#__b_3]\color\state])
     EndIf
   EndProcedure
   
@@ -4084,9 +4068,10 @@ Module Widget
   Procedure.i Draw_Spin(*this._s_widget) 
     Draw_Scroll(*this)
     
-    ; draw text
-    If *this\text\string
-      _draw_text_(*this)
+    ; Draw string
+    If *this\text And *this\text\string
+      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+      DrawRotatedText(*this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[*this\color\state])
     EndIf
   EndProcedure
   
@@ -4136,9 +4121,9 @@ Module Widget
   ;-
   Procedure.i Draw_frame(*this._s_widget)
     With *this 
-      ; draw text
-      If *this\text\string
-        _draw_text_(*this)
+      If \text\string.s
+        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+        DrawText(\text\x, \text\y, \text\string.s, \color\front&$FFFFFF|\color\alpha<<24)
       EndIf
       
       ; 1 - frame
@@ -5081,6 +5066,107 @@ Module Widget
   EndProcedure
   
   ;-
+  Procedure   _draw_text_(*this._s_widget)
+    ; draw text
+    If *this\text\string
+      ForEach *this\row\_s()
+        If *this\row\_s()\text\string
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawRotatedText(*this\row\_s()\text\x+*this\scroll\x, *this\row\_s()\text\y+*this\scroll\y, *this\row\_s()\text\string, *this\text\rotate, *this\color\front[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+        EndIf
+      Next
+    EndIf
+  EndProcedure
+  
+  Procedure   Draw_button(*this._s_widget)
+    With *this
+      Protected State = \color\state
+      Protected Alpha = \color\alpha<<24
+      
+      ;       ; Draw image
+      ;       If \image\handle
+      ;         DrawingMode(#PB_2DDrawing_transparent|#PB_2DDrawing_alphaBlend)
+      ;         DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
+      ;       EndIf
+      ;       
+      ;       ; Draw string
+      ;       If *this\text\string
+      ;         DrawingMode(#PB_2DDrawing_transparent|#PB_2DDrawing_alphaBlend)
+      ;         DrawRotatedText(*this\text\x, *this\text\y, *this\text\string, *this\text\rotate, \color\front[State]&$FFFFFF|Alpha)
+      ;       EndIf
+      
+      
+    EndWith 
+    
+    ; draw text
+    If *this\text\string
+      _draw_text_(*this)
+    EndIf
+  EndProcedure
+  
+  Procedure   _draw_hyperlink_(*this._s_widget)
+    ; draw text
+    If *this\text\string
+      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+      _draw_text_(*this)
+      
+      If *this\flag\lines
+        Line(*this\text\x, *this\text\y+*this\text\height-2, *this\text\width, 1, *this\color\front[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+      EndIf
+    EndIf
+  EndProcedure
+  
+  Procedure   _draw_checkbox_(*this._s_widget)
+    ; draw box background
+    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+    RoundBox(*this\check_box\x,*this\check_box\y,*this\check_box\width,*this\check_box\height, *this\round, *this\round, *this\color\back&$FFFFFF|*this\color\alpha<<24)
+    
+    ; draw box frame
+    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+    RoundBox(*this\check_box\x,*this\check_box\y,*this\check_box\width,*this\check_box\height, *this\round, *this\round, *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+    
+    ; draw box state
+    If *this\check_box\checked = #PB_Checkbox_Checked
+      Protected i.i
+      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+      For i = 0 To 2
+        LineXY((*this\check_box\x+3),(i+*this\check_box\y+8),(*this\check_box\x+7),(i+*this\check_box\y+9), *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24) 
+        LineXY((*this\check_box\x+10+i),(*this\check_box\y+3),(*this\check_box\x+6+i),(*this\check_box\y+10), *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+      Next
+      
+    ElseIf *this\check_box\checked = #PB_Checkbox_Inbetween
+      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+      RoundBox( *this\check_box\x+2,*this\check_box\y+2,*this\check_box\width-4,*this\check_box\height-4, *this\round-2, *this\round-2, *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+    EndIf
+    
+    ; draw text
+    If *this\text\string
+      _draw_text_(*this)
+    EndIf
+  EndProcedure
+  
+  Procedure   _draw_option_(*this._s_widget)
+    ; draw circle background
+    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+    RoundBox(*this\option_box\x, *this\option_box\y, *this\option_box\width, *this\option_box\width, *this\round, *this\round, *this\color\back&$FFFFFF|*this\color\alpha<<24)
+    
+    ; draw circle frame
+    DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+    Circle(*this\option_box\x+*this\round, *this\option_box\y+*this\round, *this\round, *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+    
+    ; draw circle state
+    If *this\option_box\checked > 0
+      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+      Circle(*this\option_box\x+*this\round, *this\option_box\y+*this\round, 2, *this\color\frame[*this\color\state]&$FFFFFFFF|*this\color\alpha<<24)
+    EndIf
+    
+    ; draw text
+    If *this\text\string
+      _draw_text_(*this)
+    EndIf
+  EndProcedure
+  
+  ;-
   Macro _resize_panel_(_this_, _bar_button_, _pos_)
     If _bar_in_start_(_this_\tab\bar)
       _this_\tab\bar\button[#__b_1]\width = 0
@@ -5387,124 +5473,38 @@ Module Widget
   
   
   ;-
-  Macro _set_text_flag_(_this_, _flag_, _x_=0, _y_=0)
-    ;     If Not _this_\text
-    ;       _this_\text = AllocateStructure(_s_text)
-    ;     EndIf
-    
-    If _this_\text
-      _this_\text\x = _x_
-      _this_\text\y = _y_
-      ; _this_\text\padding = 5
-      _this_\text\change = #True
-      
-      _this_\text\editable = Bool(Not constants::_check_(_flag_, #__text_readonly))
-      _this_\text\lower = constants::_check_(_flag_, #__text_lowercase)
-      _this_\text\upper = constants::_check_(_flag_, #__text_uppercase)
-      _this_\text\pass = constants::_check_(_flag_, #__text_password)
-      _this_\text\invert = constants::_check_(_flag_, #__text_invert)
-      
-      If constants::_check_(_flag_, #__align_text)
-        _this_\text\align\top = constants::_check_(_flag_, #__text_top)
-        _this_\text\align\left = constants::_check_(_flag_, #__text_left)
-        _this_\text\align\right = constants::_check_(_flag_, #__text_right)
-        _this_\text\align\bottom = constants::_check_(_flag_, #__text_bottom)
-        
-        If constants::_check_(_flag_, #__text_center)
-          _this_\text\align\horizontal = Bool(Not _this_\text\align\right And Not _this_\text\align\left)
-          _this_\text\align\vertical = Bool(Not _this_\text\align\bottom And Not _this_\text\align\top)
-        EndIf
-      EndIf
-      
-      If constants::_check_(_flag_, #__text_wordwrap)
-        _this_\text\multiLine =- 1
-      ElseIf constants::_check_(_flag_, #__text_multiline)
-        _this_\text\multiLine = 1
-      Else
-        _this_\text\multiLine = 0 
-      EndIf
-      
-      If _this_\text\invert 
-        _this_\text\Rotate = Bool(_this_\vertical)*270 + Bool(Not _this_\vertical)*180
-      Else
-        _this_\text\Rotate = Bool(_this_\vertical)*90
-      EndIf
-      
-      If _this_\type = #PB_GadgetType_Editor Or
-         _this_\type = #PB_GadgetType_String
-        
-        _this_\color\fore = 0
-        _this_\text\caret\pos[1] =- 1
-        _this_\text\caret\pos[2] =- 1
-        _this_\cursor = #PB_Cursor_IBeam
-        
-        If _this_\text\editable
-          _this_\text\caret\width = 1
-          _this_\color\back[0] = $FFFFFFFF 
-        Else
-          _this_\color\back[0] = $FFF0F0F0  
-        EndIf
-      EndIf
-      
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
-        ;                     \text\fontID = GetGadgetFont(TextGadget) 
-        ;                     FreeGadget(TextGadget)
-        ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
-        ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
-        ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
-        
-        ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
-        ;\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
-        _this_\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
-        ;
-        ;           \text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
-        ;           CocoaMessage(@FontSize, \text\fontID, "pointSize")
-        ;           
-        ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
-        
-        ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, \text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
-        
-      CompilerElse
-        _this_\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-      CompilerEndIf
-    EndIf
-    
-  EndMacro
-  
   Macro _make_line_pos_(_this_, _len_)
     _this_\row\_s()\text\len = _len_
     _this_\row\_s()\text\pos = _this_\text\pos
     _this_\text\pos + _this_\row\_s()\text\len + 1 ; Len(#LF$)
   EndMacro
   
-  Macro _make_line_x_(_this_, _scroll_width_)
+  Macro _make_line_x_(_this_)
     If _this_\vertical
       If _this_\text\rotate = 90
-        _this_\row\_s()\text\x = _x_ + _this_y_ - Bool(#PB_Compiler_OS <> #PB_OS_Windows)
+        _this_\row\_s()\text\x = _x_ + (_this_\scroll\width - _this_\text\x*2)
         
       ElseIf _this_\text\rotate = 270
-        _this_\row\_s()\text\x = _x_ + (_scroll_width_ - _this_y_) + Bool(#PB_Compiler_OS <> #PB_OS_Windows)
-        
+        _this_\row\_s()\text\x = _x_ + (_width_ - (_this_\scroll\width - _this_\text\x*2))
       EndIf
       
     Else
       If _this_\text\rotate = 0
         If _this_\text\align\right
-          _this_\row\_s()\text\x = _x_ + (_scroll_width_ - _this_\row\_s()\text\width) 
+          _this_\row\_s()\text\x = _x_ + (_width_ - _this_\row\_s()\text\width - _this_\text\align\width - _this_\text\padding) 
         ElseIf _this_\text\align\horizontal
-          _this_\row\_s()\text\x = _x_ + (_scroll_width_ - _this_\row\_s()\text\width)/2
+          _this_\row\_s()\text\x = _x_ + (_width_ +  _this_\text\align\width - _this_\row\_s()\text\width)/2
         Else
-          _this_\row\_s()\text\x = _x_
+          _this_\row\_s()\text\x = _x_ +  _this_\text\align\width + _this_\text\padding
         EndIf
         
       ElseIf _this_\text\rotate = 180
         If _this_\text\align\right
-          _this_\row\_s()\text\x = _x_ + _scroll_width_
+          _this_\row\_s()\text\x = _x_ + _width_ - _this_\text\padding 
         ElseIf _this_\text\align\horizontal
-          _this_\row\_s()\text\x = _x_ + (_scroll_width_ + _this_\row\_s()\text\width)/2 
+          _this_\row\_s()\text\x = _x_ + (_width_ +  _this_\text\align\width + _this_\row\_s()\text\width)/2 
         Else
-          _this_\row\_s()\text\x = _x_ + _this_\row\_s()\text\width 
+          _this_\row\_s()\text\x = _x_ +  _this_\text\align\width + _this_\row\_s()\text\width + _this_\text\padding 
         EndIf
         
       EndIf
@@ -5512,34 +5512,34 @@ Module Widget
     
   EndMacro
   
-  Macro _make_line_y_(_this_, _scroll_height_)
+  Macro _make_line_y_(_this_)
     If _this_\vertical
       If _this_\text\rotate = 90
         If _this_\text\align\bottom
-          _this_\row\_s()\text\y = _y_ + _scroll_height_ 
+          _this_\row\_s()\text\y = _y_ + _height_ - _this_\text\padding - _this_\text\align\height
         ElseIf _this_\text\align\vertical
-          _this_\row\_s()\text\y = _y_ + (_scroll_height_ + _this_\row\_s()\text\width)/2
+          _this_\row\_s()\text\y = _y_ + (_height_ + _this_\row\_s()\text\width + _this_\text\align\height)/2
         Else
-          _this_\row\_s()\text\y = _y_ + _this_\row\_s()\text\width
+          _this_\row\_s()\text\y = _y_ + _this_\row\_s()\text\width + _this_\text\padding + _this_\text\align\height
         EndIf
         
       ElseIf _this_\text\rotate = 270
         If _this_\text\align\bottom
-          _this_\row\_s()\text\y = _y_ + ((_scroll_height_ - _this_\row\_s()\text\width) ) 
+          _this_\row\_s()\text\y = _y_ + (_height_ - _this_\row\_s()\text\width - _this_\text\align\height - _this_\text\padding) 
         ElseIf _this_\text\align\vertical
-          _this_\row\_s()\text\y = _y_ + (_scroll_height_ - _this_\row\_s()\text\width)/2 
+          _this_\row\_s()\text\y = _y_ + (_height_ - _this_\row\_s()\text\width + _this_\text\align\height)/2 
         Else
-          _this_\row\_s()\text\y = _y_
+          _this_\row\_s()\text\y = _y_ + _this_\text\padding  + _this_\text\align\height
         EndIf
         
       EndIf
       
     Else
       If _this_\text\rotate = 0
-        _this_\row\_s()\text\y = _y_ + _this_y_ - Bool(#PB_Compiler_OS <> #PB_OS_Windows)
+        _this_\row\_s()\text\y = _y_ + (_this_\scroll\height - _this_\text\y*2)
         
       ElseIf _this_\text\rotate = 180
-        _this_\row\_s()\text\y = _y_ + (_scroll_height_ - _this_y_) + Bool(#PB_Compiler_OS <> #PB_OS_Windows)
+        _this_\row\_s()\text\y = _y_ + (_height_ - (_this_\scroll\height - _this_\text\y*2))
         
       EndIf
     EndIf
@@ -5548,65 +5548,68 @@ Module Widget
   
   Macro _make_scroll_x_(_this_)
     If _this_\text\align\right
-      _this_\scroll\x = (((_this_\width - _this_\bs*2) - _this_\scroll\align\right - _this_\text\padding) - _this_\scroll\width)
+      _this_\scroll\x = (((_this_\width - _this_\bs*2) - _this_\text\align\width - _this_\text\padding) - _this_\scroll\width)
     ElseIf _this_\text\align\horizontal
-      _this_\scroll\x = (((_this_\width - _this_\bs*2) + _this_\scroll\align\left - _this_\scroll\align\right) - _this_\scroll\width + Bool(_this_\scroll\width % 2))/2 
+      _this_\scroll\x = (((_this_\width - _this_\bs*2) + _this_\text\align\width) - _this_\scroll\width + Bool(_this_\scroll\width % 2))/2 
     Else
-      _this_\scroll\x = _this_\text\padding + _this_\scroll\align\left
-    EndIf
-    
-    If *this\scroll\x < 0
-      *this\scroll\x = _this_\scroll\align\left
+      _this_\scroll\x = _this_\text\padding + _this_\text\align\width
     EndIf
   EndMacro
   
   Macro _make_scroll_y_(_this_)
     If _this_\text\align\bottom
-      _this_\scroll\y = (((_this_\height - _this_\bs*2) - _this_\scroll\align\bottom - _this_\text\padding) - _this_\scroll\height) 
+      _this_\scroll\y = (((_this_\height - _this_\bs*2) - _this_\text\align\height - _this_\text\padding) - _this_\scroll\height) 
     ElseIf _this_\text\align\vertical
-      _this_\scroll\y = ((((_this_\height - _this_\bs*2) + _this_\scroll\align\top - _this_\scroll\align\bottom) - _this_\scroll\height + Bool(_this_\scroll\height % 2))/2)
+      _this_\scroll\y = (((_this_\height - _this_\bs*2) + _this_\text\align\height - _this_\scroll\height + Bool(_this_\scroll\height % 2))/2)
     Else
-      _this_\scroll\y = _this_\text\padding + _this_\scroll\align\top
-    EndIf
-    
-    If *this\scroll\y < 0
-      *this\scroll\y = _this_\scroll\align\top
+      _this_\scroll\y = _this_\text\padding + _this_\text\align\height
     EndIf
   EndMacro
   
-  Macro _make_scroll_height_(_this_, _height_)
+  ;     Macro _make_scroll_y_(_this_)
+  ;     If _this_\text\align\bottom
+  ;       _this_\scroll\y = ((_this_\height - _this_\bs*2 - _this_\text\y*2 - _this_\flag\gridlines*2) - (_this_\text\height*_this_\count\items)) 
+  ;       
+  ;     ElseIf _this_\text\align\vertical
+  ;       _this_\scroll\y = (((_this_\height - _this_\bs*2 -_this_\text\y*2) - (_this_\text\height*_this_\count\items))/2)
+  ;       
+  ;     Else
+  ;       _this_\scroll\y = 0
+  ;     EndIf
+  ;   EndMacro
+  
+  Macro _make_scroll_height_(_this_)
     If _this_\vertical
-      _this_\scroll\width + _height_ + _this_\flag\gridlines
+      _this_\scroll\width + _this_\row\_s()\height + _this_\flag\gridlines
     Else
-      _this_\scroll\height + _height_ + _this_\flag\gridlines
+      _this_\scroll\height + _this_\row\_s()\height + _this_\flag\gridlines
     EndIf
     
     If _this_\scroll\v And 
-       _this_\scroll\v\bar\scrollstep <> _height_ + Bool(_this_\flag\gridlines)
-      _this_\scroll\v\bar\scrollstep = _height_ + Bool(_this_\flag\gridlines)
+       _this_\scroll\v\bar\scrollstep <> _this_\row\_s()\height + Bool(_this_\flag\gridlines)
+      _this_\scroll\v\bar\scrollstep = _this_\row\_s()\height + Bool(_this_\flag\gridlines)
     EndIf
   EndMacro
   
-  Macro _make_scroll_width_(_this_, _width_)
+  Macro _make_scroll_width_(_this_)
     If _this_\vertical
-      If _this_\text\multiline =- 1 And _this_\scroll\height > (_this_\height[2] - _this_\text\align\height - Bool(_this_\scroll\width > _this_\width[2]) * _this_\scroll\v\height)
+      If _this_\text\multiline =- 1 And (_this_\row\_s()\text\width + _this_\text\x*2) >= _this_\height[2]
         _this_\scroll\height = _this_\height[2] - _this_\text\align\height - Bool(_this_\scroll\width > _this_\width[2]) * _this_\scroll\v\height
       Else
-        If _this_\scroll\height < _width_ + _this_\text\x*2
-          _this_\scroll\height = _width_ + _this_\text\x*2
+        If _this_\scroll\height < _this_\row\_s()\text\width + _this_\text\x*2
+          _this_\scroll\height = _this_\row\_s()\text\width + _this_\text\x*2
         EndIf
       EndIf
     Else
-      If _this_\text\multiline =- 1 And _this_\scroll\width > (_this_\width[2] - _this_\text\align\width - Bool(_this_\scroll\height > _this_\height[2]) * _this_\scroll\v\width)
+      If _this_\text\multiline =- 1 And (_this_\row\_s()\text\width + _this_\text\x*2) >= _this_\width[2]
         _this_\scroll\width = _this_\width[2] - _this_\text\align\width - Bool(_this_\scroll\height > _this_\height[2]) * _this_\scroll\v\width
       Else
-        If _this_\scroll\width < _width_ + _this_\text\x*2 + *this\text\caret\width
-          _this_\scroll\width = _width_ + _this_\text\x*2 + *this\text\caret\width
+        If _this_\scroll\width < _this_\row\_s()\text\width + _this_\text\x*2 + *this\text\caret\width
+          _this_\scroll\width = _this_\row\_s()\text\width + _this_\text\x*2 + *this\text\caret\width
         EndIf
       EndIf
     EndIf
   EndMacro
-  
   
   
   Procedure.s _text_wrap_(*this._s_widget, text$, softWrapPosn.i, hardWrapPosn.i=-1, delimList$=" "+Chr(9), nl$=#LF$, liStart$="")
@@ -5632,9 +5635,17 @@ Module Widget
     ; out: return value: text$ with given nl$ inserted at appropriate positions
     ;
     ; <http://www.purebasic.fr/english/viewtopic.php?f=12&t=53800>
-    Protected.i numLines, i, indentLen=-1, length, TextWidth
+    Protected.i numLines, i, indentLen=-1, length
     Protected line$, line1$, indent$, ret$="", ret1$="", start, start1, found, length1
     
+    ;numLines = CountString(text$, #LF$) + 1
+    
+    If *this\text\multiline =- 1
+      text$+#LF$
+    EndIf
+    
+    ;hardWrapPosn = 0
+    ;softWrapPosn/6
     If hardWrapPosn > 0
       length = softWrapPosn/6
     EndIf
@@ -5644,7 +5655,7 @@ Module Widget
     
     If softWrapPosn > 0 And *End
       While *End\c 
-        If *End\c = #LF ;And *str <> *End
+        If *End\c = #LF And *str <> *End
           start = (*End-*str)>>#PB_Compiler_Unicode
           line$ = PeekS (*str, start)
           
@@ -5654,7 +5665,7 @@ Module Widget
               length = start
               
               While length > 1
-                If softWrapPosn > TextWidth(Left(line$, length))
+                If softWrapPosn > TextWidth(Left(line$, length)) 
                   Break
                 Else
                   length - 1 
@@ -5682,7 +5693,7 @@ Module Widget
           
           ret$ + line$ + nl$
           
-         *str = *End + #__sOC 
+          *str = *End + #__sOC 
         EndIf 
         
         *End + #__sOC 
@@ -5694,16 +5705,15 @@ Module Widget
   
   Procedure.s make_multiline(*this._s_widget, text.s)
     Protected StringWidth, len, string.s
-    Protected IT,Text_Y,Text_X,Width,Height, _this_y_
-    Protected *str.Character
-    Protected *End.Character
+    Protected IT,Text_Y,Text_X,Width,Height
     
     With *This
       Protected _x_=*this\x[2] + *this\text\x, 
-                _y_=*this\y[2] + *this\text\y, 
-                _width_, _height_
-      
-      ; Make output text
+                      _y_=*this\y[2] + *this\text\y, 
+                      _width_=*this\width[2]-*this\text\x*2, 
+                      _height_=*this\height[2]-*this\text\y*2
+            
+            ; Make output text
       If \Vertical
         Width = \Height[#__c_2]
         Height = \Width[#__c_2]
@@ -5712,79 +5722,33 @@ Module Widget
         Height = \Height[#__c_2]
       EndIf
       
-      \text\pos = 0
-      
-      If \text\multiline
-        If *this\text\multiline =- 1
-          text+#LF$
-        EndIf
-        
-        text = _text_wrap_(*this, text, Width-\text\padding*2, \text\multiline)
-        
-        \count\items = 0 ; CountString(text, #LF$)
-        \scroll\width = \text\x*2
-        \scroll\height = \text\y*2 ; 0
-        
-        *str.Character = @text
-        *End.Character = @text
-        
-        While *End\c 
-          If *End\c = #LF 
-            len = (*End-*str)>>#PB_Compiler_Unicode
-            String = PeekS (*str, len)
-            
-            _make_scroll_width_(*this, TextWidth(String))
-            _make_scroll_height_(*this, TextHeight(String))
-            
-            \count\items + 1
-            
-            *str = *End + #__sOC 
-          EndIf 
-          
-          *End + #__sOC 
-        Wend
-        
+      If \Text\multiline
+        text = _text_wrap_(*this, text + #LF$, Width-\text\padding*2, \text\multiline)
+        \count\items = CountString(text, #LF$)
       Else
         text + #LF$
         \count\items = 1
-        \scroll\width = \text\x*2
-        \scroll\height = \text\y*2 ; 0
-        _make_scroll_width_(*this, TextWidth(text))
-        _make_scroll_height_(*this, (\count\items * *this\text\height))
       EndIf
       
-                  
-      _width_ = (*this\scroll\width - *this\text\x*2)
-      _height_ = (*this\scroll\height - *this\text\y*2)
-      
-      _make_scroll_x_(*this)
-      _make_scroll_y_(*this)
-      
       If \count\items
-        \text\len = Len(text)
+        \text\pos = 0
+        \scroll\width = \text\x*2
+        \scroll\height = \text\y*2 ; 0
+        
         ClearList(\row\_s())
-        _this_y_ = 0;*this\text\y
         
         Protected time = ElapsedMilliseconds()
         
-        *str.Character = @text
-        *End.Character = @text 
-        
+        Protected *str.Character = @text, *End.Character = @text 
         While *End\c 
-          If *End\c = #LF And AddElement(\row\_s())
-            len = (*end-*str)>>#PB_Compiler_Unicode ; /#__sOC 
-            ;len = (*end-*str)/#__sOC 
+          If *End\c = #LF And *str <> *End And AddElement(\row\_s())
+            len = (*end-*str)/#__sOC 
             String = PeekS (*str, len)
             
             \row\_s()\draw = 1
-            \row\_s()\y = _y_ + _this_y_
-            \row\_s()\height = \text\height
-            \row\_s()\text\height = \text\height
-            
             \row\_s()\text\string.s = String.s
             \row\_s()\index = ListIndex(\row\_s())
             \row\_s()\text\width = TextWidth(String.s)
-            \row\_s()\text\height = \text\height
             
             \row\_s()\color = _get_colors_()
             \row\_s()\color\fore[0] = 0
@@ -5802,10 +5766,21 @@ Module Widget
             ; Update line pos in the text
             _make_line_pos_(*this, len)
             
-            _make_line_x_(*this, _width_)
-            _make_line_y_(*this, _height_)
+            \row\_s()\y = _y_ + (*this\scroll\height-*this\text\y*2) 
+            \row\_s()\height = \text\height
+            \row\_s()\text\height = \text\height
+            ;_set_content_X_(*this)
             
-            _this_y_ + *this\text\height + *this\flag\gridlines
+            
+            _make_line_x_(*this)
+            _make_line_y_(*this)
+            
+            ; Scroll hight length
+            _make_scroll_height_(*this)
+            
+            ; Scroll width length
+            _make_scroll_width_(*this)
+            
             
             *str = *End + #__sOC 
           EndIf 
@@ -5831,33 +5806,71 @@ Module Widget
       
       ; 
       If *this\scroll And *this\text\change
+        _make_scroll_x_(*this)
+        _make_scroll_y_(*this)
+        
         If *this\scroll\v And *this\scroll\h
-          Protected scroll_change.b
-          
-          If *this\scroll\v\bar\min <> -*this\scroll\y
-            scroll_change | Bar::SetAttribute(*this\scroll\v, #__bar_minimum, -*this\scroll\y)
+          If *this\scroll\y <> *this\scroll\v\bar\min
+            If *this\scroll\y < 0
+              *this\scroll\y = *this\text\align\height
+            EndIf
+            
+            If \text\rotate <> 0
+              PushListPosition(*this\row\_s())
+              ForEach *this\row\_s()
+                If \text\rotate = 180 
+                  *this\row\_s()\text\y - (*this\height[2] - *this\scroll\height)
+                Else
+                  *this\row\_s()\text\y - *this\scroll\y
+                EndIf
+              Next
+              PopListPosition(*this\row\_s())
+            EndIf
+            
+            Bar::SetAttribute(*this\scroll\v, #__bar_Minimum, -*this\scroll\y)
           EndIf
           
-          If *this\scroll\h\bar\min <> -*this\scroll\x
-            scroll_change | Bar::SetAttribute(*this\scroll\h, #__bar_minimum, -*this\scroll\x)
+          If *this\scroll\x <> *this\scroll\h\bar\min
+            If *this\scroll\x < 0
+              *this\scroll\x = *this\text\align\width
+            EndIf
+            
+            If \text\rotate <> 90 
+              PushListPosition(*this\row\_s())
+              ForEach *this\row\_s()
+                If \text\rotate = 270 
+                  *this\row\_s()\text\x - (*this\width[2] - *this\scroll\width)
+                Else
+                  *this\row\_s()\text\x - *this\scroll\x
+                EndIf
+              Next
+              PopListPosition(*this\row\_s())
+            EndIf
+            
+            Bar::SetAttribute(*this\scroll\h, #__bar_Minimum, -*this\scroll\x)
           EndIf
           
-          If *this\scroll\v\bar\max <> *this\scroll\height 
-             scroll_change | Bar::SetAttribute(*this\scroll\v, #__bar_maximum, *this\scroll\height)
-          EndIf
-          
-          If *this\scroll\h\bar\max <> *this\scroll\width 
-             scroll_change | Bar::SetAttribute(*this\scroll\h, #__bar_maximum, *this\scroll\width)
-          EndIf
-          
-          If scroll_change
+          If *this\scroll\v\bar\max <> *this\scroll\height And 
+             Bar::SetAttribute(*this\scroll\v, #__bar_Maximum, *this\scroll\height)
+            ;If \text\multiline
             Bar::Resizes(*this\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            ;EndIf
+            
             \height[2] = \scroll\v\bar\page\len
             \width[2] = \scroll\h\bar\page\len 
           EndIf
+          
+          If *this\scroll\h\bar\max <> *this\scroll\width And 
+             Bar::SetAttribute(*this\scroll\h, #__bar_Maximum, *this\scroll\width)
+            ;If \text\multiline
+            Bar::Resizes(*this\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            ;EndIf
+            
+            \height[2] = *this\scroll\v\bar\page\len
+            \width[2] = *this\scroll\h\bar\page\len 
+          EndIf
         EndIf
-        
-        
+      
         ;           ; This is for the caret and scroll when entering the key - (enter & backspace) ;
         ;           ; При вводе enter выделенную строку перемещаем в конец страницы и прокручиваем ползунок
         ;           If \scroll\v
@@ -5919,7 +5932,7 @@ Module Widget
       
       If \text And (\text\change Or (\resize And *this\text\multiline =- 1))
         *this\text\change = 1
-        make_multiline(*this._s_widget, \text\string)
+        make_multiline(*this._s_widget, \text\edit\string)
       EndIf
       
       ; 
@@ -6062,7 +6075,7 @@ Module Widget
         ; Draw anchors 
         If \root And \root\anchor And \root\anchor\widget
           ;Debug \root\anchor\widget
-          a_draw(\root\anchor\widget)
+          a_Draw(\root\anchor\widget)
         EndIf
       EndIf
       
@@ -6103,7 +6116,7 @@ Module Widget
       
       If StartDrawing(CanvasOutput(\root\canvas))
         ;If \root\color\back
-        ; ;DrawingMode(#PB_2DDrawing_default)
+        ; ;DrawingMode(#PB_2DDrawing_Default)
         ; ;box(0,0,OutputWidth(),OutputHeight(), *this\color\back)
         ; FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), \root\color\back)
         ;EndIf
@@ -6455,7 +6468,7 @@ Module Widget
             Case #__bar_maximum : Result = \bar\max  ; 2
             Case #__bar_inverted : Result = \bar\inverted
             Case #__bar_buttonSize : Result = \bar\button[#__b_3]\len ; scroll
-            Case #__bar_direction : Result = \bar\direction
+            Case #__bar_Direction : Result = \bar\direction
             Case #__bar_pageLength : Result = \bar\page\len ; 3
           EndSelect
       EndSelect
@@ -7153,7 +7166,7 @@ Module Widget
             
           Case #PB_GadgetType_Image
             Select Attribute
-              Case #__displayMode
+              Case #__DisplayMode
                 
                 Select Value
                   Case 0 ; Default
@@ -8398,21 +8411,12 @@ Module Widget
       \bs = 1
       \fs = 1
       
-;       ; \text = AllocateStructure(_s_text)
-;       \text\edit\string = Text.s
-;       \text\string.s = Text.s
-;       \text\change = 1
-      _set_text_flag_(*this, flag, 2, - 22)
-     
-      *this\text\padding = 5
-      ;*this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
-      ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
+      ; \text = AllocateStructure(_s_text)
+      \text\edit\string = Text.s
+      \text\string.s = Text.s
+      \text\change = 1
       
       Resize(*this, X,Y,Width,Height)
-      If Text.s
-        SetText(*this, Text.s)
-      EndIf
-    
     EndWith
     
     ProcedureReturn *this
@@ -8506,9 +8510,7 @@ Module Widget
       \scroll\h = bar_create(#PB_GadgetType_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)
-      If Text.s
-        SetText(*this, Text.s)
-      EndIf
+      SetText(*this, Text.s)
     EndWith
     
     ProcedureReturn *this
@@ -8583,13 +8585,13 @@ Module Widget
       _set_text_flag_(*this, flag)
      
       *this\text\padding = 3
+      *this\text\align\width = 18
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
       ; \scroll = AllocateStructure(_s_scroll) 
       \scroll\v = bar_create(#PB_GadgetType_ScrollBar, #__test_scrollbar_size,0,0,Height, #__bar_vertical, 7, *this)
       \scroll\h = bar_create(#PB_GadgetType_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
-      *this\scroll\align\left = 18
       
       \option_box\width = 15
       \option_box\height = \option_box\width
@@ -8623,13 +8625,13 @@ Module Widget
       _set_text_flag_(*this, flag)
      
       *this\text\padding = 3
+      *this\text\align\width = 18
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
       ; \scroll = AllocateStructure(_s_scroll) 
       \scroll\v = bar_create(#PB_GadgetType_ScrollBar, #__test_scrollbar_size,0,0,Height, #__bar_vertical, 7, *this)
       \scroll\h = bar_create(#PB_GadgetType_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
-      *this\scroll\align\left = 18
       
       \round = 3
       \check_box\height = 15
@@ -8647,7 +8649,7 @@ Module Widget
   
   ;-
   Procedure.i Text(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0)
-    Protected Size = 16, *this._s_widget = editor::create(#PB_GadgetType_Text, 0,0,0,0, "", Flag|#__text_readonly)
+    Protected Size = 16, *this._s_widget = editor::create(0, 0,0,0,0, "", Flag|#__text_readonly)
     
     _set_last_parameters_(*this, #PB_GadgetType_Text, Flag, Root()\opened)
     
@@ -8673,7 +8675,7 @@ Module Widget
   EndProcedure
   
   Procedure.i String(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, round.l=0)
-    Protected Size = 16, *this._s_widget = editor::create(#PB_GadgetType_String, 0,0,0,0, "", Flag)
+    Protected Size = 16, *this._s_widget = editor::create(0, 0,0,0,0, "", Flag)
     
     _set_last_parameters_(*this, #PB_GadgetType_String, Flag, Root()\opened)
     
@@ -8716,7 +8718,7 @@ Module Widget
   
   Procedure.i IPAddress(X.l,Y.l,Width.l,Height.l)
     Protected Text.s="0.0.0.0"
-    Protected Size = 16, *this._s_widget = editor::create(#PB_GadgetType_IPAddress, 0,0,0,0, "", 0)
+    Protected Size = 16, *this._s_widget = editor::create(0, 0,0,0,0, "", 0)
     
     _set_last_parameters_(*this, #PB_GadgetType_IPAddress, 0, Root()\opened)
     
@@ -8742,7 +8744,7 @@ Module Widget
   EndProcedure
   
   Procedure.i Editor(X.l,Y.l,Width.l,Height.l, Flag.i=0)
-    Protected Size = 16, *this._s_widget = editor::create(#PB_GadgetType_Editor, 0,0,0,0, "", Flag)
+    Protected Size = 16, *this._s_widget = editor::create(0, 0,0,0,0, "", Flag)
     
     _set_last_parameters_(*this, #PB_GadgetType_Editor, Flag, Root()\opened)
     
@@ -10580,7 +10582,7 @@ Module Widget
             EndSelect
             
           Case #PB_EventType_DragStart,
-               #PB_EventType_drop
+               #PB_EventType_Drop
             
             Select \type
               Case #PB_GadgetType_Image, 
@@ -10649,7 +10651,7 @@ Module Widget
             ;           
             ;           Post(eventtype, *this, *this\index[#__s_1])
             
-          Case #PB_EventType_drop
+          Case #PB_EventType_Drop
             Debug "drop - "+*this
             
           Case #PB_EventType_Focus
@@ -10843,7 +10845,7 @@ Module Widget
         ; post drop event
         If DD::EventDrop(Root()\entered, #PB_EventType_LeftButtonUp)
           Debug 4444
-          CallBack(Root()\entered, #PB_EventType_drop, mouse_x, mouse_y)
+          CallBack(Root()\entered, #PB_EventType_Drop, mouse_x, mouse_y)
         EndIf
         
         ;             If Not Root()\entered
@@ -10924,7 +10926,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
-  LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4-Bool(#PB_Compiler_OS=#PB_OS_Linux)*4)
+  LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4)
   
   If Open(0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
@@ -10938,8 +10940,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(230, 10, 200, 20, "Standard Button", 0, -1,8)
     Button(230, 40, 200, 20, "Left Button", #__text_left)
     Button(230, 70, 200, 20, "Right Button", #__text_right)
-    Button(230,100, 200, 60, "multiline Button (longer text gets automatically wrapped)", #__text_wordwrap|#__button_default, -1, 4)
-    Button(230,170, 200, 60, "multiline Button (longer text gets automatically multiline)", #__text_multiline, -1, 4)
+    Button(230,100, 200, 60, "multiline Button  (longer text gets automatically wrapped)", #__text_wordwrap|#__button_Default, -1, 4)
+    Button(230,170, 200, 60, "multiline Button  (longer text gets automatically multiline)", #__text_multiline, -1, 4)
     Button(230,170+70, 200, 25, "Toggle Button", #__button_toggle)
     
     redraw(root())
@@ -10979,9 +10981,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
     With *Button_1
       ResizeImage(0, 32,32)
-      *Button_1 = Editor(10, 10, 180,  120);, #__text_multiline)
-      SetText(*Button_1, Text)
-      ;*Button_1 = Text(0,0,0,0,Text)
+; ; ;       *Button_1 = Editor(10, 10, 180,  120);, #__text_multiline)
+; ; ;       SetText(*Button_1, Text)
+      *Button_1 = Text(0,0,0,0,Text)
       ;\Cursor = #PB_cursor_hand
       ;SetColor(*Button_1, #PB_Gadget_frontColor, $4919D5)
       ;SetFont(*Button_1, FontID(0))
@@ -11011,5 +11013,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------0----------v--------------f-----PG--v-8------------------------------------------------vt-v-------8-----------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -3,11 +3,13 @@
 ; теперь исправилено 
 
 IncludePath "../"
-XIncludeFile "editor().pb"
+XIncludeFile "editor().pbi"
 ;XIncludeFile "widgets().pbi"
 UseModule editor
+UseModule constants
+UseModule structures
 
-Global *w._struct_, *w1
+Global *w._s_widget
 
 #MaxLines = 20
 

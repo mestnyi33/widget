@@ -12,6 +12,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       pos.l
       len.l
       *end
+;       min.l
+;       max.l
     EndStructure
     
     ;- - _s_point
@@ -180,6 +182,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       editable.b
       multiline.b
       
+      invert.b
       rotate.f
       padding.l
       
@@ -255,6 +258,9 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_scroll
     Structure _s_scroll Extends _s_coordinate
+      align._s_align
+      ;padding.b
+      
       *v._s_widget
       *h._s_widget
     EndStructure
@@ -395,7 +401,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *gadget._s_widget ; this\canvas\gadget ; root\active\gadget
       *window._s_widget ; this\canvas\window ; root\active\window
       
-      *scroll._s_scroll 
+      scroll._s_scroll 
       *splitter._s_splitter
       
       bar._s_bar
@@ -404,7 +410,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       row._s_row
       tab._s_tab
       
-      errors.b
+      *errors
+      notify.b ; оповестить об изменении
+      
       state.b     ; mouse current state(#normal=0;#entered=1;#selected=2;#disabled=3)
       index.i[3]  ; Index[#normal=0] of new list element ; inex[#entered=1] ; index[#selected=2]
       adress.i
@@ -503,5 +511,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = HAAAAg7
+; Folding = PAAEEg8
 ; EnableXP

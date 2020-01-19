@@ -6,6 +6,10 @@
     
     ;- - CONSTANTs
     ;{
+    
+    #__scrollbar_size = 16
+    #__test_scrollbar_size = 0
+    
     #__round = 7
     #__draw_clip_box = 0
     #__draw_scroll_box = 1
@@ -24,18 +28,26 @@
     Enumeration #PB_EventType_FirstCustomValue
       CompilerIf (#PB_Compiler_Version<547) : #PB_EventType_Resize : CompilerEndIf
       
-      #PB_EventType_free
-      #PB_EventType_create
+      #PB_EventType_Free
+      #PB_EventType_Create
       #PB_EventType_Drop
       
-      #PB_EventType_repaint
+      #PB_EventType_Repaint
       #PB_EventType_ScrollChange
+      ; #PB_EventType_ReturnKey
     EndEnumeration
     
     #__anchors = 9+4
     
     #__a_moved = 9
     #__arrow_type = 1
+    
+    ; errors
+    Enumeration 1
+      #__error_text_input
+      #__errors_text_back
+      #__errors_text_return
+    EndEnumeration
     
     ;bar buttons
     Enumeration
@@ -145,7 +157,7 @@
       #__flag_systemmenu
       #__flag_anchorsGadget
       #__flag_borderless
-      ;         #__flag_Double
+      ;         #__flag_double
       ;         #__flag_flat
       ;         #__flag_raised
       ;         #__flag_Single
@@ -202,7 +214,7 @@
     ;- _c_editor
     #__editor_inline = #__flag_InLine
     #__editor_wordwrap = #__flag_wordwrap
-    #__editor_numeric = #__flag_numeric
+    #__editor_numeric = #__flag_numeric|#__text_multiline
     #__editor_fullselection = #__flag_fullselection
     #__editor_alwaysselection = #__flag_alwaysselection
     #__editor_gridlines = #__flag_gridLines
@@ -226,18 +238,18 @@
     #__button_default = #__flag_default
     #__button_vertical = #__text_vertical
     #__button_inverted = #__flag_inverted
-    #__button_multiline = #__text_multiline
+    #__button_multiline = #__text_wordwrap
     
     ;- _c_bar
     EnumerationBinary #__flag_numeric;1
       #__bar_minimum 
       #__bar_maximum 
-      #__bar_pageLength 
+      #__bar_pagelength 
       
       ;#__bar_arrowSize 
       #__bar_buttonSize 
       #__bar_ScrollStep
-      #__bar_Direction 
+      #__bar_direction 
       #__bar_ticks
       #__bar_reverse
       #__bar_inverted = #__flag_inverted
@@ -254,7 +266,7 @@
     
     
     ;   ; Set/Get Attribute
-    #__DisplayMode = 1<<13
+    #__displayMode = 1<<13
     ;   #PB_Image = 1<<13
     ;   #PB_text = 1<<14
     ;   #PB_flag = 1<<15

@@ -115,40 +115,64 @@ CompilerIf #PB_Compiler_IsMainFile
   Define text_v.s = "Standard"+ m.s +"Button Button"+ m.s +"(Vertical)"
   Define text_h.s = "Standard"+ m.s +"Button Button"+ m.s +"(horizontal)"
   
-  If OpenWindow(0, 0, 0, 615, (height+5)*8+20+110, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    *S_0 = GetGadgetData(Gadget(0, 8,  10, 140, height, text_h, #__flag_gridlines|#__string_readonly|#__text_top|#__string_multiline))
-    *S_1 = GetGadgetData(Gadget(1, 8,  (height+5)*1+10, 140, height, text_h, #__flag_gridlines|#__string_multiline))
-    *S_2 = GetGadgetData(Gadget(2, 8,  (height+5)*2+10, 140, height, text_h, #__flag_gridlines|#__text_bottom|#__string_multiline))
+  If OpenWindow(0, 0, 0, 908, (height+5)*5+20+110, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    *S_0 = GetGadgetData(Gadget(-1, 8+150,  10, 140, height, text_h, #__flag_gridlines|#__string_readonly|#__text_top|#__string_right|#__string_multiline))
-    *S_1 = GetGadgetData(Gadget(-1, 8+150,  (height+5)*1+10, 140, height, text_h, #__flag_gridlines|#__string_right|#__string_multiline))
-    *S_2 = GetGadgetData(Gadget(-1, 8+150,  (height+5)*2+10, 140, height, text_h, #__flag_gridlines|#__text_bottom|#__string_right|#__string_multiline))
+    *S_0 = GetGadgetData(Gadget(0, 8,  10, 140, height, text_h,                        #__flag_gridlines|#__string_multiline|#__text_left|#__text_top))
+    *S_1 = GetGadgetData(Gadget(1, 8,  (height+5)*1+10, 140, height, text_h,           #__flag_gridlines|#__string_multiline|#__text_left))
+    *S_2 = GetGadgetData(Gadget(2, 8,  (height+5)*2+10, 140, height, text_h,           #__flag_gridlines|#__string_multiline|#__text_left|#__text_bottom))
     
-    *S_3 = GetGadgetData(Gadget(3, 8,  (height+5)*3+10, 290, height, text_h,#__flag_gridlines| #__string_uppercase|#__string_center|#__string_multiline))
-    *S_4 = GetGadgetData(Gadget(4, 8, (height+5)*4+10, 290, height, text_v, #__flag_gridlines|#__flag_vertical|#__string_lowercase|#__text_top|#__string_multiline))
-    *S_5 = GetGadgetData(Gadget(5, 8, (height+5)*5+10, 290, height, text_v, #__flag_gridlines|#__flag_vertical|#__flag_borderless|#__string_multiline))
-    *S_6 = GetGadgetData(Gadget(6, 8, (height+5)*6+10, 290, height, text_v, #__flag_gridlines|#__flag_vertical|#__text_bottom|#__string_multiline))
-     *S_7 = GetGadgetData(Gadget(7, 8, (height+5)*7+10, 290, height, "", #__flag_gridlines|#__string_password|#__string_multiline))
-     *S_8 = GetGadgetData(Gadget(8, 8, (height+5)*8+10, 290, 90+20, Text, #__flag_gridlines|#__flag_numeric|#__text_multiline|#__string_multiline))
-                               
-    *S_10 = GetGadgetData(Gadget(10, 305+8,  10, 140, height, text_h, #__flag_gridlines|#__string_readonly|#__text_top|#__text_invert|#__string_multiline))
-    *S_11 = GetGadgetData(Gadget(11, 305+8,  (height+5)*1+10, 140, height, text_h, #__flag_gridlines|#__text_invert|#__string_multiline))
-    *S_12 = GetGadgetData(Gadget(12, 305+8,  (height+5)*2+10, 140, height, text_h, #__flag_gridlines|#__text_bottom|#__text_invert|#__string_multiline))
+    *S_0 = GetGadgetData(Gadget(3, 8+150,  10, 140, height, text_h,                    #__flag_gridlines|#__string_multiline|#__string_center|#__text_top|#__string_readonly))
+    *S_1 = GetGadgetData(Gadget(4, 8+150,  (height+5)*1+10, 140, height, text_h,       #__flag_gridlines|#__string_multiline|#__string_center))
+    *S_2 = GetGadgetData(Gadget(5, 8+150,  (height+5)*2+10, 140, height, text_h,       #__flag_gridlines|#__string_multiline|#__string_center|#__text_bottom))
     
-    *S_10 = GetGadgetData(Gadget(-1, 305+8+150,  10, 140, height, text_h, #__flag_gridlines|#__string_readonly|#__text_top|#__string_right|#__text_invert|#__string_multiline))
-    *S_11 = GetGadgetData(Gadget(-1, 305+8+150,  (height+5)*1+10, 140, height, text_h, #__flag_gridlines|#__string_right|#__text_invert|#__string_multiline))
-    *S_12 = GetGadgetData(Gadget(-1, 305+8+150,  (height+5)*2+10, 140, height, text_h, #__flag_gridlines|#__string_right|#__text_bottom|#__text_invert|#__string_multiline))
+    *S_0 = GetGadgetData(Gadget(6, 8+300,  10, 140, height, text_h,                    #__flag_gridlines|#__string_multiline|#__string_right|#__text_top|#__string_readonly))
+    *S_1 = GetGadgetData(Gadget(7, 8+300,  (height+5)*1+10, 140, height, text_h,       #__flag_gridlines|#__string_multiline|#__string_right))
+    *S_2 = GetGadgetData(Gadget(8, 8+300,  (height+5)*2+10, 140, height, text_h,       #__flag_gridlines|#__string_multiline|#__string_right|#__text_bottom))
     
-    *S_13 = GetGadgetData(Gadget(13, 305+8,  (height+5)*3+10, 290, height, text_v, #__flag_gridlines|#__flag_vertical|#__string_lowercase|#__string_center|#__text_invert|#__string_multiline))
-    *S_14 = GetGadgetData(Gadget(14, 305+8, (height+5)*4+10, 290, height, text_v,#__flag_gridlines| #__flag_vertical|#__text_top|#__string_right|#__text_invert|#__string_multiline))
-    *S_15 = GetGadgetData(Gadget(15, 305+8, (height+5)*5+10, 290, height, text_v, #__flag_gridlines|#__flag_vertical|#__flag_borderless|#__string_right|#__text_invert|#__string_multiline))
-    *S_16 = GetGadgetData(Gadget(16, 305+8, (height+5)*6+10, 290, height, text_v, #__flag_gridlines|#__flag_vertical|#__text_bottom|#__string_right|#__text_invert|#__string_multiline))
-     *S_17 = GetGadgetData(Gadget(17, 305+8, (height+5)*7+10, 290, height, Text1, #__string_password|#__string_multiline))
-     *S_18 = GetGadgetData(Gadget(18, 305+8, (height+5)*8+10, 290, 90+20, Text, #__flag_gridlines|#__flag_gridlines|#__flag_numeric|#__text_wordwrap))
-                             
-    SetText(*S_17, "GaT")
-    Debug "Get widget text "+GetText(*S_17)
     
+    *S_0 = GetGadgetData(Gadget(10, 8+450,  10, 140, height, text_h,                   #__flag_gridlines|#__string_multiline|#__text_invert|#__text_left|#__text_top))
+    *S_1 = GetGadgetData(Gadget(11, 8+450,  (height+5)*1+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__text_invert|#__text_left))
+    *S_2 = GetGadgetData(Gadget(12, 8+450,  (height+5)*2+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__text_invert|#__text_left|#__text_bottom))
+    
+    *S_0 = GetGadgetData(Gadget(13, 8+150+450,  10, 140, height, text_h,               #__flag_gridlines|#__string_multiline|#__text_invert|#__string_center|#__text_top|#__string_readonly))
+    *S_1 = GetGadgetData(Gadget(14, 8+150+450,  (height+5)*1+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__text_invert|#__string_center))
+    *S_2 = GetGadgetData(Gadget(15, 8+150+450,  (height+5)*2+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__text_invert|#__string_center|#__text_bottom))
+    
+    *S_0 = GetGadgetData(Gadget(16, 8+300+450,  10, 140, height, text_h,               #__flag_gridlines|#__string_multiline|#__text_invert|#__string_right|#__text_top|#__string_readonly))
+    *S_1 = GetGadgetData(Gadget(17, 8+300+450,  (height+5)*1+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__text_invert|#__string_right))
+    *S_2 = GetGadgetData(Gadget(18, 8+300+450,  (height+5)*2+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__text_invert|#__string_right|#__text_bottom))
+    
+    
+    
+    *S_0 = GetGadgetData(Gadget(20, 8,  (height+5)*3+10, 140, height, text_h,          #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_left|#__text_top))
+    *S_1 = GetGadgetData(Gadget(21, 8,  (height+5)*4+10, 140, height, text_h,          #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_left))
+    *S_2 = GetGadgetData(Gadget(22, 8,  (height+5)*5+10, 140, height, text_h,          #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_left|#__text_bottom))
+    
+    *S_0 = GetGadgetData(Gadget(23, 8+150,  (height+5)*3+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__flag_vertical|#__string_center|#__text_top|#__string_readonly))
+    *S_1 = GetGadgetData(Gadget(24, 8+150,  (height+5)*4+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__flag_vertical|#__string_center))
+    *S_2 = GetGadgetData(Gadget(25, 8+150,  (height+5)*5+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__flag_vertical|#__string_center|#__text_bottom))
+    
+    *S_0 = GetGadgetData(Gadget(26, 8+300,  (height+5)*3+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__flag_vertical|#__string_right|#__text_top|#__string_readonly))
+    *S_1 = GetGadgetData(Gadget(27, 8+300,  (height+5)*4+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__flag_vertical|#__string_right))
+    *S_2 = GetGadgetData(Gadget(28, 8+300,  (height+5)*5+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__flag_vertical|#__string_right|#__text_bottom))
+    
+    
+    *S_0 = GetGadgetData(Gadget(30, 8+450,  (height+5)*3+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_invert|#__text_left|#__text_top))
+    *S_1 = GetGadgetData(Gadget(31, 8+450,  (height+5)*4+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_invert|#__text_left))
+    *S_2 = GetGadgetData(Gadget(32, 8+450,  (height+5)*5+10, 140, height, text_h,      #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_invert|#__text_left|#__text_bottom))
+    
+    *S_0 = GetGadgetData(Gadget(33, 8+150+450,  (height+5)*3+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_invert|#__string_center|#__text_top|#__string_readonly))
+    *S_1 = GetGadgetData(Gadget(34, 8+150+450,  (height+5)*4+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_invert|#__string_center))
+    *S_2 = GetGadgetData(Gadget(35, 8+150+450,  (height+5)*5+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_invert|#__string_center|#__text_bottom))
+    
+    *S_0 = GetGadgetData(Gadget(36, 8+300+450,  (height+5)*3+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_invert|#__string_right|#__text_top|#__string_readonly))
+    *S_1 = GetGadgetData(Gadget(37, 8+300+450,  (height+5)*4+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_invert|#__string_right))
+    *S_2 = GetGadgetData(Gadget(38, 8+300+450,  (height+5)*5+10, 140, height, text_h,  #__flag_gridlines|#__string_multiline|#__flag_vertical|#__text_invert|#__string_right|#__text_bottom))
+    
+                       
+;     SetText(*S_17, "GaT")
+;     Debug "Get widget text "+GetText(*S_17)
+;     
     ;     BindEvent(#PB_Event_Widget, @Events())
     ;     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow

@@ -1,10 +1,13 @@
 ﻿
 IncludePath "../"
-XIncludeFile "editor().pb"
+XIncludeFile "editor().pbi"
 ;XIncludeFile "widgets().pbi"
 
 UseModule editor
-Global *w._struct_
+UseModule constants
+UseModule structures
+
+Global *w._s_widget
 
 LN = 1000; количесвто итемов 
 
