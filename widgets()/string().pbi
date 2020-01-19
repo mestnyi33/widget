@@ -1091,7 +1091,10 @@ Module Editor
       length = softWrapPosn 
     EndIf
     
-    If softWrapPosn > 0 And *end
+    If softWrapPosn < 10
+      softWrapPosn = 10
+    EndIf
+    
       While *end\c 
         If *end\c = #LF
           start = (*end-*str)>>#PB_Compiler_Unicode
@@ -1136,7 +1139,6 @@ Module Editor
         
         *end + #__sOC 
       Wend
-    EndIf
     
     ProcedureReturn ret$
   EndProcedure
@@ -3577,5 +3579,5 @@ CompilerEndIf
 ; ; ;   EndIf
 ; ; ; CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -------------------4---fz-+--------------------------f---------------
+; Folding = -------------------4--+fz-+--------------------------f---------------
 ; EnableXP
