@@ -2487,7 +2487,7 @@ Module Widget
         \text\change = 1
         \text\editable = 1
         \text\align\Vertical = 1
-        \text\padding = #__spin_padding_text
+        \text\_padding = #__spin_padding_text
         
         ; ???? ???? ???????
         \color = _get_colors_()
@@ -4361,7 +4361,7 @@ Module Widget
               _items_\image\y = _items_\y + (_items_\height-_items_\image\height)/2-_this_\scroll\v\bar\page\pos
             EndIf
             
-            _items_\text\x = _items_\x + _this_\text\padding + _items_\sublevellen + _this_\row\sublevel - _this_\scroll\h\bar\page\pos
+            _items_\text\x = _items_\x + _this_\text\_padding + _items_\sublevellen + _this_\row\sublevel - _this_\scroll\h\bar\page\pos
             _items_\text\y = _items_\y + (_items_\height-_items_\text\height)/2-_this_\scroll\v\bar\page\pos
             
             _items_\draw = Bool(_items_\y+_items_\height-_this_\scroll\v\bar\page\pos>_this_\y[#__c_2] And 
@@ -5395,7 +5395,7 @@ Module Widget
     If _this_\text
       _this_\text\x = _x_
       _this_\text\y = _y_
-      ; _this_\text\padding = 5
+      ; _this_\text\_padding = 5
       _this_\text\change = #True
       
       _this_\text\editable = Bool(Not constants::_check_(_flag_, #__text_readonly))
@@ -5548,11 +5548,11 @@ Module Widget
   
   Macro _make_scroll_x_(_this_)
     If _this_\text\align\right
-      _this_\scroll\x = (((_this_\width - _this_\bs*2) - _this_\scroll\align\right - _this_\text\padding) - _this_\scroll\width)
+      _this_\scroll\x = (((_this_\width - _this_\bs*2) - _this_\scroll\align\right - _this_\text\_padding) - _this_\scroll\width)
     ElseIf _this_\text\align\horizontal
       _this_\scroll\x = (((_this_\width - _this_\bs*2) + _this_\scroll\align\left - _this_\scroll\align\right) - _this_\scroll\width + Bool(_this_\scroll\width % 2))/2 
     Else
-      _this_\scroll\x = _this_\text\padding + _this_\scroll\align\left
+      _this_\scroll\x = _this_\text\_padding + _this_\scroll\align\left
     EndIf
     
     If *this\scroll\x < 0
@@ -5562,11 +5562,11 @@ Module Widget
   
   Macro _make_scroll_y_(_this_)
     If _this_\text\align\bottom
-      _this_\scroll\y = (((_this_\height - _this_\bs*2) - _this_\scroll\align\bottom - _this_\text\padding) - _this_\scroll\height) 
+      _this_\scroll\y = (((_this_\height - _this_\bs*2) - _this_\scroll\align\bottom - _this_\text\_padding) - _this_\scroll\height) 
     ElseIf _this_\text\align\vertical
       _this_\scroll\y = ((((_this_\height - _this_\bs*2) + _this_\scroll\align\top - _this_\scroll\align\bottom) - _this_\scroll\height + Bool(_this_\scroll\height % 2))/2)
     Else
-      _this_\scroll\y = _this_\text\padding + _this_\scroll\align\top
+      _this_\scroll\y = _this_\text\_padding + _this_\scroll\align\top
     EndIf
     
     If *this\scroll\y < 0
@@ -5719,7 +5719,7 @@ Module Widget
           text+#LF$
         EndIf
         
-        text = _text_wrap_(*this, text, Width-\text\padding*2, \text\multiline)
+        text = _text_wrap_(*this, text, Width-\text\_padding*2, \text\multiline)
         
         \count\items = 0 ; CountString(text, #LF$)
         \scroll\width = \text\x*2
@@ -8084,11 +8084,11 @@ Module Widget
         
         Select \type
           Case #PB_GadgetType_Option
-            *this\option_box\x = *this\x[#__c_2] + *this\text\padding
+            *this\option_box\x = *this\x[#__c_2] + *this\text\_padding
             *this\option_box\y = *this\y[#__c_2] + (*this\height[#__c_2] - *this\option_box\height)/2
             
           Case #PB_GadgetType_CheckBox
-            *this\check_box\x = *this\x[#__c_2] + *this\text\padding
+            *this\check_box\x = *this\x[#__c_2] + *this\text\_padding
             *this\check_box\y = *this\y[#__c_2] + (*this\height[#__c_2] - *this\check_box\height)/2
             
             
@@ -8404,7 +8404,7 @@ Module Widget
 ;       \text\change = 1
       _set_text_flag_(*this, flag, 2, - 22)
      
-      *this\text\padding = 5
+      *this\text\_padding = 5
       ;*this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
@@ -8492,7 +8492,7 @@ Module Widget
       
       _set_text_flag_(*this, flag, 0, 0)
       
-      *this\text\padding = 5
+      *this\text\_padding = 5
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       *this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
@@ -8534,7 +8534,7 @@ Module Widget
       
       _set_text_flag_(*this, flag)
      
-      *this\text\padding = 5
+      *this\text\_padding = 5
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
@@ -8582,7 +8582,7 @@ Module Widget
       
       _set_text_flag_(*this, flag)
      
-      *this\text\padding = 3
+      *this\text\_padding = 3
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
@@ -8622,7 +8622,7 @@ Module Widget
       
       _set_text_flag_(*this, flag)
      
-      *this\text\padding = 3
+      *this\text\_padding = 3
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
@@ -8655,7 +8655,7 @@ Module Widget
       
       _set_text_flag_(*this, flag, 2,2)
      
-      *this\text\padding = 0
+      *this\text\_padding = 0
       *this\text\multiline =- 1
       *this\row\margin\hide = 1
       
@@ -8825,7 +8825,7 @@ Module Widget
           \text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         CompilerEndIf
         
-        \text\padding = 4
+        \text\_padding = 4
         \image\padding = 2
         
         \flag\gridlines = Bool(flag&#__tree_gridLines)

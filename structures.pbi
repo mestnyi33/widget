@@ -169,6 +169,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       change.b
     EndStructure
     
+     ;- - _s_padding
+  Structure _s_padding
+    left.l
+    top.l
+    right.l
+    bottom.l
+  EndStructure
+  
+  
     ;- - _s_text
     Structure _s_text Extends _s_edit
       ;     ;     Char.c
@@ -184,8 +193,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       invert.b
       rotate.f
-      padding.l
       
+      _padding.b
+      
+      padding._s_padding
+    
       edit._s_edit[4]
       caret._s_caret
       align._s_align
@@ -222,8 +234,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       index.l
       handle.i[2] ; - editor
       change.b
-      padding.l
-      
+      padding._s_padding
+    
       align._s_align
     EndStructure
     
@@ -410,6 +422,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       row._s_row
       tab._s_tab
       
+      handle.i
       *errors
       notify.b ; оповестить об изменении
       
@@ -483,6 +496,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       *widget._s_widget
       *active._s_widget ; active window
       colors._s_color
+      
+      
+      *leave._s_widget  
+    *enter._s_widget  
+    _draw.l
       ;draw.b
     EndStructure
     
@@ -511,5 +529,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = PAAEEg8
+; Folding = PAAsIA4
 ; EnableXP

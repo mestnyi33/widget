@@ -211,6 +211,36 @@
     #__tree_multiselect = #__flag_multiselect
     #__tree_borderless = #__flag_borderless
     
+    ;- _c_tree_attribute
+    #__tree_Selected = #PB_Tree_Selected
+    #__tree_Checked = #PB_Tree_Checked
+    #__tree_Collapsed = #PB_Tree_Collapsed
+    #__tree_Inbetween = #PB_Tree_Inbetween
+    #__tree_Expanded = #PB_Tree_Expanded
+    #__tree_SubLevel = #PB_Tree_SubLevel
+    
+;     
+;     ;- TREE CONSTANTs
+;   #__tree_NoLines = #PB_Tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
+;   #__tree_NoButtons = #PB_Tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
+;   #__tree_CheckBoxes = #PB_Tree_CheckBoxes                   ; 4 256 Add a checkbox before each Item.
+;   #__tree_ThreeState = #PB_Tree_ThreeState                   ; 8 65535 The checkboxes can have an "in between" state.
+;   
+;   EnumerationBinary 16
+;     #__tree_Collapse
+;     #__tree_AlwaysSelection
+;     #__tree_ClickSelect
+;     #__tree_MultiSelect
+;     #__tree_GridLines
+;     #__tree_OptionBoxes
+;     #__tree_BorderLess
+;     #__tree_FullSelection
+;   EndEnumeration
+;   
+;   #PB_Tree_Collapse = #__tree_Collapse
+;   #PB_Tree_GridLines = #__tree_GridLines
+  
+  
     ;- _c_editor
     #__editor_inline = #__flag_InLine
     #__editor_wordwrap = #__flag_wordwrap

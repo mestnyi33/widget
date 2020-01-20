@@ -134,6 +134,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
   
   Declare.b Resize(*this, iX.l,iY.l,iWidth.l,iHeight.l)
   Declare.b Resizes(*scroll._S_scroll, X.l,Y.l,Width.l,Height.l)
+  Declare.b Arrow(X.l,Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1)
 EndDeclareModule
 
 Module bar
@@ -341,22 +342,22 @@ Module bar
       EndIf
       
       If _this_\text\align\right
-        _this_\text\y = _y_ +_this_\text\align\height+ _this_\text\padding+_this_\text\width
+        _this_\text\y = _y_ +_this_\text\align\height+ _this_\text\_padding+_this_\text\width
       ElseIf _this_\text\align\horizontal
         _this_\text\y = _y_ + (_height_+_this_\text\align\height+_this_\text\width)/2
       Else
-        _this_\text\y = _y_ + _height_-_this_\text\padding
+        _this_\text\y = _y_ + _height_-_this_\text\_padding
       EndIf
       
     ElseIf _this_\text\rotate = 270
       _this_\text\x = _x_ + (_width_-_this_\y)
       
       If _this_\text\align\right
-        _this_\text\y = _y_ + (_height_-_this_\text\width-_this_\text\padding) 
+        _this_\text\y = _y_ + (_height_-_this_\text\width-_this_\text\_padding) 
       ElseIf _this_\text\align\horizontal
         _this_\text\y = _y_ + (_height_-_this_\text\width)/2 
       Else
-        _this_\text\y = _y_ + _this_\text\padding 
+        _this_\text\y = _y_ + _this_\text\_padding 
       EndIf
       
     EndIf
@@ -370,22 +371,22 @@ Module bar
       EndIf
       
       If _this_\text\align\right
-        _this_\text\x = _x_ + (_width_-_this_\text\align\width-_this_\text\width-_this_\text\padding) 
+        _this_\text\x = _x_ + (_width_-_this_\text\align\width-_this_\text\width-_this_\text\_padding) 
       ElseIf _this_\text\align\horizontal
         _this_\text\x = _x_ + (_width_-_this_\text\align\width-_this_\text\width)/2
       Else
-        _this_\text\x = _x_ + _this_\text\padding
+        _this_\text\x = _x_ + _this_\text\_padding
       EndIf
       
     ElseIf _this_\text\rotate = 180
       _this_\text\y = _y_ + (_height_-_this_\y)
       
       If _this_\text\align\right
-        _this_\text\x = _x_ + _this_\text\padding+_this_\text\width
+        _this_\text\x = _x_ + _this_\text\_padding+_this_\text\width
       ElseIf _this_\text\align\horizontal
         _this_\text\x = _x_ + (_width_+_this_\text\width)/2 
       Else
-        _this_\text\x = _x_ + _width_-_this_\text\padding 
+        _this_\text\x = _x_ + _width_-_this_\text\_padding 
       EndIf
       
     EndIf
@@ -2093,7 +2094,7 @@ Module bar
         \text\change = 1
         \text\editable = 1
         \text\align\Vertical = 1
-        \text\padding = #__spin_padding_text
+        \text\_padding = #__spin_padding_text
         
         ; ???? ???? ???????
         \color = _get_colors_()
@@ -2603,5 +2604,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = x9+vDAEgAAAAAA----8ff5+LAAA-Ag-+--PCAAQAAAAAAAAAAAAgHACAAAA0
+; Folding = x9+vLA9-BAAAAA----8ff-+LAAA-Ag-+--PCAAQAAAAAAAAAAgAkHACAAAA0
 ; EnableXP

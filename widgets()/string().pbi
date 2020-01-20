@@ -22,7 +22,6 @@ CompilerIf Not Defined(colors, #PB_Module)
   XIncludeFile "../colors.pbi"
 CompilerEndIf
 
-
 CompilerIf Not Defined(Bar, #PB_Module)
   XIncludeFile "bar().pb"
 CompilerEndIf
@@ -164,11 +163,11 @@ Module Editor
   
   ;-
   Macro _text_scroll_x_(_this_)
-    *this\change = bar::_scrolled_(*this\scroll\h, _this_\text\caret\x-(Bool(_this_\text\caret\x>0) * (_this_\scroll\h\x+_this_\text\padding+_this_\text\x)), (_this_\text\padding*2+_this_\text\x*2+_this_\row\margin\width+2)) ; ok
+    *this\change = bar::_scrolled_(*this\scroll\h, _this_\text\caret\x-(Bool(_this_\text\caret\x>0) * (_this_\scroll\h\x+_this_\text\_padding+_this_\text\x)), (_this_\text\_padding*2+_this_\text\x*2+_this_\row\margin\width+2)) ; ok
   EndMacro
   
   Macro _text_scroll_y_(_this_)
-    *this\change = bar::_scrolled_(*this\scroll\v, _this_\text\caret\y-(Bool(_this_\text\caret\y>0) * (_this_\scroll\v\y+_this_\text\padding+_this_\text\y)), (_this_\text\padding*2+_this_\text\y*2+_this_\text\caret\height)) ; ok
+    *this\change = bar::_scrolled_(*this\scroll\v, _this_\text\caret\y-(Bool(_this_\text\caret\y>0) * (_this_\scroll\v\y+_this_\text\_padding+_this_\text\y)), (_this_\text\_padding*2+_this_\text\y*2+_this_\text\caret\height)) ; ok
   EndMacro
   
   
@@ -993,11 +992,11 @@ Module Editor
   
   Macro _make_scroll_x_(_this_)
     If _this_\text\align\right
-      _this_\scroll\x = (((_this_\width - _this_\bs*2) - _this_\scroll\align\right - _this_\text\padding) - _this_\scroll\width)
+      _this_\scroll\x = (((_this_\width - _this_\bs*2) - _this_\scroll\align\right - _this_\text\_padding) - _this_\scroll\width)
     ElseIf _this_\text\align\horizontal
       _this_\scroll\x = (((_this_\width - _this_\bs*2) + _this_\scroll\align\left - _this_\scroll\align\right) - _this_\scroll\width + Bool(_this_\scroll\width % 2))/2 
     Else
-      _this_\scroll\x = _this_\text\padding + _this_\scroll\align\left
+      _this_\scroll\x = _this_\text\_padding + _this_\scroll\align\left
     EndIf
     
     If *this\scroll\x < 0
@@ -1007,11 +1006,11 @@ Module Editor
   
   Macro _make_scroll_y_(_this_)
     If _this_\text\align\bottom
-      _this_\scroll\y = (((_this_\height - _this_\bs*2) - _this_\scroll\align\bottom - _this_\text\padding) - _this_\scroll\height) 
+      _this_\scroll\y = (((_this_\height - _this_\bs*2) - _this_\scroll\align\bottom - _this_\text\_padding) - _this_\scroll\height) 
     ElseIf _this_\text\align\vertical
       _this_\scroll\y = ((((_this_\height - _this_\bs*2) + _this_\scroll\align\top - _this_\scroll\align\bottom) - _this_\scroll\height + Bool(_this_\scroll\height % 2))/2)
     Else
-      _this_\scroll\y = _this_\text\padding + _this_\scroll\align\top
+      _this_\scroll\y = _this_\text\_padding + _this_\scroll\align\top
     EndIf
     
     If *this\scroll\y < 0
@@ -1038,7 +1037,7 @@ Module Editor
   Macro _make_scroll_width_(_this_, _width_)
     If _this_\vertical
       If _this_\text\multiline =- 1 And _this_\scroll\v
-        _this_\scroll\height = bar::make_area_height(_this_\scroll, _this_\width - _this_\bs*2 - _this_\text\padding*2, _this_\height - _this_\bs*2 - _this_\text\padding*2)
+        _this_\scroll\height = bar::make_area_height(_this_\scroll, _this_\width - _this_\bs*2 - _this_\text\_padding*2, _this_\height - _this_\bs*2 - _this_\text\_padding*2)
       Else
         If _this_\scroll\height < _width_ + _this_\text\y*2 + _this_\text\caret\height
           _this_\scroll\height = _width_ + _this_\text\y*2 + _this_\text\caret\height
@@ -1046,7 +1045,7 @@ Module Editor
       EndIf
     Else
       If _this_\text\multiline =- 1 And _this_\scroll\h
-        _this_\scroll\width = bar::make_area_width(_this_\scroll, _this_\width - _this_\bs*2 - _this_\text\padding*2, _this_\height - _this_\bs*2 - _this_\text\padding*2)
+        _this_\scroll\width = bar::make_area_width(_this_\scroll, _this_\width - _this_\bs*2 - _this_\text\_padding*2, _this_\height - _this_\bs*2 - _this_\text\_padding*2)
       Else
         If _this_\scroll\width < _width_ + _this_\text\x*2 + _this_\text\caret\width
           _this_\scroll\width = _width_ + _this_\text\x*2 + _this_\text\caret\width
@@ -1161,17 +1160,17 @@ Module Editor
       
       If \vertical
         If *this\scroll\h And Not *this\scroll\h\hide
-          width = \height - \bs*2 - \text\padding*2 - \text\y*2 - *this\scroll\h\height
+          width = \height - \bs*2 - \text\_padding*2 - \text\y*2 - *this\scroll\h\height
         Else
-          width = \height - \bs*2 - \text\padding*2 - \text\y*2
+          width = \height - \bs*2 - \text\_padding*2 - \text\y*2
         EndIf
         
         Height = \width - \bs*2 
       Else
         If *this\scroll\v And Not *this\scroll\v\hide
-          width = \width - \bs*2 - \text\padding*2 - \text\x*2 - *this\scroll\v\width - 10
+          width = \width - \bs*2 - \text\_padding*2 - \text\x*2 - *this\scroll\v\width - 10
         Else
-          width = \width - \bs*2 - \text\padding*2 - \text\x*2
+          width = \width - \bs*2 - \text\_padding*2 - \text\x*2
         EndIf
         
         height = \height - \bs*2
@@ -2999,7 +2998,7 @@ Module Editor
     If _this_\text
       _this_\text\x = 5
       _this_\text\y = 2
-      _this_\text\padding = 0
+      _this_\text\_padding = 0
       _this_\text\change = #True
       
       _this_\text\editable = Bool(Not constants::_check_(_flag_, #__text_readonly))
@@ -3115,12 +3114,12 @@ Module Editor
         \row\margin\color\back = $C8F0F0F0  ; \color\back[0] 
         
         _set_text_flag_(*this, Flag)
-        ; *this\text\padding = 0
+        ; *this\text\_padding = 0
       EndIf
       
       ;If Width Or Height
       ; \scroll = AllocateStructure(_s_scroll) 
-      \scroll\v = Bar::create(#PB_GadgetType_ScrollBar,16, 0,0,0, #PB_ScrollBar_Vertical, 7, *this)
+      \scroll\v = Bar::create(#PB_GadgetType_ScrollBar, 16, 0,0,0, #PB_ScrollBar_Vertical, 7, *this)
       \scroll\h = Bar::create(#PB_GadgetType_ScrollBar, 16, 0,0,0, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)
@@ -3579,5 +3578,5 @@ CompilerEndIf
 ; ; ;   EndIf
 ; ; ; CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -------------------4--+fz-+--------------------------f---------------
+; Folding = +------------------4--+fz-+--------------------------f---------------
 ; EnableXP
