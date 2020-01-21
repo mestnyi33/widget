@@ -738,13 +738,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       mode.i
       
       hide.b
-      change.l
+      change.b
       vertical.b
       inverted.b
       direction.l
       
-      increment.f
-      scrollstep.f
+      scroll_increment.f
+      scroll_step.f
+      scroll_change.f
       
       page._s_page
       area._s_page
@@ -1273,7 +1274,7 @@ DeclareModule Widget
   Declare.i Editor(X.l,Y.l,Width.l,Height.l, Flag.i=0)
   
   ; container
-  Declare.i ScrollArea(X.l,Y.l,Width.l,Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l=1, Flag.i=0)
+  Declare.i ScrollArea(X.l,Y.l,Width.l,Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, scroll_step.l=1, Flag.i=0)
   Declare.i Container(X.l,Y.l,Width.l,Height.l, Flag.i=0)
   Declare.i Frame(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0)
   Declare.i Panel(X.l,Y.l,Width.l,Height.l, Flag.i=0)
@@ -1350,7 +1351,7 @@ Module Widget
       
       _item_\image\index = _image_ 
       _item_\image\handle = ImageID(_image_)
-      ;_this_\row\sublevel = _this_\image\padding + _item_\image\width
+      ;_this_\row\sublevel = _this_\image\_padding + _item_\image\width
     Else
       _item_\image\index =- 1
       _item_\image\handle = 0
@@ -1528,7 +1529,7 @@ Module Widget
       
       _item_\image\index = _image_ 
       _item_\image\handle = ImageID(_image_)
-      _this_\row\sublevel = _this_\image\padding + _item_\image\width
+      _this_\row\sublevel = _this_\image\_padding + _item_\image\width
     Else
       _item_\image\index =- 1
     EndIf
@@ -1662,7 +1663,7 @@ Module Widget
   EndMacro
   
   Macro _bar_thumb_pos_(_bar_, _scroll_pos_)
-    (_bar_\area\pos + Round((_scroll_pos_-_bar_\min) * _bar_\increment, #PB_Round_Nearest)) 
+    (_bar_\area\pos + Round((_scroll_pos_-_bar_\min) * _bar_\scroll_increment, #PB_Round_Nearest)) 
     ; (_bar_\area\pos + Round((_scroll_pos_-_bar_\min) * (_bar_\area\len / (_bar_\max-_bar_\min)), #PB_round_nearest)) 
   EndMacro
   
@@ -1720,8 +1721,8 @@ Module Widget
   ;     
   ;   EndProcedure
   ;   
-  ;   Procedure.i bar_create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scrollstep.f=1.0)
-  ;     ProcedureReturn bar::create(type, size, min, max, pagelength, flag, round, parent, scrollstep)
+  ;   Procedure.i bar_create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
+  ;     ProcedureReturn bar::create(type, size, min, max, pagelength, flag, round, parent, scroll_step)
   ;   EndProcedure
   
   Macro _bar_scrolled_(_this_, _pos_, _len_)
@@ -1739,7 +1740,7 @@ Module Widget
     EndIf
     
     _this_\bar\area\end = _this_\bar\area\pos + (_this_\bar\area\len - _this_\bar\thumb\len)
-    _this_\bar\increment = (_this_\bar\area\len / (_this_\bar\max - _this_\bar\min))
+    _this_\bar\scroll_increment = (_this_\bar\area\len / (_this_\bar\max - _this_\bar\min))
   EndMacro
   
   Macro _bar_ThumbPos(_this_, _scroll_pos_)
@@ -1988,7 +1989,7 @@ Module Widget
       _bar_splitter_size_(_this_)
     EndIf
     
-    If _this_\bar\change
+    If _this_\bar\page\change
       If _this_\text
         _this_\text\change = 1
         _this_\text\string = "%"+Str(_this_\bar\page\Pos)
@@ -2005,11 +2006,11 @@ Module Widget
         If _this_\bar\vertical
           _this_\parent\scroll\y =- _this_\bar\page\pos ; _this_\y 
                                                          ;_this_\parent\scroll\height = _this_\bar\max
-          _childrens_move_(_this_\parent, 0, _this_\bar\change)
+          _childrens_move_(_this_\parent, 0, _this_\bar\page\change)
         Else
           _this_\parent\scroll\x =- _this_\bar\page\pos ; _this_\x 
                                                          ;_this_\parent\scroll\width = _this_\bar\max
-          _childrens_move_(_this_\parent, _this_\bar\change, 0)
+          _childrens_move_(_this_\parent, _this_\bar\page\change, 0)
         EndIf
       EndIf
       
@@ -2039,7 +2040,7 @@ Module Widget
       EndIf
       
       If \page\pos <> ScrollPos
-        \change = \page\pos - ScrollPos
+        \page\change = \page\pos - ScrollPos
         
         If \page\pos > ScrollPos
           \direction =- ScrollPos
@@ -2155,7 +2156,7 @@ Module Widget
         
         If \bar\area\len 
           \bar\page\end = \bar\max - \bar\page\len
-          \bar\increment = (\bar\area\len / (\bar\max - \bar\min))
+          \bar\scroll_increment = (\bar\area\len / (\bar\max - \bar\min))
           \bar\thumb\pos = _bar_ThumbPos(*this, _bar_invert_(*this\bar, \bar\page\pos, \bar\inverted))
           
           If #PB_GadgetType_ScrollBar = \type And \bar\thumb\pos = \bar\area\end And \bar\page\pos <> \bar\page\end And _bar_in_stop_(\bar)
@@ -2221,7 +2222,7 @@ Module Widget
           \bar\page\pos = \bar\max
         EndIf
         
-        \bar\change = #False
+        \bar\page\change = #False
         \change = #True
         Result = #True
       EndIf
@@ -2299,8 +2300,8 @@ Module Widget
               Result = #True
             EndIf
             
-          Case #__bar_ScrollStep 
-            \bar\scrollstep = Value
+          Case #__bar_scroll_step 
+            \bar\scroll_step = Value
             
           Case #__bar_buttonSize
             If \bar\button[#__b_3]\len <> Value
@@ -2374,7 +2375,7 @@ Module Widget
     EndWith
   EndProcedure
   
-  Procedure.i Bar_Create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scrollstep.f=1.0)
+  Procedure.i Bar_Create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
     Protected *this._s_widget = AllocateStructure(_s_widget)
     
     With *this
@@ -2395,7 +2396,7 @@ Module Widget
       \bar\mode = Bool(Flag&#__bar_ticks=#__bar_ticks)*#__bar_ticks
       \bar\vertical = Bool(Flag&#__bar_vertical=#__bar_vertical)
       \bar\inverted = Bool(Flag&#__bar_inverted=#__bar_inverted)
-      \bar\scrollstep = scrollstep
+      \bar\scroll_step = scroll_step
       
       ; ???? ???? ???????
       \color\alpha = 255
@@ -3953,7 +3954,7 @@ Module Widget
             If \bar\mode = #__bar_ticks
               For i=0 To \bar\page\end-\bar\min
                 Line(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3+4)-2, 
-                     (\bar\area\pos + _thumb_ + Round(i * \bar\increment, #PB_Round_Nearest)),3, 1,\bar\button[#__b_1]\color\frame)
+                     (\bar\area\pos + _thumb_ + Round(i * \bar\scroll_increment, #PB_Round_Nearest)),3, 1,\bar\button[#__b_1]\color\frame)
               Next
             EndIf
             
@@ -3963,7 +3964,7 @@ Module Widget
           Else
             If \bar\mode = #__bar_ticks
               For i=0 To \bar\page\end-\bar\min
-                Line((\bar\area\pos + _thumb_ + Round(i * \bar\increment, #PB_Round_Nearest)), 
+                Line((\bar\area\pos + _thumb_ + Round(i * \bar\scroll_increment, #PB_Round_Nearest)), 
                      \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3+4)-2,1,3,\bar\button[#__b_3]\color\Frame)
               Next
             EndIf
@@ -4357,7 +4358,7 @@ Module Widget
             
             ;
             If _items_\image
-              _items_\image\x = _items_\x + _this_\image\padding + _items_\sublevellen - _this_\scroll\h\bar\page\pos
+              _items_\image\x = _items_\x + _this_\image\_padding + _items_\sublevellen - _this_\scroll\h\bar\page\pos
               _items_\image\y = _items_\y + (_items_\height-_items_\image\height)/2-_this_\scroll\v\bar\page\pos
             EndIf
             
@@ -4701,7 +4702,7 @@ Module Widget
           If \scroll\v And \scroll\v\bar\page\len And \scroll\v\bar\max<>\scroll\height And 
              Widget::SetAttribute(\scroll\v, #__bar_maximum, \scroll\height)
             Bar_resizes(\scroll, \x-\scroll\h\x+1, \y-\scroll\v\y+1, #PB_Ignore, #PB_Ignore)
-            \scroll\v\bar\scrollstep = \text\height
+            \scroll\v\bar\scroll_step = \text\height
           EndIf
           
           If \scroll\h And \scroll\h\bar\page\len And \scroll\h\bar\max<>\scroll\width And 
@@ -5060,7 +5061,7 @@ Module Widget
       \scroll\height = (y+\scroll\v\bar\page\pos)-\y[#__c_2]-1;\flag\gridLines
                                                               ; set vertical scrollbar max value
       If \scroll\v And \scroll\v\bar\page\len And \scroll\v\bar\max<>\scroll\height And 
-         SetAttribute(\scroll\v, #__bar_maximum, \scroll\height) : \scroll\v\bar\scrollstep = \text\height
+         SetAttribute(\scroll\v, #__bar_maximum, \scroll\height) : \scroll\v\bar\scroll_step = \text\height
         Bar_resizes(\scroll, 0,0, #PB_Ignore, #PB_Ignore)
       EndIf
       
@@ -5582,8 +5583,8 @@ Module Widget
     EndIf
     
     If _this_\scroll\v And 
-       _this_\scroll\v\bar\scrollstep <> _height_ + Bool(_this_\flag\gridlines)
-      _this_\scroll\v\bar\scrollstep = _height_ + Bool(_this_\flag\gridlines)
+       _this_\scroll\v\bar\scroll_step <> _height_ + Bool(_this_\flag\gridlines)
+      _this_\scroll\v\bar\scroll_step = _height_ + Bool(_this_\flag\gridlines)
     EndIf
   EndMacro
   
@@ -8826,7 +8827,7 @@ Module Widget
         CompilerEndIf
         
         \text\_padding = 4
-        \image\padding = 2
+        \image\_padding = 2
         
         \flag\gridlines = Bool(flag&#__tree_gridLines)
         \flag\multiselect = Bool(flag&#__tree_multiselect)
@@ -9093,7 +9094,7 @@ Module Widget
   EndProcedure
   
   ;-
-  Procedure.i ScrollArea(X.l,Y.l,Width.l,Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l=1, Flag.i=0)
+  Procedure.i ScrollArea(X.l,Y.l,Width.l,Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, scroll_step.l=1, Flag.i=0)
     Protected Size = 16, *this._s_widget = AllocateStructure(_s_widget) 
     _set_last_parameters_(*this, #PB_GadgetType_ScrollArea, Flag, Root()\opened)
     
@@ -9168,7 +9169,7 @@ Module Widget
       \color\back = $FFF9F9F9
       
       \tab\bar\page\len = Width
-      \tab\bar\scrollstep = 10
+      \tab\bar\scroll_step = 10
       
       
       \__height = 25
@@ -9626,7 +9627,7 @@ Module Widget
       If _this_\index[#__s_1] =- 1
         Select #__s_1
           Case _this_\tab\bar\button[#__b_1]\color\state
-            If Bar_Change(_this_\tab\bar, (_this_\tab\bar\page\pos - _this_\tab\bar\scrollstep))   
+            If Bar_Change(_this_\tab\bar, (_this_\tab\bar\page\pos - _this_\tab\bar\scroll_step))   
               If Not _bar_in_start_(_this_\tab\bar) And 
                  _this_\tab\bar\button[#__b_2]\color\state = #__s_3 : If #__debug_events_tab : Debug " enable tab button - right" : EndIf
                 _this_\tab\bar\button[#__b_2]\color\state = #__s_0
@@ -9639,7 +9640,7 @@ Module Widget
             EndIf
             
           Case _this_\tab\bar\button[#__b_2]\color\state 
-            If Bar_Change(_this_\tab\bar, (_this_\tab\bar\page\pos + _this_\tab\bar\scrollstep)) 
+            If Bar_Change(_this_\tab\bar, (_this_\tab\bar\page\pos + _this_\tab\bar\scroll_step)) 
               If Not _bar_in_stop_(_this_\tab\bar) And 
                  _this_\tab\bar\button[#__b_1]\color\state = #__s_3 : If #__debug_events_tab : Debug " enable tab button - left" : EndIf
                 _this_\tab\bar\button[#__b_1]\color\state = #__s_0
@@ -9879,8 +9880,8 @@ Module Widget
       ;       If _this_\index[#__s_1] =- 1
       Select _this_\from ; #__s_1
         Case #__b_1      ; _this_\bar\button[#__b_1]\color\state
-          If Bar_Change(_this_\bar, Bool(_this_\bar\inverted) * (_this_\bar\page\pos + _this_\bar\scrollstep) + 
-                                    Bool(Not _this_\bar\inverted) * (_this_\bar\page\pos - _this_\bar\scrollstep))
+          If Bar_Change(_this_\bar, Bool(_this_\bar\inverted) * (_this_\bar\page\pos + _this_\bar\scroll_step) + 
+                                    Bool(Not _this_\bar\inverted) * (_this_\bar\page\pos - _this_\bar\scroll_step))
             If Not _bar_in_start_(_this_\bar) And 
                _this_\bar\button[#__b_2]\color\state = #__s_3 
               
@@ -9897,8 +9898,8 @@ Module Widget
           EndIf
           
         Case #__b_2 ; _this_\bar\button[#__b_2]\color\state 
-          If Bar_Change(_this_\bar, Bool(_this_\bar\inverted) * (_this_\bar\page\pos - _this_\bar\scrollstep) + 
-                                    Bool(Not _this_\bar\inverted) * (_this_\bar\page\pos + _this_\bar\scrollstep))
+          If Bar_Change(_this_\bar, Bool(_this_\bar\inverted) * (_this_\bar\page\pos - _this_\bar\scroll_step) + 
+                                    Bool(Not _this_\bar\inverted) * (_this_\bar\page\pos + _this_\bar\scroll_step))
             If Not _bar_in_stop_(_this_\bar) And 
                _this_\bar\button[#__b_1]\color\state = #__s_3 
               
@@ -11011,5 +11012,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------0----------v--------------f-----PG--v-8------------------------------------------------vt-v-------8-----------------------------------
+; Folding = ---------------------------------------------------------------0----------v--------------f-----PO--v-8------------------------------------------------vt-v-------8-----------------------------------
 ; EnableXP

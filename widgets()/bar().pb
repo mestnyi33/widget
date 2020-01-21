@@ -43,30 +43,63 @@ CompilerIf Not Defined(Bar, #PB_Module)
     (Bool(Not _this_\hide) * _this_\height)
   EndMacro
 
-  Macro _is_scroll_(_this_)
+  Macro _is_scroll_bar_(_this_)
     Bool(_this_\parent And _this_\parent\scroll And (_this_\parent\scroll\v = _this_ Or _this_ = _this_\parent\scroll\h))
   EndMacro
   
-  Macro _scrolled_(_this_, _pos_, _len_)
+  Macro _scrollarea_change_(_this_, _pos_, _len_)
     Bool(Bool(((_pos_+_this_\bar\min)-_this_\bar\page\pos) < 0 And 
               Bar::SetState(_this_, (_pos_+_this_\bar\min))) Or
          Bool(((_pos_+_this_\bar\min)-_this_\bar\page\pos) > (_this_\bar\page\len-(_len_)) And 
               Bar::SetState(_this_, (_pos_+_this_\bar\min)-(_this_\bar\page\len-(_len_)))))
   EndMacro
   
+  Macro _scrollarea_draw_(_this_)
+    ; Draw scroll bars
+    CompilerIf Defined(Bar, #PB_Module)
+      If _this_\scroll
+        If Not _this_\scroll\v\hide And _this_\scroll\v\width
+          Bar::Draw(_this_\scroll\v)
+        EndIf
+        If Not _this_\scroll\h\hide And _this_\scroll\h\height
+          Bar::Draw(_this_\scroll\h)
+        EndIf
+      
+        If _this_\scroll\v And _this_\scroll\h
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          ; Scroll area coordinate
+          Box(_this_\scroll\h\x + _this_\scroll\x, _this_\scroll\v\y + _this_\scroll\y, _this_\scroll\width, _this_\scroll\height, $FF0000FF)
+          
+          ; Debug ""+ _this_\scroll\x +" "+ _this_\scroll\y +" "+ _this_\scroll\width +" "+ _this_\scroll\height
+          Box(_this_\scroll\h\x - _this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FFFF0000)
+          
+          ; page coordinate
+          Box(_this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00)
+        EndIf
+      EndIf
+    CompilerEndIf
+  EndMacro
+  
+  Macro _scrollarea_update_(_this_)
+    Bool(*this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change)
+    Bar::Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+    _this_\scroll\v\bar\area\change = #False
+    _this_\scroll\h\bar\area\change = #False
+  EndMacro
+  
   Macro _get_scroll_pos_(_bar_, _thumb_pos_)
-    ; _bar_\increment = (_bar_\area\len / (_bar_\max-_bar_\min))
-    (_bar_\min + Round(((_thumb_pos_) - _bar_\area\pos) / _bar_\increment, #PB_Round_Nearest))
+    ; _bar_\scroll_increment = (_bar_\area\len / (_bar_\max-_bar_\min))
+    (_bar_\min + Round(((_thumb_pos_) - _bar_\area\pos) / _bar_\scroll_increment, #PB_Round_Nearest))
   EndMacro
   
   Macro _get_thumb_pos_(_bar_, _scroll_pos_)
-    ; _bar_\increment = (_bar_\area\len / (_bar_\max-_bar_\min))
-    (_bar_\area\pos + Round(((_scroll_pos_) - _bar_\min) * _bar_\increment, #PB_Round_Nearest)) 
+    ; _bar_\scroll_increment = (_bar_\area\len / (_bar_\max-_bar_\min))
+    (_bar_\area\pos + Round(((_scroll_pos_) - _bar_\min) * _bar_\scroll_increment, #PB_Round_Nearest)) 
   EndMacro
   
   Macro _get_thumb_len_(_bar_)
-    ; _bar_\increment = (_bar_\area\len / (_bar_\max-_bar_\min))
-    Round(_bar_\area\len - _bar_\increment * ((_bar_\max-_bar_\min) - _bar_\page\len), #PB_Round_Nearest)
+    ; _bar_\scroll_increment = (_bar_\area\len / (_bar_\max-_bar_\min))
+    Round(_bar_\area\len - _bar_\scroll_increment * ((_bar_\max-_bar_\min) - _bar_\page\len), #PB_Round_Nearest)
   EndMacro
   
   Macro get_page_height(_scroll_, _round_ = 0)
@@ -106,7 +139,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndIf
     
     _this_\bar\area\end = _this_\bar\area\pos + (_this_\bar\area\len - _this_\bar\thumb\len)
-    _this_\bar\increment = (_this_\bar\area\len / (_this_\bar\max - _this_\bar\min))
+    _this_\bar\scroll_increment = (_this_\bar\area\len / (_this_\bar\max - _this_\bar\min))
   EndMacro
   
   
@@ -128,7 +161,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
   Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
   Declare.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.i=0)
   
-  Declare.i create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scrollstep.f=1.0)
+  Declare.i create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
   ;Declare.i create(X.l,Y.l,Width.l,Height.l, Min.l, Max.l, PageLength.l, Flag.l=0, round.l=0)
   Declare.b events(*this, EventType.l, mouse_x.l, mouse_y.l, wheel_x.b=0, wheel_y.b=0)
   
@@ -640,7 +673,7 @@ Module bar
       _splitter_size_(*this)
     EndIf
     
-    If *this\bar\change
+    If *this\bar\page\change
       If *this\text
         *this\text\change = 1
         *this\text\string = "%"+Str(*this\bar\page\Pos)
@@ -653,14 +686,14 @@ Module bar
               *this\parent\change =- 1
               *this\parent\scroll\y =- *this\bar\page\pos
               ; ScrollArea childrens auto resize 
-              _childrens_move_(*this\parent, 0, *this\bar\change)
+              _childrens_move_(*this\parent, 0, *this\bar\page\change)
             EndIf
           Else
             If *this\parent\scroll\h = *this
               *this\parent\change =- 1
               *this\parent\scroll\x =- *this\bar\page\pos
               ; ScrollArea childrens auto resize 
-              _childrens_move_(*this\parent, *this\bar\change, 0)
+              _childrens_move_(*this\parent, *this\bar\page\change, 0)
             EndIf
           EndIf
         EndIf
@@ -762,7 +795,7 @@ Module bar
         
         If \bar\area\len 
           \bar\page\end = \bar\max - \bar\page\len
-          \bar\increment = (\bar\area\len / (\bar\max - \bar\min))
+          \bar\scroll_increment = (\bar\area\len / (\bar\max - \bar\min))
           \bar\thumb\pos = ThumbPos(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
           
           If #PB_GadgetType_ScrollBar = \type And \bar\thumb\pos = \bar\area\end And \bar\page\pos <> \bar\page\end And _in_stop_(\bar)
@@ -803,8 +836,7 @@ Module bar
       EndIf
       
       If \page\pos <> ScrollPos
-       ; Debug  "   "+ScrollPos
-       \change = \page\pos - ScrollPos
+        \page\change = \page\pos - ScrollPos
         
         If \page\pos > ScrollPos
           \direction =- ScrollPos
@@ -872,8 +904,6 @@ Module bar
           \bar\page\pos = \bar\max
         EndIf
         
-        ;\change = #True
-        
         Result = #True
       EndIf
     EndWith
@@ -902,14 +932,16 @@ Module bar
         Select Attribute
           Case #__bar_minimum
             If \bar\min <> Value
-              \bar\min = Value
+              \bar\area\change = \bar\min - Value
               \bar\page\pos = Value
+              \bar\min = Value
               ;Debug  " min "+\bar\min+" max "+\bar\max
               Result = #True
             EndIf
             
           Case #__bar_maximum
             If \bar\max <> Value
+              \bar\area\change = \bar\max - Value
               If \bar\min > Value
                 \bar\max = \bar\min + 1
               Else
@@ -921,12 +953,13 @@ Module bar
               EndIf
               ;Debug  "   min "+\bar\min+" max "+\bar\max
               
-              \bar\change = #True
+              \bar\page\change = #True
               Result = #True
             EndIf
             
           Case #__bar_pagelength
             If \bar\page\len <> Value
+              \bar\area\change = \bar\page\len - Value
               \bar\page\len = Value
               
               If Not \bar\max
@@ -956,13 +989,13 @@ Module bar
             \bar\inverted = Bool(Value)
             
           Case #__bar_scrollstep 
-            \bar\scrollstep = Value
+            \bar\scroll_step = Value
             
         EndSelect
       EndIf
       
       If Result ; And \width And \height ; есть проблемы с imagegadget и scrollareagadget
-        ;\bar\change = #True
+        ;\bar\page\change = #True
         ;Resize(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) 
         \hide = update(*this)
       EndIf
@@ -1499,7 +1532,7 @@ Module bar
           EndIf
           
         Case #PB_EventType_LeftButtonDown
-          If *leave = *this And Not _is_scroll_(*this)
+          If *leave = *this And Not _is_scroll_bar_(*this)
             Macro _set_active_(_this_)
             If *event\active <> _this_
               If *event\active 
@@ -1544,16 +1577,16 @@ Module bar
               Select \from
                 Case #__b_1 
                   If \bar\inverted
-                    Result = SetState(*this, _invert_(*this\bar, (\bar\page\pos + \bar\scrollstep), Bool(\type <> #PB_GadgetType_Spin And \bar\inverted)))
+                    Result = SetState(*this, _invert_(*this\bar, (\bar\page\pos + \bar\scroll_step), Bool(\type <> #PB_GadgetType_Spin And \bar\inverted)))
                   Else
-                    Result = SetState(*this, _invert_(*this\bar, (\bar\page\pos - \bar\scrollstep), \bar\inverted))
+                    Result = SetState(*this, _invert_(*this\bar, (\bar\page\pos - \bar\scroll_step), \bar\inverted))
                   EndIf
                   
                 Case #__b_2 
                   If \bar\inverted
-                    Result = SetState(*this, _invert_(*this\bar, (\bar\page\pos - \bar\scrollstep), Bool(\type <> #PB_GadgetType_Spin And \bar\inverted)))
+                    Result = SetState(*this, _invert_(*this\bar, (\bar\page\pos - \bar\scroll_step), Bool(\type <> #PB_GadgetType_Spin And \bar\inverted)))
                   Else
-                    Result = SetState(*this, _invert_(*this\bar, (\bar\page\pos + \bar\scrollstep), \bar\inverted))
+                    Result = SetState(*this, _invert_(*this\bar, (\bar\page\pos + \bar\scroll_step), \bar\inverted))
                   EndIf
                   
                 Case #__b_3 
@@ -1729,7 +1762,7 @@ Module bar
             If \bar\mode = #PB_TrackBar_Ticks
               For i=0 To \bar\page\end-\bar\min
                 Line(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3+4)-2, 
-                     (\bar\area\pos + _thumb_ + Round(i * \bar\increment, #PB_Round_Nearest)),3, 1,\bar\button[#__b_1]\color\frame)
+                     (\bar\area\pos + _thumb_ + Round(i * \bar\scroll_increment, #PB_Round_Nearest)),3, 1,\bar\button[#__b_1]\color\frame)
               Next
             EndIf
             
@@ -1739,7 +1772,7 @@ Module bar
           Else
             If \bar\mode = #PB_TrackBar_Ticks
               For i=0 To \bar\page\end-\bar\min
-                Line((\bar\area\pos + _thumb_ + Round(i * \bar\increment, #PB_Round_Nearest)), 
+                Line((\bar\area\pos + _thumb_ + Round(i * \bar\scroll_increment, #PB_Round_Nearest)), 
                      \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3+4)-2,1,3,\bar\button[#__b_3]\color\Frame)
               Next
             EndIf
@@ -1923,9 +1956,9 @@ Module bar
           If \type = #PB_GadgetType_Spin
             Protected i
             
-            ;*this\bar\scrollstep = 1.19
+            ;*this\bar\scroll_step = 1.19
             For i=0 To 3
-              If *this\bar\scrollstep = ValF(StrF(*this\bar\scrollstep, i))
+              If *this\bar\scroll_step = ValF(StrF(*this\bar\scroll_step, i))
                 *this\text\string = StrF(*this\bar\page\Pos, i)
                 Break
               EndIf
@@ -1947,13 +1980,12 @@ Module bar
         Case #PB_GadgetType_ProgressBar : Draw_Progress(*this)
       EndSelect
       
-      If \text\change
-        \text\change = 0
+      If *this\text\change <> 0
+        *this\text\change = 0
       EndIf
       
-      If *this\change <> *this\bar\change
-        *this\change = *this\bar\change
-        *this\bar\change = 0
+      If *this\bar\page\change <> 0
+        *this\bar\page\change = 0
       EndIf
       
       EndIf
@@ -1962,7 +1994,7 @@ Module bar
   
   
   ;-
-  Procedure.i create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scrollstep.f=1.0)
+  Procedure.i create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
     Protected *this._s_widget = AllocateStructure(_s_widget)
     
     With *this
@@ -1981,7 +2013,7 @@ Module bar
       EndIf
       
       \round = round
-      \bar\scrollstep = scrollstep
+      \bar\scroll_step = scroll_step
       
       ; ???? ???? ???????
       \color\alpha = 255
@@ -2390,7 +2422,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEach *List()
       Repaint | events(*List(), EventType, MouseX, MouseY, wheel_X, wheel_Y)
       
-      If *List()\bar\change
+      If *List()\bar\page\change
         
         If *List()\bar\vertical
           v_CallBack(*List()\bar\page\pos, *List()\type)
@@ -2398,7 +2430,7 @@ CompilerIf #PB_Compiler_IsMainFile
           h_CallBack(*List()\bar\page\pos, *List()\type)
         EndIf
         
-        *List()\bar\change = 0
+        *List()\bar\page\change = 0
       EndIf
     Next
     
@@ -2604,5 +2636,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = x9+vLA9-BAAAAA----8ff-+LAAA-Ag-+--PCAAQAAAAAAAAAAgAkHACAAAA0
+; Folding = x90-uAw-PAAAA9----v-0-8vAAA9DA+8---IAAIJ+YAA9AAA5uDSeCIAAAR1
 ; EnableXP

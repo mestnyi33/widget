@@ -12,6 +12,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       pos.l
       len.l
       *end
+      change.f
 ;       min.l
 ;       max.l
     EndStructure
@@ -169,15 +170,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       change.b
     EndStructure
     
-     ;- - _s_padding
-  Structure _s_padding
-    left.l
-    top.l
-    right.l
-    bottom.l
-  EndStructure
-  
-  
+    ;- - _s_padding
+    Structure _s_padding
+      left.l
+      top.l
+      right.l
+      bottom.l
+    EndStructure
+    
     ;- - _s_text
     Structure _s_text Extends _s_edit
       ;     ;     Char.c
@@ -210,13 +210,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       mode.i
       
       hide.b
-      change.l
+      change.b
       vertical.b
       inverted.b
       direction.l
       
-      increment.f
-      scrollstep.f
+      scroll_step.f
+      ;scroll_change.f
+      scroll_increment.f
       
       page._s_page
       area._s_page
@@ -234,8 +235,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       index.l
       handle.i[2] ; - editor
       change.b
+      _padding.b
+      
       padding._s_padding
-    
       align._s_align
     EndStructure
     
@@ -529,5 +531,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = PAAsIA4
+; Folding = PCA1IA4
 ; EnableXP

@@ -163,11 +163,11 @@ Module Editor
   
   ;-
   Macro _text_scroll_x_(_this_)
-    *this\change = bar::_scrolled_(*this\scroll\h, _this_\text\caret\x-(Bool(_this_\text\caret\x>0) * (_this_\scroll\h\x+_this_\text\_padding+_this_\text\x)), (_this_\text\_padding*2+_this_\text\x*2+_this_\row\margin\width+2)) ; ok
+    *this\change = bar::_scrollarea_change_(*this\scroll\h, _this_\text\caret\x-(Bool(_this_\text\caret\x>0) * (_this_\scroll\h\x+_this_\text\_padding+_this_\text\x)), (_this_\text\_padding*2+_this_\text\x*2+_this_\row\margin\width+2)) ; ok
   EndMacro
   
   Macro _text_scroll_y_(_this_)
-    *this\change = bar::_scrolled_(*this\scroll\v, _this_\text\caret\y-(Bool(_this_\text\caret\y>0) * (_this_\scroll\v\y+_this_\text\_padding+_this_\text\y)), (_this_\text\_padding*2+_this_\text\y*2+_this_\text\caret\height)) ; ok
+    *this\change = bar::_scrollarea_change_(*this\scroll\v, _this_\text\caret\y-(Bool(_this_\text\caret\y>0) * (_this_\scroll\v\y+_this_\text\_padding+_this_\text\y)), (_this_\text\_padding*2+_this_\text\y*2+_this_\text\caret\height)) ; ok
   EndMacro
   
   
@@ -1029,8 +1029,8 @@ Module Editor
     EndIf
     
     If _this_\scroll\v And 
-       _this_\scroll\v\bar\scrollstep <> _height_ + Bool(_this_\flag\gridlines)
-      _this_\scroll\v\bar\scrollstep = _height_ + Bool(_this_\flag\gridlines)
+       _this_\scroll\v\bar\scroll_step <> _height_ + Bool(_this_\flag\gridlines)
+      _this_\scroll\v\bar\scroll_step = _height_ + Bool(_this_\flag\gridlines)
     EndIf
   EndMacro
   
@@ -1385,45 +1385,40 @@ Module Editor
       
       
       
-      If *this\scroll And (*this\text\change Or (*this\resize And *this\text\multiline =- 1))
-        If *this\scroll\v And *this\scroll\h
-          Protected scroll_change.b
-          
-          If *this\scroll\h\bar\min <> -*this\scroll\x
-            scroll_change | Bar::SetAttribute(*this\scroll\h, #__bar_minimum, -*this\scroll\x)
-          EndIf
-          
+      If *this\scroll And 
+         (*this\text\change Or (*this\resize And *this\text\multiline =- 1))
+        
+        If *this\scroll\v
           If *this\scroll\v\bar\min <> -*this\scroll\y
-            scroll_change | Bar::SetAttribute(*this\scroll\v, #__bar_minimum, -*this\scroll\y)
+            Bar::SetAttribute(*this\scroll\v, #__bar_minimum, -*this\scroll\y)
           EndIf
           
           If *this\scroll\v\bar\max <> *this\scroll\height 
-            ; Debug ""+ *this\width +" "+ *this\scroll\v\bar\max +" "+ *this\scroll\height +" "+ *this\scroll\v\height  +" "+ Str(*this\height - *this\bs*2)
-            scroll_change | Bar::SetAttribute(*this\scroll\v, #__bar_maximum, *this\scroll\height)
+            Bar::SetAttribute(*this\scroll\v, #__bar_maximum, *this\scroll\height)
+          EndIf
+          
+          ; This is for the caret and scroll when entering the key - (enter & backspace) 
+          _text_scroll_y_(*this)
+        EndIf
+        
+        If *this\scroll\h
+          If *this\scroll\h\bar\min <> -*this\scroll\x
+            Bar::SetAttribute(*this\scroll\h, #__bar_minimum, -*this\scroll\x)
           EndIf
           
           If *this\scroll\h\bar\max <> *this\scroll\width 
-            scroll_change | Bar::SetAttribute(*this\scroll\h, #__bar_maximum, *this\scroll\width)
+            Bar::SetAttribute(*this\scroll\h, #__bar_maximum, *this\scroll\width)
           EndIf
           
-          If scroll_change
-            Bar::Resizes(*this\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            
-            \height[2] = \scroll\v\bar\page\len
-            \width[2] = \scroll\h\bar\page\len 
-          EndIf
+          ; This is for the caret and scroll when entering the key - (enter & backspace) 
+          _text_scroll_x_(*this)
         EndIf
         
-        ; This is for the caret and scroll when entering the key - (enter & backspace) ;
-        ; При вводе enter выделенную строку перемещаем в конец страницы и прокручиваем ползунок
-        If \scroll\h
-          _text_scroll_x_(*this)
-        EndIf 
-        If \scroll\v
-          _text_scroll_y_(*this)
-        EndIf 
+        If bar::_scrollarea_update_(*this)
+          \height[2] = \scroll\v\bar\page\len
+          \width[2] = \scroll\h\bar\page\len 
+        EndIf
       EndIf 
-      
     EndWith
     
     ProcedureReturn Repaint
@@ -1713,16 +1708,6 @@ Module Editor
           Box(*this\text\caret\x+*this\scroll\x, *this\text\caret\y+*this\scroll\y, *this\text\caret\width, *this\text\caret\height, $FFFFFFFF)
         EndIf
         
-        ; Draw scroll bars
-        If *this\scroll
-          ;If *this\scroll\v\bar\change Or *this\repaint
-          bar::draw(*this\scroll\v)
-          ;EndIf
-          ;If *this\scroll\v\bar\change Or *this\repaint
-          bar::draw(*this\scroll\h)
-          ;EndIf
-        EndIf
-        
         ; Draw frames
         If *this\notify
           DrawingMode(#PB_2DDrawing_Outlined)
@@ -1734,19 +1719,8 @@ Module Editor
           If \round : RoundBox(\x[1],\y[1]-1,\width[1],\height[1]+2,\round,\round,\color\front[\color\state]) : EndIf  ; Сглаживание краев )))
         EndIf
         
-        If \scroll And \scroll\v And \scroll\h
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          ; Scroll area coordinate
-          Box(\scroll\h\x+*this\scroll\x, \scroll\v\y+*this\scroll\y, \scroll\width, \scroll\height, $FF0000FF) ; + \text\y*2 - \flag\gridlines), $FF0000FF)
-          
-          ; Debug ""+\scroll\x +" "+ \scroll\y +" "+ \scroll\width +" "+ \scroll\height
-          Box(\scroll\h\x-\scroll\h\bar\page\pos, \scroll\v\y-\scroll\v\bar\page\pos, \scroll\h\bar\max, \scroll\v\bar\max, $FFFF0000)
-          
-          ; page coordinate
-          Box(\scroll\h\x, \scroll\v\y, \scroll\h\bar\page\len, \scroll\v\bar\page\len, $FF00FF00)
-        EndIf
-        
-        
+        ; Draw scroll bars
+        bar::_scrollarea_draw_(*this)
         
         If \text\change : \text\change = 0 : EndIf
         If \resize : \resize = 0 : EndIf
@@ -3155,6 +3129,7 @@ Module Editor
         *this\root\window = GetActiveWindow()
         *this\root\canvas = Gadget
         GetActive() = *this\root
+        GetActive()\root = *this\root
         
         ;
         If *this\repaint
@@ -3578,5 +3553,5 @@ CompilerEndIf
 ; ; ;   EndIf
 ; ; ; CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = +------------------4--+fz-+--------------------------f---------------
+; Folding = +------------------4--+-z-+--N0---P------------------8--------------
 ; EnableXP
