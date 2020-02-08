@@ -5,6 +5,7 @@ XIncludeFile "widgets().pbi"
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseModule Widget
+  UseModule constants
   
   Global.i gEvent, gQuit, value, g_canvas, direction, x=10,y=10
   Global *window
@@ -165,6 +166,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

@@ -1,7 +1,6 @@
 ﻿; IncludePath "/Users/as/Documents/GitHub/Widget/"
 ;XIncludeFile "bar().pbi"
-;XIncludeFile "../bar().pb"
-XIncludeFile "../../splitter().pbi"
+XIncludeFile "../bar().pb"
 
 ; Module name   : Splitter
 ; Author        : mestnyi
@@ -9,13 +8,34 @@ XIncludeFile "../../splitter().pbi"
 ; Forum link    : https://www.purebasic.fr/english/viewtopic.php?f=12&t=70662
 ; 
 
-CompilerIf Not Defined(Splitter, #PB_Module)
 DeclareModule Splitter
   EnableExplicit
   UseModule constants
   UseModule structures
   
- 
+  ;- STRUCTURE
+  Structure _s_canvas
+    gadget.i
+    window.i
+  EndStructure
+  
+  Structure _s_gadget ; Extends _s_coordinate
+    type.l
+    
+    x.l[3]
+    y.l[3]
+    width.l[3]
+    height.l[3]
+    
+    fs.l
+    bs.l
+    
+    color._s_color
+    canvas._s_canvas
+    *widget._s_widget
+  EndStructure
+  
+  
   ;- DECLARE
   Declare GetState(Gadget.i)
   Declare SetState(Gadget.i, State.i)
@@ -29,32 +49,54 @@ Module Splitter
   
   ;- PROCEDURE
   
-  Procedure ReDraw(*This._s_widget)
+  Procedure ReDraw(*This._s_gadget)
     With *This
-      If StartDrawing(CanvasOutput(\root\Canvas))
+      If StartDrawing(CanvasOutput(\Canvas\Gadget))
         FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F0)
         
-        Bar::Draw(*This)
+        Bar::Draw(\widget)
         StopDrawing()
       EndIf
     EndWith  
   EndProcedure
   
   Procedure CallBack()
-    Protected WheelDelta.i, Mouse_X.i, Mouse_Y.i, *This._s_widget = GetGadgetData(EventGadget())
+    Protected WheelDelta.i, Mouse_X.i, Mouse_Y.i, *This._s_gadget = GetGadgetData(EventGadget())
     
     With *This
-      \root\Window = EventWindow()
-      Mouse_X = GetGadgetAttribute(\root\Canvas, #PB_Canvas_MouseX)
-      Mouse_Y = GetGadgetAttribute(\root\Canvas, #PB_Canvas_MouseY)
+      \Canvas\Window = EventWindow()
+      Mouse_X = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseX)
+      Mouse_Y = GetGadgetAttribute(\Canvas\Gadget, #PB_Canvas_MouseY)
       
       Select EventType()
-        Case #PB_EventType_Resize : ResizeGadget(\root\Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          Bar::Resize(*This, 0, 0, GadgetWidth(\root\Canvas), GadgetHeight(\root\Canvas)) 
+        Case #PB_EventType_Resize : ResizeGadget(\Canvas\Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          \Width = GadgetWidth(\Canvas\Gadget)
+          \Height = GadgetHeight(\Canvas\Gadget)
+          
+          ; Inner coordinae
+          If \widget\bar\Vertical
+            \X[2]=\bs
+            \Y[2]=\bs*2
+            \Width[2] = \Width-\bs*3
+            \Height[2] = \Height-\bs*4
+          Else
+            \X[2]=\bs*2
+            \Y[2]=\bs
+            \Width[2] = \Width-\bs*4
+            \Height[2] = \Height-\bs*3
+          EndIf
+          
+          ; Frame coordinae
+          \X[1]=\X[2]-\fs
+          \Y[1]=\Y[2]-\fs
+          \Width[1] = \Width[2]+\fs*2
+          \Height[1] = \Height[2]+\fs*2
+          
+          Bar::Resize(\widget, \X[2], \Y[2], \Width[2], \Height[2]) 
           ReDraw(*This)
       EndSelect
       
-      If Bar::Events(*This, EventType(), Mouse_X, Mouse_Y)
+      If Bar::Events(\widget, EventType(), Mouse_X, Mouse_Y)
         ReDraw(*This)
       EndIf
     EndWith
@@ -63,24 +105,24 @@ Module Splitter
   
   ;- PUBLIC
   Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
-    Protected *This._s_widget = GetGadgetData(Gadget)
+    Protected *This._s_gadget = GetGadgetData(Gadget)
     
     With *This
-     If Bar::SetAttribute(*This, Attribute, Value)
+     If Bar::SetAttribute(*This\widget, Attribute, Value)
         ReDraw(*This)
       EndIf
     EndWith
   EndProcedure
   
   Procedure GetAttribute(Gadget.i, Attribute.i)
-    Protected Result, *This._s_widget = GetGadgetData(Gadget)
+    Protected Result, *This._s_gadget = GetGadgetData(Gadget)
     
     With *This
       Select Attribute
-        Case #PB_Splitter_FirstGadget         : Result = \splitter\first
-        Case #PB_Splitter_SecondGadget        : Result = \splitter\second
-        Case #PB_Splitter_FirstMinimumSize    : Result = \bar\button[#__b_1]\len
-        Case #PB_Splitter_SecondMinimumSize   : Result = \bar\button[#__b_2]\len
+        Case #PB_Splitter_FirstGadget         : Result = \widget\splitter\first
+        Case #PB_Splitter_SecondGadget        : Result = \widget\splitter\second
+        Case #PB_Splitter_FirstMinimumSize    : Result = \widget\bar\button[#__b_1]\len
+        Case #PB_Splitter_SecondMinimumSize   : Result = \widget\bar\button[#__b_2]\len
       EndSelect
     EndWith
     
@@ -88,79 +130,88 @@ Module Splitter
   EndProcedure
   
   Procedure SetState(Gadget.i, State.i)
-    Protected *This._s_widget = GetGadgetData(Gadget)
+    Protected *This._s_gadget = GetGadgetData(Gadget)
     
     With *This
-      If Bar::SetState(*This, State) 
+      If Bar::SetState(*This\widget, State) 
         ReDraw(*This)
-        PostEvent(#PB_Event_Gadget, \root\Window, \root\Canvas, #PB_EventType_Change)
+        PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Change)
       EndIf
     EndWith
   EndProcedure
   
   Procedure GetState(Gadget.i)
-    Protected *This._s_widget = GetGadgetData(Gadget)
-    ProcedureReturn *This\bar\Page\Pos
+    Protected *This._s_gadget = GetGadgetData(Gadget)
+    ProcedureReturn *This\widget\bar\Page\Pos
   EndProcedure
   
-   Procedure Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, First.i, Second.i, Flag.i=0)
+  Procedure Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, First.i, Second.i, Flag.i=0)
     Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container) : CloseGadgetList() : If Gadget=-1 : Gadget=g : EndIf
-    Protected *This._s_widget = Bar::Splitter(0, 0, Width, Height, First, Second, Flag)
+    Protected *This._s_gadget = AllocateStructure(_s_gadget)
     
-    If *this
-      With *this
-        *this\root = AllocateStructure(_s_root)
-        *this\root\window = GetActiveWindow()
-        *this\root\canvas = Gadget
-        *event\active = *this\root
-        *event\active\root = *this\root
+    CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+      gtk_widget_reparent_( GadgetID(First), GadgetID(Gadget) )
+      gtk_widget_reparent_( GadgetID(Second), GadgetID(Gadget) )
+      
+    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+      SetParent_( GadgetID(First), GadgetID(Gadget) )
+      SetParent_( GadgetID(Second), GadgetID(Gadget) )
+      
+    CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
+     ;CocoaMessage(0,GadgetID(Gadget), "setParent", GadgetID(Gadget_1)); NSWindowAbove = 1
+      CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (First)) 
+      CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (Second)) 
+      
+;       Protected Point.NSPoint
+;       Point\x = 100
+;       Point\y = 100
+;       CocoaMessage (0, WindowID (0), "center")
+;       CocoaMessage (0, WindowID (0), "setFrameTopLeftPoint:@", @Point) ; Установить верхнюю левую координату окна
+;       CocoaMessage (0, WindowID (0), "setFrameOrigin:@", @Point) ; Установить нижнюю левую координату окна
+    CompilerEndIf
+    
+    If *This
+      With *This
+        \Type = #PB_GadgetType_Splitter
+        \Canvas\Gadget = Gadget
+        \Width = Width
+        \Height = Height
         
-        SetGadgetData(Gadget, *this)
-        BindGadgetEvent(Gadget, @callback())
+        \fs = 0
+        \bs = \fs
         
-        CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-          gtk_widget_reparent_( GadgetID(First), GadgetID(Gadget) )
-          gtk_widget_reparent_( GadgetID(Second), GadgetID(Gadget) )
-          
-        CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-          SetParent_( GadgetID(First), GadgetID(Gadget) )
-          SetParent_( GadgetID(Second), GadgetID(Gadget) )
-          
-          ; z-order
-          ;CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-          SetWindowLongPtr_( GadgetID(Gadget), #GWL_STYLE, GetWindowLongPtr_( GadgetID(Gadget), #GWL_STYLE ) | #WS_CLIPSIBLINGS )
-          SetWindowPos_( GadgetID(Gadget), #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
-          ;CompilerEndIf
-          
-        CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-          If *this\splitter\g_first
-            ;CocoaMessage(0,GadgetID(Gadget), "setParent", GadgetID(Gadget_1)); NSWindowAbove = 1
-            CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (First)) 
-          EndIf
-          If *this\splitter\g_second
-            CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (Second)) 
-          EndIf  
-          ;       Protected Point.NSPoint
-          ;       Point\x = 100
-          ;       Point\y = 100
-          ;       CocoaMessage (0, WindowID (0), "center")
-          ;       CocoaMessage (0, WindowID (0), "setFrameTopLeftPoint:@", @Point) ; Установить верхнюю левую координату окна
-          ;       CocoaMessage (0, WindowID (0), "setFrameOrigin:@", @Point) ; Установить нижнюю левую координату окна
-        CompilerEndIf
-        
-        ;
-        If *this\repaint
-        ;  PostEvent(#PB_Event_Gadget, *this\root\window, *this\root\canvas, constants::#__Event_Repaint)
+        ; Inner coordinae
+        If Flag&#PB_ScrollBar_Vertical
+          \X[2]=\bs
+          \Y[2]=\bs*2
+          \Width[2] = \Width-\bs*3
+          \Height[2] = \Height-\bs*4
+        Else
+          \X[2]=\bs*2
+          \Y[2]=\bs
+          \Width[2] = \Width-\bs*4
+          \Height[2] = \Height-\bs*3
         EndIf
         
+        ; Frame coordinae
+        \X[1]=\X[2]-\fs
+        \Y[1]=\Y[2]-\fs
+        \Width[1] = \Width[2]+\fs*2
+        \Height[1] = \Height[2]+\fs*2
+        
+        \Color\Frame = $C0C0C0
+        
+        \widget = Bar::Splitter(\X[2], \Y[2], \Width[2], \Height[2], First, Second, Flag)
+        
+        SetGadgetData(Gadget, *This)
+        BindGadgetEvent(Gadget, @CallBack())
         ReDraw(*This)
-      EndWith
-    EndIf
+      EndIf
+    EndWith
     
     ProcedureReturn Gadget
   EndProcedure
 EndModule
-CompilerEndIf
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -240,9 +291,6 @@ UseModule Bar
     Splitter_4 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
       ;   SetGadgetState(Splitter_1, 20)
     
-    SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
-    SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
-    
     TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
    
     Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
@@ -319,5 +367,5 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = Z-----
+; Folding = ------
 ; EnableXP

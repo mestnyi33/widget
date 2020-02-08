@@ -1,7 +1,7 @@
 ﻿CompilerIf Not Defined(constants, #PB_Module)
   DeclareModule constants
-    Macro _check_(_variable_, _constant_)
-      Bool(((_variable_) & _constant_) = _constant_)
+    Macro _check_(_variable_, _constant_, _state_=#True)
+      Bool(_state_ = Bool(((_variable_) & _constant_) = _constant_))
     EndMacro
     
     ;- - CONSTANTs
@@ -21,22 +21,6 @@
     #__spin_buttonsize2 = 15
     #__spin_buttonsize = 18
     
-    Enumeration #PB_Event_FirstCustomValue
-      #PB_Event_widget
-    EndEnumeration
-    
-    Enumeration #PB_EventType_FirstCustomValue
-      CompilerIf (#PB_Compiler_Version<547) : #PB_EventType_Resize : CompilerEndIf
-      
-      #PB_EventType_Free
-      #PB_EventType_Create
-      #PB_EventType_Drop
-      
-      #PB_EventType_Repaint
-      #PB_EventType_ScrollChange
-      ; #PB_EventType_ReturnKey
-    EndEnumeration
-    
     #__anchors = 9+4
     
     #__a_moved = 9
@@ -54,6 +38,14 @@
       #__b_1 = 1
       #__b_2 = 2
       #__b_3 = 3
+    EndEnumeration
+    
+    ;window buttons
+    Enumeration
+      #__wb_close
+      #__wb_maxi
+      #__wb_mini
+      #__wb_help
     EndEnumeration
     
     ;bar position
@@ -81,6 +73,9 @@
       #__c_2 = 2 ; inner
       #__c_3 = 3 ; container
       #__c_4 = 4 ; clip
+      #__c_5 = 5 ; clip frame
+      #__c_6 = 6 ; clip inner
+      #__c = 7
     EndEnumeration
     
     ;color state
@@ -101,10 +96,6 @@
       #__color_frame
     EndEnumeration
     
-    #PB_GadgetType_popup =- 10
-    #PB_GadgetType_property = 40
-    #PB_GadgetType_window =- 1
-    #PB_GadgetType_root =- 5
     ;
     
     #__flag_vertical = 1
@@ -153,9 +144,10 @@
       ;#__flag_autoBottom
       #__flag_noActivate
       ;#__flag_invisible
-      #__flag_sizegadget
-      #__flag_systemmenu
+      ;#__flag_sizegadget
+      ;#__flag_systemmenu
       #__flag_anchorsGadget
+      
       #__flag_borderless
       ;         #__flag_double
       ;         #__flag_flat
@@ -192,11 +184,32 @@
     #__text_invert = #__flag_inverted
     
     ;- _c_window
-    #__window_nogadget = #__flag_nobuttons
-    #__window_borderless = #__flag_borderless
-    #__window_systemmenu = #__flag_systemmenu
-    #__window_sizegadget = #__flag_sizegadget
-    #__window_screencentered = #__align_center
+;     #__window_nogadget = #__flag_nobuttons
+;     #__window_borderless = #__flag_borderless
+;     #__window_systemmenu = #__flag_systemmenu
+;     #__window_sizegadget = #__flag_sizegadget
+;     #__window_screencentered = #__align_center
+    
+    #__Window_Normal         = #PB_Window_Normal
+    #__Window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
+    #__Window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.
+    #__Window_MaximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.
+                                                         ; (MacOS only ; #PB_Window_SizeGadget will be also automatically added).
+    #__Window_SizeGadget     = #PB_Window_SizeGadget     ; Adds the sizeable feature To a window.
+    #__Window_Invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
+    #__Window_TitleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
+    #__Window_Tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry. 
+    #__Window_BorderLess     = #PB_Window_BorderLess     ; Creates a window without any borders.
+    #__Window_ScreenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
+    #__Window_WindowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified).
+                                                         ;                 x,y parameters are ignored.
+    #__Window_Maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers support this)
+    #__Window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
+    #__Window_NoGadgets      = #PB_Window_NoGadgets      ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+    #__Window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
+;     #__Window_CloseGadget    = #PB_Window_NoActivate<<2
+;     #__Window_Close          = #PB_Window_NoActivate<<2
+    #PB_Window                 = #PB_Window_NoActivate<<2
     
     ;- _c_tree
     #__tree_collapse = #__flag_collapse
@@ -302,7 +315,101 @@
     ;   #PB_flag = 1<<15
     ;   #PB_State = 1<<16
     
+    ;- _c_resize
+    EnumerationBinary 
+      #__resize_x
+      #__resize_y
+      #__resize_width
+      #__resize_height
+      #__resize_restore
+      #__resize_minimize
+      #__resize_maximize
+      #__resize_change
+    EndEnumeration
     
+    ;- _c_event
+    #__Event_MouseEnter       = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
+    #__Event_MouseLeave       = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
+    #__Event_MouseMove        = #PB_EventType_MouseMove        ; The mouse cursor moved
+    #__Event_MouseWheel       = #PB_EventType_MouseWheel       ; The mouse wheel was moved
+    #__Event_LeftButtonDown   = #PB_EventType_LeftButtonDown   ; The left mouse button was pressed
+    #__Event_LeftButtonUp     = #PB_EventType_LeftButtonUp     ; The left mouse button was released
+    #__Event_LeftClick        = #PB_EventType_LeftClick        ; A click With the left mouse button
+    #__Event_LeftDoubleClick  = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
+    #__Event_RightButtonDown  = #PB_EventType_RightButtonDown  ; The right mouse button was pressed
+    #__Event_RightButtonUp    = #PB_EventType_RightButtonUp    ; The right mouse button was released
+    #__Event_RightClick       = #PB_EventType_RightClick       ; A click With the right mouse button
+    #__Event_RightDoubleClick = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
+    #__Event_MiddleButtonDown = #PB_EventType_MiddleButtonDown ; The middle mouse button was pressed
+    #__Event_MiddleButtonUp   = #PB_EventType_MiddleButtonUp   ; The middle mouse button was released
+    #__Event_Focus            = #PB_EventType_Focus            ; The gadget gained keyboard focus
+    #__Event_LostFocus        = #PB_EventType_LostFocus        ; The gadget lost keyboard focus
+    #__Event_KeyDown          = #PB_EventType_KeyDown          ; A key was pressed
+    #__Event_KeyUp            = #PB_EventType_KeyUp            ; A key was released
+    #__Event_Input            = #PB_EventType_Input            ; Text input was generated
+    #__Event_Resize           = #PB_EventType_Resize           ; The gadget has been resized
+    #__Event_StatusChange     = #PB_EventType_StatusChange
+    #__Event_TitleChange      = #PB_EventType_TitleChange
+    #__Event_Change           = #PB_EventType_Change
+    #__Event_DragStart        = #PB_EventType_DragStart
+    
+    Enumeration #PB_EventType_FirstCustomValue
+      #__Event_Free         
+      #__Event_Create
+      #__Event_Drop
+      
+      #__Event_Repaint
+      #__Event_ScrollChange
+      #__Event_ReturnKey
+      
+      #__Event_CloseWindow
+      #__Event_MaximizeWindow
+      #__Event_MinimizeWindow
+      #__Event_RestoreWindow
+    EndEnumeration
+    
+    ;- _c_type
+    #__Type_Root          =- 5
+    #__Type_Property      =- 4
+    #__Type_Popup         =- 3
+    #__Type_Menu          =- 2
+    #__Type_Window        =- 1
+    
+    #__Type_Unknown       = #PB_GadgetType_Unknown
+    #__Type_Button        = #PB_GadgetType_Button
+    #__Type_ButtonImage   = #PB_GadgetType_ButtonImage
+    #__Type_Calendar      = #PB_GadgetType_Calendar
+    #__Type_Canvas        = #PB_GadgetType_Canvas
+    #__Type_CheckBox      = #PB_GadgetType_CheckBox
+    #__Type_ComboBox      = #PB_GadgetType_ComboBox
+    #__Type_Container     = #PB_GadgetType_Container
+    #__Type_Date          = #PB_GadgetType_Date
+    #__Type_Editor        = #PB_GadgetType_Editor
+    #__Type_ExplorerCombo = #PB_GadgetType_ExplorerCombo
+    #__Type_ExplorerList  = #PB_GadgetType_ExplorerList
+    #__Type_ExplorerTree  = #PB_GadgetType_ExplorerTree
+    #__Type_Frame         = #PB_GadgetType_Frame
+    #__Type_HyperLink     = #PB_GadgetType_HyperLink
+    #__Type_Image         = #PB_GadgetType_Image
+    #__Type_IPAddress     = #PB_GadgetType_IPAddress
+    #__Type_ListIcon      = #PB_GadgetType_ListIcon
+    #__Type_ListView      = #PB_GadgetType_ListView
+    #__Type_MDI           = #PB_GadgetType_MDI
+    #__Type_Option        = #PB_GadgetType_Option
+    #__Type_Panel         = #PB_GadgetType_Panel
+    #__Type_ProgressBar   = #PB_GadgetType_ProgressBar
+    #__Type_Scintilla     = #PB_GadgetType_Scintilla
+    #__Type_ScrollArea    = #PB_GadgetType_ScrollArea
+    #__Type_ScrollBar     = #PB_GadgetType_ScrollBar
+    #__Type_Shortcut      = #PB_GadgetType_Shortcut
+    #__Type_Spin          = #PB_GadgetType_Spin
+    #__Type_Splitter      = #PB_GadgetType_Splitter
+    #__Type_String        = #PB_GadgetType_String
+    #__Type_Text          = #PB_GadgetType_Text
+    #__Type_TrackBar      = #PB_GadgetType_TrackBar
+    #__Type_Tree          = #PB_GadgetType_Tree
+    #__Type_Web           = #PB_GadgetType_Web
+    #__Type_OpenGL        = #PB_GadgetType_OpenGL
     ;}
     
   EndDeclareModule 

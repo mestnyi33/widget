@@ -132,7 +132,7 @@ Module Editor
   
   Macro _repaint_(_this_)
     If _this_\root And Not _this_\repaint : _this_\repaint = 1
-      PostEvent(#PB_Event_Gadget, _this_\root\window, _this_\root\canvas, #__Event_Repaint);, _this_)
+      PostEvent(#PB_Event_Gadget, _this_\root\window, _this_\root\canvas, #PB_EventType_Repaint);, _this_)
     EndIf
   EndMacro 
   
@@ -175,7 +175,7 @@ Module Editor
     Protected i.l, X.l, Position.l =- 1,  
               MouseX.l, Distance.f, MinDistance.f = Infinity()
     
-    MouseX = *this\root\mouse\x - (*this\row\_s()\text\x + *this\scroll\x)
+    MouseX = *this\root\mouse\x - *this\row\_s()\text\x
     
     ; Get caret pos
     For i = 0 To *this\row\_s()\text\len
@@ -267,7 +267,7 @@ Module Editor
     EndIf
     
     ; set position (left;selected;right)
-    *this\row\_s()\text\edit[1]\x = *this\row\_s()\text\x 
+    *this\row\_s()\text\edit[1]\x = *this\row\_s()\text\x[2] 
     *this\row\_s()\text\edit[2]\x = (*this\row\_s()\text\edit[1]\x+*this\row\_s()\text\edit[1]\width) 
     *this\row\_s()\text\edit[3]\x = (*this\row\_s()\text\edit[2]\x+*this\row\_s()\text\edit[2]\width)
     
@@ -924,66 +924,66 @@ Module Editor
   Macro _make_line_x_(_this_, _scroll_width_)
     If _this_\vertical
       If _this_\text\rotate = 90
-        _this_\row\_s()\text\x[2] = _this_y_ - Bool(#PB_Compiler_OS <> #PB_OS_Windows)
+        _this_\row\_s()\text\x[2] = _this_\text\x + _this_y_ - Bool(#PB_Compiler_OS <> #PB_OS_Windows)
         
       ElseIf _this_\text\rotate = 270
-        _this_\row\_s()\text\x[2] = (_scroll_width_ - _this_y_) + Bool(#PB_Compiler_OS <> #PB_OS_Windows)
+        _this_\row\_s()\text\x[2] = _this_\text\x + (_scroll_width_ - _this_y_) + Bool(#PB_Compiler_OS <> #PB_OS_Windows)
         
       EndIf
       
     Else
       If _this_\text\rotate = 0
         If _this_\text\align\right
-          _this_\row\_s()\text\x[2] = (_scroll_width_ - _this_\row\_s()\text\width) 
+          _this_\row\_s()\text\x[2] = _this_\text\x + (_scroll_width_ - _this_\row\_s()\text\width) 
         ElseIf _this_\text\align\horizontal
-          _this_\row\_s()\text\x[2] = (_scroll_width_ - _this_\row\_s()\text\width)/2
+          _this_\row\_s()\text\x[2] = _this_\text\x + (_scroll_width_ - _this_\row\_s()\text\width)/2
         Else
-          _this_\row\_s()\text\x[2] = 0
+          _this_\row\_s()\text\x[2] = _this_\text\x
         EndIf
         
       ElseIf _this_\text\rotate = 180
         If _this_\text\align\right
-          _this_\row\_s()\text\x[2] = _scroll_width_
+          _this_\row\_s()\text\x[2] = _this_\text\x + _scroll_width_
         ElseIf _this_\text\align\horizontal
-          _this_\row\_s()\text\x[2] = (_scroll_width_ + _this_\row\_s()\text\width)/2 
+          _this_\row\_s()\text\x[2] = _this_\text\x + (_scroll_width_ + _this_\row\_s()\text\width)/2 
         Else
-          _this_\row\_s()\text\x[2] = _this_\row\_s()\text\width 
+          _this_\row\_s()\text\x[2] = _this_\text\x + _this_\row\_s()\text\width 
         EndIf
         
       EndIf
     EndIf
     
-    _this_\row\_s()\text\x = _x_ + _this_\row\_s()\text\x[2]
+    _this_\row\_s()\text\x = _x_ + _this_\row\_s()\text\x[2] + _this_\scroll\x
   EndMacro
   
   Macro _make_line_y_(_this_, _scroll_height_)
     If _this_\vertical
       If _this_\text\rotate = 90
         If _this_\text\align\bottom
-          _this_\row\_s()\text\y[2] = _scroll_height_ 
+          _this_\row\_s()\text\y[2] = _this_\text\y + _scroll_height_ 
         ElseIf _this_\text\align\vertical
-          _this_\row\_s()\text\y[2] = (_scroll_height_ + _this_\row\_s()\text\width)/2
+          _this_\row\_s()\text\y[2] = _this_\text\y + (_scroll_height_ + _this_\row\_s()\text\width)/2
         Else
-          _this_\row\_s()\text\y[2] = _this_\row\_s()\text\width
+          _this_\row\_s()\text\y[2] = _this_\text\y + _this_\row\_s()\text\width
         EndIf
         
       ElseIf _this_\text\rotate = 270
         If _this_\text\align\bottom
-          _this_\row\_s()\text\y[2] = ((_scroll_height_ - _this_\row\_s()\text\width) ) 
+          _this_\row\_s()\text\y[2] = _this_\text\y + ((_scroll_height_ - _this_\row\_s()\text\width) ) 
         ElseIf _this_\text\align\vertical
-          _this_\row\_s()\text\y[2] = (_scroll_height_ - _this_\row\_s()\text\width)/2 
+          _this_\row\_s()\text\y[2] = _this_\text\y + (_scroll_height_ - _this_\row\_s()\text\width)/2 
         Else
-          _this_\row\_s()\text\y[2] = 0
+          _this_\row\_s()\text\y[2] = _this_\text\y
         EndIf
         
       EndIf
       
     Else
       If _this_\text\rotate = 0
-        _this_\row\_s()\text\y[2] = _this_y_ - Bool(#PB_Compiler_OS <> #PB_OS_Windows)
+        _this_\row\_s()\text\y[2] = _this_\text\y + _this_y_ - Bool(#PB_Compiler_OS <> #PB_OS_Windows)
         
       ElseIf _this_\text\rotate = 180
-        _this_\row\_s()\text\y[2] = (_scroll_height_ - _this_y_) + Bool(#PB_Compiler_OS <> #PB_OS_Windows)
+        _this_\row\_s()\text\y[2] = _this_\text\y + (_scroll_height_ - _this_y_) + Bool(#PB_Compiler_OS <> #PB_OS_Windows)
         
       EndIf
     EndIf
@@ -1154,10 +1154,9 @@ Module Editor
       Protected *str.Character = @text
       Protected *end.Character = @text
       
-      Protected _x_=*this\x[2] + *this\text\x, 
-                _y_=*this\y[2] + *this\text\y, 
+      Protected _x_=*this\x[2], 
+                _y_=*this\y[2], 
                 _width_, _height_, _this_y_
-      
       
       If \vertical
         If *this\scroll\h And Not *this\scroll\h\hide
@@ -1254,7 +1253,7 @@ Module Editor
               ; ;           If CreateRegularExpression(0, ~".*\n?") : If ExamineRegularExpression(0, string_out) : While NextRegularExpressionMatch(0) : String.s = Trim(RegularExpressionMatchString(0), #LF$) : len = Len(string.s)
               If AddElement(\row\_s())
                 \row\_s()\draw = 1
-                \row\_s()\y = _y_ + _this_y_
+                \row\_s()\y = _y_ + \text\y + _this_y_
                 \row\_s()\height = \text\height
                 *this\row\_s()\text\height = \text\height
                 
@@ -1462,9 +1461,8 @@ Module Editor
         ; Then resized widget
         If \resize
           ; Посылаем сообщение об изменении размера 
-          ; PostEvent(#PB_Event_Widget, \root\window, *this, #__Event_Resize, \resize)
-          ;Bar::Resizes(\scroll, \x[0]+\bs, \y[0]+\bs, \width[0]-\bs*2, \height[0]-\bs*2)
-          Bar::Resizes(\scroll, 0, 0, \width[0]-\bs*2, \height[0]-\bs*2)
+          ; PostEvent(#PB_Event_Widget, \root\window, *this, #PB_EventType_Resize, \resize)
+          Bar::Resizes(\scroll, \x[0]+\bs, \y[0]+\bs, \width[0]-\bs*2, \height[0]-\bs*2)
           
           ;           ; ;           Macro get_scroll_area_height(_this_)
           ;           ; ;             (_this_\height - _this_\bs*2 - (Bool((_this_\scroll\width > _this_\width - _this_\bs*2) Or Not _this_\scroll\h\hide) * _this_\scroll\h\height) + Bool(_this_\scroll\v\round And _this_\scroll\h\round And Not _this_\scroll\h\hide) * (_this_\scroll\h\height/4)) 
@@ -1552,15 +1550,16 @@ Module Editor
                                   \row\_s()\y+\row\_s()\height+*this\scroll\y>*this\y[2] And 
                                   (\row\_s()\y-*this\y[2])+*this\scroll\y<*this\height[2])
             
+            If (*this\text\change Or *this\resize) Or *this\scroll\h\change
+                *this\row\_s()\text\x = (*this\x[2] + *this\row\_s()\text\x[2]) + *this\scroll\x
+              ;  *this\row\_s()\text\y = *this\y[2] + *this\row\_s()\text\y[2] + *this\scroll\y
+              EndIf
+              
+             
             ; Draw selections
             If *this\row\_s()\draw 
-;               If (*this\text\change Or *this\resize)
-;                 *this\row\_s()\text\x = *this\x[2] + *this\row\_s()\text\x[2] + *this\scroll\x
-;                 *this\row\_s()\text\y = *this\y[2] + *this\row\_s()\text\y[2] + *this\scroll\y
-;               EndIf
-              
               Y = *this\row\_s()\y + *this\scroll\y
-              Text_X = *this\row\_s()\text\x + *this\scroll\x
+              Text_X = *this\row\_s()\text\x ;+ *this\scroll\x
               Text_Y = *this\row\_s()\text\y + *this\scroll\y
               
               Protected text_x_sel = \row\_s()\text\edit[2]\x + *this\scroll\x
@@ -2188,7 +2187,7 @@ Module Editor
       CompilerEndIf
       
       Select EventType
-        Case #__Event_Input ; - Input (key)
+        Case #PB_EventType_Input ; - Input (key)
           If Not _key_control_   ; And Not _key_shift_
             If Not *this\notify And *this\root\keyboard\input
               
@@ -2197,7 +2196,7 @@ Module Editor
             EndIf
           EndIf
           
-        Case #__Event_KeyUp
+        Case #PB_EventType_KeyUp
           ; Чтобы перерисовать 
           ; рамку вокруг едитора 
           ; reset all errors
@@ -2206,7 +2205,7 @@ Module Editor
             ProcedureReturn - 1
           EndIf
           
-        Case #__Event_KeyDown
+        Case #PB_EventType_KeyDown
           Select *this\root\keyboard\key
             Case #PB_Shortcut_Home : *this\text\caret\pos[2] = 0
               If _key_control_ : *this\index[2] = 0 : EndIf
@@ -2659,7 +2658,7 @@ Module Editor
             ;Debug  _line_; (\root\mouse\y-\y[2]-\text\y+\scroll\v\bar\page\pos)
             
             Select EventType 
-              Case #__Event_LeftDoubleClick 
+              Case #PB_EventType_LeftDoubleClick 
                 ; bug pb
                 ; в мак ос в editorgadget ошибка
                 ; при двойном клике на слове выделяет правильно 
@@ -2687,7 +2686,7 @@ Module Editor
                 Repaint = _edit_sel_draw_(*this, *this\index[2], Caret)
                 *this\row\selected = \row\_s() ; *this\index[2]
                 
-              Case #__Event_LeftButtonDown
+              Case #PB_EventType_LeftButtonDown
                 
                 If _line_ >= 0 And 
                    _line_ < \count\items And 
@@ -2757,12 +2756,12 @@ Module Editor
                 EndIf
                 
                 
-              Case #__Event_MouseMove  
+              Case #PB_EventType_MouseMove  
                 If \root\mouse\buttons & #PB_Canvas_LeftButton 
                   Repaint = _edit_sel_draw_(*this, _line_)
                 EndIf
                 
-              Case #__Event_LeftButtonUp  
+              Case #PB_EventType_LeftButtonUp  
                 If *this\text\editable And *this\row\box\checked
                   ;                   
                   ;                   If _line_ >= 0 And 
@@ -2904,7 +2903,7 @@ Module Editor
     Protected *deactive._s_widget = GetActive()\gadget
     
     With *this
-      If EventType = #__Event_LeftButtonDown
+      If EventType = #PB_EventType_LeftButtonDown
         ;Debug  ""+*this +" "+ *this\parent
         
         ;If Not (_from_point_(*this\root\mouse\x, *this\root\mouse\y, *this\scroll\v))
@@ -2927,26 +2926,26 @@ Module Editor
       EndIf
       
       Select EventType
-        Case #__Event_Repaint
+        Case #PB_EventType_Repaint
           Debug " -- Canvas repaint -- "+EventGadget
           
-        Case #__Event_Input 
+        Case #PB_EventType_Input 
           \root\keyboard\input = GetGadgetAttribute(\root\canvas, #PB_Canvas_Input)
           \root\keyboard\key[1] = GetGadgetAttribute(\root\canvas, #PB_Canvas_Modifiers)
-        Case #__Event_KeyDown, #__Event_KeyUp
+        Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
           \root\keyboard\key = GetGadgetAttribute(\root\canvas, #PB_Canvas_Key)
           \root\keyboard\key[1] = GetGadgetAttribute(\root\canvas, #PB_Canvas_Modifiers)
-        Case #__Event_MouseEnter, #__Event_MouseMove, #__Event_MouseLeave
+        Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
           \root\mouse\x = GetGadgetAttribute(\root\canvas, #PB_Canvas_MouseX)
           \root\mouse\y = GetGadgetAttribute(\root\canvas, #PB_Canvas_MouseY)
-        Case #__Event_LeftButtonDown, #__Event_LeftButtonUp, 
-             #__Event_MiddleButtonDown, #__Event_MiddleButtonUp, 
-             #__Event_RightButtonDown, #__Event_RightButtonUp
+        Case #PB_EventType_LeftButtonDown, #PB_EventType_LeftButtonUp, 
+             #PB_EventType_MiddleButtonDown, #PB_EventType_MiddleButtonUp, 
+             #PB_EventType_RightButtonDown, #PB_EventType_RightButtonUp
           
           CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-            \root\mouse\buttons = (Bool(EventType = #__Event_LeftButtonDown) * #PB_Canvas_LeftButton) |
-                                  (Bool(EventType = #__Event_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
-                                  (Bool(EventType = #__Event_RightButtonDown) * #PB_Canvas_RightButton) 
+            \root\mouse\buttons = (Bool(EventType = #PB_EventType_LeftButtonDown) * #PB_Canvas_LeftButton) |
+                                  (Bool(EventType = #PB_EventType_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
+                                  (Bool(EventType = #PB_EventType_RightButtonDown) * #PB_Canvas_RightButton) 
           CompilerElse
             \root\mouse\buttons = GetGadgetAttribute(\root\canvas, #PB_Canvas_Buttons)
           CompilerEndIf
@@ -2954,7 +2953,7 @@ Module Editor
       
       
       Select EventType
-        Case #__Event_Repaint 
+        Case #PB_EventType_Repaint 
           \row\count = \count\items
           
           If *this\repaint 
@@ -2962,7 +2961,7 @@ Module Editor
             Repaint = 1
           EndIf
           
-        Case #__Event_Resize : ResizeGadget(\root\canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+        Case #PB_EventType_Resize : ResizeGadget(\root\canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
           Repaint | Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\root\canvas)-*this\x*2, GadgetHeight(\root\canvas)-*this\y*2)
       EndSelect
       
@@ -2986,7 +2985,7 @@ Module Editor
       _this_\text\_padding = 0
       _this_\text\change = #True
       
-      _this_\text\editable = constants::_check_(_flag_, #__text_readonly, #False)
+      _this_\text\editable = Bool(Not constants::_check_(_flag_, #__text_readonly))
       _this_\text\lower = constants::_check_(_flag_, #__text_lowercase)
       _this_\text\upper = constants::_check_(_flag_, #__text_uppercase)
       _this_\text\pass = constants::_check_(_flag_, #__text_password)
@@ -3079,7 +3078,7 @@ Module Editor
         \color = _get_colors_()
         
         \vertical = constants::_check_(Flag, #__flag_Vertical)
-        \fs = constants::_check_(Flag, #__flag_BorderLess, #False) * #__border_scroll
+        \fs = Bool(Not constants::_check_(Flag, #__flag_BorderLess))*#__border_scroll
         \bs = \fs
         
         If Not Bool(flag&#__flag_wordwrap)
@@ -3087,18 +3086,20 @@ Module Editor
         EndIf
         
         \flag\multiSelect = 1
-        \flag\fullselection = constants::_check_(Flag, #__flag_fullselection, #False)*7
+        \flag\fullselection = Bool(Not constants::_check_(Flag, #__flag_fullselection))*7
         \flag\alwaysselection = constants::_check_(Flag, #__flag_alwaysselection)
         \flag\gridlines = constants::_check_(Flag, #__flag_gridlines)
         ;\flag\checkBoxes = constants::_check_(Flag, #__flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
         ;\flag\bar\buttons = constants::_check_(Flag, #__flag_NoButtons)
         ;\flag\lines = constants::_check_(Flag, #__flag_NoLines)
         
-        \row\margin\hide = constants::_check_(Flag, #__text_numeric, #False)
+        \row\margin\hide = Bool(Not constants::_check_(Flag, #__text_numeric))
         \row\margin\color\front = $C8000000 ; \color\back[0] 
         \row\margin\color\back = $C8F0F0F0  ; \color\back[0] 
         
+        _set_text_flag_(*this, Flag)
         ; *this\text\_padding = 0
+      EndIf
       
       ;If Width Or Height
       ; \scroll = AllocateStructure(_s_scroll) 
@@ -3106,10 +3107,9 @@ Module Editor
       \scroll\h = Bar::Create(#PB_GadgetType_ScrollBar, 16, 0,0,0, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)
+      ;EndIf
       
       ; set text
-      _set_text_flag_(*this, Flag)
-      
       If Text
         SetText(*this, Text.s)
       Else
@@ -3120,8 +3120,7 @@ Module Editor
         ;\text\len = 1
       EndIf
     EndWith
-     EndIf
-     
+    
     ProcedureReturn *this
   EndProcedure
   
@@ -3144,7 +3143,7 @@ Module Editor
         
         ;
         If *this\repaint
-          PostEvent(#PB_Event_Gadget, *this\root\window, *this\root\canvas, constants::#__Event_Repaint)
+          PostEvent(#PB_Event_Gadget, *this\root\window, *this\root\canvas, constants::#PB_EventType_Repaint)
         EndIf
         
         SetGadgetData(Gadget, *this)
@@ -3255,22 +3254,22 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected String.s
     
     Select EventType()
-      Case #__Event_Focus
+      Case #PB_EventType_Focus
         String.s = "focus "+EventGadget()+" "+EventType()
-      Case #__Event_LostFocus
+      Case #PB_EventType_LostFocus
         String.s = "lostfocus "+EventGadget()+" "+EventType()
-      Case #__Event_Change
+      Case #PB_EventType_Change
         String.s = "change "+EventGadget()+" "+EventType()
     EndSelect
     
     If IsGadget(EventGadget())
-      If EventType() = #__Event_Focus
+      If EventType() = #PB_EventType_Focus
         Debug String.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
       Else
         Debug String.s +" - gadget"
       EndIf
     Else
-      If EventType() = #__Event_Focus
+      If EventType() = #PB_EventType_Focus
         Debug String.s +" - widget" +" get text - "+ GetText(EventGadget())
       Else
         Debug String.s +" - widget"
@@ -3418,7 +3417,7 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(25, @resize_splitter())
     
     ;     BindEvent(#PB_Event_Widget, @Events())
-    ;     PostEvent(#PB_Event_Gadget, 0,10, #__Event_Resize)
+    ;     PostEvent(#PB_Event_Gadget, 0,10, #PB_EventType_Resize)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
@@ -3451,22 +3450,22 @@ CompilerEndIf
 ; ; ;     Protected String.s
 ; ; ;     
 ; ; ;     Select EventType()
-; ; ;       Case #__Event_Focus
+; ; ;       Case #PB_EventType_Focus
 ; ; ;         String.s = "focus "+EventGadget()+" "+EventType()
-; ; ;       Case #__Event_LostFocus
+; ; ;       Case #PB_EventType_LostFocus
 ; ; ;         String.s = "lostfocus "+EventGadget()+" "+EventType()
-; ; ;       Case #__Event_Change
+; ; ;       Case #PB_EventType_Change
 ; ; ;         String.s = "change "+EventGadget()+" "+EventType()
 ; ; ;     EndSelect
 ; ; ;     
 ; ; ;     If IsGadget(EventGadget())
-; ; ;       If EventType() = #__Event_Focus
+; ; ;       If EventType() = #PB_EventType_Focus
 ; ; ;         Debug String.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
 ; ; ;       Else
 ; ; ;         Debug String.s +" - gadget"
 ; ; ;       EndIf
 ; ; ;     Else
-; ; ;       If EventType() = #__Event_Focus
+; ; ;       If EventType() = #PB_EventType_Focus
 ; ; ;         Debug String.s +" - widget" +" get text - "+ GetText(EventGadget())
 ; ; ;       Else
 ; ; ;         Debug String.s +" - widget"

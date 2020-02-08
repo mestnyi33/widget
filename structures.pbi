@@ -19,8 +19,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_point
     Structure _s_point
-      y.l[4] ; убрать 
-      x.l[4]
+      y.l[5] ; убрать 
+      x.l[5]
     EndStructure
     
     ;- - _s_coordinate
@@ -93,11 +93,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       checked.b
     EndStructure
     
-    ;- - _s_caption
-    Structure _s_caption Extends _s_button
-      button._s_button[3]
-    EndStructure
-    
     ;- - _s_transform
     Structure _s_transform Extends _s_coordinate
       hide.b
@@ -168,6 +163,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       string.s
       change.b
+      
+      *color._s_color
     EndStructure
     
     ;- - _s_padding
@@ -176,6 +173,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       top.l
       right.l
       bottom.l
+    EndStructure
+    
+    ;- - _s_syntax
+    Structure _s_syntax
+      List *word._s_edit()
     EndStructure
     
     ;- - _s_text
@@ -201,6 +203,24 @@ CompilerIf Not Defined(structures, #PB_Module)
       edit._s_edit[4]
       caret._s_caret
       align._s_align
+      syntax._s_syntax
+    EndStructure
+    
+    ;- - _s_caption
+    Structure _s_caption
+      y.l[5]
+      x.l[5]
+      height.l[5]
+      width.l[5]
+      
+      text._s_text
+      button._s_button[4]
+      color._s_color
+      
+      interact.b
+      hide.b
+      round.b
+      _padding.b
     EndStructure
     
     ;- - _s_bar
@@ -401,23 +421,35 @@ CompilerIf Not Defined(structures, #PB_Module)
       List _s._s_tabs()
     EndStructure
     
+    ;- - _s_draw
+    Structure _s_draw
+      y.l[constants::#__c]
+      x.l[constants::#__c]
+      height.l[constants::#__c]
+      width.l[constants::#__c]
+      
+    EndStructure
+    
     ;- - _s_widget
     Structure _s_widget 
       type.b ;[3] ; [2] for splitter
       
-      y.l[5]
-      x.l[5]
-      height.l[5]
-      width.l[5]
+      draw._s_draw
       
+      y.l[constants::#__c]
+      x.l[constants::#__c]
+      height.l[constants::#__c]
+      width.l[constants::#__c]
+      ;frame._s_button[5]
+      
+      *adress           ; adress widget
       *root._s_root     ; adress root
       *parent._s_widget ; adress parent
       *gadget._s_widget ; this\canvas\gadget ; root\active\gadget
       *window._s_widget ; this\canvas\window ; root\active\window
       
-      scroll._s_scroll 
       *splitter._s_splitter
-      
+      scroll._s_scroll 
       bar._s_bar
       caption._s_caption
       color._s_color[4]
@@ -430,7 +462,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       state.b     ; mouse current state(#normal=0;#entered=1;#selected=2;#disabled=3)
       index.i[3]  ; Index[#normal=0] of new list element ; inex[#entered=1] ; index[#selected=2]
-      adress.i
       round.a
       from.l
       
@@ -531,5 +562,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = PCA1IA4
+; Folding = -iIfZAe-
 ; EnableXP

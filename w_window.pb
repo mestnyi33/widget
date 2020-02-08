@@ -551,26 +551,29 @@ CompilerIf Not Defined(structures, #PB_Module)
     Prototype pFunc()
     
     ;{ 
-    ; - _s_page
+    ;- - _s_page
     Structure _s_page
       pos.l
       len.l
       *end
+      change.f
+;       min.l
+;       max.l
     EndStructure
     
-    ; - _s_point
+    ;- - _s_point
     Structure _s_point
-      y.l[4] ; убрать 
-      x.l[4]
+      y.l[5] ; убрать 
+      x.l[5]
     EndStructure
     
-    ; - _s_coordinate
+    ;- - _s_coordinate
     Structure _s_coordinate Extends _s_point
       width.l
       height.l
     EndStructure
     
-    ; - _s_color
+    ;- - _s_color
     Structure _s_color
       state.b ; entered; selected; disabled;
       front.i[4]
@@ -581,7 +584,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       alpha.a[2]
     EndStructure
     
-    ; - _s_mouse
+    ;- - _s_mouse
     Structure _s_mouse Extends _s_point
       drag.b[2]
       change.b
@@ -590,14 +593,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       delta._s_point
     EndStructure
     
-    ; - _s_keyboard
+    ;- - _s_keyboard
     Structure _s_keyboard
       change.b
       input.c
       key.i[2]
     EndStructure
     
-    ; - _s_align
+    ;- - _s_align
     Structure _s_align
       width.l
       height.l
@@ -611,14 +614,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       autosize.b
     EndStructure
     
-    ; - _s_arrow
+    ;- - _s_arrow
     Structure _s_arrow
       size.a
       type.b
       direction.b
     EndStructure
     
-    ; - _s_button
+    ;- - _s_button
     Structure _s_button Extends _s_coordinate
       len.l
       hide.b
@@ -629,24 +632,19 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color
     EndStructure
     
-    ; - _s_box
+    ;- - _s_box
     Structure _s_box Extends _s_button
       checked.b
     EndStructure
     
-    ; - _s_caption
-    Structure _s_caption Extends _s_button
-      button._s_button[3]
-    EndStructure
-    
-    ; - _s_transform
+    ;- - _s_transform
     Structure _s_transform Extends _s_coordinate
       hide.b
       cursor.l
       color._s_color[4]
     EndStructure
     
-    ; - _s_anchor
+    ;- - _s_anchor
     Structure _s_anchor
       pos.l
       size.l
@@ -657,7 +655,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       id._s_transform[#__count_anchors_]
     EndStructure
     
-    ; - _s_windowFlag
+    ;- - _s_windowFlag
     Structure _s_windowFlag
       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
@@ -676,7 +674,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
     EndStructure
     
-    ; - _s_flag
+    ;- - _s_flag
     Structure _s_flag
       Window._s_windowFlag
       inline.b
@@ -696,22 +694,37 @@ CompilerIf Not Defined(structures, #PB_Module)
       transform.b
     EndStructure
     
-    ; - _s_caret
+    ;- - _s_caret
     Structure _s_caret Extends _s_coordinate
       pos.l[3]
       time.l
     EndStructure
     
-    ; - _s_edit
+    ;- - _s_edit
     Structure _s_edit Extends _s_coordinate
       pos.l
       len.l
       
       string.s
       change.b
+      
+      *color._s_color
     EndStructure
     
-    ; - _s_text
+    ;- - _s_padding
+    Structure _s_padding
+      left.l
+      top.l
+      right.l
+      bottom.l
+    EndStructure
+    
+    ;- - _s_syntax
+    Structure _s_syntax
+      List *word._s_edit()
+    EndStructure
+    
+    ;- - _s_text
     Structure _s_text Extends _s_edit
       ;     ;     Char.c
       fontID.i
@@ -724,15 +737,37 @@ CompilerIf Not Defined(structures, #PB_Module)
       editable.b
       multiline.b
       
+      invert.b
       rotate.f
-      padding.l
       
+      _padding.b
+      
+      padding._s_padding
+    
       edit._s_edit[4]
       caret._s_caret
       align._s_align
+      syntax._s_syntax
     EndStructure
     
-    ; - _s_bar
+    ;- - _s_caption
+    Structure _s_caption
+      y.l[5]
+      x.l[5]
+      height.l[5]
+      width.l[5]
+      
+      text._s_text
+      button._s_button[4]
+      color._s_color
+      
+      interact.b
+      hide.b
+      round.b
+      _padding.b
+    EndStructure
+    
+    ;- - _s_bar
     Structure _s_bar
       max.l
       min.l
@@ -744,9 +779,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       inverted.b
       direction.l
       
-      scroll_increment.f
       scroll_step.f
-      scroll_change.f
+      ;scroll_change.f
+      scroll_increment.f
       
       page._s_page
       area._s_page
@@ -754,7 +789,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       button._s_button[4]
     EndStructure
     
-    ; - _s_image
+    ;- - _s_image
     Structure _s_image
       y.l[3]
       x.l[3]
@@ -764,18 +799,19 @@ CompilerIf Not Defined(structures, #PB_Module)
       index.l
       handle.i[2] ; - editor
       change.b
-      padding.l
+      _padding.b
       
+      padding._s_padding
       align._s_align
     EndStructure
     
-    ; - _s_line_
+    ;- - _s_line_
     Structure _s_line_
       v._s_coordinate
       h._s_coordinate
     EndStructure
     
-    ; - _s_tt
+    ;- - _s_tt
     Structure _s_tt Extends _s_coordinate
       window.i
       gadget.i
@@ -787,7 +823,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color
     EndStructure
     
-    ; - _s_splitter
+    ;- - _s_splitter
     Structure _s_splitter
       *first._s_widget
       *second._s_widget
@@ -798,13 +834,16 @@ CompilerIf Not Defined(structures, #PB_Module)
       g_second.b
     EndStructure
     
-    ; - _s_scroll
+    ;- - _s_scroll
     Structure _s_scroll Extends _s_coordinate
+      align._s_align
+      ;padding.b
+      
       *v._s_widget
       *h._s_widget
     EndStructure
     
-    ; - _s_popup
+    ;- - _s_popup
     Structure _s_popup
       gadget.i
       window.i
@@ -812,20 +851,20 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; *Widget._s_widget
     EndStructure
     
-    ; - _s_count
+    ;- - _s_count
     Structure _s_count
       items.l
       
       childrens.l
     EndStructure
     
-    ; - _s_margin
+    ;- - _s_margin
     Structure _s_margin Extends _s_coordinate
       color._s_color
       hide.b
     EndStructure
     
-    ; - _s_items
+    ;- - _s_items
     Structure _s_items Extends _s_coordinate
       index.l
       *parent._s_items
@@ -847,7 +886,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *data      ; set/get item data
     EndStructure
     
-    ; - _s_rows
+    ;- - _s_rows
     Structure _s_rows Extends _s_coordinate 
       ; list view
       sublevel.l
@@ -878,7 +917,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *data  ; set/get item data
     EndStructure
     
-    ; - _s_row
+    ;- - _s_row
     Structure _s_row
       ; list view
       drag.b
@@ -904,7 +943,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       List _s._s_rows()
     EndStructure
     
-    ; - _s_tabs
+    ;- - _s_tabs
     Structure _s_tabs Extends _s_coordinate
       index.l  ; Index of new list element
       hide.b
@@ -915,7 +954,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color
     EndStructure
     
-    ; - _s_tab
+    ;- - _s_tab
     Structure _s_tab
       index.l ; [3] ; index[0]-parent tab  ; inex[1]-entered tab ; index[2]-selected tab
       count.l ; count tab items
@@ -926,39 +965,47 @@ CompilerIf Not Defined(structures, #PB_Module)
       List _s._s_tabs()
     EndStructure
     
-    ; - _s_func
-    Interface _s_func
-      resize(*this, X.l,Y.l,Width.l,Height.l)
-    EndInterface
+    ;- - _s_draw
+    Structure _s_draw
+      y.l[constants::#__c]
+      x.l[constants::#__c]
+      height.l[constants::#__c]
+      width.l[constants::#__c]
+      
+    EndStructure
     
-    ; - _s_widget
+    ;- - _s_widget
     Structure _s_widget 
-      func._s_func
       type.b ;[3] ; [2] for splitter
       
-      y.l[5]
-      x.l[5]
-      height.l[5]
-      width.l[5]
+      draw._s_draw
       
+      y.l[constants::#__c]
+      x.l[constants::#__c]
+      height.l[constants::#__c]
+      width.l[constants::#__c]
+      ;frame._s_button[5]
+      
+      *adress           ; adress widget
       *root._s_root     ; adress root
       *parent._s_widget ; adress parent
       *gadget._s_widget ; this\canvas\gadget ; root\active\gadget
       *window._s_widget ; this\canvas\window ; root\active\window
       
-      *scroll._s_scroll 
       *splitter._s_splitter
-      
+      scroll._s_scroll 
       bar._s_bar
       caption._s_caption
       color._s_color[4]
       row._s_row
       tab._s_tab
       
-      errors.b
+      handle.i
+      *errors
+      notify.b ; оповестить об изменении
+      
       state.b     ; mouse current state(#normal=0;#entered=1;#selected=2;#disabled=3)
       index.i[3]  ; Index[#normal=0] of new list element ; inex[#entered=1] ; index[#selected=2]
-      adress.i
       round.a
       from.l
       
@@ -1015,7 +1062,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *data
     EndStructure
     
-    ; - _s_event
+    ;- - _s_event
     Structure _s_event 
       type.l
       item.l
@@ -1026,10 +1073,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       *widget._s_widget
       *active._s_widget ; active window
       colors._s_color
+      
+      
+      *leave._s_widget  
+    *enter._s_widget  
+    _draw.l
       ;draw.b
     EndStructure
     
-    ; - _s_root
+    ;- - _s_root
     Structure _s_root Extends _s_widget
       canvas.i
       *anchor._s_anchor
@@ -1044,10 +1096,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       event_count.b
       List *event_list._s_event()
     EndStructure
-    ;}
-    
+
     Global *event._s_event = AllocateStructure(_s_event)
-    
+
   EndDeclareModule 
   
   Module structures 
@@ -1078,7 +1129,7 @@ DeclareModule Widget
   ;-
   ;- - DECLAREs GLOBALs
   Macro _get_colors_()
-    colors::*this\green
+    colors::*this\grey
   EndMacro
   
   
@@ -1110,14 +1161,22 @@ DeclareModule Widget
     structures::*event\active
   EndMacro
   
+  Macro GetAdress(_this_)
+    _this_\adress
+  EndMacro
+  
+  Macro _is_widget_(_this_)
+    Bool(_this_ And _this_\adress) * _this_
+  EndMacro
+  
+  Macro _is_root_(_this_)
+    Bool(_this_ And _this_ = _this_\root) * _this_
+  EndMacro
+  
   Macro repaint()
     If widget()\root\repaint
       redraw(widget()\root)
     EndIf
-  EndMacro
-  
-  Macro _is_root_(_this_)
-    Bool(_this_ And _this_ = _this_\root)
   EndMacro
   
   Macro IsList(_index_, _list_)
@@ -1127,6 +1186,7 @@ DeclareModule Widget
   Macro selectList(_index_, _list_)
     Bool(IsList(_index_, _list_) And _index_ <> ListIndex(_list_) And SelectElement(_list_, _index_))
   EndMacro
+  
   
   ;- - DRAG&DROP
   Macro DropText()
@@ -1170,10 +1230,6 @@ DeclareModule Widget
   EndMacro
   Macro GetAnchors(_this_)
     a_get(_this_)
-  EndMacro
-  
-  Macro GetAdress(_this_)
-    _this_\adress
   EndMacro
   
   ;-
@@ -1238,7 +1294,7 @@ DeclareModule Widget
   Declare.i SetActive(*this)
   Declare.i SetState(*this, State.i)
   Declare.i SetAttribute(*this, Attribute.i, Value.i)
-  Declare.i CallBack(*this, EventType.i, mouse_x=0, mouse_y=0)
+  Declare.i Events(*this, eventtype.i, mouse_x=0, mouse_y=0)
   Declare.i SetColor(*this, ColorType.i, Color.i, State.i=0, Item.i=0)
   Declare.i SetImage(*this, Image.i)
   Declare.i SetData(*this, *Data)
@@ -1283,12 +1339,12 @@ DeclareModule Widget
   Declare.i Free(*this)
   Declare.i Popup(*widget, X.l,Y.l,Width.l,Height.l, Flag.i=0)
   
-  Declare.i g_callback()
+  Declare.i CallBack()
   Declare.i CloseList()
   Declare.i OpenList(*this, item.l=0)
   Declare.i Bind(*callback, *this=#PB_All, eventtype.l=#PB_All)
   Declare.i Post(eventtype.l, *this, eventitem.l=#PB_All, *data=0)
-  Declare.i Open(Window.i, X.l,Y.l,Width.l,Height.l, Text.s="", Flag.i=0, WindowID.i=0)
+  Declare.i Open(Window.i, X.l=#PB_Ignore,Y.l=#PB_Ignore,Width.l=#PB_Ignore,Height.l=#PB_Ignore, Text.s="", Flag.i=0, WindowID.i=0)
   
   Declare.i From(*this, mouse_x.l, mouse_y.l)
   Declare.i Create(Type.i, X.l,Y.l,Width.l,Height.l, Text.s, Param_1.i=0, Param_2.i=0, Param_3.i=0, Flag.i=0, Parent.i=0, parent_item.i=0)
@@ -2006,11 +2062,11 @@ Module Widget
         
         If _this_\bar\vertical
           _this_\parent\scroll\y =- _this_\bar\page\pos ; _this_\y 
-                                                         ;_this_\parent\scroll\height = _this_\bar\max
+                                                        ;_this_\parent\scroll\height = _this_\bar\max
           _childrens_move_(_this_\parent, 0, _this_\bar\page\change)
         Else
           _this_\parent\scroll\x =- _this_\bar\page\pos ; _this_\x 
-                                                         ;_this_\parent\scroll\width = _this_\bar\max
+                                                        ;_this_\parent\scroll\width = _this_\bar\max
           _childrens_move_(_this_\parent, _this_\bar\page\change, 0)
         EndIf
       EndIf
@@ -2344,6 +2400,8 @@ Module Widget
       
       If y=#PB_Ignore : y = \v\y : EndIf
       If x=#PB_Ignore : x = \h\x : EndIf
+;       If y=#PB_Ignore : y = \v\y-\v\parent\y[2] : EndIf
+;       If x=#PB_Ignore : x = \h\x-\v\parent\x[2] : EndIf
       If Width=#PB_Ignore : Width = \v\x-\h\x+\v\width : EndIf
       If Height=#PB_Ignore : Height = \h\y-\v\y+\h\height : EndIf
       
@@ -2386,6 +2444,7 @@ Module Widget
       ;\hide = Bool(Not pagelength)  ; add
       
       \type = Type
+      \adress = *this
       
       \parent = parent
       If \parent
@@ -2722,44 +2781,44 @@ Module Widget
   
   Macro a_resize(_this_)
     If _this_\root\anchor\id[1] ; left
-      _this_\root\anchor\id[1]\x = _this_\x-_this_\root\anchor\pos
-      _this_\root\anchor\id[1]\y = _this_\y+(_this_\height-_this_\root\anchor\id[1]\height)/2
+      _this_\root\anchor\id[1]\x = _this_\x[#__c_1]-_this_\root\anchor\pos
+      _this_\root\anchor\id[1]\y = _this_\y[#__c_1]+(_this_\height[#__c_1]-_this_\root\anchor\id[1]\height)/2
     EndIf
     If _this_\root\anchor\id[2] ; top
-      _this_\root\anchor\id[2]\x = _this_\x+(_this_\width-_this_\root\anchor\id[2]\width)/2
-      _this_\root\anchor\id[2]\y = _this_\y-_this_\root\anchor\pos
+      _this_\root\anchor\id[2]\x = _this_\x[#__c_1]+(_this_\width[#__c_1]-_this_\root\anchor\id[2]\width)/2
+      _this_\root\anchor\id[2]\y = _this_\y[#__c_1]-_this_\root\anchor\pos
     EndIf
     If  _this_\root\anchor\id[3] ; right
-      _this_\root\anchor\id[3]\x = _this_\x+_this_\width-_this_\root\anchor\id[3]\width+_this_\root\anchor\pos
-      _this_\root\anchor\id[3]\y = _this_\y+(_this_\height-_this_\root\anchor\id[3]\height)/2
+      _this_\root\anchor\id[3]\x = _this_\x[#__c_1]+_this_\width[#__c_1]-_this_\root\anchor\id[3]\width+_this_\root\anchor\pos
+      _this_\root\anchor\id[3]\y = _this_\y[#__c_1]+(_this_\height[#__c_1]-_this_\root\anchor\id[3]\height)/2
     EndIf
     If _this_\root\anchor\id[4] ; bottom
-      _this_\root\anchor\id[4]\x = _this_\x+(_this_\width-_this_\root\anchor\id[4]\width)/2
-      _this_\root\anchor\id[4]\y = _this_\y+_this_\height-_this_\root\anchor\id[4]\height+_this_\root\anchor\pos
+      _this_\root\anchor\id[4]\x = _this_\x[#__c_1]+(_this_\width[#__c_1]-_this_\root\anchor\id[4]\width)/2
+      _this_\root\anchor\id[4]\y = _this_\y[#__c_1]+_this_\height[#__c_1]-_this_\root\anchor\id[4]\height+_this_\root\anchor\pos
     EndIf
     
     If _this_\root\anchor\id[5] ; left&top
-      _this_\root\anchor\id[5]\x = _this_\x-_this_\root\anchor\pos
-      _this_\root\anchor\id[5]\y = _this_\y-_this_\root\anchor\pos
+      _this_\root\anchor\id[5]\x = _this_\x[#__c_1]-_this_\root\anchor\pos
+      _this_\root\anchor\id[5]\y = _this_\y[#__c_1]-_this_\root\anchor\pos
     EndIf
     If _this_\root\anchor\id[6] ; right&top
-      _this_\root\anchor\id[6]\x = _this_\x+_this_\width-_this_\root\anchor\id[6]\width+_this_\root\anchor\pos
-      _this_\root\anchor\id[6]\y = _this_\y-_this_\root\anchor\pos
+      _this_\root\anchor\id[6]\x = _this_\x[#__c_1]+_this_\width[#__c_1]-_this_\root\anchor\id[6]\width+_this_\root\anchor\pos
+      _this_\root\anchor\id[6]\y = _this_\y[#__c_1]-_this_\root\anchor\pos
     EndIf
     If _this_\root\anchor\id[7] ; right&bottom
-      _this_\root\anchor\id[7]\x = _this_\x+_this_\width-_this_\root\anchor\id[7]\width+_this_\root\anchor\pos
-      _this_\root\anchor\id[7]\y = _this_\y+_this_\height-_this_\root\anchor\id[7]\height+_this_\root\anchor\pos
+      _this_\root\anchor\id[7]\x = _this_\x[#__c_1]+_this_\width[#__c_1]-_this_\root\anchor\id[7]\width+_this_\root\anchor\pos
+      _this_\root\anchor\id[7]\y = _this_\y[#__c_1]+_this_\height[#__c_1]-_this_\root\anchor\id[7]\height+_this_\root\anchor\pos
     EndIf
     If _this_\root\anchor\id[8] ; left&bottom
-      _this_\root\anchor\id[8]\x = _this_\x-_this_\root\anchor\pos
-      _this_\root\anchor\id[8]\y = _this_\y+_this_\height-_this_\root\anchor\id[8]\height+_this_\root\anchor\pos
+      _this_\root\anchor\id[8]\x = _this_\x[#__c_1]-_this_\root\anchor\pos
+      _this_\root\anchor\id[8]\y = _this_\y[#__c_1]+_this_\height[#__c_1]-_this_\root\anchor\id[8]\height+_this_\root\anchor\pos
     EndIf
     
     If _this_\root\anchor\id[#__a_moved] 
-      _this_\root\anchor\id[#__a_moved]\x = _this_\x
-      _this_\root\anchor\id[#__a_moved]\y = _this_\y
-      _this_\root\anchor\id[#__a_moved]\width = _this_\width
-      _this_\root\anchor\id[#__a_moved]\height = _this_\height
+      _this_\root\anchor\id[#__a_moved]\x = _this_\x[#__c_1]
+      _this_\root\anchor\id[#__a_moved]\y = _this_\y[#__c_1]
+      _this_\root\anchor\id[#__a_moved]\width = _this_\width[#__c_1]
+      _this_\root\anchor\id[#__a_moved]\height = _this_\height[#__c_1]
     EndIf
     
     If _this_\root\anchor\id[10] And _this_\root\anchor\id[11] And _this_\root\anchor\id[12] And _this_\root\anchor\id[13]
@@ -2774,10 +2833,10 @@ Module Widget
     
     With *Gadget
       If *Gadget
-        checked_x1 = \x
-        checked_y1 = \y
-        checked_x2 = checked_x1+\width
-        checked_y2 = checked_y1+\height
+        checked_x1 = \x[#__c_1]
+        checked_y1 = \y[#__c_1]
+        checked_x2 = checked_x1+\width[#__c_1]
+        checked_y2 = checked_y1+\height[#__c_1]
         
         top_x1 = checked_x1 : top_x2 = checked_x2
         left_y1 = checked_y1 : left_y2 = checked_y2 
@@ -2788,10 +2847,10 @@ Module Widget
           PushListPosition(\parent\childrens())
           ForEach \parent\childrens()
             If Not \parent\childrens()\hide
-              relative_x1 = \parent\childrens()\x
-              relative_y1 = \parent\childrens()\y
-              relative_x2 = relative_x1+\parent\childrens()\width
-              relative_y2 = relative_y1+\parent\childrens()\height
+              relative_x1 = \parent\childrens()\x[#__c_1]
+              relative_y1 = \parent\childrens()\y[#__c_1]
+              relative_x2 = relative_x1+\parent\childrens()\width[#__c_1]
+              relative_y2 = relative_y1+\parent\childrens()\height[#__c_1]
               
               ;Left_line
               If checked_x1 = relative_x1
@@ -2986,12 +3045,12 @@ Module Widget
     ProcedureReturn Result
   EndProcedure
   
-  Procedure a_callback(*this._s_widget, EventType.i, Buttons.i, mouse_x.i,mouse_y.i)
+  Procedure a_callback(*this._s_widget, eventtype.i, Buttons.i, mouse_x.i,mouse_y.i)
     Protected result, i 
     
     With *this
       If \root\anchor 
-        Select EventType 
+        Select eventtype 
           Case #__Event_MouseMove
             If \root\anchor\id[\root\anchor\index]\color\state = #__s_2
               *this = \root\anchor\widget
@@ -3098,7 +3157,216 @@ Module Widget
     ProcedureReturn result
   EndProcedure
   
+  ;- 
+  Procedure  window_draw(*this._s_widget)
+    With *this 
+      If \__height
+        ; Draw caption back
+        If \caption\color\back 
+          DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          _box_gradient_( 0, \caption\x, \caption\y, \caption\width, \caption\height-1, \caption\color\fore[\color\state], \caption\color\back[\color\state], \round, \caption\color\alpha)
+        EndIf
+        
+        ; Draw caption frame
+        If \fs
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          RoundBox(\caption\x, \caption\y, \caption\width, \caption\height-1,\round,\round,\color\frame[\color\state])
+          
+          ; erase the bottom edge of the frame
+          DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          BackColor(\caption\color\fore[\color\state])
+          FrontColor(\caption\color\back[\color\state])
+          
+          Protected i
+          For i=\round/2+2 To \caption\height-2
+            Line(\x[#__c_1],\y[#__c_1]+i,\width[#__c_1],1, \caption\color\back[\color\state])
+          Next
+          
+          ; two edges of the frame
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          Line(\x[#__c_1],\y[#__c_1]+\round/2+2,1,\caption\height-\round/2,\color\frame[\color\state])
+          Line(\x[#__c_1]+\width[#__c_1]-1,\y[#__c_1]+\round/2+2,1,\caption\height-\round/2,\color\frame[\color\state])
+        EndIf
+        
+        ;         ; Draw image
+        ;         If \caption\image\handle
+        ;           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+        ;           DrawAlphaImage(\caption\image\handle, \caption\image\x, \caption\image\y, \caption\color\alpha)
+        ;         EndIf
+        
+        If \caption\text\string
+          ;ClipOutput(\caption\x[#__c_4], \caption\y[#__c_4], \caption\width[#__c_4], \caption\height[#__c_4])
+          ClipOutput(\caption\x[#__c_2], \caption\y[#__c_2], \caption\width[#__c_2], \caption\height[#__c_2])
+;           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+;           RoundBox(\caption\x[#__c_2], \caption\y[#__c_2], \caption\width[#__c_2], \caption\height[#__c_2], \round, \round, $FF000000)
+          ; Draw string
+          If \resize & #__resize_change
+            \caption\text\x = \caption\x[#__c_2] + \caption\text\_padding
+            \caption\text\y = \caption\y[#__c_2] + (\caption\height[#__c_2]-TextHeight("A"))/2
+          EndIf
+          
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawText(\caption\text\x, \caption\text\y, \caption\text\string, \color\front[\color\state]&$FFFFFF|\color\alpha<<24)
+        EndIf
+        
+        ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
+        
+        ; draw button back
+        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        If Not \caption\button[0]\hide
+          RoundBox(\caption\button[0]\x, \caption\button[0]\y, \caption\button[0]\width, \caption\button[0]\height, 
+                   \caption\button[0]\round, \caption\button[0]\round, \caption\button[0]\color\back[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
+        EndIf
+        If Not \caption\button[1]\hide
+          RoundBox(\caption\button[1]\x, \caption\button[1]\y, \caption\button[1]\width, \caption\button[1]\height,
+                   \caption\button[1]\round, \caption\button[1]\round, \caption\button[1]\color\back[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
+        EndIf
+        If Not \caption\button[2]\hide
+          RoundBox(\caption\button[2]\x, \caption\button[2]\y, \caption\button[2]\width, \caption\button[2]\height, 
+                   \caption\button[2]\round, \caption\button[2]\round, \caption\button[2]\color\back[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
+        EndIf
+        If Not \caption\button[3]\hide
+          RoundBox(\caption\button[3]\x, \caption\button[3]\y, \caption\button[3]\width, \caption\button[3]\height, 
+                   \caption\button[3]\round, \caption\button[3]\round, \caption\button[3]\color\back[\caption\button[3]\color\state]&$FFFFFF|\caption\button[3]\color\alpha<<24)
+        EndIf
+        
+        ; draw button frame
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+        If Not \caption\button[0]\hide
+          If \caption\button[0]\color\state
+            Line(\caption\button[0]\x+1+(\caption\button[0]\width-6)/2, \caption\button[0]\y+(\caption\button[0]\height-6)/2, 6, 6, \caption\button[0]\color\front[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
+            Line(\caption\button[0]\x+(\caption\button[0]\width-6)/2, \caption\button[0]\y+(\caption\button[0]\height-6)/2, 6, 6, \caption\button[0]\color\front[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
+            
+            Line(\caption\button[0]\x-1+6+(\caption\button[0]\width-6)/2, \caption\button[0]\y+(\caption\button[0]\height-6)/2, -6, 6, \caption\button[0]\color\front[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
+            Line(\caption\button[0]\x+6+(\caption\button[0]\width-6)/2, \caption\button[0]\y+(\caption\button[0]\height-6)/2, -6, 6, \caption\button[0]\color\front[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
+          EndIf
+          
+          RoundBox(\caption\button[0]\x, \caption\button[0]\y, \caption\button[0]\width, \caption\button[0]\height, 
+                   \caption\button[0]\round, \caption\button[0]\round, \caption\button[0]\color\frame[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
+        EndIf
+        If Not \caption\button[1]\hide
+          If \caption\button[1]\color\state
+            Line(\caption\button[1]\x+2+(\caption\button[1]\width-4)/2, \caption\button[1]\y+(\caption\button[1]\height-4)/2, 4, 4, \caption\button[1]\color\front[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
+            Line(\caption\button[1]\x+1+(\caption\button[1]\width-4)/2, \caption\button[1]\y+(\caption\button[1]\height-4)/2, 4, 4, \caption\button[1]\color\front[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
+            
+            Line(\caption\button[1]\x+1+(\caption\button[1]\width-4)/2, \caption\button[1]\y+(\caption\button[1]\height-4)/2, -4, 4, \caption\button[1]\color\front[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
+            Line(\caption\button[1]\x+2+(\caption\button[1]\width-4)/2, \caption\button[1]\y+(\caption\button[1]\height-4)/2, -4, 4, \caption\button[1]\color\front[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
+          EndIf
+          
+          RoundBox(\caption\button[1]\x, \caption\button[1]\y, \caption\button[1]\width, \caption\button[1]\height,
+                   \caption\button[1]\round, \caption\button[1]\round, \caption\button[1]\color\frame[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
+        EndIf
+        If Not \caption\button[2]\hide
+          If \caption\button[2]\color\state
+            Line(\caption\button[2]\x-2+(\caption\button[2]\width-4)/2, \caption\button[2]\y+(\caption\button[2]\height-4)/2, 4, 4, \caption\button[2]\color\front[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
+            Line(\caption\button[2]\x-1+(\caption\button[2]\width-4)/2, \caption\button[2]\y+(\caption\button[2]\height-4)/2, 4, 4, \caption\button[2]\color\front[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
+            
+            Line(\caption\button[2]\x-1+6+(\caption\button[2]\width-4)/2, \caption\button[2]\y+(\caption\button[2]\height-4)/2, -4, 4, \caption\button[2]\color\front[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
+            Line(\caption\button[2]\x-2+6+(\caption\button[2]\width-4)/2, \caption\button[2]\y+(\caption\button[2]\height-4)/2, -4, 4, \caption\button[2]\color\front[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
+          EndIf
+          
+          RoundBox(\caption\button[2]\x, \caption\button[2]\y, \caption\button[2]\width, \caption\button[2]\height, 
+                   \caption\button[2]\round, \caption\button[2]\round, \caption\button[2]\color\frame[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
+        EndIf
+        If Not \caption\button[3]\hide
+          RoundBox(\caption\button[3]\x, \caption\button[3]\y, \caption\button[3]\width, \caption\button[3]\height, 
+                   \caption\button[3]\round, \caption\button[3]\round, \caption\button[3]\color\frame[\caption\button[3]\color\state]&$FFFFFF|\caption\button[3]\color\alpha<<24)
+        EndIf
+        
+      EndIf
+      
+      
+    EndWith
+  EndProcedure
   
+  Procedure window_close(*this._s_widget)
+    Protected.b result
+    
+    ; close window
+      If Not Post(#__Event_CloseWindow, *this)
+        Free(*this)
+        
+        If _is_root_(*this)
+          PostEvent(#PB_Event_CloseWindow, *this\root\window, *this)
+        EndIf
+        
+        result = #True
+      EndIf
+  EndProcedure
+  
+  Procedure window_setstate(*this._s_widget, state.l)
+    Protected.b result
+    
+    ; restore state
+    If state = #__Window_Normal
+      If Not Post(#__Event_RestoreWindow, *this)
+        If *this\resize & #__resize_minimize
+          *this\resize &~ #__resize_minimize
+          *this\caption\button[0]\hide = 0
+          *this\caption\button[2]\hide = 0
+        EndIf
+        *this\resize &~ #__resize_maximize
+        *this\resize | #__resize_restore
+        
+        Resize(*this, *this\root\x[#__c_3], *this\root\y[#__c_3], 
+               *this\root\width[#__c_3], *this\root\height[#__c_3])
+        
+        If _is_root_(*this)
+          PostEvent(#PB_Event_RestoreWindow, *this\root\window, *this)
+        EndIf
+      EndIf
+    EndIf
+    
+    ; maximize state
+    If state = #__Window_Maximize
+      If Not Post(#__Event_MaximizeWindow, *this)
+        If Not *this\resize & #__resize_minimize
+          *this\root\x[#__c_3] = *this\x[#__c_3]
+          *this\root\y[#__c_3] = *this\y[#__c_3]
+          *this\root\width[#__c_3] = *this\width
+          *this\root\height[#__c_3] = *this\height
+        EndIf
+        
+        *this\resize | #__resize_maximize
+        Resize(*this, 0,0, *this\parent\width, *this\parent\height)
+        
+        If _is_root_(*this)
+          PostEvent(#PB_Event_MaximizeWindow, *this\root\window, *this)
+        EndIf
+        
+        result = #True
+      EndIf
+    EndIf
+    
+    ; minimize state
+    If state = #__Window_Minimize
+      If Not Post(#__Event_MinimizeWindow, *this)
+        If Not *this\resize & #__resize_maximize
+          *this\root\x[#__c_3] = *this\x[#__c_3]
+          *this\root\y[#__c_3] = *this\y[#__c_3]
+          *this\root\width[#__c_3] = *this\width
+          *this\root\height[#__c_3] = *this\height
+        EndIf
+        
+        *this\caption\button[0]\hide = 1
+        If *this\caption\button[1]\hide = 0
+          *this\caption\button[2]\hide = 1
+        EndIf
+        *this\resize | #__resize_minimize
+        
+        Resize(*this, *this\root\x[#__c_3], *this\parent\height-*this\__height, *this\root\width[#__c_3], *this\__height)
+        
+        If _is_root_(*this)
+          PostEvent(#PB_Event_MinimizeWindow, *this\root\window, *this)
+        EndIf
+        
+        result = #True
+      EndIf
+    EndIf
+    
+    ProcedureReturn result 
+  EndProcedure
+
   ;-
   ;- DRAWPOPUP
   ;-
@@ -3114,7 +3382,7 @@ Module Widget
           Case #PB_Event_ActivateWindow
             Protected *Widget._s_widget = (\root\canvas)
             
-            If CallBack(\childrens(), #__Event_LeftButtonDown, WindowMouseX(\root\window), WindowMouseY(\root\window))
+            If Events(\childrens(), #__Event_LeftButtonDown, WindowMouseX(\root\window), WindowMouseY(\root\window))
               ; If \childrens()\index[#__s_2] <> \childrens()\index[#__s_1]
               *Widget\index[#__s_2] = \childrens()\index[#__s_1]
               Post(#__Event_Change, *Widget, \childrens()\index[#__s_1])
@@ -3140,7 +3408,7 @@ Module Widget
             mouse_x = GetGadgetAttribute(\root\canvas, #PB_Canvas_MouseX)
             mouse_y= GetGadgetAttribute(\root\canvas, #PB_Canvas_MouseY)
             
-            If CallBack(From(*this, mouse_x, mouse_y), EventType(), mouse_x, mouse_y)
+            If Events(From(*this, mouse_x, mouse_y), EventType(), mouse_x, mouse_y)
               ReDraw(*this)
             EndIf
             
@@ -3185,7 +3453,7 @@ Module Widget
       EndIf
       
       Resize(*Widget, #PB_Ignore,#PB_Ignore, width, Height )
-      If *Widget\resize
+      If *Widget\resize & #__resize_change
         ResizeWindow(*Widget\root\window, x, y, width, Height)
         ResizeGadget(*Widget\root\canvas, #PB_Ignore, #PB_Ignore, width, Height)
       EndIf
@@ -3553,7 +3821,7 @@ Module Widget
             
             Debug "set_state() - "+State;*this\index[#__s_1]+" "+ListIndex(\items())
                                         ; Post change event To widget (tree, listview)
-            CallBack(*this, #__Event_Change, *this\root\mouse\x, *this\root\mouse\y)
+            Events(*this, #__Event_Change, *this\root\mouse\x, *this\root\mouse\y)
           EndIf
           
           Repaint = 1
@@ -3745,7 +4013,7 @@ Module Widget
     If *this\text\string
       ForEach *this\row\_s()
         If *this\row\_s()\text\string
-          If (*this\text\change Or *this\resize)
+          If (*this\text\change Or *this\resize & #__resize_change)
             *this\row\_s()\text\x = *this\x[2] + *this\row\_s()\text\x[2] + *this\scroll\x
             *this\row\_s()\text\y = *this\y[2] + *this\row\_s()\text\y[2] + *this\scroll\y
           EndIf
@@ -4591,7 +4859,7 @@ Module Widget
         
         
         If \text\change : \text\change = 0 : EndIf
-        If \resize : \resize = 0 : EndIf
+        If \resize & #__resize_change : \resize &~ #__resize_change : EndIf
       EndIf
     EndWith
     
@@ -4641,7 +4909,7 @@ Module Widget
           \scroll\height=0
           
           ForEach \row\_s()
-            ;             If Not \row\_s()\text\change And Not \resize And Not \change
+            ;             If Not \row\_s()\text\change And Not \resize & #__resize_change And Not \change
             ;               Break
             ;             EndIf
             
@@ -5355,40 +5623,6 @@ Module Widget
     EndWith
   EndProcedure
   
-  Procedure.i Draw_window(*this._s_widget)
-    With *this 
-      If \__height
-        ; Draw caption frame
-        If \caption\color\back > 0
-          DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          _box_gradient_( \Vertical, \caption\x, \caption\y, \caption\width, \caption\height, \caption\color\fore[\color\state], \caption\color\back[\color\state], \round, \caption\color\alpha)
-        EndIf
-        
-        ;       ; Draw image
-        ;       If \caption\image\handle
-        ;         DrawingMode(#PB_2DDrawing_transparent|#PB_2DDrawing_alphaBlend)
-        ;         DrawAlphaImage(\caption\image\handle, \caption\image\x, \caption\image\y, \caption\color\alpha)
-        ;       EndIf
-        
-        ; Draw string
-        If \text\string
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawText(\text\x, \text\y, \text\string.s, \color\front[\color\state]&$FFFFFF|\color\alpha<<24)
-        EndIf
-        
-        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox(\caption\button[1]\x, \caption\button[1]\y, \caption\button[1]\width, \caption\button[1]\height, \caption\round, \caption\round, $FF0000FF&$FFFFFF|\color[1]\alpha<<24)
-        RoundBox(\caption\button[2]\x, \caption\button[2]\y, \caption\button[2]\width, \caption\button[2]\height, \caption\round, \caption\round, $FFFF0000&$FFFFFF|\color[2]\alpha<<24)
-        RoundBox(\caption\button[3]\x, \caption\button[3]\y, \caption\button[3]\width, \caption\button[3]\height, \caption\round, \caption\round, $FF00FF00&$FFFFFF|\color[3]\alpha<<24)
-        
-        ; Draw caption frame
-        If \fs And \color\frame
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox(\caption\button[0]\x, \caption\button[0]\y, \caption\button[0]\width, \caption\button[0]\height, \round, \round, \color\frame&$FFFFFF|\color\alpha<<24)
-        EndIf
-      EndIf
-    EndWith
-  EndProcedure
   
   
   
@@ -5691,7 +5925,7 @@ Module Widget
           
           ret$ + line$ + nl$
           
-         *str = *End + #__sOC 
+          *str = *End + #__sOC 
         EndIf 
         
         *End + #__sOC 
@@ -5762,7 +5996,7 @@ Module Widget
         _make_scroll_height_(*this, (\count\items * *this\text\height))
       EndIf
       
-                  
+      
       _width_ = (*this\scroll\width - *this\text\x*2)
       _height_ = (*this\scroll\height - *this\text\y*2)
       
@@ -5782,7 +6016,7 @@ Module Widget
         While *End\c 
           If *End\c = #LF And AddElement(\row\_s())
             len = (*end-*str)>>#PB_Compiler_Unicode ; /#__sOC 
-            ;len = (*end-*str)/#__sOC 
+                                                    ;len = (*end-*str)/#__sOC 
             String = PeekS (*str, len)
             
             \row\_s()\draw = 1
@@ -5852,11 +6086,11 @@ Module Widget
           EndIf
           
           If *this\scroll\v\bar\max <> *this\scroll\height 
-             scroll_change | Bar::SetAttribute(*this\scroll\v, #__bar_maximum, *this\scroll\height)
+            scroll_change | Bar::SetAttribute(*this\scroll\v, #__bar_maximum, *this\scroll\height)
           EndIf
           
           If *this\scroll\h\bar\max <> *this\scroll\width 
-             scroll_change | Bar::SetAttribute(*this\scroll\h, #__bar_maximum, *this\scroll\width)
+            scroll_change | Bar::SetAttribute(*this\scroll\h, #__bar_maximum, *this\scroll\width)
           EndIf
           
           If scroll_change
@@ -5897,83 +6131,69 @@ Module Widget
         \text\height = TextHeight("A")
       EndIf
       
-      If \image 
-        If (\image\change Or \resize Or \change)
-          ; Image default position
-          If \image\handle
-            If (\type = #__Type_Image)
-              \image\x[1] = \image\x[2] + (Bool(\scroll\h\bar\page\len>\image\width And (\image\align\right Or \image\align\horizontal)) * (\scroll\h\bar\page\len-\image\width)) / (\image\align\horizontal+1)
-              \image\y[1] = \image\y[2] + (Bool(\scroll\v\bar\page\len>\image\height And (\image\align\bottom Or \image\align\Vertical)) * (\scroll\v\bar\page\len-\image\height)) / (\image\align\Vertical+1)
-              \image\y = \scroll\y+\image\y[1]+\y[#__c_2]
-              \image\x = \scroll\x+\image\x[1]+\x[#__c_2]
-              
-            ElseIf (\type = #__Type_Window)
-              \image\x[1] = \image\x[2] + (Bool(\image\align\right Or \image\align\horizontal) * (\width-\image\width)) / (\image\align\horizontal+1)
-              \image\y[1] = \image\y[2] + (Bool(\image\align\bottom Or \image\align\Vertical) * (\height-\image\height)) / (\image\align\Vertical+1)
-              \image\x = \image\x[1]+\x[#__c_2]
-              \image\y = \image\y[1]+\y+\bs+(\__height-\image\height)/2
-              \text\x[2] = \image\x[2] + \image\width
-            Else
-              \image\x[1] = \image\x[2] + (Bool(\image\align\right Or \image\align\horizontal) * (\width-\image\width)) / (\image\align\horizontal+1)
-              \image\y[1] = \image\y[2] + (Bool(\image\align\bottom Or \image\align\Vertical) * (\height-\image\height)) / (\image\align\Vertical+1)
-              \image\x = \image\x[1]+\x[#__c_2]
-              \image\y = \image\y[1]+\y[#__c_2]
-            EndIf
-          EndIf
-        EndIf
-        
-        Protected image_width = \image\width
-      EndIf
-      
-      
-      If \text And (\text\change Or (\resize And *this\text\multiline =- 1))
-        *this\text\change = 1
+      If \text And (\text\change Or (\resize & #__resize_change And *this\text\multiline =- 1)) : *this\text\change = 1
         make_multiline(*this._s_widget, \text\string)
       EndIf
       
       ; 
-      If \height > 0 And \width > 0 And Not \hide And 
-         Not (*this = \root And \width[#__c_4] > 0 And \height[#__c_4] > 0)
+      If \height > 0 And \width > 0 And Not \hide And Not (*this = \root And \width[#__c_4] > 0 And \height[#__c_4] > 0)
         
-        ;         If \scroll And \scroll\v And \scroll\h
-        ;           ClipOutput(\x[#__c_2],\y[#__c_2], \scroll\h\bar\page\len,\scroll\v\bar\page\len)
-        ;         Else
         ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
-        ;         EndIf
+        ;ClipOutput(\x[#__c_5],\y[#__c_5],\width[#__c_5],\height[#__c_5])
         
-        If (\color\state > 0 And Not \interact)
-          \color\state = 0
-        EndIf
-        
-        ; Draw background  
-        If \color\back[\color\state]<>-1
-          If \color\fore[\color\state] > 0
-            DrawingMode( #PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-            _box_gradient_( \Vertical, \x[#__c_2], \y[#__c_2], \width[#__c_2], \height[#__c_2], \color\fore[\color\state], \color\back[\color\state], \round, \color\alpha)
+        If \fs
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          Protected i=1
+          
+          If \fs = 1 
+            For i=1 To \round
+              Line(\x[#__c_1]+i-1,\y[#__c_1]+\caption\height-1,1,Bool(\round)*(i-\round),\caption\color\back[\color\state])
+              Line(\x[#__c_1]+\width[#__c_1]+i-\round-1,\y[#__c_1]+\caption\height-1,1,-Bool(\round)*(i),\caption\color\back[\color\state])
+            Next
           Else
-            DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\x[#__c_2], \y[#__c_2], \width[#__c_2], \height[#__c_2], \round, \round, \color\back&$FFFFFF|\color\alpha<<24)
+            For i=1 To \fs
+              RoundBox(\x[#__c_1]+i-1, \y[#__c_2]-\fs+i-1, \width[#__c_1]-i*2+2, Bool(\height[#__c_1]-\__height>0)*(\height[#__c_1]-\__height)-i*2+2,Bool(Not \__height)*\round,Bool(Not \__height)*\round, \caption\color\back[\color\state])
+              RoundBox(\x[#__c_1]+i-1, \y[#__c_2]-\fs+i, \width[#__c_1]-i*2+2, Bool(\height[#__c_1]-\__height>0)*(\height[#__c_1]-\__height)-i*2,Bool(Not \__height)*\round,Bool(Not \__height)*\round, \caption\color\back[\color\state])
+            Next
+          EndIf
+        EndIf 
+        
+        ; Draw back
+        If \color\back[\interact * \color\state]
+          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        ;  RoundBox(\x[#__c_2]-Bool(\fs),\y[#__c_2]-Bool(\fs),\width[#__c_2]+Bool(\fs),Bool(\height[#__c_1]-\__height-\fs*2+Bool(\fs)*2>0) * (\height[#__c_1]-\__height-\fs*2+Bool(\fs)),Bool(Not \__height)*\round,Bool(Not \__height)*\round,\color\back[\interact * \color\state])
+         RoundBox(\x[#__c_2],\y[#__c_2],\width[#__c_2],\height[#__c_2], Bool(Not \__height)*\round,Bool(Not \__height)*\round,\color\back[\interact * \color\state])
+         ;  RoundBox(\x[#__c_2]-1,\y[#__c_2]-1,\width[#__c_2]+2,\height[#__c_2]+2, Bool(Not \__height)*\round,Bool(Not \__height)*\round,\color\back[\interact * \color\state])
+        EndIf
+        
+        If \fs
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          If \fs = 1 
+            RoundBox(\x[#__c_1], \y[#__c_1]+\__height, \width[#__c_1], Bool(\height[#__c_1]-\__height>0) * (\height[#__c_1]-\__height),
+                     Bool(Not \__height)*\round, Bool(Not \__height)*\round, \color\frame[\color\state])
+          Else
+           ; draw out frame
+           RoundBox(\x[#__c_1], \y[#__c_1]+\__height, \width[#__c_1], Bool(\height[#__c_1]-\__height>0) * (\height[#__c_1]-\__height),
+                     Bool(Not \__height)*\round, Bool(Not \__height)*\round, \color\frame[\color\state])
+          
+          ; draw inner frame 
+           If \type = #__Type_ScrollArea ; \scroll And \scroll\v And \scroll\h
+              RoundBox(\x[#__c_2]-1, \y[#__c_2]-1, Bool(\width[#__c_1]-\fs*2>-2)*(\width[#__c_1]-\fs*2+2), 
+                       Bool(\height[#__c_1]-\fs*2-\__height>-2)*(\height[#__c_1]-\fs*2-\__height+2),
+                       Bool(Not \__height)*\round, Bool(Not \__height)*\round, \scroll\v\color\line)
+            Else
+              RoundBox(\x[#__c_2]-1, \y[#__c_2]-1, Bool(\width[#__c_1]-\fs*2>-2)*(\width[#__c_1]-\fs*2+2), 
+                       Bool(\height[#__c_1]-\fs*2-\__height>-2)*(\height[#__c_1]-\fs*2-\__height+2),
+                       Bool(Not \__height)*\round, Bool(Not \__height)*\round, \color\frame[\color\state])
+            EndIf
           EndIf
         EndIf
         
-        ; Draw background image
-        If \image And \image\handle
-          If \scroll And \scroll\v And \scroll\h And 
-             \scroll\h\bar\page\len < \width[#__c_4] And \scroll\v\bar\page\len < \height[#__c_4]
-            ClipOutput(\x[#__c_2], \y[#__c_2], \scroll\h\bar\page\len, \scroll\v\bar\page\len)
-          EndIf
-          
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
-          
-          If \scroll And \scroll\v And \scroll\h
-            ClipOutput(\x[#__c_4], \y[#__c_4], \width[#__c_4], \height[#__c_4])
-          EndIf
-        EndIf
+        
         
         ; draw widgets
         Select \type
-          Case #__Type_Window       : Draw_window(*this)
+          Case #__Type_Window       : window_draw(*this)
           Case #__Type_Panel        : Draw_panel(*this)
           Case #__Type_Frame        : Draw_frame(*this)
             
@@ -6002,30 +6222,31 @@ Module Widget
           Case #__Type_ProgressBar  : Draw_progress(*this)
         EndSelect
         
+;         ; draw text
+;         If *this\text\string
+;           _draw_text_(*this)
+;         EndIf
+        
         If \scroll 
-          ; ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
           If \scroll\v And \scroll\v\type And Not \scroll\v\hide : Draw_Scroll(\scroll\v) : EndIf
           If \scroll\h And \scroll\h\type And Not \scroll\h\hide : Draw_Scroll(\scroll\h) : EndIf
         EndIf
         
-        ; Draw inner frame 
-        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        If \color\state
-          ; RoundBox(\x[#__c_1]+Bool(\fs),\y[#__c_1]+Bool(\fs),\width[#__c_1]-Bool(\fs)*2,\height[#__c_1]-Bool(\fs)*2,\round,\round,0);\color\back)
-          RoundBox(\x[#__c_2]-Bool(\fs),\y[#__c_2]-Bool(\fs),\width[#__c_2]+Bool(\fs)*2,\height[#__c_2]+Bool(\fs)*2,\round,\round,\color\back)
-          RoundBox(\x[#__c_1],\y[#__c_1],\width[#__c_1],\height[#__c_1],\round,\round,\color\frame[2])
-          ;           If \round : RoundBox(\x[#__c_1],\y[#__c_1]-1,\width[#__c_1],\height[#__c_1]+2,\round,\round,\color\frame[2]) : EndIf  ; ??????????? ????? )))
-          ;           RoundBox(\x[#__c_1]-1,\y[#__c_1]-1,\width[#__c_1]+2,\height[#__c_1]+2,\round,\round,\color\frame[2])
-        ElseIf \fs
-          RoundBox(\x[#__c_1],\y[#__c_1],\width[#__c_1],\height[#__c_1],\round,\round,\color\frame[\color\state])
+        ; Draw anchors 
+        If \root And \root\anchor And \root\anchor\widget
+          ;Debug \root\anchor\widget
+          a_draw(\root\anchor\widget)
         EndIf
         
-        ;         ; Draw out frame
-        ;         If \fs And \color\frame[\color\state] > 0 
-        ;           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_alphaBlend)
-        ;           RoundBox( \x, \y, \width, \height, \round, \round, \color\frame[\color\state])
-        ;         EndIf
-        
+;         ; post event draw
+;         If \root\event And 
+;            (\root\event\type = #PB_All Or
+;             \root\event\type = #__Event_repaint)
+;           
+;           SetOrigin(\x,\y)
+;           Post(#__Event_repaint, *this)
+;           SetOrigin(0,0)
+;         EndIf
         
         ; Draw Childrens
         If Childrens And \count\childrens
@@ -6036,64 +6257,16 @@ Module Widget
                \childrens()\tab\index = \index[#__s_2]
               
               Draw(\childrens(), Childrens) 
-            EndIf
-            
-            ; post event draw
-            If \childrens()\root\event And 
-               (\childrens()\root\event\type = #PB_All Or
-                \childrens()\root\event\type = #__Event_repaint)
-              
-              SetOrigin(\childrens()\x,\childrens()\y)
-              Post(#__Event_repaint, \childrens())
-              SetOrigin(0,0)
-            EndIf
+             EndIf
           Next
         EndIf
-        
-        UnclipOutput()
-        
-        If #__draw_clip_box And *this\color\state = #__s_2 ;And (*this = GetActive()\gadget Or *this = GetActive())  ; Demo default coordinate
-          DrawingMode(#PB_2DDrawing_Outlined)
-          Box(\x,\y,\width,\height, $FF0000)
-        EndIf
-        
-        If #__draw_scroll_box And \Scroll And \Scroll\v And \Scroll\h
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          ; Scroll area coordinate
-          ;Box(\Scroll\x, \Scroll\y, \Scroll\width, \Scroll\height, $FFFF0000)
-          ; Debug ""+\Scroll\x +" "+ \Scroll\y +" "+ \Scroll\width +" "+ \Scroll\height
-          Box(\Scroll\h\x-\Scroll\h\bar\page\pos, \Scroll\v\y-\Scroll\v\bar\page\pos, \Scroll\h\bar\max, \Scroll\v\bar\max, $FFFF0000)
-          
-          ; page coordinate
-          Box(\Scroll\h\x, \Scroll\v\y, \Scroll\h\bar\page\len, \Scroll\v\bar\page\len, $FF00FF00)
-        EndIf
-        
-        ; Draw anchors 
-        If \root And \root\anchor And \root\anchor\widget
-          ;Debug \root\anchor\widget
-          a_draw(\root\anchor\widget)
-        EndIf
       EndIf
       
       
-      If \scroll
-        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        ; Scroll area coordinate
-        Box(\x[2]+*this\scroll\x, \y[2]+*this\scroll\y, \scroll\width, \scroll\height, $FF0000FF) ; + \text\y*2 - \flag\gridlines), $FF0000FF)
-        
-        If \scroll\v And \scroll\h 
-          ; Debug ""+\scroll\x +" "+ \scroll\y +" "+ \scroll\width +" "+ \scroll\height
-          Box(\scroll\h\x-\scroll\h\bar\page\pos, \scroll\v\y-\scroll\v\bar\page\pos, \scroll\h\bar\max, \scroll\v\bar\max, $FFFF0000)
-          
-          ; page coordinate
-          Box(\scroll\h\x, \scroll\v\y, \scroll\h\bar\page\len, \scroll\v\bar\page\len, $FF00FF00)
-        EndIf
-      EndIf
       
-        
       ; reset 
       If \change : \change = 0 : EndIf
-      If \resize : \resize = 0 : EndIf
+      If \resize & #__resize_change : \resize &~ #__resize_change : EndIf
       If \text : \text\change = 0 : EndIf
       If \image : \image\change = 0 : EndIf
       
@@ -6111,21 +6284,16 @@ Module Widget
       EndIf
       
       If StartDrawing(CanvasOutput(\root\canvas))
-        ;If \root\color\back
-        ; ;DrawingMode(#PB_2DDrawing_default)
-        ; ;box(0,0,OutputWidth(),OutputHeight(), *this\color\back)
-        ; FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), \root\color\back)
-        ;EndIf
+        If \root\color\back
+          ;DrawingMode(#PB_2DDrawing_default)
+          ;box(0,0,OutputWidth(),OutputHeight(), *this\color\back)
+          FillMemory(DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), \root\color\back)
+        EndIf
         
         Draw(*this, 1)
         
-        
-        ;       ; selector
-        ;         If \root\anchor 
-        ;           box(\root\anchor\x, \root\anchor\y, \root\anchor\width, \root\anchor\height ,\root\anchor\color[\root\anchor\state]\frame) 
-        ;         EndIf
-        
         StopDrawing()
+        
         If *this\root And 
            *this\root\repaint
           *this\root\repaint = #False
@@ -6864,9 +7032,9 @@ Module Widget
       
       If Not(_active_ = _active_\root And _active_\root\type =- 5)
         If (_state_)
-          CallBack(_active_, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Events(_active_, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
         Else
-          CallBack(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Events(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
         EndIf
         
         PostEvent(#PB_Event_Gadget, _active_\root\window, _active_\root\canvas, #__Event_repaint)
@@ -6876,9 +7044,9 @@ Module Widget
         _active_\gadget\color\state = (_state_)
         
         If (_state_)
-          CallBack(_active_\gadget, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Events(_active_\gadget, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
         Else
-          CallBack(_active_\gadget, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Events(_active_\gadget, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
         EndIf
       EndIf
     EndMacro
@@ -6887,7 +7055,7 @@ Module Widget
       If \type > 0 And GetActive()
         If GetActive()\gadget <> *this
           If GetActive() <> \window
-            If GetActive()
+            If _is_widget_(GetActive())
               _set_active_state_(GetActive(), #__s_0)
             EndIf
             
@@ -6898,26 +7066,27 @@ Module Widget
           Else
             If GetActive()\gadget
               GetActive()\gadget\color\state = #__s_0
-              CallBack(GetActive()\gadget, #__Event_LostFocus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
+              Events(GetActive()\gadget, #__Event_LostFocus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
             EndIf
             
             GetActive()\gadget = *this
             GetActive()\gadget\color\state = #__s_2
-            CallBack(GetActive()\gadget, #__Event_Focus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
+            Events(GetActive()\gadget, #__Event_Focus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
           EndIf
           
           Result = #True 
         EndIf
         
       ElseIf GetActive() <> *this
-        If GetActive()
+        If _is_widget_(GetActive())
           _set_active_state_(GetActive(), #__s_0)
         EndIf
         
         GetActive() = *this
         
-        _set_active_state_(GetActive(), #__s_2)
-        
+        ;If _is_widget_(GetActive())
+          _set_active_state_(GetActive(), #__s_2)
+        ;EndIf
         Result = #True
       EndIf
       
@@ -7098,7 +7267,7 @@ Module Widget
                 SetAttribute(\scroll\v, #__bar_maximum, \image\height)
                 SetAttribute(\scroll\h, #__bar_maximum, \image\width)
                 
-                \resize = 1<<1|1<<2|1<<3|1<<4 
+                \resize = #__resize_x|#__resize_y|#__resize_width|#__resize_height|#__resize_change
                 Resize(*this, \x, \y, \width, \height) 
                 \resize = 0
               EndIf
@@ -7966,40 +8135,21 @@ Module Widget
   Procedure.i Resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
     Protected Lines.i, Change_x, Change_y, Change_width, Change_height
     
-    If *this > 0
       With *this
         ; #__flag_autoSize
-        If \parent And \parent\type <> #__Type_Splitter And \align And \align\autoSize And \align\left And \align\top And \align\right And \align\bottom
+        If \parent And \parent\type <> #__Type_Splitter And
+           \align And \align\autoSize And \align\left And \align\top And \align\right And \align\bottom
           X = 0; \align\width
           Y = 0; \align\height
           Width = \parent\width[#__c_2] ; - \align\width
           Height = \parent\height[#__c_2] ; - \align\height
         EndIf
         
-        ;         ; Resize vertical&horizontal scrollbar
-        ;         If (\scroll And \scroll\v And \scroll\h)
-        ;           ; Bar_resizes(\scroll, x,y, width,height)
-        ;           Bar_resizes(\scroll, x,y, width-\bs*2,height-\bs*2)
-        ;         EndIf
-        
-        ;         ; Set widget coordinate
-        ;         If X<>#PB_Ignore : If \parent : \x[#__c_3] = X : X+\parent\x+\parent\bs : EndIf : If \x <> X : Change_x = x-\x : \x = X : \x[#__c_2] = \x+\bs : \x[#__c_1] = \x[#__c_2]-\fs : \resize | 1<<1 : EndIf : EndIf  
-        ;         If Y<>#PB_Ignore : If \parent : \y[#__c_3] = Y : Y+\parent\y+\parent\bs+\parent\__height : EndIf : If \y <> Y : Change_y = y-\y : \y = Y : \y[#__c_2] = \y+\bs+\__height : \y[#__c_1] = \y[#__c_2]-\fs : \resize | 1<<2 : EndIf : EndIf  
-        ;         
-        ;         If _is_root_(*this)
-        ;           If Width<>#PB_Ignore : If \width <> Width : Change_width = width-\width : \width = Width : \width[#__c_2] = \width-\bs*2 : \width[#__c_1] = \width[#__c_2]+\fs*2 : \resize | 1<<3 : EndIf : EndIf  
-        ;           If Height<>#PB_Ignore : If \height <> Height : Change_height = height-\height : \height = Height : \height[#__c_2] = \height-\bs*2-\__height-\__height : \height[#__c_1] = \height[#__c_2]+\fs*2 : \resize | 1<<4 : EndIf : EndIf 
-        ;         Else
-        ;           If Width<>#PB_Ignore : If \width <> Width : Change_width = width-\width : \width = Width+Bool(\type=-1)*(\bs*2) : \width[#__c_2] = width-Bool(\type<>-1)*(\bs*2) : \width[#__c_1] = \width[#__c_2]+\fs*2 : \resize | 1<<3 : EndIf : EndIf  
-        ;           If Height<>#PB_Ignore : If \height <> Height : Change_height = height-\height : \height = Height+Bool(\type=-1)*(\__height+\bs*2) : \height[#__c_2] = height-Bool(\type<>-1)*(\__height+\bs*2) : \height[#__c_1] = \height[#__c_2]+\fs*2 : \resize | 1<<4 : EndIf : EndIf 
-        ;         EndIf
-        
-        
         ; Set widget coordinate
         If X<>#PB_Ignore 
           If \parent 
             \x[#__c_3] = X 
-            X+\parent\x+\parent\bs 
+            X+\parent\x[#__c_2] 
           EndIf 
           
           If \x <> X 
@@ -8007,101 +8157,139 @@ Module Widget
             \x = X 
             \x[#__c_2] = \x+\bs 
             \x[#__c_1] = \x[#__c_2]-\fs 
-            \resize | 1<<1 
+            \resize | #__resize_x | #__resize_change
           EndIf 
         EndIf  
         
         If Y<>#PB_Ignore 
           If \parent 
-            \y[#__c_3] = Y 
-            Y+\parent\y+\parent\bs+\parent\__height 
+            \y[#__c_3] = y 
+            y+\parent\y[#__c_2] 
           EndIf 
           
-          If \y <> Y 
+          If \y <> y 
             Change_y = y-\y 
-            \y = Y 
-            \y[#__c_2] = \y+\bs+\__height 
-            \y[#__c_1] = \y[#__c_2]-\fs 
-            \resize | 1<<2 
+            \y = y 
+            \y[#__c_1] = \y+\bs-\fs 
+            \y[#__c_2] = \y+\bs+\__height
+            \resize | #__resize_y | #__resize_change
           EndIf 
         EndIf  
         
-        If _is_root_(*this)
-          If Width <> #PB_Ignore 
-            If \width <> Width 
-              Change_width = width-\width 
-              \width = Width 
-              \width[#__c_2] = \width-\bs*2 
-              \width[#__c_1] = \width[#__c_2]+\fs*2 
-              \resize | 1<<3 
-            EndIf 
-          EndIf  
+        If width <> #PB_Ignore 
+          If width < 0 : width = 0 : EndIf
           
-          If Height <> #PB_Ignore 
-            If \height <> Height 
-              Debug "root resize height"
-              
-              Change_height = height-\height 
-              \height = Height 
-              \height[#__c_2] = height-\bs*2-\__height ; -\__height 
-              \height[#__c_1] = \height[#__c_2]+\fs*2 
-              \resize | 1<<4 
-            EndIf 
+          If \width <> width 
+            Change_width = width-\width 
+            \width = width 
+            \width[#__c_2] = \width-\bs*2 
+            \width[#__c_1] = \width[#__c_2]+\fs*2 
+            If \width[#__c_1] < 0 : \width[#__c_1] = 0 : EndIf
+            If \width[#__c_2] < 0 : \width[#__c_2] = 0 : EndIf
+            \resize | #__resize_width | #__resize_change
           EndIf 
+        EndIf  
+        
+        If Height <> #PB_Ignore 
+          If Height < 0 : Height = 0 : EndIf
           
-        Else
-          If Width <> #PB_Ignore 
-            If \width <> Width 
-              Change_width = width-\width 
-              \width = Width+Bool(\type=-1)*(\bs*2) 
-              \width[#__c_2] = width-Bool(\type<>-1)*(\bs*2) 
-              \width[#__c_1] = \width[#__c_2]+\fs*2 
-              \resize | 1<<3 
-            EndIf 
-          EndIf  
+          If \height <> Height 
+            Change_height = height-\height 
+            \height = Height 
+            \height[#__c_1] = \height-\bs*2+\fs*2 
+            \height[#__c_2] = \height-\bs*2-\__height
+            If \height[#__c_1] < 0 : \height[#__c_1] = 0 : EndIf
+            If \height[#__c_2] < 0 : \height[#__c_2] = 0 : EndIf
+            \resize | #__resize_height | #__resize_change
+          EndIf 
+        EndIf 
+        
+        ;
+        ;If \resize & #__resize_change
+          ; Resize vertical&horizontal scrollbars
+          If (\scroll And \scroll\v And \scroll\h)
+            Bar_resizes(\scroll, 0,0, \width-\bs*2, \height-\bs*2-\__height)
+            
+            \width[#__c_2] = \scroll\h\bar\page\len
+            \height[#__c_2] = \scroll\v\bar\page\len
+          EndIf
           
-          If Height <> #PB_Ignore 
-            If \height <> Height 
-              Change_height = height-\height 
-              \height = Height+Bool(\type=-1)*(\__height+\bs*2) 
-              \height[#__c_2] = height-Bool(\type<>-1)*(\__height+\bs*2) 
-              \height[#__c_1] = \height[#__c_2]+\fs*2 
-              \resize | 1<<4 
-              
-              If Bool(\type=-1)
-                Debug "resize window height "+\height +" "+ \height[#__c_2]
+          If \type = #__Type_Splitter Or
+             \type = #__Type_ScrollBar Or
+             \type = #__Type_ProgressBar Or
+             \type = #__Type_TrackBar
+            Bar_update(*this)
+          EndIf
+          
+          ; set clip coordinate
+          If Not _is_root_(*this) And \parent 
+            Protected clip_v, clip_h, clip_x, clip_y, clip_width, clip_height
+            
+            If \parent\scroll 
+              If \parent\scroll\v 
+                clip_v = Bool(\parent\width=\parent\width[#__c_4] And Not \parent\scroll\v\hide And \parent\scroll\v\type = #__Type_ScrollBar)*\parent\scroll\v\width 
               EndIf
-            EndIf 
-          EndIf 
-        EndIf
-        
-        ; Resize vertical&horizontal scrollbars
-        If (\scroll And \scroll\v And \scroll\h)
-          Bar_resizes(\scroll, 0,0, \width-\bs*2, \height-\bs*2-\__height)
+              If \parent\scroll\h 
+                clip_h = Bool(\parent\height=\parent\height[#__c_4] And Not \parent\scroll\h\hide And \parent\scroll\h\type = #__Type_ScrollBar) * \parent\scroll\h\height 
+              EndIf
+            EndIf
+            
+            clip_x = \parent\x[#__c_4] + Bool(\parent\x[#__c_2] > \parent\x[#__c_4]) * (\parent\x[#__c_2]-\parent\x[#__c_4]) 
+            clip_y = \parent\y[#__c_4] + Bool(\parent\y[#__c_2] > \parent\y[#__c_4]) * (\parent\y[#__c_2]-\parent\y[#__c_4]) 
+            
+            clip_width = ((\parent\x[#__c_4]+\parent\width[#__c_4])-Bool((\parent\x[#__c_4]+\parent\width[#__c_4])>(\parent\x[#__c_2]+\parent\width[#__c_2]))*\parent\bs)-clip_v 
+            ;clip_height = ((\parent\y[#__c_4]+\parent\height[#__c_4])-Bool((\parent\y[#__c_4]+\parent\height[#__c_4])>(\parent\y[#__c_2]+\parent\height[#__c_2]))*\parent\bs)-clip_h 
+            clip_height = ((\parent\y[#__c_4]+\parent\height[#__c_4]) - Bool((\y+\height)>(\parent\y[#__c_2]+\parent\height[#__c_2])) * \parent\bs)-clip_h 
+          EndIf
           
-          ;  Bar_SetAttribute(\scroll\h, #__bar_maximum, \scroll\width)
-          ;           ;Bar_resizes(\scroll, 0,0, \width[#__c_2],\height[#__c_2])
-          \width[#__c_2] = \scroll\h\bar\page\len
-          \height[#__c_2] = \scroll\v\bar\page\len
+;           If \resize & #__resize_x Or
+;              \resize & #__resize_width
+            
+            If \resize & #__resize_x
+              If clip_x And clip_x > \x 
+                \x[#__c_4] = clip_x 
+              Else 
+                \x[#__c_4] = \x 
+              EndIf
+            EndIf
+            
+            If clip_width And clip_width < (\x+\width)
+              \width[#__c_4] = clip_width - \x[#__c_4] 
+            Else 
+              \width[#__c_4] = (\x+\width) - \x[#__c_4] ; \width - (\x[#__c_4]-\x) 
+            EndIf
+;           EndIf
           
-          ;           If StartDrawing(CanvasOutput(*this\root\canvas))
-          ;             _tree_items_update_(*this, *this\row\_s())
-          ;             StopDrawing()
-          ;           EndIf
+;           If \resize & #__resize_y Or
+;              \resize & #__resize_height
+            
+            If \resize & #__resize_y
+              If clip_y And clip_y > \y 
+                \y[#__c_4] = clip_y 
+              Else 
+                \y[#__c_4] = \y 
+              EndIf
+            EndIf
+            
+            If clip_height And clip_height < (\y+\height) 
+              \height[#__c_4] = clip_height - \y[#__c_4] 
+            Else 
+              \height[#__c_4] = (\y+\height) - \y[#__c_4] ; \height - (\y[#__c_4]-\y) 
+            EndIf
+;           EndIf
           
-        EndIf
-        
-        Select \type
-          Case #__Type_Option
+          ; resize type
+          If \type = #__Type_Option
             *this\option_box\x = *this\x[#__c_2] + *this\text\_padding
             *this\option_box\y = *this\y[#__c_2] + (*this\height[#__c_2] - *this\option_box\height)/2
-            
-          Case #__Type_CheckBox
+          EndIf
+          
+          If \type = #__Type_CheckBox
             *this\check_box\x = *this\x[#__c_2] + *this\text\_padding
             *this\check_box\y = *this\y[#__c_2] + (*this\height[#__c_2] - *this\check_box\height)/2
-            
-            
-          Case #__Type_Panel
+          EndIf
+          
+          If \type = #__Type_Panel
             _resize_panel_(*this, \tab\bar\button[#__b_1], \x[#__c_2])
             
             If _bar_in_stop_(\tab\bar)
@@ -8118,165 +8306,170 @@ Module Widget
               \tab\bar\page\pos = \tab\bar\max
               \tab\bar\thumb\pos = _bar_thumb_pos_(\tab\bar, \tab\bar\page\pos)
             EndIf
-            
-            
-;           Case #__Type_Window
-;             \caption\x = \x[#__c_2]
-;             \caption\y = \y+\bs
-;             \caption\width = \width[#__c_2]
-;             \caption\height = \__height
-;             
-;             \caption\button[0]\width = \caption\len
-;             \caption\button[1]\width = \caption\len
-;             \caption\button[2]\width = \caption\len
-;             
-;             \caption\button[0]\height = \caption\len
-;             \caption\button[1]\height = \caption\len
-;             \caption\button[2]\height = \caption\len
-;             
-;             \caption\button[0]\x = \x[#__c_2]+\width[#__c_2]-\caption\button[0]\width-5
-;             \caption\button[1]\x = \caption\button[0]\x-Bool(Not \caption\button[1]\hide) * \caption\button[1]\width-5
-;             \caption\button[2]\x = \caption\button[1]\x-Bool(Not \caption\button[2]\hide) * \caption\button[2]\width-5
-;             
-;             \caption\button[0]\y = \y+\bs+(\__height-\caption\len)/2
-;             \caption\button[1]\y = \caption\button[0]\y
-;             \caption\button[2]\y = \caption\button[0]\y
-            
-            Case #__Type_Window
-            \caption\x = \x[#__c_2]
-            \caption\y = \y+\bs
-            \caption\width = \width[#__c_2]
-            \caption\height = \__height-\fs
-            
-            ; caption frame
-            \caption\button[0]\x = \caption\x-1
-            \caption\button[0]\y = \caption\y-1
-            \caption\button[0]\width = \caption\width+2
-            \caption\button[0]\height = \caption\height+2
-            
-            ; caption close button
-            \caption\button[1]\width = 12
-            \caption\button[1]\height = 12
-            \caption\button[1]\x = \x[#__c_2]+\width[#__c_2]-\caption\button[1]\width-5
-            \caption\button[1]\y = \y+\bs+(\caption\height-\caption\button[1]\height)/2
-            
-            ; caption minimize button
-            \caption\button[2]\width = \caption\button[1]\width
-            \caption\button[2]\height = \caption\button[1]\height
-            \caption\button[2]\x = \caption\button[1]\x-Bool(Not \caption\button[2]\hide) * \caption\button[2]\width-5
-            \caption\button[2]\y = \caption\button[1]\y
-             
-            ; caption maximize button
-            \caption\button[3]\width = \caption\button[1]\width
-            \caption\button[3]\height = \caption\button[1]\height
-            \caption\button[3]\x = \caption\button[2]\x-Bool(Not \caption\button[3]\hide) * \caption\button[3]\width-5
-            \caption\button[3]\y = \caption\button[1]\y
+          EndIf  
           
-            
-          Default
-            
-            Bar_update(*this)
-            
-        EndSelect
-        
-        ; set clip coordinate
-        If Not _is_root_(*this) And \parent 
-          Protected clip_v, clip_h, clip_x, clip_y, clip_width, clip_height
-          
-          If \parent\scroll 
-            If \parent\scroll\v : clip_v = Bool(\parent\width=\parent\width[#__c_4] And Not \parent\scroll\v\hide And \parent\scroll\v\type = #__Type_ScrollBar)*\parent\scroll\v\width : EndIf
-            If \parent\scroll\h : clip_h = Bool(\parent\height=\parent\height[#__c_4] And Not \parent\scroll\h\hide And \parent\scroll\h\type = #__Type_ScrollBar)*\parent\scroll\h\height : EndIf
-          EndIf
-          
-          clip_x = \parent\x[#__c_4]+Bool(\parent\x[#__c_4]<\parent\x+\parent\bs)*\parent\bs
-          clip_y = \parent\y[#__c_4]+Bool(\parent\y[#__c_4]<\parent\y+\parent\bs)*(\parent\bs+\parent\__height) 
-          clip_width = ((\parent\x[#__c_4]+\parent\width[#__c_4])-Bool((\parent\x[#__c_4]+\parent\width[#__c_4])>(\parent\x[#__c_2]+\parent\width[#__c_2]))*\parent\bs)-clip_v 
-          clip_height = ((\parent\y[#__c_4]+\parent\height[#__c_4])-Bool((\parent\y[#__c_4]+\parent\height[#__c_4])>(\parent\y[#__c_2]+\parent\height[#__c_2]))*\parent\bs)-clip_h 
-        EndIf
-        
-        If clip_x And \x < clip_x : \x[#__c_4] = clip_x : Else : \x[#__c_4] = \x : EndIf
-        If clip_y And \y < clip_y : \y[#__c_4] = clip_y : Else : \y[#__c_4] = \y : EndIf
-        If clip_width And (\x+\width) > clip_width : \width[#__c_4] = clip_width - \x[#__c_4] : Else : \width[#__c_4] = \width - (\x[#__c_4]-\x) : EndIf
-        If clip_height And (\y+\height) > clip_height : \height[#__c_4] = clip_height - \y[#__c_4] : Else : \height[#__c_4] = \height - (\y[#__c_4]-\y) : EndIf
-        
-        ; Debug ""+height+" "+\height[#__c_0]+" "+\height[#__c_1]+" "+\height[#__c_2]+" "+\height[#__c_3]+" "+\height[#__c_4]
-        
-        ;         ; Resize vertical&horizontal scrollbar
-        ;         If (\scroll And \scroll\v And \scroll\h)
-        ;           Bar_resizes(\scroll, 0,0, \width[#__c_2],\height[#__c_2])
-        ;           ;           If StartDrawing(CanvasOutput(*this\root\canvas))
-        ;           ;             _tree_items_update_(*this, *this\row\_s())
-        ;           ;             StopDrawing()
-        ;           ;           EndIf
-        ;           
-        ;         EndIf
-        ;         
-        ; Resize childrens
-        If \count\childrens
-          If \type = #__Type_Splitter
-            _bar_splitter_size_(*this)
-          Else
-            ForEach \childrens()
-              If \childrens()\align
-                If \childrens()\align\horizontal
-                  x = (\width[#__c_2] - (\childrens()\align\width+\childrens()\width))/2
-                ElseIf \childrens()\align\right And Not \childrens()\align\left
-                  x = \width[#__c_2] - \childrens()\align\width
-                Else
-                  If \x[#__c_2]
-                    x = (\childrens()\x-\x[#__c_2]) + Change_x 
-                  Else
-                    x = 0
-                  EndIf
-                EndIf
-                
-                If \childrens()\align\Vertical
-                  y = (\height[#__c_2] - (\childrens()\align\height+\childrens()\height))/2 
-                ElseIf \childrens()\align\bottom And Not \childrens()\align\top
-                  y = \height[#__c_2] - \childrens()\align\height
-                Else
-                  If \y[#__c_2]
-                    y = (\childrens()\y-\y[#__c_2]) + Change_y 
-                  Else
-                    y = 0
-                  EndIf
-                EndIf
-                
-                If \childrens()\align\top And \childrens()\align\bottom
-                  Height = \height[#__c_2] - \childrens()\align\height
-                Else
-                  Height = #PB_Ignore
-                EndIf
-                
-                If \childrens()\align\left And \childrens()\align\right
-                  Width = \width[#__c_2] - \childrens()\align\width
-                Else
-                  Width = #PB_Ignore
-                EndIf
-                
-                Resize(\childrens(), x, y, Width, Height)
-              Else
-                Resize(\childrens(), (\childrens()\x-\x[#__c_2]) + Change_x, (\childrens()\y-\y[#__c_2]) + Change_y, #PB_Ignore, #PB_Ignore)
+          ; caption title bar
+          If \type = #__Type_Window
+            If Not \caption\hide
+              \caption\x = \x[#__c_1]
+              \caption\y = \y[#__c_1]
+              \caption\width = \width[#__c_1]
+              \caption\height = \__height + \fs ; \height[#__c_1]-\height[#__c_2]-\fs ; 
+              
+              ; 
+              \caption\x[#__c_2] = \x[#__c_1] + \fs
+              \caption\y[#__c_2] = \y[#__c_1] + \fs
+              \caption\height[#__c_2] = \__height - \fs
+              
+              If \caption\height > \height[#__c_1] -\fs ;*2
+                \caption\height = \height[#__c_1] -\fs  ;*2
               EndIf
-            Next
+              
+              ; caption close button
+              If Not \caption\button[0]\hide
+                \caption\button[0]\x = (\x[#__c_2]+\width[#__c_2]) - (\caption\button[0]\width+\caption\_padding)
+                \caption\button[0]\y = \y[#__c_1] + (\caption\height-\caption\button[0]\height)/2
+              EndIf
+              
+              ; caption maximize button
+              If Not \caption\button[1]\hide
+                If \caption\button[0]\hide
+                  \caption\button[1]\x = (\x[#__c_2]+\width[#__c_2]) - (\caption\button[1]\width+\caption\_padding)
+                Else
+                  \caption\button[1]\x = \caption\button[0]\x - (\caption\button[1]\width+\caption\_padding)
+                EndIf
+                \caption\button[1]\y = \y[#__c_1] + (\caption\height-\caption\button[1]\height)/2
+              EndIf
+              
+              ; caption minimize button
+              If Not \caption\button[2]\hide
+                If \caption\button[1]\hide
+                  \caption\button[2]\x = \caption\button[0]\x - (\caption\button[2]\width+\caption\_padding)
+                Else
+                  \caption\button[2]\x = \caption\button[1]\x - (\caption\button[2]\width+\caption\_padding)
+                EndIf
+                \caption\button[2]\y = \y[#__c_1] + (\caption\height-\caption\button[2]\height)/2
+              EndIf
+              
+              ; caption help button
+              If Not \caption\button[3]\hide
+                If Not \caption\button[2]\hide
+                  \caption\button[3]\x = \caption\button[2]\x - (\caption\button[3]\width+\caption\_padding)
+                ElseIf Not \caption\button[1]\hide
+                  \caption\button[3]\x = \caption\button[1]\x - (\caption\button[3]\width+\caption\_padding)
+                Else
+                  \caption\button[3]\x = \caption\button[0]\x - (\caption\button[3]\width+\caption\_padding)
+                EndIf
+                \caption\button[3]\y = \caption\button[0]\y
+              EndIf
+              
+              ; title bar width
+              If Not \caption\button[3]\hide
+                \caption\width[#__c_2] = \caption\button[3]\x - \x[#__c_2] - \caption\_padding
+              ElseIf Not \caption\button[2]\hide
+                \caption\width[#__c_2] = \caption\button[2]\x - \x[#__c_2] - \caption\_padding
+              ElseIf Not \caption\button[1]\hide
+                \caption\width[#__c_2] = \caption\button[1]\x - \x[#__c_2] - \caption\_padding
+              ElseIf Not \caption\button[0]\hide
+                \caption\width[#__c_2] = \caption\button[0]\x - \x[#__c_2] - \caption\_padding
+              Else
+                \caption\width[#__c_2] = \width[#__c_1] - \fs*2
+              EndIf
+              
+              ; clip text coordinate
+              If \caption\x[#__c_2] < \x[#__c_4]
+                \caption\x[#__c_4] = \x[#__c_4]
+              Else
+                \caption\x[#__c_4] = \caption\x[#__c_2]
+              EndIf
+              If \caption\y[#__c_2] < \y[#__c_4]
+                \caption\y[#__c_4] = \y[#__c_4]
+              Else
+                \caption\y[#__c_4] = \caption\y[#__c_2]
+              EndIf
+              If \caption\x[#__c_2]+\caption\width[#__c_2] > \x[#__c_4]+\width[#__c_2]
+                \caption\width[#__c_4] = \width[#__c_4]
+              Else
+                \caption\width[#__c_4] = \caption\width[#__c_2]
+              EndIf
+              If \caption\y[#__c_2]+\caption\height[#__c_2] > \y[#__c_4]+\height[#__c_2]
+                \caption\height[#__c_4] = \height[#__c_4]
+              Else
+                \caption\height[#__c_4] = \caption\height[#__c_2]
+              EndIf
+              
+            EndIf
           EndIf
-        EndIf
-        
-        ; anchors widgets
-        If *this And (\root And \root\anchor And \root\anchor\widget = *this)
-          a_resize(*this)
-        EndIf
+          
+          ; Debug ""+height+" "+\height[#__c_0]+" "+\height[#__c_1]+" "+\height[#__c_2]+" "+\height[#__c_3]+" "+\height[#__c_4]
+          
+          ; Resize childrens
+          If \count\childrens
+            If \type = #__Type_Splitter
+              _bar_splitter_size_(*this)
+            Else
+              ForEach \childrens()
+                If \childrens()\align
+                  If \childrens()\align\horizontal
+                    x = (\width[#__c_2] - (\childrens()\align\width+\childrens()\width))/2
+                  ElseIf \childrens()\align\right And Not \childrens()\align\left
+                    x = \width[#__c_2] - \childrens()\align\width
+                  Else
+                    If \x[#__c_2]
+                      x = (\childrens()\x-\x[#__c_2]) + Change_x 
+                    Else
+                      x = 0
+                    EndIf
+                  EndIf
+                  
+                  If \childrens()\align\Vertical
+                    y = (\height[#__c_2] - (\childrens()\align\height+\childrens()\height))/2 
+                  ElseIf \childrens()\align\bottom And Not \childrens()\align\top
+                    y = \height[#__c_2] - \childrens()\align\height
+                  Else
+                    If \y[#__c_2]
+                      y = (\childrens()\y-\y[#__c_2]) + Change_y 
+                    Else
+                      y = 0
+                    EndIf
+                  EndIf
+                  
+                  If \childrens()\align\top And \childrens()\align\bottom
+                    Height = \height[#__c_2] - \childrens()\align\height
+                  Else
+                    Height = #PB_Ignore
+                  EndIf
+                  
+                  If \childrens()\align\left And \childrens()\align\right
+                    Width = \width[#__c_2] - \childrens()\align\width
+                  Else
+                    Width = #PB_Ignore
+                  EndIf
+                  
+                  Resize(\childrens(), x, y, Width, Height)
+                Else
+                  Resize(\childrens(), (\childrens()\x-\x[#__c_2]) + Change_x, (\childrens()\y-\y[#__c_2]) + Change_y, #PB_Ignore, #PB_Ignore)
+                EndIf
+              Next
+            EndIf
+          EndIf
+          
+          ; anchors widgets
+          If *this And (\root And \root\anchor And \root\anchor\widget = *this)
+            a_resize(*this)
+          EndIf
+        ;EndIf
         
         If \type = #__Type_ScrollBar
           ProcedureReturn \bar\hide
           
-        ElseIf (Change_x Or Change_y Or Change_width Or Change_height)
-          ProcedureReturn 1
+        ElseIf \resize & #__resize_change ; (Change_x Or Change_y Or Change_width Or Change_height)
+          ProcedureReturn \resize
         EndIf
       EndWith
-    EndIf
     
   EndProcedure
+  
   
   ;-
   Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=7)
@@ -8436,12 +8629,12 @@ Module Widget
       \bs = 1
       \fs = 1
       
-;       ; \text = AllocateStructure(_s_text)
-;       \text\edit\string = Text.s
-;       \text\string.s = Text.s
-;       \text\change = 1
+      ;       ; \text = AllocateStructure(_s_text)
+      ;       \text\edit\string = Text.s
+      ;       \text\string.s = Text.s
+      ;       \text\change = 1
       _set_text_flag_(*this, flag, 2, - 22)
-     
+      
       *this\text\_padding = 5
       ;*this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
@@ -8450,7 +8643,7 @@ Module Widget
       If Text.s
         SetText(*this, Text.s)
       EndIf
-    
+      
     EndWith
     
     ProcedureReturn *this
@@ -8571,7 +8764,7 @@ Module Widget
       \color\front[2] = Color
       
       _set_text_flag_(*this, flag)
-     
+      
       *this\text\_padding = 5
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
@@ -8619,7 +8812,7 @@ Module Widget
       \bs = \fs
       
       _set_text_flag_(*this, flag)
-     
+      
       *this\text\_padding = 3
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
@@ -8659,7 +8852,7 @@ Module Widget
       \bs = \fs
       
       _set_text_flag_(*this, flag)
-     
+      
       *this\text\_padding = 3
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
@@ -8692,7 +8885,7 @@ Module Widget
     With *this
       
       _set_text_flag_(*this, flag, 2,2)
-     
+      
       *this\text\_padding = 0
       *this\text\multiline =- 1
       *this\row\margin\hide = 1
@@ -9139,22 +9332,21 @@ Module Widget
       \x =- 1
       \y =- 1
       \container = 1
+      \index[#__s_1] =- 1
+      \index[#__s_2] = 0
+      
       \color = _get_colors_()
       \color\back = $FFF9F9F9
       
-      \fs = Bool(Not Flag&#__flag_borderless)*#__border_scroll
+      \fs = Bool(Not Flag&#__flag_borderless) * #__border_scroll
       \bs = \fs
-      *this\index[#__s_1] =- 1
-      *this\index[#__s_2] = 0
-      
-      ; \image = AllocateStructure(_s_image)
       
       ; \scroll = AllocateStructure(_s_scroll) 
       \scroll\v = bar_create(#__Type_ScrollBar, Size, 0,ScrollAreaHeight,Height, #__bar_vertical, 7, *this)
       \scroll\h = bar_create(#__Type_ScrollBar, Size, 0,ScrollAreaWidth,Width, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#__flag_noGadget
+      If constants::_check_(flag, #__flag_noGadget, #False)
         OpenList(*this)
       EndIf
     EndWith
@@ -9170,8 +9362,8 @@ Module Widget
       \x =- 1
       \y =- 1
       \container = 1
-      *this\index[#__s_1] =- 1
-      *this\index[#__s_2] = 0
+      \index[#__s_1] =- 1
+      \index[#__s_2] = 0
       
       \color = _get_colors_()
       \color\fore = 0
@@ -9180,10 +9372,8 @@ Module Widget
       \fs = Bool(Not Flag&#__flag_borderless)
       \bs = \fs
       
-      ; \image = AllocateStructure(_s_image)
-      
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#__flag_noGadget
+      If constants::_check_(flag, #__flag_noGadget, #False)
         OpenList(*this)
       EndIf
     EndWith
@@ -9198,22 +9388,18 @@ Module Widget
     With *this
       \x =- 1
       \y =- 1
-      
       \container = 1
+      \index[#__s_1] =- 1
+      \index[#__s_2] = 0
       
       \color = _get_colors_()
-      \color\alpha = 255
       \color\back = $FFF9F9F9
       
+      \from =- 1
+      \__height = 25
       \tab\bar\page\len = Width
       \tab\bar\scroll_step = 10
-      
-      
-      \__height = 25
-      \from =- 1
-      *this\index[#__s_1] =- 1
-      *this\index[#__s_2] = 0
-      
+     
       \tab\bar\button[#__b_1]\len = 13 + 2
       \tab\bar\button[#__b_2]\len = 13 + 2
       \tab\bar\button[#__b_1]\round = 7
@@ -9233,11 +9419,8 @@ Module Widget
       \fs = 1
       \bs = Bool(Not Flag&#__flag_anchorsGadget)
       
-      ; Background image
-      ; \image[1] = AllocateStructure(_s_image)
-      
       Resize(*this, X,Y,Width,Height)
-      If Not Flag&#__flag_noGadget
+      If constants::_check_(flag, #__flag_noGadget, #False)
         OpenList(*this)
       EndIf
     EndWith
@@ -9247,12 +9430,11 @@ Module Widget
   
   ;-
   Procedure.i CloseList()
-    ;Debug ""+Root() +" "+ Root()\opened +" "+ Root()\opened\parent +" "+ Root()\opened\parent\parent +" "+ Root()\parent
-    
-    If Root()\opened\parent And Root()\opened\root\canvas = Root()\canvas ;And Root()\opened\parent\parent <> Root()\parent
+    If Root()\opened And 
+       Root()\opened\parent And 
+       Root()\opened\root\canvas = Root()\canvas 
       Root()\opened = Root()\opened\parent
     Else
-      ;Debug 6666
       Root()\opened = Root()
     EndIf
   EndProcedure
@@ -9272,22 +9454,20 @@ Module Widget
     ProcedureReturn result
   EndProcedure
   
-  Procedure.i Form(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, *Parent._s_widget=0)
+  Procedure.i Form(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, *parent._s_widget=0)
     Protected *this._s_widget = AllocateStructure(_s_widget) 
     
-    If *Parent 
-      If *Parent = Root() ; And Not Root()\parent 
-                          ;Debug 5555555
+    If *parent
+      If Root() = *parent 
         Root()\parent = *this
       EndIf
-      
     Else
-      ;OpenList(Root())
-      *Parent = Root()
+      *parent = Root()
     EndIf
     
-    _set_last_parameters_(*this, #__Type_Window, Flag, *Parent) 
+    _set_last_parameters_(*this, #__Type_Window, Flag, *parent) 
     ;Debug ""+#PB_compiler_procedure+"(func) line - "+#PB_compiler_line +" "+ root()\opened 
+    
     ; ? ????? ???????? ??????
     If Not Root()\opened 
       Root()\opened = Root()
@@ -9296,67 +9476,128 @@ Module Widget
     With *this
       \x =- 1
       \y =- 1
-      *this\index[#__s_1] =- 1
-      *this\index[#__s_2] = 0
-      
       \container =- 1
+      \index[#__s_1] =- 1
+      \index[#__s_2] = 0 ; 
+      
       \color = _get_colors_()
       \color\fore = 0
       \color\back = $FFF0F0F0
-      \color\alpha = 255
       \color[1]\alpha = 128
       \color[2]\alpha = 128
       \color[3]\alpha = 128
       
-      If Not flag&#__flag_borderless
-        \__height = 23
-      EndIf
-      
       ; Background image
-      ; \image = AllocateStructure(_s_image)
       \image\index =- 1
       
-      ; \text = AllocateStructure(_s_text)
-      \text\align\horizontal = 1
+      
+;       \flag\window\sizeGadget = constants::_check_(flag, #__Window_SizeGadget)
+; ;       \flag\window\systemMenu = constants::_check_(flag, #__Window_SystemMenu)
+; ;       \flag\window\MinimizeGadget = constants::_check_(flag, #__Window_MinimizeGadget)
+; ;       \flag\window\MaximizeGadget = constants::_check_(flag, #__Window_MaximizeGadget)
+;       \flag\window\TitleBar = constants::_check_(flag, #__Window_TitleBar)
+;       \flag\window\Tool = constants::_check_(flag, #__Window_Tool)
+;       \flag\window\borderless = constants::_check_(flag, #__Window_BorderLess)
       
       \caption\round = 4
+      \caption\_padding = \caption\round
       \caption\color = _get_colors_()
       
-      \flag\window\sizeGadget = Bool(Flag&#PB_Window_SizeGadget)
-      \flag\window\systemMenu = Bool(Flag&#PB_Window_SystemMenu)
-      \flag\window\borderless = Bool(Flag&#PB_Window_BorderLess)
+      ;\caption\hide = constants::_check_(flag, #__flag_borderless)
+      \caption\hide = constants::_check_(flag, #__Window_TitleBar, #False)
+      \caption\button[0]\hide = constants::_check_(flag, #__Window_SystemMenu, #False)
+      \caption\button[1]\hide = constants::_check_(flag, #__Window_MaximizeGadget, #False)
+      \caption\button[2]\hide = constants::_check_(flag, #__Window_MinimizeGadget, #False)
+      \caption\button[3]\hide = 1
       
-      \fs = Bool(Not Flag&#__flag_borderless)
+      \caption\button[0]\color = colors::*this\red
+      \caption\button[1]\color = colors::*this\blue
+      \caption\button[2]\color = colors::*this\green
+      
+      *this\caption\button[0]\color\state = 1
+      *this\caption\button[1]\color\state = 1
+      *this\caption\button[2]\color\state = 1
+      
+      \caption\button[0]\round = 4+3
+      \caption\button[1]\round = \caption\button[0]\round
+      \caption\button[2]\round = \caption\button[0]\round
+      \caption\button[3]\round = \caption\button[0]\round
+      
+      \caption\button[0]\width = 12+2
+      \caption\button[0]\height = 12+2
+      
+      \caption\button[1]\width = \caption\button[0]\width
+      \caption\button[1]\height = \caption\button[0]\height
+      
+      \caption\button[2]\width = \caption\button[0]\width
+      \caption\button[2]\height = \caption\button[0]\height
+      
+      \caption\button[3]\width = \caption\button[0]\width*2
+      \caption\button[3]\height = \caption\button[0]\height
+      
+      If \caption\button[1]\hide = 0 Or 
+         \caption\button[2]\hide = 0
+        \caption\button[0]\hide = 0
+      EndIf
+      
+      If \caption\button[0]\hide = 0
+        \caption\hide = 0
+      EndIf
+      
+      If Not \caption\hide 
+        \__height = constants::_check_(flag, #__flag_borderless, #False) * 23
+      EndIf
+      
+      \fs = constants::_check_(flag, #__flag_borderless, #False) * 5
       \bs = \fs
+     
+      ;\round = 7
+        
       
       Resize(*this, X,Y,Width,Height)
       
-      If Not Flag&#__flag_noGadget
+      If constants::_check_(flag, #__Window_NoGadgets, #False)
         OpenList(*this)
       EndIf
-      If Not Flag&#__flag_noActivate
+      If constants::_check_(flag, #__Window_NoActivate, #False)
         SetActive(*this)
       EndIf 
-      If Text.s And \fs
-        SetText(*this, Text.s)
+      
+      If Text And \caption\height
+        \caption\text\_padding = 5
+        \caption\text\string = Text
       EndIf
     EndWith
     
     ProcedureReturn *this
   EndProcedure
   
-  Procedure.i Open(Window.i, X.l,Y.l,Width.l,Height.l, Text.s="", Flag.i=0, WindowID.i=0)
+  Procedure.i Open(Window.i, X.l=#PB_Ignore,Y.l=#PB_Ignore,Width.l=#PB_Ignore,Height.l=#PB_Ignore, Text.s="", Flag.i=0, WindowID.i=0)
     Protected w.i=-1, pb_flag, Canvas.i=-1, *this._s_widget
     
     With *this
+      If x = #PB_Ignore : x = 0 : EndIf
+      If y = #PB_Ignore : y = 0 : EndIf
+      
+      If IsWindow(Window) 
+        If Width = #PB_Ignore
+          Width = WindowWidth(Window) - x*2
+        EndIf
+        
+        If Height = #PB_Ignore
+          Height = WindowHeight(Window) - y*2
+        EndIf
+      EndIf
+      
+      If Width = #PB_Ignore : Width = 300 : EndIf
+      If Height = #PB_Ignore : Height = 200 : EndIf
+      
       Root() = AllocateStructure(_s_root)
       Root()\root = Root()
       Root()\window =- 1
       Root()\canvas =- 1
       Root()\width = Width
       Root()\height = Height
-      ;       Root()\width[#__c_4] = Width
-      ;       Root()\height[#__c_4] = Height
       Root()\color = _get_colors_()
       
       If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
@@ -9370,17 +9611,14 @@ Module Widget
       
       *this = Form(0, 0, Width,Height, Text.s, flag,  Root())
       
-      Width + \bs*2
-      Height + \__height + \bs*2
+;       ;       Width + \bs*2
+;       ;       Height + \__height + \bs*2
+;       Width + \fs*2
+;       Height + \__height + \fs*2
       
       If Not IsWindow(Window) 
-        Flag&~#__flag_borderless
-        Flag&~#__flag_anchorsGadget
-        
-        w = OpenWindow(Window, X,Y,Width,Height, Text, pb_flag, WindowID) 
+        w = OpenWindow(Window, X,Y,Width,Height, Text, pb_flag, WindowID) : If Window =- 1 : Window = w : EndIf
         Root()\color\back = $FFF0F0F0
-        ;         EndIf
-        If Window =- 1 : Window = w : EndIf
         X = 0 : Y = 0
       Else
         Root()\color\back = $FFFFFFFF
@@ -9392,7 +9630,7 @@ Module Widget
       If IsGadget(Root()\canvas)
         SetGadgetData(Root()\canvas, Root())
         SetWindowData(Root()\window, Root()\canvas)
-        BindGadgetEvent(Root()\canvas, @g_callback())
+        BindGadgetEvent(Root()\canvas, @CallBack())
       EndIf
     EndWith
     
@@ -9438,7 +9676,7 @@ Module Widget
           If \scroll\h
             FreeStructure(\scroll\h)  : \scroll\h = 0
           EndIf
-         ; FreeStructure(\scroll) : \scroll = 0
+          ; FreeStructure(\scroll) : \scroll = 0
         EndIf
         
         ;If \box : FreeStructure(\box) : \box = 0 : EndIf
@@ -9566,7 +9804,8 @@ Module Widget
   EndProcedure
   
   ;- 
-  Macro _events_panel_(_this_, _event_type_, _mouse_x_, _mouse_y_)
+  
+Macro _events_panel_(_this_, _event_type_, _mouse_x_, _mouse_y_)
     
     If _event_type_ = #__Event_MouseMove Or
        _event_type_ = #__Event_LeftButtonUp Or
@@ -10244,24 +10483,24 @@ Module Widget
     ProcedureReturn result
   EndProcedure
   
-  Procedure.i CallBack(*this._s_widget, EventType.i, mouse_x.i=0, mouse_y.i=0)
+  Procedure.i Events(*this._s_widget, eventtype.i, mouse_x.i=0, mouse_y.i=0)
     Protected repaint.b
     Static delta.l
     
     With *this
-      If Not *this
+      If Not _is_widget_(*this)
         ProcedureReturn
       EndIf
       
       ;       ; anchors events
-      ;       If a_callback(*this, EventType, *this\root\mouse\buttons, mouse_x,mouse_y)
+      ;       If a_callback(*this, eventtype, *this\root\mouse\buttons, mouse_x,mouse_y)
       ;         ProcedureReturn 1
       ;       EndIf
       
-      If EventType = #__Event_MouseMove Or
-         EventType = #__Event_LeftButtonUp Or
-         EventType = #__Event_MouseEnter Or
-         EventType = #__Event_MouseLeave
+      If eventtype = #__Event_MouseMove Or
+         eventtype = #__Event_LeftButtonUp Or
+         eventtype = #__Event_MouseEnter Or
+         eventtype = #__Event_MouseLeave
         
         ; Columns at point
         If ListSize(\columns())
@@ -10412,17 +10651,17 @@ Module Widget
         EndIf
         
         Select \type
-          Case #__Type_Tree        : _events_tree_(*this, EventType, mouse_x, mouse_y)
-          Case #__Type_Panel       : _events_panel_(*this, EventType, mouse_x, mouse_y)
-          Case #__Type_Spin        : _events_bar_(*this, EventType, mouse_x, mouse_y)
-          Case #__Type_Splitter    : _events_bar_(*this, EventType, mouse_x, mouse_y)
-          Case #__Type_TrackBar    : _events_bar_(*this, EventType, mouse_x, mouse_y)
-          Case #__Type_ScrollBar   : _events_bar_(*this, EventType, mouse_x, mouse_y)
-          Case #__Type_ProgressBar : _events_bar_(*this, EventType, mouse_x, mouse_y)
+          Case #__Type_Tree        : _events_tree_(*this, eventtype, mouse_x, mouse_y)
+          Case #__Type_Panel       : _events_panel_(*this, eventtype, mouse_x, mouse_y)
+          Case #__Type_Spin        : _events_bar_(*this, eventtype, mouse_x, mouse_y)
+          Case #__Type_Splitter    : _events_bar_(*this, eventtype, mouse_x, mouse_y)
+          Case #__Type_TrackBar    : _events_bar_(*this, eventtype, mouse_x, mouse_y)
+          Case #__Type_ScrollBar   : _events_bar_(*this, eventtype, mouse_x, mouse_y)
+          Case #__Type_ProgressBar : _events_bar_(*this, eventtype, mouse_x, mouse_y)
         EndSelect     
       EndIf
       
-      Select EventType 
+      Select eventtype 
         Case #__Event_Focus, 
              #__Event_LostFocus
           repaint = 1
@@ -10441,7 +10680,7 @@ Module Widget
             repaint = 1
           EndIf
           
-          Post(EventType, *this)
+          Post(eventtype, *this)
           
         Case #__Event_MouseLeave
           If \interact
@@ -10454,7 +10693,7 @@ Module Widget
             repaint = 1
           EndIf
           
-          Post(EventType, *this)
+          Post(eventtype, *this)
           
         Case #__Event_MouseMove
           If *this\cursor And *this\text 
@@ -10471,6 +10710,49 @@ Module Widget
                 repaint = 1
               EndIf
             EndIf
+          EndIf
+          
+          If \type = #__Type_Window
+            If _from_point_(mouse_x, mouse_y, *this\caption\button[0])
+              If *this\caption\button[0]\color\state <> 2
+                *this\caption\button[0]\color\state = 2
+                Repaint = 1
+              EndIf
+            Else
+              If *this\caption\button[0]\color\state <> 1
+                *this\caption\button[0]\color\state = 1
+                Repaint = 1
+              EndIf
+            EndIf
+            If _from_point_(mouse_x, mouse_y, *this\caption\button[1])
+              If *this\caption\button[1]\color\state <> 2
+                *this\caption\button[1]\color\state = 2
+                Repaint = 1
+              EndIf
+            Else
+              If *this\caption\button[1]\color\state <> 1
+                *this\caption\button[1]\color\state = 1
+                Repaint = 1
+              EndIf
+            EndIf
+            If _from_point_(mouse_x, mouse_y, *this\caption\button[2])
+              If *this\caption\button[2]\color\state <> 2
+                *this\caption\button[2]\color\state = 2
+                Repaint = 1
+              EndIf
+            Else
+              If *this\caption\button[2]\color\state <> 1
+                *this\caption\button[2]\color\state = 1
+                Repaint = 1
+              EndIf
+            EndIf
+            
+            If \root\mouse\buttons
+              If *this\caption\interact
+                repaint = Resize(*this, mouse_x-\root\mouse\delta\x, mouse_y-\root\mouse\delta\y, #PB_Ignore, #PB_Ignore)
+              EndIf
+            EndIf
+            
           EndIf
           
           If delta
@@ -10503,11 +10785,28 @@ Module Widget
                 _events_panel_(*this, #__Event_LeftButtonDown, mouse_x, mouse_y)
                 
               Case #__Type_Window
-                If \from = 1
-                  Free(*this)
+                *this\caption\interact = _from_point_(mouse_x, mouse_y, *this\caption, [2])
                   
-                  If *this = \root
-                    PostEvent(#PB_Event_CloseWindow, \root\window, *this)
+                ; close button
+                If _from_point_(mouse_x, mouse_y, *this\caption\button[0])
+                  ProcedureReturn window_close(*this)
+                EndIf
+                
+                ; maximize button
+                If _from_point_(mouse_x, mouse_y, *this\caption\button[1])
+                  If Not *this\resize & #__resize_maximize And
+                     Not *this\resize & #__resize_minimize
+                    
+                    ProcedureReturn window_setstate(*this, #__window_maximize)
+                  Else
+                    ProcedureReturn window_setstate(*this, #__window_normal)
+                  EndIf
+                EndIf
+                
+                ; minimize button
+                If _from_point_(mouse_x, mouse_y, *this\caption\button[2])
+                  If Not *this\resize & #__resize_minimize
+                    ProcedureReturn window_setstate(*this, #__window_minimize)
                   EndIf
                 EndIf
                 
@@ -10562,8 +10861,13 @@ Module Widget
           
         Case #__Event_LeftButtonUp, 
              #__Event_RightButtonUp 
+          
+          If \type = #__Type_Window
+            *this\caption\interact = 0
+          EndIf
+          
           delta = 0
-          ;           ;repaint | Events(*this, \from, EventType, mouse_x, mouse_y)
+          ;           ;repaint | Events(*this, \from, eventtype, mouse_x, mouse_y)
           ;           select \type
           ;             case #__Type_tree
           ;               _events_tree_(*this, #__Event_leftButtonUp, mouse_x, mouse_y)
@@ -10573,7 +10877,7 @@ Module Widget
           ;           Endselect
           ;           
           
-          Post(EventType, *this)
+          Post(eventtype, *this)
           repaint = 1
           
           ; active widget key state
@@ -10587,7 +10891,13 @@ Module Widget
             \root\keyboard\key = GetGadgetAttribute(\root\canvas, #PB_Canvas_Key)
             \root\keyboard\key[1] = GetGadgetAttribute(\root\canvas, #PB_Canvas_Modifiers)
             
-            repaint | events_key_tree(*this, EventType, mouse_x, mouse_y)
+            Select \type
+              Case #__Type_Tree, 
+                   #__Type_ListView, 
+                   #__Type_ListIcon
+                
+                repaint | events_key_tree(*this, eventtype, mouse_x, mouse_y)
+            EndSelect
           EndIf
           
       EndSelect
@@ -10597,12 +10907,12 @@ Module Widget
         Select \type
           Case #__Type_String, 
                #__Type_Editor
-            Repaint | editor::events(*this, EventType)
+            Repaint | editor::events(*this, eventtype)
             
         EndSelect
       EndIf
       
-      ; post event 
+      ; post valid event 
       If \flag\transform
         Post(eventtype, *this, *this\index[#__s_1])
       Else
@@ -10640,8 +10950,6 @@ Module Widget
                 
                 Post(eventtype, *this, *this\index[#__s_1])
             EndSelect
-            
-            ;case #__Event_leftButtonUp : Repaint = 1 : delta = 0  : Repaint | w_Events(*this, EventType, at)
             
           Case #__Event_LeftClick 
             Select \type
@@ -10724,9 +11032,9 @@ Module Widget
     ProcedureReturn repaint
   EndProcedure
   
-  Procedure g_callback()
+  Procedure CallBack()
     Protected Canvas.i = EventGadget()
-    Protected EventType.i = EventType()
+    Protected eventtype.i = EventType()
     Protected Repaint, Change, enter, leave
     Protected Width = GadgetWidth(Canvas)
     Protected Height = GadgetHeight(Canvas)
@@ -10739,7 +11047,7 @@ Module Widget
     Protected *this._s_widget
     root() = GetGadgetData(Canvas)
     
-    Select EventType
+    Select eventtype
       Case #__Event_repaint 
         Repaint = 1
         
@@ -10752,15 +11060,13 @@ Module Widget
     EndSelect
     
     ; set mouse buttons
-    If EventType = #__Event_LeftButtonDown
-      root()\mouse\delta\x = mouse_x
-      root()\mouse\delta\y = mouse_y
+    If eventtype = #__Event_LeftButtonDown
       root()\mouse\buttons | #PB_Canvas_LeftButton
-    ElseIf EventType = #__Event_RightButtonDown
+    ElseIf eventtype = #__Event_RightButtonDown
       root()\mouse\buttons | #PB_Canvas_RightButton
-    ElseIf EventType = #__Event_MiddleButtonDown
+    ElseIf eventtype = #__Event_MiddleButtonDown
       root()\mouse\buttons | #PB_Canvas_MiddleButton
-    ElseIf EventType = #__Event_MouseMove
+    ElseIf eventtype = #__Event_MouseMove
       If root()\mouse\x <> mouse_x
         root()\mouse\x = mouse_x
         change = #True
@@ -10779,12 +11085,12 @@ Module Widget
          root()\mouse\y<root()\mouse\delta\y+3
         
         root()\mouse\drag = 1
-        repaint | CallBack(root()\entered, #__Event_DragStart, mouse_x, mouse_y)
+        repaint | Events(root()\entered, #__Event_DragStart, mouse_x, mouse_y)
       EndIf
       
     ElseIf Not root()\mouse\buttons And 
-           (EventType = #__Event_MouseEnter Or 
-            EventType = #__Event_MouseLeave)
+           (eventtype = #__Event_MouseEnter Or 
+            eventtype = #__Event_MouseLeave)
       change =- 1
     EndIf
     
@@ -10811,7 +11117,7 @@ Module Widget
         root()\entered\state = #__s_0
         
         If Not root()\mouse\buttons
-          Repaint | CallBack(root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
+          Repaint | Events(root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
         EndIf
       EndIf
       
@@ -10823,64 +11129,74 @@ Module Widget
           ; set drop start
           DD::EventDrop(root()\entered, #__Event_MouseEnter)
         Else
-          Repaint | CallBack(root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
+          Repaint | Events(root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
         EndIf
       EndIf
     EndIf
     
-    If EventType <> #__Event_MouseMove
+    If eventtype <> #__Event_MouseMove
       change = 1
       
       ; set active 
-      If root()\entered And 
-         (EventType = #__Event_LeftButtonDown Or
-          EventType = #__Event_RightButtonDown)
-        root()\selected = root()\entered
+      If _is_widget_(root()\entered) And 
+         (eventtype = #__Event_LeftButtonDown Or
+          eventtype = #__Event_RightButtonDown)
         
-        Repaint | SetActive(root()\entered)
+        root()\selected = root()\entered
+        root()\mouse\delta\x = mouse_x - root()\entered\x[#__c_3]
+        root()\mouse\delta\y = mouse_y - root()\entered\y[#__c_3]
+        
+;         If root()\entered\type = #__Type_Window
+;           If Not (_from_point_(mouse_x, mouse_y, root()\entered\caption\button[0]) Or
+;                   _from_point_(mouse_x, mouse_y, root()\entered\caption\button[1]) Or 
+;                   _from_point_(mouse_x, mouse_y, root()\entered\caption\button[2]))
+;             Repaint | SetActive(root()\entered)
+;           EndIf
+;         Else
+          Repaint | SetActive(root()\entered)
+;         EndIf
       EndIf
     EndIf
     
-    If EventType = #__Event_LeftClick Or
-       EventType = #__Event_MouseLeave Or
-       EventType = #__Event_MouseEnter Or
-       EventType = #__Event_DragStart Or
-       EventType = #__Event_Focus
+    If eventtype = #__Event_LeftClick Or
+       eventtype = #__Event_MouseLeave Or
+       eventtype = #__Event_MouseEnter Or
+       eventtype = #__Event_DragStart Or
+       eventtype = #__Event_Focus
       ; 
-    ElseIf EventType = #__Event_Input Or
-           EventType = #__Event_KeyDown Or
-           EventType = #__Event_KeyUp
+    ElseIf eventtype = #__Event_Input Or
+           eventtype = #__Event_KeyDown Or
+           eventtype = #__Event_KeyUp
       
       ; widget key events
       If GetActive() 
         If GetActive()\gadget
-          Repaint | CallBack(GetActive()\gadget, EventType, mouse_x, mouse_y)
+          Repaint | Events(GetActive()\gadget, eventtype, mouse_x, mouse_y)
         Else
-          Repaint | CallBack(GetActive(), EventType, mouse_x, mouse_y)
+          Repaint | Events(GetActive(), eventtype, mouse_x, mouse_y)
         EndIf
       EndIf
       
     ElseIf Not root()\mouse\buttons And root()\entered And change 
-      Repaint | CallBack(root()\entered, EventType, mouse_x, mouse_y)
+      Repaint | Events(root()\entered, eventtype, mouse_x, mouse_y)
     ElseIf root()\selected And change 
-      Repaint | CallBack(root()\selected, EventType, mouse_x, mouse_y)
+      Repaint | Events(root()\selected, eventtype, mouse_x, mouse_y)
     EndIf
     
     ; reset mouse buttons
     If root()\mouse\buttons
-      If EventType = #__Event_LeftButtonUp
+      If eventtype = #__Event_LeftButtonUp
         root()\mouse\buttons &~ #PB_Canvas_LeftButton
-      ElseIf EventType = #__Event_RightButtonUp
+      ElseIf eventtype = #__Event_RightButtonUp
         root()\mouse\buttons &~ #PB_Canvas_RightButton
-      ElseIf EventType = #__Event_MiddleButtonUp
+      ElseIf eventtype = #__Event_MiddleButtonUp
         root()\mouse\buttons &~ #PB_Canvas_MiddleButton
       EndIf
       
       If Not root()\mouse\buttons
         ; post drop event
         If DD::EventDrop(Root()\entered, #__Event_LeftButtonUp)
-          Debug 4444
-          CallBack(Root()\entered, #__Event_drop, mouse_x, mouse_y)
+          Events(Root()\entered, #__Event_drop, mouse_x, mouse_y)
         EndIf
         
         ;             If Not Root()\entered
@@ -10892,21 +11208,21 @@ Module Widget
         If GetActive() 
           If GetActive()\state
             If Not root()\mouse\drag
-              Repaint | CallBack(GetActive(), #__Event_LeftClick, mouse_x, mouse_y)
+              Repaint | Events(GetActive(), #__Event_LeftClick, mouse_x, mouse_y)
             EndIf
           Else
-            Repaint | CallBack(GetActive(), #__Event_MouseLeave, mouse_x, mouse_y)
-            Repaint | CallBack(root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
+            Repaint | Events(GetActive(), #__Event_MouseLeave, mouse_x, mouse_y)
+            Repaint | Events(root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
           EndIf
           
           If GetActive()\gadget
             If GetActive()\gadget\state
               If Not root()\mouse\drag
-                Repaint | CallBack(GetActive()\gadget, #__Event_LeftClick, mouse_x, mouse_y)
+                Repaint | Events(GetActive()\gadget, #__Event_LeftClick, mouse_x, mouse_y)
               EndIf
             Else
-              Repaint | CallBack(GetActive()\gadget, #__Event_MouseLeave, mouse_x, mouse_y)
-              Repaint | CallBack(root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
+              Repaint | Events(GetActive()\gadget, #__Event_MouseLeave, mouse_x, mouse_y)
+              Repaint | Events(root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
             EndIf
           EndIf
         EndIf
@@ -10943,10 +11259,9 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule constants
   ;   UseModule structures
   
-  
-  Global *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
   Global *Button_0._s_widget
   Global *Button_1._s_widget
+  Global *Button_2._s_widget
   
   UsePNGImageDecoder()
   
@@ -10957,31 +11272,11 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure Events()
+  Procedure _events_()
     Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
   LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4-Bool(#PB_Compiler_OS=#PB_OS_Linux)*4)
-  
-  If Open(0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    
-    text(10, 10, 100, 80, "Standard Button Button (horizontal)", #__text_multiline);, -1,8)
-    Button(30, 100, 80, 100, "Standard Button Button (Vertical)", #__flag_vertical|#__text_multiline, -1, 8)
-    Checkbox(120, 10, 100, 80, "Standard Button Button (horizontal)", #__text_multiline|#__text_invert);, -1,8)
-    Button(120, 100, 80, 100, "Standard Button Button (Vertical)", #__flag_vertical|#__text_multiline|#__text_invert, -1,8)
-    Button(10,  210, 210, 55, "change button font", 0,-1, 20)
-    SetFont(widget(), FontID(0))
-    
-    Button(230, 10, 200, 20, "Standard Button", 0, -1,8)
-    Button(230, 40, 200, 20, "Left Button", #__text_left)
-    Button(230, 70, 200, 20, "Right Button", #__text_right)
-    Button(230,100, 200, 60, "multiline Button (longer text gets automatically wrapped)", #__text_wordwrap|#__button_default, -1, 4)
-    Button(230,170, 200, 60, "multiline Button (longer text gets automatically multiline)", #__text_multiline, -1, 4)
-    Button(230,170+70, 200, 25, "Toggle Button", #__button_toggle)
-    
-    redraw(root())
-  EndIf
-  
   
   Global c2, _splitter_ 
   Procedure ResizeCallBack()
@@ -10989,64 +11284,120 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Height = WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)
     
     Resize(_splitter_, 10, 10, Width-20, Height-20) 
-;     ResizeGadget(c2, 10, 10, Width-20, Height-20)
-;     Resize(*Button_0, Width-90, #PB_Ignore, #PB_Ignore, Height-40)
-;     Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-110, Height-40)
+    ;     ResizeGadget(c2, 10, 10, Width-20, Height-20)
+    ;     Resize(*Button_0, Width-90, #PB_Ignore, #PB_Ignore, Height-40)
+    ;     Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-110, Height-40)
     
     SetWindowTitle(EventWindow(), Str(*Button_1\width))
   EndProcedure
   
-  If Open(11, 0, 0, 325+80, 160, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If Open(11, 0, 0, 720+60, 420+130, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     c2 = GetGadget(Root())
     
-    Define m.s = #LF$, Text.s = "This is a long line." + m.s +
-                                "Who should show." + 
-                                m.s +
-                                m.s +
-                                m.s +
-                                m.s +
-                                "I have to write the text in the box or not." + 
-                                m.s +
-                                m.s +
-                                m.s +
-                                m.s +
-                                "The string must be very long." + m.s +
-                                "Otherwise it will not work." ;+ m.s +
+    ;     With *Button_1
+    ;       ResizeImage(0, 32,32)
+    ;     EndWith
+    Define._s_widget *f_0, *f_1, *f_2, *f_3, *f_4, *f_5, *f_6, *f_7, *f_8, *f_9, *f_10, *f_11, *sp_0, *sp_1, *sc_0
+    
+    *f_0 = form(10, 10, 180,  120, "form_0", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
+    button(10, -10, 80, 40, "Butt_0", #__flag_anchorsgadget)
+    ;*f_0\fs = 10
+    
+    ; set_border_size()
+    *f_0\bs = 10
+    Define _change_x_ = *f_0\bs - *f_0\fs
+    Define _change_y_ = *f_0\bs - *f_0\fs
+    
+    Resize(*f_0, 0, 0, #PB_Ignore, #PB_Ignore)
+    If ListSize(*f_0\childrens())
+      ForEach *f_0\childrens()
+        Resize(*f_0\childrens(), 
+               (*f_0\childrens()\x-*f_0\x-*f_0\bs) + _change_x_,
+               (*f_0\childrens()\y-*f_0\y-*f_0\bs-*f_0\__height) + _change_y_, 
+               #PB_Ignore, #PB_Ignore)
+;         Resize(*f_0\childrens(), 
+;                (*f_0\childrens()\x[#__c_3]-*f_0\parent\x[#__c_2]) + _change_x_,
+;                (*f_0\childrens()\y[#__c_3]-*f_0\parent\y[#__c_2]) + _change_y_, 
+;                #PB_Ignore, #PB_Ignore)
+      Next
+    EndIf
     
     
-    With *Button_1
-      ResizeImage(0, 32,32)
-      *Button_1 = Editor(10, 10, 180,  120);, #__text_multiline)
-      SetText(*Button_1, Text)
-      ;*Button_1 = Text(0,0,0,0,Text)
-      ;\Cursor = #PB_cursor_hand
-      ;SetColor(*Button_1, #PB_Gadget_frontColor, $4919D5)
-      ;SetFont(*Button_1, FontID(0))
-    EndWith
+    button(10, 40, 80, 40, "Butt_0", #__flag_anchorsgadget)
+    closelist()
     
-    With *Button_0
-      *Button_0 = Editor(200, 10,  180, 120, #__editor_wordwrap)
-      SetText(*Button_0, Text)
-      ;       SetColor(*Button_0, #PB_Gadget_backColor, $CCBFB4)
-      ;SetColor(*Button_0, #PB_Gadget_frontColor, $D56F1A)
-      ;SetFont(*Button_0, FontID(0))
-    EndWith
+    *f_1 = form(10, 10, 180,  120, "form_1", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
+    button(10, -10, 80, 40, "Butt_1", #__flag_anchorsgadget)
+    closelist()
     
-    Splitter(10,10,385, 140, *Button_1, *Button_0, #PB_Splitter_Vertical)
+    *f_2 = form(10, 10, 180,  120, "form_2", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
+    *f_3 = ScrollArea(10, 10, 180,  120, 250, 250, 1, #__flag_anchorsgadget)
+    ;*f_3 = form(10, 10, 180,  120, "form_3", #__flag_anchorsgadget, *f_2)
+    button(10, 0, 80, 40, "Butt_3", #__flag_anchorsgadget)
+    closelist()
+    closelist()
+    
+    *sp_0 = splitter(0, 0, 0, 0, *f_1, *f_0, #__bar_vertical)
+    *sp_1 = splitter(10, 10, 360, 360+20, *f_2, *sp_0)
+;     *sp_0 = splitter(0, 0, 0, 0, *f_1, *f_0)
+;     *sp_1 = splitter(10, 10, 360, 360, *f_2, *sp_0, #__bar_vertical)
+;     
+    
+; ; ;     Define area_width = 575
+; ; ;     Define area_height = 555
+; ; ;     
+; ; ;     *sc_0 = ScrollArea(380, 10, 390,220, area_width, area_height, 30)
+; ; ;       Button  (10, 10, 230, 30,"Button 1")
+; ; ;       Button  (50, 50, 230, 30,"Button 2")
+; ; ;       Button  (90, 90, 230, 30,"Button 3")
+; ; ;       Text    (130,130, 230, 20,"This is the content of a ScrollAreaGadget!",#__Text_Right)
+; ; ;       
+; ; ;       Button  (area_width-230, area_height-30, 230, 30,"Button 4")
+; ; ;     CloseList()
+; ; ;     
+; ; ;      Resize(*f_3, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+   
+    ;BindGadgetEvent(0, @ BindScrollDatas())
+     
+    *f_4 = form(370+10, 10, 180,  120, "form_4", #__flag_BorderLess)
+    button(5, 5, 80, 20, "Butt_4_0")
+    *f_5 = form(370+10+190, 10, 180,  120, "form_5 SystemMenu", #PB_Window_SystemMenu)
+    button(5, 5, 80, 20, "Butt_5_0")
+    
+    *f_6 = form(370+10, 130+10, 180,  120, "form_6", #PB_Window_SizeGadget)
+    button(5, 5, 80, 20, "Butt_6_0")
+    *f_7 = form(370+10+190, 130+10, 180,  120, "form_7 Minimize", #PB_Window_MinimizeGadget)
+    button(5, 5, 80, 20, "Butt_7_0")
+    
+    *f_8 = form(370+10, 130+10+130, 180,  120, "form_8", #PB_Window_TitleBar)
+    button(5, 5, 80, 20, "Butt_8_0")
+    *f_9 = form(370+10+190, 130+10+130, 180,  120, "form_9 Maximize", #PB_Window_MaximizeGadget)
+    button(5, 5, 80, 20, "Butt_9_0")
+    
+    *f_10 = form(370+10, 130+10+130+130, 180,  120, "form_10", #PB_Window_TitleBar)
+    button(5, 5, 80, 20, "Butt_10_0")
+    *f_11 = form(370+10+190, 130+10+130+130, 180,  120, "form_11", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
+    button(5, 5, 80, 20, "Butt_11_0")
+    
+    SetColor(*f_4, #__color_back, $CA00D7FF)
+    SetColor(*f_5, #__color_back, $CA00D7FF)
+    SetColor(*f_6, #__color_back, $CA00D7FF)
+    SetColor(*f_7, #__color_back, $CA00D7FF)
+    SetColor(*f_8, #__color_back, $CA00D7FF)
+    SetColor(*f_9, #__color_back, $CA00D7FF)
+    SetColor(*f_10, #__color_back, $CA00D7FF)
+    SetColor(*f_11, #__color_back, $CA00D7FF)
     
     
+    ;Resize(*f_0, #PB_Ignore, -10, #PB_Ignore, #PB_Ignore)
+
     redraw(root())
-    ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
     
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
-    ;PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
     
-    ;     BindGadgetEvent(g, @CallBacks())
-    ;     PostEvent(#PB_Event_gadget, 11,11, #__Event_resize)
-    ;     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 4----------+-------------------------------------------------------------------------------------+----------------------------------------------------Xb-------------------------------------------B-
+; Folding = AAAAAAAAAAABAAAAAAeAAAABAoAyoAAAAMDAA7-BAeAAAAAgtNAAAAAEAAAAAAAAAAAAwBAAAAAAAAAAAAAAAATAAgAAAAAAAAABAAAAAAAAw5BAA-AAAAAAAAAAAAAAAAAAAAADGAAAAAAAAAAAAAAAABEgWDAABAAAAAIAAAAAAAAAAjRAAAAAAAAAAAAAAAAAAAAAAAAAAAAw
 ; EnableXP

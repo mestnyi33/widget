@@ -1,10 +1,12 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+;XIncludeFile "widgets().pbi"
+;XIncludeFile "w_window.pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule Widget
+  UseModule widget
+  UseModule constants
   
   Global.i gEvent, gQuit, value, g_canvas, direction, x=10,y=10
   Global *window
@@ -139,28 +141,28 @@ CompilerIf #PB_Compiler_IsMainFile
     Static *After
     
     Select EventType
-        ;Case #PB_EventType_Repaint : Repaint = EventData()
-      Case #PB_EventType_Resize : Repaint = 1
+        ;Case #__Event_Repaint : Repaint = EventData()
+      Case #__Event_Resize : Repaint = 1
         Resize(*window, #PB_Ignore, #PB_Ignore, Width, Height)
       Default
         
-        If EventType() = #PB_EventType_LeftButtonDown
+        If EventType() = #__Event_LeftButtonDown
           SetActiveGadget(Canvas)
         EndIf
         
         *This = from(*window, MouseX, MouseY)
         
         If *This
-          Repaint | CallBack(*This, EventType(), MouseX, MouseY)
+          Repaint | Events(*This, EventType(), MouseX, MouseY)
           
           Select EventType
-            Case #PB_EventType_LeftButtonDown
+            Case #__Event_LeftButtonDown
               *After = _GetPosition(*This, #PB_List_After)
               
               _SetPosition(*This, #PB_List_Last)
               Repaint = 1
               
-            Case #PB_EventType_LeftButtonUp
+            Case #__Event_LeftButtonUp
               _SetPosition(*This, #PB_List_Before, *After)
               Repaint = 1
           EndSelect
@@ -188,37 +190,37 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Это из за ошибки в мак ос и линукс
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
       Select EventType 
-        Case #PB_EventType_MouseEnter 
+        Case #__Event_MouseEnter 
           If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
-            EventType = #PB_EventType_MouseMove
+            EventType = #__Event_MouseMove
             MouseLeave = 0
           EndIf
           
-        Case #PB_EventType_MouseLeave 
+        Case #__Event_MouseLeave 
           If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
-            EventType = #PB_EventType_MouseMove
+            EventType = #__Event_MouseMove
             MouseLeave = 1
           EndIf
           
-        Case #PB_EventType_LeftButtonDown
+        Case #__Event_LeftButtonDown
           If GetActiveGadget()<>EventGadget
             SetActiveGadget(EventGadget)
           EndIf
           
-        Case #PB_EventType_LeftButtonUp
+        Case #__Event_LeftButtonUp
           If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
             MouseLeave = 0
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-              Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
-              EventType = #PB_EventType_MouseLeave
+              Result | Canvas_Events(EventGadget, #__Event_LeftButtonUp)
+              EventType = #__Event_MouseLeave
             CompilerEndIf
           Else
             MouseLeave =- 1
-            Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
-            EventType = #PB_EventType_LeftClick
+            Result | Canvas_Events(EventGadget, #__Event_LeftButtonUp)
+            EventType = #__Event_LeftClick
           EndIf
           
-        Case #PB_EventType_LeftClick : ProcedureReturn 0
+        Case #__Event_LeftClick : ProcedureReturn 0
       EndSelect
     CompilerEndIf
     
@@ -235,21 +237,21 @@ CompilerIf #PB_Compiler_IsMainFile
     Static *After
     
     Select EventType
-      Case #PB_EventType_MouseEnter
+      Case #__Event_MouseEnter
         ; bug in mac os
         If GetActiveGadget() <> EventGadget()
           SetActiveGadget(EventGadget())
         EndIf
        
-      Case #PB_EventType_LeftButtonDown
+      Case #__Event_LeftButtonDown
         *After = _GetPosition(EventWidget, #PB_List_After)
         
         _SetPosition(EventWidget, #PB_List_Last)
         
-      Case #PB_EventType_LeftButtonUp
+      Case #__Event_LeftButtonUp
         _SetPosition(EventWidget, #PB_List_Before, *After)
         
-      Case #PB_EventType_Repaint
+      Case #__Event_Repaint
         ; draw active window focused frame
         If GetActive() = EventWidget
           DrawingMode(#PB_2DDrawing_Outlined)
@@ -317,6 +319,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --------
 ; EnableXP

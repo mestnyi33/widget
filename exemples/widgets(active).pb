@@ -4,7 +4,8 @@ XIncludeFile "widgets().pbi"
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule Widget
+  UseModule widget
+  UseModule constants
   
   Global.i gEvent, gQuit
   Global *this, *root, NewMap w_list.i()
@@ -16,27 +17,27 @@ CompilerIf #PB_Compiler_IsMainFile
               EventData.i = *event\data
     
     Select EventType
-      Case #PB_EventType_MouseEnter
+      Case #__Event_MouseEnter
         ; bug in mac os
         If GetActiveGadget() <> EventGadget()
           SetActiveGadget(EventGadget())
         EndIf
        
-      Case #PB_EventType_Focus   
+      Case #__Event_Focus   
         If GetType(EventWidget) > 0
           Debug "Focus "+ GetData(EventWidget)
         Else
           Debug "Active "+ GetData(EventWidget)
         EndIf
         
-      Case #PB_EventType_LostFocus 
+      Case #__Event_LostFocus 
         If GetType(EventWidget) > 0
           Debug " LostFocus "+ GetData(EventWidget) 
         Else
           Debug " DeActive "+ GetData(EventWidget)
         EndIf
         
-      Case #PB_EventType_Repaint
+      Case #__Event_Repaint
         ; draw active window focused frame
         If GetActive() = EventWidget
           DrawingMode(#PB_2DDrawing_Outlined)
@@ -285,7 +286,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_Event_Gadget
         
         Select EventType()
-          Case #PB_EventType_LeftClick
+          Case #__Event_LeftClick
             Debug " --- "
             *root = GetGadgetData(EventGadget())
             *this = from(*root, GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseX), GetGadgetAttribute(EventGadget(), #PB_Canvas_MouseY))
@@ -328,6 +329,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Repaint()
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = -H4-
 ; EnableXP

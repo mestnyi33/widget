@@ -282,10 +282,10 @@ Module Tree
         
         If *this\root\canvas <> *event\active\root\canvas 
           ; set lost focus canvas
-          PostEvent(#PB_Event_Gadget, *event\active\root\window, *event\active\root\canvas, #PB_EventType_Repaint);, *event\active)
+          PostEvent(#PB_Event_Gadget, *event\active\root\window, *event\active\root\canvas, #__Event_Repaint);, *event\active)
         EndIf
         
-        ;Result | Events(*event\active, #PB_EventType_LostFocus, *event\active\root\mouse\x, *event\active\root\mouse\y)
+        ;Result | Events(*event\active, #__Event_LostFocus, *event\active\root\mouse\x, *event\active\root\mouse\y)
       EndIf
       
       If *this\row\selected And *this\row\selected\color\state = 3
@@ -294,7 +294,7 @@ Module Tree
       
       *this\color\state = 2
       *event\active = *this
-      ;Result | Events(*this, #PB_EventType_Focus, mouse_x, mouse_y)
+      ;Result | Events(*this, #__Event_Focus, mouse_x, mouse_y)
     EndIf
     
     ProcedureReturn Result
@@ -346,7 +346,7 @@ Module Tree
       
       _this_\change = 1
       _this_\row\count = _this_\countitems
-      PostEvent(#PB_Event_Gadget, _this_\root\window, _this_\root\canvas, #PB_EventType_Repaint, _this_)
+      PostEvent(#PB_Event_Gadget, _this_\root\window, _this_\root\canvas, #__Event_Repaint, _this_)
     EndIf  
   EndMacro
   
@@ -1089,12 +1089,12 @@ Module Tree
       
       If Repaint
         If Repaint = 2
-          Post(#PB_EventType_StatusChange, *this, Item)
+          Post(#__Event_StatusChange, *this, Item)
         EndIf
         
         If Repaint = 1
-          Post(#PB_EventType_Change, *this, Item)
-          ;Events(*this, #PB_EventType_Change)
+          Post(#__Event_Change, *this, Item)
+          ;Events(*this, #__Event_Change)
         EndIf
         
         _repaint_(*this)
@@ -1342,7 +1342,7 @@ Module Tree
         Draw(*this)
         StopDrawing()
       EndIf
-      Post(#PB_EventType_Change, *this, #PB_All)
+      Post(#__Event_Change, *this, #PB_All)
     EndIf
   EndProcedure
   
@@ -1796,46 +1796,46 @@ Module Tree
     Protected Result, down
     
     Select eventtype
-      Case #PB_EventType_LeftClick
+      Case #__Event_LeftClick
         Debug "click - "+*this
         Post(eventtype, *this, *this\row\index)
         
-      Case #PB_EventType_Change
+      Case #__Event_Change
         Debug "change - "+*this
         Post(eventtype, *this, *this\row\index)
         Result = 1
         
-      Case #PB_EventType_DragStart
+      Case #__Event_DragStart
         Debug "drag - "+*this
         Post(eventtype, *this, *this\row\index)
         
-      Case #PB_EventType_Drop
+      Case #__Event_Drop
         Debug "drop - "+*this
         Post(eventtype, *this, *this\row\index)
         
-      Case #PB_EventType_Focus
+      Case #__Event_Focus
         Debug "focus - "+*this
         Result = 1
         
-      Case #PB_EventType_LostFocus
+      Case #__Event_LostFocus
         Debug "lost focus - "+*this
         Result = 1
         
-      Case #PB_EventType_LeftButtonDown
+      Case #__Event_LeftButtonDown
         Debug "left down - "+*this
         
-      Case #PB_EventType_LeftButtonUp
+      Case #__Event_LeftButtonUp
         Debug "left up - "+*this
         
-      Case #PB_EventType_MouseEnter
+      Case #__Event_MouseEnter
         Debug "enter - "+*this +" "+ *this\root\mouse\buttons
         Result = 1
         
-      Case #PB_EventType_MouseLeave
+      Case #__Event_MouseLeave
         Debug "leave - "+*this
         Result = 1
         
-      Case #PB_EventType_MouseMove
+      Case #__Event_MouseMove
         ; Debug "move - "+*this
         
         If position And *this\row\index >= 0
@@ -1901,7 +1901,7 @@ Module Tree
     With *this
       ; post widget events                     
       Select EventType 
-        Case #PB_EventType_LeftButtonDown
+        Case #__Event_LeftButtonDown
           If *this = *event\enter  ; *event\leave;
             *this\root\mouse\delta\x = mouse_x
             *this\root\mouse\delta\y = mouse_y
@@ -1967,7 +1967,7 @@ Module Tree
             *event\leave = *event\enter
           EndIf
           
-        Case #PB_EventType_LeftButtonUp 
+        Case #__Event_LeftButtonUp 
           If *this = *event\leave And *event\leave\root\mouse\buttons
             *event\leave\root\mouse\buttons = 0
             
@@ -1980,49 +1980,49 @@ Module Tree
                 *this\row\selected = *row_selected
                 *this\row\selected\color\state = 2
                 
-                Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
+                Result | Events(*this, #__Event_Change, mouse_x, mouse_y)
               EndIf
             EndIf
             
-            Result | Events(*this, #PB_EventType_LeftButtonUp, mouse_x, mouse_y)
+            Result | Events(*this, #__Event_LeftButtonUp, mouse_x, mouse_y)
             
             If *this\row\drag 
               *this\row\drag = 0
               
             ElseIf *this\row\index >= 0 
-              Result | Events(*this, #PB_EventType_LeftClick, mouse_x, mouse_y)
+              Result | Events(*this, #__Event_LeftClick, mouse_x, mouse_y)
             EndIf
             
             If *event\leave <> *event\enter
-              Result | Events(*event\leave, #PB_EventType_MouseLeave, mouse_x, mouse_y) 
+              Result | Events(*event\leave, #__Event_MouseLeave, mouse_x, mouse_y) 
               *event\leave\row\index =- 1
               *event\leave = *event\enter
               
               ; post enter event
               If *event\enter
-                Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+                Result | Events(*event\enter, #__Event_MouseEnter, mouse_x, mouse_y)
               EndIf
             EndIf
             
             ; post drop event
             CompilerIf Defined(DD, #PB_Module)
-              If DD::EventDrop(*event\enter, #PB_EventType_LeftButtonUp)
-                Result | Events(*event\enter, #PB_EventType_Drop, mouse_x, mouse_y)
+              If DD::EventDrop(*event\enter, #__Event_LeftButtonUp)
+                Result | Events(*event\enter, #__Event_Drop, mouse_x, mouse_y)
               EndIf
               
               If Not *event\enter
-                DD::EventDrop(-1, #PB_EventType_LeftButtonUp)
+                DD::EventDrop(-1, #__Event_LeftButtonUp)
               EndIf
             CompilerEndIf
             
           EndIf
           
           If *this = *event\enter And Not *event\leave
-            Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+            Result | Events(*event\enter, #__Event_MouseEnter, mouse_x, mouse_y)
             *event\leave = *event\enter
           EndIf
           
-        Case #PB_EventType_LostFocus
+        Case #__Event_LostFocus
           ; если фокус получил PB gadget
           ; то убираем фокус с виджета
           If *this = *event\active
@@ -2030,13 +2030,13 @@ Module Tree
               *event\active\row\selected\color\state = 3
             EndIf
             
-            Result | Events(*this, #PB_EventType_LostFocus, mouse_x, mouse_y)
+            Result | Events(*this, #__Event_LostFocus, mouse_x, mouse_y)
             
             *event\active\color\state = 0
             *event\active = 0
           EndIf
           
-        Case #PB_EventType_KeyDown
+        Case #__Event_KeyDown
           If *this = *event\active
             
             Select *this\root\keyboard\key
@@ -2085,7 +2085,7 @@ Module Tree
                       *this\row\_s()\color\state = 2
                       *row_selected = *this\row\_s()
                       
-                      Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
+                      Result | Events(*this, #__Event_Change, mouse_x, mouse_y)
                     EndIf
                     
                     *this\change = _bar_update_(*this\scroll\v, *this\row\selected\y, *this\row\selected\height)
@@ -2126,7 +2126,7 @@ Module Tree
                       *this\row\_s()\color\state = 2
                       *row_selected = *this\row\_s()
                       
-                      Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
+                      Result | Events(*this, #__Event_Change, mouse_x, mouse_y)
                     EndIf
                     
                     *this\change = _bar_update_(*this\scroll\v, *this\row\selected\y, *this\row\selected\height)
@@ -2168,13 +2168,13 @@ Module Tree
               
               If *this\row\index <> *this\row\draws()\index
                 If *this\row\index >= 0 ;And SelectElement(\row\_s(), \row\index)
-                  Result | Events(*this, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
+                  Result | Events(*this, #__Event_MouseMove, mouse_x, mouse_y, -1)
                 EndIf
                 
                 *this\row\index = *this\row\draws()\index
                 
                 If *this\row\index >= 0 And SelectElement(*this\row\_s(), *this\row\index)
-                  Result | Events(*this, #PB_EventType_MouseMove, mouse_x, mouse_y, 1)
+                  Result | Events(*this, #__Event_MouseMove, mouse_x, mouse_y, 1)
                 EndIf
               EndIf
               
@@ -2184,14 +2184,14 @@ Module Tree
           
           If *this\row\index >= 0 And Not (mouse_y >= *this\row\_s()\y-*this\scroll\v\bar\page\pos And
                                            mouse_y < *this\row\_s()\y+*this\row\_s()\height-*this\scroll\v\bar\page\pos)
-            Result | Events(*this, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
+            Result | Events(*this, #__Event_MouseMove, mouse_x, mouse_y, -1)
             *this\row\index =- 1
           EndIf
         Else
           
           If *this\row\index >= 0
             ;Debug " leave items"
-            Result | Events(*this, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
+            Result | Events(*this, #__Event_MouseMove, mouse_x, mouse_y, -1)
             *this\row\index =- 1
           EndIf
           
@@ -2206,16 +2206,16 @@ Module Tree
             *this\row\selected = *row_selected
             ;*this\row\selected\color\state = 2
             
-            Result | Events(*this, #PB_EventType_Change, mouse_x, mouse_y)
+            Result | Events(*this, #__Event_Change, mouse_x, mouse_y)
           EndIf
           
-          Result | Events(*this, #PB_EventType_DragStart, mouse_x, mouse_y)
+          Result | Events(*this, #__Event_DragStart, mouse_x, mouse_y)
         EndIf
       EndIf
       
-      If EventType = #PB_EventType_MouseMove
+      If EventType = #__Event_MouseMove
         If *event\leave And *event\leave\row\index =- 1
-          Result | Events(*event\leave, #PB_EventType_MouseMove, mouse_x, mouse_y)
+          Result | Events(*event\leave, #__Event_MouseMove, mouse_x, mouse_y)
         EndIf
       EndIf
     EndWith
@@ -2233,16 +2233,16 @@ Module Tree
     EndIf
     
     Select EventType
-      Case #PB_EventType_Repaint
+      Case #__Event_Repaint
         Debug " -- Canvas repaint -- " + *this\row\count
-      Case #PB_EventType_MouseWheel
+      Case #__Event_MouseWheel
         *this\root\mouse\wheel\y = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_WheelDelta)
-      Case #PB_EventType_Input 
+      Case #__Event_Input 
         *this\root\keyboard\input = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_Input)
-      Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
+      Case #__Event_KeyDown, #__Event_KeyUp
         *this\root\keyboard\Key = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_Key)
         *this\root\keyboard\Key[1] = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_Modifiers)
-      Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
+      Case #__Event_MouseEnter, #__Event_MouseMove, #__Event_MouseLeave
         *this\root\mouse\x = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_MouseX)
         *this\root\mouse\y = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_MouseY)
         
@@ -2253,19 +2253,19 @@ Module Tree
     
     With *this
       ;       DD::DropStart(_this_)
-      ;       Post(#PB_EventType_Drop, DD::DropStop(_this_), _this_\row\index)
+      ;       Post(#__Event_Drop, DD::DropStop(_this_), _this_\row\index)
       
       Protected enter = Bool(*event\enter <> *this And Not (*event\enter And *event\enter\index > *this\index) And _from_point_(mouse_x, mouse_y, *this))
       Protected leave = Bool(*event\enter And (enter Or (*event\enter = *this And Not _from_point_(mouse_x, mouse_y, *event\enter))))
       
       If leave
         If *event\enter\countitems And *event\enter\row\index >= 0 ;And SelectElement(*event\enter\row\_s(), *event\enter\row\index)
-          Result | Events(*event\enter, #PB_EventType_MouseMove, mouse_x, mouse_y, -1)
+          Result | Events(*event\enter, #__Event_MouseMove, mouse_x, mouse_y, -1)
         EndIf
         
         ;If Not *event\enter\mouse\buttons
         If Not *this\root\mouse\buttons ; And *event\enter <> *this\parent
-          Result | Events(*event\enter, #PB_EventType_MouseLeave, mouse_x, mouse_y)
+          Result | Events(*event\enter, #__Event_MouseLeave, mouse_x, mouse_y)
           
           If *event\enter And *event\enter\root\canvas <> *this\root\canvas
             ReDraw(*event\enter)
@@ -2278,7 +2278,7 @@ Module Tree
         ; reset drop start
         CompilerIf Defined(DD, #PB_Module)
           If *event\leave And *event\leave\row\drag
-            DD::EventDrop(0, #PB_EventType_MouseLeave)
+            DD::EventDrop(0, #__Event_MouseLeave)
           EndIf
         CompilerEndIf
         
@@ -2292,23 +2292,23 @@ Module Tree
         ; set drop start
         CompilerIf Defined(DD, #PB_Module)
           If *event\leave And *event\leave\row\drag
-            DD::EventDrop(*event\enter, #PB_EventType_MouseEnter)
+            DD::EventDrop(*event\enter, #__Event_MouseEnter)
           EndIf
         CompilerEndIf
         
         If Not *this\root\mouse\buttons ; And Not (*event\leave And *event\leave\parent = *this)
-          Result | Events(*event\enter, #PB_EventType_MouseEnter, mouse_x, mouse_y)
+          Result | Events(*event\enter, #__Event_MouseEnter, mouse_x, mouse_y)
           *event\leave = *event\enter
         EndIf
       EndIf
       
       ; set mouse buttons
       If *this = *event\enter 
-        If EventType = #PB_EventType_LeftButtonDown
+        If EventType = #__Event_LeftButtonDown
           \root\mouse\buttons | #PB_Canvas_LeftButton
-        ElseIf EventType = #PB_EventType_RightButtonDown
+        ElseIf EventType = #__Event_RightButtonDown
           \root\mouse\buttons | #PB_Canvas_RightButton
-        ElseIf EventType = #PB_EventType_MiddleButtonDown
+        ElseIf EventType = #__Event_MiddleButtonDown
           \root\mouse\buttons | #PB_Canvas_MiddleButton
         EndIf
       EndIf
@@ -2321,11 +2321,11 @@ Module Tree
       
       ; reset mouse buttons
       If \root\mouse\buttons
-        If EventType = #PB_EventType_LeftButtonUp
+        If EventType = #__Event_LeftButtonUp
           \root\mouse\buttons &~ #PB_Canvas_LeftButton
-        ElseIf EventType = #PB_EventType_RightButtonUp
+        ElseIf EventType = #__Event_RightButtonUp
           \root\mouse\buttons &~ #PB_Canvas_RightButton
-        ElseIf EventType = #PB_EventType_MiddleButtonUp
+        ElseIf EventType = #__Event_MiddleButtonUp
           \root\mouse\buttons &~ #PB_Canvas_MiddleButton
         EndIf
       EndIf
@@ -2341,11 +2341,11 @@ Module Tree
     
     With *this
       Select EventType
-        Case #PB_EventType_Repaint
+        Case #__Event_Repaint
           \row\count = \countitems
           Repaint = 1
           
-        Case #PB_EventType_Resize : ResizeGadget(\root\canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+        Case #__Event_Resize : ResizeGadget(\root\canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
           Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\root\canvas), GadgetHeight(\root\canvas))   
           
           If \scroll\v\bar\page\len And \scroll\v\bar\max<>\scroll\height-Bool(\flag\gridlines) And
@@ -2679,7 +2679,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected *this._struct_ ; = GetGadgetData(Canvas)
     
     Select EventType
-      Case #PB_EventType_Repaint
+      Case #__Event_Repaint
         *this = EventData()
         
         If *this And *this\handle
@@ -2702,13 +2702,13 @@ CompilerIf #PB_Compiler_IsMainFile
           Repaint = 1
         EndIf
         
-      Case #PB_EventType_Resize ; : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      Case #__Event_Resize ; : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                                 ;          ForEach *List()
                                 ;            Resize(*List(), #PB_Ignore, #PB_Ignore, Width, Height)  
                                 ;          Next
         Repaint = 1
         
-      Case #PB_EventType_LeftButtonDown
+      Case #__Event_LeftButtonDown
         SetActiveGadget(Canvas)
         
     EndSelect
@@ -2743,11 +2743,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventItem = GetGadgetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "gadget click item = " + EventItem +" data "+ EventData
+      Case #__Event_ScrollChange : Debug "gadget scroll change data "+ EventData
+      Case #__Event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #__Event_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
+      Case #__Event_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
+      Case #__Event_LeftClick : Debug "gadget click item = " + EventItem +" data "+ EventData
     EndSelect
   EndProcedure
   
@@ -2759,11 +2759,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
+      Case #__Event_ScrollChange : Debug "widget scroll change data "+ EventData
+      Case #__Event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #__Event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
+      Case #__Event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
+      Case #__Event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
     EndSelect
   EndProcedure
   
@@ -2876,7 +2876,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;If widget
     g_Canvas = CanvasGadget(-1, 0, 225, 1110, 425, #PB_Canvas_Keyboard|#PB_Canvas_Container)
     BindGadgetEvent(g_Canvas, @Canvas_Events())
-    ;PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
+    ;PostEvent(#PB_Event_Gadget, 0,g_Canvas, #__Event_Resize)
     ;EndIf
     
     g = 10
@@ -3099,7 +3099,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; DragStart event on the source s, initiate a drag & drop
     ;
     Select EventType
-      Case #PB_EventType_DragStart
+      Case #__Event_DragStart
         Select EventGadget
             
           Case SourceText
@@ -3134,7 +3134,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ; Drop event on the target gadgets, receive the dropped data
         ;
-      Case #PB_EventType_Drop
+      Case #__Event_Drop
         
         Select EventGadget
             
@@ -3238,8 +3238,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
     CompilerEndIf
     
-    Bind(SourceText, @Events(), #PB_EventType_DragStart)
-    Bind(TargetText, @Events(), #PB_EventType_Drop)
+    Bind(SourceText, @Events(), #__Event_DragStart)
+    Bind(TargetText, @Events(), #__Event_Drop)
     
     ;     Bind(@Events())
     ;     ReDraw(Root())
@@ -3252,5 +3252,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----BW8-------------------------------------------f-4---------
+; Folding = ----JW8-------------------------------------------f-4---------
 ; EnableXP

@@ -2150,42 +2150,169 @@ EndModule
 CompilerEndIf
 
 ;-
+DeclareModule Splitter
+  EnableExplicit
+  UseModule constants
+  UseModule structures
+  
+  
+  ;- DECLARE
+  Declare GetState(Gadget.i)
+  Declare SetState(Gadget.i, State.i)
+  Declare GetAttribute(Gadget.i, Attribute.i)
+  Declare SetAttribute(Gadget.i, Attribute.i, Value.i)
+  Declare Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, First.i, Second.i, Flag.i=0)
+  
+EndDeclareModule
+
+Module Splitter
+  
+  ;- PROCEDURE
+  
+  Procedure ReDraw(*This._s_widget)
+    With *This
+      If StartDrawing(CanvasOutput(\root\Canvas))
+        FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F0)
+        
+        Bar::Draw(*This)
+        StopDrawing()
+      EndIf
+    EndWith  
+  EndProcedure
+  
+  Procedure CallBack()
+    Protected WheelDelta.i, Mouse_X.i, Mouse_Y.i, *This._s_widget = GetGadgetData(EventGadget())
+    
+    With *This
+      \root\Window = EventWindow()
+      Mouse_X = GetGadgetAttribute(\root\Canvas, #PB_Canvas_MouseX)
+      Mouse_Y = GetGadgetAttribute(\root\Canvas, #PB_Canvas_MouseY)
+      
+      Select EventType()
+        Case #PB_EventType_Resize : ResizeGadget(\root\Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          If Bar::Resize(*This, 0, 0, GadgetWidth(\root\Canvas), GadgetHeight(\root\Canvas)) 
+            ReDraw(*This)
+          EndIf
+      EndSelect
+      
+      If Bar::Events(*This, EventType(), Mouse_X, Mouse_Y)
+        ReDraw(*This)
+      EndIf
+    EndWith
+    
+  EndProcedure
+  
+  ;- PUBLIC
+  Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
+    Protected *This._s_widget = GetGadgetData(Gadget)
+    
+    With *This
+      If Bar::SetAttribute(*This, Attribute, Value)
+        ReDraw(*This)
+      EndIf
+    EndWith
+  EndProcedure
+  
+  Procedure GetAttribute(Gadget.i, Attribute.i)
+    Protected Result, *This._s_widget = GetGadgetData(Gadget)
+    
+    With *This
+      Select Attribute
+        Case #PB_Splitter_FirstGadget         : Result = \splitter\first
+        Case #PB_Splitter_SecondGadget        : Result = \splitter\second
+        Case #PB_Splitter_FirstMinimumSize    : Result = \bar\button[#__b_1]\len
+        Case #PB_Splitter_SecondMinimumSize   : Result = \bar\button[#__b_2]\len
+      EndSelect
+    EndWith
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  Procedure SetState(Gadget.i, State.i)
+    Protected *This._s_widget = GetGadgetData(Gadget)
+    
+    With *This
+      If Bar::SetState(*This, State) 
+        ReDraw(*This)
+        PostEvent(#PB_Event_Gadget, \root\Window, \root\Canvas, #PB_EventType_Change)
+      EndIf
+    EndWith
+  EndProcedure
+  
+  Procedure GetState(Gadget.i)
+    Protected *This._s_widget = GetGadgetData(Gadget)
+    ProcedureReturn *This\bar\Page\Pos
+  EndProcedure
+  
+  Procedure Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, First.i, Second.i, Flag.i=0)
+    Protected g = CanvasGadget(Gadget, X, Y, Width, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container) : CloseGadgetList() : If Gadget=-1 : Gadget=g : EndIf
+    Protected *This._s_widget = Bar::Splitter(0, 0, Width, Height, First, Second, Flag)
+    
+    If *this
+      With *this
+        *this\root = AllocateStructure(_s_root)
+        *this\root\window = GetActiveWindow()
+        *this\root\canvas = Gadget
+        *event\active = *this\root
+        *event\active\root = *this\root
+        
+        ;
+        If *this\repaint
+          PostEvent(#PB_Event_Gadget, *this\root\window, *this\root\canvas, constants::#__Event_Repaint)
+        EndIf
+        
+        SetGadgetData(Gadget, *this)
+        BindGadgetEvent(Gadget, @callback())
+        
+        CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+          gtk_widget_reparent_( GadgetID(First), GadgetID(Gadget) )
+          gtk_widget_reparent_( GadgetID(Second), GadgetID(Gadget) )
+          
+        CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+          SetParent_( GadgetID(First), GadgetID(Gadget) )
+          SetParent_( GadgetID(Second), GadgetID(Gadget) )
+          
+          ; z-order
+          ;CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+          SetWindowLongPtr_( GadgetID(Gadget), #GWL_STYLE, GetWindowLongPtr_( GadgetID(Gadget), #GWL_STYLE ) | #WS_CLIPSIBLINGS )
+          SetWindowPos_( GadgetID(Gadget), #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
+          ;CompilerEndIf
+          
+        CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
+          If *this\splitter\g_first
+            ;CocoaMessage(0,GadgetID(Gadget), "setParent", GadgetID(Gadget_1)); NSWindowAbove = 1
+            CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (First)) 
+          EndIf
+          If *this\splitter\g_second
+            CocoaMessage (0, GadgetID (Gadget), "addSubview:", GadgetID (Second)) 
+          EndIf  
+          ;       Protected Point.NSPoint
+          ;       Point\x = 100
+          ;       Point\y = 100
+          ;       CocoaMessage (0, WindowID (0), "center")
+          ;       CocoaMessage (0, WindowID (0), "setFrameTopLeftPoint:@", @Point) ; Установить верхнюю левую координату окна
+          ;       CocoaMessage (0, WindowID (0), "setFrameOrigin:@", @Point) ; Установить нижнюю левую координату окна
+        CompilerEndIf
+        
+        ReDraw(*This)
+      EndWith
+    EndIf
+    
+    ProcedureReturn Gadget
+  EndProcedure
+EndModule
+
+
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Bar
   UseModule Constants
   UseModule Structures
   
   Global g_Canvas, NewList *List._s_widget()
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5
+  Global Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    Procedure GetCurrentEvent()
-      Protected app = CocoaMessage(0,0,"NSApplication sharedApplication")
-      If app
-        ProcedureReturn CocoaMessage(0,app,"currentEvent")
-      EndIf
-    EndProcedure
-    
-    Procedure.CGFloat GetWheelDeltaX()
-      Protected wheelDeltaX.CGFloat = 0.0
-      Protected currentEvent = GetCurrentEvent()
-      If currentEvent
-        CocoaMessage(@wheelDeltaX,currentEvent,"scrollingDeltaX")
-      EndIf
-      ProcedureReturn wheelDeltaX
-    EndProcedure
-    
-    Procedure.CGFloat GetWheelDeltaY()
-      Protected wheelDeltaY.CGFloat = 0.0
-      Protected currentEvent = GetCurrentEvent()
-      If currentEvent
-        CocoaMessage(@wheelDeltaY,currentEvent,"scrollingDeltaY")
-      EndIf
-      ProcedureReturn wheelDeltaY
-    EndProcedure
-  CompilerEndIf
-  
-  Procedure ReDraw(Canvas)
+  Procedure _ReDraw(Canvas)
     If StartDrawing(CanvasOutput(Canvas))
       FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F6)
       
@@ -2199,68 +2326,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
       StopDrawing()
     EndIf
-  EndProcedure
-  
-  Procedure v_GadgetCallBack()
-    Protected Repaint.b, state = GetGadgetState(EventGadget())
-    ;ProcedureReturn
-    ForEach *List()
-      If *List()\bar\vertical And *List()\type = GadgetType(EventGadget())
-        Repaint | SetState(*List(), state)
-      EndIf
-    Next
-    
-    If Repaint
-      SetWindowTitle(EventWindow(), Str(state))
-      ReDraw(g_Canvas)
-    EndIf
-  EndProcedure
-  
-  Procedure h_GadgetCallBack()
-    Protected Repaint.b, state = GetGadgetState(EventGadget())
-    ;ProcedureReturn
-    ForEach *List()
-      If Not *List()\bar\vertical And *List()\type = GadgetType(EventGadget())
-        Repaint | SetState(*List(), state)
-      EndIf
-    Next
-    
-    If Repaint
-      SetWindowTitle(EventWindow(), Str(state))
-      ReDraw(g_Canvas)
-    EndIf
-  EndProcedure
-  
-  Procedure v_CallBack(GetState, type)
-    ;ProcedureReturn
-    Select type
-      Case #PB_GadgetType_ScrollBar
-        SetGadgetState(2, GetState)
-      Case #PB_GadgetType_TrackBar
-        SetGadgetState(12, GetState)
-      Case #PB_GadgetType_ProgressBar
-        ;SetGadgetState(22, GetState)
-      Case #PB_GadgetType_Splitter
-        ; SetGadgetState(Splitter_4, GetState)
-    EndSelect
-    
-    SetWindowTitle(EventWindow(), Str(GetState))
-  EndProcedure
-  
-  Procedure h_CallBack(GetState, type)
-    ;ProcedureReturn
-    Select type
-      Case #PB_GadgetType_ScrollBar
-        SetGadgetState(1, GetState)
-      Case #PB_GadgetType_TrackBar
-        SetGadgetState(11, GetState)
-      Case #PB_GadgetType_ProgressBar
-        ;SetGadgetState(21, GetState)
-      Case #PB_GadgetType_Splitter
-        ; SetGadgetState(Splitter_3, GetState)
-    EndSelect
-    
-    SetWindowTitle(EventWindow(), Str(GetState))
   EndProcedure
   
   Procedure.i Canvas_Events()
@@ -2277,21 +2342,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected *callback = GetGadgetData(Canvas)
     ;     Protected *this._s_widget = GetGadgetData(Canvas)
     
-    If EventType = #__Event_MouseWheel
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        Protected wheel_X.CGFloat = GetWheelDeltaX()
-        Protected wheel_Y.CGFloat = GetWheelDeltaY()
-      CompilerElse
-        Protected wheel_X
-        Protected wheel_Y
-      CompilerEndIf
-    EndIf
-    
     Select EventType
       Case #__Event_Resize ; : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                                ;          ForEach *List()
-                                ;            Resize(*List(), #PB_Ignore, #PB_Ignore, Width, Height)  
-                                ;          Next
+                           ;          ForEach *List()
+                           ;            Resize(*List(), #PB_Ignore, #PB_Ignore, Width, Height)  
+                           ;          Next
         Repaint = 1
         
       Case #__Event_LeftButtonDown
@@ -2304,198 +2359,94 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If *List()\bar\page\change
         
-        If *List()\bar\vertical
-          v_CallBack(*List()\bar\page\pos, *List()\type)
-        Else
-          h_CallBack(*List()\bar\page\pos, *List()\type)
-        EndIf
+        ;         If *List()\bar\vertical
+        ;           v_CallBack(*List()\bar\page\pos, *List()\type)
+        ;         Else
+        ;           h_CallBack(*List()\bar\page\pos, *List()\type)
+        ;         EndIf
         
         *List()\bar\page\change = 0
       EndIf
     Next
     
     If Repaint 
-      ReDraw(Canvas)
+      _ReDraw(Canvas)
     EndIf
   EndProcedure
   
-  Procedure ev()
-    ;Debug ""+Widget() +" "+ Type() +" "+ Item() +" "+ Data()     ;  EventWindow() +" "+ EventGadget() +" "+ 
-  EndProcedure
-  
-  Procedure ev2()
-    ;Debug "  "+Widget() +" "+ Type() +" "+ Item() +" "+ Data()   ;  EventWindow() +" "+ EventGadget() +" "+ 
-  EndProcedure
-  
-  
-  If OpenWindow(0, 0, 0, 605, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    g_Canvas = CanvasGadget(-1, 0, 0, 605, 140+200+140+140, #PB_Canvas_Container)
+  Procedure Gadget_Open(Window, X.i, Y.i, Width.i, Height.i)
+    Protected g_Canvas = CanvasGadget(#PB_Any, X.i, Y.i, Width.i, Height.i, #PB_Canvas_Container)
     BindGadgetEvent(g_Canvas, @Canvas_Events())
-    PostEvent(#PB_Event_Gadget, 0,g_Canvas, #__Event_Resize)
-    
-    TextGadget       (-1,  10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ScrollBarGadget  (1,  10, 42, 250,  20, 30, 100, 30)
-    SetGadgetState   (1,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ScrollBarGadget  (2, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    ;ScrollBarGadget  (2, 270, 10,  25, 100 ,0, 521, 96, #PB_ScrollBar_Vertical)
-    SetGadgetState   (2, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    TextGadget       (-1,  300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    AddElement(*List()) : *List() = Spin  (300+10, 72, 250,  21, 0, 10, 0)
-    SetState   (Widget(),  5)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    AddElement(*List()) : *List() = Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
-    SetState   (Widget(),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    
-    TextGadget       (-1,  300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical);|#__bar_inverted)
-                                                                                                ;AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 100 ,0, 521, 96, #PB_ScrollVertical)
-    SetState   (Widget(), 100)                                                                  ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    BindGadgetEvent(1,@h_GadgetCallBack())
-    BindGadgetEvent(2,@v_GadgetCallBack())
-    ;Bind(@ev(), Widget())
-    
-    
-    ; example_2
-    TextGadget    (-1, 10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    TrackBarGadget(10, 10,  140+40, 250, 20, 0, 10000)
-    SetGadgetState(10, 5000)
-    TextGadget    (-1, 10, 140+90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    ;     TrackBarGadget(11, 10, 140+120, 250, 20, 0, 30, #PB_TrackTicks)
-    TrackBarGadget(11, 10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    SetGadgetState(11, 60)
-    TextGadget    (-1,  60, 140+160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-    TrackBarGadget(12, 270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SetGadgetState(12, 8000)
-    
-    
-    TextGadget    (-1, 300+10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    AddElement(*List()) : *List() = Track(300+10,  140+40, 250, 20, 0, 10000, 0)
-    SetState(Widget(), 5000)
-    TextGadget    (-1, 300+10, 140+90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    ;     AddElement(*List()) : *List() = Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
-    AddElement(*List()) : *List() = Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    SetState(Widget(), 60)
-    TextGadget    (-1,  300+60, 140+160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-    AddElement(*List()) : *List() = Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SetState(Widget(), 8000)
-    
-    BindGadgetEvent(11,@h_GadgetCallBack())
-    BindGadgetEvent(12,@v_GadgetCallBack())
-    
-    ;
-    ; example_3
-    TextGadget       (-1,  10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
-    ProgressBarGadget  (21,  10, 140+200+42, 250,  20, 30, 100)
-    SetGadgetState   (21,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ProgressBarGadget  (22, 270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical)
-    SetGadgetState   (22, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    
-    TextGadget       (-1,  300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
-    AddElement(*List()) : *List() = Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
-    SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    AddElement(*List()) : *List() = Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical)
-    SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    BindGadgetEvent(21,@h_GadgetCallBack())
-    BindGadgetEvent(22,@v_GadgetCallBack())
-    
-    
-    ; example_4
-    ;     TextGadget       (-1,  10, 140+200+140+10, 230,  20, "SplitterBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ;     ScrollBarGadget(100, 0, 0, 0, 0, 30,71, 0) ; No need to specify size or coordinates
-    ;     ProgressBarGadget(200, 0, 0, 0, 0, 30,100) ; as they will be sized automatically
-    ;     SetGadgetState   (100, 30)
-    ;     SetGadgetState   (200, 50)
-    ;     SplitterGadget  (31,  10, 140+200+140+42, 230,  60, 100, 200, #PB_Splitter_Vertical)
-    ;     SetGadgetState   (31,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    ;     TextGadget       (-1,  10,140+200+140+110, 230,  20, "SplitterBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ;     TrackBarGadget(300, 0, 0, 250,  20, 30, 100) ; No need to specify size or coordinates
-    ;     ProgressBarGadget(400, 0, 0, 0, 0, 30,100)   ; as they will be sized automatically
-    ;     SetGadgetState   (300, 30)
-    ;     SetGadgetState   (400, 50)
-    ;     SplitterGadget  (32, 250, 140+200+140+10,  45, 120 ,300, 400, 0)
-    ;     SetGadgetState   (32, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    ;     TextGadget       (-1,  300+10, 140+200+140+10, 230,  20, "SplitterBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ;     *b1 = Splitter  (0, 0, 0, 0, 0, 0, #PB_Splitter_Vertical|#PB_Splitter_Separator);|#PB_Splitter_FirstFixed)
-    ;     *b2 = Progress  (0, 0, 0, 0, 30, 100, 0)
-    ;     ;SetState   (*b1, 30) 
-    ;     SetState   (*b2, 50) 
-    ;     AddElement(*List()) : *List() = *b1
-    ;     AddElement(*List()) : *List() = *b2
-    ;     
-    ;     AddElement(*List()) : *List() = Splitter  (300+10, 140+200+140+42, 230,  60, *b1, *b2, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    ;     SetState   (Widget(),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    ;     SetAttribute(Widget(), #__FirstMinimumSize, 20)
-    ;     SetAttribute(Widget(), #__SecondMinimumSize, 20)
-    ;     TextGadget       (-1,  300+10,140+200+140+110, 230,  20, "SplitterBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ;     
-    ;     *b3 = Track  (0, 0, 0, 0, 30, 60)
-    ;     *b4 = Progress  (0, 0, 0, 0, 30, 100)
-    ;     SetState   (*b3, 30) 
-    ;     SetState   (*b4, 50) 
-    ;     AddElement(*List()) : *List() = *b3
-    ;     AddElement(*List()) : *List() = *b4
-    ;     
-    ;     AddElement(*List()) : *List() = Splitter  (300+250, 140+200+140+10,  45, 120 ,*b3, *b4, #PB_Splitter_Separator)
-    ;     ;SetState   (*List(), 40)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    ;     
-    ;     BindGadgetEvent(31,@h_GadgetCallBack())
-    ;     BindGadgetEvent(32,@v_GadgetCallBack())
-    ;     
-    ;     Post(333, Widget())
-    ;     Bind(@ev2(), Widget(), #__Event_StatusChange)
-    
-    
-    
+    PostEvent(#PB_Event_Gadget, Window, g_Canvas, #__Event_Resize)
+    ProcedureReturn g_Canvas
+  EndProcedure
+  
+  If OpenWindow(0, 0, 0, 430, 480+190, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
     Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
     
-    Button_2 = SpinGadget(#PB_Any, 0, 0, 0, 0, 0,20) ; No need to specify size or coordinates
+    Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
     Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
     Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
     Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
     
     Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-    ;     ;SetGadgetState(Splitter_1, 20)
+    ;SetGadgetAttribute(Splitter_0, #PB_Splitter_FirstMinimumSize, 20)
+    ; SetGadgetAttribute(Splitter_0, #PB_Splitter_SecondMinimumSize, 20)
+    ;SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
+    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
     Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
     Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = SplitterGadget(#PB_Any, 10, 140+200+130, 285, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
+    Splitter_4 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
+    ;   SetGadgetState(Splitter_1, 20)
     
+    SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
+    SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
+    
+    ;TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
+    
+    Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
+    Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+    
+    Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
+    Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
+    Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+    
+    Splitter_0 = Splitter::Gadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
+    Splitter_1 = Splitter::Gadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
+    Splitter::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
+    Splitter::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
+    Splitter_2 = Splitter::Gadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
+    Splitter_3 = Splitter::Gadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
+    Splitter_4 = Splitter::Gadget(#PB_Any, 10, 230, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
+    ;  Splitter::SetState(Splitter_1, 20)
+    
+    ;TextGadget(#PB_Any, 530, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
+    
+    
+    g_Canvas = Gadget_Open(0, 10, 450, 410, 210)
     
     Button_0 = Bar::Progress(0, 0, 0, 0, 0,100) ; No need to specify size or coordinates
-    Button_1 = Bar::Progress(0, 0, 0, 0, 10, 100); No need to specify size or coordinates
-    Button_2 = Bar::Spin(0, 0, 0, 0, 0,20)       ; as they will be sized automatically
-    Button_3 = Bar::Progress(0, 0, 0, 0, 0, 100, 30) ; as they will be sized automatically
-    
-    Button_4 = Bar::Progress(0, 0, 0, 0, 40,100) ; as they will be sized automatically
-    Button_5 = Bar::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
+    Button_1 = Bar::Progress(0, 0, 0, 0, 10,100); No need to specify size or coordinates
+    Button_2 = Bar::Progress(0, 0, 0, 0, 20,100); as they will be sized automatically
+    Button_3 = Bar::Progress(0, 0, 0, 0, 30,100); as they will be sized automatically
+    Button_4 = Bar::Progress(0, 0, 0, 0, 40,100); as they will be sized automatically
+    Button_5 = Bar::Progress(0, 0, 0, 0, 50,100); as they will be sized automatically
     
     Splitter_0 = Bar::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     Splitter_1 = Bar::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-    SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-    ;SetState(Splitter_1, 410/2-20)
+    Bar::SetAttribute(Splitter_0, #PB_Splitter_FirstMinimumSize, 20)
+    ; Bar::SetAttribute(Splitter_0, #PB_Splitter_SecondMinimumSize, 20)
+    Bar::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
+    Bar::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
     Splitter_2 = Bar::Splitter(0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
     Splitter_3 = Bar::Splitter(0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = Bar::Splitter(300+10, 140+200+130, 285, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    
-    SetState(Button_2, 5)
-    SetState(Button_5, 65)
-    
-    ;     Widget() = Button_3
-    ;     Widget()\height = 30
-    ;     Widget()\width = 30
-    ;     Widget()\bar\button[#__b_3]\len = 30
-    ;     Resize(Widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+    Splitter_4 = Bar::Splitter(0, 0, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
+    ; Bar::SetState(Splitter_1, 20)
+    ; bar::SetState(Splitter_0, 10)
+    ; bar::SetState(Splitter_4, 14)
     
     AddElement(*List()) : *List() = Button_0
     AddElement(*List()) : *List() = Button_1
@@ -2505,16 +2456,19 @@ CompilerIf #PB_Compiler_IsMainFile
     AddElement(*List()) : *List() = Button_5
     
     AddElement(*List()) : *List() = Splitter_0
-    ; *List()\focus = 10
+    bar::SetState(Splitter_0, bar::Width(*List())/2-5)
     AddElement(*List()) : *List() = Splitter_1
-    ; *List()\focus = 11
+    bar::SetState(Splitter_1, bar::Width(*List())/2-5)
+    
     AddElement(*List()) : *List() = Splitter_2
     AddElement(*List()) : *List() = Splitter_3
     AddElement(*List()) : *List() = Splitter_4
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
+  
 CompilerEndIf
+
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = xA-n-BA9f--f-04--X92-v0----8z0-NGE++jP4DA--B-b0A1ToHwB+d+
+; Folding = ---------------------------------------------------------
 ; EnableXP

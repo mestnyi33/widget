@@ -64,27 +64,20 @@ Module fixme
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     Procedure.i TextHeight_(Text.s)
       If *drawing
-        ;       Protected NSString, Attributes, NSSize.NSSize
-      ;       NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
-      ;       ;Attributes = CocoaMessage(0, 0, "NSDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
-      ;       CocoaMessage(@NSSize, NSString, "sizeWithAttributes:", *drawing\attributes)
-      ;       ProcedureReturn NSSize\height
-      ProcedureReturn *drawing\size\height
-    EndIf
-  EndProcedure
+        If Not *drawing\size\height
+          *drawing\size\height = PB(TextHeight)("A")
+        EndIf
+        ProcedureReturn *drawing\size\height
+      EndIf
+    EndProcedure
     
     Procedure.i TextWidth_(Text.s)
       If Text And *drawing And *drawing\fontID
         Protected NSString, Attributes, NSSize.NSSize
         NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
-        
         Attributes = CocoaMessage(0, 0, "NSDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
-;         If NSString And *drawing And *drawing\attributes
-;            Debug ""+Attributes+" "+*drawing\attributes
-          CocoaMessage(@NSSize, NSString, "sizeWithAttributes:", Attributes);*drawing\attributes)
-;         EndIf
-          
-          ProcedureReturn NSSize\width
+        CocoaMessage(@NSSize, NSString, "sizeWithAttributes:", Attributes)
+        ProcedureReturn NSSize\width
       EndIf
     EndProcedure
     

@@ -1,11 +1,13 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+;XIncludeFile "widgets().pbi"
+XIncludeFile "w_window.pb"
 
 ;- 
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
+  UseModule constants
   
   Procedure Events()
     Select *event\type
@@ -21,10 +23,14 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug "leave - "+*event\widget\index
         *event\widget\color\back = $FF0000
         
-       Case #PB_EventType_Repaint
-         DrawingMode(#PB_2DDrawing_Transparent)
-         DrawText(2,0, Str(*event\widget\index), 0)
-         
+      Case #PB_EventType_Repaint
+        DrawingMode(#PB_2DDrawing_Default)
+        Box(2,0,10,10,$FF000000)
+        DrawingMode(#PB_2DDrawing_Transparent)
+        DrawText(2,0, Str(*event\widget\index), $FFFFFFFF)
+        
+        Debug " repaint"
+        
     EndSelect
   EndProcedure
   
@@ -33,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If *callback
         CallCFunctionFast(*callback, *this)
         
-        If \count
+        If \count\childrens
           ForEach \childrens()
             Enumerates(\childrens(), *callback)
           Next
@@ -42,22 +48,9 @@ CompilerIf #PB_Compiler_IsMainFile
     EndWith
   EndProcedure
   
-;   Procedure Enumerates(*this._S_widget, *callback)
-;     With *this
-;       If *callback
-;         CallCFunctionFast(*callback, *this)
-;         
-;         If ListSize(\Childrens())
-;           ForEach \Childrens()
-;             Enumerates(\Childrens(), *callback)
-;           Next
-;         EndIf
-;       EndIf
-;     EndWith
-;   EndProcedure
-  
   Procedure enum(*this._S_widget)
-     Bind(@Events(), *this)
+    Debug  ""+*this\index +" "+ *this\type 
+    Bind(@Events(), *this)
   EndProcedure
   
   If Open(0, 0, 0, 220, 220, "demo mouse position", #PB_Window_SystemMenu)
@@ -78,13 +71,15 @@ CompilerIf #PB_Compiler_IsMainFile
     SetData(Container(10, 20, 70, 30, #__Flag_NoGadget), 11) 
     SetData(Container(10, 30, 70, 30, #__Flag_NoGadget), 12) 
     CloseList()
-
-;     
-;     Define widget
-;     While Enumerate(@widget, root())
-;       Debug widget
-;       Bind(@Events(), widget)
-;     Wend
+    
+    
+    
+    ;     Define widget._s_widget
+    ;     While Enumerate(@widget, root())
+    ;       Debug widget\index
+    ;       ;Bind(@Events(), widget)
+    ;     Wend
+    
     Enumerates(root(), @enum())
     
     Redraw(Root())
@@ -95,6 +90,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

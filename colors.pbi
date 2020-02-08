@@ -3,6 +3,7 @@
     grey.structures::_s_color
     grey2.structures::_s_color
     green.structures::_s_color
+    red.structures::_s_color
     blue.structures::_s_color
   EndStructure
   
@@ -143,6 +144,37 @@
     \fore[2] = $FFC3FDB7
     \back[2] = $FF00B002
     \frame[2] = $FF23BE03
+    
+    ; Цвета если отключили виджет
+    \front[3] = $FFBABABA
+    \fore[3] = $FFFFFFFF
+    \back[3] = $FFDAFCE1  
+    \frame[3] = $CA6AFF70 
+  EndWith
+  
+  ;- red - (красные цвета)
+  With *this\red                          
+    \state = 0
+    \alpha[0] = 255
+    \alpha[1] = 255
+    
+    ; Цвета по умолчанию
+    \front[0] = $FF000000
+    \fore[0] = $FFFFFFFF
+    \back[0] = $FFB4B4E1  
+    \frame[0] = $FF7878E1 
+    
+    ; Цвета если мышь на виджете
+    \front[1] = $FF000000
+    \fore[1] = $FFE7FFEC
+    \back[1] = $FF9696E1
+    \frame[1] = $FF4646E1 ; $FF51AB50
+    
+    ; Цвета если нажали на виджет
+    \front[2] = $FFFEFEFE
+    \fore[2] = $FFC3FDB7
+    \back[2] = $FF5F5EEE
+    \frame[2] = $FF3333F0
     
     ; Цвета если отключили виджет
     \front[3] = $FFBABABA

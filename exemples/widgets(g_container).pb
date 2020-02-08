@@ -1,17 +1,21 @@
 ﻿IncludePath "../"
 XIncludeFile "widgets().pbi"
+;XIncludeFile "w_window.pb"
 
 ;- 
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
   UseModule Widget
+  UseModule constants
   
   Procedure Events()
     Select *event\type
       Case #PB_EventType_MouseEnter
         Debug "enter - "+*event\widget\index
         *event\widget\color\back = $0000FF
+        
+        ;setcolor(*event\widget, #__color_back, *event\widget\color\back)
         
       Case #PB_EventType_MouseLeave
         Debug "leave - "+*event\widget\index
@@ -71,6 +75,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Until Event = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

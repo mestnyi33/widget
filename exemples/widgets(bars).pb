@@ -10,9 +10,9 @@ CompilerIf #PB_Compiler_IsMainFile
    UseModule constants
 ;   UseModule structures
   
-  Procedure Events()
+  Procedure _Events()
     Select *event\type
-      Case #PB_EventType_MouseEnter
+      Case #__Event_MouseEnter
         Debug "post enter - "+*event\widget\index
         If GetButtons(*event\widget)
           *event\widget\color\back = $00FF00
@@ -20,11 +20,11 @@ CompilerIf #PB_Compiler_IsMainFile
           *event\widget\color\back = $0000FF
         EndIf
         
-      Case #PB_EventType_MouseLeave
+      Case #__Event_MouseLeave
         Debug "post leave - "+*event\widget\index
         *event\widget\color\back = $FF0000
         
-      Case #PB_EventType_Repaint
+      Case #__Event_Repaint
         DrawingMode(#PB_2DDrawing_Transparent)
         DrawText(2,0, Str(*event\widget\index), 0)
         
