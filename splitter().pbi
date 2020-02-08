@@ -1,6 +1,8 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget/widgets()"
   XIncludeFile "../fixme(mac).pbi"
+CompilerelseIf #PB_Compiler_OS = #PB_OS_Linux 
+  IncludePath "/media/sf_as/Documents/GitHub/Widget/widgets()"
 CompilerElse
   IncludePath "widgets()"
 CompilerEndIf
@@ -1317,7 +1319,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
+; CursorPosition = 3
 ; Folding = ---------------------0----------
 ; EnableXP

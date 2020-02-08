@@ -1,7 +1,7 @@
 ﻿; IncludePath "/Users/as/Documents/GitHub/Widget/"
 ;XIncludeFile "bar().pbi"
-;XIncludeFile "../bar().pb"
-XIncludeFile "../../splitter().pbi"
+XIncludeFile "../bar().pb"
+;XIncludeFile "../../splitter().pbi"
 
 ; Module name   : Splitter
 ; Author        : mestnyi
@@ -318,6 +318,7 @@ CompilerEndIf
 ;     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ;   EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
+; CursorPosition = 3
 ; Folding = Z-----
 ; EnableXP
