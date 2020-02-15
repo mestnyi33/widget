@@ -1131,8 +1131,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
           *this\bar\area\len = *this\width - (*this\bar\button[#__b_1]\len + *this\bar\button[#__b_2]\len)
         EndIf
         
-        If *this\bar\area\len < *this\bar\thumb\len 
-          *this\bar\area\len = *this\bar\thumb\len 
+        If *this\bar\area\len < *this\bar\button[#__b_3]\len 
+          *this\bar\area\len = *this\bar\button[#__b_3]\len 
         Else
           ; if SetState(height-value or width-value)
           If *this\bar\button[#__b_3]\fixed < 0 

@@ -1149,6 +1149,18 @@ CompilerIf Not Defined(Bar, #PB_Module)
             *this\bar\button[#__b_1]\len = *this\bar\button[#__b_3]\len
             *this\bar\button[#__b_2]\len = *this\bar\button[#__b_3]\len
           EndIf
+          
+          If *this\bar\button[#__b_3]\len
+            If *this\bar\vertical
+              If *this\width = 0
+                *this\width = *this\bar\button[#__b_3]\len
+              EndIf
+            Else
+              If *this\height = 0
+                *this\height = *this\bar\button[#__b_3]\len
+              EndIf
+            EndIf
+          EndIf
         EndIf
         
         If *this\bar\vertical
@@ -1159,8 +1171,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
           *this\bar\area\len = *this\width - (*this\bar\button[#__b_1]\len + *this\bar\button[#__b_2]\len)
         EndIf
         
-        If *this\bar\area\len < *this\bar\thumb\len 
-          *this\bar\area\len = *this\bar\thumb\len 
+        If *this\bar\area\len < *this\bar\button[#__b_3]\len 
+          *this\bar\area\len = *this\bar\button[#__b_3]\len 
         Else
           ; if SetState(height-value or width-value)
           If *this\bar\button[#__b_3]\fixed < 0 
@@ -1170,7 +1182,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         EndIf
         
         *this\bar\thumb\len = _get_thumb_len_(*this\bar)
-        
+            
         ; one
         If Not *this\bar\max And *this\width And *this\height
           If Not *this\bar\page\pos
@@ -2525,5 +2537,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----------0z-d-----------------------------------vxVj-------
+; Folding = ----------0z-d-------------------------b80--------Nua9-------
 ; EnableXP
