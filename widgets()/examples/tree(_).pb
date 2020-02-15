@@ -284,7 +284,6 @@ DeclareModule Structures
     *first;._s_bar
     *second;._s_bar
     
-    fixed.l[3]
     
     g_first.b
     g_second.b
@@ -409,6 +408,8 @@ DeclareModule Structures
     inverted.b
     direction.l
     scrollstep.l
+    
+    fixed.l[3]
     
     max.l
     min.l
@@ -893,7 +894,7 @@ Module Bar
     Protected ScrollPos.i, Result.i
     
     With *this
-      If \splitter And \splitter\fixed
+      If \splitter And \fixed
         _set_area_coordinate_(*this)
       EndIf
       
@@ -974,12 +975,12 @@ Module Bar
         \page\pos = ScrollPos
         \thumb\pos = _thumb_pos_(*this, _scroll_invert_(*this, ScrollPos, \inverted))
         
-        If \splitter And \splitter\fixed = #bb_1
-          \splitter\fixed[\splitter\fixed] = \thumb\pos - \area\pos
+        If \splitter And \fixed = #bb_1
+          \fixed[\fixed] = \thumb\pos - \area\pos
           \page\pos = 0
         EndIf
-        If \splitter And \splitter\fixed = #bb_2
-          \splitter\fixed[\splitter\fixed] = \area\len - ((\thumb\pos+\thumb\len)-\area\pos)
+        If \splitter And \fixed = #bb_2
+          \fixed[\fixed] = \area\len - ((\thumb\pos+\thumb\len)-\area\pos)
           \page\pos = \max
         EndIf
         

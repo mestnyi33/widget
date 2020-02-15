@@ -52,10 +52,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
   EndMacro
   
   Macro _scrollarea_change_(_this_, _pos_, _len_)
-    Bool(Bool(((_pos_+_this_\bar\min)-_this_\bar\page\pos) < 0 And 
-              Bar::SetState(_this_, (_pos_+_this_\bar\min))) Or
-         Bool(((_pos_+_this_\bar\min)-_this_\bar\page\pos) > (_this_\bar\page\len-(_len_)) And 
-              Bar::SetState(_this_, (_pos_+_this_\bar\min)-(_this_\bar\page\len-(_len_)))))
+    Bool(Bool((((_pos_)+_this_\bar\min)-_this_\bar\page\pos) < 0 And Bar::SetState(_this_, ((_pos_)+_this_\bar\min))) Or
+         Bool((((_pos_)+_this_\bar\min)-_this_\bar\page\pos) > (_this_\bar\page\len-(_len_)) And Bar::SetState(_this_, ((_pos_)+_this_\bar\min)-(_this_\bar\page\len-(_len_)))))
   EndMacro
   
   Macro _scrollarea_draw_(_this_)
@@ -91,12 +89,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
     _this_\scroll\h\bar\area\change = #False
   EndMacro
   
-  Macro _get_page_pos_(_bar_, _thumb_pos_)
+  Macro _page_pos_(_bar_, _thumb_pos_)
     ; _bar_\scroll_increment = (_bar_\area\len / (_bar_\max-_bar_\min))
     (_bar_\min + Round(((_thumb_pos_) - _bar_\area\pos) / _bar_\scroll_increment, #PB_Round_Nearest))
   EndMacro
   
-  Macro _get_thumb_pos_(_bar_, _scroll_pos_)
+  Macro _thumb_pos_(_bar_, _scroll_pos_)
     ; _bar_\scroll_increment = (_bar_\area\len / (_bar_\max-_bar_\min))
     (_bar_\area\pos + Round(((_scroll_pos_) - _bar_\min) * _bar_\scroll_increment, #PB_Round_Nearest)) 
   EndMacro
@@ -589,7 +587,7 @@ Module bar
   
   
   Procedure ThumbPos(*this._s_widget, _scroll_pos_)
-    *this\bar\thumb\pos = _get_thumb_pos_(*this\bar, _scroll_pos_)
+    *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
     
     If *this\bar\thumb\pos < *this\bar\area\pos 
       *this\bar\thumb\pos = *this\bar\area\pos 
@@ -852,8 +850,7 @@ Module bar
       If *this\bar\page\change
         
         If *this\parent And 
-           *this\parent\scroll And
-           *this\parent\container
+           *this\parent\scroll
           ; Debug  ""+*this\type+" "+*this\parent\type
           
           If *this\bar\vertical
@@ -861,14 +858,18 @@ Module bar
               *this\parent\change =- 1
               *this\parent\scroll\y =- *this\bar\page\pos
               ; ScrollArea childrens auto resize 
-              _childrens_move_(*this\parent, 0, *this\bar\page\change)
+              If *this\parent\container
+                _childrens_move_(*this\parent, 0, *this\bar\page\change)
+              EndIf
             EndIf
           Else
             If *this\parent\scroll\h = *this
               *this\parent\change =- 1
               *this\parent\scroll\x =- *this\bar\page\pos
               ; ScrollArea childrens auto resize 
-              _childrens_move_(*this\parent, *this\bar\page\change, 0)
+              If *this\parent\container
+                _childrens_move_(*this\parent, *this\bar\page\change, 0)
+              EndIf
             EndIf
           EndIf
         EndIf
@@ -894,15 +895,15 @@ Module bar
           \bar\max = \bar\area\len-\bar\button[#__b_3]\len
           
           If Not \bar\page\pos
-            \bar\page\pos = (\bar\max)/2 - Bool((\splitter And \splitter\fixed = #__b_1))
+            \bar\page\pos = (\bar\max)/2 - Bool((\splitter And \bar\fixed = #__b_1))
           EndIf
           
           ;           ; if splitter fixed set splitter pos to center
-          ;           If \splitter And \splitter\fixed = #__b_1
-          ;             \splitter\fixed[\splitter\fixed] = \bar\page\pos
+          ;           If \splitter And \bar\fixed = #__b_1
+          ;             \bar\fixed[\bar\fixed] = \bar\page\pos
           ;           EndIf
-          ;           If \splitter And \splitter\fixed = #__b_2
-          ;             \splitter\fixed[\splitter\fixed] = \bar\area\len-\bar\page\pos-\bar\button[#__b_3]\len  + 1
+          ;           If \splitter And \bar\fixed = #__b_2
+          ;             \bar\fixed[\bar\fixed] = \bar\area\len-\bar\page\pos-\bar\button[#__b_3]\len  + 1
           ;           EndIf
         Else
           _area_pos_(*this)
@@ -910,17 +911,17 @@ Module bar
         
         
         If \splitter ;And Not (\splitter\g_first Or \splitter\g_second)
-          If \splitter\fixed
-            If \bar\area\len - \bar\button[#__b_3]\len > \splitter\fixed[\splitter\fixed] 
-              \bar\page\pos = Bool(\splitter\fixed = 2) * \bar\max
+          If \bar\fixed
+            If \bar\area\len - \bar\button[#__b_3]\len > \bar\fixed[\bar\fixed] 
+              \bar\page\pos = Bool(\bar\fixed = 2) * \bar\max
               
-              If \splitter\fixed[\splitter\fixed] > \bar\button[#__b_3]\len
-                \bar\area\pos + \splitter\fixed[1]
-                \bar\area\len - \splitter\fixed[2]
+              If \bar\fixed[\bar\fixed] > \bar\button[#__b_3]\len
+                \bar\area\pos + \bar\fixed[1]
+                \bar\area\len - \bar\fixed[2]
               EndIf
             Else
-              \splitter\fixed[\splitter\fixed] = \bar\area\len - \bar\button[#__b_3]\len
-              \bar\page\pos = Bool(\splitter\fixed = 1) * \bar\max
+              \bar\fixed[\bar\fixed] = \bar\area\len - \bar\button[#__b_3]\len
+              \bar\page\pos = Bool(\bar\fixed = 1) * \bar\max
             EndIf
           EndIf
           
@@ -1046,7 +1047,7 @@ Module bar
   
   Procedure.b SetPos(*this._s_widget, ThumbPos.i)
     With *this
-      If \splitter And \splitter\fixed
+      If \splitter And \bar\fixed
         _area_pos_(*this)
       EndIf
       
@@ -1057,7 +1058,7 @@ Module bar
         \bar\thumb\end = ThumbPos
         
         If \bar\area\end <> ThumbPos
-          ProcedureReturn SetState(*this, _invert_(\bar, _get_page_pos_(\bar, ThumbPos), \bar\inverted))
+          ProcedureReturn SetState(*this, _invert_(\bar, _page_pos_(\bar, ThumbPos), \bar\inverted))
         Else
           ProcedureReturn SetState(*this, _invert_(\bar, \bar\page\end, \bar\inverted))
         EndIf
@@ -1077,12 +1078,12 @@ Module bar
     If change(*this\bar, ScrollPos)
         \bar\thumb\pos = ThumbPos(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
         
-        If \splitter And \splitter\fixed = #__b_1
-          \splitter\fixed[\splitter\fixed] = \bar\thumb\pos - \bar\area\pos
+        If \splitter And \bar\fixed = #__b_1
+          \bar\fixed[\bar\fixed] = \bar\thumb\pos - \bar\area\pos
           \bar\page\pos = 0
         EndIf
-        If \splitter And \splitter\fixed = #__b_2
-          \splitter\fixed[\splitter\fixed] = \bar\area\len - ((\bar\thumb\pos+\bar\thumb\len)-\bar\area\pos)
+        If \splitter And \bar\fixed = #__b_2
+          \bar\fixed[\bar\fixed] = \bar\area\len - ((\bar\thumb\pos+\bar\thumb\len)-\bar\area\pos)
           \bar\page\pos = \bar\max
         EndIf
         
@@ -1189,6 +1190,21 @@ Module bar
     ProcedureReturn Result
   EndProcedure
   
+  Procedure SetParent(*this._s_widget, *Parent._s_widget, parent_item.l=0)
+      CompilerIf Defined(widget, #PB_Module)
+        ProcedureReturn widget::SetParent(*this, *Parent, parent_item)
+      CompilerElse
+        *event\widget = *this
+        *this\parent = *Parent
+        
+        If *this\parent
+          *this\root = *this\parent\root
+          *this\window = *this\parent\window
+        EndIf
+      CompilerEndIf
+    EndProcedure
+    
+    
   ;-
   Procedure.b Post(eventtype.l, *this._s_widget, item.l=#PB_All, *data=0)
     If *this\event And 
@@ -1439,34 +1455,6 @@ Module bar
   
   
   
-  Macro _set_last_parameters_(_this_, _type_, _flag_, _parent_)
-    ;     *event\widget = _this_
-    ;     _this_\type = _type_
-    ;     _this_\class = #PB_Compiler_Procedure
-    ;     
-    ;     ; Set parent
-    ;     SetParent(_this_, _parent_, _parent_\tab\opened)
-    ;     
-    _this_\parent = _this_
-    
-    ;     ; _set_auto_size_
-    ;     If Bool(_flag_ & #__flag_autoSize=#__flag_autoSize) : x=0 : y=0
-    ;       _this_\align = AllocateStructure(_s_align)
-    ;       _this_\align\autoSize = 1
-    ;       _this_\align\left = 1
-    ;       _this_\align\top = 1
-    ;       _this_\align\right = 1
-    ;       _this_\align\bottom = 1
-    ;     EndIf
-    ;     
-    ;     If Bool(_flag_ & #__flag_anchorsGadget=#__flag_anchorsGadget)
-    ;       
-    ;       a_add(_this_)
-    ;       a_Set(_this_)
-    ;       
-    ;     EndIf
-    ;     
-  EndMacro
   
   ;-
   Procedure.b Draw_Scroll(*this._s_widget)
@@ -2030,9 +2018,9 @@ Module bar
         
         \splitter = AllocateStructure(_s_splitter)
         If Flag & #PB_Splitter_FirstFixed 
-          \splitter\fixed = #__b_1 
+          \bar\fixed = #__b_1 
         ElseIf Flag & #PB_Splitter_SecondFixed 
-          \splitter\fixed = #__b_2 
+          \bar\fixed = #__b_2 
         EndIf
       EndIf
       
@@ -2050,14 +2038,26 @@ Module bar
   
   Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=7)
     Protected *this._s_widget = create(#PB_GadgetType_TrackBar, 15, Min, Max, 0, Flag|#__bar_nobuttons, round)
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened)
+    ; _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
+    CompilerIf Defined(widget, #PB_Module)
+          widget::_set_last_parameters_(*this, *this\type, Flag, *event\root\opened)
+        CompilerElse
+           SetParent(*this, *this)
+        CompilerEndIf
+        
     Resize(*this, X,Y,Width,Height)
     ProcedureReturn *this
   EndProcedure
   
   Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0)
     Protected *this._s_widget = create(#PB_GadgetType_ProgressBar, 0, Min, Max, 0, Flag|#__bar_nobuttons, round)
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
+    ; _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
+    CompilerIf Defined(widget, #PB_Module)
+          widget::_set_last_parameters_(*this, *this\type, Flag, *event\root\opened)
+        CompilerElse
+           SetParent(*this, *this)
+        CompilerEndIf
+        
     Resize(*this, X,Y,Width,Height)
     ProcedureReturn *this
   EndProcedure
@@ -2077,8 +2077,14 @@ Module bar
     EndIf
     
     *this = create(#PB_GadgetType_Spin, 16, Min, Max, 0, Flag, round, 0, Increment)
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
-    Resize(*this, X,Y,Width,Height)
+   ; _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
+    CompilerIf Defined(widget, #PB_Module)
+          widget::_set_last_parameters_(*this, *this\type, Flag, *event\root\opened)
+        CompilerElse
+           SetParent(*this, *this)
+        CompilerEndIf
+        
+        Resize(*this, X,Y,Width,Height)
     
     ProcedureReturn *this
   EndProcedure
@@ -2092,7 +2098,13 @@ Module bar
       *this = create(#PB_GadgetType_ScrollBar, height, Min, Max, PageLength, Flag, round)
     EndIf
     
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
+    ; _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
+    CompilerIf Defined(widget, #PB_Module)
+          widget::_set_last_parameters_(*this, *this\type, Flag, *event\root\opened)
+        CompilerElse
+           SetParent(*this, *this)
+        CompilerEndIf
+        
     Resize(*this, X,Y,Width,Height)
     ProcedureReturn *this
   EndProcedure
@@ -2106,7 +2118,13 @@ Module bar
       *this = create(#PB_GadgetType_Splitter, 7, 0, Width, 0, Flag|#__bar_nobuttons, 0)
     EndIf
     
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
+    ; _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
+    CompilerIf Defined(widget, #PB_Module)
+          widget::_set_last_parameters_(*this, *this\type, Flag, *event\root\opened)
+        CompilerElse
+           SetParent(*this, *this)
+        CompilerEndIf
+        
     
     With *this
       *this\index[#__s_1] =- 1
@@ -2328,36 +2346,37 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If OpenWindow(0, 0, 0, 605, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    g_Canvas = CanvasGadget(-1, 0, 0, 605, 140+200+140+140, #PB_Canvas_Container)
+  If OpenWindow(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    g_Canvas = CanvasGadget(-1, 0, 0, 605+30, 140+200+140+140, #PB_Canvas_Container)
     BindGadgetEvent(g_Canvas, @Canvas_Events())
     PostEvent(#PB_Event_Gadget, 0,g_Canvas, #__Event_Resize)
     
-    TextGadget       (-1,  10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ScrollBarGadget  (1,  10, 42, 250,  20, 30, 100, 30)
+    ; example scroll gadget bar
+    TextGadget       (-1,  10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#PB_Text_Center)
+    ScrollBarGadget  (1,  10, 42, 250,  20, 30, 150, 30)
     SetGadgetState   (1,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
     ScrollBarGadget  (2, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    ;ScrollBarGadget  (2, 270, 10,  25, 100 ,0, 521, 96, #PB_ScrollBar_Vertical)
     SetGadgetState   (2, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
-    TextGadget       (-1,  300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    AddElement(*List()) : *List() = Spin  (300+10, 72, 250,  21, 0, 10, 0)
-    SetState   (Widget(),  5)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    AddElement(*List()) : *List() = Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
-    SetState   (Widget(),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    
+    ; example scroll widget bar
+    TextGadget       (-1,  300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#PB_Text_Center)
+    AddElement(*List()) : *List() = Scroll  (300+10, 42, 250,  20, 30, 150, 30, 0)
+    SetState   (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
+    AddElement(*List()) : *List() = Scroll  (300+10, 42+30, 250,  10, 30, 150, 30, #__bar_inverted, 7)
+    SetState   (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical);|#__bar_inverted)
-                                                                                                ;AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 100 ,0, 521, 96, #PB_ScrollVertical)
-    SetState   (Widget(), 100)                                                                  ; set 2nd scrollbar (ID = 1) to 100 of 300
+    AddElement(*List()) : *List() = Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
+    SetState   (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
+    AddElement(*List()) : *List() = Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_inverted, 7)
+    SetState   (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     BindGadgetEvent(1,@h_GadgetCallBack())
     BindGadgetEvent(2,@v_GadgetCallBack())
-    ;Bind(@ev(), Widget())
+    ; Bind(@ev(), Widget())
     
     
-    ; example_2
+    ; example_2 track gadget bar
     TextGadget    (-1, 10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
     TrackBarGadget(10, 10,  140+40, 250, 20, 0, 10000)
     SetGadgetState(10, 5000)
@@ -2369,9 +2388,11 @@ CompilerIf #PB_Compiler_IsMainFile
     TrackBarGadget(12, 270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
     SetGadgetState(12, 8000)
     
-    
+    ; example_2 track widget bar
     TextGadget    (-1, 300+10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
     AddElement(*List()) : *List() = Track(300+10,  140+40, 250, 20, 0, 10000, 0)
+    SetState(Widget(), 5000)
+    AddElement(*List()) : *List() = Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_inverted)
     SetState(Widget(), 5000)
     TextGadget    (-1, 300+10, 140+90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
     ;     AddElement(*List()) : *List() = Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
@@ -2380,12 +2401,14 @@ CompilerIf #PB_Compiler_IsMainFile
     TextGadget    (-1,  300+60, 140+160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
     AddElement(*List()) : *List() = Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
     SetState(Widget(), 8000)
+    SetAttribute(Widget(), #__bar_Inverted, 0)
+    AddElement(*List()) : *List() = Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_inverted)
+    SetState(Widget(), 8000)
     
     BindGadgetEvent(11,@h_GadgetCallBack())
     BindGadgetEvent(12,@v_GadgetCallBack())
     
-    ;
-    ; example_3
+    ; example_3 progress gadget bar
     TextGadget       (-1,  10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
     ProgressBarGadget  (21,  10, 140+200+42, 250,  20, 30, 100)
     SetGadgetState   (21,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
@@ -2393,96 +2416,61 @@ CompilerIf #PB_Compiler_IsMainFile
     ProgressBarGadget  (22, 270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical)
     SetGadgetState   (22, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
-    
+    ; example_3 progress widget bar
     TextGadget       (-1,  300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
     AddElement(*List()) : *List() = Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
     SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    AddElement(*List()) : *List() = Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_inverted, 4)
+    SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    AddElement(*List()) : *List() = Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical)
+    AddElement(*List()) : *List() = Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
+    SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+    SetAttribute(Widget(), #__bar_Inverted, 0)
+    AddElement(*List()) : *List() = Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_inverted)
     SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     BindGadgetEvent(21,@h_GadgetCallBack())
     BindGadgetEvent(22,@v_GadgetCallBack())
     
     
-    ; example_4
-    ;     TextGadget       (-1,  10, 140+200+140+10, 230,  20, "SplitterBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ;     ScrollBarGadget(100, 0, 0, 0, 0, 30,71, 0) ; No need to specify size or coordinates
-    ;     ProgressBarGadget(200, 0, 0, 0, 0, 30,100) ; as they will be sized automatically
-    ;     SetGadgetState   (100, 30)
-    ;     SetGadgetState   (200, 50)
-    ;     SplitterGadget  (31,  10, 140+200+140+42, 230,  60, 100, 200, #PB_Splitter_Vertical)
-    ;     SetGadgetState   (31,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    ;     TextGadget       (-1,  10,140+200+140+110, 230,  20, "SplitterBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ;     TrackBarGadget(300, 0, 0, 250,  20, 30, 100) ; No need to specify size or coordinates
-    ;     ProgressBarGadget(400, 0, 0, 0, 0, 30,100)   ; as they will be sized automatically
-    ;     SetGadgetState   (300, 30)
-    ;     SetGadgetState   (400, 50)
-    ;     SplitterGadget  (32, 250, 140+200+140+10,  45, 120 ,300, 400, 0)
-    ;     SetGadgetState   (32, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    ;     TextGadget       (-1,  300+10, 140+200+140+10, 230,  20, "SplitterBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-    ;     *b1 = Splitter  (0, 0, 0, 0, 0, 0, #PB_Splitter_Vertical|#PB_Splitter_Separator);|#PB_Splitter_FirstFixed)
-    ;     *b2 = Progress  (0, 0, 0, 0, 30, 100, 0)
-    ;     ;SetState   (*b1, 30) 
-    ;     SetState   (*b2, 50) 
-    ;     AddElement(*List()) : *List() = *b1
-    ;     AddElement(*List()) : *List() = *b2
-    ;     
-    ;     AddElement(*List()) : *List() = Splitter  (300+10, 140+200+140+42, 230,  60, *b1, *b2, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    ;     SetState   (Widget(),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    ;     SetAttribute(Widget(), #__FirstMinimumSize, 20)
-    ;     SetAttribute(Widget(), #__SecondMinimumSize, 20)
-    ;     TextGadget       (-1,  300+10,140+200+140+110, 230,  20, "SplitterBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ;     
-    ;     *b3 = Track  (0, 0, 0, 0, 30, 60)
-    ;     *b4 = Progress  (0, 0, 0, 0, 30, 100)
-    ;     SetState   (*b3, 30) 
-    ;     SetState   (*b4, 50) 
-    ;     AddElement(*List()) : *List() = *b3
-    ;     AddElement(*List()) : *List() = *b4
-    ;     
-    ;     AddElement(*List()) : *List() = Splitter  (300+250, 140+200+140+10,  45, 120 ,*b3, *b4, #PB_Splitter_Separator)
-    ;     ;SetState   (*List(), 40)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    ;     
-    ;     BindGadgetEvent(31,@h_GadgetCallBack())
-    ;     BindGadgetEvent(32,@v_GadgetCallBack())
-    ;     
-    ;     Post(333, Widget())
-    ;     Bind(@ev2(), Widget(), #__Event_StatusChange)
-    
-    
-    
-    Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-    Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+    ;{ PB splitter Gadget
+    Button_0 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100) ; as they will be sized automatically
+    Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1")  ; as they will be sized automatically
     
     Button_2 = SpinGadget(#PB_Any, 0, 0, 0, 0, 0,20) ; No need to specify size or coordinates
     Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
     Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
     Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
     
+    SetGadgetState(Button_0, 50)
+    
     Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
+    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
     ;     ;SetGadgetState(Splitter_1, 20)
     Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
     Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
     Splitter_4 = SplitterGadget(#PB_Any, 10, 140+200+130, 285, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
     
+    SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
+    SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
+    ;}
     
     Button_0 = Bar::Progress(0, 0, 0, 0, 0,100) ; No need to specify size or coordinates
-    Button_1 = Bar::Progress(0, 0, 0, 0, 10, 100); No need to specify size or coordinates
+    Button_1 = Bar::Scroll(0, 0, 30, 30, 10, 100, 50); No need to specify size or coordinates
     Button_2 = Bar::Spin(0, 0, 0, 0, 0,20)       ; as they will be sized automatically
     Button_3 = Bar::Progress(0, 0, 0, 0, 0, 100, 30) ; as they will be sized automatically
     
     Button_4 = Bar::Progress(0, 0, 0, 0, 40,100) ; as they will be sized automatically
     Button_5 = Bar::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
     
+    SetState(Button_0, 50)
+    
     Splitter_0 = Bar::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     Splitter_1 = Bar::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
-    SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+    SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
+    SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
     ;SetState(Splitter_1, 410/2-20)
     Splitter_2 = Bar::Splitter(0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
     Splitter_3 = Bar::Splitter(0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
@@ -2490,12 +2478,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetState(Button_2, 5)
     SetState(Button_5, 65)
-    
-    ;     Widget() = Button_3
-    ;     Widget()\height = 30
-    ;     Widget()\width = 30
-    ;     Widget()\bar\button[#__b_3]\len = 30
-    ;     Resize(Widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
     
     AddElement(*List()) : *List() = Button_0
     AddElement(*List()) : *List() = Button_1
@@ -2505,9 +2487,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddElement(*List()) : *List() = Button_5
     
     AddElement(*List()) : *List() = Splitter_0
-    ; *List()\focus = 10
     AddElement(*List()) : *List() = Splitter_1
-    ; *List()\focus = 11
     AddElement(*List()) : *List() = Splitter_2
     AddElement(*List()) : *List() = Splitter_3
     AddElement(*List()) : *List() = Splitter_4
@@ -2516,5 +2496,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = xA-n-BA9f--f-04--X92-v0----8z0-NGE++jP4DA--B-b0A1ToHwB+d+
+; Folding = xA-n-HA9f--f-04--X92-v------v-+4HDCf-xn0Aw-fw-WPE-f++AOwvz-
 ; EnableXP

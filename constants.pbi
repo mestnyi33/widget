@@ -7,7 +7,15 @@
     ;- - CONSTANTs
     ;{
     
-    #__scrollbar_size = 16
+    #__arrow_type = 1
+    #__arrow_size = 4
+    
+    #__spin_padding_text = 5
+    #__spin_buttonsize2 = 15
+    #__spin_buttonsize = 18
+    
+    #__splitter_buttonsize = 7
+    #__scroll_buttonsize = 16
     #__test_scrollbar_size = 0
     
     #__round = 7
@@ -17,14 +25,9 @@
     #__sOC = SizeOf(Character)
     #__border_scroll = 2
     
-    #__spin_padding_text = 5
-    #__spin_buttonsize2 = 15
-    #__spin_buttonsize = 18
-    
     #__anchors = 9+4
     
     #__a_moved = 9
-    #__arrow_type = 1
     
     ; errors
     Enumeration 1
@@ -295,9 +298,10 @@
       #__bar_direction 
       #__bar_ticks
       #__bar_reverse
+      
+      #__bar_vertical ;= #__flag_vertical
       #__bar_inverted = #__flag_inverted
       
-      #__bar_vertical = #__flag_vertical
       #__bar_nobuttons = #__bar_buttonSize
     EndEnumeration
     
@@ -352,6 +356,21 @@
     #__Event_TitleChange      = #PB_EventType_TitleChange
     #__Event_Change           = #PB_EventType_Change
     #__Event_DragStart        = #PB_EventType_DragStart
+    #__Event_ReturnKey        = #PB_EventType_ReturnKey
+    
+    Enumeration #PB_EventType_FirstCustomValue
+      #PB_EventType_Free         
+      #PB_EventType_Create
+      #PB_EventType_Drop
+      
+      #PB_EventType_Repaint
+      #PB_EventType_ScrollChange
+      
+      #PB_EventType_CloseWindow
+      #PB_EventType_MaximizeWindow
+      #PB_EventType_MinimizeWindow
+      #PB_EventType_RestoreWindow
+    EndEnumeration
     
     Enumeration #PB_EventType_FirstCustomValue
       #__Event_Free         
@@ -360,13 +379,14 @@
       
       #__Event_Repaint
       #__Event_ScrollChange
-      #__Event_ReturnKey
       
       #__Event_CloseWindow
       #__Event_MaximizeWindow
       #__Event_MinimizeWindow
       #__Event_RestoreWindow
     EndEnumeration
+    
+    #PB_Event_Create = #PB_Event_FirstCustomValue
     
     ;- _c_type
     #__Type_Root          =- 5

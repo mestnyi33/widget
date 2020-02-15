@@ -2079,30 +2079,30 @@ Module Widget
           \bar\max = \bar\area\len-\bar\button[#__b_3]\len
           
           If Not \bar\page\pos
-            \bar\page\pos = (\bar\max)/2 - Bool(  (\splitter And \splitter\fixed=#__b_1))
+            \bar\page\pos = (\bar\max)/2 - Bool(  (\splitter And \bar\fixed=#__b_1))
           EndIf
           
           ;           ; if splitter fixed set splitter pos to center
-          ;           If \splitter And \splitter\fixed = #__b_1
-          ;             \splitter\fixed[\splitter\fixed] = \bar\page\pos
+          ;           If \splitter And \bar\fixed = #__b_1
+          ;             \bar\fixed[\bar\fixed] = \bar\page\pos
           ;           EndIf
-          ;           If \splitter And \splitter\fixed = #__b_2
-          ;             \splitter\fixed[\splitter\fixed] = \bar\area\len-\bar\page\pos-\bar\button[#__b_3]\len  + 1
+          ;           If \splitter And \bar\fixed = #__b_2
+          ;             \bar\fixed[\bar\fixed] = \bar\area\len-\bar\page\pos-\bar\button[#__b_3]\len  + 1
           ;           EndIf
         EndIf
         
         If \splitter 
-          If \splitter\fixed
-            If \bar\area\len - \bar\button[#__b_3]\len > \splitter\fixed[\splitter\fixed] 
-              \bar\page\pos = Bool(\splitter\fixed = 2) * \bar\max
+          If \bar\fixed
+            If \bar\area\len - \bar\button[#__b_3]\len > \bar\fixed[\bar\fixed] 
+              \bar\page\pos = Bool(\bar\fixed = 2) * \bar\max
               
-              If \splitter\fixed[\splitter\fixed] > \bar\button[#__b_3]\len
-                \bar\area\pos + \splitter\fixed[1]
-                \bar\area\len - \splitter\fixed[2]
+              If \bar\fixed[\bar\fixed] > \bar\button[#__b_3]\len
+                \bar\area\pos + \bar\fixed[1]
+                \bar\area\len - \bar\fixed[2]
               EndIf
             Else
-              \splitter\fixed[\splitter\fixed] = \bar\area\len - \bar\button[#__b_3]\len
-              \bar\page\pos = Bool(\splitter\fixed = 1) * \bar\max
+              \bar\fixed[\bar\fixed] = \bar\area\len - \bar\button[#__b_3]\len
+              \bar\page\pos = Bool(\bar\fixed = 1) * \bar\max
             EndIf
           EndIf
           
@@ -2183,7 +2183,7 @@ Module Widget
     Protected ScrollPos.f, result.i
     
     With *this
-      If \splitter And \splitter\fixed
+      If \splitter And \bar\fixed
         _bar_area_pos_(*this)
       EndIf
       
@@ -2214,12 +2214,12 @@ Module Widget
       If Bar_Change(*this\bar, ScrollPos)
         \bar\thumb\pos = _bar_ThumbPos(*this, _bar_invert_(*this\bar, \bar\page\pos, \bar\inverted))
         
-        If \splitter And \splitter\fixed = #__b_1
-          \splitter\fixed[\splitter\fixed] = \bar\thumb\pos - \bar\area\pos
+        If \splitter And \bar\fixed = #__b_1
+          \bar\fixed[\bar\fixed] = \bar\thumb\pos - \bar\area\pos
           \bar\page\pos = 0
         EndIf
-        If \splitter And \splitter\fixed = #__b_2
-          \splitter\fixed[\splitter\fixed] = \bar\area\len - ((\bar\thumb\pos+\bar\thumb\len)-\bar\area\pos)
+        If \splitter And \bar\fixed = #__b_2
+          \bar\fixed[\bar\fixed] = \bar\area\len - ((\bar\thumb\pos+\bar\thumb\len)-\bar\area\pos)
           \bar\page\pos = \bar\max
         EndIf
         
@@ -8367,10 +8367,10 @@ Module Widget
       \splitter\second = Second
       
       If Flag&#PB_Splitter_SecondFixed
-        \splitter\fixed = 2
+        \bar\fixed = 2
       EndIf
       If Flag&#PB_Splitter_FirstFixed
-        \splitter\fixed = 1
+        \bar\fixed = 1
       EndIf
       
       Resize(*this, X,Y,Width,Height)

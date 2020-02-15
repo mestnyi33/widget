@@ -1,5 +1,6 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+;  XIncludeFile "widgets().pbi"
+ XIncludeFile "widgets.pbi"
 ;XIncludeFile "widgets(_align_0_0_0).pbi"
 
 ;- 
@@ -65,14 +66,14 @@ CompilerIf #PB_Compiler_IsMainFile
     Spin(5, 75, 150, 30, 0, 20, #__bar_Reverse)
     SetState(Widget(), 5)
     
-    Tree(5, 110, 150, 410, #__flag_Checkboxes)
-    For i=0 To 10;20
-      If i=3 Or i=8 Or i=14
-        AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
-      Else
-        AddItem(Widget(), i, "item_"+ Str(i))
-      EndIf
-    Next
+;     Tree(5, 110, 150, 410, #__flag_Checkboxes)
+;     For i=0 To 10;20
+;       If i=3 Or i=8 Or i=14
+;         AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
+;       Else
+;         AddItem(Widget(), i, "item_"+ Str(i))
+;       EndIf
+;     Next
     
     Panel     (160, 5, 150, 100)
     For i=0 To 10
@@ -93,14 +94,14 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
     
-    Tree(160, 110, 150, 100, #__flag_Checkboxes)
-    For i=0 To 20
-      If i=3
-        AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))
-      Else
-        AddItem(Widget(), i, "item_"+ Str(i))
-      EndIf
-    Next
+;     Tree(160, 110, 150, 100, #__flag_Checkboxes)
+;     For i=0 To 20
+;       If i=3
+;         AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))
+;       Else
+;         AddItem(Widget(), i, "item_"+ Str(i))
+;       EndIf
+;     Next
     
     ScrollArea(320,110,150,100, 200,200)
     Button(10, 15, 80, 24,"Кнопка 1")
@@ -137,9 +138,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Scroll(160, 370+25, 150, 20, 0, 50, 30, #__bar_Inverted)
     SetState(Widget(), 5)
     
-    Track(160, 370+53, 150, 20, 0, 20)
+    Track(160, 370+53, 150, 20, 0, 20, #__bar_ticks)
     SetState(Widget(), 5)
-    Track(160, 370+53+25, 150, 20, 0, 20, #__bar_Inverted)
+    Track(160, 370+53+25, 150, 20, 0, 20, #__bar_Inverted|#__bar_ticks)
     SetState(Widget(), 5)
     
     Progress(160, 370+105, 150, 20, 0, 20)
@@ -153,10 +154,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Scroll(320+25, 370, 20, 150, 0, 50, 30, #__bar_Vertical|#__bar_Inverted)
     SetState(Widget(), 5)
     
-    Track(320+53, 370, 20, 150, 0, 20, #__bar_Vertical)
+    Track(320+53, 370, 20, 150, 0, 20, #__bar_Vertical|#__bar_ticks)
     SetState(Widget(), 5)
     SetAttribute(Widget(), #__bar_Inverted, 0)
-    Track(320+53+25, 370, 20, 150, 0, 20, #__bar_Vertical|#__bar_Inverted)
+    Track(320+53+25, 370, 20, 150, 0, 20, #__bar_Vertical|#__bar_Inverted|#__bar_ticks)
     SetState(Widget(), 5)
     
     Progress(320+105, 370, 20, 150, 0, 20, #__bar_Vertical)

@@ -726,7 +726,6 @@ DeclareModule Widget
   Declare.i GetParent(*this)
   Declare.i GetParentItem(*this)
   Declare.i GetPosition(*this, Position.i)
-  Declare.i a_get(*this, index.i=-1)
   Declare.i GetCount(*this)
   Declare.s GetClass(*this)
   
@@ -740,7 +739,6 @@ DeclareModule Widget
   Declare.i SetItemFont(*this, Item.l, Font.i)
   
   Declare.i SetTransparency(*this, Transparency.a)
-  Declare.i a_Set(*this)
   Declare.s SetClass(*this, Class.s)
   Declare.i SetActive(*this)
   Declare.i SetState(*this, State.i)
@@ -802,6 +800,36 @@ DeclareModule Widget
   Declare.b Arrow(X.l,Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1)
   Declare.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
   
+  Declare.i a_Set(*this)
+  Declare.i a_get(*this, index.i=-1)
+  Declare.i a_add(*this._s_widget, Size.l=6, Pos.l=-1)
+  Macro _set_last_parameters_(_this_, _type_, _flag_, _parent_)
+    _this_\type = _type_
+    _this_\class = #PB_Compiler_Procedure
+    
+    ; Set parent
+    Widget::SetParent(_this_, _parent_, _parent_\tab\opened)
+    
+    ; _set_auto_size_
+    If Bool(_flag_ & #__flag_autoSize=#__flag_autoSize) : x=0 : y=0
+      _this_\align = AllocateStructure(structures::_s_align)
+      _this_\align\autoSize = 1
+      _this_\align\left = 1
+      _this_\align\top = 1
+      _this_\align\right = 1
+      _this_\align\bottom = 1
+    EndIf
+    
+    If Bool(_flag_ & #__flag_anchorsGadget=#__flag_anchorsGadget)
+      
+      Widget::a_add(_this_)
+      Widget::a_Set(_this_)
+      
+    EndIf
+    
+  EndMacro
+  
+  
 EndDeclareModule
 
 
@@ -809,7 +837,11 @@ EndDeclareModule
 ;- XIncludeFile
 ;-
 CompilerIf Not Defined(Bar, #PB_Module)
-  XIncludeFile "widgets()/bar().pb"
+  XIncludeFile "widgets()/bar().pbi"
+CompilerEndIf
+
+CompilerIf Not Defined(Splitter, #PB_Module)
+  XIncludeFile "widgets()/splitter().pbi"
 CompilerEndIf
 
 CompilerIf Not Defined(Editor, #PB_Module)
@@ -896,33 +928,6 @@ Module Widget
   
   Macro Get_cursor(_this_)
     GetGadgetAttribute(_this_\root\canvas, #PB_Canvas_Cursor)
-  EndMacro
-  
-  Macro _set_last_parameters_(_this_, _type_, _flag_, _parent_)
-    structures::*event\widget = _this_
-    _this_\type = _type_
-    _this_\class = #PB_Compiler_Procedure
-    
-    ; Set parent
-    SetParent(_this_, _parent_, _parent_\tab\opened)
-    
-    ; _set_auto_size_
-    If Bool(_flag_ & #__flag_autoSize=#__flag_autoSize) : x=0 : y=0
-      _this_\align = AllocateStructure(structures::_s_align)
-      _this_\align\autoSize = 1
-      _this_\align\left = 1
-      _this_\align\top = 1
-      _this_\align\right = 1
-      _this_\align\bottom = 1
-    EndIf
-    
-    If Bool(_flag_ & #__flag_anchorsGadget=#__flag_anchorsGadget)
-      
-      a_add(_this_)
-      a_Set(_this_)
-      
-    EndIf
-    
   EndMacro
   
   ;-
@@ -1137,7 +1142,7 @@ Module Widget
   EndMacro
   
   Macro _bar_thumb_pos_(_bar_, _scroll_pos_)
-    bar::_get_thumb_pos_(_bar_, _scroll_pos_)
+    bar::_thumb_pos_(_bar_, _scroll_pos_)
   EndMacro
   
   Macro _bar_thumb_len_(_bar_)
@@ -1167,9 +1172,13 @@ Module Widget
     bar::_area_pos_(_this_)
   EndMacro
   
-  Macro _bar_ThumbPos(_this_, _scroll_pos_)
-    bar::ThumbPos(_this_, _scroll_pos_)
-  EndMacro
+;   Macro _bar_ThumbPos(_this_, _scroll_pos_)
+;     bar::ThumbPos(_this_, _scroll_pos_)
+;   EndMacro
+  
+  Procedure.b Bar_Draw(*this._s_widget)
+    ProcedureReturn bar::Draw(*this)
+  EndProcedure
   
   Procedure.i Bar_Change(*bar.structures::_s_bar, ScrollPos.f)
     ProcedureReturn bar::Change(*bar, ScrollPos)
@@ -2990,49 +2999,6 @@ Module Widget
     EndIf
   EndProcedure
   
-  Procedure.b Draw_Splitter(*this._s_widget)
-    Protected Pos, Size, round.d = 2
-    
-    With *this
-      If *this > 0
-        DrawingMode(#PB_2DDrawing_Outlined)
-        If \bar\mode
-          Protected *first._s_widget = \splitter\first
-          Protected *second._s_widget = \splitter\second
-          
-          If Not \splitter\g_first And (Not *first Or (*first And Not *first\splitter))
-            Box(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-          EndIf
-          If Not \splitter\g_second And (Not *second Or (*second And Not *second\splitter))
-            Box(\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button\color\frame[\bar\button[#__b_2]\Color\state])
-          EndIf
-        EndIf
-        
-        If \bar\mode = #PB_Splitter_Separator
-          ; ??????? ????????? 
-          Size = \bar\thumb\len/2
-          Pos = \bar\thumb\Pos+Size
-          
-          If \bar\vertical ; horisontal
-            Circle(\bar\button\X+((\bar\button\Width-round)/2-((round*2+2)*2+2)), Pos,round,\bar\button\Color\Frame[#__s_2])
-            Circle(\bar\button\X+((\bar\button\Width-round)/2-(round*2+2)),       Pos,round,\bar\button\Color\Frame[#__s_2])
-            Circle(\bar\button\X+((\bar\button\Width-round)/2),                    Pos,round,\bar\button\Color\Frame[#__s_2])
-            Circle(\bar\button\X+((\bar\button\Width-round)/2+(round*2+2)),       Pos,round,\bar\button\Color\Frame[#__s_2])
-            Circle(\bar\button\X+((\bar\button\Width-round)/2+((round*2+2)*2+2)), Pos,round,\bar\button\Color\Frame[#__s_2])
-          Else
-            Circle(Pos,\bar\button\Y+((\bar\button\Height-round)/2-((round*2+2)*2+2)),round,\bar\button\Color\Frame[#__s_2])
-            Circle(Pos,\bar\button\Y+((\bar\button\Height-round)/2-(round*2+2)),      round,\bar\button\Color\Frame[#__s_2])
-            Circle(Pos,\bar\button\Y+((\bar\button\Height-round)/2),                   round,\bar\button\Color\Frame[#__s_2])
-            Circle(Pos,\bar\button\Y+((\bar\button\Height-round)/2+(round*2+2)),      round,\bar\button\Color\Frame[#__s_2])
-            Circle(Pos,\bar\button\Y+((\bar\button\Height-round)/2+((round*2+2)*2+2)),round,\bar\button\Color\Frame[#__s_2])
-          EndIf
-        EndIf
-      EndIf
-      
-    EndWith
-  EndProcedure
-  
-  
   ;-
   Procedure.i Draw_frame(*this._s_widget)
     With *this 
@@ -4841,7 +4807,7 @@ Module Widget
           Case #__Type_HyperLink    : _draw_hyperlink_(*this)
             
           Case #__Type_Spin         : Draw_Spin(*this)
-          Case #__Type_Splitter     : Draw_Splitter(*this)
+          Case #__Type_Splitter     : Bar_Draw(*this)
           Case #__Type_TrackBar     : Draw_track(*this)
           Case #__Type_ScrollBar    : Draw_Scroll(*this)
           Case #__Type_ProgressBar  : Draw_progress(*this)
@@ -5513,6 +5479,8 @@ Module Widget
     
     With *this
       If *this > 0 
+        structures::*event\widget = *this
+        
         ; set first item
         If parent_item =- 1
           parent_item = 0 
@@ -6839,8 +6807,7 @@ Module Widget
         \height[#__c_2] = \scroll\v\bar\page\len
       EndIf
       
-      If \type = #__Type_Splitter Or
-         \type = #__Type_ScrollBar Or
+      If \type = #__Type_ScrollBar Or
          \type = #__Type_ProgressBar Or
          \type = #__Type_TrackBar
         Bar_update(*this)
@@ -6933,9 +6900,9 @@ Module Widget
         EndIf
       EndIf  
       
-      ; caption title bar
       If \type = #__Type_Window
-        If Not \caption\hide
+       ; caption title bar
+       If Not \caption\hide
           \caption\x = \x[#__c_1]
           \caption\y = \y[#__c_1]
           \caption\width = \width[#__c_1]
@@ -7028,11 +6995,11 @@ Module Widget
       
       ; Debug ""+height+" "+\height[#__c_0]+" "+\height[#__c_1]+" "+\height[#__c_2]+" "+\height[#__c_3]+" "+\height[#__c_4]
       
-      ; Resize childrens
-      If \count\childrens
-        If \type = #__Type_Splitter
-          _bar_splitter_size_(*this)
-        Else
+      If \type = #__Type_Splitter
+        Bar_Update(*this)
+      Else
+       ; Resize childrens
+       If \count\childrens
           ForEach \childrens()
             If \childrens()\align
               If \childrens()\align\horizontal
@@ -7097,109 +7064,24 @@ Module Widget
   
   
   ;-
-  Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=7)
-    Protected *this._s_widget
-    If Flag&#__bar_vertical
-      Flag|#__bar_inverted
-    EndIf
-    ;     If Flag&#__bar_ticks
-    ;       Debug 897987987987
-    ;     EndIf
-    
-    *this = bar_create(#__Type_TrackBar, 15, Min, Max, 0, Flag|#__bar_buttonSize, round)
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened)
-    Resize(*this, X,Y,Width,Height)
-    
-    ProcedureReturn *this
-  EndProcedure
-  
-  Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0)
-    Protected *this._s_widget
-    If Flag&#__bar_vertical
-      Flag|#__bar_inverted
-    EndIf
-    
-    *this = bar_create(#__Type_ProgressBar, 0, Min, Max, 0, Flag|#__bar_buttonSize, round)
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
-    Resize(*this, X,Y,Width,Height)
-    
-    ProcedureReturn *this
+  Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
+    ProcedureReturn Bar::Scroll(X,Y,Width,Height, Min,Max,PageLength, Flag, round)
   EndProcedure
   
   Procedure.i Spin(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0, Increment.f=1.0)
-    Protected *this._s_widget
-    If Flag&#__bar_vertical
-      Flag&~#__bar_vertical
-      ;Flag|#__bar_inverted
-    Else
-      Flag|#__bar_vertical
-      Flag|#__bar_inverted
-    EndIf
-    
-    If Flag&#__bar_reverse
-      Flag|#__bar_inverted
-    EndIf
-    
-    *this = bar_create(#__Type_Spin, 16, Min, Max, 0, Flag, round, 0, Increment)
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
-    Resize(*this, X,Y,Width,Height)
-    
-    ProcedureReturn *this
+    ProcedureReturn Bar::Spin(X,Y,Width,Height, Min,Max, Flag, round, Increment)
   EndProcedure
   
-  Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
-    Protected *this._s_widget, Size
-    If Bool(Flag&#__bar_vertical)
-      Size = width
-    Else
-      Size = height
-    EndIf
-    
-    *this = bar_create(#__Type_ScrollBar, Size, Min, Max, PageLength, Flag, round)
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
-    Resize(*this, X,Y,Width,Height)
-    
-    ProcedureReturn *this
+  Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=7)
+    ProcedureReturn Bar::Track(X,Y,Width,Height, Min,Max, Flag, round)
+  EndProcedure
+  
+  Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0)
+    ProcedureReturn Bar::Progress(X,Y,Width,Height, Min,Max, Flag, round)
   EndProcedure
   
   Procedure.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.i=0)
-    Protected *this._s_widget 
-    
-    If Bool(Not Flag&#PB_Splitter_Vertical)
-      *this = bar::create(#PB_GadgetType_Splitter, 7, 0, Height, 0, Flag|#__bar_nobuttons, 0)
-    Else
-      *this = bar::create(#PB_GadgetType_Splitter, 7, 0, Width, 0, Flag|#__bar_nobuttons, 0)
-    EndIf
-    
-    _set_last_parameters_(*this, *this\type, Flag, Root()\opened) 
-    
-    With *this
-      *this\index[#__s_1] =- 1
-      *this\index[#__s_2] = 0
-      
-      \splitter\first = First
-      \splitter\second = Second
-      
-      ;Bar::Resize(*this, X,Y,Width,Height)
-      Resize(*this, X,Y,Width,Height)
-      ;bar::update(*this)
-      
-      If \bar\vertical
-        \cursor = #PB_Cursor_UpDown
-        bar::SetState(*this, \height/2-1)
-      Else
-        \cursor = #PB_Cursor_LeftRight
-        bar::SetState(*this, \width/2-1)
-      EndIf
-      
-      ;       \splitter\first\parent = *this
-      ;       \splitter\second\parent = *this
-      SetParent(\splitter\first, *this)
-      SetParent(\splitter\second, *this)
-      
-    EndWith
-    
-    ProcedureReturn *this
+    ProcedureReturn Bar::Splitter(X,Y,Width,Height, First, Second, Flag)
   EndProcedure
   
   ;-
@@ -8785,7 +8667,7 @@ Module Widget
             _this_\bar\button[#__b_1]\color\state = #__s_2
             If _this_\type = #__Type_ScrollBar Or
                _this_\type = #__Type_Spin
-              _this_\bar\thumb\pos = _bar_ThumbPos(_this_, _bar_invert_(_this_\bar, _this_\bar\page\pos, _this_\bar\inverted))
+              bar_update(_this_) ; _this_\bar\thumb\pos = _bar_ThumbPos(_this_, _bar_invert_(_this_\bar, _this_\bar\page\pos, _this_\bar\inverted))
             EndIf
             Repaint = #True
           EndIf
@@ -8803,7 +8685,7 @@ Module Widget
             _this_\bar\button[#__b_2]\color\state = #__s_2 
             If _this_\type = #__Type_ScrollBar Or
                _this_\type = #__Type_Spin
-              _this_\bar\thumb\pos = _bar_ThumbPos(_this_, _bar_invert_(_this_\bar, _this_\bar\page\pos, _this_\bar\inverted))
+              bar_update(_this_) ; _this_\bar\thumb\pos = _bar_ThumbPos(_this_, _bar_invert_(_this_\bar, _this_\bar\page\pos, _this_\bar\inverted))
             EndIf
             Repaint = #True
           EndIf
@@ -9273,6 +9155,7 @@ Module Widget
           Case #__Type_Panel       : _events_panel_(*this, eventtype, mouse_x, mouse_y)
           Case #__Type_Spin        : _events_bar_(*this, eventtype, mouse_x, mouse_y)
           Case #__Type_Splitter    : _events_bar_(*this, eventtype, mouse_x, mouse_y)
+          ;Case #__Type_Splitter    : _events_bar_(*this, eventtype, mouse_x-*this\x, mouse_y-*this\y)
           Case #__Type_TrackBar    : _events_bar_(*this, eventtype, mouse_x, mouse_y)
           Case #__Type_ScrollBar   : _events_bar_(*this, eventtype, mouse_x, mouse_y)
           Case #__Type_ProgressBar : _events_bar_(*this, eventtype, mouse_x, mouse_y)
@@ -9374,10 +9257,18 @@ Module Widget
           EndIf
           
           If delta
-            If \bar\vertical
-              Repaint = Bar_SetPos(*this, (mouse_y-delta))
+            If \type = #PB_GadgetType_Splitter
+              If \bar\vertical
+                Repaint = Splitter::SetPos(*this, (mouse_y-delta))
+              Else
+                Repaint = Splitter::SetPos(*this, (mouse_x-delta))
+              EndIf
             Else
-              Repaint = Bar_SetPos(*this, (mouse_x-delta))
+              If \bar\vertical
+                Repaint = Bar_SetPos(*this, (mouse_y-delta))
+              Else
+                Repaint = Bar_SetPos(*this, (mouse_x-delta))
+              EndIf
             EndIf
           EndIf
           
@@ -10017,5 +9908,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = f----------v--fw--------------4-------------------------------------------------------------------------------------------------------Z80-S50--+-8----------------0-+--4----v0-------------
 ; EnableXP

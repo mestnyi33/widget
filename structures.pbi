@@ -7,16 +7,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     Prototype pFunc()
     
     ;{ 
-    ;- - _s_page
-    Structure _s_page
-      pos.l
-      len.l
-      *end
-      change.f
-;       min.l
-;       max.l
-    EndStructure
-    
     ;- - _s_point
     Structure _s_point
       y.l[5] ; убрать 
@@ -77,11 +67,24 @@ CompilerIf Not Defined(structures, #PB_Module)
       direction.b
     EndStructure
     
+    ;- - _s_page
+    Structure _s_page
+      pos.l
+      len.l
+      *end
+      change.f
+    EndStructure
+    
     ;- - _s_button
     Structure _s_button Extends _s_coordinate
+      *handle ;;;;;;
+      
       len.l
       hide.b
       round.a
+      
+      fixed.l ; splitter\fixed[1..2] 
+      
       ; switched.b
       interact.b
       arrow._s_arrow
@@ -91,6 +94,30 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_box
     Structure _s_box Extends _s_button
       checked.b
+    EndStructure
+    
+    ;- - _s_bar
+    Structure _s_bar
+      max.l
+      min.l
+      mode.i
+      
+      fixed.l[3]  ; для совместимости временно 
+      
+      hide.b
+      change.b
+      vertical.b
+      inverted.b
+      direction.l
+      
+      scroll_step.f
+      ;scroll_change.f
+      scroll_increment.f
+      
+      page._s_page
+      area._s_page
+      thumb._s_page  
+      button._s_button[4]
     EndStructure
     
     ;- - _s_transform
@@ -223,28 +250,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       _padding.b
     EndStructure
     
-    ;- - _s_bar
-    Structure _s_bar
-      max.l
-      min.l
-      mode.i
-      
-      hide.b
-      change.b
-      vertical.b
-      inverted.b
-      direction.l
-      
-      scroll_step.f
-      ;scroll_change.f
-      scroll_increment.f
-      
-      page._s_page
-      area._s_page
-      thumb._s_page  
-      button._s_button[4]
-    EndStructure
-    
     ;- - _s_image
     Structure _s_image
       y.l[3]
@@ -284,7 +289,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       *first._s_widget
       *second._s_widget
       
-      fixed.l[3]
       
       g_first.b
       g_second.b
@@ -532,9 +536,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       
       *leave._s_widget  
-    *enter._s_widget  
-    _draw.l
+      *enter._s_widget  
+      _draw.l
       ;draw.b
+      
+      List *childrens._s_widget()
+      
     EndStructure
     
     ;- - _s_root
@@ -562,5 +569,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -iIfZAe-
+; Folding = fxSGYAc-
 ; EnableXP

@@ -5,11 +5,14 @@ XIncludeFile "widgets().pbi"
 CompilerIf #PB_Compiler_IsMainFile
   
   UseModule Widget
+  UseModule constants
+  
   EnableExplicit
   
   Global *w._S_widget, *combo
   Global *window_1._S_widget, *window_2._S_widget, *panel._S_widget, *container._S_widget, *scrollarea._S_widget
   Global *w_0, *d_0, *b_0, *b_1, *p_0, *p_1, *p_2, *c_0, *s_0
+  Global *pb_0, *pb_1, *pb_2, *pb_3
     
   
   Procedure Widgets_CallBack()
@@ -34,9 +37,9 @@ CompilerIf #PB_Compiler_IsMainFile
           Case *d_0 : SetParent(*w, GetRoot(EventWidget))
             
           Case *w_0 : SetParent(*w, *window_1)
-          Case *p_0 : SetParent(*w, *panel, 0)
-          Case *p_1 : SetParent(*w, *panel, 1)
-          Case *p_2 : SetParent(*w, *panel, 2)
+          Case *p_0, *pb_0 : SetParent(*w, *panel, 0)
+          Case *p_1, *pb_1 : SetParent(*w, *panel, 1)
+          Case *p_2, *pb_2 : SetParent(*w, *panel, 2)
           Case *c_0 : SetParent(*w, *container)
           Case *s_0 : SetParent(*w, *scrollarea)
           Case *b_0, *b_1 : SetParent(*w, *window_2)
@@ -120,11 +123,16 @@ CompilerIf #PB_Compiler_IsMainFile
   
   *window_1 = Form(202, 0, 630, 319, "demo set  new parent", Flags )
   
-  *w_0 = Button(30,90,160,30,"Button >>(Window)")
   *panel=Panel(10,150,200,160) : AddItem(*panel,-1,"Panel") : *p_0=Button(30,90,160,30,"Button >>(Panel (0))") : AddItem(*panel,-1,"Second") : *p_1=Button(35,90,160,30,"Button >>(Panel (1))") : AddItem(*panel,-1,"Third") : *p_2=Button(40,90,160,30,"Button >>(Panel (2))") : CloseList()
   *container = Container(215,150,200,160,#PB_Container_Flat) : *c_0=Button(30,90,160,30,"Button >>(Container)") : CloseList() ; Container
   *scrollarea = ScrollArea(420,150,200,160,200,160,10,#PB_ScrollArea_Flat) : *s_0=Button(30,90,160,30,"Button >>(ScrollArea)") : CloseList()
+  ;
+  *pb_3 = Button((630-160)/2,90-25-35,160,30,"Button >>(Desktop)") 
+  *pb_0 = Button((630-160)/2,90-25,160,20,"Button >>(Panel (0))") 
+  *pb_1 = Button((630-160)/2,90,160,20,"Button >>(Panel (1))") 
+  *pb_2 = Button((630-160)/2,90+25,160,20,"Button >>(Panel (2))") 
   
+  *w_0 = Button(30,90,160,30,"Button >>(Window)")
   *b_0 = Button(450,90,160,30,"Button >>(Back)") 
   
   Bind(@Widgets_CallBack(), Root())
@@ -195,5 +203,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = v-
+; Folding = --
 ; EnableXP

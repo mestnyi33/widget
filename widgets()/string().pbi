@@ -23,7 +23,7 @@ CompilerIf Not Defined(colors, #PB_Module)
 CompilerEndIf
 
 CompilerIf Not Defined(Bar, #PB_Module)
-  XIncludeFile "bar().pb"
+  XIncludeFile "bar().pbi"
 CompilerEndIf
 
 ;-
@@ -1752,6 +1752,21 @@ Module Editor
   
   ;-
   ;- - (SET&GET)s
+  Procedure.s InvertCase(Text.s)
+    Protected *C.CHARACTER = @Text
+    
+    While (*C\c)
+      If (*C\c = Asc(LCase(Chr(*C\c))))
+        *C\c = Asc(UCase(Chr(*C\c)))
+      Else
+        *C\c = Asc(LCase(Chr(*C\c)))
+      EndIf
+      *C + #__sOC ; SizeOf(CHARACTER)
+    Wend
+    
+    ProcedureReturn Text
+  EndProcedure
+  
   Procedure   AddItem(*this._s_widget, Item.l,Text.s,Image.i=-1,Flag.i=0)
     Static len.l
     Protected l.l, i.l
@@ -3225,7 +3240,7 @@ Module String
   EndProcedure
 EndModule
 
-
+;-
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   UseModule String
@@ -3564,5 +3579,5 @@ CompilerEndIf
 ; ; ;   EndIf
 ; ; ; CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------
+; Folding = -----------------------------4---------------------------------------
 ; EnableXP

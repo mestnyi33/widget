@@ -660,25 +660,29 @@ DeclareModule Gadget
     
     
     Procedure EventData_()
-      If Tree::*event\data
-        ProcedureReturn Tree::*event\data
+      If structures::*event\data
+        ProcedureReturn structures::*event\data
       Else
         ProcedureReturn PB(EventData)()
       EndIf
     EndProcedure
     
     Procedure EventType_()
-      If Tree::*event\type =- 1
+      If structures::*event\type =- 1
         ProcedureReturn PB(EventType)()
       Else
-        ProcedureReturn Tree::*event\type
+        ProcedureReturn structures::*event\type
       EndIf
     EndProcedure
     
     Procedure EventGadget_()
-      If Tree::*event\widget
-        Protected *this.Structures::_S_widget = Tree::*event\widget
-        ProcedureReturn *this\canvas\gadget
+      If structures::*event\widget 
+        Protected *this.Structures::_S_widget = structures::*event\widget
+        If *this\root
+          ProcedureReturn *this\root\canvas
+        Else
+          ProcedureReturn PB(EventGadget)()
+        EndIf
       Else
         ProcedureReturn PB(EventGadget)()
       EndIf
@@ -1095,6 +1099,7 @@ DeclareModule Gadget
   
   CompilerIf #PB_Compiler_IsMainFile
     UseModule Gadget
+    UseModule constants
     UseModule DD
     
     Macro PB(Function)
@@ -1204,7 +1209,7 @@ DeclareModule Gadget
     If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;ListViewGadget(0, 10, 10, 160, 160) 
       PB(TreeGadget)(0, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-      TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_Collapse | #PB_Tree_GridLines | #PB_Tree_AlwaysShowSelection)   ; TreeGadget with Checkboxes + NoLines
+      TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_Collapse | #__Tree_GridLines | #PB_Tree_AlwaysShowSelection)   ; TreeGadget with Checkboxes + NoLines
       
       For ID = 0 To 1
         For a = 0 To 10
@@ -1248,5 +1253,5 @@ DeclareModule Gadget
   CompilerEndIf
   
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = +-------------------------------------
+; Folding = +--------------------------------------
 ; EnableXP
