@@ -24,6 +24,7 @@ CompilerEndIf
 
 CompilerIf Not Defined(Bar, #PB_Module)
   XIncludeFile "bar().pbi"
+;  XIncludeFile "Open().pbi"
 CompilerEndIf
 
 ;-
