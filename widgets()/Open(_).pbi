@@ -464,6 +464,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
           
           
         EndIf
+        
+        
+        DrawingMode(#PB_2DDrawing_Outlined)
+        Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF00FF00)
+          
       EndWith 
     EndProcedure
     
@@ -750,9 +755,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
             Case #PB_GadgetType_ScrollArea  : Draw_ScrollArea(*this)
           EndSelect
           
-          DrawingMode(#PB_2DDrawing_Outlined)
-          Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF00FF00)
-          
+;           DrawingMode(#PB_2DDrawing_Outlined)
+;           Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF00FF00)
+;           
           If *this\text\change <> 0
             *this\text\change = 0
           EndIf
@@ -1614,6 +1619,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
             
             ; resize vertical&horizontal scrollbars
             If (*this\scroll And *this\scroll\v And *this\scroll\h)
+              \width[#__c_3] = \width[#__c_2]
+              \height[#__c_3] = \height[#__c_2]
+              
               If (Change_x Or Change_y)
                 Resize(*this\scroll\v, *this\scroll\v\x[#__c_3], *this\scroll\v\y[#__c_3], #PB_Ignore, #PB_Ignore)
                 Resize(*this\scroll\h, *this\scroll\h\x[#__c_3], *this\scroll\h\y[#__c_3], #PB_Ignore, #PB_Ignore)
@@ -1621,15 +1629,15 @@ CompilerIf Not Defined(Bar, #PB_Module)
               
               If (Change_width Or Change_height)
                 Resizes(\scroll, 0, 0, \width[#__c_2], \height[#__c_2])
-                
-                \width[#__c_3] = \scroll\h\bar\page\len
-                \height[#__c_3] = \scroll\v\bar\page\len
               EndIf
+              
+              \width[#__c_3] = \width[#__c_2] - Bool(Not \scroll\v\hide) * \scroll\v\width ; \scroll\h\bar\page\len
+              \height[#__c_3] = \height[#__c_2] - Bool(Not \scroll\h\hide) * \scroll\h\height ; \scroll\v\bar\page\len
             EndIf
             
             ; then move and size parent
             If *this\container And *this\count\childrens
-              _move_childrens_(*this, 0,0)
+                _move_childrens_(*this, 0,0)
             EndIf
           EndIf
           
@@ -2670,5 +2678,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----------------+-r3-----f+-4t0------d48---------------------+
+; Folding = ----------2v-4-07-r3-----f+-4t0------d48z--------------------+
 ; EnableXP
