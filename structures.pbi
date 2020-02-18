@@ -425,20 +425,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       List _s._s_tabs()
     EndStructure
     
-    ;- - _s_draw
-    Structure _s_draw
-      y.l[constants::#__c]
-      x.l[constants::#__c]
-      height.l[constants::#__c]
-      width.l[constants::#__c]
-      
-    EndStructure
-    
     ;- - _s_widget
     Structure _s_widget 
+      draw.b
       type.b ;[3] ; [2] for splitter
-      
-      draw._s_draw
       
       y.l[constants::#__c]
       x.l[constants::#__c]
@@ -481,7 +471,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       grid.i
       enumerate.i
       __height.i ; 
-      drawing.i
       container.i
       
       countitems.i[2]
@@ -569,5 +558,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = fxSGYAc-
+; Folding = fxSGYAu
 ; EnableXP

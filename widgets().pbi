@@ -4899,7 +4899,7 @@ Module Widget
         \columns()\text\x = \columns()\image\x + \columns()\image\width + Bool(\columns()\image\width) * 3
         \columns()\text\y = \columns()\y+(\columns()\height-\columns()\text\height)/2
         
-        \columns()\drawing = Bool(Not \columns()\hide And \columns()\x+\columns()\width>\x[#__c_2] And \columns()\x<\x[#__c_2]+\width[#__c_2])
+        \columns()\draw = Bool(Not \columns()\hide And \columns()\x+\columns()\width>\x[#__c_2] And \columns()\x<\x[#__c_2]+\width[#__c_2])
         
         
         ForEach \columns()\items()
@@ -4975,7 +4975,7 @@ Module Widget
               EndIf
             EndIf
             
-            If \columns()\drawing 
+            If \columns()\draw 
               ;\columns()\items()\width = \scroll\h\bar\page\len
               
               ; Draw checkbox
@@ -5020,7 +5020,7 @@ Module Widget
         Next
         
         
-        If \columns()\drawing
+        If \columns()\draw
           ; Draw thumb  
           If \color\back[\columns()\color\state]<>-1
             If \color\fore[\columns()\color\state]
@@ -10267,7 +10267,7 @@ Module Widget
         If ListSize(\columns())
           
           ForEach \columns()
-            If \columns()\drawing
+            If \columns()\draw
               If (mouse_x>=\columns()\x And mouse_x=<\columns()\x+\columns()\width+1 And 
                   mouse_y>=\columns()\y And mouse_y=<\columns()\y+\columns()\height)
                 

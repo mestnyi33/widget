@@ -720,7 +720,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
       EndMacro
       
       With *this
-        If *this
+        If \width[#__c_4] > 0 And \height[#__c_4] > 0
+          ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
+          
           If \text 
             If \text\fontID 
               DrawingFont(\text\fontID)
@@ -730,14 +732,14 @@ CompilerIf Not Defined(Bar, #PB_Module)
               *this\text\height = TextHeight("A")
               *this\text\width = TextWidth(*this\text\string)
               
-              *this\text\rotate = (Bool(*this\bar\vertical And *this\bar\inverted) * 90) +
+              If *this\type = #PB_GadgetType_ProgressBar
+                *this\text\rotate = (Bool(*this\bar\vertical And *this\bar\inverted) * 90) +
                                   (Bool(*this\bar\vertical And Not *this\bar\inverted) * 270)
+              EndIf
               
               _text_change_(*this, *this\x, *this\y, *this\width, *this\height)
             EndIf
           EndIf
-          
-          ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
           
           Select \type
             Case #PB_GadgetType_Spin        : Draw_Spin(*this)
@@ -897,6 +899,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         EndIf
         
         If \type = #PB_GadgetType_ScrollBar
+          ;Debug  ""+\bar\max +" "+ \bar\page\len
           \bar\hide = Bool(Not (\bar\max > \bar\page\len))
           
           If \bar\hide
@@ -904,6 +907,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             ;\bar\thumb\pos = ThumbPos(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
             ; ProcedureReturn Update_Scroll(*this)
           EndIf
+          
           ProcedureReturn \bar\hide
         EndIf
       EndWith
@@ -1231,65 +1235,66 @@ CompilerIf Not Defined(Bar, #PB_Module)
         *this\bar\scroll_increment = ((*this\bar\area\end-*this\bar\area\pos) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
       EndIf
       
-      If *this\bar\fixed And Not *this\bar\page\change
-        If *this\bar\button[*this\bar\fixed]\fixed > *this\bar\area\len - *this\bar\thumb\len
-          *this\bar\button[*this\bar\fixed]\fixed = *this\bar\area\len - *this\bar\thumb\len
+      If Not *this\bar\area\len < 0
+        If *this\bar\fixed And Not *this\bar\page\change
+          If *this\bar\button[*this\bar\fixed]\fixed > *this\bar\area\len - *this\bar\thumb\len
+            *this\bar\button[*this\bar\fixed]\fixed = *this\bar\area\len - *this\bar\thumb\len
+          EndIf
+          
+          If *this\bar\button[*this\bar\fixed]\fixed < 0
+            *this\bar\button[*this\bar\fixed]\fixed = 0
+          EndIf
+          
+          If *this\bar\fixed = #__b_1
+            *this\bar\page\pos = 0
+          Else
+            *this\bar\page\pos = *this\bar\page\end
+          EndIf
+          _scroll_pos_ = *this\bar\page\pos
+        Else
+          _scroll_pos_ = _invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted)
         EndIf
         
-        If *this\bar\button[*this\bar\fixed]\fixed < 0
-          *this\bar\button[*this\bar\fixed]\fixed = 0
+        *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
+        
+        ; _in_start_
+        If *this\bar\button[#__b_1]\len 
+          If _scroll_pos_ = *this\bar\min
+            *this\bar\button[#__b_1]\color\state = #__s_3
+            *this\bar\button[#__b_1]\interact = 0
+          Else
+            If *this\bar\button[#__b_1]\color\state <> #__s_2
+              *this\bar\button[#__b_1]\color\state = #__s_0
+            EndIf
+            *this\bar\button[#__b_1]\interact = 1
+          EndIf 
         EndIf
         
-        If *this\bar\fixed = #__b_1
-          *this\bar\page\pos = 0
-        Else
-          *this\bar\page\pos = *this\bar\page\end
+        ; _in_stop_
+        If *this\bar\button[#__b_2]\len
+          ; Debug ""+ Bool(*this\bar\thumb\pos = *this\bar\area\end) +" "+ Bool(_scroll_pos_ = *this\bar\page\end)
+          If _scroll_pos_ = *this\bar\page\end
+            *this\bar\button[#__b_2]\color\state = #__s_3
+            *this\bar\button[#__b_2]\interact = 0
+          Else
+            If *this\bar\button[#__b_2]\color\state <> #__s_2
+              *this\bar\button[#__b_2]\color\state = #__s_0
+            EndIf
+            *this\bar\button[#__b_2]\interact = 1
+          EndIf 
         EndIf
-        _scroll_pos_ = *this\bar\page\pos
-      Else
-        _scroll_pos_ = _invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted)
-      EndIf
-      
-      *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
-      
-      ; _in_start_
-      If *this\bar\button[#__b_1]\len 
-        If _scroll_pos_ = *this\bar\min
-          *this\bar\button[#__b_1]\color\state = #__s_3
-          *this\bar\button[#__b_1]\interact = 0
-        Else
-          If *this\bar\button[#__b_1]\color\state <> #__s_2
-            *this\bar\button[#__b_1]\color\state = #__s_0
-          EndIf
-          *this\bar\button[#__b_1]\interact = 1
-        EndIf 
-      EndIf
-      
-      ; _in_stop_
-      If *this\bar\button[#__b_2]\len
-        ; Debug ""+ Bool(*this\bar\thumb\pos = *this\bar\area\end) +" "+ Bool(_scroll_pos_ = *this\bar\page\end)
-        If _scroll_pos_ = *this\bar\page\end
-          *this\bar\button[#__b_2]\color\state = #__s_3
-          *this\bar\button[#__b_2]\interact = 0
-        Else
-          If *this\bar\button[#__b_2]\color\state <> #__s_2
-            *this\bar\button[#__b_2]\color\state = #__s_0
-          EndIf
-          *this\bar\button[#__b_2]\interact = 1
-        EndIf 
-      EndIf
-      
-      
-      If *this\type = #PB_GadgetType_ScrollBar
-        ProcedureReturn Update_Scroll(*this)
-      ElseIf *this\type = #PB_GadgetType_ProgressBar
-        ProcedureReturn Update_Progress(*this)
-      ElseIf *this\type = #PB_GadgetType_TrackBar
-        ProcedureReturn Update_Track(*this)
-      ElseIf *this\type = #PB_GadgetType_Splitter
-        ProcedureReturn Update_Splitter(*this)
-      ElseIf *this\type = #PB_GadgetType_Spin
-        ProcedureReturn Update_Spin(*this)
+        
+        If *this\type = #PB_GadgetType_ScrollBar
+          ProcedureReturn Update_Scroll(*this)
+        ElseIf *this\type = #PB_GadgetType_ProgressBar
+          ProcedureReturn Update_Progress(*this)
+        ElseIf *this\type = #PB_GadgetType_TrackBar
+          ProcedureReturn Update_Track(*this)
+        ElseIf *this\type = #PB_GadgetType_Splitter
+          ProcedureReturn Update_Splitter(*this)
+        ElseIf *this\type = #PB_GadgetType_Spin
+          ProcedureReturn Update_Spin(*this)
+        EndIf
       EndIf
     EndProcedure
     
@@ -1379,7 +1384,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         Else
           Select Attribute
             Case #__bar_minimum
-              If \bar\min <> Value
+              If \bar\min <> Value And Not Value < 0
                 \bar\area\change = \bar\min - Value
                 If \bar\page\pos < Value
                   \bar\page\pos = Value
@@ -1390,7 +1395,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
               EndIf
               
             Case #__bar_maximum
-              If \bar\max <> Value
+              If \bar\max <> Value And Not Value < 0
                 \bar\area\change = \bar\max - Value
                 If \bar\min > Value
                   \bar\max = \bar\min + 1
@@ -1408,7 +1413,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
               EndIf
               
             Case #__bar_pagelength
-              If \bar\page\len <> Value
+              If \bar\page\len <> Value And Not Value < 0
                 \bar\area\change = \bar\page\len - Value
                 \bar\page\len = Value
                 
@@ -1591,20 +1596,20 @@ CompilerIf Not Defined(Bar, #PB_Module)
             Protected parent_y2 = \parent\y[#__c_2]+\parent\height[#__c_3]
             Protected parent_y4 = \parent\y[#__c_4]+\parent\height[#__c_4]
             
-            If \parent And parent_x4>0 And parent_x4 < \x+\width And parent_x2 > parent_x4 
+            If \parent And parent_x4 > 0 And parent_x4 < \x+\width And parent_x2 > parent_x4 
               \width[#__c_4] = parent_x4 - \x[#__c_4]
-            ElseIf \parent And parent_x2>0 And parent_x2 < \x+\width
+            ElseIf \parent And parent_x2 > 0 And parent_x2 < \x+\width
               \width[#__c_4] = parent_x2 - \x[#__c_4]
             Else
-              \width[#__c_4] = \width
+              \width[#__c_4] = (\x+\width) - \x[#__c_4]
             EndIf
             
-            If \parent And parent_y4>0 And parent_y4 < \y+\height And parent_y2 > parent_y4 
+            If \parent And parent_y4 > 0 And parent_y4 < \y+\height And parent_y2 > parent_y4 
               \height[#__c_4] = parent_y4 - \y[#__c_4]
-            ElseIf \parent And parent_y2>0 And parent_y2 < \y+\height
+            ElseIf \parent And parent_y2 > 0 And parent_y2 < \y+\height
               \height[#__c_4] = parent_y2 - \y[#__c_4]
             Else
-              \height[#__c_4] = \height
+              \height[#__c_4] = (\y+\height) - \y[#__c_4]
             EndIf
             
             ; resize vertical&horizontal scrollbars
@@ -1766,7 +1771,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         EndIf
         
         ; get at point buttons
-        If Not \hide And (_from_point_(mouse_x, mouse_y, *this) Or Down)
+        If Not \hide And (_from_point_(mouse_x, mouse_y, *this, [#__c_4]) Or Down)
           If \bar\button 
             If \bar\button[#__b_3]\interact And _from_point_(mouse_x, mouse_y, \bar\button[#__b_3])
               from = #__b_3
@@ -2589,12 +2594,12 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(22,@v_GadgetCallBack())
     
     ;{ PB splitter Gadget
-    Button_0 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100) ; as they will be sized automatically
+    Button_0 = SpinGadget(#PB_Any, 0, 0, 0, 0, 0,20) ; as they will be sized automatically
     Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1")  ; as they will be sized automatically
     
-    Button_2 = SpinGadget(#PB_Any, 0, 0, 0, 0, 0,20) ; No need to specify size or coordinates
-    Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-    Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+    Button_2 = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, 150, 150) : CloseGadgetList(); No need to specify size or coordinates
+    Button_3 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100) ; as they will be sized automatically
+    Button_4 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100) ; No need to specify size or coordinates
     Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
     
     SetGadgetState(Button_0, 50)
@@ -2610,6 +2615,21 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
     SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
+    
+    SetGadgetState(Splitter_0, 40)
+    SetGadgetState(Splitter_4, 225)
+    
+    If OpenGadgetList(Button_2)
+      Button_4 = ScrollAreaGadget(#PB_Any, -1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
+                                                             ;       Define i
+                                                             ;       For i=0 To 1000
+      ButtonGadget(#PB_Any, 10, 10, 50, 30,"1")
+      ;       Next
+      CloseGadgetList()
+      ButtonGadget(#PB_Any, 100, 10, 50, 30, "2")
+      CloseGadgetList()
+    EndIf
+    
     ;}
     
     Button_0 = Bar::Spin(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
@@ -2632,16 +2652,17 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_4 = Bar::Splitter(300+10, 140+200+130, 285, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
     
     ; Bar::SetState(Button_2, 5)
+    Bar::SetState(Splitter_0, 40)
     Bar::SetState(Splitter_4, 225)
     
     If OpenList(Button_2)
       Button_4 = Bar::ScrollArea(-1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
                                                              ;       Define i
                                                              ;       For i=0 To 1000
-      Bar::Progress(10, 10, 50, 30, 11, 100, 30)
+      Bar::Progress(10, 10, 50, 30, 1, 100, 30)
       ;       Next
       CloseList()
-      Bar::Progress(100, 10, 50, 30, 1, 100, 30)
+      Bar::Progress(100, 10, 50, 30, 2, 100, 30)
       CloseList()
     EndIf
     
@@ -2649,5 +2670,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------------------------------f4-+----------------------
+; Folding = ----------------+-r3-----f+-4t0------d48---------------------+
 ; EnableXP
