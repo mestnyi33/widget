@@ -175,7 +175,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       _this_\bar\scroll_increment = (_this_\bar\area\len / (_this_\bar\max - _this_\bar\min))
     EndMacro
     
-    Macro _childrens_move_(_this_, _change_x_, _change_y_)
+    Macro _move_childrens_(_this_, _change_x_, _change_y_)
       ;Debug  Str(_this_\x-_this_\bs) +" "+ _this_\x[2]
       
       If ListSize(_this_\childrens())
@@ -816,7 +816,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
                   *this\parent\scroll\y =- *this\bar\page\pos
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container
-                    _childrens_move_(*this\parent, 0, *this\bar\page\change)
+                    _move_childrens_(*this\parent, 0, *this\bar\page\change)
                   EndIf
                 EndIf
               Else
@@ -825,7 +825,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
                   *this\parent\scroll\x =- *this\bar\page\pos
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container
-                    _childrens_move_(*this\parent, *this\bar\page\change, 0)
+                    _move_childrens_(*this\parent, *this\bar\page\change, 0)
                   EndIf
                 EndIf
               EndIf
@@ -3131,5 +3131,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----------------------------------------------+-ve4-uf---f---------0
+; Folding = ------------f-------f-f-----------------------+-ve4-uf---f---------0
 ; EnableXP

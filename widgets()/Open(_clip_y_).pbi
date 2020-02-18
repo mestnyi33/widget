@@ -1584,13 +1584,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
             EndIf 
           EndIf 
           
-          If \resize & #__resize_change
-            ; then move and size parent set clip (width&height)
+        If \resize & #__resize_change
             Protected parent_x2 = \parent\x[#__c_2]+\parent\width[#__c_3]
             Protected parent_x4 = \parent\x[#__c_4]+\parent\width[#__c_4]
-            Protected parent_y2 = \parent\y[#__c_2]+\parent\height[#__c_3]
-            Protected parent_y4 = \parent\y[#__c_4]+\parent\height[#__c_4]
-            
             If \parent And parent_x4>0 And parent_x4 < \x+\width And parent_x2 > parent_x4 
               \width[#__c_4] = parent_x4 - \x[#__c_4]
             ElseIf \parent And parent_x2>0 And parent_x2 < \x+\width
@@ -1599,6 +1595,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
               \width[#__c_4] = \width
             EndIf
             
+            Protected parent_y2 = \parent\y[#__c_2]+\parent\height[#__c_3]
+            Protected parent_y4 = \parent\y[#__c_4]+\parent\height[#__c_4]
             If \parent And parent_y4>0 And parent_y4 < \y+\height And parent_y2 > parent_y4 
               \height[#__c_4] = parent_y4 - \y[#__c_4]
             ElseIf \parent And parent_y2>0 And parent_y2 < \y+\height
@@ -1607,25 +1605,27 @@ CompilerIf Not Defined(Bar, #PB_Module)
               \height[#__c_4] = \height
             EndIf
             
-            ; resize vertical&horizontal scrollbars
-            If (*this\scroll And *this\scroll\v And *this\scroll\h)
-              If (Change_x Or Change_y)
-                Resize(*this\scroll\v, *this\scroll\v\x[#__c_3], *this\scroll\v\y[#__c_3], #PB_Ignore, #PB_Ignore)
-                Resize(*this\scroll\h, *this\scroll\h\x[#__c_3], *this\scroll\h\y[#__c_3], #PB_Ignore, #PB_Ignore)
-              EndIf
-              
-              If (Change_width Or Change_height)
+            If (Change_width Or Change_height)
+              ; Resize vertical&horizontal scrollbars
+              If (\scroll And \scroll\v And \scroll\h)
                 Resizes(\scroll, 0, 0, \width[#__c_2], \height[#__c_2])
                 
                 \width[#__c_3] = \scroll\h\bar\page\len
                 \height[#__c_3] = \scroll\v\bar\page\len
               EndIf
             EndIf
-            
-            ; then move and size parent
-            If *this\container And *this\count\childrens
-              _move_childrens_(*this, 0,0)
+             
+            If (Change_x Or Change_y)
+              If (*this\scroll And *this\scroll\v And *this\scroll\h)
+                Resize(*this\scroll\v, *this\scroll\v\x[#__c_3], *this\scroll\v\y[#__c_3], #PB_Ignore, #PB_Ignore)
+                Resize(*this\scroll\h, *this\scroll\h\x[#__c_3], *this\scroll\h\y[#__c_3], #PB_Ignore, #PB_Ignore)
+              EndIf
+              
+              If *this\container And *this\count\childrens
+                _move_childrens_(*this, 0,0)
+              EndIf
             EndIf
+            
           EndIf
           
           Protected result = Update(*this)
@@ -1633,6 +1633,169 @@ CompilerIf Not Defined(Bar, #PB_Module)
           ProcedureReturn result
         EndWith
       CompilerEndIf
+    EndProcedure
+    
+    Procedure.b _Resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
+      Protected Lines.i, Change_x, Change_y, Change_width, Change_height
+      
+      With *this
+        ; #__flag_autoSize
+        If \parent And \parent\type <> #__Type_Splitter And
+           \align And \align\autoSize And \align\left And \align\top And \align\right And \align\bottom
+          X = 0; \align\width
+          Y = 0; \align\height
+          Width = \parent\width[#__c_2] ; - \align\width
+          Height = \parent\height[#__c_2] ; - \align\height
+        EndIf
+        
+        ; Set widget coordinate
+        If X<>#PB_Ignore 
+          If \parent 
+            \x[#__c_3] = X 
+            X+\parent\x[#__c_2] 
+          EndIf 
+          
+          If \x <> X 
+            Change_x = x-\x 
+            \x = X 
+            \x[#__c_2] = \x+\bs 
+            \x[#__c_1] = \x[#__c_2]-\fs 
+            \resize | #__resize_x | #__resize_change
+          EndIf 
+        EndIf  
+        
+        If Y<>#PB_Ignore 
+          If \parent 
+            \y[#__c_3] = y 
+            y+\parent\y[#__c_2] 
+          EndIf 
+          
+          If \y <> y 
+            Change_y = y-\y 
+            \y = y 
+            \y[#__c_1] = \y+\bs-\fs 
+            \y[#__c_2] = \y+\bs+\__height
+            \resize | #__resize_y | #__resize_change
+          EndIf 
+        EndIf  
+        
+        If width <> #PB_Ignore 
+          If width < 0 : width = 0 : EndIf
+          
+          If \width <> width 
+            Change_width = width-\width 
+            \width = width 
+            \width[#__c_2] = \width-\bs*2 
+            \width[#__c_1] = \width[#__c_2]+\fs*2 
+            If \width[#__c_1] < 0 : \width[#__c_1] = 0 : EndIf
+            If \width[#__c_2] < 0 : \width[#__c_2] = 0 : EndIf
+            \width[#__c_3] = \width[#__c_2]
+              \resize | #__resize_width | #__resize_change
+          EndIf 
+        EndIf  
+        
+        If Height <> #PB_Ignore 
+          If Height < 0 : Height = 0 : EndIf
+          
+          If \height <> Height 
+            Change_height = height-\height 
+            \height = Height 
+            \height[#__c_1] = \height-\bs*2+\fs*2 
+            \height[#__c_2] = \height-\bs*2-\__height
+            If \height[#__c_1] < 0 : \height[#__c_1] = 0 : EndIf
+            If \height[#__c_2] < 0 : \height[#__c_2] = 0 : EndIf
+            \height[#__c_3] = \height[#__c_2]
+              \resize | #__resize_height | #__resize_change
+          EndIf 
+        EndIf 
+        
+        ; set clip coordinate
+        If Not _is_root_(*this) And \parent 
+          Protected clip_v, clip_h, clip_x, clip_y, clip_width, clip_height
+          ;clip_width = ((\parent\x[#__c_4]+\parent\width[#__c_4]) +Bool((\parent\x[#__c_4]+\parent\width[#__c_4])>(\parent\x[#__c_2]+\parent\width[#__c_3]))*((\parent\x[#__c_4]+\parent\width[#__c_4])-(\parent\x[#__c_2]+\parent\width[#__c_3])))
+          
+          If \parent\scroll 
+            If \parent\scroll\v 
+              clip_v = Bool(\parent\width=\parent\width[#__c_4] And Not \parent\scroll\v\hide And \parent\scroll\v\type = #__Type_ScrollBar)*\parent\scroll\v\width 
+            EndIf
+            If \parent\scroll\h 
+              clip_h = Bool(\parent\height=\parent\height[#__c_4] And Not \parent\scroll\h\hide And \parent\scroll\h\type = #__Type_ScrollBar) * \parent\scroll\h\height 
+            EndIf
+          EndIf
+          
+          clip_x = \parent\x[#__c_4] + Bool(\parent\x[#__c_2] > \parent\x[#__c_4]) * (\parent\x[#__c_2]-\parent\x[#__c_4]) 
+          clip_y = \parent\y[#__c_4] + Bool(\parent\y[#__c_2] > \parent\y[#__c_4]) * (\parent\y[#__c_2]-\parent\y[#__c_4]) 
+          
+          ;Debug (\parent\width[#__c_2]-\parent\width[#__c_3])
+          
+          
+          clip_width = ((\parent\x[#__c_4]+\parent\width[#__c_4])-2) ; -Bool((\parent\x[#__c_4]+\parent\width[#__c_4])>(\parent\x[#__c_2]+\parent\width[#__c_2]))*\parent\bs)-clip_v 
+          ;clip_height = ((\parent\y[#__c_4]+\parent\height[#__c_4])-Bool((\parent\y[#__c_4]+\parent\height[#__c_4])>(\parent\y[#__c_2]+\parent\height[#__c_2]))*\parent\bs)-clip_h 
+          clip_height = ((\parent\y[#__c_4]+\parent\height[#__c_4]) - Bool((\y+\height)>(\parent\y[#__c_2]+\parent\height[#__c_2])) * \parent\bs)-clip_h 
+        EndIf
+        
+        ;           If \resize & #__resize_x Or
+        ;              \resize & #__resize_width
+        
+        If \resize & #__resize_x
+          If clip_x And clip_x > \x 
+            \x[#__c_4] = clip_x 
+          Else 
+            \x[#__c_4] = \x 
+          EndIf
+        EndIf
+        
+        If clip_width>0 And clip_width < (\x+\width) ; And clip_width < (\parent\x[#__c_2]+\parent\width[#__c_3])
+          \width[#__c_4] = clip_width - \x[#__c_4] 
+        Else 
+          \width[#__c_4] = (\x+\width) - \x[#__c_4] ; \width - (\x[#__c_4]-\x) 
+        EndIf
+        ;           EndIf
+        
+        ;           If \resize & #__resize_y Or
+        ;              \resize & #__resize_height
+        
+        If \resize & #__resize_y
+          If clip_y And clip_y > \y 
+            \y[#__c_4] = clip_y 
+          Else 
+            \y[#__c_4] = \y 
+          EndIf
+        EndIf
+        
+        If clip_height>0 And clip_height < (\y+\height) 
+          \height[#__c_4] = clip_height - \y[#__c_4] 
+        Else 
+          \height[#__c_4] = (\y+\height) - \y[#__c_4] ; \height - (\y[#__c_4]-\y) 
+        EndIf
+        ;           EndIf
+        
+        Protected result = Update(*this)
+        
+        If (Change_x Or Change_y)
+          If (*this\scroll And *this\scroll\v And *this\scroll\h)
+            Resize(*this\scroll\v, *this\scroll\v\x[#__c_3], *this\scroll\v\y[#__c_3], #PB_Ignore, #PB_Ignore)
+            Resize(*this\scroll\h, *this\scroll\h\x[#__c_3], *this\scroll\h\y[#__c_3], #PB_Ignore, #PB_Ignore)
+          EndIf
+          
+          If *this\container And *this\count\childrens
+            _move_childrens_(*this, 0,0)
+          EndIf
+        EndIf
+        
+        If (Change_width Or Change_height)
+          ; Resize vertical&horizontal scrollbars
+          If (\scroll And \scroll\v And \scroll\h)
+            Resizes(\scroll, 0, 0, \width[#__c_2], \height[#__c_2])
+            
+            \width[#__c_3] = \scroll\h\bar\page\len
+            \height[#__c_3] = \scroll\v\bar\page\len
+          EndIf
+        EndIf
+        
+        ProcedureReturn result
+      EndWith
+      
     EndProcedure
     
     Procedure SetParent(*this._s_widget, *Parent._s_widget, parent_item.l=0)
@@ -2507,134 +2670,15 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If OpenWindow(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    ; example scroll gadget bar
-    TextGadget       (-1,  10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#PB_Text_Center)
-    ScrollBarGadget  (1,  10, 42, 250,  20, 30, 150, 30)
-    SetGadgetState   (1,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ScrollBarGadget  (2, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    SetGadgetState   (2, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
-    ; example scroll widget bar
-    TextGadget       (-1,  300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#PB_Text_Center)
-    Bar::Scroll  (300+10, 42, 250,  20, 30, 150, 30, 0)
-    Bar::SetState   (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    Bar::Scroll  (300+10, 42+30, 250,  10, 30, 150, 30, #__bar_inverted, 7)
-    Bar::SetState   (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    Bar::Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    Bar::SetState   (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
-    Bar::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_inverted, 7)
-    Bar::SetState   (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
+    ;Button_0 = Bar::Spin(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
+    Button_1 = Bar::ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
     
-    BindGadgetEvent(1,@h_GadgetCallBack())
-    BindGadgetEvent(2,@v_GadgetCallBack())
-    ; Bind(@ev(), Widget())
+    Splitter_0 = Bar::Splitter(300+10, 200+130, 140, 285, Button_0, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     
+    Bar::SetState(Splitter_0, 225)
     
-    ; example_2 track gadget bar
-    TextGadget    (-1, 10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    TrackBarGadget(10, 10,  140+40, 250, 20, 0, 10000)
-    SetGadgetState(10, 5000)
-    TextGadget    (-1, 10, 140+90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    ;     TrackBarGadget(11, 10, 140+120, 250, 20, 0, 30, #PB_TrackTicks)
-    TrackBarGadget(11, 10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    SetGadgetState(11, 60)
-    TextGadget    (-1,  60, 140+160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-    TrackBarGadget(12, 270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SetGadgetState(12, 8000)
-    
-    ; example_2 track widget bar
-    TextGadget    (-1, 300+10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    Bar::Track(300+10,  140+40, 250, 20, 0, 10000, 0)
-    Bar::SetState(Widget(), 5000)
-    Bar::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_inverted)
-    Bar::SetState(Widget(), 5000)
-    TextGadget    (-1, 300+10, 140+90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    ;     Bar::Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
-    Bar::Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    Bar::SetState(Widget(), 60)
-    TextGadget    (-1,  300+60, 140+160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-    Bar::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    Bar::SetAttribute(Widget(), #__bar_Inverted, 0)
-    Bar::SetState(Widget(), 8000)
-    Bar::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_inverted)
-    Bar::SetState(Widget(), 8000)
-    
-    BindGadgetEvent(11,@h_GadgetCallBack())
-    BindGadgetEvent(12,@v_GadgetCallBack())
-    
-    ; example_3 progress gadget bar
-    TextGadget       (-1,  10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
-    ProgressBarGadget  (21,  10, 140+200+42, 250,  20, 30, 100)
-    SetGadgetState   (21,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ProgressBarGadget  (22, 270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical)
-    SetGadgetState   (22, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    ; example_3 progress widget bar
-    TextGadget       (-1,  300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
-    Bar::Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
-    Bar::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    Bar::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_inverted, 4)
-    Bar::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    Bar::Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
-    Bar::SetAttribute(Widget(), #__bar_Inverted, 0)
-    Bar::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    Bar::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_inverted)
-    Bar::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    BindGadgetEvent(21,@h_GadgetCallBack())
-    BindGadgetEvent(22,@v_GadgetCallBack())
-    
-    ;{ PB splitter Gadget
-    Button_0 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100) ; as they will be sized automatically
-    Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1")  ; as they will be sized automatically
-    
-    Button_2 = SpinGadget(#PB_Any, 0, 0, 0, 0, 0,20) ; No need to specify size or coordinates
-    Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-    Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
-    
-    SetGadgetState(Button_0, 50)
-    
-    Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;     ;SetGadgetState(Splitter_1, 20)
-    Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
-    Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = SplitterGadget(#PB_Any, 10, 140+200+130, 285, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    
-    SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
-    SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
-    ;}
-    
-    Button_0 = Bar::Spin(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
-    Button_1 = Bar::Scroll(0, 0, 0, 0, 10, 100, 50); No need to specify size or coordinates
-    Button_2 = Bar::ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
-    Button_3 = Bar::Progress(0, 0, 0, 0, 0, 100, 30)                         ; as they will be sized automatically
-    
-    Button_4 = Bar::Progress(0, 0, 0, 0, 40,100) ; as they will be sized automatically
-    Button_5 = Bar::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
-    
-    Bar::SetState(Button_0, 50)
-    
-    Splitter_0 = Bar::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Splitter_1 = Bar::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    Bar::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    Bar::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;Bar::SetState(Splitter_1, 410/2-20)
-    Splitter_2 = Bar::Splitter(0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
-    Splitter_3 = Bar::Splitter(0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = Bar::Splitter(300+10, 140+200+130, 285, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    
-    ; Bar::SetState(Button_2, 5)
-    Bar::SetState(Splitter_4, 225)
-    
-    If OpenList(Button_2)
+    If OpenList(Button_1)
       Button_4 = Bar::ScrollArea(-1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
                                                              ;       Define i
                                                              ;       For i=0 To 1000
@@ -2649,5 +2693,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------------------------------f4-+----------------------
+; Folding = ------------------------------------4--f---------------------------
 ; EnableXP

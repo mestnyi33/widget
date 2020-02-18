@@ -1133,8 +1133,8 @@ Module Widget
   
   ;-
   ; SCROLLBAR
-  Macro _childrens_move_(_this_, _change_x_, _change_y_)
-    bar::_childrens_move_(_this_, _change_x_, _change_y_)
+  Macro _move_childrens_(_this_, _change_x_, _change_y_)
+    bar::_move_childrens_(_this_, _change_x_, _change_y_)
   EndMacro
   
   Macro _bar_splitter_size_(_this_)
@@ -6725,7 +6725,281 @@ Module Widget
   EndProcedure
   
   ;-
-  Procedure.i Resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
+  Procedure.i _Resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
+        Protected.l Change_x, Change_y, Change_width, Change_height
+        
+        With *this
+          If X<>#PB_Ignore 
+            If \parent 
+              \x[#__c_3] = X 
+              X+\parent\x[#__c_2] 
+            EndIf 
+            
+            If \x <> X 
+              Change_x = x-\x 
+              \x = X 
+              \x[#__c_2] = \x+\bs 
+              \x[#__c_1] = \x[#__c_2]-\fs 
+              
+              If \parent And \parent\x[#__c_2] > \x And 
+                 \parent\x[#__c_2] > \parent\x[#__c_4]
+                \x[#__c_4] = \parent\x[#__c_2]
+              ElseIf \parent And \parent\x[#__c_4] > \x 
+                \x[#__c_4] = \parent\x[#__c_4]
+              Else
+                \x[#__c_4] = \x
+              EndIf
+              
+              \resize | #__resize_x | #__resize_change
+            EndIf 
+          EndIf  
+          
+          If Y<>#PB_Ignore 
+            If \parent 
+              \y[#__c_3] = y 
+              y+\parent\y[#__c_2] 
+            EndIf 
+            
+            If \y <> y 
+              Change_y = y-\y 
+              \y = y 
+              \y[#__c_1] = \y+\bs-\fs 
+              \y[#__c_2] = \y+\bs+\__height
+              
+              If \parent And \parent\y[#__c_2] > \y And 
+                 \parent\y[#__c_2] > \parent\y[#__c_4]
+                \y[#__c_4] = \parent\y[#__c_2]
+              ElseIf \parent And \parent\y[#__c_4] > \y 
+                \y[#__c_4] = \parent\y[#__c_4]
+              Else
+                \y[#__c_4] = \y
+              EndIf
+              
+              \resize | #__resize_y | #__resize_change
+            EndIf 
+          EndIf  
+          
+          If width <> #PB_Ignore 
+            If width < 0 : width = 0 : EndIf
+            
+            If \width <> width 
+              Change_width = width-\width 
+              \width = width 
+              \width[#__c_2] = \width-\bs*2 
+              \width[#__c_1] = \width[#__c_2]+\fs*2 
+              If \width[#__c_1] < 0 : \width[#__c_1] = 0 : EndIf
+              If \width[#__c_2] < 0 : \width[#__c_2] = 0 : EndIf
+              \width[#__c_3] = \width[#__c_2]
+              \resize | #__resize_width | #__resize_change
+            EndIf 
+          EndIf  
+          
+          If Height <> #PB_Ignore 
+            If Height < 0 : Height = 0 : EndIf
+            
+            If \height <> Height 
+              Change_height = height-\height 
+              \height = Height 
+              \height[#__c_1] = \height-\bs*2+\fs*2 
+              \height[#__c_2] = \height-\bs*2-\__height
+              If \height[#__c_1] < 0 : \height[#__c_1] = 0 : EndIf
+              If \height[#__c_2] < 0 : \height[#__c_2] = 0 : EndIf
+              \height[#__c_3] = \height[#__c_2]
+              \resize | #__resize_height | #__resize_change
+            EndIf 
+          EndIf 
+          
+          
+          If \resize & #__resize_change
+            If \parent And \parent\x[#__c_2]+\parent\width[#__c_3] < \x+\width And 
+               \parent\x[#__c_2]+\parent\width[#__c_3] < \parent\x[#__c_4]+\parent\width[#__c_4]
+              \width[#__c_4] = \parent\x[#__c_2]+\parent\width[#__c_3] - \x[#__c_4]
+            ElseIf \parent And \parent\x[#__c_4]+\parent\width[#__c_4] > \x+\width 
+              \width[#__c_4] = \parent\x[#__c_4]+\parent\width[#__c_4] - \x[#__c_4]
+            Else
+              \width[#__c_4] = \width
+            EndIf
+            
+            If \parent And \parent\y[#__c_2]+\parent\height[#__c_3] < \y+\height And 
+               \parent\y[#__c_2]+\parent\height[#__c_3] < \parent\y[#__c_4]+\parent\height[#__c_4]
+              \height[#__c_4] = \parent\y[#__c_2]+\parent\height[#__c_3] - \y[#__c_4]
+            ElseIf \parent And \parent\y[#__c_4]+\parent\height[#__c_4] > \y+\height 
+              \height[#__c_4] = \parent\y[#__c_4]+\parent\height[#__c_4] - \y[#__c_4]
+            Else
+              \height[#__c_4] = \height
+            EndIf
+            
+            If (Change_x Or Change_y)
+              If (*this\scroll And *this\scroll\v And *this\scroll\h)
+                Resize(*this\scroll\v, *this\scroll\v\x[#__c_3], *this\scroll\v\y[#__c_3], #PB_Ignore, #PB_Ignore)
+                Resize(*this\scroll\h, *this\scroll\h\x[#__c_3], *this\scroll\h\y[#__c_3], #PB_Ignore, #PB_Ignore)
+              EndIf
+              
+              If *this\container And *this\count\childrens
+                _move_childrens_(*this, 0,0)
+              EndIf
+            EndIf
+            
+            If (Change_width Or Change_height)
+              ; Resize vertical&horizontal scrollbars
+              If (\scroll And \scroll\v And \scroll\h)
+                bar_Resizes(\scroll, 0, 0, \width[#__c_2], \height[#__c_2])
+                
+                \width[#__c_3] = \scroll\h\bar\page\len
+                \height[#__c_3] = \scroll\v\bar\page\len
+              EndIf
+            EndIf
+          EndIf
+          
+          If \type = #__Type_ScrollBar Or
+         \type = #__Type_ProgressBar Or
+         \type = #__Type_TrackBar
+        Bar_update(*this)
+      EndIf
+      
+      If \type = #__Type_Splitter
+        Bar_Update(*this)
+      EndIf
+      
+      ; resize type
+      If \type = #__Type_Option
+        *this\option_box\x = *this\x[#__c_2] + *this\text\_padding
+        *this\option_box\y = *this\y[#__c_2] + (*this\height[#__c_2] - *this\option_box\height)/2
+      EndIf
+      
+      If \type = #__Type_CheckBox
+        *this\check_box\x = *this\x[#__c_2] + *this\text\_padding
+        *this\check_box\y = *this\y[#__c_2] + (*this\height[#__c_2] - *this\check_box\height)/2
+      EndIf
+      
+      If \type = #__Type_Panel
+        _resize_panel_(*this, \tab\bar\button[#__b_1], \x[#__c_2])
+        
+        If _bar_in_stop_(\tab\bar)
+          If \tab\bar\max < \tab\bar\min : \tab\bar\max = \tab\bar\min : EndIf
+          
+          If \tab\bar\max > \tab\bar\max-\tab\bar\page\len
+            If \tab\bar\max > \tab\bar\page\len
+              \tab\bar\max = \tab\bar\max-\tab\bar\page\len
+            Else
+              \tab\bar\max = \tab\bar\min 
+            EndIf
+          EndIf
+          
+          \tab\bar\page\pos = \tab\bar\max
+          \tab\bar\thumb\pos = _bar_thumb_pos_(\tab\bar, \tab\bar\page\pos)
+        EndIf
+      EndIf  
+      
+      If \type = #__Type_Window
+       ; caption title bar
+       If Not \caption\hide
+          \caption\x = \x[#__c_1]
+          \caption\y = \y[#__c_1]
+          \caption\width = \width[#__c_1]
+          \caption\height = \__height + \fs ; \height[#__c_1]-\height[#__c_2]-\fs ; 
+          
+          ; 
+          \caption\x[#__c_2] = \x[#__c_1] + \fs
+          \caption\y[#__c_2] = \y[#__c_1] + \fs
+          \caption\height[#__c_2] = \__height - \fs
+          
+          If \caption\height > \height[#__c_1] -\fs ;*2
+            \caption\height = \height[#__c_1] -\fs  ;*2
+          EndIf
+          
+          ; caption close button
+          If Not \caption\button[0]\hide
+            \caption\button[0]\x = (\x[#__c_2]+\width[#__c_2]) - (\caption\button[0]\width+\caption\_padding)
+            \caption\button[0]\y = \y[#__c_1] + (\caption\height-\caption\button[0]\height)/2
+          EndIf
+          
+          ; caption maximize button
+          If Not \caption\button[1]\hide
+            If \caption\button[0]\hide
+              \caption\button[1]\x = (\x[#__c_2]+\width[#__c_2]) - (\caption\button[1]\width+\caption\_padding)
+            Else
+              \caption\button[1]\x = \caption\button[0]\x - (\caption\button[1]\width+\caption\_padding)
+            EndIf
+            \caption\button[1]\y = \y[#__c_1] + (\caption\height-\caption\button[1]\height)/2
+          EndIf
+          
+          ; caption minimize button
+          If Not \caption\button[2]\hide
+            If \caption\button[1]\hide
+              \caption\button[2]\x = \caption\button[0]\x - (\caption\button[2]\width+\caption\_padding)
+            Else
+              \caption\button[2]\x = \caption\button[1]\x - (\caption\button[2]\width+\caption\_padding)
+            EndIf
+            \caption\button[2]\y = \y[#__c_1] + (\caption\height-\caption\button[2]\height)/2
+          EndIf
+          
+          ; caption help button
+          If Not \caption\button[3]\hide
+            If Not \caption\button[2]\hide
+              \caption\button[3]\x = \caption\button[2]\x - (\caption\button[3]\width+\caption\_padding)
+            ElseIf Not \caption\button[1]\hide
+              \caption\button[3]\x = \caption\button[1]\x - (\caption\button[3]\width+\caption\_padding)
+            Else
+              \caption\button[3]\x = \caption\button[0]\x - (\caption\button[3]\width+\caption\_padding)
+            EndIf
+            \caption\button[3]\y = \caption\button[0]\y
+          EndIf
+          
+          ; title bar width
+          If Not \caption\button[3]\hide
+            \caption\width[#__c_2] = \caption\button[3]\x - \x[#__c_2] - \caption\_padding
+          ElseIf Not \caption\button[2]\hide
+            \caption\width[#__c_2] = \caption\button[2]\x - \x[#__c_2] - \caption\_padding
+          ElseIf Not \caption\button[1]\hide
+            \caption\width[#__c_2] = \caption\button[1]\x - \x[#__c_2] - \caption\_padding
+          ElseIf Not \caption\button[0]\hide
+            \caption\width[#__c_2] = \caption\button[0]\x - \x[#__c_2] - \caption\_padding
+          Else
+            \caption\width[#__c_2] = \width[#__c_1] - \fs*2
+          EndIf
+          
+          ; clip text coordinate
+          If \caption\x[#__c_2] < \x[#__c_4]
+            \caption\x[#__c_4] = \x[#__c_4]
+          Else
+            \caption\x[#__c_4] = \caption\x[#__c_2]
+          EndIf
+          If \caption\y[#__c_2] < \y[#__c_4]
+            \caption\y[#__c_4] = \y[#__c_4]
+          Else
+            \caption\y[#__c_4] = \caption\y[#__c_2]
+          EndIf
+          If \caption\x[#__c_2]+\caption\width[#__c_2] > \x[#__c_4]+\width[#__c_2]
+            \caption\width[#__c_4] = \width[#__c_4]
+          Else
+            \caption\width[#__c_4] = \caption\width[#__c_2]
+          EndIf
+          If \caption\y[#__c_2]+\caption\height[#__c_2] > \y[#__c_4]+\height[#__c_2]
+            \caption\height[#__c_4] = \height[#__c_4]
+          Else
+            \caption\height[#__c_4] = \caption\height[#__c_2]
+          EndIf
+          
+        EndIf
+      EndIf
+      
+      ; anchors widgets
+      If *this And (\root And \root\anchor And \root\anchor\widget = *this)
+        a_resize(*this)
+      EndIf
+      ;EndIf
+      
+      If \type = #__Type_ScrollBar
+        ProcedureReturn \bar\hide
+        
+      ElseIf \resize & #__resize_change ; (Change_x Or Change_y Or Change_width Or Change_height)
+        ProcedureReturn \resize
+      EndIf
+        EndWith
+    EndProcedure
+    
+    Procedure.i Resize(*this._s_widget, X.l,Y.l,Width.l,Height.l)
     Protected Lines.i, Change_x, Change_y, Change_width, Change_height
     
     With *this
@@ -9908,5 +10182,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = f----------v--fw--------------4-------------------------------------------------------------------------------------------------------Z80-S50--+-8----------------0-+--4----v0-------------
+; Folding = f-------------fw--------------4-------------------------------------------------------------------------------------------------------c48-f9+-ns0+dL9+----0----------------+f---8----4+-------------
 ; EnableXP
