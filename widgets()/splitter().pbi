@@ -131,9 +131,11 @@ CompilerIf Not Defined(Splitter, #PB_Module)
           EndIf
           
           *this\bar\page\end = (*this\bar\max - *this\bar\page\len)
-          *this\bar\area\end = (*this\bar\area\pos + (*this\bar\area\len - *this\bar\thumb\len))
+          *this\bar\area\end = (*this\bar\area\pos + (*this\bar\area\len - *this\bar\thumb\len)) ; - *this\bar\button[#__b_1]\len)
           *this\bar\scroll_increment = (*this\bar\area\len / (*this\bar\max - *this\bar\min))
-        EndIf
+         ;  *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
+        ;*this\bar\scroll_increment = ((*this\bar\area\end-*this\bar\area\pos) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
+      EndIf
         
         If *this\bar\fixed And Not *this\bar\page\change
           If *this\bar\button[*this\bar\fixed]\fixed > *this\bar\area\len - *this\bar\thumb\len
@@ -1269,5 +1271,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -------086----------------ftT-
+; Folding = -------086----8-----------ftT-
 ; EnableXP

@@ -6,6 +6,7 @@
     
     ;- - CONSTANTs
     ;{
+    #PB_GadgetType_TabBar = 100
     
     #__arrow_type = 1
     #__arrow_size = 4
