@@ -235,12 +235,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare.b Bind(*callBack, *this._s_widget, eventtype.l=#PB_All)
     
     Declare   Tab(x.l, y.l, width.l, height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
-    Declare   Open_Canvas(Window, X.l, Y.l, Width.l, Height.l, Flag.i)
+    Declare   Canvas(Window, X.l, Y.l, Width.l, Height.l, *CallBack, Flag.i)
     
     Declare.i CloseList()
     Declare.i OpenList(*this, item.l=0)
     Declare   ScrollArea(x.l, y.l, width.l, height.l, Scroll_AreaWidth.l, Scroll_AreaHeight.l, scroll_step.l=1, Flag.i=0)
-    Declare   Open_CanvasWindow(Window, X.l, Y.l, Width.l, Height.l, Title.s, Flag.i, ParentID.i)
+    Declare   Open_Window(Window, X.l, Y.l, Width.l, Height.l, Title.s, Flag.i, ParentID.i)
   EndDeclareModule
   
   Module bar
@@ -3112,48 +3112,35 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure Resize_CanvasWindow()
-      ResizeGadget(GetWindowData(EventWindow()), #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()))
+      Protected canvas = GetWindowData(EventWindow())
+      ResizeGadget(canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow())-GadgetX(canvas)*2, WindowHeight(EventWindow())-GadgetY(canvas)*2)
     EndProcedure
     
-    Procedure Open_Canvas(Window, X.l, Y.l, Width.l, Height.l, Flag.i)
-      Protected g_Canvas = CanvasGadget(#PB_Any, X, Y, Width, Height, Flag) ;: CloseGadgetList()
-                                                                            ;       BindGadgetEvent(g_Canvas, @Events_CanvasWindow())
-                                                                            ;       PostEvent(#PB_Event_Gadget, Window, g_Canvas, #__Event_Resize)
-      
+    Procedure Canvas(Window, X.l, Y.l, Width.l, Height.l, *CallBack, Flag.i)
+      Protected Canvas = CanvasGadget(#PB_Any, X, Y, Width, Height, Flag)
       *event\root = AllocateStructure(_s_root)
       *event\root\class = "Root"
       *event\root\opened = *event\root
       *event\root\window = Window
-      *event\root\canvas = g_Canvas
+      *event\root\canvas = Canvas
       
       *event\active = *event\root
       *event\active\root = *event\root
       
-      SetGadgetData(g_Canvas, *event)
-      SetWindowData(Window, g_Canvas)
-      ;BindEvent(#PB_Event_SizeWindow, @Resize_CanvasWindow(), Window);, g_Canvas)
-      ProcedureReturn g_Canvas
+      SetGadgetData(Canvas, *event)
+      SetWindowData(Window, Canvas)
+      
+      BindGadgetEvent(Canvas, *CallBack)
+      PostEvent(#PB_Event_Gadget, Window, Canvas, #__Event_Resize)
+      
+      BindEvent(#PB_Event_SizeWindow, @Resize_CanvasWindow(), Window);, Canvas)
+      ProcedureReturn Canvas
     EndProcedure
     
-    Procedure Open_CanvasWindow(Window, X.l, Y.l, Width.l, Height.l, Title.s, Flag.i, ParentID.i)
+    Procedure Open_Window(Window, X.l, Y.l, Width.l, Height.l, Title.s, Flag.i, ParentID.i)
       Protected w = OpenWindow(Window, X, Y, Width, Height, Title, Flag, ParentID) : If Window =- 1 : Window = w : EndIf
-      Protected g_Canvas = CanvasGadget(#PB_Any, 0, 0, Width, Height, #PB_Canvas_Container) ;: CloseGadgetList()
-      BindGadgetEvent(g_Canvas, @Events_CanvasWindow())
-      PostEvent(#PB_Event_Gadget, Window, g_Canvas, #__Event_Resize)
-      
-      *event\root = AllocateStructure(_s_root)
-      *event\root\class = "Root"
-      *event\root\opened = *event\root
-      *event\root\window = Window
-      *event\root\canvas = g_Canvas
-      
-      *event\active = *event\root
-      *event\active\root = *event\root
-      
-      SetGadgetData(g_Canvas, *event)
-      SetWindowData(Window, g_Canvas)
-      BindEvent(#PB_Event_SizeWindow, @Resize_CanvasWindow(), Window);, g_Canvas)
-      ProcedureReturn g_Canvas
+      Protected Canvas = Canvas(Window, 0, 0, Width, Height, @Events_CanvasWindow(), #PB_Canvas_Container) ;: CloseGadgetList()
+      ProcedureReturn w
     EndProcedure
     
   EndModule
@@ -3165,8 +3152,9 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule Bar
   UseModule Constants
   UseModule Structures
+  
   Macro OpenWindow(Window, X, Y, Width, Height, Title, Flag=0, ParentID=0)
-    bar::Open_CanvasWindow(Window, X, Y, Width, Height, Title, Flag, ParentID)
+    bar::Open_Window(Window, X, Y, Width, Height, Title, Flag, ParentID)
   EndMacro
   
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
@@ -3407,5 +3395,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------------------------------0v----------------------4----------------
+; Folding = ------------------------------------0v----------------------4-----------------
 ; EnableXP

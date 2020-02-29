@@ -17,7 +17,7 @@ UseModule Bar
 UseModule Constants
 UseModule Structures
 ;   Macro OpenWindow(Window, X, Y, Width, Height, Title, Flag=0, ParentID=0)
-;     bar::Open_CanvasWindow(Window, X, Y, Width, Height, Title, Flag, ParentID)
+;     bar::Open_Window(Window, X, Y, Width, Height, Title, Flag, ParentID)
 ;   EndMacro
 ;   
 EnableExplicit
@@ -40,32 +40,6 @@ Global x=100,y=100, Width=420, Height=420 , focus
 
 Global NewList Images.canvasitem()
 
-
-Procedure Draw_Canvas(canvas.i, List Images.canvasitem())
-  If StartDrawing(CanvasOutput(canvas))
-    DrawingMode(#PB_2DDrawing_Default)
-    Box(0, 0, OutputWidth(), OutputHeight(), RGB(255,255,255))
-    
-    ClipOutput(*scroll\h\x, *scroll\v\y, *scroll\h\bar\page\len, *scroll\v\bar\page\len)
-    
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
-    ForEach Images()
-      DrawImage(ImageID(Images()\img), Images()\x, Images()\y) ; draw all images with z-order
-    Next
-    
-    Bar::Draw(*scroll\v)
-    Bar::Draw(*scroll\h)
-    
-    UnclipOutput()
-    DrawingMode(#PB_2DDrawing_Outlined)
-    Box(x, y, Width, Height, RGB(0,255,255))
-    Box(*scroll\x, *scroll\y, *scroll\width, *scroll\height, RGB(255,0,255))
-    Box(*scroll\x, *scroll\y, *scroll\h\bar\max, *scroll\v\bar\max, RGB(255,0,0))
-    Box(*scroll\h\x, *scroll\v\y, *scroll\h\bar\page\len, *scroll\v\bar\page\len, RGB(255,255,0))
-    
-    StopDrawing()
-  EndIf
-EndProcedure
 
 Procedure.i HitTest (List Images.canvasitem(), x, y)
   Shared currentItemXOffset.i, currentItemYOffset.i
@@ -153,7 +127,33 @@ Macro GetScrollCoordinate(x, y, width, height)
  ; SetWindowTitle(EventWindow(), Str(Images()\x)+" "+Str(Images()\width)+" "+Str(Images()\x+Images()\width))
 EndMacro
 
-Procedure CallBack()
+Procedure Canvas_Draw(canvas.i, List Images.canvasitem())
+  If StartDrawing(CanvasOutput(canvas))
+    DrawingMode(#PB_2DDrawing_Default)
+    Box(0, 0, OutputWidth(), OutputHeight(), RGB(255,255,255))
+    
+    ; ClipOutput(*scroll\h\x, *scroll\v\y, *scroll\h\bar\page\len, *scroll\v\bar\page\len)
+    
+    DrawingMode(#PB_2DDrawing_AlphaBlend)
+    ForEach Images()
+      DrawImage(ImageID(Images()\img), Images()\x, Images()\y) ; draw all images with z-order
+    Next
+    
+    Bar::Draw(*scroll\v)
+    Bar::Draw(*scroll\h)
+    
+    UnclipOutput()
+    DrawingMode(#PB_2DDrawing_Outlined)
+    Box(x, y, Width, Height, RGB(0,255,255))
+    Box(*scroll\x, *scroll\y, *scroll\width, *scroll\height, RGB(255,0,255))
+    Box(*scroll\x, *scroll\y, *scroll\h\bar\max, *scroll\v\bar\max, RGB(255,0,0))
+    Box(*scroll\h\x, *scroll\v\y, *scroll\h\bar\page\len, *scroll\v\bar\page\len, RGB(255,255,0))
+    
+    StopDrawing()
+  EndIf
+EndProcedure
+
+Procedure Canvas_CallBack()
   Static set_cursor 
   Protected cursor
   Protected Repaint
@@ -247,35 +247,22 @@ Procedure CallBack()
     EndSelect
   EndIf 
   
-  If Repaint : Draw_Canvas(MyCanvas, Images()) : EndIf
+  If Repaint : Canvas_Draw(MyCanvas, Images()) : EndIf
 EndProcedure
-
-Procedure ResizeCallBack()
-  ResizeGadget(MyCanvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
-EndProcedure
-
 
 If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
   MessageRequester("Fatal error", "Program terminated.")
   End
 EndIf
 
-;
-MyCanvas = Open_Canvas(0, 10, 10, Width+x*2, Width+y*2, #PB_Canvas_Keyboard)
-      
+MyCanvas = Canvas(0, 10, 10, Width+x*2, Width+y*2, @Canvas_CallBack(), #PB_Canvas_Keyboard)
             
-; *scroll\v = Bar::scroll(x+Width-20, y,  20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
-; *scroll\h = Bar::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, 0, 11)
 *scroll\v = Bar::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
 *scroll\h = Bar::scroll(x, 0, 0,  20, 0, 0, Height-20, 0, 11)
-
-PostEvent(#PB_Event_Gadget, 0,MyCanvas,#PB_EventType_Resize)
-BindGadgetEvent(MyCanvas, @CallBack())
-BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
 
 Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------
+; Folding = 4vp---
 ; EnableXP
