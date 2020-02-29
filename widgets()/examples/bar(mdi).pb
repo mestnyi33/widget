@@ -119,7 +119,8 @@ EndProcedure
 AddImage(Images(),  x+10, y+10, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
 AddImage(Images(), x+100,y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/GeeBee2.bmp"))
 ;AddImage(Images(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
-AddImage(Images(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+;AddImage(Images(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+AddImage(Images(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
 
 hole = CreateImage(#PB_Any,100,100,32)
 If StartDrawing(ImageOutput(hole))
@@ -558,7 +559,7 @@ Procedure _Updates(*scroll._s_scroll, x.l, y.l, width.l, height.l)
     *scroll\h\bar\page\len = width - Bool(*scroll\height > height) * *scroll\v\width
   EndIf
   
-  If *scroll\x > x
+  If *scroll\x >= x
     sx = (*scroll\x-x) 
     *scroll\width + (*scroll\x-x) 
     *scroll\x = x
@@ -566,7 +567,7 @@ Procedure _Updates(*scroll._s_scroll, x.l, y.l, width.l, height.l)
     *scroll\v\bar\page\len = height - *scroll\h\height
   EndIf
   
-  If *scroll\y > y
+  If *scroll\y >= y
     sy = (*scroll\y-y)
     *scroll\height + (*scroll\y-y)
     *scroll\y = y
@@ -901,5 +902,5 @@ Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------------------
+; Folding = X-----------------------
 ; EnableXP
