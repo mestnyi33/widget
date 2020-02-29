@@ -559,27 +559,26 @@ Procedure _Updates(*scroll._s_scroll, x.l, y.l, width.l, height.l)
     *scroll\h\bar\page\len = width - Bool(*scroll\height > height) * *scroll\v\width
   EndIf
   
-  If *scroll\x >= x
-    sx = (*scroll\x-x) 
-    *scroll\width + (*scroll\x-x) 
-    *scroll\x = x
-  Else
+  If *scroll\x < x
+    ; left set state
     *scroll\v\bar\page\len = height - *scroll\h\height
+  Else
+    sx = (*scroll\x-x) 
+    *scroll\width + sx
+    *scroll\x = x
   EndIf
   
-  If *scroll\y >= y
-    sy = (*scroll\y-y)
-    *scroll\height + (*scroll\y-y)
-    *scroll\y = y
-  Else
+  If *scroll\y < y
+    ; top set state
     *scroll\h\bar\page\len = width - *scroll\v\width
+  Else
+    sy = (*scroll\y-y)
+    *scroll\height + sy
+    *scroll\y = y
   EndIf
   
-  If *scroll\width =< *scroll\h\bar\page\len - (*scroll\x-x)
-    *scroll\h\bar\max = *scroll\width
-    *scroll\width = *scroll\h\bar\page\len - (*scroll\x-x)
-  Else
-    If *scroll\width-sx =< width And *scroll\height = *scroll\v\bar\page\len - (*scroll\x-x)
+  If *scroll\width > *scroll\h\bar\page\len - (*scroll\x-x)
+    If *scroll\width-sx =< width And *scroll\height = *scroll\v\bar\page\len - (*scroll\y-y)
       ;Debug "w - "+Str(*scroll\height-sx)
       
       ; if on the h-scroll
@@ -594,12 +593,12 @@ Procedure _Updates(*scroll._s_scroll, x.l, y.l, width.l, height.l)
     EndIf
     
     *scroll\v\bar\page\len = height - *scroll\h\height 
+  Else
+    *scroll\h\bar\max = *scroll\width
+    *scroll\width = *scroll\h\bar\page\len - (*scroll\x-x)
   EndIf
   
-  If *scroll\height =< *scroll\v\bar\page\len - (*scroll\y-y)
-    *scroll\v\bar\max = *scroll\height
-    *scroll\height = *scroll\v\bar\page\len - (*scroll\y-y)
-  Else
+  If *scroll\height > *scroll\v\bar\page\len - (*scroll\y-y)
     If *scroll\height-sy =< Height And *scroll\width = *scroll\h\bar\page\len - (*scroll\x-x)
       ;Debug " h - "+Str(*scroll\height-sy)
       
@@ -615,6 +614,9 @@ Procedure _Updates(*scroll._s_scroll, x.l, y.l, width.l, height.l)
     EndIf
     
     *scroll\h\bar\page\len = width - *scroll\v\width
+  Else
+    *scroll\v\bar\max = *scroll\height
+    *scroll\height = *scroll\v\bar\page\len - (*scroll\y-y)
   EndIf
   
   If *scroll\width >= *scroll\h\bar\page\len  
