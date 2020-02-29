@@ -118,7 +118,8 @@ EndProcedure
 
 AddImage(Images(),  x+10, y+10, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
 AddImage(Images(), x+100,y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/GeeBee2.bmp"))
-AddImage(Images(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+;AddImage(Images(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+AddImage(Images(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
 
 hole = CreateImage(#PB_Any,100,100,32)
 If StartDrawing(ImageOutput(hole))
@@ -615,7 +616,7 @@ Procedure _Updates(*scroll._s_scroll, x.l, y.l, width.l, height.l)
     *scroll\h\bar\page\len = width - *scroll\v\width
   EndIf
   
-  If *scroll\width > *scroll\h\bar\page\len  
+  If *scroll\width >= *scroll\h\bar\page\len  
     If *scroll\h\bar\Max <> *scroll\width 
       *scroll\h\bar\Max = *scroll\width
       
@@ -631,7 +632,7 @@ Procedure _Updates(*scroll._s_scroll, x.l, y.l, width.l, height.l)
     EndIf
   EndIf
   
-  If *scroll\height > *scroll\v\bar\page\len  
+  If *scroll\height >= *scroll\v\bar\page\len  
     If *scroll\v\bar\Max <> *scroll\height  
       *scroll\v\bar\Max = *scroll\height
       
@@ -645,19 +646,29 @@ Procedure _Updates(*scroll._s_scroll, x.l, y.l, width.l, height.l)
       ; Debug  "v "+*scroll\v\bar\page\len
       *scroll\v\hide = Bar::Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len)
     EndIf
-    
   EndIf
   
-  If Not *scroll\h\hide And *scroll\h\y[#__c_3] <> y+*scroll\v\bar\page\len
+  ; mac os ok but no ok windows
+;   If Not *scroll\h\hide And *scroll\h\y[#__c_3] <> y+*scroll\v\bar\page\len
+;     ; Debug "y"
+;     *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, y+*scroll\v\bar\page\len, #PB_Ignore, #PB_Ignore)
+;   EndIf
+;   
+;   If Not *scroll\v\hide And *scroll\v\x[#__c_3] <> x+*scroll\h\bar\page\len
+;     ; Debug "x"
+;     *scroll\v\hide = Bar::Resize(*scroll\v, x+*scroll\h\bar\page\len, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;   EndIf
+  
+  If Not *scroll\h\hide And *scroll\h\y[#__c_3] <> y+height - *scroll\h\height
     ; Debug "y"
-    *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, y+*scroll\v\bar\page\len, #PB_Ignore, #PB_Ignore)
+    *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, y+height - *scroll\h\height, #PB_Ignore, #PB_Ignore)
   EndIf
   
-  If Not *scroll\v\hide And *scroll\v\x[#__c_3] <> x+*scroll\h\bar\page\len
+  If Not *scroll\v\hide And *scroll\v\x[#__c_3] <> x+width - *scroll\v\width
     ; Debug "x"
-    *scroll\v\hide = Bar::Resize(*scroll\v, x+*scroll\h\bar\page\len, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+    *scroll\v\hide = Bar::Resize(*scroll\v, x+width - *scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   EndIf
-  
+ 
   If v_max <> *scroll\v\bar\Max
     v_max = *scroll\v\bar\Max
     *scroll\v\hide = Bar::Update(*scroll\v) 
