@@ -100,8 +100,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndMacro
     
     Macro _scrollarea_update_(_this_)
-      Bool(*this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change)
+      ;Bool(*this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change)
       Bar::Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      ;Bar::Resizes(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
+      ;Bar::Updates(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
       _this_\scroll\v\bar\area\change = #False
       _this_\scroll\h\bar\area\change = #False
     EndMacro
@@ -220,7 +222,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare.i Scroll(x.l, y.l, width.l, height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
     Declare.i Splitter(x.l, y.l, width.l, height.l, First.i, Second.i, Flag.i=0)
     
+    Declare.i _create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
     Declare.i  Create(type.l, *parent, size.l, *param_1, *param_2, *param_3, flag.i=0, round.l=7, scroll_step.f=1.0)
+    
     Declare.b Events(*this, EventType.l, mouse_x.l, mouse_y.l, wheel_x.b=0, wheel_y.b=0)
     Declare.b Resize(*this, iX.l,iY.l,iWidth.l,iHeight.l)
     
@@ -1031,6 +1035,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         *scroll\h\hide = Bar::Update(*scroll\h) 
       EndIf
       
+      ProcedureReturn Bool(*scroll\v\bar\area\change Or *scroll\h\bar\area\change)
     EndProcedure
     
     Procedure Resizes(*scroll._s_scroll, x.l, y.l, width.l, height.l)
@@ -1076,7 +1081,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         *scroll\v\hide = *scroll\v\bar\hide ; Bool(*scroll\v\bar\min = *scroll\v\bar\page\end)
         *scroll\h\hide = *scroll\h\bar\hide ; Bool(*scroll\h\bar\min = *scroll\h\bar\page\end)
         
-        ProcedureReturn #True
+        ProcedureReturn Bool(*scroll\v\bar\area\change Or *scroll\h\bar\area\change)
       EndWith
     EndProcedure
     
@@ -1682,7 +1687,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         
         ; _in_start_
         If *this\bar\button[#__b_1]\len 
-          If _scroll_pos_ =< *this\bar\min
+          If *this\bar\min >= _scroll_pos_
             *this\bar\button[#__b_1]\color\state = #__s_3
             *this\bar\button[#__b_1]\interact = #False
           Else
@@ -1708,7 +1713,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
         
         ; disable thumb button
         ; If *this\bar\button[#__b_3]\len
-        If *this\bar\min = *this\bar\page\end
+        ; Debug   ""+ *this\bar\min +" "+ *this\bar\page\end
+        If *this\bar\min >= *this\bar\page\end
           *this\bar\button[#__b_3]\color\state = #__s_3
           *this\bar\button[#__b_3]\interact = #False
         Else
@@ -2403,6 +2409,190 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     
     ;-
+    Procedure.i _create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
+    Protected *this._s_widget = AllocateStructure(_s_widget)
+    
+    With *this
+      *event\widget = *this
+      \x =- 1
+      \y =- 1
+      
+      ;\hide = Bool(Not pagelength)  ; add
+      
+      \type = Type
+      \adress = *this
+      
+      \parent = parent
+      If \parent
+        \root = \parent\root
+        \window = \parent\window
+      EndIf
+      
+      \round = round
+      \bar\scroll_step = scroll_step
+      
+      ; ???? ???? ???????
+      \color\alpha = 255
+      \color\alpha[1] = 0
+      \color\state = 0
+      \color\back = $FFF9F9F9
+      \color\frame = \color\back
+      \color\line = $FFFFFFFF
+      \color\front = $FFFFFFFF
+      
+      \bar\button[#__b_1]\color = _get_colors_()
+      \bar\button[#__b_2]\color = _get_colors_()
+      \bar\button[#__b_3]\color = _get_colors_()
+      
+      \bar\vertical = Bool(Type = #PB_GadgetType_ScrollBar And 
+                           (Bool(Flag & #PB_ScrollBar_Vertical = #PB_ScrollBar_Vertical) Or
+                            Bool(Flag & #__Bar_Vertical = #__Bar_Vertical)))
+      
+      If Not Bool(Flag&#__bar_nobuttons)
+        If \bar\vertical
+          \width = Size
+        Else
+          \height = Size
+        EndIf
+        
+        If Size < 21
+          Size - 1
+        Else
+          size = 17
+        EndIf
+      EndIf
+        
+        
+      ; min thumb size
+      \bar\button[#__b_3]\len = size
+      
+      If Type = #PB_GadgetType_ScrollBar
+        \bar\inverted = Bool(Flag & #__bar_inverted = #__bar_inverted)
+      
+        \bar\button[#__b_1]\interact = #True
+        \bar\button[#__b_2]\interact = #True
+        \bar\button[#__b_3]\interact = #True
+        
+        \bar\button[#__b_1]\len = size
+        \bar\button[#__b_2]\len = size
+        
+        \bar\button[#__b_1]\arrow\size = 4
+        \bar\button[#__b_2]\arrow\size = 4
+        \bar\button[#__b_3]\arrow\size = 3
+        
+        \bar\button[#__b_1]\arrow\type = #__arrow_type ; -1 0 1
+        \bar\button[#__b_2]\arrow\type = #__arrow_type ; -1 0 1
+        
+        \bar\button[#__b_1]\round = \round
+        \bar\button[#__b_2]\round = \round
+        \bar\button[#__b_3]\round = \round
+      EndIf
+      
+      If Type = #PB_GadgetType_ProgressBar
+        \bar\vertical = Bool(Flag & #PB_ProgressBar_Vertical = #PB_ProgressBar_Vertical Or
+                            Bool(Flag & #__Bar_Vertical = #__Bar_Vertical))
+        \bar\inverted = \bar\vertical
+        
+        ; \text = AllocateStructure(_s_text)
+        \text\change = 1
+        
+        \text\align\vertical = 1
+        \text\align\horizontal = 1
+        \text\rotate = \bar\vertical * 90 ; 270
+        
+        \bar\button[#__b_1]\interact = #False
+        \bar\button[#__b_2]\interact = #False
+        
+        \bar\button[#__b_1]\round = \round
+        \bar\button[#__b_2]\round = \round
+      EndIf
+      
+      If Type = #PB_GadgetType_TrackBar
+        \bar\vertical = Bool(Flag & #PB_TrackBar_Vertical = #PB_TrackBar_Vertical); Or Bool(Flag & #__Bar_Vertical = #__Bar_Vertical))
+        \bar\inverted = \bar\vertical
+        
+        \bar\button[#__b_1]\interact = #False
+        \bar\button[#__b_2]\interact = #False
+        \bar\button[#__b_3]\interact = #True
+        
+        
+    
+        \bar\button[#__b_1]\len = 1
+        \bar\button[#__b_2]\len = 1
+        
+        \bar\button[#__b_3]\arrow\size = 4
+        \bar\button[#__b_3]\arrow\type = #__arrow_type
+        
+        \bar\button[#__b_1]\round = 2
+        \bar\button[#__b_2]\round = 2
+        \bar\button[#__b_3]\round = \round
+        
+        If \round < 7
+          \bar\button[#__b_3]\len = 9
+        EndIf
+        
+        \bar\mode = Bool(flag & #PB_TrackBar_Ticks) * #PB_TrackBar_Ticks
+      EndIf
+      
+      If Type = #PB_GadgetType_Spin
+        \bar\vertical = Bool(Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical)
+        \bar\inverted = \bar\vertical
+        
+        ; \text = AllocateStructure(_s_text)
+        \text\change = 1
+        \text\editable = 1
+        \text\align\Vertical = 1
+        \text\_padding = #__spin_padding_text
+        
+        ; ???? ???? ???????
+        \color = _get_colors_()
+        \color\alpha = 255
+        \color\back = $FFFFFFFF
+        
+        \bar\button\len = #__spin_buttonsize
+        
+        \bar\button[#__b_3]\len = 0
+        \bar\button[#__b_1]\len = Size
+        \bar\button[#__b_2]\len = Size
+        
+        \bar\button[#__b_1]\arrow\size = 4
+        \bar\button[#__b_2]\arrow\size = 4
+        
+        \bar\button[#__b_1]\arrow\type = #__arrow_type ; -1 0 1
+        \bar\button[#__b_2]\arrow\type = #__arrow_type ; -1 0 1
+      EndIf
+      
+      If Type = #PB_GadgetType_Splitter
+        \container = #PB_GadgetType_Splitter
+        \bar\vertical = Bool(Not Flag & #PB_Splitter_Vertical = #PB_Splitter_Vertical)
+        
+        \bar\button[#__b_1]\interact = #False
+        \bar\button[#__b_2]\interact = #False
+        \bar\button[#__b_3]\interact = #True
+        
+        \bar\button\len = 7
+        \bar\thumb\len = 7
+        \bar\mode = #PB_Splitter_Separator
+        
+        \splitter = AllocateStructure(_s_splitter)
+        If Flag & #PB_Splitter_FirstFixed 
+          \bar\fixed = #__b_1 
+        ElseIf Flag & #PB_Splitter_SecondFixed 
+          \bar\fixed = #__b_2 
+        EndIf
+      EndIf
+      
+        
+      
+      If \bar\min <> Min : SetAttribute(*this, #__bar_minimum, Min) : EndIf
+      If \bar\max <> Max : SetAttribute(*this, #__bar_maximum, Max) : EndIf
+      If \bar\page\len <> Pagelength : SetAttribute(*this, #__bar_pageLength, Pagelength) : EndIf
+      If \bar\inverted : SetAttribute(*this, #__bar_inverted, #True) : EndIf
+      
+    EndWith
+    
+    ProcedureReturn *this
+  EndProcedure
     Procedure.i Create(type.l, *parent._s_widget, size.l, *param_1, *param_2, *param_3, flag.i=0, round.l=7, scroll_step.f=1.0)
       Protected x,y,*this._s_widget = AllocateStructure(_s_widget)
       
@@ -3217,5 +3407,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------------------------------0v-------------------------------------
+; Folding = ------------------------------------0v----------------------4----------------
 ; EnableXP
