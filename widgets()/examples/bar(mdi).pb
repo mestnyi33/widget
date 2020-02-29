@@ -36,25 +36,22 @@ Global MyCanvas, *scroll._s_scroll = AllocateStructure(_s_scroll)
 Global *current=#False
 Global currentItemXOffset.i, currentItemYOffset.i
 Global Event.i, drag.i, hole.i
-Global x=150,y=50, Width=420, Height=420 , focus
+Global x=100,y=100, Width=420, Height=420 , focus
 
 Global NewList Images.canvasitem()
 
 
 Procedure Draw_Canvas(canvas.i, List Images.canvasitem())
   If StartDrawing(CanvasOutput(canvas))
-    
-    ;ClipOutput(0,0, iWidth, iHeight)
-    
     DrawingMode(#PB_2DDrawing_Default)
     Box(0, 0, OutputWidth(), OutputHeight(), RGB(255,255,255))
+    
+    ClipOutput(*scroll\h\x, *scroll\v\y, *scroll\h\bar\page\len, *scroll\v\bar\page\len)
     
     DrawingMode(#PB_2DDrawing_AlphaBlend)
     ForEach Images()
       DrawImage(ImageID(Images()\img), Images()\x, Images()\y) ; draw all images with z-order
     Next
-    
-    ;UnclipOutput()
     
     Bar::Draw(*scroll\v)
     Bar::Draw(*scroll\h)
@@ -116,11 +113,12 @@ Procedure AddImage (List Images.canvasitem(), x, y, img, alphatest=0)
   EndIf
 EndProcedure
 
-AddImage(Images(),  x+10, y+10, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
+AddImage(Images(),  x-80, y-30, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
 AddImage(Images(), x+100,y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/GeeBee2.bmp"))
 ;AddImage(Images(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
 ;AddImage(Images(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
-AddImage(Images(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+;AddImage(Images(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+AddImage(Images(),  x+310,y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
 
 hole = CreateImage(#PB_Any,100,100,32)
 If StartDrawing(ImageOutput(hole))
@@ -133,227 +131,7 @@ EndIf
 AddImage(Images(),x+170,y+70,hole,1)
 
 
-Procedure _Updates(*scroll._s_scroll, x.l, y.l, width.l, height.l)
-  Static v_max, h_max
-  Protected sx, sy, rh
-  
-  If *scroll\v\bar\page\len <> height - Bool(*scroll\width > width) * *scroll\h\height
-    *scroll\v\bar\page\len = height - Bool(*scroll\width > width) * *scroll\h\height
-  EndIf
-  
-  If *scroll\h\bar\page\len <> width - Bool(*scroll\height > height) * *scroll\v\width
-    *scroll\h\bar\page\len = width - Bool(*scroll\height > height) * *scroll\v\width
-  EndIf
-  
-  If *scroll\x < x
-    ; left set state
-    *scroll\v\bar\page\len = height - *scroll\h\height
-  Else
-    sx = (*scroll\x-x) 
-    *scroll\width + sx
-    *scroll\x = x
-  EndIf
-  
-  If *scroll\y < y
-    ; top set state
-    *scroll\h\bar\page\len = width - *scroll\v\width
-  Else
-    sy = (*scroll\y-y)
-    *scroll\height + sy
-    *scroll\y = y
-  EndIf
-  
-  If *scroll\width > *scroll\h\bar\page\len - (*scroll\x-x)
-    If *scroll\width-sx =< width And *scroll\height = *scroll\v\bar\page\len - (*scroll\y-y)
-      ;Debug "w - "+Str(*scroll\height-sx)
-      
-      ; if on the h-scroll
-      If *scroll\v\bar\max > height - *scroll\h\height
-        *scroll\v\bar\page\len = height - *scroll\h\height
-        *scroll\h\bar\page\len = width - *scroll\v\width 
-        *scroll\height = *scroll\v\bar\max
-        Debug "w - "+*scroll\v\bar\max +" "+ *scroll\v\height +" "+ *scroll\v\bar\page\len
-      Else
-        *scroll\height = *scroll\v\bar\page\len - (*scroll\x-x) - *scroll\h\height
-      EndIf
-    EndIf
-    
-    *scroll\v\bar\page\len = height - *scroll\h\height 
-  Else
-    *scroll\h\bar\max = *scroll\width
-    *scroll\width = *scroll\h\bar\page\len - (*scroll\x-x)
-  EndIf
-  
-  If *scroll\height > *scroll\v\bar\page\len - (*scroll\y-y)
-    If *scroll\height-sy =< Height And *scroll\width = *scroll\h\bar\page\len - (*scroll\x-x)
-      ;Debug " h - "+Str(*scroll\height-sy)
-      
-      ; if on the v-scroll
-      If *scroll\h\bar\max > width - *scroll\v\width
-        *scroll\h\bar\page\len = width - *scroll\v\width
-        *scroll\v\bar\page\len = height - *scroll\h\height 
-        *scroll\width = *scroll\h\bar\max
-        Debug "h - "+*scroll\h\bar\max +" "+ *scroll\h\width +" "+ *scroll\h\bar\page\len
-      Else
-        *scroll\width = *scroll\h\bar\page\len - (*scroll\x-x) - *scroll\v\width
-      EndIf
-    EndIf
-    
-    *scroll\h\bar\page\len = width - *scroll\v\width
-  Else
-    *scroll\v\bar\max = *scroll\height
-    *scroll\height = *scroll\v\bar\page\len - (*scroll\y-y)
-  EndIf
-  
-  If *scroll\h\round And
-     *scroll\v\round And
-     *scroll\h\bar\page\len < width And 
-     *scroll\v\bar\page\len < height
-    rh = (*scroll\h\height/4)
-  EndIf
-  
-  If *scroll\width >= *scroll\h\bar\page\len  
-    If *scroll\h\bar\Max <> *scroll\width 
-      *scroll\h\bar\Max = *scroll\width
-      
-      If *scroll\x =< x 
-        *scroll\h\bar\page\pos =- (*scroll\x-x)
-        *scroll\h\bar\change = 0
-      EndIf
-    EndIf
-    
-    If *scroll\h\width <> *scroll\h\bar\page\len + rh
-      ; Debug  "h "+*scroll\h\bar\page\len
-      *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, #PB_Ignore, *scroll\h\bar\page\len + rh, #PB_Ignore)
-    EndIf
-  EndIf
-  
-  If *scroll\height >= *scroll\v\bar\page\len  
-    If *scroll\v\bar\Max <> *scroll\height  
-      *scroll\v\bar\Max = *scroll\height
-      
-      If *scroll\y =< y 
-        *scroll\v\bar\page\pos =- (*scroll\y-y)
-        *scroll\v\bar\change = 0
-      EndIf
-    EndIf
-    
-    If *scroll\v\height <> *scroll\v\bar\page\len + rh
-      ; Debug  "v "+*scroll\v\bar\page\len
-      *scroll\v\hide = Bar::Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len + rh)
-    EndIf
-  EndIf
-   
-  If Not *scroll\h\hide And *scroll\h\y[#__c_3] <> y+height - *scroll\h\height
-    ; Debug "y"
-    *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, y+height - *scroll\h\height, #PB_Ignore, #PB_Ignore)
-  EndIf
-  
-  If Not *scroll\v\hide And *scroll\v\x[#__c_3] <> x+width - *scroll\v\width
-    ; Debug "x"
-    *scroll\v\hide = Bar::Resize(*scroll\v, x+width - *scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  EndIf
- 
-  If v_max <> *scroll\v\bar\Max
-    v_max = *scroll\v\bar\Max
-    *scroll\v\hide = Bar::Update(*scroll\v) 
-  EndIf
-  
-  If h_max <> *scroll\h\bar\Max
-    h_max = *scroll\h\bar\Max
-    *scroll\h\hide = Bar::Update(*scroll\h) 
-  EndIf
-  
-EndProcedure
-
-Procedure _Resizes(*scroll._s_scroll, x.l, y.l, width.l, height.l)
-  Protected r_width
-  Protected r_height
-  
-  Protected i_width = (width - Bool(*scroll\v\bar\min <> *scroll\v\bar\page\end) * *scroll\v\width)
-  Protected i_height = (height - Bool(*scroll\h\bar\min <> *scroll\h\bar\page\end) * *scroll\h\height)
-  
-  If *scroll\x > x
-    *scroll\width + (*scroll\x-x) 
-    *scroll\x = x
-  EndIf
-  
-  If *scroll\y > y
-    *scroll\height + (*scroll\y-y)
-    *scroll\y = y
-  EndIf
-  
-  Protected rh ;= Bool(Not *scroll\h\hide And Not *scroll\v\hide And *scroll\v\round And *scroll\h\round) * (*scroll\h\height/4)
-  Protected rw ;= Bool(Not *scroll\h\hide And Not *scroll\v\hide And *scroll\v\round And *scroll\h\round) * (*scroll\v\width/4)
-  
-  If *scroll\v\bar\page\len <> height - Bool(*scroll\width > i_width) * *scroll\h\height
-    *scroll\v\bar\page\len = height - Bool(*scroll\width > i_width) * *scroll\h\height
-    *scroll\v\hide = Bar::Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len)
-  EndIf
-  
-  If *scroll\h\bar\page\len <> width - Bool(*scroll\height > i_height) * *scroll\v\width
-    *scroll\h\bar\page\len = width - Bool(*scroll\height > i_height) * *scroll\v\width
-    *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, #PB_Ignore, *scroll\h\bar\page\len, #PB_Ignore)
-  EndIf
-  
-  If *scroll\v\bar\page\len <> height - Bool(*scroll\h\bar\min <> *scroll\h\bar\page\end) * *scroll\h\height
-    *scroll\v\bar\page\len = height - Bool(*scroll\h\bar\min <> *scroll\h\bar\page\end) * *scroll\h\height
-    *scroll\v\hide = Bar::Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len)
-  EndIf
-  
-  If *scroll\h\bar\page\len <> width - Bool(*scroll\v\bar\min <> *scroll\v\bar\page\end) * *scroll\v\width
-    *scroll\h\bar\page\len = width - Bool(*scroll\v\bar\min <> *scroll\v\bar\page\end) * *scroll\v\width
-    *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, #PB_Ignore, *scroll\h\bar\page\len, #PB_Ignore)
-  EndIf
-  
-  If *scroll\h\y[#__c_3] <> y+*scroll\v\bar\page\len
-    *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, y+*scroll\v\bar\page\len, #PB_Ignore, #PB_Ignore)
-  EndIf
-  
-  If *scroll\v\x[#__c_3] <> x+*scroll\h\bar\page\len
-    *scroll\v\hide = Bar::Resize(*scroll\v, x+*scroll\h\bar\page\len, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  EndIf
-  
-  If *scroll\width < *scroll\h\bar\page\len - (*scroll\x-x)
-    *scroll\h\hide = #True
-    *scroll\h\bar\max = *scroll\width
-    *scroll\width = *scroll\h\bar\page\len - (*scroll\x-x)
-  EndIf
-  
-  If *scroll\height < *scroll\v\bar\page\len - (*scroll\y-y)
-    *scroll\v\hide = #True
-    *scroll\v\bar\max = *scroll\height
-    *scroll\height = *scroll\v\bar\page\len - (*scroll\y-y)
-  EndIf
-  
-  If *scroll\width > *scroll\h\bar\page\len
-    If *scroll\h\bar\Max <> *scroll\width 
-      *scroll\h\bar\Max = *scroll\width
-      
-      If *scroll\x =< x 
-        *scroll\h\bar\page\pos =- (*scroll\x-x)
-        *scroll\h\bar\change = 0
-      EndIf
-      
-      *scroll\h\hide = Bar::Update(*scroll\h) 
-    EndIf
-  EndIf
-  
-  If *scroll\height > *scroll\v\bar\page\len
-    If *scroll\v\bar\Max <> *scroll\height  
-      *scroll\v\bar\Max = *scroll\height
-      
-      If *scroll\y =< y 
-        *scroll\v\bar\page\pos =- (*scroll\y-y)
-        *scroll\v\bar\change = 0
-      EndIf
-      
-      *scroll\v\hide = Bar::Update(*scroll\v) 
-    EndIf
-  EndIf
-EndProcedure
-
-Macro GetScrollCoordinate()
+Macro GetScrollCoordinate(x, y, width, height)
   *scroll\x = Images()\x 
   *scroll\y = Images()\Y
   *scroll\width = Images()\x+Images()\width - *scroll\x
@@ -370,13 +148,14 @@ Macro GetScrollCoordinate()
   Next
   PopListPosition(Images())
   
-  ;Bar::Updates(*scroll, x, y, width, height)
-  _Updates(*scroll, x, y, width, height)
+  Bar::Updates(*scroll, x, y, width, height)
   
-  SetWindowTitle(EventWindow(), Str(Images()\x)+" "+Str(Images()\width)+" "+Str(Images()\x+Images()\width))
+ ; SetWindowTitle(EventWindow(), Str(Images()\x)+" "+Str(Images()\width)+" "+Str(Images()\x+Images()\width))
 EndMacro
 
 Procedure CallBack()
+  Static set_cursor 
+  Protected cursor
   Protected Repaint
   Protected Event = EventType()
   Protected Canvas = EventGadget()
@@ -425,35 +204,44 @@ Procedure CallBack()
   Else
     Select Event
       Case #PB_EventType_LeftButtonUp : Drag = #False
+        SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
+      
       Case #PB_EventType_LeftButtonDown
-        *current = HitTest(Images(), Mousex, Mousey)
-        If *current 
+        Drag = Bool(HitTest(Images(), Mousex, Mousey))
+        If Drag 
+          SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Arrows)
           Repaint = #True 
-          Drag = #True
         EndIf
         
       Case #PB_EventType_MouseMove
         If Drag = #True
-          If *current
-            If LastElement(Images())
-              Images()\x = Mousex - currentItemXOffset
-              Images()\y = Mousey - currentItemYOffset
-              
-              GetScrollCoordinate()
-              
-              Repaint = #True
-            EndIf
+          If LastElement(Images())
+            Images()\x = Mousex - currentItemXOffset
+            Images()\y = Mousey - currentItemYOffset
+            
+            GetScrollCoordinate(x, y, width, height)
+            
+            Repaint = #True
           EndIf
+        Else
+          If Bool(HitTest(Images(), Mousex, Mousey)) 
+            ;If Bar::_from_point_(Mousex, Mousey, Images(), [3])
+              cursor = #PB_Cursor_Hand
+            ;EndIf
+          Else 
+            cursor = #PB_Cursor_Default
+          EndIf
+          
+          If set_cursor <> cursor
+            set_cursor = cursor
+            SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, cursor)
+          EndIf
+          
         EndIf
         
       Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-                                                                                                       ;Bar::Resizes(*scroll, x, y, width, height)
-        GetScrollCoordinate()
         
-        
-        ;         ; ffffff
-        ;         *scroll\v\hide = Bar::SetAttribute(*scroll\v, #__bar_pagelength, Height)
-        ;         *scroll\h\hide = Bar::SetAttribute(*scroll\h, #__bar_pagelength, Width)
+        GetScrollCoordinate(x, y, width, height)
         Repaint = #True
         
     EndSelect
@@ -474,9 +262,12 @@ EndIf
 
 ;
 MyCanvas = Open_Canvas(0, 10, 10, Width+x*2, Width+y*2, #PB_Canvas_Keyboard)
-
-*scroll\v = Bar::scroll(x+Width-20, y,  20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
-*scroll\h = Bar::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, 0, 11)
+      
+            
+; *scroll\v = Bar::scroll(x+Width-20, y,  20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
+; *scroll\h = Bar::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, 0, 11)
+*scroll\v = Bar::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
+*scroll\h = Bar::scroll(x, 0, 0,  20, 0, 0, Height-20, 0, 11)
 
 PostEvent(#PB_Event_Gadget, 0,MyCanvas,#PB_EventType_Resize)
 BindGadgetEvent(MyCanvas, @CallBack())
@@ -486,5 +277,5 @@ Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = X-----------
+; Folding = ------
 ; EnableXP
