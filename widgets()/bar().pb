@@ -3802,7 +3802,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure.b SetState(*this._s_widget, ScrollPos.f)
-      
       If Change(*this\bar, ScrollPos)
         Update(*this)
         

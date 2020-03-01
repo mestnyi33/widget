@@ -1303,7 +1303,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure.b SetState(*this._s_widget, ScrollPos.f)
-      
       If Change(*this\bar, ScrollPos)
         Update(*this)
         
@@ -1640,6 +1639,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure.b events(*this._s_widget, EventType.l, mouse_x.l, mouse_y.l, Wheel_X.b=0, Wheel_Y.b=0)
+      ;ProcedureReturn 
+      
       Protected Result, from =- 1 
       Static cursor_change, LastX, LastY, Last, *leave._s_widget, Down
       
@@ -3131,5 +3132,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------
+; Folding = ----------------------------------------8--b0-----------------------
 ; EnableXP

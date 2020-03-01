@@ -1,10 +1,13 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+﻿; IncludePath "../../"
+; XIncludeFile "widgets().pbi"
+
+IncludePath "../"
+XIncludeFile "Open().pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule widget
+  UseModule Bar
   UseModule constants
   
   Global.i gEvent, gQuit, g_Canvas
@@ -14,8 +17,8 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 400, 100, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ButtonGadget   (0,    5,   65, 390,  30, "set  inverted scrollbar", #PB_Button_Toggle)
       
-      If Open(0, 10, 10, 380, 50, "", #__flag_BorderLess)
-        g_Canvas = GetGadget(root())
+      If Canvas(0, 10, 10, 380, 50)
+        g_Canvas = GetWindowData(0) ; GetGadget(root())
         *Bar_0 = Scroll(5, 10, 370, 30, 20, 50, 8, #__Bar_Inverted)
         
         SetGadgetState(0, GetAttribute(widget(), #__Bar_Inverted))
@@ -47,16 +50,17 @@ CompilerIf #PB_Compiler_IsMainFile
               SetGadgetText(0, "set standart scrollbar")
             EndIf
             
+            redraw(root())
+    
           Case g_Canvas
-            If widget()\change
+            If widget()\bar\change <> 0
               SetWindowTitle(0, Str(GetState(widget())))
+              widget()\bar\change = 0
             EndIf
             
         EndSelect
-        
     EndSelect
     
-    repaint()
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)

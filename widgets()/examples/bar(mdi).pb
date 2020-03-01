@@ -87,12 +87,12 @@ Procedure AddImage (List Images.canvasitem(), x, y, img, alphatest=0)
   EndIf
 EndProcedure
 
-AddImage(Images(),  x-80, y-30, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/PureBasic.bmp"))
-AddImage(Images(), x+100,y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/GeeBee2.bmp"))
-;AddImage(Images(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
-;AddImage(Images(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
-;AddImage(Images(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
-AddImage(Images(),  x+310,y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "Examples/Sources/Data/AlphaChannel.bmp"))
+AddImage(Images(),  x-80, y-20, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp"))
+AddImage(Images(), x+100,y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp"))
+;AddImage(Images(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+;AddImage(Images(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+;AddImage(Images(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+AddImage(Images(),  x+310,y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
 
 hole = CreateImage(#PB_Any,100,100,32)
 If StartDrawing(ImageOutput(hole))
@@ -255,7 +255,7 @@ If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "Move/Drag Canvas Image"
   End
 EndIf
 
-MyCanvas = Canvas(0, 10, 10, Width+x*2, Width+y*2, @Canvas_CallBack(), #PB_Canvas_Keyboard)
+MyCanvas = Canvas(0, 10, 10, Width+x*2, Width+y*2, #PB_Canvas_Keyboard, @Canvas_CallBack())
             
 *scroll\v = Bar::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
 *scroll\h = Bar::scroll(x, 0, 0,  20, 0, 0, Height-20, 0, 11)
@@ -264,5 +264,5 @@ Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 4vp---
+; Folding = 4-p---
 ; EnableXP
