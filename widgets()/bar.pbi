@@ -271,6 +271,31 @@ CompilerIf Not Defined(Bar, #PB_Module)
       BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
     EndMacro
     
+    Macro _set_active_state_(_active_, _state_)
+      _active_\color\state = (_state_)
+      
+      If Not(_active_ = _active_\root And _active_\root\type =- 5)
+        If (_state_)
+          _events(_active_, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
+        Else
+          _events(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
+        EndIf
+        
+        PostEvent(#PB_Event_Gadget, _active_\root\canvas\window, _active_\root\canvas\gadget, #__Event_repaint)
+      EndIf
+      
+      If _active_\gadget
+        _active_\gadget\color\state = (_state_)
+        
+        If (_state_)
+          _events(_active_\gadget, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
+        Else
+          _events(_active_\gadget, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
+        EndIf
+      EndIf
+    EndMacro
+    
+    ;- TEXTs
     Macro _text_change_(_this_, _x_, _y_, _width_, _height_)
       ;If _this_\text\vertical
       If _this_\text\rotate = 90
@@ -333,114 +358,91 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndMacro
     
     Macro _set_text_flag_(_this_, _flag_, _x_=0, _y_=0)
-    ;     If Not _this_\text
-    ;       _this_\text = AllocateStructure(_s_text)
-    ;     EndIf
-    
-    If _this_\text
-      _this_\text\x = _x_
-      _this_\text\y = _y_
-      ; _this_\text\_padding = 5
-      _this_\text\change = #True
+      ;     If Not _this_\text
+      ;       _this_\text = AllocateStructure(_s_text)
+      ;     EndIf
       
-      _this_\text\editable = Bool(Not constants::_check_(_flag_, #__text_readonly))
-      _this_\text\lower = constants::_check_(_flag_, #__text_lowercase)
-      _this_\text\upper = constants::_check_(_flag_, #__text_uppercase)
-      _this_\text\pass = constants::_check_(_flag_, #__text_password)
-      _this_\text\invert = constants::_check_(_flag_, #__text_invert)
-      
-      If constants::_check_(_flag_, #__align_text)
-        _this_\text\align\top = constants::_check_(_flag_, #__text_top)
-        _this_\text\align\left = constants::_check_(_flag_, #__text_left)
-        _this_\text\align\right = constants::_check_(_flag_, #__text_right)
-        _this_\text\align\bottom = constants::_check_(_flag_, #__text_bottom)
+      If _this_\text
+        _this_\text\x = _x_
+        _this_\text\y = _y_
+        ; _this_\text\_padding = 5
+        _this_\text\change = #True
         
-        If constants::_check_(_flag_, #__text_center)
-          _this_\text\align\horizontal = Bool(Not _this_\text\align\right And Not _this_\text\align\left)
-          _this_\text\align\vertical = Bool(Not _this_\text\align\bottom And Not _this_\text\align\top)
+        _this_\text\editable = Bool(Not constants::_check_(_flag_, #__text_readonly))
+        _this_\text\lower = constants::_check_(_flag_, #__text_lowercase)
+        _this_\text\upper = constants::_check_(_flag_, #__text_uppercase)
+        _this_\text\pass = constants::_check_(_flag_, #__text_password)
+        _this_\text\invert = constants::_check_(_flag_, #__text_invert)
+        
+        If constants::_check_(_flag_, #__align_text)
+          _this_\text\align\top = constants::_check_(_flag_, #__text_top)
+          _this_\text\align\left = constants::_check_(_flag_, #__text_left)
+          _this_\text\align\right = constants::_check_(_flag_, #__text_right)
+          _this_\text\align\bottom = constants::_check_(_flag_, #__text_bottom)
+          
+          If constants::_check_(_flag_, #__text_center)
+            _this_\text\align\horizontal = Bool(Not _this_\text\align\right And Not _this_\text\align\left)
+            _this_\text\align\vertical = Bool(Not _this_\text\align\bottom And Not _this_\text\align\top)
+          EndIf
         EndIf
-      EndIf
-      
-      If constants::_check_(_flag_, #__text_wordwrap)
-        _this_\text\multiLine =- 1
-      ElseIf constants::_check_(_flag_, #__text_multiline)
-        _this_\text\multiLine = 1
-      Else
-        _this_\text\multiLine = 0 
-      EndIf
-      
-      If _this_\text\invert 
-        _this_\text\Rotate = Bool(_this_\vertical)*270 + Bool(Not _this_\vertical)*180
-      Else
-        _this_\text\Rotate = Bool(_this_\vertical)*90
-      EndIf
-      
-      If _this_\type = #__Type_Editor Or
-         _this_\type = #__Type_String
         
-        _this_\color\fore = 0
-        _this_\text\caret\pos[1] =- 1
-        _this_\text\caret\pos[2] =- 1
-        _this_\cursor = #PB_Cursor_IBeam
-        
-        If _this_\text\editable
-          _this_\text\caret\width = 1
-          _this_\color\back[0] = $FFFFFFFF 
+        If constants::_check_(_flag_, #__text_wordwrap)
+          _this_\text\multiLine =- 1
+        ElseIf constants::_check_(_flag_, #__text_multiline)
+          _this_\text\multiLine = 1
         Else
-          _this_\color\back[0] = $FFF0F0F0  
+          _this_\text\multiLine = 0 
         EndIf
-      EndIf
-      
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
-        ;                     \text\fontID = GetGadgetFont(TextGadget) 
-        ;                     FreeGadget(TextGadget)
-        ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
-        ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
-        ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
         
-        ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
-        ;\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
-        _this_\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
-        ;
-        ;           \text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
-        ;           CocoaMessage(@FontSize, \text\fontID, "pointSize")
-        ;           
-        ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
-        
-        ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, \text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
-        
-      CompilerElse
-        _this_\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-      CompilerEndIf
-    EndIf
-    
-  EndMacro
-  
-    Macro _set_active_state_(_active_, _state_)
-      _active_\color\state = (_state_)
-      
-      If Not(_active_ = _active_\root And _active_\root\type =- 5)
-        If (_state_)
-          _events(_active_, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
+        If _this_\text\invert 
+          _this_\text\Rotate = Bool(_this_\vertical)*270 + Bool(Not _this_\vertical)*180
         Else
-          _events(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
+          _this_\text\Rotate = Bool(_this_\vertical)*90
         EndIf
         
-        PostEvent(#PB_Event_Gadget, _active_\root\canvas\window, _active_\root\canvas\gadget, #__Event_repaint)
+        If _this_\type = #__Type_Editor Or
+           _this_\type = #__Type_String
+          
+          _this_\color\fore = 0
+          _this_\text\caret\pos[1] =- 1
+          _this_\text\caret\pos[2] =- 1
+          _this_\cursor = #PB_Cursor_IBeam
+          
+          If _this_\text\editable
+            _this_\text\caret\width = 1
+            _this_\color\back[0] = $FFFFFFFF 
+          Else
+            _this_\color\back[0] = $FFF0F0F0  
+          EndIf
+        EndIf
+        
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+          ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
+          ;                     \text\fontID = GetGadgetFont(TextGadget) 
+          ;                     FreeGadget(TextGadget)
+          ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
+          ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
+          ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
+          
+          ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
+          ;\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
+          _this_\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
+          ;
+          ;           \text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
+          ;           CocoaMessage(@FontSize, \text\fontID, "pointSize")
+          ;           
+          ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
+          
+          ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, \text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
+          
+        CompilerElse
+          _this_\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
+        CompilerEndIf
       EndIf
       
-      If _active_\gadget
-        _active_\gadget\color\state = (_state_)
-        
-        If (_state_)
-          _events(_active_\gadget, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
-        Else
-          _events(_active_\gadget, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
-        EndIf
-      EndIf
     EndMacro
     
+    ;-
     Procedure.b Arrow(X.l,Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1)
       Protected I
       
@@ -687,13 +689,17 @@ CompilerIf Not Defined(Bar, #PB_Module)
             RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
           EndIf
           
+          *this\text\x = 6
+          *this\text\height = TextHeight("A")
+          
           ForEach \tab\_s()
             If \tab\_s()\text\change
               \tab\_s()\x = \bar\max + 1
-              \tab\_s()\text\width = 40;TextWidth(\tab\_s()\text\string)
-              \tab\_s()\text\height = TextHeight("A")
-              \tab\_s()\text\x = \tab\_s()\x + 4
-              \tab\_s()\text\y = \tab\_s()\y + (\tab\_s()\height - \tab\_s()\text\height)/2
+              
+              \tab\_s()\text\width = *this\text\x*2 + TextWidth(\tab\_s()\text\string)
+              \tab\_s()\text\height = *this\text\height
+              \tab\_s()\text\x = *this\text\x + \tab\_s()\x
+              \tab\_s()\text\y = *this\text\y + \tab\_s()\y + (\tab\_s()\height - \tab\_s()\text\height)/2
               
               \tab\_s()\width = \tab\_s()\text\width
               \bar\max + \tab\_s()\width + Bool(\tab\_s()\index <> \count\items - 1) + Bool(\tab\_s()\index = \count\items - 1)*2
@@ -701,8 +707,18 @@ CompilerIf Not Defined(Bar, #PB_Module)
             EndIf
           Next
           
+          Static max
+          If max <> \bar\max
+            ; Debug \bar\max
+           ; *this\resize | #__resize_change
+            Update(*this)
+           ; *this\resize &~ #__resize_change
+            max = \bar\max
+          EndIf
+          
           Protected x = \bar\button[#__b_3]\x
           Protected y = \bar\button[#__b_3]\y
+          
           ForEach \tab\_s()
             ; Draw thumb
             DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
@@ -1026,9 +1042,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Procedure.b Draw(*this._s_widget)
       With *this
         If \width[#__c_4] > 0 And \height[#__c_4] > 0
-          ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
-          
-          If \text 
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Defined(fixme, #PB_Module)
+            ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
+          CompilerEndIf
+    
+          If \text\string 
             If \text\fontID 
               DrawingFont(\text\fontID)
             EndIf
@@ -1415,7 +1433,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             Else 
               ; Left button coordinate on horizontal scroll bar
               *this\bar\button[#__b_1]\y = *this\y           + 1 ; white line size
-              *this\bar\button[#__b_1]\height = *this\__height   ; *this\height - 1 ; white line size
+              *this\bar\button[#__b_1]\height = *this\height - 1 ; *this\__height   ; white line size
               *this\bar\button[#__b_1]\x = *this\x 
               *this\bar\button[#__b_1]\width = *this\bar\button[#__b_1]\len 
             EndIf
@@ -1431,7 +1449,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             Else 
               ; Right button coordinate on horizontal scroll bar
               *this\bar\button[#__b_2]\y = *this\y           + 1 ; white line size
-              *this\bar\button[#__b_2]\height = *this\__height   ; *this\height - 1 ; white line size
+              *this\bar\button[#__b_2]\height = *this\height - 1 ; *this\__height   ; white line size
               *this\bar\button[#__b_2]\width = *this\bar\button[#__b_2]\len 
               *this\bar\button[#__b_2]\x = *this\X+*this\width-*this\bar\button[#__b_2]\width 
             EndIf
@@ -1449,58 +1467,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
             *this\bar\button[#__b_3]\height = *this\__height;*this\bar\button[#__b_1]\height
             *this\bar\button[#__b_3]\width = *this\bar\max
             *this\bar\button[#__b_3]\x = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
-            ;*this\bar\button[#__b_3]\x = (*this\bar\area\pos + *this\bar\area\len + _page_pos_(*this\bar, *this\bar\thumb\pos)) - *this\bar\max
-            ;*this\bar\button[#__b_3]\x = (*this\bar\area\pos + *this\bar\min + Round(((*this\bar\thumb\pos-*this\bar\area\pos) / *this\bar\scroll_increment) , #PB_Round_Nearest)) - *this\bar\max
-            ; *this\bar\button[#__b_3]\x = *this\bar\area\pos+_page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\button[#__b_3]\width; *this\bar\page\pos + (*this\bar\button[#__b_3]\width) ; (*this\bar\thumb\pos+*this\bar\button[#__b_1]\len-(*this\bar\button[#__b_3]\width-*this\bar\thumb\len)/2); + *this\bar\max)
           EndIf
           ;EndIf
-          
-          If *this\bar\thumb\change
-            
-            ;             If *this\parent And 
-            ;                *this\parent\scroll
-            ;               ; Debug  ""+*this\type+" "+*this\parent\type
-            ;               
-            ;               If *this\bar\vertical
-            ;                 If *this\parent\scroll\v = *this
-            ;                   *this\parent\change =- 1
-            ;                   *this\parent\scroll\y =- *this\bar\page\pos
-            ;                   ; ScrollArea childrens auto resize 
-            ;                   If *this\parent\container
-            ;                     _move_childrens_(*this\parent, 0, *this\bar\thumb\change)
-            ;                   EndIf
-            ;                 EndIf
-            ;               Else
-            ;                 If *this\parent\scroll\h = *this
-            ;                   *this\parent\change =- 1
-            ;                   *this\parent\scroll\x =- *this\bar\page\pos
-            ;                   ; ScrollArea childrens auto resize 
-            ;                   If *this\parent\container
-            ;                     _move_childrens_(*this\parent, *this\bar\thumb\change, 0)
-            ;                   EndIf
-            ;                 EndIf
-            ;               EndIf
-            ;             EndIf
-            
-            ;       ; bar change
-            ;       Post(#__Event_StatusChange, *this, *this\bar\from, *this\bar\direction)
-            ; *this\bar\thumb\change = 0
-          EndIf
         EndIf
         
-        
-        If \type = #PB_GadgetType_TabBar
-          ;Debug  ""+\bar\max +" "+ \bar\page\len
-          \bar\hide = Bool(Not (\bar\max > \bar\page\len))
-          
-          If \bar\hide
-            \bar\page\pos = \bar\min
-            ;\bar\thumb\pos = ThumbPos(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
-            ; ProcedureReturn Update_Scroll(*this)
-          EndIf
-          
-          ProcedureReturn \bar\hide
-        EndIf
+        ProcedureReturn Bool(\resize & #__resize_change)
       EndWith
     EndProcedure
     
@@ -1789,10 +1760,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
         If *this\bar\area\len < *this\bar\button[#__b_3]\len 
           *this\bar\area\len = *this\bar\button[#__b_3]\len 
         Else
-          ; if SetState(height-value or width-value)
-          If *this\bar\button[#__b_3]\fixed < 0 
-            *this\bar\page\pos = *this\bar\area\len + *this\bar\button[#__b_3]\fixed
-            *this\bar\button[3]\fixed = 0
+          If *this\type <> #PB_GadgetType_TabBar
+            ; if SetState(height-value or width-value)
+            If *this\bar\button[#__b_3]\fixed < 0 
+              *this\bar\page\pos = *this\bar\area\len + *this\bar\button[#__b_3]\fixed
+              *this\bar\button[3]\fixed = 0
+            EndIf
           EndIf
         EndIf
         
@@ -2112,10 +2085,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     Procedure.b Change(*bar._s_bar, ScrollPos.f)
       With *bar
-        ;Debug  ScrollPos
         If ScrollPos < \min 
-          ; if SetState(height-value or width-value)
-          \button[#__b_3]\fixed = ScrollPos
+          ;If *this\type <> #PB_GadgetType_TabBar
+            ; if SetState(height-value or width-value)
+            \button[#__b_3]\fixed = ScrollPos
+          ;EndIf
           ScrollPos = \min 
           
         ElseIf \max And ScrollPos > \page\end ;= (\max-\page\len)
@@ -2492,7 +2466,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure.i Tab(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
-      ProcedureReturn Create(#__Type_TabBar, Root()\opened, x,y,width,height, min,max,pagelength, 40, #__bar_child|flag, round, 1)
+      ProcedureReturn Create(#__Type_TabBar, Root()\opened, x,y,width,height, min,max,pagelength, 40, #__bar_child|flag, round, 40)
     EndProcedure
 
     Procedure.i Scroll(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
@@ -2664,6 +2638,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
         
         *this\bar\inverted = Bool(Flag & #__bar_Inverted = Bool(*this\type <> #PB_GadgetType_TabBar) * #__bar_Inverted)
         
+        _set_text_flag_(*this, flag)
+        
         ; - Create Scroll
         If *this\type = #__Type_ScrollBar
           *this\class = "Scroll"
@@ -2756,7 +2732,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           
           *this\bar\button[#__b_1]\interact = #True
           *this\bar\button[#__b_2]\interact = #True
-          ;*this\bar\button[#__b_3]\interact = #True
+          *this\bar\button[#__b_3]\interact = #True
           
           *this\bar\button[#__b_1]\round = *this\round
           *this\bar\button[#__b_2]\round = *this\round
@@ -3139,47 +3115,19 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ElseIf _event_type_ = #__Event_LeftButtonDown
         *this\bar\state = *this\bar\from
         
+        If *this\bar\button[*this\bar\from]\color\state = #__s_1
+          *this\bar\button[*this\bar\from]\color\state = #__s_2
+        EndIf
+        
         ;       If *this\index[#__s_1] =- 1
         Select *this\bar\from ; #__s_1
           Case #__b_1         ; *this\bar\button[#__b_1]\color\state
-            If Bar::Change(*this\bar, *this\bar\page\pos + (Bool(*this\bar\inverted) * *this\bar\scroll_step) - (Bool(Not *this\bar\inverted) * *this\bar\scroll_step))
-              If Not Bar::_in_start_(*this\bar) And 
-                 *this\bar\button[#__b_2]\color\state = #__s_3 
-                
-                Debug " enable tab button - right"
-                *this\bar\button[#__b_2]\color\state = #__s_0
-              EndIf
-              
-              *this\bar\button[#__b_1]\color\state = #__s_2
-              If *this\type = #__Type_ScrollBar Or
-                 *this\type = #__Type_TabBar Or
-                 *this\type = #__Type_Spin
-                Bar::Update(*this) ; *this\bar\thumb\pos = _bar_ThumbPos(*this, _bar_invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted))
-              EndIf
-              Repaint = #True
-            EndIf
-            
+            Repaint = Bar::SetState(*this, *this\bar\page\pos + (Bool(*this\bar\inverted) * *this\bar\scroll_step) - (Bool(Not *this\bar\inverted) * *this\bar\scroll_step))
+             
           Case #__b_2 ; *this\bar\button[#__b_2]\color\state 
-            If Bar::Change(*this\bar, Bool(*this\bar\inverted) * (*this\bar\page\pos - *this\bar\scroll_step) + Bool(Not *this\bar\inverted) * (*this\bar\page\pos + *this\bar\scroll_step))
-              If Not Bar::_in_stop_(*this\bar) And 
-                 *this\bar\button[#__b_1]\color\state = #__s_3 
-                
-                Debug " enable tab button - left"
-                *this\bar\button[#__b_1]\color\state = #__s_0
-              EndIf
-              
-              *this\bar\button[#__b_2]\color\state = #__s_2 
-              If *this\type = #__Type_ScrollBar Or
-                 *this\type = #__Type_TabBar Or
-                 *this\type = #__Type_Spin
-                Bar::Update(*this) ; *this\bar\thumb\pos = _bar_ThumbPos(*this, _bar_invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted))
-              EndIf
-              Repaint = #True
-            EndIf
+            Repaint = Bar::SetState(*this, *this\bar\page\pos - (Bool(*this\bar\inverted) * *this\bar\scroll_step) + (Bool(Not *this\bar\inverted) * *this\bar\scroll_step))
             
           Case #__b_3 ; *this\bar\button[#__b_3]\color\state
-                      ;If *this\bar\button[#__b_3]\color\state <> #__s_2 
-            *this\bar\button[#__b_3]\color\state = #__s_2
             If *this\bar\vertical
               delta = _mouse_y_ - *this\bar\thumb\pos
             Else
@@ -3187,7 +3135,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
             EndIf
             
             Repaint = delta
-            ;EndIf
             
         EndSelect
         
@@ -3724,7 +3671,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                             ;                                          Button_1 = Bar::Scroll(0, 0, 0, 0, 10, 100, 50); No need to specify size or coordinates
     
     AddItem(Button_1, -1, "Tab_0")
-    AddItem(Button_1, -1, "Tab_1")
+    AddItem(Button_1, -1, "Tab long long 1")
     AddItem(Button_1, -1, "Tab_2")
     
     Button_2 = Bar::ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
@@ -3763,5 +3710,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----T+------------f-----------------------------------------frdx0----------6-8--------
+; Folding = -----j+-------------+----------------------------------------f8dx0-4-----4-z-4--------
 ; EnableXP
