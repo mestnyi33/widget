@@ -133,7 +133,7 @@ Module Editor
   
   Macro _repaint_(_this_)
     If _this_\root And Not _this_\repaint : _this_\repaint = 1
-      PostEvent(#PB_Event_Gadget, _this_\root\window, _this_\root\canvas, #__Event_Repaint);, _this_)
+      PostEvent(#PB_Event_Gadget, _this_\root\window, _this_\root\canvas\gadget, #__Event_Repaint);, _this_)
     EndIf
   EndMacro 
   
@@ -152,7 +152,7 @@ Module Editor
   ;-
   ;- PUBLIC
   Procedure _start_drawing_(*this._s_widget)
-    If StartDrawing(CanvasOutput(*this\root\canvas)) 
+    If StartDrawing(CanvasOutput(*this\root\canvas\gadget)) 
       
       If *this\text\fontID
         DrawingFont(*this\text\fontID) 
@@ -1742,7 +1742,7 @@ Module Editor
   EndProcedure
   
   Procedure ReDraw(*this._s_widget)
-    If *this And *this\root And StartDrawing(CanvasOutput(*this\root\canvas))
+    If *this And *this\root And StartDrawing(CanvasOutput(*this\root\canvas\gadget))
       ; If *this\root\fontID : DrawingFont(*this\root\fontID) : EndIf
       FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $FFf0f0f0)
       
@@ -2041,7 +2041,7 @@ Module Editor
             ;             EndIf
           EndIf
           
-          ;           If *this And StartDrawing(CanvasOutput(*this\root\canvas))
+          ;           If *this And StartDrawing(CanvasOutput(*this\root\canvas\gadget))
           ;             If \text\fontID 
           ;               DrawingFont(\text\fontID) 
           ;             EndIf
@@ -2736,7 +2736,7 @@ Module Editor
                       *this\row\box\checked = 1
                       
                       Debug "sel - "+\row\_s()\text\edit[2]\width
-                      SetGadgetAttribute(*this\root\canvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
+                      SetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
                     Else
                       ; reset items selection
                       PushListPosition(*this\row\_s())
@@ -2859,7 +2859,7 @@ Module Editor
                     ;                     EndIf
                     ;Repaint = _edit_sel_set_(*this, *this\index[1], Repaint)
                     
-                    SetGadgetAttribute(*this\root\canvas, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
+                    SetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
                   Else
                     *this\text\caret\pos[2] = _text_caret_(*this)
                     *this\row\_s()\text\edit[2]\len = 0
@@ -2947,14 +2947,14 @@ Module Editor
           Debug " -- Canvas repaint -- "+EventGadget
           
         Case #__Event_Input 
-          \root\keyboard\input = GetGadgetAttribute(\root\canvas, #PB_Canvas_Input)
-          \root\keyboard\key[1] = GetGadgetAttribute(\root\canvas, #PB_Canvas_Modifiers)
+          \root\keyboard\input = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_Input)
+          \root\keyboard\key[1] = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_Modifiers)
         Case #__Event_KeyDown, #__Event_KeyUp
-          \root\keyboard\key = GetGadgetAttribute(\root\canvas, #PB_Canvas_Key)
-          \root\keyboard\key[1] = GetGadgetAttribute(\root\canvas, #PB_Canvas_Modifiers)
+          \root\keyboard\key = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_Key)
+          \root\keyboard\key[1] = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_Modifiers)
         Case #__Event_MouseEnter, #__Event_MouseMove, #__Event_MouseLeave
-          \root\mouse\x = GetGadgetAttribute(\root\canvas, #PB_Canvas_MouseX)
-          \root\mouse\y = GetGadgetAttribute(\root\canvas, #PB_Canvas_MouseY)
+          \root\mouse\x = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_MouseX)
+          \root\mouse\y = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_MouseY)
         Case #__Event_LeftButtonDown, #__Event_LeftButtonUp, 
              #__Event_MiddleButtonDown, #__Event_MiddleButtonUp, 
              #__Event_RightButtonDown, #__Event_RightButtonUp
@@ -2964,7 +2964,7 @@ Module Editor
                                   (Bool(EventType = #__Event_MiddleButtonDown) * #PB_Canvas_MiddleButton) |
                                   (Bool(EventType = #__Event_RightButtonDown) * #PB_Canvas_RightButton) 
           CompilerElse
-            \root\mouse\buttons = GetGadgetAttribute(\root\canvas, #PB_Canvas_Buttons)
+            \root\mouse\buttons = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_Buttons)
           CompilerEndIf
       EndSelect
       
@@ -2978,8 +2978,8 @@ Module Editor
             Repaint = 1
           EndIf
           
-        Case #__Event_Resize : ResizeGadget(\root\canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          Repaint | Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\root\canvas)-*this\x*2, GadgetHeight(\root\canvas)-*this\y*2)
+        Case #__Event_Resize : ResizeGadget(\root\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Repaint | Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\root\canvas\gadget)-*this\x*2, GadgetHeight(\root\canvas\gadget)-*this\y*2)
       EndSelect
       
       Repaint | events(*this, EventType)
@@ -3154,13 +3154,13 @@ Module Editor
       With *this
         *this\root = AllocateStructure(_s_root)
         *this\root\window = GetActiveWindow()
-        *this\root\canvas = Gadget
+        *this\root\canvas\gadget = Gadget
         GetActive() = *this\root
         GetActive()\root = *this\root
         
         ;
         If *this\repaint
-          PostEvent(#PB_Event_Gadget, *this\root\window, *this\root\canvas, constants::#__Event_Repaint)
+          PostEvent(#PB_Event_Gadget, *this\root\window, *this\root\canvas\gadget, constants::#__Event_Repaint)
         EndIf
         
         SetGadgetData(Gadget, *this)

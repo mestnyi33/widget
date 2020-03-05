@@ -6,6 +6,8 @@
     
     ;- - CONSTANTs
     ;{
+    #__from_mouse_state = 0
+    
     #PB_GadgetType_TabBar = 100
     
     #__arrow_type = 1
@@ -304,6 +306,7 @@
       #__bar_inverted = #__flag_inverted
       
       #__bar_nobuttons = #__bar_buttonSize
+      #__bar_child
     EndEnumeration
     
     
@@ -395,6 +398,7 @@
     #__Type_Popup         =- 3
     #__Type_Menu          =- 2
     #__Type_Window        =- 1
+    #__Type_TabBar        = #PB_GadgetType_TabBar
     
     #__Type_Unknown       = #PB_GadgetType_Unknown
     #__Type_Button        = #PB_GadgetType_Button

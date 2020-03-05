@@ -1,6 +1,6 @@
 ﻿IncludePath "../"
-;XIncludeFile "widgets().pbi"
-XIncludeFile "w_window.pb"
+XIncludeFile "widgets().pbi"
+;XIncludeFile "w_window.pb"
 
 ;- 
 ;- example

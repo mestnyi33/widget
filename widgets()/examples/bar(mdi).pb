@@ -264,5 +264,5 @@ Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 4-p---
+; Folding = 4-6---
 ; EnableXP

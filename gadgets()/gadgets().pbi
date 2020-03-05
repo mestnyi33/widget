@@ -679,7 +679,7 @@ DeclareModule Gadget
       If structures::*event\widget 
         Protected *this.Structures::_S_widget = structures::*event\widget
         If *this\root
-          ProcedureReturn *this\root\canvas
+          ProcedureReturn *this\root\canvas\gadget
         Else
           ProcedureReturn PB(EventGadget)()
         EndIf

@@ -1145,14 +1145,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
               *this\bar\button[#__b_1]\x = *this\x 
               *this\bar\button[#__b_1]\width = *this\width/2-Bool(Not *this\width%2)
             EndIf
-            
-            If *this\bar\vertical
-              *this\bar\button[#__b_3]\width = 0 
-              *this\bar\button[#__b_3]\height = 0                             
-            Else
-              *this\bar\button[#__b_3]\height = 0
-              *this\bar\button[#__b_3]\width = 0                                 
-            EndIf
           EndIf
           
           If *this\bar\thumb\change 
@@ -1183,7 +1175,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             EndIf
             
             ;       ; bar change
-            ;       Post(#__Event_StatusChange, *this, *this\from, *this\bar\direction)
+            ;       Post(#__Event_StatusChange, *this, *this\bar\from, *this\bar\direction)
             ; *this\bar\thumb\change = 0
           EndIf
           
@@ -1281,7 +1273,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             ;             EndIf
             
             ;       ; bar change
-            ;       Post(#__Event_StatusChange, *this, *this\from, *this\bar\direction)
+            ;       Post(#__Event_StatusChange, *this, *this\bar\from, *this\bar\direction)
             ; *this\bar\thumb\change = 0
           EndIf
         EndIf
@@ -2169,7 +2161,255 @@ CompilerIf Not Defined(Bar, #PB_Module)
       *this\event\callback = *callBack
     EndProcedure
     
+    Macro _entered_(_button_)
+      Bool(*this\bar\from = _button_ And *this\bar\button[_button_]\color\state <> #__s_0)
+    EndMacro
+    
+    Procedure _events_button_(*this._s_widget, _event_type_, _mouse_x_, _mouse_y_)
+      Protected Repaint
+      
+      If _event_type_ = #__Event_MouseMove Or
+         _event_type_ = #__Event_MouseEnter Or
+         _event_type_ = #__Event_MouseLeave Or
+         _event_type_ = #__Event_LeftButtonUp
+         
+        If _event_type_ = #__Event_LeftButtonUp And 
+           *this\bar\from >= 0 And 
+           *this\bar\button[*this\bar\from]\interact And
+           *this\bar\button[*this\bar\from]\color\state <> #__s_3 And
+           *this\bar\button[*this\bar\from]\color\state <> #__s_1
+          *this\bar\button[*this\bar\from]\color\state = #__s_1
+          Repaint = #True
+        EndIf
+        
+        ; If Not (*this\bar\from >=0 And *this\bar\button[*this\bar\from]\color\state = #__s_2) 
+        ; If Not (*this\root\mouse\buttons And _event_type_ <> #__Event_LeftButtonUp)
+        If (*this\bar\state =- 1) 
+          
+          If *this\bar\button[#__b_3]\interact And
+             *this\bar\button[#__b_3]\color\state <> #__s_3 And
+             _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_3])
+            
+            If *this\bar\from <> #__b_3
+              If *this\bar\button[#__b_3]\color\state <> #__s_3 And 
+                 *this\bar\button[#__b_3]\color\state <> #__s_1
+                *this\bar\button[#__b_3]\color\state = #__s_1
+              EndIf
+              
+              If *this\bar\from = #__b_1
+                Debug " leave button - (1 >> 3)"
+                If *this\bar\button[#__b_1]\color\state <> #__s_3 And 
+                   *this\bar\button[#__b_1]\color\state <> #__s_0 
+                  *this\bar\button[#__b_1]\color\state = #__s_0
+                EndIf
+              EndIf
+              
+              If *this\bar\from = #__b_2
+                Debug " leave button - (2 >> 3)"
+                If *this\bar\button[#__b_2]\color\state <> #__s_3 And 
+                   *this\bar\button[#__b_2]\color\state <> #__s_0  
+                  *this\bar\button[#__b_2]\color\state = #__s_0
+                EndIf
+              EndIf
+              
+              If  Not *this\root\mouse\buttons And *this\cursor
+                ; set_cursor(*this, *this\cursor)
+                SetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Cursor, *this\cursor)
+              EndIf
+              
+              *this\bar\from = #__b_3
+              Debug " enter button - 3"
+              Repaint = #True
+            EndIf
+            
+          ElseIf *this\bar\button[#__b_2]\interact And
+                 *this\bar\button[#__b_2]\color\state <> #__s_3 And 
+                 _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_2])
+            
+            If *this\bar\from <> #__b_2
+              If *this\bar\button[#__b_2]\color\state <> #__s_3 And
+                 *this\bar\button[#__b_2]\color\state <> #__s_1
+                *this\bar\button[#__b_2]\color\state = #__s_1
+              EndIf
+              
+              If *this\bar\from = #__b_1
+                Debug " leave button - (1 >> 2)"
+                If *this\bar\button[#__b_1]\color\state <> #__s_3 And
+                   *this\bar\button[#__b_1]\color\state <> #__s_0 
+                  *this\bar\button[#__b_1]\color\state = #__s_0
+                EndIf
+              EndIf
+              
+              If *this\bar\from = #__b_3
+                Debug " leave button - (3 >> 2)"
+                If *this\bar\button[#__b_3]\color\state <> #__s_3 And 
+                   *this\bar\button[#__b_3]\color\state <> #__s_0  
+                  *this\bar\button[#__b_3]\color\state = #__s_0
+                EndIf
+              EndIf
+              
+              *this\bar\from = #__b_2
+              Debug " enter button - 2"
+              Repaint = #True
+            EndIf
+            
+          ElseIf *this\bar\button[#__b_1]\interact And 
+                 *this\bar\button[#__b_1]\color\state <> #__s_3 And 
+                 _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_1])
+            
+            If *this\bar\from <> #__b_1
+              If *this\bar\button[#__b_1]\color\state <> #__s_3 And 
+                 *this\bar\button[#__b_1]\color\state <> #__s_1
+                *this\bar\button[#__b_1]\color\state = #__s_1
+              EndIf
+              
+              If *this\bar\from = #__b_2
+                Debug " leave button - (2 >> 1)"
+                If *this\bar\button[#__b_2]\color\state <> #__s_3 And 
+                   *this\bar\button[#__b_2]\color\state <> #__s_0  
+                  *this\bar\button[#__b_2]\color\state = #__s_0
+                EndIf
+              EndIf
+              
+              If *this\bar\from = #__b_3
+                Debug " leave button - (3 >> 1)"
+                If *this\bar\button[#__b_3]\color\state <> #__s_3 And
+                   *this\bar\button[#__b_3]\color\state <> #__s_0  
+                  *this\bar\button[#__b_3]\color\state = #__s_0
+                EndIf
+              EndIf
+              
+              *this\bar\from = #__b_1
+              Debug " enter button - 1"
+              Repaint = #True
+            EndIf
+            
+          Else
+            If *this\bar\from <>- 1
+              If *this\bar\from = #__b_1
+                Debug " leave button - 1"
+                If *this\bar\button[#__b_1]\color\state <> #__s_3 And
+                   *this\bar\button[#__b_1]\color\state <> #__s_0 
+                  *this\bar\button[#__b_1]\color\state = #__s_0
+                EndIf
+              EndIf
+              
+              If *this\bar\from = #__b_2
+                Debug " leave button - 2"
+                If *this\bar\button[#__b_2]\color\state <> #__s_3 And
+                   *this\bar\button[#__b_2]\color\state <> #__s_0  
+                  *this\bar\button[#__b_2]\color\state = #__s_0
+                EndIf
+              EndIf
+              
+              If *this\bar\from = #__b_3
+                Debug " leave button - 3"
+                If *this\bar\button[#__b_3]\color\state <> #__s_3 And 
+                   *this\bar\button[#__b_3]\color\state <> #__s_0  
+                  *this\bar\button[#__b_3]\color\state = #__s_0
+                EndIf
+                
+                If Not *this\root\mouse\buttons And *this\cursor
+                  ;                 set_cursor(*this, #PB_Cursor_Default)
+                  SetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
+                EndIf
+              EndIf
+              
+              *this\bar\from =- 1
+              Repaint = #True
+            EndIf
+            
+            If *this\count\items
+              ForEach *this\tab\_s()
+                If *this\tab\_s()\draw
+                  If _from_point_(_mouse_x_, _mouse_y_, *this\tab\_s()) And
+                     _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_3])
+                    
+                    If *this\index[#__s_1] <> *this\tab\_s()\index
+                      If *this\index[#__s_1] >= 0
+                        Debug " leave tab - " + *this\index[#__s_1]
+                      EndIf
+                      
+                      *this\index[#__s_1] = *this\tab\_s()\index
+                      Debug " enter tab - " + *this\index[#__s_1]
+                    EndIf
+                    Break
+                    
+                  ElseIf *this\index[#__s_1] = *this\tab\_s()\index
+                    Debug " leave tab - " + *this\index[#__s_1]
+                    *this\index[#__s_1] =- 1
+                    Break
+                  EndIf
+                EndIf
+              Next
+            EndIf
+          EndIf
+        EndIf
+        
+      ElseIf _event_type_ = #__Event_LeftButtonDown
+        ;       If *this\index[#__s_1] =- 1
+        Select *this\bar\from ; #__s_1
+          Case #__b_1     ; *this\bar\button[#__b_1]\color\state
+            If Bar::Change(*this\bar, *this\bar\page\pos + (Bool(*this\bar\inverted) * *this\bar\scroll_step) - (Bool(Not *this\bar\inverted) * *this\bar\scroll_step))
+              If Not Bar::_in_start_(*this\bar) And 
+                 *this\bar\button[#__b_2]\color\state = #__s_3 
+                
+                Debug " enable tab button - right"
+                *this\bar\button[#__b_2]\color\state = #__s_0
+              EndIf
+              
+              *this\bar\button[#__b_1]\color\state = #__s_2
+              If *this\type = #__Type_ScrollBar Or
+                 *this\type = #__Type_Spin
+                Bar::Update(*this) ; *this\bar\thumb\pos = _bar_ThumbPos(*this, _bar_invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted))
+              EndIf
+              Repaint = #True
+            EndIf
+            
+          Case #__b_2 ; *this\bar\button[#__b_2]\color\state 
+            If Bar::Change(*this\bar, Bool(*this\bar\inverted) * (*this\bar\page\pos - *this\bar\scroll_step) + Bool(Not *this\bar\inverted) * (*this\bar\page\pos + *this\bar\scroll_step))
+              If Not Bar::_in_stop_(*this\bar) And 
+                 *this\bar\button[#__b_1]\color\state = #__s_3 
+                
+                Debug " enable tab button - left"
+                *this\bar\button[#__b_1]\color\state = #__s_0
+              EndIf
+              
+              *this\bar\button[#__b_2]\color\state = #__s_2 
+              If *this\type = #__Type_ScrollBar Or
+                 *this\type = #__Type_Spin
+                Bar::Update(*this) ; *this\bar\thumb\pos = _bar_ThumbPos(*this, _bar_invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted))
+              EndIf
+              Repaint = #True
+            EndIf
+            
+          Case #__b_3 ; *this\bar\button[#__b_3]\color\state
+            Static delta
+            ;If *this\bar\button[#__b_3]\color\state <> #__s_2 
+            *this\bar\button[#__b_3]\color\state = #__s_2
+            If *this\bar\vertical
+              delta = _mouse_y_ - *this\bar\thumb\pos
+            Else
+              delta = _mouse_x_ - *this\bar\thumb\pos
+            EndIf
+            
+            Repaint = delta
+            ;EndIf
+            
+        EndSelect
+        
+        *this\bar\state = *this\bar\from
+        ;       Else
+        ;         Repaint = SetState(*this, *this\index[#__s_1])
+        ;       EndIf
+      EndIf
+      
+      ProcedureReturn Repaint
+    EndProcedure
+    
     Procedure.b Events(*this._s_widget, EventType.l, mouse_x.l, mouse_y.l, Wheel_X.b=0, Wheel_Y.b=0)
+      ProcedureReturn _events_button_(*this, EventType, mouse_x, mouse_y)
+      
       Protected Result, from =- 1 
       Static cursor_change, LastX, LastY, Last, *leave._s_widget, Down
       
@@ -2308,7 +2548,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           If \from >= 0 And
              \bar\button[\from]\interact And
              \bar\button[\from]\color\state <> #__s_3
-              
+            
             If EventType = #__Event_LeftButtonUp
               ; Debug ""+#PB_Compiler_Line +" Мышь up"
               _callback_(*this, #__Event_LeftButtonUp)
@@ -2385,7 +2625,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             If from = 0 And 
                \bar\button[#__b_3]\interact And
                \bar\button[#__b_3]\color\state <> #__s_3
-               
+              
               If \bar\vertical
                 Result = SetPos(*this, (mouse_y-\bar\thumb\len/2))
               Else
@@ -2644,6 +2884,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         \y =- 2147483648
         \type = type
         \adress = *this
+        \bar\state =- 1
         \class = #PB_Compiler_Procedure
         
         CompilerIf Defined(widget, #PB_Module)
@@ -2719,9 +2960,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
           \color = _get_colors_()
           \color\alpha = 255
           \color\back = $FFFFFFFF
-          
-          \bar\button[#__b_1]\interact = #True
-          \bar\button[#__b_2]\interact = #True
           
           ;\bar\button[#__b_3]\len = Size
           \bar\button[#__b_1]\len = Size
@@ -2833,6 +3071,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
       *this\y =- 2147483648
       *this\round = round
       *this\adress = *this
+      *this\bar\from =- 1
+      *this\bar\state =- 1
       *this\bar\scroll_step = 1.0
       *this\class = #PB_Compiler_Procedure
       *this\type = #PB_GadgetType_TabBar
@@ -2903,6 +3143,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
       *this\y =- 2147483648
       *this\round = round
       *this\adress = *this
+      *this\bar\from =- 1
+      *this\bar\state =- 1
       *this\bar\scroll_step = 1.0
       *this\class = #PB_Compiler_Procedure
       *this\type = #PB_GadgetType_ProgressBar
@@ -2955,6 +3197,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
       *this\y =- 2147483648
       *this\round = round
       *this\adress = *this
+      *this\bar\from =- 1
+      *this\bar\state =- 1
       *this\bar\scroll_step = 1.0
       *this\class = #PB_Compiler_Procedure
       *this\type = #PB_GadgetType_TrackBar
@@ -3045,6 +3289,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
         \index[#__s_1] =- 1
         \index[#__s_2] = 0
         
+        *this\bar\from =- 1
+        *this\bar\state =- 1
+      
         \color = _get_colors_()
         \color\back = $FFF9F9F9
         
@@ -3451,5 +3698,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------------------------0----8-----------------+--4-0------------------
+; Folding = ----------------------------------------------------------------------0--4ff---------
 ; EnableXP

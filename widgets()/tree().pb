@@ -59,7 +59,7 @@ DeclareModule Tree
   EndMacro
   
   Macro GetCanvas(_this_)
-    _this_\root\canvas
+    _this_\root\canvas\gadget
   EndMacro
   
   Global *event._s_event = AllocateStructure(_s_event)
@@ -280,9 +280,9 @@ Module Tree
           *event\active\row\selected\color\state = 3
         EndIf
         
-        If *this\root\canvas <> *event\active\root\canvas 
+        If *this\root\canvas\gadget <> *event\active\root\canvas\gadget 
           ; set lost focus canvas
-          PostEvent(#PB_Event_Gadget, *event\active\root\window, *event\active\root\canvas, #__Event_Repaint);, *event\active)
+          PostEvent(#PB_Event_Gadget, *event\active\root\window, *event\active\root\canvas\gadget, #__Event_Repaint);, *event\active)
         EndIf
         
         ;Result | Events(*event\active, #__Event_LostFocus, *event\active\root\mouse\x, *event\active\root\mouse\y)
@@ -346,7 +346,7 @@ Module Tree
       
       _this_\change = 1
       _this_\row\count = _this_\countitems
-      PostEvent(#PB_Event_Gadget, _this_\root\window, _this_\root\canvas, #__Event_Repaint, _this_)
+      PostEvent(#PB_Event_Gadget, _this_\root\window, _this_\root\canvas\gadget, #__Event_Repaint, _this_)
     EndIf  
   EndMacro
   
@@ -792,7 +792,7 @@ Module Tree
   Procedure.l ReDraw(*this._struct_, canvas_backcolor=#Null)
     If *this
       With *this
-        If StartDrawing(CanvasOutput(\root\canvas))
+        If StartDrawing(CanvasOutput(\root\canvas\gadget))
           If canvas_backcolor And *event\_draw = 0 : *event\_draw = 1
             FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), canvas_backcolor)
           EndIf
@@ -1338,7 +1338,7 @@ Module Tree
       
       ClearList(*this\row\_s())
       
-      If StartDrawing(CanvasOutput(*this\root\canvas))
+      If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
         Draw(*this)
         StopDrawing()
       EndIf
@@ -1727,7 +1727,7 @@ Module Tree
   
   Procedure tt_CallBack()
     ;     ;SetActiveWindow(*event\widget\root\window)
-    ;     ;SetActiveGadget(*event\widget\root\canvas)
+    ;     ;SetActiveGadget(*event\widget\root\canvas\gadget)
     ;     
     ;     If *event\widget\row\selected
     ;       *event\widget\row\selected\color\State = 0
@@ -1856,7 +1856,7 @@ Module Tree
             
             ; create tooltip on the item
             If Bool((*this\flag\buttons=0 And *this\flag\lines=0)) And *this\scroll\h\bar\max > *this\width[2]
-              tt_creare(*this, GadgetX(*this\root\canvas, #PB_Gadget_ScreenCoordinate), GadgetY(*this\root\canvas, #PB_Gadget_ScreenCoordinate))
+              tt_creare(*this, GadgetX(*this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate), GadgetY(*this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate))
             EndIf
             
             ; event mouse leave line
@@ -1881,7 +1881,7 @@ Module Tree
       Result | Bar::Events(*this\scroll\h, eventtype, mouse_x, mouse_y, *this\root\mouse\wheel\x, *this\root\mouse\wheel\y)
       
       If (*this\scroll\v\change Or *this\scroll\h\change)
-        If StartDrawing(CanvasOutput(*this\root\canvas))
+        If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
           _update_(*this, *this\row\_s())
           StopDrawing()
         EndIf
@@ -1933,7 +1933,7 @@ Module Tree
                 Wend
                 PopListPosition(*this\row\_s())
                 
-                If StartDrawing(CanvasOutput(*this\root\canvas))
+                If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
                   _update_(*this, *this\row\_s())
                   StopDrawing()
                 EndIf
@@ -2236,15 +2236,15 @@ Module Tree
       Case #__Event_Repaint
         Debug " -- Canvas repaint -- " + *this\row\count
       Case #__Event_MouseWheel
-        *this\root\mouse\wheel\y = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_WheelDelta)
+        *this\root\mouse\wheel\y = GetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_WheelDelta)
       Case #__Event_Input 
-        *this\root\keyboard\input = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_Input)
+        *this\root\keyboard\input = GetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Input)
       Case #__Event_KeyDown, #__Event_KeyUp
-        *this\root\keyboard\Key = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_Key)
-        *this\root\keyboard\Key[1] = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_Modifiers)
+        *this\root\keyboard\Key = GetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Key)
+        *this\root\keyboard\Key[1] = GetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Modifiers)
       Case #__Event_MouseEnter, #__Event_MouseMove, #__Event_MouseLeave
-        *this\root\mouse\x = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_MouseX)
-        *this\root\mouse\y = GetGadgetAttribute(*this\root\canvas, #PB_Canvas_MouseY)
+        *this\root\mouse\x = GetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_MouseX)
+        *this\root\mouse\y = GetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_MouseY)
         
     EndSelect
     
@@ -2267,7 +2267,7 @@ Module Tree
         If Not *this\root\mouse\buttons ; And *event\enter <> *this\parent
           Result | Events(*event\enter, #__Event_MouseLeave, mouse_x, mouse_y)
           
-          If *event\enter And *event\enter\root\canvas <> *this\root\canvas
+          If *event\enter And *event\enter\root\canvas\gadget <> *this\root\canvas\gadget
             ReDraw(*event\enter)
             ; _repaint_(*event\enter)
           EndIf
@@ -2345,8 +2345,8 @@ Module Tree
           \row\count = \countitems
           Repaint = 1
           
-        Case #__Event_Resize : ResizeGadget(\root\canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\root\canvas), GadgetHeight(\root\canvas))   
+        Case #__Event_Resize : ResizeGadget(\root\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+          Resize(*this, #PB_Ignore, #PB_Ignore, GadgetWidth(\root\canvas\gadget), GadgetHeight(\root\canvas\gadget))   
           
           If \scroll\v\bar\page\len And \scroll\v\bar\max<>\scroll\height-Bool(\flag\gridlines) And
              Bar::SetAttribute(\scroll\v, #__bar_Maximum, \scroll\height-Bool(\flag\gridlines))
@@ -2368,7 +2368,7 @@ Module Tree
             \height[2] = (\scroll\h\y + Bool(\scroll\h\hide) * \scroll\h\height) - \y[2]
           EndIf
           
-          If StartDrawing(CanvasOutput(\root\canvas))
+          If StartDrawing(CanvasOutput(\root\canvas\gadget))
             Draw(*this)
             StopDrawing()
           EndIf
@@ -2377,8 +2377,8 @@ Module Tree
       Repaint | CallBack(*this, EventType)
       
       If Repaint And 
-         StartDrawing(CanvasOutput(\root\canvas))
-        ; Debug \root\canvas
+         StartDrawing(CanvasOutput(\root\canvas\gadget))
+        ; Debug \root\canvas\gadget
         Draw(*this)
         StopDrawing()
       EndIf
@@ -2394,7 +2394,7 @@ Module Tree
       With *this
          *this\root = AllocateStructure(_s_root)
         *this\root\window = GetActiveWindow()
-        *this\root\canvas = Gadget
+        *this\root\canvas\gadget = Gadget
         GetActive() = *this\root
         GetActive()\root = *this\root
         
@@ -2444,7 +2444,7 @@ Module Tree
   EndProcedure
   
   Procedure Free(*this._struct_)
-    Protected Gadget = *this\root\canvas
+    Protected Gadget = *this\root\canvas\gadget
     
     ClearStructure(*this\scroll\v, _s_bar)
     ClearStructure(*this\scroll\h, _s_bar)
@@ -2686,7 +2686,7 @@ CompilerIf #PB_Compiler_IsMainFile
           *this\row\count = *this\countitems
           CallBack(*this, EventType)
           
-          If StartDrawing(CanvasOutput(*this\root\canvas))
+          If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
             If *event\_draw = 0
               *event\_draw = 1
               FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F6)
@@ -2718,7 +2718,7 @@ CompilerIf #PB_Compiler_IsMainFile
         DeleteElement(*List())
       EndIf
       
-      *List()\root\canvas = EventGadget()
+      *List()\root\canvas\gadget = EventGadget()
       *List()\root\window = EventWindow()
       
       Repaint | CallBack(*List(), EventType);, MouseX, MouseY)
@@ -2883,7 +2883,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If widget
       *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
-      *g\root\canvas = g_Canvas
+      *g\root\canvas\gadget = g_Canvas
       AddElement(*List()) : *List() = *g
     Else
       *g = GetGadgetData(Gadget(g, 10, 100, 210, 210, #__tree_CheckBoxes|#__tree_MultiSelect))
@@ -2913,7 +2913,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 11
     If widget
       *g = Tree(230, 100, 210, 210, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
-      *g\root\canvas = g_Canvas
+      *g\root\canvas\gadget = g_Canvas
       AddElement(*List()) : *List() = *g
     Else
       *g = GetGadgetData(Gadget(g, 160, 120, 210, 210, #__tree_AlwaysSelection))
@@ -2938,7 +2938,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 12
     *g = Tree(450, 100, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
      *g\root = AllocateStructure(_s_root)
-       *g\root\canvas = g_Canvas
+       *g\root\canvas\gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  2_example
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
@@ -2969,7 +2969,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 13
     *g = Tree(600+70, 100, 210, 210, #__tree_OptionBoxes|#__tree_NoButtons|#__tree_NoLines|#__tree_ClickSelect) ;                                        
     *g\root = AllocateStructure(_s_root)
-     *g\root\canvas = g_Canvas
+     *g\root\canvas\gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  4_example
     ; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
@@ -3000,7 +3000,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 14
     *g = Tree(750+135, 100, 103, 210, #__tree_NoButtons)                                         
     *g\root = AllocateStructure(_s_root)
-     *g\root\canvas = g_Canvas
+     *g\root\canvas\gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  5_example
     AddItem(*g, 0, "Tree_0", -1 )
@@ -3017,7 +3017,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 15
     *g = Tree(890+106, 100, 103, 210, #__tree_BorderLess|#__tree_Collapse)                                         
     *g\root = AllocateStructure(_s_root)
-     *g\root\canvas = g_Canvas
+     *g\root\canvas\gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;  6_example
     AddItem(*g, 0, "Tree_1", -1, 1) 
@@ -3196,7 +3196,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;
     SourceText = Tree(10, 10, 140, 140);, "Drag Text here", 130)   
     *g = SourceText
-    *g\root\canvas = g_Canvas
+    *g\root\canvas\gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     ;SourceImage = Image(160, 10, 140, 140, (#ImageSource), #PB_Image_Border) 
     ;SourceFiles = ExplorerList(310, 10, 290, 140, GetHomeDirectory(), #PB_Explorer_MultiSelect)
@@ -3215,12 +3215,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ;
     TargetText = Tree(10, 160, 140, 140);, "Drop Text here", 130)
     *g = TargetText
-    *g\root\canvas = g_Canvas
+    *g\root\canvas\gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     
     TargetImage = Tree(160, 160, 140, 140);, (#ImageTarget), #PB_Image_Border) 
     *g = TargetImage
-    *g\root\canvas = g_Canvas
+    *g\root\canvas\gadget = g_Canvas
     AddElement(*List()) : *List() = *g
     
     ;     TargetFiles = ListIcon(310, 160, 140, 140, "Drop Files here", 130)

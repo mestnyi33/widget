@@ -77,6 +77,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_button
     Structure _s_button Extends _s_coordinate
+      state.l
       *handle ;;;;;;
       
       len.l
@@ -98,6 +99,9 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
+      from.l
+      state.l
+      
       max.l
       min.l
       mode.i
@@ -494,6 +498,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       type_index.l
       type_count.l
       
+      _level.l ; ??????????? ???????
       level.l ; ??????????? ???????
       count._s_count
       List *childrens._s_widget()
@@ -529,13 +534,21 @@ CompilerIf Not Defined(structures, #PB_Module)
       _draw.l
       ;draw.b
       
+      ;??????????????????????
       List *childrens._s_widget()
       
     EndStructure
     
+    ;- - _s_canvas
+    Structure _s_canvas
+      window.i
+      gadget.i
+      gadget_set_cursor_widget.i
+    EndStructure
+    
     ;- - _s_root
     Structure _s_root Extends _s_widget
-      canvas.i
+      canvas._s_canvas
       *anchor._s_anchor
       
       *opened._s_widget    ; open list element
@@ -546,7 +559,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       keyboard._s_keyboard
       
       event_count.b
+      
       List *event_list._s_event()
+      List *_childrens._s_widget()
     EndStructure
 
     Global *event._s_event = AllocateStructure(_s_event)
@@ -558,5 +573,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = fxSGYAu
+; Folding = fxSGYAe-
 ; EnableXP

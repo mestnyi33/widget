@@ -453,7 +453,7 @@ CompilerIf Not Defined(Splitter, #PB_Module)
     ;-
     Procedure ReDraw(*This._s_widget)
       With *This
-        If StartDrawing(CanvasOutput(\root\Canvas))
+        If StartDrawing(CanvasOutput(\root\canvas\gadget))
           FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F0)
           
           Splitter::Draw(*This)
@@ -822,12 +822,12 @@ CompilerIf Not Defined(Splitter, #PB_Module)
       
       With *This
         \root\Window = EventWindow()
-        Mouse_X = GetGadgetAttribute(\root\Canvas, #PB_Canvas_MouseX)
-        Mouse_Y = GetGadgetAttribute(\root\Canvas, #PB_Canvas_MouseY)
+        Mouse_X = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_MouseX)
+        Mouse_Y = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_MouseY)
         
         Select EventType()
-          Case #PB_EventType_Resize : ResizeGadget(\root\Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-            If Splitter::Resize(*This, 0, 0, GadgetWidth(\root\Canvas), GadgetHeight(\root\Canvas)) 
+          Case #PB_EventType_Resize : ResizeGadget(\root\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+            If Splitter::Resize(*This, 0, 0, GadgetWidth(\root\canvas\gadget), GadgetHeight(\root\canvas\gadget)) 
               ReDraw(*This)
             EndIf
         EndSelect
@@ -951,13 +951,13 @@ CompilerIf Not Defined(Splitter, #PB_Module)
         With *this
           *this\root = AllocateStructure(_s_root)
           *this\root\window = GetActiveWindow()
-          *this\root\canvas = Gadget
+          *this\root\canvas\gadget = Gadget
           *event\active = *this\root
           *event\active\root = *this\root
           
           ;
           If *this\repaint
-            PostEvent(#PB_Event_Gadget, *this\root\window, *this\root\canvas, constants::#__Event_Repaint)
+            PostEvent(#PB_Event_Gadget, *this\root\window, *this\root\canvas\gadget, constants::#__Event_Repaint)
           EndIf
           
           SetGadgetData(Gadget, *this)
@@ -1034,7 +1034,7 @@ CompilerIf Not Defined(Splitter, #PB_Module)
       With *This
         If Splitter::SetState(*This, State) 
           ReDraw(*This)
-          PostEvent(#PB_Event_Gadget, \root\Window, \root\Canvas, #PB_EventType_Change)
+          PostEvent(#PB_Event_Gadget, \root\Window, \root\canvas\gadget, #PB_EventType_Change)
         EndIf
       EndWith
     EndProcedure
@@ -1065,7 +1065,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; PushListPosition(*List())
       ForEach *List()
-        ;If *List()\root And *List()\root\canvas = *event\root\canvas
+        ;If *List()\root And *List()\root\canvas\gadget = *event\root\canvas\gadget
         If Not *List()\hide
           Draw(*List())
         EndIf
@@ -1130,7 +1130,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *event\root = AllocateStructure(_s_root)
     *event\root\window = Window
-    *event\root\canvas = g_Canvas
+    *event\root\canvas\gadget = g_Canvas
     *event\active = *event\root
     *event\active\root = *event\root
     
@@ -1271,5 +1271,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -------086----8-----------ftT-
+; Folding = -------086----8-----------fvb-
 ; EnableXP
