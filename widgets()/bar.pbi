@@ -710,9 +710,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
           Static max
           If max <> \bar\max
             ; Debug \bar\max
-           ; *this\resize | #__resize_change
+            ; *this\resize | #__resize_change
             Update(*this)
-           ; *this\resize &~ #__resize_change
+            ; *this\resize &~ #__resize_change
             max = \bar\max
           EndIf
           
@@ -814,9 +814,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure.b Draw_Track(*this._s_widget)
-      *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
-      *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
-      *this\bar\button[#__b_3]\color\state = 2
+;       *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
+;        *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
+;       *this\bar\button[#__b_3]\color\state = #__s_2
       
       Draw_Scroll(*this)
       
@@ -1045,7 +1045,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Defined(fixme, #PB_Module)
             ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
           CompilerEndIf
-    
+          
           If \text\string 
             If \text\fontID 
               DrawingFont(\text\fontID)
@@ -1301,162 +1301,48 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     ;-
     Procedure.b Update_Scroll(*this._s_widget)
-      With *this
-        If *this\type = #PB_GadgetType_ScrollBar 
-          If *this\bar\button[#__b_1]\len 
-            If *this\bar\vertical 
-              ; Top button coordinate on vertical scroll bar
-              *this\bar\button[#__b_1]\x = *this\x           + 1 ; white line size
-              *this\bar\button[#__b_1]\width = *this\width   - 1 ; white line size
-              *this\bar\button[#__b_1]\y = *this\y 
-              *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\len                   
-            Else 
-              ; Left button coordinate on horizontal scroll bar
-              *this\bar\button[#__b_1]\y = *this\y           + 1 ; white line size
-              *this\bar\button[#__b_1]\height = *this\height - 1 ; white line size
-              *this\bar\button[#__b_1]\x = *this\x 
-              *this\bar\button[#__b_1]\width = *this\bar\button[#__b_1]\len 
-            EndIf
-          EndIf
-          
-          If *this\bar\button[#__b_2]\len 
-            If *this\bar\vertical 
-              ; Botom button coordinate on vertical scroll bar
-              *this\bar\button[#__b_2]\x = *this\x           + 1 ; white line size
-              *this\bar\button[#__b_2]\width = *this\width   - 1 ; white line size
-              *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\len 
-              *this\bar\button[#__b_2]\y = *this\Y+*this\height-*this\bar\button[#__b_2]\height
-            Else 
-              ; Right button coordinate on horizontal scroll bar
-              *this\bar\button[#__b_2]\y = *this\y           + 1 ; white line size
-              *this\bar\button[#__b_2]\height = *this\height - 1 ; white line size
-              *this\bar\button[#__b_2]\width = *this\bar\button[#__b_2]\len 
-              *this\bar\button[#__b_2]\x = *this\X+*this\width-*this\bar\button[#__b_2]\width 
-            EndIf
-          EndIf
-          
-          ; Thumb coordinate on scroll bar
-          If *this\bar\thumb\len
-            If *this\bar\vertical
-              *this\bar\button[#__b_3]\x = *this\bar\button[#__b_1]\x 
-              *this\bar\button[#__b_3]\width = *this\bar\button[#__b_1]\width 
-              *this\bar\button[#__b_3]\y = *this\bar\thumb\pos
-              *this\bar\button[#__b_3]\height = *this\bar\thumb\len                              
-            Else
-              *this\bar\button[#__b_3]\y = *this\bar\button[#__b_1]\y 
-              *this\bar\button[#__b_3]\height = *this\bar\button[#__b_1]\height
-              *this\bar\button[#__b_3]\x = *this\bar\thumb\pos 
-              *this\bar\button[#__b_3]\width = *this\bar\thumb\len                                  
-            EndIf
-            
-          Else
-            ; auto resize buttons
-            If *this\bar\vertical
-              *this\bar\button[#__b_2]\height = *this\height/2 
-              *this\bar\button[#__b_2]\y = *this\y+*this\bar\button[#__b_2]\height+Bool(*this\height%2) 
-              
-              *this\bar\button[#__b_1]\y = *this\y 
-              *this\bar\button[#__b_1]\height = *this\height/2-Bool(Not *this\height%2)
-              
-            Else
-              *this\bar\button[#__b_2]\width = *this\width/2 
-              *this\bar\button[#__b_2]\x = *this\x+*this\bar\button[#__b_2]\width+Bool(*this\width%2) 
-              
-              *this\bar\button[#__b_1]\x = *this\x 
-              *this\bar\button[#__b_1]\width = *this\width/2-Bool(Not *this\width%2)
-            EndIf
-            
-            If *this\bar\vertical
-              *this\bar\button[#__b_3]\width = 0 
-              *this\bar\button[#__b_3]\height = 0                             
-            Else
-              *this\bar\button[#__b_3]\height = 0
-              *this\bar\button[#__b_3]\width = 0                                 
-            EndIf
-          EndIf
-          
-          If *this\bar\thumb\change 
-            
-            If *this\parent And 
-               *this\parent\scroll
-              ; Debug  ""+*this\type+" "+*this\parent\type
-              
-              If *this\bar\vertical
-                If *this\parent\scroll\v = *this
-                  *this\parent\change =- 1
-                  *this\parent\scroll\y =- *this\bar\page\pos
-                  ; ScrollArea childrens auto resize 
-                  If *this\parent\container And *this\parent\count\childrens
-                    _move_childrens_(*this\parent, 0, *this\bar\thumb\change)
-                  EndIf
-                EndIf
-              Else
-                If *this\parent\scroll\h = *this
-                  *this\parent\change =- 1
-                  *this\parent\scroll\x =- *this\bar\page\pos
-                  ; ScrollArea childrens auto resize 
-                  If *this\parent\container And *this\parent\count\childrens
-                    _move_childrens_(*this\parent, *this\bar\thumb\change, 0)
-                  EndIf
-                EndIf
-              EndIf
-            EndIf
-            
-            ;       ; bar change
-            ;       Post(#__Event_StatusChange, *this, *this\bar\from, *this\bar\direction)
-            ; *this\bar\thumb\change = 0
-          EndIf
-          
-          \bar\hide = Bool(Not (\bar\max > \bar\page\len)) ; Bool(\bar\min = \bar\page\end) ; 
-          
-          If \bar\hide
-            \bar\page\pos = \bar\min
-            ;\bar\thumb\pos = ThumbPos(*this, _invert_(*this\bar, \bar\page\pos, \bar\inverted))
-            ; ProcedureReturn Update_Scroll(*this)
-          EndIf
-          
-          ProcedureReturn \bar\hide
+      If *this\type = #PB_GadgetType_ScrollBar 
+        *this\bar\hide = Bool(Not (*this\bar\max > *this\bar\page\len)) ; Bool(*this\bar\min = *this\bar\page\end) ; 
+        
+        If *this\bar\hide
+          *this\bar\page\pos = *this\bar\min
+          *this\bar\thumb\pos = _thumb_pos_(*this\bar, _invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted))
         EndIf
-      EndWith
-    EndProcedure
-    
-    Procedure.b Update_Tab(*this._s_widget)
-      With *this
-        If *this\type = #PB_GadgetType_TabBar 
-          If *this\bar\button[#__b_1]\len 
-            If *this\bar\vertical 
-              ; Top button coordinate on vertical scroll bar
-              *this\bar\button[#__b_1]\x = *this\x           + 1 ; white line size
-              *this\bar\button[#__b_1]\width = *this\__height    ; *this\width   - 1 ; white line size
-              *this\bar\button[#__b_1]\y = *this\y 
-              *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\len                   
-            Else 
-              ; Left button coordinate on horizontal scroll bar
-              *this\bar\button[#__b_1]\y = *this\y           + 1 ; white line size
-              *this\bar\button[#__b_1]\height = *this\height - 1 ; *this\__height   ; white line size
-              *this\bar\button[#__b_1]\x = *this\x 
-              *this\bar\button[#__b_1]\width = *this\bar\button[#__b_1]\len 
-            EndIf
+        
+        If *this\bar\button[#__b_1]\len 
+          If *this\bar\vertical 
+            ; Top button coordinate on vertical scroll bar
+            *this\bar\button[#__b_1]\x = *this\x           + 1 ; white line size
+            *this\bar\button[#__b_1]\width = *this\width   - 1 ; white line size
+            *this\bar\button[#__b_1]\y = *this\y 
+            *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\len                   
+          Else 
+            ; Left button coordinate on horizontal scroll bar
+            *this\bar\button[#__b_1]\y = *this\y           + 1 ; white line size
+            *this\bar\button[#__b_1]\height = *this\height - 1 ; white line size
+            *this\bar\button[#__b_1]\x = *this\x 
+            *this\bar\button[#__b_1]\width = *this\bar\button[#__b_1]\len 
           EndIf
-          
-          If *this\bar\button[#__b_2]\len 
-            If *this\bar\vertical 
-              ; Botom button coordinate on vertical scroll bar
-              *this\bar\button[#__b_2]\x = *this\x           + 1 ; white line size
-              *this\bar\button[#__b_2]\width = *this\width   - 1 ; white line size
-              *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\len 
-              *this\bar\button[#__b_2]\y = *this\Y+*this\height-*this\bar\button[#__b_2]\height
-            Else 
-              ; Right button coordinate on horizontal scroll bar
-              *this\bar\button[#__b_2]\y = *this\y           + 1 ; white line size
-              *this\bar\button[#__b_2]\height = *this\height - 1 ; *this\__height   ; white line size
-              *this\bar\button[#__b_2]\width = *this\bar\button[#__b_2]\len 
-              *this\bar\button[#__b_2]\x = *this\X+*this\width-*this\bar\button[#__b_2]\width 
-            EndIf
+        EndIf
+        
+        If *this\bar\button[#__b_2]\len 
+          If *this\bar\vertical 
+            ; Botom button coordinate on vertical scroll bar
+            *this\bar\button[#__b_2]\x = *this\x           + 1 ; white line size
+            *this\bar\button[#__b_2]\width = *this\width   - 1 ; white line size
+            *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\len 
+            *this\bar\button[#__b_2]\y = *this\Y+*this\height-*this\bar\button[#__b_2]\height
+          Else 
+            ; Right button coordinate on horizontal scroll bar
+            *this\bar\button[#__b_2]\y = *this\y           + 1 ; white line size
+            *this\bar\button[#__b_2]\height = *this\height - 1 ; white line size
+            *this\bar\button[#__b_2]\width = *this\bar\button[#__b_2]\len 
+            *this\bar\button[#__b_2]\x = *this\X+*this\width-*this\bar\button[#__b_2]\width 
           EndIf
-          
-          
-          ;If *this\bar\thumb\len
+        EndIf
+        
+        ; Thumb coordinate on scroll bar
+        If *this\bar\thumb\len
           If *this\bar\vertical
             *this\bar\button[#__b_3]\x = *this\bar\button[#__b_1]\x 
             *this\bar\button[#__b_3]\width = *this\bar\button[#__b_1]\width 
@@ -1464,33 +1350,151 @@ CompilerIf Not Defined(Bar, #PB_Module)
             *this\bar\button[#__b_3]\height = *this\bar\thumb\len                              
           Else
             *this\bar\button[#__b_3]\y = *this\bar\button[#__b_1]\y 
-            *this\bar\button[#__b_3]\height = *this\__height;*this\bar\button[#__b_1]\height
-            *this\bar\button[#__b_3]\width = *this\bar\max
-            *this\bar\button[#__b_3]\x = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
+            *this\bar\button[#__b_3]\height = *this\bar\button[#__b_1]\height
+            *this\bar\button[#__b_3]\x = *this\bar\thumb\pos 
+            *this\bar\button[#__b_3]\width = *this\bar\thumb\len                                  
           EndIf
-          ;EndIf
+          
+        Else
+          ; auto resize buttons
+          If *this\bar\vertical
+            *this\bar\button[#__b_2]\height = *this\height/2 
+            *this\bar\button[#__b_2]\y = *this\y+*this\bar\button[#__b_2]\height+Bool(*this\height%2) 
+            
+            *this\bar\button[#__b_1]\y = *this\y 
+            *this\bar\button[#__b_1]\height = *this\height/2-Bool(Not *this\height%2)
+            
+          Else
+            *this\bar\button[#__b_2]\width = *this\width/2 
+            *this\bar\button[#__b_2]\x = *this\x+*this\bar\button[#__b_2]\width+Bool(*this\width%2) 
+            
+            *this\bar\button[#__b_1]\x = *this\x 
+            *this\bar\button[#__b_1]\width = *this\width/2-Bool(Not *this\width%2)
+          EndIf
+          
+          If *this\bar\vertical
+            *this\bar\button[#__b_3]\width = 0 
+            *this\bar\button[#__b_3]\height = 0                             
+          Else
+            *this\bar\button[#__b_3]\height = 0
+            *this\bar\button[#__b_3]\width = 0                                 
+          EndIf
         EndIf
         
-        ProcedureReturn Bool(\resize & #__resize_change)
-      EndWith
+        If *this\bar\thumb\change 
+          
+          If *this\parent And 
+             *this\parent\scroll
+            ; Debug  ""+*this\type+" "+*this\parent\type
+            
+            If *this\bar\vertical
+              If *this\parent\scroll\v = *this
+                *this\parent\change =- 1
+                *this\parent\scroll\y =- *this\bar\page\pos
+                ; ScrollArea childrens auto resize 
+                If *this\parent\container And *this\parent\count\childrens
+                  
+                  ;; _move_childrens_(*this\parent, 0, *this\bar\thumb\change)
+                  ; PushListPosition(*this\parent\root\_childrens())
+                  ChangeCurrentElement(*this\parent\root\_childrens(), *this\parent\adress)
+                  While NextElement(*this\parent\root\_childrens())
+                    ; ForEach *this\parent\root\_childrens()
+                    If *this\parent\root\_childrens()\parent = *this\parent 
+                      Resize(*this\parent\root\_childrens(), #PB_Ignore, 
+                             *this\parent\root\_childrens()\y[#__c_3] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
+                    EndIf
+                    ; Next
+                  Wend
+                  ; PopListPosition(*this\parent\root\_childrens())
+                EndIf
+              EndIf
+            Else
+              If *this\parent\scroll\h = *this
+                *this\parent\change =- 1
+                *this\parent\scroll\x =- *this\bar\page\pos
+                ; ScrollArea childrens auto resize 
+                If *this\parent\container And *this\parent\count\childrens
+                  
+                  ;; _move_childrens_(*this\parent, *this\bar\thumb\change, 0)
+                  ; PushListPosition(*this\parent\root\_childrens())
+                  ChangeCurrentElement(*this\parent\root\_childrens(), *this\parent\adress)
+                  While NextElement(*this\parent\root\_childrens())
+                    ; ForEach *this\parent\root\_childrens()
+                    If *this\parent\root\_childrens()\parent = *this\parent 
+                      Resize(*this\parent\root\_childrens(), 
+                             *this\parent\root\_childrens()\x[#__c_3] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                    EndIf
+                    ; Next
+                  Wend
+                  ; PopListPosition(*this\parent\root\_childrens())
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+      EndIf
+      
+      ProcedureReturn *this\bar\hide
+    EndProcedure
+    
+    Procedure.b Update_Tab(*this._s_widget)
+      If *this\type = #PB_GadgetType_TabBar 
+        If *this\bar\button[#__b_1]\len 
+          If *this\bar\vertical 
+            ; Top button coordinate on vertical scroll bar
+            *this\bar\button[#__b_1]\x = *this\x           + 1 ; white line size
+            *this\bar\button[#__b_1]\width = *this\__height    ; *this\width   - 1 ; white line size
+            *this\bar\button[#__b_1]\y = *this\y 
+            *this\bar\button[#__b_1]\height = *this\bar\button[#__b_1]\len                   
+          Else 
+            ; Left button coordinate on horizontal scroll bar
+            *this\bar\button[#__b_1]\y = *this\y           + 1 ; white line size
+            *this\bar\button[#__b_1]\height = *this\__height   ; *this\height - 1 ; white line size
+            *this\bar\button[#__b_1]\x = *this\x 
+            *this\bar\button[#__b_1]\width = *this\bar\button[#__b_1]\len 
+          EndIf
+        EndIf
+        
+        If *this\bar\button[#__b_2]\len 
+          If *this\bar\vertical 
+            ; Botom button coordinate on vertical scroll bar
+            *this\bar\button[#__b_2]\x = *this\x           + 1 ; white line size
+            *this\bar\button[#__b_2]\width = *this\width   - 1 ; white line size
+            *this\bar\button[#__b_2]\height = *this\bar\button[#__b_2]\len 
+            *this\bar\button[#__b_2]\y = *this\Y+*this\height-*this\bar\button[#__b_2]\height
+          Else 
+            ; Right button coordinate on horizontal scroll bar
+            *this\bar\button[#__b_2]\y = *this\y           + 1 ; white line size
+            *this\bar\button[#__b_2]\height = *this\__height   ; *this\height - 1 ; white line size
+            *this\bar\button[#__b_2]\width = *this\bar\button[#__b_2]\len 
+            *this\bar\button[#__b_2]\x = *this\X+*this\width-*this\bar\button[#__b_2]\width 
+          EndIf
+        EndIf
+        
+        ;If *this\bar\thumb\len
+        If *this\bar\vertical
+          *this\bar\button[#__b_3]\x = *this\bar\button[#__b_1]\x 
+          *this\bar\button[#__b_3]\width = *this\bar\button[#__b_1]\width 
+          *this\bar\button[#__b_3]\height = *this\bar\max                             
+          *this\bar\button[#__b_3]\y = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
+        Else
+          *this\bar\button[#__b_3]\y = *this\bar\button[#__b_1]\y 
+          *this\bar\button[#__b_3]\height = *this\__height ; *this\bar\button[#__b_1]\height
+          *this\bar\button[#__b_3]\width = *this\bar\max
+          ; Debug  *this\bar\page\pos
+          
+          ; *this\bar\button[#__b_3]\x = (*this\bar\area\pos + _invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted) - *this\bar\page\end)
+          *this\bar\button[#__b_3]\x = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
+        EndIf
+        ;EndIf
+      EndIf
+      
+      ProcedureReturn Bool(*this\resize & #__resize_change)
     EndProcedure
     
     Procedure.b Update_Spin(*this._s_widget)
-      With *this
-        ;         If *this\bar\button[#__b_3]\len
-        ; ;           If *this\bar\vertical
-        ;             *this\bar\button[#__b_3]\y      = *this\y[2]
-        ;             *this\bar\button[#__b_3]\height = *this\height[2]
-        ;             *this\bar\button[#__b_3]\x      = (*this\x[2]+*this\width[2])-*this\bar\button[#__b_3]\len
-        ;             *this\bar\button[#__b_3]\width  = *this\bar\button[#__b_3]\len                                  
-        ; ;           Else
-        ; ;             *this\bar\button[#__b_3]\x      = *this\x[2] 
-        ; ;             *this\bar\button[#__b_3]\width  = *this\width[2] 
-        ; ;             *this\bar\button[#__b_3]\y      = (*this\y[2]+*this\height[2])-*this\bar\button[#__b_3]\len
-        ; ;             *this\bar\button[#__b_3]\height = *this\bar\button[#__b_3]\len                              
-        ; ;           EndIf
-        ;         EndIf
-        
+      If *this\type = #PB_GadgetType_Spin
         If *this\bar\vertical      
           ; Top button coordinate
           *this\bar\button[#__b_2]\y      = *this\y[2]+*this\height[2]/2 + Bool(*this\height%2)
@@ -1517,7 +1521,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
           *this\bar\button[#__b_2]\x      = *this\x[2]+*this\width[2]-*this\bar\button[#__b_2]\len/2                             
         EndIf
         
-        
         If *this\text
           Protected i
           *this\text\change = 1
@@ -1529,13 +1532,20 @@ CompilerIf Not Defined(Bar, #PB_Module)
             EndIf
           Next
         EndIf
-        
-        ProcedureReturn Bool(\resize & #__resize_change)
-      EndWith
+      EndIf
+      
+      ProcedureReturn Bool(*this\resize & #__resize_change)
     EndProcedure
     
     Procedure.b Update_Track(*this._s_widget)
-      With *this
+      If *this\type = #PB_GadgetType_TrackBar 
+        If *this\bar\button[#__b_1]\color\state <> Bool(Not *this\bar\inverted) * #__s_2 Or 
+           *this\bar\button[#__b_2]\color\state <> Bool(*this\bar\inverted) * #__s_2
+          *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
+          *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
+          *this\bar\button[#__b_3]\color\state = #__s_2
+        EndIf
+        
         ; Thumb coordinate on scroll bar
         If *this\bar\thumb\len
           If *this\bar\vertical
@@ -1593,13 +1603,13 @@ CompilerIf Not Defined(Bar, #PB_Module)
             *this\bar\button[#__b_3]\y      = *this\bar\button[#__b_1]\y-*this\bar\button[#__b_3]\height/4-1- Bool(*this\bar\button[#__b_3]\len>10)
           EndIf
         EndIf
-        
-        ProcedureReturn Bool(*this\resize & #__resize_change)
-      EndWith
+      EndIf
+      
+      ProcedureReturn Bool(*this\resize & #__resize_change)
     EndProcedure
     
     Procedure.b Update_Progress(*this._s_widget)
-      With *this
+      If *this\type = #PB_GadgetType_ProgressBar
         *this\bar\button[#__b_1]\x        = *this\X
         *this\bar\button[#__b_1]\y        = *this\Y
         
@@ -1627,9 +1637,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
           *this\text\change = 1
           *this\text\string = "%" + Str(*this\bar\page\pos)  +" "+ Str(*this\width)
         EndIf
-        
-        ProcedureReturn Bool(\resize & #__resize_change)
-      EndWith
+      EndIf
+    
+      ProcedureReturn Bool(*this\resize & #__resize_change)
     EndProcedure
     
     Procedure.b Update_Splitter(*this._s_widget) ; Ok
@@ -1717,33 +1727,37 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Procedure.b Update(*this._s_widget)
       Protected result.b, _scroll_pos_.f
       
+;        If *this\type = #PB_GadgetType_TabBar
+;               *this\bar\fixed = 1
+;             EndIf
+            
+           
       If Bool(*this\resize & #__resize_change)
-        If *this\bar\max And *this\type = #PB_GadgetType_ScrollBar And 
-           *this\bar\button[#__b_1]\len =- 1 And *this\bar\button[#__b_2]\len =- 1
-          
-          If *this\bar\vertical And 
-             *this\width[2] > 7 And *this\width[2] < 21
-            *this\bar\button[#__b_1]\len = *this\width[2] - 1
-            *this\bar\button[#__b_2]\len = *this\width[2] - 1
+        If *this\type = #PB_GadgetType_ScrollBar 
+          If *this\bar\max And *this\bar\button[#__b_1]\len =- 1 And *this\bar\button[#__b_2]\len =- 1
             
-          ElseIf Not *this\bar\vertical And 
-                 *this\height[2] > 7 And *this\height[2] < 21
-            *this\bar\button[#__b_1]\len = *this\height[2] - 1
-            *this\bar\button[#__b_2]\len = *this\height[2] - 1
-            
-          Else
-            *this\bar\button[#__b_1]\len = *this\bar\button[#__b_3]\len
-            *this\bar\button[#__b_2]\len = *this\bar\button[#__b_3]\len
-          EndIf
-          
-          If *this\bar\button[#__b_3]\len
-            If *this\bar\vertical
-              If *this\width = 0
-                *this\width = *this\bar\button[#__b_3]\len
-              EndIf
+            If *this\bar\vertical And *this\width[2] > 7 And *this\width[2] < 21
+              *this\bar\button[#__b_1]\len = *this\width[2] - 1
+              *this\bar\button[#__b_2]\len = *this\width[2] - 1
+              
+            ElseIf Not *this\bar\vertical And *this\height[2] > 7 And *this\height[2] < 21
+              *this\bar\button[#__b_1]\len = *this\height[2] - 1
+              *this\bar\button[#__b_2]\len = *this\height[2] - 1
+              
             Else
-              If *this\height = 0
-                *this\height = *this\bar\button[#__b_3]\len
+              *this\bar\button[#__b_1]\len = *this\bar\button[#__b_3]\len
+              *this\bar\button[#__b_2]\len = *this\bar\button[#__b_3]\len
+            EndIf
+            
+            If *this\bar\button[#__b_3]\len
+              If *this\bar\vertical
+                If *this\width = 0
+                  *this\width = *this\bar\button[#__b_3]\len
+                EndIf
+              Else
+                If *this\height = 0
+                  *this\height = *this\bar\button[#__b_3]\len
+                EndIf
               EndIf
             EndIf
           EndIf
@@ -1760,35 +1774,40 @@ CompilerIf Not Defined(Bar, #PB_Module)
         If *this\bar\area\len < *this\bar\button[#__b_3]\len 
           *this\bar\area\len = *this\bar\button[#__b_3]\len 
         Else
-          If *this\type <> #PB_GadgetType_TabBar
-            ; if SetState(height-value or width-value)
-            If *this\bar\button[#__b_3]\fixed < 0 
+          ; if SetState(height-value or width-value)
+          If *this\bar\button[#__b_3]\fixed < 0 
+            Debug  "if SetState(height-value or width-value)"
+            If *this\type <> #PB_GadgetType_TabBar
               *this\bar\page\pos = *this\bar\area\len + *this\bar\button[#__b_3]\fixed
-              *this\bar\button[3]\fixed = 0
+            *this\bar\button[#__b_3]\fixed = 0
             EndIf
           EndIf
         EndIf
         
         ; one
-        If Not *this\bar\max And *this\width And *this\height And *this\type <> #PB_GadgetType_TabBar
-          *this\bar\thumb\len = *this\bar\button[#__b_3]\len
-          
-          If Not *this\bar\page\pos
-            *this\bar\page\pos = (*this\bar\area\len-*this\bar\thumb\len)/2
-          EndIf
-          
-          If *this\bar\fixed And *this\bar\button[#__b_1]\len
-            *this\bar\max = *this\bar\area\len + *this\bar\button[#__b_1]\len*2 + Bool(*this\bar\fixed = #__b_1) * 4
-          Else
-            *this\bar\max = (*this\bar\area\len-*this\bar\thumb\len) - 2
-          EndIf
-          
-          ;if splitter fixed set splitter pos to center
-          If *this\bar\fixed = #__b_1
-            *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\pos
-          EndIf
-          If *this\bar\fixed = #__b_2
-            *this\bar\button[*this\bar\fixed]\fixed = *this\bar\area\len-*this\bar\thumb\len-*this\bar\page\pos
+        If *this\type = #PB_GadgetType_Splitter 
+          If Not *this\bar\max And *this\width And *this\height ; And *this\type <> #PB_GadgetType_TabBar
+            ; Debug  "one - Not *this\bar\max And *this\width And *this\height"
+            
+            *this\bar\thumb\len = *this\bar\button[#__b_3]\len
+            
+            If Not *this\bar\page\pos
+              *this\bar\page\pos = (*this\bar\area\len-*this\bar\thumb\len)/2
+            EndIf
+            
+            If *this\bar\fixed And *this\bar\button[#__b_1]\len
+              *this\bar\max = *this\bar\area\len + *this\bar\button[#__b_1]\len*2 + Bool(*this\bar\fixed = #__b_1) * 4
+            Else
+              *this\bar\max = (*this\bar\area\len-*this\bar\thumb\len) - 2
+            EndIf
+            
+            ;if splitter fixed set splitter pos to center
+            If *this\bar\fixed = #__b_1
+              *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\pos
+            EndIf
+            If *this\bar\fixed = #__b_2
+              *this\bar\button[*this\bar\fixed]\fixed = *this\bar\area\len-*this\bar\thumb\len-*this\bar\page\pos
+            EndIf
           EndIf
         EndIf
         
@@ -1815,20 +1834,43 @@ CompilerIf Not Defined(Bar, #PB_Module)
           EndIf
           
         Else
-          If *this\type = #PB_GadgetType_TabBar
-            *this\bar\page\len = *this\bar\area\len
-          EndIf
-          
           *this\bar\thumb\len = *this\bar\button[#__b_3]\len
         EndIf
         
-        *this\bar\page\end = *this\bar\min + ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
-        ;*this\bar\page\end = *this\bar\min + Bool(*this\bar\max > *this\bar\page\Len) * ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
+; ;           If *this\type = #PB_GadgetType_TabBar
+; ;             *this\bar\page\len = *this\bar\area\len
+; ;           EndIf
+; ;           
+; ;         *this\bar\page\end = (*this\bar\max - *this\bar\page\len)
+; ;        ; *this\bar\page\end = *this\bar\min + ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
+; ;         ; *this\bar\page\end = *this\bar\min + Bool(*this\bar\max > *this\bar\page\Len) * ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
+; ; ;         If *this\bar\page\end < 0
+; ; ;           *this\bar\page\end = 0
+; ; ;         EndIf
+; ;         
+; ;         ; *this\bar\thumb\end = (*this\bar\area\len - *this\bar\thumb\len)
+; ;         *this\bar\area\end = *this\bar\area\pos + (*this\bar\area\len - *this\bar\thumb\len)  
+; ;         *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
+        
+       If *this\type = #PB_GadgetType_TabBar
+          *this\bar\page\end = *this\bar\max - *this\bar\area\len
+          *this\bar\thumb\len = *this\bar\area\len - *this\bar\page\end
+        Else
+          *this\bar\page\end = *this\bar\max - *this\bar\page\len
+        EndIf
+        
+        ;         If *this\bar\page\end < 0
+        ;           *this\bar\page\end = 0
+        ;         EndIf
+        
+        ; *this\bar\thumb\end = (*this\bar\area\len - *this\bar\thumb\len)
         *this\bar\area\end = *this\bar\area\pos + (*this\bar\area\len - *this\bar\thumb\len)  
-        ; *this\bar\thumb\end = (*this\bar\area\end-*this\bar\area\pos)
-        ; (*this\bar\area\len - *this\bar\thumb\len) = (*this\bar\area\end-*this\bar\area\pos)
-        *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
-        ; *this\bar\scroll_increment = ((*this\bar\area\end-*this\bar\area\pos) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
+        
+        If *this\type = #PB_GadgetType_TabBar
+          *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\area\len)) 
+        Else
+          *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
+        EndIf 
       EndIf
       
       If Not *this\bar\area\len < 0
@@ -1851,17 +1893,32 @@ CompilerIf Not Defined(Bar, #PB_Module)
           _scroll_pos_ = *this\bar\page\pos
         Else
           ; for the scrollarea childrens
-          If *this\bar\page\end And *this\bar\page\pos > *this\bar\page\end And ; *this\bar\thumb\pos = *this\bar\area\end
-             *this\parent And *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h
+          If *this\bar\page\end >- 1 And *this\bar\page\pos > *this\bar\page\end And *this\parent And *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h
+            
             Debug  ""+*this\bar\page\pos +" "+ *this\bar\page\end
+            
             *this\bar\thumb\change = *this\bar\page\pos - *this\bar\page\end
             *this\bar\page\pos = *this\bar\page\end
           EndIf
+          
           _scroll_pos_ = _invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted)
         EndIf
         
-        *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
-        
+;         If *this\type = #PB_GadgetType_TabBar
+;           *this\bar\thumb\pos = (*this\bar\area\pos + _scroll_pos_ - *this\bar\page\end)
+;        
+; ;           *this\bar\thumb\pos = (*this\bar\area\pos + Round(((_scroll_pos_) - *this\bar\min) * *this\bar\scroll_increment, #PB_Round_Nearest))
+; ;           *this\bar\thumb\pos = (*this\bar\min + Round(((*this\bar\thumb\pos) - *this\bar\area\pos) / *this\bar\scroll_increment, #PB_Round_Nearest)) 
+; ;           *this\bar\thumb\pos = (*this\bar\area\pos + *this\bar\thumb\pos - *this\bar\page\end)
+; ;           ;              *this\bar\thumb\pos = (Round(((_scroll_pos_) - *this\bar\min) * *this\bar\scroll_increment, #PB_Round_Nearest))
+; ;           ;             *this\bar\thumb\pos = (*this\bar\min + Round(((*this\bar\thumb\pos)) / *this\bar\scroll_increment, #PB_Round_Nearest)) 
+; ;           ;             ;*this\bar\min + ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
+; ;           ;             *this\bar\thumb\pos = (*this\bar\max + *this\bar\thumb\pos+*this\bar\area\len)
+; ;           ;            ; *this\bar\thumb\pos = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
+;         Else
+          *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
+;         EndIf
+             
         ; _in_start_
         If *this\bar\button[#__b_1]\len 
           If *this\bar\min >= _scroll_pos_
@@ -1889,14 +1946,36 @@ CompilerIf Not Defined(Bar, #PB_Module)
         EndIf
         
         ; disable thumb button
-        ; If *this\bar\button[#__b_3]\len
-        ; Debug   ""+ *this\bar\min +" "+ *this\bar\page\end
-        If *this\bar\min >= *this\bar\page\end
-          *this\bar\button[#__b_3]\color\state = #__s_3
-        ElseIf *this\bar\button[#__b_3]\color\state <> #__s_2
-          *this\bar\button[#__b_3]\color\state = #__s_0
+        If *this\type = #PB_GadgetType_ScrollBar
+          If *this\bar\thumb\len
+            ; Debug   ""+ *this\bar\min +" "+ *this\bar\page\end
+            If *this\bar\min >= *this\bar\page\end
+              *this\bar\button[#__b_3]\color\state = #__s_3
+            ElseIf *this\bar\button[#__b_3]\color\state <> #__s_2
+              *this\bar\button[#__b_3]\color\state = #__s_0
+            EndIf
+          EndIf
         EndIf
-        ; EndIf
+        
+;         If *this\type = #PB_GadgetType_ScrollBar Or 
+;            *this\type = #PB_GadgetType_TabBar
+;           
+;           If *this\bar\fixed And *this\bar\thumb\change
+;             If *this\bar\vertical
+;               If *this\bar\fixed = #__b_1
+;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\bar\thumb\pos - *this\y) - *this\bar\button[*this\bar\fixed]\len
+;               ElseIf *this\bar\fixed = #__b_2
+;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\height - (*this\bar\thumb\pos - *this\y + *this\bar\thumb\len)) - *this\bar\button[*this\bar\fixed]\len
+;               EndIf
+;             Else
+;               If *this\bar\fixed = #__b_1
+;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\bar\thumb\pos - *this\x) - *this\bar\button[*this\bar\fixed]\len
+;               ElseIf *this\bar\fixed = #__b_2
+;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\width - (*this\bar\thumb\pos - *this\x + *this\bar\thumb\len)) - *this\bar\button[*this\bar\fixed]\len
+;               EndIf
+;             EndIf
+;           EndIf
+;         EndIf
         
         If *this\type = #PB_GadgetType_ScrollBar
           result = Update_Scroll(*this)
@@ -2087,8 +2166,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
       With *bar
         If ScrollPos < \min 
           ;If *this\type <> #PB_GadgetType_TabBar
-            ; if SetState(height-value or width-value)
-            \button[#__b_3]\fixed = ScrollPos
+          ; if SetState(height-value or width-value)
+          \button[#__b_3]\fixed = ScrollPos
           ;EndIf
           ScrollPos = \min 
           
@@ -2468,7 +2547,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Procedure.i Tab(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
       ProcedureReturn Create(#__Type_TabBar, Root()\opened, x,y,width,height, min,max,pagelength, 40, #__bar_child|flag, round, 40)
     EndProcedure
-
+    
     Procedure.i Scroll(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
       ProcedureReturn Create(#__Type_ScrollBar, Root()\opened, x,y,width,height, min,max,pagelength, #__scroll_buttonsize, #__bar_child|flag, round, 1)
     EndProcedure
@@ -2494,9 +2573,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
         *this\x =- 2147483648
         *this\y =- 2147483648
         *this\round = round
-;         *this\container = 1
-;         *this\index[#__s_1] =- 1
-;         *this\index[#__s_2] = 0
+        ;         *this\container = 1
+        ;         *this\index[#__s_1] =- 1
+        ;         *this\index[#__s_2] = 0
         *this\type = #__Type_Button
         *this\class = #PB_Compiler_Procedure
         
@@ -2910,63 +2989,74 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     ;-
     Procedure _events(*this._s_widget, _event_type_.l, _mouse_x_.l, _mouse_y_.l, _wheel_x_.b=0, _wheel_y_.b=0)
-      Static delta
       Protected Repaint
       
       ; set event widget 
       Widget() = *this
+      
+      If _event_type_ = #__Event_LeftButtonUp 
+        If *this\bar\state >= 0
+          If *this\bar\button[*this\bar\state]\state = #__s_2
+            ;Debug " up button - " + *this\bar\state
+            *this\bar\button[*this\bar\state]\state = #__s_1
+            Repaint = #True
+          EndIf
+          
+          ;Debug ""+*this\bar\state +" "+ *this\bar\from
+          
+          If *this\bar\state <> *this\bar\from
+            If *this\bar\button[*this\bar\state]\state = #__s_1
+              *this\bar\button[*this\bar\state]\state = #__s_0
+              
+              If *this\bar\state = #__b_3 And *this\cursor
+                 Debug  "  reset cur"
+                ;                 set_cursor(*this, #PB_Cursor_Default)
+                SetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
+              EndIf
+              
+              ; Debug " up leave button - " + *this\bar\state
+              Repaint = #True
+            EndIf
+          EndIf
+          
+          *this\bar\button[#__b_3]\fixed = 0 ; reset delta pos
+        EndIf
+      EndIf
       
       If _event_type_ = #__Event_MouseMove Or
          _event_type_ = #__Event_MouseEnter Or
          _event_type_ = #__Event_MouseLeave Or
          _event_type_ = #__Event_LeftButtonUp
         
-        If _event_type_ = #__Event_LeftButtonUp 
-          If *this\bar\state >= 0
-            If *this\bar\button[*this\bar\state]\color\state = #__s_2
-              ;Debug " up button - " + *this\bar\state
-              *this\bar\button[*this\bar\state]\color\state = #__s_1
-            EndIf
-            
-            ;Debug ""+*this\bar\state +" "+ *this\bar\from
-            
-            If *this\bar\state <> *this\bar\from
-              If *this\bar\button[*this\bar\state]\color\state = #__s_1
-                *this\bar\button[*this\bar\state]\color\state = #__s_0
-                
-                If *this\bar\state = #__b_3 And *this\cursor
-                  Debug  "reset cur"
-                  ;                 set_cursor(*this, #PB_Cursor_Default)
-                  SetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
-                EndIf
-                
-                Debug " up leave button - " + *this\bar\state
-              EndIf
-            EndIf
-          EndIf
-          
-          Repaint = #True
-        EndIf
+;         Protected thumb = #__b_3
+;         
+;         If *this\type = #PB_GadgetType_TabBar And
+;            (_from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_1]) Or 
+;             _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_2]))
+;           thumb = 0 ; thumb = #__b_3 And 
+;         EndIf
         
         If *this\bar\button[#__b_3]\interact And
-           *this\bar\button[#__b_3]\color\state <> #__s_3 And
-           _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_3])
+           *this\bar\button[#__b_3]\state <> #__s_3 And
+           _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_3]) And
+           (Bool(Not *this\bar\vertical And _mouse_x_ >= *this\bar\area\pos And _mouse_x_ =< *this\bar\area\pos+*this\bar\area\len) Or 
+            Bool(*this\bar\vertical And _mouse_y_ >= *this\bar\area\pos And _mouse_y_ =< *this\bar\area\pos+*this\bar\area\len))
           
           If *this\bar\from <> #__b_3
-            If *this\bar\button[#__b_3]\color\state = #__s_0
-              *this\bar\button[#__b_3]\color\state = #__s_1
+            If *this\bar\button[#__b_3]\state = #__s_0
+              *this\bar\button[#__b_3]\state = #__s_1
               
               If *this\bar\from = #__b_1
-                Debug " leave button - (1 >> 3)"
-                If *this\bar\button[#__b_1]\color\state = #__s_1
-                  *this\bar\button[#__b_1]\color\state = #__s_0
+                ; Debug " leave button - (1 >> 3)"
+                If *this\bar\button[#__b_1]\state = #__s_1
+                  *this\bar\button[#__b_1]\state = #__s_0
                 EndIf
               EndIf
               
               If *this\bar\from = #__b_2
-                Debug " leave button - (2 >> 3)"
-                If *this\bar\button[#__b_2]\color\state = #__s_1  
-                  *this\bar\button[#__b_2]\color\state = #__s_0
+                ; Debug " leave button - (2 >> 3)"
+                If *this\bar\button[#__b_2]\state = #__s_1  
+                  *this\bar\button[#__b_2]\state = #__s_0
                 EndIf
               EndIf
               
@@ -2977,71 +3067,71 @@ CompilerIf Not Defined(Bar, #PB_Module)
               EndIf
               
               *this\bar\from = #__b_3
-              Debug " enter button - 3"
+              ; Debug " enter button - 3"
               Repaint = #True
             EndIf
           EndIf
           
         ElseIf *this\bar\button[#__b_2]\interact And
-               *this\bar\button[#__b_2]\color\state <> #__s_3 And 
+               *this\bar\button[#__b_2]\state <> #__s_3 And 
                _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_2])
           
           If *this\bar\from <> #__b_2
-            If *this\bar\button[#__b_2]\color\state = #__s_0
-              *this\bar\button[#__b_2]\color\state = #__s_1
+            If *this\bar\button[#__b_2]\state = #__s_0
+              *this\bar\button[#__b_2]\state = #__s_1
               
               If *this\bar\from = #__b_1
-                Debug " leave button - (1 >> 2)"
-                If *this\bar\button[#__b_1]\color\state = #__s_1
-                  *this\bar\button[#__b_1]\color\state = #__s_0
+                ; Debug " leave button - (1 >> 2)"
+                If *this\bar\button[#__b_1]\state = #__s_1
+                  *this\bar\button[#__b_1]\state = #__s_0
                 EndIf
               EndIf
               
               If *this\bar\from = #__b_3
-                Debug " leave button - (3 >> 2)"
-                If *this\bar\button[#__b_3]\color\state = #__s_1  
-                  *this\bar\button[#__b_3]\color\state = #__s_0
+                ; Debug " leave button - (3 >> 2)"
+                If *this\bar\button[#__b_3]\state = #__s_1  
+                  *this\bar\button[#__b_3]\state = #__s_0
                 EndIf
               EndIf
               
               *this\bar\from = #__b_2
-              Debug " enter button - 2"
+              ; Debug " enter button - 2"
               Repaint = #True
             EndIf
           EndIf
           
         ElseIf *this\bar\button[#__b_1]\interact And 
-               *this\bar\button[#__b_1]\color\state <> #__s_3 And 
+               *this\bar\button[#__b_1]\state <> #__s_3 And 
                _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_1])
           
           If *this\bar\from <> #__b_1
-            If *this\bar\button[#__b_1]\color\state = #__s_0
-              *this\bar\button[#__b_1]\color\state = #__s_1
+            If *this\bar\button[#__b_1]\state = #__s_0
+              *this\bar\button[#__b_1]\state = #__s_1
               
               If *this\bar\from = #__b_2
-                Debug " leave button - (2 >> 1)"
-                If *this\bar\button[#__b_2]\color\state = #__s_1  
-                  *this\bar\button[#__b_2]\color\state = #__s_0
+                ; Debug " leave button - (2 >> 1)"
+                If *this\bar\button[#__b_2]\state = #__s_1  
+                  *this\bar\button[#__b_2]\state = #__s_0
                 EndIf
               EndIf
               
               If *this\bar\from = #__b_3
-                Debug " leave button - (3 >> 1)"
-                If *this\bar\button[#__b_3]\color\state = #__s_1  
-                  *this\bar\button[#__b_3]\color\state = #__s_0
+                ; Debug " leave button - (3 >> 1)"
+                If *this\bar\button[#__b_3]\state = #__s_1  
+                  *this\bar\button[#__b_3]\state = #__s_0
                 EndIf
               EndIf
               
               *this\bar\from = #__b_1
-              Debug " enter button - 1"
+              ; Debug " enter button - 1"
               Repaint = #True
             EndIf
           EndIf
           
         Else
           If *this\bar\from <>- 1
-            If *this\bar\button[*this\bar\from]\color\state = #__s_1
-              *this\bar\button[*this\bar\from]\color\state = #__s_0
+            If *this\bar\button[*this\bar\from]\state = #__s_1
+              *this\bar\button[*this\bar\from]\state = #__s_0
               
               If Not *this\root\selected 
                 If *this\bar\from = #__b_3 And *this\cursor
@@ -3051,7 +3141,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
                 EndIf
               EndIf
               
-              Debug " leave button - " + *this\bar\from
+              ; Debug " leave button - " + *this\bar\from
             EndIf
             
             *this\bar\from =- 1
@@ -3084,64 +3174,80 @@ CompilerIf Not Defined(Bar, #PB_Module)
           EndIf
         EndIf
         
+        If *this\Type <> #PB_GadgetType_TrackBar
+          ; set button_1 color state
+          If *this\bar\button[#__b_1]\color\state <> #__s_3 And 
+             *this\bar\button[#__b_1]\color\state <> *this\bar\button[#__b_1]\state
+            *this\bar\button[#__b_1]\color\state = *this\bar\button[#__b_1]\state
+          EndIf
+          
+          ; set button_2 color state
+          If *this\bar\button[#__b_2]\color\state <> #__s_3 And 
+             *this\bar\button[#__b_2]\color\state <> *this\bar\button[#__b_2]\state
+            *this\bar\button[#__b_2]\color\state = *this\bar\button[#__b_2]\state
+          EndIf
+          
+          ; set thumb color state
+          If *this\bar\button[#__b_3]\color\state <> #__s_3 And 
+             *this\bar\button[#__b_3]\color\state <> *this\bar\button[#__b_3]\state
+            *this\bar\button[#__b_3]\color\state = *this\bar\button[#__b_3]\state
+          EndIf
+        EndIf
+      
         If Not *this\root\mouse\buttons
           *this\bar\state = *this\bar\from
         EndIf
-        
-        If _event_type_ = #__Event_MouseMove
-          If delta And *this\root\selected = *this And *this\bar\state
-            ;Debug ""+*event\root\mouse\delta\x +" "+ LastX
-            
+      EndIf
+      
+      If _event_type_ = #__Event_MouseEnter
+        ; *this\color\back = $ff0000ff 
+        Repaint = #True
+      EndIf
+      
+      If _event_type_ = #__Event_MouseLeave
+        ; *this\color\back = $ff00ff00
+        Repaint = #True
+      EndIf
+      
+      If _event_type_ = #__Event_LeftButtonDown
+        If *this\bar\from >= 0 And 
+           *this\bar\button[*this\bar\from]\state = #__s_1
+          *this\bar\button[*this\bar\from]\state = #__s_2
+          *this\bar\state = *this\bar\from
+          
+          If *this\Type <> #PB_GadgetType_TrackBar
+            ; set color state
+            If *this\bar\button[*this\bar\from]\color\state <> #__s_3 And 
+               *this\bar\button[*this\bar\from]\color\state <> *this\bar\button[*this\bar\from]\state
+              *this\bar\button[*this\bar\from]\color\state = *this\bar\button[*this\bar\from]\state
+            EndIf
+          EndIf
+          
+          If *this\bar\from = #__b_3
             If *this\bar\vertical
-              Repaint = SetPos(*this, (_mouse_y_-delta))
+              *this\bar\button[*this\bar\from]\fixed = _mouse_y_ - *this\bar\thumb\pos
             Else
-              Repaint = SetPos(*this, (_mouse_x_-delta))
+              *this\bar\button[*this\bar\from]\fixed = _mouse_x_ - *this\bar\thumb\pos
             EndIf
             
-            SetWindowTitle(EventWindow(), Str(*this\bar\page\pos) +" "+ Str(*this\bar\thumb\pos-*this\bar\area\pos))
+            Repaint = *this\bar\button[*this\bar\from]\fixed
+          ElseIf (*this\bar\from = #__b_1 And *this\bar\inverted) Or
+                 (*this\bar\from = #__b_2 And Not *this\bar\inverted)
+            Repaint = Bar::SetState(*this, *this\bar\page\pos + *this\bar\scroll_step)
+            
+          ElseIf (*this\bar\from = #__b_2 And *this\bar\inverted) Or 
+                 (*this\bar\from = #__b_1 And Not *this\bar\inverted)
+            Repaint = Bar::SetState(*this, *this\bar\page\pos - *this\bar\scroll_step)
           EndIf
         EndIf
-        
-        If _event_type_ = #__Event_MouseEnter
-          *this\color\back = $ff0000ff 
-          Repaint = #True
+      EndIf
+      
+      If _event_type_ = #__Event_MouseMove
+        If *this\bar\button[#__b_3]\fixed And *this = *this\root\selected And *this\bar\state
+          Repaint = Bar::SetPos(*this, (((Bool(Not *this\bar\vertical) * _mouse_x_) + (Bool(*this\bar\vertical) * _mouse_y_)) - *this\bar\button[#__b_3]\fixed))
+          
+          SetWindowTitle(EventWindow(), Str(*this\bar\page\pos) +" "+ Str(*this\bar\thumb\pos-*this\bar\area\pos))
         EndIf
-        
-        If _event_type_ = #__Event_MouseLeave
-          *this\color\back = $ff00ff00
-          Repaint = #True
-        EndIf
-        
-      ElseIf _event_type_ = #__Event_LeftButtonDown
-        *this\bar\state = *this\bar\from
-        
-        If *this\bar\button[*this\bar\from]\color\state = #__s_1
-          *this\bar\button[*this\bar\from]\color\state = #__s_2
-        EndIf
-        
-        ;       If *this\index[#__s_1] =- 1
-        Select *this\bar\from ; #__s_1
-          Case #__b_1         ; *this\bar\button[#__b_1]\color\state
-            Repaint = Bar::SetState(*this, *this\bar\page\pos + (Bool(*this\bar\inverted) * *this\bar\scroll_step) - (Bool(Not *this\bar\inverted) * *this\bar\scroll_step))
-             
-          Case #__b_2 ; *this\bar\button[#__b_2]\color\state 
-            Repaint = Bar::SetState(*this, *this\bar\page\pos - (Bool(*this\bar\inverted) * *this\bar\scroll_step) + (Bool(Not *this\bar\inverted) * *this\bar\scroll_step))
-            
-          Case #__b_3 ; *this\bar\button[#__b_3]\color\state
-            If *this\bar\vertical
-              delta = _mouse_y_ - *this\bar\thumb\pos
-            Else
-              delta = _mouse_x_ - *this\bar\thumb\pos
-            EndIf
-            
-            Repaint = delta
-            
-        EndSelect
-        
-        
-        ;       Else
-        ;         Repaint = SetState(*this, *this\index[#__s_1])
-        ;       EndIf
       EndIf
       
       ProcedureReturn Repaint
@@ -3233,43 +3339,31 @@ CompilerIf Not Defined(Bar, #PB_Module)
           EndIf
         Until PreviousElement(Root()\_childrens()) = #False 
         
-        ;         If Change =- 1
-        ;           *this = root()
-        ;         EndIf
+        If Not *this : *this = Root() : EndIf
         
-        ; set mouse state (entered&leaved)
+        ; set widget mouse
+        ; state - (entered & leaved)
         If Root()\entered <> *this
-          If Root()\entered And Not (#__from_mouse_state And _is_child(*this, Root()\entered))
-            If Root()\entered\state = #__s_1
-              Root()\entered\state = #__s_0
-              
-              Repaint | _events(Root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
-              
-              If #__from_mouse_state
-                ; SelectElement(Root()\_childrens(), Root()\entered\index)
-                ;                 If Root()\entered\parent And Root()\entered\parent\scroll And 
-                ;                    Root()\entered\parent\scroll\v And Root()\entered\parent\scroll\h  
-                ;                   ChangeCurrentElement(Root()\_childrens(), Root()\entered\parent\adress)
-                ;                 Else
-                ;                   ChangeCurrentElement(Root()\_childrens(), Root()\entered\adress)
-                ;                 EndIf
-                
-                ChangeCurrentElement(Root()\_childrens(), Root()\entered\adress)
-                ; Debug ""+Root()\entered\index +" "+ Root()\entered\adress +" "+ Root()\_childrens()
-                
-                Repeat                 
-                  If _is_child(Root()\entered, Root()\_childrens())
-                    If Root()\_childrens()\state = #__s_1
-                      Root()\_childrens()\state = #__s_0
-                      
-                      Repaint | _events(Root()\_childrens(), #__Event_MouseLeave, mouse_x, mouse_y)
-                    EndIf
+          If Root()\entered And Root()\entered\state = #__s_1 And 
+             Not (#__from_mouse_state And _is_child(*this, Root()\entered))
+            Root()\entered\state = #__s_0
+            
+            Repaint | _events(Root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
+            
+            If #__from_mouse_state
+              ChangeCurrentElement(Root()\_childrens(), Root()\entered\adress)
+              Repeat                 
+                If _is_child(Root()\entered, Root()\_childrens())
+                  If Root()\_childrens()\state = #__s_1
+                    Root()\_childrens()\state = #__s_0
+                    
+                    Repaint | _events(Root()\_childrens(), #__Event_MouseLeave, mouse_x, mouse_y)
                   EndIf
-                Until PreviousElement(Root()\_childrens()) = #False 
-              EndIf
-              
-              Root()\entered = *this
+                EndIf
+              Until PreviousElement(Root()\_childrens()) = #False 
             EndIf
+            
+            Root()\entered = *this
           EndIf
           
           If *this And
@@ -3298,31 +3392,22 @@ CompilerIf Not Defined(Bar, #PB_Module)
         EndIf  
       EndIf
       
-      ; set active 
+      ; set active widget
       If (eventtype = #__Event_LeftButtonDown Or
-          eventtype = #__Event_RightButtonDown) And
-         _is_widget_(Root()\entered) 
+          eventtype = #__Event_RightButtonDown) And _is_widget_(Root()\entered) 
         
-        Root()\selected = Root()\entered
         Root()\mouse\delta\x = mouse_x - Root()\entered\x[#__c_3]
         Root()\mouse\delta\y = mouse_y - Root()\entered\y[#__c_3]
+        Root()\selected = Root()\entered
         
-        ;         If Root()\entered\type = #__Type_Window
-        ;           If Not (_from_point_(mouse_x, mouse_y, Root()\entered\caption\button[0]) Or
-        ;                   _from_point_(mouse_x, mouse_y, Root()\entered\caption\button[1]) Or 
-        ;                   _from_point_(mouse_x, mouse_y, Root()\entered\caption\button[2]))
-        ;             Repaint | SetActive(Root()\entered)
-        ;           EndIf
-        ;         Else
         Repaint | SetActive(Root()\entered)
-        ;         EndIf
       EndIf
       
       If eventtype <> #__Event_MouseMove
         change = 1
-        
       EndIf
       
+      ;
       If eventtype = #__Event_LeftClick Or
          eventtype = #__Event_MouseLeave Or
          eventtype = #__Event_MouseEnter Or
@@ -3395,8 +3480,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
             EndIf
           EndIf
           
-          Root()\selected = 0
           Root()\mouse\drag = 0
+          Root()\selected = 0
         EndIf
       EndIf
       
@@ -3710,5 +3795,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----j+-------------+----------------------------------------f8dx0-4-----4-z-4--------
+; Folding = -----------------------------f2--fP-e--0-+-----------X8--------v0u+-----vv8---f----------
 ; EnableXP

@@ -77,16 +77,17 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_button
     Structure _s_button Extends _s_coordinate
-      state.l
-      *handle ;;;;;;
+       state.l
+      ; switched.b
+      ; *handle ;;;;;;
       
+      ; [3]fixed = thumb delta pos 
+      ; [1..2]fixed = splitter\bar\fixed
+      fixed.l 
+                                 
       len.l
       hide.b
       round.a
-      
-      fixed.l ; splitter\fixed[1..2] 
-      
-      ; switched.b
       interact.b
       arrow._s_arrow
       color._s_color
@@ -99,14 +100,16 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
-      from.l
-      state.l
+      from.l  ; entered button index
+      state.l ; selected button index
       
       max.l
       min.l
+      
       mode.i
       
-      fixed.l[3]  ; для совместимости временно 
+      ; delta.l
+      fixed.l[3]  ; [3] для совместимости временно 
       
       hide.b
       change.b
@@ -573,5 +576,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = fxSGYAe-
+; Folding = fxSGYgf-
 ; EnableXP

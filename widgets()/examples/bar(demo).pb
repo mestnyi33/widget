@@ -210,7 +210,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                             ;                                          Button_1 = Bar::Scroll(0, 0, 0, 0, 10, 100, 50); No need to specify size or coordinates
     
     AddItem(Button_1, -1, "Tab_0")
-    AddItem(Button_1, -1, "Tab_1")
+    AddItem(Button_1, -1, "Tab_1 (long)")
     AddItem(Button_1, -1, "Tab_2")
     
     Button_2 = Bar::ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
