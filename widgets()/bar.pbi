@@ -814,9 +814,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure.b Draw_Track(*this._s_widget)
-;       *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
-;        *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
-;       *this\bar\button[#__b_3]\color\state = #__s_2
+      ;       *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
+      ;        *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
+      ;       *this\bar\button[#__b_3]\color\state = #__s_2
       
       Draw_Scroll(*this)
       
@@ -1042,7 +1042,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Procedure.b Draw(*this._s_widget)
       With *this
         If \width[#__c_4] > 0 And \height[#__c_4] > 0
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Defined(fixme, #PB_Module)
+          CompilerIf Not (#PB_Compiler_OS = #PB_OS_MacOS And Not Defined(fixme, #PB_Module))
             ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
           CompilerEndIf
           
@@ -1482,9 +1482,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
           *this\bar\button[#__b_3]\y = *this\bar\button[#__b_1]\y 
           *this\bar\button[#__b_3]\height = *this\__height ; *this\bar\button[#__b_1]\height
           *this\bar\button[#__b_3]\width = *this\bar\max
-          ; Debug  *this\bar\page\pos
-          
-          ; *this\bar\button[#__b_3]\x = (*this\bar\area\pos + _invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted) - *this\bar\page\end)
           *this\bar\button[#__b_3]\x = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
         EndIf
         ;EndIf
@@ -1638,7 +1635,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           *this\text\string = "%" + Str(*this\bar\page\pos)  +" "+ Str(*this\width)
         EndIf
       EndIf
-    
+      
       ProcedureReturn Bool(*this\resize & #__resize_change)
     EndProcedure
     
@@ -1727,11 +1724,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Procedure.b Update(*this._s_widget)
       Protected result.b, _scroll_pos_.f
       
-;        If *this\type = #PB_GadgetType_TabBar
-;               *this\bar\fixed = 1
-;             EndIf
-            
-           
+      ;        If *this\type = #PB_GadgetType_TabBar
+      ;               *this\bar\fixed = 1
+      ;             EndIf
+      
+      
       If Bool(*this\resize & #__resize_change)
         If *this\type = #PB_GadgetType_ScrollBar 
           If *this\bar\max And *this\bar\button[#__b_1]\len =- 1 And *this\bar\button[#__b_2]\len =- 1
@@ -1779,7 +1776,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             Debug  "if SetState(height-value or width-value)"
             If *this\type <> #PB_GadgetType_TabBar
               *this\bar\page\pos = *this\bar\area\len + *this\bar\button[#__b_3]\fixed
-            *this\bar\button[#__b_3]\fixed = 0
+              *this\bar\button[#__b_3]\fixed = 0
             EndIf
           EndIf
         EndIf
@@ -1787,7 +1784,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         ; one
         If *this\type = #PB_GadgetType_Splitter 
           If Not *this\bar\max And *this\width And *this\height ; And *this\type <> #PB_GadgetType_TabBar
-            ; Debug  "one - Not *this\bar\max And *this\width And *this\height"
+                                                                ; Debug  "one - Not *this\bar\max And *this\width And *this\height"
             
             *this\bar\thumb\len = *this\bar\button[#__b_3]\len
             
@@ -1811,6 +1808,14 @@ CompilerIf Not Defined(Bar, #PB_Module)
           EndIf
         EndIf
         
+        If *this\type = #PB_GadgetType_TabBar
+          *this\bar\page\end = *this\bar\max - *this\bar\area\len
+        Else
+          *this\bar\page\end = *this\bar\max - *this\bar\page\len
+          ; *this\bar\page\end = *this\bar\min + ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
+        EndIf
+        
+        ; thumb len
         If *this\type = #PB_GadgetType_ScrollBar
           *this\bar\thumb\len = Round((*this\bar\area\len / (*this\bar\max-*this\bar\min)) * (*this\bar\page\len), #PB_Round_Nearest)
           ; *this\bar\thumb\len = Round(*this\bar\area\len - (*this\bar\area\len / (*this\bar\max-*this\bar\min)) * ((*this\bar\max-*this\bar\min) - *this\bar\page\len), #PB_Round_Nearest)
@@ -1833,30 +1838,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
             EndIf
           EndIf
           
-        Else
-          *this\bar\thumb\len = *this\bar\button[#__b_3]\len
-        EndIf
-        
-; ;           If *this\type = #PB_GadgetType_TabBar
-; ;             *this\bar\page\len = *this\bar\area\len
-; ;           EndIf
-; ;           
-; ;         *this\bar\page\end = (*this\bar\max - *this\bar\page\len)
-; ;        ; *this\bar\page\end = *this\bar\min + ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
-; ;         ; *this\bar\page\end = *this\bar\min + Bool(*this\bar\max > *this\bar\page\Len) * ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
-; ; ;         If *this\bar\page\end < 0
-; ; ;           *this\bar\page\end = 0
-; ; ;         EndIf
-; ;         
-; ;         ; *this\bar\thumb\end = (*this\bar\area\len - *this\bar\thumb\len)
-; ;         *this\bar\area\end = *this\bar\area\pos + (*this\bar\area\len - *this\bar\thumb\len)  
-; ;         *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
-        
-       If *this\type = #PB_GadgetType_TabBar
-          *this\bar\page\end = *this\bar\max - *this\bar\area\len
+        ElseIf *this\type = #PB_GadgetType_TabBar
           *this\bar\thumb\len = *this\bar\area\len - *this\bar\page\end
         Else
-          *this\bar\page\end = *this\bar\max - *this\bar\page\len
+          *this\bar\thumb\len = *this\bar\button[#__b_3]\len
         EndIf
         
         ;         If *this\bar\page\end < 0
@@ -1874,7 +1859,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
       EndIf
       
       If Not *this\bar\area\len < 0
-        
         If *this\bar\fixed And Not *this\bar\thumb\change
           If *this\bar\button[*this\bar\fixed]\fixed > *this\bar\area\len - *this\bar\thumb\len
             *this\bar\button[*this\bar\fixed]\fixed = *this\bar\area\len - *this\bar\thumb\len
@@ -1904,21 +1888,21 @@ CompilerIf Not Defined(Bar, #PB_Module)
           _scroll_pos_ = _invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted)
         EndIf
         
-;         If *this\type = #PB_GadgetType_TabBar
-;           *this\bar\thumb\pos = (*this\bar\area\pos + _scroll_pos_ - *this\bar\page\end)
-;        
-; ;           *this\bar\thumb\pos = (*this\bar\area\pos + Round(((_scroll_pos_) - *this\bar\min) * *this\bar\scroll_increment, #PB_Round_Nearest))
-; ;           *this\bar\thumb\pos = (*this\bar\min + Round(((*this\bar\thumb\pos) - *this\bar\area\pos) / *this\bar\scroll_increment, #PB_Round_Nearest)) 
-; ;           *this\bar\thumb\pos = (*this\bar\area\pos + *this\bar\thumb\pos - *this\bar\page\end)
-; ;           ;              *this\bar\thumb\pos = (Round(((_scroll_pos_) - *this\bar\min) * *this\bar\scroll_increment, #PB_Round_Nearest))
-; ;           ;             *this\bar\thumb\pos = (*this\bar\min + Round(((*this\bar\thumb\pos)) / *this\bar\scroll_increment, #PB_Round_Nearest)) 
-; ;           ;             ;*this\bar\min + ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
-; ;           ;             *this\bar\thumb\pos = (*this\bar\max + *this\bar\thumb\pos+*this\bar\area\len)
-; ;           ;            ; *this\bar\thumb\pos = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
-;         Else
-          *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
-;         EndIf
-             
+        ;         If *this\type = #PB_GadgetType_TabBar
+        ;           *this\bar\thumb\pos = (*this\bar\area\pos + _scroll_pos_ - *this\bar\page\end)
+        ;        
+        ; ;           *this\bar\thumb\pos = (*this\bar\area\pos + Round(((_scroll_pos_) - *this\bar\min) * *this\bar\scroll_increment, #PB_Round_Nearest))
+        ; ;           *this\bar\thumb\pos = (*this\bar\min + Round(((*this\bar\thumb\pos) - *this\bar\area\pos) / *this\bar\scroll_increment, #PB_Round_Nearest)) 
+        ; ;           *this\bar\thumb\pos = (*this\bar\area\pos + *this\bar\thumb\pos - *this\bar\page\end)
+        ; ;           ;              *this\bar\thumb\pos = (Round(((_scroll_pos_) - *this\bar\min) * *this\bar\scroll_increment, #PB_Round_Nearest))
+        ; ;           ;             *this\bar\thumb\pos = (*this\bar\min + Round(((*this\bar\thumb\pos)) / *this\bar\scroll_increment, #PB_Round_Nearest)) 
+        ; ;           ;             ;*this\bar\min + ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
+        ; ;           ;             *this\bar\thumb\pos = (*this\bar\max + *this\bar\thumb\pos+*this\bar\area\len)
+        ; ;           ;            ; *this\bar\thumb\pos = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
+        ;         Else
+        *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
+        ;         EndIf
+        
         ; _in_start_
         If *this\bar\button[#__b_1]\len 
           If *this\bar\min >= _scroll_pos_
@@ -1957,25 +1941,25 @@ CompilerIf Not Defined(Bar, #PB_Module)
           EndIf
         EndIf
         
-;         If *this\type = #PB_GadgetType_ScrollBar Or 
-;            *this\type = #PB_GadgetType_TabBar
-;           
-;           If *this\bar\fixed And *this\bar\thumb\change
-;             If *this\bar\vertical
-;               If *this\bar\fixed = #__b_1
-;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\bar\thumb\pos - *this\y) - *this\bar\button[*this\bar\fixed]\len
-;               ElseIf *this\bar\fixed = #__b_2
-;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\height - (*this\bar\thumb\pos - *this\y + *this\bar\thumb\len)) - *this\bar\button[*this\bar\fixed]\len
-;               EndIf
-;             Else
-;               If *this\bar\fixed = #__b_1
-;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\bar\thumb\pos - *this\x) - *this\bar\button[*this\bar\fixed]\len
-;               ElseIf *this\bar\fixed = #__b_2
-;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\width - (*this\bar\thumb\pos - *this\x + *this\bar\thumb\len)) - *this\bar\button[*this\bar\fixed]\len
-;               EndIf
-;             EndIf
-;           EndIf
-;         EndIf
+        ;         If *this\type = #PB_GadgetType_ScrollBar Or 
+        ;            *this\type = #PB_GadgetType_TabBar
+        ;           
+        ;           If *this\bar\fixed And *this\bar\thumb\change
+        ;             If *this\bar\vertical
+        ;               If *this\bar\fixed = #__b_1
+        ;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\bar\thumb\pos - *this\y) - *this\bar\button[*this\bar\fixed]\len
+        ;               ElseIf *this\bar\fixed = #__b_2
+        ;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\height - (*this\bar\thumb\pos - *this\y + *this\bar\thumb\len)) - *this\bar\button[*this\bar\fixed]\len
+        ;               EndIf
+        ;             Else
+        ;               If *this\bar\fixed = #__b_1
+        ;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\bar\thumb\pos - *this\x) - *this\bar\button[*this\bar\fixed]\len
+        ;               ElseIf *this\bar\fixed = #__b_2
+        ;                 *this\bar\button[*this\bar\fixed]\fixed = (*this\width - (*this\bar\thumb\pos - *this\x + *this\bar\thumb\len)) - *this\bar\button[*this\bar\fixed]\len
+        ;               EndIf
+        ;             EndIf
+        ;           EndIf
+        ;         EndIf
         
         If *this\type = #PB_GadgetType_ScrollBar
           result = Update_Scroll(*this)
@@ -3009,7 +2993,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
               *this\bar\button[*this\bar\state]\state = #__s_0
               
               If *this\bar\state = #__b_3 And *this\cursor
-                 Debug  "  reset cur"
+                Debug  "  reset cur"
                 ;                 set_cursor(*this, #PB_Cursor_Default)
                 SetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
               EndIf
@@ -3028,13 +3012,13 @@ CompilerIf Not Defined(Bar, #PB_Module)
          _event_type_ = #__Event_MouseLeave Or
          _event_type_ = #__Event_LeftButtonUp
         
-;         Protected thumb = #__b_3
-;         
-;         If *this\type = #PB_GadgetType_TabBar And
-;            (_from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_1]) Or 
-;             _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_2]))
-;           thumb = 0 ; thumb = #__b_3 And 
-;         EndIf
+        ;         Protected thumb = #__b_3
+        ;         
+        ;         If *this\type = #PB_GadgetType_TabBar And
+        ;            (_from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_1]) Or 
+        ;             _from_point_(_mouse_x_, _mouse_y_, *this\bar\button[#__b_2]))
+        ;           thumb = 0 ; thumb = #__b_3 And 
+        ;         EndIf
         
         If *this\bar\button[#__b_3]\interact And
            *this\bar\button[#__b_3]\state <> #__s_3 And
@@ -3193,7 +3177,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             *this\bar\button[#__b_3]\color\state = *this\bar\button[#__b_3]\state
           EndIf
         EndIf
-      
+        
         If Not *this\root\mouse\buttons
           *this\bar\state = *this\bar\from
         EndIf
@@ -3795,5 +3779,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----------------------------f2--fP-e--0-+-----------X8--------v0u+-----vv8---f----------
+; Folding = --------------------------------vav-e--0-+x+t0-------------------------------------------
 ; EnableXP
