@@ -2395,7 +2395,7 @@ Module Widget
       
       \round = round
       \bar\mode = Bool(Flag&#__bar_ticks=#__bar_ticks)*#__bar_ticks
-      \bar\vertical = Bool(Flag&#__bar_vertical=#__bar_vertical)
+      \bar\vertical = Bool(Flag&#__flag_vertical=#__flag_vertical)
       \bar\inverted = Bool(Flag&#__bar_inverted=#__bar_inverted)
       \bar\scroll_step = scroll_step
       
@@ -8281,7 +8281,7 @@ Module Widget
   ;-
   Procedure.i Track(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=7)
     Protected *this._s_widget
-    If Flag&#__bar_vertical
+    If Flag&#__flag_vertical
       Flag|#__bar_inverted
     EndIf
     ;     If Flag&#__bar_ticks
@@ -8297,7 +8297,7 @@ Module Widget
   
   Procedure.i Progress(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0)
     Protected *this._s_widget
-    If Flag&#__bar_vertical
+    If Flag&#__flag_vertical
       Flag|#__bar_inverted
     EndIf
     
@@ -8310,11 +8310,11 @@ Module Widget
   
   Procedure.i Spin(X.l,Y.l,Width.l,Height.l, Min.l,Max.l, Flag.i=0, round.l=0, Increment.f=1.0)
     Protected *this._s_widget
-    If Flag&#__bar_vertical
-      Flag&~#__bar_vertical
+    If Flag&#__flag_vertical
+      Flag&~#__flag_vertical
       ;Flag|#__bar_inverted
     Else
-      Flag|#__bar_vertical
+      Flag|#__flag_vertical
       Flag|#__bar_inverted
     EndIf
     
@@ -8331,7 +8331,7 @@ Module Widget
   
   Procedure.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
     Protected *this._s_widget, Size
-    If Bool(Flag&#__bar_vertical)
+    If Bool(Flag&#__flag_vertical)
       Size = width
     Else
       Size = height
@@ -8540,7 +8540,7 @@ Module Widget
       _set_image_(*this, *this, Image)
       
       ; \scroll = AllocateStructure(_s_scroll) 
-      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__bar_vertical, 7, *this)
+      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__flag_vertical, 7, *this)
       \scroll\h = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)
@@ -8577,7 +8577,7 @@ Module Widget
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
       ; \scroll = AllocateStructure(_s_scroll) 
-      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__bar_vertical, 7, *this)
+      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__flag_vertical, 7, *this)
       \scroll\h = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
       
       \flag\lines = constants::_check_(Flag, #PB_HyperLink_Underline)
@@ -8625,7 +8625,7 @@ Module Widget
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
       ; \scroll = AllocateStructure(_s_scroll) 
-      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__bar_vertical, 7, *this)
+      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__flag_vertical, 7, *this)
       \scroll\h = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
       *this\scroll\align\left = 18
       
@@ -8665,7 +8665,7 @@ Module Widget
       ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
       
       ; \scroll = AllocateStructure(_s_scroll) 
-      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__bar_vertical, 7, *this)
+      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__flag_vertical, 7, *this)
       \scroll\h = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
       *this\scroll\align\left = 18
       
@@ -8698,7 +8698,7 @@ Module Widget
       *this\row\margin\hide = 1
       
       ; \scroll = AllocateStructure(_s_scroll) 
-      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__bar_vertical, 7, *this)
+      \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__flag_vertical, 7, *this)
       \scroll\h = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)
@@ -8786,7 +8786,7 @@ Module Widget
     
     With *this
       ; \scroll = AllocateStructure(_s_scroll) 
-      \scroll\v = bar_create(#__Type_ScrollBar,Size,0,0,Height, #__bar_vertical, 7, *this)
+      \scroll\v = bar_create(#__Type_ScrollBar,Size,0,0,Height, #__flag_vertical, 7, *this)
       \scroll\h = bar_create(#__Type_ScrollBar,Size,0,0,Width, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)
@@ -9150,7 +9150,7 @@ Module Widget
       ; \image = AllocateStructure(_s_image)
       
       ; \scroll = AllocateStructure(_s_scroll) 
-      \scroll\v = bar_create(#__Type_ScrollBar, Size, 0,ScrollAreaHeight,Height, #__bar_vertical, 7, *this)
+      \scroll\v = bar_create(#__Type_ScrollBar, Size, 0,ScrollAreaHeight,Height, #__flag_vertical, 7, *this)
       \scroll\h = bar_create(#__Type_ScrollBar, Size, 0,ScrollAreaWidth,Width, 0, 7, *this)
       
       Resize(*this, X,Y,Width,Height)

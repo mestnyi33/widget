@@ -837,7 +837,10 @@ EndDeclareModule
 ;- XIncludeFile
 ;-
 CompilerIf Not Defined(Bar, #PB_Module)
-  XIncludeFile "widgets()/bar().pbi"
+ ;   XIncludeFile "widgets()/bar.pbi"
+  
+  ;   XIncludeFile "widgets()/bar().pb"
+XIncludeFile "widgets()/bar().pbi"
 CompilerEndIf
 
 CompilerIf Not Defined(Splitter, #PB_Module)
@@ -10042,9 +10045,10 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule constants
   ;   UseModule structures
   
+  
+  Global *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
   Global *Button_0._s_widget
   Global *Button_1._s_widget
-  Global *Button_2._s_widget
   
   UsePNGImageDecoder()
   
@@ -10055,11 +10059,12 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure _events_()
+  Procedure _Events()
     Debug "window "+EventWindow()+" widget "+EventGadget()+" eventtype "+EventType()+" eventdata "+EventData()
   EndProcedure
   
   LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4-Bool(#PB_Compiler_OS=#PB_OS_Linux)*4)
+  
   
   Global c2, _splitter_ 
   Procedure ResizeCallBack()
@@ -10067,120 +10072,58 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Height = WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)
     
     Resize(_splitter_, 10, 10, Width-20, Height-20) 
-    ;     ResizeGadget(c2, 10, 10, Width-20, Height-20)
-    ;     Resize(*Button_0, Width-90, #PB_Ignore, #PB_Ignore, Height-40)
-    ;     Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-110, Height-40)
+;     ResizeGadget(c2, 10, 10, Width-20, Height-20)
+;     Resize(*Button_0, Width-90, #PB_Ignore, #PB_Ignore, Height-40)
+;     Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-110, Height-40)
     
     SetWindowTitle(EventWindow(), Str(*Button_1\width))
   EndProcedure
   
-  If Open(11, 0, 0, 720+60, 420+130, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+  If Open(11, 0, 0, 380, 200, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     c2 = GetGadget(Root())
+    Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  
+;     Button_1 = Tab(0, 0, 0, 0, 0, 0, 0); No need to specify size or coordinates
+;     AddItem(Button_1, -1, "Tab_0")
+;     AddItem(Button_1, -1, "Tab long long 1")
+;     AddItem(Button_1, -1, "Tab_2")
+;     Button_1 = Scroll(0, 0, 0, 0, 0, 100, 20) ; No need to specify size or coordinates
+;     Button_1 = Splitter(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     
-    ;     With *Button_1
-    ;       ResizeImage(0, 32,32)
-    ;     EndWith
-    Define._s_widget *f_0, *f_1, *f_2, *f_3, *f_4, *f_5, *f_6, *f_7, *f_8, *f_9, *f_10, *f_11, *sp_0, *sp_1, *sc_0
+    Button_2 = ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
     
-    *f_0 = form(10, 10, 180,  120, "form_0", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    button(10, -10, 80, 40, "Butt_0", #__flag_anchorsgadget)
-    ;*f_0\fs = 10
+    ;     Splitter_3 = Splitter(0, 0, 0, 0, Splitter_2, Button_2, #PB_Splitter_Vertical|#PB_Splitter_Separator)
+;     Splitter_4 = Splitter(10, 10, 285+30, 140, Splitter_3, Splitter_0, #PB_Splitter_Vertical|#PB_Splitter_Separator)
     
-    ; set_border_size()
-    *f_0\bs = 10
-    Define _change_x_ = *f_0\bs - *f_0\fs
-    Define _change_y_ = *f_0\bs - *f_0\fs
+    Splitter_3 = Splitter(0, 0, 0, 0, Splitter_2, Button_2, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
+    Splitter_4 = Splitter(10, 10, 285+30, 140, Splitter_3, Splitter_0, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
     
-    Resize(*f_0, 0, 0, #PB_Ignore, #PB_Ignore)
-    If ListSize(*f_0\childrens())
-      ForEach *f_0\childrens()
-        Resize(*f_0\childrens(), 
-               (*f_0\childrens()\x-*f_0\x-*f_0\bs) + _change_x_,
-               (*f_0\childrens()\y-*f_0\y-*f_0\bs-*f_0\__height) + _change_y_, 
-               #PB_Ignore, #PB_Ignore)
-;         Resize(*f_0\childrens(), 
-;                (*f_0\childrens()\x[#__c_3]-*f_0\parent\x[#__c_2]) + _change_x_,
-;                (*f_0\childrens()\y[#__c_3]-*f_0\parent\y[#__c_2]) + _change_y_, 
-;                #PB_Ignore, #PB_Ignore)
-      Next
+
+    SetState(Splitter_3, 40)
+    SetState(Splitter_4, 245)
+    
+    If OpenList(Button_2)
+      Button_4 = ScrollArea(-1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
+                                                             ;       Define i
+                                                             ;       For i=0 To 1000
+      Progress(10, 10, 50, 30, 1, 100, 30)
+      ;       Next
+      CloseList()
+      Progress(100, 10, 50, 30, 2, 100, 30)
+      CloseList()
     EndIf
     
-    
-    button(10, 40, 80, 40, "Butt_0", #__flag_anchorsgadget)
-    closelist()
-    
-    *f_1 = form(10, 10, 180,  120, "form_1", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    button(10, -10, 80, 40, "Butt_1", #__flag_anchorsgadget)
-    closelist()
-    
-    *f_2 = form(10, 10, 180,  120, "form_2", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    *f_3 = ScrollArea(10, 10, 180,  120, 250, 250, 1, #__flag_anchorsgadget)
-    ;*f_3 = form(10, 10, 180,  120, "form_3", #__flag_anchorsgadget, *f_2)
-    button(10, 0, 80, 40, "Butt_3", #__flag_anchorsgadget)
-    closelist()
-    closelist()
-    
-    *sp_0 = splitter(0, 0, 0, 0, *f_1, *f_0, #__bar_vertical)
-    *sp_1 = splitter(10, 10, 360, 360+20, *f_2, *sp_0)
-;     *sp_0 = splitter(0, 0, 0, 0, *f_1, *f_0)
-;     *sp_1 = splitter(10, 10, 360, 360, *f_2, *sp_0, #__bar_vertical)
-;     
-    
-; ; ;     Define area_width = 575
-; ; ;     Define area_height = 555
-; ; ;     
-; ; ;     *sc_0 = ScrollArea(380, 10, 390,220, area_width, area_height, 30)
-; ; ;       Button  (10, 10, 230, 30,"Button 1")
-; ; ;       Button  (50, 50, 230, 30,"Button 2")
-; ; ;       Button  (90, 90, 230, 30,"Button 3")
-; ; ;       Text    (130,130, 230, 20,"This is the content of a ScrollAreaGadget!",#__Text_Right)
-; ; ;       
-; ; ;       Button  (area_width-230, area_height-30, 230, 30,"Button 4")
-; ; ;     CloseList()
-; ; ;     
-; ; ;      Resize(*f_3, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-   
-    ;BindGadgetEvent(0, @ BindScrollDatas())
-     
-    *f_4 = form(370+10, 10, 180,  120, "form_4", #__flag_BorderLess)
-    button(5, 5, 80, 20, "Butt_4_0")
-    *f_5 = form(370+10+190, 10, 180,  120, "form_5 SystemMenu", #PB_Window_SystemMenu)
-    button(5, 5, 80, 20, "Butt_5_0")
-    
-    *f_6 = form(370+10, 130+10, 180,  120, "form_6", #PB_Window_SizeGadget)
-    button(5, 5, 80, 20, "Butt_6_0")
-    *f_7 = form(370+10+190, 130+10, 180,  120, "form_7 Minimize", #PB_Window_MinimizeGadget)
-    button(5, 5, 80, 20, "Butt_7_0")
-    
-    *f_8 = form(370+10, 130+10+130, 180,  120, "form_8", #PB_Window_TitleBar)
-    button(5, 5, 80, 20, "Butt_8_0")
-    *f_9 = form(370+10+190, 130+10+130, 180,  120, "form_9 Maximize", #PB_Window_MaximizeGadget)
-    button(5, 5, 80, 20, "Butt_9_0")
-    
-    *f_10 = form(370+10, 130+10+130+130, 180,  120, "form_10", #PB_Window_TitleBar)
-    button(5, 5, 80, 20, "Butt_10_0")
-    *f_11 = form(370+10+190, 130+10+130+130, 180,  120, "form_11", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    button(5, 5, 80, 20, "Butt_11_0")
-    
-    SetColor(*f_4, #__color_back, $CA00D7FF)
-    SetColor(*f_5, #__color_back, $CA00D7FF)
-    SetColor(*f_6, #__color_back, $CA00D7FF)
-    SetColor(*f_7, #__color_back, $CA00D7FF)
-    SetColor(*f_8, #__color_back, $CA00D7FF)
-    SetColor(*f_9, #__color_back, $CA00D7FF)
-    SetColor(*f_10, #__color_back, $CA00D7FF)
-    SetColor(*f_11, #__color_back, $CA00D7FF)
-    
-    
-    ;Resize(*f_0, #PB_Ignore, -10, #PB_Ignore, #PB_Ignore)
-
     redraw(root())
     
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
+    ;PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
     
+    ;     BindGadgetEvent(g, @CallBacks())
+    ;     PostEvent(#PB_Event_gadget, 11,11, #__Event_resize)
+    ;     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = f-------------fw--------------4--------------------------------------------------6----------------------------------------------------c48-f9+-Hs0+dL9+----0-----------------f---8----4+-----f-------
+; Folding = f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -205,7 +205,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare.i Scroll(X.l,Y.l,Width.l,Height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
     Declare.i Splitter(X.l,Y.l,Width.l,Height.l, First.i, Second.i, Flag.i=0)
     
-    Declare.i create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
+    Declare.i Create(type.l, *parent._s_widget, x.l,y.l,width.l,height.l, *param_1, *param_2, *param_3, size.l, flag.i=0, round.l=7, scroll_step.f=1.0)
+    ;create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
     Declare.b Events(*this, EventType.l, mouse_x.l, mouse_y.l, wheel_x.b=0, wheel_y.b=0)
     
     Declare.b Resize(*this, iX.l,iY.l,iWidth.l,iHeight.l)
@@ -1870,7 +1871,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     
     ;-
-    Procedure.i create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
+    Procedure.i Create(type.l, *parent._s_widget, x.l,y.l,width.l,height.l, *param_1, *param_2, *param_3, size.l, flag.i=0, round.l=7, scroll_step.f=1.0)
+      ;create(type.l, size.l, *param_1, *param_2, *param_3, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
     Protected *this._s_widget = AllocateStructure(_s_widget)
     
     With *this
@@ -1878,12 +1880,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
       \x =- 1
       \y =- 1
       
-      ;\hide = Bool(Not pagelength)  ; add
+      ;\hide = Bool(Not *param_3)  ; add
       
       \type = Type
       \adress = *this
       
-      \parent = parent
+      \parent = *parent
       If \parent
         \root = \parent\root
         \window = \parent\window
@@ -2045,9 +2047,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
       
         
       
-      If \bar\min <> Min : SetAttribute(*this, #__bar_minimum, Min) : EndIf
-      If \bar\max <> Max : SetAttribute(*this, #__bar_maximum, Max) : EndIf
-      If \bar\page\len <> Pagelength : SetAttribute(*this, #__bar_pageLength, Pagelength) : EndIf
+      If \bar\min <> *param_1 : SetAttribute(*this, #__bar_minimum, *param_1) : EndIf
+      If \bar\max <> *param_2 : SetAttribute(*this, #__bar_maximum, *param_2) : EndIf
+      If \bar\page\len <> *param_3 : SetAttribute(*this, #__bar_pageLength, *param_3) : EndIf
       If \bar\inverted : SetAttribute(*this, #__bar_inverted, #True) : EndIf
       
     EndWith
@@ -2302,8 +2304,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Procedure Area(parent.i, size.l, mode.l, round, type.l=#PB_GadgetType_ScrollBar)
       Protected *scroll._s_scroll = AllocateStructure(_s_scroll)
       
-      *scroll\v = Bar::Create(type, size, 0,0,0, #__bar_vertical, round, parent)
-      *scroll\h = Bar::Create(type, Bool(mode)*size, 0,0,0, 0, round, parent)
+      *scroll\v = Bar::Create(type, parent, 0,0,0,0, 0,0,0, size, #__bar_vertical, round)
+      *scroll\h = Bar::Create(type, parent, 0,0,0,0, 0,0,0, Bool(mode)*size, 0, round)
       
       ProcedureReturn *scroll
     EndProcedure
@@ -2797,7 +2799,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *event\root = AllocateStructure(_s_root)
     *event\root\window = Window
-    *event\root\canvas = g_Canvas
+    *event\root\canvas\gadget = g_Canvas
     *event\active = *event\root
     *event\active\root = *event\root
     
@@ -3132,5 +3134,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----------------------------------------8--b0-----------------------
+; Folding = ----------------------------------------8--b0-fk-----4v-+f-+--------
 ; EnableXP

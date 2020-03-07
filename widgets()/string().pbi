@@ -2651,7 +2651,8 @@ Module Editor
     With *this
       ;If \text\editable
       Protected scroll
-      If \scroll\v
+      CompilerIf Defined(Bar::events, #PB_Procedure)
+        If \scroll\v
         Repaint | Bar::events(\scroll\v, EventType, \root\mouse\x, \root\mouse\y)
         scroll | Bool(*this\scroll\v\from <>- 1)
       EndIf       
@@ -2659,7 +2660,8 @@ Module Editor
         Repaint | Bar::events(\scroll\h, EventType, \root\mouse\x, \root\mouse\y)
         scroll | Bool(*this\scroll\h\from <>- 1)
       EndIf
-      
+    CompilerEndIf
+    
       If *this And Not scroll
         If ListSize(*this\row\_s())
           If Not \hide And \interact
@@ -3118,9 +3120,9 @@ Module Editor
       
       ;If Width Or Height
       ; \scroll = AllocateStructure(_s_scroll) 
-      \scroll\v = Bar::Create(#PB_GadgetType_ScrollBar, 16, 0,0,0, #PB_ScrollBar_Vertical, 7, *this)
-      \scroll\h = Bar::Create(#PB_GadgetType_ScrollBar, 16, 0,0,0, 0, 7, *this)
-      
+      \scroll\v = Bar::Create(#PB_GadgetType_ScrollBar, *this, 0,0,0,0, 0,0,0, 16, #PB_ScrollBar_Vertical, 7)
+      \scroll\h = Bar::Create(#PB_GadgetType_ScrollBar, *this, 0,0,0,0, 0,0,0, 16, 0, 7)
+       
       Resize(*this, X,Y,Width,Height)
       
       ; set text
@@ -3580,5 +3582,5 @@ CompilerEndIf
 ; ; ;   EndIf
 ; ; ; CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----------------------------4---------------------------------------
+; Folding = ---------------87-+0Lw-------4---------------------------------------
 ; EnableXP
