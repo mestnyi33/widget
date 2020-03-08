@@ -1582,7 +1582,7 @@ Module Widget
       
       _this_\change = 1
       _this_\row\count = _this_\count\items
-      PostEvent(#PB_Event_Gadget, _this_\root\window, _this_\root\gadget, #__Event_repaint, _this_)
+      PostEvent(#PB_Event_Gadget, _this_\root\canvas\window, _this_\root\canvas\gadget, #__Event_repaint, _this_)
     EndIf  
   EndMacro
   
@@ -3114,7 +3114,7 @@ Module Widget
           Case #PB_Event_ActivateWindow
             Protected *Widget._s_widget = (\root\canvas\gadget)
             
-            If CallBack(\childrens(), #__Event_LeftButtonDown, WindowMouseX(\root\window), WindowMouseY(\root\window))
+            If CallBack(\childrens(), #__Event_LeftButtonDown, WindowMouseX(\root\canvas\window), WindowMouseY(\root\canvas\window))
               ; If \childrens()\index[#__s_2] <> \childrens()\index[#__s_1]
               *Widget\index[#__s_2] = \childrens()\index[#__s_1]
               Post(#__Event_Change, *Widget, \childrens()\index[#__s_1])
@@ -3134,7 +3134,7 @@ Module Widget
             ;*Widget\box\checked = 0
             SetActive(*Widget)
             ReDraw(*Widget\root)
-            HideWindow(\root\window, 1)
+            HideWindow(\root\canvas\window, 1)
             
           Case #PB_Event_Gadget
             mouse_x = GetGadgetAttribute(\root\canvas\gadget, #PB_Canvas_MouseX)
@@ -3186,14 +3186,14 @@ Module Widget
       
       Resize(*Widget, #PB_Ignore,#PB_Ignore, width, Height )
       If *Widget\resize
-        ResizeWindow(*Widget\root\window, x, y, width, Height)
+        ResizeWindow(*Widget\root\canvas\window, x, y, width, Height)
         ResizeGadget(*Widget\root\canvas\gadget, #PB_Ignore, #PB_Ignore, width, Height)
       EndIf
     EndWith
     
     ReDraw(*Widget)
     
-    HideWindow(*Widget\root\window, 0, #PB_Window_NoActivate)
+    HideWindow(*Widget\root\canvas\window, 0, #PB_Window_NoActivate)
   EndProcedure
   
   Procedure.i Popup(*Widget._s_widget, X.l,Y.l,Width.l,Height.l, Flag.i=0)
@@ -3225,19 +3225,19 @@ Module Widget
           Height = *Widget\height
         EndIf
         
-        If IsWindow(*Widget\root\window)
-          Protected WindowID = WindowID(*Widget\root\window)
+        If IsWindow(*Widget\root\canvas\window)
+          Protected WindowID = WindowID(*Widget\root\canvas\window)
         EndIf
         
         \root\parent = *Widget
-        \root\window = OpenWindow(#PB_Any, X,Y,Width,Height, "", #PB_Window_BorderLess|#PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID) ;|#PB_Window_noGadgets
+        \root\canvas\window = OpenWindow(#PB_Any, X,Y,Width,Height, "", #PB_Window_BorderLess|#PB_Window_NoActivate|(Bool(#PB_Compiler_OS<>#PB_OS_Windows)*#PB_Window_Tool), WindowID) ;|#PB_Window_noGadgets
         \root\canvas\gadget = CanvasGadget(#PB_Any,0,0,Width,Height)
         Resize(\root, 1,1, width, Height)
         
-        SetWindowData(\root\window, *this)
+        SetWindowData(\root\canvas\window, *this)
         SetGadgetData(\root\canvas\gadget, *Widget)
         
-        BindEvent(#PB_Event_ActivateWindow, @CallBack_popup(), \root\window);, \gadget )
+        BindEvent(#PB_Event_ActivateWindow, @CallBack_popup(), \root\canvas\window);, \gadget )
         BindGadgetEvent(\root\canvas\gadget, @CallBack_popup())
       EndIf
     EndWith  
@@ -6255,7 +6255,7 @@ Module Widget
       EndIf
       
       ;       If Not \repaint : \repaint = 1
-      ;        PostEvent(#PB_Event_gadget, \root\window, \root\canvas\gadget, #__Event_repaint)
+      ;        PostEvent(#PB_Event_gadget, \root\canvas\window, \root\canvas\gadget, #__Event_repaint)
       ;       EndIf
     EndWith
   EndProcedure
@@ -6269,7 +6269,7 @@ Module Widget
         \count\items = 0 
         \text\string = #LF$
         ;         If Not \repaint : \repaint = 1
-        ;           PostEvent(#PB_Event_gadget, \root\window, \root\canvas\gadget, #__Event_repaint)
+        ;           PostEvent(#PB_Event_gadget, \root\canvas\window, \root\canvas\gadget, #__Event_repaint)
         ;         EndIf
       Else
         Debug "remove item - "+Item
@@ -6366,7 +6366,7 @@ Module Widget
   
   Procedure.i GetWindow(*this._s_widget)
     If _is_root_(*this)
-      ProcedureReturn *this\root\window ; Returns canvas window
+      ProcedureReturn *this\root\canvas\window ; Returns canvas window
     Else
       ProcedureReturn *this\window ; Returns element window
     EndIf
@@ -6869,7 +6869,7 @@ Module Widget
           CallBack(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
         EndIf
         
-        PostEvent(#PB_Event_Gadget, _active_\root\window, _active_\root\canvas\gadget, #__Event_repaint)
+        PostEvent(#PB_Event_Gadget, _active_\root\canvas\window, _active_\root\canvas\gadget, #__Event_repaint)
       EndIf
       
       If _active_\gadget
@@ -7748,7 +7748,7 @@ Module Widget
         
         \image\width = \columns()\items()\image\width
         ;         If ListIndex(\columns()\items()) = 0
-        ;           PostEvent(#PB_Event_gadget, \root\window, \root\canvas\gadget, #__Event_repaint)
+        ;           PostEvent(#PB_Event_gadget, \root\canvas\window, \root\canvas\gadget, #__Event_repaint)
         ;         EndIf
       Next
       
@@ -10375,7 +10375,7 @@ Module Widget
           ; ;                 
           ; ; ; ;                 ; create tooltip on the item
           ; ; ; ;                 If Bool((*this\flag\buttons=0 And *this\flag\lines=0)) And *this\row\_s()\len > *this\width[2]
-          ; ; ; ;                   tt_creare(*this, GadgetX(*this\root\gadget, #PB_Gadget_ScreenCoordinate), GadgetY(*this\root\gadget, #PB_Gadget_ScreenCoordinate))
+          ; ; ; ;                   tt_creare(*this, GadgetX(*this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate), GadgetY(*this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate))
           ; ; ; ;                 EndIf
           ; ;                 
           ; ;                 Result = #True
@@ -10507,7 +10507,7 @@ Module Widget
                   Free(*this)
                   
                   If *this = \root
-                    PostEvent(#PB_Event_CloseWindow, \root\window, *this)
+                    PostEvent(#PB_Event_CloseWindow, \root\canvas\window, *this)
                   EndIf
                 EndIf
                 
@@ -10517,7 +10517,7 @@ Module Widget
                 If \combo_box\checked
                   Display_popup(*this, \popup)
                 Else
-                  HideWindow(\popup\root\window, 1)
+                  HideWindow(\popup\root\canvas\window, 1)
                 EndIf
                 repaint = 1
                 
