@@ -183,23 +183,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ;  (Bool(_inverted_) * ((_bar_\min + (_bar_\max - _bar_\page\len)) - (_scroll_pos_)) + Bool(Not _inverted_) * (_scroll_pos_))
     EndMacro
     
-    Macro _move_childrens_(_parent_, _change_x_, _change_y_)
-      If _parent_\container And _parent_\count\childrens ; And ListSize(_parent_\childrens())
-        PushListPosition(_parent_\root\_childrens())
-        ForEach _parent_\root\_childrens()
-          If _parent_\root\_childrens()\parent = _parent_ 
-            ; Debug _parent_\root\_childrens()\class +" - "+ _parent_\root\_childrens()\parent\class +" - "+ _parent_\class +" - "+ _parent_\parent\class; Bool(_parent_\root\_childrens()\type = #PB_GadgetType_Button)
-            
-            Resize(_parent_\root\_childrens(), 
-                   _parent_\root\_childrens()\x[#__c_3] + (_change_x_),
-                   _parent_\root\_childrens()\y[#__c_3] + (_change_y_), 
-                   #PB_Ignore, #PB_Ignore)
-          EndIf
-        Next
-        PopListPosition(_parent_\root\_childrens())
-      EndIf
-    EndMacro
-    
     Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
       Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ < (_type_\x#_mode_+_type_\width#_mode_) And 
             _mouse_y_ > _type_\y#_mode_ And _mouse_y_ < (_type_\y#_mode_+_type_\height#_mode_))
@@ -803,7 +786,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       Draw_Scroll(*this)
       
       DrawingMode(#PB_2DDrawing_Outlined)
-      Box(*this\bar\button[#__b_1]\x-2,*this\y[#__c_1],*this\x[2]+*this\width[2] - *this\bar\button[#__b_1]\x+3,*this\height[#__c_1], *this\color\frame[*this\color\state])
+      Box(*this\bar\button[#__b_1]\x-2,*this\y[#__c_1],*this\x[#__c_2]+*this\width[#__c_3] - *this\bar\button[#__b_1]\x+3,*this\height[#__c_1], *this\color\frame[*this\color\state])
       Box(*this\x[#__c_1],*this\y[#__c_1],*this\width[#__c_1],*this\height[#__c_1], *this\color\frame[*this\color\state])
       
       
@@ -1306,6 +1289,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         ProcedureReturn Bool(*scroll\v\bar\area\change Or *scroll\h\bar\area\change)
       EndWith
     EndProcedure
+    
     
     ;-
     Procedure.b Update(*this._s_widget)
@@ -1892,28 +1876,28 @@ CompilerIf Not Defined(Bar, #PB_Module)
           If *this\type = #PB_GadgetType_Spin
             If *this\bar\vertical      
               ; Top button coordinate
-              *this\bar\button[#__b_2]\y      = *this\y[2]+*this\height[2]/2 + Bool(*this\height%2)
-              *this\bar\button[#__b_2]\height = *this\height[2]/2 - 1 
+              *this\bar\button[#__b_2]\y      = *this\y[#__c_2]+*this\height[#__c_2]/2 + Bool(*this\height%2)
+              *this\bar\button[#__b_2]\height = *this\height[#__c_2]/2 - 1 
               *this\bar\button[#__b_2]\width  = *this\bar\button[#__b_2]\len 
-              *this\bar\button[#__b_2]\x      = (*this\x[2]+*this\width[2])-*this\bar\button[#__b_2]\len - 1
+              *this\bar\button[#__b_2]\x      = (*this\x[#__c_2]+*this\width[#__c_3]) - *this\bar\button[#__b_2]\len - 1
               
               ; Bottom button coordinate
-              *this\bar\button[#__b_1]\y      = *this\y[2] + 1 
-              *this\bar\button[#__b_1]\height = *this\height[2]/2 - Bool(Not *this\height%2) - 1
+              *this\bar\button[#__b_1]\y      = *this\y[#__c_2] + 1 
+              *this\bar\button[#__b_1]\height = *this\height[#__c_2]/2 - Bool(Not *this\height%2) - 1
               *this\bar\button[#__b_1]\width  = *this\bar\button[#__b_1]\len 
-              *this\bar\button[#__b_1]\x      = (*this\x[2]+*this\width[2])-*this\bar\button[#__b_1]\len - 1                               
+              *this\bar\button[#__b_1]\x      = (*this\x[#__c_2]+*this\width[#__c_3]) - *this\bar\button[#__b_1]\len - 1                               
             Else    
               ; Left button coordinate
-              *this\bar\button[#__b_1]\y      = *this\y[2] + 1
-              *this\bar\button[#__b_1]\height = *this\height[2] - 2
+              *this\bar\button[#__b_1]\y      = *this\y[#__c_2] + 1
+              *this\bar\button[#__b_1]\height = *this\height[#__c_2] - 2
               *this\bar\button[#__b_1]\width  = *this\bar\button[#__b_1]\len/2 - 1
-              *this\bar\button[#__b_1]\x      = *this\x+*this\width-*this\bar\button[#__b_1]\len - 1   
+              *this\bar\button[#__b_1]\x      = *this\x+*this\width - *this\bar\button[#__b_1]\len - 1   
               
               ; Right button coordinate
-              *this\bar\button[#__b_2]\y      = *this\y[2] + 1 
-              *this\bar\button[#__b_2]\height = *this\height[2] - 2
+              *this\bar\button[#__b_2]\y      = *this\y[#__c_2] + 1 
+              *this\bar\button[#__b_2]\height = *this\height[#__c_2] - 2
               *this\bar\button[#__b_2]\width  = *this\bar\button[#__b_2]\len/2 - 1
-              *this\bar\button[#__b_2]\x      = *this\x[2]+*this\width[2]-*this\bar\button[#__b_2]\len/2                             
+              *this\bar\button[#__b_2]\x      = *this\x[#__c_2]+*this\width[#__c_3] - *this\bar\button[#__b_2]\len/2                             
             EndIf
             
             If *this\text
@@ -1941,27 +1925,29 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ProcedureReturn result
     EndProcedure
     
-    Procedure _set_clip_len(*this._s_widget, childrens.b)
+    Procedure   Clip(*this._s_widget, childrens.b)
       ; then move and size parent set clip (width&height)
-      Protected parent_x2 = *this\parent\x[#__c_2]+*this\parent\width[#__c_3]
-      Protected parent_x4 = *this\parent\x[#__c_4]+*this\parent\width[#__c_4]
-      Protected parent_y2 = *this\parent\y[#__c_2]+*this\parent\height[#__c_3]
-      Protected parent_y4 = *this\parent\y[#__c_4]+*this\parent\height[#__c_4]
+      Protected _p_x2_ = *this\parent\x[#__c_2]+*this\parent\width[#__c_2]
+      Protected _p_y2_ = *this\parent\y[#__c_2]+*this\parent\height[#__c_2]
+      Protected _p_x4_ = *this\parent\x[#__c_4]+*this\parent\width[#__c_4]
+      Protected _p_y4_ = *this\parent\y[#__c_4]+*this\parent\height[#__c_4]
+      Protected _t_x2_ = *this\x+*this\width
+      Protected _t_y2_ = *this\y+*this\height
       
-      If *this\parent And parent_x4 > 0 And parent_x4 < *this\x+*this\width And parent_x2 > parent_x4 
-        *this\width[#__c_4] = parent_x4 - *this\x[#__c_4]
-      ElseIf *this\parent And parent_x2 > 0 And parent_x2 < *this\x+*this\width
-        *this\width[#__c_4] = parent_x2 - *this\x[#__c_4]
+      If *this\parent And _p_x4_ > 0 And _p_x4_ < _t_x2_ And _p_x2_ > _p_x4_ 
+        *this\width[#__c_4] = _p_x4_ - *this\x[#__c_4]
+      ElseIf *this\parent And _p_x2_ > 0 And _p_x2_ < _t_x2_
+        *this\width[#__c_4] = _p_x2_ - *this\x[#__c_4]
       Else
-        *this\width[#__c_4] = (*this\x+*this\width) - *this\x[#__c_4]
+        *this\width[#__c_4] = _t_x2_ - *this\x[#__c_4]
       EndIf
       
-      If *this\parent And parent_y4 > 0 And parent_y4 < *this\y+*this\height And parent_y2 > parent_y4 
-        *this\height[#__c_4] = parent_y4 - *this\y[#__c_4]
-      ElseIf *this\parent And parent_y2 > 0 And parent_y2 < *this\y+*this\height
-        *this\height[#__c_4] = parent_y2 - *this\y[#__c_4]
+      If *this\parent And _p_y4_ > 0 And _p_y4_ < _t_y2_ And _p_y2_ > _p_y4_ 
+        *this\height[#__c_4] = _p_y4_ - *this\y[#__c_4]
+      ElseIf *this\parent And _p_y2_ > 0 And _p_y2_ < _t_y2_
+        *this\height[#__c_4] = _p_y2_ - *this\y[#__c_4]
       Else
-        *this\height[#__c_4] = (*this\y+*this\height) - *this\y[#__c_4]
+        *this\height[#__c_4] = _t_y2_ - *this\y[#__c_4]
       EndIf
       
       If *this\width[#__c_4] < 0
@@ -1983,7 +1969,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         PushListPosition(*this\root\_childrens())
         ForEach *this\root\_childrens()
           If *this\root\_childrens()\parent = *this
-            _set_clip_len(*this\root\_childrens(), childrens)
+            Clip(*this\root\_childrens(), childrens)
           EndIf
         Next
         PopListPosition(*this\root\_childrens())
@@ -2053,11 +2039,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
             If \width <> width 
               Change_width = width-\width 
               \width = width 
-              \width[#__c_2] = \width-\bs*2 
-              \width[#__c_1] = \width[#__c_2]+\fs*2 
+              \width[#__c_1] = \width-\bs*2+\fs*2 
+              \width[#__c_3] = \width-\bs*2 
               If \width[#__c_1] < 0 : \width[#__c_1] = 0 : EndIf
-              If \width[#__c_2] < 0 : \width[#__c_2] = 0 : EndIf
-              \width[#__c_3] = \width[#__c_2]
+              If \width[#__c_3] < 0 : \width[#__c_3] = 0 : EndIf
               \resize | #__resize_width | #__resize_change
             EndIf 
           EndIf  
@@ -2069,40 +2054,42 @@ CompilerIf Not Defined(Bar, #PB_Module)
               Change_height = height-\height 
               \height = Height 
               \height[#__c_1] = \height-\bs*2+\fs*2 
-              \height[#__c_2] = \height-\bs*2-\__height
+              \height[#__c_3] = \height-\bs*2-\__height
               If \height[#__c_1] < 0 : \height[#__c_1] = 0 : EndIf
-              If \height[#__c_2] < 0 : \height[#__c_2] = 0 : EndIf
-              \height[#__c_3] = \height[#__c_2]
+              If \height[#__c_3] < 0 : \height[#__c_3] = 0 : EndIf
               \resize | #__resize_height | #__resize_change
             EndIf 
           EndIf 
           
           If \resize & #__resize_change
             ; then move and size parent set clip (width&height)
-            _set_clip_len(*this, #False)
+            Clip(*this, #False)
+            
+            ; 
+            *this\width[#__c_2] = *this\width[#__c_3]
+            *this\height[#__c_2] = *this\height[#__c_3]
             
             ; resize vertical&horizontal scrollbars
             If (*this\scroll And *this\scroll\v And *this\scroll\h)
-              \width[#__c_3] = \width[#__c_2]
-              \height[#__c_3] = \height[#__c_2]
-              
               If (Change_x Or Change_y)
                 Resize(*this\scroll\v, *this\scroll\v\x[#__c_3], *this\scroll\v\y[#__c_3], #PB_Ignore, #PB_Ignore)
                 Resize(*this\scroll\h, *this\scroll\h\x[#__c_3], *this\scroll\h\y[#__c_3], #PB_Ignore, #PB_Ignore)
               EndIf
               
               If (Change_width Or Change_height)
-                Resizes(\scroll, 0, 0, \width[#__c_2], \height[#__c_2])
+                Resizes(*this\scroll, 0, 0, *this\width[#__c_3], *this\height[#__c_3])
               EndIf
               
-              \width[#__c_3] = \width[#__c_2] - Bool(Not \scroll\v\hide) * \scroll\v\width ; \scroll\h\bar\page\len
-              \height[#__c_3] = \height[#__c_2] - Bool(Not \scroll\h\hide) * \scroll\h\height ; \scroll\v\bar\page\len
+              *this\width[#__c_2] = *this\width[#__c_3] - Bool(Not *this\scroll\v\hide) * *this\scroll\v\width ; *this\scroll\h\bar\page\len
+              *this\height[#__c_2] = *this\height[#__c_3] - Bool(Not *this\scroll\h\hide) * *this\scroll\h\height ; *this\scroll\v\bar\page\len
+            EndIf
+            
+            If *this\type = #PB_GadgetType_Spin
+              *this\width[#__c_2] = *this\width[#__c_3] - *this\bs*2 - *this\bar\button[#__b_3]\len
             EndIf
             
             ; then move and size parent
             If *this\container And *this\count\childrens
-              ; _move_childrens_(*this, 0,0)
-              
               PushListPosition(*this\root\_childrens())
               ForEach *this\root\_childrens()
                 If *this\root\_childrens()\parent = *this ; And *this\root\_childrens()\draw 
@@ -2159,7 +2146,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
                              #PB_Ignore, #PB_Ignore)
                       
                     ElseIf (Change_width Or Change_height)
-                      _set_clip_len(*this\root\_childrens(), #True)
+                      Clip(*this\root\_childrens(), #True)
                     EndIf
                   EndIf
                 EndIf
@@ -2176,6 +2163,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         EndWith
       CompilerEndIf
     EndProcedure
+    
     
     ;-
     Procedure.l GetAttribute(*this._s_widget, Attribute.l)
@@ -2915,7 +2903,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
           *this\bar\button[#__b_2]\interact = #True
           ;*this\bar\button[#__b_3]\interact = #True
           
-          ;*this\bar\button[#__b_3]\len = Size
+          If *this\bar\vertical
+            *this\bar\button[#__b_3]\len = Size + 2
+          Else
+            *this\bar\button[#__b_3]\len = Size*2 + 3
+          EndIf
+          
           *this\bar\button[#__b_1]\len = Size
           *this\bar\button[#__b_2]\len = Size
           
