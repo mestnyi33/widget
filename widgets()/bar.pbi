@@ -48,30 +48,24 @@ CompilerIf Not Defined(Bar, #PB_Module)
       structures::*event\active
     EndMacro
     
-    Macro _is_widget_(_this_)
-      Bool(_this_ And _this_\adress) * _this_
+    Macro GetChildrens(_this_) ; Returns active window
+      _this_\root\_childrens()
     EndMacro
     
+    ;-
     Macro _is_root_(_this_)
-      Bool(_this_ And _this_ = _this_\root) * _this_
+      Bool(_this_ And _this_ = _this_\root) * _this_\root
     EndMacro
     
-    Macro width(_this_)
-      (Bool(Not _this_\hide) * _this_\width)
+    Macro _is_widget_(_this_)
+      Bool(_this_ And _this_\adress) * _this_\adress
     EndMacro
     
-    Macro height(_this_)
-      (Bool(Not _this_\hide) * _this_\height)
-    EndMacro
-    
-    Macro _is_bar_(_this_, _bar_)
-      Bool(_this_ And _this_\scroll And (_this_\scroll\v = _bar_ Or _bar_ = _this_\scroll\h))
-    EndMacro
-    
-    Macro _is_scroll_bar_(_this_)
+    Macro _is_scrollbar_(_this_)
       Bool(_this_\parent And _this_\parent\scroll And (_this_\parent\scroll\v = _this_ Or _this_ = _this_\parent\scroll\h))
     EndMacro
     
+    ;-
     Macro _scrollarea_change_(_this_, _pos_, _len_)
       Bool(Bool((((_pos_)+_this_\bar\min)-_this_\bar\page\pos) < 0 And Bar::SetState(_this_, ((_pos_)+_this_\bar\min))) Or
            Bool((((_pos_)+_this_\bar\min)-_this_\bar\page\pos) > (_this_\bar\page\len-(_len_)) And Bar::SetState(_this_, ((_pos_)+_this_\bar\min)-(_this_\bar\page\len-(_len_)))))
@@ -112,11 +106,46 @@ CompilerIf Not Defined(Bar, #PB_Module)
       _this_\scroll\h\bar\area\change = #False
     EndMacro
     
-    Macro _page_pos_(_bar_, _thumb_pos_)
+    ;-
+    Macro _get_page_height_(_scroll_, _round_ = 0)
+      (_scroll_\v\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\h\hide) * (_scroll_\h\height/4)) 
+    EndMacro
+    
+    Macro _get_page_width_(_scroll_, _round_ = 0)
+      (_scroll_\h\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\v\hide) * (_scroll_\v\width/4))
+    EndMacro
+    
+    Macro make_area_height(_scroll_, _width_, _height_)
+      (_height_ - (Bool((_scroll_\width > _width_) Or Not _scroll_\h\hide) * _scroll_\h\height)) 
+    EndMacro
+    
+    Macro make_area_width(_scroll_, _width_, _height_)
+      (_width_ - (Bool((_scroll_\height > _height_) Or Not _scroll_\v\hide) * _scroll_\v\width))
+    EndMacro
+    
+    ;-
+    Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
+      Bool(_mouse_x_ > _type_\x#_mode_ And _mouse_x_ < (_type_\x#_mode_+_type_\width#_mode_) And 
+           _mouse_y_ > _type_\y#_mode_ And _mouse_y_ < (_type_\y#_mode_+_type_\height#_mode_))
+    EndMacro
+    
+    Macro _bar_in_start_(_bar_) 
+      Bool(_bar_\page\pos =< _bar_\min) 
+    EndMacro
+    
+    Macro _bar_in_stop_(_bar_) 
+      Bool(_bar_\page\pos >= _bar_\page\end) 
+    EndMacro
+    
+    Macro _bar_invert_(_bar_, _scroll_pos_, _inverted_ = #True)
+      (Bool(_inverted_) * (_bar_\page\end - (_scroll_pos_-_bar_\min)) + Bool(Not _inverted_) * (_scroll_pos_))
+    EndMacro
+    
+    Macro _bar_page_pos_(_bar_, _thumb_pos_)
       (_bar_\min + Round(((_thumb_pos_) - _bar_\area\pos) / _bar_\scroll_increment, #PB_Round_Nearest))
     EndMacro
     
-    Macro _thumb_pos_(_bar_, _scroll_pos_)
+    Macro _bar_thumb_pos_(_bar_, _scroll_pos_)
       (_bar_\area\pos + Round(((_scroll_pos_) - _bar_\min) * _bar_\scroll_increment, #PB_Round_Nearest)) 
       
       If (_bar_\fixed And Not _bar_\thumb\change)
@@ -155,37 +184,13 @@ CompilerIf Not Defined(Bar, #PB_Module)
       EndIf
     EndMacro
     
-    Macro _get_page_height_(_scroll_, _round_ = 0)
-      (_scroll_\v\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\h\hide) * (_scroll_\h\height/4)) 
+    ;-
+    Macro width(_this_)
+      (Bool(Not _this_\hide) * _this_\width)
     EndMacro
     
-    Macro _get_page_width_(_scroll_, _round_ = 0)
-      (_scroll_\h\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\v\hide) * (_scroll_\v\width/4))
-    EndMacro
-    
-    Macro make_area_height(_scroll_, _width_, _height_)
-      (_height_ - (Bool((_scroll_\width > _width_) Or Not _scroll_\h\hide) * _scroll_\h\height)) 
-    EndMacro
-    
-    Macro make_area_width(_scroll_, _width_, _height_)
-      (_width_ - (Bool((_scroll_\height > _height_) Or Not _scroll_\v\hide) * _scroll_\v\width))
-    EndMacro
-    
-    ; Then scroll bar start position
-    Macro _in_start_(_bar_) : Bool(_bar_\page\pos =< _bar_\min) : EndMacro
-    
-    ; Then scroll bar end position
-    Macro _in_stop_(_bar_) : Bool(_bar_\page\pos >= _bar_\page\end) : EndMacro
-    
-    ; Inverted scroll bar position
-    Macro _invert_(_bar_, _scroll_pos_, _inverted_=#True)
-      (Bool(_inverted_) * (_bar_\page\end - (_scroll_pos_-_bar_\min)) + Bool(Not _inverted_) * (_scroll_pos_))
-      ;  (Bool(_inverted_) * ((_bar_\min + (_bar_\max - _bar_\page\len)) - (_scroll_pos_)) + Bool(Not _inverted_) * (_scroll_pos_))
-    EndMacro
-    
-    Macro _from_point_(_mouse_x_, _mouse_y_, _type_, _mode_=)
-      Bool (_mouse_x_ > _type_\x#_mode_ And _mouse_x_ < (_type_\x#_mode_+_type_\width#_mode_) And 
-            _mouse_y_ > _type_\y#_mode_ And _mouse_y_ < (_type_\y#_mode_+_type_\height#_mode_))
+    Macro height(_this_)
+      (Bool(Not _this_\hide) * _this_\height)
     EndMacro
     
     
@@ -194,22 +199,24 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare   ReDraw(*this)
     
     Declare.b Update(*this)
-    Declare.b Change(*bar, ScrollPos.f)
     Declare.b SetPos(*this, ThumbPos.i)
+    Declare.b Change(*bar, ScrollPos.f)
+    Declare.b Resize(*this, ix.l,iy.l,iwidth.l,iheight.l)
     
     Declare.f GetState(*this)
     Declare.b SetState(*this, ScrollPos.f)
     
-    Declare.l SetAttribute(*this, Attribute.l, Value.l)
     Declare.l GetAttribute(*this, Attribute.l)
+    Declare.l SetAttribute(*this, Attribute.l, Value.l)
     
     Declare.i SetAlignment(*this, Mode.l, Type.l=1)
-    Declare   SetData(*this, *data)
+    Declare.i SetData(*this, *data)
     
+    Declare.i Spin(x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i=0, round.l=0, increment.f=1.0)
+    Declare.i Tab(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
+    Declare.i Scroll(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
     Declare.i Track(x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i=0, round.l=7)
     Declare.i Progress(x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i=0, round.l=0)
-    Declare.i Spin(x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i=0, round.l=0, increment.f=1.0)
-    Declare.i Scroll(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
     Declare.i Splitter(x.l,y.l,width.l,height.l, First.i, Second.i, Flag.i=0)
     
     Declare.i Button(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, Image.i=-1, round.l=0)
@@ -217,11 +224,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare.i Container(x.l,y.l,width.l,height.l, Flag.i=0)
     Declare.i ScrollArea(x.l,y.l,width.l,height.l, Scroll_AreaWidth.l, Scroll_AreaHeight.l, scroll_step.l=1, Flag.i=0)
     
-    ; Declare.i _create(type.l, size.l, min.l, max.l, pagelength.l, flag.i=0, round.l=7, parent.i=0, scroll_step.f=1.0)
-    Declare.i  Create(type.l, *parent, x.l,y.l,width.l,height.l, *param_1,*param_2,*param_3, size.l, flag.i=0, round.l=7, scroll_step.f=1.0)
+    Declare.i Create(type.l, *parent, x.l,y.l,width.l,height.l, *param_1,*param_2,*param_3, size.l, flag.i=0, round.l=7, scroll_step.f=1.0)
     
     Declare   CallBack()
-    Declare.b Resize(*this, iX.l,iY.l,iWidth.l,iHeight.l)
+    Declare.i CloseList()
+    Declare.i OpenList(*this, item.l=0)
     
     Declare   Updates(*scroll._s_scroll, x.l,y.l,width.l,height.l)
     Declare   Resizes(*scroll._S_scroll, x.l,y.l,width.l,height.l)
@@ -230,11 +237,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare.b Arrow(X.l,Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1)
     Declare.b Bind(*callBack, *this, eventtype.l=#PB_All)
     
-    Declare   Tab(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
     Declare   Canvas(Window, x.l,y.l,width.l,height.l, Flag.i=#Null, *CallBack=#Null)
-    
-    Declare.i CloseList()
-    Declare.i OpenList(*this, item.l=0)
     Declare   Open_Window(Window, x.l,y.l,width.l,height.l, Title.s, Flag.i, ParentID.i)
   EndDeclareModule
   
@@ -1077,14 +1080,14 @@ CompilerIf Not Defined(Bar, #PB_Module)
         FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F6)
         
         ; Protected count
-        ; PushListPosition(*this\root\_childrens())
-        ForEach *this\root\_childrens()
-          If Not *this\root\_childrens()\hide And *this\root\_childrens()\draw
-            ; Debug ""+count +" "+ *this\root\_childrens()\width[#__c_4] : count + 1
-            Draw(*this\root\_childrens())
+        ; PushListPosition(GetChildrens(*this))
+        ForEach GetChildrens(*this)
+          If Not GetChildrens(*this)\hide And GetChildrens(*this)\draw
+            ; Debug ""+count +" "+ GetChildrens(*this)\width[#__c_4] : count + 1
+            Draw(GetChildrens(*this))
           EndIf
         Next
-        ; PopListPosition(*this\root\_childrens())
+        ; PopListPosition(GetChildrens(*this))
         
         StopDrawing()
       EndIf
@@ -1449,10 +1452,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
           EndIf
           ;EndIf
           
-          _scroll_pos_ = _invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted)
+          _scroll_pos_ = _bar_invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted)
         EndIf
         
-        *this\bar\thumb\pos = _thumb_pos_(*this\bar, _scroll_pos_)
+        *this\bar\thumb\pos = _bar_thumb_pos_(*this\bar, _scroll_pos_)
         
         ; _in_start_
         If *this\bar\button[#__b_1]\len 
@@ -1505,7 +1508,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
               EndIf
               
               *this\bar\page\pos = *this\bar\min
-              *this\bar\thumb\pos = _thumb_pos_(*this\bar, _invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted))
+              *this\bar\thumb\pos = _bar_thumb_pos_(*this\bar, _bar_invert_(*this\bar, *this\bar\page\pos, *this\bar\inverted))
             EndIf
             
             If *this\bar\button[#__b_1]\len 
@@ -1584,50 +1587,37 @@ CompilerIf Not Defined(Bar, #PB_Module)
               
               If *this\parent And 
                  *this\parent\scroll
-                ; Debug  ""+*this\type+" "+*this\parent\type
-                ;             (*this\parent\root\_childrens()\y[#__c_3] + *this\bar\thumb\change) >= *this\parent\root\_childrens()\parent\y[#__c_4] And 
-                ;             ((*this\parent\root\_childrens()\y[#__c_3] + *this\bar\thumb\change) + *this\parent\root\_childrens()\height) =< *this\parent\root\_childrens()\parent\height[#__c_4]
                 
                 If *this\bar\vertical
                   If *this\parent\scroll\v = *this
                     *this\parent\change =- 1
                     *this\parent\scroll\y =- *this\bar\page\pos
+                    
                     ; ScrollArea childrens auto resize 
                     If *this\parent\container And *this\parent\count\childrens
-                      
-                      ;; _move_childrens_(*this\parent, 0, *this\bar\thumb\change)
-                      ; PushListPosition(*this\parent\root\_childrens())
-                      ChangeCurrentElement(*this\parent\root\_childrens(), *this\parent\adress)
-                      While NextElement(*this\parent\root\_childrens())
-                        ; ForEach *this\parent\root\_childrens()
-                        If *this\parent\root\_childrens()\parent = *this\parent
-                          Resize(*this\parent\root\_childrens(), #PB_Ignore, 
-                                 *this\parent\root\_childrens()\y[#__c_3] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
+                      ChangeCurrentElement(GetChildrens(*this\parent), *this\parent\adress)
+                      While NextElement(GetChildrens(*this\parent))
+                        If GetChildrens(*this\parent)\parent = *this\parent
+                          Resize(GetChildrens(*this\parent), #PB_Ignore, 
+                                 GetChildrens(*this\parent)\y[#__c_3] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
                         EndIf
-                        ; Next
                       Wend
-                      ; PopListPosition(*this\parent\root\_childrens())
                     EndIf
                   EndIf
                 Else
                   If *this\parent\scroll\h = *this
                     *this\parent\change =- 1
                     *this\parent\scroll\x =- *this\bar\page\pos
+                    
                     ; ScrollArea childrens auto resize 
                     If *this\parent\container And *this\parent\count\childrens
-                      
-                      ;; _move_childrens_(*this\parent, *this\bar\thumb\change, 0)
-                      ; PushListPosition(*this\parent\root\_childrens())
-                      ChangeCurrentElement(*this\parent\root\_childrens(), *this\parent\adress)
-                      While NextElement(*this\parent\root\_childrens())
-                        ; ForEach *this\parent\root\_childrens()
-                        If *this\parent\root\_childrens()\parent = *this\parent
-                          Resize(*this\parent\root\_childrens(), 
-                                 *this\parent\root\_childrens()\x[#__c_3] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                      ChangeCurrentElement(GetChildrens(*this\parent), *this\parent\adress)
+                      While NextElement(GetChildrens(*this\parent))
+                        If GetChildrens(*this\parent)\parent = *this\parent
+                          Resize(GetChildrens(*this\parent), 
+                                 GetChildrens(*this\parent)\x[#__c_3] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                         EndIf
-                        ; Next
                       Wend
-                      ; PopListPosition(*this\parent\root\_childrens())
                     EndIf
                   EndIf
                 EndIf
@@ -1676,12 +1666,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
               *this\bar\button[#__b_3]\x = *this\bar\button[#__b_1]\x 
               *this\bar\button[#__b_3]\width = *this\bar\button[#__b_1]\width 
               *this\bar\button[#__b_3]\height = *this\bar\max                             
-              *this\bar\button[#__b_3]\y = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
+              *this\bar\button[#__b_3]\y = (*this\bar\area\pos + _bar_page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
             Else
               *this\bar\button[#__b_3]\y = *this\bar\button[#__b_1]\y 
               *this\bar\button[#__b_3]\height = *this\__height ; *this\bar\button[#__b_1]\height
               *this\bar\button[#__b_3]\width = *this\bar\max
-              *this\bar\button[#__b_3]\x = (*this\bar\area\pos + _page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
+              *this\bar\button[#__b_3]\x = (*this\bar\area\pos + _bar_page_pos_(*this\bar, *this\bar\thumb\pos) - *this\bar\page\end)
             EndIf
             ;EndIf
             
@@ -1966,13 +1956,13 @@ CompilerIf Not Defined(Bar, #PB_Module)
       EndIf
       
       If childrens And *this\container And *this\count\childrens
-        PushListPosition(*this\root\_childrens())
-        ForEach *this\root\_childrens()
-          If *this\root\_childrens()\parent = *this
-            Clip(*this\root\_childrens(), childrens)
+        PushListPosition(GetChildrens(*this))
+        ForEach GetChildrens(*this)
+          If GetChildrens(*this)\parent = *this
+            Clip(GetChildrens(*this), childrens)
           EndIf
         Next
-        PopListPosition(*this\root\_childrens())
+        PopListPosition(GetChildrens(*this))
       EndIf
     EndProcedure
     
@@ -2090,68 +2080,68 @@ CompilerIf Not Defined(Bar, #PB_Module)
             
             ; then move and size parent
             If *this\container And *this\count\childrens
-              PushListPosition(*this\root\_childrens())
-              ForEach *this\root\_childrens()
-                If *this\root\_childrens()\parent = *this ; And *this\root\_childrens()\draw 
-                  If *this\root\_childrens()\align
-                    If *this\root\_childrens()\align\horizontal
-                      x = (*this\width[#__c_2] - (*this\root\_childrens()\align\width+*this\root\_childrens()\width))/2
-                    ElseIf *this\root\_childrens()\align\right And Not *this\root\_childrens()\align\left
+              PushListPosition(GetChildrens(*this))
+              ForEach GetChildrens(*this)
+                If GetChildrens(*this)\parent = *this ; And GetChildrens(*this)\draw 
+                  If GetChildrens(*this)\align
+                    If GetChildrens(*this)\align\horizontal
+                      x = (*this\width[#__c_2] - (GetChildrens(*this)\align\width+GetChildrens(*this)\width))/2
+                    ElseIf GetChildrens(*this)\align\right And Not GetChildrens(*this)\align\left
                       ;                       If *this\type = #PB_GadgetType_ScrollArea
-                      ;                         x = *this\scroll\h\bar\max - *this\root\_childrens()\align\width
+                      ;                         x = *this\scroll\h\bar\max - GetChildrens(*this)\align\width
                       ;                       Else
-                      x = *this\width[#__c_2] - *this\root\_childrens()\align\width
+                      x = *this\width[#__c_2] - GetChildrens(*this)\align\width
                       ;                       EndIf
                     Else
                       If *this\x[#__c_2]
-                        x = (*this\root\_childrens()\x-*this\x[#__c_2]) + Change_x 
+                        x = (GetChildrens(*this)\x-*this\x[#__c_2]) + Change_x 
                       Else
                         x = 0
                       EndIf
                     EndIf
                     
-                    If *this\root\_childrens()\align\Vertical
-                      y = (*this\height[#__c_2] - (*this\root\_childrens()\align\height+*this\root\_childrens()\height))/2 
+                    If GetChildrens(*this)\align\Vertical
+                      y = (*this\height[#__c_2] - (GetChildrens(*this)\align\height+GetChildrens(*this)\height))/2 
                       
-                    ElseIf *this\root\_childrens()\align\bottom And Not *this\root\_childrens()\align\top
-                      y = \height[#__c_2] - *this\root\_childrens()\align\height
+                    ElseIf GetChildrens(*this)\align\bottom And Not GetChildrens(*this)\align\top
+                      y = \height[#__c_2] - GetChildrens(*this)\align\height
                       
                     Else
                       If *this\y[#__c_2]
-                        y = (*this\root\_childrens()\y-*this\y[#__c_2]) + Change_y 
+                        y = (GetChildrens(*this)\y-*this\y[#__c_2]) + Change_y 
                       Else
                         y = 0
                       EndIf
                     EndIf
                     
-                    If *this\root\_childrens()\align\top And *this\root\_childrens()\align\bottom
-                      Height = *this\height[#__c_2] - *this\root\_childrens()\align\height
+                    If GetChildrens(*this)\align\top And GetChildrens(*this)\align\bottom
+                      Height = *this\height[#__c_2] - GetChildrens(*this)\align\height
                     Else
                       Height = #PB_Ignore
                     EndIf
                     
-                    If *this\root\_childrens()\align\left And *this\root\_childrens()\align\right
-                      Width = *this\width[#__c_2] - *this\root\_childrens()\align\width
+                    If GetChildrens(*this)\align\left And GetChildrens(*this)\align\right
+                      Width = *this\width[#__c_2] - GetChildrens(*this)\align\width
                     Else
                       Width = #PB_Ignore
                     EndIf
                     
-                    Resize(*this\root\_childrens(), x, y, Width, Height)
+                    Resize(GetChildrens(*this), x, y, Width, Height)
                   Else
                     If (Change_x Or Change_y)
                       
-                      Resize(*this\root\_childrens(), 
-                             *this\root\_childrens()\x[#__c_3],
-                             *this\root\_childrens()\y[#__c_3], 
+                      Resize(GetChildrens(*this), 
+                             GetChildrens(*this)\x[#__c_3],
+                             GetChildrens(*this)\y[#__c_3], 
                              #PB_Ignore, #PB_Ignore)
                       
                     ElseIf (Change_width Or Change_height)
-                      Clip(*this\root\_childrens(), #True)
+                      Clip(GetChildrens(*this), #True)
                     EndIf
                   EndIf
                 EndIf
               Next
-              PopListPosition(*this\root\_childrens())
+              PopListPosition(GetChildrens(*this))
             EndIf
           EndIf
           
@@ -2228,7 +2218,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       If ThumbPos > *this\bar\area\end : ThumbPos = *this\bar\area\end : EndIf
       
       If *this\bar\thumb\end <> ThumbPos : *this\bar\thumb\end = ThumbPos
-        ProcedureReturn SetState(*this, _invert_(*this\bar, _page_pos_(*this\bar, ThumbPos), *this\bar\inverted))
+        ProcedureReturn SetState(*this, _bar_invert_(*this\bar, _bar_page_pos_(*this\bar, ThumbPos), *this\bar\inverted))
       EndIf
     EndProcedure
     
@@ -2458,12 +2448,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
             *this\root\count\childrens - 1
             *this\parent\count\childrens - 1
             
-            ChangeCurrentElement(*this\parent\root\_childrens(), *this\adress)
-            MoveElement(*this\parent\root\_childrens(), #PB_List_After, *Parent\adress)
+            ChangeCurrentElement(GetChildrens(*this\parent), *this\adress)
+            MoveElement(GetChildrens(*this\parent), #PB_List_After, *Parent\adress)
             
-            While PreviousElement(*this\parent\root\_childrens()) 
-              If _is_child(*this\parent\root\_childrens(), *this)
-                MoveElement(*this\parent\root\_childrens(), #PB_List_After, *this\adress)
+            While PreviousElement(GetChildrens(*this\parent)) 
+              If _is_child(GetChildrens(*this\parent), *this)
+                MoveElement(GetChildrens(*this\parent), #PB_List_After, *this\adress)
               EndIf
             Wend
           EndIf
@@ -2481,12 +2471,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
           If Not (*this\parent And *this\parent\type = #PB_GadgetType_Splitter)
             *this\index = *this\root\count\childrens
             *this\level = *this\parent\level + 1
-            LastElement(*this\parent\root\_childrens())
-            *this\adress = AddElement(*this\parent\root\_childrens()) 
-            *this\parent\root\_childrens() = *this
+            LastElement(GetChildrens(*this\parent))
+            *this\adress = AddElement(GetChildrens(*this\parent)) 
+            GetChildrens(*this\parent) = *this
           EndIf
-          
-          ;  Debug ListIndex(*this\parent\root\_childrens())  
         EndIf
       CompilerEndIf
     EndProcedure
@@ -3329,12 +3317,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
       EndIf
       
       If _event_type_ = #__Event_MouseEnter
-        ; *this\color\back = $ff0000ff 
+         *this\color\back = $ff0000ff 
         Repaint = #True
       EndIf
       
       If _event_type_ = #__Event_MouseLeave
-        ; *this\color\back = $ff00ff00
+         *this\color\back = $ff00ff00
         Repaint = #True
       EndIf
       
@@ -3924,5 +3912,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------
+; Folding = --HAw----------------------------------------------------------------------------------------
 ; EnableXP

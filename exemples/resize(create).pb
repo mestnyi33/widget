@@ -46,12 +46,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ScrollArea(-1, -1, 90, 90, 150, 150, 1)
       Define i, time
       time = ElapsedMilliseconds()
-      For i=0 To 10000
+      For i=0 To 5000
         Progress(10+i*2, 10+i*2, 50, 30, 1, 100, 30)
       Next
       CloseList()
-      For i=0 To 0;10000
-        Progress(100+i*2, 10+i*2, 50, 30, 1, 100, 30)
+      For i=0 To 5000
+        Progress(100-i*2, 10+i*2, 50, 30, 1, 100, 30)
       Next
       Debug "time - "+Str(ElapsedMilliseconds()-time)
       CloseList()
@@ -72,12 +72,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ScrollAreaGadget(#PB_Any, -1, -1, 90, 90, 150, 150, 1)
       Define i, time
       time = ElapsedMilliseconds()
-      For i=0 To 10000
+      For i=0 To 5000
         ProgressBarGadget(#PB_Any, 10+i*2, 10+i*2, 50, 30, 1, 100, 30)
       Next
       CloseGadgetList()
-      For i=0 To 0;10000
-        ProgressBarGadget(#PB_Any, 100+i*2, 10+i*2, 50, 30, 1, 100, 30)
+      For i=0 To 5000
+        ProgressBarGadget(#PB_Any, 100-i*2, 10+i*2, 50, 30, 1, 100, 30)
       Next
       Debug "time - "+Str(ElapsedMilliseconds()-time)
       CloseGadgetList()
