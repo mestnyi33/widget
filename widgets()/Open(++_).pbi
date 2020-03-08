@@ -488,19 +488,32 @@ CompilerIf Not Defined(Bar, #PB_Module)
             RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
           EndIf
           
+          *this\text\x = 6
+          *this\text\height = TextHeight("A")
+          
           ForEach \tab\_s()
             If \tab\_s()\text\change
               \tab\_s()\x = \bar\max + 1
-              \tab\_s()\text\width = 40;TextWidth(\tab\_s()\text\string)
-              \tab\_s()\text\height = TextHeight("A")
-              \tab\_s()\text\x = \tab\_s()\x + 4
-              \tab\_s()\text\y = \tab\_s()\y + (\tab\_s()\height - \tab\_s()\text\height)/2
+              
+              \tab\_s()\text\width = *this\text\x*2 + TextWidth(\tab\_s()\text\string)
+              \tab\_s()\text\height = *this\text\height
+              \tab\_s()\text\x = *this\text\x + \tab\_s()\x
+              \tab\_s()\text\y = *this\text\y + \tab\_s()\y + (\tab\_s()\height - \tab\_s()\text\height)/2
               
               \tab\_s()\width = \tab\_s()\text\width
               \bar\max + \tab\_s()\width + Bool(\tab\_s()\index <> \count\items - 1) + Bool(\tab\_s()\index = \count\items - 1)*2
               \tab\_s()\text\change = 0
             EndIf
           Next
+          
+          Static max
+          If max <> \bar\max
+            ; Debug \bar\max
+            ; *this\resize | #__resize_change
+            Update(*this)
+            ; *this\resize &~ #__resize_change
+            max = \bar\max
+          EndIf
           
           Protected x = \bar\button[#__b_3]\x
           Protected y = \bar\button[#__b_3]\y
@@ -2788,6 +2801,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
         SetAttribute(*this, #__bar_pageLength, PageLength) 
       EndIf
       
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+          *this\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
+        CompilerElse
+          *this\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
+        CompilerEndIf
+        
       CompilerIf Defined(widget, #PB_Module)
         widget::_set_last_parameters_(*this, *this\type, Flag, Root()\opened)
       CompilerElse
@@ -3947,7 +3966,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                             ;                                          Button_1 = Bar::Scroll(0, 0, 0, 0, 10, 100, 50); No need to specify size or coordinates
     
     AddItem(Button_1, -1, "Tab_0")
-    AddItem(Button_1, -1, "Tab_1")
+    AddItem(Button_1, -1, "Tab_1 (long)")
     AddItem(Button_1, -1, "Tab_2")
     
     Button_2 = Bar::ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
@@ -3968,7 +3987,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Splitter_4 = Bar::Splitter(300+10, 140+200+130, 285, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
     
     ; Bar::SetState(Button_2, 5)
-    Bar::SetState(Splitter_0, 40)
+    Bar::SetState(Splitter_0, 27)
     Bar::SetState(Splitter_4, 225)
     
     If OpenList(Button_2)

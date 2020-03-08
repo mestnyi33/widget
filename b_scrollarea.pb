@@ -1828,14 +1828,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
         If *this\type = #PB_GadgetType_TabBar
           *this\bar\page\end = *this\bar\max - *this\bar\area\len
         Else
-          If *this\bar\max > *this\bar\page\len
-            *this\bar\page\end = *this\bar\max - *this\bar\page\len
+          *this\bar\page\end = *this\bar\max - *this\bar\page\len
           ; *this\bar\page\end = *this\bar\min + ((*this\bar\max-*this\bar\min) - *this\bar\page\len)
+          ; Debug ""+*this\bar\max +" "+ *this\bar\page\len+" - "+*this\bar\page\end
+          If *this\bar\page\end < 0
+            *this\bar\page\end = 0
           EndIf
-          Debug ""+*this\bar\max +" "+ *this\bar\page\len+" - "+*this\bar\page\end
-;           If *this\bar\page\end < 0
-;             *this\bar\page\end = 0
-;           EndIf
         EndIf
         
         ; thumb len
@@ -1896,7 +1894,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           _scroll_pos_ = *this\bar\page\pos
         Else
 ;           ; for the scrollarea childrens
-;           If *this\bar\page\end >- 1 And *this\bar\page\pos > *this\bar\page\end And *this\parent And *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h
+;           If *this\bar\page\pos > *this\bar\page\end ; And *this\parent And *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h
 ;             
 ;             Debug  ""+*this\bar\page\pos +" "+ *this\bar\page\end
 ;             
@@ -3654,11 +3652,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Splitter_4, 245)
     
     If OpenList(Button_2)
-      Button_4 = ScrollArea(-1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
-                                                             ;       Define i
-                                                             ;       For i=0 To 1000
-      Progress(10, 10, 50, 30, 1, 100, 30)
-      ;       Next
+      Button_4 = ScrollArea(-1, -1, 90, 90, 150, 150, 1)
+      Define i
+      For i=0 To 10;000
+        Progress(10+i*2, 10+i*2, 50, 30, 1, 100, 30)
+      Next
       CloseList()
       Progress(100, 10, 50, 30, 2, 100, 30)
       CloseList()

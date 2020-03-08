@@ -263,6 +263,7 @@ MyCanvas = Canvas(0, 10, 10, Width+x*2, Width+y*2, #PB_Canvas_Keyboard, @Canvas_
 Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 7
 ; Folding = 4-6---
 ; EnableXP

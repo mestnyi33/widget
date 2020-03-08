@@ -1,12 +1,12 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets()/bar.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule Widget
+  UseModule Bar
   UseModule constants
-  ;   UseModule structures
+  UseModule structures
   
   Global.i Canvas_0, gEvent, gQuit, x=10,y=10
   Global NewMap Widgets.i()
@@ -36,10 +36,10 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 600, 600, "Demo docking widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
        
-     Open(0, 10, 10, 580, 600-50, "", #__flag_BorderLess)
+     Canvas(0, 10, 10, 580, 600-50)
       
-      Widgets(Str(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_Flag_AnchorsGadget)
-      ;Widgets(Str(0)) = Container(50, 50, 280, 200);, #__flag_Flag_AnchorsGadget);#__flag_Flag_AutoSize)
+      ;Widgets(Str(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_Flag_AnchorsGadget)
+      Widgets(Str(0)) = Container(50, 50, 280, 200);, #__flag_Flag_AnchorsGadget);#__flag_Flag_AutoSize)
       ;Widgets(Str(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Str(0)), -1, "panel")
       ;Widgets(Str(0)) = ScrollArea(50, 50, 280, 200, 280,200)
       
@@ -58,12 +58,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       _SetAlignment(Widgets(Str(4)), #__flag_Flag_AutoSize|#__align_left|#__align_right|#__align_bottom)
 ;       _SetAlignment(Widgets(Str(5)), #__flag_Flag_AutoSize|#__align_full)
       
-      SetAlignment(Widgets(Str(4)), #__flag_AutoSize|#__align_bottom)
-      SetAlignment(Widgets(Str(6)), #__flag_AutoSize|#__align_bottom)
-      SetAlignment(Widgets(Str(1)), #__flag_AutoSize|#__align_top)
-      SetAlignment(Widgets(Str(2)), #__flag_AutoSize|#__align_left)
-      SetAlignment(Widgets(Str(3)), #__flag_AutoSize|#__align_right)
-      SetAlignment(Widgets(Str(5)), #__flag_AutoSize)
+      _SetAlignment(Widgets(Str(4)), #__flag_AutoSize|#__align_bottom)
+      _SetAlignment(Widgets(Str(6)), #__flag_AutoSize|#__align_bottom)
+      _SetAlignment(Widgets(Str(1)), #__flag_AutoSize|#__align_top)
+      _SetAlignment(Widgets(Str(2)), #__flag_AutoSize|#__align_left)
+      _SetAlignment(Widgets(Str(3)), #__flag_AutoSize|#__align_right)
+      _SetAlignment(Widgets(Str(5)), #__flag_AutoSize)
       
       ;BindGadgetEvent(Canvas_0, @Canvas_CallBack())
       ReDraw(Root())
@@ -104,11 +104,12 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            Width = Width(Widgets(Str(0)))
-            Height = Height(Widgets(Str(0)))
+            Define *th._s_widget = Widgets(Str(0))
+            Width = Width(*th)
+            Height = Height(*th)
             
             If GetGadgetState(0)
-              AddWindowTimer(0, 1, 10)
+              AddWindowTimer(0, 1, 200)
             Else
               RemoveWindowTimer(0, 1)
             EndIf

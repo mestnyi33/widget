@@ -1,12 +1,12 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets()/bar.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule Widget
+  UseModule Bar
   UseModule constants
-  ;   UseModule structures
+  UseModule structures
   
   Global NewMap Widgets.i()
   Global.i Canvas_0, gEvent, gQuit, x=10,y=10
@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure.i _SetAlignment(*This._S_widget, Mode.i, Type.i=1)
-    ;  ProcedureReturn SetAlignment(*This._S_widget, Mode.i, Type.i)
+      ProcedureReturn SetAlignment(*This._S_widget, Mode.i, Type.i)
     
       With *this
       Select Type
@@ -92,7 +92,11 @@ CompilerIf #PB_Compiler_IsMainFile
               If \align\left
                 \align\width = \parent\width[#__c_2] - \width
               Else
-                \align\width = (\parent\width[#__c_2]-\x[3])
+                If \parent\type = #PB_GadgetType_ScrollArea
+                  \align\width = (\parent\scroll\h\bar\max-\x[#__c_3])
+                Else
+                  \align\width = (\parent\width[#__c_2]-\x[#__c_3])
+                EndIf
               EndIf
             EndIf
             
@@ -100,7 +104,11 @@ CompilerIf #PB_Compiler_IsMainFile
               If \align\top
                 \align\height = \parent\height[#__c_2] - \height
               Else
-                \align\height = (\parent\height[#__c_2]-\y[3])
+                If \parent\type = #PB_GadgetType_ScrollArea
+                  \align\width = (\parent\scroll\v\bar\max-\x[#__c_3])
+                Else
+                  \align\height = (\parent\height[#__c_2]-\y[#__c_3])
+                EndIf
               EndIf
             EndIf
             
@@ -118,23 +126,25 @@ CompilerIf #PB_Compiler_IsMainFile
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
       
-      Define *w._S_widget = Open(0, 10, 10, 580, 600-50, "", #__flag_BorderLess)
-      Canvas_0 = GetGadget(Root())
+      Define *w._S_widget = Canvas(0, 10, 10, 580, 600-50)
+      ;Canvas_0 = GetGadget(Root())
       
-      Widgets(Hex(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_AnchorsGadget)
-      ;Widgets(Hex(0)) = Container(50, 50, 280, 200);, #__flag_AnchorsGadget);#__flag_AutoSize)
+      Protected b = 4
+      Protected iw = 280
+      ;Widgets(Hex(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_AnchorsGadget)
+       Widgets(Hex(0)) = Container(50, 50, 280, 200);, #__flag_AnchorsGadget);#__flag_AutoSize)
       ;Widgets(Hex(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Hex(0)), -1, "panel")
-      ;Widgets(Hex(0)) = ScrollArea(50, 50, 280, 200, 280,200)
+     ;Widgets(Hex(0)) = ScrollArea(50, 50, 280, 200, iw,300)
       
       Widgets(Hex(1)) = Button(0, (200-20)/2, 80, 20, "Left_Center_"+Str(1))
-      Widgets(Hex(2)) = Button((280-80)/2, 0, 80, 20, "Top_Center_"+Str(2))
-      Widgets(Hex(3)) = Button(280-80, (200-20)/2, 80, 20, Str(3)+"_Center_Right")
-      Widgets(Hex(4)) = Button((280-80)/2, 200-20, 80, 20, Str(4)+"_Center_Bottom")
+      Widgets(Hex(2)) = Button((iw-80)/2, 0, 80, 20, "Top_Center_"+Str(2))
+      Widgets(Hex(3)) = Button(iw-80-b, (200-20)/2, 80, 20, Str(3)+"_Center_Right")
+      Widgets(Hex(4)) = Button((iw-80)/2, 200-20-b, 80, 20, Str(4)+"_Center_Bottom")
       Widgets(Hex(5)) = Button(0, 0, 80, 20, "Default_"+Str(5))
-      Widgets(Hex(6)) = Button(280-80, 0, 80, 20, "Right_"+Str(6))
-      Widgets(Hex(7)) = Button(280-80, 200-20, 80, 20, "Bottom_"+Str(7))
-      Widgets(Hex(8)) = Button(0, 200-20, 80, 20, Str(8)+"_Bottom_Right")
-      Widgets(Hex(9)) = Button((280-80)/2, (200-20)/2, 80, 20, "Bottom_"+Str(9))
+      Widgets(Hex(6)) = Button(iw-80-b, 0, 80, 20, "Right_"+Str(6))
+      Widgets(Hex(7)) = Button(iw-80-b, 200-20-b, 80, 20, "Bottom_"+Str(7))
+      Widgets(Hex(8)) = Button(0, 200-20-b, 80, 20, Str(8)+"_Bottom_Right")
+      Widgets(Hex(9)) = Button((iw-80)/2, (200-20)/2, 80, 20, "Bottom_"+Str(9))
       
       CloseList()
       
@@ -156,61 +166,61 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Window_1()
-    CreateImage(0,200,60):StartDrawing(ImageOutput(0)):Define i:For i=0 To 200:Circle(100,30,200-i,(i+50)*$010101):Next:StopDrawing()
-    
-    If OpenWindow(0, 0, 0, 700, 600, "Resize gadget",#PB_Window_ScreenCentered | #PB_Window_SizeGadget) 
-      WindowBounds(0, WindowWidth(0), WindowHeight(0), #PB_Ignore, #PB_Ignore)
-      ButtonGadget   (0, 5, 600-35, 690,  30, "resize", #PB_Button_Toggle)
-      
-      Define bs, *w._S_widget = Open(0, 10, 10, 680, 600-50, "")
-      
-      Widgets(Hex(0)) = Form(50, 50, 512, 200, "Demo dock widgets");, #__flag_AnchorsGadget)
-                                                                   ; ; ;       ;Widgets(Hex(0)) = Container(50, 50, 512, 200) : bs = 2 ;, #__flag_AnchorsGadget)
-                                                                   ; ; ;       ;Widgets(Hex(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Hex(0)), -1, "panel")
-                                                                   ; ; ;       ;Widgets(Hex(0)) = ScrollArea(50, 50, 280, 200, 280,200)
-      
-      Widgets(Hex(1)) = Text(10,  10, 200, 50, "Resize the window, the gadgets will be automatically resized",#PB_Text_Center)
-      Widgets(Hex(3)) = Button(10, 70, 200, 60, "", 0, 0)
-      Widgets(Hex(2)) = Editor(10,  140, 200, 20) : SetText(Widgets(Hex(2)),"Editor")
-      Widgets(Hex(4)) = Button(10, 170, 490, 20, "Button / toggle", #PB_Button_Toggle)
-      Widgets(Hex(5)) = Text(220,10,190,20,"Text",#PB_Text_Center) : SetColor(Widgets(Hex(5)), #PB_Gadget_BackColor, $00FFFF)
-      Widgets(Hex(6)) = Container( 220, 30, 190, 100,#PB_Container_Single) : SetColor(Widgets(Hex(6)), #PB_Gadget_BackColor, $cccccc) 
-      Widgets(Hex(7)) = Editor(10,  10, 170, 50) : SetText(Widgets(Hex(7)),"Editor")
-      Widgets(Hex(8)) = Button(10, 70, 80, 20, "Button") 
-      Widgets(Hex(9)) = Button(100, 70, 80, 20, "Button") 
-      CloseList() 
-      Widgets(Hex(10)) = String(220,  140, 190, 20, "String")
-      Widgets(Hex(11)) = Button(420,  10, 80, 80, "Bouton")
-      Widgets(Hex(12)) = CheckBox(420,  90, 80, 20, "CheckBox")
-      Widgets(Hex(13)) = CheckBox(420,  110, 80, 20, "CheckBox")
-      Widgets(Hex(14)) = CheckBox(420,  130, 80, 20, "CheckBox")
-      Widgets(Hex(15)) = CheckBox(420,  150, 80, 20, "CheckBox")
-      
-      
-      ;SetAlignment(Widgets(Hex(1)), #PB_Vertical)
-      SetAlignment(Widgets(Hex(2)), #__align_top|#__align_left|#__align_bottom)
-      ;       SetAlignment(Widgets(Hex(3)), #__flag_Vertical|#__align_right)
-      SetAlignment(Widgets(Hex(4)), #__align_bottom|#__align_right|#__align_left)
-      SetAlignment(Widgets(Hex(5)), #__align_top|#__align_left|#__align_right)
-      SetAlignment(Widgets(Hex(6)), #__align_full)
-      SetAlignment(Widgets(Hex(7)), #__align_full)
-      
-      SetAlignment(Widgets(Hex(8)), #__align_bottom|#__align_right|#__align_left)
-      SetAlignment(Widgets(Hex(9)), #__align_bottom|#__align_right|#__align_left)
-      
-      SetAlignment(Widgets(Hex(10)), #__align_bottom|#__align_right|#__align_left)
-      SetAlignment(Widgets(Hex(11)), #__align_bottom|#__align_right|#__align_top)
-      
-      SetAlignment(Widgets(Hex(12)), #__align_bottom|#__align_right)
-      SetAlignment(Widgets(Hex(13)), #__align_bottom|#__align_right)
-      SetAlignment(Widgets(Hex(14)), #__align_bottom|#__align_right)
-      SetAlignment(Widgets(Hex(15)), #__align_bottom|#__align_right)
-      
-      ReDraw(Root())
-      
-      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
-    EndIf
-  EndProcedure
+;     CreateImage(0,200,60):StartDrawing(ImageOutput(0)):Define i:For i=0 To 200:Circle(100,30,200-i,(i+50)*$010101):Next:StopDrawing()
+;     
+;     If OpenWindow(0, 0, 0, 700, 600, "Resize gadget",#PB_Window_ScreenCentered | #PB_Window_SizeGadget) 
+;       WindowBounds(0, WindowWidth(0), WindowHeight(0), #PB_Ignore, #PB_Ignore)
+;       ButtonGadget   (0, 5, 600-35, 690,  30, "resize", #PB_Button_Toggle)
+;       
+;       Define bs, *w._S_widget = Canvas(0, 10, 10, 680, 600-50)
+;       
+;       ; ; ;Widgets(Hex(0)) = Form(50, 50, 512, 200, "Demo dock widgets");, #__flag_AnchorsGadget)
+;                                                                           ;Widgets(Hex(0)) = Container(50, 50, 512, 200) : bs = 2 ;, #__flag_AnchorsGadget)
+;                                                                    ; ; ;       ;Widgets(Hex(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Hex(0)), -1, "panel")
+;                                                                    ; ; ;       ;Widgets(Hex(0)) = ScrollArea(50, 50, 280, 200, 280,200)
+;       
+;       Widgets(Hex(1)) = Text(10,  10, 200, 50, "Resize the window, the gadgets will be automatically resized",#PB_Text_Center)
+;       Widgets(Hex(3)) = Button(10, 70, 200, 60, "", 0, 0)
+;       Widgets(Hex(2)) = Editor(10,  140, 200, 20) : SetText(Widgets(Hex(2)),"Editor")
+;       Widgets(Hex(4)) = Button(10, 170, 490, 20, "Button / toggle", #PB_Button_Toggle)
+;       Widgets(Hex(5)) = Text(220,10,190,20,"Text",#PB_Text_Center) : SetColor(Widgets(Hex(5)), #PB_Gadget_BackColor, $00FFFF)
+;       Widgets(Hex(6)) = Container( 220, 30, 190, 100,#PB_Container_Single) : SetColor(Widgets(Hex(6)), #PB_Gadget_BackColor, $cccccc) 
+;       Widgets(Hex(7)) = Editor(10,  10, 170, 50) : SetText(Widgets(Hex(7)),"Editor")
+;       Widgets(Hex(8)) = Button(10, 70, 80, 20, "Button") 
+;       Widgets(Hex(9)) = Button(100, 70, 80, 20, "Button") 
+;       CloseList() 
+;       Widgets(Hex(10)) = String(220,  140, 190, 20, "String")
+;       Widgets(Hex(11)) = Button(420,  10, 80, 80, "Bouton")
+;       Widgets(Hex(12)) = CheckBox(420,  90, 80, 20, "CheckBox")
+;       Widgets(Hex(13)) = CheckBox(420,  110, 80, 20, "CheckBox")
+;       Widgets(Hex(14)) = CheckBox(420,  130, 80, 20, "CheckBox")
+;       Widgets(Hex(15)) = CheckBox(420,  150, 80, 20, "CheckBox")
+;       
+;       
+;       ;SetAlignment(Widgets(Hex(1)), #PB_Vertical)
+;       SetAlignment(Widgets(Hex(2)), #__align_top|#__align_left|#__align_bottom)
+;       ;       SetAlignment(Widgets(Hex(3)), #__flag_Vertical|#__align_right)
+;       SetAlignment(Widgets(Hex(4)), #__align_bottom|#__align_right|#__align_left)
+;       SetAlignment(Widgets(Hex(5)), #__align_top|#__align_left|#__align_right)
+;       SetAlignment(Widgets(Hex(6)), #__align_full)
+;       SetAlignment(Widgets(Hex(7)), #__align_full)
+;       
+;       SetAlignment(Widgets(Hex(8)), #__align_bottom|#__align_right|#__align_left)
+;       SetAlignment(Widgets(Hex(9)), #__align_bottom|#__align_right|#__align_left)
+;       
+;       SetAlignment(Widgets(Hex(10)), #__align_bottom|#__align_right|#__align_left)
+;       SetAlignment(Widgets(Hex(11)), #__align_bottom|#__align_right|#__align_top)
+;       
+;       SetAlignment(Widgets(Hex(12)), #__align_bottom|#__align_right)
+;       SetAlignment(Widgets(Hex(13)), #__align_bottom|#__align_right)
+;       SetAlignment(Widgets(Hex(14)), #__align_bottom|#__align_right)
+;       SetAlignment(Widgets(Hex(15)), #__align_bottom|#__align_right)
+;       
+;       ReDraw(Root())
+;       
+;       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
+;     EndIf
+   EndProcedure
   
   Window_0()
   
@@ -241,11 +251,12 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            Width = Width(Widgets(Hex(0)))
-            Height = Height(Widgets(Hex(0)))
+            Define *th._s_widget = Widgets(Str(0))
+            Width = Width(*th)
+            Height = Height(*th)
             
             If GetGadgetState(0)
-              AddWindowTimer(0, 1, 100)
+              AddWindowTimer(0, 1, 200)
             Else
               RemoveWindowTimer(0, 1)
             EndIf

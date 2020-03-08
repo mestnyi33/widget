@@ -100,6 +100,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
+      _type.l
       from.l  ; entered button index
       state.l ; selected button index
       
@@ -437,6 +438,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       draw.b
       type.b ;[3] ; [2] for splitter
       
+      _y.l[constants::#__c]
+      _x.l[constants::#__c]
       y.l[constants::#__c]
       x.l[constants::#__c]
       height.l[constants::#__c]
@@ -505,6 +508,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       level.l ; ??????????? ???????
       count._s_count
       List *childrens._s_widget()
+                  List *_childrens._s_widget() ;temp
       
       List *items._s_items()
       List *columns._s_widget()
@@ -564,7 +568,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       event_count.b
       
       List *event_list._s_event()
-      List *_childrens._s_widget()
+      ; List *_childrens._s_widget()
     EndStructure
 
     Global *event._s_event = AllocateStructure(_s_event)
@@ -576,5 +580,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = fxSGYgf-
+; Folding = fxSGYgb-
 ; EnableXP

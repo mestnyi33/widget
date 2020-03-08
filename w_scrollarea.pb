@@ -837,10 +837,10 @@ EndDeclareModule
 ;- XIncludeFile
 ;-
 CompilerIf Not Defined(Bar, #PB_Module)
- ;   XIncludeFile "widgets()/bar.pbi"
+  ;   XIncludeFile "widgets()/bar.pbi"
   
-  ;   XIncludeFile "widgets()/bar().pb"
-XIncludeFile "widgets()/bar().pbi"
+  ; XIncludeFile "widgets()/bar().pb"
+  XIncludeFile "widgets()/bar().pbi"
 CompilerEndIf
 
 CompilerIf Not Defined(Splitter, #PB_Module)
@@ -10103,11 +10103,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Splitter_4, 245)
     
     If OpenList(Button_2)
-      Button_4 = ScrollArea(-1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
-                                                             ;       Define i
-                                                             ;       For i=0 To 1000
-      Progress(10, 10, 50, 30, 1, 100, 30)
-      ;       Next
+      Button_4 = ScrollArea(-1, -1, 90, 90, 150, 150, 1)
+      Define i
+      For i=0 To 10;000
+        Progress(10+i*2, 10+i*2, 50, 30, 1, 100, 30)
+      Next
       CloseList()
       Progress(100, 10, 50, 30, 2, 100, 30)
       CloseList()
