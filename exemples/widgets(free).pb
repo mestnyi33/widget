@@ -1,5 +1,5 @@
 ﻿IncludePath "../"
-XIncludeFile "widgets.pbi"
+XIncludeFile "widgets().pbi"
 ; 
 ; Иногда видает ошибку при удалении кнопки
 ; Fixme - При клике на скролл бар тоже видает ошибку, теперь осталось залипание скролла
@@ -24,31 +24,31 @@ CompilerIf #PB_Compiler_IsMainFile
           If \Scroll\h
             FreeStructure(\Scroll\h)  : \Scroll\h = 0
           EndIf
-          FreeStructure(\Scroll) : \Scroll = 0
+          ; FreeStructure(\Scroll) : \Scroll = 0
         EndIf
         
-        If \Box
-          FreeStructure(\Box) : \Box = 0
-        EndIf
+;         If \Box
+;           FreeStructure(\Box) : \Box = 0
+;         EndIf
         
-        If \Image
-          FreeStructure(\Image) : \Image = 0
-        EndIf
+;         If \Image
+;           FreeStructure(\Image) : \Image = 0
+;         EndIf
         
-        If \Image[1]
-          FreeStructure(\Image[1]) : \Image[1] = 0
-        EndIf
-        
-        If \Text
-          FreeStructure(\Text) : \Text = 0
-        EndIf
+;         If \Image[1]
+;           FreeStructure(\Image[1]) : \Image[1] = 0
+;         EndIf
+;         
+;         If \Text
+;           FreeStructure(\Text) : \Text = 0
+;         EndIf
         
         FreeStructure(*This) 
-        *Value\Active = 0
-        *Value\Focus = 0
+;         *Value\Active = 0
+;         *Value\Focus = 0
         
         If \Parent And ListSize(\Parent\Childrens()) : \Parent\CountItems - 1
-          ChangeCurrentElement(\Parent\Childrens(), Adress(*This))
+          ChangeCurrentElement(\Parent\Childrens(), *This\Adress)
           Result = DeleteElement(\Parent\Childrens())
         EndIf
       EndIf
@@ -109,6 +109,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

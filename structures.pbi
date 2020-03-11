@@ -435,6 +435,14 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_widget
     Structure _s_widget 
+      *first._s_widget
+      *last._s_widget
+      *after._s_widget
+      *before._s_widget
+      *prev_s_widget
+      *Next._s_widget
+      
+      
       draw.b
       type.b ;[3] ; [2] for splitter
       

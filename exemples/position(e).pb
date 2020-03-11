@@ -1,318 +1,373 @@
-﻿IncludePath "../"
-XIncludeFile "widgets.pbi"
+﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+  IncludePath "/Users/as/Documents/GitHub/Widget";/widgets()"
+  XIncludeFile "fixme(mac).pbi"
+CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
+  IncludePath "/media/sf_as/Documents/GitHub/Widget/widgets()"
+CompilerElse
+  IncludePath "Z:/Documents/GitHub/Widget/widgets()"
+CompilerEndIf
+
+XIncludeFile "elements.pbi"
 ;XIncludeFile "w_window.pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule widget
+  UseModule bar
   UseModule constants
+  UseModule structures
   
-  Global.i gEvent, gQuit, value, g_canvas, direction, x=10,y=10
-  Global *window
+  Global *this._s_widget
+  Global *current._s_widget
   
-  Procedure.i GetIndex(*This._S_widget, Position.i)
-    Protected Result.i
-    
-    With *This
-      If *This And \Parent
-        Select Position
-          Case #PB_List_First  : Result = FirstElement(\Parent\Childrens())
-          Case #PB_List_Before : ChangeCurrentElement(\Parent\Childrens(), GetAdress(*This)) : Result = PreviousElement(\Parent\Childrens())
-          Case #PB_List_After  : ChangeCurrentElement(\Parent\Childrens(), GetAdress(*This)) : Result = NextElement(\Parent\Childrens())
-          Case #PB_List_Last   : Result = LastElement(\Parent\Childrens())
-        EndSelect
-        Result = ListIndex(\Parent\Childrens())
-      EndIf
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
+  #_First=99
+  #PrevOne=100
+  #NextOne=101
+  #_Last=102
   
-  Procedure.i SetIndex(*This._S_widget, Position.i, *Widget_2 =- 1) ; Ok SetStacking()
+  ; Получить последный элемент у родителя
+  Procedure ParentLastElement(*Parent._s_widget)
+    Protected *LastElement._s_widget =- 1
     
-    With *This\Parent
-      If *This And *This\Parent
-;         ForEach \Parent\Childrens()
-;           If *This = \Parent\Childrens()
-;             Break
-;           EndIf
-;         Next
-        ChangeCurrentElement(\Childrens(), GetAdress(*This))
-        
-        If *Widget_2 =- 1
-          Select Position
-            Case #PB_List_First  : MoveElement(\Childrens(), #PB_List_First)
-            Case #PB_List_Before : PreviousElement(\Childrens()) : MoveElement(\Childrens(), #PB_List_After, GetAdress(\Childrens()))
-            Case #PB_List_After  : NextElement(\Childrens())     : MoveElement(\Childrens(), #PB_List_Before, GetAdress(\Childrens()))
-            Case #PB_List_Last   : MoveElement(\Childrens(), #PB_List_Last)
-          EndSelect
-        ElseIf *Widget_2
-          Select Position
-            Case #PB_List_Before : MoveElement(\Childrens(), #PB_List_Before, *Widget_2)
-            Case #PB_List_After  : MoveElement(\Childrens(), #PB_List_After, *Widget_2)
-          EndSelect
+    If _is_widget_(*Parent)
+      PushListPosition(GetChildrens(*Parent)) 
+      ChangeCurrentElement(GetChildrens(*Parent), *Parent\adress)
+      ;       Debug \This()\Items()\Text\String$
+      ;       Debug ElementID(Parent);
+      
+      While NextElement(GetChildrens(*Parent)) 
+        If _is_child(GetChildrens(*Parent), *Parent)
+          *LastElement = GetChildrens(*Parent)
         EndIf
-      EndIf 
-    EndWith
-    
-  EndProcedure
-  
-  
-  ;-
-  ; Получить Z-позицию элемента в окне
-  Procedure _GetPosition(*This._S_widget, Position=#PB_Default)
-    Protected Result.i
-    
-    With *This
-      If *This And \Parent
-        If (\Type = #PB_GadgetType_ScrollBar And 
-            \Parent\Type = #PB_GadgetType_ScrollArea) Or
-           \Parent\Type = #PB_GadgetType_Splitter
-          *This = \Parent
-        EndIf
-        
-        Select Position
-          Case #PB_List_First  : Result = FirstElement(\Parent\Childrens())
-          Case #PB_List_Before : ChangeCurrentElement(\Parent\Childrens(), GetAdress(*This)) : Result = PreviousElement(\Parent\Childrens())
-          Case #PB_List_After  : ChangeCurrentElement(\Parent\Childrens(), GetAdress(*This)) : Result = NextElement(\Parent\Childrens())
-          Case #PB_List_Last   : Result = LastElement(\Parent\Childrens())
-          Default              : Result = GetAdress(*This)
-        EndSelect
-      EndIf
-    EndWith
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.i _SetPosition(*This._S_widget, Position, *Widget_2 =- 1) ; Ok
-    
-    With *This
-      If *This And \Parent
-        ;Debug "Position "+\text\string
-        
-;         ForEach \Parent\Childrens()
-;           If *This = \Parent\Childrens()
-;             Break
-;           EndIf
-;         Next
-        If (\Type = #PB_GadgetType_ScrollBar And 
-            \Parent\Type = #PB_GadgetType_ScrollArea) Or
-           \Parent\Type = #PB_GadgetType_Splitter
-          *This = \Parent
-        EndIf
-        ;Debug "SetPosition "+\Parent\Childrens()\text\string +" "+ ListIndex(\Parent\Childrens())
-        
-        ChangeCurrentElement(\Parent\Childrens(), GetAdress(*This))
-        Debug *This 
-        
-        If *Widget_2 =- 1
-          Select Position
-            Case #PB_List_First  : MoveElement(\Parent\Childrens(), #PB_List_First)
-            Case #PB_List_Before : PreviousElement(\Parent\Childrens()) : MoveElement(\Parent\Childrens(), #PB_List_After, GetAdress(\Parent\Childrens()))
-            Case #PB_List_After  : NextElement(\Parent\Childrens())     : MoveElement(\Parent\Childrens(), #PB_List_Before, GetAdress(\Parent\Childrens()))
-            Case #PB_List_Last   : MoveElement(\Parent\Childrens(), #PB_List_Last)
-          EndSelect
-        ElseIf *Widget_2
-          Select Position
-            Case #PB_List_Before : MoveElement(\Parent\Childrens(), #PB_List_Before, *Widget_2)
-            Case #PB_List_After  : MoveElement(\Parent\Childrens(), #PB_List_After, *Widget_2)
-          EndSelect
-        EndIf
-        
-        ;\Parent\Childrens()\Adress = @\Parent\Childrens()
-        
-      EndIf 
-    EndWith
-    
-  EndProcedure
-  
-  ; Позиционирование элементов (Positioning This)
-  
-  
-  Procedure Canvas_Events(Canvas.i, EventType.i)
-    Protected Repaint, *This._S_widget
-    Protected Width = GadgetWidth(Canvas)
-    Protected Height = GadgetHeight(Canvas)
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    Protected *window = GetGadgetData(Canvas)
-    Static *After
-    
-    Select EventType
-        ;Case #__Event_Repaint : Repaint = EventData()
-      Case #__Event_Resize : Repaint = 1
-        Resize(*window, #PB_Ignore, #PB_Ignore, Width, Height)
-      Default
-        
-        If EventType() = #__Event_LeftButtonDown
-          SetActiveGadget(Canvas)
-        EndIf
-        
-        *This = from(*window, MouseX, MouseY)
-        
-        If *This
-          Repaint | Events(*This, EventType(), MouseX, MouseY)
-          
-          Select EventType
-            Case #__Event_LeftButtonDown
-              *After = _GetPosition(*This, #PB_List_After)
-              
-              _SetPosition(*This, #PB_List_Last)
-              Repaint = 1
-              
-            Case #__Event_LeftButtonUp
-              _SetPosition(*This, #PB_List_Before, *After)
-              Repaint = 1
-          EndSelect
-        EndIf
-        
-    EndSelect
-    
-    If Repaint 
-      ReDraw(*window)
+      Wend
+      
+      If *LastElement =- 1 : *LastElement = *Parent : EndIf
+      PopListPosition(GetChildrens(*Parent))
     EndIf
     
+    ;Debug *LastElement
+    ProcedureReturn *LastElement
   EndProcedure
   
-  Procedure Canvas_CallBack()
-    ; Canvas events bug fix
-    Protected Result.b
-    Static MouseLeave.b
-    Protected EventGadget.i = EventGadget()
-    Protected EventType.i = EventType()
-    Protected Width = GadgetWidth(EventGadget)
-    Protected Height = GadgetHeight(EventGadget)
-    Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
+  
+  ; Получить первый элемент
+  Procedure FirstPosition(*this._s_widget) ; Ok
+    ChangeCurrentElement(GetChildrens(*this), *this\parent\adress)
     
-    ; Это из за ошибки в мак ос и линукс
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
-      Select EventType 
-        Case #__Event_MouseEnter 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
-            EventType = #__Event_MouseMove
-            MouseLeave = 0
-          EndIf
-          
-        Case #__Event_MouseLeave 
-          If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
-            EventType = #__Event_MouseMove
-            MouseLeave = 1
-          EndIf
-          
-        Case #__Event_LeftButtonDown
-          If GetActiveGadget()<>EventGadget
-            SetActiveGadget(EventGadget)
-          EndIf
-          
-        Case #__Event_LeftButtonUp
-          If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
-            MouseLeave = 0
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-              Result | Canvas_Events(EventGadget, #__Event_LeftButtonUp)
-              EventType = #__Event_MouseLeave
-            CompilerEndIf
+    While NextElement(GetChildrens(*this)) 
+      If GetChildrens(*this)\hide = #False And 
+         GetChildrens(*this)\parent = *this\parent And 
+         GetChildrens(*this)\tab\index = *this\parent\tab\index
+        ProcedureReturn GetChildrens(*this) 
+        Break
+      EndIf
+    Wend 
+  EndProcedure
+  
+  ; Получить последный элемент
+  Procedure LastPosition(*this._s_widget) ; Ok
+    Protected Item =- 1
+    Protected *Parent._s_widget =- 1
+    Protected Result =- 1
+    
+    If _is_widget_(*this)
+      PushListPosition(GetChildrens(*this)) 
+      ChangeCurrentElement(GetChildrens(*this), *this\adress) 
+      Item = GetChildrens(*this)\tab\index
+      *parent = GetChildrens(*this)\Parent
+      
+      ; LastElement
+      While NextElement(GetChildrens(*this)) 
+        If _is_child(GetChildrens(*this), *parent) = #False And GetChildrens(*this)\Hide = #False
+          Break
+        EndIf
+      Wend
+      
+      While PreviousElement(GetChildrens(*this)) 
+        If GetChildrens(*this)\Parent = *parent And Item = GetChildrens(*this)\tab\index And GetChildrens(*this)\Hide = #False
+          Break
+        EndIf
+      Wend
+      
+      Result = GetChildrens(*this) 
+      PopListPosition(GetChildrens(*this))
+    EndIf
+    
+    ProcedureReturn Result
+  EndProcedure
+  
+  
+  Procedure.i _GetPosition(*this._s_widget, Position.i)
+    Protected Result.i
+    
+    If *this
+      ChangeCurrentElement(GetChildrens(*this), *this\adress) 
+      
+      Select Position
+        Case #PB_List_First  
+          If *this\parent
+            ;ChangeCurrentElement(GetChildrens(*this), *this\parent\adress)
+            FirstElement(GetChildrens(*this))
+            
+            While NextElement(GetChildrens(*this)) 
+              If GetChildrens(*this)\hide = #False And 
+                 GetChildrens(*this)\parent = *this\parent And 
+                 GetChildrens(*this)\tab\index = *this\parent\tab\index
+                ProcedureReturn GetChildrens(*this) 
+              EndIf
+            Wend 
           Else
-            MouseLeave =- 1
-            Result | Canvas_Events(EventGadget, #__Event_LeftButtonUp)
-            EventType = #__Event_LeftClick
+            Result = FirstElement(GetChildrens(*this))
           EndIf
           
-        Case #__Event_LeftClick : ProcedureReturn 0
+        Case #PB_List_Before 
+          While PreviousElement(GetChildrens(*this))
+            If GetChildrens(*this)\hide = #False And 
+               GetChildrens(*this)\parent = *this\parent And 
+               GetChildrens(*this)\tab\index = *this\parent\tab\index
+              
+              If *this\parent = GetChildrens(*this)
+                ProcedureReturn *this
+              Else
+                ProcedureReturn GetChildrens(*this)
+              EndIf
+            EndIf
+          Wend
+          
+        Case #PB_List_After  
+          While NextElement(GetChildrens(*this))   
+            If GetChildrens(*this)\Hide = #False And
+               GetChildrens(*this)\Parent = *this\parent And 
+               GetChildrens(*this)\tab\index = *this\parent\tab\index
+              ProcedureReturn GetChildrens(*this)
+            EndIf
+          Wend
+          
+          
+        Case #PB_List_Last   
+          If *this\parent
+            LastElement(GetChildrens(*this))
+            
+            While PreviousElement(GetChildrens(*this)) 
+              If _is_child(GetChildrens(*this), *this\parent)
+                Result = GetChildrens(*this)
+                Break
+              EndIf
+            Wend
+          Else
+            Result = LastElement(GetChildrens(*this))
+          EndIf
+          
       EndSelect
-    CompilerEndIf
-    
-    Result | Canvas_Events(EventGadget, EventType)
+    EndIf
     
     ProcedureReturn Result
   EndProcedure
   
-  Procedure Widget_Handler()
-    Protected EventWidget.i = *event\widget,
-              EventType.i = *event\type,
-              EventItem.i = *event\item, 
-              EventData.i = *event\data
-    Static *After
+  Procedure _SetPosition(*this._s_widget, Position, *Widget_2._s_widget =- 1) ; Ok
+    Protected Type
+    Protected Result =- 1
     
-    Select EventType
-      Case #__Event_MouseEnter
-        ; bug in mac os
-        If GetActiveGadget() <> EventGadget()
-          SetActiveGadget(EventGadget())
+    If *this = *Widget_2
+      ProcedureReturn 0
+    EndIf
+    
+    Protected *next._s_widget
+    Protected *prev._s_widget
+    
+    Select Position
+      Case #PB_List_First 
+        *prev._s_widget = _GetPosition(*this, #PB_List_First)
+        
+        If *prev
+          ChangeCurrentElement(GetChildrens(*this), *this\adress)
+          MoveElement(GetChildrens(*this), #PB_List_Before, *prev\adress)
+          ;           ChangeCurrentElement(GetChildrens(*this), *this\adress)
+          ;           MoveElement(GetChildrens(*this), #PB_List_First)
+          
+          While NextElement(GetChildrens(*this)) 
+            If _is_child(GetChildrens(*this), *this)
+              MoveElement(GetChildrens(*this), #PB_List_Before, *this\adress)
+            EndIf
+          Wend
+          
         EndIf
-       
-      Case #__Event_LeftButtonDown
-        *After = _GetPosition(EventWidget, #PB_List_After)
         
-        _SetPosition(EventWidget, #PB_List_Last)
         
-      Case #__Event_LeftButtonUp
-        _SetPosition(EventWidget, #PB_List_Before, *After)
+      Case #PB_List_Before 
+        *prev._s_widget = _GetPosition(*this, #PB_List_Before)
         
-      Case #__Event_Repaint
-        ; draw active window focused frame
-        If GetActive() = EventWidget
-          DrawingMode(#PB_2DDrawing_Outlined)
-          Box(0, 0, width(EventWidget), height(EventWidget), $FFFF00FF)
+        If *prev
+          ChangeCurrentElement(GetChildrens(*this), *this\adress)
+          MoveElement(GetChildrens(*this), #PB_List_Before, *prev\adress)
+          
+          While NextElement(GetChildrens(*this)) 
+            If _is_child(GetChildrens(*this), *this)
+              MoveElement(GetChildrens(*this), #PB_List_Before, *prev\adress)
+            EndIf
+          Wend
         EndIf
         
-        ; draw active gadget focused frame
-        If GetGadget(GetActive()) = EventWidget
-          DrawingMode(#PB_2DDrawing_Outlined)
-          Box(0, 0, width(EventWidget), height(EventWidget), $FFFFFF00)
+      Case #PB_List_After 
+        *next._s_widget = _GetPosition(*this, #PB_List_After)
+        
+        If *next
+          ChangeCurrentElement(GetChildrens(*this), *this\adress)
+          MoveElement(GetChildrens(*this), #PB_List_After, *next\adress)
+          
+          While PreviousElement(GetChildrens(*this)) 
+            If _is_child(GetChildrens(*this), *this)
+              MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
+            EndIf
+          Wend
         EndIf
+        
+      Case #PB_List_Last 
+        Debug *this\parent\last\index
+        LastElement(GetChildrens(*this))
+        Debug GetChildrens(*this)\index
+        
+        If *this\parent\adress
+          LastElement(GetChildrens(*this))
+          
+          While PreviousElement(GetChildrens(*this)) 
+            If _is_child(GetChildrens(*this), *this\parent)
+              Break
+            EndIf
+          Wend
+          
+          MoveElement(GetChildrens(*this), #PB_List_After)
+        Else
+          
+          ChangeCurrentElement(GetChildrens(*this), *this\adress)
+          MoveElement(GetChildrens(*this), #PB_List_Last)
+        EndIf
+        
+        While PreviousElement(GetChildrens(*this)) 
+          If _is_child(GetChildrens(*this), *this)
+            MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
+          EndIf
+        Wend
+        
+        
         
     EndSelect
     
-    ProcedureReturn 1
-  EndProcedure
-  
-  
-  Procedure Window_0_Resize()
-    ResizeGadget(g_canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-50)
-    ResizeGadget(10, #PB_Ignore, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-35, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-10, #PB_Ignore)
-  EndProcedure
-  
-  Procedure Window_0()
-    Protected i
+    ;       If *Widget_2 =- 1
+    ;         
+    ;         If _is_widget_(*CreateElement\StickyWindow)
+    ;           PushListPosition(GetChildrens(*this)) 
+    ;           ChangeCurrentElement(GetChildrens(*this), ElementID(*CreateElement\StickyWindow))
+    ;           MoveElement(GetChildrens(*this), #PB_List_Last)
+    ;           While PreviousElement(GetChildrens(*this))
+    ;             If _is_child(GetChildrens(*this), *CreateElement\StickyWindow) 
+    ;               MoveElement(GetChildrens(*this), #PB_List_After, ElementID(*CreateElement\StickyWindow))
+    ;             EndIf
+    ;           Wend
+    ;           PopListPosition(GetChildrens(*this)) 
+    ;         EndIf
+    ;         
+    ;         If _is_widget_(*CreateElement\Sticky) 
+    ;           PushListPosition(GetChildrens(*this)) 
+    ;           ChangeCurrentElement(GetChildrens(*this), ElementID(*CreateElement\Sticky))
+    ;           
+    ;           ;If GetChildrens(*this)\Hide = 0
+    ;           MoveElement(GetChildrens(*this), #PB_List_Last)
+    ;           While PreviousElement(GetChildrens(*this))
+    ;             If GetChildrens(*this)\Sticky ;;; And GetChildrens(*this)\Hide = 0 And GetChildrens(*this) <> *CreateElement\Sticky
+    ;               MoveElement(GetChildrens(*this), #PB_List_After, ElementID(*CreateElement\Sticky))
+    ;             EndIf
+    ;           Wend
+    ;           PopListPosition(GetChildrens(*this)) 
+    ;           ;EndIf
+    ;         EndIf
+    ;         
+    ;       EndIf
     
-    If OpenWindow(0, 0, 0, 600, 600, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      ButtonGadget   (10,    5,   565, 590,  30, "start change scrollbar", #PB_Button_Toggle)
-      
-      *window = open(0, 10,10, 580, 550)
-      g_canvas = getgadget(root())
-      SetGadgetAttribute(g_canvas, #PB_Canvas_Cursor, #PB_Cursor_Hand)
-      
-      Form(150, 50, 280, 200, "Window_1");, #PB_Flag_AnchorsGadget)
-      Form(280, 100, 280, 200, "Window_2");, #PB_Flag_AnchorsGadget)
-      Form(20, 150, 280, 200, "Window_3") ;, #PB_Flag_AnchorsGadget)
-      
-      Panel(100, 20, 80, 80) : CloseList() ; "Button_1");, #PB_Flag_AnchorsGadget)
-      ScrollArea(130, 80, 80, 80, 0,100,100) : CloseList() ; "Button_2");, #PB_Flag_AnchorsGadget)
-      ScrollArea(70, 80, 80, 80, 0,100,100) : CloseList() ; "Button_3") ;, #PB_Flag_AnchorsGadget)
-      
-      ;Widgets(Hex(2)) = Button(91, 21, 280-2-182, 200-2-42, "Full_"+Str(5))
-      
-      CloseList()
-      
-      
-      BindGadgetEvent(g_canvas, @Canvas_CallBack())
-      ; Bind(@Widget_Handler(), root())
-      
-      redraw(root())
-      
-      BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
-    EndIf
+    redraw(root())
+    ProcedureReturn Result
   EndProcedure
   
-  Window_0()
   
+  Procedure Demo()
+    Protected   ParentID = OpenWindow(0, 0, 0, 250, 110, "Demo z-order gadget", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
+    
+    canvas(0, 0, 0, 250, 110)
+    
+    Container(55, 60, 190, 45)                     ; Gadget(9,   
+    Container(3, -3, 175-4, 45+6)   
+    Container(3, -3, 160-8, 45+6)   
+    CloseList()
+    CloseList()
+    CloseList()
+    
+    Button(55, 56, 170, 25, "8",#PB_Button_Right)  ; Gadget(8, 
+    Button(55, 52, 150, 25, "7",#PB_Button_Right)  ; Gadget(7, 
+    Button(55, 48, 130, 25, "6",#PB_Button_Right)  ; Gadget(6, 
+    
+    *this = Container(10, 10, 60, 90)              ; Gadget(10, 
+    Container(10, 10, 60, 70-4)   
+    Container(10, 10, 60, 50-8)   
+    CloseList()
+    CloseList()
+    CloseList()
+    *current = Button(55, 44, 110, 25, "5",#PB_Button_Right)  ; Gadget(5, 
+    
+    Button(55, 40, 90, 25, "4",#PB_Button_Right)  ; Gadget(4, 
+    Button(55, 36, 70, 25, "3",#PB_Button_Right)  ; Gadget(3, 
+    Button(55, 32, 50, 25, "2",#PB_Button_Right)  ; Gadget(2, 
+    
+    Container(55, 28, 30, 25)                     ; Gadget(1,
+    Container(3, -3, 24-4, 25+6)   
+    Container(3, -3, 17-8, 25+6)   
+    CloseList()
+    CloseList()
+    CloseList()
+    
+    ResizeWindow(0,#PB_Ignore,WindowY(0)-130,#PB_Ignore,#PB_Ignore)
+    ; BindEvent(#PB_Event_MoveWindow, @Resize(), 0)
+    
+    OpenWindow(10, 0, 0, 250, 125, "", #PB_Window_BorderLess|#PB_Window_ScreenCentered, ParentID)
+    ButtonGadget(#_Last, 5, 10, 240, 20, "last position gadget №10")
+    ButtonGadget(#PrevOne, 5, 40, 240, 20, "prev position gadget №10")
+    
+    ButtonGadget(#NextOne, 5, 70, 240, 20, "next position gadget №10")
+    ButtonGadget(#_First, 5, 100, 240, 20, "first position gadget №10")
+  EndProcedure
+  
+  Demo()
+  
+  Define gEvent, gQuit
   Repeat
     gEvent= WaitWindowEvent()
     
     Select gEvent
+      Case #PB_Event_Gadget
+        Select EventType()
+          Case #PB_EventType_LeftClick
+            Select EventGadget()
+              Case #_First
+                SetPosition(*this, #PB_List_First)
+                
+              Case #PrevOne
+                SetPosition(*this, #PB_List_Before)
+                
+              Case #NextOne
+                SetPosition(*this, #PB_List_After)
+                
+              Case #_Last
+                SetPosition(*this, #PB_List_Last)
+                
+            EndSelect
+            
+            ;               ClearDebugOutput()
+            ;               Debug "first "+GetFirst(ParentID)
+            ;               Debug "last "+GetLast(ParentID)
+            ;               Debug "prev №1 < № "+GetPrev(1)
+            ;               Debug "next №1 > № "+GetNext(1)
+            
+        EndSelect
+        
       Case #PB_Event_CloseWindow
         gQuit= #True
     EndSelect
@@ -320,5 +375,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --------
+; Folding = -------
 ; EnableXP

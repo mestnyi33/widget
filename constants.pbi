@@ -17,7 +17,7 @@
     #__spin_buttonsize2 = 15
     #__spin_buttonsize = 18
     
-    #__splitter_buttonsize = 7
+    #__splitter_buttonsize = 9
     #__scroll_buttonsize = 16
     #__test_scrollbar_size = 0
     
