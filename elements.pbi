@@ -248,14 +248,13 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare.i Bind(*callback, *this=#PB_All, eventtype.l=#PB_All)
     Declare.i Post(eventtype.l, *this, eventitem.l=#PB_All, *data=0)
     
+    Declare   Events(*this, _event_type_.l, _mouse_x_.l, _mouse_y_.l, _wheel_x_.b=0, _wheel_y_.b=0)
     Declare   Canvas(Window, x.l=0,y.l=0,width.l=#PB_Ignore,height.l=#PB_Ignore, Flag.i=#Null, *callback=#Null)
     Declare   Open_Window(Window, x.l,y.l,width.l,height.l, Title.s, Flag.i, ParentID.i)
     Declare.i Create(type.l, *parent, x.l,y.l,width.l,height.l, *param_1,*param_2,*param_3, size.l, flag.i=0, round.l=7, scroll_step.f=1.0)
   EndDeclareModule
   
   Module bar
-    Declare _events(*this, _event_type_.l, _mouse_x_.l, _mouse_y_.l, _wheel_x_.b=0, _wheel_y_.b=0)
-    
     ;-
     ;- PRIVATEs
     Macro _box_gradient_(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _round_=0, _alpha_=255)
@@ -275,9 +274,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
       
       If Not(_active_ = _active_\root And _active_\root\type =- 5)
         If (_state_)
-          _events(_active_, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Events(_active_, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
         Else
-          _events(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Events(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
         EndIf
         
         PostEvent(#PB_Event_Gadget, _active_\root\canvas\window, _active_\root\canvas\gadget, #__Event_repaint)
@@ -287,9 +286,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
         _active_\gadget\color\state = (_state_)
         
         If (_state_)
-          _events(_active_\gadget, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Events(_active_\gadget, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
         Else
-          _events(_active_\gadget, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Events(_active_\gadget, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
         EndIf
       EndIf
     EndMacro
@@ -1652,6 +1651,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
         ; get page end
         If *this\type = #PB_GadgetType_TabBar
           *this\bar\page\end = *this\bar\max - *this\bar\area\len
+;         ElseIf *this\type = #PB_GadgetType_Splitter
+;           *this\bar\page\end = (*this\bar\max+*this\bar\min) - *this\bar\page\len
         Else
           *this\bar\page\end = *this\bar\max - *this\bar\page\len
         EndIf
@@ -1686,13 +1687,19 @@ CompilerIf Not Defined(Bar, #PB_Module)
         
         ; get increment size
         If *this\bar\area\len > *this\bar\thumb\len
-          If *this\type = #PB_GadgetType_Splitter
-            *this\bar\scroll_increment = 1.0
-          ElseIf *this\type = #PB_GadgetType_TabBar
+          If *this\type = #PB_GadgetType_TabBar
             *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\area\len)) 
+;           ElseIf *this\type = #PB_GadgetType_Splitter
+;             *this\bar\scroll_increment =  Round((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len), #PB_Round_Nearest) 
           Else
             *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
           EndIf 
+          
+          If *this\type = #PB_GadgetType_Splitter
+            If *this\bar\scroll_increment < 1.0 
+              *this\bar\scroll_increment = 1.0
+            EndIf
+          EndIf  
         Else
           *this\bar\scroll_increment = 1.0
         EndIf
@@ -2469,8 +2476,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
           
           If \resize & #__resize_change
             ; then move and size parent set clip (width&height)
-            Clip(*this, #False)
-            
+            If *this\parent
+              Clip(*this, #False)
+            EndIf
+          
             ; 
             *this\width[#__c_2] = *this\width[#__c_3]
             *this\height[#__c_2] = *this\height[#__c_3]
@@ -2715,6 +2724,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           Select Attribute
             Case #PB_Splitter_FirstMinimumSize
               \bar\button[#__b_1]\len = Value
+              \bar\min = Value
               Result = Bool(\bar\max)
               
             Case #PB_Splitter_SecondMinimumSize
@@ -3256,12 +3266,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
             Else
               If GetActive()\gadget
                 GetActive()\gadget\color\state = #__s_0
-                _events(GetActive()\gadget, #__Event_LostFocus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
+                Events(GetActive()\gadget, #__Event_LostFocus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
               EndIf
               
               GetActive()\gadget = *this
               GetActive()\gadget\color\state = #__s_2
-              _events(GetActive()\gadget, #__Event_Focus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
+              Events(GetActive()\gadget, #__Event_Focus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
             EndIf
             
             Result = #True 
@@ -3488,7 +3498,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure.i Splitter(x.l,y.l,width.l,height.l, First.i,Second.i, Flag.i=0)
-      ProcedureReturn Create(#__Type_Splitter, Root()\opened, x,y,width,height, First,Second, 0,0, #__bar_child|flag, 0, 1)
+;       If IsGadget(First)
+;         ProcedureReturn Create(#__Type_Splitter, 0, x,y,width,height, First,Second, 0,0, #__bar_child|flag, 0, 1)
+;       Else
+        ProcedureReturn Create(#__Type_Splitter, Root()\opened, x,y,width,height, First,Second, 0,0, #__bar_child|flag, 0, 1)
+;       EndIf
     EndProcedure
     
     ;-
@@ -4083,12 +4097,16 @@ CompilerIf Not Defined(Bar, #PB_Module)
           *this\index = *parent\index
           *this\adress = *parent\adress
         Else
-          CompilerIf Defined(widget, #PB_Module)
-            widget::_set_last_parameters_(*this, *this\type, Flag, Root()\opened)
-          CompilerElse
-            SetParent(*this, Root()\opened)
-          CompilerEndIf
-          
+          If *parent
+            CompilerIf Defined(widget, #PB_Module)
+              widget::_set_last_parameters_(*this, *this\type, Flag, *parent)
+            CompilerElse
+              SetParent(*this, *parent)
+            CompilerEndIf
+          Else
+            *this\draw = 1
+          EndIf
+        
           If *this\type = #PB_GadgetType_Splitter
             If *this\splitter\first And Not *this\splitter\g_first
               SetParent(*this\splitter\first, *this)
@@ -4223,7 +4241,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     
     ;-
-    Procedure _events(*this._s_widget, _event_type_.l, _mouse_x_.l, _mouse_y_.l, _wheel_x_.b=0, _wheel_y_.b=0)
+    Procedure Events(*this._s_widget, _event_type_.l, _mouse_x_.l, _mouse_y_.l, _wheel_x_.b=0, _wheel_y_.b=0)
       Protected Repaint
       
       If Not _is_widget_(*this)
@@ -4578,7 +4596,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           
           Root()\mouse\drag = 1
           
-          repaint | _events(Root()\entered, #__Event_DragStart, mouse_x, mouse_y)
+          repaint | Events(Root()\entered, #__Event_DragStart, mouse_x, mouse_y)
         EndIf
         
       ElseIf Not Root()\mouse\buttons And 
@@ -4619,7 +4637,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
              Not (#__from_mouse_state And Child(*this, Root()\entered))
             Root()\entered\state = #__s_0
             
-            Repaint | _events(Root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
+            Repaint | Events(Root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
             
             If #__from_mouse_state
               ChangeCurrentElement(Root()\_childrens(), Root()\entered\adress)
@@ -4628,7 +4646,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
                   If Root()\_childrens()\state = #__s_1
                     Root()\_childrens()\state = #__s_0
                     
-                    Repaint | _events(Root()\_childrens(), #__Event_MouseLeave, mouse_x, mouse_y)
+                    Repaint | Events(Root()\_childrens(), #__Event_MouseLeave, mouse_x, mouse_y)
                   EndIf
                 EndIf
               Until PreviousElement(Root()\_childrens()) = #False 
@@ -4652,13 +4670,13 @@ CompilerIf Not Defined(Bar, #PB_Module)
                   If Root()\_childrens()\state = #__s_0
                     Root()\_childrens()\state = #__s_1
                     
-                    Repaint | _events(Root()\_childrens(), #__Event_MouseEnter, mouse_x, mouse_y)
+                    Repaint | Events(Root()\_childrens(), #__Event_MouseEnter, mouse_x, mouse_y)
                   EndIf
                 EndIf
               Next
             EndIf
             
-            Repaint | _events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
+            Repaint | Events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
           EndIf
         EndIf  
       EndIf
@@ -4692,18 +4710,18 @@ CompilerIf Not Defined(Bar, #PB_Module)
         ; widget key events
         If GetActive() 
           If GetActive()\gadget
-            Repaint | _events(GetActive()\gadget, eventtype, mouse_x, mouse_y)
+            Repaint | Events(GetActive()\gadget, eventtype, mouse_x, mouse_y)
           Else
-            Repaint | _events(GetActive(), eventtype, mouse_x, mouse_y)
+            Repaint | Events(GetActive(), eventtype, mouse_x, mouse_y)
           EndIf
         EndIf
         
       Else
         If Root()\entered And change
-          Repaint | _events(Root()\entered, eventtype, mouse_x, mouse_y)
+          Repaint | Events(Root()\entered, eventtype, mouse_x, mouse_y)
         EndIf
         If Root()\selected And Root()\entered <> Root()\selected And change 
-          Repaint | _events(Root()\selected, eventtype, mouse_x, mouse_y)
+          Repaint | Events(Root()\selected, eventtype, mouse_x, mouse_y)
         EndIf
       EndIf
       
@@ -4720,7 +4738,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         If Not Root()\mouse\buttons
           ; ;         ; post drop event
           ; ;         If DD::EventDrop(Root()\entered, #__Event_LeftButtonUp)
-          ; ;           _events(Root()\entered, #__Event_drop, mouse_x, mouse_y)
+          ; ;           Events(Root()\entered, #__Event_drop, mouse_x, mouse_y)
           ; ;         EndIf
           
           ;             If Not Root()\entered
@@ -4732,21 +4750,21 @@ CompilerIf Not Defined(Bar, #PB_Module)
           If GetActive() 
             If GetActive()\state
               If Not Root()\mouse\drag
-                Repaint | _events(GetActive(), #__Event_LeftClick, mouse_x, mouse_y)
+                Repaint | Events(GetActive(), #__Event_LeftClick, mouse_x, mouse_y)
               EndIf
             Else
-              Repaint | _events(GetActive(), #__Event_MouseLeave, mouse_x, mouse_y)
-              Repaint | _events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
+              Repaint | Events(GetActive(), #__Event_MouseLeave, mouse_x, mouse_y)
+              Repaint | Events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
             EndIf
             
             If _is_widget_(GetActive()\gadget)
               If GetActive()\gadget\state
                 If Not Root()\mouse\drag
-                  Repaint | _events(GetActive()\gadget, #__Event_LeftClick, mouse_x, mouse_y)
+                  Repaint | Events(GetActive()\gadget, #__Event_LeftClick, mouse_x, mouse_y)
                 EndIf
               Else
-                Repaint | _events(GetActive()\gadget, #__Event_MouseLeave, mouse_x, mouse_y)
-                Repaint | _events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
+                Repaint | Events(GetActive()\gadget, #__Event_MouseLeave, mouse_x, mouse_y)
+                Repaint | Events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
               EndIf
             EndIf
           EndIf
@@ -4786,6 +4804,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
         height = WindowHeight(window, #PB_Window_InnerCoordinate)
       EndIf
       
+      If width = #PB_Ignore And 
+         height = #PB_Ignore
+        flag = #PB_Canvas_Container
+      EndIf
+      
       Protected Canvas = CanvasGadget(#PB_Any, x,y,width,height, Flag)
       Root() = AllocateStructure(_s_root)
       Root()\class = "Root"
@@ -4807,6 +4830,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
         *CallBack = @CallBack()
         Root()\repaint = #True
       EndIf
+      
+      ; z-order
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        SetWindowLongPtr_( GadgetID(Canvas), #GWL_STYLE, GetWindowLongPtr_( GadgetID(Canvas), #GWL_STYLE ) | #WS_CLIPSIBLINGS )
+        SetWindowPos_( GadgetID(Canvas), #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
+      CompilerEndIf
       
       BindGadgetEvent(Canvas, *CallBack)
       PostEvent(#PB_Event_Gadget, Window, Canvas, #__Event_Resize)
@@ -5089,5 +5118,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = QAAAQAAAAAAAAAAAAAAAAAAAAmBAAAAAA5BGAOC-BYAAAAAAAAAAAAAAAaNAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAQAAg
+; Folding = wgAAQBAAAAEAAAAAAAAAAAAAAmBACAAAA5BGAOD-HgBAAAAAAAAAAAAwAo2DAAAAwwOAAeAAAAAAAAA9CAAAAwAAAgAAA5BAAAgAAAAAAAAAgy5fzv-52AAj
 ; EnableXP

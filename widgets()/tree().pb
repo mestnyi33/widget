@@ -1608,6 +1608,7 @@ Module Tree
     
     If *this
       With *this
+        \root = Root()
         \handle = *this
         \index = index : index + 1
         \type = #PB_GadgetType_Tree
@@ -1689,8 +1690,10 @@ Module Tree
       
 ;       \scroll\v = Bar::Scroll(0, 0, 16, 0, 0,0,0, #__bar_Vertical, 7)
 ;       \scroll\h = Bar::Scroll(0, 0, 0, Bool((\flag\buttons=0 And \flag\lines=0)=0)*16, 0,0,0, 0, 7)
-      \scroll\v = Bar::create(#PB_GadgetType_ScrollBar, 16, 0,0,0, #__bar_Vertical, 7, *this)
-      \scroll\h = Bar::create(#PB_GadgetType_ScrollBar, Bool((\flag\buttons=0 And \flag\lines=0)=0)*16, 0,0,0, 0, 7, *this)
+;       \scroll\v = Bar::create(#PB_GadgetType_ScrollBar, 16, 0,0,0, #__bar_Vertical, 7, *this)
+;       \scroll\h = Bar::create(#PB_GadgetType_ScrollBar, Bool((\flag\buttons=0 And \flag\lines=0)=0)*16, 0,0,0, 0, 7, *this)
+      \scroll\v = Bar::Create(#PB_GadgetType_ScrollBar, *this, 0,0,0,0, 0,0,0, 16, #PB_ScrollBar_Vertical, 7)
+      \scroll\h = Bar::Create(#PB_GadgetType_ScrollBar, *this, 0,0,0,0, 0,0,0, 16, 0, 7)
       
       Resize(*this, X,Y,Width,Height)
     EndWith
@@ -3167,7 +3170,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(#Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
     
-    g_Canvas = CanvasGadget(-1, 0, 0, 760, 310, #PB_Canvas_Keyboard|#PB_Canvas_Container)
+    g_Canvas = CanvasGadget(0, 0, 0, 760, 310, #PB_Canvas_Keyboard|#PB_Canvas_Container);, @Canvas_Events())
     BindGadgetEvent(g_Canvas, @Canvas_Events())
     
     ; create some images for the image demonstration

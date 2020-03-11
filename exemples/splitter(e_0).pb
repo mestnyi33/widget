@@ -8,6 +8,7 @@ CompilerElse
 CompilerEndIf
 
 XIncludeFile "elements.pbi"
+;XIncludeFile "widgets()/bar.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -36,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; first splitter
   b_0 = Button(0, 0, 0, 0, "BTN1")
   b_1 = Button(0, 0, 0, 0, "BTN2")
-  s_0 = Splitter(0, 0, 250, 150, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
+  s_0 = Splitter(0, 0, 250, 150, b_0, b_1, #PB_Splitter_Separator | #PB_Splitter_Vertical );| #PB_Splitter_FirstFixed)
   
   ; second splitter
   b_2 = Button(0, 0, 0, 0, "BTN3")
