@@ -8,13 +8,12 @@ CompilerElse
 CompilerEndIf
 
 XIncludeFile "elements.pbi"
-;XIncludeFile "widgets()/bar.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule bar
-  UseModule constants
+  Uselib(bar)
+  
   Global b_0,b_1,b_2,s_0,s_1
   
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
@@ -22,12 +21,12 @@ CompilerIf #PB_Compiler_IsMainFile
   Canvas(0);, 0, 0, 510, 340)
   
   ; first splitter
-  StringGadget(11, 0, 0, 0, 0, "BTN1")
-  StringGadget(22, 0, 0, 0, 0, "BTN2")
+  ButtonGadget(11, 0, 0, 0, 0, "BTN1")
+  ButtonGadget(22, 0, 0, 0, 0, "BTN2")
   SplitterGadget(99, 0, 0, 250, 150, 11, 22, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
   
   ; second splitter
-  StringGadget(33, 0, 0, 0, 0, "BTN3")
+  ButtonGadget(33, 0, 0, 0, 0, "BTN3")
   SplitterGadget(98, 125, 10, 250, 150, 99, 33, #PB_Splitter_Separator | #PB_Splitter_Vertical)
   
   SetGadgetState(99, 30)

@@ -442,6 +442,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *prev_s_widget
       *Next._s_widget
       
+      _gadget.i
       
       draw.b
       type.b ;[3] ; [2] for splitter

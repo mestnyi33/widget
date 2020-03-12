@@ -5,7 +5,7 @@
 ; Forum link    : https://www.purebasic.fr/english/viewtopic.php?f=12&t=70662
 ; 
 
-XIncludeFile "../../elements.pbi"
+XIncludeFile "../elements.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(bar)
@@ -37,13 +37,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
       
-      Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-      Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+      Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
+      Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
       
-      Button_2 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-      Button_3 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-      Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-      Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+      Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
+      Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
+      Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+      Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
       
       Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
       Splitter_1 = Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
@@ -63,7 +63,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

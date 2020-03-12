@@ -1636,12 +1636,12 @@ CompilerIf Not Defined(Bar, #PB_Module)
               *this\bar\page\pos = (*this\bar\area\len-*this\bar\thumb\len)/2
             EndIf
             
-;             If *this\bar\fixed And *this\bar\button[#__b_1]\len
-;               *this\bar\max = *this\bar\area\len + *this\bar\button[#__b_1]\len*2 + Bool(*this\bar\fixed = #__b_1) * 4
-;             Else
-              *this\bar\max = (*this\bar\area\len-*this\bar\thumb\len)
-;             EndIf            
-           
+            ;             If *this\bar\fixed And *this\bar\button[#__b_1]\len
+            ;               *this\bar\max = *this\bar\area\len + *this\bar\button[#__b_1]\len*2 + Bool(*this\bar\fixed = #__b_1) * 4
+            ;             Else
+            *this\bar\max = (*this\bar\area\len-*this\bar\thumb\len)
+            ;             EndIf            
+            
             ;if splitter fixed set splitter pos to center
             If *this\bar\fixed = #__b_1
               *this\bar\button[*this\bar\fixed]\fixed = *this\bar\page\pos
@@ -1655,8 +1655,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
         ; get page end
         If *this\type = #PB_GadgetType_TabBar
           *this\bar\page\end = *this\bar\max - *this\bar\area\len
-;         ElseIf *this\type = #PB_GadgetType_Splitter
-;           *this\bar\page\end = (*this\bar\max+*this\bar\min) - *this\bar\page\len
+          ;         ElseIf *this\type = #PB_GadgetType_Splitter
+          ;           *this\bar\page\end = (*this\bar\max+*this\bar\min) - *this\bar\page\len
         Else
           *this\bar\page\end = *this\bar\max - *this\bar\page\len
         EndIf
@@ -1693,8 +1693,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
         If *this\bar\area\len > *this\bar\thumb\len
           If *this\type = #PB_GadgetType_TabBar
             *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\area\len)) 
-;           ElseIf *this\type = #PB_GadgetType_Splitter
-;             *this\bar\scroll_increment =  Round((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len), #PB_Round_Nearest) 
+            ;           ElseIf *this\type = #PB_GadgetType_Splitter
+            ;             *this\bar\scroll_increment =  Round((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len), #PB_Round_Nearest) 
           Else
             *this\bar\scroll_increment = ((*this\bar\area\len - *this\bar\thumb\len) / ((*this\bar\max-*this\bar\min) - *this\bar\page\len)) 
           EndIf 
@@ -1719,17 +1719,17 @@ CompilerIf Not Defined(Bar, #PB_Module)
             *this\bar\button[*this\bar\fixed]\fixed = 0
           EndIf
           
-;           ;           If *this\bar\fixed = #__b_1
-;           ;             *this\bar\thumb\pos = _bar_thumb_pos_(*this\bar, 0)
-;           ;           Else
-;           *this\bar\thumb\pos = _bar_thumb_pos_(*this\bar, Bool(*this\bar\fixed = #__b_2) * *this\bar\page\end)
-;           ;           EndIf
-            
-            If *this\bar\fixed = #__b_1
-              *this\bar\thumb\pos = *this\bar\area\pos + *this\bar\button[*this\bar\fixed]\fixed 
-            Else
-              *this\bar\thumb\pos = *this\bar\area\end - *this\bar\button[*this\bar\fixed]\fixed 
-            EndIf
+          ;           ;           If *this\bar\fixed = #__b_1
+          ;           ;             *this\bar\thumb\pos = _bar_thumb_pos_(*this\bar, 0)
+          ;           ;           Else
+          ;           *this\bar\thumb\pos = _bar_thumb_pos_(*this\bar, Bool(*this\bar\fixed = #__b_2) * *this\bar\page\end)
+          ;           ;           EndIf
+          
+          If *this\bar\fixed = #__b_1
+            *this\bar\thumb\pos = *this\bar\area\pos + *this\bar\button[*this\bar\fixed]\fixed 
+          Else
+            *this\bar\thumb\pos = *this\bar\area\end - *this\bar\button[*this\bar\fixed]\fixed 
+          EndIf
         Else
           ; for the scrollarea childrens
           ;If *this\type = #PB_GadgetType_TabBar Or *this\type = #PB_GadgetType_ScrollBar
@@ -2258,8 +2258,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
             ; Splitter childrens auto resize       
             If *this\splitter\first
               If *this\splitter\g_first
-              ;  ResizeGadget(*this\splitter\first, *this\bar\button[#__b_1]\x-*this\x, *this\bar\button[#__b_1]\y-*this\y, *this\bar\button[#__b_1]\width, *this\bar\button[#__b_1]\height)
-                ResizeGadget(*this\splitter\first, (*this\bar\button[#__b_1]\x-*this\x)+GadgetX(*this\root\canvas\gadget), (*this\bar\button[#__b_1]\y-*this\y)+GadgetY(*this\root\canvas\gadget), *this\bar\button[#__b_1]\width, *this\bar\button[#__b_1]\height)
+                If *this\root\container
+                  ResizeGadget(*this\splitter\first, *this\bar\button[#__b_1]\x-*this\x, *this\bar\button[#__b_1]\y-*this\y, *this\bar\button[#__b_1]\width, *this\bar\button[#__b_1]\height)
+                Else
+                  ResizeGadget(*this\splitter\first, (*this\bar\button[#__b_1]\x-*this\x)+GadgetX(*this\root\canvas\gadget), (*this\bar\button[#__b_1]\y-*this\y)+GadgetY(*this\root\canvas\gadget), *this\bar\button[#__b_1]\width, *this\bar\button[#__b_1]\height)
+                EndIf
               Else
                 If *this\splitter\first\x <> *this\bar\button[#__b_1]\x Or ; -*this\x
                    *this\splitter\first\y <> *this\bar\button[#__b_1]\y Or ; -*this\y
@@ -2273,8 +2276,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
             
             If *this\splitter\second
               If *this\splitter\g_second
-              ;  ResizeGadget(*this\splitter\second, *this\bar\button[#__b_2]\x-*this\x, *this\bar\button[#__b_2]\y-*this\y, *this\bar\button[#__b_2]\width, *this\bar\button[#__b_2]\height)
-                ResizeGadget(*this\splitter\second, (*this\bar\button[#__b_2]\x-*this\x)+GadgetX(*this\root\canvas\gadget), (*this\bar\button[#__b_2]\y-*this\y)+GadgetY(*this\root\canvas\gadget), *this\bar\button[#__b_2]\width, *this\bar\button[#__b_2]\height)
+                If *this\root\container 
+                  ResizeGadget(*this\splitter\second, *this\bar\button[#__b_2]\x-*this\x, *this\bar\button[#__b_2]\y-*this\y, *this\bar\button[#__b_2]\width, *this\bar\button[#__b_2]\height)
+                Else
+                  ResizeGadget(*this\splitter\second, (*this\bar\button[#__b_2]\x-*this\x)+GadgetX(*this\root\canvas\gadget), (*this\bar\button[#__b_2]\y-*this\y)+GadgetY(*this\root\canvas\gadget), *this\bar\button[#__b_2]\width, *this\bar\button[#__b_2]\height)
+                EndIf
               Else
                 If *this\splitter\second\x <> *this\bar\button[#__b_2]\x Or ; -*this\x
                    *this\splitter\second\y <> *this\bar\button[#__b_2]\y Or ; -*this\y
@@ -2485,7 +2491,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             If *this\parent
               Clip(*this, #False)
             EndIf
-          
+            
             ; 
             *this\width[#__c_2] = *this\width[#__c_3]
             *this\height[#__c_2] = *this\height[#__c_3]
@@ -3201,51 +3207,51 @@ CompilerIf Not Defined(Bar, #PB_Module)
           EndIf
           
         Case #PB_List_Last 
-;             *after = *this\parent\last
-;           
-;           If *this\parent\last <> *this 
-;             *Last = GetParentLast(*after)
-;             
-;             ChangeCurrentElement(GetChildrens(*this), *this\adress)
-;             MoveElement(GetChildrens(*this), #PB_List_After, *Last\adress)
-;             
-;             While PreviousElement(GetChildrens(*this)) 
-;               If Child(GetChildrens(*this), *this)
-;                 MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
-;               EndIf
-;             Wend
-;             
-;             If *this\parent\first = *this
-;               *this\parent\first = *after
-;             EndIf
-;             
-;               Debug "last - "+*after\index+" "+*this\after\index
-;             If *this\after
-;               *this\after\before = *this\before
-;             EndIf
-;             
-;             *this\before = *after
-;             *this\after = *after\after 
-;             
-;             If Not *this\after
-; ;               If *this\before
-; ;                 Debug "   this\before "+*this\before\index
-; ;               EndIf
-; ;               Debug "   this "+*this\index
-; ;               If *this\after
-; ;                 Debug "   this\after "+*this\after\index
-; ;               EndIf
-;             
-;               *this\parent\last = *this
-;               *this\parent\last\after = 0
-;             EndIf
-;           EndIf
-;           *Last = GetParentLast(*this\parent)
-;           
-;           If *Last <> *this
-;             Debug  "set Last "
-;             SetPosition(*this, #PB_List_After, *last)
-;           EndIf
+          ;             *after = *this\parent\last
+          ;           
+          ;           If *this\parent\last <> *this 
+          ;             *Last = GetParentLast(*after)
+          ;             
+          ;             ChangeCurrentElement(GetChildrens(*this), *this\adress)
+          ;             MoveElement(GetChildrens(*this), #PB_List_After, *Last\adress)
+          ;             
+          ;             While PreviousElement(GetChildrens(*this)) 
+          ;               If Child(GetChildrens(*this), *this)
+          ;                 MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
+          ;               EndIf
+          ;             Wend
+          ;             
+          ;             If *this\parent\first = *this
+          ;               *this\parent\first = *after
+          ;             EndIf
+          ;             
+          ;               Debug "last - "+*after\index+" "+*this\after\index
+          ;             If *this\after
+          ;               *this\after\before = *this\before
+          ;             EndIf
+          ;             
+          ;             *this\before = *after
+          ;             *this\after = *after\after 
+          ;             
+          ;             If Not *this\after
+          ; ;               If *this\before
+          ; ;                 Debug "   this\before "+*this\before\index
+          ; ;               EndIf
+          ; ;               Debug "   this "+*this\index
+          ; ;               If *this\after
+          ; ;                 Debug "   this\after "+*this\after\index
+          ; ;               EndIf
+          ;             
+          ;               *this\parent\last = *this
+          ;               *this\parent\last\after = 0
+          ;             EndIf
+          ;           EndIf
+          ;           *Last = GetParentLast(*this\parent)
+          ;           
+          ;           If *Last <> *this
+          ;             Debug  "set Last "
+          ;             SetPosition(*this, #PB_List_After, *last)
+          ;           EndIf
           
       EndSelect
       
@@ -3504,11 +3510,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure.i Splitter(x.l,y.l,width.l,height.l, First.i,Second.i, Flag.i=0)
-;       If IsGadget(First)
-;         ProcedureReturn Create(#__Type_Splitter, 0, x,y,width,height, First,Second, 0,0, #__bar_child|flag, 0, 1)
-;       Else
-        ProcedureReturn Create(#__Type_Splitter, Root()\opened, x,y,width,height, First,Second, 0,0, #__bar_child|flag, 0, 1)
-;       EndIf
+      ;       If IsGadget(First)
+      ;         ProcedureReturn Create(#__Type_Splitter, 0, x,y,width,height, First,Second, 0,0, #__bar_child|flag, 0, 1)
+      ;       Else
+      ProcedureReturn Create(#__Type_Splitter, Root()\opened, x,y,width,height, First,Second, 0,0, #__bar_child|flag, 0, 1)
+      ;       EndIf
     EndProcedure
     
     ;-
@@ -4112,7 +4118,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           Else
             *this\draw = 1
           EndIf
-        
+          
           If *this\type = #PB_GadgetType_Splitter
             If *this\splitter\first And Not *this\splitter\g_first
               SetParent(*this\splitter\first, *this)
@@ -4803,6 +4809,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure Canvas(window, x.l=0,y.l=0,width.l=#PB_Ignore,height.l=#PB_Ignore, flag.i=#Null, *CallBack=#Null)
+      If width = #PB_Ignore And 
+         height = #PB_Ignore
+        flag = #PB_Canvas_Container
+      EndIf
+      
       If width = #PB_Ignore
         width = WindowWidth(window, #PB_Window_InnerCoordinate)
       EndIf
@@ -4810,9 +4821,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
         height = WindowHeight(window, #PB_Window_InnerCoordinate)
       EndIf
       
-      If width = #PB_Ignore And 
-         height = #PB_Ignore
-        flag = #PB_Canvas_Container
+      If flag & #PB_Canvas_Container
+        width - x
+        height - y
+      Else
+        BindEvent(#PB_Event_SizeWindow, @Resize_CanvasWindow(), Window);, Canvas)
       EndIf
       
       Protected Canvas = CanvasGadget(#PB_Any, x,y,width,height, Flag)
@@ -4825,6 +4838,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
       
       Root()\canvas\window = window
       Root()\canvas\gadget = Canvas
+      
+      If flag & #PB_Canvas_Container = #PB_Canvas_Container
+        Root()\container = Canvas
+      EndIf
       
       GetActive() = Root()
       GetActive()\root = Root()
@@ -4846,7 +4863,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
       BindGadgetEvent(Canvas, *CallBack)
       PostEvent(#PB_Event_Gadget, Window, Canvas, #__Event_Resize)
       
-      BindEvent(#PB_Event_SizeWindow, @Resize_CanvasWindow(), Window);, Canvas)
       ProcedureReturn Canvas
     EndProcedure
     
@@ -4860,11 +4876,16 @@ CompilerIf Not Defined(Bar, #PB_Module)
   ;- <<< 
 CompilerEndIf
 
-;-
-CompilerIf #PB_Compiler_IsMainFile
-  UseModule bar
+Macro Uselib(_name_)
+  UseModule _name_
   UseModule constants
   UseModule structures
+EndMacro
+
+
+;-
+CompilerIf #PB_Compiler_IsMainFile
+  Uselib(bar)
   
   Macro OpenWindow(Window, X, Y, Width, Height, Title, Flag=0, ParentID=0)
     bar::OpenWindow_(Window, X, Y, Width, Height, Title, Flag, ParentID)
@@ -5124,5 +5145,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = wMBAgCAAAAIAAAAAAAAAAAAAAMDAEAAAAwDMAYG+PAHAAAAAAAAYyGAgPQrHAAAAghdAA9AAAAAAAAA5FAAAAgBAAABAAwPAAAABAAAAAAAAAlx-mf-x8DAG-
+; Folding = -------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
