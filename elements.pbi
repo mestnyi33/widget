@@ -36,6 +36,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
       colors::*this\grey
     EndMacro
     
+    Macro PB(Function)
+      Function
+    EndMacro
+    
     Macro Root()
       structures::*event\root
     EndMacro
@@ -250,7 +254,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     Declare   Events(*this, _event_type_.l, _mouse_x_.l, _mouse_y_.l, _wheel_x_.b=0, _wheel_y_.b=0)
     Declare   Canvas(Window, x.l=0,y.l=0,width.l=#PB_Ignore,height.l=#PB_Ignore, Flag.i=#Null, *callback=#Null)
-    Declare   Open_Window(Window, x.l,y.l,width.l,height.l, Title.s, Flag.i, ParentID.i)
+    Declare   OpenWindow_(Window, x.l,y.l,width.l,height.l, Title.s, Flag.i=#Null, ParentID.i=#Null)
     Declare.i Create(type.l, *parent, x.l,y.l,width.l,height.l, *param_1,*param_2,*param_3, size.l, flag.i=0, round.l=7, scroll_step.f=1.0)
   EndDeclareModule
   
@@ -2254,7 +2258,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
             ; Splitter childrens auto resize       
             If *this\splitter\first
               If *this\splitter\g_first
-                ResizeGadget(*this\splitter\first, *this\bar\button[#__b_1]\x-*this\x, *this\bar\button[#__b_1]\y-*this\y, *this\bar\button[#__b_1]\width, *this\bar\button[#__b_1]\height)
+              ;  ResizeGadget(*this\splitter\first, *this\bar\button[#__b_1]\x-*this\x, *this\bar\button[#__b_1]\y-*this\y, *this\bar\button[#__b_1]\width, *this\bar\button[#__b_1]\height)
+                ResizeGadget(*this\splitter\first, (*this\bar\button[#__b_1]\x-*this\x)+GadgetX(*this\root\canvas\gadget), (*this\bar\button[#__b_1]\y-*this\y)+GadgetY(*this\root\canvas\gadget), *this\bar\button[#__b_1]\width, *this\bar\button[#__b_1]\height)
               Else
                 If *this\splitter\first\x <> *this\bar\button[#__b_1]\x Or ; -*this\x
                    *this\splitter\first\y <> *this\bar\button[#__b_1]\y Or ; -*this\y
@@ -2268,7 +2273,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
             
             If *this\splitter\second
               If *this\splitter\g_second
-                ResizeGadget(*this\splitter\second, *this\bar\button[#__b_2]\x-*this\x, *this\bar\button[#__b_2]\y-*this\y, *this\bar\button[#__b_2]\width, *this\bar\button[#__b_2]\height)
+              ;  ResizeGadget(*this\splitter\second, *this\bar\button[#__b_2]\x-*this\x, *this\bar\button[#__b_2]\y-*this\y, *this\bar\button[#__b_2]\width, *this\bar\button[#__b_2]\height)
+                ResizeGadget(*this\splitter\second, (*this\bar\button[#__b_2]\x-*this\x)+GadgetX(*this\root\canvas\gadget), (*this\bar\button[#__b_2]\y-*this\y)+GadgetY(*this\root\canvas\gadget), *this\bar\button[#__b_2]\width, *this\bar\button[#__b_2]\height)
               Else
                 If *this\splitter\second\x <> *this\bar\button[#__b_2]\x Or ; -*this\x
                    *this\splitter\second\y <> *this\bar\button[#__b_2]\y Or ; -*this\y
@@ -4844,7 +4850,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ProcedureReturn Canvas
     EndProcedure
     
-    Procedure Open_Window(Window, x.l,y.l,width.l,height.l, Title.s, Flag.i, ParentID.i)
+    Procedure OpenWindow_(Window, x.l,y.l,width.l,height.l, Title.s, Flag.i=#Null, ParentID.i=#Null)
       Protected w = OpenWindow(Window, x,y,width,height, Title, Flag, ParentID) : If Window =- 1 : Window = w : EndIf
       Protected Canvas = Canvas(Window, 0, 0, Width, Height, #PB_Canvas_Container);, @CallBack()) ;: CloseGadgetList()
       ProcedureReturn w
@@ -4861,7 +4867,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseModule structures
   
   Macro OpenWindow(Window, X, Y, Width, Height, Title, Flag=0, ParentID=0)
-    bar::Open_Window(Window, X, Y, Width, Height, Title, Flag, ParentID)
+    bar::OpenWindow_(Window, X, Y, Width, Height, Title, Flag, ParentID)
   EndMacro
   
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
@@ -5118,5 +5124,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = wgAAQBAAAAEAAAAAAAAAAAAAAmBACAAAA5BGAOD-HgBAAAAAAAAAAAAwAo2DAAAAwwOAAeAAAAAAAAA9CAAAAwAAAgAAA5BAAAgAAAAAAAAAgy5fzv-52AAj
+; Folding = wMBAgCAAAAIAAAAAAAAAAAAAAMDAEAAAAwDMAYG+PAHAAAAAAAAYyGAgPQrHAAAAghdAA9AAAAAAAAA5FAAAAgBAAABAAwPAAAABAAAAAAAAAlx-mf-x8DAG-
 ; EnableXP
