@@ -39,13 +39,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       delta._s_point
     EndStructure
     
-    ;- - _s_keyboard
-    Structure _s_keyboard
-      change.b
-      input.c
-      key.i[2]
-    EndStructure
-    
     ;- - _s_align
     Structure _s_align
       width.l
@@ -73,6 +66,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       len.l
       *end
       change.f
+    EndStructure
+    
+    ;- - _s_splitter
+    Structure _s_splitter
+      *first._s_widget
+      *second._s_widget
+      
+      g_first.b
+      g_second.b
     EndStructure
     
     ;- - _s_button
@@ -107,10 +109,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       max.l
       min.l
       
-      mode.i
-      
       ; delta.l
-      fixed.l[3]  ; [3] для совместимости временно 
+      fixed.l
+      mode.i
       
       hide.b
       change.b
@@ -118,9 +119,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       inverted.b
       direction.l
       
-      scroll_step.f
-      ;scroll_change.f
-      scroll_increment.f
+;       scroll_step.f
+;       ;scroll_change.f
+;       scroll_increment.f
+      percent.f
+      increment.f
       
       page._s_page
       area._s_page
@@ -292,16 +295,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color
     EndStructure
     
-    ;- - _s_splitter
-    Structure _s_splitter
-      *first._s_widget
-      *second._s_widget
-      
-      
-      g_first.b
-      g_second.b
-    EndStructure
-    
     ;- - _s_scroll
     Structure _s_scroll Extends _s_coordinate
       align._s_align
@@ -433,17 +426,21 @@ CompilerIf Not Defined(structures, #PB_Module)
       List _s._s_tabs()
     EndStructure
     
+    ;- _s_place
+    Structure _s_place
+      *first._s_widget
+      *last._s_widget
+      *after._s_widget
+      *before._s_widget
+    EndStructure
+    
     ;- - _s_widget
     Structure _s_widget 
       *first._s_widget
       *last._s_widget
       *after._s_widget
       *before._s_widget
-      *prev_s_widget
-      *Next._s_widget
-      
-      _gadget.i
-      
+
       draw.b
       type.b ;[3] ; [2] for splitter
       
@@ -464,6 +461,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *splitter._s_splitter
       scroll._s_scroll 
       bar._s_bar
+      
       caption._s_caption
       color._s_color[4]
       row._s_row
@@ -490,8 +488,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       grid.i
       enumerate.i
       __height.i ; 
-      container.i
       
+      container.i
       countitems.i[2]
       
       interact.i 
@@ -532,47 +530,50 @@ CompilerIf Not Defined(structures, #PB_Module)
       *data
     EndStructure
     
+    ;- - _s_canvas
+    Structure _s_canvas
+      window.i
+      gadget.i
+     ; gadget_set_cursor_widget.i
+    EndStructure
+    
     ;- - _s_event
     Structure _s_event 
+      *widget._s_widget
       type.l
       item.l
       *data
       
       *root._s_root
-      *callback.pFunc
-      *widget._s_widget
       *active._s_widget ; active window
-      colors._s_color
+      *callback.pFunc
       
-      
-      *leave._s_widget  
-      *enter._s_widget  
-      _draw.l
-      ;draw.b
-      
-      ;??????????????????????
-      List *childrens._s_widget()
-      
+      ; ??????????????????????
+      ; colors._s_color
+      ; *leave._s_widget  
+      ; *enter._s_widget  
+      ; _draw.l
+      ; draw.b
+      ; List *childrens._s_widget()
     EndStructure
     
-    ;- - _s_canvas
-    Structure _s_canvas
-      window.i
-      gadget.i
-      gadget_set_cursor_widget.i
+    ;- - _s_keyboard
+    Structure _s_keyboard
+      change.b
+      input.c
+      key.i[2]
     EndStructure
     
     ;- - _s_root
     Structure _s_root Extends _s_widget
+      mouse._s_mouse
       canvas._s_canvas
-      *anchor._s_anchor
+      keyboard._s_keyboard
       
+      *anchor._s_anchor
       *opened._s_widget    ; open list element
       *entered._s_widget   ; at point element
       *selected._s_widget  ; pushed at point element
-      
-      mouse._s_mouse
-      keyboard._s_keyboard
       
       event_count.b
       
@@ -589,5 +590,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = fxSGYgb-
+; Folding = f8SAIA-+
 ; EnableXP

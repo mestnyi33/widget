@@ -92,6 +92,7 @@
       #__s_3
     EndEnumeration
     
+    ;- _c_color
     Enumeration 1
       #__color_front
       #__color_back
@@ -100,12 +101,12 @@
       #__color_titleback
       #__color_graytext 
       #__color_frame
+      #__color_fore
     EndEnumeration
     
     ;
     
-    #__flag_vertical = 1
-    
+   
     ;- _c_align
     EnumerationBinary _c_align 2
       #__align_left
@@ -113,15 +114,16 @@
       #__align_right
       #__align_bottom
       #__align_center
-      #__align_text
-      #__flag_autoSize
       
+      #__align_text
     EndEnumeration
     
     #__align_full = #__align_left|#__align_top|#__align_right|#__align_bottom
     
     ;- _c_flag
-    EnumerationBinary _c_flag 256 ; 128
+    EnumerationBinary _c_align;_c_flag 256 ; 128
+      #__flag_vertical ;= 1
+      #__flag_autoSize
       
       #__flag_numeric
       #__flag_readonly
@@ -161,7 +163,7 @@
       ;         #__flag_Single
       
       
-      
+      #__MDI_NoScrollBars
       #__flag_limit
     EndEnumeration
     
@@ -173,11 +175,14 @@
     #__flag_alwaysselection = #__flag_lowercase|#__flag_uppercase
     
     ;- _c_text
+    #__text_border = #__flag_borderless;#PB_Text_Border
+    
     #__text_left = #__align_text|#__align_left
     #__text_top = #__align_text|#__align_top
     #__text_center = #__align_text|#__align_center
     #__text_right = #__align_text|#__align_right
     #__text_bottom = #__align_text|#__align_bottom
+    #__text_Middle = #__text_center
     
     #__text_vertical = #__flag_vertical
     #__text_multiline = #__flag_multiline

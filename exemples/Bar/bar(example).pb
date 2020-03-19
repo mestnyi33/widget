@@ -1,13 +1,14 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets().pbi"
+﻿;
+; example demo resize draw splitter - OS gadgets
+; 
 
-;- 
-;- example
-;-
+XIncludeFile "../../widgets.pbi"
+
+;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule widget
-  UseModule constants
-  
+  EnableExplicit
+  Uselib(widget)
+ 
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     LoadFont(0, "Arial", 16)
   CompilerElse
@@ -29,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
            "The string must be very long." + m.s +
            "Otherwise it will not work." ;+ m.s +
  
-  Procedure Events()
+  Procedure _Events()
     Select *event\type
       Case #PB_EventType_MouseEnter
         Debug "post enter - "+*event\widget\index

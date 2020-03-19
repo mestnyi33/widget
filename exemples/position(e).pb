@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       Debug ElementID(Parent);
       
       While NextElement(GetChildrens(*Parent)) 
-        If _is_child(GetChildrens(*Parent), *Parent)
+        If Child(GetChildrens(*Parent), *Parent)
           *LastElement = GetChildrens(*Parent)
         EndIf
       Wend
@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; LastElement
       While NextElement(GetChildrens(*this)) 
-        If _is_child(GetChildrens(*this), *parent) = #False And GetChildrens(*this)\Hide = #False
+        If Child(GetChildrens(*this), *parent) = #False And GetChildrens(*this)\Hide = #False
           Break
         EndIf
       Wend
@@ -149,7 +149,7 @@ CompilerIf #PB_Compiler_IsMainFile
             LastElement(GetChildrens(*this))
             
             While PreviousElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this\parent)
+              If Child(GetChildrens(*this), *this\parent)
                 Result = GetChildrens(*this)
                 Break
               EndIf
@@ -186,7 +186,7 @@ CompilerIf #PB_Compiler_IsMainFile
           ;           MoveElement(GetChildrens(*this), #PB_List_First)
           
           While NextElement(GetChildrens(*this)) 
-            If _is_child(GetChildrens(*this), *this)
+            If Child(GetChildrens(*this), *this)
               MoveElement(GetChildrens(*this), #PB_List_Before, *this\adress)
             EndIf
           Wend
@@ -202,7 +202,7 @@ CompilerIf #PB_Compiler_IsMainFile
           MoveElement(GetChildrens(*this), #PB_List_Before, *prev\adress)
           
           While NextElement(GetChildrens(*this)) 
-            If _is_child(GetChildrens(*this), *this)
+            If Child(GetChildrens(*this), *this)
               MoveElement(GetChildrens(*this), #PB_List_Before, *prev\adress)
             EndIf
           Wend
@@ -216,7 +216,7 @@ CompilerIf #PB_Compiler_IsMainFile
           MoveElement(GetChildrens(*this), #PB_List_After, *next\adress)
           
           While PreviousElement(GetChildrens(*this)) 
-            If _is_child(GetChildrens(*this), *this)
+            If Child(GetChildrens(*this), *this)
               MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
             EndIf
           Wend
@@ -231,7 +231,7 @@ CompilerIf #PB_Compiler_IsMainFile
           LastElement(GetChildrens(*this))
           
           While PreviousElement(GetChildrens(*this)) 
-            If _is_child(GetChildrens(*this), *this\parent)
+            If Child(GetChildrens(*this), *this\parent)
               Break
             EndIf
           Wend
@@ -244,7 +244,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         While PreviousElement(GetChildrens(*this)) 
-          If _is_child(GetChildrens(*this), *this)
+          If Child(GetChildrens(*this), *this)
             MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
           EndIf
         Wend
@@ -260,7 +260,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;           ChangeCurrentElement(GetChildrens(*this), ElementID(*CreateElement\StickyWindow))
     ;           MoveElement(GetChildrens(*this), #PB_List_Last)
     ;           While PreviousElement(GetChildrens(*this))
-    ;             If _is_child(GetChildrens(*this), *CreateElement\StickyWindow) 
+    ;             If Child(GetChildrens(*this), *CreateElement\StickyWindow) 
     ;               MoveElement(GetChildrens(*this), #PB_List_After, ElementID(*CreateElement\StickyWindow))
     ;             EndIf
     ;           Wend

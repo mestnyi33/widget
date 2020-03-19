@@ -1,6 +1,7 @@
 ﻿DeclareModule colors
   Structure _s_color
     grey.structures::_s_color
+    grey1.structures::_s_color
     grey2.structures::_s_color
     green.structures::_s_color
     red.structures::_s_color
@@ -213,6 +214,40 @@
     \back[3] = $FFE2E2E2 
     \frame[3] = $FFCECECE
   EndWith
+  
+  
+  ;- grey1 - (серые цвета)
+  With *this\grey1                          
+    \state = 0
+    \alpha[0] = 255
+    \alpha[1] = 255
+    
+    ; Цвета по умолчанию
+    \front[0] = $FFFFFFFF
+    \Fore[0] = $FFF6F6F6 
+    \Frame[0] = $FFBABABA
+    \Back[0] = $FFE2E2E2;$F0F0F0 
+    
+    ; Цвета если курсор на виджете
+    \front[1] = $FF5B5B5B
+    \Fore[1] = $FFEAEAEA
+    \Back[1] = $FFCECECE
+    \Frame[1] = $FF8F8F8F
+    
+    ; Цвета если нажали на виджет
+    \front[2] = $FFFFFFFF
+    \Fore[2] = $FFE2E2E2
+    \Back[2] = $FFB4B4B4
+    \Frame[2] = $FF6F6F6F
+    
+    ; Цвета если отключили виджет
+    \front[3] = $FFBABABA
+    \fore[3] = $FFF6F6F6 
+    \back[3] = $FFE2E2E2 
+    \frame[3] = $FFCECECE
+ EndWith
+  
+  
 EndDeclareModule
 
 Module colors

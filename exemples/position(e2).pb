@@ -35,7 +35,7 @@ Procedure ParentLastElement(*Parent._s_widget)
 ;       Debug ElementID(Parent);
      
       While NextElement(GetChildrens(*Parent)) 
-        If _is_child(GetChildrens(*Parent), *Parent)
+        If Child(GetChildrens(*Parent), *Parent)
           *LastElement = GetChildrens(*Parent)
         EndIf
       Wend
@@ -123,7 +123,7 @@ Procedure LastPosition(*this._s_widget) ; Ok
       
       ; LastElement
       While NextElement(GetChildrens(*this)) 
-        If _is_child(GetChildrens(*this), *parent) = #False And GetChildrens(*this)\Hide = #False
+        If Child(GetChildrens(*this), *parent) = #False And GetChildrens(*this)\Hide = #False
           Break
         EndIf
       Wend
@@ -186,7 +186,7 @@ Procedure _GetPosition(*this._s_widget, position.l)
             LastElement(GetChildrens(*this))
             
             While PreviousElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this\parent)
+              If Child(GetChildrens(*this), *this\parent)
                 Result = GetChildrens(*this)
                 Break
               EndIf
@@ -230,7 +230,7 @@ Procedure _SetPosition(*this._s_widget, position.l, *widget_2._s_widget=#Null) ;
             MoveElement(GetChildrens(*this), #PB_List_Before, *widget_2\adress)
             
             While NextElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this)
+              If Child(GetChildrens(*this), *this)
                 MoveElement(GetChildrens(*this), #PB_List_Before, *widget_2\adress)
               EndIf
             Wend
@@ -246,7 +246,7 @@ Procedure _SetPosition(*this._s_widget, position.l, *widget_2._s_widget=#Null) ;
             MoveElement(GetChildrens(*this), #PB_List_After, *widget_2\adress)
             
             While PreviousElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this)
+              If Child(GetChildrens(*this), *this)
                 MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
               EndIf
             Wend
@@ -257,7 +257,7 @@ Procedure _SetPosition(*this._s_widget, position.l, *widget_2._s_widget=#Null) ;
 ;             LastElement(GetChildrens(*this))
 ;             
 ;             While PreviousElement(GetChildrens(*this)) 
-;               If _is_child(GetChildrens(*this), *this\parent)
+;               If Child(GetChildrens(*this), *this\parent)
 ;              MoveElement(GetChildrens(*this), #PB_List_After)
 ;                Break
 ;               EndIf
@@ -293,14 +293,14 @@ Procedure _SetPosition(*this._s_widget, position.l, *widget_2._s_widget=#Null) ;
             MoveElement(GetChildrens(*this), #PB_List_Before, *Widget_2\adress)
             
             While NextElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this) ;And _is_child(GetChildrens(*this)\Parent\*this, Parent)
+              If Child(GetChildrens(*this), *this) ;And Child(GetChildrens(*this)\Parent\*this, Parent)
                 MoveElement(GetChildrens(*this), #PB_List_Before, *Widget_2\adress)
               EndIf
             Wend
             
           Case #PB_List_After : MoveElement(GetChildrens(*this), #PB_List_After, *Widget_2\adress)
             While PreviousElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this) ; And _is_child(GetChildrens(*this)\Parent\*this, Parent) 
+              If Child(GetChildrens(*this), *this) ; And Child(GetChildrens(*this)\Parent\*this, Parent) 
                 MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
               EndIf
             Wend
@@ -340,7 +340,7 @@ Procedure _SetPosition(*this._s_widget, position.l, *widget_2._s_widget=#Null) ;
               LastElement(GetChildrens(*this))
               
               While PreviousElement(GetChildrens(*this)) 
-                If _is_child(GetChildrens(*this), *this\parent)
+                If Child(GetChildrens(*this), *this\parent)
                   Break
                 EndIf
               Wend
@@ -361,7 +361,7 @@ Procedure _SetPosition(*this._s_widget, position.l, *widget_2._s_widget=#Null) ;
 ;           ChangeCurrentElement(GetChildrens(*this), ElementID(*CreateElement\StickyWindow))
 ;           MoveElement(GetChildrens(*this), #PB_List_Last)
 ;           While PreviousElement(GetChildrens(*this))
-;             If _is_child(GetChildrens(*this), *CreateElement\StickyWindow) 
+;             If Child(GetChildrens(*this), *CreateElement\StickyWindow) 
 ;               MoveElement(GetChildrens(*this), #PB_List_After, ElementID(*CreateElement\StickyWindow))
 ;             EndIf
 ;           Wend
@@ -461,5 +461,5 @@ EndProcedure
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -3----+---
+; Folding = -3--------
 ; EnableXP

@@ -195,7 +195,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     ;-
     ;-  DECLAREs
-    Declare  _is_child(*this._s_widget, *parent._s_widget)
+    Declare  Child(*this._s_widget, *parent._s_widget)
     
     Declare.b Draw(*this)
     Declare   ReDraw(*this)
@@ -543,7 +543,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     ;-
     ;- PUBLICs
-    Procedure _is_child(*this._s_widget, *parent._s_widget)
+    Procedure Child(*this._s_widget, *parent._s_widget)
       Protected result, *next._s_widget
       
       If *this
@@ -644,7 +644,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
               LastElement(GetChildrens(*this))
               
               While PreviousElement(GetChildrens(*this)) 
-                If _is_child(GetChildrens(*this), *this\parent)
+                If Child(GetChildrens(*this), *this\parent)
                   Result = GetChildrens(*this)
                   Break
                 EndIf
@@ -2893,7 +2893,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             MoveElement(GetChildrens(*this\parent), #PB_List_After, *Parent\adress)
             
             While PreviousElement(GetChildrens(*this\parent)) 
-              If _is_child(GetChildrens(*this\parent), *this)
+              If Child(GetChildrens(*this\parent), *this)
                 MoveElement(GetChildrens(*this\parent), #PB_List_After, *this\adress)
               EndIf
             Wend
@@ -3154,7 +3154,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             MoveElement(GetChildrens(*this), #PB_List_Before, *before\adress)
             
             While NextElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this)
+              If Child(GetChildrens(*this), *this)
                 MoveElement(GetChildrens(*this), #PB_List_Before, *before\adress)
               EndIf
             Wend
@@ -3206,7 +3206,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             MoveElement(GetChildrens(*this), #PB_List_Before, *before\adress)
             
             While NextElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this)
+              If Child(GetChildrens(*this), *this)
                 MoveElement(GetChildrens(*this), #PB_List_Before, *before\adress)
               EndIf
             Wend
@@ -3243,7 +3243,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             MoveElement(GetChildrens(*this), #PB_List_After, *Last\adress)
             
             While PreviousElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this)
+              If Child(GetChildrens(*this), *this)
                 MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
               EndIf
             Wend
@@ -3276,7 +3276,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             MoveElement(GetChildrens(*this), #PB_List_After, *Last\adress)
             
             While PreviousElement(GetChildrens(*this)) 
-              If _is_child(GetChildrens(*this), *this)
+              If Child(GetChildrens(*this), *this)
                 MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
               EndIf
             Wend
@@ -3336,7 +3336,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ; ; ;             MoveElement(GetChildrens(*this), #PB_List_Before, *widget_2\adress)
       ; ; ;             
       ; ; ;             While NextElement(GetChildrens(*this)) 
-      ; ; ;               If _is_child(GetChildrens(*this), *this)
+      ; ; ;               If Child(GetChildrens(*this), *this)
       ; ; ;                 MoveElement(GetChildrens(*this), #PB_List_Before, *widget_2\adress)
       ; ; ;               EndIf
       ; ; ;             Wend
@@ -3352,7 +3352,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ; ; ;             MoveElement(GetChildrens(*this), #PB_List_After, *widget_2\adress)
       ; ; ;             
       ; ; ;             While PreviousElement(GetChildrens(*this)) 
-      ; ; ;               If _is_child(GetChildrens(*this), *this)
+      ; ; ;               If Child(GetChildrens(*this), *this)
       ; ; ;                 MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
       ; ; ;               EndIf
       ; ; ;             Wend
@@ -3363,7 +3363,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ; ; ;             ;             LastElement(GetChildrens(*this))
       ; ; ;             ;             
       ; ; ;             ;             While PreviousElement(GetChildrens(*this)) 
-      ; ; ;             ;               If _is_child(GetChildrens(*this), *this\parent)
+      ; ; ;             ;               If Child(GetChildrens(*this), *this\parent)
       ; ; ;             ;              MoveElement(GetChildrens(*this), #PB_List_After)
       ; ; ;             ;                Break
       ; ; ;             ;               EndIf
@@ -3375,7 +3375,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ; ; ;           EndIf
       ; ; ;           
       ; ; ;           While PreviousElement(GetChildrens(*this)) 
-      ; ; ;             If _is_child(GetChildrens(*this), *this)
+      ; ; ;             If Child(GetChildrens(*this), *this)
       ; ; ;               MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
       ; ; ;             EndIf
       ; ; ;           Wend
@@ -4307,7 +4307,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             LastElement(GetChildrens(*this\parent))
             Repeat
               If GetChildrens(*this\parent) = *this Or
-                 _is_child(GetChildrens(*this\parent), *this)
+                 Child(GetChildrens(*this\parent), *this)
                 
                 Debug "  \"+GetChildrens(*this\parent)\index
                 
@@ -4766,7 +4766,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         ; state - (entered & leaved)
         If Root()\entered <> *this
           If Root()\entered And Root()\entered\state = #__s_1 And 
-             Not (#__from_mouse_state And _is_child(*this, Root()\entered))
+             Not (#__from_mouse_state And Child(*this, Root()\entered))
             Root()\entered\state = #__s_0
             
             Repaint | _events(Root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
@@ -4774,7 +4774,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
             If #__from_mouse_state
               ChangeCurrentElement(Root()\_childrens(), Root()\entered\adress)
               Repeat                 
-                If Root()\_childrens()\draw And _is_child(Root()\entered, Root()\_childrens())
+                If Root()\_childrens()\draw And Child(Root()\entered, Root()\_childrens())
                   If Root()\_childrens()\state = #__s_1
                     Root()\_childrens()\state = #__s_0
                     
@@ -4798,7 +4798,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
                   Break
                 EndIf
                 
-                If Root()\_childrens()\draw And _is_child(Root()\entered, Root()\_childrens())
+                If Root()\_childrens()\draw And Child(Root()\entered, Root()\_childrens())
                   If Root()\_childrens()\state = #__s_0
                     Root()\_childrens()\state = #__s_1
                     
@@ -4994,7 +4994,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       Debug ElementID(Parent);
       
       While NextElement(GetChildrens(*Parent)) 
-        If _is_child(GetChildrens(*Parent), *Parent)
+        If Child(GetChildrens(*Parent), *Parent)
           *LastElement = GetChildrens(*Parent)
         EndIf
       Wend
@@ -5036,7 +5036,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; LastElement
       While NextElement(GetChildrens(*this)) 
-        If _is_child(GetChildrens(*this), *parent) = #False And GetChildrens(*this)\Hide = #False
+        If Child(GetChildrens(*this), *parent) = #False And GetChildrens(*this)\Hide = #False
           Break
         EndIf
       Wend
@@ -5191,7 +5191,7 @@ CompilerIf #PB_Compiler_IsMainFile
           MoveElement(GetChildrens(*this), #PB_List_Before, *this\parent\first\adress)
           
           While NextElement(GetChildrens(*this)) 
-            If _is_child(GetChildrens(*this), *this)
+            If Child(GetChildrens(*this), *this)
               MoveElement(GetChildrens(*this), #PB_List_Before, *this\parent\first\adress)
             EndIf
           Wend
@@ -5217,7 +5217,7 @@ CompilerIf #PB_Compiler_IsMainFile
           MoveElement(GetChildrens(*this), #PB_List_Before, *this\before\adress)
           
           While NextElement(GetChildrens(*this)) 
-            If _is_child(GetChildrens(*this), *this)
+            If Child(GetChildrens(*this), *this)
               MoveElement(GetChildrens(*this), #PB_List_Before, *this\before\adress)
             EndIf
           Wend
@@ -5252,7 +5252,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
           
           While PreviousElement(GetChildrens(*this)) 
-            If _is_child(GetChildrens(*this), *this)
+            If Child(GetChildrens(*this), *this)
               MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
             EndIf
           Wend
@@ -5283,7 +5283,7 @@ CompilerIf #PB_Compiler_IsMainFile
           MoveElement(GetChildrens(*this), #PB_List_After, *this\parent\last\adress)
           
           While PreviousElement(GetChildrens(*this)) 
-            If _is_child(GetChildrens(*this), *this)
+            If Child(GetChildrens(*this), *this)
               MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
             EndIf
           Wend
@@ -5312,7 +5312,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;           ChangeCurrentElement(GetChildrens(*this), ElementID(*CreateElement\StickyWindow))
     ;           MoveElement(GetChildrens(*this), #PB_List_Last)
     ;           While PreviousElement(GetChildrens(*this))
-    ;             If _is_child(GetChildrens(*this), *CreateElement\StickyWindow) 
+    ;             If Child(GetChildrens(*this), *CreateElement\StickyWindow) 
     ;               MoveElement(GetChildrens(*this), #PB_List_After, ElementID(*CreateElement\StickyWindow))
     ;             EndIf
     ;           Wend
@@ -5428,5 +5428,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------0----L0-----------------------------------------f--------
+; Folding = ---------------------------------------------------------------------------0----PO+--------------------------------------4--------
 ; EnableXP

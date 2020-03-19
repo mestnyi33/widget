@@ -1,11 +1,13 @@
-﻿IncludePath "../../"
-; XIncludeFile "widgets().pbi"
-XIncludeFile "w_window.pb"
+﻿;
+; example demo resize draw splitter - OS gadgets
+; 
 
+XIncludeFile "../../widgets.pbi"
+
+;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule widget
-  UseModule constants
-  ;UseModule structures
+  EnableExplicit
+  Uselib(widget)
   
   Global g_Canvas, NewList *List._S_widget()
   
@@ -51,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     ForEach *List()
-      Repaint | bar::Events(*List(), EventType, MouseX, MouseY)
+      Repaint | widget::Events(*List(), EventType, MouseX, MouseY)
     Next
     
     If Repaint 
@@ -84,7 +86,7 @@ If OpenWindow(0, 0, 0, 850, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_W
 ;     BindGadgetEvent(g_Canvas, @Canvas_Events())
 ;     PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
     
-    g_Canvas = GetGadget(GetRoot(Open(0, 420, 0, 430, 280, "", #__flag_BorderLess)))
+    g_Canvas = canvas(0, 420, 0, 430, 280);GetGadget(GetRoot(canvas(0, 420, 0, 430, 280)))
         
     Button_0 = Progress(0, 0, 0, 0, 0, 100) ; No need to specify size or coordinates
     Button_1 = Progress(0, 0, 0, 0, 10,100) ; No need to specify size or coordinates

@@ -1,29 +1,29 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/widgets()"
-  XIncludeFile "../fixme(mac).pbi"
+  IncludePath "/Users/as/Documents/GitHub/Widget"
+  XIncludeFile "fixme(mac).pbi"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
-  IncludePath "/media/sf_as/Documents/GitHub/Widget/widgets()"
+  IncludePath "/media/sf_as/Documents/GitHub/Widget"
 CompilerElse
-  IncludePath "Z:/Documents/GitHub/Widget/widgets()"
+  IncludePath "Z:/Documents/GitHub/Widget"
 CompilerEndIf
 
 
 CompilerIf Not Defined(constants, #PB_Module)
-  XIncludeFile "../constants.pbi"
+  XIncludeFile "constants.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined(structures, #PB_Module)
-  XIncludeFile "../structures.pbi"
+  XIncludeFile "structures.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined(colors, #PB_Module)
-  XIncludeFile "../colors.pbi"
+  XIncludeFile "colors.pbi"
 CompilerEndIf
 
 
-CompilerIf Not Defined(Bar, #PB_Module)
+CompilerIf Not Defined(widget, #PB_Module)
   ;- >>>
-  DeclareModule bar
+  DeclareModule widget
     EnableExplicit
     UseModule constants
     UseModule structures
@@ -71,8 +71,8 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     ;-
     Macro _scrollarea_change_(_this_, _pos_, _len_)
-      Bool(Bool((((_pos_)+_this_\bar\min)-_this_\bar\page\pos) < 0 And Bar::SetState(_this_, ((_pos_)+_this_\bar\min))) Or
-           Bool((((_pos_)+_this_\bar\min)-_this_\bar\page\pos) > (_this_\bar\page\len-(_len_)) And Bar::SetState(_this_, ((_pos_)+_this_\bar\min)-(_this_\bar\page\len-(_len_)))))
+      Bool(Bool((((_pos_)+_this_\bar\min)-_this_\bar\page\pos) < 0 And widget::SetState(_this_, ((_pos_)+_this_\bar\min))) Or
+           Bool((((_pos_)+_this_\bar\min)-_this_\bar\page\pos) > (_this_\bar\page\len-(_len_)) And widget::SetState(_this_, ((_pos_)+_this_\bar\min)-(_this_\bar\page\len-(_len_)))))
     EndMacro
     
     Macro _scrollarea_draw_(_this_)
@@ -80,10 +80,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
       CompilerIf Defined(Bar, #PB_Module)
         If _this_\scroll
           If Not _this_\scroll\v\hide And _this_\scroll\v\width
-            Bar::Draw(_this_\scroll\v)
+            widget::Draw(_this_\scroll\v)
           EndIf
           If Not _this_\scroll\h\hide And _this_\scroll\h\height
-            Bar::Draw(_this_\scroll\h)
+            widget::Draw(_this_\scroll\h)
           EndIf
           
           If _this_\scroll\v And _this_\scroll\h
@@ -103,9 +103,9 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     Macro _scrollarea_update_(_this_)
       ;Bool(*this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change)
-      Bar::Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-      ;Bar::Resizes(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
-      ;Bar::Updates(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
+      widget::Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      ;widget::Resizes(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
+      ;widget::Updates(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
       _this_\scroll\v\bar\area\change = #False
       _this_\scroll\h\bar\area\change = #False
     EndMacro
@@ -198,14 +198,22 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare.b Draw(*this)
     Declare   ReDraw(*this)
     
+    Declare.l GetType(*this)
+    Declare.i GetRoot(*this)
+    Declare.i GetData(*this)
     Declare.i GetGadget(*this)
     Declare.i GetWindow(*this)
     Declare.i GetParent(*this, mode.l=0)
+    
+    Declare.i SetActive(*this)
     
     Declare.b Update(*this)
     Declare.b SetPos(*this, ThumbPos.i)
     Declare.b Change(*bar, ScrollPos.f)
     Declare.b Resize(*this, ix.l,iy.l,iwidth.l,iheight.l)
+    
+    Declare.s GetText(*this)
+    Declare SetText(*this, text.s)
     
     Declare.f GetState(*this)
     Declare.b SetState(*this, state.f)
@@ -221,6 +229,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare   SetPosition(*this, position.l, *widget_2=#Null)
     
     ; button
+    Declare.i String(x.l,y.l,width.l,height.l, Text.s, Flag.i=0, round.l=0)
     Declare.i Button(x.l,y.l,width.l,height.l, Text.s, Flag.i=0, Image.i=-1, round.l=0)
     
     ; bar
@@ -258,7 +267,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Declare.i Create(type.l, *parent, x.l,y.l,width.l,height.l, *param_1,*param_2,*param_3, size.l, flag.i=0, round.l=7, scroll_step.f=1.0)
   EndDeclareModule
   
-  Module bar
+  Module widget
     ;-
     ;- PRIVATEs
     Macro _box_gradient_(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _round_=0, _alpha_=255)
@@ -273,29 +282,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
       BackColor(#PB_Default) : FrontColor(#PB_Default) ; bug
     EndMacro
     
-    Macro _set_active_state_(_active_, _state_)
-      _active_\color\state = (_state_)
-      
-      If Not(_active_ = _active_\root And _active_\root\type =- 5)
-        If (_state_)
-          Events(_active_, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
-        Else
-          Events(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
-        EndIf
-        
-        PostEvent(#PB_Event_Gadget, _active_\root\canvas\window, _active_\root\canvas\gadget, #__Event_repaint)
-      EndIf
-      
-      If _active_\gadget
-        _active_\gadget\color\state = (_state_)
-        
-        If (_state_)
-          Events(_active_\gadget, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
-        Else
-          Events(_active_\gadget, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
-        EndIf
-      EndIf
-    EndMacro
     
     ;- TEXTs
     Macro _text_change_(_this_, _x_, _y_, _width_, _height_)
@@ -566,6 +552,18 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     ;-
+    Procedure.i GetData(*this._s_widget)
+      ProcedureReturn *this\data
+    EndProcedure
+    
+    Procedure.l GetType(*this._s_widget)
+      ProcedureReturn *this\type
+    EndProcedure
+    
+    Procedure.i GetRoot(*this._s_widget)
+      ProcedureReturn *this\root ; Returns root element
+    EndProcedure
+    
     Procedure.i GetParent(*this._s_widget, mode.l=0)
       If mode
         ProcedureReturn *this\tab\index
@@ -645,7 +643,15 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ProcedureReturn *this\bar\page\pos
     EndProcedure
     
+    Procedure.s GetText(*this._s_widget)
+      If *this\text\pass
+        ProcedureReturn *this\text\edit\string
+      Else
+        ProcedureReturn *this\text\string
+      EndIf
+    EndProcedure
     
+  
     ;-
     Procedure  Draw_Window(*this._s_widget)
       With *this 
@@ -1462,7 +1468,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         
         If *scroll\h\width <> *scroll\h\bar\page\len + round
           ; Debug  "h "+*scroll\h\bar\page\len
-          *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, #PB_Ignore, *scroll\h\bar\page\len + round, #PB_Ignore)
+          *scroll\h\hide = widget::Resize(*scroll\h, #PB_Ignore, #PB_Ignore, *scroll\h\bar\page\len + round, #PB_Ignore)
         EndIf
       EndIf
       
@@ -1478,40 +1484,40 @@ CompilerIf Not Defined(Bar, #PB_Module)
         
         If *scroll\v\height <> *scroll\v\bar\page\len + round
           ; Debug  "v "+*scroll\v\bar\page\len
-          *scroll\v\hide = Bar::Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len + round)
+          *scroll\v\hide = widget::Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len + round)
         EndIf
       EndIf
       
       If Not *scroll\h\hide 
         If *scroll\h\y[#__c_3] <> y+height - *scroll\h\height
           ; Debug "y"
-          *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, y+height - *scroll\h\height, #PB_Ignore, #PB_Ignore)
+          *scroll\h\hide = widget::Resize(*scroll\h, #PB_Ignore, y+height - *scroll\h\height, #PB_Ignore, #PB_Ignore)
         EndIf
         If *scroll\h\x[#__c_3] <> x
           ; Debug "y"
-          *scroll\h\hide = Bar::Resize(*scroll\h, x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          *scroll\h\hide = widget::Resize(*scroll\h, x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
         EndIf
       EndIf
       
       If Not *scroll\v\hide 
         If *scroll\v\x[#__c_3] <> x+width - *scroll\v\width
           ; Debug "x"
-          *scroll\v\hide = Bar::Resize(*scroll\v, x+width - *scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          *scroll\v\hide = widget::Resize(*scroll\v, x+width - *scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
         EndIf
         If *scroll\v\y[#__c_3] <> y
           ; Debug "y"
-          *scroll\v\hide = Bar::Resize(*scroll\v, #PB_Ignore, y, #PB_Ignore, #PB_Ignore)
+          *scroll\v\hide = widget::Resize(*scroll\v, #PB_Ignore, y, #PB_Ignore, #PB_Ignore)
         EndIf
       EndIf
       
       If v_max <> *scroll\v\bar\Max
         v_max = *scroll\v\bar\Max
-        *scroll\v\hide = Bar::Update(*scroll\v) 
+        *scroll\v\hide = widget::Update(*scroll\v) 
       EndIf
       
       If h_max <> *scroll\h\bar\Max
         h_max = *scroll\h\bar\Max
-        *scroll\h\hide = Bar::Update(*scroll\h) 
+        *scroll\h\hide = widget::Update(*scroll\h) 
       EndIf
       
       ProcedureReturn Bool(*scroll\v\bar\area\change Or *scroll\h\bar\area\change)
@@ -1535,29 +1541,29 @@ CompilerIf Not Defined(Bar, #PB_Module)
         If Width=#PB_Ignore : Width = \v\x-\h\x+\v\width : EndIf
         If Height=#PB_Ignore : Height = \h\y-\v\y+\h\height : EndIf
         
-        If Bar::SetAttribute(*scroll\v, #__bar_pagelength, make_area_height(*scroll, Width, Height))
-          *scroll\v\hide = Bar::Resize(*scroll\v, #PB_Ignore, y, #PB_Ignore, _get_page_height_(*scroll, 1))
+        If widget::SetAttribute(*scroll\v, #__bar_pagelength, make_area_height(*scroll, Width, Height))
+          *scroll\v\hide = widget::Resize(*scroll\v, #PB_Ignore, y, #PB_Ignore, _get_page_height_(*scroll, 1))
         EndIf
         
-        If Bar::SetAttribute(*scroll\h, #__bar_pagelength, make_area_width(*scroll, Width, Height))
-          *scroll\h\hide = Bar::Resize(*scroll\h, x, #PB_Ignore, _get_page_width_(*scroll, 1), #PB_Ignore)
+        If widget::SetAttribute(*scroll\h, #__bar_pagelength, make_area_width(*scroll, Width, Height))
+          *scroll\h\hide = widget::Resize(*scroll\h, x, #PB_Ignore, _get_page_width_(*scroll, 1), #PB_Ignore)
         EndIf
         
-        If Bar::SetAttribute(*scroll\v, #__bar_pagelength, make_area_height(*scroll, Width, Height))
-          *scroll\v\hide = Bar::Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, _get_page_height_(*scroll, 1))
+        If widget::SetAttribute(*scroll\v, #__bar_pagelength, make_area_height(*scroll, Width, Height))
+          *scroll\v\hide = widget::Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, _get_page_height_(*scroll, 1))
         EndIf
         
-        If Bar::SetAttribute(*scroll\h, #__bar_pagelength, make_area_width(*scroll, Width, Height))
-          *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, #PB_Ignore, _get_page_width_(*scroll, 1), #PB_Ignore)
+        If widget::SetAttribute(*scroll\h, #__bar_pagelength, make_area_width(*scroll, Width, Height))
+          *scroll\h\hide = widget::Resize(*scroll\h, #PB_Ignore, #PB_Ignore, _get_page_width_(*scroll, 1), #PB_Ignore)
         EndIf
         
         If Width+x-*scroll\v\width <> *scroll\v\x[#__c_3]
-          *scroll\v\hide = Bar::Resize(*scroll\v, Width+x-*scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          *scroll\v\hide = widget::Resize(*scroll\v, Width+x-*scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
         Else
           *scroll\v\hide = Update(*scroll\v)
         EndIf
         If Height+y-*scroll\h\height <> *scroll\h\y[#__c_3]
-          *scroll\h\hide = Bar::Resize(*scroll\h, #PB_Ignore, Height+y-*scroll\h\height, #PB_Ignore, #PB_Ignore)
+          *scroll\h\hide = widget::Resize(*scroll\h, #PB_Ignore, Height+y-*scroll\h\height, #PB_Ignore, #PB_Ignore)
         Else
           *scroll\h\hide = Update(*scroll\h)
         EndIf
@@ -2402,13 +2408,20 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure.b Resize(*this._s_widget, x.l,y.l,width.l,height.l)
-      CompilerIf Defined(widget, #PB_Module)
-        ProcedureReturn widget::Resize(*this, X,Y,Width,Height)
-      CompilerElse
-        Protected.l Change_x, Change_y, Change_width, Change_height
+       Protected.l Change_x, Change_y, Change_width, Change_height
         
         With *this
-          If X<>#PB_Ignore 
+          ; #__flag_autoSize
+        If \parent And \parent\type <> #__Type_Splitter And \align And
+           \align\autoSize And \align\left And \align\top And \align\right And \align\bottom
+          X = 0; \align\width
+          Y = 0; \align\height
+          Width = \parent\width[#__c_2] ; - \align\width
+          Height = \parent\height[#__c_2] ; - \align\height
+        EndIf
+        
+        
+        If X<>#PB_Ignore 
             If \parent 
               \x[#__c_3] = X 
               X+\parent\x[#__c_2] 
@@ -2488,10 +2501,15 @@ CompilerIf Not Defined(Bar, #PB_Module)
           
           If \resize & #__resize_change
             ; then move and size parent set clip (width&height)
-            If *this\parent
-              Clip(*this, #False)
-            EndIf
-            
+            If *this\parent And *this\parent <> *this
+            Clip(*this, #False)
+          Else
+            *this\x[#__c_4] = *this\x
+            *this\y[#__c_4] = *this\y
+            *this\width[#__c_4] = *this\width
+            *this\height[#__c_4] = *this\height
+          EndIf
+          
             ; 
             *this\width[#__c_2] = *this\width[#__c_3]
             *this\height[#__c_2] = *this\height[#__c_3]
@@ -2588,7 +2606,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
           
           ProcedureReturn result
         EndWith
-      CompilerEndIf
     EndProcedure
     
     
@@ -2832,7 +2849,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
     
     
     ;-
-    Procedure.i SetText(*this._s_widget, Text.s)
+    Procedure.i SetText(*this._s_widget, text.s)
       *this\text\change = #True
       *this\text\string.s = Text
     EndProcedure
@@ -2842,9 +2859,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     Procedure SetParent(*this._s_widget, *parent._s_widget, parent_item.l=0)
-      CompilerIf Defined(widget, #PB_Module)
-        ProcedureReturn widget::SetParent(*this, *Parent, parent_item)
-      CompilerElse
         If *this\parent <> *Parent
           Widget() = *this
           
@@ -2904,7 +2918,6 @@ CompilerIf Not Defined(Bar, #PB_Module)
             EndIf
           EndIf
         EndIf
-      CompilerEndIf
     EndProcedure
     
     Procedure.i SetAlignment(*this._s_widget, Mode.l, Type.l=1)
@@ -3263,6 +3276,30 @@ CompilerIf Not Defined(Bar, #PB_Module)
     Procedure.i SetActive(*this._s_widget)
       Protected Result.i
       
+      Macro _set_active_state_(_active_, _state_)
+        _active_\color\state = (_state_)
+        
+        If Not(_active_ = _active_\root And _active_\root\type =- 5)
+          If (_state_)
+            Events(_active_, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Else
+            Events(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
+          EndIf
+          
+          PostEvent(#PB_Event_Gadget, _active_\root\canvas\window, _active_\root\canvas\gadget, #__Event_repaint)
+        EndIf
+        
+        If _active_\gadget
+          _active_\gadget\color\state = (_state_)
+          
+          If (_state_)
+            Events(_active_\gadget, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
+          Else
+            Events(_active_\gadget, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
+          EndIf
+        EndIf
+      EndMacro
+      
       With *this
         If \type > 0 And GetActive()
           If GetActive()\gadget <> *this
@@ -3518,6 +3555,10 @@ CompilerIf Not Defined(Bar, #PB_Module)
     EndProcedure
     
     ;-
+    Procedure.i String(x.l,y.l,width.l,height.l, Text.s, Flag.i=0, round.l=0)
+      ProcedureReturn Track(x,y,width,height, 10,100, Flag, 9)
+    EndProcedure
+    
     Procedure.i Button(x.l,y.l,width.l,height.l, Text.s, Flag.i=0, Image.i=-1, round.l=0)
       ProcedureReturn Progress(x,y,width,height, 10,100, Flag, round)
       
@@ -3554,15 +3595,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
         ;       *this\image\align\horizontal = 1
         ;       _set_image_(*this, *this, Image)
         
-        CompilerIf Defined(widget, #PB_Module)
-          widget::_set_last_parameters_(*this, #__Type_ScrollArea, Flag, Root()\opened)
-        CompilerElse
-          SetParent(*this, Root()\opened)
-        CompilerEndIf
+        SetParent(*this, Root()\opened)
         
         ; \scroll = AllocateStructure(_s_scroll) 
-        *this\scroll\v = bar::create(#__Type_ScrollBar, *this, 0,0,0,0, 0,0,Height, #__test_scrollbar_size, #__bar_vertical, 7)
-        *this\scroll\h = bar::create(#__Type_ScrollBar, *this, 0,0,0,0, 0,0,Width, #__test_scrollbar_size, 0, 7)
+        *this\scroll\v = widget::create(#__Type_ScrollBar, *this, 0,0,0,0, 0,0,Height, #__test_scrollbar_size, #__bar_vertical, 7)
+        *this\scroll\h = widget::create(#__Type_ScrollBar, *this, 0,0,0,0, 0,0,Width, #__test_scrollbar_size, 0, 7)
         
         Resize(*this, X,Y,Width,Height)
         If Text.s
@@ -3594,11 +3631,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         *this\fs = Bool(Not Flag&#__flag_borderless) * #__border_scroll
         *this\bs = *this\fs
         
-        CompilerIf Defined(widget, #PB_Module)
-          widget::_set_last_parameters_(*this, #__Type_ScrollArea, Flag, Root()\opened)
-        CompilerElse
-          SetParent(*this, Root()\opened)
-        CompilerEndIf
+        SetParent(*this, Root()\opened)
         
         If constants::_check_(flag, #__flag_noGadget, #False)
           OpenList(*this)
@@ -3797,12 +3830,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
         \bs = \fs
         
         ;\round = 7
-        CompilerIf Defined(widget, #PB_Module)
-          widget::_set_last_parameters_(*this, #__Type_ScrollArea, Flag, *parent)
-        CompilerElse
           SetParent(*this, *parent)
-        CompilerEndIf
-        
         
         Resize(*this, X,Y,Width,Height)
         
@@ -3841,19 +3869,15 @@ CompilerIf Not Defined(Bar, #PB_Module)
         *this\fs = Bool(Not Flag&#__flag_borderless) * #__border_scroll
         *this\bs = *this\fs
         
-        CompilerIf Defined(widget, #PB_Module)
-          widget::_set_last_parameters_(*this, #__Type_ScrollArea, Flag, Root()\opened)
-        CompilerElse
           SetParent(*this, Root()\opened)
-        CompilerEndIf
         
         If constants::_check_(flag, #__flag_noGadget, #False)
           OpenList(*this)
         EndIf
         
         ;         ; \scroll = AllocateStructure(_s_scroll) 
-        \scroll\v = bar::create(#__Type_ScrollBar, *this, 0,0,0,0, 0,Scroll_AreaHeight,Height, Size, #__bar_vertical, 7, scroll_step)
-        \scroll\h = bar::create(#__Type_ScrollBar, *this, 0,0,0,0, 0,Scroll_AreaWidth,Width, Size, 0, 7, scroll_step)
+        \scroll\v = widget::create(#__Type_ScrollBar, *this, 0,0,0,0, 0,Scroll_AreaHeight,Height, Size, #__bar_vertical, 7, scroll_step)
+        \scroll\h = widget::create(#__Type_ScrollBar, *this, 0,0,0,0, 0,Scroll_AreaWidth,Width, Size, 0, 7, scroll_step)
         
         Resize(*this, X,Y,Width,Height)
       EndWith
@@ -4100,6 +4124,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           EndIf
         EndIf
         
+          
         If Not Flag & #__bar_child = #__bar_child
           *this\bar\_type = *this\Type
           *this\parent = *parent
@@ -4110,11 +4135,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           *this\adress = *parent\adress
         Else
           If *parent
-            CompilerIf Defined(widget, #PB_Module)
-              widget::_set_last_parameters_(*this, *this\type, Flag, *parent)
-            CompilerElse
               SetParent(*this, *parent)
-            CompilerEndIf
           Else
             *this\draw = 1
           EndIf
@@ -4129,7 +4150,19 @@ CompilerIf Not Defined(Bar, #PB_Module)
             EndIf
           EndIf
           
-          Resize(*this, x,y,width,height)
+         If flag & #__flag_autosize = #__flag_autosize
+            *this\align = AllocateStructure(_s_align)
+            *this\align\autoSize = 1
+            *this\align\left = 1
+            *this\align\top = 1
+            *this\align\right = 1
+            *this\align\bottom = 1
+            
+            ; set parent back transporent
+            *this\parent\color\back =- 1
+          EndIf
+          
+         Resize(*this, x,y,width,height)
         EndIf
       EndWith
       
@@ -4266,6 +4299,21 @@ CompilerIf Not Defined(Bar, #PB_Module)
       ; set event widget 
       Widget() = *this
       
+      Select _event_type_ 
+        Case #__Event_Focus,
+             #__Event_LostFocus 
+          
+;           Select *this\type
+;             Case #__Type_Window,
+;                  #__Type_String,
+;                  #__Type_Tree, 
+;                  #__Type_ListView, 
+;                  #__Type_ListIcon
+              
+              Post(_event_type_, *this, *this\index[#__s_1])
+;           EndSelect
+      EndSelect
+          
       If _event_type_ = #__Event_LeftButtonUp 
         Debug ""+*this\root +" "+ *this\adress +" "+  SizeOf(*this\adress) ; *this\root\adress
         
@@ -4507,11 +4555,11 @@ CompilerIf Not Defined(Bar, #PB_Module)
             Repaint = *this\bar\button[*this\bar\from]\fixed
           ElseIf (*this\bar\from = #__b_1 And *this\bar\inverted) Or
                  (*this\bar\from = #__b_2 And Not *this\bar\inverted)
-            Repaint = Bar::SetState(*this, *this\bar\page\pos + *this\bar\scroll_step)
+            Repaint = widget::SetState(*this, *this\bar\page\pos + *this\bar\scroll_step)
             
           ElseIf (*this\bar\from = #__b_2 And *this\bar\inverted) Or 
                  (*this\bar\from = #__b_1 And Not *this\bar\inverted)
-            Repaint = Bar::SetState(*this, *this\bar\page\pos - *this\bar\scroll_step)
+            Repaint = widget::SetState(*this, *this\bar\page\pos - *this\bar\scroll_step)
           EndIf
         EndIf
         
@@ -4545,7 +4593,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       
       If _event_type_ = #__Event_MouseMove
         If *this\bar\button[#__b_3]\fixed And *this = *this\root\selected And *this\bar\state
-          Repaint = Bar::SetPos(*this, (((Bool(Not *this\bar\vertical) * _mouse_x_) + (Bool(*this\bar\vertical) * _mouse_y_)) - *this\bar\button[#__b_3]\fixed))
+          Repaint = widget::SetPos(*this, (((Bool(Not *this\bar\vertical) * _mouse_x_) + (Bool(*this\bar\vertical) * _mouse_y_)) - *this\bar\button[#__b_3]\fixed))
           
           SetWindowTitle(EventWindow(), Str(*this\bar\page\pos) +" "+ Str(*this\bar\thumb\pos-*this\bar\area\pos))
         EndIf
@@ -4574,7 +4622,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
           Repaint = 1
           
         Case #__Event_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          ;Resize(Root(), #PB_Ignore, #PB_Ignore, Width, Height)  
+          Resize(Root(), #PB_Ignore, #PB_Ignore, Width, Height)  
           ;Resize(Root()\parent, #PB_Ignore, #PB_Ignore, Width-Root()\parent\bs*2, Height-Root()\parent\bs*2-Root()\parent\__height)  
           ;         Root()\Width = Width
           ;         Root()\Height = Height 
@@ -4832,6 +4880,7 @@ CompilerIf Not Defined(Bar, #PB_Module)
       Root() = AllocateStructure(_s_root)
       Root()\class = "Root"
       ; Root()\adress = Root()
+      Root()\root = Root()
       Root()\opened = Root()
       Root()\parent = Root()
       Root()\window = Root()
@@ -4863,13 +4912,15 @@ CompilerIf Not Defined(Bar, #PB_Module)
       BindGadgetEvent(Canvas, *CallBack)
       PostEvent(#PB_Event_Gadget, Window, Canvas, #__Event_Resize)
       
+      ; SetActive(Root())
+      
       ProcedureReturn Canvas
     EndProcedure
     
     Procedure OpenWindow_(Window, x.l,y.l,width.l,height.l, Title.s, Flag.i=#Null, ParentID.i=#Null)
       Protected w = OpenWindow(Window, x,y,width,height, Title, Flag, ParentID) : If Window =- 1 : Window = w : EndIf
       Protected Canvas = Canvas(Window, 0, 0, Width, Height, #PB_Canvas_Container);, @CallBack()) ;: CloseGadgetList()
-      ProcedureReturn w
+      ProcedureReturn Root()
     EndProcedure
     
   EndModule
@@ -4885,10 +4936,10 @@ EndMacro
 
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(bar)
+  Uselib(widget)
   
   Macro OpenWindow(Window, X, Y, Width, Height, Title, Flag=0, ParentID=0)
-    bar::OpenWindow_(Window, X, Y, Width, Height, Title, Flag, ParentID)
+    widget::OpenWindow_(Window, X, Y, Width, Height, Title, Flag, ParentID)
   EndMacro
   
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
@@ -4976,15 +5027,15 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; example scroll widget bar
     TextGadget       (-1,  300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#PB_Text_Center)
-    Bar::Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
-    Bar::SetState    (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    Bar::Scroll  (300+10, 42+30, 250,  10, 30, 150, 230, #__bar_inverted, 7)
-    Bar::SetState    (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
+    widget::Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
+    widget::SetState    (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
+    widget::Scroll  (300+10, 42+30, 250,  10, 30, 150, 230, #__bar_inverted, 7)
+    widget::SetState    (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    Bar::Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    Bar::SetState    (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
-    Bar::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_inverted, 7)
-    Bar::SetState    (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
+    widget::Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
+    widget::SetState    (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
+    widget::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_inverted, 7)
+    widget::SetState    (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     BindGadgetEvent(1,@h_GadgetCallBack())
     BindGadgetEvent(2,@v_GadgetCallBack())
@@ -5004,20 +5055,20 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; example_2 track widget bar
     TextGadget    (-1, 300+10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    Bar::Track(300+10,  140+40, 250, 20, 0, 10000, 0)
-    Bar::SetState(Widget(), 5000)
-    Bar::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_inverted)
-    Bar::SetState(Widget(), 5000)
+    widget::Track(300+10,  140+40, 250, 20, 0, 10000, 0)
+    widget::SetState(Widget(), 5000)
+    widget::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_inverted)
+    widget::SetState(Widget(), 5000)
     TextGadget    (-1, 300+10, 140+90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    ;     Bar::Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
-    Bar::Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    Bar::SetState(Widget(), 60)
+    ;     widget::Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
+    widget::Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
+    widget::SetState(Widget(), 60)
     TextGadget    (-1,  300+60, 140+160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-    Bar::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    Bar::SetAttribute(Widget(), #__bar_Inverted, 0)
-    Bar::SetState(Widget(), 8000)
-    Bar::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_inverted)
-    Bar::SetState(Widget(), 8000)
+    widget::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
+    widget::SetAttribute(Widget(), #__bar_Inverted, 0)
+    widget::SetState(Widget(), 8000)
+    widget::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_inverted)
+    widget::SetState(Widget(), 8000)
     
     BindGadgetEvent(11,@h_GadgetCallBack())
     BindGadgetEvent(12,@v_GadgetCallBack())
@@ -5032,16 +5083,16 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; example_3 progress widget bar
     TextGadget       (-1,  300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
-    Bar::Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
-    Bar::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    Bar::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_inverted, 4)
-    Bar::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    widget::Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
+    widget::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    widget::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_inverted, 4)
+    widget::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
     TextGadget       (-1,  300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    Bar::Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
-    Bar::SetAttribute(Widget(), #__bar_Inverted, 0)
-    Bar::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    Bar::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_inverted)
-    Bar::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+    widget::Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
+    widget::SetAttribute(Widget(), #__bar_Inverted, 0)
+    widget::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+    widget::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_inverted)
+    widget::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
     BindGadgetEvent(21,@h_GadgetCallBack())
     BindGadgetEvent(22,@v_GadgetCallBack())
@@ -5085,9 +5136,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;}
     
-    Button_0 = Bar::Spin(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
+    Button_0 = widget::Spin(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
     
-    Button_1 = Bar::Form(0, 0, 330, 0, "form", #PB_Window_TitleBar|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget) 
+    Button_1 = widget::Form(0, 0, 330, 0, "form", #PB_Window_TitleBar|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget) 
     Container(10,10,100,100)
     Container(10,10,100,100)
     Container(10,10,100,100)
@@ -5096,48 +5147,48 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     CloseList() ; No need to specify size or coordinates
     
-    ;     Button_1 = Bar::Tab(0, 0, 0, 0, 0, 0, 0); No need to specify size or coordinates
+    ;     Button_1 = widget::Tab(0, 0, 0, 0, 0, 0, 0); No need to specify size or coordinates
     ;     AddItem(Button_1, -1, "Tab_0")
     ;     AddItem(Button_1, -1, "Tab_1 (long)")
     ;     AddItem(Button_1, -1, "Tab_2")
     
-    ;     Button_10 = Bar::Scroll(0, 0, 0, 0, 0, 100, 20) ; No need to specify size or coordinates
-    ;     Button_1 = Bar::Splitter(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
+    ;     Button_10 = widget::Scroll(0, 0, 0, 0, 0, 100, 20) ; No need to specify size or coordinates
+    ;     Button_1 = widget::Splitter(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
     
-    Button_2 = Bar::ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
-    Button_3 = Bar::Progress(0, 0, 0, 0, 0, 100, 30)                         ; as they will be sized automatically
+    Button_2 = widget::ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
+    Button_3 = widget::Progress(0, 0, 0, 0, 0, 100, 30)                         ; as they will be sized automatically
     
-    Button_4 = Bar::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
-    Button_5 = Bar::Tab(0, 0, 0, 0, 0, 0, 0)                  ; No need to specify size or coordinates
+    Button_4 = widget::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
+    Button_5 = widget::Tab(0, 0, 0, 0, 0, 0, 0)                  ; No need to specify size or coordinates
     AddItem(Button_5, -1, "Tab_0")
     AddItem(Button_5, -1, "Tab_1 (long)")
     AddItem(Button_5, -1, "Tab_2")
     
-    Bar::SetState(Button_0, 50)
+    widget::SetState(Button_0, 50)
     
-    Splitter_0 = Bar::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Splitter_1 = Bar::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    Bar::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    Bar::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;Bar::SetState(Splitter_1, 410/2-20)
-    Splitter_2 = Bar::Splitter(0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
-    Splitter_3 = Bar::Splitter(0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = Bar::Splitter(300+10, 140+200+130, 285+30, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
+    Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
+    Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
+    widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
+    widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
+    ;widget::SetState(Splitter_1, 410/2-20)
+    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
+    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
+    Splitter_4 = widget::Splitter(300+10, 140+200+130, 285+30, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
     
-    ; Bar::SetState(Button_2, 5)
-    Bar::SetState(Splitter_0, 26)
-    Bar::SetState(Splitter_4, 225)
-    Bar::SetState(Splitter_3, 55)
-    Bar::SetState(Splitter_2, 15)
+    ; widget::SetState(Button_2, 5)
+    widget::SetState(Splitter_0, 26)
+    widget::SetState(Splitter_4, 225)
+    widget::SetState(Splitter_3, 55)
+    widget::SetState(Splitter_2, 15)
     
     If Button_2 And OpenList(Button_2)
-      Button_4 = Bar::ScrollArea(-1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
+      Button_4 = widget::ScrollArea(-1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
                                                              ;       Define i
                                                              ;       For i=0 To 1000
-      Bar::Progress(10, 10, 50, 30, 1, 100, 30)
+      widget::Progress(10, 10, 50, 30, 1, 100, 30)
       ;       Next
       CloseList()
-      Bar::Progress(100, 10, 50, 30, 2, 100, 30)
+      widget::Progress(100, 10, 50, 30, 2, 100, 30)
       CloseList()
     EndIf
     
@@ -5145,5 +5196,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
