@@ -386,7 +386,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             _this_\text\align\right = constants::_check_(_flag_, #__text_right)
           EndIf
           
-          If _this_\text\invert And _this_\vertical
+          If (_this_\text\invert And _this_\vertical) Or
+             (_this_\text\invert And Not _this_\vertical)
             _this_\text\align\bottom = constants::_check_(_flag_, #__text_top)
             _this_\text\align\top = constants::_check_(_flag_, #__text_bottom)
           Else
@@ -1656,7 +1657,10 @@ CompilerIf Not Defined(widget, #PB_Module)
                       \scroll\y = \Text\y+Text_X
                       
                     ElseIf \text\rotate = 90
-                      \scroll\x = \Text\x+Text_y-TxtHeight
+                      If Not \scroll\x
+                        \scroll\x = \Text\x+Text_y
+                      EndIf
+                      
                       \scroll\y = (\Text\Y+((width-\scroll\height)-Text_X))
                     EndIf
                   EndIf
@@ -1668,13 +1672,23 @@ CompilerIf Not Defined(widget, #PB_Module)
                   If \scroll\width < StringWidth
                     \scroll\width = StringWidth
                     
-                    If Not \scroll\y
-                      \scroll\y = \Text\y+Text_y  
-                    EndIf
-                    
                     If \text\rotate = 0
+                      If Not \scroll\y
+                        \scroll\y = \Text\y+Text_y  
+                      EndIf
+                      
                       \scroll\x = (\Text\X+Text_X)
                     ElseIf \text\rotate = 180
+                      If Not \scroll\y
+                        If \Text\Align\bottom
+                          \scroll\y = \Text\y
+                        ElseIf \Text\Align\vertical 
+                          \scroll\y = \Text\y+Text_y
+                        Else
+                          \scroll\y = \Text\y+(Height-(\Text\Height*CountString)-Text_Y) 
+                        EndIf
+                      EndIf
+                      
                       \scroll\x = \Text\X+((width-\scroll\width)-Text_X)
                     EndIf
                   EndIf
@@ -1683,7 +1697,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 DrawingMode(#PB_2DDrawing_Transparent)
                 If \Vertical
                   If \text\rotate = 270
-                    DrawRotatedText(\X[2]+\Text\x+(Height-Text_Y) + 1, \Y[2]+\Text\y+Text_X, String4.s, 270, \Color\Front[\color\state])
+                    DrawRotatedText(\X[2]+\Text\x+(Height-Text_Y) + Bool(Not \Text\Align\horizontal), \Y[2]+\Text\y+Text_X, String4.s, 270, \Color\Front[\color\state])
                   EndIf
                   If \text\rotate = 90
                     DrawRotatedText(\X[2]+\Text\Y+Text_Y - 1, \Y[2]+\Text\X+(width-Text_X), String4.s, 90, \Color\Front[\color\state])
@@ -1695,7 +1709,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                     DrawRotatedText(\X[2]+\Text\X+Text_X, \Y[2]+\Text\Y+Text_Y-1, String4.s, 0, \Color\Front[\color\state])
                   EndIf
                   If \text\rotate = 180
-                    DrawRotatedText(\X[2]+\Text\X+(Width-Text_X), \Y[2]+\Text\Y+Text_Y+TxtHeight, String4.s, 180, \Color\Front[\color\state])
+                    DrawRotatedText(\X[2]+\Text\X+(Width-Text_X), \Y[2]+\Text\Y+(Height-Text_Y) + Bool(Not \Text\Align\vertical), String4.s, 180, \Color\Front[\color\state])
                   EndIf
                   
                   Text_Y+TxtHeight : If Text_Y-\Text\Y > (Height-TxtHeight) : Break : EndIf
@@ -5925,5 +5939,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = wAAAgIAAAAAAAABiBAAAAAAAAAAAAAAAMAAk1DE5AAAAgHAAAIAAAAAAAAAAAAAAAAAQAo2DAAAAAwAAAAgDwHwDAAAAAAGAAAgAAAYU5ZIAgBAAAAAAAAAAAAAAAABAAAAAICAM+
+; Folding = wAAAgMAAAAAAAABiBAAAAAAAAAAAAA9------egAHAAAA9AAAABAAAAAAAAAAAAAAAAACAteAAAAAAGAAAAcA+AeAAAAAAwAAAAEAAAjCPDBAMAAAAAAAAAAAAAAAAIAAAAAARAgx
 ; EnableXP
