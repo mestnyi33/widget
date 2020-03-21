@@ -38,6 +38,8 @@ Procedure window_ide_open(x=100,y=100,width=800,height=600)
   
   panel_inspector = Panel(0,0,0,0)
   AddItem(panel_inspector, 0, "elements", 0, 0) 
+  Button(0,0,0,0, "elements", #__flag_autosize)
+  
   AddItem(panel_inspector, 1, "properties", 0, 0)  
   AddItem(panel_inspector, 2, "events", 0, 0)  
   CloseList()
