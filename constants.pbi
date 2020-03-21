@@ -222,6 +222,12 @@
 ;     #__Window_Close          = #PB_Window_NoActivate<<2
     #PB_Window                 = #PB_Window_NoActivate<<2
     
+    ;- _c_spin
+    #__spin_left = #__text_left
+    #__spin_right = #__text_right
+    #__spin_center = #__text_center
+    
+    
     ;- _c_tree
     #__tree_collapse = #__flag_collapse
     #__tree_optionboxes = #__flag_optionboxes

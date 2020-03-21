@@ -68,6 +68,78 @@ CompilerIf Not Defined(structures, #PB_Module)
       change.f
     EndStructure
     
+    ;- - _s_caret
+    Structure _s_caret Extends _s_coordinate
+      pos.l[3]
+      time.l
+    EndStructure
+    
+    ;- - _s_edit
+    Structure _s_edit Extends _s_coordinate
+      pos.l
+      len.l
+      
+      string.s
+      change.b
+      
+      *color._s_color
+    EndStructure
+    
+    ;- - _s_padding
+    Structure _s_padding
+      left.l
+      top.l
+      right.l
+      bottom.l
+    EndStructure
+    
+    ;- - _s_syntax
+    Structure _s_syntax
+      List *word._s_edit()
+    EndStructure
+    
+    ;- - _s_text
+    Structure _s_text Extends _s_edit
+      ;     ;     Char.c
+      fontID.i
+      count.l
+      
+      pass.b
+      lower.b
+      upper.b
+      numeric.b
+      editable.b
+      multiline.b
+      
+      invert.b
+      rotate.f
+      
+      _padding.b
+      padding._s_padding
+    
+      edit._s_edit[4]
+      caret._s_caret
+      align._s_align
+      syntax._s_syntax
+    EndStructure
+    
+    ;- - _s_image
+    Structure _s_image
+      y.l[3]
+      x.l[3]
+      height.l
+      width.l
+      
+      index.l
+      handle.i[2] ; - editor
+      change.b
+      
+      _padding.b
+      padding._s_padding
+      
+      align._s_align
+    EndStructure
+    
     ;- - _s_splitter
     Structure _s_splitter
       *first._s_widget
@@ -79,7 +151,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_button
     Structure _s_button Extends _s_coordinate
-       state.l
+      len.l
+      state.l
       ; switched.b
       ; *handle ;;;;;;
       
@@ -87,7 +160,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; [1..2]fixed = splitter\bar\fixed
       fixed.l 
                                  
-      len.l
       hide.b
       round.a
       interact.b
@@ -102,33 +174,47 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
-      _type.l
+      ;_type.l
+      ; delta.l
+      mode.i
+      fixed.l
+      
+      ;index.l ; parent tab index
       from.l  ; entered button index
       state.l ; selected button index
       
       max.l
       min.l
-      
-      ; delta.l
-      fixed.l
-      mode.i
-      
       hide.b
       change.b
+      percent.f
+      increment.f
       vertical.b
       inverted.b
       direction.l
-      
-;       scroll_step.f
-;       ;scroll_change.f
-;       scroll_increment.f
-      percent.f
-      increment.f
       
       page._s_page
       area._s_page
       thumb._s_page  
       button._s_button[4]
+    EndStructure
+    
+    ;- - _s_tabs
+    Structure _s_tabs Extends _s_coordinate
+      index.l  ; Index of new list element
+      hide.b
+      draw.b
+      round.a
+      text._s_text
+      image._s_image
+      color._s_color
+    EndStructure
+    
+    ;- - _s_tab
+    Structure _s_tab
+      bar._s_bar
+      *_tab._s_widget
+      List _s._s_tabs()
     EndStructure
     
     ;- - _s_transform
@@ -188,62 +274,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       transform.b
     EndStructure
     
-    ;- - _s_caret
-    Structure _s_caret Extends _s_coordinate
-      pos.l[3]
-      time.l
-    EndStructure
-    
-    ;- - _s_edit
-    Structure _s_edit Extends _s_coordinate
-      pos.l
-      len.l
-      
-      string.s
-      change.b
-      
-      *color._s_color
-    EndStructure
-    
-    ;- - _s_padding
-    Structure _s_padding
-      left.l
-      top.l
-      right.l
-      bottom.l
-    EndStructure
-    
-    ;- - _s_syntax
-    Structure _s_syntax
-      List *word._s_edit()
-    EndStructure
-    
-    ;- - _s_text
-    Structure _s_text Extends _s_edit
-      ;     ;     Char.c
-      fontID.i
-      count.l
-      
-      pass.b
-      lower.b
-      upper.b
-      numeric.b
-      editable.b
-      multiline.b
-      
-      invert.b
-      rotate.f
-      
-      _padding.b
-      
-      padding._s_padding
-    
-      edit._s_edit[4]
-      caret._s_caret
-      align._s_align
-      syntax._s_syntax
-    EndStructure
-    
     ;- - _s_caption
     Structure _s_caption
       y.l[5]
@@ -259,22 +289,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       hide.b
       round.b
       _padding.b
-    EndStructure
-    
-    ;- - _s_image
-    Structure _s_image
-      y.l[3]
-      x.l[3]
-      height.l
-      width.l
-      
-      index.l
-      handle.i[2] ; - editor
-      change.b
-      _padding.b
-      
-      padding._s_padding
-      align._s_align
     EndStructure
     
     ;- - _s_line_
@@ -404,28 +418,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       List _s._s_rows()
     EndStructure
     
-    ;- - _s_tabs
-    Structure _s_tabs Extends _s_coordinate
-      index.l  ; Index of new list element
-      hide.b
-      draw.b
-      round.a
-      text._s_text
-      image._s_image
-      color._s_color
-    EndStructure
-    
-    ;- - _s_tab
-    Structure _s_tab
-      index.l ; [3] ; index[0]-parent tab  ; inex[1]-entered tab ; index[2]-selected tab
-      count.l ; count tab items
-      opened.l; parent open list item id
-      scrolled.l    ; panel set state tab
-      bar._s_bar
-      
-      List _s._s_tabs()
-    EndStructure
-    
     ;- _s_place
     Structure _s_place
       *first._s_widget
@@ -440,7 +432,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       *last._s_widget
       *after._s_widget
       *before._s_widget
-
+      
+      _item.l ; panel add item opened index
+      _parent_item.l ; parent panel tab index
+      
       draw.b
       type.b ;[3] ; [2] for splitter
       
@@ -590,5 +585,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = f8SAIA-+
+; Folding = f8nOhA-+
 ; EnableXP

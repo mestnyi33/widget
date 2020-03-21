@@ -31,8 +31,17 @@ Procedure window_ide_open(x=100,y=100,width=800,height=600)
   AddItem(tree_inspector, 1, "Form_1", 0, 0)  
   AddItem(tree_inspector, 2, "Form_2", 0, 0)
   
-  listview_debug = 0;Button(0,0,0,0, "help")
-  panel_inspector = 0
+  listview_debug = Editor(0,0,0,0)
+  AddItem(listview_debug, 0, "Form_0", 0, 0) 
+  AddItem(listview_debug, 1, "Form_1", 0, 0)  
+  AddItem(listview_debug, 2, "Form_2", 0, 0)
+  
+  panel_inspector = Panel(0,0,0,0)
+  AddItem(panel_inspector, 0, "elements", 0, 0) 
+  AddItem(panel_inspector, 1, "properties", 0, 0)  
+  AddItem(panel_inspector, 2, "events", 0, 0)  
+  CloseList()
+  
   text_help  = Text(0,0,0,0, "help for the inspector", #__text_border)
   
   
@@ -55,7 +64,7 @@ Procedure window_ide_open(x=100,y=100,width=800,height=600)
   widget::SetState(Splitter_ide, widget::width(Splitter_ide)-220)
   widget::SetState(splitter_help, widget::height(splitter_help)-80)
   widget::SetState(splitter_debug, widget::height(splitter_debug)-150)
-  widget::SetState(Splitter_inspector, 200)
+  widget::SetState(Splitter_inspector, 150)
   widget::SetState(Splitter_design, 30)
   
   ProcedureReturn window_ide
@@ -82,5 +91,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = +
+; Folding = -
 ; EnableXP

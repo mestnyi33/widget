@@ -904,7 +904,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Window_0 = OpenWindow(#PB_Any, x, y, width, height+25, "", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
     ;BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), Window_0)
     
-    Canvas_0 = Canvas(Window_0, 10,10)
+    Canvas_0 = GetGadget(Open(Window_0, 10,10))
     If Canvas_0
       ;Form(50,50,150,150, "", #PB_Window_SystemMenu|#__Flag_AutoSize)
       
