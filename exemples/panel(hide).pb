@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure enum(*this._S_widget)
     If Not *this\hide
-      Debug " class - " + *this\Class +" ("+ *this\tab\index +" - parent_item)"
+      Debug " class - " + *this\Class +" ("+ *this\_item +" - parent_item)"
     EndIf
   EndProcedure
   
@@ -62,7 +62,9 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Open(3)
     Define *w,*w1,*w2
-      
+     
+     Button(10,5,50,35, "butt")
+     
       *w=Panel     (8, 8, 356, 203)
       AddItem (*w, -1, "Панель 1")
       
