@@ -547,9 +547,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       ; ??????????????????????
       ; colors._s_color
-      ; *leave._s_widget  
+       *leave._s_widget  
       ; *enter._s_widget  
-      ; _draw.l
+      _draw.l
       ; draw.b
       ; List *childrens._s_widget()
     EndStructure
@@ -587,7 +587,7 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 217
-; FirstLine = 180
+; CursorPosition = 549
+; FirstLine = 365
 ; Folding = f8nOhA-+
 ; EnableXP

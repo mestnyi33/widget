@@ -13,6 +13,7 @@ Global window_ide, canvas_ide
 
 Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
 Global mdi_design, toolbar_design, listview_debug, text_help, tree_inspector,panel_inspector
+Global tree_elements
 
 Procedure window_ide_open(x=100,y=100,width=800,height=600)
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
@@ -28,17 +29,20 @@ Procedure window_ide_open(x=100,y=100,width=800,height=600)
   
   tree_inspector = Tree(0,0,0,0)
   AddItem(tree_inspector, 0, "Form_0", 0, 0) 
-  AddItem(tree_inspector, 1, "Form_1", 0, 0)  
-  AddItem(tree_inspector, 2, "Form_2", 0, 0)
+  AddItem(tree_inspector, 1, "Form_1", 0, 1)  
+  AddItem(tree_inspector, 2, "Form_2", 0, 2)
   
-  listview_debug = Editor(0,0,0,0)
+  listview_debug = Editor(0,0,0,0) ; ListView
   AddItem(listview_debug, 0, "Form_0", 0, 0) 
   AddItem(listview_debug, 1, "Form_1", 0, 0)  
   AddItem(listview_debug, 2, "Form_2", 0, 0)
   
   panel_inspector = Panel(0,0,0,0)
   AddItem(panel_inspector, 0, "elements", 0, 0) 
-  Button(0,0,0,0, "elements", #__flag_autosize)
+  tree_elements = Tree(0,0,0,0, #__flag_autosize)
+  AddItem(tree_elements, 0, "Button", 0, 0) 
+  AddItem(tree_elements, 1, "Container", 0, 0)  
+  AddItem(tree_elements, 2, "String", 0, 0)
   
   AddItem(panel_inspector, 1, "properties", 0, 0)  
   AddItem(panel_inspector, 2, "events", 0, 0)  
@@ -92,6 +96,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 29
+; FirstLine = 18
 ; Folding = -
 ; EnableXP

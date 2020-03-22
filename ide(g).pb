@@ -8,7 +8,7 @@
 Procedure.i Form(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, *parent=0)
   Protected g = ContainerGadget(#PB_Any, x,y,width,height, #PB_Container_Flat)
   
-  SetGadgetColor(g, #PB_Gadget_BackColor, $fff0f0f0)
+  SetGadgetColor(g, #PB_Gadget_BackColor, $f0f0f0)
   ProcedureReturn g
 EndProcedure
 
@@ -52,9 +52,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Global window_ide
   Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
   Global mdi_design, toolbar_design, listview_debug, text_help, tree_inspector,panel_inspector
-  
+  Global tree_elements
+
   Procedure window_resize()
     ResizeGadget(Splitter_ide, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()), WindowHeight(EventWindow()))
+  EndProcedure
+  Procedure panel_resize()
+    ResizeGadget(tree_elements, #PB_Ignore, #PB_Ignore, GetGadgetAttribute(EventGadget(), #PB_Panel_ItemWidth), GetGadgetAttribute(EventGadget(), #PB_Panel_ItemHeight))
   EndProcedure
   
     
@@ -81,12 +85,29 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
   tree_inspector = TreeGadget(#PB_Any, 0,0,0,0)
   AddGadgetItem(tree_inspector, 0, "Form_0", 0, 0) 
-  AddGadgetItem(tree_inspector, 1, "Form_1", 0, 0)  
-  AddGadgetItem(tree_inspector, 2, "Form_2", 0, 0)
+  AddGadgetItem(tree_inspector, 1, "Form_1", 0, 1)  
+  AddGadgetItem(tree_inspector, 2, "Form_2", 0, 2)
   
   listview_debug = ListViewGadget(#PB_Any, 0,0,0,0)
-  panel_inspector = PanelGadget(#PB_Any, 0,0,0,0) : CloseGadgetList()
+   AddGadgetItem(listview_debug, 0, "Form_0", 0, 0) 
+  AddGadgetItem(listview_debug, 1, "Form_1", 0, 0)  
+  AddGadgetItem(listview_debug, 2, "Form_2", 0, 0)
+  
+  panel_inspector = PanelGadget(#PB_Any, 0,0,0,0)  : BindGadgetEvent(panel_inspector, @panel_resize())
+  AddGadgetItem(panel_inspector, 0, "elements", 0, 0) 
+  tree_elements = TreeGadget(#PB_Any, 0,0,0,0)
+  AddGadgetItem(tree_elements, 0, "Button", 0, 0) 
+  AddGadgetItem(tree_elements, 1, "Container", 0, 0)  
+  AddGadgetItem(tree_elements, 2, "String", 0, 0)
+  
+  AddGadgetItem(panel_inspector, 1, "properties", 0, 0)  
+  AddGadgetItem(panel_inspector, 2, "events", 0, 0)  
+  CloseGadgetList()
+  
   text_help  = TextGadget(#PB_Any, 0,0,0,0, "help for the inspector", #PB_Text_Border)
+  
+  
+  
   
   
   Splitter_design = SplitterGadget(#PB_Any, 0,0,0,0, toolbar_design,mdi_design, #PB_Splitter_FirstFixed)
@@ -116,6 +137,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
  
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 88
+; FirstLine = 81
+; Folding = --
 ; EnableXP
