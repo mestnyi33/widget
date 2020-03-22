@@ -172,6 +172,17 @@ CompilerIf Not Defined(structures, #PB_Module)
       checked.b
     EndStructure
     
+    ;- - _s_tabs
+    Structure _s_tabs Extends _s_coordinate
+      index.l  ; Index of new list element
+      hide.b
+      draw.b
+      round.a
+      text._s_text
+      image._s_image
+      color._s_color
+    EndStructure
+    
     ;- - _s_bar
     Structure _s_bar
       ;_type.l
@@ -197,24 +208,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       area._s_page
       thumb._s_page  
       button._s_button[4]
-    EndStructure
-    
-    ;- - _s_tabs
-    Structure _s_tabs Extends _s_coordinate
-      index.l  ; Index of new list element
-      hide.b
-      draw.b
-      round.a
-      text._s_text
-      image._s_image
-      color._s_color
+      
+      List *_s._s_tabs()
     EndStructure
     
     ;- - _s_tab
     Structure _s_tab
       bar._s_bar
-      *_tab._s_widget
-      List _s._s_tabs()
+      ;List *_s._s_tabs()
     EndStructure
     
     ;- - _s_transform
@@ -433,6 +434,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *after._s_widget
       *before._s_widget
       
+      *_tab._s_widget
       _item.l ; panel add item opened index
       _parent_item.l ; parent panel tab index
       
@@ -584,6 +586,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
   EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 217
+; FirstLine = 180
 ; Folding = f8nOhA-+
 ; EnableXP

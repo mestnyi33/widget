@@ -1,5 +1,5 @@
-﻿XIncludeFile "form(ide).pb"
-XIncludeFile "code(ide).pb"
+﻿XIncludeFile "ide(form).pb"
+XIncludeFile "ide(code).pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile 
@@ -16,6 +16,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

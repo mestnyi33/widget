@@ -347,6 +347,38 @@
     EndEnumeration
     
     ;- _c_event
+    Enumeration #PB_EventType_FirstCustomValue
+      #PB_EventType_Free         
+      #PB_EventType_Create
+      #PB_EventType_Drop
+      
+      CompilerIf Not Defined(PB_EventType_Resize, #PB_Constant)
+        #PB_EventType_Resize
+      CompilerEndIf
+      
+      #PB_EventType_Repaint
+      #PB_EventType_ScrollChange
+      
+      #PB_EventType_CloseWindow
+      #PB_EventType_MaximizeWindow
+      #PB_EventType_MinimizeWindow
+      #PB_EventType_RestoreWindow
+    EndEnumeration
+    
+    Enumeration #PB_EventType_FirstCustomValue
+      #__Event_Free         
+      #__Event_Create
+      #__Event_Drop
+      
+      #__Event_Repaint
+      #__Event_ScrollChange
+      
+      #__Event_CloseWindow
+      #__Event_MaximizeWindow
+      #__Event_MinimizeWindow
+      #__Event_RestoreWindow
+    EndEnumeration
+    
     #__Event_MouseEnter       = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
     #__Event_MouseLeave       = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
     #__Event_MouseMove        = #PB_EventType_MouseMove        ; The mouse cursor moved
@@ -372,34 +404,6 @@
     #__Event_Change           = #PB_EventType_Change
     #__Event_DragStart        = #PB_EventType_DragStart
     #__Event_ReturnKey        = #PB_EventType_ReturnKey
-    
-    Enumeration #PB_EventType_FirstCustomValue
-      #PB_EventType_Free         
-      #PB_EventType_Create
-      #PB_EventType_Drop
-      
-      #PB_EventType_Repaint
-      #PB_EventType_ScrollChange
-      
-      #PB_EventType_CloseWindow
-      #PB_EventType_MaximizeWindow
-      #PB_EventType_MinimizeWindow
-      #PB_EventType_RestoreWindow
-    EndEnumeration
-    
-    Enumeration #PB_EventType_FirstCustomValue
-      #__Event_Free         
-      #__Event_Create
-      #__Event_Drop
-      
-      #__Event_Repaint
-      #__Event_ScrollChange
-      
-      #__Event_CloseWindow
-      #__Event_MaximizeWindow
-      #__Event_MinimizeWindow
-      #__Event_RestoreWindow
-    EndEnumeration
     
     #PB_Event_Create = #PB_Event_FirstCustomValue
     
@@ -457,6 +461,6 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP
