@@ -347,25 +347,12 @@
     EndEnumeration
     
     ;- _c_event
+    
     Enumeration #PB_EventType_FirstCustomValue
-      #PB_EventType_Free         
-      #PB_EventType_Create
-      #PB_EventType_Drop
-      
       CompilerIf Not Defined(PB_EventType_Resize, #PB_Constant)
         #PB_EventType_Resize
       CompilerEndIf
       
-      #PB_EventType_Repaint
-      #PB_EventType_ScrollChange
-      
-      #PB_EventType_CloseWindow
-      #PB_EventType_MaximizeWindow
-      #PB_EventType_MinimizeWindow
-      #PB_EventType_RestoreWindow
-    EndEnumeration
-    
-    Enumeration #PB_EventType_FirstCustomValue
       #__Event_Free         
       #__Event_Create
       #__Event_Drop
@@ -378,6 +365,20 @@
       #__Event_MinimizeWindow
       #__Event_RestoreWindow
     EndEnumeration
+    
+    #PB_EventType_Free     = #__Event_Free    
+    #PB_EventType_Create   = #__Event_Create
+    #PB_EventType_Drop     = #__Event_Drop
+    
+    
+    #PB_EventType_Repaint      = #__Event_Repaint
+    #PB_EventType_ScrollChange = #__Event_ScrollChange
+    
+    #PB_EventType_CloseWindow  = #__Event_CloseWindow
+    #PB_EventType_MaximizeWindow = #__Event_MaximizeWindow
+    #PB_EventType_MinimizeWindow = #__Event_MinimizeWindow
+    #PB_EventType_RestoreWindow  =#__Event_RestoreWindow
+    
     
     #__Event_MouseEnter       = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
     #__Event_MouseLeave       = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
@@ -461,6 +462,6 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

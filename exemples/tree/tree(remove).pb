@@ -1,14 +1,14 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets.pbi"
+UseLib(widget)
 
-UseModule widget
 LN=1000; количесвто итемов 
 Global *w._S_widget
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   ListViewGadget(0, 10, 10, 250, 680)    ;, #PB_ListView_MultiSelect
   
-  Open(0, 270, 10, 250, 680, "", #__flag_borderless)
+  Open(0, 270, 10, 250, 680);, "", #__flag_borderless)
   *w=Tree(0, 0, 250, 680, #__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
   
   a=0
@@ -47,6 +47,6 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

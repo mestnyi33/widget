@@ -1,5 +1,6 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets.pbi"
+UseLib(widget)
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -17,7 +18,7 @@ If OpenWindow(0, 0, 0, 590, 300, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetGadgetItemColor(0,  3, #PB_Gadget_BackColor,  $00FFFF)
     SetGadgetItemColor(0,  9, #PB_Gadget_BackColor,  $FFFF00)
     
-    Open(0, 300, 10, 280, 280, "", #__flag_borderless)
+    Open(0, 300, 10, 280, 280);, "", #__flag_borderless)
     
     *w=Tree(0, 0, 280, 280)
     For i = 1 To 10
@@ -40,7 +41,6 @@ If OpenWindow(0, 0, 0, 590, 300, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
   CompilerEndIf
-
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

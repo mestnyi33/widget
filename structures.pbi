@@ -395,6 +395,9 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_row
     Structure _s_row
+      draw.l ;???????
+      
+      
       ; list view
       drag.b
       FontID.i
@@ -586,8 +589,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     
   EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 549
-; FirstLine = 365
-; Folding = f8nOhA-+
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; Folding = f8nOhg-+
 ; EnableXP

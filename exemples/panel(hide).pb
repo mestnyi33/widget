@@ -71,16 +71,16 @@ CompilerIf #PB_Compiler_IsMainFile
       *w1=Panel (5, 30, 340, 166)
       AddItem(*w1, -1, "Под-Панель 1")
       
-;       Tree(5, 5, 180, 100, #__flag_Checkboxes|#PB_Tree_ThreeState)
-;       
-;       Define i
-;       For i=0 To 20
-;         If i=3
-;           AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))
-;         Else
-;           AddItem(Widget(), i, "item_"+ Str(i))
-;         EndIf
-;       Next
+      Tree(5, 5, 180, 100, #__flag_Checkboxes|#PB_Tree_ThreeState)
+      
+      Define i
+      For i=0 To 20
+        If i=3
+          AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, Bool(i=3 Or i=6))
+        Else
+          AddItem(Widget(), i, "item_"+ Str(i))
+        EndIf
+      Next
       
       AddItem(*w1, -1, "Под-Панель 2")
       Bind(@Events(), Button( 5, 5, 55, 22, "hide_2"))

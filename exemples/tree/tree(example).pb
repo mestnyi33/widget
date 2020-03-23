@@ -1,5 +1,6 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets.pbi"
+UseLib(widget)
 
 CompilerIf #PB_Compiler_IsMainFile
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -259,7 +260,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If *this ;And *this\handle
           *this\row\draw = *this\count\items
-          CallBack(*this, EventType)
+          Events(*this, EventType, Root()\mouse\x, Root()\mouse\y)
           
           If StartDrawing(CanvasOutput(*this\root\gadget))
 ;             If *event\draw = 0
@@ -300,7 +301,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;SetGadgetData(*List()\root\gadget, *List())
       ;ProcedureReturn G_Callback()
     
-      Repaint | CallBack(*List(), EventType, MouseX, MouseY)
+      Repaint | Events(*List(), EventType, MouseX, MouseY)
     Next
     
     ; reset mouse buttons
@@ -648,7 +649,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
-
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = 0f8----r--
 ; EnableXP
