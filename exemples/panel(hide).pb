@@ -9,17 +9,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *c, *s
   
   Procedure Enumerates(*this._S_widget, *callback)
-    With *this
-      If *callback
-        CallCFunctionFast(*callback, *this)
-        
-        If ListSize(\Childrens())
-          ForEach \Childrens()
-            Enumerates(\Childrens(), *callback)
-          Next
-        EndIf
-      EndIf
-    EndWith
+    If *callback And *this\root\count\childrens
+      ForEach GetChildrens(*this)
+        CallCFunctionFast(*callback, GetChildrens(*this))
+      Next
+    EndIf
   EndProcedure
   
   Procedure enum(*this._S_widget)
@@ -30,7 +24,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure _Events()
     Select *event\type
-      Case #PB_EventType_LeftButtonDown
+      Case #PB_EventType_LeftClick
+        ;Debug GetText(*event\widget)
         
         Select GetText(*event\widget)
           Case "hide_2"
@@ -83,14 +78,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       
       AddItem(*w1, -1, "Под-Панель 2")
-      Bind(@Events(), Button( 5, 5, 55, 22, "hide_2"))
-      Bind(@Events(), Button( 5, 30, 55, 22, "show_2"))
+      Bind(Button( 5, 5, 55, 22, "hide_2"), @_Events())
+      Bind(Button( 5, 30, 55, 22, "show_2"), @_Events())
       
       *c=Container(110,5,150,155, #PB_Container_Flat) 
       Container(10,5,150,55, #PB_Container_Flat) 
       Container(10,5,150,55, #PB_Container_Flat) 
       Container(10,5,150,55, #PB_Container_Flat) 
-      Button(10,5,50,35, "butt") 
+      Button(10,5,50,45, "butt") 
       CloseList()
       CloseList()
       CloseList()
@@ -98,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Container(10,75,150,55, #PB_Container_Flat) 
       Container(10,5,150,55, #PB_Container_Flat) 
       Container(10,5,150,55, #PB_Container_Flat) 
-      Button(10,5,50,35, "butt1") 
+      Button(10,5,50,45, "butt1") 
       CloseList()
       CloseList()
       CloseList()
@@ -148,6 +143,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 27
+; FirstLine = 24
 ; Folding = --
 ; EnableXP

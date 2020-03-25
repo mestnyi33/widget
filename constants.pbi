@@ -84,6 +84,14 @@
       #__c = 7
     EndEnumeration
     
+    ;state
+    EnumerationBinary
+      #__s_Normal
+      #__s_Entered
+      #__s_Selected
+      #__s_Disabled
+    EndEnumeration
+    
     ;color state
     Enumeration
       #__s_0
@@ -150,20 +158,20 @@
       ; common
       ;#__flag_autoRight
       ;#__flag_autoBottom
-      #__flag_noActivate
+      #__flag_NoActivate
       ;#__flag_invisible
       ;#__flag_sizegadget
       ;#__flag_systemmenu
       #__flag_anchorsGadget
       
-      #__flag_borderless
+      #__flag_BorderLess
       ;         #__flag_double
       ;         #__flag_flat
       ;         #__flag_raised
       ;         #__flag_Single
       
       
-      #__MDI_NoScrollBars
+      #__flag_NoScrollBars
       #__flag_limit
     EndEnumeration
     
@@ -462,6 +470,8 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 90
+; FirstLine = 75
 ; Folding = --
 ; EnableXP

@@ -72,7 +72,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Widgets(Hex(302)) = Spin(0, 0, 100,20,0,10)              ;, "Button_2")
     Widgets(Hex(#PB_GadgetType_Splitter)) = Splitter(665, 405, 160,95,Widgets(Hex(301)), Widgets(Hex(302)));, #PB_Splitter_Vertical);, Button(0, 0, 100,20, "ButtonGadget"), Button(0, 0, 0,20, "StringGadget")) 
                                                                                                            ;     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                                                                                                           ;       MDIGadget(#PB_GadgetType_MDI, 665, 505, 160,95,1, 2);, #PB_MDI_AutoSize)
+    Widgets(Hex(#PB_GadgetType_MDI)) = MDI(665, 505, 160,95)                                                                                  ;,#__flag_AutoSize)
+    Define *g = AddItem(Widgets(Hex(#PB_GadgetType_MDI)), -1, "form_0")
+    Resize(*g, #PB_Ignore, #PB_Ignore, 150, 150)
                                                                                                            ;     CompilerEndIf
                                                                                                            ;     InitScintilla()
                                                                                                            ;     ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
@@ -89,6 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 76
+; FirstLine = 58
 ; Folding = -
 ; EnableXP
