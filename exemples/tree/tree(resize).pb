@@ -3,68 +3,7 @@ XIncludeFile "widgets.pbi"
 UseLib(widget)
 
 CompilerIf #PB_Compiler_IsMainFile
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    Procedure GadgetsClipCallBack( GadgetID, lParam )
-      If GadgetID
-        Protected Gadget = GetProp_( GadgetID, "PB_ID" )
-        
-        If GetWindowLongPtr_( GadgetID, #GWL_STYLE ) & #WS_CLIPSIBLINGS = #False 
-          SetWindowLongPtr_( GadgetID, #GWL_STYLE, GetWindowLongPtr_( GadgetID, #GWL_STYLE ) | #WS_CLIPSIBLINGS|#WS_CLIPCHILDREN )
-          
-          If IsGadget( Gadget ) 
-            Select GadgetType( Gadget )
-              Case #PB_GadgetType_ComboBox
-                Protected Height = GadgetHeight( Gadget )
-                
-              Case #PB_GadgetType_Text
-                If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE) & #SS_NOTIFY) = #False
-                  SetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE) | #SS_NOTIFY)
-                EndIf
-                
-              Case #PB_GadgetType_Frame, #PB_GadgetType_Image
-                If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-                  SetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-                EndIf
-                
-                ; Для панел гаджета темный фон убирать
-              Case #PB_GadgetType_Panel 
-                If Not IsGadget( Gadget ) And (GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-                  SetWindowLongPtr_(GadgetID, #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-                EndIf
-                
-            EndSelect
-            
-            ;             If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
-            ;               SetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
-            ;             EndIf
-          EndIf
-          
-          
-          If Height
-            ResizeGadget( Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height )
-          EndIf
-          
-          SetWindowPos_( GadgetID, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
-        EndIf
-        
-      EndIf
-      
-      ProcedureReturn GadgetID
-    EndProcedure
-  CompilerEndIf
-  
-  Procedure ClipGadgets( WindowID )
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      WindowID = GetAncestor_( WindowID, #GA_ROOT )
-      If Not (GetWindowLongPtr_(WindowID, #GWL_STYLE)&#WS_CLIPCHILDREN)
-        SetWindowLongPtr_( WindowID, #GWL_STYLE, GetWindowLongPtr_( WindowID, #GWL_STYLE )|#WS_CLIPCHILDREN )
-      EndIf
-      EnumChildWindows_( WindowID, @GadgetsClipCallBack(), 0 )
-    CompilerEndIf
-  EndProcedure
-  
-  UseModule widget
-  Global *g._S_widget, g_Canvas, NewList *List._S_widget()
+  Global g, *g._S_widget, g_Canvas, NewList *List._S_widget()
   
   Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
@@ -210,24 +149,10 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  Procedure ResizeCallBack()
-    ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
-    ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
-    CompilerIf #PB_Compiler_Version =< 546
-      PostEvent(#PB_Event_Gadget, EventWindow(), g_Canvas, #PB_EventType_Resize)
-    CompilerEndIf
-  EndProcedure
-  
-  Procedure SplitterCallBack()
-    PostEvent(#PB_Event_Gadget, EventWindow(), g_Canvas, #PB_EventType_Resize)
-  EndProcedure
-  
   If OpenWindow(0, 0, 0, 222, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
-    
-    Define i,a,g 
-    g = 0
-    TreeGadget(g, 230, 10, 210, 210, #PB_Tree_AlwaysShowSelection)                                         
+    g_Canvas = GetGadget(Open(0))
+  
+    g = TreeGadget(#PB_Any, 230, 10, 210, 210, #PB_Tree_AlwaysShowSelection)                                         
     ; 3_example
     AddGadgetItem(g, 0, "Tree_0", 0 )
     AddGadgetItem(g, 1, "Tree_1_1", ImageID(0), 1) 
@@ -244,18 +169,12 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(g, 12, "Tree_5", 0 )
     AddGadgetItem(g, 13, "Tree_6", 0 )
     
+    Define i
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
     
-;     Macro Gadget(_x_,_y_,_width_,_height_, _flag_)
-;       Open(0, _x_,_y_,_width_,_height_, "", #__flag_borderless)
-;       *g=Tree(0, 0, _width_,_height_, #__Flag_autosize|_flag_)
-;     EndMacro
+    *g=Tree(0, 0, 0, 0);|#__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
     
-    Open(0, 270, 10, 250, 150);, "", #__flag_borderless)
-    g_Canvas = GetGadget(Root())
-    
-    *g=Tree(0, 0, 250, 150, #__Flag_autosize);|#__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines)  ; |#PB_Flag_MultiSelect
     ;  3_example
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1_1", 0, 1) 
@@ -272,14 +191,8 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 12, "Tree_5", -1 )
     AddItem(*g, 13, "Tree_6", -1 )
     
-    
-    SplitterGadget(10,8, 8, 306, 491-16,g_Canvas, 0)
-    CompilerIf #PB_Compiler_Version =< 546
-      BindGadgetEvent(10, @SplitterCallBack())
-    CompilerEndIf
-    PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug no linux
-    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
-    
+    SetGadgetData(g_Canvas, Splitter(8, 8, 306, 491-16,*g, g, #__flag_autosize))
+   
     Repeat
       Select WaitWindowEvent()   
         Case #PB_Event_CloseWindow
@@ -289,6 +202,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 0f8--2-
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 193
+; FirstLine = 20
+; Folding = 0--7-
 ; EnableXP
