@@ -4,7 +4,6 @@
 ; Manual modification is possible to adjust existing commands, but anything else will be dropped when the code is compiled.
 ; Event procedures needs to be put in another source file.
 ;
-
 Procedure.i Form(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, *parent=0)
   Protected g = ContainerGadget(#PB_Any, x,y,width,height, #PB_Container_Flat)
   
@@ -138,7 +137,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 88
-; FirstLine = 81
+; CursorPosition = 5
 ; Folding = --
 ; EnableXP

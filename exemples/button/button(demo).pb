@@ -43,6 +43,6 @@ EndProcedure
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 12
+; CursorPosition = 6
 ; Folding = -
 ; EnableXP

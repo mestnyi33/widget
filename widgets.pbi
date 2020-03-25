@@ -1857,6 +1857,81 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndMacro
     
+    Procedure   Tab_AddItem(*this._s_widget, Item.i, Text.s, Image.i=-1, sublevel.i=0)
+      Protected result
+      
+      With *this
+        *this\bar\change = #True
+       
+        If (Item =- 1 Or Item > ListSize(\bar\_s()) - 1)
+            LastElement(\bar\_s())
+            AddElement(\bar\_s()) 
+            Item = ListIndex(\bar\_s())
+          Else
+            If SelectElement(\bar\_s(), Item)
+           If Item =< *this\index[#__s_2]
+          *this\index[#__s_2]  + 1
+        EndIf
+        
+            If *this\parent\_tab And *this\parent\_tab = *this
+              ; \parent\type = #PB_GadgetType_Panel
+              ; PushListPosition(GetChildrens(*this))
+              ForEach GetChildrens(*this)
+                If Child( GetChildrens(*this), *this\parent)
+                  If GetChildrens(*this)\parent = *this\parent And 
+                     GetChildrens(*this)\_parent_item = Item
+                    GetChildrens(*this)\_parent_item + 1
+                  EndIf
+                  
+                  GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or
+                                                   GetChildrens(*this)\parent\hide Or
+                                                   GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
+                EndIf
+              Next
+              ; PopListPosition(GetChildrens(*this))
+            EndIf
+            
+            InsertElement(\bar\_s())
+            
+            PushListPosition(\bar\_s())
+            While NextElement(\bar\_s())
+              *this\bar\_s()\index = ListIndex(*this\bar\_s())
+            Wend
+            PopListPosition(\bar\_s())
+          EndIf
+        EndIf
+          
+          *this\bar\_s() = AllocateStructure(_s_tabs)
+          *this\bar\_s()\color = _get_colors_()
+          *this\bar\_s()\index = Item
+          *this\bar\_s()\text\string = Text.s
+          *this\bar\_s()\height = \height - 1
+          
+          ; last opened item of the parent
+          If *this\parent\_tab And *this\parent\_tab = *this ; type = #PB_GadgetType_Panel
+            *this\parent\_item = *this\bar\_s()\index
+            *this\parent\count\items + 1 
+          EndIf
+          *this\_item = \bar\_s()\index
+          *this\count\items + 1 
+          
+          ; _set_image_(*this, \bar\_s(), Image)
+      EndWith
+      
+      ProcedureReturn Item
+    EndProcedure
+    
+    Procedure.i Tab_RemoveItem(*this._s_widget, Item.l)
+      If SelectElement(*this\bar\_s(), item)
+        If *this\bar\_s()\index = *this\index[#__s_2]
+          *this\index[#__s_2]  = item - 1
+        EndIf
+        DeleteElement(*this\bar\_s(), 1)
+        *this\count\items - 1
+        *this\bar\change = 1
+      EndIf
+    EndProcedure
+    
     Procedure.b Tab_Draw(*this._s_widget)
       With *this
         
@@ -1867,11 +1942,12 @@ CompilerIf Not Defined(widget, #PB_Module)
             RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
           EndIf
           
-          *this\text\x = 6
+          If \bar\change
+           *this\text\x = 6
           *this\text\height = TextHeight("A")
-          
-          ForEach \bar\_s()
-            If \bar\_s()\text\change
+           \bar\max = 0
+            
+            ForEach \bar\_s()
               \bar\_s()\y = 2
               \bar\_s()\x = \bar\max ;+ 1
               \bar\_s()\height = \bar\button[#__b_3]\height-3
@@ -1884,16 +1960,18 @@ CompilerIf Not Defined(widget, #PB_Module)
               \bar\_s()\width = \bar\_s()\text\width
               \bar\max + \bar\_s()\width + Bool(\bar\_s()\index <> \count\items - 1) ;+ Bool(\bar\_s()\index = \count\items - 1) 
               \bar\_s()\text\change = 0
+            Next
+            
+            \bar\change = 0
+            
+            Static max
+            If max <> \bar\max
+              ; Debug \bar\max
+              ; *this\resize | #__resize_change
+              Bar_Update(*this)
+              ; *this\resize &~ #__resize_change
+              max = \bar\max
             EndIf
-          Next
-          
-          Static max
-          If max <> \bar\max
-            ; Debug \bar\max
-            ; *this\resize | #__resize_change
-            Bar_Update(*this)
-            ; *this\resize &~ #__resize_change
-            max = \bar\max
           EndIf
           
           Protected x = \bar\button[#__b_3]\x
@@ -8366,8 +8444,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           PushListPosition(GetChildrens(*this))
           ForEach GetChildrens(*this)
             If Child( GetChildrens(*this), *this)  
-              GetChildrens(*this)\hide = Bool(GetChildrens(*this)\hide[1] Or
-                                              GetChildrens(*this)\parent\hide Or
+              GetChildrens(*this)\hide = Bool(GetChildrens(*this)\hide[1] Or GetChildrens(*this)\parent\hide Or
                                               GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
               
               ;               Debug ""+ GetChildrens(*this)\index +" "+ 
@@ -8940,11 +9017,11 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;- DRAWINGs
     Procedure.b Draw(*this._s_widget)
       With *this
-        If \text\string 
           If \text\fontID 
             DrawingFont(\text\fontID)
           EndIf
           
+        If \text\string 
           If \text\change Or *this\resize & #__resize_change
             If Not *this\text\multiline
               *this\text\width = TextWidth(*this\text\string)
@@ -9660,63 +9737,15 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If *this\type = #PB_GadgetType_Panel
           If *this\_tab
-            ProcedureReturn AddItem(*this\_tab, Item,Text,Image,sublevel)
+            ProcedureReturn Tab_AddItem(*this\_tab, Item,Text,Image,sublevel)
           Else
             ProcedureReturn Panel_AddItem(*this, Item,Text,Image,sublevel)
           EndIf
         EndIf
         
         If *this\type = #PB_GadgetType_TabBar
-          If (Item =- 1 Or Item > ListSize(\bar\_s()) - 1)
-            LastElement(\bar\_s())
-            AddElement(\bar\_s()) 
-            Item = ListIndex(\bar\_s())
-          Else
-            SelectElement(\bar\_s(), Item)
-            
-            If *this\parent\_tab And *this\parent\_tab = *this  ; \parent\type = #PB_GadgetType_Panel
-                                                                ; PushListPosition(GetChildrens(*this))
-              ForEach GetChildrens(*this)
-                If Child( GetChildrens(*this), *this\parent)
-                  If GetChildrens(*this)\parent = *this\parent And 
-                     GetChildrens(*this)\_parent_item = Item
-                    GetChildrens(*this)\_parent_item + 1
-                  EndIf
-                  
-                  GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or
-                                                   GetChildrens(*this)\parent\hide Or
-                                                   GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
-                EndIf
-              Next
-              ; PopListPosition(GetChildrens(*this))
-            EndIf
-            
-            InsertElement(\bar\_s())
-            
-            PushListPosition(\bar\_s())
-            While NextElement(\bar\_s())
-              \bar\_s()\index = ListIndex(\bar\_s())
-            Wend
-            PopListPosition(\bar\_s())
-          EndIf
-          
-          *this\bar\_s() = AllocateStructure(_s_tabs)
-          *this\bar\_s()\color = _get_colors_()
-          *this\bar\_s()\index = Item
-          *this\bar\_s()\text\change = 1
-          *this\bar\_s()\text\string = Text.s
-          *this\bar\_s()\height = \height - 1
-          
-          ; last opened item of the parent
-          If *this\parent\_tab And *this\parent\_tab = *this ; type = #PB_GadgetType_Panel
-            *this\parent\_item = *this\bar\_s()\index
-            *this\parent\count\items + 1 
-          EndIf
-          *this\_item = \bar\_s()\index
-          *this\count\items + 1 
-          
-          ; _set_image_(*this, \bar\_s(), Image)
-        EndIf
+           ProcedureReturn Tab_AddItem(*this, Item,Text,Image,sublevel)
+         EndIf
       EndWith
       
       ProcedureReturn Item
@@ -9732,7 +9761,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         result = Tree_RemoveItem(*this, Item)
         
       ElseIf *this\type = #__Type_Panel
-        ; result = Panel_RemoveItem(*this, Item)
+         result = Tab_RemoveItem(*this\_tab, Item)
+         
+       ElseIf *this\type = #__Type_TabBar
+         result = Tab_RemoveItem(*this, Item)
         
       EndIf
       
@@ -11105,7 +11137,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\bar\button[#__b_1]\arrow\size = #__arrow_size
           *this\bar\button[#__b_2]\arrow\size = #__arrow_size
           ;*this\bar\button[#__b_3]\arrow\size = 3
-        EndIf
+          
+         _set_text_flag_(*this, flag)
+         EndIf
         
         ; - Create Track
         If *this\Type = #PB_GadgetType_TrackBar
@@ -12608,7 +12642,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 8750
-; FirstLine = 7997
-; Folding = ----f9--0---f00f---0-8+0-v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------4+---fbbX--J+-j+---------f-+-f----------
+; CursorPosition = 1927
+; FirstLine = 130
+; Folding = QAAAQAAAAAAEAAAAAAAAAAAAAAwAAAABAAAAAAAAAvfNAAAAAAAAAAAAGAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAPAAAAAAYAAAAAAAEAAAAAAAAAQAAGAAAgAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAw-BABBgDJAAAAADAAADvAAAAAA9AAAAgAAAaNAAAxHAAAAAAAAAAAAAAAAAAAAAAAAAAAQAEAAAAAAAAAAYDAAAAAAgAAAAAQIAAAAA9
 ; EnableXP
