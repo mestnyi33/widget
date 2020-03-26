@@ -677,6 +677,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     ;-
+    Declare.b Tab_Draw(*this._s_widget)
     Procedure.i Tab_SetState(*this._s_widget, State.l)
       Protected Result.b
       
@@ -692,6 +693,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\index[#__s_2] = State
         
         If *this = *this\parent\_tab 
+          *this\parent\index[#__s_2] = State
+          
           PushListPosition(GetChildrens(*this))
           ForEach GetChildrens(*this)
             If Child( GetChildrens(*this), *this\parent)  
@@ -739,8 +742,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                     GetChildrens(*this)\_parent_item + 1
                   EndIf
                   
-                  GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or
-                                                   GetChildrens(*this)\parent\hide Or
+                  GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or GetChildrens(*this)\parent\hide Or
                                                    GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\_tab\index[#__s_2])
                 EndIf
               Next
@@ -764,7 +766,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\bar\_s()\height = \height - 1
         
         ; last opened item of the parent
-        If *this\parent\_tab And *this\parent\_tab = *this ; type = #PB_GadgetType_Panel
+        If *this\parent\_tab = *this ; type = #PB_GadgetType_Panel
           *this\parent\_item = *this\bar\_s()\index
           *this\parent\count\items + 1 
         EndIf
@@ -784,7 +786,24 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         DeleteElement(*this\bar\_s(), 1)
         *this\count\items - 1
+        If *this\parent\_tab = *this
+          *this\parent\count\items - 1
+        EndIf
         *this\bar\change = 1
+      EndIf
+    EndProcedure
+    
+    Procedure Tab_ClearItems(*this._s_widget) ; Ok
+      If *this\count\items <> 0
+        *this\count\items = 0
+        ClearList(*this\bar\_s())
+        
+        If *this\parent\_tab = *this
+          *this\parent\count\items = 0
+          Post(#PB_EventType_CloseItem, *this\parent, #PB_All)
+        Else
+          Post(#PB_EventType_CloseItem, *this, #PB_All)
+        EndIf
       EndIf
     EndProcedure
     
@@ -2545,7 +2564,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             Repaint | #True
           EndIf
         EndIf
-          
+        
         If event_type = #__Event_leftbuttonup
           If *this\index[#__s_1] >= 0 And 
              *this\index[#__s_2] <> *this\index[#__s_1]
@@ -8197,7 +8216,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected State_3.i, Alpha.i, Color_frame.i
       
       With *this 
-        Tab_Draw(*this\_tab) 
+        If *this\_tab\count\items
+          Tab_Draw(*this\_tab) 
+        EndIf
         
         ; 1 - frame
         ;If *this\color\frame<>-1
@@ -9229,8 +9250,23 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure.l ClearItems(*this._s_widget)
-      *this\count\items = 0
-      ProcedureReturn 
+      Protected result
+      
+      If *this\type = #__Type_Editor
+        result = Editor_ClearItems(*this)
+        
+      ElseIf *this\type = #__Type_Tree
+        result = Tree_ClearItems(*this)
+        
+      ElseIf *this\type = #__Type_Panel
+        result = Tab_ClearItems(*this\_tab)
+        
+      ElseIf *this\type = #__Type_TabBar
+        result = Tab_ClearItems(*this)
+        
+      EndIf
+      
+      ProcedureReturn result
     EndProcedure
     
     Procedure.i CloseList()
@@ -12103,7 +12139,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 856
-; FirstLine = 841
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------0---+-v--3-0---------------------------------------------------------------------------------------------
+; CursorPosition = 802
+; FirstLine = 687
+; Folding = --------88v-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

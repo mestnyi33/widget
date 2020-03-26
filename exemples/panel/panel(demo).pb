@@ -1,5 +1,19 @@
 ﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
 
+; - AddItem(): Add a panel. 
+; - RemoveItem(): Remove a panel. 
+; - CountItems(): Count the number of panels. 
+; - ClearItems(): Remove all panels. 
+; - GetItemText(): Retrieve the text of the specified item. 
+; - SetItemText(): Change the text of the specified item. 
+; - SetItemImage(): Change the image of the specified item. ;;;;;;;;;;;(Not supported on OS X) 
+; - GetItemData(): Retrieve the value associated With the specified item. 
+; - SetItemData(): Associate a value With the specified item. 
+; 
+; - SetState(): Change the active panel. 
+; - GetState(): Get the index of the current panel. 
+; - GetAttribute(): With one of the following attributes: (there must be at least 1 item For this To work) 
+
 Procedure events_gadgets()
   Debug ""+EventGadget() + " - gadget  event - " +EventType()+ "  item - " +GetGadgetState(EventGadget())
 EndProcedure
@@ -13,7 +27,12 @@ Procedure events_gbuttons()
     Case #PB_EventType_LeftClick
       Select EventGadget()
         Case 2 : RemoveGadgetItem(1, 1)
-        Case 3 
+        Debug ""+CountGadgetItems(1) +" - count gadget items"
+        
+      Case 4 : ClearGadgetItems(1)
+        Debug ""+CountGadgetItems(1) +" - count gadget items"
+        
+      Case 3 
           OpenGadgetList(1)
           AddGadgetItem(1, 1, "Sub 2 (add)")
           CloseGadgetList()
@@ -26,6 +45,11 @@ Procedure events_wbuttons()
     Case #PB_EventType_LeftClick
       Select (*event\widget\index - 1)
         Case 2 : RemoveItem(GetWidget(1), 1)
+          Debug ""+CountItems(GetWidget(1)) +" - count widget items"
+  
+        Case 4 : ClearItems(GetWidget(1))
+          Debug ""+CountItems(GetWidget(1)) +" - count widget items"
+  
         Case 3 
           ;OpenList(GetWidget(1))
           AddItem(GetWidget(1), 1, "Sub 2 (add)")
@@ -49,16 +73,17 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   
   ButtonGadget(2, 10, 145, 80, 24,"remove")
   ButtonGadget(3, 95, 145, 80, 24,"add")
+  ButtonGadget(4, 95+85, 145, 80, 24,"clear")
   
   AddGadgetItem (0, -1,"Panel 2")
-  ButtonGadget(4, 10, 15, 80, 24,"Button 3")
-  ButtonGadget(5, 95, 15, 80, 24,"Button 4")
+  ButtonGadget(5, 10, 15, 80, 24,"Button 3")
+  ButtonGadget(6, 95, 15, 80, 24,"Button 4")
   CloseGadgetList()
   
   For i = 0 To 1
     BindGadgetEvent(i, @events_gadgets())
   Next
-  For i = 2 To 3
+  For i = 2 To 4
     BindGadgetEvent(i, @events_gbuttons())
   Next
   
@@ -75,6 +100,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   
   Button(10, 145, 80, 24,"remove")
   Button(95, 145, 80, 24,"add")
+  Button(95+85, 145, 80, 24,"clear")
   
   AddItem (GetWidget(0), -1,"Panel 2")
   Button(10, 15, 80, 24,"Button 3")
@@ -84,7 +110,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   For i = 0 To 1
     Bind(GetWidget(i), @events_widgets())
   Next
-  For i = 2 To 3
+  For i = 2 To 4
     Bind(GetWidget(i), @events_wbuttons())
   Next
   
@@ -95,6 +121,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 7
+; CursorPosition = 79
+; FirstLine = 60
 ; Folding = --
 ; EnableXP
