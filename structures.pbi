@@ -209,14 +209,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       thumb._s_page  
       button._s_button[4]
       
+      *_sel._s_tabs
       List *_s._s_tabs()
     EndStructure
     
-    ;- - _s_tab
-    Structure _s_tab
-      bar._s_bar
-      ;List *_s._s_tabs()
-    EndStructure
+;     ;- - _s_tab
+;     Structure _s_tab
+;       bar._s_bar
+;       ;List *_s._s_tabs()
+;     EndStructure
     
     ;- - _s_transform
     Structure _s_transform Extends _s_coordinate
@@ -458,13 +459,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       *window._s_widget ; this\canvas\window ; root\active\window
       
       *splitter._s_splitter
-      scroll._s_scroll 
-      bar._s_bar
-      
       caption._s_caption
+      scroll._s_scroll 
       color._s_color[4]
       row._s_row
-      tab._s_tab
+      bar._s_bar
       
       handle.i
       *errors
@@ -484,15 +483,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       fs.i 
       bs.i
-      grid.i
-      enumerate.i
+      ;grid.i
+      ;enumerate.i
       __height.i ; 
       
       container.i
-      countitems.i[2]
+      ;countitems.i[2]
       
       interact.i 
-      attribute.i
+      ;attribute.i
       
       repaint.i
       resize.b
@@ -592,8 +591,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     
   EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 570
-; FirstLine = 408
-; Folding = f8nOhiz+
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; Folding = f8nmQxZ-
 ; EnableXP

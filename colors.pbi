@@ -154,7 +154,7 @@
     \alpha[1] = 255
     
     ; Цвета по умолчанию
-    \front[0] = $FFFFFFFF
+    \front[0] = $FF5B5B5B
     \Fore[0] = $FFF6F6F6 
     \Frame[0] = $FFBABABA
     \Back[0] = $FFE2E2E2;$F0F0F0 

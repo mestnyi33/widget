@@ -691,11 +691,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *this\index[#__s_2] <> State 
         *this\index[#__s_2] = State
-        *this\bar\_sel = SelectElement(*this\bar\_s(), state)
         
         If *this = *this\parent\_tab 
           *this\parent\index[#__s_2] = State
-          
+          *this\bar\_sel = SelectElement(*this\bar\_s(), state)
+        
           PushListPosition(GetChildrens(*this))
           ForEach GetChildrens(*this)
             If Child( GetChildrens(*this), *this\parent)  
@@ -887,18 +887,13 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               ; Draw frame
               DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-              RoundBox(x+\bar\_s()\x, y+\bar\_s()\y-Bool(\index[#__s_2] = \bar\_s()\index)*2,\bar\_s()\width,\bar\_s()\height+Bool(\index[#__s_2] = \bar\_s()\index)*4,
-                         \bar\button[#__b_3]\round,\bar\button[#__b_3]\round,\bar\_s()\color\frame[State_3]&$FFFFFF|\bar\_s()\color\alpha<<24)
-              
-              If \index[#__s_2] = \bar\_s()\index
-                Line(x+\bar\_s()\x+1, y+\bar\_s()\y+\bar\_s()\height + 1,\bar\_s()\width-2,1, \bar\_s()\color\frame[0]&$FFFFFF|\bar\_s()\color\alpha<<24)
-              EndIf
-              
-              If Bool(\index[#__s_1] = \bar\_s()\index And \bar\state = #__b_3)
-                RoundBox(x+\bar\_s()\x+Bool(\index[#__s_2]=\bar\_s()\index)*2,y+\bar\_s()\y,\bar\_s()\width-Bool(\index[#__s_2]=\bar\_s()\index)*4,\bar\_s()\height,
+              If Bool( \index[#__s_1] = \bar\_s()\index And \bar\state = #__b_3)
+                RoundBox(x+\bar\_s()\x,y+\bar\_s()\y,\bar\_s()\width,\bar\_s()\height,
                          \bar\button[#__b_3]\round,\bar\button[#__b_3]\round,\bar\_s()\color\frame[2]&$FFFFFF|\bar\_s()\color\alpha<<24)
+              Else
+                RoundBox(x+\bar\_s()\x,y+\bar\_s()\y-Bool(\index[#__s_2]= \bar\_s()\index)*2,\bar\_s()\width,\bar\_s()\height+Bool(\index[#__s_2]= \bar\_s()\index)*4,
+                         \bar\button[#__b_3]\round,\bar\button[#__b_3]\round,\bar\_s()\color\frame[State_3]&$FFFFFF|\bar\_s()\color\alpha<<24)
               EndIf
-              
               
               DrawingMode(#PB_2DDrawing_Transparent)
               DrawText(x+\bar\_s()\text\x, y+\bar\_s()\text\y,\bar\_s()\text\string, \bar\_s()\color\front[State_3]&$FFFFFF|\bar\_s()\color\alpha<<24)
@@ -8226,15 +8221,26 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected State_3.i, Alpha.i, Color_frame.i
       
       With *this 
-        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        Box(*this\x[#__c_2]-1, *this\y[#__c_2]-1, *this\width[#__c_2]+2, *this\height[#__c_2]+2, \color\frame[Bool(\index[#__s_2]<>-1)*2 ])
-        
         If *this\_tab\count\items
           Tab_Draw(*this\_tab) 
         EndIf
         
-        ;         DrawingMode(#PB_2DDrawing_Outlined)
-        ;         Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF0000FF)
+         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+       If SelectElement(*this\_tab\bar\_s(), *this\_tab\index[#__s_2])
+        ; 1 - frame
+        ;If *this\color\frame<>-1
+        Line(*this\x[#__c_2], *this\y[2]-1, *this\_tab\bar\_s()\x+1, 1, \color\frame[Bool(\index[#__s_2]<>-1)*2])
+        Line(*this\_tab\bar\_s()\x+*this\_tab\bar\_s()\width, *this\y[2]-1, *this\x[#__c_2]+\width[#__c_2]-(*this\_tab\bar\_s()\x+*this\_tab\bar\_s()\width), 1, \color\frame[Bool(\index[#__s_2]<>-1)*2 ])
+        Line(*this\x[#__c_2]+*this\_tab\bar\_s()\x+2, *this\y[2]-1, *this\_tab\bar\_s()\width-2, 1, \color\frame[0])
+      EndIf
+      
+        Line(*this\x[#__c_1], *this\y[#__c_1]+*this\__height, 1, *this\height[#__c_1]-*this\__height, \color\frame[Bool(\index[#__s_2]<>-1)*2 ])
+        Line(*this\x[#__c_1]+*this\width[#__c_1]-1, *this\y[#__c_1]+*this\__height, 1, *this\height[#__c_1]-*this\__height, \color\frame[Bool(\index[#__s_2]<>-1)*2 ])
+        Line(*this\x[#__c_1], *this\y[#__c_1]+*this\height[#__c_1]-1, *this\width[#__c_1], 1, \color\frame[Bool(\index[#__s_2]<>-1)*2 ])
+        ; EndIf
+;         
+;         DrawingMode(#PB_2DDrawing_Outlined)
+;         Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF0000FF)
       EndWith
     EndProcedure
     
@@ -11776,370 +11782,127 @@ Macro Uselib(_name_)
   UseModule structures
 EndMacro
 
+UseLib(widget)
 
-;-
-CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
+; - AddItem(): Add a panel. 
+; - RemoveItem(): Remove a panel. 
+; - CountItems(): Count the number of panels. 
+; - ClearItems(): Remove all panels. 
+; - GetItemText(): Retrieve the text of the specified item. 
+; - SetItemText(): Change the text of the specified item. 
+; - SetItemImage(): Change the image of the specified item. ;;;;;;;;;;;(Not supported on OS X) 
+; - GetItemData(): Retrieve the value associated With the specified item. 
+; - SetItemData(): Associate a value With the specified item. 
+; 
+; - SetState(): Change the active panel. 
+; - GetState(): Get the index of the current panel. 
+; - GetAttribute(): With one of the following attributes: (there must be at least 1 item For this To work) 
+
+Procedure events_gadgets()
+  Debug ""+EventGadget() + " - gadget  event - " +EventType()+ "  item - " +GetGadgetState(EventGadget())
+EndProcedure
+
+Procedure events_widgets()
+  Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item ; GetState(*event\widget) ; 
+EndProcedure
+
+Procedure events_gbuttons()
+  Select EventType()
+    Case #PB_EventType_LeftClick
+      Select EventGadget()
+        Case 2 : RemoveGadgetItem(1, 1)
+        Debug ""+CountGadgetItems(1) +" - count gadget items"
+        
+      Case 4 : ClearGadgetItems(1)
+        Debug ""+CountGadgetItems(1) +" - count gadget items"
+        
+      Case 3 
+          OpenGadgetList(1)
+          AddGadgetItem(1, 1, "Sub 2 (add)")
+          CloseGadgetList()
+      EndSelect
+  EndSelect
+EndProcedure
+
+Procedure events_wbuttons()
+  Select *event\type
+    Case #PB_EventType_LeftClick
+      Select (*event\widget\index - 1)
+        Case 2 : RemoveItem(GetWidget(1), 1)
+          Debug ""+CountItems(GetWidget(1)) +" - count widget items"
   
-  Macro OpenWindow(Window, X, Y, Width, Height, Title, Flag=0, ParentID=0)
-    widget::OpenWindow_(Window, X, Y, Width, Height, Title, Flag, ParentID)
-  EndMacro
+        Case 4 : ClearItems(GetWidget(1))
+          Debug ""+CountItems(GetWidget(1)) +" - count widget items"
   
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+        Case 3 
+          ;OpenList(GetWidget(1))
+          AddItem(GetWidget(1), 1, "Sub 2 (add)")
+          ;CloseList()
+      EndSelect
+  EndSelect
+EndProcedure
+
+
+
+; Shows using of several panels...
+If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 322, 0, 322, 220)
+  PanelGadget     (0, 8, 8, 306, 203)
+  AddGadgetItem (0, -1, "Panel 1")
+  PanelGadget (1, 5, 5, 290, 166-30)
+  AddGadgetItem(1, -1, "Sub 1")
+  AddGadgetItem(1, -1, "Sub 2")
+  AddGadgetItem(1, -1, "Sub 3")
+  AddGadgetItem(1, -1, "Sub 4")
+  CloseGadgetList()
   
+  ButtonGadget(2, 10, 145, 80, 24,"remove")
+  ButtonGadget(3, 95, 145, 80, 24,"add")
+  ButtonGadget(4, 95+85, 145, 80, 24,"clear")
   
-  Procedure v_GadgetCallBack()
-    Protected Repaint.b, state = GetGadgetState(EventGadget())
-    ;ProcedureReturn
-    ForEach Root()\_childrens()
-      If Root()\_childrens()\bar\vertical And Root()\_childrens()\type = GadgetType(EventGadget())
-        Repaint | SetState(Root()\_childrens(), state)
-      EndIf
-    Next
-    
-    If Repaint
-      SetWindowTitle(EventWindow(), Str(state))
-      ReDraw(Root())
-    EndIf
-  EndProcedure
+  AddGadgetItem (0, -1,"Panel 2")
+  ButtonGadget(5, 10, 15, 80, 24,"Button 3")
+  ButtonGadget(6, 95, 15, 80, 24,"Button 4")
+  CloseGadgetList()
   
-  Procedure h_GadgetCallBack()
-    Protected Repaint.b, state = GetGadgetState(EventGadget())
-    ;ProcedureReturn
-    ForEach Root()\_childrens()
-      If Not Root()\_childrens()\bar\vertical And Root()\_childrens()\type = GadgetType(EventGadget())
-        Repaint | SetState(Root()\_childrens(), state)
-      EndIf
-    Next
-    
-    If Repaint
-      SetWindowTitle(EventWindow(), Str(state))
-      ReDraw(Root())
-    EndIf
-  EndProcedure
+  For i = 0 To 1
+    BindGadgetEvent(i, @events_gadgets())
+  Next
+  For i = 2 To 4
+    BindGadgetEvent(i, @events_gbuttons())
+  Next
   
-  Procedure v_CallBack(GetState, type)
-    ;ProcedureReturn
-    Select type
-      Case #PB_GadgetType_ScrollBar
-        SetGadgetState(2, GetState)
-      Case #PB_GadgetType_TrackBar
-        SetGadgetState(12, GetState)
-      Case #PB_GadgetType_ProgressBar
-        ;SetGadgetState(22, GetState)
-      Case #PB_GadgetType_Splitter
-        ; SetGadgetState(Splitter_4, GetState)
-    EndSelect
-    
-    SetWindowTitle(EventWindow(), Str(GetState))
-  EndProcedure
+  Debug ""+CountGadgetItems(1) +" - count gadget items"
   
-  Procedure h_CallBack(GetState, type)
-    ;ProcedureReturn
-    Select type
-      Case #PB_GadgetType_ScrollBar
-        SetGadgetState(1, GetState)
-      Case #PB_GadgetType_TrackBar
-        SetGadgetState(11, GetState)
-      Case #PB_GadgetType_ProgressBar
-        ;SetGadgetState(21, GetState)
-      Case #PB_GadgetType_Splitter
-        ; SetGadgetState(Splitter_3, GetState)
-    EndSelect
-    
-    SetWindowTitle(EventWindow(), Str(GetState))
-  EndProcedure
+  Panel(8, 8, 306, 203)
+  AddItem (GetWidget(0), -1, "Panel 1")
+  Panel(5, 5, 290, 166-30)
+  AddItem(GetWidget(1), -1, "Sub 1")
+  AddItem(GetWidget(1), -1, "Sub 2")
+  AddItem(GetWidget(1), -1, "Sub 3")
+  AddItem(GetWidget(1), -1, "Sub 4")
+  CloseList()
   
-  Procedure ev()
-    Debug ""+Widget() ;+" "+ Type() +" "+ Item() +" "+ Data()     ;  EventWindow() +" "+ EventGadget() +" "+ 
-  EndProcedure
+  Button(10, 145, 80, 24,"remove")
+  Button(95, 145, 80, 24,"add")
+  Button(95+85, 145, 80, 24,"clear")
   
-  Procedure ev2()
-    ;Debug "  "+Widget() +" "+ Type() +" "+ Item() +" "+ Data()   ;  EventWindow() +" "+ EventGadget() +" "+ 
-  EndProcedure
+  AddItem (GetWidget(0), -1,"Panel 2")
+  Button(10, 15, 80, 24,"Button 3")
+  Button(95, 15, 80, 24,"Button 4")
+  CloseList()
   
+  For i = 0 To 1
+    Bind(GetWidget(i), @events_widgets())
+  Next
+  For i = 2 To 4
+    Bind(GetWidget(i), @events_wbuttons())
+  Next
   
-  If OpenWindow(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    ; example scroll gadget bar
-    TextGadget       (-1,  10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#PB_Text_Center)
-    ScrollBarGadget  (101,  10, 42, 250,  20, 30, 100, 30)
-    SetGadgetState   (101,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ScrollBarGadget  (201, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    SetGadgetState   (201, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    ; example scroll widget bar
-    widget::Text(300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#__Text_Center)
-    widget::Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
-    widget::SetState    (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Scroll  (300+10, 42+30, 250,  10, 30, 150, 230, #__bar_inverted, 7)
-    widget::SetState    (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#__Text_Right)
-    widget::Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    widget::SetState    (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
-    widget::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_inverted, 7)
-    widget::SetState    (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    BindGadgetEvent(101,@h_GadgetCallBack())
-    BindGadgetEvent(201,@v_GadgetCallBack())
-    ; Bind(@ev(), Widget())
-    
-    ; example_2 track gadget bar
-    TextGadget    (-1, 10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    TrackBarGadget(1010, 10,  140+40, 250, 20, 0, 10000)
-    SetGadgetState(1010, 5000)
-    TextGadget    (-1, 10, 140+90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    ;     TrackBarGadget(11, 10, 140+120, 250, 20, 0, 30, #PB_TrackTicks)
-    TrackBarGadget(1111, 10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    SetGadgetState(1111, 60)
-    TextGadget    (-1,  60, 140+160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-    TrackBarGadget(1212, 270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SetGadgetState(1212, 8000)
-    
-    ; example_2 track widget bar
-    widget::Text(300+10,  140+10, 250, 20,"TrackBar Standard", #__Text_Center)
-    widget::Track(300+10,  140+40, 250, 20, 0, 10000, 0)
-    widget::SetState(Widget(), 5000)
-    widget::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_inverted)
-    widget::SetState(Widget(), 5000)
-    widget::Text(300+10, 140+90, 250, 20, "TrackBar Ticks", #__Text_Center)
-    ;     widget::Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
-    widget::Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    widget::SetState(Widget(), 60)
-    widget::Text(300+60, 140+160, 200, 20, "TrackBar Vertical", #__Text_Right)
-    widget::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    widget::SetAttribute(Widget(), #__bar_Inverted, 0)
-    widget::SetState(Widget(), 8000)
-    widget::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_inverted)
-    widget::SetState(Widget(), 8000)
-    
-    BindGadgetEvent(1111,@h_GadgetCallBack())
-    BindGadgetEvent(1212,@v_GadgetCallBack())
-    
-    ; example_3 progress gadget bar
-    TextGadget       (-1,  10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
-    ProgressBarGadget  (2121,  10, 140+200+42, 250,  20, 30, 100)
-    SetGadgetState   (2121,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ProgressBarGadget  (2222, 270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical)
-    SetGadgetState   (2222, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    ; example_3 progress widget bar
-    widget::Text(300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#__Text_Center)
-    widget::Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
-    widget::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_inverted, 4)
-    widget::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#__Text_Right)
-    widget::Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
-    widget::SetAttribute(Widget(), #__bar_Inverted, 0)
-    widget::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    widget::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_inverted)
-    widget::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    BindGadgetEvent(2121,@h_GadgetCallBack())
-    BindGadgetEvent(2222,@v_GadgetCallBack())
-    
-    ;{ PB splitter Gadget
-    Button_0 = StringGadget(#PB_Any, 0, 0, 0, 0, "") ; as they will be sized automatically
-    
-    
-    ButtonGadget(1, 0, 0, 0, 0, "BTN1")
-    ButtonGadget(2, 0, 0, 0, 0, "BTN2")
-    SplitterGadget(3, 125, 10, 250, 70, 1, 2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
-    
-    ButtonGadget(4, 0, 0, 0, 0, "BTN4")
-    ButtonGadget(5, 0, 0, 0, 0, "BTN5")
-    SplitterGadget(6, 125, 90, 250, 70, 4, 5, #PB_Splitter_Separator | #PB_Splitter_Vertical)
-    
-    ButtonGadget(7, 0, 0, 0, 0, "BTN7")
-    ButtonGadget(8, 0, 0, 0, 0, "BTN8")
-    SplitterGadget(9, 125, 90, 250, 70, 7, 8, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-    
-    SplitterGadget(10, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
-    
-    ; first splitter
-    ButtonGadget(11, 0, 0, 0, 0, "BTN1")
-    Button_1 = SplitterGadget(#PB_Any, 125, 10, 250, 70, 10, 9, #PB_Splitter_Separator ) 
-    SetGadgetState(Button_1, 42)
-    ;Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1")  ; as they will be sized automatically
-    
-    Button_2 = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, 150, 150) : CloseGadgetList(); No need to specify size or coordinates
-    Button_3 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100)                     ; as they will be sized automatically
-    Button_4 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100)                     ; No need to specify size or coordinates
-    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5")                      ; as they will be sized automatically
-    
-    SetGadgetState(Button_0, 50)
-    
-    Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;     ;SetGadgetState(Splitter_1, 20)
-    Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
-    Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = SplitterGadget(#PB_Any, 10, 140+200+130, 285+15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    
-    ;     SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
-    ;     SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
-    
-    SetGadgetState(Splitter_0, 26)
-    SetGadgetState(Splitter_4, 225)
-    SetGadgetState(Splitter_3, 55)
-    SetGadgetState(Splitter_2, 15)
-    
-    If OpenGadgetList(Button_2)
-      Button_4 = ScrollAreaGadget(#PB_Any, -1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
-                                                                       ;       Define i
-                                                                       ;       For i=0 To 1000
-      ButtonGadget(#PB_Any, 10, 10, 50, 30,"1")
-      ;       Next
-      CloseGadgetList()
-      ButtonGadget(#PB_Any, 100, 10, 50, 30, "2")
-      CloseGadgetList()
-    EndIf
-    
-    ;}
-    
-    Button_0 = widget::Spin(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
-    
-    
-    Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-    ;     Button_1 = widget::Panel(0, 0, 0, 0) 
-    ;     AddItem(Button_1, -1, "Panel_0") 
-    ;     Define *w2=Panel (5, 30, 140, 166)
-    ;     AddItem(*w2, -1, "Под--Панель 1")
-    ;     AddItem(*w2, -1, "Под--Панель 2")
-    ;     Button( 5, 5, 55, 22, "кнопка 5")
-    ;     Button( 5, 30, 55, 22, "кнопка 30")
-    ;     
-    ;     AddItem(*w2, -1, "Под--Панель 3")
-    ;     AddItem(*w2, -1, "Под--Панель 4")
-    ;     
-    ;     AddItem(*w2, 1, "Под--Панель -2-")
-    ;     Button( 15, 5, 55, 22, "кнопка 15")
-    ;     Button( 20, 30, 55, 22, "кнопка 20")
-    ;     CloseList()
-    ;     SetState(*w2, 2)
-    ;     
-    ;     AddItem(Button_1, -1, "Panel_1") 
-    ;     widget::Container(20,10,200,100)
-    ;     widget::Button(20, 5, 100, 30, text)
-    ;     
-    ;     Define panel = widget::Panel(20,30,200,100)
-    ;     AddItem(panel, -1, "Panel_0") 
-    ;     widget::Button(10, 10, 100, 30, text)
-    ;     AddItem(panel, -1, "Panel_1") 
-    ;     widget::Button(20, 20, 100, 30, text)
-    ;     widget::CloseList()
-    ;     widget::CloseList()
-    ;     
-    ;     AddItem(Button_1, -1, "Panel_2") 
-    ;     widget::Container(10,10,100,100)
-    ;     widget::Button(10, 10, 100, 20, text)
-    ;     widget::CloseList()
-    ;     
-    ;     AddItem(Button_1, -1, "Panel_3") 
-    ;     AddItem(Button_1, -1, "Panel_4") 
-    ;     CloseList()
-    ;     
-    ;     ;     Button_1 = widget::Editor(0, 0, 0, 0) : SetText(Button_1, text)
-    ;     ;     Button_1 = widget::Button(0, 0, 0, 0, text) ; No need to specify size or coordinates
-    ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__Text_Border) ; No need to specify size or coordinates
-    ;     ; ;     Button_1 = widget::MDI(0, 0, 0, 0) ; No need to specify size or coordinates
-    ;     ; ;     widget::AddItem(Button_1, -1, "Form_0")
-    ;     ; ;     widget::AddItem(Button_1, -1, "Form_1")
-    ;     ; ;     widget::AddItem(Button_1, -1, "Form_2")
-    ;     
-    ;     ;     Define w_1,w_2,w_3,w_4,w_5,w_6,w_7,w_8,w_9,w_10,w_11,w_12,w_13,w_14,w_15
-    ;     ;     w_1 = widget::Button(0, 0, 0, 0, "BTN1")
-    ;     ;     w_2 = widget::Button(0, 0, 0, 0, "BTN2")
-    ;     ;     w_3 = widget::Splitter(125, 170, 250, 40, w_1, w_2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
-    ;     ;     
-    ;     ;     w_4 = widget::Button(0, 0, 0, 0, "BTN4")
-    ;     ;     w_5 = widget::Button(0, 0, 0, 0, "BTN5")
-    ;     ;     w_6 = widget::Splitter(125, 170, 250, 40, w_4, w_5, #PB_Splitter_Separator | #PB_Splitter_Vertical)
-    ;     ;     
-    ;     ;     w_7 = widget::Button(0, 0, 0, 0, "BTN7")
-    ;     ;     w_8 = widget::Button(0, 0, 0, 0, "BTN8")
-    ;     ;     w_9 = widget::Splitter(125, 170+80, 250, 40, w_7, w_8, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-    ;     ;     
-    ;     ;     w_10 = widget::Splitter(125, 170, 250, 70, w_3, w_6, #PB_Splitter_Separator)
-    ;     ;     
-    ;     ;     w_11 = widget::Button(0, 0, 0, 0, "BTN11")
-    ;     ;     Button_1 = widget::Splitter(125, 170, 250, 70, w_10, w_9, #PB_Splitter_Separator)
-    ;     ;     widget::SetState(Button_1, 42)
-    ;     ;     
-    ;     ;     ; ;     Button_1 = widget::Window(0, 0, 330, 0, "form", #PB_Window_TitleBar|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget) 
-    ;     ;     ; ;     widget::Container(10,10,100,100)
-    ;     ;     ; ;     widget::Container(10,10,100,100)
-    ;     ;     ; ;     widget::Container(10,10,100,100)
-    ;     ;     ; ;     widget::CloseList()
-    ;     ;     ; ;     widget::CloseList()
-    ;     ;     ; ;     widget::CloseList()
-    ;     ;     ; ;     widget::CloseList() ; No need to specify size or coordinates
-    ;     ;     ; ;     
-    ;     ;     ; ;     ;     Button_1 = widget::Tab(0, 0, 0, 0, 0, 0, 0); No need to specify size or coordinates
-    ;     ;     ; ;     ;     widget::AddItem(Button_1, -1, "Tab_0")
-    ;     ;     ; ;     ;     widget::AddItem(Button_1, -1, "Tab_1 (long)")
-    ;     ;     ; ;     ;     widget::AddItem(Button_1, -1, "Tab_2")
-    ;     ;     ; ;     
-    ;     ;     ; ;     ;     Button_10 = widget::Scroll(0, 0, 0, 0, 0, 100, 20) ; No need to specify size or coordinates
-    ;     ;     ; ;     ;     Button_1 = widget::Splitter(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Button_1 = widget::Tree(0, 0, 0, 0, 0)                                 ; as they will be sized automatically
-    widget::AddItem(Button_1, -1, "index_0_level_0")
-    widget::AddItem(Button_1, -1, "index_1_sublevel_1", -1, 1)
-    widget::AddItem(Button_1, -1, "index_2_sublevel_2", -1, 2)
-    widget::AddItem(Button_1, -1, "index_3_level_0")
-    widget::AddItem(Button_1, -1, "index_4_sublevel_1", -1, 1)
-    widget::AddItem(Button_1, -1, "index_5_sublevel_2", -1, 2)
-    widget::AddItem(Button_1, -1, "Form_0")
-    widget::AddItem(Button_1, -1, "Form_0")
-    widget::AddItem(Button_1, -1, "Form_0")
-    widget::AddItem(Button_1, -1, "Form_0")
-    widget::AddItem(Button_1, -1, "Form_0")
-    SetItemColor(Button_1,  #PB_All, #__Color_Line,  $FF00f000)
-    
-    Button_2 = widget::ScrollArea(0, 0, 0, 0, 150, 150, 1) : widget::CloseList()        ; as they will be sized automatically
-    Button_3 = widget::Progress(0, 0, 0, 0, 0, 100, 30)                                 ; as they will be sized automatically
-    
-    Button_4 = widget::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
-    Button_5 = widget::Tab(0, 0, 0, 0, 0, 0, 0)                  ; No need to specify size or coordinates
-    widget::AddItem(Button_5, -1, "Tab_0")
-    widget::AddItem(Button_5, -1, "Tab_1 (long)")
-    widget::AddItem(Button_5, -1, "Tab_2")
-    
-    widget::SetState(Button_0, 50)
-    
-    Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed);|#PB_Splitter_Separator)
-    Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed);|#PB_Splitter_Separator)
-    widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;widget::SetState(Splitter_1, 410/2-20)
-    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_5);, #PB_Splitter_Separator)
-    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_2, Splitter_2);, #PB_Splitter_Separator)
-    Splitter_4 = widget::Splitter(300+10+15, 140+200+130, 285+15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical);|#PB_Splitter_Separator)
-    
-    ; widget::SetState(Button_2, 5)
-    widget::SetState(Splitter_0, 26)
-    widget::SetState(Splitter_4, 220)
-    widget::SetState(Splitter_3, 55)
-    widget::SetState(Splitter_2, 15)
-    
-    If Button_2 And widget::OpenList(Button_2)
-      Button_4 = widget::ScrollArea(-1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
-                                                                ;       Define i
-                                                                ;       For i=0 To 1000
-      widget::Progress(10, 10, 50, 30, 1, 100, 30)
-      ;       Next
-      widget::CloseList()
-      widget::Progress(100, 10, 50, 30, 2, 100, 30)
-      widget::CloseList()
-    EndIf
-    
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  EndIf
-CompilerEndIf
+  Debug ""+CountItems(GetWidget(1)) +" - count widget items"
+  
+  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+EndIf
+
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
