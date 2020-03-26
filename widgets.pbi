@@ -648,6 +648,726 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     ;- BARs
+    Declare.b Bar_Update(*this)
+    
+    Macro Area(_parent_, _width_, _height_, _area_width_, _area_height_, _scroll_step_, _mode_ = #True)
+      _parent_\scroll\v = Bar(#__Type_ScrollBar, _parent_, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child|#__bar_vertical, 7, _scroll_step_)
+      _parent_\scroll\h = Bar(#__Type_ScrollBar, _parent_, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool(_mode_)*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_)
+    EndMacro
+    
+    Macro Area_Draw(_this_)
+      If _this_\scroll
+        If Not _this_\scroll\v\hide And _this_\scroll\v\width And _this_\scroll\v\width[#__c_4] > 0 And _this_\scroll\v\height[#__c_4] > 0
+          Bar_Draw(_this_\scroll\v)
+        EndIf
+        If Not _this_\scroll\h\hide And _this_\scroll\h\height And _this_\scroll\h\width[#__c_4] > 0 And _this_\scroll\h\height[#__c_4] > 0
+          Bar_Draw(_this_\scroll\h)
+        EndIf
+        
+        If _this_\scroll\v And _this_\scroll\h
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          ; Scroll area coordinate
+          Box(_this_\scroll\h\x + _this_\scroll\x, _this_\scroll\v\y + _this_\scroll\y, _this_\scroll\width, _this_\scroll\height, $FF0000FF)
+          
+          ; Debug ""+ _this_\scroll\x +" "+ _this_\scroll\y +" "+ _this_\scroll\width +" "+ _this_\scroll\height
+          Box(_this_\scroll\h\x - _this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FFFF0000)
+          
+          ; page coordinate
+          Box(_this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00)
+        EndIf
+      EndIf
+    EndMacro
+    
+    ;-
+    Procedure.i Tab_SetState(*this._s_widget, State.l)
+      Protected Result.b
+      
+      If State < 0 
+        State = 0 
+      EndIf
+      
+      If State > *this\count\items - 1 
+        State = *this\count\items - 1 
+      EndIf
+      
+      If *this\index[#__s_2] <> State 
+        *this\index[#__s_2] = State
+        
+        If *this = *this\parent\_tab 
+          *this\parent\index[#__s_2] = State
+          
+          PushListPosition(GetChildrens(*this))
+          ForEach GetChildrens(*this)
+            If Child( GetChildrens(*this), *this\parent)  
+              GetChildrens(*this)\hide = Bool(GetChildrens(*this)\hide[1] Or GetChildrens(*this)\parent\hide Or 
+                                              GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
+             EndIf
+          Next
+          PopListPosition(GetChildrens(*this))
+          
+          Post(#PB_EventType_Change, *this\parent, State)
+        Else
+          Post(#PB_EventType_Change, *this, State)
+        EndIf
+            
+          ;*this\bar\state = State + 1
+        Result = #True
+      EndIf
+      
+      ProcedureReturn Result
+    EndProcedure
+    
+    Procedure   Tab_AddItem(*this._s_widget, Item.i, Text.s, Image.i=-1, sublevel.i=0)
+      Protected result
+      
+      With *this
+        *this\bar\change = #True
+       
+        If (Item =- 1 Or Item > ListSize(\bar\_s()) - 1)
+            LastElement(\bar\_s())
+            AddElement(\bar\_s()) 
+            Item = ListIndex(\bar\_s())
+          Else
+            If SelectElement(\bar\_s(), Item)
+           If Item =< *this\index[#__s_2]
+          *this\index[#__s_2]  + 1
+        EndIf
+        
+            If *this\parent\_tab = *this
+              ; \parent\type = #PB_GadgetType_Panel
+              ; PushListPosition(GetChildrens(*this))
+              ForEach GetChildrens(*this)
+                If Child( GetChildrens(*this), *this\parent)
+                  If GetChildrens(*this)\parent = *this\parent And 
+                     GetChildrens(*this)\_parent_item = Item
+                    GetChildrens(*this)\_parent_item + 1
+                  EndIf
+                  
+                  GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or
+                                                   GetChildrens(*this)\parent\hide Or
+                                                   GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
+                EndIf
+              Next
+              ; PopListPosition(GetChildrens(*this))
+            EndIf
+            
+            InsertElement(\bar\_s())
+            
+            PushListPosition(\bar\_s())
+            While NextElement(\bar\_s())
+              *this\bar\_s()\index = ListIndex(*this\bar\_s())
+            Wend
+            PopListPosition(\bar\_s())
+          EndIf
+        EndIf
+          
+          *this\bar\_s() = AllocateStructure(_s_tabs)
+          *this\bar\_s()\color = _get_colors_()
+          *this\bar\_s()\index = Item
+          *this\bar\_s()\text\string = Text.s
+          *this\bar\_s()\height = \height - 1
+          
+          ; last opened item of the parent
+          If *this\parent\_tab And *this\parent\_tab = *this ; type = #PB_GadgetType_Panel
+            *this\parent\_item = *this\bar\_s()\index
+            *this\parent\count\items + 1 
+          EndIf
+          *this\_item = \bar\_s()\index
+          *this\count\items + 1 
+          
+          ; _set_image_(*this, \bar\_s(), Image)
+      EndWith
+      
+      ProcedureReturn Item
+    EndProcedure
+    
+    Procedure.i Tab_RemoveItem(*this._s_widget, Item.l)
+      If SelectElement(*this\bar\_s(), item)
+        If *this\bar\_s()\index = *this\index[#__s_2]
+          *this\index[#__s_2]  = item - 1
+        EndIf
+        DeleteElement(*this\bar\_s(), 1)
+        *this\count\items - 1
+        *this\bar\change = 1
+      EndIf
+    EndProcedure
+    
+    Procedure.b Tab_Draw(*this._s_widget)
+      With *this
+        
+        If Not \hide And \color\alpha
+          If \color\back <> - 1
+            ; Draw scroll bar background
+            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+            RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
+          EndIf
+          
+          If \bar\change
+           *this\text\x = 6
+          *this\text\height = TextHeight("A")
+           \bar\max = 0
+            
+            ForEach \bar\_s()
+              \bar\_s()\y = 2
+              \bar\_s()\x = \bar\max ;+ 1
+              \bar\_s()\height = \bar\button[#__b_3]\height-3
+              
+              \bar\_s()\text\height = *this\text\height
+              \bar\_s()\text\x = *this\text\x + \bar\_s()\x
+              \bar\_s()\text\width = *this\text\x*2 + TextWidth(\bar\_s()\text\string)
+              \bar\_s()\text\y = *this\text\y + \bar\_s()\y + (\bar\_s()\height - \bar\_s()\text\height)/2
+              
+              \bar\_s()\width = \bar\_s()\text\width
+              \bar\max + \bar\_s()\width + Bool(\bar\_s()\index <> \count\items - 1) ;+ Bool(\bar\_s()\index = \count\items - 1) 
+              \bar\_s()\text\change = 0
+            Next
+            
+            \bar\change = 0
+            
+            Static max
+            If max <> \bar\max
+              ; Debug \bar\max
+              ; *this\resize | #__resize_change
+              Bar_Update(*this)
+              ; *this\resize &~ #__resize_change
+              max = \bar\max
+            EndIf
+          EndIf
+          
+          Protected x = \bar\button[#__b_3]\x
+          Protected y = \bar\button[#__b_3]\y
+          
+          
+          ;           If *this\bar\button[#__b_2]\color\state = #__s_3 ;And 
+          ;              ;*this\bar\button[#__b_2]\color\state = #__s_3
+          ;             x = \bar\button[#__b_3]\x - \bar\button[#__b_1]\width
+          ;           EndIf
+          
+          Protected State_3, Color_frame
+          
+          ForEach \bar\_s()
+            If \index[#__s_1] = \bar\_s()\index
+              State_3 = Bool(\index[#__s_1] = \bar\_s()\index); +Bool( \index[#__s_1] = \bar\_s()\index And \bar\state = #__b_3)
+            Else
+              State_3 = 0
+            EndIf
+            
+            If \index[#__s_2] = \bar\_s()\index
+              State_3 = 2
+            EndIf
+            
+            ; Color_frame = \color\frame[State_3]&$FFFFFF|\bar\_s()\color\alpha
+            ;Debug  ""+\index[#__s_1]  +" "+ \bar\_s()\index
+            \bar\_s()\draw = Bool(Not \bar\_s()\hide And \bar\_s()\x+\bar\_s()\width>\x+\bs And \bar\_s()\x<\x+\width-\bs)
+            
+            If \bar\_s()\draw
+              ; Draw back
+              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+              _box_gradient_(\bar\vertical,x+\bar\_s()\x,y+\bar\_s()\y-Bool(\index[#__s_2]= \bar\_s()\index),\bar\_s()\width,\bar\_s()\height+Bool(\index[#__s_2]= \bar\_s()\index)*2,
+                             \bar\_s()\color\fore[State_3],\bar\_s()\color\Back[State_3], \bar\button[#__b_3]\round, \bar\_s()\color\alpha)
+              
+              ; Draw frame
+              DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+              If Bool( \index[#__s_1] = \bar\_s()\index And \bar\state = #__b_3)
+                RoundBox(x+\bar\_s()\x,y+\bar\_s()\y,\bar\_s()\width,\bar\_s()\height,
+                       \bar\button[#__b_3]\round,\bar\button[#__b_3]\round,\bar\_s()\color\frame[2]&$FFFFFF|\bar\_s()\color\alpha<<24)
+              Else
+                RoundBox(x+\bar\_s()\x,y+\bar\_s()\y-Bool(\index[#__s_2]= \bar\_s()\index)*2,\bar\_s()\width,\bar\_s()\height+Bool(\index[#__s_2]= \bar\_s()\index)*4,
+                       \bar\button[#__b_3]\round,\bar\button[#__b_3]\round,\bar\_s()\color\frame[State_3]&$FFFFFF|\bar\_s()\color\alpha<<24)
+              EndIf
+              
+              DrawingMode(#PB_2DDrawing_Transparent)
+              DrawText(x+\bar\_s()\text\x, y+\bar\_s()\text\y,\bar\_s()\text\string, $FF000000)
+            EndIf
+          Next
+          
+          
+          Protected fabe_x, fabe_out, button_size, Size = 40, color = \parent\color\fore[\parent\color\state]
+          If Not color
+            color = \parent\color\back[\parent\color\state]
+          EndIf
+          
+          DrawingMode(#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Gradient)
+          ResetGradientColors()
+          GradientColor(0.0, Color&$FFFFFF)
+          GradientColor(0.5, Color&$FFFFFF|$A0<<24)
+          GradientColor(1.0, Color&$FFFFFF|245<<24)
+          
+          ;             ; to left
+          ;             If (\bar\button[#__b_1]\x < \bar\button[#__b_3]\x)
+          If \bar\button[#__b_2]\x < \bar\button[#__b_3]\x
+            button_size = \bar\button[#__b_1]\len+5
+          Else
+            button_size = \bar\button[#__b_2]\len/2+5
+          EndIf
+          fabe_out = Size - button_size
+          ;             Else
+          ;               fabe_out = Size
+          ;             EndIf
+          
+          If Not _bar_in_start_(\bar) 
+            fabe_x = \x[#__c_0]+(size-size/5)
+            LinearGradient(fabe_x, \y+\bs, fabe_x-fabe_out, \y+\bs)
+            RoundBox(fabe_x, \y+\bs, -Size, \height-\bs, 10,10)
+          EndIf
+          
+          ;             ; to right
+          ;             If \bar\button[#__b_2]\x > \bar\button[#__b_3]\x
+          If \bar\button[#__b_1]\x > \bar\button[#__b_3]\x
+            button_size = \bar\button[#__b_1]\len+5
+          Else
+            button_size = \bar\button[#__b_1]\len/2+5
+          EndIf
+          fabe_out = Size - button_size
+          ;             Else
+          ;               fabe_out = Size
+          ;             EndIf
+          
+          If Not _bar_in_stop_(\bar) 
+            fabe_x= \x[#__c_0]+\width[#__c_0]-(size-size/5)
+            LinearGradient(fabe_x, \y+\bs, fabe_x+fabe_out, \y+\bs)
+            RoundBox(fabe_x, \y+\bs, Size, \height-\bs ,10,10)
+          EndIf
+          
+          ResetGradientColors()
+          
+          
+          If Not \bar\button[#__b_1]\hide And (\bar\vertical And \bar\button[#__b_1]\height) Or (Not \bar\vertical And \bar\button[#__b_1]\width) ;\bar\button[#__b_1]\len
+                                                                                                                                                  ; Draw buttons
+            If \bar\button[#__b_1]\color\fore <> - 1
+              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+              _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,
+                             \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], \bar\button[#__b_1]\round, \bar\button[#__b_1]\color\alpha)
+            Else
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              RoundBox(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
+            EndIf
+            
+            ; Draw buttons frame
+            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+            RoundBox(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
+            
+            ; Draw arrows
+            If \bar\button[#__b_1]\arrow\size
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              Arrow(\bar\button[#__b_1]\x+(\bar\button[#__b_1]\width-\bar\button[#__b_1]\arrow\size)/2,\bar\button[#__b_1]\y+(\bar\button[#__b_1]\height-\bar\button[#__b_1]\arrow\size)/2, 
+                    \bar\button[#__b_1]\arrow\size, Bool(\bar\vertical)+2, \bar\button[#__b_1]\color\front[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24, \bar\button[#__b_1]\arrow\type)
+            EndIf
+          EndIf
+          
+          If Not \bar\button[#__b_2]\hide And (\bar\vertical And \bar\button[#__b_2]\height) Or (Not \bar\vertical And \bar\button[#__b_2]\width)
+            ; Draw buttons
+            If \bar\button[#__b_2]\color\fore <> - 1
+              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+              _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,
+                             \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], \bar\button[#__b_2]\round, \bar\button[#__b_2]\color\alpha)
+            Else
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              RoundBox(\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
+            EndIf
+            
+            ; Draw buttons frame
+            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+            RoundBox(\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
+            
+            ; Draw arrows
+            If \bar\button[#__b_2]\arrow\size
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              Arrow(\bar\button[#__b_2]\x+(\bar\button[#__b_2]\width-\bar\button[#__b_2]\arrow\size)/2,\bar\button[#__b_2]\y+(\bar\button[#__b_2]\height-\bar\button[#__b_2]\arrow\size)/2, 
+                    \bar\button[#__b_2]\arrow\size, Bool(\bar\vertical), \bar\button[#__b_2]\color\front[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24, \bar\button[#__b_2]\arrow\type)
+            EndIf
+          EndIf
+          
+          
+        EndIf
+        DrawingMode(#PB_2DDrawing_Outlined)
+        Box(\x[#__c_1]-1,\y[#__c_2]+\height[#__c_2],\width[#__c_1]+2,1, \color\frame[Bool(\index[#__s_2]<>-1)*2 ])
+        
+        DrawingMode(#PB_2DDrawing_Outlined)
+        Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF0000FF)
+        ;         ;Box(\x[#__c_0],\y[#__c_0],\width[#__c_0],\height[#__c_0], $FF00F0F0)
+        ;         Box(\x[#__c_1],\y[#__c_1],\width[#__c_1],\height[#__c_1], $FF00F0F0)
+        Box(\x[#__c_2],\y[#__c_2],\width[#__c_2],\height[#__c_2], $FF00FF00)
+        
+      EndWith 
+    EndProcedure
+    
+    ;-
+    Procedure.b Scroll_Draw(*this._s_widget)
+      With *this
+        
+        If Not \hide And \color\alpha
+          If \color\back <> - 1
+            ; Draw scroll bar background
+            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+            RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
+          EndIf
+          
+          If \type = #PB_GadgetType_ScrollBar
+            If \bar\vertical
+              If (\bar\page\len+Bool(\round)*(\width/4)) = \height
+                Line( \x, \y, 1, \bar\page\len+1, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
+              Else
+                Line( \x, \y, 1, \height, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
+              EndIf
+            Else
+              If (\bar\page\len+Bool(\round)*(\height/4)) = \width
+                Line( \x, \y, \bar\page\len+1, 1, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
+              Else
+                Line( \x, \y, \width, 1, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
+              EndIf
+            EndIf
+          EndIf
+          
+          If (\bar\vertical And \bar\button[#__b_1]\height) Or (Not \bar\vertical And \bar\button[#__b_1]\width) ;\bar\button[#__b_1]\len
+                                                                                                                 ; Draw buttons
+            If \bar\button[#__b_1]\color\fore <> - 1
+              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+              _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,
+                             \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], \bar\button[#__b_1]\round, \bar\button[#__b_1]\color\alpha)
+            Else
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              RoundBox(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
+            EndIf
+            
+            ; Draw buttons frame
+            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+            RoundBox(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
+            
+            ; Draw arrows
+            If \bar\button[#__b_1]\arrow\size
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              Arrow(\bar\button[#__b_1]\x+(\bar\button[#__b_1]\width-\bar\button[#__b_1]\arrow\size)/2,\bar\button[#__b_1]\y+(\bar\button[#__b_1]\height-\bar\button[#__b_1]\arrow\size)/2, 
+                    \bar\button[#__b_1]\arrow\size, Bool(\bar\vertical), \bar\button[#__b_1]\color\front[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24, \bar\button[#__b_1]\arrow\type)
+            EndIf
+          EndIf
+          
+          If (\bar\vertical And \bar\button[#__b_2]\height) Or (Not \bar\vertical And \bar\button[#__b_2]\width)
+            ; Draw buttons
+            If \bar\button[#__b_2]\color\fore <> - 1
+              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+              _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,
+                             \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], \bar\button[#__b_2]\round, \bar\button[#__b_2]\color\alpha)
+            Else
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              RoundBox(\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
+            EndIf
+            
+            ; Draw buttons frame
+            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+            RoundBox(\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
+            
+            ; Draw arrows
+            If \bar\button[#__b_2]\arrow\size
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              Arrow(\bar\button[#__b_2]\x+(\bar\button[#__b_2]\width-\bar\button[#__b_2]\arrow\size)/2,\bar\button[#__b_2]\y+(\bar\button[#__b_2]\height-\bar\button[#__b_2]\arrow\size)/2, 
+                    \bar\button[#__b_2]\arrow\size, Bool(\bar\vertical)+2, \bar\button[#__b_2]\color\front[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24, \bar\button[#__b_2]\arrow\type)
+            EndIf
+          EndIf
+          
+          If \bar\thumb\len And \type <> #PB_GadgetType_ProgressBar
+            ; Draw thumb
+            DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+            _box_gradient_(\bar\vertical,\bar\button[#__b_3]\x,\bar\button[#__b_3]\y,\bar\button[#__b_3]\width,\bar\button[#__b_3]\height,
+                           \bar\button[#__b_3]\color\fore[\bar\button[#__b_3]\color\state],\bar\button[#__b_3]\color\Back[\bar\button[#__b_3]\color\state], \bar\button[#__b_3]\round, \bar\button[#__b_3]\color\alpha)
+            
+            ; Draw thumb frame
+            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+            RoundBox(\bar\button[#__b_3]\x,\bar\button[#__b_3]\y,\bar\button[#__b_3]\width,\bar\button[#__b_3]\height,\bar\button[#__b_3]\round,\bar\button[#__b_3]\round,\bar\button[#__b_3]\color\frame[\bar\button[#__b_3]\color\state]&$FFFFFF|\bar\button[#__b_3]\color\alpha<<24)
+            
+            If \bar\button[#__b_3]\arrow\type ; \type = #PB_GadgetType_ScrollBar
+              If \bar\button[#__b_3]\arrow\size
+                DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                Arrow(\bar\button[#__b_3]\x+(\bar\button[#__b_3]\width-\bar\button[#__b_3]\arrow\size)/2,\bar\button[#__b_3]\y+(\bar\button[#__b_3]\height-\bar\button[#__b_3]\arrow\size)/2, 
+                      \bar\button[#__b_3]\arrow\size, \bar\button[#__b_3]\arrow\direction, \bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\bar\button[#__b_3]\color\alpha<<24, \bar\button[#__b_3]\arrow\type)
+              EndIf
+            Else
+              ; Draw thumb lines
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              If \bar\vertical
+                Line(\bar\button[#__b_3]\x+(\bar\button[#__b_3]\width-\bar\button[#__b_3]\arrow\size)/2,\bar\button[#__b_3]\y+\bar\button[#__b_3]\height/2-3,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
+                Line(\bar\button[#__b_3]\x+(\bar\button[#__b_3]\width-\bar\button[#__b_3]\arrow\size)/2,\bar\button[#__b_3]\y+\bar\button[#__b_3]\height/2,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
+                Line(\bar\button[#__b_3]\x+(\bar\button[#__b_3]\width-\bar\button[#__b_3]\arrow\size)/2,\bar\button[#__b_3]\y+\bar\button[#__b_3]\height/2+3,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
+              Else
+                Line(\bar\button[#__b_3]\x+\bar\button[#__b_3]\width/2-3,\bar\button[#__b_3]\y+(\bar\button[#__b_3]\height-\bar\button[#__b_3]\arrow\size)/2,1,\bar\button[#__b_3]\arrow\size,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
+                Line(\bar\button[#__b_3]\x+\bar\button[#__b_3]\width/2,\bar\button[#__b_3]\y+(\bar\button[#__b_3]\height-\bar\button[#__b_3]\arrow\size)/2,1,\bar\button[#__b_3]\arrow\size,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
+                Line(\bar\button[#__b_3]\x+\bar\button[#__b_3]\width/2+3,\bar\button[#__b_3]\y+(\bar\button[#__b_3]\height-\bar\button[#__b_3]\arrow\size)/2,1,\bar\button[#__b_3]\arrow\size,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
+              EndIf
+              
+            EndIf
+          EndIf
+          
+          
+        EndIf
+        
+        
+        ;                 DrawingMode(#PB_2DDrawing_Outlined)
+        ;                 Box(\x[#__c_2],\y[#__c_2],\width[#__c_2],\height[#__c_2], $FF00FF00)
+        
+      EndWith 
+    EndProcedure
+    
+    Procedure.i Spin_Draw(*this._s_widget) 
+      Scroll_Draw(*this)
+      
+      DrawingMode(#PB_2DDrawing_Outlined)
+      Box(*this\bar\button[#__b_1]\x-2,*this\y[#__c_1],*this\x[#__c_2]+*this\width[#__c_3] - *this\bar\button[#__b_1]\x+3,*this\height[#__c_1], *this\color\frame[*this\color\state])
+      Box(*this\x[#__c_1],*this\y[#__c_1],*this\width[#__c_1],*this\height[#__c_1], *this\color\frame[*this\color\state])
+      
+      
+      ; Draw string
+      If *this\text And *this\text\string
+        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+        DrawRotatedText(*this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[0]) ; *this\color\state])
+      EndIf
+    EndProcedure
+    
+    Procedure.b Track_Draw(*this._s_widget)
+      ;       *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
+      ;        *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
+      ;       *this\bar\button[#__b_3]\color\state = #__s_2
+      
+      Scroll_Draw(*this)
+      
+      With *this
+        If \type = #PB_GadgetType_TrackBar And \bar\thumb\len
+          Protected i, _thumb_ = (\bar\button[3]\len/2)
+          DrawingMode(#PB_2DDrawing_XOr)
+          
+          If \bar\vertical
+            If \bar\mode & #PB_TrackBar_Ticks
+              If \bar\percent > 1
+                For i=\bar\min To \bar\page\end
+                  Line(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3+4)-1, 
+                       (\bar\area\pos + _thumb_ + (i-\bar\min) * \bar\percent),3, 1,\bar\button[#__b_1]\color\frame)
+                Next
+              Else
+                Box(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3+4)-1,\bar\area\pos + _thumb_, 3, *this\bar\area\len - *this\bar\thumb\len+1, \bar\button[#__b_1]\color\frame)
+              EndIf
+            EndIf
+            
+            Line(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3),\bar\area\pos + _thumb_,3, 1,\bar\button[#__b_3]\color\Frame)
+            Line(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3),\bar\area\pos + *this\bar\area\len - *this\bar\thumb\len + _thumb_,3, 1,\bar\button[#__b_3]\color\Frame)
+            
+          Else
+            If \bar\mode & #PB_TrackBar_Ticks
+              If \bar\percent > 1
+                For i=0 To \bar\page\end-\bar\min
+                  Line((\bar\area\pos + _thumb_ + i * \bar\percent), 
+                       \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3+4)-1,1,3,\bar\button[#__b_3]\color\Frame)
+                Next
+              Else
+                Box(\bar\area\pos + _thumb_, \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3+4)-1,*this\bar\area\len - *this\bar\thumb\len+1, 3, \bar\button[#__b_1]\color\frame)
+              EndIf
+            EndIf
+            
+            Line(\bar\area\pos + _thumb_, \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3),1,3,\bar\button[#__b_3]\color\Frame)
+            Line(\bar\area\pos + *this\bar\area\len - *this\bar\thumb\len + _thumb_, \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3),1,3,\bar\button[#__b_3]\color\Frame)
+          EndIf
+        EndIf
+      EndWith    
+      
+    EndProcedure
+    
+    Procedure.b Progress_Draw(*this._s_widget)
+      *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
+      *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
+      
+      Scroll_Draw(*this)
+      
+      With *this
+        If \type = #PB_GadgetType_ProgressBar 
+          
+          ;           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_alphaBlend)
+          ;           RoundBox(\bar\thumb\pos-1-\bar\button[#__b_2]\round,\bar\button[#__b_1]\y,1+\bar\button[#__b_2]\round,\bar\button[#__b_1]\height,
+          ;                    \bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
+          ;           RoundBox(\bar\thumb\pos+\bar\button[#__b_2]\round,\bar\button[#__b_1]\y,1+\bar\button[#__b_2]\round,\bar\button[#__b_1]\height,
+          ;                    \bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\back[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
+          
+          If \bar\button[#__b_1]\round
+            If \bar\vertical
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              Line(\bar\button[#__b_1]\x, \bar\thumb\pos-\bar\button[#__b_1]\round, 1,\bar\button[#__b_1]\round, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state])
+              Line(\bar\button[#__b_1]\x+\bar\button[#__b_1]\width-1, \bar\thumb\pos-\bar\button[#__b_1]\round, 1,\bar\button[#__b_1]\round, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state])
+              
+              Line(\bar\button[#__b_2]\x, \bar\thumb\pos, 1,\bar\button[#__b_2]\round, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state])
+              Line(\bar\button[#__b_2]\x+\bar\button[#__b_2]\width-1, \bar\thumb\pos, 1,\bar\button[#__b_2]\round, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state])
+            Else
+              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+              Line(\bar\thumb\pos-\bar\button[#__b_1]\round,\bar\button[#__b_1]\y, \bar\button[#__b_1]\round, 1, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state])
+              Line(\bar\thumb\pos-\bar\button[#__b_1]\round,\bar\button[#__b_1]\y+\bar\button[#__b_1]\height-1, \bar\button[#__b_1]\round, 1, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state])
+              
+              Line(\bar\thumb\pos,\bar\button[#__b_2]\y, \bar\button[#__b_2]\round, 1, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state])
+              Line(\bar\thumb\pos,\bar\button[#__b_2]\y+\bar\button[#__b_2]\height-1, \bar\button[#__b_2]\round, 1, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state])
+            EndIf
+          EndIf
+          
+          If \bar\page\pos > \bar\min
+            If \bar\vertical
+              If \bar\button[#__b_1]\color\fore <> - 1
+                DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x+1,\bar\thumb\pos-1-\bar\button[#__b_2]\round,\bar\button[#__b_1]\width-2,1+\bar\button[#__b_2]\round,
+                               \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha)
+                
+              EndIf
+              
+              ; Draw buttons
+              If \bar\button[#__b_2]\color\fore <> - 1
+                DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x+1,\bar\thumb\pos,\bar\button[#__b_2]\width-2,1+\bar\button[#__b_2]\round,
+                               \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha)
+              EndIf
+            Else
+              If \bar\button[#__b_1]\color\fore <> - 1
+                DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                _box_gradient_(\bar\vertical,\bar\thumb\pos-1-\bar\button[#__b_2]\round,\bar\button[#__b_1]\y+1,1+\bar\button[#__b_2]\round,\bar\button[#__b_1]\height-2,
+                               \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha)
+                
+              EndIf
+              
+              ; Draw buttons
+              If \bar\button[#__b_2]\color\fore <> - 1
+                DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+                _box_gradient_(\bar\vertical,\bar\thumb\pos,\bar\button[#__b_2]\y+1,1+\bar\button[#__b_2]\round,\bar\button[#__b_2]\height-2,
+                               \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha)
+              EndIf
+            EndIf
+          EndIf
+          
+        EndIf
+      EndWith
+      
+      ; Draw string
+      If *this\text And *this\text\string And (*this\height > *this\text\height)
+        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+        DrawRotatedText(*this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\bar\button[#__b_3]\color\frame[*this\bar\button[#__b_3]\color\state])
+      EndIf
+    EndProcedure
+    
+    Procedure.b Splitter_Draw(*this._s_widget)
+      With *this
+        DrawingMode(#PB_2DDrawing_Outlined);|#PB_2DDrawing_AlphaBlend)
+        
+        
+        If \bar\mode 
+          If \bar\vertical ; horisontal
+            Box(\x, \bar\thumb\pos,\width,\bar\thumb\len,$FFFFFFFF)
+          Else
+            Box(\bar\thumb\pos,\y,\bar\thumb\len, \height,$FFFFFFFF)
+          EndIf
+          
+          If \bar\vertical ; horisontal
+            Box(\x+1, \bar\thumb\pos+1,\width-2,\bar\thumb\len-2,\bar\button[#__b_3]\Color\Frame[#__s_2])
+          Else
+            Box(\bar\thumb\pos+1,\y+1,\bar\thumb\len-2, \height-2,\bar\button[#__b_3]\Color\Frame[#__s_2])
+          EndIf
+          
+          If Not \splitter\g_first And (Not \splitter\first Or (\splitter\first And Not \splitter\first\splitter))
+            Box(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
+          EndIf
+          If Not \splitter\g_second And (Not \splitter\second Or (\splitter\second And Not \splitter\second\splitter))
+            Box(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button\color\frame[\bar\button[#__b_2]\Color\state])
+          EndIf
+          
+          ;           If \bar\vertical ; horisontal
+          ;             Box(\x, \bar\thumb\pos+\bar\thumb\len/2,\width,1,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
+          ;           Else
+          ;             Box(\bar\thumb\pos+\bar\thumb\len/2,\y,1, \height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
+          ;           EndIf
+          ;           
+          ;           If Not \splitter\g_first And (Not \splitter\first Or (\splitter\first And Not \splitter\first\splitter))
+          ; ;             Line(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y, \bar\button[#__b_1]\width, 1, \bar\button\color\frame[\bar\button[#__b_1]\Color\state])
+          ; ;             Line(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y, 1, \bar\button[#__b_1]\height, \bar\button\color\frame[\bar\button[#__b_1]\Color\state])
+          ; ;             Line(\bar\button[#__b_1]\x+\bar\button[#__b_1]\width-1, \bar\button[#__b_1]\y, 1, \bar\button[#__b_1]\height, \bar\button\color\frame[\bar\button[#__b_1]\Color\state])
+          ; ;             Line(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y+\bar\button[#__b_1]\height-1, \bar\button[#__b_1]\width, 1, $FFFFFFFF)
+          ; ;             ; Box(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
+          ;              Box(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,$FFFFFFFF)
+          ;           EndIf
+          ;           If Not \splitter\g_second And (Not \splitter\second Or (\splitter\second And Not \splitter\second\splitter))
+          ; ;             Line(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y, \bar\button[#__b_2]\width, 1, $FFFFFFFF)
+          ; ;             Line(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y, 1, \bar\button[#__b_2]\height, \bar\button\color\frame[\bar\button[#__b_2]\Color\state])
+          ; ;             Line(\bar\button[#__b_2]\x+\bar\button[#__b_2]\width-1, \bar\button[#__b_2]\y, 1, \bar\button[#__b_2]\height, \bar\button\color\frame[\bar\button[#__b_2]\Color\state])
+          ; ;             Line(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y+\bar\button[#__b_2]\height-1, \bar\button[#__b_2]\width, 1, \bar\button\color\frame[\bar\button[#__b_2]\Color\state])
+          ; ;           ;  Box(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button\color\frame[\bar\button[#__b_2]\Color\state])
+          ;             Box(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,$FFFFFFFF)
+          ;           EndIf
+          ;           
+          ;           ;Box(\x, \y,\width,\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
+        Else
+          If Not \splitter\g_first And (Not \splitter\first Or (\splitter\first And Not \splitter\first\splitter))
+            Box(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
+          EndIf
+          If Not \splitter\g_second And (Not \splitter\second Or (\splitter\second And Not \splitter\second\splitter))
+            Box(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button\color\frame[\bar\button[#__b_2]\Color\state])
+          EndIf
+          
+          If \bar\vertical ; horisontal
+            If \bar\button[#__b_3]\width > 35
+              Circle(\bar\button[#__b_3]\X[1]-(\bar\button[#__b_3]\round*2+2)*2-2, \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
+              Circle(\bar\button[#__b_3]\X[1]+(\bar\button[#__b_3]\round*2+2)*2+2, \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
+            EndIf
+            If \bar\button[#__b_3]\width > 20
+              Circle(\bar\button[#__b_3]\X[1]-(\bar\button[#__b_3]\round*2+2), \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
+              Circle(\bar\button[#__b_3]\X[1]+(\bar\button[#__b_3]\round*2+2), \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
+            EndIf
+          Else
+            If \bar\button[#__b_3]\Height > 35
+              Circle(\bar\button[#__b_3]\x[1],\bar\button[#__b_3]\Y[1]-(\bar\button[#__b_3]\round*2+2)*2-2, \bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
+              Circle(\bar\button[#__b_3]\x[1],\bar\button[#__b_3]\Y[1]+(\bar\button[#__b_3]\round*2+2)*2+2, \bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
+            EndIf
+            If \bar\button[#__b_3]\Height > 20
+              Circle(\bar\button[#__b_3]\x[1],\bar\button[#__b_3]\Y[1]-(\bar\button[#__b_3]\round*2+2), \bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
+              Circle(\bar\button[#__b_3]\x[1],\bar\button[#__b_3]\Y[1]+(\bar\button[#__b_3]\round*2+2), \bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
+            EndIf
+          EndIf
+          
+          Circle(\bar\button[#__b_3]\X[1], \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
+          
+        EndIf
+      EndWith
+    EndProcedure
+    
+    Procedure.b Bar_Draw(*this._s_widget)
+      With *this
+        If \text\string  And (*this\type = #PB_GadgetType_Spin Or
+                              *this\type = #PB_GadgetType_ProgressBar)
+          
+          If \text\fontID 
+            DrawingFont(\text\fontID)
+          EndIf
+          
+          If \text\change Or *this\resize & #__resize_change
+            *this\text\height = TextHeight("A")
+            *this\text\width = TextWidth(*this\text\string)
+            
+            If *this\type = #PB_GadgetType_ProgressBar
+              *this\text\rotate = (Bool(*this\bar\vertical And *this\bar\inverted) * 90) +
+                                  (Bool(*this\bar\vertical And Not *this\bar\inverted) * 270)
+            EndIf
+            
+            _text_change_(*this, *this\x[#__c_2], *this\y[#__c_2], *this\width[#__c_2], *this\height[#__c_2])
+          EndIf
+        EndIf
+        
+        Select \type
+          Case #__Type_Spin           : Spin_Draw(*this)
+          Case #__Type_TabBar         : Tab_Draw(*this)
+          Case #__Type_TrackBar       : Track_Draw(*this)
+          Case #__Type_ScrollBar      : Scroll_Draw(*this)
+          Case #__Type_ProgressBar    : Progress_Draw(*this)
+          Case #__Type_Splitter       : Splitter_Draw(*this)
+        EndSelect
+        
+        ;            DrawingMode(#PB_2DDrawing_Outlined)
+        ;            Box(\x[#__c_2],\y[#__c_2],\width[#__c_2],\height[#__c_2], $FF00FF00)
+        
+        If *this\text\change <> 0
+          *this\text\change = 0
+        EndIf
+      EndWith
+    EndProcedure
+    
+    ;-
     Procedure.b Bar_Update(*this._s_widget)
       Protected result.b, _scroll_pos_.f
       
@@ -1559,11 +2279,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       Widget() = *this
       
       If event_type = #__Event_MouseEnter
-        Repaint = #True
+        Repaint | #True
       EndIf
       
       If event_type = #__Event_MouseLeave
-        Repaint = #True
+        Repaint | #True
       EndIf
       
       If event_type = #__Event_LeftButtonUp 
@@ -1571,7 +2291,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           If *this\bar\button[*this\bar\state]\state = #__s_2
             ;Debug " up button - " + *this\bar\state
             *this\bar\button[*this\bar\state]\state = #__s_1
-            Repaint = #True
+            Repaint | #True
           EndIf
           
           ;Debug ""+*this\bar\state +" "+ *this\bar\from
@@ -1589,7 +2309,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
               
               ; Debug " up leave button - " + *this\bar\state
-              Repaint = #True
+              Repaint | #True
             EndIf
           EndIf
           
@@ -1636,7 +2356,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               *this\bar\from = #__b_3
               ; Debug " enter button - 3"
-              Repaint = #True
+              Repaint | #True
             EndIf
           EndIf
           
@@ -1664,7 +2384,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               *this\bar\from = #__b_2
               ; Debug " enter button - 2"
-              Repaint = #True
+              Repaint | #True
             EndIf
           EndIf
           
@@ -1692,7 +2412,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               *this\bar\from = #__b_1
               ; Debug " enter button - 1"
-              Repaint = #True
+              Repaint | #True
             EndIf
           EndIf
           
@@ -1715,7 +2435,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             *this\bar\from =- 1
-            Repaint = #True
+            Repaint | #True
           EndIf
         EndIf
         
@@ -1728,26 +2448,31 @@ CompilerIf Not Defined(widget, #PB_Module)
                 If *this\index[#__s_1] <> *this\bar\_s()\index
                   If *this\index[#__s_1] >= 0
                     ; Debug " leave tab - " + *this\index[#__s_1]
-                    Repaint = #True
+                    Repaint | #True
                   EndIf
                   
                   *this\index[#__s_1] = *this\bar\_s()\index
                   ; Debug " enter tab - " + *this\index[#__s_1]
-                  Repaint = #True
+                  Repaint | #True
                 EndIf
                 Break
                 
               ElseIf *this\index[#__s_1] = *this\bar\_s()\index
                 ; Debug " leave tab - " + *this\index[#__s_1]
                 *this\index[#__s_1] =- 1
-                Repaint = #True
+                Repaint | #True
                 Break
               EndIf
               ; EndIf
             Next
           EndIf
+        Else       
+          ;         If Not *this\root\mouse\buttons
+          ;          ; *this\bar\state = *this\bar\from
+          ;         EndIf
         EndIf
         
+        ; set color state
         If *this\Type <> #PB_GadgetType_TrackBar
           ; set button_1 color state
           If *this\bar\button[#__b_1]\color\state <> #__s_3 And 
@@ -1767,22 +2492,9 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\bar\button[#__b_3]\color\state = *this\bar\button[#__b_3]\state
           EndIf
         EndIf
-        
-        If Not *this\root\mouse\buttons
-          *this\bar\state = *this\bar\from
-        EndIf
       EndIf
       
       If event_type = #__Event_LeftButtonDown
-        If *this\Type = #PB_GadgetType_TabBar
-          If *this\index[#__s_1] >= 0
-            *this\index[#__s_2] = *this\index[#__s_1]
-            If *this\Type = #PB_GadgetType_TabBar
-              Repaint = Panel_SetState(*this\parent, *this\index[#__s_1])
-            EndIf
-          EndIf
-        EndIf
-        
         If *this\bar\from >= 0 And 
            *this\bar\button[*this\bar\from]\state = #__s_1
           *this\bar\button[*this\bar\from]\state = #__s_2
@@ -1803,699 +2515,48 @@ CompilerIf Not Defined(widget, #PB_Module)
               *this\bar\button[*this\bar\from]\fixed = mouse_x - *this\bar\thumb\pos
             EndIf
             
-            Repaint = *this\bar\button[*this\bar\from]\fixed
+            Repaint | *this\bar\button[*this\bar\from]\fixed
             
             
           ElseIf (*this\bar\from = #__b_1 And *this\bar\inverted) Or
                  (*this\bar\from = #__b_2 And Not *this\bar\inverted)
-            Repaint = Bar_SetState(*this, *this\bar\page\pos + *this\bar\increment)
+            Repaint | Bar_SetState(*this, *this\bar\page\pos + *this\bar\increment)
             
           ElseIf (*this\bar\from = #__b_2 And *this\bar\inverted) Or 
                  (*this\bar\from = #__b_1 And Not *this\bar\inverted)
-            Repaint = Bar_SetState(*this, *this\bar\page\pos - *this\bar\increment)
+            Repaint | Bar_SetState(*this, *this\bar\page\pos - *this\bar\increment)
           EndIf
         EndIf
       EndIf
       
       If event_type = #__Event_MouseMove
         If *this\bar\button[#__b_3]\fixed And *this = *this\root\selected And *this\bar\state
-          Repaint = Bar_SetPos(*this, (((Bool(Not *this\bar\vertical) * mouse_x) + (Bool(*this\bar\vertical) * mouse_y)) - *this\bar\button[#__b_3]\fixed))
+          Repaint | Bar_SetPos(*this, (((Bool(Not *this\bar\vertical) * mouse_x) + (Bool(*this\bar\vertical) * mouse_y)) - *this\bar\button[#__b_3]\fixed))
           
           SetWindowTitle(EventWindow(), Str(*this\bar\page\pos) +" "+ Str(*this\bar\thumb\pos-*this\bar\area\pos))
         EndIf
       EndIf
       
+      If *this\type = #PB_GadgetType_TabBar
+        If event_type = #__Event_LeftButtonDown
+          *this\bar\state = #__s_3
+          Repaint | #True
+        EndIf
+        
+        If event_type = #__Event_LeftButtonUp
+          *this\bar\state = #__s_0
+          Repaint | #True
+        EndIf
+        
+        If event_type = #__Event_leftbuttonup
+          If *this\index[#__s_1] >= 0 And 
+             *this\index[#__s_2] <> *this\index[#__s_1]
+            Repaint | Tab_SetState(*this, *this\index[#__s_1])
+          EndIf
+        EndIf
+      EndIf
+      
       ProcedureReturn Repaint
-    EndProcedure
-    
-    ;-
-    Macro Area(_parent_, _width_, _height_, _area_width_, _area_height_, _scroll_step_, _mode_ = #True)
-      _parent_\scroll\v = Bar(#__Type_ScrollBar, _parent_, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child|#__bar_vertical, 7, _scroll_step_)
-      _parent_\scroll\h = Bar(#__Type_ScrollBar, _parent_, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool(_mode_)*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_)
-    EndMacro
-    
-    Macro Area_Draw(_this_)
-      If _this_\scroll
-        If Not _this_\scroll\v\hide And _this_\scroll\v\width And _this_\scroll\v\width[#__c_4] > 0 And _this_\scroll\v\height[#__c_4] > 0
-          Bar_Draw(_this_\scroll\v)
-        EndIf
-        If Not _this_\scroll\h\hide And _this_\scroll\h\height And _this_\scroll\h\width[#__c_4] > 0 And _this_\scroll\h\height[#__c_4] > 0
-          Bar_Draw(_this_\scroll\h)
-        EndIf
-        
-        If _this_\scroll\v And _this_\scroll\h
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          ; Scroll area coordinate
-          Box(_this_\scroll\h\x + _this_\scroll\x, _this_\scroll\v\y + _this_\scroll\y, _this_\scroll\width, _this_\scroll\height, $FF0000FF)
-          
-          ; Debug ""+ _this_\scroll\x +" "+ _this_\scroll\y +" "+ _this_\scroll\width +" "+ _this_\scroll\height
-          Box(_this_\scroll\h\x - _this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FFFF0000)
-          
-          ; page coordinate
-          Box(_this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00)
-        EndIf
-      EndIf
-    EndMacro
-    
-    Procedure   Tab_AddItem(*this._s_widget, Item.i, Text.s, Image.i=-1, sublevel.i=0)
-      Protected result
-      
-      With *this
-        *this\bar\change = #True
-       
-        If (Item =- 1 Or Item > ListSize(\bar\_s()) - 1)
-            LastElement(\bar\_s())
-            AddElement(\bar\_s()) 
-            Item = ListIndex(\bar\_s())
-          Else
-            If SelectElement(\bar\_s(), Item)
-           If Item =< *this\index[#__s_2]
-          *this\index[#__s_2]  + 1
-        EndIf
-        
-            If *this\parent\_tab And *this\parent\_tab = *this
-              ; \parent\type = #PB_GadgetType_Panel
-              ; PushListPosition(GetChildrens(*this))
-              ForEach GetChildrens(*this)
-                If Child( GetChildrens(*this), *this\parent)
-                  If GetChildrens(*this)\parent = *this\parent And 
-                     GetChildrens(*this)\_parent_item = Item
-                    GetChildrens(*this)\_parent_item + 1
-                  EndIf
-                  
-                  GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or
-                                                   GetChildrens(*this)\parent\hide Or
-                                                   GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
-                EndIf
-              Next
-              ; PopListPosition(GetChildrens(*this))
-            EndIf
-            
-            InsertElement(\bar\_s())
-            
-            PushListPosition(\bar\_s())
-            While NextElement(\bar\_s())
-              *this\bar\_s()\index = ListIndex(*this\bar\_s())
-            Wend
-            PopListPosition(\bar\_s())
-          EndIf
-        EndIf
-          
-          *this\bar\_s() = AllocateStructure(_s_tabs)
-          *this\bar\_s()\color = _get_colors_()
-          *this\bar\_s()\index = Item
-          *this\bar\_s()\text\string = Text.s
-          *this\bar\_s()\height = \height - 1
-          
-          ; last opened item of the parent
-          If *this\parent\_tab And *this\parent\_tab = *this ; type = #PB_GadgetType_Panel
-            *this\parent\_item = *this\bar\_s()\index
-            *this\parent\count\items + 1 
-          EndIf
-          *this\_item = \bar\_s()\index
-          *this\count\items + 1 
-          
-          ; _set_image_(*this, \bar\_s(), Image)
-      EndWith
-      
-      ProcedureReturn Item
-    EndProcedure
-    
-    Procedure.i Tab_RemoveItem(*this._s_widget, Item.l)
-      If SelectElement(*this\bar\_s(), item)
-        If *this\bar\_s()\index = *this\index[#__s_2]
-          *this\index[#__s_2]  = item - 1
-        EndIf
-        DeleteElement(*this\bar\_s(), 1)
-        *this\count\items - 1
-        *this\bar\change = 1
-      EndIf
-    EndProcedure
-    
-    Procedure.b Tab_Draw(*this._s_widget)
-      With *this
-        
-        If Not \hide And \color\alpha
-          If \color\back <> - 1
-            ; Draw scroll bar background
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
-          EndIf
-          
-          If \bar\change
-           *this\text\x = 6
-          *this\text\height = TextHeight("A")
-           \bar\max = 0
-            
-            ForEach \bar\_s()
-              \bar\_s()\y = 2
-              \bar\_s()\x = \bar\max ;+ 1
-              \bar\_s()\height = \bar\button[#__b_3]\height-3
-              
-              \bar\_s()\text\height = *this\text\height
-              \bar\_s()\text\x = *this\text\x + \bar\_s()\x
-              \bar\_s()\text\width = *this\text\x*2 + TextWidth(\bar\_s()\text\string)
-              \bar\_s()\text\y = *this\text\y + \bar\_s()\y + (\bar\_s()\height - \bar\_s()\text\height)/2
-              
-              \bar\_s()\width = \bar\_s()\text\width
-              \bar\max + \bar\_s()\width + Bool(\bar\_s()\index <> \count\items - 1) ;+ Bool(\bar\_s()\index = \count\items - 1) 
-              \bar\_s()\text\change = 0
-            Next
-            
-            \bar\change = 0
-            
-            Static max
-            If max <> \bar\max
-              ; Debug \bar\max
-              ; *this\resize | #__resize_change
-              Bar_Update(*this)
-              ; *this\resize &~ #__resize_change
-              max = \bar\max
-            EndIf
-          EndIf
-          
-          Protected x = \bar\button[#__b_3]\x
-          Protected y = \bar\button[#__b_3]\y
-          
-          
-          ;           If *this\bar\button[#__b_2]\color\state = #__s_3 ;And 
-          ;              ;*this\bar\button[#__b_2]\color\state = #__s_3
-          ;             x = \bar\button[#__b_3]\x - \bar\button[#__b_1]\width
-          ;           EndIf
-          
-          Protected State_3, Color_frame
-          
-          ForEach \bar\_s()
-            If \index[#__s_2] = \bar\_s()\index
-              State_3 = 2
-              ;               \bar\_s()\y = 2
-              ;               \bar\_s()\height=\bar\button[#__b_3]\height-1
-            Else
-              State_3 = Bool(\index[#__s_1] = \bar\_s()\index); = \bar\_s()\color\state
-                                                              ;               \bar\_s()\y = 4
-                                                              ;               \bar\_s()\height=\bar\button[#__b_3]\height-4-1
-            EndIf
-            ; Color_frame = \color\frame[State_3]&$FFFFFF|\bar\_s()\color\alpha
-            ;Debug  State_3
-            \bar\_s()\draw = Bool(Not \bar\_s()\hide And \bar\_s()\x+\bar\_s()\width>\x+\bs And \bar\_s()\x<\x+\width-\bs)
-            
-            ; Draw back
-            DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-            _box_gradient_(\bar\vertical,x+\bar\_s()\x,y+\bar\_s()\y-Bool(\index[#__s_2]= \bar\_s()\index),\bar\_s()\width,\bar\_s()\height+Bool(\index[#__s_2]= \bar\_s()\index)*2,
-                           \bar\_s()\color\fore[State_3],\bar\_s()\color\Back[State_3], \bar\button[#__b_3]\round, \bar\_s()\color\alpha)
-            
-            ; Draw frame
-            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox(x+\bar\_s()\x,y+\bar\_s()\y-Bool(\index[#__s_2]= \bar\_s()\index)*2,\bar\_s()\width,\bar\_s()\height+Bool(\index[#__s_2]= \bar\_s()\index)*4,
-                     \bar\button[#__b_3]\round,\bar\button[#__b_3]\round,\bar\_s()\color\frame[State_3]&$FFFFFF|\bar\_s()\color\alpha<<24)
-            
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawText(x+\bar\_s()\text\x, y+\bar\_s()\text\y,\bar\_s()\text\string, $FF000000)
-          Next
-          
-          
-          Protected fabe_x, fabe_out, button_size, Size = 40, color = \parent\color\fore[\parent\color\state]
-          If Not color
-            color = \parent\color\back[\parent\color\state]
-          EndIf
-          
-          DrawingMode(#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Gradient)
-          ResetGradientColors()
-          GradientColor(0.0, Color&$FFFFFF)
-          GradientColor(0.5, Color&$FFFFFF|$A0<<24)
-          GradientColor(1.0, Color&$FFFFFF|245<<24)
-          
-          ;             ; to left
-          ;             If (\bar\button[#__b_1]\x < \bar\button[#__b_3]\x)
-          If \bar\button[#__b_2]\x < \bar\button[#__b_3]\x
-            button_size = \bar\button[#__b_1]\len+5
-          Else
-            button_size = \bar\button[#__b_2]\len/2+5
-          EndIf
-          fabe_out = Size - button_size
-          ;             Else
-          ;               fabe_out = Size
-          ;             EndIf
-          
-          If Not _bar_in_start_(\bar) 
-            fabe_x = \x[#__c_0]+(size-size/5)
-            LinearGradient(fabe_x, \y+\bs, fabe_x-fabe_out, \y+\bs)
-            RoundBox(fabe_x, \y+\bs, -Size, \height-\bs, 10,10)
-          EndIf
-          
-          ;             ; to right
-          ;             If \bar\button[#__b_2]\x > \bar\button[#__b_3]\x
-          If \bar\button[#__b_1]\x > \bar\button[#__b_3]\x
-            button_size = \bar\button[#__b_1]\len+5
-          Else
-            button_size = \bar\button[#__b_1]\len/2+5
-          EndIf
-          fabe_out = Size - button_size
-          ;             Else
-          ;               fabe_out = Size
-          ;             EndIf
-          
-          If Not _bar_in_stop_(\bar) 
-            fabe_x= \x[#__c_0]+\width[#__c_0]-(size-size/5)
-            LinearGradient(fabe_x, \y+\bs, fabe_x+fabe_out, \y+\bs)
-            RoundBox(fabe_x, \y+\bs, Size, \height-\bs ,10,10)
-          EndIf
-          
-          ResetGradientColors()
-          
-          
-          If Not \bar\button[#__b_1]\hide And (\bar\vertical And \bar\button[#__b_1]\height) Or (Not \bar\vertical And \bar\button[#__b_1]\width) ;\bar\button[#__b_1]\len
-                                                                                                                                                  ; Draw buttons
-            If \bar\button[#__b_1]\color\fore <> - 1
-              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-              _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,
-                             \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], \bar\button[#__b_1]\round, \bar\button[#__b_1]\color\alpha)
-            Else
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              RoundBox(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
-            EndIf
-            
-            ; Draw buttons frame
-            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
-            
-            ; Draw arrows
-            If \bar\button[#__b_1]\arrow\size
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              Arrow(\bar\button[#__b_1]\x+(\bar\button[#__b_1]\width-\bar\button[#__b_1]\arrow\size)/2,\bar\button[#__b_1]\y+(\bar\button[#__b_1]\height-\bar\button[#__b_1]\arrow\size)/2, 
-                    \bar\button[#__b_1]\arrow\size, Bool(\bar\vertical)+2, \bar\button[#__b_1]\color\front[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24, \bar\button[#__b_1]\arrow\type)
-            EndIf
-          EndIf
-          
-          If Not \bar\button[#__b_2]\hide And (\bar\vertical And \bar\button[#__b_2]\height) Or (Not \bar\vertical And \bar\button[#__b_2]\width)
-            ; Draw buttons
-            If \bar\button[#__b_2]\color\fore <> - 1
-              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-              _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,
-                             \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], \bar\button[#__b_2]\round, \bar\button[#__b_2]\color\alpha)
-            Else
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              RoundBox(\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
-            EndIf
-            
-            ; Draw buttons frame
-            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
-            
-            ; Draw arrows
-            If \bar\button[#__b_2]\arrow\size
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              Arrow(\bar\button[#__b_2]\x+(\bar\button[#__b_2]\width-\bar\button[#__b_2]\arrow\size)/2,\bar\button[#__b_2]\y+(\bar\button[#__b_2]\height-\bar\button[#__b_2]\arrow\size)/2, 
-                    \bar\button[#__b_2]\arrow\size, Bool(\bar\vertical), \bar\button[#__b_2]\color\front[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24, \bar\button[#__b_2]\arrow\type)
-            EndIf
-          EndIf
-          
-          
-        EndIf
-        DrawingMode(#PB_2DDrawing_Outlined)
-        Box(\x[#__c_1]-1,\y[#__c_2]+\height[#__c_2],\width[#__c_1]+2,1, \color\frame[Bool(\index[#__s_2]<>-1)*2 ])
-        
-        DrawingMode(#PB_2DDrawing_Outlined)
-        Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF0000FF)
-        ;         ;Box(\x[#__c_0],\y[#__c_0],\width[#__c_0],\height[#__c_0], $FF00F0F0)
-        ;         Box(\x[#__c_1],\y[#__c_1],\width[#__c_1],\height[#__c_1], $FF00F0F0)
-        Box(\x[#__c_2],\y[#__c_2],\width[#__c_2],\height[#__c_2], $FF00FF00)
-        
-      EndWith 
-    EndProcedure
-    
-    Procedure.b Scroll_Draw(*this._s_widget)
-      With *this
-        
-        If Not \hide And \color\alpha
-          If \color\back <> - 1
-            ; Draw scroll bar background
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
-          EndIf
-          
-          If \type = #PB_GadgetType_ScrollBar
-            If \bar\vertical
-              If (\bar\page\len+Bool(\round)*(\width/4)) = \height
-                Line( \x, \y, 1, \bar\page\len+1, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
-              Else
-                Line( \x, \y, 1, \height, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
-              EndIf
-            Else
-              If (\bar\page\len+Bool(\round)*(\height/4)) = \width
-                Line( \x, \y, \bar\page\len+1, 1, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
-              Else
-                Line( \x, \y, \width, 1, \color\front&$FFFFFF|\color\alpha<<24) ; $FF000000) ;   
-              EndIf
-            EndIf
-          EndIf
-          
-          If (\bar\vertical And \bar\button[#__b_1]\height) Or (Not \bar\vertical And \bar\button[#__b_1]\width) ;\bar\button[#__b_1]\len
-                                                                                                                 ; Draw buttons
-            If \bar\button[#__b_1]\color\fore <> - 1
-              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-              _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,
-                             \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], \bar\button[#__b_1]\round, \bar\button[#__b_1]\color\alpha)
-            Else
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              RoundBox(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
-            EndIf
-            
-            ; Draw buttons frame
-            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
-            
-            ; Draw arrows
-            If \bar\button[#__b_1]\arrow\size
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              Arrow(\bar\button[#__b_1]\x+(\bar\button[#__b_1]\width-\bar\button[#__b_1]\arrow\size)/2,\bar\button[#__b_1]\y+(\bar\button[#__b_1]\height-\bar\button[#__b_1]\arrow\size)/2, 
-                    \bar\button[#__b_1]\arrow\size, Bool(\bar\vertical), \bar\button[#__b_1]\color\front[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24, \bar\button[#__b_1]\arrow\type)
-            EndIf
-          EndIf
-          
-          If (\bar\vertical And \bar\button[#__b_2]\height) Or (Not \bar\vertical And \bar\button[#__b_2]\width)
-            ; Draw buttons
-            If \bar\button[#__b_2]\color\fore <> - 1
-              DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-              _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,
-                             \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], \bar\button[#__b_2]\round, \bar\button[#__b_2]\color\alpha)
-            Else
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              RoundBox(\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
-            EndIf
-            
-            ; Draw buttons frame
-            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
-            
-            ; Draw arrows
-            If \bar\button[#__b_2]\arrow\size
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              Arrow(\bar\button[#__b_2]\x+(\bar\button[#__b_2]\width-\bar\button[#__b_2]\arrow\size)/2,\bar\button[#__b_2]\y+(\bar\button[#__b_2]\height-\bar\button[#__b_2]\arrow\size)/2, 
-                    \bar\button[#__b_2]\arrow\size, Bool(\bar\vertical)+2, \bar\button[#__b_2]\color\front[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24, \bar\button[#__b_2]\arrow\type)
-            EndIf
-          EndIf
-          
-          If \bar\thumb\len And \type <> #PB_GadgetType_ProgressBar
-            ; Draw thumb
-            DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-            _box_gradient_(\bar\vertical,\bar\button[#__b_3]\x,\bar\button[#__b_3]\y,\bar\button[#__b_3]\width,\bar\button[#__b_3]\height,
-                           \bar\button[#__b_3]\color\fore[\bar\button[#__b_3]\color\state],\bar\button[#__b_3]\color\Back[\bar\button[#__b_3]\color\state], \bar\button[#__b_3]\round, \bar\button[#__b_3]\color\alpha)
-            
-            ; Draw thumb frame
-            DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-            RoundBox(\bar\button[#__b_3]\x,\bar\button[#__b_3]\y,\bar\button[#__b_3]\width,\bar\button[#__b_3]\height,\bar\button[#__b_3]\round,\bar\button[#__b_3]\round,\bar\button[#__b_3]\color\frame[\bar\button[#__b_3]\color\state]&$FFFFFF|\bar\button[#__b_3]\color\alpha<<24)
-            
-            If \bar\button[#__b_3]\arrow\type ; \type = #PB_GadgetType_ScrollBar
-              If \bar\button[#__b_3]\arrow\size
-                DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                Arrow(\bar\button[#__b_3]\x+(\bar\button[#__b_3]\width-\bar\button[#__b_3]\arrow\size)/2,\bar\button[#__b_3]\y+(\bar\button[#__b_3]\height-\bar\button[#__b_3]\arrow\size)/2, 
-                      \bar\button[#__b_3]\arrow\size, \bar\button[#__b_3]\arrow\direction, \bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\bar\button[#__b_3]\color\alpha<<24, \bar\button[#__b_3]\arrow\type)
-              EndIf
-            Else
-              ; Draw thumb lines
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              If \bar\vertical
-                Line(\bar\button[#__b_3]\x+(\bar\button[#__b_3]\width-\bar\button[#__b_3]\arrow\size)/2,\bar\button[#__b_3]\y+\bar\button[#__b_3]\height/2-3,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
-                Line(\bar\button[#__b_3]\x+(\bar\button[#__b_3]\width-\bar\button[#__b_3]\arrow\size)/2,\bar\button[#__b_3]\y+\bar\button[#__b_3]\height/2,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
-                Line(\bar\button[#__b_3]\x+(\bar\button[#__b_3]\width-\bar\button[#__b_3]\arrow\size)/2,\bar\button[#__b_3]\y+\bar\button[#__b_3]\height/2+3,\bar\button[#__b_3]\arrow\size,1,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
-              Else
-                Line(\bar\button[#__b_3]\x+\bar\button[#__b_3]\width/2-3,\bar\button[#__b_3]\y+(\bar\button[#__b_3]\height-\bar\button[#__b_3]\arrow\size)/2,1,\bar\button[#__b_3]\arrow\size,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
-                Line(\bar\button[#__b_3]\x+\bar\button[#__b_3]\width/2,\bar\button[#__b_3]\y+(\bar\button[#__b_3]\height-\bar\button[#__b_3]\arrow\size)/2,1,\bar\button[#__b_3]\arrow\size,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
-                Line(\bar\button[#__b_3]\x+\bar\button[#__b_3]\width/2+3,\bar\button[#__b_3]\y+(\bar\button[#__b_3]\height-\bar\button[#__b_3]\arrow\size)/2,1,\bar\button[#__b_3]\arrow\size,\bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF|\color\alpha<<24)
-              EndIf
-              
-            EndIf
-          EndIf
-          
-          
-        EndIf
-        
-        
-        ;                 DrawingMode(#PB_2DDrawing_Outlined)
-        ;                 Box(\x[#__c_2],\y[#__c_2],\width[#__c_2],\height[#__c_2], $FF00FF00)
-        
-      EndWith 
-    EndProcedure
-    
-    Procedure.i Spin_Draw(*this._s_widget) 
-      Scroll_Draw(*this)
-      
-      DrawingMode(#PB_2DDrawing_Outlined)
-      Box(*this\bar\button[#__b_1]\x-2,*this\y[#__c_1],*this\x[#__c_2]+*this\width[#__c_3] - *this\bar\button[#__b_1]\x+3,*this\height[#__c_1], *this\color\frame[*this\color\state])
-      Box(*this\x[#__c_1],*this\y[#__c_1],*this\width[#__c_1],*this\height[#__c_1], *this\color\frame[*this\color\state])
-      
-      
-      ; Draw string
-      If *this\text And *this\text\string
-        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawRotatedText(*this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[0]) ; *this\color\state])
-      EndIf
-    EndProcedure
-    
-    Procedure.b Track_Draw(*this._s_widget)
-      ;       *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
-      ;        *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
-      ;       *this\bar\button[#__b_3]\color\state = #__s_2
-      
-      Scroll_Draw(*this)
-      
-      With *this
-        If \type = #PB_GadgetType_TrackBar And \bar\thumb\len
-          Protected i, _thumb_ = (\bar\button[3]\len/2)
-          DrawingMode(#PB_2DDrawing_XOr)
-          
-          If \bar\vertical
-            If \bar\mode & #PB_TrackBar_Ticks
-              If \bar\percent > 1
-                For i=\bar\min To \bar\page\end
-                  Line(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3+4)-1, 
-                       (\bar\area\pos + _thumb_ + (i-\bar\min) * \bar\percent),3, 1,\bar\button[#__b_1]\color\frame)
-                Next
-              Else
-                Box(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3+4)-1,\bar\area\pos + _thumb_, 3, *this\bar\area\len - *this\bar\thumb\len+1, \bar\button[#__b_1]\color\frame)
-              EndIf
-            EndIf
-            
-            Line(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3),\bar\area\pos + _thumb_,3, 1,\bar\button[#__b_3]\color\Frame)
-            Line(\bar\button[3]\x+Bool(\bar\inverted)*(\bar\button[3]\width-3),\bar\area\pos + *this\bar\area\len - *this\bar\thumb\len + _thumb_,3, 1,\bar\button[#__b_3]\color\Frame)
-            
-          Else
-            If \bar\mode & #PB_TrackBar_Ticks
-              If \bar\percent > 1
-                For i=0 To \bar\page\end-\bar\min
-                  Line((\bar\area\pos + _thumb_ + i * \bar\percent), 
-                       \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3+4)-1,1,3,\bar\button[#__b_3]\color\Frame)
-                Next
-              Else
-                Box(\bar\area\pos + _thumb_, \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3+4)-1,*this\bar\area\len - *this\bar\thumb\len+1, 3, \bar\button[#__b_1]\color\frame)
-              EndIf
-            EndIf
-            
-            Line(\bar\area\pos + _thumb_, \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3),1,3,\bar\button[#__b_3]\color\Frame)
-            Line(\bar\area\pos + *this\bar\area\len - *this\bar\thumb\len + _thumb_, \bar\button[3]\y+Bool(Not \bar\inverted)*(\bar\button[3]\height-3),1,3,\bar\button[#__b_3]\color\Frame)
-          EndIf
-        EndIf
-      EndWith    
-      
-    EndProcedure
-    
-    Procedure.b Progress_Draw(*this._s_widget)
-      *this\bar\button[#__b_1]\color\state = Bool(Not *this\bar\inverted) * #__s_2
-      *this\bar\button[#__b_2]\color\state = Bool(*this\bar\inverted) * #__s_2
-      
-      Scroll_Draw(*this)
-      
-      With *this
-        If \type = #PB_GadgetType_ProgressBar 
-          
-          ;           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_alphaBlend)
-          ;           RoundBox(\bar\thumb\pos-1-\bar\button[#__b_2]\round,\bar\button[#__b_1]\y,1+\bar\button[#__b_2]\round,\bar\button[#__b_1]\height,
-          ;                    \bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\back[\bar\button[#__b_1]\color\state]&$FFFFFF|\bar\button[#__b_1]\color\alpha<<24)
-          ;           RoundBox(\bar\thumb\pos+\bar\button[#__b_2]\round,\bar\button[#__b_1]\y,1+\bar\button[#__b_2]\round,\bar\button[#__b_1]\height,
-          ;                    \bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\back[\bar\button[#__b_2]\color\state]&$FFFFFF|\bar\button[#__b_2]\color\alpha<<24)
-          
-          If \bar\button[#__b_1]\round
-            If \bar\vertical
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              Line(\bar\button[#__b_1]\x, \bar\thumb\pos-\bar\button[#__b_1]\round, 1,\bar\button[#__b_1]\round, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state])
-              Line(\bar\button[#__b_1]\x+\bar\button[#__b_1]\width-1, \bar\thumb\pos-\bar\button[#__b_1]\round, 1,\bar\button[#__b_1]\round, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state])
-              
-              Line(\bar\button[#__b_2]\x, \bar\thumb\pos, 1,\bar\button[#__b_2]\round, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state])
-              Line(\bar\button[#__b_2]\x+\bar\button[#__b_2]\width-1, \bar\thumb\pos, 1,\bar\button[#__b_2]\round, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state])
-            Else
-              DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-              Line(\bar\thumb\pos-\bar\button[#__b_1]\round,\bar\button[#__b_1]\y, \bar\button[#__b_1]\round, 1, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state])
-              Line(\bar\thumb\pos-\bar\button[#__b_1]\round,\bar\button[#__b_1]\y+\bar\button[#__b_1]\height-1, \bar\button[#__b_1]\round, 1, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state])
-              
-              Line(\bar\thumb\pos,\bar\button[#__b_2]\y, \bar\button[#__b_2]\round, 1, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state])
-              Line(\bar\thumb\pos,\bar\button[#__b_2]\y+\bar\button[#__b_2]\height-1, \bar\button[#__b_2]\round, 1, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state])
-            EndIf
-          EndIf
-          
-          If \bar\page\pos > \bar\min
-            If \bar\vertical
-              If \bar\button[#__b_1]\color\fore <> - 1
-                DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x+1,\bar\thumb\pos-1-\bar\button[#__b_2]\round,\bar\button[#__b_1]\width-2,1+\bar\button[#__b_2]\round,
-                               \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha)
-                
-              EndIf
-              
-              ; Draw buttons
-              If \bar\button[#__b_2]\color\fore <> - 1
-                DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x+1,\bar\thumb\pos,\bar\button[#__b_2]\width-2,1+\bar\button[#__b_2]\round,
-                               \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha)
-              EndIf
-            Else
-              If \bar\button[#__b_1]\color\fore <> - 1
-                DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                _box_gradient_(\bar\vertical,\bar\thumb\pos-1-\bar\button[#__b_2]\round,\bar\button[#__b_1]\y+1,1+\bar\button[#__b_2]\round,\bar\button[#__b_1]\height-2,
-                               \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha)
-                
-              EndIf
-              
-              ; Draw buttons
-              If \bar\button[#__b_2]\color\fore <> - 1
-                DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                _box_gradient_(\bar\vertical,\bar\thumb\pos,\bar\button[#__b_2]\y+1,1+\bar\button[#__b_2]\round,\bar\button[#__b_2]\height-2,
-                               \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha)
-              EndIf
-            EndIf
-          EndIf
-          
-        EndIf
-      EndWith
-      
-      ; Draw string
-      If *this\text And *this\text\string And (*this\height > *this\text\height)
-        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-        DrawRotatedText(*this\text\x, *this\text\y, *this\text\string, *this\text\rotate, *this\bar\button[#__b_3]\color\frame[*this\bar\button[#__b_3]\color\state])
-      EndIf
-    EndProcedure
-    
-    Procedure.b Splitter_Draw(*this._s_widget)
-      With *this
-        DrawingMode(#PB_2DDrawing_Outlined);|#PB_2DDrawing_AlphaBlend)
-        
-        
-        If \bar\mode 
-          If \bar\vertical ; horisontal
-            Box(\x, \bar\thumb\pos,\width,\bar\thumb\len,$FFFFFFFF)
-          Else
-            Box(\bar\thumb\pos,\y,\bar\thumb\len, \height,$FFFFFFFF)
-          EndIf
-          
-          If \bar\vertical ; horisontal
-            Box(\x+1, \bar\thumb\pos+1,\width-2,\bar\thumb\len-2,\bar\button[#__b_3]\Color\Frame[#__s_2])
-          Else
-            Box(\bar\thumb\pos+1,\y+1,\bar\thumb\len-2, \height-2,\bar\button[#__b_3]\Color\Frame[#__s_2])
-          EndIf
-          
-          If Not \splitter\g_first And (Not \splitter\first Or (\splitter\first And Not \splitter\first\splitter))
-            Box(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-          EndIf
-          If Not \splitter\g_second And (Not \splitter\second Or (\splitter\second And Not \splitter\second\splitter))
-            Box(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button\color\frame[\bar\button[#__b_2]\Color\state])
-          EndIf
-          
-          ;           If \bar\vertical ; horisontal
-          ;             Box(\x, \bar\thumb\pos+\bar\thumb\len/2,\width,1,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-          ;           Else
-          ;             Box(\bar\thumb\pos+\bar\thumb\len/2,\y,1, \height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-          ;           EndIf
-          ;           
-          ;           If Not \splitter\g_first And (Not \splitter\first Or (\splitter\first And Not \splitter\first\splitter))
-          ; ;             Line(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y, \bar\button[#__b_1]\width, 1, \bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-          ; ;             Line(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y, 1, \bar\button[#__b_1]\height, \bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-          ; ;             Line(\bar\button[#__b_1]\x+\bar\button[#__b_1]\width-1, \bar\button[#__b_1]\y, 1, \bar\button[#__b_1]\height, \bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-          ; ;             Line(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y+\bar\button[#__b_1]\height-1, \bar\button[#__b_1]\width, 1, $FFFFFFFF)
-          ; ;             ; Box(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-          ;              Box(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,$FFFFFFFF)
-          ;           EndIf
-          ;           If Not \splitter\g_second And (Not \splitter\second Or (\splitter\second And Not \splitter\second\splitter))
-          ; ;             Line(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y, \bar\button[#__b_2]\width, 1, $FFFFFFFF)
-          ; ;             Line(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y, 1, \bar\button[#__b_2]\height, \bar\button\color\frame[\bar\button[#__b_2]\Color\state])
-          ; ;             Line(\bar\button[#__b_2]\x+\bar\button[#__b_2]\width-1, \bar\button[#__b_2]\y, 1, \bar\button[#__b_2]\height, \bar\button\color\frame[\bar\button[#__b_2]\Color\state])
-          ; ;             Line(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y+\bar\button[#__b_2]\height-1, \bar\button[#__b_2]\width, 1, \bar\button\color\frame[\bar\button[#__b_2]\Color\state])
-          ; ;           ;  Box(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button\color\frame[\bar\button[#__b_2]\Color\state])
-          ;             Box(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,$FFFFFFFF)
-          ;           EndIf
-          ;           
-          ;           ;Box(\x, \y,\width,\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-        Else
-          If Not \splitter\g_first And (Not \splitter\first Or (\splitter\first And Not \splitter\first\splitter))
-            Box(\bar\button[#__b_1]\x, \bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button\color\frame[\bar\button[#__b_1]\Color\state])
-          EndIf
-          If Not \splitter\g_second And (Not \splitter\second Or (\splitter\second And Not \splitter\second\splitter))
-            Box(\bar\button[#__b_2]\x, \bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button\color\frame[\bar\button[#__b_2]\Color\state])
-          EndIf
-          
-          If \bar\vertical ; horisontal
-            If \bar\button[#__b_3]\width > 35
-              Circle(\bar\button[#__b_3]\X[1]-(\bar\button[#__b_3]\round*2+2)*2-2, \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
-              Circle(\bar\button[#__b_3]\X[1]+(\bar\button[#__b_3]\round*2+2)*2+2, \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
-            EndIf
-            If \bar\button[#__b_3]\width > 20
-              Circle(\bar\button[#__b_3]\X[1]-(\bar\button[#__b_3]\round*2+2), \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
-              Circle(\bar\button[#__b_3]\X[1]+(\bar\button[#__b_3]\round*2+2), \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
-            EndIf
-          Else
-            If \bar\button[#__b_3]\Height > 35
-              Circle(\bar\button[#__b_3]\x[1],\bar\button[#__b_3]\Y[1]-(\bar\button[#__b_3]\round*2+2)*2-2, \bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
-              Circle(\bar\button[#__b_3]\x[1],\bar\button[#__b_3]\Y[1]+(\bar\button[#__b_3]\round*2+2)*2+2, \bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
-            EndIf
-            If \bar\button[#__b_3]\Height > 20
-              Circle(\bar\button[#__b_3]\x[1],\bar\button[#__b_3]\Y[1]-(\bar\button[#__b_3]\round*2+2), \bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
-              Circle(\bar\button[#__b_3]\x[1],\bar\button[#__b_3]\Y[1]+(\bar\button[#__b_3]\round*2+2), \bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
-            EndIf
-          EndIf
-          
-          Circle(\bar\button[#__b_3]\X[1], \bar\button[#__b_3]\y[1],\bar\button[#__b_3]\round,\bar\button[#__b_3]\Color\Frame[#__s_2])
-          
-        EndIf
-      EndWith
-    EndProcedure
-    
-    Procedure.b Bar_Draw(*this._s_widget)
-      With *this
-        If \text\string  And (*this\type = #PB_GadgetType_Spin Or
-                              *this\type = #PB_GadgetType_ProgressBar)
-          
-          If \text\fontID 
-            DrawingFont(\text\fontID)
-          EndIf
-          
-          If \text\change Or *this\resize & #__resize_change
-            *this\text\height = TextHeight("A")
-            *this\text\width = TextWidth(*this\text\string)
-            
-            If *this\type = #PB_GadgetType_ProgressBar
-              *this\text\rotate = (Bool(*this\bar\vertical And *this\bar\inverted) * 90) +
-                                  (Bool(*this\bar\vertical And Not *this\bar\inverted) * 270)
-            EndIf
-            
-            _text_change_(*this, *this\x[#__c_2], *this\y[#__c_2], *this\width[#__c_2], *this\height[#__c_2])
-          EndIf
-        EndIf
-        
-        Select \type
-          Case #__Type_Spin           : Spin_Draw(*this)
-          Case #__Type_TabBar         : Tab_Draw(*this)
-          Case #__Type_TrackBar       : Track_Draw(*this)
-          Case #__Type_ScrollBar      : Scroll_Draw(*this)
-          Case #__Type_ProgressBar    : Progress_Draw(*this)
-          Case #__Type_Splitter       : Splitter_Draw(*this)
-        EndSelect
-        
-        ;            DrawingMode(#PB_2DDrawing_Outlined)
-        ;            Box(\x[#__c_2],\y[#__c_2],\width[#__c_2],\height[#__c_2], $FF00FF00)
-        
-        If *this\text\change <> 0
-          *this\text\change = 0
-        EndIf
-      EndWith
     EndProcedure
     
     
@@ -4945,11 +5006,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         CompilerIf Defined(Bar_events, #PB_Procedure)
           If \scroll\v
             Repaint | Bar_events(\scroll\v, event_type, \root\mouse\x, \root\mouse\y)
-            scroll | Bool(*this\scroll\v\from <>- 1)
+            scroll | Bool(*this\scroll\v\bar\from <>- 1)
           EndIf       
           If \scroll\h
             Repaint | Bar_events(\scroll\h, event_type, \root\mouse\x, \root\mouse\y)
-            scroll | Bool(*this\scroll\h\from <>- 1)
+            scroll | Bool(*this\scroll\h\bar\from <>- 1)
           EndIf
         CompilerEndIf
         
@@ -7399,7 +7460,7 @@ CompilerIf Not Defined(widget, #PB_Module)
            event_type = #__Event_LeftButtonUp
           ; Debug ""+mouse_x +" - "+ event_type +" "+ *this\root\mouse\delta\x;Bool(Abs((mouse_x-*this\root\mouse\delta\x)+(mouse_y-*this\root\mouse\delta\y)) >= 6)
           
-          If *this = Root()\entered ;And *this\scroll\v\from =- 1 And *this\scroll\h\from =- 1 ;And Not *this\root\key; And Not *this\root\mouse\buttons
+          If *this = Root()\entered ;And *this\scroll\v\bar\from =- 1 And *this\scroll\h\bar\from =- 1 ;And Not *this\root\key; And Not *this\root\mouse\buttons
             
             If _from_point_(mouse_x, mouse_y, *this, [2]) 
               
@@ -8439,7 +8500,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If *this\index[#__s_2] <> State 
           *this\index[#__s_2] = State
-          ClearDebugOutput()
+          ; ClearDebugOutput()
           
           PushListPosition(GetChildrens(*this))
           ForEach GetChildrens(*this)
@@ -8741,7 +8802,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         CompilerEndIf
         
-        \from =- 1
         *this\index[#__s_1] =- 1
         *this\index[#__s_2] = 0
         
@@ -9935,7 +9995,14 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure.f GetState(*this._s_widget)
       If *this\type = #PB_GadgetType_Editor
-        ProcedureReturn *this\index[2] ; *this\text\caret\pos
+        ProcedureReturn *this\index[#__s_2] ; *this\text\caret\pos
+        
+      ElseIf *this\type = #PB_GadgetType_Panel
+        ProcedureReturn *this\index[#__s_2] 
+        
+      ElseIf *this\type = #PB_GadgetType_TabBar
+        ProcedureReturn *this\index[#__s_2] 
+        
       Else
         ProcedureReturn *this\bar\page\pos
       EndIf
@@ -11549,6 +11616,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       structures::*event\widget = *this
       structures::*event\data = *data
       structures::*event\type = eventtype
+      structures::*event\item = eventitem
       
       If Not *this\root\count\event
         ; 
@@ -12641,8 +12709,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 1927
-; FirstLine = 130
-; Folding = QAAAQAAAAAAEAAAAAAAAAAAAAAwAAAABAAAAAAAAAvfNAAAAAAAAAAAAGAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAPAAAAAAYAAAAAAAEAAAAAAAAAQAAGAAAgAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAw-BABBgDJAAAAADAAADvAAAAAA9AAAAgAAAaNAAAxHAAAAAAAAAAAAAAAAAAAAAAAAAAAQAEAAAAAAAAAAYDAAAAAAgAAAAAQIAAAAA9
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; Folding = QAAAQAAA98v---4--rf-v-f-AAAEAAAAAAAAAAAAAAwAAAA---------fgBAAAAAAAAAAAAgAEAAAAAAAAAAAAAAAwDAAAAAAGAAAAAAABAwDAAAAAAEAgBAAAIAAAAAAAIAAAAAAAAAAAAAAAAAACAAwAAAAAAAAAAAAAAAAAAAAACA5PAQQA5QCAACAwAAAwwLAAAAAAPAAAAIAAgWDAAQ9BAAAAGAAAAAAAAAAAAAAAAAAAAAAEABAAAAAAgAAA3AAAAACU5AAAAAECAAAAA-
 ; EnableXP
