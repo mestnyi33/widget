@@ -44,9 +44,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       structures::*event\root
     EndMacro
     
-    Macro Widget()
-      structures::*event\widget
-    EndMacro
+;     Macro Widget()
+;       structures::*event\widget
+;     EndMacro
     
     Macro GetActive() ; Returns active window
       structures::*event\active
@@ -286,7 +286,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Declare   Events(*this, event_type.l, mouse_x.l, mouse_y.l, _wheel_x_.b=0, _wheel_y_.b=0)
     Declare   Open(Window, x.l=0,y.l=0,width.l=#PB_Ignore,height.l=#PB_Ignore, Flag.i=#Null, *callback=#Null, Canvas=#PB_Any)
-    Declare   OpenWindow_(Window, x.l,y.l,width.l,height.l, Title.s, Flag.i=#Null, ParentID.i=#Null)
     Declare.i Gadget(Type.l, Gadget.i, X.l, Y.l, Width.l, Height.l, Flag.i=#Null,  window=-1, *CallBack=#Null)
   EndDeclareModule
   
@@ -855,7 +854,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
           EndIf
           
-          If \bar\change
+          If \bar\change Or \resize & #__resize_change
             *this\text\x = 6
             *this\text\height = TextHeight("A")
             \bar\max = 0
@@ -2336,9 +2335,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure   Bar_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l, _wheel_x_.b=0, _wheel_y_.b=0)
       Protected Repaint
-      
-      ; set event widget 
-      Widget() = *this
       
       If event_type = #__Event_MouseEnter
         Repaint | #True
@@ -8088,9 +8084,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure   Window_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l)
       Protected Repaint
       
-      ; set event widget 
-      Widget() = *this
-      
       If event_type = #__Event_MouseEnter
         Repaint = #True
       EndIf
@@ -9664,8 +9657,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure SetParent(*this._s_widget, *parent._s_widget, parent_item.l=0)
       If *this\parent <> *Parent
-        Widget() = *this
-        
         If *this\parent
           *this\parent\count\childrens - 1
           *this\root\count\childrens - Bool(*this\parent <> *this\root)
@@ -9731,122 +9722,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         EndIf
       EndIf
-    EndProcedure
-    
-    Procedure.i _SetParent(*this._s_widget, *Parent._s_widget, parent_item.l=0)
-      Protected x.l, y.l, *LastParent._s_widget
-      
-      With *this
-        If *this > 0 
-          widget() = *this
-          
-          ; set first item
-          If parent_item =- 1
-            parent_item = *parent\_item 
-          EndIf
-          
-          ; set root parent
-          If Not *Parent\type And *this <> *Parent\parent
-            ;  Debug ""+*this+" "+*Parent+" "+*Parent\parent+" "+*Parent\type
-            *Parent = *Parent\parent
-          EndIf
-          
-          If *Parent <> \parent Or \_parent_item <> parent_item : \_parent_item = parent_item
-            If \parent And 
-               \parent <> *Parent And 
-               \parent\count\childrens > 0
-              
-              ;             ChangeCurrentElement(\parent\childrens(), *this\adress) 
-              ;             DeleteElement(\parent\childrens())  
-              ChangeCurrentElement(GetChildrens(*this\parent), *this\adress)
-              MoveElement(GetChildrens(*this\parent), #PB_List_After, *Parent\adress)
-              
-              While PreviousElement(GetChildrens(*this\parent)) 
-                If Child(GetChildrens(*this\parent), *this)
-                  MoveElement(GetChildrens(*this\parent), #PB_List_After, *this\adress)
-                EndIf
-              Wend
-              
-              ;             If \parent\root <> *Parent\root
-              ;               \root\count\childrens - 1
-              ;             EndIf
-              ;             
-              ;             \parent\count\childrens - 1
-              *LastParent = \parent
-            EndIf
-            
-            \parent = *Parent
-            \root = *Parent\root
-            \index = \root\count\childrens : \root\count\childrens + 1 
-            
-            If \parent = \root
-              \window = \parent
-            Else
-              \window = \parent\window
-              \parent\count\childrens + 1 
-              \level = \parent\level + 1
-            EndIf
-            
-            If Not (*this\parent And 
-                    *this\parent\type = #PB_GadgetType_Splitter)
-              ; Add new children to the parent
-              LastElement(GetChildrens(*this)) 
-              \adress = AddElement(GetChildrens(*this))
-              GetChildrens(*this) = *this 
-            EndIf
-            
-            ; ???????? ??? ??????? ???????? ????????,
-            ; ? ????? ??? ??? ??????????? ???? ?? ??????
-            \hide = Bool(\parent\hide Or \_parent_item <> \parent\_tab\index[#__s_2])
-            
-            ; Make count type
-            If \window
-              Static NewMap typecount.l()
-              
-              \type_index = typecount(Hex(\window)+"_"+Hex(\type))
-              typecount(Hex(\window)+"_"+Hex(\type)) + 1
-              
-              \type_count = typecount(Hex(\parent)+"__"+Hex(\type))
-              typecount(Hex(\parent)+"__"+Hex(\type)) + 1
-            EndIf
-            
-            If *LastParent
-              \root\repaint = #True
-              
-              If \scroll
-                If \scroll\v
-                  \scroll\v\root = \root
-                  \scroll\v\window = \window
-                EndIf
-                If \scroll\h
-                  \scroll\v\root = \root
-                  \scroll\h\window = \window
-                EndIf
-              EndIf
-              
-              x = \x[#__c_3]
-              y = \y[#__c_3]
-              
-              If \parent\scroll And \parent\scroll\v And \parent\scroll\h
-                ; for the scroll area childrens
-                x-\parent\scroll\h\bar\page\pos
-                y-\parent\scroll\v\bar\page\pos
-              EndIf
-              
-              Resize(*this, x, y, #PB_Ignore, #PB_Ignore)
-              
-              If *LastParent <> *Parent And 
-                 *LastParent\root <> *Parent\root
-                
-                Select Root()
-                  Case *LastParent\root : ReDraw(*Parent)
-                  Case *Parent\root     : ReDraw(*LastParent)
-                EndSelect
-              EndIf
-            EndIf
-          EndIf
-        EndIf
-      EndWith
     EndProcedure
     
     Procedure.i SetAlignment(*this._s_widget, Mode.l, Type.l=1)
@@ -11300,9 +11175,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         ProcedureReturn 
       EndIf
       
-      ; set event widget 
-      Widget() = *this
-      
       If *this\type = #__Type_Window
         Repaint = Window_Events(*this, event_type, mouse_x, mouse_y)
       EndIf
@@ -11371,7 +11243,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       Select eventtype
         Case #__Event_repaint 
           Repaint = 1
-          Debug " -- Canvas repaint -- " + widget()\row\count
+          Debug " -- Canvas repaint -- "; + widget()\row\count
           
         Case #__Event_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           Repaint = Resize(Root(), #PB_Ignore, #PB_Ignore, Width, Height)  
@@ -11674,12 +11546,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       ResizeGadget(canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow())-GadgetX(canvas)*2, WindowHeight(EventWindow())-GadgetY(canvas)*2)
     EndProcedure
     
-    Procedure OpenWindow_(Window, x.l,y.l,width.l,height.l, Title.s, Flag.i=#Null, ParentID.i=#Null)
-      Protected w = OpenWindow(Window, x,y,width,height, Title, Flag, ParentID) : If Window =- 1 : Window = w : EndIf
-      Protected Canvas = Open(Window, 0, 0, Width, Height, #PB_Canvas_Container);, @CallBack()) ;: CloseGadgetList()
-      ProcedureReturn Root()
-    EndProcedure
-    
     Procedure Open(window, x.l=0,y.l=0,width.l=#PB_Ignore,height.l=#PB_Ignore, flag.i=#Null, *CallBack=#Null, Canvas=#PB_Any)
       Protected g 
       
@@ -11699,7 +11565,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       g = CanvasGadget(Canvas, X, Y, Width, Height, Flag|#PB_Canvas_Keyboard) : If Canvas=-1 : Canvas=g : EndIf
       Root() = AllocateStructure(_s_root)
       Root()\opened = Root()
-      
       ; Root()\widget = AllocateStructure(_s_widget)
       
       Root()\class = "Root"
@@ -11813,87 +11678,12 @@ EndMacro
 
 ;-
 CompilerIf #PB_Compiler_IsMainFile
+  EnableExplicit
   Uselib(widget)
   
-  Macro OpenWindow(Window, X, Y, Width, Height, Title, Flag=0, ParentID=0)
-    widget::OpenWindow_(Window, X, Y, Width, Height, Title, Flag, ParentID)
-  EndMacro
+  Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
-  
-  
-  Procedure v_GadgetCallBack()
-    Protected Repaint.b, state = GetGadgetState(EventGadget())
-    ;ProcedureReturn
-    ForEach Root()\_childrens()
-      If Root()\_childrens()\bar\vertical And Root()\_childrens()\type = GadgetType(EventGadget())
-        Repaint | SetState(Root()\_childrens(), state)
-      EndIf
-    Next
-    
-    If Repaint
-      SetWindowTitle(EventWindow(), Str(state))
-      ReDraw(Root())
-    EndIf
-  EndProcedure
-  
-  Procedure h_GadgetCallBack()
-    Protected Repaint.b, state = GetGadgetState(EventGadget())
-    ;ProcedureReturn
-    ForEach Root()\_childrens()
-      If Not Root()\_childrens()\bar\vertical And Root()\_childrens()\type = GadgetType(EventGadget())
-        Repaint | SetState(Root()\_childrens(), state)
-      EndIf
-    Next
-    
-    If Repaint
-      SetWindowTitle(EventWindow(), Str(state))
-      ReDraw(Root())
-    EndIf
-  EndProcedure
-  
-  Procedure v_CallBack(GetState, type)
-    ;ProcedureReturn
-    Select type
-      Case #PB_GadgetType_ScrollBar
-        SetGadgetState(2, GetState)
-      Case #PB_GadgetType_TrackBar
-        SetGadgetState(12, GetState)
-      Case #PB_GadgetType_ProgressBar
-        ;SetGadgetState(22, GetState)
-      Case #PB_GadgetType_Splitter
-        ; SetGadgetState(Splitter_4, GetState)
-    EndSelect
-    
-    SetWindowTitle(EventWindow(), Str(GetState))
-  EndProcedure
-  
-  Procedure h_CallBack(GetState, type)
-    ;ProcedureReturn
-    Select type
-      Case #PB_GadgetType_ScrollBar
-        SetGadgetState(1, GetState)
-      Case #PB_GadgetType_TrackBar
-        SetGadgetState(11, GetState)
-      Case #PB_GadgetType_ProgressBar
-        ;SetGadgetState(21, GetState)
-      Case #PB_GadgetType_Splitter
-        ; SetGadgetState(Splitter_3, GetState)
-    EndSelect
-    
-    SetWindowTitle(EventWindow(), Str(GetState))
-  EndProcedure
-  
-  Procedure ev()
-    Debug ""+Widget() ;+" "+ Type() +" "+ Item() +" "+ Data()     ;  EventWindow() +" "+ EventGadget() +" "+ 
-  EndProcedure
-  
-  Procedure ev2()
-    ;Debug "  "+Widget() +" "+ Type() +" "+ Item() +" "+ Data()   ;  EventWindow() +" "+ EventGadget() +" "+ 
-  EndProcedure
-  
-  
-  If OpenWindow(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     ; example scroll gadget bar
     TextGadget       (-1,  10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#PB_Text_Center)
     ScrollBarGadget  (101,  10, 42, 250,  20, 30, 100, 30)
@@ -11904,19 +11694,16 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; example scroll widget bar
     widget::Text(300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#__Text_Center)
-    widget::Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
-    widget::SetState    (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Scroll  (300+10, 42+30, 250,  10, 30, 150, 230, #__bar_inverted, 7)
-    widget::SetState    (Widget(),  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
+    *w = widget::Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
+    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
+    *w = widget::Scroll  (300+10, 42+30, 250,  10, 30, 150, 230, #__bar_inverted, 7)
+    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
     widget::Text(300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#__Text_Right)
-    widget::Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    widget::SetState    (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
-    widget::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_inverted, 7)
-    widget::SetState    (Widget(), 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
+    *w = widget::Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
+    widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
+    *w = widget::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_inverted, 7)
+    widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
     
-    BindGadgetEvent(101,@h_GadgetCallBack())
-    BindGadgetEvent(201,@v_GadgetCallBack())
-    ; Bind(@ev(), Widget())
     
     ; example_2 track gadget bar
     TextGadget    (-1, 10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
@@ -11932,23 +11719,21 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; example_2 track widget bar
     widget::Text(300+10,  140+10, 250, 20,"TrackBar Standard", #__Text_Center)
-    widget::Track(300+10,  140+40, 250, 20, 0, 10000, 0)
-    widget::SetState(Widget(), 5000)
-    widget::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_inverted)
-    widget::SetState(Widget(), 5000)
+    *w = widget::Track(300+10,  140+40, 250, 20, 0, 10000, 0)
+    widget::SetState(*w, 5000)
+    *w = widget::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_inverted)
+    widget::SetState(*w, 5000)
     widget::Text(300+10, 140+90, 250, 20, "TrackBar Ticks", #__Text_Center)
     ;     widget::Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
-    widget::Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    widget::SetState(Widget(), 60)
+    *w = widget::Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
+    widget::SetState(*w, 60)
     widget::Text(300+60, 140+160, 200, 20, "TrackBar Vertical", #__Text_Right)
-    widget::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    widget::SetAttribute(Widget(), #__bar_Inverted, 0)
-    widget::SetState(Widget(), 8000)
-    widget::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_inverted)
-    widget::SetState(Widget(), 8000)
+    *w = widget::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
+    widget::SetAttribute(*w, #__bar_Inverted, 0)
+    widget::SetState(*w, 8000)
+    *w = widget::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_inverted)
+    widget::SetState(*w, 8000)
     
-    BindGadgetEvent(1111,@h_GadgetCallBack())
-    BindGadgetEvent(1212,@v_GadgetCallBack())
     
     ; example_3 progress gadget bar
     TextGadget       (-1,  10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
@@ -11960,19 +11745,17 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; example_3 progress widget bar
     widget::Text(300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#__Text_Center)
-    widget::Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
-    widget::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_inverted, 4)
-    widget::SetState   (Widget(),  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    *w = widget::Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
+    widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
+    *w = widget::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_inverted, 4)
+    widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
     widget::Text(300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#__Text_Right)
-    widget::Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
-    widget::SetAttribute(Widget(), #__bar_Inverted, 0)
-    widget::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    widget::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_inverted)
-    widget::SetState   (Widget(), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+    *w = widget::Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
+    widget::SetAttribute(*w, #__bar_Inverted, 0)
+    widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+    *w = widget::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_inverted)
+    widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
     
-    BindGadgetEvent(2121,@h_GadgetCallBack())
-    BindGadgetEvent(2222,@v_GadgetCallBack())
     
     ;{ PB splitter Gadget
     Button_0 = StringGadget(#PB_Any, 0, 0, 0, 0, "") ; as they will be sized automatically
@@ -12175,5 +11958,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------48-----------------------
+; Folding = -----------4-------------f+---Hf-4---------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------48---------------------
 ; EnableXP
