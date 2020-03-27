@@ -191,7 +191,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 12, "Tree_5", -1 )
     AddItem(*g, 13, "Tree_6", -1 )
     
-    SetGadgetData(g_Canvas, Splitter(8, 8, 306, 491-16,*g, g, #__flag_autosize))
+    SetGadgetData(g_Canvas, Splitter(8, 8, 306, 491-16, g,*g, #__flag_autosize))
    
     Repeat
       Select WaitWindowEvent()   
@@ -202,8 +202,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 193
-; FirstLine = 20
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = 0--7-
 ; EnableXP

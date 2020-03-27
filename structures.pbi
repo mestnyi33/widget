@@ -190,14 +190,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       mode.i
       fixed.l
       
-      ;index.l ; parent tab index
+      index.l ; selected tab index
       from.l  ; entered button index
       state.l ; selected button index
       
       max.l
       min.l
       hide.b
-      change.b
+      change.b ; tab items to redraw
       percent.f
       increment.f
       vertical.b
@@ -209,7 +209,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       thumb._s_page  
       button._s_button[4]
       
-      *_sel._s_tabs
       List *_s._s_tabs()
     EndStructure
     
@@ -444,6 +443,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       draw.b
       type.b
+      hide.b[2] ; hide[1] - state
       
 ;       _y.l[constants::#__c]
 ;       _x.l[constants::#__c]
@@ -475,9 +475,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       from.l
       
       ;mode.l  ; track bar
-      change.l[2]
+      change.l;[2]
       cursor.l[2]
-      hide.b[2]
       vertical.b
       
       

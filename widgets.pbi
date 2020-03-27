@@ -45,7 +45,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
 ;     Macro Widget()
-;       structures::*event\widget
+;       Root()\_childrens()
 ;     EndMacro
     
     Macro GetActive() ; Returns active window
@@ -653,12 +653,9 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     ;- BARs
+    Declare.b Tab_Draw(*this)
     Declare.b Bar_Update(*this)
-    
-    Macro Area(_parent_, _width_, _height_, _area_width_, _area_height_, _scroll_step_, _mode_ = #True)
-      _parent_\scroll\v = Bar(#__Type_ScrollBar, _parent_, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child|#__bar_vertical, 7, _scroll_step_)
-      _parent_\scroll\h = Bar(#__Type_ScrollBar, _parent_, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool(_mode_)*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_)
-    EndMacro
+    Declare.b Bar_SetState(*this, state.f)
     
     Macro Area_Draw(_this_)
       If _this_\scroll
@@ -683,8 +680,13 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndMacro
     
+    Macro Area(_parent_, _width_, _height_, _area_width_, _area_height_, _scroll_step_, _mode_ = #True)
+      _parent_\scroll\v = Bar(#__Type_ScrollBar, _parent_, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child|#__bar_vertical, 7, _scroll_step_)
+      _parent_\scroll\h = Bar(#__Type_ScrollBar, _parent_, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool(_mode_)*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_)
+    EndMacro
+    
+    
     ;-
-    Declare.b Tab_Draw(*this._s_widget)
     Procedure.i Tab_SetState(*this._s_widget, State.l)
       Protected Result.b
       
@@ -698,7 +700,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *this\index[#__s_2] <> State 
         *this\index[#__s_2] = State
-        *this\bar\_sel = SelectElement(*this\bar\_s(), state)
         
         If *this = *this\parent\_tab 
           *this\parent\index[#__s_2] = State
@@ -707,7 +708,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           ForEach GetChildrens(*this)
             If Child( GetChildrens(*this), *this\parent)  
               GetChildrens(*this)\hide = Bool(GetChildrens(*this)\hide[1] Or GetChildrens(*this)\parent\hide Or 
-                                              GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\_tab\index[#__s_2])
+                                              GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
             EndIf
           Next
           PopListPosition(GetChildrens(*this))
@@ -717,7 +718,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Post(#PB_EventType_Change, *this, State)
         EndIf
         
-        ;*this\bar\state = State + 1
+        *this\bar\index = State + 1
         Result = #True
       EndIf
       
@@ -751,7 +752,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                   EndIf
                   
                   GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or GetChildrens(*this)\parent\hide Or
-                                                   GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\_tab\index[#__s_2])
+                                                   GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
                 EndIf
               Next
               ; PopListPosition(GetChildrens(*this))
@@ -804,7 +805,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndProcedure
     
-    Procedure Tab_ClearItems(*this._s_widget) ; Ok
+    Procedure   Tab_ClearItems(*this._s_widget) ; Ok
       If *this\count\items <> 0
         *this\count\items = 0
         ClearList(*this\bar\_s())
@@ -854,36 +855,48 @@ CompilerIf Not Defined(widget, #PB_Module)
             RoundBox(\X,\Y,\width,\height,\round,\round,\Color\Back&$FFFFFF|\color\alpha<<24)
           EndIf
           
-          If \bar\change Or \resize & #__resize_change
+          If *this\bar\change
             *this\text\x = 6
+            *this\bar\max = 0
             *this\text\height = TextHeight("A")
-            \bar\max = 0
             
             ForEach \bar\_s()
-              \bar\_s()\y = 2
-              \bar\_s()\x = \bar\max ;+ 1
-              \bar\_s()\height = \bar\button[#__b_3]\height-3
+              *this\bar\_s()\y = 2
+              *this\bar\_s()\x = *this\bar\max
+              *this\bar\_s()\height = *this\bar\button[#__b_3]\height-3
               
-              \bar\_s()\text\height = *this\text\height
-              \bar\_s()\text\x = *this\text\x + \bar\_s()\x
-              \bar\_s()\text\width = *this\text\x*2 + TextWidth(\bar\_s()\text\string)
-              \bar\_s()\text\y = *this\text\y + \bar\_s()\y + (\bar\_s()\height - \bar\_s()\text\height)/2
+              *this\bar\_s()\text\height = *this\text\height
+              *this\bar\_s()\text\x = *this\text\x + *this\bar\_s()\x
+              *this\bar\_s()\text\width = *this\text\x*2 + TextWidth(*this\bar\_s()\text\string)
+              *this\bar\_s()\text\y = *this\text\y + *this\bar\_s()\y + (*this\bar\_s()\height - *this\bar\_s()\text\height)/2
               
-              \bar\_s()\width = \bar\_s()\text\width
-              \bar\max + \bar\_s()\width + Bool(\bar\_s()\index <> \count\items - 1) ;+ Bool(\bar\_s()\index = \count\items - 1) 
-              \bar\_s()\text\change = 0
+              ; then set tab state
+              If *this\bar\_s()\index = *this\bar\index - 1
+                *this\bar\page\pos = *this\bar\_s()\x-*this\bar\_s()\text\width-*this\bar\button[2]\len ;96 ; 76;
+                If *this\bar\page\pos < 0
+                  *this\bar\page\pos = 0
+                EndIf
+                *this\bar\index = 0
+              EndIf
+              
+              *this\bar\_s()\width = *this\bar\_s()\text\width
+              *this\bar\max + *this\bar\_s()\width + Bool(*this\bar\_s()\index <> *this\count\items - 1) ;+ Bool(*this\bar\_s()\index = *this\count\items - 1) 
+              *this\bar\_s()\text\change = 0
             Next
             
-            \bar\change = 0
-            
-            Static max
-            If max <> \bar\max
-              ; Debug \bar\max
-              ; *this\resize | #__resize_change
-              Bar_Update(*this)
-              ; *this\resize &~ #__resize_change
-              max = \bar\max
+            If *this\bar\max < *this\width[2] 
+              *this\bar\page\pos = 0
             EndIf
+            
+            If *this\bar\page\end And 
+               *this\bar\page\pos > *this\bar\page\end
+              *this\bar\page\pos = *this\bar\page\end
+            EndIf
+            
+            Debug " tab max - "+*this\bar\max +" "+ *this\width[2] +" "+ *this\bar\page\pos +" "+ *this\bar\page\end
+           
+            Bar_Update(*this)
+            *this\bar\change = 0
           EndIf
           
           Protected x = \bar\button[#__b_3]\x
@@ -2161,7 +2174,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       If ThumbPos > *this\bar\area\end : ThumbPos = *this\bar\area\end : EndIf
       
       If *this\bar\thumb\end <> ThumbPos : *this\bar\thumb\end = ThumbPos
-        ProcedureReturn SetState(*this, _bar_invert_(*this\bar, _bar_page_pos_(*this\bar, ThumbPos), *this\bar\inverted))
+        ProcedureReturn Bar_SetState(*this, _bar_invert_(*this\bar, _bar_page_pos_(*this\bar, ThumbPos), *this\bar\inverted))
       EndIf
     EndProcedure
     
@@ -8276,17 +8289,18 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected *parent._s_widget = Root()\opened
       
       With *this
-        \x =- 1
-        \y =- 1
-        \__height = 25
-        \container = 1
+        *this\x =- 1
+        *this\y =- 1
+        *this\__height = 25
+        *this\container = 1
         *this\type = #__Type_Panel
         *this\class = #PB_Compiler_Procedure
         
-        \color = _get_colors_()
-        \color\alpha = 255
-        \color\back = $FFFFFFFF
+        *this\color = _get_colors_()
+        *this\color\back = $FFFFFFFF
         
+        *this\index[#__s_1] =- 1
+        *this\index[#__s_2] = 0
         
         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           *this\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
@@ -8294,11 +8308,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
         CompilerEndIf
         
-        *this\index[#__s_1] =- 1
-        *this\index[#__s_2] = 0
-        
         \fs = 1
-        \bs = \fs;Bool(Not Flag&#__flag_anchorsGadget)
+        \bs = \fs
         
         ; Background image
         ; \image[1] = AllocateStructure(_s_image)
@@ -8307,9 +8318,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         _set_alignment_flag_(*this, *parent, flag)
         SetParent(*this, *parent, #PB_Default)
         
-        \_tab = Bar(#__Type_TabBar, *this, 0,0,0,25, 0,0, 0, 25, #__bar_child, 0, 25)
-        \_tab\fs = 1
-        \_tab\bs = \_tab\fs;Bool(Not Flag&#__flag_anchorsGadget)
+        \_tab = Bar(#__Type_TabBar, *this, 0,0,0,25, 0,0,0, 25, #__bar_child, 0, 30)
         
         If Not Flag & #__flag_noGadget
           OpenList(*this)
@@ -8593,6 +8602,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         If *this\text\change <> 0
           *this\text\change = 0
         EndIf
+        If *this\resize & #__resize_change
+          *this\resize &~ #__resize_change
+        EndIf
+      
       EndWith
     EndProcedure
     
@@ -9065,6 +9078,14 @@ CompilerIf Not Defined(widget, #PB_Module)
             If \width[#__c_1] < 0 : \width[#__c_1] = 0 : EndIf
             If \width[#__c_3] < 0 : \width[#__c_3] = 0 : EndIf
             \resize | #__resize_width | #__resize_change
+            
+            If *this\bar\vertical
+              If *this\type = #__type_tabbar
+                ; to fix the width of the 
+                ; vertical tabbar items
+                *this\bar\change = #True
+              EndIf
+            EndIf
           EndIf 
         EndIf  
         
@@ -9079,6 +9100,14 @@ CompilerIf Not Defined(widget, #PB_Module)
             If \height[#__c_1] < 0 : \height[#__c_1] = 0 : EndIf
             If \height[#__c_3] < 0 : \height[#__c_3] = 0 : EndIf
             \resize | #__resize_height | #__resize_change
+            
+            If Not *this\bar\vertical
+              If *this\type = #__type_tabbar
+                 ; to fix the height of the
+                 ; horizontal tabbar items
+                *this\bar\change = #True
+              EndIf
+            EndIf
           EndIf 
         EndIf 
         
@@ -9511,6 +9540,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       ElseIf *this\type = #__Type_Panel
         result = Tab_SetState(*this\_tab, state)
         
+      ElseIf *this\type = #__Type_TabBar
+        result = Tab_SetState(*this, state)
+        
       Else
         result = Bar_SetState(*this, state)
       EndIf
@@ -9692,10 +9724,13 @@ CompilerIf Not Defined(widget, #PB_Module)
           parent_item = *parent\_item
         EndIf
         
-        If *this\parent\_tab
-          *this\_parent_item = parent_item
-          *this\hide = Bool(*this\parent\hide Or *this\_parent_item <> *this\parent\_tab\index[#__s_2])
-        EndIf
+        *this\_parent_item = parent_item
+       
+;         If *this\parent\_tab
+          *this\hide = Bool(*this\parent\hide Or *this\_parent_item <> *this\parent\index[#__s_2])
+;         Else
+;           *this\hide = Bool(*this\parent\hide)
+;         EndIf
         
         If Not (*this\parent And 
                 *this\parent\type = #PB_GadgetType_Splitter)
@@ -10533,7 +10568,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           ;*this\__height = size
-          *this\bs = 2
+          *this\bs = 1 + Bool(Flag & #__bar_child = #False)
           *this\fs = *this\bs
           
           *this\bar\button[#__b_1]\interact = #True
@@ -11965,5 +12000,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----------4-------------f+---Hf-4---------------------------------------------------------------------------------------------------------------------------+------------------------------------6u4n6--------------------------------------48---------------------
+; Folding = wEAAwAAAI-GA9+AAAAAAAAAAAACAAIAAAgBgnAAAAAAAgjBAAAAAAAAAAe-DMAAoBYAAAAAAAAEgAAAAwhOAAAMAH8AIeAAAAAAwAAAAAAAIAAAAAA5AAgAAMAAAABAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYHbPC3RDHAAAAAA5BeAAAQA9-fgDAAAAAAAAYAAAMCcBCAAAAAAAAAAgYbzDAAcOhAAAAbAAABAAAEAAAAAQAAQ9
 ; EnableXP
