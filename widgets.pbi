@@ -8253,12 +8253,19 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;-
     ;- - PANEL-e
     Procedure.i Panel_Draw(*this._s_widget)
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      
       If *this\_tab\count\items
+        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        Box(*this\x[#__c_2]-1, *this\y[#__c_2]-1, *this\width[#__c_2]+2, *this\height[#__c_2]+2, *this\color\back[0])
+        
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
         Box(*this\x[#__c_2]-1, *this\y[#__c_2]-1, *this\width[#__c_2]+2, *this\height[#__c_2]+2, *this\color\frame[Bool(*this\_tab\index[#__s_2]<>-1)*2 ])
+        
         Tab_Draw(*this\_tab) 
       Else
+        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        Box(*this\x[#__c_1], *this\y[#__c_1], *this\width[#__c_1], *this\height[#__c_1], *this\color\back[0])
+        
+        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
         Box(*this\x[#__c_1], *this\y[#__c_1], *this\width[#__c_1], *this\height[#__c_1], *this\color\frame[Bool(*this\index[#__s_2]<>-1)*2 ])
       EndIf
     EndProcedure
@@ -8278,7 +8285,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         \color = _get_colors_()
         \color\alpha = 255
-        \color\back = $FFF9F9F9
+        \color\back = $FFFFFFFF
         
         
         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -11234,11 +11241,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
       Protected *this._s_widget = GetGadgetData(Canvas)
       
-      ;       If _is_root_(*this)
-      ;         Root() = *this
-      ;       Else
-      Root() = *this\root
-      ;       EndIf
+      If Root() <> *this\root
+        Root() = *this\root
+      EndIf
       
       Select eventtype
         Case #__Event_repaint 
@@ -11248,14 +11253,14 @@ CompilerIf Not Defined(widget, #PB_Module)
         Case #__Event_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           Repaint = Resize(Root(), #PB_Ignore, #PB_Ignore, Width, Height)  
           
-          If *this And *this <> Root() 
-            Repaint = Resize(*this, #PB_Ignore, #PB_Ignore, Width, Height)  
-            ;            ; PushListPosition(GetChildrens(*this))
-            ;         ForEach GetChildrens(*this)
-            ;           Resize(GetChildrens(*this), #PB_Ignore, #PB_Ignore, Width, Height)  
-            ;         Next
-            ;         ; PopListPosition(GetChildrens(*this))
-          EndIf
+;           If Not _is_root_(*this)
+;             Repaint = Resize(*this, #PB_Ignore, #PB_Ignore, Width, Height)  
+;             ;            ; PushListPosition(GetChildrens(*this))
+;             ;         ForEach GetChildrens(*this)
+;             ;           Resize(GetChildrens(*this), #PB_Ignore, #PB_Ignore, Width, Height)  
+;             ;         Next
+;             ;         ; PopListPosition(GetChildrens(*this))
+;           EndIf
           
           Repaint = 1
           
@@ -11549,8 +11554,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure Open(window, x.l=0,y.l=0,width.l=#PB_Ignore,height.l=#PB_Ignore, flag.i=#Null, *CallBack=#Null, Canvas=#PB_Any)
       Protected g 
       
-      If width = #PB_Ignore And 
-         height = #PB_Ignore
+      If width = #PB_Ignore And height = #PB_Ignore
         flag = #PB_Canvas_Container
       EndIf
       
@@ -11571,6 +11575,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       Root()\root = Root()
       Root()\parent = Root()
       Root()\window = Root()
+      
+      Root()\container = #__type_root
+      
       Root()\canvas\window = Window
       Root()\canvas\gadget = Canvas
       
@@ -11958,5 +11965,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----------4-------------f+---Hf-4---------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------48---------------------
+; Folding = -----------4-------------f+---Hf-4---------------------------------------------------------------------------------------------------------------------------+------------------------------------6u4n6--------------------------------------48---------------------
 ; EnableXP

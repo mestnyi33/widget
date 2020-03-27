@@ -27,16 +27,21 @@ Procedure events_gbuttons()
     Case #PB_EventType_LeftClick
       Select EventGadget()
         Case 2 : RemoveGadgetItem(1, 1)
-        Debug ""+CountGadgetItems(1) +" - count gadget items"
-        
-      Case 4 : ClearGadgetItems(1)
-        Debug ""+CountGadgetItems(1) +" - count gadget items"
-        
-      Case 3 
+          Debug ""+CountGadgetItems(1) +" - count gadget items"
+          
+        Case 4 : ClearGadgetItems(1)
+          Debug ""+CountGadgetItems(1) +" - count gadget items"
+          
+        Case 3 
           OpenGadgetList(1)
           AddGadgetItem(1, 1, "Sub 2 (add)")
-          SetGadgetItemText(1, 1, "Sub 2 (add&set)")
-          Debug GetGadgetItemText(1, 1) + " - get item text"
+          If CountGadgetItems(1) > 1
+            SetGadgetItemText(1, 1, "Sub 2 (add&set)")
+            Debug GetGadgetItemText(1, 1) + " - get item text"
+          Else
+            SetGadgetItemText(1, 0, "Sub 1 (add&set)")
+            Debug GetGadgetItemText(1, 0) + " - get item text"
+          EndIf
           CloseGadgetList()
       EndSelect
   EndSelect
@@ -48,15 +53,20 @@ Procedure events_wbuttons()
       Select (*event\widget\index - 1)
         Case 2 : RemoveItem(GetWidget(1), 1)
           Debug ""+CountItems(GetWidget(1)) +" - count widget items"
-  
+          
         Case 4 : ClearItems(GetWidget(1))
           Debug ""+CountItems(GetWidget(1)) +" - count widget items"
-  
+          
         Case 3 
           ;OpenList(GetWidget(1))
           AddItem(GetWidget(1), 1, "Sub 2 (add)")
-          SetItemText(GetWidget(1), 1, "Sub 2 (add&set)")
-          Debug GetItemText(GetWidget(1), 1) + " - get item text"
+          If CountItems(GetWidget(1)) > 1
+            SetItemText(GetWidget(1), 1, "Sub 2 (add&set)")
+            Debug GetItemText(GetWidget(1), 1) + " - get item text"
+          Else
+            SetItemText(GetWidget(1), 0, "Sub 1 (add&set)")
+            Debug GetItemText(GetWidget(1), 0) + " - get item text"
+          EndIf
           ;CloseList()
       EndSelect
   EndSelect
@@ -71,6 +81,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   AddGadgetItem(1, -1, "Sub 2")
   AddGadgetItem(1, -1, "Sub 3")
   AddGadgetItem(1, -1, "Sub 4")
+  SetGadgetState(1, 2)
   CloseGadgetList()
   
   ButtonGadget(2, 10, 145, 80, 24,"remove")
@@ -98,6 +109,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   AddItem(GetWidget(1), -1, "Sub 2")
   AddItem(GetWidget(1), -1, "Sub 3")
   AddItem(GetWidget(1), -1, "Sub 4")
+  SetState(GetWidget(1), 2)
   CloseList()
   
   Button(10, 145, 80, 24,"remove")
