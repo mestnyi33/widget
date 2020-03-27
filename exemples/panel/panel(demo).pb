@@ -35,6 +35,8 @@ Procedure events_gbuttons()
       Case 3 
           OpenGadgetList(1)
           AddGadgetItem(1, 1, "Sub 2 (add)")
+          SetGadgetItemText(1, 1, "Sub 2 (add&set)")
+          Debug GetGadgetItemText(1, 1) + " - get item text"
           CloseGadgetList()
       EndSelect
   EndSelect
@@ -53,12 +55,12 @@ Procedure events_wbuttons()
         Case 3 
           ;OpenList(GetWidget(1))
           AddItem(GetWidget(1), 1, "Sub 2 (add)")
+          SetItemText(GetWidget(1), 1, "Sub 2 (add&set)")
+          Debug GetItemText(GetWidget(1), 1) + " - get item text"
           ;CloseList()
       EndSelect
   EndSelect
 EndProcedure
-
-
 
 ; Shows using of several panels...
 If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 322, 0, 322, 220)
@@ -119,9 +121,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 
-
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 79
-; FirstLine = 60
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

@@ -61,8 +61,16 @@ CompilerIf Not Defined(widget, #PB_Module)
       Bool(_this_ And _this_ = _this_\root) ; * _this_\root
     EndMacro
     
+    Macro _is_item_(_this_, _item_)
+      Bool(_item_ >= 0 And _item_ < _this_\count\items)
+    EndMacro
+    
     Macro _is_widget_(_this_)
       Bool(_this_ And _this_\adress) ; * _this_\adress
+    EndMacro
+    
+    Macro _is_window_(_this_)
+      Bool(_this_ And _this_ = _this_\window)
     EndMacro
     
     Macro _is_scrollbar_(_this_)
@@ -809,6 +817,32 @@ CompilerIf Not Defined(widget, #PB_Module)
           Post(#PB_EventType_CloseItem, *this, #PB_All)
         EndIf
       EndIf
+    EndProcedure
+    
+    Procedure.s Tab_GetItemText(*this._s_widget, Item.l, Column.l=0)
+      Protected Result.s
+      
+      If _is_item_(*this, Item) And 
+         SelectElement(*this\bar\_s(), Item) 
+        Result = *this\bar\_s()\text\string
+      EndIf
+      
+      ProcedureReturn Result
+    EndProcedure
+    
+    Procedure.l Tab_SetItemText(*this._s_widget, Item.l, Text.s, Column.l=0)
+      Protected Result.l
+      
+      If _is_item_(*this, Item) And 
+         SelectElement(*this\bar\_s(), Item) And 
+         *this\bar\_s()\text\string <> Text 
+        *this\bar\_s()\text\string = Text 
+        *this\bar\_s()\text\change = 1
+        *this\change = 1
+        Result = #True
+      EndIf
+      
+      ProcedureReturn Result
     EndProcedure
     
     Procedure.b Tab_Draw(*this._s_widget)
@@ -2188,7 +2222,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;             ;EndIf
         ;           EndIf  
         
-        
+        If Not (*this\type = #PB_GadgetType_ScrollBar And _is_scrollbar_(*this))
+          Post(#PB_EventType_Change, *this);, *this\bar\button[*this\bar\state])
+          ReDraw(*this\root)
+        EndIf
         result = #True
       EndIf
       
@@ -8223,19 +8260,14 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;-
     ;- - PANEL-e
     Procedure.i Panel_Draw(*this._s_widget)
-      Protected State_3.i, Alpha.i, Color_frame.i
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
       
-      With *this 
-        DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        Box(*this\x[#__c_2]-1, *this\y[#__c_2]-1, *this\width[#__c_2]+2, *this\height[#__c_2]+2, \color\frame[Bool(\index[#__s_2]<>-1)*2 ])
-        
-        If *this\_tab\count\items
-          Tab_Draw(*this\_tab) 
-        EndIf
-        
-        ;         DrawingMode(#PB_2DDrawing_Outlined)
-        ;         Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF0000FF)
-      EndWith
+      If *this\_tab\count\items
+        Box(*this\x[#__c_2]-1, *this\y[#__c_2]-1, *this\width[#__c_2]+2, *this\height[#__c_2]+2, *this\color\frame[Bool(*this\_tab\index[#__s_2]<>-1)*2 ])
+        Tab_Draw(*this\_tab) 
+      Else
+        Box(*this\x[#__c_1], *this\y[#__c_1], *this\width[#__c_1], *this\height[#__c_1], *this\color\frame[Bool(*this\index[#__s_2]<>-1)*2 ])
+      EndIf
     EndProcedure
     
     Procedure.i Panel(x.l,y.l,width.l,height.l, Flag.i=0)
@@ -10257,7 +10289,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         result = Tree_GetItemText(*this, Item, Column)
         
       ElseIf *this\type = #__Type_Panel
-        
+        result = Tab_GetItemText(*this\_tab, Item, Column)
       Else
       EndIf
       
@@ -10355,7 +10387,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         result = Tree_SetItemText(*this, Item, Text, Column)
         
       ElseIf *this\type = #__Type_Panel
-        
+        result = Tab_SetItemText(*this\_tab, Item, Text, Column)
+       
       Else
       EndIf
       
@@ -11044,19 +11077,51 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure.i Post(eventtype.l, *this._s_widget, eventitem.l=#PB_All, *data=0)
       Protected result.i
       
-      structures::*event\widget = *this
-      structures::*event\data = *data
       structures::*event\type = eventtype
       structures::*event\item = eventitem
+      structures::*event\widget = *this
+      structures::*event\data = *data
       
-      If Not *this\root\count\event
-        ; 
+      If *this And *this\root\count\events
+        If Not _is_root_(*this)
+          If *this\event And 
+             (*this\event\type = #PB_All Or *this\event\type = eventtype)
+            
+            result = *this\event\callback()
+            
+            If result = #PB_Ignore
+              ProcedureReturn #PB_Ignore
+            EndIf
+          EndIf
+          
+          If Not _is_window_(*this) And Not _is_root_(*this\window) And *this\window\event And 
+             (*this\window\event\type = #PB_All Or *this\window\event\type = eventtype)
+            
+            result = *this\window\event\callback()
+            
+            If result = #PB_Ignore
+              ProcedureReturn #PB_Ignore
+            EndIf
+          EndIf
+        EndIf
+        
+        If *this\root And *this\root\event And 
+           (*this\root\event\type = #PB_All Or *this\root\event\type = eventtype) 
+          
+          result = *this\root\event\callback()
+          
+          If result = #PB_Ignore
+            ProcedureReturn #PB_Ignore
+          EndIf
+        EndIf
+      Else
         Select eventtype 
           Case #__Event_Focus, 
                #__Event_LostFocus
             
             ForEach Root()\_events()
-              If Root()\_events()\widget = *this And Root()\_events()\type = eventtype
+              If Root()\_events()\widget = *this And 
+                 Root()\_events()\type = eventtype
                 result = 1
               EndIf
             Next
@@ -11064,44 +11129,13 @@ CompilerIf Not Defined(widget, #PB_Module)
             If Not result
               AddElement(Root()\_events())
               Root()\_events() = AllocateStructure(_s_event)
-              Root()\_events()\widget = *this
               Root()\_events()\type = eventtype
               Root()\_events()\item = eventitem
+              Root()\_events()\widget = *this
               Root()\_events()\data = *data
             EndIf
             
         EndSelect
-      EndIf
-      
-      If *this And *this\root\count\event
-        If *this\root <> *this  
-          If *this\event And
-             (*this\event\type = #PB_All Or
-              *this\event\type = eventtype)
-            
-            result = *this\event\callback()
-          EndIf
-          
-          If *this\window And 
-             *this\window\event And 
-             result <> #PB_Ignore And 
-             *this\window <> *this And 
-             *this\window <> *this\root And 
-             (*this\window\event\type = #PB_All Or
-              *this\window\event\type = eventtype)
-            
-            result = *this\window\event\callback()
-          EndIf
-        EndIf
-        
-        If *this\root And 
-           *this\root\event And 
-           result <> #PB_Ignore And 
-           (*this\root\event\type = #PB_All Or 
-            *this\root\event\type = eventtype) 
-          
-          result = *this\root\event\callback()
-        EndIf
       EndIf
       
       ProcedureReturn result
@@ -11116,12 +11150,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\event = AllocateStructure(_s_event)
       EndIf
       
-      If Not *this\root\count\event
-        *this\root\count\event = 1
+      If Not *this\root\count\events
+        *this\root\count\events = 1
       EndIf
       
-      *this\event\type = eventtype
       *this\event\callback = *callback
+      *this\event\type = eventtype
       
       If ListSize(Root()\_events())
         ForEach Root()\_events()
@@ -12141,5 +12175,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----------8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------48-----------------------
 ; EnableXP

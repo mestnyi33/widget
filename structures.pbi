@@ -330,8 +330,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_count
     Structure _s_count
-      event.l
       items.l
+      events.l
       childrens.l
     EndStructure
     
@@ -592,5 +592,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = f8nmQxZ-
+; Folding = f8nGQxZ-
 ; EnableXP
