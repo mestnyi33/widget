@@ -190,9 +190,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       mode.i
       fixed.l
       
-      index.l ; selected tab index
+      index.l
       from.l  ; entered button index
-      state.l ; selected button index
+      state.l[2] ;[0] - selected button index  ;[1] - selected tab index
       
       max.l
       min.l
@@ -418,16 +418,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       count.l
       index.l
       box._s_box          ; editor - edit rectangle
+      
       *selected._s_rows
       List _s._s_rows()
-    EndStructure
-    
-    ;- _s_place
-    Structure _s_place
-      *first._s_widget
-      *last._s_widget
-      *after._s_widget
-      *before._s_widget
     EndStructure
     
     ;- - _s_widget
@@ -485,6 +478,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;grid.i
       ;enumerate.i
       __height.i ; 
+      __width.i
       
       container.i
       ;countitems.i[2]
@@ -591,5 +585,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = f8nGQxZ-
+; Folding = f8nGQxs
 ; EnableXP
