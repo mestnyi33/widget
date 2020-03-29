@@ -22,30 +22,33 @@ Procedure events_widgets()
   EndSelect
 EndProcedure
 
-If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-  ScrollBarGadget  (0,  10, 42, 250,  20, 30, 100, 30)
-  SetGadgetState   (0,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+; Shows possible flags of ButtonGadget in action...
+If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  OptionGadget(0, 30, 20, 80, 20, "Option 1")
+  OptionGadget(1, 30, 45, 80, 20, "Option 2")
+  OptionGadget(2, 30, 70, 80, 20, "Option 3")
+  SetGadgetState(1, 1)   ; set second option as active one
   
-  ScrollBarGadget  (1, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-  SetGadgetState   (1, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+  ButtonGadget(3, 30,  95, 80, 20, "button")
+  OptionGadget(4, 30, 120, 80, 20, "Option 2")
+  OptionGadget(5, 30, 145, 80, 20, "Option 3")
   
-  TextGadget       (#PB_Any,  10, 20, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#PB_Text_Center)
-  TextGadget       (#PB_Any,  10,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-  
-  For i = 0 To 1
+  For i = 0 To 2
     BindGadgetEvent(i, @events_gadgets())
   Next
   
-  Scroll(10+305, 42, 250,  20, 30, 100, 30)
-  SetState   (GetWidget(0),  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
+  Option(30+140, 20, 80, 20, "Option 1")
+  Option(30+140, 45, 80, 20, "Option 2")
+  Option(30+140, 70, 80, 20, "Option 3")
+  SetState(GetWidget(1), 1)   ; set second option as active one
   
-  Scroll(270+305, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-  SetState   (GetWidget(1), 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+  Button(30+140,  95, 80, 20, "button")
+  Option(30+140, 120, 80, 20, "Option 2")
+  Option(30+140, 145, 80, 20, "Option 3")
   
-  Text(10+305, 20, 250,  20, "ScrollBar Standard  (start=50, page=30/100)",#__Text_Center)
-  Text(10+305,115, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#__Text_Right)
+  ;Bind(#PB_All, @events_widgets())
   
-  For i = 0 To 1
+  For i = 0 To 2
     Bind(GetWidget(i), @events_widgets())
   Next
   

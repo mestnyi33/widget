@@ -186,7 +186,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_bar
     Structure _s_bar
       ;_type.l
-      ; delta.l
+      
       mode.i
       fixed.l
       
@@ -430,6 +430,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       *after._s_widget
       *before._s_widget
       
+      *v._s_widget
+      *h._s_widget
       *_tab._s_widget
       _item.l ; panel add item opened index
       _parent_item.l ; parent panel tab index
@@ -462,10 +464,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       *errors
       notify.b ; оповестить об изменении
       
-      state.b     ; mouse current state(#normal=0;#entered=1;#selected=2;#disabled=3)
+      ;state.b     ; mouse current state(#normal=0;#entered=1;#selected=2;#disabled=3)
       index.i[3]  ; Index[#normal=0] of new list element ; inex[#entered=1] ; index[#selected=2]
       round.a
-      from.l
+      _state.l
       
       ;mode.l  ; track bar
       change.l;[2]

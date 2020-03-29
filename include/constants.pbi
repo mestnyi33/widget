@@ -81,7 +81,9 @@
       #__c_4 = 4 ; clip
       #__c_5 = 5 ; clip frame
       #__c_6 = 6 ; clip inner
-      #__c = 7
+      #__c_7 = 7 ; scroll 
+      #__c = 8
+      
     EndEnumeration
     
     ;state
@@ -470,8 +472,6 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 90
-; FirstLine = 75
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

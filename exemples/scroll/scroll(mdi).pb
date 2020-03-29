@@ -150,84 +150,89 @@ CompilerIf #PB_Compiler_IsMainFile
     Width = GadgetWidth(Canvas) - x*2
     Height = GadgetHeight(Canvas) - y*2
     
-    If *scroll\v\bar\state =- 1 And 
-       *scroll\h\bar\state =- 1
-      Select Event
-        Case #PB_EventType_LeftButtonUp : Drag = #False
-          SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
-          
-        Case #PB_EventType_LeftButtonDown
+    Select Event
+      Case #PB_EventType_LeftButtonUp : Drag = #False
+        SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
+        
+      Case #PB_EventType_LeftButtonDown
+        If Not (*event\widget And *event\widget\bar\state > 0)
           Drag = Bool(HitTest(Images(), Mousex, Mousey))
           If Drag 
             SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Arrows)
             Repaint = #True 
           EndIf
-          
-        Case #PB_EventType_MouseMove
-          If Drag = #True
-            If LastElement(Images())
-              Images()\x = Mousex - currentItemXOffset
-              Images()\y = Mousey - currentItemYOffset
-              
-              GetScrollCoordinate(x, y, width, height)
-              
-              Repaint = #True
-            EndIf
-          Else
-            If Bool(HitTest(Images(), Mousex, Mousey)) 
-              ;If widget::_from_point_(Mousex, Mousey, Images(), [3])
-              cursor = #PB_Cursor_Hand
-              ;EndIf
-            Else 
-              cursor = #PB_Cursor_Default
-            EndIf
-            
-            If set_cursor <> cursor
-              set_cursor = cursor
-              SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, cursor)
-            EndIf
-            
-          EndIf
-          
-        Case #PB_EventType_Resize : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-          
-          GetScrollCoordinate(x, y, width, height)
-          Repaint = #True
-          
-      EndSelect
-    EndIf
-    
-    If Not Repaint And widget::Callback()
-      
-      If Widget()\bar\change
-        If Widget()\bar\vertical
-          PushListPosition(Images())
-          ForEach Images()
-            Images()\Y + Widget()\bar\page\change 
-          Next
-          PopListPosition(Images())
-          
-          *scroll\y =- Widget()\bar\page\pos+Widget()\y
-        Else
-          
-          PushListPosition(Images())
-          ForEach Images()
-            Images()\X + Widget()\bar\page\change
-          Next
-          PopListPosition(Images())
-          
-          *scroll\x =- Widget()\bar\page\pos+Widget()\x
         EndIf
         
-        Widget()\bar\change = 0
-      EndIf
-      
-      Repaint = #True 
-    EndIf
+      Case #PB_EventType_MouseMove
+        If Drag = #True
+          If LastElement(Images())
+            If Images()\x <> Mousex - currentItemXOffset
+              Images()\x = Mousex - currentItemXOffset
+              Repaint = #True
+            EndIf
+            
+            If Images()\y <> Mousey - currentItemYOffset
+              Images()\y = Mousey - currentItemYOffset
+              Repaint = #True
+            EndIf
+            
+            If Repaint
+              GetScrollCoordinate(x, y, width, height)
+            EndIf
+          EndIf
+        Else
+          If Bool(HitTest(Images(), Mousex, Mousey)) 
+            ;If widget::_from_point_(Mousex, Mousey, Images(), [3])
+            cursor = #PB_Cursor_Hand
+            ;EndIf
+          Else 
+            cursor = #PB_Cursor_Default
+          EndIf
+          
+          If set_cursor <> cursor
+            set_cursor = cursor
+            SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, cursor)
+          EndIf
+          
+        EndIf
+        
+      Case #PB_EventType_Resize 
+        ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
+        
+        GetScrollCoordinate(x, y, width, height)
+        Repaint = #True
+    EndSelect
     
     If Repaint 
       Canvas_Draw(MyCanvas, Images()) 
     EndIf
+  EndProcedure
+  
+  
+  Procedure events_scrolls()
+    Select *event\type 
+      Case #PB_EventType_Change
+        If *event\widget\bar\vertical
+          PushListPosition(Images())
+          ForEach Images()
+            Images()\Y + *event\widget\bar\page\change 
+          Next
+          PopListPosition(Images())
+          
+          *scroll\y =- *event\widget\bar\page\pos+*event\widget\y
+        Else
+          
+          PushListPosition(Images())
+          ForEach Images()
+            Images()\X + *event\widget\bar\page\change
+          Next
+          PopListPosition(Images())
+          
+          *scroll\x =- *event\widget\bar\page\pos+*event\widget\x
+        EndIf
+        
+        Canvas_Draw(MyCanvas, Images()) 
+    EndSelect
   EndProcedure
   
   If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
@@ -235,17 +240,21 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  MyCanvas = GetGadget(Open(0, 10, 10, Width+x*2, Width+y*2, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetGadget(Open(0, 10, 10, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   ; *scroll\v = widget::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_inverted, 11)
   ; *scroll\h = widget::scroll(x, 0, 0,  20, 0, 0, Height-20, #__bar_inverted, 11)
   *scroll\v = widget::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
   *scroll\h = widget::scroll(x, 0, 0,  20, 0, 0, Height-20, 0, 11)
   
+  Bind(*scroll\v, @events_scrolls())
+  Bind(*scroll\h, @events_scrolls())
+  
+  
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----
+; Folding = ------
 ; EnableXP
