@@ -7730,14 +7730,16 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;-
     Procedure Button_Draw(*this._s_widget)
       With *this
-        If \color\fore
-          DrawingMode(#PB_2DDrawing_Gradient)
-          _box_gradient_(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\color\Fore[\color\state],\color\Back[\color\state], \round)
-        Else
-          DrawingMode(#PB_2DDrawing_Default)
-          RoundBox(\X[1],\Y[1],\Width[1],\Height[1], \round,\round, \color\Back[\color\state])
+        If *this\type = #PB_GadgetType_Button
+          If \color\fore
+            DrawingMode(#PB_2DDrawing_Gradient)
+            _box_gradient_(\Vertical,\X[1],\Y[1],\Width[1],\Height[1],\color\Fore[\color\state],\color\Back[\color\state], \round)
+          Else
+            DrawingMode(#PB_2DDrawing_Default)
+            RoundBox(\X[1],\Y[1],\Width[1],\Height[1], \round,\round, \color\Back[\color\state])
+          EndIf
         EndIf
-        
+      
         If \Text\String.s
           If \Text\Change
             \Text\Height = TextHeight("A")
@@ -7887,17 +7889,17 @@ CompilerIf Not Defined(widget, #PB_Module)
                 DrawingMode(#PB_2DDrawing_Transparent)
                 If \Vertical
                   If \text\rotate = 270
-                    DrawRotatedText(\X[2]+\Text\x+(Height-Text_Y) + Bool(Not \Text\Align\horizontal), \Y[2]+\Text\y+Text_X, String4.s, 270, \Color\Front[\color\state])
+                    DrawRotatedText(\X[2]+\Text\x+(Height-Text_Y) + Bool(Not \Text\Align\horizontal), \Y[2]+\Text\y+Text_X, String4.s, 270, \Color\Front[Bool(*this\type = #PB_GadgetType_Button) * \color\state])
                   EndIf
                   If \text\rotate = 90
-                    DrawRotatedText(\X[2]+\Text\Y+Text_Y - 1, \Y[2]+\Text\X+(width-Text_X), String4.s, 90, \Color\Front[\color\state])
+                    DrawRotatedText(\X[2]+\Text\Y+Text_Y - 1, \Y[2]+\Text\X+(width-Text_X), String4.s, 90, \Color\Front[Bool(*this\type = #PB_GadgetType_Button) * \color\state])
                   EndIf
                 Else
                   If \text\rotate = 0
-                    DrawRotatedText(\X[2]+\Text\X+Text_X, \Y[2]+\Text\Y+Text_Y-1, String4.s, 0, \Color\Front[\color\state])
+                    DrawRotatedText(\X[2]+\Text\X+Text_X, \Y[2]+\Text\Y+Text_Y-1, String4.s, 0, \Color\Front[Bool(*this\type = #PB_GadgetType_Button) * \color\state])
                   EndIf
                   If \text\rotate = 180
-                    DrawRotatedText(\X[2]+\Text\X+(Width-Text_X), \Y[2]+\Text\Y+(Height-Text_Y) + Bool(Not \Text\Align\vertical), String4.s, 180, \Color\Front[\color\state])
+                    DrawRotatedText(\X[2]+\Text\X+(Width-Text_X), \Y[2]+\Text\Y+(Height-Text_Y) + Bool(Not \Text\Align\vertical), String4.s, 180, \Color\Front[Bool(*this\type = #PB_GadgetType_Button) * \color\state])
                   EndIf
                 EndIf
                 
@@ -7919,6 +7921,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         EndIf
         
+        If *this\type = #PB_GadgetType_Button
         If \fs
           DrawingMode(#PB_2DDrawing_Outlined)
           RoundBox(\X[1],\Y[1],\Width[1],\Height[1], \round,\round, \Color\Frame[\color\state])
@@ -7928,6 +7931,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           ; content area coordinate
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
           Box(\x[2]+*this\scroll\x, \y[2]+*this\scroll\y, \scroll\width, \scroll\height, $FFFF0000)
+        EndIf
         EndIf
       EndWith
     EndProcedure
@@ -7978,21 +7982,29 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ; draw box frame
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      RoundBox(*this\check_box\x,*this\check_box\y,*this\check_box\width,*this\check_box\height, *this\round, *this\round, *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
-      
+      If *this\_state & #__s_selected
+        RoundBox(*this\check_box\x,*this\check_box\y,*this\check_box\width,*this\check_box\height, *this\round, *this\round, *this\color\frame[Bool(*this\_state & #__s_selected)*2]&$FFFFFF|*this\color\alpha<<24)
+      Else
+        RoundBox(*this\check_box\x,*this\check_box\y,*this\check_box\width,*this\check_box\height, *this\round, *this\round, *this\color\frame[Bool(*this\check_box\checked > 0)*2]&$FFFFFF|*this\color\alpha<<24)
+      EndIf
+    
       ; draw box state
       If *this\check_box\checked = #PB_Checkbox_Checked
         Protected i.i
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
         For i = 0 To 2
-          LineXY((*this\check_box\x+3),(i+*this\check_box\y+8),(*this\check_box\x+7),(i+*this\check_box\y+9), *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24) 
-          LineXY((*this\check_box\x+10+i),(*this\check_box\y+3),(*this\check_box\x+6+i),(*this\check_box\y+10), *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+          LineXY((*this\check_box\x+3),(i+*this\check_box\y+8),(*this\check_box\x+7),(i+*this\check_box\y+9), *this\color\frame[2]&$FFFFFF|*this\color\alpha<<24) 
+          LineXY((*this\check_box\x+10+i),(*this\check_box\y+3),(*this\check_box\x+6+i),(*this\check_box\y+10), *this\color\frame[2]&$FFFFFF|*this\color\alpha<<24)
         Next
         
       ElseIf *this\check_box\checked = #PB_Checkbox_Inbetween
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        RoundBox( *this\check_box\x+2,*this\check_box\y+2,*this\check_box\width-4,*this\check_box\height-4, *this\round-2, *this\round-2, *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+        RoundBox( *this\check_box\x+2,*this\check_box\y+2,*this\check_box\width-4,*this\check_box\height-4, *this\round-2, *this\round-2, *this\color\frame[2]&$FFFFFF|*this\color\alpha<<24)
       EndIf
+      
+;       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+;       Box(*this\x, *this\y, *this\width, *this\height, $FFFF0000)
+        
     EndProcedure
     
     Procedure   Option_Draw(*this._s_widget)
@@ -8007,13 +8019,21 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ; draw circle frame
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      Circle(*this\option_box\x+*this\round, *this\option_box\y+*this\round, *this\round, *this\color\frame[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
-      
-      ; draw circle state
-      If *this\option_box\checked > 0
-        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        Circle(*this\option_box\x+*this\round, *this\option_box\y+*this\round, 2, *this\color\frame[*this\color\state]&$FFFFFFFF|*this\color\alpha<<24)
+      If *this\_state & #__s_selected
+        Circle(*this\option_box\x+*this\round, *this\option_box\y+*this\round, *this\round, *this\color\frame[Bool(*this\_state & #__s_selected)*2]&$FFFFFF|*this\color\alpha<<24)
+      Else
+        Circle(*this\option_box\x+*this\round, *this\option_box\y+*this\round, *this\round, *this\color\frame[Bool(*this\option_box\checked > 0)*2]&$FFFFFF|*this\color\alpha<<24)
       EndIf
+    
+      ; draw circle state
+      If *this\option_box\checked > 0 
+        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        Circle(*this\option_box\x+*this\round, *this\option_box\y+*this\round, 2, *this\color\back[2]&$FFFFFFFF|*this\color\alpha<<24)
+      EndIf
+      
+;       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+;       Box(*this\x, *this\y, *this\width, *this\height, $FFFF0000)
+       
     EndProcedure
     
     Procedure.b Draw(*this._s_widget)
@@ -8414,12 +8434,12 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ; update draw coordinate
       If *this\type = #__Type_Option
-        *this\option_box\x = *this\x[#__c_2] + *this\text\_padding
+        *this\option_box\x = *this\x[#__c_2] + 3
         *this\option_box\y = *this\y[#__c_2] + (*this\height[#__c_2] - *this\option_box\height)/2
       EndIf
       
       If *this\type = #__Type_CheckBox
-        *this\check_box\x = *this\x[#__c_2] + *this\text\_padding
+        *this\check_box\x = *this\x[#__c_2] + 2
         *this\check_box\y = *this\y[#__c_2] + (*this\height[#__c_2] - *this\check_box\height)/2
       EndIf
       
@@ -10802,43 +10822,33 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\option_group = Root()\opened
       EndIf
       
-      ;_set_last_parameters_(*this, #__Type_Option, Flag, Root()\opened) 
-      
       With *this
-        \x =- 1
-        \y =- 1
+        *this\x =- 1
+        *this\y =- 1
         
         *this\type = #__Type_Option
         *this\class = #PB_Compiler_Procedure
         
-        \color = _get_colors_()
-        \color\alpha = 255
-        \color\back = $FFFFFFFF
-        \color\frame = $FF7E7E7E
-        \interact = 1
+        *this\color = _get_colors_()
+        *this\color\back = $FFFFFFFF
+        *this\interact = 1
         
-        \fs = Bool(Not constants::_check_(Flag, #__flag_borderless))
-        \bs = \fs
+        *this\fs = 0;Bool(Not constants::_check_(Flag, #__flag_borderless))
+        *this\bs = *this\fs
         
         _set_text_flag_(*this, flag)
         
-        *this\text\_padding = 3
+        
+        *this\option_box\width = 15
+        *this\option_box\height = *this\option_box\width
+        *this\round = *this\option_box\width/2
+        
+        *this\text\x = *this\option_box\width + 8
         *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
-        ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
-        
-        ;         ; \scroll = AllocateStructure(_s_scroll) 
-        ;         \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__flag_vertical, 7, *this)
-        ;         \scroll\h = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
-        *this\scroll\align\left = 18
-        
-        \option_box\width = 15
-        \option_box\height = \option_box\width
-        \round = \option_box\width/2
-        
-        *this\text\x = \option_box\width + 8
-        
+       
         _set_alignment_flag_(*this, *parent, flag)
         SetParent(*this, *parent, #PB_Default)
+        
         Resize(*this, x,y,width,height)
         If Text.s
           SetText(*this, Text.s)
@@ -10849,21 +10859,42 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure.i HyperLink(X.l,Y.l,Width.l,Height.l, Text.s, Color.i, Flag.i=0)
-      Protected *this._s_widget = Text(x,y,width,height, Text, Flag|#__text_center|#__text_border, 0)
+      Protected *this._s_widget = AllocateStructure(_s_widget) 
       Protected *parent._s_widget = Root()\opened
       
       With *this
-        \fs = 0;Bool(Not Flag&#__flag_borderless)*2
-        \bs = \fs
+        \x =- 1
+        \y =- 1
+        
+          *this\type = #__Type_HyperLink
+        *this\class = #PB_Compiler_Procedure
+       \color = _get_colors_()
+        \color\alpha = 255
+        \color\back = $FFFFFFFF
+        \color\frame = $FF7E7E7E
         \interact = 1
         
-        *this\type = #__Type_HyperLink
-        *this\class = #PB_Compiler_Procedure
+        \fs = Bool(Not constants::_check_(Flag, #__flag_borderless))
+        \bs = \fs
+        
+        _set_text_flag_(*this, flag)
+        
+        *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
+        
         \cursor = #PB_Cursor_Hand
         \color\front[1] = Color
         \color\front[2] = Color
         
         \flag\lines = constants::_check_(Flag, #PB_HyperLink_Underline)
+      
+        
+        _set_alignment_flag_(*this, *parent, flag)
+        SetParent(*this, *parent, #PB_Default)
+        
+        Resize(*this, x,y,width,height)
+        If Text.s
+          SetText(*this, Text.s)
+        EndIf
       EndWith
       
       ProcedureReturn *this
@@ -10872,7 +10903,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure.i Checkbox(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0)
       Protected *this._s_widget = AllocateStructure(_s_widget) 
       Protected *parent._s_widget = Root()\opened
-      ;_set_last_parameters_(*this, #__Type_CheckBox, Flag, Root()\opened) 
       
       With *this
         \x =- 1
@@ -10890,14 +10920,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         _set_text_flag_(*this, flag)
         
-        *this\text\_padding = 3
         *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
-        ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
-        
-        ;         ; \scroll = AllocateStructure(_s_scroll) 
-        ;         \scroll\v = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Height, #__flag_vertical, 7, *this)
-        ;         \scroll\h = bar_create(#__Type_ScrollBar, #__test_scrollbar_size,0,0,Width, 0, 7, *this)
-        *this\scroll\align\left = 18
         
         \round = 3
         \check_box\height = 15
@@ -10908,6 +10931,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         _set_alignment_flag_(*this, *parent, flag)
         SetParent(*this, *parent, #PB_Default)
+        
         Resize(*this, x,y,width,height)
         If Text.s
           SetText(*this, Text.s)
@@ -11241,31 +11265,34 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *this\type = #PB_GadgetType_Button
         Select event_type
-          Case #PB_EventType_LeftClick : Post(event_type, *this)
-          Case #PB_EventType_MouseEnter : *this\color\state = #__s_1 + Bool(*this = *this\root\Selected) : Repaint = 1
-          Case #PB_EventType_MouseLeave : *this\color\state = #__s_0 : Repaint = 1
-          Case #PB_EventType_LeftButtonUp : *this\color\state = #__s_1 : Repaint = 1
+          Case #PB_EventType_LeftClick      : Post(event_type, *this)
+          Case #PB_EventType_MouseLeave     : *this\color\state = #__s_0 : Repaint = 1
+          Case #PB_EventType_LeftButtonUp   : *this\color\state = #__s_1 : Repaint = 1
           Case #PB_EventType_LeftButtonDown : *this\color\state = #__s_2 : Repaint = 1
-        EndSelect
-      EndIf
-      
-      If *this\type = #PB_GadgetType_String
-        Select event_type
-          Case #PB_EventType_Focus     : Post(event_type, *this)
-          Case #PB_EventType_LostFocus : Post(event_type, *this)
+          Case #PB_EventType_MouseEnter     
+            *this\color\state = #__s_1 + Bool(*this = *this\root\Selected) : Repaint = 1
         EndSelect
       EndIf
       
       If *this\type = #__Type_Option
         Select event_type
-          Case #PB_EventType_LeftButtonUp : Repaint = SetState(*this, 1)
+          Case #PB_EventType_LeftButtonUp   : Repaint = 1
+          Case #PB_EventType_LeftClick      : Repaint = SetState(*this, 1)
         EndSelect
       EndIf
       
       If *this\type = #__Type_CheckBox
         Select event_type
-          Case #PB_EventType_LeftButtonUp 
-              Repaint = SetState(*this, Bool(Bool(*this\check_box\checked = #PB_Checkbox_Checked) ! 1))
+          Case #PB_EventType_LeftButtonUp   : Repaint = 1
+          Case #PB_EventType_LeftClick      
+            Repaint = SetState(*this, Bool(Bool(*this\check_box\checked = #PB_Checkbox_Checked) ! 1))
+        EndSelect
+      EndIf
+      
+      If *this\type = #PB_GadgetType_String
+        Select event_type
+          Case #PB_EventType_Focus          : Post(event_type, *this)
+          Case #PB_EventType_LostFocus      : Post(event_type, *this)
         EndSelect
       EndIf
       
@@ -12047,6 +12074,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------668---------------------------------------------------------
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 7967
+; FirstLine = 7928
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------P-----f------------------------------------fe++------------------------------f8-------------------------
 ; EnableXP

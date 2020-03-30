@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
   Procedure ev()
-    Debug ""+Widget() ;+" "+ Type() +" "+ Item() +" "+ Data()     ;  EventWindow() +" "+ EventGadget() +" "+ 
+   ; Debug ""+Widget() ;+" "+ Type() +" "+ Item() +" "+ Data()     ;  EventWindow() +" "+ EventGadget() +" "+ 
   EndProcedure
   
   Procedure ev2()
@@ -77,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 59
-; FirstLine = 45
+; CursorPosition = 18
+; FirstLine = 12
 ; Folding = --
 ; EnableXP
