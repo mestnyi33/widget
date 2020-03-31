@@ -1,6 +1,6 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   IncludePath "/Users/as/Documents/GitHub/Widget"
-  XIncludeFile "fixme(mac).pbi"
+  XIncludeFile "include/fixme(mac).pbi"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
   IncludePath "/media/sf_as/Documents/GitHub/Widget"
 CompilerElse
@@ -9,15 +9,15 @@ CompilerEndIf
 
 
 CompilerIf Not Defined(constants, #PB_Module)
-  XIncludeFile "constants.pbi"
+  XIncludeFile "include/constants.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined(structures, #PB_Module)
-  XIncludeFile "structures.pbi"
+  XIncludeFile "include/structures.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined(colors, #PB_Module)
-  XIncludeFile "colors.pbi"
+  XIncludeFile "include/colors.pbi"
 CompilerEndIf
 
 
@@ -4804,11 +4804,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         CompilerIf Defined(Bar_events, #PB_Procedure)
           If \scroll\v
             Repaint | Bar_events(\scroll\v, _event_type_, \root\mouse\x, \root\mouse\y)
-            scroll | Bool(*this\scroll\v\from <>- 1)
+            scroll | Bool(*this\scroll\v\bar\from <>- 1)
           EndIf       
           If \scroll\h
             Repaint | Bar_events(\scroll\h, _event_type_, \root\mouse\x, \root\mouse\y)
-            scroll | Bool(*this\scroll\h\from <>- 1)
+            scroll | Bool(*this\scroll\h\bar\from <>- 1)
           EndIf
         CompilerEndIf
         
@@ -12071,8 +12071,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 12072
-; FirstLine = 12043
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

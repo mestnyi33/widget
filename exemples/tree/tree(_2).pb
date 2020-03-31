@@ -11140,9 +11140,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; set widget mouse
         ; state - (entered & leaved)   
         If Root()\entered <> *this
-          If Root()\entered And Root()\entered\state = #__s_1 And 
+          If Root()\entered And Root()\entered\_state = #__s_1 And 
              Not (#__from_mouse_state And Child(*this, Root()\entered))
-            Root()\entered\state = #__s_0
+            Root()\entered\_state = #__s_0
             
             Repaint | Events(Root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
             
@@ -11150,8 +11150,8 @@ CompilerIf Not Defined(widget, #PB_Module)
               ChangeCurrentElement(Root()\_childrens(), Root()\entered\adress)
               Repeat                 
                 If Root()\_childrens()\draw And Child(Root()\entered, Root()\_childrens())
-                  If Root()\_childrens()\state = #__s_1
-                    Root()\_childrens()\state = #__s_0
+                  If Root()\_childrens()\_state = #__s_1
+                    Root()\_childrens()\_state = #__s_0
                     
                     Repaint | Events(Root()\_childrens(), #__Event_MouseLeave, mouse_x, mouse_y)
                   EndIf
@@ -11163,8 +11163,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           If *this And
-             *this\state = #__s_0 
-            *this\state = #__s_1
+             *this\_state = #__s_0 
+            *this\_state = #__s_1
             Root()\entered = *this
             
             If #__from_mouse_state
@@ -11174,8 +11174,8 @@ CompilerIf Not Defined(widget, #PB_Module)
                 EndIf
                 
                 If Root()\_childrens()\draw And Child(Root()\entered, Root()\_childrens())
-                  If Root()\_childrens()\state = #__s_0
-                    Root()\_childrens()\state = #__s_1
+                  If Root()\_childrens()\_state = #__s_0
+                    Root()\_childrens()\_state = #__s_1
                     
                     Repaint | Events(Root()\_childrens(), #__Event_MouseEnter, mouse_x, mouse_y)
                   EndIf
@@ -11286,7 +11286,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           ;             EndIf
           
           If GetActive() 
-            If GetActive()\state = #__s_1
+            If GetActive()\_state = #__s_1
               If Not Root()\mouse\drag
                 Repaint | Events(GetActive(), #__Event_LeftClick, mouse_x, mouse_y)
               EndIf
@@ -11296,7 +11296,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             If _is_widget_(GetActive()\gadget)
-              If GetActive()\gadget\state = #__s_1
+              If GetActive()\gadget\_state = #__s_1
                 If Not Root()\mouse\drag
                   Repaint | Events(GetActive()\gadget, #__Event_LeftClick, mouse_x, mouse_y)
                 EndIf

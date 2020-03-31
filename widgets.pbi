@@ -4143,66 +4143,10 @@ CompilerIf Not Defined(widget, #PB_Module)
             \text\width = TextWidth(\text\string.s)
           EndIf
           
-          ; Then resized widget
-          If \resize
-            ; Посылаем сообщение об изменении размера 
-            ; PostEvent(#PB_Event_Widget, \root\canvas\window, *this, #__Event_Resize, \resize)
-            ;Resizes(\scroll, \x[0]+\bs, \y[0]+\bs, \width[0]-\bs*2, \height[0]-\bs*2)
-            Resizes(\scroll, 0, 0, \width[0]-\bs*2, \height[0]-\bs*2)
-            
-            ;           ; ;           Macro get_scroll_area_height(_this_)
-            ;           ; ;             (_this_\height - _this_\bs*2 - (Bool((_this_\scroll\width > _this_\width - _this_\bs*2) Or Not _this_\scroll\h\hide) * _this_\scroll\h\height) + Bool(_this_\scroll\v\round And _this_\scroll\h\round And Not _this_\scroll\h\hide) * (_this_\scroll\h\height/4)) 
-            ;           ; ;           EndMacro
-            ;           ; ;           
-            ;           ; ;           Macro get_scroll_area_width(_this_)
-            ;           ; ;             (_this_\width - _this_\bs*2 - (Bool((_this_\scroll\height > _this_\height - _this_\bs*2) Or Not _this_\scroll\v\hide) * _this_\scroll\v\width) + Bool(_this_\scroll\v\round And _this_\scroll\h\round And Not _this_\scroll\v\hide) * (_this_\scroll\v\width/4))
-            ;           ; ;           EndMacro
-            ;           ; ;           
-            ;           ; ;           Macro get_scroll_height(_this_)
-            ;           ; ;             (_this_\v\height - Bool(_this_\v\round And _this_\h\round And Not _this_\h\hide) * (_this_\h\height/4)) 
-            ;           ; ;           EndMacro
-            ;           ; ;           
-            ;           ; ;           Macro get_scroll_width(_this_)
-            ;           ; ;             (_this_\h\width - Bool(_this_\v\round And _this_\h\round And Not _this_\v\hide) * (_this_\v\width/4))
-            ;           ; ;           EndMacro
-            ;           ; ;           
-            ;           ; ;           \scroll\v\hide = Resize(\scroll\v, \x[0]+\width[0]-\bs - \scroll\v\width, \y[0]+\bs, #PB_Ignore, get_scroll_area_height(*this))
-            ;           ; ;           Bar_SetAttribute(*this\scroll\v, #__bar_pagelength, get_scroll_height(*this\scroll))
-            ;           ; ;           
-            ;           ; ;           \scroll\h\hide = Resize(\scroll\h, \x[0]+\bs, \y[0]+\height[0]-\bs - \scroll\h\height, get_scroll_area_width(*this), #PB_Ignore)
-            ;           ; ;           Bar_SetAttribute(*this\scroll\h, #__bar_pagelength, get_scroll_width(*this\scroll))
-            ;           ; ;           
-            ;           ; ;           \scroll\v\hide = Resize(\scroll\v, \x[0]+\width[0]-\bs - \scroll\v\width, \y[0]+\bs, #PB_Ignore, get_scroll_area_height(*this))
-            ;           ; ;           Bar_SetAttribute(*this\scroll\v, #__bar_pagelength, get_scroll_height(*this\scroll))
-            ;           ; ;           
-            ;           ; ;           \scroll\h\hide = Resize(\scroll\h, \x[0]+\bs, \y[0]+\height[0]-\bs - \scroll\h\height, get_scroll_area_width(*this), #PB_Ignore)
-            ;           ; ;           Bar_SetAttribute(*this\scroll\h, #__bar_pagelength, get_scroll_width(*this\scroll))
-            ;           
-            ;           
-            ;           Bar_SetAttribute(*this\scroll\v, #__bar_pagelength, __make_area_height_(*this\scroll, *this\width - *this\bs*2, *this\height - *this\bs*2))
-            ;           \scroll\v\hide = Bar_Resize(\scroll\v, \x[0]+\width[0]-\bs - \scroll\v\width, \y[0]+\bs, #PB_Ignore, _bar_get_page_height_(*this\scroll, 1))
-            ;           
-            ;           Bar_SetAttribute(*this\scroll\h, #__bar_pagelength, __make_area_width_(*this\scroll, *this\width - *this\bs*2, *this\height - *this\bs*2))
-            ;           \scroll\h\hide = Bar_Resize(\scroll\h, \x[0]+\bs, \y[0]+\height[0]-\bs - \scroll\h\height, Bar_get_page_width(*this\scroll, 1), #PB_Ignore)
-            ;           
-            ;           If Bar_SetAttribute(*this\scroll\v, #__bar_pagelength, __make_area_height_(*this\scroll, *this\width - *this\bs*2, *this\height - *this\bs*2))
-            ;             \scroll\v\hide = Bar_Resize(\scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, _bar_get_page_height_(*this\scroll, 1))
-            ;           EndIf
-            ;           
-            ;           If Bar_SetAttribute(*this\scroll\h, #__bar_pagelength, __make_area_width_(*this\scroll, *this\width - *this\bs*2, *this\height - *this\bs*2))
-            ;             \scroll\h\hide = Bar_Resize(\scroll\h, #PB_Ignore, #PB_Ignore, Bar_get_page_width(*this\scroll, 1), #PB_Ignore)
-            ;           EndIf
-            ;           
-            
-            
-            If \scroll\h
-              \width[#__c_2] = \scroll\h\bar\page\len 
-            EndIf
-            If \scroll\v
-              \height[#__c_2] = \scroll\v\bar\page\len
-            EndIf
+          If \text\change
+            Post(#PB_EventType_Change, *this)
           EndIf
-          
+            
           ; Make output multi line text
           If (\text\change Or (\resize And \text\multiline =- 1))
             make_text_multiline(*this)
@@ -5020,7 +4964,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Repaint
     EndProcedure
     
-    Procedure   Editor_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l)
+    Procedure   _Editor_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l)
       Static DoubleClick.i=-1
       Protected Repaint.i, _key_control_.i, Caret.i, _line_.l, String.s
       
@@ -5273,6 +5217,25 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Repaint
     EndProcedure
     
+    Procedure   Editor_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l)
+      Protected Repaint
+      
+      Select event_type
+        Case #PB_EventType_Focus
+          Post(event_type, *this)
+          Repaint = 1
+          
+        Case #PB_EventType_LostFocus
+          Post(event_type, *this)
+          Repaint = 1
+          
+        Default
+          Repaint = _Editor_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l)
+      EndSelect
+      
+      ProcedureReturn Repaint
+    EndProcedure
+    
     Procedure.i Editor(X.l, Y.l, Width.l, Height.l, Flag.i=0, round.i=0)
       Protected *this._s_widget = AllocateStructure(_s_widget)
       
@@ -5331,7 +5294,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
-      Area(*this,Width,Height,0,0,1)
+      Area(*this,0,0,0,0,1)
       Resize(*this, x,y,width,height)
       
       ;       If *this
@@ -10161,9 +10124,13 @@ CompilerIf Not Defined(widget, #PB_Module)
                  *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24)
         Next
       ElseIf *this\check_box\checked = #PB_Checkbox_Inbetween
-        RoundBox( *this\check_box\x+2, *this\check_box\y+2,
-                  *this\check_box\width-4, *this\check_box\height-4, 
-                  *this\check_box\round-2, *this\check_box\round-2, 
+;         RoundBox( *this\check_box\x+2, *this\check_box\y+2,
+;                   *this\check_box\width-4, *this\check_box\height-4, 
+;                   *this\check_box\round-2, *this\check_box\round-2, 
+;                   *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24)
+        RoundBox( *this\check_box\x+4, *this\check_box\y+4,
+                  *this\check_box\width-8, *this\check_box\height-8, 
+                  0, 0, 
                   *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24)
       EndIf 
       
@@ -10579,9 +10546,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;-
     Procedure.i String(x.l,y.l,width.l,height.l, Text.s, Flag.i=0, round.l=0)
-      ;       ProcedureReturn Track(x,y,width,height, 10,100, Flag, 9)
-      
-      ; Protected *string.String = AllocateStructure(String) : *string\s = Text.s
       Protected *this._s_widget = AllocateStructure(_s_widget)
       Protected *parent._s_widget = Root()\opened
       
@@ -10590,10 +10554,20 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\y =- 2147483648
       *this\type = #__Type_String
       *this\color = _get_colors_()
+      *this\color\fore =- 1
       *this\color\back = $FFF9F9F9
       
       If Flag & #__flag_Vertical = #__flag_Vertical
         *this\vertical = #True
+      EndIf
+      
+      If *this\text\multiline
+        *this\row\margin\hide = 0;Bool(Not Flag&#__string_numeric)
+        *this\row\margin\color\front = $C8000000 ; \color\back[0] 
+        *this\row\margin\color\back = $C8F0F0F0  ; \color\back[0] 
+      Else
+        *this\row\margin\hide = 1
+        *this\text\numeric = Bool(Flag&#__string_numeric)
       EndIf
       
       _set_text_flag_(*this, flag)
@@ -10626,6 +10600,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
+      
+      Area(*this,0,0,0,0,1)
       Resize(*this, x,y,width,height)
       
       ProcedureReturn *this
@@ -10634,7 +10610,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;-
     Procedure.i Text(x.l,y.l,width.l,height.l, Text.s, Flag.i=0, round.l=0)
-      ; Protected *string.String = AllocateStructure(String) : *string\s = Text.s
       Protected *this._s_widget = AllocateStructure(_s_widget)
       Protected *parent._s_widget = Root()\opened
       
@@ -10774,7 +10749,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\check_box\color = _get_colors_()
       *this\check_box\color\back = $ffffffff
       
-      *this\check_box\round = 3
+      *this\check_box\round = 2
       *this\check_box\height = 15
       *this\check_box\width = *this\check_box\height
       *this\text\x = *this\check_box\width + 8
@@ -10928,7 +10903,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Case #__Type_MDI            : ScrollArea_Draw(*this)
           Case #__Type_Panel          : Panel_Draw(*this)
             
-          Case #__Type_String         : Button_Draw(*this)
+          Case #__Type_String         : Editor_Draw(*this)
           Case #__Type_Editor         : Editor_Draw(*this)
           Case #__Type_Tree           : Tree_Draw(*this)
             
@@ -11228,7 +11203,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint = Tree_Events(*this, event_type, mouse_x, mouse_y)
       EndIf
       
-      If *this\type = #PB_GadgetType_Editor
+      If *this\type = #PB_GadgetType_Editor Or
+        *this\type = #PB_GadgetType_String
         Repaint = Editor_Events(*this, event_type, mouse_x, mouse_y)
       EndIf
       
@@ -11288,13 +11264,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           Case #PB_EventType_LeftButtonUp   : Repaint = 1
           Case #PB_EventType_LeftClick      
             Repaint = SetState(*this, Bool(Bool(*this\check_box\checked = #PB_Checkbox_Checked) ! #True))
-        EndSelect
-      EndIf
-      
-      If *this\type = #PB_GadgetType_String
-        Select event_type
-          Case #PB_EventType_Focus          : Post(event_type, *this)
-          Case #PB_EventType_LostFocus      : Post(event_type, *this)
         EndSelect
       EndIf
       
@@ -11931,9 +11900,9 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(Button_1, -1, "Panel_0") 
     Define *w2 = Panel (5, 5, 140, 166)
     AddItem(*w2, -1, "Под--Панель 1")
-    Option(5, 10, 70, 20, "option_0")
+    SetState(Option(5, 10, 70, 20, "option_0"), 1)
     Option(5, 32, 100, 20, "option_1")
-    CheckBox(5, 54, 100, 20, "checkbox_0")
+    SetState(CheckBox(5, 54, 100, 20, "checkbox_0", #PB_CheckBox_ThreeState), #PB_Checkbox_Inbetween)
     Button(75, 10, 60, 20, "button")
     HyperLink(75, 32, 60, 20, "HyperLink", $ffff0000)
     
@@ -12079,5 +12048,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------4f-v-4----4-------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

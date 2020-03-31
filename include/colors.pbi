@@ -136,7 +136,7 @@
     \frame[1] = $FFB0B0B0 
     
     ; Цвета если нажали на виджет
-    \front[2] = $FFFEFEFE
+    \front[2] = $80000000
     \Line[2] = $FFFEFEFE
     \fore[2] = $FFE2E2E2
     \back[2] = $FFB4B4B4

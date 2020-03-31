@@ -1,7 +1,7 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets.pbi"
 ;XIncludeFile "widgets(_align_0_0_0).pbi"
-UseModule widget
+Uselib(widget)
   Global *g._S_widget, g_Canvas, NewList *List._S_widget()
   
   
@@ -252,7 +252,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       *g=Tree(0, 0, _width_,_height_, #__Flag_autosize|_flag_)
 ;     EndMacro
     
-    Open(0, 270, 10, 250, 150, "", #__flag_borderless)
+    Open(0, 270, 10, 250, 150)
     g_Canvas = GetGadget(Root())
     
     *g=Editor(0, 0, 250, 150, #__Flag_autosize)
@@ -290,6 +290,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = 0f---2-
 ; EnableXP
