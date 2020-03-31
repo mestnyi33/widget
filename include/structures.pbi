@@ -21,7 +21,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_color
     Structure _s_color
-      state.b ; entered; selected; disabled;
+      state.b; entered; selected; disabled;
       front.i[4]
       line.i[4]
       fore.i[4]
@@ -574,6 +574,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *entered._s_widget   ; at point element
       *selected._s_widget  ; pushed at point element
       
+      Map *__childrens._s_widget()
       List *_childrens._s_widget()
       List *_events._s_event()
     EndStructure
@@ -586,6 +587,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
   EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = f8nGQxs
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 23
+; FirstLine = 21
+; Folding = -8nGQxs
 ; EnableXP

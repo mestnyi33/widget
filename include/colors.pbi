@@ -15,7 +15,8 @@
     \state = 0
     \alpha[0] = 255
     \alpha[1] = 255
-    
+    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
+     
     ; Цвета по умолчанию
     \front[0] = $80000000
     \fore[0] = $FFF8F8F8 
@@ -53,6 +54,7 @@
     \state = 0
     \alpha[0] = 255
     \alpha[1] = 255
+    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; Цвета по умолчанию
     \front[0] = $FF000000
@@ -84,6 +86,7 @@
     \state = 0
     \alpha[0] = 255
     \alpha[1] = 255
+    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; Цвета по умолчанию
     \front[0] = $FF000000
@@ -116,6 +119,7 @@
     \state = 0
     \alpha[0] = 255
     \alpha[1] = 255
+    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; Цвета по умолчанию
     \front[0] = $80000000
@@ -152,6 +156,7 @@
     \state = 0
     \alpha[0] = 255
     \alpha[1] = 255
+    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; Цвета по умолчанию
     \front[0] = $FF5B5B5B
@@ -184,6 +189,7 @@
     \state = 0
     \alpha[0] = 255
     \alpha[1] = 255
+    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; - Серые цвета
     ; Цвета по умолчанию

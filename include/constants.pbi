@@ -92,6 +92,12 @@
       #__s_Entered
       #__s_Selected
       #__s_Disabled
+      
+      #__s_front
+      #__s_back
+      #__s_frame
+      #__s_fore
+      #__s_line
     EndEnumeration
     
     ;color state
@@ -472,6 +478,8 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 97
+; FirstLine = 78
 ; Folding = --
 ; EnableXP
