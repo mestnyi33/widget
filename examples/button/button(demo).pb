@@ -10,7 +10,7 @@ EndProcedure
 Procedure events_widgets()
   Select *event\type
     Case #PB_EventType_LeftClick
-      Debug  Str(*event\widget\index - 1)+" - widget click"
+      Debug  ""+GetIndex(*event\widget)+" - widget click"
   EndSelect
 EndProcedure
 
@@ -41,8 +41,6 @@ EndProcedure
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 
-
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 6
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

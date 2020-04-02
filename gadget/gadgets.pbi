@@ -458,7 +458,7 @@ CompilerIf Not Defined(DD, #PB_Module)
 CompilerEndIf
 ;- >>>
 
-IncludePath "../../"
+IncludePath "../"
 XIncludeFile "widgets.pbi"
 Uselib(widget)
 
@@ -478,6 +478,44 @@ DeclareModule Gadget
       ;       PB_Gadget_Objects.i
       PB_Image_Objects.i
     EndImport
+    
+    
+    
+    Macro EventDropText()
+      DD::DropText()
+    EndMacro
+    
+    Macro EventDropAction()
+      DD::DropAction()
+    EndMacro
+    
+    Macro EventDropType()
+      DD::DropType()
+    EndMacro
+    
+    Macro EventDropImage(_image_, _depth_=24)
+      DD::DropImage(_image_, _depth_)
+    EndMacro
+    
+    Macro DragText(_text_, _actions_=#PB_Drag_Copy)
+      DD::Text(_text_, _actions_)
+    EndMacro
+    
+    Macro DragImage(_image_, _actions_=#PB_Drag_Copy)
+      DD::Image(_image_, _actions_)
+    EndMacro
+    
+    Macro DragPrivate(_type_, _actions_=#PB_Drag_Copy)
+      DD::Private(_type_, _actions_)
+    EndMacro
+    
+    Macro EnableGadgetDrop(_this_, _format_, _actions_, _private_type_=0)
+      DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
+    EndMacro
+    
+    Macro EnableWindowDrop(_this_, _format_, _actions_, _private_type_=0)
+      DD::EnableDrop(_this_, _format_, _actions_, _private_type_)
+    EndMacro
     
     ;   
     Macro SetGadgetAttribute(_gadget_, _attribute_, _value_)
@@ -592,7 +630,10 @@ DeclareModule Gadget
     EndMacro
     
     Macro TreeGadget(_gadget_, X,Y,Width,Height, Flags=0)
-      widget::Gadget(#PB_GadgetType_Tree, _gadget_, X,Y,Width,Height, Flags)
+      widget::Gadget(#PB_GadgetType_Tree, _gadget_, X,Y,Width,Height, "", 0,0,0, Flags)
+    EndMacro
+    Macro ButtonGadget(_gadget_, X,Y,Width,Height, text, Flags=0)
+      widget::Gadget(#PB_GadgetType_Button, _gadget_, X,Y,Width,Height, text, 0,0,0, Flags)
     EndMacro
     
     Declare SetGadgetAttribute_(Gadget, Attribute, Value)
@@ -1102,9 +1143,9 @@ DeclareModule Gadget
     UseModule Gadget
     ;UseModule DD
     
-    Macro PB(Function)
-      Function
-    EndMacro
+;     Macro PB(Function)
+;       Function
+;     EndMacro
     
     #PB_Tree_Collapse = 16
     UsePNGImageDecoder()
@@ -1227,7 +1268,7 @@ DeclareModule Gadget
         EnableGadgetDrop(ID, #PB_Drop_Text, #PB_Drag_Copy)
       Next
       
-      ButtonGadget(3, 10, 180, 100, 24, "set state Item")
+      PB(ButtonGadget)(3, 10, 180, 100, 24, "set state Item")
       BindGadgetEvent(3, @events_tree_gadget())
       ButtonGadget(4, 120, 180, 100, 24, "add Item")
       BindGadgetEvent(4, @events_tree_gadget())
@@ -1252,8 +1293,6 @@ DeclareModule Gadget
     EndIf
   CompilerEndIf
   
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 1211
-; FirstLine = 112
-; Folding = +---------0-----0----------------------
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; Folding = --+--------------f----------------------
 ; EnableXP

@@ -9,12 +9,262 @@
 EnableExplicit
 Uselib(widget)
 
+;- GLOBALs
 Global window_ide, canvas_ide
 
 Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
-Global mdi_design, toolbar_design, listview_debug, text_help, tree_inspector,panel_inspector
-Global tree_elements
+Global toolbar_design, listview_debug, text_help
+Global id_design, id_elements, id_properties_tree, id_inspector_tree, id_inspector_panel
 
+;- ENUMs
+Enumeration 
+  #_pi_id
+  #_pi_class
+  #_pi_text
+  #_pi_x
+  #_pi_y
+  #_pi_width
+  #_pi_height
+EndEnumeration
+
+;- PUBLICs
+Procedure.i elements_list_fill(*id, Directory$)
+  Protected ZipFile$ = Directory$ + "SilkTheme.zip"
+  
+  If FileSize(ZipFile$) < 1
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
+    CompilerElse
+      ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+    CompilerEndIf
+    If FileSize(ZipFile$) < 1
+      MessageRequester("Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
+      End
+    EndIf
+  EndIf
+  ;   Directory$ = GetCurrentDirectory()+"images/" ; "";
+  ;   Protected ZipFile$ = Directory$ + "images.zip"
+  
+  
+  If FileSize(ZipFile$) > 0
+    UsePNGImageDecoder()
+    
+    CompilerIf #PB_Compiler_Version > 522
+      UseZipPacker()
+    CompilerEndIf
+    
+    Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+    ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
+    
+    If ZipFile  
+      If ExaminePack(ZipFile)
+        While NextPackEntry(ZipFile)
+          
+          PackEntryName.S = PackEntryName(ZipFile)
+          ImageSize = PackEntrySize(ZipFile)
+          If ImageSize
+            *Image = AllocateMemory(ImageSize)
+            UncompressPackMemory(ZipFile, *Image, ImageSize)
+            Image = CatchImage(#PB_Any, *Image, ImageSize)
+            PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
+            If PackEntryName.S="application_form" 
+              PackEntryName.S="vd_windowgadget"
+            EndIf
+            
+            PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+            
+            Select PackEntryType(ZipFile)
+              Case #PB_Packer_File
+                If Image
+                  If FindString(Left(PackEntryName.S, 3), "vd_")
+                    PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
+                    PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
+                    
+                    Protected Left.S = UCase(Left(PackEntryName.S,1))
+                    Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
+                    PackEntryName.S = " "+Left.S+Right.S
+                    
+                    If FindString(LCase(PackEntryName.S), "cursor")
+                      
+                      ;Debug "add cursor"
+                      AddItem(*id, 0, PackEntryName.S, Image)
+                      SetItemData(*id, 0, Image)
+                      
+                      ;                   ElseIf FindString(LCase(PackEntryName.S), "window")
+                      ;                     
+                      ;                     Debug "add window"
+                      ;                     AddItem(*id, 1, PackEntryName.S, Image)
+                      ;                     SetItemData(*id, 1, Image)
+                      
+                    ElseIf FindString(LCase(PackEntryName.S), "buttonimage")
+                    ElseIf FindString(LCase(PackEntryName.S), "window")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "button")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "container")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "panel")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "scrollarea")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    EndIf
+                  EndIf
+                EndIf    
+            EndSelect
+            
+            FreeMemory(*Image)
+          EndIf
+        Wend  
+      EndIf
+      
+      ClosePack(ZipFile)
+    EndIf
+  EndIf
+EndProcedure
+
+Procedure properties_update(*this._s_widget, Value.i)
+  ;     SetState(Widgets("Inspector"), GetData(Value))
+  ;     SetGadgetState(WE_Selecting, GetData(Value))
+  
+  SetItemText(*this, #_pi_id, Str(Value))
+  SetItemText(*this, #_pi_class, GetClass(Value)+"_"+GetCount(Value))
+  SetItemText(*this, #_pi_text, GetText(Value))
+  SetItemText(*this, #_pi_x, Str(X(Value)))
+  SetItemText(*this, #_pi_y, Str(Y(Value)))
+  SetItemText(*this, #_pi_width, Str(Width(Value)))
+  SetItemText(*this, #_pi_height, Str(Height(Value)))
+EndProcedure
+
+Procedure inspector_get_pos(*this._s_widget, *new._s_widget, SubLevel)
+  Protected i, Position = 1 ; Начальная позиция
+  Protected CountItems = CountItems(*this)
+  ; Protected SubLevel = GetLevel(*new)
+  
+  For i = 0 To CountItems - 1
+    If *new = GetItemData(*this, i) 
+      ; SubLevel = GetItemAttribute(*this, i, #PB_Tree_SubLevel) + 1
+      Position = (i+1)
+      Break
+    EndIf
+  Next 
+  
+  For i = Position To CountItems - 1
+    If SubLevel > GetItemAttribute(*this, i, #PB_Tree_SubLevel) 
+      Break
+    Else
+      SetData( GetItemData(*this, i), i)
+      
+      Position = (i+1)
+    EndIf
+  Next 
+  
+  ProcedureReturn Position
+EndProcedure
+
+Procedure inspector_add_pos(*this._s_widget, *new._s_widget, Class.s)
+  Protected Parent = GetParent(*new)
+  Protected SubLevel = GetLevel(Parent)
+  Protected Position = inspector_get_pos(*this, Parent, SubLevel)
+  ; Protected Class.s = GetClass(*new) +"_"+ GetCount(*new)
+  
+  AddItem(*this, Position, Class.s, #PB_Default, SubLevel)
+  SetItemData(*this, Position, *new)
+  SetState(*this, Position)
+  SetItemState(*this, Position, #PB_Tree_Selected)
+  
+  ;     AddGadgetItem(WE_Selecting, Position, Class.s, 0, SubLevel )
+  ;     SetGadgetItemData(WE_Selecting, Position, *new)
+  ;     SetGadgetState(WE_Selecting, Position) ; Bug
+  ;     SetGadgetItemState(WE_Selecting, Position, #PB_Tree_Selected)
+  
+  SetData(*new, Position)
+  ;Add_Code(*new, Position-1, SubLevel)
+  
+  ProcedureReturn Position
+EndProcedure
+
+Procedure object_add_new(type, x.l,y.l, *parent._s_widget)
+  Protected width.l,height.l, *param1, *param2, *param3, text.s, flag.i
+  
+  Protected Position =- 1
+  Protected *new._s_widget, Class.s
+  
+  
+  Select type
+    Case #__type_window    
+      If Not Width
+        Width=350
+      EndIf
+      
+      If Not Height
+        Height=200
+      EndIf
+      
+      flag = #__Window_SystemMenu|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget
+      
+    Case #PB_GadgetType_Container, #PB_GadgetType_ScrollArea, #PB_GadgetType_Panel, 
+         #PB_GadgetType_Splitter, #PB_GadgetType_ListView, #PB_GadgetType_ListIcon, #PB_GadgetType_Image 
+      
+      If Not Width
+        Width=220
+      EndIf
+      
+      If Not Height
+        Height=140
+      EndIf
+      
+    Default
+      If Not Width : Width=100 : EndIf
+      If Not Height : Height=30 : EndIf
+      
+  EndSelect
+  
+  If *parent
+    OpenList(*parent, 0)
+  EndIf
+  
+  Select Type
+    Case #__type_window    
+      If *parent\type = #PB_GadgetType_MDI
+        *new = AddItem(*parent, -1, text, -1, flag)
+      Else
+        *new = Window(x,y,width,height, text, flag, *parent)
+      EndIf
+      
+      ;Case #__type_window     : *new = Window(x,y,width,height, text, flag, *parent)
+    Case #__type_ScrollArea : *new = ScrollArea(x,y,width,height, *param1, *param2, *param3, flag)
+    Case #__type_Container  : *new = Container(x,y,width,height, flag)
+    Case #__type_Panel      : *new = Panel(x,y,width,height, flag)
+      
+    Case #__type_Button     : *new = Button(x,y,width,height, text, flag)
+  EndSelect
+  
+  If *new\container
+    ; SetImage(*new, 5)
+  EndIf
+  
+  If *new
+    Class.s = GetClass(*new)+"_"+GetCount(*new)
+    SetText(*new, Class.s)
+    
+    inspector_add_pos(id_inspector_tree, *new, Class.s)
+    
+    ;       If SetAnchors(*new)
+    ;         properties_update(*new)
+    ;       EndIf
+  EndIf
+  
+  If *parent : CloseList() : EndIf
+  
+  ProcedureReturn *new
+EndProcedure
+
+;-
 Procedure window_ide_open(x=100,y=100,width=800,height=600)
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
   Define root = widget::Open(OpenWindow(#PB_Any, x,y,width,height, "ide", flag))
@@ -22,37 +272,37 @@ Procedure window_ide_open(x=100,y=100,width=800,height=600)
   canvas_ide = widget::GetGadget(root)
   
   toolbar_design = 0
-  mdi_design = MDI(0,0,0,0) 
-  AddItem(mdi_design, 0, "Form_0") 
-  AddItem(mdi_design, 1, "Form_1")  
-  AddItem(mdi_design, 2, "Form_2")
-  
-  tree_inspector = Tree(0,0,0,0)
-  AddItem(tree_inspector, 0, "Form_0", 0, 0) 
-  AddItem(tree_inspector, 1, "Form_1", 0, 1)  
-  AddItem(tree_inspector, 2, "Form_2", 0, 2)
-  
+  id_design = MDI(0,0,0,0) 
+  id_inspector_tree = Tree(0,0,0,0)
   listview_debug = Editor(0,0,0,0) ; ListView
-  AddItem(listview_debug, 0, "Form_0", 0, 0) 
-  AddItem(listview_debug, 1, "Form_1", 0, 0)  
-  AddItem(listview_debug, 2, "Form_2", 0, 0)
+                                   ;   AddItem(listview_debug, 0, "Form_0", 0, 0) 
+                                   ;   AddItem(listview_debug, 1, "Form_1", 0, 0)  
+                                   ;   AddItem(listview_debug, 2, "Form_2", 0, 0)
   
-  panel_inspector = Panel(0,0,0,0)
-  AddItem(panel_inspector, 0, "elements", 0, 0) 
-  tree_elements = Tree(0,0,0,0, #__flag_autosize)
-  AddItem(tree_elements, 0, "Button", 0, 0) 
-  AddItem(tree_elements, 1, "Container", 0, 0)  
-  AddItem(tree_elements, 2, "String", 0, 0)
+  id_inspector_panel = Panel(0,0,0,0)
+  AddItem(id_inspector_panel, 0, "elements", 0, 0) 
+  id_elements = Tree(0,0,0,0, #__flag_autosize|#__flag_NoButtons|#__flag_NoLines)
+  ; AddItem(id_elements, 0, "Button", 0, 0) ; bug tree no add fill list
   
-  AddItem(panel_inspector, 1, "properties", 0, 0)  
-  AddItem(panel_inspector, 2, "events", 0, 0)  
+  AddItem(id_inspector_panel, 1, "properties", 0, 0)  
+  id_properties_tree = Tree(0,0,0,0, #__flag_autosize)
+  Define Value = id_properties_tree
+  AddItem(id_properties_tree, #_pi_id, Str(Value))
+  AddItem(id_properties_tree, #_pi_class, GetClass(Value)+"_"+GetCount(Value))
+  AddItem(id_properties_tree, #_pi_text, GetText(Value))
+  AddItem(id_properties_tree, #_pi_x, Str(X(Value)))
+  AddItem(id_properties_tree, #_pi_y, Str(Y(Value)))
+  AddItem(id_properties_tree, #_pi_width, Str(Width(Value)))
+  AddItem(id_properties_tree, #_pi_height, Str(Height(Value)))
+  
+  AddItem(id_inspector_panel, 2, "events", 0, 0)  
   CloseList()
   
   text_help  = Text(0,0,0,0, "help for the inspector", #__text_border)
   
   
-  Splitter_design = widget::Splitter(0,0,0,0, toolbar_design,mdi_design, #PB_Splitter_FirstFixed|#PB_Splitter_Separator)
-  Splitter_inspector = widget::Splitter(0,0,0,0, tree_inspector,panel_inspector, #PB_Splitter_FirstFixed)
+  Splitter_design = widget::Splitter(0,0,0,0, toolbar_design,id_design, #PB_Splitter_FirstFixed|#PB_Splitter_Separator)
+  Splitter_inspector = widget::Splitter(0,0,0,0, id_inspector_tree,id_inspector_panel, #PB_Splitter_FirstFixed)
   splitter_debug = widget::Splitter(0,0,0,0, Splitter_design,listview_debug, #PB_Splitter_SecondFixed)
   splitter_help = widget::Splitter(0,0,0,0, Splitter_inspector,text_help, #PB_Splitter_SecondFixed)
   Splitter_ide = widget::Splitter(0,0,0,0, splitter_debug,splitter_help, #__flag_autosize|#PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
@@ -86,6 +336,21 @@ CompilerIf #PB_Compiler_IsMainFile
   Define event
   window_ide_open()
   
+  
+  elements_list_fill(id_elements, GetCurrentDirectory()+"Themes/")
+  
+  ;OpenList(id_design)
+  Define *window = object_add_new(#__type_window, 10, 10, id_design)
+  Define *container = object_add_new(#__type_container, 80, 10, *window)
+  object_add_new(#__type_button, 10, 20, *container)
+  object_add_new(#__type_button, 10, 20, *window)
+  
+  Define *window = object_add_new(#__type_window, 10, 10, id_design)
+  Define *container = object_add_new(#__type_container, 80, 10, *window)
+  object_add_new(#__type_button, 10, 20, *container)
+  object_add_new(#__type_button, 10, 20, *window)
+  ;CloseList()
+  
   Repeat 
     event = WaitWindowEvent() 
     
@@ -96,8 +361,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 29
-; FirstLine = 18
-; Folding = -
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; Folding = +------
 ; EnableXP

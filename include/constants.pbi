@@ -6,6 +6,10 @@
     
     ;- - CONSTANTs
     ;{
+    #__height = 21
+    #__bsize = 3
+    #__window_frame = #__height+#__bsize*2
+    
     #__from_mouse_state = 0
     
     #PB_GadgetType_TabBar = 100
@@ -54,23 +58,23 @@
       #__wb_help
     EndEnumeration
     
-    ;bar position
-    Enumeration
-      #__bp_0 = 0
-      #__bp_1 = 1
-      #__bp_2 = 2
-      #__bp_3 = 3
-    EndEnumeration
+;     ;bar position
+;     Enumeration
+;       #__bp_0 = 0
+;       #__bp_1 = 1
+;       #__bp_2 = 2
+;       #__bp_3 = 3
+;     EndEnumeration
     
-    ;element position
-    Enumeration
-      #last =- 1
-      #first = 0
-      #prev = 1
-      #next = 2
-      #__before = 3
-      #__after = 4
-    EndEnumeration
+;     ;element position
+;     Enumeration
+;       #last =- 1
+;       #first = 0
+;       #prev = 1
+;       #next = 2
+;       #__before = 3
+;       #__after = 4
+;     EndEnumeration
     
     ;element coordinate 
     Enumeration
@@ -92,6 +96,8 @@
       #__s_Entered
       #__s_Selected
       #__s_Disabled
+      
+      #__s_Focused
       
       #__s_front
       #__s_back
@@ -121,6 +127,27 @@
     EndEnumeration
     
     ;
+    ;   ; Set/Get Attribute
+    #__displayMode = 1<<13
+    ;   #PB_Image = 1<<13
+    ;   #PB_text = 1<<14
+    ;   #PB_flag = 1<<15
+    ;   #PB_State = 1<<16
+    
+    ;- _c_resize
+    EnumerationBinary 
+      #__resize_x
+      #__resize_y
+      #__resize_width
+      #__resize_height
+      
+      #__resize_change
+      
+      #__resize_restore
+      #__resize_minimize
+      #__resize_maximize
+    EndEnumeration
+    
     
    
     ;- _c_align
@@ -146,11 +173,13 @@
       #__flag_lowercase 
       #__flag_uppercase
       #__flag_password
+      
       #__flag_wordwrap
       #__flag_multiline 
       
-      #__flag_inline
+     ; #__flag_inline
       #__flag_nolines
+      #__flag_nobuttons
       #__flag_checkboxes
       #__flag_optionboxes
       #__flag_threeState
@@ -160,7 +189,6 @@
       #__flag_clickselect
       #__flag_fullselection
       
-      #__flag_nobuttons
       #__flag_inverted
       
       ; common
@@ -189,6 +217,26 @@
     
     #__flag_default = #__flag_nolines|#__flag_nobuttons|#__flag_checkboxes
     #__flag_alwaysselection = #__flag_lowercase|#__flag_uppercase
+    
+    ;- _c_bar
+    EnumerationBinary #__flag_numeric;1
+      #__bar_minimum 
+      #__bar_maximum 
+      #__bar_pagelength 
+      
+      ;#__bar_arrowSize 
+      #__bar_buttonsize 
+      #__bar_scrollstep
+      #__bar_direction 
+      #__bar_ticks
+      #__bar_reverse
+      
+      #__bar_vertical ;= #__flag_vertical
+      #__bar_inverted = #__flag_inverted
+      
+      #__bar_nobuttons = #__bar_buttonsize
+      #__bar_child
+    EndEnumeration
     
     ;- _c_text
     #__text_border = #__flag_borderless;#PB_Text_Border
@@ -242,6 +290,8 @@
     #__spin_left = #__text_left
     #__spin_right = #__text_right
     #__spin_center = #__text_center
+    #__spin_numeric = #__text_numeric
+    #__spin_vertical = #__bar_vertical
     
     
     ;- _c_tree
@@ -288,7 +338,7 @@
   
   
     ;- _c_editor
-    #__editor_inline = #__flag_InLine
+    ;#__editor_inline = #__flag_InLine
     #__editor_wordwrap = #__flag_wordwrap
     #__editor_numeric = #__flag_numeric|#__text_multiline
     #__editor_fullselection = #__flag_fullselection
@@ -316,51 +366,12 @@
     #__button_inverted = #__flag_inverted
     #__button_multiline = #__text_wordwrap
     
-    ;- _c_bar
-    EnumerationBinary #__flag_numeric;1
-      #__bar_minimum 
-      #__bar_maximum 
-      #__bar_pagelength 
-      
-      ;#__bar_arrowSize 
-      #__bar_buttonSize 
-      #__bar_ScrollStep
-      #__bar_direction 
-      #__bar_ticks
-      #__bar_reverse
-      
-      #__bar_vertical ;= #__flag_vertical
-      #__bar_inverted = #__flag_inverted
-      
-      #__bar_nobuttons = #__bar_buttonSize
-      #__bar_child
-    EndEnumeration
-    
     
     If (#__flag_limit>>1) > 2147483647 ; 8589934592
       Debug "Исчерпан лимит в x32 ("+Str(#__flag_limit>>1)+")"
     EndIf
     
     
-    
-    ;   ; Set/Get Attribute
-    #__displayMode = 1<<13
-    ;   #PB_Image = 1<<13
-    ;   #PB_text = 1<<14
-    ;   #PB_flag = 1<<15
-    ;   #PB_State = 1<<16
-    
-    ;- _c_resize
-    EnumerationBinary 
-      #__resize_x
-      #__resize_y
-      #__resize_width
-      #__resize_height
-      #__resize_restore
-      #__resize_minimize
-      #__resize_maximize
-      #__resize_change
-    EndEnumeration
     
     ;- _c_event
     
@@ -478,8 +489,6 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 97
-; FirstLine = 78
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

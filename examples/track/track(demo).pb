@@ -17,8 +17,8 @@ Procedure events_widgets()
   
   Select *event\type
     Case #PB_EventType_Change
-      SetGadgetState((*event\widget\index - 1), GetState(*event\widget))
-      Debug  Str(*event\widget\index - 1)+" - widget change " + GetState(*event\widget)
+      SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
+      Debug  ""+GetIndex(*event\widget)+" - widget change " + GetState(*event\widget)
   EndSelect
 EndProcedure
 
@@ -62,7 +62,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "TrackBarGadget", #PB_Window_Sys
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

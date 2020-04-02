@@ -226,7 +226,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_anchor
-    Structure _s_anchor
+    Structure _s_anchor Extends _s_coordinate
       pos.l
       size.l
       index.l
@@ -329,6 +329,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_count
     Structure _s_count
+      index.l
+      type.l
       items.l
       events.l
       childrens.l
@@ -438,6 +440,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       draw.b
       type.b
+      class.s  
+      level.l 
       hide.b[2] ; hide[1] - state
       
 ;       _y.l[constants::#__c]
@@ -477,45 +481,25 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       fs.i 
       bs.i
-      ;grid.i
-      ;enumerate.i
+      
       __height.i ; 
       __width.i
       
       container.i
-      ;countitems.i[2]
-      
       interact.i 
-      ;attribute.i
-      
       repaint.i
       resize.b
       
-      
       *Popup._s_widget
       
+      flag._s_flag
       combo_box._s_box
       check_box._s_box
       option_box._s_box
       *option_group._s_widget
       
-      
-      class.s ; 
-      type_index.l
-      type_count.l
-      
-      _level.l ; ??????????? ???????
-      level.l ; ??????????? ???????
-      count._s_count
-      
-      ; List *childrens._s_widget()
-              ;    List *_childrens._s_widget() ;temp
-      
-      ;List *items._s_items()
-      ;List *columns._s_widget()
-      
-      flag._s_flag
       text._s_text 
+      count._s_count
       image._s_image[2]
       *align._s_align
       
@@ -587,8 +571,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     
   EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 23
-; FirstLine = 21
-; Folding = -8nGQxs
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; Folding = -8nWQxs
 ; EnableXP
