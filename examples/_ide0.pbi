@@ -600,7 +600,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     lastValue = Value
   EndProcedure
   
-  Procedure Update_Inspector(Value.i)
+  Procedure properties_update(Value.i)
     ;     SetState(Widgets("Inspector"), GetData(Value))
     ;     SetGadgetState(WE_Selecting, GetData(Value))
     
@@ -730,7 +730,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       AddPos_inspector(*this, Class.s)
       
       If SetAnchors(*this)
-        Update_Inspector(*this)
+        properties_update(*this)
       EndIf
     EndIf
     
@@ -846,7 +846,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             If *this And SetAnchors(*this)
               Debug "изменено "+ GetState(EventWidget)
               SetGadgetState(WE_Selecting, GetState(EventWidget))
-              Update_Inspector(*this)
+              properties_update(*this)
             EndIf
             
         EndSelect
@@ -881,7 +881,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
                 
                 DragText = ""
               Else
-                Update_Inspector(*this)
+                properties_update(*this)
               EndIf
             EndIf
             
@@ -896,7 +896,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
                   Debug "изменено down"+ *this
                   SetState(Widgets("Inspector"), GetData(*this))
                   SetGadgetState(WE_Selecting, GetData(*this))
-                  Update_Inspector(*this)
+                  properties_update(*this)
                 EndIf
               EndIf
             EndIf
@@ -1056,7 +1056,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             If *this And SetAnchors(*this)
               ; Debug "  изменено "+ GetGadgetState(EventGadget())
               SetState(Widgets("Inspector"), GetGadgetState(EventGadget()))
-              Update_Inspector(*this)
+              properties_update(*this)
               ReDraw(GetRoot(*this))
             EndIf
             
@@ -1065,5 +1065,5 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -------------------
+; Folding = f------------0-----
 ; EnableXP

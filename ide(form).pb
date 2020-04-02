@@ -21,11 +21,63 @@ Enumeration
   #_pi_id
   #_pi_class
   #_pi_text
+  
   #_pi_x
   #_pi_y
   #_pi_width
   #_pi_height
 EndEnumeration
+
+
+
+
+Procedure.i GetClassType(Class.s)
+  Protected Result.i
+  
+  Select Trim(Class.s)
+    Case "Button"         : Result = #PB_GadgetType_Button
+    Case "ButtonImage"    : Result = #PB_GadgetType_ButtonImage
+    Case "Calendar"       : Result = #PB_GadgetType_Calendar
+    Case "Canvas"         : Result = #PB_GadgetType_Canvas
+    Case "CheckBox"       : Result = #PB_GadgetType_CheckBox
+    Case "ComboBox"       : Result = #PB_GadgetType_ComboBox
+    Case "Container"      : Result = #PB_GadgetType_Container
+    Case "Date"           : Result = #PB_GadgetType_Date
+    Case "Editor"         : Result = #PB_GadgetType_Editor
+    Case "ExplorerCombo"  : Result = #PB_GadgetType_ExplorerCombo
+    Case "ExplorerList"   : Result = #PB_GadgetType_ExplorerList
+    Case "ExplorerTree"   : Result = #PB_GadgetType_ExplorerTree
+    Case "Frame"          : Result = #PB_GadgetType_Frame
+    Case "HyperLink"      : Result = #PB_GadgetType_HyperLink
+    Case "Image"          : Result = #PB_GadgetType_Image
+    Case "IPAddress"      : Result = #PB_GadgetType_IPAddress
+    Case "ListIcon"       : Result = #PB_GadgetType_ListIcon
+    Case "ListView"       : Result = #PB_GadgetType_ListView
+    Case "MDI"            : Result = #PB_GadgetType_MDI
+    Case "OpenGL"         : Result = #PB_GadgetType_OpenGL
+    Case "Option"         : Result = #PB_GadgetType_Option
+      ;Case "Popup"          : Result = #PB_GadgetType_Popup
+    Case "Panel"          : Result = #PB_GadgetType_Panel
+      ;Case "Property"       : Result = #PB_GadgetType_Property
+    Case "ProgressBar"    : Result = #PB_GadgetType_ProgressBar
+    Case "Scintilla"      : Result = #PB_GadgetType_Scintilla
+    Case "ScrollArea"     : Result = #PB_GadgetType_ScrollArea
+    Case "ScrollBar"      : Result = #PB_GadgetType_ScrollBar
+    Case "Shortcut"       : Result = #PB_GadgetType_Shortcut
+    Case "Spin"           : Result = #PB_GadgetType_Spin
+    Case "Splitter"       : Result = #PB_GadgetType_Splitter
+    Case "String"         : Result = #PB_GadgetType_String
+    Case "Text"           : Result = #PB_GadgetType_Text
+    Case "TrackBar"       : Result = #PB_GadgetType_TrackBar
+    Case "Tree"           : Result = #PB_GadgetType_Tree
+    Case "Unknown"        : Result = #PB_GadgetType_Unknown
+    Case "Web"            : Result = #PB_GadgetType_Web
+    Case "Window"         : Result = #__Type_Window
+  EndSelect
+  
+  ProcedureReturn Result
+EndProcedure
+
 
 ;- PUBLICs
 Procedure.i elements_list_fill(*id, Directory$)
@@ -140,6 +192,7 @@ Procedure properties_update(*this._s_widget, Value.i)
   SetItemText(*this, #_pi_height, Str(Height(Value)))
 EndProcedure
 
+;-
 Procedure inspector_get_pos(*this._s_widget, *new._s_widget, SubLevel)
   Protected i, Position = 1 ; Начальная позиция
   Protected CountItems = CountItems(*this)
@@ -188,8 +241,98 @@ Procedure inspector_add_pos(*this._s_widget, *new._s_widget, Class.s)
   ProcedureReturn Position
 EndProcedure
 
-Procedure object_add_new(type, x.l,y.l, *parent._s_widget)
-  Protected width.l,height.l, *param1, *param2, *param3, text.s, flag.i
+
+
+
+;-
+Procedure.i GetSelectorX(*this._s_widget)
+  ProcedureReturn Root()\anchor\x-*this\X[2]
+EndProcedure
+
+Procedure.i GetSelectorY(*this._s_widget)
+  ProcedureReturn Root()\anchor\y-*this\Y[2]
+EndProcedure
+
+Procedure.i GetSelectorWidth(*this._s_widget)
+  ProcedureReturn Root()\anchor\Width
+EndProcedure
+
+Procedure.i GetSelectorHeight(*this._s_widget)
+  ProcedureReturn Root()\anchor\Height
+EndProcedure
+
+Global GrabDrawingImage
+
+Procedure.i FreeSelector(*this._s_widget)
+  Redraw(*this\root)
+  
+  ;*this\root\anchor = 0
+  GrabDrawingImage = 0
+EndProcedure
+
+Procedure.i SetSelector(*this._s_widget)
+  Redraw(*this\root)
+  
+  If StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
+    GrabDrawingImage = GrabDrawingImage(#PB_Any, 0,0, *this\root\width, *this\root\height)
+    StopDrawing()
+  EndIf
+  
+  ProcedureReturn *this
+EndProcedure
+
+Procedure.i UpdateSelector(*this._s_widget)
+  Protected MouseX, MouseY, DeltaX, DeltaY
+  
+  If *this And GetButtons(*this)
+    If Not *this\root\anchor
+      *this\root\anchor = AllocateStructure(_s_anchor)
+    EndIf
+    
+    ;If *this And *this\root\anchor And *this\root\selected
+    DeltaX = *this\root\mouse\delta\x + *this\root\selected\x[#__c_3] 
+    DeltaY = *this\root\mouse\delta\y + *this\root\selected\y[#__c_3]
+    
+    MouseX = *this\root\mouse\x
+    MouseY = *this\root\mouse\y
+    
+    If DeltaX > MouseX
+      Swap DeltaX, MouseX
+    EndIf
+    
+    If DeltaY > MouseY
+      Swap DeltaY, MouseY
+    EndIf
+    
+    ;Debug ""+DeltaX +" "+ DeltaY +" "+ Str(MouseX-DeltaX) +" "+ Str(MouseY-DeltaY)
+          
+    *this\root\anchor\X = DeltaX
+    *this\root\anchor\Y = DeltaY
+    *this\root\anchor\Width = MouseX-DeltaX
+    *this\root\anchor\Height = MouseY-DeltaY
+    
+   
+    If GrabDrawingImage And StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
+      DrawImage(ImageID(GrabDrawingImage), 0,0)
+      
+      ; draw selector
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      Box(*this\root\anchor\x, *this\root\anchor\y, *this\root\anchor\width, *this\root\anchor\height , $ff000000);*this\root\anchor\color[*this\root\anchor\state]\frame) 
+      StopDrawing()
+    EndIf
+  EndIf
+  
+;   If *this\root\mouse\Drag
+;     ProcedureReturn *this
+;   EndIf
+  
+EndProcedure
+
+;-
+Declare object_events()
+
+Procedure object_add_new(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0)
+  Protected *param1, *param2, *param3, text.s, flag.i = #__flag_anchorsGadget
   
   Protected Position =- 1
   Protected *new._s_widget, Class.s
@@ -224,8 +367,8 @@ Procedure object_add_new(type, x.l,y.l, *parent._s_widget)
       
   EndSelect
   
-  If *parent
-    OpenList(*parent, 0)
+  If *parent 
+    OpenList(*parent) 
   EndIf
   
   Select Type
@@ -235,6 +378,8 @@ Procedure object_add_new(type, x.l,y.l, *parent._s_widget)
       Else
         *new = Window(x,y,width,height, text, flag, *parent)
       EndIf
+      
+      Bind(*new, @object_events())
       
       ;Case #__type_window     : *new = Window(x,y,width,height, text, flag, *parent)
     Case #__type_ScrollArea : *new = ScrollArea(x,y,width,height, *param1, *param2, *param3, flag)
@@ -254,9 +399,9 @@ Procedure object_add_new(type, x.l,y.l, *parent._s_widget)
     
     inspector_add_pos(id_inspector_tree, *new, Class.s)
     
-    ;       If SetAnchors(*new)
-    ;         properties_update(*new)
-    ;       EndIf
+;     If a_set(*new)
+;       properties_update(id_properties_tree, *new)
+;     EndIf
   EndIf
   
   If *parent : CloseList() : EndIf
@@ -264,8 +409,97 @@ Procedure object_add_new(type, x.l,y.l, *parent._s_widget)
   ProcedureReturn *new
 EndProcedure
 
+Procedure object_events()
+  Static Drag, DragText.s
+  Protected *this._s_widget
+  Protected e_widget = *event\widget
+  Protected e_type = *event\type
+  
+  
+  Select e_type 
+    Case #PB_EventType_MouseMove
+;       If Drag
+;         If Not UpdateSelector(Drag)
+;           Drag = 0
+;         EndIf
+;       EndIf
+;       
+      ;Debug  Drag
+      UpdateSelector(Drag)
+      
+    Case #PB_EventType_LeftButtonUp
+      *this = a_get(e_widget)
+      
+      If *this
+        Debug "изменено up "+ *this
+        ;Debug " "+GetSelectorX(*this) +" "+ GetSelectorY(*this) +" "+ GetSelectorWidth(*this) +" "+ GetSelectorHeight(*this)
+           
+        If DragText
+          If Drag
+            
+            *this = object_add_new(*this, GetClassType(DragText), GetSelectorX(*this), GetSelectorY(*this), GetSelectorWidth(*this), GetSelectorHeight(*this)) ; DeltaX, DeltaY, MouseX-DeltaX, MouseY-DeltaY)
+            
+            FreeSelector(*this)
+            Drag = 0
+          Else
+            
+            object_add_new(*this, GetClassType(DragText), GetMouseX(*this), GetMouseY(*this))
+            
+          EndIf
+          
+          DragText = ""
+        Else
+          properties_update(id_properties_tree, *this)
+        EndIf
+      EndIf
+      
+    Case #PB_EventType_LeftButtonDown
+      *this = a_get(e_widget)
+      
+      If *this   
+        If GetState(id_elements) > 0
+          DragText = GetItemText(id_elements, GetState(id_elements))
+          SetState(id_elements, 0)
+        EndIf
+        
+        If DragText
+          Drag = SetSelector(*This)
+        Else
+          If a_set(*this)
+            Debug "изменено down"+ *this
+            SetState(id_inspector_tree, GetData(*this))
+            ;SetGadgetState(WE_Selecting, GetData(*this))
+            properties_update(id_properties_tree, *this)
+          EndIf
+        EndIf
+      EndIf
+      
+  EndSelect
+  
+EndProcedure
+
 ;-
-Procedure window_ide_open(x=100,y=100,width=800,height=600)
+Procedure ide_gadget_events()
+  Protected *this._s_widget
+  Protected e_type = *event\type
+  Protected e_widget = *event\widget
+  
+  Select e_type
+    Case #PB_EventType_Change
+      If e_widget = id_inspector_tree
+        *this = GetItemData(e_widget, GetState(e_widget))
+        
+        If *this And a_set(*this)
+          Debug "изменено "+ GetState(e_widget)
+          ;SetGadgetState(WE_Selecting, GetState(EventWidget))
+          properties_update(id_properties_tree, *this)
+        EndIf
+      EndIf
+      
+  EndSelect
+EndProcedure
+
+Procedure ide_window_open(x=100,y=100,width=800,height=600)
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
   Define root = widget::Open(OpenWindow(#PB_Any, x,y,width,height, "ide", flag))
   window_ide = widget::GetWindow(root)
@@ -323,32 +557,35 @@ Procedure window_ide_open(x=100,y=100,width=800,height=600)
   widget::SetState(Splitter_inspector, 150)
   widget::SetState(Splitter_design, 30)
   
+  
+  Bind(id_inspector_tree, @ide_gadget_events())
   ProcedureReturn window_ide
 EndProcedure
 
-Procedure window_ide_events(Event)
+Procedure ide_window_events(Event)
   Select event
       
   EndSelect
 EndProcedure
 
+;-
 CompilerIf #PB_Compiler_IsMainFile 
   Define event
-  window_ide_open()
+  ide_window_open()
   
   
   elements_list_fill(id_elements, GetCurrentDirectory()+"Themes/")
   
   ;OpenList(id_design)
-  Define *window = object_add_new(#__type_window, 10, 10, id_design)
-  Define *container = object_add_new(#__type_container, 80, 10, *window)
-  object_add_new(#__type_button, 10, 20, *container)
-  object_add_new(#__type_button, 10, 20, *window)
+  Define *window = object_add_new(id_design, #__type_window, 10, 10)
+  Define *container = object_add_new(*window, #__type_container, 80, 10)
+  object_add_new(*container, #__type_button, 10, 20)
+  object_add_new(*window, #__type_button, 10, 20)
   
-  Define *window = object_add_new(#__type_window, 10, 10, id_design)
-  Define *container = object_add_new(#__type_container, 80, 10, *window)
-  object_add_new(#__type_button, 10, 20, *container)
-  object_add_new(#__type_button, 10, 20, *window)
+  Define *window = object_add_new(id_design, #__type_window, 10, 10)
+  Define *container = object_add_new(*window, #__type_container, 80, 10)
+  object_add_new(*container, #__type_button, 10, 20)
+  object_add_new(*window, #__type_button, 10, 20)
   ;CloseList()
   
   Repeat 
@@ -356,11 +593,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select EventWindow()
       Case window_ide 
-        window_ide_events(event)
+        ide_window_events(event)
     EndSelect
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = +------
+; Folding = 7-Pb+f--8-6-
 ; EnableXP

@@ -84,9 +84,9 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro _tree_bar_update_(_this_, _pos_, _len_)
-;       Bool(Bool((_pos_-_this_\y-_this_\bar\page\pos) < 0 And bar_SetState(_this_, (_pos_-_this_\y))) Or
-;            Bool((_pos_-_this_\y-_this_\bar\page\pos) > (_this_\bar\page\len-_len_) And
-;                 bar_SetState(_this_, (_pos_-_this_\y) - (_this_\bar\page\len-_len_)))) : _this_\change = 0
+      ;       Bool(Bool((_pos_-_this_\y-_this_\bar\page\pos) < 0 And bar_SetState(_this_, (_pos_-_this_\y))) Or
+      ;            Bool((_pos_-_this_\y-_this_\bar\page\pos) > (_this_\bar\page\len-_len_) And
+      ;                 bar_SetState(_this_, (_pos_-_this_\y) - (_this_\bar\page\len-_len_)))) : _this_\change = 0
       _bar_scrollarea_change_(_this_, _pos_-_this_\y, _len_)
     EndMacro
     
@@ -180,18 +180,21 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;-
     ;-
     ;-  DECLAREs
+    Declare a_add(*this._s_widget, Size.l=6, Pos.l=-1)
+    Declare a_get(*this._s_widget, index.i=-1)
+    Declare a_set(*this._s_widget)
     
     Declare   Child(*this, *parent)
     Declare.l X(*this, mode.l=#__c_0)
     Declare.l Y(*this, mode.l=#__c_0)
     Declare.l Width(*this, mode.l=#__c_0)
     Declare.l Height(*this, mode.l=#__c_0)
+    Declare.l GetMouseX(*this, mode.l = #__c_0)
+    Declare.l GetMouseY(*this, mode.l = #__c_0)
     
     Declare.b Draw(*this)
     Declare   ReDraw(*this)
     
-    Declare.l GetMouseX(*this)
-    Declare.l GetMouseY(*this)
     Declare.l GetDeltaX(*this)
     Declare.l GetDeltaY(*this)
     Declare.l GetIndex(*this)
@@ -314,6 +317,281 @@ CompilerIf Not Defined(widget, #PB_Module)
   EndDeclareModule
   
   Module widget
+    Procedure CreateIcon(img.l, type.l)
+      Protected x,y,Pixel, size=8, index.i
+      
+      index = CreateImage(img, size, size) 
+      If img =- 1 : img = index : EndIf
+      
+      If StartDrawing(ImageOutput(img))
+        Box(0, 0, size, size, $fff0f0f0);GetSysColor_(#COLOR_BTNFACE))
+        
+        If type = 1
+          Restore img_arrow_down
+          For y = 0 To size-1
+            For x = 0 To size-1
+              Read.b Pixel
+              
+              If Pixel
+                Plot(x, y, $000000)
+              EndIf
+            Next x
+          Next y
+          
+        ElseIf type = 2
+          Restore img_arrow_down
+          For y = size-1 To 0 Step -1
+            For x = 0 To size-1
+              Read.b Pixel
+              
+              If Pixel
+                Plot(x, y, $000000)
+              EndIf
+            Next x
+          Next y
+        EndIf 
+        StopDrawing()
+      EndIf
+      
+      DataSection
+        
+        img_arrow_down:
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        Data.b 0,0,0,0,0,0,0,0,0,0
+        
+        
+        ;       img_arrow_>:
+        ;       Data.b 0,0,0,0,0,0,0,0
+        ;       Data.b 0,1,1,1,0,0,0,0
+        ;       Data.b 0,0,1,1,1,0,0,0
+        ;       Data.b 0,0,0,1,1,1,0,0
+        ;       Data.b 0,0,1,1,1,0,0,0
+        ;       Data.b 0,1,1,1,0,0,0,0
+        ;       Data.b 0,0,0,0,0,0,0,0
+        ;       Data.b 0,0,0,0,0,0,0,0
+        
+        ;       img_arrow_v:
+        ;       Data.b 0,0,0,0,0,0,0,0
+        ;       Data.b 0,1,0,0,0,1,0,0
+        ;       Data.b 0,1,1,0,1,1,0,0
+        ;       Data.b 0,1,1,1,1,1,0,0
+        ;       Data.b 0,0,1,1,1,0,0,0
+        ;       Data.b 0,0,0,1,0,0,0,0
+        ;       Data.b 0,0,0,0,0,0,0,0
+        ;       Data.b 0,0,0,0,0,0,0,0
+        ;       
+        ;       img_close
+        ;       Data.b 0,0,0,0,0,0,0,0
+        ;       Data.b 0,1,1,0,0,1,1,0
+        ;       Data.b 0,1,1,1,1,1,1,0
+        ;       Data.b 0,0,1,1,1,1,0,0
+        ;       Data.b 0,0,1,1,1,1,0,0
+        ;       Data.b 0,1,1,1,1,1,1,0
+        ;       Data.b 0,1,1,0,0,1,1,0
+        ;       Data.b 0,0,0,0,0,0,0,0
+        
+      EndDataSection
+    EndProcedure
+    
+    Procedure DrawArrow(x.l, y.l, Direction.l, color.l)
+      
+      If Direction = 0
+        ; left                                                 
+        ; 0,0,0,0,0,0,0
+        ; 0,0,0,1,1,1,0
+        ; 0,0,1,1,1,0,0
+        ; 0,1,1,1,0,0,0
+        ; 0,0,1,1,1,0,0
+        ; 0,0,0,1,1,1,0
+        ; 0,0,0,0,0,0,0
+        
+        :                                               : Plot(x+3, y+1, color)                        
+        :                       : Plot(x+2, y+2, color) : Plot(x+4, y+1, color)                     
+        :                       : Plot(x+3, y+2, color) : Plot(x+5, y+1, color)
+        : Plot(x+1, y+3, color) : Plot(x+4, y+2, color)
+        : Plot(x+2, y+3, color)                                                                       
+        : Plot(x+3, y+3, color) : Plot(x+2, y+4, color)                          
+        :                       : Plot(x+3, y+4, color)     
+        :                       : Plot(x+4, y+4, color) : Plot(x+3, y+5, color) 
+        :                                               : Plot(x+4, y+5, color)                       
+        :                                               : Plot(x+5, y+5, color)  
+      EndIf
+      
+      If Direction = 1
+        ; up                                                 
+        ; 0,0,0,0,0,0,0
+        ; 0,0,0,1,0,0,0
+        ; 0,0,1,1,1,0,0
+        ; 0,1,1,1,1,1,0
+        ; 0,1,1,0,1,1,0
+        ; 0,1,0,0,0,1,0
+        ; 0,0,0,0,0,0,0
+        
+        :                                               : Plot(x+3, y+1, color) 
+        :                       : Plot(x+2, y+2, color) : Plot(x+3, y+2, color) : Plot(x+4, y+2, color) 
+        : Plot(x+1, y+3, color) : Plot(x+2, y+3, color) : Plot(x+3, y+3, color) : Plot(x+4, y+3, color) : Plot(x+5, y+3, color)
+        : Plot(x+1, y+4, color) : Plot(x+2, y+4, color)                         : Plot(x+4, y+4, color) : Plot(x+5, y+4, color)
+        : Plot(x+1, y+5, color)                                                                         : Plot(x+5, y+5, color)
+      EndIf
+      
+      If Direction = 2
+        ; right                                                 
+        ; 0,0,0,0,0,0,0
+        ; 0,1,1,1,0,0,0
+        ; 0,0,1,1,1,0,0
+        ; 0,0,0,1,1,1,0
+        ; 0,0,1,1,1,0,0
+        ; 0,1,1,1,0,0,0
+        ; 0,0,0,0,0,0,0
+        
+        : Plot(x+1, y+1, color)                        
+        : Plot(x+2, y+1, color) : Plot(x+2, y+2, color)                      
+        : Plot(x+3, y+1, color) : Plot(x+3, y+2, color) 
+        :                       : Plot(x+4, y+2, color) : Plot(x+3, y+3, color)
+        :                                               : Plot(x+4, y+3, color)                        
+        :                       : Plot(x+2, y+4, color) : Plot(x+5, y+3, color)                          
+        :                       : Plot(x+3, y+4, color)     
+        : Plot(x+1, y+5, color) : Plot(x+4, y+4, color)
+        : Plot(x+2, y+5, color)                       
+        : Plot(x+3, y+5, color)  
+      EndIf
+      
+      If Direction = 3
+        ; down
+        ; 0,0,0,0,0,0,0
+        ; 0,1,0,0,0,1,0
+        ; 0,1,1,0,1,1,0
+        ; 0,1,1,1,1,1,0
+        ; 0,0,1,1,1,0,0
+        ; 0,0,0,1,0,0,0
+        ; 0,0,0,0,0,0,0
+        
+        : Plot(x+1, y+1, color)                                                                         : Plot(x+5, y+1, color)
+        : Plot(x+1, y+2, color) : Plot(x+2, y+2, color)                         : Plot(x+4, y+2, color) : Plot(x+5, y+2, color)
+        : Plot(x+1, y+3, color) : Plot(x+2, y+3, color) : Plot(x+3, y+3, color) : Plot(x+4, y+3, color) : Plot(x+5, y+3, color)
+        :                       : Plot(x+2, y+4, color) : Plot(x+3, y+4, color) : Plot(x+4, y+4, color)
+        :                                               : Plot(x+3, y+5, color)
+      EndIf
+      
+    EndProcedure
+    
+    Procedure.b Arrow(X.l,Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1)
+      ; ProcedureReturn DrawArrow(x,y, Direction, Color)
+      
+      Protected I
+      ;Size - 2
+      
+      If Not Length
+        Style =- 1
+      EndIf
+      Length = (Size+2)/2
+      
+      
+      If Direction = 1 ; top
+        If Style > 0 : x-1 : y+2
+          Size / 2
+          For i = 0 To Size 
+            LineXY((X+1+i)+Size,(Y+i-1)-(Style),(X+1+i)+Size,(Y+i-1)+(Style),Color)         ; Левая линия
+            LineXY(((X+1+(Size))-i),(Y+i-1)-(Style),((X+1+(Size))-i),(Y+i-1)+(Style),Color) ; правая линия
+          Next
+        Else : x-1 : y-1
+          For i = 1 To Length 
+            If Style =- 1
+              LineXY(x+i, (Size+y), x+Length, y, Color)
+              LineXY(x+Length*2-i, (Size+y), x+Length, y, Color)
+            Else
+              LineXY(x+i, (Size+y)-i/2, x+Length, y, Color)
+              LineXY(x+Length*2-i, (Size+y)-i/2, x+Length, y, Color)
+            EndIf
+          Next 
+          i = Bool(Style =- 1) 
+          LineXY(x, (Size+y)+Bool(i=0), x+Length, y+1, Color) 
+          LineXY(x+Length*2, (Size+y)+Bool(i=0), x+Length, y+1, Color) ; bug
+        EndIf
+      ElseIf Direction = 3 ; bottom
+        If Style > 0 : x-1 : y+1;2
+          Size / 2
+          For i = 0 To Size
+            LineXY((X+1+i),(Y+i)-(Style),(X+1+i),(Y+i)+(Style),Color) ; Левая линия
+            LineXY(((X+1+(Size*2))-i),(Y+i)-(Style),((X+1+(Size*2))-i),(Y+i)+(Style),Color) ; правая линия
+          Next
+        Else : x-1 : y+1
+          For i = 0 To Length 
+            If Style =- 1
+              LineXY(x+i, y, x+Length, (Size+y), Color)
+              LineXY(x+Length*2-i, y, x+Length, (Size+y), Color)
+            Else
+              LineXY(x+i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
+              LineXY(x+Length*2-i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
+            EndIf
+          Next
+        EndIf
+      ElseIf Direction = 0 ; в лево
+        If Style > 0 : y-1
+          Size / 2
+          For i = 0 To Size 
+            ; в лево
+            LineXY(((X+1)+i)-(Style),(((Y+1)+(Size))-i),((X+1)+i)+(Style),(((Y+1)+(Size))-i),Color) ; правая линия
+            LineXY(((X+1)+i)-(Style),((Y+1)+i)+Size,((X+1)+i)+(Style),((Y+1)+i)+Size,Color)         ; Левая линия
+          Next  
+        Else : x-1 : y-1
+          For i = 1 To Length
+            If Style =- 1
+              LineXY((Size+x), y+i, x, y+Length, Color)
+              LineXY((Size+x), y+Length*2-i, x, y+Length, Color)
+            Else
+              LineXY((Size+x)-i/2, y+i, x, y+Length, Color)
+              LineXY((Size+x)-i/2, y+Length*2-i, x, y+Length, Color)
+            EndIf
+          Next 
+          i = Bool(Style =- 1) 
+          LineXY((Size+x)+Bool(i=0), y, x+1, y+Length, Color) 
+          LineXY((Size+x)+Bool(i=0), y+Length*2, x+1, y+Length, Color)
+        EndIf
+      ElseIf Direction = 2 ; в право
+        If Style > 0 : y-1 ;: x + 1
+          Size / 2
+          For i = 0 To Size 
+            ; в право
+            LineXY(((X+1)+i)-(Style),((Y+1)+i),((X+1)+i)+(Style),((Y+1)+i),Color) ; Левая линия
+            LineXY(((X+1)+i)-(Style),(((Y+1)+(Size*2))-i),((X+1)+i)+(Style),(((Y+1)+(Size*2))-i),Color) ; правая линия
+          Next
+        Else : y-1 : x+1
+          For i = 0 To Length 
+            If Style =- 1
+              LineXY(x, y+i, Size+x, y+Length, Color)
+              LineXY(x, y+Length*2-i, Size+x, y+Length, Color)
+            Else
+              LineXY(x+i/2-Bool(i=0), y+i, Size+x, y+Length, Color)
+              LineXY(x+i/2-Bool(i=0), y+Length*2-i, Size+x, y+Length, Color)
+            EndIf
+          Next
+        EndIf
+      EndIf
+      
+    EndProcedure
+    
+    Procedure.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
+      If Grid 
+        Value = Round((Value/Grid), #PB_Round_Nearest) * Grid 
+        If Value>Max 
+          Value=Max 
+        EndIf
+      EndIf
+      
+      ProcedureReturn Value
+      ;   Procedure.i Match(Value.i, Grid.i, Max.i=$7FFFFFFF)
+      ;     ProcedureReturn ((Bool(Value>Max) * Max) + (Bool(Grid And Value<Max) * (Round((Value/Grid), #PB_round_nearest) * Grid)))
+    EndProcedure
+    
     ;-
     ;- PRIVATEs
     Macro _box_gradient_(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _round_=0, _alpha_=255)
@@ -585,98 +863,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     ;-
-    Procedure.b Arrow(X.l,Y.l, Size.l, Direction.l, Color.l, Style.b = 1, Length.l = 1)
-      Protected I
-      
-      If Not Length
-        Style =- 1
-      EndIf
-      Length = (Size+2)/2
-      
-      
-      If Direction = 1 ; top
-        If Style > 0 : x-1 : y+2
-          Size / 2
-          For i = 0 To Size 
-            LineXY((X+1+i)+Size,(Y+i-1)-(Style),(X+1+i)+Size,(Y+i-1)+(Style),Color)         ; Левая линия
-            LineXY(((X+1+(Size))-i),(Y+i-1)-(Style),((X+1+(Size))-i),(Y+i-1)+(Style),Color) ; правая линия
-          Next
-        Else : x-1 : y-1
-          For i = 1 To Length 
-            If Style =- 1
-              LineXY(x+i, (Size+y), x+Length, y, Color)
-              LineXY(x+Length*2-i, (Size+y), x+Length, y, Color)
-            Else
-              LineXY(x+i, (Size+y)-i/2, x+Length, y, Color)
-              LineXY(x+Length*2-i, (Size+y)-i/2, x+Length, y, Color)
-            EndIf
-          Next 
-          i = Bool(Style =- 1) 
-          LineXY(x, (Size+y)+Bool(i=0), x+Length, y+1, Color) 
-          LineXY(x+Length*2, (Size+y)+Bool(i=0), x+Length, y+1, Color) ; bug
-        EndIf
-      ElseIf Direction = 3 ; bottom
-        If Style > 0 : x-1 : y+1;2
-          Size / 2
-          For i = 0 To Size
-            LineXY((X+1+i),(Y+i)-(Style),(X+1+i),(Y+i)+(Style),Color) ; Левая линия
-            LineXY(((X+1+(Size*2))-i),(Y+i)-(Style),((X+1+(Size*2))-i),(Y+i)+(Style),Color) ; правая линия
-          Next
-        Else : x-1 : y+1
-          For i = 0 To Length 
-            If Style =- 1
-              LineXY(x+i, y, x+Length, (Size+y), Color)
-              LineXY(x+Length*2-i, y, x+Length, (Size+y), Color)
-            Else
-              LineXY(x+i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
-              LineXY(x+Length*2-i, y+i/2-Bool(i=0), x+Length, (Size+y), Color)
-            EndIf
-          Next
-        EndIf
-      ElseIf Direction = 0 ; в лево
-        If Style > 0 : y-1
-          Size / 2
-          For i = 0 To Size 
-            ; в лево
-            LineXY(((X+1)+i)-(Style),(((Y+1)+(Size))-i),((X+1)+i)+(Style),(((Y+1)+(Size))-i),Color) ; правая линия
-            LineXY(((X+1)+i)-(Style),((Y+1)+i)+Size,((X+1)+i)+(Style),((Y+1)+i)+Size,Color)         ; Левая линия
-          Next  
-        Else : x-1 : y-1
-          For i = 1 To Length
-            If Style =- 1
-              LineXY((Size+x), y+i, x, y+Length, Color)
-              LineXY((Size+x), y+Length*2-i, x, y+Length, Color)
-            Else
-              LineXY((Size+x)-i/2, y+i, x, y+Length, Color)
-              LineXY((Size+x)-i/2, y+Length*2-i, x, y+Length, Color)
-            EndIf
-          Next 
-          i = Bool(Style =- 1) 
-          LineXY((Size+x)+Bool(i=0), y, x+1, y+Length, Color) 
-          LineXY((Size+x)+Bool(i=0), y+Length*2, x+1, y+Length, Color)
-        EndIf
-      ElseIf Direction = 2 ; в право
-        If Style > 0 : y-1 ;: x + 1
-          Size / 2
-          For i = 0 To Size 
-            ; в право
-            LineXY(((X+1)+i)-(Style),((Y+1)+i),((X+1)+i)+(Style),((Y+1)+i),Color) ; Левая линия
-            LineXY(((X+1)+i)-(Style),(((Y+1)+(Size*2))-i),((X+1)+i)+(Style),(((Y+1)+(Size*2))-i),Color) ; правая линия
-          Next
-        Else : y-1 : x+1
-          For i = 0 To Length 
-            If Style =- 1
-              LineXY(x, y+i, Size+x, y+Length, Color)
-              LineXY(x, y+Length*2-i, Size+x, y+Length, Color)
-            Else
-              LineXY(x+i/2-Bool(i=0), y+i, Size+x, y+Length, Color)
-              LineXY(x+i/2-Bool(i=0), y+Length*2-i, Size+x, y+Length, Color)
-            EndIf
-          Next
-        EndIf
-      EndIf
-      
-    EndProcedure
     
     
     
@@ -1215,6 +1401,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;-
     Procedure.b Scroll_Draw(*this._s_widget)
       With *this
+        
+        ;         DrawImage(ImageID(UpImage),\bar\button[#__b_1]\x,\bar\button[#__b_1]\y)
+        ;         DrawImage(ImageID(DownImage),\bar\button[#__b_2]\x,\bar\button[#__b_2]\y)
+        ;         ProcedureReturn 
         
         If Not \hide And \color\alpha
           If \color\back <> - 1
@@ -2736,11 +2926,13 @@ CompilerIf Not Defined(widget, #PB_Module)
             Repaint = #True
           ElseIf (*this\bar\from = #__b_1 And *this\bar\inverted) Or
                  (*this\bar\from = #__b_2 And Not *this\bar\inverted)
+            
             Post(#PB_EventType_Down, *this)
             Repaint | Bar_SetState(*this, *this\bar\page\pos + *this\bar\increment)
             
           ElseIf (*this\bar\from = #__b_2 And *this\bar\inverted) Or 
                  (*this\bar\from = #__b_1 And Not *this\bar\inverted)
+            
             Post(#PB_EventType_Up, *this)
             Repaint | Bar_SetState(*this, *this\bar\page\pos - *this\bar\increment)
           EndIf
@@ -2763,6 +2955,425 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       ProcedureReturn Repaint
+    EndProcedure
+    
+    
+    ;-
+    ;- ANCHORs
+    Macro _set_cursor_(_this_, _cursor_)
+      SetGadgetAttribute(_this_\root\canvas\gadget, #PB_Canvas_Cursor, _cursor_)
+    EndMacro
+    
+    Macro a_draw(_this_)
+      If _this_\root\anchor
+        DrawingMode(#PB_2DDrawing_Outlined)
+        If _this_\root\anchor\id[1] : Box(_this_\root\anchor\id[1]\x, _this_\root\anchor\id[1]\y, _this_\root\anchor\id[1]\width, _this_\root\anchor\id[1]\height ,_this_\root\anchor\id[1]\color[_this_\root\anchor\id[1]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[2] : Box(_this_\root\anchor\id[2]\x, _this_\root\anchor\id[2]\y, _this_\root\anchor\id[2]\width, _this_\root\anchor\id[2]\height ,_this_\root\anchor\id[2]\color[_this_\root\anchor\id[2]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[3] : Box(_this_\root\anchor\id[3]\x, _this_\root\anchor\id[3]\y, _this_\root\anchor\id[3]\width, _this_\root\anchor\id[3]\height ,_this_\root\anchor\id[3]\color[_this_\root\anchor\id[3]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[4] : Box(_this_\root\anchor\id[4]\x, _this_\root\anchor\id[4]\y, _this_\root\anchor\id[4]\width, _this_\root\anchor\id[4]\height ,_this_\root\anchor\id[4]\color[_this_\root\anchor\id[4]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[5] : Box(_this_\root\anchor\id[5]\x, _this_\root\anchor\id[5]\y, _this_\root\anchor\id[5]\width, _this_\root\anchor\id[5]\height ,_this_\root\anchor\id[5]\color[_this_\root\anchor\id[5]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[6] : Box(_this_\root\anchor\id[6]\x, _this_\root\anchor\id[6]\y, _this_\root\anchor\id[6]\width, _this_\root\anchor\id[6]\height ,_this_\root\anchor\id[6]\color[_this_\root\anchor\id[6]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[7] : Box(_this_\root\anchor\id[7]\x, _this_\root\anchor\id[7]\y, _this_\root\anchor\id[7]\width, _this_\root\anchor\id[7]\height ,_this_\root\anchor\id[7]\color[_this_\root\anchor\id[7]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[8] : Box(_this_\root\anchor\id[8]\x, _this_\root\anchor\id[8]\y, _this_\root\anchor\id[8]\width, _this_\root\anchor\id[8]\height ,_this_\root\anchor\id[8]\color[_this_\root\anchor\id[8]\color\state]\frame) : EndIf
+        ;If _this_\root\anchor\id[#__a_moved] : Box(_this_\root\anchor\id[#__a_moved]\x, _this_\root\anchor\id[#__a_moved]\y, _this_\root\anchor\id[#__a_moved]\width, _this_\root\anchor\id[#__a_moved]\height ,_this_\root\anchor\id[#__a_moved]\color[_this_\root\anchor\id[#__a_moved]\color\state]\frame) : EndIf
+        
+        DrawingMode(#PB_2DDrawing_Outlined)
+        If _this_\root\anchor\id[10] : Box(_this_\root\anchor\id[10]\x, _this_\root\anchor\id[10]\y, _this_\root\anchor\id[10]\width, _this_\root\anchor\id[10]\height ,_this_\root\anchor\id[10]\color[_this_\root\anchor\id[10]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[11] : Box(_this_\root\anchor\id[11]\x, _this_\root\anchor\id[11]\y, _this_\root\anchor\id[11]\width, _this_\root\anchor\id[11]\height ,_this_\root\anchor\id[11]\color[_this_\root\anchor\id[11]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[12] : Box(_this_\root\anchor\id[12]\x, _this_\root\anchor\id[12]\y, _this_\root\anchor\id[12]\width, _this_\root\anchor\id[12]\height ,_this_\root\anchor\id[12]\color[_this_\root\anchor\id[12]\color\state]\frame) : EndIf
+        If _this_\root\anchor\id[13] : Box(_this_\root\anchor\id[13]\x, _this_\root\anchor\id[13]\y, _this_\root\anchor\id[13]\width, _this_\root\anchor\id[13]\height ,_this_\root\anchor\id[13]\color[_this_\root\anchor\id[13]\color\state]\frame) : EndIf
+        
+        DrawingMode(#PB_2DDrawing_Default)
+        If _this_\root\anchor\id[1] : Box(_this_\root\anchor\id[1]\x+1, _this_\root\anchor\id[1]\y+1, _this_\root\anchor\id[1]\width-2, _this_\root\anchor\id[1]\height-2 ,_this_\root\anchor\id[1]\color[_this_\root\anchor\id[1]\color\state]\back) : EndIf
+        If _this_\root\anchor\id[2] : Box(_this_\root\anchor\id[2]\x+1, _this_\root\anchor\id[2]\y+1, _this_\root\anchor\id[2]\width-2, _this_\root\anchor\id[2]\height-2 ,_this_\root\anchor\id[2]\color[_this_\root\anchor\id[2]\color\state]\back) : EndIf
+        If _this_\root\anchor\id[3] : Box(_this_\root\anchor\id[3]\x+1, _this_\root\anchor\id[3]\y+1, _this_\root\anchor\id[3]\width-2, _this_\root\anchor\id[3]\height-2 ,_this_\root\anchor\id[3]\color[_this_\root\anchor\id[3]\color\state]\back) : EndIf
+        If _this_\root\anchor\id[4] : Box(_this_\root\anchor\id[4]\x+1, _this_\root\anchor\id[4]\y+1, _this_\root\anchor\id[4]\width-2, _this_\root\anchor\id[4]\height-2 ,_this_\root\anchor\id[4]\color[_this_\root\anchor\id[4]\color\state]\back) : EndIf
+        If _this_\root\anchor\id[5] And Not _this_\container : Box(_this_\root\anchor\id[5]\x+1, _this_\root\anchor\id[5]\y+1, _this_\root\anchor\id[5]\width-2, _this_\root\anchor\id[5]\height-2 ,_this_\root\anchor\id[5]\color[_this_\root\anchor\id[5]\color\state]\back) : EndIf
+        If _this_\root\anchor\id[6] : Box(_this_\root\anchor\id[6]\x+1, _this_\root\anchor\id[6]\y+1, _this_\root\anchor\id[6]\width-2, _this_\root\anchor\id[6]\height-2 ,_this_\root\anchor\id[6]\color[_this_\root\anchor\id[6]\color\state]\back) : EndIf
+        If _this_\root\anchor\id[7] : Box(_this_\root\anchor\id[7]\x+1, _this_\root\anchor\id[7]\y+1, _this_\root\anchor\id[7]\width-2, _this_\root\anchor\id[7]\height-2 ,_this_\root\anchor\id[7]\color[_this_\root\anchor\id[7]\color\state]\back) : EndIf
+        If _this_\root\anchor\id[8] : Box(_this_\root\anchor\id[8]\x+1, _this_\root\anchor\id[8]\y+1, _this_\root\anchor\id[8]\width-2, _this_\root\anchor\id[8]\height-2 ,_this_\root\anchor\id[8]\color[_this_\root\anchor\id[8]\color\state]\back) : EndIf
+        
+      EndIf
+    EndMacro
+    
+    Macro a_resize(_this_)
+      If _this_\root\anchor\id[1] ; left
+        _this_\root\anchor\id[1]\x = _this_\x-_this_\root\anchor\pos
+        _this_\root\anchor\id[1]\y = _this_\y+(_this_\height-_this_\root\anchor\id[1]\height)/2
+      EndIf
+      If _this_\root\anchor\id[2] ; top
+        _this_\root\anchor\id[2]\x = _this_\x+(_this_\width-_this_\root\anchor\id[2]\width)/2
+        _this_\root\anchor\id[2]\y = _this_\y-_this_\root\anchor\pos
+      EndIf
+      If  _this_\root\anchor\id[3] ; right
+        _this_\root\anchor\id[3]\x = _this_\x+_this_\width-_this_\root\anchor\id[3]\width+_this_\root\anchor\pos
+        _this_\root\anchor\id[3]\y = _this_\y+(_this_\height-_this_\root\anchor\id[3]\height)/2
+      EndIf
+      If _this_\root\anchor\id[4] ; bottom
+        _this_\root\anchor\id[4]\x = _this_\x+(_this_\width-_this_\root\anchor\id[4]\width)/2
+        _this_\root\anchor\id[4]\y = _this_\y+_this_\height-_this_\root\anchor\id[4]\height+_this_\root\anchor\pos
+      EndIf
+      
+      If _this_\root\anchor\id[5] ; left&top
+        _this_\root\anchor\id[5]\x = _this_\x-_this_\root\anchor\pos
+        _this_\root\anchor\id[5]\y = _this_\y-_this_\root\anchor\pos
+      EndIf
+      If _this_\root\anchor\id[6] ; right&top
+        _this_\root\anchor\id[6]\x = _this_\x+_this_\width-_this_\root\anchor\id[6]\width+_this_\root\anchor\pos
+        _this_\root\anchor\id[6]\y = _this_\y-_this_\root\anchor\pos
+      EndIf
+      If _this_\root\anchor\id[7] ; right&bottom
+        _this_\root\anchor\id[7]\x = _this_\x+_this_\width-_this_\root\anchor\id[7]\width+_this_\root\anchor\pos
+        _this_\root\anchor\id[7]\y = _this_\y+_this_\height-_this_\root\anchor\id[7]\height+_this_\root\anchor\pos
+      EndIf
+      If _this_\root\anchor\id[8] ; left&bottom
+        _this_\root\anchor\id[8]\x = _this_\x-_this_\root\anchor\pos
+        _this_\root\anchor\id[8]\y = _this_\y+_this_\height-_this_\root\anchor\id[8]\height+_this_\root\anchor\pos
+      EndIf
+      
+      If _this_\root\anchor\id[#__a_moved] 
+        _this_\root\anchor\id[#__a_moved]\x = _this_\x
+        _this_\root\anchor\id[#__a_moved]\y = _this_\y
+        _this_\root\anchor\id[#__a_moved]\width = _this_\width
+        _this_\root\anchor\id[#__a_moved]\height = _this_\height
+      EndIf
+      
+      If _this_\root\anchor\id[10] And _this_\root\anchor\id[11] And _this_\root\anchor\id[12] And _this_\root\anchor\id[13]
+        a_lines(_this_)
+      EndIf
+      
+    EndMacro
+    
+    Procedure a_lines(*this._s_widget=-1, distance=0)
+      Protected ls=1, top_x1,left_y2,top_x2,left_y1,bottom_x1,right_y2,bottom_x2,right_y1
+      Protected checked_x1,checked_y1,checked_x2,checked_y2, relative_x1,relative_y1,relative_x2,relative_y2
+      
+      With *this
+        If *this
+          checked_x1 = *this\x
+          checked_y1 = *this\y
+          checked_x2 = checked_x1+*this\width
+          checked_y2 = checked_y1+*this\height
+          
+          top_x1 = checked_x1 : top_x2 = checked_x2
+          left_y1 = checked_y1 : left_y2 = checked_y2 
+          right_y1 = checked_y1 : right_y2 = checked_y2
+          bottom_x1 = checked_x1 : bottom_x2 = checked_x2
+          
+          If *this\parent And ListSize(*this\root\_childrens())
+            PushListPosition(*this\root\_childrens())
+            ForEach *this\root\_childrens()
+              If Not *this\root\_childrens()\hide And *this\root\_childrens()\parent = *this\parent
+                relative_x1 = *this\root\_childrens()\x
+                relative_y1 = *this\root\_childrens()\y
+                relative_x2 = relative_x1+*this\root\_childrens()\width
+                relative_y2 = relative_y1+*this\root\_childrens()\height
+                
+                ;Left_line
+                If checked_x1 = relative_x1
+                  If left_y1 > relative_y1 : left_y1 = relative_y1 : EndIf
+                  If left_y2 < relative_y2 : left_y2 = relative_y2 : EndIf
+                  
+                  ; *this\root\anchor\id[10]\color[0]\frame = $0000FF
+                  *this\root\anchor\id[10]\hide = 0
+                  *this\root\anchor\id[10]\x = checked_x1
+                  *this\root\anchor\id[10]\y = left_y1
+                  *this\root\anchor\id[10]\width = ls
+                  *this\root\anchor\id[10]\height = left_y2-left_y1
+                Else
+                  ; *this\root\anchor\id[10]\color[0]\frame = $000000
+                  *this\root\anchor\id[10]\hide = 1
+                EndIf
+                
+                ;Right_line
+                If checked_x2 = relative_x2
+                  If right_y1 > relative_y1 : right_y1 = relative_y1 : EndIf
+                  If right_y2 < relative_y2 : right_y2 = relative_y2 : EndIf
+                  
+                  *this\root\anchor\id[12]\hide = 0
+                  *this\root\anchor\id[12]\x = checked_x2-ls
+                  *this\root\anchor\id[12]\y = right_y1
+                  *this\root\anchor\id[12]\width = ls
+                  *this\root\anchor\id[12]\height = right_y2-right_y1
+                Else
+                  *this\root\anchor\id[12]\hide = 1
+                EndIf
+                
+                ;Top_line
+                If checked_y1 = relative_y1 
+                  If top_x1 > relative_x1 : top_x1 = relative_x1 : EndIf
+                  If top_x2 < relative_x2 : top_x2 = relative_x2: EndIf
+                  
+                  *this\root\anchor\id[11]\hide = 0
+                  *this\root\anchor\id[11]\x = top_x1
+                  *this\root\anchor\id[11]\y = checked_y1
+                  *this\root\anchor\id[11]\width = top_x2-top_x1
+                  *this\root\anchor\id[11]\height = ls
+                Else
+                  *this\root\anchor\id[11]\hide = 1
+                EndIf
+                
+                ;Bottom_line
+                If checked_y2 = relative_y2 
+                  If bottom_x1 > relative_x1 : bottom_x1 = relative_x1 : EndIf
+                  If bottom_x2 < relative_x2 : bottom_x2 = relative_x2: EndIf
+                  
+                  *this\root\anchor\id[13]\hide = 0
+                  *this\root\anchor\id[13]\x = bottom_x1
+                  *this\root\anchor\id[13]\y = checked_y2-ls
+                  *this\root\anchor\id[13]\width = bottom_x2-bottom_x1
+                  *this\root\anchor\id[13]\height = ls
+                Else
+                  *this\root\anchor\id[13]\hide = 1
+                EndIf
+              EndIf
+            Next
+            PopListPosition(*this\root\_childrens())
+          EndIf
+          
+        EndIf
+      EndWith
+    EndProcedure
+    
+    Procedure.i a_add(*this._s_widget, Size.l=6, Pos.l=-1)
+      Structure DataBuffer
+        cursor.i[#__anchors+1]
+      EndStructure
+      
+      Protected i, *Cursor.DataBuffer = ?CursorsBuffer
+      
+      With *this
+        \flag\transform = 1
+        
+        If Pos=-1
+          Pos = Size-3
+        EndIf
+        
+        If Not \root\anchor
+          \root\anchor = AllocateStructure(structures::_s_anchor)
+          \root\anchor\index = #__a_moved
+          \root\anchor\pos = Pos
+          \root\anchor\size = Size
+          
+          For i = 0 To #__anchors
+            \root\anchor\id[i]\cursor = *Cursor\cursor[i]
+            
+            \root\anchor\id[i]\color[0]\frame = $000000
+            \root\anchor\id[i]\color[1]\frame = $FF0000
+            \root\anchor\id[i]\color[2]\frame = $0000FF
+            
+            \root\anchor\id[i]\color[0]\back = $FFFFFF
+            \root\anchor\id[i]\color[1]\back = $FFFFFF
+            \root\anchor\id[i]\color[2]\back = $FFFFFF
+            
+            \root\anchor\id[i]\width = \root\anchor\size
+            \root\anchor\id[i]\height = \root\anchor\size
+            
+            If \container And i = 5
+              \root\anchor\id[5]\width * 2
+              \root\anchor\id[5]\height * 2
+            EndIf
+            
+            If i=10 Or i=12
+              \root\anchor\id[i]\color[0]\frame = $0000FF
+              ;           \root\anchor\id[i]\color[1]\frame = $0000FF
+              ;           \root\anchor\id[i]\color[2]\frame = $0000FF
+            EndIf
+            If i=11 Or i=13
+              \root\anchor\id[i]\color[0]\frame = $FF0000
+              ;           \root\anchor\id[i]\color[1]\frame = $FF0000
+              ;           \root\anchor\id[i]\color[2]\frame = $FF0000
+            EndIf
+          Next i
+          
+        EndIf
+      EndWith
+      
+      DataSection
+        CursorsBuffer:
+        Data.i #PB_Cursor_Default
+        Data.i #PB_Cursor_LeftRight
+        Data.i #PB_Cursor_UpDown
+        Data.i #PB_Cursor_LeftRight
+        Data.i #PB_Cursor_UpDown
+        Data.i #PB_Cursor_LeftUpRightDown
+        Data.i #PB_Cursor_LeftDownRightUp
+        Data.i #PB_Cursor_LeftUpRightDown
+        Data.i #PB_Cursor_LeftDownRightUp
+        Data.i #PB_Cursor_Arrows
+      EndDataSection
+    EndProcedure
+    
+    Procedure.i a_get(*this._s_widget, index.i=-1)
+      ProcedureReturn Bool(*this\root\anchor\id[(Bool(index.i=-1) * #__a_moved) + (Bool(index.i>0) * index)]) * *this
+    EndProcedure
+    
+    Procedure.i a_set(*this._s_widget)
+      Protected Result.i
+      Static *LastPos
+      
+      With *this
+        If Not (\parent And 
+                (\parent\scroll And (*this = \parent\scroll\v Or *this = \parent\scroll\h)) Or 
+                (\parent\splitter And (*this = \parent\splitter\first Or *this = \parent\splitter\second Or \bar\from = #__b_3)))
+          
+          If \root\anchor\widget <> *this
+            ;         If \root\anchor\widget
+            ;           If *LastPos
+            ;             ; ?????????? ?? ?????
+            ;             SetPosition(\root\anchor\widget, #PB_list_before, *LastPos)
+            ;             *LastPos = 0
+            ;           EndIf
+            ;         EndIf
+            ;         
+            ;         *LastPos = GetPosition(*this, #PB_list_after)
+            ;         If *LastPos
+            ;           SetPosition(*this, #PB_list_last)
+            ;         EndIf
+            \root\anchor\widget = *this
+            
+            If \container
+              \root\anchor\id[5]\width = \root\anchor\size * 2
+              \root\anchor\id[5]\height = \root\anchor\size * 2
+            Else
+              \root\anchor\id[5]\width = \root\anchor\size
+              \root\anchor\id[5]\height = \root\anchor\size
+            EndIf
+            
+            a_resize(*this)
+            Result = 1
+          EndIf
+        EndIf
+      EndWith
+      
+      ProcedureReturn Result
+    EndProcedure
+    
+    Procedure.i a_remove(*this._s_widget)
+      Protected Result.i
+      
+      With *this
+        If \root\anchor
+          Result = \root\anchor
+          FreeStructure(\root\anchor)
+          \root\anchor = 0
+        EndIf
+      EndWith
+      
+      ProcedureReturn Result
+    EndProcedure
+    
+    Procedure a_events(*this._s_widget, EventType.i, buttons.i, mouse_x.i, mouse_y.i)
+      Protected result, i 
+      
+      With *this
+        If \root\anchor 
+          Select EventType 
+            Case #__Event_MouseMove
+              If \root\anchor\id[\root\anchor\index]\color\state = #__s_2
+                *this = \root\anchor\widget
+                mouse_x-\root\anchor\delta\x
+                mouse_y-\root\anchor\delta\y
+                
+                ;Protected.i Px,Py, Grid = \grid, IsGrid = Bool(Grid>1)
+                Protected.i Px,Py, Grid = 5, IsGrid = Bool(Grid>1)
+                
+                If \parent
+                  Px = \parent\x[#__c_2]
+                  Py = \parent\y[#__c_2]
+                EndIf
+                
+                Protected mx = Match(mouse_x-Px+\root\anchor\pos, Grid)
+                Protected my = Match(mouse_y-Py+\root\anchor\pos, Grid)
+                Protected mw = Match((\x+\width-IsGrid)-mouse_x-\root\anchor\pos, Grid)+IsGrid
+                Protected mh = Match((\y+\height-IsGrid)-mouse_y-\root\anchor\pos, Grid)+IsGrid
+                Protected mxw = Match(mouse_x-\x+\root\anchor\pos, Grid)+IsGrid
+                Protected myh = Match(mouse_y-\y+\root\anchor\pos, Grid)+IsGrid
+                
+                Select \root\anchor\index
+                  Case 1 : result = Resize(*this, mx, #PB_Ignore, mw, #PB_Ignore)
+                  Case 2 : result = Resize(*this, #PB_Ignore, my, #PB_Ignore, mh)
+                  Case 3 : result = Resize(*this, #PB_Ignore, #PB_Ignore, mxw, #PB_Ignore)
+                  Case 4 : result = Resize(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, myh)
+                    
+                  Case 5 
+                    If \container ; Form, Container, ScrollArea, Panel
+                      result = Resize(*this, mx, my, #PB_Ignore, #PB_Ignore)
+                    Else
+                      result = Resize(*this, mx, my, mw, mh)
+                    EndIf
+                    
+                  Case 6 : result = Resize(*this, #PB_Ignore, my, mxw, mh)
+                  Case 7 : result = Resize(*this, #PB_Ignore, #PB_Ignore, mxw, myh)
+                  Case 8 : result = Resize(*this, mx, #PB_Ignore, mw, myh)
+                    
+                  Case #__a_moved 
+                    If Not \container
+                      If  Not \root\anchor\cursor 
+                        _set_cursor_(*this, \root\anchor\id[\root\anchor\index]\cursor)
+                        \root\anchor\cursor = 1
+                      EndIf
+                      
+                      result = Resize(*this, mx, my, #PB_Ignore, #PB_Ignore)
+                    EndIf
+                EndSelect
+                
+              ElseIf Not Buttons
+                ; From point anchor
+                For i = #__anchors To 0 Step - 1
+                  If \root\anchor\id[i] And _from_point_(mouse_x, mouse_y, \root\anchor\id[i]) 
+                    If i <> #__a_moved And Not \root\anchor\cursor
+                      If \container And i = 5
+                        _set_cursor_(*this, \root\anchor\id[#__a_moved]\cursor)
+                      Else
+                        _set_cursor_(*this, \root\anchor\id[i]\cursor)
+                      EndIf
+                      \root\anchor\cursor = 1
+                    EndIf
+                    \root\anchor\id[i]\color\state = 1
+                    \root\anchor\index = i
+                    Break
+                  Else
+                    \root\anchor\id[i]\color\state = 0
+                    If \root\anchor\cursor
+                      _set_cursor_(*this, \root\anchor\id[0]\cursor)
+                      \root\anchor\cursor = 0
+                    EndIf
+                  EndIf
+                Next
+              EndIf
+              
+            Case #__Event_LeftButtonDown  
+              If \root\flag\transform
+                If a_Set(*this)
+                EndIf
+                \flag\transform = 1
+              EndIf
+              
+              If \flag\transform
+                If _from_point_(mouse_x, mouse_y, \root\anchor\id[\root\anchor\index]) 
+                  \root\anchor\delta\x = mouse_x-\root\anchor\id[\root\anchor\index]\x
+                  \root\anchor\delta\y = mouse_y-\root\anchor\id[\root\anchor\index]\y
+                  \root\anchor\id[\root\anchor\index]\color\state = #__s_2
+                EndIf
+              EndIf
+              
+            Case #__Event_LeftButtonUp
+              If \flag\transform
+                If \root\anchor\cursor And Not _from_point_(mouse_x, mouse_y, \root\anchor\id[\root\anchor\index]) 
+                  _set_cursor_(*this, \root\anchor\id[0]\cursor)
+                  \root\anchor\cursor = 0
+                EndIf
+                
+                \root\anchor\id[\root\anchor\index]\color\state = 0
+                \root\anchor\index = 0
+              EndIf
+              
+          EndSelect
+        EndIf
+      EndWith
+      
+      ProcedureReturn result
     EndProcedure
     
     
@@ -4170,7 +4781,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           If \text\change
             Post(#PB_EventType_Change, *this)
           EndIf
-            
+          
           ; Make output multi line text
           If (\text\change Or (\resize And \text\multiline =- 1))
             make_text_multiline(*this)
@@ -7592,7 +8203,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         SetParent(*this, *parent, #PB_Default)
-        Resize(*this, X,Y,Width,Height)
         
         If constants::_check_(flag, #__Window_NoGadgets, #False)
           OpenList(*this)
@@ -7601,10 +8211,17 @@ CompilerIf Not Defined(widget, #PB_Module)
           ;  SetActive(*this)
         EndIf 
         
+        
         If Text And \caption\height
           \caption\text\_padding = 5
           \caption\text\string = Text
         EndIf
+        
+        If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
+            a_add(*this)
+            a_set(*this)
+          EndIf
+        Resize(*this, X,Y,Width,Height)
       EndWith
       
       ProcedureReturn *this
@@ -7877,13 +8494,13 @@ CompilerIf Not Defined(widget, #PB_Module)
         If Height=#PB_Ignore : Height = \h\y-\v\y+\h\height : EndIf
         
         ;If
-          Bar_SetAttribute(*scroll\v, #__bar_pagelength, _make_area_height_(*scroll, Width, Height))
-          *scroll\v\hide = widget::Resize(*scroll\v, #PB_Ignore, y, #PB_Ignore, _get_page_height_(*scroll, 1))
+        Bar_SetAttribute(*scroll\v, #__bar_pagelength, _make_area_height_(*scroll, Width, Height))
+        *scroll\v\hide = widget::Resize(*scroll\v, #PB_Ignore, y, #PB_Ignore, _get_page_height_(*scroll, 1))
         ;EndIf
         
         ;If 
-          Bar_SetAttribute(*scroll\h, #__bar_pagelength, _make_area_width_(*scroll, Width, Height))
-          *scroll\h\hide = widget::Resize(*scroll\h, x, #PB_Ignore, _get_page_width_(*scroll, 1), #PB_Ignore)
+        Bar_SetAttribute(*scroll\h, #__bar_pagelength, _make_area_width_(*scroll, Width, Height))
+        *scroll\h\hide = widget::Resize(*scroll\h, x, #PB_Ignore, _get_page_width_(*scroll, 1), #PB_Ignore)
         ;EndIf
         
         If Bar_SetAttribute(*scroll\v, #__bar_pagelength, _make_area_height_(*scroll, Width, Height))
@@ -8160,9 +8777,9 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
             EndIf
             
-              If *this\type = #__type_tree
-                *this\change = #True
-              EndIf
+            If *this\type = #__type_tree
+              *this\change = #True
+            EndIf
             
           EndIf 
         EndIf  
@@ -8187,9 +8804,9 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
             EndIf
             
-             If *this\type = #__type_tree
-                *this\change = #True
-              EndIf
+            If *this\type = #__type_tree
+              *this\change = #True
+            EndIf
             
           EndIf 
         EndIf 
@@ -8323,6 +8940,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           result = #True
         EndIf
         
+        ; anchors widgets
+        If *this And (*this\root And *this\root\anchor And *this\root\anchor\widget = *this)
+          a_resize(*this)
+        EndIf
+        
         ProcedureReturn result
       EndWith
     EndProcedure
@@ -8352,7 +8974,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Static pos_x, pos_y
         OpenList(*this)
         *this\count\items + 1
-        result = Window(pos_x+x, pos_y+y, Width, Height, Text, #__window_systemmenu|#__window_sizegadget|#__window_maximizegadget|#__window_minimizegadget, *this) : CloseList()
+        result = Window(pos_x+x, pos_y+y, Width, Height, Text, #__window_systemmenu|#__window_sizegadget|#__window_maximizegadget|#__window_minimizegadget|sublevel, *this) : CloseList()
         
         *this\scroll\x = 0
         *this\scroll\y = 0
@@ -8592,21 +9214,21 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure.s GetClass(*this._s_widget)
       ProcedureReturn *this\class
     EndProcedure
-  
-    Procedure.l GetMouseX(*this._s_widget)
-      ProcedureReturn *this\root\mouse\x-*This\X[2]-*This\fs
+    
+    Procedure.l GetMouseX(*this._s_widget, mode.l = #__c_0)
+      ProcedureReturn *this\root\mouse\x - *this\x[mode]
     EndProcedure
     
-    Procedure.l GetMouseY(*this._s_widget)
-      ProcedureReturn *this\root\mouse\y-*This\Y[2]-*This\fs
+    Procedure.l GetMouseY(*this._s_widget, mode.l = #__c_0)
+      ProcedureReturn *this\root\mouse\y - *this\y[mode]
     EndProcedure
     
     Procedure.l GetDeltaX(*this._s_widget)
-      ProcedureReturn *this\root\mouse\delta\x ; (*This\Mouse\Delta\X-*This\X[2]-*This\fs)+*This\X[3]
+      ProcedureReturn *this\root\mouse\delta\x + *this\root\selected\x[#__c_3]
     EndProcedure
     
     Procedure.l GetDeltaY(*this._s_widget)
-      ProcedureReturn *this\root\mouse\delta\y ; (*This\Mouse\Delta\Y-*This\Y[2]-*This\fs)+*This\Y[3]
+      ProcedureReturn *this\root\mouse\delta\y + *this\root\selected\y[#__c_3]
     EndProcedure
     
     Procedure.l GetButtons(*this._s_widget)
@@ -8618,12 +9240,12 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure.l GetCount(*this._s_widget, mode.b=#False)
-     If mode
-       ProcedureReturn *this\count\type
-     Else
-       ProcedureReturn *this\count\index
-     EndIf
-   EndProcedure
+      If mode
+        ProcedureReturn *this\count\type
+      Else
+        ProcedureReturn *this\count\index
+      EndIf
+    EndProcedure
     
     Procedure.i GetData(*this._s_widget)
       ProcedureReturn *this\data
@@ -8727,11 +9349,13 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *this\type = #PB_GadgetType_Editor
         ProcedureReturn *this\index[#__s_2] ; *this\text\caret\pos
-        
-      ElseIf *this\type = #PB_GadgetType_Panel
+      EndIf
+      
+      If *this\type = #PB_GadgetType_Panel
         ProcedureReturn *this\index[#__s_2] 
-        
-      ElseIf *this\type = #PB_GadgetType_TabBar
+      EndIf
+      
+      If *this\type = #PB_GadgetType_TabBar
         ProcedureReturn *this\index[#__s_2] 
         
       Else
@@ -9089,12 +9713,12 @@ CompilerIf Not Defined(widget, #PB_Module)
             ChangeCurrentElement(GetChildrens(*this\parent), *this\adress)
             MoveElement(GetChildrens(*this\parent), #PB_List_After, *Parent\adress)
           EndIf
-            
-            While PreviousElement(GetChildrens(*this\parent)) 
-              If Child(GetChildrens(*this\parent), *this)
-                MoveElement(GetChildrens(*this\parent), #PB_List_After, *this\adress)
-              EndIf
-            Wend
+          
+          While PreviousElement(GetChildrens(*this\parent)) 
+            If Child(GetChildrens(*this\parent), *this)
+              MoveElement(GetChildrens(*this\parent), #PB_List_After, *this\adress)
+            EndIf
+          Wend
         EndIf
         
         *this\parent = *Parent
@@ -9126,7 +9750,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           *this\parent\count\childrens + 1
           *this\root\count\childrens + Bool(*this\parent <> *this\root)
-        
+          
           LastElement(GetChildrens(*this\parent))
           *this\adress = AddElement(GetChildrens(*this\parent)) 
           GetChildrens(*this\parent) = *this
@@ -9193,6 +9817,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         EndIf
       EndIf
+      
+       
     EndProcedure
     
     Procedure.i SetAlignment(*this._s_widget, Mode.l, Type.l=1)
@@ -9615,34 +10241,34 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;-
     Procedure.i GetItemData(*this._s_widget, item.l)
-    Protected Result.i
+      Protected Result.i
+      
+      With *This
+        Select \Type
+          Case #PB_GadgetType_Tree,
+               #PB_GadgetType_ListView
+            PushListPosition(*this\row\_s()) 
+            ForEach *this\row\_s()
+              If *this\row\_s()\index = Item 
+                Result = *this\row\_s()\data
+                ; Debug *this\row\_s()\Text\String
+                Break
+              EndIf
+            Next
+            PopListPosition(*this\row\_s())
+        EndSelect
+      EndWith
+      
+      ;     If Result
+      ;       Protected *w.Widget_S = Result
+      ;       
+      ;       Debug "GetItemData "+Item +" "+ Result +" "+  *w\Class
+      ;     EndIf
+      
+      ProcedureReturn Result
+    EndProcedure
     
-    With *This
-      Select \Type
-        Case #PB_GadgetType_Tree,
-             #PB_GadgetType_ListView
-          PushListPosition(*this\row\_s()) 
-          ForEach *this\row\_s()
-            If *this\row\_s()\index = Item 
-              Result = *this\row\_s()\data
-              ; Debug *this\row\_s()\Text\String
-              Break
-            EndIf
-          Next
-          PopListPosition(*this\row\_s())
-      EndSelect
-    EndWith
-    
-    ;     If Result
-    ;       Protected *w.Widget_S = Result
-    ;       
-    ;       Debug "GetItemData "+Item +" "+ Result +" "+  *w\Class
-    ;     EndIf
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  Procedure.s GetItemText(*this._s_widget, Item.l, Column.l=0)
+    Procedure.s GetItemText(*this._s_widget, Item.l, Column.l=0)
       Protected result.s
       
       If *this\type = #__Type_Window
@@ -9799,19 +10425,19 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *this\type = #__Type_Tree
         ;Debug "SetItemData "+Item +" "+ *Data ;+" "+  *w\index
-      ;     
-      With *This
-        PushListPosition(*this\row\_s()) 
-        ForEach *this\row\_s()
-          If *this\row\_s()\index = Item  ;  ListIndex(*this\row\_s()) = Item ;  
-            *this\row\_s()\data = *Data
-            Break
-          EndIf
-        Next
-        PopListPosition(*this\row\_s())
-      EndWith
-    EndIf
-    
+        ;     
+        With *This
+          PushListPosition(*this\row\_s()) 
+          ForEach *this\row\_s()
+            If *this\row\_s()\index = Item  ;  ListIndex(*this\row\_s()) = Item ;  
+              *this\row\_s()\data = *Data
+              Break
+            EndIf
+          Next
+          PopListPosition(*this\row\_s())
+        EndWith
+      EndIf
+      
       ProcedureReturn Result
     EndProcedure
     
@@ -10251,10 +10877,10 @@ CompilerIf Not Defined(widget, #PB_Module)
                  *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24)
         Next
       ElseIf *this\check_box\checked = #PB_Checkbox_Inbetween
-;         RoundBox( *this\check_box\x+2, *this\check_box\y+2,
-;                   *this\check_box\width-4, *this\check_box\height-4, 
-;                   *this\check_box\round-2, *this\check_box\round-2, 
-;                   *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24)
+        ;         RoundBox( *this\check_box\x+2, *this\check_box\y+2,
+        ;                   *this\check_box\width-4, *this\check_box\height-4, 
+        ;                   *this\check_box\round-2, *this\check_box\round-2, 
+        ;                   *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24)
         RoundBox( *this\check_box\x+4, *this\check_box\y+4,
                   *this\check_box\width-8, *this\check_box\height-8, 
                   0, 0, 
@@ -10308,7 +10934,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\bar\state =- 1
         *this\index[#__s_1] =- 1
         *this\index[#__s_2] =- 1
-        *this\bar\increment = ScrollStep
         
         ; *this\adress = *this
         ; *this\class = #PB_Compiler_Procedure
@@ -10339,7 +10964,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; - Create Scroll
         If *this\type = #PB_GadgetType_ScrollBar
           *this\class = "Scroll"
-          
+          *this\bar\increment = ScrollStep
+        
           *this\color\back = $FFF9F9F9 ; - 1 
           *this\color\front = $FFFFFFFF
           *this\bar\button[#__b_1]\color = _get_colors_()
@@ -10378,7 +11004,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; - Create Spin
         If *this\Type = #PB_GadgetType_Spin
           *this\class = "Spin"
-          
+          *this\bar\increment = ScrollStep
+        
           *this\color\back =- 1 
           *this\bar\button[#__b_1]\color = _get_colors_()
           *this\bar\button[#__b_2]\color = _get_colors_()
@@ -10431,7 +11058,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; - Create Tab
         If *this\type = #PB_GadgetType_TabBar
           *this\class = "Tab"
-          
+          *this\bar\increment = ScrollStep
+         
           *this\index[#__s_2] = 0 ; default selected tab
           
           *this\color\back =- 1 
@@ -10477,7 +11105,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; - Create Track
         If *this\Type = #PB_GadgetType_TrackBar
           *this\class = "Track"
-          
+          *this\bar\increment = ScrollStep
+        
           *this\color\back =- 1 
           *this\bar\button[#__b_1]\color = _get_colors_()
           *this\bar\button[#__b_2]\color = _get_colors_()
@@ -10520,7 +11149,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; - Create Progress
         If *this\type = #PB_GadgetType_ProgressBar
           *this\class = "Progress"
-          
+          *this\bar\increment = ScrollStep
+        
           *this\color\back =- 1 
           *this\bar\button[#__b_1]\color = _get_colors_()
           *this\bar\button[#__b_2]\color = _get_colors_()
@@ -10548,7 +11178,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; - Create Splitter
         If *this\type = #PB_GadgetType_Splitter
           *this\class = "Splitter"
-          
+          *this\bar\increment = ScrollStep
+        
           *this\color\back =- 1 
           
           ;         *this\bar\button[#__b_1]\color = _get_colors_()
@@ -10636,10 +11267,15 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             If flag & #__flag_NoScrollBars = #False
-              Area(*this, width, height, *param_1, *param_2, *param_3)
+              Area(*this, width, height, *param_1, *param_2, ScrollStep)
             EndIf
           EndIf
           
+          If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
+            a_add(*this)
+            a_set(*this)
+          EndIf
+        
           Resize(*this, x,y,width,height)
         EndIf
       EndWith
@@ -10729,6 +11365,13 @@ CompilerIf Not Defined(widget, #PB_Module)
       SetParent(*this, *parent, #PB_Default)
       
       Area(*this,0,0,0,0,1)
+      
+      
+      If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
+            a_add(*this)
+            a_set(*this)
+          EndIf
+        
       Resize(*this, x,y,width,height)
       
       ProcedureReturn *this
@@ -10778,7 +11421,14 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
-      Resize(*this, x,y,width,height)
+      
+      
+      
+      If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
+            a_add(*this)
+            a_set(*this)
+          EndIf
+        Resize(*this, x,y,width,height)
       
       ProcedureReturn *this
     EndProcedure
@@ -10846,7 +11496,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
-      Resize(*this, x,y,width,height)
+      If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
+            a_add(*this)
+            a_set(*this)
+          EndIf
+        Resize(*this, x,y,width,height)
       If Text.s
         SetText(*this, Text.s)
       EndIf
@@ -10884,7 +11538,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
-      Resize(*this, x,y,width,height)
+      If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
+            a_add(*this)
+            a_set(*this)
+          EndIf
+        Resize(*this, x,y,width,height)
       If Text.s
         SetText(*this, Text.s)
       EndIf
@@ -10919,7 +11577,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
-      Resize(*this, x,y,width,height)
+      If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
+            a_add(*this)
+            a_set(*this)
+          EndIf
+        Resize(*this, x,y,width,height)
       If Text.s
         SetText(*this, Text.s)
       EndIf
@@ -10966,6 +11628,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         _set_alignment_flag_(*this, *parent, flag)
         SetParent(*this, *parent, #PB_Default)
+        
+        
+        If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
+            a_add(*this)
+            a_set(*this)
+          EndIf
         Resize(*this, X,Y,Width,Height)
         If Text.s
           SetText(*this, Text.s)
@@ -11000,6 +11668,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         SetParent(*this, *parent, #PB_Default)
         
         Area(*this, Width,Height, Width,Height, 1)
+        
+        If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
+            a_add(*this)
+            a_set(*this)
+          EndIf
         Resize(*this, X,Y,Width,Height)
       EndWith
       
@@ -11089,6 +11762,19 @@ CompilerIf Not Defined(widget, #PB_Module)
         Next
         ; PopListPosition(GetChildrens(*this))
         
+        ; Draw anchors 
+        If *this\root And *this\root\anchor And *this\root\anchor\widget
+          UnclipOutput()
+          ;Debug *this\root\anchor\widget
+          a_draw(*this\root\anchor\widget)
+        EndIf
+        
+; ; ;         ; selector
+; ; ;         If *this\root\anchor 
+; ; ;            UnclipOutput()
+; ; ;          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+; ; ;           Box(*this\root\anchor\x, *this\root\anchor\y, *this\root\anchor\width, *this\root\anchor\height , $ff000000);*this\root\anchor\color[*this\root\anchor\state]\frame) 
+; ; ;         EndIf
         StopDrawing()
       EndIf
     EndProcedure
@@ -11321,10 +12007,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         ProcedureReturn 
       EndIf
       
-      ;If *this\flag\transform
-      ;  Post(event_type, *this, *this\index[#__s_1])
-      ;EndIf
-      
+      If *this\flag\transform
+        Post(event_type, *this, *this\index[#__s_1])
+        
+        ProcedureReturn a_events(*this, event_type, *this\root\mouse\buttons, *this\root\mouse\x, *this\root\mouse\y)
+      EndIf
+     
       If *this\type = #__Type_Window
         Repaint = Window_Events(*this, event_type, mouse_x, mouse_y)
       EndIf
@@ -11338,7 +12026,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If *this\type = #PB_GadgetType_Editor Or
-        *this\type = #PB_GadgetType_String
+         *this\type = #PB_GadgetType_String
         Repaint = Editor_Events(*this, event_type, mouse_x, mouse_y)
       EndIf
       
@@ -11625,11 +12313,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ;
       If eventtype = #__Event_LeftClick Or
-        eventtype = #__Event_DragStart 
+         eventtype = #__Event_DragStart 
         
       ElseIf eventtype = #__Event_Focus
         
-       ElseIf eventtype = #__Event_LostFocus
+      ElseIf eventtype = #__Event_LostFocus
         ; если фокус получил PB gadget
         ; то убираем фокус с виджета
         If GetActive()
@@ -11643,31 +12331,31 @@ CompilerIf Not Defined(widget, #PB_Module)
           ; GetActive() = 0
         EndIf
         
-       ;
-       ElseIf eventtype = #__Event_MouseEnter 
-         If Root()\count\childrens
-           Root()\entered = Root()\_childrens()
-           
-           If Root()\entered\_state & #__s_entered = #False
-             Root()\entered\_state | #__s_entered
-             ;Debug "enter"+Root()\container
-             Repaint | Events(Root()\_childrens(), #__Event_MouseEnter, mouse_x, mouse_y)
-           EndIf
-         EndIf
-         
-       ElseIf eventtype = #__Event_MouseLeave 
-         If Root()\count\childrens
-           Root()\entered = Root()\_childrens()
-           
-           If Root()\entered\_state & #__s_entered
-             Root()\entered\_state &~ #__s_entered
-             ;Debug "leave"
-             Repaint | Events(Root()\_childrens(), #__Event_MouseLeave, mouse_x, mouse_y)
-           EndIf
-         EndIf
-         
-         ; 
-       ElseIf eventtype = #__Event_Input Or
+        ;
+      ElseIf eventtype = #__Event_MouseEnter 
+        If Root()\count\childrens
+          Root()\entered = Root()\_childrens()
+          
+          If Root()\entered\_state & #__s_entered = #False
+            Root()\entered\_state | #__s_entered
+            ;Debug "enter"+Root()\container
+            Repaint | Events(Root()\_childrens(), #__Event_MouseEnter, mouse_x, mouse_y)
+          EndIf
+        EndIf
+        
+      ElseIf eventtype = #__Event_MouseLeave 
+        If Root()\count\childrens
+          Root()\entered = Root()\_childrens()
+          
+          If Root()\entered\_state & #__s_entered
+            Root()\entered\_state &~ #__s_entered
+            ;Debug "leave"
+            Repaint | Events(Root()\_childrens(), #__Event_MouseLeave, mouse_x, mouse_y)
+          EndIf
+        EndIf
+        
+        ; 
+      ElseIf eventtype = #__Event_Input Or
              eventtype = #__Event_KeyDown Or
              eventtype = #__Event_KeyUp
         
@@ -11749,36 +12437,36 @@ CompilerIf Not Defined(widget, #PB_Module)
       ;SetActiveGadget(canvas)
       
       
-;       If _is_widget_(Root()\entered) 
-;         Root()\selected = Root()\entered
-;         Root()\selected\_state | #__s_selected
-;         
-;         If Root()\entered\bar\from
-;           ; bar mouse delta pos
-;           If Root()\entered\bar\from = #__b_3
-;             Root()\mouse\delta\x = Root()\mouse\x - Root()\entered\bar\thumb\pos
-;             Root()\mouse\delta\y = Root()\mouse\y - Root()\entered\bar\thumb\pos
-;           EndIf
-;         Else
-;           Root()\mouse\delta\x = Root()\mouse\x - Root()\entered\x[#__c_3]
-;           Root()\mouse\delta\y = Root()\mouse\y - Root()\entered\y[#__c_3]
-;         EndIf
-;         
-;         If Root()\entered = Root()\entered\parent\scroll\v Or
-;            Root()\entered = Root()\entered\parent\scroll\h Or 
-;            Root()\entered = Root()\entered\parent\_tab 
-;           
-;           Repaint | SetActive(Root()\entered\parent)
-;         Else
-;           Repaint | SetActive(Root()\entered)
-;         EndIf
-;         
-;         Repaint | Events(Root()\entered, #PB_EventType_LeftButtonDown, Root()\mouse\x, Root()\mouse\y)
-;         
-;         If Repaint 
-;           ReDraw(Root())
-;         EndIf
-;      EndIf
+      ;       If _is_widget_(Root()\entered) 
+      ;         Root()\selected = Root()\entered
+      ;         Root()\selected\_state | #__s_selected
+      ;         
+      ;         If Root()\entered\bar\from
+      ;           ; bar mouse delta pos
+      ;           If Root()\entered\bar\from = #__b_3
+      ;             Root()\mouse\delta\x = Root()\mouse\x - Root()\entered\bar\thumb\pos
+      ;             Root()\mouse\delta\y = Root()\mouse\y - Root()\entered\bar\thumb\pos
+      ;           EndIf
+      ;         Else
+      ;           Root()\mouse\delta\x = Root()\mouse\x - Root()\entered\x[#__c_3]
+      ;           Root()\mouse\delta\y = Root()\mouse\y - Root()\entered\y[#__c_3]
+      ;         EndIf
+      ;         
+      ;         If Root()\entered = Root()\entered\parent\scroll\v Or
+      ;            Root()\entered = Root()\entered\parent\scroll\h Or 
+      ;            Root()\entered = Root()\entered\parent\_tab 
+      ;           
+      ;           Repaint | SetActive(Root()\entered\parent)
+      ;         Else
+      ;           Repaint | SetActive(Root()\entered)
+      ;         EndIf
+      ;         
+      ;         Repaint | Events(Root()\entered, #PB_EventType_LeftButtonDown, Root()\mouse\x, Root()\mouse\y)
+      ;         
+      ;         If Repaint 
+      ;           ReDraw(Root())
+      ;         EndIf
+      ;      EndIf
       
     EndProcedure
     
@@ -12198,15 +12886,15 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemColor(*Tree,  #PB_All, #__Color_Line,  $FF00f000)
     
     AddItem(Button_1, -1, "window_5") 
-                Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#__Window_TitleBar|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget, Button_1) 
-                widget::Container(10,10,100,100)
-                widget::Container(10,10,100,100)
-                widget::Container(10,10,100,100)
-                widget::CloseList()
-                widget::CloseList()
-                widget::CloseList()
-                widget::CloseList() ; *window
-                
+    Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#__Window_TitleBar|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget, Button_1) 
+    widget::Container(10,10,100,100)
+    widget::Container(10,10,100,100)
+    widget::Container(10,10,100,100)
+    widget::CloseList()
+    widget::CloseList()
+    widget::CloseList()
+    widget::CloseList() ; *window
+    
     CloseList()
     SetState(Button_1, 4)
     
@@ -12282,5 +12970,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -------------------------------------------------------------0+-------------------------------------------------------------------------------------------------p-vu-----------------------------------------------------------------------------------------------24-------bA5--
+; Folding = wAAAAKAAAOIAEAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAwAAAAAAAAAAAAwE1t---r--fgBAAAAAAAAAAAAgAEAAAAAAAAAAAAAAA9AAAYAAAAAAAEAAAAAAAgAVAAAAADCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgwBEoBYAAAAgHAAAAQAohGAAADDAAAAAPAAA+HAAAAAAAAgAAACAAAAAAAAAAAAABAAAAAAAAAAAoBAAQ5BCGm1WaAGCAAAbAAAkAAQAABgDAAAACAAgh
 ; EnableXP
