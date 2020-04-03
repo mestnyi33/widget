@@ -183,24 +183,46 @@ CompilerIf Not Defined(widget, #PB_Module)
       _child_\parent\scroll\width = _child_\x+_child_\width - _child_\parent\scroll\x
       _child_\parent\scroll\height = _child_\Y+_child_\height - _child_\parent\scroll\y
       
-      PushListPosition(_child_\root\_childrens())
-      ForEach _child_\root\_childrens()
-        If _child_\root\_childrens()\parent = _child_\parent
-          If _child_\parent\scroll\x > _child_\root\_childrens()\x : _child_\parent\scroll\x = _child_\root\_childrens()\x : EndIf
-          If _child_\parent\scroll\y > _child_\root\_childrens()\y : _child_\parent\scroll\y = _child_\root\_childrens()\y : EndIf
-       EndIf
-      Next
-      ForEach _child_\root\_childrens()
-       If _child_\root\_childrens()\parent = _child_\parent
-          If _child_\parent\scroll\width < _child_\root\_childrens()\x+_child_\root\_childrens()\width - _child_\parent\scroll\x : _child_\parent\scroll\width = _child_\root\_childrens()\x+_child_\root\_childrens()\width - _child_\parent\scroll\x : EndIf
-          If _child_\parent\scroll\height < _child_\root\_childrens()\Y+_child_\root\_childrens()\height - _child_\parent\scroll\y : _child_\parent\scroll\height = _child_\root\_childrens()\Y+_child_\root\_childrens()\height - _child_\parent\scroll\y : EndIf
+      _child_\parent\width[#__c_2] = _child_\parent\width[#__c_3]
+      _child_\parent\height[#__c_2] = _child_\parent\height[#__c_3]
+      
+      PushListPosition(GetChildrens(_child_))
+      ForEach GetChildrens(_child_)
+        If GetChildrens(_child_)\parent = _child_\parent
+          If _child_\parent\scroll\x > GetChildrens(_child_)\x 
+            _child_\parent\scroll\x = GetChildrens(_child_)\x 
+          EndIf
+          If _child_\parent\scroll\y > GetChildrens(_child_)\y 
+            _child_\parent\scroll\y = GetChildrens(_child_)\y 
+          EndIf
         EndIf
       Next
-      PopListPosition(_child_\root\_childrens())
+      ForEach GetChildrens(_child_)
+        If GetChildrens(_child_)\parent = _child_\parent
+          If _child_\parent\scroll\width < GetChildrens(_child_)\x+GetChildrens(_child_)\width - _child_\parent\scroll\x 
+            _child_\parent\scroll\width = GetChildrens(_child_)\x+GetChildrens(_child_)\width - _child_\parent\scroll\x 
+          EndIf
+          If _child_\parent\scroll\height < GetChildrens(_child_)\Y+GetChildrens(_child_)\height - _child_\parent\scroll\y 
+            _child_\parent\scroll\height = GetChildrens(_child_)\Y+GetChildrens(_child_)\height - _child_\parent\scroll\y 
+          EndIf
+        EndIf
+      Next
+      PopListPosition(GetChildrens(_child_))
       
-     widget::Updates(_child_\parent\scroll, _child_\parent\x[#__c_2], _child_\parent\y[#__c_2], _child_\parent\width[#__c_2], _child_\parent\height[#__c_2])
-     ;  widget::Updates(_child_\parent\scroll, _child_\parent\x, _child_\parent\y, _child_\parent\width, _child_\parent\height)
-     ;  widget::Updates(_child_\parent\scroll, 0, 0, _child_\parent\width, _child_\parent\height)
+      widget::Updates(_child_\parent\scroll, _child_\parent\x[#__c_2], _child_\parent\y[#__c_2], _child_\parent\width[#__c_2], _child_\parent\height[#__c_2])
+      
+      _child_\parent\width[#__c_2] = _child_\parent\scroll\h\bar\page\len
+      _child_\parent\height[#__c_2] = _child_\parent\scroll\v\bar\page\len
+      
+      If _child_\parent\container And _child_\parent\count\childrens
+        PushListPosition(GetChildrens(_child_))
+        ForEach GetChildrens(_child_)
+          If GetChildrens(_child_)\parent = _child_\parent
+            Clip(GetChildrens(_child_), #True)
+          EndIf
+        Next
+        PopListPosition(GetChildrens(_child_))
+      EndIf
     EndMacro
   
   
@@ -294,7 +316,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.i GetFont(*this)
     Declare.i SetFont(*this, FontID.i)
     
-    Declare.i Bar(type.l, *parent._s_widget, x.l,y.l,width.l,height.l, *param_1, *param_2, *param_3, size.l, flag.i=0, round.l=7, ScrollStep.f=1.0)
+    Declare.i Create(type.l, *parent._s_widget, x.l,y.l,width.l,height.l, *param_1, *param_2, *param_3, size.l, flag.i=0, round.l=7, ScrollStep.f=1.0)
+    
     ; button
     Declare.i Text(x.l,y.l,width.l,height.l, Text.s, Flag.i=0, round.l=0)
     Declare.i String(x.l,y.l,width.l,height.l, Text.s, Flag.i=0, round.l=0)
@@ -304,7 +327,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.i HyperLink(X.l,Y.l,Width.l,Height.l, Text.s, Color.i, Flag.i=0)
     
     ; bar
-    ;Declare.i Area(*parent, Width, Height, AreaWidth, AreaHeight, ScrollStep, Mode = 1)
+    ;Declare.i Area(*parent, ScrollStep, AreaWidth, AreaHeight, Width, Height, Mode = 1)
     Declare.i Spin(x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i=0, round.l=0, increment.f=1.0)
     Declare.i Tab(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
     Declare.i Scroll(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
@@ -315,6 +338,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     ; list
     Declare.i Tree(x.l,y.l,width.l,height.l, Flag.i=0)
     Declare.i Editor(X.l, Y.l, Width.l, Height.l, Flag.i=0, round.i=0)
+    
+    Declare.i Image(x.l,y.l,width.l,height.l, image.l, Flag.i=0)
     
     ; container
     Declare.i Panel(x.l,y.l,width.l,height.l, Flag.i=0)
@@ -649,9 +674,9 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro _set_image_(_this_, _item_, _image_)
-      _item_\image\change = IsImage(_image_)
+      _item_\image\index = IsImage(_image_)
       
-      If _item_\image\change
+      If _item_\image\index
         If _this_\flag\iconsize
           _item_\image\width = _this_\flag\iconsize
           _item_\image\height = _this_\flag\iconsize
@@ -661,12 +686,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           _item_\image\height = ImageHeight(_image_)
         EndIf  
         
-        _item_\image\index = _image_ 
-        _item_\image\handle = ImageID(_image_)
+        _item_\image\index[1] = _image_ 
+        _item_\image\index[2] = ImageID(_image_)
         ;_this_\row\sublevel = _this_\image\_padding + _item_\image\width
       Else
-        _item_\image\index =- 1
-        _item_\image\handle = 0
+        _item_\image\index[1] =- 1
+        _item_\image\index[2] = 0
         _item_\image\width = 0
         _item_\image\height = 0
         ;_this_\row\sublevel = 0
@@ -956,9 +981,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndMacro
     
-    Macro Area(_parent_, _width_, _height_, _area_width_, _area_height_, _scroll_step_, _mode_ = #True)
-      _parent_\scroll\v = Bar(#__Type_ScrollBar, _parent_, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child|#__bar_vertical, 7, _scroll_step_)
-      _parent_\scroll\h = Bar(#__Type_ScrollBar, _parent_, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool(_mode_)*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_)
+    Macro Area(_parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _mode_ = #True)
+      _parent_\scroll\v = Create(#__Type_ScrollBar, _parent_, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child|#__bar_vertical, 7, _scroll_step_)
+      _parent_\scroll\h = Create(#__Type_ScrollBar, _parent_, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool(_mode_)*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_)
     EndMacro
     
     
@@ -5957,7 +5982,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
-      Area(*this,0,0,0,0,1)
+      Area(*this,1,0,0,0,0)
       Resize(*this, x,y,width,height)
       
       ;       If *this
@@ -6165,9 +6190,9 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro _tree_set_item_image_(_this_, _item_, _image_)
-      _item_\image\change = IsImage(_image_)
+      _item_\image\index = IsImage(_image_)
       
-      If _item_\image\change
+      If _item_\image\index
         If _this_\flag\iconsize
           _item_\image\width = _this_\flag\iconsize
           _item_\image\height = _this_\flag\iconsize
@@ -6179,11 +6204,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           
         EndIf  
         
-        _item_\image\index = _image_ 
-        _item_\image\handle = ImageID(_image_)
+        _item_\image\index[1] = _image_ 
+        _item_\image\index[2] = ImageID(_image_)
         _this_\row\sublevel = _this_\image\padding\left + _item_\image\width
       Else
-        _item_\image\index =- 1
+        _item_\image\index[1] =- 1
       EndIf
     EndMacro
     
@@ -6480,9 +6505,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           RoundBox(\x[#__c_1],\y[#__c_1],\width[#__c_1],\height[#__c_1],\round,\round,\color\back[\color\state])
           
           ; Draw background image
-          If \image\handle
+          If \image\index[2]
             DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-            DrawAlphaImage(\image\handle, \image\x, \image\y, \color\alpha)
+            DrawAlphaImage(\image\index[2], \image\x, \image\y, \color\alpha)
           EndIf
           
           ;         ; Draw all items
@@ -6532,9 +6557,9 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
               
               ; Draw image
-              If *this\row\draws()\image\handle
+              If *this\row\draws()\image\index[2]
                 DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                DrawAlphaImage(*this\row\draws()\image\handle, *this\row\draws()\image\x, *this\row\draws()\image\y, *this\row\draws()\color\alpha)
+                DrawAlphaImage(*this\row\draws()\image\index[2], *this\row\draws()\image\x, *this\row\draws()\image\y, *this\row\draws()\color\alpha)
               EndIf
               
               ; Draw text
@@ -7011,7 +7036,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         _set_alignment_flag_(*this, *parent, flag)
         SetParent(*this, *parent, #PB_Default)
         
-        Area(*this, width, height, width, height, 1, Bool((\flag\buttons=0 And \flag\lines=0)=0))
+        Area(*this, 1, width, height, width, height, Bool((\flag\buttons=0 And \flag\lines=0)=0))
         Resize(*this, X,Y,Width,Height)
       EndWith
       
@@ -7785,9 +7810,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           ;         ; Draw image
-          ;         If \caption\image\handle
+          ;         If \caption\image\index[2]
           ;           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          ;           DrawAlphaImage(\caption\image\handle, \caption\image\x, \caption\image\y, \caption\color\alpha)
+          ;           DrawAlphaImage(\caption\image\index[2], \caption\image\x, \caption\image\y, \caption\color\alpha)
           ;         EndIf
           
           If \caption\text\string
@@ -8125,131 +8150,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Repaint
     EndProcedure
     
-    Procedure.i Window(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, *parent._s_widget=0)
-      Protected *this._s_widget = AllocateStructure(_s_widget) 
-      
-      If *parent
-        If Root() = *parent 
-          Root()\parent = *this
-        EndIf
-      Else
-        *parent = Root()
-      EndIf
-      
-      ;       ;_set_last_parameters_(*this, #__Type_Window, Flag, *parent) 
-      ;       ;Debug ""+#PB_compiler_procedure+"(func) line - "+#PB_compiler_line +" "+ root()\opened 
-      ;       
-      ;       ; ? ????? ???????? ??????
-      ;       If Not Root()\opened 
-      ;         Root()\opened = Root()
-      ;       EndIf
-      
-      With *this
-        *this\x =- 2147483648
-        *this\y =- 2147483648
-        *this\container =- 1
-        *this\index[#__s_1] =- 1
-        *this\index[#__s_2] = 0
-        *this\type = #__Type_Window
-        *this\class = #PB_Compiler_Procedure
-        
-        *this\color = _get_colors_()
-        *this\color\back = $FFF9F9F9
-        
-        ; Background image
-        \image\index =- 1
-        
-        
-        ;       \flag\window\sizeGadget = constants::_check_(flag, #__Window_SizeGadget)
-        ; ;       \flag\window\systemMenu = constants::_check_(flag, #__Window_SystemMenu)
-        ; ;       \flag\window\MinimizeGadget = constants::_check_(flag, #__Window_MinimizeGadget)
-        ; ;       \flag\window\MaximizeGadget = constants::_check_(flag, #__Window_MaximizeGadget)
-        ;       \flag\window\TitleBar = constants::_check_(flag, #__Window_TitleBar)
-        ;       \flag\window\Tool = constants::_check_(flag, #__Window_Tool)
-        ;       \flag\window\borderless = constants::_check_(flag, #__Window_BorderLess)
-        
-        \caption\round = 4
-        \caption\_padding = \caption\round
-        \caption\color = _get_colors_()
-        
-        ;\caption\hide = constants::_check_(flag, #__flag_borderless)
-        \caption\hide = constants::_check_(flag, #__Window_TitleBar, #False)
-        \caption\button[0]\hide = constants::_check_(flag, #__Window_SystemMenu, #False)
-        \caption\button[1]\hide = constants::_check_(flag, #__Window_MaximizeGadget, #False)
-        \caption\button[2]\hide = constants::_check_(flag, #__Window_MinimizeGadget, #False)
-        \caption\button[3]\hide = 1
-        
-        \caption\button[0]\color = colors::*this\red
-        \caption\button[1]\color = colors::*this\blue
-        \caption\button[2]\color = colors::*this\green
-        
-        *this\caption\button[0]\color\state = 1
-        *this\caption\button[1]\color\state = 1
-        *this\caption\button[2]\color\state = 1
-        
-        \caption\button[0]\round = 4+3
-        \caption\button[1]\round = \caption\button[0]\round
-        \caption\button[2]\round = \caption\button[0]\round
-        \caption\button[3]\round = \caption\button[0]\round
-        
-        \caption\button[0]\width = 12+2
-        \caption\button[0]\height = 12+2
-        
-        \caption\button[1]\width = \caption\button[0]\width
-        \caption\button[1]\height = \caption\button[0]\height
-        
-        \caption\button[2]\width = \caption\button[0]\width
-        \caption\button[2]\height = \caption\button[0]\height
-        
-        \caption\button[3]\width = \caption\button[0]\width*2
-        \caption\button[3]\height = \caption\button[0]\height
-        
-        If \caption\button[1]\hide = 0 Or 
-           \caption\button[2]\hide = 0
-          \caption\button[0]\hide = 0
-        EndIf
-        
-        If \caption\button[0]\hide = 0
-          \caption\hide = 0
-        EndIf
-        
-        If Not \caption\hide 
-          \__height = constants::_check_(flag, #__flag_borderless, #False) * #__height
-        EndIf
-        
-        \fs = constants::_check_(flag, #__flag_borderless, #False) * #__bsize
-        \bs = \fs
-        
-        ;\round = 7
-        _set_alignment_flag_(*this, *parent, flag)
-        SetParent(*this, *parent, #PB_Default)
-        
-        If constants::_check_(flag, #__Window_NoGadgets, #False)
-          OpenList(*this)
-        EndIf
-        
-        If constants::_check_(flag, #__Window_NoActivate, #False)
-          SetActive(*this)
-        EndIf 
-        
-        If Text And \caption\height
-          \caption\text\_padding = 5
-          \caption\text\string = Text
-        EndIf
-        
-        If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
-            a_add(*this)
-            a_set(*this)
-          EndIf
-        Resize(*this, X,Y,Width,Height)
-      EndWith
-      
-      ProcedureReturn *this
-    EndProcedure
-    
     
     ;-
-    ;- - PANEL-e
+    ;- - DRAWs
     Procedure.i Panel_Draw(*this._s_widget)
       If *this\_tab\count\items
         DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
@@ -8268,61 +8171,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndProcedure
     
-    Procedure.i Panel(x.l,y.l,width.l,height.l, Flag.i=0)
-      Protected Size = 16, *this._s_widget = AllocateStructure(_s_widget) 
-      ;_set_last_parameters_(*this, #__Type_Panel, Flag, Root()\opened)
-      Protected *parent._s_widget = Root()\opened
-      
-      With *this
-        *this\x =- 1
-        *this\y =- 1
-        
-        If Flag & #__bar_vertical = #False
-          *this\__height = 25
-        Else
-          *this\__width = 85
-        EndIf
-        
-        *this\container = 1
-        *this\type = #__Type_Panel
-        *this\class = #PB_Compiler_Procedure
-        
-        *this\color = _get_colors_()
-        *this\color\back = $FFFFFFFF
-        
-        *this\index[#__s_1] =- 1
-        *this\index[#__s_2] = 0
-        
-        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-          *this\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
-        CompilerElse
-          *this\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-        CompilerEndIf
-        
-        \fs = 1
-        \bs = \fs
-        
-        ; Background image
-        ; \image[1] = AllocateStructure(_s_image)
-        
-        ;_set_text_flag_(*this, Flag)
-        _set_alignment_flag_(*this, *parent, flag)
-        SetParent(*this, *parent, #PB_Default)
-        
-        \_tab = Bar(#__Type_TabBar, *this, 0,0,0,0, 0,0,0, 0, Flag|#__bar_child, 0, 30)
-        
-        If Not Flag & #__flag_noGadget
-          OpenList(*this)
-        EndIf
-        Resize(*this, X,Y,Width,Height)
-      EndWith
-      
-      ProcedureReturn *this
-    EndProcedure
-    
-    
-    ;-
-    Procedure ScrollArea_Draw(*this._s_widget)
+    Procedure   ScrollArea_Draw(*this._s_widget)
       With *this
         DrawingMode(#PB_2DDrawing_Default)
         Box(*this\x[#__c_1],*this\y[#__c_1],*this\width[#__c_1],*this\height[#__c_1], *this\color\back[*this\color\state])
@@ -8333,6 +8182,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         DrawingMode(#PB_2DDrawing_Transparent)
         ;         DrawText(*this\x[#__c_1]+20,*this\y[#__c_1], Str(\index)+"_"+Str(\level), $ff000000)
         
+        ; Draw background image
+        If \image\index[2]
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawAlphaImage(\image\index[2], *this\scroll\x + \image\x, *this\scroll\y + \image\y, \color\alpha)
+        EndIf
+         
         If \scroll 
           ; ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
           If \scroll\v And \scroll\v\type And Not \scroll\v\hide : Scroll_Draw(\scroll\v) : EndIf
@@ -8856,8 +8711,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           ; resize vertical&horizontal scrollbars
           If (*this\scroll And *this\scroll\v And *this\scroll\h)
             If (Change_x Or Change_y)
-              Resize(*this\scroll\v, *this\scroll\v\x[#__c_3], *this\scroll\v\y[#__c_3], #__scroll_buttonsize, *this\height[#__c_2])
-              Resize(*this\scroll\h, *this\scroll\h\x[#__c_3], *this\scroll\h\y[#__c_3], *this\width[#__c_2], #__scroll_buttonsize)
+              Resize(*this\scroll\v, *this\scroll\v\x[#__c_3], *this\scroll\v\y[#__c_3], #__scroll_buttonsize, #PB_Ignore)
+              Resize(*this\scroll\h, *this\scroll\h\x[#__c_3], *this\scroll\h\y[#__c_3], #PB_Ignore, #__scroll_buttonsize)
             EndIf
             
             If (Change_width Or Change_height)
@@ -8967,18 +8822,9 @@ CompilerIf Not Defined(widget, #PB_Module)
              *this\parent\scroll\v\bar\thumb\change = 0 And
              *this\parent\scroll\h\bar\thumb\change = 0
             
-            *this\parent\width[#__c_2] = *this\parent\width[#__c_3]
-            *this\parent\height[#__c_2] = *this\parent\height[#__c_3]
-            
-            ; Debug *this\parent\scroll\v\bar\thumb\change 
-          
-            ; Debug  ""+*this\x+" "+*this\y+" "+*this\width+" "+*this\height+" " ;parent\type;scroll\v\bar\change
-            MDI_Update(*this);, x, y, width, height)
-            
-            *this\parent\width[#__c_2] = *this\parent\scroll\h\bar\page\len ; *this\parent\width[#__c_3] - Bool(Not *this\parent\scroll\v\hide) * *this\parent\scroll\v\width
-            *this\parent\height[#__c_2] = *this\parent\scroll\v\bar\page\len ; *this\parent\height[#__c_3] - Bool(Not *this\parent\scroll\h\hide) * *this\parent\scroll\h\height
+             MDI_Update(*this)
           EndIf
-        
+          
         EndIf
         
         If *this\draw
@@ -9017,27 +8863,14 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected result
       
       If *this\type = #PB_GadgetType_MDI
-        Static pos_x, pos_y
-        Protected *child._s_widget
-        Protected x = 10, y = 10, width.l = 280, height.l = 180
-        
-        OpenList(*this)
         *this\count\items + 1
-        *child = Window(pos_x+x, pos_y+y, Width, Height, Text, #__window_systemmenu|#__window_sizegadget|#__window_maximizegadget|#__window_minimizegadget|sublevel, *this) : CloseList()
-        
-        ;MDI_Update(*child)
-        *this\scroll\x = *child\x
-        *this\scroll\y = *child\y
-        *this\scroll\width = *child\x+*child\width - *this\scroll\x
-        *this\scroll\height = *child\Y+*child\height - *this\scroll\y
-    
-        Updates(*this\scroll, *this\x[#__c_2], *this\y[#__c_2], *this\width[#__c_2], *this\height[#__c_2])
-        
-        pos_x + 20
+        Static pos_x, pos_y
+        Protected x = 10, y = 10, width.l = 280, height.l = 180
+        sublevel | #__window_systemmenu|#__window_sizegadget|#__window_maximizegadget|#__window_minimizegadget
+        result = Window(pos_x+x, pos_y+y, Width, Height, Text, sublevel, *this)
         pos_y + 20 + 25
-        CloseList()
-        
-        ProcedureReturn *child
+        pos_x + 20
+        ProcedureReturn result
       EndIf
       
       If *this\type = #PB_GadgetType_Editor
@@ -9213,7 +9046,11 @@ CompilerIf Not Defined(widget, #PB_Module)
          Root()\opened\root\canvas\gadget = Root()\canvas\gadget 
         
         ; Debug ""+Root()\opened+" - "+Root()\opened\class+" "+Root()\opened\parent+" - "+Root()\opened\parent\class
-        Root()\opened = Root()\opened\parent
+        If Root()\opened\parent\type = #__type_mdi
+          Root()\opened = Root()\opened\parent\parent
+        Else
+          Root()\opened = Root()\opened\parent
+        EndIf
       Else
         Root()\opened = Root()
       EndIf
@@ -10351,7 +10188,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
       ElseIf *this\type = #__Type_Tree
         If _is_item_(*this, item) And SelectElement(*this\row\_s(), Item)
-          Result = *this\row\_s()\image\index
+          Result = *this\row\_s()\image\index[1]
         Else
           Result =- 1
         EndIf
@@ -10538,7 +10375,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
       ElseIf *this\type = #__Type_Tree
         If _is_item_(*this, item) And SelectElement(*this\row\_s(), Item)
-          If *this\row\_s()\image\index <> Image
+          If *this\row\_s()\image\index[1] <> Image
             _tree_set_item_image_(*this, *this\row\_s(), Image)
             _tree_repaint_(*this)
           EndIf
@@ -10975,8 +10812,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;-
     ;- CREATEs
-    Procedure.i Bar(type.l, *parent._s_widget, x.l,y.l,width.l,height.l, *param_1, *param_2, *param_3, size.l, flag.i=0, round.l=7, ScrollStep.f=1.0)
-      Protected *this._s_widget = AllocateStructure(_s_widget)
+    Procedure.i Create(type.l, *parent._s_widget, x.l,y.l,width.l,height.l, *param_1, *param_2, *param_3, size.l, flag.i=0, round.l=7, ScrollStep.f=1.0)
+      Protected ScrollBars, *this._s_widget = AllocateStructure(_s_widget)
       
       With *this
         *this\x =- 2147483648
@@ -10995,23 +10832,55 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         ; - Create Container
         If *this\type = #PB_GadgetType_Container Or
-           *this\type = #PB_GadgetType_ScrollArea
+           *this\type = #PB_GadgetType_ScrollArea Or
+           *this\type = #PB_GadgetType_MDI
+           
+          If *this\type = #PB_GadgetType_MDI
+            ScrollBars = 1
+            *this\fs = Bool(Not Flag&#__flag_BorderLess) * #__border_scroll
+            *this\class = "MDI"
+          EndIf
           
-          *this\color\back = $FFF9F9F9
-          *this\container = *this\type
-          *this\index[#__s_1] =- 1
-          *this\index[#__s_2] = 0
+          If *this\type = #PB_GadgetType_ScrollArea
+            ScrollBars = 1
+            *this\fs = Bool(Not Flag&#__flag_BorderLess) * #__border_scroll
+            *this\class = "ScrollArea"
+          EndIf
           
           If *this\type = #PB_GadgetType_Container 
             *this\class = "Container"
             *this\fs = 1
           EndIf
           
-          If *this\type = #PB_GadgetType_ScrollArea
-            *this\class = "ScrollArea"
-            *this\fs = Bool(Not Flag&#__flag_BorderLess) * #__border_scroll
-          EndIf
+          *this\color\back = $FFF9F9F9
+          *this\container = *this\type
+          *this\index[#__s_1] =- 1
+          *this\index[#__s_2] = 0
           
+          *this\bs = *this\fs
+        EndIf
+        
+        ; - Create Container
+        If *this\type = #PB_GadgetType_Image
+          ScrollBars = 1
+          *this\class = "Image"
+          *this\image\index = IsImage(*param_3)
+          
+          If *this\image\index
+            *this\image\index[1] = *param_3
+            *this\image\index[2] = ImageID(*param_3)
+            *this\image\width = ImageWidth(*param_3)
+            *this\image\height = ImageHeight(*param_3)
+            
+            *param_1 = *this\image\width 
+            *param_2 = *this\image\height 
+          EndIf
+            
+          *this\color\back = $FFF9F9F9
+          *this\index[#__s_1] =- 1
+          *this\index[#__s_2] = 0
+          
+          *this\fs = Bool(Not Flag&#__flag_BorderLess) * #__border_scroll
           *this\bs = *this\fs
         EndIf
         
@@ -11234,13 +11103,13 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\class = "Splitter"
           *this\bar\increment = ScrollStep
         
-          *this\color\back =- 1 
+          *this\color\back =- 1
           
           ;         *this\bar\button[#__b_1]\color = _get_colors_()
           ;         *this\bar\button[#__b_2]\color = _get_colors_()
           ;         *this\bar\button[#__b_3]\color = _get_colors_()
           
-          *this\container = 1
+          *this\container =- *this\type 
           *this\index[#__s_1] =- 1
           *this\index[#__s_2] = 0
           
@@ -11306,7 +11175,7 @@ CompilerIf Not Defined(widget, #PB_Module)
 ; ;             *this\height[#__c_2] = size - *this\bs*2
 ; ;             *this\height[#__c_3] = size - *this\bs*2
 ;           EndIf
-          
+         
 ;           *this\width[#__c_3] = width - *this\bs*2
 ;           *this\height[#__c_3] = height - *this\bs*2
         Else
@@ -11328,14 +11197,16 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
           EndIf
           
-          If *this\container > 1
-            If flag & #__flag_NoGadget = #False
-              OpenList(*this)
-            EndIf
-            
-            If flag & #__flag_NoScrollBars = #False
-              Area(*this, width, height, *param_1, *param_2, ScrollStep)
-            EndIf
+          If *this\container And 
+             *this\type <> #PB_GadgetType_Splitter And 
+             flag & #__flag_NoGadget = #False
+            OpenList(*this)
+          EndIf
+          
+          If ScrollBars And 
+             flag & #__flag_NoScrollBars = #False
+            Area(*this, ScrollStep, *param_1, *param_2, 0, 0)
+            ; Area(*this, ScrollStep, *param_1, *param_2, width, height)
           EndIf
           
           If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
@@ -11344,6 +11215,13 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         
           Resize(*this, x,y,width,height)
+          
+           If ScrollBars And 
+             flag & #__flag_NoScrollBars = #False
+            *this\scroll\x = *this\x[#__c_2]
+            *this\scroll\y = *this\y[#__c_2] 
+           EndIf
+          
         EndIf
       EndWith
       
@@ -11351,27 +11229,27 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure.i Tab(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
-      ProcedureReturn Bar(#__Type_TabBar, Root()\opened, x,y,width,height, min,max,pagelength, 40, flag, round, 40)
+      ProcedureReturn Create(#__Type_TabBar, Root()\opened, x,y,width,height, min,max,pagelength, 40, flag, round, 40)
     EndProcedure
     
     Procedure.i Spin(x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i=0, round.l=0, Increment.f=1.0)
-      ProcedureReturn Bar(#__Type_Spin, Root()\opened, x,y,width,height, min,max,0, #__spin_buttonsize, flag, round, Increment)
+      ProcedureReturn Create(#__Type_Spin, Root()\opened, x,y,width,height, min,max,0, #__spin_buttonsize, flag, round, Increment)
     EndProcedure
     
     Procedure.i Scroll(x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i=0, round.l=0)
-      ProcedureReturn Bar(#__Type_ScrollBar, Root()\opened, x,y,width,height, min,max,pagelength, #__scroll_buttonsize, flag, round, 1)
+      ProcedureReturn Create(#__Type_ScrollBar, Root()\opened, x,y,width,height, min,max,pagelength, #__scroll_buttonsize, flag, round, 1)
     EndProcedure
     
     Procedure.i Track(x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i=0, round.l=7)
-      ProcedureReturn Bar(#__Type_TrackBar, Root()\opened, x,y,width,height, min,max,0,0, flag, round, 1)
+      ProcedureReturn Create(#__Type_TrackBar, Root()\opened, x,y,width,height, min,max,0,0, flag, round, 1)
     EndProcedure
     
     Procedure.i Progress(x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i=0, round.l=0)
-      ProcedureReturn Bar(#__Type_ProgressBar, Root()\opened, x,y,width,height, min,max,0,0, flag, round, 1)
+      ProcedureReturn Create(#__Type_ProgressBar, Root()\opened, x,y,width,height, min,max,0,0, flag, round, 1)
     EndProcedure
     
     Procedure.i Splitter(x.l,y.l,width.l,height.l, First.i,Second.i, Flag.i=0)
-      ProcedureReturn Bar(#__Type_Splitter, Root()\opened, x,y,width,height, First,Second, 0,0, flag, 0, 1)
+      ProcedureReturn Create(#__Type_Splitter, Root()\opened, x,y,width,height, First,Second, 0,0, flag, 0, 1)
     EndProcedure
     
     ;-
@@ -11431,7 +11309,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
-      Area(*this,0,0,0,0,1)
+      Area(*this,1,0,0,0,0)
       
       
       If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
@@ -11464,6 +11342,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       ; - Create Text
       If *this\type = #PB_GadgetType_Text
         *this\class = "Text"
+        
         *this\color\fore =- 1
         *this\color\back = _get_colors_()\fore
         *this\color\front = _get_colors_()\front
@@ -11472,6 +11351,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         If Flag & #__text_border = #__text_border 
           *this\fs = 1
           *this\bs = *this\fs
+          *this\color\frame = _get_colors_()\frame
         EndIf
         
         If *this\Vertical
@@ -11548,7 +11428,15 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       _set_text_flag_(*this, flag)
       
-      *this\color\back =- 1
+;       *this\color\back =- 1; _get_colors_(); - 1
+;       *this\color\fore =- 1
+      
+      ; *this\_state = #__s_front
+      *this\color\fore =- 1
+      *this\color\back = _get_colors_()\fore
+      *this\color\front = _get_colors_()\front
+      
+      
       *this\option_box\color = _get_colors_()
       *this\option_box\color\back = $ffffffff
       
@@ -11593,7 +11481,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
       *this\text\multiline =- CountString(Text, #LF$)
       
-      *this\color\back =- 1
+      ; *this\_state = #__s_front
+      *this\color\fore =- 1
+      *this\color\back = _get_colors_()\fore
+      *this\color\front = _get_colors_()\front
+      
       *this\check_box\color = _get_colors_()
       *this\check_box\color\back = $ffffffff
       
@@ -11657,12 +11549,127 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     ;-
-    Procedure.i ScrollArea(x.l,y.l,width.l,height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l=1, Flag.i=0)
-      ProcedureReturn Bar(#__Type_ScrollArea, Root()\opened, x,y,width,height, ScrollAreaWidth,ScrollAreaHeight,0, #__scroll_buttonsize, flag, 0, ScrollStep)
-    EndProcedure
-    
-    Procedure.i Container(x.l,y.l,width.l,height.l, Flag.i=0)
-      ProcedureReturn Bar(#__Type_Container, Root()\opened, x,y,width,height, 0,0,0, #__scroll_buttonsize, flag|#__flag_NoScrollBars, 0, 0)
+    Procedure.i Window(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i=0, *parent._s_widget=0)
+      Protected *this._s_widget = AllocateStructure(_s_widget) 
+      
+      If *parent
+        If Root() = *parent 
+          Root()\parent = *this
+        EndIf
+      Else
+        *parent = Root()
+      EndIf
+      
+      ;       ;_set_last_parameters_(*this, #__Type_Window, Flag, *parent) 
+      ;       ;Debug ""+#PB_compiler_procedure+"(func) line - "+#PB_compiler_line +" "+ root()\opened 
+      ;       
+      ;       ; ? ????? ???????? ??????
+      ;       If Not Root()\opened 
+      ;         Root()\opened = Root()
+      ;       EndIf
+      
+      With *this
+        *this\x =- 2147483648
+        *this\y =- 2147483648
+        *this\container =- 1
+        *this\index[#__s_1] =- 1
+        *this\index[#__s_2] = 0
+        *this\type = #__Type_Window
+        *this\class = #PB_Compiler_Procedure
+        
+        *this\color = _get_colors_()
+        *this\color\back = $FFF9F9F9
+        
+        ; Background image
+        \image\index[1] =- 1
+        
+        
+        ;       \flag\window\sizeGadget = constants::_check_(flag, #__Window_SizeGadget)
+        ; ;       \flag\window\systemMenu = constants::_check_(flag, #__Window_SystemMenu)
+        ; ;       \flag\window\MinimizeGadget = constants::_check_(flag, #__Window_MinimizeGadget)
+        ; ;       \flag\window\MaximizeGadget = constants::_check_(flag, #__Window_MaximizeGadget)
+        ;       \flag\window\TitleBar = constants::_check_(flag, #__Window_TitleBar)
+        ;       \flag\window\Tool = constants::_check_(flag, #__Window_Tool)
+        ;       \flag\window\borderless = constants::_check_(flag, #__Window_BorderLess)
+        
+        \caption\round = 4
+        \caption\_padding = \caption\round
+        \caption\color = _get_colors_()
+        
+        ;\caption\hide = constants::_check_(flag, #__flag_borderless)
+        \caption\hide = constants::_check_(flag, #__Window_TitleBar, #False)
+        \caption\button[0]\hide = constants::_check_(flag, #__Window_SystemMenu, #False)
+        \caption\button[1]\hide = constants::_check_(flag, #__Window_MaximizeGadget, #False)
+        \caption\button[2]\hide = constants::_check_(flag, #__Window_MinimizeGadget, #False)
+        \caption\button[3]\hide = 1
+        
+        \caption\button[0]\color = colors::*this\red
+        \caption\button[1]\color = colors::*this\blue
+        \caption\button[2]\color = colors::*this\green
+        
+        *this\caption\button[0]\color\state = 1
+        *this\caption\button[1]\color\state = 1
+        *this\caption\button[2]\color\state = 1
+        
+        \caption\button[0]\round = 4+3
+        \caption\button[1]\round = \caption\button[0]\round
+        \caption\button[2]\round = \caption\button[0]\round
+        \caption\button[3]\round = \caption\button[0]\round
+        
+        \caption\button[0]\width = 12+2
+        \caption\button[0]\height = 12+2
+        
+        \caption\button[1]\width = \caption\button[0]\width
+        \caption\button[1]\height = \caption\button[0]\height
+        
+        \caption\button[2]\width = \caption\button[0]\width
+        \caption\button[2]\height = \caption\button[0]\height
+        
+        \caption\button[3]\width = \caption\button[0]\width*2
+        \caption\button[3]\height = \caption\button[0]\height
+        
+        If \caption\button[1]\hide = 0 Or 
+           \caption\button[2]\hide = 0
+          \caption\button[0]\hide = 0
+        EndIf
+        
+        If \caption\button[0]\hide = 0
+          \caption\hide = 0
+        EndIf
+        
+        If Not \caption\hide 
+          \__height = constants::_check_(flag, #__flag_borderless, #False) * #__height
+        EndIf
+        
+        \fs = constants::_check_(flag, #__flag_borderless, #False) * #__bsize
+        \bs = \fs
+        
+        ;\round = 7
+        _set_alignment_flag_(*this, *parent, flag)
+        SetParent(*this, *parent, #PB_Default)
+        
+         If Text And \caption\height
+          \caption\text\_padding = 5
+          \caption\text\string = Text
+        EndIf
+        
+        If Bool(flag & #__flag_anchorsGadget = #__flag_anchorsGadget)
+          a_add(*this)
+          a_set(*this)
+        EndIf
+          
+        Resize(*this, X,Y,Width,Height)
+        
+        If flag & #__Window_NoGadgets = #False
+          OpenList(*this)
+        EndIf
+        
+        If flag & #__Window_NoActivate = #False
+          SetActive(*this)
+        EndIf 
+      EndWith
+      
+      ProcedureReturn *this
     EndProcedure
     
     Procedure.i Frame(x.l,y.l,width.l,height.l, Text.s, Flag.i=0)
@@ -11711,49 +11718,72 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn *this
     EndProcedure
     
-    Procedure.i MDI(x.l,y.l,width.l,height.l, Flag.i=0) ; , Menu.i, SubMenu.l, FirstMenuItem.l)
-      Protected *this._s_widget = AllocateStructure(_s_widget) 
+    Procedure.i Panel(x.l,y.l,width.l,height.l, Flag.i=0)
+      Protected Size = 16, *this._s_widget = AllocateStructure(_s_widget) 
+      ;_set_last_parameters_(*this, #__Type_Panel, Flag, Root()\opened)
       Protected *parent._s_widget = Root()\opened
       
       With *this
-        ; first change default XY
-        *this\x =- 2147483648
-        *this\y =- 2147483648
-        *this\container = 1
-        *this\index[#__s_1] =- 1
-        *this\index[#__s_2] = 0
-        *this\type = #PB_GadgetType_MDI
+        *this\x =- 1
+        *this\y =- 1
+        
+        If Flag & #__bar_vertical = #False
+          *this\__height = 25
+        Else
+          *this\__width = 85
+        EndIf
+        
+        *this\type = #__Type_Panel
         *this\class = #PB_Compiler_Procedure
+        *this\container = *this\type
         
         *this\color = _get_colors_()
-        *this\color\back = $FFF9F9F9
+        *this\color\back = $FFFFFFFF
         
-        *this\fs = Bool(Not Flag&#__flag_borderless) * #__border_scroll
-        *this\bs = *this\fs
+        *this\index[#__s_1] =- 1
+        *this\index[#__s_2] = 0
         
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+          *this\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
+        CompilerElse
+          *this\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
+        CompilerEndIf
+        
+        \fs = 1
+        \bs = \fs
+        
+        ; Background image
+        ; \image[1] = AllocateStructure(_s_image)
+        
+        ;_set_text_flag_(*this, Flag)
         _set_alignment_flag_(*this, *parent, flag)
         SetParent(*this, *parent, #PB_Default)
         
-       ; Area(*this, Width,Height, Width,Height, 1)
-        Area(*this, 0,0, 0,0, 1)
+        \_tab = Create(#__Type_TabBar, *this, 0,0,0,0, 0,0,0, 0, Flag|#__bar_child, 0, 30)
         
-          If Bool(flag & #__flag_anchorsGadget=#__flag_anchorsGadget)
-            a_add(*this)
-            a_set(*this)
-          EndIf
-          
-          Resize(*this, X,Y,Width,Height)
-          
-;           *this\scroll\x = x
-;         *this\scroll\y = y
-;         *this\scroll\width = x+width - *this\scroll\x
-;         *this\scroll\height = Y+height - *this\scroll\y
-;     
-;         Updates(*this\scroll, *this\x, *this\y, *this\width, *this\height)
-        
+        If Not Flag & #__flag_noGadget
+          OpenList(*this)
+        EndIf
+        Resize(*this, X,Y,Width,Height)
       EndWith
       
       ProcedureReturn *this
+    EndProcedure
+    
+    Procedure.i Container(x.l,y.l,width.l,height.l, Flag.i=0)
+      ProcedureReturn Create(#__Type_Container, Root()\opened, x,y,width,height, 0,0,0, #__scroll_buttonsize, flag|#__flag_NoScrollBars, 0, 0)
+    EndProcedure
+    
+    Procedure.i ScrollArea(x.l,y.l,width.l,height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l=1, Flag.i=0)
+      ProcedureReturn Create(#__Type_ScrollArea, Root()\opened, x,y,width,height, ScrollAreaWidth,ScrollAreaHeight,0, #__scroll_buttonsize, flag, 0, ScrollStep)
+    EndProcedure
+    
+    Procedure.i MDI(x.l,y.l,width.l,height.l, Flag.i=0) ; , Menu.i, SubMenu.l, FirstMenuItem.l)
+      ProcedureReturn Create(#__Type_MDI, Root()\opened, x,y,width,height, 0,0,0, #__scroll_buttonsize, flag|#__flag_NoGadget, 0, 1)
+    EndProcedure
+    
+    Procedure.i Image(x.l,y.l,width.l,height.l, image.l, Flag.i=0) ; , Menu.i, SubMenu.l, FirstMenuItem.l)
+      ProcedureReturn Create(#__Type_Image, Root()\opened, x,y,width,height, 0,0,image, #__scroll_buttonsize, flag, 0, 1)
     EndProcedure
     
     
@@ -11779,15 +11809,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Case #__Type_Container      : ScrollArea_Draw(*this)
           Case #__Type_ScrollArea     : ScrollArea_Draw(*this)
           Case #__Type_MDI            : ScrollArea_Draw(*this)
-            
-             UnclipOutput()
-            DrawingMode(#PB_2DDrawing_Outlined)
-            Box(*this\x, *this\y, *this\Width, *this\Height, RGB(0,255,255))
-            Box(*this\scroll\x, *this\scroll\y, *this\scroll\width, *this\scroll\height, RGB(255,0,255))
-           ; Box(*this\scroll\x, *this\scroll\y, *this\scroll\h\bar\max, *this\scroll\v\bar\max, RGB(255,0,0))
-            Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, RGB(255,255,0))
-       
-            
+          Case #__Type_Image          : ScrollArea_Draw(*this)
           Case #__Type_Panel          : Panel_Draw(*this)
             
           Case #__Type_String         : Editor_Draw(*this)
@@ -11808,11 +11830,23 @@ CompilerIf Not Defined(widget, #PB_Module)
                #__Type_Splitter       
             
             Bar_Draw(*this)
+            
+;             UnclipOutput()
+;             DrawingMode(#PB_2DDrawing_Outlined)
+;             Box(*this\x[#__c_4], *this\y[#__c_4], *this\width[#__c_4], *this\height[#__c_4], $ff00ffff)
+        
         EndSelect
         
-        ;           DrawingMode(#PB_2DDrawing_Outlined)
-        ;           Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF00FF00)
-        ;           
+        If *this\scroll And *this\scroll\v And *this\scroll\h
+          UnclipOutput()
+          DrawingMode(#PB_2DDrawing_Outlined)
+          ;Box(*this\x, *this\y, *this\width, *this\height, $ffffff00)
+          Box(*this\scroll\x, *this\scroll\y, *this\scroll\width, *this\scroll\height, $ffff00ff)
+          ;Box(*this\scroll\x, *this\scroll\y, *this\scroll\h\bar\max, *this\scroll\v\bar\max,$ff0000ff)
+          Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $ff00ff00)
+          ; Box(*this\x[#__c_4], *this\y[#__c_4], *this\width[#__c_4], *this\height[#__c_4], $ff00ffff)
+        EndIf
+        
         If *this\text\change <> 0
           *this\text\change = 0
         EndIf
@@ -13056,5 +13090,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = wAAEAWAAAcQAZAAAAAAAAAAAAAAAAAAACAAIAAAgBgvAAAAAAAgBAAAAAAAAAAAgJob---X---ADAAAAAAAAAAAAABIAAAAAAAAAAAAAAA5BAAwAAAAAAAIAAAAAAAABqgBAAAGEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhDI5B5BAA5-BAAAQAohGd5-HGAAAAAeAAA9PAAAAAAAAA+Z-fAAAAAAAAAAAAAIAAAAAAAAAAAANAAACPQwwk3SHyQAAAYDAAgEAACMIAcAAAAQAAAM9
+; Folding = -----0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------tt-----------------------------------------
 ; EnableXP

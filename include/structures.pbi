@@ -130,9 +130,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       height.l
       width.l
       
-      index.l
-      handle.i[2] ; - editor
-      change.b
+      index.i[3]
+      ;handle.i[2] ; - editor
+      ;change.b
       
       _padding.b
       padding._s_padding
@@ -485,6 +485,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       __height.i ; 
       __width.i
       
+      ;;scrolls.i
       container.i
       interact.i 
       repaint.i
@@ -572,5 +573,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -8nWQxs
+; Folding = -8vWQxs
 ; EnableXP
