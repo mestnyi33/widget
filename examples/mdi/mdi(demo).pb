@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../../widgets.pbi"
+; надо исправить scroll\v draw width
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -16,15 +17,17 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define *mdi = MDI(x,y,Width, height);, #__flag_autosize)
   
-  AddItem(*mdi, -1, "form_0")
-  Button(10,10,80,30,"button_0")
+  Define *g0 = AddItem(*mdi, -1, "form_0")
+  Button(10,10,80,80,"button_0")
   
-  AddItem(*mdi, -1, "form_1")
-  Button(10,10,80,30,"button_1")
+  Define *g1 = AddItem(*mdi, -1, "form_1")
+  Button(10,10,80,80,"button_1")
   
-  Define *g = AddItem(*mdi, -1, "form_2")
-  Button(10,10,80,30,"button_2")
-  Resize(*g, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
+  Define *g2 = AddItem(*mdi, -1, "form_2")
+  Button(10,10,80,80,"button_2")
+  
+  Resize(*g2, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
+  Resize(*g1, 300, #PB_Ignore, #PB_Ignore, #PB_Ignore)
     
   Repeat
     Event = WaitWindowEvent()

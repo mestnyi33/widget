@@ -1562,8 +1562,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         
-        ;                 DrawingMode(#PB_2DDrawing_Outlined)
-        ;                 Box(\x[#__c_2],\y[#__c_2],\width[#__c_2],\height[#__c_2], $FF00FF00)
+                        DrawingMode(#PB_2DDrawing_Outlined)
+                        Box(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4], $FF00FF00)
         
       EndWith 
     EndProcedure
@@ -8289,7 +8289,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If *scroll\h\width <> *scroll\h\bar\page\len + round
           ; Debug  "h "+*scroll\h\bar\page\len
-          *scroll\h\hide = Resize(*scroll\h, #PB_Ignore, #PB_Ignore, *scroll\h\bar\page\len + round, #PB_Ignore)
+          ;*scroll\h\hide = Resize(*scroll\h, #PB_Ignore, #PB_Ignore, *scroll\h\bar\page\len + round, #PB_Ignore)
+          *scroll\h\width = *scroll\h\bar\page\len + round
+          *scroll\h\hide = Bar_Update(*scroll\h)
           result = 1
         EndIf
       EndIf
@@ -8310,7 +8312,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If *scroll\v\height <> *scroll\v\bar\page\len + round
           ; Debug  "v "+*scroll\v\bar\page\len
-          *scroll\v\hide = Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len + round)
+          ;*scroll\v\hide = Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len + round)
+          *scroll\v\height = *scroll\v\bar\page\len + round
+          *scroll\v\hide = Bar_Update(*scroll\v)
           result = 1
         EndIf
       EndIf
@@ -8472,6 +8476,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         _p_x4_ = *this\parent\x[#__c_1]+*this\parent\width[#__c_1]
         _p_y4_ = *this\parent\y[#__c_1]+*this\parent\height[#__c_1]
       EndIf
+      
+;       If *this\type = #__type_scrollbar And 
+;          *this\parent\scroll And (*this\parent\scroll\v = *this Or *this = *this\parent\scroll\h)
+;         _p_x4_ = *this\parent\x[#__c_1]+*this\parent\width[#__c_1]
+;         _p_y4_ = *this\parent\y[#__c_1]+*this\parent\height[#__c_1]
+;       EndIf
       
       If *this\parent And _p_x4_ > 0 And _p_x4_ < _t_x2_ And _p_x2_ > _p_x4_ 
         *this\width[#__c_4] = _p_x4_ - *this\x[#__c_4]
@@ -11851,15 +11861,15 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         EndSelect
         
-        If *this\scroll And *this\scroll\v And *this\scroll\h
-          UnclipOutput()
-          DrawingMode(#PB_2DDrawing_Outlined)
-          ;Box(*this\x, *this\y, *this\width, *this\height, $ffffff00)
-          Box(*this\scroll\x, *this\scroll\y, *this\scroll\width, *this\scroll\height, $ffff00ff)
-          ;Box(*this\scroll\x, *this\scroll\y, *this\scroll\h\bar\max, *this\scroll\v\bar\max,$ff0000ff)
-          Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $ff00ff00)
-          Box(*this\x[#__c_4], *this\y[#__c_4], *this\width[#__c_4], *this\height[#__c_4], $ff00ffff)
-        EndIf
+;         If *this\scroll And *this\scroll\v And *this\scroll\h
+;           UnclipOutput()
+;           DrawingMode(#PB_2DDrawing_Outlined)
+;           ;Box(*this\x, *this\y, *this\width, *this\height, $ffffff00)
+;           Box(*this\scroll\x, *this\scroll\y, *this\scroll\width, *this\scroll\height, $ffff00ff)
+;           ;Box(*this\scroll\x, *this\scroll\y, *this\scroll\h\bar\max, *this\scroll\v\bar\max,$ff0000ff)
+;           Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $ff00ff00)
+;           Box(*this\x[#__c_4], *this\y[#__c_4], *this\width[#__c_4], *this\height[#__c_4], $ff00ffff)
+;         EndIf
         
         If *this\text\change <> 0
           *this\text\change = 0
