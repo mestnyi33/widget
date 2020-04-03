@@ -378,7 +378,7 @@ Procedure object_add_new(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0
       Else
         *new = Window(x,y,width,height, text, flag, *parent)
       EndIf
-      
+      ;Updates(*parent\scroll, *parent\x, *parent\y, *parent\width, *parent\height)
       Bind(*new, @object_events())
       
       ;Case #__type_window     : *new = Window(x,y,width,height, text, flag, *parent)

@@ -244,8 +244,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; *scroll\v = widget::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_inverted, 11)
   ; *scroll\h = widget::scroll(x, 0, 0,  20, 0, 0, Height-20, #__bar_inverted, 11)
-  *scroll\v = widget::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
-  *scroll\h = widget::scroll(x, 0, 0,  20, 0, 0, Height-20, 0, 11)
+  *scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
+  *scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, 0, 11)
   
   Bind(*scroll\v, @events_scrolls())
   Bind(*scroll\h, @events_scrolls())
