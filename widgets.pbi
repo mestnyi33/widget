@@ -183,9 +183,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       _child_\parent\scroll\width = _child_\x+_child_\width - _child_\parent\scroll\x
       _child_\parent\scroll\height = _child_\Y+_child_\height - _child_\parent\scroll\y
       
-      _child_\parent\width[#__c_2] = _child_\parent\width[#__c_3]
-      _child_\parent\height[#__c_2] = _child_\parent\height[#__c_3]
-      
       PushListPosition(GetChildrens(_child_))
       ForEach GetChildrens(_child_)
         If GetChildrens(_child_)\parent = _child_\parent
@@ -209,20 +206,22 @@ CompilerIf Not Defined(widget, #PB_Module)
       Next
       PopListPosition(GetChildrens(_child_))
       
-      widget::Updates(_child_\parent\scroll, _child_\parent\x[#__c_2], _child_\parent\y[#__c_2], _child_\parent\width[#__c_2], _child_\parent\height[#__c_2])
-      
-      _child_\parent\width[#__c_2] = _child_\parent\scroll\h\bar\page\len
-      _child_\parent\height[#__c_2] = _child_\parent\scroll\v\bar\page\len
-      
-      If _child_\parent\container And _child_\parent\count\childrens
-        PushListPosition(GetChildrens(_child_))
-        ForEach GetChildrens(_child_)
-          If GetChildrens(_child_)\parent = _child_\parent
-            Clip(GetChildrens(_child_), #True)
-          EndIf
-        Next
-        PopListPosition(GetChildrens(_child_))
+      If widget::Updates(_child_\parent\scroll, _child_\parent\x[#__c_2], _child_\parent\y[#__c_2], _child_\parent\width[#__c_3], _child_\parent\height[#__c_3])
+        
+        _child_\parent\width[#__c_2] = _child_\parent\scroll\h\bar\page\len
+        _child_\parent\height[#__c_2] = _child_\parent\scroll\v\bar\page\len
+        
+        If _child_\parent\container And _child_\parent\count\childrens
+          PushListPosition(GetChildrens(_child_))
+          ForEach GetChildrens(_child_)
+            If GetChildrens(_child_)\parent = _child_\parent
+              Clip(GetChildrens(_child_), #True)
+            EndIf
+          Next
+          PopListPosition(GetChildrens(_child_))
+        EndIf
       EndIf
+      
     EndMacro
   
   
@@ -8201,6 +8200,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure Updates(*scroll._s_scroll, x.l,y.l,width.l,height.l)
       Static v_max, h_max
       Protected sx, sy, round
+      Protected result
       
       If *scroll\v\bar\page\len <> height - Bool(*scroll\width > width) * *scroll\h\height
         *scroll\v\bar\page\len = height - Bool(*scroll\width > width) * *scroll\h\height
@@ -8290,6 +8290,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         If *scroll\h\width <> *scroll\h\bar\page\len + round
           ; Debug  "h "+*scroll\h\bar\page\len
           *scroll\h\hide = Resize(*scroll\h, #PB_Ignore, #PB_Ignore, *scroll\h\bar\page\len + round, #PB_Ignore)
+          result = 1
         EndIf
       EndIf
       
@@ -8310,6 +8311,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         If *scroll\v\height <> *scroll\v\bar\page\len + round
           ; Debug  "v "+*scroll\v\bar\page\len
           *scroll\v\hide = Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len + round)
+          result = 1
         EndIf
       EndIf
       
@@ -8347,7 +8349,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         *scroll\h\hide = Bar_Update(*scroll\h) 
       EndIf
       
-      ProcedureReturn Bool(*scroll\v\bar\area\change Or *scroll\h\bar\area\change)
+      ProcedureReturn result
     EndProcedure
     
     Procedure Resizes(*scroll._s_scroll, x.l,y.l,width.l,height.l)
@@ -8704,6 +8706,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\height[#__c_4] = *this\height
           EndIf
           
+          
           ; 
           *this\width[#__c_2] = *this\width[#__c_3]
           *this\height[#__c_2] = *this\height[#__c_3]
@@ -8722,6 +8725,17 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\width[#__c_2] = *this\scroll\h\bar\page\len ; *this\width[#__c_3] - Bool(Not *this\scroll\v\hide) * *this\scroll\v\width ; 
             *this\height[#__c_2] = *this\scroll\v\bar\page\len ; *this\height[#__c_3] - Bool(Not *this\scroll\h\hide) * *this\scroll\h\height ; 
           EndIf
+          
+;           If *this\parent\scroll 
+;             If *this\parent\scroll\v = *this
+;               Debug  *this\parent\height[#__c_2];*this\parent\scroll\v\bar\page\len
+;               *this\parent\height[#__c_2] = *this\parent\width[#__c_3] - Bool(Not *this\parent\scroll\v\hide) * *this\parent\scroll\v\width;*this\parent\scroll\v\bar\page\len
+;             EndIf
+;             If *this\parent\scroll\h = *this
+;               *this\parent\width[#__c_2] = *this\parent\height[#__c_3] - Bool(Not *this\parent\scroll\h\hide) * *this\parent\scroll\h\height;*this\parent\scroll\h\bar\page\len
+;             EndIf
+;              ; Clip(*this\parent, #False)
+;           EndIf
           
           If (*this\_tab)
             If *this\_tab\bar\vertical
@@ -11844,7 +11858,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Box(*this\scroll\x, *this\scroll\y, *this\scroll\width, *this\scroll\height, $ffff00ff)
           ;Box(*this\scroll\x, *this\scroll\y, *this\scroll\h\bar\max, *this\scroll\v\bar\max,$ff0000ff)
           Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $ff00ff00)
-          ; Box(*this\x[#__c_4], *this\y[#__c_4], *this\width[#__c_4], *this\height[#__c_4], $ff00ffff)
+          Box(*this\x[#__c_4], *this\y[#__c_4], *this\width[#__c_4], *this\height[#__c_4], $ff00ffff)
         EndIf
         
         If *this\text\change <> 0
@@ -13090,5 +13104,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------tt-----------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P404--0------------------------------------------------------tt-----------------------------------------
 ; EnableXP

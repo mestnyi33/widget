@@ -255,7 +255,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Open(0, 270, 10, 250, 150)
     g_Canvas = GetGadget(Root())
     
-    *g=Editor(0, 0, 250, 150, #__Flag_autosize|)
+    *g=Editor(0, 0, 250, 150, #__Flag_autosize)
     ;  3_example
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1_1", 0, 1) 
