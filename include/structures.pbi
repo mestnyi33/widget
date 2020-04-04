@@ -367,6 +367,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_rows
     Structure _s_rows Extends _s_coordinate 
       ; list view
+      _state.l
       sublevel.l
       sublevellen.l
       
@@ -389,6 +390,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       hide.b
       draw.b
       round.a
+      
       text._s_text
       image._s_image
       color._s_color
@@ -419,9 +421,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;
       count.l
       index.l
-      box._s_box          ; editor - edit rectangle
+      box._s_box           ; editor - edit rectangle
       
-      *selected._s_rows
+      *selected._s_rows    ; pushed at point item
       List _s._s_rows()
     EndStructure
     
@@ -559,7 +561,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *entered._s_widget   ; at point element
       *selected._s_widget  ; pushed at point element
       
-      Map *__childrens._s_widget()
+      ;Map *__childrens._s_widget()
       List *_childrens._s_widget()
       List *_events._s_event()
     EndStructure
@@ -573,5 +575,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -8vWQxs
+; Folding = -8vWQ6s
 ; EnableXP

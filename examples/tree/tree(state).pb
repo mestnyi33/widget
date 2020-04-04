@@ -45,6 +45,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   
   Redraw(root())
   
+  Debug " -------- "
   
   ListViewGadget(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
   
@@ -83,6 +84,8 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Next
   Debug "  "+Str(ElapsedMilliseconds()-time) + " - gadget set items state time"
   ; HideGadget(0, 0)
+  
+  Debug " -------- "
   
   Redraw(root())
   Repeat : Event=WaitWindowEvent()

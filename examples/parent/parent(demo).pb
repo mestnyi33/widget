@@ -57,10 +57,10 @@ CompilerIf #PB_Compiler_IsMainFile
                   Case 3  : *w = Text(30,20,160,30,"Text", #__Text_Border) 
                   Case 4  : *w = Option(30,20,160,30,"Option") 
                   Case 5  : *w = CheckBox(30,20,160,30,"CheckBox") 
-                    ;                   Case 6  : *w = ListView(30,20,160,30) : For i = 0 To 10 : AddItem(*w,-1,"ListView_"+Str(i)) : Next : SetState(*w,5)
-                    ;                   Case 7  : *w = Frame(30,20,160,30,"Frame") 
+                                      Case 6  : *w = ListView(30,20,160,30) : For i = 0 To 10 : AddItem(*w,-1,"ListView_"+Str(i)) : Next : SetState(*w,5)
+                                      Case 7  : *w = Frame(30,20,160,30,"Frame") 
                     ;                   Case 8  : *w = ComboBox(30,20,160,30) : For i = 0 To 10 : AddItem(*w,-1,"ComboBox_"+Str(i)) : Next : SetState(*w,0)
-                    ;                   Case 9  : *w = Image(30,20,160,30,0,#PB_Image_Border) 
+                                      Case 9  : *w = Image(30,20,160,30,0,#PB_Image_Border) 
                                       Case 10 : *w = HyperLink(30,20,160,30,"HyperLink", $FF00FF, #PB_HyperLink_Underline) 
                                       Case 11 : *w = Container(30,20,160,30,#PB_Container_Flat) : Button(0,0,80,20,"Button") : CloseList() ; Container
                     ;                   Case 12 : *w = ListIcon(30,20,160,30,"ListIcon",88) 
@@ -160,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
   *w = Button(30,10,160,70,"Button") 
   
   
-  *combo = Tree( 30,90,160,230 ) 
+  *combo = ListView( 30,90,160,230 ) 
   Bind(*combo, @Widgets_CallBack())
   
   AddItem( *combo, -1, "Selected  to move")

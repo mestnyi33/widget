@@ -177,13 +177,13 @@
       #__flag_wordwrap
       #__flag_multiline 
       
-     ; #__flag_inline
+      ;#__flag_collapsed = 8 mac
+      ; #__flag_inline
       #__flag_nolines
       #__flag_nobuttons
       #__flag_checkboxes
       #__flag_optionboxes
       #__flag_threeState
-      #__flag_collapse
       #__flag_gridLines
       #__flag_multiselect
       #__flag_clickselect
@@ -295,7 +295,7 @@
     
     
     ;- _c_tree
-    #__tree_collapse = #__flag_collapse
+    ;#__tree_collapsed = #__flag_collapsed
     #__tree_optionboxes = #__flag_optionboxes
     #__tree_alwaysselection = #__flag_alwaysselection
     #__tree_checkboxes = #__flag_checkboxes
@@ -308,12 +308,12 @@
     #__tree_borderless = #__flag_borderless
     
     ;- _c_tree_attribute
-    #__tree_Selected = #PB_Tree_Selected
-    #__tree_Checked = #PB_Tree_Checked
-    #__tree_Collapsed = #PB_Tree_Collapsed
-    #__tree_Inbetween = #PB_Tree_Inbetween
-    #__tree_Expanded = #PB_Tree_Expanded
-    #__tree_SubLevel = #PB_Tree_SubLevel
+    #__tree_SubLevel  = #PB_Tree_SubLevel   ; 1
+    #__tree_Selected  = #PB_Tree_Selected   ; 1
+    #__tree_Expanded  = #PB_Tree_Expanded   ; 2
+    #__tree_Checked   = #PB_Tree_Checked    ; 4
+    #__tree_Collapsed = #PB_Tree_Collapsed  ; 8
+    #__tree_Inbetween = #PB_Tree_Inbetween  ; 16
     
 ;     
 ;     ;- TREE CONSTANTs
@@ -360,7 +360,7 @@
     ;- _c_button
     #__button_left = #__text_left
     #__button_right = #__text_right
-    #__button_toggle = #__flag_collapse
+    #__button_toggle = #__flag_threeState ; #__flag_collapsed
     #__button_default = #__flag_default
     #__button_vertical = #__text_vertical
     #__button_inverted = #__flag_inverted

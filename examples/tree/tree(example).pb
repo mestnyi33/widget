@@ -1,4 +1,5 @@
 ﻿IncludePath "../../"
+XIncludeFile "gadget/gadgets.pbi"
 XIncludeFile "widgets.pbi"
 UseLib(widget)
 
@@ -64,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  UseModule widget
   Global Canvas_0
+  Define i, a, g = 1
   Global *g._S_widget
   Global *g0._S_widget
   Global *g1._S_widget
@@ -77,7 +78,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *g7._S_widget
   Global *g8._S_widget
   Global *g9._S_widget
-  Global g_Canvas, NewList *List._S_widget()
   
   
   Procedure LoadControls(Widget, Directory$)
@@ -186,153 +186,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure _ReDraw(Canvas)
-    If StartDrawing(CanvasOutput(Canvas))
-      FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F6)
-      
-      ; PushListPosition(*List())
-      ForEach *List()
-        If Not *List()\hide
-          Draw(*List())
-        EndIf
-      Next
-      ; PopListPosition(*List())
-      
-      StopDrawing()
-    EndIf
-  EndProcedure
-  
-  Procedure.i Canvas_Events()
-    Protected Canvas.i = EventGadget()
-    Protected EventType.i = EventType()
-    Protected Repaint
-    Protected Width = GadgetWidth(Canvas)
-    Protected Height = GadgetHeight(Canvas)
-    Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
-    Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
-    ;      MouseX = DesktopMouseX()-GadgetX(Canvas, #PB_Gadget_ScreenCoordinate)
-    ;      MouseY = DesktopMouseY()-GadgetY(Canvas, #PB_Gadget_ScreenCoordinate)
-    Protected WheelDelta = GetGadgetAttribute(EventGadget(), #PB_Canvas_WheelDelta)
-    Protected *callback = GetGadgetData(Canvas)
-    Protected *this._S_widget = Root(); = GetGadgetData(Canvas)
-    
-    Select EventType
-        Case #PB_EventType_Repaint
-          Debug " -- Canvas repaint -- " + *this\row\draw
-        Case #PB_EventType_MouseWheel
-          Root()\mouse\wheel\y = GetGadgetAttribute(Root()\gadget, #PB_Canvas_WheelDelta)
-        Case #PB_EventType_Input 
-          Root()\keyboard\input = GetGadgetAttribute(Root()\gadget, #PB_Canvas_Input)
-        Case #PB_EventType_KeyDown, #PB_EventType_KeyUp
-          Root()\keyboard\Key = GetGadgetAttribute(Root()\gadget, #PB_Canvas_Key)
-          Root()\keyboard\Key[1] = GetGadgetAttribute(Root()\gadget, #PB_Canvas_Modifiers)
-        Case #PB_EventType_LeftButtonDown, 
-             #PB_EventType_RightButtonDown,
-             #PB_EventType_MiddleButtonDown
-          
-          If EventType = #PB_EventType_LeftButtonDown
-            Root()\mouse\buttons | #PB_Canvas_LeftButton
-          ElseIf EventType = #PB_EventType_RightButtonDown
-            Root()\mouse\buttons | #PB_Canvas_RightButton
-          ElseIf EventType = #PB_EventType_MiddleButtonDown
-            Root()\mouse\buttons | #PB_Canvas_MiddleButton
-          EndIf
-          
-          Root()\mouse\delta\x = Root()\mouse\x
-          Root()\mouse\delta\y = Root()\mouse\y
-          
-        Case #PB_EventType_DragStart : EventType = #PB_EventType_MouseMove
-        Case #PB_EventType_MouseEnter, #PB_EventType_MouseMove, #PB_EventType_MouseLeave
-          Root()\mouse\x = GetGadgetAttribute(Root()\gadget, #PB_Canvas_MouseX)
-          Root()\mouse\y = GetGadgetAttribute(Root()\gadget, #PB_Canvas_MouseY)
-          
-;           If Root()\mouse\buttons And Root()\mouse\drag = 0 And
-;              (Abs((Root()\mouse\x-Root()\mouse\delta\x)+(Root()\mouse\x-Root()\mouse\delta\y)) > 6)
-;             Root()\mouse\drag = 1
-;             EventType = #PB_EventType_DragStart
-;           EndIf
-          
-      EndSelect
-      
-    Select EventType
-      Case #PB_EventType_Repaint
-        *this = EventData()
-        
-        If *this ;And *this\handle
-          *this\row\draw = *this\count\items
-          Events(*this, EventType, Root()\mouse\x, Root()\mouse\y)
-          
-          If StartDrawing(CanvasOutput(*this\root\gadget))
-;             If *event\draw = 0
-;               *event\draw = 1
-               FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F6)
-;             EndIf
-            
-            Draw(*this)
-            StopDrawing()
-          EndIf
-          
-          ;ReDraw(*this, $F6)
-          ProcedureReturn
-        Else
-          Repaint = 1
-        EndIf
-        
-      Case #PB_EventType_Resize ; : ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                                ;          ForEach *List()
-                                ;            Resize(*List(), #PB_Ignore, #PB_Ignore, Width, Height)  
-                                ;          Next
-        Repaint = 1
-        
-      Case #PB_EventType_LeftButtonDown
-        SetActiveGadget(Canvas)
-        
-    EndSelect
-    
-    
-    ForEach *List()
-      ;If Not *List()\handle
-        DeleteElement(*List())
-      ;EndIf
-      
-    *List()\root\gadget = EventGadget()
-      *List()\root\window = EventWindow()
-      
-      ;SetGadgetData(*List()\root\gadget, *List())
-      ;ProcedureReturn G_Callback()
-    
-      Repaint | Events(*List(), EventType, MouseX, MouseY)
-    Next
-    
-    ; reset mouse buttons
-      If Root()\mouse\buttons
-        If EventType = #PB_EventType_LeftButtonUp
-          Root()\mouse\buttons &~ #PB_Canvas_LeftButton
-        ElseIf EventType = #PB_EventType_RightButtonUp
-          Root()\mouse\buttons &~ #PB_Canvas_RightButton
-        ElseIf EventType = #PB_EventType_MiddleButtonUp
-          Root()\mouse\buttons &~ #PB_Canvas_MiddleButton
-        EndIf
-        
-        If Not Root()\mouse\buttons 
-          ;Debug 666
-          ;           Select EventType 
-          ;             Case #PB_EventType_LeftButtonDown, 
-          ;                  #PB_EventType_RightButtonDown,
-          ;                  #PB_EventType_MiddleButtonDown
-          
-          ;Root()\mouse\drag = 0
-          Root()\mouse\delta\x = 0
-          Root()\mouse\delta\y = 0
-          ;           EndSelect
-        EndIf
-      EndIf
-      
-    If Repaint 
-      _ReDraw(Canvas)
-    EndIf
-  EndProcedure
-  
   UsePNGImageDecoder()
   
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
@@ -376,8 +229,9 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
+  
   If OpenWindow(0, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Define i,a,g = 1
+    ;{
     TreeGadget(g, 10, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
     ; 1_example
     AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
@@ -479,27 +333,14 @@ CompilerIf #PB_Compiler_IsMainFile
     Next i
     
     ;For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
+    ;}
     
-    Define widget = 1
-    
-;     ;If widget
-;     g_Canvas = CanvasGadget(-1, 0, 225, 1110, 425, #PB_Canvas_Keyboard|#PB_Canvas_Container)
-;     BindGadgetEvent(g_Canvas, @Canvas_Events())
-;     Root() = AllocateStructure(_S_root)
-;     Root()\root = Root()
-;     Root()\parent = Root()
-;     Root()\opened = Root()
-;     Root()\window = 0
-;     Root()\canvas = g_Canvas
-;     ;PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
-;     ;EndIf
-    
-    Open(0, 0, 225, 1110, 425, "", #__flag_borderless)
+    Open(0, 0, 225, 1110, 425)
     g_Canvas = GetGadget(root())
     g = 10
     
-    *g = Tree(10, 100, 210, 210, #PB_Tree_CheckBoxes)                                         
-    AddElement(*List()) : *List() = *g
+    *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
+    
     
     ; 1_example
     AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
@@ -524,7 +365,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 11
     *g = Tree(230, 100, 210, 210, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
-    AddElement(*List()) : *List() = *g
+    
     
     ;  3_example
     AddItem(*g, 0, "Tree_0", -1 )
@@ -548,7 +389,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 12
     *g = Tree(450, 100, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
-    AddElement(*List()) : *List() = *g
+    
     
     ;  2_example
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
@@ -559,26 +400,26 @@ CompilerIf #PB_Compiler_IsMainFile
         AddItem(*g, -1, "Tree_"+Str(i), 0, -1) 
       EndIf
     Next
-; ;     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-; ;     SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
-; ;     SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
-; ;     
-; ;     LoadFont(5, "Arial", 16)
-; ;     SetItemFont(*g, 3, 5)
-; ;     SetItemText(*g, 3, "16_font and text change")
-; ;     SetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
-; ;     SetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
-; ;     SetItemText(*g, 5, "backcolor and text change")
-; ;     LoadFont(6, "Arial", 25)
-; ;     SetItemFont(*g, 4, 6)
-; ;     SetItemText(*g, 4, "25_font and text change")
-; ;     SetItemFont(*g, 14, 6)
-; ;     SetItemText(*g, 14, "25_font and text change")
-; ;     ;Bind(*g, @events_tree_widget())
-; ;     
+    ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
+    SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
+    
+    LoadFont(5, "Arial", 16)
+    SetItemFont(*g, 3, 5)
+    SetItemText(*g, 3, "16_font and text change")
+    SetItemColor(*g, 5, #__Color_Front, $FFFFFF00)
+    SetItemColor(*g, 5, #__Color_Back, $FFFF00FF)
+    SetItemText(*g, 5, "backcolor and text change")
+    LoadFont(6, "Arial", 25)
+    SetItemFont(*g, 4, 6)
+    SetItemText(*g, 4, "25_font and text change")
+    SetItemFont(*g, 14, 6)
+    SetItemText(*g, 14, "25_font and text change")
+    ;Bind(*g, @events_tree_widget())
+    
     g = 13
     *g = Tree(600+70, 100, 210, 210, #__tree_OptionBoxes|#__tree_NoButtons|#__tree_NoLines|#__tree_ClickSelect) ;                                        
-    AddElement(*List()) : *List() = *g
+    
     ;  4_example
     ; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
     ; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
@@ -607,7 +448,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     g = 14
     *g = Tree(750+135, 100, 103, 210, #PB_Tree_NoButtons)                                         
-    AddElement(*List()) : *List() = *g
+    
     ;  5_example
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1", -1, 0) 
@@ -621,8 +462,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     SetItemImage(*g, 0, 0)
     
     g = 15
-    *g = Tree(890+106, 100, 103, 210, #__tree_BorderLess|#__tree_Collapse)                                         
-    AddElement(*List()) : *List() = *g
+    *g = Tree(890+106, 100, 103, 210, #__tree_BorderLess|#__tree_Collapsed)                                         
+    
     ;  6_example
     AddItem(*g, 0, "Tree_1", -1, 1) 
     AddItem(*g, 0, "Tree_2_1", -1, 2) 
@@ -648,7 +489,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 0f8----r--
+; Folding = 0f8--25-
 ; EnableXP

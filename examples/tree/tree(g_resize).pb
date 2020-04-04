@@ -63,9 +63,6 @@ CompilerIf #PB_Compiler_IsMainFile
     CompilerEndIf
   EndProcedure
   
-  UseModule widget
-  Global *g._S_widget, g_Canvas, NewList *List._S_widget()
-  
   Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
@@ -172,11 +169,19 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
+  
   UsePNGImageDecoder()
   
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
     End
   EndIf
+  
+  Enumeration 
+    #g_tree 
+    #w_tree
+    #g_splitter
+  EndEnumeration
+  
   
   Procedure events_tree_gadget()
     ;Debug " gadget - "+EventGadget()+" "+EventType()
@@ -211,8 +216,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure ResizeCallBack()
-    ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
-    ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
+    ResizeGadget(#g_splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
     
     CompilerIf #PB_Compiler_Version =< 546
       PostEvent(#PB_Event_Gadget, EventWindow(), g_Canvas, #PB_EventType_Resize)
@@ -224,11 +228,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If OpenWindow(0, 0, 0, 222, 491, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
+    Define i,a,g
     
-    Define i,a,g 
-    g = 0
-    TreeGadget(g, 230, 10, 210, 210, #PB_Tree_AlwaysShowSelection)                                         
+    TreeGadget(#g_tree, 0,0,0,0, #PB_Tree_AlwaysShowSelection)                                         
+    g = #g_tree
+    
     ; 3_example
     AddGadgetItem(g, 0, "Tree_0", 0 )
     AddGadgetItem(g, 1, "Tree_1_1", ImageID(0), 1) 
@@ -248,31 +252,31 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
      
-    Gadget(#PB_GadgetType_Tree, #PB_Any, 0, 0, 0, 0);|#__Flag_GridLines|#__Flag_NoButtons|#__Flag_NoLines))  ; |#PB_Flag_MultiSelect
-    g_Canvas = GetGadget(Root())
-    *g=GetGadgetData(g_Canvas)
+    Gadget(#PB_GadgetType_Tree, #w_tree, 0, 0, 0, 0)
+    g = GetGadgetData(#w_tree)
     
     ;  3_example
-    AddItem(*g, 0, "Tree_0", -1 )
-    AddItem(*g, 1, "Tree_1_1", 0, 1) 
-    AddItem(*g, 4, "Tree_1_1_1", -1, 2) 
-    AddItem(*g, 5, "Tree_1_1_2", -1, 2) 
-    AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
-    AddItem(*g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", -1, 4) 
-    AddItem(*g, 7, "Tree_1_1_2_2 980980_", -1, 3) 
-    AddItem(*g, 2, "Tree_1_2", -1, 1) 
-    AddItem(*g, 3, "Tree_1_3", -1, 1) 
-    AddItem(*g, 9, "Tree_2",-1 )
-    AddItem(*g, 10, "Tree_3", -1 )
-    AddItem(*g, 11, "Tree_4", -1 )
-    AddItem(*g, 12, "Tree_5", -1 )
-    AddItem(*g, 13, "Tree_6", -1 )
+    AddItem(g, 0, "Tree_0", -1 )
+    AddItem(g, 1, "Tree_1_1", 0, 1) 
+    AddItem(g, 4, "Tree_1_1_1", -1, 2) 
+    AddItem(g, 5, "Tree_1_1_2", -1, 2) 
+    AddItem(g, 6, "Tree_1_1_2_1", -1, 3) 
+    AddItem(g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", -1, 4) 
+    AddItem(g, 7, "Tree_1_1_2_2 980980_", -1, 3) 
+    AddItem(g, 2, "Tree_1_2", -1, 1) 
+    AddItem(g, 3, "Tree_1_3", -1, 1) 
+    AddItem(g, 9, "Tree_2",-1 )
+    AddItem(g, 10, "Tree_3", -1 )
+    AddItem(g, 11, "Tree_4", -1 )
+    AddItem(g, 12, "Tree_5", -1 )
+    AddItem(g, 13, "Tree_6", -1 )
     
     
-    SplitterGadget(10,8, 8, 306, 491-16,g_Canvas, 0)
+    SplitterGadget(#g_splitter,8, 8, 306, 491-16, #w_tree, #g_tree)
     CompilerIf #PB_Compiler_Version =< 546
-      BindGadgetEvent(10, @SplitterCallBack())
+      BindGadgetEvent(#g_splitter, @SplitterCallBack())
     CompilerEndIf
+    
     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug no linux
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
     
@@ -287,8 +291,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 249
-; FirstLine = 258
-; Folding = -------
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; Folding = 0f8--2-
 ; EnableXP
