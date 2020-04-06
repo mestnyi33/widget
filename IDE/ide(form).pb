@@ -13,7 +13,7 @@ Uselib(widget)
 Global window_ide, canvas_ide
 
 Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
-Global toolbar_design, listview_debug, text_help
+Global toolbar_design, listview_debug, id_help_text
 Global id_design, id_elements, id_properties_tree, id_inspector_tree, id_inspector_panel
 
 ;- ENUMs
@@ -194,9 +194,7 @@ EndProcedure
 
 ;-
 Procedure inspector_get_pos(*this._s_widget, *new._s_widget, SubLevel)
-  Protected i, Position = 1 ; Начальная позиция
-  Protected CountItems = CountItems(*this)
-  ; Protected SubLevel = GetLevel(*new)
+  Protected i, CountItems = CountItems(*this), Position = CountItems ; Начальная позиция
   
   For i = 0 To CountItems - 1
     If *new = GetItemData(*this, i) 
@@ -348,7 +346,7 @@ Procedure object_add_new(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0
         Height=200
       EndIf
       
-      flag = #__Window_SystemMenu|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget
+      flag | #__Window_SystemMenu|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget
       
     Case #PB_GadgetType_Container, #PB_GadgetType_ScrollArea, #PB_GadgetType_Panel, 
          #PB_GadgetType_Splitter, #PB_GadgetType_ListView, #PB_GadgetType_ListIcon, #PB_GadgetType_Image 
@@ -482,12 +480,17 @@ EndProcedure
 Procedure ide_gadget_events()
   Protected *this._s_widget
   Protected e_type = *event\type
+  Protected e_item = *event\item
   Protected e_widget = *event\widget
   
   Select e_type
+    Case #PB_EventType_StatusChange
+      SetText(id_help_text, GetItemText(e_widget, e_item))
+      
     Case #PB_EventType_Change
       If e_widget = id_inspector_tree
         *this = GetItemData(e_widget, GetState(e_widget))
+        Debug  *this
         
         If *this And a_set(*this)
           Debug "изменено "+ GetState(e_widget)
@@ -532,13 +535,13 @@ Procedure ide_window_open(x=100,y=100,width=800,height=600)
   AddItem(id_inspector_panel, 2, "events", 0, 0)  
   CloseList()
   
-  text_help  = Text(0,0,0,0, "help for the inspector", #__text_border)
+  id_help_text  = Text(0,0,0,0, "help for the inspector", #__text_border)
   
   
   Splitter_design = widget::Splitter(0,0,0,0, toolbar_design,id_design, #PB_Splitter_FirstFixed|#PB_Splitter_Separator)
   Splitter_inspector = widget::Splitter(0,0,0,0, id_inspector_tree,id_inspector_panel, #PB_Splitter_FirstFixed)
   splitter_debug = widget::Splitter(0,0,0,0, Splitter_design,listview_debug, #PB_Splitter_SecondFixed)
-  splitter_help = widget::Splitter(0,0,0,0, Splitter_inspector,text_help, #PB_Splitter_SecondFixed)
+  splitter_help = widget::Splitter(0,0,0,0, Splitter_inspector,id_help_text, #PB_Splitter_SecondFixed)
   Splitter_ide = widget::Splitter(0,0,0,0, splitter_debug,splitter_help, #__flag_autosize|#PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
   
   ; set splitters default minimum size
@@ -559,6 +562,7 @@ Procedure ide_window_open(x=100,y=100,width=800,height=600)
   
   
   Bind(id_inspector_tree, @ide_gadget_events())
+  Bind(id_elements, @ide_gadget_events())
   ProcedureReturn window_ide
 EndProcedure
 
@@ -599,5 +603,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 7-Pb+f--8-8-
+; Folding = +-vf+---8-8-
 ; EnableXP

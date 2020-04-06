@@ -95,9 +95,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
       ;Resizes(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
       ;Updates(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
-      _this_\width[#__c_2] = _this_\scroll\h\bar\page\len ; *this\width[#__c_3] - Bool(Not *this\scroll\v\hide) * *this\scroll\v\width ; 
-      _this_\height[#__c_2] = _this_\scroll\v\bar\page\len; *this\height[#__c_3] - Bool(Not *this\scroll\h\hide) * *this\scroll\h\height ; 
-      
       _this_\scroll\v\bar\area\change = #False
       _this_\scroll\h\bar\area\change = #False
     EndMacro
@@ -5849,9 +5846,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;- TREEs
     ;-
     Declare.l Tree_Draw(*this._s_widget)
-    Declare  _tree_events_(*this, eventtype.l, mouse_x.l=-1, mouse_y.l=-1, position.l=0)
-    
-    ;-
     Declare tt_close(*this._s_tt)
     
     Procedure tt_Tree_Draw(*this._s_tt, *color._s_color=0)
@@ -6296,8 +6290,6 @@ CompilerIf Not Defined(widget, #PB_Module)
          bar_SetAttribute(*this\scroll\v, #__bar_Maximum, *this\scroll\height)
         
         Resizes(*this\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        *this\width[#__c_2] = *this\scroll\h\bar\page\len ; *this\width[#__c_3] - Bool(Not *this\scroll\v\hide) * *this\scroll\v\width ; 
-        *this\height[#__c_2] = *this\scroll\v\bar\page\len; *this\height[#__c_3] - Bool(Not *this\scroll\h\hide) * *this\scroll\h\height ; 
       EndIf
       ; Debug ""+*this\scroll\v\bar\max +" "+ *this\scroll\height +" "+ *this\scroll\v\bar\page\pos +" "+ *this\scroll\v\bar\page\len
       
@@ -6305,10 +6297,10 @@ CompilerIf Not Defined(widget, #PB_Module)
          bar_SetAttribute(*this\scroll\h, #__bar_Maximum, *this\scroll\width)
         
         Resizes(*this\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-        *this\width[#__c_2] = *this\scroll\h\bar\page\len ; *this\width[#__c_3] - Bool(Not *this\scroll\v\hide) * *this\scroll\v\width ; 
-        *this\height[#__c_2] = *this\scroll\v\bar\page\len; *this\height[#__c_3] - Bool(Not *this\scroll\h\hide) * *this\scroll\h\height ; 
       EndIf
       
+      *this\width[#__c_2] = *this\scroll\h\bar\page\len ; *this\width[#__c_3] - Bool(Not *this\scroll\v\hide) * *this\scroll\v\width ; 
+      *this\height[#__c_2] = *this\scroll\v\bar\page\len; *this\height[#__c_3] - Bool(Not *this\scroll\h\hide) * *this\scroll\h\height ; 
       
       If *this\change <> 0
         ;           *this\width[2] = (*this\scroll\v\x + Bool(*this\scroll\v\hide) * *this\scroll\v\width) - *this\x[2]
@@ -6375,7 +6367,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               
               Y = *this\row\draws()\y - *this\scroll\v\bar\page\pos
-              state = *this\row\draws()\color\state  ;+ Bool(*this\row\draws()\color\state = #__s_2 And *this <> GetActive()\gadget)
+              state = *this\row\draws()\color\state ;+ Bool(*this\row\draws()\color\state = #__s_2 And *this <> GetActive()\gadget)
               
               ; Draw select back
               If *this\row\draws()\color\back[state]
@@ -6510,7 +6502,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *SelectElement 
         If State & #__tree_Selected
-          *this\row\_s()\color\state = #__s_3
+          *this\row\_s()\color\state = 2
           *this\row\selected = *this\row\_s()
         EndIf
         
@@ -6568,7 +6560,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ;           EndIf
             
             *this\row\selected = *this\row\_s()
-            *this\row\selected\color\state = #__s_3
+            *this\row\selected\color\state = 2 + Bool(GetActive()<>*this)
             Repaint = 1
           Else
             State &~ #__tree_Selected
@@ -6788,7 +6780,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn handle
     EndProcedure
     
-    
     Procedure.l Tree_Events_Key(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
       Protected Result, from =- 1
       Static cursor_change, Down, *row_selected._s_rows
@@ -6887,7 +6878,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                       *this\row\_s()\color\state = 2
                       *row_selected = *this\row\_s()
                       
-                      *this\change = _tree_bar_update_(*this\scroll\v, *this\row\selected\y, *this\row\selected\height)
+                    *this\change = _tree_bar_update_(*this\scroll\v, *this\row\selected\y, *this\row\selected\height)
                       Post(#__Event_Change, *this, *this\row\_s()\index)
                       Result = 1
                     EndIf
@@ -6933,8 +6924,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Repaint | #True
         EndIf
         
-        If *this\row\selected ;And *this\row\selected\index = *event\item
-          ; Debug ""+*this\row\selected\index +" "+ *event\item
+        If *this\row\selected And *this\row\selected\index = *event\item
           If Not *this\flag\multiselect
             If *this\row\selected\_state & #__s_selected = #False
               *this\row\selected\_state | #__s_selected
@@ -6965,29 +6955,21 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If event_type = #__Event_Focus
-        PushListPosition(*this\row\_s()) 
-        ForEach *this\row\_s()
-          If *this\row\_s()\color\state = #__s_3
-            *this\row\_s()\color\state = #__s_2
-          EndIf
-        Next
-        PopListPosition(*this\row\_s()) 
-        
-        ; Post(#PB_EventType_Focus, *this, *event\item)
-        Repaint | #True
+        If *this\row\selected And 
+           *this\row\selected\color\state = #__s_3
+          *this\row\selected\color\state = #__s_2
+          Post(#PB_EventType_Focus, *this, *this\row\selected\index)
+          Repaint | #True
+        EndIf
       EndIf
       
       If event_type = #__Event_Lostfocus
-        PushListPosition(*this\row\_s()) 
-        ForEach *this\row\_s()
-          If *this\row\_s()\color\state = #__s_2
-            *this\row\_s()\color\state = #__s_3
-          EndIf
-        Next
-        PopListPosition(*this\row\_s()) 
-        
-        ; Post(#PB_EventType_LostFocus, *this, *event\item)
-        Repaint | #True
+        If *this\row\selected And 
+           *this\row\selected\color\state = #__s_2
+          *this\row\selected\color\state = #__s_3
+          Post(#PB_EventType_LostFocus, *this, *this\row\selected\index)
+          Repaint | #True
+        EndIf
       EndIf
       
       If event_type = #__Event_MouseEnter Or
@@ -7024,7 +7006,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 
                 
                 If event_type = #__Event_LeftButtonDown And *this\flag\buttons And *this\row\draws()\childrens And 
-                   _from_point_(mouse_x, mouse_y, *this\row\draws()\box[0])
+                       _from_point_(mouse_x, mouse_y, *this\row\draws()\box[0])
                   
                   If SelectElement(*this\row\_s(), *this\row\draws()\index) 
                     *this\row\box\checked = 2
@@ -7138,7 +7120,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ElseIf *this\row\draws()\_state & #__s_entered
               *this\row\draws()\_state &~ #__s_entered 
               
-              
+               
               If *this\row\draws()\color\state = #__s_1
                 *this\row\draws()\color\state = #__s_0
               EndIf
@@ -7171,465 +7153,150 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Repaint
     EndProcedure
     
-    
     ;-
-    Procedure _tree_events_(*this._s_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1, position.l=0)
-      Protected Result, down
+    Procedure.l ListView_Events(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
+      Protected Repaint
       
-      Select eventtype
-        Case #__Event_LeftClick
-          Debug "click - "+*this
-          Post(eventtype, *this, *this\row\index)
-          
-        Case #__Event_Change
-          Debug "change - "+*this
-          Post(eventtype, *this, *this\row\index)
-          Result = 1
-          
-        Case #__Event_DragStart
-          Debug "drag - "+*this
-          Post(eventtype, *this, *this\row\index)
-          
-        Case #__Event_Drop
-          Debug "drop - "+*this
-          Post(eventtype, *this, *this\row\index)
-          
-        Case #__Event_Focus
-          ; Debug "focus - "+*this
-          Result = 1
-          
-        Case #__Event_LostFocus
-          ;  Debug "lost focus - "+*this
-          Result = 1
-          
-        Case #__Event_LeftButtonDown
-          ; Debug "left down - "+*this
-          
-        Case #__Event_LeftButtonUp
-          ; Debug "left up - "+*this
-          
-        Case #__Event_MouseEnter
-          ; Debug "enter - "+*this +" "+ *this\root\mouse\buttons
-          Result = 1
-          
-        Case #__Event_MouseLeave
-          ; Debug "leave - "+*this
-          Result = 1
-          
-        Case #__Event_MouseMove
-          ; Debug "move - "+*this
-          
-          If position And *this\row\index >= 0
-            ;down = *this\root\mouse\buttons
-            
-            ; event mouse enter line
-            If position > 0
-              If down And *this\flag\multiselect 
-                _tree_multi_select_(*this, *this\row\index, *this\row\selected\index)
-                
-              ElseIf *this\row\_s()\color\state = 0
-                *this\row\_s()\color\state = 1+Bool(down)
-                
-                If down
-                  *this\row\selected = *this\row\_s()
-                EndIf
-              EndIf
-              
-              ; create tooltip on the item
-              If Bool((*this\flag\buttons=0 And *this\flag\lines=0)) And *this\scroll\h\bar\max > *this\width[#__c_2]
-                tt_creare(*this, GadgetX(*this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate), GadgetY(*this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate))
-              EndIf
-              
-              ; event mouse leave line
-            Else
-              If (*this\row\_s()\color\state = 1 Or down)
-                *this\row\_s()\color\state = 0
-              EndIf
-              
-              ; close tooltip on the item
-              If *this\row\tt And *this\row\tt\visible
-                tt_close(*this\row\tt)
-              EndIf
-              
-            EndIf
-            
-            Result = #True
-          EndIf
-      EndSelect
-      
-      If (Not position And *this\scroll And *this\scroll\v And *this\scroll\h)
-        Result | bar_Events(*this\scroll\v, eventtype, mouse_x, mouse_y, *this\root\mouse\wheel\x, *this\root\mouse\wheel\y)
-        Result | bar_Events(*this\scroll\h, eventtype, mouse_x, mouse_y, *this\root\mouse\wheel\x, *this\root\mouse\wheel\y)
-        
-        If (*this\scroll\v\change Or *this\scroll\h\change)
-          If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
-            Tree_Update(*this, *this\row\_s())
-            StopDrawing()
+      If event_type = #__Event_LeftButtonUp
+        If Not *this\flag\multiselect
+          If *this\row\selected\_state & #__s_selected = #False
+            *this\row\selected\_state | #__s_selected
+            Post(#PB_EventType_Change, *this, *this\row\selected\index)
+            Repaint | #True
           EndIf
           
-          *this\scroll\v\change = 0 
-          *this\scroll\h\change = 0
+          Post(#PB_EventType_LeftClick, *this, *this\row\selected\index)
+        Else
+          Post(#PB_EventType_LeftClick, *this, *event\item)
         EndIf
       EndIf
       
-      ProcedureReturn Result
-    EndProcedure
-    
-    Procedure.l _Tree_Events_Key(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
-      Protected Result, from =- 1
-      Static cursor_change, Down, *row_selected._s_rows
+      If event_type = #__Event_RightButtonUp
+        Post(#PB_EventType_RightClick, *this, *this\row\selected\index)
+      EndIf
       
-      With *this
-        Select event_type 
-          Case #__Event_KeyDown
-            ;If *this = GetActive()\gadget
-            
-            Select *this\root\keyboard\key
-              Case #PB_Shortcut_PageUp
-                If bar_SetState(*this\scroll\v, 0) 
-                  *this\change = 1 
-                  Result = 1
-                EndIf
-                
-              Case #PB_Shortcut_PageDown
-                If bar_SetState(*this\scroll\v, *this\scroll\v\bar\page\end) 
-                  *this\change = 1 
-                  Result = 1
-                EndIf
-                
-              Case #PB_Shortcut_Up,
-                   #PB_Shortcut_Home
-                If *this\row\selected
-                  If (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Alt) And
-                     (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Control)
-                    If bar_SetState(*this\scroll\v, *this\scroll\v\bar\page\pos-18) 
-                      *this\change = 1 
-                      Result = 1
-                    EndIf
-                    
-                  ElseIf *this\row\selected\index > 0
-                    ; select modifiers key
-                    If (*this\root\keyboard\key = #PB_Shortcut_Home Or
-                        (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Alt))
-                      SelectElement(*this\row\_s(), 0)
-                    Else
-                      SelectElement(*this\row\_s(), *this\row\selected\index - 1)
-                      
-                      If *this\row\_s()\hide
-                        While PreviousElement(*this\row\_s())
-                          If Not *this\row\_s()\hide
-                            Break
-                          EndIf
-                        Wend
-                      EndIf
-                    EndIf
-                    
-                    If *this\row\selected <> *this\row\_s()
-                      *this\row\selected\color\state = 0
-                      *this\row\selected  = *this\row\_s()
-                      *this\row\_s()\color\state = 2
-                      *row_selected = *this\row\_s()
-                      
-                      Result | _tree_events_(*this, #__Event_Change, mouse_x, mouse_y)
-                    EndIf
-                    
-                    *this\change = _tree_bar_update_(*this\scroll\v, *this\row\selected\y, *this\row\selected\height)
-                    
-                  EndIf
-                EndIf
-                
-              Case #PB_Shortcut_Down,
-                   #PB_Shortcut_End
-                If *this\row\selected
-                  If (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Alt) And
-                     (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Control)
-                    
-                    If bar_SetState(*this\scroll\v, *this\scroll\v\bar\page\pos+18) 
-                      *this\change = 1 
-                      Result = 1
-                    EndIf
-                    
-                  ElseIf *this\row\selected\index < (*this\count\items - 1)
-                    ; select modifiers key
-                    If (*this\root\keyboard\key = #PB_Shortcut_End Or
-                        (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Alt))
-                      SelectElement(*this\row\_s(), (*this\count\items - 1))
-                    Else
-                      SelectElement(*this\row\_s(), *this\row\selected\index + 1)
-                      
-                      If *this\row\_s()\hide
-                        While NextElement(*this\row\_s())
-                          If Not *this\row\_s()\hide
-                            Break
-                          EndIf
-                        Wend
-                      EndIf
-                    EndIf
-                    
-                    If *this\row\selected <> *this\row\_s()
-                      *this\row\selected\color\state = 0
-                      *this\row\selected  = *this\row\_s()
-                      *this\row\_s()\color\state = 2
-                      *row_selected = *this\row\_s()
-                      
-                      Result | _tree_events_(*this, #__Event_Change, mouse_x, mouse_y)
-                    EndIf
-                    
-                    *this\change = _tree_bar_update_(*this\scroll\v, *this\row\selected\y, *this\row\selected\height)
-                    
-                  EndIf
-                EndIf
-                
-              Case #PB_Shortcut_Left
-                If (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Alt) And
-                   (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Control)
-                  
-                  *this\change = bar_SetState(*this\scroll\h, *this\scroll\h\bar\page\pos-(*this\scroll\h\bar\page\end/10)) 
-                  Result = 1
-                EndIf
-                
-              Case #PB_Shortcut_Right
-                If (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Alt) And
-                   (*this\root\keyboard\key[#__c_1] & #PB_Canvas_Control)
-                  
-                  *this\change = bar_SetState(*this\scroll\h, *this\scroll\h\bar\page\pos+(*this\scroll\h\bar\page\end/10)) 
-                  Result = 1
-                EndIf
-                
-            EndSelect
-            
-            ;EndIf
-            
-        EndSelect
-      EndWith
+      If event_type = #__Event_LeftDoubleClick
+        Post(#PB_EventType_LeftDoubleClick, *this, *this\row\selected\index)
+      EndIf
       
-      ProcedureReturn Result
-    EndProcedure
-    
-    Procedure.l _Tree_Events(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
-      Protected Result, from =- 1
-      Static cursor_change, Down, *row_selected._s_rows
-      
-      With *this
-        ; post widget events                     
-        Select event_type 
-          Case #__Event_LeftButtonDown
-            ;           If *this = Root()\entered  ; *event\leave;
-            *this\root\mouse\delta\x = mouse_x
-            *this\root\mouse\delta\y = mouse_y
-            
-            ;             If GetActive()\gadget <> *this
-            ;               _tree_set_active_(*this)
-            ;             EndIf
-            
-            Result | _tree_events_(*this, event_type, mouse_x, mouse_y)
-            
-            If *this\row\index >= 0
-              If _from_point_(mouse_x, mouse_y, *this\row\_s()\box[#__c_1])
-                _tree_set_state_(*this, *this\row\_s(), 1)
-                *this\row\box\checked = 1
+      If event_type = #__Event_MouseEnter Or
+         event_type = #__Event_MouseMove Or
+         event_type = #__Event_MouseLeave Or
+         event_type = #__Event_RightButtonDown Or
+         event_type = #__Event_LeftButtonDown ;Or event_type = #__Event_LeftButtonUp
+        
+        If *this\count\items
+          ForEach *this\row\draws()
+            ; If *this\row\draws()\draw
+            If _from_point_(mouse_x, mouse_y, *this, [#__c_2]) And 
+               _from_point_(mouse_x + *this\scroll\h\bar\page\pos,
+                            mouse_y + *this\scroll\v\bar\page\pos, *this\row\draws())
+              
+              ; 
+              If Not *this\row\draws()\_state & #__s_entered
+                *this\row\draws()\_state | #__s_entered 
                 
-                Result = #True
-              ElseIf *this\flag\buttons And *this\row\_s()\childrens And _from_point_(mouse_x, mouse_y, *this\row\_s()\box[0])
-                *this\change = 1
-                *this\row\box\checked = 2
-                *this\row\_s()\box[0]\checked ! 1
+                If *this\row\draws()\color\state = #__s_0
+                  *this\row\draws()\color\state = #__s_1
+                  Repaint | #True
+                EndIf
                 
-                PushListPosition(*this\row\_s())
-                While NextElement(*this\row\_s())
-                  If *this\row\_s()\parent And *this\row\_s()\sublevel > *this\row\_s()\parent\sublevel 
-                    *this\row\_s()\hide = Bool(*this\row\_s()\parent\box[0]\checked | *this\row\_s()\parent\hide)
+                If Not (*this\root\mouse\buttons And *this\flag\multiselect)
+                  Post(#PB_EventType_StatusChange, *this, *this\row\draws()\index)
+                EndIf
+              EndIf
+              
+              If (event_type = #__Event_LeftButtonDown) Or 
+                 (*this\root\mouse\buttons And Not *this\flag\multiselect)
+                
+                If *this\flag\multiselect = 1
+                  If *this\row\draws()\_state & #__s_selected 
+                    *this\row\draws()\_state &~ #__s_selected
+                    *this\row\draws()\color\state = #__s_0
                   Else
-                    Break
+                    *this\row\draws()\_state | #__s_selected
+                    *this\row\draws()\color\state = #__s_2
                   EndIf
-                Wend
-                PopListPosition(*this\row\_s())
-                
-                If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
-                  Tree_Update(*this, *this\row\_s())
-                  StopDrawing()
-                EndIf
-                
-                Result = #True
-              Else
-                
-                If *row_selected <> *this\row\_s()
+                  
+                  Post(#PB_EventType_Change, *this, *this\row\draws()\index)
+                  
+                Else
                   If *this\row\selected 
-                    *this\row\selected\color\state = 0
-                  EndIf
-                  
-                  *row_selected = *this\row\_s()
-                  *this\row\_s()\color\state = 2
-                EndIf
-                
-                
-                ;                   If \flag\multiselect
-                ;                     _tree_multi_select_(*this, \row\index, \row\selected\index)
-                ;                   EndIf
-                
-                If *this\row\tt And *this\row\tt\visible
-                  tt_close(*this\row\tt)
-                EndIf
-                
-                Result = #True
-              EndIf
-            EndIf
-            
-            ;           Else
-            *event\leave = Root()\entered
-            ;           EndIf
-            
-          Case #__Event_LeftButtonUp 
-            ;Debug *this\row\drag 
-            
-            If *this = *event\leave And *event\leave\root\mouse\buttons
-              *event\leave\root\mouse\buttons = 0
-              
-              If *this\row\box\checked 
-                *this\row\box\checked = 0
-                
-              ElseIf *this\row\index >= 0 And Not *this\row\drag
-                
-                If *this\row\selected <> *row_selected
-                  *this\row\selected = *row_selected
-                  *this\row\selected\color\state = 2
-                  
-                  Result | _tree_events_(*this, #__Event_Change, mouse_x, mouse_y)
-                EndIf
-              EndIf
-              
-              Result | _tree_events_(*this, #__Event_LeftButtonUp, mouse_x, mouse_y)
-              
-              If *this\row\drag 
-                *this\row\drag = 0
-                
-              ElseIf *this\row\index >= 0 
-                Result | _tree_events_(*this, #__Event_LeftClick, mouse_x, mouse_y)
-              EndIf
-              
-              If *event\leave <> Root()\entered
-                Result | _tree_events_(*event\leave, #__Event_MouseLeave, mouse_x, mouse_y) 
-                *event\leave\row\index =- 1
-                *event\leave = Root()\entered
-                
-                ; post enter event
-                If Root()\entered
-                  Result | _tree_events_(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
-                EndIf
-              EndIf
-              
-              ; post drop event
-              CompilerIf Defined(DD, #PB_Module)
-                If DD::EventDrop(Root()\entered, #__Event_LeftButtonUp)
-                  Result | _tree_events_(Root()\entered, #__Event_Drop, mouse_x, mouse_y)
-                EndIf
-                
-                If Not Root()\entered
-                  DD::EventDrop(-1, #__Event_LeftButtonUp)
-                EndIf
-              CompilerEndIf
-              
-            EndIf
-            
-            If *this = Root()\entered And Not *event\leave
-              Result | _tree_events_(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
-              *event\leave = Root()\entered
-            EndIf
-            
-          Case #__Event_LostFocus
-            ; если фокус получил PB gadget
-            ; то убираем фокус с виджета
-            If *this = GetActive()\gadget
-              If GetActive()\gadget\row\selected 
-                GetActive()\gadget\row\selected\color\state = 3
-              EndIf
-              
-              Result | _tree_events_(*this, #__Event_LostFocus, mouse_x, mouse_y)
-              
-              GetActive()\gadget\color\state = 0
-              GetActive()\gadget = 0
-            EndIf
-            
-        EndSelect
-        
-        If event_type = #__Event_MouseMove Or
-           event_type = #__Event_MouseEnter Or
-           event_type = #__Event_MouseLeave Or
-           event_type = #__Event_LeftButtonUp
-          ; Debug ""+mouse_x +" - "+ event_type +" "+ *this\root\mouse\delta\x;Bool(Abs((mouse_x-*this\root\mouse\delta\x)+(mouse_y-*this\root\mouse\delta\y)) >= 6)
-          
-          If *this = Root()\entered ;And *this\scroll\v\bar\from =- 1 And *this\scroll\h\bar\from =- 1 ;And Not *this\root\key; And Not *this\root\mouse\buttons
-            
-            If _from_point_(mouse_x, mouse_y, *this, [2]) 
-              
-              ; at item from points
-              ForEach *this\row\draws()
-                If (mouse_y >= *this\row\draws()\y-*this\scroll\v\bar\page\pos And
-                    mouse_y < *this\row\draws()\y+*this\row\draws()\height-*this\scroll\v\bar\page\pos)
-                  
-                  If *this\row\index <> *this\row\draws()\index
-                    If *this\row\index >= 0 ;And SelectElement(\row\_s(), \row\index)
-                      Result | _tree_events_(*this, #__Event_MouseMove, mouse_x, mouse_y, -1)
+                    If *this\row\selected <> *this\row\draws()
+                      If *this\flag\multiselect = 2
+                        If *this\row\selected\_state & #__s_selected
+                          *this\row\selected\_state &~ #__s_selected
+                          Post(#PB_EventType_Change, *this, *this\row\selected\index)
+                        EndIf
+                      EndIf
+                      
+                      *this\row\selected\_state &~ #__s_selected
                     EndIf
                     
-                    *this\row\index = *this\row\draws()\index
-                    
-                    If *this\row\index >= 0 And SelectElement(*this\row\_s(), *this\row\index)
-                      Result | _tree_events_(*this, #__Event_MouseMove, mouse_x, mouse_y, 1)
+                    *this\row\selected\color\state = #__s_0
+                  EndIf
+                  
+                  If *this\flag\multiselect = 2
+                    If *this\row\draws()\_state & #__s_selected = 0
+                      *this\row\draws()\_state | #__s_selected
+                      Post(#PB_EventType_Change, *this, *this\row\draws()\index)
                     EndIf
                   EndIf
                   
-                  Break
+                  *this\row\draws()\color\state = #__s_2
                 EndIf
-              Next
-              
-              If *this\row\index >= 0 And Not (mouse_y >= *this\row\_s()\y-*this\scroll\v\bar\page\pos And
-                                               mouse_y < *this\row\_s()\y+*this\row\_s()\height-*this\scroll\v\bar\page\pos)
-                Result | _tree_events_(*this, #__Event_MouseMove, mouse_x, mouse_y, -1)
-                *this\row\index =- 1
-              EndIf
-            Else
-              
-              If *this\row\index >= 0
-                ;Debug " leave items"
-                Result | _tree_events_(*this, #__Event_MouseMove, mouse_x, mouse_y, -1)
-                *this\row\index =- 1
-              EndIf
-              
-            EndIf
-            
-            
-            ; post change and drag start 
-            If *this\root\mouse\buttons And *this\row\drag = 0 And (Abs((mouse_x-*this\root\mouse\delta\x)+(mouse_y-*this\root\mouse\delta\y)) >= 6)
-              *this\row\drag = 1
-              
-              If *this\row\selected <> *row_selected
-                *this\row\selected = *row_selected
-                ;*this\row\selected\color\state = 2
                 
-                Result | _tree_events_(*this, #__Event_Change, mouse_x, mouse_y)
+                *this\row\selected = *this\row\draws()
+                ; *this\change = _tree_bar_update_(*this\scroll\v, *this\row\selected\y, *this\row\selected\height)
+                Repaint | #True
               EndIf
               
-              Result | _tree_events_(*this, #__Event_DragStart, mouse_x, mouse_y)
+              If *this\flag\multiselect = 2 And
+                 *this\root\mouse\buttons
+                Protected _index_, _selected_index_
+                
+                _index_ = *this\row\draws()\index
+                _selected_index_ = *this\row\selected\index
+                
+                PushListPosition(*this\row\_s()) 
+                ForEach *this\row\_s()
+                  If *this\row\_s()\draw
+                    If Bool((_selected_index_ >= *this\row\_s()\index And _index_ =< *this\row\_s()\index) Or ; верх
+                            (_selected_index_ =< *this\row\_s()\index And _index_ >= *this\row\_s()\index))   ; вниз
+                      
+                      If *this\row\_s()\color\state <> #__s_2
+                        *this\row\_s()\color\state = #__s_2
+                        
+                        Post(#PB_EventType_Change, *this, *this\row\_s()\index)
+                        Repaint | #True
+                      EndIf
+                      
+                    ElseIf *this\row\_s()\color\state <> #__s_0
+                      *this\row\_s()\color\state = #__s_0
+                      
+                      Post(#PB_EventType_Change, *this, *this\row\_s()\index)
+                      Repaint | #True
+                    EndIf
+                  EndIf
+                Next
+                PopListPosition(*this\row\_s()) 
+              EndIf
+              
+            ElseIf *this\row\draws()\_state & #__s_entered
+              *this\row\draws()\_state &~ #__s_entered 
+              
+              If *this\row\draws()\color\state = #__s_1
+                *this\row\draws()\color\state = #__s_0
+              EndIf
+              
+              Repaint | #True
             EndIf
-          EndIf
-          
+            ; EndIf
+          Next
         EndIf
-        
-        If event_type = #__Event_MouseMove
-          If *event\leave And *event\leave\row\index =- 1
-            Result | _tree_events_(*event\leave, #__Event_MouseMove, mouse_x, mouse_y)
-          EndIf
-        EndIf
-        
-        
-        ; tree key events
-        If GetActive() And GetActive()\gadget = *this
-          Result | _Tree_Events_Key(*this, event_type, mouse_x, mouse_y)
-        EndIf
-      EndWith
+      EndIf
       
-      ProcedureReturn Result
+      ProcedureReturn Repaint
     EndProcedure
     
     
@@ -9169,12 +8836,13 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure.f GetState(*this._s_widget)
       If *this\type = #PB_GadgetType_ListView Or
          *this\type = #PB_GadgetType_Tree
+        ;         If *this\row\selected And *this\row\selected\color\state
+        ;           ProcedureReturn *this\row\selected\index
+        ;         Else
+        ;           ProcedureReturn - 1
+        ;         EndIf
+        ProcedureReturn *event\item
         
-        If *this\row\selected And *this\row\selected\color\state
-          ProcedureReturn *this\row\selected\index
-        Else
-          ProcedureReturn - 1
-        EndIf
       EndIf
       
       If *this\type = #PB_GadgetType_Option
@@ -10075,8 +9743,10 @@ CompilerIf Not Defined(widget, #PB_Module)
       Macro _set_active_state_(_active_, _state_)
         If Not(_active_ = _active_\root And _active_\root\type =- 5)
           If (_state_)
+            _active_\_state | #__s_focused
             Events(_active_, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
           Else
+            _active_\_state &~ #__s_focused
             Events(_active_, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
           EndIf
           
@@ -10085,8 +9755,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If _active_\gadget
           If (_state_)
+            _active_\gadget\_state | #__s_focused
             Events(_active_\gadget, #__Event_Focus, _active_\root\mouse\x, _active_\root\mouse\y)
           Else
+            _active_\gadget\_state &~ #__s_focused
             Events(_active_\gadget, #__Event_LostFocus, _active_\root\mouse\x, _active_\root\mouse\y)
           EndIf
         EndIf
@@ -10108,10 +9780,12 @@ CompilerIf Not Defined(widget, #PB_Module)
               _set_active_state_(GetActive(), #__s_2)
             Else
               If GetActive()\gadget
+                GetActive()\gadget\_state &~ #__s_focused
                 Events(GetActive()\gadget, #__Event_LostFocus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
               EndIf
               
               GetActive()\gadget = *this
+              GetActive()\gadget\_state | #__s_focused
               Events(GetActive()\gadget, #__Event_Focus, GetActive()\root\mouse\x, GetActive()\root\mouse\y)
             EndIf
             
@@ -10142,7 +9816,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         Select \Type
           Case #PB_GadgetType_Tree,
                #PB_GadgetType_ListView
-            
             PushListPosition(*this\row\_s()) 
             ForEach *this\row\_s()
               If *this\row\_s()\index = Item 
@@ -10327,9 +10000,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           ForEach *this\row\_s()
             If *this\row\_s()\index = Item  ;  ListIndex(*this\row\_s()) = Item ;  
               *this\row\_s()\data = *Data
-               ;Debug *this\row\_s()\Text\String
-               
-               Break
+              Break
             EndIf
           Next
           PopListPosition(*this\row\_s())
@@ -11324,6 +10995,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           If flag & #__tree_ClickSelect = #__tree_ClickSelect
             \flag\multiSelect = 1
           EndIf
+          
           \flag\alwaysSelection = Bool(flag&#__tree_AlwaysSelection)
           
           \flag\collapse = Bool(flag&#__tree_Collapsed) 
@@ -12007,8 +11679,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         ;         If *this\scroll And *this\scroll\v And *this\scroll\h
         ;           UnclipOutput()
-        ;           DrawingMode(#PB_2DDrawing_Outlined)
-        ;           ;Box(*this\x, *this\y, *this\width, *this\height, $ffffff00)
+        DrawingMode(#PB_2DDrawing_Outlined)
+        Box(*this\x[2], *this\y[2], *this\width[2], *this\height[2], $ffffff00)
         ;           Box(*this\scroll\x, *this\scroll\y, *this\scroll\width, *this\scroll\height, $ffff00ff)
         ;           ;Box(*this\scroll\x, *this\scroll\y, *this\scroll\h\bar\max, *this\scroll\v\bar\max,$ff0000ff)
         ;           Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $ff00ff00)
@@ -12314,7 +11986,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If *this\type = #PB_GadgetType_ListView
-        Repaint = Tree_Events(*this, event_type, mouse_x, mouse_y)
+        Repaint = ListView_Events(*this, event_type, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_Editor Or
@@ -12949,322 +12621,96 @@ Macro Uselib(_name_)
 EndMacro
 
 
-;-
-CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-  Uselib(widget)
+
+; XIncludeFile "../../widgets.pbi" 
+Uselib(widget)
+
+Procedure events_gadgets()
+  Select EventType()
+    Case #PB_EventType_LeftClick
+      Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadgetState(EventGadget())
+      
+    Case #PB_EventType_LeftDoubleClick
+      Debug  ""+ EventGadget() +" - gadget LeftDoubleClick "+GetGadgetState(EventGadget())
+      
+    Case #PB_EventType_RightClick
+      Debug  ""+ EventGadget() +" - gadget RightClick "+GetGadgetState(EventGadget())
+      
+  EndSelect
+EndProcedure
+
+Procedure events_widgets()
+  Select *event\type
+    Case #PB_EventType_Up
+      Debug  ""+GetIndex(*event\widget)+" - widget Up "+GetState(*event\widget)
+      
+    Case #PB_EventType_Down
+      Debug  ""+GetIndex(*event\widget)+" - widget Down "+GetState(*event\widget)
+      
+    Case #PB_EventType_ScrollChange
+      Debug  ""+GetIndex(*event\widget)+" - widget ScrollChange "+GetState(*event\widget)
+      
+    Case #PB_EventType_StatusChange
+      Debug  ""+GetIndex(*event\widget)+" - widget StatusChange "+GetState(*event\widget)
+      
+    Case #PB_EventType_LeftClick
+      Debug  ""+GetIndex(*event\widget)+" - widget LeftClick "+GetState(*event\widget)
+      
+    Case #PB_EventType_Change
+      Debug  ""+GetIndex(*event\widget)+" - widget Change "+GetState(*event\widget)
+      
+    Case #PB_EventType_LeftDoubleClick
+      Debug  ""+GetIndex(*event\widget)+" - widget LeftDoubleClick "+GetState(*event\widget)
+      
+    Case #PB_EventType_RightClick
+      Debug  ""+GetIndex(*event\widget)+" - widget RightClick "+GetState(*event\widget)
+      
+  EndSelect
+EndProcedure
+
+If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 180+180, "ListViewGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  TreeGadget(0, 10, 10, 160, 160)                                         ; TreeGadget standard
+  TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines); TreeGadget with Checkboxes + NoLines
   
-  Procedure.s get_text(m.s=#LF$)
-    Protected Text.s = "This is a long line." + m.s +
-                       "Who should show." + 
-                       m.s +
-                       m.s +
-                       m.s +
-                       m.s +
-                       "I have to write the text in the box or not." + 
-                       m.s +
-                       m.s +
-                       m.s +
-                       m.s +
-                       "The string must be very long." + m.s +
-                       "Otherwise it will not work." ;+ m.s; +
+  For ID = 0 To 1
+    For a = 0 To 10
+      AddGadgetItem (ID, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
+      AddGadgetItem (ID, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
+      AddGadgetItem(ID, -1, "Sub-Item 1", 0, 1)           ; These are on the 1st sublevel
+      AddGadgetItem(ID, -1, "Sub-Item 2", 0, 1)
+      AddGadgetItem(ID, -1, "Sub-Item 3", 0, 1)
+      AddGadgetItem(ID, -1, "Sub-Item 4", 0, 1)
+      AddGadgetItem (ID, -1, "File "+Str(a), 0, 0) ; sublevel 0 again
+    Next
     
-    ProcedureReturn Text
-  EndProcedure
+    
+    BindGadgetEvent(id, @events_gadgets())
+  Next
+    SetGadgetState(1, 1)
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  ;--------------
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    ; example scroll gadget bar
-    TextGadget       (-1,  10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#PB_Text_Center)
-    ScrollBarGadget  (101,  10, 42, 250,  20, 30, 100, 30)
-    SetGadgetState   (101,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ScrollBarGadget  (201, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    SetGadgetState   (201, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    ; example scroll widget bar
-    widget::Text(300+10, 15, 250,  20, "ScrollBar Standard  (start=50, page=30/150)",#__Text_Center)
-    *w = widget::Scroll  (300+10, 42, 250,  20, 30, 100, 30, 0)
-    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    *w = widget::Scroll  (300+10, 42+30, 250,  10, 30, 150, 230, #__bar_inverted, 7)
-    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300+10,110, 250,  20, "ScrollBar Vertical  (start=100, page=50/300)",#__Text_Right)
-    *w = widget::Scroll  (300+270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
-    *w = widget::Scroll  (300+270+30, 10,  25, 120 ,0, 300, 50, #__bar_vertical|#__bar_inverted, 7)
-    widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
+  Tree(10, 10+180, 160, 160, #__Tree_Collapsed)                                         ; TreeGadget standard
+  Tree(180, 10+180, 160, 160, #__Tree_CheckBoxes | #__Tree_NoLines | #__Tree_Collapsed) ; TreeGadget with Checkboxes + NoLines
+  
+  For ID = 0 To 1
+    For a = 0 To 10
+      AddItem(GetWidget(ID), -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
+      AddItem(GetWidget(ID), -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
+      AddItem(GetWidget(ID), -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
+      AddItem(GetWidget(ID), -1, "Sub-Item 2", 0, 1)
+      AddItem(GetWidget(ID), -1, "Sub-Item 3", 0, 1)
+      AddItem(GetWidget(ID), -1, "Sub-Item 4", 0, 1)
+      AddItem(GetWidget(ID), -1, "File "+Str(a), 0, 0) ; sublevel 0 again
+    Next
     
     
-    ; example_2 track gadget bar
-    TextGadget    (-1, 10,  140+10, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    TrackBarGadget(1010, 10,  140+40, 250, 20, 0, 10000)
-    SetGadgetState(1010, 5000)
-    TextGadget    (-1, 10, 140+90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    ;     TrackBarGadget(11, 10, 140+120, 250, 20, 0, 30, #PB_TrackTicks)
-    TrackBarGadget(1111, 10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    SetGadgetState(1111, 60)
-    TextGadget    (-1,  60, 140+160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-    TrackBarGadget(1212, 270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SetGadgetState(1212, 8000)
-    
-    ; example_2 track widget bar
-    widget::Text(300+10,  140+10, 250, 20,"TrackBar Standard", #__Text_Center)
-    *w = widget::Track(300+10,  140+40, 250, 20, 0, 10000, 0)
-    widget::SetState(*w, 5000)
-    *w = widget::Track(300+10,  140+40+20, 250, 20, 0, 10000, #__bar_inverted)
-    widget::SetState(*w, 5000)
-    widget::Text(300+10, 140+90, 250, 20, "TrackBar Ticks", #__Text_Center)
-    ;     widget::Track(300+10, 140+120, 250, 20, 0, 30, #__bar_ticks)
-    *w = widget::Track(300+10, 140+120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    widget::SetState(*w, 60)
-    widget::Text(300+60, 140+160, 200, 20, "TrackBar Vertical", #__Text_Right)
-    *w = widget::Track(300+270, 140+10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    widget::SetAttribute(*w, #__bar_Inverted, 0)
-    widget::SetState(*w, 8000)
-    *w = widget::Track(300+270+30, 140+10, 25, 170, 0, 10000, #__bar_vertical|#__bar_inverted)
-    widget::SetState(*w, 8000)
-    
-    
-    ; example_3 progress gadget bar
-    TextGadget       (-1,  10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#PB_Text_Center)
-    ProgressBarGadget  (2121,  10, 140+200+42, 250,  20, 30, 100)
-    SetGadgetState   (2121,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       (-1,  10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#PB_Text_Right)
-    ProgressBarGadget  (2222, 270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical)
-    SetGadgetState   (2222, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    ; example_3 progress widget bar
-    widget::Text(300+10, 140+200+10, 250,  20, "ProgressBar Standard  (start=65, page=30/100)",#__Text_Center)
-    *w = widget::Progress  (300+10, 140+200+42, 250,  20, 30, 100, 0)
-    widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    *w = widget::Progress  (300+10, 140+200+42+30, 250,  10, 30, 100, #__bar_inverted, 4)
-    widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300+10,140+200+100, 250,  20, "ProgressBar Vertical  (start=100, page=50/300)",#__Text_Right)
-    *w = widget::Progress  (300+270, 140+200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical, 19)
-    widget::SetAttribute(*w, #__bar_Inverted, 0)
-    widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    *w = widget::Progress  (300+270+30, 140+200,  25, 120 ,0, 300, #__bar_vertical|#__bar_inverted)
-    widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    
-    ;{ PB splitter Gadget
-    Button_0 = StringGadget(#PB_Any, 0, 0, 0, 0, "") ; as they will be sized automatically
-    
-    
-    ButtonGadget(1, 0, 0, 0, 0, "BTN1")
-    ButtonGadget(2, 0, 0, 0, 0, "BTN2")
-    SplitterGadget(3, 125, 10, 250, 70, 1, 2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
-    
-    ButtonGadget(4, 0, 0, 0, 0, "BTN4")
-    ButtonGadget(5, 0, 0, 0, 0, "BTN5")
-    SplitterGadget(6, 125, 90, 250, 70, 4, 5, #PB_Splitter_Separator | #PB_Splitter_Vertical)
-    
-    ButtonGadget(7, 0, 0, 0, 0, "BTN7")
-    ButtonGadget(8, 0, 0, 0, 0, "BTN8")
-    SplitterGadget(9, 125, 90, 250, 70, 7, 8, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-    
-    SplitterGadget(10, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
-    
-    ; first splitter
-    ButtonGadget(11, 0, 0, 0, 0, "BTN1")
-    Button_1 = SplitterGadget(#PB_Any, 125, 10, 250, 70, 10, 9, #PB_Splitter_Separator ) 
-    SetGadgetState(Button_1, 42)
-    ;Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1")  ; as they will be sized automatically
-    
-    Button_2 = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, 150, 150) : CloseGadgetList(); No need to specify size or coordinates
-    Button_3 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100)                     ; as they will be sized automatically
-    Button_4 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100)                     ; No need to specify size or coordinates
-    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5")                      ; as they will be sized automatically
-    
-    SetGadgetState(Button_0, 50)
-    
-    Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;     ;SetGadgetState(Splitter_1, 20)
-    Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
-    Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = SplitterGadget(#PB_Any, 10, 140+200+130, 285+15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    
-    ;     SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
-    ;     SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
-    
-    SetGadgetState(Splitter_0, 26)
-    SetGadgetState(Splitter_4, 225)
-    SetGadgetState(Splitter_3, 55)
-    SetGadgetState(Splitter_2, 15)
-    
-    If OpenGadgetList(Button_2)
-      Button_4 = ScrollAreaGadget(#PB_Any, -1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
-                                                                       ;       Define i
-                                                                       ;       For i=0 To 1000
-      ButtonGadget(#PB_Any, 10, 10, 50, 30,"1")
-      ;       Next
-      CloseGadgetList()
-      ButtonGadget(#PB_Any, 100, 10, 50, 30, "2")
-      CloseGadgetList()
-    EndIf
-    
-    ;}
-    
-    Button_0 = widget::Spin(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
-    
-    
-    Button_1 = widget::Panel(0, 0, 0, 0) 
-    AddItem(Button_1, -1, "Panel_0") 
-    Define *w2 = Panel (5, 5, 140, 166)
-    AddItem(*w2, -1, "Под--Панель 1")
-    SetState(Option(5, 10, 70, 20, "option_0"), 1)
-    Option(5, 32, 100, 20, "option_1")
-    SetState(CheckBox(5, 54, 100, 20, "checkbox_0", #PB_CheckBox_ThreeState), #PB_Checkbox_Inbetween)
-    Button(75, 10, 60, 20, "button")
-    HyperLink(75, 32, 60, 20, "HyperLink", $ffff0000)
-    
-    AddItem(*w2, -1, "Под--Панель 2")
-    Button( 5, 5, 55, 22, "кнопка 5")
-    Button( 5, 30, 55, 22, "кнопка 30")
-    
-    AddItem(*w2, -1, "Под--Панель 3")
-    AddItem(*w2, -1, "Под--Панель 4")
-    
-    AddItem(*w2, 1, "Под--Панель -2-")
-    Button( 15, 5, 55, 22, "кнопка 15")
-    Button( 20, 30, 55, 22, "кнопка 20")
-    CloseList()
-    ;SetState(*w2, 2)
-    
-    AddItem(Button_1, -1, "Panel_1") 
-    widget::Container(20,10,200,100)
-    widget::Button(20, 5, 100, 30, text)
-    
-    Define panel = widget::Panel(20,30,200,100)
-    AddItem(panel, -1, "Panel_0") 
-    widget::Button(10, 10, 100, 30, text)
-    AddItem(panel, -1, "Panel_1") 
-    widget::Button(20, 20, 100, 30, text)
-    widget::CloseList()
-    widget::CloseList()
-    
-    AddItem(Button_1, -1, "tab_2") 
-    Define *Tab = widget::Tab(0,0,0,0, 0,0,0, #__flag_autosize|#__bar_vertical); No need to specify size or coordinates
-    widget::AddItem(*Tab, -1, "Tab_0")
-    widget::AddItem(*Tab, -1, "Tab_1 (long)")
-    widget::AddItem(*Tab, -1, "Tab_2")
-    widget::AddItem(*Tab, -1, "Tab_3 (long)")
-    widget::AddItem(*Tab, -1, "Tab_4")
-    widget::AddItem(*Tab, -1, "Tab_5 (long)")
-    widget::AddItem(*Tab, -1, "Tab_6")
-    widget::AddItem(*Tab, -1, "Tab_7 (long)")
-    widget::AddItem(*Tab, -1, "Tab_8")
-    SetState(*Tab, 7)
-    
-    
-    AddItem(Button_1, -1, "editor_3") 
-    Define *Editor = widget::Editor(0, 0, 0, 0, #__flag_autosize) 
-    SetText(*Editor, get_text(#LF$))
-    
-    AddItem(Button_1, -1, "tree_4") 
-    Define *Tree = widget::Tree(0, 0, 0, 0, #__flag_autosize) 
-    widget::AddItem(*Tree, -1, "index_0_level_0")
-    widget::AddItem(*Tree, -1, "index_1_sublevel_1", -1, 1)
-    widget::AddItem(*Tree, -1, "index_2_sublevel_2", -1, 2)
-    widget::AddItem(*Tree, -1, "index_3_level_0")
-    widget::AddItem(*Tree, -1, "index_4_sublevel_1", -1, 1)
-    widget::AddItem(*Tree, -1, "index_5_sublevel_2", -1, 2)
-    widget::AddItem(*Tree, -1, "Form_0")
-    widget::AddItem(*Tree, -1, "Form_0")
-    widget::AddItem(*Tree, -1, "Form_0")
-    widget::AddItem(*Tree, -1, "Form_0")
-    widget::AddItem(*Tree, -1, "Form_0")
-    ;SetItemColor(*Tree,  #PB_All, #__Color_Line,  $FF00f000)
-    
-    AddItem(Button_1, -1, "window_5") 
-    Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#__Window_TitleBar|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget, Button_1) 
-    widget::Container(10,10,100,100)
-    widget::Container(10,10,100,100)
-    widget::Container(10,10,100,100)
-    widget::CloseList()
-    widget::CloseList()
-    widget::CloseList()
-    widget::CloseList() ; *window
-    
-    CloseList()
-    SetState(Button_1, 4)
-    
-    ;     
-    ;     ;     Button_1 = widget::Editor(0, 0, 0, 0) : SetText(Button_1, text)
-    ;     ;     Button_1 = widget::Button(0, 0, 0, 0, text) ; No need to specify size or coordinates
-    ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__Text_Border) ; No need to specify size or coordinates
-    ;     ; ;     Button_1 = widget::MDI(0, 0, 0, 0) ; No need to specify size or coordinates
-    ;     ; ;     widget::AddItem(Button_1, -1, "Form_0")
-    ;     ; ;     widget::AddItem(Button_1, -1, "Form_1")
-    ;     ; ;     widget::AddItem(Button_1, -1, "Form_2")
-    ;     
-    ;     ;     Define w_1,w_2,w_3,w_4,w_5,w_6,w_7,w_8,w_9,w_10,w_11,w_12,w_13,w_14,w_15
-    ;     ;     w_1 = widget::Button(0, 0, 0, 0, "BTN1")
-    ;     ;     w_2 = widget::Button(0, 0, 0, 0, "BTN2")
-    ;     ;     w_3 = widget::Splitter(125, 170, 250, 40, w_1, w_2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
-    ;     ;     
-    ;     ;     w_4 = widget::Button(0, 0, 0, 0, "BTN4")
-    ;     ;     w_5 = widget::Button(0, 0, 0, 0, "BTN5")
-    ;     ;     w_6 = widget::Splitter(125, 170, 250, 40, w_4, w_5, #PB_Splitter_Separator | #PB_Splitter_Vertical)
-    ;     ;     
-    ;     ;     w_7 = widget::Button(0, 0, 0, 0, "BTN7")
-    ;     ;     w_8 = widget::Button(0, 0, 0, 0, "BTN8")
-    ;     ;     w_9 = widget::Splitter(125, 170+80, 250, 40, w_7, w_8, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-    ;     ;     
-    ;     ;     w_10 = widget::Splitter(125, 170, 250, 70, w_3, w_6, #PB_Splitter_Separator)
-    ;     ;     
-    ;     ;     w_11 = widget::Button(0, 0, 0, 0, "BTN11")
-    ;     ;     Button_1 = widget::Splitter(125, 170, 250, 70, w_10, w_9, #PB_Splitter_Separator)
-    ;     ;     widget::SetState(Button_1, 42)
-    ;     ;     
-    ;     ;     ; ;     ;     Button_10 = widget::Scroll(0, 0, 0, 0, 0, 100, 20) ; No need to specify size or coordinates
-    ;     ;     ; ;     ;     Button_1 = widget::Splitter(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    
-    Button_2 = widget::ScrollArea(0, 0, 0, 0, 150, 150, 1) : widget::CloseList()        ; as they will be sized automatically
-    Button_3 = widget::Progress(0, 0, 0, 0, 0, 100, 30)                                 ; as they will be sized automatically
-    
-    Button_4 = widget::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
-    Button_5 = widget::Tab(0, 0, 0, 0, 0, 0, 0)                  ; No need to specify size or coordinates
-    widget::AddItem(Button_5, -1, "Tab_0")
-    widget::AddItem(Button_5, -1, "Tab_1 (long)")
-    widget::AddItem(Button_5, -1, "Tab_2")
-    
-    widget::SetState(Button_0, 50)
-    
-    Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed);|#PB_Splitter_Separator)
-    Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed);|#PB_Splitter_Separator)
-    widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;widget::SetState(Splitter_1, 410/2-20)
-    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_5);, #PB_Splitter_Separator)
-    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_2, Splitter_2);, #PB_Splitter_Separator)
-    Splitter_4 = widget::Splitter(300+10+15, 140+200+130, 285+15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical);|#PB_Splitter_Separator)
-    
-    ; widget::SetState(Button_2, 5)
-    widget::SetState(Splitter_0, 26)
-    widget::SetState(Splitter_4, 220)
-    widget::SetState(Splitter_3, 55)
-    widget::SetState(Splitter_2, 15)
-    
-    If Button_2 And widget::OpenList(Button_2)
-      Button_4 = widget::ScrollArea(-1, -1, 50, 50, 100, 100, 1);, #__flag_noGadget)
-                                                                ;       Define i
-                                                                ;       For i=0 To 1000
-      widget::Progress(10, 10, 50, 30, 1, 100, 30)
-      ;       Next
-      widget::CloseList()
-      widget::Progress(100, 10, 50, 30, 2, 100, 30)
-      widget::CloseList()
-    EndIf
-    
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  EndIf
-CompilerEndIf
+    Bind(GetWidget(ID), @events_widgets())
+  Next
+    SetState(GetWidget(1), 1)
+  
+  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+EndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------v-----+----------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----vfv-4a0----------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

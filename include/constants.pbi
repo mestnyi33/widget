@@ -96,8 +96,8 @@
       #__s_Entered
       #__s_Selected
       #__s_Disabled
-      
       #__s_Focused
+      
       
       #__s_front
       #__s_back
@@ -336,7 +336,10 @@
 ;   #PB_Tree_Collapse = #__tree_Collapse
 ;   #PB_Tree_GridLines = #__tree_GridLines
   
-  
+    ;- _c_listview
+    #__listview_clickselect = #__flag_clickselect
+    #__listview_multiselect = #__flag_multiselect
+    
     ;- _c_editor
     ;#__editor_inline = #__flag_InLine
     #__editor_wordwrap = #__flag_wordwrap

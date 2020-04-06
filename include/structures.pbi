@@ -266,7 +266,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       fullselection.b
       alwaysselection.b
       multiselect.b
-      clickselect.b
+      ;clickselect.b
       
       collapse.b
       option_group.b
@@ -423,6 +423,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       index.l
       box._s_box           ; editor - edit rectangle
       
+      *entered._s_rows    ; at point item
       *selected._s_rows    ; pushed at point item
       List _s._s_rows()
     EndStructure
@@ -575,5 +576,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -8vWQ6s
+; Folding = -8vWR6s
 ; EnableXP
