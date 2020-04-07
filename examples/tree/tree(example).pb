@@ -418,7 +418,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Bind(*g, @events_tree_widget())
     
     g = 13
-    *g = Tree(600+70, 100, 210, 210, #__tree_OptionBoxes|#__tree_NoButtons|#__tree_NoLines|#__tree_ClickSelect) ;                                        
+    *g = Tree(600+70, 100, 210, 210, #__tree_OptionBoxes|#__tree_NoButtons|#__tree_NoLines) ;                                        
     
     ;  4_example
     ; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
@@ -489,6 +489,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 420
+; FirstLine = 116
 ; Folding = 0f8--25-
 ; EnableXP

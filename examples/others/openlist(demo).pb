@@ -1,39 +1,32 @@
 ﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
+UseLib(widget)
 
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseLib(widget)
   Global *w, *w1, *w2
   
-  If Open(OpenWindow(#PB_Any, 100, 0, 180, 130, "openlist1", #PB_Window_SystemMenu))
+  If Open(OpenWindow(#PB_Any, 100, 0, 800, 600, "openlist demo", #PB_Window_SystemMenu))
+    
+    *w = Window(100, 100, 180, 130+#__window_frame, "openlist1", #__Window_SystemMenu)
     Button( 50, 95, 80,20,"button1")
-    *w = Root()
-  EndIf
-  
-  If Open(OpenWindow(#PB_Any, 300, 0, 180, 130, "openlist2", #PB_Window_SystemMenu))
+    
+    Window(300, 100, 180, 130+#__window_frame, "openlist2", #__Window_SystemMenu)
     Button( 50, 95, 80,20,"button2")
-  EndIf
-  
-  OpenList(*w)
-  Button(30, 15, 120, 24,"openlist1")
-  CloseList()
-  
-  If Open(OpenWindow(#PB_Any, 500, 0, 180, 130, "openlist3", #PB_Window_SystemMenu))
+    
+    OpenList(*w)
+    Button(30, 15, 120, 24,"openlist1")
+    CloseList()
+    
+    Window(500, 100, 180, 130+#__window_frame, "openlist3", #__Window_SystemMenu)
     Button( 50, 95, 80,20,"button3")
     CloseList()
+    
+    
+    Button( 30, 55, 120,20,"openlist2")
   EndIf
-  
-  
-  Button( 30, 55, 120,20,"openlist2")
-  
-;   ;ReDraw(*w)
-;   ;ReDraw(*w1)
-;   ;ReDraw(*w2)
-;   
-;   ReDraw(Root())
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf

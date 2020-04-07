@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Open(3)
     Define *w,*w1,*w2
      
-     Button(10,5,50,35, "butt")
+     ;Button(10,5,50,35, "butt")
      
       *w=Panel     (8, 8, 356, 203)
       AddItem (*w, -1, "Панель 1")

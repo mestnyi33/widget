@@ -45,7 +45,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro Widget()
-      Root()\_childrens()
+      GetChildrens(Root())
     EndMacro
     
     Macro GetActive() ; Returns active window
@@ -53,7 +53,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro GetChildrens(_this_) ; Returns active window
-      _this_\root\_childrens()
+                               ; _this_\root\_childrens()
+      *event\_childrens()
     EndMacro
     
     ;-
@@ -807,14 +808,14 @@ CompilerIf Not Defined(widget, #PB_Module)
           right_y1 = checked_y1 : right_y2 = checked_y2
           bottom_x1 = checked_x1 : bottom_x2 = checked_x2
           
-          If *this\parent And ListSize(*this\root\_childrens())
-            PushListPosition(*this\root\_childrens())
-            ForEach *this\root\_childrens()
-              If Not *this\root\_childrens()\hide And *this\root\_childrens()\parent = *this\parent
-                relative_x1 = *this\root\_childrens()\x
-                relative_y1 = *this\root\_childrens()\y
-                relative_x2 = relative_x1+*this\root\_childrens()\width
-                relative_y2 = relative_y1+*this\root\_childrens()\height
+          If *this\parent And ListSize(GetChildrens(*this))
+            PushListPosition(GetChildrens(*this))
+            ForEach GetChildrens(*this)
+              If Not GetChildrens(*this)\hide And GetChildrens(*this)\parent = *this\parent
+                relative_x1 = GetChildrens(*this)\x
+                relative_y1 = GetChildrens(*this)\y
+                relative_x2 = relative_x1+GetChildrens(*this)\width
+                relative_y2 = relative_y1+GetChildrens(*this)\height
                 
                 ;Left_line
                 If checked_x1 = relative_x1
@@ -875,7 +876,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 EndIf
               EndIf
             Next
-            PopListPosition(*this\root\_childrens())
+            PopListPosition(GetChildrens(*this))
           EndIf
           
         EndIf
@@ -1015,7 +1016,12 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       With *this
         If \root\anchor 
+          Post(eventtype, *this, *this\index[#__s_1])
+          
           Select EventType 
+              ;             Case #PB_EventType_StatusChange
+              ;               ProcedureReturn 1
+              
             Case #__Event_MouseMove
               If \root\anchor\id[\root\anchor\index]\color\state = #__s_2
                 *this = \root\anchor\widget
@@ -1103,6 +1109,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                   \root\anchor\delta\y = mouse_y-\root\anchor\id[\root\anchor\index]\y
                   \root\anchor\id[\root\anchor\index]\color\state = #__s_2
                 EndIf
+                result = 1
               EndIf
               
             Case #__Event_LeftButtonUp
@@ -1114,6 +1121,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 
                 \root\anchor\id[\root\anchor\index]\color\state = 0
                 \root\anchor\index = 0
+                result = 1
               EndIf
               
           EndSelect
@@ -1682,6 +1690,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             If \index[#__s_2] = \bar\_s()\index
               State_3 = 2
             EndIf
+            
+            ;State_3 = \bar\_s()\color\state
             
             If *this\bar\vertical
               \bar\_s()\draw = Bool(Not \bar\_s()\hide And \y[#__c_2]+\bar\_s()\y+\bar\_s()\height > \y[#__c_2] ); And \x[#__c_2]+\bar\_s()\x < \x[#__c_2]+\width[#__c_2])
@@ -6072,7 +6082,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro _tree_set_state_(_this_, _items_, _state_)
-      If _this_\flag\option_group And _items_\parent
+      If _this_\flag\check And _items_\parent
         If _items_\option_group\option_group <> _items_
           If _items_\option_group\option_group
             _items_\option_group\option_group\box[#__c_1]\checked = 0
@@ -6243,7 +6253,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If (*this\change Or *this\scroll\v\change Or *this\scroll\h\change)
             ; check box
-            If *this\flag\checkBoxes Or *this\flag\option_group
+            If *this\flag\check
               row()\box[#__c_1]\x = row()\x + 3 - *this\scroll\h\bar\page\pos
               row()\box[#__c_1]\y = (row()\y+row()\height)-(row()\height+row()\box[#__c_1]\height)/2-*this\scroll\v\bar\page\pos
             EndIf
@@ -6391,13 +6401,15 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               ; Draw checkbox
               ; Draw option
-              If *this\flag\option_group And *this\row\draws()\parent
-                DrawingMode(#PB_2DDrawing_Default)
-                _tree_box_(*this\row\draws()\box[#__c_1]\x, *this\row\draws()\box[#__c_1]\y, *this\row\draws()\box[#__c_1]\width, *this\row\draws()\box[#__c_1]\height, *this\row\draws()\box[#__c_1]\checked, 1, $FFFFFFFF, 7, 255)
-                
-              ElseIf *this\flag\checkboxes
-                DrawingMode(#PB_2DDrawing_Default)
-                _tree_box_(*this\row\draws()\box[#__c_1]\x, *this\row\draws()\box[#__c_1]\y, *this\row\draws()\box[#__c_1]\width, *this\row\draws()\box[#__c_1]\height, *this\row\draws()\box[#__c_1]\checked, 3, $FFFFFFFF, 2, 255)
+              If *this\flag\check 
+                If *this\row\draws()\parent And *this\flag\check = 4
+                  DrawingMode(#PB_2DDrawing_Default)
+                  _tree_box_(*this\row\draws()\box[#__c_1]\x, *this\row\draws()\box[#__c_1]\y, *this\row\draws()\box[#__c_1]\width, *this\row\draws()\box[#__c_1]\height, *this\row\draws()\box[#__c_1]\checked, 1, $FFFFFFFF, 7, 255)
+                  
+                Else
+                  DrawingMode(#PB_2DDrawing_Default)
+                  _tree_box_(*this\row\draws()\box[#__c_1]\x, *this\row\draws()\box[#__c_1]\y, *this\row\draws()\box[#__c_1]\width, *this\row\draws()\box[#__c_1]\height, *this\row\draws()\box[#__c_1]\checked, 3, $FFFFFFFF, 2, 255)
+                EndIf
               EndIf
               
               ; Draw image
@@ -6443,7 +6455,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           ; Draw arrow
-          If *this\flag\buttons ;And Not *this\flag\option_group
+          If *this\flag\buttons ;And Not *this\flag\check = 4
             DrawingMode(#PB_2DDrawing_Default)
             
             ForEach *this\row\draws()
@@ -6500,7 +6512,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure.l Tree_SetItemState(*this._s_widget, Item.l, State.b)
       Protected Result.l, collapsed.b, sublevel.l, *SelectElement
       
-      ;If (*this\flag\multiSelect Or *this\flag\clickSelect)
+      ;If (*this\flag\check = 2 Or *this\flag\check = 3)
       If Item < 0 : Item = 0 : EndIf
       If Item > *this\count\items - 1 
         Item = *this\count\items - 1 
@@ -6549,7 +6561,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure.l _Tree_SetItemState(*this._s_widget, Item.l, State.b)
       Protected Result.l, Repaint.b, collapsed.b
       
-      ;     ;If (*this\flag\multiSelect Or *this\flag\clickSelect)
+      ;     (*this\flag\check = 2 Or *this\flag\check = 3)
       If Item < 0 Or Item > *this\count\items - 1 
         ProcedureReturn 0
       EndIf
@@ -6631,11 +6643,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         If *this
           If sublevel =- 1
             *parent = *this
-            \flag\option_group = 12
-            \flag\checkBoxes = \flag\option_group
+             \flag\check = 4
           EndIf
           
-          If \flag\option_group
+          If \flag\check = 4
             If subLevel > 1
               subLevel = 1
             EndIf
@@ -6727,7 +6738,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             ; set option group
-            If \flag\option_group 
+            If \flag\check = 4
               If \row\_s()\parent
                 \row\_s()\option_group = \row\_s()\parent
               Else
@@ -6760,16 +6771,16 @@ CompilerIf Not Defined(widget, #PB_Module)
               \row\_s()\box[0]\height = \flag\buttons
             EndIf
             
-            If \flag\checkBoxes Or \flag\option_group
-              \row\_s()\box[#__c_1]\width = \flag\checkBoxes
-              \row\_s()\box[#__c_1]\height = \flag\checkBoxes
+            If \flag\check 
+              \row\_s()\box[#__c_1]\width = 12
+              \row\_s()\box[#__c_1]\height = 12
             EndIf
             
             If \row\sublevellen 
               If (\flag\buttons Or \flag\lines)
-                \row\_s()\sublevellen = \row\_s()\sublevel * \row\sublevellen + Bool(\flag\buttons) * 19 + Bool(\flag\checkBoxes) * 18
+                \row\_s()\sublevellen = \row\_s()\sublevel * \row\sublevellen + Bool(\flag\buttons) * 19 + Bool(\flag\check) * 18
               Else
-                \row\_s()\sublevellen =  Bool(\flag\checkBoxes) * 18 
+                \row\_s()\sublevellen =  Bool(\flag\check) * 18 
               EndIf
             EndIf
             
@@ -6928,40 +6939,45 @@ CompilerIf Not Defined(widget, #PB_Module)
       If event_type = #__Event_LeftButtonUp
         ; collapsed button up
         If *this\row\box\checked = 2
-          *this\row\box\checked = 0
+          *this\row\box\checked =- 1
           Post(#PB_EventType_Up, *this, *event\item)
           Repaint | #True
-        EndIf
-        
-        If *this\row\selected ;And *this\row\selected\index = *event\item
-          ; Debug ""+*this\row\selected\index +" "+ *event\item
-          If Not *this\flag\multiselect
-            If *this\row\selected\_state & #__s_selected = #False
-              *this\row\selected\_state | #__s_selected
-              Post(#PB_EventType_Change, *this, *this\row\selected\index)
+        Else
+          If *this\row\selected ;And *this\row\selected\index = *event\item
+                                ; Debug ""+*this\row\selected\index +" "+ *event\item
+            If Not *this\flag\check
+              If *this\row\selected\_state & #__s_selected = #False
+                *this\row\selected\_state | #__s_selected
+                Post(#PB_EventType_Change, *this, *this\row\selected\index)
+                
+                If *this\_state & #__s_entered = #False
+                  Post(#PB_EventType_LeftClick, *this, *event\item)
+                EndIf
+              EndIf
             EndIf
-            
-            Post(#PB_EventType_LeftClick, *this, *event\item)
-          Else
-            Post(#PB_EventType_LeftClick, *this, *event\item)
           EndIf
           
           Repaint | #True
         EndIf
       EndIf
       
-      If event_type = #__Event_RightButtonUp
-        If *this\row\selected And *this\row\selected\index = *event\item 
-          Post(#PB_EventType_RightClick, *this, *this\row\selected\index)
+      If event_type = #__Event_LeftClick
+        If *this\row\box\checked =- 1
+          *this\row\box\checked = 0
+        Else
+          Post(#PB_EventType_LeftClick, *this, *event\item)
           Repaint | #True
         EndIf
       EndIf
       
+      If event_type = #__Event_RightButtonUp
+        Post(#PB_EventType_RightClick, *this, *event\item)
+        Repaint | #True
+      EndIf
+      
       If event_type = #__Event_LeftDoubleClick
-        If *this\row\selected And *this\row\selected\index = *event\item 
-          Post(#PB_EventType_LeftDoubleClick, *this, *this\row\selected\index)
-          Repaint | #True
-        EndIf
+        Post(#PB_EventType_LeftDoubleClick, *this, *event\item)
+        Repaint | #True
       EndIf
       
       If event_type = #__Event_Focus
@@ -6969,6 +6985,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ForEach *this\row\_s()
           If *this\row\_s()\color\state = #__s_3
             *this\row\_s()\color\state = #__s_2
+            *this\row\_s()\_state | #__s_selected
           EndIf
         Next
         PopListPosition(*this\row\_s()) 
@@ -6982,6 +6999,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ForEach *this\row\_s()
           If *this\row\_s()\color\state = #__s_2
             *this\row\_s()\color\state = #__s_3
+            *this\row\_s()\_state &~ #__s_selected
           EndIf
         Next
         PopListPosition(*this\row\_s()) 
@@ -7013,17 +7031,18 @@ CompilerIf Not Defined(widget, #PB_Module)
                   Repaint | #True
                 EndIf
                 
-                If Not (*this\root\mouse\buttons And *this\flag\multiselect)
+                If Not (*this\root\mouse\buttons And *this\flag\check)
                   Post(#PB_EventType_StatusChange, *this, *this\row\draws()\index)
                   Repaint | #True
                 EndIf
               EndIf
               
               If (event_type = #__Event_LeftButtonDown) Or 
-                 (*this\root\mouse\buttons And Not *this\flag\multiselect)
+                 (*this\root\mouse\buttons And Not *this\flag\check)
                 
-                
-                If event_type = #__Event_LeftButtonDown And *this\flag\buttons And *this\row\draws()\childrens And 
+                ; collapsed/expanded button
+                If event_type = #__Event_LeftButtonDown And 
+                   *this\flag\buttons And *this\row\draws()\childrens And 
                    _from_point_(mouse_x, mouse_y, *this\row\draws()\box[0])
                   
                   If SelectElement(*this\row\_s(), *this\row\draws()\index) 
@@ -7056,7 +7075,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                     *this\row\box\checked = 1
                   EndIf
                   
-                  If *this\flag\multiselect = 1
+                  If *this\flag\check = 2
                     If *this\row\draws()\_state & #__s_selected 
                       *this\row\draws()\_state &~ #__s_selected
                       *this\row\draws()\color\state = #__s_0
@@ -7068,22 +7087,22 @@ CompilerIf Not Defined(widget, #PB_Module)
                     Post(#PB_EventType_Change, *this, *this\row\draws()\index)
                     
                   Else
-                    If *this\row\selected 
-                      If *this\row\selected <> *this\row\draws()
-                        If *this\flag\multiselect = 2
-                          If *this\row\selected\_state & #__s_selected
-                            *this\row\selected\_state &~ #__s_selected
-                            Post(#PB_EventType_Change, *this, *this\row\selected\index)
-                          EndIf
+                    If *this\row\selected And *this\row\selected <> *this\row\draws()
+                      ;If *this\row\selected <> *this\row\draws()
+                      If *this\flag\check = 3
+                        If *this\row\selected\_state & #__s_selected
+                          *this\row\selected\_state &~ #__s_selected
+                          Post(#PB_EventType_Change, *this, *this\row\selected\index)
                         EndIf
-                        
-                        *this\row\selected\_state &~ #__s_selected
                       EndIf
+                      
+                      *this\row\selected\_state &~ #__s_selected
+                      ;EndIf
                       
                       *this\row\selected\color\state = #__s_0
                     EndIf
                     
-                    If *this\flag\multiselect = 2
+                    If *this\flag\check = 3
                       If *this\row\draws()\_state & #__s_selected = 0
                         *this\row\draws()\_state | #__s_selected
                         Post(#PB_EventType_Change, *this, *this\row\draws()\index)
@@ -7104,7 +7123,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 Repaint | #True
               EndIf
               
-              If *this\flag\multiselect = 2 And
+              If *this\flag\check = 3 And
                  *this\root\mouse\buttons
                 Protected _index_, _selected_index_
                 
@@ -7224,7 +7243,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             ; event mouse enter line
             If position > 0
-              If down And *this\flag\multiselect 
+              If down And *this\flag\check 
                 _tree_multi_select_(*this, *this\row\index, *this\row\selected\index)
                 
               ElseIf *this\row\_s()\color\state = 0
@@ -7463,7 +7482,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 EndIf
                 
                 
-                ;                   If \flag\multiselect
+                ;                   If \flag\check
                 ;                     _tree_multi_select_(*this, \row\index, \row\selected\index)
                 ;                   EndIf
                 
@@ -8355,7 +8374,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               If Child( GetChildrens(*this), *this)
                 GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or
                                                  GetChildrens(*this)\parent\hide Or
-                                                 GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\_tab\index[#__s_2])
+                                                 GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
               EndIf
             Next
           EndIf
@@ -8370,7 +8389,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         If *this\parent = *parent
           result = *this
         Else
-          While *this\root <> *this
+          While *this\adress ; *this\root <> *this
             If *this\parent = *parent
               result = *this
               Break
@@ -9026,11 +9045,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected result
       
       If index =- 1
-        ProcedureReturn Root()\_childrens()
+        ProcedureReturn GetChildrens(Root())
       Else
-        ForEach Root()\_childrens()
-          If Root()\_childrens()\index = index ;+ 1
-            result = Root()\_childrens()
+        ForEach GetChildrens(Root())
+          If GetChildrens(Root())\index = index ;+ 1
+            result = GetChildrens(Root())
             Break
           EndIf
         Next
@@ -9364,7 +9383,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If *this\row\selected <> *SelectElement
-          If *this\flag\multiselect = 1
+          If *this\flag\check = 2
             If *this\row\_s()\_state & #__s_selected 
               *this\row\_s()\_state &~ #__s_selected
               *this\row\_s()\color\state = #__s_0
@@ -9378,7 +9397,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Else
             If *this\row\selected 
               If *this\row\selected <> *this\row\_s()
-                If *this\flag\multiselect = 2
+                If *this\flag\check = 3
                   If *this\row\selected\_state & #__s_selected
                     *this\row\selected\_state &~ #__s_selected
                     Post(#PB_EventType_Change, *this, *this\row\selected\index)
@@ -9391,7 +9410,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               *this\row\selected\color\state = #__s_0
             EndIf
             
-            If *this\flag\multiselect = 2
+            If *this\flag\check = 3
               If *this\row\_s()\_state & #__s_selected = 0
                 *this\row\_s()\_state | #__s_selected
                 Post(#PB_EventType_Change, *this, *this\row\_s()\index)
@@ -9595,27 +9614,20 @@ CompilerIf Not Defined(widget, #PB_Module)
         If *this\parent
           *LastParent = *this\parent
           *this\parent\count\childrens - 1
-          *this\root\count\childrens - Bool(*this\parent <> *this\root)
           
-          If *LastParent\root = *Parent\root
-            If _is_root_(*Parent)
-              FirstElement(GetChildrens(*this\parent))
-              MoveElement(GetChildrens(*this\parent), #PB_List_First)
-            Else
-              ChangeCurrentElement(GetChildrens(*this\parent), *this\adress)
-              MoveElement(GetChildrens(*this\parent), #PB_List_After, *Parent\adress)
-            EndIf
-            
-            While PreviousElement(GetChildrens(*this\parent)) 
-              If Child(GetChildrens(*this\parent), *this)
-                MoveElement(GetChildrens(*this\parent), #PB_List_After, *this\adress)
-              EndIf
-            Wend
+          If _is_root_(*Parent)
+            FirstElement(GetChildrens(*this\parent))
+            MoveElement(GetChildrens(*this\parent), #PB_List_First)
           Else
-            Free(*this)
-            ReDraw(*LastParent)
+            ChangeCurrentElement(GetChildrens(*this\parent), *this\adress)
+            MoveElement(GetChildrens(*this\parent), #PB_List_After, *Parent\adress)
           EndIf
           
+          While PreviousElement(GetChildrens(*this\parent)) 
+            If Child(GetChildrens(*this\parent), *this)
+              MoveElement(GetChildrens(*this\parent), #PB_List_After, *this\adress)
+            EndIf
+          Wend
         EndIf
         
         *this\parent = *Parent
@@ -9637,9 +9649,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           typecount(Hex(*this\parent)+"__"+Hex(*this\type)) + 1
         EndIf
         
-        If Not (*this\parent And 
-                *this\parent\type = #PB_GadgetType_Splitter)
-          
+        If Not *this\adress
           If *this\root\count\childrens
             *this\index = *this\root\count\childrens
             *this\level = *this\parent\level + 1
@@ -9648,6 +9658,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\parent\count\childrens + 1
           *this\root\count\childrens + Bool(*this\parent <> *this\root)
           
+          ; SelectElement(GetChildrens(*this\parent), *this\parent\index) ; LastElement(GetChildrens(*this\parent))
           LastElement(GetChildrens(*this\parent))
           *this\adress = AddElement(GetChildrens(*this\parent)) 
           GetChildrens(*this\parent) = *this
@@ -10327,9 +10338,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           ForEach *this\row\_s()
             If *this\row\_s()\index = Item  ;  ListIndex(*this\row\_s()) = Item ;  
               *this\row\_s()\data = *Data
-               ;Debug *this\row\_s()\Text\String
-               
-               Break
+              ;Debug *this\row\_s()\Text\String
+              
+              Break
             EndIf
           Next
           PopListPosition(*this\row\_s())
@@ -10511,8 +10522,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\flag\collapse = Bool(Not Value) 
             
           Case #__tree_OptionBoxes
-            *this\flag\option_group = Bool(Value)*12
-            *this\flag\checkBoxes = *this\flag\option_group
+            *this\flag\check = Bool(Value)*2
             
         EndSelect
         
@@ -11318,24 +11328,32 @@ CompilerIf Not Defined(widget, #PB_Module)
           \bs = \fs
           
           \flag\gridlines = Bool(flag&#__tree_GridLines)
-          If flag & #__tree_MultiSelect = #__tree_MultiSelect
-            \flag\multiSelect = 2
-          EndIf
-          If flag & #__tree_ClickSelect = #__tree_ClickSelect
-            \flag\multiSelect = 1
-          EndIf
-          \flag\alwaysSelection = Bool(flag&#__tree_AlwaysSelection)
+          
+           \flag\alwaysSelection = Bool(flag&#__tree_AlwaysSelection)
           
           \flag\collapse = Bool(flag&#__tree_Collapsed) 
           \flag\threestate = Bool(flag&#__tree_ThreeState) 
           
           \flag\lines = Bool(Not flag&#__tree_NoLines) * 8 ; Это еще будет размер линии
           \flag\buttons = Bool(Not flag&#__tree_NoButtons) * 9 ; Это еще будет размер кнопки
-          \flag\checkBoxes = Bool(flag&#__tree_CheckBoxes) * 12; Это еще будет размер чек бокса
-          \flag\option_group = Bool(flag&#__tree_OptionBoxes) * 12 ; Это еще будет размер
-          \flag\checkBoxes = Bool(\flag\option_group) * 12         ; Это еще будет размер чек бокса
           
-          If \flag\lines Or \flag\buttons Or \flag\checkBoxes
+          If  flag & #__tree_CheckBoxes = #__tree_CheckBoxes
+            \flag\check = 1
+          EndIf
+          
+          If flag & #__listview_ClickSelect = #__listview_ClickSelect
+            \flag\check = 2
+          EndIf
+          
+          If flag & #__listview_MultiSelect = #__listview_MultiSelect
+            \flag\check = 3
+          EndIf
+          
+          If flag & #__tree_OptionBoxes = #__tree_OptionBoxes
+            \flag\check = 4
+          EndIf
+          
+          If \flag\lines Or \flag\buttons Or \flag\check
             \row\sublevellen = 18
           EndIf
         EndIf
@@ -11398,14 +11416,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         
-        *this\flag\multiSelect = 1
+        *this\flag\check = 3 ; multiselect
         *this\flag\fullselection = constants::_check_(Flag, #__flag_fullselection, #False)*7
         *this\flag\alwaysselection = constants::_check_(Flag, #__flag_alwaysselection)
         *this\flag\gridlines = constants::_check_(Flag, #__flag_gridlines)
-        ;\flag\checkBoxes = constants::_check_(Flag, #__flag_CheckBoxes)*12 ; Это еще будет размер чек бокса
-        ;\flag\bar\buttons = constants::_check_(Flag, #__flag_NoButtons)
-        ;\flag\lines = constants::_check_(Flag, #__flag_NoLines)
-        
+         
         *this\row\margin\hide = constants::_check_(Flag, #__text_numeric, #False)
         *this\row\margin\color\front = $C8000000 ; \color\back[0] 
         *this\row\margin\color\back = $C8F0F0F0  ; \color\back[0] 
@@ -11576,10 +11591,10 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected *parent._s_widget = Root()\opened
       
       If Root()\count\childrens
-        If Root()\_childrens()\type = #__Type_Option
-          *this\option_group = Root()\_childrens()\option_group 
+        If GetChildrens(Root())\type = #__Type_Option
+          *this\option_group = GetChildrens(Root())\option_group 
         Else
-          *this\option_group = Root()\_childrens() 
+          *this\option_group = GetChildrens(Root()) 
         EndIf
       Else
         *this\option_group = Root()\opened
@@ -12027,14 +12042,20 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure   ReDraw(*this._s_widget)
       If StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
+        If Root()\canvas\repaint <> #False
+          Root()\canvas\repaint = #False
+        EndIf
+        
         If Root()\repaint = #True
           FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F0)
         EndIf
         
         ; Protected count
-        ; PushListPosition(GetChildrens(*this))
+        PushListPosition(GetChildrens(*this))
         ForEach GetChildrens(*this)
-          If (Not GetChildrens(*this)\hide And GetChildrens(*this)\draw)
+          If (Not GetChildrens(*this)\hide And GetChildrens(*this)\draw) And
+             GetChildrens(*this)\root\canvas\gadget = *this\root\canvas\gadget
+            
             If (GetChildrens(*this)\width[#__c_4] > 0 And GetChildrens(*this)\height[#__c_4] > 0)
               CompilerIf Not (#PB_Compiler_OS = #PB_OS_MacOS And Not Defined(fixme, #PB_Module))
                 ClipOutput( GetChildrens(*this)\x[#__c_4], 
@@ -12048,10 +12069,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
           EndIf
         Next
-        ; PopListPosition(GetChildrens(*this))
+        PopListPosition(GetChildrens(*this))
         
         ; Draw anchors 
-        If *this\root And *this\root\anchor And *this\root\anchor\widget
+        If *this\root And *this\root\anchor And 
+           *this\root\anchor\widget And Not *this\root\anchor\widget\hide
           UnclipOutput()
           ;Debug *this\root\anchor\widget
           a_draw(*this\root\anchor\widget)
@@ -12070,65 +12092,79 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure.i Post(eventtype.l, *this._s_widget, eventitem.l=#PB_All, *data=0)
       Protected result.i
       
-      structures::*event\type = eventtype
-      structures::*event\item = eventitem
-      structures::*event\widget = *this
-      structures::*event\data = *data
-      
-      If *this And *this\root\count\events
-        If Not _is_root_(*this)
-          If *this\event And 
-             (*this\event\type = #PB_All Or *this\event\type = eventtype)
-            
-            result = *this\event\callback()
-            
-            If result = #PB_Ignore
-              ProcedureReturn #PB_Ignore
-            EndIf
+      If eventtype = #PB_EventType_Repaint
+        If *this = #PB_All
+          If Root()\canvas\repaint = #False
+            Root()\canvas\repaint = #True
+            PostEvent(#PB_Event_Gadget, Root()\canvas\window, Root()\canvas\gadget, #PB_EventType_Repaint, Root())
           EndIf
-          
-          If Not _is_window_(*this) And Not _is_root_(*this\window) And *this\window\event And 
-             (*this\window\event\type = #PB_All Or *this\window\event\type = eventtype)
-            
-            result = *this\window\event\callback()
-            
-            If result = #PB_Ignore
-              ProcedureReturn #PB_Ignore
-            EndIf
-          EndIf
-        EndIf
-        
-        If *this\root And *this\root\event And 
-           (*this\root\event\type = #PB_All Or *this\root\event\type = eventtype) 
-          
-          result = *this\root\event\callback()
-          
-          If result = #PB_Ignore
-            ProcedureReturn #PB_Ignore
+        Else
+          If *this\root\canvas\repaint = #False
+            *this\root\canvas\repaint = #True
+            PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_Repaint, *this)
           EndIf
         EndIf
       Else
-        Select eventtype 
-          Case #__Event_Focus, 
-               #__Event_LostFocus
-            
-            ForEach Root()\_events()
-              If Root()\_events()\widget = *this And 
-                 Root()\_events()\type = eventtype
-                result = 1
+        structures::*event\type = eventtype
+        structures::*event\item = eventitem
+        structures::*event\widget = *this
+        structures::*event\data = *data
+        
+        If *this And *this\root\count\events
+          If Not _is_root_(*this)
+            If *this\event And 
+               (*this\event\type = #PB_All Or *this\event\type = eventtype)
+              
+              result = *this\event\callback()
+              
+              If result = #PB_Ignore
+                ProcedureReturn #PB_Ignore
               EndIf
-            Next
-            
-            If Not result
-              AddElement(Root()\_events())
-              Root()\_events() = AllocateStructure(_s_event)
-              Root()\_events()\type = eventtype
-              Root()\_events()\item = eventitem
-              Root()\_events()\widget = *this
-              Root()\_events()\data = *data
             EndIf
             
-        EndSelect
+            If Not _is_window_(*this) And Not _is_root_(*this\window) And *this\window\event And 
+               (*this\window\event\type = #PB_All Or *this\window\event\type = eventtype)
+              
+              result = *this\window\event\callback()
+              
+              If result = #PB_Ignore
+                ProcedureReturn #PB_Ignore
+              EndIf
+            EndIf
+          EndIf
+          
+          If *this\root And *this\root\event And 
+             (*this\root\event\type = #PB_All Or *this\root\event\type = eventtype) 
+            
+            result = *this\root\event\callback()
+            
+            If result = #PB_Ignore
+              ProcedureReturn #PB_Ignore
+            EndIf
+          EndIf
+        Else
+          Select eventtype 
+            Case #__Event_Focus, 
+                 #__Event_LostFocus
+              
+              ForEach Root()\_events()
+                If Root()\_events()\widget = *this And 
+                   Root()\_events()\type = eventtype
+                  result = 1
+                EndIf
+              Next
+              
+              If Not result
+                AddElement(Root()\_events())
+                Root()\_events() = AllocateStructure(_s_event)
+                Root()\_events()\type = eventtype
+                Root()\_events()\item = eventitem
+                Root()\_events()\widget = *this
+                Root()\_events()\data = *data
+              EndIf
+              
+          EndSelect
+        EndIf
       EndIf
       
       ProcedureReturn result
@@ -12296,8 +12332,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If *this\flag\transform
-        Post(event_type, *this, *this\index[#__s_1])
-        
         ProcedureReturn a_events(*this, event_type, *this\root\mouse\buttons, *this\root\mouse\x, *this\root\mouse\y)
       EndIf
       
@@ -12317,8 +12351,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint = Tree_Events(*this, event_type, mouse_x, mouse_y)
       EndIf
       
-      If *this\type = #PB_GadgetType_Editor Or
-         *this\type = #PB_GadgetType_String
+      If *this\type = #PB_GadgetType_Editor 
+        Repaint = Editor_Events(*this, event_type, mouse_x, mouse_y)
+      EndIf
+      
+      If *this\type = #PB_GadgetType_String
         Repaint = Editor_Events(*this, event_type, mouse_x, mouse_y)
       EndIf
       
@@ -12330,6 +12367,23 @@ CompilerIf Not Defined(widget, #PB_Module)
           Case #PB_EventType_LeftButtonDown : *this\color\state = #__s_2 : Repaint = 1
           Case #PB_EventType_MouseEnter     
             *this\color\state = #__s_1 + Bool(*this = *this\root\Selected) : Repaint = 1
+        EndSelect
+      EndIf
+      
+      If *this\type = #__Type_Option
+        Select event_type
+          Case #PB_EventType_LeftButtonDown : Repaint = 1
+          Case #PB_EventType_LeftButtonUp   : Repaint = 1
+          Case #PB_EventType_LeftClick      : Repaint = SetState(*this, #True)
+        EndSelect
+      EndIf
+      
+      If *this\type = #__Type_CheckBox
+        Select event_type
+          Case #PB_EventType_LeftButtonDown : Repaint = 1
+          Case #PB_EventType_LeftButtonUp   : Repaint = 1
+          Case #PB_EventType_LeftClick      
+            Repaint = SetState(*this, Bool(Bool(*this\check_box\checked = #PB_Checkbox_Checked) ! #True))
         EndSelect
       EndIf
       
@@ -12362,23 +12416,6 @@ CompilerIf Not Defined(widget, #PB_Module)
             Repaint = 1
           EndIf
         EndIf
-      EndIf
-      
-      If *this\type = #__Type_Option
-        Select event_type
-          Case #PB_EventType_LeftButtonDown : Repaint = 1
-          Case #PB_EventType_LeftButtonUp   : Repaint = 1
-          Case #PB_EventType_LeftClick      : Repaint = SetState(*this, #True)
-        EndSelect
-      EndIf
-      
-      If *this\type = #__Type_CheckBox
-        Select event_type
-          Case #PB_EventType_LeftButtonDown : Repaint = 1
-          Case #PB_EventType_LeftButtonUp   : Repaint = 1
-          Case #PB_EventType_LeftClick      
-            Repaint = SetState(*this, Bool(Bool(*this\check_box\checked = #PB_Checkbox_Checked) ! #True))
-        EndSelect
       EndIf
       
       If *this\type = #PB_GadgetType_Spin Or
@@ -12486,13 +12523,14 @@ CompilerIf Not Defined(widget, #PB_Module)
       If change
         ; get at point
         If Root()\count\childrens
-          LastElement(Root()\_childrens()) 
+          LastElement(GetChildrens(Root())) 
           Repeat                                 
-            If _is_widget_(Root()\_childrens()) And
-               Not Root()\_childrens()\hide And Root()\_childrens()\draw And 
-               _from_point_(mouse_x, mouse_y, Root()\_childrens(), [#__c_4])
+            If _is_widget_(GetChildrens(Root())) And
+               Not GetChildrens(Root())\hide And GetChildrens(Root())\draw And 
+               GetChildrens(Root())\root\canvas\gadget = Root()\canvas\gadget And 
+               _from_point_(mouse_x, mouse_y, GetChildrens(Root()), [#__c_4])
               
-              *this = Root()\_childrens()
+              *this = GetChildrens(Root())
               
               ; scrollbars events
               If *this And *this\scroll
@@ -12515,10 +12553,11 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               Break
             EndIf
-          Until PreviousElement(Root()\_childrens()) = #False 
+          Until PreviousElement(GetChildrens(Root())) = #False 
         EndIf
         
         If Not *this : *this = Root() : EndIf
+        
         
         ; set widget mouse
         ; state - (entered & leaved)   
@@ -12530,16 +12569,17 @@ CompilerIf Not Defined(widget, #PB_Module)
             Repaint | Events(Root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
             
             If #__from_mouse_state
-              ChangeCurrentElement(Root()\_childrens(), Root()\entered\adress)
+              ;ChangeCurrentElement(GetChildrens(Root()), Root()\entered\adress)
+              SelectElement(GetChildrens(Root()), Root()\entered\index)
               Repeat                 
-                If Root()\_childrens()\draw And Child(Root()\entered, Root()\_childrens())
-                  If Root()\_childrens()\_state & #__s_entered
-                    Root()\_childrens()\_state &~ #__s_entered
+                If GetChildrens(Root())\draw And Child(Root()\entered, GetChildrens(Root()))
+                  If GetChildrens(Root())\_state & #__s_entered
+                    GetChildrens(Root())\_state &~ #__s_entered
                     
-                    Repaint | Events(Root()\_childrens(), #__Event_MouseLeave, mouse_x, mouse_y)
+                    Repaint | Events(GetChildrens(Root()), #__Event_MouseLeave, mouse_x, mouse_y)
                   EndIf
                 EndIf
-              Until PreviousElement(Root()\_childrens()) = #False 
+              Until PreviousElement(GetChildrens(Root())) = #False 
             EndIf
             
             Root()\entered = *this
@@ -12551,16 +12591,16 @@ CompilerIf Not Defined(widget, #PB_Module)
             Root()\entered = *this
             
             If #__from_mouse_state
-              ForEach Root()\_childrens()
-                If Root()\_childrens() = Root()\entered
+              ForEach GetChildrens(Root())
+                If GetChildrens(Root()) = Root()\entered
                   Break
                 EndIf
                 
-                If Root()\_childrens()\draw And Child(Root()\entered, Root()\_childrens())
-                  If Root()\_childrens()\_state & #__s_entered = #False
-                    Root()\_childrens()\_state | #__s_entered
+                If GetChildrens(Root())\draw And Child(Root()\entered, GetChildrens(Root()))
+                  If GetChildrens(Root())\_state & #__s_entered = #False
+                    GetChildrens(Root())\_state | #__s_entered
                     
-                    Repaint | Events(Root()\_childrens(), #__Event_MouseEnter, mouse_x, mouse_y)
+                    Repaint | Events(GetChildrens(Root()), #__Event_MouseEnter, mouse_x, mouse_y)
                   EndIf
                 EndIf
               Next
@@ -12569,6 +12609,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             Repaint | Events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
           EndIf
         EndIf  
+        
+        
       EndIf
       
       ; set active widget
@@ -12578,7 +12620,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Root()\selected = Root()\entered
         Root()\selected\_state | #__s_selected
         
-        If Root()\entered\bar\from
+        If Root()\entered\bar\from > 0
           ; bar mouse delta pos
           If Root()\entered\bar\from = #__b_3
             Root()\mouse\delta\x = mouse_x - Root()\entered\bar\thumb\pos
@@ -12604,15 +12646,15 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       ;
-      If eventtype = #__Event_LeftClick Or
-         eventtype = #__Event_DragStart 
-        
+      If eventtype = #__Event_LeftClick 
+      ElseIf eventtype = #__Event_Repaint 
+      ElseIf eventtype = #__Event_DragStart 
       ElseIf eventtype = #__Event_Focus
         
       ElseIf eventtype = #__Event_LostFocus
-        ; если фокус получил PB gadget
-        ; то убираем фокус с виджета
         If GetActive()
+          ; если фокус получил PB gadget
+          ; то убираем фокус с виджета
           Repaint | Events(GetActive(), #__Event_LostFocus, mouse_x, mouse_y)
           
           If GetActive()\gadget And GetActive() <> GetActive()\gadget
@@ -12623,30 +12665,23 @@ CompilerIf Not Defined(widget, #PB_Module)
           ; GetActive() = 0
         EndIf
         
-        ;
       ElseIf eventtype = #__Event_MouseEnter 
-        If Root()\count\childrens = 1 And
-           Root()\_childrens()\align And 
-           Root()\_childrens()\align\autosize = 1
-          Root()\entered = Root()\_childrens()
-          
+        If Root()\entered 
           If Root()\entered\_state & #__s_entered = #False
             Root()\entered\_state | #__s_entered
-            ;Debug "enter"+Root()\container
-            Repaint | Events(Root()\_childrens(), #__Event_MouseEnter, mouse_x, mouse_y)
+            ; Debug "enter " + Root()\entered\class
+            
+            Repaint | Events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
           EndIf
         EndIf
         
       ElseIf eventtype = #__Event_MouseLeave 
-        If Root()\count\childrens = 1 And
-           Root()\_childrens()\align And 
-           Root()\_childrens()\align\autosize = 1
-          Root()\entered = Root()\_childrens()
-          
+        If Root()\entered
           If Root()\entered\_state & #__s_entered
             Root()\entered\_state &~ #__s_entered
-            ;Debug "leave"
-            Repaint | Events(Root()\_childrens(), #__Event_MouseLeave, mouse_x, mouse_y)
+            ; Debug "leave " + Root()\entered\class
+            
+            Repaint | Events(Root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
           EndIf
         EndIf
         
@@ -12664,6 +12699,52 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         EndIf
         
+      ElseIf eventtype = #__Event_LeftButtonUp Or 
+             eventtype = #__Event_RightButtonUp Or
+             eventtype = #__Event_MiddleButtonUp
+        
+        ; reset mouse buttons
+        If Root()\mouse\buttons
+          If eventtype = #__Event_LeftButtonUp
+            Root()\mouse\buttons &~ #PB_Canvas_LeftButton
+          ElseIf eventtype = #__Event_RightButtonUp
+            Root()\mouse\buttons &~ #PB_Canvas_RightButton
+          ElseIf eventtype = #__Event_MiddleButtonUp
+            Root()\mouse\buttons &~ #PB_Canvas_MiddleButton
+          EndIf
+          
+          If _is_widget_(Root()\selected) And Not Root()\mouse\buttons
+            Repaint | Events(Root()\selected, eventtype, mouse_x, mouse_y)
+            
+            Root()\selected\_state &~ #__s_selected
+            ; if the mouse button 
+            ; is released in the widget
+            ; then send the message click
+            If Root()\selected\_state & #__s_entered
+              If Not Root()\mouse\drag
+                Static ClickTime 
+                If Not (ClickTime And (ElapsedMilliseconds()-ClickTime) < DoubleClickTime())
+                  If eventtype = #__Event_LeftButtonUp
+                    Repaint | Events(Root()\selected, #__Event_LeftClick, mouse_x, mouse_y)
+                  EndIf
+                  If eventtype = #__Event_RightButtonUp
+                    Repaint | Events(Root()\selected, #__Event_RightClick, mouse_x, mouse_y)
+                  EndIf
+                  ClickTime = ElapsedMilliseconds()
+                EndIf
+              EndIf
+            Else
+              ; Repaint | Events(Root()\selected, #__Event_MouseLeave, mouse_x, mouse_y)
+              ; Repaint | Events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
+            EndIf
+            
+            Root()\mouse\delta\x = 0
+            Root()\mouse\delta\y = 0
+            Root()\mouse\drag = 0
+            Root()\selected = 0
+          EndIf
+        EndIf
+        
       Else
         
         If Root()\entered And change
@@ -12673,38 +12754,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           Repaint | Events(Root()\selected, eventtype, mouse_x, mouse_y)
         EndIf
         
-      EndIf
-      
-      ; reset mouse buttons
-      If Root()\mouse\buttons
-        If eventtype = #__Event_LeftButtonUp
-          Root()\mouse\buttons &~ #PB_Canvas_LeftButton
-        ElseIf eventtype = #__Event_RightButtonUp
-          Root()\mouse\buttons &~ #PB_Canvas_RightButton
-        ElseIf eventtype = #__Event_MiddleButtonUp
-          Root()\mouse\buttons &~ #PB_Canvas_MiddleButton
-        EndIf
-        
-        
-        If _is_widget_(Root()\selected) And Not Root()\mouse\buttons
-          Root()\selected\_state &~ #__s_selected
-          ; if the mouse button 
-          ; is released in the widget
-          ; then send the message click
-          If Root()\selected\_state & #__s_entered
-            If Not Root()\mouse\drag
-              Repaint | Events(Root()\selected, #__Event_LeftClick, mouse_x, mouse_y)
-            EndIf
-          Else
-            Repaint | Events(Root()\selected, #__Event_MouseLeave, mouse_x, mouse_y)
-            Repaint | Events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
-          EndIf
-          
-          Root()\mouse\delta\x = 0
-          Root()\mouse\delta\y = 0
-          Root()\mouse\drag = 0
-          Root()\selected = 0
-        EndIf
       EndIf
       
       If Repaint 
@@ -12811,6 +12860,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       Root()\root = Root()
       Root()\parent = Root()
       Root()\window = Root()
+      Root()\entered = Root()
       
       Root()\container = #__type_root
       
@@ -12866,8 +12916,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       Open(Window, x,y,Width,Height, #Null, *CallBack, Gadget)
-      Root()\container = IsGadget(Root()\canvas\gadget)
-      
+      ; Root()\container = IsGadget(Root()\canvas\gadget)
       
       Select Type
         Case #PB_GadgetType_Button
@@ -12918,6 +12967,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           *this = Tree(0, 0, Width, Height, Flag | flags | #__flag_autosize)
       EndSelect
+      
+      Root()\entered = *this
       
       If Gadget =- 1
         Gadget = GetGadget(Root())
@@ -13266,5 +13317,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------v-----+----------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------T---fV0f---Aw--
 ; EnableXP

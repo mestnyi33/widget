@@ -262,14 +262,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       lines.b
       buttons.b
       gridlines.b
-      checkboxes.b
+      
+      check.b  
+      
       fullselection.b
       alwaysselection.b
-      multiselect.b
-      ;clickselect.b
       
       collapse.b
-      option_group.b
+      
       threestate.b
       iconsize.b
       transform.b
@@ -467,7 +467,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       row._s_row
       bar._s_bar
       
-      handle.i
+      ;handle.i
       *errors
       notify.b ; оповестить об изменении
       
@@ -517,6 +517,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       container.b
       window.i
       gadget.i
+      repaint.b
     EndStructure
     
     ;- - _s_keyboard
@@ -545,14 +546,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       _draw.l
       ; draw.b
       ; List *childrens._s_widget()
+      List *_childrens._s_widget()
+      
     EndStructure
     
     ;- - _s_root
     Structure _s_root Extends _s_widget
-;        *event._s_event
-;      count._s_count
-      *widget._s_widget ; ????
-     
+      *widget._s_widget ; gadget root
+      
       mouse._s_mouse
       canvas._s_canvas
       keyboard._s_keyboard
@@ -576,5 +577,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -8vWR6s
+; Folding = -8vWR6t
 ; EnableXP

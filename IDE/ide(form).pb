@@ -14,7 +14,8 @@ Global window_ide, canvas_ide
 
 Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
 Global toolbar_design, listview_debug, id_help_text
-Global id_design, id_elements, id_properties_tree, id_inspector_tree, id_inspector_panel
+Global id_design_panel, id_design_form, id_design_code, 
+       id_elements, id_properties_tree, id_inspector_tree, id_inspector_panel
 
 ;- ENUMs
 Enumeration 
@@ -429,9 +430,6 @@ Procedure object_events()
       *this = a_get(e_widget)
       
       If *this
-        Debug "изменено up "+ *this
-        ;Debug " "+GetSelectorX(*this) +" "+ GetSelectorY(*this) +" "+ GetSelectorWidth(*this) +" "+ GetSelectorHeight(*this)
-           
         If DragText
           If Drag
             
@@ -509,12 +507,21 @@ Procedure ide_window_open(x=100,y=100,width=800,height=600)
   canvas_ide = widget::GetGadget(root)
   
   toolbar_design = 0
-  id_design = MDI(0,0,0,0) 
+  
+;   id_design_panel = Panel(0,0,0,0) ; , #__bar_vertical) : OpenList(id_design_panel)
+;   AddItem(id_design_panel, -1, "Form")
+;   id_design_form = MDI(0,0,0,0, #__flag_autosize) 
+;   
+;   AddItem(id_design_panel, -1, "Code")
+;   id_design_code = Editor(0,0,0,0, #__flag_autosize) 
+;   CloseList()
+  
   id_inspector_tree = Tree(0,0,0,0)
-  listview_debug = Editor(0,0,0,0) ; ListView
-                                   ;   AddItem(listview_debug, 0, "Form_0", 0, 0) 
-                                   ;   AddItem(listview_debug, 1, "Form_1", 0, 0)  
-                                   ;   AddItem(listview_debug, 2, "Form_2", 0, 0)
+  listview_debug = ListView(0,0,0,0) 
+  
+  id_design_form = MDI(0,0,0,0) 
+  id_design_panel = id_design_form
+  id_design_code = listview_debug
   
   id_inspector_panel = Panel(0,0,0,0)
   AddItem(id_inspector_panel, 0, "elements", 0, 0) 
@@ -538,7 +545,7 @@ Procedure ide_window_open(x=100,y=100,width=800,height=600)
   id_help_text  = Text(0,0,0,0, "help for the inspector", #__text_border)
   
   
-  Splitter_design = widget::Splitter(0,0,0,0, toolbar_design,id_design, #PB_Splitter_FirstFixed|#PB_Splitter_Separator)
+  Splitter_design = widget::Splitter(0,0,0,0, toolbar_design,id_design_panel, #PB_Splitter_FirstFixed|#PB_Splitter_Separator)
   Splitter_inspector = widget::Splitter(0,0,0,0, id_inspector_tree,id_inspector_panel, #PB_Splitter_FirstFixed)
   splitter_debug = widget::Splitter(0,0,0,0, Splitter_design,listview_debug, #PB_Splitter_SecondFixed)
   splitter_help = widget::Splitter(0,0,0,0, Splitter_inspector,id_help_text, #PB_Splitter_SecondFixed)
@@ -577,19 +584,18 @@ CompilerIf #PB_Compiler_IsMainFile
   Define event
   ide_window_open()
   
-  
   elements_list_fill(id_elements, GetCurrentDirectory()+"Themes/")
   
-  ;OpenList(id_design)
-  Define *window = object_add_new(id_design, #__type_window, 10, 10)
+  ;OpenList(id_design_form)
+  Define *window = object_add_new(id_design_form, #__type_window, 10, 10)
   Define *container = object_add_new(*window, #__type_container, 80, 10)
   object_add_new(*container, #__type_button, 10, 20)
   object_add_new(*window, #__type_button, 10, 20)
   
-  Define *window = object_add_new(id_design, #__type_window, 10, 10)
+  Define *window = object_add_new(id_design_form, #__type_window, 10, 10)
   Define *container = object_add_new(*window, #__type_container, 80, 10)
-  object_add_new(*container, #__type_button, 10, 20)
   object_add_new(*window, #__type_button, 10, 20)
+  object_add_new(*container, #__type_button, -10, 20)
   ;CloseList()
   
   Repeat 
@@ -603,5 +609,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = +-vf+---8-8-
+; Folding = +-vf+v----8-
 ; EnableXP

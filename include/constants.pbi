@@ -181,12 +181,14 @@
       ; #__flag_inline
       #__flag_nolines
       #__flag_nobuttons
-      #__flag_checkboxes
+      
+       #__flag_checkboxes ; for the tree 
+      #__flag_clickselect ; = #__flag_checkboxes ; for the list view
+      
       #__flag_optionboxes
       #__flag_threeState
       #__flag_gridLines
       #__flag_multiselect
-      #__flag_clickselect
       #__flag_fullselection
       
       #__flag_inverted
@@ -211,6 +213,8 @@
       #__flag_limit
     EndEnumeration
     
+    ;#__flag_checkboxes = #__flag_clickselect
+      
     #__flag_noGadget = #__flag_nobuttons
     #__flag_autoright = #__flag_autosize|#__align_right
     #__flag_autobottom = #__flag_autosize|#__align_bottom
@@ -303,8 +307,6 @@
     #__tree_nobuttons = #__flag_nobuttons
     #__tree_gridlines = #__flag_gridLines
     #__tree_threestate = #__flag_threeState
-    #__tree_clickselect = #__flag_clickselect
-    #__tree_multiselect = #__flag_multiselect
     #__tree_borderless = #__flag_borderless
     
     ;- _c_tree_attribute
@@ -339,7 +341,7 @@
     ;- _c_listview
     #__listview_clickselect = #__flag_clickselect
     #__listview_multiselect = #__flag_multiselect
-    
+   
     ;- _c_editor
     ;#__editor_inline = #__flag_InLine
     #__editor_wordwrap = #__flag_wordwrap
@@ -492,6 +494,8 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; CursorPosition = 343
+; FirstLine = 340
 ; Folding = --
 ; EnableXP

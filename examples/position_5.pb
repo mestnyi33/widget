@@ -1,6 +1,6 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/widgets()"
-  XIncludeFile "../fixme(mac).pbi"
+  IncludePath "/Users/as/Documents/GitHub/Widget"
+  XIncludeFile "include/fixme(mac).pbi"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
   IncludePath "/media/sf_as/Documents/GitHub/Widget/widgets()"
 CompilerElse
@@ -9,15 +9,15 @@ CompilerEndIf
 
 
 CompilerIf Not Defined(constants, #PB_Module)
-  XIncludeFile "../constants.pbi"
+  XIncludeFile "include/constants.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined(structures, #PB_Module)
-  XIncludeFile "../structures.pbi"
+  XIncludeFile "include/structures.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined(colors, #PB_Module)
-  XIncludeFile "../colors.pbi"
+  XIncludeFile "include/colors.pbi"
 CompilerEndIf
 
 

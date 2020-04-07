@@ -1,4 +1,18 @@
-﻿XIncludeFile "../../widgets.pbi" 
+﻿; keyboard events
+; flag = none
+; up/down selected item 
+; up/down post event leftclick
+
+; flag = multiselect
+; shift & up/down selected item 
+; up/down post event leftclick
+
+; flag = clickselect
+; spake & up/down selected item
+; spake post event leftclick
+
+
+XIncludeFile "../../widgets.pbi" 
 Uselib(widget)
 
 Procedure events_gadgets()
@@ -17,17 +31,23 @@ EndProcedure
 
 Procedure events_widgets()
   Select *event\type
-    Case #PB_EventType_ScrollChange
-      Debug  ""+GetIndex(*event\widget)+" - widget ScrollChange "+GetState(*event\widget) +" "+ *event\item
-      
-    Case #PB_EventType_StatusChange
-      Debug  ""+GetIndex(*event\widget)+" - widget StatusChange "+GetState(*event\widget) +" "+ *event\item
+;     Case #PB_EventType_Up
+;       Debug  ""+GetIndex(*event\widget)+" - widget Up "+GetState(*event\widget)
+;       
+;     Case #PB_EventType_Down
+;       Debug  ""+GetIndex(*event\widget)+" - widget Down "+GetState(*event\widget)
+;       
+;     Case #PB_EventType_ScrollChange
+;       Debug  ""+GetIndex(*event\widget)+" - widget ScrollChange "+GetState(*event\widget) +" "+ *event\item
+;       
+;     Case #PB_EventType_StatusChange
+;       Debug  ""+GetIndex(*event\widget)+" - widget StatusChange "+GetState(*event\widget) +" "+ *event\item
+;       
+;     Case #PB_EventType_Change
+;       Debug  ""+GetIndex(*event\widget)+" - widget Change "+GetState(*event\widget) +" "+ *event\item
       
     Case #PB_EventType_LeftClick
       Debug  ""+GetIndex(*event\widget)+" - widget LeftClick "+GetState(*event\widget) +" "+ *event\item
-      
-    Case #PB_EventType_Change
-      Debug  ""+GetIndex(*event\widget)+" - widget Change "+GetState(*event\widget) +" "+ *event\item
       
     Case #PB_EventType_LeftDoubleClick
       Debug  ""+GetIndex(*event\widget)+" - widget LeftDoubleClick "+GetState(*event\widget) +" "+ *event\item
@@ -109,6 +129,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x86)
+; FirstLine = 24
 ; Folding = -
 ; EnableXP

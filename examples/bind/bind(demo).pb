@@ -10,29 +10,29 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
     ClearDebugOutput()
-    Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (gadget)"
+    Debug ""+GetIndex(*event\widget)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (gadget)"
     
     Select *event\type 
       Case #PB_EventType_LeftClick
-        If (*event\widget\index - 1) = 1
+        If GetIndex(*event\widget) = 1
           ProcedureReturn #PB_Ignore ; no send to (window & root) - event
         EndIf
     EndSelect
   EndProcedure
   
   Procedure events_windows()
-    Debug "  "+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (window)"
+    Debug "  "+GetIndex(*event\widget)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (window)"
     
     Select *event\type 
       Case #PB_EventType_LeftClick
-        If (*event\widget\index - 1) = 2
+        If GetIndex(*event\widget) = 2
           ProcedureReturn #PB_Ignore ; no send to (root) - event
         EndIf
     EndSelect
   EndProcedure
   
   Procedure events_roots()
-    Debug "    "+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (root)"
+    Debug "    "+GetIndex(*event\widget)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (root)"
   EndProcedure
   
   
