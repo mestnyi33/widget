@@ -22,6 +22,7 @@ EndProcedure
     ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #PB_Button_MultiLine|#PB_Button_Default)
     ButtonGadget(4, 10,170, 200, 20, "Toggle Button", #PB_Button_Toggle)
     
+    SetGadgetState(4, 1)
     For i = 0 To 4
       BindGadgetEvent(i, @events_gadgets())
     Next
@@ -32,6 +33,7 @@ EndProcedure
     Button(10+222,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)", #__Button_MultiLine|#__Button_Default)
     Button(10+222,170, 200, 20, "Toggle Button", #__Button_Toggle)
     
+    SetState(GetWidget(4), 1)
     Bind(#PB_All, @events_widgets())
       
 ;     For i = 0 To 4
@@ -40,7 +42,6 @@ EndProcedure
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
-
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

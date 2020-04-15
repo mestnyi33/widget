@@ -17,6 +17,12 @@ Uselib(widget)
 
 Procedure events_gadgets()
   Select EventType()
+    Case #PB_EventType_DragStart
+      Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
+      
+    Case #PB_EventType_Change
+      Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
+      
     Case #PB_EventType_LeftClick
       Debug  ""+ EventGadget() +" - gadget LeftClick "+GetGadgetState(EventGadget())
       
@@ -43,8 +49,11 @@ Procedure events_widgets()
 ;     Case #PB_EventType_StatusChange
 ;       Debug  ""+GetIndex(*event\widget)+" - widget StatusChange "+GetState(*event\widget) +" "+ *event\item
 ;       
-;     Case #PB_EventType_Change
-;       Debug  ""+GetIndex(*event\widget)+" - widget Change "+GetState(*event\widget) +" "+ *event\item
+    Case #PB_EventType_DragStart
+      Debug  ""+GetIndex(*event\widget)+" - widget DragStart "+GetState(*event\widget) +" "+ *event\item
+      
+    Case #PB_EventType_Change
+      Debug  ""+GetIndex(*event\widget)+" - widget Change "+GetState(*event\widget) +" "+ *event\item
       
     Case #PB_EventType_LeftClick
       Debug  ""+GetIndex(*event\widget)+" - widget LeftClick "+GetState(*event\widget) +" "+ *event\item
@@ -129,7 +138,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; FirstLine = 24
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP

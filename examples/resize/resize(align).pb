@@ -1,12 +1,10 @@
-﻿IncludePath "../"
-XIncludeFile "widgets()/bar.pbi"
-
+﻿IncludePath "../../"
+XIncludeFile "widgets.pbi"
+UseLib(widget)
+  
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseModule Bar
-  UseModule constants
-  UseModule structures
   
   Global NewMap Widgets.i()
   Global.i Canvas_0, gEvent, gQuit, x=10,y=10
@@ -124,12 +122,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      Define *w._S_widget = Open(0)
+      ;Canvas_0 = GetGadget(Root())
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
       
-      Define *w._S_widget = Canvas(0, 10, 10, 580, 600-50)
-      ;Canvas_0 = GetGadget(Root())
       
-      Protected b = 4
+      Protected b = 2
       Protected iw = 280
       ;Widgets(Hex(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_AnchorsGadget)
        Widgets(Hex(0)) = Container(50, 50, 280, 200);, #__flag_AnchorsGadget);#__flag_AutoSize)

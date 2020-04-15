@@ -10,8 +10,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Uselib(widget)
   
-  Macro gadget(id, x,y,width,height,text,flag)
-    button(x,y,width,height,text,flag)
+  Macro gadget(id, _x_,_y_,_width_,_height_,_text_,_flag_)
+    checkbox(_x_,_y_,_width_,_height_,_text_,_flag_)
   EndMacro
   
   Global *S_0._s_widget

@@ -27,9 +27,12 @@ If OpenWindow(0, 0, 0, 590, 300, "SetGadgetItemColor", #PB_Window_SystemMenu | #
 
     SetItemColor(*w, #PB_All, #__Color_Front, $FF0000FF)
     SetItemColor(*w,  3, #__Color_Back,  $FF00FFFF)
-    SetItemColor(*w,  9, #__Color_Back,  $FFFFFF00)
+    SetItemColor(*w,  7, #__Color_Back,  $FFFFFF00)
+    SetItemFont(*w,  7, (LoadFont(#PB_Any, "Helvetica", 20)))
     
     SetItemColor(*w,  3, #__Color_Frame,  $FF0000f0)
+    
+    SetItemFont(*w,  3, (LoadFont(#PB_Any, "Helvetica", 20)))
     
     SetItemColor(*w,  #PB_All, #__Color_Front,  $FF00FFFF, 2)
     SetItemColor(*w,  #PB_All, #__Color_Back,  $FF3F00F0, 2)

@@ -14,6 +14,9 @@ Uselib(widget)
 
 Procedure events_gadgets()
   Select EventType()
+    Case #PB_EventType_DragStart
+      Debug  ""+ EventGadget() +" - gadget DragStart "+GetGadgetState(EventGadget())
+      
     Case #PB_EventType_Change
       Debug  ""+ EventGadget() +" - gadget Change "+GetGadgetState(EventGadget())
       
@@ -31,6 +34,9 @@ EndProcedure
 
 Procedure events_widgets()
   Select *event\type
+     Case #PB_EventType_DragStart
+      Debug  ""+GetIndex(*event\widget)+" - widget DragStart "+GetState(*event\widget) +" "+ *event\item
+      
     Case #PB_EventType_Up
       Debug  ""+GetIndex(*event\widget)+" - widget Up "+GetState(*event\widget)
       
@@ -102,6 +108,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 180+180, "ListViewGadget", #PB_Wi
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 9
+; CursorPosition = 19
 ; Folding = -
 ; EnableXP

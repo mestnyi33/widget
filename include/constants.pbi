@@ -12,7 +12,6 @@
     
     #__from_mouse_state = 0
     
-    #PB_GadgetType_TabBar = 100
     
     #__arrow_type = 1
     #__arrow_size = 4
@@ -92,11 +91,12 @@
     
     ;state
     EnumerationBinary
-      #__s_Normal
-      #__s_Entered
-      #__s_Selected
-      #__s_Disabled
-      #__s_Focused
+      #__s_normal
+      #__s_entered
+      #__s_selected
+      #__s_disabled
+      #__s_focused
+      #__s_toggled
       
       
       #__s_front
@@ -151,69 +151,60 @@
     
    
     ;- _c_align
+    ;- _c_flag
     EnumerationBinary _c_align 2
+      #__flag_vertical ;= 1
+      
+      #__align_auto
       #__align_left
       #__align_top
       #__align_right
       #__align_bottom
       #__align_center
       
-      #__align_text
-    EndEnumeration
-    
-    #__align_full = #__align_left|#__align_top|#__align_right|#__align_bottom
-    
-    ;- _c_flag
-    EnumerationBinary _c_align;_c_flag 256 ; 128
-      #__flag_vertical ;= 1
-      #__flag_autoSize
       
       #__flag_numeric
       #__flag_readonly
       #__flag_lowercase 
       #__flag_uppercase
       #__flag_password
-      
       #__flag_wordwrap
       #__flag_multiline 
       
-      ;#__flag_collapsed = 8 mac
+      
       ; #__flag_inline
       #__flag_nolines
-      #__flag_nobuttons
-      
-       #__flag_checkboxes ; for the tree 
-      #__flag_clickselect ; = #__flag_checkboxes ; for the list view
-      
-      #__flag_optionboxes
-      #__flag_threeState
       #__flag_gridLines
+      #__flag_threeState
+      #__flag_checkboxes 
+      #__flag_optionboxes
+      #__flag_clickselect 
       #__flag_multiselect
       #__flag_fullselection
       
-      #__flag_inverted
-      
       ; common
-      ;#__flag_autoRight
-      ;#__flag_autoBottom
-      #__flag_NoActivate
+      #__flag_nobuttons
+      #__flag_inverted
+      #__flag_autosize
+      #__flag_noactivate
       ;#__flag_invisible
       ;#__flag_sizegadget
       ;#__flag_systemmenu
-      #__flag_anchorsGadget
+      #__flag_anchorsgadget
       
-      #__flag_BorderLess
+      #__flag_borderless
       ;         #__flag_double
       ;         #__flag_flat
       ;         #__flag_raised
       ;         #__flag_Single
       
       
-      #__flag_NoScrollBars
+      #__flag_noscrollbars
       #__flag_limit
     EndEnumeration
     
     ;#__flag_checkboxes = #__flag_clickselect
+    #__align_full = #__align_left|#__align_top|#__align_right|#__align_bottom
       
     #__flag_noGadget = #__flag_nobuttons
     #__flag_autoright = #__flag_autosize|#__align_right
@@ -223,43 +214,43 @@
     #__flag_alwaysselection = #__flag_lowercase|#__flag_uppercase
     
     ;- _c_bar
-    EnumerationBinary #__flag_numeric;1
+    EnumerationBinary 4
       #__bar_minimum 
       #__bar_maximum 
       #__bar_pagelength 
-      
-      ;#__bar_arrowSize 
       #__bar_buttonsize 
       #__bar_scrollstep
       #__bar_direction 
-      #__bar_ticks
-      #__bar_reverse
       
-      #__bar_vertical ;= #__flag_vertical
-      #__bar_inverted = #__flag_inverted
+      ;#__bar_arrowSize 
+      ;#__bar_reverse
       
-      #__bar_nobuttons = #__bar_buttonsize
+       #__bar_ticks
+      #__bar_vertical
       #__bar_child
     EndEnumeration
+     
+    #__bar_nobuttons = #__flag_nobuttons
+     #__bar_inverted = #__flag_inverted
     
     ;- _c_text
     #__text_border = #__flag_borderless;#PB_Text_Border
     
-    #__text_left = #__align_text|#__align_left
-    #__text_top = #__align_text|#__align_top
-    #__text_center = #__align_text|#__align_center
-    #__text_right = #__align_text|#__align_right
-    #__text_bottom = #__align_text|#__align_bottom
-    #__text_Middle = #__text_center
+    #__text_left = #__align_left
+    #__text_top = #__align_top
+    #__text_center = #__align_center
+    #__text_right = #__align_right
+    #__text_bottom = #__align_bottom
+    #__text_middle = #__text_center
     
     #__text_vertical = #__flag_vertical
     #__text_multiline = #__flag_multiline
+    #__text_wordwrap = #__flag_wordwrap
     #__text_numeric = #__flag_numeric
     #__text_password = #__flag_password
     #__text_readonly = #__flag_readonly
     #__text_lowercase = #__flag_lowercase
     #__text_uppercase = #__flag_uppercase
-    #__text_wordwrap = #__flag_wordwrap
     #__text_invert = #__flag_inverted
     
     ;- _c_window
@@ -369,7 +360,7 @@
     #__button_default = #__flag_default
     #__button_vertical = #__text_vertical
     #__button_inverted = #__flag_inverted
-    #__button_multiline = #__text_wordwrap
+    #__button_multiline = #__text_multiline;#__text_wordwrap
     
     
     If (#__flag_limit>>1) > 2147483647 ; 8589934592
@@ -383,6 +374,9 @@
     Enumeration #PB_EventType_FirstCustomValue
       CompilerIf Not Defined(PB_EventType_Resize, #PB_Constant)
         #PB_EventType_Resize
+      CompilerEndIf
+      CompilerIf Not Defined(PB_EventType_ReturnKey, #PB_Constant)
+        #PB_EventType_ReturnKey
       CompilerEndIf
       
       #__Event_Free         
@@ -441,6 +435,9 @@
     #PB_Event_Create = #PB_Event_FirstCustomValue
     
     ;- _c_type
+    #PB_GadgetType_TabBar = 100
+    #PB_GadgetType_Tree_Properties = 127
+    
     #__Type_Root          =- 5
     #__Type_Property      =- 4
     #__Type_Popup         =- 3
@@ -483,6 +480,7 @@
     #__Type_Tree          = #PB_GadgetType_Tree
     #__Type_Web           = #PB_GadgetType_Web
     #__Type_OpenGL        = #PB_GadgetType_OpenGL
+    #__Type_Tree_Properties    = #PB_GadgetType_Tree_Properties
     ;}
     
   EndDeclareModule 
@@ -494,8 +492,6 @@
   
   ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 343
-; FirstLine = 340
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; Folding = --
 ; EnableXP

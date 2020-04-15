@@ -19,15 +19,22 @@ Global id_design_panel, id_design_form, id_design_code,
 
 ;- ENUMs
 Enumeration 
+  #_pi_group_0 
   #_pi_id
   #_pi_class
   #_pi_text
   
+  #_pi_group_1 
   #_pi_x
   #_pi_y
   #_pi_width
   #_pi_height
+  
+  #_pi_group_2 
+  #_pi_disable
+  #_pi_hide
 EndEnumeration
+
 
 
 
@@ -529,15 +536,22 @@ Procedure ide_window_open(x=100,y=100,width=800,height=600)
   ; AddItem(id_elements, 0, "Button", 0, 0) ; bug tree no add fill list
   
   AddItem(id_inspector_panel, 1, "properties", 0, 0)  
-  id_properties_tree = Tree(0,0,0,0, #__flag_autosize)
+  id_properties_tree = Tree_Properties(0,0,0,0, #__flag_autosize)
   Define Value = id_properties_tree
-  AddItem(id_properties_tree, #_pi_id, Str(Value))
-  AddItem(id_properties_tree, #_pi_class, GetClass(Value)+"_"+GetCount(Value))
-  AddItem(id_properties_tree, #_pi_text, GetText(Value))
-  AddItem(id_properties_tree, #_pi_x, Str(X(Value)))
-  AddItem(id_properties_tree, #_pi_y, Str(Y(Value)))
-  AddItem(id_properties_tree, #_pi_width, Str(Width(Value)))
-  AddItem(id_properties_tree, #_pi_height, Str(Height(Value)))
+  AddItem(id_properties_tree, #_pi_group_0, "common")
+  AddItem(id_properties_tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
+  AddItem(id_properties_tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetCount(Value), #PB_GadgetType_String, 1)
+  AddItem(id_properties_tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #PB_GadgetType_String, 1)
+  
+  AddItem(id_properties_tree, #_pi_group_1, "layout")
+  AddItem(id_properties_tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_GadgetType_Spin, 1)
+  AddItem(id_properties_tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #PB_GadgetType_Spin, 1)
+  AddItem(id_properties_tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #PB_GadgetType_Spin, 1)
+  AddItem(id_properties_tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #PB_GadgetType_Spin, 1)
+  
+  AddItem(id_properties_tree, #_pi_group_2, "state")
+  AddItem(id_properties_tree, #_pi_disable, "disable:"+Chr(10)+"", #PB_GadgetType_ComboBox, 1);Str(Disable(Value)))
+  AddItem(id_properties_tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_GadgetType_ComboBox, 1)
   
   AddItem(id_inspector_panel, 2, "events", 0, 0)  
   CloseList()
@@ -609,5 +623,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = +-vf+v----8-
+; Folding = ------------
 ; EnableXP

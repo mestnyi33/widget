@@ -372,12 +372,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       sublevellen.l
       
       len.l ; ?????? ?????? ??????? ?????
-      fontID.i
       childrens.l
       
-      l._s_line_ ; 
       *last._s_rows
       *first._s_rows
+      *after._s_rows
+      *before._s_rows
+      
+      l._s_line_ ; 
       *parent._s_rows
       box._s_box[2]
       *option_group._s_rows
@@ -404,7 +406,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       ; list view
       drag.b
-      FontID.i
       scrolled.b
       sublevel.l
       sublevellen.l
@@ -440,6 +441,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       *_tab._s_widget
       _item.l ; panel add item opened index
       _parent_item.l ; parent panel tab index
+      *_flag
+      
       
       draw.b
       type.b
