@@ -1,6 +1,7 @@
 ﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+; no work
 
-Global i, *w, *p1,*p2, *ch, *b
+Global i, *s, *w, *p1,*p2, *ch, *b
 
 Procedure events_widgets()
   Select *event\type
@@ -26,22 +27,28 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
   CloseList()
   
   *p1 = Container(20, 180, 200, 200)
-  Button(-25, 10, 100, 30, "Button")
   *w = Container(10, 10, 100, 100)
-  Container(10, 10, 100, 100)
-  *ch = Button(-25, 10, 100, 20, "Button")
+  *s = Container(10, 10, 100, 100)
   CloseList()
   CloseList()
   CloseList()
   
-  *b=Button(10,430, 200, 30, "change parent", #__Button_Toggle)
+  OpenList(*p1)
+   Button(-25, 10, 100, 30, "Button_1_4")
+  CloseList()
+  
+  OpenList(*s)
+  *ch = Button(-25, 10, 100, 20, "Button_3_5")
+  CloseList()
+  
+  ;*b=Button(10,430, 200, 30, "change parent", #__Button_Toggle)
   
   i = 1
-  SetParent(*w, *p2)
-  SetParent(*w, *p1)
+;   SetParent(*w, *p2)
+;   SetParent(*w, *p1)
   
   ForEach GetChildrens(Root())
-    Debug  GetChildrens(Root())\class +" - "+ GetChildrens(Root())\text\string
+    Debug ""+ GetChildrens(Root())\index +" - "+ ListIndex(GetChildrens(Root())) +" - "+ GetChildrens(Root())\parent\index +" - "+ GetChildrens(Root())\class
   Next
   
   

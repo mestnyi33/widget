@@ -41,16 +41,17 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_align
     Structure _s_align
-      width.l
-      height.l
+      delta._s_coordinate
       
       left.b
       top.b
       right.b
       bottom.b
-      vertical.b
-      horizontal.b
+      
+      ; proportional.b
       autosize.b
+      v.b
+      h.b
     EndStructure
     
     ;- - _s_arrow

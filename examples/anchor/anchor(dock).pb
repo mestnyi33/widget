@@ -180,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  Global *l,*t,*r,*b , *lt,*rt,*rb,*lb, *ce
+  Global *l,*t,*r,*b , *dl,*dt,*dr,*db , *lt,*rt,*rb,*lb, *ce
   
   Global *demo
   Procedure events_widgets()
@@ -249,12 +249,17 @@ CompilerIf #PB_Compiler_IsMainFile
      *rb = Button(98-s-o*2,98-s-o*2,s,s,"",#__button_toggle,0,r)
      *lb = Button(o,98-s-o*2,s,s,"",#__button_toggle,0,r)
     
-     *t = Button(o2,o2,s2,s2,"",#__button_toggle,0,r2)
+     
+;      *dt = Button(o2,o2,s2,s2,"",#__button_toggle,0,r2)
+      *dl = Button(o2,s+1,s2,98-s*2-o2*4 ,"",#__button_toggle,0,r2)
+      *dr = Button(98-s2-o2*2,s+1,s2,98-s*2-o2*4,"",#__button_toggle,0,r2)
+;      *db = Button(o2,98-s2-o2*2,s2,s2,"",#__button_toggle,0,r2)
+     
+      *t = Button(o2,o2,s2,s2,"",#__button_toggle,0,r2)
      *l = Button(o2,o2,s2,s2,"",#__button_toggle,0,r2)
      *r = Button(98-s2-o2*2,o2,s2,s2,"",#__button_toggle,0,r2)
      *b = Button(o2,98-s2-o2*2,s2,s2,"",#__button_toggle,0,r2)
-     
-     SetState(*lt, 1)
+    SetState(*lt, 1)
      
     Define *c._s_widget = Container(s2+o2*3-1,s2+o2*3-1,(98-s2*2-o2*6+1),(98-s2*2-o2*6+1))
     *c\round = 9
@@ -346,5 +351,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----Ng
+; Folding = 0-vWZg
 ; EnableXP

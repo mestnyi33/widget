@@ -405,9 +405,9 @@ Procedure object_add_new(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0
     
     inspector_add_pos(id_inspector_tree, *new, Class.s)
     
-;     If a_set(*new)
-;       properties_update(id_properties_tree, *new)
-;     EndIf
+    ;If a_set(*new)
+      properties_update(id_properties_tree, *new)
+    ;EndIf
   EndIf
   
   If *parent : CloseList() : EndIf

@@ -156,6 +156,19 @@ CompilerIf #PB_Compiler_IsMainFile
       EndWith
     EndProcedure
     
+    Procedure.i __SetAlignment(*this._s_widget, x.f, y.f, auto.b)
+      
+      With *this
+        If \parent
+          If Not \align
+            \align.structures::_s_align = AllocateStructure(structures::_s_align)
+          EndIf
+          
+          
+        EndIf  
+      EndWith
+    EndProcedure
+    
     
   Procedure.s get_text(m.s=#LF$)
     Protected Text.s = "This is a long line." + m.s +
@@ -331,5 +344,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----Ow
+; Folding = ----4B+
 ; EnableXP

@@ -18,30 +18,30 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Open(0, 0, 0, 250, 110)
     
-    Container(55, 60, 190, 45)                     ; Gadget(9,   
-    Container(3, -3, 175-4, 45+6)   
-    Container(3, -3, 160-8, 45+6)   
+    Container(55, 60, 30, 45)                     ; Gadget(9,   
+    Container(3, 20, 24-4, 25+6)   
+    Container(3, 4, 17-8, 25+6)   
     CloseList()
     CloseList()
     CloseList()
     
-    Button(55, 56, 170, 25, "8",#PB_Button_Right)  ; Gadget(8, 
-    Button(55, 52, 150, 25, "7",#PB_Button_Right)  ; Gadget(7, 
-    Button(55, 48, 130, 25, "6",#PB_Button_Right)  ; Gadget(6, 
+    Button(55, 51, 170, 25, "8",#PB_Button_Right)  ; Gadget(8, 
+    Button(55, 47, 150, 25, "7",#PB_Button_Right)  ; Gadget(7, 
+    Button(55, 43, 130, 25, "6",#PB_Button_Right)  ; Gadget(6, 
     
-    *this = Container(10, 10, 60, 90)              ; Gadget(10, 
-    Container(10, 10, 60, 70-4)   
-    Container(10, 10, 60, 50-8)   
+    *this = Container(10, 15, 60, 80)              ; Gadget(10, 
+    Container(10, 4, 60, 74-4)   
+    Container(10, 4, 60, 68-8)   
     CloseList()
     CloseList()
     CloseList()
-    *current = Button(55, 44, 110, 25, "5",#PB_Button_Right)  ; Gadget(5, 
+    *current = Button(55, 39, 110, 25, "5",#PB_Button_Right)  ; Gadget(5, 
     
-    Button(55, 40, 90, 25, "4",#PB_Button_Right)  ; Gadget(4, 
-    Button(55, 36, 70, 25, "3",#PB_Button_Right)  ; Gadget(3, 
-    Button(55, 32, 50, 25, "2",#PB_Button_Right)  ; Gadget(2, 
+    Button(55, 35, 90, 25, "4",#PB_Button_Right)  ; Gadget(4, 
+    Button(55, 31, 70, 25, "3",#PB_Button_Right)  ; Gadget(3, 
+    Button(55, 27, 50, 25, "2",#PB_Button_Right)  ; Gadget(2, 
     
-    Container(55, 28, 30, 25)                     ; Gadget(1,
+    Container(55, 5, 30, 43)                     ; Gadget(1,
     Container(3, -3, 24-4, 25+6)   
     Container(3, -3, 17-8, 25+6)   
     CloseList()

@@ -149,19 +149,32 @@
     EndEnumeration
     
     
-   
-    ;- _c_align
+    EnumerationBinary 
+      #__Vertical
+      
+      #__Full
+      
+      #__Left   
+      #__Top    
+      #__Right  
+      #__Bottom 
+      
+      #__Center 
+      #__Proportional
+    EndEnumeration
+    
     ;- _c_flag
     EnumerationBinary _c_align 2
       #__flag_vertical ;= 1
       
-      #__align_auto
-      #__align_left
-      #__align_top
-      #__align_right
-      #__align_bottom
-      #__align_center
+      #__flag_left
+      #__flag_top
+      #__flag_right
+      #__flag_bottom
       
+      #__flag_center
+      #__flag_proportional
+    
       
       #__flag_numeric
       #__flag_readonly
@@ -204,14 +217,25 @@
     EndEnumeration
     
     ;#__flag_checkboxes = #__flag_clickselect
-    #__align_full = #__align_left|#__align_top|#__align_right|#__align_bottom
-      
     #__flag_noGadget = #__flag_nobuttons
-    #__flag_autoright = #__flag_autosize|#__align_right
-    #__flag_autobottom = #__flag_autosize|#__align_bottom
+    #__flag_autoright = #__flag_autosize|#__flag_right
+    #__flag_autobottom = #__flag_autosize|#__flag_bottom
     
     #__flag_default = #__flag_nolines|#__flag_nobuttons|#__flag_checkboxes
     #__flag_alwaysselection = #__flag_lowercase|#__flag_uppercase
+    
+    ;- _c_align
+    #__align_none          = #False
+    #__align_vertical      = #__flag_vertical
+    #__align_left          = #__flag_left
+    #__align_top           = #__flag_top  
+    #__align_right         = #__flag_right
+    #__align_bottom        = #__flag_bottom
+    
+    #__align_full          = #__flag_autosize
+    #__align_center        = #__flag_center
+    #__align_proportional  = #__flag_proportional
+    ;#__align_full = #__align_left|#__align_top|#__align_right|#__align_bottom
     
     ;- _c_bar
     EnumerationBinary 4

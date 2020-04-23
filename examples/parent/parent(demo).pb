@@ -138,13 +138,16 @@ CompilerIf #PB_Compiler_IsMainFile
   *s_0 = Button(30,90,160,30,"Button >>(ScrollArea)") 
   CloseList()
   ;
-  *pb_3 = Button((630-160)/2,90-25-35,160,30,"Button >>(Desktop)") 
-  *pb_0 = Button((630-160)/2,90-25,160,20,"Button >>(Panel (0))") 
-  *pb_1 = Button((630-160)/2,90,160,20,"Button >>(Panel (1))") 
-  *pb_2 = Button((630-160)/2,90+25,160,20,"Button >>(Panel (2))") 
+  *pb_3 = Button((630-190)/2,90-25-35,190,30,"Button >>(Desktop)") 
+  *pb_0 = Button((630-190)/2,90-25,190,20,"Button >>(Panel to hide item (0))") 
+  *pb_1 = Button((630-190)/2,90,190,20,"Button >>(Panel to hide item (1))") 
+  *pb_2 = Button((630-190)/2,90+25,190,20,"Button >>(Panel to hide item (2))") 
   
   *w_0 = Button(30,90,160,30,"Button >>(Window)")
   *b_0 = Button(450,90,160,30,"Button >>(Back)") 
+  
+  
+  Disable(*pb_0, 1)
   
   Bind(Root(), @Widgets_CallBack())
   
