@@ -10107,23 +10107,24 @@ CompilerIf Not Defined(widget, #PB_Module)
         DrawingMode(#PB_2DDrawing_Default)
         RoundBox(*this\x[#__c_1],*this\y[#__c_1],*this\width[#__c_1],*this\height[#__c_1], *this\round, *this\round, *this\color\back[*this\color\state])
         
-        DrawingMode(#PB_2DDrawing_Outlined)
-        RoundBox(*this\x[#__c_1],*this\y[#__c_1],*this\width[#__c_1],*this\height[#__c_1], *this\round, *this\round, *this\color\frame[*this\color\state])
-        
         ;         DrawingMode(#PB_2DDrawing_Transparent)
         ;         DrawText(*this\x[#__c_1]+20,*this\y[#__c_1], Str(\index)+"_"+Str(\level), $ff000000)
         
         ; Draw background image
         If \image\index[2]
+          ClipOutput( *this\x[#__c_2], *this\y[#__c_2], *this\width[#__c_2], *this\height[#__c_2])
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
           DrawAlphaImage(\image\index[2], *this\scroll\x + \image\x, *this\scroll\y + \image\y, \color\alpha)
+          ClipOutput( *this\x[#__c_4], *this\y[#__c_4], *this\width[#__c_4], *this\height[#__c_4])
         EndIf
         
         If \scroll 
-          ; ClipOutput(\x[#__c_4],\y[#__c_4],\width[#__c_4],\height[#__c_4])
           If \scroll\v And \scroll\v\type And Not \scroll\v\hide : Scroll_Draw(\scroll\v) : EndIf
           If \scroll\h And \scroll\h\type And Not \scroll\h\hide : Scroll_Draw(\scroll\h) : EndIf
         EndIf
+        
+        DrawingMode(#PB_2DDrawing_Outlined)
+        RoundBox(*this\x[#__c_1],*this\y[#__c_1],*this\width[#__c_1],*this\height[#__c_1], *this\round, *this\round, *this\color\frame[*this\color\state])
       EndWith
     EndProcedure
     
@@ -15353,5 +15354,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------c4-+f8---------------------------------0-------------------------------------+--------------------------------
+; Folding = +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---+------c4-+f8---------------------------------0-------------------------------------+--------------------------------
 ; EnableXP

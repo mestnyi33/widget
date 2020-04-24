@@ -1219,9 +1219,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         EndIf
         
         If _this_\text\align\right
-          _this_\text\y = _y_ +_this_\text\align\height+ _this_\text\_padding+_this_\text\width
+          _this_\text\y = _y_ +_this_\text\align\delta\height+ _this_\text\_padding+_this_\text\width
         ElseIf Not _this_\text\align\left
-          _this_\text\y = _y_ + (_height_+_this_\text\align\height+_this_\text\width)/2
+          _this_\text\y = _y_ + (_height_+_this_\text\align\delta\height+_this_\text\width)/2
         Else
           _this_\text\y = _y_ + _height_-_this_\text\_padding
         EndIf
@@ -1248,9 +1248,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         EndIf
         
         If _this_\text\align\right
-          _this_\text\x = _x_ + (_width_-_this_\text\align\width-_this_\text\width-_this_\text\_padding) 
+          _this_\text\x = _x_ + (_width_-_this_\text\align\delta\width-_this_\text\width-_this_\text\_padding) 
         ElseIf Not _this_\text\align\left
-          _this_\text\x = _x_ + (_width_-_this_\text\align\width-_this_\text\width)/2
+          _this_\text\x = _x_ + (_width_-_this_\text\align\delta\width-_this_\text\width)/2
         Else
           _this_\text\x = _x_ + _this_\text\_padding
         EndIf
@@ -2262,7 +2262,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                                   (Bool(*this\bar\vertical And Not *this\bar\inverted) * 270)
             EndIf
             
-            _text_change_(*this, *this\x[#__c_2], *this\y[#__c_2], *this\width[#__c_2], *this\height[#__c_2])
+           ; _text_change_(*this, *this\x[#__c_2], *this\y[#__c_2], *this\width[#__c_2], *this\height[#__c_2])
           EndIf
         EndIf
         
@@ -10339,10 +10339,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; #__flag_autoSize
         If \parent And \parent\type <> #__Type_Splitter And \align And
            \align\autoSize And \align\left And \align\top And \align\right And \align\bottom
-          X = 0; \align\width
-          Y = 0; \align\height
-          Width = \parent\width[#__c_2] ; - \align\width
-          Height = \parent\height[#__c_2] ; - \align\height
+          X = 0; \align\delta\width
+          Y = 0; \align\delta\height
+          Width = \parent\width[#__c_2] ; - \align\delta\width
+          Height = \parent\height[#__c_2] ; - \align\delta\height
         EndIf
         
         
@@ -10515,20 +10515,20 @@ CompilerIf Not Defined(widget, #PB_Module)
               If GetChildrens(*this)\parent = *this ; And GetChildrens(*this)\draw 
                 If GetChildrens(*this)\align
                   If GetChildrens(*this)\align\right And Not GetChildrens(*this)\align\left
-                    x = *this\width[#__c_2] - GetChildrens(*this)\align\width
+                    x = *this\width[#__c_2] - GetChildrens(*this)\align\delta\width
                     
                   ElseIf Not GetChildrens(*this)\align\left
-                    x = (*this\width[#__c_2] - (GetChildrens(*this)\align\width+GetChildrens(*this)\width))/2
+                    x = (*this\width[#__c_2] - (GetChildrens(*this)\align\delta\width+GetChildrens(*this)\width))/2
                     
                   Else
                     x = (GetChildrens(*this)\x-*this\x[#__c_2]) + Change_x 
                   EndIf
                   
                   If GetChildrens(*this)\align\bottom And Not GetChildrens(*this)\align\top
-                    y = \height[#__c_2] - GetChildrens(*this)\align\height
+                    y = \height[#__c_2] - GetChildrens(*this)\align\delta\height
                     
                   ElseIf Not GetChildrens(*this)\align\top
-                    y = (*this\height[#__c_2] - (GetChildrens(*this)\align\height+GetChildrens(*this)\height))/2 
+                    y = (*this\height[#__c_2] - (GetChildrens(*this)\align\delta\height+GetChildrens(*this)\height))/2 
                     
                   Else
                     If *this\y[#__c_2]
@@ -10539,13 +10539,13 @@ CompilerIf Not Defined(widget, #PB_Module)
                   EndIf
                   
                   If GetChildrens(*this)\align\top And GetChildrens(*this)\align\bottom
-                    Height = *this\height[#__c_2] - GetChildrens(*this)\align\height
+                    Height = *this\height[#__c_2] - GetChildrens(*this)\align\delta\height
                   Else
                     Height = #PB_Ignore
                   EndIf
                   
                   If GetChildrens(*this)\align\left And GetChildrens(*this)\align\right
-                    Width = *this\width[#__c_2] - GetChildrens(*this)\align\width
+                    Width = *this\width[#__c_2] - GetChildrens(*this)\align\delta\width
                   Else
                     Width = #PB_Ignore
                   EndIf
@@ -11628,17 +11628,17 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               If \align\right
                 If \align\left
-                  \align\width = \parent\width[#__c_2] - \width
+                  \align\delta\width = \parent\width[#__c_2] - \width
                 Else
-                  \align\width = (\parent\width[#__c_2]-\x[#__c_3])
+                  \align\delta\width = (\parent\width[#__c_2]-\x[#__c_3])
                 EndIf
               EndIf
               
               If \align\bottom
                 If \align\top
-                  \align\height = \parent\height[#__c_2] - \height
+                  \align\delta\height = \parent\height[#__c_2] - \height
                 Else
-                  \align\height = (\parent\height[#__c_2]-\y[#__c_3])
+                  \align\delta\height = (\parent\height[#__c_2]-\y[#__c_3])
                 EndIf
               EndIf
               
