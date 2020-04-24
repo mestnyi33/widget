@@ -42,6 +42,10 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_align
     Structure _s_align
       delta._s_coordinate
+      _left.l
+      _top.l
+      _right.l
+      _bottom.l
       
       left.b
       top.b

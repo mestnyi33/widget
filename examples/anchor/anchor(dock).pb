@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 If \align\bottom
                   \y = (\parent\height[2] - \height)
                   
-                ElseIf \align\vertical
+                ElseIf \align\v
                   \y = (\parent\height[p] - \height)/2
                   
                 EndIf
@@ -98,7 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     \x = (\parent\width[2] - \width)
                   EndIf
                   
-                ElseIf \align\horizontal
+                ElseIf \align\h
                   \x = (\parent\width[p] - \width)/2
                 EndIf
                 
@@ -106,17 +106,17 @@ CompilerIf #PB_Compiler_IsMainFile
                 
               If \align\right
                 If \align\left
-                  \align\width = \parent\width[#__c_2] - \width
+                  \align\delta\x = \parent\width[#__c_2] - \width
                 Else
-                  \align\width = (\parent\width[#__c_2]-\x[#__c_3])
+                  \align\delta\x = (\parent\width[#__c_2]-\x[#__c_3])
                 EndIf
               EndIf
               
               If \align\bottom
                 If \align\top
-                  \align\height = \parent\height[#__c_2] - \height
+                  \align\delta\y = \parent\height[#__c_2] - \height
                 Else
-                  \align\height = (\parent\height[#__c_2]-\y[#__c_3])
+                  \align\delta\y = (\parent\height[#__c_2]-\y[#__c_3])
                 EndIf
               EndIf
                 
@@ -136,17 +136,17 @@ CompilerIf #PB_Compiler_IsMainFile
               
               If \align\right
                 If \align\left
-                  \align\width = \parent\width[#__c_2] - \width
+                  \align\delta\x = \parent\width[#__c_2] - \width
                 Else
-                  \align\width = (\parent\width[#__c_2]-\x[#__c_3])
+                  \align\delta\x = (\parent\width[#__c_2]-\x[#__c_3])
                 EndIf
               EndIf
               
               If \align\bottom
                 If \align\top
-                  \align\height = \parent\height[#__c_2] - \height
+                  \align\delta\y = \parent\height[#__c_2] - \height
                 Else
-                  \align\height = (\parent\height[#__c_2]-\y[#__c_3])
+                  \align\delta\y = (\parent\height[#__c_2]-\y[#__c_3])
                 EndIf
               EndIf
               
@@ -351,5 +351,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 0-vWZg
+; Folding = ----Zg
 ; EnableXP

@@ -1,329 +1,245 @@
 ﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
+UseLib(widget)
 
-;-
-CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-  Uselib(widget)
+Global Window_3
+
+Global AlignResult, L_Button, T_Button, R_Button, B_Button, LT_Button, RT_Button, LB_Button, RB_Button, C_Button, S_Screen, C_Add, Sha
+Global S_Left, S_Top, S_Right, S_Bottom, T_Z, L_Z, R_Z, B_Z, L_L, L_R, L_C, T_T, R_R, B_B, T_B, T_C, R_L, R_C, B_T, B_C
+
+UsePNGImageDecoder()
+
+Procedure  Additinal()
+  If WindowWidth(Window_3)< = 120
+    ResizeWindow(Window_3,#PB_Ignore,#PB_Ignore,390,#PB_Ignore)
+  Else
+    ResizeWindow(Window_3,#PB_Ignore,#PB_Ignore,120,#PB_Ignore)
+  EndIf  
+EndProcedure
+
+Macro ResetStatic()
+  L = 0
+  T = 0
+  R = 0
+  B = 0
+  LT = 0
+  RT = 0
+  RB = 0
+  LB = 0
+  SetState(L_Button,0)
+  SetState(T_Button,0)
+  SetState(R_Button,0)
+  SetState(B_Button,0)
+  SetState(LT_Button,0)
+  SetState(LB_Button,0)
+  SetState(RT_Button,0)
+  SetState(RB_Button,0)
+EndMacro
+
+Procedure SetAlign(Sha, x,y)
+  Static L,LT,T,RT,R,RB,B,LB,C,Result
   
-  Procedure.i _SetAlignment(*this._s_widget, Mode.l, Type.l=1)
-      
-      With *this
-        Select Type
-          Case 1 ; widget
-            If \parent
-              If Not \align
-                \align.structures::_s_align = AllocateStructure(structures::_s_align)
-              EndIf
-              
-              ; Auto dock
-                Static y2,x2,y1,x1
-                Protected width = #PB_Ignore
-                Protected height = #PB_Ignore
-                
-                
-              If Bool(Mode&#__flag_autoSize=#__flag_autoSize)
-                \align\top = Bool(Not Mode&#__align_bottom)
-                \align\left = Bool(Not Mode&#__align_right)
-                \align\right = Bool(Not Mode&#__align_left)
-                \align\bottom = Bool(Not Mode&#__align_top)
-                \align\autoSize = 0
-                
-                If \align\left And \align\right
-                  \x = x2
-                  width = \parent\width[#__c_2] - x1 - x2
-                EndIf
-                If \align\top And \align\bottom 
-                  \y = y2
-                  height = \parent\height[#__c_2] - y1 - y2
-                EndIf
-                
-                If \align\left And Not \align\right
-                  \x = x2
-                  \y = y2
-                  x2 + \width
-                  height = \parent\height[#__c_2] - y1 - y2
-                EndIf
-                If \align\right And Not \align\left
-                  \x = \parent\width[#__c_2] - \width - x1
-                  \y = y2
-                  x1 + \width
-                  height = \parent\height[#__c_2] - y1 - y2
-                EndIf
-                
-                If \align\top And Not \align\bottom 
-                  \x = 0
-                  \y = y2
-                  y2 + \height
-                  width = \parent\width[#__c_2] - x1 - x2
-                EndIf
-                If \align\bottom And Not \align\top
-                  \x = 0
-                  \y = \parent\height[#__c_2] - \height - y1
-                  y1 + \height
-                  width = \parent\width[#__c_2] - x1 - x2
-                EndIf
-                
-                
-                Resize(*this, \x, \y, width, height)
-                
-              ElseIf Bool(Mode&#__align_auto=#__align_auto)
-                \align\top = Bool(Mode&#__align_top=#__align_top)
-                \align\left = Bool(Mode&#__align_left=#__align_left)
-                \align\right = Bool(Mode&#__align_right=#__align_right)
-                \align\bottom = Bool(Mode&#__align_bottom=#__align_bottom)
-                
-                Protected p = 0
-                If \align\top
-                  \y = 0
-                  \x = (\parent\width[p] - \width)/2
-                EndIf
-                
-                If \align\left
-                  \y = (\parent\height[p] - \height)/2 
-                  \x = 0
-                EndIf
-                
-                If \align\right
-                  \y = (\parent\height[p] - \height)/2
-                  \x = (\parent\width[2] - \width)
-                EndIf
-                
-                If \align\bottom
-                  \y = (\parent\height[2] - \height)
-                  \x = (\parent\width[p] - \width)/2
-                EndIf
-                
-                
-                If \align\left And \align\top
-                  \y = 0
-                  \x = 0
-                EndIf
-                 
-                If \align\right And \align\top
-                  \y = 0
-                  \x = (\parent\width[2] - \width)
-                EndIf
-                
-                If \align\right And \align\bottom
-                  \y = (\parent\height[2] - \height)
-                  \x = (\parent\width[2] - \width)
-                EndIf
-                
-                If \align\left And \align\bottom
-                  \y = (\parent\height[2] - \height)
-                  \x = 0
-                EndIf
-                
-                
-              If \align\right
-                If \align\left
-                  \align\width = \parent\width[#__c_2] - \width
-                Else
-                  \align\width = (\parent\width[#__c_2]-\x[#__c_3])
-                EndIf
-              EndIf
-              
-              If \align\bottom
-                If \align\top
-                  \align\height = \parent\height[#__c_2] - \height
-                Else
-                  \align\height = (\parent\height[#__c_2]-\y[#__c_3])
-                EndIf
-              EndIf
-                
-                Resize(*this, \x, \y, width, height)
-                
-              Else
-                \align\top = Bool(Mode&#__align_top=#__align_top)
-                \align\left = Bool(Mode&#__align_left=#__align_left)
-                \align\right = Bool(Mode&#__align_right=#__align_right)
-                \align\bottom = Bool(Mode&#__align_bottom=#__align_bottom)
-                
-                If Bool(Mode&#__align_center=#__align_center)
-                  \align\horizontal = Bool(Not \align\right And Not \align\left)
-                  \align\vertical = Bool(Not \align\bottom And Not \align\top)
-                EndIf
-              EndIf
-              
-              If \align\right
-                If \align\left
-                  \align\width = \parent\width[#__c_2] - \width
-                Else
-                  \align\width = (\parent\width[#__c_2]-\x[#__c_3])
-                EndIf
-              EndIf
-              
-              If \align\bottom
-                If \align\top
-                  \align\height = \parent\height[#__c_2] - \height
-                Else
-                  \align\height = (\parent\height[#__c_2]-\y[#__c_3])
-                EndIf
-              EndIf
-              
-              ; update parent childrens coordinate
-              Resize(\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-            EndIf
-          Case 2 ; text
-          Case 3 ; image
-        EndSelect
-      EndWith
-    EndProcedure
-    
-  Procedure.s get_text(m.s=#LF$)
-    Protected Text.s = "This is a long line." + m.s +
-                       "Who should show." + 
-                       m.s +
-                       m.s +
-                       m.s +
-                       m.s +
-                       "I have to write the text in the box or not." + 
-                       m.s +
-                       m.s +
-                       m.s +
-                       m.s +
-                       "The string must be very long." + m.s +
-                       "Otherwise it will not work." ;+ m.s; +
-    
-    ProcedureReturn Text
-  EndProcedure
+  L = GetState(L_Button)
+  T = GetState(T_Button)
+  R = GetState(R_Button)
+  B = GetState(B_Button)
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  LT = GetState(LT_Button)
+  RT = GetState(RT_Button)
+  RB = GetState(RB_Button)
+  LB = GetState(LB_Button)
+  
+  C = GetState(C_Button)
   
   
-  Global *demo
-  Procedure events_widgets()
-    Select GetClass(*event\widget)
-      Case "t_anchor"
-        _SetAlignment(*demo, #__align_Center|#__align_top|#__align_auto)
-        
-      Case "l_anchor"
-        _SetAlignment(*demo, #__align_Center|#__align_left|#__align_auto)
-        
-      Case "r_anchor"
-        _SetAlignment(*demo, #__align_Center|#__align_right|#__align_auto)
-        
-      Case "b_anchor"
-        _SetAlignment(*demo, #__align_Center|#__align_bottom|#__align_auto)
-        
-        
-      Case "lt_anchor"
-        _SetAlignment(*demo, #__align_left|#__align_top|#__align_auto)
-        
-      Case "rt_anchor"
-        _SetAlignment(*demo, #__align_right|#__align_top|#__align_auto)
-        
-      Case "rb_anchor"
-        _SetAlignment(*demo, #__align_right|#__align_bottom|#__align_auto)
-        
-      Case "lb_anchor"
-        _SetAlignment(*demo, #__align_left|#__align_bottom|#__align_auto)
-      
-  EndSelect    
-  EndProcedure
-  
-  If Open(OpenWindow(#PB_Any, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
+  If (L = #True And R = #True And T = #True And B = #True)
+    Result = 9
     
-    Define *cont = Container(15,15,100,100)
-    Define s2=10+6, s = s2+6-1, r2 = 4+3, r = r2+3-1, o=1, o2 = 1
-    Define *lt = Button(o,o,s,s,"",0,0,r)
-    Define *rt = Button(98-s-o*2,o,s,s,"",0,0,r)
-    Define *rb = Button(98-s-o*2,98-s-o*2,s,s,"",0,0,r)
-    Define *lb = Button(o,98-s-o*2,s,s,"",0,0,r)
+  ElseIf L = #True And T = #True And R = #True
+    Result = 11
+  ElseIf L = #True And B = #True And R = #True
+    Result = 13
+  ElseIf T = #True And R = #True And B = #True
+    Result = 12
+  ElseIf T = #True And L = #True And B = #True
+    Result = 10
     
-    Define *t = Button(o2,o2,s2,s2,"",0,0,r2)
-    Define *l = Button(o2,o2,s2,s2,"",0,0,r2)
-    Define *r = Button(98-s2-o2*2,o2,s2,s2,"",0,0,r2)
-    Define *b = Button(o2,98-s2-o2*2,s2,s2,"",0,0,r2)
+  ElseIf L = #True And T = #True
+    Result = 2
+  ElseIf L = #True And B = #True
+    Result = 8
+  ElseIf R = #True And T = #True
+    Result = 4
+  ElseIf R = #True And B = #True
+    Result = 6
     
-    Define *c._s_widget = Container(s2+o2*3-1,s2+o2*3-1,(98-s2*2-o2*6+1),(98-s2*2-o2*6+1))
-    *c\round = 9
+  ElseIf L = #True And R = #True
+    Result = 14
+  ElseIf T = #True And B = #True
+    Result = 15
     
-    *demo = Button(o2,o2,s2,s2,"",0,0, r2)
-    CloseList()
-    
-    SetClass(*t, "t_anchor")
-    SetClass(*l, "l_anchor")
-    SetClass(*r, "r_anchor")
-    SetClass(*b, "b_anchor")
-    
-    SetClass(*lt, "lt_anchor")
-    SetClass(*rt, "rt_anchor")
-    SetClass(*rb, "rb_anchor")
-    SetClass(*lb, "lb_anchor")
-    
-    _SetAlignment(*t, #__align_Center|#__align_top)
-    _SetAlignment(*b, #__align_Center|#__align_bottom)
-    _SetAlignment(*l, #__align_Center|#__align_left)
-    _SetAlignment(*r, #__align_Center|#__align_right)
-    
-    
-    _SetAlignment(*lt, #__align_left|#__align_top)
-    _SetAlignment(*rt, #__align_right|#__align_top)
-    _SetAlignment(*rb, #__align_right|#__align_bottom)
-    _SetAlignment(*lb, #__align_left|#__align_bottom)
-    
-    _SetAlignment(*c, #__align_Center|#__align_full)
-    CloseList()
-    
-    Bind(*t, @events_widgets())
-    Bind(*l, @events_widgets())
-    Bind(*r, @events_widgets())
-    Bind(*b, @events_widgets())
-    
-    Bind(*lt, @events_widgets())
-    Bind(*rt, @events_widgets())
-    Bind(*rb, @events_widgets())
-    Bind(*lb, @events_widgets())
-    
-    Define direction = 1
-  Define Width, Height
-  
-    Repeat
-   Define  gEvent= WaitWindowEvent()
-    
-    Select gEvent
-      Case #PB_Event_CloseWindow
-        Define gQuit= #True
-        
-      Case #PB_Event_Timer
-        If Width = 100
-           direction = 1
-        EndIf
-        If Width = Width(Root())-100
-          direction =- 1
-        EndIf
-;         
-        Width + direction
-        Height + direction
-        
-        If Resize(*cont, #PB_Ignore, #PB_Ignore, Width, Height)
-          ; SetWindowTitle(0, "Change scroll direction "+ Str(GetAttribute(*Bar_0, #PB_Bar_Direction)))
-        EndIf
-        ReDraw(Root())
-    
-      Case #PB_Event_Gadget
-        
-        Select EventGadget()
-          Case 0
-            Width = Width(*cont)
-            Height = Height(*cont)
-            
-            If GetGadgetState(0)
-              AddWindowTimer(GetWindow(Root()), 1, 200)
-            Else
-              RemoveWindowTimer(GetWindow(Root()), 1)
-            EndIf
-        EndSelect
-        
-    EndSelect
-    
-  Until gQuit
+  Else
+    If     L = #True : Result = 1
+    ElseIf T = #True : Result = 3
+    ElseIf R = #True : Result = 5
+    ElseIf B = #True : Result = 7
+    EndIf
   EndIf
-CompilerEndIf
+  
+  If L = #True Or T = #True Or R = #True Or B = #True
+    SetState(LT_Button,0)
+    SetState(RT_Button,0)
+    SetState(RB_Button,0)
+    SetState(LB_Button,0)
+  EndIf
+ 
+  
+  Select Result
+    Case 0  : Resize(Sha, 19,19,21,21)
+    Case 1  : Resize(Sha, 0,19,21,21)
+    Case 3  : Resize(Sha, 19,0,21,21)
+    Case 5  : Resize(Sha, 38-1,19,21,21) 
+    Case 7  : Resize(Sha, 19,38-1,21,21)
+      
+    Case 10 : Resize(Sha, 0,0,40,60-2)
+    Case 11 : Resize(Sha, 0,0,60-2,40)
+    Case 12 : Resize(Sha, 19,0,40,60-2)
+    Case 13 : Resize(Sha, 0,19,60-2,40)
+    Case 14 : Resize(Sha, 0,19,60-2,21)
+    Case 15 : Resize(Sha, 19,0,21,60-2)
+      
+    Case 2  : Resize(Sha, 0,0,21,21)
+    Case 4  : Resize(Sha, 38-1,0,21,21)
+    Case 6  : Resize(Sha, 38-1,38-1,21,21)
+    Case 8  : Resize(Sha, 0,38-1,21,21)
+    Case 9  : Resize(Sha, 0,0,60-2,60-2)
+  EndSelect
+EndProcedure
+
+
+Procedure AliginsEvent()
+  Protected Ev = *event\widget
+
+  
+  Select Ev
+    Case LT_Button 
+      If LT = #True
+        SetAlign(Sha, 0,0)
+        
+        Result = 2
+      Else
+        If B And R
+          SetAlign(Sha, 1,1)
+          
+          Result = 9
+        EndIf
+      EndIf
+      
+    Case LB_Button 
+      If LB = #True
+        SetAlign(Sha, 0,2)
+        
+        Result = 8
+      Else
+        If T And R
+          SetAlign(Sha, 1,1)
+          
+          Result = 9
+        EndIf
+      EndIf
+      
+    Case RT_Button   
+      If RT = #True
+        SetAlign(Sha, 2,0)
+        
+        Result = 4
+      Else
+        If L And B
+          
+          Result = 9
+        EndIf
+      EndIf
+      
+    Case RB_Button     
+      If RB = #True
+        SetAlign(Sha, 2,2)
+        
+        Result = 6
+      Else
+        If L And T
+          SetAlign(Sha, 1,1)
+          
+          Result = 9
+        EndIf
+      EndIf
+      
+    Case C_Button
+      SetAlign(Sha, 1,1)
+      Result = 0
+      
+    Default
+      If L = 0 And T = 0 And R = 0 And B = 0
+        SetAlign(Sha, 1,1)
+  
+        Result = 0
+      EndIf
+      
+  EndSelect 
+  
+EndProcedure
+
+Procedure AlignWindow(x = 0, y = 0, width = 120, height = 140)
+  Window_3  = OpenWindow(#PB_Any, x, y, width, height, "Привязка выбраных гаджетов", #PB_Window_SystemMenu | #PB_Window_Tool | #PB_Window_Invisible)
+  Open(Window_3)
+  
+  L_Button  = Button(10, 30, 15, 60, "", #__button_Toggle|#__button_vertical, -1, 7) ;:ToolTip(L_Button,  "Включить привязку (влево)")
+  T_Button  = Button(30, 10, 60, 15, "", #__button_Toggle, -1, 7)                    ;:ToolTip(T_Button,  "Включить привязку (верх)")
+  R_Button  = Button(95, 30, 15, 60, "", #__button_Toggle|#__button_vertical|#__button_inverted, -1, 7) ;:ToolTip(R_Button,  "Включить привязку (вправо)")
+  B_Button  = Button(30, 95, 60, 15, "", #__button_Toggle|#__button_inverted, -1, 7)                    ;:ToolTip(B_Button,  "Включить привязку (вниз)")
+  LT_Button = Button(10, 10, 15, 15, "", #__button_Toggle, -1, 7)                                       ;:ToolTip(LT_Button, "Включить привязку (влево верх)")
+  RT_Button = Button(95, 10, 15, 15, "", #__button_Toggle, -1, 7)                                       ;:ToolTip(RT_Button, "Включить привязку (вправо верх)")
+  LB_Button = Button(10, 95, 15, 15, "", #__button_Toggle, -1, 7)                                       ;:ToolTip(LB_Button, "Включить привязку (влево вниз)")
+  RB_Button = Button(95, 95, 15, 15, "", #__button_Toggle, -1, 7)                                       ;:ToolTip(RB_Button, "Включить привязку (вправо вниз)")
+  
+  S_Screen = Container(30, 30, 60, 60);, "", #__button_Toggle) :Disable(S_Screen,1)
+                                      ;Define *c._s_widget = S_Screen : *c\round = 9
+  Sha = Text(0, 0, 21, 21, "", #__text_border) : SetColor(Sha, #__color_back, $ff00f0f0)
+  C_Button  = Button(22, 22, 15, 15, "", 0, -1, 7)                    ;:ToolTip(C_Button,  "Включить привязку (вцентре)")
+  CloseList()
+  
+  SetState(L_Button, 1)
+  SetState(T_Button, 1)
+  SetState(RB_Button, 1)
+  
+  ;SetState(LT_Button, 1)
+  ; Post(#PB_EventType_LeftClick, LT_Button)
+  
+  C_Add = Button(10, 115, 100, 15, ">", #__button_Toggle)
+  ; ToolTip(C_Add, "Дополнительные параметры")
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  ; BindGadgetEvent(C_Add,@Additinal())
+  Bind(#PB_All, @AliginsEvent());, Window_3)
+EndProcedure
+
+Procedure ShowAlignWindow()
+  x = DesktopMouseX()+20
+  y = DesktopMouseY()-10
+  ResizeWindow(Window_3,x, y,#PB_Ignore,#PB_Ignore)
+  HideWindow(Window_3,0)
+EndProcedure
+
+AlignWindow()
+ShowAlignWindow()
+
+Repeat :Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ----fH5
+; Folding = ----
 ; EnableXP

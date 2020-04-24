@@ -167,6 +167,7 @@
     EnumerationBinary _c_align 2
       #__flag_vertical ;= 1
       
+      
       #__flag_left
       #__flag_top
       #__flag_right
@@ -174,7 +175,8 @@
       
       #__flag_center
       #__flag_proportional
-    
+      #__align_auto
+      
       
       #__flag_numeric
       #__flag_readonly
@@ -232,7 +234,7 @@
     #__align_right         = #__flag_right
     #__align_bottom        = #__flag_bottom
     
-    #__align_full          = #__flag_autosize
+    #__align_full          = #__flag_autosize|#__align_auto
     #__align_center        = #__flag_center
     #__align_proportional  = #__flag_proportional
     ;#__align_full = #__align_left|#__align_top|#__align_right|#__align_bottom
