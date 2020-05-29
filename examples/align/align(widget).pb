@@ -23,31 +23,31 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Widgets(Hex(5)) = Button(55, 65, 80, 20, ">>|<<")    ; proportional  #proportion
     
-    Widgets(Hex(6)) = Button(10, 90, 80, 20, ">>|", #__Button_Right) ; proportional
-    Widgets(Hex(7)) = Button(100, 90, 80, 20, "|<<", #__Button_Left) ; proportional
+    Widgets(Hex(6)) = Button(10, 90, 80, 20, ">>|", #__button_right) ; proportional
+    Widgets(Hex(7)) = Button(100, 90, 80, 20, "|<<", #__button_left) ; proportional
     
-    Widgets(Hex(8)) = Button(10, 115, 50, 20, ">>|", #__Button_Right) ; proportional
+    Widgets(Hex(8)) = Button(10, 115, 50, 20, ">>|", #__button_right) ; proportional
     Widgets(Hex(9)) = Button(60, 115, 20, 20, "|")                    ; proportional
     Widgets(Hex(10)) = Button(80, 115, 30, 20, "<<>>")                ; proportional
     Widgets(Hex(11)) = Button(110, 115, 20, 20, "|")                  ; proportional
-    Widgets(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__Button_Left); proportional
+    Widgets(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__button_left); proportional
     
     
-    SetAlignment(Widgets(Hex(2)), #__align_center|#__align_top|#__align_proportional|#__align_vertical)
-    SetAlignment(Widgets(Hex(3)), #__align_center|#__align_right)
-    SetAlignment(Widgets(Hex(4)), #__align_full|#__align_proportional|#__align_vertical)
+    SetAlignment(Widgets(Hex(2)), #__align_center |#__align_vertical |#__align_top|#__align_proportional)    
+    SetAlignment(Widgets(Hex(3)), #__align_center |#__align_right)
+    SetAlignment(Widgets(Hex(4)), #__align_full   |#__align_vertical |#__align_proportional) ; stretch proportional
     SetAlignment(Widgets(Hex(44)), #__align_center|#__align_top)
     
-    SetAlignment(Widgets(Hex(5)), #__align_left|#__align_right|#__align_proportional|#__align_bottom)
+    SetAlignment(Widgets(Hex(5)), #__align_bottom |#__align_left|#__align_right|#__align_proportional)
     
-    SetAlignment(Widgets(Hex(6)), #__align_left|#__align_proportional|#__align_bottom)
-    SetAlignment(Widgets(Hex(7)), #__align_right|#__align_proportional|#__align_bottom)
+    SetAlignment(Widgets(Hex(6)), #__align_bottom |#__align_left|#__align_proportional)
+    SetAlignment(Widgets(Hex(7)), #__align_bottom |#__align_right|#__align_proportional)
     
     SetAlignment(Widgets(Hex(8)), #__align_bottom)
     SetAlignment(Widgets(Hex(9)), #__align_bottom)
-    SetAlignment(Widgets(Hex(10)), #__align_left|#__align_right|#__align_bottom)
-    SetAlignment(Widgets(Hex(11)), #__align_right|#__align_bottom)
-    SetAlignment(Widgets(Hex(12)), #__align_right|#__align_bottom)
+    SetAlignment(Widgets(Hex(10)), #__align_bottom |#__align_left|#__align_right)
+    SetAlignment(Widgets(Hex(11)), #__align_bottom |#__align_right)
+    SetAlignment(Widgets(Hex(12)), #__align_bottom |#__align_right)
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,260)
   EndProcedure
@@ -65,11 +65,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
     
-    Widgets(Hex(1)) = Text(10,  10, 200, 50, "Resize the window, the gadgets will be automatically resized", #__Text_Center)
+    Widgets(Hex(1)) = Text(10,  10, 200, 50, "Resize the window, the gadgets will be automatically resized", #__text_center)
     ; Widgets(Hex(3)) = ButtonImageGadget(3, 10, 70, 200, 60, ImageID(0))
     Widgets(Hex(2)) = Editor(10, 140, 200, 20) : SetText(Widgets(Hex(2)),"Editor")
-    Widgets(Hex(4)) = Button(10, 170, 490, 20, "Button / toggle", #__Button_Toggle)
-    Widgets(Hex(5)) = Text(220,10,190,20,"Text", #__Text_Center) : SetColor(Widgets(Hex(5)), #PB_Gadget_BackColor, $00FFFF)
+    Widgets(Hex(4)) = Button(10, 170, 490, 20, "Button / toggle", #__button_toggle)
+    Widgets(Hex(5)) = Text(220,10,190,20,"Text", #__text_center) : SetColor(Widgets(Hex(5)), #PB_Gadget_BackColor, $00FFFF)
     Widgets(Hex(6)) = Container(220, 30, 190, 100, #PB_Container_Single) : SetColor(Widgets(Hex(6)), #PB_Gadget_BackColor, $cccccc) 
     Widgets(Hex(7)) = Editor(10,  10, 170, 50) : SetText(Widgets(Hex(7)),"Editor")
     Widgets(Hex(8)) = Button(10, 70, 80, 20, "Button") 
@@ -102,61 +102,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
   
+  ; auto alignment
   Procedure example_2()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 0, 0, 190, 200, "Resize gadget", #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
-    
-    Widgets(Hex(1)) = Button(10, 85, 80, 20, "left")   ; center \2     align_proportional_horizontal
-    Widgets(Hex(2)) = Button(55, 10, 80, 20, "top")    ; center \2     align_proportional_horizontal
-    Widgets(Hex(3)) = Button(100, 85, 80, 20, "right") ; right         #right
-    Widgets(Hex(4)) = Button(55, 170, 80, 20, "bottom"); right         #right
-    
-    Widgets(Hex(5)) = Button(55, 85, 80, 20, "center")   ; center \2     align_proportional_horizontal
-    
-    Widgets(Hex(6)) = Button(10, 10, 80, 20, "left&top")    ; right         #right
-    Widgets(Hex(7)) = Button(100, 10, 80, 20, "right&top")  ; right         #right
-    Widgets(Hex(8)) = Button(100, 170, 80, 20, "right&bottom")    ; right         #right
-    Widgets(Hex(9)) = Button(10, 170, 80, 20, "left&bottom")      ; right         #right
-    
-    SetAlignment(Widgets(Hex(1)),#__align_center|#__align_Left) 
-    SetAlignment(Widgets(Hex(2)),#__align_center|#__align_top) 
-    SetAlignment(Widgets(Hex(3)),#__align_center|#__align_right)              
-    SetAlignment(Widgets(Hex(4)),#__align_center|#__align_bottom)      
-    
-    SetAlignment(Widgets(Hex(5)),#__align_center)
-    
-    ;SetAlignment(Widgets(Hex(6)),#__align_none) 
-    SetAlignment(Widgets(Hex(7)),#__align_right)
-    SetAlignment(Widgets(Hex(8)),#__align_right|#__align_bottom) 
-    SetAlignment(Widgets(Hex(9)),#__align_bottom) 
-    
-    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,200)
-  EndProcedure
-  
-  Procedure example_3()
-    Define *w._S_widget = Open( OpenWindow( #PB_Any, 0, 0, 190, 200, "Resize gadget", #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
-    Canvas_0 = GetGadget(*w)
-    Window_0 = GetWindow(*w)
-    
-    Widgets(Hex(1)) = Button(0, 20, 80, 160, "left")  
-    Widgets(Hex(2)) = Button(0, 0, 190, 20, "top")   
-    Widgets(Hex(3)) = Button(110, 20, 80, 160, "right")    
-    Widgets(Hex(4)) = Button(0, 180, 190, 20, "bottom")   
-    
-    Widgets(Hex(5)) = Button(80, 20, 30, 160, "center")   
-    
-    SetAlignment(Widgets(Hex(1)),#__align_full|#__align_Left) 
-    SetAlignment(Widgets(Hex(2)),#__align_full|#__align_top) 
-    SetAlignment(Widgets(Hex(3)),#__align_full|#__align_right)              
-    SetAlignment(Widgets(Hex(4)),#__align_full|#__align_Bottom)      
-    
-    SetAlignment(Widgets(Hex(5)),#__align_full)
-    
-    ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 260,260)
-  EndProcedure
-  
-  Procedure example_2_0()
     Define *w._S_widget = Open( OpenWindow( #PB_Any, 100, 100, 190, 200, "alignment", #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
@@ -169,11 +116,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Widgets(Hex(5)) = Button(0, 0, 80, 40, "center")   ; center \2     align_proportional_horizontal
     
     Widgets(Hex(6)) = Button(0, 0, 80, 40, "left&top")    ; right         #right
-    Widgets(Hex(7)) = Button(0, 0, 80, 40, "right&top")  ; right         #right
-    Widgets(Hex(8)) = Button(0, 0, 80, 40, "right&bottom")    ; right         #right
-    Widgets(Hex(9)) = Button(0, 0, 80, 40, "left&bottom")      ; right         #right
+    Widgets(Hex(7)) = Button(0, 0, 80, 40, "right&top")   ; right         #right
+    Widgets(Hex(8)) = Button(0, 0, 80, 40, "right&bottom"); right         #right
+    Widgets(Hex(9)) = Button(0, 0, 80, 40, "left&bottom") ; right         #right
     
-    SetAlignment(Widgets(Hex(1)),#__align_auto|#__align_center|#__align_Left) 
+    SetAlignment(Widgets(Hex(1)),#__align_auto|#__align_center|#__align_left) 
     SetAlignment(Widgets(Hex(2)),#__align_auto|#__align_center|#__align_top) 
     SetAlignment(Widgets(Hex(3)),#__align_auto|#__align_center|#__align_right)              
     SetAlignment(Widgets(Hex(4)),#__align_auto|#__align_center|#__align_bottom)      
@@ -188,7 +135,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,260)
   EndProcedure
   
-  Procedure example_3_0()
+  ; auto docking
+  Procedure example_3()
     Define *w._S_widget = Open( OpenWindow( #PB_Any, 500, 200, 390, 200, "docking", #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
     Window_0 = GetWindow(*w)
@@ -213,31 +161,32 @@ CompilerIf #PB_Compiler_IsMainFile
     
     CloseList()
     
-    SetAlignment(Widgets(Hex(1)),#__align_full|#__align_Left) 
-    SetAlignment(Widgets(Hex(2)),#__align_full|#__align_top) 
-    SetAlignment(Widgets(Hex(3)),#__align_full|#__align_right)              
-    SetAlignment(Widgets(Hex(4)),#__align_full|#__align_Bottom)      
+    SetAlignment(Widgets(Hex(1)),#__align_auto|#__align_full|#__align_left) 
+    SetAlignment(Widgets(Hex(2)),#__align_auto|#__align_full|#__align_top) 
+    SetAlignment(Widgets(Hex(3)),#__align_auto|#__align_full|#__align_right)              
+    SetAlignment(Widgets(Hex(4)),#__align_auto|#__align_full|#__align_bottom)      
     
-    SetAlignment(Widgets(Hex(11)),#__align_full|#__align_Left) 
-    SetAlignment(Widgets(Hex(33)),#__align_full|#__align_right)              
-    SetAlignment(Widgets(Hex(22)),#__align_full|#__align_top) 
-    SetAlignment(Widgets(Hex(44)),#__align_full|#__align_Bottom)      
+    SetAlignment(Widgets(Hex(11)),#__align_auto|#__align_full|#__align_left) 
+    SetAlignment(Widgets(Hex(33)),#__align_auto|#__align_full|#__align_right)              
+    SetAlignment(Widgets(Hex(22)),#__align_auto|#__align_full|#__align_top) 
+    SetAlignment(Widgets(Hex(44)),#__align_auto|#__align_full|#__align_bottom)      
     
-    SetAlignment(Widgets(Hex(5)),#__align_full)
+    SetAlignment(Widgets(Hex(5)),#__align_auto|#__align_full)
     
+    SetAlignment(Widgets(Hex(51)),#__align_auto|#__align_full|#__align_left) 
+    SetAlignment(Widgets(Hex(52)),#__align_auto|#__align_full|#__align_top) 
+    SetAlignment(Widgets(Hex(53)),#__align_auto|#__align_full|#__align_right)              
+    SetAlignment(Widgets(Hex(54)),#__align_auto|#__align_full|#__align_bottom)      
     
-    SetAlignment(Widgets(Hex(51)),#__align_full|#__align_Left) 
-    SetAlignment(Widgets(Hex(52)),#__align_full|#__align_top) 
-    SetAlignment(Widgets(Hex(53)),#__align_full|#__align_right)              
-    SetAlignment(Widgets(Hex(54)),#__align_full|#__align_Bottom)      
-    
-    SetAlignment(Widgets(Hex(55)),#__align_full)
+    SetAlignment(Widgets(Hex(55)),#__align_auto|#__align_full)
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 460,360)
   EndProcedure
   
-  example_2_0()
-  example_3_0()
+  ; example_1()
+  example_2()
+  example_3()
+  example_0()
   
   Repeat
     gEvent= WaitWindowEvent()
@@ -250,6 +199,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = v-
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = p-
 ; EnableXP

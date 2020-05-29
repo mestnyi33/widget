@@ -202,7 +202,8 @@ EndProcedure
 
 ;-
 Procedure inspector_get_pos(*this._s_widget, *new._s_widget, SubLevel)
-  Protected i, CountItems = CountItems(*this), Position = CountItems ; Начальная позиция
+  Protected CountItems = CountItems(*this)
+  Protected i, Position = CountItems ; Начальная позиция
   
   For i = 0 To CountItems - 1
     If *new = GetItemData(*this, i) 
@@ -228,7 +229,8 @@ EndProcedure
 Procedure inspector_add_pos(*this._s_widget, *new._s_widget, Class.s)
   Protected Parent = GetParent(*new)
   Protected SubLevel = GetLevel(Parent)
-  Protected Position = inspector_get_pos(*this, Parent, SubLevel)
+   ;SetData(*new, CountItems(*this))
+   Protected Position = inspector_get_pos(*this, Parent, SubLevel)
   ; Protected Class.s = GetClass(*new) +"_"+ GetCount(*new)
   
   AddItem(*this, Position, Class.s, #PB_Default, SubLevel)
@@ -236,11 +238,12 @@ Procedure inspector_add_pos(*this._s_widget, *new._s_widget, Class.s)
   SetState(*this, Position)
   SetItemState(*this, Position, #PB_Tree_Selected)
   
-  ;     AddGadgetItem(WE_Selecting, Position, Class.s, 0, SubLevel )
-  ;     SetGadgetItemData(WE_Selecting, Position, *new)
-  ;     SetGadgetState(WE_Selecting, Position) ; Bug
-  ;     SetGadgetItemState(WE_Selecting, Position, #PB_Tree_Selected)
+  AddGadgetItem(listview_debug, Position, Class.s, 0, SubLevel)
+  SetGadgetItemData(listview_debug, Position, *new)
+  SetGadgetState(listview_debug, Position) ; Bug
+  SetGadgetItemState(listview_debug, Position, #PB_Tree_Selected)
   
+  ;Debug Position
   SetData(*new, Position)
   ;Add_Code(*new, Position-1, SubLevel)
   
@@ -469,9 +472,9 @@ Procedure object_events()
           Drag = SetSelector(*This)
         Else
           If a_set(*this)
-            Debug "изменено down"+ *this
+            Debug "изменено down"+ *this +" "+ GetData(*this)
             SetState(id_inspector_tree, GetData(*this))
-            ;SetGadgetState(WE_Selecting, GetData(*this))
+            SetGadgetState(listview_debug, GetData(*this))
             properties_update(id_properties_tree, *this)
           EndIf
         EndIf
@@ -524,11 +527,11 @@ Procedure ide_window_open(x=100,y=100,width=800,height=600)
 ;   CloseList()
   
   id_inspector_tree = Tree(0,0,0,0)
-  listview_debug = ListView(0,0,0,0) 
+  listview_debug = TreeGadget(-1,0,0,0,0) ; ListView(0,0,0,0) 
   
   id_design_form = MDI(0,0,0,0) 
   id_design_panel = id_design_form
-  id_design_code = listview_debug
+  ;id_design_code = listview_debug
   
   id_inspector_panel = Panel(0,0,0,0)
   AddItem(id_inspector_panel, 0, "elements", 0, 0) 
@@ -608,8 +611,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define *window = object_add_new(id_design_form, #__type_window, 10, 10)
   Define *container = object_add_new(*window, #__type_container, 80, 10)
-  object_add_new(*window, #__type_button, 10, 20)
   object_add_new(*container, #__type_button, -10, 20)
+  object_add_new(*window, #__type_button, 10, 20)
   ;CloseList()
   
   Repeat 
