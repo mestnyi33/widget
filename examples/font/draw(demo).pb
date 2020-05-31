@@ -130,8 +130,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   AddItem (GetWidget(0), -1, "Panel 1")
   
   Define text.s, *g
-  *g = Panel(10, 10, 334, 130)
-  ;*g = Tree(10, 10, 286-2+50, 130, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+  ;*g = Panel(10, 10, 334, 130)
+  *g = Tree(10, 10, 286-2+50, 130, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
   
   If GetType(*g) = #PB_GadgetType_Panel
     text = "Sub"
