@@ -19,7 +19,7 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item ; GetState(*event\widget) ; 
+  Debug ""+Str(GetIndex(*event\widget))+ " - widget  event - " +*event\type+ "  item - " +*event\item ; GetState(*event\widget) ; 
 EndProcedure
 
 Procedure events_gbuttons()
@@ -53,7 +53,7 @@ EndProcedure
 Procedure events_wbuttons()
   Select *event\type
     Case #PB_EventType_LeftClick
-      Select (*event\widget\index - 1)
+      Select GetIndex(*event\widget)
         Case 2 
           If CountItems(GetWidget(1)) > 1
             RemoveItem(GetWidget(1), 1)
@@ -138,6 +138,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_Syst
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

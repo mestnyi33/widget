@@ -367,7 +367,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *g = Tree(230, 100, 210, 210, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
     
     
-    ;  3_example
+    ;  2_example
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1_1", 0, 1) 
     AddItem(*g, 4, "Tree_1_1_1", -1, 2) 
@@ -387,11 +387,9 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     DD::EnableDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
     
     
-    g = 12
+    ;{  3_example
     *g = Tree(450, 100, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
     
-    
-    ;  2_example
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 ;Or i%3=0
@@ -399,7 +397,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Else
         AddItem(*g, -1, "Tree_"+Str(i), 0, -1) 
       EndIf
-    Next
+    Next 
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     SetItemState(*g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
     SetItemState(*g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
@@ -416,11 +414,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemFont(*g, 14, 6)
     SetItemText(*g, 14, "25_font and text change")
     ;Bind(*g, @events_tree_widget())
+    ;}
     
-    g = 13
+    ;{  4_example
     *g = Tree(600+70, 100, 210, 210, #__tree_OptionBoxes|#__tree_NoButtons|#__tree_NoLines) ;                                        
     
-    ;  4_example
     ; ;     AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
     ; ;     AddItem(*g, 1, "Tree_1", -1, 1) 
     ; ;     AddItem(*g, 2, "Tree_2_2", -1, 2) 
@@ -443,13 +441,11 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem (*g, -1, "#PB_Window_Minimize      ", -1, 1); Opens the window minimized.
     AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1)   ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
     AddItem (*g, -1, "#PB_Window_NoActivate    ", -1)   ; Don't activate the window after opening.
+    ;}                                                    ;
     
-    
-    
-    g = 14
+    ;{  5_example
     *g = Tree(750+135, 100, 103, 210, #PB_Tree_NoButtons)                                         
     
-    ;  5_example
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1", -1, 0) 
     AddItem(*g, 2, "Tree_2", -1, 0) 
@@ -459,12 +455,12 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 2, "Tree_2_1", -1, 1) 
     AddItem(*g, 2, "Tree_2_2", -1, 2) 
     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
-; ;     SetItemImage(*g, 0, 0)
+    ;     SetItemImage(*g, 0, 0)
+    ;}
     
-    g = 15
+    ;{  6_example
     *g = Tree(890+106, 100, 103, 210, #__tree_BorderLess|#__tree_Collapsed)                                         
     
-    ;  6_example
     AddItem(*g, 0, "Tree_1", -1, 1) 
     AddItem(*g, 0, "Tree_2_1", -1, 2) 
     AddItem(*g, 0, "Tree_2_2", -1, 3) 
@@ -476,6 +472,7 @@ CompilerIf #PB_Compiler_IsMainFile
         AddItem(*g, -1, "Item" + Str(i), -1, 1)
       EndIf
     Next i
+    ;}
     
     redraw(root())
     ; Free(*g)
@@ -489,8 +486,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 420
-; FirstLine = 116
-; Folding = 0f8--25-
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = 0f8--2Y9
 ; EnableXP

@@ -372,7 +372,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.i Bind(*this, *callback, eventtype.l=#PB_All)
     Declare.i Post(eventtype.l, *this, eventitem.l=#PB_All, *data=0)
     
-    Declare   Events(*this, event_type.l, mouse_x.l, mouse_y.l, _wheel_x_.b=0, _wheel_y_.b=0)
+    Declare   Events(*this, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b=0, _wheel_y_.b=0)
     Declare   Open(Window, x.l=0,y.l=0,width.l=#PB_Ignore,height.l=#PB_Ignore, Flag.i=#Null, *callback=#Null, Canvas=#PB_Any)
     Declare.i Gadget(Type.l, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s="", *param1=#Null, *param2=#Null, *param3=#Null, Flag.i=#Null,  window=-1, *CallBack=#Null)
     ;}
@@ -1139,6 +1139,33 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;-
     ;- PRIVATEs
+    Macro _drawing_font_(_this_)
+      ; drawing font
+      If Not _this_\hide
+        
+        If _this_\root\current\fontID <> _this_\text\fontID
+          If Not _this_\text\fontID 
+            _this_\text\fontID = _this_\root\text\fontID 
+          EndIf
+          
+          _this_\root\current\fontID = _this_\text\fontID
+          DrawingFont(_this_\text\fontID) 
+          
+          Debug "draw current font - " + #PB_Compiler_Procedure +" "+ _this_
+        EndIf
+        
+        If _this_\text\change Or _this_\resize & #__resize_change
+          If _this_\text\string And Not _this_\text\multiline
+            _this_\text\width = TextWidth(_this_\text\string)
+          EndIf
+          _this_\text\height = TextHeight("A")
+          
+          Debug "change text size - " + #PB_Compiler_Procedure +" "+ _this_
+        EndIf
+        
+      EndIf
+    EndMacro
+    
     Macro _box_gradient_(_type_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _round_=0, _alpha_=255)
       BackColor(_color_1_&$FFFFFF|_alpha_<<24)
       FrontColor(_color_2_&$FFFFFF|_alpha_<<24)
@@ -1352,37 +1379,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         EndIf
         
-        ;         CompilerSelect #PB_compiler_OS
-        ;           CompilerCase #PB_OS_Windows
-        ;             numbers=LoadFont(#PB_Any, "Bernard MT Condensed", 0.1000*sz)
-        ;           CompilerCase #PB_OS_MacOS
-        ;             numbers=LoadFont(#PB_Any, "Charter", 0.1000*sz)
-        ;           CompilerCase #PB_OS_linux
-        ;             numbers=LoadFont(#PB_Any, "FreeSerif", 0.1000*sz)
-        ;         CompilerEndSelect
-        
-        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-          ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
-          ;                     \text\fontID = GetGadgetFont(TextGadget) 
-          ;                     FreeGadget(TextGadget)
-          ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
-          ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
-          ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
-          
-          ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
-          ;\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
-          _this_\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
-          ;
-          ;           \text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
-          ;           CocoaMessage(@FontSize, \text\fontID, "pointSize")
-          ;           
-          ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
-          
-          ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, \text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
-          
-        CompilerElse
-          _this_\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-        CompilerEndIf
+      ;  _this_\text\fontID = Root()\text\fontID
       EndIf
       
     EndMacro
@@ -2267,9 +2264,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         If \text\string  And (*this\type = #PB_GadgetType_Spin Or
                               *this\type = #PB_GadgetType_ProgressBar)
           
-          If \text\fontID 
-            DrawingFont(\text\fontID)
-          EndIf
+;           If \text\fontID 
+;             DrawingFont(\text\fontID)
+;           EndIf
           
           If \text\change Or *this\resize & #__resize_change
             *this\text\height = TextHeight("A")
@@ -3210,18 +3207,18 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Result
     EndProcedure
     
-    Procedure   Bar_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l, _wheel_x_.b=0, _wheel_y_.b=0)
+    Procedure   Bar_Events(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b=0, _wheel_y_.b=0)
       Protected Repaint
       
-      If event_type = #__Event_MouseEnter
+      If eventtype = #__Event_MouseEnter
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_MouseLeave
+      If eventtype = #__Event_MouseLeave
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_leftButtonUp 
+      If eventtype = #__Event_leftButtonUp 
         If *this\bar\state >= 0
           If *this\bar\button[*this\bar\state]\state = #__s_2
             ;Debug " up button - " + *this\bar\state
@@ -3261,10 +3258,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_MouseMove Or
-         event_type = #__Event_MouseEnter Or
-         event_type = #__Event_MouseLeave Or
-         event_type = #__Event_leftButtonUp
+      If eventtype = #__Event_MouseMove Or
+         eventtype = #__Event_MouseEnter Or
+         eventtype = #__Event_MouseLeave Or
+         eventtype = #__Event_leftButtonUp
         
         
         If *this\bar\button[#__b_3]\interact And
@@ -3438,7 +3435,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_leftButtonDown
+      If eventtype = #__Event_leftButtonDown
         If *this\bar\from >= 0 And 
            *this\bar\button[*this\bar\from]\state = #__s_1
           *this\bar\button[*this\bar\from]\state = #__s_2
@@ -3470,7 +3467,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_MouseMove
+      If eventtype = #__Event_MouseMove
         If *this\bar\state And 
            *this\root\selected = *this
           If *this\bar\vertical
@@ -3493,9 +3490,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     Macro  _start_drawing_(_this_)
       StartDrawing(CanvasOutput(_this_\root\canvas\gadget)) 
       
-      If _this_\text\fontID
-        DrawingFont(_this_\text\fontID) 
-      EndIf
+      _drawing_font_(_this_)
+;       If _this_\text\fontID
+;         DrawingFont(_this_\text\fontID) 
+;       EndIf
     EndMacro
     
     Macro _text_scroll_x_(_this_)
@@ -4775,10 +4773,10 @@ CompilerIf Not Defined(widget, #PB_Module)
           RoundBox(\x[#__c_1],\y[#__c_1],\width[#__c_1],\height[#__c_1],\round,\round,\color\back[\color\state])
           ;         EndIf
           
-          ;
-          If \text\fontID 
-            DrawingFont(\text\fontID) 
-          EndIf
+;           ;
+;           If \text\fontID 
+;             DrawingFont(\text\fontID) 
+;           EndIf
           
           ; Then changed text
           If \text\change
@@ -4840,9 +4838,9 @@ CompilerIf Not Defined(widget, #PB_Module)
                 If GetActive()
                   Protected text_sel_state = 2 + Bool(GetActive()\gadget <> *this)
                   Protected text_sel_width = \row\_s()\text\edit[2]\width + Bool(GetActive()\gadget <> *this) * *this\text\caret\width
-                Protected text_state = *this\row\_s()\color\state
-                
-                text_state = Bool(*this\row\_s()\index = *this\index[#__c_1]) + Bool(*this\row\_s()\index = *this\index[#__c_1] And GetActive()\gadget <> *this)*2
+                  Protected text_state = *this\row\_s()\color\state
+                  
+                  text_state = Bool(*this\row\_s()\index = *this\index[#__c_1]) + Bool(*this\row\_s()\index = *this\index[#__c_1] And GetActive()\gadget <> *this)*2
                 EndIf
                 
                 If *this\text\editable
@@ -5587,7 +5585,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Repaint
     EndProcedure
     
-    Procedure   _Editor_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l)
+    Procedure   _Editor_Events(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l)
       Static DoubleClick.i=-1
       Protected Repaint.i, _key_control_.i, Caret.i, _line_.l, String.s
       
@@ -5609,7 +5607,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               ;EndIf
               ;Debug  _line_; (\root\mouse\y-\y[2]-\text\y+\scroll\v\bar\page\pos)
               
-              Select event_type 
+              Select eventtype 
                 Case #__Event_leftDoubleClick 
                   ; bug pb
                   ; в мак ос в editorgadget ошибка
@@ -5830,7 +5828,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             ; edit events
             If *this\text\editable And GetActive()\gadget = *this
-              Repaint | Editor_Events_Key(*this, event_type, \root\mouse\x, \root\mouse\y)
+              Repaint | Editor_Events_Key(*this, eventtype, \root\mouse\x, \root\mouse\y)
             EndIf
           EndIf
         EndIf
@@ -5840,20 +5838,20 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Repaint
     EndProcedure
     
-    Procedure   Editor_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l)
+    Procedure   Editor_Events(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l)
       Protected Repaint
       
-      Select event_type
+      Select eventtype
         Case #PB_EventType_Focus
-          Post(event_type, *this)
+          Post(eventtype, *this)
           Repaint = 1
           
         Case #PB_EventType_LostFocus
-          Post(event_type, *this)
+          Post(eventtype, *this)
           Repaint = 1
           
         Default
-          Repaint = _Editor_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l)
+          Repaint = _Editor_Events(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l)
       EndSelect
       
       ProcedureReturn Repaint
@@ -6059,9 +6057,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       With *this
         If Not \hide
-          If \text\fontID 
-            DrawingFont(\text\fontID) 
-          EndIf
+;           If \text\fontID 
+;             DrawingFont(\text\fontID) 
+;           EndIf
           
           If \change <> 0
             Tree_Properties_Update(*this, \row\_s())
@@ -6221,9 +6219,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       With *this
         If Not \hide
-          If \text\fontID 
-            DrawingFont(\text\fontID) 
-          EndIf
+;           If \text\fontID 
+;             DrawingFont(\text\fontID) 
+;           EndIf
           
           If \change <> 0
             Tree_Properties_Update(*this, \row\_s())
@@ -6593,10 +6591,10 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn handle
     EndProcedure
     
-    Procedure.l Tree_Properties_Events(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
+    Procedure.l Tree_Properties_Events(*this._s_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1)
       Protected Repaint
       
-      If event_type = #__Event_Focus
+      If eventtype = #__Event_Focus
         PushListPosition(*this\row\_s()) 
         ForEach *this\row\_s()
           If *this\row\_s()\color\state = #__s_3
@@ -6610,7 +6608,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_lostfocus
+      If eventtype = #__Event_lostfocus
         PushListPosition(*this\row\_s()) 
         ForEach *this\row\_s()
           If *this\row\_s()\color\state = #__s_2
@@ -6624,7 +6622,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_leftButtonUp
+      If eventtype = #__Event_leftButtonUp
         If *this\row\selected 
           If *this\flag\check = 3
             *this\row\entered = *this\row\selected
@@ -6645,27 +6643,27 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_leftClick
+      If eventtype = #__Event_leftClick
         Post(#PB_EventType_LeftClick, *this, *this\row\entered\index)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_leftDoubleClick
+      If eventtype = #__Event_leftDoubleClick
         Post(#PB_EventType_LeftDoubleClick, *this, *this\row\entered\index)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_rightClick
+      If eventtype = #__Event_rightClick
         Post(#PB_EventType_RightClick, *this, *this\row\entered\index)
         Repaint | #True
       EndIf
       
       
-      If event_type = #__Event_MouseEnter Or
-         event_type = #__Event_MouseMove Or
-         event_type = #__Event_MouseLeave Or
-         event_type = #__Event_rightButtonDown Or
-         event_type = #__Event_leftButtonDown ;Or event_type = #__Event_leftButtonUp
+      If eventtype = #__Event_MouseEnter Or
+         eventtype = #__Event_MouseMove Or
+         eventtype = #__Event_MouseLeave Or
+         eventtype = #__Event_rightButtonDown Or
+         eventtype = #__Event_leftButtonDown ;Or eventtype = #__Event_leftButtonUp
         
         If *this\count\items
           ForEach *this\row\draws()
@@ -6701,7 +6699,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                   
                   ; clickselect items
                   If *this\flag\check = 2
-                    If event_type = #__Event_leftButtonDown
+                    If eventtype = #__Event_leftButtonDown
                       If *this\row\draws()\_state & #__s_selected 
                         *this\row\draws()\_state &~ #__s_selected
                         *this\row\draws()\color\state = #__s_1
@@ -6758,7 +6756,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                             
                             ; reset select before this 
                             ; example(sel 5;6;7, click 7, reset 5;6)
-                          ElseIf event_type = #__Event_leftButtonDown
+                          ElseIf eventtype = #__Event_leftButtonDown
                             If *this\row\selected <> *this\row\_s()
                               *this\row\_s()\color\state = #__s_0
                               Repaint | #True
@@ -6830,7 +6828,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
               
               ; collapsed/expanded button
-              If event_type = #__Event_leftButtonDown And 
+              If eventtype = #__Event_leftButtonDown And 
                  *this\flag\buttons And *this\row\draws()\childrens And 
                  _from_point_(mouse_x, mouse_y, *this\row\draws()\box[0])
                 
@@ -6884,7 +6882,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_KeyDown 
+      If eventtype = #__Event_KeyDown 
         Protected Result, from =- 1
         Static cursor_change, Down
         
@@ -7068,9 +7066,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             *color = \color
           EndIf
           
+          ;_drawing_font_(*this)
           If \text\fontID 
             DrawingFont(\text\fontID) 
-          EndIf 
+          EndIf
+          
           DrawingMode(#PB_2DDrawing_Default)
           Box(0,1,\width,\height-2, *color\back[*color\state])
           DrawingMode(#PB_2DDrawing_Transparent)
@@ -7297,12 +7297,9 @@ CompilerIf Not Defined(widget, #PB_Module)
             _items_\box[#__c_1]\checked = 1
           Else
             Select _items_\box[#__c_1]\checked 
-              Case 0
-                _items_\box[#__c_1]\checked = 2
-              Case 1
-                _items_\box[#__c_1]\checked = 0
-              Case 2
-                _items_\box[#__c_1]\checked = 1
+              Case 0 : _items_\box[#__c_1]\checked = 2
+              Case 1 : _items_\box[#__c_1]\checked = 0
+              Case 2 : _items_\box[#__c_1]\checked = 1
             EndSelect
           EndIf
         Else
@@ -7321,6 +7318,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ClearList(*this\row\draws())
       
+      ; reset item z-order
       PushListPosition(row())
       ForEach row()
         If row()\parent
@@ -7361,25 +7359,27 @@ CompilerIf Not Defined(widget, #PB_Module)
             row()\width = *this\width[#__c_2] ; ???
           EndIf
           
-          ; check box
+          ; check box position
           If *this\flag\check
             row()\box[#__c_1]\x = row()\x + 3 - *this\scroll\h\bar\page\pos
             row()\box[#__c_1]\y = (row()\y+row()\height)-(row()\height+row()\box[#__c_1]\height)/2-*this\scroll\v\bar\page\pos
           EndIf
           
-          ; expanded & collapsed box
+          ; expanded & collapsed box position
           If *this\flag\buttons Or *this\flag\lines 
             row()\box[0]\x = row()\x + row()\sublevellen - *this\row\sublevellen + Bool(*this\flag\buttons) * 4 + Bool(Not *this\flag\buttons And *this\flag\lines) * 8 - *this\scroll\h\bar\page\pos 
             row()\box[0]\y = (row()\y+row()\height)-(row()\height+row()\box[0]\height)/2-*this\scroll\v\bar\page\pos
           EndIf
           
-          ;
+          ; image position
           row()\image\x = row()\x + *this\image\padding\left + row()\sublevellen - *this\scroll\h\bar\page\pos
           row()\image\y = row()\y + (row()\height-row()\image\height)/2-*this\scroll\v\bar\page\pos
           
+          ; text position
           row()\text\x = row()\x + *this\text\padding\left + row()\sublevellen + *this\row\sublevel - *this\scroll\h\bar\page\pos
           row()\text\y = row()\y + (row()\height-row()\text\height)/2-*this\scroll\v\bar\page\pos
           
+          ; 
           row()\draw = Bool(row()\y+row()\height-*this\scroll\v\bar\page\pos>*this\y[#__c_2] And 
                             (row()\y-*this\y[#__c_2])-*this\scroll\v\bar\page\pos<*this\height[#__c_2])
           
@@ -7544,9 +7544,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       With *this
         If Not \hide
-          If \text\fontID 
-            DrawingFont(\text\fontID) 
-          EndIf
+;           If \text\fontID 
+;             DrawingFont(\text\fontID) 
+;           EndIf
           
           If \change <> 0
             ;             If \text\change
@@ -7882,7 +7882,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       With *this
         If *this
           If sublevel =- 1
-            *parent = *this
+            *parent = *this\row\_s()\parent
             \flag\check = 4
           EndIf
           
@@ -8040,12 +8040,12 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     
-    Procedure.l Tree_Events_Key(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
+    Procedure.l Tree_Events_Key(*this._s_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1)
       Protected Result, from =- 1
       Static cursor_change, Down, *row_selected._s_rows
       
       With *this
-        Select event_type 
+        Select eventtype 
           Case #__Event_KeyDown
             ;If *this = GetActive()\gadget
             
@@ -8173,10 +8173,10 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Result
     EndProcedure
     
-    Procedure.l Tree_Events(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
+    Procedure.l Tree_Events(*this._s_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1)
       Protected Repaint
       
-      If event_type = #__Event_leftButtonUp
+      If eventtype = #__Event_leftButtonUp
         ; collapsed button up
         If *this\row\box\checked = 2
           *this\row\box\checked =- 1
@@ -8201,7 +8201,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_leftClick
+      If eventtype = #__Event_leftClick
         If *this\row\box\checked =- 1
           *this\row\box\checked = 0
         Else
@@ -8210,17 +8210,17 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_rightButtonUp
+      If eventtype = #__Event_rightButtonUp
         Post(#PB_EventType_RightClick, *this, *event\item)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_leftDoubleClick
+      If eventtype = #__Event_leftDoubleClick
         Post(#PB_EventType_LeftDoubleClick, *this, *event\item)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_Focus
+      If eventtype = #__Event_Focus
         PushListPosition(*this\row\_s()) 
         ForEach *this\row\_s()
           If *this\row\_s()\color\state = #__s_3
@@ -8234,7 +8234,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_lostfocus
+      If eventtype = #__Event_lostfocus
         PushListPosition(*this\row\_s()) 
         ForEach *this\row\_s()
           If *this\row\_s()\color\state = #__s_2
@@ -8248,11 +8248,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_MouseEnter Or
-         event_type = #__Event_MouseMove Or
-         event_type = #__Event_MouseLeave Or
-         event_type = #__Event_rightButtonDown Or
-         event_type = #__Event_leftButtonDown ;Or event_type = #__Event_leftButtonUp
+      If eventtype = #__Event_MouseEnter Or
+         eventtype = #__Event_MouseMove Or
+         eventtype = #__Event_MouseLeave Or
+         eventtype = #__Event_rightButtonDown Or
+         eventtype = #__Event_leftButtonDown ;Or eventtype = #__Event_leftButtonUp
         
         If *this\count\items
           ForEach *this\row\draws()
@@ -8277,11 +8277,11 @@ CompilerIf Not Defined(widget, #PB_Module)
                 EndIf
               EndIf
               
-              If (event_type = #__Event_leftButtonDown) Or 
+              If (eventtype = #__Event_leftButtonDown) Or 
                  (*this\root\mouse\buttons And Not *this\flag\check)
                 
                 ; collapsed/expanded button
-                If event_type = #__Event_leftButtonDown And 
+                If eventtype = #__Event_leftButtonDown And 
                    *this\flag\buttons And *this\row\draws()\childrens And 
                    _from_point_(mouse_x, mouse_y, *this\row\draws()\box[0])
                   
@@ -8418,12 +8418,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_Input Or
-         event_type = #__Event_KeyDown Or
-         event_type = #__Event_KeyUp
+      If eventtype = #__Event_Input Or
+         eventtype = #__Event_KeyDown Or
+         eventtype = #__Event_KeyUp
         
         If GetActive() And GetActive()\gadget = *this
-          Repaint | Tree_Events_Key(*this, event_type, mouse_x, mouse_y)
+          Repaint | Tree_Events_Key(*this, eventtype, mouse_x, mouse_y)
         EndIf
       EndIf
       
@@ -8432,7 +8432,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     
     ;-
-    Procedure.l ListView_Events(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
+    Procedure.l ListView_Events(*this._s_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1)
       Protected Repaint
       
       Macro _multi_select_items_(_this_)
@@ -8467,7 +8467,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndMacro
       
       
-      If event_type = #__Event_Focus
+      If eventtype = #__Event_Focus
         PushListPosition(*this\row\_s()) 
         ForEach *this\row\_s()
           If *this\row\_s()\color\state = #__s_3
@@ -8481,7 +8481,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_lostfocus
+      If eventtype = #__Event_lostfocus
         PushListPosition(*this\row\_s()) 
         ForEach *this\row\_s()
           If *this\row\_s()\color\state = #__s_2
@@ -8495,7 +8495,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_leftButtonUp
+      If eventtype = #__Event_leftButtonUp
         If *this\row\selected 
           If *this\flag\check = 3
             *this\row\entered = *this\row\selected
@@ -8516,27 +8516,27 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_leftClick
+      If eventtype = #__Event_leftClick
         Post(#PB_EventType_LeftClick, *this, *this\row\entered\index)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_leftDoubleClick
+      If eventtype = #__Event_leftDoubleClick
         Post(#PB_EventType_LeftDoubleClick, *this, *this\row\entered\index)
         Repaint | #True
       EndIf
       
-      If event_type = #__Event_rightClick
+      If eventtype = #__Event_rightClick
         Post(#PB_EventType_RightClick, *this, *this\row\entered\index)
         Repaint | #True
       EndIf
       
       
-      If event_type = #__Event_MouseEnter Or
-         event_type = #__Event_MouseMove Or
-         event_type = #__Event_MouseLeave Or
-         event_type = #__Event_rightButtonDown Or
-         event_type = #__Event_leftButtonDown ;Or event_type = #__Event_leftButtonUp
+      If eventtype = #__Event_MouseEnter Or
+         eventtype = #__Event_MouseMove Or
+         eventtype = #__Event_MouseLeave Or
+         eventtype = #__Event_rightButtonDown Or
+         eventtype = #__Event_leftButtonDown ;Or eventtype = #__Event_leftButtonUp
         
         If *this\count\items
           ForEach *this\row\draws()
@@ -8572,7 +8572,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                   
                   ; clickselect items
                   If *this\flag\check = 2
-                    If event_type = #__Event_leftButtonDown
+                    If eventtype = #__Event_leftButtonDown
                       If *this\row\draws()\_state & #__s_selected 
                         *this\row\draws()\_state &~ #__s_selected
                         *this\row\draws()\color\state = #__s_1
@@ -8629,7 +8629,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                             
                             ; reset select before this 
                             ; example(sel 5;6;7, click 7, reset 5;6)
-                          ElseIf event_type = #__Event_leftButtonDown
+                          ElseIf eventtype = #__Event_leftButtonDown
                             If *this\row\selected <> *this\row\_s()
                               *this\row\_s()\color\state = #__s_0
                               Repaint | #True
@@ -8727,7 +8727,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_KeyDown 
+      If eventtype = #__Event_KeyDown 
         Protected Result, from =- 1
         Static cursor_change, Down
         
@@ -8993,12 +8993,12 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Result
     EndProcedure
     
-    Procedure.l _tree_Events_Key(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
+    Procedure.l _tree_Events_Key(*this._s_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1)
       Protected Result, from =- 1
       Static cursor_change, Down, *row_selected._s_rows
       
       With *this
-        Select event_type 
+        Select eventtype 
           Case #__Event_KeyDown
             ;If *this = GetActive()\gadget
             
@@ -9124,13 +9124,13 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Result
     EndProcedure
     
-    Procedure.l _tree_Events(*this._s_widget, event_type.l, mouse_x.l=-1, mouse_y.l=-1)
+    Procedure.l _tree_Events(*this._s_widget, eventtype.l, mouse_x.l=-1, mouse_y.l=-1)
       Protected Result, from =- 1
       Static cursor_change, Down, *row_selected._s_rows
       
       With *this
         ; post widget events                     
-        Select event_type 
+        Select eventtype 
           Case #__Event_leftButtonDown
             ;           If *this = Root()\entered  ; *event\leave;
             *this\root\mouse\delta\x = mouse_x
@@ -9140,7 +9140,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ;               _tree_set_active_(*this)
             ;             EndIf
             
-            Result | _tree_events_(*this, event_type, mouse_x, mouse_y)
+            Result | _tree_events_(*this, eventtype, mouse_x, mouse_y)
             
             If *this\row\index >= 0
               If _from_point_(mouse_x, mouse_y, *this\row\_s()\box[#__c_1])
@@ -9270,11 +9270,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             
         EndSelect
         
-        If event_type = #__Event_MouseMove Or
-           event_type = #__Event_MouseEnter Or
-           event_type = #__Event_MouseLeave Or
-           event_type = #__Event_leftButtonUp
-          ; Debug ""+mouse_x +" - "+ event_type +" "+ *this\root\mouse\delta\x;Bool(Abs((mouse_x-*this\root\mouse\delta\x)+(mouse_y-*this\root\mouse\delta\y)) >= 6)
+        If eventtype = #__Event_MouseMove Or
+           eventtype = #__Event_MouseEnter Or
+           eventtype = #__Event_MouseLeave Or
+           eventtype = #__Event_leftButtonUp
+          ; Debug ""+mouse_x +" - "+ eventtype +" "+ *this\root\mouse\delta\x;Bool(Abs((mouse_x-*this\root\mouse\delta\x)+(mouse_y-*this\root\mouse\delta\y)) >= 6)
           
           If *this = Root()\entered ;And *this\scroll\v\bar\from =- 1 And *this\scroll\h\bar\from =- 1 ;And Not *this\root\key; And Not *this\root\mouse\buttons
             
@@ -9334,7 +9334,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
         EndIf
         
-        If event_type = #__Event_MouseMove
+        If eventtype = #__Event_MouseMove
           If *event\leave And *event\leave\row\index =- 1
             Result | _tree_events_(*event\leave, #__Event_MouseMove, mouse_x, mouse_y)
           EndIf
@@ -9343,7 +9343,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         ; tree key events
         If GetActive() And GetActive()\gadget = *this
-          Result | _tree_Events_Key(*this, event_type, mouse_x, mouse_y)
+          Result | _tree_Events_Key(*this, eventtype, mouse_x, mouse_y)
         EndIf
       EndWith
       
@@ -9724,30 +9724,30 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndProcedure
     
-    Procedure   Window_Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l)
+    Procedure   Window_Events(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l)
       Protected Repaint
       
-      If event_type = #__Event_focus
+      If eventtype = #__Event_focus
         *this\color\state = #__s_2
-        Post(event_type, *this)
+        Post(eventtype, *this)
         Repaint = #True
       EndIf
       
-      If event_type = #__Event_lostfocus
+      If eventtype = #__Event_lostfocus
         *this\color\state = #__s_3
-        Post(event_type, *this)
+        Post(eventtype, *this)
         Repaint = #True
       EndIf
       
-      If event_type = #__Event_MouseEnter
+      If eventtype = #__Event_MouseEnter
         Repaint = #True
       EndIf
       
-      If event_type = #__Event_MouseLeave
+      If eventtype = #__Event_MouseLeave
         Repaint = #True
       EndIf
       
-      If event_type = #__Event_MouseMove
+      If eventtype = #__Event_MouseMove
         If *this\root\selected = *this
           If *this\container = #__type_root
             ResizeWindow(*this\root\canvas\window, (DesktopMouseX() - *this\root\mouse\delta\x), (DesktopMouseY() - *this\root\mouse\delta\y), #PB_Ignore, #PB_Ignore)
@@ -9757,7 +9757,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If event_type = #__Event_leftButtonDown
+      If eventtype = #__Event_leftButtonDown
         If *this\type = #__type_Window
           *this\caption\interact = _from_point_(mouse_x, mouse_y, *this\caption, [2])
           ;*this\color\state = 2
@@ -11727,6 +11727,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         EndIf
         
+        ; children reparent 
         If *parent And 
            *LastParent And 
            *LastParent <> *parent
@@ -11846,29 +11847,29 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               ; docking
               If Mode & #__align_auto = #__align_auto
-                If \align\h = 2 ; right
-                  \align\delta\x = \parent\width[#__c_2] - \align\delta\width
-                ElseIf \align\h = 1 ; center
+                If \align\h = 1 ; center
                   \align\delta\x = (\parent\width[#__c_2] - \align\delta\width)/2
+                ElseIf \align\h = 2 ; right
+                  \align\delta\x = \parent\width[#__c_2] - \align\delta\width
                 EndIf
                 
-                If \align\v = 2 ; bottom
-                  \align\delta\y = \parent\height[#__c_2] - \align\delta\height
-                ElseIf \align\v = 1 ; center
+                If \align\v = 1 ; center
                   \align\delta\y = (\parent\height[#__c_2] - \align\delta\height)/2
+                ElseIf \align\v = 2 ; bottom
+                  \align\delta\y = \parent\height[#__c_2] - \align\delta\height
                 EndIf
                 
                 If \align\h = 3 Or \align\v = 3
                   If \align\h = 3 ; full horizontal
                     \align\delta\width = \parent\width[#__c_2]
                     
-                    If \align\v = 2 ; bottom
-                      \align\delta\y - \parent\align\_bottom
-                      \parent\align\_bottom + *this\height + \parent\bs*2
-                      
-                    ElseIf \align\v = 0 ; top
+                    If \align\v = 0 ; top
                       \align\delta\y + \parent\align\_top
                       \parent\align\_top + *this\height
+                      
+                    ElseIf \align\v = 2 ; bottom
+                      \align\delta\y - \parent\align\_bottom
+                      \parent\align\_bottom + *this\height + \parent\bs*2
                       
                     EndIf
                   EndIf
@@ -11876,13 +11877,13 @@ CompilerIf Not Defined(widget, #PB_Module)
                   If \align\v = 3 ; full vertical
                     \align\delta\height = \parent\height[#__c_2] 
                     
-                    If \align\h = 2 ; right
-                      \align\delta\x - \parent\align\_right
-                      \parent\align\_right + *this\width + \parent\bs*2
-                      
-                    ElseIf \align\h = 0 ; left
+                    If \align\h = 0 ; left
                       \align\delta\x + \parent\align\_left
                       \parent\align\_left + *this\width
+                      
+                    ElseIf \align\h = 2 ; right
+                      \align\delta\x - \parent\align\_right
+                      \parent\align\_right + *this\width + \parent\bs*2
                       
                     EndIf
                   EndIf
@@ -11911,74 +11912,6 @@ CompilerIf Not Defined(widget, #PB_Module)
                 EndIf
               EndIf
               
-              
-; ; ;               If Mode & #__align_auto = #__align_auto
-; ; ;                 ;If Mode & #__align_full = #__align_full
-; ; ;                   If \align\v = 3 And \align\h = 0 ; top
-; ; ;                     \align\delta\x + \parent\align\_left
-; ; ;                     \parent\align\_left + *this\width
-; ; ;                   EndIf
-; ; ;                   If \align\h = 3 And \align\v = 0 ; top
-; ; ;                     \align\delta\y + \parent\align\_top
-; ; ;                     \parent\align\_top + *this\height
-; ; ;                   EndIf
-; ; ;                 ;EndIf
-; ; ;                 
-; ; ;                 If \align\h = 1 ; center
-; ; ;                   \align\delta\x = (\parent\width[#__c_2] - \align\delta\width)/2
-; ; ;                 EndIf
-; ; ;                 If \align\h = 2 ; right
-; ; ;                   \align\delta\x = \parent\width[#__c_2] - \align\delta\width
-; ; ;                   If \align\v = 3 ; full 
-; ; ;                                   ; If Mode & #__align_full = #__align_full
-; ; ;                     \align\delta\x - \parent\align\_right
-; ; ;                     \parent\align\_right + *this\width + \parent\bs*2
-; ; ;                   EndIf
-; ; ;                 EndIf
-; ; ;                 If \align\h = 3 ; full
-; ; ;                   \align\delta\width = \parent\width[#__c_2]
-; ; ;                 EndIf
-; ; ;                 
-; ; ;                 If \align\v = 1 ; center
-; ; ;                   \align\delta\y = (\parent\height[#__c_2] - \align\delta\height)/2
-; ; ;                 EndIf
-; ; ;                 If \align\v = 2 ; bottom
-; ; ;                   \align\delta\y = \parent\height[#__c_2] - \align\delta\height
-; ; ;                   If \align\h = 3 ; full
-; ; ;                                   ; If Mode & #__align_full = #__align_full
-; ; ;                     \align\delta\y - \parent\align\_bottom
-; ; ;                     \parent\align\_bottom + *this\height + \parent\bs*2
-; ; ;                   EndIf
-; ; ;                 EndIf
-; ; ;                 If \align\v = 3 ; full
-; ; ;                   \align\delta\height = \parent\height[#__c_2] 
-; ; ;                 EndIf
-; ; ;                 
-; ; ;                 If \align\h = 3 Or \align\v = 3 ; Mode & #__align_full = #__align_full
-; ; ;                   PushListPosition(GetChildrens(*this))
-; ; ;                   ForEach GetChildrens(*this)
-; ; ;                     If GetChildrens(*this)\align And
-; ; ;                        GetChildrens(*this)\parent = \parent 
-; ; ;                       
-; ; ;                       If (GetChildrens(*this)\align\h = 0 Or GetChildrens(*this)\align\h = 2)
-; ; ;                         GetChildrens(*this)\align\delta\y = \parent\align\_top
-; ; ;                         GetChildrens(*this)\align\delta\height = \parent\align\delta\height-\parent\align\_top-\parent\align\_bottom
-; ; ;                       EndIf
-; ; ;                       
-; ; ;                       If (GetChildrens(*this)\align\v = 3 And GetChildrens(*this)\align\h = 3)
-; ; ;                         GetChildrens(*this)\align\delta\x = \parent\align\_left
-; ; ;                         GetChildrens(*this)\align\delta\width = \parent\align\delta\width-\parent\align\_left-\parent\align\_right
-; ; ;                         
-; ; ;                         GetChildrens(*this)\align\delta\y = \parent\align\_top
-; ; ;                         GetChildrens(*this)\align\delta\height = \parent\align\delta\height-\parent\align\_top-\parent\align\_bottom
-; ; ;                       EndIf
-; ; ;                       
-; ; ;                     EndIf
-; ; ;                   Next
-; ; ;                   PopListPosition(GetChildrens(*this))
-; ; ;                 EndIf
-; ; ;               EndIf
-; ; ;               
               ; update parent childrens coordinate
               Resize(\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             EndIf
@@ -12898,6 +12831,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\class = "Tab"
           *this\bar\increment = ScrollStep
           
+          ;;*this\text\change = 1
           *this\index[#__s_2] = 0 ; default selected tab
           
           *this\color\back =- 1 
@@ -13181,29 +13115,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           \text\change = 1 ; set auto size items
           \text\height = 18 
           
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
-            ;                     \text\fontID = GetGadGetFont(TextGadget) 
-            ;                     FreeGadget(TextGadget)
-            Protected FontSize.CGFloat ;= 12.0  boldSystemFontOfSize  fontWithSize
-                                       ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
-                                       ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
-            
-            ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
-            ;\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
-            ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
-            ;
-            \text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
-            CocoaMessage(@FontSize, \text\fontID, "pointSize")
-            
-            ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
-            
-            ; Debug PeekS(CocoaMessage(0,  CocoaMessage(0, \text\fontID,"displayName"), "UTF8String"), -1, #PB_UTF8)
-            
-          CompilerElse
-            \text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-          CompilerEndIf
-          
           \text\padding\left = 4
           \image\padding\left = 2
           
@@ -13278,29 +13189,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           \text\change = 1 ; set auto size items
           \text\height = 18 
-          
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
-            ;                     \text\fontID = GetGadGetFont(TextGadget) 
-            ;                     FreeGadget(TextGadget)
-            Protected FontSize.CGFloat ;= 12.0  boldSystemFontOfSize  fontWithSize
-                                       ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
-                                       ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
-            
-            ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
-            ;\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
-            ;\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
-            ;
-            \text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
-            CocoaMessage(@FontSize, \text\fontID, "pointSize")
-            
-            ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
-            
-            ; Debug PeekS(CocoaMessage(0,  CocoaMessage(0, \text\fontID,"displayName"), "UTF8String"), -1, #PB_UTF8)
-            
-          CompilerElse
-            \text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-          CompilerEndIf
           
           \text\padding\left = 4
           \image\padding\left = 2
@@ -13927,12 +13815,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\index[#__s_1] =- 1
         *this\index[#__s_2] = 0
         
-        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-          *this\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
-        CompilerElse
-          *this\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
-        CompilerEndIf
-        
         \fs = 1
         \bs = \fs
         
@@ -14012,23 +13894,12 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Create(#__type_Image, Root()\opened, x,y,width,height, 0,0,image, #__scroll_buttonsize, flag, 0, 1)
     EndProcedure
     
-    
     ;-
     ;-
     Procedure.b Draw(*this._s_widget)
       With *this
-        If \text\fontID 
-          DrawingFont(\text\fontID)
-        EndIf
-        
-        If \text\string 
-          If \text\change Or *this\resize & #__resize_change
-            If Not *this\text\multiline
-              *this\text\width = TextWidth(*this\text\string)
-            EndIf
-            *this\text\height = TextHeight("A")
-          EndIf
-        EndIf
+        ; drawing font
+        _drawing_font_(*this)
         
         Select \type
           Case #__type_Window         : Window_Draw(*this)
@@ -14338,7 +14209,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     
-    ;- 
+    ;- MAC OS
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Procedure GetCurrentEvent()
         Protected app = CocoaMessage(0,0,"NSApplication sharedApplication")
@@ -14368,7 +14239,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     
     ;-
-    Procedure Events(*this._s_widget, event_type.l, mouse_x.l, mouse_y.l, _wheel_x_.b=0, _wheel_y_.b=0)
+    Procedure Events(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b=0, _wheel_y_.b=0)
       Protected Repaint
       
       If Not _is_widget_(*this)
@@ -14379,39 +14250,39 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If *this\flag\transform
-        ProcedureReturn a_events(*this, event_type, *this\root\mouse\buttons, *this\root\mouse\x, *this\root\mouse\y)
+        ProcedureReturn a_events(*this, eventtype, *this\root\mouse\buttons, *this\root\mouse\x, *this\root\mouse\y)
       EndIf
       
       If *this\type = #__type_Window
-        Repaint = Window_Events(*this, event_type, mouse_x, mouse_y)
+        Repaint = Window_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_Panel
-        Repaint = Bar_Events(*this\_tab, event_type, mouse_x, mouse_y)
+        Repaint = Bar_Events(*this\_tab, eventtype, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_Tree
-        Repaint = Tree_Events(*this, event_type, mouse_x, mouse_y)
+        Repaint = Tree_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_tree_Properties
-        Repaint = Tree_Properties_Events(*this, event_type, mouse_x, mouse_y)
+        Repaint = Tree_Properties_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_ListView
-        Repaint = ListView_Events(*this, event_type, mouse_x, mouse_y)
+        Repaint = ListView_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_Editor 
-        Repaint = Editor_Events(*this, event_type, mouse_x, mouse_y)
+        Repaint = Editor_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_String
-        Repaint = Editor_Events(*this, event_type, mouse_x, mouse_y)
+        Repaint = Editor_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_Button
-        If event_type = #PB_EventType_LeftButtonUp
+        If eventtype = #PB_EventType_LeftButtonUp
           If *this\_state & #__s_entered
             If *this\_flag & #__button_toggle
               SetState(*this, Bool(Bool(*this\_state & #__s_toggled) ! 1))
@@ -14424,7 +14295,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If *this\_state & #__s_toggled = #False
-          Select event_type
+          Select eventtype
             Case #PB_EventType_MouseLeave     : *this\color\state = #__s_0 : Repaint = 1
             Case #PB_EventType_LeftButtonDown : *this\color\state = #__s_2 : Repaint = 1
             Case #PB_EventType_MouseEnter     : *this\color\state = #__s_1 + Bool(*this = *this\root\selected) : Repaint = 1
@@ -14434,7 +14305,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       
       If *this\type = #__type_Option
-        Select event_type
+        Select eventtype
           Case #PB_EventType_LeftButtonDown : Repaint = 1
           Case #PB_EventType_LeftButtonUp   : Repaint = 1
           Case #PB_EventType_LeftClick      : Repaint = SetState(*this, #True)
@@ -14442,7 +14313,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If *this\type = #__type_checkBox
-        Select event_type
+        Select eventtype
           Case #PB_EventType_LeftButtonDown : Repaint = 1
           Case #PB_EventType_LeftButtonUp   : Repaint = 1
           Case #PB_EventType_LeftClick      
@@ -14452,8 +14323,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *this\type = #PB_GadgetType_HyperLink
         If _from_point_(mouse_x-*this\x, mouse_y-*this\y, *this\scroll)
-          Select event_type
-            Case #PB_EventType_LeftClick : Post(event_type, *this)
+          Select eventtype
+            Case #PB_EventType_LeftClick : Post(eventtype, *this)
             Case #PB_EventType_LeftButtonUp   
               SetGadgetAttribute(*this\root\canvas\gadget, #PB_Canvas_Cursor, *this\cursor)
               *this\color\state = #__s_1 
@@ -14488,7 +14359,7 @@ CompilerIf Not Defined(widget, #PB_Module)
          *this\type = #PB_GadgetType_ProgressBar Or
          *this\type = #PB_GadgetType_Splitter
         
-        Repaint = Bar_Events(*this, event_type, mouse_x, mouse_y, _wheel_x_, _wheel_y_)
+        Repaint = Bar_Events(*this, eventtype, mouse_x, mouse_y, _wheel_x_, _wheel_y_)
       EndIf
       
       ProcedureReturn Repaint
@@ -14957,6 +14828,42 @@ CompilerIf Not Defined(widget, #PB_Module)
       GetActive() = Root()
       GetActive()\root = Root()
       
+      
+      
+      ;         CompilerSelect #PB_compiler_OS
+      ;           CompilerCase #PB_OS_Windows
+      ;             numbers=LoadFont(#PB_Any, "Bernard MT Condensed", 0.1000*sz)
+      ;           CompilerCase #PB_OS_MacOS
+      ;             numbers=LoadFont(#PB_Any, "Charter", 0.1000*sz)
+      ;           CompilerCase #PB_OS_linux
+      ;             numbers=LoadFont(#PB_Any, "FreeSerif", 0.1000*sz)
+      ;         CompilerEndSelect
+      
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+        ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
+        ;                     Root()\text\fontID = GetGadgetFont(TextGadget) 
+        ;                     FreeGadget(TextGadget)
+        ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
+        ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
+        ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
+        
+        ;Root()\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
+        ;Root()\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
+        Root()\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
+        ;
+        ;           Root()\text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
+        ;           CocoaMessage(@FontSize, Root()\text\fontID, "pointSize")
+        ;           
+        ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
+        
+        ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, Root()\text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
+        
+      CompilerElse
+        Root()\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
+      CompilerEndIf
+      
+      Root()\current\fontID = Root()\text\fontID
+      
       ; OpenList(Root())
       ; SetActive(Root())
       Resize(Root(), 0,0,width,height)
@@ -15408,5 +15315,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----9--------------f---------------------------------------------------------------------------------------------------------------------------------------x---+---------------------------------------------------------------------------------------------------------------89r----0+------------------------------------------------------------------
 ; EnableXP

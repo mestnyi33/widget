@@ -434,9 +434,17 @@ CompilerIf Not Defined(structures, #PB_Module)
       List _s._s_rows()
     EndStructure
     
+    ;- - _s_current
+    Structure _s_current
+      *fontID
+      
+    EndStructure
+      
     ;- - _s_widget
     Structure _s_widget 
-      *first._s_widget
+     current._s_current
+     
+     *first._s_widget
       *last._s_widget
       *after._s_widget
       *before._s_widget
@@ -584,6 +592,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     
   EndModule 
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -8vWR6t
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = -8vWR6b-
 ; EnableXP

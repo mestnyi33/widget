@@ -10,6 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i Window_0, Canvas_0, gEvent, gQuit, x=10,y=10
   Global *this._s_widget
   
+  ; proportional
   Procedure example_0()
     Define *w._S_widget = Open( OpenWindow( #PB_Any, 0, 0, 190, 200, "Demo alignment widgets", #PB_Window_ScreenCentered | #PB_Window_SizeGadget))
     Canvas_0 = GetGadget(*w)
@@ -33,9 +34,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Widgets(Hex(12)) = Button(130, 115, 50, 20, "|<<", #__button_left); proportional
     
     
-    SetAlignment(Widgets(Hex(2)), #__align_center |#__align_vertical |#__align_top|#__align_proportional)    
-    SetAlignment(Widgets(Hex(3)), #__align_center |#__align_right)
-    SetAlignment(Widgets(Hex(4)), #__align_full   |#__align_vertical |#__align_proportional) ; stretch proportional
+    SetAlignment(Widgets(Hex(2)), #__align_vertical |#__align_center|#__align_top|#__align_proportional)    
+    SetAlignment(Widgets(Hex(3)), #__align_center|#__align_right)
+    SetAlignment(Widgets(Hex(4)), #__align_vertical |#__align_full|#__align_proportional) ; stretch proportional
     SetAlignment(Widgets(Hex(44)), #__align_center|#__align_top)
     
     SetAlignment(Widgets(Hex(5)), #__align_bottom |#__align_left|#__align_right|#__align_proportional)
@@ -93,12 +94,12 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetAlignment(Widgets(Hex(8)),#__align_bottom|#__align_left|#__align_proportional) 
     SetAlignment(Widgets(Hex(9)),#__align_bottom|#__align_right|#__align_proportional) 
-    SetAlignment(Widgets(Hex(10)),#__align_left|#__align_right|#__align_bottom) 
-    SetAlignment(Widgets(Hex(11)),#__align_right|#__align_bottom|#__align_top) 
-    SetAlignment(Widgets(Hex(12)),#__align_right|#__align_bottom)
-    SetAlignment(Widgets(Hex(13)),#__align_right|#__align_bottom)
-    SetAlignment(Widgets(Hex(14)),#__align_right|#__align_bottom)
-    SetAlignment(Widgets(Hex(15)),#__align_right|#__align_bottom)
+    SetAlignment(Widgets(Hex(10)),#__align_bottom|#__align_left|#__align_right) 
+    SetAlignment(Widgets(Hex(11)),#__align_bottom|#__align_top|#__align_right) 
+    SetAlignment(Widgets(Hex(12)),#__align_bottom|#__align_right)
+    SetAlignment(Widgets(Hex(13)),#__align_bottom|#__align_right)
+    SetAlignment(Widgets(Hex(14)),#__align_bottom|#__align_right)
+    SetAlignment(Widgets(Hex(15)),#__align_bottom|#__align_right)
     
   EndProcedure
   
@@ -129,7 +130,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetAlignment(Widgets(Hex(6)),#__align_auto|#__align_none) 
     SetAlignment(Widgets(Hex(7)),#__align_auto|#__align_right)
-    SetAlignment(Widgets(Hex(8)),#__align_auto|#__align_right|#__align_bottom) 
+    SetAlignment(Widgets(Hex(8)),#__align_auto|#__align_bottom|#__align_right) 
     SetAlignment(Widgets(Hex(9)),#__align_auto|#__align_bottom) 
     
     ResizeWindow(Window_0, #PB_Ignore, #PB_Ignore, 300,260)
@@ -200,5 +201,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = p-
+; Folding = t-
 ; EnableXP
