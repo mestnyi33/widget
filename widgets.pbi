@@ -1141,21 +1141,25 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;- PRIVATEs
     Macro _drawing_font_(_this_)
       ; drawing font
-      If Not _this_\hide
+      ; If Not _this_\hide
         
-        If _this_\root\current\fontID <> _this_\text\fontID
+        If _this_\root\text\fontID[1] <> _this_\text\fontID
           If Not _this_\text\fontID 
             _this_\text\fontID = _this_\root\text\fontID 
           EndIf
           
-          _this_\root\current\fontID = _this_\text\fontID
+          _this_\root\text\fontID[1] = _this_\text\fontID
+          If _this_\text\fontID[1] <> _this_\text\fontID
+            _this_\text\fontID[1] = _this_\text\fontID
+            _this_\text\change = #True
+          EndIf
           DrawingFont(_this_\text\fontID) 
-          ; _this_\text\change = #True
           
           Debug "draw current font - " + #PB_Compiler_Procedure +" "+ _this_
         EndIf
         
-        If _this_\text\change Or _this_\resize & #__resize_change
+        ; Получаем один раз после изменения текста  
+        If _this_\text\change ; Or _this_\resize & #__resize_change
           If _this_\text\string And Not _this_\text\multiline
             _this_\text\width = TextWidth(_this_\text\string)
           EndIf
@@ -1164,28 +1168,33 @@ CompilerIf Not Defined(widget, #PB_Module)
           Debug "change text size - " + #PB_Compiler_Procedure +" "+ _this_
         EndIf
         
-      EndIf
+      ; EndIf
     EndMacro
     
-    Macro _drawing_font_item_(_this_, _item_)
-      ; drawing font
-      If _this_\root\current\fontID <> _item_\text\fontID
-        If _item_\text\fontID
-          _this_\root\current\fontID = _item_\text\fontID
-        Else
-          _this_\root\current\fontID = _this_\text\fontID
-          _item_\text\fontID = _this_\root\current\fontID
+    Macro _drawing_font_item_(_this_, _item_, _change_)
+      ; drawing item font
+      If _this_\root\text\fontID[1] <> _item_\text\fontID
+        If Not _item_\text\fontID
+          If Not _this_\text\fontID
+            _this_\text\fontID = _this_\root\text\fontID;[1]
+          EndIf
+          
+          _item_\text\fontID = _this_\text\fontID
         EndIf
         
+        _this_\root\text\fontID[1] = _item_\text\fontID
+        If _item_\text\fontID[1] <> _item_\text\fontID
+          _item_\text\fontID[1] = _item_\text\fontID
+          _item_\text\change = #True
+        EndIf
         DrawingFont(_item_\text\fontID) 
-        ; _item_\text\change = #True
-        
-        Debug "item draw current font - " + #PB_Compiler_Procedure +" "+ _item_\index
       EndIf
       
       ; Получаем один раз после изменения текста  
-      If _item_\text\change
-        _item_\text\width = TextWidth(_item_\text\string.s) 
+      If  _item_\text\change; _change_
+        If _item_\text\string
+          _item_\text\width = TextWidth(_item_\text\string) 
+        EndIf
         _item_\text\height = TextHeight("A") 
         _item_\text\change = #False
         
@@ -1406,7 +1415,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         EndIf
         
-      ;  _this_\text\fontID = Root()\text\fontID
+        ;  _this_\text\fontID = Root()\text\fontID
       EndIf
       
     EndMacro
@@ -2291,9 +2300,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         If \text\string  And (*this\type = #PB_GadgetType_Spin Or
                               *this\type = #PB_GadgetType_ProgressBar)
           
-;           If \text\fontID 
-;             DrawingFont(\text\fontID)
-;           EndIf
+          ;           If \text\fontID 
+          ;             DrawingFont(\text\fontID)
+          ;           EndIf
           
           If \text\change Or *this\resize & #__resize_change
             *this\text\height = TextHeight("A")
@@ -3518,9 +3527,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       StartDrawing(CanvasOutput(_this_\root\canvas\gadget)) 
       
       _drawing_font_(_this_)
-;       If _this_\text\fontID
-;         DrawingFont(_this_\text\fontID) 
-;       EndIf
+      ;       If _this_\text\fontID
+      ;         DrawingFont(_this_\text\fontID) 
+      ;       EndIf
     EndMacro
     
     Macro _text_scroll_x_(_this_)
@@ -4800,10 +4809,10 @@ CompilerIf Not Defined(widget, #PB_Module)
           RoundBox(\x[#__c_1],\y[#__c_1],\width[#__c_1],\height[#__c_1],\round,\round,\color\back[\color\state])
           ;         EndIf
           
-;           ;
-;           If \text\fontID 
-;             DrawingFont(\text\fontID) 
-;           EndIf
+          ;           ;
+          ;           If \text\fontID 
+          ;             DrawingFont(\text\fontID) 
+          ;           EndIf
           
           ; Then changed text
           If \text\change
@@ -6084,9 +6093,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       With *this
         If Not \hide
-;           If \text\fontID 
-;             DrawingFont(\text\fontID) 
-;           EndIf
+          ;           If \text\fontID 
+          ;             DrawingFont(\text\fontID) 
+          ;           EndIf
           
           If \change <> 0
             Tree_Properties_Update(*this, \row\_s())
@@ -6246,9 +6255,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       With *this
         If Not \hide
-;           If \text\fontID 
-;             DrawingFont(\text\fontID) 
-;           EndIf
+          ;           If \text\fontID 
+          ;             DrawingFont(\text\fontID) 
+          ;           EndIf
           
           If \change <> 0
             Tree_Properties_Update(*this, \row\_s())
@@ -7362,7 +7371,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Else
           If *this\change > 0
             ; drawing item font
-            _drawing_font_item_(*this, row())
+            _drawing_font_item_(*this, row(), row()\text\change)
             
             row()\x = *this\x[#__c_2]
             row()\height = row()\text\height + 2 ;
@@ -7582,13 +7591,13 @@ CompilerIf Not Defined(widget, #PB_Module)
                 *this\row\draws()\width = *this\width[#__c_2]
               EndIf
               
-              _drawing_font_item_(*this, *this\row\draws())
-;               If *this\root\current\fontID <> *this\row\draws()\text\fontID
-;                 *this\root\current\fontID = *this\row\draws()\text\fontID
-;                 DrawingFont(*this\row\draws()\text\fontID) 
-;                 
-;                 Debug "item draw current font - " + #PB_Compiler_Procedure +" "+ *this\row\draws()\index
-;               EndIf
+              _drawing_font_item_(*this, *this\row\draws(), 0)
+              ;               If *this\root\text\fontID[1] <> *this\row\draws()\text\fontID
+              ;                 *this\root\text\fontID[1] = *this\row\draws()\text\fontID
+              ;                 DrawingFont(*this\row\draws()\text\fontID) 
+              ;                 
+              ;                 Debug "item draw current font - " + #PB_Compiler_Procedure +" "+ *this\row\draws()\index
+              ;               EndIf
               
               Y = *this\row\draws()\y - *this\scroll\v\bar\page\pos
               state = *this\row\draws()\color\state  ;+ Bool(*this\row\draws()\color\state = #__s_2 And *this <> GetActive()\gadget)
@@ -11544,6 +11553,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           If Not Bool(*this\text\count And *this\text\count <> *this\count\items)
             Redraw(*this)
           EndIf
+        Else
+          If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
+            _drawing_font_(*this)
+            
+            StopDrawing()
+          EndIf
         EndIf
         
         Result = #True
@@ -13957,6 +13972,9 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure   ReDraw(*this._s_widget)
       If StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
+        ; reset drawing font value
+        Root()\root\text\fontID[1] =- 1 
+        
         If Root()\canvas\repaint <> #False
           Root()\canvas\repaint = #False
         EndIf
@@ -14859,8 +14877,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         Root()\text\fontID = GetGadgetFont(#PB_Default) ; Bug in Mac os
       CompilerEndIf
       
-      Root()\current\fontID = Root()\text\fontID
-      
       ; OpenList(Root())
       ; SetActive(Root())
       Resize(Root(), 0,0,width,height)
@@ -15312,5 +15328,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----9---------------+-------------------------------------------------------------------------------------------------------------------------------------f9--v---------------------------------------------------------------------------------------------------------------fnf0---v4-------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

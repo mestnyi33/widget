@@ -38,21 +38,16 @@ Procedure events_gbuttons()
         Case 3, 4
           OpenGadgetList(1)
           AddGadgetItem(1, 1, "Sub 2 (add)")
-          If CountGadgetItems(1) > 1
-            SetGadgetItemText(1, 1, "Sub 2 (add&set)")
-            Debug GetGadgetItemText(1, 1) + " - get item text"
-          Else
-            SetGadgetItemText(1, 0, "Sub 1 (add&set)")
-            Debug GetGadgetItemText(1, 0) + " - get item text"
-          EndIf
+          Protected sub = Bool(CountGadgetItems(1) > 1)
+          
+          SetGadgetItemText(1, sub, "Sub "+Str(sub+1)+" (add&set)")
+          Debug GetGadgetItemText(1, sub) + " - get item text"
           CloseGadgetList()
           
-;           If EventGadget() = 3
-;             SetGadgetItemFont(1, 2, 5)
-;           ElseIf EventGadget() = 4
-;             SetGadgetItemFont(1, 2, 6)
-;           EndIf
-          
+          ; SetGadgetItemFont(1, sub, 5 + Bool(GetIndex(*event\widget) = 4))
+          SetGadgetItemState(1, sub, 1)
+         ; SetState(1, 1)
+         
       EndSelect
   EndSelect
 EndProcedure
@@ -73,29 +68,30 @@ Procedure events_wbuttons()
         Case 3, 4
           ;OpenList(GetWidget(1))
           AddItem(GetWidget(1), 1, "Sub 2 (add)")
-          If CountItems(GetWidget(1)) > 1
-            SetItemText(GetWidget(1), 1, "Sub 2 (add&set)")
-            Debug GetItemText(GetWidget(1), 1) + " - get item text"
-          Else
-            SetItemText(GetWidget(1), 0, "Sub 1 (add&set)")
-            Debug GetItemText(GetWidget(1), 0) + " - get item text"
-          EndIf
+          Protected sub = Bool(CountItems(GetWidget(1)) > 1)
+          
+          SetItemText(GetWidget(1), sub, "Sub "+Str(sub+1)+" (add&set)")
+          Debug GetItemText(GetWidget(1), sub) + " - get item text"
           ;CloseList()
           
-          If GetIndex(*event\widget) = 3
-            SetItemFont(GetWidget(1), 2, 5)
-          ElseIf GetIndex(*event\widget) = 4
-            SetItemFont(GetWidget(1), 2, 6)
-          EndIf
-          
+          SetItemFont(GetWidget(1), sub, 5 + Bool(GetIndex(*event\widget) = 4))
+          SetItemState(GetWidget(1), sub, 1)
+         ; SetState(GetWidget(1), 1)
       EndSelect
   EndSelect
 EndProcedure
-
+ 
 ; Shows using of several panels...
 If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 322+50, 0, 322+50, 220)
-  LoadFont(5, "Arial", 18)
-  LoadFont(6, "Arial", 25)
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    LoadFont(5, "Arial", 18)
+    LoadFont(6, "Arial", 25)
+    
+  CompilerElse
+    LoadFont(5, "Arial", 14)
+    LoadFont(6, "Arial", 21)
+    
+  CompilerEndIf
   
   PanelGadget     (0, 8, 8, 306+50, 203)
   AddGadgetItem (0, -1, "Panel 1")
@@ -166,9 +162,20 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   Button(285, 145, 60, 24,"clear")
   
   AddItem (GetWidget(0), -1,"Panel 2")
-  SetFont(Button(10, 15, 100, 24,"Button 3"), FontID(6))
-  Button(115, 15, 100, 24,"Button 4")
+  SetFont(Button(10, 15, 100, 24,"Button 2_1"), FontID(6))
+  Button(115, 15, 100, 24,"Button 2_2")
+  
+  AddItem (GetWidget(0), -1,"Panel 3")
+  Button(10, 15, 100, 24,"Button 3_1")
+  Define *b._s_widget = Button(115, 15, 100, 24,"Button 3_2")
+  SetFont(*b, FontID(6))
+  
+  ; set auto font size
+  Resize(*b, #PB_Ignore, #PB_Ignore, *b\text\width+10, *b\text\height+10)
+  
   CloseList()
+  
+  SetItemFont(GetWidget(0), 1, 6)
   
   For i = 0 To 1
     Bind(GetWidget(i), @events_widgets())
@@ -182,5 +189,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 8--
+; Folding = ---
 ; EnableXP

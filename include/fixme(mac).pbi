@@ -323,6 +323,6 @@ UseModule fixme
 ; ;   EndModule
 ; ;   CompilerEndIf
 ; ;   
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = ------
 ; EnableXP
