@@ -1662,8 +1662,10 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\text\width = *this\width;[2]
             
             ForEach \bar\_s()
-              *this\bar\_s()\text\width = TextWidth(*this\bar\_s()\text\string)
-              *this\bar\_s()\text\height = *this\text\height
+              _drawing_font_item_(*this, *this\bar\_s(), *this\bar\_s()\change)
+              
+;               *this\bar\_s()\text\width = TextWidth(*this\bar\_s()\text\string)
+;               *this\bar\_s()\text\height = *this\text\height
               
               If *this\bar\vertical
                 ;                If *this\parent\__width < *this\bar\_s()\text\width + 12
@@ -1735,6 +1737,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           Protected State_3, Color_frame
           
           ForEach \bar\_s()
+            _drawing_font_item_(*this, *this\bar\_s(), 0)
+            
             If \index[#__s_1] = \bar\_s()\index
               State_3 = Bool(\index[#__s_1] = \bar\_s()\index); +Bool( \index[#__s_1] = \bar\_s()\index And \bar\state = #__b_3)
             Else
@@ -11554,6 +11558,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             Redraw(*this)
           EndIf
         Else
+          ; example\font\font(demo)
           If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
             _drawing_font_(*this)
             
@@ -12524,7 +12529,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       ElseIf *this\type = #__type_tree Or
              *this\type = #__type_Editor
         
-        If _is_item_(*this, item) And SelectElement(*this\row\_s(), Item) And 
+        If _is_item_(*this, item) And 
+           SelectElement(*this\row\_s(), Item) And 
            *this\row\_s()\text\fontID <> FontID
           *this\row\_s()\text\fontID = FontID
           ;       *this\row\_s()\text\change = 1
@@ -12533,7 +12539,15 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf 
         
       ElseIf *this\type = #__type_Panel
-        
+        If _is_item_(*this\_tab, item) And 
+           SelectElement(*this\_tab\bar\_s(), Item) And 
+           *this\_tab\bar\_s()\text\fontID <> FontID
+          *this\_tab\bar\_s()\text\fontID = FontID
+          ;       *this\row\_s()\text\change = 1
+          ;       *this\change = 1
+          Result = #True
+        EndIf 
+       
       Else
       EndIf
       
