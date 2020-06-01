@@ -91,10 +91,23 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(95, 35, 80, 24,"Button 6")
     CloseList()
     
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      LoadFont(5, "Arial", 18)
+      LoadFont(6, "Arial", 25)
+      
+    CompilerElse
+      LoadFont(5, "Arial", 14)
+      LoadFont(6, "Arial", 21)
+      
+    CompilerEndIf
+    
+    SetItemFont(*panel_1, 1, 6)
+  SetItemFont(*panel_2, 1, 6)
+  
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

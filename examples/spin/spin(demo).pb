@@ -39,7 +39,7 @@ Procedure events_widgets()
 EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
-If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 320,0,320,200)
   SpinGadget(0, 10,  40, 250, 20, 0, 10000)
   SetGadgetState(0, 5000)
   
@@ -57,18 +57,18 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
     BindGadgetEvent(i, @events_gadgets())
   Next
   
-  Spin(10+320,  40, 250, 20, 0, 10000)
+  Spin(10,  40, 250, 20, 0, 10000)
   SetState(GetWidget(0), 5000)
   
-  Spin(10+320, 120, 250, 20, 0, 30, #__Spin_Numeric)
+  Spin(10, 120, 250, 20, 0, 30, #__Spin_Numeric)
   SetState(GetWidget(1), 3000)
   
-; ; ;   Spin(270+320, 10, 20, 170, 0, 10000, #__Spin_Vertical)
+; ; ;   Spin(270, 10, 20, 170, 0, 10000, #__Spin_Vertical)
 ; ; ;   SetState(GetWidget(2), 8000)
   
-  Text(10+320,  20, 250, 20,"Spin Standard", #__Text_Center)
-  Text(10+320, 100, 250, 20, "Spin Ticks", #__Text_Center)
-;   Text(90+320, 180, 200, 20, "Spin Vertical", #__Text_Right)
+  Text(10,  20, 250, 20,"Spin Standard", #__Text_Center)
+  Text(10, 100, 250, 20, "Spin Ticks", #__Text_Center)
+;   Text(90, 180, 200, 20, "Spin Vertical", #__Text_Right)
   
   ;Bind(#PB_All, @events_widgets())
   
@@ -78,6 +78,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

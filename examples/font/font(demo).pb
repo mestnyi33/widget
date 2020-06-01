@@ -1,19 +1,5 @@
 ﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
 
-; - AddItem(): Add a panel. 
-; - RemoveItem(): Remove a panel. 
-; - CountItems(): Count the number of panels. 
-; - ClearItems(): Remove all panels. 
-; - GetItemText(): Retrieve the text of the specified item. 
-; - SetItemText(): Change the text of the specified item. 
-; - SetItemImage(): Change the image of the specified item. ;;;;;;;;;;;(Not supported on OS X) 
-; - GetItemData(): Retrieve the value associated With the specified item. 
-; - SetItemData(): Associate a value With the specified item. 
-; 
-; - SetState(): Change the active panel. 
-; - GetState(): Get the index of the current panel. 
-; - GetAttribute(): With one of the following attributes: (there must be at least 1 item For this To work) 
-
 Procedure events_gadgets()
   Debug ""+EventGadget() + " - gadget  event - " +EventType()+ "  item - " +GetGadgetState(EventGadget())
 EndProcedure
@@ -83,6 +69,7 @@ EndProcedure
  
 ; Shows using of several panels...
 If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 322+50, 0, 322+50, 220)
+  Define text.s, *g
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     LoadFont(5, "Arial", 18)
     LoadFont(6, "Arial", 25)
@@ -93,20 +80,43 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
     
   CompilerEndIf
   
-  PanelGadget     (0, 8, 8, 306+50, 203)
+  PanelGadget     (0, 8, 8, 356, 203)
   AddGadgetItem (0, -1, "Panel 1")
-  PanelGadget (1, 5, 5, 290, 166-30)
-  AddGadgetItem(1, -1, "Sub 1")
-  AddGadgetItem(1, -1, "Sub 2")
-  AddGadgetItem(1, -1, "Sub 3")
-  AddGadgetItem(1, -1, "Sub 4")
-  SetGadgetState(1, 2)
-  CloseGadgetList()
   
-  ButtonGadget(2, 10, 145, 80, 24,"remove")
-  ButtonGadget(3, 95, 145, 80, 24,"add (18)")
-  ButtonGadget(4, 95, 145, 80, 24,"add (25)")
-  ButtonGadget(5, 95+85, 145, 80, 24,"clear")
+  ;PanelGadget (1, 10, 10, 334, 130)
+  TreeGadget (1, 10, 10, 334, 130)
+  
+  If GadgetType(1) = #PB_GadgetType_Panel
+    text = "Sub"
+  ElseIf GadgetType(1) = #PB_GadgetType_Tree
+    text = "Tree"
+  EndIf
+  
+  AddGadgetItem (1, 0, text+"_0", 0)                                    
+  For i=1 To 12
+    If i=5 
+      AddGadgetItem(1, -1, text+"_"+Str(i), 0, 0) 
+    Else
+      AddGadgetItem(1, -1, text+"_"+Str(i), 0, 0) 
+    EndIf
+  Next 
+  
+  SetGadgetState(1, 2)
+  If GadgetType(1) = #PB_GadgetType_Panel
+    CloseGadgetList()
+  EndIf
+  
+  ;SetGadgetItemFont(1, 2, 5)
+  SetGadgetItemText(1, 2, text+"_2 (18)")
+  
+  ;SetGadgetItemFont(1, 4, 6)
+  SetGadgetItemText(1, 4, text+"_4 (25)")
+  
+  
+  ButtonGadget(2, 10, 145, 60, 24,"remove")
+  ButtonGadget(3, 75, 145, 100, 24,"add (18)")
+  ButtonGadget(4, 180, 145, 100, 24,"add (25)")
+  ButtonGadget(5, 285, 145, 60, 24,"clear")
   
   AddGadgetItem (0, -1,"Panel 2")
   ButtonGadget(6, 10, 15, 80, 24,"Button 6")
@@ -122,12 +132,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   
   Debug ""+CountGadgetItems(1) +" - count gadget items"
   
-  Panel(8, 8, 306+50, 203)
+  Panel(8, 8, 356, 203)
   AddItem (GetWidget(0), -1, "Panel 1")
   
-  Define text.s, *g
   ;*g = Panel(10, 10, 334, 130)
-  *g = Tree(10, 10, 286-2+50, 130, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
+  *g = Tree(10, 10, 334, 130, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
   
   If GetType(*g) = #PB_GadgetType_Panel
     text = "Sub"
@@ -136,7 +145,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   EndIf
   
   AddItem (*g, 0, text+"_0", 0)                                    
-  For i=1 To 6
+  For i=1 To 12
     If i=5 
       AddItem(*g, -1, text+"_"+Str(i), -1, 0) 
     Else
@@ -156,7 +165,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   SetItemText(*g, 4, text+"_4 (25)")
   
   Button(10, 145, 60, 24,"remove")
-  
   SetFont(Button(75, 145, 100, 24,"add (18)"), FontID(5))
   SetFont(Button(180, 145, 100, 24,"add (25)"), FontID(6))
   Button(285, 145, 60, 24,"clear")
@@ -186,8 +194,18 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   
   Debug ""+CountItems(GetWidget(1)) +" - count widget items"
   
+;   ; bug set font - FIXED ReDraw() ; Root(()\text\fontID[1] =- 1 >> *this\root\text\fontID[1] =- 1 
+;   Open(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
+;   Global *panel._S_widget = Panel(10,150,200,160) 
+;   AddItem(*panel,-1,"Panel") 
+;   AddItem(*panel,-1,"Second") 
+;   AddItem(*panel,-1,"Third") 
+;   CloseList()
+;   Open(OpenWindow(#PB_Any, 0, 0, 100, 100, "", 0, UseGadgetList(0)))
+;   ReDraw(GetRoot(*panel))
+  
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---
+; Folding = ----
 ; EnableXP

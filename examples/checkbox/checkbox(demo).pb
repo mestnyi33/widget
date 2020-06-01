@@ -17,8 +17,8 @@ Procedure events_widgets()
   
   Select *event\type
     Case #PB_EventType_Change
-      SetGadgetState((*event\widget\index - 1), GetState(*event\widget))
-      Debug  Str(*event\widget\index - 1)+" - widget change " + GetState(*event\widget)
+      SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
+      Debug  Str(GetIndex(*event\widget))+" - widget change " + GetState(*event\widget)
   EndSelect
 EndProcedure
 
@@ -36,7 +36,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 100, "CheckBoxGadget", #PB_Window_Sys
   Next
   
   CheckBox(10+140, 10, 140, 20, "CheckBox 1")
-  CheckBox(10+140, 30, 140, 40, text, #__text_center)
+  CheckBox(10+140, 30, 140, 40, text);, #__text_center)
   CheckBox(10+140, 70, 140, 20, "CheckBox 3", #__text_right)
   SetState(GetWidget(1), 1)   ; set second option as active one
   ;Bind(#PB_All, @events_widgets())
@@ -47,6 +47,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 100, "CheckBoxGadget", #PB_Window_Sys
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

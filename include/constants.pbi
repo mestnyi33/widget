@@ -6,6 +6,11 @@
     
     ;- - CONSTANTs
     ;{
+    #debug = 0
+    #debug_draw_font = #debug
+    #debug_draw_font_change = #debug
+    #debug_draw_item_font_change = #debug
+    
     #__height = 21
     #__bsize = 3
     #__window_frame = #__height+#__bsize*2

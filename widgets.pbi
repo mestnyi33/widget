@@ -1155,7 +1155,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           DrawingFont(_this_\text\fontID) 
           
-          Debug "draw current font - " + #PB_Compiler_Procedure +" "+ _this_
+          If #debug_draw_font
+            Debug "draw current font - " + #PB_Compiler_Procedure +" "+ _this_
+          EndIf
         EndIf
         
         ; Получаем один раз после изменения текста  
@@ -1165,7 +1167,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           _this_\text\height = TextHeight("A")
           
-          Debug "change text size - " + #PB_Compiler_Procedure +" "+ _this_
+          If #debug_draw_font_change
+            Debug "change text size - " + #PB_Compiler_Procedure +" "+ _this_
+          EndIf
         EndIf
         
       ; EndIf
@@ -1176,7 +1180,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       If _this_\root\text\fontID[1] <> _item_\text\fontID
         If Not _item_\text\fontID
           If Not _this_\text\fontID
-            _this_\text\fontID = _this_\root\text\fontID;[1]
+            _this_\text\fontID = _this_\root\text\fontID
+            ;_drawing_font_(_this_)
           EndIf
           
           _item_\text\fontID = _this_\text\fontID
@@ -1198,7 +1203,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         _item_\text\height = TextHeight("A") 
         _item_\text\change = #False
         
-        Debug "item change text size - " + #PB_Compiler_Procedure +" "+ _item_\index
+        If #debug_draw_item_font_change
+          Debug "item change text size - " + #PB_Compiler_Procedure +" "+ _item_\index
+        EndIf
       EndIf 
     EndMacro      
     
@@ -11719,14 +11726,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\index = ListIndex(GetChildrens(*parent)) 
           ;           EndIf
           GetChildrens(*parent) = *this
-          
-          *parent\count\childrens + 1
-          
-          If *parent <> *this\root
-            *this\root\count\childrens + 1
-            *this\level = *parent\level + 1
-          EndIf
-          
           ; set z-order position 
           If Not *parent\first 
             If Not *parent\last
@@ -11742,6 +11741,14 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             *parent\last = *this
           EndIf
+        EndIf
+        
+        ; add parent childrens count
+        *parent\count\childrens + 1
+        
+        If *parent <> *this\root
+          *this\root\count\childrens + 1
+          *this\level = *parent\level + 1
         EndIf
         
         ; children reparent 
@@ -11763,13 +11770,22 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
           EndIf
           
-          If *this\parent\scroll And 
-             *this\parent\scroll\v And 
-             *this\parent\scroll\h
+          If *parent\scroll And 
+             *parent\scroll\v And 
+             *parent\scroll\h
             
             ; for the scroll area childrens
-            x - *this\parent\scroll\h\bar\page\pos
-            y - *this\parent\scroll\v\bar\page\pos
+            x - *parent\scroll\h\bar\page\pos
+            y - *parent\scroll\v\bar\page\pos
+          EndIf
+          
+          If *LastParent\scroll And 
+             *LastParent\scroll\v And 
+             *LastParent\scroll\h
+            
+            ; for the scroll area childrens
+            x + *LastParent\scroll\h\bar\page\pos
+            y + *LastParent\scroll\v\bar\page\pos
           EndIf
           
           Resize(*this, x, y, #PB_Ignore, #PB_Ignore)
@@ -13985,15 +14001,18 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure   ReDraw(*this._s_widget)
+      ;Debug  ""+Root()\repaint +" "+ *this\root\repaint
+      
       If StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
-        ; reset drawing font value
-        Root()\root\text\fontID[1] =- 1 
+        ; reset current drawing font
+        ; to set new current drawing font
+        *this\root\text\fontID[1] =- 1 
         
-        If Root()\canvas\repaint <> #False
-          Root()\canvas\repaint = #False
+        If *this\root\canvas\repaint <> #False
+          *this\root\canvas\repaint = #False
         EndIf
         
-        If Root()\repaint = #True
+        If *this\root\repaint = #True
           FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F0)
         EndIf
         
@@ -14521,7 +14540,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If Not *this : *this = Root() : EndIf
         
-        
         ; set widget mouse
         ; state - (entered & leaved)   
         If Root()\entered <> *this
@@ -14744,7 +14762,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If Repaint 
-        ;       If Root()\entered And Root()\entered\bar\button[#__b_3]\color\state
+      ;       If Root()\entered And Root()\entered\bar\button[#__b_3]\color\state
         ; ;         Debug Root()\entered\bar\button[#__b_3]\color\state
         ; ;       EndIf
         ;       ;       If Root()\entered And Root()\entered\type = #__type_tree
@@ -15342,5 +15360,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------v---8+-----0----
 ; EnableXP
