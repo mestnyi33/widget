@@ -47,6 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   SetState(*scrollarea\scroll\h, 10)
 ;   setparent(*w, *scrollarea)
   
+  ReDraw(Root()) ; get required pos&size
+  
   Debug "POSITION (x&y)"
   Debug "  screen - "+ x(*w, #__c_screen)
   Debug "  frame - "+ x(*w, #__c_frame)
