@@ -9,30 +9,31 @@ EndProcedure
 
 Procedure NextWindow( *this.Integer ) 
   Protected *element
+  ; Widget() = GetChildrens(Root())
   
   If Not enumerate_count
-    *element = FirstElement(GetChildrens(Root()))
+    *element = FirstElement(Widget())
   Else
-    *element = NextElement(GetChildrens(Root()))
+    *element = NextElement(Widget())
   EndIf
   
   enumerate_count + 1
   
-  If GetChildrens(Root())\type <> #__type_window
+  If Widget()\type <> #__type_window
     While *element
-      *element = NextElement(GetChildrens(Root()))
+      *element = NextElement(Widget())
       
-      If GetChildrens(Root())\type = #__type_window
+      If Widget()\type = #__type_window
         Break
       EndIf 
     Wend
   EndIf
   
-  If GetChildrens(Root())\type <> #__type_window
+  If Widget()\type <> #__type_window
     ProcedureReturn 0
   EndIf
   
-  *this\i = GetChildrens(Root())\index ; ListIndex(GetChildrens(Root()))
+  *this\i = Widget()\index ; ListIndex(Widget())
   ProcedureReturn *element
   
 EndProcedure
@@ -51,32 +52,32 @@ Procedure NextGadget( *this.Integer, parent =- 1 )
   Protected *element
   
   If Not enumerate_count
-    *element = FirstElement(GetChildrens(Root()))
+    *element = FirstElement(Widget())
   Else
-    *element = NextElement(GetChildrens(Root()))
+    *element = NextElement(Widget())
   EndIf
   
   enumerate_count + 1
   
-  If GetChildrens(Root())\type = #__type_window
+  If Widget()\type = #__type_window
     While *element
-      *element = NextElement(GetChildrens(Root()))
+      *element = NextElement(Widget())
       
-      If GetChildrens(Root())\type <> #__type_window And
-         Not (GetChildrens(Root())\parent\index <> parent And parent <> #PB_Any)
+      If Widget()\type <> #__type_window And
+         Not (Widget()\parent\index <> parent And parent <> #PB_Any)
         Break
       EndIf 
     Wend
   EndIf
   
-  If GetChildrens(Root())\type = #__type_window Or
-     (GetChildrens(Root())\parent\index <> parent And parent <> #PB_Any)
+  If Widget()\type = #__type_window Or
+     (Widget()\parent\index <> parent And parent <> #PB_Any)
     enumerate_count = 0
     ProcedureReturn 0
   EndIf
   
-  *this\i = GetChildrens(Root())\index ; ListIndex(GetChildrens(Root()))
-                                       ;Debug GetChildrens(Root())\text\string
+  *this\i = Widget()\index ; ListIndex(Widget())
+                                       ;Debug Widget()\text\string
   ProcedureReturn *element
   
 EndProcedure
@@ -125,6 +126,12 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322, 600, "PanelGadget", #PB_Window_SystemMenu
     Wend
     AbortGadget()
   EndIf
+  
+  
+  Debug "Begen enumerate alls"
+  ForEach Widget()
+    Debug "Widget "+ Widget()\index
+  Next
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf

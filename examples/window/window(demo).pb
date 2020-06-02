@@ -34,9 +34,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Open(OpenWindow(#PB_Any, 150, 150, 200, 200+#__window_frame, "window_0", #PB_Window_BorderLess))
   Window(0,0,0,0,GetWindowTitle(Root()\canvas\window), #__flag_autosize | #__Window_SizeGadget | #__Window_SystemMenu)
-  Root()\_childrens()\container = #__type_root
-  Root()\_childrens()\round = 7
-  SetActive(Root()\_childrens())
+  
+  Widget()\container = #__type_root
+  Widget()\round = 7
+  SetActive(Widget())
   
   Button(0,0,80,20,"button")
   Button(200-80,200-20,80,20,"button")
@@ -47,9 +48,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Open(OpenWindow(#PB_Any, 200, 200, 200, 200+#__window_frame, "window_1", #PB_Window_BorderLess))
   Window(0,0,0,0,GetWindowTitle(Root()\canvas\window), #__flag_autosize | #__Window_SizeGadget | #__Window_SystemMenu)
-  Root()\_childrens()\container = #__type_root
-  Root()\_childrens()\round = 7
-  SetActive(Root()\_childrens())
+  
+  Widget()\container = #__type_root
+  Widget()\round = 7
+  SetActive(Widget())
   
   Button(0,0,80,20,"button")
   Button(200-80,200-20,80,20,"button")
@@ -60,8 +62,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 39
-; FirstLine = 28
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

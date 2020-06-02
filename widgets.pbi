@@ -44,17 +44,17 @@ CompilerIf Not Defined(widget, #PB_Module)
       structures::*event\root
     EndMacro
     
-    Macro Widget()
-      GetChildrens(Root())
-    EndMacro
-    
     Macro GetActive() ; Returns active window
       structures::*event\active
     EndMacro
     
-    Macro GetChildrens(_this_) ; Returns active window
+    Macro GetChildrens(_this_=0) ; Returns last created widget
                                ; _this_\root\_childrens()
-      *event\_childrens()
+      structures::*event\_childrens()
+    EndMacro
+    
+    Macro Widget()
+      structures::*event\_childrens()  ; GetChildrens(Root())
     EndMacro
     
     ;- 
@@ -9778,7 +9778,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;       EndIf
     ;     EndProcedure
     
-    Procedure   Text_Draw(*this._s_widget)
+    Procedure   Button_Draw(*this._s_widget)
       With *this
         If *this\color\back <> -  1
           If \color\fore <> -  1
@@ -10027,6 +10027,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                  *this\button\color\frame[Bool(*this\button\state Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\button\color\alpha<<24)
         EndIf 
         
+        ; draw frame
         If *this\fs
           DrawingMode(#PB_2DDrawing_Outlined)
           RoundBox(*this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round,*this\round, *this\color\Frame[Bool(*this\_state & #__s_frame)**this\color\state])
@@ -13935,11 +13936,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             
           Case #__type_listView       : Tree_Draw(*this)
             
-          Case #__type_text           : Text_Draw(*this)
-          Case #__type_button         : Text_Draw(*this)
-          Case #__type_Option         : Text_Draw(*this)
-          Case #__type_checkBox       : Text_Draw(*this)
-          Case #__type_HyperLink      : Text_Draw(*this)
+          Case #__type_text           : Button_Draw(*this)
+          Case #__type_button         : Button_Draw(*this)
+          Case #__type_Option         : Button_Draw(*this)
+          Case #__type_checkBox       : Button_Draw(*this)
+          Case #__type_HyperLink      : Button_Draw(*this)
             
           Case #__type_Spin ,
                #__type_tabBar,
@@ -14281,16 +14282,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint = Window_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
-      If *this\type = #PB_GadgetType_Panel
-        Repaint = Bar_Events(*this\_tab, eventtype, mouse_x, mouse_y)
+      If *this\type = #__Type_tree_Properties
+        Repaint = Tree_Properties_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_Tree
         Repaint = Tree_Events(*this, eventtype, mouse_x, mouse_y)
-      EndIf
-      
-      If *this\type = #PB_GadgetType_tree_Properties
-        Repaint = Tree_Properties_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
       If *this\type = #PB_GadgetType_ListView
@@ -14305,6 +14302,27 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint = Editor_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
+      If *this\type = #PB_GadgetType_Panel
+        Repaint = Bar_Events(*this\_tab, eventtype, mouse_x, mouse_y)
+      EndIf
+      
+      ;
+      If *this\type = #PB_GadgetType_Option Or
+         *this\type = #PB_GadgetType_CheckBox
+        
+        Select eventtype
+          Case #PB_EventType_LeftButtonDown : Repaint = #True
+          Case #PB_EventType_LeftButtonUp   : Repaint = #True
+            If *this\_state & #__s_entered
+              If *this\type = #PB_GadgetType_CheckBox
+                SetState(*this, Bool(Bool(*this\button\state & #PB_Checkbox_Checked = #PB_Checkbox_Checked) ! 1))
+              Else
+                SetState(*this, #True)
+              EndIf
+            EndIf
+        EndSelect
+      EndIf
+      
       If *this\type = #PB_GadgetType_Button
         If eventtype = #PB_EventType_LeftButtonUp
           If *this\_state & #__s_entered
@@ -14313,6 +14331,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             Else
               *this\color\state = #__s_1
             EndIf
+            
             Post(#PB_EventType_LeftClick, *this) 
             Repaint = 1
           EndIf
@@ -14320,33 +14339,17 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If *this\_state & #__s_toggled = #False
           Select eventtype
-            Case #PB_EventType_MouseLeave     : *this\color\state = #__s_0 : Repaint = 1
-            Case #PB_EventType_LeftButtonDown : *this\color\state = #__s_2 : Repaint = 1
-            Case #PB_EventType_MouseEnter     : *this\color\state = #__s_1 + Bool(*this = *this\root\selected) : Repaint = 1
+            Case #PB_EventType_MouseLeave     : Repaint = #True : *this\color\state = #__s_0 
+            Case #PB_EventType_LeftButtonDown : Repaint = #True : *this\color\state = #__s_2
+            Case #PB_EventType_MouseEnter     : Repaint = #True : *this\color\state = #__s_1 + Bool(*this = *this\root\selected)
           EndSelect
         EndIf
       EndIf
       
-      
-      If *this\type = #__type_Option
-        Select eventtype
-          Case #PB_EventType_LeftButtonDown : Repaint = 1
-          Case #PB_EventType_LeftButtonUp   : Repaint = 1
-          Case #PB_EventType_LeftClick      : Repaint = SetState(*this, #True)
-        EndSelect
-      EndIf
-      
-      If *this\type = #__type_checkBox
-        Select eventtype
-          Case #PB_EventType_LeftButtonDown : Repaint = 1
-          Case #PB_EventType_LeftButtonUp   : Repaint = 1
-          Case #PB_EventType_LeftClick      
-            Repaint = SetState(*this, Bool(Bool(*this\button\state & #PB_Checkbox_Checked = #PB_Checkbox_Checked) ! #True))
-        EndSelect
-      EndIf
-      
       If *this\type = #PB_GadgetType_HyperLink
-        If _from_point_(mouse_x - *this\x, mouse_y - *this\y, *this, [#__c_required]) And eventtype <> #PB_EventType_MouseLeave
+        If eventtype <> #PB_EventType_MouseLeave And
+           _from_point_(mouse_x - *this\x, mouse_y - *this\y, *this, [#__c_required])
+          
           Select eventtype
             Case #PB_EventType_LeftClick : Post(eventtype, *this)
             Case #PB_EventType_LeftButtonUp   
@@ -14376,6 +14379,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
+      ;
       If *this\type = #PB_GadgetType_Spin Or
          *this\type = #PB_GadgetType_tabBar Or
          *this\type = #PB_GadgetType_TrackBar Or
@@ -15336,5 +15340,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---f7------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t---f------------------------------------------------------------------------------------------------------400----------------
 ; EnableXP
