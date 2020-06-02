@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_LeftClick, #PB_EventType_Change
         
         Select EventWidget
-          Case *d_0 : SetParent(*w, GetRoot(EventWidget))
+          Case *d_0, *pb_3 : SetParent(*w, GetRoot(EventWidget))
             
           Case *w_0 : SetParent(*w, *window_1)
           Case *p_0, *pb_0 : SetParent(*w, *panel, 0)
@@ -227,5 +227,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --
+; Folding = -0
 ; EnableXP

@@ -170,18 +170,18 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   Button(285, 145, 60, 24,"clear")
   
   AddItem (GetWidget(0), -1,"Panel 2")
-  SetFont(Button(10, 15, 100, 24,"Button 2_1"), FontID(6))
+  SetFont(Button(10, 15, 100, 24,"Button 2_1"), FontID(5))
   Button(115, 15, 100, 24,"Button 2_2")
   
   AddItem (GetWidget(0), -1,"Panel 3")
   Button(10, 15, 100, 24,"Button 3_1")
-  Define *b._s_widget = Button(115, 15, 100, 24,"Button 3_2")
-  SetFont(*b, FontID(6))
+  Define *b._s_widget = Button(10, 15+30, 100, 24,"Auto resize button then change font", #__Button_MultiLine)
+  SetFont(*b, FontID(5))
   
 ;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
-;  Debug ""+*b\text\width +" "+ *b\text\height ; mac = 121 29 ; win 70 16
+  Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\scroll\width +" "+ *b\scroll\height ; mac = 121 29 ; win 70 16
   ; set auto font size
-  Resize(*b, #PB_Ignore, #PB_Ignore, *b\text\width+10, *b\text\height+10)
+  Resize(*b, #PB_Ignore, #PB_Ignore, *b\scroll\width+12, *b\scroll\height+12)
   
   CloseList()
   

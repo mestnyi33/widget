@@ -459,8 +459,8 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;       _x.l[constants::#__c]
       y.l[constants::#__c]
       x.l[constants::#__c]
-      height.l[constants::#__c]
-      width.l[constants::#__c]
+      height.l[6];constants::#__c]
+      width.l[6];constants::#__c]
       
       *adress           ; widget list adress
       *root._s_root     ; adress root

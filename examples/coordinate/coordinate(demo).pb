@@ -40,27 +40,47 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-  setparent(*w, *scrollarea)
+  SetParent(*w, *scrollarea)
   SetState(*scrollarea\scroll\h, 30)
 ;  setparent(*w, Root())
   
 ;   SetState(*scrollarea\scroll\h, 10)
 ;   setparent(*w, *scrollarea)
   
-  Debug " screen - "+ x(*w, #__c_0)
-  Debug " frame - "+ x(*w, #__c_1)
-  Debug " inner - "+ x(*w, #__c_2)
-  Debug " draw - "+ x(*w, #__c_4)
-  Debug " window - "+ x(*w, #__c_8)
-  Debug " container - "+ x(*w, #__c_3)
+  Debug "POSITION (x&y)"
+  Debug "  screen - "+ x(*w, #__c_screen)
+  Debug "  frame - "+ x(*w, #__c_frame)
+  Debug "  inner - "+ x(*w, #__c_inner)
+  Debug "  scroll - "+ x(*w, #__c_scroll)
+  Debug "  clip - "+ x(*w, #__c_clip)
+  Debug "  window - "+ x(*w, #__c_wind)
+  Debug "  container - "+ x(*w, #__c_cont)
+  Debug "  draw - "+ x(*w, #__c_draw)
   Debug ""
-  Debug " screen - "+ x(*s_0, #__c_0)
-  Debug " frame - "+ x(*s_0, #__c_1)
-  Debug " inner - "+ x(*s_0, #__c_2)
-  Debug " draw - "+ x(*s_0, #__c_4)
-  Debug " window - "+ x(*s_0, #__c_8)
-  Debug " container - "+ x(*s_0, #__c_3)
+  Debug "  screen - "+ x(*s_0, #__c_screen)
+  Debug "  frame - "+ x(*s_0, #__c_frame)
+  Debug "  inner - "+ x(*s_0, #__c_inner)
+  Debug "  scroll - "+ x(*s_0, #__c_scroll)
+  Debug "  clip - "+ x(*s_0, #__c_clip)
+  Debug "  window - "+ x(*s_0, #__c_wind)
+  Debug "  container - "+ x(*s_0, #__c_cont)
+  Debug "  draw - "+ x(*s_0, #__c_draw)
   Debug ""
+  
+  Debug "SIZE (width&height)"
+  Debug "  frame - "+ width(*w, #__c_frame)
+  Debug "  inner - "+ width(*w, #__c_inner)
+  Debug "  scroll - "+ width(*w, #__c_scroll)
+  Debug "  clip - "+ width(*w, #__c_clip)
+  ;Debug "  draw - "+ width(*w, #__c_draw)
+  Debug ""
+  Debug "  frame - "+ width(*s_0, #__c_frame)
+  Debug "  inner - "+ width(*s_0, #__c_inner)
+  Debug "  scroll - "+ width(*s_0, #__c_scroll)
+  Debug "  clip - "+ width(*s_0, #__c_clip)
+  ;Debug "  draw - "+ width(*s_0, #__c_draw)
+  Debug ""
+  
 ;   Macro Enumerate()
 ;     GetChildrens(Root())
 ;   EndMacro

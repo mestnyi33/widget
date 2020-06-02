@@ -82,19 +82,19 @@
     
     ;- coordinate 
     Enumeration
-      #__c_0 = 0 ; screen
-      #__c_1 = 1 ; frame screen
-      #__c_2 = 2 ; inner screen
-      #__c_3 = 3 ; draw container
-      #__c_4 = 4 ; clip
-      #__c_5 = 5 ; clip frame
-      #__c_6 = 6 ; clip inner
-      #__c_7 = 7 ; scroll 
+      ; pos & size
+      #__c_screen = 0 ; screen
+      #__c_frame = 1 ; frame screen
+      #__c_inner = 2 ; inner screen
+      #__c_scroll = 3 ; scroll 
+      #__c_clip = 4 ; clip
+      #__c_draw = 5 ; draw container
       
-      #__c_8 = 8 ; window
-      #__c_9 = 9 ; container
-      #__c = 10
+      ; pos
+      #__c_wind = 6 ; window
+      #__c_cont = 7 ; container
       
+      #__c = 8
     EndEnumeration
     
     ;state
