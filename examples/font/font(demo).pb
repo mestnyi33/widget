@@ -179,9 +179,9 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   SetFont(*b, FontID(5))
   
 ;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
-  Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\scroll\width +" "+ *b\scroll\height ; mac = 121 29 ; win 70 16
+  Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
   ; set auto font size
-  Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[3]+12, *b\height[3]+12)
+  Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+12, *b\height[#__c_required]+12)
   
   CloseList()
   
