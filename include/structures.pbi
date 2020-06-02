@@ -158,8 +158,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_button Extends _s_coordinate
       len.l
       state.l
-      ; switched.b
-      ; *handle ;;;;;;
       
       ; [3]fixed = thumb delta pos 
       ; [1..2]fixed = splitter\bar\fixed
@@ -168,13 +166,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       hide.b
       round.a
       interact.b
+      
       arrow._s_arrow
       color._s_color
-    EndStructure
-    
-    ;- - _s_box
-    Structure _s_box Extends _s_button
-      checked.b
     EndStructure
     
     ;- - _s_tabs
@@ -242,7 +236,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_windowFlag
-    Structure _s_windowFlag
+    Structure _s_window_mode
       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
       MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
@@ -260,9 +254,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
     EndStructure
     
-    ;- - _s_flag
-    Structure _s_flag
-      Window._s_windowFlag
+    ;- - _s_mode
+    Structure _s_mode
+      Window._s_window_mode
       inline.b
       lines.b
       buttons.b
@@ -356,7 +350,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       image._s_image
       text._s_text[4]
-      box._s_box[2]
+      box._s_button[2]
       color._s_color
       
       ;state.b
@@ -386,7 +380,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       l._s_line_ ; 
       *parent._s_rows
-      box._s_box[2]
+      box._s_button[2]
       *option_group._s_rows
       
       ; edit
@@ -427,7 +421,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;
       count.l
       index.l
-      box._s_box           ; editor - edit rectangle
+      box._s_button           ; editor - edit rectangle
       
       *entered._s_rows    ; at point item
       *selected._s_rows    ; pushed at point item
@@ -441,22 +435,23 @@ CompilerIf Not Defined(structures, #PB_Module)
       *after._s_widget
       *before._s_widget
       
-      *v._s_widget
-      *h._s_widget
-      *_tab._s_widget
+      *_tab._s_widget   ; panel tabbar
+      *_group._s_widget ; for the group  option()
+      *v._s_widget      ; vertical scrollbar
+      *h._s_widget      ; horizontal scrollbar
+      
       _item.l ; panel add item opened index
       _parent_item.l ; parent panel tab index
       *_flag
+      _state.l
       
       
       draw.b
       type.b
       class.s  
       level.l 
-      hide.b[2] ; hide[1] - state
+      hide.b[2] 
       
-;       _y.l[constants::#__c]
-;       _x.l[constants::#__c]
       y.l[constants::#__c]
       x.l[constants::#__c]
       height.l[6];constants::#__c]
@@ -475,20 +470,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       row._s_row
       bar._s_bar
       
-      ;handle.i
       *errors
       notify.b ; оповестить об изменении
       
-      ;state.b     ; mouse current state(#normal=0;#entered=1;#selected=2;#disabled=3)
       index.i[3]  ; Index[#normal=0] of new list element ; inex[#entered=1] ; index[#selected=2]
+      change.l
       round.a
-      _state.l
-      
-      ;mode.l  ; track bar
-      change.l;[2]
       cursor.l[2]
       vertical.b
-      
       
       fs.i 
       bs.i
@@ -496,24 +485,19 @@ CompilerIf Not Defined(structures, #PB_Module)
       __height.i ; 
       __width.i
       
-      ;;scrolls.i
       container.i
       interact.i 
       repaint.i
       resize.b
       
-      *Popup._s_widget
-      
-      flag._s_flag
-      combo_box._s_box
-      check_box._s_box
-      option_box._s_box
-      *option_group._s_widget
+      mode._s_mode
+      count._s_count
       button._s_button
+      combo_box._s_button
       
       text._s_text 
-      count._s_count
-      image._s_image[2]
+      image._s_image
+      
       *align._s_align
       
       *selector._s_transform[#__count_anchors_]
@@ -586,5 +570,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -8vXR6t
+; Folding = -8vLo+3
 ; EnableXP

@@ -29,11 +29,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_Syste
   OptionGadget(2, 30, 70, 80, 20, "Option 3")
   SetGadgetState(1, 1)   ; set second option as active one
   
-  CheckBoxGadget(3, 30,  95, 80, 20, "CheckBox")
+  CheckBoxGadget(3, 30,  95, 80, 20, "CheckBox", #PB_CheckBox_ThreeState)
   OptionGadget(4, 30, 120, 80, 20, "Option 2")
   OptionGadget(5, 30, 145, 80, 20, "Option 3")
   
-  SetGadgetState(3, 1)   
+  SetGadgetState(3, #PB_Checkbox_Inbetween)   
   SetGadgetState(4, 1)   
   
   For i = 0 To 2
@@ -45,11 +45,11 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_Syste
   Option(30+140, 70, 80, 20, "Option 3")
   SetState(GetWidget(1), 1)   ; set second option as active one
   
-  CheckBox(30+140,  95, 80, 20, "CheckBox")
+  CheckBox(30+140,  95, 80, 20, "CheckBox", #PB_CheckBox_ThreeState)
   Option(30+140, 120, 80, 20, "Option 2")
   Option(30+140, 145, 80, 20, "Option 3")
   
-  SetState(GetWidget(3), 1)  
+  SetState(GetWidget(3), #PB_Checkbox_Inbetween)  
   SetState(GetWidget(4), 1)  
   
   ;Bind(#PB_All, @events_widgets())
