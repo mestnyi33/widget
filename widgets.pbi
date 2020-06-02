@@ -44,17 +44,12 @@ CompilerIf Not Defined(widget, #PB_Module)
       structures::*event\root
     EndMacro
     
+    Macro Widget()
+      structures::*event\_childrens()  ; Widget()
+    EndMacro
+    
     Macro GetActive() ; Returns active window
       structures::*event\active
-    EndMacro
-    
-    Macro GetChildrens(_this_=0) ; Returns last created widget
-                               ; _this_\root\_childrens()
-      structures::*event\_childrens()
-    EndMacro
-    
-    Macro Widget()
-      structures::*event\_childrens()  ; GetChildrens(Root())
     EndMacro
     
     ;- 
@@ -187,28 +182,28 @@ CompilerIf Not Defined(widget, #PB_Module)
       _child_\parent\scroll\width = _child_\x + _child_\width - _child_\parent\scroll\x
       _child_\parent\scroll\height = _child_\y + _child_\height - _child_\parent\scroll\y
       
-      PushListPosition(GetChildrens(_child_))
-      ForEach GetChildrens(_child_)
-        If GetChildrens(_child_)\parent = _child_\parent
-          If _child_\parent\scroll\x > GetChildrens(_child_)\x 
-            _child_\parent\scroll\x = GetChildrens(_child_)\x 
+      PushListPosition(Widget())
+      ForEach Widget()
+        If Widget()\parent = _child_\parent
+          If _child_\parent\scroll\x > Widget()\x 
+            _child_\parent\scroll\x = Widget()\x 
           EndIf
-          If _child_\parent\scroll\y > GetChildrens(_child_)\y 
-            _child_\parent\scroll\y = GetChildrens(_child_)\y 
-          EndIf
-        EndIf
-      Next
-      ForEach GetChildrens(_child_)
-        If GetChildrens(_child_)\parent = _child_\parent
-          If _child_\parent\scroll\width < GetChildrens(_child_)\x + GetChildrens(_child_)\width - _child_\parent\scroll\x 
-            _child_\parent\scroll\width = GetChildrens(_child_)\x + GetChildrens(_child_)\width - _child_\parent\scroll\x 
-          EndIf
-          If _child_\parent\scroll\height < GetChildrens(_child_)\y + GetChildrens(_child_)\height - _child_\parent\scroll\y 
-            _child_\parent\scroll\height = GetChildrens(_child_)\y + GetChildrens(_child_)\height - _child_\parent\scroll\y 
+          If _child_\parent\scroll\y > Widget()\y 
+            _child_\parent\scroll\y = Widget()\y 
           EndIf
         EndIf
       Next
-      PopListPosition(GetChildrens(_child_))
+      ForEach Widget()
+        If Widget()\parent = _child_\parent
+          If _child_\parent\scroll\width < Widget()\x + Widget()\width - _child_\parent\scroll\x 
+            _child_\parent\scroll\width = Widget()\x + Widget()\width - _child_\parent\scroll\x 
+          EndIf
+          If _child_\parent\scroll\height < Widget()\y + Widget()\height - _child_\parent\scroll\y 
+            _child_\parent\scroll\height = Widget()\y + Widget()\height - _child_\parent\scroll\y 
+          EndIf
+        EndIf
+      Next
+      PopListPosition(Widget())
       
       If widget::Updates(_child_\parent\scroll, _child_\parent\x[#__c_inner], _child_\parent\y[#__c_inner], _child_\parent\width[#__c_draw], _child_\parent\height[#__c_draw])
         
@@ -216,13 +211,13 @@ CompilerIf Not Defined(widget, #PB_Module)
         _child_\parent\height[#__c_inner] = _child_\parent\scroll\v\bar\page\len
         
         If _child_\parent\container And _child_\parent\count\childrens
-          PushListPosition(GetChildrens(_child_))
-          ForEach GetChildrens(_child_)
-            If GetChildrens(_child_)\parent = _child_\parent
-              Clip(GetChildrens(_child_), #True)
+          PushListPosition(Widget())
+          ForEach Widget()
+            If Widget()\parent = _child_\parent
+              Clip(Widget(), #True)
             EndIf
           Next
-          PopListPosition(GetChildrens(_child_))
+          PopListPosition(Widget())
         EndIf
       EndIf
       
@@ -812,14 +807,14 @@ CompilerIf Not Defined(widget, #PB_Module)
           right_y1 = checked_y1 : right_y2 = checked_y2
           bottom_x1 = checked_x1 : bottom_x2 = checked_x2
           
-          If *this\parent And ListSize(GetChildrens(*this))
-            PushListPosition(GetChildrens(*this))
-            ForEach GetChildrens(*this)
-              If Not GetChildrens(*this)\hide And GetChildrens(*this)\parent = *this\parent
-                relative_x1 = GetChildrens(*this)\x
-                relative_y1 = GetChildrens(*this)\y
-                relative_x2 = relative_x1 + GetChildrens(*this)\width
-                relative_y2 = relative_y1 + GetChildrens(*this)\height
+          If *this\parent And ListSize(Widget())
+            PushListPosition(Widget())
+            ForEach Widget()
+              If Not Widget()\hide And Widget()\parent = *this\parent
+                relative_x1 = Widget()\x
+                relative_y1 = Widget()\y
+                relative_x2 = relative_x1 + Widget()\width
+                relative_y2 = relative_y1 + Widget()\height
                 
                 ;Left_line
                 If checked_x1 = relative_x1
@@ -880,7 +875,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 EndIf
               EndIf
             Next
-            PopListPosition(GetChildrens(*this))
+            PopListPosition(Widget())
           EndIf
           
         EndIf
@@ -1517,14 +1512,14 @@ CompilerIf Not Defined(widget, #PB_Module)
         If *this = *this\parent\_tab 
           *this\parent\index[#__s_2] = State
           
-          PushListPosition(GetChildrens(*this))
-          ForEach GetChildrens(*this)
-            If Child( GetChildrens(*this), *this\parent)  
-              GetChildrens(*this)\hide = Bool(GetChildrens(*this)\hide[1] Or GetChildrens(*this)\parent\hide Or 
-                                              GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
+          PushListPosition(Widget())
+          ForEach Widget()
+            If Child( Widget(), *this\parent)  
+              Widget()\hide = Bool(Widget()\hide[1] Or Widget()\parent\hide Or 
+                                              Widget()\_parent_item <> Widget()\parent\index[#__s_2])
             EndIf
           Next
-          PopListPosition(GetChildrens(*this))
+          PopListPosition(Widget())
           
           Post(#PB_EventType_Change, *this\parent, State)
         Else
@@ -1557,19 +1552,19 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             If *this\parent\_tab = *this
               ; \parent\type = #PB_GadgetType_Panel
-              ; PushListPosition(GetChildrens(*this))
-              ForEach GetChildrens(*this)
-                If Child( GetChildrens(*this), *this\parent)
-                  If GetChildrens(*this)\parent = *this\parent And 
-                     GetChildrens(*this)\_parent_item = Item
-                    GetChildrens(*this)\_parent_item + 1
+              ; PushListPosition(Widget())
+              ForEach Widget()
+                If Child( Widget(), *this\parent)
+                  If Widget()\parent = *this\parent And 
+                     Widget()\_parent_item = Item
+                    Widget()\_parent_item + 1
                   EndIf
                   
-                  GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or GetChildrens(*this)\parent\hide Or
-                                                   GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
+                  Widget()\hide = Bool( Widget()\hide[1] Or Widget()\parent\hide Or
+                                                   Widget()\_parent_item <> Widget()\parent\index[#__s_2])
                 EndIf
               Next
-              ; PopListPosition(GetChildrens(*this))
+              ; PopListPosition(Widget())
             EndIf
             
             InsertElement(\bar\_s())
@@ -2707,11 +2702,11 @@ CompilerIf Not Defined(widget, #PB_Module)
                   
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
-                    ChangeCurrentElement(GetChildrens(*this\parent), *this\parent\adress)
-                    While NextElement(GetChildrens(*this\parent))
-                      If GetChildrens(*this\parent)\parent = *this\parent
-                        Resize(GetChildrens(*this\parent), #PB_Ignore, 
-                               GetChildrens(*this\parent)\y[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
+                    ChangeCurrentElement(Widget(), *this\parent\adress)
+                    While NextElement(Widget())
+                      If Widget()\parent = *this\parent
+                        Resize(Widget(), #PB_Ignore, 
+                               Widget()\y[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
                       EndIf
                     Wend
                   EndIf
@@ -2723,11 +2718,11 @@ CompilerIf Not Defined(widget, #PB_Module)
                   
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
-                    ChangeCurrentElement(GetChildrens(*this\parent), *this\parent\adress)
-                    While NextElement(GetChildrens(*this\parent))
-                      If GetChildrens(*this\parent)\parent = *this\parent
-                        Resize(GetChildrens(*this\parent), 
-                               GetChildrens(*this\parent)\x[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                    ChangeCurrentElement(Widget(), *this\parent\adress)
+                    While NextElement(Widget())
+                      If Widget()\parent = *this\parent
+                        Resize(Widget(), 
+                               Widget()\x[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                       EndIf
                     Wend
                   EndIf
@@ -10316,11 +10311,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\hide[1] = *this\hide
           
           If *this\count\childrens
-            ForEach GetChildrens(*this)
-              If Child( GetChildrens(*this), *this)
-                GetChildrens(*this)\hide = Bool( GetChildrens(*this)\hide[1] Or
-                                                 GetChildrens(*this)\parent\hide Or
-                                                 GetChildrens(*this)\_parent_item <> GetChildrens(*this)\parent\index[#__s_2])
+            ForEach Widget()
+              If Child( Widget(), *this)
+                Widget()\hide = Bool( Widget()\hide[1] Or
+                                                 Widget()\parent\hide Or
+                                                 Widget()\_parent_item <> Widget()\parent\index[#__s_2])
               EndIf
             Next
           EndIf
@@ -10417,13 +10412,13 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If childrens And *this\container And *this\count\childrens
-        PushListPosition(GetChildrens(*this))
-        ForEach GetChildrens(*this)
-          If GetChildrens(*this)\parent = *this
-            Clip(GetChildrens(*this), childrens)
+        PushListPosition(Widget())
+        ForEach Widget()
+          If Widget()\parent = *this
+            Clip(Widget(), childrens)
           EndIf
         Next
-        PopListPosition(GetChildrens(*this))
+        PopListPosition(Widget())
       EndIf
     EndProcedure
     
@@ -10700,38 +10695,38 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndSelect
             EndMacro
             
-            PushListPosition(GetChildrens(*this))
-            ForEach GetChildrens(*this)
-              If GetChildrens(*this)\parent = *this ; And GetChildrens(*this)\draw 
-                If GetChildrens(*this)\align
-                  ResizeD( GetChildrens(*this)\align\h, x, GetChildrens(*this)\align\delta\x, 
-                           Width, (GetChildrens(*this)\align\delta\x + GetChildrens(*this)\align\delta\width), *this\align\delta\width, *this\width)
+            PushListPosition(Widget())
+            ForEach Widget()
+              If Widget()\parent = *this ; And Widget()\draw 
+                If Widget()\align
+                  ResizeD( Widget()\align\h, x, Widget()\align\delta\x, 
+                           Width, (Widget()\align\delta\x + Widget()\align\delta\width), *this\align\delta\width, *this\width)
                   
-                  ResizeD( GetChildrens(*this)\align\v, y, GetChildrens(*this)\align\delta\y,
-                           Height, (GetChildrens(*this)\align\delta\y + GetChildrens(*this)\align\delta\height), *this\align\delta\height, *this\height)
+                  ResizeD( Widget()\align\v, y, Widget()\align\delta\y,
+                           Height, (Widget()\align\delta\y + Widget()\align\delta\height), *this\align\delta\height, *this\height)
                   
-                  ;Resize( GetChildrens(*this), x, y, Width - x + GetChildrens(*this)\bs*2, Height - y + GetChildrens(*this)\bs*2)
-                  Resize( GetChildrens(*this), x, y, Width - x, Height - y)
+                  ;Resize( Widget(), x, y, Width - x + Widget()\bs*2, Height - y + Widget()\bs*2)
+                  Resize( Widget(), x, y, Width - x, Height - y)
                   
                 Else
                   If (Change_x Or Change_y)
                     
-                    Resize(GetChildrens(*this), 
-                           GetChildrens(*this)\x[#__c_draw],
-                           GetChildrens(*this)\y[#__c_draw], 
+                    Resize(Widget(), 
+                           Widget()\x[#__c_draw],
+                           Widget()\y[#__c_draw], 
                            #PB_Ignore, #PB_Ignore)
                     
                   ElseIf (Change_width Or Change_height)
-                    ;                     If  GetChildrens(*this)\type = #PB_GadgetType_Panel ;(*this\_tab)
-                    ;                       Resize(GetChildrens(*this), #PB_Ignore, #PB_Ignore, GetChildrens(*this)\width[#__c_draw], #PB_Ignore)
+                    ;                     If  Widget()\type = #PB_GadgetType_Panel ;(*this\_tab)
+                    ;                       Resize(Widget(), #PB_Ignore, #PB_Ignore, Widget()\width[#__c_draw], #PB_Ignore)
                     ;                     EndIf
                     
-                    Clip(GetChildrens(*this), #True)
+                    Clip(Widget(), #True)
                   EndIf
                 EndIf
               EndIf
             Next
-            PopListPosition(GetChildrens(*this))
+            PopListPosition(Widget())
           EndIf
           
           
@@ -11006,11 +11001,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected result
       
       If index =- 1
-        ProcedureReturn GetChildrens(Root())
+        ProcedureReturn Widget()
       Else
-        ForEach GetChildrens(Root())
-          If GetChildrens(Root())\index = index ; +  1
-            result = GetChildrens(Root())
+        ForEach Widget()
+          If Widget()\index = index ; +  1
+            result = Widget()
             Break
           EndIf
         Next
@@ -11614,51 +11609,51 @@ CompilerIf Not Defined(widget, #PB_Module)
           *LastParent\count\childrens - 1
           
           If _is_root_(*parent)
-            FirstElement(GetChildrens(*this\parent))
-            MoveElement(GetChildrens(*this\parent), #PB_List_First)
+            FirstElement(Widget())
+            MoveElement(Widget(), #PB_List_First)
           Else
-            ChangeCurrentElement(GetChildrens(*this\parent), *this\adress)
+            ChangeCurrentElement(Widget(), *this\adress)
             If *parent\last 
               If *parent\last = *this
                 If *parent\last\before
-                  MoveElement(GetChildrens(*this\parent), #PB_List_After, *parent\last\before\adress)
-                  ;   MoveElement(GetChildrens(*this\parent), #PB_list_After, *Parent\adress)
+                  MoveElement(Widget(), #PB_List_After, *parent\last\before\adress)
+                  ;   MoveElement(Widget(), #PB_list_After, *Parent\adress)
                   
                 Else
                   Debug "*parent\last - " + *parent\last\index
-                  MoveElement(GetChildrens(*this\parent), #PB_List_After, *Parent\adress)
+                  MoveElement(Widget(), #PB_List_After, *Parent\adress)
                 EndIf
               Else
-                MoveElement(GetChildrens(*this\parent), #PB_List_After, *parent\last\adress)
+                MoveElement(Widget(), #PB_List_After, *parent\last\adress)
               EndIf
             Else
-              MoveElement(GetChildrens(*this\parent), #PB_List_After, *parent\adress)
+              MoveElement(Widget(), #PB_List_After, *parent\adress)
             EndIf
           EndIf
           
           
           If *this\root <> *this\parent\root
-            LastElement(GetChildrens(*parent))
+            LastElement(Widget())
           EndIf
           
-          While PreviousElement(GetChildrens(*this)) 
-            If Child(GetChildrens(*this), *this)
-              ; Debug GetChildrens(*this)\index
-              GetChildrens(*this)\root = *parent\root
-              GetChildrens(*this)\window = *parent\window
+          While PreviousElement(Widget()) 
+            If Child(Widget(), *this)
+              ; Debug Widget()\index
+              Widget()\root = *parent\root
+              Widget()\window = *parent\window
               
-              If GetChildrens(*this)\scroll
-                If GetChildrens(*this)\scroll\v
-                  GetChildrens(*this)\scroll\v\root = *parent\root
-                  GetChildrens(*this)\scroll\v\window = *parent\window
+              If Widget()\scroll
+                If Widget()\scroll\v
+                  Widget()\scroll\v\root = *parent\root
+                  Widget()\scroll\v\window = *parent\window
                 EndIf
-                If GetChildrens(*this)\scroll\h
-                  GetChildrens(*this)\scroll\v\root = *parent\root
-                  GetChildrens(*this)\scroll\h\window = *parent\window
+                If Widget()\scroll\h
+                  Widget()\scroll\v\root = *parent\root
+                  Widget()\scroll\h\window = *parent\window
                 EndIf
               EndIf
               
-              MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
+              MoveElement(Widget(), #PB_List_After, *this\adress)
             EndIf
           Wend
           
@@ -11678,27 +11673,28 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If Not *this\adress
-          ;           If Not *parent\last And ListIndex(GetChildrens(*parent)) > 0 ; And *parent\last\index < ListIndex(GetChildrens(*parent))
-          ;             Debug " - - - -  " + *this\class  + " " +  ListIndex(GetChildrens(*parent)) ;\index
+          ;           If Not *parent\last And ListIndex(Widget()) > 0 ; And *parent\last\index < ListIndex(Widget())
+          ;             Debug " - - - -  " + *this\class  + " " +  ListIndex(Widget()) ;\index
           ;                                                                               ;Protected *last._s_widget = GetParentLast(*parent)
-          ;             SelectElement(GetChildrens(*parent), *parent\index + 1)
-          ;             *this\adress = InsertElement(GetChildrens(*parent))
-          ;             ; *this\adress = AddElement(GetChildrens(*parent)) 
+          ;             SelectElement(Widget(), *parent\index + 1)
+          ;             *this\adress = InsertElement(Widget())
+          ;             ; *this\adress = AddElement(Widget()) 
           ;             ; *parent\last = *this\after
           ;             
           ;             ;             ; Исправляем идентификатор итема  
-          ;             ;             PushListPosition(GetChildrens(*parent))
-          ;             ;             While NextElement(GetChildrens(*parent))
-          ;             ;               GetChildrens(*parent)\index = ListIndex(GetChildrens(*parent))
+          ;             ;             PushListPosition(Widget())
+          ;             ;             While NextElement(Widget())
+          ;             ;               Widget()\index = ListIndex(Widget())
           ;             ;             Wend
-          ;             ;             PopListPosition(GetChildrens(*parent))
-          ;           *this\index = *this\root\count\childrens; ListIndex(GetChildrens(*parent)) 
+          ;             ;             PopListPosition(Widget())
+          ;           *this\index = *this\root\count\childrens; ListIndex(Widget()) 
           ;          Else
-          LastElement(GetChildrens(*parent))
-          *this\adress = AddElement(GetChildrens(*parent)) 
-          *this\index = ListIndex(GetChildrens(*parent)) 
+          LastElement(Widget())
+          *this\adress = AddElement(Widget()) 
+          *this\index = ListIndex(Widget()) 
           ;           EndIf
-          GetChildrens(*parent) = *this
+          Widget() = *this
+          
           ; set z - order position 
           If Not *parent\first 
             If Not *parent\last
@@ -11896,27 +11892,27 @@ CompilerIf Not Defined(widget, #PB_Module)
                     EndIf
                   EndIf
                   
-                  PushListPosition(GetChildrens(*this))
-                  ForEach GetChildrens(*this)
-                    If GetChildrens(*this)\align And
-                       GetChildrens(*this)\parent = \parent 
+                  PushListPosition(Widget())
+                  ForEach Widget()
+                    If Widget()\align And
+                       Widget()\parent = \parent 
                       
-                      If (GetChildrens(*this)\align\h = 0 Or GetChildrens(*this)\align\h = 2)
-                        GetChildrens(*this)\align\delta\y = \parent\align\_top
-                        GetChildrens(*this)\align\delta\height = \parent\align\delta\height - \parent\align\_top - \parent\align\_bottom
+                      If (Widget()\align\h = 0 Or Widget()\align\h = 2)
+                        Widget()\align\delta\y = \parent\align\_top
+                        Widget()\align\delta\height = \parent\align\delta\height - \parent\align\_top - \parent\align\_bottom
                       EndIf
                       
-                      If (GetChildrens(*this)\align\v = 3 And GetChildrens(*this)\align\h = 3)
-                        GetChildrens(*this)\align\delta\x = \parent\align\_left
-                        GetChildrens(*this)\align\delta\width = \parent\align\delta\width - \parent\align\_left - \parent\align\_right
+                      If (Widget()\align\v = 3 And Widget()\align\h = 3)
+                        Widget()\align\delta\x = \parent\align\_left
+                        Widget()\align\delta\width = \parent\align\delta\width - \parent\align\_left - \parent\align\_right
                         
-                        GetChildrens(*this)\align\delta\y = \parent\align\_top
-                        GetChildrens(*this)\align\delta\height = \parent\align\delta\height - \parent\align\_top - \parent\align\_bottom
+                        Widget()\align\delta\y = \parent\align\_top
+                        Widget()\align\delta\height = \parent\align\delta\height - \parent\align\_top - \parent\align\_bottom
                       EndIf
                       
                     EndIf
                   Next
-                  PopListPosition(GetChildrens(*this))
+                  PopListPosition(Widget())
                 EndIf
               EndIf
               
@@ -11939,12 +11935,12 @@ CompilerIf Not Defined(widget, #PB_Module)
       Select Position
         Case #PB_List_First 
           If *this\parent\first <> *this
-            ChangeCurrentElement(GetChildrens(*this), *this\adress)
-            MoveElement(GetChildrens(*this), #PB_List_Before, *this\parent\first\adress)
+            ChangeCurrentElement(Widget(), *this\adress)
+            MoveElement(Widget(), #PB_List_Before, *this\parent\first\adress)
             
-            While NextElement(GetChildrens(*this)) 
-              If Child(GetChildrens(*this), *this)
-                MoveElement(GetChildrens(*this), #PB_List_Before, *this\parent\first\adress)
+            While NextElement(Widget()) 
+              If Child(Widget(), *this)
+                MoveElement(Widget(), #PB_List_Before, *this\parent\first\adress)
               EndIf
             Wend
             
@@ -11962,12 +11958,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           
         Case #PB_List_Before 
           If *this\before
-            ChangeCurrentElement(GetChildrens(*this), *this\adress)
-            MoveElement(GetChildrens(*this), #PB_List_Before, *this\before\adress)
+            ChangeCurrentElement(Widget(), *this\adress)
+            MoveElement(Widget(), #PB_List_Before, *this\before\adress)
             
-            While NextElement(GetChildrens(*this)) 
-              If Child(GetChildrens(*this), *this)
-                MoveElement(GetChildrens(*this), #PB_List_Before, *this\before\adress)
+            While NextElement(Widget()) 
+              If Child(Widget(), *this)
+                MoveElement(Widget(), #PB_List_Before, *this\before\adress)
               EndIf
             Wend
             
@@ -11987,12 +11983,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           
         Case #PB_List_After 
           If *this\after
-            ChangeCurrentElement(GetChildrens(*this), *this\adress)
-            MoveElement(GetChildrens(*this), #PB_List_After, *this\after\adress)
+            ChangeCurrentElement(Widget(), *this\adress)
+            MoveElement(Widget(), #PB_List_After, *this\after\adress)
             
-            While PreviousElement(GetChildrens(*this)) 
-              If Child(GetChildrens(*this), *this)
-                MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
+            While PreviousElement(Widget()) 
+              If Child(Widget(), *this)
+                MoveElement(Widget(), #PB_List_After, *this\adress)
               EndIf
             Wend
             
@@ -12014,12 +12010,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           Protected *Last._s_widget = GetParentLast(*this\parent)
           
           If *Last <> *this
-            ChangeCurrentElement(GetChildrens(*this), *this\adress)
-            MoveElement(GetChildrens(*this), #PB_List_After, *Last\adress)
+            ChangeCurrentElement(Widget(), *this\adress)
+            MoveElement(Widget(), #PB_List_After, *Last\adress)
             
-            While PreviousElement(GetChildrens(*this)) 
-              If Child(GetChildrens(*this), *this)
-                MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
+            While PreviousElement(Widget()) 
+              If Child(Widget(), *this)
+                MoveElement(Widget(), #PB_List_After, *this\adress)
               EndIf
             Wend
             
@@ -12070,12 +12066,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           If *before
-            ChangeCurrentElement(GetChildrens(*this), *this\adress)
-            MoveElement(GetChildrens(*this), #PB_List_Before, *before\adress)
+            ChangeCurrentElement(Widget(), *this\adress)
+            MoveElement(Widget(), #PB_List_Before, *before\adress)
             
-            While NextElement(GetChildrens(*this)) 
-              If Child(GetChildrens(*this), *this)
-                MoveElement(GetChildrens(*this), #PB_List_Before, *before\adress)
+            While NextElement(Widget()) 
+              If Child(Widget(), *this)
+                MoveElement(Widget(), #PB_List_Before, *before\adress)
               EndIf
             Wend
             
@@ -12106,12 +12102,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           If *after
             *Last = GetParentLast(*after)
             
-            ChangeCurrentElement(GetChildrens(*this), *this\adress)
-            MoveElement(GetChildrens(*this), #PB_List_After, *Last\adress)
+            ChangeCurrentElement(Widget(), *this\adress)
+            MoveElement(Widget(), #PB_List_After, *Last\adress)
             
-            While PreviousElement(GetChildrens(*this)) 
-              If Child(GetChildrens(*this), *this)
-                MoveElement(GetChildrens(*this), #PB_List_After, *this\adress)
+            While PreviousElement(Widget()) 
+              If Child(Widget(), *this)
+                MoveElement(Widget(), #PB_List_After, *this\adress)
               EndIf
             Wend
             
@@ -12138,12 +12134,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           ;           If *this\parent\last <> *this 
           ;             *Last = GetParentLast(*after)
           ;             
-          ;             ChangeCurrentElement(GetChildrens(*this), *this\adress)
-          ;             MoveElement(GetChildrens(*this), #PB_list_After, *Last\adress)
+          ;             ChangeCurrentElement(Widget(), *this\adress)
+          ;             MoveElement(Widget(), #PB_list_After, *Last\adress)
           ;             
-          ;             While PreviousElement(GetChildrens(*this)) 
-          ;               If Child(GetChildrens(*this), *this)
-          ;                 MoveElement(GetChildrens(*this), #PB_list_After, *this\adress)
+          ;             While PreviousElement(Widget()) 
+          ;               If Child(Widget(), *this)
+          ;                 MoveElement(Widget(), #PB_list_After, *this\adress)
           ;               EndIf
           ;             Wend
           ;             
@@ -13542,10 +13538,10 @@ CompilerIf Not Defined(widget, #PB_Module)
       ;flag|#__text_center
       
       If Root()\count\childrens
-        If GetChildrens(Root())\type = #__type_Option
-          *this\_group = GetChildrens(Root())\_group 
+        If Widget()\type = #__type_Option
+          *this\_group = Widget()\_group 
         Else
-          *this\_group = GetChildrens(Root()) 
+          *this\_group = Widget() 
         EndIf
       Else
         *this\_group = Root()\opened
@@ -13994,25 +13990,25 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         ; Protected count
-        PushListPosition(GetChildrens(*this))
-        ForEach GetChildrens(*this)
-          If (Not GetChildrens(*this)\hide And GetChildrens(*this)\draw) And
-             GetChildrens(*this)\root\canvas\gadget = *this\root\canvas\gadget
+        PushListPosition(Widget())
+        ForEach Widget()
+          If (Not Widget()\hide And Widget()\draw) And
+             Widget()\root\canvas\gadget = *this\root\canvas\gadget
             
-            If (GetChildrens(*this)\width[#__c_clip] > 0 And GetChildrens(*this)\height[#__c_clip] > 0)
+            If (Widget()\width[#__c_clip] > 0 And Widget()\height[#__c_clip] > 0)
               CompilerIf Not (#PB_Compiler_OS = #PB_OS_MacOS And Not Defined(fixme, #PB_Module))
-                ClipOutput( GetChildrens(*this)\x[#__c_clip], 
-                            GetChildrens(*this)\y[#__c_clip], 
-                            GetChildrens(*this)\width[#__c_clip], 
-                            GetChildrens(*this)\height[#__c_clip])
+                ClipOutput( Widget()\x[#__c_clip], 
+                            Widget()\y[#__c_clip], 
+                            Widget()\width[#__c_clip], 
+                            Widget()\height[#__c_clip])
               CompilerEndIf
               
-              ; Debug "" + count  + " " +  GetChildrens(*this)\width[#__c_clip] : count + 1
-              Draw(GetChildrens(*this))
+              ; Debug "" + count  + " " +  Widget()\width[#__c_clip] : count + 1
+              Draw(Widget())
             EndIf
           EndIf
         Next
-        PopListPosition(GetChildrens(*this))
+        PopListPosition(Widget())
         
         ; Draw anchors 
         If *this\root And *this\root\anchor And 
@@ -14189,32 +14185,32 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           
-          Debug  " - " + ListSize(GetChildrens(*this))  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
+          Debug  " - " + ListSize(Widget())  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
           If *this\parent And
              *this\parent\count\childrens 
             
-            LastElement(GetChildrens(*this))
+            LastElement(Widget())
             Repeat
-              If GetChildrens(*this) = *this Or
-                 Child(GetChildrens(*this), *this)
+              If Widget() = *this Or
+                 Child(Widget(), *this)
                 
-                If GetChildrens(*this)\root\count\childrens > 0 
-                  GetChildrens(*this)\root\count\childrens - 1
-                  If GetChildrens(*this)\parent <> GetChildrens(*this)\root
-                    GetChildrens(*this)\parent\count\childrens - 1
+                If Widget()\root\count\childrens > 0 
+                  Widget()\root\count\childrens - 1
+                  If Widget()\parent <> Widget()\root
+                    Widget()\parent\count\childrens - 1
                   EndIf
-                  DeleteElement(GetChildrens(*this), 1)
+                  DeleteElement(Widget(), 1)
                 EndIf
                 
                 If Not *this\root\count\childrens
                   Break
                 EndIf
-              ElseIf PreviousElement(GetChildrens(*this)) = 0
+              ElseIf PreviousElement(Widget()) = 0
                 Break
               EndIf
             ForEver
           EndIf
-          Debug  " - " + ListSize(GetChildrens(*this))  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
+          Debug  " - " + ListSize(Widget())  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
           
           
           
@@ -14420,11 +14416,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           ;           If Not _is_root_(*this)
           ;             Repaint = Resize(*this, #PB_Ignore, #PB_Ignore, Width, Height)  
-          ;             ;            ; PushListPosition(GetChildrens(*this))
-          ;             ;         ForEach GetChildrens(*this)
-          ;             ;           Resize(GetChildrens(*this), #PB_Ignore, #PB_Ignore, Width, Height)  
+          ;             ;            ; PushListPosition(Widget())
+          ;             ;         ForEach Widget()
+          ;             ;           Resize(Widget(), #PB_Ignore, #PB_Ignore, Width, Height)  
           ;             ;         Next
-          ;             ;         ; PopListPosition(GetChildrens(*this))
+          ;             ;         ; PopListPosition(Widget())
           ;           EndIf
           
           Repaint = 1
@@ -14485,14 +14481,14 @@ CompilerIf Not Defined(widget, #PB_Module)
       If change
         ; get at point
         If Root()\count\childrens
-          LastElement(GetChildrens(Root())) 
+          LastElement(Widget()) 
           Repeat                                 
-            If _is_widget_(GetChildrens(Root())) And
-               Not GetChildrens(Root())\hide And GetChildrens(Root())\draw And 
-               GetChildrens(Root())\root\canvas\gadget = Root()\canvas\gadget And 
-               _from_point_(mouse_x, mouse_y, GetChildrens(Root()), [#__c_clip])
+            If _is_widget_(Widget()) And
+               Not Widget()\hide And Widget()\draw And 
+               Widget()\root\canvas\gadget = Root()\canvas\gadget And 
+               _from_point_(mouse_x, mouse_y, Widget(), [#__c_clip])
               
-              *this = GetChildrens(Root())
+              *this = Widget()
               
               ; scrollbars events
               If *this And *this\scroll
@@ -14515,7 +14511,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               Break
             EndIf
-          Until PreviousElement(GetChildrens(Root())) = #False 
+          Until PreviousElement(Widget()) = #False 
         EndIf
         
         If Not *this : *this = Root() : EndIf
@@ -14530,17 +14526,17 @@ CompilerIf Not Defined(widget, #PB_Module)
             Repaint | Events(Root()\entered, #__Event_MouseLeave, mouse_x, mouse_y)
             
             If #__from_mouse_state
-              ;ChangeCurrentElement(GetChildrens(Root()), Root()\entered\adress)
-              SelectElement(GetChildrens(Root()), Root()\entered\index)
+              ;ChangeCurrentElement(Widget(), Root()\entered\adress)
+              SelectElement(Widget(), Root()\entered\index)
               Repeat                 
-                If GetChildrens(Root())\draw And Child(Root()\entered, GetChildrens(Root()))
-                  If GetChildrens(Root())\_state & #__s_entered
-                    GetChildrens(Root())\_state &~ #__s_entered
+                If Widget()\draw And Child(Root()\entered, Widget())
+                  If Widget()\_state & #__s_entered
+                    Widget()\_state &~ #__s_entered
                     
-                    Repaint | Events(GetChildrens(Root()), #__Event_MouseLeave, mouse_x, mouse_y)
+                    Repaint | Events(Widget(), #__Event_MouseLeave, mouse_x, mouse_y)
                   EndIf
                 EndIf
-              Until PreviousElement(GetChildrens(Root())) = #False 
+              Until PreviousElement(Widget()) = #False 
             EndIf
             
             Root()\entered = *this
@@ -14552,16 +14548,16 @@ CompilerIf Not Defined(widget, #PB_Module)
             Root()\entered = *this
             
             If #__from_mouse_state
-              ForEach GetChildrens(Root())
-                If GetChildrens(Root()) = Root()\entered
+              ForEach Widget()
+                If Widget() = Root()\entered
                   Break
                 EndIf
                 
-                If GetChildrens(Root())\draw And Child(Root()\entered, GetChildrens(Root()))
-                  If GetChildrens(Root())\_state & #__s_entered = #False
-                    GetChildrens(Root())\_state | #__s_entered
+                If Widget()\draw And Child(Root()\entered, Widget())
+                  If Widget()\_state & #__s_entered = #False
+                    Widget()\_state | #__s_entered
                     
-                    Repaint | Events(GetChildrens(Root()), #__Event_MouseEnter, mouse_x, mouse_y)
+                    Repaint | Events(Widget(), #__Event_MouseEnter, mouse_x, mouse_y)
                   EndIf
                 EndIf
               Next
@@ -15340,5 +15336,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t---f------------------------------------------------------------------------------------------------------400----------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------3---v------------------------------------------------------------------------------------------------------8++----------------
 ; EnableXP
