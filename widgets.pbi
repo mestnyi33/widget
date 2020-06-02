@@ -9335,23 +9335,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     
-    ;   Procedure Draw_text(*this._s_widget)
-    ;       ; draw text
-    ;       If *this\text\string
-    ;         ForEach *this\row\_s()
-    ;           If *this\row\_s()\text\string
-    ;             If (*this\text\change Or *this\resize & #__resize_change)
-    ;               *this\row\_s()\text\x = *this\x[2] + *this\row\_s()\text\x[2] + *this\scroll\x
-    ;               *this\row\_s()\text\y = *this\y[2] + *this\row\_s()\text\y[2] + *this\scroll\y
-    ;             EndIf
-    ;             
-    ;             DrawingMode(#PB_2DDrawing_transparent|#PB_2DDrawing_AlphaBlend)
-    ;             DrawRotatedText(*this\row\_s()\text\x, *this\row\_s()\text\y, *this\row\_s()\text\string, *this\text\rotate, *this\color\front[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
-    ;           EndIf
-    ;         Next
-    ;       EndIf
-    ;     EndProcedure
-    
     ;- 
     ;-  WINDOW - e
     Procedure   Window_Draw(*this._s_widget)
@@ -9778,7 +9761,24 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;- 
     ;-  DRAWINGs
-    Procedure   Button_Draw(*this._s_widget)
+    ;   Procedure Draw_text(*this._s_widget)
+    ;       ; draw text
+    ;       If *this\text\string
+    ;         ForEach *this\row\_s()
+    ;           If *this\row\_s()\text\string
+    ;             If (*this\text\change Or *this\resize & #__resize_change)
+    ;               *this\row\_s()\text\x = *this\x[2] + *this\row\_s()\text\x[2] + *this\scroll\x
+    ;               *this\row\_s()\text\y = *this\y[2] + *this\row\_s()\text\y[2] + *this\scroll\y
+    ;             EndIf
+    ;             
+    ;             DrawingMode(#PB_2DDrawing_transparent|#PB_2DDrawing_AlphaBlend)
+    ;             DrawRotatedText(*this\row\_s()\text\x, *this\row\_s()\text\y, *this\row\_s()\text\string, *this\text\rotate, *this\color\front[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+    ;           EndIf
+    ;         Next
+    ;       EndIf
+    ;     EndProcedure
+    
+    Procedure   Text_Draw(*this._s_widget)
       With *this
         If *this\color\back <> -  1
           If \color\fore <> -  1
@@ -9979,49 +9979,50 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure   Checkbox_Draw(*this._s_widget)
       ; draw text
       If *this\text\string
-        Button_Draw(*this)
+        Text_Draw(*this)
       EndIf
       
       ; draw checkbox background
       DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      RoundBox(*this\check_box\x, *this\check_box\y,
-               *this\check_box\width, *this\check_box\height,
-               *this\check_box\round, *this\check_box\round,
-               *this\check_box\color\back&$FFFFFF|*this\check_box\color\alpha<<24)
+      RoundBox(*this\button\x, *this\button\y,
+               *this\button\width, *this\button\height,
+               *this\button\round, *this\button\round,
+               *this\button\color\back&$FFFFFF|*this\button\color\alpha<<24)
       
       ; draw checkbox state
-      If *this\check_box\checked = #PB_Checkbox_Checked
+      If *this\button\state & #PB_Checkbox_Inbetween = #PB_Checkbox_Inbetween
+        ;         RoundBox( *this\button\x + 2, *this\button\y + 2,
+        ;                   *this\button\width - 4, *this\button\height - 4, 
+        ;                   *this\button\round - 2, *this\button\round - 2, 
+        ;                   *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
+        RoundBox( *this\button\x + 4, *this\button\y + 4,
+                  *this\button\width - 8, *this\button\height - 8, 
+                  0, 0, 
+                  *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
+        
+      ElseIf *this\button\state & #PB_Checkbox_Checked = #PB_Checkbox_Checked
         Protected i.i
         For i = 0 To 2
-          LineXY((*this\check_box\x + 3), (i + *this\check_box\y + 8),
-                 (*this\check_box\x + 7), (i + *this\check_box\y + 9), 
-                 *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24) 
+          LineXY((*this\button\x + 3), (i + *this\button\y + 8),
+                 (*this\button\x + 7), (i + *this\button\y + 9), 
+                 *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24) 
           
-          LineXY((*this\check_box\x + 10 + i), (*this\check_box\y + 3),
-                 (*this\check_box\x + 6 + i), (*this\check_box\y + 10),
-                 *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24)
+          LineXY((*this\button\x + 10 + i), (*this\button\y + 3),
+                 (*this\button\x + 6 + i), (*this\button\y + 10),
+                 *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
         Next
-      ElseIf *this\check_box\checked = #PB_Checkbox_Inbetween
-        ;         RoundBox( *this\check_box\x + 2, *this\check_box\y + 2,
-        ;                   *this\check_box\width - 4, *this\check_box\height - 4, 
-        ;                   *this\check_box\round - 2, *this\check_box\round - 2, 
-        ;                   *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24)
-        RoundBox( *this\check_box\x + 4, *this\check_box\y + 4,
-                  *this\check_box\width - 8, *this\check_box\height - 8, 
-                  0, 0, 
-                  *this\check_box\color\frame[2]&$FFFFFF|*this\check_box\color\alpha<<24)
       EndIf 
       
       ; draw checkbox frame
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      RoundBox(*this\check_box\x,*this\check_box\y,*this\check_box\width,*this\check_box\height, *this\check_box\round, *this\check_box\round, 
-               *this\check_box\color\frame[Bool(*this\check_box\checked > 0 Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\check_box\color\alpha<<24)
+      RoundBox(*this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\round, *this\button\round, 
+               *this\button\color\frame[Bool(*this\button\state Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\button\color\alpha<<24)
     EndProcedure
     
     Procedure   Option_Draw(*this._s_widget)
       ; draw text
       If *this\text\string
-        Button_Draw(*this)
+        Text_Draw(*this)
       EndIf
       
       ; draw circle background
@@ -10043,6 +10044,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       Circle(*this\option_box\x + *this\option_box\round, *this\option_box\y + *this\option_box\round, *this\option_box\round, 
              *this\option_box\color\frame[Bool(*this\option_box\checked > 0 Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\option_box\color\alpha<<24)
     EndProcedure
+    
     
     Procedure.i Panel_Draw(*this._s_widget)
       If *this\_tab\count\items
@@ -10446,8 +10448,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If *this\type = #__type_checkBox
-        *this\check_box\x = *this\x[#__c_inner] + 3
-        *this\check_box\y = *this\y[#__c_inner] + (*this\height[#__c_inner] - *this\check_box\height)/2
+        *this\button\x = *this\x[#__c_inner] + 3
+        *this\button\y = *this\y[#__c_inner] + (*this\height[#__c_inner] - *this\button\height)/2
       EndIf
       
       If *this\type = #__type_Panel
@@ -11175,7 +11177,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If *this\type = #PB_GadgetType_CheckBox
-        ProcedureReturn *this\check_box\checked
+        ProcedureReturn *this\button\state
       EndIf
       
       If *this\type = #PB_GadgetType_Editor
@@ -11258,27 +11260,25 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If *this\type = #__type_checkBox
-        Select State
-          Case #PB_Checkbox_Unchecked,
-               #PB_Checkbox_Checked
-            
-            If *this\check_box\checked <> State
-              *this\check_box\checked = State
+        If *this\button\state <> State
+          Select State
+            Case #PB_Checkbox_Unchecked,
+                 #PB_Checkbox_Checked
+              
+              *this\button\state = State
               Post(#PB_EventType_Change, *this)
               ReDraw(*this\root)
               ProcedureReturn 1
-            EndIf
-            
-          Case #PB_Checkbox_Inbetween
-            If *this\flag\threestate 
-              If *this\check_box\checked <> State
-                *this\check_box\checked = State
+              
+            Case #PB_Checkbox_Inbetween
+              If *this\flag\threestate 
+                *this\button\state = State
                 Post(#PB_EventType_Change, *this)
                 ReDraw(*this\root)
                 ProcedureReturn 1
               EndIf
-            EndIf
-        EndSelect
+          EndSelect
+        EndIf
       EndIf
       
       If *this\type = #__type_Option
@@ -13628,13 +13628,13 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\color\back = _get_colors_()\fore
       *this\color\front = _get_colors_()\front
       
-      *this\check_box\color = _get_colors_()
-      *this\check_box\color\back = $ffffffff
+      *this\button\color = _get_colors_()
+      *this\button\color\back = $ffffffff
       
-      *this\check_box\round = 2
-      *this\check_box\height = 15
-      *this\check_box\width = *this\check_box\height
-      *this\text\x = *this\check_box\width + 8
+      *this\button\round = 2
+      *this\button\height = 15
+      *this\button\width = *this\button\height
+      *this\text\x = *this\button\width + 8
       
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
@@ -13947,11 +13947,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             
           Case #__type_listView       : Tree_Draw(*this)
             
-          Case #__type_text           : Button_Draw(*this)
-          Case #__type_button         : Button_Draw(*this)
+          Case #__type_text           : Text_Draw(*this)
+          Case #__type_button         : Text_Draw(*this)
           Case #__type_Option         : Option_Draw(*this)
           Case #__type_checkBox       : CheckBox_Draw(*this)
-          Case #__type_HyperLink      : Button_Draw(*this)
+          Case #__type_HyperLink      : Text_Draw(*this)
             
           Case #__type_Spin ,
                #__type_tabBar,
@@ -14353,7 +14353,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Case #PB_EventType_LeftButtonDown : Repaint = 1
           Case #PB_EventType_LeftButtonUp   : Repaint = 1
           Case #PB_EventType_LeftClick      
-            Repaint = SetState(*this, Bool(Bool(*this\check_box\checked = #PB_Checkbox_Checked) ! #True))
+            Repaint = SetState(*this, Bool(Bool(*this\button\state & #PB_Checkbox_Checked = #PB_Checkbox_Checked) ! #True))
         EndSelect
       EndIf
       
@@ -15348,5 +15348,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------07-----------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---+-v--3--07----2------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

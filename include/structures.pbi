@@ -509,6 +509,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       check_box._s_box
       option_box._s_box
       *option_group._s_widget
+      button._s_button
       
       text._s_text 
       count._s_count
@@ -585,5 +586,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -8vWR6t
+; Folding = -8vXR6t
 ; EnableXP

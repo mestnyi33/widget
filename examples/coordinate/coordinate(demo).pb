@@ -19,19 +19,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Open(10)
   *window_1 = Window(200, 0, 413, 319+#__window_frame, "demo set  new parent", Flags )
   
-;   *panel = Panel(10,150,200,160) 
-;   AddItem(*panel,-1,"Panel") 
-;   *p_0 = Button(30,90,160,30,"Button >>(Panel (0))") 
-;   AddItem(*panel,-1,"Second") 
-;   *p_1 = Button(35,90,160,30,"Button >>(Panel (1))") 
-;   AddItem(*panel,-1,"Third") 
-;   *p_2 = Button(40,90,160,30,"Button >>(Panel (2))") 
-;   CloseList()
-;   
-;   *container = Container(215,150,200,160,#PB_Container_Flat) 
-;   *c_0 = Button(30,90,160,30,"Button >>(Container)") 
-;   CloseList()
-  
   ;*w = Button(-30,10,160,70,"Button") 
   *w = Window(-30, 10,160,70,"Button", #PB_Window_NoGadgets) ;: closelist()
   *scrollarea = ScrollArea(200,150,200,160,200,160,10,#PB_ScrollArea_Flat) 
