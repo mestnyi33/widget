@@ -178,6 +178,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   Define *b._s_widget = Button(115, 15, 100, 24,"Button 3_2")
   SetFont(*b, FontID(6))
   
+;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
+;  Debug ""+*b\text\width +" "+ *b\text\height ; mac = 121 29 ; win 70 16
   ; set auto font size
   Resize(*b, #PB_Ignore, #PB_Ignore, *b\text\width+10, *b\text\height+10)
   

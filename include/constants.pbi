@@ -80,17 +80,20 @@
 ;       #__after = 4
 ;     EndEnumeration
     
-    ;element coordinate 
+    ;- coordinate 
     Enumeration
-      #__c_0 = 0 ; 
-      #__c_1 = 1 ; frame
-      #__c_2 = 2 ; inner
-      #__c_3 = 3 ; container
+      #__c_0 = 0 ; screen
+      #__c_1 = 1 ; frame screen
+      #__c_2 = 2 ; inner screen
+      #__c_3 = 3 ; draw container
       #__c_4 = 4 ; clip
       #__c_5 = 5 ; clip frame
       #__c_6 = 6 ; clip inner
       #__c_7 = 7 ; scroll 
-      #__c = 8
+      
+      #__c_8 = 8 ; window
+      #__c_9 = 9 ; container
+      #__c = 10
       
     EndEnumeration
     

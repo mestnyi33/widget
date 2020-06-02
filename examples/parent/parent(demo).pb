@@ -12,6 +12,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *w_0, *d_0, *b_0, *b_1, *p_0, *p_1, *p_2, *c_0, *s_0
   Global *pb_0, *pb_1, *pb_2, *pb_3
   
+  UsePNGImageDecoder()
+  
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
+    End
+  EndIf
+  
+  If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+    End
+  EndIf
+  
   
   Procedure Widgets_CallBack()
     Protected EventWidget.i = *event\widget,
@@ -216,6 +226,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

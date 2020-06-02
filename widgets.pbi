@@ -1156,14 +1156,14 @@ CompilerIf Not Defined(widget, #PB_Module)
           DrawingFont(_this_\text\fontID) 
           
           If #debug_draw_font
-            Debug "draw current font - " + #PB_Compiler_Procedure +" "+ _this_
+            Debug "draw current font - " + #PB_Compiler_Procedure +" "+ _this_ +" "+ _this_\text\change
           EndIf
         EndIf
         
         ; Получаем один раз после изменения текста  
         If _this_\text\change ; Or _this_\resize & #__resize_change
           If _this_\text\string And Not _this_\text\multiline
-            _this_\text\width = TextWidth(_this_\text\string)
+            _this_\text\width = TextWidth(_this_\text\string) 
           EndIf
           _this_\text\height = TextHeight("A")
           
@@ -10553,6 +10553,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           Height = \parent\height[#__c_2] ; - \align\delta\y
         EndIf
         
+        ; 
+        ; If \bs < \fs : \bs = \fs : EndIf
         
         If X<>#PB_Ignore 
           If \parent 
@@ -10565,6 +10567,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             \x = X 
             \x[#__c_1] = \x+\bs-\fs 
             \x[#__c_2] = \x+\bs+\__width 
+            \x[#__c_8] = \x[#__c_1]-\window\x[#__c_2]
             
             If \parent And \parent\x[#__c_2] > \x And 
                \parent\x[#__c_2] > \parent\x[#__c_4]
@@ -10590,6 +10593,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             \y = y 
             \y[#__c_1] = \y+\bs-\fs 
             \y[#__c_2] = \y+\bs+\__height
+            \y[#__c_8] = \y[#__c_1]-\window\y[#__c_2]
             
             If \parent And \parent\y[#__c_2] > \y And 
                \parent\y[#__c_2] > \parent\y[#__c_4]
@@ -11557,7 +11561,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *this\text\fontID <> FontID
         *this\text\fontID = FontID
+        ; reset current drawing font
+        ; to set new current drawing font
+        *this\root\text\fontID[1] =- 1 
         
+            
         If *this\type = #PB_GadgetType_Editor
           *this\text\change = 1
           
@@ -11568,7 +11576,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           ; example\font\font(demo)
           If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
             _drawing_font_(*this)
-            
             StopDrawing()
           EndIf
         EndIf
@@ -15360,5 +15367,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------v---8+-----0----
+; Folding = f-----------------------------------------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------v---8+-----0----
 ; EnableXP
