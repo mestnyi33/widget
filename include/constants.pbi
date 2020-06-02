@@ -11,8 +11,8 @@
     #debug_draw_font_change = #debug
     #debug_draw_item_font_change = #debug
     
-    #__height = 21
-    #__bsize = 3
+    #__height = 21 ; #__height = 21
+    #__bsize = 3 ; #__bsize = 3
     #__window_frame = #__height+#__bsize*2
     
     #__from_mouse_state = 0
@@ -43,8 +43,8 @@
     ; errors
     Enumeration 1
       #__error_text_input
-      #__errors_text_back
-      #__errors_text_return
+      #__error_text_back
+      #__error_text_return
     EndEnumeration
     
     ;bar buttons
@@ -54,7 +54,7 @@
       #__b_3 = 3
     EndEnumeration
     
-    ;window buttons
+    ;window bar buttons
     Enumeration
       #__wb_close
       #__wb_maxi
@@ -62,37 +62,19 @@
       #__wb_help
     EndEnumeration
     
-;     ;bar position
-;     Enumeration
-;       #__bp_0 = 0
-;       #__bp_1 = 1
-;       #__bp_2 = 2
-;       #__bp_3 = 3
-;     EndEnumeration
-    
-;     ;element position
-;     Enumeration
-;       #last =- 1
-;       #first = 0
-;       #prev = 1
-;       #next = 2
-;       #__before = 3
-;       #__after = 4
-;     EndEnumeration
-    
     ;- coordinate 
     Enumeration
       ; pos & size
       #__c_screen = 0 ; screen
       #__c_frame = 1 ; frame screen
       #__c_inner = 2 ; inner screen
-      #__c_scroll = 3 ; scroll 
+      #__c_required = 3 ; required
       #__c_clip = 4 ; clip
       #__c_draw = 5 ; draw container
       
       ; pos
-      #__c_wind = 6 ; window
-      #__c_cont = 7 ; container
+      #__c_window = 6 ; window
+      #__c_container = 7 ; container
       
       #__c = 8
     EndEnumeration
@@ -156,22 +138,7 @@
       #__resize_maximize
     EndEnumeration
     
-    
-;     EnumerationBinary 
-;       #__vertical
-;       
-;       #__Full
-;       
-;       #__left   
-;       #__top    
-;       #__right  
-;       #__bottom 
-;       
-;       #__center 
-;       #__Proportional
-;     EndEnumeration
-    
-    ;- _c_flag
+   ;- _c_flag
     EnumerationBinary _c_align 2
       #__flag_vertical ;= 1
       
@@ -525,6 +492,29 @@
     #__type_OpenGL        = #PB_GadgetType_OpenGL
     #__type_tree_Properties    = #PB_GadgetType_tree_Properties
     ;}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ; temp
+    #__c_0 = 0
+    #__c_1 = 1
+    #__c_2 = 2
+    #__c_3 = 3
+    #__c_4 = 4
+    #__c_5 = 5
+    #__c_6 = 6
+    
     
   EndDeclareModule 
   

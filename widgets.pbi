@@ -10523,11 +10523,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           If *this\parent 
             If *this\x[#__c_draw] <> x 
               *this\x[#__c_draw] = x 
-              *this\x[#__c_cont] = *this\x[#__c_draw]
+              *this\x[#__c_container] = *this\x[#__c_draw]
               
               ; for the scroll area childrens
               If *this\parent\scroll And *this\parent\scroll\h
-                *this\x[#__c_cont] + *this\parent\scroll\h\bar\page\pos
+                *this\x[#__c_container] + *this\parent\scroll\h\bar\page\pos
               EndIf
             EndIf
             X+*this\parent\x[#__c_inner] 
@@ -10538,7 +10538,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\x = X 
             *this\x[#__c_frame] = *this\x+*this\bs-*this\fs 
             *this\x[#__c_inner] = *this\x+*this\bs+*this\__width 
-            *this\x[#__c_wind] = *this\x[#__c_frame]-*this\window\x[#__c_inner]
+            *this\x[#__c_window] = *this\x[#__c_frame]-*this\window\x[#__c_inner]
             
             If *this\parent And *this\parent\x[#__c_inner] > *this\x And 
                *this\parent\x[#__c_inner] > *this\parent\x[#__c_clip]
@@ -10557,11 +10557,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           If *this\parent 
             If *this\y[#__c_draw] <> y 
               *this\y[#__c_draw] = y 
-              *this\y[#__c_cont] = *this\y[#__c_draw]
+              *this\y[#__c_container] = *this\y[#__c_draw]
               
               ; for the scroll area childrens
               If *this\parent\scroll And *this\parent\scroll\v 
-                *this\y[#__c_cont] + *this\parent\scroll\v\bar\page\pos
+                *this\y[#__c_container] + *this\parent\scroll\v\bar\page\pos
               EndIf
             EndIf
             y+*this\parent\y[#__c_inner] 
@@ -10572,7 +10572,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\y = y 
             *this\y[#__c_frame] = *this\y+*this\bs-*this\fs 
             *this\y[#__c_inner] = *this\y+*this\bs+*this\__height
-            *this\y[#__c_wind] = *this\y[#__c_frame]-*this\window\y[#__c_inner]
+            *this\y[#__c_window] = *this\y[#__c_frame]-*this\window\y[#__c_inner]
             
             If *this\parent And *this\parent\y[#__c_inner] > *this\y And 
                *this\parent\y[#__c_inner] > *this\parent\y[#__c_clip]
