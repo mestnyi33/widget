@@ -155,7 +155,7 @@ CompilerIf #PB_Compiler_IsMainFile
         SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
         
       Case #PB_EventType_LeftButtonDown
-        If Not (*event\widget And *event\widget\bar\state > 0)
+        If Not (*event\widget And *event\widget\bar\index > 0)
           Drag = Bool(HitTest(Images(), Mousex, Mousey))
           If Drag 
             SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Arrows)

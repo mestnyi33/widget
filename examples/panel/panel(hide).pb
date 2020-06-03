@@ -10,8 +10,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure Enumerates(*this._S_widget, *callback)
     If *callback And *this\root\count\childrens
-      ForEach GetChildrens(*this)
-        CallCFunctionFast(*callback, GetChildrens(*this))
+      ForEach Widget()
+        CallCFunctionFast(*callback, Widget())
       Next
     EndIf
   EndProcedure
@@ -143,6 +143,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

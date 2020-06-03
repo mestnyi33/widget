@@ -121,7 +121,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       _padding.b
       padding._s_padding
-    
+      
       edit._s_edit[4]
       caret._s_caret
       align._s_align
@@ -145,24 +145,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       align._s_align
     EndStructure
     
-    ;- - _s_splitter
-    Structure _s_splitter
-      *first._s_widget
-      *second._s_widget
-      
-      g_first.b
-      g_second.b
-    EndStructure
-    
     ;- - _s_button
     Structure _s_button Extends _s_coordinate
-      len.l
+      len.l ; to >> size.l
       state.l
       
       ; [3]fixed = thumb delta pos 
       ; [1..2]fixed = splitter\bar\fixed
       fixed.l 
-                                 
+      
       hide.b
       round.a
       interact.b
@@ -184,18 +175,22 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
-      ;_type.l
+      ; replace
+      ; index = state
+      ; fixed = state[1]
       
+      ; splitter - fixed button index 
+      ; tab - set state button index 
+      fixed.l  
       mode.i
-      fixed.l
       
-      index.l
+      index.l ; selected button index  
       from.l  ; entered button index
-      state.l[2] ;[0] - selected button index  ;[1] - selected tab index
       
       max.l
       min.l
       hide.b
+      
       change.b ; tab items to redraw
       percent.f
       increment.f
@@ -211,11 +206,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       List *_s._s_tabs()
     EndStructure
     
-;     ;- - _s_tab
-;     Structure _s_tab
-;       bar._s_bar
-;       ;List *_s._s_tabs()
-;     EndStructure
+    ;     ;- - _s_tab
+    ;     Structure _s_tab
+    ;       bar._s_bar
+    ;       ;List *_s._s_tabs()
+    ;     EndStructure
     
     ;- - _s_transform
     Structure _s_transform Extends _s_coordinate
@@ -314,8 +309,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       align._s_align
       ;padding.b
       
-      *v._s_widget
-      *h._s_widget
+      *v._s_widget      ; vertical scrollbar
+      *h._s_widget      ; horizontal scrollbar
     EndStructure
     
     ;- - _s_popup
@@ -424,26 +419,44 @@ CompilerIf Not Defined(structures, #PB_Module)
       box._s_button           ; editor - edit rectangle
       
       *entered._s_rows    ; at point item
-      *selected._s_rows    ; pushed at point item
+      *selected._s_rows   ; pushed at point item
       List _s._s_rows()
     EndStructure
     
     ;- - _s_widget
     Structure _s_widget 
+      ; side.l[4] ; sidebar сторона 
+                        ;       *v._s_widget      ; vertical scrollbar
+                        ;       *h._s_widget      ; horizontal scrollbar
+      
       *first._s_widget
       *last._s_widget
       *after._s_widget
       *before._s_widget
       
-      *_tab._s_widget   ; panel tabbar
-      *_group._s_widget ; for the group  option()
-      *v._s_widget      ; vertical scrollbar
-      *h._s_widget      ; horizontal scrollbar
+      *adress           ; widget list adress
+      *root._s_root     ; adress root
+      *parent._s_widget ; adress parent
+      *window._s_widget ; this\parent\window       ; root()\active\window
       
-      _item.l ; panel add item opened index
-      _parent_item.l ; parent panel tab index
+      *gadget._s_widget[3] 
+      ; \root\gadget[0] = active gadget
+      ; \gadget[0] = active child gadget 
+      ; \gadget[1] = panel() tabbar gadget
+      ; \gadget[1] = splitter() first gadget
+      ; \gadget[2] = splitter() second gadget
+      
+      index.i[3]  
+      ; \index[0] = widget index 
+      ; \index[1] = panel opened item index
+      ; \index[1] = tab entered item index
+      ; \index[2] = panel selected item index
+      ; \index[2] = tab selected item index
+      
       *_flag
       _state.l
+      _item.l    ; parent panel tab index
+      *_group._s_widget ; = option() group gadget  
       
       
       draw.b
@@ -455,15 +468,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       y.l[constants::#__c]
       x.l[constants::#__c]
       height.l[6];constants::#__c]
-      width.l[6];constants::#__c]
+      width.l[6] ;constants::#__c]
       
-      *adress           ; widget list adress
-      *root._s_root     ; adress root
-      *parent._s_widget ; adress parent
-      *gadget._s_widget ; this\canvas\gadget ; root\active\gadget
-      *window._s_widget ; this\canvas\window ; root\active\window
-      
-      *splitter._s_splitter
       caption._s_caption
       scroll._s_scroll 
       color._s_color[4]
@@ -471,9 +477,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       bar._s_bar
       
       *errors
-      notify.b ; оповестить об изменении
+      notify.l ; оповестить об изменении
+      interact.i 
       
-      index.i[3]  ; Index[#normal=0] of new list element ; inex[#entered=1] ; index[#selected=2]
       change.l
       round.a
       cursor.l[2]
@@ -486,13 +492,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       __width.i
       
       container.i
-      interact.i 
       repaint.i
       resize.b
       
       mode._s_mode
       count._s_count
-      button._s_button
+      button._s_button ; checkbox; optionbox
       combo_box._s_button
       
       text._s_text 
@@ -522,7 +527,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_event
     Structure _s_event 
-       type.l
+      type.l
       item.l
       *data
       
@@ -534,7 +539,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       ; ??????????????????????
       ; colors._s_color
-       *leave._s_widget  
+      *leave._s_widget  
       ; *enter._s_widget  
       _draw.l
       ; draw.b
@@ -544,8 +549,6 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_root
     Structure _s_root Extends _s_widget
-      *widget._s_widget ; gadget root
-      
       mouse._s_mouse
       canvas._s_canvas
       keyboard._s_keyboard
@@ -559,9 +562,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       List *_childrens._s_widget()
       List *_events._s_event()
     EndStructure
-
+    
     Global *event._s_event = AllocateStructure(_s_event)
-
+    
   EndDeclareModule 
   
   Module structures 
@@ -569,5 +572,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -8vLo+3
+; Folding = -------
 ; EnableXP

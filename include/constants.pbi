@@ -40,6 +40,17 @@
     
     #__a_moved = 9
     
+    ; splitter 
+    #__split_1 = 1
+    #__split_2 = 2
+    
+    ; panel
+    #__panel_1 = 1
+    #__panel_2 = 2
+    
+    ; option
+    #__option_1 = 2
+    
     ; errors
     Enumeration 1
       #__error_text_input
@@ -65,24 +76,24 @@
     ;- coordinate 
     Enumeration
       ; pos & size
-      #__c_screen = 0 ; screen
-      #__c_frame = 1 ; frame screen
-      #__c_inner = 2 ; inner screen
-      #__c_required = 3 ; required
-      #__c_clip = 4 ; clip
-      #__c_draw = 5 ; draw container
+      #__c_screen    = 0 ; screen
+      #__c_frame     = 1 ; frame screen
+      #__c_inner     = 2 ; inner screen
+      #__c_required  = 3 ; required
+      #__c_clip      = 4 ; clip
+      #__c_draw      = 5 ; draw container
       
       ; pos
-      #__c_window = 6 ; window
+      #__c_window    = 6 ; window
       #__c_container = 7 ; container
       
-      #__c = 8
+      #__c           = 8
     EndEnumeration
     
     ;state
     EnumerationBinary
       #__s_normal
-      #__s_entered
+      #__s_entered  ; 1<<1
       #__s_selected
       #__s_disabled
       #__s_focused
@@ -94,6 +105,8 @@
       #__s_frame
       #__s_fore
       #__s_line
+      
+      ;;#__s_gadget
     EndEnumeration
     
     ;color state
