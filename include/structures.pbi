@@ -538,9 +538,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; *enter._s_widget  
       _draw.l
       ; draw.b
-      ; List *childrens._s_widget()
-      List *_childrens._s_widget()
       
+      List *_childrens._s_widget()
     EndStructure
     
     ;- - _s_root

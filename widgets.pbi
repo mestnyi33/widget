@@ -44,8 +44,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       structures::*event\root
     EndMacro
     
-    Macro Widget()
-      structures::*event\_childrens()  ; Widget()
+    Macro Widget() ; Returns last created widget 
+      structures::*event\_childrens()
     EndMacro
     
     Macro GetActive() ; Returns active window
@@ -7590,15 +7590,13 @@ CompilerIf Not Defined(widget, #PB_Module)
                 RoundBox(*this\x[#__c_inner],Y,*this\width[#__c_inner],*this\row\draws()\height,*this\row\draws()\round,*this\row\draws()\round, *this\row\draws()\color\frame[state])
               EndIf
               
-              ; Draw checkbox
               ; Draw option
+              ; Draw checkbox
               If *this\mode\check 
+                DrawingMode(#PB_2DDrawing_Default)
                 If *this\row\draws()\parent And *this\mode\check = 4
-                  DrawingMode(#PB_2DDrawing_Default)
                   _tree_box_(*this\row\draws()\box[1]\x, *this\row\draws()\box[1]\y, *this\row\draws()\box[1]\width, *this\row\draws()\box[1]\height, *this\row\draws()\box[1]\state, 1, $FFFFFFFF, 7, 255)
-                  
                 Else
-                  DrawingMode(#PB_2DDrawing_Default)
                   _tree_box_(*this\row\draws()\box[1]\x, *this\row\draws()\box[1]\y, *this\row\draws()\box[1]\width, *this\row\draws()\box[1]\height, *this\row\draws()\box[1]\state, 3, $FFFFFFFF, 2, 255)
                 EndIf
               EndIf
@@ -7745,7 +7743,10 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\row\selected = *this\row\_s()
         EndIf
         
-        If State & #__tree_checked
+        If State & #PB_Tree_Inbetween = #PB_Tree_Inbetween
+          *this\row\_s()\box[1]\state = #PB_Tree_Inbetween
+          
+        ElseIf State & #__tree_checked = #__tree_checked
           *this\row\_s()\box[1]\state = 1
         EndIf
         
@@ -9812,7 +9813,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             String.s = text_wrap_(\text\string.s + #LF$, Width, \text\multiLine)
             CountString = CountString(String, #LF$)
           Else
-            String.s = \text\string.s + #LF$
+            ; String.s = \text\string.s + #LF$
+            String.s = RemoveString(*this\text\string, #LF$) + #LF$
             CountString = 1
           EndIf
           
@@ -11471,7 +11473,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               Else
                 ;             If Not \count\items
                 \count\items = 1
-                \text\string.s = RemoveString(\text\string.s, #LF$) 
+                ; \text\string.s = RemoveString(\text\string.s, #LF$) 
                 ;               AddElement(\row\_s())
                 ;               \row\_s()\text\string = \text\string.s
                 ;             EndIf
@@ -11496,9 +11498,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         EndWith
       Else
-        If *this\text\multiline = 0
-          Text = RemoveString(Text, #LF$)
-        EndIf
+;         If *this\text\multiline = 0
+;           Text = RemoveString(Text, #LF$)
+;         EndIf
         
         Text = ReplaceString(Text, #LFCR$, #LF$)
         Text = ReplaceString(Text, #CRLF$, #LF$)
@@ -13469,7 +13471,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\_state = #__s_front|#__s_back|#__s_frame
         
         If Not Flag & #__button_multiline
-          *this\text\string = RemoveString(*this\text\string, #LF$)
+          ; *this\text\string = RemoveString(*this\text\string, #LF$)
           *this\text\multiline = 0 
         EndIf
         
@@ -15336,5 +15338,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------3---v------------------------------------------------------------------------------------------------------8++----------------
+; Folding = -----------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------+---P0-----------------------------------------------------------------------------------------------------df-----------------
 ; EnableXP

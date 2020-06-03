@@ -56,122 +56,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndProcedure
   CompilerEndIf
   
-  Procedure ClipGadgets( WindowID )
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      WindowID = GetAncestor_( WindowID, #GA_ROOT )
-      If Not (GetWindowLongPtr_(WindowID, #GWL_STYLE)&#WS_CLIPCHILDREN)
-        SetWindowLongPtr_( WindowID, #GWL_STYLE, GetWindowLongPtr_( WindowID, #GWL_STYLE )|#WS_CLIPCHILDREN )
-      EndIf
-      EnumChildWindows_( WindowID, @GadgetsClipCallBack(), 0 )
-    CompilerEndIf
-  EndProcedure
-  
-  Procedure LoadControls(Widget, Directory$)
-    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
-    
-    If FileSize(ZipFile$) < 1
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        ZipFile$ = #PB_Compiler_Home+"themes\silkTheme.zip"
-      CompilerElse
-        ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
-      CompilerEndIf
-      If FileSize(ZipFile$) < 1
-        MessageRequester("Designer Error", "Themes\silkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
-        End
-      EndIf
-    EndIf
-    ;   Directory$ = GetCurrentDirectory()+"images/" ; "";
-    ;   Protected ZipFile$ = Directory$ + "images.zip"
-    
-    
-    If FileSize(ZipFile$) > 0
-      UsePNGImageDecoder()
-      
-      CompilerIf #PB_Compiler_Version > 522
-        UseZipPacker()
-      CompilerEndIf
-      
-      Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
-      ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
-      
-      If ZipFile  
-        If ExaminePack(ZipFile)
-          While NextPackEntry(ZipFile)
-            
-            PackEntryName.S = PackEntryName(ZipFile)
-            ImageSize = PackEntrySize(ZipFile)
-            If ImageSize
-              *Image = AllocateMemory(ImageSize)
-              UncompressPackMemory(ZipFile, *Image, ImageSize)
-              Image = CatchImage(#PB_Any, *Image, ImageSize)
-              PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
-              If PackEntryName.S="application_form" 
-                PackEntryName.S="vd_windowgadget"
-              EndIf
-              
-              PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
-              
-              Select PackEntryType(ZipFile)
-                Case #PB_Packer_File
-                  If Image
-                    If FindString(Left(PackEntryName.S, 3), "vd_")
-                      PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
-                      PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
-                      
-                      Protected Left.S = UCase(Left(PackEntryName.S,1))
-                      Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
-                      PackEntryName.S = " "+Left.S+Right.S
-                      
-                      If IsGadget(Widget)
-                        If FindString(LCase(PackEntryName.S), "cursor")
-                          
-                          ;Debug "add cursor"
-                          AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 0, ImageID(Image))
-                          
-                        ElseIf FindString(LCase(PackEntryName.S), "window")
-                          
-                          ;Debug "add gadget window"
-                          AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 1, ImageID(Image))
-                          
-                        Else
-                          AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
-                        EndIf
-                        
-                      Else
-                        If FindString(LCase(PackEntryName.S), "cursor")
-                          
-                          ;Debug "add cursor"
-                          AddItem(Widget, 0, PackEntryName.S, Image)
-                          ;SetItemData(Widget, 0, Image)
-                          
-                        ElseIf FindString(LCase(PackEntryName.S), "window")
-                          
-                          Debug "add window"
-                          AddItem(Widget, 1, PackEntryName.S, Image)
-                          ;SetItemData(Widget, 1, Image)
-                          
-                        Else
-                          AddItem(Widget, -1, PackEntryName.S, Image)
-                          ;SetItemData(Widget, CountItems(Widget)-1, Image)
-                        EndIf
-                      EndIf
-                    EndIf
-                  EndIf    
-              EndSelect
-              
-              FreeMemory(*Image)
-            EndIf
-          Wend  
-        EndIf
-        
-        ClosePack(ZipFile)
-      EndIf
-    EndIf
-  EndProcedure
-  
   UsePNGImageDecoder()
   
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
@@ -226,52 +110,23 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget(100, 490-60,490-30,67,25,"~wrap")
     
     Define i,a,g 
-    g = 0
+    
     EditorGadget(g, 230, 10, 210, 210)                                         
-    ; 3_example
-    AddGadgetItem(g, 0, "Tree_0", 0 )
-    AddGadgetItem(g, 1, "Tree_1_1", ImageID(0), 1) 
-    AddGadgetItem(g, 4, "Tree_1_1_1", 0, 2) 
-    AddGadgetItem(g, 5, "Tree_1_1_2", 0, 2) 
-    AddGadgetItem(g, 6, "Tree_1_1_2_1", 0, 3) 
-    AddGadgetItem(g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", 0, 4) 
-    AddGadgetItem(g, 7, "Tree_1_1_2_2 980980_", 0, 3) 
-    AddGadgetItem(g, 2, "Tree_1_2", 0, 1) 
-    AddGadgetItem(g, 3, "Tree_1_3", 0, 1) 
-    AddGadgetItem(g, 9, "Tree_2" )
-    AddGadgetItem(g, 10, "Tree_3", 0 )
-    AddGadgetItem(g, 11, "Tree_4" )
-    AddGadgetItem(g, 12, "Tree_5", 0 )
-    AddGadgetItem(g, 13, "Tree_6", 0 )
-    
-    For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
-    
-    
-;     Macro Gadget(_x_,_y_,_width_,_height_, _flag_)
-;       Open(0, _x_,_y_,_width_,_height_, "", #__flag_borderless)
-;       *g=Tree(0, 0, _width_,_height_, #__Flag_autosize|_flag_)
-;     EndMacro
-    
+    For i=0 To 10
+      AddGadgetItem(g, -1, "Line_"+Str(i))
+    Next
+       
     Open(0, 270, 10, 250, 150)
     g_Canvas = GetGadget(Root())
     
     *g=Editor(0, 0, 250, 150, #__Flag_autosize)
-    ;  3_example
-    AddItem(*g, 0, "Tree_0", -1 )
-    AddItem(*g, 1, "Tree_1_1", 0, 1) 
-    AddItem(*g, 4, "Tree_1_1_1", -1, 2) 
-    AddItem(*g, 5, "Tree_1_1_2", -1, 2) 
-    AddItem(*g, 6, "Tree_1_1_2_1", -1, 3) 
-    AddItem(*g, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", -1, 4) 
-    AddItem(*g, 7, "Tree_1_1_2_2 980980_", -1, 3) 
-    AddItem(*g, 2, "Tree_1_2", -1, 1) 
-    AddItem(*g, 3, "Tree_1_3", -1, 1) 
-    AddItem(*g, 9, "Tree_2",-1 )
-    AddItem(*g, 10, "Tree_3", -1 )
-    AddItem(*g, 11, "Tree_4", -1 )
-    AddItem(*g, 12, "Tree_5", -1 )
-    AddItem(*g, 13, "Tree_6", -1 )
-    
+    For i=0 To 10
+      If i = 5
+        AddItem(*g, -1, "Line_long_long_long_long_long_"+Str(i))
+      Else
+        AddItem(*g, -1, "Line_"+Str(i))
+      EndIf
+    Next
     
     
     SplitterGadget(10,8, 8, 306, 491-16,g_Canvas, 0)
@@ -290,6 +145,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = 0f---2-
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = ----
 ; EnableXP
