@@ -14,18 +14,16 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected flag.i
     
     If *this\type = #PB_GadgetType_Button
-      If *this\text\align\left ;= 1
+      If *this\text\align\left
         flag | #__button_left
       EndIf
-      If *this\text\align\right ;= 1
+      If *this\text\align\right
         flag | #__button_right
       EndIf
-      If *this\text\multiline ;= 1
+      If *this\text\multiline
         flag | #__button_multiline
       EndIf
       If *this\_flag & #__button_toggle
-        ;         *this\_state | #__s_toggled
-        ;         *this\color\state = #__s_2
         flag | #__button_toggle
       EndIf
     EndIf
@@ -43,6 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       If flag & #__button_multiline
         *this\text\multiline = 1
+        *this\text\change = 1
       EndIf
       If flag & #__button_toggle
         *this\_flag | #__button_toggle
@@ -61,8 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile
         *this\text\align\right = 0
       EndIf
       If flag & #__button_multiline
-        *this\text\change = 1
         *this\text\multiline = 0
+        *this\text\change = 1
       EndIf
       If flag & #__button_toggle
         *this\_flag &~ #__button_toggle

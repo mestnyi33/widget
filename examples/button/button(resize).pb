@@ -4,122 +4,61 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
- 
+  
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Global *this._s_widget, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
   Define vert=100, horiz=100, width=400, height=400
   
-  Procedure GetFlag(*this._s_widget)
-    Protected flag.i
-    
-    If *this\type = #PB_GadgetType_Button
-      If *this\text\align\left ;= 1
-        flag | #__button_left
-      EndIf
-      If *this\text\align\right ;= 1
-        flag | #__button_right
-      EndIf
-      If *this\text\multiline ;= 1
-        flag | #__button_multiline
-      EndIf
-      If *this\_flag & #__button_toggle
-        ;         *this\_state | #__s_toggled
-        ;         *this\color\state = #__s_2
-        flag | #__button_toggle
-      EndIf
-    EndIf
-    
-    ProcedureReturn flag
-  EndProcedure
-  
-  Procedure SetFlag(*this._s_widget, flag.i)
-    If *this\type = #PB_GadgetType_Button
-      If flag & #__button_left
-        *this\text\align\left = 1
-      EndIf
-      If flag & #__button_right
-        *this\text\align\right = 1
-      EndIf
-      If flag & #__button_multiline
-        *this\text\multiline = 1
-      EndIf
-      If flag & #__button_toggle
-        *this\_flag | #__button_toggle
-        *this\_state | #__s_toggled
-        *this\color\state = #__s_2
-      EndIf
-    EndIf
-  EndProcedure
-  
-  Procedure RemoveFlag(*this._s_widget, flag.i)
-    If *this\type = #PB_GadgetType_Button
-      If flag & #__button_left
-        *this\text\align\left = 0
-      EndIf
-      If flag & #__button_right
-        *this\text\align\right = 0
-      EndIf
-      If flag & #__button_multiline
-        *this\text\multiline = 0
-        *this\text\string = RemoveString(*this\text\string, #LF$)
-      EndIf
-      If flag & #__button_toggle
-        *this\_flag &~ #__button_toggle
-        *this\_state &~ #__s_toggled
-        *this\color\state = #__s_0
-      EndIf
-    EndIf
-  EndProcedure
-  
   Procedure events_widgets()
+    Protected flag
+    
     Select *event\type
       Case #PB_EventType_LeftClick
         Select *event\widget
-          Case Button_1
-            *this\text\multiline = GetState(*event\widget)
-            
-            If Not *this\text\multiline
-              *this\text\string = RemoveString(*this\text\string, #LF$)
-            EndIf
-            
-          Case Button_2
-            *this\text\align\left = GetState(*event\widget)
-            
-          Case Button_3
-            *this\text\align\right = GetState(*event\widget)
-            
-          Case Button_4
+          Case Button_type 
             If GetState(*event\widget)
-              *this\_flag | #__button_toggle
-              *this\_state | #__s_toggled
-              *this\color\state = #__s_2
+              Hide(*this, 1)
+              HideGadget(gadget, 0)
+              SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
+              SetText(Button_type, "widget")
             Else
-              *this\_flag &~ #__button_toggle
-              *this\_state &~ #__s_toggled
-              *this\color\state = #__s_0
+              Hide(*this, 0)
+              HideGadget(gadget, 1)
+              SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
+              SetText(Button_type, "gadget")
             EndIf
             
+          Case Button_1 : flag = #__button_multiline
+          Case Button_2 : flag = #__button_left
+          Case Button_3 : flag = #__button_right
+          Case Button_4 : flag = #__button_toggle
         EndSelect
         
+        If flag
+          Flag(*this, flag, GetState(*event\widget))
+        EndIf
         Post(#__event_repaint, #PB_All)
     EndSelect
+    
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+    gadget = ButtonGadget(#PB_Any, 10, 10, 250, 200, text, #PB_Button_MultiLine) 
+    HideGadget(gadget,1)
     *this = widget::Button(10, 10, 250, 200, text, #__button_multiline) 
+    Define y = 10
     ; flag
-    Button_0 = widget::Button(width+45, 30,   100, 26, "default", #__button_toggle) 
-    Button_1 = widget::Button(width+45, 30*2, 100, 26, "multiline", #__button_toggle) 
-    Button_2 = widget::Button(width+45, 30*3, 100, 26, "left", #__button_toggle) 
-    Button_3 = widget::Button(width+45, 30*4, 100, 26, "right", #__button_toggle) 
-    Button_4 = widget::Button(width+45, 30*5, 100, 26, "toggle", #__button_toggle) 
+    Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__button_toggle) 
+    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "default", #__button_toggle) 
+    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "multiline", #__button_toggle) 
+    Button_2 = widget::Button(width+45, y+30*3, 100, 26, "left", #__button_toggle) 
+    Button_3 = widget::Button(width+45, y+30*4, 100, 26, "right", #__button_toggle) 
+    Button_4 = widget::Button(width+45, y+30*5, 100, 26, "toggle", #__button_toggle) 
     Bind(#PB_All, @events_widgets())
     
-    If GetFlag(*this) & #__button_multiline
-      SetState(Button_1, 1)
-    EndIf
-    
+    ; set button toggled state
+    SetState(Button_1, Flag(*this, #__button_multiline))
     
     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
     Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
@@ -134,5 +73,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 0000-
+; Folding = --
 ; EnableXP

@@ -25,26 +25,26 @@ CompilerIf #PB_Compiler_IsMainFile
   
   LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4)
   
-  If OpenWindow(0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    ButtonGadget(0, 10, 10, 200, 20, "Standard Button")
-    ButtonGadget(1, 10, 40, 200, 20, "Left Button", #PB_Button_Left)
-    ButtonGadget(2, 10, 70, 200, 20, "Right Button", #PB_Button_Right)
-    ButtonGadget(3, 10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)");, #PB_Button_MultiLine)
-    ButtonGadget(4, 10,170, 200, 60, "Multiline Button  (longer text gets automatically multiline)", #PB_Button_MultiLine|#PB_Button_Default)
-    ButtonGadget(5, 10,170+70, 200, 20, "Toggle Button", #PB_Button_Toggle)
+  If Open(OpenWindow(#PB_Any, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+    Global main = GetWindow(Root())
+     
+    ButtonGadget(0, 10, 10, 200, 20, "Standard button")
+    ButtonGadget(1, 10, 40, 200, 20, "Left button", #PB_Button_Left)
+    ButtonGadget(2, 10, 70, 200, 20, "Right button", #PB_Button_Right)
+    ButtonGadget(3, 10,100, 200, 60, "Default button and long long long long text", #PB_Button_Default)
+    ButtonGadget(4, 10,170, 200, 60, "Multiline button  (longer text gets automatically multiline)", #PB_Button_MultiLine)
+    ButtonGadget(5, 10,170+70, 200, 20, "Toggle button", #PB_Button_Toggle)
     
-    Open(0,  222, 0, 222, 205+70)
     
-    Button(10, 10, 200, 20, "Standard Button", 0,-1,8)
-    Button(10, 40, 200, 20, "Left Button", #__button_left)
-    Button(10, 70, 200, 20, "Right Button", #__button_right)
-    Button(10,100, 200, 60, "Multiline Button  (longer text gets automatically wrapped)");, #__text_wordwrap, 4)
-    Button(10,170, 200, 60, "Multiline Button  (longer text gets automatically multiline)", #__button_multiline|#__button_default, 4)
-    Button(10,170+70, 200, 25, "Toggle Button", #__button_toggle)
+    Button(10+222, 10, 200, 20, "Standard button", 0,-1,8)
+    Button(10+222, 40, 200, 20, "Left button", #__button_left)
+    Button(10+222, 70, 200, 20, "Right button", #__button_right)
+    Button(10+222,100, 200, 60, "Default button and long long long long text", #__button_default, -1,4)
+    Button(10+222,170, 200, 60, "Multiline button  (longer text gets automatically multiline)", #__button_multiline, -1,4)
+    Button(10+222,170+70, 200, 25, "Toggle button", #__button_toggle)
     
   EndIf
-  
-  
+   
   Global c2
   Procedure ResizeCallBack()
     Protected Width = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate) 
@@ -76,8 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetColor(*Button_1, #__Color_Front, $FFFFFF) ; $4919D5)
     SetFont(*Button_1, FontID(0))
     
-    
-    ResizeWindow(11, #PB_Ignore, WindowY(0)+WindowHeight(0, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
+    ResizeWindow(11, #PB_Ignore, WindowY(main)+WindowHeight(main, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
     
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
     PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
@@ -88,6 +87,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = f-
 ; EnableXP

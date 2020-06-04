@@ -229,11 +229,11 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;-   DECLAREs
     ;{
     Declare.i Tree_Properties(x.l,y.l,width.l,height.l, Flag.i = 0)
-    Declare  SetClass(*this._s_widget, class.s)
+    Declare  SetClass(*this, class.s)
     
-    Declare a_add(*this._s_widget, Size.l = 6, Pos.l = -1)
-    Declare a_get(*this._s_widget, index.i = -1)
-    Declare a_set(*this._s_widget)
+    Declare a_add(*this, Size.l = 6, Pos.l = -1)
+    Declare a_get(*this, index.i = -1)
+    Declare a_set(*this)
     
     Declare   Child(*this, *parent)
     Declare.l X(*this, mode.l = #__c_screen)
@@ -283,7 +283,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.b SetState(*this, state.f)
     
     Declare.i GetItemAttribute(*this, Item.l,  Attribute.l, Column.l = 0)
-    Declare.i SetItemAttribute(*this, Item.l, Attribute.l, Value.l, Column.l = 0)
+    Declare.i SetItemAttribute(*this, Item.l, Attribute.l, *value, Column.l = 0)
     
     Declare.i GetItemData(*this, item.l)
     Declare.i SetItemData(*this, item.l, *data)
@@ -304,7 +304,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.b SetItemState(*this, Item.l, State.b)
     
     Declare.l GetAttribute(*this, Attribute.l)
-    Declare.l SetAttribute(*this, Attribute.l, Value.l)
+    Declare.l SetAttribute(*this, Attribute.l, *value)
     
     Declare.i SetAlignment(*this, Mode.l, Type.l = 1)
     Declare.i SetData(*this, *data)
@@ -319,7 +319,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.i GetFont(*this)
     Declare.i SetFont(*this, FontID.i)
     
-    Declare.i Create(type.l, *parent._s_widget, x.l,y.l,width.l,height.l, *param_1, *param_2, *param_3, size.l, flag.i = 0, round.l = 7, ScrollStep.f = 1.0)
+    Declare   Flag(*this, flag.i, state.b =- 1)
+    Declare.i Create(type.l, *parent, x.l,y.l,width.l,height.l, *param_1, *param_2, *param_3, size.l, flag.i = 0, round.l = 7, ScrollStep.f = 1.0)
     
     ; button
     Declare.i Text(x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, round.l = 0)
@@ -637,17 +638,17 @@ CompilerIf Not Defined(widget, #PB_Module)
       
     EndProcedure
     
-    Procedure.i Match(Value.i, Grid.i, Max.i = $7FFFFFFF)
+    Procedure.i Match(*value, Grid.i, Max.i = $7FFFFFFF)
       If Grid 
-        Value = Round((Value/Grid), #PB_Round_Nearest) * Grid 
-        If Value>Max 
-          Value = Max 
+        *value = Round((*value/Grid), #PB_Round_Nearest) * Grid 
+        If *value>Max 
+          *value = Max 
         EndIf
       EndIf
       
-      ProcedureReturn Value
-      ;   Procedure.i Match(Value.i, Grid.i, Max.i = $7FFFFFFF)
-      ;     ProcedureReturn ((Bool(Value>Max) * Max) + (Bool(Grid And Value<Max) * (Round((Value/Grid), #PB_round_nearest) * Grid)))
+      ProcedureReturn *value
+      ;   Procedure.i Match(*value.i, Grid.i, Max.i = $7FFFFFFF)
+      ;     ProcedureReturn ((Bool(*value>Max) * Max) + (Bool(Grid And *value<Max) * (Round((*value/Grid), #PB_round_nearest) * Grid)))
     EndProcedure
     
     Procedure.s InvertCase(Text.s)
@@ -3151,44 +3152,53 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn result
     EndProcedure
     
-    Procedure.l Bar_SetAttribute(*this._s_widget, Attribute.l, Value.l)
+    Procedure.l Bar_SetAttribute(*this._s_widget, Attribute.l, *value)
       Protected Result.l
       
       With *this
         If \type = #PB_GadgetType_Splitter
           Select Attribute
             Case #PB_Splitter_FirstMinimumSize
-              \bar\min = Value
-              \bar\button[#__b_1]\len = Value
+              \bar\min = *value
+              \bar\button[#__b_1]\len = *value
               Result = Bool(\bar\max)
               
             Case #PB_Splitter_SecondMinimumSize
-              \bar\button[#__b_2]\len = Value
+              \bar\button[#__b_2]\len = *value
               Result = Bool(\bar\max)
               
+            Case #PB_Splitter_FirstGadget
+              *this\gadget[#__split_1] = *value
+              *this\index[#__split_1] = Bool(IsGadget(*value))
+              Result = 1
+              
+            Case #PB_Splitter_SecondGadget
+              *this\gadget[#__split_2] = *value
+              *this\index[#__split_2] = Bool(IsGadget(*value))
+              Result = 1
               
           EndSelect
           
         Else
           Select Attribute
             Case #__bar_minimum
-              If \bar\min <> Value And Not Value < 0
-                \bar\area\change = \bar\min - Value
-                If \bar\page\pos < Value
-                  \bar\page\pos = Value
+              If \bar\min <> *value And Not *value < 0
+                \bar\area\change = \bar\min - *value
+                If \bar\page\pos < *value
+                  \bar\page\pos = *value
                 EndIf
-                \bar\min = Value
+                \bar\min = *value
                 ;Debug  " min " + \bar\min + " max " + \bar\max
                 Result = #True
               EndIf
               
             Case #__bar_maximum
-              If \bar\max <> Value And Not Value < 0
-                \bar\area\change = \bar\max - Value
-                If \bar\min > Value
+              If \bar\max <> *value And Not *value < 0
+                \bar\area\change = \bar\max - *value
+                If \bar\min > *value
                   \bar\max = \bar\min + 1
                 Else
-                  \bar\max = Value
+                  \bar\max = *value
                 EndIf
                 
                 If Not \bar\max
@@ -3201,15 +3211,15 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
               
             Case #__bar_pagelength
-              If \bar\page\len <> Value And Not Value < 0
-                \bar\area\change = \bar\page\len - Value
-                \bar\page\len = Value
+              If \bar\page\len <> *value And Not *value < 0
+                \bar\area\change = \bar\page\len - *value
+                \bar\page\len = *value
                 
                 If Not \bar\max
-                  If \bar\min > Value
+                  If \bar\min > *value
                     \bar\max = \bar\min + 1
                   Else
-                    \bar\max = Value
+                    \bar\max = *value
                   EndIf
                 EndIf
                 
@@ -3217,17 +3227,17 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
               
             Case #__bar_buttonsize
-              If \bar\button[#__b_3]\len <> Value
-                \bar\button[#__b_3]\len = Value
+              If \bar\button[#__b_3]\len <> *value
+                \bar\button[#__b_3]\len = *value
                 
                 If \type = #PB_GadgetType_ScrollBar
-                  \bar\button[#__b_1]\len = Value
-                  \bar\button[#__b_2]\len = Value
+                  \bar\button[#__b_1]\len = *value
+                  \bar\button[#__b_2]\len = *value
                 EndIf
                 
                 If \type = #PB_GadgetType_tabBar
-                  \bar\button[#__b_1]\len = Value
-                  \bar\button[#__b_2]\len = Value
+                  \bar\button[#__b_1]\len = *value
+                  \bar\button[#__b_2]\len = *value
                 EndIf
                 
                 *this\resize | #__resize_change
@@ -3235,11 +3245,11 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
               
             Case #__bar_inverted
-              \bar\inverted = Bool(Value)
+              \bar\inverted = Bool(*value)
               ProcedureReturn Update(*this)
               
             Case #__bar_ScrollStep 
-              \bar\increment = Value
+              \bar\increment = *value
               
           EndSelect
         EndIf
@@ -10308,12 +10318,85 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     
     ;- 
-    Procedure.b Disable(*this._s_widget, State.b = -1)
+    Procedure   Flag(*this._s_widget, flag.i, state.b =- 1)
+      Protected result
+      
+      If Not flag
+          result = *this\_flag
+        ;       If *this\type = #PB_GadgetType_Button
+        ;         ;         If *this\text\align\left
+        ;         ;           result | #__button_left
+        ;         ;         EndIf
+        ;         ;         If *this\text\align\right
+        ;         ;           result | #__button_right
+        ;         ;         EndIf
+        ;         ;         If *this\text\multiline
+        ;         ;           result | #__button_multiline
+        ;         ;         EndIf
+        ;         ;         If *this\_flag & #__button_toggle
+        ;         ;           result | #__button_toggle
+        ;         ;         EndIf
+        ;       EndIf
+      Else
+        If Not Bool(state =- 1)
+          If state 
+            *this\_flag | flag
+          Else
+            *this\_flag &~ flag
+          EndIf
+        EndIf
+        
+        If *this\type = #PB_GadgetType_Button
+          If flag & #__button_default
+            If state =- 1
+              result = #True
+            Else
+             ; *this\text\align\left = state
+            EndIf
+          EndIf
+          If flag & #__button_left
+            If state =- 1
+              result = #True
+            Else
+              *this\text\align\left = state
+            EndIf
+          EndIf
+          If flag & #__button_right
+            If state =- 1
+              result = #True
+            Else
+              *this\text\align\right = state
+            EndIf
+          EndIf
+          If flag & #__button_multiline
+            If state =- 1
+              result = #True
+            Else
+              *this\text\multiline = state
+              *this\text\change = #True
+            EndIf
+          EndIf
+          If flag & #__button_toggle
+            If state 
+              *this\_state | #__s_toggled
+              *this\color\state = #__s_2
+            Else
+              *this\_state &~ #__s_toggled
+              *this\color\state = #__s_0
+            EndIf
+          EndIf
+        EndIf
+      EndIf
+      
+      ProcedureReturn result
+    EndProcedure
+    
+    Procedure.b Disable(*this._s_widget, State.b =- 1)
       *this\color\state = #__s_3
       ; *this\_state = #__s_disabled
     EndProcedure
     
-    Procedure.b Hide(*this._s_widget, State.b = -1)
+    Procedure.b Hide(*this._s_widget, State.b =- 1)
       With *this
         If State =- 1
           ProcedureReturn *this\hide 
@@ -11445,11 +11528,18 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn result
     EndProcedure
     
-    Procedure.l SetAttribute(*this._s_widget, Attribute.l, Value.l)
+    Procedure.l SetAttribute(*this._s_widget, Attribute.l, *value)
       Protected Result.l
       
       With *this
-        Result = Bar_SetAttribute(*this, Attribute, Value)
+        If *this\type = #PB_GadgetType_Spin Or
+           *this\type = #PB_GadgetType_TabBar Or
+           *this\type = #PB_GadgetType_TrackBar Or
+           *this\type = #PB_GadgetType_ScrollBar Or
+           *this\type = #PB_GadgetType_ProgressBar Or
+           *this\type = #PB_GadgetType_Splitter
+          Result = Bar_SetAttribute(*this, Attribute, *value)
+        EndIf
       EndWith
       
       ProcedureReturn Result
@@ -12654,7 +12744,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn result
     EndProcedure
     
-    Procedure.i SetItemAttribute(*this._s_widget, Item.l, Attribute.l, Value.l, Column.l = 0)
+    Procedure.i SetItemAttribute(*this._s_widget, Item.l, Attribute.l, *value, Column.l = 0)
       Protected result
       
       If *this\type = #__type_Window
@@ -12662,10 +12752,10 @@ CompilerIf Not Defined(widget, #PB_Module)
       ElseIf *this\type = #__type_tree
         Select Attribute
           Case #__tree_collapsed
-            *this\mode\collapse = Bool(Not Value) 
+            *this\mode\collapse = Bool(Not *value) 
             
           Case #__tree_OptionBoxes
-            *this\mode\check = Bool(Value)*2
+            *this\mode\check = Bool(*value)*2
             
         EndSelect
         
@@ -13004,6 +13094,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\container =- *this\type 
           *this\gadget[#__split_1] = *param_1
           *this\gadget[#__split_2] = *param_2
+          *this\index[#__split_1] = Bool(IsGadget(*this\gadget[#__split_1]))
+          *this\index[#__split_2] = Bool(IsGadget(*this\gadget[#__split_2]))
           
           *this\bar\inverted = Bool(Flag & #__bar_Inverted = #__bar_Inverted)
           If flag & #PB_Splitter_Separator = #PB_Splitter_Separator
@@ -13027,9 +13119,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\bar\button[#__b_3]\len = #__splitter_buttonsize
           *this\bar\button[#__b_3]\round = 2
           *this\bar\button[#__b_3]\interact = #True
-          
-          *this\index[#__split_1] = Bool(IsGadget(*this\gadget[#__split_1]))
-          *this\index[#__split_2] = Bool(IsGadget(*this\gadget[#__split_2]))
           
         Else
           If *param_1 
@@ -15375,5 +15464,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------f------------Pv---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8v3+0------------------------------------------------
+; Folding = -------------------------f------------Pv------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vO-----------------------------------------------------------------rtf------------------------------------------------
 ; EnableXP
