@@ -10319,7 +10319,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;- 
     Procedure   Flag(*this._s_widget, flag.i, state.b =- 1)
-      Protected result, *flag
+      Protected result
       
       If Not flag
           result = *this\_flag
@@ -10339,54 +10339,36 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;       EndIf
       Else
         If state =- 1
-          *flag = *this\_flag
+          result = Bool(*this\_flag & flag)
         Else
-          *flag = flag
-          
           If state 
             *this\_flag | flag
           Else
             *this\_flag &~ flag
           EndIf
-        EndIf
-        
-        If *this\type = #PB_GadgetType_Button
-          If *flag & #__button_default
-            If state =- 1
-              result = #True
-            Else
-             ; *this\text\align\left = state
+          
+          If *this\type = #PB_GadgetType_Button
+            If flag & #__button_default
+              ; *this\text\align\left = state
             EndIf
-          EndIf
-          If *flag & #__button_left
-            If state =- 1
-              result = #True
-            Else
+            If flag & #__button_left
               *this\text\align\left = state
             EndIf
-          EndIf
-          If *flag & #__button_right
-            If state =- 1
-              result = #True
-            Else
+            If flag & #__button_right
               *this\text\align\right = state
             EndIf
-          EndIf
-          If *flag & #__button_multiline
-            If state =- 1
-              result = #True
-            Else
+            If flag & #__button_multiline
               *this\text\multiline = state
               *this\text\change = #True
             EndIf
-          EndIf
-          If *flag & #__button_toggle
-            If state 
-              *this\_state | #__s_toggled
-              *this\color\state = #__s_2
-            Else
-              *this\_state &~ #__s_toggled
-              *this\color\state = #__s_0
+            If flag & #__button_toggle
+              If state 
+                *this\_state | #__s_toggled
+                *this\color\state = #__s_2
+              Else
+                *this\_state &~ #__s_toggled
+                *this\color\state = #__s_0
+              EndIf
             EndIf
           EndIf
         EndIf
@@ -11324,17 +11306,19 @@ CompilerIf Not Defined(widget, #PB_Module)
       ;- Button_SetState()
       If *this\type = #__type_button
         If *this\_flag & #__button_toggle
-          If state
-            *this\_state | #__s_toggled
-            *this\color\state = #__s_2 
-            
-          ElseIf *this\_state & #__s_toggled
+          If *this\_state & #__s_toggled
             *this\_state &~ #__s_toggled
-            If *this\_state &~ #__s_entered
+            
+            If *this\_state & #__s_entered
               *this\color\state = #__s_1 
             Else
               *this\color\state = #__s_0 
             EndIf
+            
+          ElseIf state
+            *this\_state | #__s_toggled
+            *this\color\state = #__s_2 
+            
           EndIf
         EndIf
       EndIf
@@ -15465,5 +15449,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------f------------Pv------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------uP---------------------------fdnvn-j-------------------------------rtf------------------------------------------------
+; Folding = -------------------------f------------Pv-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9---------------------------2d+e+P+------------------------------v3+0------------------------------------------------
 ; EnableXP

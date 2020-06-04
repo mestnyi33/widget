@@ -16,6 +16,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Select *event\type
       Case #PB_EventType_LeftClick
         Select *event\widget
+          Case *this
+            If Flag(*this, #__button_toggle)
+              SetState(Button_4, GetState(*event\widget))
+            EndIf
+            
           Case Button_type 
             If GetState(*event\widget)
               Hide(*this, 1)
