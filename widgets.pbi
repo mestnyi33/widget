@@ -11321,12 +11321,14 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure.b SetState(*this._s_widget, state.f)
       Protected result
       
+      ;- Button_SetState()
       If *this\type = #__type_button
         If *this\_flag & #__button_toggle
           If state
             *this\_state | #__s_toggled
             *this\color\state = #__s_2 
-          Else
+            
+          ElseIf *this\_state & #__s_toggled
             *this\_state &~ #__s_toggled
             If *this\_state &~ #__s_entered
               *this\color\state = #__s_1 
@@ -13593,7 +13595,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         ; PB 
         ; If Flag & #__text_border = #__text_border 
-        *this\fs = 10
+        *this\fs = 4
         *this\bs = *this\fs
         ;  *this\color\frame = _get_colors_()\frame
         ; EndIf
@@ -15463,5 +15465,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------f------------Pv------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------uL-----------------------------------------------------------------rtf------------------------------------------------
+; Folding = -------------------------f------------Pv------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------uP---------------------------fdnvn-j-------------------------------rtf------------------------------------------------
 ; EnableXP

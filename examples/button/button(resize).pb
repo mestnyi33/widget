@@ -20,12 +20,16 @@ CompilerIf #PB_Compiler_IsMainFile
             If GetState(*event\widget)
               Hide(*this, 1)
               HideGadget(gadget, 0)
-              SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
+              If Splitter_0
+                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
+              EndIf
               SetText(Button_type, "widget")
             Else
               Hide(*this, 0)
               HideGadget(gadget, 1)
-              SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
+              If Splitter_0
+                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
+              EndIf
               SetText(Button_type, "gadget")
             EndIf
             
@@ -44,9 +48,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    gadget = ButtonGadget(#PB_Any, 10, 10, 250, 200, text, #PB_Button_MultiLine) 
+    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    *this = widget::Button(10, 10, 250, 200, text);, #__button_multiline) 
+    *this = widget::Button(100, 100, 250, 200, text, #__button_multiline) 
     
     Define y = 10
     ; flag
