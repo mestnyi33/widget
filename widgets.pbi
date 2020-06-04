@@ -10319,7 +10319,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;- 
     Procedure   Flag(*this._s_widget, flag.i, state.b =- 1)
-      Protected result
+      Protected result, *flag
       
       If Not flag
           result = *this\_flag
@@ -10338,7 +10338,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         ;         EndIf
         ;       EndIf
       Else
-        If Not Bool(state =- 1)
+        If state =- 1
+          *flag = *this\_flag
+        Else
+          *flag = flag
+          
           If state 
             *this\_flag | flag
           Else
@@ -10347,28 +10351,28 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If *this\type = #PB_GadgetType_Button
-          If flag & #__button_default
+          If *flag & #__button_default
             If state =- 1
               result = #True
             Else
              ; *this\text\align\left = state
             EndIf
           EndIf
-          If flag & #__button_left
+          If *flag & #__button_left
             If state =- 1
               result = #True
             Else
               *this\text\align\left = state
             EndIf
           EndIf
-          If flag & #__button_right
+          If *flag & #__button_right
             If state =- 1
               result = #True
             Else
               *this\text\align\right = state
             EndIf
           EndIf
-          If flag & #__button_multiline
+          If *flag & #__button_multiline
             If state =- 1
               result = #True
             Else
@@ -10376,7 +10380,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               *this\text\change = #True
             EndIf
           EndIf
-          If flag & #__button_toggle
+          If *flag & #__button_toggle
             If state 
               *this\_state | #__s_toggled
               *this\color\state = #__s_2
@@ -13572,13 +13576,13 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\x =- 2147483648
       *this\y =- 2147483648
       *this\type = #__type_button
+      *this\_flag = Flag|#__text_center
       
-      *this\_flag = Flag
       If Flag & #__flag_vertical = #__flag_vertical
         *this\vertical = #True
       EndIf
       
-      _set_text_flag_(*this, flag|#__text_center)
+      _set_text_flag_(*this, *this\_flag)
       
       ; - Create Text
       If *this\type = #PB_GadgetType_Button
@@ -13587,14 +13591,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\color = _get_colors_()
         *this\_state = #__s_front|#__s_back|#__s_frame
         
-        If Not Flag & #__button_multiline
-          ; *this\text\string = RemoveString(*this\text\string, #LF$)
-          *this\text\multiline = 0 
-        EndIf
-        
         ; PB 
         ; If Flag & #__text_border = #__text_border 
-        *this\fs = 1
+        *this\fs = 10
         *this\bs = *this\fs
         ;  *this\color\frame = _get_colors_()\frame
         ; EndIf
@@ -15464,5 +15463,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------f------------Pv------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vO-----------------------------------------------------------------rtf------------------------------------------------
+; Folding = -------------------------f------------Pv------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------uL-----------------------------------------------------------------rtf------------------------------------------------
 ; EnableXP

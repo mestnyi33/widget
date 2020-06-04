@@ -46,7 +46,8 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     gadget = ButtonGadget(#PB_Any, 10, 10, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    *this = widget::Button(10, 10, 250, 200, text, #__button_multiline) 
+    *this = widget::Button(10, 10, 250, 200, text);, #__button_multiline) 
+    
     Define y = 10
     ; flag
     Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__button_toggle) 
