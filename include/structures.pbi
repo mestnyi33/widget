@@ -213,18 +213,23 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;     EndStructure
     
     ;- - _s_transform
-    Structure _s_transform Extends _s_coordinate
+    Structure _s_transform
+      y.l
+      x.l
+      width.l
+      height.l
+      
       hide.b
       cursor.l
       color._s_color[4]
     EndStructure
     
-    ;- - _s_anchor
-    Structure _s_anchor Extends _s_coordinate
+    ;- - _s_transforms
+    Structure _s_transforms Extends _s_coordinate
       pos.l
       size.l
       index.l
-      cursor.l
+      ;cursor.l
       delta._s_point
       *widget._s_widget
       id._s_transform[#__count_anchors_]
@@ -527,22 +532,19 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_event
     Structure _s_event 
-      type.l
-      item.l
-      *data
+      type.l                ; Widget_EventType()
+      item.l                ; Widget_EventItem()
+      *data                 ; Widget_EventData()
       
       *root._s_root         ; Root()
-      *widget._s_widget
-      *active._s_widget  ; GetActive() - window
+      *widget._s_widget     ; EventWidget()
+      *active._s_widget     ; GetActive() - window
       *callback.pFunc
       
       
-      ; ??????????????????????
-      ; colors._s_color
-      *leave._s_widget  
-      ; *enter._s_widget  
+      *leave._s_widget   ;temp
+      
       _draw.l
-      ; draw.b
       
       List *_childrens._s_widget()
     EndStructure
@@ -553,12 +555,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       canvas._s_canvas
       keyboard._s_keyboard
       
-      *anchor._s_anchor
+      *anchor._s_transforms
+      
       *opened._s_widget    ; opened list element
       *entered._s_widget   ; at point element
       *selected._s_widget  ; pushed at point element
       
-      ;Map *__childrens._s_widget()
       List *_childrens._s_widget()
       List *_events._s_event()
     EndStructure

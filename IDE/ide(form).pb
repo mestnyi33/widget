@@ -275,7 +275,7 @@ Global GrabDrawingImage
 Procedure.i FreeSelector(*this._s_widget)
   Redraw(*this\root)
   
-  ;*this\root\anchor = 0
+  ;Transform() = 0
   GrabDrawingImage = 0
 EndProcedure
 
@@ -294,11 +294,11 @@ Procedure.i UpdateSelector(*this._s_widget)
   Protected MouseX, MouseY, DeltaX, DeltaY
   
   If *this And GetButtons(*this)
-    If Not *this\root\anchor
-      *this\root\anchor = AllocateStructure(_s_anchor)
+    If Not Transform()
+      InitTransform()
     EndIf
     
-    ;If *this And *this\root\anchor And *this\root\selected
+    ;If *this And Transform() And *this\root\selected
     DeltaX = *this\root\mouse\delta\x + *this\root\selected\x[#__c_3] 
     DeltaY = *this\root\mouse\delta\y + *this\root\selected\y[#__c_3]
     
@@ -315,10 +315,10 @@ Procedure.i UpdateSelector(*this._s_widget)
     
     ;Debug ""+DeltaX +" "+ DeltaY +" "+ Str(MouseX-DeltaX) +" "+ Str(MouseY-DeltaY)
           
-    *this\root\anchor\X = DeltaX
-    *this\root\anchor\Y = DeltaY
-    *this\root\anchor\Width = MouseX-DeltaX
-    *this\root\anchor\Height = MouseY-DeltaY
+    Transform()\X = DeltaX
+    Transform()\Y = DeltaY
+    Transform()\Width = MouseX-DeltaX
+    Transform()\Height = MouseY-DeltaY
     
    
     If GrabDrawingImage And StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
@@ -326,7 +326,7 @@ Procedure.i UpdateSelector(*this._s_widget)
       
       ; draw selector
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      Box(*this\root\anchor\x, *this\root\anchor\y, *this\root\anchor\width, *this\root\anchor\height , $ff000000);*this\root\anchor\color[*this\root\anchor\state]\frame) 
+      Box(Transform()\x, Transform()\y, Transform()\width, Transform()\height , $ff000000);Transform()\color[Transform()\state]\frame) 
       StopDrawing()
     EndIf
   EndIf
@@ -434,51 +434,61 @@ Procedure object_events()
 ;       EndIf
 ;       
       ;Debug  Drag
-      UpdateSelector(Drag)
+   ;   UpdateSelector(Drag)
       
-    Case #PB_EventType_LeftButtonUp
-      *this = a_get(e_widget)
+;     Case #PB_EventType_LeftButtonUp
+;       *this = e_widget
+;       
+;       If *this And *this\mode\transform
+;         If DragText
+;           If Drag
+;             
+;             *this = object_add_new(*this, GetClassType(DragText), GetSelectorX(*this), GetSelectorY(*this), GetSelectorWidth(*this), GetSelectorHeight(*this)) ; DeltaX, DeltaY, MouseX-DeltaX, MouseY-DeltaY)
+;             
+;             FreeSelector(*this)
+;             Drag = 0
+;           Else
+;             
+;             object_add_new(*this, GetClassType(DragText), GetMouseX(*this), GetMouseY(*this))
+;             
+;           EndIf
+;           
+;           DragText = ""
+;         Else
+;           properties_update(id_properties_tree, *this)
+;         EndIf
+;       EndIf
       
-      If *this
-        If DragText
-          If Drag
-            
-            *this = object_add_new(*this, GetClassType(DragText), GetSelectorX(*this), GetSelectorY(*this), GetSelectorWidth(*this), GetSelectorHeight(*this)) ; DeltaX, DeltaY, MouseX-DeltaX, MouseY-DeltaY)
-            
-            FreeSelector(*this)
-            Drag = 0
-          Else
-            
-            object_add_new(*this, GetClassType(DragText), GetMouseX(*this), GetMouseY(*this))
-            
-          EndIf
-          
-          DragText = ""
-        Else
-          properties_update(id_properties_tree, *this)
-        EndIf
+    Case #PB_EventType_Focus
+      *this = e_widget
+      
+      If *this And *this\mode\transform   
+        SetState(id_inspector_tree, GetData(*this))
+        SetGadgetState(listview_debug, GetData(*this))
+        properties_update(id_properties_tree, *this)
       EndIf
       
     Case #PB_EventType_LeftButtonDown
-      *this = a_get(e_widget)
-      
-      If *this   
-        If GetState(id_elements) > 0
-          DragText = GetItemText(id_elements, GetState(id_elements))
-          SetState(id_elements, 0)
-        EndIf
-        
-        If DragText
-          Drag = SetSelector(*This)
-        Else
-          If a_set(*this)
-            Debug "изменено down"+ *this +" "+ GetData(*this)
-            SetState(id_inspector_tree, GetData(*this))
-            SetGadgetState(listview_debug, GetData(*this))
-            properties_update(id_properties_tree, *this)
-          EndIf
-        EndIf
-      EndIf
+    ;;  Debug  GetItemText(id_elements, GetState(id_elements))
+;       *this = e_widget
+;       
+;       If *this And *this\mode\transform   
+;         If GetState(id_elements) > 0
+;           DragText = GetItemText(id_elements, GetState(id_elements))
+;           SetState(id_elements, 0)
+;         EndIf
+;         
+;         If DragText
+;           Drag = SetSelector(*This)
+;         Else
+;           If a_set(*this)
+;             Debug "изменено down"+ *this +" "+ GetData(*this)
+;             SetState(id_inspector_tree, GetData(*this))
+;             SetGadgetState(listview_debug, GetData(*this))
+;             properties_update(id_properties_tree, *this)
+;           EndIf
+;         EndIf
+;       EndIf
       
   EndSelect
   
@@ -625,6 +635,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = -----------
 ; EnableXP

@@ -1,5 +1,75 @@
 ﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
 
+
+; ; window
+; fID = GetGadgetFont(#PB_Default)
+; fnt.LOGFONT   
+; GetObject_(fID,SizeOf(fnt),@fnt)
+; fname$ =  PeekS(@fnt\lfFaceName)
+; fsize = Int(Round((-fnt\lfHeight * 72 / GetDeviceCaps_(GetDC_(0),#LOGPIXELSY)),1))
+; Debug fname$
+; Debug fsize
+Procedure.S FontName( FontID )
+    CompilerSelect #PB_Compiler_OS 
+      CompilerCase #PB_OS_Windows 
+        Protected sysFont.LOGFONT
+        GetObject_(FontID, SizeOf(LOGFONT), @sysFont)
+        ProcedureReturn PeekS(@sysFont\lfFaceName[0])
+        
+      CompilerCase #PB_OS_Linux
+;         Protected gVal.GValue
+;         Protected.s StdFnt
+;         g_value_init_( @gval, #G_TYPE_STRING )
+;         g_object_get_Properties( gtk_settings_get_default_(), "gtk-font-name", @gval )
+;         StdFnt = PeekS( g_value_get_string_( @gval ), -1, #PB_UTF8 )
+;         g_value_unset_( @gval )
+;         ProcedureReturn StdFnt 
+        
+    CompilerEndSelect
+  EndProcedure
+  
+  Procedure FontSize( FontID )
+    CompilerSelect #PB_Compiler_OS 
+      CompilerCase #PB_OS_Windows 
+        Protected sysFont.LOGFONT
+        GetObject_(FontID, SizeOf(LOGFONT), @sysFont)
+        ProcedureReturn MulDiv_(-sysFont\lfHeight, 72, GetDeviceCaps_(GetDC_(#NUL), #LOGPIXELSY))
+        ;ProcedureReturn Int(Round((-sysFont\lfHeight * 72 / GetDeviceCaps_(GetDC_(0),#LOGPIXELSY)),1))
+
+      CompilerCase #PB_OS_Linux
+;         Protected   gVal.GValue
+;         Protected.s StdFnt
+;         g_value_init_(@gval, #G_TYPE_STRING)
+;         g_object_get_Properties( gtk_settings_get_default_(), "gtk-font-name", @gval)
+;         StdFnt= PeekS(g_value_get_string_(@gval), -1, #PB_UTF8)
+;         g_value_unset_(@gval)
+;         ProcedureReturn Val(StringField((StdFnt), 2, " "))
+        
+    CompilerEndSelect
+  EndProcedure
+  
+
+#WinTemp=0
+#Font18R=0
+
+If OpenWindow(#WinTemp, 0, 0, 100, 100, "", #PB_Window_Tool | #PB_Window_Invisible)
+
+         If StartVectorDrawing(WindowVectorOutput(#WinTemp, #PB_Unit_Pixel))
+
+                 Global dgDpiX.d = VectorResolutionX()
+                 Global dgDpiY.d = VectorResolutionY()
+
+                 StopVectorDrawing()
+         EndIf
+
+         CloseWindow(#WinTemp)
+EndIf
+
+Global igFS18.i = ((18 * 100) / dgDpiY)
+LoadFont(#Font18R, "Arial Unicode MS Regular", igFS18, #PB_Font_HighQuality)
+
+
+
 Procedure events_gadgets()
   Debug ""+EventGadget() + " - gadget  event - " +EventType()+ "  item - " +GetGadgetState(EventGadget())
 EndProcedure
@@ -167,7 +237,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   Button(10, 145, 60, 24,"remove")
   SetFont(Button(75, 145, 100, 24,"add (18)"), FontID(5))
   SetFont(Button(180, 145, 100, 24,"add (25)"), FontID(6))
-  Button(285, 145, 60, 24,"clear")
+  SetFont(Button(285, 145, 60, 24,"clear"), FontID(#Font18R))
   
   AddItem (GetWidget(0), -1,"Panel 2")
   SetFont(Button(10, 15, 100, 24,"Button 2_1"), FontID(5))
@@ -186,6 +256,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   CloseList()
   
   SetItemFont(GetWidget(0), 1, 6)
+  SetItemFont(GetWidget(0), 2, #Font18R)
   
   For i = 0 To 1
     Bind(GetWidget(i), @events_widgets())
@@ -209,5 +280,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----
+; Folding = -u--
 ; EnableXP

@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    *this = widget::Button(100, 100, 250, 200, text, #__button_multiline) 
+    *this = widget::Button(100, 100, 250, 200, text, #__button_multiline|#__flag_anchorsgadget) 
     
     Define y = 10
     ; flag
@@ -83,5 +83,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --
+; Folding = 0-
 ; EnableXP
