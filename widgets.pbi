@@ -1085,7 +1085,12 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure   a_events(EventType.i)
+      Static xx, yy
       Protected result, i, index, mouse_x.i, mouse_y.i 
+      Protected mxw, myh
+      Protected.l mx, my, mw, mh
+      Protected.l Px,Py, Grid = 5, IsGrid = Bool(Grid>1)
+      
       
       Macro a_index(_result_, _index_)
         ; From point anchor
@@ -1117,6 +1122,28 @@ CompilerIf Not Defined(widget, #PB_Module)
         
       EndMacro
       
+      Macro a_widget_resize(_result_, _index_)
+        Select _index_
+          Case #__a_moved 
+            If Not Transform()\widget\container
+              If Transform()\widget\cursor <> Transform()\id[_index_]\cursor
+                Transform()\widget\cursor = Transform()\id[_index_]\cursor
+                _set_cursor_(Transform()\widget, Transform()\id[_index_]\cursor)
+              EndIf
+              
+              _result_ = Resize(Transform()\widget, mx, my, #PB_Ignore, #PB_Ignore)
+            EndIf
+            
+          Case 1 : _result_ = Resize(Transform()\widget, mx, #PB_Ignore, mxw, #PB_Ignore)
+          Case 2 : _result_ = Resize(Transform()\widget, #PB_Ignore, my, #PB_Ignore, myh)
+          Case 3 : _result_ = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, mw, #PB_Ignore)
+          Case 4 : _result_ = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, mh)
+          Case 5 : _result_ = Resize(Transform()\widget, mx, my, mxw, myh)
+          Case 6 : _result_ = Resize(Transform()\widget, #PB_Ignore, my, mw, myh)
+          Case 7 : _result_ = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, mw, mh)
+          Case 8 : _result_ = Resize(Transform()\widget, mx, #PB_Ignore, mxw, mh)
+        EndSelect
+      EndMacro
       
       If Transform() 
         mouse_x = Root()\mouse\x
@@ -1127,9 +1154,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           Case #__Event_MouseMove
             If Transform()\id[index]\color\state = #__s_2
               ;{ widget transform
-              Protected.l mx, my, mw, mh
-              Protected.l Px,Py, Grid = 5, IsGrid = Bool(Grid>1)
-              
               If Transform()\widget\parent
                 Px = Transform()\widget\parent\x[#__c_inner]
                 Py = Transform()\widget\parent\y[#__c_inner]
@@ -1141,14 +1165,14 @@ CompilerIf Not Defined(widget, #PB_Module)
               mx = Match(mouse_x - Px + Transform()\pos, Grid)
               my = Match(mouse_y - Py + Transform()\pos, Grid)
               
-              Static xx, yy
               If xx <> mx Or yy <> my
                 xx = mx
                 yy = my
                 
                 If (index = #__a_moved) Or
                    (index = 5 And Transform()\widget\container) ; Form, Container, ScrollArea, Panel
-                  Protected mxw = #PB_Ignore, myh = #PB_Ignore
+                  mxw = #PB_Ignore
+                  myh = #PB_Ignore
                 Else
                   mxw = Transform()\widget\x[#__c_draw] + Transform()\widget\width[#__c_frame] - mx
                   myh = Transform()\widget\y[#__c_draw] + Transform()\widget\height[#__c_frame] - my
@@ -1157,27 +1181,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 mw = mx - Transform()\widget\x[#__c_draw] ; + IsGrid 
                 mh = Match(mouse_y - Transform()\widget\y, Grid) ; + IsGrid 
                 
-                Select index
-                  Case #__a_moved 
-                    If Not Transform()\widget\container
-                      If Transform()\widget\cursor <> Transform()\id[index]\cursor
-                        Transform()\widget\cursor = Transform()\id[index]\cursor
-                        _set_cursor_(Transform()\widget, Transform()\id[index]\cursor)
-                      EndIf
-                      
-                      result = Resize(Transform()\widget, mx, my, #PB_Ignore, #PB_Ignore)
-                    EndIf
-                    
-                  Case 1 : result = Resize(Transform()\widget, mx, #PB_Ignore, mxw, #PB_Ignore)
-                  Case 2 : result = Resize(Transform()\widget, #PB_Ignore, my, #PB_Ignore, myh)
-                  Case 3 : result = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, mw, #PB_Ignore)
-                  Case 4 : result = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, mh)
-                  Case 5 : result = Resize(Transform()\widget, mx, my, mxw, myh)
-                  Case 6 : result = Resize(Transform()\widget, #PB_Ignore, my, mw, myh)
-                  Case 7 : result = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, mw, mh)
-                  Case 8 : result = Resize(Transform()\widget, mx, #PB_Ignore, mxw, mh)
-                EndSelect
-                
+                a_widget_resize(result, index)
               EndIf
               ;}
               
@@ -1227,12 +1231,91 @@ CompilerIf Not Defined(widget, #PB_Module)
               result = 1
             EndIf
             
+          Case #PB_EventType_KeyUp
+            ;             Selected = #False
+            
+          Case #PB_EventType_KeyDown
+            mx = Transform()\widget\x[#__c_draw]
+            my = Transform()\widget\y[#__c_draw]
+            mw = Transform()\widget\width[#__c_frame]
+            mh = Transform()\widget\height[#__c_frame]
+            
+            Select Root()\keyboard\Key[1] 
+              Case #PB_Canvas_Shift
+                Select Root()\keyboard\Key
+                  Case #PB_Shortcut_Left  : mw - Grid : Transform()\index = 3  
+                  Case #PB_Shortcut_Right : mw + Grid : Transform()\index = 3
+                    
+                  Case #PB_Shortcut_Up    : mh - Grid : Transform()\index = 4
+                  Case #PB_Shortcut_Down  : mh + Grid : Transform()\index = 4
+                EndSelect
+                
+                index = Transform()\index   
+                ;                 If xx <> mx Or yy <> my
+                ;                   xx = mx
+                ;                   yy = my
+                
+                a_widget_resize(result, index)
+                ;                 EndIf
+                
+              Case #PB_Canvas_Shift|#PB_Canvas_Control ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control|#PB_Canvas_Command
+                Select Root()\keyboard\Key
+                  Case #PB_Shortcut_Left  : mx - Grid
+                  Case #PB_Shortcut_Right : mx + Grid
+                    
+                  Case #PB_Shortcut_Up    : my - Grid
+                  Case #PB_Shortcut_Down  : my + Grid
+                EndSelect
+                
+                If xx <> mx Or yy <> my
+                  xx = mx
+                  yy = my
+                  
+                  If Transform()\widget\container
+                    Transform()\index = 5
+                    mxw = #PB_Ignore
+                  myh = #PB_Ignore
+                Else
+                    Transform()\index = #__a_moved
+                  EndIf
+                  index = Transform()\index
+                  
+                  a_widget_resize(result, index)
+                EndIf
+                
+              Default
+                Select Root()\keyboard\Key
+;                   Case #PB_Shortcut_Left  : mx - Grid
+;                   Case #PB_Shortcut_Right : mx + Grid
+                    
+                  Case #PB_Shortcut_Up   
+                    ForEach Widget()
+                      If Transform()\widget\index-1 = Widget()\index
+                        result = a_set(Widget())
+                        Break
+                      EndIf
+                    Next
+                    
+                  Case #PB_Shortcut_Down  
+                    ForEach Widget()
+                      If Transform()\widget\index+1 = Widget()\index
+                        result = a_set(Widget())
+                        Break
+                      EndIf
+                    Next
+                    
+                EndSelect
+                  
+            EndSelect
+            
         EndSelect
+        
+        
       EndIf
       
       ProcedureReturn result
     EndProcedure
-    
+
     
     
     ;- 
@@ -15565,5 +15648,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = f---------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
