@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     ; flag
     ;     Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__button_toggle) 
          Button_0 = widget::Button(width+45, y+30*1, 100, 26, "default");, #__button_toggle) 
-    ;     Button_1 = widget::Button(width+45, y+30*2, 100, 26, "multiline", #__button_toggle) 
+         Button_1 = widget::Button(width+45, y+30*2, 100, 26, "multiline", #__flag_anchorsgadget) 
     ;     Button_2 = widget::Button(width+45, y+30*3, 100, 26, "left", #__button_toggle) 
     ;     Button_3 = widget::Button(width+45, y+30*4, 100, 26, "right", #__button_toggle) 
     ;     Button_4 = widget::Button(width+45, y+30*5, 100, 26, "toggle", #__button_toggle) 
