@@ -219,13 +219,18 @@ CompilerIf Not Defined(structures, #PB_Module)
       width.l
       height.l
       
-      hide.b
+      ;hide.b
       cursor.l
       color._s_color[4]
     EndStructure
     
     ;- - _s_transforms
-    Structure _s_transforms Extends _s_coordinate
+    Structure _s_transforms 
+      y.l
+      x.l
+      width.l
+      height.l
+      
       pos.l
       size.l
       index.l

@@ -1,9 +1,9 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
-  UseModule Widget
+  Uselib(Widget)
   EnableExplicit
   
   Define a,i, *g._s_widget
@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetGadgetFont(0, FontID(0))
     
     
-    Open(0, 270, 10, 250, 680,"", #__flag_borderless)
+    Open(0, 270, 10, 250, 680)
     ;Define *w = Editor(0, 0, 0, 0, #__flag_autosize) 
     *g = Editor(0, 0, 250, 680, #__flag_autosize) 
     g=getgadget(root())
@@ -173,6 +173,6 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

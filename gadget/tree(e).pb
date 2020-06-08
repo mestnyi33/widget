@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../widgets.pbi"
 
 EnableExplicit
 Uselib(widget)
@@ -224,8 +224,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__Event_Repaint
         *this = EventData()
         
-        If *this And *this\handle
-          *this\row\count = *this\countitems
+        If *this And *this\adress
+          *this\row\count = *this\count\items
           Events(*this, EventType, MouseX, MouseY)
           
           If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
@@ -256,7 +256,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
     
     ForEach *List()
-      If Not *List()\handle
+      If Not *List()\adress
         DeleteElement(*List())
       EndIf
       
@@ -423,7 +423,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *g\root\canvas\gadget = g_Canvas
       AddElement(*List()) : *List() = *g
     Else
-      Gadget(#PB_GadgetType_Tree, g, 10, 100, 210, 210, #__tree_CheckBoxes|#__tree_MultiSelect)
+      Gadget(#PB_GadgetType_Tree, g, 10, 100, 210, 210, "", #__tree_CheckBoxes);|#__tree_MultiSelect)
       *g = GetGadgetData(g)
     EndIf
     
@@ -454,7 +454,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *g\root\canvas\gadget = g_Canvas
       AddElement(*List()) : *List() = *g
     Else
-      Gadget(#PB_GadgetType_Tree, g, 160, 120, 210, 210, #__tree_AlwaysSelection)
+      Gadget(#PB_GadgetType_Tree, g, 160, 120, 210, 210, "",#__tree_AlwaysSelection)
       *g = GetGadgetData(g)
     EndIf
     
@@ -508,7 +508,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;;Bind(*g, @events_tree_widget())
     
     g = 13
-    *g = Tree(600+70, 100, 210, 210, #__tree_OptionBoxes|#__tree_NoButtons|#__tree_NoLines|#__tree_ClickSelect) ;                                        
+    *g = Tree(600+70, 100, 210, 210, #__tree_OptionBoxes|#__tree_NoButtons|#__tree_NoLines);|#__tree_ClickSelect) ;                                        
     *g\root = AllocateStructure(_s_root)
     *g\root\canvas\gadget = g_Canvas
     AddElement(*List()) : *List() = *g
@@ -556,7 +556,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemImage(*g, 0, 0)
     
     g = 15
-    *g = Tree(890+106, 100, 103, 210, #__tree_BorderLess|#__tree_Collapse)                                         
+    *g = Tree(890+106, 100, 103, 210, #__tree_BorderLess|#__tree_Collapsed)                                         
     *g\root = AllocateStructure(_s_root)
     *g\root\canvas\gadget = g_Canvas
     AddElement(*List()) : *List() = *g
@@ -792,8 +792,6 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   
   ;   End
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 482
-; FirstLine = 303
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = ----------
 ; EnableXP

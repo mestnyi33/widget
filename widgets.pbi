@@ -244,10 +244,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare a_set(*this)
     
     Declare   Child(*this, *parent)
-    Declare.l X(*this, mode.l = #__c_screen)
-    Declare.l Y(*this, mode.l = #__c_screen)
-    Declare.l Width(*this, mode.l = #__c_screen)
-    Declare.l Height(*this, mode.l = #__c_screen)
+    Declare.l X(*this, mode.l = #__c_frame)
+    Declare.l Y(*this, mode.l = #__c_frame)
+    Declare.l Width(*this, mode.l = #__c_frame)
+    Declare.l Height(*this, mode.l = #__c_frame)
     Declare.l GetMouseX(*this, mode.l = #__c_screen)
     Declare.l GetMouseY(*this, mode.l = #__c_screen)
     
@@ -759,7 +759,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndMacro
     
-    Macro a_resize(_this_)
+    Macro a_move(_this_)
       If Transform()\id[1] ; left
         Transform()\id[1]\x = _this_\x
         Transform()\id[1]\y = _this_\y + (_this_\height - Transform()\id[1]\height)/2
@@ -872,6 +872,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ForEach Widget()
               If *this <> Widget() And
                  Not Widget()\hide And
+                 Widget()\mode\transform And
                  Widget()\parent = *this\parent
                 
                 relative_x1 = Widget()\x[#__c_frame]
@@ -957,7 +958,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             Pos = Size - Size / 3 - 1
           EndIf
           *this\bs = Pos + *this\fs
-            
+          
           If Not Transform()
             InitTransform()
             
@@ -1029,13 +1030,20 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         EndIf
         
         
-        ;If *this\repaint
-        If Transform()\widget
-          Post(#PB_EventType_LostFocus, Transform()\widget, Transform()\index)
-        EndIf
-        Post(#PB_EventType_Focus, *this, Transform()\index)
-        ;EndIf
+        ;         ;If *this\repaint
+        ;         If Transform()\widget
+        ;           Post(#PB_EventType_LostFocus, Transform()\widget, Transform()\index)
+        ;         EndIf
+        ;         Post(#PB_EventType_Focus, *this, Transform()\index)
+        ;         ;EndIf
         
+        Post(#PB_EventType_StatusChange, *this, Transform()\index)
+        
+        If Transform()\widget
+          Result = Transform()\widget
+        Else
+          Result =- 1
+        EndIf
         Transform()\widget = *this
         
         If *this\container =- 1
@@ -1077,8 +1085,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Transform()\id[5]\height = Transform()\size
         EndIf
         
-        a_resize(*this)
-        Result = 1
+        a_move(*this)
       EndIf
       
       ProcedureReturn Result
@@ -1122,7 +1129,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
       EndMacro
       
-      Macro a_widget_resize(_result_, _index_)
+      Macro a_resize(_result_, _index_)
         Select _index_
           Case #__a_moved 
             If Not Transform()\widget\container
@@ -1181,7 +1188,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 mw = mx - Transform()\widget\x[#__c_draw] ; + IsGrid 
                 mh = Match(mouse_y - Transform()\widget\y, Grid) ; + IsGrid 
                 
-                a_widget_resize(result, index)
+                a_resize(result, index)
               EndIf
               ;}
               
@@ -1255,7 +1262,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 ;                   xx = mx
                 ;                   yy = my
                 
-                a_widget_resize(result, index)
+                a_resize(result, index)
                 ;                 EndIf
                 
               Case #PB_Canvas_Shift|#PB_Canvas_Control ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control|#PB_Canvas_Command
@@ -1274,19 +1281,19 @@ CompilerIf Not Defined(widget, #PB_Module)
                   If Transform()\widget\container
                     Transform()\index = 5
                     mxw = #PB_Ignore
-                  myh = #PB_Ignore
-                Else
+                    myh = #PB_Ignore
+                  Else
                     Transform()\index = #__a_moved
                   EndIf
                   index = Transform()\index
                   
-                  a_widget_resize(result, index)
+                  a_resize(result, index)
                 EndIf
                 
               Default
                 Select Root()\keyboard\Key
-;                   Case #PB_Shortcut_Left  : mx - Grid
-;                   Case #PB_Shortcut_Right : mx + Grid
+                    ;                   Case #PB_Shortcut_Left  : mx - Grid
+                    ;                   Case #PB_Shortcut_Right : mx + Grid
                     
                   Case #PB_Shortcut_Up   
                     ForEach Widget()
@@ -1305,7 +1312,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                     Next
                     
                 EndSelect
-                  
+                
             EndSelect
             
         EndSelect
@@ -1315,7 +1322,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ProcedureReturn result
     EndProcedure
-
+    
     
     
     ;- 
@@ -7982,7 +7989,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Result
     EndProcedure
     
-    Procedure.l _tree_SetItemState(*this._s_widget, Item.l, State.b)
+    Procedure.l _Tree_SetItemState(*this._s_widget, Item.l, State.b)
       Protected Result.l, Repaint.b, collapsed.b
       
       ;     (*this\mode\check = 2 Or *this\mode\check = 3)
@@ -9978,7 +9985,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;       EndIf
     ;     EndProcedure
     
-    Procedure   Button_Draw(*this._s_widget)
+    Procedure   _Button_Draw(*this._s_widget)
       With *this
         If *this\color\back <> -  1
           If \color\fore <> -  1
@@ -10086,7 +10093,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                       *this\y[#__c_required] = \text\y + Text_X
                       
                     ElseIf \text\rotate = 90
-                      If Not *this\x[#__c_required]
+                      If Not *this\x[#__c_required] And Not \text\align\left
                         *this\x[#__c_required] = \text\x + Position
                       EndIf
                       
@@ -10102,7 +10109,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                     *this\width[#__c_required] = StringWidth
                     
                     If \text\rotate = 0
-                      If Not *this\y[#__c_required]
+                      If Not *this\y[#__c_required] And Not \text\align\top
                         *this\y[#__c_required] = \text\y + Position  
                       EndIf
                       
@@ -10162,6 +10169,266 @@ CompilerIf Not Defined(widget, #PB_Module)
             ; Next
           EndIf
         EndIf
+        
+        If #PB_GadgetType_Button = *this\type
+          ; content area coordinate
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          Box(*this\x[#__c_inner] + *this\x[#__c_required], *this\y[#__c_inner] + *this\y[#__c_required], *this\width[#__c_required], *this\height[#__c_required], $FFFF0000)
+        EndIf
+        
+        If #PB_GadgetType_CheckBox = *this\type
+          ; draw checkbox background
+          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+          RoundBox(*this\button\x, *this\button\y,
+                   *this\button\width, *this\button\height,
+                   *this\button\round, *this\button\round,
+                   *this\button\color\back&$FFFFFF|*this\button\color\alpha<<24)
+          
+          ; draw checkbox state
+          If *this\button\state & #PB_Checkbox_Inbetween = #PB_Checkbox_Inbetween
+            ;         RoundBox( *this\button\x + 2, *this\button\y + 2,
+            ;                   *this\button\width - 4, *this\button\height - 4, 
+            ;                   *this\button\round - 2, *this\button\round - 2, 
+            ;                   *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
+            RoundBox( *this\button\x + 4, *this\button\y + 4,
+                      *this\button\width - 8, *this\button\height - 8, 
+                      0, 0, 
+                      *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
+            
+          ElseIf *this\button\state & #PB_Checkbox_Checked = #PB_Checkbox_Checked
+            Protected i.i
+            For i = 0 To 2
+              LineXY((*this\button\x + 3), (i + *this\button\y + 8),
+                     (*this\button\x + 7), (i + *this\button\y + 9), 
+                     *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24) 
+              
+              LineXY((*this\button\x + 10 + i), (*this\button\y + 3),
+                     (*this\button\x + 6 + i), (*this\button\y + 10),
+                     *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
+            Next
+          EndIf 
+          
+          ; draw checkbox frame
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          RoundBox(*this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\round, *this\button\round, 
+                   *this\button\color\frame[Bool(*this\button\state Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\button\color\alpha<<24)
+        EndIf
+        
+        If #PB_GadgetType_Option = *this\type
+          ; draw circle background
+          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+          RoundBox(*this\button\x, *this\button\y,
+                   *this\button\width, *this\button\width,
+                   *this\button\round, *this\button\round, 
+                   *this\button\color\back&$FFFFFF|*this\button\color\alpha<<24)
+          
+          ; draw circle state
+          If *this\button\state
+            Circle(*this\button\x + *this\button\round, 
+                   *this\button\y + *this\button\round, 2, 
+                   *this\button\color\back[2]&$FFFFFFFF|*this\button\color\alpha<<24)
+          EndIf
+          
+          ; draw circle frame
+          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+          Circle(*this\button\x + *this\button\round, *this\button\y + *this\button\round, *this\button\round, 
+                 *this\button\color\frame[Bool(*this\button\state Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\button\color\alpha<<24)
+        EndIf 
+        
+        ; draw frame
+        If *this\fs
+          DrawingMode(#PB_2DDrawing_Outlined)
+          RoundBox(*this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round,*this\round, *this\color\Frame[Bool(*this\_state & #__s_frame)**this\color\state])
+        EndIf
+      EndWith
+    EndProcedure
+    
+    Procedure   Button_Draw(*this._s_widget)
+      With *this
+        If *this\color\back <> -  1
+          If \color\fore <> -  1
+            DrawingMode(#PB_2DDrawing_Gradient)
+            If \text\invert
+              _box_gradient_(\vertical, \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\color\Back[Bool(*this\_state&#__s_back)*\color\state], \color\Fore[\color\state],\round)
+            Else
+              _box_gradient_(\vertical, \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\color\Fore[\color\state],\color\Back[Bool(*this\_state&#__s_back)*\color\state], \round)
+            EndIf
+          Else
+            DrawingMode(#PB_2DDrawing_Default)
+            RoundBox(\x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame], \round,\round, \color\Back[Bool(*this\_state&#__s_back)*\color\state])
+          EndIf
+        EndIf
+        
+        If \text\string.s
+          DrawingMode(#PB_2DDrawing_Transparent)
+          
+          Protected String.s, String1.s, String2.s, String3.s, String4.s, StringWidth, CountString
+          Protected *str.Character
+          Protected *End.Character
+          Protected len.l, Position.l
+          Protected IT,Text_X,Width,Height
+          Protected TxtHeight = \text\height
+          Protected ColorFont = \color\Front[Bool(*this\_state & #__s_front) * \color\state]
+          
+          If \vertical
+            Width = \height[#__c_inner] - \text\X*2
+            Height = \width[#__c_inner] - \text\y*2
+          Else
+            Width = \width[#__c_inner] - \text\X*2 
+            Height = \height[#__c_inner] - \text\y*2
+          EndIf
+          
+          If \text\multiLine
+            String.s = text_wrap_(\text\string.s + #LF$, Width, \text\multiLine)
+            CountString = CountString(String, #LF$)
+          Else
+            ; String.s = \text\string.s + #LF$
+            String.s = RemoveString(*this\text\string, #LF$) + #LF$
+            CountString = 1
+          EndIf
+          
+          If CountString
+            Static ch, tw
+            *str.Character = @String
+            *End.Character = @String
+            
+            *this\y[#__c_required] = 0
+            *this\x[#__c_required] = 0
+            *this\width[#__c_required] = 0
+            *this\height[#__c_required] = 0
+            
+            If ((\vertical And \text\align\right) Or
+                (Not \vertical And \text\align\bottom))
+              Position = Height - (\text\height*CountString) 
+              
+            ElseIf ((\vertical And Not \text\align\left) Or
+                    (Not \vertical And Not \text\align\top))
+              Position = (Height - (\text\height*CountString)) / 2
+            EndIf
+            
+; ;             ; one type 
+; ;             If \vertical
+; ;               If \text\rotate = 270
+; ;                 *this\x[#__c_required] = \text\x + (Height - (\text\height*CountString)) - Position
+; ;               ElseIf \text\rotate = 90
+; ;                 *this\x[#__c_required] = \text\x + Position
+; ;               EndIf
+; ;             Else
+; ;               If \text\rotate = 0
+; ;                 *this\y[#__c_required] = \text\y + Position
+; ;               ElseIf \text\rotate = 180
+; ;                 *this\y[#__c_required] = \text\y + (Height - (\text\height*CountString)) - Position
+; ;               EndIf
+; ;             EndIf
+            
+            ; For IT = 1 To CountString
+            While *End\c 
+              If *End\c = #LF 
+                len = (*End - *str)>>#PB_Compiler_Unicode
+                String4 = PeekS (*str, len)
+                
+                ;                 If \vertical
+                ;                   If Position + \text\x < \bs : Position + TxtHeight : Continue : EndIf
+                ;                 Else
+                ;                   If Position + \text\y < \bs : Position + TxtHeight : Continue : EndIf
+                ;                 EndIf
+                ;                 
+                ;               String4 = StringField(String, IT, #LF$)
+                StringWidth = TextWidth(RTrim(String4))
+                
+                If ((\vertical And \text\align\bottom) Or (Not \vertical And \text\align\right))
+                  Text_X = (Width - StringWidth)
+                  
+                ElseIf ((\vertical And Not \text\align\top) Or (Not \vertical And Not \text\align\left))
+                  If ch <> CountString
+                    ch = CountString
+                    tw = Width
+                  EndIf
+                  Text_X = (Width - tw)/2 + (tw - StringWidth)/2
+                EndIf
+                
+                
+                If \vertical
+                  *this\width[#__c_required] + TxtHeight
+                  
+                  If *this\height[#__c_required] < StringWidth
+                    *this\height[#__c_required] = StringWidth
+                    
+                    If \text\rotate = 270
+                      *this\y[#__c_required] = \text\y + Text_X
+                    ElseIf \text\rotate = 90
+                      *this\y[#__c_required] = \text\y + (width - Text_X) - *this\height[#__c_required]
+                    EndIf
+                  EndIf
+                Else
+                  *this\height[#__c_required] + TxtHeight
+                  
+                  If *this\width[#__c_required] < StringWidth
+                    *this\width[#__c_required] = StringWidth
+                    
+                    If \text\rotate = 0
+                      *this\x[#__c_required] = \text\X + Text_X
+                    ElseIf \text\rotate = 180
+                      *this\x[#__c_required] = \text\X + (width - Text_X) - *this\width[#__c_required]
+                    EndIf
+                  EndIf
+                EndIf
+                
+                ; under line
+                If *this\mode\lines And *this\type = #__type_hyperlink
+                  Line(*this\x[#__c_inner] + Text_X,
+                       *this\y[#__c_inner] + *this\y[#__c_required] + *this\height[#__c_required] - 2, 
+                       StringWidth, 1, *this\color\front[*this\color\state]&$FFFFFF|*this\color\alpha<<24)
+                EndIf
+                
+                If \vertical
+                  If \text\rotate = 270
+                    DrawRotatedText(\x[#__c_inner] + \text\x + (Height - Position) + Bool(\text\align\left), \y[#__c_inner] + \text\y + Text_X, String4.s, 270, ColorFont)
+                  EndIf
+                  If \text\rotate = 90
+                    DrawRotatedText(\x[#__c_inner] + \text\y + Position - 1, \y[#__c_inner] + \text\X + (width - Text_X), String4.s, 90, ColorFont)
+                  EndIf
+                Else
+                  If \text\rotate = 0
+                    DrawRotatedText(\x[#__c_inner] + \text\X + Text_X, \y[#__c_inner] + \text\y + Position - 1, String4.s, 0, ColorFont)
+                  EndIf
+                  If \text\rotate = 180
+                    DrawRotatedText(\x[#__c_inner] + \text\X + (Width - Text_X), \y[#__c_inner] + \text\y + (Height - Position) + Bool(Not \text\align\top), String4.s, 180, ColorFont)
+                  EndIf
+                EndIf
+                
+                Position + TxtHeight 
+                
+                ;                 If \vertical
+                ;                   If Position - \text\x > (Height - TxtHeight) : Break : EndIf
+                ;                 Else
+                ;                   If Position - \text\y > (Height - TxtHeight) : Break : EndIf
+                ;                 EndIf
+                
+                *str = *End + #__sOC 
+              EndIf 
+              
+              *End + #__sOC 
+            Wend
+            ; Next
+            
+            If \vertical
+              If \text\rotate = 270
+                *this\x[#__c_required] = \text\x + (Height - Position)
+              ElseIf \text\rotate = 90
+                *this\x[#__c_required] = \text\x + (Position - *this\width[#__c_required])
+              EndIf
+            Else
+              If \text\rotate = 0
+                *this\y[#__c_required] = \text\y + (Position - *this\height[#__c_required])
+              ElseIf \text\rotate = 180
+                *this\y[#__c_required] = \text\y + (Height - Position)
+              EndIf
+            EndIf
+            
+          EndIf
+        EndIf
+        
         
         If #PB_GadgetType_Button = *this\type
           ; content area coordinate
@@ -11019,26 +11286,26 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         ; anchors widgets
         If *this And (*this\root And Transform() And Transform()\widget = *this)
-          a_resize(*this)
+          a_move(*this)
         EndIf
         
         ProcedureReturn result
       EndWith
     EndProcedure
     
-    Procedure.l X(*this._s_widget, mode.l = #__c_screen)
+    Procedure.l X(*this._s_widget, mode.l = #__c_frame)
       ProcedureReturn (Bool(Not *this\hide) * *this\x[mode])
     EndProcedure
     
-    Procedure.l Y(*this._s_widget, mode.l = #__c_screen)
+    Procedure.l Y(*this._s_widget, mode.l = #__c_frame)
       ProcedureReturn (Bool(Not *this\hide) * *this\y[mode])
     EndProcedure
     
-    Procedure.l Width(*this._s_widget, mode.l = #__c_screen)
+    Procedure.l Width(*this._s_widget, mode.l = #__c_frame)
       ProcedureReturn (Bool(Not *this\hide) * *this\width[mode])
     EndProcedure
     
-    Procedure.l Height(*this._s_widget, mode.l = #__c_screen)
+    Procedure.l Height(*this._s_widget, mode.l = #__c_frame)
       ProcedureReturn (Bool(Not *this\hide) * *this\height[mode])
     EndProcedure
     
@@ -11503,7 +11770,14 @@ CompilerIf Not Defined(widget, #PB_Module)
           ElseIf state
             *this\_state | #__s_toggled
             *this\color\state = #__s_2 
-            
+          EndIf
+          
+          Post(#PB_EventType_Change, *this)
+          result = 1
+        Else
+          If *this\color\state <> #__s_1
+            *this\color\state = #__s_1
+            result = 1
           EndIf
         EndIf
       EndIf
@@ -13259,6 +13533,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           ;         *this\bar\button[#__b_2]\color = _get_colors_()
           ;         *this\bar\button[#__b_3]\color = _get_colors_()
           
+          ;;Debug ""+*param_1 +" "+ IsGadget(*param_1)
+          
           *this\container =- *this\type 
           *this\gadget[#__split_1] = *param_1
           *this\gadget[#__split_2] = *param_2
@@ -13496,7 +13772,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           \interact = 1
           ;\round = round
           
-          \text\change = 1 ; set auto size items
+          ;\text\change = 1 ; set auto size items
           \text\height = 18 
           
           \text\padding\left = 4
@@ -13714,10 +13990,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If *this\vertical
-          *this\text\X = *this\fs
-          *this\text\y = *this\fs
+          *this\text\X = *this\fs 
+          *this\text\y = *this\fs + 1
         Else
-          *this\text\X = *this\fs
+          *this\text\X = *this\fs + 1
           *this\text\y = *this\fs
         EndIf
         
@@ -13770,11 +14046,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; EndIf
         
         If *this\vertical
-          *this\text\X = *this\fs + 4
-          *this\text\y = *this\fs + 4
+          *this\text\X = 4
+          *this\text\y = 4
         Else
-          *this\text\X = *this\fs + 4
-          *this\text\y = *this\fs + 4
+          *this\text\X = 4
+          *this\text\y = 4
         EndIf
         
         SetText(*This, Text)
@@ -14241,34 +14517,40 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\root\canvas\repaint = #False
         EndIf
         
-        ; 
-        If *this\root\repaint = #True
-          FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F0)
+        If _is_root_(*this)
+          ; 
+          If *this\root\repaint = #True
+            FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F0)
+          EndIf
+          
+          ; Protected count
+          PushListPosition(Widget())
+          ForEach Widget()
+            If (Not Widget()\hide And Widget()\draw) And
+               Widget()\root\canvas\gadget = *this\root\canvas\gadget
+              
+              If (Widget()\width[#__c_clip] > 0 And Widget()\height[#__c_clip] > 0)
+                CompilerIf Not (#PB_Compiler_OS = #PB_OS_MacOS And Not Defined(fixme, #PB_Module))
+                  ClipOutput( Widget()\x[#__c_clip], 
+                              Widget()\y[#__c_clip], 
+                              Widget()\width[#__c_clip], 
+                              Widget()\height[#__c_clip])
+                CompilerEndIf
+                
+                ; Debug "" + count  + " " +  Widget()\width[#__c_clip] : count + 1
+                Draw(Widget())
+              EndIf
+            EndIf
+          Next
+          PopListPosition(Widget())
+        Else
+          Draw(Widget())
         EndIf
         
-        ; Protected count
-        PushListPosition(Widget())
-        ForEach Widget()
-          If (Not Widget()\hide And Widget()\draw) And
-             Widget()\root\canvas\gadget = *this\root\canvas\gadget
-            
-            If (Widget()\width[#__c_clip] > 0 And Widget()\height[#__c_clip] > 0)
-              CompilerIf Not (#PB_Compiler_OS = #PB_OS_MacOS And Not Defined(fixme, #PB_Module))
-                ClipOutput( Widget()\x[#__c_clip], 
-                            Widget()\y[#__c_clip], 
-                            Widget()\width[#__c_clip], 
-                            Widget()\height[#__c_clip])
-              CompilerEndIf
-              
-              ; Debug "" + count  + " " +  Widget()\width[#__c_clip] : count + 1
-              Draw(Widget())
-            EndIf
-          EndIf
-        Next
-        PopListPosition(Widget())
-        
         ; Draw anchors 
-        a_draw(Transform()\widget)
+        If Transform()
+          a_draw(Transform()\widget)
+        EndIf
         
         ; ; ;         ; selector
         ; ; ;         If Transform() 
@@ -14568,21 +14850,18 @@ CompilerIf Not Defined(widget, #PB_Module)
               Else
                 SetState(*this, #True)
               EndIf
+              
+              Post(#PB_EventType_LeftClick, *this) 
             EndIf
         EndSelect
       EndIf
       
       If *this\type = #PB_GadgetType_Button
-        If eventtype = #PB_EventType_LeftButtonUp
+        If eventtype = #PB_EventType_LeftButtonUp : Repaint = #True
           If *this\_state & #__s_entered
-            If *this\_flag & #__button_toggle
-              SetState(*this, Bool(Bool(*this\_state & #__s_toggled) ! 1))
-            Else
-              *this\color\state = #__s_1
-            EndIf
+            SetState(*this, Bool(Bool(*this\_state & #__s_toggled) ! 1))
             
             Post(#PB_EventType_LeftClick, *this) 
-            Repaint = 1
           EndIf
         EndIf
         
@@ -15247,6 +15526,46 @@ CompilerIf Not Defined(widget, #PB_Module)
       ; Root()\container = IsGadget(Root()\canvas\gadget)
       
       Select Type
+        Case #PB_GadgetType_Splitter
+          *this = Splitter(0, 0, Width, Height, *param1, *param2, Flag | flags | #__flag_autosize)
+          
+        Case #PB_GadgetType_Text
+          If Flag & #PB_Text_Border = #PB_Text_Border
+            Flag &~ #PB_Text_Border
+            flags | #__text_border
+          EndIf
+          If Flag & #PB_Text_Center = #PB_Text_Center
+            Flag &~ #PB_Text_Center
+            flags | #__text_center
+          EndIf
+          If Flag & #PB_Text_Right = #PB_Text_Right
+            Flag &~ #PB_Text_Right
+            flags | #__text_right
+          EndIf
+          *this = Text(0, 0, Width, Height, Text, Flag | flags | #__flag_autosize)
+          
+        Case #PB_GadgetType_HyperLink
+          *this = HyperLink(0, 0, Width, Height, Text, *param1, Flag | flags | #__flag_autosize)
+          
+        Case #PB_GadgetType_Option
+          *this = Option(0, 0, Width, Height, Text, Flag | flags | #__flag_autosize)
+          
+        Case #PB_GadgetType_CheckBox
+          ;           If Flag & #PB_CheckBox_ThreeState = #PB_CheckBox_ThreeState
+          ;             Flag &~ #PB_CheckBox_ThreeState
+          ;             flags | #__flag_ThreeState
+          ;           EndIf
+          If Flag & #PB_CheckBox_Right = #PB_CheckBox_Right
+            Flag &~ #PB_CheckBox_Right
+            flags | #__text_right
+          EndIf
+          If Flag & #PB_CheckBox_Center = #PB_CheckBox_Center
+            Flag &~ #PB_CheckBox_Center
+            flags | #__text_center
+          EndIf
+          
+          *this = Checkbox(0, 0, Width, Height, Text, Flag | flags | #__flag_autosize)
+          
         Case #PB_GadgetType_Button
           If Flag & #PB_Button_Left = #PB_Button_Left
             Flag &~ #PB_Button_Left
@@ -15648,5 +15967,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = f---------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

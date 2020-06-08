@@ -6,80 +6,136 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  Global *this._s_widget, *tList, *vList, *pList
+  Global tList, vList, pList
   
-  Define vert=100, horiz=100, width=400, height=400
+  Enumeration 
+;   #_pi_group_0 
+;   #_pi_id
+  #_pi_class
+  #_pi_text
+  
+;   #_pi_group_1 
+  #_pi_x
+  #_pi_y
+  #_pi_width
+  #_pi_height
+  
+;   #_pi_group_2 
+;   #_pi_disable
+;   #_pi_hide
+EndEnumeration
+
+Define vert=100, horiz=100, width=400, height=400
   
   Procedure events_widgets()
     Static text.s
     
-    Select *event\widget
-      Case Button_0
-        Select *event\type
-          Case #PB_EventType_LeftButtonDown
-            text.s = "button"
-        EndSelect
-      Default
+    If *event\widget\mode\transform
         
-        Select *event\type
-          Case #PB_EventType_LeftButtonDown
-            
-            
-          Case #PB_EventType_Focus
-            Debug "focus"
-            
-          Case #PB_EventType_LostFocus
-            Debug "lostfocus"
-            
-          Case #PB_EventType_LeftClick
-            
-            ; Post(#__event_repaint, #PB_All)
-        EndSelect
-    EndSelect
+          Select *event\type
+            Case #PB_EventType_LeftButtonDown
+              
+              
+            Case #PB_EventType_StatusChange
+              Debug "status - id " + GetData(*event\widget)
+              
+              SetItemState(*tlist, GetData(*event\widget), #PB_Tree_Selected)
+              SetGadgetItemState(tlist, GetData(*event\widget), #PB_Tree_Selected)
+      
+            Case #PB_EventType_Focus
+              Debug "focus"
+              
+            Case #PB_EventType_LostFocus
+              Debug "lostfocus"
+              
+            Case #PB_EventType_LeftClick
+              
+              ; Post(#__event_repaint, #PB_All)
+          EndSelect
+        
+    Else
+      Select *event\widget
+        Case *tList
+          Select *event\type
+            Case #PB_EventType_Change
+              text.s = "button"
+          EndSelect
+      EndSelect
+    EndIf
     
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
-    HideGadget(gadget,1)
+  If Open(OpenWindow(#PB_Any, 0, 0, width+180+170, height+45, "transform", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 0, 0, width+180, height+45)
     ;Root()\mode\transform = 1
     ;a_add(Root())
     
-    ;*this = widget::Button(100, 100, 250, 200, text, #__button_multiline|#__flag_anchorsgadget) 
     widget::Button(10, 10, 150, 100, text, #__button_multiline|#__flag_anchorsgadget) 
+    
     *this = widget::Window(100, 100, 250, 200, text,#__window_nogadgets|#__flag_anchorsgadget) 
     ;*this = widget::ScrollArea(100, 100, 250, 200, 300,300,1,#__window_nogadgets|#__flag_anchorsgadget) 
     ;*this = widget::Container(100, 100, 250, 200, #__flag_anchorsgadget) 
+    
     OpenList(*this)
     widget::Button(10, 10, 150, 100, text, #__button_multiline) 
+    
     widget::Container(100, 100, 150, 100) 
     ;widget::Panel(100, 100, 150, 100,#__flag_anchorsgadget) : AddItem(widget(), -1, "Panel")
     ;widget::ScrollArea(100, 100, 250, 200, 300,300,1, #__flag_anchorsgadget) 
-    widget::Button(0, 0, 100, 50, "button", #__button_multiline) 
+    
+    *this = widget::Button(10, 10, 100, 50, "button", #__button_multiline) 
     CloseList()
     CloseList()
     
-         Define y = 10
-    ;     ; flag
-    ;     Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__button_toggle) 
-         Button_0 = widget::Button(width+45, y+30*1, 100, 26, "default");, #__button_toggle) 
-         Button_1 = widget::Button(width+45, y+30*2, 100, 26, "multiline", #__flag_anchorsgadget) 
-    ;     Button_2 = widget::Button(width+45, y+30*3, 100, 26, "left", #__button_toggle) 
-    ;     Button_3 = widget::Button(width+45, y+30*4, 100, 26, "right", #__button_toggle) 
-    ;     Button_4 = widget::Button(width+45, y+30*5, 100, 26, "toggle", #__button_toggle) 
+    Define item
+    Define y = 10
+    *tList = Tree(width+20, y, 150, 145-y)
+    
+    AddItem(*tlist, -1, "Root", -1, 0)
+      
+    ForEach widget()
+      If widget()\mode\transform
+        item = CountItems(*tlist) ; - 1
+        AddItem(*tlist, -1, widget()\class, -1, widget()\level + 1)
+        SetItemState(*tlist, item, #PB_Tree_Selected)
+        SetItemData(*tlist, item, Widget())
+        SetData(Widget(), item)
+      EndIf
+    Next
+    ;hide(*tList, 1)
+    
+    tList = TreeGadget(-1, width+190, y, 150, 145-y)
+    
+    AddGadgetItem(tList, -1, "Root")
+      
+    ForEach widget()
+      If widget()\mode\transform
+        item = CountGadgetItems(tList) ; - 1
+        AddGadgetItem(tList, -1, widget()\class, 0, widget()\level + 1)
+        SetGadgetItemData(tList, item, Widget())
+        SetData(Widget(), item)
+      EndIf
+    Next
+    
+    Define i : For i=0 To CountGadgetItems(tList) : SetGadgetItemState(tList, i, #PB_Tree_Expanded) : Next
+    SetGadgetItemState(tList, item, #PB_Tree_Selected)
+    
+    
+    *vlist = ListView(width+20, y+145*1, 150, 145-y)
+    AddItem(*vlist, -1, "Button")
+    AddItem(*vlist, -1, "Window")
+    AddItem(*vlist, -1, "Container")
+    
+    *plist = Tree_Properties(width+20, y+145*2, 150, 145-y)
+    AddItem(*plist, #_pi_class, "class:"+Chr(10)+GetClass(*this)+"_"+GetCount(*this), #PB_GadgetType_String, 1)
+    AddItem(*plist, #_pi_text, "text:"+Chr(10)+GetText(*this), #PB_GadgetType_String, 1)
+    AddItem(*plist, #_pi_x, "x:"+Chr(10)+Str(X(*this)), #PB_GadgetType_Spin, 1)
+    AddItem(*plist, #_pi_y, "y:"+Chr(10)+Str(Y(*this)), #PB_GadgetType_Spin, 1)
+    AddItem(*plist, #_pi_width, "width:"+Chr(10)+Str(Width(*this)), #PB_GadgetType_Spin, 1)
+    AddItem(*plist, #_pi_height, "height:"+Chr(10)+Str(Height(*this)), #PB_GadgetType_Spin, 1)
+    
     Bind(#PB_All, @events_widgets())
     
-    ; set button toggled state
-    ;SetState(Button_1, Flag(*this, #__button_multiline))
-    
-    ;     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-    ;     Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
-    ;     Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-    ;     Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-    ;     SetState(Splitter_3, width-40-horiz)
-    ;     SetState(Splitter_2, height-40-vert)
-    ;     SetState(Splitter_0, vert)
-    ;     SetState(Splitter_1, horiz)
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf

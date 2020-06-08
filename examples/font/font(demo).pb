@@ -68,7 +68,7 @@ EndIf
 Global igFS18.i = ((18 * 100) / dgDpiY)
 LoadFont(#Font18R, "Arial Unicode MS Regular", igFS18, #PB_Font_HighQuality)
 
-
+Global *b._s_widget
 
 Procedure events_gadgets()
   Debug ""+EventGadget() + " - gadget  event - " +EventType()+ "  item - " +GetGadgetState(EventGadget())
@@ -135,6 +135,9 @@ Procedure events_wbuttons()
          ; SetState(GetWidget(1), 1)
       EndSelect
   EndSelect
+ 
+  Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
+  
 EndProcedure
  
 ; Shows using of several panels...
@@ -245,13 +248,28 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   
   AddItem (GetWidget(0), -1,"Panel 3")
   Button(10, 15, 100, 24,"Button 3_1")
-  Define *b._s_widget = Button(10, 15+30, 100, 24,"Auto resize button then change font", #__Button_MultiLine)
+  *b = Button(10, 15+30, 100, 24,"Auto resize button then change font", #__Button_MultiLine)
   SetFont(*b, FontID(5))
   
 ;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
+; set auto font size
+  Define iw = 2 + (*b\bs+*b\text\x)*4 
+  
+  ReDraw(*b)
   Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
-  ; set auto font size
-  Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+12, *b\height[#__c_required]+12)
+  Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
+  ReDraw(*b)
+  Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
+  Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
+  ReDraw(*b)
+  Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
+  Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
+  ReDraw(*b)
+  Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
+  Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
+  ReDraw(*b)
+  Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
+  Resize(*b, #PB_Ignore, #PB_Ignore, *b\width[#__c_required]+iw, *b\height[#__c_required])
   
   CloseList()
   
@@ -280,5 +298,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -u--
+; Folding = ----
 ; EnableXP

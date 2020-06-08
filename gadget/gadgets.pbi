@@ -629,11 +629,27 @@ DeclareModule Gadget
       BindGadgetEvent_(_gadget_, _callback_, _eventtype_)
     EndMacro
     
+    ;- GADGETs
     Macro TreeGadget(_gadget_, X,Y,Width,Height, Flags=0)
       widget::Gadget(#PB_GadgetType_Tree, _gadget_, X,Y,Width,Height, "", 0,0,0, Flags)
     EndMacro
     Macro ButtonGadget(_gadget_, X,Y,Width,Height, text, Flags=0)
       widget::Gadget(#PB_GadgetType_Button, _gadget_, X,Y,Width,Height, text, 0,0,0, Flags)
+    EndMacro
+    Macro TextGadget(_gadget_, X,Y,Width,Height, text, Flags=0)
+      widget::Gadget(#PB_GadgetType_Text, _gadget_, X,Y,Width,Height, text, 0,0,0, Flags)
+    EndMacro
+    Macro CheckBoxGadget(_gadget_, X,Y,Width,Height, text, Flags=0)
+      widget::Gadget(#PB_GadgetType_CheckBox, _gadget_, X,Y,Width,Height, text, 0,0,0, Flags)
+    EndMacro
+    Macro OptionGadget(_gadget_, X,Y,Width,Height, text, Flags=0)
+      widget::Gadget(#PB_GadgetType_Option, _gadget_, X,Y,Width,Height, text, 0,0,0, Flags)
+    EndMacro
+    Macro HyperLinkGadget(_gadget_, X,Y,Width,Height, text, Color, Flags=0)
+      widget::Gadget(#PB_GadgetType_HyperLink, _gadget_, X,Y,Width,Height, text, Color,0,0, Flags)
+    EndMacro
+    Macro SplitterGadget(_gadget_, X,Y,Width,Height, gadget1, gadget2, Flags=0)
+      widget::Gadget(#PB_GadgetType_Splitter, _gadget_, X,Y,Width,Height, "", gadget1,gadget2,0, Flags)
     EndMacro
     
     Declare SetGadgetAttribute_(Gadget, Attribute, Value)
@@ -831,12 +847,12 @@ DeclareModule Gadget
     Procedure SetGadgetColor_(Gadget, ColorType, Color) ; no
       If PB(IsGadget)(Gadget)
         If PB(GadgetType)(Gadget) = #PB_GadgetType_Canvas
-          ;         ProcedureReturn widget::SetColor(PB(GetGadgetData)(Gadget), ColorType, Color)
+          ProcedureReturn widget::SetColor(PB(GetGadgetData)(Gadget), ColorType, Color)
         Else
           ProcedureReturn PB(SetGadgetColor)(Gadget, ColorType, Color)
         EndIf
       Else
-        ;       ProcedureReturn widget::SetColor(Gadget, ColorType, Color)
+        ProcedureReturn widget::SetColor(Gadget, ColorType, Color)
       EndIf
     EndProcedure
     
@@ -1293,6 +1309,6 @@ DeclareModule Gadget
     EndIf
   CompilerEndIf
   
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --+--------------f----------------------
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = --+--------------------------------------
 ; EnableXP
