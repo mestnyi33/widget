@@ -11,8 +11,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *Button_1._S_widget
   
   UsePNGImageDecoder()
-  LoadFont(0, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4)
+  #Font18R = 18
+  Global fs = 9
+  Global igFS18.i = fs + Bool(#PB_Compiler_OS=#PB_OS_MacOS)*(fs-7)
+  Debug igFS18
+  LoadFont(#Font18R, "Arial Unicode MS Regular", igFS18);, #PB_Font_HighQuality)
+  ;LoadFont(#Font18R, "Arial", 18-Bool(#PB_Compiler_OS=#PB_OS_Windows)*4)
   
+  fs = 12
+  LoadFont(0, "Arial", fs + Bool(#PB_Compiler_OS=#PB_OS_MacOS)*(fs-8))
+    
   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
     End
   EndIf
@@ -41,7 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(OpenWindow(#PB_Any, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     Global main = GetWindow(Root())
-    
+    SetGadgetFont(#PB_Any, FontID(#Font18R))
+  
     ButtonGadget(0, 10, 10, 200, 20, "Standard button")
     ButtonGadget(1, 10, 40, 200, 20, "Left button", #PB_Button_Left)
     ButtonGadget(2, 10, 70, 200, 20, "Right button", #PB_Button_Right)
@@ -72,11 +81,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Global c2
-  LoadFont(0, "Courier", 14)
+  LoadFont(10, "Arial", 16 + Bool(#PB_Compiler_OS = #PB_OS_MacOS) * 2)
   
-  ;   Procedure ResizeCallBack()
-  ;     ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
-  ;   EndProcedure
+;     Procedure ResizeCallBack()
+;       ResizeGadget(1, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-20, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-20)
+;     EndProcedure
   
   Procedure ResizeCallBack()
     Protected Width = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate) 
@@ -94,13 +103,13 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *Button_0 = Button(270, 5,  60, 120, "Button (Vertical)", #__button_multiline|#__button_vertical);|#__button_inverted)
     SetColor(*Button_0, #__Color_Front, $D56F1A)
-    SetFont(*Button_0, FontID(0))
+    SetFont(*Button_0, FontID(10))
     
     *Button_1 = Button(5, 42, 250,  60, "Button (Horisontal)", #__button_multiline,-1)
     SetColor(*Button_1, #__Color_fore, $0000FF)
     SetColor(*Button_1, #__Color_Back, $00FF00)
     SetColor(*Button_1, #__Color_Front, $FFFFFF) ; $4919D5)
-    SetFont(*Button_1, FontID(0))
+    SetFont(*Button_1, FontID(10))
     
     ResizeWindow(11, #PB_Ignore, WindowY(main)+WindowHeight(main, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
     
@@ -110,8 +119,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ;     BindGadgetEvent(g, @CallBacks())
     ;     PostEvent(#PB_Event_Gadget, 11,11, #PB_EventType_Resize)
     ;     
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
+  
+  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --

@@ -435,6 +435,9 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_widget
     Structure _s_widget 
+      *_drawing ; drawing_mode
+      *_drawing_alpha
+      
       ; side.l[4] ; sidebar сторона 
                         ;       *v._s_widget      ; vertical scrollbar
                         ;       *h._s_widget      ; horizontal scrollbar

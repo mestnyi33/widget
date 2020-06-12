@@ -15,54 +15,94 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Function
     EndMacro
     
+    Macro PB_(Function)
+      ;Function#_
+      mac_#Function
+    EndMacro
+    
     Macro TextHeight(Text)
-      TextHeight_(Text)
+      mac_TextHeight(Text)
     EndMacro
     
     Macro TextWidth(Text)
-      TextWidth_(Text)
+      mac_TextWidth(Text)
     EndMacro
     
     Macro DrawingMode(_mode_)
-      DrawingMode_(_mode_)
+      mac_DrawingMode(_mode_)
       PB(DrawingMode)(_mode_) 
     EndMacro
     
     Macro DrawingFont(FontID)
-      DrawingFont_(FontID)
+      mac_DrawingFont_(FontID)
       ; PB(DrawingFont)(FontID)
     EndMacro
     
     Macro ClipOutput(x, y, width, height)
       PB(ClipOutput)(x, y, width, height)
-      ClipOutput_(x, y, width, height)
+      PB_(ClipOutput)(x, y, width, height)
     EndMacro
     
     Macro UnclipOutput()
       PB(UnclipOutput)()
-      ClipOutput_(0, 0, OutputWidth(), OutputHeight())
+      PB_(ClipOutput)(0, 0, OutputWidth(), OutputHeight())
     EndMacro
     
     Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
-      DrawRotatedText_(x, y, Text, 0, FrontColor, BackColor)
+      mac_DrawRotatedText(x, y, Text, 0, FrontColor, BackColor)
     EndMacro
     
     Macro DrawRotatedText(x, y, Text, Angle, FrontColor=$ffffff, BackColor=0)
-      DrawRotatedText_(x, y, Text, Angle, FrontColor, BackColor)
+      mac_DrawRotatedText(x, y, Text, Angle, FrontColor, BackColor)
     EndMacro
     
-    Declare.i TextHeight_(Text.s)
-    Declare.i TextWidth_(Text.s)
-    Declare.i DrawingMode_(Mode.i)
-    Declare.i DrawingFont_(FontID.i)
-    Declare.i DrawRotatedText_(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
-    Declare.i ClipOutput_(x.i, y.i, width.i, height.i)
+    
+    Declare.i mac_GetGadgetFont(Gadget.i)
+    Declare.i mac_FreeFont(Font.i)
+    Declare.i mac_TextHeight(Text.s)
+    Declare.i mac_TextWidth(Text.s)
+    Declare.i mac_DrawingMode(Mode.i)
+    Declare.i mac_DrawingFont_(FontID.i)
+    Declare.i mac_DrawRotatedText(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
+    Declare.i mac_ClipOutput(x.i, y.i, width.i, height.i)
   CompilerEndIf
 EndDeclareModule 
 
 Module fixme
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-    Procedure.i TextHeight_(Text.s)
+    Procedure.i mac_FreeFont(Font.i)
+      If FontID(Font) = PB(GetGadgetFont)(#PB_Default)
+        SetGadgetFont(#PB_Default, #PB_Default)
+      EndIf
+      
+      ProcedureReturn PB(FreeFont)(Font)
+    EndProcedure
+
+;     Procedure.i mac_SetGadgetFont(Gadget.i, FontID.i)
+;       If Gadget =- 1 And FontID =- 1
+;         Debug #PB_Compiler_Procedure
+;         Protected fs.CGFloat 
+;         CocoaMessage(@fs, 0, "NSFont systemFontSize") : fs - 1
+;         FontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @fs) 
+;       EndIf
+;       
+;       ProcedureReturn PB(SetGadgetFont)(Gadget, FontID)
+;     EndProcedure
+    
+    Procedure.i mac_GetGadgetFont(Gadget.i)
+      Protected FontID = PB(GetGadgetFont)(Gadget)
+      
+      If Gadget =- 1 And Not FontID
+        Debug #PB_Compiler_Procedure
+        Protected fs.CGFloat 
+        CocoaMessage(@fs, 0, "NSFont systemFontSize") : fs - 1
+        FontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @fs) 
+      EndIf
+      
+      ProcedureReturn FontID
+    EndProcedure
+    
+    Procedure.i mac_TextHeight(Text.s)
       If *drawing
         If Not *drawing\size\height
           *drawing\size\height = PB(TextHeight)("A")
@@ -71,7 +111,7 @@ Module fixme
       EndIf
     EndProcedure
     
-    Procedure.i TextWidth_(Text.s)
+    Procedure.i mac_TextWidth(Text.s)
       If Text And *drawing And *drawing\fontID
         Protected NSString, Attributes, NSSize.NSSize
         NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
@@ -81,7 +121,7 @@ Module fixme
       EndIf
     EndProcedure
     
-    Procedure.i DrawingFont_(FontID.i)
+    Procedure.i mac_DrawingFont_(FontID.i)
     ;  If FontID
       If Not *drawing
         *drawing = AllocateStructure(_S_drawing)
@@ -94,14 +134,14 @@ Module fixme
    ; EndIf
   EndProcedure
     
-    Procedure.i DrawingMode_(Mode.i)
+    Procedure.i mac_DrawingMode(Mode.i)
       If Not *drawing
         *drawing = AllocateStructure(_S_drawing)
       EndIf
       *drawing\mode = Mode
     EndProcedure
     
-    Procedure.i DrawRotatedText_(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
+    Procedure.i mac_DrawRotatedText(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
       Protected.CGFloat r,g,b,a
       Protected.i Transform, NSString, Attributes, Color
       Protected Size.NSSize, Point.NSPoint
@@ -146,7 +186,7 @@ Module fixme
       EndIf
     EndProcedure
     
-    Procedure.i ClipOutput_(x.i, y.i, width.i, height.i)
+    Procedure.i mac_ClipOutput(x.i, y.i, width.i, height.i)
       Protected Rect.NSRect
       Rect\origin\x = x 
       Rect\origin\y = OutputHeight()-height-y
@@ -215,24 +255,24 @@ UseModule fixme
 ; ;     
 ; ;     Macro ClipOutput(x, y, width, height)
 ; ;       PB(ClipOutput)(x, y, width, height)
-; ;       ClipOutput_(x, y, width, height)
+; ;       mac_ClipOutput(x, y, width, height)
 ; ;     EndMacro
 ; ;     
 ; ;     Macro UnclipOutput()
 ; ;       PB(UnclipOutput)()
-; ;       ClipOutput_(0, 0, OutputWidth(), OutputHeight())
+; ;       mac_ClipOutput(0, 0, OutputWidth(), OutputHeight())
 ; ;     EndMacro
 ; ;     
 ; ;     Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
-; ;       DrawRotatedText_(x, y, Text, 0, FrontColor, BackColor)
+; ;       mac_DrawRotatedText(x, y, Text, 0, FrontColor, BackColor)
 ; ;     EndMacro
 ; ;     
 ; ;     Macro DrawRotatedText(x, y, Text, Angle, FrontColor=$ffffff, BackColor=0)
-; ;       DrawRotatedText_(x, y, Text, Angle, FrontColor, BackColor)
+; ;       mac_DrawRotatedText(x, y, Text, Angle, FrontColor, BackColor)
 ; ;     EndMacro
 ; ;     
-; ;     Declare.i DrawRotatedText_(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
-; ;     Declare.i ClipOutput_(x.i, y.i, width.i, height.i)
+; ;     Declare.i mac_DrawRotatedText(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
+; ;     Declare.i mac_ClipOutput(x.i, y.i, width.i, height.i)
 ; ;     Declare.i OSX_NSColorToRGBA(NSColor)
 ; ;     Declare.i OSX_NSColorToRGB(NSColor)
 ; ;  
@@ -241,7 +281,7 @@ UseModule fixme
 ; ; Module fixme
 ; ;    
 ; ;     
-; ;     Procedure.i DrawRotatedText_(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
+; ;     Procedure.i mac_DrawRotatedText(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
 ; ;       Protected.CGFloat r,g,b,a
 ; ;       Protected.i Transform, NSString, Attributes, Color
 ; ;       Protected Size.NSSize, Point.NSPoint
@@ -280,7 +320,7 @@ UseModule fixme
 ; ;       EndIf
 ; ;     EndProcedure
 ; ;     
-; ;     Procedure.i ClipOutput_(x.i, y.i, width.i, height.i)
+; ;     Procedure.i mac_ClipOutput(x.i, y.i, width.i, height.i)
 ; ;       Protected Rect.NSRect
 ; ;       Rect\origin\x = x 
 ; ;       Rect\origin\y = OutputHeight()-height-y
@@ -324,5 +364,5 @@ UseModule fixme
 ; ;   CompilerEndIf
 ; ;   
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------
+; Folding = -------
 ; EnableXP

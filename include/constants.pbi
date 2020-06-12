@@ -12,7 +12,7 @@
     #debug_draw_item_font_change = #debug
     
     #__height = 21 ; #__height = 21
-    #__bsize = 3 ; #__bsize = 3
+    #__bsize = 3   ; #__bsize = 3
     #__window_frame = #__height+#__bsize*2
     
     #__from_mouse_state = 0
@@ -51,6 +51,8 @@
     ; option
     #__option_1 = 2
     
+    
+    #__tree_linesize = 5
     ; errors
     Enumeration 1
       #__error_text_input
@@ -151,7 +153,7 @@
       #__resize_maximize
     EndEnumeration
     
-   ;- _c_flag
+    ;- _c_flag
     EnumerationBinary _c_align 2
       #__flag_vertical ;= 1
       
@@ -177,16 +179,17 @@
       
       ; #__flag_inline
       #__flag_nolines
-      #__flag_gridLines
-      #__flag_threeState
+      #__flag_nobuttons
       #__flag_checkboxes 
+      #__flag_threeState
+      
+      #__flag_gridLines
       #__flag_optionboxes
       #__flag_clickselect 
-      #__flag_multiselect
+      
       #__flag_fullselection
       
       ; common
-      #__flag_nobuttons
       #__flag_inverted
       #__flag_noactivate
       #__flag_autosize
@@ -207,7 +210,8 @@
     EndEnumeration
     
     ;#__flag_checkboxes = #__flag_clickselect
-    #__flag_noGadget = #__flag_nobuttons
+    #__flag_nogadgets = #__flag_nobuttons
+    #__flag_multiselect = #__flag_multiline
     
     #__flag_default = #__flag_nolines|#__flag_nobuttons|#__flag_checkboxes
     #__flag_alwaysselection = #__flag_lowercase|#__flag_uppercase
@@ -247,13 +251,13 @@
       ;#__bar_arrowSize 
       ;#__bar_reverse
       
-       #__bar_ticks
+      #__bar_ticks
       #__bar_vertical
       #__bar_child
     EndEnumeration
-     
-    #__bar_nobuttons = #__flag_nobuttons
-     #__bar_inverted = #__flag_inverted
+    
+    #__bar_nobuttons = #__flag_nogadgets
+    #__bar_inverted = #__flag_inverted
     
     ;- _c_text
     #__text_border = #__flag_borderless;#PB_text_border
@@ -276,11 +280,11 @@
     #__text_invert = #__flag_inverted
     
     ;- _c_window
-;     #__window_nogadget = #__flag_nobuttons
-;     #__window_borderless = #__flag_borderless
-;     #__window_systemmenu = #__flag_systemmenu
-;     #__window_sizegadget = #__flag_sizegadget
-;     #__window_screencentered = #__align_center
+    ;     #__window_nogadgets = #__flag_nobuttons
+    ;     #__window_borderless = #__flag_borderless
+    ;     #__window_systemmenu = #__flag_systemmenu
+    ;     #__window_sizegadget = #__flag_sizegadget
+    ;     #__window_screencentered = #__align_center
     
     #__Window_Normal         = #PB_Window_Normal
     #__Window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
@@ -299,8 +303,8 @@
     #__Window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
     #__Window_NoGadgets      = #PB_Window_NoGadgets      ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
     #__Window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
-;     #__Window_closeGadget    = #PB_Window_NoActivate<<2
-;     #__Window_close          = #PB_Window_NoActivate<<2
+                                                         ;     #__Window_closeGadget    = #PB_Window_NoActivate<<2
+                                                         ;     #__Window_close          = #PB_Window_NoActivate<<2
     #PB_Window                 = #PB_Window_NoActivate<<2
     
     ;- _c_spin
@@ -312,49 +316,52 @@
     
     
     ;- _c_tree
+    #__tree_alwaysselection = #__flag_alwaysselection
+    #__tree_nolines = #__flag_nolines
+    #__tree_nobuttons = #__flag_nogadgets
+    #__tree_checkboxes = #__flag_checkboxes
+    #__tree_threestate = #__flag_threeState
     ;#__tree_collapsed = #__flag_collapsed
     #__tree_optionboxes = #__flag_optionboxes
-    #__tree_alwaysselection = #__flag_alwaysselection
-    #__tree_checkboxes = #__flag_checkboxes
-    #__tree_nolines = #__flag_nolines
-    #__tree_nobuttons = #__flag_nobuttons
     #__tree_gridlines = #__flag_gridLines
-    #__tree_threestate = #__flag_threeState
-    #__tree_borderless = #__flag_borderless
+    #__tree_multiselect = #__flag_multiselect
+    #__tree_clickselect = #__flag_clickselect
     
-    ;- _c_tree_attribute
-    #__tree_SubLevel  = #PB_Tree_SubLevel   ; 1
-    #__tree_Selected  = #PB_Tree_Selected   ; 1
-    #__tree_Expanded  = #PB_Tree_Expanded   ; 2
+    ; tree attribute
+    #__tree_sublevel  = #PB_Tree_SubLevel   ; 1
+    
+    ; tree state
+    #__tree_selected  = #PB_Tree_Selected   ; 1
+    #__tree_expanded  = #PB_Tree_Expanded   ; 2
     #__tree_checked   = #PB_Tree_Checked    ; 4
     #__tree_collapsed = #PB_Tree_Collapsed  ; 8
-    #__tree_Inbetween = #PB_Tree_Inbetween  ; 16
+    #__tree_inbetween = #PB_Tree_Inbetween  ; 16
     
-;     
-;     ;- TREE CONSTANTs
-;   #__tree_NoLines = #PB_tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
-;   #__tree_NoButtons = #PB_tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
-;   #__tree_checkBoxes = #PB_tree_checkBoxes                   ; 4 256 Add a checkbox before each Item.
-;   #__tree_threeState = #PB_tree_threeState                   ; 8 65535 The checkboxes can have an "in between" state.
-;   
-;   EnumerationBinary 16
-;     #__tree_collapse
-;     #__tree_AlwaysSelection
-;     #__tree_clickSelect
-;     #__tree_MultiSelect
-;     #__tree_GridLines
-;     #__tree_OptionBoxes
-;     #__tree_borderLess
-;     #__tree_FullSelection
-;   EndEnumeration
-;   
-;   #PB_tree_collapse = #__tree_collapse
-;   #PB_tree_GridLines = #__tree_GridLines
-  
+    ;     
+    ;     ;- TREE CONSTANTs
+    ;   #__tree_NoLines = #PB_tree_NoLines                         ; 1 2 Hide the little lines between each nodes.
+    ;   #__tree_NoButtons = #PB_tree_NoButtons                     ; 2 1 Hide the '+' node buttons.
+    ;   #__tree_checkBoxes = #PB_tree_checkBoxes                   ; 4 256 Add a checkbox before each Item.
+    ;   #__tree_threeState = #PB_tree_threeState                   ; 8 65535 The checkboxes can have an "in between" state.
+    ;   
+    ;   EnumerationBinary 16
+    ;     #__tree_collapse
+    ;     #__tree_AlwaysSelection
+    ;     #__tree_clickSelect
+    ;     #__tree_MultiSelect
+    ;     #__tree_GridLines
+    ;     #__tree_OptionBoxes
+    ;     #__tree_borderLess
+    ;     #__tree_FullSelection
+    ;   EndEnumeration
+    ;   
+    ;   #PB_tree_collapse = #__tree_collapse
+    ;   #PB_tree_GridLines = #__tree_GridLines
+    
     ;- _c_listview
-    #__listview_clickselect = #__flag_clickselect
-    #__listview_multiselect = #__flag_multiselect
-   
+    #__listview_clickselect = #__tree_clickselect
+    #__listview_multiselect = #__tree_multiselect
+    
     ;- _c_editor
     ;#__editor_inline = #__flag_InLine
     #__editor_wordwrap = #__flag_wordwrap

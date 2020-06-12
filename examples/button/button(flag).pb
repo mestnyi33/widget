@@ -16,11 +16,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Select *event\type
       Case #PB_EventType_LeftClick
         Select *event\widget
-          Case *this
-            If Flag(*this, #__button_toggle)
-              SetState(Button_4, GetState(*event\widget))
-            EndIf
-            
           Case Button_type 
             If GetState(*event\widget)
               Hide(*this, 1)
@@ -36,6 +31,11 @@ CompilerIf #PB_Compiler_IsMainFile
                 SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
               EndIf
               SetText(Button_type, "gadget")
+            EndIf
+            
+          Case *this
+            If Flag(*this, #__button_toggle)
+              SetState(Button_4, GetState(*event\widget))
             EndIf
             
           Case Button_0 : flag = #__button_default
@@ -72,18 +72,9 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Button_1, Flag(*this, #__button_multiline))
     Hide(Button_type, 1)
     
-;     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-;     Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
-;     Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-;     Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
-;     SetState(Splitter_3, width-40-horiz)
-;     SetState(Splitter_2, height-40-vert)
-;     SetState(Splitter_0, vert)
-;     SetState(Splitter_1, horiz)
-    
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --
+; Folding = v-
 ; EnableXP

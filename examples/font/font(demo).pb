@@ -1,71 +1,24 @@
 ﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
 
-
-; ; window
-; fID = GetGadgetFont(#PB_Default)
-; fnt.LOGFONT   
-; GetObject_(fID,SizeOf(fnt),@fnt)
-; fname$ =  PeekS(@fnt\lfFaceName)
-; fsize = Int(Round((-fnt\lfHeight * 72 / GetDeviceCaps_(GetDC_(0),#LOGPIXELSY)),1))
-; Debug fname$
-; Debug fsize
-Procedure.S FontName( FontID )
-    CompilerSelect #PB_Compiler_OS 
-      CompilerCase #PB_OS_Windows 
-        Protected sysFont.LOGFONT
-        GetObject_(FontID, SizeOf(LOGFONT), @sysFont)
-        ProcedureReturn PeekS(@sysFont\lfFaceName[0])
-        
-      CompilerCase #PB_OS_Linux
-;         Protected gVal.GValue
-;         Protected.s StdFnt
-;         g_value_init_( @gval, #G_TYPE_STRING )
-;         g_object_get_Properties( gtk_settings_get_default_(), "gtk-font-name", @gval )
-;         StdFnt = PeekS( g_value_get_string_( @gval ), -1, #PB_UTF8 )
-;         g_value_unset_( @gval )
-;         ProcedureReturn StdFnt 
-        
-    CompilerEndSelect
-  EndProcedure
-  
-  Procedure FontSize( FontID )
-    CompilerSelect #PB_Compiler_OS 
-      CompilerCase #PB_OS_Windows 
-        Protected sysFont.LOGFONT
-        GetObject_(FontID, SizeOf(LOGFONT), @sysFont)
-        ProcedureReturn MulDiv_(-sysFont\lfHeight, 72, GetDeviceCaps_(GetDC_(#NUL), #LOGPIXELSY))
-        ;ProcedureReturn Int(Round((-sysFont\lfHeight * 72 / GetDeviceCaps_(GetDC_(0),#LOGPIXELSY)),1))
-
-      CompilerCase #PB_OS_Linux
-;         Protected   gVal.GValue
-;         Protected.s StdFnt
-;         g_value_init_(@gval, #G_TYPE_STRING)
-;         g_object_get_Properties( gtk_settings_get_default_(), "gtk-font-name", @gval)
-;         StdFnt= PeekS(g_value_get_string_(@gval), -1, #PB_UTF8)
-;         g_value_unset_(@gval)
-;         ProcedureReturn Val(StringField((StdFnt), 2, " "))
-        
-    CompilerEndSelect
-  EndProcedure
-  
-
 #WinTemp=0
 #Font18R=0
 
 If OpenWindow(#WinTemp, 0, 0, 100, 100, "", #PB_Window_Tool | #PB_Window_Invisible)
-
-         If StartVectorDrawing(WindowVectorOutput(#WinTemp, #PB_Unit_Pixel))
-
-                 Global dgDpiX.d = VectorResolutionX()
-                 Global dgDpiY.d = VectorResolutionY()
-
-                 StopVectorDrawing()
-         EndIf
-
-         CloseWindow(#WinTemp)
+  
+  If StartVectorDrawing(WindowVectorOutput(#WinTemp, #PB_Unit_Pixel))
+    
+    Global dgDpiX.d = VectorResolutionX()
+    Global dgDpiY.d = VectorResolutionY()
+    
+    StopVectorDrawing()
+  EndIf
+  
+  CloseWindow(#WinTemp)
 EndIf
 
-Global igFS18.i = ((18 * 100) / dgDpiY)
+Global fs = 10
+Global igFS18.i = (((fs * 100) / dgDpiY) + Bool(#PB_Compiler_OS=#PB_OS_MacOS)*(fs-5) - Bool(#PB_Compiler_OS=#PB_OS_Linux))
+
 LoadFont(#Font18R, "Arial Unicode MS Regular", igFS18, #PB_Font_HighQuality)
 
 Global *b._s_widget
@@ -102,8 +55,8 @@ Procedure events_gbuttons()
           
           ; SetGadgetItemFont(1, sub, 5 + Bool(GetIndex(*event\widget) = 4))
           SetGadgetItemState(1, sub, 1)
-         ; SetState(1, 1)
-         
+          ; SetState(1, 1)
+          
       EndSelect
   EndSelect
 EndProcedure
@@ -132,14 +85,14 @@ Procedure events_wbuttons()
           
           SetItemFont(GetWidget(1), sub, 5 + Bool(GetIndex(*event\widget) = 4))
           SetItemState(GetWidget(1), sub, 1)
-         ; SetState(GetWidget(1), 1)
+          ; SetState(GetWidget(1), 1)
       EndSelect
   EndSelect
- 
+  
   Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\width[#__c_required] +" "+ *b\height[#__c_required] ; mac = 121 29 ; win 70 16
   
 EndProcedure
- 
+
 ; Shows using of several panels...
 If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered), 322+50, 0, 322+50, 220)
   Define text.s, *g
@@ -251,8 +204,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   *b = Button(10, 15+30, 100, 24,"Auto resize button then change font", #__Button_MultiLine)
   SetFont(*b, FontID(5))
   
-;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
-; set auto font size
+  ;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
+  ; set auto font size
   Define iw = 2 + (*b\bs+*b\text\x)*4 
   
   ReDraw(*b)
@@ -285,15 +238,15 @@ If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322 + 100, 220, "PanelGadget", #PB_Windo
   
   Debug ""+CountItems(GetWidget(1)) +" - count widget items"
   
-;   ; bug set font - FIXED ReDraw() ; Root(()\text\fontID[1] =- 1 >> *this\root\text\fontID[1] =- 1 
-;   Open(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
-;   Global *panel._S_widget = Panel(10,150,200,160) 
-;   AddItem(*panel,-1,"Panel") 
-;   AddItem(*panel,-1,"Second") 
-;   AddItem(*panel,-1,"Third") 
-;   CloseList()
-;   Open(OpenWindow(#PB_Any, 0, 0, 100, 100, "", 0, UseGadgetList(0)))
-;   ReDraw(GetRoot(*panel))
+  ;   ; bug set font - FIXED ReDraw() ; Root(()\text\fontID[1] =- 1 >> *this\root\text\fontID[1] =- 1 
+  ;   Open(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
+  ;   Global *panel._S_widget = Panel(10,150,200,160) 
+  ;   AddItem(*panel,-1,"Panel") 
+  ;   AddItem(*panel,-1,"Second") 
+  ;   AddItem(*panel,-1,"Third") 
+  ;   CloseList()
+  ;   Open(OpenWindow(#PB_Any, 0, 0, 100, 100, "", 0, UseGadgetList(0)))
+  ;   ReDraw(GetRoot(*panel))
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf

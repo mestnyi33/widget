@@ -459,7 +459,7 @@ Procedure object_events()
 ;         EndIf
 ;       EndIf
       
-    Case #PB_EventType_Focus
+    Case #PB_EventType_StatusChange
       *this = e_widget
       
       If *this And *this\mode\transform   

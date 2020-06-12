@@ -53,9 +53,10 @@ CompilerIf #PB_Compiler_IsMainFile
   ; Alignment text
   CompilerIf #PB_Compiler_OS = #PB_OS_Linux
     ImportC ""
-      gtk_entry_set_alignment(Entry.i, XAlign.f)
-    EndImport
-  CompilerEndIf
+      gtk_entry_set_alignment(Entry.i, Xalign.f)
+      gtk_label_set_yalign(*Label.GtkLabel, Yalign.F)
+  EndImport
+CompilerEndIf
   
   Procedure SetTextAlignment()
     ; Alignment text
@@ -63,7 +64,11 @@ CompilerIf #PB_Compiler_IsMainFile
       CocoaMessage(0,GadgetID(1),"setAlignment:", 2)
       CocoaMessage(0,GadgetID(2),"setAlignment:", 1)
       
+      CocoaMessage(0, CocoaMessage(0, GadgetID(8), "cell"), "_setVerticallyCentered:", #True)
+      CocoaMessage(0, GadgetID(8), "setNeedsDisplay:", #True)
+      
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+      
       If OSVersion() > #PB_OS_Windows_XP
         SetWindowLongPtr_(GadgetID(1), #GWL_STYLE, GetWindowLong_(GadgetID(1), #GWL_STYLE) & $FFFFFFFC | #SS_CENTER)
         SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLongPtr_(GadgetID(2), #GWL_STYLE) & $FFFFFFFC | #ES_RIGHT) 
@@ -72,11 +77,15 @@ CompilerIf #PB_Compiler_IsMainFile
         SetWindowLongPtr_(GadgetID(2), #GWL_STYLE, GetWindowLong_(GadgetID(2), #GWL_STYLE)|#SS_RIGHT)
       EndIf
       
+      SetWindowLongPtr_(GadgetID(8), #GWL_STYLE, GetWindowLong_(GadgetID(8), #GWL_STYLE)|#SS_CENTERIMAGE)
+      
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
       ;       ImportC ""
       ;         gtk_entry_set_alignment(Entry.i, XAlign.f)
       ;       EndImport
       
+      gtk_label_set_yalign(GadgetID(8), 0.5)
+        
       gtk_entry_set_alignment(GadgetID(1), 0.5)
       gtk_entry_set_alignment(GadgetID(2), 1)
     CompilerEndIf
@@ -99,6 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
     For i=0 To 8
       BindGadgetEvent(i, @events_gadgets())
     Next
+    
     
     SetTextAlignment()
     SetGadgetText(6, "GaT")
@@ -124,6 +134,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

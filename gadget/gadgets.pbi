@@ -1310,5 +1310,5 @@ DeclareModule Gadget
   CompilerEndIf
   
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --+--------------------------------------
+; Folding = +-+-------8--------------------------8---
 ; EnableXP

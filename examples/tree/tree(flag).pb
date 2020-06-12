@@ -6,8 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
-  
+  Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Button_6
   Define vert=100, horiz=100, width=400, height=400
   
   Procedure events_widgets()
@@ -22,27 +21,14 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
           Case Button_type 
-            If GetState(*event\widget)
-              Hide(*this, 1)
-              HideGadget(gadget, 0)
-              If Splitter_0
-                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, gadget)
-              EndIf
-              SetText(Button_type, "widget")
-            Else
-              Hide(*this, 0)
-              HideGadget(gadget, 1)
-              If Splitter_0
-                SetAttribute(Splitter_0, #PB_Splitter_SecondGadget, *this)
-              EndIf
-              SetText(Button_type, "gadget")
-            EndIf
             
-          Case Button_0 : flag = #__button_default
-          Case Button_1 : flag = #__button_multiline
-          Case Button_2 : flag = #__button_left
-          Case Button_3 : flag = #__button_right
-          Case Button_4 : flag = #__button_toggle
+          Case Button_0 : flag = #__tree_nolines
+          Case Button_1 : flag = #__tree_nobuttons
+          Case Button_2 : flag = #__tree_checkboxes
+          Case Button_3 : flag = #__tree_threestate
+          Case Button_4 : flag = #__tree_collapsed
+          Case Button_5 : flag = #__tree_expanded
+          Case Button_6 : flag = #__tree_gridlines
         EndSelect
         
         If flag
@@ -56,20 +42,38 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    *this = widget::Button(100, 100, 250, 200, text, #__button_multiline|#__flag_anchorsgadget) 
+    
+    *this = widget::tree(100, 100, 250, 200, #__flag_anchorsgadget | #__tree_nolines) 
+    ;  2_example
+    AddItem(*this, 0, "Tree_0", -1 )
+    AddItem(*this, 1, "Tree_1_1", 0, 1) 
+    AddItem(*this, 4, "Tree_1_1_1", -1, 2) 
+    AddItem(*this, 5, "Tree_1_1_2", -1, 2) 
+    AddItem(*this, 6, "Tree_1_1_2_1", -1, 3) 
+    AddItem(*this, 8, "Tree_1_1_2_1_1_4_hhhhhhhhhhhhh_", -1, 4) 
+    AddItem(*this, 7, "Tree_1_1_2_2 980980_", -1, 3) 
+    AddItem(*this, 2, "Tree_1_2", -1, 1) 
+    AddItem(*this, 3, "Tree_1_3", -1, 1) 
+    AddItem(*this, 9, "Tree_2",-1 )
+    AddItem(*this, 10, "Tree_3", -1 )
+    AddItem(*this, 11, "Tree_4", -1 )
+    AddItem(*this, 12, "Tree_5", -1 )
+    AddItem(*this, 13, "Tree_6", -1 )
     
     Define y = 10
     ; flag
     Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__button_toggle) 
-    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "default", #__button_toggle) 
-    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "multiline", #__button_toggle) 
-    Button_2 = widget::Button(width+45, y+30*3, 100, 26, "left", #__button_toggle) 
-    Button_3 = widget::Button(width+45, y+30*4, 100, 26, "right", #__button_toggle) 
-    Button_4 = widget::Button(width+45, y+30*5, 100, 26, "toggle", #__button_toggle) 
+    Button_0 = widget::Button(width+45, y+30*1, 100, 26, "nolines", #__button_toggle) 
+    Button_1 = widget::Button(width+45, y+30*2, 100, 26, "nobuttons", #__button_toggle) 
+    Button_2 = widget::Button(width+45, y+30*3, 100, 26, "checkboxes", #__button_toggle) 
+    Button_3 = widget::Button(width+45, y+30*4, 100, 26, "threestate", #__button_toggle) 
+    Button_4 = widget::Button(width+45, y+30*5, 100, 26, "collapsed", #__button_toggle) 
+    Button_5 = widget::Button(width+45, y+30*6, 100, 26, "expanded", #__button_toggle) 
+    Button_6 = widget::Button(width+45, y+30*7, 100, 26, "gridlines", #__button_toggle) 
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(Button_1, Flag(*this, #__button_multiline))
+    SetState(Button_0, Flag(*this, #__tree_nolines))
     Hide(Button_type, 1)
     
 ;     Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
