@@ -9,8 +9,9 @@
 ; flag\checkboxses
 ; flag\check
 
-XIncludeFile "../../widgets.pbi" 
-Uselib(widget)
+ XIncludeFile "../../widgets.pbi" 
+; XIncludeFile "../empty.pb"
+ Uselib(widget)
 
 Procedure events_gadgets()
   Select EventType()
@@ -70,19 +71,19 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 180+180, "ListViewGadget", #PB_Wi
   
   For ID = 0 To 1
     For a = 0 To 10
-      AddGadgetItem (ID, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
-      AddGadgetItem (ID, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
+      AddGadgetItem(ID, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
+      AddGadgetItem(ID, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
       AddGadgetItem(ID, -1, "Sub-Item 1", 0, 1)           ; These are on the 1st sublevel
       AddGadgetItem(ID, -1, "Sub-Item 2", 0, 1)
       AddGadgetItem(ID, -1, "Sub-Item 3", 0, 1)
       AddGadgetItem(ID, -1, "Sub-Item 4", 0, 1)
-      AddGadgetItem (ID, -1, "File "+Str(a), 0, 0) ; sublevel 0 again
+      AddGadgetItem(ID, -1, "File "+Str(a), 0, 0) ; sublevel 0 again
     Next
-    
     
     BindGadgetEvent(id, @events_gadgets())
   Next
-    SetGadgetState(1, 1)
+  
+  SetGadgetState(1, 1)
   
   ;--------------
   
@@ -100,14 +101,13 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 180+180, "ListViewGadget", #PB_Wi
       AddItem(GetWidget(ID), -1, "File "+Str(a), 0, 0) ; sublevel 0 again
     Next
     
-    
     Bind(GetWidget(ID), @events_widgets())
   Next
-    SetState(GetWidget(1), 1)
+  
+  SetState(GetWidget(1), 1)
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 19
-; Folding = -
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = 7
 ; EnableXP

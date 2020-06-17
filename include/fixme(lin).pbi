@@ -6,24 +6,17 @@ CompilerIf #PB_Compiler_OS = #PB_OS_Linux
         Function
       EndMacro
       
-      Macro FreeFont(_font_)
-        FreeFont_(_font_)
+      Macro PB_(Function)
+        ;Function#_
+        Function
       EndMacro
       
-      Declare.i FreeFont_(Font.i)
     CompilerEndIf
   EndDeclareModule 
   
   Module fixme
     CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-      Procedure.i FreeFont_(Font.i)
-        If FontID(Font) = PB(GetGadgetFont)(#PB_Default)
-          SetGadgetFont(#PB_Default, #PB_Default)
-        EndIf
-        
-        ProcedureReturn PB(FreeFont)(Font)
-      EndProcedure
-      
+       
     CompilerEndIf
   EndModule 
   
@@ -31,8 +24,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_Linux
   
 CompilerEndIf
 
-; IDE Options = PureBasic 5.70 LTS (Linux - x64)
-; CursorPosition = 1
-; FirstLine = 7
+; IDE Options = PureBasic 5.71 LTS (Windows - x64)
+; CursorPosition = 10
 ; Folding = --
 ; EnableXP

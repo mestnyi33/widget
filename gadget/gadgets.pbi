@@ -460,6 +460,7 @@ CompilerEndIf
 
 IncludePath "../"
 XIncludeFile "widgets.pbi"
+; XIncludeFile "../examples/empty.pb"
 Uselib(widget)
 
 ;- >>>

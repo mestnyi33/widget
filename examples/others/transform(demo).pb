@@ -40,8 +40,8 @@ Define vert=100, horiz=100, width=400, height=400
             Case #PB_EventType_StatusChange
               Debug "status - id " + GetData(*event\widget)
               
-              SetItemState(*tlist, GetData(*event\widget), #PB_Tree_Selected)
-              SetGadgetItemState(tlist, GetData(*event\widget), #PB_Tree_Selected)
+              SetState(*tlist, GetData(*event\widget))
+              SetGadgetState(tlist, GetData(*event\widget))
       
             Case #PB_EventType_Focus
               Debug "focus"
@@ -97,12 +97,13 @@ Define vert=100, horiz=100, width=400, height=400
       If widget()\mode\transform
         item = CountItems(*tlist) ; - 1
         AddItem(*tlist, -1, widget()\class, -1, widget()\level + 1)
-        SetItemState(*tlist, item, #PB_Tree_Selected)
+        ;SetItemState(*tlist, item, #PB_Tree_Selected)
         SetItemData(*tlist, item, Widget())
         SetData(Widget(), item)
       EndIf
     Next
     ;hide(*tList, 1)
+    SetState(*tList, item)
     
     tList = TreeGadget(-1, width+190, y, 150, 145-y)
     
@@ -118,7 +119,7 @@ Define vert=100, horiz=100, width=400, height=400
     Next
     
     Define i : For i=0 To CountGadgetItems(tList) : SetGadgetItemState(tList, i, #PB_Tree_Expanded) : Next
-    SetGadgetItemState(tList, item, #PB_Tree_Selected)
+    SetGadgetState(tList, item)
     
     
     *vlist = ListView(width+20, y+145*1, 150, 145-y)

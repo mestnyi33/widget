@@ -12,7 +12,8 @@
 ; spake post event leftclick
 
 
-XIncludeFile "../../widgets.pbi" 
+;XIncludeFile "../../widgets.pbi" 
+XIncludeFile "../empty.pb"
 Uselib(widget)
 
 Procedure events_gadgets()
@@ -107,26 +108,26 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   For a = 0 To 12
     AddItem (GetWidget(0), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetState(GetWidget(0), 7) ; set (beginning with 0) the tenth item as the active one
-  SetState(GetWidget(0), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(GetWidget(0), 9) ; set (beginning with 0) the tenth item as the active one
+  SetState(GetWidget(0), 5) 
+  SetState(GetWidget(0), 7) 
+  SetState(GetWidget(0), 9) 
+  ;SetItemState(GetWidget(0), 5, 1) 
   
   ListView(10+270, 190, 250, 120, #__listview_clickselect)
   For a = 0 To 12
     AddItem (GetWidget(1), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetState(GetWidget(1), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(GetWidget(1), 7) ; set (beginning with 0) the tenth item as the active one
-  SetState(GetWidget(1), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(GetWidget(1), 9) ; set (beginning with 0) the tenth item as the active one
+  SetState(GetWidget(1), 5) 
+  SetState(GetWidget(1), 7) 
+  SetState(GetWidget(1), 9) 
   
   ListView(10+270+270, 190, 250, 120, #__listview_multiselect)
   For a = 0 To 12
     AddItem (GetWidget(2), -1, "Item " + Str(a) + " of the Listview") ; define listview content
   Next
-  SetState(GetWidget(2), 7) ; set (beginning with 0) the tenth item as the active one
-  SetState(GetWidget(2), 8) ; set (beginning with 0) the tenth item as the active one
-  SetState(GetWidget(2), 9) ; set (beginning with 0) the tenth item as the active one
+  SetState(GetWidget(2), 5) 
+  SetState(GetWidget(2), 7) 
+  SetState(GetWidget(2), 9) 
   
   Text(10,170, 250,20, "flag = no")
   Text(10+270,170, 250,20, "flag = ClickSelect")
@@ -138,6 +139,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

@@ -2,7 +2,6 @@
 XIncludeFile "gadget/gadgets.pbi"
 XIncludeFile "widgets.pbi"
 
-;XIncludeFile "examples/empty.pb"
 UseLib(widget)
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -428,25 +427,26 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ;     AddItem(*g, 3, "Tree_3_1", -1, 1) 
     ; ;     AddItem(*g, 3, "Tree_3_2", -1, 2) 
     ; ;     For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1,1) ; Enables the system menu on the window title bar (Default", -1).
+    AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,1) ; Creates a window With a titlebar.
+    AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
+    AddItem (*g, -1, "#PB_Window_Tool          ", -1,1) ; Creates a window With a smaller titlebar And no taskbar entry. 
     AddItem (*g, -1, "#PB_Window_MinimizeGadget", -1) ; Adds the minimize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
     AddItem (*g, -1, "#PB_Window_MaximizeGadget", -1) ; Adds the maximize gadget To the window title bar. AddItem (*g, -1, "#PB_Window_SystemMenu is automatically added.
-                                                      ;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
     AddItem (*g, -1, "#PB_Window_SizeGadget    ", -1) ; Adds the sizeable feature To a window.
-    AddItem (*g, -1, "#PB_Window_Invisible     ", -1) ; Creates the window but don't display.
-    AddItem (*g, -1, "#PB_Window_SystemMenu    ", -1) ; Enables the system menu on the window title bar (Default", -1).
-    AddItem (*g, -1, "#PB_Window_TitleBar      ", -1,2) ; Creates a window With a titlebar.
-    AddItem (*g, -1, "#PB_Window_Tool          ", -1,2) ; Creates a window With a smaller titlebar And no taskbar entry. 
-    AddItem (*g, -1, "#PB_Window_BorderLess    ", -1,2) ; Creates a window without any borders.
-    AddItem (*g, -1, "#PB_Window_ScreenCentered", -1)   ; Centers the window in the middle of the screen. x,y parameters are ignored.
-    AddItem (*g, -1, "#PB_Window_WindowCentered", -1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
+                                                      ;                              (MacOS only", -1) ; AddItem (*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
     AddItem (*g, -1, "#PB_Window_Maximize      ", -1, 1); Opens the window maximized. (Note", -1) ; on Linux, Not all Windowmanagers support this", -1)
     AddItem (*g, -1, "#PB_Window_Minimize      ", -1, 1); Opens the window minimized.
+    
+    AddItem (*g, -1, "#PB_Window_Invisible     ", -1) ; Creates the window but don't display.
     AddItem (*g, -1, "#PB_Window_NoGadgets     ", -1)   ; Prevents the creation of a GadgetList. UseGadgetList(", -1) can be used To do this later.
     AddItem (*g, -1, "#PB_Window_NoActivate    ", -1)   ; Don't activate the window after opening.
+    AddItem (*g, -1, "#PB_Window_ScreenCentered", -1, 1)   ; Centers the window in the middle of the screen. x,y parameters are ignored.
+    AddItem (*g, -1, "#PB_Window_WindowCentered", -1, 1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
     ;}                                                    ;
     
     ;{  5_example
-    *g = Tree(750+135, 100, 103, 210, #PB_Tree_NoButtons)                                         
+    *g = Tree(750+135, 100, 103, 210, #PB_Tree_NoButtons|#__tree_Collapsed)                                         
     
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1", -1, 0) 
@@ -456,7 +456,19 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 1, "Tree_1", -1, 1) 
     AddItem(*g, 2, "Tree_2_1", -1, 1) 
     AddItem(*g, 2, "Tree_2_2", -1, 2) 
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    
+    
+    For i = 0 To 10
+      AddItem(*g, -1, "Normal Item "+Str(i), 0, 0) ; if you want to add an image, use
+      AddItem(*g, -1, "Node "+Str(i), 0, 0)        ; ImageID(x) as 4th parameter
+      AddItem(*g, -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
+      AddItem(*g, -1, "Sub-Item 2", 0, 1)
+      AddItem(*g, -1, "Sub-Item 3", 0, 1)
+      AddItem(*g, -1, "Sub-Item 4", 0, 1)
+      AddItem(*g, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
+    Next
+    
+    ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     ;     SetItemImage(*g, 0, 0)
     ;}
     

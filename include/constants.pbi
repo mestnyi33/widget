@@ -197,6 +197,7 @@
       ;#__flag_sizegadget
       ;#__flag_systemmenu
       #__flag_anchorsgadget
+      #__flag_noscrollbars
       
       #__flag_borderless
       ;         #__flag_double
@@ -205,7 +206,6 @@
       ;         #__flag_Single
       
       
-      #__flag_noscrollbars
       #__flag_limit
     EndEnumeration
     
@@ -327,6 +327,9 @@
     #__tree_multiselect = #__flag_multiselect
     #__tree_clickselect = #__flag_clickselect
     
+    #__tree_property = #__flag_numeric
+    #__tree_listview = #__flag_readonly
+    
     ; tree attribute
     #__tree_sublevel  = #PB_Tree_SubLevel   ; 1
     
@@ -336,7 +339,6 @@
     #__tree_checked   = #PB_Tree_Checked    ; 4
     #__tree_collapsed = #PB_Tree_Collapsed  ; 8
     #__tree_inbetween = #PB_Tree_Inbetween  ; 16
-    
     ;     
     ;     ;- TREE CONSTANTs
     ;   #__tree_NoLines = #PB_tree_NoLines                         ; 1 2 Hide the little lines between each nodes.

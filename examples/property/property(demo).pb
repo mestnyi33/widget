@@ -1,5 +1,5 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
+﻿XIncludeFile "../../widgets.pbi"
+;XIncludeFile "../empty.pb"
 Uselib(widget)
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -65,13 +65,13 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*Tree1, #_pi_disable, "disable:"+Chr(10)+"", #PB_GadgetType_ComboBox, 1);Str(Disable(Value)))
     widget::AddItem(*Tree1, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_GadgetType_ComboBox, 1)
     
-    Splitter_0 = widget::Splitter(0, 0, 300, 300, *Tree, Button_1)
+    Splitter_0 = widget::Splitter(0, 0, 300, 300, Button_1, *Tree)
     Splitter_1 = widget::Splitter(30, 30, 300, 300, Splitter_0, *Tree1, #PB_Splitter_Vertical)
     
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

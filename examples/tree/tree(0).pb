@@ -155,53 +155,45 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
+  Define item = 1
+  Define sublevel = 5z
   
   If OpenWindow(0, 0, 0, 300, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = TreeGadget(#PB_Any, 10, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
     
     ; 1_example
-    AddGadgetItem(g, 0, "Normal Item "+Str(a), 0, 0) 
     AddGadgetItem(g, -1, "Node "+Str(a), ImageID(0), 0)      
     AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)         
-    AddGadgetItem(g, -1, "Sub-Item 2", 0, 11)
-    AddGadgetItem(g, -1, "Sub-Item 3", 0, 1)
-    AddGadgetItem(g, -1, "Sub-Item 4", 0, 1)         
-    AddGadgetItem(g, -1, "Sub-Item 5", 0, 11)
-    AddGadgetItem(g, -1, "Sub-Item 6", 0, 1)
-    AddGadgetItem(g, -1, "File "+Str(a), 0, 0) 
+    AddGadgetItem(g, -1, "Sub-Item 2", 0, 2)
+    AddGadgetItem(g, -1, "Sub-Item 3", 0, 3)
+    AddGadgetItem(g, -1, "Sub-Item 4", 0, 4)
+    
+    AddGadgetItem(g, item, "Add-Item "+Str(item), 0, sublevel)
     
     ; раскрываем весь список
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
-    ; скрываем первый итем
-    SetGadgetItemState(g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
     BindGadgetEvent(g, @events_tree_gadget())
-    Debug "g - "+ GetGadgetText(g)
+    ;Debug "g - "+ GetGadgetText(g)
   EndIf
   
   
   If Open(0, 0, 225, #PB_Ignore, 425)
     
-    *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes|#__tree_Collapsed)                                         
+    *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
     
     ; 1_example
-    AddItem (*g, 0, "Normal Item "+Str(a), -1, 0)                                   
     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 2", -1, 11)
-    AddItem (*g, -1, "Sub-Item 3", -1, 1)
-    AddItem (*g, -1, "Sub-Item 4", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 5", -1, 11)
-    AddItem (*g, -1, "Sub-Item 6", -1, 1)
-    AddItem (*g, -1, "File "+Str(a), -1, 0)  
+    AddItem (*g, -1, "Sub-Item 2", -1, 2)
+    AddItem (*g, -1, "Sub-Item 3", -1, 3)
+    AddItem (*g, -1, "Sub-Item 4", -1, 4)
     
-    ; раскрываем весь список
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
+    AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
     
-    ; скрываем первый итем
-    SetItemState(*g, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Checked)
+    
     Bind(*g, @events_tree_widget())
-    Debug "w - "+GetText(*g)
+    ;Debug "w - "+GetText(*g)
     ;     LoadFont(3, "Arial", 18)
     ;     SetFont(*g, 3)
   EndIf
@@ -214,6 +206,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   ForEver
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = 0--7-
 ; EnableXP
