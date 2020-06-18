@@ -448,9 +448,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       *before._s_widget
       
       *adress           ; widget list adress
-      *root._s_root     ; adress root
-      *parent._s_widget ; adress parent
-      *window._s_widget ; this\parent\window       ; root()\active\window
+      *root._s_root     ; this root
+      *parent._s_widget ; this parent
+      *window._s_widget ; this parent window       ; root()\active\window
       
       *gadget._s_widget[3] 
       ; \root\gadget[0] = active gadget
@@ -459,11 +459,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; \gadget[1] = splitter() first gadget
       ; \gadget[2] = splitter() second gadget
       
-      index.i[3]  
+      *index[3]  
       ; \index[0] = widget index 
       ; \index[1] = panel opened item index
-      ; \index[1] = tab entered item index
       ; \index[2] = panel selected item index
+      ; \index[1] = tab entered item index
       ; \index[2] = tab selected item index
       
       *_flag

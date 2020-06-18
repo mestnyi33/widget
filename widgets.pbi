@@ -9472,7 +9472,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       ; clip child tab bar
-      If *this\gadget[#__panel_1]
+      If *this\type = #__type_panel And *this\gadget[#__panel_1]
         Clip(*this\gadget[#__panel_1], 0)
       EndIf
       
@@ -9559,7 +9559,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected.l Change_x, Change_y, Change_width, Change_height
       
       With *this
-        ; Debug  *this
         ; #__flag_autoSize
         If *this\parent And 
            *this\align And *this\align\autosize And
@@ -9704,6 +9703,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf 
         EndIf 
         
+        
         If *this\resize & #__resize_change
           ; then move and size parent set clip (width&height)
           If *this\parent And *this\parent <> *this
@@ -9714,7 +9714,6 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\width[#__c_clip] = *this\width
             *this\height[#__c_clip] = *this\height
           EndIf
-          
           
           ; 
           *this\width[#__c_inner] = *this\width[#__c_draw]
@@ -9735,7 +9734,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\height[#__c_inner] = *this\scroll\v\bar\page\len; *this\height[#__c_draw] - Bool(Not *this\scroll\h\hide) * *this\scroll\h\height ; 
           EndIf
           
-          If (*this\gadget[#__panel_1])
+          If *this\type = #__type_panel And *this\gadget[#__panel_1]
             If *this\gadget[#__panel_1]\bar\vertical
               *this\x[#__c_inner] = *this\x + *this\bs
               
@@ -12042,6 +12041,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\index[#__split_2] = Bool(IsGadget(*this\gadget[#__split_2]))
           
           *this\bar\inverted = Bool(Flag & #__bar_Inverted = #__bar_Inverted)
+          
           If flag & #PB_Splitter_Separator = #PB_Splitter_Separator
             *this\bar\mode = #PB_Splitter_Separator
           EndIf
@@ -12061,8 +12061,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           *this\bar\button[#__b_3]\len = #__splitter_buttonsize
-          *this\bar\button[#__b_3]\round = 2
           *this\bar\button[#__b_3]\interact = #True
+          *this\bar\button[#__b_3]\round = 2
           
         Else
           If *param_1 
@@ -12078,7 +12078,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         ;
         If Flag & #__bar_child = #__bar_child
-          ;*this\bar\_type = *this\type
           *this\parent = *parent
           *this\root = *parent\root
           *this\window = *parent\window
@@ -12090,7 +12089,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           _set_alignment_flag_(*this, *parent, flag)
           
           If *parent
-            SetParent(*this, *parent, #PB_Default)
+            SetParent(*this, *parent)
           Else
             *this\draw = 1
           EndIf
@@ -12129,8 +12128,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If *this\fs And Not *this\mode\transform
             *this\bs = *this\fs
-            ;           ElseIf *this\mode\transform
-            ;             a_set(*this)
           EndIf
           
           Resize(*this, x,y,width,height)
@@ -14389,5 +14386,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------mvv-+--9--------------------------------------------------023u-------------------------------------------------
 ; EnableXP
