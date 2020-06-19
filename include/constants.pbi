@@ -153,6 +153,12 @@
       #__resize_maximize
     EndEnumeration
     
+    ;- _c_change
+    EnumerationBinary 
+      #__change_width
+      #__change_height
+    EndEnumeration
+    
     ;- _c_flag
     EnumerationBinary _c_align 2
       #__flag_vertical ;= 1
