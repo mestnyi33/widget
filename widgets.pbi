@@ -54,6 +54,14 @@ CompilerIf Not Defined(widget, #PB_Module)
       structures::*event\active
     EndMacro
     
+    Macro Focused() ; Returns focused widget
+      Root()\focused
+    EndMacro
+    
+    Macro Selected() ; Returns selected widget
+      Root()\selected
+    EndMacro
+    
     Macro Transform()
       Root()\anchor
     EndMacro
@@ -61,6 +69,11 @@ CompilerIf Not Defined(widget, #PB_Module)
     Macro InitTransform()
       Transform() = AllocateStructure(_s_transforms)
     EndMacro
+    
+    Macro SetCursor(_this_, _cursor_)
+      SetGadgetAttribute(_this_\root\canvas\gadget, #PB_Canvas_Cursor, _cursor_)
+    EndMacro
+    
     
     ;- 
     Macro _is_root_(_this_)
@@ -246,9 +259,12 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.i Tree_Properties(x.l,y.l,width.l,height.l, Flag.i = 0)
     Declare  SetClass(*this, class.s)
     
-    Declare a_add(*this, Size.l = 6, Pos.l = -1)
+    Declare a_add(*this)
     Declare a_get(*this)
-    Declare a_set(*this)
+    Declare a_set(*this, Size.l = 5, Pos.l = -1)
+    
+    Declare   SetFocus(*this)
+    ;Declare   Focused()
     
     Declare   Child(*this, *parent)
     Declare.l X(*this, mode.l = #__c_frame)
@@ -725,10 +741,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;- 
     ;-  ANCHORs
-    Macro _set_cursor_(_this_, _cursor_)
-      SetGadgetAttribute(_this_\root\canvas\gadget, #PB_Canvas_Cursor, _cursor_)
-    EndMacro
-    
     Macro a_draw(_this_)
       If *this\root And
          Transform() And 
@@ -810,7 +822,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         Transform()\id[#__a_moved]\height = _this_\height[#__c_frame]
       EndIf
       
-      If Transform()\id[10] And Transform()\id[11] And Transform()\id[12] And Transform()\id[13]
+      If Transform()\id[10] And 
+         Transform()\id[11] And
+         Transform()\id[12] And
+         Transform()\id[13]
         a_lines(_this_)
       EndIf
       
@@ -931,7 +946,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndWith
     EndProcedure
     
-    Procedure.i a_add(*this._s_widget, Size.l = 6, Pos.l = -1)
+    Procedure.i a_add(*this._s_widget)
       Structure DataBuffer
         cursor.i[#__anchors + 1]
       EndStructure
@@ -941,18 +956,10 @@ CompilerIf Not Defined(widget, #PB_Module)
       With *this
         If Not *this\mode\transform
           *this\mode\transform = #True
-          
-;           ;Size = 12
-;           If Pos =- 1
-;             Pos = Size - Size / 3 - 1
-;           EndIf
-;           ;*this\bs = Pos + *this\fs
-          
+         
           If Not Transform()
             InitTransform()
             
-;             Transform()\pos = Pos
-;             Transform()\size = Size
             Transform()\index = #__a_moved
             
             For i = 0 To #__anchors
@@ -992,7 +999,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Bool(*this\root\focused = *this) * *this\root\focused
     EndProcedure
     
-    Procedure.i a_set(*this._s_widget)
+    Procedure.i a_set(*this._s_widget, Size.l = 5, Pos.l = -1)
       Protected Result.i
       Static *LastPos
       
@@ -1022,8 +1029,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         Post(#PB_EventType_Focus, *this, Transform()\index)
         ;         ;EndIf
         
-        Transform()\size = 6 + *this\fs
-        Transform()\Pos = (Transform()\size-*this\fs) -  (Transform()\size-*this\fs) / 3
+        Transform()\size = 5 + *this\fs
+        Transform()\Pos = (Transform()\size-*this\fs) - (Transform()\size-*this\fs) / 3 - 1
+        *this\bs = Transform()\pos + *this\fs
+        
         
         Transform()\id[1]\width = Transform()\size
         Transform()\id[1]\height = Transform()\size
@@ -1054,8 +1063,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           Transform()\id[5]\height = Transform()\size
         EndIf
         
-        *this\bs = Transform()\pos + *this\fs
-        
         Post(#PB_EventType_StatusChange, *this, Transform()\index)
         
         If *this\root\focused
@@ -1071,7 +1078,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Result
     EndProcedure
     
-    
     Procedure   a_events(EventType.i)
       Static xx, yy
       Protected result, i, index, mouse_x.i, mouse_y.i 
@@ -1085,10 +1091,10 @@ CompilerIf Not Defined(widget, #PB_Module)
           If Transform()\id[_index_] And _from_point_(mouse_x, mouse_y, Transform()\id[_index_]) 
             If Transform()\id[_index_]\color\state <> #__s_1
               If _index_ <> #__a_moved
-                If Root()\focused\container And _index_ = 5
-                  _set_cursor_(Root()\focused, Transform()\id[#__a_moved]\cursor)
+                If Focused()\container And _index_ = 5
+                  SetCursor(Focused(), Transform()\id[#__a_moved]\cursor)
                 Else
-                  _set_cursor_(Root()\focused, Transform()\id[_index_]\cursor)
+                  SetCursor(Focused(), Transform()\id[_index_]\cursor)
                 EndIf
               EndIf
               
@@ -1100,7 +1106,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             Break
             
           ElseIf Transform()\id[_index_]\color\state <> #__s_0
-            _set_cursor_(Root()\focused, #PB_Cursor_Default)
+            SetCursor(Focused(), #PB_Cursor_Default)
             Transform()\id[_index_]\color\state = #__s_0
             Transform()\index = #__a_moved
             _result_ = 1
@@ -1112,23 +1118,23 @@ CompilerIf Not Defined(widget, #PB_Module)
       Macro a_resize(_result_, _index_)
         Select _index_
           Case #__a_moved 
-            If Not Root()\focused\container
-              If Root()\focused\cursor <> Transform()\id[_index_]\cursor
-                Root()\focused\cursor = Transform()\id[_index_]\cursor
-                _set_cursor_(Root()\focused, Transform()\id[_index_]\cursor)
+            If Not Focused()\container
+              If Focused()\cursor <> Transform()\id[_index_]\cursor
+                Focused()\cursor = Transform()\id[_index_]\cursor
+                SetCursor(Focused(), Transform()\id[_index_]\cursor)
               EndIf
               
-              _result_ = Resize(Root()\focused, mx, my, #PB_Ignore, #PB_Ignore)
+              _result_ = Resize(Focused(), mx, my, #PB_Ignore, #PB_Ignore)
             EndIf
             
-          Case 1 : _result_ = Resize(Root()\focused, mx, #PB_Ignore, mxw, #PB_Ignore)
-          Case 2 : _result_ = Resize(Root()\focused, #PB_Ignore, my, #PB_Ignore, myh)
-          Case 3 : _result_ = Resize(Root()\focused, #PB_Ignore, #PB_Ignore, mw, #PB_Ignore)
-          Case 4 : _result_ = Resize(Root()\focused, #PB_Ignore, #PB_Ignore, #PB_Ignore, mh)
-          Case 5 : _result_ = Resize(Root()\focused, mx, my, mxw, myh)
-          Case 6 : _result_ = Resize(Root()\focused, #PB_Ignore, my, mw, myh)
-          Case 7 : _result_ = Resize(Root()\focused, #PB_Ignore, #PB_Ignore, mw, mh)
-          Case 8 : _result_ = Resize(Root()\focused, mx, #PB_Ignore, mxw, mh)
+          Case 1 : _result_ = Resize(Focused(), mx, #PB_Ignore, mxw, #PB_Ignore)
+          Case 2 : _result_ = Resize(Focused(), #PB_Ignore, my, #PB_Ignore, myh)
+          Case 3 : _result_ = Resize(Focused(), #PB_Ignore, #PB_Ignore, mw, #PB_Ignore)
+          Case 4 : _result_ = Resize(Focused(), #PB_Ignore, #PB_Ignore, #PB_Ignore, mh)
+          Case 5 : _result_ = Resize(Focused(), mx, my, mxw, myh)
+          Case 6 : _result_ = Resize(Focused(), #PB_Ignore, my, mw, myh)
+          Case 7 : _result_ = Resize(Focused(), #PB_Ignore, #PB_Ignore, mw, mh)
+          Case 8 : _result_ = Resize(Focused(), mx, #PB_Ignore, mxw, mh)
         EndSelect
       EndMacro
       
@@ -1141,9 +1147,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           Case #__Event_MouseMove
             If Transform()\id[index]\color\state = #__s_2
               ;{ widget transform
-              If Root()\focused\parent
-                Px = Root()\focused\parent\x[#__c_inner]
-                Py = Root()\focused\parent\y[#__c_inner]
+              If Focused()\parent
+                Px = Focused()\parent\x[#__c_inner]
+                Py = Focused()\parent\y[#__c_inner]
               EndIf
               
               mouse_x - Root()\mouse\delta\x
@@ -1157,16 +1163,16 @@ CompilerIf Not Defined(widget, #PB_Module)
                 yy = my
                 
                 If (index = #__a_moved) Or
-                   (index = 5 And Root()\focused\container) ; Form, Container, ScrollArea, Panel
+                   (index = 5 And Focused()\container) ; Form, Container, ScrollArea, Panel
                   mxw = #PB_Ignore
                   myh = #PB_Ignore
                 Else
-                  mxw = Root()\focused\x[#__c_draw] + Root()\focused\width[#__c_frame] - mx
-                  myh = Root()\focused\y[#__c_draw] + Root()\focused\height[#__c_frame] - my
+                  mxw = Focused()\x[#__c_draw] + Focused()\width[#__c_frame] - mx
+                  myh = Focused()\y[#__c_draw] + Focused()\height[#__c_frame] - my
                 EndIf
                 
-                mw = mx - Root()\focused\x[#__c_draw] ; + IsGrid 
-                mh = Match(mouse_y - Root()\focused\y, Grid) ; + IsGrid 
+                mw = mx - Focused()\x[#__c_draw] ; + IsGrid 
+                mh = Match(mouse_y - Focused()\y, Grid) ; + IsGrid 
                 
                 a_resize(result, index)
               EndIf
@@ -1179,7 +1185,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             
           Case #__Event_leftButtonDown  
             ;Debug 
-            If Root()\focused\mode\transform 
+            If Root()\entered\mode\transform 
               If Transform()\id[index]\color\state <> #__s_2
                 If Not (_from_point_(mouse_x, mouse_y, Transform()\id[index]) And index <> #__a_moved)
                   If a_Set(Root()\entered)
@@ -1195,9 +1201,9 @@ CompilerIf Not Defined(widget, #PB_Module)
                 
                 ;get anchor delta pos
                 If (index = #__a_moved) Or
-                   (index = 5 And Root()\focused\container) ; Form, Container, ScrollArea, Panel 
-                  Root()\mouse\delta\x = mouse_x - Root()\focused\x;[#__c_frame]
-                  Root()\mouse\delta\y = mouse_y - Root()\focused\y;[#__c_frame]
+                   (index = 5 And Root()\entered\container) ; Form, Container, ScrollArea, Panel 
+                  Root()\mouse\delta\x = mouse_x - Root()\entered\x;[#__c_frame]
+                  Root()\mouse\delta\y = mouse_y - Root()\entered\y;[#__c_frame]
                 Else
                   Root()\mouse\delta\x = mouse_x - Transform()\id[index]\x
                   Root()\mouse\delta\y = mouse_y - Transform()\id[index]\y
@@ -1208,11 +1214,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
           Case #__Event_leftButtonUp
-            If Root()\focused\mode\transform
-              If Root()\focused\cursor = #PB_Cursor_Arrows Or
+            If Focused()\mode\transform
+              If Focused()\cursor = #PB_Cursor_Arrows Or
                  Not _from_point_(mouse_x, mouse_y, Transform()\id[index])
-                Root()\focused\cursor = #PB_Cursor_Default
-                _set_cursor_(Root()\focused, Root()\focused\cursor)
+                Focused()\cursor = #PB_Cursor_Default
+                SetCursor(Focused(), Focused()\cursor)
               EndIf
               
               Transform()\id[index]\color\state = #__s_0
@@ -1224,11 +1230,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             ;             Selected = #False
             
           Case #PB_EventType_KeyDown
-            If Root()\focused = Root()\focused
-              mx = Root()\focused\x[#__c_draw]
-              my = Root()\focused\y[#__c_draw]
-              mw = Root()\focused\width[#__c_frame]
-              mh = Root()\focused\height[#__c_frame]
+            If Focused()
+              mx = Focused()\x[#__c_draw]
+              my = Focused()\y[#__c_draw]
+              mw = Focused()\width[#__c_frame]
+              mh = Focused()\height[#__c_frame]
               
               Select Root()\keyboard\Key[1] 
                 Case #PB_Canvas_Shift
@@ -1261,7 +1267,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                     xx = mx
                     yy = my
                     
-                    If Root()\focused\container
+                    If Focused()\container
                       Transform()\index = 5
                       mxw = #PB_Ignore
                       myh = #PB_Ignore
@@ -1280,7 +1286,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                       
                     Case #PB_Shortcut_Up   
                       ForEach Widget()
-                        If Root()\focused\index-1 = Widget()\index
+                        If Focused()\index-1 = Widget()\index
                           result = a_set(Widget())
                           Break
                         EndIf
@@ -1288,7 +1294,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                       
                     Case #PB_Shortcut_Down  
                       ForEach Widget()
-                        If Root()\focused\index+1 = Widget()\index
+                        If Focused()\index+1 = Widget()\index
                           result = a_set(Widget())
                           Break
                         EndIf
@@ -10493,6 +10499,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     ;- 
+    Procedure   SetFocus(*this._s_widget)
+      Focused() = *this
+    EndProcedure
+    
     Procedure   GetWidget(index)
       Protected result
       
@@ -10637,7 +10647,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       If *this\type = #PB_GadgetType_ListView Or
          *this\type = #PB_GadgetType_Tree
         
-        If *this\row\selected And *this\row\selected\color\state
+        If *this\row\selected And 
+           *this\row\selected\color\state
           ProcedureReturn *this\row\selected\index
         Else
           ProcedureReturn - 1
@@ -11170,12 +11181,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           *this\parent = *parent
           
-          ; set transformation for the child
-          If *parent\mode\transform 
-            *this\mode\transform = *parent\mode\transform 
-            a_set(*this)
-          EndIf
-          
           ; TODO
           If *this\window
             Static NewMap typecount.l()
@@ -11224,6 +11229,12 @@ CompilerIf Not Defined(widget, #PB_Module)
               *this\before\after = *this
               
               *parent\last = *this
+            EndIf
+            
+            ; set transformation for the child
+            If Not *this\mode\transform And *parent\mode\transform 
+              *this\mode\transform = *parent\mode\transform 
+              a_set(*this)
             EndIf
           EndIf
           
@@ -11277,8 +11288,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             If *LastParent\root <> *parent\root
               Select Root()
-                Case *LastParent\root : ReDraw(*parent)
-                Case *parent\root     : ReDraw(*LastParent)
+                Case *LastParent\root : ReDraw(*parent\root)
+                Case *parent\root     : ReDraw(*LastParent\root)
               EndSelect
             EndIf
           EndIf
@@ -13609,8 +13620,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           If Root()\entered = *this
             Root()\entered = *this\parent
           EndIf
-          If Root()\selected = *this
-            Root()\selected = *this\parent
+          If Selected() = *this
+            Selected() = *this\parent
           EndIf
           
           ; *this = 0
@@ -13965,11 +13976,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       If (eventtype = #__Event_leftButtonDown Or
           eventtype = #__Event_rightButtonDown) And _is_widget_(Root()\entered) 
         
-        Root()\selected = Root()\entered
-        Root()\selected\_state | #__s_selected
+        Selected() = Root()\entered
+        Selected()\_state | #__s_selected
             
         If Not Root()\entered\mode\transform
-          Root()\focused = Root()\entered
+          Focused() = Root()\entered
           
           If Root()\entered\bar\from > 0
             ; bar mouse delta pos
@@ -13991,7 +14002,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       ; events anchors on the widget
-      If Transform() And Root()\focused
+      If Transform() And Focused()
         Repaint | a_events(eventtype)
       EndIf
       
@@ -14043,9 +14054,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           If Root()\entered
             Repaint | Events(Root()\entered, eventtype, mouse_x, mouse_y)
           EndIf
-          If Root()\selected And 
-             Root()\selected <> Root()\entered
-            Repaint | Events(Root()\selected, eventtype, mouse_x, mouse_y)
+          If Selected() And 
+             Selected() <> Root()\entered
+            Repaint | Events(Selected(), eventtype, mouse_x, mouse_y)
           EndIf
         EndIf
         
@@ -14054,8 +14065,8 @@ CompilerIf Not Defined(widget, #PB_Module)
              eventtype = #__Event_KeyUp
         
         ; widget keyboard events
-        If Root()\focused
-          Repaint | Events(Root()\focused, eventtype, mouse_x, mouse_y)
+        If Focused()
+          Repaint | Events(Focused(), eventtype, mouse_x, mouse_y)
         EndIf
         
 ;         If GetActive() 
@@ -14080,11 +14091,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             Root()\mouse\buttons &~ #PB_Canvas_MiddleButton
           EndIf
             
-          If _is_widget_(Root()\selected) And Not Root()\mouse\buttons
-            Repaint | Events(Root()\selected, eventtype, mouse_x, mouse_y)
+          If _is_widget_(Selected()) And Not Root()\mouse\buttons
+            Repaint | Events(Selected(), eventtype, mouse_x, mouse_y)
             
-            Root()\selected\_state &~ #__s_selected
-            If Root()\selected\_state & #__s_entered
+            Selected()\_state &~ #__s_selected
+            If Selected()\_state & #__s_entered
               If Not Root()\mouse\drag
                 Static ClickTime 
                 ; Debug Str(ElapsedMilliseconds() - ClickTime)  + " " +  DoubleClickTime()
@@ -14094,31 +14105,31 @@ CompilerIf Not Defined(widget, #PB_Module)
                   ; is released in the widget
                   ; then send the message click
                   If eventtype = #__Event_leftButtonUp
-                    Repaint | Events(Root()\selected, #__Event_leftClick, mouse_x, mouse_y)
+                    Repaint | Events(Selected(), #__Event_leftClick, mouse_x, mouse_y)
                   EndIf
                   If eventtype = #__Event_rightButtonUp
-                    Repaint | Events(Root()\selected, #__Event_rightClick, mouse_x, mouse_y)
+                    Repaint | Events(Selected(), #__Event_rightClick, mouse_x, mouse_y)
                   EndIf
                   ClickTime = ElapsedMilliseconds()
                 Else
                   If eventtype = #__Event_leftButtonUp
-                    Repaint | Events(Root()\selected, #__Event_leftDoubleClick, mouse_x, mouse_y)
+                    Repaint | Events(Selected(), #__Event_leftDoubleClick, mouse_x, mouse_y)
                   EndIf
                   If eventtype = #__Event_rightButtonUp
-                    Repaint | Events(Root()\selected, #__Event_rightDoubleClick, mouse_x, mouse_y)
+                    Repaint | Events(Selected(), #__Event_rightDoubleClick, mouse_x, mouse_y)
                   EndIf
                   ClickTime = 0
                 EndIf
               EndIf
             Else
-              ; Repaint | Events(Root()\selected, #__Event_MouseLeave, mouse_x, mouse_y)
+              ; Repaint | Events(Selected(), #__Event_MouseLeave, mouse_x, mouse_y)
               ; Repaint | Events(Root()\entered, #__Event_MouseEnter, mouse_x, mouse_y)
             EndIf
             
             Root()\mouse\delta\x = 0
             Root()\mouse\delta\y = 0
             Root()\mouse\drag = 0
-            Root()\selected = 0
+            Selected() = 0
           EndIf
         EndIf
         
@@ -14130,8 +14141,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         If Root()\entered And change
           Repaint | Events(Root()\entered, eventtype, mouse_x, mouse_y)
         EndIf
-        If Root()\selected And Root()\entered <> Root()\selected And change 
-          Repaint | Events(Root()\selected, eventtype, mouse_x, mouse_y)
+        If Selected() And Root()\entered <> Selected() And change 
+          Repaint | Events(Selected(), eventtype, mouse_x, mouse_y)
         EndIf
         
       EndIf
@@ -14163,8 +14174,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       
       ;       If _is_widget_(Root()\entered) 
-      ;         Root()\selected = Root()\entered
-      ;         Root()\selected\_state | #__s_selected
+      ;         Selected() = Root()\entered
+      ;         Selected()\_state | #__s_selected
       ;         
       ;         If Root()\entered\bar\from
       ;           ; bar mouse delta pos
@@ -14820,5 +14831,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-4------------------------------------------------------------------00t-d0v0B+z------------------------9+0f-yf------------
+; Folding = ------------n-----v-0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f------------------------------------------------------------------vvv0vr-tPwf+-----------------------n4v--X+------------
 ; EnableXP

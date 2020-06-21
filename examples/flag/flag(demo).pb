@@ -10,6 +10,52 @@ CompilerIf #PB_Compiler_IsMainFile
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
   
   
+  Procedure GadgetTypeFromClass(Class.s) ;Returns gadget type from gadget name
+    
+    ;   ElseIf     FindString(Class.S, LCase("Desktop")       ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Desktop
+    ;   ElseIf FindString(Class.S, LCase("PopupMenu")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_PopupMenu
+    ;   ElseIf FindString(Class.S, LCase("Toolbar")       ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Toolbar
+    ;   ElseIf FindString(Class.S, LCase("Menu")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Menu
+    ;   ElseIf FindString(Class.S, LCase("Status")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_StatusBar
+    If FindString(Class.S, LCase("Window")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Window
+    ElseIf FindString(Class.S, LCase("ButtonImage")   ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ButtonImage
+    ElseIf FindString(Class.S, LCase("String")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_String
+    ElseIf FindString(Class.S, LCase("Text")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Text
+    ElseIf FindString(Class.S, LCase("CheckBox")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_CheckBox
+    ElseIf FindString(Class.S, LCase("Option")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Option
+    ElseIf FindString(Class.S, LCase("ListView")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ListView
+    ElseIf FindString(Class.S, LCase("Frame")         ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Frame  
+    ElseIf FindString(Class.S, LCase("ComboBox")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ComboBox
+    ElseIf FindString(Class.S, LCase("Image")         ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Image
+    ElseIf FindString(Class.S, LCase("HyperLink")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_HyperLink
+    ElseIf FindString(Class.S, LCase("Container")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Container
+    ElseIf FindString(Class.S, LCase("ListIcon")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ListIcon
+    ElseIf FindString(Class.S, LCase("IPAddress")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_IPAddress
+    ElseIf FindString(Class.S, LCase("ProgressBar")   ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ProgressBar
+    ElseIf FindString(Class.S, LCase("ScrollBar")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ScrollBar
+    ElseIf FindString(Class.S, LCase("ScrollArea")    ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ScrollArea
+    ElseIf FindString(Class.S, LCase("TrackBar")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_TrackBar
+    ElseIf FindString(Class.S, LCase("Web")           ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Web
+    ElseIf FindString(Class.S, LCase("Button")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Button
+    ElseIf FindString(Class.S, LCase("Calendar")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Calendar
+    ElseIf FindString(Class.S, LCase("Date")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Date
+    ElseIf FindString(Class.S, LCase("Editor")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Editor
+    ElseIf FindString(Class.S, LCase("ExplorerList")  ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ExplorerList
+    ElseIf FindString(Class.S, LCase("ExplorerTree")  ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ExplorerTree
+    ElseIf FindString(Class.S, LCase("ExplorerCombo") ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_ExplorerCombo
+    ElseIf FindString(Class.S, LCase("Spin")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Spin
+    ElseIf FindString(Class.S, LCase("Tree")          ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Tree
+    ElseIf FindString(Class.S, LCase("Panel")         ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Panel
+    ElseIf FindString(Class.S, LCase("Splitter")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Splitter
+    ElseIf FindString(Class.S, LCase("MDI")           ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_MDI
+    ElseIf FindString(Class.S, LCase("Scintilla")     ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Scintilla
+    ElseIf FindString(Class.S, LCase("Shortcut")      ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Shortcut
+    ElseIf FindString(Class.S, LCase("Canvas")        ,-1,#PB_String_NoCase) :ProcedureReturn #__Type_Canvas
+    EndIf
+    
+    ProcedureReturn #False
+  EndProcedure
+  
   Procedure.s ClassFromType(Type)
     Protected Result.S
     
@@ -92,7 +138,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   "#PB_Button_Center|"+
                   "#PB_Button_Right|"+
                   "#PB_Button_MultiLine"
-                  
+        
         ;}
         
       Case #__Type_String         
@@ -554,7 +600,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;SetCheckedText(w_flag, )
             
           Case w_flag
-          ;  Debug GetCheckedText(w_flag)
+            ;  Debug GetCheckedText(w_flag)
         EndSelect
         
       Case #PB_EventType_LeftClick
@@ -591,5 +637,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 2----v7--
+; Folding = ---------
 ; EnableXP

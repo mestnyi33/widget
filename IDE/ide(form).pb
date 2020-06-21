@@ -94,7 +94,7 @@ Procedure.i GetClassType(Class.s)
   ProcedureReturn Result
 EndProcedure
 
-
+;-
 ;- PUBLICs
 Procedure.i elements_list_fill(*id, Directory$)
   Protected ZipFile$ = Directory$ + "SilkTheme.zip"
@@ -195,31 +195,118 @@ Procedure.i elements_list_fill(*id, Directory$)
   EndIf
 EndProcedure
 
-Procedure properties_update(*this._s_widget, Value.i)
-  SetItemText(*this, #_pi_id,      GetItemText(*this, #_pi_id)      +Chr(10)+Str(Value))
-  SetItemText(*this, #_pi_class,   GetItemText(*this, #_pi_class)   +Chr(10)+GetClass(Value)+"_"+GetCount(Value))
-  SetItemText(*this, #_pi_text,    GetItemText(*this, #_pi_text)    +Chr(10)+GetText(Value))
+Procedure update_properties(gadget.i, Value.i)
+  SetItemText(gadget, #_pi_id,      GetItemText(gadget, #_pi_id)      +Chr(10)+Str(Value))
+  SetItemText(gadget, #_pi_class,   GetItemText(gadget, #_pi_class)   +Chr(10)+GetClass(Value)+"_"+GetCount(Value))
+  SetItemText(gadget, #_pi_text,    GetItemText(gadget, #_pi_text)    +Chr(10)+GetText(Value))
   
-  SetItemText(*this, #_pi_x,       GetItemText(*this, #_pi_x)       +Chr(10)+Str(X(Value)))
-  SetItemText(*this, #_pi_y,       GetItemText(*this, #_pi_y)       +Chr(10)+Str(Y(Value)))
-  SetItemText(*this, #_pi_width,   GetItemText(*this, #_pi_width)   +Chr(10)+Str(Width(Value)))
-  SetItemText(*this, #_pi_height,  GetItemText(*this, #_pi_height)  +Chr(10)+Str(Height(Value)))
+  SetItemText(gadget, #_pi_x,       GetItemText(gadget, #_pi_x)       +Chr(10)+Str(X(Value)))
+  SetItemText(gadget, #_pi_y,       GetItemText(gadget, #_pi_y)       +Chr(10)+Str(Y(Value)))
+  SetItemText(gadget, #_pi_width,   GetItemText(gadget, #_pi_width)   +Chr(10)+Str(Width(Value)))
+  SetItemText(gadget, #_pi_height,  GetItemText(gadget, #_pi_height)  +Chr(10)+Str(Height(Value)))
   
-  SetItemText(*this, #_pi_disable, GetItemText(*this, #_pi_disable) +Chr(10)+Str(Disable(Value)))
-  SetItemText(*this, #_pi_hide,    GetItemText(*this, #_pi_hide)    +Chr(10)+Str(Hide(Value)))
+  SetItemText(gadget, #_pi_disable, GetItemText(gadget, #_pi_disable) +Chr(10)+Str(Disable(Value)))
+  SetItemText(gadget, #_pi_hide,    GetItemText(gadget, #_pi_hide)    +Chr(10)+Str(Hide(Value)))
+EndProcedure
+
+
+
+
+
+;-
+Global GrabDrawingImage
+
+Procedure.i start_select(*this._s_widget)
+  SetCursor(*this, #PB_Cursor_Cross)
+  Redraw(*this\root)
+  
+  If StartDrawing( CanvasOutput(*this\root\canvas\gadget))
+    Transform()\grab = GrabDrawingImage(#PB_Any, 0,0, *this\root\width, *this\root\height)
+    StopDrawing()
+  EndIf
+  
+  Transform()\id\x = Root()\mouse\delta\x + *this\x
+  Transform()\id\y = Root()\mouse\delta\y + *this\y
+  
+  If Not Transform()\id\width
+    Transform()\id\width = 50
+  EndIf
+  
+  If Not Transform()\id\height
+    Transform()\id\height = 50
+  EndIf
+  
+  ProcedureReturn *this
+EndProcedure
+
+Procedure.i stop_select(*this._s_widget)
+  If Transform()\grab
+    SetCursor(*this, #PB_Cursor_Default)
+    
+    Transform()\id\x - *this\x[#__c_inner]
+    Transform()\id\y - *this\y[#__c_inner]
+    
+    Transform()\grab = 0
+    ProcedureReturn *this
+  EndIf
+EndProcedure
+
+Procedure.i draw_select(*this._s_widget)
+  Protected mouse_x, mouse_y, DeltaX, DeltaY
+  
+  If *this And GetButtons(*this)
+    If Not Transform()
+      InitTransform()
+    EndIf
+    
+    mouse_x = *this\root\mouse\x
+    mouse_y = *this\root\mouse\y
+    
+    Transform()\id\x = *this\root\mouse\delta\x + *this\root\focused\x
+    Transform()\id\Y = *this\root\mouse\delta\y + *this\root\focused\y
+  
+    If Transform()\id\x > mouse_x
+      Transform()\id\Width = Transform()\id\X - mouse_x
+      Transform()\id\x = mouse_x
+    Else
+      Transform()\id\Width = mouse_x - Transform()\id\X
+    EndIf
+    
+    If Transform()\id\Y > mouse_y
+      Transform()\id\Height = Transform()\id\Y - mouse_y
+      Transform()\id\Y = mouse_y
+    Else
+      Transform()\id\Height = mouse_y - Transform()\id\Y
+    EndIf
+    
+    If Transform()\grab And 
+       StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
+      DrawImage(ImageID(Transform()\grab), 0,0)
+      
+      ; draw selector
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      Box(Transform()\id\x, Transform()\id\y, 
+          Transform()\id\width, Transform()\id\height , $ff000000);Transform()\color[Transform()\state]\id) 
+      
+      StopDrawing()
+      ProcedureReturn *this
+    EndIf
+  EndIf
 EndProcedure
 
 ;-
-Procedure inspector_add(*this._s_widget, *new._s_widget, Class.s)
+Declare events_element()
+
+Procedure add_element(gadget.i, *new._s_widget, Class.s)
   Protected Parent = GetParent(*new)
-  Protected CountItems = CountItems(*this)
+  Protected CountItems = CountItems(gadget)
   Protected *Sublevel, SubLevel ;= GetLevel(Parent) - 1 ; level mdi minus
-  Protected i, Position = GetState(*this) + 1
+  Protected i, Position = GetState(gadget) + 1
   
   ; get childrens position and sublevel
   For i = 0 To CountItems - 1
-    If Parent = GetItemData(*this, i)
-      SubLevel = GetItemAttribute(*this, i, #PB_Tree_SubLevel) + 1
+    If Parent = GetItemData(gadget, i)
+      SubLevel = GetItemAttribute(gadget, i, #PB_Tree_SubLevel) + 1
       Position = (i+1)
       Break
     EndIf
@@ -227,11 +314,11 @@ Procedure inspector_add(*this._s_widget, *new._s_widget, Class.s)
   
   ; 
   For i = Position To CountItems - 1
-    *Sublevel = GetItemAttribute(*this, i, #PB_Tree_SubLevel)
+    *Sublevel = GetItemAttribute(gadget, i, #PB_Tree_SubLevel)
     
     If SubLevel >= *Sublevel
       If SubLevel > *Sublevel
-        SetData( GetItemData(*this, i), (i+1))
+        SetData( GetItemData(gadget, i), (i+1))
       EndIf
     Else
       Position = (i+1)
@@ -239,209 +326,110 @@ Procedure inspector_add(*this._s_widget, *new._s_widget, Class.s)
     EndIf
   Next 
   
+  SetText(*new, Class)
   SetData(*new, Position)
-  
+      
   ; add to inspector
-  AddItem(*this, Position, Class.s, #PB_Default, SubLevel)
-  SetItemData(*this, Position, *new)
-  ; SetItemState(*this, Position, #PB_Tree_Selected)
-  SetState(*this, Position)
+  AddItem(gadget, Position, Class.s, #PB_Default, SubLevel)
+  SetItemData(gadget, Position, *new)
+  ; SetItemState(gadget, Position, #PB_Tree_Selected)
+  SetState(gadget, Position)
   
   AddGadgetItem(listview_debug, Position, Class.s, 0, SubLevel)
   SetGadgetItemData(listview_debug, Position, *new)
   ; SetGadgetItemState(listview_debug, Position, #PB_Tree_Selected)
   SetGadgetState(listview_debug, Position) ; Bug
-   
+  
+  update_properties(id_properties_tree, *new)
+  
   ; Debug "pos "+Position
   ;Add_Code(*new, Position-1, SubLevel)
   
   ProcedureReturn Position
 EndProcedure
 
-
-
-
-;-
-Procedure.i GetSelectorX(*this._s_widget)
-  ProcedureReturn Root()\anchor\x-*this\X[2]
-EndProcedure
-
-Procedure.i GetSelectorY(*this._s_widget)
-  ProcedureReturn Root()\anchor\y-*this\Y[2]
-EndProcedure
-
-Procedure.i GetSelectorWidth(*this._s_widget)
-  ProcedureReturn Root()\anchor\Width
-EndProcedure
-
-Procedure.i GetSelectorHeight(*this._s_widget)
-  ProcedureReturn Root()\anchor\Height
-EndProcedure
-
-Global GrabDrawingImage
-
-Procedure.i FreeSelector(*this._s_widget)
-  Redraw(*this\root)
-  
-  ;Transform() = 0
-  GrabDrawingImage = 0
-EndProcedure
-
-Procedure.i SetSelector(*this._s_widget)
-  Redraw(*this\root)
-  
-  If StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
-    GrabDrawingImage = GrabDrawingImage(#PB_Any, 0,0, *this\root\width, *this\root\height)
-    StopDrawing()
-  EndIf
-  
-  ProcedureReturn *this
-EndProcedure
-
-Procedure.i UpdateSelector(*this._s_widget)
-  Protected MouseX, MouseY, DeltaX, DeltaY
-  
-  If *this And GetButtons(*this)
-    If Not Transform()
-      InitTransform()
-    EndIf
-    
-    ;If *this And Transform() And *this\root\selected
-    DeltaX = *this\root\mouse\delta\x + *this\root\selected\x[#__c_3] 
-    DeltaY = *this\root\mouse\delta\y + *this\root\selected\y[#__c_3]
-    
-    MouseX = *this\root\mouse\x
-    MouseY = *this\root\mouse\y
-    
-    If DeltaX > MouseX
-      Swap DeltaX, MouseX
-    EndIf
-    
-    If DeltaY > MouseY
-      Swap DeltaY, MouseY
-    EndIf
-    
-    ;Debug ""+DeltaX +" "+ DeltaY +" "+ Str(MouseX-DeltaX) +" "+ Str(MouseY-DeltaY)
-          
-    Transform()\X = DeltaX
-    Transform()\Y = DeltaY
-    Transform()\Width = MouseX-DeltaX
-    Transform()\Height = MouseY-DeltaY
-    
-   
-    If GrabDrawingImage And StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
-      DrawImage(ImageID(GrabDrawingImage), 0,0)
-      
-      ; draw selector
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      Box(Transform()\x, Transform()\y, Transform()\width, Transform()\height , $ff000000);Transform()\color[Transform()\state]\frame) 
-      StopDrawing()
-    EndIf
-  EndIf
-  
-;   If *this\root\mouse\Drag
-;     ProcedureReturn *this
-;   EndIf
-  
-EndProcedure
-
-;-
-Declare this_events()
-
-Procedure this_events()
-  Protected e_type = *event\type
-  Protected *this._s_widget = *event\widget
-  
-  Select e_type 
-    Case #PB_EventType_StatusChange
-      If *this 
-        SetState(id_inspector_tree, GetData(*this))
-        SetGadgetState(listview_debug, GetData(*this))
-        properties_update(id_properties_tree, *this)
-      EndIf
-  EndSelect
-  
-EndProcedure
-
-Procedure this_create(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0)
-  Protected *param1, *param2, *param3, text.s, flag.i = #__flag_anchorsGadget
-  
-  Protected Position =- 1
-  Protected *new._s_widget, Class.s
-  
-  
-  Select type
-    Case #__type_window    
-      If Not Width
-        Width=350
-      EndIf
-      
-      If Not Height
-        Height=200
-      EndIf
-      
-      flag | #__Window_SystemMenu|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget
-      
-    Case #PB_GadgetType_Container, #PB_GadgetType_ScrollArea, #PB_GadgetType_Panel, 
-         #PB_GadgetType_Splitter, #PB_GadgetType_ListView, #PB_GadgetType_ListIcon, #PB_GadgetType_Image 
-      
-      If Not Width
-        Width=220
-      EndIf
-      
-      If Not Height
-        Height=140
-      EndIf
-      
-    Default
-      If Not Width : Width=100 : EndIf
-      If Not Height : Height=30 : EndIf
-      
-  EndSelect
+Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.l=0)
+  Protected *new._s_widget, *param1, *param2, *param3
+  Protected Position =- 1, flag.i
   
   If *parent 
-    OpenList(*parent) 
-  EndIf
-  
-  ; create elements
-  Select Type
-    Case #__type_window    
-      If *parent\type = #PB_GadgetType_MDI
-        *new = AddItem(*parent, #PB_Any, text, - 1, flag)
-      Else
-        *new = Window(x,y,width,height, text, flag, *parent)
+    class.s = LCase(Trim(class))
+    OpenList(*parent, GetState(*parent)) 
+    
+    ; create elements
+    Select class
+      Case "window"    
+        If GetType(*parent) = #PB_GadgetType_MDI
+          *new = AddItem(*parent, #PB_Any, "", - 1, flag|#__flag_anchorsGadget)
+        Else
+          *new = Window(x,y,width,height, "", flag|#__flag_anchorsGadget, *parent)
+        EndIf
+        
+        Bind(*new, @events_element())
+        
+      Case "panel"      : *new = Panel(x,y,width,height, flag)
+      Case "container"  : *new = Container(x,y,width,height, flag)
+      Case "scrollarea" : *new = ScrollArea(x,y,width,height, *param1, *param2, *param3, flag)
+      Case "button"     : *new = Button(x,y,width,height, "", flag)
+    EndSelect
+    
+    If *new
+      If *new\container
+        ;  SetImage(*new, 5)
       EndIf
       
-      Bind(*new, @this_events())
-      
-    Case #PB_GadgetType_Panel      : *new = Panel(x,y,width,height, flag)
-    Case #PB_GadgetType_Container  : *new = Container(x,y,width,height, flag)
-    Case #PB_GadgetType_ScrollArea : *new = ScrollArea(x,y,width,height, *param1, *param2, *param3, flag)
-      
-    Case #PB_GadgetType_Button     : *new = Button(x,y,width,height, text, flag)
-  EndSelect
-  
-  If *new\container
-   ;  SetImage(*new, 5)
-  EndIf
-  
-  If *new
-    Class.s = GetClass(*new)+"_"+GetCount(*new)
-    SetText(*new, Class.s)
+      Class.s = GetClass(*new)+"_"+GetCount(*new)
+      add_element(id_inspector_tree, *new, Class.s)
+    EndIf
     
-    inspector_add(id_inspector_tree, *new, Class.s)
-  EndIf
-  
-  If *parent 
     CloseList() 
   EndIf
   
   ProcedureReturn *new
 EndProcedure
 
+Procedure events_element()
+  Protected e_type = *event\type
+  Protected *this._s_widget = *event\widget
+  Static Drag
+  
+  Select e_type 
+    Case #PB_EventType_MouseMove
+      If Drag
+        If Not draw_select(Drag)
+          Drag = 0
+        EndIf
+      EndIf
+      
+    Case #PB_EventType_LeftButtonDown
+      If GetState(id_elements) > 0
+        Drag = start_select(*this)
+      EndIf
+      
+    Case #PB_EventType_LeftButtonUp
+      If stop_select(*this)
+        create_element(*this, GetText(id_elements),
+                       Transform()\id\x,
+                       Transform()\id\y, 
+                       Transform()\id\width, 
+                       Transform()\id\height)
+        
+        SetState(id_elements, 0)
+        Drag = 0
+      EndIf
+      
+    Case #PB_EventType_StatusChange
+      SetState(id_inspector_tree, GetData(*this))
+      SetGadgetState(listview_debug, GetData(*this))
+      update_properties(id_properties_tree, *this)
+      
+  EndSelect
+  
+EndProcedure
+
 
 ;-
-Procedure ide_events()
+Procedure events_ide()
   Protected *this._s_widget
   Protected e_type = *event\type
   Protected e_item = *event\item
@@ -463,7 +451,7 @@ Procedure ide_events()
   EndSelect
 EndProcedure
 
-Procedure ide_create(x=100,y=100,width=800,height=600)
+Procedure create_ide(x=100,y=100,width=800,height=600)
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
   Define root = widget::Open(OpenWindow(#PB_Any, x,y,width,height, "ide", flag))
   window_ide = widget::GetWindow(root)
@@ -471,13 +459,13 @@ Procedure ide_create(x=100,y=100,width=800,height=600)
   
   toolbar_design = 0
   
-;   id_design_panel = Panel(0,0,0,0) ; , #__bar_vertical) : OpenList(id_design_panel)
-;   AddItem(id_design_panel, -1, "Form")
-;   id_design_form = MDI(0,0,0,0, #__flag_autosize) 
-;   
-;   AddItem(id_design_panel, -1, "Code")
-;   id_design_code = Editor(0,0,0,0, #__flag_autosize) 
-;   CloseList()
+  ;   id_design_panel = Panel(0,0,0,0) ; , #__bar_vertical) : OpenList(id_design_panel)
+  ;   AddItem(id_design_panel, -1, "Form")
+  ;   id_design_form = MDI(0,0,0,0, #__flag_autosize) 
+  ;   
+  ;   AddItem(id_design_panel, -1, "Code")
+  ;   id_design_code = Editor(0,0,0,0, #__flag_autosize) 
+  ;   CloseList()
   
   id_inspector_tree = Tree(0,0,0,0)
   listview_debug = TreeGadget(-1,0,0,0,0) ; ListView(0,0,0,0) 
@@ -545,47 +533,47 @@ Procedure ide_create(x=100,y=100,width=800,height=600)
   widget::SetState(Splitter_design, 30)
   
   
-  Bind(id_inspector_tree, @ide_events())
-  Bind(id_elements, @ide_events())
+  Bind(id_inspector_tree, @events_ide())
+  Bind(id_elements, @events_ide())
   ProcedureReturn window_ide
 EndProcedure
 
 ;-
 CompilerIf #PB_Compiler_IsMainFile 
   Define event
-  ide_create()
+  create_ide()
   
   elements_list_fill(id_elements, GetCurrentDirectory()+"Themes/")
   
-  ;OpenList(id_design_form)
-  Define *window = this_create(id_design_form, #__type_window, 10, 10)
-  Define *container = this_create(*window, #__type_container, 80, 10)
-  this_create(*container, #__type_button, 10, 20)
-  this_create(*window, #__type_button, 10, 20)
-  
-  Define item = 1
-  SetState(id_inspector_tree, item)
-  SetGadgetState(listview_debug, item)
-  
-  Define *container2 = this_create(*container, #__type_container, 80, 10)
-  this_create(*container2, #__type_button, 10, 20)
-  
-;   Define *window = this_create(id_design_form, #__type_window, 10, 10)
-;   Define *container = this_create(*window, #__type_container, 80, 10)
-;   this_create(*container, #__type_button, -10, 20)
-;   this_create(*window, #__type_button, 10, 20)
-;   ;CloseList()
+  ;   ;OpenList(id_design_form)
+  Define *window = create_element(id_design_form, "window", 10, 10)
+  ;   Define *container = create_element(*window, "container", 80, 10)
+  ;   create_element(*container, "button", 10, 20)
+  ;   create_element(*window, "button", 10, 20)
+  ;   
+  ;   Define item = 1
+  ;   SetState(id_inspector_tree, item)
+  ;   SetGadgetState(listview_debug, item)
+  ;   
+  ;   Define *container2 = create_element(*container, "container", 80, 10)
+  ;   create_element(*container2, "button", 10, 20)
+  ;   
+  ; ;   Define *window = create_element(id_design_form, "window", 10, 10)
+  ; ;   Define *container = create_element(*window, "container", 80, 10)
+  ; ;   create_element(*container, "button", -10, 20)
+  ; ;   create_element(*window, "button", 10, 20)
+  ; ;   ;CloseList()
   
   Repeat 
     event = WaitWindowEvent() 
     
-;     Select EventWindow()
-;       Case window_ide 
-;         ide_window_events(event)
-;     EndSelect
+    ;     Select EventWindow()
+    ;       Case window_ide 
+    ;         ide_window_events(event)
+    ;     EndSelect
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +----v8f-8
+; Folding = ----f4---
 ; EnableXP

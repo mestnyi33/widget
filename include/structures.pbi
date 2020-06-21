@@ -218,23 +218,16 @@ CompilerIf Not Defined(structures, #PB_Module)
       x.l
       width.l
       height.l
-      
-      ;hide.b
       cursor.l
       color._s_color[4]
     EndStructure
     
     ;- - _s_transforms
     Structure _s_transforms 
-      y.l
-      x.l
-      width.l
-      height.l
-      
+      *grab
       pos.l
       size.l
       index.l
-      
       id._s_transform[#__count_anchors_]
     EndStructure
     
@@ -583,5 +576,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------
+; Folding = --f+---
 ; EnableXP
