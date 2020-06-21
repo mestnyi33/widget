@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define img = 0
     Container(10,10,width, height)
-    *this = widget::tree(100, 100, 250, 200, #__flag_anchorsgadget |#__tree_CheckBoxes | #__tree_ThreeState| #__tree_nolines | #__tree_nobuttons );| #__tree_OptionBoxes)  ; |#__tree_GridLines
+    *this = widget::tree(100, 100, 250, 200, #__flag_anchorsgadget |#__tree_optionBoxes | #__tree_nolines | #__tree_nobuttons );| #__tree_OptionBoxes)  ; |#__tree_GridLines
     CloseList()
     
     ; ;     Define i

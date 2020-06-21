@@ -15,7 +15,7 @@ Global window_ide, canvas_ide
 
 Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
 Global toolbar_design, listview_debug, id_help_text
-Global id_design_panel, id_design_form, id_design_code, 
+Global id_design_panel, id_design_form, id_design_code, id_events_tree,
        id_elements, id_properties_tree, id_inspector_tree, id_inspector_panel
 
 ;- ENUMs
@@ -34,6 +34,13 @@ Enumeration
   #_pi_group_2 
   #_pi_disable
   #_pi_hide
+EndEnumeration
+
+Enumeration 
+  #_ei_leftclick
+  #_ei_change
+  #_ei_enter
+  #_ei_leave
 EndEnumeration
 
 
@@ -189,20 +196,21 @@ Procedure.i elements_list_fill(*id, Directory$)
 EndProcedure
 
 Procedure properties_update(*this._s_widget, Value.i)
-  ;     SetState(Widgets("Inspector"), GetData(Value))
-  ;     SetGadgetState(WE_Selecting, GetData(Value))
+  SetItemText(*this, #_pi_id,      GetItemText(*this, #_pi_id)      +Chr(10)+Str(Value))
+  SetItemText(*this, #_pi_class,   GetItemText(*this, #_pi_class)   +Chr(10)+GetClass(Value)+"_"+GetCount(Value))
+  SetItemText(*this, #_pi_text,    GetItemText(*this, #_pi_text)    +Chr(10)+GetText(Value))
   
-  SetItemText(*this, #_pi_id, Str(Value))
-  SetItemText(*this, #_pi_class, GetClass(Value)+"_"+GetCount(Value))
-  SetItemText(*this, #_pi_text, GetText(Value))
-  SetItemText(*this, #_pi_x, Str(X(Value)))
-  SetItemText(*this, #_pi_y, Str(Y(Value)))
-  SetItemText(*this, #_pi_width, Str(Width(Value)))
-  SetItemText(*this, #_pi_height, Str(Height(Value)))
+  SetItemText(*this, #_pi_x,       GetItemText(*this, #_pi_x)       +Chr(10)+Str(X(Value)))
+  SetItemText(*this, #_pi_y,       GetItemText(*this, #_pi_y)       +Chr(10)+Str(Y(Value)))
+  SetItemText(*this, #_pi_width,   GetItemText(*this, #_pi_width)   +Chr(10)+Str(Width(Value)))
+  SetItemText(*this, #_pi_height,  GetItemText(*this, #_pi_height)  +Chr(10)+Str(Height(Value)))
+  
+  SetItemText(*this, #_pi_disable, GetItemText(*this, #_pi_disable) +Chr(10)+Str(Disable(Value)))
+  SetItemText(*this, #_pi_hide,    GetItemText(*this, #_pi_hide)    +Chr(10)+Str(Hide(Value)))
 EndProcedure
 
 ;-
-Procedure add_to_inspector(*this._s_widget, *new._s_widget, Class.s)
+Procedure inspector_add(*this._s_widget, *new._s_widget, Class.s)
   Protected Parent = GetParent(*new)
   Protected CountItems = CountItems(*this)
   Protected *Sublevel, SubLevel ;= GetLevel(Parent) - 1 ; level mdi minus
@@ -338,9 +346,24 @@ Procedure.i UpdateSelector(*this._s_widget)
 EndProcedure
 
 ;-
-Declare object_events()
+Declare this_events()
 
-Procedure object_add_new(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0)
+Procedure this_events()
+  Protected e_type = *event\type
+  Protected *this._s_widget = *event\widget
+  
+  Select e_type 
+    Case #PB_EventType_StatusChange
+      If *this 
+        SetState(id_inspector_tree, GetData(*this))
+        SetGadgetState(listview_debug, GetData(*this))
+        properties_update(id_properties_tree, *this)
+      EndIf
+  EndSelect
+  
+EndProcedure
+
+Procedure this_create(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0)
   Protected *param1, *param2, *param3, text.s, flag.i = #__flag_anchorsGadget
   
   Protected Position =- 1
@@ -389,7 +412,7 @@ Procedure object_add_new(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0
         *new = Window(x,y,width,height, text, flag, *parent)
       EndIf
       
-      Bind(*new, @object_events())
+      Bind(*new, @this_events())
       
     Case #PB_GadgetType_Panel      : *new = Panel(x,y,width,height, flag)
     Case #PB_GadgetType_Container  : *new = Container(x,y,width,height, flag)
@@ -399,14 +422,14 @@ Procedure object_add_new(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0
   EndSelect
   
   If *new\container
-    ; SetImage(*new, 5)
+   ;  SetImage(*new, 5)
   EndIf
   
   If *new
     Class.s = GetClass(*new)+"_"+GetCount(*new)
     SetText(*new, Class.s)
     
-    add_to_inspector(id_inspector_tree, *new, Class.s)
+    inspector_add(id_inspector_tree, *new, Class.s)
   EndIf
   
   If *parent 
@@ -416,88 +439,9 @@ Procedure object_add_new(*parent._s_widget, type, x.l,y.l, width.l=0, height.l=0
   ProcedureReturn *new
 EndProcedure
 
-Procedure object_events()
-  Static Drag, DragText.s
-  Protected *this._s_widget
-  Protected e_widget = *event\widget
-  Protected e_type = *event\type
-  
-  
-  Select e_type 
-    Case #PB_EventType_MouseMove
-;       If Drag
-;         If Not UpdateSelector(Drag)
-;           Drag = 0
-;         EndIf
-;       EndIf
-;       
-      ;Debug  Drag
-   ;   UpdateSelector(Drag)
-      
-;     Case #PB_EventType_LeftButtonUp
-;       *this = e_widget
-;       
-;       If *this And *this\mode\transform
-;         If DragText
-;           If Drag
-;             
-;             *this = object_add_new(*this, GetClassType(DragText), GetSelectorX(*this), GetSelectorY(*this), GetSelectorWidth(*this), GetSelectorHeight(*this)) ; DeltaX, DeltaY, MouseX-DeltaX, MouseY-DeltaY)
-;             
-;             FreeSelector(*this)
-;             Drag = 0
-;           Else
-;             
-;             object_add_new(*this, GetClassType(DragText), GetMouseX(*this), GetMouseY(*this))
-;             
-;           EndIf
-;           
-;           DragText = ""
-;         Else
-;           properties_update(id_properties_tree, *this)
-;         EndIf
-;       EndIf
-      
-    Case #PB_EventType_StatusChange
-      *this = e_widget
-      
-      If *this ;And GetData(*this) <> GetState(id_inspector_tree) 
-        
-        Debug ""+*this+" "+GetData(*this) +" "+ GetState(id_inspector_tree)
-        SetState(id_inspector_tree, GetData(*this))
-        SetGadgetState(listview_debug, GetData(*this))
-        properties_update(id_properties_tree, *this)
-      EndIf
-      
-    Case #PB_EventType_LeftButtonDown
-      
-      
-    ;;  Debug  GetItemText(id_elements, GetState(id_elements))
-;       *this = e_widget
-;       
-;       If *this And *this\mode\transform   
-;         If GetState(id_elements) > 0
-;           DragText = GetItemText(id_elements, GetState(id_elements))
-;           SetState(id_elements, 0)
-;         EndIf
-;         
-;         If DragText
-;           Drag = SetSelector(*This)
-;         Else
-;           If a_set(*this)
-;             Debug "изменено down"+ *this +" "+ GetData(*this)
-;             SetState(id_inspector_tree, GetData(*this))
-;             SetGadgetState(listview_debug, GetData(*this))
-;             properties_update(id_properties_tree, *this)
-;           EndIf
-;         EndIf
-;       EndIf
-      
-  EndSelect
-  
-EndProcedure
 
 ;-
-Procedure ide_gadget_events()
+Procedure ide_events()
   Protected *this._s_widget
   Protected e_type = *event\type
   Protected e_item = *event\item
@@ -519,7 +463,7 @@ Procedure ide_gadget_events()
   EndSelect
 EndProcedure
 
-Procedure ide_window_open(x=100,y=100,width=800,height=600)
+Procedure ide_create(x=100,y=100,width=800,height=600)
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
   Define root = widget::Open(OpenWindow(#PB_Any, x,y,width,height, "ide", flag))
   window_ide = widget::GetWindow(root)
@@ -543,29 +487,36 @@ Procedure ide_window_open(x=100,y=100,width=800,height=600)
   ;id_design_code = listview_debug
   
   id_inspector_panel = Panel(0,0,0,0)
-  AddItem(id_inspector_panel, 0, "elements", 0, 0) 
-  id_elements = Tree(0,0,0,0, #__flag_autosize|#__flag_NoButtons|#__flag_NoLines)
-  ; AddItem(id_elements, 0, "Button", 0, 0) ; bug tree no add fill list
   
-  AddItem(id_inspector_panel, 1, "properties", 0, 0)  
+  AddItem(id_inspector_panel, -1, "properties", 0, 0)  
   id_properties_tree = Tree_Properties(0,0,0,0, #__flag_autosize)
-  Define Value = id_properties_tree
-  AddItem(id_properties_tree, #_pi_group_0, "common")
-  AddItem(id_properties_tree, #_pi_id, "id:"+Chr(10)+Str(Value), #PB_GadgetType_String, 1)
-  AddItem(id_properties_tree, #_pi_class, "class:"+Chr(10)+GetClass(Value)+"_"+GetCount(Value), #PB_GadgetType_String, 1)
-  AddItem(id_properties_tree, #_pi_text, "text:"+Chr(10)+GetText(Value), #PB_GadgetType_String, 1)
+  If id_properties_tree
+    AddItem(id_properties_tree, #_pi_group_0,  "Common")
+    AddItem(id_properties_tree, #_pi_id,       "ID"      , #PB_GadgetType_String, 1)
+    AddItem(id_properties_tree, #_pi_class,    "Class"   , #PB_GadgetType_String, 1)
+    AddItem(id_properties_tree, #_pi_text,     "Text"    , #PB_GadgetType_String, 1)
+    
+    AddItem(id_properties_tree, #_pi_group_1,  "Layout")
+    AddItem(id_properties_tree, #_pi_x,        "X"       , #PB_GadgetType_Spin, 1)
+    AddItem(id_properties_tree, #_pi_y,        "Y"       , #PB_GadgetType_Spin, 1)
+    AddItem(id_properties_tree, #_pi_width,    "Width"   , #PB_GadgetType_Spin, 1)
+    AddItem(id_properties_tree, #_pi_height,   "Height"  , #PB_GadgetType_Spin, 1)
+    
+    AddItem(id_properties_tree, #_pi_group_2,  "State")
+    AddItem(id_properties_tree, #_pi_disable,  "Disable" , #PB_GadgetType_ComboBox, 1)
+    AddItem(id_properties_tree, #_pi_hide,     "Hide"    , #PB_GadgetType_ComboBox, 1)
+  EndIf
   
-  AddItem(id_properties_tree, #_pi_group_1, "layout")
-  AddItem(id_properties_tree, #_pi_x, "x:"+Chr(10)+Str(X(Value)), #PB_GadgetType_Spin, 1)
-  AddItem(id_properties_tree, #_pi_y, "y:"+Chr(10)+Str(Y(Value)), #PB_GadgetType_Spin, 1)
-  AddItem(id_properties_tree, #_pi_width, "width:"+Chr(10)+Str(Width(Value)), #PB_GadgetType_Spin, 1)
-  AddItem(id_properties_tree, #_pi_height, "height:"+Chr(10)+Str(Height(Value)), #PB_GadgetType_Spin, 1)
+  AddItem(id_inspector_panel, -1, "elements", 0, 0) 
+  id_elements = Tree(0,0,0,0, #__flag_autosize|#__flag_NoButtons|#__flag_NoLines)
   
-  AddItem(id_properties_tree, #_pi_group_2, "state")
-  AddItem(id_properties_tree, #_pi_disable, "disable:"+Chr(10)+"", #PB_GadgetType_ComboBox, 1);Str(Disable(Value)))
-  AddItem(id_properties_tree, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #PB_GadgetType_ComboBox, 1)
+  AddItem(id_inspector_panel, -1, "events", 0, 0)  
+  id_events_tree = Tree_Properties(0,0,0,0, #__flag_autosize) 
+  AddItem(id_events_tree, #_ei_leftclick,  "LeftClick")
+  AddItem(id_events_tree, #_ei_change,  "Change")
+  AddItem(id_events_tree, #_ei_enter,  "Enter")
+  AddItem(id_events_tree, #_ei_leave,  "Leave")
   
-  AddItem(id_inspector_panel, 2, "events", 0, 0)  
   CloseList()
   
   id_help_text  = Text(0,0,0,0, "help for the inspector", #__text_border)
@@ -594,53 +545,47 @@ Procedure ide_window_open(x=100,y=100,width=800,height=600)
   widget::SetState(Splitter_design, 30)
   
   
-  Bind(id_inspector_tree, @ide_gadget_events())
-  Bind(id_elements, @ide_gadget_events())
+  Bind(id_inspector_tree, @ide_events())
+  Bind(id_elements, @ide_events())
   ProcedureReturn window_ide
-EndProcedure
-
-Procedure ide_window_events(Event)
-  Select event
-      
-  EndSelect
 EndProcedure
 
 ;-
 CompilerIf #PB_Compiler_IsMainFile 
   Define event
-  ide_window_open()
+  ide_create()
   
   elements_list_fill(id_elements, GetCurrentDirectory()+"Themes/")
   
   ;OpenList(id_design_form)
-  Define *window = object_add_new(id_design_form, #__type_window, 10, 10)
-  Define *container = object_add_new(*window, #__type_container, 80, 10)
-  object_add_new(*container, #__type_button, 10, 20)
-  object_add_new(*window, #__type_button, 10, 20)
+  Define *window = this_create(id_design_form, #__type_window, 10, 10)
+  Define *container = this_create(*window, #__type_container, 80, 10)
+  this_create(*container, #__type_button, 10, 20)
+  this_create(*window, #__type_button, 10, 20)
   
   Define item = 1
   SetState(id_inspector_tree, item)
   SetGadgetState(listview_debug, item)
   
-  Define *container2 = object_add_new(*container, #__type_container, 80, 10)
-  object_add_new(*container2, #__type_button, 10, 20)
+  Define *container2 = this_create(*container, #__type_container, 80, 10)
+  this_create(*container2, #__type_button, 10, 20)
   
-;   Define *window = object_add_new(id_design_form, #__type_window, 10, 10)
-;   Define *container = object_add_new(*window, #__type_container, 80, 10)
-;   object_add_new(*container, #__type_button, -10, 20)
-;   object_add_new(*window, #__type_button, 10, 20)
+;   Define *window = this_create(id_design_form, #__type_window, 10, 10)
+;   Define *container = this_create(*window, #__type_container, 80, 10)
+;   this_create(*container, #__type_button, -10, 20)
+;   this_create(*window, #__type_button, 10, 20)
 ;   ;CloseList()
   
   Repeat 
     event = WaitWindowEvent() 
     
-    Select EventWindow()
-      Case window_ide 
-        ide_window_events(event)
-    EndSelect
+;     Select EventWindow()
+;       Case window_ide 
+;         ide_window_events(event)
+;     EndSelect
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----vf-6---
+; Folding = +----v8f-8
 ; EnableXP

@@ -234,9 +234,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       pos.l
       size.l
       index.l
-      ;cursor.l
-      delta._s_point
-      *widget._s_widget
+      
       id._s_transform[#__count_anchors_]
     EndStructure
     
@@ -447,6 +445,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       *after._s_widget
       *before._s_widget
       
+      child.b           ; is the widget composite?
+      
       *adress           ; widget list adress
       *root._s_root     ; this root
       *parent._s_widget ; this parent
@@ -568,6 +568,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *opened._s_widget    ; opened list element
       *entered._s_widget   ; at point element
       *selected._s_widget  ; pushed at point element
+      *focused._s_widget   ; keyboard focused element
       
       List *_childrens._s_widget()
       List *_events._s_event()
