@@ -190,6 +190,8 @@ Procedure.i elements_list_fill(*id, Directory$)
         Wend  
       EndIf
       
+      ; select cursor
+      SetState(*id, 0)
       ClosePack(ZipFile)
     EndIf
   EndIf
@@ -214,10 +216,8 @@ EndProcedure
 
 
 ;-
-Global GrabDrawingImage
-
 Procedure.i start_select(*this._s_widget)
-  SetCursor(*this, #PB_Cursor_Cross)
+  ;;SetCursor(*this, #PB_Cursor_Cross)
   Redraw(*this\root)
   
   If StartDrawing( CanvasOutput(*this\root\canvas\gadget))
@@ -301,7 +301,7 @@ Procedure add_element(gadget.i, *new._s_widget, Class.s)
   Protected Parent = GetParent(*new)
   Protected CountItems = CountItems(gadget)
   Protected *Sublevel, SubLevel ;= GetLevel(Parent) - 1 ; level mdi minus
-  Protected i, Position = GetState(gadget) + 1
+  Protected i, Position = GetState(gadget) + 1  ; GetData(Parent) + 1 ; 
   
   ; get childrens position and sublevel
   For i = 0 To CountItems - 1
@@ -314,15 +314,9 @@ Procedure add_element(gadget.i, *new._s_widget, Class.s)
   
   ; 
   For i = Position To CountItems - 1
-    *Sublevel = GetItemAttribute(gadget, i, #PB_Tree_SubLevel)
-    
-    If SubLevel >= *Sublevel
-      If SubLevel > *Sublevel
-        SetData( GetItemData(gadget, i), (i+1))
-      EndIf
-    Else
-      Position = (i+1)
-      Break
+    If SubLevel <= GetItemAttribute(gadget, i, #PB_Tree_SubLevel)
+      SetData( GetItemData(gadget, i), i)
+      Position + 1
     EndIf
   Next 
   
@@ -340,7 +334,7 @@ Procedure add_element(gadget.i, *new._s_widget, Class.s)
   ; SetGadgetItemState(listview_debug, Position, #PB_Tree_Selected)
   SetGadgetState(listview_debug, Position) ; Bug
   
-  update_properties(id_properties_tree, *new)
+  ;update_properties(id_properties_tree, *new)
   
   ; Debug "pos "+Position
   ;Add_Code(*new, Position-1, SubLevel)
@@ -353,6 +347,10 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
   Protected Position =- 1, flag.i
   
   If *parent 
+    If Not *parent\mode\transform
+      a_add(*parent)
+    EndIf
+    
     class.s = LCase(Trim(class))
     OpenList(*parent, GetState(*parent)) 
     
@@ -360,9 +358,9 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
     Select class
       Case "window"    
         If GetType(*parent) = #PB_GadgetType_MDI
-          *new = AddItem(*parent, #PB_Any, "", - 1, flag|#__flag_anchorsGadget)
+          *new = AddItem(*parent, #PB_Any, "", - 1, flag)
         Else
-          *new = Window(x,y,width,height, "", flag|#__flag_anchorsGadget, *parent)
+          *new = Window(x,y,width,height, "", flag, *parent)
         EndIf
         
         Bind(*new, @events_element())
@@ -394,6 +392,16 @@ Procedure events_element()
   Static Drag
   
   Select e_type 
+    Case #PB_EventType_MouseEnter
+      If GetState(id_elements) > 0 And *this\container 
+        SetCursor(*this, #PB_Cursor_Cross)
+      EndIf
+    
+    Case #PB_EventType_MouseLeave
+      If GetState(id_elements) > 0 And *this\container 
+        SetCursor(*this, #PB_Cursor_Default)
+      EndIf
+    
     Case #PB_EventType_MouseMove
       If Drag
         If Not draw_select(Drag)
@@ -402,20 +410,24 @@ Procedure events_element()
       EndIf
       
     Case #PB_EventType_LeftButtonDown
-      If GetState(id_elements) > 0
+      If GetState(id_elements) > 0 And *this\container 
         Drag = start_select(*this)
       EndIf
       
     Case #PB_EventType_LeftButtonUp
-      If stop_select(*this)
-        create_element(*this, GetText(id_elements),
-                       Transform()\id\x,
-                       Transform()\id\y, 
-                       Transform()\id\width, 
-                       Transform()\id\height)
+      If GetState(id_elements) > 0
+        If stop_select(*this)
+          
+          create_element(*this, GetText(id_elements),
+                         Transform()\id\x,
+                         Transform()\id\y, 
+                         Transform()\id\width, 
+                         Transform()\id\height)
+          
+          Drag = 0
+        EndIf
         
         SetState(id_elements, 0)
-        Drag = 0
       EndIf
       
     Case #PB_EventType_StatusChange
@@ -448,6 +460,11 @@ Procedure events_ide()
         EndIf
       EndIf
       
+    Case #PB_EventType_LeftClick
+      If e_widget = id_elements
+        Debug "click"
+      EndIf
+      
   EndSelect
 EndProcedure
 
@@ -476,6 +493,9 @@ Procedure create_ide(x=100,y=100,width=800,height=600)
   
   id_inspector_panel = Panel(0,0,0,0)
   
+  AddItem(id_inspector_panel, -1, "elements", 0, 0) 
+  id_elements = Tree(0,0,0,0, #__flag_autosize|#__flag_NoButtons|#__flag_NoLines)
+  
   AddItem(id_inspector_panel, -1, "properties", 0, 0)  
   id_properties_tree = Tree_Properties(0,0,0,0, #__flag_autosize)
   If id_properties_tree
@@ -494,9 +514,6 @@ Procedure create_ide(x=100,y=100,width=800,height=600)
     AddItem(id_properties_tree, #_pi_disable,  "Disable" , #PB_GadgetType_ComboBox, 1)
     AddItem(id_properties_tree, #_pi_hide,     "Hide"    , #PB_GadgetType_ComboBox, 1)
   EndIf
-  
-  AddItem(id_inspector_panel, -1, "elements", 0, 0) 
-  id_elements = Tree(0,0,0,0, #__flag_autosize|#__flag_NoButtons|#__flag_NoLines)
   
   AddItem(id_inspector_panel, -1, "events", 0, 0)  
   id_events_tree = Tree_Properties(0,0,0,0, #__flag_autosize) 
@@ -546,23 +563,26 @@ CompilerIf #PB_Compiler_IsMainFile
   elements_list_fill(id_elements, GetCurrentDirectory()+"Themes/")
   
   ;   ;OpenList(id_design_form)
-  Define *window = create_element(id_design_form, "window", 10, 10)
+  Define *window = create_element(id_design_form, "window", 10, 10, 350, 200)
+    Define *container = create_element(*window, "container", 80, 10, 220, 140)
+    create_element(*container, "button", 10, 20, 100, 30)
+    create_element(*window, "button", 10, 20, 100, 30)
+    
+    Define item = 1
+    SetState(id_inspector_tree, item)
+    SetGadgetState(listview_debug, item)
+    
+    Define *container2 = create_element(*container, "container", 80, 10, 220, 140)
+    create_element(*container2, "button", 10, 20, 100, 30)
+    
+    SetState(id_inspector_tree, 0)
+    create_element(*window, "button", 10, 20, 100, 30)
+    
+  ;   Define *window = create_element(id_design_form, "window", 10, 10)
   ;   Define *container = create_element(*window, "container", 80, 10)
-  ;   create_element(*container, "button", 10, 20)
+  ;   create_element(*container, "button", -10, 20)
   ;   create_element(*window, "button", 10, 20)
-  ;   
-  ;   Define item = 1
-  ;   SetState(id_inspector_tree, item)
-  ;   SetGadgetState(listview_debug, item)
-  ;   
-  ;   Define *container2 = create_element(*container, "container", 80, 10)
-  ;   create_element(*container2, "button", 10, 20)
-  ;   
-  ; ;   Define *window = create_element(id_design_form, "window", 10, 10)
-  ; ;   Define *container = create_element(*window, "container", 80, 10)
-  ; ;   create_element(*container, "button", -10, 20)
-  ; ;   create_element(*window, "button", 10, 20)
-  ; ;   ;CloseList()
+  ;   ;CloseList()
   
   Repeat 
     event = WaitWindowEvent() 
@@ -575,5 +595,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----f4---
+; Folding = ---X--f1--
 ; EnableXP

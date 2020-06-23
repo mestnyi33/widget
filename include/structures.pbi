@@ -107,7 +107,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_text Extends _s_edit
       ;     ;     Char.c
       fontID.i[2]
-      count.l
+      ;count.l
       
       pass.b
       lower.b
@@ -135,9 +135,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       height.l
       width.l
       
-      index.i[3]
-      ;handle.i[2] ; - editor
-      ;change.b
+      index.i[3] ;
+      ; index[0] - IsImage()
+      ; index[1] - Image()
+      ; index[2] - ImageID()
       
       _padding.b
       padding._s_padding
@@ -169,7 +170,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       draw.b
       round.a
       text._s_text
-      image._s_image
+      img._s_image
       color._s_color
     EndStructure
     
@@ -213,7 +214,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;     EndStructure
     
     ;- - _s_transform
-    Structure _s_transform
+    Structure _s_transforms
       y.l
       x.l
       width.l
@@ -223,37 +224,34 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_transforms
-    Structure _s_transforms 
-      *grab
+    Structure _s_transform
+      *main._s_widget
+      *grab ; grab image handle
       pos.l
       size.l
       index.l
-      id._s_transform[#__count_anchors_]
-    EndStructure
-    
-    ;- - _s_windowFlag
-    Structure _s_window_mode
-      SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
-      MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-      MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
-      SizeGadget.b     ; 12845056   - #PB_Window_SizeGadget      ; Adds the sizeable feature To a Window.
-      Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
-      TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
-      Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
-      Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
-      ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
-      WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
-                       ;                X,Y parameters are ignored.
-      Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
-      Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
-      NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
-      NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
+      id._s_transforms[#__count_anchors_]
     EndStructure
     
     ;- - _s_mode
     Structure _s_mode
-      Window._s_window_mode
-      inline.b
+;       SystemMenu.b     ; 13107200   - #PB_Window_SystemMenu      ; Enables the system menu on the Window Title bar (Default).
+;       MinimizeGadget.b ; 13238272   - #PB_Window_minimizeGadget  ; Adds the minimize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+;       MaximizeGadget.b ; 13172736   - #PB_Window_maximizeGadget  ; Adds the maximize Gadget To the Window Title bar. #PB_Window_SystemMenu is automatically added.
+;       SizeGadget.b     ; 12845056   - #PB_Window_SizeGadget      ; Adds the sizeable feature To a Window.
+;       Invisible.b      ; 268435456  - #PB_Window_invisible       ; creates the Window but don't display.
+;       TitleBar.b       ; 12582912   - #PB_Window_titleBar        ; creates a Window With a titlebar.
+;       Tool.b           ; 4          - #PB_Window_tool            ; creates a Window With a smaller titlebar And no taskbar entry. 
+;       Borderless.b     ; 2147483648 - #PB_Window_borderless      ; creates a Window without any borders.
+;       ScreenCentered.b ; 1          - #PB_Window_ScreenCentered  ; Centers the Window in the middle of the screen. X,Y parameters are ignored.
+;       WindowCentered.b ; 2          - #PB_Window_windowCentered  ; Centers the Window in the middle of the Parent Window ('ParentWindowID' must be specified).
+;                        ;                X,Y parameters are ignored.
+;       Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
+;       Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
+;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
+      
+      ;inline.b
       lines.b
       buttons.b
       gridlines.b
@@ -266,8 +264,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       collapse.b
       
       threestate.b
-      iconsize.b
-      transform.b
+      
+      iconsize.b  ; small/large
+      
+      transform.b ; add anchors on the widget (to size and move)
     EndStructure
     
     ;- - _s_caption
@@ -301,7 +301,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       visible.b
       
       text._s_text
-      image._s_image
+      img._s_image
       color._s_color
     EndStructure
     
@@ -344,7 +344,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       draw.b
       hide.b
       
-      image._s_image
+      img._s_image
       text._s_text[4]
       box._s_button[2]
       color._s_color
@@ -389,7 +389,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       round.a
       
       text._s_text
-      image._s_image
+      img._s_image
       color._s_color
       *data  ; set/get item data
     EndStructure
@@ -506,8 +506,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       button._s_button ; checkbox; optionbox
       combo_box._s_button
       
+      img._s_image
       text._s_text 
-      image._s_image
       
       *align._s_align
       
@@ -556,7 +556,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       canvas._s_canvas
       keyboard._s_keyboard
       
-      *anchor._s_transforms
+      *transform._s_transform
       
       *opened._s_widget    ; opened list element
       *entered._s_widget   ; at point element

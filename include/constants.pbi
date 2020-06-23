@@ -11,6 +11,9 @@
     #debug_draw_font_change = #debug
     #debug_draw_item_font_change = #debug
     
+    #debug_multiline = 0
+    #debug_repaint = 0 ; Debug " - -  Canvas repaint - -  "
+    
     #__height = 21 ; #__height = 21
     #__bsize = 3   ; #__bsize = 3
     #__window_frame = #__height+#__bsize*2
@@ -157,6 +160,7 @@
     EnumerationBinary 
       #__change_width
       #__change_height
+     ; #__change_flag
     EndEnumeration
     
     ;- _c_flag
@@ -202,7 +206,6 @@
       ;#__flag_invisible
       ;#__flag_sizegadget
       ;#__flag_systemmenu
-      #__flag_anchorsgadget
       #__flag_noscrollbars
       
       #__flag_borderless
@@ -212,6 +215,7 @@
       ;         #__flag_Single
       
       
+      #__flag_anchorsgadget
       #__flag_limit
     EndEnumeration
     

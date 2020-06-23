@@ -1,8 +1,8 @@
-﻿;XIncludeFile "../../widgets.pbi"
-XIncludeFile "../empty.pb"
+﻿XIncludeFile "../../widgets.pbi"
+;XIncludeFile "../empty.pb"
 UseLib(widget)
 
-LN=1500; количесвто итемов 
+LN=1000; количесвто итемов 
 Global *w._S_widget
 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
@@ -28,11 +28,13 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   a=0
   Define time = ElapsedMilliseconds()
   For a = 0 To LN : SetItemData(*w, a,a) : Next
+  For a = 0 To LN : SetItemText(*w, a,Str(a)) : Next
   Debug " "+Str(ElapsedMilliseconds()-time) + " - widget set items time - " + CountItems(*w)
   
   a=0
   Define time = ElapsedMilliseconds()
   For a = 0 To LN : SetGadgetItemData(0, a,a) : Next
+  For a = 0 To LN : SetGadgetItemText(0, a,Str(a)) : Next
   Debug " "+Str(ElapsedMilliseconds()-time) + " - gadget set items time - " + CountGadgetItems(0)
   
   
@@ -68,7 +70,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Until  Event= #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.71 LTS (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 43
+; CursorPosition = 35
+; FirstLine = 18
 ; Folding = -
 ; EnableXP
