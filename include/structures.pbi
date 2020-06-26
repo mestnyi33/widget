@@ -10,7 +10,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_point
     Structure _s_point
       y.l[5] ; убрать 
-      x.l[5]
+      x.l[constants::#__c]
     EndStructure
     
     ;- - _s_coordinate
@@ -28,15 +28,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       back.i[4]
       frame.i[4]
       alpha.a[2]
-    EndStructure
-    
-    ;- - _s_mouse
-    Structure _s_mouse Extends _s_point
-      drag.b[2]
-      change.b
-      buttons.l 
-      wheel._s_point
-      delta._s_point
     EndStructure
     
     ;- - _s_align
@@ -226,6 +217,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_transforms
     Structure _s_transform
       *main._s_widget
+      *widget._s_widget
+      
       *grab ; grab image handle
       pos.l
       size.l
@@ -424,6 +417,16 @@ CompilerIf Not Defined(structures, #PB_Module)
       List _s._s_rows()
     EndStructure
     
+    ;- - _s_bind
+    Structure _s_bind 
+      *callback.pFunc
+      *widget._s_widget     ; EventWidget()
+      item.l                ; EventItem()
+      *data                 ; EventData()
+      
+      List type.l()
+    EndStructure
+    
     ;- - _s_widget
     Structure _s_widget 
       *_drawing ; drawing_mode
@@ -440,6 +443,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       child.b           ; is the widget composite?
       
+      *container        ; 
       *adress           ; widget list adress
       *root._s_root     ; this root
       *parent._s_widget ; this parent
@@ -497,7 +501,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       __height.i ; 
       __width.i
       
-      container.i
       repaint.i
       resize.b
       
@@ -509,65 +512,66 @@ CompilerIf Not Defined(structures, #PB_Module)
       img._s_image
       text._s_text 
       
-      *align._s_align
-      
-      *selector._s_transform[#__count_anchors_]
-      *event._s_event
       *data
+      *align._s_align
+      *selector._s_transform[#__count_anchors_]
+      
+      List *_event._s_bind()
     EndStructure
     
-    ;- - _s_canvas
-    Structure _s_canvas
-      container.b
-      window.i
-      gadget.i
-      repaint.b
+    ;- - _s_mouse
+    Structure _s_mouse Extends _s_point
+      *widget._s_widget     ; at point element
+      *selected._s_widget   ; at point pushed element
+      drag.b[2]
+      change.b
+      buttons.l 
+      wheel._s_point
+      delta._s_point
     EndStructure
     
     ;- - _s_keyboard
     Structure _s_keyboard
+      *widget._s_widget     ; keyboard focused element
       change.b
       input.c
       key.i[2]
     EndStructure
     
-    ;- - _s_event
-    Structure _s_event 
-      type.l                ; Widget_EventType()
-      item.l                ; Widget_EventItem()
-      *data                 ; Widget_EventData()
-      
-      *root._s_root         ; Root()
-      *widget._s_widget     ; EventWidget()
-      *active._s_widget     ; GetActive() - window
-      *callback.pFunc
-      
-      
-      *leave._s_widget   ;temp
-      
-      _draw.l
-      
-      List *_childrens._s_widget()
+    ;- - _s_canvas
+    Structure _s_canvas
+      *widget._s_widget     ; opened list element
+      container.i
+      window.i
+      gadget.i
+      repaint.b
     EndStructure
     
     ;- - _s_root
     Structure _s_root Extends _s_widget
-      mouse._s_mouse
       canvas._s_canvas
-      keyboard._s_keyboard
-      
       *transform._s_transform
-      
-      *opened._s_widget    ; opened list element
-      *entered._s_widget   ; at point element
-      *selected._s_widget  ; pushed at point element
-      *focused._s_widget   ; keyboard focused element
-      
-      List *_childrens._s_widget()
-      List *_events._s_event()
     EndStructure
     
-    Global *event._s_event = AllocateStructure(_s_event)
+    ;- - _s_this
+    Structure _s_this
+      mouse._s_mouse        ; Mouse()\
+      keyboard._s_keyboard  ; Keyboard()\
+      *callback.pFunc
+      
+      *root._s_root         ; Root()\
+      *active._s_widget     ; GetActiveWindow()\
+      *widget._s_widget     ; EventWidget()
+      
+      *type                 ; EventType()
+      *item                 ; EventItem()
+      *data                 ; EventData()
+      
+      List *post._s_bind()
+      List *_childrens._s_widget()
+    EndStructure
+    
+    Global *event._s_this = AllocateStructure(_s_this)
     
   EndDeclareModule 
   
@@ -576,5 +580,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --f+---
+; Folding = --P--D-
 ; EnableXP

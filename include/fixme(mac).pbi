@@ -93,7 +93,7 @@ Module fixme
       Protected FontID = PB(GetGadgetFont)(Gadget)
       
       If Gadget =- 1 And Not FontID
-        Debug #PB_Compiler_Procedure
+        ; Debug #PB_Compiler_Procedure
         Protected fs.CGFloat 
         CocoaMessage(@fs, 0, "NSFont systemFontSize") : fs - 1
         FontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @fs) 

@@ -1,4 +1,24 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿;       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;         ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
+;         ;                     Root()\text\fontID = PB_(GetGadgetFont)(TextGadget) 
+;         ;                     FreeGadget(TextGadget)
+;         ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
+;         ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
+;         ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
+;         
+;         ;Root()\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
+;         ;Root()\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
+;         ;Root()\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
+;         ;
+;         ;           Root()\text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
+;         ;           CocoaMessage(@FontSize, Root()\text\fontID, "pointSize")
+;         ;           
+;         ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
+;         
+;         ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, Root()\text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
+;       CompilerEndIf
+      
+XIncludeFile "../../widgets.pbi" : Uselib(widget)
 
 #WinTemp=0
 #Font18R=0

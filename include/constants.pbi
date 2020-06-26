@@ -548,6 +548,252 @@
     #__c_6 = 6
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+; ;     
+; ;     
+; ;     EnumerationBinary 
+; ;       #__SystemMenu
+; ;       
+; ;       #__TitleBar
+; ;       #__SizeGadget
+; ;       #__MaximizeGadget
+; ;       #__MinimizeGadget
+; ;       
+; ;       #__ScreenCentered
+; ;       #__Tool
+; ;       
+; ;       #__Default
+; ;       
+; ;       #__Minimize
+; ;       #__Maximize
+; ;       #__Invisible
+; ;       
+; ;       #__Vertical
+; ;       #__Left
+; ;       #__Top
+; ;       #__Center
+; ;       #__Right
+; ;       #__Bottom
+; ;       
+; ;       #__Editable
+; ;       #__Numeric
+; ;       #__Password
+; ;       #__ReadOnly
+; ;       #__LowerCase
+; ;       #__UpperCase
+; ;       
+; ;       
+; ;       #__BorderLess
+; ;       #__Border
+; ;       #__Flat
+; ;       #__Raised
+; ;       #__Single
+; ;       #__Double
+; ;       
+; ;       #__WordWrap
+; ;       #__MultiLine
+; ;       
+; ;       #__ThreeState
+; ;       #__MultiSelect
+; ;       #__ClickSelect
+; ;       
+; ;       
+; ;       #__Image
+; ;       
+; ;       #__Underline
+; ;       
+; ;       #__CheckBoxes
+; ;       
+; ;       
+; ;       #__GridLines
+; ;       #__HeaderDragDrop
+; ;       #__FullRowSelect
+; ;       #__AlwaysShowSelection
+; ;       
+; ;       
+; ;       #__NoLines
+; ;       #__NoButtons
+; ;       #__NoFiles
+; ;       #__NoFolders
+; ;       #__NoParentFolder
+; ;       #__NoDirectoryChange
+; ;       #__NoDriveRequester
+; ;       #__NoMyDocuments
+; ;       #__NoSort
+; ;       #__AutoSort
+; ;       #__HiddenFiles
+; ;       
+; ;       #__Separator
+; ;       #__FirstFixed
+; ;       #__SecondFixed 
+; ;       
+; ;       #__Container
+; ;       #__ClipMouse
+; ;       
+; ;       #__Keyboard
+; ;       #__DrawFocus
+; ;       
+; ;       ;;;;;;;;;;;
+; ;       #__flag_limit
+; ;       
+; ;       
+; ;     EndEnumeration
+; ;     
+; ;     #__Normal  = #__Default
+; ;     #__WindowCentered = #__Center
+; ;     
+; ;     #__NoActivate = #__NoLines
+; ;     #__NoGadgets = #__NoButtons
+; ;     
+; ;     #__Toggle = #__DrawFocus
+; ;     
+; ;     #__Ticks = #__DrawFocus
+; ;     #__Smooth = #__DrawFocus
+; ;     
+; ;     #__UpDown = #__DrawFocus
+; ;     
+; ;     Debug #__flag_limit>>1
+; ;     If (#__flag_limit>>1) > 2147483647 ; 8589934592
+; ;       Debug "Исчерпан лимит в x32 ("+Str(#__flag_limit>>1)+")"
+; ;     EndIf
+    
+    
+; ;     
+; ;   #PB_Window_TitleBar
+; ;   #PB_Window_BorderLess
+; ;   #PB_Window_SystemMenu
+; ;   #PB_Window_MaximizeGadget
+; ;   #PB_Window_MinimizeGadget
+; ;   #PB_Window_ScreenCentered
+; ;   #PB_Window_SizeGadget
+; ;   #PB_Window_WindowCentered
+; ;   #PB_Window_Tool
+; ;   #PB_Window_Normal
+; ;   #PB_Window_Minimize
+; ;   #PB_Window_Maximize
+; ;   #PB_Window_Invisible
+; ;   #PB_Window_NoActivate
+; ;   #PB_Window_NoGadgets
+; ;   
+; ;   #PB_Button_Default
+; ;   #PB_Button_Toggle
+; ;   #PB_Button_Left
+; ;   #PB_Button_Center
+; ;   #PB_Button_Right
+; ;   #PB_Button_MultiLine
+; ;   
+; ;   #PB_String_BorderLess
+; ;   #PB_String_Numeric
+; ;   #PB_String_Password
+; ;   #PB_String_ReadOnly
+; ;   #PB_String_LowerCase
+; ;   #PB_String_UpperCase
+; ;   
+; ;   #PB_Text_Left
+; ;   #PB_Text_Center
+; ;   #PB_Text_Right
+; ;   #PB_Text_Border
+; ;   
+; ;   #PB_CheckBox_Right
+; ;   #PB_CheckBox_Center
+; ;   #PB_CheckBox_ThreeState
+; ;   
+; ;   #PB_ListView_MultiSelect
+; ;   #PB_ListView_ClickSelect
+; ;   
+; ;   #PB_Frame_Single
+; ;   #PB_Frame_Double
+; ;   #PB_Frame_Flat
+; ;   
+; ;   #PB_ComboBox_Editable
+; ;   #PB_ComboBox_LowerCase
+; ;   #PB_ComboBox_UpperCase
+; ;   #PB_ComboBox_Image
+; ;   
+; ;   #PB_Image_Border
+; ;   #PB_Image_Raised
+; ;   
+; ;   #PB_HyperLink_Underline
+; ;   
+; ;   #PB_ListIcon_CheckBoxes
+; ;   #PB_ListIcon_ThreeState
+; ;   #PB_ListIcon_MultiSelect
+; ;   #PB_ListIcon_GridLines
+; ;   #PB_ListIcon_FullRowSelect
+; ;   #PB_ListIcon_HeaderDragDrop
+; ;   #PB_ListIcon_AlwaysShowSelection
+; ;   
+; ;   #PB_ProgressBar_Smooth
+; ;   #PB_ProgressBar_Vertical
+; ;   
+; ;   #PB_ScrollBar_Vertical
+; ;   
+; ;   #PB_Container_BorderLess
+; ;   #PB_Container_Flat
+; ;   #PB_Container_Raised
+; ;   #PB_Container_Single
+; ;   #PB_Container_Double
+; ;   
+; ;   #PB_ScrollArea_BorderLess
+; ;   #PB_ScrollArea_Flat
+; ;   #PB_ScrollArea_Raised
+; ;   #PB_ScrollArea_Single
+; ;   #PB_ScrollArea_Center
+; ;   
+; ;   #PB_TrackBar_Ticks
+; ;   #PB_TrackBar_Vertical
+; ;   
+; ;   #PB_Calendar_Borderless
+; ;   
+; ;   #PB_Date_UpDown
+; ;   
+; ;   #PB_Editor_ReadOnly
+; ;   #PB_Editor_WordWrap
+; ;   
+; ;   #PB_Explorer_BorderLess
+; ;   #PB_Explorer_AlwaysShowSelection
+; ;   #PB_Explorer_MultiSelect
+; ;   #PB_Explorer_GridLines
+; ;   #PB_Explorer_HeaderDragDrop
+; ;   #PB_Explorer_FullRowSelect
+; ;   #PB_Explorer_NoFiles
+; ;   #PB_Explorer_NoFolders
+; ;   #PB_Explorer_NoParentFolder
+; ;   #PB_Explorer_NoDirectoryChange
+; ;   #PB_Explorer_NoDriveRequester
+; ;   #PB_Explorer_NoSort
+; ;   #PB_Explorer_NoMyDocuments
+; ;   #PB_Explorer_AutoSort
+; ;   #PB_Explorer_HiddenFiles
+; ;   
+; ;   #PB_Tree_AlwaysShowSelection
+; ;   #PB_Tree_NoLines
+; ;   #PB_Tree_NoButtons
+; ;   #PB_Tree_CheckBoxes
+; ;   #PB_Tree_ThreeState
+; ;   
+; ;   #PB_Splitter_Vertical
+; ;   #PB_Splitter_Separator
+; ;   #PB_Splitter_FirstFixed
+; ;   #PB_Splitter_SecondFixed 
+; ;   
+; ;   #PB_Canvas_Border
+; ;   #PB_Canvas_Container
+; ;   #PB_Canvas_ClipMouse
+; ;   #PB_Canvas_Keyboard
+; ;   #PB_Canvas_DrawFocus
+; ;   
   EndDeclareModule 
   
   

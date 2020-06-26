@@ -213,11 +213,11 @@ CompilerIf #PB_Compiler_IsMainFile
   
   SetState( *combo, #PB_GadgetType_Button) ; : PostEvent(#PB_Event_Widget, 20, *combo, #PB_EventType_Change)
   
-  ReDraw(GetRoot(*window_1))
-  ReDraw(GetRoot(*window_2))
-  
   HideWindow(GetWindow(GetRoot(*window_1)),0)
   HideWindow(GetWindow(GetRoot(*window_2)),0)
+  
+  ReDraw(GetRoot(*window_1))
+  ReDraw(GetRoot(*window_2))
   
   Repeat
     Define Event = WaitWindowEvent()

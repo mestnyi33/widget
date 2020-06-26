@@ -18,6 +18,7 @@ Global toolbar_design, listview_debug, id_help_text
 Global id_design_panel, id_design_form, id_design_code, id_events_tree,
        id_elements, id_properties_tree, id_inspector_tree, id_inspector_panel
 
+
 ;- ENUMs
 Enumeration 
   #_pi_group_0 
@@ -42,9 +43,6 @@ Enumeration
   #_ei_enter
   #_ei_leave
 EndEnumeration
-
-
-
 
 
 Procedure.i GetClassType(Class.s)
@@ -211,7 +209,43 @@ Procedure update_properties(gadget.i, Value.i)
   SetItemText(gadget, #_pi_hide,    GetItemText(gadget, #_pi_hide)    +Chr(10)+Str(Hide(Value)))
 EndProcedure
 
-
+Procedure Points(Steps = 5, BoxColor = 0, PlotColor = 0)
+  Static ID
+  Protected hDC, x,y
+    
+    If Not ID
+      ;Steps - 1
+      
+      ExamineDesktops()
+      Protected width = DesktopWidth(0)   
+      Protected height = DesktopHeight(0)
+      ID = CreateImage(#PB_Any, width, height)
+      
+      If PlotColor = 0 : PlotColor = RGB(1,1,1) : EndIf
+      If BoxColor = 0 : BoxColor = RGB(236,236,236) : EndIf
+      
+      If StartDrawing(ImageOutput(ID))
+        Box(0, 0, width, height, BoxColor)
+        
+        For x = 0 To width - 1
+          
+          For y = 0 To height - 1
+            
+            Plot(x, y, PlotColor)
+            
+            y + Steps
+          Next
+          
+          x + Steps
+        Next
+        
+        StopDrawing()
+      EndIf
+    EndIf
+    
+    ProcedureReturn ID
+  EndProcedure
+  
 
 
 
@@ -225,8 +259,8 @@ Procedure.i start_select(*this._s_widget)
     StopDrawing()
   EndIf
   
-  Transform()\id\x = Root()\mouse\delta\x + *this\x
-  Transform()\id\y = Root()\mouse\delta\y + *this\y
+  Transform()\id\x = Mouse()\delta\x + *this\x
+  Transform()\id\y = Mouse()\delta\y + *this\y
   
   If Not Transform()\id\width
     Transform()\id\width = 50
@@ -259,11 +293,11 @@ Procedure.i draw_select(*this._s_widget)
       InitTransform()
     EndIf
     
-    mouse_x = *this\root\mouse\x
-    mouse_y = *this\root\mouse\y
+    mouse_x = Mouse()\x
+    mouse_y = Mouse()\y
     
-    Transform()\id\x = *this\root\mouse\delta\x + *this\root\focused\x
-    Transform()\id\Y = *this\root\mouse\delta\y + *this\root\focused\y
+    Transform()\id\x = Mouse()\delta\x + *this\x
+    Transform()\id\Y = Mouse()\delta\y + *this\y
   
     If Transform()\id\x > mouse_x
       Transform()\id\Width = Transform()\id\X - mouse_x
@@ -299,9 +333,10 @@ Declare events_element()
 
 Procedure add_element(gadget.i, *new._s_widget, Class.s)
   Protected Parent = GetParent(*new)
-  Protected CountItems = CountItems(gadget)
+  Protected Position = GetData(Parent) 
+  ; Protected Position = GetState(gadget) + 1
+  Protected i, CountItems = CountItems(gadget)
   Protected *Sublevel, SubLevel ;= GetLevel(Parent) - 1 ; level mdi minus
-  Protected i, Position = GetState(gadget) + 1  ; GetData(Parent) + 1 ; 
   
   ; get childrens position and sublevel
   For i = 0 To CountItems - 1
@@ -369,11 +404,13 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
       Case "container"  : *new = Container(x,y,width,height, flag)
       Case "scrollarea" : *new = ScrollArea(x,y,width,height, *param1, *param2, *param3, flag)
       Case "button"     : *new = Button(x,y,width,height, "", flag)
+      Case "string"     : *new = String(x,y,width,height, "", flag)
+      Case "text"       : *new = Text(x,y,width,height, "", flag)
     EndSelect
     
     If *new
-      If *new\container
-        ;  SetImage(*new, 5)
+      If *new\container =- 1
+        SetImage(*new, Points())
       EndIf
       
       Class.s = GetClass(*new)+"_"+GetCount(*new)
@@ -595,5 +632,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---X--f1--
+; Folding = 7---8f+P7--
 ; EnableXP

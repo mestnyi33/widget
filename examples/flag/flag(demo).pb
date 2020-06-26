@@ -348,10 +348,42 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn Flags.S
   EndProcedure
   
-  Procedure.s FlagFromFlag( flag.i ) ; 
-    Protected Flags.S
+  Procedure.s FlagFromFlag( Type, flag.i ) ; 
+    Protected flags.S
     
-    ProcedureReturn Flags.S
+    Select type
+      Case #PB_GadgetType_Text
+        If flag & #__text_center
+          flags + "#PB_Text_Center|"
+        EndIf
+        If flag & #__text_right
+          flags + "#PB_Button_Right|"
+        EndIf
+        If flag & #__text_border
+          flags + "#PB_Text_Border|"
+        EndIf
+        
+      Case #PB_GadgetType_Button
+        If flag & #__button_left
+          flags + "#PB_Button_Left|"
+        EndIf
+        If flag & #__button_right
+          flags + "#PB_Button_Right|"
+        EndIf
+        If flag & #__button_multiline
+          flags + "#PB_Button_MultiLine|"
+        EndIf
+        If flag & #__button_toggle
+          flags + "#PB_Button_Toggle|"
+        EndIf
+        If flag & #__button_default
+          flags + "#PB_Button_Default|"
+        EndIf
+        
+        
+    EndSelect
+    
+    ProcedureReturn Trim(flags, "|")
   EndProcedure
   
   Procedure Add(text.s)
@@ -594,10 +626,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_Change
         Select *event\widget
           Case w_type 
-            Add(FlagFromType(GetState(w_type)))
             flag = Flag(*this)
-            Debug flag
-            ;SetCheckedText(w_flag, )
+            Add(FlagFromType(GetState(w_type)))
+            ;Debug FlagFromFlag(GetType(*this), flag)
+            SetCheckedText(w_flag, FlagFromFlag(GetType(*this), flag))
             
           Case w_flag
             ;  Debug GetCheckedText(w_flag)
@@ -619,7 +651,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, width+205, height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    *this = widget::Button(100, 100, 250, 200, text, #__button_multiline|#__flag_anchorsgadget) 
+    *this = widget::Button(100, 100, 250, 200, text, #__button_toggle|#__button_multiline|#__flag_anchorsgadget) 
     
     
     w_type = widget::ListView(width+45, 10, 150, 200) 
@@ -637,5 +669,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------
+; Folding = V0-----Wt-
 ; EnableXP

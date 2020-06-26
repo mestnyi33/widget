@@ -73,21 +73,21 @@ Procedure.i UpdateSelector(*this._s_widget)
     mouse_x = *this\root\mouse\x
     mouse_y = *this\root\mouse\y
     
-    Transform()\frame\x = *this\root\mouse\delta\x + *this\root\focused\x
-    Transform()\frame\Y = *this\root\mouse\delta\y + *this\root\focused\y
+    Transform()\id\x = *this\root\mouse\delta\x + *this\root\focused\x
+    Transform()\id\Y = *this\root\mouse\delta\y + *this\root\focused\y
     
-    If Transform()\frame\x > mouse_x
-      Transform()\frame\Width = Transform()\frame\X - mouse_x
-      Transform()\frame\x = mouse_x
+    If Transform()\id\x > mouse_x
+      Transform()\id\Width = Transform()\id\X - mouse_x
+      Transform()\id\x = mouse_x
     Else
-      Transform()\frame\Width = mouse_x - Transform()\frame\X
+      Transform()\id\Width = mouse_x - Transform()\id\X
     EndIf
     
-    If Transform()\frame\Y > mouse_y
-      Transform()\frame\Height = Transform()\frame\Y - mouse_y
-      Transform()\frame\Y = mouse_y
+    If Transform()\id\Y > mouse_y
+      Transform()\id\Height = Transform()\id\Y - mouse_y
+      Transform()\id\Y = mouse_y
     Else
-      Transform()\frame\Height = mouse_y - Transform()\frame\Y
+      Transform()\id\Height = mouse_y - Transform()\id\Y
     EndIf
     
     If GrabDrawingImage And
@@ -96,7 +96,7 @@ Procedure.i UpdateSelector(*this._s_widget)
       
       ; draw selector
       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      Box(Transform()\frame\x, Transform()\frame\y, Transform()\frame\width, Transform()\frame\height , $ff000000);Transform()\color[Transform()\state]\frame) 
+      Box(Transform()\id\x, Transform()\id\y, Transform()\id\width, Transform()\id\height , $ff000000);Transform()\color[Transform()\state]\frame) 
       StopDrawing()
       ProcedureReturn *this
     EndIf
@@ -130,10 +130,10 @@ EndProcedure
     Case #PB_EventType_LeftButtonUp
       If GetState(*vlist) > 0
         add_(*this, GetText(*vlist),
-                    Transform()\frame\x - *this\x[#__c_inner],
-                    Transform()\frame\y - *this\y[#__c_inner], 
-                    Transform()\frame\width, 
-                    Transform()\frame\height)
+                    Transform()\id\x - *this\x[#__c_inner],
+                    Transform()\id\y - *this\y[#__c_inner], 
+                    Transform()\id\width, 
+                    Transform()\id\height)
         
         SetState(*vlist, 0)
         Drag = 0

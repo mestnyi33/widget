@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+70, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    *this = widget::Button(100, 100, 250, 250, get_text(), #__button_multiline|#__flag_anchorsgadget);|#__text_vertical) 
+    *this = widget::Button(100, 100, 250, 250, get_text(), #__button_multiline);|#__flag_anchorsgadget);|#__text_vertical) 
     
     Define y = 10
     ; flag

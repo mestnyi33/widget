@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug " "+ *event\type
   EndProcedure
   
-  OpenWindow(0, 100, 100, 200, 200, "Live resize test", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
+  OpenWindow(0, 100, 100, 200, 200, "PB (window_0 & gadget)", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
   ButtonGadget(#PB_Any, 0,0,80,20,"button")
   ButtonGadget(#PB_Any, 200-80,200-20,80,20,"button")
   
@@ -32,31 +32,17 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-  Open(OpenWindow(#PB_Any, 150, 150, 200, 200+#__window_frame, "window_0", #PB_Window_BorderLess))
-  Window(0,0,0,0,GetWindowTitle(Root()\canvas\window), #__flag_autosize | #__Window_SizeGadget | #__Window_SystemMenu)
-  
-  Widget()\container = #__type_root
-  Widget()\round = 7
-  SetActive(Widget())
-  
+  Open(OpenWindow(#PB_Any, 150, 150, 200, 200, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
   Button(0,0,80,20,"button")
   Button(200-80,200-20,80,20,"button")
-  
-  ; ResizeWindow(Root()\canvas\window)
   
   Bind(Root(), @Events_widgets())
   
-  Open(OpenWindow(#PB_Any, 200, 200, 200, 200+#__window_frame, "window_1", #PB_Window_BorderLess))
-  Window(0,0,0,0,GetWindowTitle(Root()\canvas\window), #__flag_autosize | #__Window_SizeGadget | #__Window_SystemMenu)
   
-  Widget()\container = #__type_root
-  Widget()\round = 7
-  SetActive(Widget())
   
+  Open(Window(200, 200, 200, 200, "window_2", #__Window_SizeGadget | #__Window_SystemMenu))
   Button(0,0,80,20,"button")
   Button(200-80,200-20,80,20,"button")
-  
-  ; ResizeWindow(Root()\canvas\window)
   
   Bind(Root(), @Events_widgets())
   
