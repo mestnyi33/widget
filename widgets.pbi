@@ -9732,7 +9732,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If *this\type = #PB_GadgetType_Tree Or
              *this\type = #PB_GadgetType_ListView Or
-             *this\type = #PB_GadgetType_tree_properties
+             *this\type = #__type_property
             
             If flag & #__tree_nolines
               *this\mode\lines = Bool(state) * #__tree_linesize
@@ -10365,7 +10365,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       If *this\type = #PB_GadgetType_Tree Or 
-         *this\type = #PB_GadgetType_Tree_Properties
+         *this\type = #__type_property
         ProcedureReturn Tree_AddItem(*this, Item,Text,Image,flag)
       EndIf
       
@@ -11882,7 +11882,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           ProcedureReturn ""
         EndIf
         
-        If *this\type = #__type_tree_properties And Column 
+        If *this\type = #__type_property And Column 
           Result = *this\row\_s()\text\edit\string
         Else
           Result = *this\row\_s()\text\string
@@ -11900,7 +11900,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected result
       
       If *this\type = #__type_Editor Or
-         *this\type = #__type_tree_properties Or
+         *this\type = #__type_property Or
          *this\type = #__type_listview Or
          *this\type = #__type_tree
         
@@ -11918,7 +11918,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected result
       
       If *this\type = #__type_Editor Or
-         *this\type = #__type_tree_properties Or
+         *this\type = #__type_property Or
          *this\type = #__type_listview Or
          *this\type = #__type_tree
         
@@ -12031,7 +12031,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected result
       
       If *this\type = #__type_tree Or 
-         *this\type = #__type_tree_properties
+         *this\type = #__type_property
         
         If _no_select_(*this\row\_s(), item)
           ProcedureReturn #False
@@ -12088,7 +12088,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected result, FontID.i = FontID(Font)
       
       If *this\type = #__type_Editor Or 
-         *this\type = #__type_tree_properties Or 
+         *this\type = #__type_property Or 
          *this\type = #__type_listview Or 
          *this\type = #__type_tree
         
@@ -12730,7 +12730,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\y[#__c_frame] =- 2147483648
           
           If Flag & #__tree_property
-            *this\type = #PB_GadgetType_tree_Properties
+            *this\type = #__type_property
             *this\class = "Property"
             *this\bar\page\pos = 60
             
@@ -13259,7 +13259,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Case #__type_Editor         : Editor_Draw(*this)
             
           Case #__type_tree           : Tree_Draw(*this, *this\row\draws())
-          Case #PB_GadgetType_tree_Properties     : Tree_Draw(*this, *this\row\draws())
+          Case #__type_property     : Tree_Draw(*this, *this\row\draws())
             
           Case #__type_listView       : Tree_Draw(*this, *this\row\draws())
             
@@ -13720,11 +13720,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf    
       
       
-      If *this\type = #__type_Window
+      If *this\type = #__type_window
         Repaint = Window_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       
-      If *this\type = #__Type_tree_Properties
+      If *this\type = #__type_property
         Repaint = Tree_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
       

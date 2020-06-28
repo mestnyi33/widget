@@ -477,25 +477,45 @@
     #PB_Event_create = #PB_Event_FirstCustomValue
     
     ;- _c_type
-    #PB_GadgetType_tabBar = 100
-    #PB_GadgetType_tree_Properties = 127
+    Enumeration - 7 ; Type
+      #PB_GadgetType_Message
+      #PB_GadgetType_Popup
+      #PB_GadgetType_Desktop
+      #PB_GadgetType_StatusBar
+      #PB_GadgetType_Menu           ;  "Menu"
+      #PB_GadgetType_Toolbar        ;  "Toolbar"
+      #PB_GadgetType_Window         ;  "Window"
+    EndEnumeration
     
-    #__type_root          =- 5
-    #__type_Property      =- 4
-    #__type_Popup         =- 3
-    #__type_Menu          =- 2
-    #__type_Window        =- 1
-    #__type_tabBar        = #PB_GadgetType_tabBar
+    Enumeration 50
+      #PB_GadgetType_TabBar
+      #PB_GadgetType_Toggled
+      #PB_GadgetType_Property 
+      #PB_GadgetType_ImageButton
+      #PB_GadgetType_StringButton
+    EndEnumeration
     
-    #__type_Unknown       = #PB_GadgetType_Unknown
+    #__type_message       = #PB_GadgetType_Message
+    #__type_popup         = #PB_GadgetType_Popup
+    #__type_root          = #PB_GadgetType_Desktop
+    #__type_statusbar     = #PB_GadgetType_StatusBar
+    #__type_menu          = #PB_GadgetType_Menu
+    #__type_toolbar       = #PB_GadgetType_Toolbar
+    #__type_window        = #PB_GadgetType_Window
+    
+    #__type_tabbar        = #PB_GadgetType_TabBar
+    #__type_toggled       = #PB_GadgetType_Toggled
+    #__type_property      = #PB_GadgetType_Property
+    
+    #__type_unknown       = #PB_GadgetType_Unknown
     #__type_button        = #PB_GadgetType_Button
-    #__type_buttonImage   = #PB_GadgetType_ButtonImage
+    #__type_buttonimage   = #PB_GadgetType_ButtonImage
     #__type_calendar      = #PB_GadgetType_Calendar
     #__type_canvas        = #PB_GadgetType_Canvas
-    #__type_checkBox      = #PB_GadgetType_CheckBox
-    #__type_comboBox      = #PB_GadgetType_ComboBox
+    #__type_checkbox      = #PB_GadgetType_CheckBox
+    #__type_combobox      = #PB_GadgetType_ComboBox
     #__type_container     = #PB_GadgetType_Container
-    #__type_Date          = #PB_GadgetType_Date
+    #__type_date          = #PB_GadgetType_Date
     #__type_Editor        = #PB_GadgetType_Editor
     #__type_ExplorerCombo = #PB_GadgetType_ExplorerCombo
     #__type_ExplorerList  = #PB_GadgetType_ExplorerList
@@ -522,7 +542,6 @@
     #__type_tree          = #PB_GadgetType_Tree
     #__type_Web           = #PB_GadgetType_Web
     #__type_OpenGL        = #PB_GadgetType_OpenGL
-    #__type_tree_Properties    = #PB_GadgetType_tree_Properties
     ;}
     
     
