@@ -12,8 +12,8 @@
 ; spake post event leftclick
 
 
-;XIncludeFile "../../widgets.pbi" 
-XIncludeFile "../empty.pb"
+XIncludeFile "../../widgets.pbi" 
+;XIncludeFile "../empty.pb"
 Uselib(widget)
 
 Procedure events_gadgets()

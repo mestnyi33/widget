@@ -10,6 +10,10 @@ CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
 CompilerEndIf
 
 
+CompilerIf Not Defined(func, #PB_Module)
+  XIncludeFile "include/func.pbi"
+CompilerEndIf
+
 CompilerIf Not Defined(constants, #PB_Module)
   XIncludeFile "include/constants.pbi"
 CompilerEndIf
@@ -29,6 +33,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EnableExplicit
     UseModule constants
     UseModule structures
+    ;UseModule functions
     
     CompilerIf Defined(fixme, #PB_Module)
       UseModule fixme
@@ -85,7 +90,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro Repaints()
-     ;  ReDraw(Root())
+      ;  ReDraw(Root())
       Post(#PB_EventType_Repaint, Root()) ;This()\widget\root)
     EndMacro
     
@@ -99,7 +104,11 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro SetCursor(_this_, _cursor_)
-      SetGadgetAttribute(_this_\root\canvas\gadget, #PB_Canvas_Cursor, _cursor_)
+      If _cursor_ < 65560
+        SetGadgetAttribute(_this_\root\canvas\gadget, #PB_Canvas_Cursor, _cursor_)
+      Else
+        SetGadgetAttribute(_this_\root\canvas\gadget, #PB_Canvas_CustomCursor, func::cursor(_cursor_))
+      EndIf
     EndMacro
     
     
@@ -136,40 +145,16 @@ CompilerIf Not Defined(widget, #PB_Module)
            Bool((((_pos_) + _this_\bar\min) - _this_\bar\page\pos) > (_this_\bar\page\len - (_len_)) And Bar_SetState(_this_, ((_pos_) + _this_\bar\min) - (_this_\bar\page\len - (_len_)))))
     EndMacro
     
-    Macro _tree_bar_update_(_this_, _pos_, _len_)
-      ;       Bool(Bool((_pos_ - _this_\y - _this_\bar\page\pos) < 0 And bar_SetState(_this_, (_pos_ - _this_\y))) Or
-      ;            Bool((_pos_ - _this_\y - _this_\bar\page\pos) > (_this_\bar\page\len - _len_) And
-      ;                 bar_SetState(_this_, (_pos_ - _this_\y) - (_this_\bar\page\len - _len_)))) : _this_\change = 0
-      _bar_scrollarea_change_(_this_, _pos_ - _this_\y, _len_)
-    EndMacro
-    
     Macro _bar_scrollarea_update_(_this_)
-      ;Bool(*this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change)
-      Resizes(_this_\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-      ;Resizes(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
-      ;Updates(_this_\scroll, _this_\x, _this_\y, _this_\width, _this_\height)
-      _this_\width[#__c_inner] = _this_\scroll\h\bar\page\len ; *this\width[#__c_draw] - Bool(Not *this\scroll\v\hide) * *this\scroll\v\width ; 
-      _this_\height[#__c_inner] = _this_\scroll\v\bar\page\len; *this\height[#__c_draw] - Bool(Not *this\scroll\h\hide) * *this\scroll\h\height ; 
+      Bool(*this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change)
+      Bar_Resizes(_this_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      ;Bar_Resizes(_this_, _this_\x, _this_\y, _this_\width, _this_\height)
+      ;Updates(_this_, _this_\x, _this_\y, _this_\width, _this_\height)
+      ;       _this_\width[#__c_inner] = _this_\scroll\h\bar\page\len ; *this\width[#__c_draw] - Bool(Not *this\scroll\v\hide) * *this\scroll\v\width ; 
+      ;       _this_\height[#__c_inner] = _this_\scroll\v\bar\page\len; *this\height[#__c_draw] - Bool(Not *this\scroll\h\hide) * *this\scroll\h\height ; 
       
       _this_\scroll\v\bar\area\change = #False
       _this_\scroll\h\bar\area\change = #False
-    EndMacro
-    
-    ;- 
-    Macro _get_page_height_(_scroll_, _round_ = 0)
-      (_scroll_\v\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\h\hide) * (_scroll_\h\height/4)) 
-    EndMacro
-    
-    Macro _get_page_width_(_scroll_, _round_ = 0)
-      (_scroll_\h\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\v\hide) * (_scroll_\v\width/4))
-    EndMacro
-    
-    Macro _make_area_height_(_scroll_, _width_, _height_)
-      (_height_ - (Bool((_scroll_\width > _width_) Or Not _scroll_\h\hide) * _scroll_\h\height)) 
-    EndMacro
-    
-    Macro _make_area_width_(_scroll_, _width_, _height_)
-      (_width_ - (Bool((_scroll_\height > _height_) Or Not _scroll_\v\hide) * _scroll_\v\width))
     EndMacro
     
     ;- 
@@ -234,35 +219,35 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro MDI_Update(_child_)
-      _child_\parent\scroll\x = _child_\x 
-      _child_\parent\scroll\y = _child_\y
-      _child_\parent\scroll\width = _child_\x + _child_\width - _child_\parent\scroll\x
-      _child_\parent\scroll\height = _child_\y + _child_\height - _child_\parent\scroll\y
+      _child_\parent\x[#__c_required] = _child_\x 
+      _child_\parent\y[#__c_required] = _child_\y
+      _child_\parent\width[#__c_required] = _child_\x + _child_\width - _child_\parent\x[#__c_required]
+      _child_\parent\height[#__c_required] = _child_\y + _child_\height - _child_\parent\y[#__c_required]
       
       PushListPosition(Widget())
       ForEach Widget()
         If Widget()\parent = _child_\parent
-          If _child_\parent\scroll\x > Widget()\x 
-            _child_\parent\scroll\x = Widget()\x 
+          If _child_\parent\x[#__c_required] > Widget()\x 
+            _child_\parent\x[#__c_required] = Widget()\x 
           EndIf
-          If _child_\parent\scroll\y > Widget()\y 
-            _child_\parent\scroll\y = Widget()\y 
+          If _child_\parent\y[#__c_required] > Widget()\y 
+            _child_\parent\y[#__c_required] = Widget()\y 
           EndIf
         EndIf
       Next
       ForEach Widget()
         If Widget()\parent = _child_\parent
-          If _child_\parent\scroll\width < Widget()\x + Widget()\width - _child_\parent\scroll\x 
-            _child_\parent\scroll\width = Widget()\x + Widget()\width - _child_\parent\scroll\x 
+          If _child_\parent\width[#__c_required] < Widget()\x + Widget()\width - _child_\parent\x[#__c_required] 
+            _child_\parent\width[#__c_required] = Widget()\x + Widget()\width - _child_\parent\x[#__c_required] 
           EndIf
-          If _child_\parent\scroll\height < Widget()\y + Widget()\height - _child_\parent\scroll\y 
-            _child_\parent\scroll\height = Widget()\y + Widget()\height - _child_\parent\scroll\y 
+          If _child_\parent\height[#__c_required] < Widget()\y + Widget()\height - _child_\parent\y[#__c_required] 
+            _child_\parent\height[#__c_required] = Widget()\y + Widget()\height - _child_\parent\y[#__c_required] 
           EndIf
         EndIf
       Next
       PopListPosition(Widget())
       
-      If widget::Updates(_child_\parent\scroll, _child_\parent\x[#__c_inner], _child_\parent\y[#__c_inner], _child_\parent\width[#__c_draw], _child_\parent\height[#__c_draw])
+      If widget::Updates(_child_\parent, _child_\parent\x[#__c_inner], _child_\parent\y[#__c_inner], _child_\parent\width[#__c_draw], _child_\parent\height[#__c_draw])
         
         _child_\parent\width[#__c_inner] = _child_\parent\scroll\h\bar\page\len
         _child_\parent\height[#__c_inner] = _child_\parent\scroll\v\bar\page\len
@@ -282,7 +267,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     
     ;- 
-    ;- 
     ;-   DECLAREs
     ;{
     Declare.i Tree_Properties(x.l,y.l,width.l,height.l, Flag.i = 0)
@@ -291,6 +275,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare a_add(*this)
     Declare a_get(*this)
     Declare a_set(*this, Size.l = 5, Pos.l = -1)
+    Declare a_events(eventtype.i)
     
     Declare   SetFocus(*this)
     ;Declare   Focused()
@@ -416,12 +401,17 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.i ScrollArea(x.l,y.l,width.l,height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, Flag.i = 0)
     Declare.i MDI(x.l,y.l,width.l,height.l, Flag.i = 0) 
     
+    ; menu
+    Declare   ToolBar(*parent, flag.i = #PB_ToolBar_Small)
+    ;     Declare   Menus(*parent, flag.i)
+    ;     Declare   PopupMenu(*parent, flag.i)
+    
     Declare   CallBack()
     Declare.i CloseList()
     Declare.i OpenList(*this, item.l = 0)
     
-    Declare   Updates(*scroll._s_scroll, x.l,y.l,width.l,height.l)
-    Declare   Resizes(*scroll._S_scroll, x.l,y.l,width.l,height.l)
+    Declare   Updates(*this, x.l,y.l,width.l,height.l)
+    Declare   Bar_Resizes(*this, x.l,y.l,width.l,height.l)
     Declare   AddItem(*this, Item.l, Text.s, Image.i = -1, flag.i = 0)
     Declare   AddColumn(*this, Position.l, Text.s, Width.l, Image.i=-1)
     
@@ -1111,7 +1101,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Result
     EndProcedure
     
-    Procedure   a_events(EventType.i)
+    Procedure   a_events(eventtype.i)
       Static xx, yy
       Protected result, i, mouse_x.i, mouse_y.i 
       Protected mxw, myh
@@ -1175,7 +1165,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         mouse_x = Mouse()\x
         mouse_y = Mouse()\y
         
-        Select EventType 
+        Select eventtype 
           Case #__Event_MouseMove
             If Transform()\id[Transform()\index]\color\state = #__s_2
               ;{ widget transform
@@ -1233,8 +1223,8 @@ CompilerIf Not Defined(widget, #PB_Module)
                 ;get anchor delta pos
                 If (Transform()\index = #__a_moved) Or
                    (Transform()\index = 5 And Entered()\container) ; Form, Container, ScrollArea, Panel 
-                  Mouse()\delta\x = mouse_x - Entered()\x     ;[#__c_frame]
-                  Mouse()\delta\y = mouse_y - Entered()\y     ;[#__c_frame]
+                  Mouse()\delta\x = mouse_x - Entered()\x          ;[#__c_frame]
+                  Mouse()\delta\y = mouse_y - Entered()\y          ;[#__c_frame]
                 Else
                   Mouse()\delta\x = mouse_x - Transform()\id[Transform()\index]\x
                   Mouse()\delta\y = mouse_y - Transform()\id[Transform()\index]\y
@@ -1502,7 +1492,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf  
     EndMacro
     
-    
+    ;-
     ;-  TEXTs
     Macro _text_change_(_this_, _x_, _y_, _width_, _height_)
       ;If _this_\text\vertical
@@ -1514,22 +1504,22 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         EndIf
         
         If _this_\text\align\right
-          _this_\text\y = _y_  + _this_\text\align\delta\y +  _this_\text\_padding + _this_\text\width
+          _this_\text\y = _y_  + _this_\text\align\delta\y +  _this_\text\__padding\y + _this_\text\width
         ElseIf Not _this_\text\align\left
           _this_\text\y = _y_ + (_height_ + _this_\text\align\delta\y + _this_\text\width)/2
         Else
-          _this_\text\y = _y_ + _height_ - _this_\text\_padding
+          _this_\text\y = _y_ + _height_ - _this_\text\__padding\y
         EndIf
         
       ElseIf _this_\text\rotate = 270
         _this_\text\x = _x_ + (_width_ - 4)
         
         If _this_\text\align\right
-          _this_\text\y = _y_ + (_height_ - _this_\text\width - _this_\text\_padding) 
+          _this_\text\y = _y_ + (_height_ - _this_\text\width - _this_\text\__padding\y) 
         ElseIf Not _this_\text\align\left
           _this_\text\y = _y_ + (_height_ - _this_\text\width)/2 
         Else
-          _this_\text\y = _y_ + _this_\text\_padding 
+          _this_\text\y = _y_ + _this_\text\__padding\y 
         EndIf
         
       EndIf
@@ -1543,22 +1533,22 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         EndIf
         
         If _this_\text\align\right
-          _this_\text\x = _x_ + (_width_ - _this_\text\align\delta\x - _this_\text\width - _this_\text\_padding) 
+          _this_\text\x = _x_ + (_width_ - _this_\text\align\delta\x - _this_\text\width - _this_\text\__padding\x) 
         ElseIf Not _this_\text\align\left
           _this_\text\x = _x_ + (_width_ - _this_\text\align\delta\x - _this_\text\width)/2
         Else
-          _this_\text\x = _x_ + _this_\text\_padding
+          _this_\text\x = _x_ + _this_\text\__padding\x
         EndIf
         
       ElseIf _this_\text\rotate = 180
         _this_\text\y = _y_ + (_height_ - _this_\y)
         
         If _this_\text\align\right
-          _this_\text\x = _x_ + _this_\text\_padding + _this_\text\width
+          _this_\text\x = _x_ + _this_\text\__padding\x + _this_\text\width
         ElseIf Not _this_\text\align\left
           _this_\text\x = _x_ + (_width_ + _this_\text\width)/2 
         Else
-          _this_\text\x = _x_ + _width_ - _this_\text\_padding 
+          _this_\text\x = _x_ + _width_ - _this_\text\__padding\x 
         EndIf
         
       EndIf
@@ -1627,7 +1617,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         _this_\text\align\bottom = constants::_check_(_flag_, #__text_bottom)
         
         
-        If Not _flag_ & #__text_center
+        If Not _flag_ & #__text_center And 
+           Not _this_\text\align\left And
+           Not _this_\text\align\top And 
+           Not _this_\text\align\right And 
+           Not _this_\text\align\bottom
           ;           _this_\text\align\top = Bool(Not _this_\text\align\bottom)
           ;           _this_\text\align\left = Bool(Not _this_\text\align\right)
           ;           
@@ -1711,12 +1705,17 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     
     
-    
+    ;-
     ;-  BARs
     ;{
     Declare.b Tab_Draw(*this)
     Declare.b Bar_Update(*this)
     Declare.b Bar_SetState(*this, state.f)
+    
+    Macro Area(_parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _mode_ = #True)
+      _parent_\scroll\v = Create(#__type_ScrollBar, _parent_, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child|#__bar_vertical, 7, _scroll_step_)
+      _parent_\scroll\h = Create(#__type_ScrollBar, _parent_, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool(_mode_)*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_)
+    EndMacro
     
     Macro Area_Draw(_this_)
       If _this_\scroll
@@ -1730,22 +1729,17 @@ CompilerIf Not Defined(widget, #PB_Module)
         If _this_\scroll\v And _this_\scroll\h
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
           ; Scroll area coordinate
-          Box(_this_\scroll\h\x + _this_\scroll\x, _this_\scroll\v\y + _this_\scroll\y, _this_\scroll\width, _this_\scroll\height, $FF0000FF)
+          Box(_this_\x[#__c_inner] + _this_\x[#__c_required] + _this_\text\__padding\x, _this_\y[#__c_inner] + _this_\y[#__c_required] + _this_\text\__padding\y, _this_\width[#__c_required] - _this_\text\__padding\x*2, _this_\height[#__c_required] - _this_\text\__padding\y*2, $FFFF0000)
+          Box(_this_\scroll\h\x + _this_\x[#__c_required], _this_\scroll\v\y + _this_\y[#__c_required], _this_\width[#__c_required], _this_\height[#__c_required], $FF0000FF)
           
-          ; Debug "" +  _this_\scroll\x  + " " +  _this_\scroll\y  + " " +  _this_\scroll\width  + " " +  _this_\scroll\height
-          Box(_this_\scroll\h\x - _this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FFFF0000)
+          ; Debug "" +  _this_\x[#__c_required]  + " " +  _this_\y[#__c_required]  + " " +  _this_\width[#__c_required]  + " " +  _this_\height[#__c_required]
+          ; Box(_this_\scroll\h\x - _this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FF0000FF)
           
           ; page coordinate
           Box(_this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00)
         EndIf
       EndIf
     EndMacro
-    
-    Macro Area(_parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _mode_ = #True)
-      _parent_\scroll\v = Create(#__type_ScrollBar, _parent_, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child|#__bar_vertical, 7, _scroll_step_)
-      _parent_\scroll\h = Create(#__type_ScrollBar, _parent_, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool(_mode_)*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_)
-    EndMacro
-    
     
     ;- 
     Procedure.i Tab_SetState(*this._s_widget, State.l)
@@ -1903,7 +1897,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       With *this
         
         If Not \hide And \color\alpha
-          If \color\back <> - 1
+          If \color\back  <>- 1
             ; Draw scroll bar background
             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
             RoundBox(\X,\y,\width,\height,\round,\round,\color\Back&$FFFFFF|\color\alpha<<24)
@@ -2159,7 +2153,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If Not \bar\button[#__b_1]\hide And (\bar\vertical And \bar\button[#__b_1]\height) Or (Not \bar\vertical And \bar\button[#__b_1]\width) ;\bar\button[#__b_1]\len
                                                                                                                                                   ; Draw buttons
-            If \bar\button[#__b_1]\color\fore <> - 1
+            If \bar\button[#__b_1]\color\fore  <>- 1
               DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
               _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,
                              \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], \bar\button[#__b_1]\round, \bar\button[#__b_1]\color\alpha)
@@ -2182,7 +2176,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If Not \bar\button[#__b_2]\hide And (\bar\vertical And \bar\button[#__b_2]\height) Or (Not \bar\vertical And \bar\button[#__b_2]\width)
             ; Draw buttons
-            If \bar\button[#__b_2]\color\fore <> - 1
+            If \bar\button[#__b_2]\color\fore  <>- 1
               DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
               _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,
                              \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], \bar\button[#__b_2]\round, \bar\button[#__b_2]\color\alpha)
@@ -2207,7 +2201,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         ;         DrawingMode(#PB_2DDrawing_Outlined)
-        ;         Box(\x[#__c_frame] - 1,\y[#__c_inner] + \height[#__c_inner],\width[#__c_frame] + 2,1, \color\frame[Bool(\index[#__s_2]<> - 1)*2 ])
+        ;         Box(\x[#__c_frame] - 1,\y[#__c_inner] + \height[#__c_inner],\width[#__c_frame] + 2,1, \color\frame[Bool(\index[#__s_2] <>- 1)*2 ])
         ;         
         ;         DrawingMode(#PB_2DDrawing_Outlined)
         ;         Box(\x[#__c_clip],\y[#__c_clip],\width[#__c_clip],\height[#__c_clip], $FF0000FF)
@@ -2227,7 +2221,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         ProcedureReturn 
         
         If Not \hide And \color\alpha
-          If \color\back <> - 1
+          If \color\back  <>- 1
             ; Draw scroll bar background
             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
             RoundBox(\X,\y,\width,\height,\round,\round,\color\Back&$FFFFFF|\color\alpha<<24)
@@ -2251,7 +2245,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If (\bar\vertical And \bar\button[#__b_1]\height) Or (Not \bar\vertical And \bar\button[#__b_1]\width) ;\bar\button[#__b_1]\len
                                                                                                                  ; Draw buttons
-            If \bar\button[#__b_1]\color\fore <> - 1
+            If \bar\button[#__b_1]\color\fore  <>- 1
               DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
               _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,
                              \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], \bar\button[#__b_1]\round, \bar\button[#__b_1]\color\alpha)
@@ -2274,7 +2268,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If (\bar\vertical And \bar\button[#__b_2]\height) Or (Not \bar\vertical And \bar\button[#__b_2]\width)
             ; Draw buttons
-            If \bar\button[#__b_2]\color\fore <> - 1
+            If \bar\button[#__b_2]\color\fore  <>- 1
               DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
               _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,
                              \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], \bar\button[#__b_2]\round, \bar\button[#__b_2]\color\alpha)
@@ -2434,7 +2428,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If \bar\page\pos > \bar\min
             If \bar\vertical
-              If \bar\button[#__b_1]\color\fore <> - 1
+              If \bar\button[#__b_1]\color\fore  <>- 1
                 DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
                 _box_gradient_(\bar\vertical,\bar\button[#__b_1]\x + 1,\bar\thumb\pos - 1 - \bar\button[#__b_2]\round,\bar\button[#__b_1]\width - 2,1 + \bar\button[#__b_2]\round,
                                \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha)
@@ -2442,13 +2436,13 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
               
               ; Draw buttons
-              If \bar\button[#__b_2]\color\fore <> - 1
+              If \bar\button[#__b_2]\color\fore  <>- 1
                 DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
                 _box_gradient_(\bar\vertical,\bar\button[#__b_2]\x + 1,\bar\thumb\pos,\bar\button[#__b_2]\width - 2,1 + \bar\button[#__b_2]\round,
                                \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha)
               EndIf
             Else
-              If \bar\button[#__b_1]\color\fore <> - 1
+              If \bar\button[#__b_1]\color\fore  <>- 1
                 DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
                 _box_gradient_(\bar\vertical,\bar\thumb\pos - 1 - \bar\button[#__b_2]\round,\bar\button[#__b_1]\y + 1,1 + \bar\button[#__b_2]\round,\bar\button[#__b_1]\height - 2,
                                \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha)
@@ -2456,7 +2450,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
               
               ; Draw buttons
-              If \bar\button[#__b_2]\color\fore <> - 1
+              If \bar\button[#__b_2]\color\fore  <>- 1
                 DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
                 _box_gradient_(\bar\vertical,\bar\thumb\pos,\bar\button[#__b_2]\y + 1,1 + \bar\button[#__b_2]\round,\bar\button[#__b_2]\height - 2,
                                \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha)
@@ -2958,7 +2952,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 If *this\parent\scroll\v = *this
                   *this\parent\change =- 1
                   
-                  *this\parent\scroll\y =- *this\bar\page\pos
+                  *this\parent\y[#__c_required] =- *this\bar\page\pos ;;+ *this\parent\text\__padding\y
                   
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
@@ -2974,7 +2968,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               Else
                 If *this\parent\scroll\h = *this
                   *this\parent\change =- 1
-                  *this\parent\scroll\x =- *this\bar\page\pos
+                  *this\parent\x[#__c_required] =- *this\bar\page\pos ;;+ *this\parent\text\__padding\x
                   
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
@@ -3518,6 +3512,242 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn Result
     EndProcedure
     
+    Procedure   Updates(*this._s_widget, x.l,y.l,width.l,height.l)
+      Static v_max, h_max
+      Protected sx, sy, round
+      Protected result
+      
+      If *this\scroll\v\bar\page\len <> height - Bool(*this\width[#__c_required] > width) * *this\scroll\h\height
+        *this\scroll\v\bar\page\len = height - Bool(*this\width[#__c_required] > width) * *this\scroll\h\height
+      EndIf
+      
+      If *this\scroll\h\bar\page\len <> width - Bool(*this\height[#__c_required] > height) * *this\scroll\v\width
+        *this\scroll\h\bar\page\len = width - Bool(*this\height[#__c_required] > height) * *this\scroll\v\width
+      EndIf
+      
+      If *this\x[#__c_required] < x
+        ; left set state
+        *this\scroll\v\bar\page\len = height - *this\scroll\h\height
+      Else
+        sx = (*this\x[#__c_required] - x) 
+        *this\width[#__c_required] + sx
+        *this\x[#__c_required] = x
+      EndIf
+      
+      If *this\y[#__c_required] < y
+        ; top set state
+        *this\scroll\h\bar\page\len = width - *this\scroll\v\width
+      Else
+        sy = (*this\y[#__c_required] - y)
+        *this\height[#__c_required] + sy
+        *this\y[#__c_required] = y
+      EndIf
+      
+      If *this\width[#__c_required] > *this\scroll\h\bar\page\len - (*this\x[#__c_required] - x)
+        If *this\width[#__c_required] - sx <= width And *this\height[#__c_required] = *this\scroll\v\bar\page\len - (*this\y[#__c_required] - y)
+          ;Debug "w - " + Str(*this\height[#__c_required] - sx)
+          
+          ; if on the h - scroll
+          If *this\scroll\v\bar\max > height - *this\scroll\h\height
+            *this\scroll\v\bar\page\len = height - *this\scroll\h\height
+            *this\scroll\h\bar\page\len = width - *this\scroll\v\width 
+            *this\height[#__c_required] = *this\scroll\v\bar\max
+            ;  Debug "w - " + *this\scroll\v\bar\max  + " " +  *this\scroll\v\height  + " " +  *this\scroll\v\bar\page\len
+          Else
+            *this\height[#__c_required] = *this\scroll\v\bar\page\len - (*this\x[#__c_required] - x) - *this\scroll\h\height
+          EndIf
+        EndIf
+        
+        *this\scroll\v\bar\page\len = height - *this\scroll\h\height 
+      Else
+        *this\scroll\h\bar\max = *this\width[#__c_required]
+        *this\width[#__c_required] = *this\scroll\h\bar\page\len - (*this\x[#__c_required] - x)
+      EndIf
+      
+      If *this\height[#__c_required] > *this\scroll\v\bar\page\len - (*this\y[#__c_required] - y)
+        If *this\height[#__c_required] - sy <= Height And *this\width[#__c_required] = *this\scroll\h\bar\page\len - (*this\x[#__c_required] - x)
+          ;Debug " h - " + Str(*this\height[#__c_required] - sy)
+          
+          ; if on the v - scroll
+          If *this\scroll\h\bar\max > width - *this\scroll\v\width
+            *this\scroll\h\bar\page\len = width - *this\scroll\v\width
+            *this\scroll\v\bar\page\len = height - *this\scroll\h\height 
+            *this\width[#__c_required] = *this\scroll\h\bar\max
+            ;  Debug "h - " + *this\scroll\h\bar\max  + " " +  *this\scroll\h\width  + " " +  *this\scroll\h\bar\page\len
+          Else
+            *this\width[#__c_required] = *this\scroll\h\bar\page\len - (*this\x[#__c_required] - x) - *this\scroll\v\width
+          EndIf
+        EndIf
+        
+        *this\scroll\h\bar\page\len = width - *this\scroll\v\width
+      Else
+        *this\scroll\v\bar\max = *this\height[#__c_required]
+        *this\height[#__c_required] = *this\scroll\v\bar\page\len - (*this\y[#__c_required] - y)
+      EndIf
+      
+      If *this\scroll\h\round And
+         *this\scroll\v\round And
+         *this\scroll\h\bar\page\len < width And 
+         *this\scroll\v\bar\page\len < height
+        round = (*this\scroll\h\height/4)
+      EndIf
+      
+      If *this\width[#__c_required] >= *this\scroll\h\bar\page\len  
+        If *this\scroll\h\bar\Max <> *this\width[#__c_required] 
+          *this\scroll\h\bar\Max = *this\width[#__c_required]
+          
+          If *this\x[#__c_required] <= x 
+            *this\scroll\h\bar\page\pos =- (*this\x[#__c_required] - x)
+            *this\scroll\h\bar\change = 0
+          EndIf
+        EndIf
+        
+        If *this\scroll\h\width <> *this\scroll\h\bar\page\len + round
+          ; Debug  "h " + *this\scroll\h\bar\page\len
+          *this\scroll\h\hide = Resize(*this\scroll\h, #PB_Ignore, #PB_Ignore, *this\scroll\h\bar\page\len + round, #PB_Ignore)
+          ;           *this\scroll\h\width = *this\scroll\h\bar\page\len + round
+          ;           *this\scroll\h\hide = Bar_Update(*this\scroll\h)
+          result = 1
+        EndIf
+      EndIf
+      
+      If *this\height[#__c_required] >= *this\scroll\v\bar\page\len  
+        If *this\scroll\v\bar\Max <> *this\height[#__c_required]  
+          *this\scroll\v\bar\Max = *this\height[#__c_required]
+          
+          If *this\y[#__c_required] <= y 
+            ;If *this\scroll\v\bar\page\pos <>- (*this\y[#__c_required] - y)
+            *this\scroll\v\bar\page\pos =- (*this\y[#__c_required] - y)
+            
+            *this\scroll\v\bar\change = 0
+            ; Post(#PB_EventType_change, *this\scroll\v)
+            ;EndIf
+          EndIf
+        EndIf
+        
+        If *this\scroll\v\height <> *this\scroll\v\bar\page\len + round
+          ; Debug  "v " + *this\scroll\v\bar\page\len
+          *this\scroll\v\hide = Resize(*this\scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\scroll\v\bar\page\len + round)
+          ;           *this\scroll\v\height = *this\scroll\v\bar\page\len + round
+          ;           *this\scroll\v\hide = Bar_Update(*this\scroll\v)
+          result = 1
+        EndIf
+      EndIf
+      
+      ;       If Not *this\scroll\h\hide 
+      ;         If *this\scroll\h\y[#__c_draw] <> y + height - *this\scroll\h\height
+      ;           ; Debug "y"
+      ;           *this\scroll\h\hide = Resize(*this\scroll\h, #PB_Ignore, y + height - *this\scroll\h\height, #PB_Ignore, #PB_Ignore)
+      ;         EndIf
+      ;         If *this\scroll\h\x[#__c_draw] <> x
+      ;           ; Debug "y"
+      ;           *this\scroll\h\hide = Resize(*this\scroll\h, x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      ;         EndIf
+      ;       EndIf
+      ;       
+      ;       If Not *this\scroll\v\hide 
+      ;         If *this\scroll\v\x[#__c_draw] <> x + width - *this\scroll\v\width
+      ;           ; Debug "x"
+      ;           *this\scroll\v\hide = Resize(*this\scroll\v, x + width - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+      ;         EndIf
+      ;         If *this\scroll\v\y[#__c_draw] <> y
+      ;           ; Debug "y"
+      ;           *this\scroll\v\hide = Resize(*this\scroll\v, #PB_Ignore, y, #PB_Ignore, #PB_Ignore)
+      ;         EndIf
+      ;       EndIf
+      
+      If v_max <> *this\scroll\v\bar\Max
+        v_max = *this\scroll\v\bar\Max
+        *this\scroll\v\resize | #__resize_change
+        *this\scroll\v\hide = Bar_Update(*this\scroll\v) 
+      EndIf
+      
+      If h_max <> *this\scroll\h\bar\Max
+        h_max = *this\scroll\h\bar\Max
+        *this\scroll\h\resize | #__resize_change
+        *this\scroll\h\hide = Bar_Update(*this\scroll\h) 
+      EndIf
+      
+      ProcedureReturn result
+    EndProcedure
+    
+    Procedure   Bar_Resizes(*this._s_widget, x.l,y.l,width.l,height.l)
+      ;       *this\width[#__c_required] = *this\scroll\h\bar\max
+      ;       *this\height[#__c_required] = *this\scroll\v\bar\max
+      ;       
+      ;       ProcedureReturn Updates(*this, x.l,y.l,width.l,height.l)
+      
+      
+      ;       y = #PB_Ignore 
+      ;         x = #PB_Ignore 
+      ;           Width = #PB_Ignore 
+      ;           Height = #PB_Ignore 
+      ;           
+      Macro _get_page_height_(_this_, _scroll_, _round_ = 0)
+        (_scroll_\v\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\h\hide) * (_scroll_\h\height/4)) 
+      EndMacro
+      
+      Macro _get_page_width_(_this_, _scroll_, _round_ = 0)
+        (_scroll_\h\bar\page\len + Bool(_round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\v\hide) * (_scroll_\v\width/4))
+      EndMacro
+      
+      Macro _make_area_height_(_this_, _scroll_, _width_, _height_)
+        (_height_ - (Bool((_this_\width[#__c_required] > _width_) Or Not _scroll_\h\hide) * _scroll_\h\height)) 
+      EndMacro
+      
+      Macro _make_area_width_(_this_, _scroll_, _width_, _height_)
+        (_width_ - (Bool((_this_\height[#__c_required] > _height_) Or Not _scroll_\v\hide) * _scroll_\v\width))
+      EndMacro
+      
+      With *this\scroll
+        Protected iHeight, iWidth, v_x = #PB_Ignore, h_y = #PB_Ignore
+        
+        If Not *this\scroll\v Or Not *this\scroll\h
+          ProcedureReturn
+        EndIf
+        
+        If y = #PB_Ignore : y = \v\y - \v\parent\y[#__c_inner] : EndIf
+        If x = #PB_Ignore : x = \h\x - \v\parent\x[#__c_inner] : EndIf
+        If Width = #PB_Ignore : Width = \v\x - \h\x + \v\width : EndIf
+        If Height = #PB_Ignore : Height = \h\y - \v\y + \h\height : EndIf
+        
+        If Width + x - *this\scroll\v\width <> *this\scroll\v\x[#__c_draw]
+          v_x = Width + x - *this\scroll\v\width
+        EndIf
+        
+        If Height + y - *this\scroll\h\height <> *this\scroll\h\y[#__c_draw]
+          h_y = Height + y - *this\scroll\h\height
+        EndIf
+        ;Debug _make_area_height_(*this,*this\scroll, Width, Height)
+        ;If
+        Bar_SetAttribute(*this\scroll\v, #__bar_pagelength, _make_area_height_(*this,*this\scroll, Width, Height))
+        *this\scroll\v\hide = widget::Resize(*this\scroll\v, v_x, y, #PB_Ignore, _get_page_height_(*this,*this\scroll, 1))
+        ;EndIf
+        
+        ;If 
+        Bar_SetAttribute(*this\scroll\h, #__bar_pagelength, _make_area_width_(*this,*this\scroll, Width, Height))
+        *this\scroll\h\hide = widget::Resize(*this\scroll\h, x, h_y, _get_page_width_(*this,*this\scroll, 1), #PB_Ignore)
+        ;EndIf
+        
+        If Bar_SetAttribute(*this\scroll\v, #__bar_pagelength, _make_area_height_(*this,*this\scroll, Width, Height))
+          *this\scroll\v\hide = widget::Resize(*this\scroll\v, v_x, #PB_Ignore, #PB_Ignore, _get_page_height_(*this,*this\scroll, 1))
+        EndIf
+        
+        If Bar_SetAttribute(*this\scroll\h, #__bar_pagelength, _make_area_width_(*this,*this\scroll, Width, Height))
+          *this\scroll\h\hide = widget::Resize(*this\scroll\h, #PB_Ignore, h_y, _get_page_width_(*this,*this\scroll, 1), #PB_Ignore)
+        EndIf
+        
+        *this\scroll\v\hide = Bar_Update(*this\scroll\v)
+        *this\scroll\h\hide = Bar_Update(*this\scroll\h)
+        ;         
+        ;         *this\scroll\v\hide = *this\scroll\v\bar\hide ; Bool(*this\scroll\v\bar\min = *this\scroll\v\bar\page\end)
+        ;         *this\scroll\h\hide = *this\scroll\h\bar\hide ; Bool(*this\scroll\h\bar\min = *this\scroll\h\bar\page\end)
+        ;         
+        ProcedureReturn Bool(*this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change)
+      EndWith
+    EndProcedure
+    
+    
     Procedure   Bar_Events(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0)
       Protected Repaint
       Protected bar_button = *this\bar\index
@@ -3671,7 +3901,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
         Else
-          If *this\bar\from <> -  1
+          If *this\bar\from <>- 1
             If *this\bar\button[*this\bar\from]\state = #__s_1
               *this\bar\button[*this\bar\from]\state = #__s_0
               
@@ -3799,7 +4029,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     
     ;- 
-    ;-  PUBLIC
+    ;-  EDITOR
     Macro  _start_drawing_(_this_)
       StartDrawing(CanvasOutput(_this_\root\canvas\gadget)) 
       
@@ -3809,164 +4039,51 @@ CompilerIf Not Defined(widget, #PB_Module)
       ;       EndIf
     EndMacro
     
+    Macro _row_x_(_this_)
+      (_this_\x[#__c_inner] + _this_\row\_s()\x + _this_\x[#__c_required])
+    EndMacro
+    
+    Macro _row_y_(_this_)
+      (_this_\y[#__c_inner] + _this_\row\_s()\y + _this_\y[#__c_required])
+    EndMacro
+    
+    Macro _row_text_x_(_this_)
+      (_this_\x[#__c_inner] + _this_\row\_s()\text\x + _this_\x[#__c_required])
+    EndMacro
+    
+    Macro _row_text_y_(_this_)
+      (_this_\y[#__c_inner] + _this_\row\_s()\text\y + _this_\y[#__c_required])
+    EndMacro
+    
+    Macro _row_text_edit_x_(_this_, _mode_)
+      (_this_\x[#__c_inner] + _this_\row\_s()\text\edit#_mode_\x + _this_\x[#__c_required])
+    EndMacro
+    
+    Macro _row_text_edit_y_(_this_, _mode_)
+      (_this_\y[#__c_inner] + _this_\row\_s()\text\edit#_mode_\y + _this_\y[#__c_required])
+    EndMacro
+    
     Macro _text_scroll_x_(_this_)
-      *this\change = _bar_scrollarea_change_(*this\scroll\h, _this_\text\caret\x - (Bool(_this_\text\caret\x>0) * (_this_\scroll\h\x + _this_\text\_padding + _this_\text\x)), (_this_\text\_padding*2 + _this_\text\x*2 + _this_\row\margin\width + 2)) ; ok
+      If _this_\text\caret\x
+        *this\change = _bar_scrollarea_change_(*this\scroll\h, _this_\text\caret\x - _this_\text\__padding\x, (_this_\text\__padding\x * 2 + _this_\row\margin\width)) ; ok
+                                                                                                                                                                       ;  Debug _this_\text\caret\x
+      EndIf
     EndMacro
     
     Macro _text_scroll_y_(_this_)
-      *this\change = _bar_scrollarea_change_(*this\scroll\v, _this_\text\caret\y - (Bool(_this_\text\caret\y>0) * (_this_\scroll\v\y + _this_\text\_padding + _this_\text\y)), (_this_\text\_padding*2 + _this_\text\y*2 + _this_\text\caret\height)) ; ok
+        *this\change = _bar_scrollarea_change_(*this\scroll\v, _this_\text\caret\y - _this_\text\__padding\y, (_this_\text\__padding\y * 2 + _this_\text\caret\height)) ; ok
     EndMacro
     
-    ;- 
-    Macro _make_line_pos_(_this_, _len_)
-      _this_\row\_s()\text\len = _len_
-      _this_\row\_s()\text\pos = _this_\text\pos
-      _this_\text\pos + _this_\row\_s()\text\len + 1 ; Len(#LF$)
-    EndMacro
-    
-    Macro _make_line_x_(_this_, _scroll_width_)
-      If _this_\vertical
-        If _this_\text\rotate = 90
-          _this_\row\_s()\text\x[#__c_inner] = _this_y_ - Bool(#PB_Compiler_OS <> #PB_OS_Windows)
-          
-        ElseIf _this_\text\rotate = 270
-          _this_\row\_s()\text\x[#__c_inner] = (_scroll_width_ - _this_y_) + Bool(#PB_Compiler_OS <> #PB_OS_Windows)
-          
-        EndIf
-        
-      Else
-        If _this_\text\rotate = 0
-          If _this_\text\align\right
-            _this_\row\_s()\text\x[#__c_inner] = (_scroll_width_ - _this_\row\_s()\text\width) 
-          ElseIf Not _this_\text\align\left
-            _this_\row\_s()\text\x[#__c_inner] = (_scroll_width_ - _this_\row\_s()\text\width)/2
-          Else
-            _this_\row\_s()\text\x[#__c_inner] = 0
-          EndIf
-          
-        ElseIf _this_\text\rotate = 180
-          If _this_\text\align\right
-            _this_\row\_s()\text\x[#__c_inner] = _scroll_width_
-          ElseIf Not _this_\text\align\left
-            _this_\row\_s()\text\x[#__c_inner] = (_scroll_width_ + _this_\row\_s()\text\width)/2 
-          Else
-            _this_\row\_s()\text\x[#__c_inner] = _this_\row\_s()\text\width 
-          EndIf
-          
-        EndIf
-      EndIf
-      
-      _this_\row\_s()\text\x = _x_ + _this_\row\_s()\text\x[#__c_inner]
-    EndMacro
-    
-    Macro _make_line_y_(_this_, _scroll_height_)
-      If _this_\vertical
-        If _this_\text\rotate = 90
-          If _this_\text\align\bottom
-            _this_\row\_s()\text\y[#__c_inner] = _scroll_height_ 
-          ElseIf Not _this_\text\align\top
-            _this_\row\_s()\text\y[#__c_inner] = (_scroll_height_ + _this_\row\_s()\text\width)/2
-          Else
-            _this_\row\_s()\text\y[#__c_inner] = _this_\row\_s()\text\width
-          EndIf
-          
-        ElseIf _this_\text\rotate = 270
-          If _this_\text\align\bottom
-            _this_\row\_s()\text\y[#__c_inner] = ((_scroll_height_ - _this_\row\_s()\text\width) ) 
-          ElseIf Not _this_\text\align\top
-            _this_\row\_s()\text\y[#__c_inner] = (_scroll_height_ - _this_\row\_s()\text\width)/2 
-          Else
-            _this_\row\_s()\text\y[#__c_inner] = 0
-          EndIf
-          
-        EndIf
-        
-      Else
-        If _this_\text\rotate = 0
-          _this_\row\_s()\text\y[#__c_inner] = _this_y_ - Bool(#PB_Compiler_OS <> #PB_OS_Windows)
-          
-        ElseIf _this_\text\rotate = 180
-          _this_\row\_s()\text\y[#__c_inner] = (_scroll_height_ - _this_y_) + Bool(#PB_Compiler_OS <> #PB_OS_Windows)
-          
-        EndIf
-      EndIf
-      
-      _this_\row\_s()\text\y = _y_ + _this_\row\_s()\text\y[#__c_inner]
-    EndMacro
-    
-    Macro _make_scroll_x_(_this_)
-      If _this_\text\align\right
-        _this_\scroll\x = (((_this_\width - _this_\bs*2) - _this_\scroll\align\right - _this_\text\_padding) - _this_\scroll\width)
-      ElseIf Not _this_\text\align\left
-        _this_\scroll\x = (((_this_\width - _this_\bs*2) + _this_\scroll\align\left - _this_\scroll\align\right) - _this_\scroll\width + Bool(_this_\scroll\width % 2))/2 
-      Else
-        _this_\scroll\x = _this_\text\_padding + _this_\scroll\align\left
-      EndIf
-      
-      If *this\scroll\x < 0
-        *this\scroll\x = _this_\scroll\align\left
-      EndIf
-    EndMacro
-    
-    Macro _make_scroll_y_(_this_)
-      If _this_\text\align\bottom
-        _this_\scroll\y = (((_this_\height - _this_\bs*2) - _this_\scroll\align\bottom - _this_\text\_padding) - _this_\scroll\height) 
-      ElseIf Not _this_\text\align\top
-        _this_\scroll\y = ((((_this_\height - _this_\bs*2) + _this_\scroll\align\top - _this_\scroll\align\bottom) - _this_\scroll\height + Bool(_this_\scroll\height % 2))/2)
-      Else
-        _this_\scroll\y = _this_\text\_padding + _this_\scroll\align\top
-      EndIf
-      
-      If *this\scroll\y < 0
-        *this\scroll\y = _this_\scroll\align\top
-      EndIf
-      ;     If *this\scroll\v\bar\page\pos < 0
-      ;       *this\scroll\y =- *this\scroll\v\bar\page\pos
-      ;     EndIf
-    EndMacro
-    
-    Macro _make_scroll_height_(_this_, _height_)
-      If _this_\vertical
-        _this_\scroll\width + _height_ + _this_\mode\gridlines
-      Else
-        _this_\scroll\height + _height_ + _this_\mode\gridlines
-      EndIf
-      
-      If _this_\scroll\v And 
-         _this_\scroll\v\bar\increment <> _height_ + Bool(_this_\mode\gridlines)
-        _this_\scroll\v\bar\increment = _height_ + Bool(_this_\mode\gridlines)
-      EndIf
-    EndMacro
-    
-    Macro _make_scroll_width_(_this_, _width_)
-      If _this_\vertical
-        If _this_\text\multiline =- 1 And _this_\scroll\v
-          _this_\scroll\height = _make_area_height_(_this_\scroll, _this_\width - _this_\bs*2 - _this_\text\_padding*2, _this_\height - _this_\bs*2 - _this_\text\_padding*2)
-        Else
-          If _this_\scroll\height < _width_ + _this_\text\y*2 + _this_\text\caret\height
-            _this_\scroll\height = _width_ + _this_\text\y*2 + _this_\text\caret\height
-          EndIf
-        EndIf
-      Else
-        If _this_\text\multiline =- 1 And _this_\scroll\h
-          _this_\scroll\width = _make_area_width_(_this_\scroll, _this_\width - _this_\bs*2 - _this_\text\_padding*2, _this_\height - _this_\bs*2 - _this_\text\_padding*2)
-        Else
-          If _this_\scroll\width < _width_ + _this_\text\x*2 + _this_\text\caret\width
-            _this_\scroll\width = _width_ + _this_\text\x*2 + _this_\text\caret\width
-          EndIf
-        EndIf
-      EndIf
-    EndMacro
     
     
     ;- 
     Procedure.l _text_caret_(*this._s_widget)
+      ; Get caret position
       Protected i.l, X.l, Position.l =- 1,  
                 MouseX.l, Distance.f, MinDistance.f = Infinity()
       
-      MouseX = Mouse()\x - (*this\row\_s()\text\x + *this\scroll\x)
+      MouseX = Mouse()\x - _row_text_x_(*this)
       
-      ; Get caret pos
       For i = 0 To *this\row\_s()\text\len
         X = TextWidth(Left(*this\row\_s()\text\string, i))
         Distance = (MouseX - X)*(MouseX - X)
@@ -4051,7 +4168,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       CompilerEndIf
       
       ; для красоты
-      If *this\row\_s()\text\edit[2]\width > *this\scroll\width
+      If *this\row\_s()\text\edit[2]\width > *this\width[#__c_required]
         *this\row\_s()\text\edit[2]\width - _caret_last_len_
       EndIf
       
@@ -4107,7 +4224,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\text\caret\x = *this\row\_s()\text\edit[3]\x
           *this\text\caret\pos = *this\row\_s()\text\pos + *this\row\_s()\text\edit[3]\pos
         Else
+          ;           If *this\row\_s()\text\edit[2]\x
           *this\text\caret\x = *this\row\_s()\text\edit[2]\x
+          ;           Else
+          ;             *this\text\caret\x = *this\text\__padding\x
+          ;           EndIf
           *this\text\caret\pos = *this\row\_s()\text\pos + *this\row\_s()\text\edit[2]\pos
         EndIf
         
@@ -4363,7 +4484,11 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       
       Protected  _line_ = *this\index[#__s_1]
+      ;       If _line_ > 0 
+      ;         SelectElement(*this\row\_s(), _line_)
+      ;       EndIf
       
+      ;; PushListPosition(*this\row\_s())
       
       If _line_ = *this\index[#__s_2]  ; And *this\index[2] = *this\row\_s()\index
         If *this\text\caret\pos[1] > *this\text\caret\pos[2]
@@ -4393,7 +4518,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
       EndIf
       
-      
+      ;; PopListPosition(*this\row\_s())
       
       
       
@@ -4782,294 +4907,422 @@ CompilerIf Not Defined(widget, #PB_Module)
       ProcedureReturn ret$ ; ReplaceString(ret$, " ", "*")
     EndProcedure
     
-    Procedure.i make_text_multiline(*this._s_widget)
-      ;*this\text\string.s = make_multiline(*this, *this\text\string.s + #LF$) : ProcedureReturn
-      
-      Static string_out.s
-      Protected Repaint, String.s, text_width, len, text.s
-      Protected IT,Text_Y,Text_X,Width,Height, Image_Y, Image_X, Indent = 4
-      
+    ;-
+    Procedure   Editor_Update(*this._s_widget, List row._s_rows())
       With *this
-        Protected *str.Character = @text
-        Protected *end.Character = @text
         
-        Protected _x_ = *this\x[#__c_inner] + *this\text\x, 
-                  _y_ = *this\y[#__c_inner] + *this\text\y, 
-                  _width_, _height_, _this_y_
-        
-        
-        If \vertical
-          If *this\scroll\h And Not *this\scroll\h\hide
-            width = \height - \bs*2 - \text\_padding*2 - \text\y*2 - *this\scroll\h\height
+        If \text\string.s
+          Protected *str.Character
+          Protected *end.Character
+          Protected TxtHeight = \text\height
+          Protected String.s, String1.s, CountString
+          Protected IT, len.l, Position.l, Width,Height
+          Protected ColorFont = \color\Front[Bool(*this\_state & #__s_front) * \color\state]
+          
+          If \vertical
+            Width = \height[#__c_inner] - \text\X*2
+            Height = \width[#__c_inner] - \text\y*2
           Else
-            width = \height - \bs*2 - \text\_padding*2 - \text\y*2
+            Width = \width[#__c_inner] - \text\X*2 
+            Height = \height[#__c_inner] - \text\y*2
           EndIf
           
-          Height = \width - \bs*2 
-        Else
-          If *this\scroll\v And Not *this\scroll\v\hide
-            width = \width - \bs*2 - \text\_padding*2 - \text\x*2 - *this\scroll\v\width - 10
+          ; make multiline text
+          If \text\multiLine
+            Protected text$ = *this\text\string.s + #LF$
+            
+            ;     text$ = ReplaceString(text$, #LFCR$, #LF$)
+            ;     text$ = ReplaceString(text$, #CRLF$, #LF$)
+            ;     text$ = ReplaceString(text$, #CR$, #LF$)
+            ;     text$ + #LF$
+            ;     
+            
+            If \text\multiLine < 0
+              String = text$
+            Else
+              ; <http://www.purebasic.fr/english/viewtopic.php?f = 12&t = 53800>
+              Protected.i i, start, found, length
+              Protected$ line$, DelimList$ = " " + Chr(9), nl$ = #LF$
+              
+              *str.Character = @text$
+              *end.Character = @text$
+              
+              ; make word wrap
+              While *end\c 
+                If *end\c = #LF
+                  start = (*end - *str) >> #PB_Compiler_Unicode
+                  line$ = PeekS (*str, start)
+                  length = start
+                  
+                  ; Get text len
+                  While length > 1
+                    If width > TextWidth(RTrim(Left(line$, length)))
+                      Break
+                    Else
+                      length - 1 
+                    EndIf
+                  Wend
+                  
+                  While start > length 
+                    For found = length To 1 Step - 1
+                      If FindString(" ", Mid(line$, found,1))
+                        start = found
+                        Break
+                      EndIf
+                    Next
+                    
+                    If Not found
+                      start = length
+                    EndIf
+                    
+                    String + Left(line$, start) + nl$
+                    line$ = LTrim(Mid(line$, start + 1))
+                    start = Len(line$)
+                    
+                    ;If length <> start
+                    length = start
+                    
+                    ; Get text len
+                    While length > 1
+                      If width > TextWidth(RTrim(Left(line$, length)))
+                        Break
+                      Else
+                        length - 1 
+                      EndIf
+                    Wend
+                    ;EndIf
+                  Wend
+                  
+                  String + line$ + nl$
+                  *str = *end + #__sOC 
+                EndIf 
+                
+                *end + #__sOC 
+              Wend
+            EndIf
+            
+            CountString = CountString(String, #LF$)
           Else
-            width = \width - \bs*2 - \text\_padding*2 - \text\x*2
+            String.s = RemoveString(*this\text\string, #LF$) + #LF$
+            CountString = 1
           EndIf
           
-          height = \height - \bs*2
-        EndIf
-        
-        \text\pos = 0
-        
-        If \text\multiline
-          text = text_wrap_(*this\text\string + #LF$, width, \text\multiline)
-          *str.Character = @text
-          *end.Character = @text
-          
-          ; Scroll hight reset 
-          \count\items = 0
-          \scroll\width = \text\x*2
-          \scroll\height = \text\y*2
-          
-          While *end\c 
-            If *end\c = #LF 
-              len = (*end - *str)>>#PB_Compiler_Unicode
-              String = PeekS (*str, len)
-              
-              If \text\multiline > 0
-                _make_scroll_width_(*this, TextWidth(String))
-              ElseIf \text\multiline < 0
-                _make_scroll_width_(*this, Width)
-              EndIf
-              
-              _make_scroll_height_(*this, TextHeight("A"))
-              
-              *str = *end + #__sOC 
-              \count\items + 1
-            EndIf 
-            
-            *end + #__sOC 
-          Wend
-          
-        Else
-          text = *this\text\string + #LF$
-          \count\items = 1
-          \scroll\width = \text\x*2
-          \scroll\height = \text\y*2 ; 0
-          _make_scroll_width_(*this, TextWidth(text))
-          _make_scroll_height_(*this, *this\text\height)
-        EndIf
-        
-        
-        _make_scroll_x_(*this)
-        _make_scroll_y_(*this)
-        
-        _width_ = (*this\scroll\width - *this\text\x*2)
-        _height_ = (*this\scroll\height - *this\text\y*2)
-        
-        
-        If string_out <> text + Str(*this) 
-          string_out = text + Str(*this) 
-          *str.Character = @text
-          *end.Character = @text
-          
-          \text\len = Len(\text\string.s)
-          ;\count\items = CountString(text, #LF$)
-          
-          If Not \row\margin\hide
-            \row\margin\width = TextWidth(Str(\count\items)) + 11
-            \scroll\align\left = \row\margin\width
+          ; \max 
+          If \vertical
+            If *this\height[#__c_required] > *this\height[#__c_inner]
+              *this\text\change = #True
+            EndIf
+          Else
+            If *this\width[#__c_required] > *this\width[#__c_inner]
+              *this\text\change = #True
+            EndIf
           EndIf
           
-          Protected time = ElapsedMilliseconds()
+          ; 
+          If *this\count\items <> CountString
+            *this\count\items = CountString
+            *this\text\change = #True
+          EndIf
           
-          If \row\count <> \count\items 
+          If *this\text\change
+            Debug "*this\text\change - " + #PB_Compiler_Procedure
             
-            ClearList(\row\_s())
+            *str.Character = @String
+            *end.Character = @String
+            
+            *this\text\pos  = 0
+            *this\text\len = Len(*this\text\string)
+            
+            ;             ;; editor
+            ;             If *this\row\count <> *this\count\items 
+            *this\row\count = *this\count\items
             Debug  " - - - - ClearList - - - - "
             
+            ClearList(row())
+            *this\width[#__c_required] = *this\text\__padding\x*2 
+            *this\height[#__c_required] = *this\text\__padding\y*2 
+            
+            ;
             While *end\c 
               If *end\c = #LF 
-                len = (*end - *str)/#__sOC
-                String = PeekS (*str, len)
+                AddElement(row())
+                ; drawing item font
+                _drawing_font_item_(*this, row(), row()\text\change)
                 
-                ; ;           If CreateRegularExpression(0, ~".*\n?") : If ExamineRegularExpression(0, string_out) : While NextRegularExpressionMatch(0) : String.s = Trim(RegularExpressionMatchString(0), #LF$) : len = Len(string.s)
-                If AddElement(\row\_s())
-                  \row\_s()\draw = 1
-                  \row\_s()\y = _y_ + _this_y_
-                  \row\_s()\height = \text\height
-                  *this\row\_s()\text\height = \text\height
-                  
-                  \row\_s()\text\string.s = String.s
-                  \row\_s()\index = ListIndex(\row\_s())
-                  \row\_s()\text\width = TextWidth(String.s)
-                  
-                  \row\_s()\color = _get_colors_()
-                  \row\_s()\color\fore[0] = 0
-                  \row\_s()\color\fore[1] = 0
-                  \row\_s()\color\fore[2] = 0
-                  \row\_s()\color\fore[3] = 0
-                  \row\_s()\color\back[0] = 0
-                  \row\_s()\color\frame[0] = 0
-                  
-                  ; set entered color
-                  If *this\row\_s()\index = *this\index[#__s_1]
-                    *this\row\_s()\color\state = 1
-                  EndIf
-                  
-                  ; Update line pos in the text
-                  _make_line_pos_(*this, len)
-                  _make_line_x_(*this, _width_)
-                  _make_line_y_(*this, _height_)
-                  
-                  ; Margin 
-                  *this\row\_s()\margin\string = Str(\row\_s()\index)
-                  
-                  If \vertical
-                    *this\row\_s()\margin\x = \row\_s()\text\y
-                    *this\row\_s()\margin\y = *this\y[#__c_inner] + *this\row\margin\width - TextWidth(*this\row\_s()\margin\string) - 3
-                  Else
-                    *this\row\_s()\margin\y = \row\_s()\text\y
-                    *this\row\_s()\margin\x = *this\x[#__c_inner] + *this\row\margin\width - TextWidth(*this\row\_s()\margin\string) - 3
-                  EndIf
-                  
-                  ;
-                  _edit_sel_update_(*this)
-                  
-                  _this_y_ + *this\text\height + *this\mode\gridlines
-                  
+                row()\text\len = (*end - *str)>>#PB_Compiler_Unicode
+                row()\text\string = PeekS (*str, row()\text\len)
+                row()\text\width = TextWidth(row()\text\string)
+                
+                ;; editor
+                row()\index = ListIndex(row())
+                row()\height = row()\text\height
+                row()\color\back[1] = _get_colors_()\back[1]
+                row()\color\back[2] = _get_colors_()\back[2]
+                row()\color\back[3] = _get_colors_()\back[3]
+                row()\color\front[2] = _get_colors_()\front[2]
+                
+                If \index[#__s_1] = row()\index Or
+                   \index[#__s_2] = row()\index 
+                  row()\text\change = 1
                 EndIf
                 
-                ; ;               Wend : EndIf : FreeRegularExpression(0) : Else : Debug RegularExpressionError() : EndIf
-                *str = *end + #__sOC 
-              EndIf 
-              *end + #__sOC 
-            Wend
-            
-            \row\count = \count\items
-            
-            If \mode\gridlines
-              \scroll\height - \mode\gridlines
-            EndIf
-            
-            
-          Else
-            While *end\c 
-              If *end\c = #LF 
-                len = (*end - *str)/#__sOC
-                String = PeekS (*str, len)
-                
-                If SelectElement(\row\_s(), IT)
-                  If \row\_s()\text\string.s <> String.s Or \row\_s()\text\change
-                    \row\_s()\text\string.s = String.s
-                    \row\_s()\text\width = TextWidth(String.s)
+                ; make line position
+                If \vertical
+                  If *this\height[#__c_required] < row()\text\width + *this\text\__padding\y * 2
+                    *this\height[#__c_required] = row()\text\width + *this\text\__padding\y * 2
                   EndIf
                   
-                  ; Update line pos in the text
-                  _make_line_pos_(*this, len)
+                  If \text\rotate = 270
+                    row()\x = *this\width[#__c_inner] - *this\width[#__c_required] + *this\text\__padding\x + Bool(#PB_Compiler_OS = #PB_OS_MacOS)
+                  ElseIf \text\rotate = 90
+                    row()\x = *this\width[#__c_required]                           - *this\text\__padding\x - 1 
+                  EndIf
                   
-                  _make_line_x_(*this, _width_)
+                  *this\width[#__c_required] + TxtHeight
+                Else
+                  If *this\width[#__c_required] < row()\text\width + *this\text\__padding\x * 2
+                    *this\width[#__c_required] = row()\text\width + *this\text\__padding\x * 2
+                  EndIf
                   
-                  ; Set scroll width length
-                  ;_make_scroll_width_(*this, \row\_s()\text\width)
+                  If \text\rotate = 0
+                    row()\y = *this\height[#__c_required]                            - *this\text\__padding\y - 1 
+                  ElseIf \text\rotate = 180
+                    row()\y = *this\height[#__c_inner] - *this\height[#__c_required] + *this\text\__padding\y + Bool(#PB_Compiler_OS = #PB_OS_MacOS)
+                  EndIf
                   
-                  ;
-                  _edit_sel_update_(*this)
+                  *this\height[#__c_required] + TxtHeight
                 EndIf
                 
-                IT + 1
                 *str = *end + #__sOC 
               EndIf 
-              *end + #__sOC 
-            Wend
-          EndIf
-          
-          ;  MessageRequester("", Str(ElapsedMilliseconds() - time) + " text parse time ")
-          If ElapsedMilliseconds() - time > 0
-            Debug Str(ElapsedMilliseconds() - time) + " text parse time " + Str(Bool(\row\count = \count\items))
-          EndIf
-          
-        Else
-          ; Scroll hight reset 
-          If \count\items = 0
-            \scroll\width = 0
-          Else
-            \scroll\height = 0
-          EndIf
-          Debug  " - - - - updatelist - - - - "
-          
-          ForEach \row\_s()
-            If Not \row\_s()\hide
-              If \count\items = 0
-                \row\_s()\text\width = TextWidth(\row\_s()\text\string)
-                
-                ; Scroll width length
-                _make_scroll_width_(*this, \row\_s()\text\width)
-              Else
-                ; Scroll hight length
-                _make_scroll_height_(*this, \row\_s()\text\height)
-              EndIf
-            EndIf
-          Next
-          
-          ForEach \row\_s()
-            If Not \row\_s()\hide
-              _make_line_x_(*this, _width_)
               
-              If \count\items = 0
+              *end + #__sOC 
+            Wend
+            
+            ;             Else
+            ;               While *end\c 
+            ;                 If *end\c = #LF 
+            ;                   If SelectElement(row(), IT)
+            ;                     row()\text\len = (*end - *str)>>#PB_Compiler_Unicode
+            ;                     line$ = PeekS (*str, row()\text\len)
+            ;                     
+            ;                     If row()\text\string.s <> line$
+            ;                       row()\text\string.s = line$
+            ;                       row()\text\change = 1
+            ;                     EndIf
+            ;                     
+            ;                     If row()\text\change <> 0
+            ;                       row()\text\width = TextWidth(row()\text\string)
+            ;                       ;Debug *this\count\items
+            ;                       If *this\width[#__c_required] < row()\text\width + *this\text\__padding\x * 2
+            ;                         *this\width[#__c_required] = row()\text\width + *this\text\__padding\x * 2
+            ;                       EndIf
+            ;                     EndIf
+            ;                   EndIf
+            ;                   
+            ;                   IT + 1
+            ;                   *str = *end + #__sOC 
+            ;                 EndIf 
+            ;                 
+            ;                 *end + #__sOC 
+            ;               Wend
+            ;             EndIf 
+            
+            ;
+            ForEach row()
+              row()\text\pos = *this\text\pos 
+              *this\text\pos + row()\text\len + 1 ; Len(#LF$)
+              
+              
+              If *this\vertical
+                If *this\text\rotate = 270
+                  row()\x - (*this\width[#__c_inner] - *this\width[#__c_required])
+                EndIf
+                
+                row()\text\x = row()\x
+                
+                If *this\text\align\bottom
+                  If *this\text\rotate = 270
+                    row()\text\y = (*this\height[#__c_required] - row()\text\width)                - *this\text\__padding\y
+                  ElseIf *this\text\rotate = 90    
+                    row()\text\y = *this\height[#__c_required]                                     - *this\text\__padding\y
+                  EndIf
+                  
+                ElseIf Not *this\text\align\top
+                  If *this\text\rotate = 270
+                    row()\text\y = (*this\height[#__c_required] - row()\text\width) / 2
+                  ElseIf *this\text\rotate = 90
+                    row()\text\y = (*this\height[#__c_required] + row()\text\width) / 2
+                  EndIf
+                  
+                Else
+                  If *this\text\rotate = 270
+                    row()\text\y = *this\text\__padding\y
+                  ElseIf *this\text\rotate = 90
+                    row()\text\y = row()\text\width                                                 + *this\text\__padding\y
+                  EndIf
+                  
+                EndIf
+                
+              Else
+                If *this\text\rotate = 180
+                  row()\y - (*this\height[#__c_inner] - *this\height[#__c_required])
+                EndIf
+                
+                row()\text\y = row()\y
+                
+                If *this\text\align\right
+                  If *this\text\rotate = 0
+                    row()\text\x = (*this\width[#__c_required] - row()\text\width)                  - *this\text\__padding\x
+                  ElseIf \text\rotate = 180
+                    row()\text\x = *this\width[#__c_required]                                       - *this\text\__padding\x
+                  EndIf
+                  
+                ElseIf Not *this\text\align\left
+                  If *this\text\rotate = 0
+                    row()\text\x = (*this\width[#__c_required] - row()\text\width) / 2           
+                  ElseIf \text\rotate = 180
+                    row()\text\x = (*this\width[#__c_required] + row()\text\width) / 2
+                  EndIf
+                  
+                Else
+                  If *this\text\rotate = 0
+                    row()\text\x = *this\text\__padding\x 
+                  ElseIf *this\text\rotate = 180
+                    row()\text\x = row()\text\width                                                 + *this\text\__padding\x
+                  EndIf
+                  
+                EndIf
+              EndIf
+              
+              If row()\text\change <> 0
                 _edit_sel_update_(*this)
-              Else
-                _make_line_y_(*this, _height_)
+                
+                row()\text\change = 0
               EndIf
-              
-            EndIf
-          Next
+            Next 
+          EndIf
+          
+          
         EndIf
         
-        
-        
-        If *this\scroll And 
-           (*this\text\change Or (*this\resize And *this\text\multiline =- 1))
+          Protected update_scroll_area
           
-          If *this\scroll\v
-            If *this\scroll\v\bar\min <>  - *this\scroll\y
-              Bar_SetAttribute(*this\scroll\v, #__bar_minimum,  - *this\scroll\y)
-            EndIf
-            
-            If *this\scroll\v\bar\max <> *this\scroll\height 
-              Bar_SetAttribute(*this\scroll\v, #__bar_maximum, *this\scroll\height)
-            EndIf
-            
-            ; This is for the caret and scroll when entering the key - (enter & backspace) 
-            If *this\text\change
-              _text_scroll_y_(*this)
-            EndIf
+          If *this\scroll\v And
+             *this\scroll\v\bar\max <> *this\height[#__c_required] And
+             Bar_SetAttribute(*this\scroll\v, #__bar_maximum, *this\height[#__c_required])
+            update_scroll_area = 1
           EndIf
           
-          If *this\scroll\h
-            If *this\scroll\h\bar\min <>  - *this\scroll\x
-              Bar_SetAttribute(*this\scroll\h, #__bar_minimum,  - *this\scroll\x)
-            EndIf
-            
-            If *this\scroll\h\bar\max <> *this\scroll\width 
-              Bar_SetAttribute(*this\scroll\h, #__bar_maximum, *this\scroll\width)
-            EndIf
-            
-            ; This is for the caret and scroll when entering the key - (enter & backspace) 
-            If *this\text\change
-              _text_scroll_x_(*this)
-            EndIf
+          If *this\scroll\h And 
+             *this\scroll\h\bar\max <> *this\width[#__c_required] And  
+             Bar_SetAttribute(*this\scroll\h, #__bar_maximum, *this\width[#__c_required])
+            update_scroll_area = 1
           EndIf
           
-          If _bar_scrollarea_update_(*this)
+          If update_scroll_area ; _bar_scrollarea_update_(*this)
+            Bar_Resizes(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
             \height[#__c_inner] = \scroll\v\bar\page\len
             \width[#__c_inner] = \scroll\h\bar\page\len 
           EndIf
-        EndIf 
+          
+          If Not *this\scroll\v
+          ; make vertical scroll y
+            If *this\text\align\bottom
+              *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required])
+              
+              ; vertical center
+            ElseIf Not *this\text\align\top
+              *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required]) / 2
+            Else
+              *this\y[#__c_required] = 0
+            EndIf
+            
+          Else
+            ; make vertical scroll y
+            If *this\text\align\bottom
+              *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required] + *this\scroll\v\bar\page\end) - (*this\scroll\v\bar\page\pos - *this\scroll\v\bar\min)
+              
+              ; vertical center
+            ElseIf Not *this\text\align\top
+              *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required] + *this\scroll\v\bar\page\end) / 2 - (*this\scroll\v\bar\page\pos - *this\scroll\v\bar\min)
+            Else
+              *this\y[#__c_required] =- (*this\scroll\v\bar\page\pos - *this\scroll\v\bar\min)
+            EndIf
+            
+            ; This is for the caret and scroll when entering the key - (enter & backspace) 
+            _text_scroll_y_(*this)
+            
+            ; fist show 
+            If Not *this\scroll\v\bar\page\change
+              If *this\text\align\bottom
+                If Bar_Change(*this\scroll\v, *this\scroll\v\bar\page\end) 
+                  Bar_Update(*this\scroll\v)
+                EndIf
+                
+              ElseIf Not *this\text\align\top
+                If Bar_Change(*this\scroll\v, *this\scroll\v\bar\page\end / 2) 
+                  Bar_Update(*this\scroll\v)
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+          
+          If Not *this\scroll\h
+           ; make horizontal scroll x
+            If *this\text\align\right
+              *this\x[#__c_required] = (*this\width[#__c_inner] - *this\width[#__c_required])
+              
+              ; horizontal center
+            ElseIf Not *this\text\align\left
+              *this\x[#__c_required] = (*this\width[#__c_inner] -  *this\width[#__c_required]) / 2
+              
+            Else
+              *this\x[#__c_required] = 0
+            EndIf
+            
+          Else
+            ; make horizontal scroll x
+            If *this\text\align\right
+              *this\x[#__c_required] = (*this\width[#__c_inner] - *this\width[#__c_required] + *this\scroll\h\bar\page\end) - (*this\scroll\h\bar\page\pos - *this\scroll\h\bar\min)
+              
+              ; horizontal center
+            ElseIf Not *this\text\align\left
+              *this\x[#__c_required] = (*this\width[#__c_inner] -  *this\width[#__c_required] + *this\scroll\h\bar\page\end) / 2 - (*this\scroll\h\bar\page\pos - *this\scroll\h\bar\min)
+              
+            Else
+              *this\x[#__c_required] =- (*this\scroll\h\bar\page\pos - *this\scroll\h\bar\min)
+            EndIf
+            
+            ; This is for the caret and scroll when entering the key - (enter & backspace) 
+            _text_scroll_x_(*this)
+            
+            ; first show
+            If Not *this\scroll\h\bar\page\change
+              If *this\text\align\right
+                If Bar_Change(*this\scroll\h, *this\scroll\h\bar\page\end) 
+                  Bar_Update(*this\scroll\h)
+                EndIf
+                
+              ElseIf Not *this\text\align\left
+                If Bar_Change(*this\scroll\h, *this\scroll\h\bar\page\end / 2) 
+                  Bar_Update(*this\scroll\h)
+                EndIf
+              EndIf
+            EndIf
+          EndIf
+          
+;           ; text frame 
+;           *this\text\x = *this\x[#__c_required] + *this\text\__padding\x
+;           *this\text\y = *this\y[#__c_required] + *this\text\__padding\y
+;           *this\text\width = *this\width[#__c_required] - *this\text\__padding\x*2
+;           *this\text\height = *this\height[#__c_required] + *this\text\__padding\y*2
+        
+        
       EndWith
-      
-      ProcedureReturn Repaint
     EndProcedure
     
     
-    ;- 
     Procedure   Editor_Draw(*this._s_widget)
       Protected String.s, StringWidth, ix, iy, iwidth, iheight
       Protected IT,Text_Y,Text_X, X,Y, Width, Drawing
@@ -5077,6 +5330,12 @@ CompilerIf Not Defined(widget, #PB_Module)
       If Not *this\hide
         
         With *this
+          ; Make output multi line text
+          If *this\text\change <> 0
+            Editor_Update(*this, *this\row\_s())
+            *this\text\change = 0
+          EndIf
+          
           ; Draw back color
           ;         If \color\fore[\color\state]
           ;           DrawingMode(#PB_2DDrawing_Gradient)
@@ -5085,26 +5344,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           DrawingMode(#PB_2DDrawing_Default)
           RoundBox(\x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\round,\round,\color\back[\color\state])
           ;         EndIf
-          
-          ;           ;
-          ;           If \text\fontID 
-          ;             DrawingFont(\text\fontID) 
-          ;           EndIf
-          
-          ; Then changed text
-          If \text\change
-            \text\height = TextHeight("A")
-            \text\width = TextWidth(\text\string.s)
-          EndIf
-          
-          If \text\change
-            Post(#PB_EventType_Change, *this)
-          EndIf
-          
-          ; Make output multi line text
-          If (\text\change Or (\resize And \text\multiline =- 1))
-            make_text_multiline(*this)
-          EndIf
           
           ; Draw margin back color
           If \row\margin\width > 0
@@ -5129,36 +5368,34 @@ CompilerIf Not Defined(widget, #PB_Module)
           If \count\items And \scroll\v And \scroll\h
             PushListPosition(\row\_s())
             ForEach \row\_s()
-              ; Is visible lines - -  - 
-              \row\_s()\draw = Bool(Not \row\_s()\hide And 
-                                    \row\_s()\y + \row\_s()\height + *this\scroll\y>*this\y[#__c_inner] And 
-                                    (\row\_s()\y - *this\y[#__c_inner]) + *this\scroll\y<*this\height[#__c_inner])
+              ;               ; Is visible lines - -  - 
+              \row\_s()\draw = 1;Bool(Not \row\_s()\hide And 
+                                ;                                     \row\_s()\y + \row\_s()\height + *this\y[#__c_required] > *this\y[#__c_inner] And 
+                                ;                                     (\row\_s()\y - *this\y[#__c_inner]) + *this\y[#__c_required]<*this\height[#__c_inner])
               
               ; Draw selections
               If *this\row\_s()\draw 
-                ;               If (*this\text\change Or *this\resize)
-                ;                 *this\row\_s()\text\x = *this\x[2] + *this\row\_s()\text\x[2] + *this\scroll\x
-                ;                 *this\row\_s()\text\y = *this\y[2] + *this\row\_s()\text\y[2] + *this\scroll\y
-                ;               EndIf
+                Y = _row_y_(*this)
+                Text_X = _row_text_x_(*this)
+                Text_Y = _row_text_y_(*this)
                 
-                Y = *this\row\_s()\y + *this\scroll\y
-                Text_X = *this\row\_s()\text\x + *this\scroll\x
-                Text_Y = *this\row\_s()\text\y + *this\scroll\y
+                Protected sel_text_x1 = _row_text_edit_x_(*this, [1])
+                Protected sel_text_x2 = _row_text_edit_x_(*this, [2])
+                Protected sel_text_x3 = _row_text_edit_x_(*this, [3])
                 
-                Protected text_x_sel = \row\_s()\text\edit[2]\x + *this\scroll\x
                 Protected sel_x = \x[#__c_inner] + *this\text\y
                 Protected sel_width = \width[#__c_inner] - *this\text\y*2
-                If GetActive()
-                  Protected text_sel_state = 2 + Bool(GetActive()\gadget <> *this)
-                  Protected text_sel_width = \row\_s()\text\edit[2]\width + Bool(GetActive()\gadget <> *this) * *this\text\caret\width
-                  Protected text_state = *this\row\_s()\color\state
-                  
-                  text_state = Bool(*this\row\_s()\index = *this\index[#__s_1]) + Bool(*this\row\_s()\index = *this\index[#__s_1] And GetActive()\gadget <> *this)*2
-                EndIf
+                
+                Protected text_sel_state = 2 + Bool(Focused() <> *this)
+                Protected text_sel_width = \row\_s()\text\edit[2]\width + Bool(Focused() <> *this) * *this\text\caret\width
+                Protected text_state = *this\row\_s()\color\state
+                
+                text_state = Bool(*this\row\_s()\index = *this\index[#__s_1]) + Bool(*this\row\_s()\index = *this\index[#__s_1] And Focused() <> *this)*2
                 
                 If *this\text\editable
                   ; Draw lines
-                  ; Если для итема установили задный фон отличный от заднего фона едитора
+                  ; Если для итема установили задный 
+                  ; фон отличный от заднего фона едитора
                   If *this\row\_s()\color\Back  
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                     RoundBox(sel_x,Y,sel_width ,*this\row\_s()\height, *this\row\_s()\round,*this\row\_s()\round, *this\row\_s()\color\back[0] )
@@ -5178,17 +5415,12 @@ CompilerIf Not Defined(widget, #PB_Module)
                   ; Draw entered selection
                   ; GetActive()\gadget = *this
                   If text_state ; *this\row\_s()\index = *this\index[1] ; \color\state;
-                    If *this\row\_s()\color\back[text_state]<> - 1              ; no draw transparent
-                                                                                ;                     If *this\row\_s()\color\fore[text_state]
-                                                                                ;                       DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                                                                                ;                       _box_gradient_(*this\vertical,sel_x,Y,sel_width, *this\row\_s()\height, *this\row\_s()\color\fore[text_state], *this\row\_s()\color\back[text_state], *this\row\_s()\round)
-                                                                                ;                     Else
+                    If *this\row\_s()\color\back[text_state] <>- 1              ; no draw transparent
                       DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                       RoundBox(sel_x,Y,sel_width ,*this\row\_s()\height, *this\row\_s()\round,*this\row\_s()\round, *this\row\_s()\color\back[text_state] )
-                      ;                     EndIf
                     EndIf
                     
-                    If *this\row\_s()\color\frame[text_state]<> - 1 ; no draw transparent
+                    If *this\row\_s()\color\frame[text_state] <>- 1 ; no draw transparent
                       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                       RoundBox(sel_x,Y,sel_width ,*this\row\_s()\height, *this\row\_s()\round,*this\row\_s()\round, *this\row\_s()\color\frame[text_state] )
                     EndIf
@@ -5197,80 +5429,65 @@ CompilerIf Not Defined(widget, #PB_Module)
                 
                 ; Draw text
                 ; Draw string
-                If *this\text\editable And *this\row\_s()\text\edit[2]\width And *this\color\front <> *this\row\_s()\color\front[2]
+                If *this\text\editable And 
+                   *this\row\_s()\text\edit[2]\width And 
+                   *this\row\_s()\color\front[2] <> *this\color\front
                   
                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                    ; to right
+                    If \row\_s()\text\string.s
+                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                      DrawRotatedText(Text_X, Text_Y, \row\_s()\text\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
+                    EndIf
+                    
+                    If \row\_s()\text\edit[2]\width
+                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                      Box(sel_text_x2, Y, text_sel_width, \row\_s()\height, *this\row\_s()\color\back[text_sel_state])
+                    EndIf
+                    
+                    DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+                    
+                    ; to right select
                     If (*this\index[#__s_1] > *this\index[#__s_2] Or 
                         (*this\index[#__s_1] = *this\index[#__s_2] And *this\text\caret\pos[1] > *this\text\caret\pos[2]))
                       
-                      DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                      DrawRotatedText(Text_X, Text_Y, \row\_s()\text\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
-                      
-                      ;                     If *this\row\_s()\color\fore[2]
-                      ;                       DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                      ;                       _box_gradient_(*this\vertical,text_x_sel, Y, text_sel_width, \row\_s()\height, *this\row\_s()\color\fore[text_sel_state], *this\row\_s()\color\back[text_sel_state], \row\_s()\round)
-                      ;                     Else
-                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                      Box(text_x_sel, Y, text_sel_width, \row\_s()\height, *this\row\_s()\color\back[text_sel_state])
-                      ;                     EndIf
-                      
                       If \row\_s()\text\edit[2]\string.s
-                        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                        DrawRotatedText(text_x_sel, Text_Y, \row\_s()\text\edit[2]\string.s, *this\text\rotate, *this\row\_s()\color\front[text_sel_state])
+                        DrawRotatedText(sel_text_x2, Text_Y, \row\_s()\text\edit[2]\string.s, *this\text\rotate, *this\row\_s()\color\front[text_sel_state])
                       EndIf
                       
+                      ; to left select
                     Else
-                      ;                     If *this\row\_s()\color\fore[2]
-                      ;                       DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                      ;                       _box_gradient_(*this\vertical,text_x_sel, Y, text_sel_width, \row\_s()\height,*this\row\_s()\color\fore[text_sel_state], *this\row\_s()\color\back[text_sel_state], \row\_s()\round)
-                      ;                     Else
-                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                      Box(text_x_sel, Y, text_sel_width, \row\_s()\height, *this\row\_s()\color\back[text_sel_state] )
-                      ;                     EndIf
-                      
-                      If \row\_s()\text\edit[3]\string.s
-                        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-                        DrawRotatedText(\row\_s()\text\edit[3]\x + *this\scroll\x, Text_Y, \row\_s()\text\edit[3]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
-                      EndIf
-                      
                       If \row\_s()\text\edit[2]\string.s
-                        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
                         DrawRotatedText(Text_X, Text_Y, \row\_s()\text\edit[1]\string.s + \row\_s()\text\edit[2]\string.s, *this\text\rotate, *this\row\_s()\color\front[text_sel_state])
                       EndIf
                       
                       If \row\_s()\text\edit[1]\string.s
-                        DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
                         DrawRotatedText(Text_X, Text_Y, \row\_s()\text\edit[1]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
                       EndIf
                     EndIf
                     
                   CompilerElse
-                    ;                   If *this\row\_s()\color\fore[2]
-                    ;                     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-                    ;                     _box_gradient_(*this\vertical,text_x_sel, Y, text_sel_width, \row\_s()\height, *this\row\_s()\color\fore[text_sel_state], *this\row\_s()\color\back[text_sel_state], \row\_s()\round)
-                    ;                   Else
-                    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Box(text_x_sel, Y, text_sel_width, \row\_s()\height, *this\row\_s()\color\back[text_sel_state])
-                    ;                   EndIf
+                    If \row\_s()\text\edit[2]\width
+                      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                      Box(sel_text_x2, Y, text_sel_width, \row\_s()\height, *this\row\_s()\color\back[text_sel_state])
+                    EndIf
                     
-                    DrawingMode(#PB_2DDrawing_Transparent)
+                    DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
                     
                     If \row\_s()\text\edit[1]\string.s
-                      DrawRotatedText(\row\_s()\text\edit[1]\x + *this\scroll\x, Text_Y, \row\_s()\text\edit[1]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
+                      DrawRotatedText(sel_text_x1, Text_Y, \row\_s()\text\edit[1]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
                     EndIf
                     If \row\_s()\text\edit[2]\string.s
-                      DrawRotatedText(text_x_sel, Text_Y, \row\_s()\text\edit[2]\string.s, *this\text\rotate, *this\row\_s()\color\front[text_sel_state])
+                      DrawRotatedText(sel_text_x2, Text_Y, \row\_s()\text\edit[2]\string.s, *this\text\rotate, *this\row\_s()\color\front[text_sel_state])
                     EndIf
                     If \row\_s()\text\edit[3]\string.s
-                      DrawRotatedText(\row\_s()\text\edit[3]\x + *this\scroll\x, Text_Y, \row\_s()\text\edit[3]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
+                      DrawRotatedText(sel_text_x3, Text_Y, \row\_s()\text\edit[3]\string.s, *this\text\rotate, *this\row\_s()\color\front[*this\row\_s()\color\state])
                     EndIf
                   CompilerEndIf
                   
                 Else
                   If *this\row\_s()\text\edit[2]\width
                     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                    Box(text_x_sel, Y, text_sel_width, *this\row\_s()\height, $FFFBD9B7);*this\row\_s()\color\back[2])
+                    Box(sel_text_x2, Y, text_sel_width, *this\row\_s()\height, $FFFBD9B7);*this\row\_s()\color\back[2])
                   EndIf
                   
                   If *this\color\state = 2
@@ -5285,12 +5502,17 @@ CompilerIf Not Defined(widget, #PB_Module)
                 ; Draw margin text
                 If *this\row\margin\width > 0
                   DrawingMode(#PB_2DDrawing_Transparent)
-                  DrawRotatedText(*this\row\_s()\margin\x + Bool(*this\vertical) * *this\scroll\x, *this\row\_s()\margin\y + Bool(Not *this\vertical) * *this\scroll\y, *this\row\_s()\margin\string, *this\text\rotate, *this\row\margin\color\front)
+                  DrawRotatedText(*this\row\_s()\margin\x + Bool(*this\vertical) * *this\x[#__c_required],
+                                  *this\row\_s()\margin\y + Bool(Not *this\vertical) * *this\y[#__c_required], 
+                                  *this\row\_s()\margin\string, *this\text\rotate, *this\row\margin\color\front)
                 EndIf
                 
                 ; Horizontal line
-                If *this\mode\GridLines And *this\row\_s()\color\line And *this\row\_s()\color\line <> *this\row\_s()\color\back : DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                  Box(*this\row\_s()\x, (*this\row\_s()\y + *this\row\_s()\height + Bool(*this\mode\gridlines>1)) + *this\scroll\y, *this\row\_s()\width, 1, *this\color\line)
+                If *this\mode\GridLines And
+                   *this\row\_s()\color\line And 
+                   *this\row\_s()\color\line <> *this\row\_s()\color\back 
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+                  Box(*this\row\_s()\x, (*this\row\_s()\y + *this\row\_s()\height + Bool(*this\mode\gridlines>1)) + *this\y[#__c_required], *this\row\_s()\width, 1, *this\color\line)
                 EndIf
               EndIf
             Next
@@ -5298,9 +5520,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           ; Draw caret
-          If *this\text\editable And GetActive() And GetActive()\gadget = *this ; *this\color\state
+          If *this\text\editable And *this = Focused() ; *this\color\state
             DrawingMode(#PB_2DDrawing_XOr)             
-            Box(*this\text\caret\x + *this\scroll\x, *this\text\caret\y + *this\scroll\y, *this\text\caret\width, *this\text\caret\height, $FFFFFFFF)
+            Box(*this\x[#__c_inner] + *this\text\caret\x + *this\x[#__c_required], *this\y[#__c_inner] + *this\text\caret\y + *this\y[#__c_required], *this\text\caret\width, *this\text\caret\height, $FFFFFFFF)
           EndIf
           
           ; Draw frames
@@ -5736,7 +5958,6 @@ CompilerIf Not Defined(widget, #PB_Module)
                 ;- backup  
               Case #PB_Shortcut_Back   
                 If Not \notify
-                  
                   If Not _text_paste_(*this)
                     If \row\_s()\text\edit[2]\len
                       
@@ -5756,8 +5977,9 @@ CompilerIf Not Defined(widget, #PB_Module)
                       \row\_s()\text\string.s = \row\_s()\text\edit[1]\string.s + \row\_s()\text\edit[3]\string.s
                       \row\_s()\text\len = \row\_s()\text\edit[1]\len + \row\_s()\text\edit[3]\len : \row\_s()\text\change = 1
                       
-                      \text\string.s = Left(\text\string.s, \row\_s()\text\pos + \text\caret\pos[1] ) + \text\edit[3]\string
+                      \text\string.s = Left(\text\string.s, \row\_s()\text\pos + \text\caret\pos[1]) + \text\edit[3]\string
                       \text\change =- 1 ; - 1 post event change widget
+                      
                     Else
                       ; Если дошли до начала строки то 
                       ; переходим в конец предыдущего итема
@@ -5776,6 +5998,8 @@ CompilerIf Not Defined(widget, #PB_Module)
                         \text\caret\pos[1] = \row\_s()\text\len
                         \text\change =- 1 ; - 1 post event change widget
                         
+                        
+                        \row\count = 0
                       Else
                         \notify = 2
                         ProcedureReturn - 1
@@ -5789,6 +6013,13 @@ CompilerIf Not Defined(widget, #PB_Module)
                     Repaint =- 1 
                   EndIf
                 EndIf
+                
+                ;                 If Repaint 
+                ;                   ; Debug 777
+                ;                   \row\count = 0
+                ;                   ;\count\items - 1
+                ;                 EndIf
+                
                 
               Case #PB_Shortcut_Delete
                 If Not _text_paste_(*this) And 
@@ -5912,7 +6143,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                          ; Get line position
                          ;If Mouse()\buttons ; сним двойной клик не работает
               If \scroll\v And (Mouse()\y - \y[#__c_inner] - \text\y + \scroll\v\bar\page\pos) > 0
-                _line_ = ((Mouse()\y - \y[#__c_inner] - \text\y - \scroll\y) / (\text\height + \mode\gridlines))
+                _line_ = ((Mouse()\y - \y[#__c_inner] - \text\y - \y[#__c_required]) / (\text\height + \mode\gridlines))
                 ;  _line_ = ((Mouse()\y - \y[2] - \text\y + \scroll\v\bar\page\pos) / (\text\height + \mode\gridlines))
               Else
                 _line_ =- 1
@@ -6189,17 +6420,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     
     ;- 
-    ;-  TREEs
-    ;- 
-    
-    
-    
-    
-    
+    ;-  TREE
     Declare.l Tree_Draw(*this._s_widget, List row._s_rows())
-    ;Declare  _tree_events_(*this, eventtype.l, mouse_x.l = -1, mouse_y.l = -1, position.l = 0)
-    
-    ;- 
     Declare tt_close(*this._s_tt)
     
     Procedure tt_tree_Draw(*this._s_tt, *color._s_color = 0)
@@ -6253,7 +6475,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           \row\tt\x = x + \row\_s()\x + \row\_s()\width - 1
           \row\tt\y = y + \row\_s()\y - \scroll\v\bar\page\pos
           
-          \row\tt\width = \row\_s()\text\width - \width[#__c_inner] + (\row\_s()\text\x - \row\_s()\x) + 5 ; -  (\scroll\width - \width); -  \row\_s()\text\x; 105 ;\row\_s()\text\width - (\scroll\width - \row\_s()\width)  ; - 32 + 5 
+          \row\tt\width = \row\_s()\text\width - \width[#__c_inner] + (\row\_s()\text\x - \row\_s()\x) + 5 ; -  (\width[#__c_required] - \width); -  \row\_s()\text\x; 105 ;\row\_s()\text\width - (\width[#__c_required] - \row\_s()\width)  ; - 32 + 5 
           
           If \row\tt\width < 6
             \row\tt\width = 0
@@ -6294,6 +6516,13 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     ;- 
+    Macro _tree_bar_update_(_this_, _pos_, _len_)
+      ;       Bool(Bool((_pos_ - _this_\y - _this_\bar\page\pos) < 0 And bar_SetState(_this_, (_pos_ - _this_\y))) Or
+      ;            Bool((_pos_ - _this_\y - _this_\bar\page\pos) > (_this_\bar\page\len - _len_) And
+      ;                 bar_SetState(_this_, (_pos_ - _this_\y) - (_this_\bar\page\len - _len_)))) : _this_\change = 0
+      _bar_scrollarea_change_(_this_, _pos_ - _this_\y, _len_)
+    EndMacro
+    
     Macro _tree_box_(_x_,_y_, _width_, _height_, _checked_, _type_, _color_ = $FFFFFFFF, _round_ = 2, _alpha_ = 255) 
       
       If _type_ = 1
@@ -6403,10 +6632,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure   _Tree_Update(*this._s_widget, List *row._s_rows())
       If *this\change > 0
-        *this\scroll\x = 0
-        *this\scroll\y = 0
-        *this\scroll\width = 0
-        *this\scroll\height = 0
+        *this\x[#__c_required] = 0
+        *this\y[#__c_required] = 0
+        *this\width[#__c_required] = 0
+        *this\height[#__c_required] = 0
       EndIf
       
       ; reset item z - order
@@ -6444,7 +6673,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             *row()\x = *this\x[#__c_inner]
             *row()\height = *row()\text\height + 2 ;
-            *row()\y = *this\y[#__c_inner] + *this\scroll\height
+            *row()\y = *this\y[#__c_inner] + *this\height[#__c_required]
             
             *row()\width = *this\width[#__c_inner] ; ???
           EndIf
@@ -6493,10 +6722,10 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           If *this\change > 0
-            *this\scroll\height + *row()\height + Bool(*row()\index <> *this\count\items - 1) * *this\mode\GridLines
+            *this\height[#__c_required] + *row()\height + Bool(*row()\index <> *this\count\items - 1) * *this\mode\GridLines
             
-            If *this\scroll\width < (*this\row\_s()\text\x + *this\row\_s()\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos) - *this\x[#__c_inner]
-              *this\scroll\width = (*this\row\_s()\text\x + *this\row\_s()\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos) - *this\x[#__c_inner]
+            If *this\width[#__c_required] < (*this\row\_s()\text\x + *this\row\_s()\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos) - *this\x[#__c_inner]
+              *this\width[#__c_required] = (*this\row\_s()\text\x + *this\row\_s()\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos) - *this\x[#__c_inner]
             EndIf
           EndIf
         EndIf
@@ -6505,22 +6734,22 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ; if the item list has changed
       If *this\change > 0
-        ; *this\scroll\height - *this\mode\gridlines
+        ; *this\height[#__c_required] - *this\mode\gridlines
         
         ; change vertical scrollbar max
-        If *this\scroll\v\bar\max <> *this\scroll\height And
-           bar_SetAttribute(*this\scroll\v, #__bar_Maximum, *this\scroll\height)
+        If *this\scroll\v\bar\max <> *this\height[#__c_required] And
+           bar_SetAttribute(*this\scroll\v, #__bar_Maximum, *this\height[#__c_required])
           
-          Resizes(*this\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          Bar_Resizes(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           *this\width[#__c_inner] = *this\scroll\h\bar\page\len
           *this\height[#__c_inner] = *this\scroll\v\bar\page\len
         EndIf
         
         ; change horizontal scrollbar max
-        If *this\scroll\h\bar\max <> *this\scroll\width And
-           bar_SetAttribute(*this\scroll\h, #__bar_Maximum, *this\scroll\width)
+        If *this\scroll\h\bar\max <> *this\width[#__c_required] And
+           bar_SetAttribute(*this\scroll\h, #__bar_Maximum, *this\width[#__c_required])
           
-          Resizes(*this\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          Bar_Resizes(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           *this\width[#__c_inner] = *this\scroll\h\bar\page\len
           *this\height[#__c_inner] = *this\scroll\v\bar\page\len
         EndIf
@@ -6663,10 +6892,10 @@ CompilerIf Not Defined(widget, #PB_Module)
       Debug #PB_Compiler_Procedure
       
       If *this\change > 0
-        *this\scroll\x = 0
-        *this\scroll\y = 0
-        *this\scroll\width = 0
-        *this\scroll\height = 0
+        *this\x[#__c_required] = 0
+        *this\y[#__c_required] = 0
+        *this\width[#__c_required] = 0
+        *this\height[#__c_required] = 0
       EndIf
       
       ; reset item z - order
@@ -6706,7 +6935,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             _drawing_font_item_(*this, row(), row()\text\change)
             
             row()\height = row()\text\height + 2 ;
-            row()\y = *this\y[#__c_inner] + *this\scroll\height
+            row()\y = *this\y[#__c_inner] + *this\height[#__c_required]
             
             row()\x = *this\x[#__c_inner]
             row()\width = *this\width[#__c_inner] ; ???
@@ -6767,10 +6996,10 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           ; vertical & horizontal scroll max value
           If *this\change > 0
-            *this\scroll\height + row()\height + Bool(row()\index <> *this\count\items - 1) * *this\mode\GridLines
+            *this\height[#__c_required] + row()\height + Bool(row()\index <> *this\count\items - 1) * *this\mode\GridLines
             
-            If *this\scroll\width < (*this\row\_s()\text\x + *this\row\_s()\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos) - *this\x[#__c_inner]
-              *this\scroll\width = (*this\row\_s()\text\x + *this\row\_s()\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos) - *this\x[#__c_inner]
+            If *this\width[#__c_required] < (*this\row\_s()\text\x + *this\row\_s()\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos) - *this\x[#__c_inner]
+              *this\width[#__c_required] = (*this\row\_s()\text\x + *this\row\_s()\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos) - *this\x[#__c_inner]
             EndIf
           EndIf
         EndIf
@@ -6779,22 +7008,22 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ; if the item list has changed
       If *this\change > 0
-        ; *this\scroll\height - *this\mode\gridlines
+        ; *this\height[#__c_required] - *this\mode\gridlines
         
         ; change vertical scrollbar max
-        If *this\scroll\v\bar\max <> *this\scroll\height And
-           bar_SetAttribute(*this\scroll\v, #__bar_Maximum, *this\scroll\height)
+        If *this\scroll\v\bar\max <> *this\height[#__c_required] And
+           bar_SetAttribute(*this\scroll\v, #__bar_Maximum, *this\height[#__c_required])
           
-          Resizes(*this\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          Bar_Resizes(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           *this\width[#__c_inner] = *this\scroll\h\bar\page\len
           *this\height[#__c_inner] = *this\scroll\v\bar\page\len
         EndIf
         
         ; change horizontal scrollbar max
-        If *this\scroll\h\bar\max <> *this\scroll\width And
-           bar_SetAttribute(*this\scroll\h, #__bar_Maximum, *this\scroll\width)
+        If *this\scroll\h\bar\max <> *this\width[#__c_required] And
+           bar_SetAttribute(*this\scroll\h, #__bar_Maximum, *this\width[#__c_required])
           
-          Resizes(*this\scroll, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+          Bar_Resizes(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
           *this\width[#__c_inner] = *this\scroll\h\bar\page\len
           *this\height[#__c_inner] = *this\scroll\v\bar\page\len
         EndIf
@@ -6807,7 +7036,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           Tree_Draw(*this, *this\row\draws())
         EndIf
-        
       EndIf
       
       ; reset draw list
@@ -6959,8 +7187,6 @@ CompilerIf Not Defined(widget, #PB_Module)
             DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
             DrawAlphaImage(*this\img\index, *this\img\x, *this\img\y, *this\color\alpha)
           EndIf
-          
-          
           
           ;
           PushListPosition(*row())
@@ -7216,7 +7442,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           handle = AddElement(*this\row\_s()) 
-          position = ListIndex(*this\row\_s())
+          If position < 0 
+            position = ListIndex(*this\row\_s())
+          EndIf
         Else
           handle = SelectElement(*this\row\_s(), position)
           
@@ -7240,10 +7468,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;}
         
         If handle
+          ;*this\row\i(Hex(position)) = ListIndex(*this\row\_s())
+          
           ;             If Not \row\_s()
           ;               \row\_s() = AllocateStructure(_s_rows)
           ;             EndIf
-          If Not position
+          If Not ListIndex(*this\row\_s()) Or Not position
             *this\row\first = *this\row\_s()
           EndIf
           
@@ -7357,7 +7587,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       ;EndWith
       
-      ProcedureReturn handle
+      ProcedureReturn *this\count\items - 1
     EndProcedure
     
     
@@ -7754,7 +7984,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
               
               ; TODO должен отправлять если покинули все итеми
-              If Not _from_point_(mouse_x - *this\x, mouse_y - *this\y, *this\scroll)
+              If Not _from_point_(mouse_x - *this\x, mouse_y - *this\y, *this, [#__c_required])
                 If *this\row\selected
                   Post(#PB_EventType_StatusChange, *this, *this\row\selected\index)
                 Else
@@ -8342,7 +8572,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ;           RoundBox(\caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner], \round, \round, $FF000000)
             ; Draw string
             If \resize & #__resize_change
-              \caption\text\x = \caption\x[#__c_inner] + \caption\text\_padding
+              \caption\text\x = \caption\x[#__c_inner] + \caption\text\__padding\x
               \caption\text\y = \caption\y[#__c_inner] + (\caption\height[#__c_inner] - TextHeight("A"))/2
             EndIf
             
@@ -8679,8 +8909,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;         ForEach *this\row\_s()
     ;           If *this\row\_s()\text\string
     ;             If (*this\text\change Or *this\resize & #__resize_change)
-    ;               *this\row\_s()\text\x = *this\x[2] + *this\row\_s()\text\x[2] + *this\scroll\x
-    ;               *this\row\_s()\text\y = *this\y[2] + *this\row\_s()\text\y[2] + *this\scroll\y
+    ;               *this\row\_s()\text\x = *this\x[2] + *this\row\_s()\text\x[2] + *this\x[#__c_required]
+    ;               *this\row\_s()\text\y = *this\y[2] + *this\row\_s()\text\y[2] + *this\y[#__c_required]
     ;             EndIf
     ;             
     ;             DrawingMode(#PB_2DDrawing_transparent|#PB_2DDrawing_AlphaBlend)
@@ -8696,7 +8926,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         If \text\string.s
           Protected String.s, String1.s, String2.s, String3.s, String4.s, StringWidth, CountString
           Protected *str.Character
-          Protected *End.Character
+          Protected *end.Character
           Protected len.l, Position.l
           Protected IT,Text_X,Width,Height
           Protected TxtHeight = \text\height
@@ -8809,17 +9039,17 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             *str.Character = @String
-            *End.Character = @String
+            *end.Character = @String
             
             ClearList(row())
             *this\width[#__c_required] = 0
             *this\height[#__c_required] = 0
             
             ;
-            While *End\c 
-              If *End\c = #LF 
+            While *end\c 
+              If *end\c = #LF 
                 AddElement(row())
-                row()\text\len = (*End - *str)>>#PB_Compiler_Unicode
+                row()\text\len = (*end - *str)>>#PB_Compiler_Unicode
                 row()\text\string = PeekS (*str, row()\text\len)
                 row()\text\width = TextWidth(row()\text\string)
                 
@@ -8849,10 +9079,10 @@ CompilerIf Not Defined(widget, #PB_Module)
                   *this\height[#__c_required] + TxtHeight
                 EndIf
                 
-                *str = *End + #__sOC 
+                *str = *end + #__sOC 
               EndIf 
               
-              *End + #__sOC 
+              *end + #__sOC 
             Wend
             
             ;
@@ -8923,24 +9153,24 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           ; make vertical scroll y
           If \text\align\bottom
-            *this\y[#__c_required] = \height[#__c_inner] - *this\height[#__c_required] - \text\y 
+            *this\y[#__c_required] = \height[#__c_inner] - *this\height[#__c_required] - \text\__padding\y 
             
             ; vertical center
           ElseIf Not \text\align\top
             *this\y[#__c_required] = (\height[#__c_inner] - *this\height[#__c_required]) / 2
           Else
-            *this\y[#__c_required] = \text\y
+            *this\y[#__c_required] = \text\__padding\y
           EndIf
           
           ; make horizontal scroll x
           If \text\align\right
-            *this\x[#__c_required] = \width[#__c_inner] - *this\width[#__c_required] - \text\x
+            *this\x[#__c_required] = \width[#__c_inner] - *this\width[#__c_required] - \text\__padding\x
             
             ; horizontal center
           ElseIf Not \text\align\left
             *this\x[#__c_required] = (\width[#__c_inner] - *this\width[#__c_required]) / 2
           Else
-            *this\x[#__c_required] = \text\x
+            *this\x[#__c_required] = \text\__padding\x
           EndIf
           
         EndIf
@@ -8951,8 +9181,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure   Button_Draw(*this._s_widget)
       With *this
-        If *this\color\back <> -  1
-          If \color\fore <> -  1
+        If *this\color\back <>- 1
+          If \color\fore <>- 1
             DrawingMode(#PB_2DDrawing_Gradient)
             ;             If \text\invert
             ;               _box_gradient_(\vertical, \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\color\Back[Bool(*this\_state&#__s_back)*\color\state], \color\Fore[\color\state],\round)
@@ -8971,22 +9201,36 @@ CompilerIf Not Defined(widget, #PB_Module)
             If #debug_multiline
               Debug "*this\change - " + #PB_Compiler_Procedure
             EndIf
-            Button_Update(*this, *this\row\_s())
+            
+;             *this\text\height = TextHeight("A")
+            
+            ; Editor_Update(*this, *this\row\_s())
+;             *this\text\x = *this\x[#__c_required] + *this\text\__padding\x
+;             *this\text\y = *this\y[#__c_required] + *this\text\__padding\y
+;             *this\text\width = *this\width[#__c_required] - *this\text\__padding\y*2
+;             *this\text\height = *this\height[#__c_required] - *this\text\__padding\x*2
+        
+             Button_Update(*this, *this\row\_s())
+;             *this\text\x = *this\x[#__c_required]
+;             *this\text\y = *this\y[#__c_required]
+;             *this\text\width = *this\width[#__c_required]
+;             *this\text\height = *this\height[#__c_required]
+        
             *this\change = 0
           EndIf
           
           DrawingMode(#PB_2DDrawing_Transparent)
           ForEach *this\row\_s()
             DrawRotatedText(*this\x[#__c_inner] + *this\x[#__c_required] + *this\row\_s()\text\x, *this\y[#__c_inner] + *this\y[#__c_required] + *this\row\_s()\text\y, *this\row\_s()\text\String.s, *this\text\rotate, *this\color\Front[Bool(*this\_state & #__s_front) * *this\color\state]);*this\row\_s()\color\font)
-                                                                                                                                                                                                                                                                                                ;DrawRotatedText(*this\x[#__c_inner] + *this\row\_s()\text\x, *this\y[#__c_inner] + *this\row\_s()\text\y, *this\row\_s()\text\String.s, *this\text\rotate, *this\color\Front[Bool(*this\_state & #__s_front) * *this\color\state]);*this\row\_s()\color\font)
           Next 
         EndIf
         
         If #PB_GadgetType_Button = *this\type
           ; content area coordinate
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          Box(*this\x[#__c_inner] + *this\x[#__c_required], *this\y[#__c_inner] + *this\y[#__c_required], *this\width[#__c_required], *this\height[#__c_required], $FFFF0000)
-        EndIf
+         ; Box(*this\x[#__c_inner] + *this\text\x, *this\y[#__c_inner] + *this\text\y, *this\text\width, *this\text\height, $FFFF0000)
+           Box(*this\x[#__c_inner] + *this\x[#__c_required], *this\y[#__c_inner] + *this\y[#__c_required], *this\width[#__c_required], *this\height[#__c_required], $FFFF0000)
+       EndIf
         
         If #PB_GadgetType_CheckBox = *this\type
           ; draw checkbox background
@@ -9072,8 +9316,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     ; old
     Procedure   _Button_Draw(*this._s_widget)
       With *this
-        If *this\color\back <> -  1
-          If \color\fore <> -  1
+        If *this\color\back <>- 1
+          If \color\fore <>- 1
             DrawingMode(#PB_2DDrawing_Gradient)
             If \text\invert
               _box_gradient_(\vertical, \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\color\Back[Bool(*this\_state&#__s_back)*\color\state], \color\Fore[\color\state],\round)
@@ -9092,7 +9336,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           Protected String.s, String1.s, String2.s, String3.s, String4.s, StringWidth, CountString
           Protected *str.Character
-          Protected *End.Character
+          Protected *end.Character
           Protected len.l, Position.l
           Protected IT,Text_X,Width,Height
           Protected TxtHeight = \text\height
@@ -9118,7 +9362,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           If CountString
             Static ch, tw
             *str.Character = @String
-            *End.Character = @String
+            *end.Character = @String
             
             *this\y[#__c_required] = 0
             *this\x[#__c_required] = 0
@@ -9150,9 +9394,9 @@ CompilerIf Not Defined(widget, #PB_Module)
             ; ;             EndIf
             
             ; For IT = 1 To CountString
-            While *End\c 
-              If *End\c = #LF 
-                len = (*End - *str)>>#PB_Compiler_Unicode
+            While *end\c 
+              If *end\c = #LF 
+                len = (*end - *str)>>#PB_Compiler_Unicode
                 String4 = PeekS (*str, len)
                 
                 ;                 If \vertical
@@ -9233,10 +9477,10 @@ CompilerIf Not Defined(widget, #PB_Module)
                 ;                   If Position - \text\y > (Height - TxtHeight) : Break : EndIf
                 ;                 EndIf
                 
-                *str = *End + #__sOC 
+                *str = *end + #__sOC 
               EndIf 
               
-              *End + #__sOC 
+              *end + #__sOC 
             Wend
             ; Next
             
@@ -9352,7 +9596,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Box(*this\x[#__c_inner] - 1, *this\y[#__c_inner] - 1, *this\width[#__c_inner] + 2, *this\height[#__c_inner] + 2, *this\color\back[0])
         
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        Box(*this\x[#__c_inner] - 1, *this\y[#__c_inner] - 1, *this\width[#__c_inner] + 2, *this\height[#__c_inner] + 2, *this\color\frame[Bool(*this\gadget[#__panel_1]\index[#__s_2] <> -1)*2 ])
+        Box(*this\x[#__c_inner] - 1, *this\y[#__c_inner] - 1, *this\width[#__c_inner] + 2, *this\height[#__c_inner] + 2, *this\color\frame[Bool(*this\gadget[#__panel_1]\index[#__s_2]  <>-1)*2 ])
         
         Tab_Draw(*this\gadget[#__panel_1]) 
       Else
@@ -9360,7 +9604,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Box(*this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\color\back[0])
         
         DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-        Box(*this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\color\frame[Bool(*this\index[#__panel_2]<> - 1)*2 ])
+        Box(*this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\color\frame[Bool(*this\index[#__panel_2] <>- 1)*2 ])
       EndIf
     EndProcedure
     
@@ -9376,7 +9620,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         If \img\index[2]
           ;ClipOutput( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner])
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\img\index[2], *this\scroll\x + \img\x, *this\scroll\y + \img\y, \color\alpha)
+          DrawAlphaImage(\img\index[2], *this\x[#__c_required] + \img\x, *this\y[#__c_required] + \img\y, \color\alpha)
           ;ClipOutput( *this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip])
         EndIf
         
@@ -9387,227 +9631,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         DrawingMode(#PB_2DDrawing_Outlined)
         RoundBox(*this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\frame[*this\color\state])
-      EndWith
-    EndProcedure
-    
-    
-    ;- 
-    Procedure Updates(*scroll._s_scroll, x.l,y.l,width.l,height.l)
-      Static v_max, h_max
-      Protected sx, sy, round
-      Protected result
-      
-      If *scroll\v\bar\page\len <> height - Bool(*scroll\width > width) * *scroll\h\height
-        *scroll\v\bar\page\len = height - Bool(*scroll\width > width) * *scroll\h\height
-      EndIf
-      
-      If *scroll\h\bar\page\len <> width - Bool(*scroll\height > height) * *scroll\v\width
-        *scroll\h\bar\page\len = width - Bool(*scroll\height > height) * *scroll\v\width
-      EndIf
-      
-      If *scroll\x < x
-        ; left set state
-        *scroll\v\bar\page\len = height - *scroll\h\height
-      Else
-        sx = (*scroll\x - x) 
-        *scroll\width + sx
-        *scroll\x = x
-      EndIf
-      
-      If *scroll\y < y
-        ; top set state
-        *scroll\h\bar\page\len = width - *scroll\v\width
-      Else
-        sy = (*scroll\y - y)
-        *scroll\height + sy
-        *scroll\y = y
-      EndIf
-      
-      If *scroll\width > *scroll\h\bar\page\len - (*scroll\x - x)
-        If *scroll\width - sx <= width And *scroll\height = *scroll\v\bar\page\len - (*scroll\y - y)
-          ;Debug "w - " + Str(*scroll\height - sx)
-          
-          ; if on the h - scroll
-          If *scroll\v\bar\max > height - *scroll\h\height
-            *scroll\v\bar\page\len = height - *scroll\h\height
-            *scroll\h\bar\page\len = width - *scroll\v\width 
-            *scroll\height = *scroll\v\bar\max
-            ;  Debug "w - " + *scroll\v\bar\max  + " " +  *scroll\v\height  + " " +  *scroll\v\bar\page\len
-          Else
-            *scroll\height = *scroll\v\bar\page\len - (*scroll\x - x) - *scroll\h\height
-          EndIf
-        EndIf
-        
-        *scroll\v\bar\page\len = height - *scroll\h\height 
-      Else
-        *scroll\h\bar\max = *scroll\width
-        *scroll\width = *scroll\h\bar\page\len - (*scroll\x - x)
-      EndIf
-      
-      If *scroll\height > *scroll\v\bar\page\len - (*scroll\y - y)
-        If *scroll\height - sy <= Height And *scroll\width = *scroll\h\bar\page\len - (*scroll\x - x)
-          ;Debug " h - " + Str(*scroll\height - sy)
-          
-          ; if on the v - scroll
-          If *scroll\h\bar\max > width - *scroll\v\width
-            *scroll\h\bar\page\len = width - *scroll\v\width
-            *scroll\v\bar\page\len = height - *scroll\h\height 
-            *scroll\width = *scroll\h\bar\max
-            ;  Debug "h - " + *scroll\h\bar\max  + " " +  *scroll\h\width  + " " +  *scroll\h\bar\page\len
-          Else
-            *scroll\width = *scroll\h\bar\page\len - (*scroll\x - x) - *scroll\v\width
-          EndIf
-        EndIf
-        
-        *scroll\h\bar\page\len = width - *scroll\v\width
-      Else
-        *scroll\v\bar\max = *scroll\height
-        *scroll\height = *scroll\v\bar\page\len - (*scroll\y - y)
-      EndIf
-      
-      If *scroll\h\round And
-         *scroll\v\round And
-         *scroll\h\bar\page\len < width And 
-         *scroll\v\bar\page\len < height
-        round = (*scroll\h\height/4)
-      EndIf
-      
-      If *scroll\width >= *scroll\h\bar\page\len  
-        If *scroll\h\bar\Max <> *scroll\width 
-          *scroll\h\bar\Max = *scroll\width
-          
-          If *scroll\x <= x 
-            *scroll\h\bar\page\pos =- (*scroll\x - x)
-            *scroll\h\bar\change = 0
-          EndIf
-        EndIf
-        
-        If *scroll\h\width <> *scroll\h\bar\page\len + round
-          ; Debug  "h " + *scroll\h\bar\page\len
-          *scroll\h\hide = Resize(*scroll\h, #PB_Ignore, #PB_Ignore, *scroll\h\bar\page\len + round, #PB_Ignore)
-          ;           *scroll\h\width = *scroll\h\bar\page\len + round
-          ;           *scroll\h\hide = Bar_Update(*scroll\h)
-          result = 1
-        EndIf
-      EndIf
-      
-      If *scroll\height >= *scroll\v\bar\page\len  
-        If *scroll\v\bar\Max <> *scroll\height  
-          *scroll\v\bar\Max = *scroll\height
-          
-          If *scroll\y <= y 
-            ;If *scroll\v\bar\page\pos <> -  (*scroll\y - y)
-            *scroll\v\bar\page\pos =- (*scroll\y - y)
-            
-            *scroll\v\bar\change = 0
-            ; Post(#PB_EventType_change, *scroll\v)
-            ;EndIf
-          EndIf
-        EndIf
-        
-        If *scroll\v\height <> *scroll\v\bar\page\len + round
-          ; Debug  "v " + *scroll\v\bar\page\len
-          *scroll\v\hide = Resize(*scroll\v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *scroll\v\bar\page\len + round)
-          ;           *scroll\v\height = *scroll\v\bar\page\len + round
-          ;           *scroll\v\hide = Bar_Update(*scroll\v)
-          result = 1
-        EndIf
-      EndIf
-      
-      ;       If Not *scroll\h\hide 
-      ;         If *scroll\h\y[#__c_draw] <> y + height - *scroll\h\height
-      ;           ; Debug "y"
-      ;           *scroll\h\hide = Resize(*scroll\h, #PB_Ignore, y + height - *scroll\h\height, #PB_Ignore, #PB_Ignore)
-      ;         EndIf
-      ;         If *scroll\h\x[#__c_draw] <> x
-      ;           ; Debug "y"
-      ;           *scroll\h\hide = Resize(*scroll\h, x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-      ;         EndIf
-      ;       EndIf
-      ;       
-      ;       If Not *scroll\v\hide 
-      ;         If *scroll\v\x[#__c_draw] <> x + width - *scroll\v\width
-      ;           ; Debug "x"
-      ;           *scroll\v\hide = Resize(*scroll\v, x + width - *scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-      ;         EndIf
-      ;         If *scroll\v\y[#__c_draw] <> y
-      ;           ; Debug "y"
-      ;           *scroll\v\hide = Resize(*scroll\v, #PB_Ignore, y, #PB_Ignore, #PB_Ignore)
-      ;         EndIf
-      ;       EndIf
-      
-      If v_max <> *scroll\v\bar\Max
-        v_max = *scroll\v\bar\Max
-        *scroll\v\resize | #__resize_change
-        *scroll\v\hide = Bar_Update(*scroll\v) 
-      EndIf
-      
-      If h_max <> *scroll\h\bar\Max
-        h_max = *scroll\h\bar\Max
-        *scroll\h\resize | #__resize_change
-        *scroll\h\hide = Bar_Update(*scroll\h) 
-      EndIf
-      
-      ProcedureReturn result
-    EndProcedure
-    
-    Procedure Resizes(*scroll._s_scroll, x.l,y.l,width.l,height.l)
-      ;       *scroll\width = *scroll\h\bar\max
-      ;       *scroll\height = *scroll\v\bar\max
-      ;       
-      ;       ProcedureReturn Updates(*scroll._s_scroll, x.l,y.l,width.l,height.l)
-      
-      
-      ;       y = #PB_Ignore 
-      ;         x = #PB_Ignore 
-      ;           Width = #PB_Ignore 
-      ;           Height = #PB_Ignore 
-      ;           
-      With *scroll
-        Protected iHeight, iWidth, v_x = #PB_Ignore, h_y = #PB_Ignore
-        
-        If Not *scroll\v Or Not *scroll\h
-          ProcedureReturn
-        EndIf
-        
-        If y = #PB_Ignore : y = \v\y - \v\parent\y[#__c_inner] : EndIf
-        If x = #PB_Ignore : x = \h\x - \v\parent\x[#__c_inner] : EndIf
-        If Width = #PB_Ignore : Width = \v\x - \h\x + \v\width : EndIf
-        If Height = #PB_Ignore : Height = \h\y - \v\y + \h\height : EndIf
-        
-        If Width + x - *scroll\v\width <> *scroll\v\x[#__c_draw]
-          v_x = Width + x - *scroll\v\width
-        EndIf
-        
-        If Height + y - *scroll\h\height <> *scroll\h\y[#__c_draw]
-          h_y = Height + y - *scroll\h\height
-        EndIf
-        
-        ;If
-        Bar_SetAttribute(*scroll\v, #__bar_pagelength, _make_area_height_(*scroll, Width, Height))
-        *scroll\v\hide = widget::Resize(*scroll\v, v_x, y, #PB_Ignore, _get_page_height_(*scroll, 1))
-        ;EndIf
-        
-        ;If 
-        Bar_SetAttribute(*scroll\h, #__bar_pagelength, _make_area_width_(*scroll, Width, Height))
-        *scroll\h\hide = widget::Resize(*scroll\h, x, h_y, _get_page_width_(*scroll, 1), #PB_Ignore)
-        ;EndIf
-        
-        If Bar_SetAttribute(*scroll\v, #__bar_pagelength, _make_area_height_(*scroll, Width, Height))
-          *scroll\v\hide = widget::Resize(*scroll\v, v_x, #PB_Ignore, #PB_Ignore, _get_page_height_(*scroll, 1))
-        EndIf
-        
-        If Bar_SetAttribute(*scroll\h, #__bar_pagelength, _make_area_width_(*scroll, Width, Height))
-          *scroll\h\hide = widget::Resize(*scroll\h, #PB_Ignore, h_y, _get_page_width_(*scroll, 1), #PB_Ignore)
-        EndIf
-        
-        *scroll\v\hide = Bar_Update(*scroll\v)
-        *scroll\h\hide = Bar_Update(*scroll\h)
-        ;         
-        ;         *scroll\v\hide = *scroll\v\bar\hide ; Bool(*scroll\v\bar\min = *scroll\v\bar\page\end)
-        ;         *scroll\h\hide = *scroll\h\bar\hide ; Bool(*scroll\h\bar\min = *scroll\h\bar\page\end)
-        ;         
-        ProcedureReturn Bool(*scroll\v\bar\area\change Or *scroll\h\bar\area\change)
       EndWith
     EndProcedure
     
@@ -9795,7 +9818,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             If flag & #__tree_gridlines
               *this\mode\gridlines = state
             EndIf
-            If flag & #__tree_collapsed
+            If flag & #__tree_collapse ; d
               *this\mode\collapse = state
               
               If *this\count\items
@@ -10174,7 +10197,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
             EndIf
             
-            If *this\count\items
+            If *this\count\items ;And \height[#__c_required] > \height[#__c_draw]
               *this\change | #__change_height
             EndIf
           EndIf 
@@ -10204,7 +10227,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             If (Change_width Or Change_height)
-              Resizes(*this\scroll, 0, 0, *this\width[#__c_draw], *this\height[#__c_draw])
+              Bar_Resizes(*this, 0, 0, *this\width[#__c_draw], *this\height[#__c_draw])
             EndIf
             
             *this\width[#__c_inner] = *this\scroll\h\bar\page\len ; *this\width[#__c_draw] - Bool(Not *this\scroll\v\hide) * *this\scroll\v\width ; 
@@ -10334,11 +10357,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         
         ;         \Columns()\text\string.s = Text.s
         ;         \Columns()\text\change = 1
-        ;         \Columns()\x = \scroll\width
+        ;         \Columns()\x = \width[#__c_required]
         ;         \Columns()\width = Width
         ;         \Columns()\height = 24
-        ;         \scroll\width + Width
-        ;         \Scroll\height = \bs*2+\Columns()\height
+        ;         \width[#__c_required] + Width
+        ;         \height[#__c_required] = \bs*2+\Columns()\height
         ;         ;      ; ReDraw(*This)
         ;         ;       If Position = 0
         ;         ;      ;   PostEvent(#PB_Event_Gadget, \Canvas\Window, \Canvas\Gadget, #PB_EventType_Repaint)
@@ -12016,7 +12039,9 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure.i SetItemData(*This._s_widget, item.l, *data)
       Protected Result.i
       
-      If *this\type = #__type_tree
+      If *this\count\items ; *this\type = #__type_tree
+                           ;Item = *this\row\i(Hex(Item))
+        
         If _no_select_(*this\row\_s(), item)
           ProcedureReturn #False
         EndIf
@@ -12032,6 +12057,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *this\type = #__type_tree Or 
          *this\type = #__type_property
+        
+        ;Item = *this\row\i(Hex(Item))
         
         If _no_select_(*this\row\_s(), item)
           ProcedureReturn #False
@@ -12423,7 +12450,9 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\text\change = 1
             *this\text\editable = 1
             *this\text\align\top = 1
-            *this\text\_padding = #__spin_padding_text
+            
+            *this\text\__padding\x = #__spin_padding_text
+            *this\text\__padding\y = #__spin_padding_text
             
             *this\color = _get_colors_()
             *this\color\alpha = 255
@@ -12683,8 +12712,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If ScrollBars And 
              flag & #__flag_noscrollbars = #False
-            *this\scroll\x = *this\x[#__c_inner]
-            *this\scroll\y = *this\y[#__c_inner] 
+            *this\x[#__c_required] = *this\x[#__c_inner]
+            *this\y[#__c_required] = *this\y[#__c_inner] 
           EndIf
           
         EndIf
@@ -12762,6 +12791,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\text\padding\left = 4
           *this\img\padding\left = 2
           
+          ;*this\vertical = Bool(Flag&#__flag_vertical)
           *this\fs = Bool(Not Flag&#__flag_borderLess)*2
           *this\bs = *this\fs
           
@@ -12814,6 +12844,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\type = #PB_GadgetType_Editor
       *this\color = _get_colors_()
       *this\color\back = $FFF9F9F9
+      ;*this\_flag = Flag|#__text_left
       
       If Flag & #__flag_vertical = #__flag_vertical
         *this\vertical = #True
@@ -12832,14 +12863,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\fs = constants::_check_(Flag, #__flag_borderLess, #False) * #__border_scroll
         *this\bs = *this\fs
         
-        If *this\vertical
-          *this\text\X = *this\fs
-          *this\text\y = *this\fs
-        Else
-          *this\text\X = *this\fs + 2
-          *this\text\y = *this\fs
-        EndIf
-        
+        ;If *this\vertical
+          *this\text\__padding\y = 6
+        ;Else
+          *this\text\__padding\x = 6
+        ;EndIf
         
         *this\mode\check = 3 ; multiselect
         *this\mode\fullselection = constants::_check_(Flag, #__flag_fullselection, #False)*7
@@ -12857,6 +12885,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       _set_alignment_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
+      
       Area(*this,1,0,0,0,0)
       Resize(*this, x,y,width,height)
       ProcedureReturn *this
@@ -12900,13 +12929,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\bs = *this\fs
         EndIf
         
-        If *this\vertical
-          *this\text\X = *this\fs
-          *this\text\y = *this\fs
-        Else
-          *this\text\X = *this\fs
-          *this\text\y = *this\fs
-        EndIf
+        *this\text\__padding\X = 3
+        *this\text\__padding\y = 0
+        *this\text\caret\x = *this\text\__padding\X
         
         *this\text\multiline = 0
         Text = RemoveString(Text, #LF$) ; +  #LF$
@@ -13005,8 +13030,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; If Flag & #__text_border = #__text_border 
         *this\fs = 1
         *this\bs = *this\fs
-        *this\text\x = 4
-        *this\text\y = 4
+        
+        *this\text\__padding\x = 4
+        *this\text\__padding\y = 4
         
         SetText(*This, Text)
       EndIf
@@ -13209,7 +13235,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;       \text\change = 1
         _set_text_flag_(*this, flag, 2, - 22)
         
-        *this\text\_padding = 5
+        *this\text\__padding\x = 5
         ;*this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
         ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
         
@@ -13236,6 +13262,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     ;- 
+    Procedure ToolBar(*parent._s_widget, flag.i = #PB_ToolBar_Small)
+      ProcedureReturn ListView(0,0,*parent\width[#__c_inner],20, flag)
+    EndProcedure
+    
     ;- 
     Procedure.b Draw(*this._s_widget)
       With *this
@@ -13288,8 +13318,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;           UnclipOutput()
         ;           DrawingMode(#PB_2DDrawing_Outlined)
         ;           ;Box(*this\x, *this\y, *this\width, *this\height, $ffffff00)
-        ;           Box(*this\scroll\x, *this\scroll\y, *this\scroll\width, *this\scroll\height, $ffff00ff)
-        ;           ;Box(*this\scroll\x, *this\scroll\y, *this\scroll\h\bar\max, *this\scroll\v\bar\max,$ff0000ff)
+        ;           Box(*this\x[#__c_required], *this\y[#__c_required], *this\width[#__c_required], *this\height[#__c_required], $ffff00ff)
+        ;           ;Box(*this\x[#__c_required], *this\y[#__c_required], *this\scroll\h\bar\max, *this\scroll\v\bar\max,$ff0000ff)
         ;           Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $ff00ff00)
         ;           Box(*this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip], $ff00ffff)
         ;         EndIf
@@ -13327,12 +13357,20 @@ CompilerIf Not Defined(widget, #PB_Module)
         If _is_root_(*this)
           ; 
           If *this\root\repaint = #True
-            FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $F0)
+            ;             CompilerIf  #PB_Compiler_OS = #PB_OS_MacOS
+            ;               FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight())
+            ;             CompilerElse
+            FillMemory( DrawingBuffer(), DrawingBufferPitch() * OutputHeight(), $f0)
+            ;             CompilerEndIf
           EndIf
           
           Protected count
           PushListPosition(Widget())
           ForEach Widget()
+            ;             If  Widget()\class = "Tree"
+            ;               Draw(Widget())
+            ;             EndIf
+            
             If Widget()\root\canvas\gadget = *this\root\canvas\gadget And 
                (Not Widget()\hide And Widget()\draw) And (Widget()\width[#__c_clip] > 0 And Widget()\height[#__c_clip] > 0)
               CompilerIf Not (#PB_Compiler_OS = #PB_OS_MacOS And Not Defined(fixme, #PB_Module))
@@ -13374,6 +13412,133 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndProcedure
     
+    Procedure.i _Post(eventtype.l, *this._s_widget, eventitem.l = #PB_All, *data = 0)
+      Protected result.i
+      
+      If eventtype = #PB_EventType_repaint
+        If *this = #PB_All
+          If Root()\canvas\repaint = #False
+            Root()\canvas\repaint = #True
+            PostEvent(#PB_Event_Gadget, Root()\canvas\window, Root()\canvas\gadget, #PB_EventType_repaint, Root())
+          EndIf
+        Else
+          If *this\root\canvas\repaint = #False
+            *this\root\canvas\repaint = #True
+            PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #PB_EventType_repaint, *this)
+          EndIf
+        EndIf
+      Else
+        This()\item = eventitem
+        This()\type = eventtype
+        This()\widget = *this
+        This()\data = *data
+        
+        ; if bind called
+        If *this And *this\root\count\events
+          ; Debug eventtype
+          
+          If Not _is_root_(*this)
+            If MapSize(*this\bind())
+              PushMapPosition(*this\bind())
+              ForEach *this\bind()
+                If *this\bind()\callback() = #PB_Ignore 
+                  ProcedureReturn #PB_Ignore
+                EndIf
+              Next
+              PopMapPosition(*this\bind())
+            EndIf
+            
+            If MapSize(*this\window\bind()) And Not _is_window_(*this) And Not _is_root_(*this\window) 
+              PushMapPosition(*this\window\bind())
+              ForEach *this\window\bind()
+                If *this\window\bind()\callback() = #PB_Ignore
+                  ProcedureReturn #PB_Ignore
+                EndIf
+              Next
+              PopMapPosition(*this\window\bind())
+            EndIf
+          EndIf
+          
+          If MapSize(*this\root\bind())
+            PushMapPosition(*this\root\bind())
+            ForEach *this\root\bind()
+              If *this\root\bind()\callback() = #PB_Ignore
+                ProcedureReturn #PB_Ignore
+              EndIf
+            Next
+            PopMapPosition(*this\root\bind())
+          EndIf
+          
+        Else
+          Select eventtype 
+            Case #__Event_Focus, 
+                 #__Event_lostFocus
+              
+              ForEach This()\post()
+                If This()\post()\widget = *this And 
+                   This()\post()\events() = eventtype
+                  result = 1
+                EndIf
+              Next
+              
+              If Not result
+                AddElement(This()\post())
+                This()\post() = AllocateStructure(_s_bind)
+                AddMapElement(This()\post()\events(), Hex(eventtype))
+                This()\post()\events() = eventtype
+                This()\post()\item = eventitem
+                This()\post()\widget = *this
+                This()\post()\data = *data
+              EndIf
+          EndSelect
+        EndIf
+      EndIf
+      
+      ProcedureReturn result
+    EndProcedure
+    
+    Procedure.i _Bind(*this._s_widget, *callback, eventtype.l = #PB_All)
+      If *this = #PB_All
+        *this = Root()
+      EndIf
+      
+      If Not *this
+        ProcedureReturn #False
+      EndIf
+      
+      If Not FindMapElement(*this\bind(), Hex(*callback))
+        AddMapElement(*this\bind(), Hex(*callback))
+        *this\bind() = AllocateStructure(_s_bind) 
+        *this\bind()\callback = *callback
+        *this\bind()\widget = *this
+        *this\bind()\type = eventtype
+        *this\root\count\events + 1
+      EndIf
+      
+      If Not FindMapElement(*this\bind()\events(), Hex(eventtype))
+        AddMapElement(*this\bind()\events(), Hex(eventtype))
+        *this\bind()\events() = eventtype
+      EndIf
+      
+      If ListSize(This()\post())
+        ForEach This()\post()
+          ForEach This()\post()\events()
+            ; Debug ""+This()\post()\widget +" "+ *this
+            If eventtype = This()\post()\events() ; And This()\post()\widget = *this
+                                                  ;Debug 54455
+              Post(This()\post()\events(), This()\post()\widget, This()\post()\item, This()\post()\data)
+              DeleteMapElement(This()\post()\events())
+            EndIf
+          Next
+          DeleteElement(This()\post())
+        Next
+        ;ClearList(This()\post())
+      EndIf
+      
+      ProcedureReturn *this\bind()
+    EndProcedure
+    
+    
     Procedure.i Post(eventtype.l, *this._s_widget, eventitem.l = #PB_All, *data = 0)
       Protected result.i
       
@@ -13397,47 +13562,60 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         ; if bind called
         If *this And *this\root\count\events
+          ; Debug eventtype
           
           If Not _is_root_(*this)
-            If ListSize(*this\_event())
-              ForEach *this\_event()
-                ForEach *this\_event()\type()
-                  If (*this\_event()\type() = #PB_All Or
-                      *this\_event()\type() = eventtype)
-                    If *this\_event()\callback() = #PB_Ignore
-                      ProcedureReturn #PB_Ignore
-                    EndIf
+            If MapSize(*this\bind())
+              ; PushMapPosition(*this\bind())
+              If FindMapElement(*this\bind(), Hex(#PB_All)) Or FindMapElement(*this\bind(), Hex(eventtype))
+                
+                
+                ForEach *this\bind()
+                  If (*this\bind()\type = #PB_All Or
+                      *this\bind()\type = eventtype) And 
+                     *this\bind()\callback And 
+                     *this\bind()\callback() = #PB_Ignore 
+                    ProcedureReturn #PB_Ignore
                   EndIf
                 Next
-              Next
+              EndIf
+              ; PopMapPosition(*this\bind())
             EndIf
             
-            If ListSize(*this\window\_event()) And Not _is_window_(*this) And Not _is_root_(*this\window) 
-              ForEach *this\window\_event()
-                ForEach *this\window\_event()\type()
-                  If (*this\window\_event()\type() = #PB_All Or 
-                      *this\window\_event()\type() = eventtype)
-                    If *this\window\_event()\callback() = #PB_Ignore
-                      ProcedureReturn #PB_Ignore
-                    EndIf
+            If MapSize(*this\window\bind()) And Not _is_window_(*this) And Not _is_root_(*this\window) 
+              PushMapPosition(*this\window\bind())
+              If FindMapElement(*this\window\bind(), Hex(#PB_All)) Or
+                 FindMapElement(*this\window\bind(), Hex(eventtype))
+                
+                
+                ForEach *this\window\bind()
+                  If (*this\window\bind()\type = #PB_All Or 
+                      *this\window\bind()\type = eventtype) And
+                     *this\window\bind()\callback And 
+                     *this\window\bind()\callback() = #PB_Ignore 
+                    ProcedureReturn #PB_Ignore
                   EndIf
                 Next
-              Next
+              EndIf
+              PopMapPosition(*this\window\bind())
             EndIf
           EndIf
           
-          If ListSize(*this\root\_event())
-            ForEach *this\root\_event()
-              ForEach *this\root\_event()\type()
-                If *this\root And *this\root\_event() And 
-                   (*this\root\_event()\type() = #PB_All Or 
-                    *this\root\_event()\type() = eventtype) 
-                  If *this\root\_event()\callback() = #PB_Ignore
-                    ProcedureReturn #PB_Ignore
-                  EndIf
+          If MapSize(*this\root\bind())
+            PushMapPosition(*this\root\bind())
+            If FindMapElement(*this\root\bind(), Hex(#PB_All)) Or
+               FindMapElement(*this\root\bind(), Hex(eventtype))
+              
+              ForEach *this\root\bind()
+                If (*this\root\bind()\type = #PB_All Or 
+                    *this\root\bind()\type = eventtype) And
+                   *this\root\bind()\callback And 
+                   *this\root\bind()\callback() = #PB_Ignore 
+                  ProcedureReturn #PB_Ignore
                 EndIf
               Next
-            Next
+            EndIf
+            PopMapPosition(*this\root\bind())
           EndIf
           
         Else
@@ -13447,7 +13625,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               ForEach This()\post()
                 If This()\post()\widget = *this And 
-                   This()\post()\type() = eventtype
+                   This()\post()\events() = eventtype
                   result = 1
                 EndIf
               Next
@@ -13455,8 +13633,8 @@ CompilerIf Not Defined(widget, #PB_Module)
               If Not result
                 AddElement(This()\post())
                 This()\post() = AllocateStructure(_s_bind)
-                AddElement(This()\post()\type())
-                This()\post()\type() = eventtype
+                AddMapElement(This()\post()\events(), Hex(eventtype))
+                This()\post()\events() = eventtype
                 This()\post()\item = eventitem
                 This()\post()\widget = *this
                 This()\post()\data = *data
@@ -13477,20 +13655,32 @@ CompilerIf Not Defined(widget, #PB_Module)
         ProcedureReturn #False
       EndIf
       
-      If AddElement(*this\_event())
-        *this\_event() = AllocateStructure(_s_bind) : *this\_event()\callback = *callback
-        AddElement(*this\_event()\type()) : *this\_event()\type() = eventtype
-        *this\root\count\events = ListSize(*this\_event())
+      *this\root\count\events + 1
+      
+      If Not FindMapElement(*this\bind(), Hex(eventtype))
+        AddMapElement(*this\bind(), Hex(eventtype))
+        *this\bind() = AllocateStructure(_s_bind) 
+      Else
+        If Not FindMapElement(*this\bind(), Hex(*callback))
+          AddMapElement(*this\bind(), Hex(*callback))
+          *this\bind() = AllocateStructure(_s_bind) 
+        EndIf
       EndIf
-    
+      
+      *this\bind()\widget = *this
+      *this\bind()\type = eventtype
+      *this\bind()\callback = *callback
+      
+      ;Debug ""+eventtype+" "+MapSize(*this\bind())
+      
       If ListSize(This()\post())
         ForEach This()\post()
-          ForEach This()\post()\type()
+          ForEach This()\post()\events()
             ; Debug ""+This()\post()\widget +" "+ *this
-            If eventtype = This()\post()\type() ; And This()\post()\widget = *this
-              ;Debug 54455
-              Post(This()\post()\type(), This()\post()\widget, This()\post()\item, This()\post()\data)
-              DeleteElement(This()\post()\type())
+            If eventtype = This()\post()\events() ; And This()\post()\widget = *this
+                                                  ;Debug 54455
+              Post(This()\post()\events(), This()\post()\widget, This()\post()\item, This()\post()\data)
+              DeleteMapElement(This()\post()\events())
             EndIf
           Next
           DeleteElement(This()\post())
@@ -13498,101 +13688,18 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;ClearList(This()\post())
       EndIf
       
-      ProcedureReturn *this\_event()
+      ProcedureReturn *this\bind()
     EndProcedure
-    
     
     Procedure.i Unbind(*callback, *this._s_widget = #PB_All, eventtype.l = #PB_All)
-;       If *this\event
-;         *this\event\type = 0
-;         *this\event\callback = 0
-;         FreeStructure(*this\event)
-;         *this\event = 0
-;       EndIf
-;       
-;       ProcedureReturn *this\event
-    EndProcedure
-    
-    Procedure.i Free(*this._s_widget)
-      Protected Result.i
-      
-      With *this
-        If *this
-          If \scroll
-            If \scroll\v : FreeStructure(\scroll\v) : \scroll\v = 0 : EndIf
-            If \scroll\h : FreeStructure(\scroll\h)  : \scroll\h = 0 : EndIf
-            ; *this\scroll = 0
-          EndIf
-          
-          If \type = #PB_GadgetType_Splitter
-            If \gadget[#__split_1] : FreeStructure(\gadget[#__split_1]) : \gadget[#__split_1] = 0 : EndIf
-            If \gadget[#__split_2] : FreeStructure(\gadget[#__split_2])  : \gadget[#__split_2] = 0 : EndIf
-          EndIf
-          
-          If \gadget[#__panel_1]
-          EndIf
-          
-          If *this\parent 
-            If *this\parent\scroll\v = *this
-              FreeStructure(*this\parent\scroll\v) : *this\parent\scroll\v = 0
-            EndIf
-            If *this\parent\scroll\h = *this
-              FreeStructure(*this\parent\scroll\h)  : *this\parent\scroll\h = 0
-            EndIf
-            
-            If *this\parent\type = #PB_GadgetType_Splitter
-              If *this\parent\gadget[#__split_1] = *this
-                FreeStructure(*this\parent\gadget[#__split_1]) : *this\parent\gadget[#__split_1] = 0
-              EndIf
-              If *this\parent\gadget[#__split_2] = *this
-                FreeStructure(*this\parent\gadget[#__split_2])  : *this\parent\gadget[#__split_2] = 0
-              EndIf
-            EndIf
-          EndIf
-          
-          
-          Debug  " - " + ListSize(Widget())  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
-          If *this\parent And
-             *this\parent\count\childrens 
-            
-            LastElement(Widget())
-            Repeat
-              If Widget() = *this Or
-                 Child(Widget(), *this)
-                
-                If Widget()\root\count\childrens > 0 
-                  Widget()\root\count\childrens - 1
-                  If Widget()\parent <> Widget()\root
-                    Widget()\parent\count\childrens - 1
-                  EndIf
-                  DeleteElement(Widget(), 1)
-                EndIf
-                
-                If Not *this\root\count\childrens
-                  Break
-                EndIf
-              ElseIf PreviousElement(Widget()) = 0
-                Break
-              EndIf
-            ForEver
-          EndIf
-          Debug  " - " + ListSize(Widget())  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
-          
-          
-          
-          If Entered() = *this
-            Entered() = *this\parent
-          EndIf
-          If Selected() = *this
-            Selected() = *this\parent
-          EndIf
-          
-          ; *this = 0
-          ;ClearStructure(*this, _s_widget)
-        EndIf
-      EndWith
-      
-      ProcedureReturn Result
+      ;       If *this\event
+      ;         *this\event\type = 0
+      ;         *this\event\callback = 0
+      ;         FreeStructure(*this\event)
+      ;         *this\event = 0
+      ;       EndIf
+      ;       
+      ;       ProcedureReturn *this\event
     EndProcedure
     
     Procedure PBFlag(Type, Flag)
@@ -13719,7 +13826,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         ProcedureReturn 0
       EndIf    
       
-      
       If *this\type = #__type_window
         Repaint = Window_Events(*this, eventtype, mouse_x, mouse_y)
       EndIf
@@ -13829,6 +13935,18 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint = Bar_Events(*this, eventtype, mouse_x, mouse_y, _wheel_x_, _wheel_y_)
       EndIf
       
+      ;
+      If MapSize(*this\bind()) 
+        ;ForEach *this\bind()
+        If This()\type <> eventtype  
+          ;If FindMapElement(*this\bind()\events(), Hex(eventtype)) 
+          If FindMapElement(*this\bind(), Hex(eventtype)) 
+            Post(eventtype, *this, *this\index[#__s_1])
+          EndIf
+        EndIf
+        ;Next
+      EndIf
+      
       ProcedureReturn Repaint
     EndProcedure
     
@@ -13902,18 +14020,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         If Mouse()\y <> mouse_y
           Mouse()\y = mouse_y
           change = #True
-        EndIf
-        
-        ; Drag start
-        If Mouse()\buttons And Not Mouse()\drag And
-           Mouse()\x > Mouse()\delta\x - 3 And 
-           Mouse()\x < Mouse()\delta\x + 3 And 
-           Mouse()\y > Mouse()\delta\y - 3 And
-           Mouse()\y < Mouse()\delta\y + 3
-          
-          Mouse()\drag = 1
-          
-          repaint | Events(Entered(), #__Event_DragStart, mouse_x, mouse_y)
         EndIf
         
       ElseIf Not Mouse()\buttons And 
@@ -14011,7 +14117,6 @@ CompilerIf Not Defined(widget, #PB_Module)
             Repaint | Events(Entered(), #__Event_MouseEnter, mouse_x, mouse_y)
           EndIf
         EndIf  
-        
       EndIf
       
       
@@ -14023,25 +14128,25 @@ CompilerIf Not Defined(widget, #PB_Module)
         Selected() = Entered()
         Selected()\_state | #__s_selected
         
-        If Not Entered()\mode\transform And Not (Transform() And Transform()\index)
-          
-          If Entered()\bar\from > 0
-            ; bar mouse delta pos
-            If Entered()\bar\from = #__b_3
-              Mouse()\delta\x = mouse_x - Entered()\bar\thumb\pos
-              Mouse()\delta\y = mouse_y - Entered()\bar\thumb\pos
-            EndIf
-          Else
-            Mouse()\delta\x = mouse_x - Entered()\x[#__c_draw]
-            Mouse()\delta\y = mouse_y - Entered()\y[#__c_draw] ; + (Entered()\x[#__c_frame] - Entered()\x)
+        ; If Not Entered()\mode\transform And Not (Transform() And Transform()\index)
+        
+        If Entered()\bar\from > 0
+          ; bar mouse delta pos
+          If Entered()\bar\from = #__b_3
+            Mouse()\delta\x = mouse_x - Entered()\bar\thumb\pos
+            Mouse()\delta\y = mouse_y - Entered()\bar\thumb\pos
           EndIf
+        Else
+          Mouse()\delta\x = mouse_x - Entered()\x[#__c_draw]
+          Mouse()\delta\y = mouse_y - Entered()\y[#__c_draw] ; + (Entered()\x[#__c_frame] - Entered()\x)
         EndIf
-          
-;           If Entered()\child  
-;             Repaint | SetActive(Entered()\parent)
-;           Else
-            Repaint | SetActive(Entered())
-;           EndIf
+        ; EndIf
+        
+        ;           If Entered()\child  
+        ;             Repaint | SetActive(Entered()\parent)
+        ;           Else
+        Repaint | SetActive(Entered())
+        ;           EndIf
       EndIf
       
       ; events anchors on the widget
@@ -14094,12 +14199,19 @@ CompilerIf Not Defined(widget, #PB_Module)
         
       ElseIf eventtype = #__Event_MouseMove 
         If change
-          If Entered()
-            Repaint | Events(Entered(), eventtype, mouse_x, mouse_y)
-          EndIf
-          If Selected() And 
-             Selected() <> Entered()
-            Repaint | Events(Selected(), eventtype, mouse_x, mouse_y)
+          ; Drag start
+          If Mouse()\buttons And 
+             Mouse()\drag = #False
+            Mouse()\drag = #True
+            repaint | Events(Entered(), #__Event_DragStart, mouse_x, mouse_y)
+          Else
+            If Entered()
+              Repaint | Events(Entered(), eventtype, mouse_x, mouse_y)
+            EndIf
+            If Selected() And
+               Selected() <> Entered()
+              Repaint | Events(Selected(), eventtype, mouse_x, mouse_y)
+            EndIf
           EndIf
         EndIf
         
@@ -14136,6 +14248,16 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If _is_widget_(Selected()) And Not Mouse()\buttons
             Repaint | Events(Selected(), eventtype, mouse_x, mouse_y)
+            
+            ;             If Selected()\_state & #__s_entered
+            ;               If eventtype = #__Event_leftButtonUp
+            ;                 Repaint | Events(Selected(), #__Event_leftClick, mouse_x, mouse_y)
+            ;               EndIf
+            ;               If eventtype = #__Event_rightButtonUp
+            ;                 Repaint | Events(Selected(), #__Event_rightClick, mouse_x, mouse_y)
+            ;               EndIf
+            ;             EndIf
+            
             
             Selected()\_state &~ #__s_selected
             If Selected()\_state & #__s_entered
@@ -14187,7 +14309,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         If Selected() And Entered() <> Selected() And change 
           Repaint | Events(Selected(), eventtype, mouse_x, mouse_y)
         EndIf
-        
       EndIf
       
       If Repaint 
@@ -14268,6 +14389,99 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         GetActive() = 0
       EndIf
+    EndProcedure
+    
+    ;-
+    Procedure   Open(window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any)
+      If width = #PB_Ignore And height = #PB_Ignore
+        flag = #PB_Canvas_Container
+      EndIf
+      
+      If Not IsWindow(window) 
+        window = GetWindow(Root())
+        
+        If Not (IsWindow(window) And
+                Root()\canvas\container = Widget())
+          width = Widget()\width + #__bsize * 2
+          height = Widget()\height + #__height + #__bsize * 2
+          window = OpenWindow(#PB_Any, Widget()\x,Widget()\y,width,height, "", #PB_Window_BorderLess)
+        EndIf
+      EndIf
+      
+      If width = #PB_Ignore
+        width = WindowWidth(window, #PB_Window_InnerCoordinate) - x*2
+      EndIf
+      
+      If height = #PB_Ignore
+        height = WindowHeight(window, #PB_Window_InnerCoordinate) - y*2
+      EndIf
+      
+      Protected g = CanvasGadget(Canvas, X, Y, Width, Height, Flag|#PB_Canvas_Keyboard) : If Canvas = -1 : Canvas = g : EndIf
+      
+      Root() = AllocateStructure(_s_root)
+      Root()\text\fontID = PB_(GetGadgetFont)(#PB_Default)
+      Root()\class = "Root"
+      
+      Opened() = Root()
+      Entered() = Root()
+      Root()\root = Root()
+      Root()\parent = Root()
+      Root()\window = Root()
+      
+      Root()\container = #__type_root
+      
+      Root()\canvas\window = Window
+      Root()\canvas\gadget = Canvas
+      
+      GetActive() = Root()
+      GetActive()\root = Root()
+      
+      
+      Resize(Root(), 0,0,width,height)
+      
+      If flag & #PB_Canvas_Container = #PB_Canvas_Container
+        If ListSize(Widget())
+          If Widget()\container =- 1
+            _set_alignment_flag_(Widget(), Root(), #__flag_autosize)
+            Root()\canvas\container = Widget()
+            OpenList(Widget())
+            SetParent(Widget(), Root())
+          EndIf
+        Else
+          Root()\canvas\container =- 1
+        EndIf
+        
+        BindEvent(#PB_Event_SizeWindow, @CW_resize(), Window);, Canvas)
+      EndIf
+      
+      BindEvent(#PB_Event_ActivateWindow, @CW_Active(), Window);, Canvas)
+      BindEvent(#PB_Event_DeactivateWindow, @CW_Deactive(), Window);, Canvas)
+      
+      ; z - order
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        SetWindowLongPtr_( GadgetID(Canvas), #GWL_STYLE, GetWindowLongPtr_( GadgetID(Canvas), #GWL_STYLE ) | #WS_cLIPSIBLINGS )
+        SetWindowPos_( GadgetID(Canvas), #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
+      CompilerEndIf
+      
+      If *CallBack
+        BindGadgetEvent(Canvas, *CallBack)
+      Else
+        Root()\repaint = #True
+      EndIf
+      BindGadgetEvent(Canvas, @CallBack())
+      
+      PostEvent(#PB_Event_Gadget, Window, Canvas, #PB_EventType_Resize)
+      
+      SetGadgetData(Canvas, Root())
+      SetWindowData(window, Canvas)
+      
+      ;       LastElement(Widget())
+      ;       Root()\adress = AddElement(Widget()) 
+      ;       Root()\index = ListIndex(Widget()) 
+      ;       ;           EndIf
+      ;       Widget() = Root()
+      
+      ProcedureReturn Root()
     EndProcedure
     
     Procedure.i Window(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i = 0, *parent._s_widget = 0)
@@ -14372,7 +14586,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If Text And \caption\height
-          \caption\text\_padding = 5
+          \caption\text\__padding\x = 5
           \caption\text\string = Text
         EndIf
         
@@ -14404,98 +14618,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndWith
       
       ProcedureReturn *this
-    EndProcedure
-    
-    Procedure Open(window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any)
-      If width = #PB_Ignore And height = #PB_Ignore
-        flag = #PB_Canvas_Container
-      EndIf
-      
-      If Not IsWindow(window) 
-        window = GetWindow(Root())
-        
-        If Not (IsWindow(window) And
-           Root()\canvas\container = Widget())
-          width = Widget()\width + #__bsize * 2
-          height = Widget()\height + #__height + #__bsize * 2
-          window = OpenWindow(#PB_Any, Widget()\x,Widget()\y,width,height, "", #PB_Window_BorderLess)
-        EndIf
-      EndIf
-      
-      If width = #PB_Ignore
-        width = WindowWidth(window, #PB_Window_InnerCoordinate) - x*2
-      EndIf
-      
-      If height = #PB_Ignore
-        height = WindowHeight(window, #PB_Window_InnerCoordinate) - y*2
-      EndIf
-      
-      Protected g = CanvasGadget(Canvas, X, Y, Width, Height, Flag|#PB_Canvas_Keyboard) : If Canvas = -1 : Canvas = g : EndIf
-      
-      Root() = AllocateStructure(_s_root)
-      Root()\text\fontID = PB_(GetGadgetFont)(#PB_Default)
-      Root()\class = "Root"
-      
-      Opened() = Root()
-      Entered() = Root()
-      Root()\root = Root()
-      Root()\parent = Root()
-      Root()\window = Root()
-      
-      Root()\container = #__type_root
-      
-      Root()\canvas\window = Window
-      Root()\canvas\gadget = Canvas
-      
-      GetActive() = Root()
-      GetActive()\root = Root()
-      
-      
-      Resize(Root(), 0,0,width,height)
-      
-      If flag & #PB_Canvas_Container = #PB_Canvas_Container
-        If ListSize(Widget())
-          If Widget()\container =- 1
-            _set_alignment_flag_(Widget(), Root(), #__flag_autosize)
-            Root()\canvas\container = Widget()
-            OpenList(Widget())
-            SetParent(Widget(), Root())
-          EndIf
-        Else
-          Root()\canvas\container =- 1
-        EndIf
-        
-        BindEvent(#PB_Event_SizeWindow, @CW_resize(), Window);, Canvas)
-      EndIf
-      
-      BindEvent(#PB_Event_ActivateWindow, @CW_Active(), Window);, Canvas)
-      BindEvent(#PB_Event_DeactivateWindow, @CW_Deactive(), Window);, Canvas)
-      
-      ; z - order
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        SetWindowLongPtr_( GadgetID(Canvas), #GWL_STYLE, GetWindowLongPtr_( GadgetID(Canvas), #GWL_STYLE ) | #WS_cLIPSIBLINGS )
-        SetWindowPos_( GadgetID(Canvas), #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
-      CompilerEndIf
-      
-      If *CallBack
-        BindGadgetEvent(Canvas, *CallBack)
-      Else
-        Root()\repaint = #True
-      EndIf
-      BindGadgetEvent(Canvas, @CallBack())
-      
-      PostEvent(#PB_Event_Gadget, Window, Canvas, #PB_EventType_Resize)
-      
-      SetGadgetData(Canvas, Root())
-      SetWindowData(window, Canvas)
-      
-;       LastElement(Widget())
-;       Root()\adress = AddElement(Widget()) 
-;       Root()\index = ListIndex(Widget()) 
-;       ;           EndIf
-;       Widget() = Root()
-            
-      ProcedureReturn Root()
     EndProcedure
     
     Procedure.i Gadget(Type.l, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.i = #Null,  window = -1, *CallBack = #Null)
@@ -14531,10 +14653,91 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ProcedureReturn g
     EndProcedure
+    
+    Procedure.i Free(*this._s_widget)
+      Protected Result.i
+      
+      With *this
+        If *this
+          If \scroll
+            If \scroll\v : FreeStructure(\scroll\v) : \scroll\v = 0 : EndIf
+            If \scroll\h : FreeStructure(\scroll\h)  : \scroll\h = 0 : EndIf
+            ; *this\scroll = 0
+          EndIf
+          
+          If \type = #PB_GadgetType_Splitter
+            If \gadget[#__split_1] : FreeStructure(\gadget[#__split_1]) : \gadget[#__split_1] = 0 : EndIf
+            If \gadget[#__split_2] : FreeStructure(\gadget[#__split_2])  : \gadget[#__split_2] = 0 : EndIf
+          EndIf
+          
+          If \gadget[#__panel_1]
+          EndIf
+          
+          If *this\parent 
+            If *this\parent\scroll\v = *this
+              FreeStructure(*this\parent\scroll\v) : *this\parent\scroll\v = 0
+            EndIf
+            If *this\parent\scroll\h = *this
+              FreeStructure(*this\parent\scroll\h)  : *this\parent\scroll\h = 0
+            EndIf
+            
+            If *this\parent\type = #PB_GadgetType_Splitter
+              If *this\parent\gadget[#__split_1] = *this
+                FreeStructure(*this\parent\gadget[#__split_1]) : *this\parent\gadget[#__split_1] = 0
+              EndIf
+              If *this\parent\gadget[#__split_2] = *this
+                FreeStructure(*this\parent\gadget[#__split_2])  : *this\parent\gadget[#__split_2] = 0
+              EndIf
+            EndIf
+          EndIf
+          
+          
+          Debug  " free - " + ListSize(Widget())  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
+          If *this\parent And
+             *this\parent\count\childrens 
+            
+            LastElement(Widget())
+            Repeat
+              If Widget() = *this Or Child(Widget(), *this)
+                
+                If Widget()\root\count\childrens > 0 
+                  Widget()\root\count\childrens - 1
+                  If Widget()\parent <> Widget()\root
+                    Widget()\parent\count\childrens - 1
+                  EndIf
+                  DeleteElement(Widget(), 1)
+                EndIf
+                
+                If Not *this\root\count\childrens
+                  Break
+                EndIf
+              ElseIf PreviousElement(Widget()) = 0
+                Break
+              EndIf
+            ForEver
+          EndIf
+          Debug  "   free - " + ListSize(Widget())  + " " +  *this\root\count\childrens  + " " +  *this\parent\count\childrens
+          
+          
+          
+          If Entered() = *this
+            Entered() = *this\parent
+          EndIf
+          If Selected() = *this
+            Selected() = *this\parent
+          EndIf
+          
+          ; *this = 0
+          ;ClearStructure(*this, _s_widget)
+        EndIf
+      EndWith
+      
+      ProcedureReturn Result
+    EndProcedure
+    
   EndModule
   ;- <<< 
 CompilerEndIf
-
 
 
 ;- 
@@ -14873,5 +15076,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------64--------------+----------------
+; Folding = ------------------------------------------------------------------------------------------------------4-4v-P98-----------------------------------------------------------------------------------------0--0-------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

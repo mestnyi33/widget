@@ -110,7 +110,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       invert.b
       rotate.f
       
-      _padding.b
+      __padding._s_point
+      _padding.b ;;
       padding._s_padding
       
       edit._s_edit[4]
@@ -390,7 +391,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_row
     Structure _s_row
       draw.l ;???????
-      
+      Map *i()
       
       ; list view
       drag.b
@@ -423,8 +424,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       *widget._s_widget     ; EventWidget()
       item.l                ; EventItem()
       *data                 ; EventData()
+      *type
       
-      List type.l()
+      Map *events()
     EndStructure
     
     ;- - _s_widget
@@ -516,7 +518,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *align._s_align
       *selector._s_transform[#__count_anchors_]
       
-      List *_event._s_bind()
+      Map *bind._s_bind()
     EndStructure
     
     ;- - _s_mouse
@@ -569,6 +571,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       List *post._s_bind()
       List *_childrens._s_widget()
+      Map *_bind._s_bind()
     EndStructure
     
     Global *event._s_this = AllocateStructure(_s_this)
@@ -580,5 +583,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --P--D-
+; Folding = --P-fH-
 ; EnableXP

@@ -23,9 +23,9 @@ CompilerIf #PB_Compiler_IsMainFile
         Bind(#PB_All, @events_roots())
         Window(80, 100, 310, 290, "Window_2", Editable)
         
-        Button(10,  10, 280, 80, "post event for one procedure", Editable)
-        Button(10, 100, 280, 80, "post event for to two procedure", Editable)
-        Button(10, 190, 280, 80, "post event for all procedures", Editable)
+        Button(10,  10, 280, 80, "post event for one procedure");, Editable)
+        Button(10, 100, 280, 80, "post event for to two procedure");, Editable)
+        Button(10, 190, 280, 80, "post event for all procedures");, Editable)
         
         ReDraw(Root())
       EndIf

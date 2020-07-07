@@ -1,9 +1,9 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
-UseLib(widget)
+﻿IncludePath "../../" : XIncludeFile "widgets.pbi"
+; XIncludeFile "../empty5.pb"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
+  UseLib(widget)
   EnableExplicit
   
   UsePNGImageDecoder()

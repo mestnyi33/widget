@@ -1,6 +1,6 @@
-﻿IncludePath "../../"
-XIncludeFile "widgets.pbi"
-;XIncludeFile "widgets(_align_0_0_0).pbi"
+﻿; IncludePath "../../" : XIncludeFile "widgets.pbi"
+XIncludeFile "../empty5.pb"
+
 Uselib(widget)
   Global *g._S_widget, g_Canvas, NewList *List._S_widget()
   
@@ -113,7 +113,11 @@ CompilerIf #PB_Compiler_IsMainFile
     
     EditorGadget(g, 230, 10, 210, 210)                                         
     For i=0 To 10
-      AddGadgetItem(g, -1, "Line_"+Str(i))
+      If i = 5
+        AddGadgetItem(g, -1, "Line_long_long_long_long_long_"+Str(i))
+      Else
+        AddGadgetItem(g, -1, "Line_"+Str(i))
+      EndIf
     Next
        
     Open(0, 270, 10, 250, 150)
@@ -146,5 +150,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----
+; Folding = 0----
 ; EnableXP

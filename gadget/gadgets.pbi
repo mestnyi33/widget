@@ -1164,7 +1164,6 @@ DeclareModule Gadget
 ;       Function
 ;     EndMacro
     
-    #PB_Tree_Collapse = 16
     UsePNGImageDecoder()
     
     If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") 
@@ -1198,6 +1197,9 @@ DeclareModule Gadget
           If EventGadget = 4
             AddGadgetItem(0, 1, "added item "+Str(CountGadgetItems(0)))
             AddGadgetItem(1, 1, "added item "+Str(CountGadgetItems(1)))
+;             widget()\change = 1
+;             Debug widget()\change
+;             Repaints()
           EndIf
           If EventGadget = 5
             RemoveGadgetItem(0, 1)
@@ -1262,12 +1264,13 @@ DeclareModule Gadget
         EndIf
       EndIf
       
+      ;Repaints()
     EndProcedure  
     
     If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;ListViewGadget(0, 10, 10, 160, 160) 
       PB(TreeGadget)(0, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-      TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection); | #PB_Tree_Collapse | #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
+      TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection | #PB_Tree_Collapse); | #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
       
       For ID = 0 To 1
         For a = 0 To 10
@@ -1311,5 +1314,5 @@ DeclareModule Gadget
   CompilerEndIf
   
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +-+-------8--------------------------8---
+; Folding = ----------8------------------------------
 ; EnableXP

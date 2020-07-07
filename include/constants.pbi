@@ -158,6 +158,8 @@
     
     ;- _c_change
     EnumerationBinary 
+;       #__change_x
+;       #__change_y
       #__change_width
       #__change_height
      ; #__change_flag
@@ -326,19 +328,22 @@
     
     
     ;- _c_tree
+    #PB_Tree_Collapse = 32
+    
     #__tree_alwaysselection = #__flag_alwaysselection
     #__tree_nolines = #__flag_nolines
     #__tree_nobuttons = #__flag_nogadgets
     #__tree_checkboxes = #__flag_checkboxes
     #__tree_threestate = #__flag_threeState
-    ;#__tree_collapsed = #__flag_collapsed
     #__tree_optionboxes = #__flag_optionboxes
     #__tree_gridlines = #__flag_gridLines
     #__tree_multiselect = #__flag_multiselect
     #__tree_clickselect = #__flag_clickselect
+    #__tree_collapse = #PB_Tree_Collapse
     
     #__tree_property = #__flag_numeric
     #__tree_listview = #__flag_readonly
+    #__tree_toolbar = #__flag_password
     
     ; tree attribute
     #__tree_sublevel  = #PB_Tree_SubLevel   ; 1
@@ -377,6 +382,7 @@
     ;- _c_editor
     ;#__editor_inline = #__flag_InLine
     #__editor_wordwrap = #__flag_wordwrap
+    #__editor_nomultiline = #__flag_nolines
     #__editor_numeric = #__flag_numeric|#__text_multiline
     #__editor_fullselection = #__flag_fullselection
     #__editor_alwaysselection = #__flag_alwaysselection

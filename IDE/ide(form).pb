@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../widgets.pbi"
-;  XIncludeFile "../examples/empty.pb"
+ ; XIncludeFile "../examples/empty5.pb"
 
 Uselib(widget)
 
@@ -229,43 +229,232 @@ EndProcedure
 Procedure Points(Steps = 5, BoxColor = 0, PlotColor = 0)
   Static ID
   Protected hDC, x,y
+  
+  If Not ID
+    ;Steps - 1
     
-    If Not ID
-      ;Steps - 1
+    ExamineDesktops()
+    Protected width = DesktopWidth(0)   
+    Protected height = DesktopHeight(0)
+    ID = CreateImage(#PB_Any, width, height)
+    
+    If PlotColor = 0 : PlotColor = RGB(1,1,1) : EndIf
+    If BoxColor = 0 : BoxColor = RGB(236,236,236) : EndIf
+    
+    If StartDrawing(ImageOutput(ID))
+      Box(0, 0, width, height, BoxColor)
       
-      ExamineDesktops()
-      Protected width = DesktopWidth(0)   
-      Protected height = DesktopHeight(0)
-      ID = CreateImage(#PB_Any, width, height)
-      
-      If PlotColor = 0 : PlotColor = RGB(1,1,1) : EndIf
-      If BoxColor = 0 : BoxColor = RGB(236,236,236) : EndIf
-      
-      If StartDrawing(ImageOutput(ID))
-        Box(0, 0, width, height, BoxColor)
+      For x = 0 To width - 1
         
-        For x = 0 To width - 1
+        For y = 0 To height - 1
           
-          For y = 0 To height - 1
-            
-            Plot(x, y, PlotColor)
-            
-            y + Steps
-          Next
+          Plot(x, y, PlotColor)
           
-          x + Steps
+          y + Steps
         Next
         
-        StopDrawing()
-      EndIf
+        x + Steps
+      Next
+      
+      StopDrawing()
     EndIf
-    
-    ProcedureReturn ID
-  EndProcedure
- 
+  EndIf
+  
+  ProcedureReturn ID
+EndProcedure
+
 
 ;-
+Macro Pushed()
+  Mouse()\buttons
+EndMacro
+
+;-
+Procedure.s FlagFromFlag( Type, flag.i ) ; 
+  Protected flags.S
+  
+  Select type
+    Case #PB_GadgetType_Text
+      If flag & #__text_center
+        flags + "#PB_Text_Center|"
+      EndIf
+      If flag & #__text_right
+        flags + "#PB_Button_Right|"
+      EndIf
+      If flag & #__text_border
+        flags + "#PB_Text_Border|"
+      EndIf
+      
+    Case #PB_GadgetType_Button
+      If flag & #__button_left
+        flags + "#PB_Button_Left|"
+      EndIf
+      If flag & #__button_right
+        flags + "#PB_Button_Right|"
+      EndIf
+      If flag & #__button_multiline
+        flags + "#PB_Button_MultiLine|"
+      EndIf
+      If flag & #__button_toggle
+        flags + "#PB_Button_Toggle|"
+      EndIf
+      If flag & #__button_default
+        flags + "#PB_Button_Default|"
+      EndIf
+      
+    Case #PB_GadgetType_Container
+      If flag & #__flag_borderless
+        flags + "#PB_Container_BorderLess|"
+      EndIf
+      ;         If flag & #__flag_flat
+      ;           flags + "#PB_Container_Border|"
+      ;         EndIf
+      
+  EndSelect
+  
+  ProcedureReturn Trim(flags, "|")
+EndProcedure
+
+Procedure$ add_line(*new._s_widget, Handle$) ; Ok
+  Protected ID$, Result$, param1$, param2$, param3$, Text$, flag$
+  
+  flag$ = FlagFromFlag(*new\type, *new\_flag)
+  
+  Select Asc(Handle$)
+    Case '#'        : ID$ = Handle$           : Handle$ = ""
+    Case '0' To '9' : ID$ = Chr(Asc(Handle$)) : Handle$ = ""
+    Default         : ID$ = "#PB_Any"         : Handle$ + " = "
+  EndSelect
+  
+  Text$ = Chr(34)+*new\text\string+Chr(34)
+  
+  If *new\class = "Window"
+    Result$ = Handle$ +"Window("+ *new\x +", "+ *new\y +", "+ *new\width +", "+ *new\height
+  Else
+    ; type_$ = "Gadget("+ID$+", "
+    Result$ = Handle$ + *new\class +"("+ *new\x +", "+ *new\y +", "+ *new\width +", "+ *new\height
+  EndIf
+  
+  Select *new\class
+    Case "Window" : Result$ +", "+ Text$                                                                          
+      If param1$ : Result$ +", "+ param1$ : EndIf 
+      
+    Case "ScrollArea"    : Result$ +", "+ param1$ +", "+ param2$    
+      If param3$ : Result$ +", "+ param3$ : EndIf 
+      
+    Case "Calendar"      
+      If param1$ : Result$ +", "+ param1$ : EndIf 
+      If param1$ : Result$ +", "+ param1$ : EndIf 
+      
+    Case "Button"        : Result$ +", "+ Text$                                                                               
+    Case "String"        : Result$ +", "+ Text$                                                                               
+    Case "Text"          : Result$ +", "+ Text$                                                                                 
+    Case "CheckBox"      : Result$ +", "+ Text$                                                                             
+    Case "Option"        : Result$ +", "+ Text$
+    Case "Frame"         : Result$ +", "+ Text$                                                                                
+    Case "Web"           : Result$ +", "+ Text$
+    Case "Date"          : Result$ +", "+ Text$              
+    Case "ExplorerList"  : Result$ +", "+ Text$                                                                         
+    Case "ExplorerTree"  : Result$ +", "+ Text$                                                                         
+    Case "ExplorerCombo" : Result$ +", "+ Text$                                                                        
+      
+    Case "HyperLink"     : Result$ +", "+ Text$ +", "+ param1$                                                       
+    Case "ListIcon"      : Result$ +", "+ Text$ +", "+ param1$                                                        
+      
+    Case "Image"         : Result$ +", "+ param1$   
+    Case "Scintilla"     : Result$ +", "+ param1$
+    Case "Shortcut"      : Result$ +", "+ param1$
+    Case "ButtonImage"   : Result$ +", "+ param1$                                                                                             
+      
+    Case "TrackBar"      : Result$ +", "+ param1$ +", "+ param2$                                                                         
+    Case "Spin"          : Result$ +", "+ param1$ +", "+ param2$                                                                             
+    Case "Splitter"      : Result$ +", "+ param1$ +", "+ param2$                                                                         
+    Case "MDI"           : Result$ +", "+ param1$ +", "+ param2$                                                                              
+    Case "ProgressBar"   : Result$ +", "+ param1$ +", "+ param2$                                                                      
+    Case "ScrollBar"     : Result$ +", "+ param1$ +", "+ param2$ +", "+ param3$                                                 
+  EndSelect
+  
+  If flag$ : Result$ +", "+ flag$ : EndIf 
+      
+  Result$+")" 
+  
+  ProcedureReturn Result$
+EndProcedure
+
+Procedure add_code(*new._s_widget, Class.s, Position.i, SubLevel.i)
+  Protected code.s 
+  
+  ;   code = Space((*new\level-2)*4) +
+  ;          Class +" = "+ 
+  ;          *new\class +"(" + 
+  ;          *new\x +", "+
+  ;          *new\y +", "+ 
+  ;          *new\width +", "+ 
+  ;          *new\height +", "+ 
+  ;          *new\text\string +", "+ 
+  ;          FlagFromFlag(*new\type, *new\_flag)+
+  ;          ")"
+  
+  code = Space((*new\level-2)*4) + add_line(*new._s_widget, Class.s)
+  
+  ;   ForEach widget()
+  ;     If Child(widget(), id_design_form)
+  ;       Debug widget()\class
+  ;     EndIf
+  ;   Next
+  
+  If IsGadget(listview_debug)
+    AddGadgetItem(listview_debug, Position, code)
+  Else
+    AddItem(listview_debug, Position, code)
+  EndIf
+EndProcedure
+
+;-
+Procedure.i draw_select(*this._s_widget)
+  Protected mouse_x, mouse_y, DeltaX, DeltaY
+  
+  If Transform()\grab
+    mouse_x = Mouse()\x
+    mouse_y = Mouse()\y
+    
+    Transform()\id\x = Mouse()\delta\x + *this\x
+    Transform()\id\Y = Mouse()\delta\y + *this\y
+    
+    If Transform()\id\x > mouse_x
+      Transform()\id\Width = Transform()\id\X - mouse_x
+      Transform()\id\x = mouse_x
+    Else
+      Transform()\id\Width = mouse_x - Transform()\id\X
+    EndIf
+    
+    If Transform()\id\Y > mouse_y
+      Transform()\id\Height = Transform()\id\Y - mouse_y
+      Transform()\id\Y = mouse_y
+    Else
+      Transform()\id\Height = mouse_y - Transform()\id\Y
+    EndIf
+    
+    If Transform()\grab And 
+       StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
+      DrawImage(ImageID(Transform()\grab), 0,0)
+      
+      ; draw selector
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      Box(Transform()\id\x, Transform()\id\y, 
+          Transform()\id\width, Transform()\id\height , $ff000000);Transform()\color[Transform()\state]\id) 
+      
+      StopDrawing()
+      ProcedureReturn *this
+    EndIf
+  EndIf
+EndProcedure
+
 Procedure.i start_select(*this._s_widget)
+  If Not Transform()
+    InitTransform()
+  EndIf
+  
   ;;SetCursor(*this, #PB_Cursor_Cross)
   Redraw(*this\root)
   
@@ -300,67 +489,24 @@ Procedure.i stop_select(*this._s_widget)
   EndIf
 EndProcedure
 
-Procedure.i draw_select(*this._s_widget)
-  Protected mouse_x, mouse_y, DeltaX, DeltaY
-  
-  If *this And GetButtons(*this)
-    If Not Transform()
-      InitTransform()
-    EndIf
-    
-    mouse_x = Mouse()\x
-    mouse_y = Mouse()\y
-    
-    Transform()\id\x = Mouse()\delta\x + *this\x
-    Transform()\id\Y = Mouse()\delta\y + *this\y
-  
-    If Transform()\id\x > mouse_x
-      Transform()\id\Width = Transform()\id\X - mouse_x
-      Transform()\id\x = mouse_x
-    Else
-      Transform()\id\Width = mouse_x - Transform()\id\X
-    EndIf
-    
-    If Transform()\id\Y > mouse_y
-      Transform()\id\Height = Transform()\id\Y - mouse_y
-      Transform()\id\Y = mouse_y
-    Else
-      Transform()\id\Height = mouse_y - Transform()\id\Y
-    EndIf
-    
-    If Transform()\grab And 
-       StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
-      DrawImage(ImageID(Transform()\grab), 0,0)
-      
-      ; draw selector
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      Box(Transform()\id\x, Transform()\id\y, 
-          Transform()\id\width, Transform()\id\height , $ff000000);Transform()\color[Transform()\state]\id) 
-      
-      StopDrawing()
-      ProcedureReturn *this
-    EndIf
-  EndIf
-EndProcedure
-
 ;-
 Declare events_element()
 
 Procedure  GetItemChildrens(*this._s_widget, Item.l, Column.l = 0)
-      Protected result
-      
-      If *this\count\items ; row\count
-        If _no_select_(*this\row\_s(), Item) 
-          ProcedureReturn #False
-        EndIf
-        
-          Result = *this\row\_s()\childrens
-      EndIf
-      
-      ProcedureReturn result
-    EndProcedure
+  Protected result
+  
+  If *this\count\items ; row\count
+    If _no_select_(*this\row\_s(), Item) 
+      ProcedureReturn #False
+    EndIf
     
-    
+    Result = *this\row\_s()\childrens
+  EndIf
+  
+  ProcedureReturn result
+EndProcedure
+
+
 Procedure add_element(gadget.i, *new._s_widget, Class.s)
   Protected img =- 1
   Protected Parent = GetParent(*new)
@@ -369,31 +515,27 @@ Procedure add_element(gadget.i, *new._s_widget, Class.s)
   Protected i, CountItems = CountItems(gadget)
   Protected *Sublevel, SubLevel ;= GetLevel(Parent) - 1 ; level mdi minus
   
-;   ; get childrens position and sublevel
-;   For i = 0 To CountItems - 1
-;     If Parent = GetItemData(gadget, i)
-;       SubLevel = GetItemAttribute(gadget, i, #PB_Tree_SubLevel) + 1
-;       Position = (i+1)
-;       Break
-;     EndIf
-;   Next 
-  
-  If Parent = GetItemData(gadget, Position)
-    SubLevel = GetItemAttribute(gadget, Position, #PB_Tree_SubLevel) + 1
-    Position + 1
-  EndIf
-  
-  ; 
-  For i = Position To CountItems - 1
+  ; get childrens position and sublevel
+  For i = 0 To CountItems - 1
+    If Parent = GetItemData(gadget, i)
+      SubLevel = GetItemAttribute(gadget, i, #PB_Tree_SubLevel) + 1
+      Position = (i+1)
+    EndIf
+    
     If SubLevel <= GetItemAttribute(gadget, i, #PB_Tree_SubLevel)
-      Position + 1
+      Position = (i+1)
     EndIf
   Next 
+  
+  SetText(*new, Class)
+  SetData(*new, Position)
   
   ; update this widget date item
   For i = Position To CountItems - 1
     SetData( GetItemData(gadget, i), i + 1)
   Next 
+  
+  Position = GetData(*new)
   
   ; img = GetItemData(id_elements_tree, GetState(id_elements_tree))
   CountItems = CountItems(id_elements_tree)
@@ -405,24 +547,21 @@ Procedure add_element(gadget.i, *new._s_widget, Class.s)
     EndIf
   Next  
   
-  SetText(*new, Class)
-  SetData(*new, Position)
-  
   ; add to inspector
   AddItem(gadget, Position, Class.s, img, SubLevel)
   SetItemData(gadget, Position, *new)
   ; SetItemState(gadget, Position, #PB_Tree_Selected)
   SetState(gadget, Position)
   
-  AddGadgetItem(listview_debug, Position, Class.s, 0, SubLevel)
-  SetGadgetItemData(listview_debug, Position, *new)
-  ; SetGadgetItemState(listview_debug, Position, #PB_Tree_Selected)
-  SetGadgetState(listview_debug, Position) ; Bug
-  
-  ;update_properties(id_properties_tree, *new)
+  ;   If IsGadget(listview_debug)
+  ;     AddGadgetItem(listview_debug, Position, Class.s, 0, SubLevel)
+  ;     SetGadgetItemData(listview_debug, Position, *new)
+  ;     ; SetGadgetItemState(listview_debug, Position, #PB_Tree_Selected)
+  ;     SetGadgetState(listview_debug, Position) ; Bug
+  ;   EndIf
   
   ; Debug "pos "+Position
-  ;Add_Code(*new, Position-1, SubLevel)
+  add_code(*new, Class, Position, SubLevel)
   
   ProcedureReturn Position
 EndProcedure
@@ -479,16 +618,25 @@ Procedure events_element()
   Static Drag
   
   Select e_type 
-    Case #PB_EventType_MouseEnter
-      If GetState(id_elements_tree) > 0 And *this\container 
+    Case #PB_EventType_DragStart
+      If GetState(id_elements_tree) > 0 And
+         *this\container 
         SetCursor(*this, #PB_Cursor_Cross)
       EndIf
-    
+      
+    Case #PB_EventType_MouseEnter
+      If GetState(id_elements_tree) > 0 And
+         *this\container 
+        SetCursor(*this, #PB_Cursor_Cross)
+      EndIf
+      
     Case #PB_EventType_MouseLeave
-      If GetState(id_elements_tree) > 0 And *this\container 
+      If GetState(id_elements_tree) > 0 And
+         Not Pushed() And
+         *this\container
         SetCursor(*this, #PB_Cursor_Default)
       EndIf
-    
+      
     Case #PB_EventType_MouseMove
       If Drag
         If Not draw_select(Drag)
@@ -498,6 +646,7 @@ Procedure events_element()
       
     Case #PB_EventType_LeftButtonDown
       If GetState(id_elements_tree) > 0 And *this\container 
+        ;SetCursor(*this, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
         Drag = start_select(*this)
       EndIf
       
@@ -505,7 +654,8 @@ Procedure events_element()
       If GetState(id_elements_tree) > 0
         If stop_select(*this)
           
-          create_element(*this, GetText(id_elements_tree),
+          create_element(*this, 
+                         GetText(id_elements_tree),
                          Transform()\id\x,
                          Transform()\id\y, 
                          Transform()\id\width, 
@@ -518,10 +668,10 @@ Procedure events_element()
       EndIf
       
     Case #PB_EventType_StatusChange
-      Debug GetData(*this)
-      
       SetState(id_inspector_tree, GetData(*this))
-      SetGadgetState(listview_debug, GetData(*this))
+      If IsGadget(listview_debug)
+        SetGadgetState(listview_debug, GetData(*this))
+      EndIf
       update_properties(id_properties_tree, *this)
       
   EndSelect
@@ -544,14 +694,27 @@ Procedure events_ide()
       If e_widget = id_inspector_tree
         *this = GetItemData(e_widget, GetState(e_widget))
         
-        If *this 
-          a_set(*this)
+        If *this And
+           a_set(*this)
         EndIf
       EndIf
+      
+    Case #PB_EventType_MouseEnter
+      Debug "id_elements - enter"
+      ;       If GetState(id_elements_tree) > 0 
+      ;         SetCursor(*event\widget, #PB_Cursor_Default)
+      ;       EndIf
+      
+    Case #PB_EventType_MouseLeave
+      Debug "id_elements - leave"
+      ;       If GetState(id_elements_tree) > 0 
+      ;         SetCursor(*event\widget, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
+      ;       EndIf
       
     Case #PB_EventType_LeftClick
       If e_widget = id_elements_tree
         Debug "click"
+        ; SetCursor(*event\widget, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
       EndIf
       
   EndSelect
@@ -574,7 +737,7 @@ Procedure create_ide(x=100,y=100,width=800,height=600)
   ;   CloseList()
   
   id_inspector_tree = Tree(0,0,0,0)
-  listview_debug = TreeGadget(-1,0,0,0,0) ; ListView(0,0,0,0) 
+  listview_debug = Editor(0,0,0,0) ; ListView(0,0,0,0) 
   
   id_design_form = MDI(0,0,0,0) 
   id_design_panel = id_design_form
@@ -640,7 +803,14 @@ Procedure create_ide(x=100,y=100,width=800,height=600)
   
   
   Bind(id_inspector_tree, @events_ide())
-  Bind(id_elements_tree, @events_ide())
+  
+  ;Bind(id_elements_tree, @events_ide())
+  Bind(id_elements_tree, @events_ide(), #PB_EventType_LeftClick)
+  Bind(id_elements_tree, @events_ide(), #PB_EventType_Change)
+  Bind(id_elements_tree, @events_ide(), #PB_EventType_StatusChange)
+  
+  Bind(id_elements_tree, @events_ide(), #PB_EventType_MouseEnter)
+  Bind(id_elements_tree, @events_ide(), #PB_EventType_MouseLeave)
   ProcedureReturn window_ide
 EndProcedure
 
@@ -653,20 +823,21 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;   ;OpenList(id_design_form)
   Define *window = create_element(id_design_form, "window", 10, 10, 350, 200)
-    Define *container = create_element(*window, "container", 80, 10, 220, 140)
-    create_element(*container, "button", 10, 20, 100, 30)
-    create_element(*window, "button", 10, 20, 100, 30)
-    
-    Define item = 1
-    SetState(id_inspector_tree, item)
+  Define *container = create_element(*window, "container", 80, 10, 220, 140)
+  create_element(*container, "button", 10, 20, 100, 30)
+  create_element(*window, "button", 10, 20, 100, 30)
+  
+  Define item = 1
+  SetState(id_inspector_tree, item)
+  If IsGadget(listview_debug)
     SetGadgetState(listview_debug, item)
-    
-    Define *container2 = create_element(*container, "container", 80, 10, 220, 140)
-    create_element(*container2, "button", 10, 20, 100, 30)
-    
-    SetState(id_inspector_tree, 0)
-    create_element(*window, "button", 10, 20, 100, 30)
-    
+  EndIf
+  Define *container2 = create_element(*container, "container", 80, 10, 220, 140)
+  create_element(*container2, "button", 10, 20, 100, 30)
+  
+  SetState(id_inspector_tree, 0)
+  create_element(*window, "button", 10, 20, 100, 30)
+  
   ;   Define *window = create_element(id_design_form, "window", 10, 10)
   ;   Define *container = create_element(*window, "container", 80, 10)
   ;   create_element(*container, "button", -10, 20)
@@ -684,5 +855,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +-Pvr-f-v--
+; Folding = -----v+---------
 ; EnableXP

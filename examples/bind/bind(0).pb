@@ -8,17 +8,21 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Global.i gEvent, gQuit, *but, *win
   
-  Procedure events_widgets()
-   ; ClearDebugOutput()
+  Procedure events_gadgets()
     Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (gadget)"
   EndProcedure
   
+  Procedure events_widgets()
+    ; ClearDebugOutput()
+    Debug " "+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (widget)"
+  EndProcedure
+  
   Procedure events_windows()
-    Debug "  "+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (window)"
+    Debug "   "+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (window)"
   EndProcedure
   
   Procedure events_roots()
-    Debug "    "+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (root)"
+    Debug "     "+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (root)"
   EndProcedure
   
   
@@ -27,12 +31,22 @@ CompilerIf #PB_Compiler_IsMainFile
       Define Editable ; = #__flag_AnchorsGadget
       
       If Open(0, 10,10, 480, 480)
-       ; Bind(#PB_All, @events_roots())
+        ; Bind(#PB_All, @events_roots())
         Bind(Window(80, 100, 310, 290, "Window_2", Editable), @events_windows())
         
-       Button(10,  10, 280, 80, "post event for one procedure", Editable)
+        Define id = Button(10,  10, 280, 80, "post event for one procedure", Editable)
         Button(10, 100, 280, 80, "post event for to two procedure", Editable)
         Button(10, 190, 280, 80, "post event for all procedures", Editable)
+        
+        ; post all default events
+        ;Bind(id, @events_widgets())
+        
+        ; post this events
+        Bind(id, @events_gadgets(), #PB_EventType_MouseEnter)
+       ; Bind(id, @events_widgets(), #PB_EventType_MouseEnter)
+        Bind(id, @events_widgets(), #PB_EventType_MouseLeave)
+        ; Bind(id, @events_widgets(), #PB_EventType_LeftButtonDown)
+        Bind(id, @events_widgets(), #PB_EventType_LeftClick)
         
         ReDraw(Root())
       EndIf
@@ -48,16 +62,16 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_Event_CloseWindow
         gQuit= #True
         
-;       Case #PB_Event_Gadget;Widget
-;         Debug ""+gettext(EventWidget()) +" "+ WidgetEvent() ;+" "+ *Value\This +" "+ *Value\Type
-;         
-;         Select EventWidget()
-;           Case *but
-;             
-;             Debug *but
-;             
-;         EndSelect
-;         
+        ;       Case #PB_Event_Gadget;Widget
+        ;         Debug ""+gettext(EventWidget()) +" "+ WidgetEvent() ;+" "+ *Value\This +" "+ *Value\Type
+        ;         
+        ;         Select EventWidget()
+        ;           Case *but
+        ;             
+        ;             Debug *but
+        ;             
+        ;         EndSelect
+        ;         
     EndSelect
     
   Until gQuit

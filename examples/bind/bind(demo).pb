@@ -61,21 +61,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Select gEvent
       Case #PB_Event_CloseWindow
         gQuit= #True
-        
-;       Case #PB_Event_Gadget;Widget
-;         Debug ""+gettext(EventWidget()) +" "+ WidgetEvent() ;+" "+ *Value\This +" "+ *Value\Type
-;         
-;         Select EventWidget()
-;           Case *but
-;             
-;             Debug *but
-;             
-;         EndSelect
-;         
     EndSelect
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = ---
 ; EnableXP
