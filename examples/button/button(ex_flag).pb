@@ -90,8 +90,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; flag
     f = widget::Tree(width+20, 10, 150, y+10, #__Tree_NoLines|#__Tree_NoButtons|#__tree_OptionBoxes);|#__Tree_CheckBoxes)
+    ; AddItem(f, -1, "align", -1,0)
     AddItem(f, -1, "top", -1,1)
     AddItem(f, -1, "left", -1,1)
+    AddItem(f, -1, "center", -1,1)
     AddItem(f, -1, "right", -1,1)
     AddItem(f, -1, "bottom", -1,1)
     AddItem(f, -1, "default")

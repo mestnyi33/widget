@@ -6935,6 +6935,192 @@ CompilerIf Not Defined(widget, #PB_Module)
       _bar_scrollarea_change_(_this_, _pos_ - _this_\y, _len_)
     EndMacro
     
+    Macro _tree_box_3(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFF8F8F8, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255) 
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      
+      If _checked_
+        ;RoundBox( _x_,_y_,_width_,_height_, _round_,_round_, _color_frame2_&$FFFFFF|_alpha_<<24)
+        
+        BackColor(_color_frame2_&$FFFFFF|_alpha_<<24)
+        FrontColor(_color_frame2_&$FFFFFF|_alpha_<<24)
+      Else
+        ;RoundBox( _x_,_y_,_width_,_height_, _round_,_round_, _color_frame_&$FFFFFF|_alpha_<<24)
+        
+        BackColor(_color_frame_&$FFFFFF|_alpha_<<24)
+        FrontColor(_color_frame_&$FFFFFF|_alpha_<<24)
+      EndIf
+      
+      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_);, _color_frame_&$FFFFFF|_alpha_<<24)
+      RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, _round_,_round_);, _color_frame_&$FFFFFF|_alpha_<<24)
+      RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, _round_,_round_);, _color_frame_&$FFFFFF|_alpha_<<24)
+      
+      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+      
+      If _checked_
+        ;_box_gradient_(0, _x_,_y_,_width_,_height_,_color_fore2_&$FFFFFF|_alpha_<<24, _color_back2_&$FFFFFF|_alpha_<<24, _round_)
+        
+        BackColor(_color_fore2_&$FFFFFF|_alpha_<<24)
+        FrontColor(_color_back2_&$FFFFFF|_alpha_<<24)
+      Else
+        ;_box_gradient_(0, _x_,_y_,_width_,_height_,_color_fore_&$FFFFFF|_alpha_<<24, _color_back_&$FFFFFF|_alpha_<<24, _round_)
+        
+        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
+        FrontColor(_color_back_&$FFFFFF|_alpha_<<24)
+      EndIf
+      
+      
+      LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
+      ;         RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
+      
+      RoundBox(_x_ + 3,_y_ + 1,_width_ - 6,_height_ - 2, 2,2)
+      RoundBox(_x_ + 1,_y_ + 3,_width_ - 2,_height_ - 6, 2,2)
+      RoundBox(_x_ + 1,_y_ + 1,_width_ - 2,_height_ - 2, _round_,_round_)
+      
+      ;DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+      FrontColor(_color_fore_&$FFFFFF|_alpha_<<24)
+      BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
+        
+      If _checked_
+        If _type_ = 1
+          If _width_%2
+            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5, 5,5);,_color_&$FFFFFF|_alpha_<<24) 
+          Else
+            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, 4,4);,_color_&$FFFFFF|_alpha_<<24) 
+          EndIf
+        Else
+          _box_x_ = _width_/2 - 4
+          _box_y_ = _box_x_ + Bool(_width_%2) 
+          
+          LineXY((_x_ + 1+_box_x_),(_y_ +4+ _box_y_),(_x_ +2+ _box_x_),(_y_ +5+ _box_y_),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
+          LineXY((_x_ + 1+_box_x_),(_y_ +5+ _box_y_),(_x_ +2+ _box_x_),(_y_ +6+ _box_y_),_color_&$FFFFFF|_alpha_<<24); Левая линия
+          
+          LineXY((_x_ + 6+_box_x_),(_y_ +0+ _box_y_),(_x_ +3+ _box_x_),(_y_ +6+ _box_y_),_color_&$FFFFFF|_alpha_<<24) ; правая линия
+          LineXY((_x_ + 7+_box_x_),(_y_ +0+ _box_y_),(_x_ +4+ _box_x_),(_y_ +6+ _box_y_),_color_&$FFFFFF|_alpha_<<24); правая линия
+        EndIf
+      EndIf
+      
+   EndMacro
+    
+    Macro _tree_box_2(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFFFFFFF, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255) 
+      
+      If _checked_
+        FrontColor(_color_frame2_&$FFFFFF|_alpha_<<24)
+        BackColor(_color_frame2_&$FFFFFF|_alpha_<<24)
+      Else
+        FrontColor(_color_frame_&$FFFFFF|_alpha_<<24)
+        BackColor(_color_frame_&$FFFFFF|_alpha_<<24)
+      EndIf
+      
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
+      RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, _round_,_round_)
+      RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, _round_,_round_)
+      
+      If _checked_
+        FrontColor(_color_back2_&$FFFFFF|_alpha_<<24)
+        BackColor(_color_fore2_&$FFFFFF|_alpha_<<24)
+      Else
+        FrontColor(_color_back_&$FFFFFF|_alpha_<<24)
+        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
+      EndIf
+      
+      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+      LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
+      
+      RoundBox(_x_ + 3,_y_ + 1,_width_ - 6,_height_ - 2, 2,2)
+      RoundBox(_x_ + 1,_y_ + 3,_width_ - 2,_height_ - 6, 2,2)
+      RoundBox(_x_ + 1,_y_ + 1,_width_ - 2,_height_ - 2, _round_,_round_)
+      
+      If _checked_
+        FrontColor(_color_fore_&$FFFFFF|_alpha_<<24)
+        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
+        
+        If _type_ = 1
+          If _width_%2
+            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5, 5,5) 
+          Else
+            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, 4,4)
+          EndIf
+        Else
+          If _checked_ =- 1
+            If _width_%2
+              Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5) 
+            Else
+              Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4) 
+            EndIf
+          Else
+            _box_x_ = _width_/2 - 4
+            _box_y_ = _box_x_ + Bool(_width_%2) 
+            
+            LineXY((_x_ + 1+_box_x_),(_y_ +4+ _box_y_),(_x_ +2+ _box_x_),(_y_ +5+ _box_y_)) ; Левая линия
+            LineXY((_x_ + 1+_box_x_),(_y_ +5+ _box_y_),(_x_ +2+ _box_x_),(_y_ +6+ _box_y_)) ; Левая линия
+            
+            LineXY((_x_ + 6+_box_x_),(_y_ +0+ _box_y_),(_x_ +3+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
+            LineXY((_x_ + 7+_box_x_),(_y_ +0+ _box_y_),(_x_ +4+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
+          EndIf
+        EndIf
+      EndIf
+      
+    EndMacro
+    
+    Macro _tree_box_(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFFFFFFF, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255) 
+      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+      
+      If _checked_
+        BackColor(_color_fore2_&$FFFFFF|_alpha_<<24)
+        FrontColor(_color_back2_&$FFFFFF|_alpha_<<24)
+      Else
+        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
+        FrontColor(_color_back_&$FFFFFF|_alpha_<<24)
+      EndIf
+      
+      
+      LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
+      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
+      
+      FrontColor(_color_fore_&$FFFFFF|_alpha_<<24)
+      BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
+        
+      If _checked_
+        If _type_ = 1
+          If _width_%2
+            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5, 5,5) 
+          Else
+            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, 4,4) 
+          EndIf
+        Else
+          If _checked_ =- 1
+            If _width_%2
+              Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5) 
+            Else
+              Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4) 
+            EndIf
+          Else
+            _box_x_ = _width_/2 - 4
+            _box_y_ = _box_x_ + Bool(_width_%2) 
+            
+            LineXY((_x_ + 1+_box_x_),(_y_ +4+ _box_y_),(_x_ +2+ _box_x_),(_y_ +5+ _box_y_)) ; Левая линия
+            LineXY((_x_ + 1+_box_x_),(_y_ +5+ _box_y_),(_x_ +2+ _box_x_),(_y_ +6+ _box_y_)) ; Левая линия
+            
+            LineXY((_x_ + 6+_box_x_),(_y_ +0+ _box_y_),(_x_ +3+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
+            LineXY((_x_ + 7+_box_x_),(_y_ +0+ _box_y_),(_x_ +4+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
+          EndIf
+        EndIf
+      EndIf
+      
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      
+      If _checked_
+        FrontColor(_color_frame2_&$FFFFFF|_alpha_<<24)
+      Else
+        FrontColor(_color_frame_&$FFFFFF|_alpha_<<24)
+      EndIf
+      
+      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_);, _color_frame_&$FFFFFF|_alpha_<<24)
+      
+      
+   EndMacro
+    
     Macro _tree_box_1(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_ = $FFFFFFFF, _alpha_ = 255) 
       
       If _type_ = 1
@@ -6956,13 +7142,13 @@ CompilerIf Not Defined(widget, #PB_Module)
         Else
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
           
-          RoundBox(_x_,_y_,_width_,_height_, 4,4, $7E7E7E&$FFFFFF|255<<24)
-          RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, 4,4, $7E7E7E&$FFFFFF|255<<24)
-          RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, 4,4, $7E7E7E&$FFFFFF|255<<24)
+          RoundBox(_x_,_y_,_width_,_height_, 4,4, $80C8C8C8)
+          RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, 4,4, $80C8C8C8)
+          RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, 4,4, $80C8C8C8)
           
           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          BackColor($FFFFFF&$FFFFFF|255<<24)
-          FrontColor($EEEEEE&$FFFFFF|255<<24)
+          BackColor($FFF8F8F8)
+          FrontColor($80E2E2E2)
           
           LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
           RoundBox(_x_ + 3,_y_ + 1,_width_ - 6,_height_ - 2, 2,2)
@@ -7040,43 +7226,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-    EndMacro
-    
-    Macro _tree_box_(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_ = $FFFFFFFF, _color_fore_=$FFF8F8F8, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255) 
-      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-      
-      If _checked_
-        _box_gradient_(0, _x_,_y_,_width_,_height_,_color_fore2_&$FFFFFF|_alpha_<<24, _color_back2_&$FFFFFF|_alpha_<<24, _round_)
-      Else
-        _box_gradient_(0, _x_,_y_,_width_,_height_,_color_fore_&$FFFFFF|_alpha_<<24, _color_back_&$FFFFFF|_alpha_<<24, _round_)
-      EndIf
-      
-      If _checked_
-        If _type_ = 1
-          If _width_%2
-            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5, 5,5,_color_&$FFFFFF|_alpha_<<24) 
-          Else
-            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, 4,4,_color_&$FFFFFF|_alpha_<<24) 
-          EndIf
-        Else
-          _box_x_ = _width_/2 - 4
-          _box_y_ = _box_x_ + Bool(_width_%2) 
-          
-          LineXY((_x_ + 1+_box_x_),(_y_ +4+ _box_y_),(_x_ +2+ _box_x_),(_y_ +5+ _box_y_),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
-          LineXY((_x_ + 1+_box_x_),(_y_ +5+ _box_y_),(_x_ +2+ _box_x_),(_y_ +6+ _box_y_),_color_&$FFFFFF|_alpha_<<24); Левая линия
-          
-          LineXY((_x_ + 6+_box_x_),(_y_ +0+ _box_y_),(_x_ +3+ _box_x_),(_y_ +6+ _box_y_),_color_&$FFFFFF|_alpha_<<24) ; правая линия
-          LineXY((_x_ + 7+_box_x_),(_y_ +0+ _box_y_),(_x_ +4+ _box_x_),(_y_ +6+ _box_y_),_color_&$FFFFFF|_alpha_<<24); правая линия
-        EndIf
-      EndIf
-      
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      
-      If _checked_
-        RoundBox( _x_,_y_,_width_,_height_, _round_,_round_, _color_frame2_&$FFFFFF|_alpha_<<24)
-      Else
-        RoundBox( _x_,_y_,_width_,_height_, _round_,_round_, _color_frame_&$FFFFFF|_alpha_<<24)
-      EndIf
     EndMacro
     
     Procedure   Tree_Update(*this._s_widget, List row._s_rows())
@@ -7505,7 +7654,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           ; Draw check buttons
           If *this\mode\buttons Or
              (*this\mode\check = 1 Or *this\mode\check = 4)
-            DrawingMode(#PB_2DDrawing_Default)
+            ; DrawingMode(#PB_2DDrawing_Default)
             
             ForEach *row()
               If *row()\draw 
@@ -7513,15 +7662,17 @@ CompilerIf Not Defined(widget, #PB_Module)
                   Protected _box_x_, _box_y_
                   ; Draw box (check&option)
                   If *row()\parent And *this\mode\check = 4
-                    _tree_box_(1, *row()\box[1]\x, *row()\box[1]\y, *row()\box[1]\width, *row()\box[1]\height, *row()\box[1]\state, 4, \color)
+                    _tree_box_(1, *row()\box[1]\x, *row()\box[1]\y, *row()\box[1]\width, *row()\box[1]\height, *row()\box[1]\state, 4);, \color)
                   Else;If Not (*this\mode\buttons And *row()\childrens And *this\mode\check = 4)
-                    _tree_box_(3, *row()\box[1]\x, *row()\box[1]\y, *row()\box[1]\width, *row()\box[1]\height, *row()\box[1]\state, 2, \color)
+                    _tree_box_(3, *row()\box[1]\x, *row()\box[1]\y, *row()\box[1]\width, *row()\box[1]\height, *row()\box[1]\state, 2);, \color)
                   EndIf
                 EndIf
                 
                 ; Draw button (expanded&collapsed)
                 If *this\mode\buttons And *row()\childrens And 
                    Not (*row()\sublevel And *this\mode\check = 4)
+                  
+                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
                   
                   Arrow(*row()\box[0]\x + (*row()\box[0]\width - 6)/2,
                         *row()\box[0]\y + (*row()\box[0]\height - 6)/2, 
@@ -7571,10 +7722,10 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If State & #__tree_inbetween = #__tree_inbetween
-          *this\row\_s()\box[1]\state = 2 
+          *this\row\_s()\box[1]\state = #PB_Checkbox_Inbetween
           
         ElseIf State & #__tree_checked = #__tree_checked
-          *this\row\_s()\box[1]\state = 1
+          *this\row\_s()\box[1]\state = #PB_Checkbox_Checked
         EndIf
         
         If State & #__tree_collapsed
@@ -8062,13 +8213,13 @@ CompilerIf Not Defined(widget, #PB_Module)
                     If *this\mode\check = 4 And *this\row\draws()\parent
                       If *this\row\draws()\option_group  
                         If *this\row\draws()\option_group\parent And 
-                           *this\row\draws()\option_group\box[1]\state
-                          *this\row\draws()\option_group\box[1]\state = 0
+                           *this\row\draws()\option_group\box[1]\state 
+                          *this\row\draws()\option_group\box[1]\state = #PB_Checkbox_Unchecked
                         EndIf
                         
                         If *this\row\draws()\option_group\option_group <> *this\row\draws()
                           If *this\row\draws()\option_group\option_group
-                            *this\row\draws()\option_group\option_group\box[1]\state = 0
+                            *this\row\draws()\option_group\option_group\box[1]\state = #PB_Checkbox_Unchecked
                           EndIf
                           *this\row\draws()\option_group\option_group = *this\row\draws()
                         EndIf
@@ -8076,17 +8227,16 @@ CompilerIf Not Defined(widget, #PB_Module)
                     EndIf
                     
                     ; change box check
-                    If *this\mode\threestate And
-                       *this\mode\check = 1
-                      
-                      Select *this\row\draws()\box[1]\state 
-                        Case 0 : *this\row\draws()\box[1]\state = 2
-                        Case 1 : *this\row\draws()\box[1]\state = 0
-                        Case 2 : *this\row\draws()\box[1]\state = 1
-                      EndSelect
-                    Else
-                      *this\row\draws()\box[1]\state ! 1
-                    EndIf
+                    Select *this\row\draws()\box[1]\state 
+                      Case #PB_Checkbox_Unchecked 
+                        If *this\mode\threestate
+                          *this\row\draws()\box[1]\state = #PB_Checkbox_Inbetween
+                        Else
+                          *this\row\draws()\box[1]\state = #PB_Checkbox_Checked
+                        EndIf
+                      Case #PB_Checkbox_Checked : *this\row\draws()\box[1]\state = #PB_Checkbox_Unchecked
+                      Case #PB_Checkbox_Inbetween : *this\row\draws()\box[1]\state = #PB_Checkbox_Checked
+                    EndSelect
                   EndIf
                   
                   If *this\mode\check = 2
@@ -9144,63 +9294,68 @@ CompilerIf Not Defined(widget, #PB_Module)
           Next 
         EndIf
         
+        Protected _box_x_,_box_y_
         If #PB_GadgetType_CheckBox = *this\type
-          ; draw checkbox background
-          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          RoundBox(*this\button\x, *this\button\y,
-                   *this\button\width, *this\button\height,
-                   *this\button\round, *this\button\round,
-                   *this\button\color\back&$FFFFFF|*this\button\color\alpha<<24)
-          
-          ; draw checkbox state
-          If *this\button\state & #PB_Checkbox_Inbetween = #PB_Checkbox_Inbetween
-            ;         RoundBox( *this\button\x + 2, *this\button\y + 2,
-            ;                   *this\button\width - 4, *this\button\height - 4, 
-            ;                   *this\button\round - 2, *this\button\round - 2, 
-            ;                   *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
-            RoundBox( *this\button\x + 4, *this\button\y + 4,
-                      *this\button\width - 8, *this\button\height - 8, 
-                      0, 0, 
-                      *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
-            
-          ElseIf *this\button\state & #PB_Checkbox_Checked = #PB_Checkbox_Checked
-            Protected i.i
-            For i = 0 To 2
-              LineXY((*this\button\x + 3), (i + *this\button\y + 8),
-                     (*this\button\x + 7), (i + *this\button\y + 9), 
-                     *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24) 
-              
-              LineXY((*this\button\x + 10 + i), (*this\button\y + 3),
-                     (*this\button\x + 6 + i), (*this\button\y + 10),
-                     *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
-            Next
-          EndIf 
-          
-          ; draw checkbox frame
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox(*this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\round, *this\button\round, 
-                   *this\button\color\frame[Bool(*this\button\state Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\button\color\alpha<<24)
-        EndIf
+; ;           ; draw checkbox background
+; ;           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+; ;           RoundBox(*this\button\x, *this\button\y,
+; ;                    *this\button\width, *this\button\height,
+; ;                    *this\button\round, *this\button\round,
+; ;                    *this\button\color\back&$FFFFFF|*this\button\color\alpha<<24)
+; ;           
+; ;           ; draw checkbox state
+; ;           If *this\button\state & #PB_Checkbox_Inbetween = #PB_Checkbox_Inbetween
+; ;             ;         RoundBox( *this\button\x + 2, *this\button\y + 2,
+; ;             ;                   *this\button\width - 4, *this\button\height - 4, 
+; ;             ;                   *this\button\round - 2, *this\button\round - 2, 
+; ;             ;                   *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
+; ;             RoundBox( *this\button\x + 4, *this\button\y + 4,
+; ;                       *this\button\width - 8, *this\button\height - 8, 
+; ;                       0, 0, 
+; ;                       *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
+; ;             
+; ;           ElseIf *this\button\state & #PB_Checkbox_Checked = #PB_Checkbox_Checked
+; ;             Protected i.i
+; ;             For i = 0 To 2
+; ;               LineXY((*this\button\x + 3), (i + *this\button\y + 8),
+; ;                      (*this\button\x + 7), (i + *this\button\y + 9), 
+; ;                      *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24) 
+; ;               
+; ;               LineXY((*this\button\x + 10 + i), (*this\button\y + 3),
+; ;                      (*this\button\x + 6 + i), (*this\button\y + 10),
+; ;                      *this\button\color\frame[2]&$FFFFFF|*this\button\color\alpha<<24)
+; ;             Next
+; ;           EndIf 
+; ;           
+; ;           ; draw checkbox frame
+; ;           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+; ;           RoundBox(*this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\round, *this\button\round, 
+; ;                    *this\button\color\frame[Bool(*this\button\state Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\button\color\alpha<<24)
+          _tree_box_(3, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round);, \color)
+                  EndIf
         
         If #PB_GadgetType_Option = *this\type
-          ; draw circle background
-          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          RoundBox(*this\button\x, *this\button\y,
-                   *this\button\width, *this\button\width,
-                   *this\button\round, *this\button\round, 
-                   *this\button\color\back&$FFFFFF|*this\button\color\alpha<<24)
-          
-          ; draw circle state
-          If *this\button\state
-            Circle(*this\button\x + *this\button\round, 
-                   *this\button\y + *this\button\round, 2, 
-                   *this\button\color\back[2]&$FFFFFFFF|*this\button\color\alpha<<24)
-          EndIf
-          
-          ; draw circle frame
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          Circle(*this\button\x + *this\button\round, *this\button\y + *this\button\round, *this\button\round, 
-                 *this\button\color\frame[Bool(*this\button\state Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\button\color\alpha<<24)
+            _tree_box_(1, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round);, \color)
+           
+                
+; ;           ; draw circle background
+; ;           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+; ;           RoundBox(*this\button\x, *this\button\y,
+; ;                    *this\button\width, *this\button\width,
+; ;                    *this\button\round, *this\button\round, 
+; ;                    *this\button\color\back&$FFFFFF|*this\button\color\alpha<<24)
+; ;           
+; ;           ; draw circle state
+; ;           If *this\button\state
+; ;             Circle(*this\button\x + *this\button\round, 
+; ;                    *this\button\y + *this\button\round, 2, 
+; ;                    *this\button\color\back[2]&$FFFFFFFF|*this\button\color\alpha<<24)
+; ;           EndIf
+; ;           
+; ;           ; draw circle frame
+; ;           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+; ;           Circle(*this\button\x + *this\button\round, *this\button\y + *this\button\round, *this\button\round, 
+; ;                  *this\button\color\frame[Bool(*this\button\state Or *this\_state & #__s_selected)*2]&$FFFFFF|*this\button\color\alpha<<24)
         EndIf 
         
         ;;  ClipOutput(*this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip])
@@ -9470,7 +9625,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 PushListPosition(*this\row\_s())
                 ForEach *this\row\_s()
                   If *this\row\_s()\parent
-                    *this\row\_s()\box[1]\state = 0
+                    *this\row\_s()\box[1]\state = #PB_Checkbox_Unchecked
                     *this\row\_s()\option_group = Bool(state) * GetItem(*this\row\_s(), 0) 
                   EndIf
                 Next
@@ -11623,14 +11778,16 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           If *this\row\_s()\box[1]\state
-            If *this\mode\threestate And *this\row\_s()\box[1]\state = 2
+            If *this\mode\threestate And 
+               *this\row\_s()\box[1]\state = #PB_Checkbox_Inbetween
               Result | #__tree_Inbetween
             Else
               Result | #__tree_checked
             EndIf
           EndIf
           
-          If *this\row\_s()\childrens And *this\row\_s()\box[0]\state = 0
+          If *this\row\_s()\childrens And
+             *this\row\_s()\box[0]\state = #PB_Checkbox_Unchecked
             Result | #__tree_Expanded
           Else
             Result | #__tree_collapsed
@@ -12988,9 +13145,9 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\button\color = _get_colors_()
       *this\button\color\back = $ffffffff
       
+      *this\button\round = 7
       *this\button\width = 15
       *this\button\height = *this\button\width
-      *this\button\round = *this\button\width/2
       *this\text\padding\x = *this\button\width + 8
       
       *this\text\multiline =- CountString(Text, #LF$)
@@ -15038,5 +15195,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --v---------------0nr8--------------------------------------------------f-------------------------------Nf6---------------------------------9-------------------------------------------------------zr----------------------------------------------------------------------------------------+e44-------------fA------++0------------------
+; Folding = --v---------------0nr8--------------------------------------------------f-------------------------------Nf6---------------------------------5-------------------------------------------------------P-----------------------------------------------------------------------------------------+e---------------fA------++0------------------
 ; EnableXP
