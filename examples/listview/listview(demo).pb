@@ -37,33 +37,33 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  Select *event\type
+  Select this()\event
 ;     Case #PB_EventType_Up
-;       Debug  ""+GetIndex(*event\widget)+" - widget Up "+GetState(*event\widget)
+;       Debug  ""+GetIndex(this()\widget)+" - widget Up "+GetState(this()\widget)
 ;       
 ;     Case #PB_EventType_Down
-;       Debug  ""+GetIndex(*event\widget)+" - widget Down "+GetState(*event\widget)
+;       Debug  ""+GetIndex(this()\widget)+" - widget Down "+GetState(this()\widget)
 ;       
 ;     Case #PB_EventType_ScrollChange
-;       Debug  ""+GetIndex(*event\widget)+" - widget ScrollChange "+GetState(*event\widget) +" "+ *event\item
+;       Debug  ""+GetIndex(this()\widget)+" - widget ScrollChange "+GetState(this()\widget) +" "+ this()\item
 ;       
 ;     Case #PB_EventType_StatusChange
-;       Debug  ""+GetIndex(*event\widget)+" - widget StatusChange "+GetState(*event\widget) +" "+ *event\item
+;       Debug  ""+GetIndex(this()\widget)+" - widget StatusChange "+GetState(this()\widget) +" "+ this()\item
 ;       
     Case #PB_EventType_DragStart
-      Debug  ""+GetIndex(*event\widget)+" - widget DragStart "+GetState(*event\widget) +" "+ *event\item
+      Debug  ""+GetIndex(this()\widget)+" - widget DragStart "+GetState(this()\widget) +" "+ this()\item
       
     Case #PB_EventType_Change
-      Debug  ""+GetIndex(*event\widget)+" - widget Change "+GetState(*event\widget) +" "+ *event\item
+      Debug  ""+GetIndex(this()\widget)+" - widget Change "+GetState(this()\widget) +" "+ this()\item
       
     Case #PB_EventType_LeftClick
-      Debug  ""+GetIndex(*event\widget)+" - widget LeftClick "+GetState(*event\widget) +" "+ *event\item
+      Debug  ""+GetIndex(this()\widget)+" - widget LeftClick "+GetState(this()\widget) +" "+ this()\item
       
     Case #PB_EventType_LeftDoubleClick
-      Debug  ""+GetIndex(*event\widget)+" - widget LeftDoubleClick "+GetState(*event\widget) +" "+ *event\item
+      Debug  ""+GetIndex(this()\widget)+" - widget LeftDoubleClick "+GetState(this()\widget) +" "+ this()\item
       
     Case #PB_EventType_RightClick
-      Debug  ""+GetIndex(*event\widget)+" - widget RightClick "+GetState(*event\widget) +" "+ *event\item
+      Debug  ""+GetIndex(this()\widget)+" - widget RightClick "+GetState(this()\widget) +" "+ this()\item
       
   EndSelect
 EndProcedure
@@ -79,7 +79,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   
   ListViewGadget(1, 10+270, 30, 250, 120, #PB_ListView_ClickSelect)
   For a = 0 To 12
-    AddGadgetItem (1, -1, "Item " + Str(a) + " of the Listview") ; define listview content
+    AddGadgetItem (1, -1, "Item " + Str(a) + " of the Listview long long long long long") ; define listview content
   Next
   SetGadgetState(1, 8) ; set (beginning with 0) the tenth item as the active one
   SetGadgetState(1, 7) ; set (beginning with 0) the tenth item as the active one
@@ -115,7 +115,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   
   ListView(10+270, 190, 250, 120, #__listview_clickselect)
   For a = 0 To 12
-    AddItem (GetWidget(1), -1, "Item " + Str(a) + " of the Listview") ; define listview content
+    AddItem (GetWidget(1), -1, "Item " + Str(a) + " of the Listview long long long long long") ; define listview content
   Next
   SetState(GetWidget(1), 5) 
   SetState(GetWidget(1), 7) 
@@ -129,9 +129,12 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Wi
   SetState(GetWidget(2), 7) 
   SetState(GetWidget(2), 9) 
   
-  Text(10,170, 250,20, "flag = no")
-  Text(10+270,170, 250,20, "flag = ClickSelect")
-  Text(10+270+270,170, 250,20, "flag = MultiSelect")
+;   Text(10,170, 250,20, "flag = no")
+;   Text(10+270,170, 250,20, "flag = ClickSelect")
+;   Text(10+270+270,170, 250,20, "flag = MultiSelect")
+;   TextGadget(#PB_Any, 10,170, 250,20, "flag = no")
+;   TextGadget(#PB_Any, 10+270,170, 250,20, "flag = ClickSelect")
+;   TextGadget(#PB_Any, 10+270+270,170, 250,20, "flag = MultiSelect")
   
   For i = 0 To 2
     Bind(GetWidget(i), @events_widgets())

@@ -195,8 +195,9 @@ EndProcedure
 
 
 Procedure AliginsEvent()
-  Protected Ev = *event\widget
-  Select *event\type
+  Protected Ev = this()\widget
+  
+  Select this()\event
     Case #PB_EventType_LeftClick
       Static L,LT,T,RT,R,RB,B,LB,C,Result
       

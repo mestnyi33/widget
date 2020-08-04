@@ -1,5 +1,5 @@
 ﻿XIncludeFile "../widgets.pbi"
- ; XIncludeFile "../examples/empty5.pb"
+; XIncludeFile "../examples/empty5.pb"
 
 Uselib(widget)
 
@@ -236,19 +236,22 @@ Procedure Points(Steps = 5, BoxColor = 0, PlotColor = 0)
     ExamineDesktops()
     Protected width = DesktopWidth(0)   
     Protected height = DesktopHeight(0)
-    ID = CreateImage(#PB_Any, width, height)
+    ID = CreateImage(#PB_Any, width, height, 32, #PB_Image_Transparent)
     
-    If PlotColor = 0 : PlotColor = RGB(1,1,1) : EndIf
-    If BoxColor = 0 : BoxColor = RGB(236,236,236) : EndIf
+    If PlotColor = 0 : PlotColor = RGBA(1,1,1, 255) : EndIf
+    If BoxColor = 0 : BoxColor = RGBA(236,236,236, 255) : EndIf
     
     If StartDrawing(ImageOutput(ID))
-      Box(0, 0, width, height, BoxColor)
+      DrawingMode(#PB_2DDrawing_AllChannels)
+      ;Box(0, 0, width, height, BoxColor)
       
       For x = 0 To width - 1
         
         For y = 0 To height - 1
           
+          ;If x > 0 And y > 0
           Plot(x, y, PlotColor)
+          ;EndIf
           
           y + Steps
         Next
@@ -375,7 +378,7 @@ Procedure$ add_line(*new._s_widget, Handle$) ; Ok
   EndSelect
   
   If flag$ : Result$ +", "+ flag$ : EndIf 
-      
+  
   Result$+")" 
   
   ProcedureReturn Result$
@@ -411,75 +414,110 @@ Procedure add_code(*new._s_widget, Class.s, Position.i, SubLevel.i)
 EndProcedure
 
 ;-
-Procedure.i draw_select(*this._s_widget)
-  Protected mouse_x, mouse_y, DeltaX, DeltaY
-  
-  If Transform()\grab
-    mouse_x = Mouse()\x
-    mouse_y = Mouse()\y
-    
-    Transform()\id\x = Mouse()\delta\x + *this\x
-    Transform()\id\Y = Mouse()\delta\y + *this\y
-    
-    If Transform()\id\x > mouse_x
-      Transform()\id\Width = Transform()\id\X - mouse_x
-      Transform()\id\x = mouse_x
-    Else
-      Transform()\id\Width = mouse_x - Transform()\id\X
-    EndIf
-    
-    If Transform()\id\Y > mouse_y
-      Transform()\id\Height = Transform()\id\Y - mouse_y
-      Transform()\id\Y = mouse_y
-    Else
-      Transform()\id\Height = mouse_y - Transform()\id\Y
-    EndIf
-    
-    If Transform()\grab And 
-       StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
-      DrawImage(ImageID(Transform()\grab), 0,0)
-      
-      ; draw selector
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      Box(Transform()\id\x, Transform()\id\y, 
-          Transform()\id\width, Transform()\id\height , $ff000000);Transform()\color[Transform()\state]\id) 
-      
-      StopDrawing()
-      ProcedureReturn *this
-    EndIf
-  EndIf
-EndProcedure
-
 Procedure.i start_select(*this._s_widget)
   If Not Transform()
     InitTransform()
   EndIf
   
-  ;;SetCursor(*this, #PB_Cursor_Cross)
+  ;SetCursor(*this, #PB_Cursor_Cross)
   Redraw(*this\root)
   
-  If StartDrawing( CanvasOutput(*this\root\canvas\gadget))
+  If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
     Transform()\grab = GrabDrawingImage(#PB_Any, 0,0, *this\root\width, *this\root\height)
     StopDrawing()
-  EndIf
-  
-  Transform()\id\x = Mouse()\delta\x + *this\x
-  Transform()\id\y = Mouse()\delta\y + *this\y
-  
-  If Not Transform()\id\width
-    Transform()\id\width = 50
-  EndIf
-  
-  If Not Transform()\id\height
-    Transform()\id\height = 50
   EndIf
   
   ProcedureReturn *this
 EndProcedure
 
+Procedure.i draw_select(*this._s_widget)
+  Static draw_x, draw_y
+  Protected mouse_x, mouse_y, change
+  
+  If Mouse()\grid > 0
+    mouse_x = (Mouse()\x / Mouse()\grid) * Mouse()\grid
+    mouse_y = (Mouse()\y / Mouse()\grid) * Mouse()\grid
+  Else
+    mouse_x = Mouse()\x
+    mouse_y = Mouse()\y
+  EndIf
+  
+  If draw_x <> mouse_x
+    draw_x = mouse_x
+    change = 1
+  EndIf
+  
+  If draw_y <> mouse_y
+    draw_y = mouse_y
+    change = 1
+  EndIf
+  
+  If change
+    Transform()\id\x = Mouse()\delta\x + *this\x
+    Transform()\id\y = Mouse()\delta\y + *this\y
+    
+    If Transform()\id\x > mouse_x
+      Transform()\id\width = Transform()\id\x - mouse_x
+      Transform()\id\x = mouse_x
+    Else
+      Transform()\id\width = mouse_x - Transform()\id\x
+    EndIf
+    
+    If Transform()\id\y > mouse_y
+      Transform()\id\height = Transform()\id\y - mouse_y
+      Transform()\id\y = mouse_y
+    Else
+      Transform()\id\height = mouse_y - Transform()\id\y
+    EndIf
+    
+    If *this\fs
+      Transform()\id\x + *this\fs
+      Transform()\id\y + *this\fs
+    EndIf
+    
+    Transform()\id\width + 1
+    Transform()\id\height + 1
+    
+    If *this\root And 
+       *this\root\canvas\repaint = 0
+      *this\root\canvas\repaint = 1
+      PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__Event_repaint);, *this)
+    EndIf
+    
+    
+    ; Redraw(*this\root)
+    
+    ;     If StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
+    ;       If Transform()\grab
+    ;         DrawImage(ImageID(Transform()\grab), 0,0)
+    ;       EndIf
+    ;       
+    ;       ; draw selector
+    ;       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+    ;       Box(Transform()\id\x, Transform()\id\y, 
+    ;           Transform()\id\width, Transform()\id\height , $ff000000);Transform()\color[Transform()\state]\id) 
+    ;       
+    ;       StopDrawing()
+    ;     EndIf
+  EndIf
+  ProcedureReturn *this
+  
+  
+EndProcedure
+
 Procedure.i stop_select(*this._s_widget)
   If Transform()\grab
     SetCursor(*this, #PB_Cursor_Default)
+    
+    If Not Transform()\id\width
+      Transform()\id\width = 50
+      Transform()\id\x = Mouse()\delta\x + *this\x
+    EndIf
+    
+    If Not Transform()\id\height
+      Transform()\id\height = 50
+      Transform()\id\y = Mouse()\delta\y + *this\y
+    EndIf
     
     Transform()\id\x - *this\x[#__c_inner]
     Transform()\id\y - *this\y[#__c_inner]
@@ -575,6 +613,13 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
       a_add(*parent)
     EndIf
     
+    If Mouse()\grid
+      x = (x/Mouse()\grid) * Mouse()\grid
+      y = (y/Mouse()\grid) * Mouse()\grid
+      width = (width/Mouse()\grid) * Mouse()\grid + 1
+      height = (height/Mouse()\grid) * Mouse()\grid + 1
+    EndIf
+    
     class.s = LCase(Trim(class))
     OpenList(*parent, GetState(*parent)) 
     
@@ -599,7 +644,7 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
     
     If *new
       If *new\container =- 1
-        SetImage(*new, Points())
+        SetImage(*new, Points(Mouse()\grid-1))
       EndIf
       
       Class.s = GetClass(*new)+"_"+GetCount(*new)
@@ -613,41 +658,44 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
 EndProcedure
 
 Procedure events_element()
-  Protected e_type = *event\type
-  Protected *this._s_widget = *event\widget
   Static Drag
+  Protected e_type = this()\event
+  Protected *this._s_widget = this()\widget
+  
+  If *this\container
+    Select e_type 
+      Case #PB_EventType_DragStart
+        If GetState(id_elements_tree) > 0
+          SetCursor(*this, #PB_Cursor_Cross)
+        EndIf
+        
+      Case #PB_EventType_MouseEnter
+        If GetState(id_elements_tree) > 0
+          SetCursor(*this, #PB_Cursor_Cross)
+        EndIf
+        
+      Case #PB_EventType_MouseLeave
+        If GetState(id_elements_tree) > 0 
+          If Not Pushed()
+            SetCursor(*this, #PB_Cursor_Default)
+          EndIf
+        EndIf
+        
+      Case #PB_EventType_LeftButtonDown
+        If GetState(id_elements_tree) > 0
+          ;SetCursor(*this, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
+          Drag = start_select(*this)
+        EndIf
+        
+    EndSelect
+  EndIf
   
   Select e_type 
-    Case #PB_EventType_DragStart
-      If GetState(id_elements_tree) > 0 And
-         *this\container 
-        SetCursor(*this, #PB_Cursor_Cross)
-      EndIf
-      
-    Case #PB_EventType_MouseEnter
-      If GetState(id_elements_tree) > 0 And
-         *this\container 
-        SetCursor(*this, #PB_Cursor_Cross)
-      EndIf
-      
-    Case #PB_EventType_MouseLeave
-      If GetState(id_elements_tree) > 0 And
-         Not Pushed() And
-         *this\container
-        SetCursor(*this, #PB_Cursor_Default)
-      EndIf
-      
     Case #PB_EventType_MouseMove
       If Drag
         If Not draw_select(Drag)
           Drag = 0
         EndIf
-      EndIf
-      
-    Case #PB_EventType_LeftButtonDown
-      If GetState(id_elements_tree) > 0 And *this\container 
-        ;SetCursor(*this, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
-        Drag = start_select(*this)
       EndIf
       
     Case #PB_EventType_LeftButtonUp
@@ -682,9 +730,9 @@ EndProcedure
 ;-
 Procedure events_ide()
   Protected *this._s_widget
-  Protected e_type = *event\type
-  Protected e_item = *event\item
-  Protected e_widget = *event\widget
+  Protected e_type = this()\event
+  Protected e_item = this()\item
+  Protected e_widget = this()\widget
   
   Select e_type
     Case #PB_EventType_StatusChange
@@ -702,19 +750,19 @@ Procedure events_ide()
     Case #PB_EventType_MouseEnter
       Debug "id_elements - enter"
       ;       If GetState(id_elements_tree) > 0 
-      ;         SetCursor(*event\widget, #PB_Cursor_Default)
+      ;         SetCursor(this()\widget, #PB_Cursor_Default)
       ;       EndIf
       
     Case #PB_EventType_MouseLeave
       Debug "id_elements - leave"
       ;       If GetState(id_elements_tree) > 0 
-      ;         SetCursor(*event\widget, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
+      ;         SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
       ;       EndIf
       
     Case #PB_EventType_LeftClick
       If e_widget = id_elements_tree
         Debug "click"
-        ; SetCursor(*event\widget, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
+        ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
       EndIf
       
   EndSelect
@@ -726,7 +774,13 @@ Procedure create_ide(x=100,y=100,width=800,height=600)
   window_ide = widget::GetWindow(root)
   canvas_ide = widget::GetGadget(root)
   
-  toolbar_design = 0
+  toolbar_design = Container(0,0,0,0) 
+  
+  ButtonImage(0,0,30,30,CatchImage(#PB_Any,?group_align_left))
+  ButtonImage(32,0,30,30,CatchImage(#PB_Any,?group_align_right))
+  ButtonImage(64,0,30,30,CatchImage(#PB_Any,?group_align_top))
+  ButtonImage(96,0,30,30,CatchImage(#PB_Any,?group_align_bottom))
+  CloseList()
   
   ;   id_design_panel = Panel(0,0,0,0) ; , #__bar_vertical) : OpenList(id_design_panel)
   ;   AddItem(id_design_panel, -1, "Form")
@@ -823,8 +877,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;   ;OpenList(id_design_form)
   Define *window = create_element(id_design_form, "window", 10, 10, 350, 200)
-  Define *container = create_element(*window, "container", 80, 10, 220, 140)
-  create_element(*container, "button", 10, 20, 100, 30)
+  Define *container = create_element(*window, "container", 130, 20, 220, 140)
+  create_element(*container, "button", 10, 20, 30, 30)
   create_element(*window, "button", 10, 20, 100, 30)
   
   Define item = 1
@@ -832,11 +886,11 @@ CompilerIf #PB_Compiler_IsMainFile
   If IsGadget(listview_debug)
     SetGadgetState(listview_debug, item)
   EndIf
-  Define *container2 = create_element(*container, "container", 80, 10, 220, 140)
-  create_element(*container2, "button", 10, 20, 100, 30)
+  Define *container2 = create_element(*container, "container", 60, 10, 220, 140)
+  create_element(*container2, "button", 10, 20, 30, 30)
   
   SetState(id_inspector_tree, 0)
-  create_element(*window, "button", 10, 20, 100, 30)
+  create_element(*window, "button", 10, 130, 100, 30)
   
   ;   Define *window = create_element(id_design_form, "window", 10, 10)
   ;   Define *container = create_element(*window, "container", 80, 10)
@@ -854,6 +908,21 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
+
+
+DataSection   ; Include Images
+  IncludePath "include/Images"
+  group:                  : IncludeBinary "group.png"
+  group_un:               : IncludeBinary "group_un.png"
+  group_align_left:       : IncludeBinary "group_align_left.png"
+  group_align_right:      : IncludeBinary "group_align_right.png"
+  group_align_top:        : IncludeBinary "group_align_top.png"
+  group_align_bottom:     : IncludeBinary "group_align_bottom.png"
+  
+  Make_Same_Width:  : IncludeBinary "Make_Same_Width.png"
+  Make_Same_Height: : IncludeBinary "Make_Same_Height.png"
+  ThisPC:           : IncludeBinary "ThisPC.png"
+EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----v+---------
+; Folding = ----------t8-----
 ; EnableXP

@@ -1,5 +1,5 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
     EditorGadget(0, 10, 10, 250, 680)
     
-    Open(0, 270, 10, 250, 680,"", #__flag_borderless)
+    Open(0, 270, 10, 250, 680)
     ;Define *w = Editor(0, 0, 0, 0, #__flag_autosize) 
     Define *w = Editor(0, 0, 250, 680) 
     ;; Debug Procedures::IsHideGadget(1)
@@ -54,6 +54,6 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

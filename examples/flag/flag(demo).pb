@@ -622,9 +622,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag
     
-    Select *event\type
+    Select this()\event
       Case #PB_EventType_Change
-        Select *event\widget
+        Select this()\widget
           Case w_type 
             flag = Flag(*this)
             Add(FlagFromType(GetState(w_type)))
@@ -636,14 +636,14 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
       Case #PB_EventType_LeftClick
-        Select *event\widget
+        Select this()\widget
           Case w_flag
             SetFlag(w_flag, *this)
             
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(*event\widget))
+          Flag(*this, flag, GetState(this()\widget))
           Post(#__event_repaint, #PB_All)
         EndIf
     EndSelect

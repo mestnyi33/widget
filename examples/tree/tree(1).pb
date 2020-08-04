@@ -31,16 +31,16 @@ Define vert=100, horiz=100, width=400, height=400
   Procedure events_widgets()
     Static text.s
     
-    If *event\widget\mode\transform
+    If this()\widget\mode\transform
         
-          Select *event\type
+          Select this()\event
             Case #PB_EventType_LeftButtonDown
               
               
             Case #PB_EventType_StatusChange
-              Debug "status - id " + GetData(*event\widget)
+              Debug "status - id " + GetData(this()\widget)
               
-              SetItemState(*tlist, GetData(*event\widget), #PB_Tree_Selected)
+              SetItemState(*tlist, GetData(this()\widget), #PB_Tree_Selected)
               Case #PB_EventType_Focus
               Debug "focus"
               
@@ -53,9 +53,9 @@ Define vert=100, horiz=100, width=400, height=400
           EndSelect
         
     Else
-      Select *event\widget
+      Select this()\widget
         Case *tList
-          Select *event\type
+          Select this()\event
             Case #PB_EventType_Change
               text.s = "button"
           EndSelect

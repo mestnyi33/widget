@@ -12,19 +12,19 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3
+  Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   Global Button_4, Button_5, Button_6, Button_7, Button_8, Button_9
   Define vert=100, horiz=100, width=450, height=400
   
   Procedure events_widgets()
     Protected flag
     
-    Select *event\type
+    Select this()\event
       Case #PB_EventType_Change
         Debug  "change"
         
       Case #PB_EventType_LeftClick
-        Select *event\widget
+        Select this()\widget
           Case Button_type 
             
           Case Button_0 : flag = #__tree_nolines
@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(*event\widget))
+          Flag(*this, flag, GetState(this()\widget))
         EndIf
         Post(#__event_repaint, #PB_All)
     EndSelect
@@ -118,6 +118,17 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(180+30+4, height+20, 30, 24,"2")
     Button(180+60+8, height+20, 30, 24,"3")
     Button(285, height+20, 60, 24,"clear")
+    
+    Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+    Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
+    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+    Splitter_3 = widget::Splitter(10, 10, width, height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+    
+    Define pos = 80
+    SetState(Splitter_0, pos)
+    SetState(Splitter_1, pos)
+    SetState(Splitter_3, width-pos-#__splitter_buttonsize)
+    SetState(Splitter_2, height-pos-#__splitter_buttonsize)
     
     Bind(#PB_All, @events_widgets())
     

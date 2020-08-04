@@ -13,16 +13,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag
     
-    Select *event\type
+    Select this()\event
       Case #PB_EventType_LeftClick
-        Select *event\widget
+        Select this()\widget
           Case *this
             If Flag(*this, #__button_toggle)
-              SetState(Button_4, GetState(*event\widget))
+              SetState(Button_4, GetState(this()\widget))
             EndIf
             
           Case Button_type 
-            If GetState(*event\widget)
+            If GetState(this()\widget)
               Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(*event\widget))
+          Flag(*this, flag, GetState(this()\widget))
         EndIf
         Post(#__event_repaint, #PB_All)
     EndSelect
@@ -55,8 +55,9 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    *this = widget::Button(100, 100, 250, 200, text, #__button_multiline) 
-    
+   ; *this = widget::Button(100, 100, 250, 200, text, #__button_multiline) 
+   *this = widget::Editor(100, 100, 250, 200, #__text_wordwrap) : SetText(*this, text)
+   
     Define y = 10
     ; flag
     Button_type = widget::Button(width+45,   y, 100, 26, "gadget", #__button_toggle) 

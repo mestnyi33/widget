@@ -7,13 +7,14 @@
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
   EnableExplicit
-  
   Uselib(widget)
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-  ;  text(_x_,_y_,_width_,_height_,_text_,_flag_)
-   button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
-  ;   Editor(_x_,_y_,_width_,_height_, _flag_|#__text_multiline) : settext(widget(), _text_)
+  ; Text(_x_,_y_,_width_,_height_,_text_,_flag_)
+   Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
+  ; Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
+  ; CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
+  ; Editor(_x_,_y_,_width_,_height_, _flag_|#__text_multiline) : settext(widget(), _text_)
   ; String(_x_,_y_,_width_,_height_,_text_,_flag_)
   EndMacro
   
@@ -38,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Gadget(7, 8+300,  (height+5)*1+10, 140, height, text_h,       #__text_right|#__text_center);
     Gadget(8, 8+300,  (height+5)*2+10, 140, height, text_h,       #__text_right|#__text_bottom);
     
-    
+    ; invert
     Gadget(10, 8+450,  10, 140, height, text_h,                  #__text_invert|#__text_left|#__text_top);
     Gadget(11, 8+450,  (height+5)*1+10, 140, height, text_h,     #__text_invert|#__text_left|#__text_center);
     Gadget(12, 8+450,  (height+5)*2+10, 140, height, text_h,     #__text_invert|#__text_left|#__text_bottom);
@@ -52,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Gadget(18, 8+300+450,  (height+5)*2+10, 140, height, text_h, #__text_invert|#__text_right|#__text_bottom);
     
     
-    
+    ; vertical
     Gadget(20, 8,  (height+5)*3+10, 140, height, text_h,         #__flag_vertical|#__text_left|#__text_top);
     Gadget(21, 8,  (height+5)*4+10, 140, height, text_h,         #__flag_vertical|#__text_left|#__text_center);
     Gadget(22, 8,  (height+5)*5+10, 140, height, text_h,         #__flag_vertical|#__text_left|#__text_bottom);
@@ -65,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Gadget(27, 8+300,  (height+5)*4+10, 140, height, text_h,     #__flag_vertical|#__text_right|#__text_center);
     Gadget(28, 8+300,  (height+5)*5+10, 140, height, text_h,     #__flag_vertical|#__text_right|#__text_bottom);
     
-    
+    ; invert vertical
     Gadget(30, 8+450,  (height+5)*3+10, 140, height, text_h,     #__flag_vertical|#__text_invert|#__text_left|#__text_top);
     Gadget(31, 8+450,  (height+5)*4+10, 140, height, text_h,     #__flag_vertical|#__text_invert|#__text_left|#__text_center);
     Gadget(32, 8+450,  (height+5)*5+10, 140, height, text_h,     #__flag_vertical|#__text_invert|#__text_left|#__text_bottom);

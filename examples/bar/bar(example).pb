@@ -31,22 +31,22 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work." ;+ m.s +
  
   Procedure _Events()
-    Select *event\type
+    Select this()\event
       Case #PB_EventType_MouseEnter
-        Debug "post enter - "+*event\widget\index
-        If GetButtons(*event\widget)
-          *event\widget\color\back = $00FF00
+        Debug "post enter - "+this()\widget\index
+        If GetButtons(this()\widget)
+          this()\widget\color\back = $00FF00
         Else
-          *event\widget\color\back = $0000FF
+          this()\widget\color\back = $0000FF
         EndIf
         
       Case #PB_EventType_MouseLeave
-        Debug "post leave - "+*event\widget\index
-        *event\widget\color\back = $FF0000
+        Debug "post leave - "+this()\widget\index
+        this()\widget\color\back = $FF0000
         
       Case #PB_EventType_Repaint
         DrawingMode(#PB_2DDrawing_Transparent)
-        DrawText(2,0, Str(*event\widget\index), 0)
+        DrawText(2,0, Str(this()\widget\index), 0)
         
     EndSelect
   EndProcedure
@@ -79,22 +79,22 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  If Open(#PB_Any, 0, 0, 475, 525, "Root", #__flag_BorderLess|#__flag_AnchorsGadget|#PB_Window_ScreenCentered);|#__flag_AutoSize)
+  If Open(OpenWindow(#PB_Any, 0, 0, 475, 525, "Root", #PB_Window_ScreenCentered));|#__flag_AutoSize)
     Define i, *w,*w1,*w2
     
     Image(5, 5, 150, 100, 0, #__flag_Checkboxes)
     
-    ListIcon(5, 110, 150, 100, "column_0", 80, #__flag_Checkboxes)
-    AddColumn(widget(), -1, "column_1", 100)
-    For i=0 To 10;20
-      If i=3 Or i=8 Or i=14
-        AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
-      Else
-        AddItem(Widget(), i, "0_item_"+ Str(i)+Chr(10)+"1_item_"+ Str(i))
-      EndIf
-    Next
+;     ListIcon(5, 110, 150, 100, "column_0", 80, #__flag_Checkboxes)
+;     AddColumn(widget(), -1, "column_1", 100)
+;     For i=0 To 10;20
+;       If i=3 Or i=8 Or i=14
+;         AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
+;       Else
+;         AddItem(Widget(), i, "0_item_"+ Str(i)+Chr(10)+"1_item_"+ Str(i))
+;       EndIf
+;     Next
     
-    Property(5, 215, 150, 150, 80, #__flag_Checkboxes)
+    Tree_Properties(5, 215, 150, 150, #__flag_Checkboxes)
     For i=0 To 10;20
       If i=3 Or i=8 Or i=14
         AddItem(Widget(), i, "long_long_long_item_"+ Str(i),-1, 1)
@@ -114,6 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Editor(320, 5, 150, 100)
     SetText(Widget(), Text.s) 
     ;redraw(*g)
+    Define a
     For a = 0 To 2
       AddItem(Widget(), a, "Line "+Str(a))
     Next
@@ -167,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(Widget(), 5)
     Spin(5, 365+40, 150, 30, 0, 20, #__bar_Vertical)
     SetState(Widget(), 5)
-    Spin(5, 365+75, 150, 30, 0, 21, #__bar_Reverse)
+    Spin(5, 365+75, 150, 30, 0, 21);, #__bar_Reverse)
     SetState(Widget(), 5)
     
     Scroll(160, 370, 150, 20, 0, 50, 30)
@@ -226,6 +227,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event= #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

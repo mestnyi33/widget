@@ -98,32 +98,31 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_text Extends _s_edit
       ;     ;     Char.c
       fontID.i[2]
-      ;count.l
       
-      pass.b
-      lower.b
-      upper.b
-      numeric.b
+      StructureUnion
+        pass.b
+        lower.b
+        upper.b
+        numeric.b
+      EndStructureUnion
+      
       editable.b
       multiline.b
       
       invert.b
       rotate.f
       
-      __padding._s_point
-      _padding.b ;;
-      padding._s_padding
-      
       edit._s_edit[4]
       caret._s_caret
       align._s_align
       syntax._s_syntax
+      padding._s_point
     EndStructure
     
     ;- - _s_image
     Structure _s_image
-      y.l[3]
-      x.l[3]
+      y.l
+      x.l
       height.l
       width.l
       
@@ -132,16 +131,19 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; index[1] - Image()
       ; index[2] - ImageID()
       
-      _padding.b
-      padding._s_padding
-      
+      padding._s_point
       align._s_align
     EndStructure
     
     ;- - _s_button
-    Structure _s_button Extends _s_coordinate
+    Structure _s_button 
+      y.l
+      x.l
+      height.l
+      width.l
+      
       len.l ; to >> size.l
-      state.l
+      state.l ; normal; entered; selected; disabled
       
       ; [3]fixed = thumb delta pos 
       ; [1..2]fixed = splitter\bar\fixed
@@ -153,6 +155,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       arrow._s_arrow
       color._s_color
+      
+      
+      
+;       padding._s_point
+;       align._s_align
     EndStructure
     
     ;- - _s_tabs
@@ -482,11 +489,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       height.l[6];constants::#__c]
       width.l[6] ;constants::#__c]
       
-      caption._s_caption
-      scroll._s_scroll 
-      color._s_color[4]
-      row._s_row
-      bar._s_bar
       
       *errors
       notify.l ; оповестить об изменении
@@ -508,9 +510,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       mode._s_mode
       count._s_count
-      button._s_button ; checkbox; optionbox
       combo_box._s_button
+      caption._s_caption
+      scroll._s_scroll 
+      color._s_color[4]
+      row._s_row
+      bar._s_bar
       
+      button._s_button ; checkbox; optionbox
       img._s_image
       text._s_text 
       
@@ -519,12 +526,20 @@ CompilerIf Not Defined(structures, #PB_Module)
       *selector._s_transform[#__count_anchors_]
       
       Map *bind._s_bind()
+      *mouse_drag
+      
+      *time_click
+      *time_down
+      
+      ; event_queue ; очередь событий
     EndStructure
     
     ;- - _s_mouse
     Structure _s_mouse Extends _s_point
       *widget._s_widget     ; at point element
-      *selected._s_widget   ; at point pushed element
+      ;*selected._s_widget   ; at point pushed element
+      
+      *grid
       drag.b[2]
       change.b
       buttons.l 
@@ -561,16 +576,16 @@ CompilerIf Not Defined(structures, #PB_Module)
       keyboard._s_keyboard  ; Keyboard()\
       *callback.pFunc
       
-      *root._s_root         ; Root()\
+      List *_root._s_root() ; 
       *active._s_widget     ; GetActiveWindow()\
       *widget._s_widget     ; EventWidget()
       
-      *type                 ; EventType()
+      *event                 ; EventType()
       *item                 ; EventItem()
       *data                 ; EventData()
       
-      List *post._s_bind()
       List *_childrens._s_widget()
+      List *post._s_bind()
       Map *_bind._s_bind()
     EndStructure
     
@@ -583,5 +598,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --P-fH-
+; Folding = --v+fP-
 ; EnableXP

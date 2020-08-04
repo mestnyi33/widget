@@ -86,7 +86,7 @@ If OpenWindow(0, 0, 0, 850, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_W
 ;     BindGadgetEvent(g_Canvas, @Canvas_Events())
 ;     PostEvent(#PB_Event_Gadget, 0,g_Canvas, #PB_EventType_Resize)
     
-    g_Canvas = canvas(0, 420, 0, 430, 280);GetGadget(GetRoot(canvas(0, 420, 0, 430, 280)))
+    g_Canvas = GetGadget(Open(0, 420, 0, 430, 280));GetGadget(GetRoot(canvas(0, 420, 0, 430, 280)))
         
     Button_0 = Progress(0, 0, 0, 0, 0, 100) ; No need to specify size or coordinates
     Button_1 = Progress(0, 0, 0, 0, 10,100) ; No need to specify size or coordinates
@@ -123,6 +123,6 @@ If OpenWindow(0, 0, 0, 850, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_W
   EndIf
 
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

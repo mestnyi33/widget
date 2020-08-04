@@ -1,5 +1,5 @@
-﻿; IncludePath "../../" : XIncludeFile "widgets.pbi"
-XIncludeFile "../empty5.pb"
+﻿IncludePath "../../" : XIncludeFile "widgets.pbi"
+; XIncludeFile "../empty5.pb"
 
 Uselib(widget)
   Global *g._S_widget, g_Canvas, NewList *List._S_widget()

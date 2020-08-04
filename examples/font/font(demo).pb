@@ -48,7 +48,7 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  Debug ""+Str(GetIndex(*event\widget))+ " - widget  event - " +*event\type+ "  item - " +*event\item ; GetState(*event\widget) ; 
+  Debug ""+Str(GetIndex(this()\widget))+ " - widget  event - " +this()\event+ "  item - " +this()\item ; GetState(this()\widget) ; 
 EndProcedure
 
 Procedure events_gbuttons()
@@ -73,7 +73,7 @@ Procedure events_gbuttons()
           Debug GetGadgetItemText(1, sub) + " - get item text"
           CloseGadgetList()
           
-          ; SetGadgetItemFont(1, sub, 5 + Bool(GetIndex(*event\widget) = 4))
+          ; SetGadgetItemFont(1, sub, 5 + Bool(GetIndex(this()\widget) = 4))
           SetGadgetItemState(1, sub, 1)
           ; SetState(1, 1)
           
@@ -82,9 +82,9 @@ Procedure events_gbuttons()
 EndProcedure
 
 Procedure events_wbuttons()
-  Select *event\type
+  Select this()\event
     Case #PB_EventType_LeftClick
-      Select GetIndex(*event\widget)
+      Select GetIndex(this()\widget)
         Case 2 
           If CountItems(GetWidget(1)) > 1
             RemoveItem(GetWidget(1), 1)
@@ -103,7 +103,7 @@ Procedure events_wbuttons()
           Debug GetItemText(GetWidget(1), sub) + " - get item text"
           ;CloseList()
           
-          SetItemFont(GetWidget(1), sub, 5 + Bool(GetIndex(*event\widget) = 4))
+          SetItemFont(GetWidget(1), sub, 5 + Bool(GetIndex(this()\widget) = 4))
           SetItemState(GetWidget(1), sub, 1)
           ; SetState(GetWidget(1), 1)
       EndSelect

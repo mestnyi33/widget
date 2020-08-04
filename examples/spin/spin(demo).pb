@@ -23,7 +23,7 @@ Procedure events_widgets()
   ;ClearDebugOutput()
   ; Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(*event\widget) ; 
   
-  Select *event\type
+  Select *event\event
     Case #PB_EventType_Up
       SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
       Debug  ""+GetIndex(*event\widget)+" - widget up " + GetState(*event\widget)
@@ -79,5 +79,5 @@ If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 200, "SpinGadget", #PB_Window_SystemM
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -
+; Folding = +
 ; EnableXP

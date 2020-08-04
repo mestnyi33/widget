@@ -210,10 +210,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_tree_widget()
-    ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget = *event\widget
-    Protected EventType = *event\type
-    Protected EventData = *event\data
+    ;Debug " widget - "+this()\widget+" "+this()\event
+    Protected EventGadget = this()\widget
+    Protected EventType = this()\event
+    Protected EventData = this()\data
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
@@ -446,7 +446,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  5_example
-    *g = Tree(750+135, 100, 103, 210, #PB_Tree_NoButtons|#__tree_Collapsed)                                         
+    *g = Tree(750+135, 100, 103, 210, #__Tree_NoButtons|#__tree_Collapsed)                                         
     
     AddItem(*g, 0, "Tree_0", -1 )
     AddItem(*g, 1, "Tree_1", -1, 0) 

@@ -135,10 +135,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_tree_widget()
-    ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget = *event\widget
-    Protected EventType = *event\type
-    Protected EventData = *event\data
+    ;Debug " widget - "+this()\widget+" "+this()\event
+    Protected EventGadget = this()\widget
+    Protected EventType = this()\event
+    Protected EventData = this()\data
     Protected EventItem = GetState(EventGadget)
     
     Select EventType
@@ -156,7 +156,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Define item = 1
-  Define sublevel = 5z
+  Define sublevel = 5
   
   If OpenWindow(0, 0, 0, 300, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     g = TreeGadget(#PB_Any, 10, 10, 210, 210, #PB_Tree_AlwaysShowSelection|#PB_Tree_CheckBoxes)                                         
@@ -207,5 +207,5 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 0--7-
+; Folding = 0--+-
 ; EnableXP

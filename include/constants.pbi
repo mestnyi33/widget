@@ -6,6 +6,8 @@
     
     ;- - CONSTANTs
     ;{
+    #__text_update =- 124
+    
     #debug = 0
     #debug_draw_font = #debug
     #debug_draw_font_change = #debug
@@ -15,7 +17,7 @@
     #debug_repaint = 0 ; Debug " - -  Canvas repaint - -  "
     
     #__height = 21 ; #__height = 21
-    #__bsize = 3   ; #__bsize = 3
+    #__bsize = 4   ; #__bsize = 3
     #__window_frame = #__height+#__bsize*2
     
     #__from_mouse_state = 0
@@ -24,7 +26,7 @@
     #__arrow_type = 1
     #__arrow_size = 4
     
-    #__spin_padding_text = 5
+    #__spin_padding_text = 1
     #__spin_buttonsize2 = 15
     #__spin_buttonsize = 18
     
@@ -156,15 +158,6 @@
       #__resize_maximize
     EndEnumeration
     
-    ;- _c_change
-    EnumerationBinary 
-;       #__change_x
-;       #__change_y
-      #__change_width
-      #__change_height
-     ; #__change_flag
-    EndEnumeration
-    
     ;- _c_flag
     EnumerationBinary _c_align 2
       #__flag_vertical ;= 1
@@ -175,8 +168,8 @@
       #__flag_bottom
       
       #__flag_full
-      ; #__flag_autosize
       #__flag_center
+      #__flag_autosize
       #__flag_proportional
       
       
@@ -188,33 +181,32 @@
       #__flag_wordwrap
       #__flag_multiline 
       
-      
-      ; #__flag_inline
+      #__flag_fullselection
       #__flag_nolines
       #__flag_nobuttons
       #__flag_checkboxes 
-      #__flag_threeState
-      
-      #__flag_gridLines
       #__flag_optionboxes
+      #__flag_gridlines
+      
+      
+      ; #__flag_inline
+      #__flag_threeState
       #__flag_clickselect 
+      ;#__flag_multiselect 
       
-      #__flag_fullselection
       
-      ; common
       #__flag_inverted
       #__flag_noactivate
-      #__flag_autosize
       ;#__flag_invisible
       ;#__flag_sizegadget
       ;#__flag_systemmenu
       #__flag_noscrollbars
       
       #__flag_borderless
-      ;         #__flag_double
-      ;         #__flag_flat
-      ;         #__flag_raised
-      ;         #__flag_Single
+      #__flag_flat
+;       #__flag_double
+;       #__flag_raised
+;       #__flag_single
       
       
       #__flag_anchorsgadget
@@ -381,7 +373,8 @@
     
     ;- _c_editor
     ;#__editor_inline = #__flag_InLine
-    #__editor_wordwrap = #__flag_wordwrap
+    #__editor_readonly = #__text_readonly
+    #__editor_wordwrap = #__text_wordwrap
     #__editor_nomultiline = #__flag_nolines
     #__editor_numeric = #__flag_numeric|#__text_multiline
     #__editor_fullselection = #__flag_fullselection
@@ -407,7 +400,7 @@
     #__button_default = #__flag_default
     #__button_vertical = #__text_vertical
     #__button_inverted = #__flag_inverted
-    #__button_multiline = #__text_multiline;#__text_wordwrap
+    #__button_multiline = #__text_wordwrap
     
     
     If (#__flag_limit>>1) > 2147483647 ; 8589934592
@@ -418,6 +411,8 @@
     
     ;- _c_event
     
+    #PB_Event_Create          = #PB_Event_FirstCustomValue
+    
     Enumeration #PB_EventType_FirstCustomValue
       CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
         #PB_EventType_Resize
@@ -427,60 +422,61 @@
         #PB_EventType_returnKey
       CompilerEndIf
       
-      #__Event_Free         
-      #__Event_create
-      #__Event_Drop
+      #PB_EventType_ResizeEnd
+     
+      #PB_EventType_Free         
+      #PB_EventType_Create
+      #PB_EventType_Drop
       
-      #__Event_repaint
-      #__Event_ScrollChange
+      #PB_EventType_Repaint
+      #PB_EventType_ScrollChange
       
-      #__Event_closeWindow
-      #__Event_MaximizeWindow
-      #__Event_MinimizeWindow
-      #__Event_restoreWindow
+      #PB_EventType_CloseWindow
+      #PB_EventType_MaximizeWindow
+      #PB_EventType_MinimizeWindow
+      #PB_EventType_RestoreWindow
     EndEnumeration
     
-    #PB_EventType_Free     = #__Event_Free    
-    #PB_EventType_create   = #__Event_create
-    #PB_EventType_Drop     = #__Event_Drop
+    #__event_free             = #PB_EventType_Free    
+    #__event_drop             = #PB_EventType_Drop
+    #__event_create           = #PB_EventType_Create
     
     
-    #PB_EventType_repaint      = #__Event_repaint
-    #PB_EventType_ScrollChange = #__Event_ScrollChange
+    #__event_repaint          = #PB_EventType_Repaint
+    #__event_resizeend        = #PB_EventType_ResizeEnd
+    #__event_scrollchange     = #PB_EventType_ScrollChange
     
-    #PB_EventType_closeWindow  = #__Event_closeWindow
-    #PB_EventType_MaximizeWindow = #__Event_MaximizeWindow
-    #PB_EventType_MinimizeWindow = #__Event_MinimizeWindow
-    #PB_EventType_restoreWindow  =#__Event_restoreWindow
+    #__event_closewindow      = #PB_EventType_CloseWindow
+    #__event_maximizewindow   = #PB_EventType_MaximizeWindow
+    #__event_minimizewindow   = #PB_EventType_MinimizeWindow
+    #__event_restorewindow    = #PB_EventType_RestoreWindow
     
     
-    #__Event_MouseEnter       = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
-    #__Event_MouseLeave       = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
-    #__Event_MouseMove        = #PB_EventType_MouseMove        ; The mouse cursor moved
-    #__Event_MouseWheel       = #PB_EventType_MouseWheel       ; The mouse wheel was moved
-    #__Event_leftButtonDown   = #PB_EventType_LeftButtonDown   ; The left mouse button was pressed
-    #__Event_leftButtonUp     = #PB_EventType_LeftButtonUp     ; The left mouse button was released
-    #__Event_leftClick        = #PB_EventType_LeftClick        ; A click With the left mouse button
-    #__Event_leftDoubleClick  = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
-    #__Event_rightButtonDown  = #PB_EventType_RightButtonDown  ; The right mouse button was pressed
-    #__Event_rightButtonUp    = #PB_EventType_RightButtonUp    ; The right mouse button was released
-    #__Event_rightClick       = #PB_EventType_RightClick       ; A click With the right mouse button
-    #__Event_rightDoubleClick = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
-    #__Event_MiddleButtonDown = #PB_EventType_MiddleButtonDown ; The middle mouse button was pressed
-    #__Event_MiddleButtonUp   = #PB_EventType_MiddleButtonUp   ; The middle mouse button was released
-    #__Event_Focus            = #PB_EventType_Focus            ; The gadget gained keyboard focus
-    #__Event_lostFocus        = #PB_EventType_LostFocus        ; The gadget lost keyboard focus
-    #__Event_KeyDown          = #PB_EventType_KeyDown          ; A key was pressed
-    #__Event_KeyUp            = #PB_EventType_KeyUp            ; A key was released
-    #__Event_Input            = #PB_EventType_Input            ; Text input was generated
-    #__Event_resize           = #PB_EventType_Resize           ; The gadget has been resized
-    #__Event_StatusChange     = #PB_EventType_StatusChange
-    #__Event_titleChange      = #PB_EventType_TitleChange
-    #__Event_change           = #PB_EventType_Change
-    #__Event_DragStart        = #PB_EventType_DragStart
-    #__Event_returnKey        = #PB_EventType_returnKey
-    
-    #PB_Event_create = #PB_Event_FirstCustomValue
+    #__event_mouseenter       = #PB_EventType_MouseEnter       ; The mouse cursor entered the gadget
+    #__event_mouseleave       = #PB_EventType_MouseLeave       ; The mouse cursor left the gadget
+    #__event_mousemove        = #PB_EventType_MouseMove        ; The mouse cursor moved
+    #__event_mousewheel       = #PB_EventType_MouseWheel       ; The mouse wheel was moved
+    #__event_leftButtonDown   = #PB_EventType_LeftButtonDown   ; The left mouse button was pressed
+    #__event_leftButtonUp     = #PB_EventType_LeftButtonUp     ; The left mouse button was released
+    #__event_leftclick        = #PB_EventType_LeftClick        ; A click With the left mouse button
+    #__event_leftdoubleclick  = #PB_EventType_LeftDoubleClick  ; A double-click With the left mouse button
+    #__event_rightbuttondown  = #PB_EventType_RightButtonDown  ; The right mouse button was pressed
+    #__event_rightbuttonup    = #PB_EventType_RightButtonUp    ; The right mouse button was released
+    #__event_rightclick       = #PB_EventType_RightClick       ; A click With the right mouse button
+    #__event_rightdoubleclick = #PB_EventType_RightDoubleClick ; A double-click With the right mouse button
+    #__event_middlebuttondown = #PB_EventType_MiddleButtonDown ; The middle mouse button was pressed
+    #__event_middlebuttonup   = #PB_EventType_MiddleButtonUp   ; The middle mouse button was released
+    #__event_focus            = #PB_EventType_Focus            ; The gadget gained keyboard focus
+    #__event_lostfocus        = #PB_EventType_LostFocus        ; The gadget lost keyboard focus
+    #__event_keydown          = #PB_EventType_KeyDown          ; A key was pressed
+    #__event_keyup            = #PB_EventType_KeyUp            ; A key was released
+    #__event_input            = #PB_EventType_Input            ; Text input was generated
+    #__event_resize           = #PB_EventType_Resize           ; The gadget has been resized
+    #__event_statuschange     = #PB_EventType_StatusChange
+    #__event_titlechange      = #PB_EventType_TitleChange
+    #__event_change           = #PB_EventType_Change
+    #__event_dragstart        = #PB_EventType_DragStart
+    #__event_returnkey        = #PB_EventType_returnKey
     
     ;- _c_type
     Enumeration - 7 ; Type
@@ -522,32 +518,32 @@
     #__type_combobox      = #PB_GadgetType_ComboBox
     #__type_container     = #PB_GadgetType_Container
     #__type_date          = #PB_GadgetType_Date
-    #__type_Editor        = #PB_GadgetType_Editor
-    #__type_ExplorerCombo = #PB_GadgetType_ExplorerCombo
-    #__type_ExplorerList  = #PB_GadgetType_ExplorerList
-    #__type_ExplorerTree  = #PB_GadgetType_ExplorerTree
-    #__type_Frame         = #PB_GadgetType_Frame
-    #__type_HyperLink     = #PB_GadgetType_HyperLink
-    #__type_Image         = #PB_GadgetType_Image
-    #__type_IPAddress     = #PB_GadgetType_IPAddress
-    #__type_listIcon      = #PB_GadgetType_ListIcon
-    #__type_listView      = #PB_GadgetType_ListView
-    #__type_MDI           = #PB_GadgetType_MDI
-    #__type_Option        = #PB_GadgetType_Option
-    #__type_Panel         = #PB_GadgetType_Panel
-    #__type_ProgressBar   = #PB_GadgetType_ProgressBar
-    #__type_Scintilla     = #PB_GadgetType_Scintilla
-    #__type_ScrollArea    = #PB_GadgetType_ScrollArea
-    #__type_ScrollBar     = #PB_GadgetType_ScrollBar
-    #__type_Shortcut      = #PB_GadgetType_Shortcut
-    #__type_Spin          = #PB_GadgetType_Spin
-    #__type_Splitter      = #PB_GadgetType_Splitter
-    #__type_String        = #PB_GadgetType_String
+    #__type_editor        = #PB_GadgetType_Editor
+    #__type_explorercombo = #PB_GadgetType_ExplorerCombo
+    #__type_explorerlist  = #PB_GadgetType_ExplorerList
+    #__type_explorertree  = #PB_GadgetType_ExplorerTree
+    #__type_frame         = #PB_GadgetType_Frame
+    #__type_hyperlink     = #PB_GadgetType_HyperLink
+    #__type_image         = #PB_GadgetType_Image
+    #__type_ipaddress     = #PB_GadgetType_IPAddress
+    #__type_listicon      = #PB_GadgetType_ListIcon
+    #__type_listview      = #PB_GadgetType_ListView
+    #__type_mdi           = #PB_GadgetType_MDI
+    #__type_option        = #PB_GadgetType_Option
+    #__type_panel         = #PB_GadgetType_Panel
+    #__type_progressbar   = #PB_GadgetType_ProgressBar
+    #__type_scintilla     = #PB_GadgetType_Scintilla
+    #__type_scrollarea    = #PB_GadgetType_ScrollArea
+    #__type_scrollbar     = #PB_GadgetType_ScrollBar
+    #__type_shortcut      = #PB_GadgetType_Shortcut
+    #__type_spin          = #PB_GadgetType_Spin
+    #__type_splitter      = #PB_GadgetType_Splitter
+    #__type_string        = #PB_GadgetType_String
     #__type_text          = #PB_GadgetType_Text
-    #__type_trackBar      = #PB_GadgetType_TrackBar
+    #__type_trackbar      = #PB_GadgetType_TrackBar
     #__type_tree          = #PB_GadgetType_Tree
-    #__type_Web           = #PB_GadgetType_Web
-    #__type_OpenGL        = #PB_GadgetType_OpenGL
+    #__type_web           = #PB_GadgetType_Web
+    #__type_opengl        = #PB_GadgetType_OpenGL
     ;}
     
     

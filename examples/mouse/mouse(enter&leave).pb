@@ -8,9 +8,9 @@ Define editable = #__flag_anchorsgadget
 Procedure events_widgets()
   Protected repaint
   
-  Select *event\type
-    Case #PB_EventType_MouseEnter : *event\widget\color\back = $ff0000ff : repaint = 1
-    Case #PB_EventType_MouseLeave : *event\widget\color\back = $ff00ff00 : repaint = 1
+  Select this()\event
+    Case #PB_EventType_MouseEnter : this()\widget\color\back = $ff0000ff : repaint = 1
+    Case #PB_EventType_MouseLeave : this()\widget\color\back = $ff00ff00 : repaint = 1
   EndSelect
   
   If repaint

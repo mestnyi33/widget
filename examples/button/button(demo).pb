@@ -41,9 +41,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Select *event\type
+    Select WidgetEvent()
       Case #PB_EventType_LeftClick
-        Debug  ""+GetIndex(*event\widget)+" - widget click"
+        Debug  ""+EventIndex()+" - widget click"
     EndSelect
   EndProcedure
   
@@ -118,10 +118,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;     BindGadgetEvent(g, @CallBacks())
     ;     PostEvent(#PB_Event_Gadget, 11,11, #PB_EventType_Resize)
-    ;     
+        
   EndIf
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --

@@ -719,24 +719,24 @@ DeclareModule Gadget
     
     
     Procedure EventData_()
-      If structures::*event\data
-        ProcedureReturn structures::*event\data
+      If widget::this()\data
+        ProcedureReturn widget::this()\data
       Else
         ProcedureReturn PB(EventData)()
       EndIf
     EndProcedure
     
     Procedure EventType_()
-      If structures::*event\type =- 1
+      If widget::this()\event =- 1
         ProcedureReturn PB(EventType)()
       Else
-        ProcedureReturn structures::*event\type
+        ProcedureReturn widget::this()\event
       EndIf
     EndProcedure
     
     Procedure EventGadget_()
-      If structures::*event\widget 
-        Protected *this.Structures::_S_widget = structures::*event\widget
+      If widget::this()\widget 
+        Protected *this.Structures::_S_widget = widget::this()\widget
         If *this\root
           ProcedureReturn *this\root\canvas\gadget
         Else
@@ -1264,7 +1264,7 @@ DeclareModule Gadget
         EndIf
       EndIf
       
-      ;Repaints()
+      Repaints()
     EndProcedure  
     
     If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -1290,20 +1290,20 @@ DeclareModule Gadget
       
       PB(ButtonGadget)(3, 10, 180, 100, 24, "set state Item")
       BindGadgetEvent(3, @events_tree_gadget())
-      ButtonGadget(4, 120, 180, 100, 24, "add Item")
+      PB(ButtonGadget)(4, 120, 180, 100, 24, "add Item")
       BindGadgetEvent(4, @events_tree_gadget())
-      ButtonGadget(5, 230, 180, 100, 24, "remove Item")
+      PB(ButtonGadget)(5, 230, 180, 100, 24, "remove Item")
       BindGadgetEvent(5, @events_tree_gadget())
       
-      ButtonGadget(6, 10, 210, 100, 24, "set image Item")
+      PB(ButtonGadget)(6, 10, 210, 100, 24, "set image Item")
       BindGadgetEvent(6, @events_tree_gadget())
-      ButtonGadget(7, 120, 210, 35, 24, "<")
+      PB(ButtonGadget)(7, 120, 210, 35, 24, "<")
       BindGadgetEvent(7, @events_tree_gadget())
-      ButtonGadget(8, 155, 210, 30, 24, "0")
+      PB(ButtonGadget)(8, 155, 210, 30, 24, "0")
       BindGadgetEvent(8, @events_tree_gadget())
-      ButtonGadget(9, 185, 210, 35, 24, ">")
+      PB(ButtonGadget)(9, 185, 210, 35, 24, ">")
       BindGadgetEvent(9, @events_tree_gadget())
-      ButtonGadget(10, 230, 210, 100, 24, "clears Items")
+      PB(ButtonGadget)(10, 230, 210, 100, 24, "clears Items")
       BindGadgetEvent(10, @events_tree_gadget())
       
        BindGadgetEvent(0, @events_tree_gadget())

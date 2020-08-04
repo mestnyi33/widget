@@ -10,9 +10,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Global.i gEvent, gQuit, g_Canvas
   Global *Bar_0
   
+  Procedure events_widgets()
+    Select WidgetEvent()
+      Case #PB_EventType_LeftClick
+        Debug  ""+EventIndex()+" - widget click"
+    EndSelect
+  EndProcedure
+  
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 400, 100, "Demo inverted scrollbar direction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-       ButtonGadget   (0,    5,   65, 390,  30, "set  inverted scrollbar", #PB_Button_Toggle)
+       ButtonGadget   (0,    5,   65, 390,  30, "set standart scrollbar", #PB_Button_Toggle)
       
      If Open(0,10,10, 380, 50)
         g_Canvas = GetGadget(root())
@@ -42,12 +49,12 @@ CompilerIf #PB_Compiler_IsMainFile
             SetWindowTitle(0, Str(GetState(*Bar_0)))
             
             If GetGadgetState(0)
-              SetGadgetText(0, "set inverted scrollbar")
-            Else
               SetGadgetText(0, "set standart scrollbar")
+            Else
+              SetGadgetText(0, "set inverted scrollbar")
             EndIf
             
-            redraw(root())
+            ReDraw(root())
             
           Case g_Canvas
             If widget()\change
@@ -61,6 +68,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

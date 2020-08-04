@@ -4,11 +4,11 @@ XIncludeFile "widgets.pbi"
 UseLib(widget)
 
 Macro EventGadget()
-  *event\widget
+  this()\widget
 EndMacro
 
 Macro EventType()
-  *event\type
+  this()\event
 EndMacro
 
 Procedure TestHandler()
@@ -30,7 +30,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 355, 180, "TreeGadget", #PB_Window_SystemMenu 
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

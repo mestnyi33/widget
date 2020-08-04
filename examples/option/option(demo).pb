@@ -24,14 +24,14 @@ EndProcedure
 
 ; Shows possible flags of ButtonGadget in action...
 If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-  OptionGadget(0, 30, 20, 80, 20, "Option 1")
-  OptionGadget(1, 30, 45, 80, 20, "Option 2")
-  OptionGadget(2, 30, 70, 80, 20, "Option 3")
+  OptionGadget(0, 10, 20, 115, 20, "Option 1")
+  OptionGadget(1, 10, 45, 115, 20, "Option 2")
+  OptionGadget(2, 10, 70, 115, 20, "Option 3")
   SetGadgetState(1, 1)   ; set second option as active one
   
-  CheckBoxGadget(3, 30,  95, 80, 20, "CheckBox", #PB_CheckBox_ThreeState)
-  OptionGadget(4, 30, 120, 80, 20, "Option 2")
-  OptionGadget(5, 30, 145, 80, 20, "Option 3")
+  CheckBoxGadget(3, 10,  95, 115, 20, "CheckBox", #PB_CheckBox_ThreeState)
+  OptionGadget(4, 10, 120, 115, 20, "Option 2")
+  OptionGadget(5, 10, 145, 115, 20, "Option 3")
   
   SetGadgetState(3, #PB_Checkbox_Inbetween)   
   SetGadgetState(4, 1)   
@@ -40,14 +40,14 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_Syste
     BindGadgetEvent(i, @events_gadgets())
   Next
   
-  Option(30+140, 20, 80, 20, "Option 1")
-  Option(30+140, 45, 80, 20, "Option 2")
-  Option(30+140, 70, 80, 20, "Option 3")
+  Option(10+140, 20, 115, 20, "Option 1")
+  Option(10+140, 45, 115, 20, "Option 2")
+  Option(10+140, 70, 115, 20, "Option 3")
   SetState(GetWidget(1), 1)   ; set second option as active one
   
-  CheckBox(30+140,  95, 80, 20, "CheckBox", #PB_CheckBox_ThreeState)
-  Option(30+140, 120, 80, 20, "Option 2")
-  Option(30+140, 145, 80, 20, "Option 3")
+  CheckBox(10+140,  95, 115, 20, "CheckBox", #PB_CheckBox_ThreeState)
+  Option(10+140, 120, 115, 20, "Option 2")
+  Option(10+140, 145, 115, 20, "Option 3")
   
   SetState(GetWidget(3), #PB_Checkbox_Inbetween)  
   SetState(GetWidget(4), 1)  

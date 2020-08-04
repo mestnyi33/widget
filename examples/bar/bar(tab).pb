@@ -1,9 +1,9 @@
 ﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
 
 Procedure events_wbuttons()
-  Select *event\type
+  Select widgetevent()
     Case #PB_EventType_LeftClick
-      Select (*event\widget\index - 1)
+      Select Eventindex()
         Case 1 : RemoveItem(GetWidget(0), 1)
         Case 2 
           ;OpenList(GetWidget(1))
@@ -14,8 +14,8 @@ Procedure events_wbuttons()
 EndProcedure
 
 
-If OpenWindow(0, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SizeGadget| #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  Open(0)
+If Open(OpenWindow(#PB_Any, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SizeGadget| #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  
   Tab(0,0, 100, 30,0,0,0)
   SetAlignment(GetWidget(0), #__flag_AutoSize|#__align_top)
   
@@ -30,13 +30,10 @@ If OpenWindow(0, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SizeGadget| #PB
     Bind(GetWidget(i), @events_wbuttons())
   Next
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  WaitClose()
 EndIf
 
 
-
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 16
-; FirstLine = 6
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

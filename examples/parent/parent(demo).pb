@@ -25,10 +25,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure Widgets_CallBack()
-    Protected EventWidget.i = *event\widget,
-              EventType.i = *event\type,
-              EventItem.i = *event\item, 
-              EventData.i = *event\data
+    Protected EventWidget.i = this()\widget,
+              EventType.i = this()\event,
+              EventItem.i = this()\item, 
+              EventData.i = this()\data
     
     Select EventType
       Case #PB_EventType_MouseEnter
@@ -246,5 +246,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 4d-
+; Folding = -d-
 ; EnableXP

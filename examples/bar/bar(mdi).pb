@@ -1,10 +1,10 @@
 ﻿IncludePath "../../"
-XIncludeFile "widgets().pbi"
+XIncludeFile "widgets.pbi"
 
 ;-
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule widget
+  Uselib(widget)
   EnableExplicit
   
   Structure canvasitem
@@ -128,8 +128,6 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(h, #PB_ScrollBar_Maximum, GetAttribute(\h, #__bar_Maximum))
       SetGadgetAttribute(h, #PB_ScrollBar_PageLength, GetAttribute(\h, #__bar_PageLength))
       ResizeGadget(h, #PB_Ignore, #PB_Ignore, \h\width, #PB_Ignore)
-      
-      
     EndWith
   EndProcedure
   
@@ -408,10 +406,10 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn 1
   EndProcedure
   
-  Procedure Canvas_Events(Canvas.i, Event.i)
+  Procedure Canvas_CallBack();Canvas.i, Event.i)
     Protected Repaint
-    ;Protected Event = EventType()
-    ;Protected Canvas = EventGadget()
+    Protected Event = EventType()
+    Protected Canvas = EventGadget()
     Protected MouseX = GetGadgetAttribute(Canvas, #PB_Canvas_MouseX)
     Protected MouseY = GetGadgetAttribute(Canvas, #PB_Canvas_MouseY)
     Protected Buttons = GetGadgetAttribute(EventGadget(), #PB_Canvas_Buttons)
@@ -420,8 +418,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Height = GadgetHeight(Canvas)
     Protected ScrollX, ScrollY, ScrollWidth, ScrollHeight
     
-    Repaint | CallBack(*Scroll\v, Event, MouseX, MouseY) 
-    Repaint | CallBack(*Scroll\h, Event, MouseX, MouseY) 
+;     Repaint | CallBack(*Scroll\v, Event, MouseX, MouseY) 
+;     Repaint | CallBack(*Scroll\h, Event, MouseX, MouseY) 
     
     
     If *Scroll\v\Change Or *Scroll\h\Change 
@@ -505,7 +503,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Repaint = #True
     EndSelect     
     
-    If Not Bool(*Scroll\h\from=-1 And *Scroll\v\from=-1)
+    ;If Not Bool(*Scroll\h\bar\index=-1 And *Scroll\v\bar\index=-1)
       Select Event
         Case #PB_EventType_LeftButtonUp : Drag = #False
           
@@ -636,7 +634,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Repaint = #True
           
       EndSelect
-    EndIf 
+    ;EndIf 
     
     If Repaint : Canvas_ReDraw(g_Canvas, Images()) : EndIf
   EndProcedure
@@ -659,60 +657,7 @@ CompilerIf #PB_Compiler_IsMainFile
         StopDrawing()
       EndIf
     EndIf
-    
-    Procedure Canvas_CallBack()
-      ; Canvas events bug fix
-      Protected Result.b
-      Static MouseLeave.b
-      Protected EventGadget.i = EventGadget()
-      Protected EventType.i = EventType()
-      Protected Width = GadgetWidth(EventGadget)
-      Protected Height = GadgetHeight(EventGadget)
-      Protected MouseX = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseX)
-      Protected MouseY = GetGadgetAttribute(EventGadget, #PB_Canvas_MouseY)
-      
-      ; Это из за ошибки в мак ос и линукс
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS Or #PB_Compiler_OS = #PB_OS_Linux
-        Select EventType 
-          Case #PB_EventType_MouseEnter 
-            If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons) Or MouseLeave =- 1
-              EventType = #PB_EventType_MouseMove
-              MouseLeave = 0
-            EndIf
-            
-          Case #PB_EventType_MouseLeave 
-            If GetGadgetAttribute(EventGadget, #PB_Canvas_Buttons)
-              EventType = #PB_EventType_MouseMove
-              MouseLeave = 1
-            EndIf
-            
-          Case #PB_EventType_LeftButtonDown
-            If GetActiveGadget()<>EventGadget
-              SetActiveGadget(EventGadget)
-            EndIf
-            
-          Case #PB_EventType_LeftButtonUp
-            If MouseLeave = 1 And Not Bool((MouseX>=0 And MouseX<Width) And (MouseY>=0 And MouseY<Height))
-              MouseLeave = 0
-              CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
-                EventType = #PB_EventType_MouseLeave
-              CompilerEndIf
-            Else
-              MouseLeave =- 1
-              Result | Canvas_Events(EventGadget, #PB_EventType_LeftButtonUp)
-              EventType = #PB_EventType_LeftClick
-            EndIf
-            
-          Case #PB_EventType_LeftClick : ProcedureReturn 0
-        EndSelect
-      CompilerEndIf
-      
-      Result | Canvas_Events(EventGadget, EventType)
-      
-      ProcedureReturn Result
-    EndProcedure
-    
+   
     Procedure Widget_Events()
       Select EventType()
         Case #PB_EventType_ScrollChange
@@ -763,22 +708,25 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseGadgetList()
       
-      ;Canvas = CanvasGadget(#PB_Any, 200, 10, 380, 380, #PB_Canvas_Keyboard)
-;       Open(0, 200,10, 600, Height,"");, #PB_Canvas_Keyboard|#PB_Canvas_Container)
-;       g_Canvas = GetGadget(Root())
-;       ;OpenGadgetList(g_Canvas)
+;       Canvas = CanvasGadget(#PB_Any, 200, 10, 380, 380, #PB_Canvas_Keyboard)
+      Open(0, 200,10, 600, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container, @Canvas_CallBack())
+      g_Canvas = GetGadget(Root())
+      ;OpenGadgetList(g_Canvas)
       
-      g_Canvas = CanvasGadget(#PB_Any, 200,10, 600, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container)
-      SetGadgetAttribute(g_Canvas, #PB_Canvas_Cursor, #PB_Cursor_Hand)
-      
-      Root() = AllocateStructure(_S_root)
-      Root()\root = Root()
-      Root()\parent = Root()
-      Root()\opened = Root()
-      Root()\window = 0
-      Root()\canvas = g_Canvas
-      Root()\width = 600
-      Root()\height = Height
+;       g_Canvas = CanvasGadget(#PB_Any, 200,10, 600, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container)
+;       SetGadgetAttribute(g_Canvas, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+;       
+;       AddElement(Root())
+;       Root() = AllocateStructure(_S_root)
+;       Root()\root = Root()
+;       Root()\adress = Root()
+;       
+;       Root()\parent = Root()
+;       opened() = Root()
+;       Root()\canvas\window = 0
+;       Root()\canvas\gadget = g_Canvas
+;       Root()\width = 600
+;       Root()\height = Height
       
       v = ScrollBarGadget(-1, x-18, y,  16, 300 ,0,ImageHeight(0), 240-16, #PB_ScrollBar_Vertical)
       h = ScrollBarGadget(-1, x, y-18, 300,  16 ,0,ImageWidth(0), 405-16)
@@ -790,10 +738,12 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetState(h, 55)
       CloseGadgetList()
       
-      OpenList(0, g_Canvas)
+;       OpenList(0, g_Canvas)
       ; Create both scroll bars
-      *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #__bar_Vertical,7)
-      *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
+;       *Scroll\v = Scroll(#PB_Ignore, #PB_Ignore,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #__bar_Vertical,7)
+;       *Scroll\h = Scroll(#PB_Ignore, #PB_Ignore,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
+      *Scroll\v = Scroll(x, y+Height-16,  16, #PB_Ignore ,0, ImageHeight(0), 240-16, #__bar_Vertical,7)
+      *Scroll\h = Scroll(x+Width-16, y,  #PB_Ignore, 16 ,0, ImageWidth(0), 405-16, 0, 7)
       
       ;     SetAttribute(*Scroll\v, #__bar_Maximum, ImageHeight(0))
       ;     SetAttribute(*Scroll\h, #__bar_Maximum, ImageWidth(0))
@@ -802,10 +752,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState(*Scroll\v, 70)
       SetState(*Scroll\h, 55)
       
-      PostEvent(#PB_Event_Gadget, 0,g_Canvas,#PB_EventType_Resize)
-      BindGadgetEvent(g_Canvas, @Canvas_CallBack())
+;       PostEvent(#PB_Event_Gadget, 0,g_Canvas,#PB_EventType_Resize)
+;       BindGadgetEvent(g_Canvas, @Canvas_CallBack())
       
-      BindEvent(#PB_Event_SizeWindow, @ResizeCallBack())
+;       BindEvent(#PB_Event_SizeWindow, @ResizeCallBack())
       
       Define value
       
@@ -962,6 +912,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----9--------
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = 8----7------
 ; EnableXP
