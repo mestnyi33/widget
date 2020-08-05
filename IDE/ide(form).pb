@@ -217,8 +217,8 @@ Procedure update_properties(gadget.i, Value.i)
   SetItemText(gadget, #_pi_class,   GetItemText(gadget, #_pi_class)   +Chr(10)+GetClass(Value)+"_"+GetCount(Value))
   SetItemText(gadget, #_pi_text,    GetItemText(gadget, #_pi_text)    +Chr(10)+GetText(Value))
   
-  SetItemText(gadget, #_pi_x,       GetItemText(gadget, #_pi_x)       +Chr(10)+Str(X(Value)))
-  SetItemText(gadget, #_pi_y,       GetItemText(gadget, #_pi_y)       +Chr(10)+Str(Y(Value)))
+  SetItemText(gadget, #_pi_x,       GetItemText(gadget, #_pi_x)       +Chr(10)+Str(X(Value, #__c_container)))
+  SetItemText(gadget, #_pi_y,       GetItemText(gadget, #_pi_y)       +Chr(10)+Str(Y(Value, #__c_container)))
   SetItemText(gadget, #_pi_width,   GetItemText(gadget, #_pi_width)   +Chr(10)+Str(Width(Value)))
   SetItemText(gadget, #_pi_height,  GetItemText(gadget, #_pi_height)  +Chr(10)+Str(Height(Value)))
   
@@ -598,7 +598,7 @@ Procedure add_element(gadget.i, *new._s_widget, Class.s)
   ;     SetGadgetState(listview_debug, Position) ; Bug
   ;   EndIf
   
-  ; Debug "pos "+Position
+  ; Debug  " pos "+Position + "   (debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ))"
   add_code(*new, Class, Position, SubLevel)
   
   ProcedureReturn Position
@@ -924,5 +924,5 @@ DataSection   ; Include Images
   ThisPC:           : IncludeBinary "ThisPC.png"
 EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------t8-----
+; Folding = 8-ff-v-2+408-----
 ; EnableXP

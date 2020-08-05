@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
     alphatest.i
   EndStructure
   
-  Global MyCanvas, *scroll._s_scroll = AllocateStructure(_s_scroll)
+  Global MyCanvas, *this._s_widget = AllocateStructure(_s_widget) 
   
   Global *current=#False
   Global currentItemXOffset.i, currentItemYOffset.i
@@ -27,8 +27,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure.i HitTest (List Images.canvasitem(), x, y)
     Shared currentItemXOffset.i, currentItemYOffset.i
     Protected alpha.i, *current = #False
-    Protected scroll_x ; = *scroll\h\bar\Page\Pos
-    Protected scroll_y ;= *scroll\v\bar\Page\Pos
+    Protected scroll_x ; = *this\scroll\h\bar\Page\Pos
+    Protected scroll_y ;= *this\scroll\v\bar\Page\Pos
     
     If LastElement(Images()) ; search for hit, starting from end (z-order)
       Repeat
@@ -89,23 +89,23 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Macro GetScrollCoordinate(x, y, width, height)
-    *scroll\x = Images()\x 
-    *scroll\y = Images()\Y
-    *scroll\width = Images()\x+Images()\width - *scroll\x
-    *scroll\height = Images()\Y+Images()\height - *scroll\y
+    *this\x[#__c_required] = Images()\x 
+    *this\y[#__c_required] = Images()\Y
+    *this\width[#__c_required] = Images()\x+Images()\width - *this\x[#__c_required]
+    *this\height[#__c_required] = Images()\Y+Images()\height - *this\y[#__c_required]
     
     PushListPosition(Images())
     ForEach Images()
-      If *scroll\x > Images()\x : *scroll\x = Images()\x : EndIf
-      If *scroll\y > Images()\y : *scroll\y = Images()\y : EndIf
+      If *this\x[#__c_required] > Images()\x : *this\x[#__c_required] = Images()\x : EndIf
+      If *this\y[#__c_required] > Images()\y : *this\y[#__c_required] = Images()\y : EndIf
     Next
     ForEach Images()
-      If *scroll\width < Images()\x+Images()\width - *scroll\x : *scroll\width = Images()\x+Images()\width - *scroll\x : EndIf
-      If *scroll\height < Images()\Y+Images()\height - *scroll\y : *scroll\height = Images()\Y+Images()\height - *scroll\y : EndIf
+      If *this\width[#__c_required] < Images()\x+Images()\width - *this\x[#__c_required] : *this\width[#__c_required] = Images()\x+Images()\width - *this\x[#__c_required] : EndIf
+      If *this\height[#__c_required] < Images()\Y+Images()\height - *this\y[#__c_required] : *this\height[#__c_required] = Images()\Y+Images()\height - *this\y[#__c_required] : EndIf
     Next
     PopListPosition(Images())
     
-    widget::Updates(*scroll, x, y, width, height)
+    widget::Updates(*this, x, y, width, height)
     
     ; SetWindowTitle(EventWindow(), Str(Images()\x)+" "+Str(Images()\width)+" "+Str(Images()\x+Images()\width))
   EndMacro
@@ -115,22 +115,22 @@ CompilerIf #PB_Compiler_IsMainFile
       DrawingMode(#PB_2DDrawing_Default)
       Box(0, 0, OutputWidth(), OutputHeight(), RGB(255,255,255))
       
-      ;ClipOutput(*scroll\h\x, *scroll\v\y, *scroll\h\bar\page\len, *scroll\v\bar\page\len)
+      ;ClipOutput(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len)
       
       DrawingMode(#PB_2DDrawing_AlphaBlend)
       ForEach Images()
         DrawImage(ImageID(Images()\img), Images()\x, Images()\y) ; draw all images with z-order
       Next
       
-      widget::Draw(*scroll\v)
-      widget::Draw(*scroll\h)
+      widget::Draw(*this\scroll\v)
+      widget::Draw(*this\scroll\h)
       
       UnclipOutput()
       DrawingMode(#PB_2DDrawing_Outlined)
       Box(x, y, Width, Height, RGB(0,255,255))
-      Box(*scroll\x, *scroll\y, *scroll\width, *scroll\height, RGB(255,0,255))
-      Box(*scroll\x, *scroll\y, *scroll\h\bar\max, *scroll\v\bar\max, RGB(255,0,0))
-      Box(*scroll\h\x, *scroll\v\y, *scroll\h\bar\page\len, *scroll\v\bar\page\len, RGB(255,255,0))
+      Box(*this\x[#__c_required], *this\y[#__c_required], *this\width[#__c_required], *this\height[#__c_required], RGB(255,0,255))
+      Box(*this\x[#__c_required], *this\y[#__c_required], *this\scroll\h\bar\max, *this\scroll\v\bar\max, RGB(255,0,0))
+      Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, RGB(255,255,0))
       
       StopDrawing()
     EndIf
@@ -155,7 +155,7 @@ CompilerIf #PB_Compiler_IsMainFile
         SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Default)
         
       Case #PB_EventType_LeftButtonDown
-        If Not (*event\widget And *event\widget\bar\index > 0)
+        If Not (this()\widget And this()\widget\bar\index > 0)
           Drag = Bool(HitTest(Images(), Mousex, Mousey))
           If Drag 
             SetGadgetAttribute(MyCanvas, #PB_Canvas_Cursor, #PB_Cursor_Arrows)
@@ -210,25 +210,25 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Procedure events_scrolls()
-    Select *event\type 
+    Select this()\event 
       Case #PB_EventType_Change
-        If *event\widget\bar\vertical
+        If this()\widget\vertical
           PushListPosition(Images())
           ForEach Images()
-            Images()\Y + *event\widget\bar\page\change 
+            Images()\Y + this()\widget\bar\page\change 
           Next
           PopListPosition(Images())
           
-          *scroll\y =- *event\widget\bar\page\pos+*event\widget\y
+          *this\y[#__c_required] =- this()\widget\bar\page\pos + this()\widget\y
         Else
           
           PushListPosition(Images())
           ForEach Images()
-            Images()\X + *event\widget\bar\page\change
+            Images()\X + this()\widget\bar\page\change
           Next
           PopListPosition(Images())
           
-          *scroll\x =- *event\widget\bar\page\pos+*event\widget\x
+          *this\x[#__c_required] =- this()\widget\bar\page\pos + this()\widget\x
         EndIf
         
         Canvas_Draw(MyCanvas, Images()) 
@@ -242,13 +242,13 @@ CompilerIf #PB_Compiler_IsMainFile
   
   MyCanvas = GetGadget(Open(0, 10, 10, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
-  ; *scroll\v = widget::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_inverted, 11)
-  ; *scroll\h = widget::scroll(x, 0, 0,  20, 0, 0, Height-20, #__bar_inverted, 11)
-  *scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
-  *scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, 0, 11)
+  ; *this\v = widget::scroll(0, y, 20, 0, 0, 0, Width-20, #__bar_Vertical|#__bar_inverted, 11)
+  ; *this\h = widget::scroll(x, 0, 0,  20, 0, 0, Height-20, #__bar_inverted, 11)
+  *this\scroll\v = widget::scroll(x+width-20, y, 20, 0, 0, 0, Width-20, #__bar_Vertical, 11)
+  *this\scroll\h = widget::scroll(x, y+Height-20, 0,  20, 0, 0, Height-20, 0, 11)
   
-  Bind(*scroll\v, @events_scrolls())
-  Bind(*scroll\h, @events_scrolls())
+  Bind(*this\scroll\v, @events_scrolls())
+  Bind(*this\scroll\h, @events_scrolls())
   
   
   Repeat
@@ -256,5 +256,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------
+; Folding = -4----
 ; EnableXP

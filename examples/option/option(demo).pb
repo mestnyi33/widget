@@ -1,24 +1,24 @@
 ﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
 
 Procedure events_gadgets()
-  ClearDebugOutput()
-  ; Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
+  ;ClearDebugOutput()
+  Debug ""+EventType()+ " - event widget - " +EventGadget() +" state - " +GetGadgetState(EventGadget()) ; 
   
   Select EventType()
     Case #PB_EventType_LeftClick
-     SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
-     Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+      SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
+      ; Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
   EndSelect
 EndProcedure
 
 Procedure events_widgets()
-  ClearDebugOutput()
-  ; Debug ""+Str(this()\widget\index - 1)+ " - widget  event - " +this()\type+ "  state - " GetState(this()\widget) ; 
+  ;ClearDebugOutput()
+  Debug ""+this()\event+ " - event widget - " +Str(GetIndex(this()\widget)) + " state - "+ GetState(this()\widget) ; 
   
   Select this()\event
     Case #PB_EventType_Change
       SetGadgetState(GetIndex(this()\widget), GetState(this()\widget))
-      Debug  Str(GetIndex(this()\widget))+" - widget change " + GetState(this()\widget)
+      ; Debug  Str(GetIndex(this()\widget))+" - widget change " + GetState(this()\widget)
   EndSelect
 EndProcedure
 
@@ -57,6 +57,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_Syste
   For i = 0 To 2
     Bind(GetWidget(i), @events_widgets())
   Next
+  
+  ClearDebugOutput()
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf

@@ -169,7 +169,6 @@
       
       #__flag_full
       #__flag_center
-      #__flag_autosize
       #__flag_proportional
       
       
@@ -197,6 +196,7 @@
       
       #__flag_inverted
       #__flag_noactivate
+      #__flag_autosize
       ;#__flag_invisible
       ;#__flag_sizegadget
       ;#__flag_systemmenu
@@ -411,7 +411,38 @@
     
     ;- _c_event
     
-    #PB_Event_Create          = #PB_Event_FirstCustomValue
+    Enumeration #PB_Event_FirstCustomValue
+      #PB_Event_Resize
+      #PB_Event_ResizeEnd
+      
+      #PB_Event_Free         
+      #PB_Event_Create
+      #PB_Event_Drop
+      
+      #PB_Event_ReturnKey
+      #PB_Event_ScrollChange
+      
+      ;;#PB_Event_ActivateWindow
+      ;;#PB_Event_DeactivateWindow
+      ;;#PB_Event_Gadget
+      ;;#PB_Event_GadgetDrop
+      ;;#PB_Event_LeftClick
+      ;;#PB_Event_LeftDoubleClick
+      ;;#PB_Event_Menu
+      
+      ;;#PB_Event_MoveWindow
+      ;;#PB_Event_SizeWindow
+      ;;#PB_Event_SysTray
+      ;;#PB_Event_Timer
+      ;;#PB_Event_WindowDrop
+      ;;#PB_Event_RightClick
+      
+      ;;#PB_Event_Repaint
+      ;;#PB_Event_CloseWindow
+      ;;#PB_Event_MaximizeWindow
+      ;;#PB_Event_MinimizeWindow
+      ;;#PB_Event_RestoreWindow
+    EndEnumeration
     
     Enumeration #PB_EventType_FirstCustomValue
       CompilerIf Not Defined(PB_EventType_resize, #PB_Constant)
@@ -419,7 +450,7 @@
       CompilerEndIf
       
       CompilerIf Not Defined(PB_EventType_returnKey, #PB_Constant)
-        #PB_EventType_returnKey
+        #PB_EventType_ReturnKey
       CompilerEndIf
       
       #PB_EventType_ResizeEnd

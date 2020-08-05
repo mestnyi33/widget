@@ -13,12 +13,12 @@ EndProcedure
 
 Procedure events_widgets()
   ClearDebugOutput()
-  ; Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(*event\widget) ; 
+  ; Debug ""+Str(this()\widget\index - 1)+ " - widget  event - " +this()\type+ "  state - " GetState(this()\widget) ; 
   
-  Select *event\type
+  Select this()\event
     Case #PB_EventType_Change
-      SetGadgetState(GetIndex(*event\widget), GetState(*event\widget))
-      Debug  Str(GetIndex(*event\widget))+" - widget change " + GetState(*event\widget)
+      SetGadgetState(GetIndex(this()\widget), GetState(this()\widget))
+      Debug  Str(GetIndex(this()\widget))+" - widget change " + GetState(this()\widget)
   EndSelect
 EndProcedure
 
