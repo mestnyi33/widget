@@ -564,6 +564,173 @@ CompilerIf Not Defined(widget, #PB_Module)
       
     EndMacro
     
+    ;-
+;     Macro _button_draw_(_vertical_, _x_,_y_,_width_,_height_, _arrow_type_, _arrow_size_, _arrow_direction_, _color_fore_,_color_back_,_color_frame_, _color_arrow_, _alpha_, _round_)
+;       ; Draw buttons   
+;       DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+;       _box_gradient_(_vertical_,_x_,_y_,_width_,_height_, _color_fore_,_color_back_, _round_, _alpha_)
+;       
+;       ; Draw buttons frame
+;       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+;       RoundBox(_x_,_y_,_width_,_height_,_round_,_round_,_color_frame_&$FFFFFF|_alpha_<<24)
+;       
+;       ; Draw arrows
+;       DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+;       Arrow(_x_ + (_width_ - _arrow_size_)/2,_y_ + (_height_ - _arrow_size_)/2, _arrow_size_, _arrow_direction_, _color_arrow_&$FFFFFF|_alpha_<<24, _arrow_type_)
+;       ResetGradientColors()
+;     EndMacro
+    
+    Macro draw_box_button(_adress_, _color_)
+      If Not _adress_\hide
+        RoundBox(_adress_\x, _adress_\y, _adress_\width, _adress_\height, _adress_\round, _adress_\round, _color_)
+        RoundBox(_adress_\x, _adress_\y + 1, _adress_\width, _adress_\height - 2, _adress_\round, _adress_\round, _color_)
+        RoundBox(_adress_\x + 1, _adress_\y, _adress_\width - 2, _adress_\height, _adress_\round, _adress_\round, _color_)
+      EndIf
+    EndMacro
+    
+    Macro draw_close_button(_adress_, _size_)
+      ; close button
+      If Not _adress_\hide
+        If _adress_\color\state
+          Line(_adress_\x + 1 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          Line(_adress_\x + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          
+          Line(_adress_\x - 1 + _size_ + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          Line(_adress_\x + _size_ + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+        EndIf
+        
+        draw_box_button(_adress_, _adress_\color\frame[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+      EndIf
+    EndMacro
+    
+    Macro draw_maximize_button(_adress_, _size_)
+      If Not _adress_\hide
+        If _adress_\color\state
+          Line(_adress_\x + 2 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          Line(_adress_\x + 1 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          
+          Line(_adress_\x + 1 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          Line(_adress_\x + 2 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+        EndIf
+        
+        draw_box_button(_adress_, _adress_\color\frame[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+      EndIf
+    EndMacro
+    
+    Macro draw_minize_button(_adress_, _size_)
+      If Not _adress_\hide
+        If _adress_\color\state
+          Line(_adress_\x + 1 + (_adress_\width )/2 - _size_, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          Line(_adress_\x + 0 + (_adress_\width )/2 - _size_, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          
+          Line(_adress_\x - 1 + (_adress_\width)/2 + _size_, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          Line(_adress_\x - 2 + (_adress_\width)/2 + _size_, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+        EndIf
+        
+        draw_box_button(_adress_, _adress_\color\frame[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+      EndIf
+    EndMacro
+    
+    Macro draw_help_button(_adress_, _size_)
+      If Not _adress_\hide
+        RoundBox(_adress_\x, _adress_\y, _adress_\width, _adress_\height, 
+                 _adress_\round, _adress_\round, _adress_\color\frame[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+      EndIf
+    EndMacro
+    
+    Macro draw_option_button(_adress_, _size_, _color_)
+      If _adress_\round > 2
+        If _adress_\width % 2
+          RoundBox(_adress_\x + (_adress_\width - _size_)/2,_adress_\y + (_adress_\height - _size_)/2, _size_ + 1,_size_ + 1, _size_ + 1,_size_ + 1, _color_) 
+        Else
+          RoundBox(_adress_\x + (_adress_\width - _size_)/2,_adress_\y + (_adress_\height - _size_)/2, _size_,_size_, _size_,_size_, _color_) 
+        EndIf
+      Else
+        If _adress_\width % 2
+          RoundBox(_adress_\x + (_adress_\width - _size_)/2,_adress_\y + (_adress_\height - _size_)/2, _size_ + 1,_size_ + 1, 1,1, _color_) 
+        Else
+          RoundBox(_adress_\x + (_adress_\width - _size_)/2,_adress_\y + (_adress_\height - _size_)/2, _size_ + 1,_size_ + 1, 1,1, _color_) 
+        EndIf
+      EndIf
+    EndMacro
+    
+    Macro draw_check_button(_adress_, _size_, _color_)
+      If _adress_\state
+        LineXY((_adress_\x +0+ (_adress_\width-_size_)/2),(_adress_\y +4+ (_adress_\height-_size_)/2),(_adress_\x +1+ (_adress_\width-_size_)/2),(_adress_\y +5+ (_adress_\height-_size_)/2), _color_) ; Левая линия
+        LineXY((_adress_\x +0+ (_adress_\width-_size_)/2),(_adress_\y +5+ (_adress_\height-_size_)/2),(_adress_\x +1+ (_adress_\width-_size_)/2),(_adress_\y +6+ (_adress_\height-_size_)/2), _color_) ; Левая линия
+        
+        LineXY((_adress_\x +5+ (_adress_\width-_size_)/2),(_adress_\y +0+ (_adress_\height-_size_)/2),(_adress_\x +2+ (_adress_\width-_size_)/2),(_adress_\y +6+ (_adress_\height-_size_)/2), _color_) ; правая линия
+        LineXY((_adress_\x +6+ (_adress_\width-_size_)/2),(_adress_\y +0+ (_adress_\height-_size_)/2),(_adress_\x +3+ (_adress_\width-_size_)/2),(_adress_\y +6+ (_adress_\height-_size_)/2), _color_) ; правая линия
+      EndIf
+    EndMacro
+    
+    Macro draw_button(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFFFFFFF, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255) 
+      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+      LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
+      
+      If _checked_
+        BackColor(_color_fore2_&$FFFFFF|_alpha_<<24)
+        FrontColor(_color_back2_&$FFFFFF|_alpha_<<24)
+      Else
+        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
+        FrontColor(_color_back_&$FFFFFF|_alpha_<<24)
+      EndIf
+      
+      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
+      
+      If _type_ = 4
+        FrontColor($ff000000&$FFFFFF|_alpha_<<24)
+        BackColor($ff000000&$FFFFFF|_alpha_<<24)
+        
+        Line(_x_ + 1 + (_width_ - 6)/2, _y_ + (_height_ - 6)/2, 6, 6)
+        Line(_x_ + (_width_ - 6)/2, _y_ + (_height_ - 6)/2, 6, 6)
+        
+        Line(_x_ - 1 + 6 + (_width_ - 6)/2, _y_ + (_height_ - 6)/2,  - 6, 6)
+        Line(_x_ + 6 + (_width_ - 6)/2, _y_ + (_height_ - 6)/2,  - 6, 6)
+      Else
+        FrontColor(_color_fore_&$FFFFFF|_alpha_<<24)
+        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
+        
+        If _checked_
+          If _type_ = 1
+            If _width_%2
+              RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5, 5,5) 
+            Else
+              RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, 4,4) 
+            EndIf
+          Else
+            If _checked_ =- 1
+              If _width_%2
+                Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5) 
+              Else
+                Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4) 
+              EndIf
+            Else
+              _box_x_ = _width_/2 - 4
+              _box_y_ = _box_x_ + Bool(_width_%2) 
+              
+              LineXY((_x_ + 1+_box_x_),(_y_ +4+ _box_y_),(_x_ +2+ _box_x_),(_y_ +5+ _box_y_)) ; Левая линия
+              LineXY((_x_ + 1+_box_x_),(_y_ +5+ _box_y_),(_x_ +2+ _box_x_),(_y_ +6+ _box_y_)) ; Левая линия
+              
+              LineXY((_x_ + 6+_box_x_),(_y_ +0+ _box_y_),(_x_ +3+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
+              LineXY((_x_ + 7+_box_x_),(_y_ +0+ _box_y_),(_x_ +4+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
+            EndIf
+          EndIf
+        EndIf
+        
+      EndIf    
+      
+      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+      
+      If _checked_
+        FrontColor(_color_frame2_&$FFFFFF|_alpha_<<24)
+      Else
+        FrontColor(_color_frame_&$FFFFFF|_alpha_<<24)
+      EndIf
+      
+      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_);, _color_frame_&$FFFFFF|_alpha_<<24)
+    EndMacro
+    
     
     ;- 
     ;-   DECLAREs
@@ -1487,8 +1654,8 @@ CompilerIf Not Defined(widget, #PB_Module)
               mouse_x - Mouse()\delta\x
               mouse_y - Mouse()\delta\y
               
-;               mx = mouse_x - Px + Transform()\pos
-;               my = mouse_y - Py + Transform()\pos
+              ;               mx = mouse_x - Px + Transform()\pos
+              ;               my = mouse_y - Py + Transform()\pos
               mx = Match(mouse_x - Px + Transform()\pos, Mouse()\grid)
               my = Match(mouse_y - Py + Transform()\pos, Mouse()\grid)
               
@@ -1519,38 +1686,38 @@ CompilerIf Not Defined(widget, #PB_Module)
               
             EndIf
             
-;           Case #__Event_leftButtonDown  
+            ;           Case #__Event_leftButtonDown  
             ;Debug 
-;             If Entered()\mode\transform 
-;               If Transform()\id[Transform()\index]\color\state <> #__s_2
-;                 If Not (_from_point_(mouse_x, mouse_y, Transform()\id[Transform()\index]) And Transform()\index <> #__a_moved)
-;                   If a_set(Entered())
-;                     a_index(result, i)
-;                     ; Post(#PB_EventType_StatusChange, Entered(), Transform()\index)
-;                   EndIf
-;                 EndIf
-;                 
-;                 If _from_point_(mouse_x, mouse_y, Transform()\id[Transform()\index])
-;                   Transform()\id[Transform()\index]\color\state = #__s_2
-;                 EndIf
-;                 
-;                 ;get anchor delta pos
-;                 If Transform()\index = #__a_moved
-;                   If Mouse()\grid > 0
-;                     mouse_x = (mouse_x/Mouse()\grid) * Mouse()\grid
-;                     mouse_y = (mouse_y/Mouse()\grid) * Mouse()\grid
-;                   EndIf
-;                   
-;                   Mouse()\delta\x = mouse_x - Entered()\x[#__c_frame]        
-;                   Mouse()\delta\y = mouse_y - Entered()\y[#__c_frame]
-;                 Else
-;                   Mouse()\delta\x = mouse_x - Transform()\id[Transform()\index]\x
-;                   Mouse()\delta\y = mouse_y - Transform()\id[Transform()\index]\y
-;                 EndIf
-;               EndIf
-;               
-;               result = 1
-;             EndIf
+            ;             If Entered()\mode\transform 
+            ;               If Transform()\id[Transform()\index]\color\state <> #__s_2
+            ;                 If Not (_from_point_(mouse_x, mouse_y, Transform()\id[Transform()\index]) And Transform()\index <> #__a_moved)
+            ;                   If a_set(Entered())
+            ;                     a_index(result, i)
+            ;                     ; Post(#PB_EventType_StatusChange, Entered(), Transform()\index)
+            ;                   EndIf
+            ;                 EndIf
+            ;                 
+            ;                 If _from_point_(mouse_x, mouse_y, Transform()\id[Transform()\index])
+            ;                   Transform()\id[Transform()\index]\color\state = #__s_2
+            ;                 EndIf
+            ;                 
+            ;                 ;get anchor delta pos
+            ;                 If Transform()\index = #__a_moved
+            ;                   If Mouse()\grid > 0
+            ;                     mouse_x = (mouse_x/Mouse()\grid) * Mouse()\grid
+            ;                     mouse_y = (mouse_y/Mouse()\grid) * Mouse()\grid
+            ;                   EndIf
+            ;                   
+            ;                   Mouse()\delta\x = mouse_x - Entered()\x[#__c_frame]        
+            ;                   Mouse()\delta\y = mouse_y - Entered()\y[#__c_frame]
+            ;                 Else
+            ;                   Mouse()\delta\x = mouse_x - Transform()\id[Transform()\index]\x
+            ;                   Mouse()\delta\y = mouse_y - Transform()\id[Transform()\index]\y
+            ;                 EndIf
+            ;               EndIf
+            ;               
+            ;               result = 1
+            ;             EndIf
             
           Case #__Event_leftButtonUp
             If Transform()\widget\mode\transform
@@ -1750,21 +1917,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf 
     EndMacro      
-    
-    Macro _button_draw_(_vertical_, _x_,_y_,_width_,_height_, _arrow_type_, _arrow_size_, _arrow_direction_, _color_fore_,_color_back_,_color_frame_, _color_arrow_, _alpha_, _round_)
-      ; Draw buttons   
-      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-      _box_gradient_(_vertical_,_x_,_y_,_width_,_height_, _color_fore_,_color_back_, _round_, _alpha_)
-      
-      ; Draw buttons frame
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      RoundBox(_x_,_y_,_width_,_height_,_round_,_round_,_color_frame_&$FFFFFF|_alpha_<<24)
-      
-      ; Draw arrows
-      DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      Arrow(_x_ + (_width_ - _arrow_size_)/2,_y_ + (_height_ - _arrow_size_)/2, _arrow_size_, _arrow_direction_, _color_arrow_&$FFFFFF|_alpha_<<24, _arrow_type_)
-      ResetGradientColors()
-    EndMacro
     
     Macro _set_item_image_(_this_, _item_, _image_)
       _item_\img\index = IsImage(_image_)
@@ -6946,7 +7098,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure tt_close(*this._s_tt)
       If IsWindow(*this\window)
         *this\visible = 0
-        ;UnbindEvent(#PB_Event_ActivateWindow, @tt_tree_callBack(), *this\window)
+        ; UnbindEvent(#PB_Event_ActivateWindow, @tt_tree_callBack(), *this\window)
         CloseWindow(*this\window)
         ; ClearStructure(*this, _s_tt) ;??????
       EndIf
@@ -6958,299 +7110,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       ;            Bool((_pos_ - _this_\y - _this_\bar\page\pos) > (_this_\bar\page\len - _len_) And
       ;                 bar_SetState(_this_, (_pos_ - _this_\y) - (_this_\bar\page\len - _len_)))) : _this_\change = 0
       _bar_scrollarea_change_(_this_, _pos_ - _this_\y, _len_)
-    EndMacro
-    
-    Macro _tree_box_3(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFF8F8F8, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255) 
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      
-      If _checked_
-        ;RoundBox( _x_,_y_,_width_,_height_, _round_,_round_, _color_frame2_&$FFFFFF|_alpha_<<24)
-        
-        BackColor(_color_frame2_&$FFFFFF|_alpha_<<24)
-        FrontColor(_color_frame2_&$FFFFFF|_alpha_<<24)
-      Else
-        ;RoundBox( _x_,_y_,_width_,_height_, _round_,_round_, _color_frame_&$FFFFFF|_alpha_<<24)
-        
-        BackColor(_color_frame_&$FFFFFF|_alpha_<<24)
-        FrontColor(_color_frame_&$FFFFFF|_alpha_<<24)
-      EndIf
-      
-      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_);, _color_frame_&$FFFFFF|_alpha_<<24)
-      RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, _round_,_round_);, _color_frame_&$FFFFFF|_alpha_<<24)
-      RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, _round_,_round_);, _color_frame_&$FFFFFF|_alpha_<<24)
-      
-      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-      
-      If _checked_
-        ;_box_gradient_(0, _x_,_y_,_width_,_height_,_color_fore2_&$FFFFFF|_alpha_<<24, _color_back2_&$FFFFFF|_alpha_<<24, _round_)
-        
-        BackColor(_color_fore2_&$FFFFFF|_alpha_<<24)
-        FrontColor(_color_back2_&$FFFFFF|_alpha_<<24)
-      Else
-        ;_box_gradient_(0, _x_,_y_,_width_,_height_,_color_fore_&$FFFFFF|_alpha_<<24, _color_back_&$FFFFFF|_alpha_<<24, _round_)
-        
-        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
-        FrontColor(_color_back_&$FFFFFF|_alpha_<<24)
-      EndIf
-      
-      
-      LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-      ;         RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
-      
-      RoundBox(_x_ + 3,_y_ + 1,_width_ - 6,_height_ - 2, 2,2)
-      RoundBox(_x_ + 1,_y_ + 3,_width_ - 2,_height_ - 6, 2,2)
-      RoundBox(_x_ + 1,_y_ + 1,_width_ - 2,_height_ - 2, _round_,_round_)
-      
-      ;DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-      FrontColor(_color_fore_&$FFFFFF|_alpha_<<24)
-      BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
-        
-      If _checked_
-        If _type_ = 1
-          If _width_%2
-            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5, 5,5);,_color_&$FFFFFF|_alpha_<<24) 
-          Else
-            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, 4,4);,_color_&$FFFFFF|_alpha_<<24) 
-          EndIf
-        Else
-          _box_x_ = _width_/2 - 4
-          _box_y_ = _box_x_ + Bool(_width_%2) 
-          
-          LineXY((_x_ + 1+_box_x_),(_y_ +4+ _box_y_),(_x_ +2+ _box_x_),(_y_ +5+ _box_y_),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
-          LineXY((_x_ + 1+_box_x_),(_y_ +5+ _box_y_),(_x_ +2+ _box_x_),(_y_ +6+ _box_y_),_color_&$FFFFFF|_alpha_<<24); Левая линия
-          
-          LineXY((_x_ + 6+_box_x_),(_y_ +0+ _box_y_),(_x_ +3+ _box_x_),(_y_ +6+ _box_y_),_color_&$FFFFFF|_alpha_<<24) ; правая линия
-          LineXY((_x_ + 7+_box_x_),(_y_ +0+ _box_y_),(_x_ +4+ _box_x_),(_y_ +6+ _box_y_),_color_&$FFFFFF|_alpha_<<24); правая линия
-        EndIf
-      EndIf
-      
-   EndMacro
-    
-    Macro _tree_box_2(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFFFFFFF, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255) 
-      
-      If _checked_
-        FrontColor(_color_frame2_&$FFFFFF|_alpha_<<24)
-        BackColor(_color_frame2_&$FFFFFF|_alpha_<<24)
-      Else
-        FrontColor(_color_frame_&$FFFFFF|_alpha_<<24)
-        BackColor(_color_frame_&$FFFFFF|_alpha_<<24)
-      EndIf
-      
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
-      RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, _round_,_round_)
-      RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, _round_,_round_)
-      
-      If _checked_
-        FrontColor(_color_back2_&$FFFFFF|_alpha_<<24)
-        BackColor(_color_fore2_&$FFFFFF|_alpha_<<24)
-      Else
-        FrontColor(_color_back_&$FFFFFF|_alpha_<<24)
-        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
-      EndIf
-      
-      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-      LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-      
-      RoundBox(_x_ + 3,_y_ + 1,_width_ - 6,_height_ - 2, 2,2)
-      RoundBox(_x_ + 1,_y_ + 3,_width_ - 2,_height_ - 6, 2,2)
-      RoundBox(_x_ + 1,_y_ + 1,_width_ - 2,_height_ - 2, _round_,_round_)
-      
-      If _checked_
-        FrontColor(_color_fore_&$FFFFFF|_alpha_<<24)
-        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
-        
-        If _type_ = 1
-          If _width_%2
-            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5, 5,5) 
-          Else
-            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, 4,4)
-          EndIf
-        Else
-          If _checked_ =- 1
-            If _width_%2
-              Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5) 
-            Else
-              Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4) 
-            EndIf
-          Else
-            _box_x_ = _width_/2 - 4
-            _box_y_ = _box_x_ + Bool(_width_%2) 
-            
-            LineXY((_x_ + 1+_box_x_),(_y_ +4+ _box_y_),(_x_ +2+ _box_x_),(_y_ +5+ _box_y_)) ; Левая линия
-            LineXY((_x_ + 1+_box_x_),(_y_ +5+ _box_y_),(_x_ +2+ _box_x_),(_y_ +6+ _box_y_)) ; Левая линия
-            
-            LineXY((_x_ + 6+_box_x_),(_y_ +0+ _box_y_),(_x_ +3+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
-            LineXY((_x_ + 7+_box_x_),(_y_ +0+ _box_y_),(_x_ +4+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
-          EndIf
-        EndIf
-      EndIf
-      
-    EndMacro
-    
-    Macro _tree_box_(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFFFFFFF, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255) 
-      DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-      
-      If _checked_
-        BackColor(_color_fore2_&$FFFFFF|_alpha_<<24)
-        FrontColor(_color_back2_&$FFFFFF|_alpha_<<24)
-      Else
-        BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
-        FrontColor(_color_back_&$FFFFFF|_alpha_<<24)
-      EndIf
-      
-      
-      LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
-      
-      FrontColor(_color_fore_&$FFFFFF|_alpha_<<24)
-      BackColor(_color_fore_&$FFFFFF|_alpha_<<24)
-        
-      If _checked_
-        If _type_ = 1
-          If _width_%2
-            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5, 5,5) 
-          Else
-            RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, 4,4) 
-          EndIf
-        Else
-          If _checked_ =- 1
-            If _width_%2
-              Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 5,5) 
-            Else
-              Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4) 
-            EndIf
-          Else
-            _box_x_ = _width_/2 - 4
-            _box_y_ = _box_x_ + Bool(_width_%2) 
-            
-            LineXY((_x_ + 1+_box_x_),(_y_ +4+ _box_y_),(_x_ +2+ _box_x_),(_y_ +5+ _box_y_)) ; Левая линия
-            LineXY((_x_ + 1+_box_x_),(_y_ +5+ _box_y_),(_x_ +2+ _box_x_),(_y_ +6+ _box_y_)) ; Левая линия
-            
-            LineXY((_x_ + 6+_box_x_),(_y_ +0+ _box_y_),(_x_ +3+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
-            LineXY((_x_ + 7+_box_x_),(_y_ +0+ _box_y_),(_x_ +4+ _box_x_),(_y_ +6+ _box_y_)) ; правая линия
-          EndIf
-        EndIf
-      EndIf
-      
-      DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      
-      If _checked_
-        FrontColor(_color_frame2_&$FFFFFF|_alpha_<<24)
-      Else
-        FrontColor(_color_frame_&$FFFFFF|_alpha_<<24)
-      EndIf
-      
-      RoundBox(_x_,_y_,_width_,_height_, _round_,_round_);, _color_frame_&$FFFFFF|_alpha_<<24)
-      
-      
-   EndMacro
-    
-    Macro _tree_box_1(_type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_ = $FFFFFFFF, _alpha_ = 255) 
-      
-      If _type_ = 1
-        If _checked_
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          
-          RoundBox(_x_,_y_,_width_,_height_, 4,4, $F67905&$FFFFFF|255<<24)
-          RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, 4,4, $F67905&$FFFFFF|255<<24)
-          RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, 4,4, $F67905&$FFFFFF|255<<24)
-          
-          DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          BackColor($FFB775&$FFFFFF|255<<24) 
-          FrontColor($F67905&$FFFFFF|255<<24)
-          
-          LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-          RoundBox(_x_ + 3,_y_ + 1,_width_ - 6,_height_ - 2, 2,2)
-          RoundBox(_x_ + 1,_y_ + 3,_width_ - 2,_height_ - 6, 2,2)
-          RoundBox(_x_ + 1,_y_ + 1,_width_ - 2,_height_ - 2, 4,4)
-        Else
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          
-          RoundBox(_x_,_y_,_width_,_height_, 4,4, $80C8C8C8)
-          RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, 4,4, $80C8C8C8)
-          RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, 4,4, $80C8C8C8)
-          
-          DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-          BackColor($FFF8F8F8)
-          FrontColor($80E2E2E2)
-          
-          LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-          RoundBox(_x_ + 3,_y_ + 1,_width_ - 6,_height_ - 2, 2,2)
-          RoundBox(_x_ + 1,_y_ + 3,_width_ - 2,_height_ - 6, 2,2)
-          RoundBox(_x_ + 1,_y_ + 1,_width_ - 2,_height_ - 2, 4,4)
-        EndIf
-      Else
-        DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-        
-        If _checked_
-          BackColor($FFB775&$FFFFFF|255<<24) 
-          FrontColor($F67905&$FFFFFF|255<<24)
-          
-          LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-          RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
-          
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox(_x_,_y_,_width_,_height_, _round_,_round_, $F67905&$FFFFFF|255<<24)
-          
-          If _type_ = 1
-            RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, 4,4, $F67905&$FFFFFF|255<<24)
-            RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, 4,4, $F67905&$FFFFFF|255<<24)
-            
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            RoundBox(_x_ + 3,_y_ + 1,_width_ - 6,_height_ - 2, 2,2)
-            RoundBox(_x_ + 1,_y_ + 3,_width_ - 2,_height_ - 6, 2,2)
-          EndIf
-          
-        Else
-          BackColor($FFFFFF&$FFFFFF|255<<24)
-          FrontColor($EEEEEE&$FFFFFF|255<<24)
-          
-          LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-          RoundBox(_x_,_y_,_width_,_height_, _round_,_round_)
-          
-          DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          RoundBox(_x_,_y_,_width_,_height_, _round_,_round_, $7E7E7E&$FFFFFF|255<<24)
-          
-          If _type_ = 1
-            RoundBox(_x_,_y_ + 1,_width_,_height_ - 2, 4,4, $7E7E7E&$FFFFFF|255<<24)
-            RoundBox(_x_ + 1,_y_,_width_ - 2,_height_, 4,4, $7E7E7E&$FFFFFF|255<<24)
-            
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-            RoundBox(_x_ + 3,_y_ + 1,_width_ - 6,_height_ - 2, 2,2)
-            RoundBox(_x_ + 1,_y_ + 3,_width_ - 2,_height_ - 6, 2,2)
-          EndIf
-        EndIf
-      EndIf
-      
-      If _checked_
-        DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-        
-        If _type_ = 1
-          RoundBox(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, 4,4,_color_&$FFFFFF|_alpha_<<24) ; правая линия
-                                                                                                       ; RoundBox(_x_ + (_width_ - 8)/2,_y_ + (_height_ - 8)/2, 8,8, 4,4,_color_&$FFFFFF|_alpha_<<24) ; правая линия
-        ElseIf _type_ = 3
-          If _checked_ > 1
-            Box(_x_ + (_width_ - 4)/2,_y_ + (_height_ - 4)/2, 4,4, _color_&$FFFFFF|_alpha_<<24) ; правая линия
-          Else
-            If _width_ = 15
-              LineXY((_x_ + 4),(_y_ + 8),(_x_ + 5),(_y_ + 9),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
-              LineXY((_x_ + 4),(_y_ + 9),(_x_ + 5),(_y_ + 10),_color_&$FFFFFF|_alpha_<<24); Левая линия
-              
-              LineXY((_x_ + 9),(_y_ + 4),(_x_ + 6),(_y_ + 10),_color_&$FFFFFF|_alpha_<<24) ; правая линия
-              LineXY((_x_ + 10),(_y_ + 4),(_x_ + 7),(_y_ + 10),_color_&$FFFFFF|_alpha_<<24); правая линия
-              
-            Else
-              LineXY((_x_ + 2),(_y_ + 6),(_x_ + 4),(_y_ + 7),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
-              LineXY((_x_ + 2),(_y_ + 7),(_x_ + 4),(_y_ + 8),_color_&$FFFFFF|_alpha_<<24) ; Левая линия
-              
-              LineXY((_x_ + 8),(_y_ + 2),(_x_ + 5),(_y_ + 8),_color_&$FFFFFF|_alpha_<<24) ; правая линия
-              LineXY((_x_ + 9),(_y_ + 2),(_x_ + 6),(_y_ + 8),_color_&$FFFFFF|_alpha_<<24) ; правая линия
-            EndIf
-          EndIf
-        EndIf
-      EndIf
-      
     EndMacro
     
     Procedure   Tree_Update(*this._s_widget, List row._s_rows())
@@ -7324,7 +7183,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               *this\mode\check = 4)
             
             If row()\parent And *this\mode\check = 4
-               row()\box[1]\x = row()\x + row()\sublevellen - row()\box[1]\width - *this\scroll\h\bar\page\pos
+              row()\box[1]\x = row()\x + row()\sublevellen - row()\box[1]\width - *this\scroll\h\bar\page\pos
             Else
               row()\box[1]\x = row()\x + (18 - row()\box[1]\width) - *this\scroll\h\bar\page\pos
             EndIf
@@ -7679,32 +7538,87 @@ CompilerIf Not Defined(widget, #PB_Module)
           ; Draw check buttons
           If *this\mode\buttons Or
              (*this\mode\check = 1 Or *this\mode\check = 4)
-            ; DrawingMode(#PB_2DDrawing_Default)
             
+; ; ;             DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+; ; ;             ; Draw boxs (check&option)
+; ; ;             ForEach *row()
+; ; ;               If *row()\draw And 
+; ; ;                  *this\mode\check 
+; ; ;                 If *row()\parent And *this\mode\check = 4
+; ; ;                   *row()\box[1]\round = 4
+; ; ;                 Else                                                                                                                ;If Not (*this\mode\buttons And *row()\childrens And *this\mode\check = 4)
+; ; ;                   *row()\box[1]\round = 1
+; ; ;                 EndIf
+; ; ;                 
+; ; ;                 If *row()\box[1]\state
+; ; ;                   BackColor($FFE9BA81&$FFFFFF|255<<24)
+; ; ;                   FrontColor($FFE89C3D&$FFFFFF|255<<24)
+; ; ;                 Else
+; ; ;                   BackColor($FFFeFeFe&$FFFFFF|255<<24)
+; ; ;                   FrontColor($80E2E2E2&$FFFFFF|255<<24)
+; ; ;                 EndIf
+; ; ;                 
+; ; ;                 LinearGradient(*row()\box[1]\x, *row()\box[1]\y,
+; ; ;                                *row()\box[1]\x, (*row()\box[1]\y + *row()\box[1]\height))
+; ; ;                 
+; ; ;                 draw_box_button(*row()\box[1], 0)
+; ; ;                 
+; ; ;               EndIf    
+; ; ;             Next
+; ; ;             
+; ; ;             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+; ; ;             ; Draw state (check&option)
+; ; ;             ForEach *row()
+; ; ;               If *row()\draw And 
+; ; ;                  *this\mode\check And 
+; ; ;                   *row()\box[1]\state
+; ; ;                 If *row()\parent And *this\mode\check = 4
+; ; ;                   draw_option_button(*row()\box[1], 4, $FFFFFFFF)
+; ; ;                 Else                                                                                                                ;If Not (*this\mode\buttons And *row()\childrens And *this\mode\check = 4)
+; ; ;                   draw_check_button(*row()\box[1], 6, $FFFFFFFF)
+; ; ;                 EndIf
+; ; ;               EndIf    
+; ; ;             Next
+; ; ;             
+; ; ;             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+; ; ;             ; Draw frame (check&option)
+; ; ;             ForEach *row()
+; ; ;               If *row()\draw And 
+; ; ;                  *this\mode\check
+; ; ;                 If *row()\box[1]\state
+; ; ;                   draw_box_button(*row()\box[1], $FFDC9338)
+; ; ;                 Else
+; ; ;                   draw_box_button(*row()\box[1], $80C8C8C8)
+; ; ;                 EndIf
+; ; ;               EndIf    
+; ; ;             Next
+; ; ;             
+            
+            ; Draw boxs (check&option)
+            Protected _box_x_, _box_y_
             ForEach *row()
-              If *row()\draw 
-                If *this\mode\check
-                  Protected _box_x_, _box_y_
-                  ; Draw box (check&option)
-                  If *row()\parent And *this\mode\check = 4
-                    _tree_box_(1, *row()\box[1]\x, *row()\box[1]\y, *row()\box[1]\width, *row()\box[1]\height, *row()\box[1]\state, 4);, \color)
-                  Else;If Not (*this\mode\buttons And *row()\childrens And *this\mode\check = 4)
-                    _tree_box_(3, *row()\box[1]\x, *row()\box[1]\y, *row()\box[1]\width, *row()\box[1]\height, *row()\box[1]\state, 2);, \color)
-                  EndIf
+              If *row()\draw And 
+                 *this\mode\check
+                
+                If *row()\parent And *this\mode\check = 4
+                  draw_button(1, *row()\box[1]\x, *row()\box[1]\y, *row()\box[1]\width, *row()\box[1]\height, *row()\box[1]\state, 4);, \color)
+                Else                                                                                                                ;If Not (*this\mode\buttons And *row()\childrens And *this\mode\check = 4)
+                  draw_button(3, *row()\box[1]\x, *row()\box[1]\y, *row()\box[1]\width, *row()\box[1]\height, *row()\box[1]\state, 2);, \color)
                 EndIf
+              EndIf    
+            Next
+            
+            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+            
+            ; Draw buttons (expanded&collapsed)
+            ForEach *row()
+              If *row()\draw And *this\mode\buttons And 
+                 *row()\childrens And Not (*row()\sublevel And *this\mode\check = 4)
                 
-                ; Draw button (expanded&collapsed)
-                If *this\mode\buttons And *row()\childrens And 
-                   Not (*row()\sublevel And *this\mode\check = 4)
-                  
-                  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-                  
-                  Arrow(*row()\box[0]\x + (*row()\box[0]\width - 6)/2,
-                        *row()\box[0]\y + (*row()\box[0]\height - 6)/2, 
-                        6, Bool(Not *row()\box[0]\state) + 2,
-                        *row()\color\front[0], 0,0)   ; *row()\color\state
-                EndIf 
-                
+                Arrow(*row()\box[0]\x + (*row()\box[0]\width - 6)/2,
+                      *row()\box[0]\y + (*row()\box[0]\height - 6)/2, 
+                      6, Bool(Not *row()\box[0]\state) + 2,
+                      *row()\color\front[0], 0,0)   ; *row()\color\state
               EndIf    
             Next
           EndIf
@@ -8874,7 +8788,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           DrawAlphaImage(*this\img\index[2], *this\x[#__c_inner]+*this\img\x, *this\y[#__c_inner]+*this\img\y, *this\color\alpha)
         EndIf
         
-        
+        ; frame draw
         If \fs
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
           If \fs = 1 
@@ -8950,70 +8864,33 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           ClipOutput(\x[#__c_clip],\y[#__c_clip],\width[#__c_clip],\height[#__c_clip])
           
-          ; draw button back
           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          If Not \caption\button[0]\hide
-            RoundBox(\caption\button[0]\x, \caption\button[0]\y, \caption\button[0]\width, \caption\button[0]\height, 
-                     \caption\button[0]\round, \caption\button[0]\round, \caption\button[0]\color\back[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
-          EndIf
-          If Not \caption\button[1]\hide
-            RoundBox(\caption\button[1]\x, \caption\button[1]\y, \caption\button[1]\width, \caption\button[1]\height,
-                     \caption\button[1]\round, \caption\button[1]\round, \caption\button[1]\color\back[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
-          EndIf
-          If Not \caption\button[2]\hide
-            RoundBox(\caption\button[2]\x, \caption\button[2]\y, \caption\button[2]\width, \caption\button[2]\height, 
-                     \caption\button[2]\round, \caption\button[2]\round, \caption\button[2]\color\back[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
-          EndIf
-          If Not \caption\button[3]\hide
-            RoundBox(\caption\button[3]\x, \caption\button[3]\y, \caption\button[3]\width, \caption\button[3]\height, 
-                     \caption\button[3]\round, \caption\button[3]\round, \caption\button[3]\color\back[\caption\button[3]\color\state]&$FFFFFF|\caption\button[3]\color\alpha<<24)
-          EndIf
+          ; close button
+          draw_box_button(\caption\button[0], \caption\button[0]\color\back[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
           
-          ; draw button frame
+          ; maximize button
+          draw_box_button(\caption\button[1], \caption\button[1]\color\back[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
+          
+          ; minimize button
+          draw_box_button(\caption\button[2], \caption\button[2]\color\back[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
+          
+          ; help button
+          draw_box_button(\caption\button[3], \caption\button[3]\color\back[\caption\button[3]\color\state]&$FFFFFF|\caption\button[3]\color\alpha<<24)
+          
+          
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-          If Not \caption\button[0]\hide
-            If \caption\button[0]\color\state
-              Line(\caption\button[0]\x + 1 + (\caption\button[0]\width - 6)/2, \caption\button[0]\y + (\caption\button[0]\height - 6)/2, 6, 6, \caption\button[0]\color\front[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
-              Line(\caption\button[0]\x + (\caption\button[0]\width - 6)/2, \caption\button[0]\y + (\caption\button[0]\height - 6)/2, 6, 6, \caption\button[0]\color\front[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
-              
-              Line(\caption\button[0]\x - 1 + 6 + (\caption\button[0]\width - 6)/2, \caption\button[0]\y + (\caption\button[0]\height - 6)/2,  - 6, 6, \caption\button[0]\color\front[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
-              Line(\caption\button[0]\x + 6 + (\caption\button[0]\width - 6)/2, \caption\button[0]\y + (\caption\button[0]\height - 6)/2,  - 6, 6, \caption\button[0]\color\front[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
-            EndIf
-            
-            RoundBox(\caption\button[0]\x, \caption\button[0]\y, \caption\button[0]\width, \caption\button[0]\height, 
-                     \caption\button[0]\round, \caption\button[0]\round, \caption\button[0]\color\frame[\caption\button[0]\color\state]&$FFFFFF|\caption\button[0]\color\alpha<<24)
-          EndIf
-          If Not \caption\button[1]\hide
-            If \caption\button[1]\color\state
-              Line(\caption\button[1]\x + 2 + (\caption\button[1]\width - 4)/2, \caption\button[1]\y + (\caption\button[1]\height - 4)/2, 4, 4, \caption\button[1]\color\front[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
-              Line(\caption\button[1]\x + 1 + (\caption\button[1]\width - 4)/2, \caption\button[1]\y + (\caption\button[1]\height - 4)/2, 4, 4, \caption\button[1]\color\front[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
-              
-              Line(\caption\button[1]\x + 1 + (\caption\button[1]\width - 4)/2, \caption\button[1]\y + (\caption\button[1]\height - 4)/2,  - 4, 4, \caption\button[1]\color\front[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
-              Line(\caption\button[1]\x + 2 + (\caption\button[1]\width - 4)/2, \caption\button[1]\y + (\caption\button[1]\height - 4)/2,  - 4, 4, \caption\button[1]\color\front[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
-            EndIf
-            
-            RoundBox(\caption\button[1]\x, \caption\button[1]\y, \caption\button[1]\width, \caption\button[1]\height,
-                     \caption\button[1]\round, \caption\button[1]\round, \caption\button[1]\color\frame[\caption\button[1]\color\state]&$FFFFFF|\caption\button[1]\color\alpha<<24)
-          EndIf
-          If Not \caption\button[2]\hide
-            If \caption\button[2]\color\state
-              Line(\caption\button[2]\x - 2 + (\caption\button[2]\width - 4)/2, \caption\button[2]\y + (\caption\button[2]\height - 4)/2, 4, 4, \caption\button[2]\color\front[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
-              Line(\caption\button[2]\x - 1 + (\caption\button[2]\width - 4)/2, \caption\button[2]\y + (\caption\button[2]\height - 4)/2, 4, 4, \caption\button[2]\color\front[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
-              
-              Line(\caption\button[2]\x - 1 + 6 + (\caption\button[2]\width - 4)/2, \caption\button[2]\y + (\caption\button[2]\height - 4)/2,  - 4, 4, \caption\button[2]\color\front[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
-              Line(\caption\button[2]\x - 2 + 6 + (\caption\button[2]\width - 4)/2, \caption\button[2]\y + (\caption\button[2]\height - 4)/2,  - 4, 4, \caption\button[2]\color\front[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
-            EndIf
-            
-            RoundBox(\caption\button[2]\x, \caption\button[2]\y, \caption\button[2]\width, \caption\button[2]\height, 
-                     \caption\button[2]\round, \caption\button[2]\round, \caption\button[2]\color\frame[\caption\button[2]\color\state]&$FFFFFF|\caption\button[2]\color\alpha<<24)
-          EndIf
-          If Not \caption\button[3]\hide
-            RoundBox(\caption\button[3]\x, \caption\button[3]\y, \caption\button[3]\width, \caption\button[3]\height, 
-                     \caption\button[3]\round, \caption\button[3]\round, \caption\button[3]\color\frame[\caption\button[3]\color\state]&$FFFFFF|\caption\button[3]\color\alpha<<24)
-          EndIf
+          ; close button
+          draw_close_button(\caption\button[0], 6)
           
+          ; maximize button
+          draw_maximize_button(\caption\button[1], 4)
+          
+          ; minimize button
+          draw_minize_button(\caption\button[2], 4)
+          
+          ; help button
+          draw_help_button(\caption\button[3], 4)
         EndIf
-        
         
       EndWith
     EndProcedure
@@ -9318,16 +9195,64 @@ CompilerIf Not Defined(widget, #PB_Module)
             DrawRotatedText(*this\x[#__c_inner] + *this\x[#__c_required] + *this\row\_s()\text\x, *this\y[#__c_inner] + *this\y[#__c_required] + *this\row\_s()\text\y, *this\row\_s()\text\String.s, *this\text\rotate, *this\color\Front[Bool(*this\_state & #__s_front) * *this\color\state]);*this\row\_s()\color\font)
           Next 
         EndIf
-        
+;         
         If #PB_GadgetType_Option = *this\type
           Protected _box_x_,_box_y_
-          _tree_box_(1, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round);, \color)
+          draw_button(1, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round);, \color)
         EndIf 
         
         If #PB_GadgetType_CheckBox = *this\type
-          _tree_box_(3, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round);, \color)
+          draw_button(3, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round);, \color)
         EndIf
         
+; ;         If #PB_GadgetType_Option = *this\type Or
+; ;            #PB_GadgetType_CheckBox = *this\type
+; ;           
+; ;           DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+; ;           
+; ; ;           DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+; ; ;           LinearGradient(*this\button\x,
+; ; ;                          *this\button\y,
+; ; ;                          *this\button\x, 
+; ; ;                          (*this\button\y + *this\button\height))
+; ;           ; Draw boxs (check&option)      
+; ;           If *this\button\state
+; ; ;             BackColor($FFE9BA81&$FFFFFF|255<<24)
+; ; ;             FrontColor($FFE89C3D&$FFFFFF|255<<24)
+; ;             draw_box_button(*this\button, $FFE89C3D)
+; ;           Else
+; ; ;             BackColor($FFFeFeFe&$FFFFFF|255<<24)
+; ; ;             FrontColor($80E2E2E2&$FFFFFF|255<<24)
+; ;             draw_box_button(*this\button, $ffffffff)
+; ;           EndIf
+; ;           
+; ;           If *this\button\state
+; ;             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+; ;             If #PB_GadgetType_Option = *this\type
+; ;               draw_option_button(*this\button, 4, $FFFFFFFF)
+; ;             Else                                                                                                                ;If Not (*this\mode\buttons And *row()\childrens And *this\mode\check = 4)
+; ;               If *this\button\state =- 1
+; ;                 ;draw_option_button(*this\button, 4, $FFFFFFFF)
+; ;                 RoundBox(*this\button\x+4,
+; ;                          *this\button\y+4,
+; ;                          *this\button\width-8,
+; ;                          *this\button\height-8, 1,1, $FFFFFFFF)
+; ;               Else
+; ;                 draw_check_button(*this\button, 6, $FFFFFFFF)
+; ;               EndIf
+; ;             EndIf
+; ;           EndIf
+; ;           
+; ;           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+; ;           ; Draw frame (check&option)
+; ;           If *this\button\state
+; ;             draw_box_button(*this\button, $FFDC9338)
+; ;           Else
+; ;             draw_box_button(*this\button, $80C8C8C8)
+; ;           EndIf
+; ;         EndIf
+          
+            
         ;;  ClipOutput(*this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip])
         
         ; draw frame
@@ -9861,6 +9786,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If X<>#PB_Ignore 
           If *this\parent 
+            If Not *this\child And *this\parent\scroll And *this\parent\scroll\h
+              If x > *this\parent\scroll\h\bar\max - *this\parent\scroll\h\bar\page\pos - \width
+                x = *this\parent\scroll\h\bar\max - *this\parent\scroll\h\bar\page\pos - \width
+              EndIf
+            EndIf
+            
             If *this\x[#__c_draw] <> x 
               *this\x[#__c_draw] = x 
               *this\x[#__c_container] = *this\x[#__c_draw]
@@ -9896,6 +9827,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If Y<>#PB_Ignore 
           If *this\parent 
+            If Not *this\child And *this\parent\scroll And *this\parent\scroll\v
+              If y > *this\parent\scroll\v\bar\max - *this\parent\scroll\v\bar\page\pos - \height
+                y = *this\parent\scroll\v\bar\max - *this\parent\scroll\v\bar\page\pos - \height
+              EndIf
+            EndIf
+            
             If *this\y[#__c_draw] <> y 
               *this\y[#__c_draw] = y 
               *this\y[#__c_container] = *this\y[#__c_draw]
@@ -10077,12 +10014,12 @@ CompilerIf Not Defined(widget, #PB_Module)
             PopListPosition(widget())
           EndIf
           
-;             If *this\text\string = "Button" And *this\parent\scroll And *this\parent\scroll\v 
-;             ;*this\y[#__c_container]  = 370
-;             Debug    *this\y[#__c_container] 
-;            EndIf
-            
-        
+          ;             If *this\text\string = "Button" And *this\parent\scroll And *this\parent\scroll\v 
+          ;             ;*this\y[#__c_container]  = 370
+          ;             Debug    *this\y[#__c_container] 
+          ;            EndIf
+          
+          
           If *this\parent And 
              *this\parent\type = #__type_mdi And ; Not _is_scrollbar_(*this) And Not *this\parent\change 
              *this\parent\scroll And 
@@ -10834,6 +10771,14 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\bar\increment = *value
             
         EndSelect
+        
+;         PushListPosition(widget())
+;         ForEach widget()
+;           If widget()\parent = *this
+;             Clip(widget(), #True)
+;           EndIf
+;         Next
+;         PopListPosition(widget())
       EndIf
       
       ProcedureReturn result
@@ -11166,45 +11111,45 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
             EndIf
             
-;              Debug ""+*this\x[#__c_draw]+" "+*this\x[#__c_container]+" "+*parent\x[#__c_required]
-;             x = *this\x[#__c_draw]
-;             y = *this\y[#__c_draw]
-;             
-;             ; new parent
-;             If *parent\scroll And 
-;                *parent\scroll\v And 
-;                *parent\scroll\h
-;               
-;               ; for the scroll area childrens
-;               x - *parent\scroll\h\bar\page\pos
-;               y - *parent\scroll\v\bar\page\pos
-;             EndIf
-;             
-;             ; last parent
-;             If *LastParent\scroll And 
-;                *LastParent\scroll\v And 
-;                *LastParent\scroll\h
-;               
-;               ; for the scroll area childrens
-;               x + *LastParent\scroll\h\bar\page\pos
-;               y + *LastParent\scroll\v\bar\page\pos
-;             EndIf
-;             
-;             Resize(*this, x, y, #PB_Ignore, #PB_Ignore)
-             
+            ;              Debug ""+*this\x[#__c_draw]+" "+*this\x[#__c_container]+" "+*parent\x[#__c_required]
+            ;             x = *this\x[#__c_draw]
+            ;             y = *this\y[#__c_draw]
+            ;             
+            ;             ; new parent
+            ;             If *parent\scroll And 
+            ;                *parent\scroll\v And 
+            ;                *parent\scroll\h
+            ;               
+            ;               ; for the scroll area childrens
+            ;               x - *parent\scroll\h\bar\page\pos
+            ;               y - *parent\scroll\v\bar\page\pos
+            ;             EndIf
+            ;             
+            ;             ; last parent
+            ;             If *LastParent\scroll And 
+            ;                *LastParent\scroll\v And 
+            ;                *LastParent\scroll\h
+            ;               
+            ;               ; for the scroll area childrens
+            ;               x + *LastParent\scroll\h\bar\page\pos
+            ;               y + *LastParent\scroll\v\bar\page\pos
+            ;             EndIf
+            ;             
+            ;             Resize(*this, x, y, #PB_Ignore, #PB_Ignore)
+            
             ;;  Resize(*this, *parent\x[#__c_required] + *this\x[#__c_container], *parent\y[#__c_required] + *this\y[#__c_container], #PB_Ignore, #PB_Ignore)
-             If *parent\scroll And
-                *parent\scroll\v And
-                *parent\scroll\h
-               
-               Resize(*this,
-                      *this\x[#__c_container] - *parent\scroll\h\bar\page\pos,
-                      *this\y[#__c_container] - *parent\scroll\v\bar\page\pos,
-                      #PB_Ignore, #PB_Ignore)
-             Else
-               Resize(*this, *this\x[#__c_container], *this\y[#__c_container], #PB_Ignore, #PB_Ignore)
-             EndIf
-             
+            If *parent\scroll And
+               *parent\scroll\v And
+               *parent\scroll\h
+              
+              Resize(*this,
+                     *this\x[#__c_container] - *parent\scroll\h\bar\page\pos,
+                     *this\y[#__c_container] - *parent\scroll\v\bar\page\pos,
+                     #PB_Ignore, #PB_Ignore)
+            Else
+              Resize(*this, *this\x[#__c_container], *this\y[#__c_container], #PB_Ignore, #PB_Ignore)
+            EndIf
+            
             ;               PushListPosition(Root())
             ;               ForEach Root()
             ;                 Debug Root()
@@ -12602,8 +12547,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If ScrollBars And 
              flag & #__flag_noscrollbars = #False
-; ;             *this\x[#__c_required] = *this\x[#__c_inner]
-; ;             *this\y[#__c_required] = *this\y[#__c_inner] 
+            ; ;             *this\x[#__c_required] = *this\x[#__c_inner]
+            ; ;             *this\y[#__c_required] = *this\y[#__c_inner] 
             *this\width[#__c_required] = *param_1
             *this\height[#__c_required] = *param_2
           EndIf
@@ -13444,18 +13389,18 @@ CompilerIf Not Defined(widget, #PB_Module)
       ;Debug  "" + Root()\repaint  + " " +  *this\root\repaint
       
       If StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
-       If *this\root\canvas\repaint <> #False
-         *this\root\canvas\repaint = #False
-       EndIf
-          
-          
-       If Transform() And Transform()\grab
+        If *this\root\canvas\repaint <> #False
+          *this\root\canvas\repaint = #False
+        EndIf
+        
+        
+        If Transform() And Transform()\grab
           DrawImage(ImageID(Transform()\grab), 0,0)
           
           ; draw selector
           DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
           Box(Transform()\id\x, Transform()\id\y, 
-             Transform()\id\width, Transform()\id\height , $ff000000);Transform()\color[Transform()\state]\id) 
+              Transform()\id\width, Transform()\id\height , $ff000000);Transform()\color[Transform()\state]\id) 
           
         Else
           If Not *this\root\text\fontID[1]
@@ -14359,9 +14304,9 @@ CompilerIf Not Defined(widget, #PB_Module)
                 Mouse()\delta\y = mouse_y - Entered()\bar\thumb\pos
               EndIf
             Else
-                Debug "   debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
-                Mouse()\delta\x = mouse_x - Entered()\x[#__c_draw]
-                Mouse()\delta\y = mouse_y - Entered()\y[#__c_draw]
+              Debug "   debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
+              Mouse()\delta\x = mouse_x - Entered()\x[#__c_draw]
+              Mouse()\delta\y = mouse_y - Entered()\y[#__c_draw]
             EndIf
             
             ;           If Entered()\child  
@@ -15237,5 +15182,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --f---------------8-------------------------------------------------------------------------------------f+7f---4---8----000----------f------H+-------------------------------------------------------6---------------4X-+-d---------------------------------------------------------------------+e----------------A------++0-4----------------
+; Folding = +-------P1-------------------------------------+---f---q+--------------------------------------------------------------------------------------------+---------------------------------------------v----------------8v---------------------------------------------------------------------------------------------------8v8-----------------
 ; EnableXP

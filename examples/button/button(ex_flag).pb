@@ -86,10 +86,9 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(OpenWindow(#PB_Any, 0, 0, width+180, height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ;     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget,1)
     *this = widget::Button(100, 100, 250, 250, get_text(), #__button_multiline);|#__flag_anchorsgadget);|#__text_vertical) 
-                                                                               ;*this = widget::Editor(100, 100, 250, 250, #__text_wordwrap) : SetText(*this, get_text())
     
     ; flag
-    f = widget::Tree(width+20, 10, 150, y+10, #__Tree_NoLines|#__Tree_NoButtons|#__tree_OptionBoxes);|#__Tree_CheckBoxes)
+    f = widget::Tree(width+20, 10, 150, y+10, #__Tree_NoLines|#__Tree_NoButtons|#__tree_OptionBoxes|#__tree_CheckBoxes|#__Tree_threestate)
     ; AddItem(f, -1, "align", -1,0)
     AddItem(f, -1, "top", -1,1)
     AddItem(f, -1, "left", -1,1)

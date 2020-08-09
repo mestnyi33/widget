@@ -1,7 +1,7 @@
-﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
-  ; Shows possible flags of ButtonGadget in action...
+  Uselib(widget) 
   EnableExplicit
   
   Global *Button_0._s_widget
@@ -78,5 +78,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -
+; Folding = +
 ; EnableXP
