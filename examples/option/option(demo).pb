@@ -58,7 +58,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_Syste
     Bind(GetWidget(i), @events_widgets())
   Next
   
-  ClearDebugOutput()
+  ;ClearDebugOutput()
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf

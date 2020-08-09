@@ -5,25 +5,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Global g,*g, b,*b, i, time, Sw = 350, Sh = 300, count;=1000
   
   Procedure events_gadgets()
-    Debug ""+EventGadget()+ " - widget  event - " +EventType()+ "  state - " +GetGadgetState(EventGadget()) ; 
-    
-    Select EventType()
-      Case #PB_EventType_Resize : Debug "gadget resize"
-      Case #PB_EventType_LeftClick
-        SetState(*g, GetGadgetState(EventGadget()))
-        Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
-    EndSelect
+    Debug ""+EventGadget()+ " - gadget event - " +EventType()
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+Str(GetIndex(this()\widget))+ " - widget  event - " +this()\event+ "  state - " +GetState(this()\widget) ; 
-    
-    Select this()\event
-      Case #PB_EventType_Resize : Debug "widget resize"
-      Case #PB_EventType_Change
-        SetGadgetState(g, GetState(this()\widget))
-        Debug  Str(GetIndex(this()\widget))+" - widget change " + GetState(this()\widget)
-    EndSelect
+    Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 440, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
@@ -76,10 +62,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ; set&get demos
     If Not count
-      SetGadgetAttribute(g, #PB_ScrollArea_X, 50)
-      SetGadgetAttribute(g, #PB_ScrollArea_Y, 50)
-      
       SetAttribute(*g, #PB_ScrollArea_X, 50)
+      SetGadgetAttribute(g, #PB_ScrollArea_X, 50)
+      
+      SetGadgetAttribute(g, #PB_ScrollArea_Y, 50)
       SetAttribute(*g, #PB_ScrollArea_Y, 50)
       
       SetGadgetAttribute(g, #PB_ScrollArea_InnerHeight, sh+80)
@@ -107,11 +93,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug "step - "+GetAttribute(*g, #PB_ScrollArea_ScrollStep)
     
     BindGadgetEvent(g, @events_gadgets())
-    Bind(*g, @events_gadgets())
+    Bind(*g, @events_widgets())
     
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -+
+; Folding = v-
 ; EnableXP

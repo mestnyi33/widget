@@ -1961,6 +1961,21 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf  
     EndMacro
     
+    Macro change_checkbox_state(_adress_, _three_state_)
+      ; change checkbox state
+      Select _adress_\state 
+        Case #PB_Checkbox_Unchecked 
+          If _three_state_
+            _adress_\state = #PB_Checkbox_Inbetween
+          Else
+            _adress_\state = #PB_Checkbox_Checked
+          EndIf
+        Case #PB_Checkbox_Checked : _adress_\state = #PB_Checkbox_Unchecked
+        Case #PB_Checkbox_Inbetween : _adress_\state = #PB_Checkbox_Checked
+      EndSelect
+    EndMacro
+
+
     ;-
     ;-  TEXTs
     Macro _set_text_(_this_, _text_, _flag_)
@@ -3919,6 +3934,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       If Bar_Change(*this, state) 
         Bar_Update(*this)
         
+        ; post event
         If Not (*this\type = #PB_GadgetType_ScrollBar And _is_scrollbar_(*this))
           If *this\type <> #PB_GadgetType_tabBar
             If *this\root\canvas\gadget <> EventGadget() 
@@ -3926,9 +3942,9 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
           EndIf
           
-          Post(#PB_EventType_Change, *this, *this\bar\from)
+          Post(#PB_EventType_Change, *this, *this\bar\from, *this\bar\direction)
         Else
-          Post(#PB_EventType_ScrollChange, *this\parent, *this\bar\from)
+          Post(#PB_EventType_ScrollChange, *this\parent, *this\bar, *this\bar\direction)
         EndIf
         
         result = #True
@@ -8166,16 +8182,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                     EndIf
                     
                     ; change box check
-                    Select *this\row\draws()\box[1]\state 
-                      Case #PB_Checkbox_Unchecked 
-                        If *this\mode\threestate
-                          *this\row\draws()\box[1]\state = #PB_Checkbox_Inbetween
-                        Else
-                          *this\row\draws()\box[1]\state = #PB_Checkbox_Checked
-                        EndIf
-                      Case #PB_Checkbox_Checked : *this\row\draws()\box[1]\state = #PB_Checkbox_Unchecked
-                      Case #PB_Checkbox_Inbetween : *this\row\draws()\box[1]\state = #PB_Checkbox_Checked
-                    EndSelect
+                    change_checkbox_state(*this\row\draws()\box[1], *this\mode\threestate)
                   EndIf
                   
                   If *this\mode\check = 2
@@ -10551,41 +10558,22 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      If *this\type = #__type_IPAddress
-        If *this\index[#__s_2] <> State : *this\index[#__s_2] = State
-          SetText(*this, Str(IPAddressField(State,0)) + "." + 
-                         Str(IPAddressField(State,1)) + "." + 
-                         Str(IPAddressField(State,2)) + "." + 
-                         Str(IPAddressField(State,3)))
-        EndIf
-      EndIf
-      
       ;
       If *this\type = #__type_checkBox
-        If *this\button\state <> State
-          Select State
-            Case #PB_Checkbox_Unchecked,
-                 #PB_Checkbox_Checked
-              
-              *this\button\state = State
-              Post(#PB_EventType_Change, *this)
-              ReDraw(*this\root)
-              ProcedureReturn 1
-              
-            Case #PB_Checkbox_Inbetween
-              If *this\mode\threestate 
-                *this\button\state = State
-                Post(#PB_EventType_Change, *this)
-                ReDraw(*this\root)
-                ProcedureReturn 1
-              EndIf
-          EndSelect
+        If *this\button\state <> state
+          change_checkbox_state(*this\button, Bool(state = #PB_Checkbox_Inbetween))
+          
+          Post(#PB_EventType_Change, *this)
+          ReDraw(*this\root)
+          ProcedureReturn 1
         EndIf
       EndIf
       
       ;
       If *this\type = #__type_Option
-        If *this\_group And *this\button\state <> State
+        If *this\_group And 
+           *this\button\state <> State
+          
           If *this\_group\_group <> *this
             If *this\_group\_group
               *this\_group\_group\button\state = 0
@@ -10597,6 +10585,15 @@ CompilerIf Not Defined(widget, #PB_Module)
           Post(#PB_EventType_Change, *this)
           ReDraw(*this\root)
           ProcedureReturn 1
+        EndIf
+      EndIf
+      
+      If *this\type = #__type_IPAddress
+        If *this\index[#__s_2] <> State : *this\index[#__s_2] = State
+          SetText(*this, Str(IPAddressField(State,0)) + "." + 
+                         Str(IPAddressField(State,1)) + "." + 
+                         Str(IPAddressField(State,2)) + "." + 
+                         Str(IPAddressField(State,3)))
         EndIf
       EndIf
       
@@ -13969,20 +13966,21 @@ CompilerIf Not Defined(widget, #PB_Module)
         Repaint = Bar_Events(*this\gadget[#__panel_1], eventtype, mouse_x, mouse_y)
       EndIf
       
-      ;
+      ;- CheckBox_Events()
       If *this\type = #PB_GadgetType_Option Or
          *this\type = #PB_GadgetType_CheckBox
         
         Select eventtype
           Case #PB_EventType_LeftButtonDown : Repaint = #True
           Case #PB_EventType_LeftButtonUp   : Repaint = #True
-            If *this\_state & #__s_entered
-              If *this\type = #PB_GadgetType_CheckBox
-                SetState(*this, Bool(Bool(*this\button\state & #PB_Checkbox_Checked = #PB_Checkbox_Checked) ! 1))
-              Else
-                SetState(*this, #True)
-              EndIf
-              
+          Case #PB_EventType_LeftClick
+            If *this\type = #PB_GadgetType_CheckBox
+              Repaint = SetState(*this, Bool(*this\button\state ! 1))
+            Else
+              Repaint = SetState(*this, 1)
+            EndIf
+            
+            If Repaint
               Post(#PB_EventType_LeftClick, *this) 
             EndIf
         EndSelect
@@ -14017,6 +14015,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
+      ;- Hyper_Events()
       If *this\type = #PB_GadgetType_HyperLink
         If eventtype <> #PB_EventType_MouseLeave And
            _from_point_(mouse_x - *this\x, mouse_y - *this\y, *this, [#__c_required])
@@ -15182,5 +15181,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +-------P1-------------------------------------+---f---q+--------------------------------------------------------------------------------------------+---------------------------------------------v----------------8v---------------------------------------------------------------------------------------------------8v8-----------------
+; Folding = +-------P1-------------------------------------0----+--V0--------------------------------------------------------------------------------------------0---------------------------------------------4----------------04-------------------4--------------------------------------------------------------------------44--f-d------------------
 ; EnableXP
