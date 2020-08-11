@@ -537,7 +537,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_mouse
     Structure _s_mouse Extends _s_point
       *widget._s_widget     ; at point element
-      ;*selected._s_widget   ; at point pushed element
+                    ;;*selected._s_widget   ; at point pushed element
       
       *grid
       drag.b[2]

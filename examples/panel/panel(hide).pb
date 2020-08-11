@@ -23,11 +23,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure _Events()
-    Select *event\type
+    Select this()\event
       Case #PB_EventType_LeftClick
-        ;Debug GetText(*event\widget)
+        ;Debug GetText(this()\widget)
         
-        Select GetText(*event\widget)
+        Select GetText(this()\widget)
           Case "hide_2"
             hide(*c, 1)
             ; Disable(*c, 1)

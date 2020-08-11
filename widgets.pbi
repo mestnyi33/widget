@@ -3512,38 +3512,30 @@ CompilerIf Not Defined(widget, #PB_Module)
               
               If *this\vertical
                 If *this\parent\scroll\v = *this
-                  *this\parent\change =- 1
                   *this\parent\y[#__c_required] =- *this\bar\page\pos
+                  *this\parent\change =- 1
                   
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
                     ChangeCurrentElement(widget(), *this\parent\adress)
-                    
                     While NextElement(widget())
                       If widget()\parent = *this\parent
-                        Resize(widget(), #PB_Ignore, 
-                               (widget()\y[#__c_container] + *this\parent\y[#__c_required]) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
-;                         Resize(widget(), #PB_Ignore, 
-;                                widget()\y[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
+                        Resize(widget(), #PB_Ignore, (widget()\y[#__c_draw] + *this\parent\y[#__c_required]) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
                       EndIf
                     Wend
                   EndIf
                 EndIf
               Else
                 If *this\parent\scroll\h = *this
-                  *this\parent\change =- 2
                   *this\parent\x[#__c_required] =- *this\bar\page\pos
+                  *this\parent\change =- 2
                   
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
                     ChangeCurrentElement(widget(), *this\parent\adress)
-                    
                     While NextElement(widget())
                       If widget()\parent = *this\parent
-                        Resize(widget(), 
-                               (widget()\x[#__c_container] - *this\bar\page\pos) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-;                         Resize(widget(), 
-;                                widget()\x[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                        Resize(widget(), (widget()\x[#__c_draw] + *this\parent\x[#__c_required]) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                       EndIf
                     Wend
                   EndIf
@@ -9810,7 +9802,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             If *this\x[#__c_draw] <> x
               *this\x[#__c_draw] = x
-              *this\x[#__c_container] = *this\x[#__c_draw]
+              *this\x[#__c_container] = *this\x[#__c_draw] ;- *this\parent\x[#__c_required]
             EndIf
             
             X + *this\parent\x[#__c_inner]
@@ -9847,6 +9839,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               *this\y[#__c_draw] = y
               *this\y[#__c_container] = *this\y[#__c_draw]
             EndIf
+            
             y + *this\parent\y[#__c_inner]
           EndIf 
           
@@ -10959,7 +10952,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\window = *parent\window
           
           If *parent\type = #PB_GadgetType_Panel
-            If *parent\index[#__panel_2] <> _item
+            If *parent\index[#__panel_2] = _item
+              *this\hide = #False
+            Else
               *this\hide = #True
             EndIf
           EndIf
@@ -11106,9 +11101,8 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
             EndIf
             
-            ; Debug ""+*this\x[#__c_draw]+" "+*this\x[#__c_container]+" "+*parent\x[#__c_required]
-            x = *this\x[#__c_container] + *parent\x[#__c_required] ; *this\x[#__c_draw]
-            y = *this\y[#__c_container] + *parent\y[#__c_required] ; *this\y[#__c_draw]
+            x = *this\x[#__c_draw]
+            y = *this\y[#__c_draw]
             
             ; new parent
             If *parent\scroll And 
@@ -11130,29 +11124,9 @@ CompilerIf Not Defined(widget, #PB_Module)
               y + *LastParent\scroll\v\bar\page\pos
             EndIf
             
-            Resize(*this, x, y, #PB_Ignore, #PB_Ignore)
+            Resize(*this, x + *parent\x[#__c_required], y + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore)
             
-            
-            ;  Resize(*this, *parent\x[#__c_required] + *this\x[#__c_container], *parent\y[#__c_required] + *this\y[#__c_container], #PB_Ignore, #PB_Ignore)
-;             If *parent\scroll And
-;                *parent\scroll\v And
-;                *parent\scroll\h
-;               
-;               Resize(*this,
-;                      (*this\x[#__c_container] - *parent\scroll\h\bar\page\pos)+*parent\x[#__c_required],
-;                      *this\y[#__c_container] - *parent\scroll\v\bar\page\pos,
-;                      #PB_Ignore, #PB_Ignore)
-;             Else
-;               Resize(*this, -*this\x[#__c_draw] - *this\x[#__c_container], *this\y[#__c_container], #PB_Ignore, #PB_Ignore)
-;             EndIf
-;             Resize(*this, *this\x[#__c_container] + *parent\x[#__c_required], *this\y[#__c_container]+*parent\y[#__c_required], #PB_Ignore, #PB_Ignore)
-            ;               PushListPosition(Root())
-            ;               ForEach Root()
-            ;                 Debug Root()
-            ;                 ReDraw(Root())
-            ;               Next
-            ;               PopListPosition(Root())
-            
+            ; re draw new parent root 
             If *LastParent\root <> *parent\root
               Select Root()
                 Case *LastParent\root : ReDraw(*parent\root)
@@ -15180,5 +15154,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +---fAAAAg-------------------------------------9----9--V0--------------------------------------------------------------------------------------------0---------------------------------------------4---------------ef08-----------------f-----------f-nr----------------------------------------------8-------------++--8v8-----------------
+; Folding = +---fAAAAg-------------------------------------0----9--V0--------------------------------------------------------------------------------------------0---------------------------------------------4---------------ef08-----------------f-----------P-nr6---------------------------------------------8-------------++--8v8-----------------
 ; EnableXP

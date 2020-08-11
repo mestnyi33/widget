@@ -19,7 +19,7 @@ Procedure events_gadgets()
 EndProcedure
 
 Procedure events_widgets()
-  Debug ""+Str(GetIndex(*event\widget))+ " - widget  event - " +*event\type+ "  item - " +*event\item ; GetState(*event\widget) ; 
+  Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ "  item - " +this()\item ; GetState(this()\widget) ; 
 EndProcedure
 
 Procedure events_gbuttons()
@@ -51,9 +51,9 @@ Procedure events_gbuttons()
 EndProcedure
 
 Procedure events_wbuttons()
-  Select *event\type
+  Select this()\event
     Case #PB_EventType_LeftClick
-      Select GetIndex(*event\widget)
+      Select GetIndex(this()\widget)
         Case 2 
           If CountItems(GetWidget(1)) > 1
             RemoveItem(GetWidget(1), 1)
