@@ -9804,12 +9804,16 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If X<>#PB_Ignore 
           If *this\parent 
-            If *this\x[#__c_draw] <> x 
-              *this\x[#__c_draw] = x 
-              *this\x[#__c_container] = *this\x[#__c_draw] - *this\parent\x[#__c_required]
+            If Not *this\child
+              x - *this\parent\x[#__c_required] 
             EndIf
             
-            X + *this\parent\x[#__c_inner] - Bool(Not *this\child) * *this\parent\x[#__c_required]
+            If *this\x[#__c_draw] <> x
+              *this\x[#__c_draw] = x
+              *this\x[#__c_container] = *this\x[#__c_draw]
+            EndIf
+            
+            X + *this\parent\x[#__c_inner]
           EndIf 
           
           If *this\x[#__c_frame] <> X; + *this\bs - *this\fs  
@@ -9835,11 +9839,15 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If Y<>#PB_Ignore 
           If *this\parent 
-            If *this\y[#__c_draw] <> y 
-              *this\y[#__c_draw] = y 
-              *this\y[#__c_container] = *this\y[#__c_draw] - *this\parent\y[#__c_required]
+            If Not *this\child
+              y - *this\parent\y[#__c_required] 
             EndIf
-            y + *this\parent\y[#__c_inner] - Bool(Not *this\child) * *this\parent\y[#__c_required] 
+            
+            If *this\y[#__c_draw] <> y
+              *this\y[#__c_draw] = y
+              *this\y[#__c_container] = *this\y[#__c_draw]
+            EndIf
+            y + *this\parent\y[#__c_inner]
           EndIf 
           
           If *this\y[#__c_frame] <> y 
@@ -15172,5 +15180,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +---fAAAAg-------------------------------------0----9--V0--------------------------------------------------------------------------------------------0---------------------------------------------4---------------uX-+-----------------4-----------4-67----------------------------------------------+------------vv---+8+-----------------
+; Folding = +---fAAAAg-------------------------------------9----9--V0--------------------------------------------------------------------------------------------0---------------------------------------------4---------------ef08-----------------f-----------f-nr----------------------------------------------8-------------++--8v8-----------------
 ; EnableXP

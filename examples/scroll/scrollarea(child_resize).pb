@@ -3522,7 +3522,9 @@ CompilerIf Not Defined(widget, #PB_Module)
                     While NextElement(widget())
                       If widget()\parent = *this\parent
                         Resize(widget(), #PB_Ignore, 
-                               widget()\y[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
+                               (widget()\y[#__c_draw] - *this\bar\page\pos) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
+;                         Resize(widget(), #PB_Ignore, 
+;                                widget()\y[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
                       EndIf
                     Wend
                   EndIf
@@ -3539,7 +3541,9 @@ CompilerIf Not Defined(widget, #PB_Module)
                     While NextElement(widget())
                       If widget()\parent = *this\parent
                         Resize(widget(), 
-                               widget()\x[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                               (widget()\x[#__c_container] - *this\bar\page\pos) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;                         Resize(widget(), 
+;                                widget()\x[#__c_draw] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                       EndIf
                     Wend
                   EndIf
@@ -9800,22 +9804,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If X<>#PB_Ignore 
           If *this\parent 
-;             If Not *this\child And *this\parent\scroll And *this\parent\scroll\h
-;               If x > *this\parent\scroll\h\bar\max - *this\parent\scroll\h\bar\page\pos - \width
-;                 x = *this\parent\scroll\h\bar\max - *this\parent\scroll\h\bar\page\pos - \width
-;               EndIf
-;             EndIf
-            
             If *this\x[#__c_draw] <> x 
               *this\x[#__c_draw] = x 
-              *this\x[#__c_container] = *this\x[#__c_draw]
-              
-              ; for the scroll area childrens
-              If *this\parent\scroll And *this\parent\scroll\h
-                *this\x[#__c_container] + *this\parent\scroll\h\bar\page\pos
-              EndIf
+              *this\x[#__c_container] = *this\x[#__c_draw] - *this\parent\x[#__c_required]
             EndIf
-            X + *this\parent\x[#__c_inner] 
+            
+            X + *this\parent\x[#__c_inner] - Bool(Not *this\child) * *this\parent\x[#__c_required]
           EndIf 
           
           If *this\x[#__c_frame] <> X; + *this\bs - *this\fs  
@@ -9841,23 +9835,15 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         If Y<>#PB_Ignore 
           If *this\parent 
-            y  - *this\parent\y[#__c_required]
-            
-            If *this\text\string = "Button"
-              Debug ""+y+" "+*this\parent\scroll\v\bar\page\pos
+            If Not *this\child
+              y - *this\parent\y[#__c_required] 
             EndIf
             
-            If *this\y[#__c_draw] <> y 
-              *this\y[#__c_draw] = y + *this\parent\y[#__c_required]
+            If *this\y[#__c_draw] <> y ; - *this\parent\y[#__c_required] 
+              *this\y[#__c_draw] = y ; - *this\parent\y[#__c_required] 
               *this\y[#__c_container] = *this\y[#__c_draw]
-              
-              ; for the scroll area childrens
-              If *this\parent\scroll And *this\parent\scroll\v 
-              ;  *this\y[#__c_container] + *this\parent\scroll\v\bar\page\pos
-              EndIf
             EndIf
-            
-            y + (*this\parent\y[#__c_inner] );- *this\parent\y[#__c_required])
+            y + *this\parent\y[#__c_inner] ; - Bool(Not *this\child) * *this\parent\y[#__c_required] 
           EndIf 
           
           If *this\y[#__c_frame] <> y 
@@ -14974,5 +14960,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---------------------------------+-------------------------------------------------------------------------------------4-
+; Folding = ----------------------------------------------------------8-408-f--------------------------------------------------------------------------------------------------------------------------------------------------vv+------------------------------v--------------------------------------------------------------------------------------0
 ; EnableXP
