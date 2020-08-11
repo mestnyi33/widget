@@ -5,7 +5,12 @@ UseLib(widget)
 
 LN=1000; количесвто итемов 
 Global *w._S_widget
-
+; CompilerCase #PB_OS_MacOS
+;   Protected Range.NSRange\location = Len(GetGadgetText(DialogGadget(#Dialog_Main, "log")))
+;   CocoaMessage(0, GadgetID(DialogGadget(#Dialog_Main, "log")), "scrollRangeToVisible:@", @Range)
+; CompilerEndSelect
+  
+ 
 If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   ListViewGadget(0, 10, 10, 250, 150)    ;, #PB_ListView_MultiSelect
   ;TreeGadget(0, 10, 10, 250, 150, #PB_Tree_NoButtons|#PB_Tree_NoLines)

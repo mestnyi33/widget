@@ -13,13 +13,13 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Result = #PB_MessageRequester_Yes       ; pressed Yes button
     flag = #PB_MessageRequester_Ok|#PB_MessageRequester_Info
-    a$ + "Yes"
+    a$ +#LF$+ "Yes"
   ElseIf Result = #PB_MessageRequester_No    ; pressed No button
     flag = #PB_MessageRequester_YesNo|#PB_MessageRequester_Error
-    a$ + "No"
+    a$ +#LF$+ "No"
   Else                                       ; pressed Cancel button or Esc
     flag = #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Warning
-    a$ + "Cancel"
+    a$ +#LF$+ "Cancel"
   EndIf
   Message("Information", a$, flag)
   

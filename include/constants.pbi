@@ -203,13 +203,14 @@
       #__flag_noscrollbars
       
       #__flag_borderless
-      #__flag_flat
+;       #__flag_flat
 ;       #__flag_double
 ;       #__flag_raised
 ;       #__flag_single
       
       
       #__flag_anchorsgadget
+      #__flag_transparent
       #__flag_limit
     EndEnumeration
     

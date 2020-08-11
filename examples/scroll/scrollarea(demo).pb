@@ -12,8 +12,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +this()\item+ " direction - " +this()\data 
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 440, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(OpenWindow(#PB_Any, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     g = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
+    
     ButtonGadget  (1,  10,  10, 230, 30,"Button 1")
     ButtonGadget  (2,  50,  50, 230, 30,"Button 2")
     ButtonGadget  (3,  90,  90, 230, 30,"Button 3")
@@ -23,16 +25,19 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseGadgetList()
     
     *g = ScrollArea(0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
+    
     Button(10,  10, 230, 30,"Button 1")
     Button(50,  50, 230, 30,"Button 2")
     Button(90,  90, 230, 30,"Button 3")
     Text(130, 130, 330, 20,"This is the content of a ScrollAreaGadget!", #__text_right)
+    ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
     *b = Button(Sw-130, Sh-30, 130, 30,"Button")
     CloseList()
     
     ;
-    Splitter(10,10,590,420, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
+    Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
     
     If count
       OpenGadgetList(g)

@@ -3,9 +3,8 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   
-  UseLib(widget)
-  
   EnableExplicit
+  UseLib(widget)
   
   Global  pos_x = 10
   Global *w._S_widget, *combo
@@ -248,5 +247,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -d-
+; Folding = +d-
 ; EnableXP

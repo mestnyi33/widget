@@ -3,14 +3,14 @@ XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   ; Shows possible flags of ButtonGadget in action...
-  UseLib(Widget)
   EnableExplicit
+  UseLib(Widget)
+  UsePNGImageDecoder()
   
   Global i, *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
   Global *Button_0._S_widget
   Global *Button_1._S_widget
   
-  UsePNGImageDecoder()
   #Font18R = 18
   Global fs = 9
   Global igFS18.i = fs + Bool(#PB_Compiler_OS=#PB_OS_MacOS)*(fs-7)
