@@ -9809,7 +9809,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               *this\x[#__c_container] = *this\x[#__c_draw] - *this\parent\x[#__c_required]
             EndIf
             
-            X + *this\parent\x[#__c_inner] - *this\parent\x[#__c_required]
+            X + *this\parent\x[#__c_inner] - Bool(Not *this\child) * *this\parent\x[#__c_required]
           EndIf 
           
           If *this\x[#__c_frame] <> X; + *this\bs - *this\fs  
@@ -9839,7 +9839,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               *this\y[#__c_draw] = y 
               *this\y[#__c_container] = *this\y[#__c_draw] - *this\parent\y[#__c_required]
             EndIf
-            y + *this\parent\y[#__c_inner] - *this\parent\y[#__c_required] 
+            y + *this\parent\y[#__c_inner] - Bool(Not *this\child) * *this\parent\y[#__c_required] 
           EndIf 
           
           If *this\y[#__c_frame] <> y 
