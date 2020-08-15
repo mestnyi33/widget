@@ -10,7 +10,7 @@ If Open(OpenWindow(#PB_Any, 100, 50, 400, 500, "ListViewGadget", #PB_Window_Syst
   If LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
   EndIf
   
-  ButtonImage(10, 10, 380, 380, (0)) 
+  Image(10, 10, 380, 380, (0)) 
   
   Button(10,390, 95, 25, "")
   WaitClose()

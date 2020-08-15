@@ -822,10 +822,14 @@ Procedure create_ide(x=100,y=100,width=800,height=600)
   canvas_ide = widget::GetGadget(root)
   
   toolbar_design = Container(0,0,0,0) 
-  ButtonImage(0,0,30,30,CatchImage(#PB_Any,?group_align_left))
-  ButtonImage(32,0,30,30,CatchImage(#PB_Any,?group_align_right))
-  ButtonImage(64,0,30,30,CatchImage(#PB_Any,?group_align_top))
-  ButtonImage(96,0,30,30,CatchImage(#PB_Any,?group_align_bottom))
+  ButtonImage(2     ,2,30,30,CatchImage(#PB_Any,?group_left))
+  ButtonImage(2+32*1,2,30,30,CatchImage(#PB_Any,?group_right))
+  
+  ButtonImage(2+32*2,2,30,30,CatchImage(#PB_Any,?group_top))
+  ButtonImage(2+32*3,2,30,30,CatchImage(#PB_Any,?group_bottom))
+  
+  ButtonImage(2+32*4,2,30,30,CatchImage(#PB_Any,?group_width))
+  ButtonImage(2+32*5,2,30,30,CatchImage(#PB_Any,?group_height))
   CloseList()
   
   ;   id_design_panel = Panel(0,0,0,0) ; , #__bar_vertical) : OpenList(id_design_panel)
@@ -959,15 +963,15 @@ CompilerEndIf
 
 DataSection   ; Include Images
   IncludePath "include/Images"
-  group:                  : IncludeBinary "group.png"
-  group_un:               : IncludeBinary "group_un.png"
-  group_align_left:       : IncludeBinary "group_align_left.png"
-  group_align_right:      : IncludeBinary "group_align_right.png"
-  group_align_top:        : IncludeBinary "group_align_top.png"
-  group_align_bottom:     : IncludeBinary "group_align_bottom.png"
+  group:            : IncludeBinary "group.png"
+  group_un:         : IncludeBinary "group_un.png"
+  group_top:        : IncludeBinary "group_top.png"
+  group_left:       : IncludeBinary "group_left.png"
+  group_right:      : IncludeBinary "group_right.png"
+  group_bottom:     : IncludeBinary "group_bottom.png"
+  group_width:      : IncludeBinary "group_width.png"
+  group_height:     : IncludeBinary "group_height.png"
   
-  Make_Same_Width:  : IncludeBinary "Make_Same_Width.png"
-  Make_Same_Height: : IncludeBinary "Make_Same_Height.png"
   ThisPC:           : IncludeBinary "ThisPC.png"
 EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)

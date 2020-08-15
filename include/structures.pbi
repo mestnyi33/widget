@@ -110,12 +110,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       multiline.b
       
       invert.b
-      rotate.f
       
       edit._s_edit[4]
       caret._s_caret
-      align._s_align
       syntax._s_syntax
+      
+      rotate.f
+      align._s_align
       padding._s_point
     EndStructure
     
@@ -132,8 +133,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; index[1] - Image()
       ; index[2] - ImageID()
       
-      padding._s_point
+      ;;rotate.f
       align._s_align
+      padding._s_point
     EndStructure
     
     ;- - _s_button
