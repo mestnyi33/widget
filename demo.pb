@@ -70,7 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     Widgets(Hex(#PB_GadgetType_TrackBar)) = Track(335, 405, 160,95,0,21, #__Bar_Ticks) : SetState(Widgets(Hex(#PB_GadgetType_TrackBar)), 11)
     ;     WebGadget(#PB_GadgetType_Web, 335, 505, 160,95,"" )
     
-    ;Widgets(Hex(#PB_GadgetType_ButtonImage)) = Button(500, 5, 160,95, "", 0, 1)
+    Widgets(Hex(#PB_GadgetType_ButtonImage)) = ButtonImage(500, 5, 160,95, 1)
     ;     CalendarGadget(#PB_GadgetType_Calendar, 500, 105, 160,95 )
     ;     DateGadget(#PB_GadgetType_Date, 500, 205, 160,95 )
     Widgets(Hex(#PB_GadgetType_Editor)) = Editor(500, 305, 160,95 ) : AddItem(Widgets(Hex(#PB_GadgetType_Editor)), -1, "set"+#LF$+"editor"+#LF$+"_"+Hex(#PB_GadgetType_Editor) +#LF$+"add"+#LF$+"multi"+#LF$+"line"+#LF$+"text")  

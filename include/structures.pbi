@@ -125,6 +125,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       x.l
       height.l
       width.l
+      change.b
       
       index.i[3] ;
       ; index[0] - IsImage()
@@ -436,6 +437,16 @@ CompilerIf Not Defined(structures, #PB_Module)
       Map *events()
     EndStructure
     
+    ;- - _s_column
+    Structure _s_column
+      y.l
+      x.l
+      height.l
+      width.l
+      
+      
+    EndStructure
+    
     ;- - _s_widget
     Structure _s_widget 
       *_drawing ; drawing_mode
@@ -532,6 +543,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *time_down
       
       ; event_queue ; очередь событий
+      List *column._s_column()
     EndStructure
     
     ;- - _s_mouse
@@ -598,5 +610,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --v+fP-
+; Folding = --v+ff+
 ; EnableXP

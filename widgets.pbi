@@ -150,12 +150,12 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     ;-
-    Macro Transform()
-      Root()\transform
+    Macro _structure_(_struct_name_)
+      _s_#_struct_name_ = AllocateStructure(_s_#_struct_name_)
     EndMacro
     
-    Macro InitTransform()
-      Transform() = AllocateStructure(_s_transform)
+    Macro Transform()
+      Root()\transform
     EndMacro
     
     Macro CustomCursor(_image_)
@@ -790,7 +790,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ; 
     Declare.i SetActive(*this)
-    Macro GetActive() : This()\active : EndMacro ; Returns activeed window
+    Macro GetActive() : this()\active : EndMacro ; Returns activeed window
     
     Declare.s GetClass(*this)
     Declare   SetClass(*this, class.s)
@@ -895,7 +895,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Declare   Free(*this)
     Declare.i Bind(*this, *callback, eventtype.l = #PB_All)
-    Declare.i Post(eventtype.l, *this, eventitem.l = #PB_All, *data = 0)
+    Declare.i Post(eventtype.l, *this, *button = #PB_All, *data = 0)
     
     ;
     Declare   Events(*this, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0)
@@ -1458,7 +1458,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\mode\transform = #True
           
           If Not Transform()
-            InitTransform()
+            Transform()._structure_(transform)
             
             Transform()\main = *this
             Transform()\index = #__a_moved
@@ -1682,6 +1682,10 @@ CompilerIf Not Defined(widget, #PB_Module)
                 mh = Match(mouse_y - Transform()\widget\y[#__c_frame], Mouse()\grid) + IsGrid 
                 
                 a_resize(result, Transform()\index)
+                
+                If result And Not Transform()\widget\container
+                  Post(#PB_EventType_Resize, Transform()\widget, Transform()\index)
+                EndIf
               EndIf
               ;}
               
@@ -1981,6 +1985,58 @@ CompilerIf Not Defined(widget, #PB_Module)
 
 
     ;-
+    Procedure update_image(*this._s_widget)
+      If *this\img\change <> 0
+        *this\img\change = 0
+        ; Debug ""+ *this\width[#__c_inner] +" "+ *this\width[#__c_required]
+        
+        If *this\img\align\right
+          *this\img\x = (*this\width[#__c_inner] - *this\img\width)                  - *this\img\padding\x
+          
+        ElseIf Not *this\img\align\left
+          *this\img\x = (*this\width[#__c_inner] - *this\img\width) / 2           
+          
+        Else
+          *this\img\x =                                                                *this\img\padding\x
+          
+        EndIf
+        
+        If *this\img\align\bottom
+          *this\img\y = (*this\height[#__c_inner] - *this\img\height)                - *this\img\padding\y
+          
+        ElseIf Not *this\img\align\top
+          *this\img\y = (*this\height[#__c_inner] - *this\img\height) / 2           
+          
+        Else
+          *this\img\y =                                                                *this\img\padding\y
+          
+        EndIf
+      EndIf
+    EndProcedure    
+    
+    
+    Macro _set_alignment_(_adress_, _left_, _top_, _right_, _bottom_, _center_)
+      _adress_\align\left = _left_
+      _adress_\align\right = _right_
+      
+      _adress_\align\top = _top_
+      _adress_\align\bottom = _bottom_
+      
+      If Not _center_ And 
+         Not _adress_\align\top And 
+         Not _adress_\align\left And
+         Not _adress_\align\right And 
+         Not _adress_\align\bottom
+        
+        If Not _adress_\align\right
+          _adress_\align\left = #True 
+        EndIf
+        If Not _adress_\align\bottom
+          _adress_\align\top = #True
+        EndIf
+      EndIf
+    EndMacro
+    
     ;-  TEXTs
     Macro _set_text_(_this_, _text_, _flag_)
       ;     If Not _this_\text
@@ -1996,27 +2052,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         _this_\text\pass = constants::_check_(_flag_, #__text_password)
         _this_\text\invert = constants::_check_(_flag_, #__text_invert)
         
-        _this_\text\align\left = constants::_check_(_flag_, #__text_left)
-        _this_\text\align\right = constants::_check_(_flag_, #__text_right)
-        
-        _this_\text\align\top = constants::_check_(_flag_, #__text_top)
-        _this_\text\align\bottom = constants::_check_(_flag_, #__text_bottom)
-        
-        
-        If Not _flag_ & #__text_center And 
-           Not _this_\text\align\left And
-           Not _this_\text\align\top And 
-           Not _this_\text\align\right And 
-           Not _this_\text\align\bottom
-          
-          If Not _this_\text\align\bottom
-            _this_\text\align\top = #True
-          EndIf
-          
-          If Not _this_\text\align\right
-            _this_\text\align\left = #True 
-          EndIf
-        EndIf
+        _set_alignment_(_this_\text, 
+                        constants::_check_(_flag_, #__text_left),
+                        constants::_check_(_flag_, #__text_top),
+                        constants::_check_(_flag_, #__text_right),
+                        constants::_check_(_flag_, #__text_bottom),
+                        Bool(_flag_ & #__text_center))
         
         If _this_\text\invert 
           _this_\text\rotate = Bool(_this_\vertical)*270 + Bool(Not _this_\vertical)*180
@@ -2113,27 +2154,13 @@ CompilerIf Not Defined(widget, #PB_Module)
         _this_\text\pass = constants::_check_(_flag_, #__text_password)
         _this_\text\invert = constants::_check_(_flag_, #__text_invert)
         
-        _this_\text\align\left = constants::_check_(_flag_, #__text_left)
-        _this_\text\align\right = constants::_check_(_flag_, #__text_right)
+        _set_alignment_(_this_\text, 
+                        constants::_check_(_flag_, #__text_left),
+                        constants::_check_(_flag_, #__text_top),
+                        constants::_check_(_flag_, #__text_right),
+                        constants::_check_(_flag_, #__text_bottom),
+                        Bool(_flag_ & #__text_center))
         
-        _this_\text\align\top = constants::_check_(_flag_, #__text_top)
-        _this_\text\align\bottom = constants::_check_(_flag_, #__text_bottom)
-        
-        
-        If Not _flag_ & #__text_center And 
-           Not _this_\text\align\left And
-           Not _this_\text\align\top And 
-           Not _this_\text\align\right And 
-           Not _this_\text\align\bottom
-          
-          If Not _this_\text\align\bottom
-            _this_\text\align\top = #True
-          EndIf
-          
-          If Not _this_\text\align\right
-            _this_\text\align\left = #True 
-          EndIf
-        EndIf
         
         If constants::_check_(_flag_, #__text_wordwrap)
           _this_\text\multiLine =- 1
@@ -2170,7 +2197,58 @@ CompilerIf Not Defined(widget, #PB_Module)
       
     EndMacro
     
-    Macro _set_alignment_flag_(_this_, _parent_, _flag_)
+    ;-
+    Macro _set_align_x_(_this_, _adress_, _width_)
+      If _this_\align\right
+        If _this_\rotate = 0
+          _adress_\x = (_width_ - _adress_\width)       - _this_\padding\x
+        ElseIf _this_\rotate = 180
+          _adress_\x = _width_                          - _this_\padding\x
+        EndIf
+        
+      ElseIf Not _this_\align\left
+        If _this_\rotate = 0
+          _adress_\x = (_width_ - _adress_\width) / 2           
+        ElseIf _this_\rotate = 180
+          _adress_\x = (_width_ + _adress_\width) / 2
+        EndIf
+        
+      Else
+        If _this_\rotate = 0
+          _adress_\x =                                   _this_\padding\x
+        ElseIf _this_\rotate = 180
+          _adress_\x = _adress_\width                  + _this_\padding\x
+        EndIf
+        
+      EndIf
+    EndMacro
+    
+    Macro _set_align_y_(_this_, _adress_, _height_)
+      If _this_\align\bottom
+        If _this_\rotate = 270
+          _adress_\y = (_height_ - _adress_\width)     - _this_\padding\y
+        ElseIf _this_\rotate = 90    
+          _adress_\y = _height_                        - _this_\padding\y
+        EndIf
+        
+      ElseIf Not _this_\align\top
+        If _this_\rotate = 270
+          _adress_\y = (_height_ - _adress_\width) / 2
+        ElseIf _this_\rotate = 90
+          _adress_\y = (_height_ + _adress_\width) / 2
+        EndIf
+        
+      Else
+        If _this_\rotate = 270
+          _adress_\y =                                    _this_\padding\y
+        ElseIf _this_\rotate = 90
+          _adress_\y = _adress_\width                   + _this_\padding\y
+        EndIf
+        
+      EndIf
+    EndMacro
+    
+    Macro _set_align_flag_(_this_, _parent_, _flag_)
       If _flag_ & #__flag_autosize = #__flag_autosize
         _this_\align = AllocateStructure(_s_align)
         _this_\align\autoSize = 1
@@ -3944,7 +4022,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           Post(#PB_EventType_Change, *this, *this\bar\from, *this\bar\direction)
         Else
-          Post(#PB_EventType_ScrollChange, *this\parent, *this\bar, *this\bar\direction)
+          Post(#PB_EventType_ScrollChange, *this\parent, *this, *this\bar\direction)
         EndIf
         
         result = #True
@@ -5771,29 +5849,29 @@ CompilerIf Not Defined(widget, #PB_Module)
                   row()\text\x = row()\x
                 EndIf
                 
-                If *this\text\align\bottom
-                  If *this\text\rotate = 270
-                    row()\text\y = (*this\height[#__c_required] - row()\text\width)                - *this\text\padding\y
-                  ElseIf *this\text\rotate = 90    
-                    row()\text\y = *this\height[#__c_required]                                     - *this\text\padding\y
-                  EndIf
-                  
-                ElseIf Not *this\text\align\top
-                  If *this\text\rotate = 270
-                    row()\text\y = (*this\height[#__c_required] - row()\text\width) / 2
-                  ElseIf *this\text\rotate = 90
-                    row()\text\y = (*this\height[#__c_required] + row()\text\width) / 2
-                  EndIf
-                  
-                Else
-                  If *this\text\rotate = 270
-                    row()\text\y =                                                                    *this\text\padding\y
-                  ElseIf *this\text\rotate = 90
-                    row()\text\y = row()\text\width                                                 + *this\text\padding\y
-                  EndIf
-                  
-                EndIf
-                
+; ;                 If *this\text\align\bottom
+; ;                   If *this\text\rotate = 270
+; ;                     row()\text\y = (*this\height[#__c_required] - row()\text\width)                - *this\text\padding\y
+; ;                   ElseIf *this\text\rotate = 90    
+; ;                     row()\text\y = *this\height[#__c_required]                                     - *this\text\padding\y
+; ;                   EndIf
+; ;                   
+; ;                 ElseIf Not *this\text\align\top
+; ;                   If *this\text\rotate = 270
+; ;                     row()\text\y = (*this\height[#__c_required] - row()\text\width) / 2
+; ;                   ElseIf *this\text\rotate = 90
+; ;                     row()\text\y = (*this\height[#__c_required] + row()\text\width) / 2
+; ;                   EndIf
+; ;                   
+; ;                 Else
+; ;                   If *this\text\rotate = 270
+; ;                     row()\text\y =                                                                    *this\text\padding\y
+; ;                   ElseIf *this\text\rotate = 90
+; ;                     row()\text\y = row()\text\width                                                 + *this\text\padding\y
+; ;                   EndIf
+; ;                   
+; ;                 EndIf
+                _set_align_y_(*this\text, row()\text, *this\height[#__c_required])
               Else
                 If *this\text\rotate = 180
                   row()\y - (*this\height[#__c_inner] - *this\height[#__c_required])
@@ -5808,28 +5886,30 @@ CompilerIf Not Defined(widget, #PB_Module)
                   row()\text\y = row()\y
                 EndIf
                 
-                If *this\text\align\right
-                  If *this\text\rotate = 0
-                    row()\text\x = (*this\width[#__c_required] - row()\text\width)                  - *this\text\padding\x
-                  ElseIf \text\rotate = 180
-                    row()\text\x = *this\width[#__c_required]                                       - *this\text\padding\x
-                  EndIf
-                  
-                ElseIf Not *this\text\align\left
-                  If *this\text\rotate = 0
-                    row()\text\x = (*this\width[#__c_required] - row()\text\width) / 2           
-                  ElseIf \text\rotate = 180
-                    row()\text\x = (*this\width[#__c_required] + row()\text\width) / 2
-                  EndIf
-                  
-                Else
-                  If *this\text\rotate = 0
-                    row()\text\x =                                                                    *this\text\padding\x
-                  ElseIf *this\text\rotate = 180
-                    row()\text\x = row()\text\width                                                 + *this\text\padding\x
-                  EndIf
-                  
-                EndIf
+; ;                 If *this\text\align\right
+; ;                   If *this\text\rotate = 0
+; ;                     row()\text\x = (*this\width[#__c_required] - row()\text\width)                  - *this\text\padding\x
+; ;                   ElseIf \text\rotate = 180
+; ;                     row()\text\x = *this\width[#__c_required]                                       - *this\text\padding\x
+; ;                   EndIf
+; ;                   
+; ;                 ElseIf Not *this\text\align\left
+; ;                   If *this\text\rotate = 0
+; ;                     row()\text\x = (*this\width[#__c_required] - row()\text\width) / 2           
+; ;                   ElseIf \text\rotate = 180
+; ;                     row()\text\x = (*this\width[#__c_required] + row()\text\width) / 2
+; ;                   EndIf
+; ;                   
+; ;                 Else
+; ;                   If *this\text\rotate = 0
+; ;                     row()\text\x =                                                                    *this\text\padding\x
+; ;                   ElseIf *this\text\rotate = 180
+; ;                     row()\text\x = row()\text\width                                                 + *this\text\padding\x
+; ;                   EndIf
+; ;                   
+; ;                 EndIf
+                
+                _set_align_x_(*this\text, row()\text, *this\width[#__c_required])
               EndIf
               
               ;               
@@ -9157,6 +9237,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;-  DRAWINGs
     Procedure   Button_Draw(*this._s_widget)
       With *this
+        If *this\img\change <> 0
+          Update_Image(*this)
+        EndIf
+        
         If *this\color\back <>- 1
           If \color\fore <>- 1
             DrawingMode(#PB_2DDrawing_Gradient)
@@ -9262,6 +9346,17 @@ CompilerIf Not Defined(widget, #PB_Module)
             
         ;;  ClipOutput(*this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip])
         
+        ; Draw background image
+        If \img\index[2]
+          ;ClipOutput( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner])
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawAlphaImage(\img\index[2],
+                         *this\x[#__c_inner] + *this\x[#__c_required] + \img\x,
+                         *this\y[#__c_inner] + *this\y[#__c_required] + \img\y, 
+                         \color\alpha)
+          ;ClipOutput( *this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip])
+        EndIf
+        
         ; draw frame
         If *this\fs
           DrawingMode(#PB_2DDrawing_Outlined)
@@ -9305,6 +9400,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure   ScrollArea_Draw(*this._s_widget)
       With *this
+        If *this\img\change <> 0
+          Update_Image(*this)
+        EndIf
+        
         DrawingMode(#PB_2DDrawing_Default)
         RoundBox(*this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state])
         
@@ -9424,6 +9523,10 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\text\change = #__text_update
             *this\text\align\top = 0
             *this\text\align\bottom = state
+            
+            *this\img\change = #__text_update
+            *this\img\align\top = 0
+            *this\img\align\bottom = state
           EndIf
           If flag & #__text_left
             *this\text\change = #__text_update
@@ -9434,6 +9537,10 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\text\change = #__text_update
             *this\text\align\left = 0
             *this\text\align\right = state
+            
+            *this\img\change = #__text_update
+            *this\img\align\left = 0
+            *this\img\align\right = state
           EndIf
           
           If flag & #__text_multiline
@@ -9802,7 +9909,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             If *this\x[#__c_draw] <> x
               *this\x[#__c_draw] = x
-              *this\x[#__c_container] = *this\x[#__c_draw] ;- *this\parent\x[#__c_required]
+              *this\x[#__c_container] = *this\x[#__c_draw] ; - *this\parent\x[#__c_required]
             EndIf
             
             X + *this\parent\x[#__c_inner]
@@ -9875,6 +9982,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             If \width[#__c_draw] < 0 : \width[#__c_draw] = 0 : EndIf
             \resize | #__resize_width | #__resize_change
             
+            If *this\type = #__type_image Or
+               *this\type = #__type_buttonimage
+              *this\img\change = 1
+            EndIf
+            
             If *this\type = #__type_tabbar
               If *this\vertical
                 ; to fix the width of the vertical tabbar items
@@ -9899,6 +10011,11 @@ CompilerIf Not Defined(widget, #PB_Module)
             If \height[#__c_frame] < 0 : \height[#__c_frame] = 0 : EndIf
             If \height[#__c_draw] < 0 : \height[#__c_draw] = 0 : EndIf
             \resize | #__resize_height | #__resize_change
+            
+            If *this\type = #__type_image Or
+               *this\type = #__type_buttonimage
+              *this\img\change = 1
+            EndIf
             
             If *this\type = #__type_tabbar
               If Not *this\vertical
@@ -10042,6 +10159,10 @@ CompilerIf Not Defined(widget, #PB_Module)
           a_move(*this)
         EndIf
         
+        If *this\container And (Change_x Or Change_y Or Change_width Or Change_height)
+          Post(#__event_resize, *this)
+        EndIf
+                  
         ProcedureReturn result
       EndWith
     EndProcedure
@@ -12063,7 +12184,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             Flag(*this, flag, #True)
           EndIf
           
-          _set_alignment_flag_(*this, *parent, flag)
+          _set_align_flag_(*this, *parent, flag)
           SetParent(*this, *parent, #PB_Default)
           
           If flag & #__flag_noscrollbars = #False
@@ -12077,7 +12198,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure.i Create(*parent._s_widget, class.s, type.l, x.l,y.l,width.l,height.l, *param_1, *param_2, *param_3, size.l, flag.i = 0, round.l = 7, ScrollStep.f = 1.0)
-      Protected ScrollBars, *this._s_widget = AllocateStructure(_s_widget)
+      Protected ScrollBars, *this._structure_(widget) ; _s_widget = AllocateStructure(_s_widget)
       
       With *this
         
@@ -12152,6 +12273,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         If *this\type = #PB_GadgetType_Image
           ScrollBars = 1
           *this\class = "Image"
+          
           *this\img\index = IsImage(*param_3)
           
           If *this\img\index
@@ -12170,8 +12292,20 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             *param_1 = *this\img\width 
             *param_2 = *this\img\height 
+            *this\img\change = 1
           EndIf
           
+          
+          ;_set_item_image_(*this, *this, Image)
+          *this\_flag = Flag|#__flag_center
+      
+          _set_alignment_(*this\img, 
+                        constants::_check_(Flag, #__flag_left),
+                        constants::_check_(Flag, #__flag_top),
+                        constants::_check_(Flag, #__flag_right),
+                        constants::_check_(Flag, #__flag_bottom),
+                        #True)
+      
           *this\color\back = $FFF9F9F9
           *this\index[#__s_1] =- 1
           *this\index[#__s_2] = 0
@@ -12469,7 +12603,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           *this\child = #True
         Else
-          _set_alignment_flag_(*this, *parent, flag)
+          _set_align_flag_(*this, *parent, flag)
           
           If *parent
             SetParent(*this, *parent, #PB_Default)
@@ -12618,7 +12752,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             Flag(*this, flag, #True)
           EndIf
           
-          _set_alignment_flag_(*this, *parent, flag)
+          _set_align_flag_(*this, *parent, flag)
           SetParent(*this, *parent, #PB_Default)
           
           If flag & #__flag_noscrollbars = #False
@@ -12782,7 +12916,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
       EndIf
       
-      _set_alignment_flag_(*this, *parent, flag)
+      _set_align_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
       If Bool(flag & #__flag_anchorsGadget = #__flag_anchorsGadget)
@@ -12895,7 +13029,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\change = 1
       EndIf
       
-      _set_alignment_flag_(*this, *parent, flag)
+      _set_align_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
       Area(*this,1,0,0,0,0)
@@ -12952,7 +13086,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         SetText(*This, Text)
       EndIf
       
-      _set_alignment_flag_(*this, *parent, flag)
+      _set_align_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
       If Bool(flag & #__flag_anchorsGadget = #__flag_anchorsGadget)
@@ -13000,7 +13134,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         SetText(*This, Text)
       EndIf
       
-      _set_alignment_flag_(*this, *parent, flag)
+      _set_align_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
       If Bool(flag & #__flag_anchorsGadget = #__flag_anchorsGadget)
@@ -13028,6 +13162,17 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       _set_text_flag_(*this, *this\_flag)
       
+      _set_item_image_(*this, *this, Image)
+      
+      _set_alignment_(*this\img, 
+                        constants::_check_(Flag, #__flag_left),
+                        constants::_check_(Flag, #__flag_top),
+                        constants::_check_(Flag, #__flag_right),
+                        constants::_check_(Flag, #__flag_bottom),
+                        Bool(Flag & #__flag_center))
+        
+        
+      
       ; - Create Text
       If *this\type = #PB_GadgetType_Button
         *this\class = "Button"
@@ -13046,7 +13191,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         SetText(*This, Text)
       EndIf
       
-      _set_alignment_flag_(*this, *parent, flag)
+      _set_align_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
       If flag & #__flag_anchorsGadget = #__flag_anchorsGadget
@@ -13108,7 +13253,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       *this\text\multiline =- CountString(Text, #LF$)
       
-      _set_alignment_flag_(*this, *parent, flag)
+      _set_align_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
       If Bool(flag & #__flag_anchorsGadget = #__flag_anchorsGadget)
@@ -13157,7 +13302,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\button\width = *this\button\height
       *this\text\padding\x = *this\button\width + 8
       
-      _set_alignment_flag_(*this, *parent, flag)
+      _set_align_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
       If Bool(flag & #__flag_anchorsGadget = #__flag_anchorsGadget)
@@ -13196,7 +13341,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\color\front[#__s_0] = _get_colors_()\front
       *this\color\front[#__s_1] = Color
       
-      _set_alignment_flag_(*this, *parent, flag)
+      _set_align_flag_(*this, *parent, flag)
       SetParent(*this, *parent, #PB_Default)
       
       If Bool(flag & #__flag_anchorsGadget = #__flag_anchorsGadget)
@@ -13260,7 +13405,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;*this\text\align\vertical = Bool(Not *this\text\align\top And Not *this\text\align\bottom)
         ;*this\text\align\horizontal = Bool(Not *this\text\align\left And Not *this\text\align\right)
         
-        _set_alignment_flag_(*this, *parent, flag)
+        _set_align_flag_(*this, *parent, flag)
         SetParent(*this, *parent, #PB_Default)
         
         
@@ -13438,7 +13583,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndProcedure
     
-    Procedure.i Post(eventtype.l, *this._s_widget, eventitem.l = #PB_All, *data = #Null)
+    Procedure.i Post(eventtype.l, *this._s_widget, *button = #PB_All, *data = #Null)
       Protected result.i, root
       
       If eventtype = #PB_EventType_repaint
@@ -13452,7 +13597,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           PostEvent(#PB_Event_Gadget, Root()\canvas\window, Root()\canvas\gadget, #PB_EventType_repaint, Root())
         EndIf
       Else
-        This()\item = eventitem
+        This()\item = *button
         This()\event = eventtype
         This()\widget = *this
         This()\data = *data
@@ -13530,7 +13675,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 This()\post() = AllocateStructure(_s_bind)
                 AddMapElement(This()\post()\events(), Hex(eventtype))
                 This()\post()\events() = eventtype
-                This()\post()\item = eventitem
+                This()\post()\item = *button
                 This()\post()\widget = *this
                 This()\post()\data = *data
               EndIf
@@ -14439,6 +14584,16 @@ CompilerIf Not Defined(widget, #PB_Module)
         ReDraw(Root())
         ;             EndIf
         
+;         If eventtype = #__Event_leftButtonDown
+;           If Transform() And
+;              Transform()\widget And 
+;              Transform()\widget\container And 
+;              StartDrawing(CanvasOutput(Transform()\widget\root\canvas\gadget))
+;             Transform()\grab = GrabDrawingImage(#PB_Any, 0,0, Transform()\widget\root\width, Transform()\widget\root\height)
+;             StopDrawing()
+;           EndIf
+;         EndIf
+        
         ProcedureReturn Repaint
       EndIf
     EndProcedure
@@ -14535,7 +14690,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       If flag & #PB_Canvas_Container = #PB_Canvas_Container
         If ListSize(widget())
           If widget()\container =- 1
-            _set_alignment_flag_(widget(), Root(), #__flag_autosize)
+            _set_align_flag_(widget(), Root(), #__flag_autosize)
             Root()\canvas\container = widget()
             OpenList(widget())
             SetParent(widget(), Root())
@@ -14680,7 +14835,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         
         *this\fs = constants::_check_(flag, #__flag_borderless, #False) * #__bsize
         
-        _set_alignment_flag_(*this, *parent, flag)
+        _set_align_flag_(*this, *parent, flag)
         SetParent(*this, *parent, #PB_Default)
         
         If flag & #__Window_NoGadgets = #False
@@ -15154,5 +15309,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +---fAAAAg-------------------------------------0----9--V0--------------------------------------------------------------------------------------------0---------------------------------------------4---------------ef08-----------------f-----------P-nr6---------------------------------------------8-------------++--8v8-----------------
+; Folding = +---fAAAAg----------------P---------------------4----z--X2-------------------------------------------------v-848-------------------------------------0---------------------------------------------v-v-------------nr8-------------------f-----------P-nr6----------------------v----------------------8-------------++f67v80-+--------------
 ; EnableXP

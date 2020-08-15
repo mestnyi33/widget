@@ -472,7 +472,7 @@
     #__event_free             = #PB_EventType_Free    
     #__event_drop             = #PB_EventType_Drop
     #__event_create           = #PB_EventType_Create
-    
+    #__event_sizeitem         = #PB_EventType_SizeItem
     
     #__event_repaint          = #PB_EventType_Repaint
     #__event_resizeend        = #PB_EventType_ResizeEnd
@@ -512,6 +512,7 @@
     
     ;- _c_type
     Enumeration - 7 ; Type
+      #PB_GadgetType_Hiasm
       #PB_GadgetType_Message
       #PB_GadgetType_Popup
       #PB_GadgetType_Desktop
@@ -529,6 +530,7 @@
       #PB_GadgetType_StringButton
     EndEnumeration
     
+    #__type_hiasm         = #PB_GadgetType_Hiasm
     #__type_message       = #PB_GadgetType_Message
     #__type_popup         = #PB_GadgetType_Popup
     #__type_root          = #PB_GadgetType_Desktop

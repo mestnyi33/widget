@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Procedure.i get_image(m.s=#LF$)
-  ProcedureReturn 0
+  ProcedureReturn 2
   EndProcedure
   
   Procedure events_widgets()

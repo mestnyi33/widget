@@ -11,7 +11,8 @@ Uselib(widget)
 
 ;- 
 EnableExplicit
-
+UsePNGImageDecoder()
+    
 ;- ENUMs
 Enumeration 
   #_pi_group_0 
@@ -130,7 +131,7 @@ Procedure.i elements_list_fill(*id, Directory$)
   
   
   If FileSize(ZipFile$) > 0
-    UsePNGImageDecoder()
+    ; UsePNGImageDecoder()
     
     CompilerIf #PB_Compiler_Version > 522
       UseZipPacker()
@@ -212,20 +213,8 @@ Procedure.i elements_list_fill(*id, Directory$)
   EndIf
 EndProcedure
 
-Procedure update_properties(gadget.i, Value.i)
-  SetItemText(gadget, #_pi_id,      GetItemText(gadget, #_pi_id)      +Chr(10)+Str(Value))
-  SetItemText(gadget, #_pi_class,   GetItemText(gadget, #_pi_class)   +Chr(10)+GetClass(Value)+"_"+GetCount(Value))
-  SetItemText(gadget, #_pi_text,    GetItemText(gadget, #_pi_text)    +Chr(10)+GetText(Value))
-  
-  SetItemText(gadget, #_pi_x,       GetItemText(gadget, #_pi_x)       +Chr(10)+Str(X(Value, #__c_container)))
-  SetItemText(gadget, #_pi_y,       GetItemText(gadget, #_pi_y)       +Chr(10)+Str(Y(Value, #__c_container)))
-  SetItemText(gadget, #_pi_width,   GetItemText(gadget, #_pi_width)   +Chr(10)+Str(Width(Value)))
-  SetItemText(gadget, #_pi_height,  GetItemText(gadget, #_pi_height)  +Chr(10)+Str(Height(Value)))
-  
-  SetItemText(gadget, #_pi_disable, GetItemText(gadget, #_pi_disable) +Chr(10)+Str(Disable(Value)))
-  SetItemText(gadget, #_pi_hide,    GetItemText(gadget, #_pi_hide)    +Chr(10)+Str(Hide(Value)))
-EndProcedure
 
+;-
 Procedure Points(Steps = 5, BoxColor = 0, PlotColor = 0)
   Static ID
   Protected hDC, x,y
@@ -271,6 +260,47 @@ EndProcedure
 Macro Pushed()
   Mouse()\buttons
 EndMacro
+
+
+;-
+Macro update_properties_id(_gadget_, _value_)
+  SetItemText(_gadget_, #_pi_id,      GetItemText(_gadget_, #_pi_id)      +Chr(10)+Str(_value_))
+EndMacro
+
+Macro update_properties_class(_gadget_, _value_)
+  SetItemText(_gadget_, #_pi_class,   GetItemText(_gadget_, #_pi_class)   +Chr(10)+GetClass(_value_)+"_"+GetCount(_value_))
+EndMacro
+
+Macro update_properties_text(_gadget_, _value_)
+  SetItemText(_gadget_, #_pi_text,    GetItemText(_gadget_, #_pi_text)    +Chr(10)+GetText(_value_))
+EndMacro
+
+Macro update_properties_disable(_gadget_, _value_)
+  SetItemText(_gadget_, #_pi_disable, GetItemText(_gadget_, #_pi_disable) +Chr(10)+Str(Disable(_value_)))
+EndMacro
+
+Macro update_properties_hide(_gadget_, _value_)
+  SetItemText(_gadget_, #_pi_hide,    GetItemText(_gadget_, #_pi_hide)    +Chr(10)+Str(Hide(_value_)))
+EndMacro
+
+Macro update_properties_coordinate(_gadget_, _value_)
+  SetItemText(_gadget_, #_pi_x,       GetItemText(_gadget_, #_pi_x)       +Chr(10)+Str(X(_value_, #__c_container)))
+  SetItemText(_gadget_, #_pi_y,       GetItemText(_gadget_, #_pi_y)       +Chr(10)+Str(Y(_value_, #__c_container)))
+  SetItemText(_gadget_, #_pi_width,   GetItemText(_gadget_, #_pi_width)   +Chr(10)+Str(Width(_value_)))
+  SetItemText(_gadget_, #_pi_height,  GetItemText(_gadget_, #_pi_height)  +Chr(10)+Str(Height(_value_)))
+EndMacro
+
+Macro update_properties(_gadget_, _value_)
+  update_properties_id(_gadget_, _value_)
+  update_properties_class(_gadget_, _value_)
+  
+  update_properties_text(_gadget_, _value_)
+  update_properties_coordinate(_gadget_, _value_)
+  
+  update_properties_disable(_gadget_, _value_)
+  update_properties_hide(_gadget_, _value_)
+EndMacro
+
 
 ;-
 Procedure.s FlagFromFlag( Type, flag.i ) ; 
@@ -416,16 +446,19 @@ EndProcedure
 ;-
 Procedure.i start_select(*this._s_widget)
   If Not Transform()
-    InitTransform()
+    Transform()._structure_(transform)
   EndIf
   
-  ;SetCursor(*this, #PB_Cursor_Cross)
-  Redraw(*this\root)
-  
-  If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
-    Transform()\grab = GrabDrawingImage(#PB_Any, 0,0, *this\root\width, *this\root\height)
-    StopDrawing()
-  EndIf
+;   ;SetCursor(*this, #PB_Cursor_Cross)
+;   Redraw(*this\root)
+;   
+;   If Transform() And
+;      Transform()\widget And 
+;      Transform()\widget\container And 
+;      StartDrawing(CanvasOutput(Transform()\widget\root\canvas\gadget))
+;     Transform()\grab = GrabDrawingImage(#PB_Any, 0,0, Transform()\widget\root\width, Transform()\widget\root\height)
+;     StopDrawing()
+;   EndIf
   
   ProcedureReturn *this
 EndProcedure
@@ -667,6 +700,15 @@ Procedure events_element()
       Case #PB_EventType_DragStart
         If GetState(id_elements_tree) > 0
           SetCursor(*this, #PB_Cursor_Cross)
+          
+          If Transform() And 
+             Transform()\widget And 
+             Not Transform()\grab And 
+             Transform()\widget\container And 
+             StartDrawing(CanvasOutput(Transform()\widget\root\canvas\gadget))
+            Transform()\grab = GrabDrawingImage(#PB_Any, 0,0, Transform()\widget\root\width, Transform()\widget\root\height)
+            StopDrawing()
+          EndIf
         EndIf
         
       Case #PB_EventType_MouseEnter
@@ -683,8 +725,10 @@ Procedure events_element()
         
       Case #PB_EventType_LeftButtonDown
         If GetState(id_elements_tree) > 0
-          ;SetCursor(*this, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
           Drag = start_select(*this)
+;         Else
+;           start_select(*this)
+;           Debug 888
         EndIf
         
     EndSelect
@@ -721,6 +765,9 @@ Procedure events_element()
         SetGadgetState(listview_debug, GetData(*this))
       EndIf
       update_properties(id_properties_tree, *this)
+      
+    Case #PB_EventType_Resize
+      update_properties_coordinate(id_properties_tree, *this)
       
   EndSelect
   
@@ -775,7 +822,6 @@ Procedure create_ide(x=100,y=100,width=800,height=600)
   canvas_ide = widget::GetGadget(root)
   
   toolbar_design = Container(0,0,0,0) 
-  
   ButtonImage(0,0,30,30,CatchImage(#PB_Any,?group_align_left))
   ButtonImage(32,0,30,30,CatchImage(#PB_Any,?group_align_right))
   ButtonImage(64,0,30,30,CatchImage(#PB_Any,?group_align_top))
@@ -898,6 +944,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   create_element(*window, "button", 10, 20)
   ;   ;CloseList()
   
+  
   Repeat 
     event = WaitWindowEvent() 
     
@@ -924,5 +971,5 @@ DataSection   ; Include Images
   ThisPC:           : IncludeBinary "ThisPC.png"
 EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 8-ff-v-2+408-----
+; Folding = +-tHA-v-d--30-----
 ; EnableXP
