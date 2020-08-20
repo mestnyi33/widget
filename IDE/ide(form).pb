@@ -62,6 +62,8 @@ Global id_inspector_panel,
        id_properties_tree, 
        id_events_tree
 
+Global group_select,
+       group_drag
 
 ;-
 ;- PUBLICs
@@ -443,6 +445,7 @@ Procedure add_code(*new._s_widget, Class.s, Position.i, SubLevel.i)
   EndIf
 EndProcedure
 
+
 ;-
 Procedure.i start_select(*this._s_widget)
   If Not Transform()
@@ -559,6 +562,83 @@ Procedure.i stop_select(*this._s_widget)
     ProcedureReturn *this
   EndIf
 EndProcedure
+
+
+Procedure.i draw_group_select(*this._s_widget)
+  Static draw_x, draw_y
+  Protected mouse_x, mouse_y, change
+  
+  If Mouse()\grid > 0
+    mouse_x = (Mouse()\x / Mouse()\grid) * Mouse()\grid
+    mouse_y = (Mouse()\y / Mouse()\grid) * Mouse()\grid
+  Else
+    mouse_x = Mouse()\x
+    mouse_y = Mouse()\y
+  EndIf
+  
+  If draw_x <> mouse_x
+    draw_x = mouse_x
+    change = 1
+  EndIf
+  
+  If draw_y <> mouse_y
+    draw_y = mouse_y
+    change = 1
+  EndIf
+  
+  If change
+    Transform()\id\x = Mouse()\delta\x + *this\x
+    Transform()\id\y = Mouse()\delta\y + *this\y
+    
+    If Transform()\id\x > mouse_x
+      Transform()\id\width = Transform()\id\x - mouse_x
+      Transform()\id\x = mouse_x
+    Else
+      Transform()\id\width = mouse_x - Transform()\id\x
+    EndIf
+    
+    If Transform()\id\y > mouse_y
+      Transform()\id\height = Transform()\id\y - mouse_y
+      Transform()\id\y = mouse_y
+    Else
+      Transform()\id\height = mouse_y - Transform()\id\y
+    EndIf
+    
+    If *this\fs
+      Transform()\id\x + *this\fs
+      Transform()\id\y + *this\fs
+    EndIf
+    
+    Transform()\id\width + 1
+    Transform()\id\height + 1
+    
+    If *this\root And 
+       *this\root\canvas\repaint = 0
+      *this\root\canvas\repaint = 1
+      PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__Event_repaint);, *this)
+    EndIf
+    
+    
+    ; Redraw(*this\root)
+    
+    ;     If StartDrawing( CanvasOutput(*this\root\canvas\gadget) )
+    ;       If Transform()\grab
+    ;         DrawImage(ImageID(Transform()\grab), 0,0)
+    ;       EndIf
+    ;       
+    ;       ; draw selector
+    ;       DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+    ;       Box(Transform()\id\x, Transform()\id\y, 
+    ;           Transform()\id\width, Transform()\id\height , $ff000000);Transform()\color[Transform()\state]\id) 
+    ;       
+    ;       StopDrawing()
+    ;     EndIf
+  EndIf
+  ProcedureReturn *this
+  
+  
+EndProcedure
+
 
 ;-
 Declare events_element()
@@ -690,6 +770,7 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
   ProcedureReturn *new
 EndProcedure
 
+
 Procedure events_element()
   Static Drag
   Protected e_type = this()\event
@@ -698,7 +779,11 @@ Procedure events_element()
   If *this\container
     Select e_type 
       Case #PB_EventType_DragStart
-        If GetState(id_elements_tree) > 0
+        If group_select 
+          group_drag = *this
+        EndIf
+        
+        If GetState(id_elements_tree) > 0 Or group_select
           SetCursor(*this, #PB_Cursor_Cross)
           
           If Transform() And 
@@ -710,6 +795,7 @@ Procedure events_element()
             StopDrawing()
           EndIf
         EndIf
+        
         
       Case #PB_EventType_MouseEnter
         If GetState(id_elements_tree) > 0
@@ -742,6 +828,14 @@ Procedure events_element()
         EndIf
       EndIf
       
+      If group_drag And 
+         group_select
+        
+        If Not draw_group_select(group_drag)
+        EndIf
+        
+      EndIf
+      
     Case #PB_EventType_LeftButtonUp
       If GetState(id_elements_tree) > 0
         If stop_select(*this)
@@ -757,6 +851,21 @@ Procedure events_element()
         EndIf
         
         SetState(id_elements_tree, 0)
+      EndIf
+      
+      If group_drag And 
+         group_select And 
+         GetState(id_elements_tree) = 0
+        
+        ForEach widget()
+          If child(widget(), *this) And Intersect(widget(), Transform()\id)
+            Debug widget()\class +"_"+ Str(widget()\index-widget()\parent\index)
+            ; a_set(widget())
+          EndIf
+        Next
+        
+        stop_select(group_drag)
+        group_drag = 0
       EndIf
       
     Case #PB_EventType_StatusChange
@@ -792,6 +901,8 @@ Procedure events_ide()
         If *this And
            a_set(*this)
         EndIf
+        
+        ; SetActive(e_widget)
       EndIf
       
     Case #PB_EventType_MouseEnter
@@ -812,24 +923,68 @@ Procedure events_ide()
         ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
       EndIf
       
+      If getclass(e_widget) = "ToolBar"
+        Select GetData(e_widget)
+          Case 1 ; group
+            group_select = e_widget
+            Flag(e_widget, #__button_toggle, 1)
+            setstate(e_widget, 1)
+            
+          Case 2 ; un group
+            If group_select
+              setstate(group_select, 0)
+              group_select = 0
+            EndIf
+          
+        EndSelect
+      EndIf
+      
   EndSelect
 EndProcedure
 
+
+
+Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
+  ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
+  ButtonImage(((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_)
+  ;widget()\color = widget()\parent\color
+  ;widget()\text\padding\x = 0
+  widget()\class = "ToolBar"
+  widget()\data = _button_
+  ;SetData(widget(), _button_)
+  Bind(widget(), @events_ide())
+EndMacro
+
+Macro BarSeparator()
+  Text(widget()\x+widget()\width, 2,1,30,"")
+  Button(widget()\x+widget()\width, 2+4,1,24,"")
+  SetData(widget(), - MacroExpandedCount)
+  Text(widget()\x+widget()\width, 2,1,30,"")
+EndMacro
+
+
+  
 Procedure create_ide(x=100,y=100,width=800,height=600)
   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
   Define root = widget::Open(OpenWindow(#PB_Any, x,y,width,height, "ide", flag))
   window_ide = widget::GetWindow(root)
   canvas_ide = widget::GetGadget(root)
   
-  toolbar_design = Container(0,0,0,0) 
-  ButtonImage(2     ,2,30,30,CatchImage(#PB_Any,?group_left))
-  ButtonImage(2+32*1,2,30,30,CatchImage(#PB_Any,?group_right))
   
-  ButtonImage(2+32*2,2,30,30,CatchImage(#PB_Any,?group_top))
-  ButtonImage(2+32*3,2,30,30,CatchImage(#PB_Any,?group_bottom))
+ toolbar_design = Container(0,0,0,0) 
+  ;ToolBar(toolbar, window, flags)
   
-  ButtonImage(2+32*4,2,30,30,CatchImage(#PB_Any,?group_width))
-  ButtonImage(2+32*5,2,30,30,CatchImage(#PB_Any,?group_height))
+  ToolBarButton(1, CatchImage(#PB_Any,?group))
+  ToolBarButton(2, CatchImage(#PB_Any,?group_un))
+  BarSeparator()
+  ToolBarButton(3, CatchImage(#PB_Any,?group_left))
+  ToolBarButton(4, CatchImage(#PB_Any,?group_right))
+  BarSeparator()
+  ToolBarButton(5, CatchImage(#PB_Any,?group_top))
+  ToolBarButton(6, CatchImage(#PB_Any,?group_bottom))
+  BarSeparator()
+  ToolBarButton(7, CatchImage(#PB_Any,?group_width))
+  ToolBarButton(8, CatchImage(#PB_Any,?group_height))
   CloseList()
   
   ;   id_design_panel = Panel(0,0,0,0) ; , #__bar_vertical) : OpenList(id_design_panel)
@@ -975,5 +1130,5 @@ DataSection   ; Include Images
   ThisPC:           : IncludeBinary "ThisPC.png"
 EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +-tHA-v-d--30-----
+; Folding = 7-tHA-v-V--+4u-894-+-
 ; EnableXP

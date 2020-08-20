@@ -88,13 +88,13 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     EndProcedure
   
   Procedure ResizeCallBack()
-    Protected Width = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate) 
-    Protected Height = WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)
+    Protected Width = WindowWidth(11, #PB_Window_InnerCoordinate) 
+    Protected Height = WindowHeight(11, #PB_Window_InnerCoordinate)
     
     Resize(*Button_0, Width-85, #PB_Ignore, #PB_Ignore, Height-30)
     Resize(*Button_1, #PB_Ignore, #PB_Ignore, Width-100, #PB_Ignore)
     ResizeGadget(c2, 10, 10, Width-20, Height-20)
-    SetWindowTitle(EventWindow(), Str(*Button_1\width))
+    SetWindowTitle(11, Str(*Button_1\width))
   EndProcedure
   
   If OpenWindow(11, 0, 0, 260, 160, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
@@ -114,7 +114,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeWindow(11, #PB_Ignore, WindowY(main)+WindowHeight(main, #PB_Window_FrameCoordinate)+10, #PB_Ignore, #PB_Ignore)
     
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 11)
-    PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore)
+    ; PostEvent(#PB_Event_SizeWindow, 11, #PB_Ignore) ; bug in linux
+    ResizeCallBack()
     
     ;     BindGadgetEvent(g, @CallBacks())
     ;     PostEvent(#PB_Event_Gadget, 11,11, #PB_EventType_Resize)
@@ -123,6 +124,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose()
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (Linux - x64)
+; CursorPosition = 116
+; FirstLine = 99
 ; Folding = --
 ; EnableXP

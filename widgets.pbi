@@ -215,6 +215,16 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     ;- 
+    Macro Intersect(_adress_1_, _adress_2_, _mode_ = )
+      Bool((_adress_1_\x#_mode_ + _adress_1_\width) > _adress_2_\x And _adress_1_\x#_mode_ < (_adress_2_\x + _adress_2_\width) And 
+           (_adress_1_\y#_mode_ + _adress_1_\height) > _adress_2_\y And _adress_1_\y#_mode_ < (_adress_2_\y + _adress_2_\height))
+    EndMacro
+    
+    Macro Atpoint(_adress_, _mode_ = )
+      Bool(mouse()\x > _adress_\x#_mode_ And mouse()\x < (_adress_\x#_mode_ + _adress_\width#_mode_) And 
+           mouse()\y > _adress_\y#_mode_ And mouse()\y < (_adress_\y#_mode_ + _adress_\height#_mode_))
+    EndMacro
+    
     Macro _from_point_(mouse_x, mouse_y, _type_, _mode_ = )
       Bool(mouse_x > _type_\x#_mode_ And mouse_x < (_type_\x#_mode_ + _type_\width#_mode_) And 
            mouse_y > _type_\y#_mode_ And mouse_y < (_type_\y#_mode_ + _type_\height#_mode_))
@@ -2069,6 +2079,74 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndMacro
     
+    ;-
+    Macro make_scrollarea_x(_this_, _adress_);, _rotate_)
+      ; make horizontal scroll x
+      If Not _this_\scroll\h
+        If _adress_\align\right
+          _this_\x[#__c_required] = (_this_\width[#__c_inner] - _this_\width[#__c_required])
+          
+          ; horizontal center
+        ElseIf Not _adress_\align\left
+          _this_\x[#__c_required] = (_this_\width[#__c_inner] -  _this_\width[#__c_required]) / 2
+          
+        Else
+          _this_\x[#__c_required] = 0
+        EndIf
+        
+      Else
+        ; make horizontal scroll x
+        If _adress_\align\right
+          _this_\x[#__c_required] = (_this_\width[#__c_inner] - _this_\width[#__c_required] + _this_\scroll\h\bar\page\end) - (_this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min)
+          
+          ; horizontal center
+        ElseIf Not _adress_\align\left
+          _this_\x[#__c_required] = (_this_\width[#__c_inner] -  _this_\width[#__c_required] + _this_\scroll\h\bar\page\end) / 2 - (_this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min)
+          
+        Else
+          _this_\x[#__c_required] =- (_this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min)
+        EndIf
+      EndIf
+    EndMacro    
+    
+    Macro make_scrollarea_y(_this_, _adress_, _rotate_=0)
+      
+      ; make vertical scroll y
+      If Not _this_\scroll\v
+        If _adress_\align\bottom
+          _this_\y[#__c_required] = (_this_\height[#__c_inner] - _this_\height[#__c_required])
+          
+          ; vertical center
+        ElseIf Not _adress_\align\top
+          If _this_\button\height And 
+             Not _adress_\align\left And Not _adress_\align\right
+            
+            ; horizontal center 
+            If _rotate_ = 0
+              _this_\y[#__c_required] = (_this_\height[#__c_inner] - _this_\height[#__c_required] + _this_\button\height) / 2
+            Else
+              _this_\y[#__c_required] = (_this_\height[#__c_inner] - _this_\height[#__c_required] - _this_\button\height) / 2
+            EndIf
+          Else
+            _this_\y[#__c_required] = (_this_\height[#__c_inner] - _this_\height[#__c_required]) / 2
+          EndIf
+        Else
+          _this_\y[#__c_required] = 0
+        EndIf
+        
+      Else
+        ; make vertical scroll y
+        If _adress_\align\bottom
+          _this_\y[#__c_required] = (_this_\height[#__c_inner] - _this_\height[#__c_required] + _this_\scroll\v\bar\page\end) - (_this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min)
+          
+          ; vertical center
+        ElseIf Not _adress_\align\top
+          _this_\y[#__c_required] = (_this_\height[#__c_inner] - _this_\height[#__c_required] + _this_\scroll\v\bar\page\end) / 2 - (_this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min)
+        Else
+          _this_\y[#__c_required] =- (_this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min)
+        EndIf
+      EndIf
+    EndMacro
     
     ;- 
     Macro _set_text_(_this_, _text_, _flag_)
@@ -5618,7 +5696,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ;             If *this\row\count <> *this\count\items 
             ; *this\row\count = *this\count\items
             Debug  " - - - - ClearList - - - - " + *this\text\change
-            Protected padding_x2 = *this\text\padding\x*2 ;+ *this\button\width
+            Protected padding_x2 = *this\text\padding\x*2 ;+ *this\img\width
             
             ClearList(row())
             *this\width[#__c_required] = padding_x2
@@ -5714,69 +5792,365 @@ CompilerIf Not Defined(widget, #PB_Module)
             ;             EndIf 
             
             
-            ; make vertical scroll y
-            If Not *this\scroll\v
-              If *this\text\align\bottom
-                *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required])
-                
-                ; vertical center
-              ElseIf Not *this\text\align\top
-                If *this\button\height And 
-                   Not *this\text\align\left And Not *this\text\align\right
-                  
-                  ; horizontal center 
-                  If *this\text\rotate = 0
-                    *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required] + *this\button\height) / 2
-                  Else
-                    *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required] - *this\button\height) / 2
-                  EndIf
-                Else
-                  *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required]) / 2
+            ;
+            ForEach row()
+              row()\text\pos = *this\text\pos 
+              *this\text\pos + row()\text\len + 1 ; Len(#LF$)
+              
+              If *this\vertical
+                If *this\text\rotate = 270
+                  row()\x - (*this\width[#__c_inner] - *this\width[#__c_required])
                 EndIf
+                
+                ; changed
+                If \text\rotate = 270
+                  row()\text\x = row()\x + Bool(#PB_Compiler_OS = #PB_OS_MacOS) + 1
+                ElseIf \text\rotate = 90
+                  row()\text\x = row()\x - Bool(#PB_Compiler_OS = #PB_OS_MacOS) - 1 
+                Else
+                  row()\text\x = row()\x
+                EndIf
+                
+                _set_align_y_(*this\text, row()\text, *this\height[#__c_required], *this\text\rotate)
               Else
-                *this\y[#__c_required] = 0
+                If *this\text\rotate = 180
+                  row()\y - (*this\height[#__c_inner] - *this\height[#__c_required])
+                EndIf
+                
+                ; changed
+                If \text\rotate = 0
+                  row()\text\y = row()\y - Bool(#PB_Compiler_OS = #PB_OS_MacOS) - 1 
+                ElseIf \text\rotate = 180
+                  row()\text\y = row()\y + Bool(#PB_Compiler_OS = #PB_OS_MacOS) * 2 + Bool(#PB_Compiler_OS = #PB_OS_Linux) + row()\text\height
+                Else
+                  row()\text\y = row()\y
+                EndIf
+                
+                _set_align_x_(*this\text, row()\text, *this\width[#__c_required], *this\text\rotate)
               EndIf
               
-            Else
-              ; make vertical scroll y
+              ;               
+              ;                         \row\_s()\draw = Bool(Not \row\_s()\hide And 
+              ;                                     _row_y_(*this) > *this\y[#__c_inner] - \row\_s()\height And 
+              ;                                     _row_y_(*this) < *this\y[#__c_inner] + *this\height[#__c_inner])
+              ; ;               If  _row_y_(*this) > *this\y[#__c_inner] - \row\_s()\height And _row_y_(*this) < *this\y[#__c_inner] + \row\_s()\height
+              ;                         If \row\_s()\draw
+              ;                           Debug \row\_s()\index;_row_y_(*this)
+              ;                EndIf
+              
+              If row()\text\change <> 0
+                _edit_sel_update_(*this)
+                
+                row()\text\change = 0
+              EndIf
+            Next 
+            
+            
+          EndIf
+        EndIf
+        
+        If *this\text\change
+          Protected update_scroll_area
+          
+          If *this\scroll\v And
+             *this\scroll\v\bar\max <> *this\height[#__c_required] And
+             Bar_SetAttribute(*this\scroll\v, #__bar_maximum, *this\height[#__c_required])
+            update_scroll_area = 1
+          EndIf
+          
+          If *this\scroll\h And 
+             *this\scroll\h\bar\max <> *this\width[#__c_required] And  
+             Bar_SetAttribute(*this\scroll\h, #__bar_maximum, *this\width[#__c_required])
+            update_scroll_area = 1
+          EndIf
+          
+          If update_scroll_area ; _bar_scrollarea_update_(*this)
+            Bar_Resizes(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            \height[#__c_inner] = \scroll\v\bar\page\len
+            \width[#__c_inner] = \scroll\h\bar\page\len 
+          EndIf
+          
+          ; Debug ""+*this\scroll\h\bar\page\pos +" "+ *this\scroll\h\bar\page\end
+          ; *this\scroll\h\bar\page\end) *this\scroll\h\bar\page\pos - *this\scroll\h\bar\min
+          ; make horizontal scroll x
+          make_scrollarea_x(*this, *this\text)
+          
+          ; make vertical scroll y
+          make_scrollarea_y(*this, *this\text)
+          
+          
+          If *this\text\change = #__text_update 
+            
+            ; vertical bar one before displaying
+            If *this\scroll\v 
               If *this\text\align\bottom
-                *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required] + *this\scroll\v\bar\page\end) - (*this\scroll\v\bar\page\pos - *this\scroll\v\bar\min)
+                If Bar_Change(*this\scroll\v, *this\scroll\v\bar\page\end) 
+                  Bar_Update(*this\scroll\v)
+                EndIf
                 
-                ; vertical center
               ElseIf Not *this\text\align\top
-                *this\y[#__c_required] = (*this\height[#__c_inner] - *this\height[#__c_required] + *this\scroll\v\bar\page\end) / 2 - (*this\scroll\v\bar\page\pos - *this\scroll\v\bar\min)
-              Else
-                *this\y[#__c_required] =- (*this\scroll\v\bar\page\pos - *this\scroll\v\bar\min)
+                If Bar_Change(*this\scroll\v, *this\scroll\v\bar\page\end / 2) 
+                  Bar_Update(*this\scroll\v)
+                EndIf
               EndIf
             EndIf
             
-            ; make horizontal scroll x
-            If Not *this\scroll\h
+            ; horizontal bar one before displaying
+            If *this\scroll\h  
               If *this\text\align\right
-                *this\x[#__c_required] = (*this\width[#__c_inner] - *this\width[#__c_required])
+                If Bar_Change(*this\scroll\h, *this\scroll\h\bar\page\end) 
+                  Bar_Update(*this\scroll\h)
+                EndIf
                 
-                ; horizontal center
               ElseIf Not *this\text\align\left
-                *this\x[#__c_required] = (*this\width[#__c_inner] -  *this\width[#__c_required]) / 2
-                
-              Else
-                *this\x[#__c_required] = 0
+                If Bar_Change(*this\scroll\h, *this\scroll\h\bar\page\end / 2) 
+                  Bar_Update(*this\scroll\h)
+                EndIf
               EndIf
-              
+            EndIf
+          Else
+            
+            ; This is for the caret and scroll 
+            ; when entering the key - (enter & backspace) 
+            If *this\scroll\v
+              _text_scroll_y_(*this)
+            EndIf
+            
+            If *this\scroll\h
+              _text_scroll_x_(*this)
+            EndIf
+            
+          EndIf
+        EndIf
+        ;           ; text frame 
+        ;           *this\text\x = *this\x[#__c_required] + *this\text\padding\x
+        ;           *this\text\y = *this\y[#__c_required] + *this\text\padding\y
+        ;           *this\text\width = *this\width[#__c_required] - *this\text\padding\x*2
+        ;           *this\text\height = *this\height[#__c_required] + *this\text\padding\y*2
+        
+        
+      EndWith
+    EndProcedure
+    
+    Procedure   _Editor_Update(*this._s_widget, List row._s_rows())
+      With *this
+        
+        If \text\string.s
+          Protected *str.Character
+          Protected *end.Character
+          Protected TxtHeight = \text\height
+          Protected String.s, String1.s, CountString
+          Protected IT, len.l, Position.l, Width,Height
+          Protected ColorFont = \color\Front[Bool(*this\_state & #__s_front) * \color\state]
+          
+          If \vertical
+            Width = \height[#__c_inner] - \text\X*2
+            Height = \width[#__c_inner] - \text\y*2
+          Else
+            Width = \width[#__c_inner] - \text\X*2 
+            Height = \height[#__c_inner] - \text\y*2
+          EndIf
+          
+          ; make multiline text
+          If \text\multiLine
+            Protected text$ = *this\text\string.s + #LF$
+            
+            ;     text$ = ReplaceString(text$, #LFCR$, #LF$)
+            ;     text$ = ReplaceString(text$, #CRLF$, #LF$)
+            ;     text$ = ReplaceString(text$, #CR$, #LF$)
+            ;     text$ + #LF$
+            ;     
+            
+            If \text\multiLine < 0
+              String = text$
             Else
-              ; make horizontal scroll x
-              If *this\text\align\right
-                *this\x[#__c_required] = (*this\width[#__c_inner] - *this\width[#__c_required] + *this\scroll\h\bar\page\end) - (*this\scroll\h\bar\page\pos - *this\scroll\h\bar\min)
+              ; <http://www.purebasic.fr/english/viewtopic.php?f = 12&t = 53800>
+              Protected.i i, start, found, length
+              Protected$ line$, DelimList$ = " " + Chr(9), nl$ = #LF$
+              
+              *str.Character = @text$
+              *end.Character = @text$
+              
+              ; make word wrap
+              While *end\c 
+                If *end\c = #LF
+                  start = (*end - *str) >> #PB_Compiler_Unicode
+                  line$ = PeekS (*str, start)
+                  length = start
+                  
+                  ; Get text len
+                  While length > 1
+                    If width > TextWidth(RTrim(Left(line$, length)))
+                      Break
+                    Else
+                      length - 1 
+                    EndIf
+                  Wend
+                  
+                  While start > length 
+                    For found = length To 1 Step - 1
+                      If FindString(" ", Mid(line$, found,1))
+                        start = found
+                        Break
+                      EndIf
+                    Next
+                    
+                    If Not found
+                      start = length
+                    EndIf
+                    
+                    String + Left(line$, start) + nl$
+                    line$ = LTrim(Mid(line$, start + 1))
+                    start = Len(line$)
+                    
+                    ;If length <> start
+                    length = start
+                    
+                    ; Get text len
+                    While length > 1
+                      If width > TextWidth(RTrim(Left(line$, length)))
+                        Break
+                      Else
+                        length - 1 
+                      EndIf
+                    Wend
+                    ;EndIf
+                  Wend
+                  
+                  String + line$ + nl$
+                  *str = *end + #__sOC 
+                EndIf 
                 
-                ; horizontal center
-              ElseIf Not *this\text\align\left
-                *this\x[#__c_required] = (*this\width[#__c_inner] -  *this\width[#__c_required] + *this\scroll\h\bar\page\end) / 2 - (*this\scroll\h\bar\page\pos - *this\scroll\h\bar\min)
-                
-              Else
-                *this\x[#__c_required] =- (*this\scroll\h\bar\page\pos - *this\scroll\h\bar\min)
-              EndIf
+                *end + #__sOC 
+              Wend
             EndIf
             
+            CountString = CountString(String, #LF$)
+          Else
+            String.s = RemoveString(*this\text\string, #LF$) + #LF$
+            CountString = 1
+          EndIf
+          
+          ; \max 
+          If \vertical
+            If *this\height[#__c_required] > *this\height[#__c_inner]
+              *this\text\change = #True
+            EndIf
+          Else
+            If *this\width[#__c_required] > *this\width[#__c_inner]
+              *this\text\change = #True
+            EndIf
+          EndIf
+          
+          ; 
+          If *this\count\items <> CountString
+            *this\count\items = CountString
+            *this\text\change = #True
+          EndIf
+          
+          If *this\text\change
+            Debug "*this\text\change - " + #PB_Compiler_Procedure
+            
+            *str.Character = @String
+            *end.Character = @String
+            
+            *this\text\pos  = 0
+            *this\text\len = Len(*this\text\string)
+            
+            ;             ;; editor
+            ;             If *this\row\count <> *this\count\items 
+            *this\row\count = *this\count\items
+            Debug  " - - - - ClearList - - - - "
+            
+            ClearList(row())
+            *this\width[#__c_required] = *this\text\padding\x*2 
+            *this\height[#__c_required] = *this\text\padding\y*2 
+            
+            ;
+            While *end\c 
+              If *end\c = #LF 
+                AddElement(row())
+                ; drawing item font
+                _drawing_font_item_(*this, row(), row()\text\change)
+                
+                row()\text\len = (*end - *str)>>#PB_Compiler_Unicode
+                row()\text\string = PeekS (*str, row()\text\len)
+                row()\text\width = TextWidth(row()\text\string)
+                
+                ;; editor
+                row()\index = ListIndex(row())
+                row()\height = row()\text\height
+                row()\color\back[1] = _get_colors_()\back[1]
+                row()\color\back[2] = _get_colors_()\back[2]
+                row()\color\back[3] = _get_colors_()\back[3]
+                row()\color\front[2] = _get_colors_()\front[2]
+                
+                If \index[#__s_1] = row()\index Or
+                   \index[#__s_2] = row()\index 
+                  row()\text\change = 1
+                EndIf
+                
+                ; make line position
+                If \vertical
+                  If *this\height[#__c_required] < row()\text\width + *this\text\padding\y * 2
+                    *this\height[#__c_required] = row()\text\width + *this\text\padding\y * 2
+                  EndIf
+                  
+                  If \text\rotate = 270
+                    row()\x = *this\width[#__c_inner] - *this\width[#__c_required] + *this\text\padding\x + Bool(#PB_Compiler_OS = #PB_OS_MacOS)
+                  ElseIf \text\rotate = 90
+                    row()\x = *this\width[#__c_required]                           - *this\text\padding\x - 1 
+                  EndIf
+                  
+                  *this\width[#__c_required] + TxtHeight
+                Else
+                  If *this\width[#__c_required] < row()\text\width + *this\text\padding\x * 2
+                    *this\width[#__c_required] = row()\text\width + *this\text\padding\x * 2
+                  EndIf
+                  
+                  If \text\rotate = 0
+                    row()\y = *this\height[#__c_required]                            - *this\text\padding\y - 1 
+                  ElseIf \text\rotate = 180
+                    row()\y = *this\height[#__c_inner] - *this\height[#__c_required] + *this\text\padding\y + Bool(#PB_Compiler_OS = #PB_OS_MacOS)
+                  EndIf
+                  
+                  *this\height[#__c_required] + TxtHeight
+                EndIf
+                
+                *str = *end + #__sOC 
+              EndIf 
+              
+              *end + #__sOC 
+            Wend
+            
+            ;             Else
+            ;               While *end\c 
+            ;                 If *end\c = #LF 
+            ;                   If SelectElement(row(), IT)
+            ;                     row()\text\len = (*end - *str)>>#PB_Compiler_Unicode
+            ;                     line$ = PeekS (*str, row()\text\len)
+            ;                     
+            ;                     If row()\text\string.s <> line$
+            ;                       row()\text\string.s = line$
+            ;                       row()\text\change = 1
+            ;                     EndIf
+            ;                     
+            ;                     If row()\text\change <> 0
+            ;                       row()\text\width = TextWidth(row()\text\string)
+            ;                       ;Debug *this\count\items
+            ;                       If *this\width[#__c_required] < row()\text\width + *this\text\padding\x * 2
+            ;                         *this\width[#__c_required] = row()\text\width + *this\text\padding\x * 2
+            ;                       EndIf
+            ;                     EndIf
+            ;                   EndIf
+            ;                   
+            ;                   IT + 1
+            ;                   *str = *end + #__sOC 
+            ;                 EndIf 
+            ;                 
+            ;                 *end + #__sOC 
+            ;               Wend
+            ;             EndIf 
             
             ;
             ForEach row()
@@ -5831,9 +6205,10 @@ CompilerIf Not Defined(widget, #PB_Module)
               EndIf
             Next 
           EndIf
+          
+          
         EndIf
-        
-        If *this\text\change
+          
           Protected update_scroll_area
           
           If *this\scroll\v And
@@ -5854,9 +6229,20 @@ CompilerIf Not Defined(widget, #PB_Module)
             \width[#__c_inner] = \scroll\h\bar\page\len 
           EndIf
           
-          If *this\text\change = #__text_update 
-            ; vertical bar once before displaying
-            If *this\scroll\v 
+            ; make vertical scroll y
+            make_scrollarea_y(*this, *this\text)
+            
+            ; make horizontal scroll x
+            make_scrollarea_x(*this, *this\text)
+            
+            
+            
+          If *this\scroll\v
+              ; This is for the caret and scroll when entering the key - (enter & backspace) 
+            _text_scroll_y_(*this)
+            
+            ; fist show 
+            If Not *this\scroll\v\bar\page\change
               If *this\text\align\bottom
                 If Bar_Change(*this\scroll\v, *this\scroll\v\bar\page\end) 
                   Bar_Update(*this\scroll\v)
@@ -5868,9 +6254,15 @@ CompilerIf Not Defined(widget, #PB_Module)
                 EndIf
               EndIf
             EndIf
+          EndIf
+          
+          
+          If *this\scroll\h
+            ; This is for the caret and scroll when entering the key - (enter & backspace) 
+            _text_scroll_x_(*this)
             
-            ; horizontal bar once before displaying
-            If *this\scroll\h  
+            ; first show
+            If Not *this\scroll\h\bar\page\change
               If *this\text\align\right
                 If Bar_Change(*this\scroll\h, *this\scroll\h\bar\page\end) 
                   Bar_Update(*this\scroll\h)
@@ -5882,29 +6274,17 @@ CompilerIf Not Defined(widget, #PB_Module)
                 EndIf
               EndIf
             EndIf
-          Else
-            
-            ; This is for the caret and scroll when entering the key - (enter & backspace) 
-            If *this\scroll\v
-              _text_scroll_y_(*this)
-            EndIf
-            
-            If *this\scroll\h
-              _text_scroll_x_(*this)
-            EndIf
-            
           EndIf
-        EndIf
-        ;           ; text frame 
-        ;           *this\text\x = *this\x[#__c_required] + *this\text\padding\x
-        ;           *this\text\y = *this\y[#__c_required] + *this\text\padding\y
-        ;           *this\text\width = *this\width[#__c_required] - *this\text\padding\x*2
-        ;           *this\text\height = *this\height[#__c_required] + *this\text\padding\y*2
+          
+;           ; text frame 
+;           *this\text\x = *this\x[#__c_required] + *this\text\padding\x
+;           *this\text\y = *this\y[#__c_required] + *this\text\padding\y
+;           *this\text\width = *this\width[#__c_required] - *this\text\padding\x*2
+;           *this\text\height = *this\height[#__c_required] + *this\text\padding\y*2
         
         
       EndWith
     EndProcedure
-    
     
     Procedure   Editor_Draw(*this._s_widget)
       Protected String.s, StringWidth, ix, iy, iwidth, iheight
@@ -6106,7 +6486,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           ; Draw caret
-          If *this\text\editable And _is_selected_(*this)
+          If *this\text\editable And *this = Focused(); _is_selected_(*this)
             DrawingMode(#PB_2DDrawing_XOr)             
             Box(*this\x[#__c_inner] + *this\text\caret\x + *this\x[#__c_required], *this\y[#__c_inner] + *this\text\caret\y + *this\y[#__c_required], *this\text\caret\width, *this\text\caret\height, $FFFFFFFF)
           EndIf
@@ -9140,11 +9520,13 @@ CompilerIf Not Defined(widget, #PB_Module)
     ;-  DRAWINGs
     Procedure   Button_Draw(*this._s_widget)
       With *this
-        If *this\img\change <> 0
-          _set_align_x_(*this\img, *this\img, *this\width[#__c_inner], 0)
-          _set_align_y_(*this\img, *this\img, *this\height[#__c_inner], 270)
-          *this\img\change = 0
-        EndIf
+;         If *this\img\change <> 0
+;           _set_align_x_(*this\img, *this\img, *this\width[#__c_inner], 0)
+;           _set_align_y_(*this\img, *this\img, *this\height[#__c_inner], 270)
+;           *this\img\change = 0
+;         EndIf
+        
+        
         
         If *this\color\back <>- 1
           If \color\fore <>- 1
@@ -9191,7 +9573,38 @@ CompilerIf Not Defined(widget, #PB_Module)
             DrawRotatedText(*this\x[#__c_inner] + *this\x[#__c_required] + *this\row\_s()\text\x, *this\y[#__c_inner] + *this\y[#__c_required] + *this\row\_s()\text\y, *this\row\_s()\text\String.s, *this\text\rotate, *this\color\Front[Bool(*this\_state & #__s_front) * *this\color\state]);*this\row\_s()\color\font)
           Next 
         EndIf
-;         
+        ;       
+        
+        
+        
+        
+        If *this\img\change <> 0
+          *this\img\padding\x = *this\text\padding\x 
+          *this\img\padding\y = *this\text\padding\y
+          
+          ; make horizontal scroll max 
+          If *this\width[#__c_required] < *this\img\width + *this\img\padding\x * 2
+            *this\width[#__c_required] = *this\img\width + *this\img\padding\x * 2
+          EndIf
+          
+          ; make vertical scroll max 
+          If *this\height[#__c_required] < *this\img\height + *this\img\padding\y * 2
+            *this\height[#__c_required] = *this\img\height + *this\img\padding\y * 2
+          EndIf
+          
+          ; make horizontal scroll x
+          make_scrollarea_x(*this, *this\img)
+          
+          ; make vertical scroll y
+          make_scrollarea_y(*this, *this\img)
+          
+            
+          _set_align_x_(*this\img, *this\img, *this\width[#__c_required], 0)
+          _set_align_y_(*this\img, *this\img, *this\height[#__c_required], 270)
+          *this\img\change = 0
+        EndIf
+        
+        
         If #PB_GadgetType_Option = *this\type
           Protected _box_x_,_box_y_
           draw_button(1, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round);, \color)
@@ -15215,5 +15628,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------g------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----------------------------------------------------------
+; Folding = --------------------------D5-------------------------------------------------------------------------------3v5nr--3v2v4----------------------------------------------------------------------------------+-----------------------------------------------------------------------------v-----------------------------------------------------------
 ; EnableXP
