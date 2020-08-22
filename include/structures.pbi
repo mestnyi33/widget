@@ -71,7 +71,12 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_edit
-    Structure _s_edit Extends _s_coordinate
+    Structure _s_edit ; Extends _s_coordinate
+      y.l
+      x.l
+      height.l
+      width.l
+      
       pos.l
       len.l
       
@@ -126,12 +131,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       x.l
       height.l
       width.l
-      change.b
       
-      index.i[3] ;
-      ; index[0] - IsImage()
-      ; index[1] - Image()
-      ; index[2] - ImageID()
+      *id  ; - ImageID() 
+      *img ; - Image()
+      
+      change.b
+      size.w  ; icon small/large
       
       ;;rotate.f
       align._s_align
@@ -172,7 +177,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       draw.b
       round.a
       text._s_text
-      img._s_image
+      image._s_image
       color._s_color
     EndStructure
     
@@ -269,7 +274,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       threestate.b
       
-      iconsize.b  ; small/large
       
       transform.b ; add anchors on the widget (to size and move)
     EndStructure
@@ -305,7 +309,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       visible.b
       
       text._s_text
-      img._s_image
+      image._s_image
       color._s_color
     EndStructure
     
@@ -348,7 +352,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       draw.b
       hide.b
       
-      img._s_image
+      image._s_image
       text._s_text[4]
       box._s_button[2]
       color._s_color
@@ -393,7 +397,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       round.a
       
       text._s_text
-      img._s_image
+      image._s_image
       color._s_color
       *data  ; set/get item data
     EndStructure
@@ -449,6 +453,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
     EndStructure
     
+    ;-
     ;- - _s_widget
     Structure _s_widget 
       *_drawing ; drawing_mode
@@ -485,6 +490,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; \index[1] = tab entered item index
       ; \index[2] = tab selected item index
       
+      *tt._s_tt
       *_flag
       _state.l
       _item.l    ; parent panel tab index
@@ -531,7 +537,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       bar._s_bar
       
       button._s_button ; checkbox; optionbox
-      img._s_image
+      image._s_image[3]
       text._s_text 
       
       *data
@@ -555,10 +561,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *grid
       drag.b[2]
-      change.b
       buttons.l 
+      ;change.b
+      
       wheel._s_point
       delta._s_point
+      ;move._s_point
     EndStructure
     
     ;- - _s_keyboard
@@ -612,5 +620,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --v+ff+
+; Folding = ---+-f+
 ; EnableXP

@@ -12,17 +12,22 @@
     #debug_draw_font = #debug
     #debug_draw_font_change = #debug
     #debug_draw_item_font_change = #debug
+    #__debug_events_tab = 0
+    
+    #__draw_clip_box = 0
+    #__draw_scroll_box = 0
+    #__test_scrollbar_size = 0
     
     #debug_multiline = 0
     #debug_repaint = 0 ; Debug " - -  Canvas repaint - -  "
     
-    #__height = 21 ; #__height = 21
-    #__bsize = 4   ; #__bsize = 3
-    #__window_frame = #__height+#__bsize*2
+    #__border_size = 4  
+    #__caption_height = 21
     
     #__from_mouse_state = 0
     
     
+    #__round = 7
     #__arrow_type = 1
     #__arrow_size = 4
     
@@ -32,14 +37,9 @@
     
     #__splitter_buttonsize = 9
     #__scroll_buttonsize = 16
-    #__test_scrollbar_size = 0
     
-    #__round = 7
-    #__draw_clip_box = 0
-    #__draw_scroll_box = 1
-    #__debug_events_tab = 0
-    #__sOC = SizeOf(Character)
     #__border_scroll = 2
+    #__sOC = SizeOf(Character)
     
     #__anchors = 9+4
     
@@ -58,6 +58,7 @@
     
     
     #__tree_linesize = 5
+    
     ; errors
     Enumeration 1
       #__error_text_input
@@ -166,9 +167,9 @@
       #__flag_top
       #__flag_right
       #__flag_bottom
+      #__flag_center
       
       #__flag_full
-      #__flag_center
       #__flag_proportional
       
       
