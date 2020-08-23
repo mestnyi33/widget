@@ -1927,27 +1927,26 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro      
     
     Macro _set_item_image_(_this_, _item_, _image_)
-      _item_\img\index = IsImage(_image_)
       
-      If _item_\img\index
-        If _this_\mode\iconsize
-          _item_\img\width = _this_\mode\iconsize
-          _item_\img\height = _this_\mode\iconsize
-          ResizeImage(_image_, _item_\img\width, _item_\img\height)
+      If IsImage(_image_)
+        If _this_\image\size
+          _item_\image\width = _this_\image\size
+          _item_\image\height = _this_\image\size
+          ResizeImage(_image_, _item_\image\width, _item_\image\height)
         Else
-          _item_\img\width = ImageWidth(_image_)
-          _item_\img\height = ImageHeight(_image_)
+          _item_\image\width = ImageWidth(_image_)
+          _item_\image\height = ImageHeight(_image_)
         EndIf  
         
-        _item_\img\index[1] = _image_ 
-        _item_\img\index[2] = ImageID(_image_)
+        _item_\image\img = _image_ 
+        _item_\image\id = ImageID(_image_)
         
-        _this_\row\margin\width = _this_\img\padding\x + _item_\img\width + 2
+        _this_\row\margin\width = _this_\image\padding\x + _item_\image\width + 2
       Else
-        _item_\img\index[1] =- 1
-        _item_\img\index[2] = 0
-        _item_\img\width = 0
-        _item_\img\height = 0
+        _item_\image\img =- 1
+        _item_\image\id = 0
+        _item_\image\width = 0
+        _item_\image\height = 0
       EndIf
     EndMacro
     
@@ -7268,9 +7267,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           ; Draw background image
-          If *this\img\index
+          If *this\image\id
             DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-            DrawAlphaImage(*this\img\index, *this\img\x, *this\img\y, *this\color\alpha)
+            DrawAlphaImage(*this\image\id, *this\image\x, *this\image\y, *this\color\alpha)
           EndIf
           
           ;
@@ -8391,9 +8390,9 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         ; Draw background image
-        If *this\img\index[2]
+        If *this\image\id
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(*this\img\index[2], *this\x[#__c_inner]+*this\img\x, *this\y[#__c_inner]+*this\img\y, *this\color\alpha)
+          DrawAlphaImage(*this\image\id, *this\x[#__c_inner]+*this\image\x, *this\y[#__c_inner]+*this\image\y, *this\color\alpha)
         EndIf
         
         ; frame draw
@@ -8450,9 +8449,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           ;         ; Draw image
-          ;         If \caption\img\index[2]
+          ;         If \caption\image\id
           ;           DrawingMode(#PB_2DDrawing_transparent|#PB_2DDrawing_AlphaBlend)
-          ;           DrawAlphaImage(\caption\img\index[2], \caption\img\x, \caption\img\y, \caption\color\alpha)
+          ;           DrawAlphaImage(\caption\image\id, \caption\image\x, \caption\image\y, \caption\color\alpha)
           ;         EndIf
           
           If \caption\text\string
@@ -8913,12 +8912,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         ;         DrawText(*this\x[#__c_frame] + 20,*this\y[#__c_frame], Str(\index) + "_" + Str(\level), $ff000000)
         
         ; Draw background image
-        If \img\index[2]
+        If \image\id
           ;ClipOutput( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner], *this\height[#__c_inner])
           DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawAlphaImage(\img\index[2],
-                         *this\x[#__c_inner] + *this\x[#__c_required] + \img\x,
-                         *this\y[#__c_inner] + *this\y[#__c_required] + \img\y, 
+          DrawAlphaImage(\image\id,
+                         *this\x[#__c_inner] + *this\x[#__c_required] + \image\x,
+                         *this\y[#__c_inner] + *this\y[#__c_required] + \image\y, 
                          \color\alpha)
           ;ClipOutput( *this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip])
         EndIf
@@ -10529,11 +10528,9 @@ CompilerIf Not Defined(widget, #PB_Module)
     Procedure   SetImage(*this._s_widget, *image)
       Protected is_image = IsImage(*image)
       
-      If is_image And 
-         *this\img\index[0] <> is_image
-        *this\img\index[0] = is_image
-        *this\img\index[1] = *image
-        *this\img\index[2] = ImageID(*image)
+      If is_image 
+        *this\image\img = *image
+        *this\image\id = ImageID(*image)
       EndIf
     EndProcedure
     
@@ -11295,7 +11292,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           ProcedureReturn #PB_Default
         EndIf
         
-        result = *this\row\_s()\img\index[1]
+        result = *this\row\_s()\image\img
       EndIf
       
       ProcedureReturn result
@@ -11467,7 +11464,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If *this\type = #__type_tree
         If _is_item_(*this, item) And SelectElement(*this\row\_s(), Item)
-          If *this\row\_s()\img\index[1] <> Image
+          If *this\row\_s()\image\img <> Image
             _set_item_image_(*this, *this\row\_s(), Image)
             _repaint_items_(*this)
           EndIf
@@ -11645,7 +11642,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\text\change = 1 
           *this\text\height = 18 
           
-          *this\img\padding\x = 2
+          *this\image\padding\x = 2
           *this\text\padding\x = 4
           
           ;*this\vertical = Bool(Flag&#__flag_vertical)
@@ -11757,24 +11754,23 @@ CompilerIf Not Defined(widget, #PB_Module)
         If *this\type = #PB_GadgetType_Image
           ScrollBars = 1
           *this\class = "Image"
-          *this\img\index = IsImage(*param_3)
           
-          If *this\img\index
-            *this\img\index[1] = *param_3
-            *this\img\index[2] = ImageID(*param_3)
+          If IsImage(*param_3)
+            *this\image\img = *param_3
+            *this\image\id = ImageID(*param_3)
             
             ;             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            ;               CocoaMessage(@*this\img\width, *this\img\index[2], "pixelsWide")
-            ;               CocoaMessage(@*this\img\height, *this\img\index[2], "pixelsHigh")
-            ;               Debug *this\img\width
+            ;               CocoaMessage(@*this\image\width, *this\image\id, "pixelsWide")
+            ;               CocoaMessage(@*this\image\height, *this\image\id, "pixelsHigh")
+            ;               Debug *this\image\width
             ;             CompilerEndIf
             
-            *this\img\width = ImageWidth(*param_3)
-            *this\img\height = ImageHeight(*param_3)
-            ;             Debug *this\img\width
+            *this\image\width = ImageWidth(*param_3)
+            *this\image\height = ImageHeight(*param_3)
+            ;             Debug *this\image\width
             
-            *param_1 = *this\img\width 
-            *param_2 = *this\img\height 
+            *param_1 = *this\image\width 
+            *param_2 = *this\image\height 
           EndIf
           
           *this\color\back = $FFF9F9F9
@@ -12200,7 +12196,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\text\change = 1 
           *this\text\height = 18 
           
-          *this\img\padding\x = 2
+          *this\image\padding\x = 2
           *this\text\padding\x = 4
           
           ;*this\vertical = Bool(Flag&#__flag_vertical)
@@ -12274,7 +12270,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\text\change = 1 
           *this\text\height = 18 
           
-          *this\img\padding\x = 2
+          *this\image\padding\x = 2
           *this\text\padding\x = 4
           
           ;*this\vertical = Bool(Flag&#__flag_vertical)
@@ -13390,8 +13386,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected result
       Protected img =- 1, f1 =- 1, f2=8, width = 400, height = 120
       Protected bw = 85, bh = 25, iw = height-bh-f1 - f2*4 - 2-1
-      Protected x = (Root()\width-width-#__bsize*2)/2
-      Protected y = (Root()\height-height-#__height-#__bsize*2)/2
+      Protected x = (Root()\width-width-#__border_size*2)/2
+      Protected y = (Root()\height-height-#__caption_height-#__border_size*2)/2
       
       Protected window = Window(x,y, width, height, Title, #__window_titlebar)
       ;SetAlignment(widget(), #__align_center)
@@ -14235,8 +14231,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure.i Window(X.l,Y.l,Width.l,Height.l, Text.s, Flag.i = 0, *parent._s_widget = 0)
       
-      Width + #__bsize*2
-      Height + Bool(Flag)*#__height+#__bsize*2
+      Width + #__border_size*2
+      Height + Bool(Flag)*#__caption_height+#__border_size*2
       
       If Not ListSize(Root())
         Protected root = Open(OpenWindow(#PB_Any, X,Y,Width,Height, "", #PB_Window_BorderLess, *parent))
@@ -14278,7 +14274,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\color\back = $FFF9F9F9
         
         ; Background image
-        \img\index[1] =- 1
+        \image\img =- 1
         
         
         ;       \mode\window\sizeGadget = constants::_check_(flag, #__Window_SizeGadget)
@@ -14335,7 +14331,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If Not \caption\hide 
-          *this\__height = constants::_check_(flag, #__flag_borderless, #False) * #__height
+          *this\__height = constants::_check_(flag, #__flag_borderless, #False) * #__caption_height
           *this\round = 7
         EndIf
         
@@ -14344,7 +14340,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           \caption\text\string = Text
         EndIf
         
-        *this\fs = constants::_check_(flag, #__flag_borderless, #False) * #__bsize
+        *this\fs = constants::_check_(flag, #__flag_borderless, #False) * #__border_size
         
         _set_alignment_flag_(*this, *parent, flag)
         SetParent(*this, *parent, #PB_Default)

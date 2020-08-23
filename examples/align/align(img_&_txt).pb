@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-   Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline, 0)
+   Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__text_multiline, 0)
   EndMacro
   
   Define m.s = #LF$

@@ -230,6 +230,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color[4]
     EndStructure
     
+    ;- - _s_dotted
+    Structure _s_dotted
+      draw.b
+      dot.l
+      line.l
+    EndStructure
+    
     ;- - _s_transforms
     Structure _s_transform
       *main._s_widget
@@ -239,6 +246,12 @@ CompilerIf Not Defined(structures, #PB_Module)
       pos.l
       size.l
       index.l
+      *type
+      ;dot.b
+      ;dashdot.b
+      
+      dotted._s_dotted
+      
       id._s_transforms[#__count_anchors_]
     EndStructure
     
@@ -557,15 +570,16 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_mouse
     Structure _s_mouse Extends _s_point
       *widget._s_widget     ; at point element
-                    ;;*selected._s_widget   ; at point pushed element
+                    *selected._s_widget   ; at point pushed element
       
       *grid
       drag.b[2]
       buttons.l 
-      ;change.b
       
       wheel._s_point
       delta._s_point
+      
+      ;change.b
       ;move._s_point
     EndStructure
     
@@ -620,5 +634,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---+-f+
+; Folding = ---+--9
 ; EnableXP
