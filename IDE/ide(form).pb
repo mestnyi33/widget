@@ -616,9 +616,10 @@ Procedure events_element()
           
           Transform()\id\color\frame = $ff000000
         Else
-          Transform()\dotted\draw = 1
-          Transform()\dotted\dot = 2
-          Transform()\dotted\line = 6
+          Transform()\dotted\draw = 0
+          Transform()\dotted\dot = 1 ; 2
+          Transform()\dotted\space = 4
+          Transform()\dotted\line = 6 ; 6
           
           Transform()\id\color\frame = $ffff0000
         EndIf
@@ -673,13 +674,23 @@ Procedure events_element()
            group_select And 
            GetState(id_elements_tree) = 0
           
-          ClearList(group_list())
-          
+         ClearList(group_list())
+;          Define  group_parent = Container(Transform()\id\x - Focused()\x[#__c_inner],
+;                          Transform()\id\y - Focused()\y[#__c_inner], 
+;                          Transform()\id\width, 
+;                          Transform()\id\height) 
+;           CloseList()
+         ;Transform()\multi = 1
+         
           ForEach widget()
             If child(widget(), e_widget) And Intersect(widget(), Transform()\id) And widget() <> Transform()\widget
               Debug widget()\class +"_"+ widget()\count\index ; Str(widget()\index-widget()\window\index)
               AddElement(group_list()) 
               group_list() = widget()
+;               Resize(widget(),
+;                      widget()\x[#__c_window]-(Transform()\id\x - Focused()\x[#__c_inner]),
+;                      widget()\y[#__c_window]-(Transform()\id\y - Focused()\y[#__c_inner]), #PB_Ignore, #PB_Ignore)
+;               SetParent(widget(), group_parent)
             EndIf
           Next
           
@@ -945,22 +956,22 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(group_select, 1) 
   
   Define *window = create_element(id_design_form, "window", 10, 10, 400, 250)
-  create_element(*window, "button", 25, 25, 50, 30)
-  create_element(*window, "button", 25, 65, 50, 30)
-  create_element(*window, "text", 25, 65+40, 50, 30)
-  create_element(*window, "text", 25, 65+40*2, 50, 30)
+  create_element(*window, "button", 15, 25, 50, 30)
+  create_element(*window, "text", 25, 65, 50, 30)
+  create_element(*window, "button", 35, 65+40, 50, 30)
+  create_element(*window, "text", 45, 65+40*2, 50, 30)
   
   Define *container = create_element(*window, "container", 100, 25, 265, 170)
-  create_element(*container, "button", 25, 25, 50, 30)
-  create_element(*container, "button", 25, 65, 50, 30)
-  create_element(*container, "text", 25, 65+40, 50, 30)
-  create_element(*container, "text", 25, 65+40*2, 50, 30)
+  create_element(*container, "button", 15, 25, 30, 30)
+  create_element(*container, "text", 25, 65, 50, 30)
+  create_element(*container, "button", 35, 65+40, 80, 30)
+  create_element(*container, "text", 45, 65+40*2, 50, 30)
   
   Define *container2 = create_element(*window, "container", 100+110, 25+45, 165, 140)
-  create_element(*container2, "button", 25, 25, 50, 30)
-  create_element(*container2, "button", 25, 65, 50, 30)
-  create_element(*container2, "text", 25, 65+40, 50, 30)
-  create_element(*container2, "text", 25, 65+40*2, 50, 30)
+  create_element(*container2, "button", 15, 25, 50, 30)
+  create_element(*container2, "text", 25, 65, 50, 30)
+  create_element(*container2, "button", 35, 65+40, 50, 30)
+  create_element(*container2, "text", 45, 65+40*2, 50, 30)
   
   Repeat 
     event = WaitWindowEvent() 

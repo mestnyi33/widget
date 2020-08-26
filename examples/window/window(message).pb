@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Open(OpenWindow(#PB_Any, 150, 150, 600, 300, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
   
-  Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel) 
+  Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
   Define a$ = "Result of the previously requester was: "
   
   If Result = #PB_MessageRequester_Yes       ; pressed Yes button

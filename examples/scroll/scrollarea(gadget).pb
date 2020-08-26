@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
+    ; Debug ""+Str(GetIndex(this()\widget))+ " - widget event - " +this()\event+ " bar - " +GetClass(this()\item)+ " direction - " +this()\data 
     
     Select this()\event
       Case #PB_EventType_Resize

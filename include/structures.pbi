@@ -235,6 +235,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       draw.b
       dot.l
       line.l
+      space.l
     EndStructure
     
     ;- - _s_transforms
@@ -246,9 +247,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       pos.l
       size.l
       index.l
-      *type
+                   *type
       ;dot.b
       ;dashdot.b
+                   multi.b
       
       dotted._s_dotted
       
