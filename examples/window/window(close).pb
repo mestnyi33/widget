@@ -6,6 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UsePNGImageDecoder()
   
   Procedure call()
+    CocoaMessage(0, CocoaMessage(0, 0, "NSApplication sharedApplication"), "run")
 ;     Repeat 
 ;         If WaitWindowEvent() = #PB_Event_CloseWindow
 ; ;           If EventWindow() = _window_ 
@@ -30,8 +31,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     If this()\event = #PB_EventType_CloseWindow
       Debug "close"
-      Message("","",#PB_MessageRequester_Ok)
-      ;CallCFunctionFast(@call())
+      ;Message("","",#PB_MessageRequester_Ok)
+      CallCFunctionFast(@call())
       
       ProcedureReturn #PB_Ignore
     EndIf
@@ -45,8 +46,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (Windows - x86)
-; CursorPosition = 33
-; FirstLine = 9
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

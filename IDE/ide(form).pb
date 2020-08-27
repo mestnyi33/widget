@@ -503,7 +503,7 @@ Procedure add_element(gadget.i, *new._s_widget, Class.s)
   
   Position = GetData(*new)
   
-  ; img = GetItemData(id_elements_tree, GetState(id_elements_tree))
+  ; img = GetItemData(id_elements_tree, Transform()\type)
   CountItems = CountItems(id_elements_tree)
   
   For i = 0 To CountItems - 1
@@ -600,37 +600,36 @@ Procedure events_element()
   If this()\widget\container
     Select e_type 
       Case #PB_EventType_LeftButtonDown
-        If group_select 
-          group_drag = e_widget
-          Debug 8888
+        If Transform()\type > 0 Or group_select
           Transform()\grab = 1
+          If group_select 
+            group_drag = e_widget
+          EndIf
         EndIf
         
-        If GetState(id_elements_tree) > 0
-          If Not Transform()
-            Transform()._structure_(transform)
-          EndIf
-          Transform()\grab = 1
-          
+        
+        If Transform()\type > 0
           Transform()\dotted\draw = 0
           
-          Transform()\id\color\frame = $ff000000
+          Transform()\id\color\back = $ffE5E8E8
+          Transform()\id\color\frame = $9F646565
         Else
-          Transform()\dotted\draw = 0
+          Transform()\dotted\draw = 1
           Transform()\dotted\dot = 1 ; 2
           Transform()\dotted\space = 4
           Transform()\dotted\line = 6 ; 6
           
-          Transform()\id\color\frame = $ffff0000
+          Transform()\id\color\back = $80DFE2E2 
+          Transform()\id\color\frame = $BA161616
         EndIf
         
       Case #PB_EventType_MouseEnter
-        If GetState(id_elements_tree) > 0
+        If Transform()\type > 0
           SetCursor(e_widget, #PB_Cursor_Cross)
         EndIf
         
       Case #PB_EventType_MouseLeave
-        If GetState(id_elements_tree) > 0 
+        If Transform()\type > 0 
           If Not Pressed()
             SetCursor(e_widget, #PB_Cursor_Default)
           EndIf
@@ -644,18 +643,21 @@ Procedure events_element()
     Case #PB_EventType_MouseMove
     Case #PB_EventType_LeftButtonUp
       If Transform()\grab
-        If GetState(id_elements_tree) > 0
-            
+        If Transform()\type
+          
+          ; default width 
           If Not Transform()\id\width
             Transform()\id\width = 50
             Transform()\id\x = Mouse()\delta\x + Focused()\x
           EndIf
           
+          ; default height
           If Not Transform()\id\height
             Transform()\id\height = 50
             Transform()\id\y = Mouse()\delta\y + Focused()\y
           EndIf
           
+          ;
           Transform()\id\x - Focused()\x[#__c_inner]
           Transform()\id\y - Focused()\y[#__c_inner]
           
@@ -666,13 +668,14 @@ Procedure events_element()
                          Transform()\id\width, 
                          Transform()\id\height)
           
-          
+          ; no create new 
           SetState(id_elements_tree, 0)
+          Transform()\type = 0
         EndIf
         
         If group_drag And 
            group_select And 
-           GetState(id_elements_tree) = 0
+           Transform()\type = 0
           
          ClearList(group_list())
 ;          Define  group_parent = Container(Transform()\id\x - Focused()\x[#__c_inner],
@@ -728,6 +731,10 @@ Procedure events_ide()
       SetText(id_help_text, GetItemText(e_widget, e_item))
       
     Case #PB_EventType_Change
+      If e_widget = id_elements_tree
+        Transform()\type = GetState(e_widget)
+      EndIf
+      
       If e_widget = id_inspector_tree
         *this = GetItemData(e_widget, GetState(e_widget))
         
@@ -738,22 +745,23 @@ Procedure events_ide()
         ; SetActive(e_widget)
       EndIf
       
+      
     Case #PB_EventType_MouseEnter
       Debug "id_elements - enter"
-      ;       If GetState(id_elements_tree) > 0 
+      ;       If Transform()\type > 0 
       ;         SetCursor(this()\widget, #PB_Cursor_Default)
       ;       EndIf
       
     Case #PB_EventType_MouseLeave
       Debug "id_elements - leave"
-      ;       If GetState(id_elements_tree) > 0 
-      ;         SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
+      ;       If Transform()\type > 0 
+      ;         SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
       ;       EndIf
       
     Case #PB_EventType_LeftClick
       If e_widget = id_elements_tree
         Debug "click"
-        ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, GetState(id_elements_tree))))
+        ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
       EndIf
       
       If getclass(e_widget) = "ToolBar"
@@ -1006,5 +1014,5 @@ DataSection   ; Include Images
   ThisPC:           : IncludeBinary "ThisPC.png"
 EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 7-vHg-4-a4---v89-
+; Folding = 7-vHg-4-74-----x-
 ; EnableXP

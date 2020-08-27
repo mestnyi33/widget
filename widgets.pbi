@@ -1218,35 +1218,11 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure   Draw_Datted(X, Y, SourceColor, TargetColor)
-;       Protected Color, Dot.b = Transform()\dotted\dot, line.b = Transform()\dotted\line, Length.b = (Line + Dot*2 + 1)
-;       Static Len.b
-;       
-;       If ((Len%Length)<line Or (Len%Length) = (line + Dot))
-;         If (Len>(Line + Dot)) : Len = 0 : EndIf
-;         Color = SourceColor
-;       Else
-;         Color = TargetColor
-;       EndIf
-;       
-;       Len + 1
-;       ProcedureReturn Color
-      
-      Protected Color, Dot = Transform()\dotted\dot, Space.b = Transform()\dotted\space, line.b = Transform()\dotted\line
       Static Len.b
-      
-;       If ((Len % (Line + Space + 1)) < line)
-;         If Len > Line
-;           Len =- 1 
-;         EndIf
-;         Color = SourceColor
-;       Else
-;         If Not (Len % (Line + Space / 2)) ; (Len % Line) * 2 = Space
-;           Color = SourceColor
-;         Else
-;           Color = TargetColor
-;         EndIf
-;       EndIf
-      
+      Protected Color,
+                Dot = Transform()\dotted\dot, 
+                Space.b = Transform()\dotted\space, 
+                line.b = Transform()\dotted\line
       
       If ((Len % (Line + Space*2 - 1)) < line)
         If Len > Line
@@ -1260,7 +1236,18 @@ CompilerIf Not Defined(widget, #PB_Module)
           Color = TargetColor
         EndIf
       EndIf
-      
+;       If Len < (line + Space)
+;         If (Len % (Line + Space)) * 2 > Space 
+;           Color = SourceColor
+;         Else
+;           Color = TargetColor
+;         EndIf
+;         Len + 1
+;       Else;If Len = line
+;         Color = TargetColor
+;         Len =- 1
+;       EndIf
+   
       Len + 1
       ProcedureReturn Color
     EndProcedure
@@ -1324,12 +1311,6 @@ CompilerIf Not Defined(widget, #PB_Module)
         If Transform()\id[8] : Box(Transform()\id[8]\x, Transform()\id[8]\y, Transform()\id[8]\width, Transform()\id[8]\height ,Transform()\id[8]\color[Transform()\id[8]\color\state]\frame) : EndIf
         ;If Transform()\id[#__a_moved] : Box(Transform()\id[#__a_moved]\x, Transform()\id[#__a_moved]\y, Transform()\id[#__a_moved]\width, Transform()\id[#__a_moved]\height ,Transform()\id[#__a_moved]\color[Transform()\id[#__a_moved]\color\state]\frame) : EndIf
         
-;         Transform()\dotted\draw = 1
-;           Transform()\dotted\dot = 1
-;           Transform()\dotted\line = 2
-;           DrawingMode(#PB_2DDrawing_CustomFilter|#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend) 
-;         CustomFilterCallback(@Draw_Datted())
-          
         If Transform()\id[10] : Box(Transform()\id[10]\x, Transform()\id[10]\y, Transform()\id[10]\width, Transform()\id[10]\height ,Transform()\id[10]\color[Transform()\id[10]\color\state]\frame) : EndIf
         If Transform()\id[11] : Box(Transform()\id[11]\x, Transform()\id[11]\y, Transform()\id[11]\width, Transform()\id[11]\height ,Transform()\id[11]\color[Transform()\id[11]\color\state]\frame) : EndIf
         If Transform()\id[12] : Box(Transform()\id[12]\x, Transform()\id[12]\y, Transform()\id[12]\width, Transform()\id[12]\height ,Transform()\id[12]\color[Transform()\id[12]\color\state]\frame) : EndIf
@@ -13883,14 +13864,22 @@ CompilerIf Not Defined(widget, #PB_Module)
           DrawImage(ImageID(Transform()\grab), 0,0)
           
           ; draw selector
-          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-          Box(Transform()\id\x, Transform()\id\y, 
-              Transform()\id\width, Transform()\id\height, $FFFFD0BE&$FFFFFF|80<<24) 
+          If Transform()\id\color\back[Transform()\id\color\state]
+            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+            Box(Transform()\id\x, Transform()\id\y, 
+                Transform()\id\width, Transform()\id\height, Transform()\id\color\back[Transform()\id\color\state])
+          EndIf
           
           If Transform()\dotted\draw
             DrawingMode(#PB_2DDrawing_CustomFilter|#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend) 
             CustomFilterCallback(@Draw_Datted())
           Else
+            ;DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+            Transform()\text\x = Transform()\id\x + 3
+            Transform()\text\y = Transform()\id\y + 1
+            ;Transform()\text\string = "width - "+Str(Transform()\id\width) + " height - "+Str(Transform()\id\height)
+            DrawText(Transform()\text\x, Transform()\text\y, Str(Transform()\id\width) +"x"+ Str(Transform()\id\height), 0, Transform()\id\color\back[Transform()\id\color\state])
+            
             DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
           EndIf
           
@@ -14478,6 +14467,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               Transform()\id\x = Mouse()\delta\x + Transform()\widget\x
               Transform()\id\y = Mouse()\delta\y + Transform()\widget\y
               
+              ; to left
               If Transform()\id\x > move_x
                 Transform()\id\width = Transform()\id\x - move_x
                 Transform()\id\x = move_x
@@ -14485,6 +14475,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 Transform()\id\width = move_x - Transform()\id\x
               EndIf
               
+              ; to top
               If Transform()\id\y > move_y
                 Transform()\id\height = Transform()\id\y - move_y
                 Transform()\id\y = move_y
@@ -15759,5 +15750,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------------------9----Y+-----------------8-------------------------------------------------------------3v7nr--3v2v4--------------------------8-------------------------------------------------------+----------------------------------------------------v-------------------------0------------------------------f2fRD+----lzv---Xc--------------
+; Folding = ----------------------9----Y+-----------------8-------------------------------------------------------------3v7nr--3v2v4--------------------------8-------------------------------------------------------+----------------------------------------------------v-------------------------0-------------------+-----------q-me9----Lnf---v5+-------------
 ; EnableXP

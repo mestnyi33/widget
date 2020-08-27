@@ -240,6 +240,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_transforms
     Structure _s_transform
+      *type
       *main._s_widget
       *widget._s_widget
       
@@ -247,13 +248,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       pos.l
       size.l
       index.l
-                   *type
+                   
       ;dot.b
       ;dashdot.b
                    multi.b
       
       dotted._s_dotted
-      
+      text._s_text
       id._s_transforms[#__count_anchors_]
     EndStructure
     
