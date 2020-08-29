@@ -141,6 +141,11 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;;rotate.f
       align._s_align
       padding._s_point
+;       
+;       
+;       *pressed._s_image
+;       *released._s_image
+;       *background._s_image
     EndStructure
     
     ;- - _s_button
@@ -220,26 +225,38 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;       ;List *_s._s_tabs()
     ;     EndStructure
     
+    ;- - _s_dotted
+    Structure _s_dotted
+      ;draw.b
+      dot.l
+      line.l
+      space.l
+    EndStructure
+    
     ;- - _s_transform
     Structure _s_transforms
       y.l
       x.l
       width.l
       height.l
+      
+      round.a
+      
       cursor.l
       color._s_color[4]
     EndStructure
     
-    ;- - _s_dotted
-    Structure _s_dotted
-      draw.b
-      dot.l
-      line.l
-      space.l
-    EndStructure
-    
     ;- - _s_transforms
     Structure _s_transform
+      y.l
+      x.l
+      width.l
+      height.l
+      
+      color._s_color
+      
+      ;;*container
+      
       *type
       *main._s_widget
       *widget._s_widget
@@ -254,7 +271,7 @@ CompilerIf Not Defined(structures, #PB_Module)
                    multi.b
       
       dotted._s_dotted
-      text._s_text
+      ;;text._s_text
       id._s_transforms[#__count_anchors_]
     EndStructure
     
@@ -493,18 +510,24 @@ CompilerIf Not Defined(structures, #PB_Module)
       *window._s_widget ; this parent window       ; root()\active\window
       
       *gadget._s_widget[3] 
-      ; \root\gadget[0] = active gadget
-      ; \gadget[0] = active child gadget 
-      ; \gadget[1] = panel() tabbar gadget
-      ; \gadget[1] = splitter() first gadget
-      ; \gadget[2] = splitter() second gadget
+      ; \root\gadget[0] - active gadget
+      ; \gadget[0] - active child gadget 
+      ; \gadget[1] - panel() tabbar gadget
+      ; \gadget[1] - splitter() first gadget
+      ; \gadget[2] - splitter() second gadget
       
       *index[3]  
-      ; \index[0] = widget index 
-      ; \index[1] = panel opened item index
-      ; \index[2] = panel selected item index
-      ; \index[1] = tab entered item index
-      ; \index[2] = tab selected item index
+      ; \index[0] - widget index 
+      ; \index[1] - panel opened item index
+      ; \index[2] - panel selected item index
+      ; \index[1] - tab entered item index
+      ; \index[2] - tab selected item index
+      
+      image._s_image[4]       
+      ; \image[0] - draw image
+      ; \image[1] - released image
+      ; \image[2] - pressed image
+      ; \image[3] - background image
       
       *tt._s_tt
       *_flag
@@ -521,8 +544,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       y.l[constants::#__c]
       x.l[constants::#__c]
-      height.l[6];constants::#__c]
-      width.l[6] ;constants::#__c]
+      height.l[constants::#__c]
+      width.l[constants::#__c]
       
       
       *errors
@@ -553,7 +576,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       bar._s_bar
       
       button._s_button ; checkbox; optionbox
-      image._s_image[3]
       text._s_text 
       
       *data
@@ -637,5 +659,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---+--9
+; Folding = ------9
 ; EnableXP

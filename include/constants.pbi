@@ -66,6 +66,13 @@
       #__error_text_return
     EndEnumeration
     
+    ;images
+    Enumeration
+      #__img_released = 1
+      #__img_pressed = 2
+      #__img_background = 3
+    EndEnumeration
+    
     ;bar buttons
     Enumeration
       #__b_1 = 1
@@ -90,12 +97,13 @@
       #__c_required  = 3 ; required
       #__c_clip      = 4 ; clip
       #__c_draw      = 5 ; draw container
+      #__c_clip_i    = 6 ; clip inner 
       
       ; pos
-      #__c_window    = 6 ; window
-      #__c_container = 7 ; container
+      #__c_window    = 7 ; window
+      #__c_container = 8 ; container
       
-      #__c           = 8
+      #__c           = 9
     EndEnumeration
     
     ;state

@@ -579,7 +579,8 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
     
     If *new
       If *new\container =- 1
-        SetImage(*new, Points(Mouse()\grid-1))
+        SetImage(*new, CatchImage(#PB_Any,?group_bottom))
+        SetBackgroundImage(*new, Points(Mouse()\grid-1))
       EndIf
       
       Class.s = GetClass(*new)+"_"+GetCount(*new)
@@ -601,7 +602,6 @@ Procedure events_element()
     Select e_type 
       Case #PB_EventType_LeftButtonDown
         If Transform()\type > 0 Or group_select
-          Transform()\grab = 1
           If group_select 
             group_drag = e_widget
           EndIf
@@ -609,12 +609,10 @@ Procedure events_element()
         
         
         If Transform()\type > 0
-          Transform()\dotted\draw = 0
-          
-          Transform()\id\color\back = $ffE5E8E8
-          Transform()\id\color\frame = $9F646565
+          Transform()\id\color\frame = $BA161616
+          Transform()\id\color\front = $ffffffff
+          Transform()\id\color\back = $80646565
         Else
-          Transform()\dotted\draw = 1
           Transform()\dotted\dot = 1 ; 2
           Transform()\dotted\space = 4
           Transform()\dotted\line = 6 ; 6
@@ -1014,5 +1012,5 @@ DataSection   ; Include Images
   ThisPC:           : IncludeBinary "ThisPC.png"
 EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 7-vHg-4-74-----x-
+; Folding = 7-vHg-4-7------8-
 ; EnableXP
