@@ -120,116 +120,6 @@ Procedure.i GetClassType(Class.s)
   ProcedureReturn Result
 EndProcedure
 
-Procedure.i elements_list_fill(*id, Directory$)
-  Protected ZipFile$ = Directory$ + "SilkTheme.zip"
-  
-  If FileSize(ZipFile$) < 1
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
-    CompilerElse
-      ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
-    CompilerEndIf
-    If FileSize(ZipFile$) < 1
-      MessageRequester("Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
-      End
-    EndIf
-  EndIf
-  ;   Directory$ = GetCurrentDirectory()+"images/" ; "";
-  ;   Protected ZipFile$ = Directory$ + "images.zip"
-  
-  
-  If FileSize(ZipFile$) > 0
-    ; UsePNGImageDecoder()
-    
-    CompilerIf #PB_Compiler_Version > 522
-      UseZipPacker()
-    CompilerEndIf
-    
-    Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
-    ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
-    
-    If ZipFile  
-      If ExaminePack(ZipFile)
-        While NextPackEntry(ZipFile)
-          
-          PackEntryName.S = PackEntryName(ZipFile)
-          ImageSize = PackEntrySize(ZipFile)
-          If ImageSize
-            *Image = AllocateMemory(ImageSize)
-            UncompressPackMemory(ZipFile, *Image, ImageSize)
-            Image = CatchImage(#PB_Any, *Image, ImageSize)
-            PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
-            If PackEntryName.S="application_form" 
-              PackEntryName.S="vd_windowgadget"
-            EndIf
-            
-            PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
-            
-            Select PackEntryType(ZipFile)
-              Case #PB_Packer_File
-                If Image
-                  If FindString(Left(PackEntryName.S, 3), "vd_")
-                    PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
-                    PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
-                    
-                    Protected Left.S = UCase(Left(PackEntryName.S,1))
-                    Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
-                    PackEntryName.S = Left.S+Right.S
-                    
-                    If FindString(LCase(PackEntryName.S), "cursor")
-                      
-                      ;Debug "add cursor"
-                      AddItem(*id, 0, PackEntryName.S, Image)
-                      SetItemData(*id, 0, Image)
-                      
-                      ;                   ElseIf FindString(LCase(PackEntryName.S), "window")
-                      ;                     
-                      ;                     Debug "add window"
-                      ;                     AddItem(*id, 1, PackEntryName.S, Image)
-                      ;                     SetItemData(*id, 1, Image)
-                      
-                    ;ElseIf FindString(LCase(PackEntryName.S), "buttonimage")
-                    ElseIf FindString(LCase(PackEntryName.S), "window")
-                      AddItem(*id, -1, PackEntryName.S, Image)
-                      SetItemData(*id, CountItems(*id)-1, Image)
-                    ElseIf FindString(LCase(PackEntryName.S), "image")
-                      AddItem(*id, -1, PackEntryName.S, Image)
-                      SetItemData(*id, CountItems(*id)-1, Image)
-                    ElseIf FindString(LCase(PackEntryName.S), "button")
-                      AddItem(*id, -1, PackEntryName.S, Image)
-                      SetItemData(*id, CountItems(*id)-1, Image)
-                    ElseIf FindString(LCase(PackEntryName.S), "string")
-                      AddItem(*id, -1, PackEntryName.S, Image)
-                      SetItemData(*id, CountItems(*id)-1, Image)
-                    ElseIf FindString(LCase(PackEntryName.S), "text")
-                      AddItem(*id, -1, PackEntryName.S, Image)
-                      SetItemData(*id, CountItems(*id)-1, Image)
-                    ElseIf FindString(LCase(PackEntryName.S), "container")
-                      AddItem(*id, -1, PackEntryName.S, Image)
-                      SetItemData(*id, CountItems(*id)-1, Image)
-                    ElseIf FindString(LCase(PackEntryName.S), "panel")
-                      AddItem(*id, -1, PackEntryName.S, Image)
-                      SetItemData(*id, CountItems(*id)-1, Image)
-                    ElseIf FindString(LCase(PackEntryName.S), "scrollarea")
-                      AddItem(*id, -1, PackEntryName.S, Image)
-                      SetItemData(*id, CountItems(*id)-1, Image)
-                    EndIf
-                  EndIf
-                EndIf    
-            EndSelect
-            
-            FreeMemory(*Image)
-          EndIf
-        Wend  
-      EndIf
-      
-      ; select cursor
-      SetState(*id, 0)
-      ClosePack(ZipFile)
-    EndIf
-  EndIf
-EndProcedure
-
 
 ;-
 Procedure Points(Steps = 5, BoxColor = 0, PlotColor = 0)
@@ -472,6 +362,116 @@ Procedure  GetItemChildrens(*this._s_widget, Item.l, Column.l = 0)
   ProcedureReturn result
 EndProcedure
 
+;-
+Procedure.i list_element(*id, Directory$)
+  Protected ZipFile$ = Directory$ + "SilkTheme.zip"
+  
+  If FileSize(ZipFile$) < 1
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
+    CompilerElse
+      ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+    CompilerEndIf
+    If FileSize(ZipFile$) < 1
+      MessageRequester("Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
+      End
+    EndIf
+  EndIf
+  ;   Directory$ = GetCurrentDirectory()+"images/" ; "";
+  ;   Protected ZipFile$ = Directory$ + "images.zip"
+  
+  
+  If FileSize(ZipFile$) > 0
+    ; UsePNGImageDecoder()
+    
+    CompilerIf #PB_Compiler_Version > 522
+      UseZipPacker()
+    CompilerEndIf
+    
+    Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+    ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
+    
+    If ZipFile  
+      If ExaminePack(ZipFile)
+        While NextPackEntry(ZipFile)
+          
+          PackEntryName.S = PackEntryName(ZipFile)
+          ImageSize = PackEntrySize(ZipFile)
+          If ImageSize
+            *Image = AllocateMemory(ImageSize)
+            UncompressPackMemory(ZipFile, *Image, ImageSize)
+            Image = CatchImage(#PB_Any, *Image, ImageSize)
+            PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
+            If PackEntryName.S="application_form" 
+              PackEntryName.S="vd_windowgadget"
+            EndIf
+            
+            PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+            
+            Select PackEntryType(ZipFile)
+              Case #PB_Packer_File
+                If Image
+                  If FindString(Left(PackEntryName.S, 3), "vd_")
+                    PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
+                    PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
+                    
+                    Protected Left.S = UCase(Left(PackEntryName.S,1))
+                    Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
+                    PackEntryName.S = Left.S+Right.S
+                    
+                    If FindString(LCase(PackEntryName.S), "cursor")
+                      
+                      ;Debug "add cursor"
+                      AddItem(*id, 0, PackEntryName.S, Image)
+                      SetItemData(*id, 0, Image)
+                      
+                      ;                   ElseIf FindString(LCase(PackEntryName.S), "window")
+                      ;                     
+                      ;                     Debug "add window"
+                      ;                     AddItem(*id, 1, PackEntryName.S, Image)
+                      ;                     SetItemData(*id, 1, Image)
+                      
+                    ;ElseIf FindString(LCase(PackEntryName.S), "buttonimage")
+                    ElseIf FindString(LCase(PackEntryName.S), "window")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "image")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "button")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "string")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "text")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "container")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "panel")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    ElseIf FindString(LCase(PackEntryName.S), "scrollarea")
+                      AddItem(*id, -1, PackEntryName.S, Image)
+                      SetItemData(*id, CountItems(*id)-1, Image)
+                    EndIf
+                  EndIf
+                EndIf    
+            EndSelect
+            
+            FreeMemory(*Image)
+          EndIf
+        Wend  
+      EndIf
+      
+      ; select cursor
+      SetState(*id, 0)
+      ClosePack(ZipFile)
+    EndIf
+  EndIf
+EndProcedure
 
 Procedure add_element(gadget.i, *new._s_widget, Class.s)
   Protected img =- 1
@@ -931,7 +931,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Define event
   create_ide()
   
-  elements_list_fill(id_elements_tree, GetCurrentDirectory()+"Themes/")
+  list_element(id_elements_tree, GetCurrentDirectory()+"Themes/")
   
 ;   ; example 1
 ;   ;   ;OpenList(id_design_form)
@@ -1012,5 +1012,5 @@ DataSection   ; Include Images
   ThisPC:           : IncludeBinary "ThisPC.png"
 EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 7-vHg-4-7------8-
+; Folding = 8B5-0v3-f4-----8-
 ; EnableXP

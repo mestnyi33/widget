@@ -15,109 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure.i _SetAlignment(*This._S_widget, Mode.i, Type.i=1)
-      ProcedureReturn SetAlignment(*This._S_widget, Mode.i, Type.i)
-    
-      With *this
-      Select Type
-        Case 1 ; widget
-          If \parent
-            If Not \align
-              \align.structures::_s_align = AllocateStructure(structures::_s_align)
-            EndIf
-            
-            If Bool(Mode&#__flag_autoSize=#__flag_autoSize)
-              \align\top = Bool(Not Mode&#__align_bottom)
-              \align\left = Bool(Not Mode&#__align_right)
-              \align\right = Bool(Not Mode&#__align_left)
-              \align\bottom = Bool(Not Mode&#__align_top)
-              \align\autoSize = 0
-              
-              ; Auto dock
-              Static y2,x2,y1,x1
-              Protected width = #PB_Ignore
-              Protected height = #PB_Ignore
-              
-              If \align\left And \align\right
-                \x = x2
-                width = \parent\width[#__c_2] - x1 - x2
-              EndIf
-              If \align\top And \align\bottom 
-                \y = y2
-                height = \parent\height[#__c_2] - y1 - y2
-              EndIf
-              
-              If \align\left And Not \align\right
-                \x = x2
-                \y = y2
-                x2 + \width
-                height = \parent\height[#__c_2] - y1 - y2
-              EndIf
-              If \align\right And Not \align\left
-                \x = \parent\width[#__c_2] - \width - x1
-                \y = y2
-                x1 + \width
-                height = \parent\height[#__c_2] - y1 - y2
-              EndIf
-              
-              If \align\top And Not \align\bottom 
-                \x = 0
-                \y = y2
-                y2 + \height
-                width = \parent\width[#__c_2] - x1 - x2
-              EndIf
-              If \align\bottom And Not \align\top
-                \x = 0
-                \y = \parent\height[#__c_2] - \height - y1
-                y1 + \height
-                width = \parent\width[#__c_2] - x1 - x2
-              EndIf
-              
-              Resize(*this, \x, \y, width, height)
-              
-            Else
-              \align\top = Bool(Mode&#__align_top=#__align_top)
-              \align\left = Bool(Mode&#__align_left=#__align_left)
-              \align\right = Bool(Mode&#__align_right=#__align_right)
-              \align\bottom = Bool(Mode&#__align_bottom=#__align_bottom)
-              
-              If Bool(Mode&#__align_center=#__align_center)
-                \align\horizontal = Bool(Not \align\right And Not \align\left)
-                \align\vertical = Bool(Not \align\bottom And Not \align\top)
-              EndIf
-            EndIf
-            
-            If \align\right
-              If \align\left
-                \align\width = \parent\width[#__c_2] - \width
-              Else
-                If \parent\type = #PB_GadgetType_ScrollArea
-                  \align\width = (\parent\scroll\h\bar\max-\x[#__c_3])
-                Else
-                  \align\width = (\parent\width[#__c_2]-\x[#__c_3])
-                EndIf
-              EndIf
-            EndIf
-            
-            If \align\bottom
-              If \align\top
-                \align\height = \parent\height[#__c_2] - \height
-              Else
-                If \parent\type = #PB_GadgetType_ScrollArea
-                  \align\width = (\parent\scroll\v\bar\max-\x[#__c_3])
-                Else
-                  \align\height = (\parent\height[#__c_2]-\y[#__c_3])
-                EndIf
-              EndIf
-            EndIf
-            
-            ; update parent childrens coordinate
-            Resize(\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-          EndIf
-        Case 2 ; text
-        Case 3 ; image
-      EndSelect
-    EndWith
- 
+    SetAlignment(*This._S_widget, Mode, Type)
   EndProcedure
   
   Procedure Window_0()
@@ -264,6 +162,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = -----
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = --
 ; EnableXP

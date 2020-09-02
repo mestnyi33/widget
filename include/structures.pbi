@@ -246,6 +246,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color[4]
     EndStructure
     
+    Structure _s_group
+      *widget._s_widget
+      width.l
+      height.l
+      
+    EndStructure
+    
     ;- - _s_transforms
     Structure _s_transform
       y.l
@@ -255,7 +262,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       color._s_color
       
-      ;;*container
+      ; *container
+      List *group._s_group()
       
       *type
       *main._s_widget
@@ -268,7 +276,7 @@ CompilerIf Not Defined(structures, #PB_Module)
                    
       ;dot.b
       ;dashdot.b
-                   multi.b
+       ;            multi.b
       
       dotted._s_dotted
       ;;text._s_text
@@ -659,5 +667,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------9
+; Folding = ------6-
 ; EnableXP

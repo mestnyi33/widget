@@ -1,34 +1,17 @@
-﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/Widget/widgets()"
-  XIncludeFile "../fixme(mac).pbi"
-CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
-  IncludePath "/media/sf_as/Documents/GitHub/Widget/widgets()"
-CompilerElse
-  IncludePath "Z:/Documents/GitHub/Widget/widgets()"
-CompilerEndIf
-
-
-CompilerIf Not Defined(bar, #PB_Module)
-  XIncludeFile "bar.pbi"
-CompilerEndIf
-
+﻿IncludePath "../../"
+XIncludeFile "widgets.pbi"
 
 ;- 
 ;- example
 ;-
 CompilerIf #PB_Compiler_IsMainFile
-  UseModule bar
-  UseModule constants
-  UseModule structures
-  
-  Macro OpenWindow(Window, X, Y, Width, Height, Title, Flag=0, ParentID=0)
-    bar::Open_Window(Window, X, Y, Width, Height, Title, Flag, ParentID)
-  EndMacro
+  EnableExplicit
+  UseLib(widget)
   
   Global Button_1, Button_2, Button_3, Splitter_1, Splitter_2
   
   
-  If OpenWindow(0, 0, 0, 380, 400, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(OpenWindow(#PB_Any, 0, 0, 380, 400, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
     Button_1 = Progress(0, 0, 0, 0, 1, 100, 30)
     Button_2 = ScrollArea(0, 0, 0, 0, 150, 150, 1) : CloseList()        ; as they will be sized automatically
     Button_3 = Progress(0, 0, 0, 0, 1, 100, 30)
@@ -86,6 +69,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = --
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = -
 ; EnableXP

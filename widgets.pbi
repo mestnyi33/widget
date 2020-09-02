@@ -168,7 +168,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       func::cursor(_image_)
     EndMacro
     
-    Macro GetCursor(_this_)
+    Macro _get_cursor_(_this_)
       _this_\cursor
     EndMacro
     

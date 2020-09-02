@@ -103,7 +103,8 @@
       #__c_window    = 7 ; window
       #__c_container = 8 ; container
       
-      #__c           = 9
+      #__c_delta     = 9
+      #__c           = 10
     EndEnumeration
     
     ;state
