@@ -100,7 +100,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro Transform()
-      Root()\transform
+      Root()\_transform
     EndMacro
     
     
@@ -816,6 +816,106 @@ CompilerIf Not Defined(widget, #PB_Module)
       
     EndMacro
     
+    Macro a_update(_parent_)
+      If ListSize(Transform()\group())
+        ; update min group pos
+        ForEach Transform()\group()
+          If Transform()\id\x = 0 Or 
+             Transform()\id\x > Transform()\group()\widget\x
+            Transform()\id\x = Transform()\group()\widget\x
+          EndIf
+          If Transform()\id\y = 0 Or 
+             Transform()\id\y > Transform()\group()\widget\y
+            Transform()\id\y = Transform()\group()\widget\y
+          EndIf
+        Next
+        
+        ; update max group size
+        ForEach Transform()\group()
+          If Transform()\id\x + Transform()\id\width < Transform()\group()\widget\x + Transform()\group()\widget\width
+            Transform()\id\width = (Transform()\group()\widget\x - Transform()\id\x) + Transform()\group()\widget\width
+          EndIf
+          If Transform()\id\y + Transform()\id\height < Transform()\group()\widget\y + Transform()\group()\widget\height
+            Transform()\id\height = (Transform()\group()\widget\y - Transform()\id\y) + Transform()\group()\widget\height
+          EndIf
+        Next
+        
+        ; update delta size
+        ForEach Transform()\group()
+          Transform()\group()\x = Transform()\group()\widget\x[#__c_container]
+          Transform()\group()\y = Transform()\group()\widget\y[#__c_container]
+          Transform()\group()\width = (Transform()\id\width + Transform()\pos*2) - Transform()\group()\widget\width
+          Transform()\group()\height = (Transform()\id\height + Transform()\pos*2) - Transform()\group()\widget\height
+        Next
+        
+      Else
+        ; check transform group
+        ForEach widget()
+          If widget() <> _parent_ And
+             child(widget(), _parent_) And 
+             Intersect(widget(), Transform()\id)
+            ; Debug " -- "+widget()\class +"_"+ widget()\count\index 
+            
+            widget()\transform = 2
+            widget()\root\transform =- 1
+            widget()\parent\transform =- 1
+          EndIf
+        Next
+        
+        ; reset
+        Transform()\id\x = 0
+        Transform()\id\y = 0
+        Transform()\id\width = 0
+        Transform()\id\height = 0
+        ; ClearList(Transform()\group())
+        
+        ; init min group pos
+        ForEach widget()
+          If widget()\transform = 2
+            If Transform()\id\x = 0 Or 
+               Transform()\id\x > widget()\x
+              Transform()\id\x = widget()\x
+            EndIf
+            If Transform()\id\y = 0 Or 
+               Transform()\id\y > widget()\y
+              Transform()\id\y = widget()\y
+            EndIf
+          EndIf
+        Next
+        
+        ; init max group size
+        ForEach widget()
+          If widget()\transform = 2
+            If Transform()\id\x + Transform()\id\width < widget()\x + widget()\width
+              Transform()\id\width = (widget()\x - Transform()\id\x) + widget()\width
+            EndIf
+            If Transform()\id\y + Transform()\id\height < widget()\y + widget()\height
+              Transform()\id\height = (widget()\y - Transform()\id\y) + widget()\height
+            EndIf
+          EndIf
+        Next
+        
+        ; init group list (& delta size)
+        ForEach widget()
+          If widget()\transform = 2
+            If AddElement(Transform()\group())
+              Transform()\group.allocate(group, ())
+              ;Transform()\group()\widget.allocate(widget)
+              
+              Transform()\group()\widget = widget()
+              Transform()\group()\x = Transform()\group()\widget\x[#__c_container]
+              Transform()\group()\y = Transform()\group()\widget\y[#__c_container]
+              Transform()\group()\width = (Transform()\id\width + Transform()\pos*2) - widget()\width
+              Transform()\group()\height = (Transform()\id\height + Transform()\pos*2) - widget()\height
+            EndIf
+          EndIf
+        Next
+      EndIf   
+      
+      ;
+      a_move(Transform()\id\x, Transform()\id\y, Transform()\id\width, Transform()\id\height)
+    EndMacro
+    
     
     Declare.l x(*this, mode.l = #__c_frame)
     Declare.l Y(*this, mode.l = #__c_frame)
@@ -1488,7 +1588,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       ; draw container move anchor
       If Transform()\widget\container And Transform()\id[#__a_moved] 
-        If Transform()\widget\mode\transform = 1
+        If Transform()\widget\transform = 1
           Box(Transform()\id[#__a_moved]\x, Transform()\id[#__a_moved]\y, Transform()\id[#__a_moved]\width, Transform()\id[#__a_moved]\height, Transform()\id[#__a_moved]\color[Transform()\id[#__a_moved]\color\state]\frame) 
         Else
           Box(Transform()\id[#__a_moved]\x, Transform()\id[#__a_moved]\y, Transform()\id[#__a_moved]\width, Transform()\id[#__a_moved]\height ,$ffff00ff) 
@@ -1577,7 +1677,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ForEach widget()
           If *this <> widget() And
              Not widget()\hide And
-             widget()\mode\transform And
+             widget()\transform And
              widget()\parent = *this\parent
             
             relative_x1 = widget()\x[#__c_frame]
@@ -1646,8 +1746,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       Transform()\size = size
       *this\cursor = #PB_Cursor_Default
         
-      If (*this\mode\transform =- 1 And Not Transform()\index) Or 
-         (*this\mode\transform = 1 And Transform()\main <> *this And Transform()\widget <> *this)
+      If (*this\transform =- 1 And Not Transform()\index) Or 
+         (*this\transform = 1 And Transform()\main <> *this And Transform()\widget <> *this)
        
 ;         Debug ""+Transform()\main +" "+ *this
 ;         Static *LastPos
@@ -1710,8 +1810,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected i, *Cursor.DataBuffer = ?CursorsBuffer
       
       With *this
-        If Not *this\mode\transform
-          *this\mode\transform = #True
+        If Not *this\transform
+          *this\transform = #True
           
           If Not Transform()
             Transform().Allocate(transform)
@@ -1829,16 +1929,25 @@ CompilerIf Not Defined(widget, #PB_Module)
             Transform()\id[Transform()\index]\color\state = #__s_2
             
             ; set anchor delta pos
-            Mouse()\delta\x = mouse_x - Transform()\id[Transform()\index]\x
-            Mouse()\delta\y = mouse_y - Transform()\id[Transform()\index]\y
-            
+            If Transform()\widget\transform = 1
+              Mouse()\delta\x = mouse_x - Transform()\id[Transform()\index]\x
+              Mouse()\delta\y = mouse_y - Transform()\id[Transform()\index]\y
+            Else
+              Mouse()\delta\x = mouse_x - Transform()\id[0]\x
+              Mouse()\delta\y = mouse_y - Transform()\id[0]\y
+            EndIf
+          
           Else
             ; reset multi group
-            ForEach widget()
-              If widget()\mode\transform = 2
-                widget()\mode\transform = 1
-              EndIf
-            Next
+            If ListSize(Transform()\group())
+              ForEach Transform()\group()
+                Transform()\group()\widget\root\transform = 1
+                Transform()\group()\widget\parent\transform = 1
+                Transform()\group()\widget\transform = 1
+              Next
+              
+              ClearList(Transform()\group())
+            EndIf
             
             ; grid mouse pos
             If Mouse()\grid > 0
@@ -1887,65 +1996,10 @@ CompilerIf Not Defined(widget, #PB_Module)
             _set_cursor_(*this, Transform()\widget\cursor)
           EndIf
           
-          ; multi group selector
-          If Transform()\grab And Not Transform()\type 
-            Protected t_x, t_y, t_width, t_height
-            
-            ForEach widget()
-              If widget() <> *this And
-                 child(widget(), *this) And 
-                 Intersect(widget(), Transform()\id)
-                ; Debug " -- "+widget()\class +"_"+ widget()\count\index 
-                
-                widget()\mode\transform = 2
-                widget()\root\mode\transform =- 1
-                widget()\parent\mode\transform =- 1
-                
-                If Not t_x Or t_x > widget()\x
-                  t_x = widget()\x
-                EndIf
-                If Not t_y  Or t_y > widget()\y
-                  t_y = widget()\y
-                EndIf
-                
-                If t_x + t_width < widget()\x + widget()\width
-                  t_width = (widget()\x - t_x) + widget()\width
-                EndIf
-                If t_y + t_height < widget()\y + widget()\height
-                  t_height = (widget()\y - t_y) + widget()\height
-                EndIf
-              EndIf
-            Next
-            
-            Transform()\id\x = t_x
-            Transform()\id\y = t_y
-            Transform()\id\width = t_width
-            Transform()\id\height = t_height
-            
-            ClearList(Transform()\group())
-            
-            ForEach widget()
-              If widget()\mode\transform = 2
-                If AddElement(Transform()\group())
-                  Transform()\group.allocate(group, ())
-                  ;Transform()\group()\widget.allocate(widget)
-                  
-                  Transform()\group()\widget = widget()
-                  Transform()\group()\width = (Transform()\id\width + Transform()\pos*2) - widget()\width
-                  Transform()\group()\height = (Transform()\id\height + Transform()\pos*2) - widget()\height
-                EndIf
-                
-                widget()\width[#__c_delta] = Transform()\id\width + Transform()\pos*2 - widget()\width
-                
-                Debug Transform()\id\width
-                Debug widget()\width[#__c_delta]
-              EndIf
-            Next
-            
-            
-            ;Transform()\pos = 8
-            ; a_size( 12 )
-            a_move(Transform()\id\x, Transform()\id\y, Transform()\id\width, Transform()\id\height)
+          ; init multi group selector
+          If Transform()\grab And 
+             Not Transform()\type 
+            a_update(*this)
           EndIf
           
           Repaint = 1
@@ -1958,7 +2012,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               a_index(Repaint, i)
               
             ElseIf Transform()\id[Transform()\index]\color\state = #__s_2
-              If Transform()\widget\mode\transform = 1
+              If Transform()\widget\transform = 1
                 If Transform()\widget\parent And Transform()\widget\parent\type <> #PB_GadgetType_MDI
                   Px = Transform()\widget\parent\x[#__c_inner]
                   Py = Transform()\widget\parent\y[#__c_inner]
@@ -1998,16 +2052,17 @@ CompilerIf Not Defined(widget, #PB_Module)
                 mouse_y - Mouse()\delta\y
                 
                 mx = Match(mouse_x, Mouse()\grid)
+                my = Match(mouse_y, Mouse()\grid)
                 ;mx = Match(mouse_x - Px + Transform()\pos, Mouse()\grid)
-                my = Match(mouse_y - Py + Transform()\pos, Mouse()\grid)
-                
+                ;my = Match(mouse_y - Py + Transform()\pos, Mouse()\grid)
+                    
                 If xx <> mx Or yy <> my
                   xx = mx
                   yy = my
                   
                   Select Transform()\index
                     Case 3, 6, 7 
-                      mw = mx - (Transform()\id\x - Transform()\pos) + IsGrid 
+                      mw = mx; - (Transform()\id\x - Transform()\pos) + IsGrid 
                       ; mw = Match(mouse_x - Transform()\id\x + Transform()\size, Mouse()\grid) + IsGrid
                       Transform()\id\width = mw 
                   EndSelect
@@ -2020,11 +2075,11 @@ CompilerIf Not Defined(widget, #PB_Module)
                   
                   Select Transform()\index
                     Case 1, 5, 8, #__a_moved
-                      Transform()\id\x = mx 
                       If Transform()\index <> #__a_moved
-                        mxw = Transform()\id\x - mx + Transform()\id\width
+                        mxw = Transform()\id\x + Transform()\id\width - mx
                         Transform()\id\width = mxw
                       EndIf
+                      Transform()\id\x = mx 
                   EndSelect
                   
                   Select Transform()\index
@@ -2044,8 +2099,11 @@ CompilerIf Not Defined(widget, #PB_Module)
 ;                   mw - Transform()\pos*2
 ;                   mh - Transform()\pos*2
                   
+                  move_x = mx - Transform()\group()\widget\parent\x[#__c_inner] ;+ Transform()\pos ;+ Transform()\group()\width
+                move_y = my - Transform()\group()\widget\parent\y[#__c_inner] ; + Transform()\pos
+                
                   ForEach Transform()\group()
-                    If Transform()\group()\widget\mode\transform = 2
+                    If Transform()\group()\widget\transform = 2
                       ;a_resize(Repaint, widget(), Transform()\index)
                       Select Transform()\index
                         Case 3, 6, 7 
@@ -2062,7 +2120,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                           If Transform()\index = #__a_moved
                             mxw = #PB_Ignore
                           EndIf
-                          Repaint = Resize(Transform()\group()\widget, mx, #PB_Ignore, mxw, #PB_Ignore)
+                          Repaint = Resize(Transform()\group()\widget, move_x + Transform()\group()\x - Transform()\pos*3, #PB_Ignore, mxw - Transform()\group()\width, #PB_Ignore)
                       EndSelect
                       
                       Select Transform()\index
@@ -2070,7 +2128,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                           If Transform()\index = #__a_moved
                             myh = #PB_Ignore
                           EndIf
-                          Repaint = Resize(Transform()\group()\widget, #PB_Ignore, my, #PB_Ignore, myh)
+                          Repaint = Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\y - Transform()\pos*3, #PB_Ignore, myh)
                       EndSelect
                     EndIf
                   Next
@@ -10871,7 +10929,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If (Change_x Or Change_y Or Change_width Or Change_height)
-          If *this\mode\transform = 1
+          If *this\transform = 1
             ; anchors widgets
             ;If (*this\root And Transform() And Transform()\widget = *this)
             a_move(*this\x, *this\y, *this\width, *this\height, *this\container)
@@ -11879,7 +11937,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\count\index = typecount(Hex(*this\window + *this\type))
             typecount(Hex(*this\window + *this\type)) + 1
             
-            If *parent\mode\transform
+            If *parent\transform
               *this\count\type = typecount(Hex(*parent) + "_" + Hex(*this\type))
               typecount(Hex(*parent) + "_" + Hex(*this\type)) + 1
             EndIf
@@ -11925,8 +11983,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             ; set transformation for the child
-            If Not *this\mode\transform And *parent\mode\transform 
-              *this\mode\transform = Bool(*parent\mode\transform)
+            If Not *this\transform And *parent\transform 
+              *this\transform = Bool(*parent\transform)
               a_set(*this)
             EndIf
           EndIf
@@ -14240,14 +14298,14 @@ CompilerIf Not Defined(widget, #PB_Module)
                 Draw(widget())
                 
                 ; draw group transform widgets frame
-                If widget()\mode\transform = 2
+                If widget()\transform = 2
                   UnclipOutput()
                   DrawingMode(#PB_2DDrawing_Outlined)
                   Box(widget()\x[#__c_frame], widget()\y[#__c_frame], widget()\width[#__c_frame], widget()\height[#__c_frame], $ffff00ff)
                 EndIf
               Else
                 ; draw clip out transform widgets frame
-                If widget()\mode\transform 
+                If widget()\transform 
                   UnclipOutput()
                   DrawingMode(#PB_2DDrawing_Outlined)
                   Box(widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner], widget()\height[#__c_inner], $ff00ffff)
@@ -14739,7 +14797,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ProcedureReturn 0
       EndIf
       
-      If *this\mode\transform
+      If *this\transform
         Repaint = a_events(*this, eventtype, mouse_x, mouse_y)
         
         Post(eventtype, *this, *this\index[#__s_1])
@@ -15073,7 +15131,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Entered()\_state | #__s_selected
           Entered()\time_down = ElapsedMilliseconds()
           
-          If Not Entered()\mode\transform 
+          If Not Entered()\transform 
             If Entered()\bar\from > 0
               Debug "   debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
               ; bar mouse delta pos
@@ -15491,11 +15549,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           a_add(*this)
         EndIf
         
-        If flag & #__Window_NoActivate = #False And Not *this\mode\transform
+        If flag & #__Window_NoActivate = #False And Not *this\transform
           SetActive(*this)
         EndIf 
         
-;         If *this\fs And Not *this\mode\transform
+;         If *this\fs And Not *this\transform
 ;           *this\bs = *this\fs
 ;         EndIf
         
@@ -16182,7 +16240,7 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
   Protected Position =- 1, flag.i
   
   If *parent 
-    If Not *parent\mode\transform
+    If Not *parent\transform
       a_add(*parent)
     EndIf
     
@@ -16397,43 +16455,77 @@ Procedure events_ide()
               group_select = 0
             EndIf
             
-          Default
             ForEach Transform()\group()
-              ;If Transform()\group()\widget\mode\transform = 2
-                move_x = Transform()\id\x - Transform()\group()\widget\parent\x[#__c_inner] + Transform()\pos
-                move_y = Transform()\id\y - Transform()\group()\widget\parent\y[#__c_inner] + Transform()\pos
+                Debug Transform()\group()\widget\x
                 
+              Next
+              
+              
+            Default
+              move_x = Transform()\id\x - Transform()\widget\x[#__c_inner] + Transform()\pos
+              move_y = Transform()\id\y - Transform()\widget\y[#__c_inner] + Transform()\pos
+              
+              ForEach Transform()\group()
                 Select button
                   Case #group_left ; left
-                    Transform()\group()\width = Transform()\pos*2
+                    ;Transform()\id\x = 0
+                    Transform()\id\width = 0
                     Resize(Transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                     
                   Case #group_right ; right
+                    Transform()\id\x = 0
+                    Transform()\id\width = 0
                     Resize(Transform()\group()\widget, move_x + Transform()\group()\width - Transform()\pos*2, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                     
                   Case #group_top ; top
-                    ; Transform()\group()\height = 0
+                    ;Transform()\id\y = 0
+                    Transform()\id\height = 0
                     Resize(Transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
                     
                   Case #group_bottom ; bottom
+                    Transform()\id\y = 0
+                    Transform()\id\height = 0
                     Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\height - Transform()\pos*2, #PB_Ignore, #PB_Ignore)
                     
                   Case #group_width ; stretch horizontal
                     Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id\width - Transform()\pos*2, #PB_Ignore)
-;                     If Transform()\group()\width
-                       a_move(Transform()\id\x, Transform()\id\y, Transform()\id\width - Transform()\pos*2 + Transform()\group()\width, Transform()\id\height)
-;                     EndIf
-                    ; Transform()\group()\width = (Transform()\id\width + Transform()\group()\width) - Transform()\group()\widget\width
-                   
+                    
                   Case #group_height ; stretch vertical
                     Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id\height - Transform()\pos*2)
-;                     If Transform()\group()\height
-;                       a_move(Transform()\id\x, Transform()\id\y, Transform()\id\width, Transform()\id\height + Transform()\group()\height - Transform()\pos*2)
-;                     EndIf
                     
                 EndSelect
-              ;EndIf
-            Next
+              Next
+              
+              a_update(Transform()\widget)
+              
+;               ForEach Transform()\group()
+;                 If Transform()\id\x = 0 Or 
+;                    Transform()\id\x > Transform()\group()\widget\x
+;                   Transform()\id\x = Transform()\group()\widget\x
+;                 EndIf
+;                 If Transform()\id\y = 0 Or 
+;                    Transform()\id\y > Transform()\group()\widget\y
+;                   Transform()\id\y = Transform()\group()\widget\y
+;                 EndIf
+;               Next
+;               
+;               ForEach Transform()\group()
+;                 If Transform()\id\x + Transform()\id\width < Transform()\group()\widget\x + Transform()\group()\widget\width
+;                   Transform()\id\width = (Transform()\group()\widget\x - Transform()\id\x) + Transform()\group()\widget\width
+;                 EndIf
+;                 If Transform()\id\y + Transform()\id\height < Transform()\group()\widget\y + Transform()\group()\widget\height
+;                   Transform()\id\height = (Transform()\group()\widget\y - Transform()\id\y) + Transform()\group()\widget\height
+;                 EndIf
+;               Next
+;               
+;               ForEach Transform()\group()
+;                 Transform()\group()\width = (Transform()\id\width + Transform()\pos*2) - Transform()\group()\widget\width
+;                 Transform()\group()\height = (Transform()\id\height + Transform()\pos*2) - Transform()\group()\widget\height
+;               Next
+;             
+;               a_move(Transform()\id\x, Transform()\id\y, Transform()\id\width, Transform()\id\height)
+              
+              ;Redraw(root())
         EndSelect
       EndIf
       
@@ -16624,10 +16716,10 @@ CompilerIf #PB_Compiler_IsMainFile
   create_element(*container, "button", 35, 65+40, 80, 30)
   create_element(*container, "text", 45, 65+40*2, 50, 30)
   
-  Define *container2 = create_element(*window, "container", 100+110, 25+45, 165, 140)
-  create_element(*container2, "button", 15, 25, 50, 30)
+  Define *container2 = create_element(*window, "container", 100+140, 25+45, 165, 140)
+  create_element(*container2, "button", 75, 25, 30, 30)
   create_element(*container2, "text", 25, 65, 50, 30)
-  create_element(*container2, "button", 35, 65+40, 50, 30)
+  create_element(*container2, "button", 15, 65+40, 80, 30)
   create_element(*container2, "text", 45, 65+40*2, 50, 30)
   
   Repeat 
@@ -16663,5 +16755,5 @@ DataSection   ; Include Images
   ThisPC:           : IncludeBinary "ThisPC.png"
 EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------8-------f--4-T---P--v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------0-----
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

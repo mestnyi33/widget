@@ -248,6 +248,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     Structure _s_group
       *widget._s_widget
+      x.l
+      y.l
       width.l
       height.l
       
@@ -316,7 +318,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       threestate.b
       
       
-      transform.b ; add anchors on the widget (to size and move)
     EndStructure
     
     ;- - _s_caption
@@ -510,7 +511,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       *before._s_widget
       
       child.b           ; is the widget composite?
-      
+      transform.b ; add anchors on the widget (to size and move)
+    
       *container        ; 
       *adress           ; widget list adress
       *root._s_root     ; this root
@@ -636,7 +638,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_root
     Structure _s_root Extends _s_widget
       canvas._s_canvas
-      *transform._s_transform
+      *_transform._s_transform
     EndStructure
     
     ;- - _s_this

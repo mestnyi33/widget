@@ -161,7 +161,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro Transform()
-      Root()\transform
+      Root()\_transform
     EndMacro
     
     Macro CustomCursor(_image_)
@@ -1587,7 +1587,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ForEach widget()
               If *this <> widget() And
                  Not widget()\hide And
-                 widget()\mode\transform And
+                 widget()\transform And
                  widget()\parent = *this\parent
                 
                 relative_x1 = widget()\x[#__c_frame]
@@ -1664,8 +1664,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       Mouse()\grid = 6
       Transform()\size = 6
       
-      If (*this\mode\transform =- 1 And Not Transform()\index) Or 
-         (*this\mode\transform = 1 And Transform()\main <> *this And Transform()\widget <> *this)
+      If (*this\transform =- 1 And Not Transform()\index) Or 
+         (*this\transform = 1 And Transform()\main <> *this And Transform()\widget <> *this)
         
         *this\cursor = #PB_Cursor_Default
         ;Debug ""+Transform()\main +" "+ *this
@@ -1723,8 +1723,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected i, *Cursor.DataBuffer = ?CursorsBuffer
       
       With *this
-        If Not *this\mode\transform
-          *this\mode\transform = #True
+        If Not *this\transform
+          *this\transform = #True
           
           If Not Transform()
             Transform()._structure_(transform)
@@ -1794,7 +1794,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndMacro
       
       Macro a_resize(_result_, _index_)
-        If Transform()\widget\mode\transform = 1
+        If Transform()\widget\transform = 1
           Select _index_
             Case #__a_moved 
               _result_ = Resize(Transform()\widget, mx, my, #PB_Ignore, #PB_Ignore)
@@ -1821,7 +1821,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndSelect
           
           ForEach widget()
-            If widget()\mode\transform = 2
+            If widget()\transform = 2
               Select _index_
                 Case #__a_moved 
                   _result_ = Resize(widget(), mx, my, #PB_Ignore, #PB_Ignore)
@@ -1860,8 +1860,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           If Not Transform()\index 
             ; reset multi group
             ForEach widget()
-              If widget()\mode\transform = 2
-                widget()\mode\transform = 1
+              If widget()\transform = 2
+                widget()\transform = 1
               EndIf
             Next
             
@@ -2028,8 +2028,8 @@ CompilerIf Not Defined(widget, #PB_Module)
               If child(widget(), *this) And Intersect(widget(), Transform()\id) And widget() <> Transform()\widget
                 Debug " -- "+widget()\class +"_"+ widget()\count\index ; Str(widget()\index-widget()\window\index)
                 
-                widget()\parent\mode\transform =- 1
-                widget()\mode\transform = 2
+                widget()\parent\transform =- 1
+                widget()\transform = 2
                 
                 If Not t_x Or t_x > widget()\x
                   t_x = widget()\x
@@ -10820,7 +10820,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         If (Change_x Or Change_y Or Change_width Or Change_height)
-          If *this\mode\transform = 1
+          If *this\transform = 1
             ; anchors widgets
             ;If (*this\root And Transform() And Transform()\widget = *this)
             a_move(*this\x, *this\y, *this\width, *this\height, *this\container)
@@ -11828,7 +11828,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             *this\count\index = typecount(Hex(*this\window + *this\type))
             typecount(Hex(*this\window + *this\type)) + 1
             
-            If *parent\mode\transform
+            If *parent\transform
               *this\count\type = typecount(Hex(*parent) + "_" + Hex(*this\type))
               typecount(Hex(*parent) + "_" + Hex(*this\type)) + 1
             EndIf
@@ -11874,8 +11874,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             ; set transformation for the child
-            If Not *this\mode\transform And *parent\mode\transform 
-              *this\mode\transform = Bool(*parent\mode\transform)
+            If Not *this\transform And *parent\transform 
+              *this\transform = Bool(*parent\transform)
               a_set(*this)
             EndIf
           EndIf
@@ -13307,7 +13307,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             a_add(*this)
           EndIf
           
-          If *this\fs And Not *this\mode\transform
+          If *this\fs And Not *this\transform
             *this\bs = *this\fs
           EndIf
           
@@ -14109,7 +14109,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; drawing font
         _drawing_font_(*this)
         
-        ;         If *this\mode\transform
+        ;         If *this\transform
         ;           DrawingMode(#PB_2DDrawing_Outlined)
         ;           Box(*this\x, *this\y, *this\width, *this\height, $ffe0e0e0)
         ;         EndIf
@@ -14226,7 +14226,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 Draw(widget())
               EndIf
               
-              If widget()\mode\transform And (widget()\width[#__c_clip] = 0 And widget()\height[#__c_clip] = 0)
+              If widget()\transform And (widget()\width[#__c_clip] = 0 And widget()\height[#__c_clip] = 0)
                 UnclipOutput()
                 DrawingMode(#PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend)
                 Box(widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner], widget()\height[#__c_inner], $ff00ffff)
@@ -14717,7 +14717,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ProcedureReturn 0
       EndIf
       
-      If *this\mode\transform
+      If *this\transform
         Repaint = a_events(*this, eventtype, mouse_x, mouse_y)
         
         Post(eventtype, *this, *this\index[#__s_1])
@@ -15051,7 +15051,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Entered()\_state | #__s_selected
           Entered()\time_down = ElapsedMilliseconds()
           
-          If Not Entered()\mode\transform 
+          If Not Entered()\transform 
             If Entered()\bar\from > 0
               Debug "   debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
               ; bar mouse delta pos
@@ -15468,11 +15468,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           a_add(*this)
         EndIf
         
-        If flag & #__Window_NoActivate = #False And Not *this\mode\transform
+        If flag & #__Window_NoActivate = #False And Not *this\transform
           SetActive(*this)
         EndIf 
         
-        If *this\fs And Not *this\mode\transform
+        If *this\fs And Not *this\transform
           *this\bs = *this\fs
         EndIf
         
@@ -15930,5 +15930,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
