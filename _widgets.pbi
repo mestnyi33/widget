@@ -215,8 +215,8 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;- 
     Macro Intersect(_adress_1_, _adress_2_, _mode_ = )
-      Bool((_adress_1_\x#_mode_ + _adress_1_\width) > _adress_2_\x And _adress_1_\x#_mode_ < (_adress_2_\x + _adress_2_\width) And 
-           (_adress_1_\y#_mode_ + _adress_1_\height) > _adress_2_\y And _adress_1_\y#_mode_ < (_adress_2_\y + _adress_2_\height))
+      Bool((_adress_1_\x#_mode_ + _adress_1_\width#_mode_) > _adress_2_\x And _adress_1_\x#_mode_ < (_adress_2_\x + _adress_2_\width) And 
+           (_adress_1_\y#_mode_ + _adress_1_\height#_mode_) > _adress_2_\y And _adress_1_\y#_mode_ < (_adress_2_\y + _adress_2_\height))
     EndMacro
     
     Macro Atpoint(_adress_, _mode_ = )
@@ -1762,7 +1762,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           If widget() <> *parent And
              widget()\parent = *parent And 
              ; child(widget(), *parent) And 
-            Intersect(widget(), Transform()\id)
+            Intersect(widget(), Transform()\id, [#__c_frame])
             ; Debug " -- "+widget()\class +"_"+ widget()\count\index 
             
             widget()\transform = 2
@@ -16762,5 +16762,5 @@ DataSection   ; Include Images
   ThisPC:           : IncludeBinary "ThisPC.png"
 EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------X+--80-f+Pe+9X4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f+----------------------------------
+; Folding = ------------------X+--8--f+Pe+9X4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f+----------------------------------
 ; EnableXP
