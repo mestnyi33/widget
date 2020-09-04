@@ -1661,12 +1661,12 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected result.i
       Static *LastPos
       
-      Mouse()\grid = 6
-      Transform()\size = 6
       
       If (*this\transform =- 1 And Not Transform()\index) Or 
          (*this\transform = 1 And Transform()\main <> *this And Transform()\widget <> *this)
         
+      Mouse()\grid = 6
+      Transform()\size = 6
         *this\cursor = #PB_Cursor_Default
         ;Debug ""+Transform()\main +" "+ *this
         
