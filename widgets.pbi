@@ -1,12 +1,15 @@
 ﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  IncludePath "/Users/as/Documents/GitHub/widget"
+  #path = "/Users/as/Documents/GitHub/widget/"
+  IncludePath #path
   XIncludeFile "include/fixme(mac).pbi"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux 
-  IncludePath "/media/sf_as/Documents/GitHub/widget"
+  #path = "/media/sf_as/Documents/GitHub/widget"
+  IncludePath #path
   XIncludeFile "include/fixme(lin).pbi"
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows 
-  IncludePath "Z:/Documents/GitHub/widget"
-  ;IncludePath "C:\Users\as\Desktop\Widget_15_08_2020"
+  #path = "Z:/Documents/GitHub/widget"
+  ;#path "C:\Users\as\Desktop\Widget_15_08_2020"
+  IncludePath #path
   XIncludeFile "include/fixme(win).pbi"
 CompilerEndIf
 
@@ -155,10 +158,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro Repaints()
-      ForEach root()
+     ; ForEach root()
         ;  ReDraw(Root())
         Post(#PB_EventType_Repaint, Root()) ;This()\widget\root)
-      Next
+     ; Next
     EndMacro
     
     ;-
@@ -757,6 +760,23 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare a_add(*this)
     Declare a_set(*this, size.l = 6, position.l = #PB_Ignore)
     Declare a_update(*parent)
+    Macro a_reset()
+      ; reset multi group
+      If ListSize(Transform()\group())
+        ForEach Transform()\group()
+          Transform()\group()\widget\root\transform = 1
+          Transform()\group()\widget\parent\transform = 1
+          Transform()\group()\widget\transform = 1
+        Next
+        
+        Transform()\id[0]\x = 0
+        Transform()\id[0]\y = 0
+        Transform()\id[0]\width = 0
+        Transform()\id[0]\height = 0
+        ClearList(Transform()\group())
+      EndIf
+    EndMacro
+    
     
     
     Declare.l x(*this, mode.l = #__c_frame)
@@ -1647,54 +1667,40 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure.i a_set(*this._s_widget, size.l = 6, position.l = #PB_Ignore)
       Protected result.i
-      ;;Debug *this
       
       If (*this\transform =- 1 And Not Transform()\index) Or 
          (*this\transform = 1 And Transform()\main <> *this And Transform()\widget <> *this)
         
-       ;;Debug *this\count\index
-       ; reset multi group
-        If ListSize(Transform()\group())
-          ForEach Transform()\group()
-            Transform()\group()\widget\root\transform = 1
-            Transform()\group()\widget\parent\transform = 1
-            Transform()\group()\widget\transform = 1
-          Next
-          
-          Transform()\id[0]\x = 0
-          Transform()\id[0]\y = 0
-          Transform()\id[0]\width = 0
-          Transform()\id[0]\height = 0
-          ClearList(Transform()\group())
-        EndIf
-            
-        ;size = 20
+        ;;Debug *this\count\index
+        ;; a_reset()
+        
+        size = 15
         Mouse()\grid = 6
         *this\cursor = #PB_Cursor_Default
-     
-;         Debug ""+Transform()\main +" "+ *this
-;         Static *LastPos
-          
-;         If *LastPos
-;           If Transform()\widget
-;             SetPosition(Transform()\widget, #PB_List_Before, *LastPos)
-;             *LastPos = 0
-;           EndIf
-;         EndIf
-;         
-;         *LastPos = GetPosition(*this, #PB_List_After)
-;         
-;         If *LastPos
-;           SetPosition(*this, #PB_List_Last)
-;         EndIf
-;         
-;         
-; ;         ;If *this\repaint
-; ;         If Transform()\widget
-; ;           Post(#PB_EventType_LostFocus, Transform()\widget, Transform()\index)
-; ;         EndIf
-; ;         Post(#PB_EventType_Focus, *this, Transform()\index)
-; ;         ;EndIf
+        
+        ;         Debug ""+Transform()\main +" "+ *this
+        ;         Static *LastPos
+        
+        ;         If *LastPos
+        ;           If Transform()\widget
+        ;             SetPosition(Transform()\widget, #PB_List_Before, *LastPos)
+        ;             *LastPos = 0
+        ;           EndIf
+        ;         EndIf
+        ;         
+        ;         *LastPos = GetPosition(*this, #PB_List_After)
+        ;         
+        ;         If *LastPos
+        ;           SetPosition(*this, #PB_List_Last)
+        ;         EndIf
+        ;         
+        ;         
+        ; ;         ;If *this\repaint
+        ; ;         If Transform()\widget
+        ; ;           Post(#PB_EventType_LostFocus, Transform()\widget, Transform()\index)
+        ; ;         EndIf
+        ; ;         Post(#PB_EventType_Focus, *this, Transform()\index)
+        ; ;         ;EndIf
         
         Transform()\size = size
         
@@ -1721,9 +1727,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         Transform()\widget = *this
         
         a_move(*this\x, *this\y, *this\width, *this\height, *this\container)
+        ;a_move(*this\x[#__c_frame] - Transform()\pos, *this\y[#__c_frame] - Transform()\pos, *this\width[#__c_frame] + Transform()\pos*2, *this\height[#__c_frame] + Transform()\pos*2, *this\container)
+        
         Post(#PB_EventType_StatusChange, *this, Transform()\index)
       EndIf
-    
+      
       ProcedureReturn result
     EndProcedure
     
@@ -1758,7 +1766,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
         EndIf
       EndWith
-            
+      
       DataSection
         CursorsBuffer:
         Data.i #PB_Cursor_Default
@@ -1776,7 +1784,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     Procedure   a_update(*parent._s_widget)
       If *parent\transform = 1 ; Not ListSize(Transform()\group())
-        ; check transform group
+                               ; check transform group
         ForEach widget()
           If widget() <> *parent And
              widget()\parent = *parent And 
@@ -1801,12 +1809,12 @@ CompilerIf Not Defined(widget, #PB_Module)
         ForEach widget()
           If widget()\transform = 2
             If Transform()\id[0]\x = 0 Or 
-               Transform()\id[0]\x > widget()\x
-              Transform()\id[0]\x = widget()\x
+               Transform()\id[0]\x > widget()\x[#__c_frame]
+              Transform()\id[0]\x = widget()\x[#__c_frame]
             EndIf
             If Transform()\id[0]\y = 0 Or 
-               Transform()\id[0]\y > widget()\y
-              Transform()\id[0]\y = widget()\y
+               Transform()\id[0]\y > widget()\y[#__c_frame]
+              Transform()\id[0]\y = widget()\y[#__c_frame]
             EndIf
           EndIf
         Next
@@ -1814,11 +1822,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; init max group size
         ForEach widget()
           If widget()\transform = 2
-            If Transform()\id[0]\x + Transform()\id[0]\width < widget()\x + widget()\width
-              Transform()\id[0]\width = (widget()\x - Transform()\id[0]\x) + widget()\width
+            If Transform()\id[0]\x + Transform()\id[0]\width < widget()\x[#__c_frame] + widget()\width[#__c_frame]
+              Transform()\id[0]\width = (widget()\x[#__c_frame] - Transform()\id[0]\x) + widget()\width[#__c_frame]
             EndIf
-            If Transform()\id[0]\y + Transform()\id[0]\height < widget()\y + widget()\height
-              Transform()\id[0]\height = (widget()\y - Transform()\id[0]\y) + widget()\height
+            If Transform()\id[0]\y + Transform()\id[0]\height < widget()\y[#__c_frame] + widget()\height[#__c_frame]
+              Transform()\id[0]\height = (widget()\y[#__c_frame] - Transform()\id[0]\y) + widget()\height[#__c_frame]
             EndIf
           EndIf
         Next
@@ -1831,11 +1839,11 @@ CompilerIf Not Defined(widget, #PB_Module)
               ;Transform()\group()\widget.allocate(widget)
               
               Transform()\group()\widget = widget()
-              Transform()\group()\x = Transform()\group()\widget\x - Transform()\id[0]\x
-              Transform()\group()\y = Transform()\group()\widget\y - Transform()\id[0]\y
+              Transform()\group()\x = Transform()\group()\widget\x[#__c_frame] - Transform()\id[0]\x
+              Transform()\group()\y = Transform()\group()\widget\y[#__c_frame] - Transform()\id[0]\y
               
-              Transform()\group()\width = (Transform()\id[0]\width + Transform()\pos*2) - Transform()\group()\widget\width
-              Transform()\group()\height = (Transform()\id[0]\height + Transform()\pos*2) - Transform()\group()\widget\height
+              Transform()\group()\width = Transform()\id[0]\width - Transform()\group()\widget\width[#__c_frame]
+              Transform()\group()\height = Transform()\id[0]\height - Transform()\group()\widget\height[#__c_frame]
             EndIf
           EndIf
         Next
@@ -1844,37 +1852,37 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; update min group pos
         ForEach Transform()\group()
           If Transform()\id[0]\x = 0 Or 
-             Transform()\id[0]\x > Transform()\group()\widget\x
-            Transform()\id[0]\x = Transform()\group()\widget\x
+             Transform()\id[0]\x > Transform()\group()\widget\x[#__c_frame]
+            Transform()\id[0]\x = Transform()\group()\widget\x[#__c_frame]
           EndIf
           If Transform()\id[0]\y = 0 Or 
-             Transform()\id[0]\y > Transform()\group()\widget\y
-            Transform()\id[0]\y = Transform()\group()\widget\y
+             Transform()\id[0]\y > Transform()\group()\widget\y[#__c_frame]
+            Transform()\id[0]\y = Transform()\group()\widget\y[#__c_frame]
           EndIf
         Next
         
         ; update max group size
         ForEach Transform()\group()
-          If Transform()\id[0]\x + Transform()\id[0]\width < Transform()\group()\widget\x + Transform()\group()\widget\width
-            Transform()\id[0]\width = (Transform()\group()\widget\x - Transform()\id[0]\x) + Transform()\group()\widget\width
+          If Transform()\id[0]\x + Transform()\id[0]\width < Transform()\group()\widget\x[#__c_frame] + Transform()\group()\widget\width[#__c_frame]
+            Transform()\id[0]\width = (Transform()\group()\widget\x[#__c_frame] - Transform()\id[0]\x) + Transform()\group()\widget\width[#__c_frame]
           EndIf
-          If Transform()\id[0]\y + Transform()\id[0]\height < Transform()\group()\widget\y + Transform()\group()\widget\height
-            Transform()\id[0]\height = (Transform()\group()\widget\y - Transform()\id[0]\y) + Transform()\group()\widget\height
+          If Transform()\id[0]\y + Transform()\id[0]\height < Transform()\group()\widget\y[#__c_frame] + Transform()\group()\widget\height[#__c_frame]
+            Transform()\id[0]\height = (Transform()\group()\widget\y[#__c_frame] - Transform()\id[0]\y) + Transform()\group()\widget\height[#__c_frame]
           EndIf
         Next
         
         ; update delta size
         ForEach Transform()\group()
-          Transform()\group()\x = Transform()\group()\widget\x - Transform()\id[0]\x
-          Transform()\group()\y = Transform()\group()\widget\y - Transform()\id[0]\y
+          Transform()\group()\x = Transform()\group()\widget\x[#__c_frame] - Transform()\id[0]\x
+          Transform()\group()\y = Transform()\group()\widget\y[#__c_frame] - Transform()\id[0]\y
           
-          Transform()\group()\width = (Transform()\id[0]\width + Transform()\pos*2) - Transform()\group()\widget\width
-          Transform()\group()\height = (Transform()\id[0]\height + Transform()\pos*2) - Transform()\group()\widget\height
+          Transform()\group()\width = Transform()\id[0]\width - Transform()\group()\widget\width[#__c_frame]
+          Transform()\group()\height = Transform()\id[0]\height - Transform()\group()\widget\height[#__c_frame]
         Next
       EndIf   
       
       ;
-      a_move(Transform()\id[0]\x, Transform()\id[0]\y, Transform()\id[0]\width, Transform()\id[0]\height)
+      a_move(Transform()\id[0]\x - Transform()\pos, Transform()\id[0]\y - Transform()\pos, Transform()\id[0]\width + Transform()\pos*2, Transform()\id[0]\height + Transform()\pos*2)
     EndProcedure
     
     Procedure   a_events(*this._s_widget, eventtype.l, mouse_x.l, mouse_y.l)
@@ -1907,56 +1915,69 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       Macro a_resize(_result_, _x_, _y_, _width_, _height_)
         If Transform()\widget\transform = 1 ; Not ListSize(Transform()\group())
-          If Transform()\index = #__a_moved
-            _height_ = #PB_Ignore
-            _width_ = #PB_Ignore
+          
+          If #__a_moved = Transform()\index
+            _result_ = Resize(Transform()\widget, _x_, _y_, #PB_Ignore, #PB_Ignore)
+          Else
+            Select Transform()\index
+              Case 3, 6, 7 ; right
+                _result_ = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, _width_, #PB_Ignore)
+                
+              Case 1, 5, 8 ; left
+                _result_ = Resize(Transform()\widget, _x_, #PB_Ignore, _width_, #PB_Ignore)
+            EndSelect
+            
+            Select Transform()\index
+              Case 4, 8, 7 ; bottom 
+                _result_ = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, _height_)
+                
+              Case 2, 5, 6 ; top
+                _result_ = Resize(Transform()\widget, #PB_Ignore, _y_, #PB_Ignore, _height_)
+            EndSelect
           EndIf
           
-          Select Transform()\index
-            Case 3, 6, 7 
-              _result_ = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, _width_, #PB_Ignore)
-          EndSelect
-          
-          Select Transform()\index
-            Case 4, 8, 7 
-              _result_ = Resize(Transform()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, _height_)
-          EndSelect
-          
-          Select Transform()\index
-            Case 1, 5, 8, #__a_moved 
-              _result_ = Resize(Transform()\widget, _x_, #PB_Ignore, _width_, #PB_Ignore)
-          EndSelect
-          
-          Select Transform()\index
-            Case 2, 5, 6, #__a_moved 
-              _result_ = Resize(Transform()\widget, #PB_Ignore, _y_, #PB_Ignore, _height_)
-          EndSelect
         Else
-          ForEach Transform()\group()
-            ; left
-            Select Transform()\index
-              Case 1, 5, 8, #__a_moved 
-                _result_ = Resize(Transform()\group()\widget, _x_ + Transform()\group()\x, #PB_Ignore, _width_ - Transform()\group()\width, #PB_Ignore)
-            EndSelect
-            
-            ; top
-            Select Transform()\index
-              Case 2, 5, 6, #__a_moved 
-                _result_ = Resize(Transform()\group()\widget, #PB_Ignore, _y_ + Transform()\group()\y, #PB_Ignore, _height_ - Transform()\group()\height)
-            EndSelect
-            
-            ; right
-            Select Transform()\index
-              Case 3, 6, 7 
-                _result_ = Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, _width_ - Transform()\group()\width, #PB_Ignore)
-            EndSelect
-            
-            ; bottom
-            Select Transform()\index
-              Case 4, 8, 7 
-                _result_ = Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, _height_ - Transform()\group()\height)
-            EndSelect
-          Next
+          ;
+          Transform()\id[0]\x = _x_
+          Transform()\id[0]\y = _y_
+          
+          Transform()\id[0]\width = _width_
+          Transform()\id[0]\height = _height_
+          
+          a_move(Transform()\id[0]\x - Transform()\pos, 
+                 Transform()\id[0]\y - Transform()\pos, 
+                 Transform()\id[0]\width + Transform()\pos*2, 
+                 Transform()\id[0]\height + Transform()\pos*2)
+          
+          Select Transform()\index
+            Case 1, 5, 8, #__a_moved ; left
+              ForEach Transform()\group()
+                _result_ = Resize(Transform()\group()\widget, 
+                                  (Transform()\id[0]\x - Transform()\widget\x[#__c_inner]) + Transform()\group()\x,
+                                   #PB_Ignore, Transform()\id[0]\width - Transform()\group()\width, #PB_Ignore)
+              Next
+              
+            Case 3, 6, 7 ; right
+              ForEach Transform()\group()
+                _result_ = Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id[0]\width - Transform()\group()\width, #PB_Ignore)
+              Next
+          EndSelect
+          
+          Select Transform()\index
+            Case 2, 5, 6, #__a_moved ; top
+              ForEach Transform()\group()
+                _result_ = Resize(Transform()\group()\widget, #PB_Ignore, 
+                                  (Transform()\id[0]\y - Transform()\widget\y[#__c_inner]) + Transform()\group()\y,
+                                   #PB_Ignore, Transform()\id[0]\height - Transform()\group()\height)
+              Next
+              
+            Case 4, 8, 7 ; bottom 
+              ForEach Transform()\group()
+                _result_ = Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id[0]\height - Transform()\group()\height)
+              Next
+          EndSelect
+          
+          _result_ = 1
         EndIf
       EndMacro
       
@@ -1967,8 +1988,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         Protected mxw, myh
         Protected.l mx, my, mw, mh
         Protected.l Px,Py, IsGrid = Bool(Mouse()\grid>1)
-        Protected pos = (Transform()\pos - #__border_size)
-                
+        
         ;
         If eventtype = #__Event_leftButtonDown 
           ; change frame color
@@ -1986,49 +2006,55 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           ; set current transform widget
-          If Not (Transform()\index And Not (Transform()\index = #__a_moved And Transform()\widget\container = 0))
-            a_set(*this)
+          If Not (Transform()\index And
+                  Not (Transform()\index = #__a_moved And 
+                       Transform()\widget\container = 0))
+            If a_set(*this)
+              a_reset()
+            EndIf
           EndIf
-            
+          
           ; get transform index
           a_index(Repaint, i)
           
           If Transform()\index 
             ; set current transform index
             Transform()\id[Transform()\index]\color\state = #__s_2
+            Protected pos = Bool(Transform()\index <> #__a_moved Or (Transform()\index = #__a_moved And Transform()\widget\container And Transform()\widget\transform = 1)) * Transform()\pos
             
             ; set anchor delta pos
-            If Transform()\widget\transform = 1
-              Mouse()\delta\x = mouse_x - Transform()\id[Transform()\index]\x
-              Mouse()\delta\y = mouse_y - Transform()\id[Transform()\index]\y
-              
-              ; multi group 
-            Else
-              ; left
-              Select Transform()\index
-                Case 1, 5, 8, #__a_moved 
-                  Mouse()\delta\x = mouse_x - Transform()\id[0]\x - pos
-              EndSelect
-              
-              ; top
-              Select Transform()\index
-                Case 2, 5, 6, #__a_moved 
-                  Mouse()\delta\y = mouse_y - Transform()\id[0]\y - pos
-              EndSelect
-              
-              ; right
-              Select Transform()\index
-                Case 3, 6, 7 
-                  Mouse()\delta\x = mouse_x - Transform()\id[Transform()\index]\x - Transform()\pos*2
-              EndSelect
-              
-              ; bottom
-              Select Transform()\index
-                Case 4, 8, 7 
-                  Mouse()\delta\y = mouse_y - Transform()\id[Transform()\index]\y - Transform()\pos*2
-              EndSelect
+            ; add parent coordinate
+            If Transform()\widget\parent And 
+               Transform()\widget\transform = 1 And 
+               Transform()\widget\parent\type <> #PB_GadgetType_MDI ; mdi inner coordinate bug
+              mouse_x + Transform()\widget\parent\x[#__c_inner]
+              mouse_y + Transform()\widget\parent\y[#__c_inner]
             EndIf
-          
+            
+            ; left
+            Select Transform()\index
+              Case 1, 5, 8, #__a_moved 
+                Mouse()\delta\x = mouse_x - Transform()\id[Transform()\index]\x - pos
+            EndSelect
+            
+            ; top
+            Select Transform()\index
+              Case 2, 5, 6, #__a_moved 
+                Mouse()\delta\y = mouse_y - Transform()\id[Transform()\index]\y - pos
+            EndSelect
+            
+            ; right
+            Select Transform()\index
+              Case 3, 6, 7 
+                Mouse()\delta\x = mouse_x - Transform()\id[Transform()\index]\x - (Transform()\size-Transform()\pos)
+            EndSelect
+            
+            ; bottom
+            Select Transform()\index
+              Case 4, 8, 7 
+                Mouse()\delta\y = mouse_y - Transform()\id[Transform()\index]\y - (Transform()\size-Transform()\pos)
+            EndSelect
+            
           Else
             ; grid mouse pos
             If Mouse()\grid > 0
@@ -2037,8 +2063,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             ; set delta pos
-            Mouse()\delta\x = mouse_x - *this\x        
-            Mouse()\delta\y = mouse_y - *this\y
+            Mouse()\delta\x = mouse_x ; - *this\x[#__c_frame]        
+            Mouse()\delta\y = mouse_y ; - *this\y[#__c_frame]
           EndIf
           
           Repaint = #True
@@ -2093,99 +2119,66 @@ CompilerIf Not Defined(widget, #PB_Module)
               a_index(Repaint, i)
               
             ElseIf Transform()\id[Transform()\index]\color\state = #__s_2
-              If Transform()\widget\transform = 1
-                If Transform()\widget\parent And Transform()\widget\parent\type <> #PB_GadgetType_MDI
-                  Px = Transform()\widget\parent\x[#__c_inner]
-                  Py = Transform()\widget\parent\y[#__c_inner]
-                EndIf
-                
-                mouse_x - Mouse()\delta\x
-                mouse_y - Mouse()\delta\y
-                
-                mx = Match(mouse_x - Px + Transform()\pos, Mouse()\grid)
-                my = Match(mouse_y - Py + Transform()\pos, Mouse()\grid)
-                
-                If xx <> mx Or yy <> my
-                  xx = mx
-                  yy = my
+              mouse_x = Match(mouse_x - Mouse()\delta\x, Mouse()\grid)
+              mouse_y = Match(mouse_y - Mouse()\delta\y, Mouse()\grid)
+              
+              If xx <> mouse_x Or yy <> mouse_y : xx = mouse_x : yy = mouse_y
+                If Transform()\widget\transform = 1
                   
+                  Select Transform()\index
+                    Case 1, 5, 8 ; left
+                      mw = (Transform()\widget\x[#__c_container] - mouse_x) + Transform()\widget\width[#__c_frame]
+                      
+                    Case 3, 6, 7 ; right
+                      mw = (mouse_x - Transform()\widget\x[#__c_container]) + IsGrid 
+                  EndSelect
+                  
+                  
+                  
+                  Select Transform()\index
+                    Case 2, 5, 6 ; top
+                      mh = (Transform()\widget\y[#__c_container] - mouse_y) + Transform()\widget\height[#__c_frame]
+                      
+                    Case 4, 8, 7 ; bottom 
+                      mh = (mouse_y - Transform()\widget\y[#__c_container]) + IsGrid 
+                  EndSelect
+                  
+                  a_resize(Repaint, mouse_x,mouse_y,mw,mh)
+                  
+                Else
                   ; left
                   Select Transform()\index
                     Case 1, 5, 8, #__a_moved
                       If Transform()\index <> #__a_moved
-                        mw = Transform()\widget\x[#__c_draw] - mx + Transform()\widget\width[#__c_frame]
-                      EndIf
+                        Transform()\id[0]\width = (Transform()\id[0]\x - mouse_x) + Transform()\id[0]\width
+                      EndIf     
+                      Transform()\id[0]\x = mouse_x
                   EndSelect
                   
                   ; top
                   Select Transform()\index
                     Case 2, 5, 6, #__a_moved
                       If Transform()\index <> #__a_moved
-                        mh = Transform()\widget\y[#__c_draw] - my + Transform()\widget\height[#__c_frame]
-                      EndIf
+                        Transform()\id[0]\height = (Transform()\id[0]\y - mouse_y) + Transform()\id[0]\height
+                      EndIf  
+                      Transform()\id[0]\y = mouse_y
                   EndSelect
                   
                   ; right
                   Select Transform()\index
                     Case 3, 6, 7 
-                      mw = mx - Transform()\widget\x[#__c_container] + IsGrid 
-                      ;mw = Match(mouse_x - Transform()\widget\x[#__c_frame], Mouse()\grid) + IsGrid 
+                      Transform()\id[0]\width = (mouse_x - Transform()\id[0]\x)
                   EndSelect
                   
                   ; bottom
                   Select Transform()\index
                     Case 4, 8, 7 
-                      ; mh = my - Transform()\widget\y[#__c_draw] + IsGrid 
-                      mh = Match(mouse_y - Transform()\widget\y[#__c_frame], Mouse()\grid) + IsGrid 
+                      Transform()\id[0]\height = (mouse_y - Transform()\id[0]\y)
                   EndSelect
                   
-                  a_resize(Repaint, mx,my,mw,mh)
+                  a_resize(Repaint, Transform()\id[0]\x,Transform()\id[0]\y,Transform()\id[0]\width,Transform()\id[0]\height)
                 EndIf
-              Else
-                mx = Match(mouse_x - Mouse()\delta\x, Mouse()\grid)
-                my = Match(mouse_y - Mouse()\delta\y, Mouse()\grid)
-                    
-                If xx <> mx Or yy <> my : xx = mx : yy = my
-                  ; left
-                  Select Transform()\index
-                    Case 1, 5, 8, #__a_moved
-                      If Transform()\index <> #__a_moved
-                       Transform()\id[0]\width = (Transform()\id[0]\x - (mx - pos)) + Transform()\id[0]\width
-                      EndIf
-                      Transform()\id[0]\x = (mx - pos)
-                  EndSelect
-                  
-                  ; top
-                  Select Transform()\index
-                    Case 2, 5, 6, #__a_moved
-                      If Transform()\index <> #__a_moved
-                        Transform()\id[0]\height = (Transform()\id[0]\y - (my - pos)) + Transform()\id[0]\height
-                      EndIf
-                      Transform()\id[0]\y = (my - pos)
-                  EndSelect
-                  
-                  ; right
-                  Select Transform()\index
-                    Case 3, 6, 7 
-                      Transform()\id[0]\width = mx - (Transform()\id[0]\x)
-                  EndSelect
-                  
-                  ; bottom
-                  Select Transform()\index
-                    Case 4, 8, 7 
-                      Transform()\id[0]\height = my - (Transform()\id[0]\y)
-                  EndSelect
-                  
-                  ;
-                  a_move(Transform()\id[0]\x, Transform()\id[0]\y, Transform()\id[0]\width, Transform()\id[0]\height) 
-                  
-                  mx = (Transform()\id[0]\x + Transform()\pos) - Transform()\group()\widget\parent\x[#__c_inner]
-                  my = (Transform()\id[0]\y + Transform()\pos) - Transform()\group()\widget\parent\y[#__c_inner]
-                  
-                  a_resize(Repaint, mx,my,Transform()\id[0]\width,Transform()\id[0]\height)
-               
-                  Repaint = 1
-                EndIf
+                
               EndIf
             EndIf
           EndIf
@@ -2193,11 +2186,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           ; change selector coordinate
           If Transform()\grab
             If Mouse()\grid > 0
-              mouse_x = (Mouse()\x / Mouse()\grid) * Mouse()\grid
-              mouse_y = (Mouse()\y / Mouse()\grid) * Mouse()\grid
-            Else
-              mouse_x = Mouse()\x
-              mouse_y = Mouse()\y
+              mouse_x = (mouse_x / Mouse()\grid) * Mouse()\grid
+              mouse_y = (mouse_y / Mouse()\grid) * Mouse()\grid
             EndIf
             
             If move_x <> mouse_x
@@ -2219,8 +2209,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             If Repaint
-              Transform()\id[0]\x = Mouse()\delta\x + Transform()\widget\x
-              Transform()\id[0]\y = Mouse()\delta\y + Transform()\widget\y
+              Transform()\id[0]\x = Mouse()\delta\x ; + Transform()\widget\x[#__c_frame]
+              Transform()\id[0]\y = Mouse()\delta\y ; + Transform()\widget\y[#__c_frame]
               
               ; to left
               If Transform()\id[0]\x > move_x
@@ -2238,11 +2228,18 @@ CompilerIf Not Defined(widget, #PB_Module)
                 Transform()\id[0]\height = move_y - Transform()\id[0]\y
               EndIf
               
-              If Transform()\widget\fs
+              ; points of the window start pos
+              Transform()\id[0]\x + #__border_size
+              Transform()\id[0]\y + #__border_size
+              
+              ; add container frame size 
+              If Transform()\widget\fs And 
+                 Transform()\widget\container > 0
                 Transform()\id[0]\x + Transform()\widget\fs
                 Transform()\id[0]\y + Transform()\widget\fs
               EndIf
               
+              ; points width of the window
               If Mouse()\grid > 0
                 Transform()\id[0]\width + 1
                 Transform()\id[0]\height + 1
@@ -2254,11 +2251,18 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; 
         If eventtype = #PB_EventType_KeyDown
           If Transform()\widget
-            mx = Transform()\widget\x[#__c_draw]
-            my = Transform()\widget\y[#__c_draw]
-            mw = Transform()\widget\width[#__c_frame]
-            mh = Transform()\widget\height[#__c_frame]
-            
+            If Transform()\widget\transform = 1
+              mx = Transform()\widget\x[#__c_draw]
+              my = Transform()\widget\y[#__c_draw]
+              mw = Transform()\widget\width[#__c_frame]
+              mh = Transform()\widget\height[#__c_frame]
+            Else
+              mx = Transform()\id[0]\x
+              my = Transform()\id[0]\y
+              mw = Transform()\id[0]\width
+              mh = Transform()\id[0]\height
+            EndIf
+          
             Select Keyboard()\Key[1] 
               Case #PB_Canvas_Shift
                 Select Keyboard()\Key
@@ -10993,6 +10997,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ; anchors widgets
             ;If (*this\root And Transform() And Transform()\widget = *this)
             a_move(*this\x, *this\y, *this\width, *this\height, *this\container)
+            ;a_move(*this\x[#__c_frame] - Transform()\pos, *this\y[#__c_frame] - Transform()\pos, *this\width[#__c_frame] + Transform()\pos*2, *this\height[#__c_frame] + Transform()\pos*2, *this\container)
             ;EndIf
             
             Post(#__event_resize, *this , Transform()\index)
@@ -15098,21 +15103,21 @@ CompilerIf Not Defined(widget, #PB_Module)
               *this = widget()
               
               ; scrollbars events
-              If *this And *this\scroll
-                If *this\scroll\v And Not *this\scroll\v\hide And *this\scroll\v\type And 
-                   _from_point_(mouse_x,mouse_y, *this\scroll\v, [#__c_clip]) And _from_point_(mouse_x, mouse_y, widget(), [#__c_frame])
-                  *this = *this\scroll\v
-                ElseIf *this\scroll\h And Not *this\scroll\h\hide And *this\scroll\h\type And 
-                       _from_point_(mouse_x,mouse_y, *this\scroll\h, [#__c_clip]) And _from_point_(mouse_x, mouse_y, widget(), [#__c_frame])
-                  *this = *this\scroll\h
+              If widget() And widget()\scroll
+                If widget()\scroll\v And Not widget()\scroll\v\hide And widget()\scroll\v\type And 
+                   _from_point_(mouse_x,mouse_y, widget()\scroll\v, [#__c_clip]) And _from_point_(mouse_x, mouse_y, widget()\scroll\v, [#__c_frame])
+                  *this = widget()\scroll\v
+                ElseIf widget()\scroll\h And Not widget()\scroll\h\hide And widget()\scroll\h\type And 
+                       _from_point_(mouse_x,mouse_y, widget()\scroll\h, [#__c_clip]) And _from_point_(mouse_x, mouse_y, widget()\scroll\h, [#__c_frame])
+                  *this = widget()\scroll\h
                 EndIf
               EndIf
               
               ; tabbar events
-              If *this And *this\gadget[#__panel_1] 
-                If Not *this\gadget[#__panel_1]\hide And  *this\gadget[#__panel_1]\type And 
-                   _from_point_(mouse_x,mouse_y, *this\gadget[#__panel_1], [#__c_clip]) And _from_point_(mouse_x, mouse_y, widget(), [#__c_frame])
-                  *this = *this\gadget[#__panel_1]
+              If widget() And widget()\gadget[#__panel_1] 
+                If Not widget()\gadget[#__panel_1]\hide And  widget()\gadget[#__panel_1]\type And 
+                   _from_point_(mouse_x,mouse_y, widget()\gadget[#__panel_1], [#__c_clip]) And _from_point_(mouse_x, mouse_y, widget()\gadget[#__panel_1], [#__c_frame])
+                  *this = widget()\gadget[#__panel_1]
                 EndIf
               EndIf
               
@@ -15610,9 +15615,9 @@ CompilerIf Not Defined(widget, #PB_Module)
           SetActive(*this)
         EndIf 
         
-;         If *this\fs And Not *this\transform
-;           *this\bs = *this\fs
-;         EndIf
+        ;         If *this\fs And Not *this\transform
+        ;           *this\bs = *this\fs
+        ;         EndIf
         
         Resize(*this, x,y,width,height)
       EndWith
@@ -15739,7 +15744,6 @@ CompilerIf Not Defined(widget, #PB_Module)
   ;- <<< 
 CompilerEndIf
 
-
 ;- 
 Macro Uselib(_name_)
   UseModule _name_
@@ -15748,325 +15752,1160 @@ Macro Uselib(_name_)
 EndMacro
 
 
+;
+; This code is automatically generated by the FormDesigner.
+; Manual modification is possible to adjust existing commands, but anything else will be dropped when the code is compiled.
+; Event procedures needs to be put in another source file.
+;
+
 ;- 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  Uselib(widget)
   
-  Procedure.s get_text(m.s = #LF$)
-    Protected Text.s = "This is a long line." + m.s  + 
-                       "Who should show." + 
-                       m.s  + 
-                       m.s  + 
-                       m.s  + 
-                       m.s  + 
-                       "I have to write the text in the box or not." + 
-                       m.s  + 
-                       m.s  + 
-                       m.s  + 
-                       m.s  + 
-                       "The string must be very long." + m.s  + 
-                       "Otherwise it will not work." ; +  m.s;  + 
+  Uselib(widget)
+  UsePNGImageDecoder()
+  
+  ;- ENUMs
+  ; properties items
+  Enumeration 
+    #_pi_group_0 
+    #_pi_id
+    #_pi_class
+    #_pi_text
     
-    ProcedureReturn Text
+    #_pi_group_1 
+    #_pi_x
+    #_pi_y
+    #_pi_width
+    #_pi_height
+    
+    #_pi_group_2 
+    #_pi_disable
+    #_pi_hide
+  EndEnumeration
+  
+  ; events items
+  Enumeration 
+    #_ei_leftclick
+    #_ei_change
+    #_ei_enter
+    #_ei_leave
+  EndEnumeration
+  
+  ; toolbar buttons
+  Enumeration 
+    #_tb_group_left = 3
+    #_tb_group_right
+    #_tb_group_top
+    #_tb_group_bottom
+    #_tb_group_width
+    #_tb_group_height
+    
+    #_tb_align_left
+    #_tb_align_right
+    #_tb_align_top
+    #_tb_align_bottom
+    #_tb_align_center
+    
+    #_tb_widget_paste
+    #_tb_widget_delete
+    #_tb_widget_copy
+    #_tb_widget_cut
+  EndEnumeration
+  
+  ;- GLOBALs
+  Global window_ide, 
+         canvas_ide
+  
+  Global Splitter_ide, 
+         Splitter_design, 
+         splitter_debug, 
+         Splitter_inspector, 
+         splitter_help
+  
+  Global toolbar_design, 
+         listview_debug, 
+         id_help_text
+  
+  Global id_design_panel, 
+         id_design_form,
+         id_design_code
+  
+  Global id_inspector_panel,
+         id_inspector_tree, 
+         id_elements_tree,
+         id_properties_tree, 
+         id_events_tree
+  
+  Global group_select,
+         group_drag
+  
+  UsePNGImageDecoder()
+  
+  Global img = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") 
+  
+  ;-
+  ;- PUBLICs
+  Procedure.i GetClassType(Class.s)
+    Protected Result.i
+    
+    Select Trim(Class.s)
+      Case "Button"         : Result = #PB_GadgetType_Button
+      Case "ButtonImage"    : Result = #PB_GadgetType_ButtonImage
+      Case "Calendar"       : Result = #PB_GadgetType_Calendar
+      Case "Canvas"         : Result = #PB_GadgetType_Canvas
+      Case "CheckBox"       : Result = #PB_GadgetType_CheckBox
+      Case "ComboBox"       : Result = #PB_GadgetType_ComboBox
+      Case "Container"      : Result = #PB_GadgetType_Container
+      Case "Date"           : Result = #PB_GadgetType_Date
+      Case "Editor"         : Result = #PB_GadgetType_Editor
+      Case "ExplorerCombo"  : Result = #PB_GadgetType_ExplorerCombo
+      Case "ExplorerList"   : Result = #PB_GadgetType_ExplorerList
+      Case "ExplorerTree"   : Result = #PB_GadgetType_ExplorerTree
+      Case "Frame"          : Result = #PB_GadgetType_Frame
+      Case "HyperLink"      : Result = #PB_GadgetType_HyperLink
+      Case "Image"          : Result = #PB_GadgetType_Image
+      Case "IPAddress"      : Result = #PB_GadgetType_IPAddress
+      Case "ListIcon"       : Result = #PB_GadgetType_ListIcon
+      Case "ListView"       : Result = #PB_GadgetType_ListView
+      Case "MDI"            : Result = #PB_GadgetType_MDI
+      Case "OpenGL"         : Result = #PB_GadgetType_OpenGL
+      Case "Option"         : Result = #PB_GadgetType_Option
+        ;Case "Popup"          : Result = #PB_GadgetType_Popup
+      Case "Panel"          : Result = #PB_GadgetType_Panel
+        ;Case "Property"       : Result = #PB_GadgetType_Property
+      Case "ProgressBar"    : Result = #PB_GadgetType_ProgressBar
+      Case "Scintilla"      : Result = #PB_GadgetType_Scintilla
+      Case "ScrollArea"     : Result = #PB_GadgetType_ScrollArea
+      Case "ScrollBar"      : Result = #PB_GadgetType_ScrollBar
+      Case "Shortcut"       : Result = #PB_GadgetType_Shortcut
+      Case "Spin"           : Result = #PB_GadgetType_Spin
+      Case "Splitter"       : Result = #PB_GadgetType_Splitter
+      Case "String"         : Result = #PB_GadgetType_String
+      Case "Text"           : Result = #PB_GadgetType_Text
+      Case "TrackBar"       : Result = #PB_GadgetType_TrackBar
+      Case "Tree"           : Result = #PB_GadgetType_Tree
+      Case "Unknown"        : Result = #PB_GadgetType_Unknown
+      Case "Web"            : Result = #PB_GadgetType_Web
+      Case "Window"         : Result = #__Type_Window
+    EndSelect
+    
+    ProcedureReturn Result
   EndProcedure
   
-  Define cr.s = #LF$, text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Global *w, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 605 + 30, 140 + 200 + 140 + 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-    ; example scroll gadget bar
-    TextGadget       ( -1,  10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#PB_Text_Center)
-    ScrollBarGadget  (101,  10, 42, 250,  20, 30, 100, 30)
-    SetGadgetState   (101,  50)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       ( -1,  10,110, 250,  20, "ScrollBar Vertical  (start = 100, page = 50/300)",#PB_Text_Right)
-    ScrollBarGadget  (201, 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical)
-    SetGadgetState   (201, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
+  ;-
+  Procedure Points(Steps = 5, BoxColor = 0, PlotColor = 0)
+    Static ID
+    Protected hDC, x,y
     
-    ; example scroll widget bar
-    widget::Text(300 + 10, 15, 250,  20, "ScrollBar Standard  (start = 50, page = 30/150)",#__text_center)
-    *w = widget::Scroll  (300 + 10, 42, 250,  20, 30, 100, 30, 0)
-    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    *w = widget::Scroll  (300 + 10, 42 + 30, 250,  15, 30, 100, 30, #__bar_inverted|#__bar_nobuttons, 7)
-    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    
-    *w = widget::Scroll  (300 + 10, 42 + 30 + 20, 250,  10, 30, 150, 230, #__bar_inverted, 7)
-    widget::SetState    (*w,  50)  ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300 + 10,110, 250,  20, "ScrollBar Vertical  (start = 100, page = 50/300)",#__text_right)
-    *w = widget::Scroll  (300 + 270, 10,  25, 120 ,0, 300, 50, #PB_ScrollBar_Vertical|#__bar_inverted)
-    widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
-    *w = widget::Scroll  (300 + 270 + 30, 10,  25, 120 ,0, 300, 50, #__bar_vertical, 7)
-    widget::SetState    (*w, 100)  ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    
-    ; example_2 track gadget bar
-    TextGadget    ( -1, 10,  140 + 10, 250, 20,"TrackBar Standard", #PB_Text_Center)
-    TrackBarGadget(1010, 10,  140 + 40, 250, 20, 0, 10000)
-    SetGadgetState(1010, 5000)
-    TextGadget    ( -1, 10, 140 + 90, 250, 20, "TrackBar Ticks", #PB_Text_Center)
-    ;     TrackBarGadget(11, 10, 140 + 120, 250, 20, 0, 30, #PB_trackTicks)
-    TrackBarGadget(1111, 10, 140 + 120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    SetGadgetState(1111, 60)
-    TextGadget    ( -1,  60, 140 + 160, 200, 20, "TrackBar Vertical", #PB_Text_Right)
-    TrackBarGadget(1212, 270, 140 + 10, 25, 170, 0, 10000, #PB_TrackBar_Vertical)
-    SetGadgetState(1212, 8000)
-    
-    ; example_2 track widget bar
-    widget::Text(300 + 10,  140 + 10, 250, 20,"TrackBar Standard");, #__text_center)
-    *w = widget::Track(300 + 10,  140 + 40, 250, 20, 0, 10000, 0)
-    widget::SetState(*w, 5000)
-    *w = widget::Track(300 + 10,  140 + 40 + 20, 250, 20, 0, 10000, #__bar_inverted)
-    widget::SetState(*w, 5000)
-    widget::Text(300 + 10, 140 + 90, 250, 20, "TrackBar Ticks", #__text_center)
-    ;     widget::Track(300 + 10, 140 + 120, 250, 20, 0, 30, #__bar_ticks)
-    *w = widget::Track(300 + 10, 140 + 120, 250, 20, 30, 60, #PB_TrackBar_Ticks)
-    widget::SetState(*w, 60)
-    widget::Text(300 + 60, 140 + 160, 200, 20, "TrackBar Vertical", #__text_right)
-    *w = widget::Track(300 + 270, 140 + 10, 25, 170, 0, 10000, #PB_TrackBar_Vertical|#__bar_inverted)
-    ;widget::SetAttribute(*w, #__bar_Inverted, 0)
-    widget::SetState(*w, 8000)
-    *w = widget::Track(300 + 270 + 30, 140 + 10, 25, 170, 0, 10000, #__bar_vertical)
-    widget::SetState(*w, 8000)
-    
-    
-    ; example_3 progress gadget bar
-    TextGadget       ( -1,  10, 140 + 200 + 10, 250,  20, "ProgressBar Standard  (start = 65, page = 30/100)",#PB_Text_Center)
-    ProgressBarGadget  (2121,  10, 140 + 200 + 42, 250,  20, 30, 100)
-    SetGadgetState   (2121,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    TextGadget       ( -1,  10,140 + 200 + 100, 250,  20, "ProgressBar Vertical  (start = 100, page = 50/300)",#PB_Text_Right)
-    ProgressBarGadget  (2222, 270, 140 + 200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical)
-    SetGadgetState   (2222, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    ; example_3 progress widget bar
-    widget::Text(300 + 10, 140 + 200 + 10, 250,  20, "ProgressBar Standard  (start = 65, page = 30/100)",#__text_center)
-    *w = widget::Progress  (300 + 10, 140 + 200 + 42, 250,  20, 30, 100, 0)
-    widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    *w = widget::Progress  (300 + 10, 140 + 200 + 42 + 30, 250,  20, 30, 100, #__bar_inverted, 14)
-    widget::SetState   (*w,  65)   ; set 1st scrollbar (ID = 0) to 50 of 100
-    widget::Text(300 + 10,140 + 200 + 100, 250,  20, "ProgressBar Vertical  (start = 100, page = 50/300)",#__text_right)
-    *w = widget::Progress  (300 + 270, 140 + 200,  25, 120 ,0, 300, #PB_ProgressBar_Vertical|#__bar_inverted, 19)
-    ;widget::SetAttribute(*w, #__bar_Inverted, 0)
-    widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    *w = widget::Progress  (300 + 270 + 30, 140 + 200,  25, 120 ,0, 300, #__bar_vertical)
-    widget::SetState   (*w, 100)   ; set 2nd scrollbar (ID = 1) to 100 of 300
-    
-    
-    ;{ PB splitter Gadget
-    Button_0 = StringGadget(#PB_Any, 0, 0, 0, 0, "") ; as they will be sized automatically
-    
-    
-    ButtonGadget(1, 0, 0, 0, 0, "BTN1")
-    ButtonGadget(2, 0, 0, 0, 0, "BTN2")
-    SplitterGadget(3, 125, 10, 250, 70, 1, 2, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_FirstFixed)
-    
-    ButtonGadget(4, 0, 0, 0, 0, "BTN4")
-    ButtonGadget(5, 0, 0, 0, 0, "BTN5")
-    SplitterGadget(6, 125, 90, 250, 70, 4, 5, #PB_Splitter_Separator | #PB_Splitter_Vertical)
-    
-    ButtonGadget(7, 0, 0, 0, 0, "BTN7")
-    ButtonGadget(8, 0, 0, 0, 0, "BTN8")
-    SplitterGadget(9, 125, 90, 250, 70, 7, 8, #PB_Splitter_Separator | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
-    
-    SplitterGadget(10, 125, 10, 250, 70, 3, 6, #PB_Splitter_Separator )
-    
-    ; first splitter
-    ButtonGadget(11, 0, 0, 0, 0, "BTN1")
-    Button_1 = SplitterGadget(#PB_Any, 125, 10, 250, 70, 10, 9, #PB_Splitter_Separator ) 
-    SetGadgetState(Button_1, 42)
-    ;Button_1 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 1")  ; as they will be sized automatically
-    
-    Button_2 = ScrollAreaGadget(#PB_Any, 0, 0, 0, 0, 150, 150) : CloseGadgetList(); No need to specify size or coordinates
-    Button_3 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100)                     ; as they will be sized automatically
-    Button_4 = ProgressBarGadget(#PB_Any, 0, 0, 0, 0, 0, 100)                     ; No need to specify size or coordinates
-    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5")                      ; as they will be sized automatically
-    
-    SetGadgetState(Button_0, 50)
-    
-    Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_Separator|#PB_Splitter_SecondFixed)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;     ;SetGadgetState(Splitter_1, 20)
-    Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5, #PB_Splitter_Separator)
-    Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
-    Splitter_4 = SplitterGadget(#PB_Any, 10, 140 + 200 + 130, 285 + 15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
-    
-    ;     SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2 - 5)
-    ;     SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2 - 5)
-    
-    SetGadgetState(Splitter_0, 26)
-    SetGadgetState(Splitter_4, 225)
-    SetGadgetState(Splitter_3, 55)
-    SetGadgetState(Splitter_2, 15)
-    
-    If OpenGadgetList(Button_2)
-      Button_4 = ScrollAreaGadget(#PB_Any, -1, -1, 50, 50, 100, 100, 1);, #__flag_nogadgets)
-                                                                       ;       Define i
-                                                                       ;       For i = 0 To 1000
-      ButtonGadget(#PB_Any, 10, 10, 50, 30,"1")
-      ;       Next
-      CloseGadgetList()
-      ButtonGadget(#PB_Any, 100, 10, 50, 30, "2")
-      CloseGadgetList()
+    If Not ID
+      ;Steps - 1
+      
+      ExamineDesktops()
+      Protected width = DesktopWidth(0)   
+      Protected height = DesktopHeight(0)
+      ID = CreateImage(#PB_Any, width, height, 32, #PB_Image_Transparent)
+      
+      If PlotColor = 0 : PlotColor = RGBA(1,1,1, 255) : EndIf
+      If BoxColor = 0 : BoxColor = RGBA(236,236,236, 255) : EndIf
+      
+      If StartDrawing(ImageOutput(ID))
+        DrawingMode(#PB_2DDrawing_AllChannels)
+        ;Box(0, 0, width, height, BoxColor)
+        
+        For x = 0 To width - 1
+          
+          For y = 0 To height - 1
+            
+            ;If x > 0 And y > 0
+            Plot(x, y, PlotColor)
+            ;EndIf
+            
+            y + Steps
+          Next
+          
+          x + Steps
+        Next
+        
+        StopDrawing()
+      EndIf
     EndIf
     
-    ;}
+    ProcedureReturn ID
+  EndProcedure
+  
+  
+  ;-
+  Macro properties_update_id(_gadget_, _value_)
+    SetItemText(_gadget_, #_pi_id,      GetItemText(_gadget_, #_pi_id)      +Chr(10)+Str(_value_))
+  EndMacro
+  
+  Macro properties_update_text(_gadget_, _value_)
+    SetItemText(_gadget_, #_pi_text,    GetItemText(_gadget_, #_pi_text)    +Chr(10)+GetText(_value_))
+  EndMacro
+  
+  Macro properties_update_class(_gadget_, _value_)
+    SetItemText(_gadget_, #_pi_class,   GetItemText(_gadget_, #_pi_class)   +Chr(10)+GetClass(_value_)+"_"+GetCount(_value_))
+  EndMacro
+  
+  Macro properties_update_hide(_gadget_, _value_)
+    SetItemText(_gadget_, #_pi_hide,    GetItemText(_gadget_, #_pi_hide)    +Chr(10)+Str(Hide(_value_)))
+  EndMacro
+  
+  Macro properties_update_disable(_gadget_, _value_)
+    SetItemText(_gadget_, #_pi_disable, GetItemText(_gadget_, #_pi_disable) +Chr(10)+Str(Disable(_value_)))
+  EndMacro
+  
+  Macro properties_update_coordinate(_gadget_, _value_)
+    SetItemText(_gadget_, #_pi_x,       GetItemText(_gadget_, #_pi_x)       +Chr(10)+Str(x(_value_, #__c_container)))
+    SetItemText(_gadget_, #_pi_y,       GetItemText(_gadget_, #_pi_y)       +Chr(10)+Str(Y(_value_, #__c_container)))
+    SetItemText(_gadget_, #_pi_width,   GetItemText(_gadget_, #_pi_width)   +Chr(10)+Str(Width(_value_)))
+    SetItemText(_gadget_, #_pi_height,  GetItemText(_gadget_, #_pi_height)  +Chr(10)+Str(Height(_value_)))
+  EndMacro
+  
+  Macro properties_update(_gadget_, _value_)
+    properties_update_id(_gadget_, _value_)
+    properties_update_class(_gadget_, _value_)
     
-    Button_0 = widget::Spin(0, 0, 0, 0, 0, 20) ; No need to specify size or coordinates
+    properties_update_text(_gadget_, _value_)
+    properties_update_coordinate(_gadget_, _value_)
     
+    properties_update_disable(_gadget_, _value_)
+    properties_update_hide(_gadget_, _value_)
+  EndMacro
+  
+  
+  ;-
+  Procedure.s FlagFromFlag( Type, flag.i ) ; 
+    Protected flags.S
     
-    Button_1 = widget::Panel(0, 0, 0, 0) 
-    AddItem(Button_1, -1, "Panel_0") 
-    Define *w2 = Panel (5, 5, 140, 166)
-    AddItem(*w2, -1, "Под -  - Панель 1")
-    SetState(Option(5, 10, 70, 20, "option_0"), 1)
-    Option(5, 32, 100, 20, "option_1")
-    SetState(CheckBox(5, 54, 100, 20, "checkbox_0", #PB_CheckBox_ThreeState), #PB_Checkbox_Inbetween)
-    Button(75, 10, 60, 20, "button")
-    HyperLink(75, 32, 60, 20, "HyperLink", $ffff0000)
+    Select type
+      Case #PB_GadgetType_Text
+        If flag & #__text_center
+          flags + "#PB_Text_Center | "
+        EndIf
+        If flag & #__text_right
+          flags + "#PB_Button_Right | "
+        EndIf
+        If flag & #__text_border
+          flags + "#PB_Text_Border | "
+        EndIf
+        
+      Case #PB_GadgetType_Button
+        If flag & #__button_left
+          flags + "#PB_Button_Left | "
+        EndIf
+        If flag & #__button_right
+          flags + "#PB_Button_Right | "
+        EndIf
+        If flag & #__button_multiline
+          flags + "#PB_Button_MultiLine | "
+        EndIf
+        If flag & #__button_toggle
+          flags + "#PB_Button_Toggle | "
+        EndIf
+        If flag & #__button_default
+          flags + "#PB_Button_Default | "
+        EndIf
+        
+      Case #PB_GadgetType_Container
+        If flag & #__flag_borderless
+          flags + "#PB_Container_BorderLess | "
+        EndIf
+        ;         If flag & #__flag_flat
+        ;           flags + "#PB_Container_Border | "
+        ;         EndIf
+        
+    EndSelect
     
-    AddItem(*w2, -1, "Под -  - Панель 2")
-    Button( 5, 5, 55, 22, "кнопка 5")
-    Button( 5, 30, 55, 22, "кнопка 30")
+    ProcedureReturn Trim(flags, "|")
+  EndProcedure
+  
+  Procedure$ add_line(*new._s_widget, Handle$) ; Ok
+    Protected ID$, Result$, param1$, param2$, param3$, Text$, flag$
     
-    AddItem(*w2, -1, "Под -  - Панель 3")
-    AddItem(*w2, -1, "Под -  - Панель 4")
+    flag$ = FlagFromFlag(*new\type, *new\_flag)
     
-    AddItem(*w2, 1, "Под -  - Панель  - 2 - ")
-    Button( 15, 5, 55, 22, "кнопка 15")
-    Button( 20, 30, 55, 22, "кнопка 20")
-    CloseList()
-    ;SetState(*w2, 2)
+    Select Asc(Handle$)
+      Case '#'        : ID$ = Handle$           : Handle$ = ""
+      Case '0' To '9' : ID$ = Chr(Asc(Handle$)) : Handle$ = ""
+      Default         : ID$ = "#PB_Any"         : Handle$ + " = "
+    EndSelect
     
-    AddItem(Button_1, -1, "Panel_1") 
-    widget::Container(20,10,200,100)
-    widget::Button(20, 5, 100, 30, text)
+    Text$ = Chr(34)+*new\text\string+Chr(34)
     
-    Define panel = widget::Panel(20,30,200,100)
-    AddItem(panel, -1, "Panel_0") 
-    widget::Button(10, 10, 100, 30, text)
-    AddItem(panel, -1, "Panel_1") 
-    widget::Button(20, 20, 100, 30, text)
-    widget::CloseList()
-    widget::CloseList()
-    
-    AddItem(Button_1, -1, "tab_2") 
-    Define *Tab = widget::Tab(0,0,0,0, 0,0,0, #__flag_autosize|#__bar_vertical); No need to specify size or coordinates
-    widget::AddItem(*Tab, -1, "Tab_0")
-    widget::AddItem(*Tab, -1, "Tab_1 (long)")
-    widget::AddItem(*Tab, -1, "Tab_2")
-    widget::AddItem(*Tab, -1, "Tab_3 (long)")
-    widget::AddItem(*Tab, -1, "Tab_4")
-    widget::AddItem(*Tab, -1, "Tab_5 (long)")
-    widget::AddItem(*Tab, -1, "Tab_6")
-    widget::AddItem(*Tab, -1, "Tab_7 (long)")
-    widget::AddItem(*Tab, -1, "Tab_8")
-    SetState(*Tab, 7)
-    
-    
-    AddItem(Button_1, -1, "editor_3") 
-    Define *Editor = widget::Editor(0, 0, 0, 0, #__flag_autosize) 
-    SetText(*Editor, get_text(#LF$))
-    
-    AddItem(Button_1, -1, "tree_4") 
-    Define *Tree = widget::Tree(0, 0, 0, 0, #__flag_autosize) 
-    widget::AddItem(*Tree, -1, "index_0_level_0")
-    widget::AddItem(*Tree, -1, "index_1_sublevel_1", -1, 1)
-    widget::AddItem(*Tree, -1, "index_2_sublevel_2", -1, 2)
-    widget::AddItem(*Tree, -1, "index_3_level_0")
-    widget::AddItem(*Tree, -1, "index_4_sublevel_1", -1, 1)
-    widget::AddItem(*Tree, -1, "index_5_sublevel_2", -1, 2)
-    widget::AddItem(*Tree, -1, "Form_0")
-    widget::AddItem(*Tree, -1, "Form_0")
-    widget::AddItem(*Tree, -1, "Form_0")
-    widget::AddItem(*Tree, -1, "Form_0")
-    widget::AddItem(*Tree, -1, "Form_0")
-    ;SetItemColor(*Tree,  #PB_All, #__color_line,  $FF00f000)
-    
-    AddItem(Button_1, -1, "window_5") 
-    Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#__Window_titleBar|#__Window_SizeGadget|#__Window_MaximizeGadget|#__Window_MinimizeGadget, Button_1) 
-    widget::Container(10,10,100,100)
-    widget::Container(10,10,100,100)
-    widget::Container(10,10,100,100)
-    widget::CloseList()
-    widget::CloseList()
-    widget::CloseList()
-    widget::CloseList() ; *window
-    
-    CloseList()
-    SetState(Button_1, 4)
-    
-    ;     
-    ;     ;     Button_1 = widget::Editor(0, 0, 0, 0) : SetText(Button_1, text)
-    ;     ;     Button_1 = widget::Button(0, 0, 0, 0, text) ; No need to specify size or coordinates
-    ;     ;Button_1 = widget::Text(0, 0, 0, 0, text, #__text_border) ; No need to specify size or coordinates
-    ;     ; ;     Button_1 = widget::MDI(0, 0, 0, 0) ; No need to specify size or coordinates
-    ;     ; ;     widget::AddItem(Button_1, -1, "Form_0")
-    ;     ; ;     widget::AddItem(Button_1, -1, "Form_1")
-    ;     ; ;     widget::AddItem(Button_1, -1, "Form_2")
-    ;     
-    ;     ;     Define w_1,w_2,w_3,w_4,w_5,w_6,w_7,w_8,w_9,w_10,w_11,w_12,w_13,w_14,w_15
-    ;     ;     w_1 = widget::Button(0, 0, 0, 0, "BTN1")
-    ;     ;     w_2 = widget::Button(0, 0, 0, 0, "BTN2")
-    ;     ;     w_3 = widget::Splitter(125, 170, 250, 40, w_1, w_2, #PB_Splitter_Separator | #PB_Splitter_vertical | #PB_Splitter_FirstFixed)
-    ;     ;     
-    ;     ;     w_4 = widget::Button(0, 0, 0, 0, "BTN4")
-    ;     ;     w_5 = widget::Button(0, 0, 0, 0, "BTN5")
-    ;     ;     w_6 = widget::Splitter(125, 170, 250, 40, w_4, w_5, #PB_Splitter_Separator | #PB_Splitter_vertical)
-    ;     ;     
-    ;     ;     w_7 = widget::Button(0, 0, 0, 0, "BTN7")
-    ;     ;     w_8 = widget::Button(0, 0, 0, 0, "BTN8")
-    ;     ;     w_9 = widget::Splitter(125, 170 + 80, 250, 40, w_7, w_8, #PB_Splitter_Separator | #PB_Splitter_vertical | #PB_Splitter_SecondFixed)
-    ;     ;     
-    ;     ;     w_10 = widget::Splitter(125, 170, 250, 70, w_3, w_6, #PB_Splitter_Separator)
-    ;     ;     
-    ;     ;     w_11 = widget::Button(0, 0, 0, 0, "BTN11")
-    ;     ;     Button_1 = widget::Splitter(125, 170, 250, 70, w_10, w_9, #PB_Splitter_Separator)
-    ;     ;     widget::SetState(Button_1, 42)
-    ;     ;     
-    ;     ;     ; ;     ;     Button_10 = widget::Scroll(0, 0, 0, 0, 0, 100, 20) ; No need to specify size or coordinates
-    ;     ;     ; ;     ;     Button_1 = widget::Splitter(0, 0, 0, 0, Button_10, Button_1, #PB_Splitter_Separator|#PB_Splitter_FirstFixed)
-    
-    Button_2 = widget::ScrollArea(0, 0, 0, 0, 150, 150, 1) : widget::CloseList()        ; as they will be sized automatically
-    Button_3 = widget::Progress(0, 0, 0, 0, 0, 100, 30)                                 ; as they will be sized automatically
-    
-    Button_4 = widget::Spin(0, 0, 0, 0, 50,100, #__bar_vertical) ; as they will be sized automatically
-    Button_5 = widget::Tab(0, 0, 0, 0, 0, 0, 0)                  ; No need to specify size or coordinates
-    widget::AddItem(Button_5, -1, "Tab_0")
-    widget::AddItem(Button_5, -1, "Tab_1 (long)")
-    widget::AddItem(Button_5, -1, "Tab_2")
-    
-    widget::SetState(Button_0, 50)
-    
-    Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed);|#PB_Splitter_Separator)
-    Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed);|#PB_Splitter_Separator)
-    widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 20)
-    widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 20)
-    ;widget::SetState(Splitter_1, 410/2 - 20)
-    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, Button_5);, #PB_Splitter_Separator)
-    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_2, Splitter_2);, #PB_Splitter_Separator)
-    Splitter_4 = widget::Splitter(300 + 10 + 15, 140 + 200 + 130, 285 + 15, 140, Splitter_0, Splitter_3, #PB_Splitter_Vertical);|#PB_Splitter_Separator)
-    
-    ; widget::SetState(Button_2, 5)
-    widget::SetState(Splitter_0, 26)
-    widget::SetState(Splitter_4, 220)
-    widget::SetState(Splitter_3, 55)
-    widget::SetState(Splitter_2, 15)
-    
-    If Button_2 And widget::OpenList(Button_2)
-      Button_4 = widget::ScrollArea( -1, -1, 50, 50, 100, 100, 1);, #__flag_nogadgets)
-                                                                 ;       Define i
-                                                                 ;       For i = 0 To 1000
-      widget::Progress(10, 10, 50, 30, 1, 100, 30)
-      ;       Next
-      widget::CloseList()
-      widget::Progress(100, 10, 50, 30, 2, 100, 30)
-      widget::CloseList()
+    If *new\class = "Window"
+      Result$ = Handle$ +"Window("+ *new\x +", "+ *new\y +", "+ *new\width +", "+ *new\height
+    Else
+      ; type_$ = "Gadget("+ID$+", "
+      Result$ = Handle$ + *new\class +"("+ *new\x +", "+ *new\y +", "+ *new\width +", "+ *new\height
     EndIf
     
-    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-  EndIf
+    Select *new\class
+      Case "Window" : Result$ +", "+ Text$                                                                          
+        If param1$ : Result$ +", "+ param1$ : EndIf 
+        
+      Case "ScrollArea"    : Result$ +", "+ param1$ +", "+ param2$    
+        If param3$ : Result$ +", "+ param3$ : EndIf 
+        
+      Case "Calendar"      
+        If param1$ : Result$ +", "+ param1$ : EndIf 
+        If param1$ : Result$ +", "+ param1$ : EndIf 
+        
+      Case "Button"        : Result$ +", "+ Text$                                                                               
+      Case "String"        : Result$ +", "+ Text$                                                                               
+      Case "Text"          : Result$ +", "+ Text$                                                                                 
+      Case "CheckBox"      : Result$ +", "+ Text$                                                                             
+      Case "Option"        : Result$ +", "+ Text$
+      Case "Frame"         : Result$ +", "+ Text$                                                                                
+      Case "Web"           : Result$ +", "+ Text$
+      Case "Date"          : Result$ +", "+ Text$              
+      Case "ExplorerList"  : Result$ +", "+ Text$                                                                         
+      Case "ExplorerTree"  : Result$ +", "+ Text$                                                                         
+      Case "ExplorerCombo" : Result$ +", "+ Text$                                                                        
+        
+      Case "HyperLink"     : Result$ +", "+ Text$ +", "+ param1$                                                       
+      Case "ListIcon"      : Result$ +", "+ Text$ +", "+ param1$                                                        
+        
+      Case "Image"         : Result$ +", "+ param1$   
+      Case "Scintilla"     : Result$ +", "+ param1$
+      Case "Shortcut"      : Result$ +", "+ param1$
+      Case "ButtonImage"   : Result$ +", "+ param1$                                                                                             
+        
+      Case "TrackBar"      : Result$ +", "+ param1$ +", "+ param2$                                                                         
+      Case "Spin"          : Result$ +", "+ param1$ +", "+ param2$                                                                             
+      Case "Splitter"      : Result$ +", "+ param1$ +", "+ param2$                                                                         
+      Case "MDI"           : Result$ +", "+ param1$ +", "+ param2$                                                                              
+      Case "ProgressBar"   : Result$ +", "+ param1$ +", "+ param2$                                                                      
+      Case "ScrollBar"     : Result$ +", "+ param1$ +", "+ param2$ +", "+ param3$                                                 
+    EndSelect
+    
+    If flag$ : Result$ +", "+ flag$ : EndIf 
+    
+    Result$+")" 
+    
+    ProcedureReturn Result$
+  EndProcedure
+  
+  Procedure add_code(*new._s_widget, Class.s, Position.i, SubLevel.i)
+    Protected code.s 
+    
+    ;   code = Space((*new\level-2)*4) +
+    ;          Class +" = "+ 
+    ;          *new\class +"(" + 
+    ;          *new\x +", "+
+    ;          *new\y +", "+ 
+    ;          *new\width +", "+ 
+    ;          *new\height +", "+ 
+    ;          *new\text\string +", "+ 
+    ;          FlagFromFlag(*new\type, *new\_flag)+
+    ;          ")"
+    
+    code = Space((*new\level-2)*4) + add_line(*new._s_widget, Class.s)
+    
+    ;   ForEach widget()
+    ;     If Child(widget(), id_design_form)
+    ;       Debug widget()\class
+    ;     EndIf
+    ;   Next
+    
+    If IsGadget(listview_debug)
+      AddGadgetItem(listview_debug, Position, code)
+    Else
+      AddItem(listview_debug, Position, code)
+    EndIf
+  EndProcedure
+  
+  
+  ;-
+  Declare widget_events()
+  
+  Procedure.i widget_images(*id, Directory$)
+    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
+    
+    If FileSize(ZipFile$) < 1
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
+      CompilerElse
+        ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+      CompilerEndIf
+      If FileSize(ZipFile$) < 1
+        MessageRequester("Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+        End
+      EndIf
+    EndIf
+    ;   Directory$ = GetCurrentDirectory()+"images/" ; "";
+    ;   Protected ZipFile$ = Directory$ + "images.zip"
+    
+    
+    If FileSize(ZipFile$) > 0
+      ; UsePNGImageDecoder()
+      
+      CompilerIf #PB_Compiler_Version > 522
+        UseZipPacker()
+      CompilerEndIf
+      
+      Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+      ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
+      
+      If ZipFile  
+        If ExaminePack(ZipFile)
+          While NextPackEntry(ZipFile)
+            
+            PackEntryName.S = PackEntryName(ZipFile)
+            ImageSize = PackEntrySize(ZipFile)
+            If ImageSize
+              *Image = AllocateMemory(ImageSize)
+              UncompressPackMemory(ZipFile, *Image, ImageSize)
+              Image = CatchImage(#PB_Any, *Image, ImageSize)
+              PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
+              If PackEntryName.S="application_form" 
+                PackEntryName.S="vd_windowgadget"
+              EndIf
+              
+              PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+              
+              Select PackEntryType(ZipFile)
+                Case #PB_Packer_File
+                  If Image
+                    If FindString(Left(PackEntryName.S, 3), "vd_")
+                      PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
+                      PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
+                      
+                      Protected Left.S = UCase(Left(PackEntryName.S,1))
+                      Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
+                      PackEntryName.S = Left.S+Right.S
+                      
+                      If FindString(LCase(PackEntryName.S), "cursor")
+                        
+                        ;Debug "add cursor"
+                        AddItem(*id, 0, PackEntryName.S, Image)
+                        SetItemData(*id, 0, Image)
+                        
+                        ;                   ElseIf FindString(LCase(PackEntryName.S), "window")
+                        ;                     
+                        ;                     Debug "add window"
+                        ;                     AddItem(*id, 1, PackEntryName.S, Image)
+                        ;                     SetItemData(*id, 1, Image)
+                        
+                        ;ElseIf FindString(LCase(PackEntryName.S), "buttonimage")
+                      ElseIf FindString(LCase(PackEntryName.S), "window")
+                        AddItem(*id, -1, PackEntryName.S, Image)
+                        SetItemData(*id, CountItems(*id)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "image")
+                        AddItem(*id, -1, PackEntryName.S, Image)
+                        SetItemData(*id, CountItems(*id)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "button")
+                        AddItem(*id, -1, PackEntryName.S, Image)
+                        SetItemData(*id, CountItems(*id)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "string")
+                        AddItem(*id, -1, PackEntryName.S, Image)
+                        SetItemData(*id, CountItems(*id)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "text")
+                        AddItem(*id, -1, PackEntryName.S, Image)
+                        SetItemData(*id, CountItems(*id)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "container")
+                        AddItem(*id, -1, PackEntryName.S, Image)
+                        SetItemData(*id, CountItems(*id)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "scrollarea")
+                        AddItem(*id, -1, PackEntryName.S, Image)
+                        SetItemData(*id, CountItems(*id)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "splitter")
+                        AddItem(*id, -1, PackEntryName.S, Image)
+                        SetItemData(*id, CountItems(*id)-1, Image)
+                      ElseIf FindString(LCase(PackEntryName.S), "panel")
+                        AddItem(*id, -1, PackEntryName.S, Image)
+                        SetItemData(*id, CountItems(*id)-1, Image)
+                      EndIf
+                    EndIf
+                  EndIf    
+              EndSelect
+              
+              FreeMemory(*Image)
+            EndIf
+          Wend  
+        EndIf
+        
+        ; select cursor
+        SetState(*id, 0)
+        ClosePack(ZipFile)
+      EndIf
+    EndIf
+  EndProcedure
+  
+  Procedure widget_add(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.l=0)
+    Protected *new._s_widget, *param1, *param2, *param3
+    Protected flag.i
+    
+    If *parent 
+      If Not *parent\transform
+        a_add(*parent)
+      EndIf
+      
+      If Mouse()\grid
+        x = (x/Mouse()\grid) * Mouse()\grid
+        y = (y/Mouse()\grid) * Mouse()\grid
+        width = (width/Mouse()\grid) * Mouse()\grid + 1
+        height = (height/Mouse()\grid) * Mouse()\grid + 1
+      EndIf
+      
+      class.s = LCase(Trim(class))
+      OpenList(*parent, GetState(*parent)) 
+      
+      ; create elements
+      Select class
+        Case "window"    
+          If GetType(*parent) = #PB_GadgetType_MDI
+            *new = AddItem(*parent, #PB_Any, "", - 1, flag)
+            Resize(*new, #PB_Ignore, #PB_Ignore, width,height)
+          Else
+            *new = Window(x,y,width,height, "", flag, *parent)
+          EndIf
+          
+          SetColor(*new, #__color_back, $FFECECEC)
+          Bind(*new, @widget_events())
+          
+        Case "container"   : *new = Container(x,y,width,height, flag)                             : CloseList()
+          SetColor(*new, #__color_back, $FFF1F1F1)
+        Case "panel"       : *new = Panel(x,y,width,height, flag) : AddItem(*new, -1, class+"_0") : CloseList()
+        Case "scrollarea"  : *new = ScrollArea(x,y,width,height, *param1, *param2, *param3, flag) : CloseList()
+        Case "splitter"    : *new = Splitter(x,y,width,height, *param1, *param2, flag)
+          
+        Case "image"       : *new = Image(x,y,width,height, img, flag)
+        Case "buttonimage" : *new = ButtonImage(x,y,width,height, img, flag)
+          
+        Case "button"      : *new = Button(x,y,width,height, "", flag) 
+        Case "string"      : *new = String(x,y,width,height, "", flag)
+        Case "text"        : *new = Text(x,y,width,height, "", flag)
+      EndSelect
+      
+      If *new
+        If *new\container =- 1
+          SetImage(*new, CatchImage(#PB_Any,?group_bottom))
+          SetBackgroundImage(*new, Points(Mouse()\grid-1))
+        EndIf
+        
+        Class.s = GetClass(*new)+"_"+GetCount(*new)
+        ;;widget_add(id_inspector_tree, *new, Class.s)
+        
+        Protected img =- 1
+        Protected i, sublevel, position = GetData(*parent) 
+        Protected countitems = CountItems(id_inspector_tree)
+        
+        ; get childrens position and sublevel
+        For i = 0 To countitems - 1
+          If *parent = GetItemData(id_inspector_tree, i)
+            sublevel = GetItemAttribute(id_inspector_tree, i, #PB_Tree_SubLevel) + 1
+            position = (i+1)
+          EndIf
+          
+          If sublevel <= GetItemAttribute(id_inspector_tree, i, #PB_Tree_SubLevel)
+            position = (i+1)
+          EndIf
+        Next 
+        
+        ; Debug ""+position +" "+ countitems
+        ; set new widget data
+        SetData(*new, position)
+        SetText(*new, class)
+        
+        ; update new widget data item
+        If countitems > position
+          For i = position To countitems - 1
+           ; Debug ""+*new +" "+ GetItemData(id_inspector_tree, i)
+            SetData( GetItemData(id_inspector_tree, i), i + 1)
+          Next 
+          
+         ; position = GetData(*new)
+        EndIf
+         
+        ; img = GetItemData(id_elements_tree, Transform()\type)
+        countitems = CountItems(id_elements_tree)
+        
+        For i = 0 To countitems - 1
+          If StringField(Class, 1, "_") = GetItemText(id_elements_tree, i)
+            img = GetItemData(id_elements_tree, i)
+            Break
+          EndIf
+        Next  
+        
+        ; add to inspector
+        AddItem(id_inspector_tree, position, class.s, img, sublevel)
+        SetItemData(id_inspector_tree, position, *new)
+        ; SetItemState(id_inspector_tree, position, #PB_Tree_Selected)
+        SetState(id_inspector_tree, position)
+        
+        If IsGadget(id_design_code)
+          AddGadgetItem(id_design_code, position, Class.s, 0, SubLevel)
+          SetGadgetItemData(id_design_code, position, *new)
+          ; SetGadgetItemState(id_design_code, position, #PB_Tree_Selected)
+          SetGadgetState(id_design_code, position) ; Bug
+        EndIf
+        
+        ; Debug  " pos "+position + "   (debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ))"
+        add_code(*new, class, position, sublevel)
+    
+      EndIf
+      
+      CloseList() 
+    EndIf
+    
+    ProcedureReturn *new
+  EndProcedure
+  
+  Procedure widget_events()
+    Protected e_type = this()\event
+    Protected e_widget = this()\widget
+    
+    If this()\widget\container
+      Select e_type 
+        Case #PB_EventType_LeftButtonUp
+          
+          If Transform()\widget\transform <> 1
+            SetState(id_inspector_tree, -1)
+            If IsGadget(id_design_code)
+              SetGadgetState(id_design_code, -1)
+            EndIf
+            
+            ForEach Transform()\group()
+              SetItemState(id_inspector_tree, GetData(Transform()\group()\widget), #PB_Tree_Selected)
+              If IsGadget(id_design_code)
+                SetGadgetItemState(id_design_code, GetData(Transform()\group()\widget), #PB_Tree_Selected)
+              EndIf
+            Next
+          EndIf
+          
+        Case #PB_EventType_LeftButtonDown
+          If Transform()\type > 0 Or group_select
+            ;Transform()\grab = 1
+            If group_select 
+              group_drag = e_widget
+            EndIf
+          EndIf
+          
+          ;           If Transform()\widget\transform <> 1
+          ;             ForEach Transform()\group()
+          ;               SetItemState(id_inspector_tree, GetData(Transform()\group()\widget), 0)
+          ;             Next
+          ;           EndIf
+          
+          
+        Case #PB_EventType_MouseEnter
+          If Transform()\type > 0
+            SetCursor(e_widget, #PB_Cursor_Cross)
+          EndIf
+          
+        Case #PB_EventType_MouseLeave
+          If Transform()\type > 0 
+            If Not Pressed()
+              SetCursor(e_widget, #PB_Cursor_Default)
+            EndIf
+          EndIf
+          
+          
+      EndSelect
+    EndIf
+    
+    Select e_type 
+      Case #PB_EventType_MouseMove
+      Case #PB_EventType_LeftButtonUp
+        If Transform()\grab
+          If Transform()\type
+            
+            ; default width 
+            If Not Transform()\id[0]\width
+              Transform()\id[0]\width = 50
+              Transform()\id[0]\x = Mouse()\delta\x + Focused()\x
+            EndIf
+            
+            ; default height
+            If Not Transform()\id[0]\height
+              Transform()\id[0]\height = 50
+              Transform()\id[0]\y = Mouse()\delta\y + Focused()\y
+            EndIf
+            
+            ;
+            Transform()\id[0]\x - Focused()\x[#__c_inner]
+            Transform()\id[0]\y - Focused()\y[#__c_inner]
+            
+            widget_add(e_widget, 
+                           GetText(id_elements_tree),
+                           Transform()\id[0]\x,
+                           Transform()\id[0]\y, 
+                           Transform()\id[0]\width, 
+                           Transform()\id[0]\height)
+            
+            ; no create new 
+            SetState(id_elements_tree, 0)
+            Transform()\type = 0
+          EndIf
+          
+          Transform()\grab = 0
+        EndIf
+        
+        
+      Case #PB_EventType_StatusChange
+        SetState(id_inspector_tree, GetData(e_widget))
+        If IsGadget(id_design_code)
+          SetGadgetState(id_design_code, GetData(e_widget))
+        EndIf
+        properties_update(id_properties_tree, e_widget)
+        
+      Case #PB_EventType_Resize
+        properties_update_coordinate(id_properties_tree, e_widget)
+        
+    EndSelect
+    
+  EndProcedure
+  
+  ;-
+  Macro widget_copy()
+    ClearList(*copy())
+    
+    If Transform()\widget\transform = 1
+      AddElement(*copy()) 
+      *copy.allocate(group, ())
+      *copy()\widget = Transform()\widget
+    Else
+      ;       ForEach Transform()\group()
+      ;         AddElement(*copy()) 
+      ;         *copy.allocate(group, ())
+      ;         *copy()\widget = Transform()\group()\widget
+      ;       Next
+      
+      CopyList(Transform()\group(), *copy())
+      
+    EndIf
+    
+    Transform()\id[0]\x = Mouse()\grid
+    Transform()\id[0]\y = Mouse()\grid
+  EndMacro
+  
+  Macro widget_delete()
+    If Transform()\widget\transform = 1
+      ;  transform = Transform()\widget\parent
+      
+      RemoveItem(id_inspector_tree, GetData(Transform()\widget))
+      Free(Transform()\widget)
+    Else
+      ;  transform = Transform()\widget
+      
+      ForEach Transform()\group()
+        RemoveItem(id_inspector_tree, GetData(Transform()\group()\widget))
+        Free(Transform()\group()\widget)
+        DeleteElement(Transform()\group())
+      Next
+      
+      ClearList(Transform()\group())
+    EndIf
+    
+    ; a_set(transform)
+  EndMacro
+  
+  Macro widget_paste()
+    If ListSize(*copy())
+      ForEach *copy()
+        widget_add(*copy()\widget\parent, 
+                       *copy()\widget\class, 
+                       *copy()\widget\x[#__c_container] + (Transform()\id[0]\x),; -*copy()\widget\parent\x[#__c_inner]),
+                       *copy()\widget\y[#__c_container] + (Transform()\id[0]\y),; -*copy()\widget\parent\y[#__c_inner]), 
+                       *copy()\widget\width[#__c_frame],
+                       *copy()\widget\height[#__c_frame])
+      Next
+      
+      Transform()\id[0]\x + Mouse()\grid
+      Transform()\id[0]\y + Mouse()\grid
+      
+      ClearList(Transform()\group())
+      CopyList(*copy(), Transform()\group())
+    EndIf
+    
+    ForEach Transform()\group()
+      Debug " ggg "+Transform()\group()\widget
+    Next
+    
+    ;a_update(Transform()\widget)
+  EndMacro
+  
+  
+  
+  ;-
+  Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
+    ; #PB_ToolBar_Normal: the button will act as standard button (Default)
+    ; #PB_ToolBar_Toggle: the button will act as toggle button
+    
+    ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
+    ButtonImage(2+((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_, _mode_)
+    ;widget()\color = widget()\parent\color
+    ;widget()\text\padding\x = 0
+    widget()\class = "ToolBar"
+    widget()\data = _button_
+    ;SetData(widget(), _button_)
+    Bind(widget(), @ide_events())
+  EndMacro
+  
+  Macro Separator()
+    Text(2+widget()\x+widget()\width, 2,1,30,"")
+    Button(widget()\x+widget()\width, 2+4,1,24,"")
+    SetData(widget(), - MacroExpandedCount)
+    Text(widget()\x+widget()\width, 2,1,30,"")
+  EndMacro
+  
+  
+  ;-
+  Procedure ide_events()
+    Protected *this._s_widget
+    Protected e_type = this()\event
+    Protected e_item = this()\item
+    Protected e_widget = this()\widget
+    
+    Select e_type
+      Case #PB_EventType_StatusChange
+        SetText(id_help_text, GetItemText(e_widget, e_item))
+        
+      Case #PB_EventType_Change
+        If e_widget = id_elements_tree
+          Transform()\type = GetState(e_widget)
+        EndIf
+        
+        If e_widget = id_inspector_tree
+          *this = GetItemData(e_widget, GetState(e_widget))
+          
+          If a_set(*this)
+            a_reset()
+          EndIf
+          
+          ; SetActive(e_widget)
+        EndIf
+        
+        
+      Case #PB_EventType_MouseEnter
+        Debug "id_elements - enter"
+        ;       If Transform()\type > 0 
+        ;         SetCursor(this()\widget, #PB_Cursor_Default)
+        ;       EndIf
+        
+      Case #PB_EventType_MouseLeave
+        Debug "id_elements - leave"
+        ;       If Transform()\type > 0 
+        ;         SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
+        ;       EndIf
+        
+      Case #PB_EventType_LeftClick
+        If e_widget = id_elements_tree
+          Debug "click"
+          ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
+        EndIf
+        
+        If getclass(e_widget) = "ToolBar"
+          Protected transform, move_x, move_y, toolbarbutton = GetData(e_widget)
+          Static NewList *copy._s_group()
+          
+          
+          Select toolbarbutton
+            Case 1
+              If Getstate(e_widget)  
+                ; group
+                group_select = e_widget
+                ; SetAtributte(e_widget, #PB_Button_PressedImage)
+              Else
+                ; un group
+                group_select = 0
+              EndIf
+              
+              ForEach Transform()\group()
+                Debug Transform()\group()\widget\x
+                
+              Next
+              
+              
+            Case #_tb_widget_copy
+              widget_copy()
+              
+            Case #_tb_widget_cut
+              widget_copy()
+              widget_delete()
+              
+            Case #_tb_widget_paste
+              widget_paste()
+              
+            Case #_tb_widget_delete
+              If Transform()\widget\transform = 1
+                transform = Transform()\widget\parent
+              Else
+                transform = Transform()\widget
+              EndIf
+              
+              widget_delete()
+              
+              a_set(transform)
+              
+            Case #_tb_group_left,
+                 #_tb_group_right, 
+                 #_tb_group_top, 
+                 #_tb_group_bottom, 
+                 #_tb_group_width, 
+                 #_tb_group_height
+              
+              move_x = Transform()\id[0]\x - Transform()\widget\x[#__c_inner]
+              move_y = Transform()\id[0]\y - Transform()\widget\y[#__c_inner]
+              
+              ForEach Transform()\group()
+                Select toolbarbutton
+                  Case #_tb_group_left ; left
+                                       ;Transform()\id[0]\x = 0
+                    Transform()\id[0]\width = 0
+                    Resize(Transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                    
+                  Case #_tb_group_right ; right
+                    Transform()\id[0]\x = 0
+                    Transform()\id[0]\width = 0
+                    Resize(Transform()\group()\widget, move_x + Transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                    
+                  Case #_tb_group_top ; top
+                                      ;Transform()\id[0]\y = 0
+                    Transform()\id[0]\height = 0
+                    Resize(Transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
+                    
+                  Case #_tb_group_bottom ; bottom
+                    Transform()\id[0]\y = 0
+                    Transform()\id[0]\height = 0
+                    Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\height, #PB_Ignore, #PB_Ignore)
+                    
+                  Case #_tb_group_width ; stretch horizontal
+                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id[0]\width, #PB_Ignore)
+                    
+                  Case #_tb_group_height ; stretch vertical
+                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id[0]\height)
+                    
+                EndSelect
+              Next
+              
+              a_update(Transform()\widget)
+              
+              ;Redraw(root())
+          EndSelect
+        EndIf
+        
+    EndSelect
+  EndProcedure
+  
+  Procedure ide_open(x=100,y=100,width=800,height=600)
+    OpenWindow(#PB_Any, 0,0,332,232, "")
+    id_design_code = TreeGadget(-1,1,1,330,230) 
+    
+    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
+    Define root = widget::Open(OpenWindow(#PB_Any, x,y,width,height, "ide", flag))
+    window_ide = widget::GetWindow(root)
+    canvas_ide = widget::GetGadget(root)
+    
+    
+    toolbar_design = Container(0,0,0,0) 
+    ;ToolBar(toolbar, window, flags)
+    
+    group_select = ToolBarButton(1, - 1, #__button_Toggle)
+    SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
+    SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
+    
+    ;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
+    Separator()
+    ToolBarButton(#_tb_group_left, CatchImage(#PB_Any,?group_left))
+    ToolBarButton(#_tb_group_right, CatchImage(#PB_Any,?group_right))
+    Separator()
+    ToolBarButton(#_tb_group_top, CatchImage(#PB_Any,?group_top))
+    ToolBarButton(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
+    Separator()
+    ToolBarButton(#_tb_group_width, CatchImage(#PB_Any,?group_width))
+    ToolBarButton(#_tb_group_height, CatchImage(#PB_Any,?group_height))
+    
+    Separator()
+    ToolBarButton(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
+    ToolBarButton(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
+    ToolBarButton(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
+    ToolBarButton(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
+    Separator()
+    ToolBarButton(#_tb_align_left, CatchImage(#PB_Any,?group_left))
+    ToolBarButton(#_tb_align_top, CatchImage(#PB_Any,?group_top))
+    ToolBarButton(#_tb_align_center, CatchImage(#PB_Any,?group_width))
+    ToolBarButton(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
+    ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
+    CloseList()
+    
+    ;   id_design_panel = Panel(0,0,0,0) ; , #__bar_vertical) : OpenList(id_design_panel)
+    ;   AddItem(id_design_panel, -1, "Form")
+    ;   id_design_form = MDI(0,0,0,0, #__flag_autosize) 
+    ;   
+    ;   AddItem(id_design_panel, -1, "Code")
+    ;id_design_code = Editor(0,0,0,0) 
+    ;   CloseList()
+    
+    id_inspector_tree = Tree(0,0,0,0, #__flag_gridlines)
+    listview_debug = Editor(0,0,0,0) ; ListView(0,0,0,0) 
+    
+    id_design_form = MDI(0,0,0,0) 
+    id_design_panel = id_design_form
+    ;id_design_code = listview_debug
+    
+    id_inspector_panel = Panel(0,0,0,0)
+    
+    ; panel 1 item
+    AddItem(id_inspector_panel, -1, "elements", 0, 0) 
+    id_elements_tree = Tree(0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines)
+    
+    ; panel 2 item
+    AddItem(id_inspector_panel, -1, "properties", 0, 0)  
+    id_properties_tree = Tree_Properties(0,0,0,0, #__flag_autosize | #__flag_gridlines)
+    If id_properties_tree
+      AddItem(id_properties_tree, #_pi_group_0,  "Common")
+      AddItem(id_properties_tree, #_pi_id,       "ID"      , #PB_GadgetType_String, 1)
+      AddItem(id_properties_tree, #_pi_class,    "Class"   , #PB_GadgetType_String, 1)
+      AddItem(id_properties_tree, #_pi_text,     "Text"    , #PB_GadgetType_String, 1)
+      
+      AddItem(id_properties_tree, #_pi_group_1,  "Layout")
+      AddItem(id_properties_tree, #_pi_x,        "x"       , #PB_GadgetType_Spin, 1)
+      AddItem(id_properties_tree, #_pi_y,        "Y"       , #PB_GadgetType_Spin, 1)
+      AddItem(id_properties_tree, #_pi_width,    "Width"   , #PB_GadgetType_Spin, 1)
+      AddItem(id_properties_tree, #_pi_height,   "Height"  , #PB_GadgetType_Spin, 1)
+      
+      AddItem(id_properties_tree, #_pi_group_2,  "State")
+      AddItem(id_properties_tree, #_pi_disable,  "Disable" , #PB_GadgetType_ComboBox, 1)
+      AddItem(id_properties_tree, #_pi_hide,     "Hide"    , #PB_GadgetType_ComboBox, 1)
+    EndIf
+    
+    ; panel 3 item
+    AddItem(id_inspector_panel, -1, "events", 0, 0)  
+    id_events_tree = Tree_Properties(0,0,0,0, #__flag_autosize) 
+    AddItem(id_events_tree, #_ei_leftclick,  "LeftClick")
+    AddItem(id_events_tree, #_ei_change,  "Change")
+    AddItem(id_events_tree, #_ei_enter,  "Enter")
+    AddItem(id_events_tree, #_ei_leave,  "Leave")
+    
+    ; panel closes
+    CloseList()
+    
+    id_help_text  = Text(0,0,0,0, "help for the inspector", #__text_border)
+    
+    
+    Splitter_design = widget::Splitter(0,0,0,0, toolbar_design,id_design_panel, #PB_Splitter_FirstFixed | #PB_Splitter_Separator)
+    Splitter_inspector = widget::Splitter(0,0,0,0, id_inspector_tree,id_inspector_panel, #PB_Splitter_FirstFixed)
+    splitter_debug = widget::Splitter(0,0,0,0, Splitter_design,listview_debug, #PB_Splitter_SecondFixed)
+    splitter_help = widget::Splitter(0,0,0,0, Splitter_inspector,id_help_text, #PB_Splitter_SecondFixed)
+    Splitter_ide = widget::Splitter(0,0,0,0, splitter_debug,splitter_help, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+    
+    ; set splitters default minimum size
+    widget::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
+    widget::SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
+    widget::SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
+    widget::SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
+    widget::SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
+    widget::SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
+    ; widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
+    
+    ; set splitters dafault positions
+    widget::SetState(Splitter_ide, widget::width(Splitter_ide)-220)
+    widget::SetState(splitter_help, widget::height(splitter_help)-80)
+    widget::SetState(splitter_debug, widget::height(splitter_debug)-150)
+    widget::SetState(Splitter_inspector, 150)
+    widget::SetState(Splitter_design, 30)
+    
+    
+    Bind(id_inspector_tree, @ide_events())
+    
+    ;Bind(id_elements_tree, @ide_events())
+    Bind(id_elements_tree, @ide_events(), #PB_EventType_LeftClick)
+    Bind(id_elements_tree, @ide_events(), #PB_EventType_Change)
+    Bind(id_elements_tree, @ide_events(), #PB_EventType_StatusChange)
+    
+    Bind(id_elements_tree, @ide_events(), #PB_EventType_MouseEnter)
+    Bind(id_elements_tree, @ide_events(), #PB_EventType_MouseLeave)
+    ProcedureReturn window_ide
+  EndProcedure
+  
+  ;-
+  CompilerIf #PB_Compiler_IsMainFile 
+    Define event
+    ide_open()
+    
+    widget_images(id_elements_tree, GetCurrentDirectory()+"Themes/")
+    
+;       ; example 1
+;       ;   ;OpenList(id_design_form)
+;       Define *window = widget_add(id_design_form, "window", 10, 10, 350, 200)
+;       Define *container = widget_add(*window, "container", 130, 20, 220, 140)
+;       widget_add(*container, "button", 10, 20, 30, 30)
+;       widget_add(*window, "button", 10, 20, 100, 30)
+;       
+;       Define item = 1
+;       SetState(id_inspector_tree, item)
+;       If IsGadget(id_design_code)
+;         SetGadgetState(id_design_code, item)
+;       EndIf
+;       Define *container2 = widget_add(*container, "container", 60, 10, 220, 140)
+;       widget_add(*container2, "button", 10, 20, 30, 30)
+;       
+;       SetState(id_inspector_tree, 0)
+;       widget_add(*window, "button", 10, 130, 100, 30)
+;       
+;       ;   Define *window = widget_add(id_design_form, "window", 10, 10)
+;       ;   Define *container = widget_add(*window, "container", 80, 10)
+;       ;   widget_add(*container, "button", -10, 20)
+;       ;   widget_add(*window, "button", 10, 20)
+;       ;   ;CloseList()
+    
+    ; example 2
+    ;   ;OpenList(id_design_form)
+    SetState(group_select, 1) 
+    
+    Define *window = widget_add(id_design_form, "window", 30, 30, 400, 250)
+    widget_add(*window, "button", 15, 25, 50, 30)
+    widget_add(*window, "text", 25, 65, 50, 30)
+    widget_add(*window, "button", 35, 65+40, 50, 30)
+    widget_add(*window, "text", 45, 65+40*2, 50, 30)
+    
+    Define *container = widget_add(*window, "container", 100, 25, 265, 170)
+    widget_add(*container, "button", 15, 25, 30, 30)
+    widget_add(*container, "text", 25, 65, 50, 30)
+    widget_add(*container, "button", 35, 65+40, 80, 30)
+    widget_add(*container, "text", 45, 65+40*2, 50, 30)
+    
+    Define *container2 = widget_add(*window, "container", 100+140, 25+45, 165, 140)
+    widget_add(*container2, "button", 75, 25, 30, 30)
+    widget_add(*container2, "text", 25, 65, 50, 30)
+    widget_add(*container2, "button", 15, 65+40, 80, 30)
+    widget_add(*container2, "text", 45, 65+40*2, 50, 30)
+    
+    Repeat 
+      event = WaitWindowEvent() 
+      
+      ;     Select EventWindow()
+      ;       Case window_ide 
+      ;         ide_window_events(event)
+      ;     EndSelect
+      
+    Until event = #PB_Event_CloseWindow
+  CompilerEndIf
+  
+  
+  DataSection   
+    ; include images
+    IncludePath #path + "ide/include/images"
+    
+    widget_delete:    : IncludeBinary "delete1.png"
+    widget_paste:     : IncludeBinary "paste.png"
+    widget_copy:      : IncludeBinary "copy.png"
+    widget_cut:       : IncludeBinary "cut.png"
+    
+    group:            : IncludeBinary "group/group.png"
+    group_un:         : IncludeBinary "group/group_un.png"
+    group_top:        : IncludeBinary "group/group_top.png"
+    group_left:       : IncludeBinary "group/group_left.png"
+    group_right:      : IncludeBinary "group/group_right.png"
+    group_bottom:     : IncludeBinary "group/group_bottom.png"
+    group_width:      : IncludeBinary "group/group_width.png"
+    group_height:     : IncludeBinary "group/group_height.png"
+  EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------9-f-----4----------------------0-------------------------------------------------------------------------------------------------------------------------------------------------8---------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------u--------------------------------
 ; EnableXP

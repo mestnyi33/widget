@@ -3,7 +3,7 @@
 XIncludeFile "../../widgets.pbi" 
 Uselib(widget)
 
-Define editable = #__flag_anchorsgadget
+Define editable = 0;#__flag_anchorsgadget  ; #__flag_flat ; 
 
 Procedure events_widgets()
   Protected repaint
@@ -20,6 +20,9 @@ EndProcedure
 
 If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
                    #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If editable = #__flag_anchorsgadget
+    a_add(root())
+  EndIf
   
   SetData(Container(20, 20, 180, 180, editable), 1)
   SetData(Container(70, 10, 70, 180, #__Flag_NoGadgets|editable), 2) 
@@ -51,10 +54,21 @@ If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
   CloseList()
   
   
-  Bind(#PB_All, @events_widgets())
-  
+  If editable = #__flag_anchorsgadget
+    Bind(#PB_All, @events_widgets())
+  Else
+;     ; TODO
+;     Bind(#PB_All, @events_widgets(), #PB_EventType_MouseEnter)
+;     Bind(#PB_All, @events_widgets(), #PB_EventType_MouseLeave)
+      
+    ForEach widget()
+      Bind(widget(), @events_widgets(), #PB_EventType_MouseEnter)
+      Bind(widget(), @events_widgets(), #PB_EventType_MouseLeave)
+    Next
+  EndIf
+
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -
+; Folding = --
 ; EnableXP

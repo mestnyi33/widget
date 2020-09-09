@@ -90,6 +90,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 180+180, "ListViewGadget", #PB_Wi
     
     BindGadgetEvent(id, @events_gadgets())
     EnableGadgetDrop(id, #PB_Drop_Text, #PB_Drag_Copy)
+    For i=0 To CountGadgetItems(ID) : SetGadgetItemState(ID, i, #PB_Tree_Expanded) : Next
   Next
   
   BindEvent(#PB_Event_GadgetDrop, @events_gadgets())
@@ -119,8 +120,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 270+270+270, 180+180, "ListViewGadget", #PB_Wi
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.71 LTS (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 18
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

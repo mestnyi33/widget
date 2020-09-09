@@ -31,7 +31,7 @@ Define vert=100, horiz=100, width=400, height=400
   Procedure events_widgets()
     Static text.s
     
-    If this()\widget\mode\transform
+    If this()\widget\transform
         
           Select this()\event
             Case #PB_EventType_LeftButtonDown

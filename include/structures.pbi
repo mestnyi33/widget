@@ -120,6 +120,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       caret._s_caret
       syntax._s_syntax
       
+      ; short._s_text ; сокращенный текст
+      
       rotate.f
       align._s_align
       padding._s_point
@@ -451,7 +453,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       ; list view
       drag.b
-      scrolled.b
+      *scrolled
       sublevel.l
       sublevellen.l
       
