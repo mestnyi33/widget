@@ -248,13 +248,20 @@ CompilerIf Not Defined(structures, #PB_Module)
       color._s_color[4]
     EndStructure
     
+    ; multi group
     Structure _s_group
       *widget._s_widget
       x.l
       y.l
       width.l
       height.l
-      
+    EndStructure
+    
+    Structure _s_grid
+      *widget
+      *image
+      size.l
+      type.l
     EndStructure
     
     ;- - _s_transforms
@@ -266,24 +273,21 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       color._s_color
       
-      ; *container
       List *group._s_group()
+      *widget._s_widget
       
       *type
       *main._s_widget
-      *widget._s_widget
       
       *grab ; grab image handle
+      
       pos.l
       size.l
       index.l
-                   
-      ;dot.b
-      ;dashdot.b
-       ;            multi.b
       
-      dotted._s_dotted
       ;;text._s_text
+      grid._s_grid
+      dotted._s_dotted
       id._s_transforms[#__count_anchors_]
     EndStructure
     
@@ -671,5 +675,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------6-
+; Folding = ------z-
 ; EnableXP

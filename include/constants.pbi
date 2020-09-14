@@ -21,8 +21,12 @@
     #debug_multiline = 0
     #debug_repaint = 0 ; Debug " - -  Canvas repaint - -  "
     
-    #__border_size = 4  
-    #__caption_height = 21
+    ; demo 
+    #__grid_type = 0
+    #__grid_size = 8 : #__a_size = 13 : #__border_size = 4 : #__caption_height = 24 ; -#__border_size
+    
+;     #__border_size = 4  
+;     #__caption_height = 21
     
     #__from_mouse_state = 0
     
@@ -48,6 +52,9 @@
     ; splitter 
     #__split_1 = 1
     #__split_2 = 2
+    
+    #__b_split_1 = 1
+    #__b_split_2 = 2
     
     ; panel
     #__panel_1 = 1
@@ -219,8 +226,9 @@
 ;       #__flag_single
       
       
-      #__flag_anchorsgadget
       #__flag_transparent
+      #__mdi_editable
+      #__flag_anchorsGadget
       #__flag_limit
     EndEnumeration
     

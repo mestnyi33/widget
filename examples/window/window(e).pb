@@ -27,24 +27,24 @@ CompilerIf #PB_Compiler_IsMainFile
     Define._s_widget *f_0, *f_1, *f_2, *f_3, *f_4, *f_5, *f_6, *f_7, *f_8, *f_9, *f_10, *f_11, *sp_0, *sp_1, *sc_0
     
     *f_0 = window(10, 10, 180,  120, "form_0", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    button(10, -10, 80, 40, "Butt_0", #__flag_anchorsgadget)
+    button(10, -10, 80, 40, "Butt_0")
     ;*f_0\fs = 10
     
     ; set_border_size()
     *f_0\bs = 10
     Resize(*f_0, 0, 0, #PB_Ignore, #PB_Ignore)
     
-    button(10, 40, 80, 40, "Butt_0", #__flag_anchorsgadget)
+    button(10, 40, 80, 40, "Butt_0")
     closelist()
     
     *f_1 = window(10, 10, 180,  120, "form_1", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    button(10, -10, 80, 40, "Butt_1", #__flag_anchorsgadget)
+    button(10, -10, 80, 40, "Butt_1")
     closelist()
     
     *f_2 = window(10, 10, 180,  120, "form_2", #PB_Window_MinimizeGadget|#PB_Window_MaximizeGadget)
-    *f_3 = ScrollArea(10, 10, 180,  120, 250, 250, 1, #__flag_anchorsgadget)
-    ;*f_3 = window(10, 10, 180,  120, "form_3", #__flag_anchorsgadget, *f_2)
-    button(10, 0, 80, 40, "Butt_3", #__flag_anchorsgadget)
+    *f_3 = ScrollArea(10, 10, 180,  120, 250, 250, 1)
+    ;*f_3 = window(10, 10, 180,  120, "form_3", *f_2)
+    button(10, 0, 80, 40, "Butt_3")
     closelist()
     closelist()
     
@@ -78,5 +78,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +
+; Folding = -
 ; EnableXP
