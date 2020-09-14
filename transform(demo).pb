@@ -158,10 +158,10 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro Repaints()
-     ; ForEach root()
-        ;  ReDraw(Root())
-        Post(#PB_EventType_Repaint, Root()) ;This()\widget\root)
-     ; Next
+      ; ForEach root()
+      ;  ReDraw(Root())
+      Post(#PB_EventType_Repaint, Root()) ;This()\widget\root)
+                                          ; Next
     EndMacro
     
     ;-
@@ -1341,7 +1341,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro _clip_input_(_this_)
-       ClipOutput(_this_\x[#__c_clip_i], _this_\y[#__c_clip_i], _this_\width[#__c_clip_i], _this_\height[#__c_clip_i])
+      ClipOutput(_this_\x[#__c_clip_i], _this_\y[#__c_clip_i], _this_\width[#__c_clip_i], _this_\height[#__c_clip_i])
       ;  ClipPut(_this_, _this_\x[#__c_frame] + _this_\bs, _this_\y[#__c_frame] + _this_\bs + _this_\__height, _this_\width[#__c_frame] - _this_\bs*2, _this_\height[#__c_frame] - _this_\bs*2 - _this_\__height)
       ; ClipPut(_this_, _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_draw], _this_\height[#__c_draw])
       ;ClipPut(_this_, _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_inner], _this_\height[#__c_inner])
@@ -1821,7 +1821,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Transform()\grid\type = #__grid_type
           Transform()\grid\size = #__grid_size
           Transform()\grid\image = a_grid_image(#__grid_size-1, #__grid_type, $FF000000)
-
+          
           For i = 1 To #__anchors
             Transform()\id[i]\cursor = *Cursor\cursor[i]
             
@@ -2028,7 +2028,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               ForEach Transform()\group()
                 _result_ = Resize(Transform()\group()\widget, 
                                   (Transform()\id[0]\x - Transform()\widget\x[#__c_inner]) + Transform()\group()\x,
-                                   #PB_Ignore, Transform()\id[0]\width - Transform()\group()\width, #PB_Ignore)
+                                  #PB_Ignore, Transform()\id[0]\width - Transform()\group()\width, #PB_Ignore)
               Next
               
             Case 3, 6, 7 ; right
@@ -2042,7 +2042,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               ForEach Transform()\group()
                 _result_ = Resize(Transform()\group()\widget, #PB_Ignore, 
                                   (Transform()\id[0]\y - Transform()\widget\y[#__c_inner]) + Transform()\group()\y,
-                                   #PB_Ignore, Transform()\id[0]\height - Transform()\group()\height)
+                                  #PB_Ignore, Transform()\id[0]\height - Transform()\group()\height)
               Next
               
             Case 4, 8, 7 ; bottom 
@@ -2083,7 +2083,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           If Not (Transform()\index And
                   Not (Transform()\index = #__a_moved And 
                        Transform()\widget\container = 0))
-          ;If Not (Transform()\index And Not Atpoint(Transform()\id))
+            ;If Not (Transform()\index And Not Atpoint(Transform()\id))
             If a_set(*this)
               a_reset()
             EndIf
@@ -2120,12 +2120,12 @@ CompilerIf Not Defined(widget, #PB_Module)
                 EndIf
               EndIf
             Else
-;               If Transform()\group()\widget\parent
-;                 Debug  mouse_y
-;                 mouse_x + Transform()\group()\widget\parent\x[#__c_inner]
-;                 mouse_y + Transform()\group()\widget\parent\y[#__c_inner]
-;                 Debug mouse_y
-;               EndIf 
+              ;               If Transform()\group()\widget\parent
+              ;                 Debug  mouse_y
+              ;                 mouse_x + Transform()\group()\widget\parent\x[#__c_inner]
+              ;                 mouse_y + Transform()\group()\widget\parent\y[#__c_inner]
+              ;                 Debug mouse_y
+              ;               EndIf 
             EndIf
             
             ; horizontal
@@ -2214,8 +2214,8 @@ CompilerIf Not Defined(widget, #PB_Module)
               a_index(Repaint, i)
               
             ElseIf Transform()\id[Transform()\index]\color\state = #__s_2
-              mouse_x = Match(mouse_x - Mouse()\delta\x, Transform()\grid\size) +4;, (Transform()\widget\parent\width[#__c_inner] - Transform()\widget\width[#__c_frame]))
-              mouse_y = Match(mouse_y - Mouse()\delta\y, Transform()\grid\size) +4;, (Transform()\widget\parent\height[#__c_inner] - Transform()\widget\height[#__c_frame]))
+              mouse_x = Match(mouse_x - Mouse()\delta\x, Transform()\grid\size)
+              mouse_y = Match(mouse_y - Mouse()\delta\y, Transform()\grid\size)
               
               If xx <> mouse_x Or yy <> mouse_y : xx = mouse_x : yy = mouse_y
                 If Transform()\widget\transform = 1
@@ -2241,6 +2241,8 @@ CompilerIf Not Defined(widget, #PB_Module)
                   a_resize(Repaint, mouse_x,mouse_y,mw,mh)
                   
                 Else
+                  mouse_x + (#__border_size) % Transform()\grid\size
+                  mouse_y + (#__border_size + #__caption_height) % Transform()\grid\size
                   
                   ; horizontal 
                   Select Transform()\index
@@ -2353,7 +2355,7 @@ CompilerIf Not Defined(widget, #PB_Module)
               mw = Transform()\id[0]\width
               mh = Transform()\id[0]\height
             EndIf
-          
+            
             Select Keyboard()\Key[1] 
               Case #PB_Canvas_Shift
                 Select Keyboard()\Key
@@ -10801,7 +10803,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
           EndIf
         EndIf
-          
+        
         ; 
         If \bs < \fs 
           \bs = \fs 
@@ -11145,7 +11147,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           width = (width/Transform()\grid\size) * Transform()\grid\size - (#__border_size * 2)%Transform()\grid\size + 1
           height = (height/Transform()\grid\size) * Transform()\grid\size - (#__border_size*2+#__caption_height)%Transform()\grid\size + 1
         EndIf
-      
+        
         flag | #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget
         result = Window(pos_x + x, pos_y + y, Width, Height, Text, flag, *this)
         pos_y + 20 + 25
@@ -15826,292 +15828,292 @@ UsePNGImageDecoder()
 
 Define *new
 ; toolbar buttons
-  Enumeration 
-    #_tb_group_left = 3
-    #_tb_group_right
-    #_tb_group_top
-    #_tb_group_bottom
-    #_tb_group_width
-    #_tb_group_height
-    
-    #_tb_align_left
-    #_tb_align_right
-    #_tb_align_top
-    #_tb_align_bottom
-    #_tb_align_center
-    
-    #_tb_widget_paste
-    #_tb_widget_delete
-    #_tb_widget_copy
-    #_tb_widget_cut
-  EndEnumeration
+Enumeration 
+  #_tb_group_left = 3
+  #_tb_group_right
+  #_tb_group_top
+  #_tb_group_bottom
+  #_tb_group_width
+  #_tb_group_height
   
-  Macro widget_copy()
-    ClearList(*copy())
-    
-    If Transform()\widget\transform = 1
-      AddElement(*copy()) 
-      *copy.allocate(group, ())
-      *copy()\widget = Transform()\widget
-    Else
-      ;       ForEach Transform()\group()
-      ;         AddElement(*copy()) 
-      ;         *copy.allocate(group, ())
-      ;         *copy()\widget = Transform()\group()\widget
-      ;       Next
-      
-      CopyList(Transform()\group(), *copy())
-      
-    EndIf
-    
-    Transform()\id[0]\x = Mouse()\grid
-    Transform()\id[0]\y = Mouse()\grid
-  EndMacro
+  #_tb_align_left
+  #_tb_align_right
+  #_tb_align_top
+  #_tb_align_bottom
+  #_tb_align_center
   
-  Macro widget_delete()
-    If Transform()\widget\transform = 1
-      ;  transform = Transform()\widget\parent
-      
-      RemoveItem(id_inspector_tree, GetData(Transform()\widget))
-      Free(Transform()\widget)
-    Else
-      ;  transform = Transform()\widget
-      
-      ForEach Transform()\group()
-        RemoveItem(id_inspector_tree, GetData(Transform()\group()\widget))
-        Free(Transform()\group()\widget)
-        DeleteElement(Transform()\group())
-      Next
-      
-      ClearList(Transform()\group())
-    EndIf
-    
-    ; a_set(transform)
-  EndMacro
+  #_tb_widget_paste
+  #_tb_widget_delete
+  #_tb_widget_copy
+  #_tb_widget_cut
+EndEnumeration
+
+Macro widget_copy()
+  ClearList(*copy())
   
-  Macro widget_paste()
-    If ListSize(*copy())
-      ForEach *copy()
-;         widget_add(*copy()\widget\parent, 
-;                        *copy()\widget\class, 
-;                        *copy()\widget\x[#__c_container] + (Transform()\id[0]\x),; -*copy()\widget\parent\x[#__c_inner]),
-;                        *copy()\widget\y[#__c_container] + (Transform()\id[0]\y),; -*copy()\widget\parent\y[#__c_inner]), 
-;                        *copy()\widget\width[#__c_frame],
-;                        *copy()\widget\height[#__c_frame])
-      Next
-      
-      Transform()\id[0]\x + Mouse()\grid
-      Transform()\id[0]\y + Mouse()\grid
-      
-      ClearList(Transform()\group())
-      CopyList(*copy(), Transform()\group())
-    EndIf
+  If Transform()\widget\transform = 1
+    AddElement(*copy()) 
+    *copy.allocate(group, ())
+    *copy()\widget = Transform()\widget
+  Else
+    ;       ForEach Transform()\group()
+    ;         AddElement(*copy()) 
+    ;         *copy.allocate(group, ())
+    ;         *copy()\widget = Transform()\group()\widget
+    ;       Next
+    
+    CopyList(Transform()\group(), *copy())
+    
+  EndIf
+  
+  Transform()\id[0]\x = Mouse()\grid
+  Transform()\id[0]\y = Mouse()\grid
+EndMacro
+
+Macro widget_delete()
+  If Transform()\widget\transform = 1
+    ;  transform = Transform()\widget\parent
+    
+    RemoveItem(id_inspector_tree, GetData(Transform()\widget))
+    Free(Transform()\widget)
+  Else
+    ;  transform = Transform()\widget
     
     ForEach Transform()\group()
-      Debug " ggg "+Transform()\group()\widget
+      RemoveItem(id_inspector_tree, GetData(Transform()\group()\widget))
+      Free(Transform()\group()\widget)
+      DeleteElement(Transform()\group())
     Next
     
-    ;a_update(Transform()\widget)
-  EndMacro
+    ClearList(Transform()\group())
+  EndIf
   
-  Procedure toolbar_events()
-    Protected *this._s_widget
-    Protected e_type = this()\event
-    Protected e_item = this()\item
-    Protected e_widget = this()\widget
+  ; a_set(transform)
+EndMacro
+
+Macro widget_paste()
+  If ListSize(*copy())
+    ForEach *copy()
+      ;         widget_add(*copy()\widget\parent, 
+      ;                        *copy()\widget\class, 
+      ;                        *copy()\widget\x[#__c_container] + (Transform()\id[0]\x),; -*copy()\widget\parent\x[#__c_inner]),
+      ;                        *copy()\widget\y[#__c_container] + (Transform()\id[0]\y),; -*copy()\widget\parent\y[#__c_inner]), 
+      ;                        *copy()\widget\width[#__c_frame],
+      ;                        *copy()\widget\height[#__c_frame])
+    Next
     
-    Select e_type
-      Case #PB_EventType_LeftClick
-        If e_widget = id_elements_tree
-          Debug "click"
-          ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
-        EndIf
-        
-        If getclass(e_widget) = "ToolBar"
-          Protected transform, move_x, move_y, toolbarbutton = GetData(e_widget)
-          Static NewList *copy._s_group()
-          
-          
-          Select toolbarbutton
-            Case 1
-              If Getstate(e_widget)  
-                ; group
-                group_select = e_widget
-                ; SetAtributte(e_widget, #PB_Button_PressedImage)
-              Else
-                ; un group
-                group_select = 0
-              EndIf
-              
-              ForEach Transform()\group()
-                Debug Transform()\group()\widget\x
-                
-              Next
-              
-              
-            Case #_tb_widget_copy
-              widget_copy()
-              
-            Case #_tb_widget_cut
-              widget_copy()
-              widget_delete()
-              
-            Case #_tb_widget_paste
-              widget_paste()
-              
-            Case #_tb_widget_delete
-              If Transform()\widget\transform = 1
-                transform = Transform()\widget\parent
-              Else
-                transform = Transform()\widget
-              EndIf
-              
-              widget_delete()
-              
-              a_set(transform)
-              
-            Case #_tb_group_left,
-                 #_tb_group_right, 
-                 #_tb_group_top, 
-                 #_tb_group_bottom, 
-                 #_tb_group_width, 
-                 #_tb_group_height
-              
-              move_x = Transform()\id[0]\x - Transform()\widget\x[#__c_inner]
-              move_y = Transform()\id[0]\y - Transform()\widget\y[#__c_inner]
-              
-              ForEach Transform()\group()
-                Select toolbarbutton
-                  Case #_tb_group_left ; left
-                                       ;Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_right ; right
-                    Transform()\id[0]\x = 0
-                    Transform()\id[0]\width = 0
-                    Resize(Transform()\group()\widget, move_x + Transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_top ; top
-                                      ;Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_bottom ; bottom
-                    Transform()\id[0]\y = 0
-                    Transform()\id[0]\height = 0
-                    Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\height, #PB_Ignore, #PB_Ignore)
-                    
-                  Case #_tb_group_width ; stretch horizontal
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id[0]\width, #PB_Ignore)
-                    
-                  Case #_tb_group_height ; stretch vertical
-                    Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id[0]\height)
-                    
-                EndSelect
-              Next
-              
-              a_update(Transform()\widget)
-              
-              ;Redraw(root())
-          EndSelect
-        EndIf
-        
-    EndSelect
-  EndProcedure
-  
- Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
-    ; #PB_ToolBar_Normal: the button will act as standard button (Default)
-    ; #PB_ToolBar_Toggle: the button will act as toggle button
+    Transform()\id[0]\x + Mouse()\grid
+    Transform()\id[0]\y + Mouse()\grid
     
-    ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
-    ButtonImage(2+((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_, _mode_)
-    ;widget()\color = widget()\parent\color
-    ;widget()\text\padding\x = 0
-    widget()\class = "ToolBar"
-    widget()\data = _button_
-    ;SetData(widget(), _button_)
-    Bind(widget(), @toolbar_events())
-  EndMacro
+    ClearList(Transform()\group())
+    CopyList(*copy(), Transform()\group())
+  EndIf
   
-  Macro Separator()
-    Text(2+widget()\x+widget()\width, 2,1,30,"")
-    Button(widget()\x+widget()\width, 2+4,1,24,"")
-    SetData(widget(), - MacroExpandedCount)
-    Text(widget()\x+widget()\width, 2,1,30,"")
-  EndMacro
+  ForEach Transform()\group()
+    Debug " ggg "+Transform()\group()\widget
+  Next
   
+  ;a_update(Transform()\widget)
+EndMacro
+
+Procedure toolbar_events()
+  Protected *this._s_widget
+  Protected e_type = this()\event
+  Protected e_item = this()\item
+  Protected e_widget = this()\widget
   
+  Select e_type
+    Case #PB_EventType_LeftClick
+      If e_widget = id_elements_tree
+        Debug "click"
+        ; SetCursor(this()\widget, ImageID(GetItemData(id_elements_tree, Transform()\type)))
+      EndIf
+      
+      If getclass(e_widget) = "ToolBar"
+        Protected transform, move_x, move_y, toolbarbutton = GetData(e_widget)
+        Static NewList *copy._s_group()
+        
+        
+        Select toolbarbutton
+          Case 1
+            If Getstate(e_widget)  
+              ; group
+              group_select = e_widget
+              ; SetAtributte(e_widget, #PB_Button_PressedImage)
+            Else
+              ; un group
+              group_select = 0
+            EndIf
+            
+            ForEach Transform()\group()
+              Debug Transform()\group()\widget\x
+              
+            Next
+            
+            
+          Case #_tb_widget_copy
+            widget_copy()
+            
+          Case #_tb_widget_cut
+            widget_copy()
+            widget_delete()
+            
+          Case #_tb_widget_paste
+            widget_paste()
+            
+          Case #_tb_widget_delete
+            If Transform()\widget\transform = 1
+              transform = Transform()\widget\parent
+            Else
+              transform = Transform()\widget
+            EndIf
+            
+            widget_delete()
+            
+            a_set(transform)
+            
+          Case #_tb_group_left,
+               #_tb_group_right, 
+               #_tb_group_top, 
+               #_tb_group_bottom, 
+               #_tb_group_width, 
+               #_tb_group_height
+            
+            move_x = Transform()\id[0]\x - Transform()\widget\x[#__c_inner]
+            move_y = Transform()\id[0]\y - Transform()\widget\y[#__c_inner]
+            
+            ForEach Transform()\group()
+              Select toolbarbutton
+                Case #_tb_group_left ; left
+                                     ;Transform()\id[0]\x = 0
+                  Transform()\id[0]\width = 0
+                  Resize(Transform()\group()\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                  
+                Case #_tb_group_right ; right
+                  Transform()\id[0]\x = 0
+                  Transform()\id[0]\width = 0
+                  Resize(Transform()\group()\widget, move_x + Transform()\group()\width, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+                  
+                Case #_tb_group_top ; top
+                                    ;Transform()\id[0]\y = 0
+                  Transform()\id[0]\height = 0
+                  Resize(Transform()\group()\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore)
+                  
+                Case #_tb_group_bottom ; bottom
+                  Transform()\id[0]\y = 0
+                  Transform()\id[0]\height = 0
+                  Resize(Transform()\group()\widget, #PB_Ignore, move_y + Transform()\group()\height, #PB_Ignore, #PB_Ignore)
+                  
+                Case #_tb_group_width ; stretch horizontal
+                  Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, Transform()\id[0]\width, #PB_Ignore)
+                  
+                Case #_tb_group_height ; stretch vertical
+                  Resize(Transform()\group()\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Transform()\id[0]\height)
+                  
+              EndSelect
+            Next
+            
+            a_update(Transform()\widget)
+            
+            ;Redraw(root())
+        EndSelect
+      EndIf
+      
+  EndSelect
+EndProcedure
+
+Macro ToolBarButton(_button_, _image_, _mode_=0, _text_="")
+  ; #PB_ToolBar_Normal: the button will act as standard button (Default)
+  ; #PB_ToolBar_Toggle: the button will act as toggle button
+  
+  ;ButtonImage(2 + ((Bool(MacroExpandedCount>1) * 32) * (MacroExpandedCount-1)), 2,30,30,_image_)
+  ButtonImage(2+((widget()\x+widget()\width) * Bool(MacroExpandedCount - 1)), 2,30,30,_image_, _mode_)
+  ;widget()\color = widget()\parent\color
+  ;widget()\text\padding\x = 0
+  widget()\class = "ToolBar"
+  widget()\data = _button_
+  ;SetData(widget(), _button_)
+  Bind(widget(), @toolbar_events())
+EndMacro
+
+Macro Separator()
+  Text(2+widget()\x+widget()\width, 2,1,30,"")
+  Button(widget()\x+widget()\width, 2+4,1,24,"")
+  SetData(widget(), - MacroExpandedCount)
+  Text(widget()\x+widget()\width, 2,1,30,"")
+EndMacro
+
+
 Open(OpenWindow(#PB_Any, 150, 150, 600, 600+40, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
 toolbar_design = Container(0,0,600,40) 
 ;SetAlignment(widget(), #__align_top)
 ;ToolBar(toolbar, window, flags)
-    
-    group_select = ToolBarButton(1, - 1, #__button_Toggle)
-    SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
-    SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
-    
-    ;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
-    Separator()
-    ToolBarButton(#_tb_group_left, CatchImage(#PB_Any,?group_left))
-    ToolBarButton(#_tb_group_right, CatchImage(#PB_Any,?group_right))
-    Separator()
-    ToolBarButton(#_tb_group_top, CatchImage(#PB_Any,?group_top))
-    ToolBarButton(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
-    Separator()
-    ToolBarButton(#_tb_group_width, CatchImage(#PB_Any,?group_width))
-    ToolBarButton(#_tb_group_height, CatchImage(#PB_Any,?group_height))
-    
-    Separator()
-    ToolBarButton(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
-    ToolBarButton(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
-    ToolBarButton(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
-    ToolBarButton(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
-    Separator()
-    ToolBarButton(#_tb_align_left, CatchImage(#PB_Any,?group_left))
-    ToolBarButton(#_tb_align_top, CatchImage(#PB_Any,?group_top))
-    ToolBarButton(#_tb_align_center, CatchImage(#PB_Any,?group_width))
-    ToolBarButton(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
-    ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
-    CloseList()
-    
-    
-    Container(0,40,600,600);, #__flag_autosize) 
-    ;SetAlignment(widget(), #__align_full)
-    a_init(widget()) 
+
+group_select = ToolBarButton(1, - 1, #__button_Toggle)
+SetAttribute(widget(), #PB_Button_Image, CatchImage(#PB_Any,?group_un))
+SetAttribute(widget(), #PB_Button_PressedImage, CatchImage(#PB_Any,?group))
+
+;ToolBarButton(2, CatchImage(#PB_Any,?group_un))
+Separator()
+ToolBarButton(#_tb_group_left, CatchImage(#PB_Any,?group_left))
+ToolBarButton(#_tb_group_right, CatchImage(#PB_Any,?group_right))
+Separator()
+ToolBarButton(#_tb_group_top, CatchImage(#PB_Any,?group_top))
+ToolBarButton(#_tb_group_bottom, CatchImage(#PB_Any,?group_bottom))
+Separator()
+ToolBarButton(#_tb_group_width, CatchImage(#PB_Any,?group_width))
+ToolBarButton(#_tb_group_height, CatchImage(#PB_Any,?group_height))
+
+Separator()
+ToolBarButton(#_tb_widget_copy, CatchImage(#PB_Any,?widget_copy))
+ToolBarButton(#_tb_widget_paste, CatchImage(#PB_Any,?widget_paste))
+ToolBarButton(#_tb_widget_cut, CatchImage(#PB_Any,?widget_cut))
+ToolBarButton(#_tb_widget_delete, CatchImage(#PB_Any,?widget_delete))
+Separator()
+ToolBarButton(#_tb_align_left, CatchImage(#PB_Any,?group_left))
+ToolBarButton(#_tb_align_top, CatchImage(#PB_Any,?group_top))
+ToolBarButton(#_tb_align_center, CatchImage(#PB_Any,?group_width))
+ToolBarButton(#_tb_align_bottom, CatchImage(#PB_Any,?group_bottom))
+ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
+CloseList()
+
+
+Container(0,40,600,600);, #__flag_autosize) 
+                       ;SetAlignment(widget(), #__align_full)
+a_init(widget()) 
 
 *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
 
-; container(30,30,450-2,450-2)
-; ;ScrollArea(30,30,450-2,450-2, 0,0)
-; container(30,30,400,400)
+; ; container(30,30,450-2,450-2)
+ScrollArea(30,30,450-2,450-2, 0,0)
+container(30,30,400,400)
 Button(120,120,170,40,"button")
 Button(120,180,75,40,"button")
 Button(220,180,75,40,"button")
 Button(120,240,170,40,"button")
-; closelist()
-; closelist()
+closelist()
+closelist()
 
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 DataSection   
-    ; include images
-    IncludePath #path + "ide/include/images"
-    
-    widget_delete:    : IncludeBinary "delete1.png"
-    widget_paste:     : IncludeBinary "paste.png"
-    widget_copy:      : IncludeBinary "copy.png"
-    widget_cut:       : IncludeBinary "cut.png"
-    
-    group:            : IncludeBinary "group/group.png"
-    group_un:         : IncludeBinary "group/group_un.png"
-    group_top:        : IncludeBinary "group/group_top.png"
-    group_left:       : IncludeBinary "group/group_left.png"
-    group_right:      : IncludeBinary "group/group_right.png"
-    group_bottom:     : IncludeBinary "group/group_bottom.png"
-    group_width:      : IncludeBinary "group/group_width.png"
-    group_height:     : IncludeBinary "group/group_height.png"
-  EndDataSection
+  ; include images
+  IncludePath #path + "ide/include/images"
+  
+  widget_delete:    : IncludeBinary "delete1.png"
+  widget_paste:     : IncludeBinary "paste.png"
+  widget_copy:      : IncludeBinary "copy.png"
+  widget_cut:       : IncludeBinary "cut.png"
+  
+  group:            : IncludeBinary "group/group.png"
+  group_un:         : IncludeBinary "group/group_un.png"
+  group_top:        : IncludeBinary "group/group_top.png"
+  group_left:       : IncludeBinary "group/group_left.png"
+  group_right:      : IncludeBinary "group/group_right.png"
+  group_bottom:     : IncludeBinary "group/group_bottom.png"
+  group_width:      : IncludeBinary "group/group_width.png"
+  group_height:     : IncludeBinary "group/group_height.png"
+EndDataSection
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------P9--vv--z--v-8-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8z2----------------------------------------------------------------------------------------------------------------------0--
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
