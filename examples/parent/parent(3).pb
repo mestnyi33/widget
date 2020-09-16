@@ -3,7 +3,7 @@
 Global i, *w._s_widget, *p1,*p2._s_widget, *ch
 
 Procedure events_widgets()
-  Select *event\type
+  Select this()\event
     Case #PB_EventType_LeftClick
       If i 
         SetParent(*w, *p1)
@@ -39,18 +39,18 @@ EndProcedure
     SetParent(*w, *p2)
     *w\root = *p2\root
     
-    ForEach GetChildrens(Root())
-      If GetChildrens(Root()) = *w
-        GetChildrens(Root())\root = *p2\root
+    ForEach widget()
+      If widget() = *w
+        widget()\root = *p2\root
       EndIf
       
-      Debug  ""+GetChildrens(Root())\root +" "+ *p2\root +" - "+ GetChildrens(Root())\text\string
+      Debug  ""+widget()\root +" "+ *p2\root +" - "+ widget()\text\string
     Next
             
     Bind(#PB_All, @events_widgets())
    
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

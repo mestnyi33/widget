@@ -2115,6 +2115,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                       mouse_y + Transform()\widget\parent\y[#__c_inner]
                   EndSelect
                 Else
+                ;Debug Transform()\widget\parent\y[#__c_inner]
                   mouse_x + Transform()\widget\parent\x[#__c_inner]
                   mouse_y + Transform()\widget\parent\y[#__c_inner]
                 EndIf
@@ -4177,7 +4178,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           If *this\bar\thumb\change 
-            
+            ;- ScrollArea_Update
             If *this\parent And 
                *this\parent\scroll
               
@@ -4189,12 +4190,15 @@ CompilerIf Not Defined(widget, #PB_Module)
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
                     ChangeCurrentElement(widget(), *this\parent\adress)
+                    
                     While NextElement(widget())
                       If widget()\parent = *this\parent
                         Resize(widget(), #PB_Ignore, (widget()\y[#__c_draw] + *this\parent\y[#__c_required]) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
                       EndIf
                     Wend
-                  EndIf
+                    
+                    ; Debug "v scroll parent children end " + widget()\class
+                   EndIf
                 EndIf
               Else
                 If *this\parent\scroll\h = *this
@@ -4204,11 +4208,14 @@ CompilerIf Not Defined(widget, #PB_Module)
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
                     ChangeCurrentElement(widget(), *this\parent\adress)
+                    
                     While NextElement(widget())
                       If widget()\parent = *this\parent
                         Resize(widget(), (widget()\x[#__c_draw] + *this\parent\x[#__c_required]) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                       EndIf
                     Wend
+                    
+                    ; Debug "h scroll parent children end " + widget()\class
                   EndIf
                 EndIf
               EndIf
@@ -11140,16 +11147,16 @@ CompilerIf Not Defined(widget, #PB_Module)
         Static pos_x, pos_y
         Protected x = 10, y = 10, width.l = 280, height.l = 180
         
-        If Transform()\grid\size
-          x = (x/Transform()\grid\size) * Transform()\grid\size
-          y = (y/Transform()\grid\size) * Transform()\grid\size
-          
-          width = (width/Transform()\grid\size) * Transform()\grid\size - (#__border_size * 2)%Transform()\grid\size + 1
-          height = (height/Transform()\grid\size) * Transform()\grid\size - (#__border_size*2+#__caption_height)%Transform()\grid\size + 1
-        EndIf
+;         If Transform() And Transform()\grid\size
+;           x = (x/Transform()\grid\size) * Transform()\grid\size
+;           y = (y/Transform()\grid\size) * Transform()\grid\size
+;           
+;           width = (width/Transform()\grid\size) * Transform()\grid\size - (#__border_size * 2)%Transform()\grid\size + 1
+;           height = (height/Transform()\grid\size) * Transform()\grid\size - (#__border_size*2+#__caption_height)%Transform()\grid\size + 1
+;         EndIf
         
         flag | #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget
-        result = Window(pos_x + x, pos_y + y, Width, Height, Text, flag, *this)
+        result = Window(x + pos_x, y + pos_y, width, height, Text, flag, *this)
         pos_y + 20 + 25
         pos_x + 20
         ProcedureReturn result
@@ -12109,44 +12116,59 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
           EndIf
           
-          If Not *this\adress
-            ;           If Not *parent\last And ListIndex(widget()) > 0 ; And *parent\last\index < ListIndex(widget())
-            ;             Debug " - - - -  " + *this\class  + " " +  ListIndex(widget()) ;\index
-            ;                                                                               ;Protected *last._s_widget = GetParentLast(*parent)
-            ;             SelectElement(widget(), *parent\index + 1)
-            ;             *this\adress = InsertElement(widget())
-            ;             ; *this\adress = AddElement(widget()) 
-            ;             ; *parent\last = *this\after
-            ;             
-            ;             ;             ; Исправляем идентификатор итема  
-            ;             ;             PushListPosition(widget())
-            ;             ;             While NextElement(widget())
-            ;             ;               widget()\index = ListIndex(widget())
-            ;             ;             Wend
-            ;             ;             PopListPosition(widget())
-            ;           *this\index = *this\root\count\childrens; ListIndex(widget()) 
-            ;          Else
-            LastElement(widget())
-            *this\adress = AddElement(widget()) 
-            *this\index = ListIndex(widget()) 
-            ;           EndIf
-            widget() = *this
-            
-            ; set z - order position 
-            If Not *parent\first 
-              If Not *parent\last
-                ; Debug *this\index
-                *parent\last = *this
-              EndIf
-              ; Debug *this\index
-              *parent\first = *this
-              
-            ElseIf *parent\last
-              *this\before = *parent\last
-              *this\before\after = *this
-              
-              *parent\last = *this
-            EndIf
+           If Not *this\adress
+             
+             ; z - order position 
+             If *parent\last 
+               *this\before = *parent\last
+               *this\before\after = *this
+               
+               If *parent\last\last
+                 ; example\zorder\position(3&4)
+                 Protected *last._s_widget = *parent\last\last
+                 While *last\last 
+                   *last = *last\last 
+                 Wend
+                 ChangeCurrentElement(widget(), *last\adress)
+               Else
+                 ; example\zorder\position(1&2)
+                 ChangeCurrentElement(widget(), *parent\last\adress)
+               EndIf
+             Else
+               *parent\first = *this
+               
+               If _is_root_(*parent)
+                 LastElement(widget())
+               Else
+                 ChangeCurrentElement(widget(), *parent\adress)
+               EndIf
+             EndIf
+             *parent\last = *this
+             
+             *this\adress = AddElement(widget()) 
+             *this\index = ListIndex(widget()) 
+             widget() = *this
+          
+;             LastElement(widget())
+;             *this\adress = AddElement(widget()) 
+;             *this\index = ListIndex(widget()) 
+;             widget() = *this
+;             
+;             ; set z - order position 
+;             If Not *parent\first 
+;               If Not *parent\last
+;                 ; Debug *this\index
+;                 *parent\last = *this
+;               EndIf
+;               ; Debug *this\index
+;               *parent\first = *this
+;               
+;             ElseIf *parent\last
+;               *this\before = *parent\last
+;               *this\before\after = *this
+;               
+;               *parent\last = *this
+;             EndIf
             
             ; set transformation for the child
             If Not *this\transform And *parent\transform 
@@ -12167,6 +12189,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           If *LastParent And 
              *LastParent <> *parent
             
+            ;
             If *this\scroll
               If *this\scroll\v
                 *this\scroll\v\root = *this\root
@@ -12181,22 +12204,14 @@ CompilerIf Not Defined(widget, #PB_Module)
             x = *this\x[#__c_draw]
             y = *this\y[#__c_draw]
             
-            ; new parent
-            If *parent\scroll And 
-               *parent\scroll\v And 
-               *parent\scroll\h
-              
-              ; for the scroll area childrens
+            ; for the scrollarea container childrens
+            ; if new parent - scrollarea container
+            If *parent\scroll And *parent\scroll\v And *parent\scroll\h
               x - *parent\scroll\h\bar\page\pos
               y - *parent\scroll\v\bar\page\pos
             EndIf
-            
-            ; last parent
-            If *LastParent\scroll And 
-               *LastParent\scroll\v And 
-               *LastParent\scroll\h
-              
-              ; for the scroll area childrens
+            ; if last parent - scrollarea container
+            If *LastParent\scroll And *LastParent\scroll\v And *LastParent\scroll\h
               x + *LastParent\scroll\h\bar\page\pos
               y + *LastParent\scroll\v\bar\page\pos
             EndIf
@@ -15866,8 +15881,8 @@ Macro widget_copy()
     
   EndIf
   
-  Transform()\id[0]\x = Mouse()\grid
-  Transform()\id[0]\y = Mouse()\grid
+  Transform()\id[0]\x = Transform()\grid\size
+  Transform()\id[0]\y = Transform()\grid\size
 EndMacro
 
 Macro widget_delete()
@@ -15902,8 +15917,8 @@ Macro widget_paste()
       ;                        *copy()\widget\height[#__c_frame])
     Next
     
-    Transform()\id[0]\x + Mouse()\grid
-    Transform()\id[0]\y + Mouse()\grid
+    Transform()\id[0]\x + Transform()\grid\size
+    Transform()\id[0]\y + Transform()\grid\size
     
     ClearList(Transform()\group())
     CopyList(*copy(), Transform()\group())
@@ -16082,10 +16097,13 @@ Container(0,40,600,600);, #__flag_autosize)
                        ;SetAlignment(widget(), #__align_full)
 a_init(widget()) 
 
-*new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
+mdi(0,0,0,0, #__flag_autosize)
+additem(widget(), -1, "form_0")
+resize(widget(), 50, 30, 500, 500)
+; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
+; ; ; container(30,30,450-2,450-2)
+; ScrollArea(30,30,450-2,450-2, 0,0)
 
-; ; container(30,30,450-2,450-2)
-ScrollArea(30,30,450-2,450-2, 0,0)
 container(30,30,400,400)
 Button(120,120,170,40,"button")
 Button(120,180,75,40,"button")

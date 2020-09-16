@@ -751,7 +751,6 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     ;- 
     ;-   DECLAREs
-    ;-
     ;{
     ; Requester
     Global resize_one
@@ -804,7 +803,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.l ClearItems(*this)
     Declare   RemoveItem(*this, Item.l) 
     
-    Declare.i GetLast(*last)
+    
     Declare.l GetDeltax(*this)
     Declare.l GetDeltaY(*this)
     Declare.l GetIndex(*this)
@@ -12123,7 +12122,10 @@ CompilerIf Not Defined(widget, #PB_Module)
                
                If *parent\last\last
                  ; example\zorder\position(3&4)
-                 Protected *last._s_widget = GetLast(*parent\last\last)
+                 Protected *last._s_widget = *parent\last\last
+                 While *last\last 
+                   *last = *last\last 
+                 Wend
                  ChangeCurrentElement(widget(), *last\adress)
                Else
                  ; example\zorder\position(1&2)
@@ -12396,7 +12398,36 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       Select Position
         Case #PB_List_First 
-          result = SetPosition(*this, #PB_List_Before, *this\parent\first)
+          *first = *this\parent\first
+          
+          If *first <> *this
+            ChangeCurrentElement(widget(), *this\adress)
+            MoveElement(widget(), #PB_List_Before, *first\adress)
+            
+            While NextElement(widget()) 
+              If Child(widget(), *this)
+                MoveElement(widget(), #PB_List_Before, *first\adress)
+              EndIf
+            Wend
+            
+            If *this\parent\last = *this
+              *this\parent\last = *this\before
+            EndIf
+            
+            If *this\before
+              *this\before\after = *this\after
+            EndIf
+            
+            If *this\after
+              *this\after\before = *this\before
+            EndIf
+            
+            *this\after = *this\parent\first
+            *this\before = 0
+            
+            *this\parent\first\before = *this
+            *this\parent\first = *this
+          EndIf
           
         Case #PB_List_Before 
           If *widget_2
@@ -12414,30 +12445,21 @@ CompilerIf Not Defined(widget, #PB_Module)
                 MoveElement(widget(), #PB_List_Before, *before\adress)
               EndIf
             Wend
-                       
-            If *this\parent\last = *this
-              *this\parent\last = *this\before
+            
+            If *this\parent\last   = *this ; GetLast(*this\parent\last) 
+              *this\parent\last    = *before
             EndIf
             
             If *this\before
-              *this\before\after = *this\after
+              *this\before\after   = *this\after
             EndIf
             
-            If *this\after
-              *this\after\before = *this\before
-            EndIf
-            
-            If *widget_2
-              *this\after = *this\parent\first
-              *this\before = 0
-            Else
-              *this\after = *before
-              *this\before = *before\before 
-            EndIf
+             *this\after            = *before
+            *this\before           = *before\before 
             
             If Not *this\before
-              *this\parent\first\before = *this
               *this\parent\first = *this
+              *this\parent\first\before = 0
             EndIf
           EndIf
           
@@ -12449,46 +12471,66 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           If *after
-            *last = GetLast(*after)
+            *Last = GetLast(*after)
             
             ChangeCurrentElement(widget(), *this\adress)
-            MoveElement(widget(), #PB_List_After, *last\adress)
+            MoveElement(widget(), #PB_List_After, *Last\adress)
             
             While PreviousElement(widget()) 
               If Child(widget(), *this)
                 MoveElement(widget(), #PB_List_After, *this\adress)
               EndIf
             Wend
-           
-            ; first element in parent list
+            
             If *this\parent\first = *this
-              *this\parent\first = *this\after
+              *this\parent\first = *after
             EndIf
             
             If *this\after
               *this\after\before = *this\before
             EndIf
             
+            *this\before = *after
+            *this\after = *after\after 
+            
+            If Not *this\after
+              *this\parent\last = *this
+              *this\parent\last\after = 0
+            EndIf
+          EndIf
+          
+        Case #PB_List_Last 
+          *last = GetLast(*this\parent)
+          
+          If *Last <> *this
+            ChangeCurrentElement(widget(), *this\adress)
+            MoveElement(widget(), #PB_List_After, *Last\adress)
+            
+            While PreviousElement(widget()) 
+              If Child(widget(), *this)
+                MoveElement(widget(), #PB_List_After, *this\adress)
+              EndIf
+            Wend
+            
+            ; first element in parent list
+            If *this\parent\first = *this
+              *this\parent\first = *this\after
+            EndIf
+            
             If *this\before
               *this\before\after = *this\after
             EndIf
             
-            If *widget_2
-              *this\before = *this\parent\last
-              *this\after = 0
-            Else
-              *this\before = *after
-              *this\after = *after\after 
+            If *this\after
+              *this\after\before = *this\before
             EndIf
             
-            If Not *this\after
-              *this\parent\last\after = *this
-              *this\parent\last = *this
-            EndIf
-         EndIf
-          
-        Case #PB_List_Last 
-          result = SetPosition(*this, #PB_List_After, *this\parent\last)
+            *this\before = *this\parent\last
+            *this\after = 0
+            
+            *this\parent\last\after = *this
+            *this\parent\last = *this
+          EndIf
           
       EndSelect
       
@@ -12560,9 +12602,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           result = #True
         EndIf
         
-        If _is_window_(GetActive())
-          SetPosition(GetActive(), #PB_List_Last)
-        EndIf
+        SetPosition(GetActive(), #PB_List_Last)
       EndWith
       
       ProcedureReturn result
@@ -16890,5 +16930,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------z--------------------------------------------0-8+0-v--------------------------------------------------------------------------------------------------------------------------------------------------------44-----------------------------------8v------6X----------------------------------------------------------------------4--------------+---
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -515,6 +515,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *last._s_widget
       *after._s_widget
       *before._s_widget
+      *__last._s_widget
       
       child.b           ; is the widget composite?
       transform.b ; add anchors on the widget (to size and move)
@@ -675,5 +676,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------z-
+; Folding = -----Bz-
 ; EnableXP

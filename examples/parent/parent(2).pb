@@ -3,7 +3,7 @@
 Global i, *w, *p1,*p2, *ch, *b
 
 Procedure events_widgets()
-  Select *event\type
+  Select this()\event
     Case #PB_EventType_LeftClick
       If *b = *event\widget
         If i 
@@ -40,15 +40,15 @@ If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_Syst
   
   *b=Button(10,430, 200, 30, "change parent", #__Button_Toggle)
   
-;   ForEach GetChildrens(Root())
-;     GetChildrens(Root())\class = GetChildrens(Root())\class +"-"+ GetChildrens(Root())\index
+;   ForEach widget()
+;     widget()\class = widget()\class +"-"+ widget()\index
 ;   Next
   
   i = 1
   SetParent(*w, *p2)
   
-  ForEach GetChildrens(Root())
-    Debug  ""+ListIndex(GetChildrens(Root())) +" - "+ GetChildrens(Root())\index +" - "+ GetChildrens(Root())\class +" - "+ GetChildrens(Root())\text\string +" - "+ GetChildrens(Root())\root
+  ForEach widget()
+    Debug  ""+ListIndex(widget()) +" - "+ widget()\index +" - "+ widget()\class +" - "+ widget()\text\string +" - "+ widget()\root
   Next
   
   
@@ -56,6 +56,6 @@ If Open(OpenWindow(#PB_Any, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_Syst
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP

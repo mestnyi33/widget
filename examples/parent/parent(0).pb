@@ -3,9 +3,9 @@
 Global i, *w, *p1,*p2, *ch, *b
 
 Procedure events_widgets()
-  Select *event\type
+  Select this()\event
     Case #PB_EventType_LeftClick
-      If *b = *event\widget
+      If *b = this()\widget
         If i 
           SetParent(*w, *p2)
         Else
@@ -40,8 +40,8 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
   SetParent(*w, *p2)
   SetParent(*w, *p1)
   
-  ForEach GetChildrens(Root())
-    Debug  GetChildrens(Root())\class +" - "+ GetChildrens(Root())\text\string
+  ForEach widget()
+    Debug ""+ widget()\index +" - "+ ListIndex(widget()) +" - "+ widget()\parent\index +" - "+ widget()\class +" - "+ widget()\text\string
   Next
   
   
@@ -49,6 +49,6 @@ If Open(OpenWindow(#PB_Any, 0, 0, 222, 470, "ButtonGadgets", #PB_Window_SystemMe
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

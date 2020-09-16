@@ -159,7 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *pb_2 = Button(10,90+90,180,20,">>(Panel to hide item (2))") 
     
     
-    *window_1 = Window(202, 0, 430, 314+#__window_frame, "demo set  new parent", Flags )
+    *window_1 = Window(202, 0, 430, 314+(#__border_size + #__caption_height), "demo set  new parent", Flags )
     *w_0 = Button(pos_x,90,160,30,">>(Window)")
     
     *container = Container(215,10,200,130,#PB_Container_Flat) 
@@ -185,7 +185,7 @@ CompilerIf #PB_Compiler_IsMainFile
   X = WindowX( 10 )+5+WindowWidth( 10 )
   Y = WindowY( 10 )
   
-  OpenWindow(20, X, Y, 185, 346+#__height, "old parent", Flags, WindowID(GetWindow(GetRoot(*window_1))))
+  OpenWindow(20, X, Y, 185, 346+(#__caption_height), "old parent", Flags, WindowID(GetWindow(GetRoot(*window_1))))
   *window_2 = Open(20)
   *window_2 = Window(0,0,0,0,  "", #__flag_autosize|Flags)
   *w = Button(pos_x,10,160,70,"Button") 
@@ -247,5 +247,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = +d-
+; Folding = -d-
 ; EnableXP
