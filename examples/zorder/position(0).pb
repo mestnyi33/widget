@@ -6,9 +6,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Enumeration 
   #__position_First
+  #__position_Last
   #__position_Prev
   #__position_Next
-  #__position_Last
 EndEnumeration
 
   Global Window_1, Window_2, Window_3, Window_4, Window_3_Panel =- 1
@@ -18,7 +18,7 @@ EndEnumeration
   
   Procedure Window_First_Event()
     Select this()\event
-      Case #__event_LeftButtonDown : SetPosition(this()\event, #__position_First)
+      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #__position_First)
     EndSelect
     
     ProcedureReturn #True
@@ -26,7 +26,7 @@ EndEnumeration
   
   Procedure Window_Prev_Event()
     Select this()\event
-      Case #__event_LeftButtonDown : SetPosition(this()\event, #__position_Prev)
+      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #__position_Prev)
     EndSelect
     
     ProcedureReturn #True
@@ -34,7 +34,7 @@ EndEnumeration
   
   Procedure Window_Next_Event()
     Select this()\event
-      Case #__event_LeftButtonDown : SetPosition(this()\event, #__position_Next)
+      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #__position_Next)
     EndSelect
     
     ProcedureReturn #True
@@ -42,7 +42,7 @@ EndEnumeration
   
   Procedure Window_Last_Event()
     Select this()\event
-      Case #__event_LeftButtonDown : SetPosition(this()\event, #__position_Last)
+      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #__position_Last)
     EndSelect
     
     ProcedureReturn #True
@@ -50,7 +50,7 @@ EndEnumeration
   
   
   Procedure _events()
-    If this()\event = #__event_LeftClick
+    If this()\event = #PB_EventType_LeftClick
       Debug "e "+this()\event+" p "+GetParent(this()\event)
     EndIf
   EndProcedure
@@ -128,7 +128,6 @@ EndEnumeration
   
   WaitClose(w)
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = --
 ; EnableXP
