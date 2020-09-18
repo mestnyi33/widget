@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #return = 103
   
   Procedure   _SetPosition(*this._s_widget, position.l, *widget._s_widget = #Null) ; Ok
-    ;;ProcedureReturn SetPosition(*this, position, *widget)
+    ProcedureReturn SetPosition(*this, position, *widget)
       
     Protected Type
     Protected result
@@ -289,7 +289,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select EventGadget()
               Case #first
-               after = GetPosition(*this, #PB_List_Before)
+               before = GetPosition(*this, #PB_List_Before)
                _SetPosition(*this, #PB_List_First)
                 
               Case #before
@@ -299,15 +299,15 @@ CompilerIf #PB_Compiler_IsMainFile
                 _SetPosition(*this, #PB_List_After)
                 
               Case #last
-               before = GetPosition(*this, #PB_List_After)
+               after = GetPosition(*this, #PB_List_After)
                _SetPosition(*this, #PB_List_Last)
                 
               Case #return
                 If after
-                  _SetPosition(*this, #PB_List_After, after)
+                  _SetPosition(*this, #PB_List_Before, after)
                 EndIf
                 If before
-                  _SetPosition(*this, #PB_List_Before, before)
+                  _SetPosition(*this, #PB_List_After, before)
                 EndIf
             EndSelect
             

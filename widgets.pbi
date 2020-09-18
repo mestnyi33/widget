@@ -818,6 +818,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.l GetCount(*this, mode.b = #False)
     Declare.i GetItem(*this, parent_sublevel.l =- 1)
     
+    Declare.i GetAdress(*this)
     ; 
     Declare.i SetActive(*this)
     Macro GetActive() : this()\active : EndMacro ; Returns activeed window
@@ -1342,15 +1343,15 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro _clip_input_(_this_)
-      ClipOutput(_this_\x[#__c_clip_i], _this_\y[#__c_clip_i], _this_\width[#__c_clip_i], _this_\height[#__c_clip_i])
+     ClipOutput(_this_\x[#__c_clip_i], _this_\y[#__c_clip_i], _this_\width[#__c_clip_i], _this_\height[#__c_clip_i])
       ;  ClipPut(_this_, _this_\x[#__c_frame] + _this_\bs, _this_\y[#__c_frame] + _this_\bs + _this_\__height, _this_\width[#__c_frame] - _this_\bs*2, _this_\height[#__c_frame] - _this_\bs*2 - _this_\__height)
       ; ClipPut(_this_, _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_draw], _this_\height[#__c_draw])
       ;ClipPut(_this_, _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_inner], _this_\height[#__c_inner])
     EndMacro
     
-    Macro _clip_padding_input_(_this_)
-      ClipPut(_this_, _this_\x[#__c_inner]+_this_\text\padding\x, _this_\y[#__c_inner]+_this_\text\padding\y, _this_\width[#__c_inner]-_this_\text\padding\x*2, _this_\height[#__c_inner]-_this_\text\padding\y*2)
-    EndMacro
+;     Macro _clip_padding_input_(_this_)
+;       ClipPut(_this_, _this_\x[#__c_inner]+_this_\text\padding\x, _this_\y[#__c_inner]+_this_\text\padding\y, _this_\width[#__c_inner]-_this_\text\padding\x*2, _this_\height[#__c_inner]-_this_\text\padding\y*2)
+;     EndMacro
     
     Macro _clip_caption_(_this_)
       ClipPut(_this_, _this_\x[#__c_frame] + _this_\bs, _this_\y[#__c_frame] + _this_\fs, _this_\width[#__c_frame] - _this_\bs*2, _this_\__height - _this_\fs*2)
@@ -10123,11 +10124,11 @@ CompilerIf Not Defined(widget, #PB_Module)
         EndIf
         
         
-        _clip_padding_input_(*this)
-        
         
         If \text\string.s
-          If *this\change
+         ClipPut(*this, *this\x[#__c_inner]+*this\text\padding\x, *this\y[#__c_inner], *this\width[#__c_inner]-*this\text\padding\x*2,*this\height[#__c_inner])
+         
+         If *this\change
             Editor_Update(*this, *this\row\_s())
             
             ; update element (option&checkbox)
@@ -10160,8 +10161,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           ForEach *this\row\_s()
             DrawRotatedText(*this\x[#__c_inner] + *this\x[#__c_required] + *this\row\_s()\text\x, *this\y[#__c_inner] + *this\y[#__c_required] + *this\row\_s()\text\y, *this\row\_s()\text\String.s, *this\text\rotate, *this\color\Front[Bool(*this\_state & #__s_front) * *this\color\state]);*this\row\_s()\color\font)
           Next 
+          
+          _clip_input_(*this)
         EndIf
         ;       
+        
         
         
         
@@ -10809,6 +10813,22 @@ CompilerIf Not Defined(widget, #PB_Module)
               y - *this\parent\fs
             EndIf
           EndIf
+          
+          If width <> #PB_Ignore 
+            width = (width/Transform()\grid\size) * Transform()\grid\size + 1
+            
+            If *this\type = #__type_window
+              Width + (#__border_size * 2) % Transform()\grid\size
+            EndIf
+          EndIf
+            
+          If Height <> #PB_Ignore
+            height = (height/Transform()\grid\size) * Transform()\grid\size + 1
+            
+            If *this\type = #__type_window
+              height + (#__border_size * 2 + #__caption_height)%Transform()\grid\size
+            EndIf
+          EndIf
         EndIf
         
         ; 
@@ -10887,14 +10907,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           If width < 0 : width = 0 : EndIf
           
           If \width[#__c_frame] <> width 
-            If Transform() And Transform()\grid\size
-              width = (width/Transform()\grid\size) * Transform()\grid\size + 1
-              
-              If *this\type = #__type_window
-                Width + (#__border_size * 2) % Transform()\grid\size
-              EndIf
-            EndIf
-            
             Change_width = width - \width[#__c_frame] 
             \width[#__c_frame] = width 
             \width = \width[#__c_frame] + (\bs*2 - \fs*2)
@@ -10925,14 +10937,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           If Height < 0 : Height = 0 : EndIf
           
           If \height[#__c_frame] <> Height 
-            If Transform() And Transform()\grid\size
-              height = (height/Transform()\grid\size) * Transform()\grid\size + 1
-              
-              If *this\type = #__type_window
-                height + (#__border_size * 2 + #__caption_height)%Transform()\grid\size
-              EndIf
-            EndIf
-            
             Change_height = height - \height[#__c_frame] 
             \height[#__c_frame] = Height 
             \height = \height[#__c_frame] + (\bs*2 - \fs*2)
@@ -11364,6 +11368,10 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
       
       ProcedureReturn result
+    EndProcedure
+    
+    Procedure.i GetAdress(*this._s_widget)
+      ProcedureReturn *this\adress
     EndProcedure
     
     Procedure.l GetIndex(*this._s_widget)
@@ -12015,6 +12023,77 @@ CompilerIf Not Defined(widget, #PB_Module)
       *this\data = *data
     EndProcedure
     
+    Procedure.i SetActive(*this._s_widget)
+      Protected result.i
+      
+      Macro _set_active_state_(_active_, _state_)
+        If Not(_active_ = _active_\root And _active_\root\type =- 5)
+          If (_state_)
+            Events(_active_, #__Event_Focus, Mouse()\x, Mouse()\y)
+          Else
+            Events(_active_, #__Event_lostFocus, Mouse()\x, Mouse()\y)
+          EndIf
+          
+          PostEvent(#PB_Event_Gadget, _active_\root\canvas\window, _active_\root\canvas\gadget, #__Event_repaint)
+        EndIf
+        
+        If _active_\gadget
+          If (_state_)
+            Events(_active_\gadget, #__Event_Focus, Mouse()\x, Mouse()\y)
+          Else
+            Events(_active_\gadget, #__Event_lostFocus, Mouse()\x, Mouse()\y)
+          EndIf
+        EndIf
+      EndMacro
+      
+      With *this
+        If *this\child  
+          *this = *this\parent
+        EndIf
+        
+        ;This()\widget = *this
+        
+        If \type > 0 And GetActive()
+          If GetActive()\gadget <> *this
+            If GetActive() <> \window
+              If _is_widget_(GetActive())
+                _set_active_state_(GetActive(), #__s_0)
+              EndIf
+              
+              GetActive() = \window
+              GetActive()\gadget = *this
+              
+              _set_active_state_(GetActive(), #__s_2)
+            Else
+              If GetActive()\gadget
+                Events(GetActive()\gadget, #__Event_lostFocus, Mouse()\x, Mouse()\y)
+              EndIf
+              
+              GetActive()\gadget = *this
+              Events(GetActive()\gadget, #__Event_Focus, Mouse()\x, Mouse()\y)
+            EndIf
+            
+            result = #True 
+          EndIf
+          
+        ElseIf GetActive() <> *this
+          If _is_widget_(GetActive())
+            _set_active_state_(GetActive(), #__s_0)
+          EndIf
+          
+          GetActive() = *this
+          _set_active_state_(GetActive(), #__s_2)
+          result = #True
+        EndIf
+        
+        If _is_window_(GetActive())
+          SetPosition(GetActive(), #PB_List_Last)
+        EndIf
+      EndWith
+      
+      ProcedureReturn result
+    EndProcedure
+    
     Procedure   SetParent(*this._s_widget, *parent._s_widget, _item.l = 0)
       Protected x.l, y.l, *LastParent._s_widget
       
@@ -12224,6 +12303,136 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf
     EndProcedure
     
+    Procedure   SetPosition(*this._s_widget, position.l, *widget._s_widget = #Null) ; Ok
+      Protected Type
+    Protected result
+    
+    Protected *before._s_widget 
+    Protected *after._s_widget 
+    Protected *last._s_widget
+    Protected *first._s_widget
+    
+    If *this = *widget
+      ProcedureReturn 0
+    EndIf
+    
+    Select Position
+      Case #PB_List_First 
+        result = SetPosition(*this, #PB_List_Before, *this\parent\first)
+        
+      Case #PB_List_Before 
+        If *widget
+          *after = *widget
+        Else
+          *after = *this\before
+        EndIf
+        
+        If *after
+          ChangeCurrentElement(widget(), *this\adress)
+          MoveElement(widget(), #PB_List_Before, *after\adress)
+          
+          While NextElement(widget()) 
+            If Child(widget(), *this)
+              MoveElement(widget(), #PB_List_Before, *after\adress)
+            EndIf
+          Wend
+          
+          ; if first element in parent list
+          If *this\parent\first = *this
+            *this\parent\first = *this\after
+          EndIf
+          
+          ; if last element in parent list
+          If *this\parent\last = *this
+            *this\parent\last = *this\before
+          EndIf
+          
+          If *this\before
+            *this\before\after = *this\after
+          EndIf
+          
+          If *this\after
+            *this\after\before = *this\before
+          EndIf
+          
+          *this\after = *after
+          *this\before = *after\before 
+          *after\before = *this
+          
+          If *this\before
+            *this\before\after = *this
+          Else
+            *this\parent\first\before = *this
+            *this\parent\first = *this
+          EndIf
+          
+          result = 1
+        EndIf
+        
+      Case #PB_List_After 
+        If *widget
+          *before = *widget
+        Else
+          *before = *this\after
+        EndIf
+        
+        If *before
+          *last = GetLast(*before)
+          ;           Debug *before\class
+          ;           Debug *last\class
+          
+          ChangeCurrentElement(widget(), *this\adress)
+          MoveElement(widget(), #PB_List_After, *last\adress)
+          
+          While PreviousElement(widget()) 
+            If Child(widget(), *this)
+              MoveElement(widget(), #PB_List_After, *this\adress)
+            EndIf
+          Wend
+          
+          ; if first element in parent list
+          If *this\parent\first = *this
+            *this\parent\first = *this\after
+          EndIf
+          
+          ; if last element in parent list
+          If *this\parent\last = *this
+            *this\parent\last = *this\before
+          EndIf
+          
+          If *this\after
+            *this\after\before = *this\before
+          EndIf
+          
+          If *this\before
+            *this\before\after = *this\after
+          EndIf
+          
+          *this\before = *before
+          *this\after = *before\after 
+          *before\after = *this
+          
+          If *this\after
+            *this\after\before = *this
+          Else
+            *this\parent\last\after = *this
+            *this\parent\last = *this
+          EndIf
+          
+          result = 1
+        EndIf
+        
+      Case #PB_List_Last 
+        result = SetPosition(*this, #PB_List_After, *this\parent\last)
+        
+    EndSelect
+    
+    
+      ; PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__event_repaint, *this)
+      
+      ProcedureReturn result
+    EndProcedure
+    
     Procedure.i SetAlignment(*this._s_widget, Mode.l, Type.l = 1) ; ok
       Protected rx.b, ry.b
       
@@ -12380,206 +12589,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndWith
     EndProcedure
     
-    Procedure   SetPosition(*this._s_widget, position.l, *widget._s_widget = #Null) ; Ok
-      Protected Type
-    Protected result
-    
-    Protected *before._s_widget 
-    Protected *after._s_widget 
-    Protected *last._s_widget
-    Protected *first._s_widget
-    
-    If *this = *widget
-      ProcedureReturn 0
-    EndIf
-    
-    Select Position
-      Case #PB_List_First 
-        result = SetPosition(*this, #PB_List_Before, *this\parent\first)
-        
-      Case #PB_List_Before 
-        If *widget
-          *after = *widget
-        Else
-          *after = *this\before
-        EndIf
-        
-        If *after
-          ChangeCurrentElement(widget(), *this\adress)
-          MoveElement(widget(), #PB_List_Before, *after\adress)
-          
-          While NextElement(widget()) 
-            If Child(widget(), *this)
-              MoveElement(widget(), #PB_List_Before, *after\adress)
-            EndIf
-          Wend
-          
-          ; if first element in parent list
-          If *this\parent\first = *this
-            *this\parent\first = *this\after
-          EndIf
-          
-          ; if last element in parent list
-          If *this\parent\last = *this
-            *this\parent\last = *this\before
-          EndIf
-          
-          If *this\before
-            *this\before\after = *this\after
-          EndIf
-          
-          If *this\after
-            *this\after\before = *this\before
-          EndIf
-          
-          *this\after = *after
-          *this\before = *after\before 
-          *after\before = *this
-          
-          If *this\before
-            *this\before\after = *this
-          Else
-            *this\parent\first\before = *this
-            *this\parent\first = *this
-          EndIf
-          
-          result = 1
-        EndIf
-        
-      Case #PB_List_After 
-        If *widget
-          *before = *widget
-        Else
-          *before = *this\after
-        EndIf
-        
-        If *before
-          *last = GetLast(*before)
-          ;           Debug *before\class
-          ;           Debug *last\class
-          
-          ChangeCurrentElement(widget(), *this\adress)
-          MoveElement(widget(), #PB_List_After, *last\adress)
-          
-          While PreviousElement(widget()) 
-            If Child(widget(), *this)
-              MoveElement(widget(), #PB_List_After, *this\adress)
-            EndIf
-          Wend
-          
-          ; if first element in parent list
-          If *this\parent\first = *this
-            *this\parent\first = *this\after
-          EndIf
-          
-          ; if last element in parent list
-          If *this\parent\last = *this
-            *this\parent\last = *this\before
-          EndIf
-          
-          If *this\after
-            *this\after\before = *this\before
-          EndIf
-          
-          If *this\before
-            *this\before\after = *this\after
-          EndIf
-          
-          *this\before = *before
-          *this\after = *before\after 
-          *before\after = *this
-          
-          If *this\after
-            *this\after\before = *this
-          Else
-            *this\parent\last\after = *this
-            *this\parent\last = *this
-          EndIf
-          
-          result = 1
-        EndIf
-        
-      Case #PB_List_Last 
-        result = SetPosition(*this, #PB_List_After, *this\parent\last)
-        
-    EndSelect
-    
-    
-      ; PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__event_repaint, *this)
-      
-      ProcedureReturn result
-    EndProcedure
-    
-    Procedure.i SetActive(*this._s_widget)
-      Protected result.i
-      
-      Macro _set_active_state_(_active_, _state_)
-        If Not(_active_ = _active_\root And _active_\root\type =- 5)
-          If (_state_)
-            Events(_active_, #__Event_Focus, Mouse()\x, Mouse()\y)
-          Else
-            Events(_active_, #__Event_lostFocus, Mouse()\x, Mouse()\y)
-          EndIf
-          
-          PostEvent(#PB_Event_Gadget, _active_\root\canvas\window, _active_\root\canvas\gadget, #__Event_repaint)
-        EndIf
-        
-        If _active_\gadget
-          If (_state_)
-            Events(_active_\gadget, #__Event_Focus, Mouse()\x, Mouse()\y)
-          Else
-            Events(_active_\gadget, #__Event_lostFocus, Mouse()\x, Mouse()\y)
-          EndIf
-        EndIf
-      EndMacro
-      
-      With *this
-        If *this\child  
-          *this = *this\parent
-        EndIf
-        
-        ;This()\widget = *this
-        
-        If \type > 0 And GetActive()
-          If GetActive()\gadget <> *this
-            If GetActive() <> \window
-              If _is_widget_(GetActive())
-                _set_active_state_(GetActive(), #__s_0)
-              EndIf
-              
-              GetActive() = \window
-              GetActive()\gadget = *this
-              
-              _set_active_state_(GetActive(), #__s_2)
-            Else
-              If GetActive()\gadget
-                Events(GetActive()\gadget, #__Event_lostFocus, Mouse()\x, Mouse()\y)
-              EndIf
-              
-              GetActive()\gadget = *this
-              Events(GetActive()\gadget, #__Event_Focus, Mouse()\x, Mouse()\y)
-            EndIf
-            
-            result = #True 
-          EndIf
-          
-        ElseIf GetActive() <> *this
-          If _is_widget_(GetActive())
-            _set_active_state_(GetActive(), #__s_0)
-          EndIf
-          
-          GetActive() = *this
-          _set_active_state_(GetActive(), #__s_2)
-          result = #True
-        EndIf
-        
-        If _is_window_(GetActive())
-          SetPosition(GetActive(), #PB_List_Last)
-        EndIf
-      EndWith
-      
-      ProcedureReturn result
-    EndProcedure
     
     ;- 
     Procedure.i GetItemData(*this._s_widget, item.l)
@@ -16902,5 +16911,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------z--------------------------------------------0-8+0-v--------------------------------------------------------------------------------------------------------------------------------------------------------44-----------------------------------8v--------------------------------------------------------------------------------------------f---
+; Folding = -----------------0---------6--------------------------------------------+-d-+-4---------------------------------------------------------------------------------------------------------------------------------------09----------------++P0p----------------------------4-0--+8v--f--------------------------------------------------------------------------------------f---
 ; EnableXP
