@@ -162,7 +162,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro Transform()
-      Root()\transform
+      Root()\_transform
     EndMacro
     
     Macro CustomCursor(_image_)
@@ -1394,7 +1394,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ForEach widget()
               If *this <> widget() And
                  Not widget()\hide And
-                 widget()\mode\transform And
+                 widget()\transform And
                  widget()\parent = *this\parent
                 
                 relative_x1 = widget()\x[#__c_frame]
@@ -1472,8 +1472,8 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected i, *Cursor.DataBuffer = ?CursorsBuffer
       
       With *this
-        If Not *this\mode\transform
-          *this\mode\transform = #True
+        If Not *this\transform
+          *this\transform = #True
           
           If Not Transform()
             Transform()._structure_(transform)
@@ -1524,7 +1524,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       Mouse()\grid = 6
       
-      If *this\mode\transform And 
+      If *this\transform And 
          Transform()\main <> *this And 
          Transform()\widget <> *this
         *this\cursor = #PB_Cursor_Default
@@ -1714,7 +1714,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             
             ;           Case #__Event_leftButtonDown  
             ;Debug 
-            ;             If Entered()\mode\transform 
+            ;             If Entered()\transform 
             ;               If Transform()\id[Transform()\index]\color\state <> #__s_2
             ;                 If Not (_from_point_(mouse_x, mouse_y, Transform()\id[Transform()\index]) And Transform()\index <> #__a_moved)
             ;                   If a_set(Entered())
@@ -1746,7 +1746,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ;             EndIf
             
           Case #__Event_leftButtonUp
-            If Transform()\widget\mode\transform
+            If Transform()\widget\transform
               If Transform()\widget\cursor = #PB_Cursor_Arrows Or
                  Not _from_point_(mouse_x, mouse_y, Transform()\id[Transform()\index])
                 Transform()\widget\cursor = #PB_Cursor_Default
@@ -11520,8 +11520,8 @@ CompilerIf Not Defined(widget, #PB_Module)
             EndIf
             
             ; set transformation for the child
-            If Not *this\mode\transform And *parent\mode\transform 
-              *this\mode\transform = *parent\mode\transform 
+            If Not *this\transform And *parent\transform 
+              *this\transform = *parent\transform 
               a_set(*this)
             EndIf
           EndIf
@@ -12953,7 +12953,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             a_add(*this)
           EndIf
           
-          If *this\fs And Not *this\mode\transform
+          If *this\fs And Not *this\transform
             *this\bs = *this\fs
           EndIf
           
@@ -13757,7 +13757,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ; drawing font
         _drawing_font_(*this)
         
-        ;         If *this\mode\transform
+        ;         If *this\transform
         ;           DrawingMode(#PB_2DDrawing_Outlined)
         ;           Box(*this\x, *this\y, *this\width, *this\height, $ffe0e0e0)
         ;         EndIf
@@ -13882,7 +13882,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                 Draw(widget())
               EndIf
               
-              If widget()\mode\transform And (widget()\width[#__c_clip] = 0 And widget()\height[#__c_clip] = 0)
+              If widget()\transform And (widget()\width[#__c_clip] = 0 And widget()\height[#__c_clip] = 0)
                 UnclipOutput()
                 DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
                 Box(widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner], widget()\height[#__c_inner], $ff00ffff)
@@ -14372,7 +14372,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         ProcedureReturn 0
       EndIf
       
-      If *this\mode\transform
+      If *this\transform
        If eventtype = #PB_EventType_LeftButtonDown
          Debug 555
           Mouse()\selected = *this
@@ -14830,7 +14830,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           Entered()\_state | #__s_selected
           Entered()\time_down = ElapsedMilliseconds()
           
-          If eventtype = #__Event_leftButtonDown And Entered()\mode\transform 
+          If eventtype = #__Event_leftButtonDown And Entered()\transform 
 ;             If Transform()\id[Transform()\index]\color\state <> #__s_2
 ;               If Not (_from_point_(mouse_x, mouse_y, Transform()\id[Transform()\index]) And Transform()\index <> #__a_moved)
 ;                 If a_set(Entered())
@@ -15279,11 +15279,11 @@ CompilerIf Not Defined(widget, #PB_Module)
           a_add(*this)
         EndIf
         
-        If flag & #__Window_NoActivate = #False And Not *this\mode\transform
+        If flag & #__Window_NoActivate = #False And Not *this\transform
           SetActive(*this)
         EndIf 
         
-        If *this\fs And Not *this\mode\transform
+        If *this\fs And Not *this\transform
           *this\bs = *this\fs
         EndIf
         
@@ -15960,7 +15960,7 @@ Procedure create_element(*parent._s_widget, class.s, x.l,y.l, width.l=0, height.
   Protected Position =- 1, flag.i
   
   If *parent 
-    If Not *parent\mode\transform
+    If Not *parent\transform
       a_add(*parent)
     EndIf
     

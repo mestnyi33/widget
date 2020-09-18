@@ -15,6 +15,125 @@ CompilerIf #PB_Compiler_IsMainFile
   #last=102
   #return = 103
   
+  Procedure   _4SetPosition(*this._s_widget, position.l, *widget_2._s_widget = #Null) ; Ok
+    Protected Type
+    Protected result =- 1
+    
+    Protected *before._s_widget 
+    Protected *after._s_widget 
+    Protected *last._s_widget
+    Protected *first._s_widget
+    
+    If *this = *widget_2
+      ProcedureReturn 0
+    EndIf
+    
+    Select Position
+      Case #PB_List_First 
+        result = SetPosition(*this, #PB_List_Before, *this\parent\first)
+        
+      Case #PB_List_Before 
+        If *widget_2
+          *after = *widget_2
+        Else
+          *after = *this\before
+        EndIf
+        
+        If *after
+          ChangeCurrentElement(widget(), *this\adress)
+          MoveElement(widget(), #PB_List_Before, *after\adress)
+          
+          While NextElement(widget()) 
+            If Child(widget(), *this)
+              MoveElement(widget(), #PB_List_Before, *after\adress)
+            EndIf
+          Wend
+          
+          If *this\parent\last = *this
+            *this\parent\last = *this\before
+          EndIf
+          
+          If *this\before
+            *this\before\after = *this\after
+          EndIf
+          
+          If *this\after
+            *this\after\before = *this\before
+          EndIf
+          
+;           If *widget_2
+;             *this\after = *this\parent\first
+;             *this\before = 0
+;           Else
+            *this\after = *after
+            *this\before = *after\before 
+;           EndIf
+          
+          If Not *this\before
+            *this\parent\first\before = *this
+            *this\parent\first = *this
+          EndIf
+        EndIf
+        
+      Case #PB_List_After 
+        If *widget_2
+          *before = *widget_2
+        Else
+          *before = *this\after
+        EndIf
+        
+        If *before
+          *last = GetLast(*before)
+;           Debug *before\class
+;           Debug *last\class
+          
+          ChangeCurrentElement(widget(), *this\adress)
+          MoveElement(widget(), #PB_List_After, *last\adress)
+          
+          While PreviousElement(widget()) 
+            If Child(widget(), *this)
+              MoveElement(widget(), #PB_List_After, *this\adress)
+            EndIf
+          Wend
+          
+          ; first element in parent list
+          If *this\parent\first = *this
+            *this\parent\first = *this\after
+          EndIf
+          
+          If *this\after
+            *this\after\before = *this\before
+          EndIf
+          
+          If *this\before
+            *this\before\after = *this\after
+          EndIf
+          
+;           If *widget_2
+;             *this\before = *this\parent\last
+;             *this\after = 0
+;           Else
+            *this\before = *before
+            *this\after = *before\after 
+;           EndIf
+            ;Debug *this\after
+            
+          If Not *this\after
+            *this\parent\last\after = *this
+            *this\parent\last = *this
+          EndIf
+        EndIf
+        
+      Case #PB_List_Last 
+        result = SetPosition(*this, #PB_List_After, *this\parent\last)
+        
+    EndSelect
+    
+    ; PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__event_repaint, *this)
+    
+    ProcedureReturn result
+  EndProcedure
+  
   Procedure   _SetPosition(*this._s_widget, position.l, *widget._s_widget = #Null) ; Ok
     ;;ProcedureReturn SetPosition(*this, position, *widget)
       
@@ -69,15 +188,13 @@ CompilerIf #PB_Compiler_IsMainFile
             *this\after\before = *this\before
           EndIf
           
-          ;           If *widget
-          ;             *this\after = *this\parent\first
-          ;             *this\before = 0
-          ;           Else
           *this\after = *after
           *this\before = *after\before 
-          ;           EndIf
+          *after\before = *this
           
-          If Not *this\before
+          If *this\before
+            *this\before\after = *this
+          Else
             *this\parent\first\before = *this
             *this\parent\first = *this
           EndIf
@@ -124,16 +241,13 @@ CompilerIf #PB_Compiler_IsMainFile
             *this\before\after = *this\after
           EndIf
           
-          
-          ;           If *widget
-          ;             *this\before = *this\parent\last
-          ;             *this\after = 0
-          ;           Else
           *this\before = *before
           *this\after = *before\after 
-          ;           EndIf
+          *before\after = *this
           
-          If Not *this\after
+          If *this\after
+            *this\after\before = *this
+          Else
             *this\parent\last\after = *this
             *this\parent\last = *this
           EndIf
@@ -289,7 +403,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select EventGadget()
               Case #first
-               after = GetPosition(*this, #PB_List_Before)
+               after = GetPosition(*this, #PB_List_After)
                _SetPosition(*this, #PB_List_First)
                 
               Case #before
@@ -299,15 +413,15 @@ CompilerIf #PB_Compiler_IsMainFile
                 _SetPosition(*this, #PB_List_After)
                 
               Case #last
-               before = GetPosition(*this, #PB_List_After)
+               before = GetPosition(*this, #PB_List_Before)
                _SetPosition(*this, #PB_List_Last)
                 
               Case #return
                 If after
-                  _SetPosition(*this, #PB_List_After, after)
+                  _SetPosition(*this, #PB_List_Before, after)
                 EndIf
                 If before
-                  _SetPosition(*this, #PB_List_Before, before)
+                  _SetPosition(*this, #PB_List_After, before)
                 EndIf
             EndSelect
             
@@ -332,5 +446,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----j-
+; Folding = 0--------
 ; EnableXP

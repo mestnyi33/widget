@@ -847,7 +847,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     Declare.i SetAttribute(*this, Attribute.l, *value)
     
     Declare   GetPosition(*this, position.l)
-    Declare   SetPosition(*this, position.l, *widget_2 = #Null)
+    Declare   SetPosition(*this, position.l, *widget = #Null)
     
     ;
     Declare.l GetItemState(*this, Item.l)
@@ -9806,7 +9806,6 @@ CompilerIf Not Defined(widget, #PB_Module)
           ; help button
           draw_help_button(\caption\button[3], 4)
           
-          \caption\text\string = \text\string
           If \caption\text\string
             ClipPut(*this, \caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner])
             
@@ -12381,117 +12380,131 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndWith
     EndProcedure
     
-    Procedure   SetPosition(*this._s_widget, position.l, *widget_2._s_widget = #Null) ; Ok
+    Procedure   SetPosition(*this._s_widget, position.l, *widget._s_widget = #Null) ; Ok
       Protected Type
-      Protected result =- 1
-      
-      Protected *before._s_widget 
-      Protected *after._s_widget 
-      Protected *last._s_widget
-      Protected *first._s_widget
-      
-      If *this = *widget_2
-        ProcedureReturn 0
-      EndIf
-      
-      Select Position
-        Case #PB_List_First 
-          result = SetPosition(*this, #PB_List_Before, *this\parent\first)
+    Protected result
+    
+    Protected *before._s_widget 
+    Protected *after._s_widget 
+    Protected *last._s_widget
+    Protected *first._s_widget
+    
+    If *this = *widget
+      ProcedureReturn 0
+    EndIf
+    
+    Select Position
+      Case #PB_List_First 
+        result = SetPosition(*this, #PB_List_Before, *this\parent\first)
+        
+      Case #PB_List_Before 
+        If *widget
+          *after = *widget
+        Else
+          *after = *this\before
+        EndIf
+        
+        If *after
+          ChangeCurrentElement(widget(), *this\adress)
+          MoveElement(widget(), #PB_List_Before, *after\adress)
           
-        Case #PB_List_Before 
-          If *widget_2
-            *before = *widget_2
+          While NextElement(widget()) 
+            If Child(widget(), *this)
+              MoveElement(widget(), #PB_List_Before, *after\adress)
+            EndIf
+          Wend
+          
+          ; if first element in parent list
+          If *this\parent\first = *this
+            *this\parent\first = *this\after
+          EndIf
+          
+          ; if last element in parent list
+          If *this\parent\last = *this
+            *this\parent\last = *this\before
+          EndIf
+          
+          If *this\before
+            *this\before\after = *this\after
+          EndIf
+          
+          If *this\after
+            *this\after\before = *this\before
+          EndIf
+          
+          *this\after = *after
+          *this\before = *after\before 
+          *after\before = *this
+          
+          If *this\before
+            *this\before\after = *this
           Else
-            *before = *this\before
+            *this\parent\first\before = *this
+            *this\parent\first = *this
           EndIf
           
-          If *before
-            ChangeCurrentElement(widget(), *this\adress)
-            MoveElement(widget(), #PB_List_Before, *before\adress)
-            
-            While NextElement(widget()) 
-              If Child(widget(), *this)
-                MoveElement(widget(), #PB_List_Before, *before\adress)
-              EndIf
-            Wend
-                       
-            If *this\parent\last = *this
-              *this\parent\last = *this\before
+          result = 1
+        EndIf
+        
+      Case #PB_List_After 
+        If *widget
+          *before = *widget
+        Else
+          *before = *this\after
+        EndIf
+        
+        If *before
+          *last = GetLast(*before)
+          ;           Debug *before\class
+          ;           Debug *last\class
+          
+          ChangeCurrentElement(widget(), *this\adress)
+          MoveElement(widget(), #PB_List_After, *last\adress)
+          
+          While PreviousElement(widget()) 
+            If Child(widget(), *this)
+              MoveElement(widget(), #PB_List_After, *this\adress)
             EndIf
-            
-            If *this\before
-              *this\before\after = *this\after
-            EndIf
-            
-            If *this\after
-              *this\after\before = *this\before
-            EndIf
-            
-            If *widget_2
-              *this\after = *this\parent\first
-              *this\before = 0
-            Else
-              *this\after = *before
-              *this\before = *before\before 
-            EndIf
-            
-            If Not *this\before
-              *this\parent\first\before = *this
-              *this\parent\first = *this
-            EndIf
+          Wend
+          
+          ; if first element in parent list
+          If *this\parent\first = *this
+            *this\parent\first = *this\after
           EndIf
           
-        Case #PB_List_After 
-          If *widget_2
-            *after = *widget_2
+          ; if last element in parent list
+          If *this\parent\last = *this
+            *this\parent\last = *this\before
+          EndIf
+          
+          If *this\after
+            *this\after\before = *this\before
+          EndIf
+          
+          If *this\before
+            *this\before\after = *this\after
+          EndIf
+          
+          *this\before = *before
+          *this\after = *before\after 
+          *before\after = *this
+          
+          If *this\after
+            *this\after\before = *this
           Else
-            *after = *this\after
+            *this\parent\last\after = *this
+            *this\parent\last = *this
           EndIf
           
-          If *after
-            *last = GetLast(*after)
-            
-            ChangeCurrentElement(widget(), *this\adress)
-            MoveElement(widget(), #PB_List_After, *last\adress)
-            
-            While PreviousElement(widget()) 
-              If Child(widget(), *this)
-                MoveElement(widget(), #PB_List_After, *this\adress)
-              EndIf
-            Wend
-           
-            ; first element in parent list
-            If *this\parent\first = *this
-              *this\parent\first = *this\after
-            EndIf
-            
-            If *this\after
-              *this\after\before = *this\before
-            EndIf
-            
-            If *this\before
-              *this\before\after = *this\after
-            EndIf
-            
-            If *widget_2
-              *this\before = *this\parent\last
-              *this\after = 0
-            Else
-              *this\before = *after
-              *this\after = *after\after 
-            EndIf
-            
-            If Not *this\after
-              *this\parent\last\after = *this
-              *this\parent\last = *this
-            EndIf
-         EndIf
-          
-        Case #PB_List_Last 
-          result = SetPosition(*this, #PB_List_After, *this\parent\last)
-          
-      EndSelect
-      
+          result = 1
+        EndIf
+        
+      Case #PB_List_Last 
+        result = SetPosition(*this, #PB_List_After, *this\parent\last)
+        
+    EndSelect
+    
+    
       ; PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__event_repaint, *this)
       
       ProcedureReturn result
@@ -15538,9 +15551,8 @@ CompilerIf Not Defined(widget, #PB_Module)
         If Not \caption\hide 
           *this\__height = constants::_check_(flag, #__flag_borderless, #False) * (#__caption_height); + #__border_size)
           *this\round = 7
-        EndIf
-        
-        If Text And \caption\height
+          
+          \caption\height = *this\__height
           \caption\text\padding\x = 5
           \caption\text\string = Text
         EndIf
@@ -16890,5 +16902,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------z--------------------------------------------0-8+0-v--------------------------------------------------------------------------------------------------------------------------------------------------------44-----------------------------------8v-----v6X----------------------------------------------------------------------4--------------+---
+; Folding = ---------------------------z--------------------------------------------0-8+0-v--------------------------------------------------------------------------------------------------------------------------------------------------------44-----------------------------------8v--------------------------------------------------------------------------------------------f---
 ; EnableXP

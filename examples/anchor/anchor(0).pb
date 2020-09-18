@@ -21,7 +21,7 @@ EndProcedure
 Define width=500, height=400
 
 If Open(OpenWindow(#PB_Any, 100, 200, width, height, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
-  a_add(root())
+  a_init(root())
       
   Window(50, 50, 390, 250, "Window_0", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget); | #__flag_anchorsgadget)
   string(10,10,170,30,"string_0")
