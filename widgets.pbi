@@ -12033,70 +12033,55 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure.i SetActive(*this._s_widget)
-      Protected result.i
-      
-      Macro _set_active_state_(_active_, _state_)
-        If Not(_active_ = _active_\root And _active_\root\type =- 5)
-          If (_state_)
-            Events(_active_, #__Event_Focus, Mouse()\x, Mouse()\y)
-          Else
-            Events(_active_, #__Event_lostFocus, Mouse()\x, Mouse()\y)
-          EndIf
-          
-          PostEvent(#PB_Event_Gadget, _active_\root\canvas\window, _active_\root\canvas\gadget, #__Event_repaint)
-        EndIf
-        
-        If _active_\gadget
-          If (_state_)
-            Events(_active_\gadget, #__Event_Focus, Mouse()\x, Mouse()\y)
-          Else
-            Events(_active_\gadget, #__Event_lostFocus, Mouse()\x, Mouse()\y)
-          EndIf
-        EndIf
-      EndMacro
+      Protected result.i, *window._s_widget, *gadget._s_widget
       
       With *this
         If *this\child And Not *this\container
           *this = *this\parent
         EndIf
         
-        ;This()\widget = *this
+        If _is_window_(*this) 
+          *window = *this 
+          *gadget = *window\gadget
+        Else
+          *gadget = *this
+          *window = *gadget\window 
+        EndIf
         
-        If *this\type > 0 And GetActive()
-          If GetActive()\gadget <> *this ;And Not \window\child
-            If GetActive() <> *this\window
-              If _is_widget_(GetActive())
-                _set_active_state_(GetActive(), #__s_0)
-              EndIf
-              
-              GetActive() = *this\window
-              GetActive()\gadget = *this
-              
-              _set_active_state_(GetActive(), #__s_2)
-            Else
-              If GetActive()\gadget
-                Events(GetActive()\gadget, #__Event_lostFocus, Mouse()\x, Mouse()\y)
-              EndIf
-              
-              GetActive()\gadget = *this
-              Events(GetActive()\gadget, #__Event_Focus, Mouse()\x, Mouse()\y)
-            EndIf
-            
-            result = #True 
-          EndIf
-          
-        ElseIf GetActive() <> *this ;And Not *this\child
+        If GetActive() <> *window
           If _is_widget_(GetActive())
-            _set_active_state_(GetActive(), #__s_0)
+            Events(GetActive(), #__Event_LostFocus, Mouse()\x, Mouse()\y)
+            If _is_widget_(GetActive()\gadget)
+              Events(GetActive()\gadget, #__Event_lostFocus, Mouse()\x, Mouse()\y)
+            EndIf
           EndIf
           
-          GetActive() = *this
-          _set_active_state_(GetActive(), #__s_2)
+          GetActive() = *window
+          Events(GetActive(), #__Event_Focus, Mouse()\x, Mouse()\y)
           result = #True
         EndIf
         
-        If _is_window_(GetActive())
-          SetPosition(GetActive(), #PB_List_Last)
+        If GetActive()\gadget <> *gadget
+          If _is_widget_(GetActive()\gadget)
+            Events(GetActive()\gadget, #__Event_lostFocus, Mouse()\x, Mouse()\y)
+          EndIf
+          
+          GetActive()\gadget = *gadget
+          result = #True 
+        EndIf
+        
+        If result
+          If _is_widget_(GetActive()\gadget)
+            Events(GetActive()\gadget, #__Event_Focus, Mouse()\x, Mouse()\y)
+          EndIf
+          
+          If _is_window_(GetActive())
+            SetPosition(GetActive(), #PB_List_Last)
+          EndIf
+          
+          If Not(GetActive() = GetActive()\root And GetActive()\root\type =- 5)
+            PostEvent(#PB_Event_Gadget, GetActive()\root\canvas\window, GetActive()\root\canvas\gadget, #__Event_repaint)
+          EndIf
         EndIf
       EndWith
       
@@ -16900,5 +16885,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-l-8---------------------+7---zQ--------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------X+v---------------------8r---PD0-------------------------------------------------------------------
 ; EnableXP
