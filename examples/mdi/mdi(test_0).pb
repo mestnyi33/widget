@@ -25,6 +25,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define *g2 = AddItem(*mdi, -1, "form_2")
   Button(10,10,80,80,"button_2")
+  
+
+  Resize(*g1, X(*g0, #__c_container) + Width(*g0, #__c_frame) + 5, Y(*g0, #__c_container), #PB_Ignore, #PB_Ignore)
+  Resize(*g2, X(*g0, #__c_container), Y(*g0, #__c_container) + Height(*g0, #__c_frame) + 5, #PB_Ignore, #PB_Ignore)
     
   Repeat
     Event = WaitWindowEvent()

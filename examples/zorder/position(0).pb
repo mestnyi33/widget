@@ -4,13 +4,6 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   UseLib(widget)
   
-  Enumeration 
-  #__position_First
-  #__position_Last
-  #__position_Prev
-  #__position_Next
-EndEnumeration
-
   Global Window_1, Window_2, Window_3, Window_4, Window_3_Panel =- 1
   Global Panel_1_First=-1,Panel_1_Prev=-1,Panel_1_Next=-1,Panel_1_Last=-1
   Global Panel_2_First=-1,Panel_2_Prev=-1,Panel_2_Next=-1,Panel_2_Last=-1
@@ -18,7 +11,7 @@ EndEnumeration
   
   Procedure Window_First_Event()
     Select this()\event
-      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #__position_First)
+      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #PB_List_First)
     EndSelect
     
     ProcedureReturn #True
@@ -26,7 +19,7 @@ EndEnumeration
   
   Procedure Window_Prev_Event()
     Select this()\event
-      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #__position_Prev)
+      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #PB_List_Before)
     EndSelect
     
     ProcedureReturn #True
@@ -34,7 +27,7 @@ EndEnumeration
   
   Procedure Window_Next_Event()
     Select this()\event
-      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #__position_Next)
+      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #PB_List_After)
     EndSelect
     
     ProcedureReturn #True
@@ -42,7 +35,7 @@ EndEnumeration
   
   Procedure Window_Last_Event()
     Select this()\event
-      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #__position_Last)
+      Case #PB_EventType_LeftClick : SetPosition(this()\widget, #PB_List_Last)
     EndSelect
     
     ProcedureReturn #True

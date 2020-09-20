@@ -11,10 +11,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *this, *root, NewMap w_list.i()
   
   Procedure Widget_Handler()
-    Protected EventWidget.i = *event\widget,
-              EventType.i = *event\type,
-              EventItem.i = *event\item, 
-              EventData.i = *event\data
+    Protected EventWidget.i = this()\widget,
+              EventType.i = this()\event,
+              EventItem.i = this()\item, 
+              EventData.i = this()\data
     
     Select EventType
       Case #__Event_MouseEnter
@@ -329,6 +329,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Repaint()
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

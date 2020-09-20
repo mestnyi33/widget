@@ -27,20 +27,22 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Protected b = 2
       Protected iw = 280
-      ;Widgets(Hex(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_AnchorsGadget)
+      a_init(root())
+       ;Widgets(Hex(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_AnchorsGadget)
        Widgets(Hex(0)) = Container(50, 50, 280, 200);, #__flag_AnchorsGadget);#__flag_AutoSize)
       ;Widgets(Hex(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Hex(0)), -1, "panel")
      ;Widgets(Hex(0)) = ScrollArea(50, 50, 280, 200, iw,300)
-      
-      Widgets(Hex(1)) = Button(0, (200-20)/2, 80, 20, "Left_Center_"+Str(1))
-      Widgets(Hex(2)) = Button((iw-80)/2, 0, 80, 20, "Top_Center_"+Str(2))
-      Widgets(Hex(3)) = Button(iw-80-b, (200-20)/2, 80, 20, Str(3)+"_Center_Right")
-      Widgets(Hex(4)) = Button((iw-80)/2, 200-20-b, 80, 20, Str(4)+"_Center_Bottom")
+       ;a_set(widget())
+       
+      Widgets(Hex(1)) = Button(0, (200-20)/2, 80, 20, "cl_"+Str(1))
+      Widgets(Hex(2)) = Button((iw-80)/2, 0, 80, 20, "ct_"+Str(2))
+      Widgets(Hex(3)) = Button(iw-80-b, (200-20)/2, 80, 20, Str(3)+"_cr")
+      Widgets(Hex(4)) = Button((iw-80)/2, 200-20-b, 80, 20, Str(4)+"_cb")
       Widgets(Hex(5)) = Button(0, 0, 80, 20, "Default_"+Str(5))
       Widgets(Hex(6)) = Button(iw-80-b, 0, 80, 20, "Right_"+Str(6))
-      Widgets(Hex(7)) = Button(iw-80-b, 200-20-b, 80, 20, "Bottom_"+Str(7))
-      Widgets(Hex(8)) = Button(0, 200-20-b, 80, 20, Str(8)+"_Bottom_Right")
-      Widgets(Hex(9)) = Button((iw-80)/2, (200-20)/2, 80, 20, "Bottom_"+Str(9))
+      Widgets(Hex(7)) = Button(iw-80-b, 200-20-b, 80, 20, Str(8)+"_br")
+      Widgets(Hex(8)) = Button(0, 200-20-b, 80, 20, "Bottom_"+Str(7))
+      Widgets(Hex(9)) = Button((iw-80)/2, (200-20)/2, 80, 20, Str(9)+"_center")
       
       CloseList()
       

@@ -18,6 +18,7 @@
     #__draw_scroll_box = 0
     #__test_scrollbar_size = 0
     
+    #debug_update_text = 0
     #debug_multiline = 0
     #debug_repaint = 0 ; Debug " - -  Canvas repaint - -  "
     
@@ -309,6 +310,7 @@
     ;     #__window_sizegadget = #__flag_sizegadget
     ;     #__window_screencentered = #__align_center
     
+    #__window_child          = #__bar_child
     #__Window_Normal         = #PB_Window_Normal
     #__Window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
     #__Window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_Window_SystemMenu is automatically added.
