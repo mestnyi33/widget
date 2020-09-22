@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Protected b = 2
       Protected iw = 280
-      a_init(root())
+      ;a_init(root())
        ;Widgets(Hex(0)) = Form(50, 50, 280, 200, "Demo dock widgets");, #__flag_AnchorsGadget)
        Widgets(Hex(0)) = Container(50, 50, 280, 200);, #__flag_AnchorsGadget);#__flag_AutoSize)
       ;Widgets(Hex(0)) = Panel(50, 50, 280, 200) : AddItem(Widgets(Hex(0)), -1, "panel")

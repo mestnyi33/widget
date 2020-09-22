@@ -521,7 +521,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       transform.b ; add anchors on the widget (to size and move)
     
       *container        ; 
-      *adress           ; widget list adress
+      *address           ; widget list address
       *root._s_root     ; this root
       *parent._s_widget ; this parent
       *window._s_widget ; this parent window       ; root()\active\window

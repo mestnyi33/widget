@@ -189,7 +189,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndMacro
     
     Macro _is_widget_(_this_)
-      Bool(_this_ > 0 And _this_\adress) ; * _this_\adress
+      Bool(_this_ > 0 And _this_\address) ; * _this_\address
     EndMacro
     
     Macro _is_window_(_this_)
@@ -250,87 +250,87 @@ CompilerIf Not Defined(widget, #PB_Module)
 ;       ResetGradientColors()
 ;     EndMacro
     
-    Macro draw_box_button(_adress_, _color_)
-      If Not _adress_\hide
-        RoundBox(_adress_\x, _adress_\y, _adress_\width, _adress_\height, _adress_\round, _adress_\round, _color_)
-        RoundBox(_adress_\x, _adress_\y + 1, _adress_\width, _adress_\height - 2, _adress_\round, _adress_\round, _color_)
-        RoundBox(_adress_\x + 1, _adress_\y, _adress_\width - 2, _adress_\height, _adress_\round, _adress_\round, _color_)
+    Macro draw_box_button(_address_, _color_)
+      If Not _address_\hide
+        RoundBox(_address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _color_)
+        RoundBox(_address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _color_)
+        RoundBox(_address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _color_)
       EndIf
     EndMacro
     
-    Macro draw_close_button(_adress_, _size_)
+    Macro draw_close_button(_address_, _size_)
       ; close button
-      If Not _adress_\hide
-        If _adress_\color\state
-          Line(_adress_\x + 1 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
-          Line(_adress_\x + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+      If Not _address_\hide
+        If _address_\color\state
+          Line(_address_\x + 1 + (_address_\width - _size_)/2, _address_\y + (_address_\height - _size_)/2, _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
+          Line(_address_\x + (_address_\width - _size_)/2, _address_\y + (_address_\height - _size_)/2, _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
           
-          Line(_adress_\x - 1 + _size_ + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
-          Line(_adress_\x + _size_ + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          Line(_address_\x - 1 + _size_ + (_address_\width - _size_)/2, _address_\y + (_address_\height - _size_)/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
+          Line(_address_\x + _size_ + (_address_\width - _size_)/2, _address_\y + (_address_\height - _size_)/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
         EndIf
         
-        draw_box_button(_adress_, _adress_\color\frame[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+        draw_box_button(_address_, _address_\color\frame[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
       EndIf
     EndMacro
     
-    Macro draw_maximize_button(_adress_, _size_)
-      If Not _adress_\hide
-        If _adress_\color\state
-          Line(_adress_\x + 2 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
-          Line(_adress_\x + 1 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+    Macro draw_maximize_button(_address_, _size_)
+      If Not _address_\hide
+        If _address_\color\state
+          Line(_address_\x + 2 + (_address_\width - _size_)/2, _address_\y + (_address_\height - _size_)/2, _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
+          Line(_address_\x + 1 + (_address_\width - _size_)/2, _address_\y + (_address_\height - _size_)/2, _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
           
-          Line(_adress_\x + 1 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
-          Line(_adress_\x + 2 + (_adress_\width - _size_)/2, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          Line(_address_\x + 1 + (_address_\width - _size_)/2, _address_\y + (_address_\height - _size_)/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
+          Line(_address_\x + 2 + (_address_\width - _size_)/2, _address_\y + (_address_\height - _size_)/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
         EndIf
         
-        draw_box_button(_adress_, _adress_\color\frame[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+        draw_box_button(_address_, _address_\color\frame[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
       EndIf
     EndMacro
     
-    Macro draw_minize_button(_adress_, _size_)
-      If Not _adress_\hide
-        If _adress_\color\state
-          Line(_adress_\x + 1 + (_adress_\width )/2 - _size_, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
-          Line(_adress_\x + 0 + (_adress_\width )/2 - _size_, _adress_\y + (_adress_\height - _size_)/2, _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+    Macro draw_minize_button(_address_, _size_)
+      If Not _address_\hide
+        If _address_\color\state
+          Line(_address_\x + 1 + (_address_\width )/2 - _size_, _address_\y + (_address_\height - _size_)/2, _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
+          Line(_address_\x + 0 + (_address_\width )/2 - _size_, _address_\y + (_address_\height - _size_)/2, _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
           
-          Line(_adress_\x - 1 + (_adress_\width)/2 + _size_, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
-          Line(_adress_\x - 2 + (_adress_\width)/2 + _size_, _adress_\y + (_adress_\height - _size_)/2,  - _size_, _size_, _adress_\color\front[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+          Line(_address_\x - 1 + (_address_\width)/2 + _size_, _address_\y + (_address_\height - _size_)/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
+          Line(_address_\x - 2 + (_address_\width)/2 + _size_, _address_\y + (_address_\height - _size_)/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
         EndIf
         
-        draw_box_button(_adress_, _adress_\color\frame[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+        draw_box_button(_address_, _address_\color\frame[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
       EndIf
     EndMacro
     
-    Macro draw_help_button(_adress_, _size_)
-      If Not _adress_\hide
-        RoundBox(_adress_\x, _adress_\y, _adress_\width, _adress_\height, 
-                 _adress_\round, _adress_\round, _adress_\color\frame[_adress_\color\state]&$FFFFFF|_adress_\color\alpha<<24)
+    Macro draw_help_button(_address_, _size_)
+      If Not _address_\hide
+        RoundBox(_address_\x, _address_\y, _address_\width, _address_\height, 
+                 _address_\round, _address_\round, _address_\color\frame[_address_\color\state]&$FFFFFF|_address_\color\alpha<<24)
       EndIf
     EndMacro
     
-    Macro draw_option_button(_adress_, _size_, _color_)
-      If _adress_\round > 2
-        If _adress_\width % 2
-          RoundBox(_adress_\x + (_adress_\width - _size_)/2,_adress_\y + (_adress_\height - _size_)/2, _size_ + 1,_size_ + 1, _size_ + 1,_size_ + 1, _color_) 
+    Macro draw_option_button(_address_, _size_, _color_)
+      If _address_\round > 2
+        If _address_\width % 2
+          RoundBox(_address_\x + (_address_\width - _size_)/2,_address_\y + (_address_\height - _size_)/2, _size_ + 1,_size_ + 1, _size_ + 1,_size_ + 1, _color_) 
         Else
-          RoundBox(_adress_\x + (_adress_\width - _size_)/2,_adress_\y + (_adress_\height - _size_)/2, _size_,_size_, _size_,_size_, _color_) 
+          RoundBox(_address_\x + (_address_\width - _size_)/2,_address_\y + (_address_\height - _size_)/2, _size_,_size_, _size_,_size_, _color_) 
         EndIf
       Else
-        If _adress_\width % 2
-          RoundBox(_adress_\x + (_adress_\width - _size_)/2,_adress_\y + (_adress_\height - _size_)/2, _size_ + 1,_size_ + 1, 1,1, _color_) 
+        If _address_\width % 2
+          RoundBox(_address_\x + (_address_\width - _size_)/2,_address_\y + (_address_\height - _size_)/2, _size_ + 1,_size_ + 1, 1,1, _color_) 
         Else
-          RoundBox(_adress_\x + (_adress_\width - _size_)/2,_adress_\y + (_adress_\height - _size_)/2, _size_ + 1,_size_ + 1, 1,1, _color_) 
+          RoundBox(_address_\x + (_address_\width - _size_)/2,_address_\y + (_address_\height - _size_)/2, _size_ + 1,_size_ + 1, 1,1, _color_) 
         EndIf
       EndIf
     EndMacro
     
-    Macro draw_check_button(_adress_, _size_, _color_)
-      If _adress_\state
-        LineXY((_adress_\x +0+ (_adress_\width-_size_)/2),(_adress_\y +4+ (_adress_\height-_size_)/2),(_adress_\x +1+ (_adress_\width-_size_)/2),(_adress_\y +5+ (_adress_\height-_size_)/2), _color_) ; Левая линия
-        LineXY((_adress_\x +0+ (_adress_\width-_size_)/2),(_adress_\y +5+ (_adress_\height-_size_)/2),(_adress_\x +1+ (_adress_\width-_size_)/2),(_adress_\y +6+ (_adress_\height-_size_)/2), _color_) ; Левая линия
+    Macro draw_check_button(_address_, _size_, _color_)
+      If _address_\state
+        LineXY((_address_\x +0+ (_address_\width-_size_)/2),(_address_\y +4+ (_address_\height-_size_)/2),(_address_\x +1+ (_address_\width-_size_)/2),(_address_\y +5+ (_address_\height-_size_)/2), _color_) ; Левая линия
+        LineXY((_address_\x +0+ (_address_\width-_size_)/2),(_address_\y +5+ (_address_\height-_size_)/2),(_address_\x +1+ (_address_\width-_size_)/2),(_address_\y +6+ (_address_\height-_size_)/2), _color_) ; Левая линия
         
-        LineXY((_adress_\x +5+ (_adress_\width-_size_)/2),(_adress_\y +0+ (_adress_\height-_size_)/2),(_adress_\x +2+ (_adress_\width-_size_)/2),(_adress_\y +6+ (_adress_\height-_size_)/2), _color_) ; правая линия
-        LineXY((_adress_\x +6+ (_adress_\width-_size_)/2),(_adress_\y +0+ (_adress_\height-_size_)/2),(_adress_\x +3+ (_adress_\width-_size_)/2),(_adress_\y +6+ (_adress_\height-_size_)/2), _color_) ; правая линия
+        LineXY((_address_\x +5+ (_address_\width-_size_)/2),(_address_\y +0+ (_address_\height-_size_)/2),(_address_\x +2+ (_address_\width-_size_)/2),(_address_\y +6+ (_address_\height-_size_)/2), _color_) ; правая линия
+        LineXY((_address_\x +6+ (_address_\width-_size_)/2),(_address_\y +0+ (_address_\height-_size_)/2),(_address_\x +3+ (_address_\width-_size_)/2),(_address_\y +6+ (_address_\height-_size_)/2), _color_) ; правая линия
       EndIf
     EndMacro
     
@@ -1968,17 +1968,17 @@ CompilerIf Not Defined(widget, #PB_Module)
       EndIf  
     EndMacro
     
-    Macro change_checkbox_state(_adress_, _three_state_)
+    Macro change_checkbox_state(_address_, _three_state_)
       ; change checkbox state
-      Select _adress_\state 
+      Select _address_\state 
         Case #PB_Checkbox_Unchecked 
           If _three_state_
-            _adress_\state = #PB_Checkbox_Inbetween
+            _address_\state = #PB_Checkbox_Inbetween
           Else
-            _adress_\state = #PB_Checkbox_Checked
+            _address_\state = #PB_Checkbox_Checked
           EndIf
-        Case #PB_Checkbox_Checked : _adress_\state = #PB_Checkbox_Unchecked
-        Case #PB_Checkbox_Inbetween : _adress_\state = #PB_Checkbox_Checked
+        Case #PB_Checkbox_Checked : _address_\state = #PB_Checkbox_Unchecked
+        Case #PB_Checkbox_Inbetween : _address_\state = #PB_Checkbox_Checked
       EndSelect
     EndMacro
 
@@ -3520,7 +3520,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                   
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
-                    ChangeCurrentElement(widget(), *this\parent\adress)
+                    ChangeCurrentElement(widget(), *this\parent\address)
                     While NextElement(widget())
                       If widget()\parent = *this\parent
                         Resize(widget(), #PB_Ignore, (widget()\y[#__c_draw] + *this\parent\y[#__c_required]) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore)
@@ -3535,7 +3535,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                   
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container And *this\parent\count\childrens
-                    ChangeCurrentElement(widget(), *this\parent\adress)
+                    ChangeCurrentElement(widget(), *this\parent\address)
                     While NextElement(widget())
                       If widget()\parent = *this\parent
                         Resize(widget(), (widget()\x[#__c_draw] + *this\parent\x[#__c_required]) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore)
@@ -9248,7 +9248,7 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure   Clip(*this._s_widget, childrens.b)
-      ; Debug  *this\adress
+      ; Debug  *this\address
       
       ; then move and size parent set clip (width&height)
       Protected _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_inner]
@@ -10574,22 +10574,22 @@ CompilerIf Not Defined(widget, #PB_Module)
               FirstElement(widget())
               MoveElement(widget(), #PB_List_First)
             Else
-              ChangeCurrentElement(widget(), *this\adress)
+              ChangeCurrentElement(widget(), *this\address)
               If *parent\last 
                 If *parent\last = *this
                   If *parent\last\before
-                    MoveElement(widget(), #PB_List_After, *parent\last\before\adress)
-                    ;   MoveElement(widget(), #PB_list_After, *Parent\adress)
+                    MoveElement(widget(), #PB_List_After, *parent\last\before\address)
+                    ;   MoveElement(widget(), #PB_list_After, *Parent\address)
                     
                   Else
                     Debug "*parent\last - " + *parent\last\index
-                    MoveElement(widget(), #PB_List_After, *Parent\adress)
+                    MoveElement(widget(), #PB_List_After, *Parent\address)
                   EndIf
                 Else
-                  MoveElement(widget(), #PB_List_After, *parent\last\adress)
+                  MoveElement(widget(), #PB_List_After, *parent\last\address)
                 EndIf
               Else
-                MoveElement(widget(), #PB_List_After, *parent\adress)
+                MoveElement(widget(), #PB_List_After, *parent\address)
               EndIf
             EndIf
             
@@ -10615,7 +10615,7 @@ CompilerIf Not Defined(widget, #PB_Module)
                   EndIf
                 EndIf
                 
-                MoveElement(widget(), #PB_List_After, *this\adress)
+                MoveElement(widget(), #PB_List_After, *this\address)
               EndIf
             Wend
             
@@ -10634,13 +10634,13 @@ CompilerIf Not Defined(widget, #PB_Module)
             typecount(Hex(*parent) + "__" + Hex(*this\type)) + 1
           EndIf
           
-          If Not *this\adress
+          If Not *this\address
             ;           If Not *parent\last And ListIndex(widget()) > 0 ; And *parent\last\index < ListIndex(widget())
             ;             Debug " - - - -  " + *this\class  + " " +  ListIndex(widget()) ;\index
             ;                                                                               ;Protected *last._s_widget = GetParentLast(*parent)
             ;             SelectElement(widget(), *parent\index + 1)
-            ;             *this\adress = InsertElement(widget())
-            ;             ; *this\adress = AddElement(widget()) 
+            ;             *this\address = InsertElement(widget())
+            ;             ; *this\address = AddElement(widget()) 
             ;             ; *parent\last = *this\after
             ;             
             ;             ;             ; Исправляем идентификатор итема  
@@ -10652,7 +10652,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             ;           *this\index = *this\root\count\childrens; ListIndex(widget()) 
             ;          Else
             LastElement(widget())
-            *this\adress = AddElement(widget()) 
+            *this\address = AddElement(widget()) 
             *this\index = ListIndex(widget()) 
             ;           EndIf
             widget() = *this
@@ -10906,12 +10906,12 @@ CompilerIf Not Defined(widget, #PB_Module)
       Select Position
         Case #PB_List_First 
           If *this\parent\first <> *this
-            ChangeCurrentElement(widget(), *this\adress)
-            MoveElement(widget(), #PB_List_Before, *this\parent\first\adress)
+            ChangeCurrentElement(widget(), *this\address)
+            MoveElement(widget(), #PB_List_Before, *this\parent\first\address)
             
             While NextElement(widget()) 
               If Child(widget(), *this)
-                MoveElement(widget(), #PB_List_Before, *this\parent\first\adress)
+                MoveElement(widget(), #PB_List_Before, *this\parent\first\address)
               EndIf
             Wend
             
@@ -10929,12 +10929,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           
         Case #PB_List_Before 
           If *this\before
-            ChangeCurrentElement(widget(), *this\adress)
-            MoveElement(widget(), #PB_List_Before, *this\before\adress)
+            ChangeCurrentElement(widget(), *this\address)
+            MoveElement(widget(), #PB_List_Before, *this\before\address)
             
             While NextElement(widget()) 
               If Child(widget(), *this)
-                MoveElement(widget(), #PB_List_Before, *this\before\adress)
+                MoveElement(widget(), #PB_List_Before, *this\before\address)
               EndIf
             Wend
             
@@ -10954,12 +10954,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           
         Case #PB_List_After 
           If *this\after
-            ChangeCurrentElement(widget(), *this\adress)
-            MoveElement(widget(), #PB_List_After, *this\after\adress)
+            ChangeCurrentElement(widget(), *this\address)
+            MoveElement(widget(), #PB_List_After, *this\after\address)
             
             While PreviousElement(widget()) 
               If Child(widget(), *this)
-                MoveElement(widget(), #PB_List_After, *this\adress)
+                MoveElement(widget(), #PB_List_After, *this\address)
               EndIf
             Wend
             
@@ -10981,12 +10981,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           Protected *Last._s_widget = GetParentLast(*this\parent)
           
           If *Last <> *this
-            ChangeCurrentElement(widget(), *this\adress)
-            MoveElement(widget(), #PB_List_After, *Last\adress)
+            ChangeCurrentElement(widget(), *this\address)
+            MoveElement(widget(), #PB_List_After, *Last\address)
             
             While PreviousElement(widget()) 
               If Child(widget(), *this)
-                MoveElement(widget(), #PB_List_After, *this\adress)
+                MoveElement(widget(), #PB_List_After, *this\address)
               EndIf
             Wend
             
@@ -11037,12 +11037,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           EndIf
           
           If *before
-            ChangeCurrentElement(widget(), *this\adress)
-            MoveElement(widget(), #PB_List_Before, *before\adress)
+            ChangeCurrentElement(widget(), *this\address)
+            MoveElement(widget(), #PB_List_Before, *before\address)
             
             While NextElement(widget()) 
               If Child(widget(), *this)
-                MoveElement(widget(), #PB_List_Before, *before\adress)
+                MoveElement(widget(), #PB_List_Before, *before\address)
               EndIf
             Wend
             
@@ -11073,12 +11073,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           If *after
             *Last = GetParentLast(*after)
             
-            ChangeCurrentElement(widget(), *this\adress)
-            MoveElement(widget(), #PB_List_After, *Last\adress)
+            ChangeCurrentElement(widget(), *this\address)
+            MoveElement(widget(), #PB_List_After, *Last\address)
             
             While PreviousElement(widget()) 
               If Child(widget(), *this)
-                MoveElement(widget(), #PB_List_After, *this\adress)
+                MoveElement(widget(), #PB_List_After, *this\address)
               EndIf
             Wend
             
@@ -11105,12 +11105,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           ;           If *this\parent\last <> *this 
           ;             *Last = GetParentLast(*after)
           ;             
-          ;             ChangeCurrentElement(widget(), *this\adress)
-          ;             MoveElement(widget(), #PB_list_After, *Last\adress)
+          ;             ChangeCurrentElement(widget(), *this\address)
+          ;             MoveElement(widget(), #PB_list_After, *Last\address)
           ;             
           ;             While PreviousElement(widget()) 
           ;               If Child(widget(), *this)
-          ;                 MoveElement(widget(), #PB_list_After, *this\adress)
+          ;                 MoveElement(widget(), #PB_list_After, *this\address)
           ;               EndIf
           ;             Wend
           ;             
@@ -11693,7 +11693,7 @@ CompilerIf Not Defined(widget, #PB_Module)
         *this\index[#__s_1] =- 1
         *this\index[#__s_2] =- 1
         
-        ; *this\adress = *this
+        ; *this\address = *this
         ; *this\class = #PB_compiler_Procedure
         *this\color = _get_colors_()
         
@@ -12066,7 +12066,7 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\window = *parent\window
           ; 
           *this\index = *parent\index
-          *this\adress = *parent\adress
+          *this\address = *parent\address
           
           *this\child = #True
         Else
@@ -13106,7 +13106,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       If eventtype = #PB_EventType_repaint
         If *this <> #PB_All
           ; Root() = *this\root
-          ChangeCurrentElement(Root(), @*this\root\adress)
+          ChangeCurrentElement(Root(), @*this\root\address)
         EndIf
         
         If Root()\canvas\repaint = #False
@@ -13725,7 +13725,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       If Root() <> *this\root
         ; Root() = *this\root
-        ChangeCurrentElement(Root(), @*this\root\adress)
+        ChangeCurrentElement(Root(), @*this\root\address)
       EndIf
       
       Select eventtype
@@ -13843,7 +13843,7 @@ CompilerIf Not Defined(widget, #PB_Module)
             Repaint | Events(Entered(), #__Event_MouseLeave, mouse_x, mouse_y)
             
             If #__from_mouse_state
-              ;ChangeCurrentElement(widget(), Entered()\adress)
+              ;ChangeCurrentElement(widget(), Entered()\address)
               SelectElement(widget(), Entered()\index)
               Repeat                 
                 If widget()\draw And Child(Entered(), widget())
@@ -14124,7 +14124,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       Protected *this._s_widget = GetGadgetData(Canvas)
       
       If Root() <> *this\root
-        ChangeCurrentElement(Root(), @*this\root\adress)
+        ChangeCurrentElement(Root(), @*this\root\address)
         ; Root() = *this\root
       EndIf
       
@@ -14171,7 +14171,7 @@ CompilerIf Not Defined(widget, #PB_Module)
       
       AddElement(Root()) 
       Root() = AllocateStructure(_s_root)
-      Root()\adress = Root()
+      Root()\address = Root()
       Root()\class = "Root"
       
       Opened() = Root()
