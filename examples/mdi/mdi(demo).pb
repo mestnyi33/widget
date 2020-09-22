@@ -28,6 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; use root list
   OpenList(Root())
+  ;;CloseList()
   
   Define *spl1 = Splitter(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
   Define *spl2 = Splitter(x,y,width,height, *spl1, #Null);, #__flag_autosize)

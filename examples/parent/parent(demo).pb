@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case *combo
             Select EventType
-              Case #PB_EventType_Change  ; : Debug "Combo change " + GetState( *combo )
+              Case #PB_EventType_Change   : Debug "Combo change " + GetState( *combo )
                 Define i, ParentID = GetParent( *w )
                 
                 ; If GetState( *combo ) >- 1
@@ -132,6 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 Resize(*w,pos_x,10,160,70)
                 SetParent(*w, ParentID)
                 
+                
             EndSelect
             
         EndSelect
@@ -188,7 +189,29 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(20, X, Y, 185, 346+(#__caption_height), "old parent", Flags, WindowID(GetWindow(GetRoot(*window_1))))
   *window_2 = Open(20)
   *window_2 = Window(0,0,0,0,  "", #__flag_autosize|Flags)
-  *w = Button(pos_x,10,160,70,"Button") 
+  
+  
+  *w = ScrollArea(pos_x,10,160,70, 305,305,9,#PB_ScrollArea_Flat) 
+  SetClass(Button(0,0,80,20,"Button1"), "scroll_butt_1") 
+  SetClass(Button(30,30,80,20,"Button2"), "scroll_butt_2") 
+  CloseList()
+  
+;   *w = MDI(pos_x,10,160,70);, #__flag_autosize)
+;   
+;   Define *g0 = AddItem(*w, -1, "form_0")
+;   Button(10,10,80,80,"button_0")
+;   
+;   Define *g1 = AddItem(*w, -1, "form_1")
+;   Button(10,10,80,80,"button_1")
+;   
+;   Define *g2 = AddItem(*w, -1, "form_2")
+;   Button(10,10,80,80,"button_2")
+;   
+;   ; use window list
+;   OpenList(*window_2)
+;   ;CloseList()
+  
+  ;;*w = Button(pos_x,10,160,70,"Button") 
   *b_0 = Button(10,90,160,30,">>(Back)") : Disable(*b_0, 1)
   Bind(*b_0, @Widgets_CallBack())
   
@@ -230,7 +253,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem( *combo, -1, "Shortcut")  
     AddItem( *combo, -1, "Canvas")   
     
-    SetState( *combo, #PB_GadgetType_Button)
+    SetState( *combo, #PB_GadgetType_ScrollArea)
     Bind(*combo, @Widgets_CallBack())
   EndIf
   
@@ -247,5 +270,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -d-
+; Folding = ---
 ; EnableXP
