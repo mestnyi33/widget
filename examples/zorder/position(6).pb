@@ -7,7 +7,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Global *this._s_widget
-  Global *button._s_widget
   Global *current._s_widget
   
   #first=99
@@ -46,8 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     
-    Button(x, y+51+s*8, 195, h, "2",#__Button_Right|#__text_top) : SetClass(widget(), GetText(widget())) ; Gadget(8, 
-    *current = Button(x, y+47+s*7, 175, h, "3",#__Button_Right|#__text_top) : SetClass(widget(), GetText(widget())) ; Gadget(7, 
+    *current = Button(x, y+51+s*8, 195, h, "2",#__Button_Right|#__text_top) : SetClass(widget(), GetText(widget())) ; Gadget(8, 
+    Button(x, y+47+s*7, 175, h, "3",#__Button_Right|#__text_top) : SetClass(widget(), GetText(widget())) ; Gadget(7, 
     Button(x, y+43+s*6, 155, h, "4",#__Button_Right|#__text_top) : SetClass(widget(), GetText(widget())) ; Gadget(6, 
     
     ;;*this = Button(10, y, 250, 80+h+s*9, "6 < 5 > 4", #__Button_Right|#__text_top) : SetClass(widget(), GetText(widget())) : *current = *this
@@ -62,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SEtColor(widget(), #PB_Gadget_BackColor, $ffff00)
     SetClass(widget(), "this_1")
     
-    *button = Button(4, 4, 200-4, (80+h+s*9)-16-4, "6 < 5 > 4", #__Button_Right|#__text_top) 
+    Button(4, 4, 200-4, (80+h+s*9)-16-4, "6 < 5 > 4", #__Button_Right|#__text_top) 
     SetClass(widget(), "this_2") 
     CloseList()
     CloseList()
@@ -88,10 +87,6 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     ;}
     
-    
-    ;SetPosition(*this, #PB_List_Before, *current)
-    SetPosition(*this, #PB_List_After, *current)
-    
     ResizeWindow(0,WindowX(0)-200,#PB_Ignore,#PB_Ignore,#PB_Ignore)
     
     OpenWindow(10, 0, 0, 130, 180, "", #PB_Window_TitleBar|#PB_Window_ScreenCentered, ParentID)
@@ -102,6 +97,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ButtonGadget(#return, 5, 145, 120, 30, "return")
     DisableGadget(#return, 1)
+    
+    
+   ; SetPosition(*this, #PB_List_Before, *current)
+    SetPosition(*this, #PB_List_After, *current)
   EndProcedure
   
   Demo()
@@ -189,7 +188,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 EndIf
               EndIf
               
-              SetText(*button, text)
+              SetText(*current, text)
               
               Redraw(Root())
               
@@ -213,5 +212,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----
+; Folding = v+--
 ; EnableXP

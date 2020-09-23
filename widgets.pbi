@@ -2560,6 +2560,13 @@ CompilerIf Not Defined(widget, #PB_Module)
     
     
     ;-
+    Macro _hide_state_(_this_)
+      Bool(_this_\hide[1] Or
+           _this_\parent\hide Or 
+           (_this_\parent\type = #PB_GadgetType_Panel And
+            _this_\parent\index[#__panel_2] <> _this_\_item))
+    EndMacro
+    
     Macro _set_image_(_this_, _address_, _image_)
       If IsImage(_image_)
         _address_\change = 1
@@ -2885,13 +2892,6 @@ CompilerIf Not Defined(widget, #PB_Module)
       
     EndMacro
     
-    Macro _hide_state_(_this_)
-      Bool(_this_\hide[1] Or
-           _this_\parent\hide Or 
-           (_this_\parent\type = #PB_GadgetType_Panel And
-            _this_\parent\index[#__panel_2] <> _this_\_item))
-    EndMacro
-    
     
     ;-
     ;-  BARs
@@ -2950,15 +2950,23 @@ CompilerIf Not Defined(widget, #PB_Module)
       If *this\index[#__s_2] <> State 
         *this\index[#__s_2] = State
         
-        If *this = *this\parent\gadget[#__panel_1] 
+        If *this\parent\gadget[#__panel_1] = *this 
           *this\parent\index[#__panel_2] = State
           
+          Debug "ggg - "+*this\parent\class +" "+ *this\parent\parent\class
+               
           PushListPosition(widget())
-          ForEach widget()
+          ChangeCurrentElement(widget(), *this\parent\address)
+          
+          While NextElement(widget())
             If Child( widget(), *this\parent)  
               widget()\hide = _hide_state_(widget())
+            Else
+              Break
             EndIf
-          Next
+            
+            Debug ""+widget()\class +" "+ widget()\parent\class
+          Wend
           PopListPosition(widget())
           
           Post(#PB_EventType_Change, *this\parent, State)
@@ -10607,6 +10615,8 @@ CompilerIf Not Defined(widget, #PB_Module)
           *this\hide[1] = *this\hide
           
           If *this\count\childrens
+            ;;Debug "hide - " + *this\class
+            
             ForEach widget()
               If Child(widget(), *this)
                 widget()\hide = _hide_state_(widget())
@@ -10618,22 +10628,31 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure   Child(*this._s_widget, *parent._s_widget)
-      Protected result
+      Protected result 
       
-      ;If *this And *parent
-      If *this\parent = *parent
-        result = *this
-      Else
-        While *this <> *this\root ; Not _is_root_(*this)
-          If *parent = *this\parent
-            result = *this
-            Break
-          EndIf
-          
-          *this = *this\parent
-        Wend
-      EndIf
-      ;EndIf
+      Repeat
+        If *parent = *this\parent
+          result = *this
+          Break
+        EndIf
+        
+        *this = *this\parent
+      Until *this = *this\root
+      
+; ; ;       ;If *this And *parent
+; ; ;       If *this\parent = *parent
+; ; ;         result = *this
+; ; ;       Else
+; ; ;         While *this <> *this\root ; Not _is_root_(*this)
+; ; ;           If *parent = *this\parent
+; ; ;             result = *this
+; ; ;             Break
+; ; ;           EndIf
+; ; ;           
+; ; ;           *this = *this\parent
+; ; ;         Wend
+; ; ;       EndIf
+; ; ;       ;EndIf
       
       ProcedureReturn result
     EndProcedure
@@ -11464,7 +11483,9 @@ CompilerIf Not Defined(widget, #PB_Module)
     EndProcedure
     
     Procedure.i GetLast(*last._s_widget)
-      While *last\last 
+      ;Protected *root = *last\root
+      
+      While *last\last ;And *last\root = *root
         *last = *last\last 
       Wend
       
@@ -12125,23 +12146,31 @@ CompilerIf Not Defined(widget, #PB_Module)
           If *this\parent
             *LastParent = *this\parent
             *LastParent\count\childrens - 1
-            Debug "change - "+*this\class 
             
-            SetPosition(*this, #PB_List_After, *parent)
-            
-            PushListPosition(widget())
-            ForEach widget()
-              If child(widget(), *this)
-                widget()\root = *parent\root
-                
-                If _is_window_(*parent\window)
-                  widget()\window = *parent\window
+            If *this\count\childrens
+              PushListPosition(Widget())
+              ChangeCurrentElement(widget(), *this\address)
+              
+              While NextElement(widget())
+                If Child(widget(), *this)
+                  widget()\root = *parent\root
+                  
+                  If _is_window_(*parent\window)
+                    widget()\window = *parent\window
+                  EndIf
+                  
+                  widget()\hide = _hide_state_(widget())
+                Else
+                  Break
                 EndIf
-                
-                widget()\hide = _hide_state_(widget())
-              EndIf
-            Next
-            PopListPosition(widget())
+              Wend
+              PopListPosition(Widget())
+            EndIf
+          
+            SetPosition(*this, #PB_List_After, *parent)
+;             SetPosition(*this, #PB_List_Before, *parent\last)
+;             SetPosition(*parent\last, #PB_List_Before, *this)
+           
           EndIf
           
           *this\parent = *parent
@@ -12248,19 +12277,28 @@ CompilerIf Not Defined(widget, #PB_Module)
                 Case *parent\root     : ReDraw(*LastParent\root)
               EndSelect
             EndIf
+            
+; ;             ;
+; ;             If *parent
+; ;               PushListPosition(Widget())
+; ;               ChangeCurrentElement(widget(), *parent\address)
+; ;               
+; ;               While  NextElement(widget())
+; ;                 If Not child(widget(), *parent)
+; ;                 ;  Break
+; ;                 EndIf
+; ;                 
+; ;                 Debug " re - "+widget()\class +"  & from - "+ widget()\parent\class +" >> to - "+ *parent
+; ;               Wend
+; ;               PopListPosition(Widget())
+; ;             EndIf
+            
+            
+            
           EndIf
         EndIf
       EndIf
-      
-      
-;         PushListPosition(Widget())
-;         ForEach widget()
-;           If child(widget(), *parent)
-;             Debug ""+widget()\class +" "+ widget()\parent +" "+ widget()\root
-;           EndIf
-;         Next
-;         PopListPosition(Widget())
-        
+         
     EndProcedure
     
     Procedure   SetPosition(*this._s_widget, position.l, *widget._s_widget = #Null) ; Ok
@@ -12293,6 +12331,12 @@ CompilerIf Not Defined(widget, #PB_Module)
           If *after
             ChangeCurrentElement(widget(), *this\address)
             MoveElement(widget(), #PB_List_Before, *after\address)
+            
+            While PreviousElement(widget()) 
+              If Child(widget(), *this)
+                MoveElement(widget(), #PB_List_After, *after\address)
+              EndIf
+            Wend
             
             While NextElement(widget()) 
               If Child(widget(), *this)
@@ -12343,11 +12387,15 @@ CompilerIf Not Defined(widget, #PB_Module)
           
           If *before
             *last = GetLast(*before)
-            ;           Debug *before\class
-            ;           Debug *last\class
             
             ChangeCurrentElement(widget(), *this\address)
             MoveElement(widget(), #PB_List_After, *last\address)
+            
+            While NextElement(widget()) 
+              If Child(widget(), *this)
+                MoveElement(widget(), #PB_List_Before, *last\address)
+              EndIf
+            Wend
             
             While PreviousElement(widget()) 
               If Child(widget(), *this)
@@ -12391,8 +12439,16 @@ CompilerIf Not Defined(widget, #PB_Module)
           
       EndSelect
       
-      
-      ; PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__event_repaint, *this)
+; ;       Debug ""
+; ;             PushListPosition(Widget())
+; ;             ForEach Widget()
+; ;               ;If child(widget(), *parent)
+; ;                 Debug ""+widget()\class ;+" "+ widget()\parent +" "+ widget()\root
+; ;               ;EndIf
+; ;             Next
+; ;             PopListPosition(Widget())
+; ;             
+; ;       ; PostEvent(#PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__event_repaint, *this)
       
       ProcedureReturn result
     EndProcedure
@@ -16876,5 +16932,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------07S-4---------f0-4+4--------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------edp-8------0--b0a9Oo-8------------------------------------------------------------------------------------------
 ; EnableXP

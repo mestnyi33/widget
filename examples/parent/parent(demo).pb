@@ -168,9 +168,9 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     
     *panel = Panel(10,145,200,160) 
-    AddItem(*panel, -1, "item (0)") : *p_0 = Button(pos_x,90,160,30,">>(Panel (0))") 
-    AddItem(*panel, -1, "item (1)") : *p_1 = Button(pos_x+5,90,160,30,">>(Panel (1))") 
-    AddItem(*panel, -1, "item (2)") : *p_2 = Button(pos_x+10,90,160,30,">>(Panel (2))") 
+    AddItem(*panel, -1, "item (0)") : *p_0 = Button(pos_x,90,160,30,">>(Panel (0))") : SetClass(widget(), GetText(widget()))
+    AddItem(*panel, -1, "item (1)") : *p_1 = Button(pos_x+5,90,160,30,">>(Panel (1))") : SetClass(widget(), GetText(widget())) 
+    AddItem(*panel, -1, "item (2)") : *p_2 = Button(pos_x+10,90,160,30,">>(Panel (2))") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
     *scrollarea = ScrollArea(215,145,200,160,200,160,10,#PB_ScrollArea_Flat) 
@@ -189,12 +189,27 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(20, X, Y, 185, 346+(#__caption_height), "old parent", Flags, WindowID(GetWindow(GetRoot(*window_1))))
   *window_2 = Open(20)
   *window_2 = Window(0,0,0,0,  "", #__flag_autosize|Flags)
+  SetClass(root(), "root_1")
   
   
   *w = ScrollArea(pos_x,10,160,70, 305,305,9,#PB_ScrollArea_Flat) 
-  SetClass(Button(0,0,80,20,"Button1"), "scroll_butt_1") 
-  SetClass(Button(30,30,80,20,"Button2"), "scroll_butt_2") 
+  SetClass(widget(), "scrollarea_0")
+  Button(0,0,80,20,"disable")
+  Disable(widget(), 1) 
+  SetClass(widget(), "scrollarea_0_butt_"+GetText(widget()))
+  
+  SetClass(Button(30,30,80,20,"Button2"), "scrollarea_0_butt_2") 
+  
+  ScrollArea(50,5,160,70, 305,305,9,#PB_ScrollArea_Flat) 
+  SetClass(widget(), "scrollarea_1")
+  Button(0,0,80,20,"hide")
+  Hide(widget(), 1) 
+  SetClass(widget(), "scrollarea_1_butt_"+GetText(widget()))
+  
+  SetClass(Button(30,30,80,20,"Button4"), "scrollarea_1_butt_4") 
   CloseList()
+  CloseList()
+  
   
 ;   *w = MDI(pos_x,10,160,70);, #__flag_autosize)
 ;   
