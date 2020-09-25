@@ -129,10 +129,23 @@ CompilerIf #PB_Compiler_IsMainFile
                 ;                     EndSelect
                 ;                   CompilerEndIf
                 
+                
                 Resize(*w,pos_x,10,160,70)
                 SetParent(*w, ParentID)
                 
-                
+;                 Debug " add - "
+;                 ForEach widget( ) 
+;                   If widget( )\before And widget( )\after
+;                     Debug " add - "+ widget( )\before\class +" "+ widget( )\class +" "+ widget( )\after\class
+;                   ElseIf widget( )\after
+;                     Debug " add - none "+ widget( )\class +" "+ widget( )\after\class
+;                   ElseIf widget( )\before
+;                     Debug " add - "+ widget( )\before\class +" "+ widget( )\class +" none"
+;                   Else
+;                     Debug " add - "+ widget( )\class 
+;                   EndIf
+;                 Next
+;                 Debug ""
             EndSelect
             
         EndSelect
@@ -192,24 +205,24 @@ CompilerIf #PB_Compiler_IsMainFile
   SetClass(root(), "root_1")
   
   
-  *w = ScrollArea(pos_x,10,160,70, 305,305,9,#PB_ScrollArea_Flat) 
-  SetClass(widget(), "scrollarea_0")
-  Button(0,0,80,20,"disable")
-  Disable(widget(), 1) 
-  SetClass(widget(), "scrollarea_0_butt_"+GetText(widget()))
-  
-  SetClass(Button(30,30,80,20,"Button2"), "scrollarea_0_butt_2") 
-  
-  ScrollArea(50,5,160,70, 305,305,9,#PB_ScrollArea_Flat) 
-  SetClass(widget(), "scrollarea_1")
-  Button(0,0,80,20,"hide")
-  Hide(widget(), 1) 
-  SetClass(widget(), "scrollarea_1_butt_"+GetText(widget()))
-  
-  SetClass(Button(30,30,80,20,"Button4"), "scrollarea_1_butt_4") 
-  CloseList()
-  CloseList()
-  
+;   *w = ScrollArea(pos_x,10,160,70, 305,305,9,#PB_ScrollArea_Flat) 
+;   SetClass(widget(), "scrollarea_0")
+;   Button(0,0,80,20,"disable")
+;   Disable(widget(), 1) 
+;   SetClass(widget(), "scrollarea_0_butt_"+GetText(widget()))
+;   
+;   SetClass(Button(30,30,80,20,"Button2"), "scrollarea_0_butt_2") 
+;   
+;   ScrollArea(50,5,160,70, 305,305,9,#PB_ScrollArea_Flat) 
+;   SetClass(widget(), "scrollarea_1")
+;   Button(0,0,80,20,"hide")
+;   Hide(widget(), 1) 
+;   SetClass(widget(), "scrollarea_1_butt_"+GetText(widget()))
+;   
+;   SetClass(Button(30,30,80,20,"Button4"), "scrollarea_1_butt_4") 
+;   CloseList()
+;   CloseList()
+;   
   
 ;   *w = MDI(pos_x,10,160,70);, #__flag_autosize)
 ;   
@@ -226,7 +239,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   OpenList(*window_2)
 ;   ;CloseList()
   
-  ;;*w = Button(pos_x,10,160,70,"Button") 
+  *w = Button(pos_x,10,160,70,"Button") 
   *b_0 = Button(10,90,160,30,">>(Back)") : Disable(*b_0, 1)
   Bind(*b_0, @Widgets_CallBack())
   
@@ -268,7 +281,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem( *combo, -1, "Shortcut")  
     AddItem( *combo, -1, "Canvas")   
     
-    SetState( *combo, #PB_GadgetType_ScrollArea)
+    SetState( *combo, #PB_GadgetType_Button)
     Bind(*combo, @Widgets_CallBack())
   EndIf
   
@@ -285,5 +298,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---
+; Folding = -8-
 ; EnableXP

@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure enum(*this._S_widget)
     If Not *this\hide
-      Debug " class - " + *this\Class +" ("+ *this\_item +" - parent_item)"
+      Debug " class - " + *this\Class +" ("+ *this\_tabindex +" - parent_item)"
     EndIf
   EndProcedure
   
@@ -103,28 +103,28 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       Bind(@Events(), Button( 5, 5, 55, 22,"hide_3"))
       ;       Bind(@Events(), Button( 5, 30, 55, 22,"show_3"))
       
-      *s=Splitter(110, 5, 300, 152, Splitter(5,5, 300, 152, Button(0, 0, 0, 0,"кнопка 15"), 
-      Button(0, 0, 0, 0,"кнопка 15")), Button(0, 0, 0, 0,"кнопка 15"), #PB_Splitter_Vertical) 
+      *s=Splitter(110, 5, 300, 152, Splitter(5, 5, 300, 152, Button(0,0,0,0, "кнопка 12"), 
+      Button(0,0,0,0, "кнопка 13")), Button(0,0,0,0, "кнопка 14"), #PB_Splitter_Vertical) 
       
       AddItem(*w1, -1, "Под-Панель 4")
       
       *w2=Panel (5, 30, 340, 166)
       AddItem(*w2, -1, "Под--Панель 1")
       AddItem(*w2, -1, "Под--Панель 2")
-      Button( 5, 5, 55, 22, "кнопка 5")
-      Button( 5, 30, 55, 22, "кнопка 30")
+      Button( 5, 5, 80, 22, "кнопка 25")
+      Button( 5, 30, 80, 22, "кнопка 30")
       AddItem(*w2, -1, "Под--Панель 3")
       AddItem(*w2, -1, "Под--Панель 4")
       AddItem(*w2, 1, "Под--Панель -2-")
-      Button( 15, 5, 55, 22, "кнопка 15")
-      Button( 20, 30, 55, 22, "кнопка 20")
+      Button( 15, 5, 80, 22, "кнопка 15")
+      Button( 20, 30, 80, 22, "кнопка 20")
       CloseList()
       SetState(*w2, 4)
       
       
       CloseList()
       
-      Button(5, 5, 55, 22,"кнопка 5")
+      Button(5, 5, 80, 22,"кнопка 5")
       
       AddItem (*w, -1,"Панель 2")
       Button(10, 15, 80, 24,"Кнопка 1")

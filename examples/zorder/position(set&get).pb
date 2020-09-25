@@ -89,8 +89,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     
-    ;SetPosition(*this, #PB_List_Before, *current)
-    SetPosition(*this, #PB_List_After, *current)
+    SetPosition(*this, #PB_List_Before, *current)
+    ;SetPosition(*this, #PB_List_After, *current)
     
     ResizeWindow(0,WindowX(0)-200,#PB_Ignore,#PB_Ignore,#PB_Ignore)
     

@@ -54,12 +54,16 @@
     #__split_1 = 1
     #__split_2 = 2
     
-    #__b_split_1 = 1
-    #__b_split_2 = 2
+    #__split_b1 = 1
+    #__split_b2 = 2
+    #__split_b3 = 3
     
     ; panel
     #__panel_1 = 1
     #__panel_2 = 2
+    
+    #__tab_1 = 1 ; entered item
+    #__tab_2 = 2 ; selected item
     
     ; option
     #__option_1 = 2

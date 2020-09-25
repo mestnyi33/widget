@@ -14,9 +14,19 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_coordinate
-    Structure _s_coordinate Extends _s_point
+    Structure _s_coordinate ;Extends _s_point
+      y.l
+      x.l
       width.l
       height.l
+    EndStructure
+    
+    ;- - _s_padding
+    Structure _s_padding
+      left.l
+      top.l
+      right.l
+      bottom.l
     EndStructure
     
     ;- - _s_color
@@ -71,12 +81,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_edit
-    Structure _s_edit ; Extends _s_coordinate
-      y.l
-      x.l
-      height.l
-      width.l
-      
+    Structure _s_edit Extends _s_coordinate
       pos.l
       len.l
       
@@ -84,14 +89,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       change.b
       
       *color._s_color
-    EndStructure
-    
-    ;- - _s_padding
-    Structure _s_padding
-      left.l
-      top.l
-      right.l
-      bottom.l
     EndStructure
     
     ;- - _s_syntax
@@ -128,12 +125,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_image
-    Structure _s_image
-      y.l
-      x.l
-      height.l
-      width.l
-      
+    Structure _s_image Extends _s_coordinate
       *id  ; - ImageID() 
       *img ; - Image()
       
@@ -150,14 +142,9 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;       *background._s_image
     EndStructure
     
-    ;- - _s_button
-    Structure _s_button 
-      y.l
-      x.l
-      height.l
-      width.l
-      
-      len.l ; to >> size.l
+    ;- - _s_buttons
+    Structure _s_buttons Extends _s_coordinate 
+      size.l ; len >> size.l
       state.l ; normal; entered; selected; disabled
       
       ; [3]fixed = thumb delta pos 
@@ -170,11 +157,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       arrow._s_arrow
       color._s_color
-      
-      
-      
-;       padding._s_point
-;       align._s_align
+    EndStructure
+    
+    ;- - _s_button
+    Structure _s_button 
+      pushed.l
+      entered.l
+      id._s_buttons[3]
     EndStructure
     
     ;- - _s_tabs
@@ -190,16 +179,12 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_bar
     Structure _s_bar
-      ; replace
-      ; index = state
-      ; fixed = state[1]
-      
       ; splitter - fixed button index 
-      ; tab - set state button index 
+      ; tab - setstate() button index 
       fixed.l  
       mode.i
       
-      index.l ; selected button index  
+      index.l ; current added index 
       from.l  ; entered button index
       
       max.l
@@ -216,7 +201,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       page._s_page
       area._s_page
       thumb._s_page  
-      button._s_button[4]
+      button._s_buttons[4]
       
       List *_s._s_tabs()
     EndStructure
@@ -236,12 +221,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_transform
-    Structure _s_transforms
-      y.l
-      x.l
-      width.l
-      height.l
-      
+    Structure _s_transforms Extends _s_coordinate
       round.a
       
       cursor.l
@@ -249,12 +229,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ; multi group
-    Structure _s_group
+    Structure _s_group Extends _s_coordinate
       *widget._s_widget
-      x.l
-      y.l
-      width.l
-      height.l
     EndStructure
     
     Structure _s_grid
@@ -265,12 +241,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_transforms
-    Structure _s_transform
-      y.l
-      x.l
-      width.l
-      height.l
-      
+    Structure _s_transform Extends _s_coordinate
       color._s_color
       
       List *group._s_group()
@@ -334,7 +305,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       width.l[5]
       
       text._s_text
-      button._s_button[4]
+      button._s_buttons[4]
       color._s_color
       
       interact.b
@@ -402,7 +373,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       image._s_image
       text._s_text[4]
-      box._s_button[2]
+      box._s_buttons[2]
       color._s_color
       
       ;state.b
@@ -432,7 +403,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       l._s_line_ ; 
       *parent._s_rows
-      box._s_button[2]
+      box._s_buttons[2]
       *option_group._s_rows
       
       ; edit
@@ -473,7 +444,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;
       count.l
       index.l
-      box._s_button           ; editor - edit rectangle
+      box._s_buttons           ; editor - edit rectangle
       
       *entered._s_rows    ; at point item
       *selected._s_rows   ; pushed at point item
@@ -492,34 +463,31 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     ;- - _s_column
-    Structure _s_column
-      y.l
-      x.l
-      height.l
-      width.l
-      
+    Structure _s_column Extends _s_coordinate
       
     EndStructure
     
     ;-
     ;- - _s_widget
     Structure _s_widget 
-      *_drawing ; drawing_mode
-      *_drawing_alpha
+   ;       *_drawing ; drawing_mode
+;       *_drawing_alpha
       
       ; side.l[4] ; sidebar сторона 
                         ;       *v._s_widget      ; vertical scrollbar
                         ;       *h._s_widget      ; horizontal scrollbar
       
+      y.l[constants::#__c]
+      x.l[constants::#__c]
+      height.l[constants::#__c]
+      width.l[constants::#__c]
+      
+      ; placing layout
       *first._s_widget
       *last._s_widget
       *after._s_widget
       *before._s_widget
-      *__last._s_widget
       
-      child.b           ; is the widget composite?
-      transform.b ; add anchors on the widget (to size and move)
-    
       *container        ; 
       *address           ; widget list address
       *root._s_root     ; this root
@@ -529,7 +497,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       *gadget._s_widget[3] 
       ; \root\gadget[0] - active gadget
       ; \gadget[0] - active child gadget 
-      ; \gadget[1] - panel() tabbar gadget
       ; \gadget[1] - splitter() first gadget
       ; \gadget[2] - splitter() second gadget
       
@@ -546,23 +513,26 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; \image[2] - pressed image
       ; \image[3] - background image
       
-      *tt._s_tt
-      *_flag
-      _state.l
-      _item.l    ; parent panel tab index
-      *_group._s_widget ; = option() group gadget  
+      StructureUnion
+        *_tab._s_widget ; = panel() tabbar gadget
+        *_group._s_widget ; = option() groupbar gadget  
+        *tt._s_tt
+      EndStructureUnion
       
+      *flag
+      *data
+      
+      _state.l
+      _tabindex.l ; parent panel tab index
+      
+      child.b ; is the widget composite?
+      transform.b ; add anchors on the widget (to size and move)
       
       draw.b
       type.b
       class.s  
       level.l 
       hide.b[2] 
-      
-      y.l[constants::#__c]
-      x.l[constants::#__c]
-      height.l[constants::#__c]
-      width.l[constants::#__c]
       
       
       *errors
@@ -585,22 +555,22 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       mode._s_mode
       count._s_count
-      combo_box._s_button
+      combo_box._s_buttons
       caption._s_caption
       scroll._s_scroll 
       color._s_color[4]
       row._s_row
       bar._s_bar
       
-      button._s_button ; checkbox; optionbox
       text._s_text 
       
-      *data
+      button._s_buttons ; checkbox; optionbox
+      
       *align._s_align
       *selector._s_transform[#__count_anchors_]
       
       Map *bind._s_bind()
-      *mouse_drag
+      ;*mouse_drag
       
       *time_click
       *time_down
@@ -676,5 +646,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----Bz-
+; Folding = -f6--fm-
 ; EnableXP

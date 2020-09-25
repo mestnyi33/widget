@@ -1,11 +1,4 @@
-﻿;
-; Module name   : elements
-; Author        : mestnyi
-; Last updated  : mar 12, 2020
-; Forum link    : https://www.purebasic.fr/english/viewtopic.php?f=12&t=70662
-; 
-
-XIncludeFile "../../widgets.pbi"
+﻿XIncludeFile "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
@@ -37,21 +30,34 @@ CompilerIf #PB_Compiler_IsMainFile
       
       TextGadget(#PB_Any, 110, 235, 210, 40, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Center )
       
-      Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
-      Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+;       Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
+;       Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
+;       
+;       Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
+;       Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
+;       Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
+;       Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
       
-      Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
-      Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
-      Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
-      Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+      Button_0 = 0
+      Button_1 = 0
+      Button_2 = 0
+      Button_3 = 0
+      Button_4 = 0
+      Button_5 = 0
       
-      Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+      Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_FirstFixed) ; #PB_Splitter_Vertical|
       Splitter_1 = Splitter(0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
       SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
       Splitter_2 = Splitter(0, 0, 0, 0, Splitter_1, Button_5)
       Splitter_3 = Splitter(0, 0, 0, 0, Button_2, Splitter_2)
       Splitter_4 = Splitter(430-GadgetX(GetGadget(Root())), 10-GadgetY(GetGadget(Root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+      
+      SetClass(Splitter_0, "0")
+      SetClass(Splitter_1, "1")
+      SetClass(Splitter_2, "2")
+      SetClass(Splitter_3, "3")
+      SetClass(Splitter_4, "4")
       
       SetState(Splitter_1, 20)
       ;SetState(Splitter_1, 410-20)
