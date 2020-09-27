@@ -133,22 +133,24 @@ CompilerIf #PB_Compiler_IsMainFile
                 Resize(*w,pos_x,10,160,70)
                 SetParent(*w, ParentID)
                 
-;                 Debug " add - "
-;                 ForEach widget( ) 
-;                   If widget( )\before And widget( )\after
-;                     Debug " add - "+ widget( )\before\class +" "+ widget( )\class +" "+ widget( )\after\class
-;                   ElseIf widget( )\after
-;                     Debug " add - none "+ widget( )\class +" "+ widget( )\after\class
-;                   ElseIf widget( )\before
-;                     Debug " add - "+ widget( )\before\class +" "+ widget( )\class +" none"
-;                   Else
-;                     Debug " add - "+ widget( )\class 
-;                   EndIf
-;                 Next
-;                 Debug ""
             EndSelect
             
         EndSelect
+        
+        Debug " add - "
+        ForEach widget( ) 
+          If widget( )\before And widget( )\after
+            Debug " add - "+ widget( )\before\class +" "+ widget( )\class +" "+ widget( )\after\class
+          ElseIf widget( )\after
+            Debug " add - none "+ widget( )\class +" "+ widget( )\after\class
+          ElseIf widget( )\before
+            Debug " add - "+ widget( )\before\class +" "+ widget( )\class +" none"
+          Else
+            Debug " add - none "+ widget( )\class  +" none"
+          EndIf
+        Next
+        Debug ""
+        
         
         If GetParent(*w) = GetParent(*pb_0) 
           Disable(*pb_0, 1)
@@ -167,17 +169,18 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; Create desktop for the widgets
   If Open(10)
-    *d_0 = Button(pos_x,90,160,30,">>(Desktop)") 
-    *pb_0 = Button(10,90+40,180,20,">>(Panel to hide item (0))") : Disable(*pb_0, 1)
-    *pb_1 = Button(10,90+65,180,20,">>(Panel to hide item (1))") 
-    *pb_2 = Button(10,90+90,180,20,">>(Panel to hide item (2))") 
+    Root()\class = "root_0"
+    *d_0 = Button(pos_x,90,160,30,">>(Desktop)") : SetClass(widget(), GetText(widget())) 
+    *pb_0 = Button(10,90+40,180,20,">>(Panel to hide item (0))") : SetClass(widget(), GetText(widget())) : Disable(*pb_0, 1)
+    *pb_1 = Button(10,90+65,180,20,">>(Panel to hide item (1))") : SetClass(widget(), GetText(widget())) 
+    *pb_2 = Button(10,90+90,180,20,">>(Panel to hide item (2))") : SetClass(widget(), GetText(widget())) 
     
     
     *window_1 = Window(202, 0, 430, 314+(#__border_size + #__caption_height), "demo set  new parent", Flags )
-    *w_0 = Button(pos_x,90,160,30,">>(Window)")
+    *w_0 = Button(pos_x,90,160,30,">>(Window)") : SetClass(widget(), GetText(widget()))
     
     *container = Container(215,10,200,130,#PB_Container_Flat) 
-    *c_0 = Button(pos_x,90,160,30,">>(Container)") 
+    *c_0 = Button(pos_x,90,160,30,">>(Container)") : SetClass(widget(), GetText(widget()))
     CloseList()
     
     *panel = Panel(10,145,200,160) 
@@ -188,7 +191,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     *scrollarea = ScrollArea(215,145,200,160,200,160,10,#PB_ScrollArea_Flat) 
     Debug ""+widget()\x[#__c_draw]+" "+widget()\x[#__c_container]+" "+widget()\x[#__c_required]
-    *s_0 = Button(pos_x,90,160,30,">>(ScrollArea)") 
+    *s_0 = Button(pos_x,90,160,30,">>(ScrollArea)") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
     Bind(Root(), @Widgets_CallBack())
@@ -201,8 +204,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   OpenWindow(20, X, Y, 185, 346+(#__caption_height), "old parent", Flags, WindowID(GetWindow(GetRoot(*window_1))))
   *window_2 = Open(20)
+  Root()\class = "root_1"
+  
   *window_2 = Window(0,0,0,0,  "", #__flag_autosize|Flags)
-  SetClass(root(), "root_1")
   
   
 ;   *w = ScrollArea(pos_x,10,160,70, 305,305,9,#PB_ScrollArea_Flat) 
@@ -239,8 +243,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   OpenList(*window_2)
 ;   ;CloseList()
   
-  *w = Button(pos_x,10,160,70,"Button") 
-  *b_0 = Button(10,90,160,30,">>(Back)") : Disable(*b_0, 1)
+  *w = Button(pos_x,10,160,70,"current") : SetClass(widget(), GetText(widget())) 
+  *b_0 = Button(10,90,160,30,">>(Back)") : SetClass(widget(), GetText(widget())) : Disable(*b_0, 1)
   Bind(*b_0, @Widgets_CallBack())
   
   ;
@@ -298,5 +302,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -8-
+; Folding = 46-
 ; EnableXP
