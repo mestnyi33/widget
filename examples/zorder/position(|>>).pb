@@ -20,12 +20,12 @@ CompilerIf #PB_Compiler_IsMainFile
     *b1 = Button(10,10,80,30,"btn1") : SetClass(widget(), GetText(widget()))
     *b2 = Button(10,40,80,30,"btn2") : SetClass(widget(), GetText(widget()))
     
-    SetAttribute(*s1, #PB_Splitter_FirstGadget, *b1)
-    SetAttribute(*s1, #PB_Splitter_SecondGadget, *b2)
+;     SetAttribute(*s1, #PB_Splitter_FirstGadget, *b1)
+;     SetAttribute(*s1, #PB_Splitter_SecondGadget, *b2)
     
-;     SetParent(*b1, *s1, #PB_Splitter_FirstGadget)
-;     SetParent(*b2, *s1, #PB_Splitter_SecondGadget)
-;     
+    SetParent(*b1, *s1, #PB_Splitter_FirstGadget)
+    SetParent(*b2, *s1, #PB_Splitter_SecondGadget)
+    
     ;     - 
     ;     - 0 0 none btn0 con1
     ;     - 1 1 btn0 con1 btn3

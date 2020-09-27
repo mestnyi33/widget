@@ -4732,12 +4732,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #PB_Splitter_FirstGadget
               *this\gadget[#__split_1] = *value
               *this\index[#__split_1] = Bool( IsGadget( *value ) )
-              result = 1
+              result =- 1
               
             Case #PB_Splitter_SecondGadget
               *this\gadget[#__split_2] = *value
               *this\index[#__split_2] = Bool( IsGadget( *value ) )
-              result = 1
+              result =- 1
               
           EndSelect
           
@@ -4822,7 +4822,9 @@ CompilerIf Not Defined( widget, #PB_Module )
           Update( *this ) ; \hide = 
           
           If *this\type = #PB_GadgetType_Splitter
-            SetParent(*value, *this)
+            If result =- 1
+              SetParent(*value, *this)
+            EndIf
           EndIf
         EndIf
       EndWith
@@ -16338,20 +16340,6 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Procedure.i Match( *value, Grid.i, Max.i = $7FFFFFFF )
-    If Grid 
-      *value = Round( ( *value/Grid ), #PB_Round_Nearest ) * Grid 
-      
-      If *value > Max 
-        *value = Max 
-      EndIf
-    EndIf
-    
-    ProcedureReturn *value
-    ;   Procedure.i Match( *value.i, Grid.i, Max.i = $7FFFFFFF )
-    ;     ProcedureReturn ( ( Bool( *value>Max ) * Max ) + ( Bool( Grid And *value<Max ) * ( Round( ( *value/Grid ), #PB_round_nearest ) * Grid ) ) )
-  EndProcedure
-  
   Procedure widget_add( *parent._s_widget, class.s, x.l,y.l, width.l=0, height.l=0 )
     Protected *new._s_widget, *param1, *param2, *param3
     Protected flag.i
@@ -17052,5 +17040,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------0--------PAA-------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--f-9f6-d--------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------veA+f-r--+-8--B+--
 ; EnableXP
