@@ -76,8 +76,17 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; Create desktop for the widgets
   If Open(10)
+    *window_1 = Root()
+    *w_0 = Button(pos_x,90,160,30,">>(Window)") : SetClass(widget(), GetText(widget()))
+    
     *container = Container(215,10,200,130,#PB_Container_Flat) : SetClass(widget(), "container") 
     *c_0 = Button(pos_x,90,160,30,">>(Container)") : SetClass(widget(), GetText(widget())) 
+    CloseList()
+    
+    *panel = Panel(10,145,200,160) 
+    AddItem(*panel, -1, "item (0)") : *p_0 = Button(pos_x,90,160,30,">>(Panel (0))") : SetClass(widget(), GetText(widget()))
+    AddItem(*panel, -1, "item (1)") : *p_1 = Button(pos_x+5,90,160,30,">>(Panel (1))") : SetClass(widget(), GetText(widget())) 
+    AddItem(*panel, -1, "item (2)") : *p_2 = Button(pos_x+10,90,160,30,">>(Panel (2))") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
     *scrollarea = ScrollArea(215,145,200,160,200,160,10,#PB_ScrollArea_Flat) : SetClass(widget(), "scrollarea") 

@@ -1,4 +1,8 @@
-﻿CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+﻿;
+; ver. 0.0.1.2
+;
+
+CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
   #path = "/Users/as/Documents/GitHub/widget/"
   IncludePath #path
   XIncludeFile "include/fixme(mac).pbi"
@@ -2578,6 +2582,24 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     Macro _move_after_(_this_, _before_)
+      ; if first element in parent list
+      If _this_\parent\first = _this_
+        _this_\parent\first = _this_\after
+      EndIf
+      
+      ; if last element in parent list
+      If _this_\parent\last = _this_
+        _this_\parent\last = _this_\before
+      EndIf
+      
+      If _this_\before
+        _this_\before\after = _this_\after
+      EndIf
+      
+      If _this_\after
+        _this_\after\before = _this_\before
+      EndIf
+      
       PushListPosition( widget( ) )
       ChangeCurrentElement( widget( ), _this_\address )
       MoveElement( widget( ), #PB_List_After, _before_\address )
@@ -2599,6 +2621,24 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     Macro _move_before_(_this_, _after_)
+      ; if first element in parent list
+      If _this_\parent\first = _this_
+        _this_\parent\first = _this_\after
+      EndIf
+      
+      ; if last element in parent list
+      If _this_\parent\last = _this_
+        _this_\parent\last = _this_\before
+      EndIf
+      
+      If _this_\before
+        _this_\before\after = _this_\after
+      EndIf
+      
+      If _this_\after
+        _this_\after\before = _this_\before
+      EndIf
+      
       PushListPosition( widget( ) )
       ChangeCurrentElement( widget( ), _this_\address )
       MoveElement( widget( ), #PB_List_Before, _after_\address )
@@ -12212,6 +12252,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\root = *parent\root
           *this\window = *parent\window
           
+          ;
           If *parent\last 
             If *parent\last\last
               *last = GetLast( *parent\last\last )
@@ -12229,6 +12270,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; 
             PushListPosition( widget( ) )
+            
+            _move_after_(*this, *last)
             
             If *this\count\childrens
               ChangeCurrentElement( widget( ), *this\address )
@@ -12248,57 +12291,9 @@ CompilerIf Not Defined( widget, #PB_Module )
               Wend
             EndIf
             
-            ; if first element in parent list
-            If *this\parent\first = *this
-              *this\parent\first = *this\after
-            EndIf
-            
-            ; if last element in parent list
-            If *this\parent\last = *this
-              *this\parent\last = *this\before
-            EndIf
-            
-            If *this\before
-              *this\before\after = *this\after
-            EndIf
-            
-            If *this\after
-              *this\after\before = *this\before
-            EndIf
-            
-            If *parent\last 
-              *this\before = *parent\last 
-              *this\before\after = *this
-            Else
-              *parent\first = *this
-              *parent\first\before = 0
-            EndIf
-            
-            *this\after = 0
-
-            
-          ; SetPosition( *this, #PB_List_After, *last)
-            
-            ;             If *parent\last 
-            ;               If *this\parent\last = *this
-            ;                 *this\parent\last = *parent
-            ;                 *parent\after = 0
-            ;               EndIf
-            ;             EndIf
-            
-            _move_after_(*this, *last)
-            
             PopListPosition( widget( ) )
           Else
             If *parent\root\count\childrens
-              If *parent\last 
-                *this\before = *parent\last
-                *this\before\after = *this
-              Else
-                *parent\first = *this
-                *parent\first\before = 0
-              EndIf
-              
               ChangeCurrentElement( widget( ), *last\address )
             Else
               LastElement( widget( ) )
@@ -12309,7 +12304,17 @@ CompilerIf Not Defined( widget, #PB_Module )
             widget( ) = *this
           EndIf
           
+          If *parent\last 
+            *this\before = *parent\last 
+            *this\before\after = *this
+          Else
+            *parent\first = *this
+            *parent\first\before = 0
+          EndIf
+          
+          *this\after = 0
           *parent\last = *this
+          
           *this\parent = *parent
           
           ; add parent childrens count
@@ -12432,24 +12437,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *after
             _move_before_(*this, *after)
             
-            ; if first element in parent list
-            If *this\parent\first = *this
-              *this\parent\first = *this\after
-            EndIf
-            
-            ; if last element in parent list
-            If *this\parent\last = *this
-              *this\parent\last = *this\before
-            EndIf
-            
-            If *this\before
-              *this\before\after = *this\after
-            EndIf
-            
-            If *this\after
-              *this\after\before = *this\before
-            EndIf
-            
             *this\after = *after
             *this\before = *after\before 
             *after\before = *this
@@ -12474,39 +12461,13 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *before
-            ; Debug ""+*this\parent\class+" "+*before\parent\class
-            ;             If *this\parent\root = *before\parent\root
             *last = GetLast( *before )
-            ;             Else
-            ;               *last = *before
-            ;             EndIf
             
             _move_after_(*this, *last)
             
-            ; if first element in parent list
-            If *this\parent\first = *this
-              *this\parent\first = *this\after
-            EndIf
-            
-            ; if last element in parent list
-            If *this\parent\last = *this
-              *this\parent\last = *this\before
-            EndIf
-            
-            If *this\after
-              *this\after\before = *this\before
-            EndIf
-            
-            If *this\before
-              *this\before\after = *this\after
-            EndIf
-            
             *this\before = *before
-            
-            If *before <> *widget
-              *this\after = *before\after 
-              *before\after = *this
-            EndIf
+            *this\after = *before\after 
+            *before\after = *this
             
             If *this\after
               *this\after\before = *this
@@ -17091,5 +17052,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------0--------PAw-------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--f-c-v94+8---------------------------------------------------------------------------------------------
+; Folding = ---------------------------0--------PAA-------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--f-9f6-d--------------------------------------------------------------------------------------------
 ; EnableXP
