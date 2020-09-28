@@ -230,6 +230,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ; multi group
     Structure _s_group Extends _s_coordinate
+      *id._s_widget
       *widget._s_widget
     EndStructure
     
@@ -581,6 +582,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_mouse
     Structure _s_mouse Extends _s_point
+      interact.b 
+      ;*behavior
       *widget._s_widget     ; at point element
                     *selected._s_widget   ; at point pushed element
       

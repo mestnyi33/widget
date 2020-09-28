@@ -38,12 +38,12 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         If *after
-          ChangeCurrentElement(widget(), *this\adress)
-          MoveElement(widget(), #PB_List_Before, *after\adress)
+          ChangeCurrentElement(widget(), *this\address)
+          MoveElement(widget(), #PB_List_Before, *after\address)
           
           While NextElement(widget()) 
             If Child(widget(), *this)
-              MoveElement(widget(), #PB_List_Before, *after\adress)
+              MoveElement(widget(), #PB_List_Before, *after\address)
             EndIf
           Wend
           
@@ -91,12 +91,12 @@ CompilerIf #PB_Compiler_IsMainFile
           ;           Debug *before\class
           ;           Debug *last\class
           
-          ChangeCurrentElement(widget(), *this\adress)
-          MoveElement(widget(), #PB_List_After, *last\adress)
+          ChangeCurrentElement(widget(), *this\address)
+          MoveElement(widget(), #PB_List_After, *last\address)
           
           While PreviousElement(widget()) 
             If Child(widget(), *this)
-              MoveElement(widget(), #PB_List_After, *this\adress)
+              MoveElement(widget(), #PB_List_After, *this\address)
             EndIf
           Wend
           
@@ -207,5 +207,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = N-9--
+; Folding = v-+--
 ; EnableXP

@@ -278,7 +278,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure$ add_line(*new._s_widget, Handle$) ; Ok
     Protected ID$, Result$, param1$, param2$, param3$, Text$, flag$
     
-    flag$ = FlagFromFlag(*new\type, *new\_flag)
+    flag$ = FlagFromFlag(*new\type, *new\flag)
     
     Select Asc(Handle$)
       Case '#'        : ID$ = Handle$           : Handle$ = ""

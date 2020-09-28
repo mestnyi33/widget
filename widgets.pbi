@@ -1,5 +1,5 @@
 ﻿;
-; ver. 0.0.1.2
+; ver. 0.0.1.6
 ;
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -166,6 +166,29 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;  ReDraw( root( ) )
       Post( #PB_EventType_Repaint, root( ) ) ;this( )\widget\root )
                                              ; Next
+    EndMacro
+    
+    ;-
+    Macro StartEnumeration( _parent_ )
+      Bool( _parent_\count\childrens )
+      
+      PushListPosition( widget( ) )
+      ChangeCurrentElement( widget( ), _parent_\address )
+      
+      While NextElement( widget( ) )
+        If Child( widget( ), _parent_ )
+        EndMacro
+        
+        Macro AbortEnumeration( )
+          Break
+        EndMacro
+        
+        Macro StopEnumeration( )
+        Else
+          Break
+        EndIf
+      Wend
+      PopListPosition( widget( ) )
     EndMacro
     
     ;-
@@ -1766,29 +1789,29 @@ CompilerIf Not Defined( widget, #PB_Module )
         ;*this\cursor = #PB_Cursor_Default
         
         a_grid_change( *this\parent )
-        ;         Debug ""+transform( )\main +" "+ *this
-        ;         Static *LastPos
+        ;         ;         Debug ""+transform( )\main +" "+ *this
+        ;                  Static *LastPos
+        ;         
+        ;                 If *LastPos
+        ;                   If transform( )\widget
+        ;                     SetPosition( transform( )\widget, #PB_List_Before, *LastPos )
+        ;                     *LastPos = 0
+        ;                   EndIf
+        ;                 EndIf
+        ;                 
+        ;                 *LastPos = GetPosition( *this, #PB_List_After )
+        ;                 
+        ;                 If *LastPos
+        ;                   SetPosition( *this, #PB_List_Last )
+        ;                 EndIf
+        ;                 
         
-        ;         If *LastPos
-        ;           If transform( )\widget
-        ;             SetPosition( transform( )\widget, #PB_List_Before, *LastPos )
-        ;             *LastPos = 0
-        ;           EndIf
+        ;         ;If *this\repaint
+        ;         If transform( )\widget
+        ;           Post( #PB_EventType_LostFocus, transform( )\widget, transform( )\index )
         ;         EndIf
-        ;         
-        ;         *LastPos = GetPosition( *this, #PB_List_After )
-        ;         
-        ;         If *LastPos
-        ;           SetPosition( *this, #PB_List_Last )
-        ;         EndIf
-        ;         
-        ;         
-        ; ;         ;If *this\repaint
-        ; ;         If transform( )\widget
-        ; ;           Post( #PB_EventType_LostFocus, transform( )\widget, transform( )\index )
-        ; ;         EndIf
-        ; ;         Post( #PB_EventType_Focus, *this, transform( )\index )
-        ; ;         ;EndIf
+        ;         Post( #PB_EventType_Focus, *this, transform( )\index )
+        ;         ;EndIf
         
         transform( )\size = size
         
@@ -2108,6 +2131,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             If a_set( *this )
               a_reset( )
             EndIf
+          Else
+            If entered( )\transform =- 1
+              Debug 6666
+            Else
+              Debug 7777
+              ; transform( )\group( )\widget = entered()
+            EndIf
           EndIf
           
           ; get transform index
@@ -2181,6 +2211,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             mouse( )\delta\y = mouse_y ;+ ( #__border_size+#__caption_height ) ; - *this\y[#__c_frame]
           EndIf
           
+          ;           Static after
+          ;           after = GetPosition(*this, #PB_List_After)
+          ;           If after
+          ;             Debug "After - "+GetClass(after)
+          ;             SetPosition(*this, #PB_List_Last)
+          ;           EndIf
+          
           Repaint = #True
         EndIf
         
@@ -2225,6 +2262,11 @@ CompilerIf Not Defined( widget, #PB_Module )
              Not transform( )\type 
             a_update( *this )
           EndIf
+          
+          ;           If after
+          ;             Debug "reafter - "+GetClass(after)
+          ;             SetPosition(this()\widget, #PB_List_Before, after)
+          ;           EndIf
           
           Repaint = 1
         EndIf
@@ -2579,84 +2621,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             _this_\parent\hide Or 
             ( _this_\parent\type = #PB_GadgetType_Panel And
               _this_\parent\_tab\index[#__tab_2] <> _this_\_tabindex ) )
-    EndMacro
-    
-    Macro _move_after_(_this_, _before_)
-      ; if first element in parent list
-      If _this_\parent\first = _this_
-        _this_\parent\first = _this_\after
-      EndIf
-      
-      ; if last element in parent list
-      If _this_\parent\last = _this_
-        _this_\parent\last = _this_\before
-      EndIf
-      
-      If _this_\before
-        _this_\before\after = _this_\after
-      EndIf
-      
-      If _this_\after
-        _this_\after\before = _this_\before
-      EndIf
-      
-      PushListPosition( widget( ) )
-      ChangeCurrentElement( widget( ), _this_\address )
-      MoveElement( widget( ), #PB_List_After, _before_\address )
-      
-      If _this_\count\childrens
-        While NextElement( widget( ) ) 
-          If Child( widget( ), _this_ )
-            MoveElement( widget( ), #PB_List_Before, _before_\address )
-          EndIf
-        Wend
-        
-        While PreviousElement( widget( ) ) 
-          If Child( widget( ), _this_ )
-            MoveElement( widget( ), #PB_List_After, _this_\address )
-          EndIf
-        Wend
-      EndIf
-      PopListPosition( widget( ) )
-    EndMacro
-    
-    Macro _move_before_(_this_, _after_)
-      ; if first element in parent list
-      If _this_\parent\first = _this_
-        _this_\parent\first = _this_\after
-      EndIf
-      
-      ; if last element in parent list
-      If _this_\parent\last = _this_
-        _this_\parent\last = _this_\before
-      EndIf
-      
-      If _this_\before
-        _this_\before\after = _this_\after
-      EndIf
-      
-      If _this_\after
-        _this_\after\before = _this_\before
-      EndIf
-      
-      PushListPosition( widget( ) )
-      ChangeCurrentElement( widget( ), _this_\address )
-      MoveElement( widget( ), #PB_List_Before, _after_\address )
-      
-      If _this_\count\childrens
-        While PreviousElement( widget( ) ) 
-          If Child( widget( ), _this_ )
-            MoveElement( widget( ), #PB_List_After, _after_\address )
-          EndIf
-        Wend
-        
-        While NextElement( widget( ) ) 
-          If Child( widget( ), _this_ )
-            MoveElement( widget( ), #PB_List_Before, _after_\address )
-          EndIf
-        Wend
-      EndIf
-      PopListPosition( widget( ) )
     EndMacro
     
     Macro _set_image_( _this_, _address_, _image_ )
@@ -3043,15 +3007,10 @@ CompilerIf Not Defined( widget, #PB_Module )
         *this\index[#__tab_2] = State
         
         If *this\parent\_tab = *this 
-          ChangeCurrentElement( widget( ), *this\parent\address )
-          
-          While NextElement( widget( ) )
-            If Child( widget( ), *this\parent )  
-              widget( )\hide = _hide_state_( widget( ) )
-            Else
-              Break
-            EndIf
-          Wend
+          If StartEnumeration( *this\parent )
+            widget( )\hide = _hide_state_( widget( ) )
+            StopEnumeration( )
+          EndIf
           
           Post( #PB_EventType_Change, *this\parent, State )
         Else
@@ -3083,20 +3042,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             If *this = *this\parent\_tab
-              ChangeCurrentElement( widget( ), *this\parent\address )
-              
-              While NextElement( widget( ) )
-                If Child( widget( ), *this\parent )  
-                  If widget( )\parent = *this\parent And 
-                     widget( )\_tabindex = Item
-                    widget( )\_tabindex + 1
-                  EndIf
-                  
-                  widget( )\hide = _hide_state_( widget( ) )
-                Else
-                  Break
+              If StartEnumeration( *this\parent )
+                If widget( )\parent = *this\parent And 
+                   widget( )\_tabindex = Item
+                  widget( )\_tabindex + 1
                 EndIf
-              Wend
+                
+                widget( )\hide = _hide_state_( widget( ) )
+                StopEnumeration( )
+              EndIf
             EndIf
             
             InsertElement( \bar\_s( ) )
@@ -5327,13 +5281,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             Post( #PB_EventType_Up, *this )
             Repaint | Bar_SetState( *this, *this\bar\page\pos - *this\bar\increment )
           EndIf
-          
         EndIf
       EndIf
       
       If eventtype = #__event_MouseMove
         If pushed_bar_button And _is_selected_( *this )
-          
           If *this\vertical
             Repaint | Bar_SetPos( *this, ( mouse_y - mouse( )\delta\y ) )
           Else
@@ -10695,17 +10647,9 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\hide = State
           *this\hide[1] = *this\hide
           
-          If *this\count\childrens
-            ;;Debug "hide - " + *this\class
-            
-            ChangeCurrentElement( widget( ), *this\address )
-            While NextElement( widget( ) )
-              If Child( widget( ), *this )  
-                widget( )\hide = _hide_state_( widget( ) )
-              Else
-                Break
-              EndIf
-            Wend
+          If StartEnumeration( *this )
+            widget( )\hide = _hide_state_( widget( ) )
+            StopEnumeration( )
           EndIf
         EndIf
       EndWith
@@ -11566,20 +11510,46 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn *this\parent
     EndProcedure
     
+    ; ;     Procedure.i GetLast( *last._s_widget )
+    ; ;       Protected *root._s_root = *last\root
+    ; ;       
+    ; ;       While *last\last ;And *last\root = *last\last\root ; *last\root = *root
+    ; ;         Debug ""+*root\class +" "+ *last\root\class +" "+ *last\last\root\class +" "+ *last\last\class
+    ; ;         If *last\last\before
+    ; ;           Debug "before - "+ *last\last\before\class
+    ; ;         EndIf
+    ; ;         If *last\last\after
+    ; ;           Debug "after - "+ *last\last\after\class
+    ; ;         EndIf
+    ; ;         
+    ; ;         *last = *last\last 
+    ; ;       Wend
+    ; ;       
+    ; ;       ProcedureReturn *last
+    ; ;     EndProcedure
     Procedure.i GetLast( *last._s_widget )
       Protected *root._s_root = *last\root
       
-      While *last\last ;And *last\root = *last\last\root ; *last\root = *root
-        Debug ""+*root\class +" "+ *last\root\class +" "+ *last\last\root\class +" "+ *last\last\class
-        If *last\last\before
-          Debug "before - "+ *last\last\before\class
+      If *last\last 
+        If *last\last\last
+          *last = *last\last\last
+          
+          While *last\last ;And *last\root = *last\last\root ; *last\root = *root
+            Debug #PB_Compiler_Procedure +" "+*root\class +" "+ *last\root\class +" "+ *last\last\root\class +" "+ *last\last\class
+            If *last\last\before
+              Debug "before - "+ *last\last\before\class
+            EndIf
+            If *last\last\after
+              Debug "after - "+ *last\last\after\class
+            EndIf
+            
+            *last = *last\last 
+          Wend
+          
+        Else
+          *last = *last\last
         EndIf
-        If *last\last\after
-          Debug "after - "+ *last\last\after\class
-        EndIf
-        
-        *last = *last\last 
-      Wend
+      EndIf
       
       ProcedureReturn *last
     EndProcedure
@@ -12206,6 +12176,184 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
+    Procedure   SetPosition( *this._s_widget, position.l, *widget._s_widget = #Null ) ; Ok
+      Protected Type
+      Protected result
+      
+      Protected *before._s_widget 
+      Protected *after._s_widget 
+      Protected *last._s_widget
+      Protected *first._s_widget
+      
+      If *this = *widget
+        ProcedureReturn 0
+      EndIf
+      
+      
+      Macro _move_after_(_this_, _before_)
+        ; if first element in parent list
+        If _this_\parent\first = _this_
+          _this_\parent\first = _this_\after
+        EndIf
+        
+        ; if last element in parent list
+        If _this_\parent\last = _this_
+          _this_\parent\last = _this_\before
+        EndIf
+        
+        If _this_\before
+          _this_\before\after = _this_\after
+        EndIf
+        
+        If _this_\after
+          _this_\after\before = _this_\before
+        EndIf
+        
+        PushListPosition( widget( ) )
+        ChangeCurrentElement( widget( ), _this_\address )
+        MoveElement( widget( ), #PB_List_After, _before_\address )
+        
+        If _this_\count\childrens
+          While NextElement( widget( ) ) 
+            If Child( widget( ), _this_ )
+              MoveElement( widget( ), #PB_List_Before, _before_\address )
+            EndIf
+          Wend
+          
+          While PreviousElement( widget( ) ) 
+            If Child( widget( ), _this_ )
+              MoveElement( widget( ), #PB_List_After, _this_\address )
+            EndIf
+          Wend
+        EndIf
+        PopListPosition( widget( ) )
+      EndMacro
+      
+      Macro _move_before_(_this_, _after_)
+        ; if first element in parent list
+        If _this_\parent\first = _this_
+          _this_\parent\first = _this_\after
+        EndIf
+        
+        ; if last element in parent list
+        If _this_\parent\last = _this_
+          _this_\parent\last = _this_\before
+        EndIf
+        
+        If _this_\before
+          _this_\before\after = _this_\after
+        EndIf
+        
+        If _this_\after
+          _this_\after\before = _this_\before
+        EndIf
+        
+        PushListPosition( widget( ) )
+        ChangeCurrentElement( widget( ), _this_\address )
+        MoveElement( widget( ), #PB_List_Before, _after_\address )
+        
+        If _this_\count\childrens
+          While PreviousElement( widget( ) ) 
+            If Child( widget( ), _this_ )
+              MoveElement( widget( ), #PB_List_After, _after_\address )
+            EndIf
+          Wend
+          
+          While NextElement( widget( ) ) 
+            If Child( widget( ), _this_ )
+              MoveElement( widget( ), #PB_List_Before, _after_\address )
+            EndIf
+          Wend
+        EndIf
+        PopListPosition( widget( ) )
+      EndMacro
+      
+      
+      Select Position
+        Case #PB_List_First 
+          result = SetPosition( *this, #PB_List_Before, *this\parent\first )
+          
+        Case #PB_List_Last 
+          result = SetPosition( *this, #PB_List_After, *this\parent\last )
+          
+        Case #PB_List_Before 
+          If *widget
+            *after = *widget
+          Else
+            *after = *this\before
+          EndIf
+          
+          If *after
+            _move_before_(*this, *after)
+            
+            *this\after = *after
+            *this\before = *after\before 
+            *after\before = *this
+            
+            If *this\before
+              *this\before\after = *this
+            Else
+              If *this\parent\first
+                *this\parent\first\before = *this
+              EndIf
+              *this\parent\first = *this
+            EndIf
+            
+            result = 1
+          EndIf
+          
+        Case #PB_List_After 
+          If *widget
+            *before = *widget
+          Else
+            *before = *this\after
+          EndIf
+          
+          If *before
+            If *before\last 
+              If *before\last\last
+                *last = GetLast( *before\last\last )
+              Else
+                *last = *before\last
+              EndIf
+            Else
+              *last = *before
+            EndIf
+            
+            _move_after_(*this, *last)
+            
+            *this\before = *before
+            *this\after = *before\after 
+            *before\after = *this
+            
+            If *this\after
+              *this\after\before = *this
+            Else
+              If *this\parent\last
+                *this\parent\last\after = *this
+              EndIf
+              *this\parent\last = *this
+            EndIf
+            
+            result = 1
+          EndIf
+          
+      EndSelect
+      
+      ; ;       Debug ""
+      ; ;             PushListPosition( widget( ) )
+      ; ;             ForEach widget( )
+      ; ;               ;If child( widget( ), *parent )
+      ; ;                 Debug ""+widget( )\class ;+" "+ widget( )\parent +" "+ widget( )\root
+      ; ;               ;EndIf
+      ; ;             Next
+      ; ;             PopListPosition( widget( ) )
+      ; ;             
+      ; ;       ; PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__event_repaint, *this )
+      
+      ProcedureReturn result
+    EndProcedure
+    
     Procedure   SetParent( *this._s_widget, *parent._s_widget, tabindex.l = 0 )
       Protected x.l, y.l, *last._s_widget, *lastParent._s_widget
       
@@ -12264,36 +12412,25 @@ CompilerIf Not Defined( widget, #PB_Module )
           Else
             *last = *parent
           EndIf
-              
+          
           ; change parent
           If *this\parent
             *LastParent = *this\parent
             *LastParent\count\childrens - 1
             
             ; 
-            PushListPosition( widget( ) )
-            
             _move_after_(*this, *last)
             
-            If *this\count\childrens
-              ChangeCurrentElement( widget( ), *this\address )
+            If StartEnumeration( *this )
+              widget( )\root = *parent\root
               
-              While NextElement( widget( ) )
-                If Child( widget( ), *this )
-                  widget( )\root = *parent\root
-                  
-                  If _is_window_( *parent\window )
-                    widget( )\window = *parent\window
-                  EndIf
-                  
-                  widget( )\hide = _hide_state_( widget( ) )
-                Else
-                  Break
-                EndIf
-              Wend
+              If _is_window_( *parent\window )
+                widget( )\window = *parent\window
+              EndIf
+              
+              widget( )\hide = _hide_state_( widget( ) )
+              StopEnumeration( )
             EndIf
-            
-            PopListPosition( widget( ) )
           Else
             If *parent\root\count\childrens
               ChangeCurrentElement( widget( ), *last\address )
@@ -12407,96 +12544,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
-    EndProcedure
-    
-    Procedure   SetPosition( *this._s_widget, position.l, *widget._s_widget = #Null ) ; Ok
-      Protected Type
-      Protected result
-      
-      Protected *before._s_widget 
-      Protected *after._s_widget 
-      Protected *last._s_widget
-      Protected *first._s_widget
-      
-      If *this = *widget
-        ProcedureReturn 0
-      EndIf
-      
-      Select Position
-        Case #PB_List_First 
-          result = SetPosition( *this, #PB_List_Before, *this\parent\first )
-          
-        Case #PB_List_Last 
-          result = SetPosition( *this, #PB_List_After, *this\parent\last )
-          
-        Case #PB_List_Before 
-          If *widget
-            *after = *widget
-          Else
-            *after = *this\before
-          EndIf
-          
-          If *after
-            _move_before_(*this, *after)
-            
-            *this\after = *after
-            *this\before = *after\before 
-            *after\before = *this
-            
-            If *this\before
-              *this\before\after = *this
-            Else
-              If *this\parent\first
-                *this\parent\first\before = *this
-              EndIf
-              *this\parent\first = *this
-            EndIf
-            
-            result = 1
-          EndIf
-          
-        Case #PB_List_After 
-          If *widget
-            *before = *widget
-          Else
-            *before = *this\after
-          EndIf
-          
-          If *before
-            *last = GetLast( *before )
-            
-            _move_after_(*this, *last)
-            
-            *this\before = *before
-            *this\after = *before\after 
-            *before\after = *this
-            
-            If *this\after
-              *this\after\before = *this
-            Else
-              If *this\parent\last
-                *this\parent\last\after = *this
-              EndIf
-              *this\parent\last = *this
-            EndIf
-            
-            result = 1
-          EndIf
-          
-      EndSelect
-      
-      ; ;       Debug ""
-      ; ;             PushListPosition( widget( ) )
-      ; ;             ForEach widget( )
-      ; ;               ;If child( widget( ), *parent )
-      ; ;                 Debug ""+widget( )\class ;+" "+ widget( )\parent +" "+ widget( )\root
-      ; ;               ;EndIf
-      ; ;             Next
-      ; ;             PopListPosition( widget( ) )
-      ; ;             
-      ; ;       ; PostEvent( #PB_Event_Gadget, *this\root\canvas\window, *this\root\canvas\gadget, #__event_repaint, *this )
-      
-      ProcedureReturn result
     EndProcedure
     
     Procedure.i SetAlignment( *this._s_widget, Mode.l, Type.l = 1 ) ; ok
@@ -14901,11 +14948,12 @@ CompilerIf Not Defined( widget, #PB_Module )
         ProcedureReturn a_events( *this, eventtype, mouse_x, mouse_y )
       EndIf    
       
-      ;       If eventtype = #PB_EventType_MouseEnter Or 
-      ;          eventtype = #PB_EventType_LeftButtonUp Or 
-      ;          eventtype = #PB_EventType_MouseLeave
-      ;         Debug ""+*this\class +" "+ eventtype
-      ;       EndIf
+      If eventtype = #PB_EventType_MouseEnter Or 
+         eventtype = #PB_EventType_LeftButtonDown Or 
+         eventtype = #PB_EventType_LeftButtonUp Or 
+         eventtype = #PB_EventType_MouseLeave
+        Debug ""+*this\class +" "+ eventtype
+      EndIf
       
       If *this\type = #__type_window
         Repaint = Window_Events( *this, eventtype, mouse_x, mouse_y )
@@ -15130,12 +15178,82 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndIf
       
-      If eventtype = #__event_leftButtonup 
+      If eventtype = #__event_leftButtonUp Or 
+         eventtype = #__event_rightButtonUp Or
+         eventtype = #__event_middleButtonUp
+        
+        ; enable mouse behavior
+        mouse( )\interact = 1
         change =- 1
       EndIf
       
+      If eventtype = #__event_leftButtonUp Or 
+         eventtype = #__event_rightButtonUp Or
+         eventtype = #__event_middleButtonUp
+        
+        ; ;         ; reset mouse buttons
+        ; ;         If mouse( )\buttons
+        ; ;           If eventtype = #__event_leftButtonUp
+        ; ;             mouse( )\buttons &~ #PB_Canvas_LeftButton
+        ; ;           ElseIf eventtype = #__event_rightButtonUp
+        ; ;             mouse( )\buttons &~ #PB_Canvas_RightButton
+        ; ;           ElseIf eventtype = #__event_MiddleButtonUp
+        ; ;             mouse( )\buttons &~ #PB_Canvas_MiddleButton
+        ; ;           EndIf
+        ; ;           
+        ; ;           ; up mouse buttons
+        ; ;           If Not mouse( )\buttons And
+        ; ;              _is_widget_( focused( ) ) And
+        ; ;              _is_selected_( focused( ) ) 
+        ; ;             
+        ; ;             ; reset 
+        ; ;             focused( )\_state &~ #__s_selected 
+        ; ;             
+        ; ;             ; up buttons events
+        ; ;             Repaint | Events( focused( ), eventtype, mouse_x, mouse_y )
+        ; ;             
+        ; ;             ; if released the mouse button inside the widget
+        ; ;             If focused( )\_state & #__s_entered
+        ; ;               If eventtype = #__event_leftButtonUp
+        ; ;                 Repaint | Events( focused( ), #__event_leftClick, mouse_x, mouse_y )
+        ; ;               EndIf
+        ; ;               If eventtype = #__event_rightButtonUp
+        ; ;                 Repaint | Events( focused( ), #__event_rightClick, mouse_x, mouse_y )
+        ; ;               EndIf
+        ; ;               
+        ; ;               If ( focused( )\time_click And ( ElapsedMilliseconds( ) - focused( )\time_click ) < DoubleClickTime( ) )
+        ; ;                 If eventtype = #__event_leftButtonUp
+        ; ;                   Repaint | Events( focused( ), #__event_leftDoubleClick, mouse_x, mouse_y )
+        ; ;                 EndIf
+        ; ;                 If eventtype = #__event_rightButtonUp
+        ; ;                   Repaint | Events( focused( ), #__event_rightDoubleClick, mouse_x, mouse_y )
+        ; ;                 EndIf
+        ; ;                 
+        ; ;                 focused( )\time_click = 0
+        ; ;               Else
+        ; ;                 focused( )\time_click = ElapsedMilliseconds( )
+        ; ;               EndIf
+        ; ;             EndIf
+        ; ;             
+        ; ;             ;             ; if released the mouse button inside 
+        ; ;             ;             ; the parent of the composite widget 
+        ; ;             ;             If focused( )\child And 
+        ; ;             ;                _from_point_( mouse_x, mouse_y, focused( )\parent, [#__c_clip] ) And 
+        ; ;             ;                _from_point_( mouse_x, mouse_y, focused( )\parent, [#__c_inner] )
+        ; ;             ;               entered() = focused( )\parent
+        ; ;             ;               
+        ; ;             ;               Repaint | Events( focused( )\parent, #__event_MouseEnter, mouse_x, mouse_y )
+        ; ;             ;             EndIf
+        ; ;             
+        ; ;             mouse( )\delta\x = 0
+        ; ;             mouse( )\delta\y = 0
+        ; ;             mouse( )\drag = 0
+        ; ;           EndIf
+        ; ;         EndIf
+      EndIf
+      
       ; enter&leave mouse events
-      If change
+      If mouse( )\interact And change
         ; get at point
         If root( )\count\childrens
           LastElement( widget( ) ) 
@@ -15176,19 +15294,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         If Not *this : *this = root( ) : EndIf
-        
-        ;
-        If ( focused( ) And
-             focused( )\child And
-             focused( )\parent = *this And 
-             _is_selected_( focused( ) ) )
-          
-          If eventtype = #__event_leftButtonup
-            Debug "up "+*this\class
-          Else
-            *this = focused( )
-          EndIf
-        EndIf
         
         ; entered&leaved events 
         If entered( ) <> *this 
@@ -15253,6 +15358,10 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If Not entered( )\transform 
             If entered( )\bar\from > 0
+              
+              ; disabled mouse behavior
+              mouse( )\interact = #False
+              
               Debug "   debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
               ; bar mouse delta pos
               If entered( )\bar\from = #__b_3
@@ -15328,12 +15437,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           Else
             ; mouse move from entered widget
             If entered( ) 
-              ; if we move the mouse inside the parent composite widget
-              If (focused() And focused()\child And _is_selected_(focused()))
-                Repaint | Events( focused(), eventtype, mouse_x, mouse_y )
-              Else
-                Repaint | Events( entered( ), eventtype, mouse_x, mouse_y )
-              EndIf
+              Repaint | Events( entered( ), eventtype, mouse_x, mouse_y )
             EndIf
             
             ; mouse move from selected widget
@@ -15391,6 +15495,8 @@ CompilerIf Not Defined( widget, #PB_Module )
               Else
                 focused( )\time_click = ElapsedMilliseconds( )
               EndIf
+              
+              ; entered( ) = focused( )
             EndIf
             
             ;             ; if released the mouse button inside 
@@ -15506,8 +15612,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       root( )\address = root( ) ; ! example active( demo ) 
       root( )\class = "Root"
       
-      opened( ) = root( )
-      entered( ) = root( )
       root( )\root = root( )
       root( )\parent = root( )
       root( )\window = root( )
@@ -15518,6 +15622,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       root( )\text\fontID = PB_( GetGadgetFont )( #PB_Default )
       
       ; 
+      mouse( )\interact = #True
+      opened( ) = root( )
+      entered( ) = root( )
+      
       GetActive( ) = root( )
       GetActive( )\root = root( )
       
@@ -17040,5 +17148,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------veA+f-r--+-8--B+--
+; Folding = -------------------------------------------------------------------------------------------f-n----e4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----+rf--X+8-----------------------------
 ; EnableXP
