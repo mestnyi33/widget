@@ -11546,10 +11546,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             *last = *last\last 
           Wend
           
-        Else
+       Else
           *last = *last\last
         EndIf
-      EndIf
+        EndIf
       
       ProcedureReturn *last
     EndProcedure
@@ -12310,16 +12310,61 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *before
-            If *before\last 
-              If *before\last\last
-                *last = GetLast( *before\last\last )
-              Else
-                *last = *before\last
-              EndIf
+;             If *before\last 
+;               If *before\last\last
+;                 *last = GetLast( *before\last\last )
+;               Else
+;                 *last = *before\last
+;               EndIf
+;               
+;              Else
+;               *last = *before
+;             EndIf
+;             
+; ;             ; get last index
+; ;             While *last\before And 
+; ;                   *last\_tabindex <> *this\_tabindex
+; ;               *last = *last\before
+; ;             Wend
+            
+            ;
+          If *before\last 
+            If *before\last\last
+              
+              Debug " - " + *before\last\last\class +" "+ *before\last\last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
+              *last = GetLast( *before\last\last )
+;               ; get last index
+;                 While *last\before And 
+;                       *last\_tabindex <> *this\_tabindex
+;                   *last = *last\before
+;                 Wend
+                Debug "  - " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
+                
             Else
-              *last = *before
+              *last = *before\last
             EndIf
             
+            If *before\_tab 
+              If *last\_tabindex > *this\_tabindex
+                Debug ""
+                Debug " last " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
+                
+                ; get last index
+                While *last\before And 
+                      *last\_tabindex <> *this\_tabindex
+                  *last = *last\before
+                Wend
+                
+                Debug " real last " +*last\class +" "+ *last\_tabindex +" "+  *this\class +" "+ *this\_tabindex
+                
+              EndIf
+            EndIf
+            
+          Else
+            *last = *before
+          EndIf
+          
+          
             _move_after_(*this, *last)
             
             *this\before = *before
@@ -12405,22 +12450,49 @@ CompilerIf Not Defined( widget, #PB_Module )
           ;
           If *parent\last 
             If *parent\last\last
+              
+              Debug " > " + *parent\last\last\class +" "+ *parent\last\last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
               *last = GetLast( *parent\last\last )
+;               ; get last index
+;                 While *last\before And 
+;                       *last\_tabindex <> *this\_tabindex
+;                   *last = *last\before
+;                 Wend
+                Debug "  > " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
+                
             Else
               *last = *parent\last
             EndIf
+            
+            If *parent\_tab 
+              If *last\_tabindex > *this\_tabindex
+                Debug ""
+                Debug " l " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
+                
+                ; get last index
+                While *last\before And 
+                      *last\_tabindex <> *this\_tabindex
+                  *last = *last\before
+                Wend
+                
+                Debug " r " +*last\class +" "+ *last\_tabindex +" "+  *this\class +" "+ *this\_tabindex
+                
+              EndIf
+            EndIf
+            
           Else
             *last = *parent
           EndIf
           
+              
           ; change parent
           If *this\parent
             *LastParent = *this\parent
             *LastParent\count\childrens - 1
             
-            ; 
             _move_after_(*this, *last)
             
+            ; 
             If StartEnumeration( *this )
               widget( )\root = *parent\root
               
@@ -12444,15 +12516,27 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *parent\last 
-            *this\before = *parent\last 
+            If *this\parent And 
+               *parent\last\_tabindex > *this\_tabindex
+              *this\before = *last
+              *this\after = *last\after
+              
+              If *this\after
+                *this\after\before = *this  
+              EndIf
+           Else
+              *this\before = *parent\last  
+              *parent\last = *this
+              *this\after = 0
+            EndIf
+            
             *this\before\after = *this
           Else
             *parent\first = *this
-            *parent\first\before = 0
+            *parent\last = *this
+            *this\before = 0
+            *this\after = 0
           EndIf
-          
-          *this\after = 0
-          *parent\last = *this
           
           *this\parent = *parent
           
@@ -14948,12 +15032,12 @@ CompilerIf Not Defined( widget, #PB_Module )
         ProcedureReturn a_events( *this, eventtype, mouse_x, mouse_y )
       EndIf    
       
-      If eventtype = #PB_EventType_MouseEnter Or 
-         eventtype = #PB_EventType_LeftButtonDown Or 
-         eventtype = #PB_EventType_LeftButtonUp Or 
-         eventtype = #PB_EventType_MouseLeave
-        Debug ""+*this\class +" "+ eventtype
-      EndIf
+;       If eventtype = #PB_EventType_MouseEnter Or 
+;          eventtype = #PB_EventType_LeftButtonDown Or 
+;          eventtype = #PB_EventType_LeftButtonUp Or 
+;          eventtype = #PB_EventType_MouseLeave
+;         Debug ""+*this\class +" "+ eventtype
+;       EndIf
       
       If *this\type = #__type_window
         Repaint = Window_Events( *this, eventtype, mouse_x, mouse_y )
@@ -15187,71 +15271,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         change =- 1
       EndIf
       
-      If eventtype = #__event_leftButtonUp Or 
-         eventtype = #__event_rightButtonUp Or
-         eventtype = #__event_middleButtonUp
-        
-        ; ;         ; reset mouse buttons
-        ; ;         If mouse( )\buttons
-        ; ;           If eventtype = #__event_leftButtonUp
-        ; ;             mouse( )\buttons &~ #PB_Canvas_LeftButton
-        ; ;           ElseIf eventtype = #__event_rightButtonUp
-        ; ;             mouse( )\buttons &~ #PB_Canvas_RightButton
-        ; ;           ElseIf eventtype = #__event_MiddleButtonUp
-        ; ;             mouse( )\buttons &~ #PB_Canvas_MiddleButton
-        ; ;           EndIf
-        ; ;           
-        ; ;           ; up mouse buttons
-        ; ;           If Not mouse( )\buttons And
-        ; ;              _is_widget_( focused( ) ) And
-        ; ;              _is_selected_( focused( ) ) 
-        ; ;             
-        ; ;             ; reset 
-        ; ;             focused( )\_state &~ #__s_selected 
-        ; ;             
-        ; ;             ; up buttons events
-        ; ;             Repaint | Events( focused( ), eventtype, mouse_x, mouse_y )
-        ; ;             
-        ; ;             ; if released the mouse button inside the widget
-        ; ;             If focused( )\_state & #__s_entered
-        ; ;               If eventtype = #__event_leftButtonUp
-        ; ;                 Repaint | Events( focused( ), #__event_leftClick, mouse_x, mouse_y )
-        ; ;               EndIf
-        ; ;               If eventtype = #__event_rightButtonUp
-        ; ;                 Repaint | Events( focused( ), #__event_rightClick, mouse_x, mouse_y )
-        ; ;               EndIf
-        ; ;               
-        ; ;               If ( focused( )\time_click And ( ElapsedMilliseconds( ) - focused( )\time_click ) < DoubleClickTime( ) )
-        ; ;                 If eventtype = #__event_leftButtonUp
-        ; ;                   Repaint | Events( focused( ), #__event_leftDoubleClick, mouse_x, mouse_y )
-        ; ;                 EndIf
-        ; ;                 If eventtype = #__event_rightButtonUp
-        ; ;                   Repaint | Events( focused( ), #__event_rightDoubleClick, mouse_x, mouse_y )
-        ; ;                 EndIf
-        ; ;                 
-        ; ;                 focused( )\time_click = 0
-        ; ;               Else
-        ; ;                 focused( )\time_click = ElapsedMilliseconds( )
-        ; ;               EndIf
-        ; ;             EndIf
-        ; ;             
-        ; ;             ;             ; if released the mouse button inside 
-        ; ;             ;             ; the parent of the composite widget 
-        ; ;             ;             If focused( )\child And 
-        ; ;             ;                _from_point_( mouse_x, mouse_y, focused( )\parent, [#__c_clip] ) And 
-        ; ;             ;                _from_point_( mouse_x, mouse_y, focused( )\parent, [#__c_inner] )
-        ; ;             ;               entered() = focused( )\parent
-        ; ;             ;               
-        ; ;             ;               Repaint | Events( focused( )\parent, #__event_MouseEnter, mouse_x, mouse_y )
-        ; ;             ;             EndIf
-        ; ;             
-        ; ;             mouse( )\delta\x = 0
-        ; ;             mouse( )\delta\y = 0
-        ; ;             mouse( )\drag = 0
-        ; ;           EndIf
-        ; ;         EndIf
-      EndIf
-      
       ; enter&leave mouse events
       If mouse( )\interact And change
         ; get at point
@@ -15356,12 +15375,16 @@ CompilerIf Not Defined( widget, #PB_Module )
           entered( )\_state | #__s_selected
           entered( )\time_down = ElapsedMilliseconds( )
           
+          
+          ; disabled mouse behavior
+          If entered( )\transform Or
+             entered( )\bar\from > 0
+            mouse( )\interact = #False
+          EndIf
+          
+          
           If Not entered( )\transform 
             If entered( )\bar\from > 0
-              
-              ; disabled mouse behavior
-              mouse( )\interact = #False
-              
               Debug "   debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
               ; bar mouse delta pos
               If entered( )\bar\from = #__b_3
@@ -17148,5 +17171,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------f-n----e4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----+rf--X+8-----------------------------
+; Folding = -------------------------------------------------------------------------------------------f-n----e4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------ns-8-vf49-----------------------------------------------------f-84--L-0-----------------------------
 ; EnableXP

@@ -12,6 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_First_Event()
     Select this()\event
       Case #PB_EventType_LeftClick : SetPosition(this()\widget, #PB_List_First)
+        Debug 555
     EndSelect
     
     ProcedureReturn #True

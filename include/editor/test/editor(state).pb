@@ -1,6 +1,30 @@
 ﻿;IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
+; ver 1.0.6
+; 361 - widget add items time count - 101
+; 85 - widget set items state time
+; 23 - gadget add items time count - 101
+; 0 - gadget set items state time
+; -------- 
+; 917 - widget add items time count - 101
+; 60 - widget set items state time
+; 29 - gadget add items time count - 101
+; 0 - gadget set items state time
+; -------- 
+
+; ver 1.0.2
+; 306 - widget add items time count - 101
+; 80 - widget set items state time
+; 25 - gadget add items time count - 101
+; 0 - gadget set items state time
+; -------- 
+; 858 - widget add items time count - 101
+; 267 - widget set items state time
+; 29 - gadget add items time count - 101
+; 0 - gadget set items state time
+; -------- 
+
 UseLib(widget)
 
 LN=100; количесвто итемов 

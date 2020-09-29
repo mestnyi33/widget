@@ -1,4 +1,5 @@
-﻿XIncludeFile "../e.pbi"
+﻿;XIncludeFile "../e.pbi" : #ver = 2
+XIncludeFile "../e1.pbi" : #ver = 6
 
   UseModule PBEdit
 
@@ -25,8 +26,13 @@ Macro Root()
 EndMacro
 
 Procedure Editor(x,y,width,height)   
-  canvas_gadget = PBedit_Gadget(#PB_Any, GetActiveWindow(), x+canvas_x,y+canvas_y,width,height)
-  ProcedureReturn PBEdit_EditorFromID(canvas_gadget)
+  CompilerIf #ver = 6
+    canvas_gadget = PBedit_Gadget(GetActiveWindow(), x+canvas_x,y+canvas_y,width,height)
+    ProcedureReturn canvas_gadget 
+  CompilerElse
+    canvas_gadget = PBedit_Gadget(#PB_Any, GetActiveWindow(), x+canvas_x,y+canvas_y,width,height) ; ver 1.2
+    ProcedureReturn PBEdit_EditorFromID(canvas_gadget)
+  CompilerEndIf
 EndProcedure
 
 Procedure SetText(*this, text.s)
