@@ -5,24 +5,25 @@ CompilerIf #PB_Compiler_IsMainFile
   UseLib(widget)
   
   Global Panel =- 1
-  Global _1_First=-1,_1_Prev=-1,_1_Next=-1,_1_Last=-1
-  Global _2_First=-1,_2_Prev=-1,_2_Next=-1,_2_Last=-1
-  Global _3_First=-1,_3_Prev=-1,_3_Next=-1,_3_Last=-1
+  Global first1=-1,prev1=-1,next1=-1,last1=-1
+  Global first2=-1,prev2=-1,next2=-1,last2=-1
+  Global first3=-1,prev3=-1,next3=-1,last3=-1
   
   Procedure _Event()
     Select this()\event
       Case #PB_EventType_LeftClick 
         Select this()\widget
-          Case _1_First, _2_First, _3_First
+          Case first1, first2, first3
             SetPosition(this()\widget, #PB_List_First)
-          Case _1_Prev, _2_Prev, _3_Prev
+          Case prev1, prev2, prev3
             SetPosition(this()\widget, #PB_List_Before)
-          Case _1_Next, _2_Next, _3_Next
+          Case next1, next2, next3
             SetPosition(this()\widget, #PB_List_After)
-          Case _1_Last, _2_Last, _3_Last
+          Case last1, last2, last3
             SetPosition(this()\widget, #PB_List_Last)
         EndSelect
         
+        ClearDebugOutput()
         debug_position()
     EndSelect
     
@@ -33,22 +34,22 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Panel = Panel(30,30,190,100);, "0")                                                               ;
     AddItem(Panel, -1, "tab_1")
-    _1_Last = Button(110,30,50,35, "_1_Last") : SetClass(widget(), GetText(widget()))                                                               ;
-    _1_Next = Button(70,30,50,35, "_1_Next") : SetClass(widget(), GetText(widget()))                                                                ;
-    _1_Prev = Button(30,30,50,35, "_1_Prev") : SetClass(widget(), GetText(widget()))                                                                ;
-    _1_First = Button(10,10,170,35, "_1_First") : SetClass(widget(), GetText(widget()))                                                             ;
+    last1 = Button(110,30,50,35, "last1") : SetClass(widget(), GetText(widget()))                                                               ;
+    next1 = Button(70,30,50,35, "next1") : SetClass(widget(), GetText(widget()))                                                                ;
+    prev1 = Button(30,30,50,35, "prev1") : SetClass(widget(), GetText(widget()))                                                                ;
+    first1 = Button(10,10,170,35, "first1") : SetClass(widget(), GetText(widget()))                                                             ;
     
     AddItem(Panel, -1, "tab_2") 
-    _2_Last = Button(110,30,50,35, "_2_Last") : SetClass(widget(), GetText(widget()))                                                               ;
-    _2_Next = Button(70,30,50,35, "_2_Next") : SetClass(widget(), GetText(widget()))                                                                ;
-    _2_Prev = Button(30,30,50,35, "_2_Prev") : SetClass(widget(), GetText(widget()))                                                                ;
-    _2_First = Button(10,10,170,35, "_2_First") : SetClass(widget(), GetText(widget()))                                                             ;
+    last2 = Button(110,30,50,35, "last2") : SetClass(widget(), GetText(widget()))                                                               ;
+    next2 = Button(70,30,50,35, "next2") : SetClass(widget(), GetText(widget()))                                                                ;
+    prev2 = Button(30,30,50,35, "prev2") : SetClass(widget(), GetText(widget()))                                                                ;
+    first2 = Button(10,10,170,35, "first2") : SetClass(widget(), GetText(widget()))                                                             ;
     
     AddItem(Panel, -1, "tab_3")
-    _3_Last = Button(110,30,50,35, "_3_Last") : SetClass(widget(), GetText(widget()))                                                               ;
-    _3_Next = Button(70,30,50,35, "_3_Next") : SetClass(widget(), GetText(widget()))                                                                ;
-    _3_Prev = Button(30,30,50,35, "_3_Prev") : SetClass(widget(), GetText(widget()))                                                                ;
-    _3_First = Button(10,10,170,35, "_3_First") : SetClass(widget(), GetText(widget()))                                                             ;
+    last3 = Button(110,30,50,35, "last3") : SetClass(widget(), GetText(widget()))                                                               ;
+    next3 = Button(70,30,50,35, "next3") : SetClass(widget(), GetText(widget()))                                                                ;
+    prev3 = Button(30,30,50,35, "prev3") : SetClass(widget(), GetText(widget()))                                                                ;
+    first3 = Button(10,10,170,35, "first3") : SetClass(widget(), GetText(widget()))                                                             ;
     
     CloseList()
     

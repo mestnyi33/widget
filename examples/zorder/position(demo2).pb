@@ -6,6 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
+  Global *c0
   Global *this._s_widget
   Global *current._s_widget
   
@@ -240,19 +241,21 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(55, 62, 50, 25, "8",#__Button_Right) : SetClass(widget(), GetText(widget()))  ; Gadget(2, 
     
     ;{ last container
-    Container(55, 40, 30, 43)                     ; Gadget(1,
-    SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
-    SetClass(widget(), "last_0")
+    *c0 = Panel(35, 10, 50, 73) : SetClass(widget(), "last_0")                           ; Gadget(1,
+    SEtColor(widget(), #PB_Gadget_BackColor, $ffff00ff)
     
-    Container(3, -3, 24-4, 25+8)   
-    SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
-    SetClass(widget(), "last_1")
-    
-;     Container(3, -3, 17-8, 25+6)   
-;     SEtColor(widget(), #PB_Gadget_BackColor, $ff00ff)
-;     SetClass(widget(), "last_2")
-;     CloseList()
-    Button(3, -3, 17, 25+6, "9", #__Button_left) : SetClass(widget(), GetText(widget())) 
+    AddItem(*c0, -1, "1")
+    Button( 5,  5, 50, 30,"101") : SetClass(widget(), GetText(widget()))  
+    Button(15, 25, 50, 30,"102") : SetClass(widget(), GetText(widget()))  
+    Button(25, 45, 50, 30,"103") : SetClass(widget(), GetText(widget()))  
+    AddItem(*c0, -1, "2")
+    Button( 5,  5, 50, 30,"201") : SetClass(widget(), GetText(widget()))  
+    Button(15, 25, 50, 30,"202") : SetClass(widget(), GetText(widget()))  
+    Button(25, 45, 50, 30,"203") : SetClass(widget(), GetText(widget()))  
+    AddItem(*c0, -1, "3")
+    Button( 5,  5, 50, 30,"301") : SetClass(widget(), GetText(widget()))  
+    Button(15, 25, 50, 30,"302") : SetClass(widget(), GetText(widget()))  
+    Button(25, 45, 50, 30,"303") : SetClass(widget(), GetText(widget()))  
     CloseList()
     
     CloseList()
@@ -332,5 +335,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -j-
+; Folding = 6--
 ; EnableXP

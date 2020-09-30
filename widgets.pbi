@@ -873,21 +873,21 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare.l ClearItems( *this )
     Declare   RemoveItem( *this, Item.l ) 
     
-    Declare.i GetLast( *last )
+    ;Declare.i GetLast( *last, tabindex.l )
     Declare.l GetDeltax( *this )
     Declare.l GetDeltaY( *this )
     Declare.l GetIndex( *this )
-    Declare   Getwidget( index )
+    Declare   GetWidget( index )
     Declare.l GetLevel( *this )
     Declare.l GetButtons( *this )
     Declare.l GetType( *this )
-    Declare.i Getroot( *this )
+    Declare.i GetRoot( *this )
     Declare.i GetGadget( *this )
     Declare.i GetWindow( *this )
     Declare.l GetCount( *this, mode.b = #False )
     Declare.i GetItem( *this, parent_sublevel.l =- 1 )
     
-    Declare.i Getaddress( *this )
+    Declare.i GetAddress( *this )
     ; 
     Declare.i SetActive( *this )
     Macro GetActive( ) : this( )\active : EndMacro ; Returns activeed window
@@ -12145,46 +12145,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    ; ;     Procedure.i GetLast( *last._s_widget )
-    ; ;       Protected *root._s_root = *last\root
-    ; ;       
-    ; ;       While *last\last ;And *last\root = *last\last\root ; *last\root = *root
-    ; ;         Debug ""+*root\class +" "+ *last\root\class +" "+ *last\last\root\class +" "+ *last\last\class
-    ; ;         If *last\last\before
-    ; ;           Debug "before - "+ *last\last\before\class
-    ; ;         EndIf
-    ; ;         If *last\last\after
-    ; ;           Debug "after - "+ *last\last\after\class
-    ; ;         EndIf
-    ; ;         
-    ; ;         *last = *last\last 
-    ; ;       Wend
-    ; ;       
-    ; ;       ProcedureReturn *last
-    ; ;     EndProcedure
-    Procedure.i GetLast( *last._s_widget )
-      Protected *root._s_root = *last\root
-      
-      If *last\last 
-        If *last\last\last
-          *last = *last\last\last
-          
-          While *last\last ;And *last\root = *last\last\root ; *last\root = *root
-            Debug #PB_Compiler_Procedure +" "+*root\class +" "+ *last\root\class +" "+ *last\last\root\class +" "+ *last\last\class
-            If *last\last\before
-              Debug "before - "+ *last\last\before\class
-            EndIf
-            If *last\last\after
-              Debug "after - "+ *last\last\after\class
-            EndIf
-            
-            *last = *last\last 
-          Wend
-          
-        Else
-          *last = *last\last
-        EndIf
-      EndIf
+    Procedure  GetLast( *last._s_widget, tabindex.l )
+      While *last\before And
+            *last\_tabindex <> tabindex
+        *last = *last\before
+      Wend
       
       ProcedureReturn *last
     EndProcedure
@@ -12301,10 +12266,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Select Position
         Case #PB_List_First 
-          result = SetPosition( *this, #PB_List_Before, GetPosition( *this, #PB_List_First ) )
+          *first = GetPosition( *this, #PB_List_First )
+          result = SetPosition( *this, #PB_List_Before, *first )
           
         Case #PB_List_Last 
-          result = SetPosition( *this, #PB_List_After, GetPosition( *this, #PB_List_Last ) )
+          *last = GetPosition( *this, #PB_List_Last )
+          result = SetPosition( *this, #PB_List_After, *last )
           
         Case #PB_List_Before 
           If *widget
@@ -12340,42 +12307,27 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *before
+            ; get last moved address
             If *before\last 
-              If *before\last\last
-                
-                ;;Debug " - " + *before\last\last\class +" "+ *before\last\last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
-                ;*last = GetLast( *before\last\last )
-                ; get child last address
-                *last = *before\last\last
-                While *last\last
-                  *last = *last\last
-                Wend
-                ;;Debug "  - " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
-                
+              ; get parent tab last address
+              If *before\last\parent\_tab And 
+                 *before\last\parent = *this\parent
+                *last = GetLast( *before\last, *this\_tabindex )
               Else
-                *last = *before\last
-              EndIf
-              
-              If *before\_tab 
-                If *last\_tabindex > *this\_tabindex
-                  ;;Debug ""
-                  ;;Debug " last " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
-                  
-                  ; *last = GetPosition( *last, #PB_List_Last )
-                  ; get last index
-                  While *last\before And 
-                        *last\_tabindex <> *this\_tabindex
-                    *last = *last\before
+                ; get parent last address
+                If Not *before\last\last
+                  *last = *before\last
+                Else
+                  *last = *before\last\last
+                  ; get child last address
+                  While *last\last
+                    *last = *last\last
                   Wend
-                  
-                  ;;Debug " real last " +*last\class +" "+ *last\_tabindex +" "+  *this\class +" "+ *this\_tabindex
                 EndIf
               EndIf
-              
             Else
               *last = *before
             EndIf
-            
             
             _move_position_after_(*this, *last)
             
@@ -12458,34 +12410,27 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\root = *parent\root
           *this\window = *parent\window
           
-          ;
+          ; get last added address
           If *parent\last 
-            ; get parent last address
-            If *parent\last\last 
-              *last = *parent\last\last
-              
-              ; get child last address
-              While *last\last
-                *last = *last\last
-              Wend
-            Else
-              *last = *parent\last
-            EndIf
-            
+            ; get parent tab last address
             If *parent\_tab And 
-               *last\_tabindex > *this\_tabindex
-              ; *last = GetPosition( *last, #PB_List_Last )
-              ; get last index
-              While *last\before And 
-                    *last\_tabindex <> *this\_tabindex
-                *last = *last\before
-              Wend
-              
+               *parent\last\_tabindex > *this\_tabindex
+              *last = GetLast( *parent\last, *this\_tabindex )
+            Else
+              ; get parent last address
+              If Not *parent\last\last
+                *last = *parent\last
+              Else
+                *last = *parent\last\last
+                ; get child last address
+                While *last\last
+                  *last = *last\last
+                Wend
+              EndIf
             EndIf
           Else
             *last = *parent
           EndIf
-          
           
           ; change parent
           If *this\parent
@@ -17160,5 +17105,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------dE-f-----------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-4Q16+0+N-------------------------------------------------------------------------------------------
 ; EnableXP
