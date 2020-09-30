@@ -7,20 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseLib(Widget)
   
   Global *c, *s
-  
-  Procedure Enumerates(*this._S_widget, *callback)
-    If *callback And *this\root\count\childrens
-      ForEach Widget()
-        CallCFunctionFast(*callback, Widget())
-      Next
-    EndIf
-  EndProcedure
-  
-  Procedure enum(*this._S_widget)
-    If Not *this\hide
-      Debug " class - " + *this\Class +" ("+ *this\_tabindex +" - parent_item)"
-    EndIf
-  EndProcedure
+  Global ._s_widget *w,*w1,*w2 ;
   
   Procedure _Events()
     Select this()\event
@@ -43,9 +30,15 @@ CompilerIf #PB_Compiler_IsMainFile
           
         EndSelect
         
-     Case #PB_EventType_LeftButtonUp
+        ;Case #PB_EventType_LeftButtonUp
         ClearDebugOutput()
-        Enumerates(root(), @enum())
+        
+        If StartEnumerate(*w1);Root())
+          If Not hide(widget()) ;And GetParent(widget()) = *w1
+            Debug " class - " + widget()\Class +" ("+ widget()\_tabindex +" - parent_item)"
+          EndIf
+          StopEnumerate()
+        EndIf
         
      Case #PB_EventType_Change
          Debug "hide c - "+hide(*c)+" s - "+hide(*s)
@@ -56,7 +49,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Open(3)
-    Define *w,*w1,*w2
      
      ;Button(10,5,50,35, "butt")
      

@@ -52,19 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
         EndSelect
         
-        Debug " re - "
-    ForEach widget( ) 
-      If widget( )\before And widget( )\after
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" "+ widget( )\after\class
-      ElseIf widget( )\after
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class +" "+ widget( )\after\class
-      ElseIf widget( )\before
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" none"
-      Else
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class + " none " 
-      EndIf
-    Next
-    Debug ""
+        debug_position("re")
     
     
     EndSelect
@@ -94,51 +82,12 @@ CompilerIf #PB_Compiler_IsMainFile
     *w = Button(pos_x,10,160,70,"*this") : SetClass(widget(), GetText(widget())) 
     CloseList()
     
-    Debug " - "
-    ForEach widget( ) 
-      If widget( )\before And widget( )\after
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" "+ widget( )\after\class
-      ElseIf widget( )\after
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class +" "+ widget( )\after\class
-      ElseIf widget( )\before
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" none"
-      Else
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class + " none " 
-      EndIf
-    Next
-    Debug ""
+    debug_position("")
     
-    SetParent(*w, *container, 0)
+    SetParent(*w, *panel, 1)
     
-    Debug " container - "
-    ForEach widget( ) 
-      If widget( )\before And widget( )\after
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" "+ widget( )\after\class
-      ElseIf widget( )\after
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class +" "+ widget( )\after\class
-      ElseIf widget( )\before
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" none"
-      Else
-        Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class + " none " 
-      EndIf
-    Next
-    Debug ""
+    debug_position("container")
     
-;     SetParent(*w, *scrollarea, 0)
-;     
-;     Debug " scrollarea - "
-;     ForEach widget( ) 
-;       If widget( )\before And widget( )\after
-;         Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" "+ widget( )\after\class
-;       ElseIf widget( )\after
-;         Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class +" "+ widget( )\after\class
-;       ElseIf widget( )\before
-;         Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" none"
-;       Else
-;         Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class + " none " 
-;       EndIf
-;     Next
-;     Debug ""
     
     Bind(Root(), @Widgets_CallBack())
   EndIf

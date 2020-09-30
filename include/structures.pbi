@@ -484,6 +484,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       width.l[constants::#__c]
       
       ; placing layout
+      Map *_first._s_widget()
+      Map *_last._s_widget()
       *first._s_widget
       *last._s_widget
       *after._s_widget

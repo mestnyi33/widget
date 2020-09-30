@@ -1,57 +1,67 @@
-﻿XIncludeFile "../../widgets.pbi"
-; надо исправить scroll\v draw width
+﻿IncludePath "../../"
+XIncludeFile "widgets.pbi"
 
+
+
+;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
-  Uselib(widget)
-  
   EnableExplicit
-  Global Event.i, MyCanvas
-  Global x=100,y=100, Width=420, Height=420 , focus
+  UseLib(Widget)
   
-  If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
-    MessageRequester("Fatal error", "Program terminated.")
-    End
-  EndIf
+  Enumeration 
+    #before
+    #after
+    #open
+  EndEnumeration
   
-  MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  #demo = #after
+  Global *c0,*b1,*b2
   
-  Define *g = window(10,10,200,200, "window", #PB_Window_SystemMenu|#__flag_autosize) : SetClass(widget(), "window")
-  
-  Define *g0 = Container(10,10,200,200) : SetClass(widget(), "form_0")
-  CloseList()
-  
-  Define *g1 = Container(30,30,200,200) : SetClass(widget(), "form_1")
-  Button(10,10,80,30,"button_1_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,80,30,"button_1_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,80,30,"button_1_2") : SetClass(widget(), GetText(widget()))
-  CloseList()
-  
-  Define *g2 = Container(50,50,200,200) : SetClass(widget(), "form_2")
-  Button(10,10,80,30,"button_2_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,80,30,"button_2_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,80,30,"button_2_2") : SetClass(widget(), GetText(widget()))
-  CloseList()
-  
-  OpenList(*g0)
-  Button(10,10,80,30,"button_0_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,80,30,"button_0_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,80,30,"button_0_2") : SetClass(widget(), GetText(widget()))
-  CloseList()
-  
-  ;SortStructuredList(widget(), #PB_Sort_Ascending, OffsetOf(_s_count\index), TypeOf(_s_count\index))
-            
-           
-;   Resize(*g2, #PB_Ignore, 300, #PB_Ignore, #PB_Ignore)
-;   Resize(*g1, 300, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  Debug "---->>"
-  ForEach widget()
-    Debug "  "+ widget()\class
-  Next
-  Debug "<<----"
-  
-  Repeat
-    Event = WaitWindowEvent()
-  Until Event = #PB_Event_CloseWindow
+  If Open(OpenWindow(#PB_Any, 0, 0, 240, 205, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+    
+    Button(5, 5, 200, 30,"btn0") : SetClass(widget(), GetText(widget()))  
+    
+    If #demo = #before
+      *b1 = Button(10,10,80,50,"btn1") : SetClass(widget(), GetText(widget()))
+      *b2 = Button(30,40,80,50,"btn2") : SetClass(widget(), GetText(widget()))
+    EndIf
+    
+    *c0 = Splitter(5, 40, 200, 100, 0, 0) 
+    SetClass(widget(), "con0")
+    Button(5, 145, 200, 30,"btn3") : SetClass(widget(), GetText(widget()))
+    
+    If #demo = #after
+      *b1 = Button(10,10,80,50,"btn1") : SetClass(widget(), GetText(widget()))
+      *b2 = Button(30,40,80,50,"btn2") : SetClass(widget(), GetText(widget()))
+    EndIf
+    
+    If #demo = #open
+      OpenList(*c0)
+      *b1 = Button(10,10,80,50,"btn1") : SetClass(widget(), GetText(widget()))
+      *b2 = Button(30,40,80,50,"btn2") : SetClass(widget(), GetText(widget()))
+      CloseList()
+    Else
+      ;     SetAttribute(*c0, #PB_Splitter_FirstGadget, *b1)
+      ;     SetAttribute(*c0, #PB_Splitter_SecondGadget, *b2)
+      
+      SetParent(*b1, *c0, #PB_Splitter_FirstGadget)
+      SetParent(*b2, *c0, #PB_Splitter_SecondGadget)
+    EndIf
+    
+    ;     - 
+    ;     - 0 0 none btn0 con0
+    ;     - 1 1 btn0 con0 btn3
+    ;     - 2 3 none btn1 btn2
+    ;     - 3 4 btn1 btn2 none
+    ;     - 4 2 con0 btn3 none
+    ;     -
+    
+    
+    debug_position()
+    
+    WaitClose()
+    
+  EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -

@@ -55,27 +55,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       CompilerEndIf
     EndMacro
     
-    ;- demo text
-    Macro debug_position( _text_="" )
-      Debug " " +_text_+ " - "
-      ForEach widget( ) 
-        If widget( )\before And widget( )\after
-          Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" "+ widget( )\after\class
-        ElseIf widget( )\after
-          Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class +" "+ widget( )\after\class
-        ElseIf widget( )\before
-          Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" "+ widget( )\before\class +" "+ widget( )\class +" none"
-        Else
-          Debug " - "+ Str(ListIndex(widget())) +" "+ widget( )\index +" none "+ widget( )\class + " none " 
-        EndIf
-      Next
-      Debug ""
-    EndMacro
-    
-  
-    
-    
-    
     ;-
     Macro Allocate( _struct_name_, _struct_type_= )
       _s_#_struct_name_#_struct_type_ = AllocateStructure( _s_#_struct_name_ )
@@ -11538,6 +11517,38 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn *this\parent
     EndProcedure
     
+    ; ;     Procedure.i GetLast( *last._s_widget )
+    ; ;       Protected *root._s_root = *last\root
+    ; ;       
+    ; ;       While *last\last ;And *last\root = *last\last\root ; *last\root = *root
+    ; ;         Debug ""+*root\class +" "+ *last\root\class +" "+ *last\last\root\class +" "+ *last\last\class
+    ; ;         If *last\last\before
+    ; ;           Debug "before - "+ *last\last\before\class
+    ; ;         EndIf
+    ; ;         If *last\last\after
+    ; ;           Debug "after - "+ *last\last\after\class
+    ; ;         EndIf
+    ; ;         
+    ; ;         *last = *last\last 
+    ; ;       Wend
+    ; ;       
+    ; ;       ProcedureReturn *last
+    ; ;     EndProcedure
+    Procedure.i GetPosition( *this._s_widget, Position.l )
+      Protected result.i
+      
+      If *this
+        Select Position
+          ;Case #PB_List_First  : result = *this\parent\first
+          Case #PB_List_Before : result = *this\before
+          Case #PB_List_After  : result = *this\after
+          ;Case #PB_List_Last   : result = *this\parent\last
+        EndSelect
+      EndIf
+      
+      ProcedureReturn result
+    EndProcedure
+    
     Procedure.i GetAttribute( *this._s_widget, Attribute.l )
       Protected result.i
       
@@ -12145,77 +12156,47 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    ; ;     Procedure.i GetLast( *last._s_widget )
-    ; ;       Protected *root._s_root = *last\root
-    ; ;       
-    ; ;       While *last\last ;And *last\root = *last\last\root ; *last\root = *root
-    ; ;         Debug ""+*root\class +" "+ *last\root\class +" "+ *last\last\root\class +" "+ *last\last\class
-    ; ;         If *last\last\before
-    ; ;           Debug "before - "+ *last\last\before\class
-    ; ;         EndIf
-    ; ;         If *last\last\after
-    ; ;           Debug "after - "+ *last\last\after\class
-    ; ;         EndIf
-    ; ;         
-    ; ;         *last = *last\last 
-    ; ;       Wend
-    ; ;       
-    ; ;       ProcedureReturn *last
-    ; ;     EndProcedure
+    Macro _first_position_( _this_, _tab_index_ )
+      _this_\_first( Hex( _tab_index_ ) )
+    EndMacro
+    
+    Macro _last_position_( _this_, _tab_index_ )
+      _this_\_last( Hex( _tab_index_ ) )
+    EndMacro
+    
+    Macro _get_first_position_( _this_ )
+      _first_position_( _this_\parent, _this_\_tabindex )
+    EndMacro
+    
+    Macro _get_last_position_( _this_ )
+      _last_position_( _this_\parent, _this_\_tabindex )
+    EndMacro
+    
     Procedure.i GetLast( *last._s_widget )
       Protected *root._s_root = *last\root
       
-      If *last\last 
-        If *last\last\last
-          *last = *last\last\last
+      If _last_position_( *last, 0 ) ; *last\last 
+        If _last_position_( *last, 0 )\_last(Hex(0))
+          *last = _last_position_( *last, 0 )\_last(Hex(0))
           
-          While *last\last ;And *last\root = *last\last\root ; *last\root = *root
-            Debug #PB_Compiler_Procedure +" "+*root\class +" "+ *last\root\class +" "+ *last\last\root\class +" "+ *last\last\class
-            If *last\last\before
-              Debug "before - "+ *last\last\before\class
+          While _last_position_( *last, 0 ) ;And *last\root = *last\last\root ; *last\root = *root
+            ;Debug #PB_Compiler_Procedure +" "+*root\class +" "+ *last\root\class +" "+ *last\last\root\class +" "+ *last\last\class
+            If _last_position_( *last, 0 )\before
+              Debug "before - "+ _last_position_( *last, 0 )\before\class
             EndIf
-            If *last\last\after
-              Debug "after - "+ *last\last\after\class
+            If _last_position_( *last, 0 )\after
+              Debug "after - "+ _last_position_( *last, 0 )\after\class
             EndIf
             
-            *last = *last\last 
+            *last = _last_position_( *last, 0 )
           Wend
           
         Else
-          *last = *last\last
+          *last = _last_position_( *last, 0 )
         EndIf
       EndIf
       
       ProcedureReturn *last
-    EndProcedure
-    
-    Procedure.i GetPosition( *this._s_widget, position.l )
-      Protected *result._s_widget
-      
-      Select position
-        Case #PB_List_First : *result = *this\parent\first
-          If *this\parent\_tab
-            ; get tab first address
-            While *result\after And 
-                  *result\_tabindex <> *this\_tabindex
-              *result = *result\after
-            Wend
-          EndIf
-          
-        Case #PB_List_Before : *result = *this\before
-        Case #PB_List_After  : *result = *this\after
-        Case #PB_List_Last   : *result = *this\parent\last
-          If *this\parent\_tab
-            ; get tab last address
-            While *result\before And 
-                  *result\_tabindex <> *this\_tabindex
-              *result = *result\before
-            Wend
-          EndIf
-          
-      EndSelect
-      
-      ProcedureReturn *result
     EndProcedure
     
     Procedure   SetPosition( *this._s_widget, position.l, *widget._s_widget = #Null ) ; Ok
@@ -12231,16 +12212,16 @@ CompilerIf Not Defined( widget, #PB_Module )
         ProcedureReturn 0
       EndIf
       
-      Macro _move_position_( _this_ )
+      
+      Macro _move_position_after_(_this_, _before_)
         ; if first element in parent list
-        If _this_\parent\first = _this_
-          _this_\parent\first = _this_\after
+        If _get_first_position_( _this_ ) = _this_
+          _get_first_position_( _this_ ) = _this_\after
         EndIf
         
         ; if last element in parent list
-        If _this_\parent\last = _this_
-          ; Debug #PB_Compiler_Procedure + " before - " + *this\before\class
-          _this_\parent\last = _this_\before
+        If _get_last_position_( _this_ ) = _this_
+          _get_last_position_( _this_ ) = _this_\before
         EndIf
         
         If _this_\before
@@ -12250,10 +12231,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         If _this_\after
           _this_\after\before = _this_\before
         EndIf
-      EndMacro
-      
-      Macro _move_position_after_(_this_, _before_)
-        _move_position_( _this_ )
         
         PushListPosition( widget( ) )
         ChangeCurrentElement( widget( ), _this_\address )
@@ -12276,7 +12253,23 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Macro _move_position_before_(_this_, _after_)
-        _move_position_( _this_ )
+        ; if first element in parent list
+        If _get_first_position_( _this_ ) = _this_
+          _get_first_position_( _this_ ) = _this_\after
+        EndIf
+        
+        ; if last element in parent list
+        If _get_last_position_( _this_ ) = _this_
+          _get_last_position_( _this_ ) = _this_\before
+        EndIf
+        
+        If _this_\before
+          _this_\before\after = _this_\after
+        EndIf
+        
+        If _this_\after
+          _this_\after\before = _this_\before
+        EndIf
         
         PushListPosition( widget( ) )
         ChangeCurrentElement( widget( ), _this_\address )
@@ -12301,10 +12294,30 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Select Position
         Case #PB_List_First 
-          result = SetPosition( *this, #PB_List_Before, GetPosition( *this, #PB_List_First ) )
+          Debug _get_first_position_( *this )\class ;= *this
+          
+          *first = _first_position_( *this\parent, 0 )
+          ; get tab first address
+          Debug *first\class
+          While *first\after And *first\_tabindex <> *this\_tabindex
+            *first = *first\after
+          Wend
+          Debug *first\class
+          
+          result = SetPosition( *this, #PB_List_Before, *first )
           
         Case #PB_List_Last 
-          result = SetPosition( *this, #PB_List_After, GetPosition( *this, #PB_List_Last ) )
+          *last = _last_position_( *this\parent, 0 ) ; *this\parent\last
+          
+          ; get tab last address
+          Debug *last\class
+          While *last\before And 
+                *last\_tabindex <> *this\_tabindex
+            *last = *last\before
+          Wend
+          Debug *last\class
+          
+          result = SetPosition( *this, #PB_List_After, *last )
           
         Case #PB_List_Before 
           If *widget
@@ -12323,10 +12336,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\before
               *this\before\after = *this
             Else
-              If *this\parent\first
-                *this\parent\first\before = *this
+              If _get_first_position_( *this )
+                _get_first_position_( *this )\before = *this
               EndIf
-              *this\parent\first = *this
+              _get_first_position_( *this ) = *this
             EndIf
             
             result = 1
@@ -12340,35 +12353,53 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *before
-            If *before\last 
-              If *before\last\last
+            ;             If *before\last 
+            ;               If *before\last\last
+            ;                 *last = GetLast( *before\last\last )
+            ;               Else
+            ;                 *last = *before\last
+            ;               EndIf
+            ;               
+            ;              Else
+            ;               *last = *before
+            ;             EndIf
+            ;             
+            ; ;             ; get last index
+            ; ;             While *last\before And 
+            ; ;                   *last\_tabindex <> *this\_tabindex
+            ; ;               *last = *last\before
+            ; ;             Wend
+            
+            ;
+            If _last_position_( *before, 0 ) ; *before\last 
+              If _last_position_( *before, 0 )\_last(Hex(0))
                 
-                ;;Debug " - " + *before\last\last\class +" "+ *before\last\last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
-                ;*last = GetLast( *before\last\last )
-                ; get child last address
-                *last = *before\last\last
-                While *last\last
-                  *last = *last\last
-                Wend
-                ;;Debug "  - " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
+                ;Debug " - " + *before\last\last\class +" "+ *before\last\last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
+                *last = GetLast( _last_position_( *before, 0 )\_last(Hex(0)) )
+                ;               ; get last index
+                ;                 While *last\before And 
+                ;                       *last\_tabindex <> *this\_tabindex
+                ;                   *last = *last\before
+                ;                 Wend
+                ;Debug "  - " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
                 
               Else
-                *last = *before\last
+                *last = _last_position_( *before, 0 ) ; 
               EndIf
               
               If *before\_tab 
                 If *last\_tabindex > *this\_tabindex
-                  ;;Debug ""
-                  ;;Debug " last " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
+                  Debug ""
+                  Debug " last " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
                   
-                  ; *last = GetPosition( *last, #PB_List_Last )
                   ; get last index
                   While *last\before And 
                         *last\_tabindex <> *this\_tabindex
                     *last = *last\before
                   Wend
                   
-                  ;;Debug " real last " +*last\class +" "+ *last\_tabindex +" "+  *this\class +" "+ *this\_tabindex
+                  Debug " real last " +*last\class +" "+ *last\_tabindex +" "+  *this\class +" "+ *this\_tabindex
+                  
                 EndIf
               EndIf
               
@@ -12386,10 +12417,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\after
               *this\after\before = *this
             Else
-              If *this\parent\last
-                *this\parent\last\after = *this
+              If _get_last_position_( *this )
+                _get_last_position_( *this )\after = *this
               EndIf
-              *this\parent\last = *this
+              _get_last_position_( *this ) = *this
             EndIf
             
             result = 1
@@ -12459,28 +12490,33 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\window = *parent\window
           
           ;
-          If *parent\last 
+          If _last_position_( *parent, 0 ) ; *parent\last 
             ; get parent last address
-            If *parent\last\last 
-              *last = *parent\last\last
+            If _last_position_( *parent, 0 )\_last(Hex(0)) 
+              *last = _last_position_( *parent, 0 )\_last(Hex(0))
               
+              Debug " > " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
               ; get child last address
-              While *last\last
-                *last = *last\last
+              While _last_position_( *last, 0 )
+                *last = _last_position_( *last, 0 )
               Wend
+              Debug "  > " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
             Else
-              *last = *parent\last
+              *last = _last_position_( *parent, 0 )
             EndIf
             
-            If *parent\_tab And 
-               *last\_tabindex > *this\_tabindex
-              ; *last = GetPosition( *last, #PB_List_Last )
-              ; get last index
-              While *last\before And 
-                    *last\_tabindex <> *this\_tabindex
-                *last = *last\before
-              Wend
-              
+            If *parent\_tab 
+              If *last\_tabindex > *this\_tabindex
+                Debug " l " +*last\class +" "+ *last\_tabindex +" "+ *this\class +" "+ *this\_tabindex
+                
+                ; get tab last address
+                While *last\before And 
+                      *last\_tabindex <> *this\_tabindex
+                  *last = *last\before
+                Wend
+                
+                Debug " r " +*last\class +" "+ *last\_tabindex +" "+  *this\class +" "+ *this\_tabindex
+              EndIf
             EndIf
           Else
             *last = *parent
@@ -12517,9 +12553,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             widget( ) = *this
           EndIf
           
-          If *parent\last 
+          If _last_position_( *parent, 0 )
             If *this\parent And 
-               *parent\last\_tabindex > *this\_tabindex
+               _last_position_( *parent, 0 )\_tabindex > *this\_tabindex
               *this\before = *last
               *this\after = *last\after
               
@@ -12527,8 +12563,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                 *this\after\before = *this  
               EndIf
             Else
-              *this\before = *parent\last  
-              *parent\last = *this
+              *this\before = _last_position_( *parent, 0 )  
+              _last_position_( *parent, 0 ) = *this
               *this\after = 0
             EndIf
             
@@ -12539,12 +12575,16 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;               *parent\address = *this\address
 ;             EndIf
 ;             ;
-            *parent\first = *this
-            *parent\last = *this
+            _first_position_( *parent, 0 ) = *this
+            _last_position_( *parent, 0 ) = *this
             *this\before = 0
             *this\after = 0
           EndIf
           
+          If Not _first_position_( *parent, *this\_tabindex) 
+            _first_position_( *parent, *this\_tabindex) = *this
+          EndIf  
+            
           *this\parent = *parent
           
           ; add parent childrens count
@@ -12573,7 +12613,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             a_set( *this )
           EndIf
           
-          ; reparent children 
+          ; children reparent 
           If *LastParent And 
              *LastParent <> *parent
             
@@ -15905,7 +15945,25 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\parent And
              *this\parent\count\childrens 
             
-            _move_position_( *this )
+            
+            ; if first element in parent list
+            If _get_first_position_( *this ) = *this
+              _get_first_position_( *this ) = *this\after
+            EndIf
+            
+            ; if last element in parent list
+            If _get_last_position_( *this ) = *this
+              Debug "free before - " + *this\before\class
+              _get_last_position_( *this ) = *this\before
+            EndIf
+            
+            If *this\before
+              *this\before\after = *this\after
+            EndIf
+            
+            If *this\after
+              *this\after\before = *this\before
+            EndIf
             
             ;*this\address = 0
             
@@ -17160,5 +17218,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------dE-f-----------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
