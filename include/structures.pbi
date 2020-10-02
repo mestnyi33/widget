@@ -473,10 +473,19 @@ CompilerIf Not Defined(structures, #PB_Module)
     Structure _s_widget 
    ;       *_drawing ; drawing_mode
 ;       *_drawing_alpha
-      
+   ;       Map *_first._s_widget()
+;       Map *_last._s_widget()
+   
       ; side.l[4] ; sidebar сторона 
                         ;       *v._s_widget      ; vertical scrollbar
-                        ;       *h._s_widget      ; horizontal scrollbar
+      
+      ;       *h._s_widget      ; horizontal scrollbar
+      
+      
+      fs.a ; frame size
+      bs.a ; border size
+      __width.a ; v bar size
+      __height.a ; h bar size
       
       y.l[constants::#__c]
       x.l[constants::#__c]
@@ -484,18 +493,22 @@ CompilerIf Not Defined(structures, #PB_Module)
       width.l[constants::#__c]
       
       ; placing layout
-      Map *_first._s_widget()
-      Map *_last._s_widget()
       *first._s_widget
       *last._s_widget
       *after._s_widget
       *before._s_widget
       
+      *address          ; widget list address
       *container        ; 
-      *address           ; widget list address
       *root._s_root     ; this root
       *parent._s_widget ; this parent
       *window._s_widget ; this parent window       ; root()\active\window
+      
+      StructureUnion
+        *_tab._s_widget ; = panel() tabbar gadget
+        *_group._s_widget ; = option() groupbar gadget  
+        *tt._s_tt
+      EndStructureUnion
       
       *gadget._s_widget[3] 
       ; \root\gadget[0] - active gadget
@@ -516,12 +529,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; \image[2] - pressed image
       ; \image[3] - background image
       
-      StructureUnion
-        *_tab._s_widget ; = panel() tabbar gadget
-        *_group._s_widget ; = option() groupbar gadget  
-        *tt._s_tt
-      EndStructureUnion
-      
       *flag
       *data
       
@@ -531,30 +538,21 @@ CompilerIf Not Defined(structures, #PB_Module)
       child.b ; is the widget composite?
       transform.b ; add anchors on the widget (to size and move)
       
+      level.l 
+      class.s  
+      change.l
+      vertical.b
       draw.b
       type.b
-      class.s  
-      level.l 
       hide.b[2] 
-      
+      cursor.l[2]
+      round.a
+      repaint.i
+      resize.b
       
       *errors
       notify.l ; оповестить об изменении
       interact.i 
-      
-      change.l
-      round.a
-      cursor.l[2]
-      vertical.b
-      
-      fs.i 
-      bs.i
-      
-      __height.i ; 
-      __width.i
-      
-      repaint.i
-      resize.b
       
       mode._s_mode
       count._s_count
@@ -573,7 +571,6 @@ CompilerIf Not Defined(structures, #PB_Module)
       *selector._s_transform[#__count_anchors_]
       
       Map *bind._s_bind()
-      ;*mouse_drag
       
       *time_click
       *time_down
@@ -643,6 +640,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     EndStructure
     
     Global *event._s_this = AllocateStructure(_s_this)
+    ;}
     
   EndDeclareModule 
   
@@ -651,5 +649,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -f6--fm-
+; Folding = HAA9-fi+
 ; EnableXP

@@ -13,7 +13,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Select this()\event
       Case #PB_EventType_Resize
-        ResizeGadget(oc, X(*g, #__c_inner), Y(*g, #__c_inner), width(*g, #__c_inner), height(*g, #__c_inner))
+        Debug 666
+        ResizeGadget(oc, X(this()\widget, #__c_inner), Y(this()\widget, #__c_inner), width(this()\widget, #__c_inner), height(this()\widget, #__c_inner))
         
       Case #PB_EventType_ScrollChange
         ResizeGadget(ic, X(*g, #__c_required), Y(*g, #__c_required), #PB_Ignore, #PB_Ignore)
@@ -31,6 +32,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
+    
+    ; Bind(-1, @events_widgets())
     
     *g = ScrollArea(0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
     oc = ContainerGadget(#PB_Any, X(*g, #__c_inner), Y(*g, #__c_inner), width(*g, #__c_inner), height(*g, #__c_inner))
@@ -57,7 +60,37 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*g, @events_widgets())
     
     ; set&get demos
-    If Not count
+    If count
+      OpenGadgetList(g)
+      time = ElapsedMilliseconds()
+      For i=0 To count
+        If Bool(i>count-110)
+          ButtonGadget  (#PB_Any, (count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
+        Else
+          ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button"+Str(i))
+        EndIf
+      Next
+      Debug  Str(ElapsedMilliseconds()-time) + " - time add gadget" 
+      CloseGadgetList()
+      
+      OpenGadgetList(ic)
+      ;OpenList(*g)
+      time = ElapsedMilliseconds()
+      For i=0 To count
+        If Bool(i>count-110)
+          ButtonGadget  (#PB_Any, (count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
+        Else
+          ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button"+Str(i))
+        EndIf
+;         If Bool(i>count-110)
+;           Button((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
+;         Else
+;           Button(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
+;         EndIf
+      Next
+      Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
+      CloseList()
+    Else
 ;       SetGadgetAttribute(g, #PB_ScrollArea_X, 50)
 ;       SetAttribute(*g, #PB_ScrollArea_X, 50)
       

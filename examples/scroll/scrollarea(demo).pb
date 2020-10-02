@@ -2,7 +2,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
-  Global g,*g, b,*b, i, time, Sw = 350, Sh = 300, count;=1000
+  Global g,*g, b,*b, i, time, Sw = 350, Sh = 300, count;=10000
   
   Procedure events_gadgets()
     Debug ""+EventGadget()+ " - gadget event - " +EventType()
@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(10,  10, 230, 30,"Button 1")
     Button(50,  50, 230, 30,"Button 2")
     Button(90,  90, 230, 30,"Button 3")
-    Text(130, 130, 330, 20,"This is the content of a ScrollAreaGadget!", #__text_right)
+    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__text_right)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
     *b = Button(Sw-130, Sh-30, 130, 30,"Button")
