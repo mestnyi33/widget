@@ -194,10 +194,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Bool( _parent_\count\childrens )
       
       PushListPosition( widget( ) )
-      If _is_root_( _parent_ )
-        ResetList( widget( ) )
-      Else
+      If _parent_\address
         ChangeCurrentElement( widget( ), _parent_\address )
+      Else
+        ResetList( widget( ) )
       EndIf
       
       While NextElement( widget( ) )
@@ -2670,6 +2670,331 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     
     ;-
+    Procedure   Reclip( *this._s_widget, childrens.b )
+      ; Debug  *this\address
+      
+      ; then move and size parent set clip ( width&height )
+      Protected _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_inner]
+      Protected _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_inner]
+      Protected _p_x4_ = *this\parent\x[#__c_clip] + *this\parent\width[#__c_clip]
+      Protected _p_y4_ = *this\parent\y[#__c_clip] + *this\parent\height[#__c_clip]
+      Protected _t_x2_ = *this\x[#__c_frame] + *this\width[#__c_frame]
+      Protected _t_y2_ = *this\y[#__c_frame] + *this\height[#__c_frame]
+      
+      If *this\type = #__type_tabbar And 
+         *this\parent\_tab And *this\parent\_tab = *this
+        _p_x2_ = *this\parent\x[#__c_frame] + *this\parent\width[#__c_frame]
+        _p_y2_ = *this\parent\y[#__c_frame] + *this\parent\height[#__c_frame]
+      EndIf
+      
+      If *this\type = #__type_scrollbar And 
+         *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h )
+        _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_draw]
+        _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_draw]
+      EndIf
+      
+      If *this\parent And _p_x4_ > 0 And _p_x4_ < _t_x2_ And _p_x2_ > _p_x4_ 
+        *this\width[#__c_clip] = _p_x4_ - *this\x[#__c_clip]
+      ElseIf *this\parent And _p_x2_ > 0 And _p_x2_ < _t_x2_
+        *this\width[#__c_clip] = _p_x2_ - *this\x[#__c_clip]
+      Else
+        *this\width[#__c_clip] = _t_x2_ - *this\x[#__c_clip]
+      EndIf
+      
+      If *this\parent And _p_y4_ > 0 And _p_y4_ < _t_y2_ And _p_y2_ > _p_y4_ 
+        *this\height[#__c_clip] = _p_y4_ - *this\y[#__c_clip]
+      ElseIf *this\parent And _p_y2_ > 0 And _p_y2_ < _t_y2_
+        *this\height[#__c_clip] = _p_y2_ - *this\y[#__c_clip]
+      Else
+        *this\height[#__c_clip] = _t_y2_ - *this\y[#__c_clip]
+      EndIf
+      
+      If *this\width[#__c_clip] < 0
+        *this\width[#__c_clip] = 0
+      EndIf
+      
+      If *this\height[#__c_clip] < 0
+        *this\height[#__c_clip] = 0
+      EndIf
+      
+      If ( *this\width[#__c_clip] Or 
+           *this\height[#__c_clip] )
+        *this\draw = #True
+      Else
+        *this\draw = #False
+      EndIf
+      
+      ; clip child tab bar
+      If *this\type = #__type_panel And *this\_tab
+        Reclip( *this\_tab, 0 )
+      EndIf
+      
+      ; clip child scroll bars 
+      If *this\scroll And 
+         *this\scroll\v And
+         *this\scroll\h
+        Reclip( *this\scroll\v, 0 )
+        Reclip( *this\scroll\h, 0 )
+      EndIf
+      
+      
+      ; clip inner coordinate
+      If *this\x[#__c_clip] < *this\x[#__c_inner] 
+        *this\x[#__c_clip_i] = *this\x[#__c_inner] 
+      Else
+        *this\x[#__c_clip_i] = *this\x[#__c_clip]
+      EndIf
+      
+      If *this\y[#__c_clip] < *this\y[#__c_inner] 
+        *this\y[#__c_clip_i] = *this\y[#__c_inner] 
+      Else
+        *this\y[#__c_clip_i] = *this\y[#__c_clip]
+      EndIf
+      
+      If *this\width[#__c_clip] > *this\width[#__c_draw] 
+        *this\width[#__c_clip_i] = *this\width[#__c_draw]
+      Else
+        *this\width[#__c_clip_i] = *this\width[#__c_clip]
+      EndIf
+      
+      If *this\height[#__c_clip] > *this\height[#__c_draw] 
+        *this\height[#__c_clip_i] = *this\height[#__c_draw]
+      Else
+        *this\height[#__c_clip_i] = *this\height[#__c_clip]
+      EndIf
+      
+      
+      
+      If childrens And *this\container
+        If StartEnumerate( *this ) 
+          If widget( )\parent = *this
+            Reclip( widget( ), childrens )
+          EndIf
+          StopEnumerate( )
+        EndIf
+      EndIf
+    EndProcedure
+    
+    Procedure   _ResizeC(*parent._s_widget, _change_x_, _change_y_)
+      Protected.l x, y, width, height
+      
+      Macro ResizeD( _type_, v1, ov1, v2, ov2, adv, ndv )
+        Select _type_
+          Case 0  : v1 = ov1                   : v2 = ov2
+          Case 1  : v1 = ov1 + ( ndv - adv )/2 : v2 = ov2 + ( ndv - adv )/2   ; center ( right & bottom )
+          Case 2  : v1 = ov1 + ( ndv - adv )   : v2 = ov2 + ( ndv - adv )     ; right & bottom
+          Case 3  : v1 = ov1                   : v2 = ov2 + ( ndv - adv )     ; full ( right & bottom )
+          Case 4  : v1 = ov1 * ndv / adv       : v2 = ov2 * ndv / adv
+          Case 5  : v1 = ov1                   : v2 = ov2 + ( ndv - adv )/2
+          Case 6  : v1 = ov1 + ( ndv - adv )/2 : v2 = ov2 + ( ndv - adv ) 
+        EndSelect
+      EndMacro
+      
+      If StartEnumerate( *parent ) 
+        If widget( )\parent = *parent ; And widget( )\draw 
+          If widget( )\align
+            ResizeD( widget( )\align\h, x, widget( )\align\delta\x, 
+                     width, ( widget( )\align\delta\x + widget( )\align\delta\width ), *parent\align\delta\width, *parent\width )
+            
+            ResizeD( widget( )\align\v, y, widget( )\align\delta\y,
+                     height, ( widget( )\align\delta\y + widget( )\align\delta\height ), *parent\align\delta\height, *parent\height )
+            
+            ;Resize( widget( ), x, y, Width - x + widget( )\bs*2, Height - y + widget( )\bs*2 )
+            Resize( widget( ), x, y, width - x, height - y )
+          Else
+            If _change_x_ 
+              If widget( )\child
+                Resize( widget( ), widget( )\x[#__c_draw], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+              Else
+                Resize( widget( ), widget( )\x[#__c_draw] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+              EndIf
+            EndIf
+            
+            If _change_y_ 
+              If widget( )\child
+                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw], #PB_Ignore, #PB_Ignore )
+              Else
+                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+              EndIf
+            EndIf
+          EndIf
+          
+          Reclip( widget( ), #True )
+        EndIf
+        
+        StopEnumerate( )
+      EndIf
+    EndProcedure
+    
+    Procedure   ResizeC(*parent._s_widget, _change_x_, _change_y_)
+      Protected.l x, y, width, height
+      Protected x2,y2,pw,ph, pwd,phd
+      
+      If *parent\align
+        pw = ( *parent\width - *parent\align\delta\width )
+        ph = ( *parent\height - *parent\align\delta\height )
+        pwd = pw/2 
+        phd = ph/2 
+      EndIf
+    
+       If StartEnumerate( *parent ) 
+;        PushListPosition( widget( ) )
+;        ForEach widget( )
+         
+        If widget( )\parent = *parent ; And widget( )\draw 
+          If widget( )\align
+            
+            x2 = ( widget( )\align\delta\x + widget( )\align\delta\width )
+            y2 = ( widget( )\align\delta\y + widget( )\align\delta\height )
+            
+            Select widget( )\align\h
+              Case 0, 3, 5 
+                x = widget( )\align\delta\x                                                   
+              Case 1, 6  
+                x = widget( )\align\delta\x + pwd
+              Case 2  
+                x = widget( )\align\delta\x + pw   
+              Case 4  
+                x = widget( )\align\delta\x * *parent\width / *parent\align\delta\width       
+            EndSelect
+            
+            Select widget( )\align\h
+              Case 0  
+                width = x2
+              Case 1, 5  
+                width = x2 + pwd   ; center ( right & bottom )
+              Case 2, 3, 6  
+                width = x2 + pw     ; right & bottom
+              Case 4  
+                width = x2 * *parent\width / *parent\align\delta\width
+            EndSelect
+            
+            Select widget( )\align\v
+              Case 0, 3, 5 
+                y = widget( )\align\delta\y                                                   
+              Case 1, 6 
+                y = widget( )\align\delta\y + phd 
+              Case 2  
+                y = widget( )\align\delta\y + ph   
+              Case 4  
+                y = widget( )\align\delta\y * *parent\height / *parent\align\delta\height       
+            EndSelect
+            
+            Select widget( )\align\v
+              Case 0  
+                height = y2
+              Case 1, 5  
+                height = y2 + phd   ; center ( right & bottom )
+              Case 2, 3, 6  
+                height = y2 + ph     ; right & bottom
+              Case 4  
+                height = y2 * *parent\height / *parent\align\delta\height
+            EndSelect
+            
+            
+            
+            ;Resize( widget( ), x, y, Width - x + widget( )\bs*2, Height - y + widget( )\bs*2 )
+            Resize( widget( ), x, y, width - x, height - y )
+          Else
+            If _change_x_ 
+              If widget( )\child
+                Resize( widget( ), widget( )\x[#__c_draw], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+              Else
+                Resize( widget( ), widget( )\x[#__c_draw] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+              EndIf
+            EndIf
+            
+            If _change_y_ 
+              If widget( )\child
+                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw], #PB_Ignore, #PB_Ignore )
+              Else
+                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+              EndIf
+            EndIf
+          EndIf
+          
+          Reclip( widget( ), #True )
+        EndIf
+        
+;        Next
+;        PopListPosition( widget( ) )
+      
+        StopEnumerate( )
+      EndIf
+    EndProcedure
+    
+    Macro _move_position_( _this_ )
+      ; if first element in parent list
+      If _this_\parent\first = _this_
+        _this_\parent\first = _this_\after
+      EndIf
+      
+      ; if last element in parent list
+      If _this_\parent\last = _this_
+        ; Debug #PB_Compiler_Procedure + " before - " + *this\before\class
+        _this_\parent\last = _this_\before
+      EndIf
+      
+      If _this_\before
+        _this_\before\after = _this_\after
+      EndIf
+      
+      If _this_\after
+        _this_\after\before = _this_\before
+      EndIf
+    EndMacro
+    
+    Macro _move_position_after_(_this_, _before_)
+      _move_position_( _this_ )
+      
+      PushListPosition( widget( ) )
+      ChangeCurrentElement( widget( ), _this_\address )
+      MoveElement( widget( ), #PB_List_After, _before_\address )
+      
+      ; change root address for the startenumerate 
+      If _this_\root <> _before_\root
+        _this_\root\address = _this_\address
+      EndIf
+      
+      If _this_\count\childrens
+        While NextElement( widget( ) ) 
+          If Child( widget( ), _this_ )
+            MoveElement( widget( ), #PB_List_Before, _before_\address )
+          EndIf
+        Wend
+        
+        While PreviousElement( widget( ) ) 
+          If Child( widget( ), _this_ )
+            MoveElement( widget( ), #PB_List_After, _this_\address )
+          EndIf
+        Wend
+      EndIf
+      PopListPosition( widget( ) )
+    EndMacro
+    
+    Macro _move_position_before_(_this_, _after_)
+      _move_position_( _this_ )
+      
+      PushListPosition( widget( ) )
+      ChangeCurrentElement( widget( ), _this_\address )
+      MoveElement( widget( ), #PB_List_Before, _after_\address )
+      
+      If _this_\count\childrens
+        While PreviousElement( widget( ) ) 
+          If Child( widget( ), _this_ )
+            MoveElement( widget( ), #PB_List_After, _after_\address )
+          EndIf
+        Wend
+        
+        While NextElement( widget( ) ) 
+          If Child( widget( ), _this_ )
+            MoveElement( widget( ), #PB_List_Before, _after_\address )
+          EndIf
+        Wend
+      EndIf
+      PopListPosition( widget( ) )
+    EndMacro
+    
     Macro _hide_state_( _this_ )
       Bool( _this_\hide[1] Or
             _this_\parent\hide Or 
@@ -3920,162 +4245,6 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;- 
-    Procedure   Reclip( *this._s_widget, childrens.b )
-      ; Debug  *this\address
-      
-      ; then move and size parent set clip ( width&height )
-      Protected _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_inner]
-      Protected _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_inner]
-      Protected _p_x4_ = *this\parent\x[#__c_clip] + *this\parent\width[#__c_clip]
-      Protected _p_y4_ = *this\parent\y[#__c_clip] + *this\parent\height[#__c_clip]
-      Protected _t_x2_ = *this\x[#__c_frame] + *this\width[#__c_frame]
-      Protected _t_y2_ = *this\y[#__c_frame] + *this\height[#__c_frame]
-      
-      If *this\type = #__type_tabbar And 
-         *this\parent\_tab And *this\parent\_tab = *this
-        _p_x2_ = *this\parent\x[#__c_frame] + *this\parent\width[#__c_frame]
-        _p_y2_ = *this\parent\y[#__c_frame] + *this\parent\height[#__c_frame]
-      EndIf
-      
-      If *this\type = #__type_scrollbar And 
-         *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h )
-        _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_draw]
-        _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_draw]
-      EndIf
-      
-      If *this\parent And _p_x4_ > 0 And _p_x4_ < _t_x2_ And _p_x2_ > _p_x4_ 
-        *this\width[#__c_clip] = _p_x4_ - *this\x[#__c_clip]
-      ElseIf *this\parent And _p_x2_ > 0 And _p_x2_ < _t_x2_
-        *this\width[#__c_clip] = _p_x2_ - *this\x[#__c_clip]
-      Else
-        *this\width[#__c_clip] = _t_x2_ - *this\x[#__c_clip]
-      EndIf
-      
-      If *this\parent And _p_y4_ > 0 And _p_y4_ < _t_y2_ And _p_y2_ > _p_y4_ 
-        *this\height[#__c_clip] = _p_y4_ - *this\y[#__c_clip]
-      ElseIf *this\parent And _p_y2_ > 0 And _p_y2_ < _t_y2_
-        *this\height[#__c_clip] = _p_y2_ - *this\y[#__c_clip]
-      Else
-        *this\height[#__c_clip] = _t_y2_ - *this\y[#__c_clip]
-      EndIf
-      
-      If *this\width[#__c_clip] < 0
-        *this\width[#__c_clip] = 0
-      EndIf
-      
-      If *this\height[#__c_clip] < 0
-        *this\height[#__c_clip] = 0
-      EndIf
-      
-      If ( *this\width[#__c_clip] Or 
-           *this\height[#__c_clip] )
-        *this\draw = #True
-      Else
-        *this\draw = #False
-      EndIf
-      
-      ; clip child tab bar
-      If *this\type = #__type_panel And *this\_tab
-        Reclip( *this\_tab, 0 )
-      EndIf
-      
-      ; clip child scroll bars 
-      If *this\scroll And 
-         *this\scroll\v And
-         *this\scroll\h
-        Reclip( *this\scroll\v, 0 )
-        Reclip( *this\scroll\h, 0 )
-      EndIf
-      
-      
-      ; clip inner coordinate
-      If *this\x[#__c_clip] < *this\x[#__c_inner] 
-        *this\x[#__c_clip_i] = *this\x[#__c_inner] 
-      Else
-        *this\x[#__c_clip_i] = *this\x[#__c_clip]
-      EndIf
-      
-      If *this\y[#__c_clip] < *this\y[#__c_inner] 
-        *this\y[#__c_clip_i] = *this\y[#__c_inner] 
-      Else
-        *this\y[#__c_clip_i] = *this\y[#__c_clip]
-      EndIf
-      
-      If *this\width[#__c_clip] > *this\width[#__c_draw] 
-        *this\width[#__c_clip_i] = *this\width[#__c_draw]
-      Else
-        *this\width[#__c_clip_i] = *this\width[#__c_clip]
-      EndIf
-      
-      If *this\height[#__c_clip] > *this\height[#__c_draw] 
-        *this\height[#__c_clip_i] = *this\height[#__c_draw]
-      Else
-        *this\height[#__c_clip_i] = *this\height[#__c_clip]
-      EndIf
-      
-      
-      
-      If childrens And *this\container
-        If StartEnumerate( *this ) 
-          If widget( )\parent = *this
-            Reclip( widget( ), childrens )
-          EndIf
-          StopEnumerate( )
-        EndIf
-      EndIf
-    EndProcedure
-    
-    Procedure   resize_childrens(*parent._s_widget, _change_x_, _change_y_)
-      Protected.l x, y, width, height
-      
-      Macro ResizeD( _type_, v1, ov1, v2, ov2, adv, ndv )
-        Select _type_
-          Case 0  : v1 = ov1                   : v2 = ov2
-          Case 1  : v1 = ov1 + ( ndv - adv )/2 : v2 = ov2 + ( ndv - adv )/2   ; center ( right & bottom )
-          Case 2  : v1 = ov1 + ( ndv - adv )   : v2 = ov2 + ( ndv - adv )     ; right & bottom
-          Case 3  : v1 = ov1                   : v2 = ov2 + ( ndv - adv )     ; full ( right & bottom )
-          Case 4  : v1 = ov1 * ndv / adv       : v2 = ov2 * ndv / adv
-          Case 5  : v1 = ov1                   : v2 = ov2 + ( ndv - adv )/2
-          Case 6  : v1 = ov1 + ( ndv - adv )/2 : v2 = ov2 + ( ndv - adv ) 
-        EndSelect
-      EndMacro
-      
-      If StartEnumerate( *parent ) 
-        If widget( )\parent = *parent ; And widget( )\draw 
-          If widget( )\align
-            ResizeD( widget( )\align\h, x, widget( )\align\delta\x, 
-                     width, ( widget( )\align\delta\x + widget( )\align\delta\width ), *parent\align\delta\width, *parent\width )
-            
-            ResizeD( widget( )\align\v, y, widget( )\align\delta\y,
-                     height, ( widget( )\align\delta\y + widget( )\align\delta\height ), *parent\align\delta\height, *parent\height )
-            
-            ;Resize( widget( ), x, y, Width - x + widget( )\bs*2, Height - y + widget( )\bs*2 )
-            Resize( widget( ), x, y, width - x, height - y )
-          Else
-            If _change_x_ 
-              If widget( )\child
-                Resize( widget( ), widget( )\x[#__c_draw], #PB_Ignore, #PB_Ignore, #PB_Ignore )
-              Else
-                Resize( widget( ), widget( )\x[#__c_draw] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
-              EndIf
-            EndIf
-            
-            If _change_y_ 
-              If widget( )\child
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw], #PB_Ignore, #PB_Ignore )
-              Else
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
-              EndIf
-            EndIf
-          EndIf
-          
-          Reclip( widget( ), #True )
-        EndIf
-        
-        StopEnumerate( )
-      EndIf
-    EndProcedure
-    
     Procedure.b Bar_Update( *this._s_widget )
       Protected result.b, _scroll_pos_.f
       
@@ -11184,7 +11353,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; then move and size parent
           If *this\container
-            resize_childrens(*this, Change_x, Change_y)
+            ResizeC(*this, Change_x, Change_y)
           EndIf
           
           If *this\parent And 
@@ -12238,75 +12407,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         ProcedureReturn 0
       EndIf
       
-      
-      Macro _move_position_( _this_ )
-        ; if first element in parent list
-        If _this_\parent\first = _this_
-          _this_\parent\first = _this_\after
-        EndIf
-        
-        ; if last element in parent list
-        If _this_\parent\last = _this_
-          ; Debug #PB_Compiler_Procedure + " before - " + *this\before\class
-          _this_\parent\last = _this_\before
-        EndIf
-        
-        If _this_\before
-          _this_\before\after = _this_\after
-        EndIf
-        
-        If _this_\after
-          _this_\after\before = _this_\before
-        EndIf
-      EndMacro
-      
-      Macro _move_position_after_(_this_, _before_)
-        _move_position_( _this_ )
-        
-        PushListPosition( widget( ) )
-        ChangeCurrentElement( widget( ), _this_\address )
-        MoveElement( widget( ), #PB_List_After, _before_\address )
-        
-        If _this_\count\childrens
-          While NextElement( widget( ) ) 
-            If Child( widget( ), _this_ )
-              MoveElement( widget( ), #PB_List_Before, _before_\address )
-            EndIf
-          Wend
-          
-          While PreviousElement( widget( ) ) 
-            If Child( widget( ), _this_ )
-              MoveElement( widget( ), #PB_List_After, _this_\address )
-            EndIf
-          Wend
-        EndIf
-        PopListPosition( widget( ) )
-      EndMacro
-      
-      Macro _move_position_before_(_this_, _after_)
-        _move_position_( _this_ )
-        
-        PushListPosition( widget( ) )
-        ChangeCurrentElement( widget( ), _this_\address )
-        MoveElement( widget( ), #PB_List_Before, _after_\address )
-        
-        If _this_\count\childrens
-          While PreviousElement( widget( ) ) 
-            If Child( widget( ), _this_ )
-              MoveElement( widget( ), #PB_List_After, _after_\address )
-            EndIf
-          Wend
-          
-          While NextElement( widget( ) ) 
-            If Child( widget( ), _this_ )
-              MoveElement( widget( ), #PB_List_Before, _after_\address )
-            EndIf
-          Wend
-        EndIf
-        PopListPosition( widget( ) )
-      EndMacro
-      
-      
       Select Position
         Case #PB_List_First 
           *first = GetPosition( *this, #PB_List_First )
@@ -12481,10 +12581,12 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
             EndIf
           Else
-            If *parent\root\count\childrens
+            If *parent\root\count\childrens 
               ChangeCurrentElement( widget( ), *last\address )
             Else
-              LastElement( widget( ) )
+              If LastElement( widget( ) )
+                *parent\address = widget( )\address
+              EndIf
             EndIf
             
             *this\address = AddElement( widget( ) ) 
@@ -12510,11 +12612,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\before\after = *this
           Else
-;             ; StartEnumerate()
-;             If _is_root_( *parent )
-;               *parent\address = *this\address
-;             EndIf
-;             ;
             *parent\first = *this
             *parent\last = *this
             *this\before = 0
@@ -14543,7 +14640,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       If eventtype = #PB_EventType_repaint
         If *this <> #PB_All
           ; root( ) = *this\root
-          ChangeCurrentElement( root( ), @*this\root\address )
+          ChangeCurrentElement( root( ), @*this\root\address2 )
         EndIf
         
         If root( )\canvas\repaint = #False
@@ -15170,7 +15267,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If root( ) <> *this\root
         ; root( ) = *this\root
-        ChangeCurrentElement( root( ), @*this\root\address )
+        ChangeCurrentElement( root( ), @*this\root\address2 )
       EndIf
       
       Select eventtype
@@ -15563,7 +15660,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected *this._s_widget = GetGadgetData( Canvas )
       
       If root( ) <> *this\root
-        ChangeCurrentElement( root( ), @*this\root\address )
+        ChangeCurrentElement( root( ), @*this\root\address2 )
         ; root( ) = *this\root
       EndIf
       
@@ -15610,7 +15707,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       AddElement( root( ) ) 
       root( ) = AllocateStructure( _s_root )
-      root( )\address = root( ) ; ! example active( demo ) 
+      
+      root( )\address2 = root( ) ; ! example active( demo ) 
       root( )\class = "Root"
       
       root( )\root = root( )
@@ -15937,7 +16035,6 @@ CompilerIf Not Defined( widget, #PB_Module )
   EndModule
   ;- <<< 
 CompilerEndIf
-
 ;- 
 Macro Uselib( _name_ )
   UseModule _name_
@@ -17131,5 +17228,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------4-------------------------------------------v---------0--+4-----------4-v8--vf4---------------------------------------------------------------------------------------+--0+-----------------------------------------4f8PY0---------z-9004-Zb+------------------------4-4HERufm8q4------------------------------------8------------------f-+---------------------------------
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

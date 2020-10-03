@@ -616,6 +616,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_root
     Structure _s_root Extends _s_widget
+      *address2          ; widget list address
       canvas._s_canvas
       *_transform._s_transform
     EndStructure
@@ -626,6 +627,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       keyboard._s_keyboard  ; Keyboard()\
       *callback.pFunc
       
+      ;*_root._s_root ; 
       List *_root._s_root() ; 
       *active._s_widget     ; GetActiveWindow()\
       *widget._s_widget     ; EventWidget()
@@ -649,5 +651,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = HAA9-fi+
+; Folding = HAA9-fi-
 ; EnableXP
