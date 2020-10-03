@@ -376,7 +376,8 @@ Procedure AlignWindow(x = 0, y = 0, width = 120, height = 140)
   
   S_Screen = Container(30, 30, 60, 60);, "", #__button_Toggle) :Disable(S_Screen,1)
                                       ;Define *c._s_widget = S_Screen : *c\round = 9
-  Sha = Text(0, 0, 21, 21, "", #__text_border) : SetColor(Sha, #__color_back, $ff00f0f0)
+  ;Sha = Text(0, 0, 21, 21, "", #__text_border) : SetColor(Sha, #__color_back, $ff00f0f0)
+  Sha = Button(0, 0, 21, 21, "", #__button_Toggle) : SetState(Sha, 1)
   C_Button  = Button(22, 22, 15, 15, "", 0, -1, 7)                    ;:ToolTip(C_Button,  "Включить привязку (вцентре)")
   CloseList()
   

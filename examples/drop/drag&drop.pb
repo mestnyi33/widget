@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Tree( x,y,width,height, flag)
   EndMacro
   
-  Macro ExplorerList( x,y,width,height,title,titlewidth,flag=0)
+  Macro ExplorerList( x,y,width,height,title,flag=0)
     Tree( x,y,width,height, flag)
   EndMacro
   
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CreateImage(#ImageSource, 136, 136)
     If StartDrawing(ImageOutput(#ImageSource))
       Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drag this image", $000000, $FFFFFF)        
+      ;DrawText(5, 5, "Drag this image", $000000, $FFFFFF)        
       For i = 45 To 1 Step -1
         Circle(70, 80, i, Random($FFFFFF))
       Next i        
@@ -134,12 +134,12 @@ CompilerIf #PB_Compiler_IsMainFile
     CreateImage(#ImageTarget, 136, 136)
     If StartDrawing(ImageOutput(#ImageTarget))
       Box(0, 0, 136, 136, $FFFFFF)
-      DrawText(5, 5, "Drop images here", $000000, $FFFFFF)
+      ;DrawText(5, 5, "Drop images here", $000000, $FFFFFF)
       StopDrawing()
     EndIf  
     
     
-    ; Create and fill the source gadgets
+    ; Create And fill the source gadgets
     ;
     SourceText = ListIcon(10, 10, 140, 140, "Drag Text here", 130)   
     SourceImage = Image(160, 10, 140, 140, ImageID(#ImageSource), #PB_Image_Border) 
@@ -172,8 +172,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EnableDrop(TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, 1)
     EnableDrop(TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, 2)
     
-    BindEvent(#PB_Event_Gadget, @events_())
-    BindEvent(#PB_Event_GadgetDrop, @events_())
+    Bind(#PB_All, @events_(), #PB_EventType_DragStart)
+    Bind(#PB_All, @events_(), #PB_EventType_Drop)
     
     Repeat
       Event = WaitWindowEvent()
@@ -183,5 +183,5 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 0-6
+; Folding = 0--
 ; EnableXP

@@ -24,11 +24,12 @@ CompilerIf #PB_Compiler_IsMainFile
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
     
-    *g = ScrollArea(0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    ;*g = ScrollArea(0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    *g = Container(0, 0, 0, 0)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
     Button(10,  10, 230, 30,"Button 1")
-    Button(50,  50, 230, 30,"Button 2") ;: SetAlignment(widget(), #__align_right)
+    Define *b1=Button(50,  50, 230, 30,"Button 2") ;: SetAlignment(widget(), #__align_right)
     Button(90,  90, 230, 30,"Button 3")
     Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__text_right)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
@@ -38,6 +39,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;
     Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
+    
+    SetAlignment(*b1, #__align_right)
     
     If count
       OpenGadgetList(g)
@@ -107,5 +110,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = v-
+; Folding = --
 ; EnableXP

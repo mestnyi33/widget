@@ -30,6 +30,7 @@
 ;     #__caption_height = 21
     
     #__from_mouse_state = 0
+    #__focus_state = 1
     
     
     #__round = 7
