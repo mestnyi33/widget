@@ -25,11 +25,9 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   
 ;   Define *g2 = AddItem(*mdi, -1, "form_2")
 ;   Button(10,10,80,80,"button_2")
-  Window(10,10,100,100,"window_1", #PB_Window_SystemMenu) : SetClass(widget(), "window_1") 
-  CloseList()
-  
-  Window(120,10,100,100,"window_2", #PB_Window_SystemMenu) : SetClass(widget(), "window_2") 
-  CloseList()
+
+  Window(10,10,100,100,"window_1", #PB_Window_SystemMenu) : SetClass(widget(), "window_1") : CloseList()
+  Window(120,10,100,100,"window_2", #PB_Window_SystemMenu) : SetClass(widget(), "window_2") : CloseList()
   
   Window(x,y,Width, height,"window_3", #PB_Window_SystemMenu) : SetClass(widget(), "window_3") 
   ;Define *mdi = MDI(x,y,Width, height);, #__flag_autosize)

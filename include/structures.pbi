@@ -532,6 +532,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       *flag
       *data
       
+      __state.l
       _state.l
       _tabindex.l ; parent panel tab index
       
