@@ -208,9 +208,11 @@ CompilerIf Not Defined( widget, #PB_Module )
           Break
         EndMacro
         
-        Macro StopEnumerate( )
+        Macro StopEnumerate( ) ; _break_ = #True )
         Else
-          Break
+          ; If _break_ = #True
+            Break
+          ; EndIf
         EndIf
       Wend
       PopListPosition( widget( ) )
@@ -279,14 +281,108 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     ;- 
+    Macro Atpoint( _result_, _this_ )
+      ; enter&leave mouse events
+      If mouse( )\interact
+        ; get at point
+        If root( )\count\childrens
+          LastElement( widget( ) ) 
+          Repeat                                 
+            If _is_widget_( widget( ) ) And
+               Not widget( )\hide And widget( )\draw And 
+               widget( )\root\canvas\gadget = root( )\canvas\gadget And 
+               _from_point_( mouse( )\x, mouse( )\y, widget( ), [#__c_clip] ) And 
+               _from_point_( mouse( )\x, mouse( )\y, widget( ), [#__c_frame] )
+              
+              _this_ = widget( )
+              
+              ; scrollbars events
+              If widget( ) And widget( )\scroll
+                If widget( )\scroll\v And Not widget( )\scroll\v\hide And widget( )\scroll\v\type And 
+                   _from_point_( mouse( )\x,mouse( )\y, widget( )\scroll\v, [#__c_clip] ) And 
+                   _from_point_( mouse( )\x, mouse( )\y, widget( )\scroll\v, [#__c_frame] )
+                  _this_ = widget( )\scroll\v
+                ElseIf widget( )\scroll\h And Not widget( )\scroll\h\hide And widget( )\scroll\h\type And 
+                       _from_point_( mouse( )\x,mouse( )\y, widget( )\scroll\h, [#__c_clip] ) And 
+                       _from_point_( mouse( )\x, mouse( )\y, widget( )\scroll\h, [#__c_frame] )
+                  _this_ = widget( )\scroll\h
+                EndIf
+              EndIf
+              
+              ; tabbar events
+              If widget( ) And widget( )\_tab 
+                If Not widget( )\_tab\hide And  widget( )\_tab\type And 
+                   _from_point_( mouse( )\x,mouse( )\y, widget( )\_tab, [#__c_clip] ) And 
+                   _from_point_( mouse( )\x, mouse( )\y, widget( )\_tab, [#__c_frame] )
+                  _this_ = widget( )\_tab
+                EndIf
+              EndIf
+              
+              Break
+            EndIf
+          Until PreviousElement( widget( ) ) = #False 
+        EndIf
+        
+        If Not _this_ 
+          _this_ = root( ) 
+        EndIf
+        
+        ; entered&leaved events 
+        If entered( ) <> _this_ 
+          If entered( ) And 
+             entered( )\_state & #__s_entered And 
+             Not ( #__from_mouse_state And Child( _this_, entered( ) ) )
+            entered( )\_state &~ #__s_entered
+            
+            _result_ | Events( entered( ), #__event_MouseLeave, mouse( )\x, mouse( )\y )
+            
+            If #__from_mouse_state
+              ;ChangeCurrentElement( widget( ), entered( )\address )
+              SelectElement( widget( ), entered( )\index )
+              Repeat                 
+                If widget( )\draw And Child( entered( ), widget( ) )
+                  If widget( )\_state & #__s_entered
+                    widget( )\_state &~ #__s_entered
+                    
+                    _result_ | Events( widget( ), #__event_MouseLeave, mouse( )\x, mouse( )\y )
+                  EndIf
+                EndIf
+              Until PreviousElement( widget( ) ) = #False 
+            EndIf
+            
+            entered( ) = _this_
+          EndIf
+          
+          If _this_ And 
+             _this_\_state & #__s_entered = #False
+            _this_\_state | #__s_entered
+            entered( ) = _this_
+            
+            If #__from_mouse_state
+              ForEach widget( )
+                If widget( ) = entered( )
+                  Break
+                EndIf
+                
+                If widget( )\draw And Child( entered( ), widget( ) )
+                  If widget( )\_state & #__s_entered = #False
+                    widget( )\_state | #__s_entered
+                    
+                    _result_ | Events( widget( ), #__event_MouseEnter, mouse( )\x, mouse( )\y )
+                  EndIf
+                EndIf
+              Next
+            EndIf
+            
+            _result_ | Events( entered( ), #__event_MouseEnter, mouse( )\x, mouse( )\y )
+          EndIf
+        EndIf  
+      EndIf
+    EndMacro  
+    
     Macro Intersect( _address_1_, _address_2_, _mode_ = )
       Bool( ( _address_1_\x#_mode_ + _address_1_\width#_mode_ ) > _address_2_\x And _address_1_\x#_mode_ < ( _address_2_\x + _address_2_\width ) And 
             ( _address_1_\y#_mode_ + _address_1_\height#_mode_ ) > _address_2_\y And _address_1_\y#_mode_ < ( _address_2_\y + _address_2_\height ) )
-    EndMacro
-    
-    Macro Atpoint( _address_, _mode_ = )
-      Bool( mouse( )\x > _address_\x#_mode_ And mouse( )\x < ( _address_\x#_mode_ + _address_\width#_mode_ ) And 
-            mouse( )\y > _address_\y#_mode_ And mouse( )\y < ( _address_\y#_mode_ + _address_\height#_mode_ ) )
     EndMacro
     
     Macro _from_point_( mouse_x, mouse_y, _type_, _mode_ = )
@@ -12298,27 +12394,123 @@ CompilerIf Not Defined( widget, #PB_Module )
       *this\data = *data
     EndProcedure
     
+    Procedure SetForeground( *this._s_widget )
+      While _is_window_( *this ) 
+        SetPosition( *this, #PB_List_Last )
+        *this = *this\window
+      Wend
+    EndProcedure
+    
     Procedure.i SetActive( *this._s_widget )
       Protected result.i, *window._s_widget, *gadget._s_widget
       
+      If (Not *this Or _is_root_( *this ) )
+        *this = Root()
+        *window = Root()
+        
+        If _is_widget_( GetActive( ) ) And ;;GetActive( )\parent = *window\parent And 
+           GetActive( )\__state & #__s_focused
+          GetActive( )\__state &~ #__s_focused
+          
+          If StartEnumerate( GetActive( ) ) ; Not Child( *window, GetActive( ) ) And 
+            
+            If widget()\__state & #__s_focused 
+              widget()\__state &~ #__s_focused
+              Debug  "__last lostfocus"+widget()\class
+              Events( widget(), #__event_lostFocus, mouse( )\x, mouse( )\y )
+              If _is_widget_( widget( )\gadget ) 
+                widget( )\gadget\__state &~ #__s_focused
+                Events( widget( )\gadget, #__event_lostFocus, mouse( )\x, mouse( )\y )
+              EndIf
+            EndIf
+            
+            StopEnumerate( )
+          EndIf
+          
+          Events( GetActive( ), #__event_LostFocus, mouse( )\x, mouse( )\y )
+          If _is_widget_( GetActive( )\gadget )
+            GetActive( )\gadget\__state &~ #__s_focused
+            Events( GetActive( )\gadget, #__event_lostFocus, mouse( )\x, mouse( )\y )
+          EndIf
+          
+          PushListPosition( widget( ) )
+          ChangeCurrentElement( widget( ), GetActive( )\address )
+          
+          While PreviousElement( widget( ) )               
+            If *window = widget( ) Or 
+               Child( *window, widget( ) ) 
+              Break
+            EndIf
+            
+            If Child( GetActive( ), widget( ) ) And 
+               widget( )\__state & #__s_focused
+              widget( )\__state &~ #__s_focused
+              
+              Debug "__lostfocus - "+widget( )\class
+              Events( widget( ), #__event_LostFocus, mouse( )\x, mouse( )\y )
+              If _is_widget_( widget( )\gadget ) 
+                widget( )\gadget\__state &~ #__s_focused
+                Events( widget( )\gadget, #__event_lostFocus, mouse( )\x, mouse( )\y )
+              EndIf
+            EndIf
+          Wend
+          
+          PopListPosition( widget( ) )
+        EndIf
+        
+        ProcedureReturn 1
+      EndIf
+      
       With *this
         If Not *this\transform
-          If *this\child And Not *this\container
-            *this = *this\parent
+          If GetActive( ) And 
+             Child( GetActive( ), *this )
+            Debug 777
+            If *this\__state & #__s_focused = #False
+              *this\__state | #__s_focused
+              Debug ""+*this\class +" "+ GetActive()\class
+              Events( *this, #__event_Focus, mouse( )\x, mouse( )\y )
+              Events( GetActive( ), #__event_Focus, mouse( )\x, mouse( )\y )
+              If _is_widget_( GetActive( )\gadget ) 
+                GetActive( )\gadget\__state | #__s_focused
+                Events( GetActive( )\gadget, #__event_Focus, mouse( )\x, mouse( )\y )
+              EndIf
+            EndIf
+            
+            *this = GetActive( )
           EndIf
           
           If _is_window_( *this ) 
-            *window = *this 
+             *window = *this 
             *gadget = *window\gadget
           Else
+            If *this\child And Not *this\container
+              *this = *this\parent
+            EndIf
+            
             *gadget = *this
             *window = *gadget\window 
           EndIf
           
-          If GetActive( ) <> *window
-            If _is_widget_( GetActive( ) ) And
+          If GetActive( ) <> *window ;;And Not (GetActive( ) And GetActive( )\parent = *window)
+            If _is_widget_( GetActive( ) ) And ;;GetActive( )\parent = *window\parent And 
                GetActive( )\__state & #__s_focused
               GetActive( )\__state &~ #__s_focused
+              
+              If StartEnumerate( GetActive( ) ) ; Not Child( *window, GetActive( ) ) And 
+                
+                If widget()\__state & #__s_focused 
+                  widget()\__state &~ #__s_focused
+                  Debug  "last lostfocus"+widget()\class
+                  Events( widget(), #__event_lostFocus, mouse( )\x, mouse( )\y )
+                  If _is_widget_( widget( )\gadget ) 
+                    widget( )\gadget\__state &~ #__s_focused
+                    Events( widget( )\gadget, #__event_lostFocus, mouse( )\x, mouse( )\y )
+                  EndIf
+                EndIf
+                
+                StopEnumerate( )
+              EndIf
               
               Events( GetActive( ), #__event_LostFocus, mouse( )\x, mouse( )\y )
               If _is_widget_( GetActive( )\gadget )
@@ -12328,9 +12520,14 @@ CompilerIf Not Defined( widget, #PB_Module )
               
               PushListPosition( widget( ) )
               ChangeCurrentElement( widget( ), GetActive( )\address )
-              While PreviousElement( widget( ) )                 
-                If Not Child( *window, widget( ) ) And
-                   Child( GetActive( ), widget( ) ) And 
+              
+              While PreviousElement( widget( ) )               
+                If *window = widget( ) Or 
+                   Child( *window, widget( ) ) 
+                  Break
+                EndIf
+                
+                If Child( GetActive( ), widget( ) ) And 
                    widget( )\__state & #__s_focused
                   widget( )\__state &~ #__s_focused
                   
@@ -12342,6 +12539,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                 EndIf
               Wend
+               
               PopListPosition( widget( ) )
             EndIf
             
@@ -12349,6 +12547,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If GetActive( )\__state & #__s_focused = #False
               GetActive( )\__state | #__s_focused
               
+              ; enumerate all parents
               PushListPosition( widget( ) )
               If GetActive( )\root\address
                 ChangeCurrentElement( widget( ), GetActive( )\root\address )
@@ -12356,7 +12555,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 ResetList( widget( ) )
               EndIf
               
-              While NextElement( widget( ) )                 
+              While NextElement( widget( ) )
                 If GetActive( ) = widget( )
                   Break
                 EndIf
@@ -12376,6 +12575,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             result = #True
           EndIf
           
+          ; 
           If GetActive( )\gadget <> *gadget
             If _is_widget_( GetActive( )\gadget )
               GetActive( )\gadget\__state &~ #__s_focused
@@ -12387,19 +12587,39 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If result
+            ; set active window active gadget
             If _is_widget_( GetActive( )\gadget ) 
               GetActive( )\gadget\__state | #__s_focused
               Events( GetActive( )\gadget, #__event_Focus, mouse( )\x, mouse( )\y )
             EndIf
             
-            If _is_window_( GetActive( ) )
-              *this = GetActive( )
+; ;             If GetActive( )\last
+; ;               GetActive( ) = GetPosition( GetActive( )\last, #PB_List_Last )
+; ;               If _is_window_( GetActive( ) ) And 
+; ;                  GetActive( )\__state & #__s_focused = #False
+; ;                 GetActive( )\__state | #__s_focused
+; ;                 Debug  "last "+GetActive( )\class
+; ;                 Events( GetActive( ), #__event_Focus, mouse( )\x, mouse( )\y )
+; ;               EndIf
+; ;             EndIf
+            
+            If GetActive( )\last
+              *this = GetPosition( GetActive( )\last, #PB_List_Last )
               
-              While _is_window_( *this ) 
-                SetPosition( *this, #PB_List_Last )
-                *this = *this\window
-              Wend
+              If _is_window_( *this ) And 
+                 *this\__state & #__s_focused = #False
+                *this\__state | #__s_focused
+                Debug  "last focus"+*this\class
+                Events( *this, #__event_Focus, mouse( )\x, mouse( )\y )
+                If _is_widget_( *this\gadget ) 
+                  *this\gadget\__state | #__s_focused
+                  Events( *this\gadget, #__event_Focus, mouse( )\x, mouse( )\y )
+                EndIf
+              EndIf
             EndIf
+            
+            ; set window foreground position
+            SetForeground( GetActive() )
             
             ;           If Not( GetActive( ) = GetActive( )\root And GetActive( )\root\type =- 5 )
             ;             PostEvent( #PB_Event_Gadget, GetActive( )\root\canvas\window, GetActive( )\root\canvas\gadget, #__event_repaint )
@@ -12407,7 +12627,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         Else
           
-          
+          ; transformed widget
           If _is_window_( *this )
             SetPosition( *this, #PB_List_Last )
           EndIf
@@ -15197,8 +15417,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;          eventtype = #PB_EventType_LeftButtonDown Or 
       ;          eventtype = #PB_EventType_LeftButtonUp Or 
       ;          eventtype = #PB_EventType_MouseLeave
-      ;         Debug ""+*this\class +" "+ eventtype
+      ;         Debug "     "+ eventtype +" "+ *this\class
       ;       EndIf
+      
+      ;       If eventtype = #PB_EventType_Focus Or 
+      ;          eventtype = #PB_EventType_LostFocus 
+      ;         Debug "     "+ eventtype +" "+ *this\class
+      ;       EndIf
+      
       
       If *this\type = #__type_window
         Repaint = Window_Events( *this, eventtype, mouse_x, mouse_y )
@@ -15433,98 +15659,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       ; enter&leave mouse events
-      If mouse( )\interact And change
-        ; get at point
-        If root( )\count\childrens
-          LastElement( widget( ) ) 
-          Repeat                                 
-            If _is_widget_( widget( ) ) And
-               Not widget( )\hide And widget( )\draw And 
-               widget( )\root\canvas\gadget = root( )\canvas\gadget And 
-               _from_point_( mouse_x, mouse_y, widget( ), [#__c_clip] ) And 
-               _from_point_( mouse_x, mouse_y, widget( ), [#__c_frame] )
-              
-              *this = widget( )
-              
-              ; scrollbars events
-              If widget( ) And widget( )\scroll
-                If widget( )\scroll\v And Not widget( )\scroll\v\hide And widget( )\scroll\v\type And 
-                   _from_point_( mouse_x,mouse_y, widget( )\scroll\v, [#__c_clip] ) And 
-                   _from_point_( mouse_x, mouse_y, widget( )\scroll\v, [#__c_frame] )
-                  *this = widget( )\scroll\v
-                ElseIf widget( )\scroll\h And Not widget( )\scroll\h\hide And widget( )\scroll\h\type And 
-                       _from_point_( mouse_x,mouse_y, widget( )\scroll\h, [#__c_clip] ) And 
-                       _from_point_( mouse_x, mouse_y, widget( )\scroll\h, [#__c_frame] )
-                  *this = widget( )\scroll\h
-                EndIf
-              EndIf
-              
-              ; tabbar events
-              If widget( ) And widget( )\_tab 
-                If Not widget( )\_tab\hide And  widget( )\_tab\type And 
-                   _from_point_( mouse_x,mouse_y, widget( )\_tab, [#__c_clip] ) And 
-                   _from_point_( mouse_x, mouse_y, widget( )\_tab, [#__c_frame] )
-                  *this = widget( )\_tab
-                EndIf
-              EndIf
-              
-              Break
-            EndIf
-          Until PreviousElement( widget( ) ) = #False 
-        EndIf
-        
-        If Not *this : *this = root( ) : EndIf
-        
-        ; entered&leaved events 
-        If entered( ) <> *this 
-          If entered( ) And 
-             entered( )\_state & #__s_entered And 
-             Not ( #__from_mouse_state And Child( *this, entered( ) ) )
-            entered( )\_state &~ #__s_entered
-            
-            Repaint | Events( entered( ), #__event_MouseLeave, mouse_x, mouse_y )
-            
-            If #__from_mouse_state
-              ;ChangeCurrentElement( widget( ), entered( )\address )
-              SelectElement( widget( ), entered( )\index )
-              Repeat                 
-                If widget( )\draw And Child( entered( ), widget( ) )
-                  If widget( )\_state & #__s_entered
-                    widget( )\_state &~ #__s_entered
-                    
-                    Repaint | Events( widget( ), #__event_MouseLeave, mouse_x, mouse_y )
-                  EndIf
-                EndIf
-              Until PreviousElement( widget( ) ) = #False 
-            EndIf
-            
-            entered( ) = *this
-          EndIf
-          
-          If *this And 
-             *this\_state & #__s_entered = #False
-            *this\_state | #__s_entered
-            entered( ) = *this
-            
-            If #__from_mouse_state
-              ForEach widget( )
-                If widget( ) = entered( )
-                  Break
-                EndIf
-                
-                If widget( )\draw And Child( entered( ), widget( ) )
-                  If widget( )\_state & #__s_entered = #False
-                    widget( )\_state | #__s_entered
-                    
-                    Repaint | Events( widget( ), #__event_MouseEnter, mouse_x, mouse_y )
-                  EndIf
-                EndIf
-              Next
-            EndIf
-            
-            Repaint | Events( entered( ), #__event_MouseEnter, mouse_x, mouse_y )
-          EndIf
-        EndIf  
+      If change
+        Atpoint( repaint, *this )
       EndIf
       
       ; set active widget
@@ -15579,18 +15715,19 @@ CompilerIf Not Defined( widget, #PB_Module )
       ElseIf eventtype = #__event_Focus
         
       ElseIf eventtype = #__event_lostFocus
-        If GetActive( )
-          ; если фокус получил PB gadget
-          ; то убираем фокус с виджета
-          Repaint | Events( GetActive( ), #__event_lostFocus, mouse_x, mouse_y )
-          
-          If GetActive( )\gadget And GetActive( ) <> GetActive( )\gadget
-            Repaint | Events( GetActive( )\gadget, #__event_lostFocus, mouse_x, mouse_y )
-            GetActive( )\gadget = 0
-          EndIf
-          
-          ; GetActive( ) = 0
-        EndIf
+;         If GetActive( )
+;           ; если фокус получил PB gadget
+;           ; то убираем фокус с виджета
+;           Repaint | Events( GetActive( ), #__event_lostFocus, mouse_x, mouse_y )
+;           
+;           If GetActive( )\gadget And GetActive( ) <> GetActive( )\gadget
+;             Repaint | Events( GetActive( )\gadget, #__event_lostFocus, mouse_x, mouse_y )
+;             GetActive( )\gadget = 0
+;           EndIf
+;           
+;           ; GetActive( ) = 0
+;         EndIf
+        SetActive( 0 ) 
         
       ElseIf eventtype = #__event_MouseEnter 
         If entered( ) And 
@@ -15727,21 +15864,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure CW_resize( )
-      Protected canvas = GetWindowData( EventWindow( ) )
-      ; Protected *this._s_widget = GetGadgetData( Canvas )
-      ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( ) ) - GadgetX( canvas )*2, WindowHeight( EventWindow( ) ) - GadgetY( canvas )*2 )
-    EndProcedure
-    
-    Procedure CW_Active( )
-      Protected Repaint
-      Protected canvas = GetWindowData( EventWindow( ) )
-      Protected *this._s_widget = GetGadgetData( Canvas )
-      
-    EndProcedure
-    
-    Procedure CW_Deactive( )
-      Protected Repaint
+    Procedure CW_Click( )
+      Protected result
       Protected canvas = GetWindowData( EventWindow( ) )
       Protected *this._s_widget = GetGadgetData( Canvas )
       
@@ -15750,20 +15874,64 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; root( ) = *this\root
       EndIf
       
-      If GetActive( )
-        Repaint | Events( GetActive( ), #__event_lostFocus, mouse( )\x, mouse( )\y )
-        
-        If GetActive( )\gadget And GetActive( ) <> GetActive( )\gadget
-          Repaint | Events( GetActive( )\gadget, #__event_lostFocus, mouse( )\x, mouse( )\y )
-          GetActive( )\gadget = 0
-        EndIf
-        
-        If Repaint 
-          ReDraw( root( ) )
-        EndIf 
-        
+      Debug focused( )
+      ;;PostEvent( #PB_Event_Gadget, root( )\canvas\window, root( )\canvas\gadget, #PB_EventType_LeftClick )
+;       Atpoint( result, *this )
+;       
+;       Debug ""+ *this\class +" "+ #PB_Compiler_Procedure
+;       Protected active = *this ; GetActive( )
+;       GetActive( ) = 0
+;       
+;       If SetActive( active )
+;         ReDraw( root( ) )
+;       EndIf 
+    EndProcedure
+    
+    Procedure CW_Active( )
+      Protected result
+      Protected canvas = GetWindowData( EventWindow( ) )
+      Protected *this._s_widget = GetGadgetData( Canvas )
+      
+      If root( ) <> *this\root
+        ChangeCurrentElement( root( ), @*this\root\address2 )
+        ; root( ) = *this\root
+      EndIf
+      
+      ;PostEvent( #PB_Event_Gadget, root( )\canvas\window, root( )\canvas\gadget, #PB_EventType_LeftButtonDown )
+      Atpoint( result, *this )
+      
+      Debug ""+ *this\class +" "+ #PB_Compiler_Procedure
+      Protected active = *this 
+      
+      If _is_root_( *this )
+        active = GetActive( )
         GetActive( ) = 0
       EndIf
+      
+      If SetActive( active )
+        ReDraw( root( ) )
+      EndIf 
+    EndProcedure
+    
+    Procedure CW_Deactive( )
+      Protected canvas = GetWindowData( EventWindow( ) )
+      Protected *this._s_widget = GetGadgetData( Canvas )
+      
+      If root( ) <> *this\root
+        ChangeCurrentElement( root( ), @*this\root\address2 )
+        ; root( ) = *this\root
+      EndIf
+      
+      Debug #PB_Compiler_Procedure
+      If SetActive( 0 )
+        ReDraw( root( ) )
+      EndIf 
+    EndProcedure
+    
+    Procedure CW_Resize( )
+      Protected canvas = GetWindowData( EventWindow( ) )
+      ; Protected *this._s_widget = GetGadgetData( Canvas )
+      ResizeGadget( canvas, #PB_Ignore, #PB_Ignore, WindowWidth( EventWindow( ) ) - GadgetX( canvas )*2, WindowHeight( EventWindow( ) ) - GadgetY( canvas )*2 )
     EndProcedure
     
     ;-
@@ -15833,6 +16001,10 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         BindEvent( #PB_Event_SizeWindow, @CW_resize( ), Window );, Canvas )
       EndIf
+      
+;       BindEvent( #PB_Event_LeftClick, @CW_Click( ), Window );, Canvas )
+;       ;BindEvent( #PB_Event_Gadget, @CW_Click( ), Window );, Canvas )
+;       BindEvent( #PB_Event_Repaint, @CW_Click( ), Window );, Canvas )
       
       BindEvent( #PB_Event_ActivateWindow, @CW_Active( ), Window );, Canvas )
       BindEvent( #PB_Event_DeactivateWindow, @CW_Deactive( ), Window );, Canvas )
@@ -17314,5 +17486,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------------------------------------f5+-D----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------z-------------------------------------------------------------------vf---------------------------------
+; Folding = ------f---------------------------------f5+-D----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Pd8Gl15-------------------------------------------------------------------4-8f--+f4---------------------
 ; EnableXP
