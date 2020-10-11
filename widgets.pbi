@@ -15658,11 +15658,11 @@ CompilerIf Not Defined( widget, #PB_Module )
         change =- 1
       EndIf
       
-      ; test bug fix
-      If eventtype = #__event_leftButtonDown Or 
-         eventtype = #__event_leftButtonUp 
-        Debug "fix "+eventtype
-      EndIf
+;;       ; test bug when clicking on the canvas in an inactive window
+;;       If eventtype = #__event_leftButtonDown Or 
+;;          eventtype = #__event_leftButtonUp 
+;;         Debug "fix "+eventtype
+;;       EndIf
       
       ; enter&leave mouse events
       If change
@@ -15872,55 +15872,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndProcedure
     
-    Procedure CW_Click( )
-      Protected result
-      Protected canvas = GetWindowData( EventWindow( ) )
-      Protected *this._s_widget = GetGadgetData( Canvas )
-      
-      If root( ) <> *this\root
-        ChangeCurrentElement( root( ), @*this\root\address2 )
-        ; root( ) = *this\root
-      EndIf
-      
-      Debug focused( )
-      ;;PostEvent( #PB_Event_Gadget, root( )\canvas\window, root( )\canvas\gadget, #PB_EventType_LeftClick )
-;       Atpoint( result, *this )
-;       
-;       Debug ""+ *this\class +" "+ #PB_Compiler_Procedure
-;       Protected active = *this ; GetActive( )
-;       GetActive( ) = 0
-;       
-;       If SetActive( active )
-;         ReDraw( root( ) )
-;       EndIf 
-    EndProcedure
-    
-    Procedure CW_Active( )
-;       Protected result
-;       Protected canvas = GetWindowData( EventWindow( ) )
-;       Protected *this._s_widget = GetGadgetData( Canvas )
-;       
-;       If root( ) <> *this\root
-;         ChangeCurrentElement( root( ), @*this\root\address2 )
-;         ; root( ) = *this\root
-;       EndIf
-;       
-;       ;PostEvent( #PB_Event_Gadget, root( )\canvas\window, root( )\canvas\gadget, #PB_EventType_LeftButtonDown )
-;       Atpoint( result, *this )
-;       
-;       Debug ""+ *this\class +" "+ #PB_Compiler_Procedure
-;       Protected active = *this 
-;       
-;       If _is_root_( *this )
-;         active = GetActive( )
-;         GetActive( ) = 0
-;       EndIf
-;       
-;       If SetActive( active )
-;         ReDraw( root( ) )
-;       EndIf 
-    EndProcedure
-    
     Procedure CW_Deactive( )
       Protected canvas = GetWindowData( EventWindow( ) )
       Protected *this._s_widget = GetGadgetData( Canvas )
@@ -16010,11 +15961,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         BindEvent( #PB_Event_SizeWindow, @CW_resize( ), Window );, Canvas )
       EndIf
       
-;       BindEvent( #PB_Event_LeftClick, @CW_Click( ), Window );, Canvas )
-;       ;BindEvent( #PB_Event_Gadget, @CW_Click( ), Window );, Canvas )
-;       BindEvent( #PB_Event_Repaint, @CW_Click( ), Window );, Canvas )
-      
-      BindEvent( #PB_Event_ActivateWindow, @CW_Active( ), Window );, Canvas )
       BindEvent( #PB_Event_DeactivateWindow, @CW_Deactive( ), Window );, Canvas )
       
       ; z - order
@@ -17494,5 +17440,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------f---------------------------------f5+-D----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Pd8Gl15---------------------------------------------------------------8---f-vv-f-v8---------------------
+; Folding = ------f---------------------------------f5+-D----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Pd8Gl15---------------------------------------------------------------8---v--+-0-u---------------------
 ; EnableXP

@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       ;
       ProcedureC eventTapFunction(proxy, type, event, refcon)
         If IsWindow( event_window )
-          Debug #PB_Compiler_Procedure  +" "+ GetActiveWindow() +" "+ EventWindow() +" "+ EventGadget() +" "+ event_gadget +" "+ type ;+" "+ root()
+          Debug "  "+#PB_Compiler_Procedure  +" "+ GetActiveWindow() +" "+ EventWindow() +" "+ EventGadget() +" "+ event_gadget +" "+ type ;+" "+ root()
           
           If type = 1 ; LeftButtonDown
             PostEvent( #PB_Event_Gadget , event_window, event_gadget, #PB_EventType_LeftButtonDown )
@@ -441,6 +441,8 @@ CompilerEndIf
 ; ;   
 
 CompilerIf #PB_Compiler_IsMainFile
+  Global x,y
+  
   ; *** test ***
   Procedure events_gadgets()
     Select EventType()
@@ -451,16 +453,108 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  OpenWindow(0, 200, 100, 220, 220, "click hire", #PB_Window_SystemMenu)
-  CanvasGadget(0, 10, 10, 200, 200)
+  Procedure draw_demo(x,y)
+    ClipOutput(x, y, 100, 100) ; restrict all drawing to this region
+    
+    DrawingMode(#PB_2DDrawing_Default)
+    Circle( x,  y, 50, $FF0000FF)  
+    Circle( x, y+100, 50, $Ff00FF00)  
+    Circle(x+100,  y, 50, $FFFF0000)  
+    Circle(x+100, y+100, 50, $FF00FFFF)  
+    
+    DrawingMode(#PB_2DDrawing_Transparent)
+    DrawText(x-10,y+(100-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+    
+    DrawingMode(#PB_2DDrawing_Outlined)
+    Box(x, y, 100, 100, $FF000000)
+  EndProcedure
   
-  OpenWindow(1, 300, 200, 220, 220, "Canvas down/up", #PB_Window_SystemMenu)
-  CanvasGadget(1, 10, 10, 200, 200)
+  If OpenWindow(1, 200, 100, 460, 220, "bug when clicking on the canvas in an inactive window", #PB_Window_SystemMenu)
+    CanvasGadget(1, 10, 10, 440, 200)
+    
+    If StartDrawing( CanvasOutput( 1 ) )
+      ; bug 
+      x = 50 : y = 50
+      PB(ClipOutput)(x, y, 100, 100) ; restrict all drawing to this region
+      
+      PB(DrawingMode)(#PB_2DDrawing_Default)
+      Circle( x,  y, 50, $FF0000FF)  
+      Circle( x, y+100, 50, $Ff00FF00)  
+      Circle(x+100,  y, 50, $FFFF0000)  
+      Circle(x+100, y+100, 50, $FF00FFFF)  
+      
+      PB(DrawingMode)(#PB_2DDrawing_Transparent)
+      PB(DrawText)(x-10,y+(100-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+      
+      PB(DrawingMode)(#PB_2DDrawing_Outlined)
+      Box(x, y, 100, 100, $FF000000)
+      
+      ; fix
+      x = 200 : y = 50
+      ClipOutput(x, y, 100, 100) ; restrict all drawing to this region
+      
+      DrawingMode(#PB_2DDrawing_Default)
+      Circle( x,  y, 50, $FF0000FF)  
+      Circle( x, y+100, 50, $Ff00FF00)  
+      Circle(x+100,  y, 50, $FFFF0000)  
+      Circle(x+100, y+100, 50, $FF00FFFF)  
+      
+      DrawingMode(#PB_2DDrawing_Transparent)
+      DrawText(x-10,y+(100-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+      
+      DrawingMode(#PB_2DDrawing_Outlined)
+      Box(x, y, 100, 100, $FF000000)
+      
+      StopDrawing( )
+    EndIf
+  EndIf
+  
+  If OpenWindow(2, 350, 250, 460, 220, "bug clip and set origin then drawing", #PB_Window_SystemMenu)
+    CanvasGadget(2, 10, 10, 440, 200)
+    
+    If StartDrawing( CanvasOutput( 2 ) )
+      SetOrigin( 20,20 )
+      
+      ; bug 
+      x = 50 : y = 50
+      PB(ClipOutput)(x, y, 100, 100) ; restrict all drawing to this region
+      
+      PB(DrawingMode)(#PB_2DDrawing_Default)
+      Circle( x,  y, 50, $FF0000FF)  
+      Circle( x, y+100, 50, $Ff00FF00)  
+      Circle(x+100,  y, 50, $FFFF0000)  
+      Circle(x+100, y+100, 50, $FF00FFFF)  
+      
+      PB(DrawingMode)(#PB_2DDrawing_Transparent)
+      PB(DrawText)(x-10,y+(100-TextHeight("A"))/2,"error clip text in mac os", $FF000000)  
+      
+      PB(DrawingMode)(#PB_2DDrawing_Outlined)
+      Box(x, y, 100, 100, $FF000000)
+      
+      ; fix
+      SetOrigin( 20,20 )
+      x = 200 : y = 50
+      ClipOutput(x, y, 100, 100) ; restrict all drawing to this region
+      
+      DrawingMode(#PB_2DDrawing_Default)
+      Circle( x,  y, 50, $FF0000FF)  
+      Circle( x, y+100, 50, $Ff00FF00)  
+      Circle(x+100,  y, 50, $FFFF0000)  
+      Circle(x+100, y+100, 50, $FF00FFFF)  
+      
+      DrawingMode(#PB_2DDrawing_Transparent)
+      DrawText(x-10,y+(100-TextHeight("A"))/2,"error set origin in mac os", $FF000000)  
+      
+      DrawingMode(#PB_2DDrawing_Outlined)
+      Box(x, y, 100, 100, $FF000000)
+      
+      StopDrawing( )
+    EndIf
+  EndIf
   
   BindEvent( #PB_Event_Gadget, @events_gadgets() )
-  
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---ftqZ-
+; Folding = ---------
 ; EnableXP
