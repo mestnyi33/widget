@@ -442,7 +442,7 @@ CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile
   Global x,y
-  
+  ; https://www.purebasic.fr/english/viewtopic.php?p=394079#p394079
   ; *** test ***
   Procedure events_gadgets()
     Select EventType()

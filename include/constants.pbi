@@ -108,16 +108,18 @@
       #__c_frame     = 1 ; frame screen
       #__c_inner     = 2 ; inner screen
       #__c_required  = 3 ; required
-      #__c_clip      = 4 ; clip
       #__c_draw      = 5 ; draw container
-      #__c_clip_i    = 6 ; clip inner 
+      
+      #__c_clip      = 4 ; clip screen
+      #__c_clip1    = 6 ; clip frame 
+      #__c_clip2    = 10 ; clip inner 
       
       ; pos
       #__c_window    = 7 ; window
       #__c_container = 8 ; container
       
       #__c_delta     = 9
-      #__c           = 10
+      #__c           = 11
     EndEnumeration
     
     ;state
@@ -536,16 +538,15 @@
     #__event_returnkey        = #PB_EventType_returnKey
     
     ;- _c_type
-    Enumeration - 7 ; Type
-      #PB_GadgetType_Hiasm
-      #PB_GadgetType_Message
-      #PB_GadgetType_Popup
-      #PB_GadgetType_Desktop
-      #PB_GadgetType_StatusBar
-      #PB_GadgetType_Menu           ;  "Menu"
-      #PB_GadgetType_Toolbar        ;  "Toolbar"
-      #PB_GadgetType_Window         ;  "Window"
-    EndEnumeration
+    #PB_GadgetType_All       = -1     
+    #PB_GadgetType_Window    = -2       
+    #PB_GadgetType_Toolbar   = -3      
+    #PB_GadgetType_Menu      = -4       
+    #PB_GadgetType_Root      = -5
+    #PB_GadgetType_StatusBar = -6
+    #PB_GadgetType_Popup     = -7
+    #PB_GadgetType_Message   = -8
+    #PB_GadgetType_Hiasm     = -9
     
     Enumeration 50
       #PB_GadgetType_TabBar
@@ -558,7 +559,7 @@
     #__type_hiasm         = #PB_GadgetType_Hiasm
     #__type_message       = #PB_GadgetType_Message
     #__type_popup         = #PB_GadgetType_Popup
-    #__type_root          = #PB_GadgetType_Desktop
+    #__type_root          = #PB_GadgetType_Root
     #__type_statusbar     = #PB_GadgetType_StatusBar
     #__type_menu          = #PB_GadgetType_Menu
     #__type_toolbar       = #PB_GadgetType_Toolbar
@@ -618,17 +619,26 @@
     
     
     
-    ; temp
-    #__c_0 = 0
-    #__c_1 = 1
-    #__c_2 = 2
-    #__c_3 = 3
-    #__c_4 = 4
-    #__c_5 = 5
-    #__c_6 = 6
+;     ; temp
+;     #__c_0 = 0
+;     #__c_1 = 1
+;     #__c_2 = 2
+;     #__c_3 = 3
+;     #__c_4 = 4
+;     #__c_5 = 5
+;     #__c_6 = 6
     
     
+    ;-
+    ;- GLOBAL
+    ;-
+    Global test_draw_box_clip_type =- 1 ;#__type_window
+    Global test_draw_box_clip1_type = #__type_window
+    Global test_draw_box_clip2_type = #__type_window
     
+    Global test_draw_box_screen_type ;= #PB_All
+    Global test_draw_box_inner_type ;= #PB_All
+    Global test_draw_box_frame_type ;= #PB_All
     
     
     

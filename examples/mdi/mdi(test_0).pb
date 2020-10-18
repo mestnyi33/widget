@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Window(x,y,Width, height,"window_3", #PB_Window_SystemMenu) : SetClass(widget(), "window_3") 
   ;Define *mdi = MDI(x,y,Width, height);, #__flag_autosize)
-  Define *mdi = MDI(0,0,Width, height)
+  Define *mdi._s_widget = MDI(0,0,Width, height)
   ;;a_init( *mdi )
   
   Define *g0._s_widget = AddItem(*mdi, -1, "form_0") : SetClass(widget(), "form_0") 
@@ -44,7 +44,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,10,80,80,"button_1") : SetClass(widget(), GetText(widget())) 
   
   Window(100,10,100,100,"window_11", #PB_Window_SystemMenu, *g1) : SetClass(widget(), "window_11") : CloseList()
-  Window(150,50,100,100,"window_12", #PB_Window_SystemMenu, *g1) : SetClass(widget(), "window_12") : CloseList()
+  Window(150,50,100,100,"window_12", #PB_Window_SystemMenu, *g1) : SetClass(widget(), "window_12") 
+  
+  Container(20,30,60,60)
+  widget()\bs = 10 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  Button(10,10,80,40,"button_0") : SetClass(widget(), GetText(widget())) 
+  widget()\bs = 10 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  CloseList()
+  CloseList()
   
   Define *g2._s_widget = AddItem(*mdi, -1, "form_2") : SetClass(widget(), "form_2") 
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
@@ -52,10 +59,15 @@ CompilerIf #PB_Compiler_IsMainFile
   Window(100,10,100,100,"window_21", #PB_Window_SystemMenu, *g2) : SetClass(widget(), "window_21") : CloseList()
   Window(150,50,100,100,"window_22", #PB_Window_SystemMenu, *g2) : SetClass(widget(), "window_22") : CloseList()
   
-
+;   OpenList(*mdi)
+;   Button(450,110,80,80,"button_1") : SetClass(widget(), GetText(widget())) 
+;   CloseList()
+  
   Resize(*g1, X(*g0, #__c_container) + Width(*g0, #__c_frame) - 15, Y(*g0, #__c_container), #PB_Ignore, #PB_Ignore)
   Resize(*g2, X(*g0, #__c_container), Y(*g0, #__c_container) + Height(*g0, #__c_frame) - 15, #PB_Ignore, #PB_Ignore)
-    
+  
+  SetState(*mdi\scroll\h, 120)
+  
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
