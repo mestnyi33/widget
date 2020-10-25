@@ -35,9 +35,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Resize(*g0, 50, 50, 400, 400)
   Debug Y(*g0, #__c_container)
   Resize(*g1, X(*g0, #__c_container)+50, Y(*g0, #__c_container)+50, 200, 300)
-  Resize(*g2, X(*g0, #__c_container)+Width(*g0, #__c_container), Y(*g0, #__c_container), 200, 300)
+  Resize(*g2, X(*g0, #__c_container)+Width(*g0, #__c_Frame), Y(*g0, #__c_container), 200, 300)
   Resize(*g3, X(*g2, #__c_container), Y(*g2, #__c_container)+Height(*g2, #__c_Frame), 200, 100)
-  
+  Button(0,0,200,100,"button")
+
   
   SetState(*mdi\scroll\h, 120)
   
