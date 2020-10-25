@@ -880,8 +880,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Bar_Resizes( _this_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
       ;Bar_Resizes( _this_, _this_\x[#__c_frame], _this_\y, _this_\width, _this_\height )
       ;Updates( _this_, _this_\x[#__c_frame], _this_\y, _this_\width, _this_\height )
-      ;       _this_\width[#__c_inner] = _this_\scroll\h\bar\page\len ; *this\width[#__c_draw] - Bool( Not *this\scroll\v\hide ) * *this\scroll\v\width ; 
-      ;       _this_\height[#__c_inner] = _this_\scroll\v\bar\page\len; *this\height[#__c_draw] - Bool( Not *this\scroll\h\hide ) * *this\scroll\h\height ; 
+      ;       _this_\width[#__c_inner] = _this_\scroll\h\bar\page\len ; *this\width[#__c_container] - Bool( Not *this\scroll\v\hide ) * *this\scroll\v\width ; 
+      ;       _this_\height[#__c_inner] = _this_\scroll\v\bar\page\len; *this\height[#__c_container] - Bool( Not *this\scroll\h\hide ) * *this\scroll\h\height ; 
       
       _this_\scroll\v\bar\area\change = #False
       _this_\scroll\h\bar\area\change = #False
@@ -895,8 +895,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       _child_\parent\x[#__c_required] = _child_\x[#__c_inner] 
       _child_\parent\y[#__c_required] = _child_\y[#__c_inner]
-      _child_\parent\width[#__c_required] = _child_\x[#__c_inner] + _child_\width[#__c_draw] - _child_\parent\x[#__c_required]
-      _child_\parent\height[#__c_required] = _child_\y[#__c_inner] + _child_\height[#__c_draw] - _child_\parent\y[#__c_required]
+      _child_\parent\width[#__c_required] = _child_\x[#__c_inner] + _child_\width[#__c_container] - _child_\parent\x[#__c_required]
+      _child_\parent\height[#__c_required] = _child_\y[#__c_inner] + _child_\height[#__c_container] - _child_\parent\y[#__c_required]
       
       If StartEnumerate( _child_\parent )
         If widget( )\parent = _child_\parent
@@ -922,7 +922,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         StopEnumerate( )
       EndIf
       
-      If widget::Updates( _child_\parent, _child_\parent\x[#__c_inner], _child_\parent\y[#__c_inner], _child_\parent\width[#__c_draw], _child_\parent\height[#__c_draw] )
+      If widget::Updates( _child_\parent, _child_\parent\x[#__c_inner], _child_\parent\y[#__c_inner], _child_\parent\width[#__c_container], _child_\parent\height[#__c_container] )
         
         _child_\parent\width[#__c_inner] = _child_\parent\scroll\h\bar\page\len
         _child_\parent\height[#__c_inner] = _child_\parent\scroll\v\bar\page\len
@@ -1938,7 +1938,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         transform( )\widget = *this
         
-        a_move( *this\x, *this\y, *this\width, *this\height, *this\container )
+        a_move( *this\x[#__c_screen], *this\y[#__c_screen], *this\width[#__c_screen], *this\height[#__c_screen], *this\container )
         ;a_move( *this\x[#__c_frame] - transform( )\pos, *this\y[#__c_frame] - transform( )\pos, *this\width[#__c_frame] + transform( )\pos*2, *this\height[#__c_frame] + transform( )\pos*2, *this\container )
         
         Post( #PB_EventType_StatusChange, *this, transform( )\index )
@@ -2755,7 +2755,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     Macro _clip_input_( _this_ )
       ClipOutput( _this_\x[#__c_clip2], _this_\y[#__c_clip2], _this_\width[#__c_clip2], _this_\height[#__c_clip2] )
       ;  ClipPut( _this_, _this_\x[#__c_frame] + _this_\bs, _this_\y[#__c_frame] + _this_\bs + _this_\__height, _this_\width[#__c_frame] - _this_\bs*2, _this_\height[#__c_frame] - _this_\bs*2 - _this_\__height )
-      ; ClipPut( _this_, _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_draw], _this_\height[#__c_draw] )
+      ; ClipPut( _this_, _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_container], _this_\height[#__c_container] )
       ;ClipPut( _this_, _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_inner], _this_\height[#__c_inner] )
     EndMacro
     
@@ -2938,8 +2938,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If *this\type = #__type_scrollbar And 
          *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h )
-        _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_draw]
-        _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_draw]
+        _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_container]
+        _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_container]
       EndIf
       
       ; x - clip coordinate
@@ -3040,16 +3040,16 @@ CompilerIf Not Defined( widget, #PB_Module )
         *this\y[#__c_clip2] = *this\y[#__c_clip]
       EndIf
       
-      If *this\width[#__c_draw] > *this\width[#__c_clip] 
+      If *this\width[#__c_container] > *this\width[#__c_clip] 
         *this\width[#__c_clip2] = *this\width[#__c_clip] - *this\bs
       Else
-        *this\width[#__c_clip2] = *this\width[#__c_draw]
+        *this\width[#__c_clip2] = *this\width[#__c_container]
       EndIf
       
-      If *this\height[#__c_draw] > *this\height[#__c_clip] 
+      If *this\height[#__c_container] > *this\height[#__c_clip] 
         *this\height[#__c_clip2] = *this\height[#__c_clip] - *this\bs
       Else
-        *this\height[#__c_clip2] = *this\height[#__c_draw]
+        *this\height[#__c_clip2] = *this\height[#__c_container]
       EndIf
       
       
@@ -3108,8 +3108,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If *this\type = #__type_scrollbar And 
          *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h )
-        _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_draw]
-        _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_draw]
+        _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_container]
+        _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_container]
       EndIf
       
       ; then move and size parent set clip coordinate
@@ -3295,17 +3295,17 @@ CompilerIf Not Defined( widget, #PB_Module )
           Else
             If _change_x_ 
               If widget( )\child
-                Resize( widget( ), widget( )\x[#__c_draw], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                Resize( widget( ), widget( )\x[#__c_container], #PB_Ignore, #PB_Ignore, #PB_Ignore )
               Else
-                Resize( widget( ), widget( )\x[#__c_draw] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                Resize( widget( ), widget( )\x[#__c_container] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
               EndIf
             EndIf
             
             If _change_y_ 
               If widget( )\child
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw], #PB_Ignore, #PB_Ignore )
+                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container], #PB_Ignore, #PB_Ignore )
               Else
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
               EndIf
             EndIf
           EndIf
@@ -3370,17 +3370,17 @@ CompilerIf Not Defined( widget, #PB_Module )
           Else
             If _change_x_ 
               If widget( )\child
-                Resize( widget( ), widget( )\x[#__c_draw], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                Resize( widget( ), widget( )\x[#__c_container], #PB_Ignore, #PB_Ignore, #PB_Ignore )
               Else
-                Resize( widget( ), widget( )\x[#__c_draw] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                Resize( widget( ), widget( )\x[#__c_container] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
               EndIf
             EndIf
             
             If _change_y_ 
               If widget( )\child
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw], #PB_Ignore, #PB_Ignore )
+                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container], #PB_Ignore, #PB_Ignore )
               Else
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_draw] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
               EndIf
             EndIf
             
@@ -3462,9 +3462,8 @@ CompilerIf Not Defined( widget, #PB_Module )
               x - *this\parent\x[#__c_required] 
             EndIf
             
-            If *this\x[#__c_draw] <> x
-              *this\x[#__c_draw] = x
-              *this\x[#__c_container] = *this\x[#__c_draw] ; - *this\parent\x[#__c_required]
+            If *this\x[#__c_container] <> x
+              *this\x[#__c_container] = x
             EndIf
             
             x + *this\parent\x[#__c_inner]
@@ -3479,9 +3478,8 @@ CompilerIf Not Defined( widget, #PB_Module )
               y - *this\parent\y[#__c_required] 
             EndIf
             
-            If *this\y[#__c_draw] <> y
-              *this\y[#__c_draw] = y
-              *this\y[#__c_container] = *this\y[#__c_draw]
+            If *this\y[#__c_container] <> y
+              *this\y[#__c_container] = y
             EndIf
             
             y + *this\parent\y[#__c_inner]
@@ -3525,8 +3523,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           Change_width = width - *this\width[#__c_frame] 
           *this\width[#__c_frame] = width 
           *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 )
-          *this\width[#__c_draw] = *this\width[#__c_screen] - *this\bs*2 - *this\__width 
-          If *this\width[#__c_draw] < 0 : *this\width[#__c_draw] = 0 : EndIf
+          *this\width[#__c_container] = *this\width[#__c_screen] - *this\bs*2 - *this\__width 
+          If *this\width[#__c_container] < 0 : *this\width[#__c_container] = 0 : EndIf
           
           *this\resize | #__resize_width | #__resize_change
           
@@ -3551,8 +3549,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           Change_height = height - *this\height[#__c_frame] 
           *this\height[#__c_frame] = height 
           *this\height[#__c_screen] = *this\height[#__c_frame] + ( *this\bs*2 - *this\fs*2 )
-          *this\height[#__c_draw] = *this\height[#__c_screen] - *this\bs*2 - *this\__height
-          If *this\height[#__c_draw] < 0 : *this\height[#__c_draw] = 0 : EndIf
+          *this\height[#__c_container] = *this\height[#__c_screen] - *this\bs*2 - *this\__height
+          If *this\height[#__c_container] < 0 : *this\height[#__c_container] = 0 : EndIf
           
           *this\resize | #__resize_height | #__resize_change
           
@@ -3568,7 +3566,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
           EndIf
           
-          If *this\count\items ;And \height[#__c_required] > \height[#__c_draw]
+          If *this\count\items ;And \height[#__c_required] > \height[#__c_container]
             *this\change | #__resize_height
           EndIf
         EndIf 
@@ -3586,22 +3584,22 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           ; 
-          *this\width[#__c_inner] = *this\width[#__c_draw]
-          *this\height[#__c_inner] = *this\height[#__c_draw]
+          *this\width[#__c_inner] = *this\width[#__c_container]
+          *this\height[#__c_inner] = *this\height[#__c_container]
           
           ; resize vertical&horizontal scrollbars
           If ( *this\scroll And *this\scroll\v And *this\scroll\h )
             If ( Change_x Or Change_y )
-              Resize( *this\scroll\v, *this\scroll\v\x[#__c_draw], *this\scroll\v\y[#__c_draw], #__scroll_buttonsize, #PB_Ignore )
-              Resize( *this\scroll\h, *this\scroll\h\x[#__c_draw], *this\scroll\h\y[#__c_draw], #PB_Ignore, #__scroll_buttonsize )
+              Resize( *this\scroll\v, *this\scroll\v\x[#__c_container], *this\scroll\v\y[#__c_container], #__scroll_buttonsize, #PB_Ignore )
+              Resize( *this\scroll\h, *this\scroll\h\x[#__c_container], *this\scroll\h\y[#__c_container], #PB_Ignore, #__scroll_buttonsize )
             EndIf
             
             If ( Change_width Or Change_height )
-              Bar_Resizes( *this, 0, 0, *this\width[#__c_draw], *this\height[#__c_draw] )
+              Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
             EndIf
             
-            *this\width[#__c_inner] = *this\scroll\h\bar\page\len ; *this\width[#__c_draw] - Bool( Not *this\scroll\v\hide ) * *this\scroll\v\width ; 
-            *this\height[#__c_inner] = *this\scroll\v\bar\page\len; *this\height[#__c_draw] - Bool( Not *this\scroll\h\hide ) * *this\scroll\h\height ; 
+            *this\width[#__c_inner] = *this\scroll\h\bar\page\len ; *this\width[#__c_container] - Bool( Not *this\scroll\v\hide ) * *this\scroll\v\width ; 
+            *this\height[#__c_inner] = *this\scroll\v\bar\page\len; *this\height[#__c_container] - Bool( Not *this\scroll\h\hide ) * *this\scroll\h\height ; 
           EndIf
           
           If *this\type = #__type_panel 
@@ -3609,13 +3607,13 @@ CompilerIf Not Defined( widget, #PB_Module )
               If *this\_tab\vertical
                 *this\x[#__c_inner] = *this\x + *this\bs
                 
-                Resize( *this\_tab, 0, 0, *this\__width, *this\height[#__c_draw] )
+                Resize( *this\_tab, 0, 0, *this\__width, *this\height[#__c_container] )
                 
                 *this\x[#__c_inner] = *this\x + *this\bs + *this\__width
               Else
                 *this\y[#__c_inner] = *this\y + *this\bs
                 
-                Resize( *this\_tab, 0, 0, *this\width[#__c_draw], *this\__height )
+                Resize( *this\_tab, 0, 0, *this\width[#__c_container], *this\__height )
                 
                 *this\y[#__c_inner] = *this\y + *this\bs + *this\__height
               EndIf
@@ -3623,7 +3621,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *this\type = #PB_GadgetType_Spin
-            *this\width[#__c_inner] = *this\width[#__c_draw] - *this\bs*2 - *this\bar\button[#__b_3]\size
+            *this\width[#__c_inner] = *this\width[#__c_container] - *this\bs*2 - *this\bar\button[#__b_3]\size
           EndIf
           
           ; then move and size parent
@@ -4698,7 +4696,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Scroll_Draw( *this )
       
       DrawingMode( #PB_2DDrawing_Outlined )
-      Box( *this\bar\button[#__b_1]\x - 2,*this\y[#__c_frame],*this\x[#__c_inner] + *this\width[#__c_draw] - *this\bar\button[#__b_1]\x + 3,*this\height[#__c_frame], *this\color\frame[*this\color\state] )
+      Box( *this\bar\button[#__b_1]\x - 2,*this\y[#__c_frame],*this\x[#__c_inner] + *this\width[#__c_container] - *this\bar\button[#__b_1]\x + 3,*this\height[#__c_frame], *this\color\frame[*this\color\state] )
       Box( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\color\frame[*this\color\state] )
       
       
@@ -5356,9 +5354,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                       If widget( )\parent = *this\parent
                         ; TODO resize
                                                 If widget( )\child
-                        Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_draw] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
+                        Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_container] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
                                                 Else
-                                                  Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_draw] + *this\parent\y[#__c_required] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
+                                                  Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_container] + *this\parent\y[#__c_required] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
                                                 EndIf
                       EndIf
                       
@@ -5379,9 +5377,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                       If widget( )\parent = *this\parent And Not widget( )\align
                         ; TODO resize
                                                 If widget( )\child
-                        Resize( widget( ), ( widget( )\x[#__c_draw] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                        Resize( widget( ), ( widget( )\x[#__c_container] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                                                 Else
-                                                  Resize( widget( ), ( widget( )\x[#__c_draw] + *this\parent\x[#__c_required] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                                                  Resize( widget( ), ( widget( )\x[#__c_container] + *this\parent\x[#__c_required] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                                                 EndIf
                       EndIf
                       
@@ -5687,13 +5685,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\button[#__b_2]\y      = *this\y[#__c_inner] + *this\height[#__c_inner]/2 + Bool( *this\height%2 )
             *this\bar\button[#__b_2]\height = *this\height[#__c_inner]/2 - 1 
             *this\bar\button[#__b_2]\width  = *this\bar\button[#__b_2]\size 
-            *this\bar\button[#__b_2]\x      = ( *this\x[#__c_inner] + *this\width[#__c_draw] ) - *this\bar\button[#__b_2]\size - 1
+            *this\bar\button[#__b_2]\x      = ( *this\x[#__c_inner] + *this\width[#__c_container] ) - *this\bar\button[#__b_2]\size - 1
             
             ; Bottom button coordinate
             *this\bar\button[#__b_1]\y      = *this\y[#__c_inner] + 1 
             *this\bar\button[#__b_1]\height = *this\height[#__c_inner]/2 - Bool( Not *this\height%2 ) - 1
             *this\bar\button[#__b_1]\width  = *this\bar\button[#__b_1]\size 
-            *this\bar\button[#__b_1]\x      = ( *this\x[#__c_inner] + *this\width[#__c_draw] ) - *this\bar\button[#__b_1]\size - 1                               
+            *this\bar\button[#__b_1]\x      = ( *this\x[#__c_inner] + *this\width[#__c_container] ) - *this\bar\button[#__b_1]\size - 1                               
           Else    
             ; Left button coordinate
             *this\bar\button[#__b_1]\y      = *this\y[#__c_inner] + 1
@@ -5705,7 +5703,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\button[#__b_2]\y      = *this\y[#__c_inner] + 1 
             *this\bar\button[#__b_2]\height = *this\height[#__c_inner] - 2
             *this\bar\button[#__b_2]\width  = *this\bar\button[#__b_2]\size/2 - 1
-            *this\bar\button[#__b_2]\x      = *this\x[#__c_inner] + *this\width[#__c_draw] - *this\bar\button[#__b_2]\size/2                             
+            *this\bar\button[#__b_2]\x      = *this\x[#__c_inner] + *this\width[#__c_container] - *this\bar\button[#__b_2]\size/2                             
           EndIf
           
           ; 
@@ -6042,22 +6040,22 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       ;       If Not *this\scroll\h\hide 
-      ;         If *this\scroll\h\y[#__c_draw] <> y + height - *this\scroll\h\height
+      ;         If *this\scroll\h\y[#__c_container] <> y + height - *this\scroll\h\height
       ;           ; Debug "y"
       ;           *this\scroll\h\hide = Resize( *this\scroll\h, #PB_Ignore, y + height - *this\scroll\h\height, #PB_Ignore, #PB_Ignore )
       ;         EndIf
-      ;         If *this\scroll\h\x[#__c_draw] <> x
+      ;         If *this\scroll\h\x[#__c_container] <> x
       ;           ; Debug "y"
       ;           *this\scroll\h\hide = Resize( *this\scroll\h, x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
       ;         EndIf
       ;       EndIf
       ;       
       ;       If Not *this\scroll\v\hide 
-      ;         If *this\scroll\v\x[#__c_draw] <> x + width - *this\scroll\v\width
+      ;         If *this\scroll\v\x[#__c_container] <> x + width - *this\scroll\v\width
       ;           ; Debug "x"
       ;           *this\scroll\v\hide = Resize( *this\scroll\v, x + width - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
       ;         EndIf
-      ;         If *this\scroll\v\y[#__c_draw] <> y
+      ;         If *this\scroll\v\y[#__c_container] <> y
       ;           ; Debug "y"
       ;           *this\scroll\v\hide = Resize( *this\scroll\v, #PB_Ignore, y, #PB_Ignore, #PB_Ignore )
       ;         EndIf
@@ -6118,11 +6116,11 @@ CompilerIf Not Defined( widget, #PB_Module )
         If Width = #PB_Ignore : Width = \v\x[#__c_frame] - \h\x[#__c_frame] + \v\width[#__c_frame] : EndIf
         If Height = #PB_Ignore : Height = \h\y[#__c_frame] - \v\y[#__c_frame] + \h\height[#__c_frame] : EndIf
         
-        If Width + x - *this\scroll\v\width[#__c_frame] <> *this\scroll\v\x[#__c_draw]
+        If Width + x - *this\scroll\v\width[#__c_frame] <> *this\scroll\v\x[#__c_container]
           v_x = Width + x - *this\scroll\v\width[#__c_frame]
         EndIf
         
-        If Height + y - *this\scroll\h\height[#__c_frame] <> *this\scroll\h\y[#__c_draw]
+        If Height + y - *this\scroll\h\height[#__c_frame] <> *this\scroll\h\y[#__c_container]
           h_y = Height + y - *this\scroll\h\height[#__c_frame]
         EndIf
         ;Debug _make_area_height_( *this,*this\scroll, Width, Height )
@@ -11155,8 +11153,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\resize | #__resize_restore
           
           SetAlignment( *this, #__align_none )
-          Resize( *this, *this\root\x[#__c_draw], *this\root\y[#__c_draw], 
-                  *this\root\width[#__c_draw], *this\root\height[#__c_draw] )
+          Resize( *this, *this\root\x[#__c_container], *this\root\y[#__c_container], 
+                  *this\root\width[#__c_container], *this\root\height[#__c_container] )
           
           If _is_root_( *this )
             PostEvent( #PB_Event_RestoreWindow, *this\root\canvas\window, *this )
@@ -11168,10 +11166,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       If state = #__Window_Maximize
         If Not Post( #__event_MaximizeWindow, *this )
           If Not *this\resize & #__resize_minimize
-            *this\root\x[#__c_draw] = *this\x[#__c_draw]
-            *this\root\y[#__c_draw] = *this\y[#__c_draw]
-            *this\root\width[#__c_draw] = *this\width
-            *this\root\height[#__c_draw] = *this\height
+            *this\root\x[#__c_container] = *this\x[#__c_container]
+            *this\root\y[#__c_container] = *this\y[#__c_container]
+            *this\root\width[#__c_container] = *this\width
+            *this\root\height[#__c_container] = *this\height
           EndIf
           
           *this\resize | #__resize_maximize
@@ -11189,10 +11187,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       If state = #__Window_Minimize
         If Not Post( #__event_MinimizeWindow, *this )
           If Not *this\resize & #__resize_maximize
-            *this\root\x[#__c_draw] = *this\x[#__c_draw]
-            *this\root\y[#__c_draw] = *this\y[#__c_draw]
-            *this\root\width[#__c_draw] = *this\width
-            *this\root\height[#__c_draw] = *this\height
+            *this\root\x[#__c_container] = *this\x[#__c_container]
+            *this\root\y[#__c_container] = *this\y[#__c_container]
+            *this\root\width[#__c_container] = *this\width[#__c_screen]
+            *this\root\height[#__c_container] = *this\height[#__c_screen]
           EndIf
           
           *this\caption\button[0]\hide = 1
@@ -11201,7 +11199,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           *this\resize | #__resize_minimize
           
-          Resize( *this, *this\root\x[#__c_draw], *this\parent\height[#__c_inner] - *this\__height, *this\root\width[#__c_draw], *this\__height )
+          Resize( *this, *this\root\x[#__c_container], *this\parent\height[#__c_inner] - *this\__height, *this\root\width[#__c_container], *this\__height )
           SetAlignment( *this, #__align_bottom )
           
           If _is_root_( *this )
@@ -12158,11 +12156,11 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.l GetDeltax( *this._s_widget )
-      ProcedureReturn ( mouse( )\delta\x + focused( )\x[#__c_draw] )
+      ProcedureReturn ( mouse( )\delta\x + focused( )\x[#__c_container] )
     EndProcedure
     
     Procedure.l GetDeltaY( *this._s_widget )
-      ProcedureReturn ( mouse( )\delta\y + focused( )\y[#__c_draw] )
+      ProcedureReturn ( mouse( )\delta\y + focused( )\y[#__c_container] )
     EndProcedure
     
     Procedure.l GetButtons( *this._s_widget )
@@ -13343,8 +13341,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ; TODO resize
-            x = *this\x[#__c_draw]
-            y = *this\y[#__c_draw]
+            x = *this\x[#__c_container]
+            y = *this\y[#__c_container]
             
             ; for the scrollarea container childrens
             ; if new parent - scrollarea container
@@ -13444,13 +13442,13 @@ CompilerIf Not Defined( widget, #PB_Module )
               \align\h = rx
               \align\v = ry
               
-              \align\delta\x = \x[#__c_draw]
-              \align\delta\y = \y[#__c_draw]
+              \align\delta\x = \x[#__c_container]
+              \align\delta\y = \y[#__c_container]
               \align\delta\width = \width
               \align\delta\height = \height
               
-              \parent\align\delta\x = \parent\x[#__c_draw]
-              \parent\align\delta\y = \parent\y[#__c_draw]
+              \parent\align\delta\x = \parent\x[#__c_container]
+              \parent\align\delta\y = \parent\y[#__c_container]
               \parent\align\delta\width = \parent\width
               \parent\align\delta\height = \parent\height
               
@@ -16123,8 +16121,8 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
             Else
               Debug "   debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
-              mouse( )\delta\x = mouse_x - entered( )\x[#__c_draw]
-              mouse( )\delta\y = mouse_y - entered( )\y[#__c_draw]
+              mouse( )\delta\x = mouse_x - entered( )\x[#__c_container]
+              mouse( )\delta\y = mouse_y - entered( )\y[#__c_container]
             EndIf
           EndIf
             
@@ -16394,6 +16392,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
         SetWindowLongPtr_( GadgetID( Canvas ), #GWL_STYLE, GetWindowLongPtr_( GadgetID( Canvas ), #GWL_STYLE ) | #WS_cLIPSIBLINGS )
         SetWindowPos_( GadgetID( Canvas ), #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE | #SWP_NOSIZE )
+      CompilerEndIf
+      
+      ; убрать звуковой сигнал если канвас не активен при вводе с клавиатуры
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+        CocoaMessage(0, WindowID( Window ), "makeFirstResponder:", GadgetID( Canvas ))
       CompilerEndIf
       
       If Not *CallBack
@@ -17869,5 +17872,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------f------------------------------f-v---m5z-P----8f--7-u-58--fAg------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---f74NKpx---------------------------------------------j----------------------f--0---d---------------------
+; Folding = ---------------------------------------DG+-F-+-8-------f--fu----jA9------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---pf4okG---------------------------------------------P+----------------------0-4---v8---------------------
 ; EnableXP

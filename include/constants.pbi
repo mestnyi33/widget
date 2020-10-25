@@ -102,25 +102,29 @@
     EndEnumeration
     
     ;- coordinate 
-    Enumeration
+    ;;Enumeration
       ; pos & size
       #__c_screen    = 0 ; screen
       #__c_frame     = 1 ; frame screen
       #__c_inner     = 2 ; inner screen
       #__c_required  = 3 ; required
-      #__c_draw      = 5 ; draw container
       
+      ;#__c_draw      = 5 ; draw container
       #__c_clip      = 4 ; clip screen
-      #__c_clip1    = 6 ; clip frame 
-      #__c_clip2    = 10 ; clip inner 
+      #__c_clip1     = 6 ; clip frame 
+      #__c_clip2     = 10 ; clip inner 
       
       ; pos
       #__c_window    = 7 ; window
       #__c_container = 8 ; container
       
       #__c_delta     = 9
+      
       #__c           = 11
-    EndEnumeration
+    ;;EndEnumeration
+    
+;     #__ci_frame = #__c_draw
+;     #__ci_container = #__c_draw
     
     ;state
     EnumerationBinary
@@ -632,9 +636,9 @@
     ;-
     ;- GLOBAL
     ;-
-    Global test_draw_box_clip_type =- 1 ;#__type_window
-    Global test_draw_box_clip1_type = #__type_window
-    Global test_draw_box_clip2_type = #__type_window
+    Global test_draw_box_clip_type = 0;#__type_window
+    Global test_draw_box_clip1_type = 0;#__type_window
+    Global test_draw_box_clip2_type = 0;#__type_window
     
     Global test_draw_box_screen_type ;= #PB_All
     Global test_draw_box_inner_type ;= #PB_All
