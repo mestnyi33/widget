@@ -5880,9 +5880,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       With *this\scroll
         Protected iheight, iwidth
         
-        If Not *this\scroll\v Or Not *this\scroll\h
+        If Not \v Or Not \h
           ProcedureReturn
-        EndIf        ;  *this\height[#__c_container]
+        EndIf 
+        
+        If x = #PB_Ignore 
+          x = \h\x[#__c_frame] 
+        EndIf
+        If y = #PB_Ignore 
+          y = \v\y[#__c_frame]
+        EndIf
         
         If width = #PB_Ignore 
           width = \v\x[#__c_frame] - \h\x[#__c_frame] + \v\width[#__c_frame] 
@@ -5891,17 +5898,17 @@ CompilerIf Not Defined( widget, #PB_Module )
           height = \h\y[#__c_frame] - \v\y[#__c_frame] + \h\height[#__c_frame] 
         EndIf
         
-        Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * *this\scroll\h\height ) ) )
-        Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * *this\scroll\v\width ) ) )
+        Bar_SetAttribute( \v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( \h\bar\max > \h\bar\page\len ) ) ) * \h\height ) ) )
+        Bar_SetAttribute( \h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( \v\bar\max > \v\bar\page\len ) ) ) * \v\width ) ) )
         
-        Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * *this\scroll\h\height ) ) )
-        Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * *this\scroll\v\width ) ) )
+        Bar_SetAttribute( \v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( \h\bar\max > \h\bar\page\len ) ) ) * \h\height ) ) )
+        Bar_SetAttribute( \h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( \v\bar\max > \v\bar\page\len ) ) ) * \v\width ) ) )
         
-        *this\scroll\v\hide = widget::Resize( *this\scroll\v, width - \v\width, y, #PB_Ignore, ( *this\scroll\v\bar\page\len + Bool( *this\scroll\v\round And *this\scroll\h\round And Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * ( *this\scroll\h\height/4 ) ) )
-        *this\scroll\h\hide = widget::Resize( *this\scroll\h, x, height - \h\height, ( *this\scroll\h\bar\page\len + Bool( *this\scroll\v\round And *this\scroll\h\round And Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * ( *this\scroll\v\width/4 ) ), #PB_Ignore )
+        \v\hide = widget::Resize( \v, width - \v\width, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And Not Bool( Not ( \h\bar\max > \h\bar\page\len ) ) ) * ( \h\height/4 ) ) )
+        \h\hide = widget::Resize( \h, x, height - \h\height, ( \h\bar\page\len + Bool( \v\round And \h\round And Not Bool( Not ( \v\bar\max > \v\bar\page\len ) ) ) * ( \v\width/4 ) ), #PB_Ignore )
         
         
-        ProcedureReturn Bool( *this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change )
+        ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
       EndWith
     EndProcedure
     
@@ -17613,5 +17620,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------+--44--6---8----------------4-d4P+-------------------------------------------------------09-----------------------------------------------------------------------------------------------------------------v-------------------------------------------------------------------------------------------------------------------------------------------------8f--Pw---
+; Folding = --------------------+--44--6---8----------------4-d4P+-------------------------------------------------------09------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------v-0--A---
 ; EnableXP
