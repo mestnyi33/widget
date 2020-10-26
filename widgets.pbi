@@ -3178,13 +3178,23 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf 
         EndIf  
         
-        If width = #PB_Ignore 
-          width = \width[#__c_screen] - ( \bs*2 - \fs*2 )
-        EndIf  
-        
-        If height = #PB_Ignore 
-          height = \height[#__c_screen] - ( \bs*2 - \fs*2 )
-        EndIf  
+        If *this\type = #__type_window
+          If width = #PB_Ignore 
+            width = \width[#__c_screen] - *this\bs*2 - *this\__width
+          EndIf  
+          
+          If height = #PB_Ignore 
+            height = \height[#__c_screen] - *this\bs*2 - *this\__height
+          EndIf  
+        Else
+          If width = #PB_Ignore 
+            width = \width[#__c_screen] - ( \bs*2 - \fs*2 )
+          EndIf  
+          
+          If height = #PB_Ignore 
+            height = \height[#__c_screen] - ( \bs*2 - \fs*2 )
+          EndIf  
+        EndIf
         
         If width < 0 : width = 0 : EndIf
         If Height < 0 : Height = 0 : EndIf
@@ -3209,58 +3219,77 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\resize | #__resize_y | #__resize_change
         EndIf 
         
-        If *this\width[#__c_frame] <> width 
-          Change_width = width - *this\width[#__c_frame] 
-          *this\width[#__c_frame] = width 
-          *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 )
-          *this\width[#__c_container] = *this\width[#__c_screen] - *this\bs*2 - *this\__width 
-          If *this\width[#__c_container] < 0 : *this\width[#__c_container] = 0 : EndIf
+        If *this\type = #__type_window
+          If *this\width[#__c_container] <> width 
+            Change_width = width - *this\width[#__c_container] 
+            *this\width[#__c_container] = width 
+            *this\width[#__c_frame] = width + *this\fs*2 + *this\__width
+            *this\width[#__c_screen] = width + *this\bs*2 + *this\__width
+            
+            *this\resize | #__resize_width | #__resize_change
+          EndIf 
           
-          *this\resize | #__resize_width | #__resize_change
-          
-          If *this\type = #__type_image Or
-             *this\type = #__type_buttonimage
-            *this\image\change = 1
-          EndIf
-          
-          If *this\type = #__type_tabbar
-            If *this\vertical
-              ; to fix the width of the vertical tabbar items
-              *this\bar\change | #__resize_width
+          If *this\height[#__c_container] <> height 
+            Change_height = height - *this\height[#__c_container] 
+            *this\height[#__c_container] = height
+            *this\height[#__c_frame] = height + *this\fs*2 + *this\__height
+            *this\height[#__c_screen] = height + *this\bs*2 + *this\__height
+            
+            *this\resize | #__resize_height | #__resize_change
+          EndIf 
+        Else
+          If *this\width[#__c_frame] <> width 
+            Change_width = width - *this\width[#__c_frame] 
+            *this\width[#__c_frame] = width 
+            *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 ) 
+            *this\width[#__c_container] = *this\width[#__c_screen] - *this\bs*2 - *this\__width
+            If *this\width[#__c_container] < 0 : *this\width[#__c_container] = 0 : EndIf
+            
+            *this\resize | #__resize_width | #__resize_change
+            
+            If *this\type = #__type_image Or
+               *this\type = #__type_buttonimage
+              *this\image\change = 1
             EndIf
-          EndIf
-          
-          If *this\count\items
-            *this\change | #__resize_width
-          EndIf
-        EndIf 
-        
-        If *this\height[#__c_frame] <> height 
-          Change_height = height - *this\height[#__c_frame] 
-          *this\height[#__c_frame] = height 
-          *this\height[#__c_screen] = *this\height[#__c_frame] + ( *this\bs*2 - *this\fs*2 )
-          *this\height[#__c_container] = *this\height[#__c_screen] - *this\bs*2 - *this\__height
-          If *this\height[#__c_container] < 0 : *this\height[#__c_container] = 0 : EndIf
-          
-          *this\resize | #__resize_height | #__resize_change
-          
-          If *this\type = #__type_image Or
-             *this\type = #__type_buttonimage
-            *this\image\change = 1
-          EndIf
-          
-          If *this\type = #__type_tabbar
-            If Not *this\vertical
-              ; to fix the height of the horizontal tabbar items
-              *this\bar\change | #__resize_height
+            
+            If *this\type = #__type_tabbar
+              If *this\vertical
+                ; to fix the width of the vertical tabbar items
+                *this\bar\change | #__resize_width
+              EndIf
             EndIf
-          EndIf
+            
+            If *this\count\items
+              *this\change | #__resize_width
+            EndIf
+          EndIf 
           
-          If *this\count\items ;And \height[#__c_required] > \height[#__c_container]
-            *this\change | #__resize_height
-          EndIf
-        EndIf 
-        
+          If *this\height[#__c_frame] <> height 
+            Change_height = height - *this\height[#__c_frame] 
+            *this\height[#__c_frame] = height 
+            *this\height[#__c_screen] = height + ( *this\bs*2 - *this\fs*2 )
+            *this\height[#__c_container] = height - *this\fs*2 - *this\__height
+            If *this\height[#__c_container] < 0 : *this\height[#__c_container] = 0 : EndIf
+            
+            *this\resize | #__resize_height | #__resize_change
+            
+            If *this\type = #__type_image Or
+               *this\type = #__type_buttonimage
+              *this\image\change = 1
+            EndIf
+            
+            If *this\type = #__type_tabbar
+              If Not *this\vertical
+                ; to fix the height of the horizontal tabbar items
+                *this\bar\change | #__resize_height
+              EndIf
+            EndIf
+            
+            If *this\count\items ;And \height[#__c_required] > \height[#__c_container]
+              *this\change | #__resize_height
+            EndIf
+          EndIf 
+        EndIf
         
         If *this\resize & #__resize_change
           ; then move and size parent set clip ( width&height )
@@ -10585,144 +10614,16 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     ;- 
     ;-  WINDOW - e
-    Procedure   Window_Draw( *this._s_widget )
-      With *this 
-        If \fs
-          DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-          Protected i = 1
-          
-          If \fs = 1 
-            For i = 1 To \round
-              Line( \x[#__c_frame] + i - 1,\y[#__c_frame] + \caption\height - 1,1,Bool( \round )*( i - \round ),\caption\color\back[\color\state] )
-              Line( \x[#__c_frame] + \width[#__c_frame] + i - \round - 1,\y[#__c_frame] + \caption\height - 1,1, - Bool( \round )*( i ),\caption\color\back[\color\state] )
-            Next
-          Else
-            For i = 1 To \fs
-              RoundBox( \x[#__c_frame] + i - 1, \y[#__c_inner] - \fs + i - 1, \width[#__c_frame] - i*2 + 2, Bool( \height[#__c_frame] - \__height>0 )*( \height[#__c_frame] - \__height ) - i*2 + 2,Bool( Not \__height )*\round,Bool( Not \__height )*\round, \caption\color\back[\color\state] )
-              RoundBox( \x[#__c_frame] + i - 1, \y[#__c_inner] - \fs + i, \width[#__c_frame] - i*2 + 2, Bool( \height[#__c_frame] - \__height>0 )*( \height[#__c_frame] - \__height ) - i*2,Bool( Not \__height )*\round,Bool( Not \__height )*\round, \caption\color\back[\color\state] )
-            Next
-          EndIf
-        EndIf 
-        
-        ; Draw back
-        If \color\back[\interact * \color\state]
-          DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-          ;  RoundBox( \x[#__c_inner] - Bool( \fs ),\y[#__c_inner] - Bool( \fs ),\width[#__c_inner2] + Bool( \fs ),Bool( \height[#__c_frame] - \__height - \fs*2 + Bool( \fs )*2>0 ) * ( \height[#__c_frame] - \__height - \fs*2 + Bool( \fs ) ),Bool( Not \__height )*\round,Bool( Not \__height )*\round,\color\back[\interact * \color\state] )
-          RoundBox( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner2],\height[#__c_inner2], Bool( Not \__height )*\round,Bool( Not \__height )*\round,\color\back[\interact * \color\state] )
-          ;  RoundBox( \x[#__c_inner] - 1,\y[#__c_inner] - 1,\width[#__c_inner2] + 2,\height[#__c_inner2] + 2, Bool( Not \__height )*\round,Bool( Not \__height )*\round,\color\back[\interact * \color\state] )
-        EndIf
-        
-        ; frame draw
-        If \fs
-          DrawingMode( #PB_2DDrawing_Outlined ); | #PB_2DDrawing_AlphaBlend )
-          If \fs = 1 
-            RoundBox( \x[#__c_frame], \y[#__c_frame] + \__height, \width[#__c_frame], Bool( \height[#__c_frame] - \__height>0 ) * ( \height[#__c_frame] - \__height ),
-                      Bool( Not \__height )*\round, Bool( Not \__height )*\round, \color\frame[\color\state] )
-          Else
-            ; draw out frame
-            RoundBox( \x[#__c_frame], \y[#__c_frame] + \__height, \width[#__c_frame], Bool( \height[#__c_frame] - \__height>0 ) * ( \height[#__c_frame] - \__height ),
-                      Bool( Not \__height )*\round, Bool( Not \__height )*\round, \color\frame[\color\state] )
-            
-            ; draw inner frame 
-            If \type = #__type_ScrollArea ; \scroll And \scroll\v And \scroll\h
-              RoundBox( \x[#__c_inner] - 1, \y[#__c_inner] - 1, Bool( \width[#__c_frame] - \fs*2> - 2 )*( \width[#__c_frame] - \fs*2 + 2 ), 
-                        Bool( \height[#__c_frame] - \fs*2 - \__height> - 2 )*( \height[#__c_frame] - \fs*2 - \__height + 2 ),
-                        Bool( Not \__height )*\round, Bool( Not \__height )*\round, \scroll\v\color\line )
-            Else
-              RoundBox( \x[#__c_inner] - 1, \y[#__c_inner] - 1, Bool( \width[#__c_frame] - \fs*2> - 2 )*( \width[#__c_frame] - \fs*2 + 2 ), 
-                        Bool( \height[#__c_frame] - \fs*2 - \__height> - 2 )*( \height[#__c_frame] - \fs*2 - \__height + 2 ),
-                        Bool( Not \__height )*\round, Bool( Not \__height )*\round, \color\frame[\color\state] )
-            EndIf
-          EndIf
-        EndIf
-        
-        
-        If \__height
-          ; Draw caption back
-          If \caption\color\back 
-            DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-            _box_gradient_( 0, \caption\x, \caption\y, \caption\width, \caption\height - 1, \caption\color\fore[\color\state], \caption\color\back[\color\state], \round, \caption\color\alpha )
-          EndIf
-          
-          ; Draw caption frame
-          If \fs
-            DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-            RoundBox( \caption\x, \caption\y, \caption\width, \caption\height - 1,\round,\round,\color\frame[\color\state] )
-            
-            ; erase the bottom edge of the frame
-            DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-            BackColor( \caption\color\fore[\color\state] )
-            FrontColor( \caption\color\back[\color\state] )
-            
-            ;Protected i
-            For i = \round/2 + 2 To \caption\height - 2
-              Line( \x[#__c_frame],\y[#__c_frame] + i,\width[#__c_frame],1, \caption\color\back[\color\state] )
-            Next
-            
-            ; two edges of the frame
-            DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-            Line( \x[#__c_frame],\y[#__c_frame] + \round/2 + 2,1,\caption\height - \round/2,\color\frame[\color\state] )
-            Line( \x[#__c_frame] + \width[#__c_frame] - 1,\y[#__c_frame] + \round/2 + 2,1,\caption\height - \round/2,\color\frame[\color\state] )
-          EndIf
-           
-          ; buttins background
-          DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-          draw_box_button( \caption\button[#__wb_close], \caption\button[#__wb_close]\color\back[\caption\button[#__wb_close]\color\state]&$FFFFFF | \caption\button[#__wb_close]\color\alpha<<24 )
-          draw_box_button( \caption\button[#__wb_maxi], \caption\button[#__wb_maxi]\color\back[\caption\button[#__wb_maxi]\color\state]&$FFFFFF | \caption\button[#__wb_maxi]\color\alpha<<24 )
-          draw_box_button( \caption\button[#__wb_mini], \caption\button[#__wb_mini]\color\back[\caption\button[#__wb_mini]\color\state]&$FFFFFF | \caption\button[#__wb_mini]\color\alpha<<24 )
-          draw_box_button( \caption\button[#__wb_help], \caption\button[#__wb_help]\color\back[\caption\button[#__wb_help]\color\state]&$FFFFFF | \caption\button[#__wb_help]\color\alpha<<24 )
-          
-          ; buttons image
-          DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-          draw_close_button( \caption\button[#__wb_close], 6 )
-          draw_maximize_button( \caption\button[#__wb_maxi], 4 )
-          draw_minize_button( \caption\button[#__wb_mini], 4 )
-          draw_help_button( \caption\button[#__wb_help], 4 )
-          
-          ; Draw image
-          If \image\id
-            DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-            DrawAlphaImage( \image\id,
-                            *this\x[#__c_frame] + *this\bs + *this\x[#__c_required] + \image\x,
-                            *this\y[#__c_frame] + *this\bs + *this\y[#__c_required] + \image\y - 2, \color\alpha )
-          EndIf
-          
-          If \caption\text\string
-            ClipPut( *this, \caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner] )
-            
-            ; Draw string
-            If \resize & #__resize_change
-              If \image\id
-                \caption\text\x = \caption\x[#__c_inner] + \caption\text\padding\x + \image\width + 10;\image\padding\x
-              Else
-                \caption\text\x = \caption\x[#__c_inner] + \caption\text\padding\x
-              EndIf
-              \caption\text\y = \caption\y[#__c_inner] + ( \caption\height[#__c_inner] - TextHeight( "A" ) )/2
-            EndIf
-            
-            DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-            DrawText( \caption\text\x, \caption\text\y, \caption\text\string, \color\front[\color\state]&$FFFFFF | \color\alpha<<24 )
-            
-            ;             DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-            ;             RoundBox( \caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner], \round, \round, $FF000000 )
-          EndIf
-        EndIf
-        
-        _clip_input_( *this )
-        
-        ; background image draw 
-        If *this\image[#__img_background]\id
-          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-          DrawAlphaImage( *this\image[#__img_background]\id,
-                          *this\x[#__c_inner] + *this\image[#__img_background]\x, 
-                          *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\alpha )
-        EndIf
-        
-      EndWith
-    EndProcedure
-    
     Procedure   Window_Update( *this._s_widget )
       If *this\type = #__type_window
+        ; чтобы закруглять только у окна с титлебаром
+        If *this\__height
+          If *this\round
+            *this\caption\round = *this\round
+            *this\round = 0
+          EndIf
+        EndIf
+        
         ; caption title bar
         If Not *this\caption\hide
           *this\caption\x = *this\x[#__c_frame]
@@ -10793,6 +10694,151 @@ CompilerIf Not Defined( widget, #PB_Module )
           
         EndIf
       EndIf
+    EndProcedure
+    
+    Procedure   Window_Draw( *this._s_widget )
+      With *this 
+        ; чтобы закруглять только у окна с титлебаром
+        Protected round = \round ; Bool( Not \__height )*\round
+        Protected fheight = Bool( \height[#__c_frame] - \__height>0 ) * ( \height[#__c_frame] - \__height )
+        Protected iwidth = Bool( \width[#__c_frame] - \fs*2> - 2 )*( \width[#__c_frame] - \fs*2 + 2 )
+        Protected iheight = Bool( \height[#__c_frame] - \fs*2 - \__height> - 2 )*( \height[#__c_frame] - \fs*2 - \__height + 2 )
+        
+        If \fs
+          DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
+          Protected i = 1
+          
+          If \fs = 1 
+            For i = 1 To \caption\round
+              Line( \x[#__c_frame] + i - 1,\y[#__c_frame] + \caption\height - 1,1,Bool( \round )*( i - \round ),\caption\color\back[\color\state] )
+              Line( \x[#__c_frame] + \width[#__c_frame] + i - \round - 1,\y[#__c_frame] + \caption\height - 1,1, - Bool( \round )*( i ),\caption\color\back[\color\state] )
+            Next
+          Else
+            For i = 1 To \fs
+              RoundBox( \x[#__c_frame] + i - 1, \y[#__c_inner] - \fs + i - 1, \width[#__c_frame] - i*2 + 2, Bool( \height[#__c_frame] - \__height>0 )*( \height[#__c_frame] - \__height ) - i*2 + 2,\round,\round, \caption\color\back[\color\state] )
+              RoundBox( \x[#__c_frame] + i - 1, \y[#__c_inner] - \fs + i, \width[#__c_frame] - i*2 + 2, Bool( \height[#__c_frame] - \__height>0 )*( \height[#__c_frame] - \__height ) - i*2,\round,\round, \caption\color\back[\color\state] )
+            Next
+          EndIf
+        EndIf 
+        
+        ; Draw back
+        If \color\back[\interact * \color\state]
+          DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
+          ;  RoundBox( \x[#__c_inner] - Bool( \fs ),\y[#__c_inner] - Bool( \fs ),\width[#__c_inner2] + Bool( \fs ),Bool( \height[#__c_frame] - \__height - \fs*2 + Bool( \fs )*2>0 ) * ( \height[#__c_frame] - \__height - \fs*2 + Bool( \fs ) ),round,round,\color\back[\interact * \color\state] )
+          RoundBox( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner2],\height[#__c_inner2], round,round,\color\back[\interact * \color\state] )
+          ;  RoundBox( \x[#__c_inner] - 1,\y[#__c_inner] - 1,\width[#__c_inner2] + 2,\height[#__c_inner2] + 2, round,round,\color\back[\interact * \color\state] )
+        EndIf
+        
+        ; frame draw
+        If \fs
+          DrawingMode( #PB_2DDrawing_Outlined ); | #PB_2DDrawing_AlphaBlend )
+          If \fs = 1 
+            RoundBox( \x[#__c_frame], \y[#__c_frame] + \__height, \width[#__c_frame], fheight,
+                      round, round, \color\frame[\color\state] )
+          Else
+            ; draw out frame
+            RoundBox( \x[#__c_frame], \y[#__c_frame] + \__height, \width[#__c_frame], fheight,
+                      round, round, \color\frame[\color\state] )
+            
+            ; draw inner frame 
+            If \type = #__type_ScrollArea ; \scroll And \scroll\v And \scroll\h
+              RoundBox( \x[#__c_inner] - 1, \y[#__c_inner] - 1, iwidth, iheight,
+                        round, round, \scroll\v\color\line )
+            Else
+              RoundBox( \x[#__c_inner] - 1, \y[#__c_inner] - 1, iwidth, iheight,
+                        round, round, \color\frame[\color\state] )
+            EndIf
+          EndIf
+        EndIf
+        
+        
+        If \__height
+          ; Draw caption back
+          If \caption\color\back 
+            DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
+            _box_gradient_( 0, \caption\x, \caption\y, \caption\width, \caption\height - 1, \caption\color\fore[\color\state], \caption\color\back[\color\state], \round, \caption\color\alpha )
+          EndIf
+          
+          ; Draw caption frame
+          If \fs
+            DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
+            RoundBox( \caption\x, \caption\y, \caption\width, \caption\height - 1,\caption\round,\caption\round,\color\frame[\color\state] )
+            
+            ; erase the bottom edge of the frame
+            DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
+            BackColor( \caption\color\fore[\color\state] )
+            FrontColor( \caption\color\back[\color\state] )
+            
+            ;Protected i
+            For i = \caption\round/2 + 2 To \caption\height - 2
+              Line( \x[#__c_frame],\y[#__c_frame] + i,\width[#__c_frame],1, \caption\color\back[\color\state] )
+            Next
+            
+            ; two edges of the frame
+            DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
+            Line( \x[#__c_frame],\y[#__c_frame] + \caption\round/2 + 2,1,\caption\height - \caption\round/2,\color\frame[\color\state] )
+            Line( \x[#__c_frame] + \width[#__c_frame] - 1,\y[#__c_frame] + \caption\round/2 + 2,1,\caption\height - \caption\round/2,\color\frame[\color\state] )
+          EndIf
+          
+          ; buttins background
+          DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
+          draw_box_button( \caption\button[#__wb_close], \caption\button[#__wb_close]\color\back[\caption\button[#__wb_close]\color\state]&$FFFFFF | \caption\button[#__wb_close]\color\alpha<<24 )
+          draw_box_button( \caption\button[#__wb_maxi], \caption\button[#__wb_maxi]\color\back[\caption\button[#__wb_maxi]\color\state]&$FFFFFF | \caption\button[#__wb_maxi]\color\alpha<<24 )
+          draw_box_button( \caption\button[#__wb_mini], \caption\button[#__wb_mini]\color\back[\caption\button[#__wb_mini]\color\state]&$FFFFFF | \caption\button[#__wb_mini]\color\alpha<<24 )
+          draw_box_button( \caption\button[#__wb_help], \caption\button[#__wb_help]\color\back[\caption\button[#__wb_help]\color\state]&$FFFFFF | \caption\button[#__wb_help]\color\alpha<<24 )
+          
+          ; buttons image
+          DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
+          draw_close_button( \caption\button[#__wb_close], 6 )
+          draw_maximize_button( \caption\button[#__wb_maxi], 4 )
+          draw_minize_button( \caption\button[#__wb_mini], 4 )
+          draw_help_button( \caption\button[#__wb_help], 4 )
+          
+          ; Draw image
+          If \image\id
+            DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
+            DrawAlphaImage( \image\id,
+                            *this\x[#__c_frame] + *this\bs + *this\x[#__c_required] + \image\x,
+                            *this\y[#__c_frame] + *this\bs + *this\y[#__c_required] + \image\y - 2, \color\alpha )
+          EndIf
+          
+          If \caption\text\string
+            ClipPut( *this, \caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner] )
+            
+            ; Draw string
+            If \resize & #__resize_change
+              If \image\id
+                \caption\text\x = \caption\x[#__c_inner] + \caption\text\padding\x + \image\width + 10;\image\padding\x
+              Else
+                \caption\text\x = \caption\x[#__c_inner] + \caption\text\padding\x
+              EndIf
+              \caption\text\y = \caption\y[#__c_inner] + ( \caption\height[#__c_inner] - TextHeight( "A" ) )/2
+            EndIf
+            
+            DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
+            DrawText( \caption\text\x, \caption\text\y, \caption\text\string, \color\front[\color\state]&$FFFFFF | \color\alpha<<24 )
+            
+            ;             DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
+            ;             RoundBox( \caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner], \round, \round, $FF000000 )
+          EndIf
+        EndIf
+        
+        _clip_input_( *this )
+        
+        ; background image draw 
+        If *this\image[#__img_background]\id
+          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
+          DrawAlphaImage( *this\image[#__img_background]\id,
+                          *this\x[#__c_inner] + *this\image[#__img_background]\x, 
+                          *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\alpha )
+        EndIf
+        
+        ; UnclipOutput()
+        ; DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
+        ; RoundBox( \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame], round,round,$ff000000 )
+        ; RoundBox( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], round,round,$ff000000 )
+        
+      EndWith
     EndProcedure
     
     Procedure   Window_SetState( *this._s_widget, state.l )
@@ -17529,5 +17575,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------4-dn---5-----------------------------------------------------------------------------------------------------------------------------------------------------------------------vP9-------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

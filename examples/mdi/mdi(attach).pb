@@ -33,12 +33,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 
   
   Resize(*g0, 50, 50, 400, 400)
-  Debug Y(*g0, #__c_container)
   Resize(*g1, X(*g0, #__c_container)+50, Y(*g0, #__c_container)+50, 200, 300)
   Resize(*g2, X(*g0, #__c_container)+Width(*g0, #__c_Frame), Y(*g0, #__c_container), 200, 300)
   Resize(*g3, X(*g2, #__c_container), Y(*g2, #__c_container)+Height(*g2, #__c_Frame), 200, 100)
-  Button(0,0,200,100,"button")
-
+  
   
   SetState(*mdi\scroll\h, 120)
   
