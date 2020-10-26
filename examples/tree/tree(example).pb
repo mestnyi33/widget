@@ -271,6 +271,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(g, 11, "Tree_4" )
     AddGadgetItem(g, 12, "Tree_5", 0 )
     AddGadgetItem(g, 13, "Tree_6", 0 )
+    AddGadgetItem(g, 14, "Tree_7", 0 )
     
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
@@ -383,6 +384,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 11, "Tree_4", -1 )
     AddItem(*g, 12, "Tree_5", -1 )
     AddItem(*g, 13, "Tree_6", -1 )
+    AddItem(*g, 14, "Tree_7", -1 )
     
 ; ;     ;Bind(*g, @events_tree_widget())
 ; ;     DD::EnableDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)

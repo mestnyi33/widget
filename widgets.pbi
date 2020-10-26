@@ -1080,7 +1080,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare.i HyperLink( x.l,y.l,width.l,height.l, Text.s, Color.i, Flag.i = 0 )
     
     ; bar
-    ;Declare.i Area( *parent, ScrollStep, AreaWidth, AreaHeight, Width, Height, Mode = 1 )
+    ;Declare.i Area( *parent, ScrollStep, AreaWidth, AreaHeight, width, height, Mode = 1 )
     Declare.i Spin( x.l,y.l,width.l,height.l, Min.l,Max.l, Flag.i = 0, round.l = 0, increment.f = 1.0 )
     Declare.i Tab( x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i = 0, round.l = 0 )
     Declare.i Scroll( x.l,y.l,width.l,height.l, Min.l,Max.l,PageLength.l, Flag.i = 0, round.l = 0 )
@@ -3102,6 +3102,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           Height = *this\parent\height[#__c_inner2] ; - \align\delta\y
         EndIf
         
+        Debug " resize - "+*this\class
+        
         ;
         If transform( ) And 
            transform( )\grid\size And
@@ -3316,6 +3318,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             If ( Change_width Or Change_height )
               Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
             EndIf
+            
+            ;Bar_Resizes( *this, *this\scroll\h\x[#__c_container], *this\scroll\v\y[#__c_container], *this\width[#__c_container], *this\height[#__c_container] )
             
             *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
             *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
@@ -5797,7 +5801,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure   Bar_Resizes( *this._s_widget, x.l,y.l,width.l,height.l )
+    Procedure   _Bar_Resizes( *this._s_widget, x.l,y.l,width.l,height.l )
       ;       *this\width[#__c_required] = *this\scroll\h\bar\max
       ;       *this\height[#__c_required] = *this\scroll\v\bar\max
       ;       
@@ -5844,22 +5848,22 @@ CompilerIf Not Defined( widget, #PB_Module )
         If Height + y - *this\scroll\h\height[#__c_frame] <> *this\scroll\h\y[#__c_container]
           h_y = Height + y - *this\scroll\h\height[#__c_frame]
         EndIf
-        ;Debug _make_area_height_( *this,*this\scroll, Width, Height )
+        ;Debug _make_area_height_( *this,*this\scroll, width, height )
         ;If
-        Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, _make_area_height_( *this,*this\scroll, Width, Height ) )
+        Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, _make_area_height_( *this,*this\scroll, width, height ) )
         *this\scroll\v\hide = widget::Resize( *this\scroll\v, v_x, y, #PB_Ignore, _get_page_height_( *this,*this\scroll, 1 ) )
         ;EndIf
         
         ;If 
-        Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, _make_area_width_( *this,*this\scroll, Width, Height ) )
+        Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, _make_area_width_( *this,*this\scroll, width, height ) )
         *this\scroll\h\hide = widget::Resize( *this\scroll\h, x, h_y, _get_page_width_( *this,*this\scroll, 1 ), #PB_Ignore )
         ;EndIf
         
-        If Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, _make_area_height_( *this,*this\scroll, Width, Height ) )
+        If Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, _make_area_height_( *this,*this\scroll, width, height ) )
           *this\scroll\v\hide = widget::Resize( *this\scroll\v, v_x, #PB_Ignore, #PB_Ignore, _get_page_height_( *this,*this\scroll, 1 ) )
         EndIf
         
-        If Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, _make_area_width_( *this,*this\scroll, Width, Height ) )
+        If Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, _make_area_width_( *this,*this\scroll, width, height ) )
           *this\scroll\h\hide = widget::Resize( *this\scroll\h, #PB_Ignore, h_y, _get_page_width_( *this,*this\scroll, 1 ), #PB_Ignore )
         EndIf
         
@@ -5869,6 +5873,53 @@ CompilerIf Not Defined( widget, #PB_Module )
         ;         *this\scroll\v\hide = *this\scroll\v\bar\hide ; Bool( *this\scroll\v\bar\min = *this\scroll\v\bar\page\end )
         ;         *this\scroll\h\hide = *this\scroll\h\bar\hide ; Bool( *this\scroll\h\bar\min = *this\scroll\h\bar\page\end )
         ;         
+        ProcedureReturn Bool( *this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change )
+      EndWith
+    EndProcedure
+    Procedure   Bar_Resizes( *this._s_widget, x.l,y.l,width.l,height.l )
+      With *this\scroll
+        Protected iheight, iwidth
+        Protected h_x = #PB_Ignore,
+                  h_y = #PB_Ignore, 
+                  v_x = #PB_Ignore, 
+                  v_y = #PB_Ignore 
+        
+        If Not *this\scroll\v Or Not *this\scroll\h
+          ProcedureReturn
+        EndIf        ;  *this\height[#__c_container]
+        
+        If \v\y[#__c_container] <> y
+          v_y = y
+        EndIf
+        If \h\x[#__c_container] <> x
+          h_x = x
+        EndIf
+        
+        If width = #PB_Ignore 
+          width = \v\x[#__c_frame] - \h\x[#__c_frame] + \v\width[#__c_frame] 
+        EndIf
+        If height = #PB_Ignore 
+          height = \h\y[#__c_frame] - \v\y[#__c_frame] + \h\height[#__c_frame] 
+        EndIf
+        
+        If \v\x[#__c_container] <> width - \v\width
+          v_x = width - \v\width
+        EndIf
+        If \h\y[#__c_container] <> height - \h\height
+          h_y = height - \h\height
+        EndIf
+        
+        
+        Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * *this\scroll\h\height ) ) )
+        Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * *this\scroll\v\width ) ) )
+        
+        Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * *this\scroll\h\height ) ) )
+        Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * *this\scroll\v\width ) ) )
+        
+        *this\scroll\v\hide = widget::Resize( *this\scroll\v, v_x, v_y, #PB_Ignore, ( *this\scroll\v\bar\page\len + Bool( *this\scroll\v\round And *this\scroll\h\round And Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * ( *this\scroll\h\height/4 ) ) )
+        *this\scroll\h\hide = widget::Resize( *this\scroll\h, h_x, h_y, ( *this\scroll\h\bar\page\len + Bool( *this\scroll\v\round And *this\scroll\h\round And Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * ( *this\scroll\v\width/4 ) ), #PB_Ignore )
+        
+        
         ProcedureReturn Bool( *this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change )
       EndWith
     EndProcedure
@@ -13038,7 +13089,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 *this\scroll\v\window = *this\window
               EndIf
               If *this\scroll\h
-                *this\scroll\v\root = *this\root
+                *this\scroll\h\root = *this\root
                 *this\scroll\h\window = *this\window
               EndIf
             EndIf
@@ -13059,6 +13110,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               y + *LastParent\scroll\v\bar\page\pos
             EndIf
             
+            ;;Debug "reparent - "
             Resize( *this, x + *parent\x[#__c_required], y + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
             
             ; re draw new parent root 
@@ -15718,13 +15770,13 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
         Case #__event_resize : ResizeGadget( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-          Repaint = Resize( root( ), #PB_Ignore, #PB_Ignore, Width, Height )  
+          Repaint = Resize( root( ), #PB_Ignore, #PB_Ignore, width, height )  
           
           ;           If Not _is_root_( *this )
-          ;             Repaint = Resize( *this, #PB_Ignore, #PB_Ignore, Width, Height )  
+          ;             Repaint = Resize( *this, #PB_Ignore, #PB_Ignore, width, height )  
           ;             ;            ; PushListPosition( widget( ) )
           ;             ;         ForEach widget( )
-          ;             ;           Resize( widget( ), #PB_Ignore, #PB_Ignore, Width, Height )  
+          ;             ;           Resize( widget( ), #PB_Ignore, #PB_Ignore, width, height )  
           ;             ;         Next
           ;             ;         ; PopListPosition( widget( ) )
           ;           EndIf
@@ -16044,7 +16096,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         height = WindowHeight( window, #PB_Window_InnerCoordinate ) - y*2
       EndIf
       
-      Protected g = CanvasGadget( Canvas, x, Y, Width, Height, Flag | #PB_Canvas_Keyboard ) : If Canvas =- 1 : Canvas = g : EndIf
+      Protected g = CanvasGadget( Canvas, x, Y, width, height, Flag | #PB_Canvas_Keyboard ) : If Canvas =- 1 : Canvas = g : EndIf
       
       AddElement( root( ) ) 
       root( ) = AllocateStructure( _s_root )
@@ -16255,13 +16307,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       Open( Window, x,y,width,height, #Null, *CallBack, Gadget )
       
       Select Type
-        Case #PB_GadgetType_Tree      : *this = Tree( 0, 0, Width, Height, flag )
-        Case #PB_GadgetType_Text      : *this = Text( 0, 0, Width, Height, Text, flag )
-        Case #PB_GadgetType_Button    : *this = Button( 0, 0, Width, Height, Text, flag )
-        Case #PB_GadgetType_Option    : *this = Option( 0, 0, Width, Height, Text, flag )
-        Case #PB_GadgetType_CheckBox  : *this = Checkbox( 0, 0, Width, Height, Text, flag )
-        Case #PB_GadgetType_HyperLink : *this = HyperLink( 0, 0, Width, Height, Text, *param1, flag )
-        Case #PB_GadgetType_Splitter  : *this = Splitter( 0, 0, Width, Height, *param1, *param2, flag )
+        Case #PB_GadgetType_Tree      : *this = Tree( 0, 0, width, height, flag )
+        Case #PB_GadgetType_Text      : *this = Text( 0, 0, width, height, Text, flag )
+        Case #PB_GadgetType_Button    : *this = Button( 0, 0, width, height, Text, flag )
+        Case #PB_GadgetType_Option    : *this = Option( 0, 0, width, height, Text, flag )
+        Case #PB_GadgetType_CheckBox  : *this = Checkbox( 0, 0, width, height, Text, flag )
+        Case #PB_GadgetType_HyperLink : *this = HyperLink( 0, 0, width, height, Text, *param1, flag )
+        Case #PB_GadgetType_Splitter  : *this = Splitter( 0, 0, width, height, *param1, *param2, flag )
       EndSelect
       
       If Gadget =- 1
@@ -16902,6 +16954,9 @@ CompilerIf #PB_Compiler_IsMainFile
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, width,height )
           Else
+            flag | #__window_systemmenu | #__window_maximizegadget | #__window_minimizegadget
+            a_init(*parent)
+            ;;a_set(*parent)
             *new = Window( x,y,width,height, "", flag, *parent )
           EndIf
           
@@ -17392,7 +17447,9 @@ CompilerIf #PB_Compiler_IsMainFile
     id_inspector_tree = Tree( 0,0,0,0, #__flag_gridlines )
     listview_debug = Editor( 0,0,0,0 ) ; ListView( 0,0,0,0 ) 
     
+    ;id_design_form = Container( 0,0,0,0, #__mdi_editable ) : CloseList( )
     id_design_form = MDI( 0,0,0,0, #__mdi_editable ) 
+    ;id_design_form = MDI(10,10, width( widget( ), #__c_inner )-20, height( widget( ), #__c_inner )-20);, #__flag_autosize)
     id_design_panel = id_design_form
     ;id_design_code = listview_debug
     
@@ -17575,5 +17632,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------+--44--6---8----------------4-d4P+-------------------------------------------------------4z------------------------------------------------------------------------------------------------------------------v-------------------------------------------------------------------------------------------------------------------------------------------------8f--Pw---
 ; EnableXP

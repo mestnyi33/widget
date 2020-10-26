@@ -40,7 +40,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
       Button_1 = Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
       
-      Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
+      Button_2 = MDI(0, 0, 0, 0) ; as they will be sized automatically
+      ;Button_2 = Button(0, 0, 0, 0, "Button 2") ; No need to specify size or coordinates
       Button_3 = Button(0, 0, 0, 0, "Button 3") ; as they will be sized automatically
       Button_4 = Button(0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
       Button_5 = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically

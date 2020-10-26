@@ -636,9 +636,9 @@
     ;-
     ;- GLOBAL
     ;-
-    Global test_draw_box_clip_type = 0;#__type_window
-    Global test_draw_box_clip1_type = 0;#__type_window
-    Global test_draw_box_clip2_type = 0;#__type_window
+    Global test_draw_box_clip_type = #__type_mdi
+    Global test_draw_box_clip1_type = #__type_mdi
+    Global test_draw_box_clip2_type = #__type_mdi
     
     Global test_draw_box_screen_type ;= #PB_All
     Global test_draw_box_inner_type ;= #PB_All
