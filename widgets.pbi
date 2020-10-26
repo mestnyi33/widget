@@ -3310,16 +3310,16 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; resize vertical&horizontal scrollbars
           If ( *this\scroll And *this\scroll\v And *this\scroll\h )
-            If ( Change_x Or Change_y )
-              Resize( *this\scroll\v, *this\scroll\v\x[#__c_container], *this\scroll\v\y[#__c_container], #__scroll_buttonsize, #PB_Ignore )
-              Resize( *this\scroll\h, *this\scroll\h\x[#__c_container], *this\scroll\h\y[#__c_container], #PB_Ignore, #__scroll_buttonsize )
-            EndIf
+;             If ( Change_x Or Change_y )
+;               Resize( *this\scroll\v, *this\scroll\v\x[#__c_container], *this\scroll\v\y[#__c_container], #__scroll_buttonsize, #PB_Ignore )
+;               Resize( *this\scroll\h, *this\scroll\h\x[#__c_container], *this\scroll\h\y[#__c_container], #PB_Ignore, #__scroll_buttonsize )
+;             EndIf
+;             
+;             If ( Change_width Or Change_height )
+;               Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+;             EndIf
             
-            If ( Change_width Or Change_height )
-              Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
-            EndIf
-            
-            ;Bar_Resizes( *this, *this\scroll\h\x[#__c_container], *this\scroll\v\y[#__c_container], *this\width[#__c_container], *this\height[#__c_container] )
+            Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
             
             *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
             *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
@@ -5879,21 +5879,10 @@ CompilerIf Not Defined( widget, #PB_Module )
     Procedure   Bar_Resizes( *this._s_widget, x.l,y.l,width.l,height.l )
       With *this\scroll
         Protected iheight, iwidth
-        Protected h_x = #PB_Ignore,
-                  h_y = #PB_Ignore, 
-                  v_x = #PB_Ignore, 
-                  v_y = #PB_Ignore 
         
         If Not *this\scroll\v Or Not *this\scroll\h
           ProcedureReturn
         EndIf        ;  *this\height[#__c_container]
-        
-        If \v\y[#__c_container] <> y
-          v_y = y
-        EndIf
-        If \h\x[#__c_container] <> x
-          h_x = x
-        EndIf
         
         If width = #PB_Ignore 
           width = \v\x[#__c_frame] - \h\x[#__c_frame] + \v\width[#__c_frame] 
@@ -5902,22 +5891,14 @@ CompilerIf Not Defined( widget, #PB_Module )
           height = \h\y[#__c_frame] - \v\y[#__c_frame] + \h\height[#__c_frame] 
         EndIf
         
-        If \v\x[#__c_container] <> width - \v\width
-          v_x = width - \v\width
-        EndIf
-        If \h\y[#__c_container] <> height - \h\height
-          h_y = height - \h\height
-        EndIf
-        
-        
         Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * *this\scroll\h\height ) ) )
         Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * *this\scroll\v\width ) ) )
         
         Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * *this\scroll\h\height ) ) )
         Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * *this\scroll\v\width ) ) )
         
-        *this\scroll\v\hide = widget::Resize( *this\scroll\v, v_x, v_y, #PB_Ignore, ( *this\scroll\v\bar\page\len + Bool( *this\scroll\v\round And *this\scroll\h\round And Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * ( *this\scroll\h\height/4 ) ) )
-        *this\scroll\h\hide = widget::Resize( *this\scroll\h, h_x, h_y, ( *this\scroll\h\bar\page\len + Bool( *this\scroll\v\round And *this\scroll\h\round And Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * ( *this\scroll\v\width/4 ) ), #PB_Ignore )
+        *this\scroll\v\hide = widget::Resize( *this\scroll\v, width - \v\width, y, #PB_Ignore, ( *this\scroll\v\bar\page\len + Bool( *this\scroll\v\round And *this\scroll\h\round And Not Bool( Not ( *this\scroll\h\bar\max > *this\scroll\h\bar\page\len ) ) ) * ( *this\scroll\h\height/4 ) ) )
+        *this\scroll\h\hide = widget::Resize( *this\scroll\h, x, height - \h\height, ( *this\scroll\h\bar\page\len + Bool( *this\scroll\v\round And *this\scroll\h\round And Not Bool( Not ( *this\scroll\v\bar\max > *this\scroll\v\bar\page\len ) ) ) * ( *this\scroll\v\width/4 ) ), #PB_Ignore )
         
         
         ProcedureReturn Bool( *this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change )
@@ -17632,5 +17613,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------+--44--6---8----------------4-d4P+-------------------------------------------------------4z------------------------------------------------------------------------------------------------------------------v-------------------------------------------------------------------------------------------------------------------------------------------------8f--Pw---
+; Folding = --------------------+--44--6---8----------------4-d4P+-------------------------------------------------------09-----------------------------------------------------------------------------------------------------------------v-------------------------------------------------------------------------------------------------------------------------------------------------8f--Pw---
 ; EnableXP
