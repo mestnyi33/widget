@@ -2795,27 +2795,29 @@ CompilerIf Not Defined( widget, #PB_Module )
           _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_container]
         EndIf
       EndIf
-        
-      If Not (*this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
-        If *this\parent\type = #PB_GadgetType_ScrollArea  
+      
+      ; for the splitter childrens
+      If *this\parent\type = #PB_GadgetType_Splitter
+        If *this\parent\gadget[#__split_1] = *this
+          _p_x2_ = *this\parent\bar\button[#__split_b1]\x + *this\parent\bar\button[#__split_b1]\width
+          _p_y2_ = *this\parent\bar\button[#__split_b1]\y + *this\parent\bar\button[#__split_b1]\height
+        EndIf
+        If *this\parent\gadget[#__split_2] = *this
+          _p_x2_ = *this\parent\bar\button[#__split_b2]\x + *this\parent\bar\button[#__split_b2]\width
+          _p_y2_ = *this\parent\bar\button[#__split_b2]\y + *this\parent\bar\button[#__split_b2]\height
+        EndIf
+      EndIf
+      
+      ; for the scrollarea childrens except scrollbars
+      If *this\parent\type = #PB_GadgetType_ScrollArea  
+        If Not (*this\parent\scroll And
+                ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
           If _p_x2_ > *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
             _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
           EndIf
           If _p_y2_ > *this\parent\y[#__c_inner] + *this\parent\height[#__c_required]
             _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_required]
           EndIf
-        EndIf
-      EndIf
-      
-      
-      If *this\parent\type = #PB_GadgetType_Splitter
-        If *this\parent\gadget[#__split_1] = *this And Not *this\child
-          _p_x2_ = *this\parent\bar\button[#__split_b1]\x + *this\parent\bar\button[#__split_b1]\width
-          _p_y2_ = *this\parent\bar\button[#__split_b1]\y + *this\parent\bar\button[#__split_b1]\height
-        EndIf
-        If *this\parent\gadget[#__split_2] = *this And Not *this\child
-          _p_x2_ = *this\parent\bar\button[#__split_b2]\x + *this\parent\bar\button[#__split_b2]\width
-          _p_y2_ = *this\parent\bar\button[#__split_b2]\y + *this\parent\bar\button[#__split_b2]\height
         EndIf
       EndIf
       
@@ -17592,5 +17594,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------+--44--6---8--------vZAA5----f-4d-5--40--n------------------------------------------------C------------------------------------------------------------------------------v-8+--------------------------------8--------------------------------------------------------------------------------LU----4+---------------------------------------------------------+4--D9--
+; Folding = --------------------+--44--6---8---------ZAA5----f-4d-5--40--n------------------------------------------------C------------------------------------------------------------------------------v-8+--------------------------------8--------------------------------------------------------------------------------LU----4+---------------------------------------------------------+4--D9--
 ; EnableXP
