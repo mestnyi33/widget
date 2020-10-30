@@ -447,27 +447,29 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem (*g, -1, "#PB_Window_WindowCentered", -1, 1)   ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified", -1). x,y parameters are ignored.
     ;}                                                    ;
     
-    ;{  5_example
-    *g = Tree(750+135, 100, 103, 210, #__Tree_NoButtons|#__tree_Collapsed)                                         
+    ;Define *g5,*g6
     
-    AddItem(*g, 0, "Tree_0", -1 )
-    AddItem(*g, 1, "Tree_1", -1, 0) 
-    AddItem(*g, 2, "Tree_2", -1, 0) 
-    AddItem(*g, 3, "Tree_3", -1, 0) 
-    AddItem(*g, 0, "Tree_0 (NoButtons)", -1 )
-    AddItem(*g, 1, "Tree_1", -1, 1) 
-    AddItem(*g, 2, "Tree_2_1", -1, 1) 
-    AddItem(*g, 2, "Tree_2_2", -1, 2) 
+    ;{  5_example
+    *g5 = Tree(750+135, 100, 103, 210, #__Tree_NoButtons|#__tree_Collapsed)                                         
+    
+    AddItem(*g5, 0, "Tree_0", -1 )
+    AddItem(*g5, 1, "Tree_1", -1, 0) 
+    AddItem(*g5, 2, "Tree_2", -1, 0) 
+    AddItem(*g5, 3, "Tree_3", -1, 0) 
+    AddItem(*g5, 0, "Tree_0 (NoButtons)", -1 )
+    AddItem(*g5, 1, "Tree_1", -1, 1) 
+    AddItem(*g5, 2, "Tree_2_1", -1, 1) 
+    AddItem(*g5, 2, "Tree_2_2", -1, 2) 
     
     
     For i = 0 To 10
-      AddItem(*g, -1, "Normal Item "+Str(i), 0, 0) ; if you want to add an image, use
-      AddItem(*g, -1, "Node "+Str(i), 0, 0)        ; ImageID(x) as 4th parameter
-      AddItem(*g, -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
-      AddItem(*g, -1, "Sub-Item 2", 0, 1)
-      AddItem(*g, -1, "Sub-Item 3", 0, 1)
-      AddItem(*g, -1, "Sub-Item 4", 0, 1)
-      AddItem(*g, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
+      AddItem(*g5, -1, "Normal Item "+Str(i), 0, 0) ; if you want to add an image, use
+      AddItem(*g5, -1, "Node "+Str(i), 0, 0)        ; ImageID(x) as 4th parameter
+      AddItem(*g5, -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
+      AddItem(*g5, -1, "Sub-Item 2", 0, 1)
+      AddItem(*g5, -1, "Sub-Item 3", 0, 1)
+      AddItem(*g5, -1, "Sub-Item 4", 0, 1)
+      AddItem(*g5, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
     Next
     
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
@@ -475,20 +477,23 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g = Tree(890+106, 100, 103, 210, #__flag_BorderLess|#__tree_Collapsed)                                         
+    *g6 = Tree(890+106, 100, 103, 210, #__flag_BorderLess|#__tree_Collapsed)                                         
     
-    AddItem(*g, 0, "Tree_1", -1, 1) 
-    AddItem(*g, 0, "Tree_2_1", -1, 2) 
-    AddItem(*g, 0, "Tree_2_2", -1, 3) 
+    AddItem(*g6, 0, "Tree_1", -1, 1) 
+    AddItem(*g6, 0, "Tree_2_1", -1, 2) 
+    AddItem(*g6, 0, "Tree_2_2", -1, 3) 
     
     For i = 0 To 24
       If i % 5 = 0
-        AddItem(*g, -1, "Directory" + Str(i), -1, 0)
+        AddItem(*g6, -1, "Directory" + Str(i), -1, 0)
       Else
-        AddItem(*g, -1, "Item" + Str(i), -1, 1)
+        AddItem(*g6, -1, "Item" + Str(i), -1, 1)
       EndIf
     Next i
     ;}
+    
+    
+    splitter(750+135, 100, 216, 210, *g6,*g5, #PB_Splitter_Vertical)                                         
     
     redraw(root())
     ; Free(*g)
@@ -503,5 +508,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 0f8--060
+; Folding = -f8--06-
 ; EnableXP

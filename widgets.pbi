@@ -2784,22 +2784,36 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected _tf_x2_ = *this\x[#__c_frame] + *this\width[#__c_frame]
       Protected _tf_y2_ = *this\y[#__c_frame] + *this\height[#__c_frame]
       
-      ;       If *this\parent\gadget[#__split_2] = *this And Not *this\child
-      ;         Debug "========= "+*this\class +" "+ *this\x[#__c_clip]
-      ;        ; _p_x2_ + *this\x[#__c_screen] ;+ *this\width[#__c_screen]
-      ;        ; _p_x4_ = *this\x[#__c_screen] + *this\width[#__c_clip]
-      ;       EndIf
-      
-      If *this\type = #__type_tabbar And 
-         *this\parent\_tab And *this\parent\_tab = *this
-        _p_x2_ = *this\parent\x[#__c_frame] + *this\parent\width[#__c_frame]
-        _p_y2_ = *this\parent\y[#__c_frame] + *this\parent\height[#__c_frame]
+      If *this\child
+        If *this\type = #__type_tabbar ; And *this\parent\_tab And *this\parent\_tab = *this
+          _p_x2_ = *this\parent\x[#__c_frame] + *this\parent\width[#__c_frame]
+          _p_y2_ = *this\parent\y[#__c_frame] + *this\parent\height[#__c_frame]
+        EndIf
+        
+        If *this\type = #__type_scrollbar ; And *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h )
+          _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_container]
+          _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_container]
+        EndIf
       EndIf
       
-      If *this\type = #__type_scrollbar And 
-         *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h )
-        _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_container]
-        _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_container]
+      If *this\parent\type = #PB_GadgetType_Splitter
+        If *this\parent\gadget[#__split_1] = *this And Not *this\child
+          _p_x2_ = *this\parent\bar\button[#__split_b1]\x + *this\parent\bar\button[#__split_b1]\width
+          _p_y2_ = *this\parent\bar\button[#__split_b1]\y + *this\parent\bar\button[#__split_b1]\height
+        EndIf
+        If *this\parent\gadget[#__split_2] = *this And Not *this\child
+          _p_x2_ = *this\parent\bar\button[#__split_b2]\x + *this\parent\bar\button[#__split_b2]\width
+          _p_y2_ = *this\parent\bar\button[#__split_b2]\y + *this\parent\bar\button[#__split_b2]\height
+        EndIf
+      EndIf
+      
+      If *this\parent\type = #PB_GadgetType_ScrollArea
+        If _p_x2_ > *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
+          _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
+        EndIf
+        If _p_y2_ > *this\parent\y[#__c_inner] + *this\parent\height[#__c_required]
+          _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_required]
+        EndIf
       EndIf
       
       ; then move and size parent set clip coordinate
@@ -3102,7 +3116,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           Height = *this\parent\height[#__c_inner2] ; - \align\delta\y
         EndIf
         
-        Debug " resize - "+*this\class
+       ; Debug " resize - "+*this\class
         
         ;
         If transform( ) And 
@@ -3294,35 +3308,45 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         If *this\resize & #__resize_change
-          ; then move and size parent set clip ( width&height )
-          If *this\parent And *this\parent <> *this
-            Reclip( *this, #False )
-          Else
-            *this\x[#__c_clip] = *this\x[#__c_frame]
-            *this\y[#__c_clip] = *this\y[#__c_frame]
-            *this\width[#__c_clip] = *this\width[#__c_frame]
-            *this\height[#__c_clip] = *this\height[#__c_frame]
-          EndIf
-          
           ; 
           *this\width[#__c_inner2] = *this\width[#__c_container]
           *this\height[#__c_inner2] = *this\height[#__c_container]
           
           ; resize vertical&horizontal scrollbars
           If ( *this\scroll And *this\scroll\v And *this\scroll\h )
-;             If ( Change_x Or Change_y )
-;               Resize( *this\scroll\v, *this\scroll\v\x[#__c_container], *this\scroll\v\y[#__c_container], #__scroll_buttonsize, #PB_Ignore )
-;               Resize( *this\scroll\h, *this\scroll\h\x[#__c_container], *this\scroll\h\y[#__c_container], #PB_Ignore, #__scroll_buttonsize )
-;             EndIf
-;             
-;             If ( Change_width Or Change_height )
-;               Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
-;             EndIf
+            If ( Change_x Or Change_y )
+              Resize( *this\scroll\v, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize, #PB_Ignore )
+              Resize( *this\scroll\h, #PB_Ignore, #PB_Ignore, #PB_Ignore, #__scroll_buttonsize )
+            EndIf
             
-            Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+            If ( Change_width Or Change_height )
+              Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+            EndIf
+            
+            ;Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
             
             *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
             *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
+          EndIf
+          
+          ; then move and size parent set clip ( width&height )
+          If *this\parent And *this\parent <> *this
+            Reclip( *this, #False )
+          Else
+            *this\x[#__c_clip] = *this\x[#__c_screen]
+            *this\y[#__c_clip] = *this\y[#__c_screen]
+            *this\width[#__c_clip] = *this\width[#__c_screen]
+            *this\height[#__c_clip] = *this\height[#__c_screen]
+            
+            *this\x[#__c_clip1] = *this\x[#__c_frame]
+            *this\y[#__c_clip1] = *this\y[#__c_frame]
+            *this\width[#__c_clip1] = *this\width[#__c_frame]
+            *this\height[#__c_clip1] = *this\height[#__c_frame]
+            
+            *this\x[#__c_clip2] = *this\x[#__c_inner]
+            *this\y[#__c_clip2] = *this\y[#__c_inner]
+            *this\width[#__c_clip2] = *this\width[#__c_inner]
+            *this\height[#__c_clip2] = *this\height[#__c_inner]
           EndIf
           
           If *this\type = #__type_panel 
@@ -3807,14 +3831,14 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare.b Bar_SetState( *this, state.f )
     
     Macro Area( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _mode_ = #True )
-      _parent_\scroll\v = Create( _parent_, "vertical", #__type_ScrollBar, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child | #__bar_vertical, 7, _scroll_step_ )
-      _parent_\scroll\h = Create( _parent_, "horizontal", #__type_ScrollBar, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool( _mode_ )*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_ )
+      _parent_\scroll\v = Create( _parent_, _parent_\class+"_vertical", #__type_ScrollBar, 0,0,#__scroll_buttonsize,0,  0,_area_height_, _height_, #__scroll_buttonsize, #__bar_child | #__bar_vertical, 7, _scroll_step_ )
+      _parent_\scroll\h = Create( _parent_, _parent_\class+"_horizontal", #__type_ScrollBar, 0,0,0,#__scroll_buttonsize,  0,_area_width_, _width_, Bool( _mode_ )*#__scroll_buttonsize, #__bar_child, 7, _scroll_step_ )
     EndMacro                                                  
     
     Macro Area_Draw( _this_ )
-      ClipOutput( _this_\x[#__c_clip], _this_\y[#__c_clip], _this_\width[#__c_clip], _this_\height[#__c_clip] )
-      
       If _this_\scroll
+        ClipOutput( _this_\x[#__c_clip], _this_\y[#__c_clip], _this_\width[#__c_clip], _this_\height[#__c_clip] )
+        
         If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And _this_\scroll\v\width[#__c_clip] > 0 And _this_\scroll\v\height[#__c_clip] > 0
           Bar_Draw( _this_\scroll\v )
         EndIf
@@ -3822,7 +3846,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           Bar_Draw( _this_\scroll\h )
         EndIf
         
-        If #__draw_scroll_box
+        If #__draw_scroll_box 
           DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
           ; Scroll area coordinate
           Box( _this_\x[#__c_inner] + _this_\x[#__c_required] + _this_\text\padding\x, _this_\y[#__c_inner] + _this_\y[#__c_required] + _this_\text\padding\y, _this_\width[#__c_required] - _this_\text\padding\x*2, _this_\height[#__c_required] - _this_\text\padding\y*2, $FFFF0000 )
@@ -5801,96 +5825,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn result
     EndProcedure
     
-    Procedure   _Bar_Resizes( *this._s_widget, x.l,y.l,width.l,height.l )
-      ;       *this\width[#__c_required] = *this\scroll\h\bar\max
-      ;       *this\height[#__c_required] = *this\scroll\v\bar\max
-      ;       
-      ;       ProcedureReturn Updates( *this, x.l,y.l,width.l,height.l )
-      
-      
-      ;       y = #PB_Ignore 
-      ;         x = #PB_Ignore 
-      ;           Width = #PB_Ignore 
-      ;           Height = #PB_Ignore 
-      ;           
-      Macro _get_page_height_( _this_, _scroll_, _round_ = 0 )
-        ( _scroll_\v\bar\page\len + Bool( _round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\h\hide ) * ( _scroll_\h\height/4 ) ) 
-      EndMacro
-      
-      Macro _get_page_width_( _this_, _scroll_, _round_ = 0 )
-        ( _scroll_\h\bar\page\len + Bool( _round_ And _scroll_\v\round And _scroll_\h\round And Not _scroll_\v\hide ) * ( _scroll_\v\width/4 ) )
-      EndMacro
-      
-      Macro _make_area_height_( _this_, _scroll_, _width_, _height_ )
-        ( _height_ - ( Bool( ( _this_\width[#__c_required] > _width_ ) Or Not _scroll_\h\hide ) * _scroll_\h\height ) ) 
-      EndMacro
-      
-      Macro _make_area_width_( _this_, _scroll_, _width_, _height_ )
-        ( _width_ - ( Bool( ( _this_\height[#__c_required] > _height_ ) Or Not _scroll_\v\hide ) * _scroll_\v\width ) )
-      EndMacro
-      
-      With *this\scroll
-        Protected iHeight, iWidth, v_x = #PB_Ignore, h_y = #PB_Ignore
-        
-        If Not *this\scroll\v Or Not *this\scroll\h
-          ProcedureReturn
-        EndIf
-        
-        If y = #PB_Ignore : y = \v\y[#__c_frame] - \v\parent\y[#__c_inner] : EndIf
-        If x = #PB_Ignore : x = \h\x[#__c_frame] - \v\parent\x[#__c_inner] : EndIf
-        If Width = #PB_Ignore : Width = \v\x[#__c_frame] - \h\x[#__c_frame] + \v\width[#__c_frame] : EndIf
-        If Height = #PB_Ignore : Height = \h\y[#__c_frame] - \v\y[#__c_frame] + \h\height[#__c_frame] : EndIf
-        
-        If Width + x - *this\scroll\v\width[#__c_frame] <> *this\scroll\v\x[#__c_container]
-          v_x = Width + x - *this\scroll\v\width[#__c_frame]
-        EndIf
-        
-        If Height + y - *this\scroll\h\height[#__c_frame] <> *this\scroll\h\y[#__c_container]
-          h_y = Height + y - *this\scroll\h\height[#__c_frame]
-        EndIf
-        ;Debug _make_area_height_( *this,*this\scroll, width, height )
-        ;If
-        Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, _make_area_height_( *this,*this\scroll, width, height ) )
-        *this\scroll\v\hide = widget::Resize( *this\scroll\v, v_x, y, #PB_Ignore, _get_page_height_( *this,*this\scroll, 1 ) )
-        ;EndIf
-        
-        ;If 
-        Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, _make_area_width_( *this,*this\scroll, width, height ) )
-        *this\scroll\h\hide = widget::Resize( *this\scroll\h, x, h_y, _get_page_width_( *this,*this\scroll, 1 ), #PB_Ignore )
-        ;EndIf
-        
-        If Bar_SetAttribute( *this\scroll\v, #__bar_pagelength, _make_area_height_( *this,*this\scroll, width, height ) )
-          *this\scroll\v\hide = widget::Resize( *this\scroll\v, v_x, #PB_Ignore, #PB_Ignore, _get_page_height_( *this,*this\scroll, 1 ) )
-        EndIf
-        
-        If Bar_SetAttribute( *this\scroll\h, #__bar_pagelength, _make_area_width_( *this,*this\scroll, width, height ) )
-          *this\scroll\h\hide = widget::Resize( *this\scroll\h, #PB_Ignore, h_y, _get_page_width_( *this,*this\scroll, 1 ), #PB_Ignore )
-        EndIf
-        
-        *this\scroll\v\hide = Bar_Update( *this\scroll\v )
-        *this\scroll\h\hide = Bar_Update( *this\scroll\h )
-        ;         
-        ;         *this\scroll\v\hide = *this\scroll\v\bar\hide ; Bool( *this\scroll\v\bar\min = *this\scroll\v\bar\page\end )
-        ;         *this\scroll\h\hide = *this\scroll\h\bar\hide ; Bool( *this\scroll\h\bar\min = *this\scroll\h\bar\page\end )
-        ;         
-        ProcedureReturn Bool( *this\scroll\v\bar\area\change Or *this\scroll\h\bar\area\change )
-      EndWith
-    EndProcedure
     Procedure   Bar_Resizes( *this._s_widget, x.l,y.l,width.l,height.l )
       With *this\scroll
-        Protected iheight, iwidth
-        
-        If Not \v Or Not \h
-          ProcedureReturn
-        EndIf 
+        If Not \v Or Not \h : ProcedureReturn : EndIf 
         
         If x = #PB_Ignore 
-          x = \h\x[#__c_frame] 
+          x = \h\x[#__c_container] 
         EndIf
         If y = #PB_Ignore 
-          y = \v\y[#__c_frame]
+          y = \v\y[#__c_container]
         EndIf
-        
         If width = #PB_Ignore 
           width = \v\x[#__c_frame] - \h\x[#__c_frame] + \v\width[#__c_frame] 
         EndIf
@@ -5898,15 +5842,14 @@ CompilerIf Not Defined( widget, #PB_Module )
           height = \h\y[#__c_frame] - \v\y[#__c_frame] + \h\height[#__c_frame] 
         EndIf
         
-        Bar_SetAttribute( \v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( \h\bar\max > \h\bar\page\len ) ) ) * \h\height ) ) )
-        Bar_SetAttribute( \h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( \v\bar\max > \v\bar\page\len ) ) ) * \v\width ) ) )
+        \v\bar\page\len = ( height - ( Bool( ( *this\width[#__c_required] > width ) Or ( \h\bar\max > \h\bar\page\len ) ) * \h\height ) )
+        \h\bar\page\len = ( width - ( Bool( ( *this\height[#__c_required] > height ) Or ( \v\bar\max > \v\bar\page\len ) ) * \v\width ) )
         
-        Bar_SetAttribute( \v, #__bar_pagelength, ( height - ( Bool( ( *this\width[#__c_required] > width ) Or Not Bool( Not ( \h\bar\max > \h\bar\page\len ) ) ) * \h\height ) ) )
-        Bar_SetAttribute( \h, #__bar_pagelength, ( width - ( Bool( ( *this\height[#__c_required] > height ) Or Not Bool( Not ( \v\bar\max > \v\bar\page\len ) ) ) * \v\width ) ) )
+        \v\bar\page\len = ( height - ( Bool( ( *this\width[#__c_required] > width ) Or ( \h\bar\max > \h\bar\page\len ) ) * \h\height ) )
+        \h\bar\page\len = ( width - ( Bool( ( *this\height[#__c_required] > height ) Or ( \v\bar\max > \v\bar\page\len ) ) * \v\width ) )
         
-        \v\hide = widget::Resize( \v, width - \v\width, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And Not Bool( Not ( \h\bar\max > \h\bar\page\len ) ) ) * ( \h\height/4 ) ) )
-        \h\hide = widget::Resize( \h, x, height - \h\height, ( \h\bar\page\len + Bool( \v\round And \h\round And Not Bool( Not ( \v\bar\max > \v\bar\page\len ) ) ) * ( \v\width/4 ) ), #PB_Ignore )
-        
+        \v\hide = Resize( \v, width - \v\width, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And ( \h\bar\max > \h\bar\page\len ) ) * ( \h\height/4 ) ) )
+        \h\hide = Resize( \h, x, height - \h\height, ( \h\bar\page\len + Bool( \v\round And \h\round And ( \v\bar\max > \v\bar\page\len ) ) * ( \v\width/4 ) ), #PB_Ignore )
         
         ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
       EndWith
@@ -9313,7 +9256,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
             DrawAlphaImage( *this\image\id, *this\image\x, *this\image\y, *this\color\alpha )
           EndIf
+          
           ;
+          ClipOutput( *this\x[#__c_clip2], *this\y[#__c_clip2], *this\width[#__c_clip2], *this\height[#__c_clip2] )
           PushListPosition( *row( ) )
           
           ; Draw all items
@@ -14123,6 +14068,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\draw = 1
           EndIf
           
+          ; splitter 
           If *this\type = #PB_GadgetType_Splitter
             If *this\gadget[#__split_1] And Not *this\index[#__split_1]
               SetParent( *this\gadget[#__split_1], *this )
@@ -14137,16 +14083,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\_tab = Create( *this, "PanelTabBar", #__type_tabBar, 0,0,0,0, 0,0,0, 0, Flag | #__bar_child, 0, 30 )
           EndIf
           
-          If *this\container And 
-             *this\type <> #PB_GadgetType_Splitter And 
-             flag & #__flag_nogadgets = #False
+          If *this\container And flag & #__flag_nogadgets = #False And *this\type <> #PB_GadgetType_Splitter 
             OpenList( *this )
           EndIf
           
-          If ScrollBars And 
-             flag & #__flag_noscrollbars = #False
+          If ScrollBars And flag & #__flag_noscrollbars = #False
             Area( *this, ScrollStep, *param_1, *param_2, 0, 0 )
-            ; Area( *this, ScrollStep, *param_1, *param_2, width, height )
           EndIf
           
           If *this\type = #PB_GadgetType_MDI
@@ -14965,7 +14907,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If test_draw_box_clip_type = #PB_All Or 
            test_draw_box_clip_type = *this\type
           DrawingMode( #PB_2DDrawing_Outlined )
-          Box( *this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip], $ffff00ff )
+          Box( *this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip], $ff0000ff )
         EndIf
         
         If test_draw_box_clip1_type = #PB_All Or 
@@ -14977,7 +14919,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If test_draw_box_clip2_type = #PB_All Or 
            test_draw_box_clip2_type = *this\type
           DrawingMode( #PB_2DDrawing_Outlined )
-          Box( *this\x[#__c_clip2], *this\y[#__c_clip2], *this\width[#__c_clip2], *this\height[#__c_clip2], $ff0000ff )
+          Box( *this\x[#__c_clip2], *this\y[#__c_clip2], *this\width[#__c_clip2], *this\height[#__c_clip2], $ff00ff00 )
         EndIf
         
         ; ; ;         If test_draw_box_clip1_type = #PB_All Or 
@@ -17620,5 +17562,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------+--44--6---8----------------4-d4P+-------------------------------------------------------09------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------v-0--A---
+; Folding = --------------------+--44--6---8--------+MAA9----v-8uf9--z+--z------------------------------------------------h-----------------------------------------------------------------------------4-d---------------------------------0--------------------------------------------------------------------------------Fq----b---------------------------------------------------------f-8--B+--
 ; EnableXP

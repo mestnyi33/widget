@@ -6,21 +6,6 @@
     
     ;- - CONSTANTs
     ;{
-    #__text_update =- 124
-    
-    #debug = 0
-    #debug_draw_font = #debug
-    #debug_draw_font_change = #debug
-    #debug_draw_item_font_change = #debug
-    #__debug_events_tab = 0
-    
-    #__draw_clip_box = 0
-    #__draw_scroll_box = 0
-    #__test_scrollbar_size = 0
-    
-    #debug_update_text = 0
-    #debug_multiline = 0
-    #debug_repaint = 0 ; Debug " - -  Canvas repaint - -  "
     
     ; demo 
     #__grid_type = 0
@@ -633,16 +618,41 @@
 ;     #__c_6 = 6
     
     
+    #__text_update =- 124
+    
+    #debug = 0
+    #debug_draw_font = #debug
+    #debug_draw_font_change = #debug
+    #debug_draw_item_font_change = #debug
+    #__debug_events_tab = 0
+    
+    #__draw_scroll_box = 0
+    #__test_scrollbar_size = 0
+    
+    #debug_update_text = 0
+    #debug_multiline = 0
+    #debug_repaint = 0 ; Debug " - -  Canvas repaint - -  "
     ;-
     ;- GLOBAL
     ;-
-    Global test_draw_box_clip_type = #__type_mdi
-    Global test_draw_box_clip1_type = #__type_mdi
-    Global test_draw_box_clip2_type = #__type_mdi
+    
+    Global test_draw_box_clip_type 
+    Global test_draw_box_clip1_type 
+    Global test_draw_box_clip2_type 
     
     Global test_draw_box_screen_type ;= #PB_All
     Global test_draw_box_inner_type ;= #PB_All
     Global test_draw_box_frame_type ;= #PB_All
+    
+    
+    
+;     test_draw_box_clip_type = #__type_tree
+;     test_draw_box_clip1_type = #__type_tree
+;     test_draw_box_clip2_type = #__type_tree
+    
+    test_draw_box_clip_type = #__type_mdi
+    test_draw_box_clip1_type = #__type_mdi
+    test_draw_box_clip2_type = #__type_mdi
     
     
     
