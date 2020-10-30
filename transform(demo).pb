@@ -268,7 +268,7 @@ a_init(widget())
 *new = Window(50, 30, 500, 470, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
 ; ; container(30,30,450-2,450-2)
 ;;ScrollArea(30,30,450-2,450-2, 0,0)
-ScrollArea(30,30,450-2,450-2, 750,750)
+ScrollArea(30,30,450-2,450-2, 250,750)
 
 container(30,30,400,400)
 Button(120,120,170,40,"butt0")

@@ -2795,6 +2795,18 @@ CompilerIf Not Defined( widget, #PB_Module )
           _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_container]
         EndIf
       EndIf
+        
+      If Not (*this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
+        If *this\parent\type = #PB_GadgetType_ScrollArea  
+          If _p_x2_ > *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
+            _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
+          EndIf
+          If _p_y2_ > *this\parent\y[#__c_inner] + *this\parent\height[#__c_required]
+            _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_required]
+          EndIf
+        EndIf
+      EndIf
+      
       
       If *this\parent\type = #PB_GadgetType_Splitter
         If *this\parent\gadget[#__split_1] = *this And Not *this\child
@@ -2804,15 +2816,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         If *this\parent\gadget[#__split_2] = *this And Not *this\child
           _p_x2_ = *this\parent\bar\button[#__split_b2]\x + *this\parent\bar\button[#__split_b2]\width
           _p_y2_ = *this\parent\bar\button[#__split_b2]\y + *this\parent\bar\button[#__split_b2]\height
-        EndIf
-      EndIf
-      
-      If *this\parent\type = #PB_GadgetType_ScrollArea
-        If _p_x2_ > *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
-          _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
-        EndIf
-        If _p_y2_ > *this\parent\y[#__c_inner] + *this\parent\height[#__c_required]
-          _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_required]
         EndIf
       EndIf
       
@@ -3322,8 +3325,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If ( Change_width Or Change_height )
               Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
             EndIf
-            
-            ;Bar_Resizes( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
             
             *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
             *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
@@ -5827,6 +5828,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Procedure   Bar_Resizes( *this._s_widget, x.l,y.l,width.l,height.l )
       With *this\scroll
+        Protected iwidth, iheight, w, h
         If Not \v Or Not \h : ProcedureReturn : EndIf 
         
         If x = #PB_Ignore 
@@ -5842,15 +5844,43 @@ CompilerIf Not Defined( widget, #PB_Module )
           height = \h\y[#__c_frame] - \v\y[#__c_frame] + \h\height[#__c_frame] 
         EndIf
         
-        \v\bar\page\len = ( height - ( Bool( ( *this\width[#__c_required] > width ) Or ( \h\bar\max > \h\bar\page\len ) ) * \h\height ) )
-        \h\bar\page\len = ( width - ( Bool( ( *this\height[#__c_required] > height ) Or ( \v\bar\max > \v\bar\page\len ) ) * \v\width ) )
+        w = Bool( *this\width[#__c_required] > width )
+        h = Bool( *this\height[#__c_required] > height )
         
-        \v\bar\page\len = ( height - ( Bool( ( *this\width[#__c_required] > width ) Or ( \h\bar\max > \h\bar\page\len ) ) * \h\height ) )
-        \h\bar\page\len = ( width - ( Bool( ( *this\height[#__c_required] > height ) Or ( \v\bar\max > \v\bar\page\len ) ) * \v\width ) )
+        \v\bar\page\len = height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
+        \h\bar\page\len = width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
+        
+        iheight = height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
+        If \v\bar\page\len <> iheight
+          \v\bar\area\change = \v\bar\page\len - iheight
+          \v\bar\page\len = iheight
+          
+          If Not \v\bar\max
+            If \v\bar\min > iheight
+              \v\bar\max = \v\bar\min + 1
+            Else
+              \v\bar\max = iheight
+            EndIf
+          EndIf
+        EndIf
+        
+        iwidth = width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
+        If \h\bar\page\len <> iwidth
+          \h\bar\area\change = \h\bar\page\len - iwidth
+          \h\bar\page\len = iwidth
+          
+          If Not \h\bar\max
+            If \h\bar\min > iwidth
+              \h\bar\max = \h\bar\min + 1
+            Else
+              \h\bar\max = iwidth
+            EndIf
+          EndIf
+        EndIf
         
         \v\hide = Resize( \v, width - \v\width, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And ( \h\bar\max > \h\bar\page\len ) ) * ( \h\height/4 ) ) )
         \h\hide = Resize( \h, x, height - \h\height, ( \h\bar\page\len + Bool( \v\round And \h\round And ( \v\bar\max > \v\bar\page\len ) ) * ( \v\width/4 ) ), #PB_Ignore )
-        
+               
         ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
       EndWith
     EndProcedure
@@ -17562,5 +17592,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------+--44--6---8--------+MAA9----v-8uf9--z+--z------------------------------------------------h-----------------------------------------------------------------------------4-d---------------------------------0--------------------------------------------------------------------------------Fq----b---------------------------------------------------------f-8--B+--
+; Folding = --------------------+--44--6---8--------vZAA5----f-4d-5--40--n------------------------------------------------C------------------------------------------------------------------------------v-8+--------------------------------8--------------------------------------------------------------------------------LU----4+---------------------------------------------------------+4--D9--
 ; EnableXP
