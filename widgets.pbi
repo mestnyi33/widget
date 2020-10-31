@@ -2752,10 +2752,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       ClipOutput( _this_\x[#__c_clip],_this_\y[#__c_clip],_this_\width[#__c_clip],_this_\height[#__c_clip] )
     EndMacro
     
+    Macro _clip_frame_( _this_ )
+      ClipOutput( _this_\x[#__c_clip1], _this_\y[#__c_clip1], _this_\width[#__c_clip1], _this_\height[#__c_clip1] )
+    EndMacro
+    
     Macro _clip_input_( _this_ )
       ClipOutput( _this_\x[#__c_clip2], _this_\y[#__c_clip2], _this_\width[#__c_clip2], _this_\height[#__c_clip2] )
-      ;  ClipPut( _this_, _this_\x[#__c_frame] + _this_\bs, _this_\y[#__c_frame] + _this_\bs + _this_\__height, _this_\width[#__c_frame] - _this_\bs*2, _this_\height[#__c_frame] - _this_\bs*2 - _this_\__height )
-      ; ClipPut( _this_, _this_\x[#__c_inner], _this_\y[#__c_inner], _this_\width[#__c_container], _this_\height[#__c_container] )
     EndMacro
     
     Macro _clip_content_( _address_, _mode_= )
@@ -3174,6 +3176,23 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If x = #PB_Ignore 
           x = *this\x[#__c_screen] + ( *this\bs - *this\fs )
+          
+          ; area scrollbars
+          If *this\child
+            x = *this\x[#__c_container] 
+            
+            If *this\parent 
+              If Not *this\child
+                x - *this\parent\x[#__c_required] 
+              EndIf
+              
+              If *this\x[#__c_container] <> x
+                *this\x[#__c_container] = x
+              EndIf
+              
+              x + *this\parent\x[#__c_inner]
+            EndIf 
+          EndIf
         Else
           If *this\parent 
             If Not *this\child
@@ -3190,6 +3209,23 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If y = #PB_Ignore 
           y = *this\y[#__c_screen] + ( *this\bs - *this\fs )
+          
+          ; area scrollbars
+          If *this\child
+            y = *this\y[#__c_container] 
+            
+            If *this\parent 
+              If Not *this\child
+                y - *this\parent\y[#__c_required] 
+              EndIf
+              
+              If *this\y[#__c_container] <> y
+                *this\y[#__c_container] = y
+              EndIf
+              
+              y + *this\parent\y[#__c_inner]
+            EndIf 
+          EndIf
         Else
           If *this\parent 
             If Not *this\child
@@ -3452,9 +3488,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       PushListPosition( widget( ) )
       ChangeCurrentElement( widget( ), _this_\address )
-      If widget( )\address <> _this_\address
+      ;; Debug " "+widget( )\class +" "+ _this_\class +" "+ _before_\class
+      ;;If widget( )\address <> _before_\address
         MoveElement( widget( ), #PB_List_After, _before_\address )
-      EndIf
+      ;;EndIf
       
       ; change root address for the startenumerate 
       If _this_\root <> _before_\root
@@ -3482,9 +3519,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       PushListPosition( widget( ) )
       ChangeCurrentElement( widget( ), _this_\address )
-      If widget( )\address <> _this_\address
+      ;;If widget( )\address <> _after_\address
         MoveElement( widget( ), #PB_List_Before, _after_\address )
-      EndIf
+      ;;EndIf
       
       If _this_\count\childrens
         While PreviousElement( widget( ) ) 
@@ -3849,7 +3886,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Macro Area_Draw( _this_ )
       If _this_\scroll
-        ClipOutput( _this_\x[#__c_clip], _this_\y[#__c_clip], _this_\width[#__c_clip], _this_\height[#__c_clip] )
+        _clip_output_( _this_ )
         
         If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And _this_\scroll\v\width[#__c_clip] > 0 And _this_\scroll\v\height[#__c_clip] > 0
           Bar_Draw( _this_\scroll\v )
@@ -9299,7 +9336,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           ;
-          ClipOutput( *this\x[#__c_clip2], *this\y[#__c_clip2], *this\width[#__c_clip2], *this\height[#__c_clip2] )
+          _clip_input_( *this )
+          
           PushListPosition( *row( ) )
           
           ; Draw all items
@@ -11027,38 +11065,36 @@ CompilerIf Not Defined( widget, #PB_Module )
     ;- 
     ;-  DRAWINGs
     Procedure   Container_Draw( *this._s_widget )
-      Protected x, y
-      
       With *this
-        If *this\image\change <> 0
-          _set_align_x_( *this\image, *this\image, *this\width[#__c_inner2], 0 )
-          _set_align_y_( *this\image, *this\image, *this\height[#__c_inner2], 270 )
-          *this\image\change = 0
-        EndIf
-        
         DrawingMode( #PB_2DDrawing_Default )
         RoundBox( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state] )
         ;RoundBox( *this\x[#__c_inner]-1,*this\y[#__c_inner]-1,*this\width[#__c_inner2]+2,*this\height[#__c_inner2]+2, *this\round, *this\round, *this\color\back[*this\color\state] )
         
+        ;
+        _clip_input_( *this )
+        
         If \image\id Or *this\image[#__img_background]\id
+          If *this\image\change <> 0
+            _set_align_x_( *this\image, *this\image, *this\width[#__c_inner2], 0 )
+            _set_align_y_( *this\image, *this\image, *this\height[#__c_inner2], 270 )
+            *this\image\change = 0
+          EndIf
+          
           DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-        EndIf
-        
-        ; background image draw 
-        If *this\image[#__img_background]\id
-          DrawAlphaImage( *this\image[#__img_background]\id,
-                          *this\x[#__c_inner] + *this\image[#__img_background]\x,
-                          *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\alpha )
-        EndIf
-        
-        ; scroll image draw
-        If \image\id
-          ;ClipOutput( *this\x[#__c_inner], *this\y[#__c_inner], *this\width[#__c_inner2], *this\height[#__c_inner2] )
-          DrawAlphaImage( \image\id,
-                          *this\x[#__c_inner] + *this\x[#__c_required] + *this\image\x,
-                          *this\y[#__c_inner] + *this\y[#__c_required] + *this\image\y, 
-                          *this\color\alpha )
-          ;ClipOutput( *this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip] )
+          
+          ; background image draw 
+          If *this\image[#__img_background]\id
+            DrawAlphaImage( *this\image[#__img_background]\id,
+                            *this\x[#__c_inner] + *this\image[#__img_background]\x,
+                            *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\alpha )
+          EndIf
+          
+          ; scroll image draw
+          If \image\id
+            DrawAlphaImage( \image\id,
+                            *this\x[#__c_inner] + *this\x[#__c_required] + *this\image\x,
+                            *this\y[#__c_inner] + *this\y[#__c_required] + *this\image\y, *this\color\alpha )
+          EndIf
         EndIf
         
         ; area scrollbars draw 
@@ -11154,8 +11190,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         ; draw text items
         If \text\string.s
-          ClipOutput( *this\x[#__c_clip1], *this\y[#__c_clip1], *this\width[#__c_clip1], *this\height[#__c_clip1] )
-          ;ClipOutput( *this\x[#__c_clip2], *this\y[#__c_clip2], *this\width[#__c_clip2], *this\height[#__c_clip2] )
+          _clip_frame_( *this )
           
           DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
           ForEach *this\row\_s( )
@@ -11163,7 +11198,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                              *this\row\_s( )\text\String.s, *this\text\rotate, *this\color\Front[Bool( *this\_state & #__s_front ) * *this\color\state] ) ; *this\row\_s( )\color\font )
           Next 
           
-          ClipOutput( *this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip] )
+          _clip_output_( *this )
         EndIf
         
         ; box draw    
@@ -12961,8 +12996,10 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\parent
             *LastParent = *this\parent
             *LastParent\count\childrens - 1
-            Debug " "+ *this\class +" "+ *last\class
-            _move_position_after_(*this, *last)
+            
+            If Not _is_root_( *last )
+              _move_position_after_(*this, *last)
+            EndIf
             
             ; 
             If *this\root <> *parent\root
@@ -14911,7 +14948,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         Select \type
           Case #__type_Window         : Window_Draw( *this )
-            ClipOutput( *this\x[#__c_clip], *this\y[#__c_clip], *this\width[#__c_clip], *this\height[#__c_clip] )
+            _clip_output_( *this )
             
           Case #__type_MDI            : Container_Draw( *this )
           Case #__type_container      : Container_Draw( *this )
@@ -14963,18 +15000,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           Box( *this\x[#__c_clip2], *this\y[#__c_clip2], *this\width[#__c_clip2], *this\height[#__c_clip2], $ff00ff00 )
         EndIf
         
-        ; ; ;         If test_draw_box_clip1_type = #PB_All Or 
-        ; ; ;            test_draw_box_clip1_type = *this\type
-        ; ; ;           DrawingMode( #PB_2DDrawing_Outlined )
-        ; ; ;           Box( *this\x[#__c_clip1]-1, *this\y[#__c_clip1]-1, *this\width[#__c_clip1]+2, *this\height[#__c_clip1]+2, $ffff0000 )
-        ; ; ;         EndIf
-        ; ; ;         
-        ; ; ;         If test_draw_box_clip2_type = #PB_All Or 
-        ; ; ;            test_draw_box_clip2_type = *this\type
-        ; ; ;           DrawingMode( #PB_2DDrawing_Outlined )
-        ; ; ;           Box( *this\x[#__c_clip2]-1, *this\y[#__c_clip2]-1, *this\width[#__c_clip2]+2, *this\height[#__c_clip2]+2, $ffff00ff )
-        ; ; ;         EndIf
-        
         If test_draw_box_screen_type = #PB_All Or 
            test_draw_box_screen_type = *this\type
           DrawingMode( #PB_2DDrawing_Outlined )
@@ -14994,9 +15019,16 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         
-        ;         If *this\container
-        ;           ClipOutput( *this\x[#__c_clip2], *this\y[#__c_clip2], *this\width[#__c_clip2], *this\height[#__c_clip2] )
-        ;         EndIf
+        If *this\parent
+          If test_draw_box_clip2_type = *this\parent\type
+            DrawingMode( #PB_2DDrawing_Outlined )
+            Box( *this\parent\x[#__c_clip2], *this\parent\y[#__c_clip2], *this\parent\width[#__c_clip2], *this\parent\height[#__c_clip2], $ff00ff00 )
+          EndIf
+          If test_draw_box_inner_type = *this\parent\type
+            DrawingMode( #PB_2DDrawing_Outlined )
+            Box( *this\parent\x[#__c_inner], *this\parent\y[#__c_inner], *this\parent\width[#__c_inner2], *this\parent\height[#__c_inner2], $ffff0000 )
+          EndIf
+        EndIf
         
         
         ; reset values
@@ -15054,7 +15086,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                  ( widget( )\width[#__c_clip] > 0 And widget( )\height[#__c_clip] > 0 )
                 
                 CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fixme, #PB_Module ) )
-                  ClipOutput( widget( )\x[#__c_clip], widget( )\y[#__c_clip], widget( )\width[#__c_clip], widget( )\height[#__c_clip] )
+                  _clip_output_( widget( ) )
                 CompilerEndIf
                 
                 ; begin draw all widgets
@@ -17592,5 +17624,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------0---4P+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
