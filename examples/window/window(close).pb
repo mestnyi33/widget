@@ -38,13 +38,13 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
   EndProcedure
   
-  Open(OpenWindow(#PB_Any, 150, 150, 500, 400, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
+  Open(OpenWindow(#PB_Any, 150, 150, 500, 400, "window_0", #__Window_SizeGadget | #__Window_SystemMenu))
   
-  Window(100,100,200,200,"", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
+  Window(100,100,200,200,"form_0", #__window_systemmenu|#__window_maximizegadget|#__window_minimizegadget)
   
   Bind(widget(), @events_())
   
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -

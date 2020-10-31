@@ -3117,11 +3117,16 @@ CompilerIf Not Defined( widget, #PB_Module )
            *this\align\right And *this\align\bottom
           x = 0; \align\delta\x
           Y = 0; \align\delta\y
-          Width = *this\parent\width[#__c_inner2] ; - \align\delta\x
-          Height = *this\parent\height[#__c_inner2] ; - \align\delta\y
+          width = *this\parent\width[#__c_inner2] ; - \align\delta\x
+          height = *this\parent\height[#__c_inner2] ; - \align\delta\y
+          
+          If _is_root_( *this\parent )
+            width - *this\fs*2 
+            height - *this\fs*2 - *this\__height
+          EndIf
         EndIf
         
-       ; Debug " resize - "+*this\class
+        ; Debug " resize - "+*this\class
         
         ;
         If transform( ) And 
@@ -3447,7 +3452,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       PushListPosition( widget( ) )
       ChangeCurrentElement( widget( ), _this_\address )
-      MoveElement( widget( ), #PB_List_After, _before_\address )
+      If widget( )\address <> _this_\address
+        MoveElement( widget( ), #PB_List_After, _before_\address )
+      EndIf
       
       ; change root address for the startenumerate 
       If _this_\root <> _before_\root
@@ -3475,7 +3482,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       PushListPosition( widget( ) )
       ChangeCurrentElement( widget( ), _this_\address )
-      MoveElement( widget( ), #PB_List_Before, _after_\address )
+      If widget( )\address <> _this_\address
+        MoveElement( widget( ), #PB_List_Before, _after_\address )
+      EndIf
       
       If _this_\count\childrens
         While PreviousElement( widget( ) ) 
@@ -5882,7 +5891,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         \v\hide = Resize( \v, width - \v\width, y, #PB_Ignore, ( \v\bar\page\len + Bool( \v\round And \h\round And ( \h\bar\max > \h\bar\page\len ) ) * ( \h\height/4 ) ) )
         \h\hide = Resize( \h, x, height - \h\height, ( \h\bar\page\len + Bool( \v\round And \h\round And ( \v\bar\max > \v\bar\page\len ) ) * ( \v\width/4 ) ), #PB_Ignore )
-               
+        
         ProcedureReturn Bool( \v\bar\area\change Or \h\bar\area\change )
       EndWith
     EndProcedure
@@ -12952,7 +12961,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\parent
             *LastParent = *this\parent
             *LastParent\count\childrens - 1
-            
+            Debug " "+ *this\class +" "+ *last\class
             _move_position_after_(*this, *last)
             
             ; 
@@ -16128,41 +16137,13 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.i Window( x.l,y.l,width.l,height.l, Text.s, Flag.i = 0, *parent._s_widget = 0 )
-      
-      Width + #__border_size*2
-      Height + Bool( Flag )*#__caption_height+#__border_size*2
-      
-      If Not ListSize( root( ) )
-        Protected root = Open( OpenWindow( #PB_Any, x,y,width,height, "", #PB_Window_BorderLess, *parent ) )
-        Flag | #__flag_autosize
-        x = 0
-        y = 0
-      EndIf
-      
       Protected *this._s_widget = AllocateStructure( _s_widget ) 
       
-      If *parent
-        If root( ) = *parent 
-          root( )\parent = *this
-        EndIf
-      Else
-        If root( )\canvas\container > 1
-          *parent = root( )\canvas\container 
-        Else
-          *parent = root( )
-        EndIf
-      EndIf
-      
       With *this
-        If root
-          root( )\canvas\container = *this
-        EndIf
-        
         *this\x[#__c_frame] =- 2147483648
         *this\y[#__c_frame] =- 2147483648
         *this\index[#__s_1] =- 1
         *this\index[#__s_2] = 0
-        
         
         *this\type = #__type_window
         *this\class = #PB_Compiler_Procedure
@@ -16173,15 +16154,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         ; Background image
         \image\img =- 1
-        
-        
-        ;       \mode\window\sizeGadget = constants::_check_( flag, #__Window_SizeGadget )
-        ; ;       \mode\window\systemMenu = constants::_check_( flag, #__Window_SystemMenu )
-        ; ;       \mode\window\MinimizeGadget = constants::_check_( flag, #__Window_MinimizeGadget )
-        ; ;       \mode\window\MaximizeGadget = constants::_check_( flag, #__Window_MaximizeGadget )
-        ;       \mode\window\titleBar = constants::_check_( flag, #__Window_titleBar )
-        ;       \mode\window\tool = constants::_check_( flag, #__Window_tool )
-        ;       \mode\window\borderless = constants::_check_( flag, #__Window_borderLess )
         
         \caption\round = 4
         \caption\_padding = \caption\round
@@ -16239,6 +16211,32 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         *this\fs = constants::_check_( flag, #__flag_borderless, #False ) * #__border_size
         *this\child = Bool( Flag & #__window_child = #__window_child )
+        
+        ; open root list
+        If Not ListSize( root( ) )
+          Protected root = Open( OpenWindow( #PB_Any, x,y,width + *this\fs*2,height + *this\fs*2 + *this\__height, "", #PB_Window_BorderLess, *parent ) )
+          Flag | #__flag_autosize
+          x = 0
+          y = 0
+          root()\width[#__c_inner] = width
+          root()\height[#__c_inner] = height
+        EndIf
+        
+        If *parent
+          If root( ) = *parent 
+            root( )\parent = *this
+          EndIf
+        Else
+          If root( )\canvas\container > 1
+            *parent = root( )\canvas\container 
+          Else
+            *parent = root( )
+          EndIf
+        EndIf
+        
+        If root
+          root( )\canvas\container = *this
+        EndIf
         
         _set_align_flag_( *this, *parent, flag )
         SetParent( *this, *parent, #PB_Default )
@@ -17594,5 +17592,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------+--44--6---8---------ZAA5----f-4d-5--40--n------------------------------------------------C------------------------------------------------------------------------------v-8+--------------------------------8--------------------------------------------------------------------------------LU----4+---------------------------------------------------------+4--D9--
+; Folding = --------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

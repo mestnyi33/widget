@@ -43,40 +43,15 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Open(Window(200, 200, 200, 200, "main window_2", #__Window_SizeGadget | #__Window_SystemMenu))
-;   Button(0,0,80,20,"button")
-;   Button(200-80,200-20,80,20,"button")
-  ContainerGadget(#PB_Any, widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner],widget()\height[#__c_inner])
-  ButtonGadget(#PB_Any, 0,0,80,20,"button")
-  ButtonGadget(#PB_Any, 200-80,200-20,80,20,"button")
-  CloseGadgetList()
+  Button(0,0,80,20,"button")
+  Button(200-80,200-20,80,20,"button")
+;   ContainerGadget(#PB_Any, widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner], widget()\height[#__c_inner])
+;   ButtonGadget(#PB_Any, 0,0,80,20,"button")
+;   ButtonGadget(#PB_Any, 200-80,200-20,80,20,"button")
+;   CloseGadgetList()
   
   Bind(Root(), @Events_widgets())
-  
-;   ;
-;   ;-
-;   ;
-;   Open(OpenWindow(#PB_Any, 100, 100, 600, 600, "main window", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-;   
-;   Window(100, 100, 200, 200, "window_0", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
-;   Button(0,0,80,20,"button_0_1")
-;   Button(200-80,200-20,80,20,"button_0_2")
-;   
-;   
-;   Window(150, 150, 200, 200, "window_1", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
-;   Button(0,0,80,20,"button_1_1")
-;   Button(200-80,200-20,80,20,"button_1_2")
-;   
-;   
-;   Window(200, 200, 200, 200, "window_2", #__Window_SizeGadget | #__Window_SystemMenu)
-;   Button(0,0,80,20,"button_2_1")
-;   Button(200-80,200-20,80,20,"button_2_2")
-; ; ;   ContainerGadget(#PB_Any, widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner],widget()\height[#__c_inner])
-; ; ;   ButtonGadget(#PB_Any, 0,0,80,20,"button_2_1")
-; ; ;   ButtonGadget(#PB_Any, 200-80,200-20,80,20,"button_2_2")
-; ; ;   CloseGadgetList()
-;   
-  
-  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
