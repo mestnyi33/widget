@@ -31,11 +31,11 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenList(Root())
   ;;CloseList()
   
-  Define *spl1 = Splitter(x,y,width,height, *mdi, #Null, #PB_Splitter_Vertical)
-  Define *spl2 = Splitter(x,y,width,height, *spl1, #Null);, #__flag_autosize)
+  Define *spl1 = Splitter(x,y,width,height, #Null, *mdi, #PB_Splitter_Vertical)
+  Define *spl2 = Splitter(x,y,width,height, #Null, *spl1);, #__flag_autosize)
   
-  SetState(*spl1, width - 150)
-  SetState(*spl2, height - 150)
+  SetState(*spl1, 150)
+  SetState(*spl2, 150)
   
   Repeat
     Event = WaitWindowEvent()

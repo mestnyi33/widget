@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget  (3,  90,  90, 230, 30,"Button 3")
     TextGadget    (4, 130, 130, 330, 20,"This is the content of a ScrollAreaGadget!", #PB_Text_Right)
     
-    b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
+    b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 130,"Button")
     CloseGadgetList()
     
     *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
@@ -33,7 +33,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__text_right)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
-    *b = Button(Sw-130, Sh-30, 130, 30,"Button")
+    ;bug bug bugbugbugbugbugbugbugbugbugbug
+    *b = Window(Sw-130, Sh-130, 130, 130,"Window", *g) : OpenList(*g)
+    ;*b = Button(Sw-130, Sh-130, 130, 130,"Window") : OpenList(*g)
+    ;*b = Container(Sw-130, Sh-130, 130, 130) : OpenList(*g)
     CloseList()
     
     ;
@@ -56,9 +59,9 @@ CompilerIf #PB_Compiler_IsMainFile
       time = ElapsedMilliseconds()
       For i=0 To count
         If Bool(i>count-110)
-          Button((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
+          Window((count-i)*2, (count-i)*2, 130, 30,"Window"+Str(i), *g)
         Else
-          Button(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
+          Window(Sw-130, Sh-30, 130, 30,"Window"+Str(i), *g)
         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
@@ -76,8 +79,8 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(g, #PB_ScrollArea_InnerHeight, sh+80)
       SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
       
-      ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
-      Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
+      ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-130, #PB_Ignore, #PB_Ignore)
+      Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-130, #PB_Ignore, #PB_Ignore)
       
       SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)
       SetAttribute(*g, #PB_ScrollArea_Y, 0)
@@ -107,5 +110,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = v-
+; Folding = P0
 ; EnableXP

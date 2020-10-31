@@ -190,7 +190,7 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
     
     *scrollarea = ScrollArea(215,145,200,160,200,160,10,#PB_ScrollArea_Flat) 
-    Debug ""+widget()\x[#__c_draw]+" "+widget()\x[#__c_container]+" "+widget()\x[#__c_required]
+    ;Debug ""+widget()\x[#__c_draw]+" "+widget()\x[#__c_container]+" "+widget()\x[#__c_required]
     *s_0 = Button(pos_x,90,160,30,">>(ScrollArea)") : SetClass(widget(), GetText(widget())) 
     CloseList()
     

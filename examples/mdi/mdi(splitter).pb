@@ -10,12 +10,15 @@ XIncludeFile "../../widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
-  Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  Global *mdi, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
   
   If OpenWindow(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     If Open(0);, 425, 40)
       Container(10,10, 260,260) : a_init(widget())
-      Button_0 = MDI(30, 30, 200, 120) ; as they will be sized automatically
+      *mdi = MDI(30, 30, 200, 120) ; as they will be sized automatically
+      Define *g0 = AddItem(*mdi, -1, "form_0")
+  
+      CloseList()
       CloseList()
       
       Debug ""

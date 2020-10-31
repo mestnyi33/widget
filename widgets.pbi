@@ -888,23 +888,18 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     Macro MDI_Update( _child_ )
-      ;       _child_\parent\x[#__c_required] = _child_\x[#__c_frame] 
-      ;       _child_\parent\y[#__c_required] = _child_\y[#__c_frame]
-      ;       _child_\parent\width[#__c_required] = _child_\x[#__c_frame] + _child_\width[#__c_frame] - _child_\parent\x[#__c_required]
-      ;       _child_\parent\height[#__c_required] = _child_\y[#__c_frame] + _child_\height[#__c_frame] - _child_\parent\y[#__c_required]
-      
-      _child_\parent\x[#__c_required] = _child_\x[#__c_inner] 
-      _child_\parent\y[#__c_required] = _child_\y[#__c_inner]
-      _child_\parent\width[#__c_required] = _child_\x[#__c_inner] + _child_\width[#__c_container] - _child_\parent\x[#__c_required]
-      _child_\parent\height[#__c_required] = _child_\y[#__c_inner] + _child_\height[#__c_container] - _child_\parent\y[#__c_required]
+      _child_\parent\x[#__c_required] = _child_\x[#__c_container] 
+      _child_\parent\y[#__c_required] = _child_\y[#__c_container]
+      _child_\parent\width[#__c_required] = _child_\x[#__c_container] + _child_\width[#__c_container] - _child_\parent\x[#__c_required]
+      _child_\parent\height[#__c_required] = _child_\y[#__c_container] + _child_\height[#__c_container] - _child_\parent\y[#__c_required]
       
       If StartEnumerate( _child_\parent )
         If widget( )\parent = _child_\parent
-          If _child_\parent\x[#__c_required] > widget( )\x[#__c_frame] 
-            _child_\parent\x[#__c_required] = widget( )\x[#__c_frame] 
+          If _child_\parent\x[#__c_required] > widget( )\x[#__c_container] 
+            _child_\parent\x[#__c_required] = widget( )\x[#__c_container] 
           EndIf
-          If _child_\parent\y[#__c_required] > widget( )\y[#__c_frame] 
-            _child_\parent\y[#__c_required] = widget( )\y[#__c_frame] 
+          If _child_\parent\y[#__c_required] > widget( )\y[#__c_container] 
+            _child_\parent\y[#__c_required] = widget( )\y[#__c_container] 
           EndIf
         EndIf
         StopEnumerate( )
@@ -912,17 +907,17 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If StartEnumerate( _child_\parent )
         If widget( )\parent = _child_\parent
-          If _child_\parent\width[#__c_required] < widget( )\x[#__c_frame] + widget( )\width[#__c_frame] - _child_\parent\x[#__c_required] 
-            _child_\parent\width[#__c_required] = widget( )\x[#__c_frame] + widget( )\width[#__c_frame] - _child_\parent\x[#__c_required] 
+          If _child_\parent\width[#__c_required] < widget( )\x[#__c_container] + widget( )\width[#__c_frame] - _child_\parent\x[#__c_required] 
+            _child_\parent\width[#__c_required] = widget( )\x[#__c_container] + widget( )\width[#__c_frame] - _child_\parent\x[#__c_required] 
           EndIf
-          If _child_\parent\height[#__c_required] < widget( )\y[#__c_frame] + widget( )\height[#__c_frame] - _child_\parent\y[#__c_required] 
-            _child_\parent\height[#__c_required] = widget( )\y[#__c_frame] + widget( )\height[#__c_frame] - _child_\parent\y[#__c_required] 
+          If _child_\parent\height[#__c_required] < widget( )\y[#__c_container] + widget( )\height[#__c_frame] - _child_\parent\y[#__c_required] 
+            _child_\parent\height[#__c_required] = widget( )\y[#__c_container] + widget( )\height[#__c_frame] - _child_\parent\y[#__c_required] 
           EndIf
         EndIf
         StopEnumerate( )
       EndIf
       
-      If widget::Updates( _child_\parent, _child_\parent\x[#__c_inner], _child_\parent\y[#__c_inner], _child_\parent\width[#__c_container], _child_\parent\height[#__c_container] )
+      If widget::Updates( _child_\parent, 0, 0, _child_\parent\width[#__c_container], _child_\parent\height[#__c_container] )
         
         _child_\parent\width[#__c_inner2] = _child_\parent\scroll\h\bar\page\len
         _child_\parent\height[#__c_inner2] = _child_\parent\scroll\v\bar\page\len
@@ -2978,57 +2973,11 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;-
-    Procedure   _ResizeC(*parent._s_widget, _change_x_, _change_y_)
-      Protected.l x, y, width, height
-      
-      Macro ResizeD( _type_, v1, ov1, v2, ov2, adv, ndv )
-        Select _type_
-          Case 0  : v1 = ov1                   : v2 = ov2
-          Case 1  : v1 = ov1 + ( ndv - adv )/2 : v2 = ov2 + ( ndv - adv )/2   ; center ( right & bottom )
-          Case 2  : v1 = ov1 + ( ndv - adv )   : v2 = ov2 + ( ndv - adv )     ; right & bottom
-          Case 3  : v1 = ov1                   : v2 = ov2 + ( ndv - adv )     ; full ( right & bottom )
-          Case 4  : v1 = ov1 * ndv / adv       : v2 = ov2 * ndv / adv
-          Case 5  : v1 = ov1                   : v2 = ov2 + ( ndv - adv )/2
-          Case 6  : v1 = ov1 + ( ndv - adv )/2 : v2 = ov2 + ( ndv - adv ) 
-        EndSelect
-      EndMacro
-      
-      If StartEnumerate( *parent ) 
-        If widget( )\parent = *parent ; And widget( )\draw 
-          If widget( )\align
-            ResizeD( widget( )\align\h, x, widget( )\align\delta\x, 
-                     width, ( widget( )\align\delta\x + widget( )\align\delta\width ), *parent\align\delta\width, *parent\width )
-            
-            ResizeD( widget( )\align\v, y, widget( )\align\delta\y,
-                     height, ( widget( )\align\delta\y + widget( )\align\delta\height ), *parent\align\delta\height, *parent\height )
-            
-            ;Resize( widget( ), x, y, Width - x + widget( )\bs*2, Height - y + widget( )\bs*2 )
-            Resize( widget( ), x, y, width - x, height - y )
-          Else
-            If _change_x_ 
-              If widget( )\child
-                Resize( widget( ), widget( )\x[#__c_container], #PB_Ignore, #PB_Ignore, #PB_Ignore )
-              Else
-                Resize( widget( ), widget( )\x[#__c_container] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
-              EndIf
-            EndIf
-            
-            If _change_y_ 
-              If widget( )\child
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container], #PB_Ignore, #PB_Ignore )
-              Else
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
-              EndIf
-            EndIf
-          EndIf
-          
-          Reclip( widget( ), #True )
-        EndIf
+    Macro _scroll_bars_( _this_ )
+     Bool( _this_\parent And _this_\child )
+    ;   Bool(_this_\parent And _this_\parent\scroll And ( _this_\parent\scroll\v = _this_ Or _this_ = _this_\parent\scroll\h ))
+    EndMacro
         
-        StopEnumerate( )
-      EndIf
-    EndProcedure
-    
     Procedure   ResizeC(*parent._s_widget, _change_x_, _change_y_)
       Protected.l x, y, width, height
       Protected x2,y2,pw,ph, pwd,phd
@@ -3080,8 +3029,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             Resize( widget( ), x, y, width - x, height - y )
           Else
+           ;;Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+          ;;  Resize( widget( ), widget( )\x[#__c_container] + *parent\x[#__c_required], widget( )\y[#__c_container] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
+  
             If _change_x_ 
-              If widget( )\child
+              If _scroll_bars_( widget( ) )
                 Resize( widget( ), widget( )\x[#__c_container], #PB_Ignore, #PB_Ignore, #PB_Ignore )
               Else
                 Resize( widget( ), widget( )\x[#__c_container] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -3089,15 +3041,16 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             If _change_y_ 
-              If widget( )\child
+              If _scroll_bars_( widget( ) )
                 Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container], #PB_Ignore, #PB_Ignore )
               Else
                 Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
               EndIf
             EndIf
-            
+             
           EndIf
-          Reclip( widget( ), #True )
+          
+          Reclip( widget( ), 1 )
           
         EndIf
         
@@ -3176,29 +3129,12 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         If x = #PB_Ignore 
-          x = *this\x[#__c_screen] + ( *this\bs - *this\fs )
-          
-          ; area scrollbars
-          If *this\child
-            x = *this\x[#__c_container] 
-            
-            If *this\parent 
-              If Not *this\child
-                x - *this\parent\x[#__c_required] 
-              EndIf
-              
-              If *this\x[#__c_container] <> x
-                *this\x[#__c_container] = x
-              EndIf
-              
-              x + *this\parent\x[#__c_inner]
-            EndIf 
-          EndIf
+          x = *this\parent\x[#__c_inner] + *this\x[#__c_container]
         Else
           If *this\parent 
-            If Not *this\child
+            If Not _scroll_bars_( *this )
               x - *this\parent\x[#__c_required] 
-            EndIf
+            EndIf 
             
             If *this\x[#__c_container] <> x
               *this\x[#__c_container] = x
@@ -3209,29 +3145,12 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf  
         
         If y = #PB_Ignore 
-          y = *this\y[#__c_screen] + ( *this\bs - *this\fs )
-          
-          ; area scrollbars
-          If *this\child
-            y = *this\y[#__c_container] 
-            
-            If *this\parent 
-              If Not *this\child
-                y - *this\parent\y[#__c_required] 
-              EndIf
-              
-              If *this\y[#__c_container] <> y
-                *this\y[#__c_container] = y
-              EndIf
-              
-              y + *this\parent\y[#__c_inner]
-            EndIf 
-          EndIf
+          y = *this\parent\y[#__c_inner] + *this\y[#__c_container]
         Else
           If *this\parent 
-            If Not *this\child
+            If Not _scroll_bars_( *this )
               y - *this\parent\y[#__c_required] 
-            EndIf
+            EndIf 
             
             If *this\y[#__c_container] <> y
               *this\y[#__c_container] = y
@@ -3240,7 +3159,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             y + *this\parent\y[#__c_inner]
           EndIf 
         EndIf  
-        
+
         If *this\type = #__type_window
           If width = #PB_Ignore 
             width = \width[#__c_screen] - *this\bs*2 - *this\__width
@@ -3262,7 +3181,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If width < 0 : width = 0 : EndIf
         If Height < 0 : Height = 0 : EndIf
         
-        If *this\x[#__c_frame] <> x
+        If *this\x[#__c_frame] <> x 
           Change_x = x - *this\x[#__c_frame] 
           *this\x[#__c_frame] = x 
           *this\x[#__c_screen] = *this\x[#__c_frame] - ( *this\bs - *this\fs ) 
@@ -3433,6 +3352,23 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             MDI_Update( *this )
           EndIf
+          
+;           If *this\type = #__type_mdi
+;             If widget::Updates( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+;               
+; ;               *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
+; ;               *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
+; ;               
+; ;               If *this\container 
+; ;                 If StartEnumerate( *this )
+; ;                   If widget( )\parent = *this
+; ;                     Reclip( widget( ), #True )
+; ;                   EndIf
+; ;                   StopEnumerate( )
+; ;                 EndIf
+; ;               EndIf
+;             EndIf
+;           EndIf
           
         EndIf
         
@@ -5150,9 +5086,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container
                     If StartEnumerate( *this\parent ) 
-                      If widget( )\parent = *this\parent
+                      If widget( )\parent = *this\parent And widget( ) <> *this And Not widget( )\align
+                        ;;  Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_container] ) + *this\parent\y[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
+                            
                         ; TODO resize
-                        If widget( )\child
+                        If _scroll_bars_( widget( ) )
                           Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_container] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
                         Else
                           Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_container] + *this\parent\y[#__c_required] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
@@ -5173,9 +5111,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; ScrollArea childrens auto resize 
                   If *this\parent\container
                     If StartEnumerate( *this\parent ) 
-                      If widget( )\parent = *this\parent And Not widget( )\align
+                      If widget( )\parent = *this\parent And widget( ) <> *this And Not widget( )\align
+                        ;;  Resize( widget( ), ( widget( )\x[#__c_container] ) + *this\parent\x[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                        
                         ; TODO resize
-                        If widget( )\child
+                        If _scroll_bars_( widget( ) )
                           Resize( widget( ), ( widget( )\x[#__c_container] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         Else
                           Resize( widget( ), ( widget( )\x[#__c_container] + *this\parent\x[#__c_required] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -10897,6 +10837,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                           *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\alpha )
         EndIf
         
+        _clip_output_( *this )
+        
         ; UnclipOutput()
         ; DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
         ; RoundBox( \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame], round,round,$ff000000 )
@@ -11060,200 +11002,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       ProcedureReturn Repaint
-    EndProcedure
-    
-    
-    ;- 
-    ;-  DRAWINGs
-    Procedure   Container_Draw( *this._s_widget )
-      With *this
-        DrawingMode( #PB_2DDrawing_Default )
-        RoundBox( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state] )
-        ;RoundBox( *this\x[#__c_inner]-1,*this\y[#__c_inner]-1,*this\width[#__c_inner2]+2,*this\height[#__c_inner2]+2, *this\round, *this\round, *this\color\back[*this\color\state] )
-        
-        ;
-        _clip_input_( *this )
-        
-        If \image\id Or *this\image[#__img_background]\id
-          If *this\image\change <> 0
-            _set_align_x_( *this\image, *this\image, *this\width[#__c_inner2], 0 )
-            _set_align_y_( *this\image, *this\image, *this\height[#__c_inner2], 270 )
-            *this\image\change = 0
-          EndIf
-          
-          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-          
-          ; background image draw 
-          If *this\image[#__img_background]\id
-            DrawAlphaImage( *this\image[#__img_background]\id,
-                            *this\x[#__c_inner] + *this\image[#__img_background]\x,
-                            *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\alpha )
-          EndIf
-          
-          ; scroll image draw
-          If \image\id
-            DrawAlphaImage( \image\id,
-                            *this\x[#__c_inner] + *this\x[#__c_required] + *this\image\x,
-                            *this\y[#__c_inner] + *this\y[#__c_required] + *this\image\y, *this\color\alpha )
-          EndIf
-        EndIf
-        
-        ; area scrollbars draw 
-        Area_Draw( *this )
-        
-        If *this\fs
-          DrawingMode( #PB_2DDrawing_Outlined )
-          RoundBox( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\frame[*this\color\state] )
-        EndIf
-      EndWith
-    EndProcedure
-    
-    Procedure   Button_Draw( *this._s_widget )
-      Protected x, y
-      
-      With *this
-        ; update text 
-        If *this\change 
-          Editor_Update( *this, *this\row\_s( ) )
-        EndIf
-        
-        If *this\image\change
-          *this\image\padding\x = *this\text\padding\x 
-          *this\image\padding\y = *this\text\padding\y
-          
-          ; make horizontal scroll max 
-          If *this\width[#__c_required] < *this\image\width + *this\image\padding\x * 2
-            *this\width[#__c_required] = *this\image\width + *this\image\padding\x * 2
-          EndIf
-          
-          ; make vertical scroll max 
-          If *this\height[#__c_required] < *this\image\height + *this\image\padding\y * 2
-            *this\height[#__c_required] = *this\image\height + *this\image\padding\y * 2
-          EndIf
-          
-          ; make horizontal scroll x
-          make_scrollarea_x( *this, *this\image )
-          
-          ; make vertical scroll y
-          make_scrollarea_y( *this, *this\image )
-          
-          
-          _set_align_x_( *this\image, *this\image, *this\width[#__c_required], 0 )
-          _set_align_y_( *this\image, *this\image, *this\height[#__c_required], 270 )
-        EndIf
-        
-        If *this\type = #__type_Option Or 
-           *this\type = #__type_checkbox
-          
-          ; update widget ( option&checkbox ) position
-          If *this\change
-            *this\button\y = *this\y[#__c_inner] + ( *this\height[#__c_inner2] - *this\button\height )/2
-            
-            If *this\text\align\right
-              *this\button\x = *this\x[#__c_inner] + ( *this\width[#__c_inner2] - *this\button\height - 3 )
-            ElseIf Not *this\text\align\left
-              *this\button\x = *this\x[#__c_inner] + ( *this\width[#__c_inner2] - *this\button\width )/2
-              
-              If Not *this\text\align\top 
-                If *this\text\rotate = 0
-                  *this\button\y = *this\y[#__c_inner] + *this\y[#__c_required] - *this\button\height
-                Else
-                  *this\button\y = *this\y[#__c_inner] + *this\y[#__c_required] + *this\height[#__c_required]
-                EndIf
-              EndIf
-            Else
-              *this\button\x = *this\x[#__c_inner] + 3
-            EndIf
-          EndIf
-        EndIf
-        
-        
-        ; origin position
-        x = *this\x[#__c_inner] + *this\x[#__c_required]
-        y = *this\y[#__c_inner] + *this\y[#__c_required]
-        
-        ; background draw
-        If *this\image[#__img_background]\id
-          ; background image draw 
-          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-          DrawAlphaImage( *this\image[#__img_background]\id, x + *this\image[#__img_background]\x, x + *this\image[#__img_background]\y, *this\color\alpha )
-        Else
-          If *this\color\back <>- 1
-            If \color\fore <>- 1
-              DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-              _box_gradient_( \vertical,\x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\color\Fore[\color\state],\color\Back[Bool( *this\_state&#__s_back )*\color\state], \round )
-            Else
-              DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-              draw_box( *this, color\back, [#__c_frame])
-            EndIf
-          EndIf
-        EndIf
-        
-        ; draw text items
-        If \text\string.s
-          _clip_frame_( *this )
-          
-          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-          ForEach *this\row\_s( )
-            DrawRotatedText( x + *this\row\_s( )\text\x, y + *this\row\_s( )\text\y,
-                             *this\row\_s( )\text\String.s, *this\text\rotate, *this\color\Front[Bool( *this\_state & #__s_front ) * *this\color\state] ) ; *this\row\_s( )\color\font )
-          Next 
-          
-          _clip_output_( *this )
-        EndIf
-        
-        ; box draw    
-        Protected _box_x_,_box_y_
-        If #PB_GadgetType_Option = *this\type
-          draw_button( 1, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round );, \color )
-        EndIf 
-        If #PB_GadgetType_CheckBox = *this\type
-          draw_button( 3, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round );, \color )
-        EndIf
-        
-        ; image draw
-        If \image\id
-          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-          DrawAlphaImage( \image\id, x + \image\x, y + \image\y, \color\alpha )
-        EndIf
-        
-        ; defaul focused frame draw
-        If *this\flag & #__button_default
-          DrawingMode( #PB_2DDrawing_Outlined )
-          RoundBox( \x[#__c_inner]+2-1,\Y[#__c_inner]+2-1,\width[#__c_inner2]-4+2,\height[#__c_inner2]-4+2,\round,\round,*this\color\Frame[1] )
-          If \round 
-            RoundBox( \x[#__c_inner]+2,\Y[#__c_inner]+2-1,\width[#__c_inner2]-4,\height[#__c_inner2]-4+2,\round,\round,*this\color\Frame[1] ) 
-          EndIf
-          RoundBox( \x[#__c_inner]+2,\Y[#__c_inner]+2,\width[#__c_inner2]-4,\height[#__c_inner2]-4,\round,\round,*this\color\Frame[1] )
-        EndIf
-        
-        ; area scrollbars draw 
-        Area_Draw( *this )
-        
-        ; frame draw
-        If *this\fs
-          DrawingMode( #PB_2DDrawing_Outlined )
-          draw_box( *this, color\frame, [#__c_frame])
-        EndIf
-      EndWith
-    EndProcedure
-    
-    Procedure.i Panel_Draw( *this._s_widget )
-      If *this\_tab\count\items
-        DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-        Box( *this\x[#__c_inner] - 1, *this\y[#__c_inner] - 1, *this\width[#__c_inner2] + 2, *this\height[#__c_inner2] + 2, *this\color\back[0] )
-        
-        DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-        Box( *this\x[#__c_inner] - 1, *this\y[#__c_inner] - 1, *this\width[#__c_inner2] + 2, *this\height[#__c_inner2] + 2, *this\color\frame ) ; [Bool( *this\_tab\index[#__tab_2]  <>-1 )*2 ] )
-        
-        Tab_Draw( *this\_tab ) 
-      Else
-        DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-        Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\color\back[0] )
-        
-        DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-        Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\color\frame[Bool( *this\_tab\index[#__tab_2] <>- 1 )*2 ] )
-      EndIf
     EndProcedure
     
     
@@ -13761,7 +13509,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         *this\y[#__c_frame] =- 2147483648
         *this\type = type
         *this\round = round
-        
+        *this\class = class
+            
         *this\bar\from =- 1
         ;;*this\bar\index =- 1
         *this\index[#__s_1] =- 1
@@ -13795,18 +13544,15 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\type = #PB_GadgetType_MDI
             ScrollBars = 1
             *this\fs = Bool( Not Flag&#__flag_borderLess ) * #__border_scroll
-            *this\class = "MDI"
           EndIf
           
           If *this\type = #PB_GadgetType_ScrollArea
             ScrollBars = 1
             *this\bar\increment = ScrollStep
             *this\fs = Bool( Not Flag&#__flag_borderLess ) * #__border_scroll
-            *this\class = "ScrollArea"
           EndIf
           
           If *this\type = #PB_GadgetType_Container 
-            *this\class = "Container"
             *this\fs = 1
           EndIf
           
@@ -13817,7 +13563,6 @@ CompilerIf Not Defined( widget, #PB_Module )
               *this\__width = 85
             EndIf
             
-            *this\class = "Panel"
             *this\fs = 1
           EndIf
         EndIf
@@ -13825,7 +13570,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; - Create image
         If *this\type = #PB_GadgetType_Image
           ScrollBars = 1
-          *this\class = "Image"
           *this\flag = Flag
           
           If *this\image\img <> *param_3
@@ -13857,11 +13601,10 @@ CompilerIf Not Defined( widget, #PB_Module )
            *this\type = #PB_GadgetType_Spin Or
            *this\type = #PB_GadgetType_Splitter
           
+          *this\bar\increment = ScrollStep
+            
           ; - Create Scroll
           If *this\type = #PB_GadgetType_ScrollBar
-            *this\class = "Scroll"
-            *this\bar\increment = ScrollStep
-            
             *this\color\back = $FFF9F9F9 ; - 1 
             *this\color\front = $FFFFFFFF
             *this\bar\button[#__b_1]\color = _get_colors_( )
@@ -13900,9 +13643,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; - Create Spin
           If *this\type = #PB_GadgetType_Spin
-            *this\class = "Spin"
-            *this\bar\increment = ScrollStep
-            
             *this\color\back =- 1 
             *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
@@ -13956,9 +13696,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; - Create Tab
           If *this\type = #PB_GadgetType_TabBar
-            *this\class = "Tab"
-            *this\bar\increment = ScrollStep
-            
             ;;*this\text\change = 1
             *this\index[#__tab_2] = 0 ; default selected tab
             
@@ -14002,9 +13739,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; - Create Track
           If *this\type = #PB_GadgetType_TrackBar
-            *this\class = "Track"
-            *this\bar\increment = ScrollStep
-            
             *this\color\back =- 1 
             *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
@@ -14048,9 +13782,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; - Create Progress
           If *this\type = #PB_GadgetType_ProgressBar
-            *this\class = "Progress"
-            *this\bar\increment = ScrollStep
-            
             *this\color\back =- 1 
             *this\bar\button[#__b_1]\color = _get_colors_( )
             *this\bar\button[#__b_2]\color = _get_colors_( )
@@ -14074,9 +13805,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; - Create Splitter
           If *this\type = #PB_GadgetType_Splitter
-            *this\class = "Splitter"
-            *this\bar\increment = ScrollStep
-            
             *this\color\back =- 1
             
             ;         *this\bar\button[#__b_1]\color = _get_colors_( )
@@ -14942,14 +14670,208 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;- 
+    ;- 
+    ;-  DRAWINGs
+    Procedure   Button_Draw( *this._s_widget )
+      Protected x, y
+      
+      With *this
+        ; update text 
+        If *this\change 
+          Editor_Update( *this, *this\row\_s( ) )
+        EndIf
+        
+        If *this\image\change
+          *this\image\padding\x = *this\text\padding\x 
+          *this\image\padding\y = *this\text\padding\y
+          
+          ; make horizontal scroll max 
+          If *this\width[#__c_required] < *this\image\width + *this\image\padding\x * 2
+            *this\width[#__c_required] = *this\image\width + *this\image\padding\x * 2
+          EndIf
+          
+          ; make vertical scroll max 
+          If *this\height[#__c_required] < *this\image\height + *this\image\padding\y * 2
+            *this\height[#__c_required] = *this\image\height + *this\image\padding\y * 2
+          EndIf
+          
+          ; make horizontal scroll x
+          make_scrollarea_x( *this, *this\image )
+          
+          ; make vertical scroll y
+          make_scrollarea_y( *this, *this\image )
+          
+          
+          _set_align_x_( *this\image, *this\image, *this\width[#__c_required], 0 )
+          _set_align_y_( *this\image, *this\image, *this\height[#__c_required], 270 )
+        EndIf
+        
+        If *this\type = #__type_Option Or 
+           *this\type = #__type_checkbox
+          
+          ; update widget ( option&checkbox ) position
+          If *this\change
+            *this\button\y = *this\y[#__c_inner] + ( *this\height[#__c_inner2] - *this\button\height )/2
+            
+            If *this\text\align\right
+              *this\button\x = *this\x[#__c_inner] + ( *this\width[#__c_inner2] - *this\button\height - 3 )
+            ElseIf Not *this\text\align\left
+              *this\button\x = *this\x[#__c_inner] + ( *this\width[#__c_inner2] - *this\button\width )/2
+              
+              If Not *this\text\align\top 
+                If *this\text\rotate = 0
+                  *this\button\y = *this\y[#__c_inner] + *this\y[#__c_required] - *this\button\height
+                Else
+                  *this\button\y = *this\y[#__c_inner] + *this\y[#__c_required] + *this\height[#__c_required]
+                EndIf
+              EndIf
+            Else
+              *this\button\x = *this\x[#__c_inner] + 3
+            EndIf
+          EndIf
+        EndIf
+        
+        
+        ; origin position
+        x = *this\x[#__c_inner] + *this\x[#__c_required]
+        y = *this\y[#__c_inner] + *this\y[#__c_required]
+        
+        ; background draw
+        If *this\image[#__img_background]\id
+          ; background image draw 
+          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
+          DrawAlphaImage( *this\image[#__img_background]\id, x + *this\image[#__img_background]\x, x + *this\image[#__img_background]\y, *this\color\alpha )
+        Else
+          If *this\color\back <>- 1
+            If \color\fore <>- 1
+              DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
+              _box_gradient_( \vertical,\x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\color\Fore[\color\state],\color\Back[Bool( *this\_state&#__s_back )*\color\state], \round )
+            Else
+              DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
+              draw_box( *this, color\back, [#__c_frame])
+            EndIf
+          EndIf
+        EndIf
+        
+        ; draw text items
+        If \text\string.s
+          _clip_frame_( *this )
+          
+          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
+          ForEach *this\row\_s( )
+            DrawRotatedText( x + *this\row\_s( )\text\x, y + *this\row\_s( )\text\y,
+                             *this\row\_s( )\text\String.s, *this\text\rotate, *this\color\Front[Bool( *this\_state & #__s_front ) * *this\color\state] ) ; *this\row\_s( )\color\font )
+          Next 
+          
+          _clip_output_( *this )
+        EndIf
+        
+        ; box draw    
+        Protected _box_x_,_box_y_
+        If #PB_GadgetType_Option = *this\type
+          draw_button( 1, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round );, \color )
+        EndIf 
+        If #PB_GadgetType_CheckBox = *this\type
+          draw_button( 3, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round );, \color )
+        EndIf
+        
+        ; image draw
+        If \image\id
+          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
+          DrawAlphaImage( \image\id, x + \image\x, y + \image\y, \color\alpha )
+        EndIf
+        
+        ; defaul focused frame draw
+        If *this\flag & #__button_default
+          DrawingMode( #PB_2DDrawing_Outlined )
+          RoundBox( \x[#__c_inner]+2-1,\Y[#__c_inner]+2-1,\width[#__c_inner2]-4+2,\height[#__c_inner2]-4+2,\round,\round,*this\color\Frame[1] )
+          If \round 
+            RoundBox( \x[#__c_inner]+2,\Y[#__c_inner]+2-1,\width[#__c_inner2]-4,\height[#__c_inner2]-4+2,\round,\round,*this\color\Frame[1] ) 
+          EndIf
+          RoundBox( \x[#__c_inner]+2,\Y[#__c_inner]+2,\width[#__c_inner2]-4,\height[#__c_inner2]-4,\round,\round,*this\color\Frame[1] )
+        EndIf
+        
+        ; area scrollbars draw 
+        Area_Draw( *this )
+        
+        ; frame draw
+        If *this\fs
+          DrawingMode( #PB_2DDrawing_Outlined )
+          draw_box( *this, color\frame, [#__c_frame])
+        EndIf
+      EndWith
+    EndProcedure
+    
+    Procedure.i Panel_Draw( *this._s_widget )
+      If *this\_tab\count\items
+        DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
+        Box( *this\x[#__c_inner] - 1, *this\y[#__c_inner] - 1, *this\width[#__c_inner2] + 2, *this\height[#__c_inner2] + 2, *this\color\back[0] )
+        
+        DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
+        Box( *this\x[#__c_inner] - 1, *this\y[#__c_inner] - 1, *this\width[#__c_inner2] + 2, *this\height[#__c_inner2] + 2, *this\color\frame ) ; [Bool( *this\_tab\index[#__tab_2]  <>-1 )*2 ] )
+        
+        Tab_Draw( *this\_tab ) 
+      Else
+        DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
+        Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\color\back[0] )
+        
+        DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
+        Box( *this\x[#__c_frame], *this\y[#__c_frame], *this\width[#__c_frame], *this\height[#__c_frame], *this\color\frame[Bool( *this\_tab\index[#__tab_2] <>- 1 )*2 ] )
+      EndIf
+    EndProcedure
+    
+    Procedure   Container_Draw( *this._s_widget )
+      With *this
+        DrawingMode( #PB_2DDrawing_Default )
+        RoundBox( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\back[*this\color\state] )
+        ;RoundBox( *this\x[#__c_inner]-1,*this\y[#__c_inner]-1,*this\width[#__c_inner2]+2,*this\height[#__c_inner2]+2, *this\round, *this\round, *this\color\back[*this\color\state] )
+        
+        ;
+        _clip_input_( *this )
+        
+        If \image\id Or *this\image[#__img_background]\id
+          If *this\image\change <> 0
+            _set_align_x_( *this\image, *this\image, *this\width[#__c_inner2], 0 )
+            _set_align_y_( *this\image, *this\image, *this\height[#__c_inner2], 270 )
+            *this\image\change = 0
+          EndIf
+          
+          DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
+          
+          ; background image draw 
+          If *this\image[#__img_background]\id
+            DrawAlphaImage( *this\image[#__img_background]\id,
+                            *this\x[#__c_inner] + *this\image[#__img_background]\x,
+                            *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\alpha )
+          EndIf
+          
+          ; scroll image draw
+          If \image\id
+            DrawAlphaImage( \image\id,
+                            *this\x[#__c_inner] + *this\x[#__c_required] + *this\image\x,
+                            *this\y[#__c_inner] + *this\y[#__c_required] + *this\image\y, *this\color\alpha )
+          EndIf
+        EndIf
+        
+        ; area scrollbars draw 
+        Area_Draw( *this )
+        
+        If *this\fs
+          DrawingMode( #PB_2DDrawing_Outlined )
+          RoundBox( *this\x[#__c_frame],*this\y[#__c_frame],*this\width[#__c_frame],*this\height[#__c_frame], *this\round, *this\round, *this\color\frame[*this\color\state] )
+        EndIf
+      EndWith
+    EndProcedure
+    
+    
     Procedure.b Draw( *this._s_widget )
       With *this
         ; init drawing font
         _drawing_font_( *this )
         
+        ; draw widgets
         Select \type
           Case #__type_Window         : Window_Draw( *this )
-            _clip_output_( *this )
             
           Case #__type_MDI            : Container_Draw( *this )
           Case #__type_container      : Container_Draw( *this )
@@ -15030,6 +14952,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Box( *this\parent\x[#__c_inner], *this\parent\y[#__c_inner], *this\parent\width[#__c_inner2], *this\parent\height[#__c_inner2], $ffff0000 )
           EndIf
         EndIf
+        ; ENDTEST
         
         
         ; reset values
@@ -17625,5 +17548,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------u-------------------0---4P+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = gBAAACAAAAAgFAAAAAgAw3GAAAAAAAAAAAAAAAAAwwAAAA8wHA5fwABhAIBAMAAAAAAAAAAAAAAAAAAAQAAACAAAYA5-PAAAAAAAGAAAAsCkQCAAAAAAAAAAAAAGAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAA+AAAGAAAAAAABAAAAAAAAAAAAAgBAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAABAAAAAAAAAAAAAAgAAAgBgAAAAAAIAAAAAAAAAAA9RHPKpBAAAAAAAAAAAAAgAAAAAAAAAwQYAAAAAAAAAAAAAAAAAAg---7PAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAgNAACBAAA+AAAAAAAAAAA9
 ; EnableXP

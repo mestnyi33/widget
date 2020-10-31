@@ -32,6 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Window(x,y,width, height,"window_3", #PB_Window_SystemMenu) : SetClass(widget(), "window_3") 
   ;Define *mdi._s_widget = MDI(x,y,Width, height);, #__flag_autosize)
   Define *mdi._s_widget = MDI(10,10, width( widget( ), #__c_inner )-20, height( widget( ), #__c_inner )-20);, #__flag_autosize)
+  
   ;Define *mdi._s_widget = MDI(0,0,0,0, #__flag_autosize)
   ;;a_init( *mdi )
   
