@@ -2253,7 +2253,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; add parent coordinate
             If transform( )\widget\transform = 1
               If transform( )\widget\parent 
-                If transform( )\widget\parent\type = #PB_GadgetType_MDI ; mdi inner coordinate bug
+                ; не родные гаджеты у мдай-а
+                If transform( )\widget\parent\type = #PB_GadgetType_MDI And Not transform( )\widget\child ; mdi inner coordinate bug
                                                                         ; horizontal
                   Select transform( )\index
                     Case 3, 6, 7 ; right
@@ -2287,7 +2288,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 mouse( )\delta\x = mouse_x - transform( )\id[transform( )\index]\x - pos
                 
               Case 3, 6, 7 ; right
-                mouse( )\delta\x = mouse_x - transform( )\id[transform( )\index]\x - ( transform( )\size-transform( )\pos )
+                mouse( )\delta\x = mouse_x - transform( )\id[transform( )\index]\x - ( transform( )\size-transform( )\pos ) ;+ (transform( )\widget\bs + transform( )\widget\__width)
             EndSelect
             
             
@@ -2297,7 +2298,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 mouse( )\delta\y = mouse_y - transform( )\id[transform( )\index]\y - pos
                 
               Case 4, 8, 7 ; bottom
-                mouse( )\delta\y = mouse_y - transform( )\id[transform( )\index]\y - ( transform( )\size-transform( )\pos )
+                mouse( )\delta\y = mouse_y - transform( )\id[transform( )\index]\y - ( transform( )\size-transform( )\pos ) + (transform( )\widget\bs + transform( )\widget\__height)
             EndSelect
             
           Else
@@ -17624,5 +17625,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------------------0---4P+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ------------------------------u-------------------0---4P+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

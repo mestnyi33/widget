@@ -258,14 +258,15 @@ ToolBarButton(#_tb_align_right, CatchImage(#PB_Any,?group_right))
 CloseList()
 
 
-Container(0,40,600,600);, #__flag_autosize) 
-                       ;SetAlignment(widget(), #__align_full)
-a_init(widget()) 
+;Container(0,40,600,600);, #__flag_autosize) 
+;SetAlignment(widget(), #__align_full) 
+mdi(0,40,600,600, #__mdi_editable)
+; a_init(widget()) 
+
 
 ; mdi(0,0,0,0, #__flag_autosize)
-; additem(widget(), -1, "form_0")
-; resize(widget(), 50, 30, 500, 500)
-*new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
+ additem(widget(), -1, "form_0") : resize(widget(), 50, 30, 500, 500) : *new = widget()
+; *new = Window(50, 30, 500, 500, "window_2", #__Window_SizeGadget | #__Window_SystemMenu, widget())
 ; ; container(30,30,450-2,450-2)
 ;;ScrollArea(30,30,450-2,450-2, 0,0)
 ScrollArea(30,30,450-2,450-2, 250,750)
