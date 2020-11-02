@@ -267,6 +267,13 @@ CompilerIf Not Defined( widget, #PB_Module )
               _this_\parent\scroll\h = _this_ ) )
     EndMacro
     
+    Macro _scroll_bars_( _this_ )
+      Bool( _this_\parent And _this_\child )
+      ; Bool( _this_\parent\scroll And _this_\parent\scroll\v And _this_\parent\scroll\h )
+      ;  Bool(_this_\parent And _this_\parent\scroll And ( _this_\parent\scroll\v = _this_ Or _this_ = _this_\parent\scroll\h ))
+    EndMacro
+    
+    
     ;-
     Macro _no_select_( _list_, _item_ )
       ;  Bool( _item_ >= 0 And _list_\index <> _item_ And Not SelectElement( _list_, _item_ ) )
@@ -393,7 +400,34 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     ;-
-    Macro _box_gradient_( _vertical_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _round_ = 0, _alpha_ = 255 )
+    Macro _draw_arrows_( _address_, _type_ )
+      Arrow( _address_\x + ( _address_\width - _address_\arrow\size )/2,
+             _address_\y + ( _address_\height - _address_\arrow\size )/2, _address_\arrow\size, _type_, 
+             _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24, _address_\arrow\type )
+    EndMacro
+    
+    Macro _draw_gradient_( _vertical_, _address_, _color_fore_, _color_back_, _mode_= )
+      BackColor( _color_fore_&$FFFFFF | _address_\color\alpha<<24 )
+      FrontColor( _color_back_&$FFFFFF | _address_\color\alpha<<24 )
+      
+      If _vertical_  ; _address_\vertical
+        LinearGradient( _address_\x#_mode_, _address_\y#_mode_, ( _address_\x#_mode_ + _address_\width#_mode_ ), _address_\y#_mode_ )
+      Else
+        LinearGradient( _address_\x#_mode_, _address_\y#_mode_, _address_\x#_mode_, ( _address_\y#_mode_ + _address_\height#_mode_ ) )
+      EndIf
+      
+      RoundBox( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_, _address_\round, _address_\round )
+    
+      BackColor( #PB_Default ) 
+      FrontColor( #PB_Default ) ; bug
+    EndMacro
+    
+    Macro _draw_box_( _address_, _color_type_, _mode_= )
+      RoundBox( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_, 
+                _address_\round, _address_\round, _address_\_color_type_[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
+    EndMacro
+    
+    Macro _draw_box_gradient_( _vertical_, _x_,_y_,_width_,_height_,_color_1_,_color_2_, _round_ = 0, _alpha_ = 255 )
       BackColor( _color_1_&$FFFFFF | _alpha_<<24 )
       FrontColor( _color_2_&$FFFFFF | _alpha_<<24 )
       
@@ -408,49 +442,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       BackColor( #PB_Default ) : FrontColor( #PB_Default ) ; bug
     EndMacro
     
-    Macro draw_box( _address_, _color_type_, _mode_= )
-      RoundBox( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_, 
-                _address_\round, _address_\round, _address_\_color_type_[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
-    EndMacro
-    
-    Macro draw_arrows( _address_, _type_ )
-      Arrow( _address_\x + ( _address_\width - _address_\arrow\size )/2,
-             _address_\y + ( _address_\height - _address_\arrow\size )/2, _address_\arrow\size, _type_, 
-             _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24, _address_\arrow\type )
-    EndMacro
-    
-    Macro draw_gradient_box( _address_ )
-      BackColor( _address_\color\back&$FFFFFF | _address_\color\alpha<<24 )
-      FrontColor( _address_\color\fore&$FFFFFF | _address_\color\alpha<<24 )
-      
-      If _address_\vertical
-        LinearGradient( _address_\x#_mode_, _address_\y#_mode_, ( _address_\x#_mode_ + _address_\width#_mode_ ), _address_\y#_mode_ )
-      Else
-        LinearGradient( _address_\x#_mode_, _address_\y#_mode_, _address_\x#_mode_, ( _address_\y#_mode_ + _address_\height#_mode_ ) )
-      EndIf
-      
-      draw_box( _address_ )
-      
-      BackColor( #PB_Default ) 
-      FrontColor( #PB_Default ) ; bug
-    EndMacro
-    
-    ;     Macro _button_draw_( _vertical_, _x_,_y_,_width_,_height_, _arrow_type_, _arrow_size_, _arrow_direction_, _color_fore_,_color_back_,_color_frame_, _color_arrow_, _alpha_, _round_ )
-    ;       ; Draw buttons   
-    ;       DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-    ;       _box_gradient_( _vertical_,_x_,_y_,_width_,_height_, _color_fore_,_color_back_, _round_, _alpha_ )
-    ;       
-    ;       ; Draw buttons frame
-    ;       DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-    ;       RoundBox( _x_,_y_,_width_,_height_,_round_,_round_,_color_frame_&$FFFFFF | _alpha_<<24 )
-    ;       
-    ;       ; Draw arrows
-    ;       DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-    ;       Arrow( _x_ + ( _width_ - _arrow_size_ )/2,_y_ + ( _height_ - _arrow_size_ )/2, _arrow_size_, _arrow_direction_, _color_arrow_&$FFFFFF | _alpha_<<24, _arrow_type_ )
-    ;       ResetGradientColors( )
-    ;     EndMacro
-    
-    Macro draw_box_button( _address_, _color_ )
+    Macro _draw_box_button_( _address_, _color_ )
       If Not _address_\hide
         RoundBox( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _color_ )
         RoundBox( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _color_ )
@@ -458,7 +450,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndMacro
     
-    Macro draw_close_button( _address_, _size_ )
+    Macro _draw_close_button_( _address_, _size_ )
       ; close button
       If Not _address_\hide
         If _address_\color\state
@@ -469,11 +461,11 @@ CompilerIf Not Defined( widget, #PB_Module )
           Line( _address_\x + _size_ + ( _address_\width - _size_ )/2, _address_\y + ( _address_\height - _size_ )/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
         EndIf
         
-        draw_box_button( _address_, _address_\color\frame[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
+        _draw_box_button_( _address_, _address_\color\frame[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
       EndIf
     EndMacro
     
-    Macro draw_maximize_button( _address_, _size_ )
+    Macro _draw_maximize_button_( _address_, _size_ )
       If Not _address_\hide
         If _address_\color\state
           Line( _address_\x + 2 + ( _address_\width - _size_ )/2, _address_\y + ( _address_\height - _size_ )/2, _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
@@ -483,11 +475,11 @@ CompilerIf Not Defined( widget, #PB_Module )
           Line( _address_\x + 2 + ( _address_\width - _size_ )/2, _address_\y + ( _address_\height - _size_ )/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
         EndIf
         
-        draw_box_button( _address_, _address_\color\frame[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
+        _draw_box_button_( _address_, _address_\color\frame[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
       EndIf
     EndMacro
     
-    Macro draw_minize_button( _address_, _size_ )
+    Macro _draw_minize_button_( _address_, _size_ )
       If Not _address_\hide
         If _address_\color\state
           Line( _address_\x + 1 + ( _address_\width )/2 - _size_, _address_\y + ( _address_\height - _size_ )/2, _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
@@ -497,18 +489,18 @@ CompilerIf Not Defined( widget, #PB_Module )
           Line( _address_\x - 2 + ( _address_\width )/2 + _size_, _address_\y + ( _address_\height - _size_ )/2,  - _size_, _size_, _address_\color\front[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
         EndIf
         
-        draw_box_button( _address_, _address_\color\frame[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
+        _draw_box_button_( _address_, _address_\color\frame[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
       EndIf
     EndMacro
     
-    Macro draw_help_button( _address_, _size_ )
+    Macro _draw_help_button_( _address_, _size_ )
       If Not _address_\hide
         RoundBox( _address_\x, _address_\y, _address_\width, _address_\height, 
                   _address_\round, _address_\round, _address_\color\frame[_address_\color\state]&$FFFFFF | _address_\color\alpha<<24 )
       EndIf
     EndMacro
     
-    Macro draw_option_button( _address_, _size_, _color_ )
+    Macro _draw_option_button_( _address_, _size_, _color_ )
       If _address_\round > 2
         If _address_\width % 2
           RoundBox( _address_\x + ( _address_\width - _size_ )/2,_address_\y + ( _address_\height - _size_ )/2, _size_ + 1,_size_ + 1, _size_ + 1,_size_ + 1, _color_ ) 
@@ -524,7 +516,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndMacro
     
-    Macro draw_check_button( _address_, _size_, _color_ )
+    Macro _draw_check_button_( _address_, _size_, _color_ )
       If _address_\state
         LineXY( ( _address_\x +0+ ( _address_\width-_size_ )/2 ),( _address_\y +4+ ( _address_\height-_size_ )/2 ),( _address_\x +1+ ( _address_\width-_size_ )/2 ),( _address_\y +5+ ( _address_\height-_size_ )/2 ), _color_ ) ; Левая линия
         LineXY( ( _address_\x +0+ ( _address_\width-_size_ )/2 ),( _address_\y +5+ ( _address_\height-_size_ )/2 ),( _address_\x +1+ ( _address_\width-_size_ )/2 ),( _address_\y +6+ ( _address_\height-_size_ )/2 ), _color_ ) ; Левая линия
@@ -534,7 +526,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndMacro
     
-    Macro draw_button( _type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFFFFFFF, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255 ) 
+    Macro _draw_button_( _type_, _x_,_y_, _width_, _height_, _checked_, _round_, _color_fore_=$FFFFFFFF, _color_fore2_=$FFE9BA81, _color_back_=$80E2E2E2, _color_back2_=$FFE89C3D, _color_frame_=$80C8C8C8, _color_frame2_=$FFDC9338, _alpha_ = 255 ) 
       DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
       LinearGradient( _x_,_y_, _x_, ( _y_ + _height_ ) )
       
@@ -887,7 +879,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       _this_\scroll\h\bar\area\change = #False
     EndMacro
     
-    Macro MDI_Update( _child_ )
+    ;-
+    Macro _mdi_update_( _child_ )
       _child_\parent\x[#__c_required] = _child_\x[#__c_container] 
       _child_\parent\y[#__c_required] = _child_\y[#__c_container]
       _child_\parent\width[#__c_required] = _child_\x[#__c_container] + _child_\width[#__c_frame] - _child_\parent\x[#__c_required]
@@ -2248,25 +2241,31 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; add parent coordinate
             If transform( )\widget\transform = 1
               If transform( )\widget\parent 
-                ; не родные гаджеты у мдай-а
-                If transform( )\widget\parent\type = #PB_GadgetType_MDI And Not transform( )\widget\child ; mdi inner coordinate bug
-                                                                                                          ; horizontal
-                  Select transform( )\index
-                    Case 3, 6, 7 ; right
-                      mouse_x + transform( )\widget\parent\x[#__c_inner]
-                  EndSelect
-                  
-                  
-                  ; vertical
-                  Select transform( )\index
-                    Case 4, 8, 7 ; bottom
-                      mouse_y + transform( )\widget\parent\y[#__c_inner]
-                  EndSelect
-                Else
+;                 ; не родные гаджеты у мдай-а
+;                 If transform( )\widget\parent\type = #PB_GadgetType_MDI And Not transform( )\widget\child ; mdi inner coordinate bug
+;                                                                                                           ; horizontal
+;                   Select transform( )\index
+;                     Case 3, 6, 7 ; right
+;                       mouse_x + transform( )\widget\parent\x[#__c_inner]
+;                   EndSelect
+;                   
+;                   
+;                   ; vertical
+;                   Select transform( )\index
+;                     Case 4, 8, 7 ; bottom
+;                       mouse_y + transform( )\widget\parent\y[#__c_inner]
+;                   EndSelect
+;                 Else
                   ;Debug transform( )\widget\parent\y[#__c_inner]
+                  
+                If _scroll_bars_( transform( )\widget )
                   mouse_x + transform( )\widget\parent\x[#__c_inner]
                   mouse_y + transform( )\widget\parent\y[#__c_inner]
+                Else
+                  mouse_x + transform( )\widget\parent\x[#__c_inner] - transform( )\widget\parent\x[#__c_required]
+                  mouse_y + transform( )\widget\parent\y[#__c_inner] - transform( )\widget\parent\y[#__c_required]
                 EndIf
+                ;                 EndIf
               EndIf
             Else
               ;               If transform( )\group( )\widget\parent
@@ -2296,6 +2295,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                 mouse( )\delta\y = mouse_y - transform( )\id[transform( )\index]\y - ( transform( )\size-transform( )\pos ) + (transform( )\widget\bs + transform( )\widget\__height)
             EndSelect
             
+
+              
+         
           Else
             ; grid mouse pos
             If transform( )\grid\size > 0
@@ -2384,7 +2386,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; horizontal 
                   Select transform( )\index
                     Case 1, 5, 8 ; left
-                      mw = ( transform( )\widget\x[#__c_container] - mouse_x ) + transform( )\widget\width[#__c_frame]
+                      mw =  ( transform( )\widget\x[#__c_container] - mouse_x ) + transform( )\widget\width[#__c_frame]
                       
                     Case 3, 6, 7 ; right
                       mw = ( mouse_x - transform( )\widget\x[#__c_container] ) + IsGrid 
@@ -2767,12 +2769,6 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     ;- 
     ;-
-    Macro _scroll_bars_( _this_ )
-      Bool( _this_\parent And _this_\child )
-      ; Bool( _this_\parent\scroll And _this_\parent\scroll\v And _this_\parent\scroll\h )
-      ;  Bool(_this_\parent And _this_\parent\scroll And ( _this_\parent\scroll\v = _this_ Or _this_ = _this_\parent\scroll\h ))
-    EndMacro
-    
     Declare Reclip( *this._s_widget, childrens.b )
     Procedure   Reclip( *this._s_widget, childrens.b )
       ; Debug  *this\address
@@ -3359,7 +3355,7 @@ CompilerIf Not Defined( widget, #PB_Module )
              *this\parent\scroll\v\bar\thumb\change = 0 And
              *this\parent\scroll\h\bar\thumb\change = 0
             
-            MDI_Update( *this )
+            _mdi_update_( *this )
           EndIf
           
           ;           If *this\type = #__type_mdi
@@ -4093,7 +4089,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               If \bar\_s( )\draw
                 ; Draw back
                 DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-                _box_gradient_( \vertical,x + \bar\_s( )\x - Bool( \index[#__tab_2] = \bar\_s( )\index ),y + \bar\_s( )\y,\bar\_s( )\width + Bool( \index[#__tab_2] = \bar\_s( )\index )*2,\bar\_s( )\height,
+                _draw_box_gradient_( \vertical,x + \bar\_s( )\x - Bool( \index[#__tab_2] = \bar\_s( )\index ),y + \bar\_s( )\y,\bar\_s( )\width + Bool( \index[#__tab_2] = \bar\_s( )\index )*2,\bar\_s( )\height,
                                 \bar\_s( )\color\fore[State_3],\bar\_s( )\color\Back[State_3], \bar\button[#__b_3]\round, \bar\_s( )\color\alpha )
                 
                 ; Draw frame
@@ -4121,7 +4117,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               If \bar\_s( )\draw
                 ; Draw back
                 DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-                _box_gradient_( \vertical,x + \bar\_s( )\x,y + \bar\_s( )\y - Bool( \index[#__tab_2] = \bar\_s( )\index ),\bar\_s( )\width,\bar\_s( )\height + Bool( \index[#__tab_2] = \bar\_s( )\index )*2,
+                _draw_box_gradient_( \vertical,x + \bar\_s( )\x,y + \bar\_s( )\y - Bool( \index[#__tab_2] = \bar\_s( )\index ),\bar\_s( )\width,\bar\_s( )\height + Bool( \index[#__tab_2] = \bar\_s( )\index )*2,
                                 \bar\_s( )\color\fore[State_3],\bar\_s( )\color\Back[State_3], \bar\button[#__b_3]\round, \bar\_s( )\color\alpha )
                 
                 ; Draw frame
@@ -4239,8 +4235,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                                                                                                                               ; Draw buttons
             If \bar\button[#__b_1]\color\fore <>- 1
               DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-              _box_gradient_( \vertical,\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,
-                              \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], \bar\button[#__b_1]\round, \bar\button[#__b_1]\color\alpha )
+              _draw_gradient_( \vertical, \bar\button[#__b_1], \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state] )
             Else
               DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
               RoundBox( \bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,\bar\button[#__b_1]\round,\bar\button[#__b_1]\round,\bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state]&$FFFFFF | \bar\button[#__b_1]\color\alpha<<24 )
@@ -4256,7 +4251,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               ;               Arrow( \bar\button[#__b_1]\x + ( \bar\button[#__b_1]\width - \bar\button[#__b_1]\arrow\size )/2,\bar\button[#__b_1]\y + ( \bar\button[#__b_1]\height - \bar\button[#__b_1]\arrow\size )/2, 
               ;                      \bar\button[#__b_1]\arrow\size, Bool( \vertical ) + 2, \bar\button[#__b_1]\color\front[\bar\button[#__b_1]\color\state]&$FFFFFF | \bar\button[#__b_1]\color\alpha<<24, \bar\button[#__b_1]\arrow\type )
               
-              draw_arrows( *this\bar\button[#__b_1], Bool( \vertical ) + 2 ) 
+              _draw_arrows_( *this\bar\button[#__b_1], Bool( \vertical ) + 2 ) 
             EndIf
           EndIf
           
@@ -4264,8 +4259,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; Draw buttons
             If \bar\button[#__b_2]\color\fore <>- 1
               DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-              _box_gradient_( \vertical,\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,
-                              \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], \bar\button[#__b_2]\round, \bar\button[#__b_2]\color\alpha )
+              _draw_gradient_( \vertical,\bar\button[#__b_2], \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state] )
             Else
               DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
               RoundBox( \bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,\bar\button[#__b_2]\round,\bar\button[#__b_2]\round,\bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state]&$FFFFFF | \bar\button[#__b_2]\color\alpha<<24 )
@@ -4281,7 +4275,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               ;               Arrow( \bar\button[#__b_2]\x + ( \bar\button[#__b_2]\width - \bar\button[#__b_2]\arrow\size )/2,\bar\button[#__b_2]\y + ( \bar\button[#__b_2]\height - \bar\button[#__b_2]\arrow\size )/2, 
               ;                      \bar\button[#__b_2]\arrow\size, Bool( \vertical ), \bar\button[#__b_2]\color\front[\bar\button[#__b_2]\color\state]&$FFFFFF | \bar\button[#__b_2]\color\alpha<<24, \bar\button[#__b_2]\arrow\type )
               
-              draw_arrows( *this\bar\button[#__b_2], Bool( \vertical ) ) 
+              _draw_arrows_( *this\bar\button[#__b_2], Bool( \vertical ) ) 
             EndIf
           EndIf
           
@@ -4312,7 +4306,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; Draw scroll bar background
           If \color\back <>- 1
             DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-            draw_box(*this, color\back, [#__c_frame])
+            _draw_box_(*this, color\back, [#__c_frame])
           EndIf
           
           If \type = #PB_GadgetType_ScrollBar
@@ -4335,11 +4329,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; background buttons draw
             If \bar\button[#__b_1]\color\fore <>- 1
               DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-              _box_gradient_( \vertical,\bar\button[#__b_1]\x,\bar\button[#__b_1]\y,\bar\button[#__b_1]\width,\bar\button[#__b_1]\height,
-                              \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], \bar\button[#__b_1]\round, \bar\button[#__b_1]\color\alpha )
+              _draw_gradient_( \vertical,\bar\button[#__b_1], \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state] )
             Else
               DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-              draw_box(\bar\button[#__b_1], color\back)
+              _draw_box_(\bar\button[#__b_1], color\back)
             EndIf
             
             ; arrows buttons draw 
@@ -4348,23 +4341,22 @@ CompilerIf Not Defined( widget, #PB_Module )
               ;               Arrow( \bar\button[#__b_1]\x + ( \bar\button[#__b_1]\width - \bar\button[#__b_1]\arrow\size )/2,\bar\button[#__b_1]\y + ( \bar\button[#__b_1]\height - \bar\button[#__b_1]\arrow\size )/2, 
               ;                      \bar\button[#__b_1]\arrow\size, Bool( \vertical ), \bar\button[#__b_1]\color\front[\bar\button[#__b_1]\color\state]&$FFFFFF | \bar\button[#__b_1]\color\alpha<<24, \bar\button[#__b_1]\arrow\type )
               
-              draw_arrows( *this\bar\button[#__b_1], Bool( \vertical ) ) 
+              _draw_arrows_( *this\bar\button[#__b_1], Bool( \vertical ) ) 
             EndIf
             
             ; frame buttons draw
             DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-            draw_box(\bar\button[#__b_1], color\frame)
+            _draw_box_(\bar\button[#__b_1], color\frame)
           EndIf
           
           If ( \vertical And \bar\button[#__b_2]\height ) Or ( Not \vertical And \bar\button[#__b_2]\width )
             ; Draw buttons
             If \bar\button[#__b_2]\color\fore <>- 1
               DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-              _box_gradient_( \vertical,\bar\button[#__b_2]\x,\bar\button[#__b_2]\y,\bar\button[#__b_2]\width,\bar\button[#__b_2]\height,
-                              \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], \bar\button[#__b_2]\round, \bar\button[#__b_2]\color\alpha )
+              _draw_gradient_( \vertical,\bar\button[#__b_2], \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state] )
             Else
               DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-              draw_box(\bar\button[#__b_2], color\back)
+              _draw_box_(\bar\button[#__b_2], color\back)
             EndIf
             
             ; Draw arrows
@@ -4373,19 +4365,18 @@ CompilerIf Not Defined( widget, #PB_Module )
               ;               Arrow( \bar\button[#__b_2]\x + ( \bar\button[#__b_2]\width - \bar\button[#__b_2]\arrow\size )/2,\bar\button[#__b_2]\y + ( \bar\button[#__b_2]\height - \bar\button[#__b_2]\arrow\size )/2, 
               ;                      \bar\button[#__b_2]\arrow\size, Bool( \vertical ) + 2, \bar\button[#__b_2]\color\front[\bar\button[#__b_2]\color\state]&$FFFFFF | \bar\button[#__b_2]\color\alpha<<24, \bar\button[#__b_2]\arrow\type )
               
-              draw_arrows( *this\bar\button[#__b_2], Bool( \vertical ) + 2 ) 
+              _draw_arrows_( *this\bar\button[#__b_2], Bool( \vertical ) + 2 ) 
             EndIf
             
             ; Draw buttons frame
             DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-            draw_box(\bar\button[#__b_2], color\frame)
+            _draw_box_(\bar\button[#__b_2], color\frame)
           EndIf
           
           If \bar\thumb\len And \type <> #PB_GadgetType_ProgressBar
             ; Draw thumb
             DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-            _box_gradient_( \vertical,\bar\button[#__b_3]\x,\bar\button[#__b_3]\y,\bar\button[#__b_3]\width,\bar\button[#__b_3]\height,
-                            \bar\button[#__b_3]\color\fore[\bar\button[#__b_3]\color\state],\bar\button[#__b_3]\color\Back[\bar\button[#__b_3]\color\state], \bar\button[#__b_3]\round, \bar\button[#__b_3]\color\alpha )
+            _draw_gradient_( \vertical,\bar\button[#__b_3], \bar\button[#__b_3]\color\fore[\bar\button[#__b_3]\color\state],\bar\button[#__b_3]\color\Back[\bar\button[#__b_3]\color\state])
             
             If \bar\button[#__b_3]\arrow\type ; \type = #PB_GadgetType_ScrollBar
               If \bar\button[#__b_3]\arrow\size
@@ -4393,7 +4384,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 ;                 Arrow( \bar\button[#__b_3]\x + ( \bar\button[#__b_3]\width - \bar\button[#__b_3]\arrow\size )/2,\bar\button[#__b_3]\y + ( \bar\button[#__b_3]\height - \bar\button[#__b_3]\arrow\size )/2, 
                 ;                        \bar\button[#__b_3]\arrow\size, \bar\button[#__b_3]\arrow\direction, \bar\button[#__b_3]\color\front[\bar\button[#__b_3]\color\state]&$FFFFFF | \bar\button[#__b_3]\color\alpha<<24, \bar\button[#__b_3]\arrow\type )
                 
-                draw_arrows( *this\bar\button[#__b_3], \bar\button[#__b_3]\arrow\direction ) 
+                _draw_arrows_( *this\bar\button[#__b_3], \bar\button[#__b_3]\arrow\direction ) 
               EndIf
             Else
               ; Draw thumb lines
@@ -4411,7 +4402,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; Draw thumb frame
             DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-            draw_box(\bar\button[#__b_3], color\frame)
+            _draw_box_(\bar\button[#__b_3], color\frame)
           EndIf
           
         EndIf
@@ -4529,24 +4520,24 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If \vertical
               If \bar\button[#__b_1]\color\fore <>- 1
-                _box_gradient_( \vertical,\bar\button[#__b_1]\x + 1,\bar\thumb\pos - 1 - \bar\button[#__b_2]\round,\bar\button[#__b_1]\width - 2,1 + \bar\button[#__b_2]\round,
+                _draw_box_gradient_( \vertical,\bar\button[#__b_1]\x + 1,\bar\thumb\pos - 1 - \bar\button[#__b_2]\round,\bar\button[#__b_1]\width - 2,1 + \bar\button[#__b_2]\round,
                                 \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha )
               EndIf
               
               ; Draw buttons
               If \bar\button[#__b_2]\color\fore <>- 1
-                _box_gradient_( \vertical,\bar\button[#__b_2]\x + 1,\bar\thumb\pos,\bar\button[#__b_2]\width - 2,1 + \bar\button[#__b_2]\round,
+                _draw_box_gradient_( \vertical,\bar\button[#__b_2]\x + 1,\bar\thumb\pos,\bar\button[#__b_2]\width - 2,1 + \bar\button[#__b_2]\round,
                                 \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha )
               EndIf
             Else
               If \bar\button[#__b_1]\color\fore <>- 1
-                _box_gradient_( \vertical,\bar\thumb\pos - 1 - \bar\button[#__b_2]\round,\bar\button[#__b_1]\y + 1,1 + \bar\button[#__b_2]\round,\bar\button[#__b_1]\height - 2,
+                _draw_box_gradient_( \vertical,\bar\thumb\pos - 1 - \bar\button[#__b_2]\round,\bar\button[#__b_1]\y + 1,1 + \bar\button[#__b_2]\round,\bar\button[#__b_1]\height - 2,
                                 \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha )
               EndIf
               
               ; Draw buttons
               If \bar\button[#__b_2]\color\fore <>- 1
-                _box_gradient_( \vertical,\bar\thumb\pos,\bar\button[#__b_2]\y + 1,1 + \bar\button[#__b_2]\round,\bar\button[#__b_2]\height - 2,
+                _draw_box_gradient_( \vertical,\bar\thumb\pos,\bar\button[#__b_2]\y + 1,1 + \bar\button[#__b_2]\round,\bar\button[#__b_2]\height - 2,
                                 \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha )
               EndIf
             EndIf
@@ -7773,7 +7764,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; Draw back color
           ;         If \color\fore[\color\state]
           ;           DrawingMode( #PB_2DDrawing_Gradient )
-          ;           _box_gradient_( \vertical,\x[1],\y[1],\width[1],\height[1],\color\fore[\color\state],\color\back[\color\state],\round )
+          ;           _draw_gradient_( \vertical, *this,\color\fore[\color\state],\color\back[\color\state], [#__c_frame] )
           ;         Else
           DrawingMode( #PB_2DDrawing_Default )
           RoundBox( \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\round,\round,\color\back[\color\state] )
@@ -9414,7 +9405,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; ; ;                 LinearGradient( *row( )\box[1]\x, *row( )\box[1]\y,
             ; ; ;                                *row( )\box[1]\x, ( *row( )\box[1]\y + *row( )\box[1]\height ) )
             ; ; ;                 
-            ; ; ;                 draw_box_button( *row( )\box[1], 0 )
+            ; ; ;                 _draw_box_button_( *row( )\box[1], 0 )
             ; ; ;                 
             ; ; ;               EndIf    
             ; ; ;             Next
@@ -9426,9 +9417,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; ; ;                  *this\mode\check And 
             ; ; ;                   *row( )\box[1]\state
             ; ; ;                 If *row( )\parent And *this\mode\check = 4
-            ; ; ;                   draw_option_button( *row( )\box[1], 4, $FFFFFFFF )
+            ; ; ;                   _draw_option_button_( *row( )\box[1], 4, $FFFFFFFF )
             ; ; ;                 Else                                                                                                                ;If Not ( *this\mode\buttons And *row( )\childrens And *this\mode\check = 4 )
-            ; ; ;                   draw_check_button( *row( )\box[1], 6, $FFFFFFFF )
+            ; ; ;                   _draw_check_button_( *row( )\box[1], 6, $FFFFFFFF )
             ; ; ;                 EndIf
             ; ; ;               EndIf    
             ; ; ;             Next
@@ -9439,9 +9430,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; ; ;               If *row( )\draw And 
             ; ; ;                  *this\mode\check
             ; ; ;                 If *row( )\box[1]\state
-            ; ; ;                   draw_box_button( *row( )\box[1], $FFDC9338 )
+            ; ; ;                   _draw_box_button_( *row( )\box[1], $FFDC9338 )
             ; ; ;                 Else
-            ; ; ;                   draw_box_button( *row( )\box[1], $80C8C8C8 )
+            ; ; ;                   _draw_box_button_( *row( )\box[1], $80C8C8C8 )
             ; ; ;                 EndIf
             ; ; ;               EndIf    
             ; ; ;             Next
@@ -9454,9 +9445,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                  *this\mode\check
                 
                 If *row( )\parent And *this\mode\check = 4
-                  draw_button( 1, *row( )\box[1]\x, *row( )\box[1]\y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 4 );, \color )
+                  _draw_button_( 1, *row( )\box[1]\x, *row( )\box[1]\y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 4 );, \color )
                 Else                                                                                                                        ;If Not ( *this\mode\buttons And *row( )\childrens And *this\mode\check = 4 )
-                  draw_button( 3, *row( )\box[1]\x, *row( )\box[1]\y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 2 );, \color )
+                  _draw_button_( 3, *row( )\box[1]\x, *row( )\box[1]\y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 2 );, \color )
                 EndIf
               EndIf    
             Next
@@ -9473,7 +9464,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                        6, Bool( Not *row( )\box[0]\state ) + 2,
                        *row( )\color\front[0], 0,0 )   ; *row( )\color\state
                 
-                ;; draw_arrows( *row( )\box[0], Bool( Not *row( )\box[0]\state ) + 2 ) 
+                ;; _draw_arrows_( *row( )\box[0], Bool( Not *row( )\box[0]\state ) + 2 ) 
               EndIf    
             Next
           EndIf
@@ -9488,7 +9479,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; Draw frames
           If *this\fs
             DrawingMode( #PB_2DDrawing_Outlined )
-            draw_box( *this, color\frame, [#__c_frame] )
+            _draw_box_( *this, color\frame, [#__c_frame] )
           EndIf
         EndIf
       EndWith
@@ -10747,7 +10738,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; Draw caption back
           If \caption\color\back 
             DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-            _box_gradient_( 0, \caption\x, \caption\y, \caption\width, \caption\height - 1, \caption\color\fore[\color\state], \caption\color\back[\color\state], \round, \caption\color\alpha )
+            _draw_gradient_( 0, \caption, \caption\color\fore[\color\state], \caption\color\back[\color\state] )
           EndIf
           
           ; Draw caption frame
@@ -10773,17 +10764,17 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; buttins background
           DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-          draw_box_button( \caption\button[#__wb_close], \caption\button[#__wb_close]\color\back[\caption\button[#__wb_close]\color\state]&$FFFFFF | \caption\button[#__wb_close]\color\alpha<<24 )
-          draw_box_button( \caption\button[#__wb_maxi], \caption\button[#__wb_maxi]\color\back[\caption\button[#__wb_maxi]\color\state]&$FFFFFF | \caption\button[#__wb_maxi]\color\alpha<<24 )
-          draw_box_button( \caption\button[#__wb_mini], \caption\button[#__wb_mini]\color\back[\caption\button[#__wb_mini]\color\state]&$FFFFFF | \caption\button[#__wb_mini]\color\alpha<<24 )
-          draw_box_button( \caption\button[#__wb_help], \caption\button[#__wb_help]\color\back[\caption\button[#__wb_help]\color\state]&$FFFFFF | \caption\button[#__wb_help]\color\alpha<<24 )
+          _draw_box_button_( \caption\button[#__wb_close], \caption\button[#__wb_close]\color\back[\caption\button[#__wb_close]\color\state]&$FFFFFF | \caption\button[#__wb_close]\color\alpha<<24 )
+          _draw_box_button_( \caption\button[#__wb_maxi], \caption\button[#__wb_maxi]\color\back[\caption\button[#__wb_maxi]\color\state]&$FFFFFF | \caption\button[#__wb_maxi]\color\alpha<<24 )
+          _draw_box_button_( \caption\button[#__wb_mini], \caption\button[#__wb_mini]\color\back[\caption\button[#__wb_mini]\color\state]&$FFFFFF | \caption\button[#__wb_mini]\color\alpha<<24 )
+          _draw_box_button_( \caption\button[#__wb_help], \caption\button[#__wb_help]\color\back[\caption\button[#__wb_help]\color\state]&$FFFFFF | \caption\button[#__wb_help]\color\alpha<<24 )
           
           ; buttons image
           DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
-          draw_close_button( \caption\button[#__wb_close], 6 )
-          draw_maximize_button( \caption\button[#__wb_maxi], 4 )
-          draw_minize_button( \caption\button[#__wb_mini], 4 )
-          draw_help_button( \caption\button[#__wb_help], 4 )
+          _draw_close_button_( \caption\button[#__wb_close], 6 )
+          _draw_maximize_button_( \caption\button[#__wb_maxi], 4 )
+          _draw_minize_button_( \caption\button[#__wb_mini], 4 )
+          _draw_help_button_( \caption\button[#__wb_help], 4 )
           
           ; Draw image
           If \image\id
@@ -14746,10 +14737,10 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\color\back <>- 1
             If \color\fore <>- 1
               DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-              _box_gradient_( \vertical,\x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\color\Fore[\color\state],\color\Back[Bool( *this\_state&#__s_back )*\color\state], \round )
+              _draw_gradient_( \vertical, *this,\color\Fore[\color\state],\color\Back[Bool( *this\_state&#__s_back )*\color\state], [#__c_frame] )
             Else
               DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-              draw_box( *this, color\back, [#__c_frame])
+              _draw_box_( *this, color\back, [#__c_frame])
             EndIf
           EndIf
         EndIf
@@ -14770,10 +14761,10 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; box draw    
         Protected _box_x_,_box_y_
         If #PB_GadgetType_Option = *this\type
-          draw_button( 1, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round );, \color )
+          _draw_button_( 1, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round );, \color )
         EndIf 
         If #PB_GadgetType_CheckBox = *this\type
-          draw_button( 3, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round );, \color )
+          _draw_button_( 3, *this\button\x,*this\button\y,*this\button\width,*this\button\height, *this\button\state, *this\button\round );, \color )
         EndIf
         
         ; image draw
@@ -14798,7 +14789,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; frame draw
         If *this\fs
           DrawingMode( #PB_2DDrawing_Outlined )
-          draw_box( *this, color\frame, [#__c_frame])
+          _draw_box_( *this, color\frame, [#__c_frame])
         EndIf
       EndWith
     EndProcedure
@@ -16869,6 +16860,12 @@ CompilerIf #PB_Compiler_IsMainFile
       class.s = LCase( Trim( class ) )
       OpenList( *parent, GetState( *parent ) ) 
       
+      If class = "scrollarea"
+        *param1 = width
+        *param2 = height
+        *param3 = 5
+      EndIf
+      
       ; create elements
       Select class
         Case "window"    
@@ -17491,7 +17488,8 @@ CompilerIf #PB_Compiler_IsMainFile
     widget_add( *window, "button", 35, 65+40, 50, 30 )
     widget_add( *window, "text", 45, 65+40*2, 50, 30 )
     
-    Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
+    ;Define *container = widget_add( *window, "container", 100, 25, 265, 170 )
+    Define *container = widget_add( *window, "scrollarea", 100, 25, 265, 170 )
     widget_add( *container, "button", 15, 25, 30, 30 )
     widget_add( *container, "text", 25, 65, 50, 30 )
     widget_add( *container, "button", 35, 65+40, 80, 30 )
@@ -17554,5 +17552,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = gBAAAAAAAAAkFAAAAAgAw3G5BAADAAAAAAAAAAAYghBAAACAcHYggAA5wPAgAAAAAAAAAAAAAAAAAAAACAAQAAAADA--BAAAAAAwAAAAAAAAQAAAAAAAAAAAAgxAAAAAAAAAAAAAQACgAAAAABAIAAAAAAAAAAAwHAAwAAAAAAAIAAAAAAAAQAAAAAMAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiDAAAIOAAAAAAAAAAAyAAAAAAAAAYAAAAAAAAADAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAg-BAAAAAAAAAAAAAAAAAACAAAQAAAAAAAAAAAAAAAAAAAQEYLAAAAABCQA3AA5EAAA5DAAAAAAAAAAw
+; Folding = ---------------------------z-f4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

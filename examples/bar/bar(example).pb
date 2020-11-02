@@ -8,7 +8,8 @@ XIncludeFile "../../widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
- 
+  #__round = 7
+  
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     LoadFont(0, "Arial", 16)
   CompilerElse

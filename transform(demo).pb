@@ -271,12 +271,12 @@ additem(widget(), -1, "form_0") : resize(widget(), 50, 30, 500, 500) : *new = wi
 ScrollArea(30,30,450-2,450-2, 250,750)
 
 container(30,30,400,400)
-Button(120,120,170,40,"butt0")
 Button(120,160,115,50,"butt1")
 Button(150,180,115,50,"butt2")
 Button(180,200,115,50,"butt2")
 Button(120,240,170,40,"butt4")
 closelist()
+Button(120,120,170,40,"butt0")
 closelist()
 
 Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
