@@ -24,20 +24,21 @@ CompilerIf #PB_Compiler_IsMainFile
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
     
-    *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    *g = MDI(310, 10, 290, 300)
+    SetAttribute(*g, #PB_ScrollArea_ScrollStep, 15)
+    SetAttribute(*g, #PB_ScrollArea_InnerWidth, sw)
+    SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
-    Button(10,  10, 230, 30,"Button 1")
-    Button(50,  50, 230, 30,"Button 2") ;: SetAlignment(widget(), #__align_right)
-    Button(90,  90, 230, 30,"Button 3")
+    Define *g1 = AddItem(*g, -1, "form_1") : Resize(*g1, 10,  10, 230, 30)
+    Define *g2 = AddItem(*g, -1, "form_2") : Resize(*g2, 50,  50, 230, 30)
+    Define *g3 = AddItem(*g, -1, "form_3") : Resize(*g3, 90,  90, 230, 30)
     Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__text_right)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
-    ;bug bug bugbugbugbugbugbugbugbugbugbug
-    *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : OpenList(*g)
-    ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : OpenList(*g)
-    ;*b = Button(Sw-130, Sh-130, 130, 30,"Window") : OpenList(*g)
-    ;*b = Container(Sw-130, Sh-130, 130, 30) : OpenList(*g)
+    *b = AddItem(*g, -1, "form") : Resize(*b, Sw-130, Sh-30, 130, 30)
+    ;  *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu, *g) : CloseList()
+    ; *b = Window(Sw-130, Sh-130, 130, 30,"Window", #__window_systemmenu|#__window_child, *g) : CloseList()
     CloseList()
     
     ;
@@ -60,9 +61,9 @@ CompilerIf #PB_Compiler_IsMainFile
       time = ElapsedMilliseconds()
       For i=0 To count
         If Bool(i>count-110)
-          Window((count-i)*2, (count-i)*2, 130, 30,"Window"+Str(i), *g)
+          Button((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
         Else
-          Window(Sw-130, Sh-30, 130, 30,"Window"+Str(i), *g)
+          Button(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
@@ -111,5 +112,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = P-
+; Folding = v-
 ; EnableXP

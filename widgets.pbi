@@ -890,8 +890,8 @@ CompilerIf Not Defined( widget, #PB_Module )
     Macro MDI_Update( _child_ )
       _child_\parent\x[#__c_required] = _child_\x[#__c_container] 
       _child_\parent\y[#__c_required] = _child_\y[#__c_container]
-      _child_\parent\width[#__c_required] = _child_\x[#__c_container] + _child_\width[#__c_container] - _child_\parent\x[#__c_required]
-      _child_\parent\height[#__c_required] = _child_\y[#__c_container] + _child_\height[#__c_container] - _child_\parent\y[#__c_required]
+      _child_\parent\width[#__c_required] = _child_\x[#__c_container] + _child_\width[#__c_frame] - _child_\parent\x[#__c_required]
+      _child_\parent\height[#__c_required] = _child_\y[#__c_container] + _child_\height[#__c_frame] - _child_\parent\y[#__c_required]
       
       If StartEnumerate( _child_\parent )
         If widget( )\parent = _child_\parent
@@ -1944,7 +1944,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Procedure.i a_init( *this._s_widget )
       Structure DataBuffer
-        cursor.i[#__anchors + 1]
+        cursor.i[#__a_count + 1]
       EndStructure
       
       Protected i, *Cursor.DataBuffer = ?CursorsBuffer
@@ -1962,7 +1962,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           transform( )\grid\size = #__grid_size
           transform( )\grid\image = a_grid_image( #__grid_size-1, #__grid_type, $FF000000 )
           
-          For i = 1 To #__anchors
+          For i = 1 To #__a_count
             transform( )\id[i]\cursor = *Cursor\cursor[i]
             
             transform( )\id[i]\color[0]\frame = $ff000000
@@ -2105,7 +2105,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         transform( )\index = 0 
         
         ; From point anchor
-        For _index_ = 1 To #__a_moved ; #__anchors ; To 0 Step - 1
+        For _index_ = 1 To #__a_moved ; #__a_count ; To 0 Step - 1
           If transform( )\id[_index_] And 
              _from_point_( mouse_x, mouse_y, transform( )\id[_index_] ) 
             
@@ -2250,7 +2250,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               If transform( )\widget\parent 
                 ; не родные гаджеты у мдай-а
                 If transform( )\widget\parent\type = #PB_GadgetType_MDI And Not transform( )\widget\child ; mdi inner coordinate bug
-                                                                        ; horizontal
+                                                                                                          ; horizontal
                   Select transform( )\index
                     Case 3, 6, 7 ; right
                       mouse_x + transform( )\widget\parent\x[#__c_inner]
@@ -2766,6 +2766,13 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     
     ;- 
+    ;-
+    Macro _scroll_bars_( _this_ )
+      Bool( _this_\parent And _this_\child )
+      ; Bool( _this_\parent\scroll And _this_\parent\scroll\v And _this_\parent\scroll\h )
+      ;  Bool(_this_\parent And _this_\parent\scroll And ( _this_\parent\scroll\v = _this_ Or _this_ = _this_\parent\scroll\h ))
+    EndMacro
+    
     Declare Reclip( *this._s_widget, childrens.b )
     Procedure   Reclip( *this._s_widget, childrens.b )
       ; Debug  *this\address
@@ -2807,7 +2814,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       ; for the scrollarea childrens except scrollbars
-      If *this\parent\type = #PB_GadgetType_ScrollArea  
+      If *this\parent\type = #PB_GadgetType_ScrollArea Or
+        *this\parent\type = #PB_GadgetType_MDI 
         If Not (*this\parent\scroll And
                 ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
           If _p_x2_ > *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
@@ -2972,94 +2980,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndProcedure
     
-    ;-
-    Macro _scroll_bars_( _this_ )
-     Bool( _this_\parent And _this_\child )
-    ;   Bool(_this_\parent And _this_\parent\scroll And ( _this_\parent\scroll\v = _this_ Or _this_ = _this_\parent\scroll\h ))
-    EndMacro
-        
-    Procedure   ResizeC(*parent._s_widget, _change_x_, _change_y_)
-      Protected.l x, y, width, height
-      Protected x2,y2,pw,ph, pwd,phd
-      
-      If *parent\align
-        pw = ( *parent\width - *parent\align\delta\width )
-        ph = ( *parent\height - *parent\align\delta\height )
-        pwd = pw/2 
-        phd = ph/2 
-      EndIf
-      
-      If StartEnumerate( *parent ) 
-        ;        PushListPosition( widget( ) )
-        ;        ForEach widget( )
-        
-        If widget( )\parent = *parent ; And widget( )\draw 
-          If widget( )\align
-            
-            x2 = ( widget( )\align\delta\x + widget( )\align\delta\width )
-            y2 = ( widget( )\align\delta\y + widget( )\align\delta\height )
-            
-            Select widget( )\align\h
-              Case 0, 3, 5 : x = widget( )\align\delta\x                                                   
-              Case 1, 6    : x = widget( )\align\delta\x + pwd
-              Case 2       : x = widget( )\align\delta\x + pw   
-              Case 4       : x = widget( )\align\delta\x * *parent\width / *parent\align\delta\width       
-            EndSelect
-            
-            Select widget( )\align\v
-              Case 0, 3, 5 : y = widget( )\align\delta\y                                                   
-              Case 1, 6    : y = widget( )\align\delta\y + phd 
-              Case 2       : y = widget( )\align\delta\y + ph   
-              Case 4       : y = widget( )\align\delta\y * *parent\height / *parent\align\delta\height       
-            EndSelect
-            
-            Select widget( )\align\h
-              Case 0       : width = x2
-              Case 1, 5    : width = x2 + pwd    ; center ( right & bottom )
-              Case 2, 3, 6 : width = x2 + pw     ; right & bottom
-              Case 4       : width = x2 * *parent\width / *parent\align\delta\width
-            EndSelect
-            
-            Select widget( )\align\v
-              Case 0       : height = y2
-              Case 1, 5    : height = y2 + phd    ; center ( right & bottom )
-              Case 2, 3, 6 : height = y2 + ph     ; right & bottom
-              Case 4       : height = y2 * *parent\height / *parent\align\delta\height
-            EndSelect
-            
-            Resize( widget( ), x, y, width - x, height - y )
-          Else
-           ;;Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-          ;;  Resize( widget( ), widget( )\x[#__c_container] + *parent\x[#__c_required], widget( )\y[#__c_container] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
-  
-            If _change_x_ 
-              If _scroll_bars_( widget( ) )
-                Resize( widget( ), widget( )\x[#__c_container], #PB_Ignore, #PB_Ignore, #PB_Ignore )
-              Else
-                Resize( widget( ), widget( )\x[#__c_container] + *parent\x[#__c_required], #PB_Ignore, #PB_Ignore, #PB_Ignore )
-              EndIf
-            EndIf
-            
-            If _change_y_ 
-              If _scroll_bars_( widget( ) )
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container], #PB_Ignore, #PB_Ignore )
-              Else
-                Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *parent\y[#__c_required], #PB_Ignore, #PB_Ignore )
-              EndIf
-            EndIf
-             
-          EndIf
-          
-          Reclip( widget( ), 1 )
-          
-        EndIf
-        
-        ;        Next
-        ;        PopListPosition( widget( ) )
-        StopEnumerate( )
-      EndIf
-    EndProcedure
-    
     Procedure.b Resize( *this._s_widget, x.l,y.l,width.l,height.l )
       Protected.b result
       Protected.l Change_x, Change_y, Change_width, Change_height
@@ -3129,7 +3049,10 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         If x = #PB_Ignore 
-          x = *this\parent\x[#__c_inner] + *this\x[#__c_container]
+          x = *this\x[#__c_container]
+          ;If ( *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h )
+            x + *this\parent\x[#__c_inner]
+          ;EndIf
         Else
           If *this\parent 
             If Not _scroll_bars_( *this )
@@ -3145,7 +3068,11 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf  
         
         If y = #PB_Ignore 
-          y = *this\parent\y[#__c_inner] + *this\y[#__c_container]
+          ;;y = *this\parent\y[#__c_inner] + *this\y[#__c_container]
+          y = *this\y[#__c_container]
+          ;If ( *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h )
+            y + *this\parent\y[#__c_inner]
+          ;EndIf
         Else
           If *this\parent 
             If Not _scroll_bars_( *this )
@@ -3159,7 +3086,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             y + *this\parent\y[#__c_inner]
           EndIf 
         EndIf  
-
+        
         If *this\type = #__type_window
           If width = #PB_Ignore 
             width = \width[#__c_screen] - *this\bs*2 - *this\__width
@@ -3273,6 +3200,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf 
         EndIf
         
+        
         If *this\resize & #__resize_change
           ; 
           *this\width[#__c_inner2] = *this\width[#__c_container]
@@ -3291,26 +3219,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
             *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
-          EndIf
-          
-          ; then move and size parent set clip ( width&height )
-          If *this\parent And *this\parent <> *this
-            Reclip( *this, #False )
-          Else
-            *this\x[#__c_clip] = *this\x[#__c_screen]
-            *this\y[#__c_clip] = *this\y[#__c_screen]
-            *this\width[#__c_clip] = *this\width[#__c_screen]
-            *this\height[#__c_clip] = *this\height[#__c_screen]
-            
-            *this\x[#__c_clip1] = *this\x[#__c_frame]
-            *this\y[#__c_clip1] = *this\y[#__c_frame]
-            *this\width[#__c_clip1] = *this\width[#__c_frame]
-            *this\height[#__c_clip1] = *this\height[#__c_frame]
-            
-            *this\x[#__c_clip2] = *this\x[#__c_inner]
-            *this\y[#__c_clip2] = *this\y[#__c_inner]
-            *this\width[#__c_clip2] = *this\width[#__c_inner]
-            *this\height[#__c_clip2] = *this\height[#__c_inner]
           EndIf
           
           If *this\type = #__type_panel 
@@ -3336,40 +3244,88 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\type = #PB_GadgetType_Spin
             *this\width[#__c_inner2] = *this\width[#__c_container] - *this\bs*2 - *this\bar\button[#__b_3]\size
           EndIf
+        EndIf
+        
+        ; then move and size parent set clip ( width&height )
+        If *this\parent And *this\parent <> *this
+          Reclip( *this, #False )
+        Else
+          *this\x[#__c_clip] = *this\x[#__c_screen]
+          *this\y[#__c_clip] = *this\y[#__c_screen]
+          *this\width[#__c_clip] = *this\width[#__c_screen]
+          *this\height[#__c_clip] = *this\height[#__c_screen]
           
-          ; then move and size parent
-          If *this\container
-            ResizeC(*this, Change_x, Change_y)
+          *this\x[#__c_clip1] = *this\x[#__c_frame]
+          *this\y[#__c_clip1] = *this\y[#__c_frame]
+          *this\width[#__c_clip1] = *this\width[#__c_frame]
+          *this\height[#__c_clip1] = *this\height[#__c_frame]
+          
+          *this\x[#__c_clip2] = *this\x[#__c_inner]
+          *this\y[#__c_clip2] = *this\y[#__c_inner]
+          *this\width[#__c_clip2] = *this\width[#__c_inner]
+          *this\height[#__c_clip2] = *this\height[#__c_inner]
+        EndIf
+        
+        ; then move and size parent
+        If *this\container And *this\count\childrens
+          ; Protected.l x, y, width, height
+          Protected x2,y2,pw,ph, pwd,phd
+          
+          If *this\align
+            pw = ( *this\width - *this\align\delta\width )
+            ph = ( *this\height - *this\align\delta\height )
+            pwd = pw/2 
+            phd = ph/2 
           EndIf
           
-          If *this\parent And 
-             *this\parent\type = #__type_mdi And ; Not _is_scrollbar_( *this ) And Not *this\parent\change 
-             *this\parent\scroll And 
-             *this\parent\scroll\v <> *this And 
-             *this\parent\scroll\h <> *this And
-             *this\parent\scroll\v\bar\thumb\change = 0 And
-             *this\parent\scroll\h\bar\thumb\change = 0
+          If StartEnumerate( *this ) 
+            If *this = widget( )\parent And 
+               Not (*this\scroll And (*this\scroll\v = widget( ) Or *this\scroll\h = widget( )) )
+              
+              If widget( )\align
+                x2 = ( widget( )\align\delta\x + widget( )\align\delta\width )
+                y2 = ( widget( )\align\delta\y + widget( )\align\delta\height )
+                
+                Select widget( )\align\h
+                  Case 0, 3, 5 : x = widget( )\align\delta\x                                                   
+                  Case 1, 6    : x = widget( )\align\delta\x + pwd
+                  Case 2       : x = widget( )\align\delta\x + pw   
+                  Case 4       : x = widget( )\align\delta\x * *this\width / *this\align\delta\width       
+                EndSelect
+                
+                Select widget( )\align\v
+                  Case 0, 3, 5 : y = widget( )\align\delta\y                                                   
+                  Case 1, 6    : y = widget( )\align\delta\y + phd 
+                  Case 2       : y = widget( )\align\delta\y + ph   
+                  Case 4       : y = widget( )\align\delta\y * *this\height / *this\align\delta\height       
+                EndSelect
+                
+                Select widget( )\align\h
+                  Case 0       : width = x2
+                  Case 1, 5    : width = x2 + pwd    ; center ( right & bottom )
+                  Case 2, 3, 6 : width = x2 + pw     ; right & bottom
+                  Case 4       : width = x2 * *this\width / *this\align\delta\width
+                EndSelect
+                
+                Select widget( )\align\v
+                  Case 0       : height = y2
+                  Case 1, 5    : height = y2 + phd    ; center ( right & bottom )
+                  Case 2, 3, 6 : height = y2 + ph     ; right & bottom
+                  Case 4       : height = y2 * *this\height / *this\align\delta\height
+                EndSelect
+                
+                Resize( widget( ), x, y, width - x, height - y )
+              Else
+                If (Change_x Or Change_y)
+                  Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                ElseIf (Change_width Or Change_height)
+                  Reclip( widget( ), 1 )
+                EndIf
+              EndIf
+            EndIf
             
-            MDI_Update( *this )
+            StopEnumerate( )
           EndIf
-          
-;           If *this\type = #__type_mdi
-;             If widget::Updates( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
-;               
-; ;               *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
-; ;               *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
-; ;               
-; ;               If *this\container 
-; ;                 If StartEnumerate( *this )
-; ;                   If widget( )\parent = *this
-; ;                     Reclip( widget( ), #True )
-; ;                   EndIf
-; ;                   StopEnumerate( )
-; ;                 EndIf
-; ;               EndIf
-;             EndIf
-;           EndIf
-          
         EndIf
         
         If *this\draw
@@ -3391,7 +3347,42 @@ CompilerIf Not Defined( widget, #PB_Module )
           ElseIf *this\container
             Post( #__event_resize, *this )
           EndIf
+          
+          
+          
+          If *this\resize & #__resize_change
+          If *this\parent And 
+             *this\parent\type = #__type_mdi And ; Not _is_scrollbar_( *this ) And Not *this\parent\change 
+             *this\parent\scroll And 
+             *this\parent\scroll\v <> *this And 
+             *this\parent\scroll\h <> *this And
+             *this\parent\scroll\v\bar\thumb\change = 0 And
+             *this\parent\scroll\h\bar\thumb\change = 0
+            
+            MDI_Update( *this )
+          EndIf
+          
+          ;           If *this\type = #__type_mdi
+          ;             If widget::Updates( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+          ;               
+          ; ;               *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
+          ; ;               *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
+          ; ;               
+          ; ;               If *this\container 
+          ; ;                 If StartEnumerate( *this )
+          ; ;                   If widget( )\parent = *this
+          ; ;                     Reclip( widget( ), #True )
+          ; ;                   EndIf
+          ; ;                   StopEnumerate( )
+          ; ;                 EndIf
+          ; ;               EndIf
+          ;             EndIf
+          ;           EndIf
+          
         EndIf
+        
+        
+         EndIf
         
         ProcedureReturn result
       EndWith
@@ -3427,7 +3418,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ChangeCurrentElement( widget( ), _this_\address )
       ;; Debug " "+widget( )\class +" "+ _this_\class +" "+ _before_\class
       ;;If widget( )\address <> _before_\address
-        MoveElement( widget( ), #PB_List_After, _before_\address )
+      MoveElement( widget( ), #PB_List_After, _before_\address )
       ;;EndIf
       
       ; change root address for the startenumerate 
@@ -3457,7 +3448,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       PushListPosition( widget( ) )
       ChangeCurrentElement( widget( ), _this_\address )
       ;;If widget( )\address <> _after_\address
-        MoveElement( widget( ), #PB_List_Before, _after_\address )
+      MoveElement( widget( ), #PB_List_Before, _after_\address )
       ;;EndIf
       
       If _this_\count\childrens
@@ -5074,7 +5065,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *this\bar\thumb\change 
-            ;- ScrollArea_Update
+            ;- Area_Update
             If *this\parent And 
                *this\parent\scroll
               
@@ -5083,22 +5074,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\parent\y[#__c_required] =- *this\bar\page\pos
                   *this\parent\change =- 1
                   
-                  ; ScrollArea childrens auto resize 
+                  ; Area childrens x&y auto move 
                   If *this\parent\container
                     If StartEnumerate( *this\parent ) 
-                      If widget( )\parent = *this\parent And widget( ) <> *this And Not widget( )\align
-                        ;;  Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_container] ) + *this\parent\y[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
-                            
-                        ; TODO resize
+                      If *this\parent = widget( )\parent And 
+                         *this\parent\scroll\v <> widget( ) And 
+                         *this\parent\scroll\h <> widget( ) And Not widget( )\align
+                        
                         If _scroll_bars_( widget( ) )
-                          Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_container] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
                         Else
-                          Resize( widget( ), #PB_Ignore, ( widget( )\y[#__c_container] + *this\parent\y[#__c_required] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *this\parent\y[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
                         EndIf
                       EndIf
                       
                       StopEnumerate( )
-                      ; Debug "v scroll parent children end " + widget( )\class
                     EndIf
                   EndIf
                 EndIf
@@ -5107,28 +5097,25 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\parent\x[#__c_required] =- *this\bar\page\pos
                   *this\parent\change =- 2
                   
-                  Debug "change "+*this\parent\class +" "+ *this\parent\x[#__c_required]
-                  ; ScrollArea childrens auto resize 
+                  ; Area childrens x&y auto move 
                   If *this\parent\container
                     If StartEnumerate( *this\parent ) 
-                      If widget( )\parent = *this\parent And widget( ) <> *this And Not widget( )\align
-                        ;;  Resize( widget( ), ( widget( )\x[#__c_container] ) + *this\parent\x[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                      If *this\parent = widget( )\parent And 
+                         *this\parent\scroll\v <> widget( ) And 
+                         *this\parent\scroll\h <> widget( ) And Not widget( )\align
                         
-                        ; TODO resize
                         If _scroll_bars_( widget( ) )
-                          Resize( widget( ), ( widget( )\x[#__c_container] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), widget( )\x[#__c_container] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         Else
-                          Resize( widget( ), ( widget( )\x[#__c_container] + *this\parent\x[#__c_required] ) + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                          Resize( widget( ), widget( )\x[#__c_container] + *this\parent\x[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         EndIf
                       EndIf
                       
                       StopEnumerate( )
-                      ; Debug "h scroll parent children end " + widget( )\class
                     EndIf
                   EndIf
                 EndIf
               EndIf
-              
               
             EndIf
           EndIf
@@ -10745,7 +10732,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                       round, round, \color\frame[\color\state] )
             
             ; draw inner frame 
-            If \type = #__type_ScrollArea ; \scroll And \scroll\v And \scroll\h
+            If \type = #__type_ScrollArea Or \type = #__type_mdi ; \scroll And \scroll\v And \scroll\h
               RoundBox( \x[#__c_inner] - 1, \y[#__c_inner] - 1, iwidth, iheight,
                         round, round, \scroll\v\color\line )
             Else
@@ -10954,6 +10941,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If eventtype = #__event_MouseEnter
         Repaint = #True
+      EndIf
+      
+      If eventtype = #__Event_MouseMove
+        If _is_selected_( *this )
+;           If *this\container = #__type_root
+;             ResizeWindow(*this\root\canvas\window, (DesktopMouseX() - *this\root\mouse\delta\x), (DesktopMouseY() - *this\root\mouse\delta\y), #PB_Ignore, #PB_Ignore)
+;           Else
+            Repaint = Resize(*this, (mouse_x - mouse()\delta\x), (mouse_y - mouse()\delta\y), #PB_Ignore, #PB_Ignore)
+;           EndIf
+        EndIf
       EndIf
       
       If eventtype = #__event_MouseLeave
@@ -11422,7 +11419,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       If *this\type = #PB_GadgetType_MDI
         *this\count\items + 1
         Static pos_x, pos_y
-        Protected x = 10, y = 10, width.l = 280, height.l = 180
+        Protected x = #__grid_size, y = #__grid_size, width.l = 280, height.l = 180
         
         ;         If transform( ) And transform( )\grid\size
         ;           x = ( x/transform( )\grid\size ) * transform( )\grid\size
@@ -11434,8 +11431,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         flag | #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget | #__window_child
         result = Window( x + pos_x, y + pos_y, width, height, Text, flag, *this )
-        pos_y + 20 + 25
-        pos_x + 20
+        pos_y + y + #__border_size + #__caption_height
+        pos_x + x + #__border_size
         ProcedureReturn result
       EndIf
       
@@ -11750,7 +11747,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndSelect
       EndIf
       
-      If *this\type = #PB_GadgetType_ScrollArea
+      ; Bool( *this\parent And *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
+      If *this\type = #PB_GadgetType_ScrollArea Or *this\type = #PB_GadgetType_MDI
         Select Attribute 
           Case #PB_ScrollArea_X               : result = *this\x[#__c_required]
           Case #PB_ScrollArea_Y               : result = *this\y[#__c_required]
@@ -12075,8 +12073,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndSelect
       EndIf
       
-      ; Ok
-      If *this\type = #PB_GadgetType_ScrollArea
+      ; Bool( *this\parent And *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
+      If *this\type = #PB_GadgetType_ScrollArea Or *this\type = #PB_GadgetType_MDI
         Select Attribute 
           Case #PB_ScrollArea_X 
             If Bar_SetState( *this\scroll\h, *value )
@@ -13510,7 +13508,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         *this\type = type
         *this\round = round
         *this\class = class
-            
+        
         *this\bar\from =- 1
         ;;*this\bar\index =- 1
         *this\index[#__s_1] =- 1
@@ -13543,27 +13541,30 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If *this\type = #PB_GadgetType_MDI
             ScrollBars = 1
-            *this\fs = Bool( Not Flag&#__flag_borderLess ) * #__border_scroll
           EndIf
           
           If *this\type = #PB_GadgetType_ScrollArea
             ScrollBars = 1
             *this\bar\increment = ScrollStep
-            *this\fs = Bool( Not Flag&#__flag_borderLess ) * #__border_scroll
           EndIf
           
           If *this\type = #PB_GadgetType_Container 
-            *this\fs = 1
           EndIf
           
           If *this\type = #PB_GadgetType_Panel 
             If Flag & #__bar_vertical = #False
-              *this\__height = 25
+              *this\__height = #__panel_height
             Else
-              *this\__width = 85
+              *this\__width = #__panel_width
             EndIf
-            
-            *this\fs = 1
+          EndIf
+          
+          If Not Flag&#__flag_borderLess
+            If ScrollBars
+              *this\fs = #__border_scroll
+            Else
+              *this\fs = 1
+            EndIf
           EndIf
         EndIf
         
@@ -13602,7 +13603,7 @@ CompilerIf Not Defined( widget, #PB_Module )
            *this\type = #PB_GadgetType_Splitter
           
           *this\bar\increment = ScrollStep
-            
+          
           ; - Create Scroll
           If *this\type = #PB_GadgetType_ScrollBar
             *this\color\back = $FFF9F9F9 ; - 1 
@@ -15795,16 +15796,21 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If Not entered( )\transform 
             If entered( )\bar\from > 0
-              Debug "   debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
+              Debug "   bar delta pos >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
               ; bar mouse delta pos
               If entered( )\bar\from = #__b_3
                 mouse( )\delta\x = mouse_x - entered( )\bar\thumb\pos
                 mouse( )\delta\y = mouse_y - entered( )\bar\thumb\pos
               EndIf
             Else
-              Debug "   debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
-              mouse( )\delta\x = mouse_x - entered( )\x[#__c_container]
-              mouse( )\delta\y = mouse_y - entered( )\y[#__c_container]
+              Debug "  widget delta pos >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
+              If _scroll_bars_( entered( ) )
+                mouse( )\delta\x = mouse_x - entered( )\x[#__c_container]
+                mouse( )\delta\y = mouse_y - entered( )\y[#__c_container]
+              Else
+                mouse( )\delta\x = mouse_x - entered( )\x[#__c_container] - entered( )\parent\x[#__c_required]
+                mouse( )\delta\y = mouse_y - entered( )\y[#__c_container] - entered( )\parent\y[#__c_required]
+              EndIf
             EndIf
           EndIf
           
@@ -17548,5 +17554,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = gBAAACAAAAAgFAAAAAgAw3GAAAAAAAAAAAAAAAAAwwAAAA8wHA5fwABhAIBAMAAAAAAAAAAAAAAAAAAAQAAACAAAYA5-PAAAAAAAGAAAAsCkQCAAAAAAAAAAAAAGAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAA+AAAGAAAAAAABAAAAAAAAAAAAAgBAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAABAAAAAAAAAAAAAAgAAAgBgAAAAAAIAAAAAAAAAAA9RHPKpBAAAAAAAAAAAAAgAAAAAAAAAwQYAAAAAAAAAAAAAAAAAAg---7PAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAgNAACBAAA+AAAAAAAAAAA9
+; Folding = gBAAAAAAAAAkFAAAAAgAw3G5BAADAAAAAAAAAAAYghBAAACAcHYggAA5wPAgAAAAAAAAAAAAAAAAAAAACAAQAAAADA--BAAAAAAwAAAAAAAAQAAAAAAAAAAAAgxAAAAAAAAAAAAAQACgAAAAABAIAAAAAAAAAAAwHAAwAAAAAAAIAAAAAAAAQAAAAAMAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiDAAAIOAAAAAAAAAAAyAAAAAAAAAYAAAAAAAAADAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAg-BAAAAAAAAAAAAAAAAAACAAAQAAAAAAAAAAAAAAAAAAAQEYLAAAAABCQA3AA5EAAA5DAAAAAAAAAAw
 ; EnableXP

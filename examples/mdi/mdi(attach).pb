@@ -21,10 +21,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Define *g0._s_widget = AddItem(*mdi, -1, "main") : SetClass(widget(), "main") 
   Button(10,10,80,80,"button_0") : SetClass(widget(), GetText(widget())) 
   
-  
   Define *g1._s_widget = AddItem(*mdi, -1, "Child 1 (Position Attach)") : SetClass(widget(), "form_1") 
   Button(10,10,80,80,"button_1") : SetClass(widget(), GetText(widget())) 
-  
   
   Define *g2._s_widget = AddItem(*mdi, -1, "Child 2 (Frame Magnetic)") : SetClass(widget(), "form_2") 
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 

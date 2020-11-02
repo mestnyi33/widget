@@ -105,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     
     Widgets(Hex(#PB_GadgetType_MDI)) = MDI(665, 505, 160,95); ,#__flag_AutoSize)
     Define *g = AddItem(Widgets(Hex(#PB_GadgetType_MDI)), -1, "form_0")
-    Resize(*g, #PB_Ignore, 40, 120, 60)
+    Resize(*g, 7, 40, 120, 60)
     
 ;     CloseList()
 ; ;     OpenList(Root())

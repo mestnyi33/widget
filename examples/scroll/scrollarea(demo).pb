@@ -76,8 +76,8 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(g, #PB_ScrollArea_InnerHeight, sh+80)
       SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
       
-      ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
-      Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-30, #PB_Ignore, #PB_Ignore)
+      ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b), #PB_Ignore, #PB_Ignore)
+      Resize(*b, #PB_Ignore, GetAttribute(*g, #PB_ScrollArea_InnerHeight)-Height(*b), #PB_Ignore, #PB_Ignore)
       
       SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)
       SetAttribute(*g, #PB_ScrollArea_Y, 0)

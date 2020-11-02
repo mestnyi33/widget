@@ -3,7 +3,6 @@
 ;-
 CompilerIf Not Defined(structures, #PB_Module)
   DeclareModule structures
-    #__count_anchors_ = constants::#__anchors+1
     Prototype pFunc()
     
     ;{ 
@@ -260,7 +259,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;;text._s_text
       grid._s_grid
       dotted._s_dotted
-      id._s_transforms[#__count_anchors_]
+      id._s_transforms[constants::#__a_count+1]
     EndStructure
     
     ;- - _s_mode
@@ -569,7 +568,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       button._s_buttons ; checkbox; optionbox
       
       *align._s_align
-      *selector._s_transform[#__count_anchors_]
+      ;; *selector._s_transform[constants::#__a_count+1]
       
       Map *bind._s_bind()
       

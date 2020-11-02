@@ -7,33 +7,33 @@
     ;- - CONSTANTs
     ;{
     
-    ; demo 
+    ; default values 
     #__grid_type = 0
-    #__grid_size = 8 : #__a_size = 13 : #__border_size = 4 : #__caption_height = 24 ; -#__border_size
+    #__grid_size = 8 
+    #__a_size = 13 
+    #__border_size = 4 
+    #__caption_height = 24
     
-;     #__border_size = 4  
-;     #__caption_height = 21
+    #__panel_height = 25
+    #__panel_width = 85
+    
+    #__border_scroll = 2
     
     #__from_mouse_state = 0
     #__focus_state = 1
     
-    
-    #__round = 7
-    #__arrow_type = 1
-    #__arrow_size = 4
-    
     #__spin_padding_text = 1
     #__spin_buttonsize2 = 15
     #__spin_buttonsize = 18
-    
     #__splitter_buttonsize = 9
     #__scroll_buttonsize = 16
     
-    #__border_scroll = 2
+    #__arrow_type = 1 ;
+    #__arrow_size = 4 ;
+    
     #__sOC = SizeOf(Character)
     
-    #__anchors = 9+4
-    
+    #__a_count = 9+4
     #__a_moved = 9
     
     ; splitter 
@@ -636,9 +636,9 @@
     ;- GLOBAL
     ;-
     
-    Global test_draw_box_clip_type 
-    Global test_draw_box_clip1_type 
-    Global test_draw_box_clip2_type 
+    Global test_draw_box_clip_type = #PB_All
+    Global test_draw_box_clip1_type = #PB_All
+    Global test_draw_box_clip2_type = #PB_All
     
     Global test_draw_box_screen_type ;= #PB_All
     Global test_draw_box_inner_type ;= #PB_All
@@ -653,6 +653,10 @@
     test_draw_box_clip_type = #__type_mdi
     test_draw_box_clip1_type = #__type_mdi
     test_draw_box_clip2_type = #__type_mdi
+    
+;     test_draw_box_clip_type = #__type_scrollarea
+;     test_draw_box_clip1_type = #__type_scrollarea
+;     test_draw_box_clip2_type = #__type_scrollarea
     
     
     

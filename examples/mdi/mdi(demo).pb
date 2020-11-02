@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   MyCanvas = GetGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
   
   Define *mdi = MDI(x,y,width, height);, #__flag_autosize)
-  a_init( *mdi )
+  ; a_init( *mdi )
   
   Define *g0 = AddItem(*mdi, -1, "form_0")
   Button(10,10,80,80,"button_0")
@@ -26,6 +26,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define *g2 = AddItem(*mdi, -1, "form_2")
   Button(10,10,80,80,"button_2")
+  
+  Define *g3 = AddItem(*mdi, -1, "form_2")
+  Button(10,10,80,80,"button_3")
   
   ; use root list
   OpenList(Root())
