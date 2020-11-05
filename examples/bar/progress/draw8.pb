@@ -22,22 +22,38 @@ Macro _draw_h_progress_(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _col
   LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
   
   FrontColor(_color1_)
-  For y = _y_ To _y_ + _height_
-    For x = _x_ To (_x_ + (_pos_))
-      If Point(x, y) & $00FFFFFF = _color2_ & $00FFFFFF
-        Plot(x, y)
-      EndIf
-    Next x
-  Next y
+  Debug (_x_ + (_pos_))
+
+;   If _pos_ > _round_
+;     Box(_x_ + _frame_size_ + _round_, _y_ + _frame_size_, ((_pos_) - (_round_*2)) - _frame_size_*2, _height_ - _frame_size_*2)
+;     _pos2_ = _round_
+;   Else
+;     _pos2_ = _pos_
+;   EndIf
+;   
+;   For y = _y_ To _y_ + _height_
+;     For x = _x_ To (_x_ + (_pos2_))
+;       If Point(x, y) & $00FFFFFF = _color2_ & $00FFFFFF
+;         Plot(x, y)
+;       EndIf
+;     Next x
+;   Next y
   
   FrontColor(_color2_)
-  For y = _y_ To _y_ + _height_
-    For x = _x_ + (_pos_) To _x_ + _width_
-      If Point(x, y) & $00FFFFFF = _color2_ & $00FFFFFF
-        Plot(x, y)
-      EndIf
-    Next x
-  Next y
+  If _pos_ < _width_ - _round_
+    Box(_x_ + _frame_size_ + _round_, _y_ + _frame_size_, (_width_-(_pos_) - _round_*2) - _frame_size_*2, _height_ - _frame_size_*2)
+    _pos2_ = _width_ - _round_
+  Else
+    _pos2_ = _pos_
+  EndIf
+  
+;   For y = _y_ To _y_ + _height_
+;     For x = _x_ + (_pos2_) To _x_ + _width_
+;       If Point(x, y) & $00FFFFFF = _color2_ & $00FFFFFF
+;         Plot(x, y)
+;       EndIf
+;     Next x
+;   Next y
   
 EndMacro
 
@@ -88,7 +104,7 @@ Macro _box_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_, 
       
       BackColor(_fore_color1_)
       _draw_h_progress_(_pos_, _y_ + _height_, _x_, _y_, _width_ ,_height_, _round_, _frame_color1_, _frame_color2_, 0)
-      _draw_h_progress_(_pos_, _y_ + _height_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_size_)
+      ;;_draw_h_progress_(_pos_, _y_ + _height_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_size_)
 ;       _draw_h_progress_2(_pos_, _y_ + _height_, _x_, _y_, _width_ ,_height_, _round_, _frame_color1_, _frame_color2_, 0)
 ;       _draw_h_progress_2(_pos_, _y_ + _height_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_size_)
 ;       ;_draw_h_progress_(_pos_, _y_ + 1 + _height_-2, _x_+5, _y_+5, _width_-10 ,_height_-10, _round_, _back_color1_, _back_color2_)
@@ -204,7 +220,6 @@ EndIf
 Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
-
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

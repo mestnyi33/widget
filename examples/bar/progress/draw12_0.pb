@@ -6,19 +6,6 @@
   If _gradient_
     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
     LinearGradient(_x_,_y_, (_x_ + _width_), _y_)
-    
-    
-    FrontColor(_color1_)
-    If (_pos_)
-      For i = 0 To (_len_)
-        If Point(_x_ + i, _y_ + (_height_ - _pos_)) & $00FFFFFF = _color1_ & $00FFFFFF
-          Line(_x_ + i, _y_ + (_height_ - _pos_), (_len_) - i*2, 1)
-          Break
-        EndIf
-      Next i
-      
-      FillArea(_x_ + (_len_)/2, _y_ + (_height_ - _frame_size_) - 1,  -1) 
-    EndIf
   EndIf
   
   FrontColor(_color2_)
@@ -32,6 +19,20 @@
     
     FillArea(_x_ + (_len_)/2, _y_ + (_height_ - _pos_)/2,  -1) 
   EndIf
+  
+  If _gradient_
+    FrontColor(_color1_)
+    If (_pos_)
+      For i = 0 To (_len_)
+        If Point(_x_ + i, _y_ + (_height_ - _pos_)) & $00FFFFFF = _color1_ & $00FFFFFF
+          Line(_x_ + i, _y_ + (_height_ - _pos_), (_len_) - i*2, 1)
+          Break
+        EndIf
+      Next i
+      
+      FillArea(_x_ + (_len_)/2, _y_ + (_height_ - _frame_size_) - 1,  -1) 
+    EndIf
+  EndIf
 EndMacro
 
 Macro _draw_h_progress_2(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1)
@@ -42,16 +43,8 @@ Macro _draw_h_progress_2(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _co
   If _gradient_
     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
     LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-    
-    FrontColor(_color1_)
-    For y = _y_ To _y_ + _height_
-      For x = _x_ To (_x_ + (_pos_))
-        If Point(x, y) & $00FFFFFF = _color1_ & $00FFFFFF
-          Plot(x, y)
-        EndIf
-      Next x
-    Next y
   EndIf
+  
   
   FrontColor(_color2_)
   For y = _y_ To _y_ + _height_
@@ -62,7 +55,17 @@ Macro _draw_h_progress_2(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _co
     Next x
   Next y
   
-EndMacro
+ If _gradient_
+    FrontColor(_color1_)
+    For y = _y_ To _y_ + _height_
+      For x = _x_ To (_x_ + (_pos_))
+        If Point(x, y) & $00FFFFFF = _color1_ & $00FFFFFF
+          Plot(x, y)
+        EndIf
+      Next x
+    Next y
+  EndIf
+ EndMacro
 
 Macro _draw_h_progress_(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1)
   FrontColor(_color1_)
@@ -72,36 +75,49 @@ Macro _draw_h_progress_(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _col
   If _gradient_
     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
     LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-    
-    FrontColor(_color1_)
-    If (_pos_)
-      For i = 0 To (_len_)
-        If Point(_x_ + (_pos_), _y_ + i) & $00FFFFFF = _color1_ & $00FFFFFF
-          Line(_x_ + (_pos_), _y_ + i, 1, (_len_) - i*2)
-          Break
-        EndIf
-      Next i
-      
-      FillArea(_x_ + (_pos_)/2, _y_ + (_len_)/2,  -1) 
-    EndIf
-  EndIf
+  EndIf 
   
   FrontColor(_color2_)
-  If (_width_-_pos_)
-    For i = 0 To (_len_)
-      If Point(_x_ + (_pos_), _y_ + i) & $00FFFFFF = _color1_ & $00FFFFFF
-        Line(_x_ + (_pos_), _y_ + i, 1, (_len_) - i*2)
-        Break
-      EndIf
-    Next i
-    
-    FillArea(_x_ + (_width_ - _frame_size_) - 1, _y_ + (_len_)/2,  -1) 
+  
+  For i = 0 To (_len_)
+    If Point(_x_ + (_pos_), _y_ + i) & $00FFFFFF = _color1_ & $00FFFFFF
+      Line(_x_ + (_pos_), _y_ + i, 1, (_len_) - i*2)
+      Break
+    EndIf
+  Next i
+  
+  If (_width_- ((_pos_) + 1)) > 0
+   ;; FrontColor(_color2_)
+      Debug " blue "
+      Debug Str((_pos_) + 1) +" "+ Point(_x_ + (_pos_) + 1, _y_ + (_len_)/2)
+      Debug Str(_pos_ + (_width_ - _pos_)/2) +" "+ Point(_x_ + ((_width_ - _pos_)/2), _y_ + (_len_)/2)
+      If _width_/2 > _pos_
+        FillArea(_x_ + ((_width_ - _pos_)/2 ), _y_ + (_len_)/2,  -1) 
+      Else
+        FillArea(_x_ + (_pos_) + 1, _y_ + (_len_)/2,  -1) 
   EndIf
+EndIf
+  
+    If _gradient_ And ((_pos_) - 1) > 0
+;       Debug " gray "
+;       Debug Str((_pos_) - 1) +" "+ Point(_x_ + (_pos_) - 1, _y_ + (_len_)/2)
+;       Debug Str((_pos_)/2) +" "+ Point(_x_ + (_pos_)/2, _y_ + (_len_)/2)
+      
+    FrontColor(_color1_)
+  ;; FillArea(_x_ + (_pos_) - 1, _y_ + (_len_)/2,  -1) 
+     FillArea(_x_ + (_pos_)/2, _y_ + (_len_)/2,  -1) 
+  EndIf
+  
 EndMacro
 
 Macro _draw_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_color1_, _frame_color2_)
   ;https://www.purebasic.fr/english/viewtopic.php?f=13&t=75757&p=557936#p557936 ; thank you infratec
   BackColor(_fore_color1_)
+  ClipOutput(_x_+150, _y_, _width_ ,_height_)
+  ;ClipOutput(_x_, _y_, _width_-150 ,_height_)
+  ;ClipOutput(_x_, _y_, _width_-110 ,_height_)
+  ;ClipOutput(_x_+110, _y_, _width_ ,_height_)
+  ;ClipOutput(_x_+50, _y_, _width_-100 ,_height_)
   
   If _vertical_
     If _reverse_
@@ -119,7 +135,7 @@ Macro _draw_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_,
       _pos_ = _width_ - _pos_
       
       _draw_h_progress_(_pos_, _height_, _x_, _y_, _width_ ,_height_, _round_, _frame_color2_, _frame_color1_, 0, _gradient_)
-      _draw_h_progress_(_pos_, _height_, _x_, _y_, _width_ ,_height_, _round_, _back_color2_, _back_color1_, _frame_size_, _gradient_)
+      ;_draw_h_progress_(_pos_, _height_, _x_, _y_, _width_ ,_height_, _round_, _back_color2_, _back_color1_, _frame_size_, _gradient_)
     Else
       _draw_h_progress_(_pos_, _height_, _x_, _y_, _width_ ,_height_, _round_, _frame_color1_, _frame_color2_, 0, _gradient_)
       _draw_h_progress_(_pos_, _height_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_size_, _gradient_)
@@ -236,5 +252,5 @@ Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 9-
+; Folding = --
 ; EnableXP

@@ -417,7 +417,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       RoundBox( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_, _address_\round, _address_\round )
-    
+      
       BackColor( #PB_Default ) 
       FrontColor( #PB_Default ) ; bug
     EndMacro
@@ -593,217 +593,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       RoundBox( _x_,_y_,_width_,_height_, _round_,_round_ );, _color_frame_&$FFFFFF | _alpha_<<24 )
     EndMacro
     
-    
-    ;-
-    Macro _draw_v_progress_( _pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1 )
-      FrontColor( _color1_ )
-      DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-      RoundBox( _x_ + _frame_size_, _y_ + _frame_size_, _width_ - _frame_size_*2,_height_ - _frame_size_*2, _round_,_round_ )
-      
-      If _gradient_
-        DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-        LinearGradient( _x_,_y_, ( _x_ + _width_ ), _y_ )
-        
-        
-        FrontColor( _color1_ )
-        If ( _pos_ )
-          For i = 0 To ( _len_ )
-            If Point( _x_ + i, _y_ + ( _height_ - _pos_ ) ) & $00FFFFFF = _color1_ & $00FFFFFF
-              Line( _x_ + i, _y_ + ( _height_ - _pos_ ), ( _len_ ) - i*2, 1 )
-              Break
-            EndIf
-          Next i
-          
-          FillArea( _x_ + ( _len_ )/2, _y_ + ( _height_ - _frame_size_ ) - 1,  -1 ) 
-        EndIf
-      EndIf
-      
-      FrontColor( _color2_ )
-      If ( _height_ - _pos_ )
-        For i = 0 To ( _len_ )
-          If Point( _x_ + i, _y_ + ( _height_ - _pos_ ) ) & $00FFFFFF = _color1_ & $00FFFFFF
-            Line( _x_ + i, _y_ + ( _height_ - _pos_ ), ( _len_ ) - i*2, 1 )
-            Break
-          EndIf
-        Next i
-        
-        FillArea( _x_ + ( _len_ )/2, _y_ + ( _height_ - _pos_ )/2,  -1 ) 
-      EndIf
-    EndMacro
-    
-    Macro _draw_h_progress_3( _pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1 )
-      FrontColor( _color2_ )
-      DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-      RoundBox( _x_ + _frame_size_, _y_ + _frame_size_, _width_ - _frame_size_*2,_height_ - _frame_size_*2, _round_,_round_ )
-      
-      If _gradient_
-        DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-        LinearGradient( _x_,_y_, _x_, ( _y_ + _height_ ) )
-        
-        For y = _y_ To _y_ + _height_
-          If _round_ > _pos_ 
-            For x = ( _x_ + _pos_ ) To _x_ + _round_
-              If Point( x, y ) & $00FFFFFF = _color2_ & $00FFFFFF
-                Plot( x, y )
-              EndIf
-            Next x
-          EndIf
-          
-          If ( _pos_ ) > _width_-_round_ 
-            For x = _x_ + ( _pos_ ) To _x_ + _width_
-              If Point( x, y ) & $00FFFFFF = _color2_ & $00FFFFFF
-                Plot( x, y )
-              EndIf
-            Next x
-          Else
-            For x = _x_ + _width_-_round_ To _x_ + _width_
-              If Point( x, y ) & $00FFFFFF = _color2_ & $00FFFFFF
-                Plot( x, y )
-              EndIf
-            Next x
-          EndIf
-        Next y
-        
-        
-        If ( _pos_ ) < _width_-_round_ 
-          If ( _pos_ ) >= _round_ 
-            Box( ( _x_ + ( _pos_ ) ), _y_ + _frame_size_, ( _width_-( _pos_ )-_round_ ), _height_ - _frame_size_*2 )
-          Else
-            Box( ( _x_ + _round_ ), _y_ + _frame_size_, ( _width_-_round_*2 ), _height_ - _frame_size_*2 )
-          EndIf 
-        EndIf 
-        
-      EndIf
-      
-      FrontColor( _color1_ )
-      
-      For y = _y_ To _y_ + _height_
-        If _round_ > _pos_ 
-          For x = _x_ To _x_ + ( _pos_ )
-            If Point( x, y ) & $00FFFFFF = _color2_ & $00FFFFFF
-              Plot( x, y )
-            EndIf
-          Next x
-        Else
-          For x = _x_ To _x_ + _round_
-            If Point( x, y ) & $00FFFFFF = _color2_ & $00FFFFFF
-              Plot( x, y )
-            EndIf
-          Next x
-        EndIf
-        
-        If ( _pos_ ) > _width_-_round_ 
-          For x = _x_ + _width_-_round_ To _x_ + ( _pos_ )
-            If Point( x, y ) & $00FFFFFF = _color2_ & $00FFFFFF
-              Plot( x, y )
-            EndIf
-          Next x
-        EndIf
-      Next y
-      
-      If ( _pos_ ) >= _round_ 
-        If ( _pos_ ) <= _width_-_round_
-          Box( ( _x_ + _round_ ), _y_ + _frame_size_, ( _pos_-_round_ ), _height_ - _frame_size_*2 )
-        Else
-          Box( ( _x_ + _round_ ), _y_ + _frame_size_, ( _width_-_round_*2 ), _height_ - _frame_size_*2 )
-        EndIf
-      EndIf 
-    EndMacro
-    
-    Macro _draw_h_progress_2( _pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1 )
-      FrontColor( _color1_ )
-      DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-      RoundBox( _x_ + _frame_size_, _y_ + _frame_size_, _width_ - _frame_size_*2,_height_ - _frame_size_*2, _round_,_round_ )
-      
-      If _gradient_
-        DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-        LinearGradient( _x_,_y_, _x_, ( _y_ + _height_ ) )
-        
-        FrontColor( _color1_ )
-        For y = _y_ To _y_ + _height_
-          For x = _x_ To ( _x_ + ( _pos_ ) )
-            If Point( x, y ) & $00FFFFFF = _color1_ & $00FFFFFF
-              Plot( x, y )
-            EndIf
-          Next x
-        Next y
-      EndIf
-      
-      FrontColor( _color2_ )
-      For y = _y_ To _y_ + _height_
-        For x = _x_ + ( _pos_ ) To _x_ + _width_
-          If Point( x, y ) & $00FFFFFF = _color1_ & $00FFFFFF
-            Plot( x, y )
-          EndIf
-        Next x
-      Next y
-      
-    EndMacro
-    
-    Macro _draw_h_progress_( _pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1 )
-      
-      ;_draw_h_progress_2( _pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_ )
-      
-      FrontColor( _color1_ )
-      DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-      RoundBox( _x_ + _frame_size_, _y_ + _frame_size_, _width_ - _frame_size_*2,_height_ - _frame_size_*2, _round_,_round_ )
-      
-      If _gradient_
-        DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-        LinearGradient( _x_,_y_, _x_, ( _y_ + _height_ ) )
-        
-        FrontColor( _color1_ )
-        If ( _pos_ )
-          For i = 0 To ( _len_ )
-            If Point( _x_ + ( _pos_ ), _y_ + i ) & $00FFFFFF = _color1_ & $00FFFFFF
-              Line( _x_ + ( _pos_ ), _y_ + i, 1, ( _len_ ) - i*2 )
-              Break
-            EndIf
-          Next i
-          
-          FillArea( _x_ + ( _pos_ )/2, _y_ + ( _len_ )/2,  -1 ) 
-        EndIf
-      EndIf
-      
-      FrontColor( _color2_ )
-      If ( _width_-_pos_ )
-        For i = 0 To ( _len_ )
-          If Point( _x_ + ( _pos_ ), _y_ + i ) & $00FFFFFF = _color1_ & $00FFFFFF
-            Line( _x_ + ( _pos_ ), _y_ + i, 1, ( _len_ ) - i*2 )
-            Break
-          EndIf
-        Next i
-        
-        FillArea( _x_ + ( _width_ - _frame_size_ ) - 1, _y_ + ( _len_ )/2,  -1 ) 
-      EndIf
-    EndMacro
-    
-    Macro _draw_progress_( _reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_color1_, _frame_color2_, _gradient_=1 )
-      ;https://www.purebasic.fr/english/viewtopic.php?f=13&t=75757&p=557936#p557936 ; thank you infratec
-      If _vertical_
-        If _reverse_
-          _pos_ = _height_ - _pos_
-          
-          _draw_v_progress_( _pos_, _width_, _x_, _y_, _width_ ,_height_, _round_, _frame_color2_, _frame_color1_, 0, _gradient_ )
-          _draw_v_progress_( _pos_, _width_, _x_, _y_, _width_ ,_height_, _round_, _back_color2_, _back_color1_, 1, _gradient_ )
-        Else
-          _draw_v_progress_( _pos_, _width_, _x_, _y_, _width_ ,_height_, _round_, _frame_color1_, _frame_color2_, 0, _gradient_ )
-          _draw_v_progress_( _pos_, _width_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, 1, _gradient_ )
-          
-        EndIf
-      Else
-        If _reverse_
-          _pos_ = _width_ - _pos_
-          
-          _draw_h_progress_( _pos_, _height_, _x_, _y_, _width_ ,_height_, _round_, _frame_color2_, _frame_color1_, 0, _gradient_ )
-          _draw_h_progress_( _pos_, _height_, _x_, _y_, _width_ ,_height_, _round_, _back_color2_, _back_color1_, 1, _gradient_ )
-        Else
-          _draw_h_progress_( _pos_, _height_, _x_, _y_, _width_ ,_height_, _round_, _frame_color1_, _frame_color2_, 0, _gradient_ )
-          _draw_h_progress_( _pos_, _height_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, 1, _gradient_ )
-          
-        EndIf
-      EndIf
-    EndMacro
     
     ;-
     Macro _bar_in_start_( _bar_ ) 
@@ -2241,23 +2030,23 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; add parent coordinate
             If transform( )\widget\transform = 1
               If transform( )\widget\parent 
-;                 ; не родные гаджеты у мдай-а
-;                 If transform( )\widget\parent\type = #PB_GadgetType_MDI And Not transform( )\widget\child ; mdi inner coordinate bug
-;                                                                                                           ; horizontal
-;                   Select transform( )\index
-;                     Case 3, 6, 7 ; right
-;                       mouse_x + transform( )\widget\parent\x[#__c_inner]
-;                   EndSelect
-;                   
-;                   
-;                   ; vertical
-;                   Select transform( )\index
-;                     Case 4, 8, 7 ; bottom
-;                       mouse_y + transform( )\widget\parent\y[#__c_inner]
-;                   EndSelect
-;                 Else
-                  ;Debug transform( )\widget\parent\y[#__c_inner]
-                  
+                ;                 ; не родные гаджеты у мдай-а
+                ;                 If transform( )\widget\parent\type = #PB_GadgetType_MDI And Not transform( )\widget\child ; mdi inner coordinate bug
+                ;                                                                                                           ; horizontal
+                ;                   Select transform( )\index
+                ;                     Case 3, 6, 7 ; right
+                ;                       mouse_x + transform( )\widget\parent\x[#__c_inner]
+                ;                   EndSelect
+                ;                   
+                ;                   
+                ;                   ; vertical
+                ;                   Select transform( )\index
+                ;                     Case 4, 8, 7 ; bottom
+                ;                       mouse_y + transform( )\widget\parent\y[#__c_inner]
+                ;                   EndSelect
+                ;                 Else
+                ;Debug transform( )\widget\parent\y[#__c_inner]
+                
                 If _scroll_bars_( transform( )\widget )
                   mouse_x + transform( )\widget\parent\x[#__c_inner]
                   mouse_y + transform( )\widget\parent\y[#__c_inner]
@@ -2295,9 +2084,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                 mouse( )\delta\y = mouse_y - transform( )\id[transform( )\index]\y - ( transform( )\size-transform( )\pos ) + (transform( )\widget\bs + transform( )\widget\__height)
             EndSelect
             
-
-              
-         
+            
+            
+            
           Else
             ; grid mouse pos
             If transform( )\grid\size > 0
@@ -2811,7 +2600,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ; for the scrollarea childrens except scrollbars
       If *this\parent\type = #PB_GadgetType_ScrollArea Or
-        *this\parent\type = #PB_GadgetType_MDI 
+         *this\parent\type = #PB_GadgetType_MDI 
         If Not (*this\parent\scroll And
                 ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
           If _p_x2_ > *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
@@ -3047,7 +2836,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If x = #PB_Ignore 
           x = *this\x[#__c_container]
           ;If ( *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h )
-            x + *this\parent\x[#__c_inner]
+          x + *this\parent\x[#__c_inner]
           ;EndIf
         Else
           If *this\parent 
@@ -3067,7 +2856,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           ;;y = *this\parent\y[#__c_inner] + *this\y[#__c_container]
           y = *this\y[#__c_container]
           ;If ( *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h )
-            y + *this\parent\y[#__c_inner]
+          y + *this\parent\y[#__c_inner]
           ;EndIf
         Else
           If *this\parent 
@@ -3347,38 +3136,38 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           
           If *this\resize & #__resize_change
-          If *this\parent And 
-             *this\parent\type = #__type_mdi And ; Not _is_scrollbar_( *this ) And Not *this\parent\change 
-             *this\parent\scroll And 
-             *this\parent\scroll\v <> *this And 
-             *this\parent\scroll\h <> *this And
-             *this\parent\scroll\v\bar\thumb\change = 0 And
-             *this\parent\scroll\h\bar\thumb\change = 0
+            If *this\parent And 
+               *this\parent\type = #__type_mdi And ; Not _is_scrollbar_( *this ) And Not *this\parent\change 
+               *this\parent\scroll And 
+               *this\parent\scroll\v <> *this And 
+               *this\parent\scroll\h <> *this And
+               *this\parent\scroll\v\bar\thumb\change = 0 And
+               *this\parent\scroll\h\bar\thumb\change = 0
+              
+              _mdi_update_( *this )
+            EndIf
             
-            _mdi_update_( *this )
+            ;           If *this\type = #__type_mdi
+            ;             If widget::Updates( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
+            ;               
+            ; ;               *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
+            ; ;               *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
+            ; ;               
+            ; ;               If *this\container 
+            ; ;                 If StartEnumerate( *this )
+            ; ;                   If widget( )\parent = *this
+            ; ;                     Reclip( widget( ), #True )
+            ; ;                   EndIf
+            ; ;                   StopEnumerate( )
+            ; ;                 EndIf
+            ; ;               EndIf
+            ;             EndIf
+            ;           EndIf
+            
           EndIf
           
-          ;           If *this\type = #__type_mdi
-          ;             If widget::Updates( *this, 0, 0, *this\width[#__c_container], *this\height[#__c_container] )
-          ;               
-          ; ;               *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
-          ; ;               *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
-          ; ;               
-          ; ;               If *this\container 
-          ; ;                 If StartEnumerate( *this )
-          ; ;                   If widget( )\parent = *this
-          ; ;                     Reclip( widget( ), #True )
-          ; ;                   EndIf
-          ; ;                   StopEnumerate( )
-          ; ;                 EndIf
-          ; ;               EndIf
-          ;             EndIf
-          ;           EndIf
           
         EndIf
-        
-        
-         EndIf
         
         ProcedureReturn result
       EndWith
@@ -4090,7 +3879,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 ; Draw back
                 DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
                 _draw_box_gradient_( \vertical,x + \bar\_s( )\x - Bool( \index[#__tab_2] = \bar\_s( )\index ),y + \bar\_s( )\y,\bar\_s( )\width + Bool( \index[#__tab_2] = \bar\_s( )\index )*2,\bar\_s( )\height,
-                                \bar\_s( )\color\fore[State_3],\bar\_s( )\color\Back[State_3], \bar\button[#__b_3]\round, \bar\_s( )\color\alpha )
+                                     \bar\_s( )\color\fore[State_3],\bar\_s( )\color\Back[State_3], \bar\button[#__b_3]\round, \bar\_s( )\color\alpha )
                 
                 ; Draw frame
                 DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
@@ -4118,7 +3907,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 ; Draw back
                 DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
                 _draw_box_gradient_( \vertical,x + \bar\_s( )\x,y + \bar\_s( )\y - Bool( \index[#__tab_2] = \bar\_s( )\index ),\bar\_s( )\width,\bar\_s( )\height + Bool( \index[#__tab_2] = \bar\_s( )\index )*2,
-                                \bar\_s( )\color\fore[State_3],\bar\_s( )\color\Back[State_3], \bar\button[#__b_3]\round, \bar\_s( )\color\alpha )
+                                     \bar\_s( )\color\fore[State_3],\bar\_s( )\color\Back[State_3], \bar\button[#__b_3]\round, \bar\_s( )\color\alpha )
                 
                 ; Draw frame
                 DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
@@ -4472,78 +4261,242 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.b Progress_Draw( *this._s_widget )
-      *this\bar\button[#__b_1]\color\state = Bool( Not *this\bar\inverted ) * #__s_2
-      *this\bar\button[#__b_2]\color\state = Bool( *this\bar\inverted ) * #__s_2
+;       *this\bar\button[#__b_1]\color\state = Bool( Not *this\bar\inverted ) * #__s_2
+;       *this\bar\button[#__b_2]\color\state = Bool( *this\bar\inverted ) * #__s_2
       
       With *this
+        Protected i,a, _position_, _frame_size_ = 1, _gradient_ = 1
+        Protected _vertical_ = *this\vertical
+        Protected _reverse_ = *this\bar\inverted
+        Protected _round_ = *this\bar\button[#__b_1]\round
+        Protected _frame_color_ = $000000 ; *this\bar\button[#__b_1]\color\frame[0]
         
-        ;         If *this\type = #PB_GadgetType_ProgressBar 
-        ;           Protected i, _color_1_, _color_2_, pos, y,x, color
-        ;           BackColor( \bar\button[#__b_1]\color\fore )
-        ;           
-        ;           If *this\vertical
-        ;             pos = ( \bar\thumb\pos-\y[#__c_frame] )
-        ;           Else
-        ;             pos = ( \bar\thumb\pos-\x[#__c_frame] )
-        ;             _draw_progress_( 0,*this\vertical, pos,
-        ;                             \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame],\bar\button[#__b_1]\round,
-        ;                             $ff0000FF, $ff00FF00,
-        ;                             $FFDC9338, $FFCECECE,1 )
-        ;           EndIf
-        ;           
-        ;         EndIf
+        If _vertical_
+          _position_ = ( *this\bar\thumb\pos-*this\y[#__c_frame] )
+        Else
+          _position_ = ( *this\bar\thumb\pos-*this\x[#__c_frame] )
+        EndIf
         
-        Scroll_Draw( *this )
+        ;https://www.purebasic.fr/english/viewtopic.php?f=13&t=75757&p=557936#p557936 ; thank you infratec
+        FrontColor(_frame_color_)
+        DrawingMode(#PB_2DDrawing_Outlined)
+        RoundBox(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _frame_size_, *this\width[#__c_frame] - _frame_size_*2, *this\height[#__c_frame] - _frame_size_*2, _round_,_round_)
+        ;   RoundBox(*this\x[#__c_frame] + _frame_size_+1, *this\y[#__c_frame] + _frame_size_+1, *this\width[#__c_frame] - _frame_size_*2-2, *this\height[#__c_frame] - _frame_size_*2-2, _round_,_round_)
+        ;   ; ;   RoundBox(*this\x[#__c_frame] + _frame_size_+2, *this\y[#__c_frame] + _frame_size_+2, *this\width[#__c_frame] - _frame_size_*2-4, *this\height[#__c_frame] - _frame_size_*2-4, _round_,_round_)
+        ;   ;   
+        ;   ;   For i = 0 To 1
+        ;   ;     RoundBox(*this\x[#__c_frame] + (_frame_size_+i), *this\y[#__c_frame] + (_frame_size_+i), *this\width[#__c_frame] - (_frame_size_+i)*2, *this\height[#__c_frame] - (_frame_size_+i)*2, _round_,_round_)
+        ;   ;   Next
         
-        If *this\type = #PB_GadgetType_ProgressBar 
-          
-          If \bar\button[#__b_1]\round
-            DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-            
-            If \vertical
-              Line( \bar\button[#__b_1]\x, \bar\thumb\pos - \bar\button[#__b_1]\round, 1,\bar\button[#__b_1]\round, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state] )
-              Line( \bar\button[#__b_1]\x + \bar\button[#__b_1]\width - 1, \bar\thumb\pos - \bar\button[#__b_1]\round, 1,\bar\button[#__b_1]\round, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state] )
-              
-              Line( \bar\button[#__b_2]\x, \bar\thumb\pos, 1,\bar\button[#__b_2]\round, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state] )
-              Line( \bar\button[#__b_2]\x + \bar\button[#__b_2]\width - 1, \bar\thumb\pos, 1,\bar\button[#__b_2]\round, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state] )
-            Else
-              Line( \bar\thumb\pos - \bar\button[#__b_1]\round,\bar\button[#__b_1]\y, \bar\button[#__b_1]\round, 1, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state] )
-              Line( \bar\thumb\pos - \bar\button[#__b_1]\round,\bar\button[#__b_1]\y + \bar\button[#__b_1]\height - 1, \bar\button[#__b_1]\round, 1, \bar\button[#__b_1]\color\frame[\bar\button[#__b_1]\color\state] )
-              
-              Line( \bar\thumb\pos,\bar\button[#__b_2]\y, \bar\button[#__b_2]\round, 1, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state] )
-              Line( \bar\thumb\pos,\bar\button[#__b_2]\y + \bar\button[#__b_2]\height - 1, \bar\button[#__b_2]\round, 1, \bar\button[#__b_2]\color\frame[\bar\button[#__b_2]\color\state] )
-            EndIf
+        If _gradient_
+          DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+          If _vertical_
+            LinearGradient(*this\x[#__c_frame],*this\y[#__c_frame], (*this\x[#__c_frame] + *this\width[#__c_frame]), *this\y[#__c_frame])
+          Else
+            LinearGradient(*this\x[#__c_frame],*this\y[#__c_frame], *this\x[#__c_frame], (*this\y[#__c_frame] + *this\height[#__c_frame]))
           EndIf
+        Else
+          DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
+        EndIf 
+        
+        If _vertical_
+          If Not _reverse_
+            _position_ = *this\height[#__c_frame] - _position_
+          EndIf
+        Else
+          If _reverse_
+            _position_ = *this\width[#__c_frame] - _position_
+          EndIf
+        EndIf
+        
+        BackColor(*this\bar\button[#__b_1]\color\fore[2])
+        FrontColor(*this\bar\button[#__b_1]\color\back[2])
+        
+        If Not _round_
+          If _vertical_
+            Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + (_position_), *this\width[#__c_frame] - _frame_size_*2, (*this\height[#__c_frame] - _frame_size_ - (_position_)))
+          Else
+            Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _frame_size_, (_position_) - _frame_size_, *this\height[#__c_frame] - _frame_size_*2)
+          EndIf
+        Else 
           
-          If \bar\page\pos > \bar\min
-            DrawingMode( #PB_2DDrawing_Gradient | #PB_2DDrawing_AlphaBlend )
-            
-            If \vertical
-              If \bar\button[#__b_1]\color\fore <>- 1
-                _draw_box_gradient_( \vertical,\bar\button[#__b_1]\x + 1,\bar\thumb\pos - 1 - \bar\button[#__b_2]\round,\bar\button[#__b_1]\width - 2,1 + \bar\button[#__b_2]\round,
-                                \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha )
+          If _vertical_
+            If (*this\height[#__c_frame] - (_position_)) > _round_
+              ; рисуем прямоуголную часть
+              If _round_ > (_position_)
+                Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + (_position_) + (_round_ - (_position_)), *this\width[#__c_frame] - _frame_size_*2, (*this\height[#__c_frame] - _round_ - (_position_)) - (_round_ - (_position_)))
+              Else
+                Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + (_position_), *this\width[#__c_frame] - _frame_size_*2, (*this\height[#__c_frame] - _round_ - (_position_)))
               EndIf
               
-              ; Draw buttons
-              If \bar\button[#__b_2]\color\fore <>- 1
-                _draw_box_gradient_( \vertical,\bar\button[#__b_2]\x + 1,\bar\thumb\pos,\bar\button[#__b_2]\width - 2,1 + \bar\button[#__b_2]\round,
-                                \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha )
+              For a = (*this\height[#__c_frame] - _round_) To (*this\height[#__c_frame] - _frame_size_)
+                For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_)
+                  If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
+                    Line(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a, *this\width[#__c_frame] - i*2, 1)
+                    Break
+                  EndIf
+                Next i
+              Next a
+              
+              ; если позиция ползунка больше начало второго округленыя
+              If _round_ > (_position_)
+                For a = _frame_size_ + (_position_) To _round_
+                  For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_)
+                    If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
+                      Line(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a, *this\width[#__c_frame] - i*2, 1)
+                      Break
+                    EndIf
+                  Next i
+                Next a
               EndIf
+              
             Else
-              If \bar\button[#__b_1]\color\fore <>- 1
-                _draw_box_gradient_( \vertical,\bar\thumb\pos - 1 - \bar\button[#__b_2]\round,\bar\button[#__b_1]\y + 1,1 + \bar\button[#__b_2]\round,\bar\button[#__b_1]\height - 2,
-                                \bar\button[#__b_1]\color\fore[\bar\button[#__b_1]\color\state],\bar\button[#__b_1]\color\Back[\bar\button[#__b_1]\color\state], 0, \bar\button[#__b_1]\color\alpha )
+              For a = (_position_) - _frame_size_ To (*this\height[#__c_frame] - _frame_size_)
+                For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_)
+                  If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
+                    Line(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a, *this\width[#__c_frame] - i*2, 1)
+                    Break
+                  EndIf
+                Next i
+              Next a
+            EndIf
+          Else
+            If (_position_) > _round_
+              ; рисуем прямоуголную часть
+              If _round_ > (*this\width[#__c_frame] - (_position_))
+                Box(*this\x[#__c_frame] + _round_, *this\y[#__c_frame] + _frame_size_, ((_position_) - _round_) + (*this\width[#__c_frame] - _round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
+              Else
+                Box(*this\x[#__c_frame] + _round_, *this\y[#__c_frame] + _frame_size_, ((_position_) - _round_) , *this\height[#__c_frame] - _frame_size_*2)
               EndIf
               
-              ; Draw buttons
-              If \bar\button[#__b_2]\color\fore <>- 1
-                _draw_box_gradient_( \vertical,\bar\thumb\pos,\bar\button[#__b_2]\y + 1,1 + \bar\button[#__b_2]\round,\bar\button[#__b_2]\height - 2,
-                                \bar\button[#__b_2]\color\fore[\bar\button[#__b_2]\color\state],\bar\button[#__b_2]\color\Back[\bar\button[#__b_2]\color\state], 0, \bar\button[#__b_2]\color\alpha )
+              For a = _frame_size_ To _round_; + _frame_size_
+                For i = _frame_size_ To (*this\height[#__c_frame] - _frame_size_*2)
+                  If Point(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i) & $FFFFFF = _frame_color_ & $FFFFFF
+                    Line(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i, 1, *this\height[#__c_frame] - i*2)
+                    Break
+                  EndIf
+                Next i
+              Next a
+              
+              ; если позиция ползунка больше начало второго округленыя
+              If _round_ > (*this\width[#__c_frame] - (_position_))
+                For a = (*this\width[#__c_frame] - _frame_size_ - _round_) To (_position_) - _frame_size_
+                  For i = _frame_size_ To (*this\height[#__c_frame] - _frame_size_*2)
+                    If Point(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i) & $FFFFFF = _frame_color_ & $FFFFFF
+                      Line(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i, 1, *this\height[#__c_frame] - i*2)
+                      Break
+                    EndIf
+                  Next i
+                Next a
               EndIf
+              
+            Else
+              For a = _frame_size_ To (_position_) + _frame_size_ - 1
+                For i = _frame_size_ To (*this\height[#__c_frame] - _frame_size_*2)
+                  If Point(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i) & $FFFFFF = _frame_color_ & $FFFFFF
+                    Line(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i, 1, *this\height[#__c_frame] - i*2)
+                    Break
+                  EndIf
+                Next i
+              Next a
             EndIf
           EndIf
           
         EndIf
+        
+        BackColor(*this\bar\button[#__b_1]\color\fore[0])
+        FrontColor(*this\bar\button[#__b_1]\color\back[0])
+        
+        If Not _round_
+          If _vertical_
+            Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _frame_size_, *this\width[#__c_frame] - _frame_size_*2, (_position_) - _frame_size_)
+          Else 
+            Box(*this\x[#__c_frame] + (_position_), *this\y[#__c_frame] + _frame_size_, (*this\width[#__c_frame] - _frame_size_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
+          EndIf 
+        Else 
+          If _vertical_
+            If (_position_) > _round_
+              ; рисуем прямоуголную часть
+              If _round_ > (*this\height[#__c_frame] - (_position_))
+                Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _round_, *this\width[#__c_frame] - _frame_size_*2, ((_position_) - _round_) + (*this\height[#__c_frame] - _round_ - (_position_)))
+              Else
+                Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _round_, *this\width[#__c_frame] - _frame_size_*2, ((_position_) - _round_))
+              EndIf
+              
+              For a = _frame_size_ To _round_
+                For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_*2)
+                  If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
+                    Line(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a, *this\width[#__c_frame] - i*2, 1)
+                    Break
+                  EndIf
+                Next i
+              Next a
+              
+              ; если позиция ползунка больше начало второго округленыя
+              If _round_ > (*this\height[#__c_frame] - (_position_))
+                For a = (*this\height[#__c_frame] - _frame_size_ - _round_) To (_position_) - _frame_size_
+                  For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_*2)
+                    If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
+                      Line(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a, *this\width[#__c_frame] - i*2, 1)
+                      Break
+                    EndIf
+                  Next i
+                Next a
+              EndIf
+              
+            Else
+              For a = _frame_size_ To (_position_) + _frame_size_ - 1
+                For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_*2)
+                  If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
+                    Line(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a, *this\width[#__c_frame] - i*2, 1)
+                    Break
+                  EndIf
+                Next i
+              Next a
+            EndIf
+          Else
+            If (*this\width[#__c_frame] - (_position_)) > _round_
+              ; рисуем прямоуголную часть
+              If _round_ > (_position_)
+                Box(*this\x[#__c_frame] + (_position_) + (_round_ - (_position_)), *this\y[#__c_frame] + _frame_size_, (*this\width[#__c_frame] - _round_ - (_position_)) - (_round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
+              Else
+                Box(*this\x[#__c_frame] + (_position_), *this\y[#__c_frame] + _frame_size_, (*this\width[#__c_frame] - _round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
+              EndIf
+              
+              For a = (*this\width[#__c_frame] - _round_) To (*this\width[#__c_frame] - _frame_size_)
+                For i = _frame_size_ To (*this\height[#__c_frame] - _frame_size_*2)
+                  If Point(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i) & $FFFFFF = _frame_color_ & $FFFFFF
+                    Line(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i, 1, *this\height[#__c_frame] - i*2)
+                    Break
+                  EndIf
+                Next i
+              Next a
+              
+              ; если позиция ползунка больше начало второго округленыя
+              If _round_ > (_position_)
+                For a = _frame_size_ + (_position_) To _round_
+                  For i = _frame_size_ To (*this\height[#__c_frame] - _frame_size_*2)
+                    If Point(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i) & $FFFFFF = _frame_color_ & $FFFFFF
+                      Line(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i, 1, *this\height[#__c_frame] - i*2)
+                      Break
+                    EndIf
+                  Next i
+                Next a
+              EndIf
+              
+            Else
+              For a = (_position_) - _frame_size_ To (*this\width[#__c_frame] - _frame_size_)
+                For i = _frame_size_ To (*this\height[#__c_frame] - _frame_size_*2)
+                  If Point(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i) & $FFFFFF = _frame_color_ & $FFFFFF
+                    Line(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i, 1, *this\height[#__c_frame] - i*2)
+                    Break
+                  EndIf
+                Next i
+              Next a
+            EndIf
+          EndIf
+        EndIf 
+        
         
         ; Draw string
         If *this\text And *this\text\string And ( *this\height > *this\text\height )
@@ -9446,7 +9399,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 If *row( )\parent And *this\mode\check = 4
                   _draw_button_( 1, *row( )\box[1]\x, *row( )\box[1]\y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 4 );, \color )
-                Else                                                                                                                        ;If Not ( *this\mode\buttons And *row( )\childrens And *this\mode\check = 4 )
+                Else                                                                                                                          ;If Not ( *this\mode\buttons And *row( )\childrens And *this\mode\check = 4 )
                   _draw_button_( 3, *row( )\box[1]\x, *row( )\box[1]\y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 2 );, \color )
                 EndIf
               EndIf    
@@ -10936,11 +10889,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If eventtype = #__Event_MouseMove
         If _is_selected_( *this )
-;           If *this\container = #__type_root
-;             ResizeWindow(*this\root\canvas\window, (DesktopMouseX() - *this\root\mouse\delta\x), (DesktopMouseY() - *this\root\mouse\delta\y), #PB_Ignore, #PB_Ignore)
-;           Else
-            Repaint = Resize(*this, (mouse_x - mouse()\delta\x), (mouse_y - mouse()\delta\y), #PB_Ignore, #PB_Ignore)
-;           EndIf
+          ;           If *this\container = #__type_root
+          ;             ResizeWindow(*this\root\canvas\window, (DesktopMouseX() - *this\root\mouse\delta\x), (DesktopMouseY() - *this\root\mouse\delta\y), #PB_Ignore, #PB_Ignore)
+          ;           Else
+          Repaint = Resize(*this, (mouse_x - mouse()\delta\x), (mouse_y - mouse()\delta\y), #PB_Ignore, #PB_Ignore)
+          ;           EndIf
         EndIf
       EndIf
       
@@ -17552,5 +17505,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------z-f4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------------------------------------------v3--+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

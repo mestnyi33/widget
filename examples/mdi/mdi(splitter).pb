@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     If Open(0);, 425, 40)
-      Container(10,10, 260,260) : a_init(widget())
+      Container(10,10, 260,260) ;: a_init(widget())
       *mdi = MDI(30, 30, 200, 120) ; as they will be sized automatically
       Define *g0 = AddItem(*mdi, -1, "form_0")
   

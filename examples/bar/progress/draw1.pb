@@ -3,6 +3,8 @@
   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
   RoundBox(_x_, _y_, _width_ ,_height_, _round_,_round_, _back_color2_)
   
+    
+   
   For i = 0 To _height_-2
     ;If Point(_x_+(_pos_), _y_+1+i) = _back_color2_
     If Point(_x_+(_pos_), _y_+1+i) & $00FFFFFF = _back_color2_ & $00FFFFFF
@@ -11,13 +13,15 @@
       ;  Plot(_x_+(_pos_), _y_+1+i, _back_color1_)
     EndIf
   Next i
-  
-  DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-  If _frame_color_
-    RoundBox(_x_, _y_, _width_ ,_height_, _round_,_round_, _frame_color_)
-  Else
-    RoundBox(_x_, _y_, _width_ ,_height_, _round_,_round_, _back_color1_)
-  EndIf
+  DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
+    LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
+   
+;   DrawingMode(#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
+;   If _frame_color_
+;     RoundBox(_x_, _y_, _width_ ,_height_, _round_,_round_, _frame_color_)
+;   Else
+;     RoundBox(_x_, _y_, _width_ ,_height_, _round_,_round_, _back_color1_)
+;   EndIf
   
   FillArea(_x_+(_pos_)/2, _y_+_height_/2,  -1, _back_color1_) 
 EndMacro

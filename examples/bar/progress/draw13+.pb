@@ -1,57 +1,48 @@
 ﻿Macro _draw_v_progress_(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1)
   FrontColor(_color1_)
   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-  RoundBox(_x_ + _frame_size_, _y_ + _frame_size_, _width_ - _frame_size_*2,_height_ - _frame_size_*2, _round_,_round_)
+  RoundBox(_x_ + _frame_size_, _y_ + _frame_size_, _width_ - _frame_size_*2, _height_ - _frame_size_*2, _round_,_round_)
   
   If _gradient_
     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
     LinearGradient(_x_,_y_, (_x_ + _width_), _y_)
     
-    
-    FrontColor(_color1_)
-    If (_pos_)
-      For i = 0 To (_len_)
-        If Point(_x_ + i, _y_ + (_height_ - _pos_)) & $00FFFFFF = _color1_ & $00FFFFFF
-          Line(_x_ + i, _y_ + (_height_ - _pos_), (_len_) - i*2, 1)
-          Break
+    For x = _x_ To _x_ + _width_
+      For y = _y_ To _y_ + (_pos_)
+        If Point(x, y) & $00FFFFFF = _color1_ & $00FFFFFF
+          Plot(x, y)
         EndIf
-      Next i
-      
-      FillArea(_x_ + (_len_)/2, _y_ + (_height_ - _frame_size_) - 1,  -1) 
-    EndIf
-  EndIf
+      Next y
+    Next x
+  EndIf 
   
   FrontColor(_color2_)
-  If (_height_ - _pos_)
-    For i = 0 To (_len_)
-      If Point(_x_ + i, _y_ + (_height_ - _pos_)) & $00FFFFFF = _color1_ & $00FFFFFF
-        Line(_x_ + i, _y_ + (_height_ - _pos_), (_len_) - i*2, 1)
-        Break
+  For x = _x_ To _x_ + _width_
+    For y = _y_ + (_pos_) To _y_ + _height_
+      If Point(x, y) & $00FFFFFF = _color1_ & $00FFFFFF
+        Plot(x, y)
       EndIf
-    Next i
-    
-    FillArea(_x_ + (_len_)/2, _y_ + (_height_ - _pos_)/2,  -1) 
-  EndIf
+    Next y
+  Next x
 EndMacro
 
-Macro _draw_h_progress_2(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1)
+Macro _draw_h_progress_(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1)
   FrontColor(_color1_)
   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-  RoundBox(_x_ + _frame_size_, _y_ + _frame_size_, _width_ - _frame_size_*2,_height_ - _frame_size_*2, _round_,_round_)
+  RoundBox(_x_ + _frame_size_, _y_ + _frame_size_, _width_ - _frame_size_*2, _height_ - _frame_size_*2, _round_,_round_)
   
   If _gradient_
     DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
     LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
     
-    FrontColor(_color1_)
     For y = _y_ To _y_ + _height_
-      For x = _x_ To (_x_ + (_pos_))
+      For x = _x_ To _x_ + (_pos_)
         If Point(x, y) & $00FFFFFF = _color1_ & $00FFFFFF
           Plot(x, y)
         EndIf
       Next x
     Next y
-  EndIf
+  EndIf 
   
   FrontColor(_color2_)
   For y = _y_ To _y_ + _height_
@@ -61,42 +52,6 @@ Macro _draw_h_progress_2(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _co
       EndIf
     Next x
   Next y
-  
-EndMacro
-
-Macro _draw_h_progress_(_pos_, _len_, _x_, _y_, _width_ ,_height_, _round_, _color1_, _color2_, _frame_size_, _gradient_=1)
-  FrontColor(_color1_)
-  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend)
-  RoundBox(_x_ + _frame_size_, _y_ + _frame_size_, _width_ - _frame_size_*2,_height_ - _frame_size_*2, _round_,_round_)
-  
-  If _gradient_
-    DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-    LinearGradient(_x_,_y_, _x_, (_y_ + _height_))
-    
-    FrontColor(_color1_)
-    If (_pos_)
-      For i = 0 To (_len_)
-        If Point(_x_ + (_pos_), _y_ + i) & $00FFFFFF = _color1_ & $00FFFFFF
-          Line(_x_ + (_pos_), _y_ + i, 1, (_len_) - i*2)
-          Break
-        EndIf
-      Next i
-      
-      FillArea(_x_ + (_pos_)/2, _y_ + (_len_)/2,  -1) 
-    EndIf
-  EndIf
-  
-  FrontColor(_color2_)
-  If (_width_-_pos_)
-    For i = 0 To (_len_)
-      If Point(_x_ + (_pos_), _y_ + i) & $00FFFFFF = _color1_ & $00FFFFFF
-        Line(_x_ + (_pos_), _y_ + i, 1, (_len_) - i*2)
-        Break
-      EndIf
-    Next i
-    
-    FillArea(_x_ + (_width_ - _frame_size_) - 1, _y_ + (_len_)/2,  -1) 
-  EndIf
 EndMacro
 
 Macro _draw_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_color1_, _frame_color2_)
@@ -104,6 +59,8 @@ Macro _draw_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_,
   BackColor(_fore_color1_)
   
   If _vertical_
+    ClipOutput(_x_, _y_+50, _width_ ,_height_-100)
+    
     If _reverse_
       _pos_ = _height_ - _pos_
       
@@ -115,6 +72,12 @@ Macro _draw_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_,
       
     EndIf
   Else
+    ;ClipOutput(_x_+150, _y_, _width_ ,_height_)
+    ;ClipOutput(_x_, _y_, _width_-150 ,_height_)
+    ;ClipOutput(_x_, _y_, _width_-110 ,_height_)
+    ;ClipOutput(_x_+110, _y_, _width_ ,_height_)
+    ;ClipOutput(_x_+50, _y_, _width_-100 ,_height_)
+    
     If _reverse_
       _pos_ = _width_ - _pos_
       
@@ -145,8 +108,12 @@ If CreateImage(0, 300, 310) And StartDrawing(ImageOutput(0))
   _fore_color1_ = $fff0f0f0
   _fore_color2_ = $ffffffff
   
-  _back_color1_ = $ff0000FF
-  _back_color2_ = $ff00FF00
+;   _back_color1_ = $ff0000FF
+;   _back_color2_ = $ff00FF00
+;   _frame_color1_ = $FFDC9338
+;   _frame_color2_ = $FFCECECE
+  _back_color1_ = $80E2E2E2;$ff0000FF
+  _back_color2_ = $FFE89C3D ; $ff00FF00
   _frame_color1_ = $FFDC9338
   _frame_color2_ = $FFCECECE
   
@@ -205,7 +172,7 @@ If CreateImage(10, 310, 300) And StartDrawing(ImageOutput(10))
   _draw_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_color1_, _frame_color2_)
   
   _x_ = 70
-  _pos_ = 10
+  _pos_ = 20
   _round_ = 50
   
   _draw_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_color1_, _frame_color2_)
@@ -217,7 +184,7 @@ If CreateImage(10, 310, 300) And StartDrawing(ImageOutput(10))
   _draw_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_color1_, _frame_color2_)
   
   _x_ = 190
-  _pos_ = 230
+  _pos_ = 220
   _round_ = 50
   
   _draw_progress_(_reverse_, _vertical_, _pos_, _x_, _y_, _width_ ,_height_, _round_, _back_color1_, _back_color2_, _frame_color1_, _frame_color2_)
@@ -236,5 +203,5 @@ Repeat
   Event = WaitWindowEvent()
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 9-
+; Folding = +
 ; EnableXP
