@@ -1,61 +1,59 @@
 ﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
 
-Procedure events_gadgets()
-  ;ClearDebugOutput()
-  Debug ""+EventType()+ " - event widget - " +EventGadget() +" state - " +GetGadgetState(EventGadget()) ; 
-  
-  Select EventType()
-    Case #PB_EventType_LeftClick
-      SetState(GetWidget(EventGadget()), GetGadgetState(EventGadget()))
-      ; Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
-  EndSelect
-EndProcedure
+Global Button_0, Button_1, Button_2, Button_3, Button_4, Splitter_0
 
 Procedure events_widgets()
-  ;ClearDebugOutput()
-  Debug ""+this()\event+ " - event widget - " +Str(GetIndex(this()\widget)) + " state - "+ GetState(this()\widget) ; 
-  
   Select this()\event
     Case #PB_EventType_Change
-      SetGadgetState(GetIndex(this()\widget), GetState(this()\widget))
-      ; Debug  Str(GetIndex(this()\widget))+" - widget change " + GetState(this()\widget)
+      Select this()\widget
+        Case Button_2
+          SetState(Button_0, GetState(Button_2))
+          
+        Case Button_3
+          SetState(Button_1, GetState(Button_3))
+          
+        Case Button_4
+          this()\widget = Button_0
+          this()\widget\round = GetState(Button_4)
+          this()\widget\bar\button[#__b_1]\round = this()\widget\round
+          this()\widget\bar\button[#__b_2]\round = this()\widget\round
+          
+        Case Button_5
+          this()\widget = Button_1
+          this()\widget\round = GetState(Button_5)
+          this()\widget\bar\button[#__b_1]\round = this()\widget\round
+          this()\widget\bar\button[#__b_2]\round = this()\widget\round
+            
+      EndSelect
   EndSelect
 EndProcedure
 
-; Shows possible flags of ButtonGadget in action...
-If Open(OpenWindow(#PB_Any, 0, 0, 320+320, 160, "Progress", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
-  ProgressBarGadget(0,  10, 30, 250,  30, 0, 100)
-  SetGadgetState   (0, 50)   ;  set 1st progressbar (ID = 0) to 50 of 100
-  ProgressBarGadget(1,  10, 90, 250,  30, 0, 200, #PB_ProgressBar_Smooth)
-  SetGadgetState   (1, 50)   ;  set 2nd progressbar (ID = 1) to 50 of 200
-  ProgressBarGadget(2, 270, 10,  30, 120, 0, 300, #PB_ProgressBar_Vertical)
-  SetGadgetState   (2, 100)   ; set 3rd progressbar (ID = 2) to 100 of 300
+If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(0);, 425, 40)
+    Button_0 = Progress(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical, 120) ; as they will be sized automatically
+    Button_1 = Progress(0, 0, 0, 0, 0,100,0,120) ; as they will be sized automatically
+    
+    Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+    Splitter_1 = Splitter(10, 10, 400, 250, 0, Splitter_0, #PB_Splitter_FirstFixed)
+  EndIf
   
-  TextGadget       (3,  10, 10, 250,  20, "ProgressBar Standard  (50/100)", #PB_Text_Center)
-  TextGadget       (4,  10, 70, 250,  20, "ProgressBar Smooth  (50/200)", #PB_Text_Center)
-  TextGadget       (5, 100,135, 200,  20, "ProgressBar Vertical  (100/300)", #PB_Text_Right)
+  Button_2 = Track    (400+20, 10, 20,  250, 0,100, #PB_TrackBar_Vertical) 
+  Button_3 = Track    (400+20+20, 10, 20,  250, 0, 100, #PB_TrackBar_Vertical)
   
-  For i = 0 To 2
-    BindGadgetEvent(i, @events_gadgets())
-  Next
+  Button_4 = Track    (10, 260,  400, 20, 0, 160)
+  Button_5 = Track    (10, 280,  400, 20, 0, 160)
   
-  Progress(10+320, 30, 250,  30, 0, 100, 0, 40)
-  SetState(widget( ), 50)   ;  set 1st progressbar (ID = 0) to 50 of 100
-  Progress(10+320, 90, 250,  30, 0, 200, #PB_ProgressBar_Smooth, 17)
-  SetState(widget( ), 50)   ;  set 2nd progressbar (ID = 1) to 50 of 200
-  Progress(270+320, 10,  30, 120, 0, 300, #PB_ProgressBar_Vertical)
-  SetState(widget( ), 100)   ; set 3rd progressbar (ID = 2) to 100 of 300
+  Bind(Button_2, @events_widgets())
+  Bind(Button_3, @events_widgets())
   
-  Track    (10+320, 60, 250,  20, 0,100)
-  Track    (10+320, 120, 250,  20, 0, 200)
-  Track    (300+320,10, 20,  120, 0, 300, #PB_TrackBar_Vertical)
+  Bind(Button_4, @events_widgets())
+  Bind(Button_5, @events_widgets())
   
-  ;Bind(#PB_All, @events_widgets())
+  SetState(Button_4, 120)
+  SetState(Button_5, 120)
   
-  For i = 0 To 2
-    Bind(GetWidget(i), @events_widgets())
-  Next
-  
+  SetState(Button_3, 100)
+  SetState(Splitter_0, 189)
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)

@@ -4272,9 +4272,9 @@ CompilerIf Not Defined( widget, #PB_Module )
         Protected _frame_color_ = $000000 ; *this\bar\button[#__b_1]\color\frame[0]
         
         If _vertical_
-          _position_ = ( *this\bar\thumb\pos);-*this\y[#__c_frame] )
+          _position_ = ( *this\bar\thumb\pos-*this\y[#__c_frame] )
         Else
-          _position_ = ( *this\bar\thumb\pos);-*this\x[#__c_frame] )
+          _position_ = ( *this\bar\thumb\pos-*this\x[#__c_frame] )
         EndIf
         
         If _position_ < 0
@@ -4325,16 +4325,14 @@ CompilerIf Not Defined( widget, #PB_Module )
         Else 
           
           If _vertical_
-            If (*this\height[#__c_frame] - _round_ - (_position_)) > _round_
-              If *this\height[#__c_frame] > _round_*2
-                ; рисуем прямоуголную часть
-                If _round_ > (_position_)
-                  Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + (_position_) + (_round_ - (_position_)), *this\width[#__c_frame] - _frame_size_*2, (*this\height[#__c_frame] - _round_ - (_position_)) - (_round_ - (_position_)))
-                Else
-                  Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + (_position_), *this\width[#__c_frame] - _frame_size_*2, (*this\height[#__c_frame] - _round_ - (_position_)))
-                EndIf
+            If (*this\height[#__c_frame] - (_position_)) > _round_
+              ; рисуем прямоуголную часть
+              If _round_ > (_position_)
+                Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + (_position_) + (_round_ - (_position_)), *this\width[#__c_frame] - _frame_size_*2, (*this\height[#__c_frame] - _round_ - (_position_)) - (_round_ - (_position_)))
+              Else
+                Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + (_position_), *this\width[#__c_frame] - _frame_size_*2, (*this\height[#__c_frame] - _round_ - (_position_)))
               EndIf
-            
+              
               For a = (*this\height[#__c_frame] - _round_) To (*this\height[#__c_frame] - _frame_size_)
                 For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_)
                   If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
@@ -4369,15 +4367,13 @@ CompilerIf Not Defined( widget, #PB_Module )
           Else
             If (_position_) > _round_
               ; рисуем прямоуголную часть
-              If *this\width[#__c_frame] > _round_*2
-                If (*this\width[#__c_frame] - (_position_)) > _round_ 
-                  Box(*this\x[#__c_frame] + _round_, *this\y[#__c_frame] + _frame_size_, ((_position_) - _round_) , *this\height[#__c_frame] - _frame_size_*2)
-                Else
-                  Box(*this\x[#__c_frame] + _round_, *this\y[#__c_frame] + _frame_size_, ((_position_) - _round_) + (*this\width[#__c_frame] - _round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
-                EndIf
+              If _round_ > (*this\width[#__c_frame] - (_position_))
+                Box(*this\x[#__c_frame] + _round_, *this\y[#__c_frame] + _frame_size_, ((_position_) - _round_) + (*this\width[#__c_frame] - _round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
+              Else
+                Box(*this\x[#__c_frame] + _round_, *this\y[#__c_frame] + _frame_size_, ((_position_) - _round_) , *this\height[#__c_frame] - _frame_size_*2)
               EndIf
-            
-              For a = _frame_size_ To _round_
+              
+              For a = _frame_size_ To _round_; + _frame_size_
                 For i = _frame_size_ To (*this\height[#__c_frame] - _frame_size_*2)
                   If Point(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i) & $FFFFFF = _frame_color_ & $FFFFFF
                     Line(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i, 1, *this\height[#__c_frame] - i*2)
@@ -4424,15 +4420,13 @@ CompilerIf Not Defined( widget, #PB_Module )
         Else 
           If _vertical_
             If (_position_) > _round_
-              If *this\height[#__c_frame] > _round_*2
               ; рисуем прямоуголную часть
               If _round_ > (*this\height[#__c_frame] - (_position_))
                 Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _round_, *this\width[#__c_frame] - _frame_size_*2, ((_position_) - _round_) + (*this\height[#__c_frame] - _round_ - (_position_)))
               Else
                 Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _round_, *this\width[#__c_frame] - _frame_size_*2, ((_position_) - _round_))
               EndIf
-            EndIf
-            
+              
               For a = _frame_size_ To _round_
                 For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_*2)
                   If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
@@ -4465,14 +4459,12 @@ CompilerIf Not Defined( widget, #PB_Module )
               Next a
             EndIf
           Else
-            If (*this\width[#__c_frame] - _round_ - (_position_)) > _round_
-              If *this\width[#__c_frame] > _round_*2
-                ; рисуем прямоуголную часть
-                If _round_ > (_position_)
-                  Box(*this\x[#__c_frame] + (_position_) + (_round_ - (_position_)), *this\y[#__c_frame] + _frame_size_, (*this\width[#__c_frame] - _round_ - (_position_)) - (_round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
-                Else
-                  Box(*this\x[#__c_frame] + (_position_), *this\y[#__c_frame] + _frame_size_, (*this\width[#__c_frame] - _round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
-                EndIf
+            If (*this\width[#__c_frame] - (_position_)) > _round_
+              ; рисуем прямоуголную часть
+              If _round_ > (_position_)
+                Box(*this\x[#__c_frame] + (_position_) + (_round_ - (_position_)), *this\y[#__c_frame] + _frame_size_, (*this\width[#__c_frame] - _round_ - (_position_)) - (_round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
+              Else
+                Box(*this\x[#__c_frame] + (_position_), *this\y[#__c_frame] + _frame_size_, (*this\width[#__c_frame] - _round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
               EndIf
               
               For a = (*this\width[#__c_frame] - _round_) To (*this\width[#__c_frame] - _frame_size_)
@@ -4710,19 +4702,19 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If *this\type = #PB_GadgetType_tabBar
           If *this\vertical
-            *this\bar\area\pos = *this\bs  ;  *this\y[#__c_frame] + 
+            *this\bar\area\pos = *this\y[#__c_frame] + *this\bs
             *this\bar\area\len = *this\height[#__c_frame] - *this\bs*2
           Else
-            *this\bar\area\pos = *this\bs   ; *this\x[#__c_frame] + 
+            *this\bar\area\pos = *this\x[#__c_frame] + *this\bs 
             *this\bar\area\len = *this\width[#__c_frame] - *this\bs*2
           EndIf
           
         Else
           If *this\vertical
-            *this\bar\area\pos = *this\bs + *this\bar\button[#__b_1]\size  ; *this\y[#__c_frame] + 
+            *this\bar\area\pos = *this\y[#__c_frame] + *this\bs + *this\bar\button[#__b_1]\size
             *this\bar\area\len = *this\height[#__c_frame] - *this\bs*2 - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size )
           Else
-            *this\bar\area\pos = *this\bs + *this\bar\button[#__b_1]\size ; *this\x[#__c_frame] + 
+            *this\bar\area\pos = *this\x[#__c_frame] + *this\bs + *this\bar\button[#__b_1]\size
             *this\bar\area\len = *this\width[#__c_frame] - *this\bs*2 - ( *this\bar\button[#__b_1]\size + *this\bar\button[#__b_2]\size )
           EndIf
         EndIf
@@ -4985,12 +4977,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\vertical
               *this\bar\button[#__b_3]\x = *this\bar\button[#__b_1]\x 
               *this\bar\button[#__b_3]\width = *this\bar\button[#__b_1]\width 
-              *this\bar\button[#__b_3]\y = *this\y[#__c_inner_b] + *this\bar\thumb\pos
+              *this\bar\button[#__b_3]\y = *this\bar\thumb\pos
               *this\bar\button[#__b_3]\height = *this\bar\thumb\len                              
             Else
               *this\bar\button[#__b_3]\y = *this\bar\button[#__b_1]\y 
               *this\bar\button[#__b_3]\height = *this\bar\button[#__b_1]\height
-              *this\bar\button[#__b_3]\x = *this\x[#__c_inner_b] + *this\bar\thumb\pos 
+              *this\bar\button[#__b_3]\x = *this\bar\thumb\pos 
               *this\bar\button[#__b_3]\width = *this\bar\thumb\len                                  
             EndIf
             
@@ -5177,21 +5169,21 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If *this\vertical
             *this\bar\button[#__b_1]\width  = *this\width[#__c_frame]
-            *this\bar\button[#__b_1]\height = *this\bar\thumb\pos;  - *this\y 
+            *this\bar\button[#__b_1]\height = *this\bar\thumb\pos - *this\y 
           Else
-            *this\bar\button[#__b_1]\width  = *this\bar\thumb\pos;  - *this\x 
+            *this\bar\button[#__b_1]\width  = *this\bar\thumb\pos - *this\x 
             *this\bar\button[#__b_1]\height = *this\height[#__c_frame]
           EndIf
           
           If *this\vertical
             *this\bar\button[#__b_2]\x      = *this\x[#__c_frame]
-            *this\bar\button[#__b_2]\y      = *this\y[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len
+            *this\bar\button[#__b_2]\y      = *this\bar\thumb\pos + *this\bar\thumb\len
             *this\bar\button[#__b_2]\width  = *this\width[#__c_frame]
-            *this\bar\button[#__b_2]\height = *this\height - ( *this\bar\thumb\pos + *this\bar\thumb\len )
+            *this\bar\button[#__b_2]\height = *this\height - ( *this\bar\thumb\pos + *this\bar\thumb\len - *this\y )
           Else
-            *this\bar\button[#__b_2]\x      = *this\x[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len
+            *this\bar\button[#__b_2]\x      = *this\bar\thumb\pos + *this\bar\thumb\len
             *this\bar\button[#__b_2]\y      = *this\y[#__c_frame]
-            *this\bar\button[#__b_2]\width  = *this\width[#__c_frame] - ( *this\bar\thumb\pos + *this\bar\thumb\len )
+            *this\bar\button[#__b_2]\width  = *this\width[#__c_frame] - ( *this\bar\thumb\pos + *this\bar\thumb\len - *this\x )
             *this\bar\button[#__b_2]\height = *this\height[#__c_frame]
           EndIf
           
@@ -5214,10 +5206,10 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; Thumb coordinate on scroll bar
           If *this\bar\thumb\len
             If *this\vertical
-              *this\bar\button[#__b_3]\y      = *this\y[#__c_inner_b] + *this\bar\thumb\pos
+              *this\bar\button[#__b_3]\y      = *this\bar\thumb\pos
               *this\bar\button[#__b_3]\height = *this\bar\thumb\len                              
             Else
-              *this\bar\button[#__b_3]\x      = *this\x[#__c_inner_b] + *this\bar\thumb\pos 
+              *this\bar\button[#__b_3]\x      = *this\bar\thumb\pos 
               *this\bar\button[#__b_3]\width  = *this\bar\thumb\len                                  
             EndIf
           EndIf
@@ -5229,10 +5221,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\button[#__b_3]\width    = *this\bar\button[#__b_3]\size + ( Bool( *this\bar\button[#__b_3]\size<10 )**this\bar\button[#__b_3]\size )
             
             *this\bar\button[#__b_1]\y        = *this\y
-            *this\bar\button[#__b_1]\height   = *this\bar\thumb\pos + *this\bar\thumb\len/2 
+            *this\bar\button[#__b_1]\height   = *this\bar\thumb\pos - *this\y + *this\bar\thumb\len/2
             
-            *this\bar\button[#__b_2]\y        = *this\y[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len/2
-            *this\bar\button[#__b_2]\height   = *this\height - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 )
+            *this\bar\button[#__b_2]\y        = *this\bar\thumb\pos + *this\bar\thumb\len/2
+            *this\bar\button[#__b_2]\height   = *this\height - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 - *this\y )
             
             If *this\bar\inverted
               *this\bar\button[#__b_1]\x      = *this\x[#__c_frame] + 6
@@ -5249,10 +5241,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\button[#__b_3]\height   = *this\bar\button[#__b_3]\size + ( Bool( *this\bar\button[#__b_3]\size<10 )**this\bar\button[#__b_3]\size )
             
             *this\bar\button[#__b_1]\x        = *this\x[#__c_frame]
-            *this\bar\button[#__b_1]\width    = *this\bar\thumb\pos + *this\bar\thumb\len/2
+            *this\bar\button[#__b_1]\width    = *this\bar\thumb\pos - *this\x[#__c_frame] + *this\bar\thumb\len/2
             
-            *this\bar\button[#__b_2]\x        = *this\x[#__c_inner_b] + *this\bar\thumb\pos + *this\bar\thumb\len/2
-            *this\bar\button[#__b_2]\width    = *this\width[#__c_frame] - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 )
+            *this\bar\button[#__b_2]\x        = *this\bar\thumb\pos + *this\bar\thumb\len/2
+            *this\bar\button[#__b_2]\width    = *this\width[#__c_frame] - ( *this\bar\thumb\pos + *this\bar\thumb\len/2 - *this\x )
             
             If *this\bar\inverted
               *this\bar\button[#__b_1]\y      = *this\y[#__c_frame] + *this\height[#__c_frame] - *this\bar\button[#__b_1]\height - 6
@@ -5271,14 +5263,14 @@ CompilerIf Not Defined( widget, #PB_Module )
         If *this\type = #PB_GadgetType_Splitter 
           If *this\vertical
             *this\bar\button[#__split_b1]\width    = *this\width[#__c_frame]
-            *this\bar\button[#__split_b1]\height   = *this\bar\thumb\pos
+            *this\bar\button[#__split_b1]\height   = *this\bar\thumb\pos - *this\y[#__c_frame] 
             
-            *this\bar\button[#__split_b1]\x        = *this\x[#__c_frame]
-            *this\bar\button[#__split_b2]\x        = *this\x[#__c_frame]
+            *this\bar\button[#__split_b1]\x        = *this\x[#__c_frame] + ( Bool( *this\index[#__split_1] )**this\x[#__c_frame] )
+            *this\bar\button[#__split_b2]\x        = *this\x[#__c_frame] + ( Bool( *this\index[#__split_2] )**this\x[#__c_frame] )
             
             If Not ( ( #PB_Compiler_OS = #PB_OS_MacOS ) And *this\index[#__split_1] And Not *this\parent )
-              *this\bar\button[#__split_b1]\y      = *this\y[#__c_frame] 
-              *this\bar\button[#__split_b2]\y      = ( *this\bar\thumb\pos + *this\bar\thumb\len ) + *this\y[#__c_frame] 
+              *this\bar\button[#__split_b1]\y      = *this\y[#__c_frame] + ( Bool( *this\index[#__split_1] )**this\y[#__c_frame] )
+              *this\bar\button[#__split_b2]\y      = ( *this\bar\thumb\pos + *this\bar\thumb\len ) + ( Bool( *this\index[#__split_2] )**this\y[#__c_frame] )
             Else
               *this\bar\button[#__split_b1]\y      = *this\height[#__c_frame] - *this\bar\button[#__split_b1]\height
             EndIf
@@ -5288,25 +5280,25 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If *this\bar\thumb\len
               *this\bar\button[#__b_3]\x      = *this\x[#__c_frame]
-              *this\bar\button[#__b_3]\y      = *this\y[#__c_inner_b] + *this\bar\thumb\pos
+              *this\bar\button[#__b_3]\y      = *this\bar\thumb\pos
               *this\bar\button[#__b_3]\height = *this\bar\thumb\len                              
               *this\bar\button[#__b_3]\width  = *this\width[#__c_frame] 
             EndIf
           Else
-            *this\bar\button[#__split_b1]\width    = *this\bar\thumb\pos
+            *this\bar\button[#__split_b1]\width    = *this\bar\thumb\pos - *this\x[#__c_frame] 
             *this\bar\button[#__split_b1]\height   = *this\height[#__c_frame]
             
-            *this\bar\button[#__split_b1]\y        = *this\y[#__c_frame]
-            *this\bar\button[#__split_b2]\y        = *this\y[#__c_frame]
-            *this\bar\button[#__split_b1]\x        = *this\x[#__c_frame]
-            *this\bar\button[#__split_b2]\x        = ( *this\bar\thumb\pos + *this\bar\thumb\len ) + *this\x[#__c_frame]
+            *this\bar\button[#__split_b1]\y        = *this\y[#__c_frame] + ( Bool( *this\index[#__split_1] )**this\y[#__c_frame] )
+            *this\bar\button[#__split_b2]\y        = *this\y[#__c_frame] + ( Bool( *this\index[#__split_2] )**this\y[#__c_frame] )
+            *this\bar\button[#__split_b1]\x        = *this\x[#__c_frame] + ( Bool( *this\index[#__split_1] )**this\x[#__c_frame] )
+            *this\bar\button[#__split_b2]\x        = ( *this\bar\thumb\pos + *this\bar\thumb\len ) + ( Bool( *this\index[#__split_2] )**this\x[#__c_frame] )
             
             *this\bar\button[#__split_b2]\width    = *this\width[#__c_frame] - ( *this\bar\button[#__split_b1]\width + *this\bar\thumb\len )
             *this\bar\button[#__split_b2]\height   = *this\height[#__c_frame]
             
             If *this\bar\thumb\len
               *this\bar\button[#__b_3]\y      = *this\y[#__c_frame]
-              *this\bar\button[#__b_3]\x      = *this\x[#__c_inner_b] + *this\bar\thumb\pos
+              *this\bar\button[#__b_3]\x      = *this\bar\thumb\pos
               *this\bar\button[#__b_3]\width  = *this\bar\thumb\len                                  
               *this\bar\button[#__b_3]\height = *this\height[#__c_frame]
             EndIf
@@ -5325,26 +5317,17 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\gadget[#__split_1]
             If *this\index[#__split_1]
               If *this\root\canvas\container
-                ResizeGadget( *this\gadget[#__split_1],
-                              *this\bar\button[#__split_b1]\x,
-                              *this\bar\button[#__split_b1]\y,
-                              *this\bar\button[#__split_b1]\width, *this\bar\button[#__split_b1]\height )
+                ResizeGadget( *this\gadget[#__split_1], *this\bar\button[#__split_b1]\x - *this\x[#__c_frame], *this\bar\button[#__split_b1]\y - *this\y, *this\bar\button[#__split_b1]\width, *this\bar\button[#__split_b1]\height )
               Else
-                ResizeGadget( *this\gadget[#__split_1],
-                              *this\bar\button[#__split_b1]\x + GadgetX( *this\root\canvas\gadget ), 
-                              *this\bar\button[#__split_b1]\y + GadgetY( *this\root\canvas\gadget ),
-                              *this\bar\button[#__split_b1]\width, *this\bar\button[#__split_b1]\height )
+                ResizeGadget( *this\gadget[#__split_1], ( *this\bar\button[#__split_b1]\x - *this\x[#__c_frame] ) + GadgetX( *this\root\canvas\gadget ), ( *this\bar\button[#__split_b1]\y - *this\y[#__c_frame] ) + GadgetY( *this\root\canvas\gadget ), *this\bar\button[#__split_b1]\width, *this\bar\button[#__split_b1]\height )
               EndIf
             Else
-              If *this\gadget[#__split_1]\x <> *this\bar\button[#__split_b1]\x Or
-                 *this\gadget[#__split_1]\y <> *this\bar\button[#__split_b1]\y Or
+              If *this\gadget[#__split_1]\x <> *this\bar\button[#__split_b1]\x Or ;  - *this\x
+                 *this\gadget[#__split_1]\y <> *this\bar\button[#__split_b1]\y Or ;  - *this\y
                  *this\gadget[#__split_1]\width <> *this\bar\button[#__split_b1]\width Or
                  *this\gadget[#__split_1]\height <> *this\bar\button[#__split_b1]\height
                 ; Debug "splitter_1_resize " + *this\gadget[#__split_1]
-                Resize( *this\gadget[#__split_1],
-                        *this\bar\button[#__split_b1]\x - *this\x[#__c_frame],
-                        *this\bar\button[#__split_b1]\y - *this\y[#__c_frame], 
-                        *this\bar\button[#__split_b1]\width, *this\bar\button[#__split_b1]\height )
+                Resize( *this\gadget[#__split_1], *this\bar\button[#__split_b1]\x - *this\x[#__c_frame], *this\bar\button[#__split_b1]\y - *this\y[#__c_frame], *this\bar\button[#__split_b1]\width, *this\bar\button[#__split_b1]\height )
               EndIf
             EndIf
           EndIf
@@ -5352,26 +5335,17 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\gadget[#__split_2]
             If *this\index[#__split_2]
               If *this\root\canvas\container 
-                ResizeGadget( *this\gadget[#__split_2],
-                              *this\bar\button[#__split_b2]\x, 
-                              *this\bar\button[#__split_b2]\y,
-                              *this\bar\button[#__split_b2]\width, *this\bar\button[#__split_b2]\height )
+                ResizeGadget( *this\gadget[#__split_2], *this\bar\button[#__split_b2]\x - *this\x[#__c_frame], *this\bar\button[#__split_b2]\y - *this\y[#__c_frame], *this\bar\button[#__split_b2]\width, *this\bar\button[#__split_b2]\height )
               Else
-                ResizeGadget( *this\gadget[#__split_2], 
-                              *this\bar\button[#__split_b2]\x + GadgetX( *this\root\canvas\gadget ),
-                              *this\bar\button[#__split_b2]\y + GadgetY( *this\root\canvas\gadget ),
-                              *this\bar\button[#__split_b2]\width, *this\bar\button[#__split_b2]\height )
+                ResizeGadget( *this\gadget[#__split_2], ( *this\bar\button[#__split_b2]\x - *this\x[#__c_frame] ) + GadgetX( *this\root\canvas\gadget ), ( *this\bar\button[#__split_b2]\y - *this\y[#__c_frame] ) + GadgetY( *this\root\canvas\gadget ), *this\bar\button[#__split_b2]\width, *this\bar\button[#__split_b2]\height )
               EndIf
             Else
-              If *this\gadget[#__split_2]\x <> *this\bar\button[#__split_b2]\x Or 
-                 *this\gadget[#__split_2]\y <> *this\bar\button[#__split_b2]\y Or
+              If *this\gadget[#__split_2]\x <> *this\bar\button[#__split_b2]\x Or ;  - *this\x
+                 *this\gadget[#__split_2]\y <> *this\bar\button[#__split_b2]\y Or ;  - *this\y
                  *this\gadget[#__split_2]\width <> *this\bar\button[#__split_b2]\width Or
                  *this\gadget[#__split_2]\height <> *this\bar\button[#__split_b2]\height 
                 ; Debug "splitter_2_resize " + *this\gadget[#__split_2]
-                Resize( *this\gadget[#__split_2], 
-                        *this\bar\button[#__split_b2]\x - *this\x[#__c_frame], 
-                        *this\bar\button[#__split_b2]\y - *this\y[#__c_frame], 
-                        *this\bar\button[#__split_b2]\width, *this\bar\button[#__split_b2]\height )
+                Resize( *this\gadget[#__split_2], *this\bar\button[#__split_b2]\x - *this\x[#__c_frame], *this\bar\button[#__split_b2]\y - *this\y[#__c_frame], *this\bar\button[#__split_b2]\width, *this\bar\button[#__split_b2]\height )
               EndIf
             EndIf   
           EndIf      
@@ -17537,5 +17511,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------fd---n----------------------40-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

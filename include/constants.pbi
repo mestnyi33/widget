@@ -110,7 +110,8 @@
        #__c_rootrestore = 7
 ;     #__ci_frame = #__c_draw
 ;     #__ci_container = #__c_draw
-    
+       #__c_inner_b = #__c_inner
+       
     ;state
     EnumerationBinary
       #__s_normal
