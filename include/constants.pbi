@@ -534,7 +534,7 @@
     #PB_GadgetType_Menu      = -4       
     #PB_GadgetType_Root      = -5
     #PB_GadgetType_StatusBar = -6
-    #PB_GadgetType_Popup     = -7
+    #PB_GadgetType_PopupMenu     = -7
     #PB_GadgetType_Message   = -8
     #PB_GadgetType_Hiasm     = -9
     
@@ -548,7 +548,7 @@
     
     #__type_hiasm         = #PB_GadgetType_Hiasm
     #__type_message       = #PB_GadgetType_Message
-    #__type_popup         = #PB_GadgetType_Popup
+    #__type_popupmenu     = #PB_GadgetType_PopupMenu
     #__type_root          = #PB_GadgetType_Root
     #__type_statusbar     = #PB_GadgetType_StatusBar
     #__type_menu          = #PB_GadgetType_Menu

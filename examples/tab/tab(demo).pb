@@ -16,12 +16,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
     ClearDebugOutput()
-    ; Debug ""+Str(*event\widget\index - 1)+ " - widget  event - " +*event\type+ "  state - " GetState(*event\widget) ; 
+    ; Debug ""+Str(This()\widget\index - 1)+ " - widget  event - " +This()\type+ "  state - " GetState(This()\widget) ; 
     
-    Select *event\type
+    Select This()\event
       Case #PB_EventType_Change
-        SetGadgetState((*event\widget\index - 1), GetState(*event\widget))
-        Debug  Str(*event\widget\index - 1)+" - widget change " + GetState(*event\widget)
+        SetGadgetState((This()\widget\index - 1), GetState(This()\widget))
+        Debug  Str(This()\widget\index - 1)+" - widget change " + GetState(This()\widget)
     EndSelect
   EndProcedure
   

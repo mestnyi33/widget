@@ -56,57 +56,6 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn #False
   EndProcedure
   
-  Procedure.s ClassFromType(Type)
-    Protected Result.S
-    
-    Select Type
-        ;     Case #__Type_Desktop        : Result.S = "Desktop"
-        ;     Case #__Type_StatusBar      : Result.S = "StatusBar"
-        ;     Case #__Type_PopupMenu      : Result.S = "PopupMenu"
-        ;     Case #__Type_Menu           : Result.S = "Menu"
-        ;     Case #__Type_Toolbar        : Result.S = "Toolbar"
-      Case #__Type_Window         : Result.S = "Window"
-      Case #__Type_Unknown        : Result.S = "Create"
-      Case #__Type_Button         : Result.S = "Button"
-      Case #__Type_String         : Result.S = "String"
-      Case #__Type_Text           : Result.S = "Text"
-      Case #__Type_CheckBox       : Result.S = "CheckBox"
-      Case #__Type_Option         : Result.S = "Option"
-      Case #__Type_ListView       : Result.S = "ListView"
-      Case #__Type_Frame          : Result.S = "Frame"
-      Case #__Type_ComboBox       : Result.S = "ComboBox"
-      Case #__Type_Image          : Result.S = "Image"
-      Case #__Type_HyperLink      : Result.S = "HyperLink"
-      Case #__Type_Container      : Result.S = "Container"
-      Case #__Type_ListIcon       : Result.S = "ListIcon"
-      Case #__Type_IPAddress      : Result.S = "IPAddress"
-      Case #__Type_ProgressBar    : Result.S = "ProgressBar"
-      Case #__Type_ScrollBar      : Result.S = "ScrollBar"
-      Case #__Type_ScrollArea     : Result.S = "ScrollArea"
-      Case #__Type_TrackBar       : Result.S = "TrackBar"
-      Case #__Type_Web            : Result.S = "Web"
-      Case #__Type_ButtonImage    : Result.S = "ButtonImage"
-      Case #__Type_Calendar       : Result.S = "Calendar"
-      Case #__Type_Date           : Result.S = "Date"
-      Case #__Type_Editor         : Result.S = "Editor"
-      Case #__Type_ExplorerList   : Result.S = "ExplorerList"
-      Case #__Type_ExplorerTree   : Result.S = "ExplorerTree"
-      Case #__Type_ExplorerCombo  : Result.S = "ExplorerCombo"
-      Case #__Type_Spin           : Result.S = "Spin"
-      Case #__Type_Tree           : Result.S = "Tree"
-      Case #__Type_Panel          : Result.S = "Panel"
-      Case #__Type_Splitter       : Result.S = "Splitter"
-      Case #__Type_MDI            : Result.S = "MDI"
-      Case #__Type_Scintilla      : Result.S = "Scintilla"
-      Case #__Type_Shortcut       : Result.S = "Shortcut"
-      Case #__Type_Canvas         : Result.S = "Canvas"
-        
-        ;     Case #__Type_ImageButton    : Result.S = "ImageButton"
-    EndSelect
-    
-    ProcedureReturn Result.S
-  EndProcedure
-  
   Procedure.s FlagFromType( Type ) ; 
     Protected Flags.S
     
@@ -669,5 +618,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = V0-----Wt-
+; Folding = d----+-V8-
 ; EnableXP

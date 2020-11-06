@@ -1,18 +1,20 @@
-﻿XIncludeFile "../../../widgets.pbi" : Uselib(widget)
+﻿XIncludeFile "../../widgets.pbi" : Uselib(widget)
 
 EnableExplicit
-Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1
+Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, w_type
 
 Procedure events_widgets()
   Select this()\event
     Case #PB_EventType_Change
       Select this()\widget
+        Case w_type
+          
         Case Button_2
           this()\widget = Button_1
           this()\widget\round = GetState(Button_2)
           this()\widget\bar\button[#__b_1]\round = this()\widget\round
           this()\widget\bar\button[#__b_2]\round = this()\widget\round
-            
+          
         Case Button_3
           SetState(Button_1, GetState(Button_3))
           
@@ -34,8 +36,14 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
     Button_0 = Progress(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
     Button_1 = Progress(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical,120) ; as they will be sized automatically
     
+    w_type = ListView(10, 10, 150, 200) 
+    Define i
+    For i=0 To 33
+      AddItem(w_type, -1, ClassFromType(i))
+    Next
+    
     Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-    Splitter_1 = Splitter(10, 10, 400, 250, 0, Splitter_0, #PB_Splitter_FirstFixed)
+    Splitter_1 = Splitter(10, 10, 400, 250, w_type, Splitter_0, #PB_Splitter_FirstFixed)
   EndIf
   
   Button_3 = Track    (400+20, 10, 20,  250, 0,100, #PB_TrackBar_Vertical) 
@@ -50,13 +58,13 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   Bind(Button_4, @events_widgets())
   Bind(Button_5, @events_widgets())
   
-  SetState(Button_3, 40)
-  SetState(Button_5, 40)
-  
   SetState(Button_2, 120)
-  SetState(Button_4, 120)
+  SetState(Button_3, 100)
   
-  SetState(Splitter_0, 269)
+  SetState(Button_4, 120)
+  SetState(Button_5, 100)
+  
+  SetState(Splitter_0, 189)
   WaitClose( )
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)

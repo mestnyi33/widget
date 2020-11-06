@@ -749,6 +749,9 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     
+    Declare.i TypeFromClass( class.s )
+    Declare.s ClassFromType( type.i )
+    
     
     Declare.l x( *this, mode.l = #__c_frame )
     Declare.l Y( *this, mode.l = #__c_frame )
@@ -2555,8 +2558,107 @@ CompilerIf Not Defined( widget, #PB_Module )
       ClipPut( _this_, _this_\x[#__c_frame] + _this_\bs, _this_\y[#__c_frame] + _this_\fs, _this_\width[#__c_frame] - _this_\bs*2, _this_\__height - _this_\fs*2 )
     EndMacro
     
-    
     ;- 
+    Procedure.i TypeFromClass( class.s )
+      Protected result.i
+      
+      Select Trim( LCase( class.s ) )
+        Case "popupmenu"      : result = #__type_popupmenu
+          ;case "property"       : result = #__type_property
+        Case "window"         : result = #__type_window
+          
+        Case "button"         : result = #__type_button
+        Case "buttonimage"    : result = #__type_buttonimage
+        Case "calendar"       : result = #__type_calendar
+        Case "canvas"         : result = #__type_canvas
+        Case "checkbox"       : result = #__type_checkbox
+        Case "combobox"       : result = #__type_combobox
+        Case "container"      : result = #__type_container
+        Case "date"           : result = #__type_date
+        Case "editor"         : result = #__type_editor
+        Case "explorercombo"  : result = #__type_explorercombo
+        Case "explorerlist"   : result = #__type_explorerlist
+        Case "explorertree"   : result = #__type_explorertree
+        Case "frame"          : result = #__type_frame
+        Case "hyperlink"      : result = #__type_hyperlink
+        Case "image"          : result = #__type_image
+        Case "ipaddress"      : result = #__type_ipaddress
+        Case "listicon"       : result = #__type_listicon
+        Case "listview"       : result = #__type_listview
+        Case "mdi"            : result = #__type_mdi
+        Case "opengl"         : result = #__type_openGl
+        Case "option"         : result = #__type_option
+        Case "panel"          : result = #__type_panel
+        Case "progress"       : result = #__type_progressbar
+        Case "scintilla"      : result = #__type_scintilla
+        Case "scrollarea"     : result = #__type_scrollarea
+        Case "scroll"         : result = #__type_scrollbar
+        Case "shortcut"       : result = #__type_shortcut
+        Case "spin"           : result = #__type_spin
+        Case "splitter"       : result = #__type_splitter
+        Case "string"         : result = #__type_string
+        Case "text"           : result = #__type_text
+        Case "track"       : result = #__type_trackbar
+        Case "tree"           : result = #__type_tree
+        Case "unknown"        : result = #__type_unknown
+        Case "web"            : result = #__type_web
+      EndSelect
+      
+      ProcedureReturn result
+    EndProcedure
+    
+    Procedure.s ClassFromType( type.i )
+      Protected result.s
+      
+      Select type
+        Case #__type_root           : result.s = "root"
+        Case #__type_statusbar      : result.s = "status"
+        Case #__type_popupmenu      : result.s = "popupmenu"
+        Case #__type_menu           : result.s = "menu"
+        Case #__type_toolbar        : result.s = "tool"
+          
+        Case #__type_window         : result.s = "window"
+        Case #__type_unknown        : result.s = "create"
+        Case #__type_button         : result.s = "button"
+        Case #__type_string         : result.s = "string"
+        Case #__type_text           : result.s = "text"
+        Case #__type_checkbox       : result.s = "checkbox"
+        Case #__type_option         : result.s = "option"
+        Case #__type_listview       : result.s = "listview"
+        Case #__type_frame          : result.s = "frame"
+        Case #__type_combobox       : result.s = "combobox"
+        Case #__type_image          : result.s = "image"
+        Case #__type_hyperlink      : result.s = "hyperlink"
+        Case #__type_container      : result.s = "container"
+        Case #__type_listicon       : result.s = "listicon"
+        Case #__type_ipaddress      : result.s = "ipaddress"
+        Case #__type_progressbar    : result.s = "progress"
+        Case #__type_scrollbar      : result.s = "scroll"
+        Case #__type_scrollarea     : result.s = "scrollarea"
+        Case #__type_trackbar       : result.s = "track"
+        Case #__type_web            : result.s = "web"
+        Case #__type_buttonimage    : result.s = "buttonimage"
+        Case #__type_calendar       : result.s = "calendar"
+        Case #__type_date           : result.s = "date"
+        Case #__type_editor         : result.s = "editor"
+        Case #__type_explorerlist   : result.s = "explorerlist"
+        Case #__type_explorertree   : result.s = "explorertree"
+        Case #__type_explorercombo  : result.s = "explorercombo"
+        Case #__type_spin           : result.s = "spin"
+        Case #__type_tree           : result.s = "tree"
+        Case #__type_panel          : result.s = "panel"
+        Case #__type_splitter       : result.s = "splitter"
+        Case #__type_mdi            : result.s = "mdi"
+        Case #__type_scintilla      : result.s = "scintilla"
+        Case #__type_shortcut       : result.s = "shortcut"
+        Case #__type_canvas         : result.s = "canvas"
+          
+          ;     case #__type_imagebutton    : result.s = "imagebutton"
+      EndSelect
+      
+      ProcedureReturn result.s
+    EndProcedure
+    
     ;-
     Declare Reclip( *this._s_widget, childrens.b )
     Procedure   Reclip( *this._s_widget, childrens.b )
@@ -3847,6 +3949,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\change = 0
           EndIf
           
+          ;Protected x = *this\x + \bar\button[#__b_3]\x
+;           Protected y = *this\y + \bar\button[#__b_3]\y
           Protected x = \bar\button[#__b_3]\x
           Protected y = \bar\button[#__b_3]\y
           
@@ -4067,18 +4171,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               _draw_arrows_( *this\bar\button[#__b_2], Bool( \vertical ) ) 
             EndIf
           EndIf
-          
-          
         EndIf
-        
-        ;         DrawingMode( #PB_2DDrawing_Outlined )
-        ;         Box( \x[#__c_frame] - 1,\y[#__c_inner] + \height[#__c_inner2],\width[#__c_frame] + 2,1, \color\frame[Bool( \index[#__tab_2] <>- 1 )*2 ] )
-        ;         
-        ;         DrawingMode( #PB_2DDrawing_Outlined )
-        ;         Box( \x[#__c_clip],\y[#__c_clip],\width[#__c_clip],\height[#__c_clip], $FF0000FF )
-        ;         ;         ;Box( \x[#__c_screen],\y[#__c_screen],\width[#__c_screen],\height[#__c_screen], $FF00F0F0 )
-        ;         ;         Box( \x[#__c_frame],\y[#__c_frame],\width[#__c_frame],\height[#__c_frame], $FF00F0F0 )
-        ;         Box( \x[#__c_inner],\y[#__c_inner],\width[#__c_inner2],\height[#__c_inner2], $FF00FF00 )
         
       EndWith 
     EndProcedure
@@ -5159,12 +5252,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\bar\button[#__b_3]\x = *this\x[#__c_inner]           
             *this\bar\button[#__b_3]\width = *this\width[#__c_inner]
             *this\bar\button[#__b_3]\height = *this\bar\max                             
-            *this\bar\button[#__b_3]\y = ( *this\bar\area\pos + _bar_page_pos_( *this\bar, *this\bar\thumb\pos ) - *this\bar\page\end )
+            *this\bar\button[#__b_3]\y = *this\y[#__c_inner_b] + ( *this\bar\area\pos + _bar_page_pos_( *this\bar, *this\bar\thumb\pos ) - *this\bar\page\end )
           Else
             *this\bar\button[#__b_3]\y = *this\y[#__c_inner]           
             *this\bar\button[#__b_3]\height = *this\height[#__c_inner]
             *this\bar\button[#__b_3]\width = *this\bar\max
-            *this\bar\button[#__b_3]\x = ( *this\bar\area\pos + _bar_page_pos_( *this\bar, *this\bar\thumb\pos ) - *this\bar\page\end )
+            *this\bar\button[#__b_3]\x = *this\x[#__c_inner_b] + ( *this\bar\area\pos + _bar_page_pos_( *this\bar, *this\bar\thumb\pos ) - *this\bar\page\end )
           EndIf
           ;EndIf
           
@@ -16430,54 +16523,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;-
   ;- PUBLICs
-  Procedure.i GetClassType( Class.s )
-    Protected Result.i
-    
-    Select Trim( Class.s )
-      Case "Button"         : Result = #PB_GadgetType_Button
-      Case "ButtonImage"    : Result = #PB_GadgetType_ButtonImage
-      Case "Calendar"       : Result = #PB_GadgetType_Calendar
-      Case "Canvas"         : Result = #PB_GadgetType_Canvas
-      Case "CheckBox"       : Result = #PB_GadgetType_CheckBox
-      Case "ComboBox"       : Result = #PB_GadgetType_ComboBox
-      Case "Container"      : Result = #PB_GadgetType_Container
-      Case "Date"           : Result = #PB_GadgetType_Date
-      Case "Editor"         : Result = #PB_GadgetType_Editor
-      Case "ExplorerCombo"  : Result = #PB_GadgetType_ExplorerCombo
-      Case "ExplorerList"   : Result = #PB_GadgetType_ExplorerList
-      Case "ExplorerTree"   : Result = #PB_GadgetType_ExplorerTree
-      Case "Frame"          : Result = #PB_GadgetType_Frame
-      Case "HyperLink"      : Result = #PB_GadgetType_HyperLink
-      Case "Image"          : Result = #PB_GadgetType_Image
-      Case "IPAddress"      : Result = #PB_GadgetType_IPAddress
-      Case "ListIcon"       : Result = #PB_GadgetType_ListIcon
-      Case "ListView"       : Result = #PB_GadgetType_ListView
-      Case "MDI"            : Result = #PB_GadgetType_MDI
-      Case "OpenGL"         : Result = #PB_GadgetType_OpenGL
-      Case "Option"         : Result = #PB_GadgetType_Option
-        ;Case "Popup"          : Result = #PB_GadgetType_Popup
-      Case "Panel"          : Result = #PB_GadgetType_Panel
-        ;Case "Property"       : Result = #PB_GadgetType_Property
-      Case "ProgressBar"    : Result = #PB_GadgetType_ProgressBar
-      Case "Scintilla"      : Result = #PB_GadgetType_Scintilla
-      Case "ScrollArea"     : Result = #PB_GadgetType_ScrollArea
-      Case "ScrollBar"      : Result = #PB_GadgetType_ScrollBar
-      Case "Shortcut"       : Result = #PB_GadgetType_Shortcut
-      Case "Spin"           : Result = #PB_GadgetType_Spin
-      Case "Splitter"       : Result = #PB_GadgetType_Splitter
-      Case "String"         : Result = #PB_GadgetType_String
-      Case "Text"           : Result = #PB_GadgetType_Text
-      Case "TrackBar"       : Result = #PB_GadgetType_TrackBar
-      Case "Tree"           : Result = #PB_GadgetType_Tree
-      Case "Unknown"        : Result = #PB_GadgetType_Unknown
-      Case "Web"            : Result = #PB_GadgetType_Web
-      Case "Window"         : Result = #__Type_Window
-    EndSelect
-    
-    ProcedureReturn Result
-  EndProcedure
-  
-  
   ;-
   Procedure Points( Steps = 5, line=0, Color = 0 )
     Static ID
@@ -16759,8 +16804,12 @@ CompilerIf #PB_Compiler_IsMainFile
                     If FindString( Left( PackEntryName.S, 3 ), "vd_" )
                       PackEntryName.S = ReplaceString( PackEntryName.S,"vd_"," " )
                       PackEntryName.S = Trim( ReplaceString( PackEntryName.S,"gadget","" ) )
+                      PackEntryName.S = ReplaceString( PackEntryName.S,"bar","" )
+                      PackEntryName.S = ReplaceString( PackEntryName.S,"area","Area" )
+                      ;;PackEntryName.S = ReplaceString( PackEntryName.S,"bar","Bar" )
+                      PackEntryName.S = ReplaceString( PackEntryName.S,"image","Image" )
                       
-                      Protected Left.S = UCase( Left( PackEntryName.S,1 ) )
+                      Protected Left.S = UCase( Left( PackEntryName.S, 1 ) )
                       Protected Right.S = Right( PackEntryName.S,Len( PackEntryName.S )-1 )
                       PackEntryName.S = Left.S+Right.S
                       
@@ -16792,6 +16841,10 @@ CompilerIf #PB_Compiler_IsMainFile
                       ElseIf FindString( LCase( PackEntryName.S ), "text" )
                         AddItem( *id, -1, PackEntryName.S, Image )
                         SetItemData( *id, CountItems( *id )-1, Image )
+                      ElseIf FindString( LCase( PackEntryName.S ), "progress" )
+                        AddItem( *id, -1, PackEntryName.S, Image )
+                        SetItemData( *id, CountItems( *id )-1, Image )
+                        
                       ElseIf FindString( LCase( PackEntryName.S ), "container" )
                         AddItem( *id, -1, PackEntryName.S, Image )
                         SetItemData( *id, CountItems( *id )-1, Image )
@@ -16932,7 +16985,7 @@ CompilerIf #PB_Compiler_IsMainFile
         countitems = CountItems( id_elements_tree )
         
         For i = 0 To countitems - 1
-          If StringField( Class, 1, "_" ) = GetItemText( id_elements_tree, i )
+          If LCase(StringField( Class, 1, "_" )) = LCase(GetItemText( id_elements_tree, i ))
             img = GetItemData( id_elements_tree, i )
             Break
           EndIf
@@ -17481,7 +17534,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget_add( *container, "text", 45, 65+40*2, 50, 30 )
     
     Define *container2 = widget_add( *window, "container", 100+140, 25+45, 165, 140 )
-    widget_add( *container2, "button", 75, 25, 30, 30 )
+    widget_add( *container2, "buttonimage", 75, 25, 30, 30 )
     widget_add( *container2, "text", 25, 65, 50, 30 )
     widget_add( *container2, "button", 100+15, 65+40, 80, 30 )
     widget_add( *container2, "text", 45, 65+40*2, 50, 30 )
@@ -17537,5 +17590,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------fd---n----------------------40-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------Hg-------------------------------------------------------+-v0----X4---6----------------------d------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------G3+--------------------------------------------------------------------------
 ; EnableXP
