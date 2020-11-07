@@ -2662,6 +2662,49 @@ CompilerIf Not Defined( widget, #PB_Module )
     ;-
     Declare Reclip( *this._s_widget, childrens.b )
     Procedure   Reclip( *this._s_widget, childrens.b )
+      Macro _clip_width_( _address_, _width_, _mode_ = )
+        If _address_\parent And 
+           (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) > 0 And 
+           (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) < (_address_\x[#__c_inner] + _width_) And
+           (_address_\parent\x[#__c_inner] + _address_\parent\width[#__c_inner]) > (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) 
+          
+          _address_\width#_mode_ = (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) - _address_\x#_mode_
+        ElseIf _address_\parent And 
+               (_address_\parent\x[#__c_inner] + _address_\parent\width[#__c_inner]) > 0 And 
+               (_address_\parent\x[#__c_inner] + _address_\parent\width[#__c_inner]) < (_address_\x[#__c_inner] + _width_)
+          
+          _address_\width#_mode_ = (_address_\parent\x[#__c_inner] + _address_\parent\width[#__c_inner]) - _address_\x#_mode_
+        Else
+          _address_\width#_mode_ = (_address_\x[#__c_inner] + _width_) - _address_\x#_mode_
+        EndIf
+        
+        If _address_\width#_mode_ < 0
+          _address_\width#_mode_ = 0
+        EndIf
+      EndMacro
+      
+      Macro _clip_height_( _address_, _height_, _mode_ = )
+        If _address_\parent And 
+           (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) > 0 And 
+           (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) < (_address_\y[#__c_inner] + _height_) And
+           (_address_\parent\y[#__c_inner] + _address_\parent\height[#__c_inner]) > (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) 
+          
+          _address_\height#_mode_ = (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) - _address_\y#_mode_
+        ElseIf _address_\parent And 
+               (_address_\parent\y[#__c_inner] + _address_\parent\height[#__c_inner]) > 0 And 
+               (_address_\parent\y[#__c_inner] + _address_\parent\height[#__c_inner]) < (_address_\y[#__c_inner] + _height_)
+          
+          _address_\height#_mode_ = (_address_\parent\y[#__c_inner] + _address_\parent\height[#__c_inner]) - _address_\y#_mode_
+        Else
+          _address_\height#_mode_ = (_address_\y[#__c_inner] + _height_) - _address_\y#_mode_
+        EndIf
+        
+        If _address_\height#_mode_ < 0
+          _address_\height#_mode_ = 0
+        EndIf
+      EndMacro
+      
+      
       ; Debug  *this\address
       ; then move and size parent set clip coordinate
       Protected _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_inner2]
@@ -2831,30 +2874,61 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       
+      ;       ; clip child tab bar
+      ;       If *this\parent\_tab And 
+      ;          *this\parent\type = #__type_panel
+      ;         Reclip( *this\parent, 0 )
+      ;       EndIf
+      
+      ; clip inner scrollbars parent
+      If *this\parent\scroll 
+        If *this = *this\parent\scroll\h
+          _p_x2_ = *this\parent\parent\x[#__c_inner] + *this\parent\parent\width[#__c_inner2]
+          ;;_p_x4_ = *this\parent\parent\x[#__c_clip] + *this\parent\parent\width[#__c_clip]
+          _p_x4_ = *this\parent\parent\x[#__c_clip2] + *this\parent\parent\width[#__c_clip2]
+          _ti_x2_ = *this\parent\x[#__c_inner] + *this\parent\scroll\h\bar\page\len 
+          
+          ; width - clip inner coordinate
+          If *this\parent\parent And _p_x4_ > 0 And _p_x4_ < _ti_x2_ And _p_x2_ > _p_x4_ 
+            *this\parent\width[#__c_clip2] = _p_x4_ - *this\parent\x[#__c_clip2]
+          ElseIf *this\parent\parent And _p_x2_ > 0 And _p_x2_ < _ti_x2_
+            *this\parent\width[#__c_clip2] = _p_x2_ - *this\parent\x[#__c_clip2]
+          Else
+            *this\parent\width[#__c_clip2] = _ti_x2_ - *this\parent\x[#__c_clip2]
+          EndIf
+          If *this\parent\width[#__c_clip2] < 0
+            *this\parent\width[#__c_clip2] = 0
+          EndIf
+         ; _clip_width_( *this\parent, *this\parent\scroll\h\bar\page\len, [#__c_clip2] )
+        EndIf
+        
+        If *this = *this\parent\scroll\v
+          _p_y2_ = *this\parent\parent\y[#__c_inner] + *this\parent\parent\height[#__c_inner2]
+          ;_p_y4_ = *this\parent\parent\y[#__c_clip] + *this\parent\parent\height[#__c_clip]
+          _p_y4_ = *this\parent\parent\y[#__c_clip2] + *this\parent\parent\height[#__c_clip2]
+          _ti_y2_ = *this\parent\y[#__c_inner] + *this\parent\scroll\v\bar\page\len 
+          
+          ; height - clip inner coordinate
+          If *this\parent\parent And _p_y4_ > 0 And _p_y4_ < _ti_y2_ And _p_y2_ > _p_y4_ 
+            *this\parent\height[#__c_clip2] = _p_y4_ - *this\parent\y[#__c_clip2]
+          ElseIf *this\parent\parent And _p_y2_ > 0 And _p_y2_ < _ti_y2_
+            *this\parent\height[#__c_clip2] = _p_y2_ - *this\parent\y[#__c_clip2]
+          Else
+            *this\parent\height[#__c_clip2] = _ti_y2_ - *this\parent\y[#__c_clip2]
+          EndIf
+          If *this\parent\height[#__c_clip2] < 0
+            *this\parent\height[#__c_clip2] = 0
+          EndIf
+          ;_clip_height_( *this\parent, *this\parent\scroll\v\bar\page\len, [#__c_clip2] )
+        EndIf
+      EndIf
+      
       ;
       If ( *this\width[#__c_clip] Or 
            *this\height[#__c_clip] )
         *this\draw = #True
       Else
         *this\draw = #False
-      EndIf
-      
-      
-      
-      ; clip child tab bar
-      If *this\_tab And 
-         *this\type = #__type_panel
-        Reclip( *this\_tab, 0 )
-      EndIf
-      
-      ; clip child scroll bars 
-      If *this\scroll 
-        If *this\scroll\v 
-          Reclip( *this\scroll\v, 0 )
-        EndIf
-        If *this\scroll\h
-          Reclip( *this\scroll\h, 0 )
-        EndIf
       EndIf
       
       If childrens And *this\container
@@ -14085,7 +14159,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           SetParent( *this, *parent, #PB_Default )
           
           If flag & #__flag_noscrollbars = #False
-            Area( *this, 1, width, height, width, height, Bool( ( \mode\buttons = 0 And \mode\lines = 0 ) = 0 ) )
+            Area( *this, 1, 0,0,0,0, Bool( ( \mode\buttons = 0 And \mode\lines = 0 ) = 0 ) )
           EndIf
           Resize( *this, x,y,width,height )
         EndWith
@@ -16421,6 +16495,7 @@ CompilerIf Not Defined( widget, #PB_Module )
   EndModule
   ;- <<< 
 CompilerEndIf
+
 ;- 
 Macro Uselib( _name_ )
   UseModule _name_
@@ -17590,5 +17665,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------Hg-------------------------------------------------------+-v0----X4---6----------------------d------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------G3+--------------------------------------------------------------------------
+; Folding = ---------Hg----------------------------4--------------------------f--4+----r8---9----------------------u-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fHb---------------------------------------------------------------------------
 ; EnableXP
