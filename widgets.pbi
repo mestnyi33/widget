@@ -3050,6 +3050,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ClipOutput( clip_x, clip_y, clip_w, clip_h )
     EndProcedure
     
+    Declare Reclip( *this._s_widget, childrens.b )
     Procedure   Reclip( *this._s_widget, childrens.b )
       Macro _clip_content_( _address_, _mode_= )
         ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
@@ -3208,6 +3209,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;         Reclip( *this\parent, 0 )
       ;       EndIf
       
+      ; clip child tab bar
+      If *this\_tab And 
+         *this\type = #__type_panel
+        Reclip( *this\_tab, 0 )
+      EndIf
+      
       ; clip inner scrollbars parent
       If *this\parent\scroll 
         If *this = *this\parent\scroll\h
@@ -3216,6 +3223,18 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If *this = *this\parent\scroll\v
           _clip_height_( *this\parent, *this\y[#__c_inner] + *this\parent\scroll\v\bar\page\len, _p_y2_, [#__c_clip2] )
+        EndIf
+      EndIf
+      
+      
+      ; mdi(demo) show bug
+      ; clip child scroll bars 
+      If *this\scroll 
+        If *this\scroll\v 
+          Reclip( *this\scroll\v, 0 )
+        EndIf
+        If *this\scroll\h
+          Reclip( *this\scroll\h, 0 )
         EndIf
       EndIf
       
@@ -17591,5 +17610,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------BMqH9----+v--90-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------PY8M9------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
