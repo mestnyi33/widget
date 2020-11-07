@@ -1358,8 +1358,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       ; clip drawing coordinate
-      _clip_input_( transform( )\main )
-      
+      _clip_content_( transform( )\main, [#__c_clip2] )
+        
       If transform( )\grab
         If transform( )\id[0]\color\back[0]
           Box( transform( )\id[0]\x, transform( )\id[0]\y, transform( )\id[0]\width, transform( )\id[0]\height, transform( )\id[0]\color\back[0] )
@@ -2491,7 +2491,366 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf  
     EndMacro
     
-    Macro change_checkbox_state( _address_, _three_state_ )
+    
+    ;-
+    Macro _position_move_( _this_ )
+      ; if first element in parent list
+      If _this_\parent\first = _this_
+        _this_\parent\first = _this_\after
+      EndIf
+      
+      ; if last element in parent list
+      If _this_\parent\last = _this_
+        ; Debug #PB_Compiler_Procedure + " before - " + *this\before\class
+        _this_\parent\last = _this_\before
+      EndIf
+      
+      If _this_\before
+        _this_\before\after = _this_\after
+      EndIf
+      
+      If _this_\after
+        _this_\after\before = _this_\before
+      EndIf
+    EndMacro
+    
+    Macro _position_move_after_(_this_, _before_)
+      _position_move_( _this_ )
+      
+      PushListPosition( widget( ) )
+      ChangeCurrentElement( widget( ), _this_\address )
+      ;; Debug " "+widget( )\class +" "+ _this_\class +" "+ _before_\class
+      ;;If widget( )\address <> _before_\address
+      MoveElement( widget( ), #PB_List_After, _before_\address )
+      ;;EndIf
+      
+      ; change root address for the startenumerate 
+      If _this_\root <> _before_\root
+        _this_\root\address = _this_\address
+      EndIf
+      
+      If _this_\count\childrens
+        While NextElement( widget( ) ) 
+          If Child( widget( ), _this_ )
+            MoveElement( widget( ), #PB_List_Before, _before_\address )
+          EndIf
+        Wend
+        
+        While PreviousElement( widget( ) ) 
+          If Child( widget( ), _this_ )
+            MoveElement( widget( ), #PB_List_After, _this_\address )
+          EndIf
+        Wend
+      EndIf
+      PopListPosition( widget( ) )
+    EndMacro
+    
+    Macro _position_move_before_(_this_, _after_)
+      _position_move_( _this_ )
+      
+      PushListPosition( widget( ) )
+      ChangeCurrentElement( widget( ), _this_\address )
+      ;;If widget( )\address <> _after_\address
+      MoveElement( widget( ), #PB_List_Before, _after_\address )
+      ;;EndIf
+      
+      If _this_\count\childrens
+        While PreviousElement( widget( ) ) 
+          If Child( widget( ), _this_ )
+            MoveElement( widget( ), #PB_List_After, _after_\address )
+          EndIf
+        Wend
+        
+        While NextElement( widget( ) ) 
+          If Child( widget( ), _this_ )
+            MoveElement( widget( ), #PB_List_Before, _after_\address )
+          EndIf
+        Wend
+      EndIf
+      PopListPosition( widget( ) )
+    EndMacro
+    
+    ;-
+    Macro _set_align_( _address_, _left_, _top_, _right_, _bottom_, _center_ )
+      _address_\align\left = _left_
+      _address_\align\right = _right_
+      
+      _address_\align\top = _top_
+      _address_\align\bottom = _bottom_
+      
+      If Not _center_ And 
+         Not _address_\align\top And 
+         Not _address_\align\left And
+         Not _address_\align\right And 
+         Not _address_\align\bottom
+        
+        If Not _address_\align\right
+          _address_\align\left = #True 
+        EndIf
+        If Not _address_\align\bottom
+          _address_\align\top = #True
+        EndIf
+      EndIf
+    EndMacro
+    
+    Macro _set_align_x_( _this_, _address_, _width_, _rotate_ )
+      If _rotate_ = 180
+        If _this_\align\right
+          _address_\x = _width_                          - _this_\padding\x
+        ElseIf Not _this_\align\left
+          _address_\x = ( _width_ + _address_\width ) / 2
+        Else
+          _address_\x = _address_\width                   + _this_\padding\x
+        EndIf
+      EndIf
+      
+      If _rotate_ = 0
+        If _this_\align\right
+          _address_\x = ( _width_ - _address_\width )       - _this_\padding\x
+        ElseIf Not _this_\align\left
+          _address_\x = ( _width_ - _address_\width ) / 2           
+        Else
+          _address_\x =                                    _this_\padding\x
+        EndIf
+      EndIf
+    EndMacro
+    
+    Macro _set_align_y_( _this_, _address_, _height_, _rotate_ )
+      If _rotate_ = 90                  
+        If _this_\align\bottom
+          _address_\y = _height_                         - _this_\padding\y
+        ElseIf Not _this_\align\top
+          _address_\y = ( _height_ + _address_\width ) / 2
+        Else
+          _address_\y = _address_\width                   + _this_\padding\y
+        EndIf
+      EndIf
+      
+      If _rotate_ = 270                 
+        If _this_\align\bottom
+          _address_\y = ( _height_ - _address_\width )      - _this_\padding\y
+        ElseIf Not _this_\align\top
+          _address_\y = ( _height_ - _address_\width ) / 2
+        Else
+          _address_\y =                                    _this_\padding\y
+        EndIf
+      EndIf
+    EndMacro
+    
+    Macro _set_align_flag_( _this_, _parent_, _flag_ )
+      If _flag_ & #__flag_autosize = #__flag_autosize
+        _this_\align = AllocateStructure( _s_align )
+        _this_\align\autoSize = 1
+        _this_\align\left = 1
+        _this_\align\top = 1
+        _this_\align\right = 1
+        _this_\align\bottom = 1
+        
+        If _parent_
+          _parent_\color\back =- 1
+          ;           _parent_\color\alpha = 0
+          ;           _parent_\color\alpha[1] = 0
+        EndIf
+      EndIf
+    EndMacro
+    
+    ;- 
+    Macro _set_text_( _this_, _text_, _flag_ )
+      ;     If Not _this_\text
+      ;       _this_\text = AllocateStructure( _s_text )
+      ;     EndIf
+      
+      If _this_\text
+        _this_\text\change = #True
+        
+        _this_\text\editable = Bool( Not constants::_check_( _flag_, #__text_readonly ) )
+        _this_\text\lower = constants::_check_( _flag_, #__text_lowercase )
+        _this_\text\upper = constants::_check_( _flag_, #__text_uppercase )
+        _this_\text\pass = constants::_check_( _flag_, #__text_password )
+        _this_\text\invert = constants::_check_( _flag_, #__text_invert )
+        
+        _set_align_( _this_\text, 
+                     constants::_check_( _flag_, #__text_left ),
+                     constants::_check_( _flag_, #__text_top ),
+                     constants::_check_( _flag_, #__text_right ),
+                     constants::_check_( _flag_, #__text_bottom ),
+                     constants::_check_( _flag_, #__text_center ) )
+        
+        If _this_\text\invert 
+          _this_\text\rotate = Bool( _this_\vertical )*270 + Bool( Not _this_\vertical )*180
+        Else
+          _this_\text\rotate = Bool( _this_\vertical )*90
+        EndIf
+        
+        If _this_\type = #__type_Editor Or
+           _this_\type = #__type_String
+          
+          _this_\color\fore = 0
+          _this_\text\caret\pos[1] =- 1
+          _this_\text\caret\pos[2] =- 1
+          _this_\cursor = #PB_Cursor_IBeam
+          
+          If _this_\text\editable
+            _this_\text\caret\width = 1
+            _this_\color\back[0] = $FFFFFFFF 
+          Else
+            _this_\color\back[0] = $FFF0F0F0  
+          EndIf
+        EndIf
+        
+        ;  _this_\text\fontID = root( )\text\fontID
+      EndIf
+      
+      ; padding
+      If _this_\type = #PB_GadgetType_Text
+        _this_\text\padding\x = 1
+      ElseIf _this_\type = #PB_GadgetType_Button
+        _this_\text\padding\x = 4
+        _this_\text\padding\y = 4
+      ElseIf _this_\type = #PB_GadgetType_Editor
+        _this_\text\padding\y = 6
+        _this_\text\padding\x = 6
+      ElseIf _this_\type = #PB_GadgetType_String
+        _this_\text\padding\x = 3
+        _this_\text\padding\y = 0
+        
+      ElseIf _this_\type = #__type_Option Or 
+             _this_\type = #__type_checkBox 
+        _this_\text\padding\x = _this_\button\width + 8
+      EndIf
+      
+      
+      ; multiline
+      If constants::_check_( _flag_, #__text_wordwrap )
+        _this_\text\multiLine =- 1
+        
+      ElseIf constants::_check_( _flag_, #__text_multiline )
+        _this_\text\multiLine = 1
+      Else
+        _this_\text\multiLine = 0 
+      EndIf
+      
+      If _this_\type = #__type_text
+        _this_\text\multiLine =- 1
+        
+      ElseIf _this_\type = #__type_Option Or 
+             _this_\type = #__type_checkBox Or 
+             _this_\type = #__type_HyperLink
+        ; wrap text
+        _this_\text\multiline =- CountString( _text_, #LF$ )
+        
+      ElseIf _this_\type = #__type_Editor
+        If Not _this_\text\multiLine
+          _this_\text\multiLine = 1
+        EndIf
+        
+      ElseIf _this_\type = #__type_string
+        _this_\text\multiLine = 0
+      EndIf
+      
+      If _text_
+        SetText( _this_, _text_ )
+      EndIf
+      
+    EndMacro
+    
+    Macro _set_image_( _this_, _address_, _image_ )
+      If IsImage( _image_ )
+        _address_\change = 1
+        
+        If _address_\size
+          ResizeImage( _image_, 
+                       _address_\size, 
+                       _address_\size )
+          
+          _address_\width = _address_\size
+          _address_\height = _address_\size
+        Else
+          _address_\width = ImageWidth( _image_ )
+          _address_\height = ImageHeight( _image_ )
+        EndIf  
+        
+        _address_\img = _image_ 
+        _address_\id = ImageID( _image_ )
+        
+        _this_\row\margin\width = _address_\padding\x + 
+                                  _address_\width + 2
+      Else
+        _address_\change =- 1
+        _address_\img =- 1
+        _address_\id = 0
+        _address_\width = 0
+        _address_\height = 0
+      EndIf
+    EndMacro
+    
+    Macro _set_text_flag_( _this_, _flag_, _x_ = 0, _y_ = 0 )
+      ;     If Not _this_\text
+      ;       _this_\text = AllocateStructure( _s_text )
+      ;     EndIf
+      
+      If _this_\text
+        _this_\text\x = _x_
+        _this_\text\y = _y_
+        ; _this_\text\_padding = 5
+        _this_\text\change = #True
+        
+        _this_\text\editable = Bool( Not constants::_check_( _flag_, #__text_readonly ) )
+        _this_\text\lower = constants::_check_( _flag_, #__text_lowercase )
+        _this_\text\upper = constants::_check_( _flag_, #__text_uppercase )
+        _this_\text\pass = constants::_check_( _flag_, #__text_password )
+        _this_\text\invert = constants::_check_( _flag_, #__text_invert )
+        
+        _set_align_( _this_\text, 
+                     constants::_check_( _flag_, #__text_left ),
+                     constants::_check_( _flag_, #__text_top ),
+                     constants::_check_( _flag_, #__text_right ),
+                     constants::_check_( _flag_, #__text_bottom ),
+                     constants::_check_( _flag_, #__text_center ) )
+        
+        
+        If constants::_check_( _flag_, #__text_wordwrap )
+          _this_\text\multiLine =- 1
+        ElseIf constants::_check_( _flag_, #__text_multiline )
+          _this_\text\multiLine = 1
+        Else
+          _this_\text\multiLine = 0 
+        EndIf
+        
+        If _this_\text\invert 
+          _this_\text\rotate = Bool( _this_\vertical )*270 + Bool( Not _this_\vertical )*180
+        Else
+          _this_\text\rotate = Bool( _this_\vertical )*90
+        EndIf
+        
+        If _this_\type = #__type_Editor Or
+           _this_\type = #__type_String
+          
+          _this_\color\fore = 0
+          _this_\text\caret\pos[1] =- 1
+          _this_\text\caret\pos[2] =- 1
+          _this_\cursor = #PB_Cursor_IBeam
+          
+          If _this_\text\editable
+            _this_\text\caret\width = 1
+            _this_\color\back[0] = $FFFFFFFF 
+          Else
+            _this_\color\back[0] = $FFF0F0F0  
+          EndIf
+        EndIf
+        
+        ;  _this_\text\fontID = root( )\text\fontID
+      EndIf
+      
+    EndMacro
+    
+    Macro _set_hide_state_( _this_ )
+      _this_\hide = Bool( _this_\hide[1] Or _this_\parent\hide Or 
+                          ( _this_\parent\type = #PB_GadgetType_Panel And 
+                            _this_\parent\_tab\index[#__tab_2] <> _this_\_tabindex ) )
+    EndMacro
+    
+    Macro _set_check_state_( _address_, _three_state_ )
       ; change checkbox state
       Select _address_\state 
         Case #PB_Checkbox_Unchecked 
@@ -2507,56 +2866,56 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     
     ;-
-    Procedure  ClipPut( *this._s_widget, x, y, width, height )
-      Protected clip_x, clip_y, clip_w, clip_h
-      
-      ; clip inner coordinate
-      If *this\x[#__c_clip] < x
-        clip_x = x
+    Macro make_scrollarea_x( _this_, _address_ );, _rotate_ )
+                                                ; make horizontal scroll x
+      If _this_\scroll\h
+        If _address_\align\right
+          _this_\x[#__c_required] = ( _this_\width[#__c_inner2] - _this_\width[#__c_required] + _this_\scroll\h\bar\page\end ) - ( _this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min )
+        ElseIf Not _address_\align\left ; horizontal center
+          _this_\x[#__c_required] = ( _this_\width[#__c_inner2] -  _this_\width[#__c_required] + _this_\scroll\h\bar\page\end ) / 2 - ( _this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min )
+        Else
+          _this_\x[#__c_required] =- ( _this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min )
+        EndIf
       Else
-        clip_x = *this\x[#__c_clip]
+        If _address_\align\right
+          _this_\x[#__c_required] = ( _this_\width[#__c_inner2] - _this_\width[#__c_required] )
+        ElseIf Not _address_\align\left ; horizontal center
+          _this_\x[#__c_required] = ( _this_\width[#__c_inner2] -  _this_\width[#__c_required] ) / 2
+        Else
+          _this_\x[#__c_required] = 0
+        EndIf
       EndIf
-      
-      If *this\y[#__c_clip] < y
-        clip_y = y
+    EndMacro    
+    
+    Macro make_scrollarea_y( _this_, _address_, _rotate_=0 )
+      ; make vertical scroll y
+      If _this_\scroll\v
+        If _address_\align\bottom
+          _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] + _this_\scroll\v\bar\page\end ) - ( _this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min )
+        ElseIf Not _address_\align\top ; vertical center
+          _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] + _this_\scroll\v\bar\page\end ) / 2 - ( _this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min )
+        Else
+          _this_\y[#__c_required] =- ( _this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min )
+        EndIf
       Else
-        clip_y = *this\y[#__c_clip]
+        If _address_\align\bottom
+          _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] )
+        ElseIf Not _address_\align\top ; vertical center
+          If _this_\button\height And Not _address_\align\left And Not _address_\align\right
+            If _rotate_ = 0
+              _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] + _this_\button\height ) / 2
+            Else
+              _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] - _this_\button\height ) / 2
+            EndIf
+          Else
+            _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] ) / 2
+          EndIf
+        Else
+          _this_\y[#__c_required] = 0
+        EndIf
       EndIf
-      
-      If *this\width[#__c_clip] > width
-        clip_w = width
-      Else
-        clip_w = *this\width[#__c_clip]
-      EndIf
-      
-      If *this\height[#__c_clip] > height
-        clip_h = height
-      Else
-        clip_h = *this\height[#__c_clip]
-      EndIf
-      
-      ClipOutput( clip_x, clip_y, clip_w, clip_h )
-    EndProcedure
-    
-    Macro _clip_output_( _this_ )
-      ClipOutput( _this_\x[#__c_clip],_this_\y[#__c_clip],_this_\width[#__c_clip],_this_\height[#__c_clip] )
     EndMacro
     
-    Macro _clip_frame_( _this_ )
-      ClipOutput( _this_\x[#__c_clip1], _this_\y[#__c_clip1], _this_\width[#__c_clip1], _this_\height[#__c_clip1] )
-    EndMacro
-    
-    Macro _clip_input_( _this_ )
-      ClipOutput( _this_\x[#__c_clip2], _this_\y[#__c_clip2], _this_\width[#__c_clip2], _this_\height[#__c_clip2] )
-    EndMacro
-    
-    Macro _clip_content_( _address_, _mode_= )
-      ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
-    EndMacro
-    
-    Macro _clip_caption_( _this_ )
-      ClipPut( _this_, _this_\x[#__c_frame] + _this_\bs, _this_\y[#__c_frame] + _this_\fs, _this_\width[#__c_frame] - _this_\bs*2, _this_\__height - _this_\fs*2 )
-    EndMacro
     
     ;- 
     Procedure.i TypeFromClass( class.s )
@@ -2660,22 +3019,60 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;-
-    Declare Reclip( *this._s_widget, childrens.b )
+    Procedure  ClipPut( *this._s_widget, x, y, width, height )
+      Protected clip_x, clip_y, clip_w, clip_h
+      
+      ; clip inner coordinate
+      If *this\x[#__c_clip] < x
+        clip_x = x
+      Else
+        clip_x = *this\x[#__c_clip]
+      EndIf
+      
+      If *this\y[#__c_clip] < y
+        clip_y = y
+      Else
+        clip_y = *this\y[#__c_clip]
+      EndIf
+      
+      If *this\width[#__c_clip] > width
+        clip_w = width
+      Else
+        clip_w = *this\width[#__c_clip]
+      EndIf
+      
+      If *this\height[#__c_clip] > height
+        clip_h = height
+      Else
+        clip_h = *this\height[#__c_clip]
+      EndIf
+      
+      ClipOutput( clip_x, clip_y, clip_w, clip_h )
+    EndProcedure
+    
     Procedure   Reclip( *this._s_widget, childrens.b )
-      Macro _clip_width_( _address_, _width_, _mode_ = )
+      Macro _clip_content_( _address_, _mode_= )
+        ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+      EndMacro
+      
+      Macro _clip_caption_( _this_ )
+        ClipPut( _this_, _this_\caption\x[#__c_inner], _this_\caption\y[#__c_inner], _this_\caption\width[#__c_inner], _this_\caption\height[#__c_inner] )
+        
+        ;ClipPut( _this_, _this_\x[#__c_frame] + _this_\bs, _this_\y[#__c_frame] + _this_\fs, _this_\width[#__c_frame] - _this_\bs*2, _this_\__height - _this_\fs*2 )
+      EndMacro
+      
+      Macro _clip_width_( _address_, _x_width_, _parent_ix_iwidth_, _mode_ = )
         If _address_\parent And 
-           (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) > 0 And 
-           (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) < (_address_\x[#__c_inner] + _width_) And
-           (_address_\parent\x[#__c_inner] + _address_\parent\width[#__c_inner]) > (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) 
+           (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) > 0 And
+           (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) < (_x_width_) And 
+           (_parent_ix_iwidth_) > (_address_\parent\x#_mode_ + _address_\parent\width#_mode_)  
           
-          _address_\width#_mode_ = (_address_\parent\x#_mode_ + _address_\parent\width#_mode_) - _address_\x#_mode_
-        ElseIf _address_\parent And 
-               (_address_\parent\x[#__c_inner] + _address_\parent\width[#__c_inner]) > 0 And 
-               (_address_\parent\x[#__c_inner] + _address_\parent\width[#__c_inner]) < (_address_\x[#__c_inner] + _width_)
+          _address_\width#_mode_ = (_address_\parent\x#_mode_ + _address_\parent\width#_mode_)  - _address_\x#_mode_
+        ElseIf _address_\parent And (_parent_ix_iwidth_) > 0 And (_parent_ix_iwidth_) < (_x_width_)
           
-          _address_\width#_mode_ = (_address_\parent\x[#__c_inner] + _address_\parent\width[#__c_inner]) - _address_\x#_mode_
+          _address_\width#_mode_ = (_parent_ix_iwidth_) - _address_\x#_mode_
         Else
-          _address_\width#_mode_ = (_address_\x[#__c_inner] + _width_) - _address_\x#_mode_
+          _address_\width#_mode_ = (_x_width_) - _address_\x#_mode_
         EndIf
         
         If _address_\width#_mode_ < 0
@@ -2683,20 +3080,18 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndMacro
       
-      Macro _clip_height_( _address_, _height_, _mode_ = )
+      Macro _clip_height_( _address_, _y_height_, _parent_iy_iheight_, _mode_ = )
         If _address_\parent And 
            (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) > 0 And 
-           (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) < (_address_\y[#__c_inner] + _height_) And
-           (_address_\parent\y[#__c_inner] + _address_\parent\height[#__c_inner]) > (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) 
+           (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) < (_y_height_) And
+           (_parent_iy_iheight_) > (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) 
           
           _address_\height#_mode_ = (_address_\parent\y#_mode_ + _address_\parent\height#_mode_) - _address_\y#_mode_
-        ElseIf _address_\parent And 
-               (_address_\parent\y[#__c_inner] + _address_\parent\height[#__c_inner]) > 0 And 
-               (_address_\parent\y[#__c_inner] + _address_\parent\height[#__c_inner]) < (_address_\y[#__c_inner] + _height_)
+        ElseIf _address_\parent And (_parent_iy_iheight_) > 0 And (_parent_iy_iheight_) < (_y_height_)
           
-          _address_\height#_mode_ = (_address_\parent\y[#__c_inner] + _address_\parent\height[#__c_inner]) - _address_\y#_mode_
+          _address_\height#_mode_ = (_parent_iy_iheight_) - _address_\y#_mode_
         Else
-          _address_\height#_mode_ = (_address_\y[#__c_inner] + _height_) - _address_\y#_mode_
+          _address_\height#_mode_ = (_y_height_) - _address_\y#_mode_
         EndIf
         
         If _address_\height#_mode_ < 0
@@ -2704,20 +3099,9 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
       EndMacro
       
-      
-      ; Debug  *this\address
       ; then move and size parent set clip coordinate
       Protected _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_inner2]
       Protected _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_inner2]
-      Protected _p_x4_ = *this\parent\x[#__c_clip] + *this\parent\width[#__c_clip]
-      Protected _p_y4_ = *this\parent\y[#__c_clip] + *this\parent\height[#__c_clip]
-      
-      Protected _t_x2_ = *this\x[#__c_screen] + *this\width[#__c_screen]
-      Protected _t_y2_ = *this\y[#__c_screen] + *this\height[#__c_screen]
-      Protected _ti_x2_ = *this\x[#__c_inner] + *this\width[#__c_inner2]
-      Protected _ti_y2_ = *this\y[#__c_inner] + *this\height[#__c_inner2]
-      Protected _tf_x2_ = *this\x[#__c_frame] + *this\width[#__c_frame]
-      Protected _tf_y2_ = *this\y[#__c_frame] + *this\height[#__c_frame]
       
       If *this\child
         If *this\type = #__type_tabbar ; And *this\parent\_tab And *this\parent\_tab = *this
@@ -2806,72 +3190,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       ; width&height - clip coordinate
-      If *this\parent And _p_x4_ > 0 And _p_x4_ < _t_x2_ And _p_x2_ > _p_x4_ 
-        *this\width[#__c_clip] = _p_x4_ - *this\x[#__c_clip]
-      ElseIf *this\parent And _p_x2_ > 0 And _p_x2_ < _t_x2_
-        *this\width[#__c_clip] = _p_x2_ - *this\x[#__c_clip]
-      Else
-        *this\width[#__c_clip] = _t_x2_ - *this\x[#__c_clip]
-      EndIf
-      If *this\width[#__c_clip] < 0
-        *this\width[#__c_clip] = 0
-      EndIf
-      If *this\parent And _p_y4_ > 0 And _p_y4_ < _t_y2_ And _p_y2_ > _p_y4_ 
-        *this\height[#__c_clip] = _p_y4_ - *this\y[#__c_clip]
-      ElseIf *this\parent And _p_y2_ > 0 And _p_y2_ < _t_y2_
-        *this\height[#__c_clip] = _p_y2_ - *this\y[#__c_clip]
-      Else
-        *this\height[#__c_clip] = _t_y2_ - *this\y[#__c_clip]
-      EndIf
-      If *this\height[#__c_clip] < 0
-        *this\height[#__c_clip] = 0
-      EndIf
+      _clip_width_( *this, *this\x[#__c_screen] + *this\width[#__c_screen], _p_x2_, [#__c_clip] )
+      _clip_height_( *this, *this\y[#__c_screen] + *this\height[#__c_screen], _p_y2_, [#__c_clip] )
       
       ; width&height - clip frame coordinate
-      If *this\parent And _p_x4_ > 0 And _p_x4_ < _tf_x2_ And _p_x2_ > _p_x4_ 
-        *this\width[#__c_clip1] = _p_x4_ - *this\x[#__c_clip1]
-      ElseIf *this\parent And _p_x2_ > 0 And _p_x2_ < _tf_x2_
-        *this\width[#__c_clip1] = _p_x2_ - *this\x[#__c_clip1]
-      Else
-        *this\width[#__c_clip1] = _tf_x2_ - *this\x[#__c_clip1]
-      EndIf
-      If *this\width[#__c_clip1] < 0
-        *this\width[#__c_clip1] = 0
-      EndIf
-      If *this\parent And _p_y4_ > 0 And _p_y4_ < _tf_y2_ And _p_y2_ > _p_y4_ 
-        *this\height[#__c_clip1] = _p_y4_ - *this\y[#__c_clip1]
-      ElseIf *this\parent And _p_y2_ > 0 And _p_y2_ < _tf_y2_
-        *this\height[#__c_clip1] = _p_y2_ - *this\y[#__c_clip1]
-      Else
-        *this\height[#__c_clip1] = _tf_y2_ - *this\y[#__c_clip1]
-      EndIf
-      If *this\height[#__c_clip1] < 0
-        *this\height[#__c_clip1] = 0
-      EndIf
+      _clip_width_( *this, *this\x[#__c_frame] + *this\width[#__c_frame], _p_x2_, [#__c_clip1] )
+      _clip_height_( *this, *this\y[#__c_frame] + *this\height[#__c_frame], _p_y2_, [#__c_clip1] )
       
       ; width&height - clip inner coordinate
-      If *this\parent And _p_x4_ > 0 And _p_x4_ < _ti_x2_ And _p_x2_ > _p_x4_ 
-        *this\width[#__c_clip2] = _p_x4_ - *this\x[#__c_clip2]
-      ElseIf *this\parent And _p_x2_ > 0 And _p_x2_ < _ti_x2_
-        *this\width[#__c_clip2] = _p_x2_ - *this\x[#__c_clip2]
-      Else
-        *this\width[#__c_clip2] = _ti_x2_ - *this\x[#__c_clip2]
-      EndIf
-      If *this\width[#__c_clip2] < 0
-        *this\width[#__c_clip2] = 0
-      EndIf
-      If *this\parent And _p_y4_ > 0 And _p_y4_ < _ti_y2_ And _p_y2_ > _p_y4_ 
-        *this\height[#__c_clip2] = _p_y4_ - *this\y[#__c_clip2]
-      ElseIf *this\parent And _p_y2_ > 0 And _p_y2_ < _ti_y2_
-        *this\height[#__c_clip2] = _p_y2_ - *this\y[#__c_clip2]
-      Else
-        *this\height[#__c_clip2] = _ti_y2_ - *this\y[#__c_clip2]
-      EndIf
-      If *this\height[#__c_clip2] < 0
-        *this\height[#__c_clip2] = 0
-      EndIf
-      
-      
+      _clip_width_( *this, *this\x[#__c_inner] + *this\width[#__c_inner], _p_x2_, [#__c_clip2] )
+      _clip_height_( *this, *this\y[#__c_inner] + *this\height[#__c_inner], _p_y2_, [#__c_clip2] )
       
       
       ;       ; clip child tab bar
@@ -2883,43 +3211,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       ; clip inner scrollbars parent
       If *this\parent\scroll 
         If *this = *this\parent\scroll\h
-          _p_x2_ = *this\parent\parent\x[#__c_inner] + *this\parent\parent\width[#__c_inner2]
-          ;;_p_x4_ = *this\parent\parent\x[#__c_clip] + *this\parent\parent\width[#__c_clip]
-          _p_x4_ = *this\parent\parent\x[#__c_clip2] + *this\parent\parent\width[#__c_clip2]
-          _ti_x2_ = *this\parent\x[#__c_inner] + *this\parent\scroll\h\bar\page\len 
-          
-          ; width - clip inner coordinate
-          If *this\parent\parent And _p_x4_ > 0 And _p_x4_ < _ti_x2_ And _p_x2_ > _p_x4_ 
-            *this\parent\width[#__c_clip2] = _p_x4_ - *this\parent\x[#__c_clip2]
-          ElseIf *this\parent\parent And _p_x2_ > 0 And _p_x2_ < _ti_x2_
-            *this\parent\width[#__c_clip2] = _p_x2_ - *this\parent\x[#__c_clip2]
-          Else
-            *this\parent\width[#__c_clip2] = _ti_x2_ - *this\parent\x[#__c_clip2]
-          EndIf
-          If *this\parent\width[#__c_clip2] < 0
-            *this\parent\width[#__c_clip2] = 0
-          EndIf
-         ; _clip_width_( *this\parent, *this\parent\scroll\h\bar\page\len, [#__c_clip2] )
+          _clip_width_( *this\parent, *this\x[#__c_inner] + *this\parent\scroll\h\bar\page\len, _p_x2_, [#__c_clip2] )
         EndIf
         
         If *this = *this\parent\scroll\v
-          _p_y2_ = *this\parent\parent\y[#__c_inner] + *this\parent\parent\height[#__c_inner2]
-          ;_p_y4_ = *this\parent\parent\y[#__c_clip] + *this\parent\parent\height[#__c_clip]
-          _p_y4_ = *this\parent\parent\y[#__c_clip2] + *this\parent\parent\height[#__c_clip2]
-          _ti_y2_ = *this\parent\y[#__c_inner] + *this\parent\scroll\v\bar\page\len 
-          
-          ; height - clip inner coordinate
-          If *this\parent\parent And _p_y4_ > 0 And _p_y4_ < _ti_y2_ And _p_y2_ > _p_y4_ 
-            *this\parent\height[#__c_clip2] = _p_y4_ - *this\parent\y[#__c_clip2]
-          ElseIf *this\parent\parent And _p_y2_ > 0 And _p_y2_ < _ti_y2_
-            *this\parent\height[#__c_clip2] = _p_y2_ - *this\parent\y[#__c_clip2]
-          Else
-            *this\parent\height[#__c_clip2] = _ti_y2_ - *this\parent\y[#__c_clip2]
-          EndIf
-          If *this\parent\height[#__c_clip2] < 0
-            *this\parent\height[#__c_clip2] = 0
-          EndIf
-          ;_clip_height_( *this\parent, *this\parent\scroll\v\bar\page\len, [#__c_clip2] )
+          _clip_height_( *this\parent, *this\y[#__c_inner] + *this\parent\scroll\v\bar\page\len, _p_y2_, [#__c_clip2] )
         EndIf
       EndIf
       
@@ -3351,417 +3647,6 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     
     ;-
-    Macro _move_position_( _this_ )
-      ; if first element in parent list
-      If _this_\parent\first = _this_
-        _this_\parent\first = _this_\after
-      EndIf
-      
-      ; if last element in parent list
-      If _this_\parent\last = _this_
-        ; Debug #PB_Compiler_Procedure + " before - " + *this\before\class
-        _this_\parent\last = _this_\before
-      EndIf
-      
-      If _this_\before
-        _this_\before\after = _this_\after
-      EndIf
-      
-      If _this_\after
-        _this_\after\before = _this_\before
-      EndIf
-    EndMacro
-    
-    Macro _move_position_after_(_this_, _before_)
-      _move_position_( _this_ )
-      
-      PushListPosition( widget( ) )
-      ChangeCurrentElement( widget( ), _this_\address )
-      ;; Debug " "+widget( )\class +" "+ _this_\class +" "+ _before_\class
-      ;;If widget( )\address <> _before_\address
-      MoveElement( widget( ), #PB_List_After, _before_\address )
-      ;;EndIf
-      
-      ; change root address for the startenumerate 
-      If _this_\root <> _before_\root
-        _this_\root\address = _this_\address
-      EndIf
-      
-      If _this_\count\childrens
-        While NextElement( widget( ) ) 
-          If Child( widget( ), _this_ )
-            MoveElement( widget( ), #PB_List_Before, _before_\address )
-          EndIf
-        Wend
-        
-        While PreviousElement( widget( ) ) 
-          If Child( widget( ), _this_ )
-            MoveElement( widget( ), #PB_List_After, _this_\address )
-          EndIf
-        Wend
-      EndIf
-      PopListPosition( widget( ) )
-    EndMacro
-    
-    Macro _move_position_before_(_this_, _after_)
-      _move_position_( _this_ )
-      
-      PushListPosition( widget( ) )
-      ChangeCurrentElement( widget( ), _this_\address )
-      ;;If widget( )\address <> _after_\address
-      MoveElement( widget( ), #PB_List_Before, _after_\address )
-      ;;EndIf
-      
-      If _this_\count\childrens
-        While PreviousElement( widget( ) ) 
-          If Child( widget( ), _this_ )
-            MoveElement( widget( ), #PB_List_After, _after_\address )
-          EndIf
-        Wend
-        
-        While NextElement( widget( ) ) 
-          If Child( widget( ), _this_ )
-            MoveElement( widget( ), #PB_List_Before, _after_\address )
-          EndIf
-        Wend
-      EndIf
-      PopListPosition( widget( ) )
-    EndMacro
-    
-    Macro _hide_state_( _this_ )
-      Bool( _this_\hide[1] Or
-            _this_\parent\hide Or 
-            ( _this_\parent\type = #PB_GadgetType_Panel And
-              _this_\parent\_tab\index[#__tab_2] <> _this_\_tabindex ) )
-    EndMacro
-    
-    Macro _set_image_( _this_, _address_, _image_ )
-      If IsImage( _image_ )
-        _address_\change = 1
-        
-        If _address_\size
-          ResizeImage( _image_, 
-                       _address_\size, 
-                       _address_\size )
-          
-          _address_\width = _address_\size
-          _address_\height = _address_\size
-        Else
-          _address_\width = ImageWidth( _image_ )
-          _address_\height = ImageHeight( _image_ )
-        EndIf  
-        
-        _address_\img = _image_ 
-        _address_\id = ImageID( _image_ )
-        
-        _this_\row\margin\width = _address_\padding\x + 
-                                  _address_\width + 2
-      Else
-        _address_\change =- 1
-        _address_\img =- 1
-        _address_\id = 0
-        _address_\width = 0
-        _address_\height = 0
-      EndIf
-    EndMacro
-    
-    ;-
-    Macro _set_align_( _address_, _left_, _top_, _right_, _bottom_, _center_ )
-      _address_\align\left = _left_
-      _address_\align\right = _right_
-      
-      _address_\align\top = _top_
-      _address_\align\bottom = _bottom_
-      
-      If Not _center_ And 
-         Not _address_\align\top And 
-         Not _address_\align\left And
-         Not _address_\align\right And 
-         Not _address_\align\bottom
-        
-        If Not _address_\align\right
-          _address_\align\left = #True 
-        EndIf
-        If Not _address_\align\bottom
-          _address_\align\top = #True
-        EndIf
-      EndIf
-    EndMacro
-    
-    Macro _set_align_x_( _this_, _address_, _width_, _rotate_ )
-      If _rotate_ = 180
-        If _this_\align\right
-          _address_\x = _width_                          - _this_\padding\x
-        ElseIf Not _this_\align\left
-          _address_\x = ( _width_ + _address_\width ) / 2
-        Else
-          _address_\x = _address_\width                   + _this_\padding\x
-        EndIf
-      EndIf
-      
-      If _rotate_ = 0
-        If _this_\align\right
-          _address_\x = ( _width_ - _address_\width )       - _this_\padding\x
-        ElseIf Not _this_\align\left
-          _address_\x = ( _width_ - _address_\width ) / 2           
-        Else
-          _address_\x =                                    _this_\padding\x
-        EndIf
-      EndIf
-    EndMacro
-    
-    Macro _set_align_y_( _this_, _address_, _height_, _rotate_ )
-      If _rotate_ = 90                  
-        If _this_\align\bottom
-          _address_\y = _height_                         - _this_\padding\y
-        ElseIf Not _this_\align\top
-          _address_\y = ( _height_ + _address_\width ) / 2
-        Else
-          _address_\y = _address_\width                   + _this_\padding\y
-        EndIf
-      EndIf
-      
-      If _rotate_ = 270                 
-        If _this_\align\bottom
-          _address_\y = ( _height_ - _address_\width )      - _this_\padding\y
-        ElseIf Not _this_\align\top
-          _address_\y = ( _height_ - _address_\width ) / 2
-        Else
-          _address_\y =                                    _this_\padding\y
-        EndIf
-      EndIf
-    EndMacro
-    
-    Macro _set_align_flag_( _this_, _parent_, _flag_ )
-      If _flag_ & #__flag_autosize = #__flag_autosize
-        _this_\align = AllocateStructure( _s_align )
-        _this_\align\autoSize = 1
-        _this_\align\left = 1
-        _this_\align\top = 1
-        _this_\align\right = 1
-        _this_\align\bottom = 1
-        
-        If _parent_
-          _parent_\color\back =- 1
-          ;           _parent_\color\alpha = 0
-          ;           _parent_\color\alpha[1] = 0
-        EndIf
-      EndIf
-    EndMacro
-    
-    ;-
-    Macro make_scrollarea_x( _this_, _address_ );, _rotate_ )
-                                                ; make horizontal scroll x
-      If _this_\scroll\h
-        If _address_\align\right
-          _this_\x[#__c_required] = ( _this_\width[#__c_inner2] - _this_\width[#__c_required] + _this_\scroll\h\bar\page\end ) - ( _this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min )
-        ElseIf Not _address_\align\left ; horizontal center
-          _this_\x[#__c_required] = ( _this_\width[#__c_inner2] -  _this_\width[#__c_required] + _this_\scroll\h\bar\page\end ) / 2 - ( _this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min )
-        Else
-          _this_\x[#__c_required] =- ( _this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min )
-        EndIf
-      Else
-        If _address_\align\right
-          _this_\x[#__c_required] = ( _this_\width[#__c_inner2] - _this_\width[#__c_required] )
-        ElseIf Not _address_\align\left ; horizontal center
-          _this_\x[#__c_required] = ( _this_\width[#__c_inner2] -  _this_\width[#__c_required] ) / 2
-        Else
-          _this_\x[#__c_required] = 0
-        EndIf
-      EndIf
-    EndMacro    
-    
-    Macro make_scrollarea_y( _this_, _address_, _rotate_=0 )
-      ; make vertical scroll y
-      If _this_\scroll\v
-        If _address_\align\bottom
-          _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] + _this_\scroll\v\bar\page\end ) - ( _this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min )
-        ElseIf Not _address_\align\top ; vertical center
-          _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] + _this_\scroll\v\bar\page\end ) / 2 - ( _this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min )
-        Else
-          _this_\y[#__c_required] =- ( _this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min )
-        EndIf
-      Else
-        If _address_\align\bottom
-          _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] )
-        ElseIf Not _address_\align\top ; vertical center
-          If _this_\button\height And Not _address_\align\left And Not _address_\align\right
-            If _rotate_ = 0
-              _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] + _this_\button\height ) / 2
-            Else
-              _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] - _this_\button\height ) / 2
-            EndIf
-          Else
-            _this_\y[#__c_required] = ( _this_\height[#__c_inner2] - _this_\height[#__c_required] ) / 2
-          EndIf
-        Else
-          _this_\y[#__c_required] = 0
-        EndIf
-      EndIf
-    EndMacro
-    
-    ;- 
-    Macro _set_text_( _this_, _text_, _flag_ )
-      ;     If Not _this_\text
-      ;       _this_\text = AllocateStructure( _s_text )
-      ;     EndIf
-      
-      If _this_\text
-        _this_\text\change = #True
-        
-        _this_\text\editable = Bool( Not constants::_check_( _flag_, #__text_readonly ) )
-        _this_\text\lower = constants::_check_( _flag_, #__text_lowercase )
-        _this_\text\upper = constants::_check_( _flag_, #__text_uppercase )
-        _this_\text\pass = constants::_check_( _flag_, #__text_password )
-        _this_\text\invert = constants::_check_( _flag_, #__text_invert )
-        
-        _set_align_( _this_\text, 
-                     constants::_check_( _flag_, #__text_left ),
-                     constants::_check_( _flag_, #__text_top ),
-                     constants::_check_( _flag_, #__text_right ),
-                     constants::_check_( _flag_, #__text_bottom ),
-                     constants::_check_( _flag_, #__text_center ) )
-        
-        If _this_\text\invert 
-          _this_\text\rotate = Bool( _this_\vertical )*270 + Bool( Not _this_\vertical )*180
-        Else
-          _this_\text\rotate = Bool( _this_\vertical )*90
-        EndIf
-        
-        If _this_\type = #__type_Editor Or
-           _this_\type = #__type_String
-          
-          _this_\color\fore = 0
-          _this_\text\caret\pos[1] =- 1
-          _this_\text\caret\pos[2] =- 1
-          _this_\cursor = #PB_Cursor_IBeam
-          
-          If _this_\text\editable
-            _this_\text\caret\width = 1
-            _this_\color\back[0] = $FFFFFFFF 
-          Else
-            _this_\color\back[0] = $FFF0F0F0  
-          EndIf
-        EndIf
-        
-        ;  _this_\text\fontID = root( )\text\fontID
-      EndIf
-      
-      ; padding
-      If _this_\type = #PB_GadgetType_Text
-        _this_\text\padding\x = 1
-      ElseIf _this_\type = #PB_GadgetType_Button
-        _this_\text\padding\x = 4
-        _this_\text\padding\y = 4
-      ElseIf _this_\type = #PB_GadgetType_Editor
-        _this_\text\padding\y = 6
-        _this_\text\padding\x = 6
-      ElseIf _this_\type = #PB_GadgetType_String
-        _this_\text\padding\x = 3
-        _this_\text\padding\y = 0
-        
-      ElseIf _this_\type = #__type_Option Or 
-             _this_\type = #__type_checkBox 
-        _this_\text\padding\x = _this_\button\width + 8
-      EndIf
-      
-      
-      ; multiline
-      If constants::_check_( _flag_, #__text_wordwrap )
-        _this_\text\multiLine =- 1
-        
-      ElseIf constants::_check_( _flag_, #__text_multiline )
-        _this_\text\multiLine = 1
-      Else
-        _this_\text\multiLine = 0 
-      EndIf
-      
-      If _this_\type = #__type_text
-        _this_\text\multiLine =- 1
-        
-      ElseIf _this_\type = #__type_Option Or 
-             _this_\type = #__type_checkBox Or 
-             _this_\type = #__type_HyperLink
-        ; wrap text
-        _this_\text\multiline =- CountString( _text_, #LF$ )
-        
-      ElseIf _this_\type = #__type_Editor
-        If Not _this_\text\multiLine
-          _this_\text\multiLine = 1
-        EndIf
-        
-      ElseIf _this_\type = #__type_string
-        _this_\text\multiLine = 0
-      EndIf
-      
-      If _text_
-        SetText( _this_, _text_ )
-      EndIf
-      
-    EndMacro
-    
-    Macro _set_text_flag_( _this_, _flag_, _x_ = 0, _y_ = 0 )
-      ;     If Not _this_\text
-      ;       _this_\text = AllocateStructure( _s_text )
-      ;     EndIf
-      
-      If _this_\text
-        _this_\text\x = _x_
-        _this_\text\y = _y_
-        ; _this_\text\_padding = 5
-        _this_\text\change = #True
-        
-        _this_\text\editable = Bool( Not constants::_check_( _flag_, #__text_readonly ) )
-        _this_\text\lower = constants::_check_( _flag_, #__text_lowercase )
-        _this_\text\upper = constants::_check_( _flag_, #__text_uppercase )
-        _this_\text\pass = constants::_check_( _flag_, #__text_password )
-        _this_\text\invert = constants::_check_( _flag_, #__text_invert )
-        
-        _set_align_( _this_\text, 
-                     constants::_check_( _flag_, #__text_left ),
-                     constants::_check_( _flag_, #__text_top ),
-                     constants::_check_( _flag_, #__text_right ),
-                     constants::_check_( _flag_, #__text_bottom ),
-                     constants::_check_( _flag_, #__text_center ) )
-        
-        
-        If constants::_check_( _flag_, #__text_wordwrap )
-          _this_\text\multiLine =- 1
-        ElseIf constants::_check_( _flag_, #__text_multiline )
-          _this_\text\multiLine = 1
-        Else
-          _this_\text\multiLine = 0 
-        EndIf
-        
-        If _this_\text\invert 
-          _this_\text\rotate = Bool( _this_\vertical )*270 + Bool( Not _this_\vertical )*180
-        Else
-          _this_\text\rotate = Bool( _this_\vertical )*90
-        EndIf
-        
-        If _this_\type = #__type_Editor Or
-           _this_\type = #__type_String
-          
-          _this_\color\fore = 0
-          _this_\text\caret\pos[1] =- 1
-          _this_\text\caret\pos[2] =- 1
-          _this_\cursor = #PB_Cursor_IBeam
-          
-          If _this_\text\editable
-            _this_\text\caret\width = 1
-            _this_\color\back[0] = $FFFFFFFF 
-          Else
-            _this_\color\back[0] = $FFF0F0F0  
-          EndIf
-        EndIf
-        
-        ;  _this_\text\fontID = root( )\text\fontID
-      EndIf
-      
-    EndMacro
-    
-    
-    ;-
     ;-  BARs
     ;{
     Declare.b Tab_Draw( *this )
@@ -3775,7 +3660,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Macro Area_Draw( _this_ )
       If _this_\scroll
-        _clip_output_( _this_ )
+        _clip_content_( _this_, [#__c_clip] )
         
         If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\width And _this_\scroll\v\width[#__c_clip] > 0 And _this_\scroll\v\height[#__c_clip] > 0
           Bar_Draw( _this_\scroll\v )
@@ -3820,7 +3705,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If *this\parent\_tab = *this 
           If StartEnumerate( *this\parent )
-            widget( )\hide = _hide_state_( widget( ) )
+            _set_hide_state_( widget( ) )
             StopEnumerate( )
           EndIf
           
@@ -3860,7 +3745,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   widget( )\_tabindex + 1
                 EndIf
                 
-                widget( )\hide = _hide_state_( widget( ) )
+                _set_hide_state_( widget( ) )
                 StopEnumerate( )
               EndIf
             EndIf
@@ -4024,7 +3909,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           ;Protected x = *this\x + \bar\button[#__b_3]\x
-;           Protected y = *this\y + \bar\button[#__b_3]\y
+          ;           Protected y = *this\y + \bar\button[#__b_3]\y
           Protected x = \bar\button[#__b_3]\x
           Protected y = \bar\button[#__b_3]\y
           
@@ -4428,8 +4313,8 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.b Progress_Draw( *this._s_widget )
-;       *this\bar\button[#__b_1]\color\state = Bool( Not *this\bar\inverted ) * #__s_2
-;       *this\bar\button[#__b_2]\color\state = Bool( *this\bar\inverted ) * #__s_2
+      ;       *this\bar\button[#__b_1]\color\state = Bool( Not *this\bar\inverted ) * #__s_2
+      ;       *this\bar\button[#__b_2]\color\state = Bool( *this\bar\inverted ) * #__s_2
       
       With *this
         Protected i,a, _position_, _frame_size_ = 1, _gradient_ = 1
@@ -4501,7 +4386,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + (_position_), *this\width[#__c_frame] - _frame_size_*2, (*this\height[#__c_frame] - _round_ - (_position_)))
                 EndIf
               EndIf
-            
+              
               For a = (*this\height[#__c_frame] - _round_) To (*this\height[#__c_frame] - _frame_size_)
                 For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_)
                   If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
@@ -4543,7 +4428,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Box(*this\x[#__c_frame] + _round_, *this\y[#__c_frame] + _frame_size_, ((_position_) - _round_) + (*this\width[#__c_frame] - _round_ - (_position_)), *this\height[#__c_frame] - _frame_size_*2)
                 EndIf
               EndIf
-            
+              
               For a = _frame_size_ To _round_
                 For i = _frame_size_ To (*this\height[#__c_frame] - _frame_size_*2)
                   If Point(*this\x[#__c_frame] + a, *this\y[#__c_frame] + i) & $FFFFFF = _frame_color_ & $FFFFFF
@@ -4592,14 +4477,14 @@ CompilerIf Not Defined( widget, #PB_Module )
           If _vertical_
             If (_position_) > _round_
               If *this\height[#__c_frame] > _round_*2
-              ; рисуем прямоуголную часть
-              If _round_ > (*this\height[#__c_frame] - (_position_))
-                Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _round_, *this\width[#__c_frame] - _frame_size_*2, ((_position_) - _round_) + (*this\height[#__c_frame] - _round_ - (_position_)))
-              Else
-                Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _round_, *this\width[#__c_frame] - _frame_size_*2, ((_position_) - _round_))
+                ; рисуем прямоуголную часть
+                If _round_ > (*this\height[#__c_frame] - (_position_))
+                  Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _round_, *this\width[#__c_frame] - _frame_size_*2, ((_position_) - _round_) + (*this\height[#__c_frame] - _round_ - (_position_)))
+                Else
+                  Box(*this\x[#__c_frame] + _frame_size_, *this\y[#__c_frame] + _round_, *this\width[#__c_frame] - _frame_size_*2, ((_position_) - _round_))
+                EndIf
               EndIf
-            EndIf
-            
+              
               For a = _frame_size_ To _round_
                 For i = _frame_size_ To (*this\width[#__c_frame] - _frame_size_*2)
                   If Point(*this\x[#__c_frame] + i, *this\y[#__c_frame] + a) & $FFFFFF = _frame_color_ & $FFFFFF
@@ -9405,7 +9290,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           ;
-          _clip_input_( *this )
+          _clip_content_( *this, [#__c_clip2] )
+        
           
           PushListPosition( *row( ) )
           
@@ -10167,7 +10053,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                     EndIf
                     
                     ; change box check
-                    change_checkbox_state( *this\row\draws( )\box[1], *this\mode\threestate )
+                    _set_check_state_( *this\row\draws( )\box[1], *this\mode\threestate )
                   EndIf
                   
                   If *this\mode\check = 2
@@ -10935,7 +10821,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If \caption\text\string
-            ClipPut( *this, \caption\x[#__c_inner], \caption\y[#__c_inner], \caption\width[#__c_inner], \caption\height[#__c_inner] )
+            _clip_caption_( *this )
             
             ; Draw string
             If \resize & #__resize_change
@@ -10955,7 +10841,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        _clip_input_( *this )
+        _clip_content_( *this, [#__c_clip2] )
         
         ; background image draw 
         If *this\image[#__img_background]\id
@@ -10965,7 +10851,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                           *this\y[#__c_inner] + *this\image[#__img_background]\y, *this\color\alpha )
         EndIf
         
-        _clip_output_( *this )
+        _clip_content_( *this, [#__c_clip] )
         
         ; UnclipOutput()
         ; DrawingMode( #PB_2DDrawing_Outlined | #PB_2DDrawing_AlphaBlend )
@@ -11430,7 +11316,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\hide[1] = *this\hide
           
           If StartEnumerate( *this ) ;  *this\container And 
-            widget( )\hide = _hide_state_( widget( ) )
+            _set_hide_state_( widget( ) )
             StopEnumerate( )
           EndIf
         EndIf
@@ -12016,7 +11902,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ; - CheckBox_SetState( )
       If *this\type = #__type_checkBox
         If *this\button\state <> state
-          change_checkbox_state( *this\button, Bool( state = #PB_Checkbox_Inbetween ) )
+          _set_check_state_( *this\button, Bool( state = #PB_Checkbox_Inbetween ) )
           
           Post( #PB_EventType_Change, *this )
           ReDraw( *this\root )
@@ -12744,7 +12630,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *after And *after\_tabindex = *this\_tabindex
-            _move_position_before_(*this, *after)
+            _position_move_before_(*this, *after)
             
             *this\after = *after
             *this\before = *after\before 
@@ -12792,7 +12678,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               *last = *before
             EndIf
             
-            _move_position_after_(*this, *last)
+            _position_move_after_(*this, *last)
             
             *this\before = *before
             *this\after = *before\after 
@@ -12886,7 +12772,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *LastParent\count\childrens - 1
             
             If Not _is_root_( *last )
-              _move_position_after_(*this, *last)
+              _position_move_after_(*this, *last)
             EndIf
             
             ; 
@@ -12898,7 +12784,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   widget( )\window = *parent\window
                 EndIf
                 
-                widget( )\hide = _hide_state_( widget( ) )
+                _set_hide_state_( widget( ) )
                 StopEnumerate( )
               EndIf
             EndIf
@@ -14897,15 +14783,15 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         ; draw text items
         If \text\string.s
-          _clip_frame_( *this )
-          
+          _clip_content_( *this, [#__c_clip1] )
+        
           DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
           ForEach *this\row\_s( )
             DrawRotatedText( x + *this\row\_s( )\text\x, y + *this\row\_s( )\text\y,
                              *this\row\_s( )\text\String.s, *this\text\rotate, *this\color\Front[Bool( *this\_state & #__s_front ) * *this\color\state] ) ; *this\row\_s( )\color\font )
           Next 
           
-          _clip_output_( *this )
+          _clip_content_( *this, [#__c_clip] )
         EndIf
         
         ; box draw    
@@ -14969,7 +14855,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         ;RoundBox( *this\x[#__c_inner]-1,*this\y[#__c_inner]-1,*this\width[#__c_inner2]+2,*this\height[#__c_inner2]+2, *this\round, *this\round, *this\color\back[*this\color\state] )
         
         ;
-        _clip_input_( *this )
+        _clip_content_( *this, [#__c_clip2] )
+        
         
         If \image\id Or *this\image[#__img_background]\id
           If *this\image\change <> 0
@@ -15152,7 +15039,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                  ( widget( )\width[#__c_clip] > 0 And widget( )\height[#__c_clip] > 0 )
                 
                 CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( fixme, #PB_Module ) )
-                  _clip_output_( widget( ) )
+                  _clip_content_( widget( ), [#__c_clip] )
                 CompilerEndIf
                 
                 ; begin draw all widgets
@@ -16434,7 +16321,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\parent And
              *this\parent\count\childrens 
             
-            _move_position_( *this )
+            _position_move_( *this )
             
             ;*this\address = 0
             
@@ -17665,5 +17552,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------Hg----------------------------4--------------------------f--4+----r8---9----------------------u-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fHb---------------------------------------------------------------------------
+; Folding = -------------------------------------BMqH9----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
