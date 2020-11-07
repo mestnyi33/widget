@@ -3307,59 +3307,45 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If x = #PB_Ignore 
           x = *this\x[#__c_container]
-          ;If ( *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h )
-          x + *this\parent\x[#__c_inner]
-          ;EndIf
         Else
           If *this\parent 
             If Not _scroll_bars_( *this )
               x - *this\parent\x[#__c_required] 
             EndIf 
-            
-            If *this\x[#__c_container] <> x
-              *this\x[#__c_container] = x
-            EndIf
-            
-            x + *this\parent\x[#__c_inner]
+            *this\x[#__c_container] = x
           EndIf 
         EndIf  
         
         If y = #PB_Ignore 
-          ;;y = *this\parent\y[#__c_inner] + *this\y[#__c_container]
           y = *this\y[#__c_container]
-          ;If ( *this\parent\scroll And *this\parent\scroll\v And *this\parent\scroll\h )
-          y + *this\parent\y[#__c_inner]
-          ;EndIf
         Else
           If *this\parent 
             If Not _scroll_bars_( *this )
               y - *this\parent\y[#__c_required] 
             EndIf 
-            
-            If *this\y[#__c_container] <> y
-              *this\y[#__c_container] = y
-            EndIf
-            
-            y + *this\parent\y[#__c_inner]
+            *this\y[#__c_container] = y
           EndIf 
         EndIf  
         
-        If *this\type = #__type_window
-          If width = #PB_Ignore 
-            width = \width[#__c_screen] - *this\bs*2 - *this\__width
-          EndIf  
-          
-          If height = #PB_Ignore 
-            height = \height[#__c_screen] - *this\bs*2 - *this\__height
-          EndIf  
+        If *this\parent 
+          x + *this\parent\x[#__c_inner]
+          y + *this\parent\y[#__c_inner]
+        EndIf
+        
+        If width = #PB_Ignore 
+          width = \width[#__c_screen] - ( \bs*2 - \fs*2 )
         Else
-          If width = #PB_Ignore 
-            width = \width[#__c_screen] - ( \bs*2 - \fs*2 )
-          EndIf  
-          
-          If height = #PB_Ignore 
-            height = \height[#__c_screen] - ( \bs*2 - \fs*2 )
-          EndIf  
+          If *this\type = #__type_window
+            width + *this\fs*2 + *this\__width 
+          EndIf
+        EndIf  
+        
+        If height = #PB_Ignore 
+          height = \height[#__c_screen] - ( \bs*2 - \fs*2 )
+        Else
+          If *this\type = #__type_window
+            height + *this\fs*2 + *this\__height
+          EndIf
         EndIf
         
         If width < 0 : width = 0 : EndIf
@@ -3385,78 +3371,131 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\resize | #__resize_y | #__resize_change
         EndIf 
         
-        If *this\type = #__type_window
-          If *this\width[#__c_container] <> width 
-            Change_width = width - *this\width[#__c_container] 
-            *this\width[#__c_container] = width 
-            *this\width[#__c_frame] = width + *this\fs*2 + *this\__width
-            *this\width[#__c_screen] = width + *this\bs*2 + *this\__width
-            
-            *this\resize | #__resize_width | #__resize_change
-          EndIf 
+        If *this\width[#__c_frame] <> width 
+          Change_width = width - *this\width[#__c_frame] 
+          *this\width[#__c_frame] = width 
+          *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 ) 
+          *this\width[#__c_container] = *this\width[#__c_screen] - *this\bs*2 - *this\__width
+          If *this\width[#__c_container] < 0 : *this\width[#__c_container] = 0 : EndIf
           
-          If *this\height[#__c_container] <> height 
-            Change_height = height - *this\height[#__c_container] 
-            *this\height[#__c_container] = height
-            *this\height[#__c_frame] = height + *this\fs*2 + *this\__height
-            *this\height[#__c_screen] = height + *this\bs*2 + *this\__height
-            
-            *this\resize | #__resize_height | #__resize_change
-          EndIf 
-        Else
-          If *this\width[#__c_frame] <> width 
-            Change_width = width - *this\width[#__c_frame] 
-            *this\width[#__c_frame] = width 
-            *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 ) 
-            *this\width[#__c_container] = *this\width[#__c_screen] - *this\bs*2 - *this\__width
-            If *this\width[#__c_container] < 0 : *this\width[#__c_container] = 0 : EndIf
-            
-            *this\resize | #__resize_width | #__resize_change
-            
-            If *this\type = #__type_image Or
-               *this\type = #__type_buttonimage
-              *this\image\change = 1
-            EndIf
-            
-            If *this\type = #__type_tabbar
-              If *this\vertical
-                ; to fix the width of the vertical tabbar items
-                *this\bar\change | #__resize_width
-              EndIf
-            EndIf
-            
-            If *this\count\items
-              *this\change | #__resize_width
-            EndIf
-          EndIf 
+          *this\resize | #__resize_width | #__resize_change
           
-          If *this\height[#__c_frame] <> height 
-            Change_height = height - *this\height[#__c_frame] 
-            *this\height[#__c_frame] = height 
-            *this\height[#__c_screen] = height + ( *this\bs*2 - *this\fs*2 )
-            *this\height[#__c_container] = height - *this\fs*2 - *this\__height
-            If *this\height[#__c_container] < 0 : *this\height[#__c_container] = 0 : EndIf
-            
-            *this\resize | #__resize_height | #__resize_change
-            
-            If *this\type = #__type_image Or
-               *this\type = #__type_buttonimage
-              *this\image\change = 1
+          If *this\type = #__type_image Or
+             *this\type = #__type_buttonimage
+            *this\image\change = 1
+          EndIf
+          
+          If *this\type = #__type_tabbar
+            If *this\vertical
+              ; to fix the width of the vertical tabbar items
+              *this\bar\change | #__resize_width
             EndIf
-            
-            If *this\type = #__type_tabbar
-              If Not *this\vertical
-                ; to fix the height of the horizontal tabbar items
-                *this\bar\change | #__resize_height
-              EndIf
-            EndIf
-            
-            If *this\count\items ;And \height[#__c_required] > \height[#__c_container]
-              *this\change | #__resize_height
-            EndIf
-          EndIf 
-        EndIf
+          EndIf
+          
+          If *this\count\items
+            *this\change | #__resize_width
+          EndIf
+        EndIf 
         
+        If *this\height[#__c_frame] <> height 
+          Change_height = height - *this\height[#__c_frame] 
+          *this\height[#__c_frame] = height 
+          *this\height[#__c_screen] = height + ( *this\bs*2 - *this\fs*2 )
+          *this\height[#__c_container] = height - *this\fs*2 - *this\__height
+          If *this\height[#__c_container] < 0 : *this\height[#__c_container] = 0 : EndIf
+          
+          *this\resize | #__resize_height | #__resize_change
+          
+          If *this\type = #__type_image Or
+             *this\type = #__type_buttonimage
+            *this\image\change = 1
+          EndIf
+          
+          If *this\type = #__type_tabbar
+            If Not *this\vertical
+              ; to fix the height of the horizontal tabbar items
+              *this\bar\change | #__resize_height
+            EndIf
+          EndIf
+          
+          If *this\count\items ;And \height[#__c_required] > \height[#__c_container]
+            *this\change | #__resize_height
+          EndIf
+        EndIf 
+        
+        
+;         If *this\type = #__type_window
+;           If *this\width[#__c_container] <> width 
+;             Change_width = width - *this\width[#__c_container] 
+;             *this\width[#__c_container] = width 
+;             *this\width[#__c_frame] = width + *this\fs*2 + *this\__width
+;             *this\width[#__c_screen] = width + *this\bs*2 + *this\__width
+;             
+;             *this\resize | #__resize_width | #__resize_change
+;           EndIf 
+;           
+;           If *this\height[#__c_container] <> height 
+;             Change_height = height - *this\height[#__c_container] 
+;             *this\height[#__c_container] = height
+;             *this\height[#__c_frame] = height + *this\fs*2 + *this\__height
+;             *this\height[#__c_screen] = height + *this\bs*2 + *this\__height
+;             
+;             *this\resize | #__resize_height | #__resize_change
+;           EndIf 
+;         Else
+;           If *this\width[#__c_frame] <> width 
+;             Change_width = width - *this\width[#__c_frame] 
+;             *this\width[#__c_frame] = width 
+;             *this\width[#__c_screen] = *this\width[#__c_frame] + ( *this\bs*2 - *this\fs*2 ) 
+;             *this\width[#__c_container] = *this\width[#__c_screen] - *this\bs*2 - *this\__width
+;             If *this\width[#__c_container] < 0 : *this\width[#__c_container] = 0 : EndIf
+;             
+;             *this\resize | #__resize_width | #__resize_change
+;             
+;             If *this\type = #__type_image Or
+;                *this\type = #__type_buttonimage
+;               *this\image\change = 1
+;             EndIf
+;             
+;             If *this\type = #__type_tabbar
+;               If *this\vertical
+;                 ; to fix the width of the vertical tabbar items
+;                 *this\bar\change | #__resize_width
+;               EndIf
+;             EndIf
+;             
+;             If *this\count\items
+;               *this\change | #__resize_width
+;             EndIf
+;           EndIf 
+;           
+;           If *this\height[#__c_frame] <> height 
+;             Change_height = height - *this\height[#__c_frame] 
+;             *this\height[#__c_frame] = height 
+;             *this\height[#__c_screen] = height + ( *this\bs*2 - *this\fs*2 )
+;             *this\height[#__c_container] = height - *this\fs*2 - *this\__height
+;             If *this\height[#__c_container] < 0 : *this\height[#__c_container] = 0 : EndIf
+;             
+;             *this\resize | #__resize_height | #__resize_change
+;             
+;             If *this\type = #__type_image Or
+;                *this\type = #__type_buttonimage
+;               *this\image\change = 1
+;             EndIf
+;             
+;             If *this\type = #__type_tabbar
+;               If Not *this\vertical
+;                 ; to fix the height of the horizontal tabbar items
+;                 *this\bar\change | #__resize_height
+;               EndIf
+;             EndIf
+;             
+;             If *this\count\items ;And \height[#__c_required] > \height[#__c_container]
+;               *this\change | #__resize_height
+;             EndIf
+;           EndIf 
+;         EndIf
+;         
         
         If *this\resize & #__resize_change
           ; 
@@ -17552,5 +17591,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------BMqH9----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -------------------------------------BMqH9----+v--90-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
