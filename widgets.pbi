@@ -658,47 +658,47 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     ;-
-    Macro _mdi_update_( _child_ )
-      _child_\parent\x[#__c_required] = _child_\x[#__c_container] 
-      _child_\parent\y[#__c_required] = _child_\y[#__c_container]
-      _child_\parent\width[#__c_required] = _child_\x[#__c_container] + _child_\width[#__c_frame] - _child_\parent\x[#__c_required]
-      _child_\parent\height[#__c_required] = _child_\y[#__c_container] + _child_\height[#__c_frame] - _child_\parent\y[#__c_required]
+    Macro _mdi_update_( _this_,  _x_,_y_, _width_, _height_ )
+      _this_\x[#__c_required] = _x_
+      _this_\y[#__c_required] = _y_
+      _this_\width[#__c_required] = _this_\x[#__c_required] + _width_
+      _this_\height[#__c_required] = _this_\y[#__c_required] + _height_
       
-      If StartEnumerate( _child_\parent )
-        If widget( )\parent = _child_\parent
-          If _child_\parent\x[#__c_required] > widget( )\x[#__c_container] 
-            _child_\parent\x[#__c_required] = widget( )\x[#__c_container] 
+      If widget::StartEnumerate( _this_ )
+        If widget( )\parent = _this_
+          If _this_\x[#__c_required] > widget( )\x[#__c_container] 
+            _this_\x[#__c_required] = widget( )\x[#__c_container] 
           EndIf
-          If _child_\parent\y[#__c_required] > widget( )\y[#__c_container] 
-            _child_\parent\y[#__c_required] = widget( )\y[#__c_container] 
+          If _this_\y[#__c_required] > widget( )\y[#__c_container] 
+            _this_\y[#__c_required] = widget( )\y[#__c_container] 
           EndIf
         EndIf
-        StopEnumerate( )
+        widget::StopEnumerate( )
       EndIf
       
-      If StartEnumerate( _child_\parent )
-        If widget( )\parent = _child_\parent
-          If _child_\parent\width[#__c_required] < widget( )\x[#__c_container] + widget( )\width[#__c_frame] - _child_\parent\x[#__c_required] 
-            _child_\parent\width[#__c_required] = widget( )\x[#__c_container] + widget( )\width[#__c_frame] - _child_\parent\x[#__c_required] 
+      If widget::StartEnumerate( _this_ )
+        If widget( )\parent = _this_
+          If _this_\width[#__c_required] < widget( )\x[#__c_container] + widget( )\width[#__c_frame] - _this_\x[#__c_required] 
+            _this_\width[#__c_required] = widget( )\x[#__c_container] + widget( )\width[#__c_frame] - _this_\x[#__c_required] 
           EndIf
-          If _child_\parent\height[#__c_required] < widget( )\y[#__c_container] + widget( )\height[#__c_frame] - _child_\parent\y[#__c_required] 
-            _child_\parent\height[#__c_required] = widget( )\y[#__c_container] + widget( )\height[#__c_frame] - _child_\parent\y[#__c_required] 
+          If _this_\height[#__c_required] < widget( )\y[#__c_container] + widget( )\height[#__c_frame] - _this_\y[#__c_required] 
+            _this_\height[#__c_required] = widget( )\y[#__c_container] + widget( )\height[#__c_frame] - _this_\y[#__c_required] 
           EndIf
         EndIf
-        StopEnumerate( )
+        widget::StopEnumerate( )
       EndIf
       
-      If widget::Updates( _child_\parent, 0, 0, _child_\parent\width[#__c_container], _child_\parent\height[#__c_container] )
+      If widget::Updates( _this_, 0, 0, _this_\width[#__c_container], _this_\height[#__c_container] )
         
-        _child_\parent\width[#__c_inner2] = _child_\parent\scroll\h\bar\page\len
-        _child_\parent\height[#__c_inner2] = _child_\parent\scroll\v\bar\page\len
+        _this_\width[#__c_inner2] = _this_\scroll\h\bar\page\len
+        _this_\height[#__c_inner2] = _this_\scroll\v\bar\page\len
         
-        If _child_\parent\container 
-          If StartEnumerate( _child_\parent )
-            If widget( )\parent = _child_\parent
-              Reclip( widget( ), #True )
-            EndIf
-            StopEnumerate( )
+        If _this_\container 
+          If widget::StartEnumerate( _this_ )
+            ; If widget( )\parent = _this_
+              Reclip( widget( ), 0 ); #True )
+            ; EndIf
+            widget::StopEnumerate( )
           EndIf
         EndIf
       EndIf
@@ -5978,55 +5978,7 @@ CompilerIf Not Defined( widget, #PB_Module )
            *this\parent\scroll\v\bar\thumb\change = 0 And
            *this\parent\scroll\h\bar\thumb\change = 0
           
-          *this\parent\x[#__c_required] = *this\x[#__c_container] 
-          *this\parent\y[#__c_required] = *this\y[#__c_container]
-          *this\parent\width[#__c_required] = *this\x[#__c_container] + *this\width[#__c_frame] - *this\parent\x[#__c_required]
-          *this\parent\height[#__c_required] = *this\y[#__c_container] + *this\height[#__c_frame] - *this\parent\y[#__c_required]
-          
-          If StartEnumerate( *this\parent )
-            If widget( )\parent = *this\parent
-              If *this\parent\x[#__c_required] > widget( )\x[#__c_container] 
-                *this\parent\x[#__c_required] = widget( )\x[#__c_container] 
-              EndIf
-              If *this\parent\y[#__c_required] > widget( )\y[#__c_container] 
-                *this\parent\y[#__c_required] = widget( )\y[#__c_container] 
-              EndIf
-            EndIf
-            StopEnumerate( )
-          EndIf
-          
-          If StartEnumerate( *this\parent )
-            If widget( )\parent = *this\parent
-              If *this\parent\width[#__c_required] < widget( )\x[#__c_container] + widget( )\width[#__c_frame] - *this\parent\x[#__c_required] 
-                *this\parent\width[#__c_required] = widget( )\x[#__c_container] + widget( )\width[#__c_frame] - *this\parent\x[#__c_required] 
-              EndIf
-              If *this\parent\height[#__c_required] < widget( )\y[#__c_container] + widget( )\height[#__c_frame] - *this\parent\y[#__c_required] 
-                *this\parent\height[#__c_required] = widget( )\y[#__c_container] + widget( )\height[#__c_frame] - *this\parent\y[#__c_required] 
-              EndIf
-            EndIf
-            StopEnumerate( )
-          EndIf
-          
-          ;Debug ""+ *this\parent\y[#__c_required] +" "+ *this\parent\height[#__c_required] +" "+ *this\parent\height[#__c_inner2] +" "+ *this\parent\height[#__c_container]
-          
-          If Updates( *this\parent, 0, 0,
-                      *this\parent\width[#__c_container],
-                      *this\parent\height[#__c_container] )
-            
-            *this\parent\width[#__c_inner2] = *this\parent\scroll\h\bar\page\len
-            *this\parent\height[#__c_inner2] = *this\parent\scroll\v\bar\page\len
-            
-            If *this\parent\container 
-              If StartEnumerate( *this\parent )
-                ;If widget( )\parent = *this\parent
-                  Reclip( widget( ), 0);#True )
-                ;EndIf
-                StopEnumerate( )
-              EndIf
-            EndIf
-          EndIf
-          
-          ;Debug "  "+ *this\parent\y[#__c_required] +" "+ *this\parent\height[#__c_required] +" "+ *this\parent\height[#__c_inner2] +" "+ *this\parent\height[#__c_container]
+          _mdi_update_( *this\parent, *this\x[#__c_container], *this\y[#__c_container], *this\width[#__c_frame], *this\height[#__c_frame] )
         EndIf
         
         ; then move and size parent set clip ( width&height )
@@ -6160,49 +6112,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         If *this\type = #__type_mdi
-          
-          *this\width[#__c_required] = *this\width[#__c_container] 
-          *this\height[#__c_required] = *this\height[#__c_container]
-          
-          
-          If StartEnumerate( *this )
-            If widget( )\parent = *this
-              If *this\x[#__c_required] > widget( )\x[#__c_container] 
-                *this\x[#__c_required] = widget( )\x[#__c_container] 
-              EndIf
-              If *this\y[#__c_required] > widget( )\y[#__c_container] 
-                *this\y[#__c_required] = widget( )\y[#__c_container] 
-              EndIf
-            EndIf
-            StopEnumerate( )
-          EndIf
-          
-          If StartEnumerate( *this )
-            If widget( )\parent = *this
-              If *this\width[#__c_required] < widget( )\x[#__c_container] + widget( )\width[#__c_frame] - *this\x[#__c_required] 
-                *this\width[#__c_required] = widget( )\x[#__c_container] + widget( )\width[#__c_frame] - *this\x[#__c_required] 
-              EndIf
-              If *this\height[#__c_required] < widget( )\y[#__c_container] + widget( )\height[#__c_frame] - *this\y[#__c_required] 
-                *this\height[#__c_required] = widget( )\y[#__c_container] + widget( )\height[#__c_frame] - *this\y[#__c_required] 
-              EndIf
-            EndIf
-            StopEnumerate( )
-          EndIf
-          
-          
-          If Updates(*this, 0,0, *this\width[#__c_container], *this\height[#__c_container])
-            *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
-            *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
-            
-            If *this\container 
-              If StartEnumerate( *this )
-                ;If widget( )\parent = *this\parent
-                  Reclip( widget( ), 0);#True )
-                ;EndIf
-                StopEnumerate( )
-              EndIf
-            EndIf
-          EndIf
+          _mdi_update_( *this, 0,0,0,0 )
         EndIf
         
         ; 
@@ -17604,5 +17514,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------f0Pb758--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------f0Pb758-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
