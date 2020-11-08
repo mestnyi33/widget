@@ -649,9 +649,9 @@
 ;     test_draw_box_clip1_type = #__type_listview
 ;     test_draw_box_clip2_type = #__type_listview
  
-    test_draw_box_clip_type = #__type_tree
-    test_draw_box_clip1_type = #__type_tree
-    test_draw_box_clip2_type = #__type_tree
+;     test_draw_box_clip_type = #__type_tree
+;     test_draw_box_clip1_type = #__type_tree
+;     test_draw_box_clip2_type = #__type_tree
 ;     
 ;     test_draw_box_clip_type = #__type_mdi
 ;     test_draw_box_clip1_type = #__type_mdi
@@ -662,7 +662,9 @@
 ;     test_draw_box_clip2_type = #__type_scrollarea
     
     
-    
+    test_draw_box_clip_type = #__type_scrollbar
+    test_draw_box_clip1_type = #__type_scrollbar
+    test_draw_box_clip2_type = #__type_scrollbar
     
     
     
