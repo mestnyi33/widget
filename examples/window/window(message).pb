@@ -6,8 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UsePNGImageDecoder()
   Define flag
   
-  ;Open(OpenWindow(#PB_Any, 150, 150, 600, 300, "PB (window_1)", #__Window_SizeGadget | #__Window_SystemMenu))
-  If Open( #PB_Any, 150, 150, 600, 300, #__Window_SizeGadget | #__Window_SystemMenu )
+  If Open( #PB_Any, 150, 150, 600, 300, "demo message", #__Window_SizeGadget | #__Window_SystemMenu )
     
     Define Result = Message("Title", "Please make your input:", #PB_MessageRequester_YesNoCancel|#PB_MessageRequester_Info) 
     Define a$ = "Result of the previously requester was: "

@@ -895,15 +895,16 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare.i Post( eventtype.l, *this, *button = #PB_All, *data = 0 )
     
     ;
-    Declare   Events( *this, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
-    Declare   Open( Window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, Flag.i = #Null, *callback = #Null, Canvas = #PB_Any )
+    ;;Declare   Events( *this, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
+    Declare   Open( window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *callback = #Null, canvas = #PB_Any )
     Declare.i Gadget( Type.l, Gadget.i, x.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.i = #Null,  window = -1, *CallBack = #Null )
     ;}
     
   EndDeclareModule
   
   Module widget
-    ;-
+    Declare   Events( *this, eventtype.l, mouse_x.l, mouse_y.l, _wheel_x_.b = 0, _wheel_y_.b = 0 )
+   ;-
     Procedure   CreateIcon( img.l, type.l )
       Protected x,y,Pixel, size = 8, index.i
       
@@ -16023,7 +16024,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;-
-    Procedure   Open( window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any )
+    Procedure   Open( window, x.l = 0,y.l = 0,width.l = #PB_Ignore,height.l = #PB_Ignore, title$ = #Null$, flag.i = #Null, *CallBack = #Null, Canvas = #PB_Any )
       If width = #PB_Ignore And
          height = #PB_Ignore
         flag | #PB_Canvas_Container
@@ -16031,7 +16032,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If Not IsWindow( window ) 
         If Not ListSize( root( ) )
-          window = OpenWindow( #PB_Any, x,y,width,height, "", flag )
+          window = OpenWindow( #PB_Any, x,y,width,height, title$, flag )
           x = 0
           y = 0
         Else
@@ -16247,7 +16248,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Flag = PBFlag( Type, Flag ) | #__flag_autosize
       
-      Open( Window, x,y,width,height, #Null, *CallBack, Gadget )
+      Open( Window, x,y,width,height, "", #Null, *CallBack, Gadget )
       
       Select Type
         Case #PB_GadgetType_Tree      : *this = Tree( 0, 0, width, height, flag )
