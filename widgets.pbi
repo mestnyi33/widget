@@ -664,7 +664,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       _this_\width[#__c_required] = _this_\x[#__c_required] + _width_
       _this_\height[#__c_required] = _this_\y[#__c_required] + _height_
       
-      If widget::StartEnumerate( _this_ )
+      If StartEnumerate( _this_ )
         If widget( )\parent = _this_
           If _this_\x[#__c_required] > widget( )\x[#__c_container] 
             _this_\x[#__c_required] = widget( )\x[#__c_container] 
@@ -673,10 +673,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             _this_\y[#__c_required] = widget( )\y[#__c_container] 
           EndIf
         EndIf
-        widget::StopEnumerate( )
+        StopEnumerate( )
       EndIf
       
-      If widget::StartEnumerate( _this_ )
+      If StartEnumerate( _this_ )
         If widget( )\parent = _this_
           If _this_\width[#__c_required] < widget( )\x[#__c_container] + widget( )\width[#__c_frame] - _this_\x[#__c_required] 
             _this_\width[#__c_required] = widget( )\x[#__c_container] + widget( )\width[#__c_frame] - _this_\x[#__c_required] 
@@ -685,20 +685,20 @@ CompilerIf Not Defined( widget, #PB_Module )
             _this_\height[#__c_required] = widget( )\y[#__c_container] + widget( )\height[#__c_frame] - _this_\y[#__c_required] 
           EndIf
         EndIf
-        widget::StopEnumerate( )
+        StopEnumerate( )
       EndIf
       
-      If widget::Updates( _this_, 0, 0, _this_\width[#__c_container], _this_\height[#__c_container] )
+      If Updates( _this_, 0, 0, _this_\width[#__c_container], _this_\height[#__c_container] )
         
         _this_\width[#__c_inner2] = _this_\scroll\h\bar\page\len
         _this_\height[#__c_inner2] = _this_\scroll\v\bar\page\len
         
         If _this_\container 
-          If widget::StartEnumerate( _this_ )
+          If StartEnumerate( _this_ )
             ; If widget( )\parent = _this_
               Reclip( widget( ), 0 ); #True )
             ; EndIf
-            widget::StopEnumerate( )
+            StopEnumerate( )
           EndIf
         EndIf
       EndIf
@@ -5964,9 +5964,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf 
         
-; ;         If *this\type = #__type_mdi
-; ;           Debug *this\height[#__c_required]
-; ;         EndIf
         
         ; mdi
         If *this\parent And 
@@ -6046,11 +6043,14 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; then move and size parent
         If *this\container And *this\count\childrens
           ; Protected.l x, y, width, height
-          Protected x2,y2,pw,ph, pwd,phd
+          Protected x2,y2,pw,ph, pwd,phd, frame = #__c_frame
+          If *this\type = #__type_window
+            frame = #__c_inner
+          EndIf
           
           If *this\align
-            pw = ( *this\width - *this\align\delta\width )
-            ph = ( *this\height - *this\align\delta\height )
+            pw = ( *this\width[frame] - *this\align\delta\width )
+            ph = ( *this\height[frame] - *this\align\delta\height )
             pwd = pw/2 
             phd = ph/2 
           EndIf
@@ -6067,28 +6067,28 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Case 0, 3, 5 : x = widget( )\align\delta\x                                                   
                   Case 1, 6    : x = widget( )\align\delta\x + pwd
                   Case 2       : x = widget( )\align\delta\x + pw   
-                  Case 4       : x = widget( )\align\delta\x * *this\width / *this\align\delta\width       
+                  Case 4       : x = widget( )\align\delta\x * *this\width[frame] / *this\align\delta\width       
                 EndSelect
                 
                 Select widget( )\align\v
                   Case 0, 3, 5 : y = widget( )\align\delta\y                                                   
                   Case 1, 6    : y = widget( )\align\delta\y + phd 
                   Case 2       : y = widget( )\align\delta\y + ph   
-                  Case 4       : y = widget( )\align\delta\y * *this\height / *this\align\delta\height       
+                  Case 4       : y = widget( )\align\delta\y * *this\height[frame] / *this\align\delta\height       
                 EndSelect
                 
                 Select widget( )\align\h
                   Case 0       : width = x2
                   Case 1, 5    : width = x2 + pwd    ; center ( right & bottom )
                   Case 2, 3, 6 : width = x2 + pw     ; right & bottom
-                  Case 4       : width = x2 * *this\width / *this\align\delta\width
+                  Case 4       : width = x2 * *this\width[frame] / *this\align\delta\width
                 EndSelect
                 
                 Select widget( )\align\v
                   Case 0       : height = y2
                   Case 1, 5    : height = y2 + phd    ; center ( right & bottom )
                   Case 2, 3, 6 : height = y2 + ph     ; right & bottom
-                  Case 4       : height = y2 * *this\height / *this\align\delta\height
+                  Case 4       : height = y2 * *this\height[frame] / *this\align\delta\height
                 EndSelect
                 
                 Resize( widget( ), x, y, width - x, height - y )
@@ -12946,14 +12946,20 @@ CompilerIf Not Defined( widget, #PB_Module )
               
               \align\delta\x = \x[#__c_container]
               \align\delta\y = \y[#__c_container]
-              \align\delta\width = \width
-              \align\delta\height = \height
+              \align\delta\width = \width[#__c_frame]
+              \align\delta\height = \height[#__c_frame]
               
               \parent\align\delta\x = \parent\x[#__c_container]
               \parent\align\delta\y = \parent\y[#__c_container]
-              \parent\align\delta\width = \parent\width
-              \parent\align\delta\height = \parent\height
               
+              If *this\parent\type = #__type_window
+                \parent\align\delta\width = \parent\width[#__c_inner]
+                \parent\align\delta\height = \parent\height[#__c_inner]
+              Else
+                \parent\align\delta\width = \parent\width[#__c_frame]
+                \parent\align\delta\height = \parent\height[#__c_frame]
+              EndIf
+             
               ; docking
               If Mode & #__align_auto = #__align_auto
                 If \align\h = 1 ; center
@@ -12974,11 +12980,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                     
                     If \align\v = 0 ; top
                       \align\delta\y + \parent\align\_top
-                      \parent\align\_top + *this\height
+                      \parent\align\_top + *this\height[#__c_frame]
                       
                     ElseIf \align\v = 2 ; bottom
                       \align\delta\y - \parent\align\_bottom
-                      \parent\align\_bottom + *this\height + \parent\bs*2
+                      \parent\align\_bottom + *this\height[#__c_frame] + \parent\bs*2
                       
                     EndIf
                   EndIf
@@ -12988,11 +12994,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                     
                     If \align\h = 0 ; left
                       \align\delta\x + \parent\align\_left
-                      \parent\align\_left + *this\width
+                      \parent\align\_left + *this\width[#__c_frame]
                       
                     ElseIf \align\h = 2 ; right
                       \align\delta\x - \parent\align\_right
-                      \parent\align\_right + *this\width + \parent\bs*2
+                      \parent\align\_right + *this\width[#__c_frame] + \parent\bs*2
                       
                     EndIf
                   EndIf
@@ -15324,8 +15330,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected result
       Protected img =- 1, f1 =- 1, f2=8, width = 400, height = 120
       Protected bw = 85, bh = 25, iw = height-bh-f1 - f2*4 - 2-1
+      Debug width
+      
       Protected x = ( root( )\width-width-#__border_size*2 )/2
       Protected y = ( root( )\height-height-#__caption_height-#__border_size*2 )/2
+;       Protected x = ( root( )\width-width )/2
+;       Protected y = ( root( )\height-height )/2
       
       Protected window = Window( x,y, width, height, Title, #__window_titlebar )
       ;SetAlignment( widget( ), #__align_center )
@@ -17514,5 +17524,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------f0Pb758-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------4----------------------------------------------------------------------------------------------------f0Pb758---------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------o---------------------------------------
 ; EnableXP
