@@ -535,6 +535,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       _state.l
       _tabindex.l ; parent panel tab index
       
+      *SubParent
+      *SubChild
       child.b ; is the widget composite?
       transform.b ; add anchors on the widget (to size and move)
       

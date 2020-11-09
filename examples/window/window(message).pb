@@ -3,8 +3,8 @@ Uselib(widget)
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UsePNGImageDecoder()
   Define flag
+  UsePNGImageDecoder()
   
   If Open( #PB_Any, 150, 150, 600, 300, "demo message", #__Window_SizeGadget | #__Window_SystemMenu )
     
