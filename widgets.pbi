@@ -4754,10 +4754,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                  *this\gadget[#__split_1]\width <> *this\bar\button[#__split_b1]\width Or
                  *this\gadget[#__split_1]\height <> *this\bar\button[#__split_b1]\height
                 ; Debug "splitter_1_resize " + *this\gadget[#__split_1]
-                Resize( *this\gadget[#__split_1],
+                
+                If *this\gadget[#__split_1]\type = #__type_window
+                  Resize( *this\gadget[#__split_1],
+                        *this\bar\button[#__split_b1]\x - *this\x[#__c_frame],
+                        *this\bar\button[#__split_b1]\y - *this\y[#__c_frame], 
+                        *this\bar\button[#__split_b1]\width - #__border_size*2, *this\bar\button[#__split_b1]\height - #__border_size*2 - #__caption_height)
+                Else
+                  Resize( *this\gadget[#__split_1],
                         *this\bar\button[#__split_b1]\x - *this\x[#__c_frame],
                         *this\bar\button[#__split_b1]\y - *this\y[#__c_frame], 
                         *this\bar\button[#__split_b1]\width, *this\bar\button[#__split_b1]\height )
+                EndIf
               EndIf
             EndIf
           EndIf
@@ -4781,10 +4789,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                  *this\gadget[#__split_2]\width <> *this\bar\button[#__split_b2]\width Or
                  *this\gadget[#__split_2]\height <> *this\bar\button[#__split_b2]\height 
                 ; Debug "splitter_2_resize " + *this\gadget[#__split_2]
-                Resize( *this\gadget[#__split_2], 
-                        *this\bar\button[#__split_b2]\x - *this\x[#__c_frame], 
-                        *this\bar\button[#__split_b2]\y - *this\y[#__c_frame], 
-                        *this\bar\button[#__split_b2]\width, *this\bar\button[#__split_b2]\height )
+                
+                If *this\gadget[#__split_2]\type = #__type_window
+                  Resize( *this\gadget[#__split_2], 
+                          *this\bar\button[#__split_b2]\x - *this\x[#__c_frame], 
+                          *this\bar\button[#__split_b2]\y - *this\y[#__c_frame], 
+                          *this\bar\button[#__split_b2]\width - #__border_size*2, *this\bar\button[#__split_b2]\height - #__border_size*2 - #__caption_height )
+                Else
+                  Resize( *this\gadget[#__split_2], 
+                          *this\bar\button[#__split_b2]\x - *this\x[#__c_frame], 
+                          *this\bar\button[#__split_b2]\y - *this\y[#__c_frame], 
+                          *this\bar\button[#__split_b2]\width, *this\bar\button[#__split_b2]\height )
+                EndIf
               EndIf
             EndIf   
           EndIf      
@@ -16014,10 +16030,15 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       If Not IsWindow( window ) 
-        window = GetWindow( root( ) )
-        
-        If Not ( IsWindow( window ) And widget( ) = root( )\canvas\container )
-          window = OpenWindow( #PB_Any, widget( )\x,widget( )\y,widget( )\width,widget( )\height, "", #PB_Window_BorderLess )
+        If Not ListSize( root( ) )
+          window = OpenWindow( #PB_Any, x,y,width,height, "", flag )
+          x = 0
+          y = 0
+        Else
+          window = GetWindow( root( ) )
+          If Not ( IsWindow( window ) And widget( ) = root( )\canvas\container )
+            window = OpenWindow( #PB_Any, widget( )\x,widget( )\y,widget( )\width,widget( )\height, "", #PB_Window_BorderLess )
+          EndIf
         EndIf
       EndIf
       
@@ -17524,5 +17545,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------4----------------------------------------------------------------------------------------------------f0Pb758---------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------o---------------------------------------
+; Folding = ----------4--------------------------------------------------------------0---0-8+-v4----------------------------2-spjv----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------j+--------------------------------------
 ; EnableXP
