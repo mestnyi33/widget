@@ -727,22 +727,21 @@ DeclareModule Gadget
     EndProcedure
     
     Procedure EventType_()
-      If widget::this()\event =- 1
-        ProcedureReturn PB(EventType)()
-      Else
+      If widget::this()\widget And widget::Atpoint(widget::this( )\mouse\x, widget::this( )\mouse\y, widget::this()\widget) 
+        ;if widget::this()\event <>- 1
         ProcedureReturn widget::this()\event
+      Else
+        ProcedureReturn PB(EventType)()
       EndIf
     EndProcedure
     
     Procedure EventGadget_()
-      If widget::this()\widget 
-        Protected *this.Structures::_S_widget = widget::this()\widget
-        If *this\root
-          ProcedureReturn *this\root\canvas\gadget
-        Else
-          ProcedureReturn PB(EventGadget)()
-        EndIf
-      Else
+      If widget::this()\widget And
+         widget::this()\widget\root And 
+         widget::Atpoint(widget::this( )\mouse\x, widget::this( )\mouse\y, widget::this()\widget) 
+        
+        ProcedureReturn widget::this()\widget\root\canvas\gadget
+       Else
         ProcedureReturn PB(EventGadget)()
       EndIf
     EndProcedure
@@ -1178,7 +1177,8 @@ DeclareModule Gadget
       Protected EventData = EventData()
       Protected EventItem = GetGadgetState(EventGadget)
       Protected State = GetGadgetItemState(EventGadget, EventItem)
-      
+        Debug  EventType
+          
       Select EventType
           ;     Case #PB_EventType_Focus    : Debug "gadget focus item = " + EventItem +" data "+ EventData
           ;     Case #PB_EventType_LostFocus    : Debug "gadget lfocus item = " + EventItem +" data "+ EventData
@@ -1186,47 +1186,47 @@ DeclareModule Gadget
           If EventGadget = 3
             click ! 1
             If click
-              SetGadgetItemState(0, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
               SetGadgetItemState(1, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
+              SetGadgetItemState(2, 1, #PB_Tree_Selected|#PB_Tree_Expanded|#PB_Tree_Inbetween)
             Else
-              SetGadgetItemState(0, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
               SetGadgetItemState(1, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
+              SetGadgetItemState(2, 1, #PB_Tree_Selected|#PB_Tree_Collapsed|#PB_Tree_Inbetween)
             EndIf
           EndIf
           
           If EventGadget = 4
-            AddGadgetItem(0, 1, "added item "+Str(CountGadgetItems(0)))
             AddGadgetItem(1, 1, "added item "+Str(CountGadgetItems(1)))
+            AddGadgetItem(2, 1, "added item "+Str(CountGadgetItems(2)))
 ;             widget()\change = 1
 ;             Debug widget()\change
 ;             Repaints()
           EndIf
           If EventGadget = 5
-            RemoveGadgetItem(0, 1)
             RemoveGadgetItem(1, 1)
+            RemoveGadgetItem(2, 1)
           EndIf
           If EventGadget = 6
-            SetGadgetItemImage(0, GetGadgetState(0), ImageID(0))
             SetGadgetItemImage(1, GetGadgetState(1), ImageID(0))
+            SetGadgetItemImage(2, GetGadgetState(2), ImageID(0))
           EndIf
           If EventGadget = 7 ; <<
                              ;         FreeGadget(0)
                              ;         FreeGadget(1)
             
-            SetGadgetState(0, 0)
             SetGadgetState(1, 0)
+            SetGadgetState(2, 0)
           EndIf
           If EventGadget = 8 ; 0
-            SetGadgetState(0, -1)
             SetGadgetState(1, -1)
+            SetGadgetState(2, -1)
           EndIf
           If EventGadget = 9 ; >>
-            SetGadgetState(0, CountGadgetItems(0)-1)
             SetGadgetState(1, CountGadgetItems(1)-1)
+            SetGadgetState(2, CountGadgetItems(2)-1)
           EndIf
           If EventGadget = 10
-            ClearGadgetItems(0)
             ClearGadgetItems(1)
+            ClearGadgetItems(2)
           EndIf
           
           ; widget::Redraw(GetGadgetData(1))
@@ -1269,10 +1269,12 @@ DeclareModule Gadget
     
     If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;ListViewGadget(0, 10, 10, 160, 160) 
-      PB(TreeGadget)(0, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-      TreeGadget(1, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection | #PB_Tree_Collapse); | #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
+      PB(TreeGadget)(1, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
+      TreeGadget(2, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection | #PB_Tree_Collapse); | #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
+      PB(SplitterGadget)(100, 10, 10, 335, 160, 1, 2, #PB_Splitter_Vertical)
+      ;SplitterGadget(100, 10, 10, 335, 160, 1, 2, #PB_Splitter_Vertical)
       
-      For ID = 0 To 1
+      For ID = 1 To 2
         For a = 0 To 10
           AddGadgetItem (ID, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
           AddGadgetItem (ID, -1, "Node "+Str(a), 0, 0)        ; ImageID(x) as 4th parameter
@@ -1306,13 +1308,13 @@ DeclareModule Gadget
       PB(ButtonGadget)(10, 230, 210, 100, 24, "clears Items")
       BindGadgetEvent(10, @events_tree_gadget())
       
-       BindGadgetEvent(0, @events_tree_gadget())
-;       BindGadgetEvent(1, @events_tree_gadget())
+       BindGadgetEvent(1, @events_tree_gadget())
+;       BindGadgetEvent(2, @events_tree_gadget())
       
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
     EndIf
   CompilerEndIf
   
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------8------------------------------
+; Folding = +---------8------------------------------
 ; EnableXP

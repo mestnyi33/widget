@@ -432,7 +432,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       sublevel.l
       sublevellen.l
       
-      *tt._s_tt
+      *_tt._s_tt
       *first._s_rows
       List *draws._s_rows()
       
@@ -504,9 +504,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       *window._s_widget ; this parent window       ; root()\active\window
       
       StructureUnion
+        *_owner._s_widget  ; this window owner parent
         *_tab._s_widget ; = panel() tabbar gadget
         *_group._s_widget ; = option() groupbar gadget  
-        *tt._s_tt
+        *_tt._s_tt
       EndStructureUnion
       
       *gadget._s_widget[3] 
@@ -535,8 +536,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       _state.l
       _tabindex.l ; parent panel tab index
       
-      *SubParent
-      *SubChild
+      
       child.b ; is the widget composite?
       transform.b ; add anchors on the widget (to size and move)
       
@@ -653,5 +653,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = HAA9-fi-
+; Folding = nCY0-fm-
 ; EnableXP

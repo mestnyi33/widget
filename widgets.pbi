@@ -250,28 +250,37 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     Macro _is_window_( _this_ )
-      ;  Bool( _this_ > 0 And _this_ = _this_\window )
-      Bool( _is_widget_( _this_ ) And _this_\container = #__type_window )
-      ;  Bool( _is_widget_( _this_ ) And _this_\type = #__type_window )
+      Bool( _is_widget_( _this_ ) And _this_\type = #__type_window )
     EndMacro
     
     Macro _is_selected_( _this_ )
       Bool( _this_\_state & #__s_selected )
-      ; ( _is_widget_( _this_ ) And _this_\_state & #__s_selected )
     EndMacro
     
-    Macro _is_scrollbar_( _this_ )
+    Macro _is_scrollbars_( _this_ )
       Bool( _this_\parent And 
             _this_\parent\scroll And 
             ( _this_\parent\scroll\v = _this_ Or 
               _this_\parent\scroll\h = _this_ ) )
     EndMacro
     
-    Macro _scroll_bars_( _this_ )
+    Macro _is_integral_( _this_ ) ; It is an integral part
       Bool( _this_\parent And _this_\child )
       ; Bool( _this_\parent\scroll And _this_\parent\scroll\v And _this_\parent\scroll\h )
-      ;  Bool(_this_\parent And _this_\parent\scroll And ( _this_\parent\scroll\v = _this_ Or _this_ = _this_\parent\scroll\h ))
+      ; _is_scrollbars_( _this_ )
     EndMacro
+    
+    ;- 
+    Macro Atpoint( _mouse_x_, _mouse_y_, _address_, _mode_ = )
+      Bool( _mouse_x_ > _address_\x#_mode_ And _mouse_x_ <= ( _address_\x#_mode_ + _address_\width#_mode_ ) And 
+            _mouse_y_ > _address_\y#_mode_ And _mouse_y_ <= ( _address_\y#_mode_ + _address_\height#_mode_ ) )
+    EndMacro
+    
+    Macro Intersect( _address_1_, _address_2_, _address_1_mode_ = )
+      Bool( ( _address_1_\x#_address_1_mode_ + _address_1_\width#_address_1_mode_ ) > _address_2_\x And _address_1_\x#_address_1_mode_ < ( _address_2_\x + _address_2_\width ) And 
+            ( _address_1_\y#_address_1_mode_ + _address_1_\height#_address_1_mode_ ) > _address_2_\y And _address_1_\y#_address_1_mode_ < ( _address_2_\y + _address_2_\height ) )
+    EndMacro
+    
     
     
     ;-
@@ -287,8 +296,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                  _is_selected_( _this_\scroll\h )))
     EndMacro
     
-    ;- 
-    Macro Atpoint( _result_, _this_ )
+    ;-
+    Macro _get_entered_( _result_, _this_ )
       ; enter&leave mouse events
       If mouse( )\interact
         ; get at point
@@ -298,20 +307,20 @@ CompilerIf Not Defined( widget, #PB_Module )
             If _is_widget_( widget( ) ) And
                Not widget( )\hide And widget( )\draw And 
                widget( )\root\canvas\gadget = root( )\canvas\gadget And 
-               _from_point_( mouse( )\x, mouse( )\y, widget( ), [#__c_clip] ) And 
-               _from_point_( mouse( )\x, mouse( )\y, widget( ), [#__c_frame] )
+               Atpoint( mouse( )\x, mouse( )\y, widget( ), [#__c_clip] ) And 
+               Atpoint( mouse( )\x, mouse( )\y, widget( ), [#__c_frame] )
               
               _this_ = widget( )
               
               ; scrollbars events
               If widget( ) And widget( )\scroll
                 If widget( )\scroll\v And Not widget( )\scroll\v\hide And widget( )\scroll\v\type And 
-                   _from_point_( mouse( )\x,mouse( )\y, widget( )\scroll\v, [#__c_clip] ) And 
-                   _from_point_( mouse( )\x, mouse( )\y, widget( )\scroll\v, [#__c_frame] )
+                   Atpoint( mouse( )\x,mouse( )\y, widget( )\scroll\v, [#__c_clip] ) And 
+                   Atpoint( mouse( )\x, mouse( )\y, widget( )\scroll\v, [#__c_frame] )
                   _this_ = widget( )\scroll\v
                 ElseIf widget( )\scroll\h And Not widget( )\scroll\h\hide And widget( )\scroll\h\type And 
-                       _from_point_( mouse( )\x,mouse( )\y, widget( )\scroll\h, [#__c_clip] ) And 
-                       _from_point_( mouse( )\x, mouse( )\y, widget( )\scroll\h, [#__c_frame] )
+                       Atpoint( mouse( )\x,mouse( )\y, widget( )\scroll\h, [#__c_clip] ) And 
+                       Atpoint( mouse( )\x, mouse( )\y, widget( )\scroll\h, [#__c_frame] )
                   _this_ = widget( )\scroll\h
                 EndIf
               EndIf
@@ -319,8 +328,8 @@ CompilerIf Not Defined( widget, #PB_Module )
               ; tabbar events
               If widget( ) And widget( )\_tab 
                 If Not widget( )\_tab\hide And  widget( )\_tab\type And 
-                   _from_point_( mouse( )\x,mouse( )\y, widget( )\_tab, [#__c_clip] ) And 
-                   _from_point_( mouse( )\x, mouse( )\y, widget( )\_tab, [#__c_frame] )
+                   Atpoint( mouse( )\x,mouse( )\y, widget( )\_tab, [#__c_clip] ) And 
+                   Atpoint( mouse( )\x, mouse( )\y, widget( )\_tab, [#__c_frame] )
                   _this_ = widget( )\_tab
                 EndIf
               EndIf
@@ -386,18 +395,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf  
       EndIf
     EndMacro  
-    
-    Macro Intersect( _address_1_, _address_2_, _address_1_mode_ = )
-      Bool( ( _address_1_\x#_address_1_mode_ + _address_1_\width#_address_1_mode_ ) > _address_2_\x And _address_1_\x#_address_1_mode_ < ( _address_2_\x + _address_2_\width ) And 
-            ( _address_1_\y#_address_1_mode_ + _address_1_\height#_address_1_mode_ ) > _address_2_\y And _address_1_\y#_address_1_mode_ < ( _address_2_\y + _address_2_\height ) )
-    EndMacro
-    
-    Macro _from_point_( mouse_x, mouse_y, _type_, _mode_ = )
-      ;       Bool( mouse_x > _type_\x#_mode_ And mouse_x < ( _type_\x#_mode_ + _type_\width#_mode_ ) And 
-      ;            mouse_y > _type_\y#_mode_ And mouse_y < ( _type_\y#_mode_ + _type_\height#_mode_ ) )
-      Bool( mouse_x > _type_\x#_mode_ And mouse_x <= ( _type_\x#_mode_ + _type_\width#_mode_ ) And 
-            mouse_y > _type_\y#_mode_ And mouse_y <= ( _type_\y#_mode_ + _type_\height#_mode_ ) )
-    EndMacro
     
     ;-
     Macro _draw_arrows_( _address_, _type_ )
@@ -650,19 +647,17 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndMacro
     
-    ;- 
-    Macro _bar_scrollarea_change_( _this_, _pos_, _len_ )
-      - Bool( Bool( ( ( ( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) < 0 And Bar_SetState( _this_, ( ( _pos_ ) + _this_\bar\min ) ) ) Or
-              Bool( ( ( ( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) > ( _this_\bar\page\len - ( _len_ ) ) And 
-                    Bar_SetState( _this_, ( ( _pos_ ) + _this_\bar\min ) - ( _this_\bar\page\len - ( _len_ ) ) ) ) )
+    Macro _bar_scroll_pos_( _this_, _pos_, _len_ )
+      Bool( Bool( ( ( ( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) < 0 And Bar_SetState( _this_, ( ( _pos_ ) + _this_\bar\min ) ) ) Or
+              Bool( ( ( ( _pos_ ) + _this_\bar\min ) - _this_\bar\page\pos ) > ( _this_\bar\page\len - ( _len_ ) ) And Bar_SetState( _this_, ( ( _pos_ ) + _this_\bar\min ) - ( _this_\bar\page\len - ( _len_ ) ) ) ) )
     EndMacro
     
     ;-
     Macro _mdi_update_( _this_,  _x_,_y_, _width_, _height_ )
       _this_\x[#__c_required] = _x_
       _this_\y[#__c_required] = _y_
-      _this_\width[#__c_required] = _this_\x[#__c_required] + _width_
-      _this_\height[#__c_required] = _this_\y[#__c_required] + _height_
+      _this_\width[#__c_required] = _width_
+      _this_\height[#__c_required] = _height_
       
       If StartEnumerate( _this_ )
         If widget( )\parent = _this_
@@ -1882,7 +1877,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; From point anchor
         For _index_ = 1 To #__a_moved ; #__a_count ; To 0 Step - 1
           If transform( )\id[_index_] And 
-             _from_point_( mouse_x, mouse_y, transform( )\id[_index_] ) 
+             Atpoint( mouse_x, mouse_y, transform( )\id[_index_] ) 
             
             If transform( )\id[_index_]\color\state <> #__s_1
               _set_cursor_( transform( )\widget, transform( )\id[_index_]\cursor )
@@ -2040,7 +2035,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 ;                 Else
                 ;Debug transform( )\widget\parent\y[#__c_inner]
                 
-                If _scroll_bars_( transform( )\widget )
+                If _is_integral_( transform( )\widget )
                   mouse_x + transform( )\widget\parent\x[#__c_inner]
                   mouse_y + transform( )\widget\parent\y[#__c_inner]
                 Else
@@ -2110,7 +2105,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If  *this\container And 
               Not transform( )\index And 
-              _from_point_( mouse_x, mouse_y, *this, [#__c_inner] )
+              Atpoint( mouse_x, mouse_y, *this, [#__c_inner] )
             
             _set_cursor_( *this, #PB_Cursor_Cross )
             ; transform( )\container = *this\container
@@ -2127,7 +2122,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         ;
         If eventtype = #__event_leftButtonUp
-          If _from_point_( mouse_x, mouse_y, transform( )\id[transform( )\index] )
+          If Atpoint( mouse_x, mouse_y, transform( )\id[transform( )\index] )
             transform( )\id[transform( )\index]\color\state = #__s_1
           EndIf
           
@@ -4451,7 +4446,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                          *this\parent\scroll\v <> widget( ) And 
                          *this\parent\scroll\h <> widget( ) And Not widget( )\align
                         
-                        If _scroll_bars_( widget( ) )
+                        If _is_integral_( widget( ) )
                           Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
                         Else
                           Resize( widget( ), #PB_Ignore, widget( )\y[#__c_container] + *this\parent\y[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore )
@@ -4474,7 +4469,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                          *this\parent\scroll\v <> widget( ) And 
                          *this\parent\scroll\h <> widget( ) And Not widget( )\align
                         
-                        If _scroll_bars_( widget( ) )
+                        If _is_integral_( widget( ) )
                           Resize( widget( ), widget( )\x[#__c_container] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                         Else
                           Resize( widget( ), widget( )\x[#__c_container] + *this\parent\x[#__c_required] + *this\bar\thumb\change, #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -4911,7 +4906,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         Bar_Update( *this )
         
         ; post event
-        If Not ( *this\type = #PB_GadgetType_ScrollBar And _is_scrollbar_( *this ) )
+        If Not ( *this\type = #PB_GadgetType_ScrollBar And _is_scrollbars_( *this ) )
           If *this\type <> #PB_GadgetType_tabBar
             If *this\root\canvas\gadget <> EventGadget( ) 
               ReDraw( *this\root ) ; сним у панель setstate хурмить
@@ -5337,8 +5332,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         If *this\bar\button[#__b_3]\interact And
            *this\bar\button[#__b_3]\state <> #__s_3 And
-           _from_point_( mouse_x, mouse_y, *this, [#__c_inner] ) And
-           _from_point_( mouse_x, mouse_y, *this\bar\button[#__b_3] )
+           Atpoint( mouse_x, mouse_y, *this, [#__c_inner] ) And
+           Atpoint( mouse_x, mouse_y, *this\bar\button[#__b_3] )
           
           If *this\bar\from <> #__b_3
             If *this\bar\button[#__b_3]\state = #__s_0
@@ -5372,7 +5367,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
         ElseIf *this\bar\button[#__b_2]\interact And
                *this\bar\button[#__b_2]\state <> #__s_3 And 
-               _from_point_( mouse_x, mouse_y, *this\bar\button[#__b_2] )
+               Atpoint( mouse_x, mouse_y, *this\bar\button[#__b_2] )
           
           If *this\bar\from <> #__b_2
             If *this\bar\button[#__b_2]\state = #__s_0
@@ -5400,7 +5395,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           
         ElseIf *this\bar\button[#__b_1]\interact And 
                *this\bar\button[#__b_1]\state <> #__s_3 And 
-               _from_point_( mouse_x, mouse_y, *this\bar\button[#__b_1] )
+               Atpoint( mouse_x, mouse_y, *this\bar\button[#__b_1] )
           
           If *this\bar\from <> #__b_1
             If *this\bar\button[#__b_1]\state = #__s_0
@@ -5451,8 +5446,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\count\items
             ForEach *this\bar\_s( )
               ; If *this\bar\_s( )\draw
-              If _from_point_( ( mouse_x - *this\x[#__c_frame] ) + Bool( Not *this\vertical ) * *this\bar\page\pos, mouse_y - *this\y[#__c_frame] + Bool( *this\vertical ) * *this\bar\page\pos, *this\bar\_s( ) ) And *this\bar\from = #__b_3
-                ;If _from_point_( mouse_x, mouse_y, *this\bar\_s( ) ) And *this\bar\from = #__b_3
+              If Atpoint( ( mouse_x - *this\x[#__c_frame] ) + Bool( Not *this\vertical ) * *this\bar\page\pos, mouse_y - *this\y[#__c_frame] + Bool( *this\vertical ) * *this\bar\page\pos, *this\bar\_s( ) ) And *this\bar\from = #__b_3
+                ;If Atpoint( mouse_x, mouse_y, *this\bar\_s( ) ) And *this\bar\from = #__b_3
                 If *this\index[#__tab_1] <> *this\bar\_s( )\index
                   If *this\index[#__tab_1] >= 0
                     ; Debug " leave tab - " + *this\index[#__tab_1]
@@ -5643,7 +5638,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           _p_y2_ = *this\parent\y[#__c_frame] + *this\parent\height[#__c_frame]
         EndIf
         
-        If *this\type = #__type_scrollbar ; And *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h )
+        If *this\type = #__type_scrollbar ; And _is_scrollbars_( *this )
           _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_container]
           _p_y2_ = *this\parent\y[#__c_inner] + *this\parent\height[#__c_container]
         EndIf
@@ -5664,8 +5659,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       ; for the scrollarea childrens except scrollbars
       If *this\parent\type = #PB_GadgetType_ScrollArea Or
          *this\parent\type = #PB_GadgetType_MDI 
-        If Not (*this\parent\scroll And
-                ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
+        
+        If Not _is_scrollbars_( *this )
           If _p_x2_ > *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
             _p_x2_ = *this\parent\x[#__c_inner] + *this\parent\width[#__c_required]
           EndIf
@@ -5865,7 +5860,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           x = *this\x[#__c_container]
         Else
           If *this\parent 
-            If Not _scroll_bars_( *this )
+            If Not _is_integral_( *this )
               x - *this\parent\x[#__c_required] 
             EndIf 
             *this\x[#__c_container] = x
@@ -5876,7 +5871,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           y = *this\y[#__c_container]
         Else
           If *this\parent 
-            If Not _scroll_bars_( *this )
+            If Not _is_integral_( *this )
               y - *this\parent\y[#__c_required] 
             EndIf 
             *this\y[#__c_container] = y
@@ -6073,8 +6068,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If StartEnumerate( *this ) 
-            If *this = widget( )\parent And 
-               Not (*this\scroll And (*this\scroll\v = widget( ) Or *this\scroll\h = widget( )) )
+            If *this = widget( )\parent And Not _is_scrollbars_( widget( ) )
               
               If widget( )\align
                 x2 = ( widget( )\align\delta\x + widget( )\align\delta\width )
@@ -6188,16 +6182,14 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     Macro _text_scroll_x_( _this_ )
-      If *this\scroll\h 
-        If _this_\text\caret\x
-          *this\change = _bar_scrollarea_change_( *this\scroll\h, _this_\text\caret\x - _this_\text\padding\x, ( _this_\text\padding\x * 2 + _this_\row\margin\width ) ) ; ok
-        EndIf
+      If *this\scroll\h And _this_\text\caret\x
+        *this\change =- _bar_scroll_pos_( *this\scroll\h, (_this_\text\caret\x - _this_\text\padding\x) - _this_\x, ( _this_\text\padding\x * 2 + _this_\row\margin\width ) ) ; ok
       EndIf
     EndMacro
     
     Macro _text_scroll_y_( _this_ )
       If *this\scroll\v
-        *this\change = _bar_scrollarea_change_( *this\scroll\v, _this_\text\caret\y - _this_\text\padding\y, ( _this_\text\padding\y * 2 + _this_\text\caret\height ) ) ; ok
+        *this\change =- _bar_scroll_pos_( *this\scroll\v, (_this_\text\caret\y - _this_\text\padding\y) - _this_\y, ( _this_\text\padding\y * 2 + _this_\text\caret\height ) ) ; ok
       EndIf
     EndMacro
     
@@ -8915,38 +8907,38 @@ CompilerIf Not Defined( widget, #PB_Module )
       With *this
         If *this
           this( )\widget = *this
-          \row\tt = AllocateStructure( _s_tt )
-          \row\tt\visible = 1
-          \row\tt\x = x + \row\_s( )\x + \row\_s( )\width - 1
-          \row\tt\y = y + \row\_s( )\y - \scroll\v\bar\page\pos
+          \row\_tt = AllocateStructure( _s_tt )
+          \row\_tt\visible = 1
+          \row\_tt\x = x + \row\_s( )\x + \row\_s( )\width - 1
+          \row\_tt\y = y + \row\_s( )\y - \scroll\v\bar\page\pos
           
-          \row\tt\width = \row\_s( )\text\width - \width[#__c_inner2] + ( \row\_s( )\text\x - \row\_s( )\x ) + 5 ; -  ( \width[#__c_required] - \width ); -  \row\_s( )\text\x; 105 ;\row\_s( )\text\width - ( \width[#__c_required] - \row\_s( )\width )  ; - 32 + 5 
+          \row\_tt\width = \row\_s( )\text\width - \width[#__c_inner2] + ( \row\_s( )\text\x - \row\_s( )\x ) + 5 ; -  ( \width[#__c_required] - \width ); -  \row\_s( )\text\x; 105 ;\row\_s( )\text\width - ( \width[#__c_required] - \row\_s( )\width )  ; - 32 + 5 
           
-          If \row\tt\width < 6
-            \row\tt\width = 0
+          If \row\_tt\width < 6
+            \row\_tt\width = 0
           EndIf
           
-          Debug \row\tt\width ;Str( \row\_s( )\text\x - \row\_s( )\x )
+          Debug \row\_tt\width ;Str( \row\_s( )\text\x - \row\_s( )\x )
           
-          \row\tt\height = \row\_s( )\height
+          \row\_tt\height = \row\_s( )\height
           Protected flag
           CompilerIf #PB_Compiler_OS = #PB_OS_Linux
             flag = #PB_Window_Tool
           CompilerEndIf
           
-          \row\tt\window = OpenWindow( #PB_Any, \row\tt\x, \row\tt\y, \row\tt\width, \row\tt\height, "", 
+          \row\_tt\window = OpenWindow( #PB_Any, \row\_tt\x, \row\_tt\y, \row\_tt\width, \row\_tt\height, "", 
                                        #PB_Window_BorderLess | #PB_Window_NoActivate | flag, WindowID( \root\canvas\window ) )
           
-          \row\tt\gadget = CanvasGadget( #PB_Any,0,0, \row\tt\width, \row\tt\height )
-          \row\tt\color = \row\_s( )\color
-          \row\tt\text = \row\_s( )\text
-          \row\tt\text\fontID = \row\_s( )\text\fontID
-          \row\tt\text\x =- ( \width[#__c_inner2] - ( \row\_s( )\text\x - \row\_s( )\x ) ) + 1
-          \row\tt\text\y = ( \row\_s( )\text\y - \row\_s( )\y ) + \scroll\v\bar\page\pos
+          \row\_tt\gadget = CanvasGadget( #PB_Any,0,0, \row\_tt\width, \row\_tt\height )
+          \row\_tt\color = \row\_s( )\color
+          \row\_tt\text = \row\_s( )\text
+          \row\_tt\text\fontID = \row\_s( )\text\fontID
+          \row\_tt\text\x =- ( \width[#__c_inner2] - ( \row\_s( )\text\x - \row\_s( )\x ) ) + 1
+          \row\_tt\text\y = ( \row\_s( )\text\y - \row\_s( )\y ) + \scroll\v\bar\page\pos
           
-          BindEvent( #PB_Event_ActivateWindow, @tt_tree_callBack( ), \row\tt\window )
-          SetWindowData( \row\tt\window, \row\tt )
-          tt_tree_Draw( \row\tt )
+          BindEvent( #PB_Event_ActivateWindow, @tt_tree_callBack( ), \row\_tt\window )
+          SetWindowData( \row\_tt\window, \row\_tt )
+          tt_tree_Draw( \row\_tt )
         EndIf
       EndWith              
     EndProcedure
@@ -8961,11 +8953,8 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;- 
-    Macro _tree_bar_update_( _this_, _pos_, _len_ )
-      ;       Bool( Bool( ( _pos_ - _this_\y - _this_\bar\page\pos ) < 0 And bar_SetState( _this_, ( _pos_ - _this_\y ) ) ) Or
-      ;            Bool( ( _pos_ - _this_\y - _this_\bar\page\pos ) > ( _this_\bar\page\len - _len_ ) And
-      ;                 bar_SetState( _this_, ( _pos_ - _this_\y ) - ( _this_\bar\page\len - _len_ ) ) ) ) : _this_\change = 0
-      _bar_scrollarea_change_( _this_, _pos_ - _this_\y, _len_ )
+    Macro _tree_items_scroll_y_( _this_, _pos_, _len_ )
+      - _bar_scroll_pos_( _this_, ( _pos_ ) - _this_\y, _len_ )
     EndMacro
     
     Procedure   Tree_Update( *this._s_widget, List row._s_rows( ) )
@@ -9129,24 +9118,6 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         ; lines for tree widget
         If *this\mode\lines And *this\row\sublevellen
-          
-          ; ; ;             If row( )\parent
-          ; ; ;               ; set z - order position 
-          ; ; ;               If Not row( )\parent\first 
-          ; ; ;                 If Not row( )\parent\last
-          ; ; ;                   ; Debug row( )\index
-          ; ; ;                   row( )\parent\last = row( )
-          ; ; ;                 EndIf
-          ; ; ;                 ; Debug row( )\index
-          ; ; ;                 row( )\parent\first = row( )
-          ; ; ;               ElseIf row( )\parent\last
-          ; ; ;                 row( )\before = row( )\parent\last
-          ; ; ;                 row( )\before\after = row( )
-          ; ; ;                 
-          ; ; ;                 row( )\parent\last = row( )
-          ; ; ;               EndIf
-          ; ; ;             EndIf
-          
           ; vertical lines for tree widget
           If row( )\parent 
             
@@ -9191,6 +9162,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
           EndIf
           
+          
           row( )\l\h\y = row( )\box[0]\y + row( )\box[0]\height/2
           row( )\l\v\x = row( )\box[0]\x + row( )\box[0]\width/2
           
@@ -9233,6 +9205,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
+        
         ; add new draw list
         If row( )\draw And 
            AddElement( *this\row\draws( ) )
@@ -9257,9 +9230,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           ; Draw background
           If *this\color\alpha
             DrawingMode( #PB_2DDrawing_Default )
-            RoundBox( *this\x[#__c_frame],*this\y[#__c_frame],
-                      *this\width[#__c_frame],*this\height[#__c_frame],
-                      *this\round,*this\round,*this\color\back[*this\color\state] )
+            RoundBox( *this\x[#__c_frame],*this\y[#__c_frame], *this\width[#__c_frame],*this\height[#__c_frame], *this\round,*this\round,*this\color\back[*this\color\state] )
           EndIf
           
           ; Draw background image
@@ -9328,8 +9299,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
               
               ; Horizontal line
-              If *this\mode\GridLines And 
-                 *row( )\color\line <> *row( )\color\back
+              If *this\mode\GridLines And *row( )\color\line <> *row( )\color\back
                 DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
                 Box( *row( )\x, ( *row( )\y + *row( )\height + Bool( *this\mode\gridlines>1 ) ) - *this\scroll\v\bar\page\pos, *row( )\width, 1, *this\color\line )
               EndIf
@@ -9790,7 +9760,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                       *this\row\_s( )\color\state = 2
                       *row_selected = *this\row\_s( )
                       
-                      *this\change = _tree_bar_update_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                      *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                       Post( #__event_change, *this, *this\row\_s( )\index )
                       result = 1
                     EndIf
@@ -9833,7 +9803,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                       *this\row\_s( )\color\state = 2
                       *row_selected = *this\row\_s( )
                       
-                      *this\change = _tree_bar_update_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                      *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                       Post( #__event_change, *this, *this\row\_s( )\index )
                       result = 1
                     EndIf
@@ -9961,8 +9931,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         If *this\count\items ;;And _no_select_scrollbars_(*this)
           ForEach *this\row\draws( )
             ; If *this\row\draws( )\draw
-            If _from_point_( mouse_x, mouse_y, *this, [#__c_inner] ) And 
-               _from_point_( mouse_x + *this\scroll\h\bar\page\pos,
+            If Atpoint( mouse_x, mouse_y, *this, [#__c_inner] ) And 
+               Atpoint( mouse_x + *this\scroll\h\bar\page\pos,
                              mouse_y + *this\scroll\v\bar\page\pos, *this\row\draws( ) )
               
               ; 
@@ -9987,7 +9957,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 ; collapsed/expanded button
                 If eventtype = #__event_leftButtonDown And 
                    ( *this\mode\buttons And *this\row\draws( )\childrens ) And 
-                   _from_point_( mouse_x, mouse_y, *this\row\draws( )\box[0] )
+                   Atpoint( mouse_x, mouse_y, *this\row\draws( )\box[0] )
                   
                   If SelectElement( *this\row\_s( ), *this\row\draws( )\index ) 
                     *this\row\_s( )\box[0]\state ! 1
@@ -10012,7 +9982,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                 Else
                   ; change box ( option&check )
-                  If _from_point_( mouse_x, mouse_y, *this\row\draws( )\box[1] )
+                  If Atpoint( mouse_x, mouse_y, *this\row\draws( )\box[1] )
                     *this\row\box\state = 1
                     ; change box option
                     If *this\mode\check = 4 And *this\row\draws( )\parent
@@ -10079,7 +10049,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 
                 
-                ; *this\change = _tree_bar_update_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                ; *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                 Repaint | #True
               EndIf
               
@@ -10122,7 +10092,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
               
               ; TODO должен отправлять если покинули все итеми
-              If Not _from_point_( mouse_x - *this\x[#__c_frame], mouse_y - *this\y[#__c_frame], *this, [#__c_required] )
+              If Not Atpoint( mouse_x - *this\x[#__c_frame], mouse_y - *this\y[#__c_frame], *this, [#__c_required] )
                 If *this\row\selected
                   Post( #PB_EventType_StatusChange, *this, *this\row\selected\index )
                 Else
@@ -10259,8 +10229,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         If *this\count\items
           ForEach *this\row\draws( )
             ; If *this\row\draws( )\draw
-            If _from_point_( mouse_x, mouse_y, *this, [#__c_inner] ) And 
-               _from_point_( mouse_x + *this\scroll\h\bar\page\pos,
+            If Atpoint( mouse_x, mouse_y, *this, [#__c_inner] ) And 
+               Atpoint( mouse_x + *this\scroll\h\bar\page\pos,
                              mouse_y + *this\scroll\v\bar\page\pos, *this\row\draws( ) )
               
               ;  
@@ -10414,7 +10384,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   *this\row\draws( )\color\state = #__s_2
                   *this\row\selected = *this\row\draws( )
-                  ; *this\change = _tree_bar_update_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                  ; *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                   Repaint | #True
                 EndIf
               EndIf
@@ -10517,7 +10487,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                     EndIf
                     
                     
-                    *this\change = _tree_bar_update_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                    *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                     Post( #__event_change, *this, *this\row\_s( )\index )
                     Repaint = 1
                   EndIf
@@ -10573,7 +10543,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                     EndIf
                     
                     
-                    *this\change = _tree_bar_update_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                    *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                     Post( #__event_change, *this, *this\row\_s( )\index )
                     Repaint = 1
                   EndIf
@@ -10975,16 +10945,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If eventtype = #__event_leftclick
         If *this\type = #__type_Window
-          *this\caption\interact = _from_point_( mouse_x, mouse_y, *this\caption, [2] )
+          *this\caption\interact = Atpoint( mouse_x, mouse_y, *this\caption, [2] )
           ;*this\color\state = 2
           
           ; close button
-          If _from_point_( mouse_x, mouse_y, *this\caption\button[#__wb_close] )
+          If Atpoint( mouse_x, mouse_y, *this\caption\button[#__wb_close] )
             ProcedureReturn Window_close( *this )
           EndIf
           
           ; maximize button
-          If _from_point_( mouse_x, mouse_y, *this\caption\button[#__wb_maxi] )
+          If Atpoint( mouse_x, mouse_y, *this\caption\button[#__wb_maxi] )
             If Not *this\resize & #__resize_maximize And
                Not *this\resize & #__resize_minimize
               
@@ -10995,7 +10965,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           ; minimize button
-          If _from_point_( mouse_x, mouse_y, *this\caption\button[#__wb_mini] )
+          If Atpoint( mouse_x, mouse_y, *this\caption\button[#__wb_mini] )
             If Not *this\resize & #__resize_minimize
               ProcedureReturn Window_SetState( *this, #__window_minimize )
             EndIf
@@ -11753,7 +11723,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndSelect
       EndIf
       
-      ; Bool( *this\parent And *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
+      ; _is_scrollbars_( *this )
       If *this\type = #PB_GadgetType_ScrollArea Or *this\type = #PB_GadgetType_MDI
         Select Attribute 
           Case #PB_ScrollArea_X               : result = *this\x[#__c_required]
@@ -12079,7 +12049,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndSelect
       EndIf
       
-      ; Bool( *this\parent And *this\parent\scroll And ( *this\parent\scroll\v = *this Or *this = *this\parent\scroll\h ))
+      ;  _is_scrollbars_( *this )
       If *this\type = #PB_GadgetType_ScrollArea Or *this\type = #PB_GadgetType_MDI
         Select Attribute 
           Case #PB_ScrollArea_X 
@@ -14679,7 +14649,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Procedure ToolTip( *this._s_widget, text.s, item =- 1 )
       
-      *this\tt\text\string = text 
+      *this\_tt\text\string = text 
     EndProcedure
     
     ;- 
@@ -15019,7 +14989,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             PushListPosition( widget( ) )
             ForEach widget( )
-              If ( Not widget( )\hide And widget( )\draw ) And 
+              If Not widget( )\hide And widget( )\draw And 
                  ( widget( )\root\canvas\gadget = *this\root\canvas\gadget ) And 
                  ( widget( )\width[#__c_clip] > 0 And widget( )\height[#__c_clip] > 0 )
                 
@@ -15632,7 +15602,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;- Hyper_Events( )
       If *this\type = #PB_GadgetType_HyperLink
         If eventtype <> #PB_EventType_MouseLeave And
-           _from_point_( mouse_x - *this\x, mouse_y - *this\y, *this, [#__c_required] )
+           Atpoint( mouse_x - *this\x, mouse_y - *this\y, *this, [#__c_required] )
           
           Select eventtype
             Case #PB_EventType_LeftClick : Post( eventtype, *this )
@@ -15791,7 +15761,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ; enter&leave mouse events
       If change
-        Atpoint( repaint, *this )
+        _get_entered_( repaint, *this )
       EndIf
       
       ; set active widget
@@ -15821,7 +15791,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               EndIf
             Else
               Debug "  widget delta pos >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" )"
-              If _scroll_bars_( entered( ) )
+              If _is_integral_( entered( ) )
                 mouse( )\delta\x = mouse_x - entered( )\x[#__c_container]
                 mouse( )\delta\y = mouse_y - entered( )\y[#__c_container]
               Else
@@ -15888,7 +15858,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ElseIf eventtype = #__event_MouseMove 
         If change
           If mouse( )\buttons And
-             mouse( )\drag = #False ; And entered( ) And _from_point_( mouse( )\x, mouse( )\y, entered( ), [#__c_inner] )
+             mouse( )\drag = #False ; And entered( ) And Atpoint( mouse( )\x, mouse( )\y, entered( ), [#__c_inner] )
             
             ; mouse drag start
             mouse( )\drag = #True
@@ -15961,8 +15931,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;             ; if released the mouse button inside 
             ;             ; the parent of the composite widget 
             ;             If focused( )\child And 
-            ;                _from_point_( mouse_x, mouse_y, focused( )\parent, [#__c_clip] ) And 
-            ;                _from_point_( mouse_x, mouse_y, focused( )\parent, [#__c_inner] )
+            ;                Atpoint( mouse_x, mouse_y, focused( )\parent, [#__c_clip] ) And 
+            ;                Atpoint( mouse_x, mouse_y, focused( )\parent, [#__c_inner] )
             ;               entered() = focused( )\parent
             ;               
             ;               Repaint | Events( focused( )\parent, #__event_MouseEnter, mouse_x, mouse_y )
@@ -16106,7 +16076,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ; убрать звуковой сигнал если канвас не активен при вводе с клавиатуры
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        CocoaMessage(0, WindowID( Window ), "makeFirstResponder:", GadgetID( Canvas ))
+      ;;Debug root() 
+      ;;  CocoaMessage(0, WindowID( Window ), "makeFirstResponder:", GadgetID( Canvas ))
+      ;;Debug root() ; bug
       CompilerEndIf
       
       If Not *CallBack
@@ -17546,5 +17518,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------4--------------------------------------------------------------0---0-8+-v4----------------------------2-spjv----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------j+--------------------------------------
+; Folding = -------C--0------------------------------------------------------------------0-8+-v4----------------------------2-+pjv--------------------------------------------------------------------xu------------------------------------------------------------------------------------------------------+--------------------------------------------------j+--------------------------------------
 ; EnableXP
