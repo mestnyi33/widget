@@ -15,6 +15,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_MouseEnter      : AddItem(w_flag, -1, "enter")
       Case #PB_EventType_MouseLeave      : AddItem(w_flag, -1, "leave")
         
+      Case #PB_EventType_DragStart       : AddItem(w_flag, -1, " drag")
+      Case #PB_EventType_Drop            : AddItem(w_flag, -1, " drop")
+        
       Case #PB_EventType_LeftButtonDown
         If _2click = 2
           _2click = 0
@@ -44,6 +47,9 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(w_this, @events_widgets(), #PB_EventType_MouseEnter)
     widget::Bind(w_this, @events_widgets(), #PB_EventType_MouseLeave)
     
+    widget::bind(w_this, @events_widgets(), #PB_EventType_DragStart)
+    widget::bind(w_this, @events_widgets(), constants::#PB_EventType_Drop)
+      
     widget::WaitClose()
   EndIf
 CompilerEndIf

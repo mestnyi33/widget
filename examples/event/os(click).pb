@@ -39,7 +39,6 @@ If OpenWindow(#PB_Any, 0, 0, 170, 300, "flag", #PB_Window_SystemMenu | #PB_Windo
   Repeat 
   Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

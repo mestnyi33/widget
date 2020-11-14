@@ -467,7 +467,22 @@ CompilerIf Not Defined(structures, #PB_Module)
       
     EndStructure
     
-    ;-
+    Structure _S_dragdrop
+      ;*widget._s_widget
+      cursorimage.i
+      
+      type.i
+      format.i
+      actions.i
+      
+      text.s
+      imageID.i
+      
+      width.l
+      height.l
+    EndStructure
+    
+   ;-
     ;- - _s_widget
     Structure _s_widget 
    ;       *_drawing ; drawing_mode
@@ -479,7 +494,7 @@ CompilerIf Not Defined(structures, #PB_Module)
                         ;       *v._s_widget      ; vertical scrollbar
       
       ;       *h._s_widget      ; horizontal scrollbar
-      
+      *_dd._S_dragdrop
       
       fs.a ; frame size
       bs.a ; border size
@@ -653,5 +668,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = nCY0-fm-
+; Folding = nCY0-fO-
 ; EnableXP

@@ -203,10 +203,11 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         EndIf
         *drawing\fontID = FontID
         
-        ; *drawing\attributes = CocoaMessage(0, 0, "NSDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
+        If *drawing\fontID
+          ; *drawing\attributes = CocoaMessage(0, 0, "NSDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
         *drawing\attributes = CocoaMessage(0, 0, "NSMutableDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
+         EndIf
         CocoaMessage(@*drawing\size, CocoaMessage(0, 0, "NSString stringWithString:$", @""), "sizeWithAttributes:", *drawing\attributes)
-        ; EndIf
       EndProcedure
       
       Procedure.i mac_DrawingMode(Mode.i)

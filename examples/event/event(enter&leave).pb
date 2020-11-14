@@ -21,7 +21,7 @@ EndProcedure
 If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
                    #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   If editable = #__flag_anchorsgadget
-    a_add(root())
+    a_init(root())
   EndIf
   
   SetData(Container(20, 20, 180, 180, editable), 1)
@@ -57,16 +57,16 @@ If Open(OpenWindow(#PB_Any, 0, 0, 220, 220, "enter&leave demo",
   If editable = #__flag_anchorsgadget
     Bind(#PB_All, @events_widgets())
   Else
-;     ; TODO
-;     Bind(#PB_All, @events_widgets(), #PB_EventType_MouseEnter)
-;     Bind(#PB_All, @events_widgets(), #PB_EventType_MouseLeave)
-      
+    ;     ; TODO
+    ;     Bind(#PB_All, @events_widgets(), #PB_EventType_MouseEnter)
+    ;     Bind(#PB_All, @events_widgets(), #PB_EventType_MouseLeave)
+    
     ForEach widget()
       Bind(widget(), @events_widgets(), #PB_EventType_MouseEnter)
       Bind(widget(), @events_widgets(), #PB_EventType_MouseLeave)
     Next
   EndIf
-
+  
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)

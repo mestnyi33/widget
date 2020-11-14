@@ -1,5 +1,5 @@
 ﻿;
-; ver. 0.0.1.8
+; ver. 0.0.1.9
 ;
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -708,6 +708,22 @@ CompilerIf Not Defined( widget, #PB_Module )
     ; Requester
     Global resize_one
     
+;     Macro Dragged( )
+;       ;widget::root()\_dd
+;       structures::*event\_root( )
+;     EndMacro
+    
+    ;  Drag and Drop
+    Declare.s DroppedText( )
+    Declare.i DroppedType( )
+    Declare.i DroppedAction( )
+    Declare.i DroppedImage( Image.i = -1, Depth.i = 24 )
+    Declare.i DraggedText( Text.S, Actions.i = #PB_Drag_Copy )
+    Declare.i DraggedImage( Image.i, Actions.i = #PB_Drag_Copy )
+    Declare.i DraggedPrivate( Type.i, Actions.i = #PB_Drag_Copy )
+    Declare.i EnableDrop( *this, Format.i, Actions.i, PrivateType.i = 0 )
+    
+    ;-
     Declare Message( Title.s, Text.s, Flag.i = #Null )
     
     Declare.i Tree_Properties( x.l,y.l,width.l,height.l, Flag.i = 0 )
@@ -857,6 +873,8 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare.i ListView( x.l,y.l,width.l,height.l, Flag.i = 0 )
     Declare.i Editor( x.l, Y.l, Width.l, Height.l, Flag.i = 0, round.i = 0 )
     Declare.i ListIcon( x.l,y.l,width.l,height.l, ColumnTitle.s, ColumnWidth.i, flag.i=0 )
+    
+    Declare.i ExplorerList( x.l,y.l,width.l,height.l, Directory.s, flag.i=0 )
     
     Declare.i Image( x.l,y.l,width.l,height.l, image.i, Flag.i = 0 )
     Declare.i ButtonImage( x.l,y.l,width.l,height.l, Image.i = -1, Flag.i = 0, round.l = 0 )
@@ -2356,6 +2374,200 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn Repaint
     EndProcedure
     
+    ;-
+    Procedure.i Cur( type )
+      Protected x = 1,y = 1
+      UsePNGImageDecoder( )
+      
+      If type And entered( )\_dd
+        entered( )\_dd\cursorimage = CatchImage( #PB_Any, ?add, 601 )
+       SetCursor( entered( ), ImageID( entered( )\_dd\cursorimage ))
+      Else
+        entered( )\root\_dd\cursorimage = CatchImage( #PB_Any, ?copy, 530 )
+        SetCursor( entered( )\root, ImageID( entered( )\root\_dd\cursorimage ) )
+      EndIf
+      
+      DataSection
+        add: ; memory_size - ( 601 )
+        Data.q $0A1A0A0D474E5089,$524448490D000000,$1A00000017000000,$0FBDF60000000408,$4D416704000000F5,$61FC0B8FB1000041,
+               $5248632000000005,$800000267A00004D,$80000000FA000084,$EA000030750000E8,$170000983A000060,$0000003C51BA9C70,
+               $87FF0044474B6202,$7009000000BFCC8F,$00C8000000735948,$ADE7FA6300C80000,$454D497407000000,$450A0F0B1308E307,
+               $63100000000C6AC0,$0020000000764E61,$0002000000200000,$000C8D7E6F010000,$3854414449300100,$1051034ABB528DCB,
+               $58DB084146C5293D,$82361609B441886C,$AA4910922C455E92,$C2C105F996362274,$FC2FF417B0504FC2,$DEF7BB3BB9ACF1A0,
+               $B99CE66596067119,$2DB03A16C1101E67,$12D0B4D87B0D0B8F,$11607145542B450C,$190D04A4766FDCAA,$4129428FD14DCD04,
+               $98F0D525AEFE8865,$A1C4924AD95B44D0,$26A2499413E13040,$F4F9F612B8726298,$62A6ED92C07D5B54,$E13897C2BE814222,
+               $A75C5C6365448A6C,$D792BBFAE41D2925,$1A790C0B8161DC2F,$224D78F4C611BD60,$A1E8C72566AB9F6F,$2023A32BDB05D21B,
+               $0E3BC7FEBAF316E4,$8E25C73B08CF01B1,$385C7629FEB45FBE,$8BB5746D80621D9F,$9A5AC7132FE2EC2B,$956786C4AE73CBF3,
+               $FE99E13C707BB5EB,$C2EA47199109BF48,$01FE0FA33F4D71EF,$EE0F55B370F8C437,$F12CD29C356ED20C,$CBC4BD4A70C833B1,
+               $FFCD97200103FC1C,$742500000019D443,$3A65746164745845,$3200657461657263,$312D38302D393130,$3A35313A31315439,
+               $30303A30302B3930,$25000000B3ACC875,$6574616474584574,$00796669646F6D3A,$2D38302D39313032,$35313A3131543931,
+               $303A30302B35303A,$0000007B7E35C330,$6042AE444E454900
+        Data.b $82
+        add_end:
+        ;     EndDataSection
+        ;       
+        ;     DataSection
+        copy: ; memory_size - ( 530 )
+        Data.q $0A1A0A0D474E5089,$524448490D000000,$1A00000010000000,$1461140000000408,$4D4167040000008C,$61FC0B8FB1000041,
+               $5248632000000005,$800000267A00004D,$80000000FA000084,$EA000030750000E8,$170000983A000060,$0000003C51BA9C70,
+               $87FF0044474B6202,$7009000000BFCC8F,$00C8000000735948,$ADE7FA6300C80000,$454D497407000000,$450A0F0B1308E307,
+               $63100000000C6AC0,$0020000000764E61,$0002000000200000,$000C8D7E6F010000,$2854414449E90000,$1040C20A31D27DCF,
+               $8B08226C529FD005,$961623685304458D,$05E8A288B1157A4A,$785858208E413C44,$AD03C2DE8803C505,$74CCDD93664D9893,
+               $5C25206CCCECC7D9,$0AF51740A487B038,$E4950624ACF41B10,$0B03925602882A0F,$504520607448C0E1,$714E75682A0F7A22,
+               $1EC4707FBC91940F,$EF1F26F801E80C33,$6FE840E84635C148,$47D13D78D54EC071,$5BDF86398A726F4D,$7DD0539F268C6356,
+               $39B40B3759101A3E,$2EEB2D02D7DBC170,$49172CA44A415AD2,$52B82E69FF1E0AC0,$CC0D0D97E9B7299E,$046FA509CA4B09C0,
+               $CB03993630382B86,$5E4840261A49AA98,$D3951E21331B30CF,$262C1B127F8F8BD3,$250000007DB05216,$6574616474584574,
+               $006574616572633A,$2D38302D39313032,$35313A3131543931,$303A30302B37303A,$000000EED7F72530,$7461647458457425,
+               $796669646F6D3A65,$38302D3931303200,$313A31315439312D,$3A30302B35303A35,$00007B7E35C33030,$42AE444E45490000
+        Data.b $60,$82
+        copy_end:
+      EndDataSection
+    EndProcedure
+    
+    Macro _DD_action_( _this_ )
+      Bool( _this_ And 
+            _this_\_dd And _this_\root\_dd And 
+            _this_\_dd\Format = _this_\root\_dd\Format And 
+            _this_\_dd\Type = _this_\root\_dd\Type And 
+            _this_\_dd\Actions ) ; = _this_\root\_dd\Actions)
+    EndMacro
+    
+    ;-
+    Procedure.i DraggedText( Text.s, Actions.i = #PB_Drag_Copy )
+      Debug "Drag text - " + Text
+      entered( )\root\_dd = AllocateStructure( _S_dragdrop )
+      entered( )\root\_dd\format = #PB_Drop_Text
+      entered( )\root\_dd\actions = Actions
+      entered( )\root\_dd\text = Text
+      Cur( 0 )
+    EndProcedure
+    
+    Procedure.i DraggedImage( Image.i, Actions.i = #PB_Drag_Copy )
+      Debug "Drag image - " + Image
+      entered( )\root\_dd = AllocateStructure( _S_dragdrop )
+      entered( )\root\_dd\format = #PB_Drop_Image
+      entered( )\root\_dd\actions = Actions
+      entered( )\root\_dd\imageID = ImageID( Image )
+      entered( )\root\_dd\width = ImageWidth( Image )
+      entered( )\root\_dd\height = ImageHeight( Image )
+      Cur( 0 )
+    EndProcedure
+    
+    Procedure.i DraggedPrivate( Type.i, Actions.i = #PB_Drag_Copy )
+      Debug "Drag private - " + Type
+      entered( )\root\_dd = AllocateStructure( _S_dragdrop )
+      entered( )\root\_dd\format = #PB_Drop_Private
+      entered( )\root\_dd\actions = Actions
+      entered( )\root\_dd\type = Type
+      Cur( 0 )
+    EndProcedure
+    
+    Macro ResetDrop( _this_ )
+      SetCursor( _this_, _this_\cursor )
+      FreeStructure( _this_\root\_dd ) 
+      _this_\root\_dd = 0
+    EndMacro
+    
+    Procedure.s DroppedText( )
+      If _DD_action_( entered( ) )
+        Protected result.s
+      
+        Debug "  Drop text - "+entered( )\root\_dd\text
+        result = entered( )\root\_dd\text
+        
+        ResetDrop( entered( ) )
+        ProcedureReturn result
+      EndIf
+    EndProcedure
+    
+    Procedure.i DroppedImage( Image.i = -1, Depth.i = 24 )
+      Protected result.i
+      
+      If _DD_action_( entered( ) ) And entered( )\root\_dd\ImageID
+        Debug "  Drop image - "+entered( )\root\_dd\ImageID
+        
+        If Image  = - 1
+          Result = CreateImage( #PB_Any, entered( )\root\_dd\Width, entered( )\root\_dd\Height ) : Image = Result
+        Else
+          Result = IsImage( Image )
+        EndIf
+        
+        If Result And StartDrawing( ImageOutput( Image ) )
+          If Depth = 32
+            DrawAlphaImage( entered( )\root\_dd\ImageID, 0, 0 )
+          Else
+            DrawImage( entered( )\root\_dd\ImageID, 0, 0 )
+          EndIf
+          StopDrawing( )
+        EndIf  
+        
+        ResetDrop( entered( ) )
+        ProcedureReturn Result
+      EndIf
+      
+    EndProcedure
+    
+    Procedure.i DroppedPrivate( )
+      Protected result.i
+      
+      If _DD_action_( entered( ) )
+        Debug "  Drop type - "+entered( )\root\_dd\Type
+        result = entered( )\root\_dd\Type
+        ResetDrop( entered( ) )
+        ProcedureReturn result
+      EndIf
+    EndProcedure
+    
+    Procedure.i DroppedType( )
+      If _DD_action_( entered( ) ) 
+        ProcedureReturn entered( )\_dd\Type 
+      EndIf
+    EndProcedure
+    
+    Procedure.i DroppedAction( )
+      If _DD_action_( entered( ) ) 
+        ProcedureReturn entered( )\_dd\Actions 
+      EndIf
+    EndProcedure
+    
+    Procedure.i DropEvents( *this._s_widget, eventtype.l )
+      If *this\_dd And *this\root\_dd 
+        Select eventtype
+          Case #PB_EventType_MouseEnter
+            If _DD_action_( *this )
+              Cur( 1 )
+            Else 
+              Cur( 0 )
+            EndIf
+            
+          Case #PB_EventType_MouseLeave
+            Cur( 0 )
+            
+        EndSelect
+      EndIf
+    EndProcedure
+    
+    Procedure.i EnableDrop( *this._s_widget, Format.i, Actions.i, PrivateType.i = 0 )
+      ; Format
+      ; #PB_Drop_Text    : Accept text on this widget
+      ; #PB_Drop_Image   : Accept images on this widget
+      ; #PB_Drop_Files   : Accept filenames on this widget
+      ; #PB_Drop_Private : Accept a "private" Drag & Drop on this gadgetProtected Result.i
+      
+      ; Actions
+      ; #PB_Drag_None    : The Data format will Not be accepted on the widget
+      ; #PB_Drag_Copy    : The Data can be copied
+      ; #PB_Drag_Move    : The Data can be moved
+      ; #PB_Drag_Link    : The Data can be linked
+      
+      If Not *this\_dd
+        Debug "Enable drop - " + *this
+        *this\_dd = AllocateStructure( structures::_S_dragdrop )
+        *this\_dd\format = Format
+        *this\_dd\actions = Actions
+        *this\_dd\type = PrivateType
+      EndIf
+    EndProcedure
     
     ;- 
     ;-  PRIVATEs
@@ -11739,7 +11951,8 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Procedure.f GetState( *this._s_widget )
       If *this\type = #PB_GadgetType_Tree Or
-         *this\type = #PB_GadgetType_ListView
+         *this\type = #PB_GadgetType_ListView Or
+         *this\type = #PB_GadgetType_ListIcon
         
         If *this\row\selected And 
            *this\row\selected\color\state
@@ -14014,7 +14227,11 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.i ListIcon( x.l,y.l,width.l,height.l, ColumnTitle.s, ColumnWidth.i, flag.i=0 )
-      ProcedureReturn Tree( x,y,width,height, Flag | #__tree_property )
+      ProcedureReturn Tree( x,y,width,height, Flag );| #__tree_property )
+    EndProcedure
+    
+    Procedure.i ExplorerList( x.l,y.l,width.l,height.l, Directory.s, flag.i=0 )
+      ProcedureReturn Tree( x,y,width,height, Flag | #__tree_nobuttons | #__tree_nolines | #__tree_listview )
     EndProcedure
     
     Procedure.i Tree_Properties( x.l,y.l,width.l,height.l, Flag.i = 0 )
@@ -15644,13 +15861,20 @@ CompilerIf Not Defined( widget, #PB_Module )
         Repaint = Bar_Events( *this, eventtype, mouse_x, mouse_y, _wheel_x_, _wheel_y_ )
       EndIf
       
+      ; enable drop 
+      If *this\_dd And *this\root\_dd 
+        DropEvents( *this, eventtype.l )
+      EndIf
+    
       ;
       If MapSize( *this\bind( ) ) 
         ;ForEach *this\bind( )
         If this( )\event <> eventtype  
           ;If FindMapElement( *this\bind( )\events( ), Hex( eventtype ) ) 
           If FindMapElement( *this\bind( ), Hex( eventtype ) ) 
-            Post( eventtype, *this, *this\index[#__s_1] )
+            If Post( eventtype, *this, *this\index[#__s_1] ) <> #PB_Ignore
+              repaint = 1
+            EndIf
           EndIf
         EndIf
         ;Next
@@ -15863,6 +16087,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; mouse drag start
             mouse( )\drag = #True
             repaint | Events( entered( ), #__event_DragStart, mouse_x, mouse_y )
+            ;repaint = 1
           Else
             ; mouse move from entered widget
             If entered( ) 
@@ -15893,50 +16118,68 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           ; up mouse buttons
-          If Not mouse( )\buttons And
-             _is_widget_( focused( ) ) And
-             _is_selected_( focused( ) ) 
-            
-            ; reset 
-            focused( )\_state &~ #__s_selected 
-            
-            ; up buttons events
-            Repaint | Events( focused( ), eventtype, mouse_x, mouse_y )
-            
-            ; if released the mouse button inside the widget
-            If focused( )\_state & #__s_entered
-              If eventtype = #__event_leftButtonUp
-                Repaint | Events( focused( ), #__event_leftClick, mouse_x, mouse_y )
-              EndIf
-              If eventtype = #__event_rightButtonUp
-                Repaint | Events( focused( ), #__event_rightClick, mouse_x, mouse_y )
-              EndIf
+          If Not mouse( )\buttons 
+            If _is_widget_( focused( ) ) And
+               _is_selected_( focused( ) ) 
               
-              If ( focused( )\time_click And ( ElapsedMilliseconds( ) - focused( )\time_click ) < DoubleClickTime( ) )
+              ; reset _is_selected_( )
+              focused( )\_state &~ #__s_selected 
+              
+              ; up buttons events
+              Repaint | Events( focused( ), eventtype, mouse_x, mouse_y )
+              
+              ; if released the mouse button inside the widget
+              If focused( )\_state & #__s_entered
                 If eventtype = #__event_leftButtonUp
-                  Repaint | Events( focused( ), #__event_leftDoubleClick, mouse_x, mouse_y )
+                  Repaint | Events( focused( ), #__event_leftClick, mouse_x, mouse_y )
                 EndIf
                 If eventtype = #__event_rightButtonUp
-                  Repaint | Events( focused( ), #__event_rightDoubleClick, mouse_x, mouse_y )
+                  Repaint | Events( focused( ), #__event_rightClick, mouse_x, mouse_y )
                 EndIf
                 
-                focused( )\time_click = 0
-              Else
-                focused( )\time_click = ElapsedMilliseconds( )
+                If ( focused( )\time_click And ( ElapsedMilliseconds( ) - focused( )\time_click ) < DoubleClickTime( ) )
+                  If eventtype = #__event_leftButtonUp
+                    Repaint | Events( focused( ), #__event_leftDoubleClick, mouse_x, mouse_y )
+                  EndIf
+                  If eventtype = #__event_rightButtonUp
+                    Repaint | Events( focused( ), #__event_rightDoubleClick, mouse_x, mouse_y )
+                  EndIf
+                  
+                  focused( )\time_click = 0
+                Else
+                  focused( )\time_click = ElapsedMilliseconds( )
+                EndIf
+                
+                ; entered( ) = focused( )
               EndIf
               
-              ; entered( ) = focused( )
+              ;             ; if released the mouse button inside 
+              ;             ; the parent of the composite widget 
+              ;             If focused( )\child And 
+              ;                Atpoint( mouse_x, mouse_y, focused( )\parent, [#__c_clip] ) And 
+              ;                Atpoint( mouse_x, mouse_y, focused( )\parent, [#__c_inner] )
+              ;               entered() = focused( )\parent
+              ;               
+              ;               Repaint | Events( focused( )\parent, #__event_MouseEnter, mouse_x, mouse_y )
+              ;             EndIf
             EndIf
             
-            ;             ; if released the mouse button inside 
-            ;             ; the parent of the composite widget 
-            ;             If focused( )\child And 
-            ;                Atpoint( mouse_x, mouse_y, focused( )\parent, [#__c_clip] ) And 
-            ;                Atpoint( mouse_x, mouse_y, focused( )\parent, [#__c_inner] )
-            ;               entered() = focused( )\parent
-            ;               
-            ;               Repaint | Events( focused( )\parent, #__event_MouseEnter, mouse_x, mouse_y )
-            ;             EndIf
+            ; 
+            If mouse( )\drag
+              If focused( ) \root\_dd
+                If _is_widget_( entered( ) ) 
+                  If _DD_action_( entered( )  )
+                    If entered( ) <> focused( )
+                      repaint | Events( entered( ), #PB_EventType_Drop, mouse_x, mouse_y )
+                    EndIf
+                  EndIf
+                  
+                  ResetDrop( entered( ) )
+                Else
+                  ResetDrop( focused( ) )
+                EndIf  
+              EndIf
+            EndIf
             
             mouse( )\delta\x = 0
             mouse( )\delta\y = 0
@@ -17500,7 +17743,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   DataSection   
     ; include images
-    IncludePath #path + "ide/include/images"
+    IncludePath #path + "/ide/include/images"
     
     widget_delete:    : IncludeBinary "delete1.png"
     widget_paste:     : IncludeBinary "paste.png"
@@ -17518,5 +17761,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------C--0------------------------------------------------------------------0-8+-v4----------------------------2-+pjv--------------------------------------------------------------------xu------------------------------------------------------------------------------------------------------+--------------------------------------------------j+--------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
