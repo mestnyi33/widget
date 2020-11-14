@@ -49,6 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define *g1._s_widget =  Window(X(*g0, #__c_container)+50, Y(*g0, #__c_container)+50, 200, 300, "Child 1 (Position Attach)",flag,*mdi) : SetClass(widget(), "form_1") 
   Define *g1b = Button(10,10,80,80,"message") : SetClass(widget(), GetText(widget())) 
+  ; Sticky(*g1, 1)
   
   Define *g2._s_widget = Window(X(*g0, #__c_container)+Width(*g0, #__c_Frame), Y(*g0, #__c_container), 200, 300, "Child 2 (Frame Magnetic)",flag,*mdi) : SetClass(widget(), "form_2") 
   Button(10,10,80,80,"button_2") : SetClass(widget(), GetText(widget())) 

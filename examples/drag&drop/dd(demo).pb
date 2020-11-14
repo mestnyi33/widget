@@ -20,7 +20,7 @@ Global SourceText,
        TargetPrivate1,
        TargetPrivate2
 
-Global i, Event
+Global i, Event, font = LoadFont( 0, "Aria", 13 )
 
 Procedure Events( )
   Protected EventWidget.i = this( )\widget,
@@ -39,7 +39,6 @@ Procedure Events( )
       Select EventWidget
           
         Case SourceText
-          Debug GetState( SourceText ) 
           Text$ = GetItemText( SourceText, GetState( SourceText ) )
           DraggedText( Text$ )
           
@@ -47,21 +46,21 @@ Procedure Events( )
           DraggedImage( ( #ImageSource ) )
           
         Case SourceFiles
-; ;           Files$ = ""       
-; ; ;           For i = 0 To CountItems( SourceFiles )-1
-; ; ;             If GetItemState( SourceFiles, i ) & #PB_Explorer_Selected
-; ;           i = GetState( SourceFiles )
-; ;           Files$ + GetText( SourceFiles ) + GetItemText( SourceFiles, i ) ; + Chr( 10 )
-; ; ;             EndIf
-; ; ;           Next i 
-; ;           
-; ;           If Files$ <> ""
-; ;             DragFiles( Files$ )
-; ;           EndIf
-; ;           
-; ;           ; "Private" Drags only work within the program, everything else
-; ;           ; also works with other applications ( Explorer, Word, etc )
-; ;           ;
+          Files$ = ""       
+          For i = 0 To CountItems( SourceFiles )-1
+            If GetItemState( SourceFiles, i ) & #PB_Explorer_Selected
+              ;; i = GetState( SourceFiles )
+              Files$ + GetText( SourceFiles ) + GetItemText( SourceFiles, i ) ; + Chr( 10 )
+            EndIf
+          Next i 
+          
+          If Files$ <> ""
+            DragFiles( Files$ )
+          EndIf
+          
+          ; "Private" Drags only work within the program, everything else
+          ; also works with other applications ( Explorer, Word, etc )
+          ;
         Case SourcePrivate
           If GetState( SourcePrivate ) = 0
             DraggedPrivate( 1 )
@@ -83,15 +82,25 @@ Procedure Events( )
           
         Case TargetImage
           If DroppedImage( #ImageTarget )
+            If StartDrawing( ImageOutput( #ImageTarget ) )
+              DrawingFont( font )
+              
+              Box( 5,5,OutputWidth(),30, $FFFFFF)
+              DrawText( 5, 5, "Dropped image", $000000, $FFFFFF )        
+              
+              StopDrawing( )
+            EndIf  
+            
             SetState( TargetImage, ( #ImageTarget ) )
           EndIf
           
         Case TargetFiles
-; ;           Files$ = DroppedFiles( )
-; ;           Count  = CountString( Files$, Chr( 10 ) ) + 1
-; ;           For i = 1 To Count
-; ;             AddItem( TargetFiles, -1, StringField( Files$, i, Chr( 10 ) ) )
-; ;           Next i
+          Files$ = DroppedFiles( )
+          Count  = CountString( Files$, Chr( 10 ) ) + 1
+          
+          For i = 1 To Count
+            AddItem( TargetFiles, -1, StringField( Files$, i, Chr( 10 ) ) )
+          Next i
           
         Case TargetPrivate1
           AddItem( TargetPrivate1, -1, "Private type 1 dropped" )
@@ -104,8 +113,6 @@ Procedure Events( )
   EndSelect
   
 EndProcedure
-
-font = LoadFont( 0, "Aria", 13 )
 
 If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Window_ScreenCentered )       
   ;
@@ -148,7 +155,6 @@ If Open( #Window, 0, 0, 760, 310, "Drag & Drop", #PB_Window_SystemMenu|#PB_Windo
   AddItem( SourcePrivate, -1, "Private type 1" )
   AddItem( SourcePrivate, -1, "Private type 2" )
   
-  
   ; Create the target s
   ;
   TargetText = ListIcon( 10, 160, 140, 140, "Drop Text here", 130 )
@@ -186,5 +192,5 @@ EndIf
 
 End
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --
+; Folding = ---
 ; EnableXP

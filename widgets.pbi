@@ -714,6 +714,7 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;     EndMacro
     
     ;  Drag and Drop
+    Declare.s DroppedFiles( )
     Declare.s DroppedText( )
     Declare.i DroppedType( )
     Declare.i DroppedAction( )
@@ -721,6 +722,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     Declare.i DraggedText( Text.S, Actions.i = #PB_Drag_Copy )
     Declare.i DraggedImage( Image.i, Actions.i = #PB_Drag_Copy )
     Declare.i DraggedPrivate( Type.i, Actions.i = #PB_Drag_Copy )
+    Declare.i DraggedFiles( Files.s, Actions.i = #PB_Drag_Copy )
     Declare.i EnableDrop( *this, Format.i, Actions.i, PrivateType.i = 0 )
     
     ;-
@@ -762,13 +764,14 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     Declare.b Draw( *this )
     Declare   ReDraw( *this )
-    Declare.b Hide( *this, State.b = -1 )
-    Declare.b Disable( *this, State.b = -1 )
+    Declare.b Hide( *this, State.b = #PB_Default )
+    Declare.b Disable( *this, State.b = #PB_Default )
+    Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
     
     Declare.b Update( *this )
     Declare   Child( *this, *parent )
     Declare.b Change( *this, ScrollPos.f )
-    Declare   Flag( *this, flag.i=#Null, state.b =- 1 )
+    Declare   Flag( *this, flag.i = #Null, state.b = #PB_Default )
     Declare.b Resize( *this, ix.l,iy.l,iwidth.l,iheight.l )
     
     Declare.l CountItems( *this )
@@ -2433,6 +2436,15 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     ;-
+    Procedure.i DraggedFiles( Files.s, Actions.i = #PB_Drag_Copy )
+      Debug "Drag files - " + Files
+      entered( )\root\_dd = AllocateStructure( _S_dragdrop )
+      entered( )\root\_dd\format = #PB_Drop_Files
+      entered( )\root\_dd\actions = Actions
+      entered( )\root\_dd\text = Files
+      Cur( 0 )
+    EndProcedure
+    
     Procedure.i DraggedText( Text.s, Actions.i = #PB_Drag_Copy )
       Debug "Drag text - " + Text
       entered( )\root\_dd = AllocateStructure( _S_dragdrop )
@@ -2467,6 +2479,18 @@ CompilerIf Not Defined( widget, #PB_Module )
       FreeStructure( _this_\root\_dd ) 
       _this_\root\_dd = 0
     EndMacro
+    
+    Procedure.s DroppedFiles( )
+      If _DD_action_( entered( ) )
+        Protected result.s
+      
+        Debug "  Drop files - "+entered( )\root\_dd\text
+        result = entered( )\root\_dd\text
+        
+        ResetDrop( entered( ) )
+        ProcedureReturn result
+      EndIf
+    EndProcedure
     
     Procedure.s DroppedText( )
       If _DD_action_( entered( ) )
@@ -11606,21 +11630,24 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       If *this\type = #PB_GadgetType_MDI
         *this\count\items + 1
-        Static pos_x, pos_y
-        Protected x = #__grid_size, y = #__grid_size, width.l = 280, height.l = 180
+;         Static pos_x, pos_y
+;         Protected x = #__grid_size, y = #__grid_size, width.l = 280, height.l = 180
+;         
+;         ;         If transform( ) And transform( )\grid\size
+;         ;           x = ( x/transform( )\grid\size ) * transform( )\grid\size
+;         ;           y = ( y/transform( )\grid\size ) * transform( )\grid\size
+;         ;           
+;         ;           width = ( width/transform( )\grid\size ) * transform( )\grid\size - ( #__border_size * 2 )%transform( )\grid\size + 1
+;         ;           height = ( height/transform( )\grid\size ) * transform( )\grid\size - ( #__border_size*2+#__caption_height )%transform( )\grid\size + 1
+;         ;         EndIf
+;         
+         flag | #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget | #__window_child
+;         result = Window( x + pos_x, y + pos_y, width, height, Text, flag, *this )
+;         pos_y + y + #__border_size + #__caption_height
+;         pos_x + x + #__border_size
         
-        ;         If transform( ) And transform( )\grid\size
-        ;           x = ( x/transform( )\grid\size ) * transform( )\grid\size
-        ;           y = ( y/transform( )\grid\size ) * transform( )\grid\size
-        ;           
-        ;           width = ( width/transform( )\grid\size ) * transform( )\grid\size - ( #__border_size * 2 )%transform( )\grid\size + 1
-        ;           height = ( height/transform( )\grid\size ) * transform( )\grid\size - ( #__border_size*2+#__caption_height )%transform( )\grid\size + 1
-        ;         EndIf
+        result = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag, *this )
         
-        flag | #__window_systemmenu | #__window_sizegadget | #__window_maximizegadget | #__window_minimizegadget | #__window_child
-        result = Window( x + pos_x, y + pos_y, width, height, Text, flag, *this )
-        pos_y + y + #__border_size + #__caption_height
-        pos_x + x + #__border_size
         ProcedureReturn result
       EndIf
       
@@ -12467,6 +12494,27 @@ CompilerIf Not Defined( widget, #PB_Module )
         SetPosition( *this, #PB_List_Last )
         *this = *this\window
       Wend
+      
+      If *this\root\sticky
+        SetPosition( *this\root\sticky, #PB_List_Last )
+      EndIf
+    EndProcedure
+    
+    Procedure.i Sticky( *window._s_widget = #PB_Default, state.b = #PB_Default )
+      Protected Result
+      
+      If _is_window_( *window )
+        result = *window\root\sticky
+        
+        If state = #PB_Default 
+          *window\root\sticky = #Null 
+        Else
+          *window\root\sticky = *window
+          SetForeground( *window )
+        EndIf
+      EndIf
+      
+      ProcedureReturn Result
     EndProcedure
     
     Procedure.i SetActive( *this._s_widget )
@@ -16339,6 +16387,19 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected *this._s_widget = AllocateStructure( _s_widget ) 
       
       With *this
+        Static pos_x.l, pos_y.l
+        
+        If x = #PB_Ignore
+          x = pos_x + #__grid_size
+        EndIf
+        
+        If y = #PB_Ignore
+          y = pos_y + #__grid_size
+        EndIf
+        
+        pos_x = x + #__border_size
+        pos_y = y + #__border_size + #__caption_height
+        
         *this\x[#__c_frame] =- 2147483648
         *this\y[#__c_frame] =- 2147483648
         *this\index[#__s_1] =- 1
@@ -17761,5 +17822,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = -----------------------------------4-qX0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

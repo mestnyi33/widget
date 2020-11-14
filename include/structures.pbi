@@ -634,6 +634,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_root
     Structure _s_root Extends _s_widget
       *address2          ; widget list address
+      *sticky._s_widget  ; window
+      
       canvas._s_canvas
       *_transform._s_transform
     EndStructure
