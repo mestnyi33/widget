@@ -18,17 +18,17 @@
     ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
      
     ; Цвета по умолчанию
-    \front[0] = $80000000
-    \fore[0] = $e0F8F8F8 
-    \back[0] = $e0E2E2E2
-    \line[0] = $80000000
-    \frame[0] = $80C8C8C8
+    \front[0] = $ff000000
+    \fore[0] = $ffF8F8F8 
+    \back[0] = $ffE2E2E2
+    \line[0] = $ff000000
+    \frame[0] = $ffC8C8C8
     
     ; Цвета если мышь на виджете
-    \front[1] = $80000000
+    \front[1] = $ff000000
     \fore[1] = $FFFAF8F8
-    \back[1] = $80FCEADA
-    \frame[1] = $80FFC288
+    \back[1] = $ffFCEADA
+    \frame[1] = $ffFFC288
     
     ; Цвета если нажали на виджет
     \front[2] = $FFFEFEFE
@@ -123,21 +123,21 @@
     ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
     
     ; Цвета по умолчанию
-    \front[0] = $80000000
-    \Line[0] = $80000000
+    \front[0] = $ff000000
+    \Line[0] = $ff000000
     \fore[0] = $FFF6F6F6
     \back[0] = $FFE8E8E8
     \frame[0] = $FFBABABA
     
     ; Цвета если курсор на виджете
-    \front[1] = $80000000
-    \Line[1] = $80000000
+    \front[1] = $ff000000
+    \Line[1] = $ff000000
     \fore[1] = $FFF2F2F2 
     \back[1] = $FFDCDCDC 
     \frame[1] = $FFB0B0B0 
     
     ; Цвета если нажали на виджет
-    \front[2] = $80000000
+    \front[2] = $ff000000
     \Line[2] = $FFFEFEFE
     \fore[2] = $FFE2E2E2
     \back[2] = $FFB4B4B4
@@ -194,13 +194,13 @@
     
     ; - Серые цвета
     ; Цвета по умолчанию
-    \front[0] = $80000000
+    \front[0] = $ff000000
     \fore[0] = $FFF6F6F6
     \back[0] = $FFE8E8E8
     \frame[0] = $FFBABABA
     
     ; Цвета если курсор на виджете
-    \front[1] = $80000000
+    \front[1] = $ff000000
     \fore[1] = $FFF2F2F2 
     \back[1] = $FFDCDCDC 
     \frame[1] = $FFB0B0B0 

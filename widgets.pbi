@@ -1976,9 +1976,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             Select transform( )\index
               Case 1, 5, 8, #__a_moved ; left
                 mouse( )\delta\x = mouse_x - transform( )\id[transform( )\index]\x - pos
-                ;;Debug mouse( )\delta\x
+                
               Case 3, 6, 7 ; right
-                mouse( )\delta\x = mouse_x - transform( )\id[transform( )\index]\x - ( transform( )\size-transform( )\pos ) ;+ (transform( )\widget\bs + transform( )\widget\__width)
+                mouse( )\delta\x = mouse_x - transform( )\id[transform( )\index]\x - ( transform( )\size-transform( )\pos ) ;;+ (transform( )\widget\bs + transform( )\widget\__width)
             EndSelect
             
             
@@ -1988,11 +1988,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                 mouse( )\delta\y = mouse_y - transform( )\id[transform( )\index]\y - pos
                 
               Case 4, 8, 7 ; bottom
-                mouse( )\delta\y = mouse_y - transform( )\id[transform( )\index]\y - ( transform( )\size-transform( )\pos ) + (transform( )\widget\bs + transform( )\widget\__height)
+                mouse( )\delta\y = mouse_y - transform( )\id[transform( )\index]\y - ( transform( )\size-transform( )\pos ) ;;+ (transform( )\widget\bs + transform( )\widget\__height)
             EndSelect
-            
-            
-            
             
           Else
             ; grid mouse pos
@@ -2082,7 +2079,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; horizontal 
                   Select transform( )\index
                     Case 1, 5, 8 ; left
-                      mw =  ( transform( )\widget\x[#__c_container] - mouse_x ) + transform( )\widget\width[#__c_frame]
+                      mw = ( transform( )\widget\x[#__c_container] - mouse_x ) + transform( )\widget\width[#__c_frame] ;;+ (transform( )\widget\parent\fs)
                       
                     Case 3, 6, 7 ; right
                       mw = ( mouse_x - transform( )\widget\x[#__c_container] ) + IsGrid 
@@ -2091,10 +2088,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; vertical
                   Select transform( )\index
                     Case 2, 5, 6 ; top
-                      mh = ( transform( )\widget\y[#__c_container] - mouse_y ) + transform( )\widget\height[#__c_frame]
+                      mh = ( transform( )\widget\y[#__c_container] - mouse_y ) + transform( )\widget\height[#__c_frame] ;;+ (transform( )\widget\parent\fs - transform( )\widget\__height)
                       
                     Case 4, 8, 7 ; bottom 
-                      mh = ( mouse_y - transform( )\widget\y[#__c_container] ) + IsGrid 
+                      mh = ( mouse_y - transform( )\widget\y[#__c_container] ) + IsGrid
                   EndSelect
                   
                   a_resize( Repaint, mouse_x,mouse_y,mw,mh )
@@ -2199,7 +2196,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
         EndIf
         
-        ; 
+        ;- widget::a_key_events
         If eventtype = #PB_EventType_KeyDown
           If transform( )\widget
             If transform( )\widget\transform = 1
@@ -2213,7 +2210,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                  transform( )\widget\parent\container ;;> 0
                 mx + transform( )\widget\parent\fs
                 my + transform( )\widget\parent\fs
-                mh - transform( )\widget\__height ; fixed window
               EndIf
               
             Else
@@ -2224,7 +2220,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             Select keyboard( )\Key[1] 
-              Case #PB_Canvas_Shift
+              Case (#PB_Canvas_Alt | #PB_Canvas_Control), #PB_Canvas_Shift
                 Select keyboard( )\Key
                   Case #PB_Shortcut_Left  : mw - transform( )\grid\size : transform( )\index = 3  
                   Case #PB_Shortcut_Right : mw + transform( )\grid\size : transform( )\index = 3
@@ -2235,7 +2231,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 a_resize( Repaint, mx,my,mw,mh )
                 
-              Case #PB_Canvas_Shift | #PB_Canvas_Control ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control | #PB_Canvas_Command
+              Case (#PB_Canvas_Shift | #PB_Canvas_Control), #PB_Canvas_Alt ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control | #PB_Canvas_Command
                 Select keyboard( )\Key
                   Case #PB_Shortcut_Left  : mx - transform( )\grid\size : transform( )\index = #__a_moved
                   Case #PB_Shortcut_Right : mx + transform( )\grid\size : transform( )\index = #__a_moved
@@ -2247,22 +2243,58 @@ CompilerIf Not Defined( widget, #PB_Module )
                 a_resize( Repaint, mx,my,mw,mh )
                 
               Default
+                ;;ChangeCurrentElement( widget( ), transform( )\widget\address)
+                Protected index = transform( )\widget\index ;; ListIndex( widget( ) )
+                Protected parent = transform( )\widget\parent ;; ListIndex( widget( ) )
+                
                 Select keyboard( )\Key
                   Case #PB_Shortcut_Up   
+                    PushListPosition( widget( ) )
                     ForEach widget( )
-                      If widget( )\index = transform( )\widget\index - 1
+                      If ListIndex( widget( ) ) = index - 1 ;And widget( )\parent = parent
+                      ;;If widget( )\index = index - 1
                         Repaint = a_set( widget( ) )
                         Break
                       EndIf
                     Next
+                    PopListPosition( widget( ) )
                     
                   Case #PB_Shortcut_Down  
+                    PushListPosition( widget( ) )
                     ForEach widget( )
-                      If widget( )\index = transform( )\widget\index + 1 
+                      If ListIndex( widget( ) ) = index + 1 ;And widget( )\parent = parent 
+                      ;;If widget( )\index = index + 1 
+                        Debug " "+ListIndex( widget( ) ) +" "+ widget( )\index
                         Repaint = a_set( widget( ) )
                         Break
                       EndIf
                     Next
+                    PopListPosition( widget( ) )
+                    
+                  Case #PB_Shortcut_Left  
+                    parent = transform( )\widget\parent\parent
+                    PushListPosition( widget( ) )
+                    ForEach widget( )
+                      If ListIndex( widget( ) ) = index - 1 And widget( )\parent = parent
+                      ;;If widget( )\index = index - 1
+                        Repaint = a_set( widget( ) )
+                        Break
+                      EndIf
+                    Next
+                    PopListPosition( widget( ) )
+                    
+                  Case #PB_Shortcut_Right  
+                    parent = transform( )\widget
+                    PushListPosition( widget( ) )
+                    ForEach widget( )
+                      If ListIndex( widget( ) ) = index + 1 And widget( )\parent = parent 
+                      ;;If widget( )\index = index + 1 
+                        Debug " "+ListIndex( widget( ) ) +" "+ widget( )\index
+                        Repaint = a_set( widget( ) )
+                        Break
+                      EndIf
+                    Next
+                    PopListPosition( widget( ) )
                     
                 EndSelect
                 
@@ -5977,38 +6009,20 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If width <> #PB_Ignore 
+            If *this\parent And *this\parent\container ;;> 0
+              width + *this\parent\fs
+            EndIf
+            
             width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1
-            
-            If *this\type = #__type_window
-              Width - ( #__border_size * 2 ) ;;+ (( #__border_size * 2 ) % transform( )\grid\size)
-            EndIf
           EndIf
           
-          If Height <> #PB_Ignore
+          If height <> #PB_Ignore
+            If *this\parent And *this\parent\container ;;> 0
+              height + *this\parent\fs
+            EndIf
+            
             height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1
-            
-            If *this\type = #__type_window
-            ;  height - ( #__border_size * 2 + #__caption_height ) + (( #__border_size * 2 + #__caption_height ) % transform( )\grid\size)
-              height - ( #__border_size * 2 ) ;;+ (( #__border_size * 2 ) % transform( )\grid\size)
-            EndIf
           EndIf
-          
-; ;           If width <> #PB_Ignore 
-; ;             width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1
-; ;             
-; ;             If *this\type = #__type_window
-; ;               Width + ( #__border_size * 2 ) % transform( )\grid\size
-; ;             EndIf
-; ;           EndIf
-; ;           
-; ;           If Height <> #PB_Ignore
-; ;             height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1
-; ;             
-; ;             If *this\type = #__type_window
-; ;               height + ( #__border_size * 2 + #__caption_height )%transform( )\grid\size
-; ;             EndIf
-; ;           EndIf
-          
         EndIf
         
         ; 
@@ -6046,7 +6060,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If width = #PB_Ignore 
           width = \width[#__c_screen] - ( \bs*2 - \fs*2 )
         Else
-          If *this\type = #__type_window
+          If *this\type = #__type_window And Not *this\transform
             width + *this\fs*2 + *this\__width 
           EndIf
         EndIf  
@@ -6054,7 +6068,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If height = #PB_Ignore 
           height = \height[#__c_screen] - ( \bs*2 - \fs*2 )
         Else
-          If *this\type = #__type_window
+          If *this\type = #__type_window And Not *this\transform 
             height + *this\fs*2 + *this\__height
           EndIf
         EndIf
@@ -17754,5 +17768,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----D7-8------------------8+f4-r-f-v-Vv7---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8f--------------------------------------------------------------------H5----------------------------------------
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
