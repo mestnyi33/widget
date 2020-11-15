@@ -74,76 +74,29 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     
     
-    
-    
     ;-
+    Macro _get_colors_( ) : colors::*this\blue : EndMacro
     Macro Allocate( _struct_name_, _struct_type_= )
       _s_#_struct_name_#_struct_type_ = AllocateStructure( _s_#_struct_name_ )
     EndMacro
     
-    Macro _get_colors_( )
-      colors::*this\blue
-    EndMacro
-    
     ;-
-    Macro PB( Function )
-      Function
-    EndMacro
-    
-    Macro this( )
-      structures::*event
-    EndMacro
-    
-    Macro root( )
-      this( )\_root( )
-    EndMacro
-    
-    Macro widget( ) ; Returns last created widget 
-      this( )\_childrens( )
-    EndMacro
-    
+    Macro PB( Function ) : Function : EndMacro
+    Macro this( ) : structures::*event : EndMacro
+    Macro root( ) : widget::this( )\_root( ) : EndMacro
+    Macro mouse( ) : widget::this( )\mouse : EndMacro
+    Macro widget( ) : widget::this( )\_childrens( ) : EndMacro ; Returns last created widget 
+    Macro keyboard( ) : widget::this( )\keyboard : EndMacro
     ;-
-    Macro opened( )
-      root( )\canvas\widget
-    EndMacro
-    
-    Macro mouse( )
-      this( )\mouse
-    EndMacro
-    
-    Macro entered( ) ; Returns mouse entered widget
-      mouse( )\widget
-    EndMacro
-    
-    Macro pressed( )
-      mouse( )\buttons
-    EndMacro
-    
-    Macro keyboard( )
-      this( )\keyboard
-    EndMacro
-    
-    Macro focused( ) ; Returns keyboard focused widget 
-      keyboard( )\widget 
-    EndMacro
-    
-    Macro transform( )
-      root( )\_transform
-    EndMacro
-    
-    
+    Macro entered( ) : widget::mouse( )\widget : EndMacro ; Returns mouse entered widget
+    Macro pressed( ) : widget::mouse( )\buttons : EndMacro
+    Macro focused( ) : widget::keyboard( )\widget : EndMacro ; Returns keyboard focused widget
+    Macro opened( ) : widget::root( )\canvas\widget : EndMacro
+    Macro transform( ) : widget::root( )\_transform : EndMacro
     ;-
-    Macro EventIndex( )
-      this( )\widget\index
-    EndMacro
-    
-    Macro WidgetEvent( )
-      this( )\event
-    EndMacro
-    
-    Macro Eventwidget( )
-      this( )\widget
-    EndMacro
+    Macro WidgetEvent( ) : widget::this( )\event : EndMacro
+    Macro EventWidget( ) : widget::this( )\widget : EndMacro
+    Macro EventIndex( ) : widget::this( )\widget\index : EndMacro
     
     Macro WaitClose( _window_ = #PB_Any, _time_ = 0 )
       If root( )
@@ -220,10 +173,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     
     
     ;-
-    Macro _get_cursor_( _this_ )
-      _this_\cursor
-    EndMacro
-    
+    Macro _get_cursor_( _this_ ) : _this_\cursor : EndMacro
     Macro _set_cursor_( _this_, _cursor_ )
       If _this_\root\cursor <> _cursor_ 
         _this_\root\cursor = _cursor_
@@ -237,31 +187,19 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndMacro
     
     ;- 
-    Macro _is_root_( _this_ )
-      Bool( _this_ > 0 And _this_ = _this_\root ) ; * _this_\root
-    EndMacro
+    Macro _is_root_( _this_ ) : Bool( _this_ > 0 And _this_ = _this_\root ): EndMacro
+    Macro _is_item_( _this_, _item_ ) : Bool( _item_ >= 0 And _item_ < _this_\count\items ) : EndMacro
+    Macro _is_widget_( _this_ ) : Bool( _this_ > 0 And _this_\address ) : EndMacro
+    Macro _is_window_( _this_ ) : Bool( _is_widget_( _this_ ) And _this_\type = #__type_window ) : EndMacro
+    Macro _is_selected_( _this_ ) : Bool( _this_\_state & #__s_selected ) : EndMacro
+    Macro _is_scrollbars_( _this_ ) : Bool( _this_\parent And _this_\parent\scroll And ( _this_\parent\scroll\v = _this_ Or _this_\parent\scroll\h = _this_ ) ) : EndMacro
+    Macro _no_select_scrollbars_( _this_ ) : Bool( Not (_is_selected_( _this_\scroll\v ) Or _is_selected_( _this_\scroll\h ))) : EndMacro
     
-    Macro _is_item_( _this_, _item_ )
-      Bool( _item_ >= 0 And _item_ < _this_\count\items )
-    EndMacro
-    
-    Macro _is_widget_( _this_ )
-      Bool( _this_ > 0 And _this_\address ) ; * _this_\address
-    EndMacro
-    
-    Macro _is_window_( _this_ )
-      Bool( _is_widget_( _this_ ) And _this_\type = #__type_window )
-    EndMacro
-    
-    Macro _is_selected_( _this_ )
-      Bool( _this_\_state & #__s_selected )
-    EndMacro
-    
-    Macro _is_scrollbars_( _this_ )
-      Bool( _this_\parent And 
-            _this_\parent\scroll And 
-            ( _this_\parent\scroll\v = _this_ Or 
-              _this_\parent\scroll\h = _this_ ) )
+    Macro _no_select_( _list_, _item_ )
+      ;  Bool( _item_ >= 0 And _list_\index <> _item_ And Not SelectElement( _list_, _item_ ) )
+      Bool( _item_ >= 0 And ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) ) 
+      ;Bool( ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) )
+      ;  Bool( _item_ >= 0 And _item_ < ListSize( _list_ ) And ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) )
     EndMacro
     
     Macro _is_integral_( _this_ ) ; It is an integral part
@@ -279,21 +217,6 @@ CompilerIf Not Defined( widget, #PB_Module )
     Macro Intersect( _address_1_, _address_2_, _address_1_mode_ = )
       Bool( ( _address_1_\x#_address_1_mode_ + _address_1_\width#_address_1_mode_ ) > _address_2_\x And _address_1_\x#_address_1_mode_ < ( _address_2_\x + _address_2_\width ) And 
             ( _address_1_\y#_address_1_mode_ + _address_1_\height#_address_1_mode_ ) > _address_2_\y And _address_1_\y#_address_1_mode_ < ( _address_2_\y + _address_2_\height ) )
-    EndMacro
-    
-    
-    
-    ;-
-    Macro _no_select_( _list_, _item_ )
-      ;  Bool( _item_ >= 0 And _list_\index <> _item_ And Not SelectElement( _list_, _item_ ) )
-      Bool( _item_ >= 0 And ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) ) 
-      ;Bool( ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) )
-      ;  Bool( _item_ >= 0 And _item_ < ListSize( _list_ ) And ListIndex( _list_ ) <> _item_ And Not SelectElement( _list_, _item_ ) )
-    EndMacro
-    
-    Macro _no_select_scrollbars_( _this_ )
-      Bool( Not (_is_selected_( _this_\scroll\v ) Or 
-                 _is_selected_( _this_\scroll\h )))
     EndMacro
     
     ;-
@@ -1337,7 +1260,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         transform( )\grid\widget = _this_
         
-        If _this_\container > 0
+        If _this_\container ;;> 0
           _this_\image[#__img_background]\x =- _this_\fs
           _this_\image[#__img_background]\y =- _this_\fs
         EndIf
@@ -1942,7 +1865,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
         Else
-          ;
+          ; multi resize
           transform( )\id[0]\x = _x_
           transform( )\id[0]\y = _y_
           
@@ -2028,7 +1951,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           ; get transform index
-          a_index( Repaint, i )
+          a_index( repaint, i )
           
           If transform( )\index 
             ; set current transform index
@@ -2039,23 +1962,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; add parent coordinate
             If transform( )\widget\transform = 1
               If transform( )\widget\parent 
-                ;                 ; не родные гаджеты у мдай-а
-                ;                 If transform( )\widget\parent\type = #PB_GadgetType_MDI And Not transform( )\widget\child ; mdi inner coordinate bug
-                ;                                                                                                           ; horizontal
-                ;                   Select transform( )\index
-                ;                     Case 3, 6, 7 ; right
-                ;                       mouse_x + transform( )\widget\parent\x[#__c_inner]
-                ;                   EndSelect
-                ;                   
-                ;                   
-                ;                   ; vertical
-                ;                   Select transform( )\index
-                ;                     Case 4, 8, 7 ; bottom
-                ;                       mouse_y + transform( )\widget\parent\y[#__c_inner]
-                ;                   EndSelect
-                ;                 Else
-                ;Debug transform( )\widget\parent\y[#__c_inner]
-                
                 If _is_integral_( transform( )\widget )
                   mouse_x + transform( )\widget\parent\x[#__c_inner]
                   mouse_y + transform( )\widget\parent\y[#__c_inner]
@@ -2063,22 +1969,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                   mouse_x + transform( )\widget\parent\x[#__c_inner] - transform( )\widget\parent\x[#__c_required]
                   mouse_y + transform( )\widget\parent\y[#__c_inner] - transform( )\widget\parent\y[#__c_required]
                 EndIf
-                ;                 EndIf
               EndIf
-            Else
-              ;               If transform( )\group( )\widget\parent
-              ;                 Debug  mouse_y
-              ;                 mouse_x + transform( )\group( )\widget\parent\x[#__c_inner]
-              ;                 mouse_y + transform( )\group( )\widget\parent\y[#__c_inner]
-              ;                 Debug mouse_y
-              ;               EndIf 
             EndIf
             
             ; horizontal
             Select transform( )\index
               Case 1, 5, 8, #__a_moved ; left
                 mouse( )\delta\x = mouse_x - transform( )\id[transform( )\index]\x - pos
-                
+                ;;Debug mouse( )\delta\x
               Case 3, 6, 7 ; right
                 mouse( )\delta\x = mouse_x - transform( )\id[transform( )\index]\x - ( transform( )\size-transform( )\pos ) ;+ (transform( )\widget\bs + transform( )\widget\__width)
             EndSelect
@@ -2217,7 +2115,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                       transform( )\id[0]\width = ( mouse_x - transform( )\id[0]\x ) + IsGrid
                   EndSelect
                   
-                  
                   ; vertical
                   Select transform( )\index
                     Case 2, 5, 6, #__a_moved ; top
@@ -2309,7 +2206,16 @@ CompilerIf Not Defined( widget, #PB_Module )
               mx = transform( )\widget\x[#__c_container]
               my = transform( )\widget\y[#__c_container]
               mw = transform( )\widget\width[#__c_frame]
-              mh = transform( )\widget\height[#__c_frame]
+              mh = transform( )\widget\height[#__c_frame] 
+              
+              ; fixed in container
+              If transform( )\widget\parent And
+                 transform( )\widget\parent\container ;;> 0
+                mx + transform( )\widget\parent\fs
+                my + transform( )\widget\parent\fs
+                mh - transform( )\widget\__height ; fixed window
+              EndIf
+              
             Else
               mx = transform( )\id[0]\x
               my = transform( )\id[0]\y
@@ -6057,7 +5963,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           If x <> #PB_Ignore 
             x = ( x/transform( )\grid\size ) * transform( )\grid\size
             
-            If *this\parent And *this\parent\container > 0
+            If *this\parent And *this\parent\container ;;> 0
               x - *this\parent\fs
             EndIf
           EndIf
@@ -6065,7 +5971,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           If y <> #PB_Ignore 
             y = ( y/transform( )\grid\size ) * transform( )\grid\size
             
-            If *this\parent And *this\parent\container > 0
+            If *this\parent And *this\parent\container ;;> 0
               y - *this\parent\fs
             EndIf
           EndIf
@@ -6074,7 +5980,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1
             
             If *this\type = #__type_window
-              Width + ( #__border_size * 2 ) % transform( )\grid\size
+              Width - ( #__border_size * 2 ) ;;+ (( #__border_size * 2 ) % transform( )\grid\size)
             EndIf
           EndIf
           
@@ -6082,9 +5988,27 @@ CompilerIf Not Defined( widget, #PB_Module )
             height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1
             
             If *this\type = #__type_window
-              height + ( #__border_size * 2 + #__caption_height )%transform( )\grid\size
+            ;  height - ( #__border_size * 2 + #__caption_height ) + (( #__border_size * 2 + #__caption_height ) % transform( )\grid\size)
+              height - ( #__border_size * 2 ) ;;+ (( #__border_size * 2 ) % transform( )\grid\size)
             EndIf
           EndIf
+          
+; ;           If width <> #PB_Ignore 
+; ;             width = ( width/transform( )\grid\size ) * transform( )\grid\size + 1
+; ;             
+; ;             If *this\type = #__type_window
+; ;               Width + ( #__border_size * 2 ) % transform( )\grid\size
+; ;             EndIf
+; ;           EndIf
+; ;           
+; ;           If Height <> #PB_Ignore
+; ;             height = ( height/transform( )\grid\size ) * transform( )\grid\size + 1
+; ;             
+; ;             If *this\type = #__type_window
+; ;               height + ( #__border_size * 2 + #__caption_height )%transform( )\grid\size
+; ;             EndIf
+; ;           EndIf
+          
         EndIf
         
         ; 
@@ -12501,20 +12425,26 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.i Sticky( *window._s_widget = #PB_Default, state.b = #PB_Default )
-      Protected Result
+      Protected result
       
       If _is_window_( *window )
         result = *window\root\sticky
         
         If state = #PB_Default 
-          *window\root\sticky = #Null 
+          ;;*window\root\sticky = #Null 
         Else
-          *window\root\sticky = *window
+          If state
+            *window\root\sticky = *window
+          Else
+            *window\root\sticky = #Null 
+          EndIf
           SetForeground( *window )
         EndIf
+      Else
+        result = root()\sticky
       EndIf
       
-      ProcedureReturn Result
+      ProcedureReturn result
     EndProcedure
     
     Procedure.i SetActive( *this._s_widget )
@@ -12581,7 +12511,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If Not *this\transform
           If GetActive( ) And 
              Child( GetActive( ), *this )
-            Debug 777
+            
             If *this\__state & #__s_focused = #False
               *this\__state | #__s_focused
               Debug ""+*this\class +" "+ GetActive()\class
@@ -15592,6 +15522,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected window = Window( x,y, width, height, Title, #__window_titlebar )
       ;SetAlignment( widget( ), #__align_center )
       Bind( widget( ), @message_events( ) )
+      ;;Sticky( widget( ), #True )
       
       If Flag & #PB_MessageRequester_Info
         img = CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
@@ -15751,6 +15682,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       WaitClose( window )
+      ;;Goto goto_label_message
       
       result = GetData( window )
       ProcedureReturn result
@@ -17822,5 +17754,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -----------------------------------4-qX0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----D7-8------------------8+f4-r-f-v-Vv7---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8f--------------------------------------------------------------------H5----------------------------------------
 ; EnableXP

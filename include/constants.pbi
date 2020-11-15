@@ -10,14 +10,14 @@
     ; default values 
     #__grid_type = 0
     #__grid_size = 8 
-    #__a_size = 13 
-    #__border_size = 4 
+    #__a_size = 7;13 
     #__caption_height = 24
+    #__border_size = 4 
+    #__border_scroll = 2
     
     #__panel_height = 25
     #__panel_width = 85
     
-    #__border_scroll = 2
     
     #__from_mouse_state = 0
     #__focus_state = 1
