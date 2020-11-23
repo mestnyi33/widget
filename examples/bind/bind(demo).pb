@@ -10,29 +10,29 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
     ClearDebugOutput()
-    Debug ""+GetIndex(*event\widget)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (gadget)"
+    Debug ""+GetIndex(this()\widget)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (gadget)"
     
-    Select *event\type 
+    Select this()\event 
       Case #PB_EventType_LeftClick
-        If GetIndex(*event\widget) = 1
+        If GetIndex(this()\widget) = 1
           ProcedureReturn #PB_Ignore ; no send to (window & root) - event
         EndIf
     EndSelect
   EndProcedure
   
   Procedure events_windows()
-    Debug "  "+GetIndex(*event\widget)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (window)"
+    Debug "  "+GetIndex(this()\widget)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (window)"
     
-    Select *event\type 
+    Select this()\event 
       Case #PB_EventType_LeftClick
-        If GetIndex(*event\widget) = 2
+        If GetIndex(this()\widget) = 2
           ProcedureReturn #PB_Ignore ; no send to (root) - event
         EndIf
     EndSelect
   EndProcedure
   
   Procedure events_roots()
-    Debug "    "+GetIndex(*event\widget)+ " - widget  event - " +*event\type+ "  item - " +*event\item +" (root)"
+    Debug "    "+GetIndex(this()\widget)+ " - widget  event - " +this()\event+ "  item - " +this()\item +" (root)"
   EndProcedure
   
   
@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Open(0, 10,10, 480, 480)
         Bind(#PB_All, @events_roots())
-        Bind(Window(80, 100, 310, 290, "Window_2", Editable), @events_windows())
+        Bind(Window(80, 100, 300, 280, "Window_2", Editable), @events_windows())
         
         Bind(Button(10,  10, 280, 80, "post event for one procedure", Editable), @events_widgets())
         Bind(Button(10, 100, 280, 80, "post event for to two procedure", Editable), @events_widgets())

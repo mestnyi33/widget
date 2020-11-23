@@ -7,15 +7,19 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Procedure active()
-    Debug ""+#PB_Compiler_Procedure+" "+This()\type+" "+This()\widget\index
+    Debug ""+#PB_Compiler_Procedure+" "+This()\event+" "+This()\widget\index
   EndProcedure
   
   Procedure deactive()
-    Debug ""+#PB_Compiler_Procedure+" "+This()\type+" "+This()\widget\index
+    Debug ""+#PB_Compiler_Procedure+" "+This()\event+" "+This()\widget\index
   EndProcedure
   
   Procedure click()
-    Debug ""+#PB_Compiler_Procedure+" "+This()\type+" "+This()\widget\index
+    Debug ""+#PB_Compiler_Procedure+" "+This()\event+" "+This()\widget\index
+  EndProcedure
+  
+  Procedure events()
+    Debug ""+#PB_Compiler_Procedure+" "+This()\event+" "+This()\widget\index
   EndProcedure
   
   If Open(OpenWindow(#PB_Any, 100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
@@ -30,9 +34,16 @@ CompilerIf #PB_Compiler_IsMainFile
     String(10,50,180,30,"string_1")
     SetActive(widget())
     
+    Debug ""
     Bind( #PB_All, @click(), #PB_EventType_LeftClick)
     Bind( #PB_All, @deactive(), #PB_EventType_LostFocus)
     Bind( #PB_All, @active(), #PB_EventType_Focus)
+    
+    Debug ""
+;     Bind( #PB_All, @events(), #PB_EventType_LeftClick)
+;     Bind( #PB_All, @events(), #PB_EventType_LostFocus)
+;     Bind( #PB_All, @events(), #PB_EventType_Focus)
+    Bind( #PB_All, @events())
     
     Repeat
       Event = WaitWindowEvent()

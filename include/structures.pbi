@@ -3,7 +3,7 @@
 ;-
 CompilerIf Not Defined(structures, #PB_Module)
   DeclareModule structures
-    Prototype pFunc()
+    Prototype pFunc( )
     
     ;{ 
     ;- - _s_point
@@ -92,7 +92,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_syntax
     Structure _s_syntax
-      List *word._s_edit()
+      List *word._s_edit( )
     EndStructure
     
     ;- - _s_text
@@ -125,8 +125,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_image
     Structure _s_image Extends _s_coordinate
-      *id  ; - ImageID() 
-      *img ; - Image()
+      *id  ; - ImageID( ) 
+      *img ; - Image( )
       
       change.b
       size.w  ; icon small/large
@@ -179,7 +179,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_bar
     Structure _s_bar
       ; splitter - fixed button index 
-      ; tab - setstate() button index 
+      ; tab - setstate( ) button index 
       fixed.l  
       mode.i
       
@@ -202,13 +202,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       thumb._s_page  
       button._s_buttons[4]
       
-      List *_s._s_tabs()
+      List *_s._s_tabs( )
     EndStructure
     
     ;     ;- - _s_tab
     ;     Structure _s_tab
     ;       bar._s_bar
-    ;       ;List *_s._s_tabs()
+    ;       ;List *_s._s_tabs( )
     ;     EndStructure
     
     ;- - _s_dotted
@@ -219,20 +219,13 @@ CompilerIf Not Defined(structures, #PB_Module)
       space.l
     EndStructure
     
-    ;- - _s_transform
-    Structure _s_transforms Extends _s_coordinate
-      round.a
-      
-      cursor.l
-      color._s_color[4]
-    EndStructure
-    
     ; multi group
     Structure _s_group Extends _s_coordinate
       *id._s_widget
       *widget._s_widget
     EndStructure
     
+    ;- - _s_grid
     Structure _s_grid
       *widget
       *image
@@ -240,16 +233,23 @@ CompilerIf Not Defined(structures, #PB_Module)
       type.l
     EndStructure
     
+    ;- - _s_transform
+    Structure _s_anchor Extends _s_coordinate
+      round.a
+      
+      cursor.l
+      color._s_color[4]
+    EndStructure
+    
     ;- - _s_transforms
     Structure _s_transform Extends _s_coordinate
       color._s_color
       
-      List *group._s_group()
+      *main._s_widget
       *widget._s_widget
+      List *group._s_group( )
       
       *type
-      *main._s_widget
-      
       *grab ; grab image handle
       
       pos.l
@@ -259,7 +259,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       ;;text._s_text
       grid._s_grid
       dotted._s_dotted
-      id._s_transforms[constants::#__a_count+1]
+      id._s_anchor[constants::#__a_count+1]
     EndStructure
     
     ;- - _s_mode
@@ -277,7 +277,7 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;                        ;                X,Y parameters are ignored.
 ;       Maximize.b       ; 16777216   - #PB_Window_maximize        ; Opens the Window maximized. (Note  ; on Linux, Not all Windowmanagers support this)
 ;       Minimize.b       ; 536870912  - #PB_Window_minimize        ; Opens the Window minimized.
-;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+;       NoGadgets.b      ; 8          - #PB_Window_noGadgets       ; Prevents the creation of a GadgetList. UseGadgetList( ) can be used To do this later.
 ;       NoActivate.b     ; 33554432   - #PB_Window_noActivate      ; Don't activate the window after opening.
       
       ;inline.b
@@ -424,7 +424,7 @@ CompilerIf Not Defined(structures, #PB_Module)
     ;- - _s_row
     Structure _s_row
       draw.l ;???????
-      Map *i()
+      Map *i( )
       
       ; list view
       drag.b
@@ -434,7 +434,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *_tt._s_tt
       *first._s_rows
-      List *draws._s_rows()
+      List *draws._s_rows( )
       
       ; edit
       ;caret._s_caret
@@ -448,18 +448,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
       *entered._s_rows    ; at point item
       *selected._s_rows   ; pushed at point item
-      List _s._s_rows()
-    EndStructure
-    
-    ;- - _s_bind
-    Structure _s_bind 
-      *callback.pFunc
-      *widget._s_widget     ; EventWidget()
-      item.l                ; EventItem()
-      *data                 ; EventData()
-      *type
-      
-      Map *events()
+      List _s._s_rows( )
     EndStructure
     
     ;- - _s_column
@@ -467,6 +456,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       
     EndStructure
     
+    ;- - _S_dragdrop
     Structure _S_dragdrop
       ;*widget._s_widget
       cursorimage.i
@@ -482,13 +472,28 @@ CompilerIf Not Defined(structures, #PB_Module)
       height.l
     EndStructure
     
-   ;-
+    ;- - _s_post
+    Structure _s_post
+      *type ; EventType( )
+      *item ; EventItem( )
+      *data ; EventData( )
+    EndStructure
+    
+  ;- - _s_bind 
+    Structure _s_bind 
+      *type
+      *call.pFunc
+      
+      List *callback( )
+    EndStructure
+    
+    ;-
     ;- - _s_widget
     Structure _s_widget 
    ;       *_drawing ; drawing_mode
 ;       *_drawing_alpha
-   ;       Map *_first._s_widget()
-;       Map *_last._s_widget()
+   ;       Map *_first._s_widget( )
+;       Map *_last._s_widget( )
    
       ; side.l[4] ; sidebar сторона 
                         ;       *v._s_widget      ; vertical scrollbar
@@ -516,20 +521,20 @@ CompilerIf Not Defined(structures, #PB_Module)
       *container        ; 
       *root._s_root     ; this root
       *parent._s_widget ; this parent
-      *window._s_widget ; this parent window       ; root()\active\window
+      *window._s_widget ; this parent window       ; root( )\active\window
       
       StructureUnion
         *_owner._s_widget  ; this window owner parent
-        *_tab._s_widget ; = panel() tabbar gadget
-        *_group._s_widget ; = option() groupbar gadget  
+        *_tab._s_widget ; = panel( ) tabbar gadget
+        *_group._s_widget ; = option( ) groupbar gadget  
         *_tt._s_tt
       EndStructureUnion
       
       *gadget._s_widget[3] 
       ; \root\gadget[0] - active gadget
       ; \gadget[0] - active child gadget 
-      ; \gadget[1] - splitter() first gadget
-      ; \gadget[2] - splitter() second gadget
+      ; \gadget[1] - splitter( ) first gadget
+      ; \gadget[2] - splitter( ) second gadget
       
       *index[3]  
       ; \index[0] - widget index 
@@ -587,13 +592,14 @@ CompilerIf Not Defined(structures, #PB_Module)
       *align._s_align
       ;; *selector._s_transform[constants::#__a_count+1]
       
-      Map *bind._s_bind()
       
       *time_click
       *time_down
       
       ; event_queue ; очередь событий
-      List *column._s_column()
+      List *column._s_column( )
+      List *post._s_post( )
+      List *bind._s_bind( )
     EndStructure
     
     ;- - _s_mouse
@@ -631,33 +637,35 @@ CompilerIf Not Defined(structures, #PB_Module)
       repaint.b
     EndStructure
     
+    ;- - _s_sticky
+    Structure _s_sticky
+      *window._s_widget
+      *message._s_widget
+    EndStructure
+    
     ;- - _s_root
     Structure _s_root Extends _s_widget
-      *address2          ; widget list address
-      *sticky._s_widget  ; window
-      
       canvas._s_canvas
       *_transform._s_transform
+      *address2          ; widget list address
     EndStructure
     
     ;- - _s_this
     Structure _s_this
-      mouse._s_mouse        ; Mouse()\
-      keyboard._s_keyboard  ; Keyboard()\
-      *callback.pFunc
+      mouse._s_mouse               ; mouse( )\
+      keyboard._s_keyboard         ; keyboard( )\
       
-      ;*_root._s_root ; 
-      List *_root._s_root() ; 
-      *active._s_widget     ; GetActiveWindow()\
-      *widget._s_widget     ; EventWidget()
+      List *_root._s_root( )        ; 
+      *active._s_widget            ; GetActiveWindow( )\
+      sticky._s_sticky            ; top level
       
-      *event                 ; EventType()
-      *item                 ; EventItem()
-      *data                 ; EventData()
+      *widget._s_widget            ; EventWidget( )\
+      *event                       ; EventType( )
+      *item                        ; EventItem( )
+      *data                        ; EventData( )
       
-      List *_childrens._s_widget()
-      List *post._s_bind()
-      Map *_bind._s_bind()
+      ;;List *_post._s_post( )        ; posted( )\
+      List *_childrens._s_widget( ) ; widget( )\
     EndStructure
     
     Global *event._s_this = AllocateStructure(_s_this)
@@ -670,5 +678,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = nCY0-fO-
+; Folding = nCd0-fO+
 ; EnableXP
