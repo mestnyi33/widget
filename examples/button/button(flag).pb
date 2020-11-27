@@ -13,11 +13,11 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure events_widgets()
     Protected flag
     
-    Select *event\type
+    Select this()\event
       Case #PB_EventType_LeftClick
-        Select *event\widget
+        Select this()\widget
           Case Button_type 
-            If GetState(*event\widget)
+            If GetState(this()\widget)
               Hide(*this, 1)
               HideGadget(gadget, 0)
               If Splitter_0
@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
           Case *this
             If Flag(*this, #__button_toggle)
-              SetState(Button_4, GetState(*event\widget))
+              SetState(Button_4, GetState(this()\widget))
             EndIf
             
           Case Button_0 : flag = #__button_default
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(*event\widget))
+          Flag(*this, flag, GetState(this()\widget))
         EndIf
         Post(#__event_repaint, #PB_All)
     EndSelect
@@ -76,5 +76,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = v-
+; Folding = --
 ; EnableXP

@@ -132,6 +132,7 @@ DeclareModule _PBEdit_
 		#TE_Style_BracketMismatch
 		#TE_Style_Label
 	EndEnumeration
+	
 	Global Dim StyleEnumName.s(64)
 	StyleEnumName(#TE_Style_None) = "None"
 	StyleEnumName(#TE_Style_Keyword) = "Keyword"
@@ -158,22 +159,22 @@ DeclareModule _PBEdit_
 		
 	Enumeration
 		#TE_Token_Unknown
-		#TE_Token_Whitespace			;  space or tab
+		#TE_Token_Whitespace		;  space or tab
 		#TE_Token_Text
-		#TE_Token_Number
-		#TE_Token_Operator				;  + - / & | ! ~
+		#TE_Token_Number        ;  0 - 9
+		#TE_Token_Operator			;  + - / & | ! ~
 		#TE_Token_Compare				;  < >
 		#TE_Token_Backslash
 		#TE_Token_Point
 		#TE_Token_Equal
 		#TE_Token_Comma
 		#TE_Token_Colon					;  :
-		#TE_Token_BracketOpen			;  ( [ {
-		#TE_Token_BracketClose			;  ) ] }
+		#TE_Token_BracketOpen		;  ( [ {
+		#TE_Token_BracketClose  ;  ) ] }
 		#TE_Token_String				;  "..."
 		#TE_Token_Quote					;  '...'
 		#TE_Token_Comment				;  ;...
-		#TE_Token_EOL					; End of line
+		#TE_Token_EOL				  	; End of line
 	EndEnumeration
 	
 	Global Dim TokenEnumName.s(64)
@@ -865,7 +866,7 @@ DeclareModule _PBEdit_
 	Declare Settings_OpenXml(*te.TE_STRUCT, fileName.s)
 	Declare Styling_OpenXml(*te.TE_STRUCT, fileName.s)
 	
-	Macro ProcedureReturnIf(cond_, retVal_ = 0)
+	Macro ProcedureReturn_If(cond_, retVal_ = 0)
 		If cond_
 			ProcedureReturn retVal_
 		EndIf
@@ -899,7 +900,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Language_Initialize(*te.TE_STRUCT, languageFile.s = "")
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		If languageFile = ""
 			languageFile = "language_EN.cfg"
@@ -932,7 +933,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Editor_New_AutocompleteWindow(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\window) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (IsWindow(*te\window) = 0))
 		
 		With *te\autocomplete
 			; Style_LoadFont(*te, \font, *te\font(0)\name, *te\font(0)\height)
@@ -956,7 +957,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Editor_New_FindWindow(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		OpenPreferences(*te\laguage\fileName)
 		PreferenceGroup("FindReplace")
@@ -1000,7 +1001,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Editor_New_PopupMenu(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected separator.s = "\t\t\t\t\t"
 		
@@ -1034,11 +1035,11 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Editor_New(window, x, y, width, height, languageFile.s = "")
-		ProcedureReturnIf(IsWindow(window) = 0)
+		ProcedureReturn_If(IsWindow(window) = 0)
 		
 		Protected *te.TE_STRUCT = AllocateStructure(TE_STRUCT)
 		
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		InitializeStructure(*te, TE_STRUCT)
 		
@@ -1158,7 +1159,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure View_Add(*te.TE_STRUCT, x, y, width, height, *parent.TE_VIEW, *view.TE_VIEW = #Null)
-		ProcedureReturnIf( (*te = #Null) Or (width < 1) Or (height < 1))
+		ProcedureReturn_If( (*te = #Null) Or (width < 1) Or (height < 1))
 		
 		If *view = #Null
 			*view.TE_VIEW = AllocateStructure(TE_VIEW)
@@ -1230,7 +1231,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure View_Clear(*te.TE_STRUCT, *view.TE_VIEW)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null))
 		
 		View_Clear(*te, *view\child[0])
 		View_Clear(*te, *view\child[1])
@@ -1259,7 +1260,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure View_Delete(*te.TE_STRUCT, *view.TE_VIEW)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (*view = *te\view))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (*view = *te\view))
 		
 		View_Clear(*te, *view)
 		
@@ -1272,7 +1273,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure View_Unsplit(*te.TE_STRUCT, x, y)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected *parent.TE_VIEW
 		
@@ -1302,7 +1303,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure View_Split(*te.TE_STRUCT, x, y, splitMode = #TE_View_SplitHorizontal)
-		ProcedureReturnIf( (*te = #Null) Or (*te\enableSplitScreen = #False))
+		ProcedureReturn_If( (*te = #Null) Or (*te\enableSplitScreen = #False))
 		
 		Protected *view.TE_VIEW
 		Protected width, height, width2, height2
@@ -1367,7 +1368,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure View_Get(*te.TE_STRUCT, *view.TE_VIEW)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null))
 		
 		If IsGadget(*view\canvas)
 			Scroll_Update(*te, *view, *te\currentCursor, *view\firstVisibleLineNr, -1)
@@ -1379,7 +1380,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure View_FromMouse(*te.TE_STRUCT, *view.TE_VIEW, x, y)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null))
 		
 		If IsGadget(*view\canvas) And (x >= *view\x) And (x < *view\x + *view\width) And (y >= *view\y) And (y < *view\y + *view\height)
 			*te\currentView = *view
@@ -1398,7 +1399,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure View_Zoom(*te.TE_STRUCT, *view.TE_VIEW, direction)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null))
 		
 		Protected oldZoom.d = *view\zoom
 		
@@ -1428,7 +1429,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure View_Resize(*te.TE_STRUCT, *view.TE_VIEW, x, y, width, height)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null))
 		
 		If *view\width
 			Protected scaleX.d = (width * 1.0) / *view\width
@@ -1501,19 +1502,19 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure TokenType(*parser.TE_PARSER, c.c)
-		ProcedureReturnIf( (*parser = #Null) Or (c < 0) Or (c > #TE_CharRange))
+		ProcedureReturn_If( (*parser = #Null) Or (c < 0) Or (c > #TE_CharRange))
 		
 		ProcedureReturn *parser\tokenType(c)
 	EndProcedure
 	
 	Procedure.s TokenName(*token.TE_TOKEN)
-		ProcedureReturnIf(*token = #Null, "")
+		ProcedureReturn_If(*token = #Null, "")
 		
 		ProcedureReturn TokenEnumName(*token\type)
 	EndProcedure
 	
 	Procedure LineNr_from_VisibleLineNr(*te.TE_STRUCT, visibleLineNr)
-		ProcedureReturnIf( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
 		
 		Protected lineNr = visibleLineNr
 		Protected *textBlock.TE_TEXTBLOCK
@@ -1540,7 +1541,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure LineNr_to_VisibleLineNr(*te.TE_STRUCT, lineNr)
-		ProcedureReturnIf( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
 		
 		Protected visibleLineNr = lineNr
 		Protected *textBlock.TE_TEXTBLOCK
@@ -1567,13 +1568,13 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure FoldiconSize(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		ProcedureReturn Int(*te\lineHeight * 0.6 * 0.5) << 1
 	EndProcedure
 	
 	Procedure BorderSize(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected size = *te\leftBorderSize
 		Protected textLine.TE_TEXTLINE
@@ -1600,15 +1601,15 @@ Module _PBEdit_
 		; -1	-		position near range start
 		;  1	-		position near range end
 		
-		ProcedureReturnIf( (*pos = #Null) Or (*range = #Null))
-		ProcedureReturnIf( (*pos\lineNr < *range\pos1\lineNr) Or (*pos\lineNr > *range\pos2\lineNr))
+		ProcedureReturn_If( (*pos = #Null) Or (*range = #Null))
+		ProcedureReturn_If( (*pos\lineNr < *range\pos1\lineNr) Or (*pos\lineNr > *range\pos2\lineNr))
 		
 		If includeBorder
-			ProcedureReturnIf( (*pos\lineNr = *range\pos1\lineNr) And (*pos\charNr <= *range\pos1\charNr))
-			ProcedureReturnIf( (*pos\lineNr = *range\pos2\lineNr) And (*pos\charNr >= *range\pos2\charNr))
+			ProcedureReturn_If( (*pos\lineNr = *range\pos1\lineNr) And (*pos\charNr <= *range\pos1\charNr))
+			ProcedureReturn_If( (*pos\lineNr = *range\pos2\lineNr) And (*pos\charNr >= *range\pos2\charNr))
 		Else
-			ProcedureReturnIf( (*pos\lineNr = *range\pos1\lineNr) And (*pos\charNr < *range\pos1\charNr))
-			ProcedureReturnIf( (*pos\lineNr = *range\pos2\lineNr) And (*pos\charNr > *range\pos2\charNr))
+			ProcedureReturn_If( (*pos\lineNr = *range\pos1\lineNr) And (*pos\charNr < *range\pos1\charNr))
+			ProcedureReturn_If( (*pos\lineNr = *range\pos2\lineNr) And (*pos\charNr > *range\pos2\charNr))
 		EndIf
 		
 		If (*pos\lineNr = *range\pos1\lineNr) And (*pos\lineNr = *range\pos2\lineNr)
@@ -1632,7 +1633,7 @@ Module _PBEdit_
 		; returnvalues:	*cursor - selection found
 		;				#Null	- no selection found
 		
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null))
 		
 		Protected *result.TE_CURSOR
 		Protected selection.TE_RANGE
@@ -1657,7 +1658,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Position_Equal(*pos1.TE_POSITION, *pos2.TE_POSITION)
-		ProcedureReturnIf( (*pos1 = #Null) Or (*pos2 = #Null))
+		ProcedureReturn_If( (*pos1 = #Null) Or (*pos2 = #Null))
 		
 		If (*pos1\lineNr <> *pos2\lineNr) Or (*pos1\charNr <> *pos2\charNr)
 			ProcedureReturn #False
@@ -1667,7 +1668,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Position_Changed(*pos1.TE_POSITION, *pos2.TE_POSITION)
-		ProcedureReturnIf( (*pos1 = #Null) Or (*pos2 = #Null))
+		ProcedureReturn_If( (*pos1 = #Null) Or (*pos2 = #Null))
 		
 		If (*pos1\lineNr <> *pos2\lineNr) Or (*pos1\charNr <> *pos2\charNr)
 			ProcedureReturn #True
@@ -1681,8 +1682,8 @@ Module _PBEdit_
 	;-
 	
 	Procedure.s Text_Get(*te.TE_STRUCT, startLineNr, startCharNr, endLineNr, endCharNr)
-		ProcedureReturnIf( (*te = #Null) Or (ListSize(*te\textLine()) = 0), "")
-		ProcedureReturnIf( (startLineNr < 1) Or (endLineNr <= 0), "")
+		ProcedureReturn_If( (*te = #Null) Or (ListSize(*te\textLine()) = 0), "")
+		ProcedureReturn_If( (startLineNr < 1) Or (endLineNr <= 0), "")
 		
 		Protected size, nrLines
 		Protected head.s, tail.s, *tail.Character
@@ -1772,7 +1773,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Undo_Start(*undo.TE_UNDO)
-		ProcedureReturnIf(*undo = #Null)
+		ProcedureReturn_If(*undo = #Null)
 		
 		Protected result = ListSize(*undo\entry())
 		Undo_Add(*undo, #TE_Undo_Start)
@@ -1781,7 +1782,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Undo_Add(*undo.TE_UNDO, action, startLineNr = 0, startCharNr = 0, endLineNr = 0, endCharNr = 0, text.s = "")
-		ProcedureReturnIf(*undo = #Null)
+		ProcedureReturn_If(*undo = #Null)
 		
 		Protected *entry.TE_UNDOENTRY = LastElement(*undo\entry())
 		
@@ -1823,7 +1824,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Undo_Do(*te.TE_STRUCT, *undo.TE_UNDO, *redo.TE_UNDO)
-		ProcedureReturnIf( (*te = #Null) Or (*undo = #Null) Or (*redo = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*undo = #Null) Or (*redo = #Null))
 		
 		Protected quit
 		Protected *entry.TE_UNDOENTRY = LastElement(*undo\entry())
@@ -1879,7 +1880,7 @@ Module _PBEdit_
 	Procedure Undo_Update(*te.TE_STRUCT)
 		; remove undo-start-markers from end of undo list
 		
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected result = #False
 		
@@ -1916,7 +1917,7 @@ Module _PBEdit_
 	
 	
 	Procedure KeyWord_Add(*te.TE_STRUCT, key.s, style = #TE_Ignore, caseCorrection = #TE_Ignore)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected *key.TE_KEYWORD
 		
@@ -1942,7 +1943,7 @@ Module _PBEdit_
 	Procedure KeyWord_LineContinuation(*te.TE_STRUCT, keyList.s)
 		; keyList is a list of kewords separated by chr(10)
 		
-		ProcedureReturnIf( (*te = #Null) Or (keyList = ""))
+		ProcedureReturn_If( (*te = #Null) Or (keyList = ""))
 		
 		Protected count = CountString(keyList, Chr(10))
 		Protected i
@@ -1957,7 +1958,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure KeyWord_Folding(*te.TE_STRUCT, key.s, foldState)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected *key.TE_KEYWORD
 		
@@ -1970,7 +1971,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure KeyWord_Indentation(*te.TE_STRUCT, key.s, indentationBefore, indentationAfter)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected *key.TE_KEYWORD
 		
@@ -1984,7 +1985,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Syntax_Add(*te.TE_STRUCT, text.s, flags = #TE_Flag_Multiline)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected nrParts, nrValues, valueStart
 		Protected part.s, key.s, values.s, value.s
@@ -2034,7 +2035,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Folding_GetTextBlock(*te.TE_STRUCT, lineNr)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected *textBlock.TE_TEXTBLOCK = #Null
 		
@@ -2050,7 +2051,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Folding_Update(*te.TE_STRUCT, firstLine, lastLine)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		If *te\enableFolding = #False
 			*te\needFoldUpdate = #False
@@ -2148,7 +2149,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Folding_Toggle(*te.TE_STRUCT, lineNr)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		PushListPosition(*te\textBlock())
 		Protected *textblock.TE_TEXTBLOCK = Folding_GetTextBlock(*te, lineNr)
@@ -2170,7 +2171,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Folding_UnfoldTextline(*te.TE_STRUCT, lineNr)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected *textBlock.TE_TEXTBLOCK
 		
@@ -2196,7 +2197,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure.s Indentation_Text(*te.TE_STRUCT, indentation.s, indentationCount)
-		ProcedureReturnIf( (*te = #Null) Or (indentationCount = 0), indentation)
+		ProcedureReturn_If( (*te = #Null) Or (indentationCount = 0), indentation)
 		
 		Protected i, j
 		
@@ -2231,7 +2232,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure.s Indentation_LineContinuation(*te.TE_STRUCT, *textLine.TE_TEXTLINE)
-		ProcedureReturnIf( (*te = #Null) Or (*textLine = #Null) Or (*textLine\tokenCount = 0), "")
+		ProcedureReturn_If( (*te = #Null) Or (*textLine = #Null) Or (*textLine\tokenCount = 0), "")
 		
 		Protected *firstLine.TE_TEXTLINE
 		Protected *currentLine.TE_TEXTLINE = *textLine
@@ -2301,7 +2302,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure.s Indentation_Before(*te.TE_STRUCT, *textLine.TE_TEXTLINE, mode = #TE_Indentation_Auto)
-		ProcedureReturnIf( (*te = #Null) Or (*textLine = #Null), "")
+		ProcedureReturn_If( (*te = #Null) Or (*textLine = #Null), "")
 		
 		Protected *previousLine.TE_TEXTLINE = #Null
 		Protected *indentation.TE_TOKEN = #Null
@@ -2359,7 +2360,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Indentation_Range(*te.TE_STRUCT, firstLineNr, lastLineNr, *cursor.TE_CURSOR = #Null, mode = #TE_Indentation_Auto)
-		ProcedureReturnIf( (*te = #Null) Or (*te\enableIndentation = #False))
+		ProcedureReturn_If( (*te = #Null) Or (*te\enableIndentation = #False))
 		
 		Protected *textline.TE_TEXTLINE, *lastTextline.TE_TEXTLINE
 		Protected indentationCount, indentation.s
@@ -2428,13 +2429,13 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Indentation_All(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Indentation_Range(*te, 1, ListSize(*te\textLine()), #Null, #TE_Indentation_Auto)
 	EndProcedure
 	
 	Procedure.s Indentation_Clear(*textLine.TE_TEXTLINE)
-		ProcedureReturnIf( (*textLine = #Null) Or (*textLine\tokenCount < 1), "")
+		ProcedureReturn_If( (*textLine = #Null) Or (*textLine\tokenCount < 1), "")
 		
 		If (*textLine\tokenCount = 1) And (*textLine\token(1)\type = #TE_Token_Whitespace)
 			ProcedureReturn ""
@@ -2446,7 +2447,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Indentation_Add(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
 		
 		Protected result = #False
 		Protected charNr, tabPos
@@ -2471,7 +2472,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Indentation_LTrim(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
 		
 		Protected result = #False
 		Protected *textline.TE_TEXTLINE = *cursor\position\textline
@@ -2500,7 +2501,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Parser_Initialize(*parser.TE_PARSER)
-		ProcedureReturnIf(*parser = #Null)
+		ProcedureReturn_If(*parser = #Null)
 		
 		Parser_Clear(*parser)
 		
@@ -2542,7 +2543,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Parser_Clear(*parser.TE_PARSER)
-		ProcedureReturnIf(*parser = #Null)
+		ProcedureReturn_If(*parser = #Null)
 		
 		*parser\state = 0
 		*parser\tokenIndex = 0
@@ -2552,7 +2553,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Parser_TokenAtCharNr(*te.TE_STRUCT, *textLine.TE_TEXTLINE, charNr, testBounds = #False, startIndex = 1)
-		ProcedureReturnIf( (*te = #Null) Or (*textLine = #Null) Or (*textLine\tokenCount = 0), #Null)
+		ProcedureReturn_If( (*te = #Null) Or (*textLine = #Null) Or (*textLine\tokenCount = 0), #Null)
 		
 		If ArraySize(*textLine\token()) < 0
 			Debug "Error in Procedure Parser_TokenAtCharNr"
@@ -2593,7 +2594,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Parser_NextToken(*te.TE_STRUCT, direction, flags = #TE_Flag_NoWhiteSpace)
-		ProcedureReturnIf( (*te = #Null) Or (*te\parser\textline = #Null) Or (direction = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*te\parser\textline = #Null) Or (direction = 0))
 		
 		Protected *parser.TE_PARSER = *te\parser
 		Protected *textline.TE_TEXTLINE = *parser\textline
@@ -2662,8 +2663,8 @@ Module _PBEdit_
 	;-
 	
 	Procedure Parser_SyntaxCheckFind(*te.TE_STRUCT, direction, findFlags, errorFlags)
-		ProcedureReturnIf( (*te = #Null) Or (*te\parser\textline = #Null))
-		ProcedureReturnIf( (*te\parser\tokenIndex > *te\parser\textline\tokenCount))
+		ProcedureReturn_If( (*te = #Null) Or (*te\parser\textline = #Null))
+		ProcedureReturn_If( (*te\parser\tokenIndex > *te\parser\textline\tokenCount))
 		
 		Protected *token.TE_TOKEN = #Null
 		Protected *currentToken.TE_TOKEN = *te\parser\token
@@ -2698,7 +2699,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Parser_SyntaxCheck(*te.TE_STRUCT, direction, flagStart, flagEnd, flags)
-		ProcedureReturnIf( (*te = #Null) Or (*te\parser\textline = #Null) Or (*te\parser\token = #Null) Or (direction = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*te\parser\textline = #Null) Or (*te\parser\token = #Null) Or (direction = 0))
 		
 		Protected error = 0
 		Protected result = 0
@@ -2873,7 +2874,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Parser_SyntaxCheckStart(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*te\enableSyntaxCheck = #False) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*te\enableSyntaxCheck = #False) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
 		
 		Protected *token.TE_TOKEN
 		Protected *found.TE_TOKEN
@@ -3024,7 +3025,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Tokenizer_Textline(*te.TE_STRUCT, *textline.TE_TEXTLINE)
-		ProcedureReturnIf( (*te = #Null) Or (*textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*textline = #Null))
 		
 		Protected *c.Character
 		Protected size
@@ -3116,7 +3117,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Tokenizer_All(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected tokenCount
 		
@@ -3134,7 +3135,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Style_Textline(*te.TE_STRUCT, *textLine.TE_TEXTLINE, styleFlags = 0)
-		ProcedureReturnIf( (*te = #Null) Or (*textLine = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*textLine = #Null))
 		
 		Protected indentationCount, indentationBeforeCount, indentationAfterCount
 		Protected foldCount, lastFoldCount
@@ -3348,7 +3349,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Style_FromCharNr(*textLine.TE_TEXTLINE, charNr, scanWholeLine = #False)
-		ProcedureReturnIf( (*textLine = #Null) Or (ArraySize(*textLine\style()) < 1))
+		ProcedureReturn_If( (*textLine = #Null) Or (ArraySize(*textLine\style()) < 1))
 		
 		Protected i
 		Protected result = 0
@@ -3368,7 +3369,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Style_LoadFont(*te.TE_STRUCT, *font.TE_FONT, fontName.s, fontSize, fontStyle = 0)
-		ProcedureReturnIf( (*te = #Null) Or (*font = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*font = #Null))
 		
 		Protected result = #False
 		Protected c, minTextWidth, image
@@ -3418,7 +3419,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Style_SetFont(*te.TE_STRUCT, fontName.s, fontSize, fontStyle = 0)
-		ProcedureReturnIf( (*te = #Null))
+		ProcedureReturn_If( (*te = #Null))
 		
 		Protected i, c, font
 		fontSize = Clamp(fontSize, 1, 64)
@@ -3435,7 +3436,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Style_Set(*te.TE_STRUCT, styleNr, fontNr, fColor, bColor = #TE_Ignore, underlined = #False)
-		ProcedureReturnIf( (*te = #Null) Or (styleNr < 0) Or (styleNr > ArraySize(*te\textStyle())))
+		ProcedureReturn_If( (*te = #Null) Or (styleNr < 0) Or (styleNr > ArraySize(*te\textStyle())))
 		
 		Protected *style.TE_TEXTSTYLE
 		
@@ -3449,7 +3450,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Style_SetDefaultStyle(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Style_Set(*te, #TE_Style_None, 0, *te\colors\defaultTextColor)
 		Style_Set(*te, #TE_Style_Keyword, 0, *te\colors\defaultTextColor)
@@ -3481,7 +3482,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Textline_Add(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		If AddElement(*te\textLine())
 			*te\textLine()\text = ""
@@ -3494,7 +3495,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_Delete(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (ListIndex(*te\textLine()) < 0))
+		ProcedureReturn_If( (*te = #Null) Or (ListIndex(*te\textLine()) < 0))
 		
 		Protected *textline.TE_TEXTLINE
 		Protected marker
@@ -3517,7 +3518,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_AddChar(*te.TE_STRUCT, *cursor.TE_CURSOR, c.c, overwrite, styleFlags = #TE_Styling_All, *undo.TE_UNDO = #Null)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
 		
 		ChangeCurrentElement(*te\textLine(), *cursor\position\textline)
 		
@@ -3583,7 +3584,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_AddText(*te.TE_STRUCT, *cursor.TE_CURSOR, *c.Character, textLength, styleFlags = #TE_Styling_All, *undo.TE_UNDO = #Null)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null) Or (*c = #Null) Or (*c\c = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null) Or (*c = #Null) Or (*c\c = 0))
 		
 		; 		If textLength = 1
 		; 			Cursor_Position(*te, *cursor, Textline_LineNr(*te, *cursor\position\textline), *cursor\position\charNr)
@@ -3669,7 +3670,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_SetText(*te.TE_STRUCT, *textLine.TE_TEXTLINE, text.s, styleFlags = #TE_Styling_All, *undo.TE_UNDO = #Null)
-		ProcedureReturnIf( (*te = #Null) Or (*textLine = #Null) Or (*textLine\text = text))
+		ProcedureReturn_If( (*te = #Null) Or (*textLine = #Null) Or (*textLine\text = text))
 		
 		Protected lineNr = Textline_LineNr(*te, *textLine)
 		
@@ -3684,7 +3685,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure.s Textline_GetText(*te.TE_STRUCT, lineNr)
-		ProcedureReturnIf(*te = #Null, "")
+		ProcedureReturn_If(*te = #Null, "")
 		
 		Protected text.s = ""
 		PushListPosition(*te\textLine())
@@ -3697,7 +3698,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Texlint_IsEmpty(*textline.TE_TEXTLINE)
-		ProcedureReturnIf(*textline = #Null)
+		ProcedureReturn_If(*textline = #Null)
 		
 		If (*textline\tokenCount = 1) And (*textline\token(1)\type = #TE_Token_EOL)
 			ProcedureReturn #True
@@ -3709,7 +3710,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_LineNr(*te.TE_STRUCT, *textline.TE_TEXTLINE)
-		ProcedureReturnIf( (*te = #Null) Or (*textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*textline = #Null))
 		
 		Protected lineNr
 		
@@ -3722,7 +3723,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_FromLine(*te.TE_STRUCT, lineNr)
-		ProcedureReturnIf( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
 		
 		lineNr = Clamp(lineNr, 1, ListSize(*te\textLine()))
 		
@@ -3734,7 +3735,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_FromVisibleLineNr(*te.TE_STRUCT, visibleLineNr)
-		ProcedureReturnIf( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
 		
 		Protected lineNr = LineNr_from_VisibleLineNr(*te, visibleLineNr)
 		
@@ -3746,19 +3747,19 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_TopLine(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		ProcedureReturn LineNr_from_VisibleLineNr(*te, *te\currentView\scroll\visibleLineNr)
 	EndProcedure
 	
 	Procedure Textline_BottomLine(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		ProcedureReturn Min(LineNr_from_VisibleLineNr(*te, *te\currentView\scroll\visibleLineNr + *te\currentView\pageHeight + 1), ListSize(*te\textLine()))
 	EndProcedure
 	
 	Procedure Textline_LineNrFromScreenPos(*te.TE_STRUCT, *view.TE_VIEW, screenY)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (*te\lineHeight = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (*te\lineHeight = 0))
 		
 		Protected lineNr
 		
@@ -3770,7 +3771,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_CharNrFromScreenPos(*te.TE_STRUCT, *textLine.TE_TEXTLINE, screenX)
-		ProcedureReturnIf( (*te = #Null) Or (*textLine = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*textLine = #Null))
 		
 		Protected *font.TE_FONT, fontNr
 		Protected *t.Character
@@ -3827,7 +3828,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_ColumnFromCharNr(*te.TE_STRUCT, *view.TE_VIEW, *textLine.TE_TEXTLINE, charNr)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (*textLine = #Null)); Or (*textLine\text = ""))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (*textLine = #Null)); Or (*textLine\text = ""))
 		
 		Protected *font.TE_FONT, fontNr
 		Protected *t.Character
@@ -3886,7 +3887,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_CharNrToScreenPos(*te.TE_STRUCT, *textLine.TE_TEXTLINE, charNr)
-		ProcedureReturnIf( (*te = #Null) Or (*textLine = #Null) Or (charNr < 1))
+		ProcedureReturn_If( (*te = #Null) Or (*textLine = #Null) Or (charNr < 1))
 		
 		Protected *font.TE_FONT, fontNr
 		Protected *t.Character
@@ -3928,20 +3929,20 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_CharAtPos(*textline.TE_TEXTLINE, charNr)
-		ProcedureReturnIf( (*textline = #Null) Or (charNr < 1) Or (charNr > Textline_Length(*textline)))
+		ProcedureReturn_If( (*textline = #Null) Or (charNr < 1) Or (charNr > Textline_Length(*textline)))
 		
 		ProcedureReturn Asc(Mid(*textline\text, charNr, 1))
 	EndProcedure
 	
 	
 	Procedure Textline_Width(*te.TE_STRUCT, *textLine.TE_TEXTLINE)
-		ProcedureReturnIf( (*te = #Null) Or (*textLine = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*textLine = #Null))
 		
 		ProcedureReturn Textline_CharNrToScreenPos(*te, *textLine, Textline_Length(*textLine) + 1)
 	EndProcedure
 	
 	Procedure Textline_Start(*textline.TE_TEXTLINE, charNr)
-		ProcedureReturnIf(*textLine = #Null)
+		ProcedureReturn_If(*textLine = #Null)
 		
 		If *textline\tokenCount
 			If (*textline\token(1)\type = #TE_Token_Whitespace) And (charNr <> *textline\token(1)\size + 1)
@@ -3952,13 +3953,13 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_Length(*textLine.TE_TEXTLINE)
-		ProcedureReturnIf(*textLine = #Null)
+		ProcedureReturn_If(*textLine = #Null)
 		
 		ProcedureReturn Len(*textLine\text)
 	EndProcedure
 	
 	Procedure Textline_LastCharNr(*te.TE_STRUCT, lineNr)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		If Textline_FromLine(*te, lineNr)
 			ProcedureReturn Len(*te\textLine()\text) + 2
@@ -3968,7 +3969,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_NextTabSize(*te.TE_STRUCT, *textline.TE_TEXTLINE, charNr)
-		ProcedureReturnIf( (*te = #Null) Or (*textline = #Null) Or (*te\font(0)\width(#TAB) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*textline = #Null) Or (*te\font(0)\width(#TAB) = 0))
 		
 		Protected x, tabWidth
 		
@@ -3981,7 +3982,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_JoinNextLine(*te.TE_STRUCT, *cursor.TE_CURSOR, *undo.TE_UNDO)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
 		
 		Protected lineNr = *cursor\position\lineNr
 		Protected charNr = *cursor\position\charNr
@@ -3996,7 +3997,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_JoinPreviousLine(*te.TE_STRUCT, *cursor.TE_CURSOR, *textLine.TE_TEXTLINE, *undo.TE_UNDO)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
 		
 		If *cursor\position\charNr <= 1
 			If Cursor_Move(*te, *cursor, 0, -1)
@@ -4009,7 +4010,7 @@ Module _PBEdit_
 	
 	
 	Procedure Textline_FindText(*textline.TE_TEXTLINE, find.s, *result.TE_RANGE, ignoreWhiteSpace = #False)
-		ProcedureReturnIf( (*textline = #Null) Or (*result = #Null) Or (find = ""))
+		ProcedureReturn_If( (*textline = #Null) Or (*result = #Null) Or (find = ""))
 		
 		*result\pos1\charNr = 0
 		*result\pos2\charNr = 0
@@ -4052,7 +4053,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_HasLineContinuation(*te.TE_STRUCT, *textline.TE_TEXTLINE)
-		ProcedureReturnIf( (*te = #Null) Or (*textline = #Null) Or (*textline\tokenCount < 1))
+		ProcedureReturn_If( (*te = #Null) Or (*textline = #Null) Or (*textline\tokenCount < 1))
 		
 		Protected lastToken = *textline\tokenCount
 		
@@ -4067,8 +4068,8 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Textline_Beautify(*te.TE_STRUCT, *textline.TE_TEXTLINE)
-		ProcedureReturnIf( (*te = #Null) Or (*textline = #Null) Or (*textline\tokenCount < 1))
-		ProcedureReturnIf(*te\enableBeautify = #False)
+		ProcedureReturn_If( (*te = #Null) Or (*textline = #Null) Or (*textline\tokenCount < 1))
+		ProcedureReturn_If(*te\enableBeautify = #False)
 		
 		Protected lastBracket, currentBracket
 		Protected *last.TE_TOKEN, *last2.TE_TOKEN, *current.TE_TOKEN
@@ -4216,7 +4217,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure SyntaxHighlight_Clear(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (ListSize(*te\syntaxHighlight()) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (ListSize(*te\syntaxHighlight()) = 0))
 		
 		Protected *textline.TE_TEXTLINE
 		
@@ -4235,7 +4236,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure SyntaxHighlight_Update(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected *textline.TE_TEXTLINE
 		Protected lineSize, pos1, pos2
@@ -4273,7 +4274,7 @@ Module _PBEdit_
 	;-
 		
 	Procedure Selection_Get(*cursor.TE_CURSOR, *range.TE_RANGE)
-		ProcedureReturnIf( (*cursor = #Null) Or (*range = #Null), #False)
+		ProcedureReturn_If( (*cursor = #Null) Or (*range = #Null), #False)
 		
 		; return the selection of *cursor in *range
 		;
@@ -4302,13 +4303,13 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Start(*cursor.TE_CURSOR, lineNr, charNr)
-		ProcedureReturnIf(*cursor = #Null)
+		ProcedureReturn_If(*cursor = #Null)
 		*cursor\selection\lineNr = lineNr
 		*cursor\selection\charNr = charNr
 	EndProcedure
 	
 	Procedure Selection_Delete(*te.TE_STRUCT, *cursor.TE_CURSOR, *undo.TE_UNDO = #Null)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected text.s
 		Protected previousLineNr
@@ -4378,7 +4379,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_HighlightText(*te.TE_STRUCT, startLine, startCharNr, endLine, endCharNr)
-		ProcedureReturnIf( (*te = #Null) Or (startLine <> endLine)); Or (ListSize(*te\cursor()) > 1)
+		ProcedureReturn_If( (*te = #Null) Or (startLine <> endLine)); Or (ListSize(*te\cursor()) > 1)
 		
 		Protected highlightSelection.s = ""
 		
@@ -4397,7 +4398,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_HighlightClear(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		If *te\highlightSelection
 			*te\highlightSelection = ""
@@ -4406,7 +4407,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_SetRange(*te.TE_STRUCT, *cursor.TE_CURSOR, lineNr, charNr, highLight = #True, checkOverlap = #True)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 ; 		CopyStructure(*cursor\selection, *cursor\lastSelection, TE_POSITION)
 		
@@ -4450,7 +4451,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Add(*range.TE_RANGE, lineNr, charNr)
-		ProcedureReturnIf(*range = #Null)
+		ProcedureReturn_If(*range = #Null)
 		
 		If (lineNr < *range\pos1\lineNr) Or ( (lineNr = *range\pos1\lineNr) And (charNr < *range\pos1\charNr))
 			*range\pos1\lineNr = lineNr
@@ -4462,7 +4463,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_SetRectangle(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Cursor_Clear(*te, *cursor)
 		
@@ -4497,7 +4498,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_SelectAll(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 
 		Cursor_Clear(*te, *te\maincursor)
 		
@@ -4507,7 +4508,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Clear(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		If Cursor_HasSelection(*cursor)
 			*te\redrawMode | #TE_Redraw_All
@@ -4518,7 +4519,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_ClearAll(*te.TE_STRUCT, deleteCursors = #False)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		If deleteCursors
 			Cursor_Clear(*te, *te\maincursor)
@@ -4536,7 +4537,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure.s Selection_Text(*te.TE_STRUCT, delimiter.s = "")
-		ProcedureReturnIf(*te = #Null, "")
+		ProcedureReturn_If(*te = #Null, "")
 		
 		Protected.s result, lastText, currentText
 		Protected count
@@ -4561,11 +4562,11 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Unfold(*te.TE_STRUCT, startLine, endLine)
-		ProcedureReturnIf( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (ListSize(*te\textLine()) = 0))
 	EndProcedure
 	
 	Procedure Selection_Move(*te.TE_STRUCT, direction)
-		ProcedureReturnIf( (*te = #Null) Or (*te\currentCursor = #Null) Or (direction = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*te\currentCursor = #Null) Or (direction = 0))
 		
 		Protected *cursor.TE_CURSOR = *te\currentCursor
 		Protected selection.TE_RANGE
@@ -4582,6 +4583,7 @@ Module _PBEdit_
 		
 		If Selection_Get(*cursor, selection)
 			Undo_Start(*te\undo)
+			
 			If (direction < 0) And (selection\pos1\lineNr > 1)
 				Cursor_Position(*te, *cursor, selection\pos1\lineNr - 1, 1)
 				Selection_SetRange(*te, *cursor, selection\pos1\lineNr, 1)
@@ -4624,7 +4626,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Clone(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected text.s
 		Protected lastLine
@@ -4653,7 +4655,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Comment(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected result = #False
 		Protected i
@@ -4683,7 +4685,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Uncomment(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected result = #False
 		Protected lineNr
@@ -4716,7 +4718,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_MoveComment(*te.TE_STRUCT, dir)
-		ProcedureReturnIf( (*te = #Null))
+		ProcedureReturn_If( (*te = #Null))
 		
 		; align selected comments
 		
@@ -4802,7 +4804,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Indent(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\lineNr = *cursor\selection\lineNr))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\lineNr = *cursor\selection\lineNr))
 		
 		Protected result = #False
 		
@@ -4846,7 +4848,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Unindent(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null)); Or (*cursor\position\lineNr = *cursor\selection\lineNr))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null)); Or (*cursor\position\lineNr = *cursor\selection\lineNr))
 		
 		Protected result = 0
 		
@@ -4888,7 +4890,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_Beautify(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected result = 0
 		Protected selection.TE_RANGE
@@ -4914,7 +4916,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_IsAnythingSelected(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected result = #False
 		Protected *selection.TE_RANGE
@@ -4952,7 +4954,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_FromTextLine(*te.TE_STRUCT, *textline.TE_TEXTLINE, *result.TE_RANGE)
-		ProcedureReturnIf( (*te = #Null) Or (*textline = #Null) Or (*result = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*textline = #Null) Or (*result = #Null))
 		
 		Protected selection.TE_RANGE
 		Protected lineNr = Textline_LineNr(*te, *textline)
@@ -4984,7 +4986,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Selection_ChangeCase(*te.TE_STRUCT, mode)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected result
 		Protected text.s, newTexxt.s
@@ -5013,7 +5015,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Cursor_Add(*te.TE_STRUCT, lineNr, charNr, checkOverlap = #True, startSelection = #True)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected *cursor.TE_CURSOR
 		Protected selection.TE_RANGE
@@ -5094,7 +5096,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_Delete(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		If ListSize(*te\cursor()) = 1
 			*te\maincursor = LastElement(*te\cursor())
@@ -5165,7 +5167,7 @@ Module _PBEdit_
 	
 	
 	Procedure Cursor_DeleteOverlapping(*te.TE_STRUCT, *cursor.TE_CURSOR, joinSelections = #False)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected selection1.TE_RANGE
 		Protected selection2.TE_RANGE
@@ -5238,7 +5240,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_Clear(*te.TE_STRUCT, *maincursor.TE_CURSOR)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		ForEach *te\cursor()
 			If *te\cursor()\position\textline
@@ -5259,7 +5261,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_Set(*cursor.TE_CURSOR, *textline.TE_TEXTLINE, lineNr, visibleLineNr, charNr)
-		ProcedureReturnIf(*cursor = #Null)
+		ProcedureReturn_If(*cursor = #Null)
 		
 ; 		CopyStructure(*cursor\position, *cursor\lastPosition, TE_POSITION)
 		
@@ -5270,7 +5272,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_LineHistoryAdd(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (*te\currentCursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*te\currentCursor = #Null))
 		
 		Protected *cursor.TE_CURSOR = *te\currentCursor
 		
@@ -5290,7 +5292,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_LineHistoryGoto(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (*te\maincursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*te\maincursor = #Null))
 		
 		If LastElement(*te\lineHistory())
 			Cursor_Position(*te, *te\maincursor, *te\lineHistory(), 1)
@@ -5303,7 +5305,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_Sort(*te.TE_STRUCT, sortOrder = #PB_Sort_Ascending)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		; 	sort the cursors
 		;	1. by lineNr from low to high
@@ -5332,7 +5334,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_MoveMulti(*te.TE_STRUCT, *cursor.TE_CURSOR, previousLineNr, dirY, dirX)
-		ProcedureReturnIf(ListSize(*te\cursor()) < 2)
+		ProcedureReturn_If(ListSize(*te\cursor()) < 2)
 		
 		PushListPosition(*te\cursor())
 		ChangeCurrentElement(*te\cursor(), *cursor)
@@ -5366,7 +5368,7 @@ Module _PBEdit_
 		; - style the previous textline
 		; - prepare redrawing all cursors
 		
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected result = #False
 		
@@ -5411,8 +5413,8 @@ Module _PBEdit_
 		; #false	-	no current lineNr or cursorposition unchanged
 		; #true		-	lineNr or charNr has changed
 		
-		ProcedureReturnIf( (*te = #Null) Or ListSize(*te\textLine()) = 0)
-		ProcedureReturnIf( (dirX = 0) And (dirY = 0))
+		ProcedureReturn_If( (*te = #Null) Or ListSize(*te\textLine()) = 0)
+		ProcedureReturn_If( (dirX = 0) And (dirY = 0))
 		
 		Protected visibleLineNr
 		
@@ -5474,7 +5476,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_Position(*te.TE_STRUCT, *cursor.TE_CURSOR, lineNr, charNr, ensureVisible = #True, updateLastX = #True)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (ListSize(*te\textLine()) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (ListSize(*te\textLine()) = 0))
 		
 		If ensureVisible
 			Protected *textblock.TE_TEXTBLOCK = Folding_GetTextBlock(*te, lineNr)
@@ -5501,7 +5503,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_GetScreenPos(*te.TE_STRUCT, *view.TE_VIEW, x, y, *result.TE_POSITION)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (*result = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (*result = #Null))
 		
 		x / DesktopResolutionX()
 		y / DesktopResolutionY()
@@ -5519,7 +5521,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_FromScreenPos(*te.TE_STRUCT, *view.TE_VIEW, *cursor.TE_CURSOR, x, y, addCursor = #False)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (*cursor = #Null))
 		
 		Protected position.TE_POSITION
 		
@@ -5539,14 +5541,14 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_HasSelection(*cursor.TE_CURSOR)
-		ProcedureReturnIf((*cursor = #Null) Or (*cursor\selection\lineNr <= 0) Or (*cursor\selection\charNr <= 0))
-		ProcedureReturnIf((*cursor\position\lineNr <> *cursor\selection\lineNr) Or (*cursor\position\charNr <> *cursor\selection\charNr), #True)
+		ProcedureReturn_If((*cursor = #Null) Or (*cursor\selection\lineNr <= 0) Or (*cursor\selection\charNr <= 0))
+		ProcedureReturn_If((*cursor\position\lineNr <> *cursor\selection\lineNr) Or (*cursor\position\charNr <> *cursor\selection\charNr), #True)
 		
 		ProcedureReturn #False
 	EndProcedure
 	
 	Procedure Cursor_SelectionStart(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected selection.TE_RANGE
 		
@@ -5559,7 +5561,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_SelectionEnd(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected selection.TE_RANGE
 		
@@ -5573,7 +5575,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_NextWord(*te.TE_STRUCT, *cursor.TE_CURSOR, direction)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (*cursor\position\textline = #Null))
 		
 		Protected result = 0
 		
@@ -5587,7 +5589,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_InsideComment(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null))
 		
 		Protected *textline.TE_TEXTLINE = *cursor\position\textline
 		Protected i
@@ -5604,7 +5606,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_GotoLineNr(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf((*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If((*te = #Null) Or (*cursor = #Null))
 		
 		Protected gotoLineNr.s = InputRequester(*te\laguage\gotoTitle, *te\laguage\gotoMessage, "")
 		
@@ -5618,7 +5620,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Cursor_SignalChanges(*te.TE_STRUCT, *cursor.TE_CURSOR)
-		ProcedureReturnIf((*te = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If((*te = #Null) Or (*cursor = #Null))
 		
 		Protected posChanged = Position_Changed(*cursor\position, *cursor\lastPosition)
 		Protected selChanged = Position_Changed(*cursor\selection, *cursor\lastSelection)
@@ -5641,7 +5643,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure DragDrop_Start(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected dragTextPreviewSize = 32
 		
@@ -5675,7 +5677,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure DragDrop_Stop(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		*te\cursorState\dragText = ""
 		*te\cursorState\dragTextPreview = ""
@@ -5686,7 +5688,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure DragDrop_Cancel(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (*te\cursorState\state = 0) Or (*te\currentCursor = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*te\cursorState\state = 0) Or (*te\currentCursor = #Null))
 		
 		DragDrop_Stop(*te)
 		
@@ -5694,7 +5696,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure DragDrop_Drop(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (*te\currentCursor = 0) Or (*te\cursorState\state = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*te\currentCursor = 0) Or (*te\cursorState\state = 0))
 		
 		Protected *newCursor.TE_CURSOR
 		Protected *cursor.TE_CURSOR = *te\currentCursor
@@ -5748,7 +5750,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure ClipBoard_Cut(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected text.s
 		
@@ -5766,7 +5768,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure ClipBoard_Copy(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected text.s
 		
@@ -5780,7 +5782,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure ClipBoard_Paste(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected warning.s
 		Protected text.s = GetClipboardText()
@@ -5830,7 +5832,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Scroll_Line(*te.TE_STRUCT, *view.TE_VIEW, *cursor.TE_CURSOR, visibleLineNr, keepCursor = #True, updateGadget = #True)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (*cursor = #Null) Or (IsGadget(*view\scrollBarV\gadget) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (*cursor = #Null) Or (IsGadget(*view\scrollBarV\gadget) = 0))
 		
 		Protected selection.TE_RANGE
 		Protected oldScrollLineNr = *view\scroll\visibleLineNr
@@ -5870,7 +5872,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Scroll_Char(*te.TE_STRUCT, *view.TE_VIEW, charX)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (IsGadget(*view\scrollBarH\gadget) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (IsGadget(*view\scrollBarH\gadget) = 0))
 		
 		If *te\maxLineWidth
 			*view\scroll\charX = Min(charX, Max(0, (*te\maxTextWidth % *te\maxLineWidth) - *view\pageWidth))
@@ -5886,7 +5888,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Scroll_HideScrollBarH(*te.TE_STRUCT, *view.TE_VIEW, isHidden)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (IsGadget(*view\scrollBarH\gadget) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (IsGadget(*view\scrollBarH\gadget) = 0))
 		
 		Protected result = 0
 		Protected x = *view\x
@@ -5927,7 +5929,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Scroll_HideScrollBarV(*te.TE_STRUCT, *view.TE_VIEW, isHidden)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (IsGadget(*view\scrollBarV\gadget) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (IsGadget(*view\scrollBarV\gadget) = 0))
 		
 		Protected x = *view\x
 		Protected y = *view\y
@@ -5958,8 +5960,8 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Scroll_Update(*te.TE_STRUCT, *view.TE_VIEW, *cursor.TE_CURSOR, previousVisibleLineNr, previousCharNr, updateNeeded = #True)
-		ProcedureReturnIf((*te = #Null) Or (*view = #Null) Or (*cursor = #Null))
-		ProcedureReturnIf(updateNeeded = #False)
+		ProcedureReturn_If((*te = #Null) Or (*view = #Null) Or (*cursor = #Null))
+		ProcedureReturn_If(updateNeeded = #False)
 		
 		*te\needScrollUpdate = #False
 		
@@ -6066,7 +6068,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Scroll_UpdateAllViews(*te.TE_STRUCT, *view.TE_VIEW, *currentView.TE_VIEW, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (*view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (*view = #Null))
 		
 		If *view = *currentView
 			Scroll_Update(*te, *view, *cursor, -1, -1)
@@ -6084,7 +6086,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Find_AddRecent(*te.TE_STRUCT, text.s, gadget, maxRecent = 10)
-		ProcedureReturnIf( (*te = #Null) Or (text = "") Or (IsGadget(gadget) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (text = "") Or (IsGadget(gadget) = 0))
 		
 		Protected i
 		
@@ -6107,7 +6109,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Find_Next(*te.TE_STRUCT, startLineNr, startCharNr, endLineNr, endCharNr, flags)
-		ProcedureReturnIf( (*te = #Null) Or (*te\find\text = ""), -1)
+		ProcedureReturn_If( (*te = #Null) Or (*te\find\text = ""), -1)
 		
 		Protected find.s = *te\find\text
 		Protected text.s, replace.s
@@ -6237,7 +6239,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Find_Start(*te.TE_STRUCT, *cursor.TE_CURSOR, startLineNr, startCharNr, find.s, replace.s, flags)
-		ProcedureReturnIf( (*te = #Null) Or (*cursor = #Null) Or (find = ""))
+		ProcedureReturn_If( (*te = #Null) Or (*cursor = #Null) Or (find = ""))
 		
 		Protected selection.TE_RANGE
 		Protected result
@@ -6352,7 +6354,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Find_Show(*te.TE_STRUCT, text.s)
-		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\find\wnd_findReplace) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (IsWindow(*te\find\wnd_findReplace) = 0))
 		
 		Protected *view.TE_VIEW = *te\currentView
 		
@@ -6373,7 +6375,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Find_Close(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\find\wnd_findReplace) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (IsWindow(*te\find\wnd_findReplace) = 0))
 		
 		HideWindow(*te\find\wnd_findReplace, #True)
 		SetActiveWindow(*te\window)
@@ -6383,7 +6385,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Find_Flags(*te.TE_STRUCT)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected flags
 		
@@ -6410,7 +6412,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Find_SetSelectionCheckbox(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or IsGadget(*te\find\chk_insideSelection) = 0)
+		ProcedureReturn_If( (*te = #Null) Or IsGadget(*te\find\chk_insideSelection) = 0)
 		
 		If Selection_IsAnythingSelected(*te)
 			DisableGadget(*te\find\chk_insideSelection, #False)
@@ -6424,7 +6426,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Autocomplete_Hide(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0))
 		
 		If *te\autocomplete\isVisible
 			*te\autocomplete\isVisible = #False
@@ -6439,7 +6441,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Autocomplete_Show(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0) Or (IsGadget(*te\autocomplete\lst_listBox) = 0) Or (*te\autocomplete\enabled = #False))
+		ProcedureReturn_If( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0) Or (IsGadget(*te\autocomplete\lst_listBox) = 0) Or (*te\autocomplete\enabled = #False))
 		
 		Protected *view.TE_VIEW = *te\currentView
 		Protected *cursor.TE_CURSOR = *te\currentCursor
@@ -6549,7 +6551,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Autocomplete_Insert(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0) Or (IsGadget(*te\autocomplete\lst_listBox) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0) Or (IsGadget(*te\autocomplete\lst_listBox) = 0))
 		
 		Protected *cursor.TE_CURSOR
 		Protected result = #False
@@ -6584,7 +6586,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Autocomplete_UpdateDictonary(*te.TE_STRUCT, startLine = 0, endLine = 0)
-		ProcedureReturnIf( (*te = #Null) Or (*te\enableDictionary = #False))
+		ProcedureReturn_If( (*te = #Null) Or (*te\enableDictionary = #False))
 		
 		Protected key.s
 		Protected regEx = CreateRegularExpression(#PB_Any, "[#*]?\w+[\d+]?[$]?") ; match [*/#]text[number]
@@ -6643,7 +6645,7 @@ Module _PBEdit_
 	;-	
 	
 	Procedure Marker_Add(*te.TE_STRUCT, *textline.TE_TEXTLINE, markerType)
-		ProcedureReturnIf( (*te = #Null) Or (*textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*textline = #Null))
 		
 		If *textline\marker & markerType
 			*textline\marker & ~markerType
@@ -6658,7 +6660,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Marker_Jump(*te.TE_STRUCT, markerType)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected *currentLine.TE_TEXTLINE = *te\currentcursor\position\textline
 		Protected lineNr = 0
@@ -6762,7 +6764,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Draw_DragText(*te.TE_STRUCT, x.d, y.d)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Protected width = VectorTextWidth(*te\cursorState\dragTextPreview)
 		Protected height = VectorTextHeight(*te\cursorState\dragTextPreview)
@@ -6828,7 +6830,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Draw_Cursor(*te.TE_STRUCT, x.d, y.d, width.d, height.d, cursorType)
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		If cursorType = #TE_Cursor_Normal
 			If *te\cursorState\overwrite
@@ -6854,7 +6856,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Draw_LeftBorder(*te.TE_STRUCT, *textline.TE_TEXTLINE, lineNr, x, y, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*textline = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*textline = #Null))
 		
 		Protected foldiconSize = FoldiconSize(*te)
 		Protected xFoldLine = *te\leftBorderOffset - (*te\lineHeight * 0.5) + 1
@@ -6907,7 +6909,7 @@ Module _PBEdit_
 	
 	
 	Procedure Draw_Textline(*te.TE_STRUCT, *view.TE_VIEW, *textLine.TE_TEXTLINE, lineNr, x.d, y.d, backgroundColor, *cursor.TE_CURSOR)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (*textLine = #Null), y)
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (*textLine = #Null), y)
 		
 		Protected *t.Character
 		Protected *font.TE_FONT, fontNr
@@ -7135,7 +7137,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Draw_View(*te.TE_STRUCT, *view.TE_VIEW, redrawAll = #True)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null))
 		
 		Protected backgroundColor
 		Protected lineNr, lastLineNr
@@ -7271,7 +7273,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Draw(*te.TE_STRUCT, *view.TE_VIEW, cursorBlinkState = -1, redrawMode = 0)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null))
 		
 		Protected redrawAll = #False
 		
@@ -7410,7 +7412,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Settings_OpenXml(*te.TE_STRUCT, fileName.s)
-		ProcedureReturnIf( (*te = #Null) Or (fileName = ""))
+		ProcedureReturn_If( (*te = #Null) Or (fileName = ""))
 		
 		Protected xml, mainNode, node
 		Protected result = #False
@@ -7452,7 +7454,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Styling_ReadXml(*te.TE_STRUCT, node)
-		ProcedureReturnIf( (*te = #Null) Or (node = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (node = #Null))
 		
 		Protected subNode, text.s, key.s, style, caseCorrection, flags.s, flag, i
 		Protected folding, indentBefore, indentAfter
@@ -7662,7 +7664,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Styling_OpenXml(*te.TE_STRUCT, fileName.s)
-		ProcedureReturnIf( (*te = #Null) Or (fileName = ""))
+		ProcedureReturn_If( (*te = #Null) Or (fileName = ""))
 		
 		Protected xml, mainNode, node
 		Protected result = #False
@@ -7703,7 +7705,7 @@ Module _PBEdit_
 	;-
 	
 	Procedure Event_Keyboard(*te.TE_STRUCT, *view.TE_VIEW, event_type)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
 		
 		Protected key, modifiers
 		Protected styleFlags
@@ -8462,7 +8464,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Event_Mouse(*te.TE_STRUCT, *view.TE_VIEW, event_type)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (*te\currentCursor = #Null) Or (IsGadget(*view\canvas) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (*te\currentCursor = #Null) Or (IsGadget(*view\canvas) = 0))
 		
 		Protected time = ElapsedMilliseconds()
 		Protected mx, my, modifiers, buttons
@@ -8834,7 +8836,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Event_MouseWheel(*te.TE_STRUCT, *view.TE_VIEW, event_type)
-		ProcedureReturnIf( (*te = #Null) Or (*view = #Null) Or (IsGadget(*view\canvas) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*view = #Null) Or (IsGadget(*view\canvas) = 0))
 		
 		Protected mx = GetGadgetAttribute(*view\canvas, #PB_Canvas_MouseX)
 		Protected my = GetGadgetAttribute(*view\canvas, #PB_Canvas_MouseY)
@@ -8868,10 +8870,10 @@ Module _PBEdit_
 		EndIf
 		
 		Protected *view.TE_VIEW = GetGadgetData(gNr)
-		ProcedureReturnIf( (*view = #Null) Or (*view\editor = #Null))
+		ProcedureReturn_If( (*view = #Null) Or (*view\editor = #Null))
 		
 		Protected *te.TE_STRUCT = *view\editor
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		If *te\currentCursor And (*view <> *te\currentView)
 			*te\currentView = *view
@@ -8897,7 +8899,7 @@ Module _PBEdit_
 		EndIf
 		
 		Protected *te.TE_STRUCT = GetWindowData(wNr)
-		ProcedureReturnIf( (*te = #Null) Or (*te\currentView = #Null) Or IsGadget(*te\currentView\canvas) = 0)
+		ProcedureReturn_If( (*te = #Null) Or (*te\currentView = #Null) Or IsGadget(*te\currentView\canvas) = 0)
 		
 		Protected *view.TE_VIEW = *te\currentView
 		
@@ -8980,7 +8982,7 @@ Module _PBEdit_
 		EndIf
 		
 		Protected *te.TE_STRUCT = GetGadgetData(gNr)
-		ProcedureReturnIf( (*te = #Null) Or (*te\currentView = #Null) Or IsGadget(*te\autocomplete\lst_listBox) = 0)
+		ProcedureReturn_If( (*te = #Null) Or (*te\currentView = #Null) Or IsGadget(*te\autocomplete\lst_listBox) = 0)
 		
 		Select EventType()
 			Case #PB_EventType_LeftDoubleClick
@@ -9000,7 +9002,7 @@ Module _PBEdit_
 		Protected *te.TE_STRUCT = GetWindowData(wNr)
 		Protected flags
 		
-		ProcedureReturnIf( (*te = #Null) Or (*te\currentView = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*te\currentView = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
 		
 		Select Event()
 				
@@ -9104,7 +9106,7 @@ Module _PBEdit_
 	
 	
 	Procedure Event_Resize(*te.TE_STRUCT, x, y, width, height)
-		ProcedureReturnIf( (*te = #Null) Or (*te\view = #Null))
+		ProcedureReturn_If( (*te = #Null) Or (*te\view = #Null))
 		
 		If EventWindow() = *te\window
 			Autocomplete_Hide(*te)
@@ -9121,7 +9123,7 @@ Module _PBEdit_
 		EndIf
 		
 		Protected *te.TE_STRUCT = GetWindowData(wNr)
-		ProcedureReturnIf( (*te = #Null) Or (*te\currentView = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*te\currentView = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
 		
 		If GetActiveWindow() <> *te\window
 			Autocomplete_Hide(*te.TE_STRUCT)
@@ -9135,7 +9137,7 @@ Module _PBEdit_
 		EndIf
 		
 		Protected *te.TE_STRUCT = GetWindowData(wNr)
-		ProcedureReturnIf( (*te = #Null) Or (*te\currentView = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
+		ProcedureReturn_If( (*te = #Null) Or (*te\currentView = #Null) Or (IsGadget(*te\currentView\canvas) = 0))
 		
 		Protected menu = EventMenu()
 		Protected undoIndex = Undo_Start(*te\undo)
@@ -9207,7 +9209,7 @@ Module _PBEdit_
 		EndIf
 		
 		Protected *view.TE_VIEW = GetGadgetData(gNr)
-		ProcedureReturnIf( (*view = #Null) Or (*view\editor = #Null))
+		ProcedureReturn_If( (*view = #Null) Or (*view\editor = #Null))
 		
 		Protected *te.TE_STRUCT = *view\editor
 		
@@ -9242,10 +9244,10 @@ Module _PBEdit_
 		EndIf
 		
 		Protected *view.TE_VIEW = GetGadgetData(gNr)
-		ProcedureReturnIf( (*view = #Null) Or (*view\editor = #Null))
+		ProcedureReturn_If( (*view = #Null) Or (*view\editor = #Null))
 		
 		Protected *te.TE_STRUCT = *view\editor
-		ProcedureReturnIf(*te = #Null)
+		ProcedureReturn_If(*te = #Null)
 		
 		Select EventType()
 			Case #PB_EventType_LeftButtonDown, #PB_EventType_KeyDown
@@ -9304,37 +9306,39 @@ DeclareModule PBEdit
 		#TE_EventType_Change
 		#TE_EventType_Remove
 	EndEnumeration
-
+	
+	UseModule _PBEdit_
+	
 	Declare PBEdit_Gadget(WindowID, X, Y, Width, Height, LanguageFile$ = "")
-	Declare PBEdit_LoadSettings(ID, Path$)
-	Declare PBEdit_LoadStyle(ID, Path$)
-	Declare PBEdit_EnableAutoRedraw(ID, Enabled)
+	Declare PBEdit_LoadSettings(*te.TE_STRUCT, Path$)
+	Declare PBEdit_LoadStyle(*te.TE_STRUCT, Path$)
+	Declare PBEdit_EnableAutoRedraw(*te.TE_STRUCT, Enabled)
 	
-	Declare PBEdit_CountGadgetItems(ID)
-	Declare PBEdit_AddGadgetItem(ID, Position, Text$)
-	Declare.s PBEdit_GetGadgetText(ID)
-	Declare.s PBEdit_GetGadgetItemText(ID, Position)
-	Declare PBEdit_SetGadgetText(ID, Text$)
-	Declare PBEdit_SetGadgetItemText(ID, Position, Text$)
-	Declare PBEdit_RemoveGadgetItem(ID, Position)
+	Declare PBEdit_CountGadgetItems(*te.TE_STRUCT)
+	Declare PBEdit_AddGadgetItem(*te.TE_STRUCT, Position, Text$)
+	Declare.s PBEdit_GetGadgetText(*te.TE_STRUCT)
+	Declare.s PBEdit_GetGadgetItemText(*te.TE_STRUCT, Position)
+	Declare PBEdit_SetGadgetText(*te.TE_STRUCT, Text$)
+	Declare PBEdit_SetGadgetItemText(*te.TE_STRUCT, Position, Text$)
+	Declare PBEdit_RemoveGadgetItem(*te.TE_STRUCT, Position)
 	
-	Declare PBEdit_GetCurrentLineNr(ID)
-	Declare PBEdit_GetCurrentCharNr(ID)
-	Declare PBEdit_GetCurrentColumnNr(ID)
-	Declare PBEdit_SetCurrentPosition(ID, LineNr, charNr)
-	Declare PBEdit_SetCurrentSelection(ID, LineNr, charNr)
-	Declare.s PBEdit_GetSelectedText(ID)
-	Declare PBEdit_SetText(ID, Text$)
+	Declare PBEdit_GetCurrentLineNr(*te.TE_STRUCT)
+	Declare PBEdit_GetCurrentCharNr(*te.TE_STRUCT)
+	Declare PBEdit_GetCurrentColumnNr(*te.TE_STRUCT)
+	Declare PBEdit_SetCurrentPosition(*te.TE_STRUCT, LineNr, charNr)
+	Declare PBEdit_SetCurrentSelection(*te.TE_STRUCT, LineNr, charNr)
+	Declare.s PBEdit_GetSelectedText(*te.TE_STRUCT)
+	Declare PBEdit_SetText(*te.TE_STRUCT, Text$)
 	
-	Declare PBEdit_GetFirstSelectedLineNr(ID)
-	Declare PBEdit_GetFirstSelectedCharNr(ID)
-	Declare PBEdit_GetLastSelectedLineNr(ID)
-	Declare PBEdit_GetLastSelectedCharNr(ID)
+	Declare PBEdit_GetFirstSelectedLineNr(*te.TE_STRUCT)
+	Declare PBEdit_GetFirstSelectedCharNr(*te.TE_STRUCT)
+	Declare PBEdit_GetLastSelectedLineNr(*te.TE_STRUCT)
+	Declare PBEdit_GetLastSelectedCharNr(*te.TE_STRUCT)
 	
-	Declare PBEdit_GetCursorCount(ID)
+	Declare PBEdit_GetCursorCount(*te.TE_STRUCT)
 	
-	Declare PBEdit_Undo(ID)
-	Declare PBEdit_Redo(ID)
+	Declare PBEdit_Undo(*te.TE_STRUCT)
+	Declare PBEdit_Redo(*te.TE_STRUCT)
 EndDeclareModule
 
 Module PBEdit
@@ -9357,8 +9361,8 @@ Module PBEdit
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_EnableAutoRedraw(ID, Enabled)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_EnableAutoRedraw(*te.TE_STRUCT, Enabled)
+		; Protected *te.TE_STRUCT = ID
 		Redraw = Bool(Enabled > 0)
 		If *te And Redraw
 			Scroll_Update(*te, *te\currentView, *te\currentCursor, 0, 0)
@@ -9367,33 +9371,34 @@ Module PBEdit
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_LoadSettings(ID, Path$)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_LoadSettings(*te.TE_STRUCT, Path$)
+		; Protected *te.TE_STRUCT = ID
 		If *te
 			Settings_OpenXml(*te, Path$)
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_LoadStyle(ID, Path$)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_LoadStyle(*te.TE_STRUCT, Path$)
+		; Protected *te.TE_STRUCT = ID
 		If *te
 			Styling_OpenXml(*te, Path$)
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_CountGadgetItems(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_CountGadgetItems(*te.TE_STRUCT)
+		; Protected *te.TE_STRUCT = ID
 		If *te
 			ProcedureReturn ListSize(*te\textLine())
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_AddGadgetItem(ID, Position, Text$)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_AddGadgetItem(*te.TE_STRUCT, Position, Text$)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			Protected lineNr
 			
 			Undo_Start(*te\undo)
+			
 			If Position < 0
 				If Textline_FromLine(*te, ListSize(*te\textLine()))
 					lineNr = ListIndex(*te\textLine())
@@ -9427,15 +9432,15 @@ Module PBEdit
 		EndIf
 	EndProcedure
 	
-	Procedure.s PBEdit_GetGadgetText(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure.s PBEdit_GetGadgetText(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			ProcedureReturn Text_Get(*te, 1, 1, ListSize(*te\textLine()), Textline_Length(LastElement(*te\textLine())) + 1)
 		EndIf
 	EndProcedure
 	
-	Procedure.s PBEdit_GetGadgetItemText(ID, Position)
-		Protected *te.TE_STRUCT = ID
+	Procedure.s PBEdit_GetGadgetItemText(*te.TE_STRUCT, Position)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			If Textline_FromLine(*te, Position + 1)
 				ProcedureReturn *te\textLine()\text
@@ -9444,8 +9449,8 @@ Module PBEdit
 		ProcedureReturn ""
 	EndProcedure
 	
-	Procedure PBEdit_SetGadgetText(ID, Text$)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_SetGadgetText(*te.TE_STRUCT, Text$)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			;Undo_Start(*te\undo)
 			Selection_SelectAll(*te)
@@ -9461,8 +9466,8 @@ Module PBEdit
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_SetGadgetItemText(ID, Position, Text$)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_SetGadgetItemText(*te.TE_STRUCT, Position, Text$)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			If Textline_FromLine(*te, Position + 1)
 				Undo_Start(*te\undo)
@@ -9476,8 +9481,8 @@ Module PBEdit
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_RemoveGadgetItem(ID, Position)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_RemoveGadgetItem(*te.TE_STRUCT, Position)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			If Textline_FromLine(*te, Position + 1)
 				Undo_Start(*te\undo)
@@ -9499,48 +9504,48 @@ Module PBEdit
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_GetCurrentLineNr(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_GetCurrentLineNr(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te And *te\currentCursor
 			ProcedureReturn *te\currentCursor\position\lineNr
 		EndIf
 		ProcedureReturn 0
 	EndProcedure
 	
-	Procedure PBEdit_GetCurrentCharNr(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_GetCurrentCharNr(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te And *te\currentCursor
 			ProcedureReturn *te\currentCursor\position\charNr
 		EndIf
 		ProcedureReturn 0
 	EndProcedure
 	
-	Procedure PBEdit_GetCurrentColumnNr(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_GetCurrentColumnNr(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te And *te\currentView And *te\currentCursor
 			ProcedureReturn Textline_ColumnFromCharNr(*te, *te\currentView, *te\currentcursor\position\textline, *te\currentCursor\position\charNr)
 		EndIf
 		ProcedureReturn 0
 	EndProcedure
 	
-	Procedure PBEdit_SetCurrentPosition(ID, LineNr, charNr)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_SetCurrentPosition(*te.TE_STRUCT, LineNr, charNr)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			Cursor_Position(*te, *te\currentCursor, LineNr, charNr)
 			PBEdit_Redraw(*te)
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_SetCurrentSelection(ID, LineNr, charNr)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_SetCurrentSelection(*te.TE_STRUCT, LineNr, charNr)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			Selection_SetRange(*te, *te\currentCursor, LineNr, charNr)
 			PBEdit_Redraw(*te)
 		EndIf
 	EndProcedure
 	
-	Procedure.s PBEdit_GetSelectedText(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure.s PBEdit_GetSelectedText(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			Protected selection.TE_RANGE
 			If Selection_Get(*te\currentCursor, selection)
@@ -9550,8 +9555,8 @@ Module PBEdit
 		ProcedureReturn ""
 	EndProcedure
 	
-	Procedure PBEdit_SetText(ID, Text$)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_SetText(*te.TE_STRUCT, Text$)
+		;Protected *te.TE_STRUCT = *te.TE_STRUCT
 		If *te And *te\currentCursor
 			Undo_Start(*te\undo)
 			Selection_Delete(*te, *te\currentCursor, *te\undo)
@@ -9569,8 +9574,8 @@ Module PBEdit
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_GetFirstSelectedLineNr(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_GetFirstSelectedLineNr(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			Protected selection.TE_RANGE
 			If Selection_Get(*te\currentCursor, selection)
@@ -9580,8 +9585,8 @@ Module PBEdit
 		ProcedureReturn 0
 	EndProcedure
 	
-	Procedure PBEdit_GetFirstSelectedCharNr(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_GetFirstSelectedCharNr(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			Protected selection.TE_RANGE
 			If Selection_Get(*te\currentCursor, selection)
@@ -9591,8 +9596,8 @@ Module PBEdit
 		ProcedureReturn 0
 	EndProcedure
 	
-	Procedure PBEdit_GetLastSelectedLineNr(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_GetLastSelectedLineNr(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			Protected selection.TE_RANGE
 			If Selection_Get(*te\currentCursor, selection)
@@ -9602,8 +9607,8 @@ Module PBEdit
 		ProcedureReturn 0
 	EndProcedure
 	
-	Procedure PBEdit_GetLastSelectedCharNr(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_GetLastSelectedCharNr(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			Protected selection.TE_RANGE
 			If Selection_Get(*te\currentCursor, selection)
@@ -9613,16 +9618,16 @@ Module PBEdit
 		ProcedureReturn 0
 	EndProcedure
 	
-	Procedure PBEdit_GetCursorCount(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_GetCursorCount(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			ProcedureReturn ListSize(*te\cursor())
 		EndIf
 		ProcedureReturn 0
 	EndProcedure
 	
-	Procedure PBEdit_Undo(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_Undo(*te.TE_STRUCT)
+		;;; Protected *te.TE_STRUCT = ID
 		If *te
 			If Undo_Do(*te, *te\undo, *te\redo)
 				PBEdit_Redraw(*te)
@@ -9630,8 +9635,8 @@ Module PBEdit
 		EndIf
 	EndProcedure
 	
-	Procedure PBEdit_Redo(ID)
-		Protected *te.TE_STRUCT = ID
+	Procedure PBEdit_Redo(*te.TE_STRUCT)
+		;; Protected *te.TE_STRUCT = ID
 		If *te
 			If Undo_Do(*te, *te\redo, *te\undo)
 				PBEdit_Redraw(*te)
@@ -9668,6 +9673,17 @@ editor = PBedit_Gadget(0, 5, ToolBarHeight(0), WindowWidth(0) - 10, WindowHeight
 If editor = 0
 	MessageRequester("", "Error") : End
 EndIf
+
+Define text.s = "structure" + #CRLF$ +
+                "widget.i" + #CRLF$ +
+                "gadget.i" + #CRLF$ +
+                "endstructure" + #CRLF$ +
+                "" + #CRLF$ +
+                "procedure" + #CRLF$ +
+                "endprocedure" + #CRLF$ 
+                
+PBEdit_SetGadgetText(editor, text)
+
 
 PBEdit_LoadSettings(editor, "PBEdit_Color.xml")
 PBEdit_LoadStyle(editor, "PBEdit_PureBasic.xml")
@@ -9711,11 +9727,9 @@ Repeat
 	EndSelect
 ForEver
 CompilerEndIf
-
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = --------------------------------------v-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = BAAASAQBAAAAAgaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD9
 ; EnableXP
 ; DPIAware
 ; Executable = TextEditor_x64.exe
-; DisableDebugger
 ; DisablePurifier = 1,1,1,1

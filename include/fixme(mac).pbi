@@ -204,10 +204,12 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         *drawing\fontID = FontID
         
         If *drawing\fontID
-          ; *drawing\attributes = CocoaMessage(0, 0, "NSDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
-        *drawing\attributes = CocoaMessage(0, 0, "NSMutableDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
-         EndIf
+          *drawing\attributes = CocoaMessage(0, 0, "NSDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
+         ;  *drawing\attributes = CocoaMessage(0, 0, "NSMutableDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
+        EndIf
+        
         CocoaMessage(@*drawing\size, CocoaMessage(0, 0, "NSString stringWithString:$", @""), "sizeWithAttributes:", *drawing\attributes)
+        *drawing\size\height - 2 
       EndProcedure
       
       Procedure.i mac_DrawingMode(Mode.i)
@@ -230,17 +232,38 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           ;          Protected Font = CocoaMessage(0, 0, "NSFont fontWithName:$", @"Arial", "size:@", @FontSize)
           CocoaMessage(0, Attributes, "setValue:", *drawing\fontID, "forKey:$", @"NSFont")
           
-          r = Red(FrontColor)/255 : g = Green(FrontColor)/255 : b = Blue(FrontColor)/255 : a = 1
+          r = Red(FrontColor)/255 : g = Green(FrontColor)/255 : b = Blue(FrontColor)/255 
+          a = Alpha(FrontColor)/255
+          If a = 0
+            If *drawing\mode&#PB_2DDrawing_AlphaClip
+            ElseIf *drawing\mode&#PB_2DDrawing_AlphaBlend
+            ElseIf *drawing\mode&#PB_2DDrawing_AlphaChannel
+            ElseIf *drawing\mode&#PB_2DDrawing_AllChannels
+            Else
+              a = 1
+            EndIf
+          EndIf
           Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
           CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSColor")
           
-          r = Red(BackColor)/255 : g = Green(BackColor)/255 : b = Blue(BackColor)/255 : a = Bool(*drawing\mode&#PB_2DDrawing_Transparent=0)
-          Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
-          CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSBackgroundColor")  
+; ;           r = Red(BackColor)/255 : g = Green(BackColor)/255 : b = Blue(BackColor)/255 : a = Bool(*drawing\mode&#PB_2DDrawing_Transparent=0)
+; ;           Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
+; ;           CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSBackgroundColor")  
           
           NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
           CocoaMessage(@Size, NSString, "sizeWithAttributes:", Attributes)
+          ;Size\height - 2 ;; bug
           
+          
+          ; ;           If Angle = 0
+          ; ;             y - 2
+          ; ;           ElseIf Angle = 90
+          ; ;             ;;y - 1
+          ; ;           ElseIf Angle = 180
+          ; ;             y + 3
+          ; ;           ElseIf Angle = 270
+          ; ;             ;;y - 1
+          ; ;           EndIf
           
           If Angle
             CocoaMessage(0, 0, "NSGraphicsContext saveGraphicsState")
@@ -557,5 +580,5 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------
+; Folding = ----------
 ; EnableXP

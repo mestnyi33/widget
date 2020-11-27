@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Uselib(widget)
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-  ; Text(_x_,_y_,_width_,_height_,_text_,_flag_)
+  ;Text(_x_,_y_,_width_,_height_,_text_,_flag_)
   ; Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
   ; Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)
   ; CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__text_multiline)

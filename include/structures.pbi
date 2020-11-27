@@ -582,9 +582,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       caption._s_caption
       scroll._s_scroll 
       color._s_color[4]
-      row._s_row
       bar._s_bar
       
+      row._s_row
       text._s_text 
       
       button._s_buttons ; checkbox; optionbox
@@ -678,5 +678,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = nCd0-fO+
+; Folding = HACAAQIg
 ; EnableXP

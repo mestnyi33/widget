@@ -27,13 +27,13 @@
     ; Цвета если мышь на виджете
     \front[1] = $ff000000
     \fore[1] = $FFFAF8F8
-    \back[1] = $ffFCEADA
-    \frame[1] = $ffFFC288
+    \back[1] = $ffFCEADA ; RGBA(218, 234, 252, 255)
+    \frame[1] = $ffFFC288 ; RGBA(135, 194, 255, 255)
     
     ; Цвета если нажали на виджет
     \front[2] = $FFFEFEFE
     \fore[2] = $FFE9BA81;$C8FFFCFA
-    \back[2] = $FFE89C3D; $80E89C3D
+    \back[2] = $FFE89C3D; $80E89C3D ; RGBA(60, 155, 232, 128)
     \frame[2] = $FFDC9338; $80DC9338
     
     ;     ; Цвета если нажали на виджет
@@ -46,8 +46,8 @@
     ; Цвета если отключили виджет
     \front[3] = $FFBABABA
     \fore[3] = $FFF6F6F6 
-    \back[3] = $FFE2E2E2 
-    \frame[3] = $FFCECECE
+    \back[3] = $FFE2E2E2 ; RGBA(226, 226, 226, 255)
+    \frame[3] = $FFCECECE ; RGBA(206, 206, 206, 255)
   EndWith
   
   ;- green - (зеленые цвета)

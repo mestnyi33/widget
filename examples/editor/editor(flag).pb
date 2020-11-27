@@ -80,7 +80,8 @@ CompilerIf #PB_Compiler_IsMainFile
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
     ;*this = widget::Button(100, 100, 250, 250, get_text(), #__button_multiline);|#__flag_anchorsgadget);|#__text_vertical) 
-    *this = widget::Editor(100, 100, 250, 250, #__text_wordwrap) : SetText(*this, get_text())
+    *this = widget::Editor(100, 100, 250, 250);, #__text_wordwrap) 
+    SetText(*this, get_text())
     
     Define y = 10
     ; flag

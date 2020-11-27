@@ -137,26 +137,50 @@ EndProcedure
 
 
 CompilerIf #PB_Compiler_IsMainFile
+  EnableExplicit
+  
+  Global event
+  Global *te._PBEdit_::TE_STRUCT
+  
   Enumeration 1
     #tlb_undo
     #tlb_redo
   EndEnumeration
   
-  OpenWindow(0,	0, 0, 400, 400, "TextEditor", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget );;| #PB_Window_Maximize)
+  Procedure resize_window()
+    If *te And (EventWindow() = 0)
+      _PBEdit_::Event_Resize(*te, #PB_Ignore, #PB_Ignore, WindowWidth(0) - 10, WindowHeight(0) - (ToolBarHeight(0) + MenuHeight() + StatusBarHeight(0)))
+    EndIf
+  EndProcedure
   
-  CreateToolBar(0, WindowID(0))
-  ToolBarStandardButton(#tlb_undo, #PB_ToolBarIcon_Undo)
-  ToolBarStandardButton(#tlb_redo, #PB_ToolBarIcon_Redo)
-  CreateStatusBar(0, WindowID(0))
-  AddStatusBarField(DesktopScaledX(200))
-  AddStatusBarField(DesktopScaledX(200))
-  AddStatusBarField(DesktopScaledX(500))
-  AddStatusBarField(DesktopScaledX(200))
+  OpenWindow(0,	0, 0, 400, 400, "TextEditor", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget );;| #PB_Window_Maximize)
+  BindEvent(#PB_Event_SizeWindow, @resize_window())
+  
+  If CreateMenu(0, WindowID(0))    ; menu creation starts....
+    MenuTitle("edit")
+    MenuItem(#tlb_undo, "undo"   +Chr(9)+"Ctrl+U")
+    MenuItem(#tlb_redo, "redo"   +Chr(9)+"Ctrl+R")
+  EndIf
+  
+  If CreateToolBar(0, WindowID(0))
+    ToolBarStandardButton(#tlb_undo, #PB_ToolBarIcon_Undo)
+    ToolBarStandardButton(#tlb_redo, #PB_ToolBarIcon_Redo)
+  EndIf
+  
+  If CreateStatusBar(0, WindowID(0))
+    AddStatusBarField(DesktopScaledX(200))
+    AddStatusBarField(DesktopScaledX(200))
+    AddStatusBarField(DesktopScaledX(500))
+    AddStatusBarField(DesktopScaledX(200))
+  EndIf
   WindowBounds(0, 100,100, #PB_Ignore, #PB_Ignore)
   
   *te._PBEdit_::TE_STRUCT = Editor(5, 5+ToolBarHeight(0), WindowWidth(0) - 10, WindowHeight(0) - (ToolBarHeight(0) + MenuHeight() + StatusBarHeight(0)) - 10)
   
-  
+ ;IncludePath  "/Users/as/Documents/GitHub/widget/include/editor"
+ ;PBEdit_LoadSettings(*te, "/Users/as/Documents/GitHub/widget/include/editor/PBEdit_Color.xml")
+ ;PBEdit_LoadStyle(*te, "/Users/as/Documents/GitHub/widget/include/editor/PBEdit_PureBasic.xml")
+
   Define a, Text.s
   ; Define m.s=#CRLF$
   Define m.s=#LF$
@@ -175,6 +199,17 @@ CompilerIf #PB_Compiler_IsMainFile
            "The string must be very long." + m.s +
            "Otherwise it will not work." ;+ m.s +
   
+; ;   Define text.s = "structure" + #CRLF$ +
+; ;                 "widget.i" + #CRLF$ +
+; ;                 "gadget.i" + #CRLF$ +
+; ;                 "endstructure" + #CRLF$ +
+; ;                 "" + #CRLF$ +
+; ;                 "procedure Open(1,2,3,4)" + #CRLF$ +
+; ;                 "endprocedure" + #CRLF$ 
+                
+;PBEdit_SetGadgetText(editor, text)
+
+
   SetText(*te, text)
   For a = 0 To 2
     AddItem(*te, a, "Line "+Str(a))
@@ -193,26 +228,23 @@ CompilerIf #PB_Compiler_IsMainFile
         If EventWindow() = 0
           End
         EndIf
-      Case #PB_Event_SizeWindow
-        If *te And (EventWindow() = 0)
-          _PBEdit_::Event_Resize(*te, #PB_Ignore, #PB_Ignore, WindowWidth(0) - 10, WindowHeight(0) - (ToolBarHeight(0) + MenuHeight() + StatusBarHeight(0)))
-        EndIf
       Case #PB_Event_Menu
         If EventMenu() = #tlb_undo
-          PBEdit_Undo(0)
+          PBEdit_Undo(*te)
         ElseIf EventMenu() = #tlb_redo
-          PBEdit_Redo(0)
+          PBEdit_Redo(*te)
         EndIf
+        
       Case #PB_Event_Gadget
-        StatusBarText(0, 0, "lineNr: " + Str(PBEdit_GetCurrentLineNr(0)) +
-                            "  Column: " + Str(PBEdit_GetCurrentColumnNr(0)) +
-                            "  (Char: " + Str(PBEdit_GetCurrentCharNr(0)) + ")")
+        StatusBarText(0, 0, "lineNr: " + Str(PBEdit_GetCurrentLineNr(*te)) +
+                            "  Column: " + Str(PBEdit_GetCurrentColumnNr(*te)) +
+                            "  (Char: " + Str(PBEdit_GetCurrentCharNr(*te)) + ")")
         
         StatusBarText(0, 1, "Selection [" + 
-                            Str(PBEdit_GetFirstSelectedLineNr(0)) + ", " + 
-                            Str(PBEdit_GetFirstSelectedCharNr(0)) + "] [" + 
-                            Str(PBEdit_GetLastSelectedLineNr(0)) + ", " + 
-                            Str(PBEdit_GetLastSelectedCharNr(0)) + "]" )
+                            Str(PBEdit_GetFirstSelectedLineNr(*te)) + ", " + 
+                            Str(PBEdit_GetFirstSelectedCharNr(*te)) + "] [" + 
+                            Str(PBEdit_GetLastSelectedLineNr(*te)) + ", " + 
+                            Str(PBEdit_GetLastSelectedCharNr(*te)) + "]" )
         StatusBarText(0, 2, "Cursors: " + Str(ListSize(*te\cursor())))
     EndSelect
     
@@ -223,5 +255,5 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----
+; Folding = -----
 ; EnableXP

@@ -1,4 +1,9 @@
-﻿; -=PBEdit 1.0.6=-
+﻿IncludePath "/Users/as/Documents/GitHub/widget/"
+XIncludeFile "widgets.pbi"
+
+UseLib(widget)
+
+; -=PBEdit 1.0.6=-
 ; ----------------------------------------------------------------------------------
 ; a canvas-based Texteditor -> PureBasic only <- no external libraries
 ;
@@ -85,785 +90,10 @@
 ;	SOFTWARE.
 
 DeclareModule _PBEdit_
+	IncludeFile "include/editor/TE/Te_const.pbi"
+	IncludeFile "include/editor/TE/Te_struct.pbi"
+	IncludeFile "include/editor/TE/Te_declare.pbi"
 	
-	#TE_CharSize = SizeOf(Character)
-	#TE_VectorDrawAdjust = 0.5
-	#TE_VectorDrawWidth = 1.0
-	#TE_CharRange = 256;65536
-	#TE_MaxScrollbarHeight = 10000
-	#TE_MaxCursors = 2500
-	#TE_Ignore = 0
-	
-	Enumeration #PB_Event_FirstCustomValue
-		#TE_Event_Cursor
-		#TE_Event_Selection
-		
-		#TE_EventType_Add
-		#TE_EventType_Change
-		#TE_EventType_Remove
-	EndEnumeration
-	
-	EnumerationBinary
-		#TE_Redraw_ChangedLined
-		#TE_Redraw_All
-	EndEnumeration
-	
-	Enumeration 1
-		#TE_Style_None
-		#TE_Style_Keyword
-		#TE_Style_Function
-		#TE_Style_Structure
-		#TE_Style_Text
-		#TE_Style_String
-		#TE_Style_Quote
-		#TE_Style_Comment
-		#TE_Style_Number
-		#TE_Style_Pointer
-		#TE_Style_Address
-		#TE_Style_Constant
-		#TE_Style_Operator
-		#TE_Style_Backslash
-		#TE_Style_Comma
-		#TE_Style_Bracket
-		#TE_Style_Highlight
-		#TE_Style_CodeMatch
-		#TE_Style_CodeMismatch
-		#TE_Style_BracketMatch
-		#TE_Style_BracketMismatch
-		#TE_Style_Label
-	EndEnumeration
-	Global Dim StyleEnumName.s(64)
-	StyleEnumName(#TE_Style_None) = "None"
-	StyleEnumName(#TE_Style_Keyword) = "Keyword"
-	StyleEnumName(#TE_Style_Function) = "Function"
-	StyleEnumName(#TE_Style_Structure) = "Structure"
-	StyleEnumName(#TE_Style_Text) = "Text"
-	StyleEnumName(#TE_Style_String) = "String"
-	StyleEnumName(#TE_Style_Quote) = "Quote"
-	StyleEnumName(#TE_Style_Comment) = "Comment"
-	StyleEnumName(#TE_Style_Number) = "Number"
-	StyleEnumName(#TE_Style_Pointer) = "Pointer"
-	StyleEnumName(#TE_Style_Address) = "Address"
-	StyleEnumName(#TE_Style_Constant) = "Constant"
-	StyleEnumName(#TE_Style_Operator) = "Operator"
-	StyleEnumName(#TE_Style_Backslash) = "Backslash"
-	StyleEnumName(#TE_Style_Comma) = "Comma"
-	StyleEnumName(#TE_Style_Bracket) = "Bracket"
-	StyleEnumName(#TE_Style_Highlight) = "Highlight"
-	StyleEnumName(#TE_Style_CodeMatch) = "CodeMatch"
-	StyleEnumName(#TE_Style_CodeMismatch) = "CodeMismatch"
-	StyleEnumName(#TE_Style_BracketMatch) = "BracketMatch"
-	StyleEnumName(#TE_Style_BracketMismatch) = "BracketMismatch"
-	StyleEnumName(#TE_Style_Label) = "Label"
-		
-	Enumeration
-		#TE_Token_Unknown
-		#TE_Token_Whitespace			;  space or tab
-		#TE_Token_Text
-		#TE_Token_Number
-		#TE_Token_Operator				;  + - / & | ! ~
-		#TE_Token_Compare				;  < >
-		#TE_Token_Backslash
-		#TE_Token_Point
-		#TE_Token_Equal
-		#TE_Token_Comma
-		#TE_Token_Colon					;  :
-		#TE_Token_BracketOpen			;  ( [ {
-		#TE_Token_BracketClose			;  ) ] }
-		#TE_Token_String				;  "..."
-		#TE_Token_Quote					;  '...'
-		#TE_Token_Comment				;  ;...
-		#TE_Token_EOL					; End of line
-	EndEnumeration
-	
-	Global Dim TokenEnumName.s(64)
-	TokenEnumName(#TE_Token_Unknown) = "unknown"
-	TokenEnumName(#TE_Token_Whitespace) = "whiteSpace"
-	TokenEnumName(#TE_Token_Text) = "text"
-	TokenEnumName(#TE_Token_Number) = "number"
-	TokenEnumName(#TE_Token_Operator) = "operator"
-	TokenEnumName(#TE_Token_Compare) = "compare"
-	TokenEnumName(#TE_Token_Backslash) = "backslash"
-	TokenEnumName(#TE_Token_Point) = "point"
-	TokenEnumName(#TE_Token_Equal) = "equal"
-	TokenEnumName(#TE_Token_Comma) = "comma"
-	TokenEnumName(#TE_Token_Colon) = "colon"
-	TokenEnumName(#TE_Token_BracketOpen) = "bracketOpen"
-	TokenEnumName(#TE_Token_BracketClose) = "bracketClose"
-	TokenEnumName(#TE_Token_String) = "string"
-	TokenEnumName(#TE_Token_Quote) = "quote"
-	TokenEnumName(#TE_Token_Comment) = "comment"
-	TokenEnumName(#TE_Token_EOL) = "EOL"
-	
-	EnumerationBinary
-		#TE_Styling_UpdateFolding
-		#TE_Styling_UpdateIndentation
-		#TE_Styling_UnfoldIfNeeded
-		#TE_Styling_CaseCorrection
-		#TE_Styling_All = #TE_Styling_UpdateFolding | #TE_Styling_UpdateIndentation | #TE_Styling_UnfoldIfNeeded | #TE_Styling_CaseCorrection
-	EndEnumeration
-	
-	EnumerationBinary
-		#TE_Find_Next
-		#TE_Find_Previous
-		#TE_Find_StartAtCursor
-		#TE_Find_CaseSensitive
-		#TE_Find_WholeWords
-		#TE_Find_NoComments
-		#TE_Find_NoStrings
-		#TE_Find_RegEx
-		#TE_Find_InsideSelection
-		#TE_Find_Replace
-		#TE_Find_ReplaceAll
-	EndEnumeration
-	
-	Enumeration
-		#TE_Indentation_None
-		#TE_Indentation_Block
-		#TE_Indentation_Auto
-	EndEnumeration
-	
-	Enumeration
-		#TE_Folding_Unfolded = 1
-		#TE_Folding_Folded = 2
-		#TE_Folding_End = -1
-	EndEnumeration
-	
-	Enumeration
-		#TE_Text_LowerCase
-		#TE_Text_UpperCase
-	EndEnumeration
-	
-	Enumeration 1
-		#TE_Undo_Start
-		#TE_Undo_AddText
-		#TE_Undo_DeleteText
-	EndEnumeration
-	
-	Enumeration 1
-		#TE_MousePosition_LineNumber
-		#TE_MousePosition_FoldState
-		#TE_MousePosition_TextArea
-	EndEnumeration
-	
-	Enumeration
-		#TE_View_SplitHorizontal
-		#TE_View_SplitVertical
-	EndEnumeration
-	
-	Enumeration 1
-		#TE_Cursor_Normal
-		#TE_Cursor_DragDrop
-	EndEnumeration
-	
-	Enumeration
-		#TE_Timer_CursorBlink
-		#TE_Timer_Scroll
-	EndEnumeration
-	
-	Enumeration
-		#TE_CursorState_Idle = -1
-		#TE_CursorState_DragMove = 1
-		#TE_CursorState_DragCopy = 2
-	EndEnumeration
-	
-	Enumeration
-		#TE_Autocomplete_FindAtBegind
-		#TE_Autocomplete_FindAny
-	EndEnumeration
-	
-	Enumeration 100
-		#TE_Menu_Cut
-		#TE_Menu_Copy
-		#TE_Menu_Paste
-		#TE_Menu_InsertComment
-		#TE_Menu_RemoveComment
-		#TE_Menu_FormatIndentation
-		#TE_Menu_ToggleFold
-		#TE_Menu_ToggleAllFolds
-		#TE_Menu_SelectAll
-		#TE_Menu_SplitViewHorizontal
-		#TE_Menu_SplitViewVertical
-		#TE_Menu_UnsplitView
-		
-		#TE_Menu_ReturnKey
-		#TE_Menu_EscapeKey
-	EndEnumeration
-	
-	EnumerationBinary
-		#TE_Marker_Bookmark
-		#TE_Marker_Breakpoint
-	EndEnumeration
-	
-	EnumerationBinary 1
-		#TE_Flag_Start
-		#TE_Flag_End
-		#TE_Flag_Container
-		#TE_Flag_Procedure
-		#TE_Flag_Return
-		#TE_Flag_Loop
-		#TE_Flag_Break
-		#TE_Flag_Continue
-		#TE_Flag_Compiler
-		#TE_Flag_Multiline
-		#TE_Flag_NoWhiteSpace
-		#TE_Flag_NoBlankLines
-		#TE_Flag_Foldable
-	EndEnumeration
-	
-	EnumerationBinary
-		#TE_Parser_State_EOL
-		#TE_Parser_State_EOF
-	EndEnumeration
-	
-	Enumeration
-		#TE_ScrollbarEnabled = 1
-		#TE_ScrollbarAlwaysOn = 2
-	EndEnumeration
-	
-	Structure TE_COLORSCHEME
-		defaultTextColor.i
-		selectedTextColor.i
-		cursor.i
-		inactiveBackground.i
-		currentBackground.i
-		selectionBackground.i
-		currentLine.i
-		currentLineBackground.i
-		inactiveLineBackground.i
-		indentationGuides.i
-		repeatedSelections.i
-		lineNr.i
-		currentLineNr.i
-		lineNrBackground.i
-		foldIcon.i
-		foldIconBorder.i
-		foldIconBackground.i
-	EndStructure
-	
-	Structure TE_TEXTSTYLE
-		fColor.i
-		bColor.i
-		fontNr.i
-		underlined.i
-	EndStructure
-	
-	Structure TE_TOKEN
-		type.b
-		charNr.l
-		*text.Character
-		size.l
-	EndStructure
-	
-	Structure TE_FONT
-		name.s
-		nr.i
-		id.i
-		size.i
-		height.i
-		style.i
-		Array width.i(#TE_CharRange)
-	EndStructure
-	
-	Structure TE_PARSER
-		*textline.TE_TEXTLINE
-		*token.TE_TOKEN
-		Array tokenType.c(#TE_CharRange)
-		lineNr.i
-		tokenIndex.i
-		state.i
-	EndStructure
-	
-	Structure TE_SYNTAX
-		keyword.s
-		flags.i
-		Map before.TE_SYNTAX()
-		Map after.TE_SYNTAX()
-	EndStructure
-	
-	Structure TE_KEYWORD
-		name.s
-		style.b
-		foldState.b
-		indentationBefore.b
-		indentationAfter.b
-		caseCorrection.b
-	EndStructure
-	
-	Structure TE_KEYWORDITEM
-		name.s
-		length.i
-	EndStructure
-	
-	Structure TE_INDENTATIONPOS
-		*textLine.TE_TEXTLINE
-		charNr.i
-	EndStructure
-	
-	Structure TE_POSITION
-		*textline.TE_TEXTLINE
-		lineNr.i
-		visibleLineNr.i
-		charNr.i
-		charX.i
-		currentX.i
-		width.i
-	EndStructure
-	
-	Structure TE_RANGE
-		pos1.TE_POSITION
-		pos2.TE_POSITION
-	EndStructure
-	
-	Structure TE_CURSORSTATE
-		overwrite.i
-		compareMode.i
-		
-		blinkDelay.i
-		blinkSuspend.i
-		blinkState.i
-		
-		buttons.i
-		modifiers.i
-		
-		clickSpeed.i				; in Event_Mouse
-		clickCount.i				; in Event_Mouse:	used to detect 'double/tripple/... -click'
-		firstClickTime.i			; in Event_Mouse
-		firstClickX.i				; in Event_Mouse:	first x-position of the mouse
-		firstClickY.i				; in Event_Mouse:	first y-position of the mouse
-		firstSelection.TE_RANGE		; in Event_Mouse:	first selection
-		lastSelection.TE_RANGE
-		lastPosition.TE_POSITION	; in Event_Mouse:	previous position
-		
-		state.i
-		dragStart.i
-		dragText.s
-		dragTextPreview.s
-		dragPosition.TE_POSITION
-		
-		mouseX.i					; mouse Position inside Canvas
-		mouseY.i
-		windowMouseX.i				; mouse Position inside Window
-		windowMouseY.i
-		desktopMouseX.i				; mouse Position inside Desktop
-		desktopMouseY.i
-		deltaX.i					; mouse movement
-		deltaY.i
-	EndStructure
-	
-	Structure TE_CURSOR
-		firstPosition.TE_POSITION
-		lastPosition.TE_POSITION
-		position.TE_POSITION
-		
-		lastSelection.TE_POSITION
-		selection.TE_POSITION
-		
-		visible.i
-		number.i
-	EndStructure
-	
-	Structure TE_SCROLL
-		visibleLineNr.i
-		charX.i
-		scrollTime.i
-		scrollDelay.i
-		autoScroll.i				; activated, when the mouse is in upper or lower canvas position
-	EndStructure
-	
-	Structure TE_SCROLLBAR
-		gadget.i
-		enabled.i
-		isHidden.i
-		scale.d
-	EndStructure
-	
-	Structure TE_FIND
-		wnd_findReplace.i
-		cmb_search.i
-		txt_search.i
-		chk_replace.i
-		cmb_replace.i
-		frm_0.i
-		chk_caseSensitive.i
-		chk_wholeWords.i
-		chk_insideSelection.i
-		chk_noComments.i
-		chk_noStrings.i
-		chk_regEx.i
-		btn_findNext.i
-		btn_findPrevious.i
-		btn_replace.i
-		btn_replaceAll.i
-		btn_close.i
-		
-		text.s
-		replace.s
-		replaceCount.i
-		flags.i
-		startPos.TE_POSITION
-		endPos.TE_POSITION
-		
-		regEx.i
-		
-		isVisible.i
-	EndStructure
-	
-	Structure TE_AUTOCOMPLETE
-		wnd_autocomplete.i
-		lst_listBox.i
-		
-		font.TE_FONT
-		
-		minCharacterCount.i
-		maxRows.i
-		
-		isVisible.i
-		enabled.i
-		
-		mode.i
-	EndStructure
-	
-	Structure TE_UNDOENTRY
-		action.b
-		startPos.TE_POSITION
-		endPos.TE_POSITION
-		text.s
-	EndStructure
-	
-	Structure TE_UNDO
-		List entry.TE_UNDOENTRY()
-		
-		start.i
-		index.i
-		clearRedo.i
-	EndStructure
-	
-	Structure TE_SYNTAXHIGHLIGHT
-		style.i
-		*textline.TE_TEXTLINE
-		startCharNr.i
-		EndCharNr.i
-	EndStructure
-	
-	Structure TE_TEXTBLOCK
-		firstVisibleLineNr.i
-		firstLineNr.i
-		firstCharNr.i
-		lastVisibleLineNr.i
-		lastLineNr.i
-		lastCharNr.i
-		*firstLine.TE_TEXTLINE
-		*lastLine.TE_TEXTLINE
-	EndStructure
-	
-	Structure TE_TEXTLINE
-		text.s
-		textWidth.d
-		
-		Array style.b(0)
-		Array syntaxHighlight.b(0)
-		Array token.TE_TOKEN(0)
-		
-		tokenCount.i
-		
-		foldState.b				; #TE_Folding_Folded		start of textblock (folded)
-		; #TE_Folding_Unfolded		start of textblock (unfolded)
-		; #TE_Folding_End			end of textblock
-		foldCount.l
-		foldSum.l
-		
-		indentationBefore.b
-		indentationAfter.b
-		
-		needRedraw.b
-		needStyling.b
-		marker.b
-	EndStructure
-	
-	Structure TE_VIEW
-		*editor.TE_STRUCT
-		canvas.i
-		
-		x.i
-		y.i
-		width.i
-		height.i
-		zoom.d
-		
-		pageHeight.i
-		pageWidth.i
-		
-		firstVisibleLineNr.i
-		lastVisibleLineNr.i
-		
-		scroll.TE_SCROLL
-		
-		scrollBarH.TE_SCROLLBAR
-		scrollBarV.TE_SCROLLBAR
-		
-		*parent.TE_VIEW
-		*child.TE_VIEW[2]
-	EndStructure
-	
-	Structure TE_LANGUAGE
-		fileName.s
-		
-		errorTitle.s
-		errorRegEx.s
-		errorNotFound.s
-		
-		warningTitle.s
-		warningLongText.s
-		
-		gotoTitle.s
-		gotoMessage.s
-		
-		messageTitleFindReplace.s
-		messageNoMoreMatches.s
-		messageNoMoreMatchesStart.s
-		messageNoMoreMatchesEnd.s
-		messageReplaceComplete.s
-	EndStructure
-	
-	Structure TE_STRUCT
-		*view.TE_VIEW
-		*currentView.TE_VIEW
-		
-		List textLine.TE_TEXTLINE()
-		List textBlock.TE_TEXTBLOCK()
-		List syntaxHighlight.TE_SYNTAXHIGHLIGHT()
-		List lineHistory.i()
-		
-		Map keyWord.TE_KEYWORD()
-		Map keyWordLineContinuation.s()
-		Map autoCompleteList.s()
-		Map syntax.TE_SYNTAX()
-		
-		Array font.TE_FONT(8)
-		fontName.s
-		
-		laguage.TE_LANGUAGE
-		
-		x.i
-		y.i
-		width.i
-		height.i
-		
-		lineHeight.i
-		
-		parser.TE_PARSER
-		
-		visibleLineCount.i
-		
-		window.i
-		popupMenu.i
-		autocomplete.TE_AUTOCOMPLETE
-		
-		maxLineWidth.i
-		maxTextWidth.i
-		
-		scrollbarWidth.i
-		leftBorderOffset.i
-		leftBorderSize.i
-		topBorderSize.i
-		
-		cursorState.TE_CURSORSTATE
-		List cursor.TE_CURSOR()
-		*currentCursor.TE_CURSOR
-		*maincursor.TE_CURSOR
-		
-		undo.TE_UNDO
-		redo.TE_UNDO
-		
-		find.TE_FIND
-		
-		needScrollUpdate.i
-		needFoldUpdate.i
-		redrawMode.i
-		
-		highlightSyntax.i
-		highlightSelection.s
-		highlightMode.i
-		
-		Array textStyle.TE_TEXTSTYLE(255)
-		
-		indentationMode.i
-		
-		useRealTab.i
-		tabSize.i
-		
-		commentChar.s
-		uncommentChar.s
-		
-		newLineText.s
-		newLineChar.c
-		
-		colors.TE_COLORSCHEME
-		
-		enableScrollBarHorizontal.b
-		enableScrollBarVertical.b
-		enableStyling.b
-		enableLineNumbers.b
-		enableShowCurrentLine.b
-		enableFolding.b
-		enableIndentation.b
-		enableCaseCorrection.b
-		enableIndentationLines.b
-		enableShowWhiteSpace.b
-		enableAutoComplete.b
-		enableDictionary.b
-		enableSyntaxCheck.b
-		enableBeautify.b
-		enableMultiCursor.b
-		enableSplitScreen.b
-		enableSelectPastedText.b
-		enableHighlightSelection.b
-	EndStructure
-	
-	;-
-	;- ------------ DECLARE -----------
-	;-
-	
-	Declare Editor_New(window, x, y, width, height, languageFile.s = "")
-	
-	Declare View_Add(*te.TE_STRUCT, x, y, width, height, *parent.TE_VIEW, *view.TE_VIEW = #Null)
-	Declare View_Split(*te.TE_STRUCT, x, y, splitMode = #TE_View_SplitHorizontal)
-	Declare View_Unsplit(*te.TE_STRUCT, x, y)
-	Declare View_FromMouse(*te.TE_STRUCT, *view.TE_VIEW, x, y)
-	
-	Declare Max(a, b)
-	Declare Min(a, b)
-	Declare Clamp(value, min, max)
-	Declare.s TokenName(*token.TE_TOKEN)
-	Declare.s TokenText(*token.TE_TOKEN)
-	Declare LineNr_from_VisibleLineNr(*te.TE_STRUCT, visibleLineNr)
-	Declare LineNr_to_VisibleLineNr(*te.TE_STRUCT, lineNr)
-	Declare BorderSize(*te.TE_STRUCT)
-	Declare Position_InsideRange(*pos.TE_POSITION, *range.TE_RANGE, includeBorder = #True)
-	Declare Position_Equal(*pos1.TE_POSITION, *pos2.TE_POSITION)
-	Declare Position_Changed(*pos1.TE_POSITION, *pos2.TE_POSITION)
-	
-	Declare.s Text_Get(*te.TE_STRUCT, startLineNr, startCharNr, endLineNr, endCharNr)
-	
-	Declare Undo_Start(*undo.TE_UNDO)
-	Declare Undo_Add(*undo.TE_UNDO, action, startLineNr = 0, startCharNr = 0, endLineNr = 0, endCharNr = 0, text.s = "")
-	Declare Undo_Do(*te.TE_STRUCT, *undo.TE_UNDO, *redo.TE_UNDO)
-	Declare Undo_Update(*te.TE_STRUCT)
-	Declare Undo_Clear(*undo.TE_UNDO)
-	
-	Declare Syntax_Add(*te.TE_STRUCT, text.s, flags = #TE_Flag_Multiline)
-	
-	Declare Style_Textline(*te.TE_STRUCT, *textLine.TE_TEXTLINE, flags = 0)
-	Declare Style_LoadFont(*te.TE_STRUCT, *font.TE_FONT, fontName.s, fontSize, fontStyle = 0)
-	Declare Style_SetFont(*te.TE_STRUCT, fontName.s, fontSize, fontStyle = 0)
-	Declare Style_Set(*te.TE_STRUCT, styleNr, fontNr, color, bColor = #TE_Ignore, underlined = #False)
-	Declare Style_SetDefaultStyle(*te.TE_STRUCT)
-	Declare Style_FromCharNr(*textLine.TE_TEXTLINE, charNr, scanWholeLine = #False)
-	
-	Declare Parser_Initialize(*parser.TE_PARSER)
-	Declare Parser_Clear(*parser.TE_PARSER)
-	Declare Parser_TokenAtCharNr(*te.TE_STRUCT, *textLine.TE_TEXTLINE, charNr, testBounds = #False, startIndex = 1)
-	Declare Parser_NextToken(*te.TE_STRUCT, direction, flags = #TE_Flag_NoWhiteSpace)
-	
-	Declare KeyWord_Add(*te.TE_STRUCT, key.s, style = #TE_Ignore, caseCorrection = #TE_Ignore)
-	Declare KeyWord_LineContinuation(*te.TE_STRUCT, key.s)
-	Declare KeyWord_Folding(*te.TE_STRUCT, key.s, foldState)
-	Declare KeyWord_Indentation(*te.TE_STRUCT, key.s, indentationBefore, indentationAfter)
-	
-	Declare Folding_Update(*te.TE_STRUCT, firstLine, lastLine)
-	Declare Folding_UnfoldTextline(*te.TE_STRUCT, lineNr)
-	Declare Folding_GetTextBlock(*te.TE_STRUCT, lineNr)
-	
-	Declare.s Indentation_Clear(*textLine.TE_TEXTLINE)
-	
-	Declare Textline_Add(*te.TE_STRUCT)
-	Declare Textline_FromLine(*te.TE_STRUCT, lineNr)
-	Declare Textline_FromVisibleLineNr(*te.TE_STRUCT, visibleLineNr)
-	Declare Textline_TopLine(*te.TE_STRUCT)
-	Declare Textline_BottomLine(*te.TE_STRUCT)
-	Declare Textline_AddChar(*te.TE_STRUCT, *cursor.TE_CURSOR, c.c, overwrite, styleFlags = #TE_Styling_All, *undo.TE_UNDO = #Null)
-	Declare Textline_AddText(*te.TE_STRUCT, *cursor.TE_CURSOR, *c.Character, textLength, styleFlags = #TE_Styling_All, *undo.TE_UNDO = #Null)
-	Declare Textline_SetText(*te.TE_STRUCT, *textLine.TE_TEXTLINE, text.s, styleFlags = #TE_Styling_All, *undo.TE_UNDO = #Null)
-	Declare Texlint_IsEmpty(*textline.TE_TEXTLINE)
-	Declare Textline_LineNr(*te.TE_STRUCT, *textline.TE_TEXTLINE)
-	Declare Textline_LineNrFromScreenPos(*te.TE_STRUCT, *view.TE_VIEW, screenY)
-	Declare Textline_Length(*textLine.TE_TEXTLINE)
-	Declare Textline_LastCharNr(*te.TE_STRUCT, lineNr)
-	Declare Textline_NextTabSize(*te, *textline.TE_TEXTLINE, charNr)
-	Declare Textline_Width(*te.TE_STRUCT, *textLine.TE_TEXTLINE)
-	Declare Textline_CharNrFromScreenPos(*te.TE_STRUCT, *textLine.TE_TEXTLINE, screenX)
-	Declare Textline_ColumnFromCharNr(*te.TE_STRUCT, *view.TE_VIEW, *textLine.TE_TEXTLINE, charNr)
-	Declare Textline_CharNrToScreenPos(*te.TE_STRUCT, *textLine.TE_TEXTLINE, charNr)
-	Declare Textline_FindText(*textline.TE_TEXTLINE, find.s, *result.TE_RANGE, ignoreWhiteSpace = #False)
-	Declare Textline_HasLineContinuation(*te.TE_STRUCT, *textline.TE_TEXTLINE)
-	
-	Declare SyntaxHighlight_Clear(*te.TE_STRUCT)
-	Declare SyntaxHighlight_Update(*te.TE_STRUCT)
-	
-	Declare Selection_Get(*cursor.TE_CURSOR, *range.TE_RANGE)
-	Declare Selection_SetRange(*te.TE_STRUCT, *cursor.TE_CURSOR, lineNr, charNr, highLight = #True, checkOverlap = #True)
-	Declare Selection_SelectAll(*te.TE_STRUCT)
-	Declare Selection_Clear(*te.TE_STRUCT, *cursor.TE_CURSOR)
-	Declare Selection_ClearAll(*te.TE_STRUCT, deleteCursors = #False)
-	Declare Selection_Delete(*te.TE_STRUCT, *cursor.TE_CURSOR, *undo.TE_UNDO = #Null)
-	Declare.s Selection_Text(*te.TE_STRUCT, delimiter.s = "")
-	Declare Selection_Unfold(*te.TE_STRUCT, startLine, endLine)
-	Declare Selection_IsAnythingSelected(*te.TE_STRUCT)
-	Declare Selection_Overlap(*sel1.TE_RANGE, *sel2.TE_RANGE)
-	Declare Selection_HighlightClear(*te.TE_STRUCT)
-	
-	Declare Cursor_Add(*te.TE_STRUCT, lineNr, charNr, checkOverlap = #True, startSelection = #True)
-	Declare Cursor_Delete(*te.TE_STRUCT, *cursor.TE_CURSOR)
-	Declare Cursor_Update(*te.TE_STRUCT, *cursor.TE_CURSOR, updateLastX)
-	Declare Cursor_DeleteOverlapping(*te.TE_STRUCT, *cursor.TE_CURSOR, joinSelections = #False)
-	Declare Cursor_Clear(*te.TE_STRUCT, *maincursor.TE_CURSOR)
-	Declare Cursor_Sort(*te.TE_STRUCT, sortOrder = #PB_Sort_Ascending)
-	Declare Cursor_Move(*te.TE_STRUCT, *cursor.TE_CURSOR, dirY, dirX)
-	Declare Cursor_MoveMulti(*te.TE_STRUCT, *cursor.TE_CURSOR, previousLineNr, dirY, dirX)
-	Declare Cursor_Position(*te.TE_STRUCT, *cursor.TE_CURSOR, lineNr, charNr, ensureVisible = #True, updateLastX = #True)
-	Declare Cursor_HasSelection(*cursor.TE_CURSOR)
-	Declare Cursor_FromScreenPos(*te.TE_STRUCT, *view.TE_VIEW, *cursor.TE_CURSOR, x, y, addCursor = #False)
-	Declare Cursor_InsideComment(*te.TE_STRUCT, *cursor.TE_CURSOR)
-	
-	Declare Scroll_Line(*te.TE_STRUCT, *view.TE_VIEW, *cursor.TE_CURSOR, visibleLineNr, keepCursor = #True, updateGadget = #True)
-	Declare Scroll_Char(*te.TE_STRUCT, *view.TE_VIEW, charX)
-	Declare Scroll_Update(*te.TE_STRUCT, *view.TE_VIEW, *cursor.TE_CURSOR, previousVisibleLineNr, previousCharNr, updateNeeded = #True)
-	Declare Scroll_UpdateAllViews(*te.TE_STRUCT, *view.TE_VIEW, *currentView.TE_VIEW, *cursor.TE_CURSOR)
-	Declare Scroll_HideScrollBarH(*te.TE_STRUCT, *view.TE_VIEW, isHidden)
-	Declare Scroll_HideScrollBarV(*te.TE_STRUCT, *view.TE_VIEW, isHidden)
-	
-	Declare Draw(*te.TE_STRUCT, *view.TE_VIEW, cursorBlinkState = -1, redrawMode = 0)
-	Declare Draw_Textline(*te.TE_STRUCT, *view.TE_VIEW, *textLine.TE_TEXTLINE, lineNr, x.d, y.d, backgroundColor, *cursor.TE_CURSOR)
-	
-	Declare Marker_Add(*te.TE_STRUCT, *textline.TE_TEXTLINE, style)
-	
-	Declare Find_Next(*te.TE_STRUCT, lineNr, charNr, endLineNr, endCharNr, flags)
-	Declare Find_Flags(*te.TE_STRUCT)
-	Declare Find_Close(*te.TE_STRUCT)
-	Declare Find_SetSelectionCheckbox(*te.TE_STRUCT)
-	
-	Declare Autocomplete_Hide(*te.TE_STRUCT)
-	
-	Declare Event_Gadget()
-	Declare Event_Keyboard(*te.TE_STRUCT, *view.TE_VIEW, eventType)
-	Declare Event_Mouse(*te.TE_STRUCT, *view.TE_VIEW, event_type)
-	Declare Event_MouseWheel(*te.TE_STRUCT, *view.TE_VIEW, eventType)
-	Declare Event_ScrollBar()
-	Declare Event_Timer()
-	Declare Event_Autocomplete()
-	Declare Event_FindReplace()
-	Declare Event_Resize(*te.TE_STRUCT, x, y, width, height)
-	Declare Event_Window()
-	Declare Event_Menu()
-	Declare Event_Drop()
-	; 	Declare		Event_DropCallback(TargetHandle, State, Format, Action, x, y)
-	
-	Declare Tokenizer_All(*te.TE_STRUCT)
-	Declare Tokenizer_Textline(*te, *textline)
-	
-	Declare Settings_OpenXml(*te.TE_STRUCT, fileName.s)
-	Declare Styling_OpenXml(*te.TE_STRUCT, fileName.s)
 	
 	Macro ProcedureReturnIf(cond_, retVal_ = 0)
 		If cond_
@@ -938,20 +168,20 @@ Module _PBEdit_
 			; Style_LoadFont(*te, \font, *te\font(0)\name, *te\font(0)\height)
 			\enabled = #True
 			\font = *te\font(0)
-			\wnd_autocomplete = OpenWindow(#PB_Any, 0, 0, 250, 200, "PBEdit_Autocomplete", #PB_Window_BorderLess | #PB_Window_Invisible, WindowID(*te\window))
-			\lst_listBox = ListViewGadget(#PB_Any, 0, 0, 250, 200)
+			\window = OpenWindow(#PB_Any, 0, 0, 250, 200, "PBEdit_Autocomplete", #PB_Window_BorderLess | #PB_Window_Invisible, WindowID(*te\window))
+			\gadget = ListViewGadget(#PB_Any, 0, 0, 250, 200)
 			\minCharacterCount = 3
 			\maxRows = 15
 			\mode = #TE_Autocomplete_FindAny
 			
-			SetGadgetData(\lst_listBox, *te)
-			StickyWindow(\wnd_autocomplete, #True)
+			SetGadgetData(\gadget, *te)
+			StickyWindow(\window, #True)
 			
 			If \font\id And IsFont(\font\nr)
-				SetGadgetFont(\lst_listBox, \font\id)
+				SetGadgetFont(\gadget, \font\id)
 			EndIf
 			
-			BindEvent(#PB_Event_Gadget, @Event_Autocomplete(), \wnd_autocomplete, \lst_listBox)
+			BindEvent(#PB_Event_Gadget, @Event_Autocomplete(), \window, \gadget)
 		EndWith
 	EndProcedure
 	
@@ -1927,8 +1157,8 @@ Module _PBEdit_
 		EndIf
 		
 		If *key
-			If style <> #TE_Ignore
-				*key\style = style
+		  If style <> #TE_Ignore
+		  	*key\style = style
 			EndIf
 			
 			If caseCorrection <> #TE_Ignore
@@ -3203,6 +2433,7 @@ Module _PBEdit_
 							
 							If *textLine\style(charNr) = 0
 								key = LCase(PeekS(*token\text, *token\size))
+								
 								If FindMapElement(*te\keyWord(), key)
 									*textLine\style(charNr) = *te\keyWord()\style
 									foldCount + *te\keyWord()\foldState
@@ -5780,6 +5011,8 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure ClipBoard_Paste(*te.TE_STRUCT)
+		Define time = ElapsedMilliseconds()
+		
 		ProcedureReturnIf(*te = #Null)
 		
 		Protected warning.s
@@ -5823,7 +5056,9 @@ Module _PBEdit_
 		Draw(*te, *te\view, -1, #TE_Redraw_All)
 		
 		*te\needScrollUpdate = #True
-	EndProcedure
+	 time = ElapsedMilliseconds()-time
+                Debug "time "+time 
+               EndProcedure
 	
 	;-
 	;- ----------- SCROLL -----------
@@ -6424,11 +5659,11 @@ Module _PBEdit_
 	;-
 	
 	Procedure Autocomplete_Hide(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0))
+		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\window) = 0))
 		
 		If *te\autocomplete\isVisible
 			*te\autocomplete\isVisible = #False
-			HideWindow(*te\autocomplete\wnd_autocomplete, #True)
+			HideWindow(*te\autocomplete\window, #True)
 			SetActiveWindow(*te\window)
 			SetActiveGadget(*te\currentView\canvas)
 			
@@ -6439,7 +5674,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Autocomplete_Show(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0) Or (IsGadget(*te\autocomplete\lst_listBox) = 0) Or (*te\autocomplete\enabled = #False))
+		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\window) = 0) Or (IsGadget(*te\autocomplete\gadget) = 0) Or (*te\autocomplete\enabled = #False))
 		
 		Protected *view.TE_VIEW = *te\currentView
 		Protected *cursor.TE_CURSOR = *te\currentCursor
@@ -6502,14 +5737,14 @@ Module _PBEdit_
 			
 			SortStructuredList(keyItem(), #PB_Sort_Ascending, OffsetOf(TE_KEYWORDITEM\length), #PB_Long)
 			
-			ClearGadgetItems(*te\autocomplete\lst_listBox)
+			ClearGadgetItems(*te\autocomplete\gadget)
 			ForEach keyItem()
-				AddGadgetItem(*te\autocomplete\lst_listBox, -1, keyItem()\name)
+				AddGadgetItem(*te\autocomplete\gadget, -1, keyItem()\name)
 			Next
 			
 			If ListSize(keyItem()) > 0
 				xPos = Textline_CharNrToScreenPos(*te, *cursor\position\textline, *cursor\position\charNr - textLen) - *view\scroll\charX + *te\leftBorderOffset
-				xpos = Clamp(xPos, *te\leftBorderOffset, WindowWidth(*te\window) - WindowWidth(*te\autocomplete\wnd_autocomplete))
+				xpos = Clamp(xPos, *te\leftBorderOffset, WindowWidth(*te\window) - WindowWidth(*te\autocomplete\window))
 				xPos / (*view\zoom)
 				
 				yPos = (*cursor\position\visibleLineNr - *view\scroll\visibleLineNr + 1) * *te\lineHeight + *te\topBorderSize
@@ -6527,13 +5762,13 @@ Module _PBEdit_
 				
 				height = (height + Min(0, WindowHeight(*te\window) - (yPos + height) - MenuHeight())) / DesktopResolutionY()
 				
-				SetGadgetState(*te\autocomplete\lst_listBox, 0)
+				SetGadgetState(*te\autocomplete\gadget, 0)
 				
-				ResizeWindow(*te\autocomplete\wnd_autocomplete, xPos + GadgetX(*view\canvas, #PB_Gadget_ScreenCoordinate), yPos + GadgetY(*view\canvas, #PB_Gadget_ScreenCoordinate), #PB_Ignore, height)
-				ResizeGadget(*te\autocomplete\lst_listBox, 0, 0, #PB_Ignore, WindowHeight(*te\autocomplete\wnd_autocomplete))
+				ResizeWindow(*te\autocomplete\window, xPos + GadgetX(*view\canvas, #PB_Gadget_ScreenCoordinate), yPos + GadgetY(*view\canvas, #PB_Gadget_ScreenCoordinate), #PB_Ignore, height)
+				ResizeGadget(*te\autocomplete\gadget, 0, 0, #PB_Ignore, WindowHeight(*te\autocomplete\window))
 				
 				If *te\autocomplete\isVisible = #False
-					HideWindow(*te\autocomplete\wnd_autocomplete, #False)
+					HideWindow(*te\autocomplete\window, #False)
 				EndIf
 				
 				*te\autocomplete\isVisible = #True
@@ -6549,7 +5784,7 @@ Module _PBEdit_
 	EndProcedure
 	
 	Procedure Autocomplete_Insert(*te.TE_STRUCT)
-		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\wnd_autocomplete) = 0) Or (IsGadget(*te\autocomplete\lst_listBox) = 0))
+		ProcedureReturnIf( (*te = #Null) Or (IsWindow(*te\autocomplete\window) = 0) Or (IsGadget(*te\autocomplete\gadget) = 0))
 		
 		Protected *cursor.TE_CURSOR
 		Protected result = #False
@@ -6557,7 +5792,7 @@ Module _PBEdit_
 		Protected tokenIndex
 		Protected *token.TE_TOKEN
 		
-		autocomplete = GetGadgetItemText(*te\autocomplete\lst_listBox, GetGadgetState(*te\autocomplete\lst_listBox))
+		autocomplete = GetGadgetItemText(*te\autocomplete\gadget, GetGadgetState(*te\autocomplete\gadget))
 		If autocomplete
 			ForEach *te\cursor()
 				*cursor = *te\cursor()
@@ -7440,8 +6675,8 @@ Module _PBEdit_
 			Style_SetDefaultStyle(*te)
 			
 			With *te\autocomplete
-				If IsGadget(\lst_listBox) And \font\id And IsFont(\font\nr)
-					SetGadgetFont(\lst_listBox, *te\autocomplete\font\id)
+				If IsGadget(\gadget) And \font\id And IsFont(\font\nr)
+					SetGadgetFont(\gadget, *te\autocomplete\font\id)
 				EndIf
 			EndWith
 			
@@ -8396,9 +7631,9 @@ Module _PBEdit_
 			
 			If *te\autocomplete\isVisible
 				If autocompleteKey = #PB_Shortcut_Up
-					SetGadgetState(*te\autocomplete\lst_listBox, Max(0, GetGadgetState(*te\autocomplete\lst_listBox) - 1))
+					SetGadgetState(*te\autocomplete\gadget, Max(0, GetGadgetState(*te\autocomplete\gadget) - 1))
 				ElseIf autocompleteKey = #PB_Shortcut_Down
-					SetGadgetState(*te\autocomplete\lst_listBox, GetGadgetState(*te\autocomplete\lst_listBox) + 1)
+					SetGadgetState(*te\autocomplete\gadget, GetGadgetState(*te\autocomplete\gadget) + 1)
 				ElseIf autocompleteKey = #PB_Shortcut_Tab
 					Autocomplete_Insert(*te)
 				ElseIf autocompleteShow = #False
@@ -8980,7 +8215,7 @@ Module _PBEdit_
 		EndIf
 		
 		Protected *te.TE_STRUCT = GetGadgetData(gNr)
-		ProcedureReturnIf( (*te = #Null) Or (*te\currentView = #Null) Or IsGadget(*te\autocomplete\lst_listBox) = 0)
+		ProcedureReturnIf( (*te = #Null) Or (*te\currentView = #Null) Or IsGadget(*te\autocomplete\gadget) = 0)
 		
 		Select EventType()
 			Case #PB_EventType_LeftDoubleClick
@@ -9145,7 +8380,9 @@ Module _PBEdit_
 		
 		Select menu
 			Case #TE_Menu_Cut
-				ClipBoard_Cut(*te)
+			  ClipBoard_Cut(*te)
+			  ;;Editor_New_FindWindow(*te)
+			  
 			Case #TE_Menu_Copy
 				ClipBoard_Copy(*te)
 			Case #TE_Menu_Paste
@@ -9153,8 +8390,8 @@ Module _PBEdit_
 			Case #TE_Menu_SelectAll
 				Selection_SelectAll(*te)
 			Case #TE_Menu_InsertComment
-				ForEach *te\cursor()
-					Selection_Comment(*te, *te\cursor())
+			  ForEach *te\cursor()
+			    Selection_Comment(*te, *te\cursor())
 				Next
 			Case #TE_Menu_RemoveComment
 				ForEach *te\cursor()
@@ -9445,20 +8682,39 @@ Module PBEdit
 	EndProcedure
 	
 	Procedure PBEdit_SetGadgetText(ID, Text$)
-		Protected *te.TE_STRUCT = ID
-		If *te
-			;Undo_Start(*te\undo)
-			Selection_SelectAll(*te)
+	  Protected *te.TE_STRUCT = ID
+		If *te And *te\currentCursor
+			Undo_Start(*te\undo)
 			Selection_Delete(*te, *te\currentCursor, *te\undo)
-			If FirstElement(*te\textLine())
-				Textline_AddText(*te, *te\currentCursor, @Text$, Len(Text$), #TE_Styling_UpdateFolding | #TE_Styling_UpdateIndentation);, *te\undo)
+			Textline_AddText(*te, *te\currentCursor, @Text$, Len(Text$), #TE_Styling_All, *te\undo)
+			Selection_Clear(*te, *te\currentCursor)
+			Undo_Update(*te)
+			
+			Folding_Update(*te, 0, 0)
+			
+			If Redraw
+				Scroll_Update(*te, *te\currentView, *te\currentCursor, 0, 0)
 			EndIf
-			;			Undo_Update(*te)
-			Undo_Clear(*te\undo)
-			Undo_Clear(*te\redo)
 			
 			PBEdit_Redraw(*te)
 		EndIf
+		
+; ; 		Protected *te.TE_STRUCT = ID
+; ; 		If *te
+; ; 			Undo_Start(*te\undo)
+; ; 			;Selection_SelectAll(*te)
+; ; 			Selection_Delete(*te, *te\currentCursor, *te\undo)
+; ; 			If FirstElement(*te\textLine())
+; ; 				Textline_AddText(*te, *te\currentCursor, @Text$, Len(Text$), #TE_Styling_UpdateFolding | #TE_Styling_UpdateIndentation);, *te\undo)
+; ; 			EndIf
+; ; 		  Undo_Update(*te)
+; ; 			Undo_Clear(*te\undo)
+; ; 			Undo_Clear(*te\redo)
+; ; 			
+; ; 			Folding_Update(*te, 0, 0)
+; ; 			
+; ; 			PBEdit_Redraw(*te)
+; ; 		EndIf
 	EndProcedure
 	
 	Procedure PBEdit_SetGadgetItemText(ID, Position, Text$)
@@ -9651,7 +8907,7 @@ Enumeration 1
 	#tlb_redo
 EndEnumeration
 
-OpenWindow(0, 0, 0, 800, 600, "TextEditor", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget | #PB_Window_Maximize)
+OpenWindow(0, 0, 0, 800, 600, "TextEditor", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget );| #PB_Window_Maximize)
 
 CreateToolBar(0, WindowID(0))
 ToolBarStandardButton(#tlb_undo, #PB_ToolBarIcon_Undo)
@@ -9670,6 +8926,28 @@ EndIf
 
 PBEdit_LoadSettings(editor, "PBEdit_Color.xml")
 PBEdit_LoadStyle(editor, "PBEdit_PureBasic.xml")
+
+Define text.s = "structure" + #CRLF$ +
+                "widget.i" + #CRLF$ +
+                "gadget.i" + #CRLF$ +
+                "endstructure" + #CRLF$ +
+                "" + #CRLF$ +
+                "procedure" + #CRLF$ +
+                "endprocedure" + #CRLF$ 
+
+
+  If ReadFile(0, "/Users/as/Documents/GitHub/widget/widgets.pbi")   ; if the file could be read, we continue...
+    Text = ""
+    ;While Eof(0) = 0              ; loop as long the 'end of file' isn't reached
+    Text + ReadString(0, #PB_File_IgnoreEOL) ;; + m.s      ; display line by line in the debug window
+                                             ;Wend
+    CloseFile(0)                             ; close the previously opened file
+                                             ;Debug Text
+  Else
+    MessageRequester("Information","Couldn't open the file!")
+  EndIf
+  
+PBEdit_SetGadgetText(editor, text)
 
 Repeat
 	Select WaitWindowEvent()
@@ -9709,13 +8987,9 @@ Repeat
 			EndIf
 	EndSelect
 ForEver
-; IDE Options = PureBasic 5.72 (Windows - x64)
-; CursorPosition = 9710
-; FirstLine = 9665
-; Folding = --------------------------------------v-
-; Markers = 8723
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
+; Folding = ------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = TextEditor_x64.exe
-; DisableDebugger
 ; DisablePurifier = 1,1,1,1

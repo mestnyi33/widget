@@ -144,13 +144,13 @@ EndEnumeration
 OpenWindow(#Window_Main, 300, 200, 400, 400, "Main", #PB_Window_MinimizeGadget|#PB_Window_SizeGadget|#PB_Window_ScreenCentered)
 
 OpenWindow(#Window_Child1, WindowX(#Window_Main)+50, WindowY(#Window_Main, #PB_Window_FrameCoordinate)+50, 200, 300, "Child 1 (Position Attach)", #PB_Window_SizeGadget, WindowID(#Window_Main))
-AttachWindow(#Window_Child1, #Window_Main)
+;;AttachWindow(#Window_Child1, #Window_Main)
 
 OpenWindow(#Window_Child2, WindowX(#Window_Main)+WindowWidth(#Window_Main, #PB_Window_FrameCoordinate), WindowY(#Window_Main, #PB_Window_FrameCoordinate), 200, 300, "Child 2 (Frame Magnetic)", #PB_Window_SizeGadget, WindowID(#Window_Main))
-AttachWindow(#Window_Child2, #Window_Main, #AttachedWindow_FrameDifference|#AttachedWindow_Magnetic)
+;;AttachWindow(#Window_Child2, #Window_Main, #AttachedWindow_FrameDifference|#AttachedWindow_Magnetic)
 
 OpenWindow(#Window_SubChild, WindowX(#Window_Child2), WindowY(#Window_Child2, #PB_Window_FrameCoordinate)+WindowHeight(#Window_Child2, #PB_Window_FrameCoordinate), 200, 100, "SubChild", #PB_Window_SizeGadget, WindowID(#Window_Child2))
-AttachWindow(#Window_SubChild, #Window_Child2, #AttachedWindow_FrameDifference)
+;;AttachWindow(#Window_SubChild, #Window_Child2, #AttachedWindow_FrameDifference)
 StringGadget(-1,0,0,200,100,"")
 
 Repeat
