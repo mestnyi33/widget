@@ -9283,22 +9283,22 @@ CompilerIf Not Defined( widget, #PB_Module )
           ;           ; sublevel position
           ;           If ( *this\mode\check = 4 )
           ;             If *this\mode\buttons
-          ;               row( )\sublevellen = row( )\sublevel * *this\row\sublevellen + row( )\box[1]\width + 6 ;+ 18
+          ;               row( )\sublevelsize = row( )\sublevel * *this\row\sublevelsize + row( )\box[1]\width + 6 ;+ 18
           ;             Else
-          ;               row( )\sublevellen = 18
+          ;               row( )\sublevelsize = 18
           ;             EndIf
           ;           Else
-          ;             row( )\sublevellen = row( )\sublevel * *this\row\sublevellen + Bool( *this\mode\lines Or *this\mode\buttons ) * ( bp+bp/2 ) + Bool( *this\mode\check = 1 ) * 18
+          ;             row( )\sublevelsize = row( )\sublevel * *this\row\sublevelsize + Bool( *this\mode\lines Or *this\mode\buttons ) * ( bp+bp/2 ) + Bool( *this\mode\check = 1 ) * 18
           ;           EndIf
           
-          row( )\sublevellen = row( )\sublevel * *this\row\sublevellen + Bool( *this\mode\lines Or *this\mode\buttons ) * ( bp+bp/2 ) + Bool( *this\mode\check ) * 14
+          row( )\sublevelsize = row( )\sublevel * *this\row\sublevelsize + Bool( *this\mode\lines Or *this\mode\buttons ) * ( bp+bp/2 ) + Bool( *this\mode\check ) * 14
           
           ; check & option box position
           If ( *this\mode\check = 1 Or 
                *this\mode\check = 4 )
             
             If row( )\parent And *this\mode\check = 4
-              row( )\box[1]\x = row( )\x + row( )\sublevellen - row( )\box[1]\width - *this\scroll\h\bar\page\pos
+              row( )\box[1]\x = row( )\x + row( )\sublevelsize - row( )\box[1]\width - *this\scroll\h\bar\page\pos
             Else
               row( )\box[1]\x = row( )\x + ( 14 - row( )\box[1]\width ) - *this\scroll\h\bar\page\pos
             EndIf
@@ -9309,30 +9309,30 @@ CompilerIf Not Defined( widget, #PB_Module )
           If ( *this\mode\lines Or *this\mode\buttons ) And Not ( row( )\sublevel And *this\mode\check = 4 )
             
             If *this\mode\check = 4
-              row( )\box[0]\x = row( )\x + row( )\sublevellen - 10 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
+              row( )\box[0]\x = row( )\x + row( )\sublevelsize - 10 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
             Else
-              row( )\box[0]\x = row( )\x + row( )\sublevellen - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
+              row( )\box[0]\x = row( )\x + row( )\sublevelsize - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
             EndIf
             
-            row( )\box[0]\x = row( )\x + 4 ;;+ row( )\sublevellen - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
+            row( )\box[0]\x = row( )\x + 4 ;;+ row( )\sublevelsize - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
             
             row( )\box[0]\y = ( row( )\y + row( )\height ) - ( row( )\height + row( )\box[0]\height )/2 - *this\scroll\v\bar\page\pos
           EndIf
           
           ; image position
           If row( )\image\id
-            row( )\image\x = row( )\x + row( )\sublevellen + *this\image\padding\x + 2 - *this\scroll\h\bar\page\pos
+            row( )\image\x = row( )\x + row( )\sublevelsize + *this\image\padding\x + 2 - *this\scroll\h\bar\page\pos
             row( )\image\y = row( )\y + ( row( )\height - row( )\image\height )/2 - *this\scroll\v\bar\page\pos
           EndIf
           
           ; text position
           If row( )\text\string
-            row( )\text\x = row( )\x + row( )\sublevellen + *this\row\margin\width + *this\text\padding\x - *this\scroll\h\bar\page\pos
+            row( )\text\x = row( )\x + row( )\sublevelsize + *this\row\margin\width + *this\text\padding\x - *this\scroll\h\bar\page\pos
             row( )\text\y = row( )\y + ( row( )\height - row( )\text\height )/2 - *this\scroll\v\bar\page\pos
           EndIf
           
           If row( )\text\edit\string
-            row( )\text\edit\x = row( )\x + row( )\sublevellen + *this\row\margin\width + *this\text\padding\x - *this\scroll\h\bar\page\pos  + *this\bar\page\pos; *this\bar\page\pos + row( )\x + row( )\sublevellen + 5
+            row( )\text\edit\x = row( )\x + row( )\sublevelsize + *this\row\margin\width + *this\text\padding\x - *this\scroll\h\bar\page\pos  + *this\bar\page\pos; *this\bar\page\pos + row( )\x + row( )\sublevelsize + 5
             row( )\text\edit\y = row( )\text\y
           EndIf
           
@@ -9390,7 +9390,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               ( row( )\y - *this\y[#__c_inner] ) - *this\scroll\v\bar\page\pos < *this\height[#__c_inner2] ) )
         
         ; lines for tree widget
-        If *this\mode\lines And *this\row\sublevellen
+        If *this\mode\lines And *this\row\sublevelsize
           
 ; ;           ; vertical lines for tree widget
 ; ;           If row( )\parent 
@@ -9536,8 +9536,8 @@ CompilerIf Not Defined( widget, #PB_Module )
               If *row( )\childrens And *this\flag & #__tree_property
                 DrawingMode( #PB_2DDrawing_Default )
                 RoundBox( *this\x[#__c_inner], *row( )\y - *this\scroll\v\bar\page\pos, *this\width[#__c_inner2],*row( )\height,*row( )\round,*row( )\round,*row( )\color\back )
-                ;RoundBox( *this\x[#__c_inner] + *this\row\sublevellen,Y,*this\width[#__c_inner2] - *this\row\sublevellen,*row( )\height,*row( )\round,*row( )\round,*row( )\color\back[state] )
-                Line( *this\x[#__c_inner] + *this\row\sublevellen, *row( )\y + *row( )\height - *this\scroll\v\bar\page\pos, *this\width[#__c_inner2] - *this\row\sublevellen, 1, $FFACACAC )
+                ;RoundBox( *this\x[#__c_inner] + *this\row\sublevelsize,Y,*this\width[#__c_inner2] - *this\row\sublevelsize,*row( )\height,*row( )\round,*row( )\round,*row( )\color\back[state] )
+                Line( *this\x[#__c_inner] + *this\row\sublevelsize, *row( )\y + *row( )\height - *this\scroll\v\bar\page\pos, *this\width[#__c_inner2] - *this\row\sublevelsize, 1, $FFACACAC )
                 
               Else
                 If *row( )\color\back[state]
@@ -9582,7 +9582,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           Next
           
           ;           DrawingMode( #PB_2DDrawing_Default ); | #PB_2DDrawing_AlphaBlend )
-          ;           Box( *this\x[#__c_inner], *this\y[#__c_inner], *this\row\sublevellen, *this\height[#__c_inner2], *this\row\_s( )\parent\color\back )
+          ;           Box( *this\x[#__c_inner], *this\y[#__c_inner], *this\row\sublevelsize, *this\height[#__c_inner2], *this\row\_s( )\parent\color\back )
           
           
           ; Draw plots
@@ -9595,29 +9595,46 @@ CompilerIf Not Defined( widget, #PB_Module )
             ForEach *row( )
               If *row( )\draw 
                 Protected Random_x ;= Random(5)
-; ;                 If *row( )\parent And *row( )\parent\last
-; ;                   ; for the editor
-; ;                   If *row( )\parent\sublevel = 0
-; ;                     Line( *row( )\parent\last\text\x-8+Random_x, *row( )\parent\y+*row( )\parent\height/2, 1, (*row( )\parent\last\y-*row( )\parent\y), *row( )\parent\color\line )
-; ;                   Else
-; ;                     Line( *row( )\parent\last\text\x + 1+Random_x, *row( )\parent\y+*row( )\parent\height, 1, (*row( )\parent\last\y-*row( )\parent\y)-*row( )\parent\last\height, *row( )\parent\color\line )
-; ;                   EndIf
-; ;                   
-; ;                   Line( *row( )\parent\box[0]\x+*row( )\parent\box[0]\width/2, *row( )\parent\last\y+*row( )\parent\last\height/2, 7, 1, *row( )\parent\color\line )
-; ;                   Line( *row( )\parent\box[0]\x+*row( )\parent\box[0]\width/2, *row( )\parent\y+*row( )\parent\height/2, 7, 1, *row( )\parent\color\line )
-; ;                 EndIf
-                
-                If *row( )\last
-                  ; for the editor
-                  If *row( )\sublevel = 0
-                    Line( *row( )\last\text\x -8 +Random_x, *row( )\y+*row( )\height/2, 1, (*row( )\last\y-*row( )\y), *row( )\color\line )
-                  Else
-                    Line( *row( )\last\text\x + 1+Random_x, *row( )\y+*row( )\height, 1, (*row( )\last\y-*row( )\y)-*row( )\last\height, *row( )\color\line )
+                If Not *row( )\hide 
+                  If *row( )\last And Not *row( )\last\hide
+                    ; For the editor vertical line
+                    Line( *row( )\last\text\x, (*row( )\y+*row( )\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\last\y-*row( )\y)-*row( )\last\height, *row( )\color\line )
+                    ; For the editor horizontal line
+                    Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y+*row( )\height/2, 7, 1, *row( )\color\line )
+                    Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\last\y+*row( )\last\height/2, 7, 1, *row( )\last\color\line )
+                    
+                    If *row( )\sublevel = 0
+                      ; for the tree vertical
+                      Line( *row( )\last\box[0]\x+*row( )\last\box[0]\width/2, (*row( )\y+*row( )\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\last\y-*row( )\y)-*row( )\last\height/2, *row( )\color\line )
+                    EndIf
                   EndIf
                   
-                  Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\last\y+*row( )\last\height/2, 7, 1, *row( )\color\line )
-                  Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y+*row( )\height/2, 7, 1, *row( )\color\line )
-                EndIf
+                  If *row( )\parent And Not *row( )\parent\draw And *row( )\parent\last And *row( )\parent\last = *row( )
+                    ; For the editor vertical line
+                    Line( *row( )\text\x, (*row( )\parent\y+*row( )\parent\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\y-*row( )\parent\y), *row( )\parent\color\line )
+                    ; For the editor horizontal line
+                    Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\parent\y+*row( )\parent\height/2, 7, 1, *row( )\parent\color\line )
+                    Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y+*row( )\height/2, 7, 1, *row( )\color\line )
+                    
+                    If *row( )\sublevel = 0
+                      ; for the tree vertical line
+                      Line( *row( )\box[0]\x+*row( )\box[0]\width/2, (*row( )\parent\y+*row( )\parent\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\y-*row( )\parent\y)-*row( )\height/2, *row( )\parent\color\line )
+                    EndIf
+                  EndIf
+                EndIf    
+                
+; ;                 If *row( )\last
+; ;                   ; for the editor
+; ;                   If *row( )\sublevel = 0
+; ;                     Line( *row( )\last\text\x -8 +Random_x, *row( )\y+*row( )\height/2, 1, (*row( )\last\y-*row( )\y), *row( )\color\line )
+; ;                   Else
+; ;                     Line( *row( )\last\text\x + 1+Random_x, *row( )\y+*row( )\height, 1, (*row( )\last\y-*row( )\y)-*row( )\last\height, *row( )\color\line )
+; ;                   EndIf
+                                                 
+; ;                   
+; ;                   Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\last\y+*row( )\last\height/2, 7, 1, *row( )\color\line )
+; ;                   Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y+*row( )\height/2, 7, 1, *row( )\color\line )
+; ;                 EndIf
                 
               EndIf    
             Next
@@ -10248,17 +10265,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                    ( *this\mode\buttons And *this\row\draws( )\childrens ) And 
                    Atpoint( mouse_x, mouse_y, *this\row\draws( )\box[0] )
                   
-                  If SelectElement( *this\row\_s( ), *this\row\draws( )\index ) 
+                  Protected *pushed._s_rows = SelectElement( *this\row\_s( ), *this\row\draws( )\index ) 
+                  
+                  If *pushed
                     *this\row\_s( )\box[0]\state ! 1
                     *this\row\box\state = 2
-                    ; Post( #PB_EventType_Down, *this, *this\row\_s( )\index )
                     
+                    ; Post( #PB_EventType_Down, *this, *this\row\_s( )\index )
+                    Debug *pushed\text\string
+                        
                     PushListPosition( *this\row\_s( ) )
                     While NextElement( *this\row\_s( ) )
-                      If *this\row\_s( )\parent And *this\row\_s( )\sublevel > *this\row\_s( )\parent\sublevel 
+                      If *this\row\_s( )\parent = *pushed ;And *this\row\_s( )\sublevel >= *pushed\sublevel 
+                        Debug *this\row\_s( )\text\string +" "+ *this\row\_s( )\sublevel +" "+ *this\row\_s( )\parent\sublevel 
                         *this\row\_s( )\hide = Bool( *this\row\_s( )\parent\box[0]\state | *this\row\_s( )\parent\hide )
                       Else
-                        Break
+                       ; Break
                       EndIf
                     Wend
                     PopListPosition( *this\row\_s( ) )
@@ -11504,9 +11526,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If ( *this\mode\lines Or *this\mode\buttons Or *this\mode\check ) And
                Not ( *this\flag & #__tree_property Or *this\flag & #__tree_optionboxes )
-              *this\row\sublevellen = 18 
+              *this\row\sublevelsize = 18 
             Else
-              *this\row\sublevellen = 0
+              *this\row\sublevelsize = 0
             EndIf
             
             If *this\count\items
@@ -17149,23 +17171,29 @@ CompilerIf #PB_Compiler_IsMainFile
     If *this
       ;{ Генерируем идентификатор
       If position < 0 Or position > ListSize( *this\row\_s( ) ) - 1
-        LastElement( *this\row\_s( ) )
-        handle = AddElement( *this\row\_s( ) ) 
-        If position < 0 
-          position = ListIndex( *this\row\_s( ) )
+        If LastElement( *this\row\_s( ) )
+          ;;*this\row\last = *this\row\_s( )
         EndIf
+        handle = AddElement( *this\row\_s( ) ) 
+        ;If position < 0 
+          position = ListIndex( *this\row\_s( ) )
+        ;EndIf
       Else
         handle = SelectElement( *this\row\_s( ), position )
-        
         ; for the tree( )
         If sublevel > *this\row\_s( )\sublevel
-;;           sublevel = *this\row\_s( )\sublevel + 1
+          PushListPosition( *this\row\_s( ) )
           If PreviousElement( *this\row\_s( ) )
-;;             *parent = *this\row\_s( ) 
-;;             *parent\childrens = 1
-            *this\row\last = *this\row\_s( ) 
-            NextElement( *this\row\_s( ) )
+            *this\row\last = *this\row\_s( )
+            ;; NextElement( *this\row\_s( ) )
+          Else
+            *last = *this\row\last
+            sublevel = *this\row\_s( )\sublevel
           EndIf
+          PopListPosition( *this\row\_s( ) )
+; ;           If *last = *this\row\last
+; ;             sublevel = *this\row\_s( )\sublevel
+; ;           EndIf
         Else
           *last = *this\row\last
           sublevel = *this\row\_s( )\sublevel
@@ -17176,7 +17204,11 @@ CompilerIf #PB_Compiler_IsMainFile
       ;}
       
       If handle
-        If *this\row\last ;; And Not *parent
+        If sublevel > position
+          sublevel = position
+        EndIf
+        
+        If *this\row\last 
           If sublevel > *this\row\last\sublevel
             sublevel = *this\row\last\sublevel + 1
             *parent = *this\row\last
@@ -17189,8 +17221,20 @@ CompilerIf #PB_Compiler_IsMainFile
             ElseIf sublevel < *this\row\last\sublevel 
               If *this\row\last\parent\parent
                 *parent = *this\row\last\parent\parent
+                
+                While *parent 
+                  If sublevel >= *parent\sublevel 
+                    If sublevel = *parent\sublevel 
+                      *parent = 0
+                    EndIf
+                    Break
+                  Else
+                    *parent = *parent\parent
+                  EndIf
+                Wend
               EndIf
               
+              ;;; ; for the editor( )
               If *this\row\last\parent\sublevel = sublevel
                 *this\row\last\parent\last = *this\row\_s( )
               EndIf
@@ -17201,16 +17245,26 @@ CompilerIf #PB_Compiler_IsMainFile
         *this\row\_s( )\parent = *parent
         
         If *last
-          *this\row\last = *last
+         ; *this\row\last = *last
         Else
           *this\row\last = *this\row\_s( )
         EndIf
         
-        ; for the tree( )
-        If Not *this\row\first
+        If sublevel = 0
+          If *this\row\first 
+            If *this\row\first\first
+              *this\row\_s( )\first = *this\row\first\first
+            EndIf
+            *this\row\first\first = *this\row\_s( )
+          EndIf
+        EndIf
+        
+        If position = 0
           *this\row\first = *this\row\_s( )
         EndIf
-        If *this\row\last\parent And
+        
+        ; for the tree( )
+        If *this\row\last\parent And 
            *this\row\last\parent\sublevel < sublevel
           *this\row\last\parent\last = *this\row\last
         EndIf
@@ -17239,6 +17293,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn *this\count\items - 1
   EndProcedure
   
+  
   g = 11
   *g = Tree(10, 10, 300, 600, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
   
@@ -17258,12 +17313,15 @@ CompilerIf #PB_Compiler_IsMainFile
   add(*g, 9, "", -1, 0) 
   
   add(*g, 10, "Procedure Open()", -1, 0) 
-  add(*g, 11, "If is_widget()", -1, 1) 
-  add(*g, 12, "If is_hide()", -1, 2) 
-  add(*g, 13, " ", -1, 3) 
-  add(*g, 14, "EndIf", -1, 2) 
-  add(*g, 15, "EndIf", -1, 1) 
-  add(*g, 16, "EndProcedure", -1, 0) 
+    add(*g, 11, "If is_widget()", -1, 1) 
+    add(*g, 12, "If is_hide()", -1, 2) 
+    add(*g, 13, " 1", -1, 3) 
+    add(*g, 14, "EndIf ; is_hide", -1, 2) 
+    add(*g, 15, "If is_visible()", -1, 2) 
+    add(*g, 16, " 2", -1, 3) 
+    add(*g, 17, "EndIf ; is_visible", -1, 2) 
+    add(*g, 18, "EndIf ; is_widget", -1, 1) 
+    add(*g, 19, "EndProcedure", -1, 0) 
   
   
   
@@ -17277,5 +17335,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--0------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ffx++-------------------------------------------------------------------------------------------------------------------------------------------------------------------+-v-------
 ; EnableXP

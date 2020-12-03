@@ -364,47 +364,48 @@ CompilerIf Not Defined(structures, #PB_Module)
       hide.b
     EndStructure
     
-    ;- - _s_items
-    Structure _s_items Extends _s_coordinate
-      index.l
-      *parent._s_items
-      draw.b
-      hide.b
-      
-      image._s_image
-      text._s_text[4]
-      box._s_buttons[2]
-      color._s_color
-      
-      ;state.b
-      round.a
-      
-      sublevel.l
-      childrens.l
-      sublevellen.l
-      
-      *data      ; set/get item data
-    EndStructure
-    
+;     ;- - _s_items
+;     Structure _s_items Extends _s_coordinate
+;       index.l
+;       *parent._s_items
+;       draw.b
+;       hide.b
+;       
+;       image._s_image
+;       text._s_text[4]
+;       box._s_buttons[2]
+;       color._s_color
+;       
+;       ;state.b
+;       round.a
+;       
+;       sublevel.w
+;       childrens.l
+;       sublevelsize.l
+;       
+;       *data      ; set/get item data
+;     EndStructure
+;     
     ;- - _s_rows
     Structure _s_rows Extends _s_coordinate 
       ; list view
       _state.l
-      sublevel.l
-      sublevellen.l
+      sublevel.w
+      sublevelsize.a
+      childrens.b
       
-      len.l ; ?????? ?????? ??????? ?????
-      childrens.l
+               ;;len.l ; ?????? ?????? ??????? ?????
       
-      *last._s_rows
-      *first._s_rows
-      *after._s_rows
-      *before._s_rows
-      *parent._s_rows
-      
-      l._s_line_ ; 
       box._s_buttons[2]
       *option_group._s_rows
+      
+      *parent._s_rows
+      *last._s_rows
+               *first._s_rows ; temp
+               *after._s_rows ; temp
+               *before._s_rows ; temp
+      
+               l._s_line_ ;  ; temp
       
       ; edit
       margin._s_edit
@@ -423,14 +424,14 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_row
     Structure _s_row
-      draw.l ;???????
-      Map *i( )
+                ;;draw.l ;???????
+                ;;Map *i( )
       
       ; list view
       drag.b
       *scrolled
       sublevel.l
-      sublevellen.l
+      sublevelsize.l
       
       *_tt._s_tt
       
@@ -681,5 +682,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = HACAAYIg
+; Folding = HACAAMEw
 ; EnableXP
