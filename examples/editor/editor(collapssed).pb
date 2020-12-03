@@ -28,7 +28,7 @@
 ; ; (?:\".*\"|(\w+)\s*\(((?>(?R)|[^)(])*)\))
 ; ; 
 ; ; #После выполнения:
-; ; # - В группе \1 - будет находиться название переменной
+; ; # - В группе \1 будет находиться название переменной
 ; ; # - В группе \2 - название процедуры
 ; ; # - В группе \3 - перечень всех аргументов найденной процедуры
 ; ; ~"(?:(\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(\\w+)\\s*\\(((?>(?R)|[^)(])*)\\))"
@@ -2666,7 +2666,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           _this_\text\width = TextWidth( _this_\text\string ) 
         EndIf
         
-        _this_\text\height = TextHeight( "A" ) ;;- Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2
+        _this_\text\height = TextHeight( "A" ); - Bool( #PB_Compiler_OS <> #PB_OS_Windows ) * 2
         
         If #debug_draw_font_change
           Debug "change text size - " + #PB_Compiler_Procedure  + " " +  _this_
@@ -2701,7 +2701,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If _item_\text\string
           _item_\text\width = TextWidth( _item_\text\string ) 
         EndIf
-        _item_\text\height = TextHeight( "A" ) ;;- Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2
+        _item_\text\height = TextHeight( "A" ) 
         _item_\text\change = #False
         
         If #debug_draw_item_font_change
@@ -6139,13 +6139,13 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf  
         
         If *this\parent                        
-;           If _is_false_child_( *this )
-;             x + *this\parent\x[#__c_frame]
-;             y + *this\parent\y[#__c_frame]
-;           Else
-            x + *this\parent\x[#__c_inner]
-            y + *this\parent\y[#__c_inner]
-;           EndIf
+          ;           If _is_false_child_( *this )
+          ;             x + *this\parent\x[#__c_frame]
+          ;             y + *this\parent\y[#__c_frame]
+          ;           Else
+          x + *this\parent\x[#__c_inner]
+          y + *this\parent\y[#__c_inner]
+          ;           EndIf
         EndIf
         
         If width = #PB_Ignore 
@@ -6600,7 +6600,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         ;       ; set cursor pos
         ;       If _line_ = *this\row\_s( )\index
-        *this\text\caret\y = *this\row\_s( )\text\y ;;+ Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2
+        *this\text\caret\y = *this\row\_s( )\text\y + Bool( #PB_Compiler_OS <> #PB_OS_Windows )
         *this\text\caret\height = *this\row\_s( )\text\height
         
         If _line_ > *this\index[#__s_2] Or
@@ -7449,7 +7449,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 ;; editor
                 row( )\index = ListIndex( row( ) )
-                row( )\height = row( )\text\height ;- 2
+                row( )\height = row( )\text\height
                 
                 ;If *this\type = #PB_GadgetType_Editor
                 ;EndIf
@@ -7538,9 +7538,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 ; changed
                 If \text\rotate = 270
-                  row( )\text\x = row( )\x + 1
+                  row( )\text\x = row( )\x + Bool( #PB_Compiler_OS = #PB_OS_MacOS ) + 1
                 ElseIf \text\rotate = 90
-                  row( )\text\x = row( )\x - 1 
+                  row( )\text\x = row( )\x - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) - 1 
                 Else
                   row( )\text\x = row( )\x
                 EndIf
@@ -7553,9 +7553,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 ; changed
                 If \text\rotate = 0
-                  row( )\text\y = row( )\y ;- Bool( #PB_Compiler_OS = #PB_OS_MacOS ) - 1 
+                  row( )\text\y = row( )\y - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) - 1 
                 ElseIf \text\rotate = 180
-                  row( )\text\y = row( )\y + row( )\text\height ;; + Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux )
+                  row( )\text\y = row( )\y + Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + row( )\text\height
                 Else
                   row( )\text\y = row( )\y
                 EndIf
@@ -7666,6 +7666,360 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndWith
     EndProcedure
     
+    Procedure   _Editor_Update( *this._s_widget, List row._s_rows( ) )
+      With *this
+        
+        If \text\string.s
+          Protected *str.Character
+          Protected *end.Character
+          Protected TxtHeight = \text\height
+          Protected String.s, String1.s, CountString
+          Protected IT, len.l, Position.l, Width,Height
+          Protected ColorFont = \color\Front[Bool( *this\_state & #__s_front ) * \color\state]
+          
+          If \vertical
+            Width = \height[#__c_inner2] - \text\x*2
+            Height = \width[#__c_inner2] - \text\y*2
+          Else
+            Width = \width[#__c_inner2] - \text\x*2 
+            Height = \height[#__c_inner2] - \text\y*2
+          EndIf
+          
+          ; make multiline text
+          If \text\multiLine
+            Protected text$ = *this\text\string.s + #LF$
+            
+            ;     text$ = ReplaceString( text$, #LFCR$, #LF$ )
+            ;     text$ = ReplaceString( text$, #CRLF$, #LF$ )
+            ;     text$ = ReplaceString( text$, #CR$, #LF$ )
+            ;     text$ + #LF$
+            ;     
+            
+            If \text\multiLine < 0
+              String = text$
+            Else
+              ; <http://www.purebasic.fr/english/viewtopic.php?f = 12&t = 53800>
+              Protected.i i, start, found, length
+              Protected$ line$, DelimList$ = " " + Chr( 9 ), nl$ = #LF$
+              
+              *str.Character = @text$
+              *end.Character = @text$
+              
+              ; make word wrap
+              While *end\c 
+                If *end\c = #LF
+                  start = ( *end - *str ) >> #PB_Compiler_Unicode
+                  line$ = PeekS ( *str, start )
+                  length = start
+                  
+                  ; Get text len
+                  While length > 1
+                    If width > TextWidth( RTrim( Left( line$, length ) ) )
+                      Break
+                    Else
+                      length - 1 
+                    EndIf
+                  Wend
+                  
+                  While start > length 
+                    For found = length To 1 Step - 1
+                      If FindString( " ", Mid( line$, found,1 ) )
+                        start = found
+                        Break
+                      EndIf
+                    Next
+                    
+                    If Not found
+                      start = length
+                    EndIf
+                    
+                    String + Left( line$, start ) + nl$
+                    line$ = LTrim( Mid( line$, start + 1 ) )
+                    start = Len( line$ )
+                    
+                    ;If length <> start
+                    length = start
+                    
+                    ; Get text len
+                    While length > 1
+                      If width > TextWidth( RTrim( Left( line$, length ) ) )
+                        Break
+                      Else
+                        length - 1 
+                      EndIf
+                    Wend
+                    ;EndIf
+                  Wend
+                  
+                  String + line$ + nl$
+                  *str = *end + #__sOC 
+                EndIf 
+                
+                *end + #__sOC 
+              Wend
+            EndIf
+            
+            CountString = CountString( String, #LF$ )
+          Else
+            String.s = RemoveString( *this\text\string, #LF$ ) + #LF$
+            CountString = 1
+          EndIf
+          
+          ; \max 
+          If \vertical
+            If *this\height[#__c_required] > *this\height[#__c_inner2]
+              *this\text\change = #True
+            EndIf
+          Else
+            If *this\width[#__c_required] > *this\width[#__c_inner2]
+              *this\text\change = #True
+            EndIf
+          EndIf
+          
+          ; 
+          If *this\count\items <> CountString
+            *this\count\items = CountString
+            *this\text\change = #True
+          EndIf
+          
+          If *this\text\change
+            Debug "*this\text\change - " + #PB_Compiler_Procedure
+            
+            *str.Character = @String
+            *end.Character = @String
+            
+            *this\text\pos  = 0
+            *this\text\len = Len( *this\text\string )
+            
+            ;             ;; editor
+            ;             If *this\row\count <> *this\count\items 
+            *this\row\count = *this\count\items
+            Debug  " - - - - ClearList - - - - "
+            
+            ClearList( row( ) )
+            *this\width[#__c_required] = *this\text\padding\x*2 
+            *this\height[#__c_required] = *this\text\padding\y*2 
+            
+            ;
+            While *end\c 
+              If *end\c = #LF 
+                AddElement( row( ) )
+                ; drawing item font
+                _drawing_font_item_( *this, row( ), row( )\text\change )
+                
+                row( )\text\len = ( *end - *str )>>#PB_Compiler_Unicode
+                row( )\text\string = PeekS ( *str, row( )\text\len )
+                row( )\text\width = TextWidth( row( )\text\string )
+                
+                ;; editor
+                row( )\index = ListIndex( row( ) )
+                row( )\height = row( )\text\height
+                row( )\color\back[1] = _get_colors_( )\back[1]
+                row( )\color\back[2] = _get_colors_( )\back[2]
+                row( )\color\back[3] = _get_colors_( )\back[3]
+                row( )\color\front[2] = _get_colors_( )\front[2]
+                
+                If \index[#__s_1] = row( )\index Or
+                   \index[#__s_2] = row( )\index 
+                  row( )\text\change = 1
+                EndIf
+                
+                ; make line position
+                If \vertical
+                  If *this\height[#__c_required] < row( )\text\width + *this\text\padding\y * 2
+                    *this\height[#__c_required] = row( )\text\width + *this\text\padding\y * 2
+                  EndIf
+                  
+                  If \text\rotate = 270
+                    row( )\x = *this\width[#__c_inner2] - *this\width[#__c_required] + *this\text\padding\x + Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                  ElseIf \text\rotate = 90
+                    row( )\x = *this\width[#__c_required]                           - *this\text\padding\x - 1 
+                  EndIf
+                  
+                  *this\width[#__c_required] + TxtHeight
+                Else
+                  If *this\width[#__c_required] < row( )\text\width + *this\text\padding\x * 2
+                    *this\width[#__c_required] = row( )\text\width + *this\text\padding\x * 2
+                  EndIf
+                  
+                  If \text\rotate = 0
+                    row( )\y = *this\height[#__c_required]                            - *this\text\padding\y - 1 
+                  ElseIf \text\rotate = 180
+                    row( )\y = *this\height[#__c_inner2] - *this\height[#__c_required] + *this\text\padding\y + Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                  EndIf
+                  
+                  *this\height[#__c_required] + TxtHeight
+                EndIf
+                
+                *str = *end + #__sOC 
+              EndIf 
+              
+              *end + #__sOC 
+            Wend
+            
+            ;             Else
+            ;               While *end\c 
+            ;                 If *end\c = #LF 
+            ;                   If SelectElement( row( ), IT )
+            ;                     row( )\text\len = ( *end - *str )>>#PB_Compiler_Unicode
+            ;                     line$ = PeekS ( *str, row( )\text\len )
+            ;                     
+            ;                     If row( )\text\string.s <> line$
+            ;                       row( )\text\string.s = line$
+            ;                       row( )\text\change = 1
+            ;                     EndIf
+            ;                     
+            ;                     If row( )\text\change <> 0
+            ;                       row( )\text\width = TextWidth( row( )\text\string )
+            ;                       ;Debug *this\count\items
+            ;                       If *this\width[#__c_required] < row( )\text\width + *this\text\padding\x * 2
+            ;                         *this\width[#__c_required] = row( )\text\width + *this\text\padding\x * 2
+            ;                       EndIf
+            ;                     EndIf
+            ;                   EndIf
+            ;                   
+            ;                   IT + 1
+            ;                   *str = *end + #__sOC 
+            ;                 EndIf 
+            ;                 
+            ;                 *end + #__sOC 
+            ;               Wend
+            ;             EndIf 
+            
+            ;
+            ForEach row( )
+              row( )\text\pos = *this\text\pos 
+              *this\text\pos + row( )\text\len + 1 ; Len( #LF$ )
+              
+              If *this\vertical
+                If *this\text\rotate = 270
+                  row( )\x - ( *this\width[#__c_inner2] - *this\width[#__c_required] )
+                EndIf
+                
+                ; changed
+                If \text\rotate = 270
+                  row( )\text\x = row( )\x + Bool( #PB_Compiler_OS = #PB_OS_MacOS ) + 1
+                ElseIf \text\rotate = 90
+                  row( )\text\x = row( )\x - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) - 1 
+                Else
+                  row( )\text\x = row( )\x
+                EndIf
+                
+                _set_align_y_( *this\text, row( )\text, *this\height[#__c_required], *this\text\rotate )
+              Else
+                If *this\text\rotate = 180
+                  row( )\y - ( *this\height[#__c_inner2] - *this\height[#__c_required] )
+                EndIf
+                
+                ; changed
+                If \text\rotate = 0
+                  row( )\text\y = row( )\y - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) - 1 
+                ElseIf \text\rotate = 180
+                  row( )\text\y = row( )\y + Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + row( )\text\height
+                Else
+                  row( )\text\y = row( )\y
+                EndIf
+                
+                _set_align_x_( *this\text, row( )\text, *this\width[#__c_required], *this\text\rotate )
+              EndIf
+              
+              ;               
+              ;                         \row\_s( )\draw = Bool( Not \row\_s( )\hide And 
+              ;                                     _row_y_( *this ) > *this\y[#__c_inner] - \row\_s( )\height And 
+              ;                                     _row_y_( *this ) < *this\y[#__c_inner] + *this\height[#__c_inner2] )
+              ; ;               If  _row_y_( *this ) > *this\y[#__c_inner] - \row\_s( )\height And _row_y_( *this ) < *this\y[#__c_inner] + \row\_s( )\height
+              ;                         If \row\_s( )\draw
+              ;                           Debug \row\_s( )\index;_row_y_( *this )
+              ;                EndIf
+              
+              If row( )\text\change <> 0
+                _edit_sel_update_( *this )
+                
+                row( )\text\change = 0
+              EndIf
+            Next 
+          EndIf
+          
+          
+        EndIf
+        
+        Protected update_scroll_area
+        
+        If *this\scroll\v And
+           *this\scroll\v\bar\max <> *this\height[#__c_required] And
+           Bar_SetAttribute( *this\scroll\v, #__bar_maximum, *this\height[#__c_required] )
+          update_scroll_area = 1
+        EndIf
+        
+        If *this\scroll\h And 
+           *this\scroll\h\bar\max <> *this\width[#__c_required] And  
+           Bar_SetAttribute( *this\scroll\h, #__bar_maximum, *this\width[#__c_required] )
+          update_scroll_area = 1
+        EndIf
+        
+        If update_scroll_area ; _bar_scrollarea_update_( *this )
+          Bar_Resizes( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+          \height[#__c_inner2] = \scroll\v\bar\page\len
+          \width[#__c_inner2] = \scroll\h\bar\page\len 
+        EndIf
+        
+        ; make vertical scroll y
+        make_scrollarea_y( *this, *this\text )
+        
+        ; make horizontal scroll x
+        make_scrollarea_x( *this, *this\text )
+        
+        
+        
+        If *this\scroll\v
+          ; This is for the caret and scroll when entering the key - ( enter & backspace ) 
+          _text_scroll_y_( *this )
+          
+          ; fist show 
+          If Not *this\scroll\v\bar\page\change
+            If *this\text\align\bottom
+              If Bar_Change( *this\scroll\v, *this\scroll\v\bar\page\end ) 
+                Bar_Update( *this\scroll\v )
+              EndIf
+              
+            ElseIf Not *this\text\align\top
+              If Bar_Change( *this\scroll\v, *this\scroll\v\bar\page\end / 2 ) 
+                Bar_Update( *this\scroll\v )
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        
+        If *this\scroll\h
+          ; This is for the caret and scroll when entering the key - ( enter & backspace ) 
+          _text_scroll_x_( *this )
+          
+          ; first show
+          If Not *this\scroll\h\bar\page\change
+            If *this\text\align\right
+              If Bar_Change( *this\scroll\h, *this\scroll\h\bar\page\end ) 
+                Bar_Update( *this\scroll\h )
+              EndIf
+              
+            ElseIf Not *this\text\align\left
+              If Bar_Change( *this\scroll\h, *this\scroll\h\bar\page\end / 2 ) 
+                Bar_Update( *this\scroll\h )
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        ;           ; text frame 
+        ;           *this\text\x = *this\x[#__c_required] + *this\text\padding\x
+        ;           *this\text\y = *this\y[#__c_required] + *this\text\padding\y
+        ;           *this\text\width = *this\width[#__c_required] - *this\text\padding\x*2
+        ;           *this\text\height = *this\height[#__c_required] + *this\text\padding\y*2
+        
+        
+      EndWith
+    EndProcedure
+    
     Procedure   Editor_Draw( *this._s_widget )
       Protected String.s, StringWidth, ix, iy, iwidth, iheight
       Protected IT,Text_Y,Text_x, x,Y, Width, Drawing
@@ -7675,10 +8029,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         With *this
           ; Make output multi line text
           If *this\change > 0 ;<> 0
-            Define time = ElapsedMilliseconds()
             Editor_Update( *this, *this\row\_s( ) )
-            time = ElapsedMilliseconds()-time
-            Debug " update time "+time 
           EndIf
           
           ; Draw back color
@@ -7965,8 +8316,13 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure   Editor_AddItem( *this._s_widget, Item.l,Text.s,Image.i = -1,Flag.i = 0 )
-      Static len.l
+      Static len.l, widget
       Protected l.l, i.l
+      
+      If widget <> *this 
+        widget = *this 
+        len = 0
+      EndIf
       
       If *this
         With *this  
@@ -8426,7 +8782,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                 EndIf
                 
               Case #PB_Shortcut_V
-                Define time = ElapsedMilliseconds()
                 If _key_control_ And *this\text\editable
                   Protected text.s = GetClipboardText( )
                   
@@ -8439,9 +8794,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   Repaint = _text_insert_( *this, text )
                 EndIf  
-                
-                time = ElapsedMilliseconds()-time
-                Debug "time "+time 
                 
             EndSelect 
             
@@ -8887,14 +9239,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ; reset item z - order
       PushListPosition( row( ) )
-      ForEach row( )
-        If row( )\parent
-          row( )\parent\first = 0
-          row( )\parent\last = 0
-        EndIf     
-      Next
+;       ForEach row( )
+;         If row( )\parent
+;           row( )\parent\first = 0
+;           row( )\parent\last = 0
+;         EndIf     
+;       Next
       ;       PopListPosition( row( ) )
-      Protected bp = 12; + Bool( *this\mode\check <> 4 ) * 8
+      Protected bp = 8; + Bool( *this\mode\check <> 4 ) * 8
       
       ;       
       ;       PushListPosition( row( ) )
@@ -8939,7 +9291,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           ;             row( )\sublevellen = row( )\sublevel * *this\row\sublevellen + Bool( *this\mode\lines Or *this\mode\buttons ) * ( bp+bp/2 ) + Bool( *this\mode\check = 1 ) * 18
           ;           EndIf
           
-          row( )\sublevellen = row( )\sublevel * *this\row\sublevellen + Bool( *this\mode\lines Or *this\mode\buttons ) * ( bp+bp/2 ) + Bool( *this\mode\check ) * 18
+          row( )\sublevellen = row( )\sublevel * *this\row\sublevellen + Bool( *this\mode\lines Or *this\mode\buttons ) * ( bp+bp/2 ) + Bool( *this\mode\check ) * 14
           
           ; check & option box position
           If ( *this\mode\check = 1 Or 
@@ -8948,7 +9300,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If row( )\parent And *this\mode\check = 4
               row( )\box[1]\x = row( )\x + row( )\sublevellen - row( )\box[1]\width - *this\scroll\h\bar\page\pos
             Else
-              row( )\box[1]\x = row( )\x + ( 18 - row( )\box[1]\width ) - *this\scroll\h\bar\page\pos
+              row( )\box[1]\x = row( )\x + ( 14 - row( )\box[1]\width ) - *this\scroll\h\bar\page\pos
             EndIf
             row( )\box[1]\y = ( row( )\y + row( )\height ) - ( row( )\height + row( )\box[1]\height )/2 - *this\scroll\v\bar\page\pos
           EndIf
@@ -8961,12 +9313,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             Else
               row( )\box[0]\x = row( )\x + row( )\sublevellen - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
             EndIf
+            
+            row( )\box[0]\x = row( )\x + 4 ;;+ row( )\sublevellen - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
+            
             row( )\box[0]\y = ( row( )\y + row( )\height ) - ( row( )\height + row( )\box[0]\height )/2 - *this\scroll\v\bar\page\pos
           EndIf
           
           ; image position
           If row( )\image\id
-            row( )\image\x = row( )\x + row( )\sublevellen + *this\image\padding\x + 3 - *this\scroll\h\bar\page\pos
+            row( )\image\x = row( )\x + row( )\sublevellen + *this\image\padding\x + 2 - *this\scroll\h\bar\page\pos
             row( )\image\y = row( )\y + ( row( )\height - row( )\image\height )/2 - *this\scroll\v\bar\page\pos
           EndIf
           
@@ -9036,91 +9391,93 @@ CompilerIf Not Defined( widget, #PB_Module )
         
         ; lines for tree widget
         If *this\mode\lines And *this\row\sublevellen
-          ; vertical lines for tree widget
-          If row( )\parent 
-            
-            If row( )\draw
-              If row( )\parent\last
-                row( )\parent\last\l\v\height = 0
-                
-                row( )\parent\last\first = 0
-              EndIf
-              
-              row( )\first = row( )\parent
-              row( )\parent\last = row( )
-            Else
-              
-              If row( )\parent\last
-                row( )\parent\last\l\v\height = ( *this\y[#__c_inner] + *this\height[#__c_inner2] ) -  row( )\parent\last\l\v\y 
-              EndIf
-              
-            EndIf
-            
-          Else
-            If row( )\draw
-              If *this\row\first\last And
-                 *this\row\first\sublevel = *this\row\first\last\sublevel
-                If *this\row\first\last\first
-                  *this\row\first\last\l\v\height = 0
-                  
-                  *this\row\first\last\first = 0
-                EndIf
-              EndIf
-              
-              row( )\first = *this\row\first
-              *this\row\first\last = row( )
-              
-            Else
-              If *this\row\first\last And
-                 *this\row\first\sublevel = *this\row\first\last\sublevel
-                
-                *this\row\first\last\l\v\height = ( *this\y[#__c_inner] + *this\height[#__c_inner2] ) -  *this\row\first\last\l\v\y
-                ;Debug row( )\text\string
-              EndIf
-            EndIf
-          EndIf
+          
+; ;           ; vertical lines for tree widget
+; ;           If row( )\parent 
+; ;             
+; ;             If row( )\draw
+; ;               If row( )\parent\last
+; ;                 row( )\parent\last\l\v\height = 0
+; ;                 
+; ;                 row( )\parent\last\first = 0
+; ;               EndIf
+; ;               
+; ;               row( )\first = row( )\parent
+; ;               row( )\parent\last = row( )
+; ;             Else
+; ;               
+; ;               If row( )\parent\last
+; ;                 row( )\parent\last\l\v\height = ( *this\y[#__c_inner] + *this\height[#__c_inner2] ) -  row( )\parent\last\l\v\y 
+; ;               EndIf
+; ;               
+; ;             EndIf
+; ;             
+; ;           Else
+; ;             If row( )\draw
+; ;               If *this\row\first\last And
+; ;                  *this\row\first\sublevel = *this\row\first\last\sublevel
+; ;                 If *this\row\first\last\first
+; ;                   *this\row\first\last\l\v\height = 0
+; ;                   
+; ;                   *this\row\first\last\first = 0
+; ;                 EndIf
+; ;               EndIf
+; ;               
+; ;               row( )\first = *this\row\first
+; ;               *this\row\first\last = row( )
+; ;               
+; ;             Else
+; ;               If *this\row\first\last And
+; ;                  *this\row\first\sublevel = *this\row\first\last\sublevel
+; ;                 
+; ;                 *this\row\first\last\l\v\height = ( *this\y[#__c_inner] + *this\height[#__c_inner2] ) -  *this\row\first\last\l\v\y
+; ;                 ;Debug row( )\text\string
+; ;               EndIf
+; ;             EndIf
+; ;           EndIf
           
           
           row( )\l\h\y = row( )\box[0]\y + row( )\box[0]\height/2
           row( )\l\v\x = row( )\box[0]\x + row( )\box[0]\width/2
           
-          If ( *this\x[#__c_inner] - row( )\l\v\x ) < *this\mode\lines
-            If row( )\l\v\x<*this\x[#__c_inner]
-              row( )\l\h\width = ( *this\mode\lines - ( *this\x[#__c_inner] - row( )\l\v\x ) )
-            Else
-              row( )\l\h\width = *this\mode\lines
-            EndIf
-            
-            If row( )\draw And row( )\l\h\y > *this\y[#__c_inner] And row( )\l\h\y < *this\y[#__c_inner] + *this\height[#__c_inner2]
-              row( )\l\h\x = row( )\l\v\x + ( *this\mode\lines - row( )\l\h\width )
-              row( )\l\h\height = 1
-            Else
-              row( )\l\h\height = 0
-            EndIf
-            
-            ; Vertical plot
-            If row( )\first And *this\x[#__c_inner]<row( )\l\v\x
-              row( )\l\v\y = ( row( )\first\y + row( )\first\height -  Bool( row( )\first\sublevel = row( )\sublevel ) * row( )\first\height/2 ) - *this\scroll\v\bar\page\pos
-              If row( )\l\v\y < *this\y[#__c_inner] : row( )\l\v\y = *this\y[#__c_inner] : EndIf
-              
-              row( )\l\v\height = ( row( )\y + row( )\height/2 ) - row( )\l\v\y - *this\scroll\v\bar\page\pos
-              If row( )\l\v\height < 0 : row( )\l\v\height = 0 : EndIf
-              If row( )\l\v\y + row( )\l\v\height > *this\y[#__c_inner] + *this\height[#__c_inner2] 
-                If row( )\l\v\y > *this\y[#__c_inner] + *this\height[#__c_inner2] 
-                  row( )\l\v\height = 0
-                Else
-                  row( )\l\v\height = ( *this\y[#__c_inner] + *this\height[#__c_inner2] ) -  row( )\l\v\y 
-                EndIf
-              EndIf
-              
-              If row( )\l\v\height
-                row( )\l\v\width = 1
-              Else
-                row( )\l\v\width = 0
-              EndIf
-            EndIf 
-            
-          EndIf
+; ;           If ( *this\x[#__c_inner] - row( )\l\v\x ) < *this\mode\lines
+; ;             If row( )\l\v\x<*this\x[#__c_inner]
+; ;               row( )\l\h\width = ( *this\mode\lines - ( *this\x[#__c_inner] - row( )\l\v\x ) )
+; ;             Else
+; ;               row( )\l\h\width = *this\mode\lines
+; ;             EndIf
+; ;             
+; ;             If row( )\draw And row( )\l\h\y > *this\y[#__c_inner] And row( )\l\h\y < *this\y[#__c_inner] + *this\height[#__c_inner2]
+; ;               row( )\l\h\x = row( )\l\v\x + ( *this\mode\lines - row( )\l\h\width )
+; ;               row( )\l\h\height = 1
+; ;             Else
+; ;               row( )\l\h\height = 0
+; ;             EndIf
+; ;             
+; ;             ; Vertical plot
+; ;             If row( )\first And *this\x[#__c_inner]<row( )\l\v\x
+; ;               row( )\l\v\y = ( row( )\first\y + row( )\first\height -  Bool( row( )\first\sublevel = row( )\sublevel ) * row( )\first\height/2 ) - *this\scroll\v\bar\page\pos
+; ;               If row( )\l\v\y < *this\y[#__c_inner] : row( )\l\v\y = *this\y[#__c_inner] : EndIf
+; ;               
+; ;               row( )\l\v\height = ( row( )\y + row( )\height/2 ) - row( )\l\v\y - *this\scroll\v\bar\page\pos
+; ;               If row( )\l\v\height < 0 : row( )\l\v\height = 0 : EndIf
+; ;               If row( )\l\v\y + row( )\l\v\height > *this\y[#__c_inner] + *this\height[#__c_inner2] 
+; ;                 If row( )\l\v\y > *this\y[#__c_inner] + *this\height[#__c_inner2] 
+; ;                   row( )\l\v\height = 0
+; ;                 Else
+; ;                   row( )\l\v\height = ( *this\y[#__c_inner] + *this\height[#__c_inner2] ) -  row( )\l\v\y 
+; ;                 EndIf
+; ;               EndIf
+; ;               
+; ;               If row( )\l\v\height
+; ;                 row( )\l\v\width = 1
+; ;               Else
+; ;                 row( )\l\v\width = 0
+; ;               EndIf
+; ;             EndIf 
+; ;             
+; ;           EndIf
+; ;           
         EndIf
         
         
@@ -9237,18 +9594,31 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;             CustomFilterCallback( @Draw_Plotx( ) )
             ForEach *row( )
               If *row( )\draw 
-                If *row( )\l\h\height
-                  Line( *row( )\l\h\x, *row( )\l\h\y, *row( )\l\h\width, *row( )\l\h\height, *row( )\color\line )
+                Protected Random_x ;= Random(5)
+; ;                 If *row( )\parent And *row( )\parent\last
+; ;                   ; for the editor
+; ;                   If *row( )\parent\sublevel = 0
+; ;                     Line( *row( )\parent\last\text\x-8+Random_x, *row( )\parent\y+*row( )\parent\height/2, 1, (*row( )\parent\last\y-*row( )\parent\y), *row( )\parent\color\line )
+; ;                   Else
+; ;                     Line( *row( )\parent\last\text\x + 1+Random_x, *row( )\parent\y+*row( )\parent\height, 1, (*row( )\parent\last\y-*row( )\parent\y)-*row( )\parent\last\height, *row( )\parent\color\line )
+; ;                   EndIf
+; ;                   
+; ;                   Line( *row( )\parent\box[0]\x+*row( )\parent\box[0]\width/2, *row( )\parent\last\y+*row( )\parent\last\height/2, 7, 1, *row( )\parent\color\line )
+; ;                   Line( *row( )\parent\box[0]\x+*row( )\parent\box[0]\width/2, *row( )\parent\y+*row( )\parent\height/2, 7, 1, *row( )\parent\color\line )
+; ;                 EndIf
+                
+                If *row( )\last
+                  ; for the editor
+                  If *row( )\sublevel = 0
+                    Line( *row( )\last\text\x -8 +Random_x, *row( )\y+*row( )\height/2, 1, (*row( )\last\y-*row( )\y), *row( )\color\line )
+                  Else
+                    Line( *row( )\last\text\x + 1+Random_x, *row( )\y+*row( )\height, 1, (*row( )\last\y-*row( )\y)-*row( )\last\height, *row( )\color\line )
+                  EndIf
+                  
+                  Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\last\y+*row( )\last\height/2, 7, 1, *row( )\color\line )
+                  Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y+*row( )\height/2, 7, 1, *row( )\color\line )
                 EndIf
-                ;               EndIf    
-                ;             Next
-                ;             
-                ;             CustomFilterCallback( @Draw_PlotY( ) )
-                ;             ForEach *row( )
-                ;               If *row( )\draw 
-                If *row( )\l\v\width
-                  Line( *row( )\l\v\x, *row( )\l\v\y, *row( )\l\v\width, *row( )\l\v\height, *row( )\color\line )
-                EndIf
+                
               EndIf    
             Next
             
@@ -9362,12 +9732,13 @@ CompilerIf Not Defined( widget, #PB_Module )
               If *row( )\draw And *this\mode\buttons And 
                  *row( )\childrens And Not ( *row( )\sublevel And *this\mode\check = 4 )
                 
-                Arrow( *row( )\box[0]\x + ( *row( )\box[0]\width - 6 )/2,
-                       *row( )\box[0]\y + ( *row( )\box[0]\height - 6 )/2, 
-                       6, Bool( Not *row( )\box[0]\state ) + 2,
-                       *row( )\color\front[0], 0,0 )   ; *row( )\color\state
+                _draw_button_( 0, *row( )\box[0]\x, *row( )\box[0]\y, *row( )\box[0]\width, *row( )\box[0]\height, 0,2);*row( )\box[0]\state, 2 );, \color )
                 
-                ;; _draw_arrows_( *row( )\box[0], Bool( Not *row( )\box[0]\state ) + 2 ) 
+                Line(*row( )\box[0]\x + 2, *row( )\box[0]\y + *row( )\box[0]\height/2, *row( )\box[0]\width - 4, 1, $ff000000)
+                If *row( )\box[0]\state
+                  Line(*row( )\box[0]\x + *row( )\box[0]\width/2, *row( )\box[0]\y + 2, 1, *row( )\box[0]\height - 4, $ff000000)
+                EndIf
+                
               EndIf    
             Next
           EndIf
@@ -9504,9 +9875,9 @@ CompilerIf Not Defined( widget, #PB_Module )
           ;             If Not \row\_s( )
           ;               \row\_s( ) = AllocateStructure( _s_rows )
           ;             EndIf
-          If Not ListIndex( *this\row\_s( ) ) Or Not position
-            *this\row\first = *this\row\_s( )
-          EndIf
+;           If Not ListIndex( *this\row\_s( ) ) Or Not position
+;             *this\row\first = *this\row\_s( )
+;           EndIf
           
           If *this\mode\check = 4
             If sublevel <> 0
@@ -14177,11 +14548,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         *this\fs = constants::_check_( Flag, #__flag_borderLess, #False ) * #__border_scroll
         *this\bs = *this\fs
         
-        ;If *this\vertical
-        *this\text\padding\y = Bool( #PB_Compiler_OS = #PB_OS_Windows ) 
-        ;Else
-        *this\text\padding\x = 3 - Bool( #PB_Compiler_OS = #PB_OS_Windows ) * 2 - Bool( #PB_Compiler_OS = #PB_OS_Linux ) * 3
-        ;EndIf
+        *this\text\padding\y = Bool( #PB_Compiler_OS = #PB_OS_Windows ) ;; 6
+        *this\text\padding\x = 3 - Bool( #PB_Compiler_OS = #PB_OS_Windows ) * 2 - Bool( #PB_Compiler_OS = #PB_OS_Linux ) * 3 ;; 6
         
         *this\mode\check = 3 ; multiselect
         *this\mode\fullselection = constants::_check_( Flag, #__flag_fullselection, #False )*7
@@ -16010,8 +16378,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Protected g
       If IsGadget(Canvas)
         ;g = GadgetID( Canvas )
-      root( )\container = Canvas;#__type_root
-      ;;SetGadgetData( Canvas, root( ) )
+        root( )\container = Canvas;#__type_root
+                                  ;;SetGadgetData( Canvas, root( ) )
       Else
         g = CanvasGadget( Canvas, x, Y, width, height, Flag | #PB_Canvas_Keyboard ) : If Canvas =- 1 : Canvas = g : EndIf
       EndIf
@@ -16025,47 +16393,47 @@ CompilerIf Not Defined( widget, #PB_Module )
       Resize( root( ), 0,0,width,height ) ;??
       
       If g
-      SetGadgetData( Canvas, root( ) )
-      SetWindowData( window, Canvas )
-      
-      If flag & #PB_Canvas_Container = #PB_Canvas_Container
-        If ListSize( widget( ) )
-          If widget( )\container = #__type_window
-            _set_align_flag_( widget( ), root( ), #__flag_autosize )
-            root( )\canvas\container = widget( )
-            OpenList( widget( ) )
-            SetParent( widget( ), root( ) )
+        SetGadgetData( Canvas, root( ) )
+        SetWindowData( window, Canvas )
+        
+        If flag & #PB_Canvas_Container = #PB_Canvas_Container
+          If ListSize( widget( ) )
+            If widget( )\container = #__type_window
+              _set_align_flag_( widget( ), root( ), #__flag_autosize )
+              root( )\canvas\container = widget( )
+              OpenList( widget( ) )
+              SetParent( widget( ), root( ) )
+            EndIf
+          Else
+            root( )\canvas\container = #__type_window
           EndIf
-        Else
-          root( )\canvas\container = #__type_window
+          
+          BindEvent( #PB_Event_SizeWindow, @CW_resize( ), Window );, Canvas )
         EndIf
         
-        BindEvent( #PB_Event_SizeWindow, @CW_resize( ), Window );, Canvas )
+        BindEvent( #PB_Event_DeactivateWindow, @CW_Deactive( ), Window );, Canvas )
+        
+        ; z - order
+        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+          SetWindowLongPtr_( GadgetID( Canvas ), #GWL_STYLE, GetWindowLongPtr_( GadgetID( Canvas ), #GWL_STYLE ) | #WS_cLIPSIBLINGS )
+          SetWindowPos_( GadgetID( Canvas ), #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE | #SWP_NOSIZE )
+        CompilerEndIf
+        
+        ; убрать звуковой сигнал если канвас не активен при вводе с клавиатуры
+        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+          ;;Debug root() 
+          ;;  CocoaMessage(0, WindowID( Window ), "makeFirstResponder:", GadgetID( Canvas ))
+          ;;Debug root() ; bug
+        CompilerEndIf
+        
       EndIf
-      
-      BindEvent( #PB_Event_DeactivateWindow, @CW_Deactive( ), Window );, Canvas )
-      
-      ; z - order
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        SetWindowLongPtr_( GadgetID( Canvas ), #GWL_STYLE, GetWindowLongPtr_( GadgetID( Canvas ), #GWL_STYLE ) | #WS_cLIPSIBLINGS )
-        SetWindowPos_( GadgetID( Canvas ), #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE | #SWP_NOSIZE )
-      CompilerEndIf
-      
-      ; убрать звуковой сигнал если канвас не активен при вводе с клавиатуры
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-        ;;Debug root() 
-        ;;  CocoaMessage(0, WindowID( Window ), "makeFirstResponder:", GadgetID( Canvas ))
-        ;;Debug root() ; bug
-      CompilerEndIf
-      
-     EndIf
-     If Not *CallBack
+      If Not *CallBack
         root( )\repaint = #True
       Else
         BindGadgetEvent( Canvas, *CallBack )
       EndIf
       BindGadgetEvent( Canvas, @CallBack( ) )
-     
+      
       PostEvent( #PB_Event_Gadget, Window, Canvas, #PB_EventType_Resize )
       _canvas_post_event_repaint_( root( )\canvas ) 
       ProcedureReturn root( )
@@ -16352,190 +16720,562 @@ Macro Uselib( _name_ )
   UseModule structures
 EndMacro
 
-
-;
-; This code is automatically generated by the FormDesigner.
-; Manual modification is possible to adjust existing commands, but anything else will be dropped when the code is compiled.
-; Event procedures needs to be put in another source file.
-;
-
-; IncludePath "../../" : XIncludeFile "widgets.pbi"
-;;XIncludeFile "../empty5.pb"
-
 CompilerIf #PB_Compiler_IsMainFile
+  UseLib(widget)
   
-  Uselib(Widget)
-  EnableExplicit
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    Procedure GadgetsClipCallBack( GadgetID, lParam )
+      If GadgetID
+        Protected Gadget = GetProp_( GadgetID, "PB_ID" )
+        
+        If GetWindowLongPtr_( GadgetID, #GWL_STYLE ) & #WS_CLIPSIBLINGS = #False 
+          SetWindowLongPtr_( GadgetID, #GWL_STYLE, GetWindowLongPtr_( GadgetID, #GWL_STYLE ) | #WS_CLIPSIBLINGS|#WS_CLIPCHILDREN )
+          
+          If IsGadget( Gadget ) 
+            Select GadgetType( Gadget )
+              Case #PB_GadgetType_ComboBox
+                Protected Height = GadgetHeight( Gadget )
+                
+              Case #PB_GadgetType_Text
+                If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE) & #SS_NOTIFY) = #False
+                  SetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_STYLE) | #SS_NOTIFY)
+                EndIf
+                
+              Case #PB_GadgetType_Frame, #PB_GadgetType_Image
+                If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
+                  SetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
+                EndIf
+                
+                ; Для панел гаджета темный фон убирать
+              Case #PB_GadgetType_Panel 
+                If Not IsGadget( Gadget ) And (GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
+                  SetWindowLongPtr_(GadgetID, #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID, #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
+                EndIf
+                
+            EndSelect
+            
+            ;             If (GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) & #WS_EX_TRANSPARENT) = #False
+            ;               SetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE, GetWindowLongPtr_(GadgetID( Gadget ), #GWL_EXSTYLE) | #WS_EX_TRANSPARENT)
+            ;             EndIf
+          EndIf
+          
+          
+          If Height
+            ResizeGadget( Gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height )
+          EndIf
+          
+          SetWindowPos_( GadgetID, #GW_HWNDFIRST, 0,0,0,0, #SWP_NOMOVE|#SWP_NOSIZE )
+        EndIf
+        
+      EndIf
+      
+      ProcedureReturn GadgetID
+    EndProcedure
+  CompilerEndIf
   
-  Define a,i, *g._s_widget
-  Define g, Text.s
-  ; Define m.s=#CRLF$
-  Define m.s=#LF$
-  
-  Text.s = "This is a long line" + m.s +
-           "Who should show," + m.s +
-           "I have to write the text in the box or not." + m.s +
-           "The string must be very long" + m.s +
-           "Otherwise it will not work."
-  
-  Procedure ResizeCallBack()
-    ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16-35)
-    CompilerIf #PB_Compiler_Version =< 546
-      ;PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
+  Procedure ClipGadgets( WindowID )
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      WindowID = GetAncestor_( WindowID, #GA_ROOT )
+      If Not (GetWindowLongPtr_(WindowID, #GWL_STYLE)&#WS_CLIPCHILDREN)
+        SetWindowLongPtr_( WindowID, #GWL_STYLE, GetWindowLongPtr_( WindowID, #GWL_STYLE )|#WS_CLIPCHILDREN )
+      EndIf
+      EnumChildWindows_( WindowID, @GadgetsClipCallBack(), 0 )
     CompilerEndIf
   EndProcedure
   
-  Procedure SplitterCallBack()
-    ;PostEvent(#PB_Event_Gadget, EventWindow(), 16, #PB_EventType_Resize)
+  
+  Global Canvas_0
+  Define i, a, g = 1
+  Global *g._S_widget
+  Global *g0._S_widget
+  Global *g1._S_widget
+  Global *g2._S_widget
+  Global *g3._S_widget
+  Global *g4._S_widget
+  Global *g5._S_widget
+  Global *g6._S_widget
+  Global *g7._S_widget
+  Global *g8._S_widget
+  Global *g9._S_widget
+  
+  
+  Procedure LoadControls(Widget, Directory$)
+    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
+    
+    If FileSize(ZipFile$) < 1
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        ZipFile$ = #PB_Compiler_Home+"themes\silkTheme.zip"
+      CompilerElse
+        ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+      CompilerEndIf
+      If FileSize(ZipFile$) < 1
+        MessageRequester("Designer Error", "Themes\silkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error|#PB_MessageRequester_Ok)
+        End
+      EndIf
+    EndIf
+    ;   Directory$ = GetCurrentDirectory()+"images/" ; "";
+    ;   Protected ZipFile$ = Directory$ + "images.zip"
+    
+    
+    If FileSize(ZipFile$) > 0
+      UsePNGImageDecoder()
+      
+      CompilerIf #PB_Compiler_Version > 522
+        UseZipPacker()
+      CompilerEndIf
+      
+      Protected PackEntryName.s, ImageSize, *Image, Image, ZipFile
+      ZipFile = OpenPack(#PB_Any, ZipFile$, #PB_PackerPlugin_Zip)
+      
+      If ZipFile  
+        If ExaminePack(ZipFile)
+          While NextPackEntry(ZipFile)
+            
+            PackEntryName.S = PackEntryName(ZipFile)
+            ImageSize = PackEntrySize(ZipFile)
+            If ImageSize
+              *Image = AllocateMemory(ImageSize)
+              UncompressPackMemory(ZipFile, *Image, ImageSize)
+              Image = CatchImage(#PB_Any, *Image, ImageSize)
+              PackEntryName.S = ReplaceString(PackEntryName.S,".png","")
+              If PackEntryName.S="application_form" 
+                PackEntryName.S="vd_windowgadget"
+              EndIf
+              
+              PackEntryName.S = ReplaceString(PackEntryName.S,"page_white_edit","vd_scintillagadget")   ;vd_scintillagadget.png not found. Use page_white_edit.png instead
+              
+              Select PackEntryType(ZipFile)
+                Case #PB_Packer_File
+                  If Image
+                    If FindString(Left(PackEntryName.S, 3), "vd_")
+                      PackEntryName.S = ReplaceString(PackEntryName.S,"vd_"," ")
+                      PackEntryName.S = Trim(ReplaceString(PackEntryName.S,"gadget",""))
+                      
+                      Protected Left.S = UCase(Left(PackEntryName.S,1))
+                      Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
+                      PackEntryName.S = " "+Left.S+Right.S
+                      
+                      If IsGadget(Widget)
+                        If FindString(LCase(PackEntryName.S), "cursor")
+                          
+                          ;Debug "add cursor"
+                          AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(Widget, 0, ImageID(Image))
+                          
+                        ElseIf FindString(LCase(PackEntryName.S), "window")
+                          
+                          ;Debug "add gadget window"
+                          AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(Widget, 1, ImageID(Image))
+                          
+                        Else
+                          AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
+                        EndIf
+                        
+                      Else
+                        If FindString(LCase(PackEntryName.S), "cursor")
+                          
+                          ;Debug "add cursor"
+                          AddItem(Widget, 0, PackEntryName.S, Image)
+                          ;SetItemData(Widget, 0, Image)
+                          
+                        ElseIf FindString(LCase(PackEntryName.S), "window")
+                          
+                          Debug "add window"
+                          AddItem(Widget, 1, PackEntryName.S, Image)
+                          ;SetItemData(Widget, 1, Image)
+                          
+                        Else
+                          AddItem(Widget, -1, PackEntryName.S, Image)
+                          ;SetItemData(Widget, CountItems(Widget)-1, Image)
+                        EndIf
+                      EndIf
+                    EndIf
+                  EndIf    
+              EndSelect
+              
+              FreeMemory(*Image)
+            EndIf
+          Wend  
+        EndIf
+        
+        ClosePack(ZipFile)
+      EndIf
+    EndIf
   EndProcedure
   
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-    LoadFont(0, "Arial", 16)
-  CompilerElse
-    LoadFont(0, "Arial", 11)
-  CompilerEndIf 
+  UsePNGImageDecoder()
+  
+  If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
+    End
+  EndIf
+  
+  Procedure events_tree_gadget()
+    ;Debug " gadget - "+EventGadget()+" "+EventType()
+    Protected EventGadget = EventGadget()
+    Protected EventType = EventType()
+    Protected EventData = EventData()
+    Protected EventItem = GetGadgetState(EventGadget)
+    
+    Select EventType
+      Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
+      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_LeftClick : Debug "gadget click item = " + EventItem +" data "+ EventData
+    EndSelect
+  EndProcedure
+  
+  Procedure events_tree_widget()
+    ;Debug " widget - "+this()\widget+" "+this()\event
+    Protected EventGadget = this()\widget
+    Protected EventType = this()\event
+    Protected EventData = this()\data
+    Protected EventItem = GetState(EventGadget)
+    
+    Select EventType
+      Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
+      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
+        ;; DD::DragText(GetItemText(EventGadget, EventItem))
+        
+      Case #PB_EventType_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
+        ;; Debug DD::DropText()
+        
+      Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
+      Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
+    EndSelect
+  EndProcedure
   
   
-  Text.s = "This is a long line." + m.s +
-           "Who should show." + 
-           m.s +
-           m.s +
-           m.s +
-           m.s +
-           "I have to write the text in the box or not." + 
-           m.s +
-           m.s +
-           m.s +
-           m.s +
-           "The string must be very long." + m.s +
-           "Otherwise it will not work." ;+ m.s +
+  Open(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   
-  If OpenWindow(0, 0, 0, 800, 600, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-    ButtonGadget(100, 8,8,80,25,"~wrap")
-    Open(0, 8, 35);, 400, 600)
+  Procedure.i __add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+    Protected handle, *last._s_rows, *parent._s_rows
+   ; sublevel + 1
     
-    EditorGadget(5, 8, 8, 306, 133);, #PB_Editor_WordWrap) 
-    SetGadgetText(5, Text.s) 
-    For a = 0 To 2
-      AddGadgetItem(5, a, "Line "+Str(a))
-    Next
-    AddGadgetItem(5, 7+a, "_")
-    For a = 4 To 6
-      AddGadgetItem(5, a, "Line "+Str(a))
-    Next
-    ;SetGadgetFont(5, FontID(0))
-    
-    
-    ;Define *w = Editor(0, 0, 0, 0, #__flag_autosize) 
-    *g = Editor(8, 8, 250, 680, #__flag_autosize) 
-    g=getgadget(root())
-    
-    ;     Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines|#PB_Flag_Numeric);#PB_Text_WordWrap|#PB_Flag_GridLines) 
-    ;     *g._s_widget=GetGadgetData(g)
-    
-    SetText(*g, Text.s) 
-    ;redraw(*g)
-    For a = 0 To 2
-      AddItem(*g, a, "Line "+Str(a))
-    Next
-    AddItem(*g, 7+a, "_")
-    For a = 4 To 6
-      AddItem(*g, a, "Line "+Str(a))
-    Next
-    ;SetFont(*g, FontID(0))
-    
-    Splitter(8, 35, 800-16, 600-16-35,5,*g, #PB_Splitter_Vertical|#__flag_autosize)
-    
-; ;     SplitterGadget(10,8, 8, 800, 600, 0,g, #PB_Splitter_Vertical)
-; ;     CompilerIf #PB_Compiler_Version =< 546
-; ;       BindGadgetEvent(10, @SplitterCallBack())
-; ;     CompilerEndIf
-; ;     
-; ;     PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
-; ;     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
-    
-    Debug ""+GadgetHeight(5) +" "+ GadgetHeight(g)
-    Repeat 
-      Define Event = WaitWindowEvent()
+    ;With *this
+    If *this
+      ;{ Генерируем идентификатор
+      If position < 0 Or position > ListSize( *this\row\_s( ) ) - 1
+        LastElement( *this\row\_s( ) )
+        handle = AddElement( *this\row\_s( ) ) 
+        If position < 0 
+          position = ListIndex( *this\row\_s( ) )
+        EndIf
+      Else
+        handle = SelectElement( *this\row\_s( ), position )
+        If sublevel < *this\row\_s( )\sublevel
+          sublevel = *this\row\_s( )\sublevel 
+          *last = *this\row\_s( )\parent\last
+        EndIf
+        handle = InsertElement( *this\row\_s( ) )
+      EndIf
+      ;}
       
-      Select Event
-        Case #PB_Event_Gadget
-          If EventGadget() = 100
-            Select EventType()
-              Case #PB_EventType_LeftClick
-                Define *E._s_widget = GetGadgetData(g)
+      If handle
+        If sublevel > position
+          sublevel = position
+        EndIf
+         
+        ;; If sublevel
+        If *this\row\last
+          If *this\row\last\sublevel < sublevel
+            *this\row\last\childrens = 1
+            *this\row\_s( )\parent = *this\row\last
+            
+          ElseIf *this\row\last\sublevel = sublevel 
+            *this\row\_s( )\parent = *this\row\last\parent
+            
+          ElseIf *this\row\last\sublevel > sublevel 
+            If *this\row\last\parent 
+              If *this\row\last\parent\parent
+                *this\row\_s( )\parent = *this\row\last\parent\parent
+              EndIf
+              
+              ;;*this\row\last\parent\last = *this\row\last
+              ;*this\row\last\parent\last = *this\row\_s( )
+              
+              Debug Text +" "+ sublevel +" - "+ *this\row\last\parent\text\string +" "+ *this\row\_s( )\parent;\text\string
+              ;If *this\row\last And *this\row\last\parent And *this\row\_s( )\sublevel = *this\row\last\parent\sublevel
+           ; *this\row\_s( )\parent = *this\row\last\parent
+          ;EndIf
+              If *this\row\last\parent
+                *this\row\last\parent\last = *this\row\_s( )
                 
-                *E\Text\MultiLine !- 1
-                If  *E\Text\MultiLine = 1
-                  SetGadgetText(100,"~wrap")
-                Else
-                  SetGadgetText(100,"wrap")
-                EndIf
-                
-                CompilerSelect #PB_Compiler_OS
-                  CompilerCase #PB_OS_Linux
-                    If  *E\Text\MultiLine = 1
-                      gtk_text_view_set_wrap_mode_(GadgetID(0), #GTK_WRAP_WORD)
-                    Else
-                      gtk_text_view_set_wrap_mode_(GadgetID(0), #GTK_WRAP_NONE)
-                    EndIf
-                    
-                  CompilerCase #PB_OS_MacOS
-                    
-                    If  *E\Text\MultiLine = 1
-                      EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap)
-                    Else
-                      EditorGadget(0, 8, 8, 306, 133) 
-                    EndIf
-                    
-                    SetGadgetText(0, Text.s) 
-                    For a = 0 To 5
-                      AddGadgetItem(0, a, "Line "+Str(a))
-                    Next
-                    SetGadgetFont(0, FontID(0))
-                    
-                    SplitterGadget(10,8, 8, 306, 276, 0,g)
-                    
-                    CompilerIf #PB_Compiler_Version =< 546
-                      BindGadgetEvent(10, @SplitterCallBack())
-                    CompilerEndIf
-                    PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
-                    BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
-                    
-                    ; ;                     ImportC ""
-                    ; ;                       GetControlProperty(Control, PropertyCreator, PropertyTag, BufferSize, *ActualSize, *PropertyBuffer)
-                    ; ;                       TXNSetTXNObjectControls(TXNObject, ClearAll, ControlCount, ControlTags, ControlData)
-                    ; ;                     EndImport
-                    ; ;                     
-                    ; ;                     Define TXNObject.i
-                    ; ;                     Dim ControlTag.i(0)
-                    ; ;                     Dim ControlData.i(0)
-                    ; ;                     
-                    ; ;                     ControlTag(0) = 'wwrs' ; kTXNWordWrapStateTag
-                    ; ;                     ControlData(0) = 0     ; kTXNAutoWrap
-                    ; ;                     
-                    ; ;                     If GetControlProperty(GadgetID(0), 'PURE', 'TXOB', 4, 0, @TXNObject) = 0
-                    ; ;                       TXNSetTXNObjectControls(TXNObject, #False, 1, @ControlTag(0), @ControlData(0))
-                    ; ;                     EndIf
-                  CompilerCase #PB_OS_Windows
-                    SendMessage_(GadgetID(0), #EM_SETTARGETDEVICE, 0, 0)
-                CompilerEndSelect
-                
-                
-            EndSelect
+                ;*this\row\_s( )\parent = *this\row\last\parent
+              EndIf
+            EndIf
           EndIf
           
-        Case #PB_Event_LeftClick  
-          SetActiveGadget(0)
-        Case #PB_Event_RightClick 
-          SetActiveGadget(10)
-      EndSelect
-    Until Event = #PB_Event_CloseWindow
-  EndIf
+        EndIf
+        
+        If *last
+          *this\row\last = *last
+        Else
+          *this\row\last = *this\row\_s( )
+        EndIf
+        
+        If *this\row\last\parent
+         ;; *this\row\last\parent\last = *this\row\last
+        EndIf
+        
+        *this\row\_s( )\sublevel = sublevel
+         
+        
+        ; add lines
+        *this\row\_s( )\index = ListIndex( *this\row\_s( ) )
+        *this\row\_s( )\color = _get_colors_( )
+        *this\row\_s( )\color\state = 0
+        *this\row\_s( )\color\back = 0 
+        *this\row\_s( )\color\frame = 0
+        
+        If Text
+          *this\row\_s( )\text\change = 1
+          *this\row\_s( )\text\string = StringField( Text.s, 1, #LF$ )
+          *this\row\_s( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+        EndIf
+        
+        *this\count\items + 1
+        *this\change = 1
+      EndIf
+    EndIf
+    ;EndWith
+    
+    ProcedureReturn *this\count\items - 1
+  EndProcedure
+  
+  Procedure.i _add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+    Protected handle, *last._s_rows, *parent._s_rows
+    ; sublevel + 1
+    
+    ;With *this
+    If *this
+      ;{ Генерируем идентификатор
+      If position < 0 Or position > ListSize( *this\row\_s( ) ) - 1
+        LastElement( *this\row\_s( ) )
+        handle = AddElement( *this\row\_s( ) ) 
+        If position < 0 
+          position = ListIndex( *this\row\_s( ) )
+        EndIf
+      Else
+        handle = SelectElement( *this\row\_s( ), position )
+        
+        ; for the tree( )
+        If sublevel < *this\row\_s( )\sublevel
+          sublevel = *this\row\_s( )\sublevel 
+          
+          *last = *this\row\_s( )\parent\last
+        EndIf
+        
+        handle = InsertElement( *this\row\_s( ) )
+      EndIf
+      ;}
+      
+      If handle
+        If sublevel > position
+          sublevel = position
+        EndIf
+        
+        If *this\row\last
+          If *this\row\last\sublevel < sublevel
+            *this\row\last\childrens = 1
+            *parent = *this\row\last
+            
+          ElseIf *this\row\last\parent 
+            If *this\row\last\parent\sublevel < sublevel 
+              *parent = *this\row\last\parent
+              
+            ElseIf *this\row\last\sublevel > sublevel 
+              If *this\row\last\parent\parent
+                *parent = *this\row\last\parent\parent
+              EndIf
+            EndIf
+            
+            ; for the editor( )
+            If *this\row\last\parent\sublevel = sublevel
+              *this\row\last\parent\last = *this\row\_s( )
+            EndIf
+          EndIf
+        EndIf
+        
+        *this\row\_s( )\parent = *parent
+        *this\row\_s( )\sublevel = sublevel
+        
+        If Not *this\row\first
+          *this\row\first = *this\row\_s( )
+        EndIf
+        
+        If Not *last
+;           *this\row\last = *last
+;         Else
+          *this\row\last = *this\row\_s( )
+        EndIf
+        
+        ; for the tree( )
+        If *this\row\last\parent And 
+           *this\row\last\parent\sublevel < sublevel
+         *this\row\last\parent\last = *this\row\last
+        EndIf
+        
+        ; add lines
+        *this\row\_s( )\index = ListIndex( *this\row\_s( ) )
+        *this\row\_s( )\color = _get_colors_( )
+        *this\row\_s( )\color\state = 0
+        *this\row\_s( )\color\back = 0 
+        *this\row\_s( )\color\frame = 0
+        
+        If Text
+          *this\row\_s( )\text\change = 1
+          *this\row\_s( )\text\string = StringField( Text.s, 1, #LF$ )
+          *this\row\_s( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+        EndIf
+        
+        *this\count\items + 1
+        *this\change = 1
+      EndIf
+    EndIf
+    ;EndWith
+    
+    ProcedureReturn *this\count\items - 1
+  EndProcedure
+  
+  Procedure.i add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+    Protected handle, *last._s_rows, *parent._s_rows
+    ; sublevel + 1
+    
+    ;With *this
+    If *this
+      ;{ Генерируем идентификатор
+      If position < 0 Or position > ListSize( *this\row\_s( ) ) - 1
+        LastElement( *this\row\_s( ) )
+        handle = AddElement( *this\row\_s( ) ) 
+        If position < 0 
+          position = ListIndex( *this\row\_s( ) )
+        EndIf
+      Else
+        handle = SelectElement( *this\row\_s( ), position )
+        
+        ; for the tree( )
+        If sublevel > *this\row\_s( )\sublevel
+;;           sublevel = *this\row\_s( )\sublevel + 1
+          If PreviousElement( *this\row\_s( ) )
+;;             *parent = *this\row\_s( ) 
+;;             *parent\childrens = 1
+            *this\row\last = *this\row\_s( ) 
+            NextElement( *this\row\_s( ) )
+          EndIf
+        Else
+          *last = *this\row\last
+          sublevel = *this\row\_s( )\sublevel
+        EndIf
+        
+        handle = InsertElement( *this\row\_s( ) )
+      EndIf
+      ;}
+      
+      If handle
+        If *this\row\last ;; And Not *parent
+          If sublevel > *this\row\last\sublevel
+            sublevel = *this\row\last\sublevel + 1
+            *parent = *this\row\last
+            *parent\childrens = 1
+            
+          ElseIf *this\row\last\parent 
+            If sublevel > *this\row\last\parent\sublevel 
+              *parent = *this\row\last\parent
+              
+            ElseIf sublevel < *this\row\last\sublevel 
+              If *this\row\last\parent\parent
+                *parent = *this\row\last\parent\parent
+              EndIf
+              
+              If *this\row\last\parent\sublevel = sublevel
+                *this\row\last\parent\last = *this\row\_s( )
+              EndIf
+            EndIf
+          EndIf
+        EndIf
+        
+        *this\row\_s( )\parent = *parent
+        
+        If *last
+          *this\row\last = *last
+        Else
+          *this\row\last = *this\row\_s( )
+        EndIf
+        
+        ; for the tree( )
+        If Not *this\row\first
+          *this\row\first = *this\row\_s( )
+        EndIf
+        If *this\row\last\parent And
+           *this\row\last\parent\sublevel < sublevel
+          *this\row\last\parent\last = *this\row\last
+        EndIf
+        
+        *this\row\_s( )\sublevel = sublevel
+        
+        ; add lines
+        *this\row\_s( )\index = ListIndex( *this\row\_s( ) )
+        *this\row\_s( )\color = _get_colors_( )
+        *this\row\_s( )\color\state = 0
+        *this\row\_s( )\color\back = 0 
+        *this\row\_s( )\color\frame = 0
+        
+        If Text
+          *this\row\_s( )\text\change = 1
+          *this\row\_s( )\text\string = StringField( Text.s, 1, #LF$ )
+          *this\row\_s( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+        EndIf
+        
+        *this\count\items + 1
+        *this\change = 1
+      EndIf
+    EndIf
+    ;EndWith
+    
+    ProcedureReturn *this\count\items - 1
+  EndProcedure
+  
+  g = 11
+  *g = Tree(10, 10, 300, 600, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
+  
+  ;  2_example
+  add(*g, 0, "Structure widget", -1, 0)
+  add(*g, 1, "window.i", -1, 1) 
+  add(*g, 2, "gadget.i", -1, 1) 
+  add(*g, 3, "EndStructure", -1, 0) 
+  
+  add(*g, 4, "", -1, 0) 
+  
+  add(*g, 5, "Enumeration widget", -1, 0)
+  add(*g, 6, "#window", -1, 1) 
+  add(*g, 7, "#gadget", -1, 1) 
+  add(*g, 8, "EndEnumeration", -1, 0) 
+  
+  add(*g, 9, "", -1, 0) 
+  
+  add(*g, 10, "Procedure Open()", -1, 0) 
+  add(*g, 11, "If is_widget()", -1, 1) 
+  add(*g, 12, "If is_hide()", -1, 2) 
+  add(*g, 13, " ", -1, 3) 
+  add(*g, 14, "EndIf", -1, 2) 
+  add(*g, 15, "EndIf", -1, 1) 
+  add(*g, 16, "EndProcedure", -1, 0) 
+  
+  
+  
+  Repeat
+    Select WaitWindowEvent()   
+      Case #PB_Event_CloseWindow
+        CloseWindow(EventWindow()) 
+        Break
+    EndSelect
+  ForEver
+  
 CompilerEndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; Folding = -------------------0f-f----------------------------
-; EnableXP
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------v-f+------------------4-8-0b-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--0------
 ; EnableXP

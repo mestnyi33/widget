@@ -400,9 +400,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       *first._s_rows
       *after._s_rows
       *before._s_rows
+      *parent._s_rows
       
       l._s_line_ ; 
-      *parent._s_rows
       box._s_buttons[2]
       *option_group._s_rows
       
@@ -433,7 +433,10 @@ CompilerIf Not Defined(structures, #PB_Module)
       sublevellen.l
       
       *_tt._s_tt
+      
       *first._s_rows
+      *last._s_rows ; temp
+      
       List *draws._s_rows( )
       
       ; edit
@@ -678,5 +681,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = HACAAQIg
+; Folding = HACAAYIg
 ; EnableXP

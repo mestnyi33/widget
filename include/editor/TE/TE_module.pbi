@@ -323,6 +323,7 @@ Module _PBEdit_
 		*te\leftBorderOffset = BorderSize(*te)
 		*te\newLineChar = #LF
 		*te\newLineText = Chr(*te\newLineChar)
+		;;Debug ""+*te\newLineText +" "+ *te\newLineChar
 		
 		With *te\colors
 			\defaultTextColor = RGBA( 0, 0, 0, 255)
@@ -8988,7 +8989,7 @@ Repeat
 	EndSelect
 ForEver
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------
+; Folding = -----------------v+---f-------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = TextEditor_x64.exe

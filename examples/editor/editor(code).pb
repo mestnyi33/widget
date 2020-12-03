@@ -8782,7 +8782,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         ;If \text\editable  
         
         ;Debug *this\scroll\v\bar\index
-        If *this And ( *this\scroll\v And *this\scroll\h And *this\scroll\v\bar\index =- 1 And *this\scroll\h\bar\index =- 1 )
+        If *this ;And ( *this\scroll\v And *this\scroll\h And *this\scroll\v\bar\index =- 1 And *this\scroll\h\bar\index =- 1 )
           If ListSize( *this\row\_s( ) )
             If Not \hide ;And \interact
                          ; Get line position
