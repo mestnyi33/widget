@@ -402,7 +402,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem (*g, 4, "Sub-Item 4", -1, 4)
     ;;AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
   
-    ;{  5_example
+    ;{  3_example
     *g5 = Tree(230, 100, 103, 210, #__Tree_NoButtons|#__tree_Collapsed)                                         
     AddItem(*g5, 0, "Tree_0", -1 )
     AddItem(*g5, 1, "Tree_1", -1, 0) 
@@ -440,6 +440,7 @@ CompilerIf #PB_Compiler_IsMainFile
         AddItem(*g6, -1, "Item" + Str(i), -1, 1)
       EndIf
     Next i
+    
     ;}
     
     
@@ -465,6 +466,8 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, 14, "Tree_7", -1 )
 ; ;     ;Bind(*g, @events_tree_widget())
 ; ;     DD::EnableDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
+    
+    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Collapsed) : Next
     
     
  ;{  4_example

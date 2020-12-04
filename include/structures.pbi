@@ -396,6 +396,9 @@ CompilerIf Not Defined(structures, #PB_Module)
       
                ;;len.l ; ?????? ?????? ??????? ?????
       
+      verticallines._s_coordinate
+      horizontallines._s_coordinate
+      
       box._s_buttons[2]
       *option_group._s_rows
       
@@ -406,7 +409,9 @@ CompilerIf Not Defined(structures, #PB_Module)
                *before._s_rows ; temp
       
                l._s_line_ ;  ; temp
-      
+               
+               
+               
       ; edit
       margin._s_edit
       
@@ -430,13 +435,15 @@ CompilerIf Not Defined(structures, #PB_Module)
       ; list view
       drag.b
       *scrolled
-      sublevel.l
-      sublevelsize.l
+      
+      sublevel.w
+      sublevelsize.a
       
       *_tt._s_tt
       
-      *first._s_rows
-      *last._s_rows ; temp
+      *first._s_rows ; first elemnt in the list 
+      ; *first\first ; first sublevel last elemnt in the list 
+      *last._s_rows  ; added last element
       
       List *draws._s_rows( )
       
@@ -682,5 +689,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = HACAAMEw
+; Folding = HACAEMEw
 ; EnableXP

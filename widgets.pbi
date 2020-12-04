@@ -297,6 +297,24 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
     EndMacro
     
+    Macro _repaint_( _this_ )
+      If _this_\root And Not _this_\repaint : _this_\repaint = 1
+        _canvas_post_event_repaint_( _this_\root\canvas ) 
+      EndIf
+    EndMacro 
+    
+    Macro _repaint_items_( _this_ )
+      If _this_\count\items = 0 Or 
+         ( Not _this_\hide And _this_\row\count And 
+           ( _this_\count\items % _this_\row\count ) = 0 )
+        
+        ; Debug #PB_Compiler_Procedure
+        _this_\change = 1
+        _this_\row\count = _this_\count\items
+        _repaint_( _this_ )
+      EndIf  
+    EndMacro
+    
     
     ;- 
     Macro ULCase( String )
@@ -2726,24 +2744,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf 
     EndMacro      
     
-    Macro _repaint_( _this_ )
-      If _this_\root And Not _this_\repaint : _this_\repaint = 1
-        _canvas_post_event_repaint_( _this_\root\canvas ) 
-      EndIf
-    EndMacro 
-    
-    Macro _repaint_items_( _this_ )
-      If _this_\count\items = 0 Or 
-         ( Not _this_\hide And _this_\row\count And 
-           ( _this_\count\items % _this_\row\count ) = 0 )
-        
-        ; Debug #PB_Compiler_Procedure
-        _this_\change = 1
-        _this_\row\count = _this_\count\items
-        _repaint_( _this_ )
-      EndIf  
-    EndMacro
-    
     
     ;-
     Macro _position_move_( _this_ )
@@ -3101,6 +3101,25 @@ CompilerIf Not Defined( widget, #PB_Module )
       _this_\hide = Bool( _this_\hide[1] Or _this_\parent\hide Or 
                           ( _this_\parent\type = #PB_GadgetType_Panel And 
                             _this_\parent\_tab\index[#__tab_2] <> _this_\_tabindex ) )
+    EndMacro
+    
+    Macro _set_hide_state_items_( _this_ )
+      _this_\change = #True
+      _this_\row\sublevel = _this_\row\_s( )\sublevel
+      
+      PushListPosition( _this_\row\_s( ) )
+      While NextElement( _this_\row\_s( ) )
+        If _this_\row\_s( )\parent 
+          _this_\row\_s( )\hide = Bool( _this_\row\_s( )\parent\box[0]\state | _this_\row\_s( )\parent\hide )
+        EndIf
+        
+        If _this_\row\_s( )\sublevel = _this_\row\sublevel 
+          Break
+        EndIf
+      Wend
+      PopListPosition( _this_\row\_s( ) )
+      
+      _canvas_post_event_repaint_( _this_\root\canvas )
     EndMacro
     
     Macro _set_check_state_( _address_, _three_state_ )
@@ -9322,7 +9341,10 @@ CompilerIf Not Defined( widget, #PB_Module )
               row( )\box[0]\x = row( )\x + row( )\sublevelsize - (bp-4) - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
             EndIf
             
-            ;;row( )\box[0]\x = row( )\x + 4 ;;+ row( )\sublevelsize - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
+            ; for the editor buttons pos
+            If row( )\parent And row( )\parent\last And row( )\parent\sublevel = row( )\parent\last\sublevel
+              row( )\box[0]\x = row( )\x + 4
+            EndIf
             
             row( )\box[0]\y = ( row( )\y + row( )\height ) - ( row( )\height + row( )\box[0]\height )/2 - *this\scroll\v\bar\page\pos
           EndIf
@@ -9694,6 +9716,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\row\last = *this\row\_s( )
           EndIf
           
+          ; for the tree( )
+          If *this\row\last\parent And
+             *this\row\last\parent\sublevel < sublevel
+            *this\row\last\parent\last = *this\row\last
+          EndIf
+          
           If sublevel = 0
             If *this\row\first 
               If *this\row\first\first
@@ -9705,12 +9733,6 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           If position = 0
             *this\row\first = *this\row\_s( )
-          EndIf
-          
-          ; for the tree( )
-          If *this\row\last\parent And
-             *this\row\last\parent\sublevel < sublevel
-            *this\row\last\parent\last = *this\row\last
           EndIf
           
           If *this\mode\collapse And *this\row\_s( )\parent And 
@@ -10508,19 +10530,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If collapsed Or State & #__tree_Expanded
           *this\row\_s( )\box[0]\state = collapsed
           
-          sublevel = *this\row\_s( )\sublevel
-          
-          PushListPosition( *this\row\_s( ) )
-          While NextElement( *this\row\_s( ) )
-            If *this\row\_s( )\sublevel = sublevel
-              Break
-            ElseIf *this\row\_s( )\sublevel > sublevel 
-              *this\row\_s( )\hide = collapsed
-              ;*this\row\_s( )\hide = Bool( *this\row\_s( )\parent\box[0]\state | *this\row\_s( )\parent\hide )
-              
-            EndIf
-          Wend
-          PushListPosition( *this\row\_s( ) )
+          _set_hide_state_items_( *this ) 
         EndIf
         
         result = *SelectElement
@@ -10783,25 +10793,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                    ( *this\mode\buttons And *this\row\draws( )\childrens ) And 
                    Atpoint( mouse_x, mouse_y, *this\row\draws( )\box[0] )
                   
-                  If SelectElement( *this\row\_s( ), *this\row\draws( )\index ) 
+                  If SelectElement( *this\row\_s( ), *this\row\draws( )\index )
                     *this\row\_s( )\box[0]\state ! 1
                     *this\row\box\state = 2
                     ; Post( #PB_EventType_Down, *this, *this\row\_s( )\index )
                     
-                    PushListPosition( *this\row\_s( ) )
-                    While NextElement( *this\row\_s( ) )
-                      If *this\row\_s( )\parent And *this\row\_s( )\sublevel > *this\row\_s( )\parent\sublevel 
-                        *this\row\_s( )\hide = Bool( *this\row\_s( )\parent\box[0]\state | *this\row\_s( )\parent\hide )
-                      Else
-                        Break
-                      EndIf
-                    Wend
-                    PopListPosition( *this\row\_s( ) )
+                     _set_hide_state_items_( *this )
                     
-                    *this\change = 1
-                    If *this\root
-                      ReDraw( *this )
-                    EndIf
+                     
+; ;                     If *this\root
+; ;                       ReDraw( *this )
+; ;                     EndIf
                   EndIf
                   
                 Else
@@ -18417,5 +18419,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----------------------------4---0F88-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

@@ -16860,6 +16860,12 @@ CompilerIf #PB_Compiler_IsMainFile
           *this\row\last = *this\row\_s( )
         EndIf
         
+        ; for the tree( )
+        If *this\row\last\parent And 
+           *this\row\last\parent\sublevel < sublevel
+          *this\row\last\parent\last = *this\row\last
+        EndIf
+        
         If sublevel = 0
           If *this\row\first 
             If *this\row\first\first
@@ -16871,12 +16877,6 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If position = 0
           *this\row\first = *this\row\_s( )
-        EndIf
-        
-        ; for the tree( )
-        If *this\row\last\parent And 
-           *this\row\last\parent\sublevel < sublevel
-          *this\row\last\parent\last = *this\row\last
         EndIf
         
         *this\row\_s( )\sublevel = sublevel
