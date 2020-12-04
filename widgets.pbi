@@ -34,6 +34,22 @@
 ; ; ~"(?:(\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(\\w+)\\s*\\(((?>(?R)|[^)(])*)\\))"
 #RegEx_Pattern_FindFunction = ~"(?P<Comments>;).*|(?:(?P<Handle>\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(?P<Function>\\w+)\\s*\\((?P<Arguments>(?>(?R)|[^)(])*)\\))" ; "(;).*|\b(?:.*(=)\s*\w*\(.*\)|([A-Za-z0-9_.]*)\b[^:\n\(]*\s*\((?>[^)(]|(?R))*\))"
 
+; Procedure DrawCircularText(px.f, py,f, r.f, a.f, t$, color.l=$FFFFFF, convexo.b=1)
+;   https://www.purebasic.fr/english/viewtopic.php?f=12&t=76361&sid=c9c67972f2d69bd3ed382e6e42143712
+;   Protected t.u,th.u=TextHeight(Mid(t$,1,1)),v.f
+
+;   If convexo<0:convexo=-1
+;   Else:convexo=1
+;     R-th*1.333333
+;   EndIf
+
+;   Protected len = Len(t$)
+;   For t=1 To Len
+;     DrawRotatedText(px+R*Cos(a), py+R*Sin(a), Mid(t$,t,1), convexo*90-Degree(a),color)
+;     a-convexo*th/R
+;   Next
+; EndProcedure
+
 
 ; Найти Enumeration 
 ; https://regex101.com/r/u60Wqt/1
