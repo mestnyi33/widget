@@ -467,7 +467,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     ;Bind(*g, @events_tree_widget())
 ; ;     DD::EnableDrop(*g, #PB_Drop_Text, #PB_Drag_Copy)
     
-    For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Collapsed) : Next
+  ;  For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Collapsed) : Next
     
     
  ;{  4_example

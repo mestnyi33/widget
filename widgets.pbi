@@ -269,6 +269,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ; _is_scrollbars_( _this_ )
     EndMacro
     
+    ;-
     Macro _post_event_( _address_, _eventtype_ )
       ;;PushListPosition( _address_ )
       ForEach _address_
@@ -291,19 +292,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;;PopListPosition( _address_ )
     EndMacro
     
-    Macro _canvas_post_event_repaint_( _canvas_, _eventdata_ = #Null )
-      If _canvas_\repaint = #False : _canvas_\repaint = #True
-        PostEvent( #PB_Event_Gadget, _canvas_\window, _canvas_\gadget, #PB_EventType_Repaint, _eventdata_ )
-      EndIf
-    EndMacro
-    
-    Macro _repaint_( _this_ )
+    Macro _post_repaint_( _this_ )
       If _this_\root And Not _this_\repaint : _this_\repaint = 1
-        _canvas_post_event_repaint_( _this_\root\canvas ) 
+        _post_repaint_canvas_( _this_\root\canvas ) 
       EndIf
     EndMacro 
     
-    Macro _repaint_items_( _this_ )
+    Macro _post_repaint_items_( _this_ )
       If _this_\count\items = 0 Or 
          ( Not _this_\hide And _this_\row\count And 
            ( _this_\count\items % _this_\row\count ) = 0 )
@@ -311,8 +306,14 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; Debug #PB_Compiler_Procedure
         _this_\change = 1
         _this_\row\count = _this_\count\items
-        _repaint_( _this_ )
+        _post_repaint_( _this_ )
       EndIf  
+    EndMacro
+    
+    Macro _post_repaint_canvas_( _canvas_, _eventdata_ = #Null )
+      If _canvas_\repaint = #False : _canvas_\repaint = #True
+        PostEvent( #PB_Event_Gadget, _canvas_\window, _canvas_\gadget, #PB_EventType_Repaint, _eventdata_ )
+      EndIf
     EndMacro
     
     
@@ -1286,34 +1287,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn Color
     EndProcedure
     
-    Procedure   Draw_Plotx( x, Y, SourceColor, TargetColor )
-      Protected Color
-      
-      If x%2
-        Color = SourceColor
-      Else
-        Color = TargetColor
-      EndIf
-      
-      ProcedureReturn Color
-    EndProcedure
-    
-    Procedure   Draw_PlotY( x, Y, SourceColor, TargetColor )
-      Protected Color
-      
-      If y%2
-        Color = SourceColor
-      Else
-        Color = TargetColor
-      EndIf
-      
-      ProcedureReturn Color
-    EndProcedure
-    
     Procedure   Draw_Plot( x, Y, SourceColor, TargetColor )
       Protected Color
       
-      If x%2 Or y%2
+      If (y%2 And Not x%2) Or
+         (x%2 And Not y%2)
+        
         Color = SourceColor
       Else
         Color = TargetColor
@@ -3119,7 +3098,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Wend
       PopListPosition( _this_\row\_s( ) )
       
-      _canvas_post_event_repaint_( _this_\root\canvas )
+      _post_repaint_canvas_( _this_\root\canvas )
     EndMacro
     
     Macro _set_check_state_( _address_, _three_state_ )
@@ -6245,7 +6224,9 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *this\count\items
-            *this\change | #__resize_width
+            If *this\type <> #__type_tree
+              *this\change | #__resize_width
+            EndIf
           EndIf
         EndIf 
         
@@ -8398,7 +8379,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           \text\len + l 
           Len + l
           
-          ;_repaint_items_( *this )
+          ;_post_repaint_items_( *this )
           \count\items + 1
           
         EndWith
@@ -9258,9 +9239,11 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     ;- 
-    Macro _tree_items_scroll_y_( _this_, _pos_, _len_ )
-      - _bar_scroll_pos_( _this_, ( _pos_ ) - _this_\y, _len_ )
-    EndMacro
+    Macro _tree_items_scroll_y_( _address_, _pos_, _len_ )
+      _bar_scroll_pos_( _address_, ( _pos_ ) - _address_\y, _len_ )
+      ; 
+      ;bar_SetState( _address_, ( ( _pos_ - _address_\y ) - ( _address_\bar\page\len - _len_ ) ) ) 
+   EndMacro
     
     Procedure   Tree_New_Update( *this._s_widget, List row._s_rows( ) )
       Debugger( )
@@ -9301,10 +9284,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             _drawing_font_item_( *this, row( ), row( )\text\change )
             
             row( )\height = 18;row( )\text\height + 2 ;
-            row( )\y = *this\y[#__c_inner] + *this\height[#__c_required]
             
-            row( )\x = *this\x[#__c_inner]
-            row( )\width = *this\width[#__c_inner2] ; ???
+            row( )\y[#__c_container] = *this\height[#__c_required]
+            row( )\y = *this\y[#__c_inner] + *this\height[#__c_required]
           EndIf
           
           ;           ; sublevel position
@@ -9325,44 +9307,44 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\mode\check = 4 )
             
             If row( )\parent And *this\mode\check = 4
-              row( )\box[1]\x = row( )\x + row( )\sublevelsize - row( )\box[1]\width - *this\scroll\h\bar\page\pos
+              row( )\box[1]\x = row( )\sublevelsize - row( )\box[1]\width
             Else
-              row( )\box[1]\x = row( )\x + ( 18 - row( )\box[1]\width ) - *this\scroll\h\bar\page\pos
+              row( )\box[1]\x = ( 18 - row( )\box[1]\width )
             EndIf
-            row( )\box[1]\y = ( row( )\y + row( )\height ) - ( row( )\height + row( )\box[1]\height )/2 - *this\scroll\v\bar\page\pos
+            row( )\box[1]\y = ( row( )\height ) - ( row( )\height + row( )\box[1]\height )/2
           EndIf
           
           ; expanded & collapsed box position
           If ( *this\mode\lines Or *this\mode\buttons ) And Not ( row( )\sublevel And *this\mode\check = 4 )
             
             If *this\mode\check = 4
-              row( )\box[0]\x = row( )\x + row( )\sublevelsize - 10 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
+              row( )\box[0]\x = row( )\sublevelsize - 10
             Else
-              row( )\box[0]\x = row( )\x + row( )\sublevelsize - (bp-4) - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
+              row( )\box[0]\x = row( )\sublevelsize - (bp-4) 
             EndIf
             
             ; for the editor buttons pos
             If row( )\parent And row( )\parent\last And row( )\parent\sublevel = row( )\parent\last\sublevel
-              row( )\box[0]\x = row( )\x + 4
+              row( )\box[0]\x = 4
             EndIf
             
-            row( )\box[0]\y = ( row( )\y + row( )\height ) - ( row( )\height + row( )\box[0]\height )/2 - *this\scroll\v\bar\page\pos
+            row( )\box[0]\y = ( row( )\height ) - ( row( )\height + row( )\box[0]\height )/2
           EndIf
           
           ; image position
           If row( )\image\id
-            row( )\image\x = row( )\x + row( )\sublevelsize + *this\image\padding\x + 2 - *this\scroll\h\bar\page\pos
-            row( )\image\y = row( )\y + ( row( )\height - row( )\image\height )/2 - *this\scroll\v\bar\page\pos
+            row( )\image\x = row( )\sublevelsize + *this\image\padding\x + 2
+            row( )\image\y = ( row( )\height - row( )\image\height )/2
           EndIf
           
           ; text position
           If row( )\text\string
-            row( )\text\x = row( )\x + row( )\sublevelsize + *this\row\margin\width + *this\text\padding\x - *this\scroll\h\bar\page\pos
-            row( )\text\y = row( )\y + ( row( )\height - row( )\text\height )/2 - *this\scroll\v\bar\page\pos
+            row( )\text\x = row( )\sublevelsize + *this\row\margin\width + *this\text\padding\x
+            row( )\text\y = ( row( )\height - row( )\text\height )/2
           EndIf
           
           If row( )\text\edit\string
-            row( )\text\edit\x = row( )\x + row( )\sublevelsize + *this\row\margin\width + *this\text\padding\x - *this\scroll\h\bar\page\pos  + *this\bar\page\pos; *this\bar\page\pos + row( )\x + row( )\sublevelsize + 5
+            row( )\text\edit\x = row( )\text\x  + *this\bar\page\pos
             row( )\text\edit\y = row( )\text\y
           EndIf
           
@@ -9370,8 +9352,8 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\change > 0
             *this\height[#__c_required] + row( )\height + Bool( row( )\index <> *this\count\items - 1 ) * *this\mode\GridLines
             
-            If *this\width[#__c_required] < ( *this\row\_s( )\text\x + *this\row\_s( )\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos ) - *this\x[#__c_inner]
-              *this\width[#__c_required] = ( *this\row\_s( )\text\x + *this\row\_s( )\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos ) - *this\x[#__c_inner]
+            If *this\width[#__c_required] < ( *this\row\_s( )\text\x + *this\row\_s( )\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos ); - *this\x[#__c_inner]
+              *this\width[#__c_required] = ( *this\row\_s( )\text\x + *this\row\_s( )\text\width + *this\mode\fullSelection + *this\scroll\h\bar\page\pos ); - *this\x[#__c_inner]
             EndIf
           EndIf
         EndIf
@@ -9399,25 +9381,19 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\width[#__c_inner2] = *this\scroll\h\bar\page\len
           *this\height[#__c_inner2] = *this\scroll\v\bar\page\len
         EndIf
-        
-        ; 
-        If *this\row\selected And *this\row\scrolled
-          bar_SetState( *this\scroll\v, ( ( *this\row\selected\y - *this\scroll\v\y ) - ( Bool( *this\row\scrolled>0 ) * ( *this\scroll\v\bar\page\len - *this\row\selected\height ) ) ) ) 
-          *this\scroll\v\change = 0 
-          *this\row\scrolled = 0
-          
-          Tree_Draw( *this, *this\row\draws( ) )
-        EndIf
       EndIf
       
       ; reset draw list
       ClearList( *this\row\draws( ) )
       
       ForEach row( )
+;         row( )\draw = Bool( Not row( )\hide And 
+;                             ( ( row( )\y + row( )\height ) - *this\scroll\v\bar\page\pos > *this\y[#__c_inner] And 
+;                               ( row( )\y - *this\y[#__c_inner] ) - *this\scroll\v\bar\page\pos < *this\height[#__c_inner2] ) )
+;         
         row( )\draw = Bool( Not row( )\hide And 
-                            ( ( row( )\y + row( )\height ) - *this\scroll\v\bar\page\pos > *this\y[#__c_inner] And 
-                              ( row( )\y - *this\y[#__c_inner] ) - *this\scroll\v\bar\page\pos < *this\height[#__c_inner2] ) )
-        
+                            ( ( row( )\y[#__c_container] + row( )\height - *this\scroll\v\bar\page\pos ) > 0 And 
+                              ( row( )\y[#__c_container] - *this\scroll\v\bar\page\pos ) < *this\height[#__c_inner2] ) )
         ; add new draw list
         If row( )\draw And 
            AddElement( *this\row\draws( ) )
@@ -9429,14 +9405,42 @@ CompilerIf Not Defined( widget, #PB_Module )
     EndProcedure
     
     Procedure.l Tree_New_Draw( *this._s_widget, List *row._s_rows( ) )
-      Protected state.b
+      Protected state.b, x.l,y.l, scroll_x, scroll_y
       
       With *this
         If Not \hide
-          If \change <> 0
+          If \change > 0
+            Debug "Tree_New_Update"
             Tree_New_Update( *this, *this\row\_s( ) )
-            \change = 0
           EndIf 
+          
+          ; SetState( )
+          If *this\row\selected And *this\row\scrolled
+            bar_SetState( *this\scroll\v, ( ( *this\row\selected\y - *this\scroll\v\y ) - ( *this\scroll\v\bar\page\len - *this\row\selected\height ) ) ) 
+            
+            ;\change =- 2
+            *this\scroll\v\change = 0 
+            *this\row\scrolled = 0
+          EndIf
+          
+          If \change < 0
+            ;; Tree_New_Update( *this, *this\row\_s( ) )
+            PushListPosition( *this\row\_s( ) )
+            ; reset draw list
+            ClearList( *this\row\draws( ) )
+            
+            ForEach *this\row\_s( )
+              *this\row\_s( )\draw = Bool( Not *this\row\_s( )\hide And 
+                                           ( ( *this\row\_s( )\y[#__c_container] + *this\row\_s( )\height - *this\scroll\v\bar\page\pos ) > 0 And 
+                                             ( *this\row\_s( )\y[#__c_container] - *this\scroll\v\bar\page\pos ) < *this\height[#__c_inner2] ) )
+              ; add new draw list
+              If *this\row\_s( )\draw And 
+                 AddElement( *this\row\draws( ) )
+                *this\row\draws( ) = *this\row\_s( )
+              EndIf
+            Next
+            PopListPosition( *this\row\_s( ) )
+          EndIf
           
           ; Draw background
           If *this\color\alpha
@@ -9456,12 +9460,24 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           PushListPosition( *row( ) )
           
+          scroll_x = *this\scroll\h\bar\page\pos
+          scroll_y = *this\scroll\v\bar\page\pos
+      
           ; Draw all items
           ForEach *row( )
             If *row( )\draw
+              If *row( )\x <> *this\x[#__c_inner2]
+                *row( )\x = *this\x[#__c_inner2]
+              EndIf
+              If *row( )\y <> *this\y[#__c_inner2] + *row( )\y[#__c_container]
+                *row( )\y = *this\y[#__c_inner2] + *row( )\y[#__c_container]
+              EndIf
               If *row( )\width <> *this\width[#__c_inner2]
                 *row( )\width = *this\width[#__c_inner2]
               EndIf
+              
+              x = *row( )\x - scroll_x
+              y = *row( )\y - scroll_y
               
               ; init real drawing font
               _drawing_font_item_( *this, *row( ), 0 )
@@ -9471,33 +9487,33 @@ CompilerIf Not Defined( widget, #PB_Module )
               ; Draw selector back
               If *row( )\childrens And *this\flag & #__tree_property
                 DrawingMode( #PB_2DDrawing_Default )
-                RoundBox( *this\x[#__c_inner], *row( )\y - *this\scroll\v\bar\page\pos, *this\width[#__c_inner2],*row( )\height,*row( )\round,*row( )\round,*row( )\color\back )
+                RoundBox( *row( )\x, y, *this\width[#__c_inner2],*row( )\height,*row( )\round,*row( )\round,*row( )\color\back )
                 ;RoundBox( *this\x[#__c_inner] + *this\row\sublevelsize,Y,*this\width[#__c_inner2] - *this\row\sublevelsize,*row( )\height,*row( )\round,*row( )\round,*row( )\color\back[state] )
-                Line( *this\x[#__c_inner] + *this\row\sublevelsize, *row( )\y + *row( )\height - *this\scroll\v\bar\page\pos, *this\width[#__c_inner2] - *this\row\sublevelsize, 1, $FFACACAC )
+                Line( *row( )\x + *this\row\sublevelsize, y + *row( )\height, *this\width[#__c_inner2] - *this\row\sublevelsize, 1, $FFACACAC )
                 
               Else
                 If *row( )\color\back[state]
                   DrawingMode( #PB_2DDrawing_Default )
-                  RoundBox( *row( )\x, *row( )\y - *this\scroll\v\bar\page\pos, *row( )\width, *row( )\height,*row( )\round,*row( )\round,*row( )\color\back[state] )
+                  RoundBox( *row( )\x, y, *row( )\width, *row( )\height,*row( )\round,*row( )\round,*row( )\color\back[state] )
                 EndIf
               EndIf
               
               ; Draw items image
               If *row( )\image\id
                 DrawingMode( #PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend )
-                DrawAlphaImage( *row( )\image\id, *row( )\image\x, *row( )\image\y, *row( )\color\alpha )
+                DrawAlphaImage( *row( )\image\id, x + *row( )\image\x, y + *row( )\image\y, *row( )\color\alpha )
               EndIf
               
               ; Draw items text
               If *row( )\text\string.s
                 DrawingMode( #PB_2DDrawing_Transparent )
-                DrawRotatedText( *row( )\text\x, *row( )\text\y, *row( )\text\string.s, *this\text\rotate, *row( )\color\front[state] )
+                DrawRotatedText( x + *row( )\text\x, y + *row( )\text\y, *row( )\text\string.s, *this\text\rotate, *row( )\color\front[state] )
               EndIf
               
               ; Draw items data text
               If *row( )\text\edit\string.s
                 DrawingMode( #PB_2DDrawing_Transparent )
-                DrawRotatedText( *row( )\text\edit\x, *row( )\text\edit\y, *row( )\text\edit\string.s, *this\text\rotate, *row( )\color\front[state] )
+                DrawRotatedText( *row( )\x + *row( )\text\edit\x - scroll_x, *row( )\y + *row( )\text\edit\y - scroll_y, *row( )\text\edit\string.s, *this\text\rotate, *row( )\color\front[state] )
               EndIf
               
               ; Draw selector frame
@@ -9505,14 +9521,14 @@ CompilerIf Not Defined( widget, #PB_Module )
               Else
                 If *row( )\color\frame[state]
                   DrawingMode( #PB_2DDrawing_Outlined )
-                  RoundBox( *row( )\x, *row( )\y - *this\scroll\v\bar\page\pos, *row( )\width, *row( )\height, *row( )\round,*row( )\round, *row( )\color\frame[state] )
+                  RoundBox( *row( )\x, y, *row( )\width, *row( )\height, *row( )\round,*row( )\round, *row( )\color\frame[state] )
                 EndIf
               EndIf
               
               ; Horizontal line
               If *this\mode\GridLines And *row( )\color\line <> *row( )\color\back
                 DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-                Box( *row( )\x, ( *row( )\y + *row( )\height + Bool( *this\mode\gridlines>1 ) ) - *this\scroll\v\bar\page\pos, *row( )\width, 1, *this\color\line )
+                Box( *row( )\x, y + *row( )\height + Bool( *this\mode\gridlines>1 ) , *row( )\width, 1, *this\color\line )
               EndIf
             EndIf
           Next
@@ -9523,84 +9539,82 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           ; Draw plots
           If *this\mode\lines
-            ;DrawingMode( #PB_2DDrawing_xOr ); | #PB_2DDrawing_AlphaBlend )
-            DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-            ;DrawingMode( #PB_2DDrawing_xOr | #PB_2DDrawing_customFilter ) 
-            
-            ;                         CustomFilterCallback( @Draw_Plotx( ) )
+            DrawingMode( #PB_2DDrawing_Default )
+            ; DrawingMode( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ) )
+           
             ForEach *row( )
               If *row( )\draw And Not *row( )\hide 
-                If *row( )\last And Not *row( )\last\hide
-                  ; for the editor vertical line
-                  ; Line( *row( )\last\text\x, (*row( )\y+*row( )\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\last\y-*row( )\y)-*row( )\last\height, *row( )\color\line )
-                  ; for the editor horizontal line
-                  ; Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y+*row( )\height/2, 7, 1, *row( )\color\line )
-                  ; Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\last\y+*row( )\last\height/2, 7, 1, *row( )\last\color\line )
-                  
-                  ; for the tree vertical
-                  Line( *row( )\last\box[0]\x+*row( )\last\box[0]\width/2, (*row( )\y+*row( )\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\last\y-*row( )\y)-*row( )\last\height/2, *row( )\color\line )
-                EndIf
+                x = *row( )\x - scroll_x
+                y = *row( )\y - scroll_y
                 
-                If *row( )\parent And Not *row( )\parent\draw And *row( )\parent\last And *row( )\parent\last = *row( )
-                  ; for the editor vertical line
-                  ; Line( *row( )\text\x, (*row( )\parent\y+*row( )\parent\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\y-*row( )\parent\y), *row( )\parent\color\line )
-                  ; for the editor horizontal line
-                  ; Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\parent\y+*row( )\parent\height/2, 7, 1, *row( )\parent\color\line )
-                  ; Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y+*row( )\height/2, 7, 1, *row( )\color\line )
-                  
-                  ; for the tree vertical line
-                  Line( *row( )\box[0]\x+*row( )\box[0]\width/2, (*row( )\parent\y+*row( )\parent\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\y-*row( )\parent\y)-*row( )\height/2, *row( )\parent\color\line )
+                ; for the tree vertical line
+                If *row( )\last And Not *row( )\last\hide And *row( )\last\sublevel
+                  Line( (x + *row( )\last\box[0]\x+*row( )\last\box[0]\width/2), (y+*row( )\height), 1, (*row( )\last\y-*row( )\y)-*row( )\last\height/2, *row( )\color\line )
+                EndIf
+                If *row( )\parent And Not *row( )\parent\draw And *row( )\parent\last = *row( ) And *row( )\sublevel
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (*row( )\parent\y+*row( )\parent\height) - scroll_y, 1, (*row( )\y-*row( )\parent\y)-*row( )\height/2, *row( )\parent\color\line )
                 EndIf
                 
                 ; for the tree horizontal line
-                Line( *row( )\box[0]\x+*row( )\box[0]\width/2, (*row( )\y+*row( )\height/2) - *this\scroll\v\bar\page\pos, 7, 1, *row( )\color\line )
+                If Not (*this\mode\buttons And *row( )\childrens)
+                  Line( (x + *row( )\box[0]\x+*row( )\box[0]\width/2), (y+*row( )\height/2), 7, 1, *row( )\color\line )
+                EndIf
               EndIf    
             Next
             
-            ; for the tree first item vertical line
+            ; for the tree item first vertical line
             If *this\row\first And *this\row\first\first
-              Line( (*this\row\first\box[0]\x+*this\row\first\box[0]\width/2) - *this\scroll\h\bar\page\pos, (*this\row\first\y+*this\row\first\height/2) - *this\scroll\v\bar\page\pos, 1, (*this\row\first\first\y-*this\row\first\y), *this\row\first\color\line )
+              Line( (*this\row\first\x + *this\row\first\box[0]\x+*this\row\first\box[0]\width/2) - scroll_x, (*this\row\first\y+*this\row\first\height/2) - scroll_y, 1, (*this\row\first\first\y-*this\row\first\y), *this\row\first\color\line )
             EndIf
           EndIf
           
-          ; Draw check buttons
+          ; Draw buttons
           If *this\mode\buttons Or
              ( *this\mode\check = 1 Or *this\mode\check = 4 )
             
             ; Draw boxs ( check&option )
             Protected _box_x_, _box_y_
             ForEach *row( )
-              If *row( )\draw And 
-                 *this\mode\check
+              If *row( )\draw And *this\mode\check
+                x = *row( )\x + *row( )\box[1]\x - scroll_x
+                y = *row( )\y + *row( )\box[1]\y - scroll_y
                 
                 If *row( )\parent And *this\mode\check = 4
-                  _draw_button_( 1, *row( )\box[1]\x, *row( )\box[1]\y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 4 );, \color )
+                  ; option
+                  _draw_button_( 1, x, y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 4 );, \color )
                 Else                                                                                                                          ;If Not ( *this\mode\buttons And *row( )\childrens And *this\mode\check = 4 )
-                  _draw_button_( 3, *row( )\box[1]\x, *row( )\box[1]\y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 2 );, \color )
+                  ; check
+                  _draw_button_( 3, x, y, *row( )\box[1]\width, *row( )\box[1]\height, *row( )\box[1]\state, 2 );, \color )
                 EndIf
               EndIf    
             Next
             
-            DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
+            DrawingMode( #PB_2DDrawing_Outlined); | #PB_2DDrawing_AlphaBlend )
             
             ; Draw buttons ( expanded&collapsed )
             ForEach *row( )
               If *row( )\draw And Not *row( )\hide 
-                ; ;                 If *row( )\last And Not *row( )\last\hide
-                ; ;                   ; for the tree
-                ; ;                   Line( *row( )\last\box[0]\x+*row( )\last\box[0]\width/2, *row( )\y+*row( )\height, 1, (*row( )\last\y-*row( )\y)-*row( )\last\height/2, *row( )\color\line )
-                ; ;                 EndIf
-                ; ;                 
-                ; ;                 Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y+*row( )\height/2, 7, 1, *row( )\color\line )
+                x = *row( )\x + *row( )\box[0]\x - scroll_x
+                y = *row( )\y + *row( )\box[0]\y - scroll_y
                 
-                If *this\mode\buttons And 
-                   *row( )\childrens And Not ( *row( )\sublevel And *this\mode\check = 4 )
+                If *this\mode\buttons And *row( )\childrens And
+                   Not ( *row( )\sublevel And *this\mode\check = 4 )
                   
-                  _draw_button_( 0, *row( )\box[0]\x, *row( )\box[0]\y, *row( )\box[0]\width, *row( )\box[0]\height, 0,2);*row( )\box[0]\state, 2 );, \color )
-                  
-                  Line(*row( )\box[0]\x + 2, *row( )\box[0]\y + *row( )\box[0]\height/2, *row( )\box[0]\width - 4, 1, $ff000000)
-                  If *row( )\box[0]\state
-                    Line(*row( )\box[0]\x + *row( )\box[0]\width/2, *row( )\box[0]\y + 2, 1, *row( )\box[0]\height - 4, $ff000000)
+                  If *row( )\parent And *row( )\parent\last And *row( )\parent\sublevel = *row( )\parent\last\sublevel
+                    
+                    _draw_button_( 0, x, y, *row( )\box[0]\width, *row( )\box[0]\height, 0,2)
+                    ;_draw_box_( *row( )\box[0], color\frame )
+                    
+                    Line(x + 2, y + *row( )\box[0]\height/2, *row( )\box[0]\width - 4, 1, $ff000000)
+                    If *row( )\box[0]\state
+                      Line(x + *row( )\box[0]\width/2, y + 2, 1, *row( )\box[0]\height - 4, $ff000000)
+                    EndIf
+                    
+                  Else
+                    
+                    Arrow( x + ( *row( )\box[0]\width - 4 )/2,
+                           y + ( *row( )\box[0]\height - 4 )/2, 4, 
+                           Bool( Not *row( )\box[0]\state ) + 2, *row( )\color\front[0], 0,0 ) 
                   EndIf
                   
                 EndIf
@@ -9783,7 +9797,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\row\selected\color\state = 2 + Bool( GetActive( )\gadget <> *this )
           EndIf
           
-          _repaint_items_( *this )
+          _post_repaint_items_( *this )
           
           *this\count\items + 1
           *this\change = 1
@@ -10485,7 +10499,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\row\selected\color\state = 2 + Bool( GetActive( )\gadget <> *this )
           EndIf
           
-          _repaint_items_( *this )
+          _post_repaint_items_( *this )
           
           *this\count\items + 1
           *this\change = 1
@@ -10594,7 +10608,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                       *this\row\_s( )\color\state = 2
                       *row_selected = *this\row\_s( )
                       
-                      *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                      *this\change =- _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                       Post( #__event_change, *this, *this\row\_s( )\index )
                       result = 1
                     EndIf
@@ -10637,7 +10651,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                       *this\row\_s( )\color\state = 2
                       *row_selected = *this\row\_s( )
                       
-                      *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                      *this\change =- _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                       Post( #__event_change, *this, *this\row\_s( )\index )
                       result = 1
                     EndIf
@@ -10791,7 +10805,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                 ; collapsed/expanded button
                 If eventtype = #__event_leftButtonDown And 
                    ( *this\mode\buttons And *this\row\draws( )\childrens ) And 
-                   Atpoint( mouse_x, mouse_y, *this\row\draws( )\box[0] )
+                   Atpoint( mouse_x + *this\scroll\h\bar\page\pos - *this\row\draws( )\x,
+                            mouse_y + *this\scroll\v\bar\page\pos - *this\row\draws( )\y, *this\row\draws( )\box[0] )
                   
                   If SelectElement( *this\row\_s( ), *this\row\draws( )\index )
                     *this\row\_s( )\box[0]\state ! 1
@@ -10875,7 +10890,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                 
                 
                 
-                ; *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                ; *this\change =- _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                 Repaint | #True
               EndIf
               
@@ -11210,7 +11225,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   *this\row\draws( )\color\state = #__s_2
                   *this\row\selected = *this\row\draws( )
-                  ; *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                  ; *this\change =- _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                   Repaint | #True
                 EndIf
               EndIf
@@ -11313,7 +11328,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                     EndIf
                     
                     
-                    *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                    *this\change =- _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                     Post( #__event_change, *this, *this\row\_s( )\index )
                     Repaint = 1
                   EndIf
@@ -11369,7 +11384,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                     EndIf
                     
                     
-                    *this\change = _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+                    *this\change =- _tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
                     Post( #__event_change, *this, *this\row\_s( )\index )
                     Repaint = 1
                   EndIf
@@ -12210,7 +12225,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         ;         \height[#__c_required] = \bs*2+\Columns( )\height
         ;         ;      ; ReDraw( *This )
         ;         ;       If Position = 0
-        ;         ;      ;   _canvas_post_event_repaint_( *this\root\canvas )
+        ;         ;      ;   _post_repaint_canvas_( *this\root\canvas )
         ;         ;       EndIf
       EndWith
     EndProcedure
@@ -12276,7 +12291,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\count\items = 0 
           *this\text\string = #LF$
           
-          _repaint_( *this )
+          _post_repaint_( *this )
           
         Else
           *this\text\string = RemoveString( *this\text\string, StringField( *this\text\string, item + 1, #LF$ ) + #LF$ )
@@ -12329,7 +12344,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           PopListPosition( *this\row\_s( ) )
         EndIf
         
-        _repaint_items_( *this )
+        _post_repaint_items_( *this )
         *this\count\items - 1
         
         result = #True
@@ -12360,7 +12375,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           *this\text\string = #LF$
         EndIf
         
-        _repaint_( *this )
+        _post_repaint_( *this )
         ProcedureReturn #True
       EndIf
       
@@ -12821,10 +12836,19 @@ CompilerIf Not Defined( widget, #PB_Module )
           
           *this\row\selected = *this\row\_s( )
           *this\row\scrolled = ( State+1 )
+          ;_post_repaint_items_( *this )
           
-          _repaint_items_( *this )
-          
-          *this\change = 1
+; ;           If *this\row\selected And *this\root\canvas\repaint = 0
+; ;             Debug " tree bar set state"
+; ;                ; 
+; ;             ;_tree_items_scroll_y_( *this\scroll\v, *this\row\selected\y, *this\row\selected\height )
+; ;             
+; ;             bar_SetState( *this\scroll\v, ( ( *this\row\selected\y - *this\scroll\v\y ) - ( *this\scroll\v\bar\page\len - *this\row\selected\height ) ) ) 
+; ;             *this\scroll\v\change = 0 
+; ;             *this\row\scrolled = 0
+; ;           EndIf
+        
+          ;*this\change = 1
           ProcedureReturn #True
         EndIf
       EndIf
@@ -12963,7 +12987,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               \text\len = Len( \text\string.s )
               \text\change = #True
               
-              _repaint_( *this )
+              _post_repaint_( *this )
               
               result = #True
             EndIf
@@ -14101,7 +14125,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         If _is_item_( *this, item ) And SelectElement( *this\row\_s( ), Item )
           If *this\row\_s( )\image\img <> Image
             _set_image_( *this, *this\row\_s( )\Image, Image )
-            _repaint_items_( *this )
+            _post_repaint_items_( *this )
           EndIf
         EndIf
       EndIf
@@ -15795,10 +15819,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;Debug  "" + root( )\repaint  + " " +  *this\root\repaint
       
       If StartDrawing( CanvasOutput( *this\root\canvas\gadget ) )
-        If *this\root\canvas\repaint <> #False
-          *this\root\canvas\repaint = #False
-        EndIf
-        
         ;
         If Not ( transform( ) And transform( )\grab )
           If Not *this\root\text\fontID[1]
@@ -15871,6 +15891,10 @@ CompilerIf Not Defined( widget, #PB_Module )
           a_draw( transform( )\widget )
         EndIf
         
+        If *this\root\canvas\repaint <> #False
+          *this\root\canvas\repaint = #False
+        EndIf
+        
         StopDrawing( )
       EndIf
     EndProcedure
@@ -15885,7 +15909,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           ChangeCurrentElement( root( ), @*this\root\address2 )
         EndIf
         
-        _canvas_post_event_repaint_( root( )\canvas, root( ) )
+        _post_repaint_canvas_( root( )\canvas, root( ) )
       Else
         this( )\event = eventtype
         this( )\item = *button
@@ -16972,7 +16996,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       BindGadgetEvent( Canvas, @CallBack( ) )
       
       PostEvent( #PB_Event_Gadget, Window, Canvas, #PB_EventType_Resize )
-      _canvas_post_event_repaint_( root( )\canvas ) 
+      _post_repaint_canvas_( root( )\canvas ) 
       ProcedureReturn root( )
     EndProcedure
     
@@ -18419,5 +18443,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----------------------------4---0F88-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9------------------------------------------------------------------------------------fvu9--------------------------------------------------------------------0---------------------------------------------------
 ; EnableXP

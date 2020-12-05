@@ -33,6 +33,7 @@ If OpenWindow(0, 100, 50, 530, 700, "ListViewGadget", #PB_Window_SystemMenu)
   Next
   Debug "  "+Str(ElapsedMilliseconds()-time) + " - widget set items state time"
   ;Redraw(root())
+    ;SetState(*w, ln-111) ; set (beginning with 0) the tenth item as the active one
   
   
   ; HideGadget(0, 1)

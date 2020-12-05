@@ -387,7 +387,12 @@ CompilerIf Not Defined(structures, #PB_Module)
 ;     EndStructure
 ;     
     ;- - _s_rows
-    Structure _s_rows Extends _s_coordinate 
+    Structure _s_rows ;Extends _s_coordinate 
+      y.l[constants::#__c]
+      x.l[constants::#__c]
+      height.l[constants::#__c]
+      width.l[constants::#__c]
+      
       ; list view
       _state.l
       sublevel.w

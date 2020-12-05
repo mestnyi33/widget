@@ -1252,34 +1252,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       ProcedureReturn Color
     EndProcedure
     
-    Procedure   Draw_Plotx( x, Y, SourceColor, TargetColor )
-      Protected Color
-      
-      If x%2
-        Color = SourceColor
-      Else
-        Color = TargetColor
-      EndIf
-      
-      ProcedureReturn Color
-    EndProcedure
-    
-    Procedure   Draw_PlotY( x, Y, SourceColor, TargetColor )
-      Protected Color
-      
-      If y%2
-        Color = SourceColor
-      Else
-        Color = TargetColor
-      EndIf
-      
-      ProcedureReturn Color
-    EndProcedure
-    
     Procedure   Draw_Plot( x, Y, SourceColor, TargetColor )
       Protected Color
       
-      If x%2 Or y%2
+      If (y%2 And Not x%2) Or
+         (x%2 And Not y%2)
+        
         Color = SourceColor
       Else
         Color = TargetColor
@@ -6210,7 +6188,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           If *this\count\items
-            *this\change | #__resize_width
+          ;;  *this\change | #__resize_width
           EndIf
         EndIf 
         
@@ -9306,7 +9284,7 @@ CompilerIf Not Defined( widget, #PB_Module )
               row( )\box[0]\x = row( )\x + row( )\sublevelsize - (bp-4) - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
             EndIf
             
-            ;;row( )\box[0]\x = row( )\x + 4 ;;+ row( )\sublevelsize - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
+            row( )\box[0]\x = row( )\x + 4 ;;+ row( )\sublevelsize - bp+2 - *this\scroll\h\bar\page\pos ; - Bool( *this\mode\check=4 ) * 16
             
             row( )\box[0]\y = ( row( )\y + row( )\height ) - ( row( )\height + row( )\box[0]\height )/2 - *this\scroll\v\bar\page\pos
           EndIf
@@ -9400,6 +9378,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             \change = 0
           EndIf 
           
+          Debug *this\width[#__c_required];*this\scroll\h\bar\max
+          
           ; Draw background
           If *this\color\alpha
             DrawingMode( #PB_2DDrawing_Default )
@@ -9487,33 +9467,35 @@ CompilerIf Not Defined( widget, #PB_Module )
           If *this\mode\lines
             ;DrawingMode( #PB_2DDrawing_xOr ); | #PB_2DDrawing_AlphaBlend )
             DrawingMode( #PB_2DDrawing_Default | #PB_2DDrawing_AlphaBlend )
-            ;DrawingMode( #PB_2DDrawing_xOr | #PB_2DDrawing_customFilter ) 
-            
-            ;                         CustomFilterCallback( @Draw_Plotx( ) )
+            ;DrawingMode( #PB_2DDrawing_XOr | #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ) )
             ForEach *row( )
               If *row( )\draw And Not *row( )\hide 
-                If *row( )\last And Not *row( )\last\hide
-                  ; for the tree
-                  Line( *row( )\last\box[0]\x+*row( )\last\box[0]\width/2, (*row( )\y+*row( )\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\last\y-*row( )\y)-*row( )\last\height/2, *row( )\color\line )
+                If *row( )\after And Not *row( )\after\hide
+                  If *row( )\after\sublevel = 0
+                    Line( *row( )\after\box[0]\x+*row( )\after\box[0]\width/2, (*row( )\y+*row( )\height/2) - *this\scroll\v\bar\page\pos, 1, (*row( )\after\y-*row( )\y), *row( )\color\line )
+                  EndIf
+                  Line( *row( )\x+*row( )\box[0]\width, (*row( )\after\y+*row( )\after\height/2) - *this\scroll\v\bar\page\pos, 4, 1, *row( )\color\line )
                 EndIf
                 
-                If *row( )\parent And Not *row( )\parent\draw And *row( )\parent\last And *row( )\parent\last = *row( )
-                  ; for the tree
-                  Line( *row( )\box[0]\x+*row( )\box[0]\width/2, (*row( )\parent\y+*row( )\parent\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\y-*row( )\parent\y)-*row( )\height/2, *row( )\color\line )
-                EndIf
+;                 If *row( )\parent And Not *row( )\parent\draw And *row( )\parent\after And *row( )\parent\after = *row( )
+;                   ; for the tree
+;                   Line( *row( )\box[0]\x+*row( )\box[0]\width/2, (*row( )\parent\y+*row( )\parent\height) - *this\scroll\v\bar\page\pos, 1, (*row( )\y-*row( )\parent\y)-*row( )\height/2, *row( )\color\line )
+;                 EndIf
                 
-                Line( *row( )\box[0]\x+*row( )\box[0]\width/2, (*row( )\y+*row( )\height/2) - *this\scroll\v\bar\page\pos, 7, 1, *row( )\color\line )
-; ;                 If *row( )\sublevel = 0
-; ;                   Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y - *this\scroll\v\bar\page\pos, 1, *row( )\height, *row( )\color\line )
-; ;                 EndIf
+                If *row( )\after 
+                 ; Line( *row( )\box[0]\x+*row( )\box[0]\width/2, (*row( )\y+*row( )\height/2) - *this\scroll\v\bar\page\pos, 7, 1, *row( )\color\line )
+                EndIf
+                ; ; ;                 If *row( )\sublevel = 0
+; ; ;                   Line( *row( )\box[0]\x+*row( )\box[0]\width/2, *row( )\y - *this\scroll\v\bar\page\pos, 1, *row( )\height, *row( )\color\line )
+; ; ;                 EndIf
               EndIf    
             Next
             
-            If *this\row\first And *this\row\first\first
-             ;; Debug  *this\row\first\text\string +" "+ *this\row\first\first\text\string
-              ; for the tree
-              Line( (*this\row\first\box[0]\x+*this\row\first\box[0]\width/2) - *this\scroll\h\bar\page\pos, (*this\row\first\y+*this\row\first\height/2) - *this\scroll\v\bar\page\pos, 1, (*this\row\first\first\y-*this\row\first\y), *this\row\first\color\line )
-            EndIf
+; ;             If *this\row\first And *this\row\first\first
+; ;              ;; Debug  *this\row\first\text\string +" "+ *this\row\first\first\text\string
+; ;               ; for the tree
+; ;               Line( (*this\row\first\box[0]\x+*this\row\first\box[0]\width/2) - *this\scroll\h\bar\page\pos, (*this\row\first\y+*this\row\first\height/2) - *this\scroll\v\bar\page\pos, 1, (*this\row\first\first\y-*this\row\first\y), *this\row\first\color\line )
+;             EndIf
           EndIf
           
           ; Draw check buttons
@@ -16766,7 +16748,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  Procedure.i add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+  Procedure.i _add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
     ;;ProcedureReturn AddItem( *this, position, Text, Image, sublevel)
     Protected handle, *last._s_rows, *parent._s_rows
     ; sublevel + 1
@@ -16903,6 +16885,143 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn *this\count\items - 1
   EndProcedure
   
+  Procedure.i add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+    ;;ProcedureReturn AddItem( *this, position, Text, Image, sublevel)
+    Protected handle, *last._s_rows, *parent._s_rows
+    ;sublevel = 0
+    
+    ;With *this
+    If *this
+      ;{ Генерируем идентификатор
+      If position < 0 Or position > ListSize( *this\row\_s( ) ) - 1
+        If LastElement( *this\row\_s( ) )
+          ;;*this\row\last = *this\row\_s( )
+        EndIf
+        handle = AddElement( *this\row\_s( ) ) 
+        ;If position < 0 
+          position = ListIndex( *this\row\_s( ) )
+        ;EndIf
+      Else
+        handle = SelectElement( *this\row\_s( ), position )
+        ; for the tree( )
+        If sublevel > *this\row\_s( )\sublevel
+          PushListPosition( *this\row\_s( ) )
+          If PreviousElement( *this\row\_s( ) )
+            *this\row\last = *this\row\_s( )
+            ;; NextElement( *this\row\_s( ) )
+          Else
+            *last = *this\row\last
+            sublevel = *this\row\_s( )\sublevel
+          EndIf
+          PopListPosition( *this\row\_s( ) )
+        Else
+          *last = *this\row\last
+          sublevel = *this\row\_s( )\sublevel
+        EndIf
+        
+        handle = InsertElement( *this\row\_s( ) )
+      EndIf
+      ;}
+      
+      If handle
+        If sublevel > position
+          sublevel = position
+        EndIf
+        
+        If *this\row\last 
+          If sublevel > *this\row\last\sublevel
+            sublevel = *this\row\last\sublevel + 1
+            *parent = *this\row\last
+            *parent\childrens = 1
+            
+          ElseIf *this\row\last\parent 
+            If sublevel > *this\row\last\parent\sublevel 
+              *parent = *this\row\last\parent
+              
+            ElseIf sublevel < *this\row\last\sublevel 
+              If *this\row\last\parent\parent
+                *parent = *this\row\last\parent\parent
+                
+                While *parent 
+                  If sublevel >= *parent\sublevel 
+                    If sublevel = *parent\sublevel 
+                      *parent = 0
+                    EndIf
+                    Break
+                  Else
+                    *parent = *parent\parent
+                  EndIf
+                Wend
+              EndIf
+              
+              ;; ; for the editor( )
+              If *this\row\last\parent 
+                If *this\row\last\parent\sublevel = sublevel 
+; ;                   *last = *this\row\last\parent
+; ;                   *parent = *this\row\last\parent
+; ; ;                   *parent\last = *this\row\_s( )
+; ;                    *this\row\last = *parent
+                  *this\row\_s( )\before = *this\row\last\parent
+                  *this\row\last\parent\after = *this\row\_s( )
+                  ;*this\row\last = *parent
+                  Debug Text
+                EndIf
+              EndIf
+              
+            EndIf
+          EndIf
+        EndIf
+        
+        *this\row\_s( )\parent = *parent
+        
+        If *last
+         ; *this\row\last = *last
+        Else
+          *this\row\last = *this\row\_s( )
+        EndIf
+        
+        ; for the tree( )
+        If *this\row\last\parent And 
+           *this\row\last\parent\sublevel < sublevel
+          *this\row\last\parent\last = *this\row\last
+        EndIf
+        
+        If sublevel = 0
+          If *this\row\first 
+            If *this\row\first\first
+              *this\row\_s( )\first = *this\row\first\first
+            EndIf
+            *this\row\first\first = *this\row\_s( )
+          EndIf
+        EndIf
+        
+        If position = 0
+          *this\row\first = *this\row\_s( )
+        EndIf
+        
+        *this\row\_s( )\sublevel = sublevel
+        
+        ; add lines
+        *this\row\_s( )\index = ListIndex( *this\row\_s( ) )
+        *this\row\_s( )\color = _get_colors_( )
+        *this\row\_s( )\color\state = 0
+        *this\row\_s( )\color\back = 0 
+        *this\row\_s( )\color\frame = 0
+        
+        If Text
+          *this\row\_s( )\text\change = 1
+          *this\row\_s( )\text\string = StringField( Text.s, 1, #LF$ )
+          *this\row\_s( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+        EndIf
+        
+        *this\count\items + 1
+        *this\change = 1
+      EndIf
+    EndIf
+    ;EndWith
+    
+    ProcedureReturn *this\count\items - 1
+  EndProcedure
   
   Open(OpenWindow(-1, 0, 0, 1110, 650, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
   
@@ -17028,8 +17147,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     add(*g, -1, "#PB_Window_BorderLess    ", -1,1) ; Creates a window without any borders.
 ; ;     add(*g, -1, "#PB_Window_Tool          ", -1,1) ; Creates a window With a smaller titlebar And no taskbar entry. 
 ; ;     add(*g, -1, "#PB_Window_MinimizeGadget", -1) ; Adds the minimize gadget To the window title bar. add(*g, -1, "#PB_Window_SystemMenu is automatically added.
-; ;     add(*g, -1, "#PB_Window_MaximizeGadget", -1) ; Adds the maximize gadget To the window title bar. add(*g, -1, "#PB_Window_SystemMenu is automatically added.
-; ;     add(*g, -1, "#PB_Window_SizeGadget    ", -1) ; Adds the sizeable feature To a window.
+; ;     add(*g, -1, "#PB_Window_MaximizeGadget", -1) ; adds the maximize gadget To the window title bar. add(*g, -1, "#PB_Window_SystemMenu is automatically added.
+; ;     add(*g, -1, "#PB_Window_SizeGadget    ", -1) ; adds the sizeable feature To a window.
 ; ;                                                       ;                              (MacOS only", -1) ; add(*g, -1, "#PB_Window_SizeGadget", -1) ; will be also automatically added", -1).
 ; ;     add(*g, -1, "#PB_Window_Maximize      ", -1, 1); Opens the window maximized. (Note", -1) ; on Linux, Not all Windowmanagers support this", -1)
 ; ;     add(*g, -1, "#PB_Window_Minimize      ", -1, 1); Opens the window minimized.
@@ -17068,42 +17187,38 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Bind(*g, @events_tree_widget())
     ;}
     
-  Repeat
-    Select WaitWindowEvent()   
-      Case #PB_Event_CloseWindow
-        CloseWindow(EventWindow()) 
-        Break
-    EndSelect
-  ForEver
   
 ; ; ; ;   Open(OpenWindow(-1, 0, 0, 320, 620, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
 ; ; ; ;   
 ; ; ; ;   g = 11
-; ; ; ;   *g = Tree(10, 10, 300, 600, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
-; ; ; ;   
-; ; ; ;   ; ;   ;  2_example
-; ; ; ;   ; ;   add(*g, 0, "Structure widget", -1, 0)
-; ; ; ;   ; ;   add(*g, 1, "window.i", -1, 1) 
-; ; ; ;   ; ;   add(*g, 2, "gadget.i", -1, 1) 
-; ; ; ;   ; ;   add(*g, 3, "EndStructure", -1, 0) 
-; ; ; ;   ; ;   
-; ; ; ;   ; ;   add(*g, 4, "", -1, 0) 
-; ; ; ;   ; ;   
-; ; ; ;   ; ;   add(*g, 5, "Enumeration widget", -1, 0)
-; ; ; ;   ; ;   add(*g, 6, "#window", -1, 1) 
-; ; ; ;   ; ;   add(*g, 7, "#gadget", -1, 1) 
-; ; ; ;   ; ;   add(*g, 8, "EndEnumeration", -1, 0) 
-; ; ; ;   ; ;   
-; ; ; ;   ; ;   add(*g, 9, "", -1, 0) 
-; ; ; ;   ; ;   
-; ; ; ;   ; ;   add(*g, 10, "Procedure Open()", -1, 0) 
-; ; ; ;   ; ;   add(*g, 11, "If is_widget()", -1, 1) 
-; ; ; ;   ; ;   add(*g, 12, "If is_hide()", -1, 2) 
-; ; ; ;   ; ;   add(*g, 13, " ", -1, 3) 
-; ; ; ;   ; ;   add(*g, 14, "EndIf", -1, 2) 
-; ; ; ;   ; ;   add(*g, 15, "EndIf", -1, 1) 
-; ; ; ;   ; ;   add(*g, 16, "EndProcedure", -1, 0) 
-; ; ; ;   
+    *g = Tree(10, 230, 210, 400, #__tree_AlwaysSelection);|#__tree_Collapsed)                                         
+  
+    ;  2_example
+    add(*g, 0, "Structure widget", -1, 0)
+    add(*g, 1, "window.i", -1, 1) 
+    add(*g, 2, "gadget.i", -1, 1) 
+    add(*g, 3, "EndStructure", -1, 0) 
+    
+    add(*g, 4, "", -1, 0) 
+    
+    add(*g, 5, "Enumeration widget", -1, 0)
+    add(*g, 6, "#window", -1, 1) 
+    add(*g, 7, "#gadget", -1, 1) 
+    add(*g, 8, "EndEnumeration", -1, 0) 
+    
+    add(*g, 9, "", -1, 0) 
+    
+    add(*g, 10, "Procedure Open()", -1, 0) 
+    add(*g, 11, "If is_widget()", -1, 1) 
+    add(*g, 12, "If is_hide()", -1, 2) 
+    add(*g, 13, " 1", -1, 3) 
+    add(*g, 14, "EndIf ; is_hide", -1, 2) 
+    add(*g, 15, "If is_visible()", -1, 2) 
+    add(*g, 16, " 2", -1, 3) 
+    add(*g, 17, "EndIf ; is_visible", -1, 2) 
+    add(*g, 18, "EndIf ; is_widget", -1, 1) 
+    add(*g, 19, "EndProcedure", -1, 0) 
+  
 ; ; ; ;   
 ; ; ; ; ; ;   ;  0_example
 ; ; ; ; ; ;   add(*g, 0, "Tree_0", -1 )
@@ -17132,7 +17247,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ; ;       add (*g, -1, "Sub-Item 3", -1, 3)
 ; ; ; ; ;       add (*g, -1, "Sub-Item 2", -1, 2)
 ; ; ; ; ;       add (*g, -1, "Sub-Item 4", -1, 4)
-; ; ; ; ;       add (*g, item, "Add-Item "+Str(item), -1, sublevel)
+; ; ; ; ;       add (*g, item, "add-Item "+Str(item), -1, sublevel)
 ; ; ; ; ;     
 ; ; ; ;   
 ; ; ; ; ;     ; 2_example
@@ -17141,7 +17256,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ; ;     add (*g, 3, "Sub-Item 3", -1, 3)
 ; ; ; ; ;     add (*g, 2, "Sub-Item 2", -1, 2)
 ; ; ; ; ;     add (*g, 4, "Sub-Item 4", -1, 4)
-; ; ; ; ;     add (*g, item, "Add-Item "+Str(item), -1, sublevel)
+; ; ; ; ;     add (*g, item, "add-Item "+Str(item), -1, sublevel)
 ; ; ; ; ;   
 ; ; ; ;   
 ; ; ; ;   ; 3_example
@@ -17156,23 +17271,24 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;       add (*g, -1, "Item" + Str(i), -1, 1)
 ; ; ; ;     EndIf
 ; ; ; ;   Next i
-; ; ; ;   
-; ; ; ;   ForEach *g\row\_s()
-; ; ; ;     If *g\row\_s()\parent And *g\row\_s()\parent\last
-; ; ; ;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\parent\text\string +" l "+ *g\row\_s()\parent\last\text\string
-; ; ; ;     EndIf
-; ; ; ;     
-; ; ; ;   Next
-; ; ; ;     
-; ; ; ;   Repeat
-; ; ; ;     Select WaitWindowEvent()   
-; ; ; ;       Case #PB_Event_CloseWindow
-; ; ; ;         CloseWindow(EventWindow()) 
-; ; ; ;         Break
-; ; ; ;     EndSelect
-; ; ; ;   ForEver
+  
+;   ForEach *g\row\_s()
+;     If *g\row\_s()\parent ;And *g\row\_s()\parent\last = *g\row\_s()
+;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\parent\text\string +" l "+ *g\row\_s()\parent\last\text\string
+;     EndIf
+;   Next
+;   Debug ""
+  
+  
+  Repeat
+    Select WaitWindowEvent()   
+      Case #PB_Event_CloseWindow
+        CloseWindow(EventWindow()) 
+        Break
+    EndSelect
+  ForEver
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------
 ; EnableXP
