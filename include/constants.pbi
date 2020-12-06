@@ -120,7 +120,7 @@
       #__s_disabled
       #__s_focused
       #__s_toggled
-      
+      #__s_scrolled
       
       #__s_front
       #__s_back
