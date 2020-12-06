@@ -434,13 +434,8 @@ CompilerIf Not Defined(structures, #PB_Module)
     
     ;- - _s_row
     Structure _s_row
-                ;;draw.l ;???????
-                ;;Map *i( )
-      
       ; list view
       drag.b
-      *scrolled
-      
       sublevel.w
       sublevelsize.a
       

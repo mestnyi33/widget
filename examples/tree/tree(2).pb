@@ -8,12 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Uselib(widget)
   
-  Global a, *w1, *w2, *g1, *g2, countitems=10; количесвто итемов 
-  
-  ; CompilerCase #PB_OS_MacOS
-  ;   Protected Range.NSRange\location = Len(GetGadgetText(DialogGadget(#Dialog_Main, "log")))
-  ;   CocoaMessage(0, GadgetID(DialogGadget(#Dialog_Main, "log")), "scrollRangeToVisible:@", @Range)
-  ; CompilerEndSelect
+  Global a, *w1, *w2, *g1, *g2, countitems=12; количесвто итемов 
   
   Procedure widget_events()
     Select this()\event
@@ -27,8 +22,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_Change
         SetGadgetState(*g1, GetGadgetState(EventGadget()))
         
-;       Case #PB_EventType_LeftDoubleClick
-;         SetGadgetItemState(*g1, GetGadgetState(EventGadget()), #PB_Tree_Selected)
+;         CompilerSelect #PB_Compiler_OS
+;           CompilerCase #PB_OS_MacOS
+;             Protected Range.NSRange\location = Len(GetGadgetText(*g1))
+;             CocoaMessage(0, GadgetID(*g1), "scrollRangeToVisible:@", @Range)
+;         CompilerEndSelect
+        
     EndSelect
   EndProcedure
   
@@ -39,14 +38,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     For a = 0 To countitems
       AddItem(*w1, -1, "Item "+Str(a), 0)
-    Next
-    
-    SetState(*w1, a-1)
-    
-    For a = 0 To countitems
       AddItem(*w2, -1, "Item "+Str(a), 0)
     Next
     
+    SetState(*w1, a-1)
     SetState(*w2, a-1) 
     Bind(*w2, @widget_events())
     
@@ -56,14 +51,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     For a = 0 To countitems
       AddGadgetItem(*g1, -1, "Item "+Str(a), 0)
-    Next
-    
-    SetGadgetState(*g1, a-1)
-    
-    For a = 0 To countitems
       AddGadgetItem(*g2, -1, "Item "+Str(a), 0)
     Next
     
+    SetGadgetState(*g1, a-1)
     SetGadgetState(*g2, a-1) 
     BindGadgetEvent(*g2, @gadget_events())
     

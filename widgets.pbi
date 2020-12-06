@@ -9760,9 +9760,13 @@ CompilerIf Not Defined( widget, #PB_Module )
           _set_image_( *this, *this\row\_s( )\Image, Image )
           
           If *this\row\selected 
-            *this\row\selected\_state &~ #__s_scrolled
-            
             *this\row\selected\color\state = 0
+            
+            If *this\row\selected\_state & #__s_scrolled
+              *this\row\selected\_state &~ #__s_scrolled
+              *this\row\_s( )\_state | #__s_scrolled
+            EndIf
+            
             *this\row\selected = *this\row\_s( ) 
             *this\row\selected\color\state = 2 + Bool( GetActive( )\gadget <> *this )
           EndIf
@@ -10489,7 +10493,8 @@ CompilerIf Not Defined( widget, #PB_Module )
         Item = *this\count\items - 1 
       EndIf
       
-      *SelectElement = SelectElement( *this\row\_s( ), Item ) 
+      If *this\count\items
+        *SelectElement = SelectElement( *this\row\_s( ), Item ) 
       
       If *SelectElement 
         If State & #__tree_Selected
@@ -10497,6 +10502,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\row\selected\color\state = #__s_0
           EndIf
           *this\row\_s( )\color\state = #__s_3
+          *this\row\_s( )\_state | #__s_scrolled
           *this\row\selected = *this\row\_s( )
         EndIf
         
@@ -10521,7 +10527,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndIf
       
       ProcedureReturn result
-    EndProcedure
+    EndIf
+  EndProcedure
     
     Procedure.l Tree_Events_Key( *this._s_widget, eventtype.l, mouse_x.l = -1, mouse_y.l = -1 )
       Protected result, from =- 1
@@ -12268,20 +12275,42 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         result = #True
-      ElseIf *this\type = #__type_tree
-        Protected sublevel.l
+      EndIf
+      
+      ; - Tree_ClearItems( )
+      If *this\type = #__type_tree Or
+         *this\type = #__type_listview
         
         If _no_select_( *this\row\_s( ), Item )
           ProcedureReturn #False
         EndIf
         
+        If *this\row\selected = *this\row\_s( )
+          PushListPosition( *this\row\_s( ) )
+          *this\row\selected\_state &~ #__s_selected
+          
+          If *this\row\_s( )\childrens
+            While NextElement( *this\row\_s( ) )
+              If *this\row\_s( )\sublevel = *this\row\selected\sublevel 
+                Break
+              EndIf
+            Wend
+          Else
+            NextElement( *this\row\_s( ) )
+          EndIf
+          
+          *this\row\selected = *this\row\_s( )
+          *this\row\selected\color\state = #__s_2 + Bool( GetActive( )\gadget<>*this )
+          *this\row\selected\_state | #__s_selected
+          PopListPosition( *this\row\_s( ) )
+        EndIf
+        
         If *this\row\_s( )\childrens
-          sublevel = *this\row\_s( )\sublevel
-          *this\change = 1
+          *this\row\sublevel = *this\row\_s( )\sublevel
           
           PushListPosition( *this\row\_s( ) )
           While NextElement( *this\row\_s( ) )
-            If *this\row\_s( )\sublevel > sublevel 
+            If *this\row\_s( )\sublevel > *this\row\sublevel 
               ;Debug *this\row\_s( )\text\string
               DeleteElement( *this\row\_s( ) )
               *this\count\items - 1
@@ -12294,29 +12323,30 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         DeleteElement( *this\row\_s( ) )
+        ;;Debug *this\row\_s( )\text\string
         
-        If *this\row\selected And
-           *this\row\selected\index >= Item 
-          *this\row\selected\color\state = 0
-          
-          PushListPosition( *this\row\_s( ) )
-          If *this\row\selected\index <> Item 
-            SelectElement( *this\row\_s( ), *this\row\selected\index )
-          EndIf
-          
-          While NextElement( *this\row\_s( ) )
-            If *this\row\_s( )\sublevel = sublevel 
-              *this\row\selected = *this\row\_s( )
-              *this\row\selected\color\state = 2 + Bool( GetActive( )\gadget<>*this )
-              Break
-            EndIf
-          Wend
-          PopListPosition( *this\row\_s( ) )
-        EndIf
+; ;         If *this\row\selected And
+; ;            *this\row\selected\index >= Item 
+; ;           *this\row\selected\color\state = 0
+; ;           
+; ;           PushListPosition( *this\row\_s( ) )
+; ;           If *this\row\selected\index <> Item 
+; ;             SelectElement( *this\row\_s( ), *this\row\selected\index )
+; ;           EndIf
+; ;           
+; ;           While NextElement( *this\row\_s( ) )
+; ;             If *this\row\_s( )\sublevel = *this\row\sublevel 
+; ;               *this\row\selected = *this\row\_s( )
+; ;               *this\row\selected\color\state = 2 + Bool( GetActive( )\gadget<>*this )
+; ;               Break
+; ;             EndIf
+; ;           Wend
+; ;           PopListPosition( *this\row\_s( ) )
+; ;         EndIf
         
-        _post_repaint_items_( *this )
         *this\count\items - 1
-        
+        *this\change = 1
+        _post_repaint_canvas_( *this\root\canvas )
         result = #True
         
       ElseIf *this\type = #__type_Panel
@@ -12337,6 +12367,7 @@ CompilerIf Not Defined( widget, #PB_Module )
     Procedure.l ClearItems( *this._s_widget )
       Protected result
       
+      ; - Editor_ClearItems( )
       If *this\type = #__type_Editor
         *this\text\change = 1 
         *this\count\items = 0
@@ -12349,24 +12380,32 @@ CompilerIf Not Defined( widget, #PB_Module )
         ProcedureReturn #True
       EndIf
       
-      If *this\type = #__type_tree
+      ; - Tree_ClearItems( )
+      If *this\type = #__type_tree Or
+         *this\type = #__type_listview
+        
         If *this\count\items <> 0
-          *this\change =- 1
+          Post( #__event_change, *this, #PB_All )
+          
+          *this\change = 1
           *this\row\count = 0
           *this\count\items = 0
           
           If *this\row\selected 
             *this\row\selected\color\state = 0
+            ClearStructure(*this\row\selected, _s_rows)
             *this\row\selected = 0
           EndIf
-          
+         
           ClearList( *this\row\_s( ) )
-          ReDraw( *this )
           
-          Post( #__event_change, *this, #PB_All )
+          _post_repaint_canvas_( *this\root\canvas )
+          ;           ReDraw( *this )
+          ;           
         EndIf
       EndIf
       
+      ; - Panel_ClearItems( )
       If *this\type = #__type_Panel
         result = Tab_clearItems( *this\_tab )
         
@@ -12760,56 +12799,78 @@ CompilerIf Not Defined( widget, #PB_Module )
       If *this\type = #__type_tree Or 
          *this\type = #__type_listView
         
+        ; reset all selected items
+        If State =- 1
+          If *this\row\selected 
+            If *this\row\selected\_state & #__s_selected
+              *this\row\selected\_state &~ #__s_selected
+              ; multi select mode 
+              If *this\mode\check = 3
+                Post( #PB_EventType_Change, *this, *this\row\selected\index, - 1 )
+              EndIf
+            EndIf
+            
+            If *this\row\selected\_state & #__s_scrolled
+              *this\row\selected\_state &~ #__s_scrolled
+            EndIf
+            
+            *this\row\selected\color\state = #__s_0
+          EndIf
+        EndIf
+        
         If _no_select_( *this\row\_s( ), State )
           ProcedureReturn #False
         EndIf
         
         If *this\count\items
-          ; mode click select
-          If *this\mode\check = 2
-            If *this\row\_s( )\_state & #__s_selected 
-              *this\row\_s( )\_state &~ #__s_selected
-              *this\row\_s( )\color\state = #__s_0
-            Else
-              *this\row\_s( )\_state | #__s_selected
-              *this\row\_s( )\color\state = #__s_3
-            EndIf
-            
-            Post( #PB_EventType_Change, *this, *this\row\_s( )\index )
-          Else
+          If *this\row\selected <> *this\row\_s( )
             If *this\row\selected 
-              If *this\row\selected <> *this\row\_s( )
-                ; mode multi select
-                If *this\mode\check = 3
-                  If *this\row\selected\_state & #__s_selected
-                    *this\row\selected\_state &~ #__s_selected
-                    Post( #PB_EventType_Change, *this, *this\row\selected\index )
-                  EndIf
-                EndIf
-                
+              If *this\row\selected\_state & #__s_selected
                 *this\row\selected\_state &~ #__s_selected
+                ; multi select mode 
+                If *this\mode\check = 3
+                  Post( #PB_EventType_Change, *this, *this\row\selected\index, - 1 )
+                EndIf
+              EndIf
+              
+              If *this\row\selected\_state & #__s_scrolled
+                *this\row\selected\_state &~ #__s_scrolled
               EndIf
               
               *this\row\selected\color\state = #__s_0
             EndIf
-            
-            ; mode multi select
-            If *this\mode\check = 3
-              If *this\row\_s( )\_state & #__s_selected = 0
+              
+            ; click select mode 
+            If *this\mode\check = 2
+              If *this\row\_s( )\_state & #__s_selected 
+                *this\row\_s( )\_state &~ #__s_selected
+                *this\row\_s( )\color\state = #__s_0
+              Else
                 *this\row\_s( )\_state | #__s_selected
-                Post( #PB_EventType_Change, *this, *this\row\_s( )\index )
+                *this\row\_s( )\color\state = #__s_3
               EndIf
+              
+              Post( #PB_EventType_Change, *this, *this\row\_s( )\index )
+            Else
+              If *this\row\_s( )\_state & #__s_selected = #False
+                *this\row\_s( )\_state | #__s_selected
+                ; multi select mode 
+                If *this\mode\check = 3
+                  Post( #PB_EventType_Change, *this, *this\row\_s( )\index, 1 )
+                EndIf
+              EndIf
+              
+              *this\row\_s( )\color\state = #__s_3
             EndIf
             
-            *this\row\_s( )\color\state = #__s_3
+            *this\row\_s( )\_state | #__s_scrolled
+            *this\row\selected = *this\row\_s( )
+            
+            ;_post_repaint_items_( *this )
+            
+            ;*this\change = 1
+            ProcedureReturn #True
           EndIf
-          
-          *this\row\selected = *this\row\_s( )
-          *this\row\selected\_state | #__s_scrolled
-          ;_post_repaint_items_( *this )
-          
-          ;*this\change = 1
-          ProcedureReturn #True
         EndIf
       EndIf
       
@@ -17920,7 +17981,9 @@ CompilerIf #PB_Compiler_IsMainFile
         
         
       Case #PB_EventType_StatusChange
+        ;If GetState( id_inspector_tree ) <> GetData( e_widget )
         SetState( id_inspector_tree, GetData( e_widget ) )
+        ;EndIf
         If IsGadget( id_design_code )
           SetGadgetState( id_design_code, GetData( e_widget ) )
         EndIf
@@ -18403,5 +18466,5 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------+---f------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------------------------------------------------------vXX+-------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
