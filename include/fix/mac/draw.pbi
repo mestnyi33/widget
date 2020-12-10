@@ -1,6 +1,6 @@
 ﻿;- MACOS
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-  DeclareModule fixme
+  DeclareModule draw
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       Structure _S_drawing
@@ -17,26 +17,24 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       EndMacro
       
       Macro PB_(Function)
-        ;Function#_
-        mac_#Function
+        draw::mac_#Function
       EndMacro
       
       Macro TextHeight(Text)
-        mac_TextHeight(Text)
+        PB_(TextHeight)(Text)
       EndMacro
       
       Macro TextWidth(Text)
-        mac_TextWidth(Text)
+        PB_(TextWidth)(Text)
       EndMacro
       
       Macro DrawingMode(_mode_)
-        mac_DrawingMode(_mode_)
+        PB_(DrawingMode)(_mode_)
         PB(DrawingMode)(_mode_) 
       EndMacro
       
       Macro DrawingFont(FontID)
-        mac_DrawingFont_(FontID)
-        ; PB(DrawingFont)(FontID)
+        PB_(DrawingFont)(FontID)
       EndMacro
       
       Macro ClipOutput(x, y, width, height)
@@ -50,11 +48,11 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       EndMacro
       
       Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
-        mac_DrawRotatedText(x, y, Text, 0, FrontColor, BackColor)
+        PB_(DrawRotatedText)(x, y, Text, 0, FrontColor, BackColor)
       EndMacro
       
       Macro DrawRotatedText(x, y, Text, Angle, FrontColor=$ffffff, BackColor=0)
-        mac_DrawRotatedText(x, y, Text, Angle, FrontColor, BackColor)
+        PB_(DrawRotatedText)(x, y, Text, Angle, FrontColor, BackColor)
       EndMacro
       
       
@@ -63,14 +61,14 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Declare.i mac_TextHeight(Text.s)
       Declare.i mac_TextWidth(Text.s)
       Declare.i mac_DrawingMode(Mode.i)
-      Declare.i mac_DrawingFont_(FontID.i)
+      Declare.i mac_DrawingFont(FontID.i)
       Declare.i mac_DrawRotatedText(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
       Declare.i mac_ClipOutput(x.i, y.i, width.i, height.i)
     CompilerEndIf
     
   EndDeclareModule 
   
-  Module fixme
+  Module draw
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       ; bug when clicking on the canvas in an inactive window
@@ -196,7 +194,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         EndIf
       EndProcedure
       
-      Procedure.i mac_DrawingFont_(FontID.i)
+      Procedure.i mac_DrawingFont(FontID.i)
         ;  If FontID
         If Not *drawing
           *drawing = AllocateStructure(_S_drawing)
@@ -205,7 +203,7 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
         
         If *drawing\fontID
           *drawing\attributes = CocoaMessage(0, 0, "NSDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
-         ;  *drawing\attributes = CocoaMessage(0, 0, "NSMutableDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
+          ;  *drawing\attributes = CocoaMessage(0, 0, "NSMutableDictionary dictionaryWithObject:", *drawing\fontID, "forKey:$", @"NSFont")
         EndIf
         
         CocoaMessage(@*drawing\size, CocoaMessage(0, 0, "NSString stringWithString:$", @""), "sizeWithAttributes:", *drawing\attributes)
@@ -246,13 +244,13 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
           Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
           CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSColor")
           
-; ;           r = Red(BackColor)/255 : g = Green(BackColor)/255 : b = Blue(BackColor)/255 : a = Bool(*drawing\mode&#PB_2DDrawing_Transparent=0)
-; ;           Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
-; ;           CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSBackgroundColor")  
+          ; ;           r = Red(BackColor)/255 : g = Green(BackColor)/255 : b = Blue(BackColor)/255 : a = Bool(*drawing\mode&#PB_2DDrawing_Transparent=0)
+          ; ;           Color = CocoaMessage(0, 0, "NSColor colorWithDeviceRed:@", @r, "green:@", @g, "blue:@", @b, "alpha:@", @a)
+          ; ;           CocoaMessage(0, Attributes, "setValue:", Color, "forKey:$", @"NSBackgroundColor")  
           
           NSString = CocoaMessage(0, 0, "NSString stringWithString:$", @Text)
           CocoaMessage(@Size, NSString, "sizeWithAttributes:", Attributes)
-          ;Size\height - 2 ;; bug
+          Size\height - 1 ;; bug
           
           
           ; ;           If Angle = 0
@@ -335,13 +333,13 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     
   EndModule 
   
-  UseModule fixme
+  ;;UseModule draw
   
 CompilerEndIf
 
 ; ; ;- MACOS
 ; ; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-; ;   DeclareModule fixme
+; ;   DeclareModule draw
 ; ;   
 ; ;     Global _drawing_mode_
 ; ;     
@@ -378,7 +376,7 @@ CompilerEndIf
 ; ;  
 ; ; EndDeclareModule
 ; ; 
-; ; Module fixme
+; ; Module draw
 ; ;    
 ; ;     
 ; ;     Procedure.i mac_DrawRotatedText(x.CGFloat, y.CGFloat, Text.s, Angle.CGFloat, FrontColor=$ffffff, BackColor=0)
@@ -465,6 +463,8 @@ CompilerEndIf
 ; ;   
 
 CompilerIf #PB_Compiler_IsMainFile
+  UseModule draw
+  
   Global x,y
   ; https://www.purebasic.fr/english/viewtopic.php?p=394079#p394079
   ; *** test ***

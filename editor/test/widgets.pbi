@@ -1,5 +1,6 @@
 ﻿;XIncludeFile "../e.pbi" : #ver = 2
-XIncludeFile "../e1.pbi" : #ver = 6
+;;XIncludeFile "../e1.pbi" : #ver = 6
+XIncludeFile "../PBEdit_1_0_7/PBEdit_1_0_7.pb" : #ver = 6
 
   UseModule PBEdit
 

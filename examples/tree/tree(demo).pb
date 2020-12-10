@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
           If EventGadget = 6
             SetGadgetItemImage(tree, GetGadgetState(tree), ImageID(0))
-            SetItemImage(*tree, GetState(*tree), ImageID(0))
+            SetItemImage(*tree, GetState(*tree), 0)
           EndIf
           If EventGadget = 7 ; <<
                              ;         FreeGadget(tree)
@@ -112,10 +112,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Repaints()
     EndProcedure  
     
-    If Open(OpenWindow(#PB_Any, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+    If Open(OpenWindow(#PB_Any, 0, 0, 370, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
       ;ListViewGadget(0, 10, 10, 160, 160) 
-      tree = PB(TreeGadget)(#PB_Any, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-      *tree = Tree(180, 10, 160, 160, #__Tree_CheckBoxes | #__Tree_NoLines | #__Tree_ThreeState | #__Tree_Collapse); | | #__Tree_AlwaysShowSelection #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
+      tree = PB(TreeGadget)(#PB_Any, 10, 10, 170, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
+      *tree = Tree(190, 10, 170, 160, #__Tree_GridLines | #__Tree_CheckBoxes | #__Tree_NoLines | #__Tree_ThreeState | #__Tree_Collapse); | | #__Tree_AlwaysShowSelection #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
       
         For a = 0 To 10
           AddGadgetItem(tree, -1, "Normal Item "+Str(a), 0, 0) ; if you want to add an image, use
@@ -146,22 +146,22 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         Debug " widget "+ *tree +" count items "+ CountItems(*tree) +" "+ Type(*tree)
 ;         EnableGadgetDrop(*tree, #PB_Drop_Text, #PB_Drag_Copy)
       
-      PB(ButtonGadget)(3, 10, 180, 100, 24, "set state Item")
+      PB(ButtonGadget)(3, 10, 180, 110, 24, "set state Item")
       BindGadgetEvent(3, @events_tree_gadget())
-      PB(ButtonGadget)(4, 120, 180, 100, 24, "add Item")
+      PB(ButtonGadget)(4, 130, 180, 110, 24, "add Item")
       BindGadgetEvent(4, @events_tree_gadget())
-      PB(ButtonGadget)(5, 230, 180, 100, 24, "remove Item")
+      PB(ButtonGadget)(5, 250, 180, 110, 24, "remove Item")
       BindGadgetEvent(5, @events_tree_gadget())
       
-      PB(ButtonGadget)(6, 10, 210, 100, 24, "set image Item")
+      PB(ButtonGadget)(6, 10, 210, 110, 24, "set image Item")
       BindGadgetEvent(6, @events_tree_gadget())
-      PB(ButtonGadget)(7, 120, 210, 35, 24, "<")
+      PB(ButtonGadget)(7, 130, 210, 40, 24, "<")
       BindGadgetEvent(7, @events_tree_gadget())
-      PB(ButtonGadget)(8, 155, 210, 30, 24, "0")
+      PB(ButtonGadget)(8, 170, 210, 30, 24, "0")
       BindGadgetEvent(8, @events_tree_gadget())
-      PB(ButtonGadget)(9, 185, 210, 35, 24, ">")
+      PB(ButtonGadget)(9, 200, 210, 40, 24, ">")
       BindGadgetEvent(9, @events_tree_gadget())
-      PB(ButtonGadget)(10, 230, 210, 100, 24, "clears Items")
+      PB(ButtonGadget)(10, 250, 210, 110, 24, "clears Items")
       BindGadgetEvent(10, @events_tree_gadget())
       
        BindGadgetEvent(tree, @events_tree_gadget())

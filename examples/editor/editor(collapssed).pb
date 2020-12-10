@@ -120,9 +120,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       _s_#_struct_name_#_struct_type_ = AllocateStructure( _s_#_struct_name_ )
     EndMacro
     
+    Global *event.allocate( events ) ; _s_events = allocateStructure(_s_events)
     ;-
     Macro PB( Function ) : Function : EndMacro
-    Macro this( ) : structures::*event : EndMacro
+    Macro this( ) : widget::*event : EndMacro
     Macro root( ) : widget::this( )\_root( ) : EndMacro
     Macro mouse( ) : widget::this( )\mouse : EndMacro
     Macro widget( ) : widget::this( )\_childrens( ) : EndMacro ; Returns last created widget 
@@ -9366,13 +9367,13 @@ CompilerIf Not Defined( widget, #PB_Module )
         EndIf
         
         ; 
-        If *this\row\selected And *this\row\scrolled
-          bar_SetState( *this\scroll\v, ( ( *this\row\selected\y - *this\scroll\v\y ) - ( Bool( *this\row\scrolled>0 ) * ( *this\scroll\v\bar\page\len - *this\row\selected\height ) ) ) ) 
-          *this\scroll\v\change = 0 
-          *this\row\scrolled = 0
-          
-          Tree_Draw( *this, *this\row\draws( ) )
-        EndIf
+; ;         If *this\row\selected And *this\row\scrolled
+; ;           bar_SetState( *this\scroll\v, ( ( *this\row\selected\y - *this\scroll\v\y ) - ( Bool( *this\row\scrolled>0 ) * ( *this\scroll\v\bar\page\len - *this\row\selected\height ) ) ) ) 
+; ;           *this\scroll\v\change = 0 
+; ;           *this\row\scrolled = 0
+; ;           
+; ;           Tree_Draw( *this, *this\row\draws( ) )
+; ;         EndIf
       EndIf
       
       ; reset draw list
@@ -9808,7 +9809,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           _set_image_( *this, *this\row\_s( )\Image, Image )
           
           If *this\row\selected 
-            *this\row\scrolled = 0
+;             *this\row\scrolled = 0
             *this\row\selected\color\state = 0
             *this\row\selected = *this\row\_s( ) 
             *this\row\selected\color\state = 2 + Bool( GetActive( )\gadget <> *this )
@@ -12120,7 +12121,7 @@ CompilerIf Not Defined( widget, #PB_Module )
           EndIf
           
           *this\row\selected = *this\row\_s( )
-          *this\row\scrolled = ( State+1 )
+;           *this\row\scrolled = ( State+1 )
           
           _repaint_items_( *this )
           
@@ -16832,23 +16833,19 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;{  5_example
     *g5 = Tree(230, 10, 103, 210, #__Tree_NoButtons|#__tree_Collapsed)                                         
-    AddItem(*g5, 0, "Tree_0", -1 )
-    AddItem(*g5, 1, "Tree_1", -1, 0) 
-    AddItem(*g5, 2, "Tree_2", -1, 0) 
-    AddItem(*g5, 3, "Tree_3", -1, 0) 
     AddItem(*g5, 0, "Tree_0 (NoButtons)", -1 )
     AddItem(*g5, 1, "Tree_1", -1, 1) 
     AddItem(*g5, 2, "Tree_2_1", -1, 1) 
     AddItem(*g5, 2, "Tree_2_2", -1, 2) 
-    For i = 0 To 10
-      AddItem(*g5, -1, "Normal Item "+Str(i), 0, 0) ; if you want to AddItem an image, use
-      AddItem(*g5, -1, "Node "+Str(i), 0, 0)        ; ImageID(x) as 4th parameter
-      AddItem(*g5, -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
-      AddItem(*g5, -1, "Sub-Item 2", 0, 1)
-      AddItem(*g5, -1, "Sub-Item 3", 0, 1)
-      AddItem(*g5, -1, "Sub-Item 4", 0, 1)
-      AddItem(*g5, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
-    Next
+;     For i = 0 To 10
+;       AddItem(*g5, -1, "Normal Item "+Str(i), 0, 0) ; if you want to AddItem an image, use
+;       AddItem(*g5, -1, "Node "+Str(i), 0, 0)        ; ImageID(x) as 4th parameter
+;       AddItem(*g5, -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
+;       AddItem(*g5, -1, "Sub-Item 2", 0, 1)
+;       AddItem(*g5, -1, "Sub-Item 3", 0, 1)
+;       AddItem(*g5, -1, "Sub-Item 4", 0, 1)
+;       AddItem(*g5, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
+;     Next
     
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
     ;     SetItemImage(*g, 0, 0)
@@ -17052,5 +17049,5 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-H-------------8L34---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------j-------------0F88---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP

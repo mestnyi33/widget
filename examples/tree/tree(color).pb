@@ -7,24 +7,21 @@ CompilerIf #PB_Compiler_IsMainFile
 UseModule Widget
 Global *w._S_widget
 
-If OpenWindow(0, 0, 0, 590, 300, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    TreeGadget(0, 10, 10, 280, 280)
+If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    TreeGadget(0, 10, 10, 180, 230)
+    
+    Open(0, 200, 10, 180, 230);, "", #__flag_borderless)
+    *w = Tree(0, 0, 180, 230)
     
     For i = 1 To 10
-      AddGadgetItem(0, -1, "Text 1");+Chr(10)+"Text 2")
+      AddGadgetItem(0, -1, "Text_"+Str(i));+Chr(10)+"Text 2")
+      AddItem(*w, -1, "Text_"+Str(i));+Chr(10)+"Text 2")
     Next
-
+    
     SetGadgetItemColor(0, #PB_All, #PB_Gadget_FrontColor, $0000FF)
     SetGadgetItemColor(0,  3, #PB_Gadget_BackColor,  $00FFFF)
-    SetGadgetItemColor(0,  9, #PB_Gadget_BackColor,  $FFFF00)
+    SetGadgetItemColor(0,  7, #PB_Gadget_BackColor,  $FFFF00)
     
-    Open(0, 300, 10, 280, 280);, "", #__flag_borderless)
-    
-    *w=Tree(0, 0, 280, 280)
-    For i = 1 To 10
-      AddItem(*w, -1, "Text 1");+Chr(10)+"Text 2")
-    Next
-
     SetItemColor(*w, #PB_All, #__Color_Front, $FF0000FF)
     SetItemColor(*w,  3, #__Color_Back,  $FF00FFFF)
     SetItemColor(*w,  7, #__Color_Back,  $FFFFFF00)
@@ -44,6 +41,6 @@ If OpenWindow(0, 0, 0, 590, 300, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
   CompilerEndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.72 (MacOS X - x64)
 ; Folding = -
 ; EnableXP

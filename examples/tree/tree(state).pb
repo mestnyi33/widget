@@ -5,6 +5,7 @@ UseLib(widget)
 
 LN=500; количесвто итемов 
 Global *w._S_widget
+
 ; CompilerCase #PB_OS_MacOS
 ;   Protected Range.NSRange\location = Len(GetGadgetText(DialogGadget(#Dialog_Main, "log")))
 ;   CocoaMessage(0, GadgetID(DialogGadget(#Dialog_Main, "log")), "scrollRangeToVisible:@", @Range)

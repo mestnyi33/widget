@@ -28,12 +28,14 @@ Structure udtFastString
   Char.c[0]
 EndStructure
 
+#__sOC = SizeOf(Character)
+  
 ; ----
 
 Procedure AllocateString(String.s = "") ; Result String Pointer
   Protected len, *String.udtFastString, *pointer
   len = StringByteLength(String)
-  *String = AllocateMemory(len + SizeOf(Integer) + SizeOf(Character))
+  *String = AllocateMemory(len + SizeOf(Integer) + #__sOC)
   
   If *String
     *Pointer = @*String\Char
@@ -53,7 +55,7 @@ Macro FreeString(String)
 EndMacro
 
 Procedure ClearString(*String.udtFastString) ; Result New String Pointer
-  *String = ReAllocateMemory(*String, SizeOf(Integer) + SizeOf(Character))
+  *String = ReAllocateMemory(*String, SizeOf(Integer) + #__sOC)
   *String\Len = 0
   *String\Char[0] = 0
   
@@ -63,11 +65,11 @@ EndProcedure
 ; ----
 
 Procedure LenString(*String.udtFastString)
-  ProcedureReturn *String\Len / SizeOf(Character)
+  ProcedureReturn *String\Len / #__sOC
 EndProcedure
 
 Procedure.s GetString(*String.udtFastString)
-  ProcedureReturn PeekS(@*String\Char, *String\Len / SizeOf(Character))
+  ProcedureReturn PeekS(@*String\Char, *String\Len / #__sOC)
 EndProcedure
 
 ; ----
@@ -76,7 +78,7 @@ Procedure AddString(*String.udtFastString, String.s) ; Result New String Pointer
   Protected len, len_new, *pointer
   len = StringByteLength(String)
   len_new = *String\Len + len
-  *String = ReAllocateMemory(*String, len_new + SizeOf(Integer) + SizeOf(Character), #PB_Memory_NoClear)
+  *String = ReAllocateMemory(*String, len_new + SizeOf(Integer) + #__sOC, #PB_Memory_NoClear)
   
   If *String
     *pointer = @*String\Char + *String\Len
@@ -93,10 +95,10 @@ EndProcedure
 Procedure ConcatString(*String.udtFastString, *Add.udtFastString) ; Result New String Pointer
   Protected len_new, *pointer
   len_new = *String\Len + *Add\len
-  *String = ReAllocateMemory(*String, len_new + SizeOf(Integer) + SizeOf(Character), #PB_Memory_NoClear)
+  *String = ReAllocateMemory(*String, len_new + SizeOf(Integer) + #__sOC, #PB_Memory_NoClear)
   If *String
     *pointer = @*String\Char + *String\Len
-    CopyMemory(@*Add\Char, *pointer, *Add\len + SizeOf(Character))
+    CopyMemory(@*Add\Char, *pointer, *Add\len + #__sOC)
     *String\Len = len_new
   Else
     MessageRequester("Fatal Error", "Out Of Memory - Stop", #PB_MessageRequester_Error)
@@ -113,18 +115,18 @@ Procedure InsertStringFast(*String.udtFastString, *Insert.udtFastString, Positio
   EndIf
   
   Position - 1
-  Position * SizeOf(Character)
+  Position * #__sOC
   
   If Position > *String\Len
     Position = *String\Len
   EndIf
   
   len_new = *String\Len + *Insert\len
-  *String = ReAllocateMemory(*String, len_new + SizeOf(Integer) + SizeOf(Character), #PB_Memory_NoClear)
+  *String = ReAllocateMemory(*String, len_new + SizeOf(Integer) + #__sOC, #PB_Memory_NoClear)
   
   If *String
     *pointer = @*String\Char + Position
-    MoveMemory(*pointer, *pointer + *Insert\Len, *String\Len - Position + SizeOf(Character))
+    MoveMemory(*pointer, *pointer + *Insert\Len, *String\Len - Position + #__sOC)
     CopyMemory(@*Insert\Char, *pointer, *Insert\Len)
     *String\Len = len_new
   Else
@@ -139,13 +141,13 @@ EndProcedure
 
 Procedure LeftString(*String.udtFastString, Length)
   Protected len, *NewString.udtFastString
-  Length * SizeOf(Character)
+  Length * #__sOC
   If Length <= *String\Len
     len = Length
   Else
     len = *String\Len
   EndIf
-  *NewString = AllocateMemory(len + SizeOf(Integer) + SizeOf(Character))
+  *NewString = AllocateMemory(len + SizeOf(Integer) + #__sOC)
   If *NewString
     CopyMemory(@*String\Char, @*NewString\Char, len)
     *NewString\Len = len
@@ -158,13 +160,13 @@ EndProcedure
 
 Procedure RightString(*String.udtFastString, Length)
   Protected len, *NewString.udtFastString
-  Length * SizeOf(Character)
+  Length * #__sOC
   If Length <= *String\Len
     len = Length
   Else
     len = *String\Len
   EndIf
-  *NewString = AllocateMemory(len + SizeOf(Integer) + SizeOf(Character))
+  *NewString = AllocateMemory(len + SizeOf(Integer) + #__sOC)
   If *NewString
     CopyMemory(@*String\Char + *String\Len - len, @*NewString\Char, len)
     *NewString\Len = len
@@ -178,9 +180,9 @@ EndProcedure
 Procedure MidString(*String.udtFastString, Position, Length = #PB_Ignore)
   Protected len, *NewString.udtFastString
   Position - 1
-  Position * SizeOf(Character)
+  Position * #__sOC
   If Position => *String\Len Or Position < 0
-    *NewString = AllocateMemory(SizeOf(Integer) + SizeOf(Character))
+    *NewString = AllocateMemory(SizeOf(Integer) + #__sOC)
     If *NewString
       ProcedureReturn *NewString
     Else
@@ -192,7 +194,7 @@ Procedure MidString(*String.udtFastString, Position, Length = #PB_Ignore)
   If Length = #PB_Ignore
     Length = *String\Len - Position
   Else
-    Length * SizeOf(Character)
+    Length * #__sOC
   EndIf
  
   If Length + Position <= *String\Len
@@ -200,7 +202,7 @@ Procedure MidString(*String.udtFastString, Position, Length = #PB_Ignore)
   Else
     len = *String\Len - Position
   EndIf
-  *NewString = AllocateMemory(len + SizeOf(Integer) + SizeOf(Character))
+  *NewString = AllocateMemory(len + SizeOf(Integer) + #__sOC)
   If *NewString
     CopyMemory(@*String\Char + Position, @*NewString\Char, len)
     *NewString\Len = len
@@ -215,13 +217,13 @@ EndProcedure
 
 Procedure LSetString(*String.udtFastString, Length, Character = ' ')
   Protected len, cnt, *NewString.udtFastString, *Position
-  Length * SizeOf(Character)
+  Length * #__sOC
   If *String\Len <= Length
     len = *String\Len
   Else
     len = Length
   EndIf
-  *NewString = AllocateMemory(Length + SizeOf(Integer) + SizeOf(Character))
+  *NewString = AllocateMemory(Length + SizeOf(Integer) + #__sOC)
   If *NewString
     *Position = @*NewString\Char
     CopyMemory(@*String\Char, *Position, len)
@@ -240,13 +242,13 @@ EndProcedure
 
 Procedure RSetString(*String.udtFastString, Length, Character = ' ')
   Protected len, cnt, *NewString.udtFastString, *Position
-  Length * SizeOf(Character)
+  Length * #__sOC
   If *String\Len <= Length
     len = *String\Len
   Else
     len = Length
   EndIf
-  *NewString = AllocateMemory(Length + SizeOf(Integer) + SizeOf(Character))
+  *NewString = AllocateMemory(Length + SizeOf(Integer) + #__sOC)
   If *NewString
     *Position = @*NewString\Char
     If len < Length
@@ -278,7 +280,7 @@ Procedure LCaseString(*String.udtFastString, Flags = 0)
   EndIf
  
   If *NewString
-    len = *NewString\Len / SizeOf(Character)
+    len = *NewString\Len / #__sOC
     len - 1
     For index = 0 To len
       Select *NewString\Char[index]
@@ -312,7 +314,7 @@ Procedure UCaseString(*String.udtFastString, Flags = 0)
   EndIf
  
   If *NewString
-    len = *String\Len / SizeOf(Character)
+    len = *String\Len / #__sOC
     len - 1
     For index = 0 To len
       Select *String\Char[index]

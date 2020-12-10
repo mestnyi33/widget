@@ -194,6 +194,8 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
+  Global img = ImageID( 0 )
+  
   Procedure events_tree_gadget()
     ;Debug " gadget - "+EventGadget()+" "+EventType()
     Protected EventGadget = EventGadget()
@@ -211,7 +213,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_tree_widget()
-    ;Debug " widget - "+this()\widget+" "+this()\event
+    With structures::*event
+      ;Debug " widget - "+this()\widget+" "+this()\event
     Protected EventGadget = this()\widget
     Protected EventType = this()\event
     Protected EventData = this()\data
@@ -229,6 +232,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
       Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
     EndSelect
+    EndWith
   EndProcedure
   
   Define item = 2
@@ -259,7 +263,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 0
     ; 1_example
     TreeGadget(g, 10, 10, 210, 100)                                         
-    AddGadgetItem(g, -1, "Node "+Str(a), 0, 0)                                         
+    AddGadgetItem(g, -1, "Node "+Str(a), img, 0)                                         
     AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)                                           
     AddGadgetItem(g, -1, "Sub-Item 3", 0, 3)
     AddGadgetItem(g, -1, "Sub-Item 2", 0, 2)
@@ -269,7 +273,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g = 1
     ; 2_example
     TreeGadget(g, 10, 10+110, 210, 100)                                         
-    AddGadgetItem(g, 0, "Node "+Str(a), 0, 0)                                         
+    AddGadgetItem(g, 0, "Node "+Str(a), img, 0)                                         
     AddGadgetItem(g, 1, "Sub-Item 1", 0, 1)                                           
     AddGadgetItem(g, 3, "Sub-Item 3", 0, 3)
     AddGadgetItem(g, 2, "Sub-Item 2", 0, 2)
@@ -287,6 +291,16 @@ CompilerIf #PB_Compiler_IsMainFile
     AddGadgetItem(g, 1, "Tree_1",0, 1) 
     AddGadgetItem(g, 2, "Tree_2_1",0, 1) 
     AddGadgetItem(g, 2, "Tree_2_2",0, 2) 
+    For i = 0 To 10
+      AddGadgetItem(g, -1, "Normal Item "+Str(i), 0, 0) ; if you want to add an image, use
+      AddGadgetItem(g, -1, "Node "+Str(i), 0, 0)        ; ImageID(x) as 4th parameter
+      AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
+      AddGadgetItem(g, -1, "Sub-Item 2", 0, 1)
+      AddGadgetItem(g, -1, "Sub-Item 3", 0, 1)
+      AddGadgetItem(g, -1, "Sub-Item 4", 0, 1)
+      AddGadgetItem(g, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
+    Next
+    
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     SetGadgetItemImage(g, 0, ImageID(0))
     
@@ -311,7 +325,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; 4_example
     TreeGadget(g, 450, 10, 210, 210, #PB_Tree_AlwaysShowSelection)                                         
     AddGadgetItem(g, 0, "Tree_0", 0 )
-    AddGadgetItem(g, 1, "Tree_1_1", ImageID(0), 1) 
+    AddGadgetItem(g, 1, "Tree_1_1", img, 1) 
     AddGadgetItem(g, 4, "Tree_1_1_1", 0, 2) 
     AddGadgetItem(g, 5, "Tree_1_1_2", 0, 2) 
     AddGadgetItem(g, 6, "Tree_1_1_2_1", 0, 3) 
@@ -413,13 +427,13 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g5, 2, "Tree_2_1", -1, 1) 
     AddItem(*g5, 2, "Tree_2_2", -1, 2) 
     For i = 0 To 10
-      AddItem(*g5, -1, "Normal Item "+Str(i), 0, 0) ; if you want to add an image, use
-      AddItem(*g5, -1, "Node "+Str(i), 0, 0)        ; ImageID(x) as 4th parameter
-      AddItem(*g5, -1, "Sub-Item 1", 0, 1)          ; These are on the 1st sublevel
-      AddItem(*g5, -1, "Sub-Item 2", 0, 1)
-      AddItem(*g5, -1, "Sub-Item 3", 0, 1)
-      AddItem(*g5, -1, "Sub-Item 4", 0, 1)
-      AddItem(*g5, -1, "File "+Str(i), 0, 0) ; sublevel 0 again
+      AddItem(*g5, -1, "Normal Item "+Str(i), -1, 0) ; if you want to add an image, use
+      AddItem(*g5, -1, "Node "+Str(i), -1, 0)        ; ImageID(x) as 4th parameter
+      AddItem(*g5, -1, "Sub-Item 1", -1, 1)          ; These are on the 1st sublevel
+      AddItem(*g5, -1, "Sub-Item 2", -1, 1)
+      AddItem(*g5, -1, "Sub-Item 3", -1, 1)
+      AddItem(*g5, -1, "Sub-Item 4", -1, 1)
+      AddItem(*g5, -1, "File "+Str(i), -1, 0) ; sublevel 0 again
     Next
     
     ;For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
@@ -501,7 +515,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *g = Tree(890, 100, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__tree_GridLines | #__tree_ThreeState | #__tree_OptionBoxes)                            
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
-      If i=5 ;Or i%3=0
+      If i=5 Or i=6 Or i=7
         AddItem(*g, -1, "Tree_"+Str(i), -1, 0) 
       Else
         AddItem(*g, -1, "Tree_"+Str(i), 0, -1) 

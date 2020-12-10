@@ -661,8 +661,8 @@ CompilerIf Not Defined(structures, #PB_Module)
       *address2          ; widget list address
     EndStructure
     
-    ;- - _s_this
-    Structure _s_this
+    ;- - _s_events
+    Structure _s_events
       mouse._s_mouse               ; mouse( )\
       keyboard._s_keyboard         ; keyboard( )\
       
@@ -671,6 +671,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       sticky._s_sticky            ; top level
       
       *widget._s_widget            ; EventWidget( )\
+      ;;*type                        ; EventType( )
       *event                       ; EventType( )
       *item                        ; EventItem( )
       *data                        ; EventData( )
@@ -679,7 +680,7 @@ CompilerIf Not Defined(structures, #PB_Module)
       List *_childrens._s_widget( ) ; widget( )\
     EndStructure
     
-    Global *event._s_this = AllocateStructure(_s_this)
+    ;Global *event._s_events = AllocateStructure(_s_events)
     ;}
     
   EndDeclareModule 
@@ -689,5 +690,5 @@ CompilerIf Not Defined(structures, #PB_Module)
   EndModule 
 CompilerEndIf
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = HACAEMEw
+; Folding = HACAEME1
 ; EnableXP

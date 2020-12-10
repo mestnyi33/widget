@@ -7,6 +7,8 @@
 EndDeclareModule 
 
 Module func
+  #__sOC = SizeOf(Character)
+  
   Procedure.i Cursor(ImageID.i, x.l=0, y.l=0)
     If ImageID
       CompilerSelect #PB_Compiler_OS
@@ -35,6 +37,22 @@ Module func
     ProcedureReturn *cursor
   EndProcedure
   
+  Procedure.s InvertCase( Text.s )  
+    Protected *C.CHARACTER = @Text
+    
+    While ( *C\c )
+      If ( *C\c = Asc( LCase( Chr( *C\c ) ) ) )
+        *C\c = Asc( UCase( Chr( *C\c ) ) )
+      Else
+        *C\c = Asc( LCase( Chr( *C\c ) ) )
+      EndIf
+      
+      *C + #__sOC ; SizeOf( CHARACTER )
+    Wend
+    
+    ProcedureReturn Text
+  EndProcedure
+    
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     Procedure.i ResizeIcon(hIcon.i, Width.l, Height.l, Depth.l=32)
       Protected IInfo.ICONINFO, ColorImg.i, MaskImg.i, DC.i, RethIcon.i, ICONINFO.ICONINFO
@@ -88,5 +106,5 @@ EndModule
 
 UseModule func
 ; IDE Options = PureBasic 5.72 (MacOS X - x64)
-; Folding = 4--
+; Folding = 44--
 ; EnableXP

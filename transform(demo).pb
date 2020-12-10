@@ -5,6 +5,7 @@
 XIncludeFile "widgets.pbi" 
 Uselib(widget)
 UsePNGImageDecoder()
+Global id_elements_tree, group_select, id_inspector_tree, toolbar_design
 
 Define *new
 ; toolbar buttons
